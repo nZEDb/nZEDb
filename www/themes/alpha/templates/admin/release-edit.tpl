@@ -51,16 +51,23 @@
 </tr>
 
 <tr>
-	<td><label for="rageID">Tv Rage Id:</label></td>
+	<td><label for="rageid">Tv Rage Id:</label></td>
 	<td>
-		<input id="rageID" class="short" name="rageID" type="text" value="{$release.rageid}" />
+		<input id="rageid" class="short" name="rageid" type="text" value="{$release.rageid}" />
 	</td>
 </tr>
 
 <tr>
-	<td><label for="episode">AniDB Id:</label></td>
+	<td><label for="imdbid">IMDB Id:</label></td>
 	<td>
-		<input id="anidbID" class="short" name="anidbID" type="text" value="{$release.anidbid}" />
+		<input id="imdbid" class="short" name="imdbid" type="text" value="{$release.imdbid}" />
+	</td>
+</tr>
+
+<tr>
+	<td><label for="anidbid">AniDB Id:</label></td>
+	<td>
+		<input id="anidbid" class="short" name="anidbid" type="text" value="{$release.anidbid}" />
 	</td>
 </tr>
 
@@ -82,13 +89,6 @@
 	<td><label for="episode">Episode:</label></td>
 	<td>
 		<input id="episode" class="short" name="episode" type="text" value="{$release.episode}" />
-	</td>
-</tr>
-
-<tr>
-	<td><label for="episode">IMDB Id:</label></td>
-	<td>
-		<input id="imdbID" class="short" name="imdbID" type="text" value="{$release.imdbid}" />
 	</td>
 </tr>
 

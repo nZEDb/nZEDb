@@ -30,9 +30,8 @@
     <div class="code">cd nZEDb/misc/update_scripts<br/>php update_binaries.php</div>
 </li>
 <li style="margin-bottom: 15px;">After obtaining headers, the next step is to create releases. <b>This is best done
-        from the command line</b> using the linux or windows shell scripts found in /misc/update_scripts/nix_scripts
-    (or win_scripts for windows users). If this is your first time dont bother with the init scripts just open a
-    command prompt...
+        from the command line</b> using the linux or windows shell scripts. If this is your first time dont bother with
+        the init scripts just open a command prompt...
     <div class="code">cd misc/update_scripts
         <br />php update_releases.php 1 true</div>
 </li>

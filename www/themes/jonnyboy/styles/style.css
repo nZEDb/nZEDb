@@ -53,6 +53,11 @@ h1, h2, h3
     color: #485459;
 }
 
+h2.white
+{
+    color: #FFF;
+    font-weight: bold;
+}
 h4
 {
     margin: 0;
@@ -379,10 +384,10 @@ table.nohighlight tr:hover
 }
 
 table tr.alt { background-color: #F6F6F6; }
+table tr.alttrans { background-color: transparent; }
 table tr.new { background-color: #f6f8ff; }
 table.data em {font-weight:bolder; color:red;}
 table td.item { padding:5px 5px 2px 5px; }
-
 
 label a.title
 {
@@ -449,12 +454,23 @@ div.pager .current
     border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;
 }
 
+div.highlight:hover
+{
+    background: #b5c6d0;
+    background: -moz-radial-gradient(center, ellipse cover,  #b5c6d0 8%, #e0eff9 65%, #f2f6f8 81%);
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(8%,#b5c6d0), color-stop(65%,#e0eff9), color-stop(81%,#f2f6f8));
+    background: -webkit-radial-gradient(center, ellipse cover,  #b5c6d0 8%,#e0eff9 65%,#f2f6f8 81%);
+    background: -o-radial-gradient(center, ellipse cover,  #b5c6d0 8%,#e0eff9 65%,#f2f6f8 81%);
+    background: -ms-radial-gradient(center, ellipse cover,  #b5c6d0 8%,#e0eff9 65%,#f2f6f8 81%);
+    background: radial-gradient(ellipse at center,  #b5c6d0 8%,#e0eff9 65%,#f2f6f8 81%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b5c6d0', endColorstr='#f2f6f8',GradientType=1 );
+}
 
 /*
 round buttoning
 */
 
-.rndbtn {
+.rndbtn, .rndbtnsml {
     -moz-box-shadow:inset 1px -2px 4px -35px #bdc99a;
     -webkit-box-shadow:inset 1px -2px 4px -35px #bdc99a;
     box-shadow:inset 1px -2px 4px -35px #bdc99a;
@@ -477,15 +493,22 @@ round buttoning
     margin: 2px;
 }
 
+.rndbtnsml {
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+    border:1px solid #bfc1e3;
+    padding:0 3px;
+    text-decoration:none;
+    text-shadow:2px 2px 0px #ced9bf;
+    margin: 2px;
+}
+
 table.highlight tr:hover .rndbtn, table tr.alt .rndbtn { background-color: #fff; }
 table.highlight tr:hover { background-color: #DDD; }
 table.highlight tr:hover td.static { background-color: #000; }
 
-/*
-another round button
-*/
-
-.rndbtn:hover {
+.rndbtn:hover, .rndbtnsml:hover {
     background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f2f6f8), color-stop(1, #b5c6d0));
     background:-moz-linear-gradient(top, #f2f6f8 5%, #b5c6d0 100%);
     background:-webkit-linear-gradient(top, #f2f6f8 5%, #b5c6d0 100%);
@@ -494,10 +517,6 @@ another round button
     background:linear-gradient(to bottom, #f2f6f8 5%, #b5c6d0 100%);
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f2f6f8', endColorstr='#b5c6d0',GradientType=0);
     background-color:#f2f6f8;
-}
-.button:active {
-    position:relative;
-    top:1px;
 }
 
 /*
@@ -542,10 +561,10 @@ div.movextra { padding-top:5px; color: #888; font-size: 0.9em; }
 div.movextra td {border:0; padding:0 0 10px 0}
 div.movextra tr.mlextra {display:none;}
 
-div.movcover { width:260px; }
+div.movcover {
+    margin: 5px;
+}
 div.movcover img { margin-bottom:15px;}
-
-.mediainfo, .seriesinfo {cursor:pointer;}
 
 a.external { background: url('../../Default/images/newwindow.png') center right no-repeat !important; padding-right:13px !important;}
 

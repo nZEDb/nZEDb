@@ -1359,6 +1359,7 @@ INSERT INTO site
 	('tmdbkey','9a4e16adddcd1e86da19bcaf5ff3c2a3'),
 	('rottentomatokey','qxbxyngtujprvw7jxam2m6na'),
 	('trakttvkey',''),
+	('fanarttvkey', ''),
 	('compressedheaders', 0),
 	('partrepair', 1),
 	('maxmssgs', 20000),
@@ -1440,7 +1441,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','160');
+	('sqlpatch','161');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
