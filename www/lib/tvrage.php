@@ -217,7 +217,7 @@ class TvRage
         }
         foreach ($countries as $country) {
             if ($this->echooutput) {
-                echo $this->c->primary('Updating schedule for ' . $country['country']);
+                echo $this->c->headerOver('Updating schedule for: ') . $this->c->primary($country['country']);
             }
 
             $sched = getURL($this->xmlFullScheduleUrl . $country['country']);
@@ -291,10 +291,10 @@ class TvRage
                             if ($this->echooutput) {
                                 echo $this->c->primary($epInfo['showname'] . " (" . $showId . "):");
                                 if (isset($epInfo['prev']['day_time'])) {
-                                    echo $this->c->primary("Prev EP: {$prev_ep} - " . date("m/d/Y H:i T", $epInfo['prev']['day_time']));
+                                    echo $this->c->headerOver("Prev EP: ") . $this->c->primary("{$prev_ep} - " . date("m/d/Y H:i T", $epInfo['prev']['day_time']));
                                 }
                                 if (isset($epInfo['next']['day_time'])) {
-                                    echo $this->c->primary("Next EP: {$next_ep} - " . date("m/d/Y H:i T", $epInfo['next']['day_time']));
+                                    echo $this->c->headerOver("Next EP: ") . $this->c->primary("{$next_ep} - " . date("m/d/Y H:i T", $epInfo['next']['day_time']));
                                 }
                                 echo "\n";
                             }

@@ -1,115 +1,117 @@
 <?php
+
 class RottenTomato
 {
-	const API_URL = "http://api.rottentomatoes.com/api/public/v1.0/";
 
-	private $_apikey;
+    const API_URL = "http://api.rottentomatoes.com/api/public/v1.0/";
 
-	public function __construct($apikey)
-	{
-		$this->setApikey($apikey);
-	}
+    private $_apikey;
 
-	public function getBoxOffice()
-	{
-		return $this->_makeCall('lists/movies/box_office.json');
-	}
+    public function __construct($apikey)
+    {
+        $this->setApikey($apikey);
+    }
 
-	public function getInTheaters()
-	{
-		return $this->_makeCall('lists/movies/in_theaters.json');
-	}
+    public function getBoxOffice()
+    {
+        return $this->_makeCall('lists/movies/box_office.json');
+    }
 
-	public function getOpening()
-	{
-		return $this->_makeCall('lists/movies/opening.json');
-	}
+    public function getInTheaters()
+    {
+        return $this->_makeCall('lists/movies/in_theaters.json');
+    }
 
-	public function getUpcoming()
-	{
-		return $this->_makeCall('lists/movies/upcoming.json');
-	}
+    public function getOpening()
+    {
+        return $this->_makeCall('lists/movies/opening.json');
+    }
 
-	public function getDVDReleases()
-	{
-		return $this->_makeCall('lists/dvds/new_releases.json');
-	}
+    public function getUpcoming()
+    {
+        return $this->_makeCall('lists/movies/upcoming.json');
+    }
 
-	public function searchMovie($title)
-	{
-		$params = array(
-			'q' => $title,
-			'page_limit' => 50
-		);
+    public function getDVDReleases()
+    {
+        return $this->_makeCall('lists/dvds/new_releases.json');
+    }
 
-		return $this->_makeCall('movies.json', $params);
-	}
+    public function searchMovie($title)
+    {
+        $params = array(
+            'q' => $title,
+            'page_limit' => 50
+        );
 
-	public function getMovie($rtid)
-	{
-		return $this->_makeCall('movies/'.$rtid.'.json');
-	}
+        return $this->_makeCall('movies.json', $params);
+    }
 
-	public function getReviews($rtid, $type="top_critic")
-	{
-		$params = array(
-			'review_type' => $type,
-			'page_limit' => 20
-		);
+    public function getMovie($rtid)
+    {
+        return $this->_makeCall('movies/' . $rtid . '.json');
+    }
 
-		return $this->_makeCall('movies/'.$rtid.'/reviews.json');
-	}
+    public function getReviews($rtid, $type = "top_critic")
+    {
+        $params = array(
+            'review_type' => $type,
+            'page_limit' => 20
+        );
 
-	public function getCast($rtid)
-	{
-		return $this->_makeCall('movies/'.$rtid.'/cast.json');
-	}
+        return $this->_makeCall('movies/' . $rtid . '/reviews.json');
+    }
 
-	public function getURLtest()
-	{
-		return RottenTomato::API_URL."movies.json?apikey=".$this->getApikey()."&q=inception&page_limit=50";
-	}
+    public function getCast($rtid)
+    {
+        return $this->_makeCall('movies/' . $rtid . '/cast.json');
+    }
 
-	private function _makeCall($function, $param = "")
-	{
-		$params = '';
+    public function getURLtest()
+    {
+        return RottenTomato::API_URL . "movies.json?apikey=" . $this->getApikey() . "&q=inception&page_limit=50";
+    }
 
-		if(is_array($param) AND ! empty($param))
-			$params .= '&'.http_build_query($param);
+    private function _makeCall($function, $param = "")
+    {
+        $params = '';
 
-		$url = RottenTomato::API_URL.$function."?apikey=".$this->getApikey().$params;
+        if (is_array($param) AND !empty($param)) {
+            $params .= '&' . http_build_query($param);
+        }
 
-		$results = '';
+        $url = RottenTomato::API_URL . $function . "?limit=20&apikey=" . $this->getApikey() . $params;
+        $results = '';
 
-		if (extension_loaded('curl'))
-		{
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_HEADER, 0);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+        if (extension_loaded('curl')) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 
-			$results = curl_exec($ch);
-			$headers = curl_getinfo($ch);
+            $results = curl_exec($ch);
+            $headers = curl_getinfo($ch);
 
-			$error_number = curl_errno($ch);
-			$error_message = curl_error($ch);
+            $error_number = curl_errno($ch);
+            $error_message = curl_error($ch);
 
-			curl_close($ch);
-		}
-		else
-			$results = file_get_contents($url);
+            curl_close($ch);
+        } else {
+            $results = file_get_contents($url);
+        }
 
-		return (string) $results;
-	}
+        return (string) trim($results);
+    }
 
-	public function setApikey($apikey)
-	{
-		$this->_apikey = (string) $apikey;
-	}
+    public function setApikey($apikey)
+    {
+        $this->_apikey = (string) $apikey;
+    }
 
-	public function getApikey()
-	{
-		return $this->_apikey;
-	}
+    public function getApikey()
+    {
+        return $this->_apikey;
+    }
+
 }

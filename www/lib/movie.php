@@ -989,7 +989,7 @@ class Movie
 		$s = new Sites();
 		$site = $s->get();
 		if ($this->echooutput) {
-			echo "Updating movie schedule using rotten tomatoes.\n";
+			echo $this->c->primary("Updating movie schedule using rotten tomatoes.");
 		}
 		if (isset($site->rottentomatokey)) {
 			$rt = new RottenTomato($site->rottentomatokey);
@@ -998,11 +998,11 @@ class Movie
 			if ($retbo != "") {
 				$cnt1 = $this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $retbo);
 				if ($this->echooutput && $cnt1 > 0) {
-					echo "Added/updated movies to the box office list.\n";
+					echo $this->c->primary("Added/updated movies to the box office list.");
 				}
 			} else {
 				if ($this->echooutput) {
-					echo "No new updates for box office list.\n";
+					echo $this->c->primary("No new updates for box office list.");
 				}
 			}
 
@@ -1010,11 +1010,11 @@ class Movie
 			if ($rett != "") {
 				$cnt2 = $this->updateInsUpcoming('rottentomato', Movie::SRC_INTHEATRE, $rett);
 				if ($this->echooutput && $cnt2 > 0) {
-					echo "Added/updated movies to the theaters list.\n";
+					echo $this->c->primary("Added/updated movies to the theaters list.");
 				}
 			} else {
 				if ($this->echooutput) {
-					echo "No new updates for theaters list.\n";
+					echo $this->c->primary("No new updates for theaters list.");
 				}
 			}
 
@@ -1022,11 +1022,11 @@ class Movie
 			if ($reto != "") {
 				$cnt3 = $this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $reto);
 				if ($this->echooutput && $cnt3 > 0) {
-					echo "Added/updated movies to the opening list.\n";
+					echo $this->c->primary("Added/updated movies to the opening list.");
 				}
 			} else {
 				if ($this->echooutput) {
-					echo "No new updates for opening list.\n";
+					echo $this->c->primary("No new updates for opening list.");
 				}
 			}
 
@@ -1034,11 +1034,11 @@ class Movie
 			if ($retu != "") {
 				$cnt4 = $this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $retu);
 				if ($this->echooutput && $cnt4 > 0) {
-					echo "Added/updated movies to the upcoming list.\n";
+					echo $this->c->primary("Added/updated movies to the upcoming list.");
 				}
 			} else {
 				if ($this->echooutput) {
-					echo "No new updates for upcoming list.\n";
+					echo $this->c->primary("No new updates for upcoming list.");
 				}
 			}
 
@@ -1046,16 +1046,16 @@ class Movie
 			if ($retr != "") {
 				$cnt5 = $this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $retr);
 				if ($this->echooutput && $cnt5 > 0) {
-					echo "Added/updated movies to the DVD list.\n";
+					echo $this->c->primary("Added/updated movies to the DVD list.");
 				}
 			} else {
 				if ($this->echooutput) {
-					echo "No new updates for upcoming list.\n";
+					echo $this->c->primary("No new updates for upcoming list.");
 				}
 			}
 
 			if ($this->echooutput) {
-				echo "Updated successfully.\n";
+				echo $this->c->primary("Updated successfully.");
 			}
 		}
 	}

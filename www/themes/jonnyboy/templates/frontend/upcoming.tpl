@@ -22,7 +22,7 @@
 		<tr class="{cycle values=",alt"}">
 			<td class="mid">
 				<div class="movcover">
-					<img class="shadow" src="{$result->posters->profile}" width="240" border="0" alt="{$result->title|escape:"htmlall"}" />
+					<img class="shadow" src="{$result->posters->original}" width="220" border="0" alt="{$result->title|escape:"htmlall"}" />
 					<div class="movextra">
 					</div>
 				</div>
