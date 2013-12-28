@@ -226,6 +226,7 @@
                                 </div>
                             </div>
                         </td>
+
                     </tr>
                 {/if}
             {/foreach}

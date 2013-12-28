@@ -1,4 +1,4 @@
- 
+
 <h1>{$page->title}</h1>
 
 {if $error != ''}
@@ -18,6 +18,20 @@
 </tr>
 
 <tr>
+	<td>First Name:</td>
+	<td>
+		<input autocomplete="off" class="long" name="firstname" type="text" value="{$user.firstname}" />
+	</td>
+</tr>
+
+<tr>
+	<td>Last Name:</td>
+	<td>
+		<input autocomplete="off" class="long" name="lastname" type="text" value="{$user.lastname}" />
+	</td>
+</tr>
+
+<tr>
 	<td>Email:</td>
 	<td>
 		<input autocomplete="off" class="long" name="email" type="text" value="{$user.email}" />
@@ -31,7 +45,7 @@
 		{if $user.id}
 			<div class="hint">Only enter a password if you want to change it.</div>
 		{/if}
-	</td>	
+	</td>
 </tr>
 {if $user.id}
 <tr>
