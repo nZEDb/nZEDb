@@ -18,7 +18,7 @@ if (count($list) == 0) {
 } else {
 	foreach ($list as $column) {
 		if ($column['column_name'] !== strtolower($column['column_name'])) {
-			echo $c->header("Renaming Column " . $column['column_name']);
+			echo $c->header("Renaming Table " . $column['table_name'] . " Column " . $column['column_name']);
 			$db->queryDirect("ALTER TABLE " . $column['table_name'] . " CHANGE " . $column['column_name'] . " " . strtolower($column['column_name']) . " " . $column['upper(column_type)']);
 			$count++;
 		}
@@ -27,5 +27,5 @@ if (count($list) == 0) {
 if ($count == 0) {
 	echo $c->info("All table column names are already lowercase");
 } else {
-	echo $c->header(count ." colums renamed");
+	echo $c->header($count ." colums renamed");
 }
