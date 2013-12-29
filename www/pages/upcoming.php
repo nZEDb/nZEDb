@@ -5,7 +5,10 @@ if (!$users->isLoggedIn()) {
 }
 
 require_once nZEDb_LIB . 'movie.php';
+require_once nZEDb_LIB . 'site.php';
 $m = new Movie();
+$s = new Sites();
+$site = $s->get();
 
 if (!isset($_GET["id"])) {
     $_GET["id"] = 1;
@@ -23,7 +26,7 @@ if ($data["info"] == "") {
             $page->title = "Box Office";
             break;
         case Movie::SRC_INTHEATRE;
-            $page->title = "In Theatre";
+            $page->title = "In Theater";
             break;
         case Movie::SRC_OPENING;
             $page->title = "Opening";

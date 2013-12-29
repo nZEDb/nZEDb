@@ -437,7 +437,7 @@ class TvRage
         $genre = '';
         if (isset($tvrShow['genres']) && is_array($tvrShow['genres']) && !empty($tvrShow['genres'])) {
             if (is_array($tvrShow['genres']['genre'])) {
-                $genre = implode('|', $tvrShow['genres']['genre']);
+				$genre = implode('|', $tvrShow['genres']['genre']);
             } else {
                 $genre = $tvrShow['genres']['genre'];
             }

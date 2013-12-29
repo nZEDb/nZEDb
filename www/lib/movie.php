@@ -981,7 +981,13 @@ class Movie
 	public function getUpcoming($type, $source = "rottentomato")
 	{
 		$sql = sprintf("SELECT * FROM upcoming WHERE source = %s AND typeid = %d", $this->db->escapeString($source), $type);
-		return $this->db->queryOneRow($sql);
+		$list = $this->db->queryOneRow($sql);
+		if (!$list) {
+			$this->updateUpcoming();
+			$sql = sprintf("SELECT * FROM upcoming WHERE source = %s AND typeid = %d", $this->db->escapeString($source), $type);
+			$list = $this->db->queryOneRow($sql);
+		}
+		return $list;
 	}
 
 	public function updateUpcoming()
@@ -989,73 +995,118 @@ class Movie
 		$s = new Sites();
 		$site = $s->get();
 		if ($this->echooutput) {
-			echo $this->c->primary("Updating movie schedule using rotten tomatoes.");
+			echo $this->c->header("Updating movie schedule using rotten tomatoes.");
 		}
 		if (isset($site->rottentomatokey)) {
 			$rt = new RottenTomato($site->rottentomatokey);
 
 			$retbo = $rt->getBoxOffice();
-			if ($retbo != "") {
+			$test = @json_decode($retbo);
+			if (!$test) {
+				sleep(1);
+				$retbo = $rt->getBoxOffice();
+				$test = @json_decode($retbo);
+				if (!$test) {
+					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				}
+			}
+			if ($test && $retbo != "") {
 				$cnt1 = $this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $retbo);
 				if ($this->echooutput && $cnt1 > 0) {
-					echo $this->c->primary("Added/updated movies to the box office list.");
-				}
-			} else {
-				if ($this->echooutput) {
-					echo $this->c->primary("No new updates for box office list.");
+					echo $this->c->header("Added/updated movies to the box office list.");
+				} else {
+					if ($this->echooutput) {
+						echo $this->c->primary("No new updates for box office list.");
+					}
 				}
 			}
 
 			$rett = $rt->getInTheaters();
-			if ($rett != "") {
+			$test = @json_decode($rett);
+			if (!$test) {
+				sleep(1);
+				$rett = $rt->getInTheaters();
+				$test = @json_decode($rett);
+				if (!$test) {
+					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				}
+			}
+			if ($test && $rett != "") {
 				$cnt2 = $this->updateInsUpcoming('rottentomato', Movie::SRC_INTHEATRE, $rett);
 				if ($this->echooutput && $cnt2 > 0) {
-					echo $this->c->primary("Added/updated movies to the theaters list.");
-				}
-			} else {
-				if ($this->echooutput) {
-					echo $this->c->primary("No new updates for theaters list.");
+					echo $this->c->header("Added/updated movies to the theaters list.");
+				} else {
+					if ($this->echooutput) {
+						echo $this->c->primary("No new updates for theaters list.");
+					}
 				}
 			}
 
 			$reto = $rt->getOpening();
-			if ($reto != "") {
+			$test = @json_decode($reto);
+			if (!$test) {
+				sleep(1);
+				$reto = $rt->getOpening();
+				$test = @json_decode($reto);
+				if (!$test) {
+					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				}
+			}
+			if ($test && $reto != "") {
 				$cnt3 = $this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $reto);
 				if ($this->echooutput && $cnt3 > 0) {
-					echo $this->c->primary("Added/updated movies to the opening list.");
-				}
-			} else {
-				if ($this->echooutput) {
-					echo $this->c->primary("No new updates for opening list.");
+					echo $this->c->header("Added/updated movies to the opening list.");
+				} else {
+					if ($this->echooutput) {
+						echo $this->c->primary("No new updates for opening list.");
+					}
 				}
 			}
 
 			$retu = $rt->getUpcoming();
-			if ($retu != "") {
+			$test = @json_decode($retu);
+			if (!$test) {
+				sleep(1);
+				$retu = $rt->getUpcoming();
+				$test = @json_decode($retu);
+				if (!$test) {
+					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				}
+			}
+			if ($test && $retu != "") {
 				$cnt4 = $this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $retu);
 				if ($this->echooutput && $cnt4 > 0) {
-					echo $this->c->primary("Added/updated movies to the upcoming list.");
-				}
-			} else {
-				if ($this->echooutput) {
-					echo $this->c->primary("No new updates for upcoming list.");
+					echo $this->c->header("Added/updated movies to the upcoming list.");
+				} else {
+					if ($this->echooutput) {
+						echo $this->c->primary("No new updates for upcoming list.");
+					}
 				}
 			}
 
 			$retr = $rt->getDVDReleases();
-			if ($retr != "") {
+			$test = @json_decode($retr);
+			if (!$test) {
+				sleep(1);
+				$retr = $rt->getDVDReleases();
+				$test = @json_decode($retr);
+				if (!$test) {
+					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				}
+			}
+			if ($test && $retr != "") {
 				$cnt5 = $this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $retr);
 				if ($this->echooutput && $cnt5 > 0) {
-					echo $this->c->primary("Added/updated movies to the DVD list.");
-				}
-			} else {
-				if ($this->echooutput) {
-					echo $this->c->primary("No new updates for upcoming list.");
+					echo $this->c->header("Added/updated movies to the DVD list.");
+				} else {
+					if ($this->echooutput) {
+						echo $this->c->primary("No new updates for upcoming list.");
+					}
 				}
 			}
 
 			if ($this->echooutput) {
-				echo $this->c->primary("Updated successfully.");
+				echo $this->c->header("Updated successfully.");
 			}
 		}
 	}

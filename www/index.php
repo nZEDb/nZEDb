@@ -22,6 +22,7 @@ switch ($page->page) {
     case 'browsegroup':
     case 'predb':
     case 'search':
+    case 'sysinfo':
     case 'apihelp':
     case 'rss-info':
     case 'movies':

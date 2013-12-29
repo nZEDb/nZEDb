@@ -75,12 +75,14 @@ class RottenTomato
     private function _makeCall($function, $param = "")
     {
         $params = '';
+		$limit = mt_rand(15, 20);
 
         if (is_array($param) AND !empty($param)) {
             $params .= '&' . http_build_query($param);
         }
 
-        $url = RottenTomato::API_URL . $function . "?limit=20&apikey=" . $this->getApikey() . $params;
+        $url = RottenTomato::API_URL . $function . "?limit=" . $limit . "&apikey=" . $this->getApikey() . $params;
+
         $results = '';
 
         if (extension_loaded('curl')) {

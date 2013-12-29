@@ -83,9 +83,8 @@
                 <th></th>
             </tr>
 
-            {$rowcount = 1}
-            {foreach from=$results item=result $rowcount++}
-                {if ($rowcount % 2 != 0) }
+            {foreach from=$results item=result name=movieloop}
+                {if ($smarty.foreach.movieloop.iteration % 2 != 0) }
                     <tr>
                         <td class="mid">
                             <div class="movcover">
@@ -101,7 +100,7 @@
                             </div>
                         </td>
                         <td colspan="3" class="left" >
-                            {if $result.backdrop == 1}
+                            {if $result.backdrop == 1 && $site->showbacks == 1}
                                 <div style="background-image: url({if $result.backdrop == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-backdrop.jpg{/if}); background-size: cover; height:300px;">
                                     <div style="height:300px; background-color: rgba(240, 241, 247, 0.5)">
                                         <h2 class="white">{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
@@ -166,7 +165,7 @@
                         </td>
                     {else}
                         <td colspan="3" class="left" >
-                            {if $result.backdrop == 1}
+                            {if $result.backdrop == 1 && $site->showbacks == 1}
                                 <div style="background-image: url({if $result.backdrop == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-backdrop.jpg{/if}); background-size: cover; height:300px;">
                                     <div style="height:300px; background-color: rgba(240, 241, 247, 0.5)">
                                         <h2 class="white">{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
