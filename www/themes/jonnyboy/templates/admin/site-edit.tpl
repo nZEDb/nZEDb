@@ -91,6 +91,14 @@
             </tr>
 
             <tr>
+                <td style="width:180px;"><label for="style">Backgrounds:</label></td>
+                <td>
+                    {html_radios id="showbacks" name='showbacks' values=$yesno_ids output=$yesno_names selected=$fsite->showbacks separator='<br />'}
+                    <div class="hint">Use movie backgrounds in movies cover view.</div>
+                </td>
+            </tr>
+
+            <tr>
                 <td style="width:180px;"><label for="style">Dereferrer Link:</label></td>
                 <td>
                     <input id="dereferrer_link" class="long" name="dereferrer_link" type="text" value="{$fsite->dereferrer_link}" />
