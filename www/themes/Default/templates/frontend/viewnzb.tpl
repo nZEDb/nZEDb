@@ -288,6 +288,10 @@
 
 	<tr><th>Size:</th><td>{$release.size|fsize_format:"MB"}{if $release.completion > 0}&nbsp;({if $release.completion < 100}<span class="warning">{$release.completion}%</span>{else}{$release.completion}%{/if}){/if}</td></tr>
 	<tr><th>ID:</th><td>{$release.id}</td></tr>
+	<tr><th>TvRage Id:</th><td>{$release.rageid}</td></tr>
+	<tr><th>IMDB Id:</th><td>{$release.imdbid}</td></tr>
+	<tr><th>TMDB Id:</th><td>{$release.tmdbid}</td></tr>
+	<tr><th>Anidb Id:</th><td>{$release.anidbid}</td></tr>
 	<tr><th>Grabs:</th><td>{$release.grabs} time{if $release.grabs==1}{else}s{/if}</td></tr>
 	<tr><th>Files:</th><td><a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$release.guid}">{$release.totalpart} file{if $release.totalpart==1}{else}s{/if}</a></td></tr>
 	{if $releasefiles|@count > 0}

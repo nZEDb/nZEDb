@@ -1,14 +1,14 @@
 <h1>{$page->title}</h1>
 
 <p>
-<a href="{$smarty.const.WWW_TOP}/upcoming/1">Box Office</a> | 
-<a href="{$smarty.const.WWW_TOP}/upcoming/2">In Theatre</a> | 
-<a href="{$smarty.const.WWW_TOP}/upcoming/3">Opening</a> | 
-<a href="{$smarty.const.WWW_TOP}/upcoming/4">Upcoming</a> | 
+<a href="{$smarty.const.WWW_TOP}/upcoming/1">Box Office</a> |
+<a href="{$smarty.const.WWW_TOP}/upcoming/2">In Theatre</a> |
+<a href="{$smarty.const.WWW_TOP}/upcoming/3">Opening</a> |
+<a href="{$smarty.const.WWW_TOP}/upcoming/4">Upcoming</a> |
 <a href="{$smarty.const.WWW_TOP}/upcoming/5">DVD Releases</a>
 </p>
 
-{$site->adbrowse}	
+{$site->adbrowse}
 
 {if $data|@count > 0}
 
@@ -22,7 +22,7 @@
 		<tr class="{cycle values=",alt"}">
 			<td class="mid">
 				<div class="movcover">
-					<img class="shadow" src="{$result->posters->profile}" width="120" border="0" alt="{$result->title|escape:"htmlall"}" />
+					<img class="shadow" src="{$result->posters->{$site->rottentomatoquality}}" width="120" border="0" alt="{$result->title|escape:"htmlall"}" />
 					<div class="movextra">
 					</div>
 				</div>
@@ -32,10 +32,10 @@
 				{if $result->synopsis == ""}No synopsis. Check <a target="_blank" href="{$site->dereferrer_link}{$result->links->alternate}" title="View Rotten Tomatoes Details">Rotten Tomatoes</a> for more information.{else}{$result->synopsis}{/if}
 				{if $result->abridged_cast|@count > 0}
 					<br /><br />
-					<b>Starring:</b> 
+					<b>Starring:</b>
 					{foreach from=$result->abridged_cast item=cast name=cast}
 						<a href="{$smarty.const.WWW_TOP}/movies?actors={$cast->name|escape:"htmlall"}" title="Search for movies starring {$cast->name|escape:"htmlall"}">{$cast->name|escape:"htmlall"}</a>
-						{if $smarty.foreach.cast.last}<br/><br/>{else},{/if}						
+						{if $smarty.foreach.cast.last}<br/><br/>{else},{/if}
 					{/foreach}
 				{else}
 					<br/><br/>

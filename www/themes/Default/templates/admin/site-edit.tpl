@@ -246,7 +246,8 @@
 	<td style="width:180px;"><label for="rottentomatokey">Rotten Tomatoes Key:</label></td>
 	<td>
 		<input id="rottentomatokey" class="long" name="rottentomatokey" type="text" value="{$fsite->rottentomatokey}" />
-		<div class="hint">The api key used for access to rotten tomatoes.</div>
+		{html_options style="width:180px;" id="rottentomatoquality" name='rottentomatoquality' values=$rottentomatoquality_ids output=$rottentomatoquality_names selected=$fsite->rottentomatoquality}
+		<div class="hint">The api key used for access to rotten tomatoes. Select the quality of the images to display in Upcoming.</div>
 	</td>
 </tr>
 
@@ -287,6 +288,14 @@
 	<td>
 		<input id="anidbkey" class="long" name="anidbkey" type="text" value="{$fsite->anidbkey}" />
 		<div class="hint">The Anidb api key. Used for Anime lookups.</div>
+	</td>
+</tr>
+
+<tr>
+	<td style="width:180px;"><label for="fanarttvkey">Fanart.tv API key:</label></td>
+	<td>
+		<input id="fanarttvkey" class="long" name="fanarttvkey" type="text" value="{$fsite->fanarttvkey}" />
+		<div class="hint">The Fanart.tv api key. Used for Fanart.tv lookups. Fanart.tv would appreciate it if you use this service to help them out by adding high quality images not already available on TMDB.</div>
 	</td>
 </tr>
 

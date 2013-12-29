@@ -28,6 +28,7 @@ class Movie
 		$s = new Sites();
 		$site = $s->get();
 		$this->apikey = $site->tmdbkey;
+		$this->fanartapikey = $site->fanarttvkey;
 		$this->binglimit = $this->yahoolimit = 0;
 		$this->debug = ($site->debuginfo == "0") ? false : true;
 		$this->imdburl = ($site->imdburl == "0") ? false : true;
@@ -299,7 +300,7 @@ class Movie
 			echo "Fetching IMDB info from TMDB using IMDB ID: " . $imdbId . "\n";
 		}
 
-		//check themoviedb for imdb info
+        //check themoviedb for imdb info
 		$tmdb = $this->fetchTmdbProperties($imdbId);
 
 		//check imdb for movie info
@@ -311,20 +312,28 @@ class Movie
 			return false;
 		}
 
+        //check fanarttv for background
+        $fanart = $this->fetchFanartTVProperties($imdbId);
+
 		$mov = array();
 		$mov['imdb_id'] = $imdbId;
 		$mov['tmdb_id'] = (!isset($tmdb['tmdb_id']) || $tmdb['tmdb_id'] == '') ? "NULL" : $tmdb['tmdb_id'];
 
-		//prefer tmdb cover over imdb cover
+		//prefer fanarttv cover over, prefer tmdb cover over imdb cover
 		$mov['cover'] = 0;
-		if (isset($tmdb['cover']) && $tmdb['cover'] != '') {
+		if (isset($fanart['cover']) && $fanart['cover'] != '') {
+			$mov['cover'] = $ri->saveImage($imdbId . '-cover', $fanart['cover'], $this->imgSavePath);
+		} else if (isset($tmdb['cover']) && $tmdb['cover'] != '') {
 			$mov['cover'] = $ri->saveImage($imdbId . '-cover', $tmdb['cover'], $this->imgSavePath);
 		} else if (isset($imdb['cover']) && $imdb['cover'] != '') {
 			$mov['cover'] = $ri->saveImage($imdbId . '-cover', $imdb['cover'], $this->imgSavePath);
 		}
 
+		//prefer fanart backdrop over tmdb backdrop
 		$mov['backdrop'] = 0;
-		if (isset($tmdb['backdrop']) && $tmdb['backdrop'] != '') {
+		if (isset($fanart['backdrop']) && $fanart['backdrop'] != '') {
+			$mov['backdrop'] = $ri->saveImage($imdbId . '-backdrop', $fanart['backdrop'], $this->imgSavePath, 1920, 1024);
+		} else if (isset($tmdb['backdrop']) && $tmdb['backdrop'] != '') {
 			$mov['backdrop'] = $ri->saveImage($imdbId . '-backdrop', $tmdb['backdrop'], $this->imgSavePath, 1920, 1024);
 		}
 
@@ -454,6 +463,42 @@ class Movie
 		return $movieId;
 	}
 
+	public function fetchFanartTVProperties($imdbId)
+	{
+		if ($this->fanartapikey != '') {
+			$url = "http://api.fanart.tv/webservice/movie/" . $this->fanartapikey . "/tt" . $imdbId . "/xml/";
+			$buffer = @file_get_contents($url);
+			if ($buffer == 'null') {
+				return false;
+			}
+			$art = @simplexml_load_string($buffer);
+			if (!$art) {
+				return false;
+			}
+			if (isset($art->movie->moviebackgrounds->moviebackground[0]['url'])) {
+				$ret['backdrop'] = $art->movie->moviebackgrounds->moviebackground[0]['url'];
+			} else if (isset($art->movie->moviethumbs->moviethumb[0]['url'])) {
+				$ret['backdrop'] = $art->movie->moviethumbs->moviethumb[0]['url'];
+			}
+			if (isset($art->movie->movieposters->movieposter[0]['url'])) {
+				$ret['cover'] = $art->movie->movieposters->movieposter[0]['url'];
+			}
+			if (!isset($ret['backdrop']) && !isset($ret['cover'])) {
+				return false;
+			}
+			$ret['title'] = $imdbId;
+			if (isset($art->movie['name'])) {
+				$ret['title'] = $art->movie['name'];
+			}
+			if ($this->echooutput) {
+				echo $this->c->alternateOver("\nFanart Found ") . $this->c->headerOver($ret['title']);
+			}
+			return $ret;
+		} else {
+			return false;
+		}
+	}
+
     public function fetchTmdbProperties($imdbId, $text = false)
 	{
 		$tmdb = new TMDb($this->apikey, $this->imdblanguage);
@@ -534,7 +579,7 @@ class Movie
 		'method'=>"GET",
 		'header'=>"Accept-language: en\r\n" .
 				  "Cookie: foo=bar\r\n" .  // check function.stream-context-create on php.net
-				  "User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10\r\n" // i.e. An iPad 
+				  "User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10\r\n" // i.e. An iPad
 	  )
 	);
 
@@ -936,7 +981,13 @@ class Movie
 	public function getUpcoming($type, $source = "rottentomato")
 	{
 		$sql = sprintf("SELECT * FROM upcoming WHERE source = %s AND typeid = %d", $this->db->escapeString($source), $type);
-		return $this->db->queryOneRow($sql);
+		$list = $this->db->queryOneRow($sql);
+		if (!$list) {
+			$this->updateUpcoming();
+			$sql = sprintf("SELECT * FROM upcoming WHERE source = %s AND typeid = %d", $this->db->escapeString($source), $type);
+			$list = $this->db->queryOneRow($sql);
+		}
+		return $list;
 	}
 
 	public function updateUpcoming()
@@ -944,73 +995,118 @@ class Movie
 		$s = new Sites();
 		$site = $s->get();
 		if ($this->echooutput) {
-			echo "Updating movie schedule using rotten tomatoes.\n";
+			echo $this->c->header("Updating movie schedule using rotten tomatoes.");
 		}
 		if (isset($site->rottentomatokey)) {
 			$rt = new RottenTomato($site->rottentomatokey);
 
 			$retbo = $rt->getBoxOffice();
-			if ($retbo != "") {
+			$test = @json_decode($retbo);
+			if (!$test) {
+				sleep(1);
+				$retbo = $rt->getBoxOffice();
+				$test = @json_decode($retbo);
+				if (!$test) {
+					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				}
+			}
+			if ($test && $retbo != "") {
 				$cnt1 = $this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $retbo);
 				if ($this->echooutput && $cnt1 > 0) {
-					echo "Added/updated movies to the box office list.\n";
-				}
-			} else {
-				if ($this->echooutput) {
-					echo "No new updates for box office list.\n";
+					echo $this->c->header("Added/updated movies to the box office list.");
+				} else {
+					if ($this->echooutput) {
+						echo $this->c->primary("No new updates for box office list.");
+					}
 				}
 			}
 
 			$rett = $rt->getInTheaters();
-			if ($rett != "") {
+			$test = @json_decode($rett);
+			if (!$test) {
+				sleep(1);
+				$rett = $rt->getInTheaters();
+				$test = @json_decode($rett);
+				if (!$test) {
+					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				}
+			}
+			if ($test && $rett != "") {
 				$cnt2 = $this->updateInsUpcoming('rottentomato', Movie::SRC_INTHEATRE, $rett);
 				if ($this->echooutput && $cnt2 > 0) {
-					echo "Added/updated movies to the theaters list.\n";
-				}
-			} else {
-				if ($this->echooutput) {
-					echo "No new updates for theaters list.\n";
+					echo $this->c->header("Added/updated movies to the theaters list.");
+				} else {
+					if ($this->echooutput) {
+						echo $this->c->primary("No new updates for theaters list.");
+					}
 				}
 			}
 
 			$reto = $rt->getOpening();
-			if ($reto != "") {
+			$test = @json_decode($reto);
+			if (!$test) {
+				sleep(1);
+				$reto = $rt->getOpening();
+				$test = @json_decode($reto);
+				if (!$test) {
+					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				}
+			}
+			if ($test && $reto != "") {
 				$cnt3 = $this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $reto);
 				if ($this->echooutput && $cnt3 > 0) {
-					echo "Added/updated movies to the opening list.\n";
-				}
-			} else {
-				if ($this->echooutput) {
-					echo "No new updates for opening list.\n";
+					echo $this->c->header("Added/updated movies to the opening list.");
+				} else {
+					if ($this->echooutput) {
+						echo $this->c->primary("No new updates for opening list.");
+					}
 				}
 			}
 
 			$retu = $rt->getUpcoming();
-			if ($retu != "") {
+			$test = @json_decode($retu);
+			if (!$test) {
+				sleep(1);
+				$retu = $rt->getUpcoming();
+				$test = @json_decode($retu);
+				if (!$test) {
+					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				}
+			}
+			if ($test && $retu != "") {
 				$cnt4 = $this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $retu);
 				if ($this->echooutput && $cnt4 > 0) {
-					echo "Added/updated movies to the upcoming list.\n";
-				}
-			} else {
-				if ($this->echooutput) {
-					echo "No new updates for upcoming list.\n";
+					echo $this->c->header("Added/updated movies to the upcoming list.");
+				} else {
+					if ($this->echooutput) {
+						echo $this->c->primary("No new updates for upcoming list.");
+					}
 				}
 			}
 
 			$retr = $rt->getDVDReleases();
-			if ($retr != "") {
+			$test = @json_decode($retr);
+			if (!$test) {
+				sleep(1);
+				$retr = $rt->getDVDReleases();
+				$test = @json_decode($retr);
+				if (!$test) {
+					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				}
+			}
+			if ($test && $retr != "") {
 				$cnt5 = $this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $retr);
 				if ($this->echooutput && $cnt5 > 0) {
-					echo "Added/updated movies to the DVD list.\n";
-				}
-			} else {
-				if ($this->echooutput) {
-					echo "No new updates for upcoming list.\n";
+					echo $this->c->header("Added/updated movies to the DVD list.");
+				} else {
+					if ($this->echooutput) {
+						echo $this->c->primary("No new updates for upcoming list.");
+					}
 				}
 			}
 
 			if ($this->echooutput) {
-				echo "Updated successfully.\n";
+				echo $this->c->header("Updated successfully.");
 			}
 		}
 	}
@@ -1060,5 +1156,4 @@ class Movie
 			'Western'
 		);
 	}
-
 }

@@ -101,7 +101,7 @@ CREATE INDEX ix_releases_musicinfoid ON releases (musicinfoid);
 CREATE INDEX ix_releases_consoleinfoid ON releases (consoleinfoid);
 CREATE INDEX ix_releases_bookinfoid ON releases (bookinfoid);
 CREATE INDEX ix_releases_haspreview ON releases (haspreview ASC) USING HASH;
-CREATE INDEX ix_releases_status ON releases (id, nfostatus, bitwise, passwordstatus, dehashstatus, reqidstatus, musicinfoID, consoleinfoID, bookinfoID, haspreview, categoryid, imdbid, rageid, groupid);
+CREATE INDEX ix_releases_status ON releases (id, nfostatus, bitwise, passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid, bookinfoid, haspreview, categoryid, imdbid, rageid, groupid);
 CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
 CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);
 CREATE INDEX ix_releases_nzb_guid ON releases (nzb_guid);
@@ -985,7 +985,9 @@ INSERT INTO site
 	('amazonassociatetag','n01369-20'),
 	('tmdbkey','9a4e16adddcd1e86da19bcaf5ff3c2a3'),
 	('rottentomatokey','qxbxyngtujprvw7jxam2m6na'),
+	('rottentomatoquality', 'profile'),
 	('trakttvkey',''),
+	('fanarttvkey', ''),
 	('compressedheaders', 0),
 	('partrepair', 1),
 	('maxmssgs', 20000),
@@ -1067,7 +1069,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','160');
+	('sqlpatch','163');
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (
