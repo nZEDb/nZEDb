@@ -358,8 +358,8 @@ table.data td.icons
 table.data td.category { width: 70px; text-align:center; font-size:0.9em; }
 table.data td.posted { width: 40px; text-align:center; font-size:0.9em; }
 table.data td.size { width: 56px; text-align:center; font-size:0.9em; }
-table.data td.files { width: 130px; text-align:center; font-size:0.9em; }
-table.data td.stats { width: 152px; text-align:center; font-size:0.9em; }
+table.data td.files { width: 30px; text-align:center; font-size:0.9em; }
+table.data td.stats { width: 52px; text-align:center; font-size:0.9em; }
 
 table.data td.check
 {

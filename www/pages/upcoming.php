@@ -38,7 +38,6 @@ if ($data["info"] == "") {
             $page->title = "DVD Releases";
             break;
     }
-    $page->quality = $site->rottentomatoquality;
     $page->meta_title = "View upcoming theatre releases";
     $page->meta_keywords = "view,series,theatre,dvd";
     $page->meta_description = "View upcoming theatre releases";

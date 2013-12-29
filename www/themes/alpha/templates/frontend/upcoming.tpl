@@ -30,7 +30,7 @@
 		<tr>
 			<td style="width:150px;padding:10px;text-align:center;">
 				<div class="movcover">
-					<img class="shadow img-thumbnail" src="{$result->posters->{$page->quality}}" width="120" border="0" alt="{$result->title|escape:"htmlall"}">
+					<img class="shadow img-thumbnail" src="{$result->posters->{$site->rottentomatoquality}}" width="120" border="0" alt="{$result->title|escape:"htmlall"}">
 					<div class="movextra">
 					</div>
 				</div>

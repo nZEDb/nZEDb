@@ -83,9 +83,8 @@
                 <th></th>
             </tr>
 
-            {$rowcount = 1}
-            {foreach from=$results item=result $rowcount++}
-                {if ($rowcount % 2 != 0) }
+            {foreach from=$results item=result name=movieloop}
+                {if ($smarty.foreach.movieloop.iteration % 2 != 0) }
                     <tr>
                         <td class="mid">
                             <div class="movcover">

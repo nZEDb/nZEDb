@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-12-29 -> jonnyboy -> added patch to rename all tables/columns to lower case
+2013-12-29 -> jonnyboy -> fixed incorrect usage of counter, fixed incorrect usage of var
+                          added patch to rename all tables/columns to lower case
 2013-12-28 -> jonnyboy -> added rottentomatoes image quality selection to site-edit, changes the image quality when select theater
                           fixed rottentomatoes lookup, changed image to high resolution
                           fixed release-edit for imdbid and anidbid
