@@ -15,14 +15,14 @@
 
     {*<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">*}
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="{$smarty.const.WWW_TOP}/../themes/jonnyboy/styles/style.css" rel="stylesheet" media="screen">
-    <link href="{$smarty.const.WWW_TOP}/../themes/jonnyboy/styles/admin.css" rel="stylesheet" media="screen">
+    <link href="{$smarty.const.WWW_TOP}/../themes/light/styles/style.css" rel="stylesheet" media="screen">
+    <link href="{$smarty.const.WWW_TOP}/../themes/light/styles/admin.css" rel="stylesheet" media="screen">
 
     <link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/../themes/Default/images/favicon.ico">
 
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <script>window.html5 || document.write('<script src="{$smarty.const.WWW_TOP}/../themes/jonnyboy/scripts/vendor/html5shiv.js"><\/script>')</script>
+    <script>window.html5 || document.write('<script src="{$smarty.const.WWW_TOP}/../themes/Default/scripts/vendor/html5shiv.js"><\/script>')</script>
     <![endif]-->
 
 	{$page->head}
@@ -67,12 +67,12 @@
 	<!-- end #page -->
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
-    {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/jonnyboy/scripts/vendor/jquery-1.9.1.js"><\/script>')</script>{/literal}
+    {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/Default/scripts/vendor/jquery-1.9.1.js"><\/script>')</script>{/literal}
     {*<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-    {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/jonnyboy/scripts/vendor/bootstrap.min.js"><\/script>')</script>{/literal}*}
-	<script src="{$smarty.const.WWW_TOP}/../themes/jonnyboy/scripts/sorttable.js"></script>
-	<script src="{$smarty.const.WWW_TOP}/../themes/jonnyboy/scripts/utils-admin.js"></script>
-	<script src="{$smarty.const.WWW_TOP}/../themes/jonnyboy/scripts/jquery.multifile.js"></script>
+    {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/Default/scripts/vendor/bootstrap.min.js"><\/script>')</script>{/literal}*}
+	<script src="{$smarty.const.WWW_TOP}/../themes/Default/scripts/sorttable.js"></script>
+	<script src="{$smarty.const.WWW_TOP}/../themes/Default/scripts/utils-admin.js"></script>
+	<script src="{$smarty.const.WWW_TOP}/../themes/Default/scripts/jquery.multifile.js"></script>
 	<script>var WWW_TOP = "{$smarty.const.WWW_TOP}/..";</script>
 
     {if $site->google_analytics_acc != ''}

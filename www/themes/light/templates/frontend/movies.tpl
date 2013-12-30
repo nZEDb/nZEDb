@@ -89,7 +89,7 @@
                         <td class="mid">
                             <div class="movcover">
                                 <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >
-                                    <img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="120px" border="0" alt="{$result.title|escape:"htmlall"}" />
+                                    <img class="movshadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" alt="{$result.title|escape:"htmlall"}" />
                                 </a>
                                 <div class="movextra" >
                                     <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtnsml modal_imdb" rel="movie" >Cover</a>
@@ -101,9 +101,9 @@
                         </td>
                         <td colspan="3" class="left" >
                             {if $result.backdrop == 1 && $site->showbacks == 1}
-                                <div style="background-image: url({if $result.backdrop == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-backdrop.jpg{/if}); background-size: cover; height:340px;">
+                                <div class="movbackground" style="background-image: url({if $result.backdrop == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-backdrop.jpg{/if});">
                                 {/if}
-                                <div style="height:340px; background-color: rgba(224, 239, 249, 0.85)">
+                                <div class="movoverlay">
                                     <h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
                                         {foreach from=$result.languages item=movielanguage}
                                             {release_flag($movielanguage, browse)}
@@ -164,9 +164,9 @@
                     {else}
                         <td colspan="3" class="left" >
                             {if $result.backdrop == 1 && $site->showbacks == 1}
-                                <div style="background-image: url({if $result.backdrop == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-backdrop.jpg{/if}); background-size: cover; height:340px">
+                                <div class="movbackground" style="background-image: url({if $result.backdrop == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-backdrop.jpg{/if});">
                                 {/if}
-                                <div style="height:340px; background-color: rgba(224, 239, 249, 0.85)">
+                                <div class="movoverlay">
                                     <h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
                                         {foreach from=$result.languages item=movielanguage}
                                             {release_flag($movielanguage, browse)}
@@ -227,7 +227,7 @@
                         <td class="mid">
                             <div class="movcover">
                                 <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >
-                                    <img class="shadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" width="120px" border="0" alt="{$result.title|escape:"htmlall"}" />
+                                    <img class="movshadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" alt="{$result.title|escape:"htmlall"}" />
                                 </a>
                                 <div class="movextra" >
                                     <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtnsml modal_imdb" rel="movie" >Cover</a>
