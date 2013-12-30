@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-12-20 -> jonnyboy -> removed SQL_CALC_FOUND_ROWS from query for predb row count
+2013-12-20 -> jonnyboy -> fixed bug in theme/admin pages using incorrect path for scripts
+                          removed SQL_CALC_FOUND_ROWS from query for predb row count
 2013-12-29 -> jonnyboy -> added option to enable/disable movie backgrounds in theme
                           updated site-edit comments for os/mysql changes necessary for TPG
 2013-12-29 -> niel     -> fixing sql patch version in tmux start.php
