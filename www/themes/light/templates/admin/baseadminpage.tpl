@@ -15,8 +15,8 @@
 
     {*<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">*}
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="{$smarty.const.WWW_TOP}/../themes/jonnyboy/styles/style.css" rel="stylesheet" media="screen">
-    <link href="{$smarty.const.WWW_TOP}/../themes/jonnyboy/styles/admin.css" rel="stylesheet" media="screen">
+    <link href="{$smarty.const.WWW_TOP}/../themes/light/styles/style.css" rel="stylesheet" media="screen">
+    <link href="{$smarty.const.WWW_TOP}/../themes/light/styles/admin.css" rel="stylesheet" media="screen">
 
     <link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/../themes/Default/images/favicon.ico">
 
