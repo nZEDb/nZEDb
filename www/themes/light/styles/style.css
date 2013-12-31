@@ -525,9 +525,9 @@ site wide covers and images with dropshadows
 */
 
 img.shadow { padding: 5px 5px 5px 5px; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #777; -webkit-box-shadow: 3px 6px 8px -4px #777; box-shadow: 3px 6px 8px -4px #777; border-collapse:separate; }
-img.movshadow { width:160px; border:0; padding: 5px 5px 5px 5px; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #777; -webkit-box-shadow: 3px 6px 8px -4px #777; box-shadow: 3px 6px 8px -4px #777; border-collapse:separate; }
+img.movshadow { width:165px; height:235px; border:0; padding: 5px 5px 5px 5px; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #777; -webkit-box-shadow: 3px 6px 8px -4px #777; box-shadow: 3px 6px 8px -4px #777; border-collapse:separate; }
 div.movbackground { background-size: cover; height:340px; }
-div.movoverlay { height:330px; background-color: rgba(224, 239, 249, 0.8); padding: 5px; position: relative; }
+div.movoverlay { height:330px; background-color: rgba(224, 239, 249, 0.8); padding: 5px; position: relative; overflow: auto; }
 
 /*
 mainly one-off styles used on individual pages

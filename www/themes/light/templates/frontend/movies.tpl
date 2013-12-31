@@ -103,7 +103,7 @@
                             {if $result.backdrop == 1 && $site->showbacks == 1}
                                 <div class="movbackground" style="background-image: url({if $result.backdrop == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-backdrop.jpg{/if});">
                                 {/if}
-                                <div class="movoverlay"  style="overflow: auto">
+                                <div class="movoverlay">
                                     <h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
                                         {foreach from=$result.languages item=movielanguage}
                                             {release_flag($movielanguage, browse)}

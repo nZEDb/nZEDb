@@ -4,7 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-12-30 -> jonnyboy -> added scrollbar and fixed count on movies->cover view in light theme
+2013-12-30 -> jonnyboy -> added scrollbar and fixed count on movies->cover view in light theme, moved style to css
                           added more info Rotten Tomotoes, Theater link in light theme
                           fixed newposterwall to center the row of images and use the whole row
                           fixed typo in util.php not showing country flag, changed buttons in light/search, changed newposterwall, to show only releases with covers
