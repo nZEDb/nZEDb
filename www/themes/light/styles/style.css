@@ -378,11 +378,6 @@ table.highlight tr:hover
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b5c6d0', endColorstr='#f2f6f8',GradientType=1 );
 }
 
-table.nohighlight tr:hover
-{
-    background: transparent;
-}
-
 table tr.alt { background-color: #F6F6F6; }
 table tr.alttrans { background-color: transparent; }
 table tr.new { background-color: #f6f8ff; }
@@ -471,18 +466,17 @@ div.highlight:hover
 round buttoning
 */
 
-.rndbtn, .rndbtnsml {
+.nobutton, .rndbtn, .rndbtnsml {
     -moz-box-shadow:inset 1px -2px 4px -35px #bdc99a;
     -webkit-box-shadow:inset 1px -2px 4px -35px #bdc99a;
-    box-shadow:inset 1px -2px 4px -35px #bdc99a;
-    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #b5c6d0), color-stop(1, #f2f6f8));
-    background:-moz-linear-gradient(top, #b5c6d0 5%, #f2f6f8 100%);
-    background:-webkit-linear-gradient(top, #b5c6d0 5%, #f2f6f8 100%);
-    background:-o-linear-gradient(top, #b5c6d0 5%, #f2f6f8 100%);
-    background:-ms-linear-gradient(top, #b5c6d0 5%, #f2f6f8 100%);
-    background:linear-gradient(to bottom, #b5c6d0 5%, #f2f6f8 100%);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#b5c6d0', endColorstr='#f2f6f8',GradientType=0);
-    background-color:#b5c6d0;
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f2f6f8), color-stop(1, #b5c6d0));
+    background:-moz-linear-gradient(top, #f2f6f8 5%, #b5c6d0 100%);
+    background:-webkit-linear-gradient(top, #f2f6f8 5%, #b5c6d0 100%);
+    background:-o-linear-gradient(top, #f2f6f8 5%, #b5c6d0 100%);
+    background:-ms-linear-gradient(top, #f2f6f8 5%, #b5c6d0 100%);
+    background:linear-gradient(to bottom, #f2f6f8 5%, #b5c6d0 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f2f6f8', endColorstr='#b5c6d0',GradientType=0);
+    background-color:#f2f6f8;
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
     border-radius:5px;
@@ -500,7 +494,6 @@ round buttoning
     border-radius:3px;
     border:1px solid #bfc1e3;
     padding:0 3px;
-    text-decoration:none;
     text-shadow:2px 2px 0px #ced9bf;
     margin: 2px;
 }
@@ -510,14 +503,16 @@ table.highlight tr:hover { background-color: #DDD; }
 table.highlight tr:hover td.static { background-color: #000; }
 
 .rndbtn:hover, .rndbtnsml:hover {
-    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f2f6f8), color-stop(1, #b5c6d0));
-    background:-moz-linear-gradient(top, #f2f6f8 5%, #b5c6d0 100%);
-    background:-webkit-linear-gradient(top, #f2f6f8 5%, #b5c6d0 100%);
-    background:-o-linear-gradient(top, #f2f6f8 5%, #b5c6d0 100%);
-    background:-ms-linear-gradient(top, #f2f6f8 5%, #b5c6d0 100%);
-    background:linear-gradient(to bottom, #f2f6f8 5%, #b5c6d0 100%);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f2f6f8', endColorstr='#b5c6d0',GradientType=0);
-    background-color:#f2f6f8;
+    box-shadow:inset 1px -2px 4px -35px #bdc99a;
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #b5c6d0), color-stop(1, #f2f6f8));
+    background:-moz-linear-gradient(top, #b5c6d0 5%, #f2f6f8 100%);
+    background:-webkit-linear-gradient(top, #b5c6d0 5%, #f2f6f8 100%);
+    background:-o-linear-gradient(top, #b5c6d0 5%, #f2f6f8 100%);
+    background:-ms-linear-gradient(top, #b5c6d0 5%, #f2f6f8 100%);
+    background:linear-gradient(to bottom, #b5c6d0 5%, #f2f6f8 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#b5c6d0', endColorstr='#f2f6f8',GradientType=0);
+    background-color:#b5c6d0;
+    text-decoration:none;
 }
 
 /*
@@ -525,9 +520,10 @@ site wide covers and images with dropshadows
 */
 
 img.shadow { padding: 5px 5px 5px 5px; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #777; -webkit-box-shadow: 3px 6px 8px -4px #777; box-shadow: 3px 6px 8px -4px #777; border-collapse:separate; }
-img.movshadow { width:160px; border:0; padding: 5px 5px 5px 5px; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #777; -webkit-box-shadow: 3px 6px 8px -4px #777; box-shadow: 3px 6px 8px -4px #777; border-collapse:separate; }
-div.movbackground { background-size: cover; height:340px; }
-div.movoverlay { height:330px; background-color: rgba(224, 239, 249, 0.8); padding: 5px }
+img.movshadow { height:380px; margin: 0; background: #FFF; border:1px solid #EEE; -moz-box-shadow: 3px 6px 8px -4px #777; -webkit-box-shadow: 3px 6px 8px -4px #777; box-shadow: 3px 6px 8px -4px #777; border-collapse:separate; }
+div.movbackground { background-size: cover; height: 450px; }
+div.movoverlay { height: 440px; background-color: rgba(224, 239, 249, 0.8); padding: 5px; overflow: auto; }
+div.movoverlay:hover { height: 440px; background: transparent; padding: 5px; overflow: auto; }
 
 /*
 mainly one-off styles used on individual pages
@@ -561,12 +557,13 @@ div.resextra a
 div.resextra div.admin { float:right; }
 div.resextra div.btns {float:left; }
 
-div.movextra { padding-top:5px; color: #888; font-size: 0.9em; }
-div.movextra td {border:0; padding:0 0 10px 0}
+div.movextra { padding-top:0; color: #888; font-size: 0.9em; }
+div.movextra td {border:0; padding:0; }
 div.movextra tr.mlextra {display:none;}
 
 div.movcover {
     margin: 5px;
+    text-align: center;
 }
 div.movcover img { margin-bottom:15px;}
 
@@ -669,6 +666,9 @@ div.icon_tvrage			{ background-image:url('../../Default/images/icons/tvrage.png'
 div.icon_check			{ background-image:url('../../Default/images/icons/check.png'); }
 
 
+.nopointer {
+    cursor: default;
+}
 /*
 * Div to display code
 */

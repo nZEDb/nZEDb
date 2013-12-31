@@ -496,7 +496,7 @@ function release_flag($x, $t)
 		$y = "vn";
 	}
 	if ($y !== "" && $t == "browse") {
-		return '<img src="./themes/Default/images/flags/' . $y . '.png" />';
+		return '<img src="../themes/Default/images/flags/' . $y . '.png" />';
 	} else if ($t == "search") {
 		if ($y == "") {
 			return false;

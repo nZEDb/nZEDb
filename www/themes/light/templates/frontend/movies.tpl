@@ -2,15 +2,15 @@
 <h1>Browse {$catname}</h1>
 
 <form name="browseby" action="movies">
-    <table class="rndbtn" border="0" cellpadding="2" cellspacing="0">
+    <table class="nobutton" border="0" cellpadding="2" cellspacing="0">
         <tr>
-            <th class="left"><label for="movietitle">Title</label></th>
-            <th class="left"><label for="movieactors">Actor</label></th>
-            <th class="left"><label for="moviedirector">Director</label></th>
-            <th class="left"><label for="rating">Rating</label></th>
-            <th class="left"><label for="genre">Genre</label></th>
-            <th class="left"><label for="year">Year</label></th>
-            <th class="left"><label for="category">Category</label></th>
+            <th class="left"><label class="nopointer" for="movietitle">Title</label></th>
+            <th class="left"><label class="nopointer" for="movieactors">Actor</label></th>
+            <th class="left"><label class="nopointer" for="moviedirector">Director</label></th>
+            <th class="left"><label class="nopointer" for="rating">Rating</label></th>
+            <th class="left"><label class="nopointer" for="genre">Genre</label></th>
+            <th class="left"><label class="nopointer" for="year">Year</label></th>
+            <th class="left"><label class="nopointer" for="category">Category</label></th>
             <th></th>
         </tr>
         <tr>
@@ -71,176 +71,90 @@
 
         {$pager}
 
-        <table style="width:100%;" class="data icons" id="coverstable">
+        <table style="width:100%;" class="data highlight icons" id="coverstable">
             <tr>
-                <th><input type="checkbox" class="nzb_check_all" /></th>
-                <th width="34%">title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-                <th width="8%">year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-                <th width="8%">rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-                <th width="34%">title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-                <th width="8%">year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-                <th width="8%">rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-                <th></th>
+                <th width="5%" style="border-right: none;"><input type="checkbox" class="nzb_check_all" /></th>
+                <th style="border-left: none; border-right: none;">title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+                <th style="border-left: none; border-right: none;">year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+                <th style="border-left: none;">rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
             </tr>
 
-            {foreach from=$results item=result name=movieloop}
-                {if ($smarty.foreach.movieloop.iteration % 2 != 0) }
-                    <tr>
-                        <td class="mid">
-                            <div class="movcover">
-                                <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >
-                                    <img class="movshadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" alt="{$result.title|escape:"htmlall"}" />
-                                </a>
-                                <div class="movextra" >
-                                    <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtnsml modal_imdb" rel="movie" >Cover</a>
-                                    <a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a>
-                                    <a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
-                                    <a class="rndbtnsml" target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">CouchPotato</a>
-                                </div>
-                            </div>
-                        </td>
-                        <td colspan="3" class="left" >
-                            {if $result.backdrop == 1 && $site->showbacks == 1}
-                                <div class="movbackground" style="background-image: url({if $result.backdrop == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-backdrop.jpg{/if});">
-                                {/if}
-                                <div class="movoverlay">
-                                    <h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
-                                        {foreach from=$result.languages item=movielanguage}
-                                            {release_flag($movielanguage, browse)}
-                                        {/foreach}</h2>
-                                    {if $result.tagline != ''}<b>{$result.tagline|stripslashes}</b><br />{/if}
-                                    {if $result.plot != ''}{$result.plot|stripslashes}<br /><br />{/if}
-                                    {if $result.genre != ''}<b>Genre:</b> {$result.genre|stripslashes}<br />{/if}
-                                    {if $result.director != ''}<b>Director:</b> {$result.director}<br />{/if}
-                                    {if $result.actors != ''}<b>Starring:</b> {$result.actors}<br /><br />{/if}
-                                    <div class="movextra" float="left">
-                                        <table class="nohighlight">
-                                            {assign var="msplits" value=","|explode:$result.grp_release_id}
-                                            {assign var="mguid" value=","|explode:$result.grp_release_guid}
-                                            {assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
-                                            {assign var="mgrp" value=","|explode:$result.grp_release_grpname}
-                                            {assign var="mname" value="#"|explode:$result.grp_release_name}
-                                            {assign var="mpostdate" value=","|explode:$result.grp_release_postdate}
-                                            {assign var="msize" value=","|explode:$result.grp_release_size}
-                                            {assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
-                                            {assign var="mcomments" value=","|explode:$result.grp_release_comments}
-                                            {assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
-                                            {assign var="mpass" value=","|explode:$result.grp_release_password}
-                                            {assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
-                                            {assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-                                            {foreach from=$msplits item=m}
-                                                <tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
-                                                    <td>
-                                                        <div class="icon"><input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}" /></div>
-                                                    </td>
-                                                    <td>
-                                                        <a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"}</a>
-                                                        <div>
-                                                            <i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} | <i class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} | <i class="icon-file"></i> <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]} files</a> | <i class="icon-comments"></i> <a title="View comments for {$mname[$m@index]|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]} cmt{if $mcomments[$m@index] != 1}s{/if}</a> | <i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if} |
-                                                            {if $mnfo[$m@index] > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo" rel="nfo">Nfo</a> | {/if}
-                                                            {if $mpass[$m@index] == 1}Passworded | {elseif $mpass[$m@index] == 2}Potential Password | {/if}
-                                                            <a href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a>
-                                                            {if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1} | <a href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot of {$mname[$m@index]|escape:"htmlall"}" class="modal_prev" rel="preview">Preview</a>{/if}
-                                                            {if $minnerfiles[$m@index] > 0} | <a href="#" onclick="return false;" class="mediainfo" title="{$mguid[$m@index]}">Media</a>{/if}
-                                                        </div>
-                                                    </td>
-                                                    <td class="icons">
-                                                        <div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">&nbsp;</a></div>
-                                                        <div class="icon icon_cart" title="Add to Cart"></div>
-                                                        {if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
-                                                    </td>
-                                                </tr>
-                                                {if $m@index == 1 && $m@total > 2}
-                                                    <tr><td colspan="5"><a class="mlmore" href="#">{$m@total-2} more...</a></td></tr>
-                                                {/if}
-                                            {/foreach}
-                                        </table>
-                                    </div>
-                                </div>
-                                {if $result.backdrop == 1 && $site->showbacks == 1}
-                                </div>
+            {foreach from=$results item=result}
+                <tr>
+                    <td colspan="5" class="left" >
+                        {if $result.backdrop == 1 && $site->showbacks == 1}
+                            <div class="movbackground" style="background-image: url({if $result.backdrop == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-backdrop.jpg{/if});">
                             {/if}
-                        </td>
-                    {else}
-                        <td colspan="3" class="left" >
-                            {if $result.backdrop == 1 && $site->showbacks == 1}
-                                <div class="movbackground" style="background-image: url({if $result.backdrop == 1}{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-backdrop.jpg{/if});">
-                                {/if}
-                                <div class="movoverlay">
-                                    <h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
-                                        {foreach from=$result.languages item=movielanguage}
-                                            {release_flag($movielanguage, browse)}
-                                        {/foreach}</h2>
-                                    {if $result.tagline != ''}<b>{$result.tagline|stripslashes}</b><br />{/if}
-                                    {if $result.plot != ''}{$result.plot|stripslashes}<br /><br />{/if}
-                                    {if $result.genre != ''}<b>Genre:</b> {$result.genre|stripslashes}<br />{/if}
-                                    {if $result.director != ''}<b>Director:</b> {$result.director}<br />{/if}
-                                    {if $result.actors != ''}<b>Starring:</b> {$result.actors}<br /><br />{/if}
-                                    <div class="movextra" float="left">
-                                        <table class="nohighlight">
-                                            {assign var="msplits" value=","|explode:$result.grp_release_id}
-                                            {assign var="mguid" value=","|explode:$result.grp_release_guid}
-                                            {assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
-                                            {assign var="mgrp" value=","|explode:$result.grp_release_grpname}
-                                            {assign var="mname" value="#"|explode:$result.grp_release_name}
-                                            {assign var="mpostdate" value=","|explode:$result.grp_release_postdate}
-                                            {assign var="msize" value=","|explode:$result.grp_release_size}
-                                            {assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
-                                            {assign var="mcomments" value=","|explode:$result.grp_release_comments}
-                                            {assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
-                                            {assign var="mpass" value=","|explode:$result.grp_release_password}
-                                            {assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
-                                            {assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
-                                            {foreach from=$msplits item=m}
-                                                <tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
-                                                    <td>
-                                                        <div class="icon"><input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}" /></div>
-                                                    </td>
-                                                    <td>
-                                                        <a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"}</a>
-                                                        <div>
-                                                            <i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} | <i class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} | <i class="icon-file"></i> <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]} files</a> | <i class="icon-comments"></i> <a title="View comments for {$mname[$m@index]|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]} cmt{if $mcomments[$m@index] != 1}s{/if}</a> | <i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if} |
-                                                            {if $mnfo[$m@index] > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo" rel="nfo">Nfo</a> | {/if}
-                                                            {if $mpass[$m@index] == 1}Passworded | {elseif $mpass[$m@index] == 2}Potential Password | {/if}
-                                                            <a href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a>
-                                                            {if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1} | <a href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot of {$mname[$m@index]|escape:"htmlall"}" class="modal_prev" rel="preview">Preview</a>{/if}
-                                                            {if $minnerfiles[$m@index] > 0} | <a href="#" onclick="return false;" class="mediainfo" title="{$mguid[$m@index]}">Media</a>{/if}
-                                                        </div>
-                                                    </td>
-                                                    <td class="icons">
-                                                        <div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">&nbsp;</a></div>
-                                                        <div class="icon icon_cart" title="Add to Cart"></div>
-                                                        {if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
-                                                    </td>
-                                                </tr>
-                                                {if $m@index == 1 && $m@total > 2}
-                                                    <tr><td colspan="5"><a class="mlmore" href="#">{$m@total-2} more...</a></td></tr>
-                                                {/if}
-                                            {/foreach}
-                                        </table>
-                                    </div>
-                                    {if $result.backdrop == 1 && $site->showbacks == 1}
-                                    </div>
-                                {/if}
-                            </div>
-                        </td>
-                        <td class="mid">
-                            <div class="movcover">
-                                <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >
-                                    <img class="movshadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" alt="{$result.title|escape:"htmlall"}" />
-                                </a>
-                                <div class="movextra" >
+                            <div class="movoverlay">
+                                <div class="movcover" style="float:right;">
+                                    <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >
+                                        <img class="movshadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" alt="{$result.title|escape:"htmlall"}" />
+                                    </a>
+                                <div class="movextra">
                                     <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtnsml modal_imdb" rel="movie" >Cover</a>
                                     <a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a>
                                     <a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
                                     <a class="rndbtnsml" target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">CouchPotato</a>
                                 </div>
+                                </div>
+                                <h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
+                                    {foreach from=$result.languages item=movielanguage}
+                                        {release_flag($movielanguage, browse)}
+                                    {/foreach}</h2>
+                                {if $result.tagline != ''}<b>{$result.tagline|stripslashes}</b><br />{/if}
+                                {if $result.plot != ''}{$result.plot|stripslashes}<br /><br />{/if}
+                                {if $result.genre != ''}<b>Genre:</b> {$result.genre|stripslashes}<br />{/if}
+                                {if $result.director != ''}<b>Director:</b> {$result.director}<br />{/if}
+                                {if $result.actors != ''}<b>Starring:</b> {$result.actors}<br /><br />{/if}
+                                <div class="movextra">
+                                    <table>
+                                        {assign var="msplits" value=","|explode:$result.grp_release_id}
+                                        {assign var="mguid" value=","|explode:$result.grp_release_guid}
+                                        {assign var="mnfo" value=","|explode:$result.grp_release_nfoid}
+                                        {assign var="mgrp" value=","|explode:$result.grp_release_grpname}
+                                        {assign var="mname" value="#"|explode:$result.grp_release_name}
+                                        {assign var="mpostdate" value=","|explode:$result.grp_release_postdate}
+                                        {assign var="msize" value=","|explode:$result.grp_release_size}
+                                        {assign var="mtotalparts" value=","|explode:$result.grp_release_totalparts}
+                                        {assign var="mcomments" value=","|explode:$result.grp_release_comments}
+                                        {assign var="mgrabs" value=","|explode:$result.grp_release_grabs}
+                                        {assign var="mpass" value=","|explode:$result.grp_release_password}
+                                        {assign var="minnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
+                                        {assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
+                                        {foreach from=$msplits item=m}
+                                            <tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
+                                                <td>
+                                                    <div class="icon"><input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}" /></div>
+                                                </td>
+                                                <td>
+                                                    <a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"}</a>
+                                                    <div>
+                                                        <i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} | <i class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} | <i class="icon-file"></i> <a title="View file list" href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]} files</a> | <i class="icon-comments"></i> <a title="View comments for {$mname[$m@index]|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]} cmt{if $mcomments[$m@index] != 1}s{/if}</a> | <i class="icon-download"></i> {$mgrabs[$m@index]} grab{if $mgrabs[$m@index] != 1}s{/if} |
+                                                        {if $mnfo[$m@index] > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo" rel="nfo">Nfo</a> | {/if}
+                                                        {if $mpass[$m@index] == 1}Passworded | {elseif $mpass[$m@index] == 2}Potential Password | {/if}
+                                                        <a href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a>
+                                                        {if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1} | <a href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot of {$mname[$m@index]|escape:"htmlall"}" class="modal_prev" rel="preview">Preview</a>{/if}
+                                                        {if $minnerfiles[$m@index] > 0} | <a href="#" onclick="return false;" class="mediainfo" title="{$mguid[$m@index]}">Media</a>{/if}
+                                                    </div>
+                                                </td>
+                                                <td class="icons">
+                                                    <div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">&nbsp;</a></div>
+                                                    <div class="icon icon_cart" title="Add to Cart"></div>
+                                                    {if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
+                                                </td>
+                                            </tr>
+                                            {if $m@index == 1 && $m@total > 3}
+                                                <tr><td colspan="5"><a class="mlmore" href="#">{$m@total-3} more...</a></td></tr>
+                                            {/if}
+                                        {/foreach}
+                                    </table>
+                                </div>
                             </div>
-                        </td>
+                        </div>
 
 
-                    </tr>
-                {/if}
+                </tr>
+
             {/foreach}
 
         </table>
