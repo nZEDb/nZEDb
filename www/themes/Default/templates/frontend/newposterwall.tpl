@@ -10,7 +10,7 @@
                 {foreach from=$newestmovies item=result}
                     <div class="library-show">
                         <div class="poster">
-                            <a class="titleinfo" title="{$result.guid}" href="{$smarty.const.WWW_TOP}/../details/{$result.guid}"><img alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" /></a>
+                            <a class="titleinfo" title="{$result.guid}" href="{$smarty.const.WWW_TOP}/../details/{$result.guid}"><img alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg" /></a>
                         </div>
                         <div class="rating-pod" id="guid{$result.guid}">
                             <div class="icons">

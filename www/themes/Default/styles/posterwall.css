@@ -191,26 +191,24 @@ br.clear{
 
 .main-content {
     background: none repeat scroll 0% 0% rgb(242, 242, 242);
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+    text-align: center;
 }
 
 .one-column.no-padding{
     padding:0;
 }
 
-
 .library-wrapper{
     overflow:hidden;
-    max-width:1300px;
-    padding:10px 20px 20px;
+    max-width:90%;
+    padding:10px 20px 20px 20px;
     margin: 0px auto;
 }
 
-
 .library-wrapper .library-show{
-    float:left;
+    display:inline-block;
     margin:10px 0 0 20px;
-    position:relative;
 }
 
 
@@ -230,7 +228,6 @@ br.clear{
     border-radius:15px;
     font-size:14px;
     font-weight:bold;
-    display:inline-block;
 }
 
 
@@ -328,7 +325,7 @@ br.clear{
 
 
 .library-wrapper .library-show img{
-    display:block;
+    display: inline-block;
     width:138px;
     height:203px;
 }
