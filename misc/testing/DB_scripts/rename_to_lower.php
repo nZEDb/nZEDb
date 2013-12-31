@@ -27,10 +27,10 @@ if (count($list) == 0) {
                 $db->queryDirect("ALTER TABLE " . $column['table_name'] . " CHANGE " . $column['column_name'] . " " . strtolower($column['column_name']) . " " . $column['upper(column_type)'] . " " . $extra);
                 $count++;
         }
-		if ($column['column_name'] === strtolower('id') && strtolower($column['extra']) !== 'auto_increment') {
+		if (strtolower($column['column_name']) === 'id' && strtolower($column['extra']) !== 'auto_increment') {
         		echo $c->header("Renaming Table " . $column['table_name'] . " Column " . $column['column_name']);
                 $extra = 'AUTO_INCREMENT';
-                $db->queryDirect("ALTER TABLE " . $column['table_name'] . " CHANGE " . $column['column_name'] . " " . strtolower($column['column_name']) . " " . $column['upper(column_type)'] . " " . $extra);
+                $db->queryDirect("ALTER IGNORE TABLE " . $column['table_name'] . " CHANGE " . $column['column_name'] . " " . strtolower($column['column_name']) . " " . $column['upper(column_type)'] . " " . $extra);
                 $count++;
         }
     }
