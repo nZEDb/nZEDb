@@ -1,5 +1,5 @@
 <?php
-require_once '../config.php';
+require_once './config.php';
 require_once nZEDb_LIB . 'adminpage.php';
 require_once nZEDb_LIB . 'music.php';
 require_once nZEDb_LIB . 'genres.php';

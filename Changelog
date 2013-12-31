@@ -6,7 +6,6 @@ Each update goes to the top of the file
 
 2013-12-31 -> jonnyboy -> VERY IMPORTANT PATCH - IF YOU RAN misc/testing/DB_scripts/rename_to_lower.php, THEN YOU MUST STOP ALL SCRIPTS AND RUN AGAIN, NOW
                           PLEASE MESSAGE ME IN IRC IF YOU RAN THIS SCRIPT
-                          seems many admin scripts were pointing to ./config.php which does not exist
                           changed posted/added date to date time in nzb view, fixed output of updateMovieInfo.php to display correct count
                           updated resetRelnameStatus.php to allow resetting of rename bits only
 2013-12-30 -> jonnyboy -> added scrollbar and fixed count on movies->cover view in light theme, moved style to css
