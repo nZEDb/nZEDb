@@ -19,7 +19,12 @@ foreach ($itr as $filePath) {
                         $run = $db->queryDirect("UPDATE movieinfo SET cover = 1 WHERE imdbid = " . $match[1]);
                         if ($run->rowCount() > 0) {
                                 $updated++;
-                        }
+                        } else {
+								$run = $db->queryDirect("SELECT imdbid FROM movieinfo WHERE imdbid = " . $match[1]);
+								if ($run->rowCount() == 0) {
+										echo $filePath . " not found in db.\n";
+								}
+						}
                 }
         }
         if (is_file($filePath) && preg_match('/-backdrop\.jpg/', $filePath)) {
@@ -28,7 +33,12 @@ foreach ($itr as $filePath) {
                         $db->queryDirect("UPDATE movieinfo SET backdrop = 1 WHERE imdbid = " . $match1[1]);
                         if ($run->rowCount() > 0) {
                                 $updated++;
-                        }
+                        } else {
+								$run = $db->queryDirect("SELECT imdbid FROM movieinfo WHERE imdbid = " . $match[1]);
+								if ($run->rowCount() == 0) {
+										echo $filePath . " not found in db.\n";
+								}
+						}
                 }
         }
 }
