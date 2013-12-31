@@ -43,9 +43,9 @@ if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" a
 	print(bcolors.ERROR + "\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n" + bcolors.ENDC)
 	sys.exit()
 
-if sys.argv[1] == "nfo" and sys.argv[2] == "clean":
+if len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "clean":
 	clean = " (bitwise & 384) = 384 AND "
-elif sys.argv[1] == "par2" and sys.argv[2] == "clean":
+elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "clean":
     clean = " (bitwise & 384) = 384 AND (bitwise & 320) = 320 AND"
 else:
 	clean = " "
