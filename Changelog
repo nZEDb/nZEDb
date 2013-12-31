@@ -4,7 +4,65 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-12-17 -> jonnyboy -> added option to not display renaming in requestid.php
+2013-12-30 -> jonnyboy -> added scrollbar and fixed count on movies->cover view in light theme, moved style to css
+                          added more info Rotten Tomotoes, Theater link in light theme
+                          fixed newposterwall to center the row of images and use the whole row
+                          fixed typo in util.php not showing country flag, changed buttons in light/search, changed newposterwall, to show only releases with covers
+                          fixed query in getMovieRange() to only return movies with covers since it is for cover view, removed bad formed query
+                          renamed jonnyboy theme to light
+                          fixed commit.sh to update monitor.php commit version
+                          fixed bug in theme/admin pages using incorrect path for scripts
+                          removed SQL_CALC_FOUND_ROWS from query for predb row count
+2013-12-29 -> jonnyboy -> added option to enable/disable movie backgrounds in theme
+                          updated site-edit comments for os/mysql changes necessary for TPG
+2013-12-29 -> niel     -> fixing sql patch version in tmux start.php
+2013-12-29 -> jonnyboy -> added rename_to_lower.php to rename all table columns to lowercase, removed useless patch
+                          fixed incorrect usage of counter, fixed incorrect usage of var
+                          added patch to rename all tables/columns to lower case
+2013-12-28 -> jonnyboy -> added rottentomatoes image quality selection to site-edit, changes the image quality when select theater
+                          fixed rottentomatoes lookup, changed image to high resolution
+                          fixed release-edit for imdbid and anidbid
+                          added farnart.tv lookup for movie covers and backgrounds, you need an api key from fanart.tv to use it
+2013-12-27 -> jonnyboy -> added background image to movie cover view, still need to get the alpha value and hover settings correct
+                          fixed new user add during install, added first/last name to user-edit
+                          added find_new_groups.php
+                          added 2 column display in jonnyboy->movies, needs some tweaks to pager and multi select
+2013-12-26 -> jonnyboy -> added tooltip release info to wall
+                          added patch to add menuitem for newposterwall
+                          added imdb to newposterwall
+                          added css for newposterwall for current themes
+                          fixed add user and register, including optional real first/last names
+                          fixed IMDB lookup, changed sleep timers for tmdb/imdb update scripts, added updateTvRage.php
+                          reverted change to use relative url, added missing files to theme
+2013-12-24 -> jonnyboy -> reverted function signup to before adding user real name, temp fix, until its added to the register page
+                          reverted all changes to themes other than jonnyboy, cleaned up jonnyboy theme
+2013-12-23 -> bart39   -> More regex additions/fixes for movie/audio/books/tv
+                          fixed adding/updating tvrage data
+2013-12-23 -> jonnyboy -> reset exec bit for bash scripts
+                          changed query for movie image view
+                          updated jonnyboy theme, updated postprocess_threaded.py to also use parent categoryid
+                          most commit changes are due to Netbeans making permission changes
+2013-12-22 -> bart39   -> More regex additions/fixes for movie/audio/books/tv
+2013-12-22 -> jonnyboy -> added utf8 to tmux.conf
+                          removed anime and tvrage prepopulate data from schemas
+                          added local lookup for books, music and console(may be buggy), added easier to read output for books, music and console
+                          changed sleep timer for amazon, so that each amazon lookup only takes 1 sec, does not sleep if local or lookup exceeded 1 sec
+                          fixed monitor running on/off
+2013-12-21 -> bart39   -> More regex additions/fixes for movie/audio
+2013-12-21 -> jonnyboy -> updated movie.php to get movie backdrops
+                          changed site to use relative urls for all menu items, instead of a mix of relative and full urls
+                          added option to run postprocess_threaded.py on categroyid, changed monitor to use ColorCLI, changing brackets, changed output of pp amazon scripts
+2013-12-21 -> egandt   -> Fixes to Anime display and reading for new table structure
+2013-12-20 -> ThePeePs -> Added First/Last names for users
+                          Fixed email function in util.php
+                          Fixed formating for password reset and invite emails.
+                          Invite emails will show inviting user's "real name" if set instead of username.
+                          Fixed "reset password" link in alpha theme.
+2013-12-20 -> bart39   -> More regex additions/fixes mainly warez groups
+2013-12-19 -> jonnyboy -> possible fix to postdate
+2013-12-19 -> bart39   -> Additional book regexes added to namecleaning
+2013-12-18 -> jonnyboy -> fixed bug in category.php not getting audiobooks into correct cat, added regexes for another movie group
+2013-12-17 -> jonnyboy -> added option to not display renaming in requestid.php, added abgx to predb, not much there
 2013-12-17 -> bart39   -> Additional regexes added to namecleaning
 2013-12-16 -> niel     -> Adding misc/testing/DB_scripts/setUserPasswordHash.php to allow resetting of passwords to current method.
                           Changing password hashing method to make them more secure. crypt() uses the best algorithm your system has available.

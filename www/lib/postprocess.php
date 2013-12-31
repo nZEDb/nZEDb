@@ -70,7 +70,7 @@ class PostProcess
 		}
 		$sigstr = "/^ftyp|mp4|^riff|avi|matroska|.rec|.rmf|^oggs|moov|dvd|^0&²u|free|mdat|pnot|skip|wide$sigstr/i";
 		$this->sigregex = $sigstr;
-		$this->c = new ColorCLI;
+		$this->c = new ColorCLI();
 	}
 
 	public function processAll($nntp)
@@ -172,7 +172,7 @@ class PostProcess
 		$titles = $predb->updatePre();
 		$predb->checkPre($nntp);
 		if ($titles > 0)
-			$this->doecho('Fetched '.$titles.' new title(s) from predb sources.');
+			$this->doecho($this->c->header('Fetched '.$titles.' new title(s) from predb sources.'));
 	}
 
 	// Process all TV related releases which will assign their series/episode/rage data.

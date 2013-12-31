@@ -1,6 +1,8 @@
 <?php
-if (!$users->isLoggedIn())
-	$page->show403();
+
+if (!$users->isLoggedIn()) {
+    $page->show403();
+}
 
 require_once nZEDb_LIB . 'predb.php';
 $predb = new Predb;
@@ -12,7 +14,7 @@ $parr = $predb->getAll($offset, ITEMS_PER_PAGE);
 $page->smarty->assign('pagertotalitems', $parr['count']);
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP."/predb/&amp;offset=");
+$page->smarty->assign('pagerquerybase', WWW_TOP . "/predb/&amp;offset=");
 $page->smarty->assign('pagerquerysuffix', "#results");
 
 $pager = $page->smarty->fetch("pager.tpl");
@@ -27,5 +29,3 @@ $page->meta_description = "View PreDB info";
 
 $page->content = $page->smarty->fetch('predb.tpl');
 $page->render();
-
-?>

@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'nfo.php';
 require_once nZEDb_LIB . 'namecleaning.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$c = new ColorCLI;
+$c = new ColorCLI();
 if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1])))
 	exit($c->error("\nThis script tries to match an MD5 of the releases.name or releases.searchname to predb.md5.\n"
 		."php decrypt_hashes.php 1000		...: to limit to 1000 sorted by newest postdate.\n"
@@ -26,7 +26,7 @@ function preName($argv)
 		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 512) = 512 AND dehashstatus BETWEEN -6 AND 0');
 	else if (isset($argv[1]) && is_numeric($argv[1]))
 		$res = $db->queryDirect('SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 512) = 512 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT '.$argv[1]);
-	$c = new ColorCLI;
+	$c = new ColorCLI();
 
 	$total = $res->rowCount();
 	$counter = 0;
@@ -50,7 +50,7 @@ function preName($argv)
 				if ($pre !== false)
 				{
 					$determinedcat = $category->determineCategory($pre['title'], $row['groupid']);
-					$result = $db->prepare(sprintf('UPDATE releases SET dehashstatus = 1, bitwise = ((bitwise & ~36)|36), searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($pre['title']), $determinedcat, $row['id']));
+					$result = $db->prepare(sprintf('UPDATE releases SET dehashstatus = 1, bitwise = ((bitwise & ~37)|37), searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($pre['title']), $determinedcat, $row['id']));
 					$result->execute();
 					if (count($result) > 0)
 					{

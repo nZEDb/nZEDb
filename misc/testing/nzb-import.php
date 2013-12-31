@@ -85,7 +85,7 @@ else
 	$time = TIME();
 
 	//iterate over all nzb files in all folders and subfolders
-	if(!file_exists($path))
+	if (!file_exists($path))
 	{
 		echo "ERROR: Unable to access ".$path."  Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n";
 		return;

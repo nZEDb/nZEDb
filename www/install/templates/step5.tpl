@@ -7,7 +7,9 @@
 
 <p>You must setup an admin user.</p>
 <p>The username must start with a letter followed by a letter or number.<br />
-The password must be at least 6 characters long.<br />
+The real first name is optional.<br />
+The real last name is optional.<br />
+The password must be at least 8 characters long.<br />
 The email address is used in case you forget your password.<br />
 <p>Please provide the following information:</p>
 <form action="?" method="post">
@@ -17,6 +19,14 @@ The email address is used in case you forget your password.<br />
 			<td><input autocomplete="off" type="text" name="user" id="user" value="{$cfg->ADMIN_USER}" /></td>
 		</tr>
 		<tr class="">
+			<td><label for="user">Real First Name:</label></td>
+			<td><input autocomplete="off" type="text" name="fname" id="fname" value="{$cfg->ADMIN_FNAME}" /></td>
+		</tr>
+		<tr class="alt">
+			<td><label for="user">Real Last Name:</label></td>
+			<td><input autocomplete="off" type="text" name="lname" id="lname" value="{$cfg->ADMIN_LNAME}" /></td>
+		</tr>
+        <tr class="">
 			<td><label for="pass">Password:</label></td>
 			<td><input autocomplete="off" type="text" name="pass" id="pass" value="{$cfg->ADMIN_PASS}" /></td>
 		</tr>

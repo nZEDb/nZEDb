@@ -3,27 +3,30 @@
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'framework/db.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
+
+$c = new ColorCLI();
 
 $db = new DB();
 if($db->dbSystem() == "pgsql")
-	exit("Currently only for mysql.\n");
+	exit($c->error("\nCurrently only for mysql."));
 
 if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "myisam")
 {
 	$tbl = $argv[1];
-	printf("Converting $tbl\n");
+	echo($c->header("Converting $tbl"));
 	$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 }
 else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "cinnodb")
 {
 	$tbl = $argv[1];
-	printf("Converting $tbl\n");
+	echo($c->header("Converting $tbl"));
 	$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 }
 else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "dinnodb")
 {
 	$tbl = $argv[1];
-	printf("Converting $tbl\n");
+	echo($c->header("Converting $tbl"));
 	$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 }
 else if (isset($argv[1]) && $argv[1] == "myisam")
@@ -33,7 +36,7 @@ else if (isset($argv[1]) && $argv[1] == "myisam")
 	foreach($tables as $row)
 	{
 		$tbl = $row['name'];
-		printf("Converting $tbl\n");
+		echo($c->header("Converting $tbl"));
 		$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
 }
@@ -44,7 +47,7 @@ else if (isset($argv[1]) && $argv[1] == "dinnodb")
 	foreach($tables as $row)
 	{
 		$tbl = $row['name'];
-		printf("Converting $tbl\n");
+		echo($c->header("Converting $tbl"));
 		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
 }
@@ -55,7 +58,7 @@ else if (isset($argv[1]) && $argv[1] == "cinnodb")
 	foreach($tables as $row)
 	{
 		$tbl = $row['name'];
-		printf("Converting $tbl\n");
+		echo($c->header("Converting $tbl"));
 		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 	}
 }
@@ -65,7 +68,7 @@ else if (isset($argv[1]) && $argv[1] == "collections")
 	foreach($arr as $row)
 	{
 		$tbl = $row;
-		printf("Converting $tbl\n");
+		echo($c->header("Converting $tbl"));
 		$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
 }
@@ -75,7 +78,7 @@ else if (isset($argv[1]) && $argv[1] == "mariadb-tokudb")
 	foreach($tables as $row)
 	{
 		$tbl = $row['name'];
-		printf("Converting $tbl\n");
+		echo($c->header("Converting $tbl"));
 		$sql = "ALTER TABLE $tbl ENGINE=TokuDB Compression=tokudb_lzma";
 		$db->queryExec($sql);
 		$db->queryExec("OPTIMIZE TABLE $tbl");
@@ -87,7 +90,7 @@ else if (isset($argv[1]) && $argv[1] == "tokudb")
 	foreach($tables as $row)
 	{
 		$tbl = $row['name'];
-		printf("Converting $tbl\n");
+		echo($c->header("Converting $tbl"));
 		$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_lzma";
 		$db->queryExec($sql);
 		$db->queryExec("OPTIMIZE TABLE $tbl");
@@ -95,12 +98,12 @@ else if (isset($argv[1]) && $argv[1] == "tokudb")
 }
 else
 {
-	exit("\nERROR: Wrong argument.\n\n"
+	exit($c->error("\nWrong argument.\n"
 		."php convert_mysql_tables.php myisam			...: Converts all the tables to Myisam Dynamic.\n"
 		."php convert_mysql_tables.php dinnodb			...: Converts all the tables to InnoDB Dynamic.\n"
 		."php convert_mysql_tables.php cinnodb			...: Converts all the tables to InnoDB Compressed.\n"
 		."php convert_mysql_tables.php collections		...: Converts collections, binaries, parts to MyIsam.\n"
 		."php convert_mysql_tables.php mariadb-tokudb		...: Converts all the tables to MariaDB Tokutek DB.\n"
 		."php convert_mysql_tables.php tokudb			...: Converts all the tables to Tokutek DB.\n"
-		."php convert_mysql_tables.php table [ myisam, dinnodb, cinnodb ]	...: Converts 1 table to Engine, row_format specified.\n\n");
+		."php convert_mysql_tables.php table [ myisam, dinnodb, cinnodb ]	...: Converts 1 table to Engine, row_format specified.\n"));
 }

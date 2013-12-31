@@ -1,4 +1,4 @@
- 
+
 <h1>{$page->title}</h1>
 
 {$pager}
@@ -7,6 +7,7 @@
 
 	<tr>
 		<th>title</th>
+		<th>requestid</th>
 		<th>added</th>
 		<th>pre-date</th>
 		<th>source</th>
@@ -25,48 +26,51 @@
 					{$result.title|escape:"htmlall"}
 				{/if}
 			</td>
+			<td class="predb">
+				{if {$result.requestid} == 0}
+				{elseif is_numeric({$result.requestid})}
+					{$result.requestid}
+				{/if}
+			</td>
 			<td class="predb">{$result.adddate|date_format:"%Y-%m-%d %H:%M:%S"}</td>
 			<td class="predb">{$result.predate|date_format:"%Y-%m-%d %H:%M:%S"}</td>
 			<td class="predb">
-				{if {$result.source} == backfill}
-					Backfill
-				{/if}
-				{if {$result.source} == omgwtfnzbs}
+				{if {$result.source} == abgx}
+					<a title="Visit abgx" href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss">
+						abgx.net
+					</a>
+				{elseif {$result.source} == omgwtfnzbs}
 					<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php">
 						omgwtfnzbs.org
 					</a>
-				{/if}
-				{if {$result.source} == orlydb}
+				{elseif {$result.source} == orlydb}
 					<a title="Visit ORLYDB" href="{$site->dereferrer_link}http://www.orlydb.com/">
 						ORLYDB.com
 					</a>
-				{/if}
-				{if {$result.source} == predbme}
+				{elseif {$result.source} == predbme}
 					<a title="Visit PreDB.me" href="{$site->dereferrer_link}http://predb.me/">
 						PreDB.me
 					</a>
-				{/if}
-				{if {$result.source} == prelist}
+				{elseif {$result.source} == prelist}
 					<a title="Visit Prelist" href="{$site->dereferrer_link}http://pre.zenet.org/">
 						Prelist.ws
 					</a>
-				{/if}
-				{if {$result.source} == srrdb}
+				{elseif {$result.source} == srrdb}
 					<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/">
 						srrDB.com
 					</a>
-				{/if}
-				{if {$result.source} == womble}
+				{elseif {$result.source} == womble}
 					<a title="Visit Womble" href="{$site->dereferrer_link}http://nzb.isasecret.com/">
 						Womble's NZB Index
 					</a>
-				{/if}
-				{if {$result.source} == zenet}
+				{elseif {$result.source} == zenet}
 					<a title="Visit ZEnet" href="{$site->dereferrer_link}http://pre.zenet.org/">
 						ZEnet.org
 					</a>
+				{else}
+					{$result.source}
 				{/if}
-				
+
 			</td>
 			<td class="predb">
 				{if {$result.category} == 'MP3'}

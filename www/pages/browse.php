@@ -1,6 +1,8 @@
 <?php
-if (!$users->isLoggedIn())
-	$page->show403();
+
+if (!$users->isLoggedIn()) {
+    $page->show403();
+}
 
 require_once nZEDb_LIB . 'releases.php';
 require_once nZEDb_LIB . 'category.php';
@@ -8,12 +10,14 @@ require_once nZEDb_LIB . 'category.php';
 $releases = new Releases;
 
 $category = -1;
-if (isset($_REQUEST["t"]) && ctype_digit($_REQUEST["t"]))
-	$category = $_REQUEST["t"];
+if (isset($_REQUEST["t"]) && ctype_digit($_REQUEST["t"])) {
+    $category = $_REQUEST["t"];
+}
 
 $grp = "";
-if (isset($_REQUEST["g"]))
-	$grp = $_REQUEST["g"];
+if (isset($_REQUEST["g"])) {
+    $grp = $_REQUEST["g"];
+}
 
 $catarray = array();
 $catarray[] = $category;
@@ -28,49 +32,49 @@ $orderby = isset($_REQUEST["ob"]) && in_array($_REQUEST['ob'], $ordering) ? $_RE
 $results = array();
 $results = $releases->getBrowseRange($catarray, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"], $grp);
 
-$page->smarty->assign('pagertotalitems',$browsecount);
-$page->smarty->assign('pageroffset',$offset);
-$page->smarty->assign('pageritemsperpage',ITEMS_PER_PAGE);
-$page->smarty->assign('pagerquerybase', WWW_TOP."/browse?t=".$category."&amp;g=".$grp."&amp;ob=".$orderby."&amp;offset=");
+$page->smarty->assign('pagertotalitems', $browsecount);
+$page->smarty->assign('pageroffset', $offset);
+$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
+$page->smarty->assign('pagerquerybase', WWW_TOP . "/browse?t=" . $category . "&amp;g=" . $grp . "&amp;ob=" . $orderby . "&amp;offset=");
 $page->smarty->assign('pagerquerysuffix', "#results");
 
 $pager = $page->smarty->fetch("pager.tpl");
 $page->smarty->assign('pager', $pager);
 
 $covgroup = '';
-if ($category == -1 && $grp == "")
-	$page->smarty->assign("catname","All");
-elseif ($category != -1 && $grp == "")
-{
-	$cat = new Category();
-	$cdata = $cat->getById($category);
+if ($category == -1 && $grp == "") {
+    $page->smarty->assign("catname", "All");
+} elseif ($category != -1 && $grp == "") {
+    $cat = new Category();
+    $cdata = $cat->getById($category);
 
-	if ($cdata)
-	{
-		$page->smarty->assign('catname',$cdata["title"]);
-		if ($cdata['parentid'] == Category::CAT_PARENT_GAME || $cdata['id'] == Category::CAT_PARENT_GAME)
-			$covgroup = 'console';
-		elseif ($cdata['parentid'] == Category::CAT_PARENT_MOVIE || $cdata['id'] == Category::CAT_PARENT_MOVIE)
-			$covgroup = 'movies';
-		elseif ($cdata['parentid'] == Category::CAT_PARENT_MUSIC || $cdata['id'] == Category::CAT_PARENT_MUSIC)
-			$covgroup = 'music';
-		elseif ($cdata['parentid'] == Category::CAT_PARENT_BOOKS || $cdata['id'] == Category::CAT_PARENT_BOOKS)
-			$covgroup = 'books';
-	}
-	else
-		$page->show404();
+    if ($cdata) {
+        $page->smarty->assign('catname', $cdata["title"]);
+        if ($cdata['parentid'] == Category::CAT_PARENT_GAME || $cdata['id'] == Category::CAT_PARENT_GAME) {
+            $covgroup = 'console';
+        } elseif ($cdata['parentid'] == Category::CAT_PARENT_MOVIE || $cdata['id'] == Category::CAT_PARENT_MOVIE) {
+            $covgroup = 'movies';
+        } elseif ($cdata['parentid'] == Category::CAT_PARENT_MUSIC || $cdata['id'] == Category::CAT_PARENT_MUSIC) {
+            $covgroup = 'music';
+        } elseif ($cdata['parentid'] == Category::CAT_PARENT_BOOKS || $cdata['id'] == Category::CAT_PARENT_BOOKS) {
+            $covgroup = 'books';
+        }
+    } else {
+        $page->show404();
+    }
+} elseif ($grp != "") {
+    $page->smarty->assign('catname', $grp);
 }
-elseif ($grp != "")
-	$page->smarty->assign('catname',$grp);
 
-$page->smarty->assign('covgroup',$covgroup);
+$page->smarty->assign('covgroup', $covgroup);
 
-foreach($ordering as $ordertype)
-	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/browse?t=".$category."&amp;g=".$grp."&amp;ob=".$ordertype."&amp;offset=0");
+foreach ($ordering as $ordertype) {
+    $page->smarty->assign('orderby' . $ordertype, WWW_TOP . "/browse?t=" . $category . "&amp;g=" . $grp . "&amp;ob=" . $ordertype . "&amp;offset=0");
+}
 
-$page->smarty->assign('lastvisit',$page->userdata['lastlogin']);
+$page->smarty->assign('lastvisit', $page->userdata['lastlogin']);
 
-$page->smarty->assign('results',$results);
+$page->smarty->assign('results', $results);
 
 $page->meta_title = "Browse Nzbs";
 $page->meta_keywords = "browse,nzb,description,details";
@@ -78,5 +82,3 @@ $page->meta_description = "Browse for Nzbs";
 
 $page->content = $page->smarty->fetch('browse.tpl');
 $page->render();
-
-?>

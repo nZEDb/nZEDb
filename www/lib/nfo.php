@@ -23,7 +23,7 @@ class Nfo
 		$this->tmpPath = $this->site->tmpunrarpath;
 		if (substr($this->tmpPath, -strlen( '/' ) ) != '/')
 			$this->tmpPath = $this->tmpPath.'/';
-		$this->c = new ColorCLI;
+		$this->c = new ColorCLI();
 		$this->primary = 'Green';
 		$this->warning = 'Red';
 		$this->header = 'Yellow';
@@ -168,7 +168,6 @@ class Nfo
 		}
 		else
 		{
-			$res = 0;
 			$pieces = explode('           =+=            ', $releaseToWork);
 			$res = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'groupid' => $pieces[2], 'name' => $pieces[3]));
 			$nfocount = 1;

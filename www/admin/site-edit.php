@@ -19,7 +19,7 @@ switch($action)
 		$error = "";
 		// book_reqids is an array it needs to be a comma seperated string, make it so
 		$book_ids = implode(', ', $_POST[book_reqids]);
-		// save it back 
+		// save it back
 		$_POST['book_reqids'] = $book_ids;
 		// update site table as always
 		$ret = $sites->update($_POST);
@@ -77,6 +77,9 @@ $page->smarty->assign('imdblang_names', array('English', 'Danish', 'Dutch', 'Fin
 
 $page->smarty->assign('imdb_urls', array(0,1));
 $page->smarty->assign('imdburl_names', array('imdb.com', 'akas.imdb.com'));
+
+$page->smarty->assign('rottentomatoquality_ids', array('thumbnail', 'profile', 'detailed', 'original'));
+$page->smarty->assign('rottentomatoquality_names', array('Thumbnail', 'Profile', 'Detailed', 'Original'));
 
 $page->smarty->assign('menupos_ids', array(0,1,2));
 $page->smarty->assign('menupos_names', array('Right', 'Left', 'Top'));

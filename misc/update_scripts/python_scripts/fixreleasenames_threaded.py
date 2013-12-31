@@ -43,6 +43,13 @@ if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" a
 	print(bcolors.ERROR + "\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n" + bcolors.ENDC)
 	sys.exit()
 
+if sys.argv[1] == "nfo" and sys.argv[2] == "clean":
+	clean = " (bitwise & 384) = 384 AND "
+elif sys.argv[1] == "par2" and sys.argv[2] == "clean":
+    clean = " (bitwise & 384) = 384 AND (bitwise & 320) = 320 AND"
+else:
+	clean = " "
+
 print(bcolors.HEADER + "\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 cur.execute("SELECT value FROM site WHERE setting = 'fixnamethreads'")
@@ -54,7 +61,7 @@ datas = []
 maxtries = 0
 
 if len(sys.argv) > 1 and sys.argv[1] == "nfo":
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE (bitwise & 320) = 256 AND ((bitwise & 4) = 0  OR categoryid = 7010) ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE (bitwise & 320) = 256 AND " + clean + "((bitwise & 4) = 0  OR categoryid = 7010) ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
@@ -73,7 +80,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 		maxtries = maxtries - 1
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
-	run = "SELECT DISTINCT id AS releaseid, guid, groupid FROM releases WHERE (bitwise & 288) = 256 AND ((bitwise & 4) = 0  OR categoryid = 7010) ORDER BY postdate ASC LIMIT %s"
+	run = "SELECT DISTINCT id AS releaseid, guid, groupid FROM releases WHERE (bitwise & 288) = 256 AND " + clean + "((bitwise & 4) = 0  OR categoryid = 7010) ORDER BY postdate ASC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 
@@ -114,7 +121,7 @@ def main():
 	time_of_last_run = time.time()
 
 	if sys.argv[1] == 'md5':
-		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} {} releases. dehashstatus range {} to -1".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1], maxtries - 1) + bcolors.ENDC)
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} {} releases. dehashstatus range {} to 0".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1], maxtries + 1) + bcolors.ENDC)
 	else:
 		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} releases using {}".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1]) + bcolors.ENDC)
 	time.sleep(2)

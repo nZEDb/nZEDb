@@ -1,4 +1,5 @@
 <?php
+
 require_once nZEDb_LIB . 'framework/basepage.php';
 require_once nZEDb_LIB . 'content.php';
 require_once nZEDb_LIB . 'category.php';
@@ -8,48 +9,53 @@ require_once nZEDb_LIB . 'logging.php';
 
 class Page extends BasePage
 {
+
 	function __construct()
 	{
 		parent::BasePage();
 
-		$role=Users::ROLE_GUEST;
-		if ($this->userdata != null)
+		$role = Users::ROLE_GUEST;
+		if ($this->userdata != null) {
 			$role = $this->userdata["role"];
+		}
 
 		$content = new Contents();
 		$menu = new Menu();
-		$this->smarty->assign('menulist',$menu->get($role, $this->serverurl));
-		$this->smarty->assign('usefulcontentlist',$content->getForMenuByTypeAndRole(Contents::TYPEUSEFUL, $role));
-		$this->smarty->assign('articlecontentlist',$content->getForMenuByTypeAndRole(Contents::TYPEARTICLE, $role));
+		$this->smarty->assign('menulist', $menu->get($role, $this->serverurl));
+		$this->smarty->assign('usefulcontentlist', $content->getForMenuByTypeAndRole(Contents::TYPEUSEFUL, $role));
+		$this->smarty->assign('articlecontentlist', $content->getForMenuByTypeAndRole(Contents::TYPEARTICLE, $role));
 
-		$this->smarty->assign('main_menu',$this->smarty->fetch('mainmenu.tpl'));
-		$this->smarty->assign('useful_menu',$this->smarty->fetch('usefullinksmenu.tpl'));
-		$this->smarty->assign('article_menu',$this->smarty->fetch('articlesmenu.tpl'));
+		$this->smarty->assign('main_menu', $this->smarty->fetch('mainmenu.tpl'));
+		$this->smarty->assign('useful_menu', $this->smarty->fetch('usefullinksmenu.tpl'));
+		$this->smarty->assign('article_menu', $this->smarty->fetch('articlesmenu.tpl'));
 
 		$category = new Category();
-		if ($this->userdata != null)
+		if ($this->userdata != null) {
 			$parentcatlist = $category->getForMenu($this->userdata["categoryexclusions"]);
-		else
+		} else {
 			$parentcatlist = $category->getForMenu();
+		}
 
-		$this->smarty->assign('parentcatlist',$parentcatlist);
+		$this->smarty->assign('parentcatlist', $parentcatlist);
 		$searchStr = '';
-		if ($this->page == 'search' && isset($_REQUEST["id"]))
+		if ($this->page == 'search' && isset($_REQUEST["id"])) {
 			$searchStr = (string) $_REQUEST["id"];
-		$this->smarty->assign('header_menu_search',$searchStr);
+		}
+		$this->smarty->assign('header_menu_search', $searchStr);
 
-		if (isset($_REQUEST["t"]))
-			$this->smarty->assign('header_menu_cat',$_REQUEST["t"]);
+		if (isset($_REQUEST["t"])) {
+			$this->smarty->assign('header_menu_cat', $_REQUEST["t"]);
+		}
 		$header_menu = $this->smarty->fetch('headermenu.tpl');
-		$this->smarty->assign('header_menu',$header_menu);
-
+		$this->smarty->assign('header_menu', $header_menu);
 	}
 
 	public function render()
 	{
-		$this->smarty->assign('page',$this);
+		$this->smarty->assign('page', $this);
 		$this->page_template = "basepage.tpl";
 
 		parent::render();
 	}
+
 }

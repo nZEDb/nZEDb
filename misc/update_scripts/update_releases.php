@@ -9,7 +9,7 @@ require_once nZEDb_LIB . 'nntp.php';
 require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-$c = new ColorCLI;
+$c = new ColorCLI();
 $s = new Sites();
 $site = $s->get();
 

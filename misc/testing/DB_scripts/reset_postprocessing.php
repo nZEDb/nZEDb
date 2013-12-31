@@ -54,7 +54,6 @@ else if (isset($argv[1]) && $argv[1] === "movies")
 	if (isset($argv[2]) && $argv[2] === "true")
 	{
 		$where = "";
-		$db->queryExec("TRUNCATE TABLE releasevideo");
 		$db->queryExec("TRUNCATE TABLE movieinfo");
 	}
 	else

@@ -23,7 +23,6 @@ class Tmux
 		{
 			if (is_array($settingV))
 				$settingV = implode(', ',$settingV);
-			system("echo \"Key: $settingK Value $settingV\" >> /tmp/postdata-db.txt");
 			$sql[] = sprintf("WHEN %s THEN %s", $db->escapeString($settingK), $db->escapeString($settingV));
 			$sqlKeys[] = $db->escapeString($settingK);
 		}

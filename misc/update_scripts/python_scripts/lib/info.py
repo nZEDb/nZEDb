@@ -7,7 +7,7 @@ import os, sys, re
 class bcolors:
 	HEADER = '\033[38;5;011m'
 	PRIMARY = '\033[38;5;010m'
-	ERROR = '\033[38;5;009m'
+	ERROR = '\033[31mError: '
 	ENDC = '\033[0m'
 
 	def disable(self):

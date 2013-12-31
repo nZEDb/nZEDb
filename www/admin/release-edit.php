@@ -15,7 +15,7 @@ $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 switch($action)
 {
 	case 'submit':
-		$releases->update($_POST["id"], $_POST["name"], $_POST["searchname"], $_POST["fromname"], $_POST["category"], $_POST["totalpart"], $_POST["grabs"], $_POST["size"], $_POST["postdate"], $_POST["adddate"], $_POST["rageid"], $_POST["seriesfull"], $_POST["season"], $_POST["episode"], $_POST['imdbid'], $_POST['anidbid']);
+		$releases->update($_POST["id"], $_POST["name"], $_POST["searchname"], $_POST["fromname"], $_POST["category"], $_POST["totalpart"], $_POST["grabs"], $_POST["size"], $_POST["postdate"], $_POST["adddate"], $_POST["rageid"], $_POST["seriesfull"], $_POST["season"], $_POST["episode"], $_POST["imdbid"], $_POST["anidbid"]);
 		if(isset($_POST['from']) && !empty($_POST['from']))
 		{
 			header("Location:".$_POST['from']);

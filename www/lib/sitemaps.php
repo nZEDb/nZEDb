@@ -1,6 +1,8 @@
 <?php
+
 class Sitemap
 {
+
 	public $type = '';
 	public $name = '';
 	public $loc = '';
@@ -15,4 +17,5 @@ class Sitemap
 		$this->priority = $p;
 		$this->changefreq = $c;
 	}
+
 }

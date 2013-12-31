@@ -86,7 +86,7 @@ function preName($argv)
 						{
 							foreach ($files as $f)
 							{
-								if (preg_match('/^(?P<title>.+)\.(pdf|html|epub|mobi)/', $f["name"], $match))
+								if (preg_match('/^(?P<title>.+)\.(pdf|html|epub|mobi|azw)/', $f["name"], $match))
 								{
 									$cleanedBook = true;
 									$cleanName = $match['title'];

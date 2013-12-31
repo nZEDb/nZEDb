@@ -4,16 +4,18 @@ require_once '../lib/install.php';
 $page_title = "Welcome";
 
 $cfg = new Install();
-if ($cfg->isLocked())
+if ($cfg->isLocked()) {
 	$cfg->error = true;
+}
 
 $cfg->cacheCheck = is_writable($cfg->SMARTY_DIR.'/templates_c');
-if ($cfg->cacheCheck === false)
+if ($cfg->cacheCheck === false) {
 	$cfg->error = true;
+}
 
-if (!$cfg->error)
+if (!$cfg->error) {
 	$cfg->setSession();
-
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
