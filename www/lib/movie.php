@@ -115,8 +115,8 @@ class Movie
 		$rel = new Releases();
 
 		$sql = sprintf("SELECT COUNT(DISTINCT r.imdbid) AS num FROM releases r "
-			. "INNER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != '' "
-			. "WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= %d AND %s %s %s %s ",
+			. "INNER JOIN movieinfo m ON m.imdbid = r.imdbid "
+			. "WHERE (r.bitwise & 256) = 256 AND m.cover = 1 AND m.title != '' AND r.passwordstatus <= %d AND %s %s %s %s ",
 			$rel->showPasswords(), $browseby, $catsrch, $maxage, $exccatlist);
 		$res = $this->db->queryOneRow($sql);
 		return $res["num"];
