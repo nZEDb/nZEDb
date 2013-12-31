@@ -518,7 +518,6 @@ class Binaries
 
                                 $bres = $db->queryOneRow(sprintf('SELECT id FROM ' . $group['bname'] . ' WHERE binaryhash = %s', $db->escapeString($binaryHash)));
                                 if (!$bres) {
-                                    printf('INSERT INTO ' . $group['bname'] . " (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)\n", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
                                     $bsql = sprintf('INSERT INTO ' . $group['bname'] . ' (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
                                     $binaryID = $db->queryInsert($bsql);
                                 } else
