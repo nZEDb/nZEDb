@@ -1977,9 +1977,9 @@ class Releases
     {
         $db = new DB();
         return $db->query("SELECT DISTINCT (a.imdbID), guid, name, b.title, searchname, size, completion, postdate, "
-            . "categoryid, comments, grabs, c.cover FROM releases a, category b, movieinfo c "
-            . "WHERE b.title = 'Movies'  AND a.imdbid = c.imdbid AND a.imdbid !='NULL' AND a.imdbid != 0 AND c.cover = 1 "
-            . "GROUP BY a.imdbid ORDER BY a.postdate DESC LIMIT 16");
+                . "categoryid, comments, grabs, c.cover FROM releases a, category b, movieinfo c "
+                . "WHERE b.title = 'Movies'  AND a.imdbid = c.imdbid AND a.imdbid !='NULL' AND a.imdbid != 0 AND c.cover = 1 "
+                . "GROUP BY a.imdbid ORDER BY a.postdate DESC LIMIT 16");
     }
 
     public function getNewestConsole()
