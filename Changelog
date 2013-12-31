@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-12-30 -> jonnyboy -> fixed query in getMovieRange() to only return movies with covers since it is for cover view, removed bad formed query
+2013-12-30 -> jonnyboy -> fixed typo in util.php not showing country flag, changed buttons in light/search, changed newposterwall, to show only releases with covers
+                          fixed query in getMovieRange() to only return movies with covers since it is for cover view, removed bad formed query
                           renamed jonnyboy theme to light
                           fixed commit.sh to update monitor.php commit version
                           fixed bug in theme/admin pages using incorrect path for scripts
