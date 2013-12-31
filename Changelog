@@ -4,6 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2013-12-31 -> jonnyboy -> updated resetRelnameStatus.php to allow resetting of rename bits only
 2013-12-30 -> jonnyboy -> added scrollbar and fixed count on movies->cover view in light theme, moved style to css
                           added more info Rotten Tomotoes, Theater link in light theme
                           fixed newposterwall to center the row of images and use the whole row
