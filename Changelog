@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-12-30 -> jonnyboy -> fixed newposterwall to center the row of images and use the whole row
+2013-12-30 -> jonnyboy -> added more info Rotten Tomotoes, Theater link in light theme
+                          fixed newposterwall to center the row of images and use the whole row
                           fixed typo in util.php not showing country flag, changed buttons in light/search, changed newposterwall, to show only releases with covers
                           fixed query in getMovieRange() to only return movies with covers since it is for cover view, removed bad formed query
                           renamed jonnyboy theme to light
