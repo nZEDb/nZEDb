@@ -1,7 +1,7 @@
 <?php
 
 if (is_file("config.php")) {
-    require_once './config.php';
+    require_once '../config.php';
 } else {
     if (is_dir("install")) {
         header("location: install");
