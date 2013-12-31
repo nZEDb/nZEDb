@@ -113,7 +113,7 @@
                                     {if $result.genre != ''}<b>Genre:</b> {$result.genre|stripslashes}<br />{/if}
                                     {if $result.director != ''}<b>Director:</b> {$result.director}<br />{/if}
                                     {if $result.actors != ''}<b>Starring:</b> {$result.actors}<br /><br />{/if}
-                                    <div class="movextra" float="left">
+                                    <div class="movextra">
                                         <table class="nohighlight">
                                             {assign var="msplits" value=","|explode:$result.grp_release_id}
                                             {assign var="mguid" value=","|explode:$result.grp_release_guid}

@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2013-12-20 -> jonnyboy -> renamed jonnyboy theme to light
+2013-12-30 -> jonnyboy -> fixed query in getMovieRange() to only return movies with covers since it is for cover view, removed bad formed query
+                          renamed jonnyboy theme to light
                           fixed commit.sh to update monitor.php commit version
                           fixed bug in theme/admin pages using incorrect path for scripts
                           removed SQL_CALC_FOUND_ROWS from query for predb row count
