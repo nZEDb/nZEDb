@@ -2331,6 +2331,9 @@ class nameCleaning
 			//(Ancient.Aliens.S03E05.Aliens.and.Mysterious.Rituals.720p.HDTV.x264.AC3.2Ch.REPOST) [41/42] - "Ancient.Aliens.S03E05.Aliens.and.Mysterious.Rituals.720p.HDTV.x264.AC3.2Ch.REPOST.vol071+66.PAR2" yEnc
 			else if (preg_match('/^(\((.+?)\) \[)\d+(\/\d+] - ").+?" yEnc$/', $subject, $match))
 				return $match[2];
+			//(01/48) - [Lords-of-Usenet] <<Partner of SSL-News.info>> presents Sons.of.Anarchy.S02E03.Unten.am.Fluss.GERMAN.DUBBED.720p.BLURAY.x264-ZZGtv -"zzgtv-soa-s02e03.par2" - 1,84 GB
+			else if (preg_match('/^\(\d+\/\d+\) - \[Lords-of-Usenet\] <<Partner of SSL-News.info>> presents (.+) -".+" - .+ yEnc$/i', $subject, $match))
+				return $match[1];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
@@ -3813,6 +3816,20 @@ class nameCleaning
 				return $match[1];
 			//Public Enemies (2009).720p.x264.English Subtitles.Dolby Digital 5.1.mkv [04/55]"Public Enemies sample.mkv" yEnc
 			else if (preg_match('/^(.+(1080|720).+)\..+\[\d+\/\d+\]".+" yEnc$/', $subject, $match))
+				return $match[1];
+			else
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+		}
+		else if ($groupName === "alt.binaries.test")
+		{
+			//brothers-of-usenet.net)(Sons.of.Anarchy.S03E03.Fuersorge.GERMAN.DUBBED.720p.BLURAY.x264-ZZGtv))(07/31) #34;zzgtv-soa-s03e03.part05.rar#34; - 2,02 GB - yEnc
+			if (preg_match('/^brothers-of-usenet.net\)\((.+)\)\)\(\d+\/\d+\) ("|#34;).+("|#34;).+yEnc$/', $subject, $match))
+				return $match[1];
+			//brothers-of-usenet.net(Sons.of.Anarchy.S03E03.Fuersorge.GERMAN.DUBBED.720p.BLURAY.x264-ZZGtv))(07/31) #34;zzgtv-soa-s03e03.part05.rar#34; - 2,02 GB - yEnc
+			elseif (preg_match('/^brothers-of-usenet.net\((.+)\)\)\(\d+\/\d+\) ("|#34;).+("|#34;).+yEnc$/', $subject, $match))
+				return $match[1];
+			//brothers-of-usenet.net><Sons.of.Anarchy.S03E02.Letzte.Oelung.GERMAN.DUBBED.720p.BLURAY.x264-ZZGtv>>(01/31) "zzgtv-soa-s03e02.nfo" - 1,98 GB - yEnc
+			elseif (preg_match('/^brothers-of-usenet.net><(.+)>>\(\d+\/\d+\) ("|#34;).+("|#34;).+yEnc$/', $subject, $match))
 				return $match[1];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
