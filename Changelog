@@ -4,6 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2014-01-01 -> jonnyboy -> improved local lookup for tv/movies
 2013-12-31 -> jonnyboy -> VERY IMPORTANT PATCH - IF YOU RAN misc/testing/DB_scripts/rename_to_lower.php, THEN YOU MUST STOP ALL SCRIPTS AND RUN AGAIN, NOW
                           PLEASE MESSAGE ME IN IRC IF YOU RAN THIS SCRIPT
                           changed posted/added date to date time in nzb view, fixed output of updateMovieInfo.php to display correct count

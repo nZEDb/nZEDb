@@ -7,7 +7,7 @@ if (isset($argv[1]) && $argv[1] === "all")
 {
 	if (isset($argv[2]) && $argv[2] === "true")
 	{
-		$where = "";
+		$where = '';
 		echo "Trancating tables\n";
 		$db->queryExec("TRUNCATE TABLE consoleinfo");
 		$db->queryExec("TRUNCATE TABLE movieinfo");
@@ -40,9 +40,10 @@ if (isset($argv[1]) && $argv[1] === "all")
 }
 else if (isset($argv[1]) && $argv[1] === "consoles")
 {
-	$where = "";
-	if (isset($argv[2]) && $argv[2] === "true")
+	if (isset($argv[3]) && $argv[3] === "truncate")
 		$db->queryExec("TRUNCATE TABLE consoleinfo");
+	if (isset($argv[2]) && $argv[2] === "true")
+		$where = '';
 	else
 		$where = " WHERE consoleinfoid IN (-2, 0) AND categoryid BETWEEN 1000 AND 1999";
 
@@ -51,11 +52,10 @@ else if (isset($argv[1]) && $argv[1] === "consoles")
 }
 else if (isset($argv[1]) && $argv[1] === "movies")
 {
-	if (isset($argv[2]) && $argv[2] === "true")
-	{
-		$where = "";
+	if (isset($argv[3]) && $argv[3] === "truncate")
 		$db->queryExec("TRUNCATE TABLE movieinfo");
-	}
+	if (isset($argv[2]) && $argv[2] === "true")
+		$where = '';
 	else
 		$where = " WHERE imdbid IN (-2, 0) AND categoryid BETWEEN 2000 AND 2999";
 
@@ -64,9 +64,10 @@ else if (isset($argv[1]) && $argv[1] === "movies")
 }
 else if (isset($argv[1]) && $argv[1] === "music")
 {
-	$where = "";
-	if (isset($argv[2]) && $argv[2] === "true")
+	if (isset($argv[3]) && $argv[3] === "truncate")
 		$db->queryExec("TRUNCATE TABLE musicinfo");
+	if (isset($argv[2]) && $argv[2] === "true")
+		$where = '';
 	else
 		$where = " WHERE musicinfoid IN (-2, 0) AND categoryid BETWEEN 3000 AND 3999";
 
@@ -76,7 +77,7 @@ else if (isset($argv[1]) && $argv[1] === "music")
 else if (isset($argv[1]) && $argv[1] === "misc")
 {
 	if (isset($argv[2]) && $argv[2] === "true")
-		$where = "";
+		$where = '';
 	else
 		$where = " WHERE haspreview = 0";
 
@@ -85,8 +86,10 @@ else if (isset($argv[1]) && $argv[1] === "misc")
 }
 else if (isset($argv[1]) && $argv[1] === "tv")
 {
+	if (isset($argv[3]) && $argv[3] === "truncate")
+		$db->queryExec("TRUNCATE TABLE tvrage");
 	if (isset($argv[2]) && $argv[2] === "true")
-		$where = "";
+		$where = '';
 	else
 		$where = " WHERE rageid IN (-2, 0) OR rageid IS NULL AND categoryid BETWEEN 5000 AND 5999";
 
@@ -95,9 +98,11 @@ else if (isset($argv[1]) && $argv[1] === "tv")
 }
 else if (isset($argv[1]) && $argv[1] === "books")
 {
-	$where = "";
-	if (isset($argv[2]) && $argv[2] === "true")
+	$where = '';
+	if (isset($argv[3]) && $argv[3] === "truncate")
 		$db->queryExec("TRUNCATE TABLE bookinfo");
+	if (isset($argv[2]) && $argv[2] === "true")
+		$where = '';
 	else
 		$where = " WHERE bookinfoid IN (-2, 0) AND categoryid BETWEEN 8000 AND 8999";
 
@@ -106,9 +111,10 @@ else if (isset($argv[1]) && $argv[1] === "books")
 }
 else if (isset($argv[1]) && $argv[1] === "nfos")
 {
-	$where = "";
-	if (isset($argv[2]) && $argv[2] === "true")
+	if (isset($argv[3]) && $argv[3] === "truncate")
 		$db->queryExec("TRUNCATE TABLE releasenfo");
+	if (isset($argv[2]) && $argv[2] === "true")
+		$where = '';
 	else
 		$where = " WHERE nfostatus <= 0";
 
@@ -125,6 +131,7 @@ else
 		."To reset books, run php reset_postprocessing.php books true\n"
 		."To reset nfos, run php reset_postprocessing.php nfos true\n"
 		."To reset everything, run php reset_postprocessing.php all true\n"
-		."To reset only those without covers or previews use second argument false\033[m\n");
+		."To reset only those without covers or previews use second argument false\n"
+		."To truncate the associated table add truncate as the third argument\033[m\n");
 }
 ?>
