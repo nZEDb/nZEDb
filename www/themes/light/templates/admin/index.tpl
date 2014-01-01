@@ -38,5 +38,5 @@
 <li style="margin-bottom: 15px;">If you intend to keep using nZEDb, it is best to sign up for your own api keys from
     <a href="http://www.themoviedb.org/account/signup">tmdb</a>, <a href="http://trakt.tv">trakt</a>,
     <a href="http://developer.rottentomatoes.com/">rotten tomatoes</a>, <a href="http://aws.amazon.com/">amazon
-    </a> and <a href="http://anidb.net/">anidb</a>.</li>
+    </a>, <a href="http://anidb.net/">anidb</a> and <a href="http://fanart.tv/">fanart</a>.</li>
 </ol>
