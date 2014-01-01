@@ -978,7 +978,7 @@ class Category
 
 	public function isPCGame($releasename)
 	{
-		if (preg_match('/FASDOX|games|PC GAME|RIP\-unleashed|Razor1911/i', $releasename) && !preg_match('/[-._ ]PSP|WII|XBOX/i', $releasename)) {
+		if (preg_match('/FASDOX|games|PC GAME|RIP\-unleashed|Razor1911/i', $releasename) && !preg_match('/[-._ ]PSP|WII|XBOX|MP3|FLAC/i', $releasename)) {
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
 		}
