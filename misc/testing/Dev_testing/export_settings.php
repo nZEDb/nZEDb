@@ -7,7 +7,7 @@ passthru("clear");
 $c= new ColorCLI();
 
 if (!isset($argv[1]) || (isset($argv[1]) && $argv[1] != "site" && $argv[1] != "tmux")) {
-	echo $c->error("\nThis script will output the setting of your site-edit or tmux-edit page to share with others. This will ouptut directly to web using pastebinit. This does not post any private information.\nTo run:\nphp export_settings.php [site, tmux] [tabbed, html, csv\n");
+	exit($c->error("\nThis script will output the setting of your site-edit or tmux-edit page to share with others. This will ouptut directly to web using pastebinit. This does not post any private information.\nTo run:\nphp export_settings.php [site, tmux] [tabbed, html, csv]\n"));
 }
 
 if (!command_exist('pastebinit')) {

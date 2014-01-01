@@ -825,11 +825,13 @@ class Releases
         $db = $this->db;
         if (is_array($guid)) {
             $tmpguids = array();
-            foreach ($guid as $g)
+            foreach ($guid as $g) {
                 $tmpguids[] = $db->escapeString($g);
+            }
             $gsql = sprintf('guid IN (%s)', implode(',', $tmpguids));
-        } else
+        } else {
             $gsql = sprintf('guid = %s', $db->escapeString($guid));
+        }
         $sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE %s ", $gsql);
         return (is_array($guid)) ? $db->query($sql) : $db->queryOneRow($sql);
     }
@@ -1977,9 +1979,9 @@ class Releases
     {
         $db = new DB();
         return $db->query("SELECT DISTINCT (a.imdbID), guid, name, b.title, searchname, size, completion, postdate, "
-            . "categoryid, comments, grabs, c.cover FROM releases a, category b, movieinfo c "
-            . "WHERE b.title = 'Movies'  AND a.imdbid = c.imdbid AND a.imdbid !='NULL' AND a.imdbid != 0 AND c.cover = 1 "
-            . "GROUP BY a.imdbid ORDER BY a.postdate DESC LIMIT 16");
+                . "categoryid, comments, grabs, c.cover FROM releases a, category b, movieinfo c "
+                . "WHERE b.title = 'Movies'  AND a.imdbid = c.imdbid AND a.imdbid !='NULL' AND a.imdbid != 0 AND c.cover = 1 "
+                . "GROUP BY a.imdbid ORDER BY a.postdate DESC LIMIT 16");
     }
 
     public function getNewestConsole()

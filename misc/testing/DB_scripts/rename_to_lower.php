@@ -12,17 +12,28 @@ if ($argc == 1 || $argv[1] != 'true') {
 
 $db = new Db();
 $count = 0;
-$list = $db->query("SELECT TABLE_NAME, COLUMN_NAME, UPPER(COLUMN_TYPE) FROM information_schema.columns WHERE table_schema = 'nzedb'");
+$list = $db->query("SELECT TABLE_NAME, COLUMN_NAME, UPPER(COLUMN_TYPE), EXTRA FROM information_schema.columns WHERE table_schema = 'nzedb'");
 if (count($list) == 0) {
 	echo $c->info("No table columns to rename");
 } else {
 	foreach ($list as $column) {
 		if ($column['column_name'] !== strtolower($column['column_name'])) {
-			echo $c->header("Renaming Table " . $column['table_name'] . " Column " . $column['column_name']);
-			$db->queryDirect("ALTER TABLE " . $column['table_name'] . " CHANGE " . $column['column_name'] . " " . strtolower($column['column_name']) . " " . $column['upper(column_type)']);
-			$count++;
-		}
-	}
+        		echo $c->header("Renaming Table " . $column['table_name'] . " Column " . $column['column_name']);
+                if (isset($column['extra'])) {
+                    $extra = strtoupper($column['extra']);
+                } else {
+                    $extra = '';
+                }
+                $db->queryDirect("ALTER TABLE " . $column['table_name'] . " CHANGE " . $column['column_name'] . " " . strtolower($column['column_name']) . " " . $column['upper(column_type)'] . " " . $extra);
+                $count++;
+        }
+		if (strtolower($column['column_name']) === 'id' && strtolower($column['extra']) !== 'auto_increment') {
+        		echo $c->header("Renaming Table " . $column['table_name'] . " Column " . $column['column_name']);
+                $extra = 'AUTO_INCREMENT';
+                $db->queryDirect("ALTER IGNORE TABLE " . $column['table_name'] . " CHANGE " . $column['column_name'] . " " . strtolower($column['column_name']) . " " . $column['upper(column_type)'] . " " . $extra);
+                $count++;
+        }
+    }
 }
 if ($count == 0) {
 	echo $c->info("All table column names are already lowercase");
