@@ -50,11 +50,53 @@ class TvRage
         }
 
         $title2 = str_replace(' and ', ' & ', $title);
-        $res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE LOWER(releasetitle) = LOWER(%s)", $this->db->escapeString($title2)));
+        if ($title != $title2) {
+            $res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE LOWER(releasetitle) = LOWER(%s)", $this->db->escapeString($title2)));
+            if (isset($res['rageid'])) {
+                return $res['rageid'];
+            }
+            $pieces = explode(' ', $title2);
+            $title4 = '%';
+            foreach ($pieces as $piece) {
+                $title4 .= str_replace(array("'", "!"), "", $piece) . '%';
+            }
+            $res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, \"'\", ''), '!', '') LIKE %s", $this->db->escapeString($title4)));
+            if (isset($res['rageid'])) {
+                return $res['rageid'];
+            }
+        }
+
+        // Some words are spelled correctly 2 ways
+        // example theatre and theater
+        $title3 = str_replace('er', 're', $title);
+        if ($title != $title3) {
+            $res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE LOWER(releasetitle) = LOWER(%s)", $this->db->escapeString($title3)));
+            if (isset($res['rageid'])) {
+                return $res['rageid'];
+            }
+            $pieces = explode(' ', $title3);
+            $title4 = '%';
+            foreach ($pieces as $piece) {
+                $title4 .= str_replace(array("'", "!"), "", $piece) . '%';
+            }
+            $res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, \"'\", ''), '!', '') LIKE %s", $this->db->escapeString($title4)));
+            if (isset($res['rageid'])) {
+                return $res['rageid'];
+            }
+        }
+
+        // If there was not an exact title match, look for title with missing chars
+        // example release name :Zorro 1990, tvrage name Zorro (1990)
+        $pieces = explode(' ', $title);
+        $title4 = '%';
+        foreach ($pieces as $piece) {
+            $title4 .= str_replace(array("'", "!"), "", $piece) . '%';
+        }
+        $res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, \"'\", ''), '!', '') LIKE %s", $this->db->escapeString($title4)));
         if (isset($res['rageid'])) {
             return $res['rageid'];
         }
-
+        
         return false;
     }
 
@@ -414,14 +456,14 @@ class TvRage
     public function updateEpInfo($show, $relid)
     {
         if ($this->echooutput) {
-            echo $this->c->headerOver("TV series: ") . $this->c->primary($show['name'] . " " . $show['seriesfull'] . (($show['year'] != '') ? ' ' . $show['year'] : '') . (($show['country'] != '') ? ' [' . $show['country'] . ']' : ''));
+            echo $this->c->headerOver("Updating Episode: ") . $this->c->primary($show['cleanname'] . " " . $show['seriesfull'] . (($show['year'] != '') ? ' ' . $show['year'] : '') . (($show['country'] != '') ? ' [' . $show['country'] . ']' : ''));
         }
 
         $tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $this->db->escapeString($this->checkDate($show['airdate'])) : "NULL";
         $this->db->queryExec(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate = %s WHERE id = %d", $this->db->escapeString($show['seriesfull']), $this->db->escapeString($show['season']), $this->db->escapeString($show['episode']), $tvairdate, $relid));
     }
 
-    public function updateRageInfo($rageid, $show, $tvrShow, $relid)
+    public function updateRageInfo($rageid, $title, $show, $tvrShow, $relid)
     {
         // Try and get the episode specific info from tvrage.
         $epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
@@ -509,7 +551,7 @@ class TvRage
         $this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
     }
 
-    public function processTvReleases($releaseToWork = '', $lookupTvRage = true)
+    public function processTvReleases($releaseToWork = '', $lookupTvRage = true, $local = true)
     {
         $ret = 0;
         $trakt = new Trakttv();
@@ -536,17 +578,20 @@ class TvRage
 
                 // Find the rageID.
                 $id = $this->getByTitle($show['cleanname']);
+				if ($local == true) {
+					$lookupTvRage = false;
+				}
 
                 if ($id === false && $lookupTvRage) {
                     // If it doesnt exist locally and lookups are allowed lets try to get it.
                     if ($this->echooutput) {
-                        echo $this->c->primary("TVRage ID for " . $show['cleanname'] . " not found in local db, checking web.");
+                        echo $this->c->primaryOver("TVRage ID for ") . $this->c->headerOver($show['cleanname']) . $this->c->primary(" not found in local db, checking web.");
                     }
 
                     $tvrShow = $this->getRageMatch($show);
                     if ($tvrShow !== false && is_array($tvrShow)) {
                         // Get all tv info and add show.
-                        $this->updateRageInfo($tvrShow['showid'], $show, $tvrShow, $arr['id']);
+                        $this->updateRageInfo($tvrShow['showid'], $tvrShow['title'], $show, $tvrShow, $arr['id']);
                     } else if ($tvrShow === false) {
                         // If tvrage fails, try trakt.
                         $traktArray = $trakt->traktTVSEsummary($show['name'], $show['season'], $show['episode']);
@@ -571,6 +616,9 @@ class TvRage
                         // Skip because we couldnt connect to tvrage.com.
                     }
                 } else if ($id > 0) {
+                    if ($this->echooutput) {
+                        echo $this->c->AlternateOver("TV series: ") . $this->c->header($show['cleanname'] . " " . $show['seriesfull'] . (($show['year'] != '') ? ' ' . $show['year'] : '') . (($show['country'] != '') ? ' [' . $show['country'] . ']' : ''));
+                    }
                     $tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $this->db->escapeString($this->checkDate($show['airdate'])) : "NULL";
                     $tvtitle = "NULL";
 
@@ -591,14 +639,12 @@ class TvRage
                     } else {
                         $this->db->queryExec(sprintf('UPDATE releases SET tvtitle = %s, tvairdate = %s, rageid = %d WHERE id = %d', $tvtitle, $tvairdate, $id, $arr['id']));
                     }
-                }
                 // Cant find rageid, so set rageid to n/a.
-                else {
+                } else {
                     $this->db->queryExec(sprintf('UPDATE releases SET rageid = -2 WHERE id = %d', $arr['id']));
                 }
-            }
             // Not a tv episode, so set rageid to n/a.
-            else {
+            } else {
                 $this->db->queryExec(sprintf('UPDATE releases SET rageid = -2 WHERE id = %d', $arr['id']));
             }
             $ret++;
@@ -801,12 +847,13 @@ class TvRage
         $str = str_replace('$', 's', $str);
         $str = preg_replace('/\s{2,}/', ' ', $str);
 
+		$str = trim($str, '\"');
         return trim($str);
     }
 
     public function parseNameEpSeason($relname)
     {
-        $relname = trim(preg_replace('/EnJoY!|GOU[\.\-_ ](Der)?|SecretUsenet\scom|TcP[\.\-_ ]|usenet4ever\sinfo(\sund)?/i', '', $relname));
+        $relname = trim(preg_replace('/ US |EnJoY!|GOU[\.\-_ ](Der)?|SecretUsenet\scom|TcP[\.\-_ ]|usenet4ever\sinfo(\sund)?/i', '', $relname));
         $showInfo = array('name' => '', 'season' => '', 'episode' => '', 'seriesfull' => '', 'airdate' => '', 'country' => '', 'year' => '', 'cleanname' => '');
         $matches = '';
 
