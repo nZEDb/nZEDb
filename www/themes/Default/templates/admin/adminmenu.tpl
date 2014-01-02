@@ -1,4 +1,4 @@
- 		<h2>Admin Functions</h2> 
+ 		<h2>Admin Functions</h2>
 		<ul>
 		<li><a title="Home" href="{$smarty.const.WWW_TOP}/..{$site->home_link}">Home</a></li>
 		<li><a title="Admin Home" href="{$smarty.const.WWW_TOP}/">Admin Home</a></li>
@@ -22,4 +22,5 @@
 		<li><a href="{$smarty.const.WWW_TOP}/role-list.php">View</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/role-edit.php?action=add">Add</a> Roles</li>
 		<li><a href="{$smarty.const.WWW_TOP}/site-stats.php">Site Stats</a></li>
 		<li><a href="{$smarty.const.WWW_TOP}/tmux-edit.php">Tmux Settings</a>
+		<li><a href="{$smarty.const.WWW_TOP}/delete-releases.php">Delete Releases</a>
 		</ul>
