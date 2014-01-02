@@ -711,6 +711,31 @@ class Movie
 							. 'WHERE title %s %s', $like, "'%" . $parsed['title'] . "%'"));
 					}
 
+					// Try lookup by %name%
+					if (!isset($ckimdbid['imdbid'])) {
+						$title = str_replace('er', 're', $parsed['title']);
+						if ($title != $parsed['title']) {
+							$ckimdbid = $this->db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo WHERE title %s %s', $like, "'%" . $title . "%'"));
+						}
+						if (!isset($ckimdbid['imdbid'])) {
+							$pieces = explode(' ', $parsed['title']);
+							$title1 = '%';
+							foreach ($pieces as $piece) {
+								$title1 .= str_replace(array("'", "!"), "", $piece) . '%';
+							}
+							$ckimdbid = $this->db->queryOneRow(sprintf("SELECT imdbid FROM movieinfo WHERE replace(replace(title, \"'\", ''), '!', '') %s %s", $like, $this->db->escapeString($title1)));
+						}
+						if (!isset($ckimdbid['imdbid'])) {
+							$pieces = explode(' ', $title);
+							$title2 = '%';
+							foreach ($pieces as $piece) {
+								$title2 .= str_replace(array("'", "!"), "", $piece) . '%';
+							}
+							$ckimdbid = $this->db->queryOneRow(sprintf("SELECT imdbid FROM movieinfo WHERE replace(replace(title, \"'\", ''), '!', '') %s %s", $like, $this->db->escapeString($title2)));
+						}
+					}
+
+
 					if (isset($ckimdbid['imdbid'])) {
 						$imdbId = $this->domovieupdate('tt' . $ckimdbid['imdbid'], 'Local DB', $arr['id']);
 						if ($imdbId === false) {
