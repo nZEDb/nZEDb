@@ -463,7 +463,7 @@ class TvRage
         $this->db->queryExec(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate = %s WHERE id = %d", $this->db->escapeString($show['seriesfull']), $this->db->escapeString($show['season']), $this->db->escapeString($show['episode']), $tvairdate, $relid));
     }
 
-    public function updateRageInfo($rageid, $title, $show, $tvrShow, $relid)
+    public function updateRageInfo($rageid, $show, $tvrShow, $relid)
     {
         // Try and get the episode specific info from tvrage.
         $epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
@@ -593,7 +593,7 @@ class TvRage
                     $tvrShow = $this->getRageMatch($show);
                     if ($tvrShow !== false && is_array($tvrShow)) {
                         // Get all tv info and add show.
-                        $this->updateRageInfo($tvrShow['showid'], $tvrShow['title'], $show, $tvrShow, $arr['id']);
+                        $this->updateRageInfo($tvrShow['showid'], $show, $tvrShow, $arr['id']);
                     } else if ($tvrShow === false) {
                         // If tvrage fails, try trakt.
                         $traktArray = $trakt->traktTVSEsummary($show['name'], $show['season'], $show['episode']);
