@@ -662,8 +662,8 @@ class Movie
 		if ($releaseToWork == '') {
 			$res = $this->db->query(sprintf("SELECT r.searchname AS name, r.id FROM releases r "
 				. "INNER JOIN category c ON r.categoryid = c.id "
-				. "WHERE r.imdbid IS NULL AND (r.bitwise & 256) = 256 AND c.parentid = %d LIMIT %d",
-				Category::CAT_PARENT_MOVIE, $this->movieqty));
+				. "WHERE r.imdbid IS NULL AND (r.bitwise & 256) = 256 AND (c.parentid = %d OR c.parentid = %d) LIMIT %d",
+				Category::CAT_PARENT_MOVIE, Category::CAT_PARENT_XXX, $this->movieqty));
 			$moviecount = count($res);
 		} else {
 			$pieces = explode("           =+=            ", $releaseToWork);
@@ -673,7 +673,7 @@ class Movie
 
 		if ($moviecount > 0) {
 			if ($this->echooutput && $moviecount > 1) {
-				echo $this->c - header("Processing " . $moviecount . " movie release(s).");
+				echo $this->c->header("Processing " . $moviecount . " movie release(s).");
 			}
 
 			$like = 'ILIKE';
@@ -721,7 +721,7 @@ class Movie
 							$pieces = explode(' ', $parsed['title']);
 							$title1 = '%';
 							foreach ($pieces as $piece) {
-								$title1 .= str_replace(array("'", "!"), "", $piece) . '%';
+								$title1 .= str_replace(array("'", "!", '"'), "", $piece) . '%';
 							}
 							$ckimdbid = $this->db->queryOneRow(sprintf("SELECT imdbid FROM movieinfo WHERE replace(replace(title, \"'\", ''), '!', '') %s %s", $like, $this->db->escapeString($title1)));
 						}
@@ -729,9 +729,9 @@ class Movie
 							$pieces = explode(' ', $title);
 							$title2 = '%';
 							foreach ($pieces as $piece) {
-								$title2 .= str_replace(array("'", "!"), "", $piece) . '%';
+								$title2 .= str_replace(array("'", "!", '"'), "", $piece) . '%';
 							}
-							$ckimdbid = $this->db->queryOneRow(sprintf("SELECT imdbid FROM movieinfo WHERE replace(replace(title, \"'\", ''), '!', '') %s %s", $like, $this->db->escapeString($title2)));
+							$ckimdbid = $this->db->queryOneRow(sprintf("SELECT imdbid FROM movieinfo WHERE replace(replace(replace(title, \"'\", ''), '!', ''), '\"', '') %s %s", $like, $this->db->escapeString($title2)));
 						}
 					}
 
@@ -745,9 +745,7 @@ class Movie
 						continue;
 					}
 
-					if ($this->echooutput && $releaseToWork === '') {
-						echo $this->c->primaryOver('Looking up: ') . $this->c->headerOver($moviename);
-					} else {
+					if ($this->echooutput) {
 						echo $this->c->primaryOver("\nLooking up: ") . $this->c->headerOver($moviename);
 					}
 

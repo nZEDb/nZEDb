@@ -34,8 +34,10 @@ switch($action)
 			{
 				$page->title = "Newsgroup Add";
 				$group = array();
-				$group["active"] = "1";
-				$group["backfill"] = "1";
+				$group["active"] = "0";
+				$group["backfill"] = "0";
+				$group["minfilestoformrelease"] = "0";
+				$group["minsizetoformrelease"] = "0";
 				$group["first_record"] = "0";
 				$group["last_record"] = "0";
 				$group["backfill_target"] = "0";

@@ -41,6 +41,13 @@
 	</td>
 </tr>
 <tr>
+	<td><label for="backfill">Backfill:</label></td>
+	<td>
+		{html_radios id="backfill" name='backfill' values=$yesno_ids output=$yesno_names selected=0 separator='<br />'}
+		<div class="hint">Inactive groups will not have backfill headers downloaded for them.</div>		
+	</td>
+</tr>
+<tr>
 	<td></td>
 	<td>
 		<input type="submit" value="Add Groups" />

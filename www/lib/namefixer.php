@@ -23,10 +23,10 @@ class Namefixer
       const NF_CATEGORIZED	=	   1;	0000 0000 0000 0000 0001 	Categorized release.
       0000 0000 0000 0000 0010 	Spare - Previously 2 (now split into 8,9,10) : Fixed with namefixer.
       const NF_RENAMED		=	   4;	0000 0000 0000 0000 0100 	Renamed using any script.
-      const NF_POST_PROC		=	   8;	0000 0000 0000 0000 1000 	Processed by post proc (from mp3 tags or music.php).
+      const NF_POST_PROC	=	   8;	0000 0000 0000 0000 1000 	Processed by post proc (from mp3 tags or music.php).
       const NF_MISC_SORTER	=	  16;	0000 0000 0000 0001 0000 	Processed by misc_sorter.
       const NF_PAR2			=	  32;	0000 0000 0000 0010 0000 	Processed by namefixer PAR2.
-      const NF_NF_NFO			=	  64;	0000 0000 0000 0100 0000 	Processed by namefixer NFO.
+      const NF_NF_NFO		=	  64;	0000 0000 0000 0100 0000 	Processed by namefixer NFO.
       const NF_NF_FILES		=	 128;	0000 0000 0000 1000 0000 	Processed by namefixer Files.
 
       const NZB_STATUS		=	 256;	0000 0000 0001 0000 0000 	NZBStatus 0 = no nzb, 256 = is an nzb

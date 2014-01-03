@@ -25,12 +25,15 @@ $consoletools = new ConsoleTools();
 $timestart = TIME();
 $counter = 0;
 
+//runs on every release
 if (isset($argv[1]) && $argv[1] === "all") {
     $qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1280) = 1280");
+//runs on all releases not already renamed
 } else if (isset($argv[1]) && $argv[1] === "full") {
     $qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1)");
+//runs on all releases not already renamed limited by user
 } else if (isset($argv[1]) && is_numeric($argv[1])) {
-    $qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1280) = 1280 AND reqidstatus in (0, -1) ORDER BY postdate DESC LIMIT " . $argv[1]);
+    $qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) ORDER BY postdate DESC LIMIT " . $argv[1]);
 }
 
 $total = $qry->rowCount();
