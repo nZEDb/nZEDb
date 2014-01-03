@@ -157,7 +157,7 @@ class AniDBstandAlone
 		{
 			$anidbid = (int)$value['anidbid'];
 
-			$exists = $db->query(sprintf('SELECT COUNT(*) as num FROM `anidb` WHERE `anidbid` = %d', $anidbid));
+			$exists = $db->queryOneRow(sprintf('SELECT COUNT(*) as num FROM `anidb` WHERE `anidbid` = %d', $anidbid));
 
 			if ( (int)$exists['num'] == 0 )
 			{
