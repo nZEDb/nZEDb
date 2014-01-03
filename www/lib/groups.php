@@ -230,7 +230,7 @@ class Groups
 		$first = (isset($group["first_record"]) ? $group["first_record"] : "0");
 		$last = (isset($group["last_record"]) ? $group["last_record"] : "0");
 
-		$sql = sprintf("INSERT INTO groups (name, description, first_record, last_record, last_updated, active, minfilestoformrelease, minsizetoformrelease) values (%s, %s, %s, %s, NULL, %d, %s, %s) ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($first), $db->escapeString($last), $group["active"], $minfiles, $minsizetoformrelease);
+		$sql = sprintf("INSERT INTO groups (name, description, backfill_target, first_record, last_record, last_updated, active, backfill, minfilestoformrelease, minsizetoformrelease) values (%s, %s, %s, %s, %s, NULL, %d, %d, %s, %s) ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($group["backfill_target"]), $db->escapeString($first), $db->escapeString($last), $group["active"], $group["backfill"] , $minfiles, $minsizetoformrelease);
 		return $db->queryInsert($sql);
 	}
 
