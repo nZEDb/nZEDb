@@ -551,7 +551,7 @@ class TvRage
         $this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
     }
 
-    public function processTvReleases($releaseToWork = '', $lookupTvRage = true, $local = true)
+    public function processTvReleases($releaseToWork = '', $lookupTvRage = true, $local = false)
     {
         $ret = 0;
         $trakt = new Trakttv();
@@ -578,6 +578,8 @@ class TvRage
 
                 // Find the rageID.
                 $id = $this->getByTitle($show['cleanname']);
+
+                // Force local lookup only
 				if ($local == true) {
 					$lookupTvRage = false;
 				}
@@ -853,7 +855,7 @@ class TvRage
 
     public function parseNameEpSeason($relname)
     {
-        $relname = trim(preg_replace('/ US |EnJoY!|GOU[\.\-_ ](Der)?|SecretUsenet\scom|TcP[\.\-_ ]|usenet4ever\sinfo(\sund)?/i', '', $relname));
+        $relname = trim(preg_replace('/ US | UK |EnJoY!|GOU[\.\-_ ](Der)?|SecretUsenet\scom|TcP[\.\-_ ]|usenet4ever\sinfo(\sund)?/i', '', $relname));
         $showInfo = array('name' => '', 'season' => '', 'episode' => '', 'seriesfull' => '', 'airdate' => '', 'country' => '', 'year' => '', 'cleanname' => '');
         $matches = '';
 

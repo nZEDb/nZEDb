@@ -33,5 +33,3 @@ $page->title = "Group List";
 
 $page->content = $page->smarty->fetch('group-list.tpl');
 $page->render();
-
-?>

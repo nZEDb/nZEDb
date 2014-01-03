@@ -33,13 +33,23 @@
 		<div class="hint">e.g. alt.binaries.cd.image.linux|alt.binaries.warez.linux</div>	
 	</td>
 </tr>
+
 <tr>
 	<td><label for="active">Active:</label></td>
 	<td>
-		{html_radios id="active" name='active' values=$yesno_ids output=$yesno_names selected=1 separator='<br />'}
+		{html_radios id="active" name='active' values=$yesno_ids output=$yesno_names selected=0 separator='<br />'}
 		<div class="hint">Inactive groups will not have headers downloaded for them.</div>		
 	</td>
 </tr>
+
+<tr>
+	<td><label for="backfill">Backfill:</label></td>
+	<td>
+		{html_radios id="backfill" name='backfill' values=$yesno_ids output=$yesno_names selected=0 separator='<br />'}
+		<div class="hint">Inactive groups will not have backfill headers downloaded for them.</div>		
+	</td>
+</tr>
+
 <tr>
 	<td></td>
 	<td>
