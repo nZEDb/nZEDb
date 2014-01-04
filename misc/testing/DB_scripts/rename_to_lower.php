@@ -11,8 +11,10 @@ if ($argc == 1 || $argv[1] != 'true') {
 }
 
 $db = new Db();
+$database = DB_NAME;
+
 $count = 0;
-$list = $db->query("SELECT TABLE_NAME, COLUMN_NAME, UPPER(COLUMN_TYPE), EXTRA FROM information_schema.columns WHERE table_schema = 'nzedb'");
+$list = $db->query("SELECT TABLE_NAME, COLUMN_NAME, UPPER(COLUMN_TYPE), EXTRA FROM information_schema.columns WHERE table_schema = '" . $database . "'");
 if (count($list) == 0) {
 	echo $c->info("No table columns to rename");
 } else {
