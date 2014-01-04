@@ -1453,7 +1453,7 @@ class Releases
             if ($this->echooutput)
                 echo $this->c->header("\nStage 5b -> Request ID lookup.");
 
-            // Look for records that potentially have requestID titles.
+            // Look for records that potentially have requestID titles and have not been renamed by any other means
             $resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "(bitwise & 1284) = 1280 AND reqidstatus in (0, -1, -3) LIMIT 100");
 
             if ($resrel->rowCount() > 0) {

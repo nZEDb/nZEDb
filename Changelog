@@ -4,6 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2014-01-03 -> Roelski  -> Fixed check in populate_anidb.php if anidb already had id. Changed some text.
+2014-01-03 -> jonnyboy -> fixed group add and bulk group add, changed output of pp addtional when fail to show which piece(attemp) it failed on
 2014-01-02 -> Roelski     Changed double screen in threaded screen script. Added threaded backfill to script.
 2014-01-01 -> jonnyboy -> fix for sendtosab ssl/Hoochster
                           improved local lookup for tv/movies

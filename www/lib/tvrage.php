@@ -463,7 +463,7 @@ class TvRage
         $this->db->queryExec(sprintf("UPDATE releases SET seriesfull = %s, season = %s, episode = %s, tvairdate = %s WHERE id = %d", $this->db->escapeString($show['seriesfull']), $this->db->escapeString($show['season']), $this->db->escapeString($show['episode']), $tvairdate, $relid));
     }
 
-    public function updateRageInfo($rageid, $title, $show, $tvrShow, $relid)
+    public function updateRageInfo($rageid, $show, $tvrShow, $relid)
     {
         // Try and get the episode specific info from tvrage.
         $epinfo = $this->getEpisodeInfo($rageid, $show['season'], $show['episode']);
@@ -551,7 +551,7 @@ class TvRage
         $this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
     }
 
-    public function processTvReleases($releaseToWork = '', $lookupTvRage = true, $local = true)
+    public function processTvReleases($releaseToWork = '', $lookupTvRage = true, $local = false)
     {
         $ret = 0;
         $trakt = new Trakttv();
@@ -578,6 +578,8 @@ class TvRage
 
                 // Find the rageID.
                 $id = $this->getByTitle($show['cleanname']);
+
+                // Force local lookup only
 				if ($local == true) {
 					$lookupTvRage = false;
 				}
@@ -591,7 +593,7 @@ class TvRage
                     $tvrShow = $this->getRageMatch($show);
                     if ($tvrShow !== false && is_array($tvrShow)) {
                         // Get all tv info and add show.
-                        $this->updateRageInfo($tvrShow['showid'], $tvrShow['title'], $show, $tvrShow, $arr['id']);
+                        $this->updateRageInfo($tvrShow['showid'], $show, $tvrShow, $arr['id']);
                     } else if ($tvrShow === false) {
                         // If tvrage fails, try trakt.
                         $traktArray = $trakt->traktTVSEsummary($show['name'], $show['season'], $show['episode']);
@@ -853,7 +855,7 @@ class TvRage
 
     public function parseNameEpSeason($relname)
     {
-        $relname = trim(preg_replace('/ US |EnJoY!|GOU[\.\-_ ](Der)?|SecretUsenet\scom|TcP[\.\-_ ]|usenet4ever\sinfo(\sund)?/i', '', $relname));
+        $relname = trim(preg_replace('/ US | UK |EnJoY!|GOU[\.\-_ ](Der)?|SecretUsenet\scom|TcP[\.\-_ ]|usenet4ever\sinfo(\sund)?/i', '', $relname));
         $showInfo = array('name' => '', 'season' => '', 'episode' => '', 'seriesfull' => '', 'airdate' => '', 'country' => '', 'year' => '', 'cleanname' => '');
         $matches = '';
 
