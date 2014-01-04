@@ -1431,8 +1431,8 @@ class nameCleaning
 			return $match[1] . $match[2];
 		//[NEW DOX] The.King.of.Fighters.XIII.Update.v1.1c-RELOADED [1/6] - "The.King.of.Fighters.XIII.Update.v1.1c-RELOADED.par2" yEnc
 		//[NEW DOX] Crysis.3.Crackfix.3.INTERNAL-RELOADED [00/12] ".nzb"  yEnc
-		else if (preg_match('/^\[NEW DOX\][ _-]{0,3}(.+?)[ _-]{0,3}\[\d+\/(\d+\])[ _-]{0,3}"(.+?)' . $this->e0.'[-_ ]{0,3}yEnc$/', $this->subject, $match))
-			return $match[1] . $match[2];
+		else if (preg_match('/^\[NEW DOX\][ _-]{0,3}(.+?)[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}"(.+?)' . $this->e0.'[-_ ]{0,3}yEnc$/', $this->subject, $match))
+			return $match[1]; // for some reason the nzb is posted separately with different a file count - removing it for now to combine them
 		//[NEW DOX] Minecraft.1.6.2.Installer.Updated.Server.List  - "Minecraft 1 6 2 Cracked Installer Updater Serverlist.nfo" - yEnc
 		else if (preg_match('/^\[NEW DOX\][ _-]{0,3}(.+?)[ _-]{0,3}"(.+?)'. $this->e0.'[-_ ]{0,3}yEnc$/', $this->subject, $match))
 			return $match[1];
