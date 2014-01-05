@@ -7,6 +7,7 @@ require_once nZEDb_LIB . 'groups.php';
 require_once nZEDb_LIB . 'category.php';
 require_once nZEDb_LIB . 'releases.php';
 require_once nZEDb_LIB . 'releasefiles.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
 
 
 /*
@@ -21,8 +22,9 @@ require_once nZEDb_LIB . 'releasefiles.php';
  *
 */
 
+$c = new ColorCLI();
 if (!(isset($argv[1]) && ($argv[1]=="full" || is_numeric($argv[1]))))
-	exit("To run this script on full db:\nphp renametopre.php full\n\nTo run against last x(where x is numeric) hours:\nphp renametopre.php x\n");
+	exit($c->error("\nTo run this script on full db:\nphp renametopre.php full\n\nTo run against last x(where x is numeric) hours:\nphp renametopre.php x\n"));
 
 preName($argv);
 
@@ -36,6 +38,7 @@ function preName($argv)
 	$cleaned = 0;
 	$counter=0;
 	$n = "\n";
+	$c = new ColorCLI();
 	$what = $argv[1]=='full' ? '' : ' AND adddate > NOW() - INTERVAL '.$argv[1].' HOUR';
 	if (isset($argv[3]) && is_numeric($argv[3]))
 		$where = ' AND groupid = '.$argv[3];
@@ -45,7 +48,7 @@ function preName($argv)
 		$where = '';
 
 	resetSearchnames();
-	echo "Getting work\n";
+	echo $c->header("Getting work");
 	if (!isset($argv[2]))
 		$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)".$what);
 	else if (isset($argv[2]) && is_numeric($argv[2]))
@@ -110,27 +113,27 @@ function preName($argv)
 					$groupname = $groups->getByNameByID($row["groupid"]);
 					$oldcatname = $category->getNameByID($row["categoryid"]);
 					$newcatname = $category->getNameByID($determinedcat);
-					/*echo	$n."New name:  ".$cleanName.$n.
-						"Old name:  ".$row["searchname"].$n.
-						"New cat:   ".$newcatname.$n.
-						"Old cat:   ".$oldcatname.$n.
-						"Group:     ".$groupname.$n.
-						"Method:    "."renametopre regexes".$n.
-						"ReleaseID: ". $row["id"].$n;*/
+					/*echo	$c->(headerOver("New name:  ") . $primary($cleanName).
+						$c->(headerOver("Old name:  ") . $primary($row["searchname"]).
+						$c->(headerOver("New cat:   ") . $primary($newcatname).
+						$c->(headerOver("Old cat:   ") . $primary($oldcatname).
+						$c->(headerOver("Group:     ") . $primary($groupname).
+						$c->(headerOver("Method:    ") . $primary("renametopre regexes").
+						$c->(headerOver("ReleaseID: ") . $primary($row["id"]);*/
 					if ($increment == true)
 						$updated++;
 				}
 			}
 			//else if (preg_match('/^\[?\d*\].+?yEnc/i', $row['name']))
-				//echo $row['name']."\n";
+				//echo $c->primary($row['name']);
 
 			if ( $cleanName == $row['name'])
 				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $row['id']));
-			$consoletools->overWrite("Renamed NZBs: [".$updated."] ".$consoletools->percentString(++$counter,$total));
+			$consoletools->overWritePrimary("Renamed NZBs: [".$updated."] ".$consoletools->percentString(++$counter,$total));
 		}
 	}
-	echo "\n".number_format($updated)." out of ".number_format($total)."\n";
-	echo "Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.\n";
+	echo $c->header(number_format($updated)." out of ".number_format($total));
+	echo $c->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
 	$timestart = TIME();
 	if (isset($argv[1]) && $argv[1]=="full")
 		$relcount = categorizeRelease("name", "WHERE categoryID = 7010", true);
@@ -138,9 +141,9 @@ function preName($argv)
 		$relcount = categorizeRelease("name", "WHERE categoryID = 7010 AND adddate > NOW() - INTERVAL ".$argv[1]." HOUR", true);
 	$consoletools = new ConsoleTools();
 	$time = $consoletools->convertTime(TIME() - $timestart);
-	echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the usenet subject.\n";
+	echo $c->header("Finished categorizing ".$relcount." releases in ".$time." seconds, using the usenet subject.");
 
-	echo "Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.\n";
+	echo $c->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
 	$timestart = TIME();
 	if (isset($argv[1]) && $argv[1]=="full")
 		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010", true);
@@ -148,19 +151,20 @@ function preName($argv)
 		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 AND adddate > NOW() - INTERVAL ".$argv[1]." HOUR", true);
 	$consoletools = new ConsoleTools();
 	$time = $consoletools->convertTime(TIME() - $timestart);
-	echo "\n"."Finished categorizing ".$relcount." releases in ".$time." seconds, using the searchname.\n";
+	echo $c->header("Finished categorizing ".$relcount." releases in ".$time." seconds, using the searchname.");
 	resetSearchnames();
 }
 
 function resetSearchnames()
 {
 	$db = new DB();
-	echo "\nResetting blank searchnames\n";
+	$c = new ColorCLI();
+	echo $c->header("Resetting blank searchnames.");
 	$bad = $db->queryDirect("UPDATE releases SET searchname = name WHERE searchname = ''");
 	$tot = $bad->rowCount();
 	if ($tot > 0)
-		echo $tot." Releases had no searchname\n";
-	echo "\nResetting searchnames that are a single letter\n";
+		echo $c->primary($tot." Releases had no searchname.");
+	echo $c->header("Resetting searchnames that are a single letter.");
 	$count0 = $count = 0;
 	foreach(range('a','z') as $i) {
 		$run = $db->queryDirect("UPDATE releases SET searchname = name WHERE searchname = '" . $i . "'");
@@ -168,16 +172,15 @@ function resetSearchnames()
 			$count++;
 	}
 	if ($count > 0)
-		echo $count." Releases had single letter searchnames.\n";
-	echo "\nResetting searchnames that are a single digit\n";
+		echo $c->primary($count." Releases had single letter searchnames.");
+	echo $c->header("Resetting searchnames that are a single digit.");
 	foreach(range(0, 9) as $i) {
 		$run0 = $db->queryDirect("UPDATE releases SET searchname = name WHERE searchname = '" . $i . "'");
 		if($run0->rowCount() > 0)
 			$count0++;
 	}
 	if ($count0 > 0)
-		echo $count0 . " Releases had single digit searchnames.\n";
-
+		echo $c->primary($count0 . " Releases had single digit searchnames.");
 }
 
 // Categorizes releases.
@@ -199,7 +202,7 @@ function categorizeRelease($type, $where="", $echooutput=false)
 			$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), categoryid = %d WHERE id = %d", $catId, $rowrel['id']));
 			$relcount ++;
 			if ($echooutput)
-				$consoletools->overWrite("Categorizing: ".$consoletools->percentString($relcount,$total));
+				$consoletools->overWritePrimary("Categorizing: ".$consoletools->percentString($relcount,$total));
 		}
 	}
 	if ($echooutput !== false && $relcount > 0)
