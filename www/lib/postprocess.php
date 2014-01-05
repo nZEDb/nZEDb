@@ -582,7 +582,7 @@ class PostProcess
 								$mid = array_slice((array) $rarFile['segments'], 0, $this->segmentstodownload);
                                 
 								$bingroup = $groupName;
-								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
+                                $fetchedBinary = $nntp->getMessages($bingroup, $mid);
 								if (PEAR::isError($fetchedBinary)) {
 									$nntp->doQuit();
 									$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
@@ -610,7 +610,7 @@ class PostProcess
 								}
 								else {
                                    if ($this->echooutput)
-                                        echo $this->c->headerOver("f(" . $notinfinite . ")");
+                                        echo $this->c->alternateOver("f(" . $notinfinite . ")");
 									$notinfinite = $notinfinite + 0.2;
 									$failed++;
 								}
