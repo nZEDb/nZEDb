@@ -72,7 +72,7 @@ function preName($argv)
 				else
 					$increment = false;
 			}
-			
+
 			if ($cleanName != '')
 			{
 				$cleanedBook = false;
@@ -160,6 +160,24 @@ function resetSearchnames()
 	$tot = $bad->rowCount();
 	if ($tot > 0)
 		echo $tot." Releases had no searchname\n";
+	echo "\nResetting searchnames that are a single letter\n";
+	$count0 = $count = 0;
+	foreach(range('a','z') as $i) {
+		$run = $db->queryDirect("UPDATE releases SET searchname = name WHERE searchname = '" . $i . "'");
+		if ($run->rowCount() > 0)
+			$count++;
+	}
+	if ($count > 0)
+		echo $count." Releases had single letter searchnames.\n";
+	echo "\nResetting searchnames that are a single digit\n";
+	foreach(range(0, 9) as $i) {
+		$run0 = $db->queryDirect("UPDATE releases SET searchname = name WHERE searchname = '" . $i . "'");
+		if($run0->rowCount() > 0)
+			$count0++;
+	}
+	if ($count0 > 0)
+		echo $count0 . " Releases had single digit searchnames.\n";
+
 }
 
 // Categorizes releases.

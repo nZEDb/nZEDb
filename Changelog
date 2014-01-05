@@ -4,7 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2014-01-05 -> jonnyboy -> changed groups->reset to not disable group
+2014-01-05 -> jonnyboy -> changed groups->reset to not disable group, removed porn from movie lookup, added reset searhname = name when searchname is single digit or letter
 2014-01-04 -> jonnyboy -> requestid.php, added optional final argument to reprocess releases posted newer than x min, changed output to not count releases whose name did not change
 2014-01-04 -> bart39   -> More regex additions/fixes
 2014-01-03 -> Roelski  -> Fixed check in populate_anidb.php if anidb already had id. Changed some text.
