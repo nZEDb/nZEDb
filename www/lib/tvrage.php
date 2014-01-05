@@ -618,9 +618,9 @@ class TvRage
                         // Skip because we couldnt connect to tvrage.com.
                     }
                 } else if ($id > 0) {
-                    if ($this->echooutput) {
-                        echo $this->c->AlternateOver("TV series: ") . $this->c->header($show['cleanname'] . " " . $show['seriesfull'] . (($show['year'] != '') ? ' ' . $show['year'] : '') . (($show['country'] != '') ? ' [' . $show['country'] . ']' : ''));
-                    }
+                    //if ($this->echooutput) {
+                    //    echo $this->c->AlternateOver("TV series: ") . $this->c->header($show['cleanname'] . " " . $show['seriesfull'] . (($show['year'] != '') ? ' ' . $show['year'] : '') . (($show['country'] != '') ? ' [' . $show['country'] . ']' : ''));
+                   // }
                     $tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $this->db->escapeString($this->checkDate($show['airdate'])) : "NULL";
                     $tvtitle = "NULL";
 
