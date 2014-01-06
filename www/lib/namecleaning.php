@@ -5013,7 +5013,7 @@ class nameCleaning {
 				return $match[1];
 			}
 			//[140022]-[04] - [01/40] - "140022-04.nfo" yEnc
-			else if (preg_match('/\[\d+\]-\[.+\] - \[\d+\/\d+\] - "\d+-.+" yEnc/', $subject, $match)) {
+			else if (preg_match('/\[\d+\]-\[.+\] - \[\d+\/\d+\] - "\d+-.+" yEnc/', $subject)) {
 				return array("cleansubject" => $subject, "properlynamed" => false, "ignore" => true);
 			} else {
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);

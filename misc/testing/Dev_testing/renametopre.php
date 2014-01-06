@@ -39,7 +39,6 @@ function preName($argv) {
 	$db = new DB();
 	$groups = new Groups();
 	$category = new Category();
-	$propername = $increment = true;
 	$updated = $counted = $none = 0;
 	$counter = 0;
 	$c = new ColorCLI();
@@ -72,16 +71,14 @@ function preName($argv) {
 			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $groupname);
 			if (!is_array($cleanerName)) {
 				$cleanName = trim($cleanerName);
+				$propername = $increment = true;
 			} else {
-				$cleanName = trim($cleanerName['cleansubject']);
-				$propername = $cleanerName['properlynamed'];
-				if (isset($cleanerName['increment'])) {
-					$increment = $cleanerName['increment'];
+				$cleanName = trim($cleanerName["cleansubject"]);
+				$propername = $cleanerName["properlynamed"];
+				if (isset($cleanerName["increment"])) {
+					$increment = $cleanerName["increment"];
 				} else {
 					$increment = false;
-				}
-				if (isset($cleanerName['ignore'])) {
-					echo $cleanName."\n";
 				}
 			}
 
@@ -150,7 +147,7 @@ function preName($argv) {
 				echo $c->header("         [internal][external] processed/total");
 			}
 
-			$consoletools->overWritePrimary("Renamed NZBs:  [${updated}][${counted}]        " . $consoletools->percentString(++$counter, $total));
+			$consoletools->overWritePrimary("Renamed NZBs:  [${updated}][${counted}]        " . $consoletools->percentString( ++$counter, $total));
 		}
 	}
 	echo $c->header(number_format($updated) . " renamed using namecleaning.php\n" . $counted . " using renametopre\nout of " . number_format($total) . " releases.");
@@ -243,6 +240,8 @@ function releaseCleaner($subject, $groupid, $groupname) {
 	$cleanerName = $namecleaning->releaseCleaner($subject, $groupname);
 	if (!empty($cleanerName) && !is_array($cleanerName)) {
 		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);
+	} else if (is_array($cleanerName) && isset($cleanerName['ignore'])) {
+		return $cleanerName;
 	}
 
 	$match = '';
@@ -869,7 +868,8 @@ function releaseCleaner($subject, $groupid, $groupname) {
 				return $cleanerName;
 			}
 		}
-	} else if (!empty($cleanerName) && is_array($cleanerName)) {
+	}
+	else if (!empty($cleanerName) && is_array($cleanerName)) {
 		return $cleanerName;
 	}
 }
