@@ -80,6 +80,9 @@ function preName($argv) {
 				} else {
 					$increment = false;
 				}
+				if (isset($cleanerName['ignore'])) {
+					echo $cleanName."\n";
+				}
 			}
 
 			if ($cleanName != '') {
@@ -99,34 +102,43 @@ function preName($argv) {
 						}
 					}
 				}
-				//if ($cleanName != $row['name']) {
-				$determinedcat = $category->determineCategory($cleanName, $row["groupid"]);
-				if ($cleanedBook == true && $propername == true) { // reset bookinfoid so it gets re-processed
-					$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, bookinfoid = NULL where id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
-				} else if ($cleanedBook == true && $propername == false) { // reset bookinfoid so it gets re-processed
-					$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, bookinfoid = NULL where id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
-				} else if ($propername == true) {
-					$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d where id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
-				} else if ($propername == false) {
-					$run = $db->queryExec(sprintf("UPDATE releases set bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d where id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
-				}
+				if ($cleanName != $row['name']) {
+					if (strlen(utf8_decode($cleanName)) <= 3) {
+						$counter++;
+					} else {
+						$determinedcat = $category->determineCategory($cleanName, $row["groupid"]);
+						if ($argv[2] === 'all') {
+							$preid = ' AND preid = NULL ';
+						} else {
+							$preid = ' ';
+						}
+						if ($cleanedBook == true && $propername == true) { // reset bookinfoid so it gets re-processed
+							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, bookinfoid = NULL" . $preid . "WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+						} else if ($cleanedBook == true && $propername == false) { // reset bookinfoid so it gets re-processed
+							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, bookinfoid = NULL" . $preid . "WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+						} else if ($propername == true) {
+							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d" . $preid . "WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+						} else if ($propername == false) {
+							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d" . $preid . "WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+						}
 
-				/* $groupname = $groups->getByNameByID($row["groupid"]);
-				  $oldcatname = $category->getNameByID($row["categoryid"]);
-				  $newcatname = $category->getNameByID($determinedcat);
-				  echo $c->headerOver("New name:  ") . $c->primary($cleanName).
-				  $c->headerOver("Old name:  ") . $c->primary($row["searchname"]).
-				  $c->headerOver("New cat:   ") . $c->primary($newcatname).
-				  $c->headerOver("Old cat:   ") . $c->primary($oldcatname).
-				  $c->headerOver("Group:     ") . $c->primary($groupname).
-				  $c->headerOver("Method:    ") . $c->primary("renametopre regexes").
-				  $c->headerOver("ReleaseID: ") . $c->primary($row["id"]); */
-				if ($increment === true) {
-					$updated++;
-				} else if ($propername === true) {
-					$counted++;
+						/* $groupname = $groups->getByNameByID($row["groupid"]);
+						  $oldcatname = $category->getNameByID($row["categoryid"]);
+						  $newcatname = $category->getNameByID($determinedcat);
+						  echo $c->headerOver("New name:  ") . $c->primary($cleanName).
+						  $c->headerOver("Old name:  ") . $c->primary($row["searchname"]).
+						  $c->headerOver("New cat:   ") . $c->primary($newcatname).
+						  $c->headerOver("Old cat:   ") . $c->primary($oldcatname).
+						  $c->headerOver("Group:     ") . $c->primary($groupname).
+						  $c->headerOver("Method:    ") . $c->primary("renametopre regexes").
+						  $c->headerOver("ReleaseID: ") . $c->primary($row["id"]); */
+						if ($increment === true) {
+							$updated++;
+						} else if ($propername === true) {
+							$counted++;
+						}
+					}
 				}
-				//}
 			}
 			//else if (preg_match('/^\[?\d*\].+?yEnc/i', $row['name']))
 			//echo $c->primary($row['name']);
@@ -138,7 +150,7 @@ function preName($argv) {
 				echo $c->header("         [internal][external] processed/total");
 			}
 
-			$consoletools->overWritePrimary("Renamed NZBs:  [${updated}][${counted}]        " . $consoletools->percentString( ++$counter, $total));
+			$consoletools->overWritePrimary("Renamed NZBs:  [${updated}][${counted}]        " . $consoletools->percentString(++$counter, $total));
 		}
 	}
 	echo $c->header(number_format($updated) . " renamed using namecleaning.php\n" . $counted . " using renametopre\nout of " . number_format($total) . " releases.");

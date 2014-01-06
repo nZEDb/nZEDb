@@ -8,7 +8,7 @@ if ($cfg->isLocked()) {
 	$cfg->error = true;
 }
 
-$cfg->cacheCheck = is_writable($cfg->SMARTY_DIR.'/templates_c');
+$cfg->cacheCheck = is_writable($cfg->SMARTY_DIR . '/templates_c');
 if ($cfg->cacheCheck === false) {
 	$cfg->error = true;
 }
@@ -52,18 +52,14 @@ if (!$cfg->error) {
 			</p>
 			<div align="center">
 				<?php
-				if (!$cfg->error)
-				{
+				if (!$cfg->error) {
 					?>
 					<form action="step1.php">
 						<input type="submit" value="Go to step one: Pre flight check" />
 					</form>
 					<?php
-				}
-				else
-				{
-					if (!$cfg->cacheCheck)
-					{
+				} else {
+					if (!$cfg->cacheCheck) {
 						?>
 						<div class="error">The template cache folder must be writable. A quick solution is to run:
 							<br />
@@ -72,9 +68,7 @@ if (!$cfg->error) {
 							/templates_c
 						</div>
 						<?php
-					}
-					else
-					{
+					} else {
 						?>
 						<div class="error">Installation Locked! If reinstalling, please remove www/install/install.lock.</div>
 						<?php
