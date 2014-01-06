@@ -539,7 +539,7 @@ CREATE TABLE "releases" (
   "guid" character varying(50) NOT NULL,
   "fromname" character varying(255),
   "completion" real DEFAULT 0 NOT NULL,
-  "categoryid" integer DEFAULT 0,
+  "categoryid" integer NOT NULL DEFAULT 7010,
   "rageid" integer,
   "seriesfull" character varying(15),
   "season" character varying(10),
@@ -1442,7 +1442,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','162');
+	('sqlpatch','164');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
