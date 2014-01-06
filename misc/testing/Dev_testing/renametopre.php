@@ -104,7 +104,7 @@ function preName($argv) {
 						$counter++;
 					} else {
 						$determinedcat = $category->determineCategory($cleanName, $row["groupid"]);
-						if ($argv[2] === 'all') {
+						if (isset($argv[2]) && $argv[2] === 'all') {
 							$preid = ' AND preid = NULL ';
 						} else {
 							$preid = ' ';
