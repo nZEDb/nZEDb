@@ -598,6 +598,14 @@
                 </td>
             </tr>
 
+            <tr>
+                <td style="width:180px;"><label for="book_reqids">Type of books to look up:</label></td>
+                <td>
+                    {html_options_multiple id="book_reqids" name='book_reqids' values=$book_reqids_ids output=$book_reqids_names selected=$book_reqids_selected}
+                    <div class="hint">Categories of Books to lookup information for (only work if Lookup Books is set to yes).</div>
+                    </div>
+                </td>
+            </tr>
 
             <tr>
                 <td style="width:180px;"><label for="lookup_reqids">Lookup Request IDs:</label></td>
