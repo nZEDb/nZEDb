@@ -13,6 +13,8 @@
 <legend>User Details</legend>
 <table class="input">
 	<tr><th width="100">Username:</th><td>{$user.username|escape:"htmlall"}</td></tr>
+    <tr><th>First Name:</th><td><input id="firstname" class="form-control" name="firstname" type="text" value="{$user.firstname}"></td></tr>
+    <tr><th>Last Name:</th><td><input id="lastname" class="form-control" name="lastname" type="text" value="{$user.lastname}"></td></tr>
 	<tr><th>Email:</th><td><input id="email" class="long" name="email" type="text" value="{$user.email|escape:"htmlall"}"></input></td></tr>
 	<tr><th>Password:</th>
 		<td>
