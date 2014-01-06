@@ -4,6 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2014-01-06 -> jonnyboy -> added fix_autoinc.php to fix "unable to find the AUTOINC column id"
+                          fixed dump_predb.php to use local groupid, dump not updated for this yet
 2014-01-05 -> jonnyboy -> fixed bug in namecleaning.php
                           fixed renametopre.php to also use internal regexes, fixed porn categorization
                           changed groups->reset to not disable group, removed porn from movie lookup, added reset searhname = name when searchname is single digit or letter,
