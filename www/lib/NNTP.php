@@ -7,7 +7,7 @@ require_once nZEDb_LIB . 'ColorCLI.php';
 * Class for connecting to the usenet, retrieving articles and article headers, decoding yEnc articles, decompressing article headers.
 */
 
-class Nntp extends Net_NNTP_Client
+class NNTP extends Net_NNTP_Client
 {
 	public $Compression = false;
 

@@ -1,6 +1,6 @@
 <?php
 
-class Sitemap
+class SiteMap
 {
 
 	public $type = '';

@@ -1,7 +1,7 @@
 <?php
 require_once '../lib/smarty/Smarty.class.php';
 
-class Installpage
+class InstallPage
 {
 	public $title = '';
 	public $content = '';

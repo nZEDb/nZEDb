@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'namecleaning.php';
 require_once nZEDb_LIB . 'nzbcontents.php';
 require_once nZEDb_LIB . 'ColorCLI.php';
 
-class Namefixer
+class NameFixer
 {
 	/* These constants can not be used as they are
 	 * To select where false            - 'SELECT * FROM releases WHERE (bitwise & 4) = 0;' - selects all that have not been renamed

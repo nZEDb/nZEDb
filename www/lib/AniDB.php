@@ -23,7 +23,7 @@ class AniDB
 	{
 		// this should not be run as it should be handled by populate_anidb
 		if ($this->echooutput)
-			echo "Skipped update aniTitles as it is handled by populate_anidb in misc/testing/DB_scripts\n";
+			echo "Skipped update aniTitles as it is handled by populate_anidb in misc/testing/DB\n";
 		return;
 	}
 

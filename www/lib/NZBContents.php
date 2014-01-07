@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'nfo.php';
 /*
  * Gets information contained within the NZB.
  */
-Class NZBcontents
+Class NZBContents
 {
 	public function __construct($echooutput=false)
 	{

@@ -13,7 +13,7 @@ require_once nZEDb_LIB . 'ColorCLI.php';
  * Class for inserting names/categories/md5 etc from predb sources into the DB, also for matching names on files / subjects.
  */
 
-Class Predb
+Class PreDb
 {
 
 	function __construct($echooutput = false)

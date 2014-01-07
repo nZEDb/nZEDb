@@ -8,7 +8,7 @@ require_once nZEDb_LIB . 'groups.php';
 require_once nZEDb_LIB . 'releases.php';
 require_once nZEDb_LIB . 'nntp.php';
 
-class Import
+class GrabNZBs
 {
 	function __construct()
 	{
@@ -21,7 +21,7 @@ class Import
 		$this->categorize = new Category();
 	}
 
-	public function GrabNZBs($hash='', $nntp)
+	public function Import($hash='', $nntp)
 	{
 		if (!isset($nntp))
 			exit($this->c->error("Unable to connect to usenet.\n"));

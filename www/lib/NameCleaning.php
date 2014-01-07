@@ -8,7 +8,7 @@ require_once nZEDb_LIB . 'predb.php';
  * Cleans names for collections/releases/imports/namefixer.
  */
 
-class nameCleaning
+class NameCleaning
 {
 	function __construct()
 	{

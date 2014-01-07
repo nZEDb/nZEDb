@@ -26,7 +26,7 @@
  * @access  public
  * @package phpMyAdmin
  */
-class zipfile
+class ZipFile
 {
 	/**
 	 * Array to store compressed data

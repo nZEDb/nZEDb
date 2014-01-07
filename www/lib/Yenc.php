@@ -32,7 +32,7 @@
 * @version 1.0.0
 */
 
-class yenc
+class Yenc
 {
 	/** Text of the most recent error message (if any). */
 	var $error;

@@ -6,7 +6,7 @@ require_once nZEDb_LIB . 'site.php';
  * 	Lookup information from trakt.tv using their API.
  */
 
-Class Trakttv
+Class TraktTV
 {
 
     function __construct()
