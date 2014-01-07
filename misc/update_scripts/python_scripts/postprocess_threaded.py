@@ -98,7 +98,7 @@ start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 if len(sys.argv) > 1 and sys.argv[1] == "additional":
-    cur.execute("SELECT (SELECT value FROM site WHERE setting = 'postthreads') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -1) as j, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -2) as k, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -3) as l, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -4) as m, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -5) as n, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -6) as o")
+    cur.execute("SELECT (SELECT value FROM site WHERE setting = 'postthreads') AS a, (SELECT value FROM site WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM site WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM site WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM site WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM site WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM site WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -1 "+groupID+") as j, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -2 "+groupID+") as k, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -3 "+groupID+") as l, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -4 "+groupID+") as m, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -5 "+groupID+") as n, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -6 "+groupID+") as o")
     dbgrab = cur.fetchall()
     ps1 = format(int(dbgrab[0][9]))
     ps2 = format(int(dbgrab[0][10]))
@@ -205,19 +205,19 @@ elif sys.argv[1] == "nfo":
 
 
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-        run = "SELECT DISTINCT searchname AS name, id, categoryid FROM releases WHERE (bitwise & 260) = 260 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 OR parentid = 6000) ORDER BY postdate DESC LIMIT %s"
+        run = "SELECT DISTINCT searchname AS name, id, categoryid FROM releases WHERE (bitwise & 260) = 260 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN (SELECT id FROM category WHERE parentid = 2000) ORDER BY postdate DESC LIMIT %s"
         cur.execute(run, (run_threads * movieperrun))
         datas = cur.fetchall()
 elif sys.argv[1] == "movie":
-        run = "SELECT searchname AS name, id, categoryid FROM releases WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = 2000 OR parentid = 6000) ORDER BY postdate DESC LIMIT %s"
+        run = "SELECT searchname AS name, id, categoryid FROM releases WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN (SELECT id FROM category WHERE parentid = 2000) ORDER BY postdate DESC LIMIT %s"
         cur.execute(run, (run_threads * movieperrun))
         datas = cur.fetchall()
 elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-        run = "SELECT searchname, id FROM releases WHERE (bitwise & 260) = 260 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
+        run = "SELECT searchname, id FROM releases WHERE (bitwise & 260) = 260 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN (SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
         cur.execute(run, (run_threads * tvrageperrun))
         datas = cur.fetchall()
 elif sys.argv[1] == "tv":
-        run = "SELECT searchname, id FROM releases WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN ( SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
+        run = "SELECT searchname, id FROM releases WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN (SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
         cur.execute(run, (run_threads * tvrageperrun))
         datas = cur.fetchall()
 

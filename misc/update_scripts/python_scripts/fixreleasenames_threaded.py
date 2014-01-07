@@ -46,7 +46,7 @@ if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" a
 if len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "clean":
 	clean = " (bitwise & 384) = 384 AND "
 elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "clean":
-    clean = " (bitwise & 384) = 384 AND (bitwise & 320) = 320 AND"
+    clean = " (bitwise & 384) = 384 AND (bitwise & 320) = 320 AND "
 else:
 	clean = " "
 
@@ -61,7 +61,7 @@ datas = []
 maxtries = 0
 
 if len(sys.argv) > 1 and sys.argv[1] == "nfo":
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE (bitwise & 320) = 256 AND " + clean + "((bitwise & 4) = 0  OR categoryid = 7010) ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE (bitwise & 320) = 256 AND" + clean + "((bitwise & 4) = 0  OR categoryid = 7010) ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
@@ -80,7 +80,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 		maxtries = maxtries - 1
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
-	run = "SELECT DISTINCT id AS releaseid, guid, groupid FROM releases WHERE (bitwise & 288) = 256 AND " + clean + "((bitwise & 4) = 0  OR categoryid = 7010) ORDER BY postdate ASC LIMIT %s"
+	run = "SELECT DISTINCT id AS releaseid, guid, groupid FROM releases WHERE (bitwise & 288) = 256 AND" + clean + "((bitwise & 4) = 0  OR categoryid = 7010) ORDER BY postdate ASC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 

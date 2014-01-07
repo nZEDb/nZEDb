@@ -606,7 +606,6 @@
                 </td>
             </tr>
 
-
             <tr>
                 <td style="width:180px;"><label for="lookup_reqids">Lookup Request IDs:</label></td>
                 <td>

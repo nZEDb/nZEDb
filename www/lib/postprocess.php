@@ -582,7 +582,7 @@ class PostProcess
 								$mid = array_slice((array) $rarFile['segments'], 0, $this->segmentstodownload);
                                 
 								$bingroup = $groupName;
-								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
+                                $fetchedBinary = $nntp->getMessages($bingroup, $mid);
 								if (PEAR::isError($fetchedBinary)) {
 									$nntp->doQuit();
 									$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
@@ -610,7 +610,7 @@ class PostProcess
 								}
 								else {
                                    if ($this->echooutput)
-                                        echo $this->c->headerOver("f(" . $notinfinite . ")");
+                                        echo $this->c->alternateOver("f(" . $notinfinite . ")");
 									$notinfinite = $notinfinite + 0.2;
 									$failed++;
 								}
@@ -888,7 +888,7 @@ class PostProcess
 	function addmediafile($file, $data)
 	{
 		if (@file_put_contents($file, $data) !== false) {
-			@$xmlarray = runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $file . '"');
+			$xmlarray = @runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $file . '"');
 			if (is_array($xmlarray)) {
 				$xmlarray = implode("\n", $xmlarray);
 				$xmlObj = @simplexml_load_string($xmlarray);
@@ -1074,7 +1074,8 @@ class PostProcess
 					if (preg_match('/([^\/\\\\]+)(\.[a-z][a-z0-9]{2,3})$/i', $file['name'], $name)) {
 						$rarfile = $this->tmpPath . $name[1] . mt_rand(0, 99999) . $name[2];
 						$fetchedBinary = $rar->getFileData($file['name'], $file['source']);
-						$this->addmediafile($rarfile, $fetchedBinary);
+						if ($this->site->mediainfopath != '')
+							$this->addmediafile($rarfile, $fetchedBinary);
 					}
 					if (!preg_match('/\.(r\d+|part\d+)$/i', $file['name']))
 						$retval[] = $file;
@@ -1190,7 +1191,7 @@ class PostProcess
 				$rarfile = $this->tmpPath . 'rarfile' . mt_rand(0, 99999) . '.rar';
 				if (@file_put_contents($rarfile, $fetchedBinary)) {
 					$execstring = '"' . $this->site->unrarpath . '" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' . $rarfile . '" "' . $this->tmpPath . '"';
-					$output = runCmd($execstring, false, true);
+					$output = @runCmd($execstring, false, true);
 					if (isset($files[0]['name'])) {
 						if ($this->echooutput)
 							echo 'r';
@@ -1273,7 +1274,7 @@ class PostProcess
 		if (is_array($mediafiles)) {
 			foreach ($mediafiles as $mediafile) {
 				if (is_file($mediafile) && filesize($mediafile) > 15 && preg_match('/' . $this->videofileregex . '$/i', $mediafile)) {
-					@$xmlarray = runCmd('"' . $mediainfo . '" --Output=XML "' . $mediafile . '"');
+					$xmlarray = @runCmd('"' . $mediainfo . '" --Output=XML "' . $mediafile . '"');
 					if (is_array($xmlarray)) {
 						$xmlarray = implode("\n", $xmlarray);
 						$re = new ReleaseExtra();
@@ -1308,7 +1309,7 @@ class PostProcess
 				if (is_file($audiofile) && preg_match('/' . $this->audiofileregex . '$/i', $audiofile, $ext)) {
 					// Process audio info, change searchname if we find a group/album name in the tags.
 					if ($this->site->mediainfopath != '' && $retval === false) {
-						@$xmlarray = runCmd('"' . $audioinfo . '" --Output=XML "' . $audiofile . '"');
+						$xmlarray = @runCmd('"' . $audioinfo . '" --Output=XML "' . $audiofile . '"');
 						if (is_array($xmlarray)) {
 							$arrXml = objectsIntoArray(@simplexml_load_string(implode("\n", $xmlarray)));
 							if (isset($arrXml['File']['track'])) {
@@ -1341,9 +1342,9 @@ class PostProcess
 					}
 					// Create an audio sample in ogg format.
 					if ($this->processAudioSample && $audval === false) {
-						$output = runCmd('"' . $ffmpeginfo . '" -t 30 -i "' . $audiofile . '" -acodec libvorbis -loglevel quiet -y "' . $ramdrive . $releaseguid . '.ogg"');
+						$output = @runCmd('"' . $ffmpeginfo . '" -t 30 -i "' . $audiofile . '" -acodec libvorbis -loglevel quiet -y "' . $ramdrive . $releaseguid . '.ogg"');
 						if (is_dir($ramdrive)) {
-							@$all_files = scandir($ramdrive, 1);
+							$all_files = @scandir($ramdrive, 1);
 							foreach ($all_files as $file) {
 								if (preg_match('/' . $releaseguid . '\.ogg/', $file)) {
 									if (filesize($ramdrive . $file) < 15)
@@ -1386,12 +1387,12 @@ class PostProcess
 		if (is_array($samplefiles)) {
 			foreach ($samplefiles as $samplefile) {
 				if (is_file($samplefile) && preg_match('/' . $this->videofileregex . '$/i', $samplefile)) {
-					@$filecont = file_get_contents($samplefile, true, null, 0, 40);
+					$filecont = @file_get_contents($samplefile, true, null, 0, 40);
 					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) < 30)
 						continue;
 
 					//$cmd = '"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -f image2 -ss ' . $this->ffmpeg_image_time . ' -vframes 1 -y "'.$ramdrive.'"zzzz"'.mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).'".jpg';
-					//$output = runCmd($cmd);
+					//$output = @runCmd($cmd);
 					$sample_duration = exec($ffmpeginfo . ' -i "' . $samplefile . "\" 2>&1 | grep \"Duration\"| cut -d ' ' -f 4 | sed s/,// | awk '{ split($1, A, \":\"); split(A[3], B, \".\"); print 3600*A[1] + 60*A[2] + B[1] }'");
 					if ($sample_duration > 100 || $sample_duration == 0 || $sample_duration == '')
 						$sample_duration = 2;
@@ -1400,7 +1401,7 @@ class PostProcess
 					$output = exec($ffmpeginfo . ' -i "' . $samplefile . '" -loglevel quiet -vframes 1 -ss ' . $sample_duration . ' -y "' . $output_file . '"');
 
 					if (is_dir($ramdrive)) {
-						@$all_files = scandir($ramdrive, 1);
+						$all_files = @scandir($ramdrive, 1);
 						foreach ($all_files as $file) {
 							if (preg_match('/zzzz\d{3}\.jpg/', $file) && $retval === false) {
 								if (filesize($ramdrive . $file) < 15)
@@ -1443,14 +1444,14 @@ class PostProcess
 		if (is_array($samplefiles)) {
 			foreach ($samplefiles as $samplefile) {
 				if (is_file($samplefile) && preg_match('/' . $this->videofileregex . '$/i', $samplefile)) {
-					@$filecont = file_get_contents($samplefile, true, null, 0, 40);
+					$filecont = @file_get_contents($samplefile, true, null, 0, 40);
 					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) < 30)
 						continue;
 
-					$output = runCmd('"' . $ffmpeginfo . '" -i "' . $samplefile . '" -vcodec libtheora -filter:v scale=320:-1 -t ' . $this->ffmpeg_duration . ' -acodec libvorbis -loglevel quiet -y "' . $ramdrive . 'zzzz' . $releaseguid . '.ogv"');
+					$output = @runCmd('"' . $ffmpeginfo . '" -i "' . $samplefile . '" -vcodec libtheora -filter:v scale=320:-1 -t ' . $this->ffmpeg_duration . ' -acodec libvorbis -loglevel quiet -y "' . $ramdrive . 'zzzz' . $releaseguid . '.ogv"');
 
 					if (is_dir($ramdrive)) {
-						@$all_files = scandir($ramdrive, 1);
+						$all_files = @scandir($ramdrive, 1);
 						foreach ($all_files as $file) {
 							if (preg_match('/zzzz' . $releaseguid . '\.ogv/', $file)) {
 								if (filesize($ramdrive . 'zzzz' . $releaseguid . '.ogv') > 4096) {

@@ -1489,8 +1489,10 @@ class Releases
                             $db->queryExec(sprintf('UPDATE releases SET reqidstatus = -2 WHERE id = %d', $rowrel['id']));
                     }
                     if ($bFound) {
-                        $groupname = $this->groups->getByNameByID($rowrel['groupname']);
-                        $determinedcat = $category->determineCategory($newTitle, $groupname);
+	                    if (empty($groupID)) {
+		                    $groupID = $this->groups->getIDByName($rowrel['groupname']);
+	                    }
+                        $determinedcat = $category->determineCategory($newTitle, $groupID);
                         $run = $db->prepare(sprintf('UPDATE releases SET reqidstatus = 1, bitwise = ((bitwise & ~132)|132), searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($newTitle), $determinedcat, $rowrel['id']));
                         $run->execute();
                         $newcatname = $category->getNameByID($determinedcat);

@@ -4,7 +4,17 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2014-01-03 -> bart39   -> More regex additions/fixes
+2014-01-06 -> bart39   -> fixed issue with categorizing by group while adding releases
+2014-01-06 -> jonnyboy -> fixed missings references in themes, fixed typo in site-edit, added patch to remove null from categoryid
+                          fixed bug in pp additional where 'sh: Permission denied' when mediainfo path not set
+                          added fix_autoinc.php to fix "unable to find the AUTOINC column id"
+                          fixed dump_predb.php to use local groupid, dump not updated for this yet
+2014-01-05 -> jonnyboy -> fixed bug in namecleaning.php
+                          fixed renametopre.php to also use internal regexes, fixed porn categorization
+                          changed groups->reset to not disable group, removed porn from movie lookup, added reset searhname = name when searchname is single digit or letter,
+                          updated Release_scripts/* to use color and added usage where there was none
+2014-01-04 -> jonnyboy -> requestid.php, added optional final argument to reprocess releases posted newer than x min, changed output to not count releases whose name did not change
+2014-01-04 -> bart39   -> More regex additions/fixes
 2014-01-03 -> Roelski  -> Fixed check in populate_anidb.php if anidb already had id. Changed some text.
 2014-01-03 -> jonnyboy -> fixed group add and bulk group add, changed output of pp addtional when fail to show which piece(attemp) it failed on
 2014-01-02 -> Roelski     Changed double screen in threaded screen script. Added threaded backfill to script.

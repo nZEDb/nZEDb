@@ -1,9 +1,12 @@
 <?php
-/* Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php */
 
-if(isset($argv[1]) && $argv[1] == "true")
-{
-	require dirname(__FILE__) . '/../../../www/config.php';
+/* Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php */
+require dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIB . 'ColorCLI.php';
+
+$c = new ColorCLI();
+
+if (isset($argv[1]) && $argv[1] == "true") {
 	require_once nZEDb_LIB . 'framework/db.php';
 	require_once nZEDb_LIB . 'category.php';
 	require_once nZEDb_LIB . 'releases.php';
@@ -17,14 +20,10 @@ if(isset($argv[1]) && $argv[1] == "true")
 	$site = $s->get();
 	$catlist = $category->getDisabledIDs();
 	$relsdeleted = 0;
-	if (count($catlist > 0))
-	{
-		foreach ($catlist as $cat)
-		{
-			if ($rels = $db->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $cat['id'])))
-			{
-				foreach ($rels as $rel)
-				{
+	if (count($catlist > 0)) {
+		foreach ($catlist as $cat) {
+			if ($rels = $db->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $cat['id']))) {
+				foreach ($rels as $rel) {
 					$relsdeleted++;
 					$releases->fastDelete($rel['id'], $rel['guid'], $site);
 				}
@@ -32,11 +31,12 @@ if(isset($argv[1]) && $argv[1] == "true")
 		}
 	}
 	$time = TIME() - $timestart;
-	if ($relsdeleted > 0)
-		exit ($relsdeleted." releases deleted in ".$time." seconds.\n");
-	else
-		exit ("No releases to delete.\n");
+	if ($relsdeleted > 0) {
+		echo $c->header($relsdeleted . " releases deleted in " . $time . " seconds.");
+	} else {
+		exit($c->info("No releases to delete."));
+	}
+} else {
+	exit($c->error("\nDeletes releases in categories you have disabled here : http://localhost/admin/category-list.php\n"
+			. "php $argv[0] true    ...: run this script.\n"));
 }
-else
-	exit("Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php\nIf you are sure you want to run this script, type php delete_unwated_category_releases.php true\n");
-?>
