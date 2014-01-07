@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'nntp.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'nntp.php';
 
 
 $nntp = new Nntp();

@@ -1,7 +1,7 @@
 <?php
 require_once './config.php';
-require_once nZEDb_LIB . 'framework/basepage.php';
-require_once nZEDb_LIB . 'users.php';
+//require_once nZEDb_LIB . 'framework/basepage.php';
+//require_once nZEDb_LIB . 'users.php';
 
 class AdminPage extends BasePage
 {

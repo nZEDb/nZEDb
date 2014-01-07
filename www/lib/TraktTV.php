@@ -1,6 +1,6 @@
 <?php
 
-require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'site.php';
 
 /*
  * 	Lookup information from trakt.tv using their API.

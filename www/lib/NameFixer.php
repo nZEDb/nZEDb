@@ -1,10 +1,10 @@
 <?php
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'category.php';
-require_once nZEDb_LIB . 'groups.php';
-require_once nZEDb_LIB . 'namecleaning.php';
-require_once nZEDb_LIB . 'nzbcontents.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'category.php';
+//require_once nZEDb_LIB . 'groups.php';
+//require_once nZEDb_LIB . 'namecleaning.php';
+//require_once nZEDb_LIB . 'nzbcontents.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
 
 class NameFixer
 {

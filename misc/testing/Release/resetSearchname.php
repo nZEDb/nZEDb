@@ -3,10 +3,10 @@
  * Type php resetSearchname.php to see detailed info. */
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'namecleaning.php';
-require_once nZEDb_LIB . 'namefixer.php';
-require_once nZEDb_LIB . 'consoletools.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'namecleaning.php';
+//require_once nZEDb_LIB . 'namefixer.php';
+//require_once nZEDb_LIB . 'consoletools.php';
 
 if (isset($argv[1]) && $argv[1] == "full")
 {

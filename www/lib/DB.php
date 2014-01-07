@@ -1,7 +1,7 @@
 <?php
-require_once nZEDb_LIB . 'ColorCLI.php';
-require_once nZEDb_LIB . 'consoletools.php';
-require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'consoletools.php';
+//require_once nZEDb_LIB . 'site.php';
 
 /**
  * Class for handling connection to database (MySQL or PostgreSQL) using PDO.

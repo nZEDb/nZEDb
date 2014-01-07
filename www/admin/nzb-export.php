@@ -1,11 +1,11 @@
 <?php
 require_once './config.php';
-require_once nZEDb_LIB . 'adminpage.php';
-require_once nZEDb_LIB . 'releases.php';
-require_once nZEDb_LIB . 'site.php';
-require_once nZEDb_LIB . 'nzb.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'util.php';
+//require_once nZEDb_LIB . 'adminpage.php';
+//require_once nZEDb_LIB . 'releases.php';
+//require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'nzb.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'util.php';
 
 $db = new DB();
 

@@ -8,8 +8,8 @@
  */
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'namefixer.php';
-require_once nZEDb_LIB . 'predb.php';
+//require_once nZEDb_LIB . 'namefixer.php';
+//require_once nZEDb_LIB . 'predb.php';
 
 $n = "\n";
 $namefixer = new Namefixer();

@@ -1,13 +1,13 @@
 <?php
 
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'site.php';
-require_once nZEDb_LIB . 'releases.php';
-require_once nZEDb_LIB . 'forum.php';
-require_once nZEDb_LIB . 'util.php';
-require_once nZEDb_LIB . 'releasecomments.php';
-require_once nZEDb_LIB . 'usermovies.php';
-require_once nZEDb_LIB . 'userseries.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'releases.php';
+//require_once nZEDb_LIB . 'forum.php';
+//require_once nZEDb_LIB . 'util.php';
+//require_once nZEDb_LIB . 'releasecomments.php';
+//require_once nZEDb_LIB . 'usermovies.php';
+//require_once nZEDb_LIB . 'userseries.php';
 
 class Users
 {

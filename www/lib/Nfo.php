@@ -1,12 +1,12 @@
 <?php
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'groups.php';
-require_once nZEDb_LIB . 'movie.php';
-require_once nZEDb_LIB . 'nntp.php';
-require_once nZEDb_LIB . 'nzbcontents.php';
-require_once nZEDb_LIB . 'site.php';
-require_once nZEDb_LIB . 'tvrage.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'groups.php';
+//require_once nZEDb_LIB . 'movie.php';
+//require_once nZEDb_LIB . 'nntp.php';
+//require_once nZEDb_LIB . 'nzbcontents.php';
+//require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'tvrage.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
 
 /*
  * Class for handling fetching/storing of NFO files.

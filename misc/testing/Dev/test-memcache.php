@@ -1,7 +1,7 @@
 <?php
 // Test the memcache connection.
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'framework/db.php';
 
 if (!extension_loaded('memcache'))
 {

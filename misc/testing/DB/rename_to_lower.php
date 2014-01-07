@@ -1,9 +1,8 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_WWW . 'config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI();
 if ($argc == 1 || $argv[1] != 'true') {

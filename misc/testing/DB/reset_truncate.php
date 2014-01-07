@@ -1,9 +1,9 @@
 <?php
 // This script removes releases with no NZBs, resets all groups, truncates article tables. All other releases are left alone.
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'site.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
 $c = new ColorCLI();
 
 if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop"))

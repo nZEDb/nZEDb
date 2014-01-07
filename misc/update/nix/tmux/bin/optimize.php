@@ -1,9 +1,9 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'tmux.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'tmux.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI();
 $db = new DB();

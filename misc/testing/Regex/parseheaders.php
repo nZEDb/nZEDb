@@ -1,13 +1,13 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'nntp.php';
-require_once nZEDb_LIB . 'groups.php';
-require_once nZEDb_LIB . 'backfill.php';
-require_once nZEDb_LIB . 'consoletools.php';
-require_once nZEDb_LIB . 'site.php';
-require_once nZEDb_LIB . 'namecleaning.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'nntp.php';
+//require_once nZEDb_LIB . 'groups.php';
+//require_once nZEDb_LIB . 'backfill.php';
+//require_once nZEDb_LIB . 'consoletools.php';
+//require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'namecleaning.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
 
 
 $group = $argv[1];

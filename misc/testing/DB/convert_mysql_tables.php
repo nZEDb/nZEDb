@@ -2,7 +2,7 @@
 //This script converts tables to myisam , innodb dynamic or innodb compressed, or tokudb. Run like this : php convert_mysql_tables.php dinnodb
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'framework/db.php';
 
 $db = new DB();
 if($db->dbSystem() == "pgsql")

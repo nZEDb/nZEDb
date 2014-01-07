@@ -1,9 +1,9 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'site.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $db = new DB();
 $s = new Sites();

@@ -1,10 +1,10 @@
 <?php
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'category.php';
-require_once nZEDb_LIB . 'nntp.php';
-require_once nZEDb_LIB . 'site.php';
-require_once nZEDb_LIB . 'releases.php';
-require_once nZEDb_LIB . 'binaries.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'category.php';
+//require_once nZEDb_LIB . 'nntp.php';
+//require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'releases.php';
+//require_once nZEDb_LIB . 'binaries.php';
 
 class Groups
 {

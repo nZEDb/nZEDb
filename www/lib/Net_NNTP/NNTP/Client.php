@@ -72,7 +72,7 @@
 /**
  *
  */
-require_once 'Protocol/Client.php';
+//require_once 'Protocol/Client.php';
 
 
 // {{{ Net_NNTP_Client

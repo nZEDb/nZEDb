@@ -1,6 +1,6 @@
 <?php
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'util.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'util.php';
 
 class ReleaseImage
 {

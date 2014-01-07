@@ -1,8 +1,8 @@
 <?php
 // To troubleshoot what's actually on usenet.
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'nntp.php';
-require_once nZEDb_LIB . 'backfill.php';
+//require_once nZEDb_LIB . 'nntp.php';
+//require_once nZEDb_LIB . 'backfill.php';
 
 if (!isset($argv[2]) || !is_numeric($argv[2]))
 	exit("\nTest your nntp connection, get group information and postdate for specific article.\nTo run:\ntest-nntp.php groupname articlenumber.\n");

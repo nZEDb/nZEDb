@@ -1,10 +1,10 @@
 <?php
 require_once(dirname(__FILE__).'/../../../www/config.php');
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
-require_once nZEDb_LIB . 'consoletools.php';
-require_once nZEDb_LIB . 'groups.php';
-require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'consoletools.php';
+//require_once nZEDb_LIB . 'groups.php';
+//require_once nZEDb_LIB . 'site.php';
 
 
 /*This script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.

@@ -28,9 +28,9 @@ else if (isset($argv[1]) && $argv[1] == 'false' && !isset($argv[2]))
 }
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'releases.php';
-require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'releases.php';
+//require_once nZEDb_LIB . 'site.php';
 
 if (isset($argv[1]) && !is_numeric($argv[1]) && isset($argv[2]) && $argv[2] == 'full')
 {

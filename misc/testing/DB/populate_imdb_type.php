@@ -2,8 +2,8 @@
 // Update info for the imdb ID.
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'movie.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'movie.php';
 
 $movie = new Movie(true);
 $db = new DB();

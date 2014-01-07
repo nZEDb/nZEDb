@@ -1,5 +1,5 @@
 <?php
-require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
 
 class ConsoleTools
 {

@@ -2,9 +2,9 @@
 //This inserts the patches into MySQL and PostgreSQL.
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'site.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
 
 function command_exist($cmd)
 {

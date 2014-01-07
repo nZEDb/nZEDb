@@ -1,12 +1,12 @@
 <?php
 
 require_once dirname(__FILE__) . '/config.php';
-require_once nZEDb_LIB . 'backfill.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'page.php';
-require_once nZEDb_LIB . 'category.php';
-require_once nZEDb_LIB . 'groups.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'backfill.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'page.php';
+//require_once nZEDb_LIB . 'category.php';
+//require_once nZEDb_LIB . 'groups.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI();
 if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {

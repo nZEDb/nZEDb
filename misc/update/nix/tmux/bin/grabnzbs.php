@@ -1,10 +1,10 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-require_once nZEDb_LIB . 'grabnzbs.php';
-require_once nZEDb_LIB . 'nntp.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
-require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'grabnzbs.php';
+//require_once nZEDb_LIB . 'nntp.php';
+//require_once nZEDb_LIB . 'ColorCLI.php';
+//require_once nZEDb_LIB . 'site.php';
 
 $c = new ColorCLI();
 if (!isset($argv[1])) {
