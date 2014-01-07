@@ -96,7 +96,7 @@ function test_regex($name, $group, $argv)
 		}
 	}
 
-	$file = nZEDb_MISC . 'testing/Dev_testing/renametopre.php';
+	$file = nZEDb_MISC . 'testing/Dev/renametopre.php';
 	$handle = fopen($file, "r");
 
 	$test_str = $name;

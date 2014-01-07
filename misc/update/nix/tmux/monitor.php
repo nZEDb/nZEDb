@@ -1088,7 +1088,7 @@ while ($i > 0) {
 		if ($seq != 2) {
 			// Show all available colors
 			if ($colors == 1) {
-				shell_exec("tmux respawnp -t${tmux_session}:3.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
+				shell_exec("tmux respawnp -t${tmux_session}:3.0 '$_php ${DIR}testing/Dev/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
 			}
 
 			//fix names
@@ -1394,7 +1394,7 @@ while ($i > 0) {
 		} else if ($seq == 2) {
 			// Show all available colors
 			if ($colors == 1) {
-				shell_exec("tmux respawnp -t${tmux_session}:2.0 '$_php ${DIR}testing/Dev_testing/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
+				shell_exec("tmux respawnp -t${tmux_session}:2.0 '$_php ${DIR}testing/Dev/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
 			}
 
 			//run nzb-import
