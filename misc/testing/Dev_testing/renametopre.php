@@ -242,7 +242,7 @@ function releaseCleaner($subject, $groupid, $groupname) {
 	$match = '';
 
 	// Get pre style name from releases.name
-	if (preg_match('/(\w+\.(\w+\.)+\w+-\w+)/', $subject, $match)) {
+	if (preg_match('/(\w+[\._](\w+[\._-])+\w+-\w+)/', $subject, $match)) {
 		$title = $db->queryOneRow("SELECT title from predb WHERE title = " . $db->escapeString(trim($match[1])));
 		if (isset($title['title'])) {
 			$cleanerName = $title['title'];
