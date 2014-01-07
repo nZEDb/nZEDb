@@ -8,7 +8,7 @@ set limit=111111111111111111111111
 CD..
 php.exe update_binaries.php
 php.exe update_releases.php 1 true
-CD win_scripts
+CD win
 
 set /a scrape=%scrape%+1
 if %scrape%==5 goto scrape
@@ -34,7 +34,7 @@ GOTO TOP
 CD..
 php.exe optimise_db.php
 set optimise=0
-CD win_scripts
+CD win
 GOTO OptimiseDone
 
 :Scrape
@@ -44,20 +44,20 @@ CD reqscraper
 php scrape.php
 set scrape=0
 CD..
-CD update_scripts
-CD win_scripts
+CD update
+CD win
 GOTO ScrapeDone
 
 :TV
 CD..
 php.exe update_tvschedule.php
 set tv=0
-CD win_scripts
+CD win
 GOTO tvdone
 
 :Movies
 CD..
 php.exe update_theaters.php
 set Movies=0
-CD win_scripts
+CD win
 GOTO Moviesdone

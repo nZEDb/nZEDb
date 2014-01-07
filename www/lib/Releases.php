@@ -1803,7 +1803,7 @@ class Releases
                 $stage8 = TIME();
                 if ($this->echooutput)
                     echo $this->c->header("\nStage 5b -> Request ID Threaded lookup.");
-                passthru("$PYTHON ${DIR}update_scripts/python_scripts/requestid_threaded.py");
+                passthru("$PYTHON ${DIR}update/python/requestid_threaded.py");
                 if ($this->echooutput)
                     echo $this->c->primary("\nReleases updated in " . $this->consoleTools->convertTime(TIME() - $stage8));
             }

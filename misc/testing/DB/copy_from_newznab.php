@@ -26,6 +26,6 @@ else
 	system("cp -R ".$from."/../www/covers/* ".$dir."/covers/");
 	echo "Setting nzbstatus for all releases\n";
 	$db->queryExec("UPDATE releases SET bitwise = (bitwise & ~256)|256");
-	system("php ".$misc."testing/DB_scripts/nzb-reorg.php ".$level." ".$dir."../nzbfiles/");
+	system("php ".$misc."testing/DB/nzb-reorg.php ".$level." ".$dir."../nzbfiles/");
 }
 ?>

@@ -18,11 +18,11 @@ fi
 
 export niceness=10
 export START_PATH="${NZEDB_ROOT}"
-export NZEDB_PATH="${NZEDB_ROOT}/misc/update_scripts"
-export TEST_PATH="${NZEDB_ROOT}/misc/testing/Release_scripts"
+export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
+export TEST_PATH="${NZEDB_ROOT}/misc/testing/PostProc"
 export DEV_PATH="${NZEDB_ROOT}/misc/testing/Dev_testing"
-export DB_PATH="${NZEDB_ROOT}/misc/testing/DB_scripts"
-export THREADED_PATH="${NZEDB_ROOT}/misc/update_scripts/python_scripts"
+export DB_PATH="${NZEDB_ROOT}/misc/testing/DB"
+export THREADED_PATH="${NZEDB_ROOT}/misc/update/python"
 export NZEDB_SLEEP_TIME="60" # in seconds
 
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
@@ -38,7 +38,7 @@ then
 fi
 if [[ $1 != "true" ]]
 then
-	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/resetdelaytime.php
+	$PHP ${NZEDB_PATH}/nix/tmux/bin/resetdelaytime.php
 fi
 
 loop=1
@@ -89,7 +89,7 @@ do
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 2 true all yes
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 6 true all no
-#	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/postprocess_pre.php
+#	$PHP ${NZEDB_PATH}/nix/tmux/bin/postprocess_pre.php
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py nfo
 #	$PHP ${NZEDB_PATH}/requestid.php full
 #   $PYTHON -OOu ${THREADED_PATH}/requestid_threaded.py
@@ -106,7 +106,7 @@ do
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py tv clean
 #	$PHP ${TEST_PATH}/fixReleaseNames.php 4 true all yes
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_old_threaded.py amazon
-#	$PHP ${NZEDB_PATH}/nix_scripts/tmux/bin/showsleep.php $NZEDB_SLEEP_TIME
+#	$PHP ${NZEDB_PATH}/nix/tmux/bin/showsleep.php $NZEDB_SLEEP_TIME
 	date2=`date +%s`
 	diff=$(($date2-$date1))
 	echo "Total Running Time: $(($diff / 60)) minutes and $(($diff % 60)) seconds."

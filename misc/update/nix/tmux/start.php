@@ -19,12 +19,12 @@ $hashcheck = (isset($site->hashcheck)) ? $site->hashcheck : 0;
 
 // Check collections version
 if ($hashcheck != 1) {
-	exit($c->error("\nWe have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp ${DIR}testing/DB_scripts/reset_Collections.php true\n"));
+	exit($c->error("\nWe have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp ${DIR}testing/DB/reset_Collections.php true\n"));
 }
 
 // Check database patch version
 if ($patch < 162) {
-	exit($c->error("\nYour database is not up to date. Please update.\nphp ${DIR}testing/DB_scripts/patchDB.php\n"));
+	exit($c->error("\nYour database is not up to date. Please update.\nphp ${DIR}testing/DB/patchDB.php\n"));
 }
 
 // Search for NNTPProxy session that might be running froma userthreaded.php run. Setup a clean environment to run in.
@@ -187,9 +187,9 @@ function window_proxy($tmux_session, $window)
 	$nntpproxy = $site->nntpproxy;
 	if ($nntpproxy == 1) {
 		$DIR = nZEDb_MISC;
-		$nntpproxypy = $DIR . "update_scripts/python_scripts/nntpproxy.py";
-		if (file_exists($DIR . "update_scripts/python_scripts/lib/nntpproxy.conf")) {
-			$nntpproxyconf = $DIR . "update_scripts/python_scripts/lib/nntpproxy.conf";
+		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
+		if (file_exists($DIR . "update/python/lib/nntpproxy.conf")) {
+			$nntpproxyconf = $DIR . "update/python/lib/nntpproxy.conf";
 			exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
 	}
@@ -197,9 +197,9 @@ function window_proxy($tmux_session, $window)
 	$grabnzbs = $site->grabnzbs;
 	if ($nntpproxy == 1 && ($alternate_nntp == 1 || $grabnzbs == 2)) {
 		$DIR = nZEDb_MISC;
-		$nntpproxypy = $DIR . "update_scripts/python_scripts/nntpproxy.py";
-		if (file_exists($DIR . "update_scripts/python_scripts/lib/nntpproxy_a.conf")) {
-			$nntpproxyconf = $DIR . "update_scripts/python_scripts/lib/nntpproxy_a.conf";
+		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
+		if (file_exists($DIR . "update/python/lib/nntpproxy_a.conf")) {
+			$nntpproxyconf = $DIR . "update/python/lib/nntpproxy_a.conf";
 			exec("tmux selectp -t 0; tmux splitw -t $tmux_session:$window -h -p 50 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
 	}
@@ -249,19 +249,19 @@ function attach($DIR, $tmux_session)
 	$panes_win_1 = exec("echo `tmux list-panes -t $tmux_session:0 -F '#{pane_title}'`");
 	$panes0 = str_replace("\n", '', explode(" ", $panes_win_1));
 	$log = writelog($panes0[0]);
-	exec("tmux respawnp -t $tmux_session:0.0 '$PHP " . $DIR . "update_scripts/nix_scripts/tmux/monitor.php $log'");
+	exec("tmux respawnp -t $tmux_session:0.0 '$PHP " . $DIR . "update/nix/tmux/monitor.php $log'");
 	exec("tmux select-window -t $tmux_session:0; tmux attach-session -d -t $tmux_session");
 }
 
 //create tmux session
 if ($powerline == 1) {
-	$tmuxconfig = $DIR . "update_scripts/nix_scripts/tmux/powerline/tmux.conf";
+	$tmuxconfig = $DIR . "update/nix/tmux/powerline/tmux.conf";
 } else {
-	$tmuxconfig = $DIR . "update_scripts/nix_scripts/tmux/tmux.conf";
+	$tmuxconfig = $DIR . "update/nix/tmux/tmux.conf";
 }
 
 if ($seq == 1) {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
+	exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_releases\033\"'");
 	if ($import != 0) {
 		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
@@ -278,7 +278,7 @@ if ($seq == 1) {
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 } else if ($seq == 2) {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
+	exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;\"Monitor\"\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;sequential\033\"'");
 	if ($import != 0) {
 		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");
@@ -294,7 +294,7 @@ if ($seq == 1) {
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 } else {
-	exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
+	exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig new-session -d -s $tmux_session -n Monitor 'printf \"\033]2;Monitor\033\"'");
 	exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -h -p 67 'printf \"\033]2;update_binaries\033\"'");
 	if ($import != 0) {
 		exec("tmux selectp -t $tmux_session:0.0; tmux splitw -t $tmux_session:0 -v -p 33 'printf \"\033]2;nzb-import\033\"'");

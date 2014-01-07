@@ -7,10 +7,10 @@ else
 	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
 
-export NZEDB_PATH="${NZEDB_ROOT}/misc/update_scripts"
-export HELP_PATH="${NZEDB_ROOT}/misc/update_scripts/nix_scripts/screen/threaded"
-export THREAD_PATH="${NZEDB_ROOT}/misc/update_scripts/python_scripts"
-export TEST_PATH="${NZEDB_ROOT}/misc/testing/Release_scripts"
+export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
+export HELP_PATH="${NZEDB_ROOT}/misc/update/nix/screen/threaded"
+export THREAD_PATH="${NZEDB_ROOT}/misc/update/python"
+export TEST_PATH="${NZEDB_ROOT}/misc/testing/PostProc"
 
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
 command -v python3 >/dev/null 2>&1 && export PYTHON=`command -v python3` || { export PYTHON=`command -v python`; }

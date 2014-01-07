@@ -51,7 +51,7 @@ if (isset($argv[1])) {
 		}
 
 		echo $c->primary('Patching database - ' . $dbname);
-		exec("$PHP ${DIR}testing/DB_scripts/patchDB.php");
+		exec("$PHP ${DIR}testing/DB/patchDB.php");
 	}
 
 	$tablecnt = 0;

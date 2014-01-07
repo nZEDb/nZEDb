@@ -41,19 +41,19 @@ function window_proxy($tmux_session, $powerline)
 	$site = $s->get();
 	$DIR = nZEDb_MISC;
 	if ($powerline == "TRUE")
-		$tmuxconfig = $DIR."update_scripts/nix_scripts/tmux/powerline/tmux.conf";
+		$tmuxconfig = $DIR."update/nix/tmux/powerline/tmux.conf";
 	else
-		$tmuxconfig = $DIR."update_scripts/nix_scripts/tmux/tmux.conf";
+		$tmuxconfig = $DIR."update/nix/tmux/tmux.conf";
 
 	$nntpproxy = $site->nntpproxy;
 	if ($nntpproxy == '1')
 	{
 		$DIR = nZEDb_MISC;
-		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
-		if(file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy.conf"))
+		$nntpproxypy = $DIR."update/python/nntpproxy.py";
+		if(file_exists($DIR."update/python/lib/nntpproxy.conf"))
 		{
-			$nntpproxyconf = $DIR."update_scripts/python_scripts/lib/nntpproxy.conf";
-			shell_exec("cd ${DIR}/update_scripts/nix_scripts/tmux; tmux -f $tmuxconfig attach-session -t $tmux_session || tmux new-session -d -s $tmux_session -n NNTPProxy 'printf \"\033]2;\"NNTPProxy\"\033\" && python $nntpproxypy $nntpproxyconf'");
+			$nntpproxyconf = $DIR."update/python/lib/nntpproxy.conf";
+			shell_exec("cd ${DIR}/update/nix/tmux; tmux -f $tmuxconfig attach-session -t $tmux_session || tmux new-session -d -s $tmux_session -n NNTPProxy 'printf \"\033]2;\"NNTPProxy\"\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
 	}
 
@@ -62,10 +62,10 @@ function window_proxy($tmux_session, $powerline)
 	if ($nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2'))
 	{
 		$DIR = nZEDb_MISC;
-		$nntpproxypy = $DIR."update_scripts/python_scripts/nntpproxy.py";
-		if (file_exists($DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf"))
+		$nntpproxypy = $DIR."update/python/nntpproxy.py";
+		if (file_exists($DIR."update/python/lib/nntpproxy_a.conf"))
 		{
-			$nntpproxyconf = $DIR."update_scripts/python_scripts/lib/nntpproxy_a.conf";
+			$nntpproxyconf = $DIR."update/python/lib/nntpproxy_a.conf";
 			shell_exec("tmux selectp -t 0; tmux splitw -t $tmux_session:0 -h -p 50 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
 	}

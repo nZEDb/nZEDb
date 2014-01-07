@@ -49,9 +49,9 @@ if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe"))
 	echo "Patching database - $dbname\n";
 
 	if($argv[1] == "safe")
-		system("$PHP ${DIR}testing/DB_scripts/patchDB.php safe");
+		system("$PHP ${DIR}testing/DB/patchDB.php safe");
 	else
-		system("$PHP ${DIR}testing/DB_scripts/patchDB.php");
+		system("$PHP ${DIR}testing/DB/patchDB.php");
 
 
 	if ($restart == "true")

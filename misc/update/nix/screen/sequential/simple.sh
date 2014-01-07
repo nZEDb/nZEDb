@@ -7,8 +7,8 @@ else
 	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
 
-export NZEDB_PATH="${NZEDB_ROOT}/misc/update_scripts"
-export TEST_PATH="${NZEDB_ROOT}/misc/testing/Release_scripts"
+export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
+export TEST_PATH="${NZEDB_ROOT}/misc/testing/PostProc"
 export NZEDB_SLEEP_TIME="60" # in seconds
 LASTOPTIMIZE=`date +%s`
 LASTOPTIMIZE1=`date +%s`
