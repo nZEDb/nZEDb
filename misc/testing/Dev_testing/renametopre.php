@@ -150,7 +150,7 @@ function preName($argv) {
 			if ($cleanName == $row['name']) {
 				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $row['id']));
 			}
-			$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "]        " . $consoletools->percentString( ++$counter, $total));
+			$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
 		}
 	}
 	echo $c->header("\n" . number_format($internal) . " renamed using namecleaning.php\n" . number_format($external) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
@@ -243,7 +243,7 @@ function releaseCleaner($subject, $groupid, $groupname) {
 
 	// Get pre style name from releases.name
 	if (preg_match('/(\w+\.(\w+\.)+\w+-\w+)/', $subject, $match)) {
-		$title = $db->queryOneRow("SELECT title, id from predb WHERE title = " . $db->escapeString(trim($match[1])) . " OR title = " . $db->escapeString(trim($match[2])));
+		$title = $db->queryOneRow("SELECT title from predb WHERE title = " . $db->escapeString(trim($match[1])));
 		if (isset($title['title'])) {
 			$cleanerName = $title['title'];
 			if (!empty($cleanerName)) {
