@@ -39,7 +39,9 @@ if (!isset($argv[1])) {
 		}
 	} else if (isset($pieces[1]) && $pieces[0] == 'filename') {
 		$release = $pieces[1];
-		if ($res = $db->queryOneRow(sprintf('SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE rel.id = %d', $release))) {
+		if ($res = $db->queryOneRow(sprintf('SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, '
+				. 'rel.groupid, relfiles.releaseid AS fileid, rel.id AS releaseid FROM releases rel '
+				. 'INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE rel.id = %d', $release))) {
 			//echo $res['textstring']."\n";
 			$namefixer->done = $namefixer->matched = false;
 			$namefixer->checkName($res, $echo = true, $type = 'Filenames, ', $namestatus = '1');
