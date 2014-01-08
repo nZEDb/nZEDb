@@ -30,11 +30,16 @@ class SplClassLoader
      *
      * @param string $ns The namespace to use.
      */
-    public function __construct($ns = null, $includePath = null)
+    public function __construct($ns = null, array $includePath = array())
     {
-        $this->_namespace = $ns;
-		if (substr($includePath, -1) == '/') { $includePath = substr($includePath, 0, -1); }
-        $this->_includePath = $includePath;
+		$this->_namespace = $ns;
+		foreach ($includePath as &$path) {
+			if (substr($path, -1) == '/')
+			{
+				$path = substr($path, 0, -1);
+			}
+		}
+       $this->_includePath = $includePath;
     }
 
     /**
@@ -121,17 +126,30 @@ class SplClassLoader
      */
     public function loadClass($className)
     {
-        if (null === $this->_namespace || $this->_namespace.$this->_namespaceSeparator === substr($className, 0, strlen($this->_namespace.$this->_namespaceSeparator))) {
+        if ($this->_namespace === null || $this->_namespace.$this->_namespaceSeparator === substr($className, 0, strlen($this->_namespace.$this->_namespaceSeparator))) {
             $fileName = '';
             $namespace = '';
-            if (false !== ($lastNsPos = strripos($className, $this->_namespaceSeparator))) {
-                $namespace = substr($className, 0, $lastNsPos);
-                $className = substr($className, $lastNsPos + 1);
-                $fileName = str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
-            }
-            $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . $this->_fileExtension;
+			if (strtolower(substr($className, 0, 7)) !== 'smarty_') {
+				if (false !== ($lastNsPos = strripos($className, $this->_namespaceSeparator))) {
+					$namespace = substr($className, 0, $lastNsPos);
+					$className = substr($className, $lastNsPos + 1);
+					$fileName = str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+				}
+				$fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . $this->_fileExtension;
+			} else {
+				$fileName = strtolower($className) . '.php';
+			}
 
-            require ($this->_includePath !== null ? $this->_includePath . DIRECTORY_SEPARATOR : '') . $fileName;
+			if (!empty($this->_includePath)) {
+				foreach ($this->_includePath as $path) {
+					$spec = $path . DIRECTORY_SEPARATOR  . $fileName;
+					if (file_exists($spec)) {
+						require_once $spec;
+						return;
+					}
+				}
+			}
+			require_once $fileName;
         }
     }
 }
