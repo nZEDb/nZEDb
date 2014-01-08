@@ -59,11 +59,11 @@ maxmssgs = int(dbgrab[0][1])
 hashcheck = int(dbgrab[0][2])
 
 if hashcheck == 0:
-	print(bcolors.ERROR + "We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB_scripts/reset_Collections.php true" + bcolors.ENDC)
+	print(bcolors.ERROR + "We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB/reset_Collections.php true" + bcolors.ENDC)
 	sys.exit()
 
 #before we get the groups, lets update shortgroups
-subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
+subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])
 
 #query to grab all active groups
 cur = connect()
@@ -94,7 +94,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+my_id])
 					time.sleep(.05)
 					self.my_queue.task_done()
 
@@ -149,7 +149,7 @@ def main():
 
 	for group in list(zip(groups, finals)):
 		final = ("{} {} Binary".format(group[0], group[1]))
-		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
+		subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+str(final)])
 
 	print(bcolors.HEADER + "\nBinaries Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)

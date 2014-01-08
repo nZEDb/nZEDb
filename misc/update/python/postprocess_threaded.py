@@ -245,7 +245,7 @@ class queue_runner(threading.Thread):
             else:
                 if my_id:
                     time_of_last_run = time.time()
-                    subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/postprocess_new.php", ""+my_id])
+                    subprocess.call(["php", pathname+"/../nix/tmux/bin/postprocess_new.php", ""+my_id])
                     time.sleep(.05)
                     self.my_queue.task_done()
 

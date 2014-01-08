@@ -113,9 +113,9 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					if len(sys.argv) > 1 and sys.argv[1] == "all":
-						subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_all_quick.php", ""+my_id])
+						subprocess.call(["php", pathname+"/../nix/tmux/bin/backfill_all_quick.php", ""+my_id])
 					else:
-						subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/backfill_interval.php", ""+my_id])
+						subprocess.call(["php", pathname+"/../nix/tmux/bin/backfill_interval.php", ""+my_id])
 					time.sleep(.05)
 					self.my_queue.task_done()
 

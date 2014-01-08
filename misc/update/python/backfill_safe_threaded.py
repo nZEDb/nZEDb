@@ -53,11 +53,11 @@ dorun = cur[0].fetchone()
 disconnect(cur[0], cur[1])
 if not dorun:
 	#before we get the groups, lets update shortgroups
-	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
+	subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])
 elif len(sys.argv) > 1 and sys.argv[1] not in dorun:
 	#if not dorun:
 	#before we get the groups, lets update shortgroups
-	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/update_groups.php", ""])
+	subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])
 
 count = 0
 previous = "'alt.binaries.crap'"
@@ -136,7 +136,7 @@ while count < 10000:
 		print(bcolors.PRIMARY + "Our oldest post is: {}".format("{:,}".format(datas[1])) + bcolors.ENDC)
 		print(bcolors.PRIMARY + "Available Posts: {}".format("{:,}".format(count)) + bcolors.ENDC)
 		group = ("{} {} BackfillAll".format(datas[0], count))
-		subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
+		subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+str(group)])
 
 #calculate the number of items for queue
 if (count > (backfill_qty * run_threads)):
@@ -164,7 +164,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+my_id])
 					time.sleep(.05)
 					self.my_queue.task_done()
 
@@ -195,10 +195,10 @@ def main(args):
 
 	#get postdate
 	final = ("{} {} Backfill".format(datas[0], int(datas[1] - (maxmssgs * geteach))))
-	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(final)])
+	subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+str(final)])
 
 	group = ("{} {}".format(datas[0], 1000))
-	subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/safe_pull.php", ""+str(group)])
+	subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+str(group)])
 	if run_threads <= geteach:
 		print(bcolors.HEADER + "\nWe used {} threads, a queue of {} and grabbed {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)) + bcolors.ENDC)
 	else:

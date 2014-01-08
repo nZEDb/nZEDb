@@ -74,7 +74,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../../testing/Regex_testing/grabheaders.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../../testing/Regex/grabheaders.php", ""+my_id])
 					self.my_queue.task_done()
 
 def main():

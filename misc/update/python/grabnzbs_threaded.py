@@ -102,7 +102,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../nix_scripts/tmux/bin/grabnzbs.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix/tmux/bin/grabnzbs.php", ""+my_id])
 					time.sleep(.05)
 					self.my_queue.task_done()
 
@@ -135,7 +135,7 @@ def main():
 
 	print(bcolors.HEADER + "\n\nPopulate nzb_guids Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	final = "limited"
-	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
+	subprocess.call(["php", pathname+"/../../testing/DB/populate_nzb_guid.php", ""+final])
 	print(bcolors.HEADER + "\n\nPopulate nzb_guids Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "\n\nGrabNZBs Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)

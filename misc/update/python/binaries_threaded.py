@@ -47,7 +47,7 @@ dbgrab = cur.fetchall()
 run_threads = int(dbgrab[0][0])
 hashcheck = int(dbgrab[0][1])
 if hashcheck == 0:
-	print(bcolors.ERROR + "We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB_scripts/reset_Collections.php true" + bcolors.ENDC)
+	print(bcolors.ERROR + "We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB/reset_Collections.php true" + bcolors.ENDC)
 
 #close connection to mysql
 cur.close()

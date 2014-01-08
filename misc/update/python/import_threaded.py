@@ -124,7 +124,7 @@ def main(args):
 	my_queue.join()
 
 	final = "true"
-	subprocess.call(["php", pathname+"/../../testing/DB_scripts/populate_nzb_guid.php", ""+final])
+	subprocess.call(["php", pathname+"/../../testing/DB/populate_nzb_guid.php", ""+final])
 	print(bcolors.HEADER + "\nNZB Import Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
