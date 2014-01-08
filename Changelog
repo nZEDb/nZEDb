@@ -4,6 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2014-01-08 -> jonnyboy -> commented out auto disable backfill until I can find the cause, increased matches to headers
 2014-01-07 -> jonnyboy -> updated the predb regex
                           added regex to match predb style to predb names before using regexes to clean the name - renametopre.php
                           improved performance and output - reset_postprocessing.php, added color to patchDB.php

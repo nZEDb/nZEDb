@@ -74,7 +74,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel LEFT JOIN releasefiles rf ON rel.id = rf.releaseid WHERE (bitwise & 260) = 256 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND ((rel.bitwise & 512) = 512 OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE (bitwise & 260) = 256 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND ((rel.bitwise & 512) = 512 OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate DESC LIMIT %s"
 		cur.execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
@@ -141,18 +141,23 @@ def main():
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "nfo":
 		for release in datas:
+			time.sleep(.05)
 			my_queue.put("%s %s" % ("nfo", release[0]))
 	elif sys.argv[1] == "filename":
 		for release in datas:
+			time.sleep(.05)
 			my_queue.put("%s %s" % ("filename", release[0]))
 	elif sys.argv[1] == "md5":
 		for release in datas:
+			time.sleep(.05)
 			my_queue.put("%s %s" % ("md5", release[0]))
 	elif sys.argv[1] == "par2":
 		for release in datas:
+			time.sleep(.05)
 			my_queue.put("%s %s %s %s" % ("par2", release[0], release[1], release[2]))
 	elif sys.argv[1] == "miscsorter":
 		for release in datas:
+			time.sleep(.05)
 			my_queue.put("%s %s" % ("miscsorter", release[0]))
 
 	my_queue.join()

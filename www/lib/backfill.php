@@ -95,9 +95,9 @@ class Backfill
 		// Check if we are grabbing further than the server has.
 		if($groupArr['first_record'] <= ($data['first'] + 50000))
 		{
-			echo $this->c->notice("We have hit the maximum we can backfill for ".preg_replace('/alt.binaries/', 'a.b', $groupArr['name']).", disabling it.\n\n");
-			$groups = new Groups();
-			$groups->disableForPost($groupArr['name']);
+			echo $this->c->notice("We have hit the maximum we can backfill for ".str_replace('alt.binaries', 'a.b', $groupArr['name']).", skipping it.\n\n");
+			//$groups = new Groups();
+			//$groups->disableForPost($groupArr['name']);
 			return '';
 		}
 
@@ -248,16 +248,16 @@ class Backfill
 
 		if($groupArr['first_record'] <= 0 || $targetpost <= 0)
 		{
-			echo $this->c->error("You need to run update_binaries on the ".preg_replace('/alt.binaries/', 'a.b', $data['group']).". Otherwise the group is dead, you must disable it.\n");
+			echo $this->c->error("You need to run update_binaries on the ".str_replace('alt.binaries', 'a.b', $data['group']).". Otherwise the group is dead, you must disable it.\n");
 			return '';
 		}
 
 		// Check if we are grabbing further than the server has.
 		if($groupArr['first_record'] <= $data['first']+$articles)
 		{
-			echo $this->c->notice("We have hit the maximum we can backfill for ".preg_replace('/alt.binaries/', 'a.b', $groupArr['name']).", disabling it.\n\n");
-			$groups = new Groups();
-			$groups->disableForPost($groupArr['name']);
+			echo $this->c->notice("We have hit the maximum we can backfill for ".str_replace('alt.binaries', 'a.b', $groupArr['name']).", skipping it.\n\n");
+			//$groups = new Groups();
+			//$groups->disableForPost($groupArr['name']);
 			return '';
 		}
 
@@ -372,7 +372,7 @@ class Backfill
 						if (isset($res['number']) && is_numeric($res['number']))
 						{
 							$post = $res['number'];
-							echo $this->c->info("Unable to fetch article $old_post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Retrying with newest article, from parts table, [$post] from ${groupa['pname']}\n");
+							echo $this->c->info("Unable to fetch article $old_post from ".str_replace('alt.binaries', 'a.b', $group).". Retrying with newest article, from parts table, [$post] from ${groupa['pname']}\n");
 						}
 					}
 					else
@@ -381,7 +381,7 @@ class Backfill
 						if (isset($res['number']) && is_numeric($res['number']))
 						{
 							$post = $res['number'];
-							echo $this->c->info("Unable to fetch article $old_post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Retrying with oldest article, from parts table, [$post] from ${groupa['pname']}.\n");
+							echo $this->c->info("Unable to fetch article $old_post from ".str_replace('alt.binaries', 'a.b', $group).". Retrying with oldest article, from parts table, [$post] from ${groupa['pname']}.\n");
 						}
 					}
 					$success = false;
@@ -394,7 +394,7 @@ class Backfill
 						if (isset($res['date']))
 						{
 							$date = $res['date'];
-							echo $this->c->info("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using newest date from ${groupa['cname']}.\n");
+							echo $this->c->info("Unable to fetch article $post from ".str_replace('alt.binaries', 'a.b', $group).". Using newest date from ${groupa['cname']}.\n");
 							if (strlen($date) > 0)
 								$success = true;
 						}
@@ -405,7 +405,7 @@ class Backfill
 						if (isset($res['date']))
 						{
 							$date = $res['date'];
-							echo $this->c->info("Unable to fetch article $post from ".preg_replace('/alt.binaries/', 'a.b', $group).". Using oldest date from ${groupa['cname']}.\n");
+							echo $this->c->info("Unable to fetch article $post from ".str_replace('alt.binaries', 'a.b', $group).". Using oldest date from ${groupa['cname']}.\n");
 							if (strlen($date) > 0)
 								$success = true;
 						}
@@ -431,7 +431,7 @@ class Backfill
 				$res = $db->queryOneRow(sprintf("SELECT first_record_postdate from groups where name = '%s'", $group));
 				if (array_key_exists('first_record_postdate', $res))
 				{
-					echo $this->c->info('Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current first_record_postdate['.$res['first_record_postdate']."], instead.\n");
+					echo $this->c->info('Unable to fetch article '.$keeppost.' from '.str_replace('alt.binaries', 'a.b', $group).'. Using current first_record_postdate['.$res['first_record_postdate']."], instead.\n");
 					return strtotime($res['first_record_postdate']);
 				}
 				else
@@ -442,7 +442,7 @@ class Backfill
 				$res = $db->queryOneRow(sprintf("SELECT last_record_postdate from groups where name = '%s'", $group));
 				if (array_key_exists('last_record_postdate', $res))
 				{
-					echo $this->c->info('Unable to fetch article '.$keeppost.' from '.preg_replace('/alt.binaries/', 'a.b', $group).'. Using current last_record_postdate['.$res['last_record_postdate']."], instead.\n");
+					echo $this->c->info('Unable to fetch article '.$keeppost.' from '.str_replace('alt.binaries', 'a.b', $group).'. Using current last_record_postdate['.$res['last_record_postdate']."], instead.\n");
 					return strtotime($res['last_record_postdate']);
 				}
 				else

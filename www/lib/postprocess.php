@@ -1341,7 +1341,7 @@ class PostProcess
 										} else {
 											$newcat = $category->determineCategory($newname, $rquer['groupid']);
 										}
-										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, bitwise = ((bitwise & ~13)|13) WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
+										$this->db->queryExec(sprintf('UPDATE releases searchname = %s, categoryid = %d, bitwise = ((bitwise & ~13)|13) WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
 
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID, $xmlarray);
