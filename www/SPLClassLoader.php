@@ -33,6 +33,7 @@ class SplClassLoader
     public function __construct($ns = null, $includePath = null)
     {
         $this->_namespace = $ns;
+		if (substr($includePath, -1) == '/') { $includePath = substr($includePath, 0, -1); }
         $this->_includePath = $includePath;
     }
 
