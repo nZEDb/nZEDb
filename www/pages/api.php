@@ -23,9 +23,9 @@ if (isset($_GET['t']))
 else
 	showApiError(200);
 
-require_once nZEDb_LIB . 'releases.php';
-require_once nZEDb_LIB . 'category.php';
-require_once nZEDb_LIB . 'nzb.php';
+//require_once nZEDb_LIB . 'releases.php';
+//require_once nZEDb_LIB . 'category.php';
+//require_once nZEDb_LIB . 'nzb.php';
 
 function getAudioReleases($rID)
 {
