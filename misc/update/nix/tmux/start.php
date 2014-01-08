@@ -132,7 +132,7 @@ sleep(2);
 
 function start_apps($tmux_session)
 {
-	$t = new tmux();
+	$t = new Tmux();
 	$tmux = $t->get();
 	$htop = $tmux->htop;
 	$vnstat = $tmux->vnstat;

@@ -59,7 +59,7 @@ if (!isset($argv[1])) {
 	} else if (isset($pieces[1]) && $pieces[0] == 'par2') {
 		$s = new Sites();
 		$site = $s->get();
-		$nntp = new Nntp();
+		$nntp = new NNTP();
 		if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false) {
 			exit($c->error("Unable to connect to usenet."));
 		}
@@ -70,7 +70,7 @@ if (!isset($argv[1])) {
 		$relID = $pieces[1];
 		$guid = $pieces[2];
 		$groupID = $pieces[3];
-		$nzbcontents = new NZBcontents(true);
+		$nzbcontents = new NZBContents(true);
 		$pp = new Postprocess($echooutput = true);
 		$res = $nzbcontents->checkPAR2($guid, $relID, $groupID, $db, $pp, 1, $nntp);
 		if ($res === false) {
@@ -82,7 +82,7 @@ if (!isset($argv[1])) {
 	} else if (isset($pieces[1]) && $pieces[0] == 'miscsorter') {
 		$s = new Sites();
 		$site = $s->get();
-		$nntp = new Nntp();
+		$nntp = new NNTP();
 		if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false) {
 			exit($c->error("Unable to connect to usenet."));
 		}

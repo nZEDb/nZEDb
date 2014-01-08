@@ -1,6 +1,6 @@
 <?php
 //require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'Net_NNTP/NNTP/Client.php';
+require_once nZEDb_LIB . '/Net_NNTP/NNTP/Client.php';
 //require_once nZEDb_LIB . 'ColorCLI.php';
 
 /*

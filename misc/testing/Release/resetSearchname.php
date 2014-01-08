@@ -18,10 +18,10 @@ if (isset($argv[1]) && $argv[1] == "full")
 		echo "Going to recreate all search names, recategorize them and fix the names with namefixer, this can take a while.\n";
 		$done = 0;
 		$timestart = TIME();
-		$consoletools = new consoleTools();
+		$consoletools = new ConsoleTools();
 		foreach ($res as $row)
 		{
-			$nc = new nameCleaning();
+			$nc = new NameCleaning();
 			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
 			if (is_array($newname))
 				$newname = $newname['cleansubject'];
@@ -57,10 +57,10 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		echo "Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.\n";
 		$done = 0;
 		$timestart = TIME();
-		$consoletools = new consoleTools();
+		$consoletools = new ConsoleTools();
 		foreach ($res as $row)
 		{
-			$nc = new nameCleaning();
+			$nc = new NameCleaning();
 			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
 			if (is_array($newname))
 				$newname = $newname['cleansubject'];
@@ -96,10 +96,10 @@ else if (isset($argv[1]) && $argv[1] == "reset")
 		echo "Going to reset search names, this can take a while.\n";
 		$done = 0;
 		$timestart = TIME();
-		$consoletools = new consoleTools();
+		$consoletools = new ConsoleTools();
 		foreach ($res as $row)
 		{
-			$nc = new nameCleaning();
+			$nc = new NameCleaning();
 			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
 			if (is_array($newname))
 				$newname = $newname['cleansubject'];

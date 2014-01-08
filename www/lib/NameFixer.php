@@ -224,7 +224,7 @@ class NameFixer
 		{
 			echo $relres->rowCount()." releases to process.\n";
 			$db = $this->db;
-			$nzbcontents = new NZBcontents($this->echooutput);
+			$nzbcontents = new NZBContents($this->echooutput);
 			$pp = new Postprocess($this->echooutput);
 			foreach ($relres as $relrow)
 			{
@@ -249,7 +249,7 @@ class NameFixer
 		$echooutput = true;
 		if ($this->relid !== $release["releaseid"])
 		{
-			$namecleaning = new nameCleaning();
+			$namecleaning = new NameCleaning();
 			$newname = $namecleaning->fixerCleaner($name);
 			if (strtolower($newname) != strtolower($release["searchname"]))
 			{

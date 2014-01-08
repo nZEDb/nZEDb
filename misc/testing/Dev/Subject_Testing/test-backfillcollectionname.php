@@ -15,7 +15,7 @@ else
 
 function dogroup($name, $articles)
 {
-	$backfill = new backfill();
+	$backfill = new Backfill();
 	$backfill->backfillPostAllGroups($name, $articles);
 	echo "Type y and press enter to continue, n to quit.\n";
 	if(trim(fgets(fopen("php://stdin","r"))) == 'y')

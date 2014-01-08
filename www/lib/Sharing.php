@@ -192,8 +192,8 @@ class Sharing
 	// gzip then yEnc encode the body, set up the subject then attempt to upload the comment.
 	function pushArticle($body, $row)
 	{
-		$yenc = new yenc;
-		$nntp = new Nntp;
+		$yenc = new Yenc;
+		$nntp = new NNTP();
 		$nntp->doConnect();
 		// group(s),                   subject                          ,            body                           , poster
 		$success = $nntp->post($this->group, $row['nzb_guid'].' - [1/1] "'.time().'" (1/1) yEnc', $yenc->encode(gzdeflate($body, 4), uniqid), "nZEDb");

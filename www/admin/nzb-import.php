@@ -10,7 +10,7 @@ require_once './config.php';
 
 $db = new DB();
 $binaries = new Binaries();
-$namecleaning = new nameCleaning();
+$namecleaning = new NameCleaning();
 $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;

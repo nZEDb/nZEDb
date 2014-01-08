@@ -8,7 +8,7 @@ require dirname(__FILE__) . '/../../../www/config.php';
 if (isset($argv[1]) && is_numeric($argv[1]))
 {
 	$db = new DB();
-	$predb = new Predb();
+	$predb = new PreDb();
 	$consoletools = new ConsoleTools();
 	$predbv = $db->queryOneRow("SELECT value AS v FROM site WHERE setting = 'predbversion'");
 	if ($predbv["v"] == 142)

@@ -4,7 +4,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 //require_once nZEDb_LIB . 'nntp.php';
 
 
-$nntp = new Nntp();
+$nntp = new NNTP();
 $nntp->doConnect();
 $data = $nntp->getGroups();
 

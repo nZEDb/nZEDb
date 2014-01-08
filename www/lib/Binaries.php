@@ -21,8 +21,8 @@ class Binaries
 		$this->site = $s->get();
 		$this->backfill = new Backfill($this->site);
 		$this->groups = new Groups($this->db);
-		$this->nameCleaning = new nameCleaning();
-		$this->consoleTools = new consoleTools();
+		$this->nameCleaning = new NameCleaning();
+		$this->consoleTools = new ConsoleTools();
 		$this->compressedHeaders = ($this->site->compressedheaders == '1') ? true : false;
 		$this->messagebuffer = (!empty($this->site->maxmssgs)) ? $this->site->maxmssgs : 20000;
 		$this->NewGroupScanByDays = ($this->site->newgroupscanmethod == '1') ? true : false;

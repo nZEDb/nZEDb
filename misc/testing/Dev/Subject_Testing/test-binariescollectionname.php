@@ -12,7 +12,7 @@ else
 	{
 		$groups = new Groups();
 		$grouplist = $groups->getActive();
-		$nntp = new Nntp();
+		$nntp = new NNTP();
 		foreach ($grouplist as $group)
 		{
 			$nntp->doConnect();
@@ -22,7 +22,7 @@ else
 	}
 	else
 	{
-		$nntp = new Nntp();
+		$nntp = new NNTP();
 		$nntp->doConnect();
 		dogroup($argv[1], $nntp);
 		$nntp->doQuit();
@@ -31,7 +31,7 @@ else
 
 function dogroup($group, $nntp)
 {
-	$binaries = new binaries();
+	$binaries = new Binaries();
 	$binaries->updateGroup($group);
 	echo "Press enter to continue, type n and press enter to quit.\n";
 	$cmd = trim(fgets(fopen("php://stdin","r")));

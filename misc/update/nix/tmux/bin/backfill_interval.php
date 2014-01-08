@@ -14,7 +14,7 @@ if (!isset($argv[1])) {
 	exit($c->error("This script is not intended to be run manually, it is called from backfill_threaded.py."));
 } else if (isset($argv[1])) {
 	// Create the connection here and pass
-	$nntp = new Nntp();
+	$nntp = new NNTP();
 	if ($nntp->doConnect() === false) {
 		exit($c->error("Unable to connect to usenet."));
 	}

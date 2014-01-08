@@ -14,7 +14,7 @@ if (!isset($argv[1])) {
 }
 
 // Create the connection here and pass
-$nntp = new Nntp();
+$nntp = new NNTP();
 if ($nntp->doConnect() === false) {
 	exit($c->error("Unable to connect to usenet."));
 }

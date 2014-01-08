@@ -7,7 +7,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 if (!isset($argv[2]) || !is_numeric($argv[2]))
 	exit("\nTest your nntp connection, get group information and postdate for specific article.\nTo run:\ntest-nntp.php groupname articlenumber.\n");
 
-$nntp = new Nntp();
+$nntp = new NNTP();
 $nntp->doConnect();
 
 $first = $argv[2];

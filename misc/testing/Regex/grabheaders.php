@@ -10,9 +10,9 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 //require_once nZEDb_LIB . 'ColorCLI.php';
 
 
-$cleaner = new nameCleaning();
+$cleaner = new NameCleaning();
 $group = $argv[1];
-$nntp = new Nntp();
+$nntp = new NNTP();
 $c = new ColorCLI();
 if ($nntp->doConnect() === false)
 	exit($c->error("Unable to connect to usenet."));

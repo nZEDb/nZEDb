@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 
 $group = $argv[1];
-$cleaner = new nameCleaning();
+$cleaner = new NameCleaning();
 $c = new ColorCLI();
 
 if (isset($argv[1]) && file_exists($argv[1]))

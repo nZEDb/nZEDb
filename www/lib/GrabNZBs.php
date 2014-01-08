@@ -17,7 +17,7 @@ class GrabNZBs
 		$this->site = $s->get();
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->replacenzbs = (isset($this->site->replacenzbs)) ? $this->site->replacenzbs : 0;
-		$this->namecleaner = new nameCleaning();
+		$this->namecleaner = new NameCleaning();
 		$this->categorize = new Category();
 	}
 

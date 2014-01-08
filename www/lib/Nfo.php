@@ -137,7 +137,7 @@ class Nfo
 				$release['completion'] = 0;
 			if ($release['completion'] == 0)
 			{
-				$nzbcontents = new NZBcontents($this->echooutput);
+				$nzbcontents = new NZBContents($this->echooutput);
 				$nzbcontents->NZBcompletion($release['guid'], $release['id'], $release['groupid'], $nntp, $db);
 			}
 			return true;
@@ -188,7 +188,7 @@ class Nfo
 				echo $this->c->header('Available to process: -6 = '.number_format($pw6[0]['count']).', -5 = '.number_format($pw5[0]['count']).', -4 = '.number_format($pw4[0]['count']).', -3 = '.number_format($pw3[0]['count']).', -2 = '.number_format($pw2[0]['count']).', -1 = '.number_format($pw1[0]['count']));
 			}
 			$groups = new Groups();
-			$nzbcontents = new NZBcontents($this->echooutput);
+			$nzbcontents = new NZBContents($this->echooutput);
 			$movie = new Movie($this->echooutput);
 			$tvrage = new Tvrage();
 

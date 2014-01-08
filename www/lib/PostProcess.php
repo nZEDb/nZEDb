@@ -19,9 +19,9 @@
 //require_once nZEDb_LIB . 'site.php';
 //require_once nZEDb_LIB . 'tvrage.php';
 //require_once nZEDb_LIB . 'util.php';
-//require_once nZEDb_LIB . 'rarinfo/archiveinfo.php';
-//require_once nZEDb_LIB . 'rarinfo/par2info.php';
-//require_once nZEDb_LIB . 'rarinfo/zipinfo.php';
+require_once nZEDb_LIB . 'rarinfo/archiveinfo.php';
+require_once nZEDb_LIB . 'rarinfo/par2info.php';
+require_once nZEDb_LIB . 'rarinfo/zipinfo.php';
 //require_once nZEDb_LIB . 'ColorCLI.php';
 
 class PostProcess
@@ -168,7 +168,7 @@ class PostProcess
 		if (!isset($nntp))
 			exit($this->c->error("Not connected to usenet(postprocess->processPredb).\n"));
 
-		$predb = new Predb($this->echooutput);
+		$predb = new PreDb($this->echooutput);
 		$titles = $predb->updatePre();
 		$predb->checkPre($nntp);
 		if ($titles > 0)
@@ -415,7 +415,7 @@ class PostProcess
 			}
 
 			$ri = new ReleaseImage();
-			$nzbcontents = new NZBcontents($this->echooutput);
+			$nzbcontents = new NZBContents($this->echooutput);
 			$nzb = new NZB($this->echooutput);
 			$groups = new Groups();
 			$processSample      = ($this->site->ffmpegpath != '') ? true : false;

@@ -110,7 +110,7 @@ if (isset($_GET["id"]))
 	$releasefiles = $rf->get($data["id"]);
 
 	require_once nZEDb_LIB . 'predb.php';
-	$predb = new Predb();
+	$predb = new PreDb();
 	$pre = $predb->getForRelease($data['preid']);
 
 	$page->smarty->assign('releasefiles',$releasefiles);

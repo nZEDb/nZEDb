@@ -27,7 +27,7 @@ class MiscSorter
 		$this->category = new Category($this->echooutput);
 		$this->movie = new Movie($this->echooutput);
 		$this->nfolib = new Nfo($this->echooutput);
-		$this->nc = new nameCleaning();
+		$this->nc = new NameCleaning();
 		$this->groups = new Groups();
 		$this->c = new ColorCLI();
 
@@ -475,7 +475,7 @@ class MiscSorter
 
 	function domusicfiles ($row)
 	{
-		$nzbcontents = new NZBcontents();
+		$nzbcontents = new NZBContents();
 
 		$m3u = $alt = $mp3name = '';
 		$mp3 = false;

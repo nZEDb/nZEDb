@@ -6,7 +6,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 if (!isset($argv[1]))
 	exit("This script gets all binary groups from usenet and compares against yours.\nTo run: \ncheck_usenet_groups.php 1000000\n");
 
-$nntp = new Nntp();
+$nntp = new NNTP();
 $nntp->doConnect();
 $data = $nntp->getGroups();
 

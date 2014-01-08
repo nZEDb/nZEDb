@@ -72,7 +72,7 @@ function preName($argv)
 				else
 					$increment = false;
 			}
-			
+
 			if ($cleanName != '')
 			{
 				$cleanedBook = false;
@@ -169,7 +169,7 @@ function categorizeRelease($type, $where="", $echooutput=false)
 {
 	$db = new DB();
 	$cat = new Category();
-	$consoletools = new consoleTools();
+	$consoletools = new ConsoleTools();
 	$relcount = 0;
 	$resrel = $db->queryDirect("SELECT id, ".$type.", groupid FROM releases ".$where);
 	$total = $resrel->rowCount();
@@ -194,7 +194,7 @@ function releaseCleaner($subject, $groupid, $id, $groupname)
 	$groups = new Groups();
 	$groupName = $groups->getByNameByID($groupid);
 	$db = new DB();
-	$namecleaning = new nameCleaning();
+	$namecleaning = new NameCleaning();
 	$propername = true;
 	$cleanName = '';
 	$category = new Category();

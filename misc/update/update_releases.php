@@ -16,7 +16,7 @@ $site = $s->get();
 if (isset($argv[2]) && $argv[2] === 'true')
 {
 	// Create the connection here and pass
-	$nntp = new Nntp();
+	$nntp = new NNTP();
 	if ($nntp->doConnect() === false)
 		exit($c->error("Unable to connect to usenet."));
 	if ($site->nntpproxy === "1")

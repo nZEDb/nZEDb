@@ -16,7 +16,7 @@ $page = new Page();
 $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
-$namecleaning = new nameCleaning();
+$namecleaning = new NameCleaning();
 $categorize = new Category();
 $maxtoprocess = 0;
 
@@ -138,7 +138,7 @@ else
 			$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
 			$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
 			$subject = utf8_encode(trim($partless));
-			$namecleaning = new nameCleaning();
+			$namecleaning = new NameCleaning();
 
 			// Make a fake message object to use to check the blacklist.
 			$msg = array("Subject" => $subject, "From" => $fromname, "Message-ID" => "");

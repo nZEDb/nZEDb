@@ -13,7 +13,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $n = "\n";
 $namefixer = new Namefixer();
-$predb = new Predb(true);
+$predb = new PreDb(true);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 {
@@ -27,7 +27,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 		require_once nZEDb_LIB . 'nntp.php';
 		$s = new Sites();
 		$site = $s->get();
-		$nntp = new Nntp();
+		$nntp = new NNTP();
 		if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
 		{
 			echo $c->error("Unable to connect to usenet.\n");

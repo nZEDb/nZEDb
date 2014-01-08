@@ -14,7 +14,7 @@ if (!isset($argv[1])) {
 $s = new Sites();
 $site = $s->get();
 
-$nntp = new Nntp();
+$nntp = new NNTP();
 if (($site->grabnzbs == '2' ? $nntp->doConnect_A() : $nntp->doConnect()) === false) {
 	exit($c->error("Unable to connect to usenet."));
 }

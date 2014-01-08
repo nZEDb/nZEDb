@@ -23,7 +23,7 @@ $pieces = explode('           =+=            ', $argv[1]);
 $postprocess = new PostProcess(true);
 if (isset($pieces[6])) {
 	// Create the connection here and pass, this is for post processing, so check for alternate
-	$nntp = new Nntp();
+	$nntp = new NNTP();
 	if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false) {
 		exit($c->error("Unable to connect to usenet."));
 	}
@@ -37,7 +37,7 @@ if (isset($pieces[6])) {
 	}
 } else if (isset($pieces[3])) {
 	// Create the connection here and pass, this is for post processing, so check for alternate
-	$nntp = new Nntp();
+	$nntp = new NNTP();
 	if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false) {
 		exit($c->error("Unable to connect to usenet."));
 	}
