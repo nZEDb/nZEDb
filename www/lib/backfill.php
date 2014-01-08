@@ -136,7 +136,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo $this->c->set256($this->header).'Getting '.(number_format($last-$first+1))." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).\n".$this->c->rsetColor();
+			echo $this->c->set256($this->header).'Getting '.(number_format($last-$first+1))." articles from ".str_replace('alt.binaries', 'a.b', $data['group']).", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue).\n".$this->c->rsetColor();
 			flush();
 			$process = $this->safepartrepair ? 'update' : 'backfill';
 			$binaries->scan($nntp, $groupArr, $first, $last, $process);
@@ -296,7 +296,7 @@ class Backfill
 		{
 			$binaries->startLoop = microtime(true);
 
-			echo $this->c->set256($this->header)."\nGetting ".($last-$first+1)." articles from ".$data['group'].", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue)\n".$this->c->rsetColor();
+			echo $this->c->set256($this->header)."\nGetting ".($last-$first+1)." articles from ".str_replace('alt.binaries', 'a.b', str_replace('alt.binaries', 'a.b', $data['group'])).", ".$left." group(s) left. (".(number_format($first-$targetpost))." articles in queue)\n".$this->c->rsetColor();
 			flush();
 			$process = $this->safepartrepair ? 'update' : 'backfill';
 			$binaries->scan($nntp, $groupArr, $first, $last, $process);

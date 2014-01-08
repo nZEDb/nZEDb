@@ -334,12 +334,22 @@ class Binaries
 
 				// Not a binary post most likely.. continue.
 				if ($groupArr['name'] === 'alt.binaries.sounds.mp3.complete_cd' && preg_match('/^\[\d+\/\d+\][ -]+\(Top 100 Album Charts\)[ -]+".+"[ -]+\(\d+\/\d+\)/', $msg['Subject'])) {
-					preg_match('/^\[\d+\/\d+\][ -]+\(Top 100 Album Charts\)[ -]+".+"[ -]+(\(\d+\/\d+\))/', $msg['Subject'], $partnumber);
-					$msg['Subject'] = preg_replace('/\(\d+\/\d+\)/', 'yEnc ' . $partnumber[1], $msg['Subject']);
+					if (preg_match('/^\[\d+\/\d+\][ -]+\(Top 100 Album Charts\)[ -]+".+"[ -]+(\(\d+\/\d+\))/', $msg['Subject'], $partnumber)) {
+						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)/', 'yEnc ' . $partnumber[1], $msg['Subject']);
+					}
+				} else if ($groupArr['name'] === 'alt.binaries.sounds.mp3.complete_cd' && !preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+(\(\d+\/\d+\))$/', $msg['Subject'])) {
+					if (preg_match('/.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
+						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)/', 'yEnc ' . $partnumber[1], $msg['Subject']);
+					}
+				} else if ($groupArr['name'] === 'alt.binaries.moovees' && !preg_match('/yEnc/i', $msg['Subject']) && preg_match('/\d+\.\d+ (\(\d+\/\d+\))$/', $msg['Subject'])) {
+					if (preg_match('/\d+\.\d+ (\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
+						$msg['Subject'] = preg_replace('/\d+\.\d+ (\(\d+\/\d+\))$/', 'yEnc ' . $partnumber[1], $msg['Subject']);
+					}
 				}
 
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*)\((\d+)\/(\d+)\)(\?=| \d+ [KMG]bytes)?$/', $msg['Subject'], $matches)) {
-					if (!preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject']) && preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1') {
+					//if (!preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject']) && preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1') {
+					if (!preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject']) && $this->showdroppedyencparts === '1') {
 						file_put_contents("/var/www/nZEDb/not_yenc/" . $groupArr['name'] . ".dropped.txt", $msg['Subject'] . "\n", FILE_APPEND);
 					}
 
