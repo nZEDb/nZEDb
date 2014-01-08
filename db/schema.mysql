@@ -54,7 +54,7 @@ CREATE TABLE releases (
 	guid VARCHAR(50) NOT NULL,
 	fromname VARCHAR(255) NULL,
 	completion FLOAT NOT NULL DEFAULT '0',
-	categoryid INT DEFAULT 0,
+	categoryid INT NOT NULL DEFAULT 7010,
 	rageid INT NULL,
 	seriesfull VARCHAR(15) NULL,
 	season VARCHAR(10) NULL,
@@ -1069,7 +1069,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','163');
+	('sqlpatch','164');
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (

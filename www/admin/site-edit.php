@@ -18,7 +18,7 @@ switch($action)
 	case 'submit':
 		$error = "";
 		// book_reqids is an array it needs to be a comma seperated string, make it so
-		$book_ids = implode(', ', $_POST[book_reqids]);
+		$book_ids = implode(', ', $_POST['book_reqids']);
 		// save it back
 		$_POST['book_reqids'] = $book_ids;
 		// update site table as always

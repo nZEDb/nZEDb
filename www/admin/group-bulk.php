@@ -14,7 +14,7 @@ switch($action)
 		if (isset($_POST['groupfilter']) && !empty($_POST['groupfilter']))
 		{
 			$groups = new Groups;
-			$msgs = $groups->addBulk($_POST['groupfilter'], $_POST['active']);
+			$msgs = $groups->addBulk($_POST['groupfilter'], $_POST['active'], $_POST['backfill']);
 		}
 	break;
 
@@ -30,5 +30,3 @@ $page->smarty->assign('yesno_names', array( 'Yes', 'No'));
 $page->title = "Bulk Add Newsgroups";
 $page->content = $page->smarty->fetch('group-bulk.tpl');
 $page->render();
-
-?>

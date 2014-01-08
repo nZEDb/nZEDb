@@ -108,7 +108,7 @@ class AniDBstandAlone
 			else
 			{
 				if ($this->echooutput)
-					echo 'AnimeTitle Record '.$anidbid." is not present in anidb table yet, processing for possible removal.\n";
+					echo 'AnimeTitle Record '.$anidbid." is already present in anidb table, processing for possible removal.\n";
 
 				$AniDBAPIArrayOld['AnimeInProgress'] = false;
 
@@ -157,9 +157,9 @@ class AniDBstandAlone
 		{
 			$anidbid = (int)$value['anidbid'];
 
-			$exists = $db->query(sprintf('SELECT COUNT(*) FROM `anidb` WHERE `anidbid` = %d', $anidbid));
+			$exists = $db->queryOneRow(sprintf('SELECT COUNT(*) as num FROM `anidb` WHERE `anidbid` = %d', $anidbid));
 
-			if ( (int)$exists['0'][0] == 0 )
+			if ( (int)$exists['num'] == 0 )
 			{
 				if ($this->echooutput)
 					echo 'Adding AniDB ID '.$anidbid."\n";

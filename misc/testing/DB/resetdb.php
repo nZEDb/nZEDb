@@ -45,10 +45,11 @@ foreach ($arr as &$value)
 }
 unset($value);
 
-if ($db->dbsystem == 'mysql')
+if ($db->dbsystem == 'mysql') {
 	$sql = "SHOW table status";
-else
+} else {
 	$sql = "SELECT relname FROM pg_class WHERE relname !~ '^(pg_|sql_)' AND relkind = 'r'";
+}
 $tables = $db->query($sql);
 foreach($tables as $row)
 {
@@ -97,8 +98,8 @@ if ($tvshows !== false)
 		if (isset($rage->id) && isset($rage->name) && !empty($rage->id) && !empty($rage->name))
 			$db->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, country) VALUES (%s, %s, %s)', $db->escapeString($rage->id), $db->escapeString($rage->name), $db->escapeString($rage->country)));
 	}
-}
-else
+} else {
 	echo $c->error("TVRage site has a hard limit of 400 concurrent api requests. At the moment, they have reached that limit. Please wait before retrying again.");
+}
 
 echo $c->header("Deleted all releases, images, previews and samples. This script ran for ".$consoletools->convertTime(TIME() - $timestart));

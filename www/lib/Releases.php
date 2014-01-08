@@ -825,11 +825,13 @@ class Releases
         $db = $this->db;
         if (is_array($guid)) {
             $tmpguids = array();
-            foreach ($guid as $g)
+            foreach ($guid as $g) {
                 $tmpguids[] = $db->escapeString($g);
+            }
             $gsql = sprintf('guid IN (%s)', implode(',', $tmpguids));
-        } else
+        } else {
             $gsql = sprintf('guid = %s', $db->escapeString($guid));
+        }
         $sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE %s ", $gsql);
         return (is_array($guid)) ? $db->query($sql) : $db->queryOneRow($sql);
     }
@@ -1209,7 +1211,6 @@ class Releases
 
         if ($rescol->rowCount() > 0) {
             $predb = new PreDb();
-            //$page = new Page();
 
             foreach ($rescol as $rowcol) {
                 $propername = true;
@@ -1439,7 +1440,6 @@ class Releases
 
     public function processReleasesStage5b($groupID, $echooutput = true)
     {
-        //$page = new Page();
         if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
             $db = $this->db;
             $category = new Category();
@@ -1451,7 +1451,7 @@ class Releases
             if ($this->echooutput)
                 echo $this->c->header("\nStage 5b -> Request ID lookup.");
 
-            // Look for records that potentially have requestID titles.
+            // Look for records that potentially have requestID titles and have not been renamed by any other means
             $resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "(bitwise & 1284) = 1280 AND reqidstatus in (0, -1, -3) LIMIT 100");
 
             if ($resrel->rowCount() > 0) {
@@ -1487,8 +1487,10 @@ class Releases
                             $db->queryExec(sprintf('UPDATE releases SET reqidstatus = -2 WHERE id = %d', $rowrel['id']));
                     }
                     if ($bFound) {
-                        $groupname = $this->groups->getByNameByID($rowrel['groupname']);
-                        $determinedcat = $category->determineCategory($newTitle, $groupname);
+	                    if (empty($groupID)) {
+		                    $groupID = $this->groups->getIDByName($rowrel['groupname']);
+	                    }
+                        $determinedcat = $category->determineCategory($newTitle, $groupID);
                         $run = $db->prepare(sprintf('UPDATE releases SET reqidstatus = 1, bitwise = ((bitwise & ~132)|132), searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($newTitle), $determinedcat, $rowrel['id']));
                         $run->execute();
                         $newcatname = $category->getNameByID($determinedcat);
@@ -1540,7 +1542,7 @@ class Releases
     public function processReleasesStage7a($groupID, $echooutput = false)
     {
         $db = $this->db;
-        //$page = new Page();
+
         $category = new Category();
         $genres = new Genres();
         $n = "\n";
@@ -1651,7 +1653,7 @@ class Releases
     public function processReleasesStage7b($groupID, $echooutput = false)
     {
         $db = $this->db;
-        //$page = new Page();
+
         $category = new Category();
         $genres = new Genres();
         $remcount = $reccount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = $total = 0;
@@ -1823,7 +1825,7 @@ class Releases
         if ($this->hashcheck == 0)
             exit($this->c->error("You must run update_binaries.php to update your collectionhash.\n"));
         $db = $this->db;
-        //$page = new Page();
+
         $groupID = '';
 
         if (!empty($groupName)) {
@@ -1976,7 +1978,10 @@ class Releases
     public function getNewestMovies()
     {
         $db = new DB();
-        return $db->query("SELECT DISTINCT (a.imdbID), guid, name, b.title, searchname, size, completion, postdate, categoryid, comments, grabs, c.cover FROM releases a, category b, movieinfo c WHERE b.title = 'Movies'  and a.imdbid = c.imdbid and a.imdbid !='NULL' GROUP BY a.imdbid ORDER BY a.postdate DESC LIMIT 16");
+        return $db->query("SELECT DISTINCT (a.imdbID), guid, name, b.title, searchname, size, completion, postdate, "
+                . "categoryid, comments, grabs, c.cover FROM releases a, category b, movieinfo c "
+                . "WHERE b.title = 'Movies'  AND a.imdbid = c.imdbid AND a.imdbid !='NULL' AND a.imdbid != 0 AND c.cover = 1 "
+                . "GROUP BY a.imdbid ORDER BY a.postdate DESC LIMIT 16");
     }
 
     public function getNewestConsole()

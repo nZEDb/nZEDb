@@ -217,20 +217,21 @@ class Groups
 	{
 		$db = new DB();
 
-		if ($group["minfilestoformrelease"] == "" || $group["minfilestoformrelease"] == "0")
+		if ($group["minfilestoformrelease"] == "" || trim($group["minfilestoformrelease"] == "0"))
 			$minfiles = 'NULL';
 		else
-			$minfiles = $group["minfilestoformrelease"] + 0;
+			$minfiles = trim($group["minfilestoformrelease"]) + 0;
 
-		if ($group["minsizetoformrelease"] == "" || $group["minsizetoformrelease"] == "0")
+		if ($group["minsizetoformrelease"] == "" || trim($group["minsizetoformrelease"]) == "0")
 			$minsizetoformrelease = 'NULL';
 		else
-			$minsizetoformrelease = $db->escapeString($group["minsizetoformrelease"]);
+			$minsizetoformrelease = $db->escapeString(trim($group["minsizetoformrelease"]));
 
-		$first = (isset($group["first_record"]) ? $group["first_record"] : "0");
-		$last = (isset($group["last_record"]) ? $group["last_record"] : "0");
+		$first = (isset($group["first_record"]) ? trim($group["first_record"]) : "0");
+		$last = (isset($group["last_record"]) ? trim($group["last_record"]) : "0");
+		$backfill_target = (isset($group["backfill_target"]) ? trim($group["backfill_target"]) : "0");
 
-		$sql = sprintf("INSERT INTO groups (name, description, first_record, last_record, last_updated, active, minfilestoformrelease, minsizetoformrelease) values (%s, %s, %s, %s, NULL, %d, %s, %s) ",$db->escapeString($group["name"]), $db->escapeString($group["description"]), $db->escapeString($first), $db->escapeString($last), $group["active"], $minfiles, $minsizetoformrelease);
+        $sql = sprintf("INSERT INTO groups (name, description, backfill_target, first_record, last_record, last_updated, active, backfill, minfilestoformrelease, minsizetoformrelease) values (%s, %s, %d, %d, %d, NULL, %d, %d, %d, %d) ",$db->escapeString(trim($group["name"])), $db->escapeString(trim($group["description"])), $backfill_target, $first, $last, $active, $backfill , $minfiles, $minsizetoformrelease);
 		return $db->queryInsert($sql);
 	}
 
@@ -245,7 +246,7 @@ class Groups
 	{
 		$db = new DB();
 		$db->queryExec(sprintf("DELETE FROM partrepair WHERE groupid = %d", $id));
-		return $db->queryExec(sprintf("UPDATE groups SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, active = 0, last_updated = NULL where id = %d", $id));
+		return $db->queryExec(sprintf("UPDATE groups SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL where id = %d", $id));
 	}
 
 	public function resetall()
@@ -271,10 +272,10 @@ class Groups
 			$binaries->delete($col["id"]);
 
 		$db->queryExec(sprintf("DELETE FROM partrepair WHERE groupid = %d", $id));
-		$db->queryExec('TRUNCATE TABLE collections_'.$id);
-		$db->queryExec('TRUNCATE TABLE binaries_'.$id);
-		$db->queryExec('TRUNCATE TABLE parts_'.$id);
-		$db->queryExec('TRUNCATE TABLE partrepair_'.$id);
+		$db->queryExec('DROP TABLE IF EXISTS collections_'.$id);
+		$db->queryExec('DROP TABLE IF EXISTS binaries_'.$id);
+		$db->queryExec('DROP TABLE IF EXISTS parts_'.$id);
+		$db->queryExec('DROP TABLE IF EXISTS partrepair_'.$id);
 	}
 
 	public function purgeall()
@@ -314,7 +315,7 @@ class Groups
 	//
 	// update the list of newsgroups and return an array of messages.
 	//
-	function addBulk($groupList, $active = 1)
+	function addBulk($groupList, $active = 1, $backfill = 1)
 	{
 		$ret = array();
 
@@ -330,7 +331,7 @@ class Groups
 			$groups = $nntp->getGroups();
 			$nntp->doQuit();
 
-			$regfilter = "/(" . str_replace (array ('.','*'), array ('\.','.*?'), $groupList) . ")$/";
+			$regfilter = "/(" . str_replace(array('.','*'), array('\.','.*?'), $groupList) . ")$/";
 
 			foreach($groups AS $group)
 			{
@@ -339,14 +340,12 @@ class Groups
 					$res = $db->queryOneRow(sprintf("SELECT id FROM groups WHERE name = %s ", $db->escapeString($group['group'])));
 					if($res)
 					{
-
-						$db->queryExec(sprintf("UPDATE groups SET active = %d where id = %d", $active, $res["id"]));
+						$db->queryExec(sprintf("UPDATE groups SET active = %d, backfill = %d where id = %d", $active, $backfill, $res["id"]));
 						$ret[] = array ('group' => $group['group'], 'msg' => 'Updated');
 					}
 					else
 					{
-						$desc = "";
-						$db->queryInsert(sprintf("INSERT INTO groups (name, description, active) VALUES (%s, %s, %d)", $db->escapeString($group['group']), $db->escapeString($desc), $active));
+						$db->queryInsert(sprintf("INSERT INTO groups (name, active, backfill) VALUES (%s, %d, %d)", $db->escapeString($group['group']), $active, $backfill));
 						$ret[] = array ('group' => $group['group'], 'msg' => 'Created');
 					}
 				}

@@ -458,12 +458,12 @@
 </tr>
 <tr>
 <th style="vertical-align:top">Posted:</th>
-<td title="{$release.postdate}">{$release.postdate|date_format} ({$release.postdate|daysago})
+<td title="{$release.postdate}">{$release.postdate} ({$release.postdate|daysago})
 </td>
 </tr>
 <tr>
 <th style="vertical-align:top">Added:</th>
-<td title="{$release.adddate}">{$release.adddate|date_format} ({$release.adddate|daysago})
+<td title="{$release.adddate}">{$release.adddate} ({$release.adddate|daysago})
 </td>
 </tr>
 

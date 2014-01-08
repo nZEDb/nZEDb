@@ -7,7 +7,8 @@ require_once dirname(__FILE__) . '/../../../../www/config.php';
 //require_once nZEDb_LIB . 'site.php';
 //require_once nZEDb_LIB . 'ColorCLI.php';
 
-$version = "0.3r4658";
+exec('git log | grep "^commit" | wc -l', $commit);
+$version = "0.3r" . $commit[0];
 
 $db = new DB();
 $DIR = nZEDb_MISC;

@@ -108,5 +108,5 @@
 </table>
 </fieldset>
 {/if}
-<input type="submit" value="Save Profile" />
+<input class="rndbtn" type="submit" value="Save Profile" />
 </form>

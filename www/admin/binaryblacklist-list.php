@@ -1,4 +1,5 @@
 <?php
+
 require_once './config.php';
 //require_once nZEDb_LIB . 'adminpage.php';
 //require_once nZEDb_LIB . 'binaries.php';
@@ -13,5 +14,3 @@ $page->smarty->assign('binlist', $binlist);
 
 $page->content = $page->smarty->fetch('binaryblacklist-list.tpl');
 $page->render();
-
-?>

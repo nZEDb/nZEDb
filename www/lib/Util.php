@@ -127,6 +127,7 @@ function getUrl($url, $method = 'get', $postdata = '', $language = "")
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
 	$buffer = curl_exec($ch);
 	$err = curl_errno($ch);
@@ -496,7 +497,7 @@ function release_flag($x, $t)
 		$y = "vn";
 	}
 	if ($y !== "" && $t == "browse") {
-		return '<img src="./themes/Default/images/flags/' . $y . '.png" />';
+		return '<img src="../themes/Default/images/flags/' . $y . '.png" />';
 	} else if ($t == "search") {
 		if ($y == "") {
 			return false;

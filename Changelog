@@ -4,6 +4,41 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2014-01-07 -> jonnyboy -> updated the predb regex
+                          added regex to match predb style to predb names before using regexes to clean the name - renametopre.php
+                          improved performance and output - reset_postprocessing.php, added color to patchDB.php
+                          added update_predb_md5.php to reset predb md5's after title change
+2014-01-06 -> bart39   -> fixed issue with categorizing by group while adding releases
+2014-01-06 -> jonnyboy -> fixed missings references in themes, fixed typo in site-edit, added patch to remove null from categoryid
+                          fixed bug in pp additional where 'sh: Permission denied' when mediainfo path not set
+                          added fix_autoinc.php to fix "unable to find the AUTOINC column id"
+                          fixed dump_predb.php to use local groupid, dump not updated for this yet
+2014-01-05 -> jonnyboy -> fixed bug in namecleaning.php
+                          fixed renametopre.php to also use internal regexes, fixed porn categorization
+                          changed groups->reset to not disable group, removed porn from movie lookup, added reset searhname = name when searchname is single digit or letter,
+                          updated Release_scripts/* to use color and added usage where there was none
+2014-01-04 -> jonnyboy -> requestid.php, added optional final argument to reprocess releases posted newer than x min, changed output to not count releases whose name did not change
+2014-01-04 -> bart39   -> More regex additions/fixes
+2014-01-03 -> Roelski  -> Fixed check in populate_anidb.php if anidb already had id. Changed some text.
+2014-01-03 -> jonnyboy -> fixed group add and bulk group add, changed output of pp addtional when fail to show which piece(attemp) it failed on
+2014-01-02 -> Roelski     Changed double screen in threaded screen script. Added threaded backfill to script.
+2014-01-01 -> jonnyboy -> fix for sendtosab ssl/Hoochster
+                          improved local lookup for tv/movies
+2013-12-31 -> jonnyboy -> VERY IMPORTANT PATCH - IF YOU RAN misc/testing/DB_scripts/rename_to_lower.php, THEN YOU MUST STOP ALL SCRIPTS AND RUN AGAIN, NOW
+                          PLEASE MESSAGE ME IN IRC IF YOU RAN THIS SCRIPT
+                          changed posted/added date to date time in nzb view, fixed output of updateMovieInfo.php to display correct count
+                          updated resetRelnameStatus.php to allow resetting of rename bits only
+2013-12-30 -> jonnyboy -> added scrollbar and fixed count on movies->cover view in light theme, moved style to css
+                          added more info Rotten Tomotoes, Theater link in light theme
+                          fixed newposterwall to center the row of images and use the whole row
+                          fixed typo in util.php not showing country flag, changed buttons in light/search, changed newposterwall, to show only releases with covers
+                          fixed query in getMovieRange() to only return movies with covers since it is for cover view, removed bad formed query
+                          renamed jonnyboy theme to light
+                          fixed commit.sh to update monitor.php commit version
+                          fixed bug in theme/admin pages using incorrect path for scripts
+                          removed SQL_CALC_FOUND_ROWS from query for predb row count
+2013-12-29 -> jonnyboy -> added option to enable/disable movie backgrounds in theme
+                          updated site-edit comments for os/mysql changes necessary for TPG
 2013-12-29 -> niel     -> fixing sql patch version in tmux start.php
 2013-12-29 -> jonnyboy -> added rename_to_lower.php to rename all table columns to lowercase, removed useless patch
                           fixed incorrect usage of counter, fixed incorrect usage of var
