@@ -39,7 +39,7 @@ function preName($argv) {
 	$db = new DB();
 	$groups = new Groups();
 	$category = new Category();
-	$updated = $counted = $none = 0;
+	$internal = $external = $pre = $none = 0;
 	$counter = 0;
 	$c = new ColorCLI();
 	$what = $argv[1] == 'full' ? '' : ' AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR';
@@ -79,6 +79,11 @@ function preName($argv) {
 					$increment = $cleanerName["increment"];
 				} else {
 					$increment = false;
+				}
+				if (isset($cleanerName["predb"])) {
+					$predb = $cleanerName["predb"];
+				} else {
+					$predb = false;
 				}
 			}
 
@@ -130,9 +135,11 @@ function preName($argv) {
 						  $c->headerOver("Method:    ") . $c->primary("renametopre regexes").
 						  $c->headerOver("ReleaseID: ") . $c->primary($row["id"]); */
 						if ($increment === true) {
-							$updated++;
+							$internal++;
+						} else if ($predb === true) {
+							$pre++;
 						} else if ($propername === true) {
-							$counted++;
+							$external++;
 						}
 					}
 				}
@@ -143,14 +150,10 @@ function preName($argv) {
 			if ($cleanName == $row['name']) {
 				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $row['id']));
 			}
-			if ($counter === 0) {
-				echo $c->header("         [internal][external] processed/total");
-			}
-
-			$consoletools->overWritePrimary("Renamed NZBs:  [${updated}][${counted}]        " . $consoletools->percentString( ++$counter, $total));
+			$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
 		}
 	}
-	echo $c->header("\n" . number_format($updated) . " renamed using namecleaning.php\n" . number_format($counted) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
+	echo $c->header("\n" . number_format($internal) . " renamed using namecleaning.php\n" . number_format($external) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
 	echo $c->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
 	$timestart = TIME();
 	if (isset($argv[1]) && $argv[1] == "full") {
@@ -235,6 +238,20 @@ function categorizeRelease($type, $where = "", $echooutput = false) {
 
 function releaseCleaner($subject, $groupid, $groupname) {
 	$groups = new Groups();
+	$db = new DB();
+	$match = '';
+
+	// Get pre style name from releases.name
+	if (preg_match('/(\w+[\._](\w+[\._-])+\w+-\w+)/', $subject, $match)) {
+		$title = $db->queryOneRow("SELECT title from predb WHERE title = " . $db->escapeString(trim($match[1])));
+		if (isset($title['title'])) {
+			$cleanerName = $title['title'];
+			if (!empty($cleanerName)) {
+				return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false, "predb" => true);
+			}
+		}
+	}
+
 	$groupName = $groups->getByNameByID($groupid);
 	$namecleaning = new nameCleaning();
 	$cleanerName = $namecleaning->releaseCleaner($subject, $groupname);
@@ -244,7 +261,6 @@ function releaseCleaner($subject, $groupid, $groupname) {
 		return $cleanerName;
 	}
 
-	$match = '';
 	if ($groupName == "alt.binaries.classic.tv.shows") {
 		if (preg_match('/^(?P<title>.+\d+x\d+.+)[ _-]{0,3}\[\d+\/\d+\][ _-]{0,3}("|#34;).+("|#34;)[ _-]{0,3}(yEnc|rar|par2)$/i', $subject, $match)) {
 			$cleanerName = preg_replace('/^REQ[ _-]{0,3}/i', '', preg_replace('/\.+$/', '', trim($match['title'])));
@@ -868,8 +884,7 @@ function releaseCleaner($subject, $groupid, $groupname) {
 				return $cleanerName;
 			}
 		}
-	}
-	else if (!empty($cleanerName) && is_array($cleanerName)) {
+	} else if (!empty($cleanerName) && is_array($cleanerName)) {
 		return $cleanerName;
 	}
 }

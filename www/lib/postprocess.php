@@ -184,21 +184,24 @@ class PostProcess
 	// Attempt to get a better name from a par2 file and categorize the release.
 	public function parsePAR2($messageID, $relID, $groupID, $nntp)
 	{
-		if (!isset($nntp))
+		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(postprocess->parsePAR2).\n"));
+		}
 
-		if ($messageID == '')
+		if ($messageID == '') {
 			return false;
+		}
 		$db = $this->db;
-		$category = new Category();
-		if ($db->dbSystem() == 'mysql')
+		if ($db->dbSystem() == 'mysql') {
 			$t = 'UNIX_TIMESTAMP(postdate)';
-		else
+		} else {
 			$t = 'extract(epoch FROM postdate)';
+		}
 
 		$quer = $db->queryOneRow('SELECT id, groupid, categoryid, searchname, ' . $t . ' as postdate, id as releaseid  FROM releases WHERE (bitwise & 4) = 0 AND id = ' . $relID);
-		if ($quer['categoryid'] != Category::CAT_MISC)
+		if ($quer['categoryid'] != Category::CAT_MISC) {
 			return false;
+		}
 
 		$groups = new Groups();
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
@@ -214,8 +217,9 @@ class PostProcess
 
 		$par2info = new Par2Info();
 		$par2info->setData($par2);
-		if ($par2info->error)
+		if ($par2info->error) {
 			return false;
+		}
 
 		$files = $par2info->getFileList();
 		if ($files !== false && count($files) > 0) {
@@ -224,12 +228,14 @@ class PostProcess
 			$relfiles = 0;
 			$foundname = false;
 			foreach ($files as $fileID => $file) {
-				if (!array_key_exists('name', $file))
+				if (!array_key_exists('name', $file)) {
 					return false;
+				}
 				// Add to releasefiles.
 				if ($this->addpar2 && $relfiles < 11 && $db->queryOneRow(sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s', $relID, $this->db->escapeString($file['name']))) === false) {
-					if ($rf->add($relID, $file['name'], $file['size'], $quer['postdate'], 0))
+					if ($rf->add($relID, $file['name'], $file['size'], $quer['postdate'], 0)) {
 						$relfiles++;
+					}
 				}
 				$quer['textstring'] = $file['name'];
 				//$namefixer->checkName($quer, 1, 'PAR2, ', 1);
@@ -244,16 +250,19 @@ class PostProcess
 				$this->debug('Added ' . $relfiles . ' releasefiles from PAR2 for ' . $quer['searchname']);
 				$cnt = $db->queryOneRow('SELECT COUNT(releaseid) AS count FROM releasefiles WHERE releaseid = ' . $relID);
 				$count = $relfiles;
-				if ($cnt !== false && $cnt['count'] > 0)
+				if ($cnt !== false && $cnt['count'] > 0) {
 					$count = $relfiles + $cnt['count'];
+				}
 				$db->queryExec(sprintf('UPDATE releases SET rarinnerfilecount = %d where id = %d', $count, $relID));
 			}
-			if ($foundname === true)
+			if ($foundname === true) {
 				return true;
-			else
+			} else {
 				return false;
-		} else
+			}
+		} else {
 			return false;
+		}
 	}
 
 	// Comparison function for usort, for sorting nzb file content.
@@ -1295,13 +1304,16 @@ class PostProcess
 	public function getAudioinfo($ramdrive, $ffmpeginfo, $audioinfo, $releaseguid, $releaseID)
 	{
 		$retval = $audval = false;
-		if (!is_dir($ramdrive) && $releaseID <= 0)
+		if (!is_dir($ramdrive) && $releaseID <= 0) {
 			return $retval;
+		}
 
 		// Make sure the category is music or other->misc.
-		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, groupid FROM releases WHERE (bitwise & 8) = 0 AND id = %d', $releaseID));
-		if (!preg_match('/^3\d{3}|7010/', $rquer['id']))
+		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, groupid FROM releases WHERE (bitwise & 8) = 0 '
+				. 'AND id = %d', $releaseID));
+		if (!preg_match('/^3\d{3}|7010/', $rquer['id'])) {
 			return $retval;
+		}
 
 		$audiofiles = glob($ramdrive . '*.*');
 		if (is_array($audiofiles)) {
@@ -1316,24 +1328,27 @@ class PostProcess
 								foreach ($arrXml['File']['track'] as $track) {
 									if (isset($track['Album']) && isset($track['Performer'])) {
 										$ext = strtoupper($ext[1]);
-										if (!empty($track['Recorded_date']) && preg_match('/(?:19|20)\d\d/', $track['Recorded_date'], $Year))
+										if (!empty($track['Recorded_date']) && preg_match('/(?:19|20)\d\d/', $track['Recorded_date'], $Year)) {
 											$newname = $track['Performer'] . ' - ' . $track['Album'] . ' (' . $Year[0] . ') ' . $ext;
-										else
+										} else {
 											$newname = $track['Performer'] . ' - ' . $track['Album'] . ' ' . $ext;
+										}
 										$category = new Category();
-										if ($ext == 'MP3')
+										if ($ext == 'MP3') {
 											$newcat = Category::CAT_MUSIC_MP3;
-										else if ($ext == 'FLAC')
+										} else if ($ext == 'FLAC') {
 											$newcat = Category::CAT_MUSIC_LOSSLESS;
-										else
+										} else {
 											$newcat = $category->determineCategory($newname, $rquer['groupid']);
-										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, bitwise = ((bitwise & ~8)|8) WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
+										}
+										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, bitwise = ((bitwise & ~13)|13) WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
 
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID, $xmlarray);
 										$retval = true;
-										if ($this->echooutput)
+										if ($this->echooutput) {
 											echo 'a';
+										}
 										break;
 									}
 								}
@@ -1347,16 +1362,18 @@ class PostProcess
 							$all_files = @scandir($ramdrive, 1);
 							foreach ($all_files as $file) {
 								if (preg_match('/' . $releaseguid . '\.ogg/', $file)) {
-									if (filesize($ramdrive . $file) < 15)
+									if (filesize($ramdrive . $file) < 15) {
 										continue;
+									}
 
 									@copy($ramdrive . $releaseguid . '.ogg', $this->audSavePath . $releaseguid . '.ogg');
 									if (@file_exists($this->audSavePath . $releaseguid . '.ogg')) {
 										chmod($this->audSavePath . $releaseguid . '.ogg', 0764);
 										$this->db->queryExec(sprintf('UPDATE releases SET audiostatus = 1 WHERE id = %d', $releaseID));
 										$audval = true;
-										if ($this->echooutput)
+										if ($this->echooutput) {
 											echo 'A';
+										}
 										break;
 									}
 								}
@@ -1367,8 +1384,9 @@ class PostProcess
 							}
 						}
 					}
-					if ($retval === true && $audval === true)
+					if ($retval === true && $audval === true) {
 						break;
+					}
 				}
 			}
 		}
