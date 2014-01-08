@@ -12,7 +12,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 //require_once nZEDb_LIB . 'predb.php';
 
 $n = "\n";
-$namefixer = new Namefixer();
+$namefixer = new NameFixer();
 $predb = new PreDb(true);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
