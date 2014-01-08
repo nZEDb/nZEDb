@@ -681,7 +681,7 @@ class Movie
 
 		if ($moviecount > 0) {
 			if ($this->echooutput && $moviecount > 1) {
-				echo $this->c - header("Processing " . $moviecount . " movie release(s).");
+				echo $this->c->header("Processing " . $moviecount . " movie release(s).");
 			}
 
 			$like = 'ILIKE';
