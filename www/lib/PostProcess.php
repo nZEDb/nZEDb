@@ -180,7 +180,7 @@ class PostProcess
 	{
 		if ($this->site->lookuptvrage == 1)
 		{
-			$tvrage = new TVRage($this->echooutput);
+			$tvrage = new TvRage($this->echooutput);
 			$tvrage->processTvReleases($releaseToWork, $this->site->lookuptvrage==1);
 		}
 	}
