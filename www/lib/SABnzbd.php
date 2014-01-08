@@ -1,5 +1,5 @@
 <?php
-//require_once nZEDb_LIB . 'util.php';
+require_once nZEDb_LIB . 'Util.php';
 
 class SABnzbd
 {
