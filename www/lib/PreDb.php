@@ -814,7 +814,7 @@ Class PreDb
 	public function parseTitles($time, $echo, $cats, $namestatus)
 	{
 		$db = new DB();
-		$namefixer = new Namefixer();
+		$namefixer = new NameFixer();
 		$updated = 0;
 		$matches = '';
 

@@ -38,7 +38,7 @@ if (isset($argv[1]) && $argv[1] == "full")
 		$timecat = $consoletools->convertTime(TIME() - $timestart);
 		echo "\nFinished categorizing ".$categorized." releases in ".$timecat.".\nFinally, the releases will be fixed using the NFO/filenames.\n";
 
-		$namefixer = new Namefixer();
+		$namefixer = new NameFixer();
 		$namefixer->fixNamesWithNfo(2,1,1,1);
 		$namefixer->fixNamesWithFiles(2,1,1,1);
 		$timetotal = $consoletools->convertTime(TIME() - $timestart);
@@ -77,7 +77,7 @@ else if (isset($argv[1]) && $argv[1] == "limited")
 		$timecat = $consoletools->convertTime(TIME() - $timestart);
 		echo "\nFinished categorizing ".$categorized." releases in ".$timecat.".\nFinally, the releases will be fixed using the NFO/filenames.\n";
 
-		$namefixer = new Namefixer();
+		$namefixer = new NameFixer();
 		$namefixer->fixNamesWithNfo(2,1,1,1);
 		$namefixer->fixNamesWithFiles(2,1,1,1);
 		$timetotal = $consoletools->convertTime(TIME() - $timestart);

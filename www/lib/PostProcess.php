@@ -226,7 +226,7 @@ class PostProcess
 		$files = $par2info->getFileList();
 		if ($files !== false && count($files) > 0)
 		{
-			$namefixer = new Namefixer($this->echooutput);
+			$namefixer = new NameFixer($this->echooutput);
 			$rf = new ReleaseFiles();
 			$relfiles = 0;
 			$foundname = false;
@@ -430,7 +430,7 @@ class PostProcess
 			foreach ($result as $rel)
 			{
 				if ($this->echooutput && $releaseToWork == '')
-					echo '['.$this->c->primaryOver($startCount--).']';
+					echo "\r" . str_pad ('', 79, ' ') . "\r[".$this->c->primaryOver($startCount--).']';
 				else if ($this->echooutput)
 					echo '['.$this->c->primaryOver($rel['id']).']';
 

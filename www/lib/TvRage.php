@@ -512,7 +512,7 @@ class TvRage
     public function processTvReleases($releaseToWork = '', $lookupTvRage = true)
     {
         $ret = 0;
-        $trakt = new Trakttv();
+        $trakt = new TraktTv();
 
         // Get all releases without a rageid which are in a tv category.
         if ($releaseToWork == '') {

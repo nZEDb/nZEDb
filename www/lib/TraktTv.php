@@ -6,7 +6,7 @@
  * 	Lookup information from trakt.tv using their API.
  */
 
-Class TraktTV
+Class TraktTv
 {
 
     function __construct()

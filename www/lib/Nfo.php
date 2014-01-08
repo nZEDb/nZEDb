@@ -190,7 +190,7 @@ class Nfo
 			$groups = new Groups();
 			$nzbcontents = new NZBContents($this->echooutput);
 			$movie = new Movie($this->echooutput);
-			$tvrage = new Tvrage();
+			$tvrage = new TvRage();
 
 			foreach ($res as $arr)
 			{

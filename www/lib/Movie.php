@@ -662,7 +662,7 @@ class Movie
 
 	public function processMovieReleases($releaseToWork = '')
 	{
-		$trakt = new Trakttv();
+		$trakt = new TraktTv();
 		$googleban = false;
 		$googlelimit = 0;
 		$result = '';
