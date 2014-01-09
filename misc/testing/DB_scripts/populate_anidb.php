@@ -253,13 +253,17 @@ class AniDBstandAlone
 			}
 Holding on to this in case we want it again as it has some uses, but currently we mange this in the first foreach statement, so there is no need for it any longer */
 
+			// update how many we have done of the total to do in this session
+			if ($i != 0 && $this->echooutput)
+				echo 'Processed '.$i." anidb entries of a total possible of $exitcount for this session\n";
+
 			// every 10 records sleep for 4 minutes before continuing
 			if ($i % 10 == 0 && $i != 0)
 				{
 				$sleeptime=180 + rand(30, 90);
 
 					if ($this->echooutput)
-						echo "Start waitloop to prevent banning for ".$sleeptime." sec.\n";
+						echo "Start waitloop for ".$sleeptime." sec to prevent banning.\n";
 
 				sleep($sleeptime);
 				}
@@ -268,9 +272,6 @@ Holding on to this in case we want it again as it has some uses, but currently w
 			if ($i >= $exitcount)
 				return;
 
-			// update how many we have done of the total to do in this session
-			if ($i != 0 && $this->echooutput)
-				echo 'Processed '.$i." anidb entries of a total possible of $exitcount for this session\n";
 		}	// foreach
 	}
 
