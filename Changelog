@@ -4,6 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2014-01-09 -> Roelski  -> Fixes for populate_anidb. Accept null dates as api doesnt always give them (or correct ones). Add no anime to process in lib anidb
 2014-01-09 -> bart39   -> fixed typo with requestid lookup in releases stage 5b
                           fixed typo's in namefixer
 2014-01-08 -> jonnyboy -> commented out auto disable backfill until I can find the cause, increased matches to headers, added regex to add yEnc headers that do not have it, but match the pattern
