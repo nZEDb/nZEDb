@@ -117,7 +117,7 @@ class AniDBstandAlone
 				$anidbenddate = strtotime($AniDBAPIArrayOld['enddate']);
 
 				// if the current time is less than the endtime or the endtime is 0 then the show likely has not finsihed.
-				if ($anidbstartdate == 0 && $anidbenddate == 0)
+				if ($anidbstartdate == "" && $anidbenddate == "")
 				{
 					// ignore as there is no start date or end date listed, assume not in progress
 					$AniDBAPIArrayOld['AnimeInProgress'] = false;
@@ -127,7 +127,7 @@ class AniDBstandAlone
 					// start date in the future thus it is not in progress as it has not started yet
 					$AniDBAPIArrayOld['AnimeInProgress'] = false;
 				}
-				else if ($anidbstartdate != 0 && $anidbenddate == 0)
+				else if ($anidbstartdate != "" && $anidbenddate == "")
 				{
 					// in this case anime may not have a end date and should be considered in progress as teh end date is just unknown
 					$AniDBAPIArrayOld['AnimeInProgress'] = true;
@@ -271,10 +271,10 @@ Holding on to this in case we want it again as it has some uses, but currently w
 
 /*
 		if ($this->echooutput)
-			echo sprintf("INSERT INTO anidb VALUES ('', %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)", $AniDBAPIArray['anidbid'], $db->escapeString($AniDBAPIArray['title']), $db->escapeString($AniDBAPIArray['type']), $db->escapeString($AniDBAPIArray['startdate']), $db->escapeString($AniDBAPIArray['enddate']), $db->escapeString($AniDBAPIArray['related']), $db->escapeString($AniDBAPIArray['creators']), $db->escapeString($AniDBAPIArray['description']), $db->escapeString($AniDBAPIArray['rating']), $db->escapeString($AniDBAPIArray['picture']), $db->escapeString($AniDBAPIArray['categories']), $db->escapeString($AniDBAPIArray['characters']), $db->escapeString($AniDBAPIArray['epnos']), $db->escapeString($AniDBAPIArray['airdates']), $db->escapeString($AniDBAPIArray['episodetitles']), time());
+                        echo sprintf("INSERT INTO anidb VALUES ('', %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)", $AniDBAPIArray['anidbid'], $db->escapeString($AniDBAPIArray['title']), $db->escapeString($AniDBAPIArray['type']),(empty($AniDBAPIArray['startdate']) ? 'null' : $db->escapeString($AniDBAPIArray['startdate'])), (empty($AniDBAPIArray['enddate']) ? 'null' : $db->escapeString($AniDBAPIArray['enddate'])), $db->escapeString($AniDBAPIArray['related']), $db->escapeString($AniDBAPIArray['creators']), $db->escapeString($AniDBAPIArray['description']), $db->escapeString($AniDBAPIArray['rating']), $db->escapeString($AniDBAPIArray['picture']), $db->escapeString($AniDBAPIArray['categories']), $db->escapeString($AniDBAPIArray['characters']), $db->escapeString($AniDBAPIArray['epnos']), $db->escapeString($AniDBAPIArray['airdates']), $db->escapeString($AniDBAPIArray['episodetitles']), time());
 */
 		// ad missing imdb and tvid id's remove the old id column
-		$db->queryInsert(sprintf("INSERT INTO anidb VALUES (%d, 0, 0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)", $AniDBAPIArray['anidbid'], $db->escapeString($AniDBAPIArray['title']), $db->escapeString($AniDBAPIArray['type']), $db->escapeString($AniDBAPIArray['startdate']), $db->escapeString($AniDBAPIArray['enddate']), $db->escapeString($AniDBAPIArray['related']), $db->escapeString($AniDBAPIArray['creators']), $db->escapeString($AniDBAPIArray['description']), $db->escapeString($AniDBAPIArray['rating']), $db->escapeString($AniDBAPIArray['picture']), $db->escapeString($AniDBAPIArray['categories']), $db->escapeString($AniDBAPIArray['characters']), $db->escapeString($AniDBAPIArray['epnos']), $db->escapeString($AniDBAPIArray['airdates']), $db->escapeString($AniDBAPIArray['episodetitles']), time()));
+                $db->queryInsert(sprintf("INSERT INTO anidb VALUES (%d, 0, 0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)", $AniDBAPIArray['anidbid'], $db->escapeString($AniDBAPIArray['title']), $db->escapeString($AniDBAPIArray['type']), (empty($AniDBAPIArray['startdate']) ? 'null' : $db->escapeString($AniDBAPIArray['startdate'])), (empty($AniDBAPIArray['enddate']) ? 'null' : $db->escapeString($AniDBAPIArray['enddate'])), $db->escapeString($AniDBAPIArray['related']), $db->escapeString($AniDBAPIArray['creators']), $db->escapeString($AniDBAPIArray['description']), $db->escapeString($AniDBAPIArray['rating']), $db->escapeString($AniDBAPIArray['picture']), $db->escapeString($AniDBAPIArray['categories']), $db->escapeString($AniDBAPIArray['characters']), $db->escapeString($AniDBAPIArray['epnos']), $db->escapeString($AniDBAPIArray['airdates']), $db->escapeString($AniDBAPIArray['episodetitles']), time()));
 	}
 
 
@@ -284,10 +284,10 @@ Holding on to this in case we want it again as it has some uses, but currently w
 
 /*
 		if ($this->echooutput)
-			echo sprintf('UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s, rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d WHERE anidbid = %d', $db->escapeString($title), $db->escapeString($type), $db->escapeString($startdate), $db->escapeString($enddate), $db->escapeString($related), $db->escapeString($creators), $db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters), $db->escapeString($epnos), $db->escapeString($airdates), $db->escapeString($episodetitles), time(), $anidbID), "\n";
+                        echo sprintf('UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s, rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d WHERE anidbid = %d', $db->escapeString($title), $db->escapeString($type), (empty($AniDBAPIArray['startdate']) ? 'null' : $db->escapeString($AniDBAPIArray['startdate'])), (empty($AniDBAPIArray['enddate']) ? 'null' : $db->escapeString($AniDBAPIArray['enddate'])), $db->escapeString($related), $db->escapeString($creators), $db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters), $db->escapeString($epnos), $db->escapeString($airdates), $db->escapeString($episodetitles), time(), $anidbID), "\n";
 */
 
-		$db->queryExec(sprintf('UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s, rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d WHERE anidbid = %d', $db->escapeString($title), $db->escapeString($type), $db->escapeString($startdate), $db->escapeString($enddate), $db->escapeString($related), $db->escapeString($creators), $db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters), $db->escapeString($epnos), $db->escapeString($airdates), $db->escapeString($episodetitles), time(), $anidbID));
+                $db->queryExec(sprintf('UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s, rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d WHERE anidbid = %d', $db->escapeString($title), $db->escapeString($type), (empty($AniDBAPIArray['startdate']) ? 'null' : $db->escapeString($AniDBAPIArray['startdate'])), (empty($AniDBAPIArray['enddate']) ? 'null' : $db->escapeString($AniDBAPIArray['enddate'])), $db->escapeString($related), $db->escapeString($creators), $db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters), $db->escapeString($epnos), $db->escapeString($airdates), $db->escapeString($episodetitles), time(), $anidbID));
 	}
 
 
@@ -352,8 +352,44 @@ Holding on to this in case we want it again as it has some uses, but currently w
 
 		preg_match_all('/<(type|(?:start|end)date)>(.+)<\/\1>/i', $apiresponse, $type_startenddate);
 		$AniDBAPIArray['type'] = isset($type_startenddate[2][0]) ? $type_startenddate[2][0] : '';
-		$AniDBAPIArray['startdate'] = isset($type_startenddate[2][1]) ? $type_startenddate[2][1] : '';
-		$AniDBAPIArray['enddate'] = isset($type_startenddate[2][2]) ? $type_startenddate[2][2] : '';
+
+                // new checks for correct start and enddate
+                // Warning: missing date info is added to januari and day 01 (2008 -> 2008-01-01)
+                if (isset($type_startenddate[2][1]))
+                {
+                        if (($timestamp = strtotime($type_startenddate[2][1])) === false) 
+                        {
+                        // Timestamp not good->make it null";
+//                                echo "Null date ".$type_startenddate[2][1]."\n";
+                                $AniDBAPIArray['startdate']="";
+                        }
+                // Startdate valid for php, convert in case only year or month is given to sql date
+//                        echo "Convert time. Org one: ".$type_startenddate[2][1]."\n";
+                        $AniDBAPIArray['startdate'] = date('Y-m-d', strtotime($type_startenddate[2][1]));
+                }
+                else
+                {
+                        $AniDBAPIArray['startdate'] = "";
+//                        echo "Null date ".$type_startenddate[2][1]."\n";
+                }
+
+                if (isset($type_startenddate[2][2]))
+                {
+                        if (($timestamp = strtotime($type_startenddate[2][2])) === false) 
+                        {
+                                // Timestamp not good->make it null";
+                                echo "Null date ".$type_startenddate[2][2]."\n";
+                                $AniDBAPIArray['enddate']="";
+                        }
+                        // Startdate valid for php, convert in case only year or month is given to sql date
+//                        echo "Convert time. Org one: ".$type_startenddate[2][2]."\n";
+                        $AniDBAPIArray['enddate'] = date('Y-m-d', strtotime($type_startenddate[2][2]));
+                }
+                else
+                {
+//                        echo "Null date ".$type_startenddate[2][2]."\n";
+                        $AniDBAPIArray['enddate'] = "";
+                }
 
 		preg_match_all('/<anime id="\d+" type=".+">([^<]+)<\/anime>/is', $apiresponse, $related);
 		$AniDBAPIArray['related'] = isset($related[1]) ? implode($related[1], '|') : '';
