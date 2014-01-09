@@ -123,7 +123,7 @@ if (isset($os) && $os == "unix")
 		exit($c->error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
 	}
 
-/*	if ($db->dbSystem() == "mysql")
+	/*	if ($db->dbSystem() == "mysql")
 		$patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/mysql_patches/', nZEDb_ROOT);
 	else if ($db->dbSystem() == "pgsql")
 		$patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/pgsql_patches/', nZEDb_ROOT);
