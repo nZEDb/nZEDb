@@ -2,8 +2,8 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once nZEDb_LIB . 'releases.php';
-require_once nZEDb_LIB . 'util.php';
+//require_once nZEDb_LIB . 'releases.php';
+//require_once nZEDb_LIB . 'util.php';
 
 $releases = new Releases;
 

@@ -2,9 +2,9 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once nZEDb_LIB . 'releasecomments.php';
-require_once nZEDb_LIB . 'category.php';
-require_once nZEDb_LIB . 'sabnzbd.php';
+//require_once nZEDb_LIB . 'releasecomments.php';
+//require_once nZEDb_LIB . 'category.php';
+//require_once nZEDb_LIB . 'sabnzbd.php';
 
 $rc = new ReleaseComments;
 $sab = new SABnzbd($page);

@@ -4,8 +4,8 @@ if (!$users->isLoggedIn()) {
     $page->show403();
 }
 
-require_once nZEDb_LIB . 'content.php';
-require_once nZEDb_LIB . 'releases.php';
+//require_once nZEDb_LIB . 'content.php';
+//require_once nZEDb_LIB . 'releases.php';
 
 $releases = new Releases();
 $contents = new Contents();

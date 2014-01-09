@@ -3,12 +3,12 @@ if (!isset($argv[1]))
 	exit("ERROR: You must supply a path as the first argument.\n");
 
 require_once dirname(__FILE__) . '/../../www/config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'binaries.php';
-require_once nZEDb_LIB . 'page.php';
-require_once nZEDb_LIB . 'category.php';
-require_once nZEDb_LIB . 'namecleaning.php';
-require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'binaries.php';
+//require_once nZEDb_LIB . 'page.php';
+//require_once nZEDb_LIB . 'category.php';
+//require_once nZEDb_LIB . 'namecleaning.php';
+//require_once nZEDb_LIB . 'site.php';
 
 $db = new DB();
 $binaries = new Binaries();
@@ -16,7 +16,7 @@ $page = new Page();
 $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
-$namecleaning = new nameCleaning();
+$namecleaning = new NameCleaning();
 $categorize = new Category();
 $maxtoprocess = 0;
 
@@ -138,7 +138,7 @@ else
 			$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
 			$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
 			$subject = utf8_encode(trim($partless));
-			$namecleaning = new nameCleaning();
+			$namecleaning = new NameCleaning();
 
 			// Make a fake message object to use to check the blacklist.
 			$msg = array("Subject" => $subject, "From" => $fromname, "Message-ID" => "");
