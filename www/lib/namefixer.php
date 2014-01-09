@@ -98,7 +98,10 @@ class Namefixer
         } else if ($db->dbSystem() == "pgsql") {
             $uc = "nfo";
         }
-        $query = "SELECT nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.searchname, {$uc} AS textstring, rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE categoryid != 5070 AND ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
+        $query = "SELECT nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.searchname, {$uc} AS textstring, "
+				. "rel.id AS releaseid FROM releases rel "
+				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
+				. "WHERE categoryid != 5070 AND ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
 
         //24 hours, other cats
         if ($time == 1 && $cats == 1) {
@@ -179,7 +182,9 @@ class Namefixer
             $relres = $db->queryDirect($query . $this->fullall);
         }
 
-        if (count($relres) > 0) {
+        if ($relres->rowCount() > 0) {
+            echo "Fixing " . number_format($relres->rowCount()) . " search names using the filename.\n";
+			sleep(2);
             foreach ($relres as $relrow) {
                 $this->done = $this->matched = false;
                 $this->checkName($relrow, $echo, $type, $namestatus);
