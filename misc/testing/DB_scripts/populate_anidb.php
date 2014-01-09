@@ -157,6 +157,9 @@ class AniDBstandAlone
 		{
 			$anidbid = (int)$value['anidbid'];
 
+			if ($this->echooutput)
+				echo 'Testing AniDB ID '.$anidbid."\n";
+
 			$exists = $db->queryOneRow(sprintf('SELECT COUNT(*) as num FROM `anidb` WHERE `anidbid` = %d', $anidbid));
 
 			if ( (int)$exists['num'] == 0 )
@@ -252,7 +255,14 @@ Holding on to this in case we want it again as it has some uses, but currently w
 
 			// every 10 records sleep for 4 minutes before continuing
 			if ($i % 10 == 0 && $i != 0)
-				sleep(180 + rand(30, 90));
+				{
+				$sleeptime=180 + rand(30, 90);
+
+					if ($this->echooutput)
+						echo "Start waitloop to prevent banning for ".$sleeptime." sec.\n";
+
+				sleep($sleeptime);
+				}
 
 			// using exitcount if this number of API calls is reached exit
 			if ($i >= $exitcount)
