@@ -1476,7 +1476,7 @@ class Releases
                                 $local = true;
                                 $iFoundcnt++;
                             } else {
-                                $newTitle = $this->getReleaseNameFromRequestID($page->site, $requestID, $rowrel['groupname']);
+                                $newTitle = $this->getReleaseNameFromRequestID($this->site, $requestID, $rowrel['groupname']);
                                 if ($newTitle != false && $newTitle != '') {
                                     if (strtolower($newTitle) != strtolower($rowrel['searchname'])) {
                                         $bFound = true;
