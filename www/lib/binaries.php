@@ -333,11 +333,11 @@ class Binaries
 				$msgsreceived[] = $msg['Number'];
 
 				// Add yEnc to headers that do not have them, but that have the part number at the end of the header
-				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+\(\d+\/\d+\)$/', $msg['Subject'])) {
+				/*if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+\(\d+\/\d+\)$/', $msg['Subject'])) {
 					if (preg_match('/.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
 						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', 'yEnc ' . $partnumber[1], $msg['Subject']);
 					}
-				}
+				}*/
 
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*)\((\d+)\/(\d+)\)(\?=| \d+ [KMG]bytes)?$/', $msg['Subject'], $matches)) {
