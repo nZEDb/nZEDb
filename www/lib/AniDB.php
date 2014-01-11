@@ -366,6 +366,12 @@ class AniDB
 			if ($this->echooutput)
 				echo 'Processed '.count($results)." anime releases.\n";
 		}	// if
+                else
+                {
+                        if ($this->echooutput) {
+                                echo $this->c->header('No anime releases to process.');
+                                }                        
+                }
 	}
 
 	// process a group of previously unprcoessed Anime Releases, as in postprocess
