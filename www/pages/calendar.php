@@ -2,7 +2,7 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once nZEDb_LIB . 'tvrage.php';
+//require_once nZEDb_LIB . 'tvrage.php';
 $tvrage = new TvRage;
 
 $date = date("Y-m-d");

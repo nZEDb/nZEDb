@@ -1,8 +1,8 @@
 <?php
 
 require_once './config.php';
-require_once nZEDb_LIB . 'adminpage.php';
-require_once nZEDb_LIB . 'binaries.php';
+//require_once nZEDb_LIB . 'adminpage.php';
+//require_once nZEDb_LIB . 'binaries.php';
 
 // Login Check
 $admin = new AdminPage;

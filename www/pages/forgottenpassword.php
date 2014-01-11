@@ -2,7 +2,7 @@
 if ($users->isLoggedIn())
 	$page->show404();
 
-require_once nZEDb_LIB . 'util.php';
+//require_once nZEDb_LIB . 'util.php';
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 

@@ -2,8 +2,8 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once nZEDb_LIB . 'category.php';
-require_once nZEDb_LIB . 'userseries.php';
+//require_once nZEDb_LIB . 'category.php';
+//require_once nZEDb_LIB . 'userseries.php';
 
 $us = new UserSeries();
 

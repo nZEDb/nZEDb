@@ -1,6 +1,6 @@
 <?php
 
-require_once nZEDb_LIB . 'sitemaps.php';
+//require_once nZEDb_LIB . 'sitemaps.php';
 
 $te = $page->smarty;
 $arPages = array();
