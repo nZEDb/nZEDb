@@ -32,7 +32,7 @@ $PHP ${NZEDB_PATH}/nntpproxy.php
 cd ${NZEDB_PATH}
 $PHP ${NZEDB_PATH}/update_binaries.php
 
-set -e
+
 $PHP ${NZEDB_PATH}/update_releases.php 1 true
 
 cd ${TEST_PATH}
