@@ -1909,7 +1909,7 @@ class Releases
 		return $tot_retcount;
 	}
 
-	public function processReleases($categorize, $postproc, $groupName, $nntp)
+	public function processReleases($categorize, $postproc, $groupName, $nntp, $echooutput)
 	{
 		$this->echooutput = $echooutput;
 		if ($this->hashcheck == 0) {
