@@ -4,7 +4,8 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2014-01-12 -> jonnyboy -> fixed relocateOldDirectoryContents.php, fixed typo in /nzb-import.php, updated reqestid_threaded.py to add/update predb
+2014-01-12 -> jonnyboy -> added remaining folders
+                          fixed relocateOldDirectoryContents.php, fixed typo in /nzb-import.php, updated reqestid_threaded.py to add/update predb
                           fixed typo in threaded.sh, fixed typo in update_groups.php
                           fixed typo, increased number of groups matched for anime
                           updated fixReleaseNames.php to improve speed and output, default is not to show counter, to display the name changes add last argument 'show'
