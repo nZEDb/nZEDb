@@ -1,16 +1,16 @@
 <?php
 require_once './config.php';
-require_once nZEDb_LIB . 'adminpage.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'binaries.php';
-require_once nZEDb_LIB . 'page.php';
-require_once nZEDb_LIB . 'namecleaning.php';
-require_once nZEDb_LIB . 'site.php';
-require_once nZEDb_LIB . 'category.php';
+//require_once nZEDb_LIB . 'adminpage.php';
+//require_once nZEDb_LIB . 'framework/db.php';
+//require_once nZEDb_LIB . 'binaries.php';
+//require_once nZEDb_LIB . 'page.php';
+//require_once nZEDb_LIB . 'namecleaning.php';
+//require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'category.php';
 
 $db = new DB();
 $binaries = new Binaries();
-$namecleaning = new nameCleaning();
+$namecleaning = new NameCleaning();
 $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;

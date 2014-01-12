@@ -8,7 +8,7 @@ if (!isset($_REQUEST["id"])) {
     $page->show404();
 }
 
-require_once nZEDb_LIB . 'releases.php';
+//require_once nZEDb_LIB . 'releases.php';
 $r = new Releases();
 $rel = $r->getByGuid($_REQUEST["id"]);
 

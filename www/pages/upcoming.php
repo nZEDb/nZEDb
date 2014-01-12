@@ -4,8 +4,8 @@ if (!$users->isLoggedIn()) {
     $page->show403();
 }
 
-require_once nZEDb_LIB . 'movie.php';
-require_once nZEDb_LIB . 'site.php';
+//require_once nZEDb_LIB . 'movie.php';
+//require_once nZEDb_LIB . 'site.php';
 $m = new Movie();
 $s = new Sites();
 $site = $s->get();
