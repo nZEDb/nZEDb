@@ -1,6 +1,6 @@
 <?php
-require_once nZEDb_LIB . 'releases.php';
-require_once nZEDb_LIB . 'nzb.php';
+//require_once nZEDb_LIB . 'releases.php';
+//require_once nZEDb_LIB . 'nzb.php';
 
 $nzb = new NZB;
 $rel = new Releases;

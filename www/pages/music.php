@@ -2,9 +2,9 @@
 if (!$users->isLoggedIn())
 	$page->show403();
 
-require_once nZEDb_LIB . 'music.php';
-require_once nZEDb_LIB . 'category.php';
-require_once nZEDb_LIB . 'genres.php';
+//require_once nZEDb_LIB . 'music.php';
+//require_once nZEDb_LIB . 'category.php';
+//require_once nZEDb_LIB . 'genres.php';
 
 $music = new Music;
 $cat = new Category;

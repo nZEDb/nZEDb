@@ -80,7 +80,7 @@ if (!defined('SMARTY_SPL_AUTOLOAD')) {
 	define('SMARTY_SPL_AUTOLOAD', 0);
 }
 
-if (SMARTY_SPL_AUTOLOAD && set_include_path(get_include_path() . PATH_SEPARATOR . SMARTY_SYSPLUGINS_DIR) !== false) {
+if (SMARTY_SPL_AUTOLOAD && set_include_path(get_include_path() . DIRECTORY_SEPARATOR . SMARTY_SYSPLUGINS_DIR) !== false) {
 	$registeredAutoLoadFunctions = spl_autoload_functions();
 	if (!isset($registeredAutoLoadFunctions['spl_autoload'])) {
 		spl_autoload_register();
@@ -99,6 +99,18 @@ include_once SMARTY_SYSPLUGINS_DIR.'smarty_resource.php';
 include_once SMARTY_SYSPLUGINS_DIR.'smarty_internal_resource_file.php';
 include_once SMARTY_SYSPLUGINS_DIR.'smarty_cacheresource.php';
 include_once SMARTY_SYSPLUGINS_DIR.'smarty_internal_cacheresource_file.php';
+include_once SMARTY_SYSPLUGINS_DIR.'smarty_internal_templatecompilerbase.php';
+include_once SMARTY_SYSPLUGINS_DIR.'smarty_internal_templatelexer.php';
+include_once SMARTY_SYSPLUGINS_DIR.'smarty_internal_templateparser.php';
+include_once SMARTY_SYSPLUGINS_DIR.'smarty_internal_compilebase.php';
+include_once SMARTY_SYSPLUGINS_DIR.'smarty_internal_write_file.php';
+//include_once SMARTY_SYSPLUGINS_DIR.'.php';
+//include_once SMARTY_SYSPLUGINS_DIR.'.php';
+//include_once SMARTY_SYSPLUGINS_DIR.'.php';
+//include_once SMARTY_SYSPLUGINS_DIR.'.php';
+//include_once SMARTY_SYSPLUGINS_DIR.'.php';
+//include_once SMARTY_SYSPLUGINS_DIR.'.php';
+//include_once SMARTY_SYSPLUGINS_DIR.'.php';
 
 /**
  * This is the main Smarty class

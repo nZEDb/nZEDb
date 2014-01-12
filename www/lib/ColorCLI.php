@@ -231,7 +231,7 @@ class ColorCLI
 
 	public static function alternate($str)
 	{
-		$str = "\033[38;5;" . self::$colors256['DeepPink1'] . "m$str\033[0m";
+		$str = "\033[38;5;" . self::$colors256['DeepPink1'] . "m$str\033[0m\n";
 		return $str;
 	}
 
