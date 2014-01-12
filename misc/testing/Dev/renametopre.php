@@ -117,7 +117,7 @@ function preName($argv, $argc)
 					if (strlen(utf8_decode($cleanName)) <= 3) {
 						//echo $row["name"] . "\n";
 					} else {
-						$determinedcat = $category->determineCategory($row["groupid"]);
+						$determinedcat = $category->determineCategory($cleanName, $row["groupid"]);
 						if (isset($argv[2]) && $argv[2] === 'all') {
 							$preid = ', preid = NULL ';
 						} else {

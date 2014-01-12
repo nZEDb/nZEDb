@@ -4,6 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2014-01-12 -> bart39   -> fixed missing parameter in renametopre
 2014-01-12 -> jonnyboy -> added remaining folders
                           fixed relocateOldDirectoryContents.php, fixed typo in /nzb-import.php, updated reqestid_threaded.py to add/update predb
                           fixed typo in threaded.sh, fixed typo in update_groups.php
