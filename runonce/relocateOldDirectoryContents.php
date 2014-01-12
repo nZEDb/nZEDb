@@ -1,4 +1,5 @@
 <?php
+
 require_once '../www/config.php';
 
 $output = new ColorCLI();
@@ -32,7 +33,7 @@ $dirs = [
 		['new' => 'Release']
 	],
 	[
-		['old' => '/misc/update_scripts/nix_scriipt'],
+		['old' => '/misc/update_scripts/nix_scripts'],
 		['new' => 'nix']
 	],
 	[
@@ -50,8 +51,7 @@ $dirs = [
 ];
 
 $tatus = 0;
-foreach ($dirs as $dir)
-{
+foreach ($dirs as $dir) {
 	$pathOld = nZEDb_ROOT . $dir['old'];
 	if (file_exists($pathOld)) {
 		$pathNew = dirname($pathOld) . $dir['new'];
@@ -76,5 +76,4 @@ foreach ($dirs as $dir)
 	}
 }
 
-exit((int)$status);
-?>
+exit((int) $status);

@@ -297,7 +297,7 @@ class Category {
 				return true;
 			}
 
-			if (preg_match('/alt\.binaries\.(multimedia\.)?anime(\.(highspeed|repost))?/', $groupRes["name"])) {
+			if (preg_match('/alt\.binaries\.(multimedia\.erotica\.|cartoons\.french\.|dvd\.|multimedia\.)?anime(\.highspeed|\.repost|s-fansub|\.german)?/', $groupRes["name"])) {
 				$this->tmpCat = Category::CAT_TV_ANIME;
 				return true;
 			}
@@ -1454,7 +1454,7 @@ class CategoryDanish extends Category {
 				return true;
 			}
 
-			if (preg_match('/alt\.binaries\.anime\.german/', $groupRes["name"])) {
+			if (preg_match('/alt\.binaries\.(multimedia\.erotica\.|cartoons\.french\.|dvd\.|multimedia\.)?anime(\.highspeed|\.repost|s-fansub|\.german)?/', $groupRes["name"])) {
 				$this->tmpCat = Category::CAT_TV_ANIME;
 				return true;
 			}
@@ -1996,7 +1996,7 @@ class CategoryFrench extends Category {
 				return true;
 			}
 
-			if (preg_match('/alt\.binaries\.(multimedia\.)?anime(\.(highspeed|repost))?/', $groupRes["name"])) {
+			if (preg_match('/alt\.binaries\.(multimedia\.erotica\.|cartoons\.french\.|dvd\.|multimedia\.)?anime(\.highspeed|\.repost|s-fansub|\.german)?/', $groupRes["name"])) {
 				$this->tmpCat = Category::CAT_TV_ANIME;
 				return true;
 			}
@@ -2524,7 +2524,7 @@ class CategoryGerman extends Category {
 				return true;
 			}
 
-			if (preg_match('/alt\.binaries\.anime\.german/', $groupRes["name"])) {
+			if (preg_match('/alt\.binaries\.(multimedia\.erotica\.|cartoons\.french\.|dvd\.|multimedia\.)?anime(\.highspeed|\.repost|s-fansub|\.german)?/', $groupRes["name"])) {
 				$this->tmpCat = Category::CAT_TV_ANIME;
 				return true;
 			}
