@@ -48,10 +48,14 @@ if ($bFound === true) {
 	$determinedcat = $category->determineCategory($newTitle, $groupname);
 	$run = $db->queryDirect(sprintf('UPDATE releases set reqidstatus = 1, bitwise = ((bitwise & ~4)|4), searchname = %s, '
 			. 'categoryid = %d where id = %d', $db->escapeString($newTitle), $determinedcat, $pieces[0]));
-	$md5 = md5($newTitle);
-	$groupid = $pieces[2];
-	$db->queryDirect(sprintf("INSERT IGNORE INTO predb (title, adddate, source, md5, requestid, groupid) VALUES "
-			. "(%s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d", $db->escapeString($newTitle), $db->escapeString('requestWEB'), $db->escapeString($md5), $requestID, $groupid, $requestID));
+	$groupid = $groups->getIDByName($pieces[2]);
+	if ($groupid !== 0) {
+		$md5 = md5($newTitle);
+		$db->queryDirect(sprintf("INSERT IGNORE INTO predb (title, adddate, source, md5, requestid, groupid) VALUES "
+				. "(%s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d", $db->escapeString($newTitle), $db->escapeString('requestWEB'), $db->escapeString($md5), $requestID, $groupid, $requestID));
+	} else if ($groupid === 0) {
+		echo $requestID ."\n";
+	}
 
 	$newcatname = $category->getNameByID($determinedcat);
 	$method = ($local === true) ? 'requestID local' : 'requestID web';
@@ -59,7 +63,7 @@ if ($bFound === true) {
 	echo $c->headerOver($n . $n . 'New name:  ') . $c->primary($newTitle) .
 	$c->headerOver('Old name:  ') . $c->primary($pieces[1]) .
 	$c->headerOver('New cat:   ') . $c->primary($newcatname) .
-	$c->headerOver('Group:     ') . $c->primary($pieces[2]) .
+	$c->headerOver('Group:     ') . $c->primary(trim($pieces[2])) .
 	$c->headerOver('Method:    ') . $c->primary($method) .
 	$c->headerOver('ReleaseID: ') . $c->primary($pieces[0]);
 	$updated++;
