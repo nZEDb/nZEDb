@@ -1,22 +1,13 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'consoletools.php';
-//require_once nZEDb_LIB . 'namecleaning.php';
-//require_once nZEDb_LIB . 'groups.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'releasefiles.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
-
 
 /*
  *
  * This was added because I starting writing this before
- * all of the regexes were converted to by group in namecleaning.php
+ * all of the regexes were converted to by group in NameCleaning.php
  * and I do not want to convert these regexes to run per group.
- * namecleaning.php is where the regexes should go
+ * NameCleaning.php is where the regexes should go
  * so that all new releases can be effected by them
  * instead of having to run this script to rename after the
  * release has been created
@@ -24,44 +15,62 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
  */
 
 $c = new ColorCLI();
-if (!(isset($argv[1]) && ($argv[1] == "full" || is_numeric($argv[1])))) {
-	exit($c->error("\nThis script will attempt to rename releases using regexes first from namecleaning.php and then from this file.\n"
-					. "php $argv[0] full            ...: To process all releases not previously renamed.\n"
-					. "php $argv[0] 2               ...: To process all releases added in the previous 2 hours not previously renamed.\n"
-					. "php $argv[0] full all        ...: To process all releases.\n"
-					. "php $argv[0] full 155        ...: To process all releases in groupid 155 not previously renamed.\n"
-					. "php $argv[0] full all 155    ...: To process all releases in groupid 155.\n"));
+if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || is_numeric($argv[1])))) {
+	exit($c->error("\nThis script will attempt to rename releases using regexes first from NameCleaning.php and then from this file.\n"
+			. "An optional last argument, show, will display the release name changes.\n\n"
+			. "php $argv[0] full            ...: To process all releases not previously renamed.\n"
+			. "php $argv[0] 2               ...: To process all releases added in the previous 2 hours not previously renamed.\n"
+			. "php $argv[0] all             ...: To process all releases.\n"
+			. "php $argv[0] full 155        ...: To process all releases in groupid 155 not previously renamed.\n"
+			. "php $argv[0] all 155         ...: To process all releases in groupid 155.\n"));
 }
+preName($argv, $argc);
 
-preName($argv);
-
-function preName($argv) {
+function preName($argv, $argc)
+{
 	$db = new DB();
 	$groups = new Groups();
 	$category = new Category();
 	$internal = $external = $pre = $none = 0;
+	$show = 2;
+	if ($argv[$argc - 1] === 'show') {
+		$show = 1;
+	} else if ($argv[$argc - 1] === 'bad') {
+		$show = 3;
+	}
+
 	$counter = 0;
 	$c = new ColorCLI();
-	$what = $argv[1] == 'full' ? '' : ' AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR';
-	if (isset($argv[3]) && is_numeric($argv[3])) {
-		$where = ' AND groupid = ' . $argv[3];
-	} else if (!isset($argv[3]) && isset($argv[2]) && is_numeric($argv[2])) {
+	$full = $all = false;
+	$what = $where = $why = '';
+	if ($argv[1] === 'full') {
+		$full = true;
+	} else if ($argv[1] === 'all') {
+		$all = true;
+	} else if (is_numeric($argv[1])) {
+		$what = ' AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR';
+	}
+
+	if (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
 		$where = ' AND groupid = ' . $argv[2];
+		$why = ' AND (bitwise & 260) = 256';
+	} else if (isset($argv[2]) && is_numeric($argv[2]) && $all === true) {
+		$where = ' AND groupid = ' . $argv[2];
+		$why = ' AND (bitwise & 256) = 256';
+	} else if (isset($argv[2]) && is_numeric($argv[2])) {
+		$where = ' AND groupid = ' . $argv[2];
+		$why = ' AND (bitwise & 260) = 256';
+	} else if ($full === true) {
+		$why = ' AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)';
+	} else if ($all === true) {
+		$why = ' AND (bitwise & 256) = 256';
 	} else {
-		$where = '';
+		$why = ' AND (bitwise & 260) = 256';
 	}
 
 	resetSearchnames();
-	if (!isset($argv[2])) {
-		echo $c->header("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)" . $what . ";\n");
-		$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)" . $what);
-	} else if (isset($argv[2]) && is_numeric($argv[2])) {
-		echo $c->header("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)" . $what . $where . ";\n");
-		$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1 AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)" . $what . $where);
-	} else if (isset($argv[1]) && $argv[1] == 'full' && isset($argv[2]) && $argv[2] == 'all') {
-		echo $c->header("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 256) = 256" . $where . ";\n");
-		$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 256) = 256" . $where);
-	}
+	echo $c->header("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1" . $why . $what . $where . ";\n");
+	$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1" . $why . $what . $where);
 
 	$total = $res->rowCount();
 	if ($total > 0) {
@@ -124,36 +133,42 @@ function preName($argv) {
 							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d" . $preid . "WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
 						}
 
-						/* $groupname = $groups->getByNameByID($row["groupid"]);
-						  $oldcatname = $category->getNameByID($row["categoryid"]);
-						  $newcatname = $category->getNameByID($determinedcat);
-						  echo $c->headerOver("New name:  ") . $c->primary($cleanName).
-						  $c->headerOver("Old name:  ") . $c->primary($row["searchname"]).
-						  $c->headerOver("New cat:   ") . $c->primary($newcatname).
-						  $c->headerOver("Old cat:   ") . $c->primary($oldcatname).
-						  $c->headerOver("Group:     ") . $c->primary($groupname).
-						  $c->headerOver("Method:    ") . $c->primary("renametopre regexes").
-						  $c->headerOver("ReleaseID: ") . $c->primary($row["id"]); */
 						if ($increment === true) {
+							$status = "renametopre Match";
 							$internal++;
 						} else if ($predb === true) {
+							$status = "PreDB: Match";
 							$pre++;
 						} else if ($propername === true) {
+							$status = "ReleaseCleaner Match";
 							$external++;
 						}
+						if ($show === 1) {
+							$oldcatname = $category->getNameByID($row["categoryid"]);
+							$newcatname = $category->getNameByID($determinedcat);
+							echo $c->headerOver("\n\nNew name:  ") . $c->primary($cleanName) .
+							$c->headerOver("Old name:  ") . $c->primary($row["searchname"]) .
+							$c->headerOver("New cat:   ") . $c->primary($newcatname) .
+							$c->headerOver("Old cat:   ") . $c->primary($oldcatname) .
+							$c->headerOver("Group:     ") . $c->primary($groupname) .
+							$c->headerOver("Method:    ") . $c->primary($status) .
+							$c->headerOver("ReleaseID: ") . $c->primary($row["id"]);
+						}
 					}
+				} else if ($show === 3 && preg_match('/^\[?\d*\].+?yEnc/i', $row['name'])) {
+					echo $c->primary($row['name']);
 				}
 			}
-			//else if (preg_match('/^\[?\d*\].+?yEnc/i', $row['name']))
-			//echo $c->primary($row['name']);
 
 			if ($cleanName == $row['name']) {
 				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $row['id']));
 			}
-			$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
+			if ($show === 2) {
+				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString(++$counter, $total));
+			}
 		}
 	}
-	echo $c->header("\n" . number_format($internal) . " renamed using namecleaning.php\n" . number_format($external) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
+	echo $c->header("\n" . number_format($external) . " renamed using NameCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
 	echo $c->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
 	$timestart = TIME();
 	if (isset($argv[1]) && $argv[1] == "full") {
@@ -178,7 +193,8 @@ function preName($argv) {
 	resetSearchnames();
 }
 
-function resetSearchnames() {
+function resetSearchnames()
+{
 	$db = new DB();
 	$c = new ColorCLI();
 	echo $c->header("Resetting blank searchnames.");
@@ -213,10 +229,11 @@ function resetSearchnames() {
 // Categorizes releases.
 // $type = name or searchname
 // Returns the quantity of categorized releases.
-function categorizeRelease($type, $where = "", $echooutput = false) {
+function categorizeRelease($type, $where, $echooutput = false)
+{
 	$db = new DB();
 	$cat = new Category();
-	$consoletools = new ConsoleTools();
+	$consoletools = new consoleTools();
 	$relcount = 0;
 	$resrel = $db->queryDirect("SELECT id, " . $type . ", groupid FROM releases " . $where);
 	$total = $resrel->rowCount();
@@ -236,28 +253,18 @@ function categorizeRelease($type, $where = "", $echooutput = false) {
 	return $relcount;
 }
 
-function releaseCleaner($subject, $groupid, $groupname) {
+function releaseCleaner($subject, $groupid, $groupname)
+{
 	$groups = new Groups();
 	$db = new DB();
 	$match = '';
-
-	// Get pre style name from releases.name
-	if (preg_match('/(\w+[\._](\w+[\._-])+\w+-\w+)/', $subject, $match)) {
-		$title = $db->queryOneRow("SELECT title from predb WHERE title = " . $db->escapeString(trim($match[1])));
-		if (isset($title['title'])) {
-			$cleanerName = $title['title'];
-			if (!empty($cleanerName)) {
-				return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false, "predb" => true);
-			}
-		}
-	}
 
 	$groupName = $groups->getByNameByID($groupid);
 	$namecleaning = new NameCleaning();
 	$cleanerName = $namecleaning->releaseCleaner($subject, $groupname);
 	if (!empty($cleanerName) && !is_array($cleanerName)) {
 		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);
-	} else if (is_array($cleanerName) && isset($cleanerName['ignore'])) {
+	} else if (is_array($cleanerName)) {
 		return $cleanerName;
 	}
 

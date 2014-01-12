@@ -1,30 +1,22 @@
 <?php
 
 require_once dirname(__FILE__) . '/config.php';
-//require_once nZEDb_LIB . 'backfill.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'page.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'groups.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI();
 if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
 	exit($c->error("\nThis script tries to match an MD5 of the releases.name or releases.searchname to predb.md5 doing local lookup only.\n"
-			. "php requestid.php 1000 true		...: to limit to 1000 sorted by newest postdate and show renaming.\n"
-			. "php requestid.php full true		...: to run on full database and show renaming.\n"
-			. "php requestid.php all true		...: to run on all hashed releases(including previously renamed) and show renaiming."
-			. "In addition an optional final argument is time, in minutes, to check releases that have previously been checked.\n"));
+			. "In addition an optional final argument is time, in minutes, to check releases that have previously been checked.\n\n"
+			. "php requestid.php 1000 show		...: to limit to 1000 sorted by newest postdate and show renaming.\n"
+			. "php requestid.php full show		...: to run on full database and show renaming.\n"
+			. "php requestid.php all show		...: to run on all hashed releases(including previously renamed) and show renaming.\n"));
 }
 
 $db = new DB();
-$page = new Page();
-$n = "\n";
 $category = new Category();
 $groups = new Groups();
 $consoletools = new ConsoleTools();
 $timestart = TIME();
-$counter = 0;
+$counter = $counted = 0;
 
 if (isset($argv[2]) && is_numeric($argv[2])) {
 	$time = ' OR r.postdate > NOW() - INTERVAL ' . $argv[2] . ' MINUTE)';
@@ -36,15 +28,12 @@ if (isset($argv[2]) && is_numeric($argv[2])) {
 
 //runs on every release
 if (isset($argv[1]) && $argv[1] === "all") {
-	printf("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1280) = 1280;\n");
 	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1280) = 1280");
 //runs on all releases not already renamed
 } else if (isset($argv[1]) && $argv[1] === "full") {
-	printf("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ((bitwise & 1284) = 1280 " . $time . " AND reqidstatus in (0, -1);\n");
 	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ((bitwise & 1284) = 1280 " . $time . " AND reqidstatus in (0, -1)");
 //runs on all releases not already renamed limited by user
 } else if (isset($argv[1]) && is_numeric($argv[1])) {
-	printf("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ((bitwise & 1284) = 1280 " . $time . " AND reqidstatus in (0, -1) ORDER BY postdate DESC LIMIT " . $argv[1] . ";\n");
 	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ((bitwise & 1284) = 1280 " . $time . " AND reqidstatus in (0, -1) ORDER BY postdate DESC LIMIT " . $argv[1]);
 }
 
@@ -57,6 +46,7 @@ if ($total > 0) {
 	foreach ($qry as $row) {
 		if (!preg_match('/^\[\d+\]/', $row['name']) && !preg_match('/^\[ \d+ \]/', $row['name'])) {
 			$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $row['id']);
+			$counter++;
 			continue;
 		}
 
@@ -78,32 +68,31 @@ if ($total > 0) {
 		if ($bFound === true) {
 			$groupname = $groups->getByNameByID($row['groupname']);
 			$determinedcat = $category->determineCategory($newTitle, $groupname);
-			$run = $db->prepare(sprintf('UPDATE releases set reqidstatus = 1, bitwise = ((bitwise & ~4)|4), searchname = %s, categoryid = %d where id = %d', $db->escapeString($newTitle), $determinedcat, $row['id']));
-			$run->execute();
+			$run = $db->queryDirect(sprintf('UPDATE releases set reqidstatus = 1, bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d where id = %d', $db->escapeString($newTitle), $determinedcat, $row['id']));
 			if ($row['name'] !== $newTitle) {
-				$counter++;
-				if (isset($argv[2]) && $argv[2] === 'true') {
+				$counted++;
+				if (isset($argv[2]) && $argv[2] === 'show') {
 					$newcatname = $category->getNameByID($determinedcat);
 					$oldcatname = $category->getNameByID($row['categoryid']);
 
-					echo $c->headerOver($n . $n . 'New name:  ') . $c->primary($newTitle) .
+					echo $c->headerOver("\nNew name:  ") . $c->primary($newTitle) .
 					$c->headerOver('Old name:  ') . $c->primary($row['name']) .
 					$c->headerOver('New cat:   ') . $c->primary($newcatname) .
 					$c->headerOver('Old cat:   ') . $c->primary($oldcatname) .
 					$c->headerOver('Group:     ') . $c->primary($row['groupname']) .
 					$c->headerOver('Method:    ') . $c->primary('requestID local') .
 					$c->headerOver('ReleaseID: ') . $c->primary($row['id']);
-				} else if ($counter % 100 == 0) {
-					echo ".";
 				}
 			}
 		} else {
 			$db->queryExec('UPDATE releases SET reqidstatus = -3 WHERE id = ' . $row['id']);
-			echo ".";
+		}
+		if (!isset($argv[2]) || $argv[2] !== 'show') {
+			$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString( ++$counter, $total));
 		}
 	}
 	if ($total > 0) {
-		echo $c->header("\nRenamed " . number_format($counter) . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
+		echo $c->header("\nRenamed " . number_format($counted) . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
 	} else {
 		echo $c->info("\nNothing to do.");
 	}

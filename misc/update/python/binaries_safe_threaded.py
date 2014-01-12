@@ -67,7 +67,7 @@ subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])
 
 #query to grab all active groups
 cur = connect()
-cur[0].execute("SELECT g.name AS groupname, g.last_record AS our_last, a.last_record AS thier_last FROM groups g INNER JOIN shortgroups a ON g.active = 1 AND g.name = a.name ORDER BY a.last_record DESC")
+cur[0].execute("SELECT g.name AS groupname, g.last_record AS our_last, a.last_record AS their_last FROM groups g INNER JOIN shortgroups a ON g.active = 1 AND g.name = a.name ORDER BY a.last_record DESC")
 datas = cur[0].fetchall()
 disconnect(cur[0], cur[1])
 

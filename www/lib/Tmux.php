@@ -10,7 +10,9 @@ class Tmux
 
 	public function version()
 	{
-		return "0.0.2";
+		$s = new Sites();
+		$site = $s->get();
+		return $site->version;
 	}
 
 	public function update($form)

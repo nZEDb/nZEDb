@@ -1,12 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-//require_once nZEDb_LIB . 'backfill.php';
-//require_once nZEDb_LIB . 'binaries.php';
-//require_once nZEDb_LIB . 'groups.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
-//require_once nZEDb_LIB . 'site.php';
 
 $c = new ColorCLI();
 $s = new Sites();
@@ -42,13 +36,13 @@ if (!isset($argv[1])) {
 		$backfill->getFinal($pieces[0], $pieces[1], $pieces[2], $nntp);
 	} else if (isset($pieces[2]) && $pieces[2] == 'BackfillAll') {
 		$backfill = new Backfill();
-		$backfill->backfillPostAllGroups($pieces[0], $pieces[1], $type = '', $nntp);
+		$backfill->backfillPostAllGroups($nntp, $pieces[0], $pieces[1], $type = '');
 	} else if (isset($pieces[3])) {
 		$backfill = new Backfill();
 		$backfill->getRange($pieces[0], $pieces[1], $pieces[2], $pieces[3], $nntp);
 	} else if (isset($pieces[1])) {
 		$backfill = new Backfill();
-		$backfill->backfillPostAllGroups($pieces[0], $pieces[1], $type = '', $nntp);
+		$backfill->backfillPostAllGroups($nntp, $pieces[0], $pieces[1], $type = '');
 	}
 	if ($site->nntpproxy != "1") {
 		$nntp->doQuit();

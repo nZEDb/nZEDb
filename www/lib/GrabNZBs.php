@@ -23,27 +23,25 @@ class GrabNZBs
 
 	public function Import($hash='', $nntp)
 	{
-		if (!isset($nntp))
+		if (!isset($nntp)) {
 			exit($this->c->error("Unable to connect to usenet.\n"));
+		}
 
 		$nzb = array();
 		if ($hash == '')
 		{
 			$hashes = $this->db->queryDirect('SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts');
-			if ($hashes->rowCount > 0)
-			{
-				foreach ($hashes as $hash)
-				{
+			if ($hashes->rowCount > 0) {
+				foreach ($hashes as $hash) {
 					$rel = $this->db->queryDirect(sprintf('SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber', $this->db->escapeString($hash['collectionhash'])));
 					$arr = '';
-					foreach ($rel as $nzb)
-					{
+					foreach ($rel as $nzb) {
 						$arr[] = $nzb['message_id'];
 					}
 				}
-			}
-			else
+			} else {
 				exit("No NZBs to grab\n");
+			}
 		}
 		else
 		{
@@ -54,51 +52,45 @@ class GrabNZBs
 				$arr[] = $nzb['message_id'];
 			}
 		}
-		if ($nzb && array_key_exists('groupname', $nzb))
-		{
-			if (sizeof($arr) > 10)
+		if ($nzb && array_key_exists('groupname', $nzb)) {
+			if (sizeof($arr) > 10) {
 				echo "\nGetting " . sizeof($arr) . ' articles for ' . $hash . "\n";
+			}
 
 			$article = $nntp->getArticles($nzb['groupname'], $arr);
-			if (PEAR::isError($article))
-			{
+			if (PEAR::isError($article)) {
 				$nntp->doQuit();
 				$this->site->grabnzbs == '2' ? $nntp->doConnect_A() : $nntp->doConnect();
 				$article = $nntp->getArticles($nzb['groupname'], $arr);
-				if (PEAR::isError($article))
-				{
+				if (PEAR::isError($article)) {
 					$nntp->doQuit();
 					$article = false;
 				}
 			}
 
 			// If article downloaded, import it, else delete from nzbs table
-			if ($article !== false)
-			{
+			if ($article !== false) {
 				$groups = new Groups();
 				$realgroupid = $groups->getIDByName($nzb['groupname']);
 				$this->processGrabNZBs($article, $hash, $realgroupid);
-			}
-			else
-			{
+			} else {
 				$this->db->queryExec(sprintf('DELETE FROM nzbs WHERE collectionhash = %s', $this->db->escapeString($hash)));
 				echo 'f';
 				return;
 			}
-		}
-		else
+		} else {
 			return;
+		}
 	}
 
 
 	function processGrabNZBs($article, $hash, $realgroupid)
 	{
-		if (!$article)
+		if (!$article) {
 			return;
+		}
 
 		$binaries = new Binaries();
-		$page = new Page();
-		$n = "\n";
 		$nzbsplitlevel = $this->site->nzbsplitlevel;
 		$nzbpath = $this->site->nzbpath;
 		$version = $this->site->version;
@@ -120,7 +112,7 @@ class GrabNZBs
 		}
 		else
 		{
-			$i = $totalFiles = $totalsize = 0;
+			$totalFiles = $totalsize = 0;
 			$firstname = $postername = $postdate = array();
 
 			foreach($xml->file as $file)
@@ -131,7 +123,6 @@ class GrabNZBs
 				$firstname[] = $name;
 				$fromname = (string)$file->attributes()->poster;
 				$postername[] = $fromname;
-				$unixdate = (string)$file->attributes()->date;
 				$totalFiles++;
 				$date = date('Y-m-d H:i:s', (string)($file->attributes()->date));
 				$postdate[] = $date;
@@ -154,8 +145,9 @@ class GrabNZBs
 					}
 					$groupArr[] = $group;
 
-					if ($binaries->isBlacklisted($msg, $group))
+					if ($binaries->isBlacklisted($msg, $group)) {
 						$isBlackListed = true;
+					}
 				}
 				if ($groupID != -1 && !$isBlackListed)
 				{
@@ -183,8 +175,9 @@ class GrabNZBs
 					$releases = new Releases();
 					foreach ($res as $rel)
 					{
-						if (isset($rel['id']) && isset($rel['guid']))
+						if (isset($rel['id']) && isset($rel['guid'])) {
 							$releases->fastDelete($rel['id'], $rel['guid'], $this->site);
+						}
 					}
 				}
 				else if ($res->rowCount() > 0 && $this->replacenzbs == 0)
@@ -205,10 +198,9 @@ class GrabNZBs
 				$cleanerName = $ncarr['subject'];
 				$category = $ncarr['cat'];
 				$relstat = $ncar['rstatus'];*/
-			 	if (!is_array($cleanerName))
+			 if (!is_array($cleanerName)) {
 					$cleanName = $cleanerName;
-				else
-				{
+				} else {
 					$cleanName = $cleanerName['cleansubject'];
 					$propername = $cleanerName['properlynamed'];
 				}
@@ -219,10 +211,11 @@ class GrabNZBs
 
 				$category = $this->categorize->determineCategory($cleanName, $groupName);
 				// If a release exists, delete the nzb/collection/binaries/parts
-				if ($propername === true)
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~5)|5)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($page->site->checkpasswordedrar === '1' ? -1 : 0), $category));
-				else
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~1)|1)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($page->site->checkpasswordedrar === '1' ? -1 : 0), $category));
+				if ($propername === true) {
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~5)|5)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($this->site->checkpasswordedrar === '1' ? -1 : 0), $category));
+				} else {
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~1)|1)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($this->site->checkpasswordedrar === '1' ? -1 : 0), $category));
+				}
 
 				// Set table names
 				if ($this->tablepergroup == 1)
@@ -242,15 +235,12 @@ class GrabNZBs
 
 				if ($relid == false)
 				{
-					if ($this->db->dbSystem() == 'mysql')
+					if ($this->db->dbSystem() == 'mysql') {
 						$this->db->queryExec(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ' LEFT JOIN ' . $group['bname'] . ' ON ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid LEFT JOIN ' . $group['pname'] . ' ON ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid WHERE ' . $group['cname'] . '.collectionhash = %s', $this->db->escapeString($hash)));
-					else if ($this->db->dbSystem() == 'pgsql')
-					{
+					} else if ($this->db->dbSystem() == 'pgsql') {
 						$idr = $this->db->queryDirect(sprintf('SELECT id FROM ' . $group['cname'] . ' WHERE collectionhash = %s', $this->db->escapeString($hash)));
-						if ($idr->rowCount() > 0)
-						{
-							foreach ($idr as $id)
-							{
+						if ($idr->rowCount() > 0) {
+							foreach ($idr as $id) {
 								$reccount = $this->db->queryExec(sprintf('DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] . ' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' . $group['bname'] . '.collectionid = %d)', $id['id']));
 								$reccount += $this->db->queryExec(sprintf('DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']));
 							}
@@ -275,15 +265,12 @@ class GrabNZBs
 						{
 							chmod($path, 0777);
 							$this->db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~256)|256) WHERE id = %d', $relid));
-							if ($this->db->dbSystem() == 'mysql')
+							if ($this->db->dbSystem() == 'mysql') {
 								$this->db->queryExec(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ' LEFT JOIN ' . $group['bname'] . ' ON ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid LEFT JOIN ' . $group['pname'] . ' ON ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid WHERE ' . $group['cname'] . '.collectionhash = %s', $this->db->escapeString($hash)));
-							else if ($this->db->dbSystem() == 'pgsql')
-							{
+							} else if ($this->db->dbSystem() == 'pgsql') {
 								$idr = $this->db->queryDirect(sprintf('SELECT id FROM ' . $group['cname'] . ' WHERE collectionhash = %s', $this->db->escapeString($hash)));
-								if ($idr->rowCount() > 0)
-								{
-									foreach ($idr as $id)
-									{
+								if ($idr->rowCount() > 0) {
+									foreach ($idr as $id) {
 										$reccount = $this->db->queryExec(sprintf('DELETE FROM ' . $group['cname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] . ' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' . $group['bname'] . '.collectionid = %d)', $id['id']));
 										$reccount += $this->db->queryExec(sprintf('DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']));
 									}

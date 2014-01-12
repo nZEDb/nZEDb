@@ -1,10 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-//require_once nZEDb_LIB . 'backfill.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
-//require_once nZEDb_LIB . 'site.php';
 
 $c = new ColorCLI();
 $s = new Sites();
@@ -24,7 +20,7 @@ if ($site->nntpproxy === "1") {
 
 $pieces = explode(' ', $argv[1]);
 $backfill = new Backfill();
-$backfill->backfillPostAllGroups($pieces[0], 10000, 'normal', $nntp);
+$backfill->backfillPostAllGroups($nntp, $pieces[0], 10000, 'normal');
 if ($site->nntpproxy != "1") {
 	$nntp->doQuit();
 }

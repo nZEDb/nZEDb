@@ -1,31 +1,13 @@
 <?php
-//require_once nZEDb_LIB . 'anidb.php';
-//require_once nZEDb_LIB . 'books.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'console.php';
-//require_once nZEDb_LIB . 'consoletools.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'movie.php';
-//require_once nZEDb_LIB . 'music.php';
-//require_once nZEDb_LIB . 'nfo.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'nzb.php';
-//require_once nZEDb_LIB . 'nzbcontents.php';
-//require_once nZEDb_LIB . 'predb.php';
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'releaseextra.php';
-//require_once nZEDb_LIB . 'releasefiles.php';
-//require_once nZEDb_LIB . 'releaseimage.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'tvrage.php';
+
 require_once nZEDb_LIB . 'Util.php';
 require_once nZEDb_LIB . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIB . 'rarinfo/par2info.php';
 require_once nZEDb_LIB . 'rarinfo/zipinfo.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 class PostProcess
 {
+
 	public function __construct($echooutput = false)
 	{
 		$s = new Sites();
@@ -175,12 +157,12 @@ class PostProcess
 	{
 		if ($this->site->lookuptvrage == 1) {
 			$tvrage = new TvRage($this->echooutput);
-			$tvrage->processTvReleases($releaseToWork, $this->site->lookuptvrage==1);
+			$tvrage->processTvReleases($releaseToWork, $this->site->lookuptvrage == 1);
 		}
 	}
 
 	// Attempt to get a better name from a par2 file and categorize the release.
-	public function parsePAR2($messageID, $relID, $groupID, $nntp)
+	public function parsePAR2($messageID, $relID, $groupID, $nntp, $show)
 	{
 		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(postprocess->parsePAR2).\n"));
@@ -239,7 +221,7 @@ class PostProcess
 				//$namefixer->checkName($quer, 1, 'PAR2, ', 1);
 				//$stat = $db->queryOneRow('SELECT id FROM releases WHERE (bitwise & 4) = 4 AND id = '.$relID);
 				//if ($stat['id'] === $relID)
-				if ($namefixer->checkName($quer, 1, 'PAR2, ', 1) === true) {
+				if ($namefixer->checkName($quer, 1, 'PAR2, ', 1, $show) === true) {
 					$foundname = true;
 					break;
 				}
@@ -410,7 +392,7 @@ class PostProcess
 			// Loop through the releases.
 			foreach ($result as $rel) {
 				if ($this->echooutput && $releaseToWork == '')
-					echo "\r" . str_pad ('', 79, ' ') . "\r[".$this->c->primaryOver($startCount--).']';
+					echo "\r" . str_pad('', 79, ' ') . "\r[" . $this->c->primaryOver($startCount--) . ']';
 				else if ($this->echooutput)
 					echo '[' . $this->c->primaryOver($rel['id']) . ']';
 
@@ -562,12 +544,11 @@ class PostProcess
 									break;
 							}
 							else {
-								if ($notinfinite > $this->partsqty)
-                                {
-                                    if ($this->echooutput)
-                                        echo $this->c->info("Max parts to pp reached");
+								if ($notinfinite > $this->partsqty) {
+									if ($this->echooutput)
+										echo "\n" . $this->c->info("Max parts to pp reached");
 									break;
-                                }
+								}
 							}
 
 							if ($this->password === true) {
@@ -589,7 +570,7 @@ class PostProcess
 								$mid = array_slice((array) $rarFile['segments'], 0, $this->segmentstodownload);
 
 								$bingroup = $groupName;
-                                $fetchedBinary = $nntp->getMessages($bingroup, $mid);
+								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 								if (PEAR::isError($fetchedBinary)) {
 									$nntp->doQuit();
 									$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
@@ -616,8 +597,8 @@ class PostProcess
 										$foundcontent = true;
 								}
 								else {
-                                   if ($this->echooutput)
-                                        echo $this->c->alternateOver("f(" . $notinfinite . ")");
+									if ($this->echooutput)
+										echo $this->c->alternateOver("f(" . $notinfinite . ")");
 									$notinfinite = $notinfinite + 0.2;
 									$failed++;
 								}

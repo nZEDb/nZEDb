@@ -54,7 +54,7 @@ if ($nntpproxy == 0) {
 		$ip_a = gethostbyname($host_a);
 	}
 } else {
-	$filename = "$DIR/update/python/lib/nntpproxy.conf";
+	$filename = $DIR . "update/python/lib/nntpproxy.conf";
 	$fp = fopen($filename, "r") or die("Couldn't open $filename");
 	while (!feof($fp)) {
 		$line = fgets($fp);
@@ -68,7 +68,7 @@ if ($nntpproxy == 0) {
 	}
 
 	if ($alternate_nntp == 1) {
-		$filename = "$DIR/update/python/lib/nntpproxy_a.conf";
+		$filename = $DIR . "update/python/lib/nntpproxy_a.conf";
 		$fp = fopen($filename, "r") or die("Couldn't open $filename");
 		while (!feof($fp)) {
 			$line = fgets($fp);

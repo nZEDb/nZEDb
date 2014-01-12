@@ -1,10 +1,8 @@
 <?php
+
 //This inserts the patches into MySQL and PostgreSQL.
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 function command_exist($cmd)
 {
@@ -37,7 +35,7 @@ function SplitSQL($file, $delimiter = ';')
 					try {
 						$qry = $db->prepare($query);
 						$qry->execute();
-						echo 'SUCCESS: ' . $query . "\n";
+						echo $c->primary('SUCCESS: ' . $query);
 					} catch (PDOException $e) {
 						if ($e->errorInfo[1] == 1091 || $e->errorInfo[1] == 1060 || $e->errorInfo[1] == 1054 || $e->errorInfo[1] == 1061 || $e->errorInfo[1] == 1062 || $e->errorInfo[1] == 1071 || $e->errorInfo[1] == 1072 || $e->errorInfo[1] == 1146 || $e->errorInfo[0] == 23505 || $e->errorInfo[0] == 42701 || $e->errorInfo[0] == 42703 || $e->errorInfo[0] == '42P07' || $e->errorInfo[0] == '42P16') {
 							echo $c->error($query . " Skipped - Not Fatal.\n");
@@ -78,12 +76,9 @@ function BackupDatabase()
 	}
 
 	//Backup based on database system
-	if($db->dbSystem() == "mysql")
-	{
-		system("$PHP ${DIR}testing/DB/mysqldump_tables.php db dump ../../../");
-	}
-	else if($db->dbSystem() == "pgsql")
-	{
+	if ($db->dbSystem() == "mysql") {
+		system("$PHP ${DIR}testing/DB_scripts/mysqldump_tables.php db dump ../../../");
+	} else if ($db->dbSystem() == "pgsql") {
 		exit($c->error("Currently not supported on this platform."));
 	}
 }
@@ -96,8 +91,7 @@ if (isset($argv[1]) && $argv[1] == "safe") {
 	$safeupgrade = false;
 }
 
-if (isset($os) && $os == "unix")
-{
+if (isset($os) && $os == "unix") {
 	$s = new Sites();
 	$site = $s->get();
 	$currentversion = $site->sqlpatch;
@@ -123,25 +117,20 @@ if (isset($os) && $os == "unix")
 		exit($c->error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
 	}
 
-	/*	if ($db->dbSystem() == "mysql")
-		$patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/mysql_patches/', nZEDb_ROOT);
-	else if ($db->dbSystem() == "pgsql")
-		$patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/pgsql_patches/', nZEDb_ROOT);
-*/	sort($patches);
+	/* 	if ($db->dbSystem() == "mysql")
+	  $patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/mysql_patches/', nZEDb_ROOT);
+	  else if ($db->dbSystem() == "pgsql")
+	  $patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/pgsql_patches/', nZEDb_ROOT);
+	 */ sort($patches);
 
-	foreach($patches as $patch)
-	{
-		if (preg_match('/\.sql$/i', $patch))
-		{
-			$filepath = $path.$patch;
+	foreach ($patches as $patch) {
+		if (preg_match('/\.sql$/i', $patch)) {
+			$filepath = $path . $patch;
 			$file = fopen($filepath, "r");
 			$patch = fread($file, filesize($filepath));
-			if (preg_match('/UPDATE `?site`? SET `?value`? = \'?(\d{1,})\'? WHERE `?setting`? = \'sqlpatch\'/i', $patch, $patchnumber))
-			{
-				if ($patchnumber['1'] > $currentversion)
-				{
-					if($safeupgrade == true && $backedup == false)
-					{
+			if (preg_match('/UPDATE `?site`? SET `?value`? = \'?(\d{1,})\'? WHERE `?setting`? = \'sqlpatch\'/i', $patch, $patchnumber)) {
+				if ($patchnumber['1'] > $currentversion) {
+					if ($safeupgrade == true && $backedup == false) {
 						BackupDatabase();
 						$backedup = true;
 					}
@@ -151,8 +140,7 @@ if (isset($os) && $os == "unix")
 			}
 		}
 	}
-}
-else if (isset($os) && $os == "windows") {
+} else if (isset($os) && $os == "windows") {
 	$s = new Sites();
 	$site = $s->get();
 	$currentversion = $site->sqlpatch;

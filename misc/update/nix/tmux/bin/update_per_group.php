@@ -1,17 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'groups.php';
-//require_once nZEDb_LIB . 'consoletools.php';
-//require_once nZEDb_LIB . 'binaries.php';
-//require_once nZEDb_LIB . 'backfill.php';
-//require_once nZEDb_LIB . 'postprocess.php';
-//require_once nZEDb_LIB . 'nfo.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
-//require_once nZEDb_LIB . 'site.php';
 
 $c = new ColorCLI();
 if (!isset($argv[1])) {
@@ -49,7 +38,7 @@ if ($pieces[0] != 'Stage7b') {
 	$binaries->updateGroup($group, $nntp);
 
 	// Backfill per group
-	$backfill->backfillPostAllGroups($groupname, 20000, 'normal', $nntp);
+	$backfill->backfillPostAllGroups($nntp, $groupname, 20000, 'normal');
 
 	// Update Releases per group
 	try {
@@ -68,12 +57,12 @@ if ($pieces[0] != 'Stage7b') {
 	}
 
 	// Runs function that are per group
-	$releases->processReleasesStage1($groupid, false);
-	$releases->processReleasesStage2($groupid, true);
-	$releases->processReleasesStage3($groupid, true);
-	$retcount = $releases->processReleasesStage4($groupid, true);
-	$releases->processReleasesStage5($groupid, true);
-	$releases->processReleasesStage7a($groupid, true);
+	$releases->processReleasesStage1($groupid);
+	$releases->processReleasesStage2($groupid);
+	$releases->processReleasesStage3($groupid);
+	$retcount = $releases->processReleasesStage4($groupid);
+	$releases->processReleasesStage5($groupid);
+	$releases->processReleasesStage7a($groupid);
 //	$mask = "%-30.30s added %s releases.\n";
 //	$first = number_format($retcount);
 //	if($retcount > 0)
@@ -89,8 +78,8 @@ if ($pieces[0] != 'Stage7b') {
 } else if ($pieces[0] == 'Stage7b') {
 	// Runs functions that run on releases table after all others completed
 	$groupid = '';
-	$releases->processReleasesStage4dot5($groupid, true);
-	$releases->processReleasesStage6($categorize = 1, $postproc = 0, $groupid, true);
-	$releases->processReleasesStage7b($groupid, true);
+	$releases->processReleasesStage4dot5($groupid);
+	$releases->processReleasesStage6($categorize = 1, $postproc = 0, $groupid);
+	$releases->processReleasesStage7b($groupid);
 	//echo 'Deleted '.number_format($deleted)." collections/binaries/parts.\n";
 }

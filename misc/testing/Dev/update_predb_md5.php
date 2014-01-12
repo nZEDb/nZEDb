@@ -1,10 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'framework/db.php';
-require_once nZEDb_LIB . 'category.php';
-require_once nZEDb_LIB . 'consoletools.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
 
 $db = new DB();
 $consoletools = new ConsoleTools();

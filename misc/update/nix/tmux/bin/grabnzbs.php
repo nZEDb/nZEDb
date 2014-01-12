@@ -1,10 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-//require_once nZEDb_LIB . 'grabnzbs.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
-//require_once nZEDb_LIB . 'site.php';
 
 $c = new ColorCLI();
 if (!isset($argv[1])) {
@@ -22,12 +18,12 @@ if ($site->nntpproxy === "1") {
 	usleep(500000);
 }
 
-$import = new Import(true);
+$grabnzbs = new GrabNZBs();
 
 if (isset($argv[1])) {
-	$import->GrabNZBs($argv[1], $nntp);
+	$grabnzbs->Import($argv[1], $nntp);
 } else {
-	$import->GrabNZBs($hash = '', $nntp);
+	$grabnzbs->Import($hash = '', $nntp);
 }
 if ($site->nntpproxy != "1") {
 	$nntp->doQuit();
