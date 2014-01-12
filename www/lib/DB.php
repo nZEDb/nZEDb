@@ -342,8 +342,7 @@ class DB extends PDO
 				$this->queryDirect('OPTIMIZE TABLE `' . $table['name'] . '`');
 			}
 			$this->queryDirect('FLUSH TABLES');
-		}
-		else if ($this->dbsystem == 'pgsql') {
+		} else if ($this->dbsystem == 'pgsql') {
 			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
 			$tablecnt = count($alltables);
 			foreach ($alltables as $table) {

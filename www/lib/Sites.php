@@ -1,7 +1,5 @@
 <?php
 
-//require_once nZEDb_LIB . 'framework/db.php';
-
 class Sites
 {
 

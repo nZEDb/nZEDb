@@ -1,15 +1,10 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
-//require_once nZEDb_LIB . 'consoletools.php';
-//require_once nZEDb_LIB . 'site.php';
 
 $start = TIME();
 $c = new ColorCLI();
-$consoleTools = new Consoletools();
+$consoleTools = new ConsoleTools();
 $s = new Sites();
 $site = $s->get();
 

@@ -160,7 +160,10 @@ class Namefixer
 
 		$db = $this->db;
 		$type = "Filenames, ";
-		$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE categoryid != 5070 AND ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 128) = 0";
+		$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
+			. "rel.id AS releaseid FROM releases rel "
+			. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
+			. "WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 128) = 0";
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
@@ -320,10 +323,10 @@ class Namefixer
 							$status = "bitwise = ((bitwise & ~133)|133),";
 						}
 						$run = $db->queryExec(sprintf("UPDATE releases SET searchname = %s, bitwise = ((bitwise & ~4)|4),"
-							. " %s categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
+								. " %s categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
 					} else {
 						$run = $db->queryExec(sprintf("UPDATE releases SET searchname = %s, bitwise = ((bitwise & ~1)|1), "
-							. "categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
+								. "categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
 					}
 				}
 			}
@@ -335,7 +338,6 @@ class Namefixer
 	public function matchPredbMD5($md5, $release, $echo, $namestatus, $echooutput, $show)
 	{
 		$db = $this->db;
-		$groups = new Groups();
 		$matching = 0;
 		$this->category = new Category();
 		$this->matched = false;
@@ -370,8 +372,8 @@ class Namefixer
 	//  Check the array using regex for a clean name.
 	public function checkName($release, $echo, $type, $namestatus, $show)
 	{
-		//var_dump($release);
 		// Get pre style name from releases.name
+		$matches = '';
 		preg_match_all('/(\w+[\._](\w+[\._-])+\w+-\w+)/', $release['textstring'], $matches);
 		foreach ($matches as $match) {
 			foreach ($match as $val) {

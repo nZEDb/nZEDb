@@ -87,8 +87,7 @@ function create_guids($live, $delete = false)
 		echo "Updated " . $relcount . " release(s). This script ran for ";
 		echo $consoletools->convertTime(TIME() - $timestart);
 		exit(".\n");
-	}
-	else {
+	} else {
 		echo 'Query time: ' . $consoletools->convertTime(TIME() - $timestart);
 		exit("\nNo releases are missing the guid.\n");
 	}

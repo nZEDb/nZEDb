@@ -1,12 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-//require_once nZEDb_LIB . 'backfill.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'page.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'groups.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI();
 if (!isset($argv[1])) {
@@ -15,7 +9,8 @@ if (!isset($argv[1])) {
 
 $pieces = explode('                       ', $argv[1]);
 $db = new DB();
-$page = new Page();
+$s = new Sites();
+$site = $s->get();
 $n = "\n";
 $category = new Category();
 $groups = new Groups();
@@ -39,7 +34,7 @@ if (count($requestIDtmp) >= 1) {
 			$bFound = true;
 			$local = true;
 		} else {
-			$newTitle = getReleaseNameFromRequestID($page->site, $requestID, $pieces[2]);
+			$newTitle = getReleaseNameFromRequestID($site, $requestID, $pieces[2]);
 			if ($newTitle != false && $newTitle != '') {
 				$bFound = true;
 				$local = false;
@@ -51,8 +46,13 @@ if (count($requestIDtmp) >= 1) {
 if ($bFound === true) {
 	$groupname = $groups->getByNameByID($pieces[2]);
 	$determinedcat = $category->determineCategory($newTitle, $groupname);
-	$run = $db->prepare(sprintf('UPDATE releases set reqidstatus = 1, bitwise = ((bitwise & ~4)|4), searchname = %s, categoryid = %d where id = %d', $db->escapeString($newTitle), $determinedcat, $pieces[0]));
-	$run->execute();
+	$run = $db->queryDirect(sprintf('UPDATE releases set reqidstatus = 1, bitwise = ((bitwise & ~4)|4), searchname = %s, '
+			. 'categoryid = %d where id = %d', $db->escapeString($newTitle), $determinedcat, $pieces[0]));
+	$md5 = md5($newTitle);
+	$groupid = $pieces[2];
+	$db->queryDirect(sprintf("INSERT IGNORE INTO predb (title, adddate, source, md5, requestid, groupid) VALUES "
+			. "(%s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d", $db->escapeString($newTitle), $db->escapeString('requestWEB'), $db->escapeString($md5), $requestID, $groupid, $requestID));
+
 	$newcatname = $category->getNameByID($determinedcat);
 	$method = ($local === true) ? 'requestID local' : 'requestID web';
 
@@ -70,6 +70,8 @@ if ($bFound === true) {
 
 function getReleaseNameFromRequestID($site, $requestID, $groupName)
 {
+	$s = new Sites();
+	$site = $s->get();
 	if ($site->request_url == '') {
 		return '';
 	}
@@ -85,7 +87,6 @@ function getReleaseNameFromRequestID($site, $requestID, $groupName)
 	}
 
 	$request = $xml->request[0];
-
 	return (!isset($request) || !isset($request['name'])) ? '' : $request['name'];
 }
 

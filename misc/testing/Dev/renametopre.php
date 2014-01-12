@@ -117,7 +117,7 @@ function preName($argv, $argc)
 					if (strlen(utf8_decode($cleanName)) <= 3) {
 						//echo $row["name"] . "\n";
 					} else {
-						$determinedcat = $category->determineCategory($cleanName, $row["groupid"]);
+						$determinedcat = $category->determineCategory($row["groupid"]);
 						if (isset($argv[2]) && $argv[2] === 'all') {
 							$preid = ', preid = NULL ';
 						} else {
@@ -169,10 +169,18 @@ function preName($argv, $argc)
 		}
 	}
 	echo $c->header("\n" . number_format($external) . " renamed using NameCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
-	echo $c->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
+
+	if (isset($argv[1]) && $argv[1] !== "all") {
+		echo $c->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
+	} else {
+		echo $c->header("Categorizing all releases using usenet subject. This can take a while, be patient.");
+	}
 	$timestart = TIME();
+
 	if (isset($argv[1]) && $argv[1] == "full") {
 		$relcount = categorizeRelease("name", "WHERE categoryID = 7010", true);
+	} else if (isset($argv[1]) && $argv[1] == "all") {
+		$relcount = categorizeRelease("name", "", true);
 	} else {
 		$relcount = categorizeRelease("name", "WHERE categoryID = 7010 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
@@ -180,16 +188,18 @@ function preName($argv, $argc)
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	echo $c->header("Finished categorizing " . number_format($relcount) . " releases in " . $time . " seconds, using the usenet subject.\n");
 
-	echo $c->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
-	$timestart1 = TIME();
-	if (isset($argv[1]) && $argv[1] == "full") {
-		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010", true);
-	} else {
-		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+	if (isset($argv[1]) && $argv[1] !== "all") {
+		echo $c->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
+		$timestart1 = TIME();
+		if (isset($argv[1]) && $argv[1] == "full") {
+			$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010", true);
+		} else {
+			$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		}
+		$consoletools1 = new ConsoleTools();
+		$time1 = $consoletools1->convertTime(TIME() - $timestart1);
+		echo $c->header("Finished categorizing " . number_format($relcount) . " releases in " . $time1 . " seconds, using the searchname.\n");
 	}
-	$consoletools1 = new ConsoleTools();
-	$time1 = $consoletools1->convertTime(TIME() - $timestart1);
-	echo $c->header("Finished categorizing " . number_format($relcount) . " releases in " . $time1 . " seconds, using the searchname.\n");
 	resetSearchnames();
 }
 
@@ -256,7 +266,6 @@ function categorizeRelease($type, $where, $echooutput = false)
 function releaseCleaner($subject, $groupid, $groupname)
 {
 	$groups = new Groups();
-	$db = new DB();
 	$match = '';
 
 	$groupName = $groups->getByNameByID($groupid);
