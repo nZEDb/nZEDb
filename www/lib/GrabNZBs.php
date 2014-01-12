@@ -1,15 +1,8 @@
 <?php
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'page.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'namecleaning.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'groups.php';
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'nntp.php';
 
 class GrabNZBs
 {
+
 	function __construct()
 	{
 		$this->db = new DB();
@@ -21,15 +14,14 @@ class GrabNZBs
 		$this->categorize = new Category();
 	}
 
-	public function Import($hash='', $nntp)
+	public function Import($hash = '', $nntp)
 	{
 		if (!isset($nntp)) {
 			exit($this->c->error("Unable to connect to usenet.\n"));
 		}
 
 		$nzb = array();
-		if ($hash == '')
-		{
+		if ($hash == '') {
 			$hashes = $this->db->queryDirect('SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts');
 			if ($hashes->rowCount > 0) {
 				foreach ($hashes as $hash) {
@@ -42,13 +34,10 @@ class GrabNZBs
 			} else {
 				exit("No NZBs to grab\n");
 			}
-		}
-		else
-		{
+		} else {
 			$rel = $this->db->queryDirect(sprintf('SELECT * FROM nzbs WHERE collectionhash = %s ORDER BY partnumber', $this->db->escapestring($hash)));
 			$arr = '';
-			foreach ($rel as $nzb)
-			{
+			foreach ($rel as $nzb) {
 				$arr[] = $nzb['message_id'];
 			}
 		}
@@ -83,7 +72,6 @@ class GrabNZBs
 		}
 	}
 
-
 	function processGrabNZBs($article, $hash, $realgroupid)
 	{
 		if (!$article) {
@@ -96,35 +84,30 @@ class GrabNZBs
 		$version = $this->site->version;
 
 		$groups = $this->db->queryDirect('SELECT id, name FROM groups');
-		foreach ($groups as $group)
-		{
+		foreach ($groups as $group) {
 			$siteGroups[$group['name']] = $group['id'];
 		}
 
 		$importfailed = $isBlackListed = false;
 		$xml = @simplexml_load_string($article);
 		// If article is not a valid xml, delete from nzbs
-		if (!$xml)
-		{
+		if (!$xml) {
 			$this->db->queryExec(sprintf('DELETE FROM nzbs WHERE collectionhash = %s', $this->db->escapeString($hash)));
 			echo '-';
 			return;
-		}
-		else
-		{
+		} else {
 			$totalFiles = $totalsize = 0;
 			$firstname = $postername = $postdate = array();
 
-			foreach($xml->file as $file)
-			{
+			foreach ($xml->file as $file) {
 				// File info.
 				$groupID = -1;
-				$name = (string)$file->attributes()->subject;
+				$name = (string) $file->attributes()->subject;
 				$firstname[] = $name;
-				$fromname = (string)$file->attributes()->poster;
+				$fromname = (string) $file->attributes()->poster;
 				$postername[] = $fromname;
 				$totalFiles++;
-				$date = date('Y-m-d H:i:s', (string)($file->attributes()->date));
+				$date = date('Y-m-d H:i:s', (string) ($file->attributes()->date));
 				$postdate[] = $date;
 				$partless = preg_replace('/(\(\d+\/\d+\))*$/', 'yEnc', $firstname['0']);
 				$partless = preg_replace('/yEnc.*?$/', 'yEnc', $partless);
@@ -135,11 +118,9 @@ class GrabNZBs
 
 				// Groups.
 				$groupArr = array();
-				foreach($file->groups->group as $group)
-				{
-					$group = (string)$group;
-					if (array_key_exists($group, $siteGroups))
-					{
+				foreach ($file->groups->group as $group) {
+					$group = (string) $group;
+					if (array_key_exists($group, $siteGroups)) {
 						$groupName = $group;
 						$groupID = $siteGroups[$group];
 					}
@@ -149,56 +130,45 @@ class GrabNZBs
 						$isBlackListed = true;
 					}
 				}
-				if ($groupID != -1 && !$isBlackListed)
-				{
-					if (count($file->segments->segment) > 0)
-					{
-						foreach($file->segments->segment as $segment)
-						{
+				if ($groupID != -1 && !$isBlackListed) {
+					if (count($file->segments->segment) > 0) {
+						foreach ($file->segments->segment as $segment) {
 							$totalsize += $segment->attributes()->bytes;
 						}
 					}
-				}
-				else
-				{
+				} else {
 					$importfailed = true;
 					return;
 				}
 			}
 
 			// To get accurate size to check for true duplicates, we need to process the entire nzb first
-			if (!$importfailed)
-			{
+			if (!$importfailed) {
 				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size = %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($totalsize)));
-				if ($this->replacenzbs == 1)
-				{
+				if ($this->replacenzbs == 1) {
 					$releases = new Releases();
-					foreach ($res as $rel)
-					{
+					foreach ($res as $rel) {
 						if (isset($rel['id']) && isset($rel['guid'])) {
 							$releases->fastDelete($rel['id'], $rel['guid'], $this->site);
 						}
 					}
-				}
-				else if ($res->rowCount() > 0 && $this->replacenzbs == 0)
-				{
+				} else if ($res->rowCount() > 0 && $this->replacenzbs == 0) {
 					flush();
 					$importfailed = true;
 					return;
 				}
 			}
 
-			if (!$importfailed)
-			{
+			if (!$importfailed) {
 				$propername = true;
-				$relguid = sha1(uniqid('',true).mt_rand());
+				$relguid = sha1(uniqid('', true) . mt_rand());
 				$nzb = new NZB();
 				$cleanerName = $this->namecleaner->releaseCleaner($subject, $groupName);
-				/*$ncarr = $namecleaner->collectionsCleaner($subject, $groupName);
-				$cleanerName = $ncarr['subject'];
-				$category = $ncarr['cat'];
-				$relstat = $ncar['rstatus'];*/
-			 if (!is_array($cleanerName)) {
+				/* $ncarr = $namecleaner->collectionsCleaner($subject, $groupName);
+				  $cleanerName = $ncarr['subject'];
+				  $category = $ncarr['cat'];
+				  $relstat = $ncar['rstatus']; */
+				if (!is_array($cleanerName)) {
 					$cleanName = $cleanerName;
 				} else {
 					$cleanName = $cleanerName['cleansubject'];
@@ -218,23 +188,19 @@ class GrabNZBs
 				}
 
 				// Set table names
-				if ($this->tablepergroup == 1)
-				{
+				if ($this->tablepergroup == 1) {
 					$group = array();
-					$group['cname'] = 'collections_'.$realgroupid;
-					$group['bname'] = 'binaries_'.$realgroupid;
-					$group['pname'] = 'parts_'.$realgroupid;
-				}
-				else
-				{
+					$group['cname'] = 'collections_' . $realgroupid;
+					$group['bname'] = 'binaries_' . $realgroupid;
+					$group['pname'] = 'parts_' . $realgroupid;
+				} else {
 					$group = array();
 					$group['cname'] = 'collections';
 					$group['bname'] = 'binaries';
 					$group['pname'] = 'parts';
 				}
 
-				if ($relid == false)
-				{
+				if ($relid == false) {
 					if ($this->db->dbSystem() == 'mysql') {
 						$this->db->queryExec(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ' LEFT JOIN ' . $group['bname'] . ' ON ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid LEFT JOIN ' . $group['pname'] . ' ON ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid WHERE ' . $group['cname'] . '.collectionhash = %s', $this->db->escapeString($hash)));
 					} else if ($this->db->dbSystem() == 'pgsql') {
@@ -250,19 +216,15 @@ class GrabNZBs
 					$this->db->queryExec(sprintf('DELETE from nzbs where collectionhash = %s', $this->db->escapeString($hash)));
 					echo '!';
 					return;
-				}
-				else if (count($relid) > 0)
-				{
-					$path=$nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
+				} else if (count($relid) > 0) {
+					$path = $nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
 					$fp = gzopen($path, 'w5');
-					if ($fp)
-					{
+					if ($fp) {
 						$date1 = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');
-						$article = preg_replace('/dtd">\s*<nzb xmlns=/', "dtd\">\n<!-- NZB Generated by: nZEDb ".$version.' '.$date1." -->\n<nzb xmlns=", $article);
+						$article = preg_replace('/dtd">\s*<nzb xmlns=/', "dtd\">\n<!-- NZB Generated by: nZEDb " . $version . ' ' . $date1 . " -->\n<nzb xmlns=", $article);
 						gzwrite($fp, preg_replace('/<\/file>\s*(<!--.+)?\s*<\/nzb>\s*/si', "</file>\n  <!--GrabNZBs-->\n</nzb>", $article));
 						gzclose($fp);
-						if (file_exists($path))
-						{
+						if (file_exists($path)) {
 							chmod($path, 0777);
 							$this->db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~256)|256) WHERE id = %d', $relid));
 							if ($this->db->dbSystem() == 'mysql') {
@@ -279,9 +241,7 @@ class GrabNZBs
 							}
 							$this->db->queryExec(sprintf('DELETE from nzbs where collectionhash = %s', $this->db->escapeString($hash)));
 							echo '+';
-						}
-						else
-						{
+						} else {
 							$this->db->queryExec(sprintf('DELETE FROM releases WHERE id = %d', $relid));
 							$importfailed = true;
 							echo '-';
@@ -291,4 +251,5 @@ class GrabNZBs
 			}
 		}
 	}
+
 }

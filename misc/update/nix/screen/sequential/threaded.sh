@@ -19,7 +19,7 @@ fi
 export niceness=10
 export START_PATH="${NZEDB_ROOT}"
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
-export TEST_PATH="${NZEDB_ROOT}/misc/testing/PostProc"
+export TEST_PATH="${NZEDB_ROOT}/misc/testing/Release"
 export DEV_PATH="${NZEDB_ROOT}/misc/testing/Dev"
 export DB_PATH="${NZEDB_ROOT}/misc/testing/DB"
 export THREADED_PATH="${NZEDB_ROOT}/misc/update/python"
@@ -44,8 +44,9 @@ fi
 loop=1
 while [ $loop -ge 1 ]
 do
-	#The process that I use is get binaries, create releases, rename, post process
-	#I only use the threaded scripts with the exception of decrypt_hashes.php and I do not use removeCrapReleases.php
+	#The process that I use is get binaries, create releases, rename, post process only properly renamed releases
+	#I only use the threaded scripts with the exception of decrypt_hashes.php and fixReleaseNames.php
+	#I do not use removeCrapReleases.php
 	#decrypt hashes and fixReleasenames md5 are very similar, decrypt hashes should be run first, because it is faster
 	#but fixReleasenames also looks at release files for a match, which is a plus, so both should be run, after
 	#jonnyboy

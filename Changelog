@@ -4,7 +4,9 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
-2014-01-12 -> jonnyboy -> fixed typo, increased number of groups matched for anime
+2014-01-12 -> jonnyboy -> fixed relocateOldDirectoryContents.php, fixed typo in /nzb-import.php, updated reqestid_threaded.py to add/update predb
+                          fixed typo in threaded.sh, fixed typo in update_groups.php
+                          fixed typo, increased number of groups matched for anime
                           updated fixReleaseNames.php to improve speed and output, default is not to show counter, to display the name changes add last argument 'show'
                           fixReleaseNames.php is faster with less load than fixreleasesnames_threaded.py, except for nfo, fixReleaseNames.php nfo now loops through each release
                           opening each nfo as it goes, instead of opening every nfo before it starts, all (re)naming uses predb match first, then regexes

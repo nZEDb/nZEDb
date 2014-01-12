@@ -1,77 +1,78 @@
 <?php
 
-require_once '../www/config.php';
+require_once dirname(__FILE__) . '/../www/config.php';
 
 $output = new ColorCLI();
-
-$output->primary("Checking for files in the renamed directories.");
-
+echo $output->primary("Checking for files in the renamed directories.");
+$status = 0;
 
 $dirs = [
 	[
-		['old' => '/misc/testing/DB_scripts'],
-		['new' => 'DB']
+		'old' => 'misc/testing/DB_scripts',
+		'newpath' => 'misc/testing/DB'
 	],
 	[
-		['old' => '/misc/testing/Dev_testing/Subject_testing'],
-		['new' => 'Subject']
+		'old' => 'misc/testing/Dev_testing/Subject_testing',
+		'newpath' => 'misc/testing/Dev/Subject'
 	],
 	[
-		['old' => '/misc/testing/Dev_testing'],
-		['new' => 'Dev']
+		'old' => 'misc/testing/Dev_testing',
+		'newpath' => 'misc/testing/Dev'
 	],
 	[
-		['old' => '/misc/testing/PostProc_testing'],
-		['new' => 'PostProc']
+		'old' => 'misc/testing/PostProc_testing',
+		'newpath' => 'misc/testing/PostProc'
 	],
 	[
-		['old' => '/misc/testing/Regex_testing'],
-		['new' => 'Regex']
+		'old' => 'misc/testing/Regex_testing',
+		'newpath' => 'misc/testing/Regex'
 	],
 	[
-		['old' => '/misc/testing/Release_scripts'],
-		['new' => 'Release']
+		'old' => 'misc/testing/Release_scripts',
+		'newpath' => 'misc/testing/Release'
 	],
 	[
-		['old' => '/misc/update_scripts/nix_scripts'],
-		['new' => 'nix']
+		'old' => 'misc/update_scripts/nix_scripts',
+		'newpath' => 'misc/update/nix'
 	],
 	[
-		['old' => '/misc/update_scripts/python_scripts'],
-		['new' => 'python']
+		'old' => 'misc/update_scripts/python_scripts',
+		'newpath' => 'misc/update/python'
 	],
 	[
-		['old' => '/misc/update_scripts/win_scripts'],
-		['new' => 'win']
+		'old' => 'misc/update_scripts/win_scripts',
+		'newpath' => 'misc/update/win'
 	],
 	[
-		['old' => '/misc/update_scripts'],
-		['new' => 'update']
+		'old' => 'misc/update_scripts',
+		'newpath' => 'misc/update'
 	],
 ];
 
 $tatus = 0;
 foreach ($dirs as $dir) {
-	$pathOld = nZEDb_ROOT . $dir['old'];
-	if (file_exists($pathOld)) {
-		$pathNew = dirname($pathOld) . $dir['new'];
-		$output->info("Moving contents of '$pathOld' to '$pathNew'");
-		$dirIt = new DirectoryIterator($pathOld);
-		foreach ($dirIt as $item) {
-			if ($item->isDot()) {
-				continue;
+	if (isset($dir['old'])) {
+		$pathOld = nZEDb_ROOT . $dir['old'];
+		if (file_exists($pathOld)) {
+			$pathNew = nZEDb_ROOT . $dir['newpath'];
+			echo $output->info("Moving contents of '$pathOld' to '$pathNew'");
+			$dirIt = new DirectoryIterator($pathOld);
+			foreach ($dirIt as $item) {
+				if ($item->isDot()) {
+					continue;
+				}
+				echo $output->info("  Moving {$item->getPathname()}");
+				if (rename($item->getPathname(), $pathNew . DIRECTORY_SEPARATOR . $item->getFilename()) === false) {
+					echo $output->error("   FAILED!");
+					$status = 1;
+				}
 			}
-			$output->info("  Moving {$item->getPathname()}");
-			if (rename($item->getPathname(), $pathNew . $item->getFilename()) === false) {
-				$output->error("   FAILED!");
-				$status = 1;
+			$d = dir($pathOld);
+			if ($d->read() === false) {
+				@unlink($pathOld);
+			} else {
+				echo $output->error("Could not move all files. Check your permissions!");
 			}
-		}
-		$d = dir($pathOld);
-		if ($d->read() === false) {
-			@unlink($pathOld);
-		} else {
-			$output->error("Could not move all files. Check your permissions!");
 		}
 	}
 }
