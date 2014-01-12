@@ -154,7 +154,7 @@ if (!isset($groups) || count($groups) == 0) {
 			}
 			if ($groupID != -1 && !$isBlackListed) {
 				if ($usenzbname) {
-					$usename = str_replace('.nzb', '', basename($nzbFile));
+					$usename = str_replace(array('.nzb.gz', '.nzb'), '', basename($nzbFile));
 				}
 				if (count($file->segments->segment) > 0) {
 					foreach ($file->segments->segment as $segment) {

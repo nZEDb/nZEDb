@@ -6,7 +6,7 @@ Each update goes to the top of the file
 
 2014-01-10 -> jonnyboy -> updated fixReleaseNames.php to improve speed and output, default is not to show counter, to display the name changes add last argument 'show'
                           fixReleaseNames.php is faster with less load than fixreleasesnames_threaded.py, except for nfo, fixReleaseNames.php nfo now loops through each release
-                          opening each nfo as it goes, instead of opening every nfo before it starts
+                          opening each nfo as it goes, instead of opening every nfo before it starts, all (re)naming uses predb match first, then regexes
                           fixed bug in nzb-import.php not using filenames, added some comments to threaded.sh
                           updated many other scripts, merged niel's pr
 2014-01-10 -> ajoergensen -> added "PDO::MYSQL_ATTR_LOCAL_INFILE => true" to MySQL connection options. Needed for dump_predb.php remote. You also need to configure the MySQL server to allow
