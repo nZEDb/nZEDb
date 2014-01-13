@@ -4,11 +4,11 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-require_once nZEDb_LIB . 'Releases.php';
-require_once nZEDb_LIB . 'NZB.php';
+//require_once nZEDb_LIB . 'Releases.php';
+//require_once nZEDb_LIB . 'NZB.php';
 
 $releases = new Releases;
-$nzb = new Nzb;
+$nzb = new NZB();
 
 if (isset($_GET["id"])) {
 	$rel = $releases->getByGuid($_GET["id"]);
