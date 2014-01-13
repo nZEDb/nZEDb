@@ -1,10 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-//require_once nZEDb_LIB . 'predb.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $s = new Sites();
 $site = $s->get();
@@ -19,7 +15,7 @@ if ($site->nntpproxy === "1") {
 	usleep(500000);
 }
 
-$predb = new PreDb($echooutput = true);
+$predb = new PreDb(true);
 $titles = $predb->updatePre();
 $predb->checkPre($nntp);
 if ($titles > 0) {
