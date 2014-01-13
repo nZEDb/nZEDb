@@ -4,6 +4,7 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 
+2014-01-12 -> bart39   -> fixed typo
 2014-01-12 -> jonnyboy -> added missing $nntp
 2014-01-12 -> bart39   -> fixed missing parameter in renametopre
 2014-01-12 -> jonnyboy -> added remaining folders

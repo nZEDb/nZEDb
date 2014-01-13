@@ -115,7 +115,7 @@ Class NZBContents
 				}
 				if ($this->lookuppar2 == 1 && $foundpar2 === false) {
 					if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $subject)) {
-						$pp = new Postprocess($this->echooutput);
+						$pp = new PostProcess($this->echooutput);
 						if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp, 1) === true) {
 							$foundpar2 = true;
 						}
