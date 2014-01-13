@@ -1872,7 +1872,7 @@ class Releases
 		}
 	}
 
-	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput = false, $nntp)
+	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $nntp)
 	{
 		$DIR = nZEDb_MISC;
 		if ($this->command_exist('python3')) {
@@ -1888,7 +1888,7 @@ class Releases
 			//$this->processReleasesStage4dot5($groupID, $echooutput=false);
 			$nzbcount = $this->processReleasesStage5($groupID);
 			if ($this->requestids == '1') {
-				$this->processReleasesStage5b($groupID, $this->echooutput);
+				$this->processReleasesStage5b($groupID);
 			} else if ($this->requestids == '2') {
 				$stage8 = TIME();
 				if ($this->echooutput) {
@@ -1901,15 +1901,15 @@ class Releases
 			}
 
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;
-			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput = false, $nntp);
-			$this->processReleasesStage7a($groupID, $this->echooutput);
+			$this->processReleasesStage6($categorize, $postproc, $groupID, $nntp);
+			$this->processReleasesStage7a($groupID);
 			$loops++;
 			// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
 		} while (($nzbcount > 0 || $retcount > 0) && $loops < 3);
 		return $tot_retcount;
 	}
 
-	public function processReleases($categorize, $postproc, $groupName, $echooutput = false, $nntp)
+	public function processReleases($categorize, $postproc, $groupName, $nntp, $echooutput)
 	{
 		$this->echooutput = $echooutput;
 		if ($this->hashcheck == 0) {

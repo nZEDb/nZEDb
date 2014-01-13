@@ -305,26 +305,28 @@ class Binaries
 				}
 				else {
 					$returnArray['lastArticleNumber'] = $msg['Number'];
-					if (isset($msg['Date']))
+					if (isset($msg['Date'])) {
 						$returnArray['lastArticleDate'] = $msg['Date'];
+					}
 				}
 
 				// If set we are running in partRepair mode
 				if (isset($missingParts)) {
-					if (!in_array($msg['Number'], $missingParts)) // If article isn't one that is missing skip it.
+					if (!in_array($msg['Number'], $missingParts)) { // If article isn't one that is missing skip it.
 						continue;
-					else { // We got the part this time. Remove article from partrepair.
+					} else { // We got the part this time. Remove article from partrepair.
 						$msgrepaired[] = $msg['Number'];
 					}
 				}
 
-				if (isset($msg['Bytes']))
+				if (isset($msg['Bytes'])) {
 					$bytes = $msg['Bytes'];
-				else
+				} else {
 					$bytes = $msg[':bytes'];
+				}
 
 				$msgsreceived[] = $msg['Number'];
-
+				$partnumber = '';
 				// Add yEnc to headers that do not have them, but are nzbs and that have the part number at the end of the header
 				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+nzb.+\(\d+\/\d+\)$/', $msg['Subject'])) {
 					if (preg_match('/.+\.nzb.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
@@ -332,6 +334,7 @@ class Binaries
 					}
 				}
 
+				$matches = '';
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*| \[S\d+E\d+\] )\((\d+)\/(\d+)\)/', $msg['Subject'], $matches)) {
 					//if (!preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject']) && preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1') {
@@ -359,11 +362,13 @@ class Binaries
 				// Attempt to find the file count. If it is not found, set it to 0.
 				$nofiles = false;
 				$partless = $matches[1];
+				$filecnt = '';
 				if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $partless, $filecnt)) {
 					$filecnt[2] = $filecnt[6] = 0;
 					$nofiles = true;
-					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1')
+					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1') {
 						file_put_contents("/var/www/nZEDb/not_yenc/" . $groupArr['name'] . ".no_parts.txt", $msg['Subject'] . "\n", FILE_APPEND);
+					}
 				}
 
 				if (is_numeric($matches[3]) && is_numeric($matches[4])) {
