@@ -5,7 +5,6 @@ if (!$users->isLoggedIn()) {
 }
 
 if (isset($_GET["id"])) {
-	require_once nZEDb_LIB . 'Releases.php';
 	$releases = new Releases;
 	$data = $releases->getByGuid($_GET["id"]);
 
@@ -13,14 +12,12 @@ if (isset($_GET["id"])) {
 		$page->show404();
 	}
 
-	require_once nZEDb_LIB . 'ReleaseComments.php';
 	$rc = new ReleaseComments;
 	if ($page->isPostBack()) {
 		$rc->addComment($data["id"], $_POST["txtAddComment"], $users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 	}
 
 	$nfo = $releases->getReleaseNfo($data["id"], false);
-	require_once nZEDb_LIB . 'ReleaseExtra.php';
 	$re = new ReleaseExtra;
 	$reVideo = $re->getVideo($data["id"]);
 	$reAudio = $re->getAudio($data["id"]);
@@ -30,7 +27,6 @@ if (isset($_GET["id"])) {
 
 	$rage = $ani = $mov = $mus = $con = $boo = '';
 	if ($data["rageid"] != '') {
-		require_once nZEDb_LIB . 'TvRage.php';
 		$tvrage = new TvRage;
 		$rageinfo = $tvrage->getByRageID($data["rageid"]);
 		if (count($rageinfo) > 0) {
@@ -65,13 +61,11 @@ if (isset($_GET["id"])) {
 	}
 
 	if ($data["anidbid"] > 0) {
-		require_once nZEDb_LIB . 'AniDB.php';
-		$AniDB = new AniDB;
+		$AniDB = new AniDB();
 		$ani = $AniDB->getAnimeInfo($data["anidbid"]);
 	}
 
 	if ($data['imdbid'] != '') {
-		require_once nZEDb_LIB . 'Movie.php';
 		$movie = new Movie();
 		$mov = $movie->getMovieInfo($data['imdbid']);
 
@@ -84,29 +78,24 @@ if (isset($_GET["id"])) {
 	}
 
 	if ($data['musicinfoid'] != '') {
-		require_once nZEDb_LIB . 'Music.php';
 		$music = new Music();
 		$mus = $music->getMusicInfo($data['musicinfoid']);
 	}
 
 	if ($data['consoleinfoid'] != '') {
-		require_once nZEDb_LIB . 'Console.php';
 		$c = new Console();
 		$con = $c->getConsoleInfo($data['consoleinfoid']);
 	}
 
 	if ($data['bookinfoid'] != '') {
-		require_once nZEDb_LIB . 'Books.php';
 		$b = new Books();
 		$boo = $b->getBookInfo($data['bookinfoid']);
 	}
 
-	require_once nZEDb_LIB . 'ReleaseFiles.php';
 	$rf = new ReleaseFiles;
 	$releasefiles = $rf->get($data["id"]);
 
-	require_once nZEDb_LIB . 'PreDb.php';
-	$predb = new Predb();
+	$predb = new PreDb();
 	$pre = $predb->getForRelease($data['preid']);
 
 	$page->smarty->assign('releasefiles', $releasefiles);

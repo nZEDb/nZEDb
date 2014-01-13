@@ -133,8 +133,9 @@ class PostProcess
 	// Process nfo files.
 	public function processAdditionalThreaded($releaseToWork = '', $nntp)
 	{
-		if (!isset($nntp))
+		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(postprocess->processAdditionalThreaded).\n"));
+		}
 
 		$this->processAdditional($releaseToWork, $id = '', $gui = false, $groupID = '', $nntp);
 	}
@@ -142,14 +143,16 @@ class PostProcess
 	// Fetch titles from predb sites.
 	public function processPredb($nntp)
 	{
-		if (!isset($nntp))
+		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(postprocess->processPredb).\n"));
+		}
 
 		$predb = new PreDb($this->echooutput);
 		$titles = $predb->updatePre();
 		$predb->checkPre($nntp);
-		if ($titles > 0)
-			$this->doecho($this->c->header('Fetched ' . $titles . ' new title(s) from predb sources.'));
+		if ($titles > 0) {
+			$this->doecho($this->c->header('Fetched ' . number_format($titles) . ' new title(s) from predb sources.'));
+		}
 	}
 
 	// Process all TV related releases which will assign their series/episode/rage data.
