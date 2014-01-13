@@ -131,7 +131,7 @@ class Namefixer
 					$this->checkName($relrow, $echo, $type, $namestatus, $show);
 					$this->checked++;
 					if ($this->checked % 500 === 0 && $show === 1) {
-						echo $this->c->alternate($this->checked . " NFOs processed.\n");
+						echo $this->c->alternate(number_format($this->checked) . " NFOs processed.\n");
 						sleep(1);
 					}
 				}
@@ -140,9 +140,9 @@ class Namefixer
 				}
 			}
 			if ($echo == 1) {
-				echo $this->c->header("\n" . $this->fixed . " releases have had their names changed out of: " . $this->checked . " NFO's.");
+				echo $this->c->header("\n" . number_format($this->fixed) . " releases have had their names changed out of: " . number_format($this->checked) . " NFO's.");
 			} else {
-				echo $this->c->header("\n" . $this->fixed . " releases could have their names changed. " . $this->checked . " NFO's were checked.");
+				echo $this->c->header("\n" . number_format($this->fixed) . " releases could have their names changed. " . number_format($this->checked) . " NFO's were checked.");
 			}
 		} else {
 			echo $this->c->info("Nothing to fix.");
@@ -183,14 +183,14 @@ class Namefixer
 		}
 		$total = $relres->rowCount();
 		if ($total > 0) {
-			echo $this->c->primary(number_format($total) . " releases to process.");
+			echo $this->c->primary(number_format($total) . " file names to process.");
 			sleep(2);
 			foreach ($relres as $relrow) {
 				$this->done = $this->matched = false;
 				$this->checkName($relrow, $echo, $type, $namestatus, $show);
 				$this->checked++;
 				if ($this->checked % 500 == 0 && $show === 1) {
-					echo $this->c->alternate($this->checked . " files processed.");
+					echo $this->c->alternate(number_format($this->checked) . " files processed.");
 					sleep(1);
 				}
 				if ($show === 2) {
@@ -198,9 +198,9 @@ class Namefixer
 				}
 			}
 			if ($echo == 1) {
-				echo $this->c->header("\n" . $this->fixed . " releases have had their names changed out of: " . $this->checked . " files.");
+				echo $this->c->header("\n" . number_format($this->fixed) . " releases have had their names changed out of: " . number_format($this->checked) . " files.");
 			} else {
-				echo $this->c->header("\n" . $this->fixed . " releases could have their names changed. " . $this->checked . " files were checked.");
+				echo $this->c->header("\n" . number_format($this->fixed) . " releases could have their names changed. " . number_format($this->checked) . " files were checked.");
 			}
 		} else {
 			echo $this->c->info("Nothing to fix.");
@@ -252,16 +252,16 @@ class Namefixer
 				}
 				$this->checked++;
 				if ($this->checked % 500 == 0 && $show === 1) {
-					echo $this->c->alternate("\n" . $this->checked . " files processed.\n");
+					echo $this->c->alternate("\n" . number_format($this->checked) . " files processed.\n");
 				}
 				if ($show === 2) {
 					$this->consoletools->overWritePrimary("Renamed Releases: [" . number_format($this->fixed) . "] " . $this->consoletools->percentString($this->checked, $total));
 				}
 			}
 			if ($echo == 1) {
-				echo $this->c->header("\n" . $this->fixed . " releases have had their names changed out of: " . $this->checked . " files.");
+				echo $this->c->header("\n" . number_format($this->fixed) . " releases have had their names changed out of: " . number_format($this->checked) . " files.");
 			} else {
-				echo $this->c->header("\n" . $this->fixed . " releases could have their names changed. " . $this->checked . " files were checked.");
+				echo $this->c->header("\n" . number_format($this->fixed) . " releases could have their names changed. " . number_format($this->checked) . " files were checked.");
 			}
 		} else {
 			echo $this->c->alternate("Nothing to fix.");
