@@ -19,7 +19,7 @@ if ($hashcheck != 1) {
 }
 
 // Check database patch version
-if ($patch < 164) {
+if ($patch < 166) {
 	exit($c->error("\nYour database is not up to date. Please update.\nphp ${DIR}testing/DB/patchDB.php\n"));
 }
 

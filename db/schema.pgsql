@@ -1423,6 +1423,7 @@ INSERT INTO site
 	('ffmpeg_image_time', '5'),
 	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
+	('request_hours', '1'),
 	('grabnzbthreads', '1'),
 	('loggingopt', '2'),
 	('logfile', '/var/www/nZEDb/failed-login.log'),
@@ -1442,7 +1443,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','164');
+	('sqlpatch','166');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
