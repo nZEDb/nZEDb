@@ -614,6 +614,14 @@
 				</td>
 			</tr>
 
+            <tr>
+                <td style="width:180px;"><label for="style">Request ID Time Check:</label></td>
+                <td>
+                    <input id="request_hours" class="short" name="request_hours" type="text" value="{$fsite->request_hours}" />
+                    <div class="hint">The maximum time in hours after adding a release to re-check Request ID's that didn't match initially.</div>
+                </td>
+            </tr>
+
 			<tr>
 				<td style="width:180px;"><label for="newgroupscanmethod">Where to start new groups:</label></td>
 				<td>

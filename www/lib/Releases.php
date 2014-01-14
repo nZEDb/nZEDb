@@ -1519,13 +1519,14 @@ class Releases
 			$where = (!empty($groupID)) ? ' groupid = ' . $groupID . ' AND ' : ' ';
 			$stage8 = TIME();
 			$n = "\n";
+			$hours = (isset($this->site->request_hours)) ? $this->site->request_hours : 1;
 
 			if ($this->echooutput) {
 				echo $this->c->header("\nStage 5b -> Request ID lookup.");
 			}
 
 			// Look for records that potentially have requestID titles and have not been renamed by any other means
-			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "(bitwise & 1284) = 1280 AND reqidstatus in (0, -1, -3) LIMIT 100");
+			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "(bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL ". $hours . " HOUR) LIMIT 100");
 
 			if ($resrel->rowCount() > 0) {
 				echo $n;
@@ -1579,7 +1580,7 @@ class Releases
 						}
 						$updated++;
 					} else {
-						$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $rowrel['id']);
+						$db->queryExec('UPDATE releases SET reqidstatus = -3 WHERE id = ' . $rowrel['id']);
 					}
 				}
 				if ($this->echooutput && $bFound) {
