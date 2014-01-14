@@ -1273,6 +1273,7 @@ class Releases
 
 		if ($rescol->rowCount() > 0) {
 			$predb = new PreDb();
+			$groups = new Groups();
 
 			foreach ($rescol as $rowcol) {
 				$propername = true;
@@ -1292,7 +1293,8 @@ class Releases
 				}
 				$relguid = sha1(uniqid('', true) . mt_rand());
 
-				$category = $categorize->determineCategory($cleanName, $rowcol['gname']);
+				$catID=$groups->getIDByName($rowcol['gname']);
+				$category = $categorize->determineCategory($cleanName, $catID);
 				$cleanRelName = utf8_encode($cleanRelName);
 				$cleanName = utf8_encode($cleanName);
 				$fromname = utf8_encode($fromname);
