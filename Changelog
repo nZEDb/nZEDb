@@ -5,7 +5,7 @@ Each update goes to the top of the file
 
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
-2014-01-14 -> jonnyboy -> fixed install scripts, fixed renametopre.php for hours
+2014-01-14 -> jonnyboy -> fixed install scripts, fixed renametopre.php for hours, fixed monitor to get correct number of matched predbs
 2014-01-14 -> niel     -> Fixing typo in SQL (missing space before HOUR).
 2014-01-13 -> bart39   -> fixed bad patch
 2014-01-13 -> bart39   -> added site option for numbers of hours to re-check request id's after adding releases that didn't match initially

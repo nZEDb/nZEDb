@@ -254,7 +254,7 @@ function categorizeRelease($type, $where, $echooutput = false)
 	$cat = new Category();
 	$consoletools = new consoleTools();
 	$relcount = 0;
-	printf("SELECT id, " . $type . ", groupid FROM releases " . $where . "\n");
+	//printf("SELECT id, " . $type . ", groupid FROM releases " . $where . "\n");
 	$resrel = $db->queryDirect("SELECT id, " . $type . ", groupid FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
