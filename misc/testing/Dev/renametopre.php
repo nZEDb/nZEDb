@@ -18,11 +18,12 @@ $c = new ColorCLI();
 if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || is_numeric($argv[1])))) {
 	exit($c->error("\nThis script will attempt to rename releases using regexes first from NameCleaning.php and then from this file.\n"
 			. "An optional last argument, show, will display the release name changes.\n\n"
-			. "php $argv[0] full            ...: To process all releases not previously renamed.\n"
-			. "php $argv[0] 2               ...: To process all releases added in the previous 2 hours not previously renamed.\n"
-			. "php $argv[0] all             ...: To process all releases.\n"
-			. "php $argv[0] full 155        ...: To process all releases in groupid 155 not previously renamed.\n"
-			. "php $argv[0] all 155         ...: To process all releases in groupid 155.\n"));
+			. "php $argv[0] full                    ...: To process all releases not previously renamed.\n"
+			. "php $argv[0] 2                       ...: To process all releases added in the previous 2 hours not previously renamed.\n"
+			. "php $argv[0] all                     ...: To process all releases.\n"
+			. "php $argv[0] full 155                ...: To process all releases in groupid 155 not previously renamed.\n"
+			. "php $argv[0] all 155                 ...: To process all releases in groupid 155.\n"
+			. "php $argv[0] all '(155, 140)'        ...: To process all releases in groupids 155 and 140.\n"));
 }
 preName($argv, $argc);
 
@@ -53,27 +54,33 @@ function preName($argv, $argc)
 
 	if (isset($argv[1]) && is_numeric($argv[1])) {
 		$where = '';
-		$why = ' AND (bitwise & 260) = 256';
+		$why = ' WHERE (bitwise & 260) = 256';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
 		$where = ' AND groupid = ' . $argv[2];
-		$why = ' AND (bitwise & 260) = 256';
+		$why = ' WHERE (bitwise & 260) = 256';
+    } else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
+        $where = ' AND groupid IN ' . $argv[2];
+        $why = ' WHERE (bitwise & 260) = 256';
+	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
+		$where = ' AND groupid IN ' . $argv[2];
+		$why = ' WHERE (bitwise & 256) = 256';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $all === true) {
 		$where = ' AND groupid = ' . $argv[2];
-		$why = ' AND (bitwise & 256) = 256';
+		$why = ' WHERE (bitwise & 256) = 256';
 	} else if (isset($argv[2]) && is_numeric($argv[2])) {
 		$where = ' AND groupid = ' . $argv[2];
-		$why = ' AND (bitwise & 260) = 256';
+		$why = ' WHERE (bitwise & 260) = 256';
 	} else if ($full === true) {
-		$why = ' AND ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)';
+		$why = ' WHERE ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)';
 	} else if ($all === true) {
-		$why = ' AND (bitwise & 256) = 256';
+		$why = ' WHERE (bitwise & 256) = 256';
 	} else {
-		$why = '';
+		$why = ' WHERE 1=1';
 	}
 
 	resetSearchnames();
-	echo $c->header("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1" . $why . $what . $where . ";\n");
-	$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases WHERE reqidstatus != 1" . $why . $what . $where);
+	echo $c->header("SELECT id, name, searchname, groupid, categoryid FROM releases" . $why . $what . $where . ";\n");
+	$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases" . $why . $what . $where);
 
 	$total = $res->rowCount();
 	if ($total > 0) {
@@ -173,35 +180,42 @@ function preName($argv, $argc)
 	}
 	echo $c->header("\n" . number_format($pre) . " renamed using preDB Match\n" . number_format($external) . " renamed using NameCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
 
-	if (isset($argv[1]) && $argv[1] !== "all") {
-		echo $c->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
+	if (isset($argv[1]) && $argv[1] !== "all" && !is_numeric($argv[2]) && !preg_match('/\([\d, ]+\)/', $argv[2])) {
+		echo $c->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
+    } else if (isset($argv[1]) && (is_numeric($argv[2]) || preg_match('/\([\d, ]+\)/', $argv[2]))) {
+        echo $c->header("Categorizing all non-categorized releases in ${argv[2]} using searchname. This can take a while, be patient.");
 	} else {
-		echo $c->header("Categorizing all releases using usenet subject. This can take a while, be patient.");
+		echo $c->header("Categorizing all releases using searchname. This can take a while, be patient.");
 	}
 	$timestart = TIME();
 
 	if (isset($argv[1]) && is_numeric($argv[1])) {
-		$relcount = categorizeRelease("name","WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
-	} else 	if (isset($argv[2]) && is_numeric($argv[2])) {
-		$relcount = categorizeRelease("name", str_replace(" AND", "WHERE", $where) . " AND (bitwise & 1) = 0 ", true);
+		$relcount = categorizeRelease("searchname","WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
+		$relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where) . " AND (bitwise & 1) = 0 ", true);
+    } else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
+        $relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where), true);
+	} else 	if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == "full") {
+		$relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where) . " AND (bitwise & 1) = 0 ", true);
+    } else  if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == "all") {
+        $relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where), true);
 	} else if (isset($argv[1]) && $argv[1] == "full") {
-		$relcount = categorizeRelease("name", "WHERE categoryID = 7010 OR (bitwise & 1) = 0", true);
+		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 OR (bitwise & 1) = 0", true);
 	} else if (isset($argv[1]) && $argv[1] == "all") {
-		$relcount = categorizeRelease("name", "", true);
+		$relcount = categorizeRelease("searchname", "", true);
 	} else {
-		$relcount = categorizeRelease("name", "WHERE ((bitwise & 1) = 0 OR categoryID = 701)0 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 701)0 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
 	$consoletools = new ConsoleTools();
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	echo $c->header("Finished categorizing " . number_format($relcount) . " releases in " . $time . " seconds, using the usenet subject.\n");
 
+/*
 	if (isset($argv[1]) && $argv[1] !== "all") {
 		echo $c->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
 		$timestart1 = TIME();
 		if (isset($argv[2]) && is_numeric($argv[2])) {
-			$relcount = categorizeRelease("name", str_replace(" AND", "WHERE", $where) . " AND (bitwise & 1) = 0 ", true);
-		} else if (isset($argv[1]) && $argv[1] == "full") {
-			$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 OR (bitwise & 1) = 0", true);
+			$relcount = categorizeRelease("name", str_replace(" AND", "WHERE", $where), true);
 		} else {
 			$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 		}
@@ -209,6 +223,7 @@ function preName($argv, $argc)
 		$time1 = $consoletools1->convertTime(TIME() - $timestart1);
 		echo $c->header("Finished categorizing " . number_format($relcount) . " releases in " . $time1 . " seconds, using the searchname.\n");
 	}
+*/
 	resetSearchnames();
 }
 
@@ -254,7 +269,7 @@ function categorizeRelease($type, $where, $echooutput = false)
 	$cat = new Category();
 	$consoletools = new consoleTools();
 	$relcount = 0;
-	//printf("SELECT id, " . $type . ", groupid FROM releases " . $where . "\n");
+	printf("SELECT id, " . $type . ", groupid FROM releases " . $where . "\n");
 	$resrel = $db->queryDirect("SELECT id, " . $type . ", groupid FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
