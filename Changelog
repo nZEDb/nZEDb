@@ -5,6 +5,7 @@ Each update goes to the top of the file
 
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
+2014-01-14 -> niel     -> Fixing typo in SQL (missing space before HOUR).
 2014-01-13 -> bart39   -> fixed bad patch
 2014-01-13 -> bart39   -> added site option for numbers of hours to re-check request id's after adding releases that didn't match initially
                           updated the patch number for the anidb patch that was added on the 8th
