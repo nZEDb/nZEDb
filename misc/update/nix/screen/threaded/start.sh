@@ -10,7 +10,7 @@ fi
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
 export HELP_PATH="${NZEDB_ROOT}/misc/update/nix/screen/threaded"
 export THREAD_PATH="${NZEDB_ROOT}/misc/update/python"
-export TEST_PATH="${NZEDB_ROOT}/misc/testing/PostProc"
+export TEST_PATH="${NZEDB_ROOT}/misc/testing"
 
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
 command -v python3 >/dev/null 2>&1 && export PYTHON=`command -v python3` || { export PYTHON=`command -v python`; }
@@ -57,9 +57,9 @@ do
 	then
 		LASTOPTIMIZE=`date +%s`
 		echo "Cleaning DB..."
-		$PHP ${TEST_PATH}/fixReleaseNames.php 1 true all yes
-		$PHP ${TEST_PATH}/fixReleaseNames.php 3 true other yes
-		$PHP ${TEST_PATH}/fixReleaseNames.php 5 true other yes
+		$PHP ${TEST_PATH}/Release/fixReleaseNames.php 1 true all yes
+		$PHP ${TEST_PATH}/Release/fixReleaseNames.php 3 true other yes
+		$PHP ${TEST_PATH}/Release/fixReleaseNames.php 5 true other yes
 	fi
 
 	cd ${NZEDB_PATH}
