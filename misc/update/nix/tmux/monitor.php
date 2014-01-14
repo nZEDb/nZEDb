@@ -1135,7 +1135,7 @@ while ($i > 0) {
 				$log = writelog($panes1[1]);
 				if ($fix_crap_opt == 'All') {
 					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_php ${DIR}testing/PostProc/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 				} else {
 					$fcmax = count($fix_crap) - 1;
 					if (is_null($fcnum)) {
@@ -1145,7 +1145,7 @@ while ($i > 0) {
 					if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1) {
 						shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
 							echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-							php ${DIR}testing/PostProc/removeCrapReleases.php true full $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+							php ${DIR}testing/Release/removeCrapReleases.php true full $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 						$fcnum++;
 					}
 					if ($fcnum == $fcmax) {
@@ -1157,7 +1157,7 @@ while ($i > 0) {
 				$log = writelog($panes1[1]);
 				if ($fix_crap_opt == 'All') {
 					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_php ${DIR}testing/PostProc/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 				} else {
 					$fcmax = count($fix_crap) - 1;
 					if (is_null($fcnum)) {
@@ -1167,7 +1167,7 @@ while ($i > 0) {
 					if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1) {
 						shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
 							echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-							$_php ${DIR}testing/PostProc/removeCrapReleases.php true 2 $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+							$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 						$fcnum++;
 					}
 					if ($fcnum == $fcmax) {
