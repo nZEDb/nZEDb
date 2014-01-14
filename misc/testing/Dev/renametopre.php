@@ -51,7 +51,10 @@ function preName($argv, $argc)
 		$what = ' AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR';
 	}
 
-	if (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
+	if (isset($argv[1]) && is_numeric($argv[1])) {
+		$where = '';
+		$why = ' AND (bitwise & 260) = 256';
+	} else if (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
 		$where = ' AND groupid = ' . $argv[2];
 		$why = ' AND (bitwise & 260) = 256';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $all === true) {
@@ -65,7 +68,7 @@ function preName($argv, $argc)
 	} else if ($all === true) {
 		$why = ' AND (bitwise & 256) = 256';
 	} else {
-		$why = ' AND (bitwise & 260) = 256';
+		$why = '';
 	}
 
 	resetSearchnames();
@@ -177,7 +180,9 @@ function preName($argv, $argc)
 	}
 	$timestart = TIME();
 
-	if (isset($argv[2]) && is_numeric($argv[2])) {
+	if (isset($argv[1]) && is_numeric($argv[1])) {
+		$relcount = categorizeRelease("name","WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+	} else 	if (isset($argv[2]) && is_numeric($argv[2])) {
 		$relcount = categorizeRelease("name", str_replace(" AND", "WHERE", $where) . " AND (bitwise & 1) = 0 ", true);
 	} else if (isset($argv[1]) && $argv[1] == "full") {
 		$relcount = categorizeRelease("name", "WHERE categoryID = 7010 OR (bitwise & 1) = 0", true);
@@ -249,7 +254,7 @@ function categorizeRelease($type, $where, $echooutput = false)
 	$cat = new Category();
 	$consoletools = new consoleTools();
 	$relcount = 0;
-	//printf("SELECT id, " . $type . ", groupid FROM releases " . $where . "\n");
+	printf("SELECT id, " . $type . ", groupid FROM releases " . $where . "\n");
 	$resrel = $db->queryDirect("SELECT id, " . $type . ", groupid FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
