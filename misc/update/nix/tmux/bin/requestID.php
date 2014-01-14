@@ -68,7 +68,7 @@ if ($bFound === true) {
 	$c->headerOver('ReleaseID: ') . $c->primary($pieces[0]);
 	$updated++;
 } else {
-	$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $pieces[0]);
+	$db->queryExec('UPDATE releases SET reqidstatus = -3 WHERE id = ' . $pieces[0]);
 	echo '.';
 }
 
