@@ -5,7 +5,7 @@ if (!$users->isLoggedIn()) {
 }
 
 //require_once nZEDb_LIB . 'predb.php';
-$predb = new Predb;
+$predb = new PreDb();
 
 $offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 
