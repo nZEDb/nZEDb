@@ -64,9 +64,7 @@ if (!$cfg->error) {
 						?>
 						<div class="error">The template cache folder must be writable. A quick solution is to run:
 							<br />
-							chmod 777
-							<?php echo $cfg->SMARTY_DIR; ?>
-							/templates_c
+							<?php echo 'chmod 777 ' . $cfg->SMARTY_DIR . '/templates_c'; ?>
 						</div>
 						<?php
 					} else {

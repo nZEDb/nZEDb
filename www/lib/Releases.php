@@ -1519,13 +1519,14 @@ class Releases
 			$where = (!empty($groupID)) ? ' groupid = ' . $groupID . ' AND ' : ' ';
 			$stage8 = TIME();
 			$n = "\n";
+			$hours = (isset($this->site->request_hours)) ? $this->site->request_hours : 1;
 
 			if ($this->echooutput) {
 				echo $this->c->header("\nStage 5b -> Request ID lookup.");
 			}
 
 			// Look for records that potentially have requestID titles and have not been renamed by any other means
-			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "(bitwise & 1284) = 1280 AND reqidstatus in (0, -1, -3) LIMIT 100");
+			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "(bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL ". $hours . " HOUR) LIMIT 100");
 
 			if ($resrel->rowCount() > 0) {
 				echo $n;
@@ -1579,7 +1580,7 @@ class Releases
 						}
 						$updated++;
 					} else {
-						$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $rowrel['id']);
+						$db->queryExec('UPDATE releases SET reqidstatus = -3 WHERE id = ' . $rowrel['id']);
 					}
 				}
 				if ($this->echooutput && $bFound) {
@@ -1872,7 +1873,7 @@ class Releases
 		}
 	}
 
-	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $echooutput = false, $nntp)
+	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $nntp)
 	{
 		$DIR = nZEDb_MISC;
 		if ($this->command_exist('python3')) {
@@ -1888,7 +1889,7 @@ class Releases
 			//$this->processReleasesStage4dot5($groupID, $echooutput=false);
 			$nzbcount = $this->processReleasesStage5($groupID);
 			if ($this->requestids == '1') {
-				$this->processReleasesStage5b($groupID, $this->echooutput);
+				$this->processReleasesStage5b($groupID);
 			} else if ($this->requestids == '2') {
 				$stage8 = TIME();
 				if ($this->echooutput) {
@@ -1901,15 +1902,15 @@ class Releases
 			}
 
 			$tot_nzbcount = $tot_nzbcount + $nzbcount;
-			$this->processReleasesStage6($categorize, $postproc, $groupID, $echooutput = false, $nntp);
-			$this->processReleasesStage7a($groupID, $this->echooutput);
+			$this->processReleasesStage6($categorize, $postproc, $groupID, $nntp);
+			$this->processReleasesStage7a($groupID);
 			$loops++;
 			// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
 		} while (($nzbcount > 0 || $retcount > 0) && $loops < 3);
 		return $tot_retcount;
 	}
 
-	public function processReleases($categorize, $postproc, $groupName, $echooutput = false, $nntp)
+	public function processReleases($categorize, $postproc, $groupName, $nntp, $echooutput)
 	{
 		$this->echooutput = $echooutput;
 		if ($this->hashcheck == 0) {

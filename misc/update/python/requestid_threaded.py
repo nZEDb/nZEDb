@@ -40,7 +40,10 @@ print(bcolors.HEADER + "\n\nRequestID Threaded Started at {}".format(datetime.da
 threads = 5
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1, -3) LIMIT 1000")
+cur.execute("SELECT value FROM site WHERE setting = 'request_hours'")
+dbgrab = cur.fetchone()
+request_hours = str(dbgrab[0])
+cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " + request_hours + " HOUR) LIMIT 100000")
 datas = cur.fetchall()
 
 if not datas:
@@ -72,7 +75,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix/tmux/bin/requestID.php", ""+my_id])
-					time.sleep(.05)
+					#time.sleep(.05)
 					self.my_queue.task_done()
 
 def main():
@@ -96,7 +99,7 @@ def main():
 
 	#now load some arbitrary jobs into the queue
 	for release in datas:
-		time.sleep(.05)
+		#time.sleep(.05)
 		my_queue.put("%s                       %s                       %s" % (release[0], release[1], release[2]))
 
 	my_queue.join()

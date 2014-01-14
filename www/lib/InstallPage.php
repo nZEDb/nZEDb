@@ -1,17 +1,18 @@
 <?php
+
 require_once '../lib/smarty/Smarty.class.php';
 
 class InstallPage
 {
+
 	public $title = '';
 	public $content = '';
 	public $head = '';
 	public $page_template = '';
 	public $smarty = '';
-
 	public $error = false;
 
-	function Installpage()
+	function  __construct()
 	{
 		@session_start();
 
@@ -22,12 +23,11 @@ class InstallPage
 		$this->smarty->setCompileDir(realpath('../lib/smarty/templates_c/'));
 		$this->smarty->setConfigDir(realpath('../lib/smarty/configs/'));
 		$this->smarty->setCacheDir(realpath('../lib/smarty/cache/'));
-
 	}
 
 	public function addToHead($headcontent)
 	{
-		$this->head = $this->head."\n".$headcontent;
+		$this->head = $this->head . "\n" . $headcontent;
 	}
 
 	public function render()

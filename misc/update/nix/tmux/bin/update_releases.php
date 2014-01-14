@@ -1,11 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'groups.php';
-//require_once nZEDb_LIB . 'binaries.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI();
 if (!isset($argv[1])) {
@@ -21,9 +16,20 @@ $groupname = $groups->getByNameByID($groupid);
 $group = $groups->getByName($groupname);
 $binaries = new Binaries();
 $db = new DB();
+$s = new Sites();
+$site = $s->get();
 
 if ($releases->hashcheck == 0) {
 	exit($c->error("You must run update_binaries.php to update your collectionhash."));
+}
+
+// Create the connection here and pass, this is for post processing, so check for alternate
+$nntp = new NNTP();
+if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false) {
+	exit($c->error("Unable to connect to usenet."));
+}
+if ($site->nntpproxy === "1") {
+	usleep(500000);
 }
 
 if ($pieces[0] != 'Stage7b') {
@@ -59,7 +65,7 @@ if ($pieces[0] != 'Stage7b') {
 	$groupid = '';
 	$releases->processReleasesStage4dot5($groupid);
 	$releases->processReleasesStage5b($groupid);
-	$releases->processReleasesStage6($categorize = 1, $postproc = 0, $groupid, null);
+	$releases->processReleasesStage6(1, 0, $groupid, $nntp);
 	$releases->processReleasesStage7b($groupid);
 	//echo 'Deleted '.number_format($deleted)." collections/binaries/parts.\n";
 }

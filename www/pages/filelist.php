@@ -1,23 +1,23 @@
 <?php
-if (!$users->isLoggedIn())
-	$page->show403();
 
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'nzb.php';
+if (!$users->isLoggedIn()) {
+	$page->show403();
+}
 
 $releases = new Releases;
-$nzb = new Nzb;
+$nzb = new NZB();
 
-if (isset($_GET["id"]))
-{
+if (isset($_GET["id"])) {
 	$rel = $releases->getByGuid($_GET["id"]);
-	if (!$rel)
+	if (!$rel) {
 		$page->show404();
+	}
 
 	$nzbpath = $nzb->getNZBPath($_GET["id"], $page->site->nzbpath, false, $page->site->nzbsplitlevel);
 
-	if (!file_exists($nzbpath))
+	if (!file_exists($nzbpath)) {
 		$page->show404();
+	}
 
 	ob_start();
 	@readgzfile($nzbpath);
@@ -31,7 +31,7 @@ if (isset($_GET["id"]))
 	$page->smarty->assign('pagertotalitems', sizeof($ret));
 	$page->smarty->assign('pageroffset', $offset);
 	$page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
-	$page->smarty->assign('pagerquerybase', WWW_TOP."/filelist/".$_GET["id"]."/&amp;offset=");
+	$page->smarty->assign('pagerquerybase', WWW_TOP . "/filelist/" . $_GET["id"] . "/&amp;offset=");
 	$page->smarty->assign('pagerquerysuffix', "#results");
 
 	$pager = $page->smarty->fetch("pager.tpl");
@@ -48,4 +48,3 @@ if (isset($_GET["id"]))
 	$page->content = $page->smarty->fetch('viewfilelist.tpl');
 	$page->render();
 }
-?>

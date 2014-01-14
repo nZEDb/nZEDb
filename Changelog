@@ -3,8 +3,18 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
+***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
-2014-01-12 -> bart39   -> fixed missing parameter in renametopre
+2014-01-14 -> jonnyboy -> corrected path in monitor.php, added option to process group of groupid's - reneametopre.php
+                          update Category.php
+                          fixed install scripts, fixed renametopre.php for hours, fixed monitor to get correct number of matched predbs, added SAFE script names to identify safe scripts in web ui
+2014-01-14 -> niel     -> Fixing typo in SQL (missing space before HOUR).
+2014-01-13 -> bart39   -> fixed bad patch
+2014-01-13 -> bart39   -> added site option for numbers of hours to re-check request id's after adding releases that didn't match initially
+                          updated the patch number for the anidb patch that was added on the 8th
+2014-01-13 -> jonnyboy -> possible fix to DB.php, fixed pages.php and fileist.php, changes predb matching to loop through the releases, its a little slower, but less intense for large datasets
+2014-01-12 -> jonnyboy -> added missing $nntp, added missing echooutput, fixed delete_releases.php
+2014-01-12 -> bart39   -> fixed typo, fixed missing parameter in renametopre
 2014-01-12 -> jonnyboy -> added remaining folders
                           fixed relocateOldDirectoryContents.php, fixed typo in /nzb-import.php, updated reqestid_threaded.py to add/update predb
                           fixed typo in threaded.sh, fixed typo in update_groups.php
