@@ -123,9 +123,10 @@ $proc_work2 = "SELECT
 	(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
 $proc_work3 = "SELECT
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL ". $request_hours . "HOUR)) AS requestid_inprogress,
+	(SELECT COUNT(*) FROM releases WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL ". $request_hours . " HOUR)) AS requestid_inprogress,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND reqidstatus = 1) AS requestid_matched,
 	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND preid IS NOT NULL) AS predb_matched,
+	(SELECT COUNT(DISTINCT(preid)) FROM releases) AS distinct_predb_matched,
 	(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
 
 if ($dbtype == 'mysql') {
@@ -310,7 +311,7 @@ $music_diff = $music_percent = $music_releases_proc = $music_releases_now = 0;
 $movie_diff = $movie_percent = $movie_releases_now = $movie_releases_proc = 0;
 $nfo_diff = $nfo_percent = $nfo_remaining_now = $nfo_now = $tvrage_releases_proc_start = 0;
 $pc_diff = $pc_percent = $pc_releases_now = $pc_releases_proc = $book_releases_proc_start = 0;
-$pre_diff = $pre_percent = $predb_matched = $predb_start = $predb = 0;
+$pre_diff = $pre_percent = $predb_matched = $predb_start = $predb = $distinct_predb_matched =0;
 $pron_diff = $pron_remaining_start = $pron_remaining_now = $pron_start = $pron_percent = $pron_releases_now = 0;
 $nfo_remaining_start = $work_remaining_start = $releases_start = $releases_now = $releases_since_start = 0;
 $request_percent = $requestid_inprogress_start = $requestid_inprogress = $requestid_diff = $requestid_matched = 0;
@@ -359,7 +360,7 @@ echo "\n";
 printf($mask3, "Category", "In Process", "In Database");
 printf($mask3, "======================================", "=========================", "======================================");
 printf($mask4, "NZBs", number_format($totalnzbs) . "(" . number_format($distinctnzbs) . ")", number_format($pendingnzbs));
-printf($mask4, "predb", number_format($predb - $predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
+printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
 printf($mask4, "requestID", $requestid_inprogress . "(" . $requestid_diff . ")", number_format($requestid_matched) . "(" . $request_percent . "%)");
 printf($mask4, "NFO's", number_format($nfo_remaining_now) . "(" . $nfo_diff . ")", number_format($nfo_now) . "(" . $nfo_percent . "%)");
 printf($mask4, "Console(1000)", number_format($console_releases_proc) . "(" . $console_diff . ")", number_format($console_releases_now) . "(" . $console_percent . "%)");
@@ -610,6 +611,9 @@ while ($i > 0) {
 
 	if ($proc_work_result3[0]['predb_matched'] != NULL) {
 		$predb_matched = $proc_work_result3[0]['predb_matched'];
+	}
+	if ($proc_work_result3[0]['distinct_predb_matched'] != NULL) {
+		$distinct_predb_matched = $proc_work_result3[0]['distinct_predb_matched'];
 	}
 	if ($proc_work_result3[0]['requestid_inprogress'] != NULL) {
 		$requestid_inprogress = $proc_work_result3[0]['requestid_inprogress'];
@@ -987,7 +991,7 @@ while ($i > 0) {
 	printf($mask3, "Category", "In Process", "In Database");
 	printf($mask3, "======================================", "=========================", "======================================");
 	printf($mask4, "NZBs", number_format($totalnzbs) . "(" . number_format($distinctnzbs) . ")", number_format($pendingnzbs));
-	printf($mask4, "predb", number_format($predb - $predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
+	printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
 	printf($mask4, "requestID", number_format($requestid_inprogress) . "(" . $requestid_diff . ")", number_format($requestid_matched) . "(" . $request_percent . "%)");
 	printf($mask4, "NFO's", number_format($nfo_remaining_now) . "(" . $nfo_diff . ")", number_format($nfo_now) . "(" . $nfo_percent . "%)");
 	printf($mask4, "Console(1000)", number_format($console_releases_proc) . "(" . $console_diff . ")", number_format($console_releases_now) . "(" . $console_percent . "%)");
