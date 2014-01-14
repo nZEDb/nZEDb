@@ -256,10 +256,6 @@ class Category
 	// returns -1 if no category is appropriate from the group name.
 	public function determineCategoryNormal($releasename = "", $groupID)
 	{
-		//Try against all functions, if still nothing, return Cat Misc.
-		if ($this->isMisc($releasename)) {
-			return $this->tmpCat;
-		}
 		// Note that in byGroup() some overrides occur...
 		if ($this->byGroup($releasename, $groupID)) {
 			return $this->tmpCat;
@@ -285,6 +281,10 @@ class Category
 		if ($this->isBook($releasename)) {
 			return $this->tmpCat;
 		}
+        //Try against all functions, if still nothing, return Cat Misc.
+        if ($this->isMisc($releasename)) {
+            return $this->tmpCat;
+        }
 	}
 
 	//	Groups.
@@ -419,8 +419,9 @@ class Category
 				return true;
 			}
 
-			if (preg_match('/alt\.binaries\.((movies|multimedia)\.)?(erotica(\.(amateur|divx))?|ijsklontje)/', $groupRes["name"])) {
+			if (preg_match('/alt\.binaries\..*(erotica|ijsklontje|xxx)/', $groupRes["name"])) {
 				if ($this->isXxx($releasename)) {
+					return true;
 					return $this->tmpCat;
 				}
 				$this->tmpCat = Category::CAT_XXX_OTHER;
@@ -989,7 +990,7 @@ class Category
 	//	XXX.
 	public function isXxx($releasename)
 	{
-		if (preg_match('/(XXX|PORNOLATiON|SWE6RUS|masturbation|masturebate|lesbian|cumming|ClubSeventeen|Errotica|Erotica|EroticaX|nymph|sexontv|My_Stepfather_Made_Me|slut|\bwhore\b)/i', $releasename)) {
+		if (preg_match('/(XXX|Porn|PORNOLATiON|SWE6RUS|masturbation|masturebate|lesbian|cumming|ClubSeventeen|Errotica|Erotica|EroticaX|nymph|sexontv|My_Stepfather_Made_Me|slut|\bwhore\b)/i', $releasename)) {
 			if ($this->isXxx264($releasename)) {
 				return true;
 			}
@@ -1477,9 +1478,6 @@ class CategoryDanish extends Category
 	public function determineCategory($releasename = "", $groupID)
 	{
 		//Try against all functions, if still nothing, return Cat Misc.
-		if (Category::isMisc($releasename)) {
-			return $this->tmpCat;
-		}
 		if ($this->byGroup($releasename, $groupID)) {
 			return $this->tmpCat;
 		}
@@ -1504,6 +1502,9 @@ class CategoryDanish extends Category
 		if (Category::isBook($releasename)) {
 			return $this->tmpCat;
 		}
+        if (Category::isMisc($releasename)) {
+            return $this->tmpCat;
+        }
 	}
 
 	// Groups.
@@ -2035,9 +2036,6 @@ class CategoryFrench extends Category
 	public function determineCategory($releasename = "", $groupID)
 	{
 		//Try against all functions, if still nothing, return Cat Misc.
-		if (Category::isMisc($releasename)) {
-			return $this->tmpCat;
-		}
 		if ($this->byGroup($releasename, $groupID)) {
 			return $this->tmpCat;
 		}
@@ -2062,6 +2060,9 @@ class CategoryFrench extends Category
 		if (Category::isBook($releasename)) {
 			return $this->tmpCat;
 		}
+        if (Category::isMisc($releasename)) {
+            return $this->tmpCat;
+        }
 	}
 
 	// Groups.
@@ -2590,9 +2591,6 @@ class CategoryGerman extends Category
 	public function determineCategory($releasename = "", $groupID)
 	{
 		//Try against all functions, if still nothing, return Cat Misc.
-		if (Category::isMisc($releasename)) {
-			return $this->tmpCat;
-		}
 		if ($this->byGroup($releasename, $groupID)) {
 			return $this->tmpCat;
 		}
@@ -2617,6 +2615,9 @@ class CategoryGerman extends Category
 		if (Category::isBook($releasename)) {
 			return $this->tmpCat;
 		}
+        if (Category::isMisc($releasename)) {
+            return $this->tmpCat;
+        }
 	}
 
 	public function byGroup($releasename, $groupID)
