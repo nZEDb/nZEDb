@@ -571,29 +571,24 @@ Class PreDb
 		 */
 		$db = new DB();
 		$consoletools = new ConsoleTools();
-		$updated = $matched = 0;
+		$updated = 0;
 		if ($this->echooutput) {
 			echo $this->c->header('Querying DB for release searchnames not matched with preDB titles.');
 		}
 
-		$res = $db->queryDirect('SELECT id, searchname FROM releases WHERE preid IS NULL');
+		$res = $db->queryDirect('SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.preid IS NULL');
 		$total = $res->rowCount();
-		echo $this->c->primary(number_format($total) . ' releases to check.');
+		echo $this->c->primary(number_format($total) . ' releases to match.');
 		if ($total > 0) {
 			foreach ($res as $row) {
-				$preid = $db->queryOneRow('SELECT id FROM predb WHERE title = ' . $db->escapeString($row['searchname']));
-				if (isset($preid['id']) && $preid['id'] !== 0) {
-					if ($db->queryExec(sprintf('UPDATE releases SET preid = %s WHERE id = %s', $db->escapeString($preid['id']), $db->escapeString($row['id']))) !== false) {
-						$matched++;
-					}
-				}
+				$db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $row['preid'], $row['releaseid']));
 				if ($this->echooutput) {
-					$consoletools->overWritePrimary('Matching up preDB titles with release searchnames: [' . number_format($matched) . '] ' . $consoletools->percentString(++$updated, $total));
+					$consoletools->overWritePrimary('Matching up preDB titles with release searchnames: ' . $consoletools->percentString(++$updated, $total));
 				}
 			}
 			echo "\n";
 		}
-		return $matched;
+		return $updated;
 	}
 
 	// Look if the release is missing an nfo.

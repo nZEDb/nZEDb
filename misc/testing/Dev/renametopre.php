@@ -117,7 +117,7 @@ function preName($argv, $argc)
 					if (strlen(utf8_decode($cleanName)) <= 3) {
 						//echo $row["name"] . "\n";
 					} else {
-						$determinedcat = $category->determineCategory($cleanName, $row["groupid"]);
+						$determinedcat = $category->determineCategory($row["name"], $row["groupid"]);
 						if (isset($argv[2]) && $argv[2] === 'all') {
 							$preid = ', preid = NULL ';
 						} else {
@@ -164,11 +164,11 @@ function preName($argv, $argc)
 				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $row['id']));
 			}
 			if ($show === 2) {
-				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString(++$counter, $total));
+				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
 			}
 		}
 	}
-	echo $c->header("\n" . number_format($external) . " renamed using NameCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
+	echo $c->header("\n" . number_format($pre) . " renamed using preDB Match\n" . number_format($external) . " renamed using NameCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
 
 	if (isset($argv[1]) && $argv[1] !== "all") {
 		echo $c->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
@@ -177,12 +177,14 @@ function preName($argv, $argc)
 	}
 	$timestart = TIME();
 
-	if (isset($argv[1]) && $argv[1] == "full") {
-		$relcount = categorizeRelease("name", "WHERE categoryID = 7010", true);
+	if (isset($argv[2]) && is_numeric($argv[2])) {
+		$relcount = categorizeRelease("name", str_replace(" AND", "WHERE", $where) . " AND (bitwise & 1) = 0 ", true);
+	} else if (isset($argv[1]) && $argv[1] == "full") {
+		$relcount = categorizeRelease("name", "WHERE categoryID = 7010 OR (bitwise & 1) = 0", true);
 	} else if (isset($argv[1]) && $argv[1] == "all") {
 		$relcount = categorizeRelease("name", "", true);
 	} else {
-		$relcount = categorizeRelease("name", "WHERE categoryID = 7010 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		$relcount = categorizeRelease("name", "WHERE ((bitwise & 1) = 0 OR categoryID = 701)0 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
 	$consoletools = new ConsoleTools();
 	$time = $consoletools->convertTime(TIME() - $timestart);
@@ -191,10 +193,12 @@ function preName($argv, $argc)
 	if (isset($argv[1]) && $argv[1] !== "all") {
 		echo $c->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
 		$timestart1 = TIME();
-		if (isset($argv[1]) && $argv[1] == "full") {
-			$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010", true);
+		if (isset($argv[2]) && is_numeric($argv[2])) {
+			$relcount = categorizeRelease("name", str_replace(" AND", "WHERE", $where) . " AND (bitwise & 1) = 0 ", true);
+		} else if (isset($argv[1]) && $argv[1] == "full") {
+			$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 OR (bitwise & 1) = 0", true);
 		} else {
-			$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+			$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 		}
 		$consoletools1 = new ConsoleTools();
 		$time1 = $consoletools1->convertTime(TIME() - $timestart1);
@@ -245,6 +249,7 @@ function categorizeRelease($type, $where, $echooutput = false)
 	$cat = new Category();
 	$consoletools = new consoleTools();
 	$relcount = 0;
+	//printf("SELECT id, " . $type . ", groupid FROM releases " . $where . "\n");
 	$resrel = $db->queryDirect("SELECT id, " . $type . ", groupid FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
