@@ -5,8 +5,9 @@ Each update goes to the top of the file
 
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
-2014-01-14 -> Roelski  -> Correction in nix screen testing paths (call to fixreleasenames)
-2014-01-14 -> Roelski  -> Corrected call to function determineCategory in lib/releases.php. This should fix categorisations.
+
+2014-01-15 -> jonnyboy -> cleaned up pages/*
+2014-01-14 -> Roelski  -> Correction in nix screen testing paths (call to fixreleasenames), Corrected call to function determineCategory in lib/releases.php. This should fix categorisations.
 2014-01-14 -> jonnyboy -> corrected path in monitor.php, added option to process group of groupid's - reneametopre.php
                           update Category.php, fixed predb.php
                           fixed install scripts, fixed renametopre.php for hours, fixed monitor to get correct number of matched predbs, added SAFE script names to identify safe scripts in web ui

@@ -5,14 +5,14 @@ if (!$users->isLoggedIn()) {
 }
 
 if (isset($_GET["id"])) {
-	$releases = new Releases;
+	$releases = new Releases();
 	$data = $releases->getByGuid($_GET["id"]);
 
 	if (!$data) {
 		$page->show404();
 	}
 
-	$rc = new ReleaseComments;
+	$rc = new ReleaseComments();
 	if ($page->isPostBack()) {
 		$rc->addComment($data["id"], $_POST["txtAddComment"], $users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 	}
@@ -27,7 +27,7 @@ if (isset($_GET["id"])) {
 
 	$rage = $ani = $mov = $mus = $con = $boo = '';
 	if ($data["rageid"] != '') {
-		$tvrage = new TvRage;
+		$tvrage = new TvRage();
 		$rageinfo = $tvrage->getByRageID($data["rageid"]);
 		if (count($rageinfo) > 0) {
 			$seriesnames = $seriesdescription = $seriescountry = $seriesgenre = $seriesimg = $seriesid = array();
@@ -92,7 +92,7 @@ if (isset($_GET["id"])) {
 		$boo = $b->getBookInfo($data['bookinfoid']);
 	}
 
-	$rf = new ReleaseFiles;
+	$rf = new ReleaseFiles();
 	$releasefiles = $rf->get($data["id"]);
 
 	$predb = new PreDb();

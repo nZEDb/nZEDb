@@ -7,5 +7,3 @@ $page->meta_description = "View description of the site Nzb RSS.";
 
 $page->content = $page->smarty->fetch('rssdesc.tpl');
 $page->render();
-
-?>

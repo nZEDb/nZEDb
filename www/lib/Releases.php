@@ -1273,7 +1273,6 @@ class Releases
 
 		if ($rescol->rowCount() > 0) {
 			$predb = new PreDb();
-
 			foreach ($rescol as $rowcol) {
 				$propername = true;
 				$relid = false;

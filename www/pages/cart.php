@@ -1,32 +1,37 @@
 <?php
-if (!$users->isLoggedIn())
+if (!$users->isLoggedIn()) {
 	$page->show403();
+}
 
 if (isset($_GET["add"]))
 {
-	require_once nZEDb_LIB . 'releases.php';
-	$releases = new Releases;
+	$releases = new Releases();
 	$guids = explode(',', $_GET['add']);
 	$data = $releases->getByGuid($guids);
 
-	if (!$data)
+	if (!$data) {
 		$page->show404();
+	}
 
-	foreach($data as $d)
+	foreach ($data as $d) {
 		$users->addCart($users->currentUserId(), $d["id"]);
+	}
 }
 elseif (isset($_REQUEST["delete"]))
 {
-	if (isset($_GET['delete']) && !empty($_GET['delete']))
+	if (isset($_GET['delete']) && !empty($_GET['delete'])) {
 		$ids = array($_GET['delete']);
-	elseif (isset($_POST['delete']) && is_array($_POST['delete']))
+	} elseif (isset($_POST['delete']) && is_array($_POST['delete'])) {
 		$ids = $_POST['delete'];
+	}
 
-	if (isset($ids))
+	if (isset($ids)) {
 		$users->delCart($ids, $users->currentUserId());
+	}
 
-	if (!isset($_POST['delete']))
-		header("Location: ".WWW_TOP."/cart");
+	if (!isset($_POST['delete'])) {
+		header("Location: " . WWW_TOP . "/cart");
+	}
 
 	die();
 }
@@ -42,4 +47,3 @@ else
 	$page->content = $page->smarty->fetch('cart.tpl');
 	$page->render();
 }
-?>

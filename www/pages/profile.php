@@ -1,33 +1,34 @@
 <?php
-if (!$users->isLoggedIn())
+if (!$users->isLoggedIn()) {
 	$page->show403();
+}
 
-//require_once nZEDb_LIB . 'releasecomments.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'sabnzbd.php';
 
-$rc = new ReleaseComments;
+
+$rc = new ReleaseComments();
 $sab = new SABnzbd($page);
 
 $userid = 0;
-if (isset($_GET["id"]))
+if (isset($_GET["id"])) {
 	$userid = $_GET["id"] + 0;
-elseif (isset($_GET["name"]))
-{
+} elseif (isset($_GET["name"])) {
 	$res = $users->getByUsername($_GET["name"]);
-	if ($res)
+	if ($res) {
 		$userid = $res["id"];
-}
-else
+	}
+} else {
 	$userid = $users->currentUserId();
+}
 
 $data = $users->getById($userid);
-if (!$data)
+if (!$data) {
 	$page->show404();
+}
 
 $invitedby = '';
-if ($data["invitedby"] != "")
+if ($data["invitedby"] != "") {
 	$invitedby = $users->getById($data["invitedby"]);
+}
 
 $page->smarty->assign('userinvitedby',$invitedby);
 $page->smarty->assign('user',$data);
@@ -53,12 +54,14 @@ $page->smarty->assign('saburl', $sab->url);
 $page->smarty->assign('sabapikey', $sab->apikey);
 
 $sabapikeytypes = array(SABnzbd::API_TYPE_NZB=>'Nzb Api Key', SABnzbd::API_TYPE_FULL=>'Full Api Key');
-if ($sab->apikeytype != "")
+if ($sab->apikeytype != "") {
 	$page->smarty->assign('sabapikeytype', $sabapikeytypes[$sab->apikeytype]);
+}
 
 $sabpriorities = array(SABnzbd::PRIORITY_FORCE=>'Force', SABnzbd::PRIORITY_HIGH=>'High',  SABnzbd::PRIORITY_NORMAL=>'Normal', SABnzbd::PRIORITY_LOW=>'Low');
-if ($sab->priority != "")
+if ($sab->priority != "") {
 	$page->smarty->assign('sabpriority', $sabpriorities[$sab->priority]);
+}
 
 $sabsettings = array(1=>'Site', 2=>'Cookie');
 $page->smarty->assign('sabsetting', $sabsettings[($sab->checkCookie()===true?2:1)]);
@@ -69,5 +72,3 @@ $page->meta_description = "View User Profile for ".$data["username"] ;
 
 $page->content = $page->smarty->fetch('profile.tpl');
 $page->render();
-
-?>
