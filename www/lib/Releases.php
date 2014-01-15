@@ -1292,7 +1292,7 @@ var_dump($rowcol);
 				}
 				$relguid = sha1(uniqid('', true) . mt_rand());
 
-				$category = $categorize->determineCategory($cleanName, $rowcol['gname']);
+				$category = $categorize->determineCategory($cleanName, $rowcol['groupid']);
 				$cleanRelName = utf8_encode($cleanRelName);
 				$cleanName = utf8_encode($cleanName);
 				$fromname = utf8_encode($fromname);
