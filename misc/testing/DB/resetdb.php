@@ -1,7 +1,6 @@
 <?php
 passthru('clear');
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 $c = new ColorCLI();
 
 if (!isset($argv[1]) || (isset($argv[1]) && $argv[1] !== 'true'))
@@ -17,14 +16,7 @@ if(trim($line) != 'DESTROY')
 echo "\n";
 echo $c->header("Thank you, continuing...\n\n");
 
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'consoletools.php';
-//require_once nZEDb_LIB . 'releaseimage.php';
-//require_once nZEDb_LIB . 'nzb.php';
-
-$db = new Db();
+$db = new DB();
 $s = new Sites();
 $site = $s->get();
 $timestart = TIME();

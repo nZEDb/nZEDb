@@ -41,7 +41,7 @@ foreach ($itr as $filePath) {
                 $updated++;
 				printf("UPDATE movieinfo SET backdrop = 1 WHERE backdrop = 0 AND imdbid = " . $match1[1] . "\n");
             } else {
-                $run = $db->queryDirect("SELECT imdbid FROM movieinfo WHERE imdbid = " . $match[1]);
+                $run = $db->queryDirect("SELECT imdbid FROM movieinfo WHERE imdbid = " . $match1[1]);
                 if ($run->rowCount() == 0) {
                     echo $c->info($filePath . " not found in db.");
                 }
