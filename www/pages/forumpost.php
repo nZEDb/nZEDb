@@ -1,22 +1,21 @@
 <?php
-if (!$users->isLoggedIn())
+
+if (!$users->isLoggedIn()) {
 	$page->show403();
+}
 
 $id = $_GET["id"] + 0;
 
-//require_once nZEDb_LIB . 'forum.php';
 $forum = new Forum();
-if ($page->isPostBack())
-{
+if ($page->isPostBack()) {
 	$forum->add($id, $users->currentUserId(), "", $_POST["addReply"]);
-	header("Location:".WWW_TOP."/forumpost/".$id."#last");
+	header("Location:" . WWW_TOP . "/forumpost/" . $id . "#last");
 	die();
 }
 
 $results = $forum->getPosts($id);
-if (count($results) == 0)
-{
-	header("Location:".WWW_TOP."/forum");
+if (count($results) == 0) {
+	header("Location:" . WWW_TOP . "/forum");
 	die();
 }
 
@@ -28,5 +27,3 @@ $page->smarty->assign('results', $results);
 
 $page->content = $page->smarty->fetch('forumpost.tpl');
 $page->render();
-
-?>
