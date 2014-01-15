@@ -1274,7 +1274,6 @@ class Releases
 		if ($rescol->rowCount() > 0) {
 			$predb = new PreDb();
 			foreach ($rescol as $rowcol) {
-var_dump($rowcol);
 				$propername = true;
 				$relid = false;
 				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $rowcol['subject']);
