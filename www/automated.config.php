@@ -50,3 +50,4 @@ $paths = [
 ];
 $classLoader = new SplClassLoader(null, $paths);
 $classLoader->register();
+?>
