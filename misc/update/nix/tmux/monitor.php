@@ -1,11 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../../www/config.php';
-//require_once nZEDb_LIB . 'postprocess.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'tmux.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 exec('git log | grep "^commit" | wc -l', $commit);
 $version = "0.3r" . $commit[0];
@@ -31,7 +26,6 @@ $delay = (isset($site->delaytime)) ? $site->delaytime : 2;
 $nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
 $bookreqids = ($site->book_reqids == NULL || $site->book_reqids == "") ? 8010 : $site->book_reqids;
 $request_hours = (isset($site->request_hours)) ? $site->request_hours : 1;
-
 
 if (command_exist("python3")) {
 	$PYTHON = "python3 -OOu";
@@ -391,6 +385,10 @@ $monitor = 30;
 $i = 1;
 $fcfirstrun = true;
 while ($i > 0) {
+	//kill mediainfo and ffmpeg if exceeds 60 sec
+	shell_exec("killall -o 60s -9 mediainfo 2>&1 1> /dev/null");
+	shell_exec("killall -o 60s -9 ffmpeg 2>&1 1> /dev/null");
+
 	//check the db connection
 	if ($db->ping(true) == false) {
 		unset($db);
