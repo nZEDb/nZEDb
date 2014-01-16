@@ -3,7 +3,7 @@
 /*
 require_once '../../../www/config.php';
 //require_once nZEDb_LIB . 'framework/db.php';
-$db = new DB;
+$db = new DB();
 
 // Last patch date +1 day.
 $lpdpo = "2013-05-30";
