@@ -74,6 +74,7 @@ require_once dirname(__FILE__).'/szipinfo.php';
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
  * @version    2.3
+ * @link       https://github.com/zeebinz/rarinfo/
  */
 class ArchiveInfo extends ArchiveReader
 {
