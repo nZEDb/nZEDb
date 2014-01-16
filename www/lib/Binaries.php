@@ -333,6 +333,13 @@ class Binaries
 						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
 					}
 				}
+				if (preg_match('/"(Usenet Index Post) \d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
+					$msg['Subject'] = preg_replace('/Usenet Index Post/', $number[1] . '.nzb ', $msg['Subject']);
+				}
+
+                if (preg_match('/"(Usenet Index Post) \d+_\d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
+					continue;
+                }
 
 				$matches = '';
 				// Not a binary post most likely.. continue.
