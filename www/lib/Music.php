@@ -213,7 +213,7 @@ class Music
 
 	public function getBrowseBy()
 	{
-		$db = new Db;
+		$db = new DB();
 
 		$like = ' ILIKE(';
 		if ($db->dbSystem() == 'mysql') {

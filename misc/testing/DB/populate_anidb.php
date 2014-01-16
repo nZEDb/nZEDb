@@ -23,7 +23,7 @@ class AniDBstandAlone
 		$this->imgSavePath = nZEDb_WWW.'covers/anime/';
 		$this->debug = ($this->site->debuginfo == '0') ? false : true;
 		$this->APIKEY = $this->site->anidbkey;
-		$this->db = new DB;
+		$this->db = new DB();
 	}
 
 	// get the titles list this is done only once a week
