@@ -7,6 +7,8 @@ Each update goes to the top of the file
 
 
 2014-01-16 -> jonnyboy -> added kill command for ffmpeg and mediainfo, set at 60 sec, added color to nntpproxy output
+                          added CAT_PC_ISO to Category.php, basic check for now, looking only for \biso\b
+                          removed "Usenet Index Post 1389796935 yEnc (01/01)" until I can check it better
 2014-01-15 -> jonnyboy -> cleaned up pages/*, added misc/testing/DB/convert_to_tpg_alt.php until ThePeeps can fix his script
                           added "Usenet Index Post 1389796935 yEnc (01/01)" as nzb post, best used with GrabNZBs
 2014-01-15 -> bart39   -> fixed renametopre
