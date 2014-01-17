@@ -6,6 +6,7 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
 
+2014-01-17 -> niel     -> adding php close tag to a file and fixing typo in AniDb output message.
 2014-01-16 -> jonnyboy -> added kill command for ffmpeg and mediainfo, set at 60 sec, added color to nntpproxy output
                           added CAT_PC_ISO to Category.php, basic check for now, looking only for \biso\b
                           removed "Usenet Index Post 1389796935 yEnc (01/01)" until I can check it better
