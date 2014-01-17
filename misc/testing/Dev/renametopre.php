@@ -184,7 +184,7 @@ function preName($argv, $argc)
 		echo $c->header("Categorizing all releases using searchname from the last ${argv[1]} hours. This can take a while, be patient.");
 	} else if (isset($argv[1]) && $argv[1] !== "all" && isset($argv[2]) && !is_numeric($argv[2]) && !preg_match('/\([\d, ]+\)/', $argv[2])) {
 		echo $c->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
-    } else if (isset($argv[1]) && isset($argv[2]) && is_numeric($argv[2]) || preg_match('/\([\d, ]+\)/', $argv[2])) {
+    } else if (isset($argv[1]) && isset($argv[2]) && (is_numeric($argv[2]) || preg_match('/\([\d, ]+\)/', $argv[2]))) {
         echo $c->header("Categorizing all non-categorized releases in ${argv[2]} using searchname. This can take a while, be patient.");
 	} else {
 		echo $c->header("Categorizing all releases using searchname. This can take a while, be patient.");
