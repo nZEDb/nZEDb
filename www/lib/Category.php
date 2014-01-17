@@ -916,6 +916,9 @@ class Category
 			if ($this->isMac($releasename)) {
 				return true;
 			}
+            if ($this->isISO($releasename)) {
+                return true;
+            }
 			if ($this->is0day($releasename)) {
 				return true;
 			}
@@ -944,6 +947,15 @@ class Category
 		}
 		return false;
 	}
+
+    public function isISO($releasename)
+    {
+        if (preg_match('/\biso\b/i', $releasename)) {
+            $this->tmpCat = Category::CAT_PC_ISO;
+            return true;
+        }
+        return false;
+    }
 
 	public function is0day($releasename)
 	{
