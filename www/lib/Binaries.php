@@ -328,7 +328,7 @@ class Binaries
 				$msgsreceived[] = $msg['Number'];
 				$partnumber = '';
 				// Add yEnc to headers that do not have them, but are nzbs and that have the part number at the end of the header
-				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+nzb.+\(\d+\/\d+\)$/', $msg['Subject'])) {
+/*				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+nzb.+\(\d+\/\d+\)$/', $msg['Subject'])) {
 					if (preg_match('/.+\.nzb.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
 						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
 					}
@@ -340,7 +340,10 @@ class Binaries
                 if (preg_match('/"(Usenet Index Post) \d+_\d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
 					continue;
                 }
-
+*/
+                if (preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
+                    continue;
+                }
 				$matches = '';
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*| \[S\d+E\d+\] )\((\d+)\/(\d+)\)/', $msg['Subject'], $matches)) {
@@ -467,7 +470,7 @@ class Binaries
 						break;
 				}
 				if ($type != 'partrepair')
-					echo $this->c->primary('Server did not return ' . sizeof($rangenotreceived) . " articles.");
+					echo $this->c->alternate('Server did not return ' . sizeof($rangenotreceived) . " articles from " . str_replace('alt.binaries', 'a.b', $groupArr['name']) . ".");
 			}
 
 			$this->startUpdate = microtime(true);
