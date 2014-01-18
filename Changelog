@@ -6,6 +6,12 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
 
+2014-01-18 -> jonnyboy -> added script show_table_sizes.php to show data, index, free space used in all tables, changed regex for predb matching, now matches all but ~465k predb titles
+                          added predb.tpl change posted by mordor, fixed bug in change_USP_provider.php
+                          added full text search to site search, works only if you have these indexes - ix_releases_searchname_ft and/or ix_releases_name_ft
+                          if you search on releases.name - ix_releases_name_ft is required
+                          if you search on releases.searchname - ix_releases_searchname_ft is required
+                          as posted in the forum, ^& do not work with this search
 2014-01-17 -> josh     -> fixed link in alpha->login.tpl
 2014-01-17 -> niel     -> adding php close tag to a file and fixing typo in AniDb output message.
 2014-01-16 -> jonnyboy -> added kill command for ffmpeg and mediainfo, set at 60 sec, added color to nntpproxy output

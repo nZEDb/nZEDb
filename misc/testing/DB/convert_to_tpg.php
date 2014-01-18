@@ -23,8 +23,14 @@ $s = new Sites();
 $site = $s->get();
 $DoPartRepair = ($site->partrepair == '0') ? false : true;
 
-if ((!isset($argv[1])) || $argv[1] != 'true')
-	exit($c->error("Mandatory argument missing\n\nThis script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.\nPlease STOP all update scripts before running this script.\n\nUse the following options to run:\nphp convert_to_tpg.php true               Convert c/b/p to tpg leaving current collections/binaries/parts tables in-tact.\nphp convert_to_tgp.php true delete        Convert c/b/p to tpg and TRUNCATE current collections/binaries/parts tables."));
+if ((!isset($argv[1])) || $argv[1] != 'true') {
+	exit($c->error("\mMandatory argument missing\n\n"
+		. "This script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.\n"
+		. "Please STOP all update scripts before running this script.\n\n"
+		. "Use the following options to run:\n"
+		. "php $argv[0] true             ...: Convert c/b/p to tpg leaving current collections/binaries/parts tables in-tact.\n"
+		. "php $argv[0] true delete      ...: Convert c/b/p to tpg and TRUNCATE current collections/binaries/parts tables.\n"));
+}
 
 $clen = $db->queryOneRow('SELECT COUNT(*) AS total FROM collections;');
 $cdone = 0;
@@ -33,19 +39,20 @@ $gdone = 1;
 $actgroups = $groups->getActive();
 $glen = count($actgroups);
 $newtables = $glen * 3;
-$starttime = time();
+$begintime = time();
 
 echo "Creating new collections, binaries, and parts tables for each active group...\n";
 
 foreach ($actgroups as $group)
 {
-	if ($db->newtables($group['id']) === false)
-		exit ($c->error("There is a problem creating new parts/files tables for group ${group['name']}."));
+	if ($db->newtables($group['id']) === false) {
+		exit($c->error("There is a problem creating new parts/files tables for group ${group['name']}."));
+	}
 	$consoletools->overWrite("Tables Created: ".$consoletools->percentString($gdone*3, $newtables));
 	$gdone++;
 }
 $endtime = time();
-echo "\nTable creation took ".$consoletools->convertTime($endtime - $starttime).".\n";
+echo "\nTable creation took ".$consoletools->convertTime($endtime - $begintime).".\n";
 $starttime = time();
 echo "\nNew tables created, moving data from old tables to new tables.\nThis will take awhile....\n\n";
 while ($cdone < $clen['total'])

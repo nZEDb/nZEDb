@@ -19,7 +19,7 @@
 
 	{foreach from=$results item=result}
 		<tr class="{cycle values=",alt"}">
-			<td class="predb">
+			<td class="predb-left" >
 				{if isset($result.guid)}
 					<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.title|escape:"htmlall"}">
 						{$result.title|escape:"htmlall"}
@@ -28,8 +28,8 @@
 					{$result.title|escape:"htmlall"}
 				{/if}
 				{if $isadmin || $ismod}
-					<a style="float: right;" title="NzbIndex" href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}" target="_blank">Nzbindex&nbsp;</a>
-					<a style="float: right;" title="BinSearch" href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}" target="_blank">Binsearch&nbsp;</a>
+					<a class="rndbtnsml" style="float: right;" title="NzbIndex" href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}" target="_blank">Nzbindex&nbsp;</a>
+					<a class="rndbtnsml" style="float: right;" title="BinSearch" href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}" target="_blank">Binsearch&nbsp;</a>
 				{/if}
 			</td>
 			{if $isadmin || $ismod}
@@ -43,44 +43,44 @@
 			<td class="predb">{$result.adddate|date_format:"%Y-%m-%d %H:%M:%S"}</td>
 			<td class="predb">{$result.predate|date_format:"%Y-%m-%d %H:%M:%S"}</td>
 				{if $isadmin || $ismod}
-			<td class="predb">
-				{if {$result.source} == abgx}
-					<a title="Visit abgx" href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss">
-						abgx.net
-					</a>
-				{elseif {$result.source} == omgwtfnzbs}
-					<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php">
-						omgwtfnzbs.org
-					</a>
-				{elseif {$result.source} == orlydb}
-					<a title="Visit ORLYDB" href="{$site->dereferrer_link}http://orlydb.com/?q={$result.title}" target="_blank">
-						ORLYDB.com
-					</a>
-				{elseif {$result.source} == predbme}
-					<a title="Visit PreDB.me" href="{$site->dereferrer_link}http://predb.me/?search={$result.title}" target="_blank">
-						PreDB.me
-					</a>
-				{elseif {$result.source} == prelist}
-					<a title="Visit Prelist" href="{$site->dereferrer_link}http://www.prelist.ws/?search={$result.title}" target="_blank">
-						Prelist.ws
-					</a>
-				{elseif {$result.source} == srrdb}
-					<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}" target="_blank">
-						srrDB.com
-					</a>
-				{elseif {$result.source} == womble}
-					<a title="Visit Womble" href="{$site->dereferrer_link}http://www.newshost.co.za/?s={$result.title}" target="_blank">
-						Womble's NZB Index
-					</a>
-				{elseif {$result.source} == zenet}
-					<a title="Visit ZEnet" href="{$site->dereferrer_link} http://pre.zenet.org/?search={$result.title}" target="_blank">
-						ZEnet.org
-					</a>
-				{else}
-					{$result.source}
-				{/if}
+				<td class="predb">
+					{if {$result.source} == abgx}
+						<a title="Visit abgx" href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss">
+							abgx.net
+						</a>
+					{elseif {$result.source} == omgwtfnzbs}
+						<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php">
+							omgwtfnzbs.org
+						</a>
+					{elseif {$result.source} == orlydb}
+						<a title="Visit ORLYDB" href="{$site->dereferrer_link}http://orlydb.com/?q={$result.title}" target="_blank">
+							ORLYDB.com
+						</a>
+					{elseif {$result.source} == predbme}
+						<a title="Visit PreDB.me" href="{$site->dereferrer_link}http://predb.me/?search={$result.title}" target="_blank">
+							PreDB.me
+						</a>
+					{elseif {$result.source} == prelist}
+						<a title="Visit Prelist" href="{$site->dereferrer_link}http://www.prelist.ws/?search={$result.title}" target="_blank">
+							Prelist.ws
+						</a>
+					{elseif {$result.source} == srrdb}
+						<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}" target="_blank">
+							srrDB.com
+						</a>
+					{elseif {$result.source} == womble}
+						<a title="Visit Womble" href="{$site->dereferrer_link}http://www.newshost.co.za/?s={$result.title}" target="_blank">
+							Womble's NZB Index
+						</a>
+					{elseif {$result.source} == zenet}
+						<a title="Visit ZEnet" href="{$site->dereferrer_link} http://pre.zenet.org/?search={$result.title}" target="_blank">
+							ZEnet.org
+						</a>
+					{else}
+						{$result.source}
+					{/if}
+				</td>
 			{/if}
-			</td>
 			<td class="predb">
 				{if {$result.category} == 'MP3'}
 					<a class="title" title="View category MP3" href="{$smarty.const.WWW_TOP}/browse?t=3010">
