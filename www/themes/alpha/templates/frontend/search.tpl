@@ -8,7 +8,12 @@
 {/if}*}
 <h3 class="text-center"><a href="#" onclick="if(jQuery(this).text()=='Advanced Search')jQuery(this).text('Basic Search');else jQuery(this).text('Advanced Search');jQuery('#sbasic,#sadvanced').toggle();return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search</a></h3>
 
-<p class="text-center"><b>Include ^ to indicate search must start with term, -- to exclude words.</b></p>
+<center>Standard Search: Include ^ to indicate search must start with term, -- to exclude words.<br />
+		Full Text Search:
+		A leading plus sign indicates that this word must be present in each row that is returned.<br />
+		A leading minus sign indicates that this word must not be present in any of the rows that are returned.<br />
+		By default (when neither + nor - is specified) the word is optional, but the rows that contain it are rated higher.<br />
+		See <a href='http://dev.mysql.com/doc/refman/5.0/en/fulltext-boolean.html'>docs</a> for more operators.</center>
 <br>
 
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
@@ -132,8 +137,8 @@ Admin: <input type="button" class="btn btn-warning btn-small nzb_multi_operation
 </label>
 
 <div class="resextra">
-{if $result.passwordstatus == 1}<span class="label label-default" title="Probably Passworded"><i class="icon-unlock-alt"></i></span> 
-{elseif $result.passwordstatus == 2}<span class="label label-default" title="Broken Post"><i class="icon-unlink"></i></span> 
+{if $result.passwordstatus == 1}<span class="label label-default" title="Probably Passworded"><i class="icon-unlock-alt"></i></span>
+{elseif $result.passwordstatus == 2}<span class="label label-default" title="Broken Post"><i class="icon-unlink"></i></span>
 {elseif $result.passwordstatus == 10}<span class="label label-default" title="Passworded Archive"><i class="icon-lock"></i></span> {/if}
 {release_flag($result.searchname, browse)}
 {if $result.videostatus == 1}<a href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview." class="model_prev label label-default" rel="preview"><i class="icon-youtube-play"></i></a> {/if}

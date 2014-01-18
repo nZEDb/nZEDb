@@ -518,9 +518,9 @@ class Releases
 		if (count($words) > 0) {
 			if (isset($ft['key_name'])) {
 				foreach ($words as $word) {
-					$searchwords .= sprintf(' +%s', $word);
+					$searchwords .= sprintf('%s ', $word);
 				}
-				$searchsql .= sprintf(' AND match(releases.%s) against (\'%s\' in boolean mode)', $type, $searchwords);
+				$searchsql .= sprintf(" AND MATCH(releases.%s) AGAINST('%s' IN BOOLEAN MODE)", $type, $searchwords);
 			} else {
 				$like = 'ILIKE';
 				if ($db->dbSystem() == 'mysql') {
