@@ -509,26 +509,39 @@ class Releases
 		$words = explode(' ', $search);
 		$searchsql = '';
 		$intwordcount = 0;
-		if (count($words) > 0) {
-			$like = 'ILIKE';
-			if ($db->dbSystem() == 'mysql') {
-				$like = 'LIKE';
-			}
-			foreach ($words as $word) {
-				if ($word != '') {
-					if ($intwordcount == 0 && (strpos($word, '^') === 0)) {
-						$searchsql .= sprintf(' AND releases.%s %s %s', $type, $like, $db->escapeString(substr($word, 1) . '%'));
-					} else if (substr($word, 0, 2) == '--') {
-						$searchsql .= sprintf(' AND releases.%s NOT %s %s', $type, $like, $db->escapeString('%' . substr($word, 2) . '%'));
-					} else {
-						$searchsql .= sprintf(' AND releases.%s %s %s', $type, $like, $db->escapeString('%' . $word . '%'));
-					}
+		if ($type === 'name') {
+			$ft = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_ft';");
+		} else if ($type === 'searchname') {
+			$ft = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_searchname_ft';");
+		}
 
-					$intwordcount++;
+		if (count($words) > 0) {
+			if (isset($ft['key_name'])) {
+				foreach ($words as $word) {
+					$searchwords .= sprintf(' +%s', $word);
+				}
+				$searchsql .= sprintf(' AND match(releases.%s) against (\'%s\' in boolean mode)', $type, $searchwords);
+			} else {
+				$like = 'ILIKE';
+				if ($db->dbSystem() == 'mysql') {
+					$like = 'LIKE';
+				}
+				foreach ($words as $word) {
+					if ($word != '') {
+						if ($intwordcount == 0 && (strpos($word, '^') === 0)) {
+							$searchsql .= sprintf(' AND releases.%s %s %s', $type, $like, $db->escapeString(substr($word, 1) . '%'));
+						} else if (substr($word, 0, 2) == '--') {
+							$searchsql .= sprintf(' AND releases.%s NOT %s %s', $type, $like, $db->escapeString('%' . substr($word, 2) . '%'));
+						} else {
+							$searchsql .= sprintf(' AND releases.%s %s %s', $type, $like, $db->escapeString('%' . $word . '%'));
+						}
+
+						$intwordcount++;
+					}
 				}
 			}
+			return $searchsql;
 		}
-		return $searchsql;
 	}
 
 	// Creates part of a query for searches requiring the categoryID's.
@@ -1525,7 +1538,7 @@ class Releases
 			}
 
 			// Look for records that potentially have requestID titles and have not been renamed by any other means
-			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "(bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL ". $hours . " HOUR) LIMIT 100");
+			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "(bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $hours . " HOUR) LIMIT 100");
 
 			if ($resrel->rowCount() > 0) {
 				echo $n;
@@ -2106,3 +2119,5 @@ class Releases
 	}
 
 }
+
+

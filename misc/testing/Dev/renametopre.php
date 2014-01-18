@@ -58,9 +58,9 @@ function preName($argv, $argc)
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
 		$where = ' AND groupid = ' . $argv[2];
 		$why = ' WHERE (bitwise & 260) = 256';
-    } else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
-        $where = ' AND groupid IN ' . $argv[2];
-        $why = ' WHERE (bitwise & 260) = 256';
+	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
+		$where = ' AND groupid IN ' . $argv[2];
+		$why = ' WHERE (bitwise & 260) = 256';
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
 		$where = ' AND groupid IN ' . $argv[2];
 		$why = ' WHERE (bitwise & 256) = 256';
@@ -184,23 +184,23 @@ function preName($argv, $argc)
 		echo $c->header("Categorizing all releases using searchname from the last ${argv[1]} hours. This can take a while, be patient.");
 	} else if (isset($argv[1]) && $argv[1] !== "all" && isset($argv[2]) && !is_numeric($argv[2]) && !preg_match('/\([\d, ]+\)/', $argv[2])) {
 		echo $c->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
-    } else if (isset($argv[1]) && isset($argv[2]) && (is_numeric($argv[2]) || preg_match('/\([\d, ]+\)/', $argv[2]))) {
-        echo $c->header("Categorizing all non-categorized releases in ${argv[2]} using searchname. This can take a while, be patient.");
+	} else if (isset($argv[1]) && isset($argv[2]) && (is_numeric($argv[2]) || preg_match('/\([\d, ]+\)/', $argv[2]))) {
+		echo $c->header("Categorizing all non-categorized releases in ${argv[2]} using searchname. This can take a while, be patient.");
 	} else {
 		echo $c->header("Categorizing all releases using searchname. This can take a while, be patient.");
 	}
 	$timestart = TIME();
 
 	if (isset($argv[1]) && is_numeric($argv[1])) {
-		$relcount = categorizeRelease("searchname","WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
 		$relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where) . " AND (bitwise & 1) = 0 ", true);
-    } else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
-        $relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where), true);
-	} else 	if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == "full") {
+	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
+		$relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where), true);
+	} else if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == "full") {
 		$relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where) . " AND (bitwise & 1) = 0 ", true);
-    } else  if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == "all") {
-        $relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where), true);
+	} else if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] == "all") {
+		$relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where), true);
 	} else if (isset($argv[1]) && $argv[1] == "full") {
 		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 OR (bitwise & 1) = 0", true);
 	} else if (isset($argv[1]) && $argv[1] == "all") {
@@ -212,20 +212,20 @@ function preName($argv, $argc)
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	echo $c->header("Finished categorizing " . number_format($relcount) . " releases in " . $time . " seconds, using the usenet subject.\n");
 
-/*
-	if (isset($argv[1]) && $argv[1] !== "all") {
-		echo $c->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
-		$timestart1 = TIME();
-		if (isset($argv[2]) && is_numeric($argv[2])) {
-			$relcount = categorizeRelease("name", str_replace(" AND", "WHERE", $where), true);
-		} else {
-			$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
-		}
-		$consoletools1 = new ConsoleTools();
-		$time1 = $consoletools1->convertTime(TIME() - $timestart1);
-		echo $c->header("Finished categorizing " . number_format($relcount) . " releases in " . $time1 . " seconds, using the searchname.\n");
-	}
-*/
+	/*
+	  if (isset($argv[1]) && $argv[1] !== "all") {
+	  echo $c->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
+	  $timestart1 = TIME();
+	  if (isset($argv[2]) && is_numeric($argv[2])) {
+	  $relcount = categorizeRelease("name", str_replace(" AND", "WHERE", $where), true);
+	  } else {
+	  $relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+	  }
+	  $consoletools1 = new ConsoleTools();
+	  $time1 = $consoletools1->convertTime(TIME() - $timestart1);
+	  echo $c->header("Finished categorizing " . number_format($relcount) . " releases in " . $time1 . " seconds, using the searchname.\n");
+	  }
+	 */
 	resetSearchnames();
 }
 
@@ -239,26 +239,11 @@ function resetSearchnames()
 	if ($tot > 0) {
 		echo $c->primary(number_format($tot) . " Releases had no searchname.");
 	}
-	echo $c->header("Resetting searchnames that are a single letter.");
-	$count0 = $count = 0;
-	foreach (range('a', 'z') as $i) {
-		$run = $db->queryDirect("UPDATE releases SET searchname = name, bitwise = ((bitwise & ~5)|0) WHERE searchname = '" . $i . "'");
-		if ($run->rowCount() > 0) {
-			$count++;
-		}
-	}
-	if ($count > 0) {
-		echo $c->primary(number_format($count) . " Releases had single letter searchnames.");
-	}
-	echo $c->header("Resetting searchnames that are a single digit.");
-	foreach (range(0, 9) as $i) {
-		$run0 = $db->queryDirect("UPDATE releases SET searchname = name, bitwise = ((bitwise & ~5)|0) WHERE searchname = '" . $i . "'");
-		if ($run0->rowCount() > 0) {
-			$count0++;
-		}
-	}
-	if ($count0 > 0) {
-		echo $c->primary(number_format($count0) . " Releases had single digit searchnames.");
+	echo $c->header("Resetting searchnames that are 5 characters or less.");
+	$run = $db->queryDirect("UPDATE releases SET searchname = name, bitwise = ((bitwise & ~5)|0) WHERE LENGTH(searchname) <= 5");
+	$total = $run->rowCount();
+	if ($total > 0) {
+		echo $c->primary(number_format($total) . " Releases had searchnames that were 5 characters or less.");
 	}
 }
 
@@ -773,7 +758,7 @@ function releaseCleaner($subject, $groupid, $groupname)
 	}
 	//(((CowboyUp2012)))(((Hooded_Fang-Tosta_Mista-2012-SO)))usenet-space-cowboys.info(((Powered by https://secretusenet.com)( #34;Hooded_Fang-Tosta_Mista-2012-SO.rar#34; )( 3/4 (48,14 MB) )( 44,83 MB ) yEnc
 	//
-	else if (preg_match('/^\(\(\(CowboyUp2012\)\)\)[ _-]{0,3}\(\(\((?P<title>.+)\)\)\)[ _-]{0,3}.+yEnc$/i', $subject, $match)) {
+	  else if (preg_match('/^\(\(\(CowboyUp2012\)\)\)[ _-]{0,3}\(\(\((?P<title>.+)\)\)\)[ _-]{0,3}.+yEnc$/i', $subject, $match)) {
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName)) {
 			return $cleanerName;
@@ -781,7 +766,7 @@ function releaseCleaner($subject, $groupid, $groupname)
 	}
 	//<<<CowboyUp2012 Serie>>><<<Galileo.Big.Pictures.Die.Extremsten.Bilder.der.Welt.GERMAN.DOKU.WS.SATRiP.XviD-TVP>>>usenet-space-cowboys.info<<<Powered by https://secretusenet.com>< "tvp-galileo-pictures-extreme-xvid.r24" >< 27/69 (1,18 GB) >< 19,07 MB > yEnc
 	//
-	else if (preg_match('/^<<<CowboyUp2012.+>>>[ _-]{0,3}<<<(?P<title>.+)>>>[ _-]{0,3}.+yEnc$/i', $subject, $match)) {
+	  else if (preg_match('/^<<<CowboyUp2012.+>>>[ _-]{0,3}<<<(?P<title>.+)>>>[ _-]{0,3}.+yEnc$/i', $subject, $match)) {
 		$cleanerName = $match['title'];
 		if (!empty($cleanerName)) {
 			return $cleanerName;

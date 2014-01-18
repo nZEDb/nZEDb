@@ -1,12 +1,13 @@
 <?php
 
-if (!isset($argv[1])) {
-	exit("ERROR: You must supply a path as the first argument. Two additional, optional arguments can also be used.\n"
-		. "php $argv[0] /path/to/import true 1000            ...: To import using the filename as release searchname, limited to 1000"
-		. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname");
-}
-
 require_once dirname(__FILE__) . '/../../www/config.php';
+$c = new ColorCLI();
+
+if (!isset($argv[1])) {
+	exit($c->error("nYou must supply a path as the first argument. Two additional, optional arguments can also be used.\n"
+		. "php $argv[0] /path/to/import true 1000            ...: To import using the filename as release searchname, limited to 1000"
+		. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname"));
+}
 
 $db = new DB();
 $binaries = new Binaries();

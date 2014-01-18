@@ -1,11 +1,11 @@
-<div id="group_list"> 
+<div id="group_list">
 
     <h1>{$page->title}</h1>
 
 		<p>
 			Below is a list of all usenet groups available to be indexed. Click 'Activate' to start indexing a group. Backfill works independently of active.
 		</p>
-    
+
 	{if $grouplist}
     <div style="position:relative;margin-bottom:5px;">
         <center><td class="less" id="alldel">
@@ -40,15 +40,15 @@
             <th>Backfill Days</th>
 			<th>options</th>
         </tr>
-        
+
         {foreach from=$grouplist item=group}
         <tr id="grouprow-{$group.id}" class="{cycle values=",alt"}">
             <td>
 				<a href="{$smarty.const.WWW_TOP}/group-edit.php?id={$group.id}">{$group.name|replace:"alt.binaries":"a.b"}</a>
 				<div class="hint">{$group.description}</div>
 			</td>
-            <td class="less">{$group.first_record_postdate|timeago}</td>
-			<td class="less">{$group.last_record_postdate|timeago}</td>
+            <td class="less">{$group.first_record_postdate}<br />{$group.first_record_postdate|timeago}</td>
+			<td class="less">{$group.last_record_postdate}<br />{$group.last_record_postdate|timeago}</td>
             <td class="less">{$group.last_updated|timeago} ago</td>
             <td class="less" id="group-{$group.id}">{if $group.active=="1"}<a href="javascript:ajax_group_status({$group.id}, 0)" class="group_active">Deactivate</a>{else}<a href="javascript:ajax_group_status({$group.id}, 1)" class="group_deactive">Activate</a>{/if}</td>
             <td class="less" id="backfill-{$group.id}">{if $group.backfill=="1"}<a href="javascript:ajax_backfill_status({$group.id}, 0)" class="backfill_active">Deactivate</a>{else}<a href="javascript:ajax_backfill_status({$group.id}, 1)" class="backfill_deactive">Activate</a>{/if}</td>
