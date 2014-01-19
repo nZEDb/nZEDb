@@ -26,7 +26,6 @@ if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUES
 
 	if ($searchtype == "basic") {
 		$searchStr = (string) $_REQUEST["id"];
-
 		$categoryId = array();
 		if (isset($_REQUEST["t"])) {
 			$categoryId = explode(",", $_REQUEST["t"]);

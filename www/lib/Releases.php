@@ -516,9 +516,10 @@ class Releases
 		}
 
 		if (count($words) > 0) {
-			$searchwords = '';
 			if (isset($ft['key_name'])) {
+				$searchwords = '';
 				foreach ($words as $word) {
+					$word = str_replace('!', '+', $word);
 					$searchwords .= sprintf('%s ', $word);
 				}
 				$searchsql .= sprintf(" AND MATCH(releases.%s) AGAINST('%s' IN BOOLEAN MODE)", $type, $searchwords);
