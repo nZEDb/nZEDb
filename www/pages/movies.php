@@ -17,6 +17,12 @@ if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $mtmp)) {
 	$category = $_REQUEST['t'] + 0;
 }
 
+$user = $users->getById($users->currentUserId());
+$cpapi = $user['cp_api'];
+$cpurl = $user['cp_url'];
+$page->smarty->assign('cpapi', $cpapi);
+$page->smarty->assign('cpurl', $cpurl);
+
 $catarray = array();
 $catarray[] = $category;
 

@@ -6,7 +6,6 @@ if (!$users->isLoggedIn()) {
 
 $category = new Category();
 $sab = new SABnzbd($page);
-
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
 $userid = $users->currentUserId();
@@ -50,7 +49,7 @@ switch ($action) {
 							$_POST['saburl'] = $_POST['sabapikey'] = $_POST['sabpriority'] = $_POST['sabapikeytype'] = false;
 						}
 
-						$users->update($userid, $data["username"], $_POST['firstname'], $_POST['lastname'], $_POST['email'], $data["grabs"], $data["role"], $data["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"), $_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype']);
+						$users->update($userid, $data["username"], $_POST['firstname'], $_POST['lastname'], $_POST['email'], $data["grabs"], $data["role"], $data["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"), $_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype'], $_POST['cp_url'], $_POST['cp_api']);
 
 						$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? array() : $_POST['exccat'];
 						$users->addCategoryExclusions($userid, $_POST['exccat']);
@@ -95,6 +94,9 @@ $page->smarty->assign('sabsetting_selected', ($sab->checkCookie() === true ? 2 :
 $page->meta_title = "Edit User Profile";
 $page->meta_keywords = "edit,profile,user,details";
 $page->meta_description = "Edit User Profile for " . $data["username"];
+
+$page->smarty->assign('cp_url_selected', $data['cp_url']);
+$page->smarty->assign('cp_api_selected', $data['cp_api']);
 
 $page->smarty->assign('catlist', $category->getForSelect(false));
 

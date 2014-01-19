@@ -1,4 +1,4 @@
- 
+
 <h1>Profile for {$user.username|escape:"htmlall"}</h1>
 
 <table class="data">
@@ -9,11 +9,11 @@
 	<tr><th>Role:</th><td>{$user.rolename}</td></tr>
 	{if $user.id==$userdata.id || $userdata.role==2}<tr><th title="Not public">Site Api/Rss Key:</th><td><a href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$user.rsstoken}</a></td></tr>{/if}
 	<tr><th>Grabs:</th><td>{$user.grabs}</td></tr>
-	
+
 	{if ($user.id==$userdata.id || $userdata.role==2) && $site->registerstatus==1}
 	<tr>
 		<th title="Not public">Invites:</th>
-		<td>{$user.invites} 
+		<td>{$user.invites}
 		{if $user.invites > 0}
 			[<a id="lnkSendInvite" onclick="return false;" href="#">Send Invite</a>]
 			<span title="Your invites will be reduced when the invitation is claimed." class="invitesuccess" id="divInviteSuccess">Invite Sent</span>
@@ -29,11 +29,11 @@
 		</td>
 	</tr>
 	{/if}
-	
+
 	{if $userinvitedby && $userinvitedby.username != ""}
 	<tr><th>Invited By:</th><td><a title="View {$userinvitedby.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$userinvitedby.username}">{$userinvitedby.username}</a></td>
 	{/if}
-	
+
 	<tr><th>UI Preferences:</th>
 		<td>
 			{if $user.movieview == "1"}View movie covers{else}View standard movie category{/if}<br/>
@@ -53,12 +53,18 @@
 			Storage: {if $sabsetting == ''}N/A{else}{$sabsetting}{/if}
 		</td>
 	{/if}
+	<tr><th>CouchPotato Integration:</th>
+	<td>
+		Url: {if $user.cp_url == ''}N/A{else}{$user.cp_url}{/if}<br/>
+		Key: {if $user.cp_api == ''}N/A{else}{$user.cp_api}{/if}<br/>
+	</td>
+
 	{if $user.id==$userdata.id}
 			<tr><th>My TV Shows:</th><td><a href="{$smarty.const.WWW_TOP}/myshows">Manage my shows</a></td></tr>
 			<tr><th>My Movies:</th><td><a href="{$smarty.const.WWW_TOP}/mymovies">Manage my movies</a></td></tr>
 	{/if}
-	
-	
+
+
 	{if $user.id==$userdata.id}<tr><th></th><td><a href="{$smarty.const.WWW_TOP}/profileedit">Edit</a></td></tr>{/if}
 </table>
 
@@ -76,7 +82,7 @@
 			<th>comment</th>
 		</tr>
 
-		
+
 		{foreach from=$commentslist item=comment}
 		<tr>
 			<td width="80" title="{$comment.createddate}">{$comment.createddate|date_format}</td>

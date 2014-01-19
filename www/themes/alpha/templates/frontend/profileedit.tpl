@@ -129,6 +129,21 @@
 <span class="help-block">Where to store the SAB setting.<br />&bull; <b>Cookie</b> will store the setting in your browsers coookies and will only work when using your current browser.<br/>&bull; <b>Site</b> will store the setting in your user account enabling it to work no matter where you are logged in from.<br /><span class="warning"><b>Please Note:</b></span> You should only store your full SAB api key with sites you trust.</span>
 </td>
 </tr>
+<tr>
+<th><label for="cp_url">CouchPotato Url:</label></th>
+<td>
+<input id="cp_url" class="form-control" name="cp_url" type="text" value="{$cp_url_selected}" />
+<span class="help-block">The CouchPotato url. Used for 'Add To CouchPotato', for example: http://192.168.10.10:5050</span>
+</td>
+</tr>
+
+<tr>
+<th><label for="cp_api">CouchPotato Api Key:</label></th>
+<td>
+<input id="cp_api" class="form-control" name="cp_api" type="text" value="{$cp_api_selected}" />
+<span class="help-block">The CouchPotato api key. Used for 'Send To CouchPotato'.</span>
+</td>
+</tr>
 </table>
 </fieldset>
 {/if}
