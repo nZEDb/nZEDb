@@ -1355,10 +1355,11 @@ class Releases
 			echo $this->c->header("\nStage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.");
 		}
 		$stage4dot5 = TIME();
-
+		// Delete smaller than min sizes
 		$catresrel = $db->query('SELECT c.id AS id, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize FROM category c LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE c.parentid IS NOT NULL');
 		foreach ($catresrel as $catrowrel) {
 			if ($catrowrel['minsize'] > 0) {
+				//printf("SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d\n", $catrowrel['id'], $catrowrel['minsize']);
 				$resrel = $db->query(sprintf('SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d', $catrowrel['id'], $catrowrel['minsize']));
 				foreach ($resrel as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
@@ -1367,6 +1368,7 @@ class Releases
 			}
 		}
 
+		// Delete larger than max sizes
 		if ($groupID == '') {
 			$groupIDs = $this->groups->getActiveIDs();
 

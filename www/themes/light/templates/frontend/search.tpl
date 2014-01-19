@@ -3,19 +3,26 @@
 
 <div><center>
         <a href="#" onclick="if (jQuery(this).text() == 'Advanced Search')
-                    jQuery(this).text('Basic Search');
-                else
-                    jQuery(this).text('Advanced Search');
-                jQuery('#sbasic,#sadvanced').toggle();
-                return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search</a>
+					jQuery(this).text('Basic Search');
+				else
+					jQuery(this).text('Advanced Search');
+				jQuery('#sbasic,#sadvanced').toggle();
+				return false;">{if $sadvanced}Basic{else}Click For Advanced{/if} Search</a>
     </center></div><br/>
 
-<center>Standard Search: Include ^ to indicate search must start with term, -- to exclude words.<br />
-		Full Text Search:
-		A leading exclamation point(! in place of +) indicates that this word must be present in each row that is returned.<br />
-		A leading minus sign indicates that this word must not be present in any of the rows that are returned.<br />
-		By default (when neither + nor - is specified) the word is optional, but the rows that contain it are rated higher.<br />
-		See <a target="_blank" href='http://dev.mysql.com/doc/refman/5.0/en/fulltext-boolean.html'>docs</a> for more operators.</center>
+<table class="searchinfo">
+	<tr>
+		<td style="width: 20%"><b>Standard Search:</b></td><td>Include ^ to indicate search must start with term, -- to exclude words.</td>
+	</tr>
+	<tr>
+		<td><b>Full Text Search:</b></td><td>A leading exclamation point(! in place of +) indicates that this word must be present in each row that is returned.
+			                                 A leading minus sign indicates that this word must not be present in any of the rows that are returned.
+											 By default (when neither ! nor - is specified) the word is optional, but the rows that contain it are rated higher.
+											 A trailing asterisk means the word continues beyond what you have entered, words match if they begin with the word preceding the * operator.
+											 Not all operators will work. Rows are not sorted by rating.
+											 See the <a target="_blank" href='http://dev.mysql.com/doc/refman/5.0/en/fulltext-boolean.html'>docs</a> for more operators.</td>
+	</tr>
+</table>
 
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
     <div id="sbasic" style="text-align:center;{if $sadvanced} display:none;"{/if}">
@@ -68,7 +75,7 @@
                 <tr>
                     <th><label for="searchadvhasnfo">NFO/Comments:</label></th>
                     <td><input type="hidden" name="searchadvhasnfo" value="0" /> <input type="checkbox" name="searchadvhasnfo" value="1" />
-                        <input type="hidden" name="searchadvhascomments" value="0" /><input type="checkbox" name="searchadvhascomments" value="1"/> <div style="float:right;"><input type="hidden" name="search_type" value="adv" id="search_type" /> <input id="search_adv_button" type="submit" value="search" /></div> </td>
+                        <input type="hidden" name="searchadvhascomments" value="0" /><input type="checkbox" name="searchadvhascomments" value="1"/> <div style="float:right;"><input type="hidden" name="search_type" value="adv" id="search_type" /> <input class="rndbtn" id="search_adv_button" type="submit" value="search" /></div> </td>
                 </tr>
             </table>
         </center>
@@ -131,7 +138,7 @@
                         <label value="Searchname" for="chk{$result.guid|substr:0:7}"><a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a></label>
 
                         <div class="resextra">
-                            <a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.name|escape:"htmlall"|truncate:150:"...":true}</a>
+                            <a class="browsename" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.name|escape:"htmlall"|truncate:200:"...":true}</a>
                             <div class="btns" style="float:right">
                                 {release_flag($result.searchname, browse)}
                                 {if $result.passwordstatus == 1}<img title="RAR/ZIP Possibly Passworded." src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/lock2.png" alt="RAR/ZIP Possibly Passworded." />
