@@ -299,6 +299,22 @@
 				</td>
 			</tr>
 
+            <tr>
+                <td style="width:180px;"><label for="cp_api">CouchPotato API key:</label></td>
+                <td>
+                    <input id="cp_api" class="long" name="cp_api" type="text" value="{$fsite->cp_api}" />
+                    <div class="hint">The CouchPotato api key. Used for 'Send To CouchPotato'.</div>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="width:180px;"><label for="cp_url">CouchPotato Url:</label></td>
+                <td>
+                    <input id="cp_url" class="long" name="cp_url" type="text" value="{$fsite->cp_url}" />
+                    <div class="hint">The CouchPotato url. Used for 'Send To CouchPotato'. ex. http://192.168.10.10:5050</div>
+                </td>
+            </tr>
+
 		</table>
 	</fieldset>
 
