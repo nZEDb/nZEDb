@@ -6,7 +6,8 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
 
-2014-01-18 -> jonnyboy -> add CouchPotato url/api to site=edit, fixed link 'Send to CouchPotato'
+2014-01-18 -> jonnyboy -> possible fix to safe scripts putting excessive parts into part repair
+                          add CouchPotato url/api to site=edit, fixed link 'Send to CouchPotato'
 2014-01-18 -> jonnyboy -> added script show_table_sizes.php to show data, index, free space used in all tables, changed regex for predb matching, now matches all but ~465k predb titles
                           added predb.tpl change posted by mordor, fixed bug in change_USP_provider.php
                           added full text search to site search, works only if you have these indexes - ix_releases_searchname_ft and/or ix_releases_name_ft
