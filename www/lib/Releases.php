@@ -516,6 +516,7 @@ class Releases
 		}
 
 		if (count($words) > 0) {
+			$searchwords = '';
 			if (isset($ft['key_name'])) {
 				foreach ($words as $word) {
 					$searchwords .= sprintf('%s ', $word);

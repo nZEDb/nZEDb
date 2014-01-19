@@ -10,7 +10,7 @@
 		A leading plus sign indicates that this word must be present in each row that is returned.<br />
 		A leading minus sign indicates that this word must not be present in any of the rows that are returned.<br />
 		By default (when neither + nor - is specified) the word is optional, but the rows that contain it are rated higher.<br />
-		See <a href='http://dev.mysql.com/doc/refman/5.0/en/fulltext-boolean.html'>docs</a> for more operators.</center>
+		See <a target="_blank" href='http://dev.mysql.com/doc/refman/5.0/en/fulltext-boolean.html'>docs</a> for more operators.</center>
 
 <form method="get" action="{$smarty.const.WWW_TOP}/search">
 	<div id="sbasic" style="text-align:center;{if $sadvanced} display:none;"{/if}">
