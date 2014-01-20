@@ -6,6 +6,7 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
 
+2014-01-18 -> niel        Adding a couple tests for NZB path setting and changing text for one error message.
 2014-01-18 -> jonnyboy -> possible fix to safe scripts putting excessive parts into part repair
                           add CouchPotato url/api to site=edit, fixed link 'Send to CouchPotato'
 2014-01-18 -> jonnyboy -> added script show_table_sizes.php to show data, index, free space used in all tables, changed regex for predb matching, now matches all but ~465k predb titles
