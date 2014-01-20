@@ -6,7 +6,8 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
 
-2014-01-20 -> jonnyboy -> reverted change to predb
+2014-01-20 -> jonnyboy -> moved smarty path, please run sudo chmod -R 777 smarty/templates_c/
+                          reverted change to predb
 2014-01-19 -> bart39   -> fixed couchpotato integration on alpha theme
                           added a.b.games.dox to byGroup in category
                           added more audio regexes to namecleaning
