@@ -69,7 +69,10 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 			self.wfile.write("200 localhost NNRP Service Ready.\r\n")
 			for line in self.rfile:
 				data = line.strip()
-				print(bcolors.HEADER + "%5d %s" % (nntp_client.id, data) + bcolors.ENDC)
+				if data.startswith("GROUP"):
+					print(bcolors.ALTERNATE + "%5d %s" % (nntp_client.id, data))
+				else:
+					print(bcolors.HEADER + "%5d " % (nntp_client.id)) + (bcolors.PRIMARY + "%s" % (data))
 				if data.startswith("AUTHINFO user") or data.startswith("AUTHINFO pass"):
 					self.wfile.write("281 Ok\r\n")
 				elif data.startswith("XFEATURE"):
@@ -177,6 +180,6 @@ if __name__ == "__main__":
 	addr = (config["proxy"]["host"], config["proxy"]["port"])
 	proxy = NNTPProxyServer(addr, NNTPProxyRequestHandler, nntp_client_pool)
 	remote = (config["usenet"]["host"], config["usenet"]["port"])
-	sys.stdout.write("NNTPProxy listening on %s:%d\n" % addr)
-	sys.stdout.write("NNTPProxy connected to %s:%d\n" % remote)
+	print(bcolors.HEADER + "NNTPProxy listening on %s:%d" % addr)
+	print(bcolors.HEADER + "NNTPProxy connected to %s:%d" % remote)
 	proxy.serve_forever()

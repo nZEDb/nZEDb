@@ -1,1 +1,2 @@
-Please open up the scripts in a text editor to see what they do.
+If you run these scripts without any argument, you should get a description of what the script does and how to run them.
+

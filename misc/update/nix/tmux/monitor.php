@@ -96,111 +96,115 @@ function rand_bool($loop, $chance = 60)
 }
 
 //totals per category in db, results by parentID
-$qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid';
+$qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count '
+	. 'FROM category c, releases r '
+	. 'WHERE r.categoryid = c.id '
+	. 'GROUP BY c.parentid';
 
 //needs to be processed query
-$proc_work = "SELECT
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 257) = 257 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid IN (" . $bookreqids . ") AND bookinfoid IS NULL) AS book,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) AS releases,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = 1) AS nfo,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
+$proc_work = "SELECT "
+	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv, "
+	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies, "
+	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 257) = 257 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio, "
+	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console, "
+	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid IN (" . $bookreqids . ") AND bookinfoid IS NULL) AS book, "
+	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) AS releases, "
+	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = 1) AS nfo, "
+	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
 
-$proc_work2 = "SELECT
-	(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc,
-	(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron,
-	(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work,
-	(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table,
-	(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
+$proc_work2 = "SELECT "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
+	. "(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table, "
+	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
-$proc_work3 = "SELECT
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL ". $request_hours . " HOUR)) AS requestid_inprogress,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND reqidstatus = 1) AS requestid_matched,
-	(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND preid IS NOT NULL) AS predb_matched,
-	(SELECT COUNT(DISTINCT(preid)) FROM releases) AS distinct_predb_matched,
-	(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
+$proc_work3 = "SELECT "
+	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL ". $request_hours . " HOUR)) AS requestid_inprogress, "
+	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND reqidstatus = 1) AS requestid_matched, "
+	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND preid IS NOT NULL) AS predb_matched, "
+	. "(SELECT COUNT(DISTINCT(preid)) FROM releases) AS distinct_predb_matched, "
+	. "(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
 
 if ($dbtype == 'mysql') {
-	$split_query = "SELECT
-		(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name') AS predb,
-		(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name') AS parts_table,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval backfill_target day) < first_record_postdate) AS backfill_groups_days,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval datediff(curdate(),(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
-		(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
-		(SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre,
-		(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd,
-		(SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
+	$split_query = "SELECT "
+		. "(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$db_name') AS predb, "
+		. "(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name') AS parts_table, "
+		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval backfill_target day) < first_record_postdate) AS backfill_groups_days, "
+		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval datediff(curdate(), "
+		. "(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date, "
+		. "(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
+		. "(SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre, "
+		. "(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
+		. "(SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
 } else if ($dbtype == 'pgsql') {
-	$split_query = "SELECT
-		(SELECT COUNT(*) FROM predb WHERE id IS NOT NULL) AS predb,
-		(SELECT COUNT(*) FROM parts WHERE id IS NOT NULL) AS parts_table,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - backfill_target * interval '1 days') < first_record_postdate) AS backfill_groups_days,
-		(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM site WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date,
-		(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
-		(SELECT extract(epoch FROM adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre,
-		(SELECT extract(epoch FROM adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd,
-		(SELECT extract(epoch FROM dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
+	$split_query = "SELECT "
+		. "(SELECT COUNT(*) FROM predb WHERE id IS NOT NULL) AS predb, "
+		. "(SELECT COUNT(*) FROM parts WHERE id IS NOT NULL) AS parts_table, "
+		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - backfill_target * interval '1 days') < first_record_postdate) AS backfill_groups_days, "
+		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM site WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date, "
+		. "(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
+		. "(SELECT extract(epoch FROM adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre, "
+		. "(SELECT extract(epoch FROM adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
+		. "(SELECT extract(epoch FROM dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
 }
 
 // tmux and site settings, refreshes every loop
-$proc_tmux = "SELECT
-	(SELECT searchname FROM releases ORDER BY adddate DESC LIMIT 1) AS newestname,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_delay') AS monitor,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'tmux_session') AS tmux_session,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'niceness') AS niceness,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'binaries') AS binaries_run,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'backfill') AS backfill,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'import') AS import,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'nzbs') AS nzbs,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post') AS post,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'releases') AS releases_run,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'releases_threaded') AS releases_threaded,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'fix_names') as fix_names,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'seq_timer') as seq_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'bins_timer') as bins_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'back_timer') as back_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'import_timer') as import_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'rel_timer') as rel_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'fix_timer') as fix_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_timer') as post_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'collections_kill') as collections_kill,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'postprocess_kill') as postprocess_kill,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'crap_timer') as crap_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'fix_crap') as fix_crap,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'fix_crap_opt') as fix_crap_opt,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'tv_timer') as tv_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'update_tv') as update_tv,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_kill_timer') as post_kill_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path') as monitor_path,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path_a') as monitor_path_a,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path_b') as monitor_path_b,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'progressive') as progressive,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'dehash') as dehash,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'dehash_timer') as dehash_timer,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'backfill_days') as backfilldays,
-	(SELECT VALUE FROM site WHERE SETTING = 'debuginfo') as debug,
-	(SELECT VALUE FROM site WHERE SETTING = 'lookupbooks') as processbooks,
-	(SELECT VALUE FROM site WHERE SETTING = 'lookupmusic') as processmusic,
-	(SELECT VALUE FROM site WHERE SETTING = 'lookupgames') as processgames,
-	(SELECT VALUE FROM site WHERE SETTING = 'tmpunrarpath') as tmpunrar,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_amazon') as post_amazon,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_timer_amazon') as post_timer_amazon,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_non') as post_non,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'post_timer_non') as post_timer_non,
-	(SELECT COUNT(*) FROM groups WHERE active = 1) AS active_groups,
-	(SELECT COUNT(*) FROM groups WHERE name IS NOT NULL) AS all_groups,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'colors_start') AS colors_start,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'colors_end') AS colors_end,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'colors_exc') AS colors_exc,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'showquery') AS show_query,
-	(SELECT VALUE FROM tmux WHERE SETTING = 'running') AS is_running,
-	(SELECT COUNT(DISTINCT(collectionhash)) FROM nzbs WHERE collectionhash IS NOT NULL) AS distinctnzbs,
-	(SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL) AS totalnzbs,
-	(SELECT COUNT(*) FROM (SELECT id FROM nzbs GROUP BY collectionhash, totalparts, id HAVING COUNT(*) >= totalparts) AS count) AS pendingnzbs,
-	(SELECT value FROM site WHERE setting = 'grabnzbs') AS grabnzbs";
+$proc_tmux = "SELECT "
+	. "(SELECT searchname FROM releases ORDER BY adddate DESC LIMIT 1) AS newestname, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_delay') AS monitor, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'tmux_session') AS tmux_session, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'niceness') AS niceness, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'binaries') AS binaries_run, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'backfill') AS backfill, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'import') AS import, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'nzbs') AS nzbs, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post') AS post, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'releases') AS releases_run, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'releases_threaded') AS releases_threaded, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'fix_names') as fix_names, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'seq_timer') as seq_timer, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'bins_timer') as bins_timer, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'back_timer') as back_timer, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'import_timer') as import_timer, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'rel_timer') as rel_timer, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'fix_timer') as fix_timer, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post_timer') as post_timer, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'collections_kill') as collections_kill, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'postprocess_kill') as postprocess_kill, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'crap_timer') as crap_timer, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'fix_crap') as fix_crap, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'fix_crap_opt') as fix_crap_opt, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'tv_timer') as tv_timer, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'update_tv') as update_tv, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post_kill_timer') as post_kill_timer, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path') as monitor_path, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path_a') as monitor_path_a, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'monitor_path_b') as monitor_path_b, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'progressive') as progressive, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'dehash') as dehash, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'dehash_timer') as dehash_timer, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'backfill_days') as backfilldays, "
+	. "(SELECT VALUE FROM site WHERE SETTING = 'debuginfo') as debug, "
+	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupbooks') as processbooks, "
+	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupmusic') as processmusic, "
+	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupgames') as processgames, "
+	. "(SELECT VALUE FROM site WHERE SETTING = 'tmpunrarpath') as tmpunrar, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post_amazon') as post_amazon, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post_timer_amazon') as post_timer_amazon, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post_non') as post_non, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post_timer_non') as post_timer_non, "
+	. "(SELECT COUNT(*) FROM groups WHERE active = 1) AS active_groups, "
+	. "(SELECT COUNT(*) FROM groups WHERE name IS NOT NULL) AS all_groups, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'colors_start') AS colors_start, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'colors_end') AS colors_end, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'colors_exc') AS colors_exc, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'showquery') AS show_query, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'running') AS is_running, "
+	. "(SELECT COUNT(DISTINCT(collectionhash)) FROM nzbs WHERE collectionhash IS NOT NULL) AS distinctnzbs, "
+	. "(SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL) AS totalnzbs, "
+	. "(SELECT COUNT(*) FROM (SELECT id FROM nzbs GROUP BY collectionhash, totalparts, id HAVING COUNT(*) >= totalparts) AS count) AS pendingnzbs, "
+	. "(SELECT value FROM site WHERE setting = 'grabnzbs') AS grabnzbs";
 
 //get microtime
 function microtime_float()

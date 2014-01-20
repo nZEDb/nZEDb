@@ -13,6 +13,8 @@ class Sites
 	const ERR_BADNZBPATH = -4;
 	const ERR_DEEPNOUNRAR = -5;
 	const ERR_BADTMPUNRARPATH = -6;
+	const ERR_BADNZBPATH_UNREADABLE = -7;
+	const ERR_BADNZBPATH_UNSET = -8;
 
 	function __construct()
 	{
@@ -48,8 +50,16 @@ class Sites
 			return Sites::ERR_BADUNRARPATH;
 		}
 
-		if ($site->nzbpath != "" && !file_exists($site->nzbpath)) {
+		if (empty($site->nzbpath)) {
+			return Sites::ERR_BADNZBPATH_UNSET;
+		}
+
+		if (!file_exists($site->nzbpath) || !is_dir($site->nzbpath)) {
 			return Sites::ERR_BADNZBPATH;
+		}
+
+		if (!is_readable($site->nzbpath)) {
+			return Sites::ERR_BADNZBPATH_UNREADABLE;
 		}
 
 		if ($site->checkpasswordedrar == 1 && !is_file($site->unrarpath)) {

@@ -266,7 +266,7 @@ class AniDB
 		else
 		{
 			if ($this->echooutput)
-				echo "\tFalling back to Pure REGEX methodto determine name\n";
+				echo "\tFalling back to Pure REGEX method to determine name\n";
 
 			// if no "'s were found then fall back to cleanFilename;
 			return $this->cleanFilename($searchname);
@@ -370,7 +370,7 @@ class AniDB
                 {
                         if ($this->echooutput) {
                                 echo $this->c->header('No anime releases to process.');
-                                }                        
+                                }
                 }
 	}
 

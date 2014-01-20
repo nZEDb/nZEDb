@@ -228,8 +228,9 @@ class Binaries
 	{
 		$returnArray = array();
 
-		if (!isset($nntp))
+		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(binaries->scan)."));
+		}
 
 		$db = $this->db;
 		$this->startHeaders = microtime(true);
@@ -237,8 +238,9 @@ class Binaries
 
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
-			if ($db->newtables($groupArr['id']) === false)
+			if ($db->newtables($groupArr['id']) === false) {
 				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
+			}
 			$group['cname'] = 'collections_' . $groupArr['id'];
 			$group['bname'] = 'binaries_' . $groupArr['id'];
 			$group['pname'] = 'parts_' . $groupArr['id'];
@@ -249,14 +251,24 @@ class Binaries
 			$group['pname'] = 'parts';
 		}
 
+		// Select the group, here, seems redundant, but necessary
+		$data = $nntp->selectGroup($groupArr['name']);
+		if (PEAR::isError($data)) {
+			$data = $nntp->dataError($nntp, $groupArr['name']);
+			if ($data === false) {
+				return;
+			}
+		}
+
 		// Download the headers.
 		$msgs = $nntp->getOverview($first . "-" . $last, true, false);
 		// If there ware an error, try to reconnect.
 		if ($type != 'partrepair' && PEAR::isError($msgs)) {
 			// This is usually a compression error, so try disabling compression.
 			$nntp->doQuit();
-			if ($nntp->doConnectNC() === false)
+			if ($nntp->doConnectNC() === false) {
 				return false;
+			}
 
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first . '-' . $last, true, false);
@@ -272,8 +284,9 @@ class Binaries
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 		if (is_array($msgs)) {
 			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
-			if ($this->debug)
+			if ($this->debug) {
 				$colnames = $orignames = $notyenc = array();
+			}
 
 			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
 			usort($msgs, function ($elem1, $elem2) {
@@ -282,26 +295,32 @@ class Binaries
 
 			// Loop articles, figure out files/parts.
 			foreach ($msgs AS $msg) {
-				if (!isset($msg['Number']))
+				if (!isset($msg['Number'])) {
 					continue;
+				}
 
 				if (isset($returnArray['firstArticleNumber'])) {
-					if ($msg['Number'] < $returnArray['firstArticleNumber'])
+					if ($msg['Number'] < $returnArray['firstArticleNumber']) {
 						$returnArray['firstArticleNumber'] = $msg['Number'];
-					if (isset($msg['Date']))
+					}
+					if (isset($msg['Date'])) {
 						$returnArray['firstArticleDate'] = $msg['Date'];
+					}
 				}
 				else {
 					$returnArray['firstArticleNumber'] = $msg['Number'];
-					if (isset($msg['Date']))
+					if (isset($msg['Date'])) {
 						$returnArray['firstArticleDate'] = $msg['Date'];
+					}
 				}
 
 				if (isset($returnArray['lastArticleNumber'])) {
-					if ($msg['Number'] > $returnArray['lastArticleNumber'])
+					if ($msg['Number'] > $returnArray['lastArticleNumber']) {
 						$returnArray['lastArticleNumber'] = $msg['Number'];
-					if (isset($msg['Date']))
+					}
+					if (isset($msg['Date'])) {
 						$returnArray['lastArticleDate'] = $msg['Date'];
+					}
 				}
 				else {
 					$returnArray['lastArticleNumber'] = $msg['Number'];
@@ -328,7 +347,13 @@ class Binaries
 				$msgsreceived[] = $msg['Number'];
 				$partnumber = '';
 				// Add yEnc to headers that do not have them, but are nzbs and that have the part number at the end of the header
-				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+nzb.+\(\d+\/\d+\)$/', $msg['Subject'])) {
+				if (!preg_match('/yEnc/i', $msg['Subject'])) {
+					if (preg_match('/.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
+						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
+					}
+				}
+
+/*				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+nzb.+\(\d+\/\d+\)$/', $msg['Subject'])) {
 					if (preg_match('/.+\.nzb.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
 						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
 					}
@@ -340,7 +365,10 @@ class Binaries
                 if (preg_match('/"(Usenet Index Post) \d+_\d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
 					continue;
                 }
-
+*/
+                if (preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
+                    continue;
+                }
 				$matches = '';
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*| \[S\d+E\d+\] )\((\d+)\/(\d+)\)/', $msg['Subject'], $matches)) {
@@ -467,7 +495,7 @@ class Binaries
 						break;
 				}
 				if ($type != 'partrepair')
-					echo $this->c->primary('Server did not return ' . sizeof($rangenotreceived) . " articles.");
+					echo $this->c->alternate('Server did not return ' . sizeof($rangenotreceived) . " articles from " . str_replace('alt.binaries', 'a.b', $groupArr['name']) . ".");
 			}
 
 			$this->startUpdate = microtime(true);

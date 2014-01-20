@@ -3,6 +3,7 @@
 /*
  * Gets information contained within the NZB.
  */
+
 Class NZBContents
 {
 

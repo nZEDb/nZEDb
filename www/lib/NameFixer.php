@@ -1,6 +1,6 @@
 <?php
 
-class Namefixer
+class NameFixer
 {
 	/* These constants can not be used as they are
 	 * To select where false            - 'SELECT * FROM releases WHERE (bitwise & 4) = 0;' - selects all that have not been renamed
@@ -54,6 +54,8 @@ class Namefixer
 
 	 */
 
+	CONST PREDB_REGEX = "/([\w\(\)]+[\._]([\w\(\)]+[\._-])+[\w\(\)]+-\w+)/";
+
 	function __construct($echooutput = true)
 	{
 		$this->echooutput = $echooutput;
@@ -95,6 +97,7 @@ class Namefixer
 		$query = "SELECT rel.id AS releaseid FROM releases rel "
 			. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
 			. "WHERE categoryid != 5070 AND ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
+			//. "WHERE preid IS NULL";
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
@@ -164,6 +167,7 @@ class Namefixer
 			. "rel.id AS releaseid FROM releases rel "
 			. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
 			. "WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 128) = 0";
+			//. "WHERE preid IS NULL";
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
@@ -374,7 +378,7 @@ class Namefixer
 	{
 		// Get pre style name from releases.name
 		$matches = '';
-		preg_match_all('/(\w+[\._](\w+[\._-])+\w+-\w+)/', $release['textstring'], $matches);
+		preg_match_all('/([\w\(\)]+[\._]([\w\(\)]+[\._-])+[\w\(\)]+-\w+)/', $release['textstring'], $matches);
 		foreach ($matches as $match) {
 			foreach ($match as $val) {
 				$title = $this->db->queryOneRow("SELECT title from predb WHERE title = " . $this->db->escapeString(trim($val)));
@@ -387,7 +391,7 @@ class Namefixer
 				}
 			}
 		}
-
+		return false;
 		if ($type == "PAR2, ") {
 			$this->fileCheck($release, $echo, $type, $namestatus, $show);
 		} else {
@@ -779,9 +783,9 @@ class Namefixer
 			$this->updateRelease($release, $result, $method = "fileCheck: tvp", $echo, $type, $namestatus, $show);
 		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w[-\w.\',;& ]+\d{3,4}\.hdtv-lol\.(avi|mp4|mkv|ts|nfo|nzb)/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: Title.211.hdtv-lol.extension", $echo, $type, $namestatus, $show);
-		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w[-\w.\',;& ]+-S\d{1,2}E\d{1,2}-XVID-DL.avi/i', $release["textstring"], $result)) {
+		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w[-\w.\',;& ]+-S\d{1,2}[EX]\d{1,2}-XVID-DL.avi/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: Title-SxxExx-XVID-DL.avi", $echo, $type, $namestatus, $show);
-		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\S.*[\w.\-\',;]+\s\-\ss\d{2}e\d{2}\s\-\s[\w.\-\',;].+\./i', $release["textstring"], $result)) {
+		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\S.*[\w.\-\',;]+\s\-\ss\d{2}[ex]\d{2}\s\-\s[\w.\-\',;].+\./i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: Title - SxxExx - Eptitle", $echo, $type, $namestatus, $show);
 		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\)\.nds/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus, $show);

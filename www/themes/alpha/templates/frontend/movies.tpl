@@ -64,7 +64,7 @@ Admin: <button type="button" class="btn btn-warning nzb_multi_operations_edit">E
 <span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >Cover</a></span>
 <span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a></span>
 <span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a></span>
-{*<span class="label label-default"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">Couch</a></span>*}
+<span class="label label-default"><a target="blackhole" href="{$site->dereferrer_link}{$site->cp_url}/api/{$site->cp_api}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">Couch</a></span>
 </div>
 </div>
 </td>
@@ -109,7 +109,7 @@ Admin: <button type="button" class="btn btn-warning nzb_multi_operations_edit">E
 <div class="pull-right">
 {if $mnfo[$m@index] > 0}<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}" title="View Nfo" class="modal_nfo" rel="nfo">Nfo</a></span> {/if}
 {if $mpass[$m@index] == 1}<span class="label label-default">Passworded</span>{elseif $mpass[$m@index] == 2}<span class="label label-default">Potential Password</span> {/if}
-<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a></span> 
+<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}" title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp</a></span>
 {if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg" name="name{$mguid[$m@index]}" title="Screenshot of {$mname[$m@index]|escape:"htmlall"}" class="modal_prev" rel="preview">Preview</a></span> {/if}
 {if $minnerfiles[$m@index] > 0}<span class="label label-default"><a href="#" onclick="return false;" class="mediainfo" title="{$mguid[$m@index]}">Media</a></span> {/if}
 </div>
