@@ -9,6 +9,7 @@ Each update goes to the top of the file
 2014-01-20 -> jonnyboy -> adding missed references to ReleaseCleaning and CollectionsCleaning, added remove preid from release when searchname is reset using renametopre.php
                           proper fix to safe scripts, removed selectGroup from NNTP->getArticles as its not needed to select the group prior to downloading an article
                           added delete from nzbs table on duplicate and not replacing, fixed typo in resetSearchname.php
+                          removed reference to incorrect function
 2014-01-20 -> egandt   -> split NameCleaning into ReleaseCleaning and CollectionsCleaning, simply refactored teh code nothing else, also a few changes to comments to ensure that the code would work if uncommented
 2014-01-20 -> egandt   -> added a number of new groups, fixed logging in populate_anidb
 2014-01-20 -> jonnyboy -> changed button in browse.tpl

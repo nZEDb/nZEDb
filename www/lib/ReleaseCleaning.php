@@ -1669,21 +1669,23 @@ class ReleaseCleaning
 		else if ($groupName === "alt.binaries.sounds.mp3.complete_cd") {
 			//The Refreshments - [1/9] - "The Refreshments - RockÂ´n Roll Christmas [2003].par2" yEnc
 			if (preg_match('/(.+)[-_ ]{0,3}[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}"(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $subject, $match))
-				return $match[2]; //[BFMP3] [Barrelhouse_Time Frames.nzb] [00/18] yEnc
+				return $match[2];
+			//[BFMP3] [Barrelhouse_Time Frames.nzb] [00/18] yEnc
 			else if (preg_match('/^\[.+?\][-_ ]{0,3}\[(.+)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}\])[-_ ]{0,3}[\(\[]\d+\/\d+[\)\]][-_ ]{0,3}yEnc$/', $subject, $match))
-				return $match[1]; //Metallica - Ride The Lightning    "01 - Fight Fire With Fire.mp3" yEnc
+				return $match[1];
+			//Metallica - Ride The Lightning    "01 - Fight Fire With Fire.mp3" yEnc
 			else if (preg_match('/^(.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->generic();
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
 		else if ($groupName === "alt.binaries.sounds.mp3.dance") {
 			//[2707]Solarstone-Solarstone_Collected_Vol_1-ARDI3177-WEB-2012-TraX "02-solarstone_feat_kym_marsh-day_by_day_(red_jerry_smackthe_bigot_up_remix).mp3" - yEnc
 			if (preg_match('/^\[\d+\](.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/', $subject, $match))
 				return $match[1];
 			else
-				return $this->generic();
-		}
+				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+			}
 		else if ($groupName === "alt.binaries.teevee") {
 			//[######]-[FULL]-[#a.b.teevee@EFNet]-[ Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD ] [1/5] - "Misfits.S01.SUBPACK.DVDRip.XviD-P0W4DVD.nfo" yEnc
 			if (preg_match('/^\[#+\]-\[.+?\]-\[.+?\]-\[ (.+?) \][- ]\[\d+\/\d+\][ -]{0,3}("|#34;).+?("|#34;) yEnc$/', $subject, $match))
