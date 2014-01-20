@@ -14,7 +14,7 @@ class AniDBstandAlone
 {
 	const CLIENTVER = 1;
 
-	function __construct($debug=false, $echooutput=true)
+	function __construct($debug=false, $echooutput=false)
 	{
 		$s = new Sites();
 		$this->site = $s->get();
