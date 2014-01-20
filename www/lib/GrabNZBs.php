@@ -11,8 +11,7 @@ class GrabNZBs
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->replacenzbs = (isset($this->site->replacenzbs)) ? $this->site->replacenzbs : 0;
 		$this->ReleaseCleaning = new ReleaseCleaning();
-		// this is never used as it is commented out down below, but as I'm refactoring I left it
-		$this->CollectionsCleaning = new CollectionsCleaning();
+		//$this->CollectionsCleaning = new CollectionsCleaning();
 		$this->categorize = new Category();
 	}
 

@@ -247,13 +247,16 @@ class Releases
 						if ($categ->isParent($category)) {
 							$children = $categ->getChildren($category);
 							$chlist = '-99';
-							foreach ($children as $child)
+							foreach ($children as $child) {
 								$chlist .= ', ' . $child['id'];
+							}
 
-							if ($chlist != '-99')
+							if ($chlist != '-99') {
 								$catsrch .= ' releases.categoryid IN (' . $chlist . ') OR ';
-						} else
+							}
+						} else {
 							$catsrch .= sprintf(' releases.categoryid = %d OR ', $category);
+						}
 					}
 				}
 				$catsrch .= '1=2 )';

@@ -4,11 +4,6 @@
  * Type php resetSearchname.php to see detailed info. */
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'ReleaseCleaning.php';
-//require_once nZEDb_LIB . 'namefixer.php';
-//require_once nZEDb_LIB . 'consoletools.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI();
 
@@ -21,8 +16,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$done = 0;
 		$timestart = TIME();
 		$consoletools = new ConsoleTools();
-		foreach ($res as $row)
-		{
+		foreach ($res as $row) {
 			$rc = new ReleaseCleaning();
 			$newname = $rc->releaseCleaner($row['name'], $row['gname']);
 			if (is_array($newname)) {
@@ -58,8 +52,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$done = 0;
 		$timestart = TIME();
 		$consoletools = new ConsoleTools();
-		foreach ($res as $row)
-		{
+		foreach ($res as $row) {
 			$rc = new ReleaseCleaning();
 			$newname = $rc->releaseCleaner($row['name'], $row['gname']);
 			if (is_array($newname)) {
@@ -95,8 +88,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$done = 0;
 		$timestart = TIME();
 		$consoletools = new ConsoleTools();
-		foreach ($res as $row)
-		{
+		foreach ($res as $row) {
 			$rc = new ReleaseCleaning();
 			$newname = $rc->releaseCleaner($row['name'], $row['gname']);
 			if (is_array($newname)) {
@@ -111,7 +103,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	}
 } else {
 	exit($c->error("\nThis script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.\n"
-					. "php $argv[0] full              ...: To run this, recategorize and refix release names on all releases.\n"
-					. "php $argv[0] limited           ...: To run this on releases that have not had their names fixed, then categorizing them.\n"
-					. "php $argv[0] reset             ...: To just reset searchnames.\n"));
+			. "php $argv[0] full              ...: To run this, recategorize and refix release names on all releases.\n"
+			. "php $argv[0] limited           ...: To run this on releases that have not had their names fixed, then categorizing them.\n"
+			. "php $argv[0] reset             ...: To just reset searchnames.\n"));
 }

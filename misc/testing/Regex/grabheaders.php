@@ -1,78 +1,67 @@
 <?php
-require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'groups.php';
-//require_once nZEDb_LIB . 'backfill.php';
-//require_once nZEDb_LIB . 'consoletools.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'CollectionsCleaning.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
+require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $group = $argv[1];
-// Commented out down below, so never used, so why it is not commented out here
-$cleaner = new CollectionsCleaning();
+//$cleaner = new CollectionsCleaning();
 $nntp = new NNTP();
 $c = new ColorCLI();
-if ($nntp->doConnect() === false)
+if ($nntp->doConnect() === false) {
 	exit($c->error("Unable to connect to usenet."));
+}
 
 $number = 2500000;
 //exec("tmux kill-session -t NNTPProxy");
 
 $groupArr = $nntp->selectGroup($group);
-if (PEAR::isError($groupArr) || !isset($groupArr['first']) || !isset($groupArr['last']))
+if (PEAR::isError($groupArr) || !isset($groupArr['first']) || !isset($groupArr['last'])) {
 	exit();
+}
 
 print_r($groupArr);
-if (isset($argv[2]) && is_numeric($argv[2]))
+if (isset($argv[2]) && is_numeric($argv[2])) {
 	$first = $argv[2];
-else
-	if ($groupArr['last'] - $number > $groupArr['first'])
-		$first = $groupArr['last'] - $number;
-	else
-		$first = $groupArr['first'];
+} else
+if ($groupArr['last'] - $number > $groupArr['first']) {
+	$first = $groupArr['last'] - $number;
+} else {
+	$first = $groupArr['first'];
+}
 $last = $groupArr['last'];
-@unlink("/var/www/nZEDb/not_yenc/".$group.".txt");
-@unlink("/var/www/nZEDb/not_yenc/".$group.".failed.regex.txt");
+@unlink("/var/www/nZEDb/not_yenc/" . $group . ".txt");
+@unlink("/var/www/nZEDb/not_yenc/" . $group . ".failed.regex.txt");
 
 $count = $last - $first;
-echo "\nGrabbing ".$count." headers from ".$argv[1]."\n";
+echo "\nGrabbing " . $count . " headers from " . $argv[1] . "\n";
 
-for ($x = $first; $x <= $last; $x += 5000)
-{
+for ($x = $first; $x <= $last; $x += 5000) {
 	$y = $x + 4999;
 
-	echo "Grabbing ".$x." -> ".$y."\n";
-	$msgs = $nntp->getOverview($x."-".$y, true, false);
+	echo "Grabbing " . $x . " -> " . $y . "\n";
+	$msgs = $nntp->getOverview($x . "-" . $y, true, false);
 
-	foreach ($msgs as $msg)
-	{
+	foreach ($msgs as $msg) {
 		//if (isset($msg[':bytes']))
 		//	$bytes = $msg[':bytes'];
-	//	else if (isset($msg['Bytes']))
-	//		$bytes = $msg['Bytes'];
+		//	else if (isset($msg['Bytes']))
+		//		$bytes = $msg['Bytes'];
 		//if (preg_match('/(.+yEnc)(\.\s*|\s*--\s*READ NFO!\s*|\s*)\((\d+)\/(\d+)\)$/', $msg['Subject'], $matches))
 		//{
-			//$clean = $cleaner->collectionsCleaner($matches[1], $group);
-			///if (preg_match('/yEnc/', $clean))
-			//{
-				//$header = $msg['Number']."\t\t".$msg['Subject']."\t\t".$msg['From']."\t\t".$msg['Date']."\t\t".$msg['Message-ID']."\t\t".$bytes."\t\t".$msg['Xref']."\n";
-				if (isset($msg['Subject']))
-				{
-					$header = $msg['Subject']."\n";
-					//echo $header;
-					file_put_contents("/var/www/nZEDb/not_yenc/".$group.".txt", $header, FILE_APPEND);
-					//var_dump($msg);
-				}
-				else
-				{
-					$fp = fopen("/var/www/nZEDb/not_yenc/".$group.".txt",'w');
-					fwrite($fp, print_r($msg, TRUE));
-					fclose($fp);
-				}
-			//}
+		//$clean = $cleaner->collectionsCleaner($matches[1], $group);
+		///if (preg_match('/yEnc/', $clean))
+		//{
+		//$header = $msg['Number']."\t\t".$msg['Subject']."\t\t".$msg['From']."\t\t".$msg['Date']."\t\t".$msg['Message-ID']."\t\t".$bytes."\t\t".$msg['Xref']."\n";
+		if (isset($msg['Subject'])) {
+			$header = $msg['Subject'] . "\n";
+			//echo $header;
+			file_put_contents("/var/www/nZEDb/not_yenc/" . $group . ".txt", $header, FILE_APPEND);
+			//var_dump($msg);
+		} else {
+			$fp = fopen("/var/www/nZEDb/not_yenc/" . $group . ".txt", 'w');
+			fwrite($fp, print_r($msg, TRUE));
+			fclose($fp);
+		}
+		//}
 		//}
 	}
 }
