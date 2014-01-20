@@ -5,8 +5,8 @@ $c = new ColorCLI();
 
 if (!isset($argv[1])) {
 	exit($c->error("nYou must supply a path as the first argument. Two additional, optional arguments can also be used.\n"
-		. "php $argv[0] /path/to/import true 1000            ...: To import using the filename as release searchname, limited to 1000"
-		. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname"));
+			. "php $argv[0] /path/to/import true 1000            ...: To import using the filename as release searchname, limited to 1000"
+			. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname"));
 }
 
 $db = new DB();
@@ -14,7 +14,7 @@ $binaries = new Binaries();
 $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
-$namecleaning = new NameCleaning();
+$releasecleaning = new ReleaseCleaning();
 $categorize = new Category();
 $maxtoprocess = 0;
 
@@ -133,7 +133,6 @@ if (!isset($groups) || count($groups) == 0) {
 			$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
 			$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
 			$subject = utf8_encode(trim($partless));
-			$namecleaning = new NameCleaning();
 
 			// Make a fake message object to use to check the blacklist.
 			$msg = array("Subject" => $subject, "From" => $fromname, "Message-ID" => "");
@@ -184,7 +183,7 @@ if (!isset($groups) || count($groups) == 0) {
 			if ($usenzbname === true) {
 				$cleanerName = $usename;
 			} else {
-				$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
+				$cleanerName = $releasecleaning->releaseCleaner($subject, $groupName);
 			}
 			if (!is_array($cleanerName)) {
 				$cleanName = $cleanerName;

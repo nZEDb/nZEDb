@@ -10,7 +10,8 @@ class GrabNZBs
 		$this->site = $s->get();
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->replacenzbs = (isset($this->site->replacenzbs)) ? $this->site->replacenzbs : 0;
-		$this->namecleaner = new NameCleaning();
+		$this->ReleaseCleaning = new ReleaseCleaning();
+		//$this->CollectionsCleaning = new CollectionsCleaning();
 		$this->categorize = new Category();
 	}
 
@@ -163,8 +164,8 @@ class GrabNZBs
 				$propername = true;
 				$relguid = sha1(uniqid('', true) . mt_rand());
 				$nzb = new NZB();
-				$cleanerName = $this->namecleaner->releaseCleaner($subject, $groupName);
-				/* $ncarr = $namecleaner->collectionsCleaner($subject, $groupName);
+				$cleanerName = $this->ReleaseCleaning->releaseCleaner($subject, $groupName);
+				/* $ncarr = $this->CollectionsCleaning->collectionsCleaner($subject, $groupName);
 				  $cleanerName = $ncarr['subject'];
 				  $category = $ncarr['cat'];
 				  $relstat = $ncar['rstatus']; */
