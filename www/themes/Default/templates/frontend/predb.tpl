@@ -7,10 +7,12 @@
 
 	<tr>
 		<th>title</th>
-		<th>requestid</th>
+			{if $isadmin || $ismod}
+			<th>requestid</th>
+			{/if}
 		<th>added</th>
 		<th>pre-date</th>
-		<th>source</th>
+		{if $isadmin || $ismod} <th>source</th> {/if}
 		<th>category</th>
 		<th>size</th>
 	</tr>
@@ -25,15 +27,22 @@
 				{else}
 					{$result.title|escape:"htmlall"}
 				{/if}
+				{if $isadmin || $ismod}
+					<a style="float: right;" title="NzbIndex" href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}" target="_blank">Nzbindex&nbsp;</a>
+					<a style="float: right;" title="BinSearch" href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}" target="_blank">Binsearch&nbsp;</a>
+				{/if}
 			</td>
+			{if $isadmin || $ismod}
 			<td class="predb">
 				{if {$result.requestid} == 0}
 				{elseif is_numeric({$result.requestid})}
 					{$result.requestid}
 				{/if}
 			</td>
+			{/if}
 			<td class="predb">{$result.adddate|date_format:"%Y-%m-%d %H:%M:%S"}</td>
 			<td class="predb">{$result.predate|date_format:"%Y-%m-%d %H:%M:%S"}</td>
+				{if $isadmin || $ismod}
 			<td class="predb">
 				{if {$result.source} == abgx}
 					<a title="Visit abgx" href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss">
@@ -44,33 +53,33 @@
 						omgwtfnzbs.org
 					</a>
 				{elseif {$result.source} == orlydb}
-					<a title="Visit ORLYDB" href="{$site->dereferrer_link}http://www.orlydb.com/">
+					<a title="Visit ORLYDB" href="{$site->dereferrer_link}http://orlydb.com/?q={$result.title}" target="_blank">
 						ORLYDB.com
 					</a>
 				{elseif {$result.source} == predbme}
-					<a title="Visit PreDB.me" href="{$site->dereferrer_link}http://predb.me/">
+					<a title="Visit PreDB.me" href="{$site->dereferrer_link}http://predb.me/?search={$result.title}" target="_blank">
 						PreDB.me
 					</a>
 				{elseif {$result.source} == prelist}
-					<a title="Visit Prelist" href="{$site->dereferrer_link}http://pre.zenet.org/">
+					<a title="Visit Prelist" href="{$site->dereferrer_link}http://www.prelist.ws/?search={$result.title}" target="_blank">
 						Prelist.ws
 					</a>
 				{elseif {$result.source} == srrdb}
-					<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/">
+					<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}" target="_blank">
 						srrDB.com
 					</a>
 				{elseif {$result.source} == womble}
-					<a title="Visit Womble" href="{$site->dereferrer_link}http://nzb.isasecret.com/">
+					<a title="Visit Womble" href="{$site->dereferrer_link}http://www.newshost.co.za/?s={$result.title}" target="_blank">
 						Womble's NZB Index
 					</a>
 				{elseif {$result.source} == zenet}
-					<a title="Visit ZEnet" href="{$site->dereferrer_link}http://pre.zenet.org/">
+					<a title="Visit ZEnet" href="{$site->dereferrer_link} http://pre.zenet.org/?search={$result.title}" target="_blank">
 						ZEnet.org
 					</a>
 				{else}
 					{$result.source}
 				{/if}
-
+			{/if}
 			</td>
 			<td class="predb">
 				{if {$result.category} == 'MP3'}

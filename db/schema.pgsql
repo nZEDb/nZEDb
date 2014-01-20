@@ -11,8 +11,8 @@ CREATE TABLE "anidb" (
   "tvdbid" integer NOT NULL,
   "title" character varying(255) NOT NULL,
   "type" character varying(32) NOT NULL,
-  "startdate" date NOT NULL,
-  "enddate" date NOT NULL,
+  "startdate" date,
+  "enddate" date,
   "related" character varying(1024) NOT NULL,
   "creators" character varying(1024) NOT NULL,
   "description" text NOT NULL,
@@ -842,7 +842,9 @@ CREATE TABLE "users" (
   "sabapikey" character varying(255),
   "sabapikeytype" smallint DEFAULT 0 NOT NULL,
   "sabpriority" smallint DEFAULT 0 NOT NULL,
-  "userseed" character varying(50) NOT NULL
+  "userseed" character varying(50) NOT NULL,
+  "cp_url" character varying(255),
+  "cp_api" character varying(255),
 )
 WITHOUT OIDS;
 
@@ -1285,6 +1287,20 @@ INSERT INTO groups (name, description, minfilestoformrelease, minsizetoformrelea
 INSERT INTO groups (name, description, minfilestoformrelease, minsizetoformrelease) VALUES ('alt.binaries.worms','I have no idea what this group contains besides a lot of U4ALL which isnt really usable.', 2, NULL);
 INSERT INTO groups (name, description, minfilestoformrelease, minsizetoformrelease) VALUES ('alt.binaries.x264','This group contains X264 Movies and TV.', NULL, NULL);
 INSERT INTO groups (name, description, minfilestoformrelease, minsizetoformrelease) VALUES ('alt.binaries.x','This group contains a variety of content. Some Foreign.', NULL, NULL);
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.multimedia.erotica.anime', NULL, NULL, 'erotica anime');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.multimedia.erotica.asian', NULL, NULL, 'erotica Asian');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.mp3.audiobooks.scifi-fantasy', NULL, NULL, 'Audiobooks');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.sounds.audiobooks.scifi-fantasy', NULL, NULL, 'Audiobooks');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.mp3.abooks', NULL, NULL, 'Audiobooks');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.town.xxx', NULL, NULL, 'XXX videos');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.software', NULL, NULL, 'Software');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.nzbpirates', NULL, NULL, 'Misc, mostly Erotica, and foreign movies ');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.town.cine', NULL, NULL, 'Movies');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.usenet-space-cowboys', NULL, NULL, 'Misc, mostly German');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.warez.ibm-pc.games', NULL, NULL, 'misc, mostly games and applications');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.warez.games', NULL, NULL, 'misc, mostly games and applications');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.e-book.magazines', NULL, NULL, 'magazines, mostly english');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.sounds.anime', NULL, NULL, 'music from Anime');
 
 
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('search','Advanced Search','Search for releases.', 1, 10);
@@ -1423,6 +1439,7 @@ INSERT INTO site
 	('ffmpeg_image_time', '5'),
 	('request_url', 'http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]'),
 	('lookup_reqids', '1'),
+	('request_hours', '1'),
 	('grabnzbthreads', '1'),
 	('loggingopt', '2'),
 	('logfile', '/var/www/nZEDb/failed-login.log'),
@@ -1442,7 +1459,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','164');
+	('sqlpatch','168');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

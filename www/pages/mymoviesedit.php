@@ -1,40 +1,38 @@
 <?php
-if (!$users->isLoggedIn())
-	$page->show403();
 
-require_once nZEDb_LIB . 'category.php';
-require_once nZEDb_LIB . 'usermovies.php';
+if (!$users->isLoggedIn()) {
+	$page->show403();
+}
 
 $um = new UserMovies();
-if (isset($_REQUEST["del"]))
+if (isset($_REQUEST["del"])) {
 	$um->delMovie($users->currentUserId(), $_REQUEST["del"]);
+}
 
-$cat = new Category;
+$cat = new Category();
 $tmpcats = $cat->getChildren(Category::CAT_PARENT_MOVIE, true, $page->userdata["categoryexclusions"]);
 $categories = array();
-foreach($tmpcats as $c)
+foreach ($tmpcats as $c) {
 	$categories[$c['id']] = $c['title'];
+}
 
 $movies = $um->getMovies($users->currentUserId());
 $results = array();
-foreach ($movies as $mov=>$m)
-{
+foreach ($movies as $mov => $m) {
 	$movcats = explode('|', $m['categoryid']);
-	if (is_array($movcats) && sizeof($movcats) > 0)
-	{
+	if (is_array($movcats) && sizeof($movcats) > 0) {
 		$catarr = array();
-		foreach ($movcats as $movcat)
-		{
-			if (!empty($movcat))
+		foreach ($movcats as $movcat) {
+			if (!empty($movcat)) {
 				$catarr[] = $categories[$movcat];
+			}
 		}
 		$m['categoryNames'] = implode(', ', $catarr);
-	}
-	else
+	} else {
 		$m['categoryNames'] = '';
+	}
 
 	$results[$mov] = $m;
-
 }
 $page->smarty->assign('movies', $results);
 
@@ -45,5 +43,3 @@ $page->meta_description = "Manage Your Movies";
 
 $page->content = $page->smarty->fetch('mymoviesedit.tpl');
 $page->render();
-
-?>

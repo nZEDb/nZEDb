@@ -1,18 +1,17 @@
 <?php
-if (!$users->isLoggedIn())
+if (!$users->isLoggedIn()) {
 	$page->show403();
+}
 
-require_once nZEDb_LIB . 'releases.php';
-require_once nZEDb_LIB . 'util.php';
-
-$releases = new Releases;
+$releases = new Releases();
 
 if (isset($_GET["id"]))
 {
 	$rel = $releases->getByGuid($_GET["id"]);
 
-	if (!$rel)
+	if (!$rel) {
 		$page->show404();
+	}
 
 	$nfo = $releases->getReleaseNfo($rel['id']);
 	$nfo['nfoUTF'] = cp437toUTF($nfo['nfo']);
@@ -34,9 +33,9 @@ if (isset($_GET["id"]))
 
 	$page->content = $page->smarty->fetch('viewnfo.tpl');
 
-	if ($modal)
+	if ($modal) {
 		echo $page->content;
-	else
+	} else {
 		$page->render();
+	}
 }
-?>

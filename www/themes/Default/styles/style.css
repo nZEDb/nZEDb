@@ -150,7 +150,13 @@ table.input th, table.input td { text-align: left; vertical-align:top; }
 predb
 */
 
-.predb { color:#000; }
+.predb {
+	color:#000;
+	text-align: center;
+}
+.predb-left {
+	text-align: left;
+}
 
 /*
 form inputs and helpers
@@ -298,6 +304,7 @@ div.icon_sab			{ background-image:url('../images/icons/sabup.png'); }
 div.icon_sab_clicked	{ background-image:url('../images/icons/sabdown.png'); }
 div.icon_tvrage			{ background-image:url('../images/icons/tvrage.png'); }
 div.icon_check			{ background-image:url('../images/icons/check.png'); }
+div.icon_cp				{ background-image:url('../images/icons/couch.png'); }
 
 /*
     ColorBox Core Style

@@ -4,10 +4,7 @@ if (!$users->isLoggedIn()) {
     $page->show403();
 }
 
-require_once nZEDb_LIB . 'releases.php';
-require_once nZEDb_LIB . 'category.php';
-
-$releases = new Releases;
+$releases = new Releases();
 
 $category = -1;
 if (isset($_REQUEST["t"]) && ctype_digit($_REQUEST["t"])) {

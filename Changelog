@@ -3,7 +3,74 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
+***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
+
+2014-01-20 -> bart39   -> fixed missing braces on regex
+2014-01-20 -> jonnyboy -> added option to use fulltext ix_releases_name_searchname_ft(name, searchname) instead of 2 seaparate indexes
+                          adding missed references to ReleaseCleaning and CollectionsCleaning, added remove preid from release when searchname is reset using renametopre.php
+                          proper fix to safe scripts, removed selectGroup from NNTP->getArticles as its not needed to select the group prior to downloading an article
+                          added delete from nzbs table on duplicate and not replacing, fixed typo in resetSearchname.php
+                          removed reference to incorrect function, merged dev-smarty, added missing reference to $show in resetSearchname.php
+2014-01-20 -> egandt   -> split NameCleaning into ReleaseCleaning and CollectionsCleaning, simply refactored teh code nothing else, also a few changes to comments to ensure that the code would work if uncommented
+2014-01-20 -> egandt   -> added a number of new groups, fixed logging in populate_anidb
+2014-01-20 -> jonnyboy -> changed button in browse.tpl
+                          moved smarty path, please run sudo chmod -R 777 smarty/templates_c/
+                          reverted change to predb, please run 'update predb set nfo = REPLACE(nfo, 'nzb.isasecret.com', 'www.newshost.co.za');'
+2014-01-19 -> bart39   -> fixed couchpotato integration on alpha theme
+                          added a.b.games.dox to byGroup in category
+                          added more audio regexes to namecleaning
+2014-01-19 -> jonnyboy -> moved couchpotato to user, instead of site
+2014-01-19 -> niel        Adding a couple tests for NZB path setting and changing text for one error message.
+2014-01-19 -> jonnyboy -> possible fix to safe scripts putting excessive parts into part repair
+                          add CouchPotato url/api to site=edit, fixed link 'Send to CouchPotato'
+2014-01-18 -> jonnyboy -> added script show_table_sizes.php to show data, index, free space used in all tables, changed regex for predb matching, now matches all but ~465k predb titles
+                          added predb.tpl change posted by mordor, fixed bug in change_USP_provider.php
+                          added full text search to site search, works only if you have these indexes - ix_releases_searchname_ft and/or ix_releases_name_ft
+                          if you search on releases.name - ix_releases_name_ft is required
+                          if you search on releases.searchname - ix_releases_searchname_ft is required
+                          as posted in the forum, ^& do not work with this search
+                          added explanation for useful operators when using full text searches
+2014-01-17 -> josh     -> fixed link in alpha->login.tpl
+2014-01-17 -> niel     -> adding php close tag to a file and fixing typo in AniDb output message.
+2014-01-16 -> jonnyboy -> added kill command for ffmpeg and mediainfo, set at 60 sec, added color to nntpproxy output
+                          added CAT_PC_ISO to Category.php, basic check for now, looking only for \biso\b
+                          removed "Usenet Index Post 1389796935 yEnc (01/01)" until I can check it better
+2014-01-15 -> jonnyboy -> cleaned up pages/*, added misc/testing/DB/convert_to_tpg_alt.php until ThePeeps can fix his script
+                          added "Usenet Index Post 1389796935 yEnc (01/01)" as nzb post, best used with GrabNZBs
+2014-01-15 -> bart39   -> fixed renametopre
+2014-01-14 -> Roelski  -> Correction in nix screen testing paths (call to fixreleasenames), Corrected call to function determineCategory in lib/releases.php. This should fix categorisations.
+2014-01-14 -> jonnyboy -> corrected path in monitor.php, added option to process group of groupid's - reneametopre.php
+                          update Category.php, fixed predb.php
+                          fixed install scripts, fixed renametopre.php for hours, fixed monitor to get correct number of matched predbs, added SAFE script names to identify safe scripts in web ui
+2014-01-14 -> niel     -> Fixing typo in SQL (missing space before HOUR).
+2014-01-13 -> bart39   -> fixed bad patch
+2014-01-13 -> bart39   -> added site option for numbers of hours to re-check request id's after adding releases that didn't match initially
+                          updated the patch number for the anidb patch that was added on the 8th
+2014-01-13 -> jonnyboy -> possible fix to DB.php, fixed pages.php and fileist.php, changes predb matching to loop through the releases, its a little slower, but less intense for large datasets
+2014-01-12 -> jonnyboy -> added missing $nntp, added missing echooutput, fixed delete_releases.php
+2014-01-12 -> bart39   -> fixed typo, fixed missing parameter in renametopre
+2014-01-12 -> jonnyboy -> added remaining folders
+                          fixed relocateOldDirectoryContents.php, fixed typo in /nzb-import.php, updated reqestid_threaded.py to add/update predb
+                          fixed typo in threaded.sh, fixed typo in update_groups.php
+                          fixed typo, increased number of groups matched for anime
+                          updated fixReleaseNames.php to improve speed and output, default is not to show counter, to display the name changes add last argument 'show'
+                          fixReleaseNames.php is faster with less load than fixreleasesnames_threaded.py, except for nfo, fixReleaseNames.php nfo now loops through each release
+                          opening each nfo as it goes, instead of opening every nfo before it starts, all (re)naming uses predb match first, then regexes
+                          fixed bug in nzb-import.php not using filenames, added some comments to threaded.sh
+                          updated many other scripts, merged niel's pr
+2014-01-10 -> ajoergensen -> added "PDO::MYSQL_ATTR_LOCAL_INFILE => true" to MySQL connection options. Needed for dump_predb.php remote. You also need to configure the MySQL server to allow
+                             loading loading files (see http://goo.gl/L4cUij - Basically you need local-infile=1 in my.cnf for both [mysql] and [mysqld] and make sure mysqld is not started
+                             with --local-infile=0)
+2014-01-09 -> niel     -> Brought everything up to FIG PSR0 standard. This allows scripts to automatically load classes so that include/require(_once) should not be needed in files.
+2014-01-09 -> Roelski  -> Fixes for populate_anidb. Accept null dates as api doesnt always give them (or correct ones). Add no anime to process in lib anidb
+2014-01-09 -> bart39   -> fixed typo with requestid lookup in releases stage 5b
+                          fixed typo's in namefixer
+2014-01-08 -> jonnyboy -> commented out auto disable backfill until I can find the cause, increased matches to headers, added regex to add yEnc headers that do not have it, but match the pattern
+2014-01-07 -> jonnyboy -> updated the predb regex
+                          added regex to match predb style to predb names before using regexes to clean the name - renametopre.php
+                          improved performance and output - reset_postprocessing.php, added color to patchDB.php
+                          added update_predb_md5.php to reset predb md5's after title change
 2014-01-06 -> bart39   -> fixed issue with categorizing by group while adding releases
 2014-01-06 -> jonnyboy -> fixed missings references in themes, fixed typo in site-edit, added patch to remove null from categoryid
                           fixed bug in pp additional where 'sh: Permission denied' when mediainfo path not set
