@@ -14,7 +14,7 @@ $binaries = new Binaries();
 $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
-$namecleaning = new NameCleaning();
+$releasecleaning = new ReleaseCleaning();
 $categorize = new Category();
 $maxtoprocess = 0;
 
@@ -133,7 +133,8 @@ if (!isset($groups) || count($groups) == 0) {
 			$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
 			$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
 			$subject = utf8_encode(trim($partless));
-			$namecleaning = new NameCleaning();
+			// Question is this needed?  This is never used in the FOR loop, and is defined globally, did not change as I was only refactoring
+			$releasecleaning = new ReleaseCleaning();
 
 			// Make a fake message object to use to check the blacklist.
 			$msg = array("Subject" => $subject, "From" => $fromname, "Message-ID" => "");
@@ -184,7 +185,7 @@ if (!isset($groups) || count($groups) == 0) {
 			if ($usenzbname === true) {
 				$cleanerName = $usename;
 			} else {
-				$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
+				$cleanerName = $releasecleaning->releaseCleaner($subject, $groupName);
 			}
 			if (!is_array($cleanerName)) {
 				$cleanName = $cleanerName;

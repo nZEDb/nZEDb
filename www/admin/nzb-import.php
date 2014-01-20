@@ -4,13 +4,13 @@ require_once './config.php';
 //require_once nZEDb_LIB . 'framework/db.php';
 //require_once nZEDb_LIB . 'binaries.php';
 //require_once nZEDb_LIB . 'page.php';
-//require_once nZEDb_LIB . 'namecleaning.php';
+//require_once nZEDb_LIB . 'ReleaseCleaning.php';
 //require_once nZEDb_LIB . 'site.php';
 //require_once nZEDb_LIB . 'category.php';
 
 $db = new DB();
 $binaries = new Binaries();
-$namecleaning = new NameCleaning();
+$releaseCleaner = new ReleaseCleaning();
 $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
@@ -172,7 +172,7 @@ if (!empty($argc) || $page->isPostBack() )
 				$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
 				$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
 				$subject = utf8_encode(trim($partless));
-				$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
+				$cleanerName = $releaseCleaner->releaseCleaner($subject, $groupName);
 				if (!is_array($cleanerName))
 					$cleanName = $cleanerName;
 				else
