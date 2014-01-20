@@ -513,20 +513,27 @@ class Releases
 		$words = explode(' ', $search);
 		$searchsql = '';
 		$intwordcount = 0;
-		if ($type === 'name') {
-			$ft = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_ft';");
-		} else if ($type === 'searchname') {
-			$ft = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_searchname_ft';");
+		$ft = $db->queryDirect("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_searchname_ft'");
+		if ($ft->rowCount() !== 2) {
+			if ($type === 'name') {
+				$ft = $db->queryDirec("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_ft'");
+			} else if ($type === 'searchname') {
+				$ft = $db->queryDirect("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_searchname_ft'");
+			}
 		}
 
 		if (count($words) > 0) {
-			if (isset($ft['key_name'])) {
+			if ($ft->rowCount() !== 0) {
 				$searchwords = '';
 				foreach ($words as $word) {
 					$word = str_replace('!', '+', $word);
 					$searchwords .= sprintf('%s ', $word);
 				}
-				$searchsql .= sprintf(" AND MATCH(releases.%s) AGAINST('%s' IN BOOLEAN MODE)", $type, $searchwords);
+				if ($ft->rowCount() === 2) {
+					$searchsql .= sprintf(" AND MATCH(releases.name, releases.searchname) AGAINST('%s' IN BOOLEAN MODE)", $searchwords);
+				} else {
+					$searchsql .= sprintf(" AND MATCH(releases.%s) AGAINST('%s' IN BOOLEAN MODE)", $type, $searchwords);
+				}
 			} else {
 				$like = 'ILIKE';
 				if ($db->dbSystem() == 'mysql') {
@@ -2127,5 +2134,3 @@ class Releases
 	}
 
 }
-
-
