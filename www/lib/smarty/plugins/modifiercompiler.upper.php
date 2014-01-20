@@ -20,11 +20,9 @@
  */
 function smarty_modifiercompiler_upper($params, $compiler)
 {
-	if (Smarty::$_MBSTRING) {
-		return 'mb_strtoupper(' . $params[0] . ', \'' . addslashes(Smarty::$_CHARSET) . '\')' ;
-	}
-	// no MBString fallback
-	return 'strtoupper(' . $params[0] . ')';
+    if (Smarty::$_MBSTRING) {
+        return 'mb_strtoupper(' . $params[0] . ', \'' . addslashes(Smarty::$_CHARSET) . '\')' ;
+    }
+    // no MBString fallback
+    return 'strtoupper(' . $params[0] . ')';
 }
-
-?>
