@@ -3,10 +3,8 @@
 /*
  * Class for handling fetching/storing of NFO files.
  */
-
 class Nfo
 {
-
 	public function __construct($echooutput = false)
 	{
 		$s = new Sites();
@@ -75,6 +73,31 @@ class Nfo
 		// Make sure it's not too big or small, size needs to be at least 12 bytes for header checking.
 		$size = strlen($possibleNFO);
 		if ($size < 100 * 1024 && $size > 12) {
+			// file/getid3 work with files, so save to disk
+			$tmpPath = $this->tmpPath.$guid.'.nfo';
+			file_put_contents($tmpPath, $possibleNFO);
+
+			// Linux boxes have 'file' (so should Macs)
+			if (strtolower(substr(PHP_OS, 0, 3)) != 'win') {
+				exec("file -b $tmpPath", $result);
+				if (is_array($result)) {
+					if (count($result) > 1) {
+						$result = implode(',', $result[0]);
+					} else {
+						$result = $result[0];
+					}
+				}
+				$test = preg_match('#^.*(ISO-8859|UTF-8 Unicode|ASCII( English|)) text.*$#i', $result);
+				// if the result is false, something went wrong, continue with getID3 tests.
+				if ($test !== false) {
+					if ($test === 0) {
+						copy($tmpPath, $this->tmpPath.$guid.'.tmp');
+					}
+					@unlink($tmpPath);
+					return $test;
+				}
+			}
+
 			// Ignore common file types.
 			if (preg_match('/<\?xml|;\s*Generated\s*by.*SF\w|\A\s*PAR|\.[a-z0-9]{2,7}\s*[a-z0-9]{8}|\A\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i', $possibleNFO)) {
 				return $r;
@@ -84,8 +107,8 @@ class Nfo
 			require_once nZEDb_LIB . 'getid3/getid3/getid3.php';
 			$getid3 = new getid3;
 			// getid3 works with files, so save to disk
-			$tmpPath = $this->tmpPath . $guid . '.nfo';
-			file_put_contents($tmpPath, $possibleNFO);
+			//$tmpPath = $this->tmpPath . $guid . '.nfo';
+			//file_put_contents($tmpPath, $possibleNFO);
 			$check = $getid3->analyze($tmpPath);
 			unset($getid3);
 			@unlink($tmpPath);
