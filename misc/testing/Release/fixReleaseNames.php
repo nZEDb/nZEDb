@@ -20,10 +20,9 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 	$other = ($argv[3] == "other") ? 1 : 2;
 	$setStatus = ($argv[4] == "yes") ? 1 : 2;
 
+	$show = 2;
 	if (isset($argv[5]) && $argv[5] === 'show') {
 		$show = 1;
-	} else {
-		$show = 2;
 	}
 
 	if ($argv[1] == 7 || $argv[1] == 8) {

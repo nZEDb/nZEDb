@@ -11,6 +11,10 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	$db = new DB();
 	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id");
 
+	$show = 2;
+	if (isset($argv[2]) && $argv[2] === 'show') {
+		$show = 1;
+	}
 	if (count($res) > 0) {
 		echo $c->header("Going to recreate all search names, recategorize them and fix the names with namefixer, this can take a while.");
 		$done = 0;
@@ -36,8 +40,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		echo $c->primary("\nFinished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 
 		$namefixer = new NameFixer();
-		$namefixer->fixNamesWithNfo(2, 1, 1, 1);
-		$namefixer->fixNamesWithFiles(2, 1, 1, 1);
+		$namefixer->fixNamesWithNfo(2, 1, 1, 1, $show);
+		$namefixer->fixNamesWithFiles(2, 1, 1, 1, $show);
 		$timetotal = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->header("\nFinished recreating search names / recategorizing / refixing names in " . $timetotal);
 	} else {
@@ -45,7 +49,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	}
 } else if (isset($argv[1]) && $argv[1] == "limited") {
 	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE (bitwise & 4) = 0)");
+	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE (bitwise & 4) = 0");
 
 	if (count($res) > 0) {
 		echo $c->header("Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.");
@@ -72,8 +76,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		echo $c->header("Finished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 
 		$namefixer = new NameFixer();
-		$namefixer->fixNamesWithNfo(2, 1, 1, 1);
-		$namefixer->fixNamesWithFiles(2, 1, 1, 1);
+		$namefixer->fixNamesWithNfo(2, 1, 1, 1, $show);
+		$namefixer->fixNamesWithFiles(2, 1, 1, 1, $show);
 		$timetotal = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->header("Finished recreating search names / recategorizing / refixing names in " . $timetotal);
 	} else {

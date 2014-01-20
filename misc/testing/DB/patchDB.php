@@ -182,9 +182,16 @@ if (isset($os) && $os == "unix") {
 	exit($c->error("\nUnable to determine OS.\n"));
 }
 
-if ($patched > 0) {
-	exit($c->header($patched . " patch(es) applied.\nNow you need to delete the files inside of the www/lib/smarty/templates_c folder."));
-}
 if ($patched == 0) {
 	exit($c->info("Nothing to patch, you are already on patch version " . $currentversion));
+}
+if ($patched > 0) {
+	echo $c->header($patched . " patch(es) applied.");
+	$smarty = new Smarty;
+	$cleared = $smarty->clearAllCache();
+	if ($cleared) {
+		echo $c->header("The smarty template cache has been cleaned for you");
+	} else {
+		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "template_c");
+	}
 }

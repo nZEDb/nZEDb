@@ -203,7 +203,7 @@ class NNTP extends Net_NNTP_Client
 	public function getArticles($groupname, $msgIds)
 	{
 		$body = '';
-		if ($this->articlegroup != $groupname)
+/*		if ($this->articlegroup != $groupname)
 		{
 			$this->articlegroup = $groupname;
 			$summary = $this->selectGroup($groupname);
@@ -211,7 +211,7 @@ class NNTP extends Net_NNTP_Client
 				return false;
 			}
 		}
-
+*/
 		foreach ($msgIds as $m)
 		{
 			$message = $this->get_Article($groupname, $m);

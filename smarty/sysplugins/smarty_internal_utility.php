@@ -223,7 +223,7 @@ class Smarty_Internal_Utility
         }
         $_count = 0;
         try {
-            $_compileDirs = new RecursiveDirectoryIterator($_dir);
+            $_compileDirs = new RecursiveDirectoryIterator(realpath(SMARTY_DIR . $_dir));
         // NOTE: UnexpectedValueException thrown for PHP >= 5.3
         } catch (Exception $e) {
             return 0;
