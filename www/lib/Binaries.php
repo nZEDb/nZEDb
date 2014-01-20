@@ -75,7 +75,7 @@ class Binaries
 		$this->startGroup = microtime(true);
 		echo $this->c->primary('Processing ' . $groupArr['name']);
 
-		// Select the group, here, only once
+		// Select the group, here, needed for processing the group
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
@@ -190,15 +190,17 @@ class Binaries
 				$scanSummary = $this->scan($nntp, $groupArr, $first, $last);
 
 				// Scan failed - skip group.
-				if ($scanSummary == false)
+				if ($scanSummary == false) {
 					return;
+				}
 
 				// If new group, update first record & postdate
 				if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] == '0') {
 					$groupArr['first_record'] = $scanSummary['firstArticleNumber'];
 
-					if (isset($scanSummary['firstArticleDate']))
+					if (isset($scanSummary['firstArticleDate'])) {
 						$first_record_postdate = strtotime($scanSummary['firstArticleDate']);
+					}
 
 					$groupArr['first_record_postdate'] = $first_record_postdate;
 
@@ -228,8 +230,9 @@ class Binaries
 	{
 		$returnArray = array();
 
-		if (!isset($nntp))
+		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(binaries->scan)."));
+		}
 
 		$db = $this->db;
 		$this->startHeaders = microtime(true);
@@ -237,8 +240,9 @@ class Binaries
 
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
-			if ($db->newtables($groupArr['id']) === false)
+			if ($db->newtables($groupArr['id']) === false) {
 				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
+			}
 			$group['cname'] = 'collections_' . $groupArr['id'];
 			$group['bname'] = 'binaries_' . $groupArr['id'];
 			$group['pname'] = 'parts_' . $groupArr['id'];
@@ -249,14 +253,24 @@ class Binaries
 			$group['pname'] = 'parts';
 		}
 
+		// Select the group, here, seems redundant, but necessary, or else safe scripts will fail intermittently
+		$data = $nntp->selectGroup($groupArr['name']);
+		if (PEAR::isError($data)) {
+			$data = $nntp->dataError($nntp, $groupArr['name']);
+			if ($data === false) {
+				return;
+			}
+		}
+
 		// Download the headers.
 		$msgs = $nntp->getOverview($first . "-" . $last, true, false);
 		// If there ware an error, try to reconnect.
 		if ($type != 'partrepair' && PEAR::isError($msgs)) {
 			// This is usually a compression error, so try disabling compression.
 			$nntp->doQuit();
-			if ($nntp->doConnectNC() === false)
+			if ($nntp->doConnectNC() === false) {
 				return false;
+			}
 
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first . '-' . $last, true, false);
@@ -272,8 +286,9 @@ class Binaries
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 		if (is_array($msgs)) {
 			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
-			if ($this->debug)
+			if ($this->debug) {
 				$colnames = $orignames = $notyenc = array();
+			}
 
 			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
 			usort($msgs, function ($elem1, $elem2) {
@@ -282,26 +297,32 @@ class Binaries
 
 			// Loop articles, figure out files/parts.
 			foreach ($msgs AS $msg) {
-				if (!isset($msg['Number']))
+				if (!isset($msg['Number'])) {
 					continue;
+				}
 
 				if (isset($returnArray['firstArticleNumber'])) {
-					if ($msg['Number'] < $returnArray['firstArticleNumber'])
+					if ($msg['Number'] < $returnArray['firstArticleNumber']) {
 						$returnArray['firstArticleNumber'] = $msg['Number'];
-					if (isset($msg['Date']))
+					}
+					if (isset($msg['Date'])) {
 						$returnArray['firstArticleDate'] = $msg['Date'];
+					}
 				}
 				else {
 					$returnArray['firstArticleNumber'] = $msg['Number'];
-					if (isset($msg['Date']))
+					if (isset($msg['Date'])) {
 						$returnArray['firstArticleDate'] = $msg['Date'];
+					}
 				}
 
 				if (isset($returnArray['lastArticleNumber'])) {
-					if ($msg['Number'] > $returnArray['lastArticleNumber'])
+					if ($msg['Number'] > $returnArray['lastArticleNumber']) {
 						$returnArray['lastArticleNumber'] = $msg['Number'];
-					if (isset($msg['Date']))
+					}
+					if (isset($msg['Date'])) {
 						$returnArray['lastArticleDate'] = $msg['Date'];
+					}
 				}
 				else {
 					$returnArray['lastArticleNumber'] = $msg['Number'];
@@ -328,6 +349,12 @@ class Binaries
 				$msgsreceived[] = $msg['Number'];
 				$partnumber = '';
 				// Add yEnc to headers that do not have them, but are nzbs and that have the part number at the end of the header
+				if (!preg_match('/yEnc/i', $msg['Subject'])) {
+					if (preg_match('/.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
+						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
+					}
+				}
+
 /*				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+nzb.+\(\d+\/\d+\)$/', $msg['Subject'])) {
 					if (preg_match('/.+\.nzb.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
 						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
@@ -610,7 +637,7 @@ class Binaries
 		$partsRepaired = $partsFailed = 0;
 
 		if (sizeof($missingParts) > 0) {
-			echo $this->c->primary('Attempting to repair ' . number_format(sizeof($missingParts)) . " parts.");
+			echo $this->consoleTools->overWritePrimary('Attempting to repair ' . number_format(sizeof($missingParts)) . " parts.");
 
 			// Loop through each part to group into continuous ranges with a maximum range of messagebuffer/4.
 			$ranges = array();
@@ -639,7 +666,7 @@ class Binaries
 				$count = sizeof($range['partlist']);
 
 				$num_attempted += $count;
-				$this->consoleTools->overWrite($this->c->primary("Attempting repair: " . $this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted, sizeof($missingParts)) . ': ' . $partfrom . ' to ' . $partto));
+				$this->consoleTools->overWritePrimary("Attempting repair: " . $this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted, sizeof($missingParts)) . ': ' . $partfrom . ' to ' . $partto);
 
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);

@@ -1,13 +1,6 @@
 <?php
 
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'forum.php';
 require_once nZEDb_LIB . 'Util.php';
-//require_once nZEDb_LIB . 'releasecomments.php';
-//require_once nZEDb_LIB . 'usermovies.php';
-//require_once nZEDb_LIB . 'userseries.php';
 
 class Users
 {
@@ -158,7 +151,7 @@ class Users
         return $db->queryInsert(sprintf("INSERT INTO users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed, firstname, lastname) VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)", $db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby, $db->escapeString($db->uuid()), $db->escapeString($fname), $db->escapeString($lname)));
     }
 
-    public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites, $movieview, $musicview, $consoleview, $bookview, $saburl = false, $sabapikey = false, $sabpriority = false, $sabapikeytype = false)
+    public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites, $movieview, $musicview, $consoleview, $bookview, $saburl = false, $sabapikey = false, $sabpriority = false, $sabapikeytype = false, $cp_url = false, $cp_api = false)
     {
         $db = $this->db;
 
@@ -220,6 +213,13 @@ class Users
             $sql[] = sprintf('sabapikeytype = %d', $sabapikeytype);
         }
 
+        if ($cp_url !== false) {
+            $sql[] = sprintf('cp_url = %s', $db->escapeString($cp_url));
+        }
+        if ($cp_api !== false) {
+            $sql[] = sprintf('cp_api = %s', $db->escapeString($cp_api));
+        }
+		printf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id);
         $db->queryExec(sprintf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id));
 
         return Users::SUCCESS;

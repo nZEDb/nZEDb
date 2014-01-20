@@ -4,6 +4,7 @@
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+$c = new ColorCLI();
 if (isset($argv[1])) {
 	$del = false;
 	if (isset($argv[2])) {
@@ -11,7 +12,9 @@ if (isset($argv[1])) {
 	}
 	create_guids($argv[1], $del);
 } else {
-	exit("This script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\nTo start the process run php populate_nzb_guid.php true\nTo delete invalid nzbs and releases, run php populate_nzb_guid.php true delete\n");
+	exit($c->error("\nThis script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\n\n"
+		. "php $argv[0] true         ...: To create missing nzb_guids.\n"
+		. "php $argv[0] true delete  ...: To create missing nzb_guids and delete invalid nzbs and releases.\n"));
 }
 
 function create_guids($live, $delete = false)
@@ -22,6 +25,7 @@ function create_guids($live, $delete = false)
 	$site = $s->get();
 	$timestart = TIME();
 	$relcount = $deleted = 0;
+	$c = new ColorCLI();
 
 	if ($live == "true") {
 		$relrecs = $db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND (bitwise & 256) = 256 ORDER BY id DESC"));
@@ -69,13 +73,13 @@ function create_guids($live, $delete = false)
 
 						$db->queryExec("UPDATE releases set nzb_guid = " . $db->escapestring($nzb_guid) . " WHERE id = " . $relrec["id"]);
 						$relcount++;
-						$consoletools->overWrite("Updating: [" . $deleted . "] " . $consoletools->percentString($reccnt, $total) . " Time:" . $consoletools->convertTimer(TIME() - $timestart));
+						$consoletools->overWritePrimary("Updating: [" . $deleted . "] " . $consoletools->percentString($reccnt, $total) . " Time:" . $consoletools->convertTimer(TIME() - $timestart));
 						break;
 					}
 				}
 			} else {
 				if (isset($delete) && $delete == 'delete') {
-					echo "\n" . $nzb->NZBPath($relrec['guid']) . " does not have an nzb, deleting.\n";
+					echo $c->primary($nzb->NZBPath($relrec['guid']) . " does not have an nzb, deleting.");
 					$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
 				}
 			}
@@ -84,11 +88,9 @@ function create_guids($live, $delete = false)
 		if ($relcount > 0) {
 			echo "\n";
 		}
-		echo "Updated " . $relcount . " release(s). This script ran for ";
-		echo $consoletools->convertTime(TIME() - $timestart);
-		exit(".\n");
+		echo $c->header("Updated " . $relcount . " release(s). This script ran for " . $consoletools->convertTime(TIME() - $timestart));
 	} else {
-		echo 'Query time: ' . $consoletools->convertTime(TIME() - $timestart);
-		exit("\nNo releases are missing the guid.\n");
+		echo $c->info('Query time: ' . $consoletools->convertTime(TIME() - $timestart));
+		exit($c->info("No releases are missing the guid."));
 	}
 }

@@ -65,7 +65,7 @@ function preName($argv)
 		}
 	}
 	if ($total > 0) {
-		echo $c->header("\nRenamed " . $counter . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
+		echo $c->header("\nRenamed " . $counted . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
 	} else {
 		echo $c->info("\nNothing to do.");
 	}
