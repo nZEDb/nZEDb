@@ -6,12 +6,13 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 //require_once nZEDb_LIB . 'backfill.php';
 //require_once nZEDb_LIB . 'consoletools.php';
 //require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'namecleaning.php';
+//require_once nZEDb_LIB . 'CollectionsCleaning.php';
 //require_once nZEDb_LIB . 'ColorCLI.php';
 
 
 $group = $argv[1];
-$cleaner = new NameCleaning();
+// Commented out down below, so never used, so why it is not commented out here
+$cleaner = new CollectionsCleaning();
 $c = new ColorCLI();
 
 if (isset($argv[1]) && file_exists($argv[1]))
