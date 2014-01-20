@@ -428,6 +428,11 @@ class Category
 				return true;
 			}
 
+			if (preg_match('/alt\.binaries\.games\.dox/', $groupRes["name"])) {
+				$this->tmpCat = Category::CAT_PC_GAMES;
+				return true;
+			}
+
 			if (preg_match('/alt\.binaries(\.games)?\.nintendo(\.)?ds/', $groupRes["name"])) {
 				$this->tmpCat = Category::CAT_GAME_NDS;
 				return true;
