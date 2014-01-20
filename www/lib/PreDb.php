@@ -113,7 +113,7 @@ Class PreDb
 									if ($matches2['nfo'] == '') {
 										$nfo = 'NULL';
 									} else {
-										$nfo = $db->escapeString('http://nzb.isasecret.com/' . $matches2['nfo']);
+										$nfo = $db->escapeString('http://www.newshost.co.za/' . $matches2['nfo']);
 									}
 
 									$db->queryExec(sprintf('UPDATE predb SET nfo = %s, size = %s, category = %s, predate = %s, adddate = now(), source = %s where id = %d', $nfo, $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('womble'), $oldname['id']));
@@ -129,7 +129,7 @@ Class PreDb
 								if ($matches2['nfo'] == '') {
 									$nfo = 'NULL';
 								} else {
-									$nfo = $db->escapeString('http://nzb.isasecret.com/' . $matches2['nfo']);
+									$nfo = $db->escapeString('http://www.newshost.co.za/' . $matches2['nfo']);
 								}
 
 								$db->queryExec(sprintf('INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $nfo, $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('womble'), $db->escapeString($md5)));
