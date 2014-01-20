@@ -842,7 +842,9 @@ CREATE TABLE "users" (
   "sabapikey" character varying(255),
   "sabapikeytype" smallint DEFAULT 0 NOT NULL,
   "sabpriority" smallint DEFAULT 0 NOT NULL,
-  "userseed" character varying(50) NOT NULL
+  "userseed" character varying(50) NOT NULL,
+  "cp_url" character varying(255),
+  "cp_api" character varying(255),
 )
 WITHOUT OIDS;
 
@@ -1443,9 +1445,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('cp_url', ''),
-	('cp_api', ''),
-	('sqlpatch','167');
+	('sqlpatch','168');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

@@ -1,4 +1,4 @@
- 
+
 <h1>Edit your profile</h1>
 
 {if $error != ''}
@@ -74,7 +74,7 @@
 			<div class="hint">The url of the SAB installation, for example: http://localhost:8080/sabnzbd/</div>
 		</td>
 	</tr>
-	
+
 	<tr>
 		<th><label for="sabapikey">SABnzbd Api Key:</label></th>
 		<td>
@@ -82,7 +82,7 @@
 			<div class="hint">The api key of the SAB installation. Can be the full api key or the nzb api key (as of SAB 0.6)</div>
 		</td>
 	</tr>
-	
+
 	<tr>
 		<th><label for="sabapikeytype">Api Key Type:</label></th>
 		<td>
@@ -90,7 +90,7 @@
 			<div class="hint">Select the type of api key you entered in the above setting. Using your full SAB api key will allow you access to the SAB queue from within this site.</div>
 		</td>
 	</tr>
-	
+
 	<tr>
 		<th><label for="sabpriority">Priority Level:</label></th>
 		<td>
@@ -108,5 +108,26 @@
 </table>
 </fieldset>
 {/if}
+<fieldset class="notop">
+<legend>CouchPotato Integration</legend>
+<table class="input">
+	<tr>
+		<td style="width:180px;"><label for="cp_api">CouchPotato API key:</label></td>
+		<td>
+			<input id="cp_api" class="long" name="cp_api" type="text" value="{$cp_api_selected}" />
+			<div class="hint">The CouchPotato api key. Used for 'Add To CouchPotato'.</div>
+		</td>
+	</tr>
+
+	<tr>
+		<td style="width:180px;"><label for="cp_url">CouchPotato Url:</label></td>
+		<td>
+			<input id="cp_url" class="long" name="cp_url" type="text" value="{$cp_url_selected}" />
+			<div class="hint">The CouchPotato url. Used for 'Add To CouchPotato', for example: http://192.168.10.10:5050</div>
+		</td>
+	</tr>
+</table>
+</fieldset>
+
 <input type="submit" value="Save Profile" />
 </form>

@@ -6,7 +6,12 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
 
-2014-01-18 -> jonnyboy -> possible fix to safe scripts putting excessive parts into part repair
+2014-01-19 -> bart39   -> fixed couchpotato integration on alpha theme
+                          added a.b.games.dox to byGroup in category
+                          added more audio regexes to namecleaning
+2014-01-19 -> jonnyboy -> moved couchpotato to user, instead of site
+2014-01-19 -> niel        Adding a couple tests for NZB path setting and changing text for one error message.
+2014-01-19 -> jonnyboy -> possible fix to safe scripts putting excessive parts into part repair
                           add CouchPotato url/api to site=edit, fixed link 'Send to CouchPotato'
 2014-01-18 -> jonnyboy -> added script show_table_sizes.php to show data, index, free space used in all tables, changed regex for predb matching, now matches all but ~465k predb titles
                           added predb.tpl change posted by mordor, fixed bug in change_USP_provider.php

@@ -94,7 +94,9 @@
                                     <a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtnsml modal_imdb" rel="movie" >Cover</a>
                                     <a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a>
                                     <a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
-                                    <a class="rndbtnsml" target="blackhole" href="{$site->dereferrer_link}{$site->cp_url}/api/{$site->cp_api}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">CouchPotato</a>
+                                    {if $cpurl != '' && $cpapi != ''}
+										<a class="rndbtnsml" target="blackhole" href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">CouchPotato</a>
+									{/if}
                                 </div>
                                 </div>
                                 <h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}

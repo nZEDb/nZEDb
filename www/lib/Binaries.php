@@ -75,7 +75,7 @@ class Binaries
 		$this->startGroup = microtime(true);
 		echo $this->c->primary('Processing ' . $groupArr['name']);
 
-		// Select the group, here, only once
+		// Select the group, here, needed for processing the group
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
@@ -190,15 +190,17 @@ class Binaries
 				$scanSummary = $this->scan($nntp, $groupArr, $first, $last);
 
 				// Scan failed - skip group.
-				if ($scanSummary == false)
+				if ($scanSummary == false) {
 					return;
+				}
 
 				// If new group, update first record & postdate
 				if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] == '0') {
 					$groupArr['first_record'] = $scanSummary['firstArticleNumber'];
 
-					if (isset($scanSummary['firstArticleDate']))
+					if (isset($scanSummary['firstArticleDate'])) {
 						$first_record_postdate = strtotime($scanSummary['firstArticleDate']);
+					}
 
 					$groupArr['first_record_postdate'] = $first_record_postdate;
 
@@ -251,7 +253,7 @@ class Binaries
 			$group['pname'] = 'parts';
 		}
 
-		// Select the group, here, seems redundant, but necessary
+		// Select the group, here, seems redundant, but necessary, or else safe scripts will fail intermittently
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
@@ -635,7 +637,7 @@ class Binaries
 		$partsRepaired = $partsFailed = 0;
 
 		if (sizeof($missingParts) > 0) {
-			echo $this->c->primary('Attempting to repair ' . number_format(sizeof($missingParts)) . " parts.");
+			echo $this->consoleTools->overWritePrimary('Attempting to repair ' . number_format(sizeof($missingParts)) . " parts.");
 
 			// Loop through each part to group into continuous ranges with a maximum range of messagebuffer/4.
 			$ranges = array();
@@ -664,7 +666,7 @@ class Binaries
 				$count = sizeof($range['partlist']);
 
 				$num_attempted += $count;
-				$this->consoleTools->overWrite($this->c->primary("Attempting repair: " . $this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted, sizeof($missingParts)) . ': ' . $partfrom . ' to ' . $partto));
+				$this->consoleTools->overWritePrimary("Attempting repair: " . $this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted, sizeof($missingParts)) . ': ' . $partfrom . ' to ' . $partto);
 
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);
