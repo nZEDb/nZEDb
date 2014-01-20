@@ -14,7 +14,7 @@ class Binaries
 		$this->site = $s->get();
 		$this->backfill = new Backfill($this->site);
 		$this->groups = new Groups($this->db);
-		$this->nameCleaning = new NameCleaning();
+		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->consoleTools = new ConsoleTools();
 		$this->compressedHeaders = ($this->site->compressedheaders == '1') ? true : false;
 		$this->messagebuffer = (!empty($this->site->maxmssgs)) ? $this->site->maxmssgs : 20000;
@@ -414,17 +414,17 @@ class Binaries
 					$subject = utf8_encode(trim($partless));
 
 					// Used for the sha1 hash (see below).
-					$cleansubject = $this->nameCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
+					$cleansubject = $this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
 
 					/*
-					  $ncarr = $this->nameCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
+					  $ncarr = $this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
 					  $cleansubject = $ncarr['hash'];
 					 */
 
 					// For looking at the difference between $subject and $cleansubject.
 					if ($this->debug) {
 						if (!in_array($cleansubject, $colnames)) {
-							// Uncomment this to only show articles matched by generic function of namecleaning (might show some that match by collectionsCleaner, but rare). Helps when making regex.
+							// Uncomment this to only show articles matched by generic function of collectioncleaning (might show some that match by collectionsCleaner, but rare). Helps when making regex.
 
 							/* if (preg_match('/yEnc$/', $cleansubject))
 							  {

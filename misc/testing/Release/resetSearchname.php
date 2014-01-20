@@ -5,7 +5,7 @@
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 //require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'namecleaning.php';
+//require_once nZEDb_LIB . 'ReleaseCleaning.php';
 //require_once nZEDb_LIB . 'namefixer.php';
 //require_once nZEDb_LIB . 'consoletools.php';
 //require_once nZEDb_LIB . 'ColorCLI.php';
@@ -23,8 +23,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row)
 		{
-			$nc = new NameCleaning();
-			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
+			$rc = new ReleaseCleaning();
+			$newname = $rc->releaseCleaner($row['name'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
@@ -60,8 +60,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row)
 		{
-			$nc = new NameCleaning();
-			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
+			$rc = new ReleaseCleaning();
+			$newname = $rc->releaseCleaner($row['name'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
@@ -97,8 +97,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row)
 		{
-			$nc = new NameCleaning();
-			$newname = $nc->releaseCleaner($row['name'], $row['gname']);
+			$rc = new ReleaseCleaning();
+			$newname = $rc->releaseCleaner($row['name'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
