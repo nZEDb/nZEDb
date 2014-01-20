@@ -1,7 +1,5 @@
 <?php
 
-require_once nZEDb_LIB . 'sitemaps.php';
-
 $te = $page->smarty;
 $arPages = array();
 $arPages[] = buildURL("Home", "Home Page", "/", 'daily', '1.0');

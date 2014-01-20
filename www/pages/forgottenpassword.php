@@ -1,8 +1,7 @@
 <?php
-if ($users->isLoggedIn())
+if ($users->isLoggedIn()) {
 	$page->show404();
-
-require_once nZEDb_LIB . 'util.php';
+}
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
@@ -43,27 +42,23 @@ switch($action)
 
 		$page->smarty->assign('email', $_POST['email']);
 
-		if ($_POST['email'] =="")
+		if ($_POST['email'] == "") {
 			$page->smarty->assign('error', "Missing Email");
-		else
-		{
+		} else {
 			// Check users exists and send an email.
 			$ret = $users->getByEmail($_POST['email']);
-			if (!$ret)
-			{
+			if (!$ret) {
 				$page->smarty->assign('sent', "true");
 				break;
-			}
-			else
-			{
+			} else {
 				// Generate a forgottenpassword guid, store it in the user table.
 				$guid = md5(uniqid());
 				$users->updatePassResetGuid($ret["id"], $guid);
 
 				// Send the email
 				$to = $ret["email"];
-				$subject = $page->site->title." Forgotten Password Request";
-				$contents = "Someone has requested a password reset for this email address.<br>To reset the password use <a href=\"".$page->serverurl."forgottenpassword?action=reset&guid=$guid\">this link</a>\n";
+				$subject = $page->site->title . " Forgotten Password Request";
+				$contents = "Someone has requested a password reset for this email address.<br>To reset the password use <a href=\"" . $page->serverurl . "forgottenpassword?action=reset&guid=$guid\">this link</a>\n";
 				$page->smarty->assign('sent', "true");
 				sendEmail($to, $subject, $contents, $page->site->email);
 				break;
@@ -79,5 +74,3 @@ $page->meta_description = "Forgotten Password";
 
 $page->content = $page->smarty->fetch('forgottenpassword.tpl');
 $page->render();
-
-?>

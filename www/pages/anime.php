@@ -1,15 +1,13 @@
 <?php
-if (!$users->isLoggedIn())
-	$page->show403();
 
-require_once nZEDb_LIB . 'releases.php';
-require_once nZEDb_LIB . 'anidb.php';
+if (!$users->isLoggedIn()) {
+	$page->show403();
+}
 
 $Releases = new Releases;
 $AniDB = new AniDB;
 
-if (isset($_GET["id"]) && ctype_digit($_GET['id']))
-{
+if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 
 	# force the category to 5070 as it should be for anime, as $catarray was NULL and we know the category for sure for anime
 	$release = $Releases->searchbyAnidbId($_GET["id"], '', 0, 1000, "", "5070", -1);
@@ -19,8 +17,7 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 	}
 
 	$animeEpisodeTitle = $postdate = array();
-	foreach($release as $rlk=>$rlv)
-	{
+	foreach ($release as $rlk => $rlv) {
 		$animeEpisodeTitle[$rlk] = $rlv['tvtitle'];
 		$postdate[$rlk] = $rlv['postdate'];
 	}
@@ -45,21 +42,20 @@ if (isset($_GET["id"]) && ctype_digit($_GET['id']))
 	$page->smarty->assign('animeCategories', str_replace('|', ' - ', $AniDBAPIArray['categories']));
 
 	$page->title = $AniDBAPIArray['title'];
-	$page->meta_title = "View Anime ".$AniDBAPIArray['title'];
+	$page->meta_title = "View Anime " . $AniDBAPIArray['title'];
 	$page->meta_keywords = "view,anime,anidb,description,details";
-	$page->meta_description = "View ".$AniDBAPIArray['title']." Anime";
+	$page->meta_description = "View " . $AniDBAPIArray['title'] . " Anime";
 
 	$page->content = $page->smarty->fetch('viewanime.tpl');
 	$page->render();
-}
-else
-{
+} else {
 	$letter = (isset($_GET["id"]) && preg_match('/^(0\-9|[A-Z])$/i', $_GET['id'])) ? $_GET['id'] : '0-9';
 
 	$animetitle = (isset($_GET['title']) && !empty($_GET['title'])) ? $_GET['title'] : '';
 
-	if ($animetitle != "" && !isset($_GET["id"]))
+	if ($animetitle != "" && !isset($_GET["id"])) {
 		$letter = "";
+	}
 
 	$masterserieslist = $AniDB->getAnimeList($letter, $animetitle);
 
@@ -69,14 +65,12 @@ else
 	$page->meta_description = "View Anime List";
 
 	$animelist = array();
-	foreach ($masterserieslist as $s)
-	{
-		if (preg_match('/^[0-9]/', $s['releasetitle']))
+	foreach ($masterserieslist as $s) {
+		if (preg_match('/^[0-9]/', $s['releasetitle'])) {
 			$thisrange = '0-9';
-		else
-		{
-		 	preg_match('/([A-Z]).*/i', $s['releasetitle'], $matches);
-		 	$thisrange = strtoupper($matches[1]);
+		} else {
+			preg_match('/([A-Z]).*/i', $s['releasetitle'], $matches);
+			$thisrange = strtoupper($matches[1]);
 		}
 		$animelist[$thisrange][] = $s;
 	}
@@ -90,5 +84,3 @@ else
 	$page->content = $page->smarty->fetch('viewanimelist.tpl');
 	$page->render();
 }
-
-?>

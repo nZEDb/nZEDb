@@ -1,66 +1,66 @@
 <?php
 
 require_once realpath(dirname(__FILE__) . '/../config.php');
-require_once '../lib/installpage.php';
-require_once '../lib/install.php';
+require_once '../lib/InstallPage.php';
+require_once '../lib/Install.php';
 
-$page = new Installpage();
+$page = new InstallPage();
 $page->title = "Setup Admin User";
 
 $cfg = new Install();
 
 if (!$cfg->isInitialized()) {
-    header("Location: index.php");
-    die();
+	header("Location: index.php");
+	die();
 }
 
 $cfg = $cfg->getSession();
 
 if ($page->isPostBack()) {
-    $cfg->doCheck = true;
+	$cfg->doCheck = true;
 
-    $cfg->ADMIN_USER = trim($_POST['user']);
-    $cfg->ADMIN_FNAME = trim($_POST['fname']);
-    $cfg->ADMIN_LNAME = trim($_POST['lname']);
-    $cfg->ADMIN_PASS = trim($_POST['pass']);
-    $cfg->ADMIN_EMAIL = trim($_POST['email']);
+	$cfg->ADMIN_USER = trim($_POST['user']);
+	$cfg->ADMIN_FNAME = trim($_POST['fname']);
+	$cfg->ADMIN_LNAME = trim($_POST['lname']);
+	$cfg->ADMIN_PASS = trim($_POST['pass']);
+	$cfg->ADMIN_EMAIL = trim($_POST['email']);
 
-    if ($cfg->ADMIN_USER == '' || $cfg->ADMIN_PASS == '' || $cfg->ADMIN_EMAIL == '') {
-        $cfg->error = true;
-    } else {
-        require_once '../lib/users.php';
-        $user = new Users();
-        if (!$user->isValidUsername($cfg->ADMIN_USER)) {
-            $cfg->error = true;
-            $cfg->ADMIN_USER = '';
-        } else {
-            $usrCheck = $user->getByUsername($cfg->ADMIN_USER);
-            if ($usrCheck) {
-                $cfg->error = true;
-                $cfg->ADMIN_USER = '';
-            }
-        }
-        if (!$user->isValidEmail($cfg->ADMIN_EMAIL)) {
-            $cfg->error = true;
-            $cfg->ADMIN_EMAIL = '';
-        }
+	if ($cfg->ADMIN_USER == '' || $cfg->ADMIN_PASS == '' || $cfg->ADMIN_EMAIL == '') {
+		$cfg->error = true;
+	} else {
+		require_once '../lib/Users.php';
+		$user = new Users();
+		if (!$user->isValidUsername($cfg->ADMIN_USER)) {
+			$cfg->error = true;
+			$cfg->ADMIN_USER = '';
+		} else {
+			$usrCheck = $user->getByUsername($cfg->ADMIN_USER);
+			if ($usrCheck) {
+				$cfg->error = true;
+				$cfg->ADMIN_USER = '';
+			}
+		}
+		if (!$user->isValidEmail($cfg->ADMIN_EMAIL)) {
+			$cfg->error = true;
+			$cfg->ADMIN_EMAIL = '';
+		}
 
-        if (!$cfg->error) {
-            $cfg->adminCheck = $user->add($cfg->ADMIN_USER, $cfg->ADMIN_FNAME, $cfg->ADMIN_LNAME, $cfg->ADMIN_PASS, $cfg->ADMIN_EMAIL, 2, '');
-            echo $cfg->adminCheck;
-            if (!is_numeric($cfg->adminCheck)) {
-                $cfg->error = true;
-            } else {
-                $user->login($cfg->adminCheck, "", 1);
-            }
-        }
-    }
+		if (!$cfg->error) {
+			$cfg->adminCheck = $user->add($cfg->ADMIN_USER, $cfg->ADMIN_FNAME, $cfg->ADMIN_LNAME, $cfg->ADMIN_PASS, $cfg->ADMIN_EMAIL, 2, '');
+			echo $cfg->adminCheck;
+			if (!is_numeric($cfg->adminCheck)) {
+				$cfg->error = true;
+			} else {
+				$user->login($cfg->adminCheck, "", 1);
+			}
+		}
+	}
 
-    if (!$cfg->error) {
-        $cfg->setSession();
-        header("Location: ?success");
-        die();
-    }
+	if (!$cfg->error) {
+		$cfg->setSession();
+		header("Location: ?success");
+		die();
+	}
 }
 
 $page->smarty->assign('cfg', $cfg);

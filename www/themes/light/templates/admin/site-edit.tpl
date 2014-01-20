@@ -722,7 +722,7 @@
                 <td style="width:180px;"><label for="maxpartrepair">Maximum repair per run:</label></td>
                 <td>
                     <input class="short" id="maxpartrepair" name="maxpartrepair" type="text" value="{$fsite->maxpartrepair}" />
-                    <div class="hint">The maximum amount of articles to attempt to repair at a time. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads until improves.</div>
+                    <div class="hint">The maximum amount of articles to attempt to repair at a time. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until improves. Ar least until the cause can be determined.</div>
                 </td>
             </tr>
 
@@ -954,7 +954,7 @@
                 <td style="width:180px;"><label for="binarythreads">Update Binaries Threads:</label></td>
                 <td>
                     <input class="short" id="binarythreads" name="binarythreads" type="text" value="{$fsite->binarythreads}" />
-                    <div class="hint">The number of threads for update_binaries. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads until improves.</div>
+                    <div class="hint">The number of threads for update_binaries. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until improves. Ar least until the cause can be determined.</div>
                 </td>
             </tr>
 

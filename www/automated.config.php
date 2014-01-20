@@ -24,7 +24,7 @@ if (function_exists('ini_set') && function_exists('ini_get')) {
 }
 
 // Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
-define('SMARTY_DIR', nZEDb_LIB . 'smarty' . DS);
+define('SMARTY_DIR', nZEDb_ROOT . 'smarty' . DS);
 
 // These are site constants
 $www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
@@ -41,3 +41,14 @@ define('THEMES_DIR', WWW_TOP . 'themes');
 // Number of results per page.
 define("ITEMS_PER_PAGE", "50");
 define("ITEMS_PER_COVER_PAGE", "20");
+
+require_once 'SPLClassLoader.php';
+$paths = [
+	nZEDb_LIB,
+	SMARTY_DIR,
+	SMARTY_DIR . 'plugins',
+	SMARTY_DIR . 'sysplugins'
+];
+$classLoader = new SplClassLoader(null, $paths);
+$classLoader->register();
+?>

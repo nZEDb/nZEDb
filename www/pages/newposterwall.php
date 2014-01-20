@@ -1,11 +1,8 @@
 <?php
 
 if (!$users->isLoggedIn()) {
-    $page->show403();
+	$page->show403();
 }
-
-require_once nZEDb_LIB . 'content.php';
-require_once nZEDb_LIB . 'releases.php';
 
 $releases = new Releases();
 $contents = new Contents();
@@ -13,17 +10,17 @@ $contents = new Contents();
 $getnewestmovies = $releases->getNewestMovies();
 $page->smarty->assign('newestmovies', $getnewestmovies);
 
-/*$getnewestconsole = $releases->getNewestConsole();
-$page->smarty->assign('newestconsole', $getnewestconsole);
+/* $getnewestconsole = $releases->getNewestConsole();
+  $page->smarty->assign('newestconsole', $getnewestconsole);
 
-$getnewestmp3 = $releases->getnewestMP3s();
-$page->smarty->assign('newestmp3s', $getnewestmp3);
+  $getnewestmp3 = $releases->getnewestMP3s();
+  $page->smarty->assign('newestmp3s', $getnewestmp3);
 
-$getnewestbooks = $releases->getNewestBooks();
-$page->smarty->assign('newestbooks', $getnewestbooks);
+  $getnewestbooks = $releases->getNewestBooks();
+  $page->smarty->assign('newestbooks', $getnewestbooks);
 
-$recent = $releases->getRecentlyAdded();
-$page->smarty->assign('recent', $recent);
-*/
+  $recent = $releases->getRecentlyAdded();
+  $page->smarty->assign('recent', $recent);
+ */
 $page->content = $page->smarty->fetch('newposterwall.tpl');
 $page->render();

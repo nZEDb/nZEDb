@@ -47,8 +47,8 @@
 				<a href="{$smarty.const.WWW_TOP}/group-edit.php?id={$group.id}">{$group.name|replace:"alt.binaries":"a.b"}</a>
 				<div class="hint">{$group.description}</div>
 			</td>
-			<td class="less">{$group.first_record_postdate|timeago}</td>
-			<td class="less">{$group.last_record_postdate|timeago}</td>
+            <td class="less">{$group.first_record_postdate}<br />{$group.first_record_postdate|timeago}</td>
+			<td class="less">{$group.last_record_postdate}<br />{$group.last_record_postdate|timeago}</td>
 			<td class="less">{$group.last_updated|timeago} ago</td>
 			<td class="less" id="group-{$group.id}">{if $group.active=="1"}<a href="javascript:ajax_group_status({$group.id}, 0)" class="group_active">Deactivate</a>{else}<a href="javascript:ajax_group_status({$group.id}, 1)" class="group_deactive">Activate</a>{/if}</td>
 			<td class="less" id="backfill-{$group.id}">{if $group.backfill=="1"}<a href="javascript:ajax_backfill_status({$group.id}, 0)" class="backfill_active">Deactivate</a>{else}<a href="javascript:ajax_backfill_status({$group.id}, 1)" class="backfill_deactive">Activate</a>{/if}</td>
@@ -57,8 +57,8 @@
 			<td class="less">{if $group.minsizetoformrelease==""}n/a{else}{$group.minsizetoformrelease|fsize_format:"MB"}{/if}</td>
 			<td class="less">{$group.backfill_target}</td>
 			<td class="less" id="groupdel-{$group.id}">
-				<a title="Reset this group" href="javascript:ajax_group_reset({$group.id})" class="group_reset">Reset</a> | 
-				<a href="javascript:ajax_group_delete({$group.id})" class="group_delete" onclick="return confirm('Are you sure? This will delete the group from this list.');" >Delete</a> | 
+				<a title="Reset this group" href="javascript:ajax_group_reset({$group.id})" class="group_reset">Reset</a> |
+				<a href="javascript:ajax_group_delete({$group.id})" class="group_delete" onclick="return confirm('Are you sure? This will delete the group from this list.');" >Delete</a> |
 				<a href="javascript:ajax_group_purge({$group.id})" class="group_purge" onclick="return confirm('Are you sure? This will delete all releases, collections/binaries/parts in the selected group.');" >Purge</a>
 			</td>
 		</tr>
