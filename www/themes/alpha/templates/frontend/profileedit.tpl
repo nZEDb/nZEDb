@@ -129,6 +129,12 @@
 <span class="help-block">Where to store the SAB setting.<br />&bull; <b>Cookie</b> will store the setting in your browsers coookies and will only work when using your current browser.<br/>&bull; <b>Site</b> will store the setting in your user account enabling it to work no matter where you are logged in from.<br /><span class="warning"><b>Please Note:</b></span> You should only store your full SAB api key with sites you trust.</span>
 </td>
 </tr>
+</table>
+</fieldset>
+{/if}
+<fieldset>
+<legend>CouchPotato Integration</legend>
+<table class="table table-condensed input"
 <tr>
 <th><label for="cp_url">CouchPotato Url:</label></th>
 <td>
@@ -146,6 +152,5 @@
 </tr>
 </table>
 </fieldset>
-{/if}
 <input type="submit" value="Save Profile" />
 </form>
