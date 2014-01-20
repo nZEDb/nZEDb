@@ -33,11 +33,16 @@ switch($action)
 			else if ($ret == Sites::ERR_BADMEDIAINFOPATH)
 				$error = "The mediainfo path does not point to a valid binary";
 			else if ($ret == Sites::ERR_BADNZBPATH)
-				$error = "The nzb path does not point to a valid directory";
+				$error = "The nzb path does not point to an existing directory";
 			else if ($ret == Sites::ERR_DEEPNOUNRAR)
 				$error = "Deep password check requires a valid path to unrar binary";
 			else if ($ret == Sites::ERR_BADTMPUNRARPATH)
 				$error = "The temp unrar path is not a valid directory";
+			else if ($ret == Sites::ERR_BADNZBPATH_UNREADABLE) {
+				$error = "The nzb path cannot be read from. Check the permissions.";
+			} else if ($ret == Sites::ERR_BADNZBPATH_UNSET) {
+				$error = "The nzb path is required, please set it.";
+			}
 		}
 
 		if ($error == "")
