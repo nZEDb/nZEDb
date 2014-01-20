@@ -262,15 +262,6 @@ class Binaries
 			$group['pname'] = 'parts';
 		}
 
-		// Select the group, here, seems redundant, but necessary, or else safe scripts will fail intermittently
-		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data)) {
-			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($data === false) {
-				return;
-			}
-		}
-
 		// Download the headers.
 		$msgs = $nntp->getOverview($first . "-" . $last, true, false);
 		// If there ware an error, try to reconnect.

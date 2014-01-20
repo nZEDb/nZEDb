@@ -156,6 +156,7 @@ class GrabNZBs
 				} else if ($res->rowCount() > 0 && $this->replacenzbs == 0) {
 					flush();
 					$importfailed = true;
+					echo '!';
 					return;
 				}
 			}
