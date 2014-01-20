@@ -1,60 +1,60 @@
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.multimedia.erotica.anime', 5, 31457280, 'erotica anime');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.multimedia.erotica.anime', NULL, NULL, 'erotica anime');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.multimedia.erotica.asian', 5, 31457280, 'erotica Asian');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.multimedia.erotica.asian', NULL, NULL, 'erotica Asian');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.mp3.audiobooks.scifi-fantasy', NULL, 10485760, 'Audiobooks');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.mp3.audiobooks.scifi-fantasy', NULL, NULL, 'Audiobooks');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.sounds.audiobooks.scifi-fantasy', NULL, 10485760, 'Audiobooks');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.sounds.audiobooks.scifi-fantasy', NULL, NULL, 'Audiobooks');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.mp3.abooks', 2, 10485760, 'Audiobooks');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.mp3.abooks', NULL, NULL, 'Audiobooks');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.town.xxx', 5, 10485760, 'XXX videos');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.town.xxx', NULL, NULL, 'XXX videos');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.software', 2, 5048571, 'Software');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.software', NULL, NULL, 'Software');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.nzbpirates', 5, NULL, 'Misc, mostly Erotica, and foreign movies ');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.nzbpirates', NULL, NULL, 'Misc, mostly Erotica, and foreign movies ');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.town.cine', NULL, 10485760, 'Movies');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.town.cine', NULL, NULL, 'Movies');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.usenet-space-cowboys', 0, 0, 'Misc, mostly German');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.usenet-space-cowboys', NULL, NULL, 'Misc, mostly German');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.warez.ibm-pc.games', 0, 0, 'misc, mostly games and applications');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.warez.ibm-pc.games', NULL, NULL, 'misc, mostly games and applications');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.warez.games', 0, 0, 'misc, mostly games and applications');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.warez.games', NULL, NULL, 'misc, mostly games and applications');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
@@ -64,7 +64,7 @@ BEGIN
     -- Ignore duplicate inserts.
 END;
 BEGIN
-	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.sounds.anime', 0, 0, 'music from Anime');
+	INSERT INTO `groups` (`name`, `minfilestoformrelease`, `minsizetoformrelease`, `description`) VALUES ('alt.binaries.sounds.anime', NULL, NULL, 'music from Anime');
   EXCEPTION WHEN unique_violation THEN
     -- Ignore duplicate inserts.
 END;
