@@ -1287,6 +1287,20 @@ INSERT INTO groups (name, description, minfilestoformrelease, minsizetoformrelea
 INSERT INTO groups (name, description, minfilestoformrelease, minsizetoformrelease) VALUES ('alt.binaries.worms','I have no idea what this group contains besides a lot of U4ALL which isnt really usable.', 2, NULL);
 INSERT INTO groups (name, description, minfilestoformrelease, minsizetoformrelease) VALUES ('alt.binaries.x264','This group contains X264 Movies and TV.', NULL, NULL);
 INSERT INTO groups (name, description, minfilestoformrelease, minsizetoformrelease) VALUES ('alt.binaries.x','This group contains a variety of content. Some Foreign.', NULL, NULL);
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.multimedia.erotica.anime', 5, 31457280, 'erotica anime');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.multimedia.erotica.asian', 5, 31457280, 'erotica Asian');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.mp3.audiobooks.scifi-fantasy', NULL, 10485760, 'Audiobooks');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.sounds.audiobooks.scifi-fantasy', NULL, 10485760, 'Audiobooks');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.mp3.abooks', 2, 10485760, 'Audiobooks');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.town.xxx', 5, 10485760, 'XXX videos');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.software', 2, 5048571, 'Software');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.nzbpirates', 5, NULL, 'Misc, mostly Erotica, and foreign movies ');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.town.cine', NULL, 10485760, 'Movies');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.usenet-space-cowboys', 0, 0, 'Misc, mostly German');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.warez.ibm-pc.games', 0, 0, 'misc, mostly games and applications');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.warez.games', 0, 0, 'misc, mostly games and applications');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.e-book.magazines', NULL, 104857, 'magazines, mostly english');
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.sounds.anime', 0, 0, 'music from Anime');
 
 
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('search','Advanced Search','Search for releases.', 1, 10);
