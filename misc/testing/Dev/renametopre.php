@@ -5,9 +5,9 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 /*
  *
  * This was added because I starting writing this before
- * all of the regexes were converted to by group in NameCleaning.php
+ * all of the regexes were converted to by group in ReleaseCleaning.php
  * and I do not want to convert these regexes to run per group.
- * NameCleaning.php is where the regexes should go
+ * ReleaseCleaning.php is where the regexes should go
  * so that all new releases can be effected by them
  * instead of having to run this script to rename after the
  * release has been created
@@ -16,7 +16,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $c = new ColorCLI();
 if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || is_numeric($argv[1])))) {
-	exit($c->error("\nThis script will attempt to rename releases using regexes first from NameCleaning.php and then from this file.\n"
+	exit($c->error("\nThis script will attempt to rename releases using regexes first from ReleaseCleaning.php and then from this file.\n"
 			. "An optional last argument, show, will display the release name changes.\n\n"
 			. "php $argv[0] full                    ...: To process all releases not previously renamed.\n"
 			. "php $argv[0] 2                       ...: To process all releases added in the previous 2 hours not previously renamed.\n"
@@ -178,7 +178,7 @@ function preName($argv, $argc)
 			}
 		}
 	}
-	echo $c->header("\n" . number_format($pre) . " renamed using preDB Match\n" . number_format($external) . " renamed using NameCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
+	echo $c->header("\n" . number_format($pre) . " renamed using preDB Match\n" . number_format($external) . " renamed using ReleaseCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
 
 	if (isset($argv[1]) && is_numeric($argv[1]) && !isset($argv[2])) {
 		echo $c->header("Categorizing all releases using searchname from the last ${argv[1]} hours. This can take a while, be patient.");
@@ -234,13 +234,13 @@ function resetSearchnames()
 	$db = new DB();
 	$c = new ColorCLI();
 	echo $c->header("Resetting blank searchnames.");
-	$bad = $db->queryDirect("UPDATE releases SET searchname = name, bitwise = ((bitwise & ~5)|0) WHERE searchname = ''");
+	$bad = $db->queryDirect("UPDATE releases SET preid = NULL, searchname = name, bitwise = ((bitwise & ~5)|0) WHERE searchname = ''");
 	$tot = $bad->rowCount();
 	if ($tot > 0) {
 		echo $c->primary(number_format($tot) . " Releases had no searchname.");
 	}
 	echo $c->header("Resetting searchnames that are 5 characters or less.");
-	$run = $db->queryDirect("UPDATE releases SET searchname = name, bitwise = ((bitwise & ~5)|0) WHERE LENGTH(searchname) <= 5");
+	$run = $db->queryDirect("UPDATE releases SET preid = NULL, searchname = name, bitwise = ((bitwise & ~5)|0) WHERE LENGTH(searchname) <= 5");
 	$total = $run->rowCount();
 	if ($total > 0) {
 		echo $c->primary(number_format($total) . " Releases had searchnames that were 5 characters or less.");
@@ -281,8 +281,8 @@ function releaseCleaner($subject, $groupid, $groupname)
 	$match = '';
 
 	$groupName = $groups->getByNameByID($groupid);
-	$namecleaning = new NameCleaning();
-	$cleanerName = $namecleaning->releaseCleaner($subject, $groupname);
+	$releaseCleaning = new ReleaseCleaning();
+	$cleanerName = $releaseCleaning->releaseCleaner($subject, $groupname);
 	if (!empty($cleanerName) && !is_array($cleanerName)) {
 		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);
 	} else if (is_array($cleanerName)) {

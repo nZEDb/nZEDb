@@ -10,7 +10,8 @@ class GrabNZBs
 		$this->site = $s->get();
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->replacenzbs = (isset($this->site->replacenzbs)) ? $this->site->replacenzbs : 0;
-		$this->namecleaner = new NameCleaning();
+		$this->ReleaseCleaning = new ReleaseCleaning();
+		//$this->CollectionsCleaning = new CollectionsCleaning();
 		$this->categorize = new Category();
 	}
 
@@ -138,12 +139,11 @@ class GrabNZBs
 					}
 				} else {
 					$importfailed = true;
-					return;
 				}
 			}
 
 			// To get accurate size to check for true duplicates, we need to process the entire nzb first
-			if (!$importfailed) {
+			if ($importfailed === false) {
 				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size = %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($totalsize)));
 				if ($this->replacenzbs == 1) {
 					$releases = new Releases();
@@ -155,16 +155,19 @@ class GrabNZBs
 				} else if ($res->rowCount() > 0 && $this->replacenzbs == 0) {
 					flush();
 					$importfailed = true;
-					return;
+					echo '!';
 				}
 			}
 
-			if (!$importfailed) {
+			if ($importfailed === true) {
+				$this->db->queryExec(sprintf('DELETE from nzbs where collectionhash = %s', $this->db->escapeString($hash)));
+				$return;
+			} else {
 				$propername = true;
 				$relguid = sha1(uniqid('', true) . mt_rand());
 				$nzb = new NZB();
-				$cleanerName = $this->namecleaner->releaseCleaner($subject, $groupName);
-				/* $ncarr = $namecleaner->collectionsCleaner($subject, $groupName);
+				$cleanerName = $this->ReleaseCleaning->releaseCleaner($subject, $groupName);
+				/* $ncarr = $this->CollectionsCleaning->collectionsCleaner($subject, $groupName);
 				  $cleanerName = $ncarr['subject'];
 				  $category = $ncarr['cat'];
 				  $relstat = $ncar['rstatus']; */

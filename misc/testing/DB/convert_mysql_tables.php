@@ -98,12 +98,12 @@ else if (isset($argv[1]) && $argv[1] == "tokudb")
 }
 else
 {
-	exit($c->error("\nWrong argument.\n"
-		."php convert_mysql_tables.php myisam			...: Converts all the tables to Myisam Dynamic.\n"
-		."php convert_mysql_tables.php dinnodb			...: Converts all the tables to InnoDB Dynamic.\n"
-		."php convert_mysql_tables.php cinnodb			...: Converts all the tables to InnoDB Compressed.\n"
-		."php convert_mysql_tables.php collections		...: Converts collections, binaries, parts to MyIsam.\n"
-		."php convert_mysql_tables.php mariadb-tokudb		...: Converts all the tables to MariaDB Tokutek DB.\n"
-		."php convert_mysql_tables.php tokudb			...: Converts all the tables to Tokutek DB.\n"
-		."php convert_mysql_tables.php table [ myisam, dinnodb, cinnodb ]	...: Converts 1 table to Engine, row_format specified.\n"));
+	exit($c->error("\nWrong argument.\n\n"
+		."php convert_mysql_tables.php myisam                               ...: Converts all the tables to Myisam Dynamic.\n"
+		."php convert_mysql_tables.php dinnodb                              ...: Converts all the tables to InnoDB Dynamic.\n"
+		."php convert_mysql_tables.php cinnodb                              ...: Converts all the tables to InnoDB Compressed.\n"
+		."php convert_mysql_tables.php collections                          ...: Converts collections, binaries, parts to MyIsam.\n"
+		."php convert_mysql_tables.php mariadb-tokudb                       ...: Converts all the tables to MariaDB Tokutek DB.\n"
+		."php convert_mysql_tables.php tokudb                               ...: Converts all the tables to Tokutek DB.\n"
+		."php convert_mysql_tables.php table [ myisam, dinnodb, cinnodb ]   ...: Converts 1 table to Engine, row_format specified.\n"));
 }

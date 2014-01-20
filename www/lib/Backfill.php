@@ -547,6 +547,15 @@ class Backfill
 		}
 		$this->startLoop = microtime(true);
 
+		// Select group, here, only once
+		$data = $nntp->selectGroup($groupArr['name']);
+		if (PEAR::isError($data)) {
+			$data = $nntp->dataError($nntp, $groupArr['name']);
+			if ($data === false) {
+				return;
+			}
+		}
+
 		$binaries->scan($nntp, $groupArr, $last, $first, $process);
 	}
 

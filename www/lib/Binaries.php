@@ -14,7 +14,7 @@ class Binaries
 		$this->site = $s->get();
 		$this->backfill = new Backfill($this->site);
 		$this->groups = new Groups($this->db);
-		$this->nameCleaning = new NameCleaning();
+		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->consoleTools = new ConsoleTools();
 		$this->compressedHeaders = ($this->site->compressedheaders == '1') ? true : false;
 		$this->messagebuffer = (!empty($this->site->maxmssgs)) ? $this->site->maxmssgs : 20000;
@@ -63,14 +63,16 @@ class Binaries
 				$counter++;
 			}
 			echo $this->c->primary('Updating completed in ' . number_format(microtime(true) - $alltime, 2) . " seconds.");
-		} else
+		} else {
 			echo $this->c->warning("No groups specified. Ensure groups are added to nZEDb's database for updating.");
+		}
 	}
 
 	public function updateGroup($groupArr, $nntp)
 	{
-		if (!isset($nntp))
+		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(binaries->updateGroup)."));
+		}
 
 		$this->startGroup = microtime(true);
 		echo $this->c->primary('Processing ' . $groupArr['name']);
@@ -79,8 +81,9 @@ class Binaries
 		$data = $nntp->selectGroup($groupArr['name']);
 		if (PEAR::isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($data === false)
+			if ($data === false) {
 				return;
+			}
 		}
 
 		// Attempt to repair any missing parts before grabbing new ones.
@@ -88,8 +91,9 @@ class Binaries
 			if ($this->DoPartRepair) {
 				echo $this->c->primary("Part repair enabled. Checking for missing parts.");
 				$this->partRepair($nntp, $groupArr);
-			} else
+			} else {
 				echo $this->c->primary("Part repair disabled by user.");
+			}
 		}
 
 		// Get first and last part numbers from newsgroup.
@@ -104,16 +108,16 @@ class Binaries
 					return;
 				}
 			} else {
-				if ($data['first'] > ($data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer)))
+				if ($data['first'] > ($data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer))) {
 					$first = $data['first'];
-				else
+				} else {
 					$first = $data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer);
+				}
 			}
 
 			$left = $this->messagebuffer;
 			$last = $grouplast = $data['last'] - $left;
-		}
-		else {
+		} else {
 			$first = $groupArr['last_record'];
 
 			// Leave 50%+ of the new articles on the server for next run (allow server enough time to actually make parts available).
@@ -138,10 +142,11 @@ class Binaries
 		// Generate postdate for first record, for those that upgraded.
 		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] != '0') {
 			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true, 'oldest');
-			if ($newdate !== false)
+			if ($newdate !== false) {
 				$first_record_postdate = $newdate;
-			else
+			} else {
 				$first_record_postdate = time();
+			}
 
 			$groupArr['first_record_postdate'] = $first_record_postdate;
 
@@ -149,15 +154,17 @@ class Binaries
 		}
 
 		// Defaults for post record first/last postdate
-		if (is_null($groupArr['first_record_postdate']))
+		if (is_null($groupArr['first_record_postdate'])) {
 			$first_record_postdate = time();
-		else
+		} else {
 			$first_record_postdate = strtotime($groupArr['first_record_postdate']);
+		}
 
-		if (is_null($groupArr['last_record_postdate']))
+		if (is_null($groupArr['last_record_postdate'])) {
 			$last_record_postdate = time();
-		else
+		} else {
 			$last_record_postdate = strtotime($groupArr['last_record_postdate']);
+		}
 
 
 		// Calculate total number of parts.
@@ -166,10 +173,11 @@ class Binaries
 
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if ($total > 0) {
-			if ($groupArr['last_record'] == 0)
+			if ($groupArr['last_record'] == 0) {
 				echo $this->c->primary('New group ' . $data['group'] . ' starting with ' . (($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan . ' days' : number_format($this->NewGroupMsgsToScan) . ' messages') . " worth. Leaving " . number_format($left) . " for next pass.\nServer oldest: " . number_format($data['first']) . ' Server newest: ' . number_format($data['last']) . ' Local newest: ' . number_format($groupArr['last_record']));
-			else
+			} else {
 				echo $this->c->primary('Group ' . $data['group'] . ' has ' . number_format($realtotal) . " new articles. Leaving " . number_format($left) . " for next pass.\nServer oldest: " . number_format($data['first']) . ' Server newest: ' . number_format($data['last']) . ' Local newest: ' . number_format($groupArr['last_record']));
+			}
 
 			$done = false;
 			// Get all the parts (in portions of $this->messagebuffer to not use too much memory).
@@ -177,10 +185,11 @@ class Binaries
 				$this->startLoop = microtime(true);
 
 				if ($total > $this->messagebuffer) {
-					if ($first + $this->messagebuffer > $grouplast)
+					if ($first + $this->messagebuffer > $grouplast) {
 						$last = $grouplast;
-					else
+					} else {
 						$last = $first + $this->messagebuffer;
+					}
 				}
 				$first++;
 				echo $this->c->header("\nGetting " . number_format($last - $first + 1) . ' articles (' . number_format($first) . ' to ' . number_format($last) . ') from ' . str_replace('alt.binaries', 'a.b', $data['group']) . " - (" . number_format($grouplast - $last) . " articles in queue).");
@@ -207,20 +216,21 @@ class Binaries
 					$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $scanSummary['firstArticleNumber'], $db->from_unixtime($db->escapeString($first_record_postdate)), $groupArr['id']));
 				}
 
-				if (isset($scanSummary['lastArticleDate']))
+				if (isset($scanSummary['lastArticleDate'])) {
 					$last_record_postdate = strtotime($scanSummary['lastArticleDate']);
+				}
 
 				$db->queryExec(sprintf('UPDATE groups SET last_record = %s, last_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->escapeString($scanSummary['lastArticleNumber']), $db->from_unixtime($last_record_postdate), $groupArr['id']));
 
-				if ($last == $grouplast)
+				if ($last == $grouplast) {
 					$done = true;
-				else
+				} else {
 					$first = $last;
+				}
 			}
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 			echo $this->c->primary("\n" . $data['group'] . ' processed in ' . $timeGroup . " seconds.\n");
-		}
-		else {
+		} else {
 			echo $this->c->primary('No new articles for ' . $data['group'] . ' (first ' . number_format($first) . ' last ' . number_format($last) . ' grouplast ' . number_format($groupArr['last_record']) . ' total ' . number_format($total) . ")");
 			echo $this->c->primary("Server oldest: " . number_format($data['first']) . ' Server newest: ' . number_format($data['last']) . ' Local newest: ' . number_format($groupArr['last_record']) . "\n");
 		}
@@ -246,20 +256,10 @@ class Binaries
 			$group['cname'] = 'collections_' . $groupArr['id'];
 			$group['bname'] = 'binaries_' . $groupArr['id'];
 			$group['pname'] = 'parts_' . $groupArr['id'];
-		}
-		else {
+		} else {
 			$group['cname'] = 'collections';
 			$group['bname'] = 'binaries';
 			$group['pname'] = 'parts';
-		}
-
-		// Select the group, here, seems redundant, but necessary, or else safe scripts will fail intermittently
-		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data)) {
-			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($data === false) {
-				return;
-			}
 		}
 
 		// Download the headers.
@@ -308,8 +308,7 @@ class Binaries
 					if (isset($msg['Date'])) {
 						$returnArray['firstArticleDate'] = $msg['Date'];
 					}
-				}
-				else {
+				} else {
 					$returnArray['firstArticleNumber'] = $msg['Number'];
 					if (isset($msg['Date'])) {
 						$returnArray['firstArticleDate'] = $msg['Date'];
@@ -323,8 +322,7 @@ class Binaries
 					if (isset($msg['Date'])) {
 						$returnArray['lastArticleDate'] = $msg['Date'];
 					}
-				}
-				else {
+				} else {
 					$returnArray['lastArticleNumber'] = $msg['Number'];
 					if (isset($msg['Date'])) {
 						$returnArray['lastArticleDate'] = $msg['Date'];
@@ -355,22 +353,22 @@ class Binaries
 					}
 				}
 
-/*				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+nzb.+\(\d+\/\d+\)$/', $msg['Subject'])) {
-					if (preg_match('/.+\.nzb.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
-						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
-					}
-				}
-				if (preg_match('/"(Usenet Index Post) \d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
-					$msg['Subject'] = preg_replace('/Usenet Index Post/', $number[1] . '.nzb ', $msg['Subject']);
-				}
+				/* 				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+nzb.+\(\d+\/\d+\)$/', $msg['Subject'])) {
+				  if (preg_match('/.+\.nzb.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
+				  $msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
+				  }
+				  }
+				  if (preg_match('/"(Usenet Index Post) \d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
+				  $msg['Subject'] = preg_replace('/Usenet Index Post/', $number[1] . '.nzb ', $msg['Subject']);
+				  }
 
-                if (preg_match('/"(Usenet Index Post) \d+_\d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
+				  if (preg_match('/"(Usenet Index Post) \d+_\d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
+				  continue;
+				  }
+				 */
+				if (preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
 					continue;
-                }
-*/
-                if (preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
-                    continue;
-                }
+				}
 				$matches = '';
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*| \[S\d+E\d+\] )\((\d+)\/(\d+)\)/', $msg['Subject'], $matches)) {
@@ -414,17 +412,17 @@ class Binaries
 					$subject = utf8_encode(trim($partless));
 
 					// Used for the sha1 hash (see below).
-					$cleansubject = $this->nameCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
+					$cleansubject = $this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
 
 					/*
-					  $ncarr = $this->nameCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
+					  $ncarr = $this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
 					  $cleansubject = $ncarr['hash'];
 					 */
 
 					// For looking at the difference between $subject and $cleansubject.
 					if ($this->debug) {
 						if (!in_array($cleansubject, $colnames)) {
-							// Uncomment this to only show articles matched by generic function of namecleaning (might show some that match by collectionsCleaner, but rare). Helps when making regex.
+							// Uncomment this to only show articles matched by generic function of collectioncleaning (might show some that match by collectionsCleaner, but rare). Helps when making regex.
 
 							/* if (preg_match('/yEnc$/', $cleansubject))
 							  {
@@ -456,8 +454,9 @@ class Binaries
 							$updatenzb = $db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
 						}
 					}
-					if ((int) $matches[3] > 0)
+					if ((int) $matches[3] > 0) {
 						$this->message[$subject]['Parts'][(int) $matches[3]] = array('Message-ID' => substr($msg['Message-ID'], 1, -1), 'number' => $msg['Number'], 'part' => (int) $matches[3], 'size' => $bytes);
+					}
 				}
 			}
 
@@ -476,11 +475,13 @@ class Binaries
 			$maxnum = $last;
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
 
-			if ($type != 'partrepair')
+			if ($type != 'partrepair') {
 				echo $this->c->primary('Received ' . number_format(sizeof($msgsreceived)) . ' articles of ' . (number_format($last - $first + 1)) . ' requested, ' . sizeof($msgsblacklisted) . ' blacklisted, ' . sizeof($msgsignored) . " not yEnc.");
+			}
 
-			if (sizeof($msgrepaired) > 0)
+			if (sizeof($msgrepaired) > 0) {
 				$this->removeRepairedParts($msgrepaired, $groupArr['id']);
+			}
 
 			if (sizeof($rangenotreceived) > 0) {
 				switch ($type) {
@@ -492,12 +493,14 @@ class Binaries
 						break;
 					case 'update':
 					default:
-						if ($this->DoPartRepair)
+						if ($this->DoPartRepair) {
 							$this->addMissingParts($rangenotreceived, $groupArr['id']);
+						}
 						break;
 				}
-				if ($type != 'partrepair')
+				if ($type != 'partrepair') {
 					echo $this->c->alternate('Server did not return ' . sizeof($rangenotreceived) . " articles from " . str_replace('alt.binaries', 'a.b', $groupArr['name']) . ".");
+				}
 			}
 
 			$this->startUpdate = microtime(true);
@@ -520,9 +523,9 @@ class Binaries
 					if (isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '') {
 						$db->beginTransaction();
 						$collectionHash = $data['CollectionHash'];
-						if ($lastCollectionHash == $collectionHash)
+						if ($lastCollectionHash == $collectionHash) {
 							$collectionID = $lastCollectionID;
-						else {
+						} else {
 							$lastCollectionHash = $collectionHash;
 							$lastBinaryHash = '';
 							$lastBinaryID = -1;
@@ -530,10 +533,10 @@ class Binaries
 							$cres = $db->queryOneRow(sprintf('SELECT id, subject FROM ' . $group['cname'] . ' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
 							if (array_key_exists($collectionHash, $collectionHashes)) {
 								$collectionID = $collectionHashes[$collectionHash];
-								if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject']))
+								if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
 									$db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' set subject = %s WHERE id = %s', $db->escapeString(substr($subject, 0, 255)), $collectionID));
-							}
-							else {
+								}
+							} else {
 								if (!$cres) {
 									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
 									$csql = sprintf('INSERT INTO ' . $group['cname'] . ' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject, 0, 255)), $db->escapeString(utf8_encode($data['From'])), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'], 0, 255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
@@ -541,10 +544,11 @@ class Binaries
 								} else {
 									$collectionID = $cres['id'];
 									//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
-									if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject']))
+									if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
 										$db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' set subject = %s WHERE id = %s', $db->escapeString(substr($subject, 0, 255)), $collectionID));
-									else
+									} else {
 										$db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' set dateadded = NOW() WHERE id = %s', $collectionID));
+									}
 								}
 								$collectionHashes[$collectionHash] = $collectionID;
 							}
@@ -552,20 +556,21 @@ class Binaries
 						}
 						$binaryHash = md5($subject . $data['From'] . $groupArr['id']);
 
-						if ($lastBinaryHash == $binaryHash)
+						if ($lastBinaryHash == $binaryHash) {
 							$binaryID = $lastBinaryID;
-						else {
-							if (array_key_exists($binaryHash, $binaryHashes))
+						} else {
+							if (array_key_exists($binaryHash, $binaryHashes)) {
 								$binaryID = $binaryHashes[$binaryHash];
-							else {
+							} else {
 								$lastBinaryHash = $binaryHash;
 
 								$bres = $db->queryOneRow(sprintf('SELECT id FROM ' . $group['bname'] . ' WHERE binaryhash = %s', $db->escapeString($binaryHash)));
 								if (!$bres) {
 									$bsql = sprintf('INSERT INTO ' . $group['bname'] . ' (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
 									$binaryID = $db->queryInsert($bsql);
-								} else
+								} else {
 									$binaryID = $bres['id'];
+								}
 
 								$binaryHashes[$binaryHash] = $binaryID;
 							}
@@ -578,11 +583,13 @@ class Binaries
 							$pNumber = $partdata['number'];
 							$pPartNumber = round($partdata['part']);
 							$maxnum = ($partdata['number'] > $maxnum) ? $partdata['number'] : $maxnum;
-							if (is_numeric($partdata['size']))
+							if (is_numeric($partdata['size'])) {
 								$pSize = $partdata['size'];
+							}
 							try {
-								if (!$insPartsStmt->execute())
+								if (!$insPartsStmt->execute()) {
 									$msgsnotinserted[] = $partdata['number'];
+								}
 							} catch (PDOException $e) {
 								if ($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205) {
 									continue;
@@ -594,20 +601,21 @@ class Binaries
 				}
 				if (sizeof($msgsnotinserted) > 0) {
 					echo $this->c->warning("" . sizeof($msgsnotinserted) . " parts failed to insert.");
-					if ($this->DoPartRepair)
+					if ($this->DoPartRepair) {
 						$this->addMissingParts($msgsnotinserted, $groupArr['id']);
+					}
 				}
 			}
 			$timeUpdate = number_format(microtime(true) - $this->startUpdate, 2);
 			$timeLoop = number_format(microtime(true) - $this->startLoop, 2);
 
-			if ($type != 'partrepair')
+			if ($type != 'partrepair') {
 				echo $this->c->primary($timeHeaders . 's to download articles, ' . $timeCleaning . 's to process articles, ' . $timeUpdate . 's to insert articles, ' . $timeLoop . 's total.');
+			}
 
 			unset($this->message, $data);
 			return $returnArray;
-		}
-		else {
+		} else {
 			if ($type != 'partrepair') {
 				echo $this->c->error("Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}");
 				return false;
@@ -617,19 +625,20 @@ class Binaries
 
 	public function partRepair($nntp, $groupArr)
 	{
-		if (!isset($nntp))
+		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(binaries->partRepair)."));
+		}
 
 		// Get all parts in partrepair table.
 		$db = $this->db;
 
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
-			if ($db->newtables($groupArr['id']) === false)
+			if ($db->newtables($groupArr['id']) === false) {
 				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
+			}
 			$group['prname'] = 'partrepair_' . $groupArr['id'];
-		}
-		else {
+		} else {
 			$group['prname'] = 'partrepair';
 		}
 
@@ -675,15 +684,17 @@ class Binaries
 			// Calculate parts repaired
 			$sql = sprintf('SELECT COUNT(id) AS num FROM ' . $group['prname'] . ' WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts) - 1]['numberid']);
 			$result = $db->queryOneRow($sql);
-			if (isset($result['num']))
+			if (isset($result['num'])) {
 				$partsRepaired = (sizeof($missingParts)) - $result['num'];
+			}
 
 			// Update attempts on remaining parts for active group
 			if (isset($missingParts[sizeof($missingParts) - 1]['id'])) {
 				$sql = sprintf('UPDATE ' . $group['prname'] . ' SET attempts=attempts+1 WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts) - 1]['numberid']);
 				$result = $db->queryExec($sql);
-				if ($result)
+				if ($result) {
 					$partsFailed = $result->rowCount();
+				}
 			}
 			echo $this->c->primary($partsRepaired . " parts repaired.");
 		}
@@ -698,15 +709,18 @@ class Binaries
 
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
-			if ($db->newtables($groupID) === false)
+			if ($db->newtables($groupID) === false) {
 				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
+			}
 			$group['prname'] = 'partrepair_' . $groupID;
-		} else
+		} else {
 			$group['prname'] = 'partrepair';
+		}
 
 		$insertStr = 'INSERT INTO ' . $group['prname'] . ' (numberid, groupid) VALUES ';
-		foreach ($numbers as $number)
+		foreach ($numbers as $number) {
 			$insertStr .= sprintf('(%d, %d), ', $number, $groupID);
+		}
 
 		$insertStr = substr($insertStr, 0, -2);
 		if ($db->dbSystem() == 'mysql') {
@@ -722,14 +736,16 @@ class Binaries
 	private function removeRepairedParts($numbers, $groupID)
 	{
 		$db = $this->db;
-		if ($this->tablepergroup == 1)
+		if ($this->tablepergroup == 1) {
 			$group['prname'] = 'partrepair_' . $groupID;
-		else
+		} else {
 			$group['prname'] = 'partrepair';
+		}
 
 		$sql = 'DELETE FROM ' . $group['prname'] . ' WHERE numberid in (';
-		foreach ($numbers as $number)
+		foreach ($numbers as $number) {
 			$sql .= sprintf('%d, ', $number);
+		}
 		$sql = substr($sql, 0, -2);
 		$sql .= sprintf(') AND groupid = %d', $groupID);
 		$db->queryExec($sql);
@@ -750,14 +766,17 @@ class Binaries
 	{
 		$blackList = $this->retrieveBlackList();
 		$field = array();
-		if (isset($msg['Subject']))
+		if (isset($msg['Subject'])) {
 			$field[Binaries::BLACKLIST_FIELD_SUBJECT] = $msg['Subject'];
+		}
 
-		if (isset($msg['From']))
+		if (isset($msg['From'])) {
 			$field[Binaries::BLACKLIST_FIELD_FROM] = $msg['From'];
+		}
 
-		if (isset($msg['Message-ID']))
+		if (isset($msg['Message-ID'])) {
 			$field[Binaries::BLACKLIST_FIELD_MESSAGEID] = $msg['Message-ID'];
+		}
 
 		$omitBinary = false;
 
@@ -765,12 +784,13 @@ class Binaries
 			if (preg_match('/^' . $blist['groupname'] . '$/i', $groupName)) {
 				//blacklist
 				if ($blist['optype'] == 1) {
-					if (preg_match('/' . $blist['regex'] . '/i', $field[$blist['msgcol']]))
+					if (preg_match('/' . $blist['regex'] . '/i', $field[$blist['msgcol']])) {
 						$omitBinary = true;
-				}
-				else if ($blist['optype'] == 2) {
-					if (!preg_match('/' . $blist['regex'] . '/i', $field[$blist['msgcol']]))
+					}
+				} else if ($blist['optype'] == 2) {
+					if (!preg_match('/' . $blist['regex'] . '/i', $field[$blist['msgcol']])) {
 						$omitBinary = true;
+					}
 				}
 			}
 		}
@@ -788,22 +808,25 @@ class Binaries
 		$intwordcount = 0;
 		if (count($words) > 0) {
 			$like = 'ILIKE';
-			if ($db->dbSystem() == 'mysql')
+			if ($db->dbSystem() == 'mysql') {
 				$like = 'LIKE';
+			}
 			foreach ($words as $word) {
 				// See if the first word had a caret, which indicates search must start with term.
-				if ($intwordcount == 0 && (strpos($word, '^') === 0))
+				if ($intwordcount == 0 && (strpos($word, '^') === 0)) {
 					$searchsql.= sprintf(' AND b.name %s %s', $like, $db->escapeString(substr($word, 1) . '%'));
-				else
+				} else {
 					$searchsql.= sprintf(' AND b.name %s %s', $like, $db->escapeString('%' . $word . '%'));
+				}
 
 				$intwordcount++;
 			}
 		}
 
 		$exccatlist = '';
-		if (count($excludedcats) > 0)
+		if (count($excludedcats) > 0) {
 			$exccatlist = ' AND b.categoryid NOT IN (' . implode(',', $excludedcats) . ') ';
+		}
 
 		return $db->query(sprintf("SELECT b.*, g.name AS group_name, r.guid, (SELECT COUNT(id) FROM parts p WHERE p.binaryid = b.id) as 'binnum' FROM binaries b INNER JOIN groups g ON g.id = b.groupid LEFT OUTER JOIN releases r ON r.id = b.releaseid WHERE 1=1 %s %s order by DATE DESC LIMIT %d", $searchsql, $exccatlist, $limit));
 	}
@@ -825,8 +848,9 @@ class Binaries
 		$db = $this->db;
 
 		$where = '';
-		if ($activeonly)
+		if ($activeonly) {
 			$where = ' WHERE binaryblacklist.status = 1 ';
+		}
 
 		return $db->query('SELECT binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description, binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS groupid, binaryblacklist.msgcol FROM binaryblacklist LEFT OUTER JOIN groups ON groups.name = binaryblacklist.groupname ' . $where . " ORDER BY coalesce(groupname,'zzz')");
 	}
@@ -848,9 +872,9 @@ class Binaries
 		$db = $this->db;
 
 		$groupname = $regex['groupname'];
-		if ($groupname == '')
+		if ($groupname == '') {
 			$groupname = 'null';
-		else {
+		} else {
 			$groupname = preg_replace('/a\.b\./i', 'alt.binaries.', $groupname);
 			$groupname = sprintf('%s', $db->escapeString($groupname));
 		}
@@ -863,9 +887,9 @@ class Binaries
 		$db = $this->db;
 
 		$groupname = $regex['groupname'];
-		if ($groupname == '')
+		if ($groupname == '') {
 			$groupname = 'null';
-		else {
+		} else {
 			$groupname = preg_replace('/a\.b\./i', 'alt.binaries.', $groupname);
 			$groupname = sprintf('%s', $db->escapeString($groupname));
 		}
@@ -877,8 +901,9 @@ class Binaries
 	{
 		$db = $this->db;
 		$bins = $db->query(sprintf('SELECT id FROM binaries WHERE collectionid = %d', $id));
-		foreach ($bins as $bin)
+		foreach ($bins as $bin) {
 			$db->queryExec(sprintf('DELETE FROM parts WHERE binaryid = %d', $bin['id']));
+		}
 		$db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id));
 		$db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $id));
 	}

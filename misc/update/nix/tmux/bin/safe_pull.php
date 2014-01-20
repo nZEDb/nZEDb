@@ -24,6 +24,14 @@ if (!isset($argv[1])) {
 		$groupName = $pieces[0];
 		$grp = new Groups();
 		$groupArr = $grp->getByName($groupName);
+		// Select group, here, only once
+		$data = $nntp->selectGroup($groupArr['name']);
+		if (PEAR::isError($data)) {
+			$data = $nntp->dataError($nntp, $groupArr['name']);
+			if ($data === false) {
+				return;
+			}
+		}
 		$binaries->partRepair($nntp, $groupArr);
 	} else if (isset($pieces[1]) && $pieces[0] == 'binupdate') {
 		$binaries = new Binaries();

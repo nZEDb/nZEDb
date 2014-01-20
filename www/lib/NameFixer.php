@@ -276,7 +276,7 @@ class NameFixer
 	public function updateRelease($release, $name, $method, $echo, $type, $namestatus, $show)
 	{
 		if ($this->relid !== $release["releaseid"]) {
-			$namecleaning = new NameCleaning();
+			$namecleaning = new ReleaseCleaning();
 			$newname = $namecleaning->fixerCleaner($name);
 			if (strtolower($newname) != strtolower($release["searchname"])) {
 				$this->matched = true;
