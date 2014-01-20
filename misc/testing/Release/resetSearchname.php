@@ -45,7 +45,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	}
 } else if (isset($argv[1]) && $argv[1] == "limited") {
 	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE (bitwise & 4) = 0)");
+	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE (bitwise & 4) = 0");
 
 	if (count($res) > 0) {
 		echo $c->header("Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.");
