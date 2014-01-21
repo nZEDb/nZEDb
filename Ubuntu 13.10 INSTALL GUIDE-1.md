@@ -72,7 +72,7 @@
         
                 sudo reboot
                 
- 3. Install PHP and extensions.
+3. Install PHP and extensions.
 
          # (OPTIONAL) Add a repository to get apache 2.4 and php 5.5  
          
