@@ -71,15 +71,17 @@
                 
  2. Install PHP and extensions.
 
-                # (OPTIONAL) Add a repository to get apache 2.4 and php 5.5
-                sudo add-apt-repository ppa:ondrej/php5
-                # Ubuntu 13.10 (ondrej as not added saucy yet, so you will have to use raring)
+         # (OPTIONAL) Add a repository to get apache 2.4 and php 5.5  
+         
+                sudo add-apt-repository ppa:ondrej/php5  
+                
+         # Ubuntu 13.10 (ondrej as not added saucy yet, so you will have to use raring)
                 
                 
-                        sudo nano /etc/apt/sources.list.d/ondrej-php5-saucy.list  
+                sudo nano /etc/apt/sources.list.d/ondrej-php5-saucy.list  
                         
                         
-                        # Change the words called saucy to raring (at the end left of main)  
+          # Change the words called saucy to raring (at the end left of main)  
                         
                         
                 sudo apt-get update  
