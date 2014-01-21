@@ -57,7 +57,7 @@ delay = int(dbgrab[0][1])
 maxnzb = dbgrab[0][2]
 
 if grab == 0:
-	print(bcolors.ERROR + "GrabNZBs is disabled")
+	print(bcolors.ERROR + "GrabNZBs is disabled" + bcolors.ENDC)
 	sys.exit()
 
 #delete from nzbs where size greater than x
@@ -74,7 +74,7 @@ elif conf['DB_SYSTEM'] == "pgsql":
 cur[0].execute(run, (delay))
 datas = cur[0].fetchall()
 if len(datas) == 0:
-	print(bcolors.ERROR + "No NZBs to Grab")
+	print(bcolors.ERROR + "No NZBs to Grab\n" + bcolors.ENDC)
 	sys.exit()
 
 #get threads for update_binaries

@@ -18,7 +18,8 @@ class Releases
 		$this->s = new Sites();
 		$this->site = $this->s->get();
 		$this->groups = new Groups($this->db);
-		$this->nameCleaning = new NameCleaning();
+		$this->collectionsCleaning = new CollectionsCleaning();
+		$this->releaseCleaning = new ReleaseCleaning();
 		$this->consoleTools = new ConsoleTools();
 		$this->stage5limit = (isset($this->site->maxnzbsprocessed)) ? $this->site->maxnzbsprocessed : 1000;
 		$this->completion = (isset($this->site->releasecompletion)) ? $this->site->releasecompletion : 0;
@@ -246,13 +247,16 @@ class Releases
 						if ($categ->isParent($category)) {
 							$children = $categ->getChildren($category);
 							$chlist = '-99';
-							foreach ($children as $child)
+							foreach ($children as $child) {
 								$chlist .= ', ' . $child['id'];
+							}
 
-							if ($chlist != '-99')
+							if ($chlist != '-99') {
 								$catsrch .= ' releases.categoryid IN (' . $chlist . ') OR ';
-						} else
+							}
+						} else {
 							$catsrch .= sprintf(' releases.categoryid = %d OR ', $category);
+						}
 					}
 				}
 				$catsrch .= '1=2 )';
@@ -509,20 +513,27 @@ class Releases
 		$words = explode(' ', $search);
 		$searchsql = '';
 		$intwordcount = 0;
-		if ($type === 'name') {
-			$ft = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_ft';");
-		} else if ($type === 'searchname') {
-			$ft = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_searchname_ft';");
+		$ft = $db->queryDirect("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_searchname_ft'");
+		if ($ft->rowCount() !== 2) {
+			if ($type === 'name') {
+				$ft = $db->queryDirec("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_ft'");
+			} else if ($type === 'searchname') {
+				$ft = $db->queryDirect("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_searchname_ft'");
+			}
 		}
 
 		if (count($words) > 0) {
-			if (isset($ft['key_name'])) {
+			if ($ft->rowCount() !== 0) {
 				$searchwords = '';
 				foreach ($words as $word) {
 					$word = str_replace('!', '+', $word);
 					$searchwords .= sprintf('%s ', $word);
 				}
-				$searchsql .= sprintf(" AND MATCH(releases.%s) AGAINST('%s' IN BOOLEAN MODE)", $type, $searchwords);
+				if ($ft->rowCount() === 2) {
+					$searchsql .= sprintf(" AND MATCH(releases.name, releases.searchname) AGAINST('%s' IN BOOLEAN MODE)", $searchwords);
+				} else {
+					$searchsql .= sprintf(" AND MATCH(releases.%s) AGAINST('%s' IN BOOLEAN MODE)", $type, $searchwords);
+				}
 			} else {
 				$like = 'ILIKE';
 				if ($db->dbSystem() == 'mysql') {
@@ -1292,8 +1303,8 @@ class Releases
 				$propername = true;
 				$relid = false;
 				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $rowcol['subject']);
-				$cleanerName = $this->nameCleaning->releaseCleaner($rowcol['subject'], $rowcol['gname']);
-				/* $ncarr = $this->nameCleaning->collectionsCleaner($subject, $rowcol['gname']);
+				$cleanerName = $this->releaseCleaning->releaseCleaner($rowcol['subject'], $rowcol['gname']);
+				/* $ncarr = $this->collectionsCleaning->collectionsCleaner($subject, $rowcol['gname']);
 				  $cleanerName = $ncarr['subject'];
 				  $category = $ncarr['cat'];
 				  $relstat = $ncar['rstatus']; */
@@ -1992,9 +2003,9 @@ class Releases
 				}
 
 				$groupName = $this->groups->getByNameByID($row['groupid']);
-				/* $ncarr = $this->nameCleaning->collectionsCleaner($row['bname'], $groupName, $nofiles);
+				/* $ncarr = $this->collectionsCleaning->collectionsCleaner($row['bname'], $groupName, $nofiles);
 				  $newSHA1 = sha1($ncarr['hash']).$row['fromname'].$row['groupid'].$row['totalfiles']); */
-				$newSHA1 = sha1($this->nameCleaning->collectionsCleaner($row['bname'], $groupName, $nofiles) . $row['fromname'] . $row['groupid'] . $row['totalfiles']);
+				$newSHA1 = sha1($this->collectionsCleaning->collectionsCleaner($row['bname'], $groupName, $nofiles) . $row['fromname'] . $row['groupid'] . $row['totalfiles']);
 				$cres = $db->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s', $db->escapeString($newSHA1)));
 				if (!$cres) {
 					$cIDS[] = $row['id'];
@@ -2123,5 +2134,3 @@ class Releases
 	}
 
 }
-
-

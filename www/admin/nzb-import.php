@@ -1,16 +1,10 @@
 <?php
+
 require_once './config.php';
-//require_once nZEDb_LIB . 'adminpage.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'binaries.php';
-//require_once nZEDb_LIB . 'page.php';
-//require_once nZEDb_LIB . 'namecleaning.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'category.php';
 
 $db = new DB();
 $binaries = new Binaries();
-$namecleaning = new NameCleaning();
+$releaseCleaner = new ReleaseCleaning();
 $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
@@ -18,28 +12,27 @@ $categorize = new Category();
 
 $page = new Page;
 
-if (empty($argc))
+if (empty($argc)) {
 	$page = new AdminPage();
+}
 
-if (!empty($argc))
-	if (!isset($argv[1]))
+if (!empty($argc)) {
+	if (!isset($argv[1])) {
 		exit("ERROR: You must supply a path as the first argument.\n");
+	}
+}
 
 $filestoprocess = Array();
 $browserpostednames = Array();
 $viabrowser = false;
 
-if (!empty($argc) || $page->isPostBack() )
-{
+if (!empty($argc) || $page->isPostBack()) {
 	$retval = "";
 
 	// Via browser, build an array of all the nzb files uploaded into php /tmp location.
-	if (isset($_FILES["uploadedfiles"]))
-	{
-		foreach ($_FILES["uploadedfiles"]["error"] as $key => $error)
-		{
-			if ($error == UPLOAD_ERR_OK)
-			{
+	if (isset($_FILES["uploadedfiles"])) {
+		foreach ($_FILES["uploadedfiles"]["error"] as $key => $error) {
+			if ($error == UPLOAD_ERR_OK) {
 				$tmp_name = $_FILES["uploadedfiles"]["tmp_name"][$key];
 				$name = $_FILES["uploadedfiles"]["name"][$key];
 				$filestoprocess[] = $tmp_name;
@@ -49,65 +42,62 @@ if (!empty($argc) || $page->isPostBack() )
 		}
 	}
 
-	if (!empty($argc))
-	{
+	if (!empty($argc)) {
 		$strTerminator = "\n";
 		$path = $argv[1];
 		$usenzbname = (isset($argv[2]) && $argv[2] == 'true') ? true : false;
-	}
-	else
-	{
+	} else {
 		$strTerminator = "<br />";
 		$path = (isset($_POST["folder"]) ? $_POST["folder"] : "");
 		$usenzbname = (isset($_POST['usefilename']) && $_POST["usefilename"] == 'on') ? true : false;
 	}
 
-	if (substr($path, strlen($path) - 1) != '/')
-		$path = $path."/";
+	if (substr($path, strlen($path) - 1) != '/') {
+		$path = $path . "/";
+	}
 
 	$groups = $db->query("SELECT id, name FROM groups");
-	foreach ($groups as $group)
+	foreach ($groups as $group) {
 		$siteGroups[$group["name"]] = $group["id"];
-
-	if (!isset($groups) || count($groups) == 0)
-	{
-		if (!empty($argc))
-			echo "no groups specified\n";
-		else
-			$retval.= "no groups specified"."<br />";
 	}
-	else
-	{
+
+	if (!isset($groups) || count($groups) == 0) {
+		if (!empty($argc)) {
+			echo "no groups specified\n";
+		} else {
+			$retval.= "no groups specified" . "<br />";
+		}
+	} else {
 		$nzbCount = 0;
 
 		// Read from the path, if no files submitted via the browser.
-		if (count($filestoprocess) == 0)
-			$filestoprocess = glob($path."*.nzb");
-		$start=date('Y-m-d H:i:s');
+		if (count($filestoprocess) == 0) {
+			$filestoprocess = glob($path . "*.nzb");
+		}
+		$start = date('Y-m-d H:i:s');
 
-		foreach($filestoprocess as $nzbFile)
-		{
+		foreach ($filestoprocess as $nzbFile) {
 			$nzba = file_get_contents($nzbFile);
 
 			$xml = @simplexml_load_string($nzba);
-			if (!$xml || strtolower($xml->getName()) != 'nzb')
+			if (!$xml || strtolower($xml->getName()) != 'nzb') {
 				continue;
+			}
 
 			$importfailed = $isBlackListed = $skipCheck = false;
 			$i = $totalFiles = $totalsize = 0;
 			$firstname = $postername = $postdate = array();
 
-			foreach($xml->file as $file)
-			{
+			foreach ($xml->file as $file) {
 				// File info.
 				$groupID = -1;
-				$name = (string)$file->attributes()->subject;
+				$name = (string) $file->attributes()->subject;
 				$firstname[] = $name;
-				$fromname = (string)$file->attributes()->poster;
+				$fromname = (string) $file->attributes()->poster;
 				$postername[] = $fromname;
-				$unixdate = (string)$file->attributes()->date;
+				$unixdate = (string) $file->attributes()->date;
 				$totalFiles++;
-				$date = date("Y-m-d H:i:s", (string)$file->attributes()->date);
+				$date = date("Y-m-d H:i:s", (string) $file->attributes()->date);
 				$postdate[] = $date;
 				$subject = utf8_encode(trim($firstname['0']));
 
@@ -116,105 +106,96 @@ if (!empty($argc) || $page->isPostBack() )
 
 				// Groups.
 				$groupArr = array();
-				foreach($file->groups->group as $group)
-				{
-					$group = (string)$group;
-					if (array_key_exists($group, $siteGroups))
-					{
+				foreach ($file->groups->group as $group) {
+					$group = (string) $group;
+					if (array_key_exists($group, $siteGroups)) {
 						$groupID = $siteGroups[$group];
 						$groupName = $group;
 					}
 					$groupArr[] = $group;
 
-					if ($binaries->isBlacklisted($msg, $group))
+					if ($binaries->isBlacklisted($msg, $group)) {
 						$isBlackListed = TRUE;
+					}
 				}
 
-				if ($groupID != -1 && !$isBlackListed)
-				{
-					if ($usenzbname)
+				if ($groupID != -1 && !$isBlackListed) {
+					if ($usenzbname) {
 						$usename = str_replace('.nzb', '', ($viabrowser ? $browserpostednames[$nzbFile] : basename($nzbFile)));
-					if (count($file->segments->segment) > 0)
-					{
-						foreach($file->segments->segment as $segment)
-						{
+					}
+					if (count($file->segments->segment) > 0) {
+						foreach ($file->segments->segment as $segment) {
 							$size = $segment->attributes()->bytes;
-							$totalsize = $totalsize+$size;
+							$totalsize = $totalsize + $size;
 						}
 					}
-				}
-				else
-				{
-					if ($isBlackListed)
-						$errorMessage = "Subject is blacklisted: ".$subject;
-					else
-						$errorMessage = "No group found for ".$name." (one of ".implode(', ', $groupArr)." are missing";
+				} else {
+					if ($isBlackListed) {
+						$errorMessage = "Subject is blacklisted: " . $subject;
+					} else {
+						$errorMessage = "No group found for " . $name . " (one of " . implode(', ', $groupArr) . " are missing";
+					}
 
 					$importfailed = true;
-					if (!empty($argc))
-					{
-						echo ($errorMessage."\n");
+					if (!empty($argc)) {
+						echo ($errorMessage . "\n");
 						flush();
+					} else {
+						$retval.= $errorMessage . "<br />";
 					}
-					else
-						$retval.= $errorMessage."<br />";
 
 					break;
 				}
 			}
 
-			if (!$importfailed)
-			{
-				$relguid = sha1(uniqid('',true).mt_rand());
+			if (!$importfailed) {
+				$relguid = sha1(uniqid('', true) . mt_rand());
 				$nzb = new NZB();
 				$propername = false;
 				// Removes everything after yEnc in subject.
 				$partless = preg_replace('/(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?(\(\d+\/\d+\))?$/', 'yEnc', $firstname['0']);
 				$partless = preg_replace('/yEnc.*?$/i', 'yEnc', $partless);
 				$subject = utf8_encode(trim($partless));
-				$cleanerName = $namecleaning->releaseCleaner($subject, $groupName);
-				if (!is_array($cleanerName))
+				$cleanerName = $releaseCleaner->releaseCleaner($subject, $groupName);
+				if (!is_array($cleanerName)) {
 					$cleanName = $cleanerName;
-				else
-				{
+				} else {
 					$cleanName = $cleanerName['cleansubject'];
 					$propername = $cleanerName['properlynamed'];
 				}
-				if (empty($postername[0]))
+				if (empty($postername[0])) {
 					$poster = '';
-				else
+				} else {
 					$poster = $postername[0];
-				if (empty($postdate[0]))
+				}
+				if (empty($postdate[0])) {
 					$posteddate = $date = date("Y-m-d H:i:s");
-				else
+				} else {
 					$posteddate = $postdate[0];
+				}
 				$category = $categorize->determineCategory($cleanName, $groupName);
-				if ($propername === true)
+				if ($propername === true) {
 					$relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~261)|261)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0), $category));
-				else
+				} else {
 					$relID = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~257)|257)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($page->site->checkpasswordedrar == "1" ? -1 : 0), $category));
+				}
 
-				if (isset($relid) && $relid == false)
-				{
-					echo "\n\033[38;5;".$color_skipped."mSkipping ".$subject.", it already exists in your database.\033[0m\n";
+				if (isset($relid) && $relid == false) {
+					echo "\n\033[38;5;" . $color_skipped . "mSkipping " . $subject . ", it already exists in your database.\033[0m\n";
 					@unlink($nzbFile);
 					flush();
 					$importfailed = true;
 					continue;
 				}
-				if($nzb->copyNZBforImport($relguid, $nzba))
-				{
-					$message = "Imported NZB successfully. Subject: ".$firstname['0']."\n";
-					if (!empty($argc))
-					{
-						echo ($message."\n");
+				if ($nzb->copyNZBforImport($relguid, $nzba)) {
+					$message = "Imported NZB successfully. Subject: " . $firstname['0'] . "\n";
+					if (!empty($argc)) {
+						echo ($message . "\n");
 						flush();
+					} else {
+						$retval.= $message . "<br />";
 					}
-					else
-						$retval.= $message."<br />";
-				}
-				else
-				{
+				} else {
 					$db->queryExec(sprintf("DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d", $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($totalsize)));
 					echo "Failed copying NZB, deleting release from DB.\n";
 					$importfailed = true;
@@ -225,11 +206,10 @@ if (!empty($argc) || $page->isPostBack() )
 		}
 	}
 	$seconds = strtotime(date('Y-m-d H:i:s')) - strtotime($start);
-	$retval .= 'Processed '.$nzbCount.' nzbs in '.$seconds.' second(s)';
+	$retval .= 'Processed ' . $nzbCount . ' nzbs in ' . $seconds . ' second(s)';
 
-	if (!empty($argc))
-	{
-		echo $retval."\n";
+	if (!empty($argc)) {
+		echo $retval . "\n";
 		die();
 	}
 	$page->smarty->assign('output', $retval);
@@ -238,5 +218,3 @@ if (!empty($argc) || $page->isPostBack() )
 $page->title = "Import Nzbs";
 $page->content = $page->smarty->fetch('nzb-import.tpl');
 $page->render();
-
-?>

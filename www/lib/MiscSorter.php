@@ -1,13 +1,4 @@
 <?php
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'movie.php';
-//require_once nZEDb_LIB . 'nfo.php';
-//require_once nZEDb_LIB . 'namecleaning.php';
-//require_once nZEDb_LIB . 'books.php';
-//require_once nZEDb_LIB . 'predb.php';
-//require_once nZEDb_LIB . 'groups.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 class MiscSorter
 {
@@ -27,7 +18,7 @@ class MiscSorter
 		$this->category = new Category($this->echooutput);
 		$this->movie = new Movie($this->echooutput);
 		$this->nfolib = new Nfo($this->echooutput);
-		$this->nc = new NameCleaning();
+		$this->nc = new ReleaseCleaning();
 		$this->groups = new Groups();
 		$this->c = new ColorCLI();
 
