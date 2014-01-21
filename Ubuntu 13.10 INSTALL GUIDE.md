@@ -131,7 +131,7 @@
         ## 2.2 & 2.4: ##
         ################
 
-        # Paste the following:
+        # Paste the following:  
 
 <VirtualHost *:80>
         ServerAdmin webmaster@localhost
@@ -158,7 +158,7 @@
         
         ################
         ## Apache 2.4 ##
-        ################
+        ################  
         
         sudo a2dissite 00-default
         sudo a2ensite nZEDb.conf
@@ -169,7 +169,8 @@
         (Could not reliably determine the server's fully qualified domain name, using 127.0.1.1 for ServerName)
 
         sudo sh -c 'echo "ServerName localhost" >> /etc/apache2/conf.d/name' && sudo service apache2 restart
-        **********************************************
+        **********************************************       
+        
 
 5. Install unrar / ffmpeg / mediainfo / lame.
 
