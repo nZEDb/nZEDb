@@ -64,7 +64,10 @@
         
                 sudo apt-get upgrade  
                 
-        # (OPTIONAL) Optionally run sudo apt-get dist-upgrade to upgrade the kernel.
+        # (OPTIONAL) Optionally run sudo apt-get dist-upgrade to upgrade the kernel.  
+        
+                sudo apt-get dist-upgrade  
+                
         # Reboot.  
         
                 sudo reboot
