@@ -113,7 +113,27 @@
        
                 sudo -i -u postgres  
                 
-       # Enter the PostgreSQL CLI interface:
+       # Enter the PostgreSQL CLI interface:  
+       
+                psql  
+                
+       # Create a user account (change the username):  
+       
+                CREATE USER EnterYourUserNameHere;  
+                
+       # Create a database for the user account (change the database name or leave it):  
+       
+                CREATE DATABASE nzedb OWNER EnterYourUserNameHere;  
+                
+       # Create a password for the user (the single quotes around the password are required):  
+       
+                ALTER USER EnterYourUserNameHere WITH ENCRYPTED PASSWORD 'EnterYourPasswordHere';  
+                
+       # Detach from pgsql and login to your linux user account:  
+       
+                control+d
+                su EnterYourLinuxUsernameHere  
+                
 
 
                 
