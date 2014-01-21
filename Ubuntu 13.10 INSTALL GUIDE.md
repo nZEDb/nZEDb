@@ -144,6 +144,20 @@
        
                 sudo nano /etc/php5/cli/php.ini  
                 
+       ## To search in nano, use control+w  
+       # Change the following settings:  
+       
+                max_execution_time = 120
+                
+       # You can set 1024M to -1 if you have RAM to spare.  
+       
+                memory_limit = 1024M  
+                
+       # Change Europe/London to your local timezone, see here for a list: http://php.net/manual/en/timezones.php
+       # remove the ; if there is one preceding date.timezone
+            
+                
+                
                 
 
 
