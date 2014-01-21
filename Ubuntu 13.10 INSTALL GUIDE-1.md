@@ -15,12 +15,14 @@
                 
 
        # For the threaded scripts you will require the Python cymysql module for mysql:
-                # Python 2.*
+                # Python 2.*  
+                
                         sudo apt-get install python-setuptools python-pip
                         sudo python -m easy_install
                         sudo easy_install cymysql
                         pip list
-                # Python 3.* - If Python 3 is installed, the module also must be installed
+                # Python 3.* - If Python 3 is installed, the module also must be installed  
+                
                         sudo apt-get install python3-setuptools python3-pip
                         sudo python3 -m easy_install pip
                         sudo pip-3.2 install cymysql
