@@ -155,7 +155,17 @@
                 
        # Change Europe/London to your local timezone, see here for a list: http://php.net/manual/en/timezones.php  
        
-       # remove the ; if there is one preceding date.timezone
+       # remove the ; if there is one preceding date.timezone  
+       
+                date.timezone = Europe/London  
+                
+       # Press control+x when you are done to save and exit.  
+       
+       # Configure the PHP apache2 ini file (use the above settings):  
+       
+                sudo nano /etc/php5/apache2/php.ini  
+                
+                
             
                 
                 
