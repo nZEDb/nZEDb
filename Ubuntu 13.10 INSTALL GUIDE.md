@@ -134,7 +134,19 @@
                 control+d
                 su EnterYourLinuxUsernameHere  
                 
-5. Install and configure Apache.
+5. Install and configure Apache.  
+
+       # Install apache:  
+       
+                sudo apt-get install apache2  
+                
+       # Configure PHP CLI ini file using the nano text editor:  
+       
+                sudo nano /etc/php5/cli/php.ini  
+                
+                
+
+
                 
 
 
