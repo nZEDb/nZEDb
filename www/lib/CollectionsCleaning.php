@@ -1176,12 +1176,10 @@ class CollectionsCleaning
 
 	public function ebook_magazines()
 	{
-print("Header is: " . $this->subject . "\n");
 	        // e-book.magazines has really only header we care about in the form
 	        // [Top.Gear.South.Africa-February.2014] - "Top.Gear.South.Africa-February.2014.pdf.vol00+1.par2" yEnc  - 809.32 KB
 	        if (preg_match('/(\[.*\])/', $this->subject, $match))
 	        {
-print("\tProcessed Header is: " . $match[1]. "\n");
 	            return $match[1];
 	        }
 	        else
