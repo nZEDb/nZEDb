@@ -33,18 +33,24 @@
                         
        #For Ubuntu 13.10, python3 uses pip3, not pip3.2
 
-        # Or the Python psycopg module for PostgreSQL(this is not currently supported)
-                sudo apt-get install postgresql postgresql-server-dev-all php5-pgsql python-dev python3-dev make
-                # Python 2.*
-                        sudo apt-get install python-setuptools python-pip
-                        sudo easy_install psycopg2
-                        pip list
-                # Python 3.* - If Python 3 is installed, the module also must be installed
-                        sudo apt-get install python3-setuptools python3-pip
-                        sudo easy_install3 psycopg2
-                        pip-3.2 list
-                        -or-
-                        pip-3.3 list
+       # Or the Python psycopg module for PostgreSQL(this is not currently supported)  
+       
+                sudo apt-get install postgresql postgresql-server-dev-all php5-pgsql python-dev python3-dev make  
+                
+       # Python 2.*  
+       
+                sudo apt-get install python-setuptools python-pip
+                sudo easy_install psycopg2
+                pip list  
+                
+       # Python 3.* - If Python 3 is installed, the module also must be installed  
+       
+                sudo apt-get install python3-setuptools python3-pip
+                sudo easy_install3 psycopg2
+                pip-3.2 list
+                -or-
+                pip-3.3 list  
+                
                 If after using easy_install, it still shows error, this link was current at the time this was posted: http://initd.org/psycopg/install/
                         wget http://initd.org/psycopg/tarballs/PSYCOPG-2-5/psycopg2-2.5.1.tar.gz
                         tar xfvz psycopg2-2.5.1.tar.gz
