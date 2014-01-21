@@ -81,7 +81,7 @@
                 sudo nano /etc/apt/sources.list.d/ondrej-php5-saucy.list  
                         
                         
-          # Change the words called saucy to raring (at the end left of main)  
+         # Change the words called saucy to raring (at the end left of main)  
                         
                         
                 sudo apt-get update  
