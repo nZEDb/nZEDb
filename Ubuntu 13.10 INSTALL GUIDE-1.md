@@ -134,6 +134,8 @@
                 control+d
                 su EnterYourLinuxUsernameHere  
                 
+  5. Install and configure Apache.
+                
 
 
                 
