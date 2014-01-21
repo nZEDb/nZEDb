@@ -12,7 +12,8 @@
                 sudo update-rc.d -f apparmor remove  
                 
 
-       # For the threaded scripts you will require the Python cymysql module for mysql:
+       # For the threaded scripts you will require the Python cymysql module for mysql:  
+       
        # Python 2.*  
                 
                  sudo apt-get install python-setuptools python-pip
