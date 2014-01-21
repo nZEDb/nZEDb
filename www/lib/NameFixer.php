@@ -391,7 +391,7 @@ class NameFixer
 				}
 			}
 		}
-		return false;
+
 		if ($type == "PAR2, ") {
 			$this->fileCheck($release, $echo, $type, $namestatus, $show);
 		} else {
