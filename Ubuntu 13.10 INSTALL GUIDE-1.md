@@ -106,6 +106,12 @@
        # Or PostgreSQL:  
        
                 sudo apt-get install postgresql php5-pgsql  
+                
+       # Login to PostgreSQL root user:  
+       
+                sudo -i -u postgres  
+                
+       # Enter the PostgreSQL CLI interface:
 
 
                 
