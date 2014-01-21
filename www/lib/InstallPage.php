@@ -1,6 +1,6 @@
 <?php
 
-require_once '../lib/smarty/Smarty.class.php';
+require_once '../../smarty/Smarty.class.php';
 
 class InstallPage
 {
@@ -19,10 +19,9 @@ class InstallPage
 		$this->smarty = new Smarty();
 
 		$this->smarty->setTemplateDir(realpath('../install/templates/'));
-
-		$this->smarty->setCompileDir(realpath('../lib/smarty/templates_c/'));
-		$this->smarty->setConfigDir(realpath('../lib/smarty/configs/'));
-		$this->smarty->setCacheDir(realpath('../lib/smarty/cache/'));
+		$this->smarty->setCompileDir(realpath('../../smarty/templates_c/'));
+		$this->smarty->setConfigDir(realpath('../../smarty/configs/'));
+		$this->smarty->setCacheDir(realpath('../../smarty/cache/'));
 	}
 
 	public function addToHead($headcontent)

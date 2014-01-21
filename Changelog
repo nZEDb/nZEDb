@@ -6,6 +6,7 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
 
+2014-01-20 -> jonnyboy -> fixed bug in InstallPage.php
 2014-01-20 -> bart39   -> fixed missing braces on regex
 2014-01-20 -> jonnyboy -> added option to use fulltext ix_releases_name_searchname_ft(name, searchname) instead of 2 seaparate indexes
                           adding missed references to ReleaseCleaning and CollectionsCleaning, added remove preid from release when searchname is reset using renametopre.php
