@@ -52,16 +52,18 @@
                 -or-
                 pip-3.3 list  
                 
-                If after using easy_install, it still shows error, this link was current at the time this was posted: http://initd.org/psycopg/install/
-                        wget http://initd.org/psycopg/tarballs/PSYCOPG-2-5/psycopg2-2.5.1.tar.gz
-                        tar xfvz psycopg2-2.5.1.tar.gz
-                        cd psycopg2-2.5.1/
-                        sudo python setup.py install
-                        sudo python3 setup.py install
-                        pip-3.2 list
-                        -or-
-                        pip-3.3 list
-                #For Ubuntu 13.10, python3 uses pip3, not pip3.2
+       # If after using easy_install, it still shows error, this link was current at the time this was posted: http://initd.org/psycopg/install/  
+       
+                wget http://initd.org/psycopg/tarballs/PSYCOPG-2-5/psycopg2-2.5.1.tar.gz
+                tar xfvz psycopg2-2.5.1.tar.gz
+                cd psycopg2-2.5.1/
+                sudo python setup.py install
+                sudo python3 setup.py install
+                pip-3.2 list
+                -or-
+                pip-3.3 list  
+                
+       #For Ubuntu 13.10, python3 uses pip3, not pip3.2
                 
                 
 2. Update and upgrade the operating system.
