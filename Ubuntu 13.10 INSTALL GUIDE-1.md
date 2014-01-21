@@ -105,7 +105,9 @@
        # Install PHP and the required extensions:    
         
         
-                sudo apt-get install -y php5 php5-dev php5-json php-pear php5-gd php5-mysql php5-curl 
+                sudo apt-get install -y php5 php5-dev php5-json php-pear php5-gd php5-mysql php5-curl  
+                
+4. Install MySQL OR PostgreSQL.
                 
 
 
