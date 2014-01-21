@@ -107,7 +107,17 @@
         
                 sudo apt-get install -y php5 php5-dev php5-json php-pear php5-gd php5-mysql php5-curl  
                 
-4. Install MySQL OR PostgreSQL.
+4. Install MySQL OR PostgreSQL.  
+
+       # MySQL:  
+       
+                sudo apt-get install mysql-server mysql-client libmysqlclient-dev  
+                
+       # Or PostgreSQL:  
+       
+                sudo apt-get install postgresql php5-pgsql  
+
+
                 
 
 
