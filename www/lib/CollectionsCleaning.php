@@ -125,6 +125,8 @@ class CollectionsCleaning
 				return $this->e_book();
 			case 'alt.binaries.e-book.flood':
 				return $this->e_book_flood();
+			case 'alt.binaries.e-book.magazines':
+				return $this->ebook_magazines();
 			case 'alt.binaries.e-book.rpg':
 				return $this->e_book_rpg();
 			case 'alt.binaries.erotica':
@@ -1170,6 +1172,22 @@ class CollectionsCleaning
 			return $match[1] . $match[2];
 		else
 			return $this->generic();
+	}
+
+	public function ebook_magazines()
+	{
+print("Header is: " . $this->subject . "\n");
+	        // e-book.magazines has really only header we care about in the form
+	        // [Top.Gear.South.Africa-February.2014] - "Top.Gear.South.Africa-February.2014.pdf.vol00+1.par2" yEnc  - 809.32 KB
+	        if (preg_match('/(\[.*\])/', $this->subject, $match))
+	        {
+print("\tProcessed Header is: " . $match[1]. "\n");
+	            return $match[1];
+	        }
+	        else
+	        {
+	            return $this->generic();
+	        }
 	}
 
 	//a.b.e-book.rpg

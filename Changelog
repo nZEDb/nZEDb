@@ -6,6 +6,7 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 
 
+2014-01-21 -> egandt   -> regex fixes for the group alt.binaries.e-book.magazines as the generic format failed to match
 2014-01-21 -> jonnyboy -> removed early exit from fixReleaseNames
 2014-01-21 -> niel     -> Slight improvement to smarty fix.
 2014-01-20 -> niel     -> Updated autoloader for the path change to smarty.
