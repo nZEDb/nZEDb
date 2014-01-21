@@ -2,10 +2,10 @@
 
 1. Misc.
 
-        # For those using an older version of ubuntu, php 5.4 is required. (Ubuntu 12.04 requires backports for php 5.4 a user reported.)  
+       # For those using an older version of ubuntu, php 5.4 is required. (Ubuntu 12.04 requires backports for php 5.4 a user reported.)  
         
 
-        # Apparmor interferes with some of our files, here is how to disable it:  
+       # Apparmor interferes with some of our files, here is how to disable it:  
         
                 sudo /etc/init.d/apparmor stop  
                 
@@ -14,7 +14,7 @@
                 sudo update-rc.d -f apparmor remove  
                 
 
-        # For the threaded scripts you will require the Python cymysql module for mysql:
+       # For the threaded scripts you will require the Python cymysql module for mysql:
                 # Python 2.*
                         sudo apt-get install python-setuptools python-pip
                         sudo python -m easy_install
