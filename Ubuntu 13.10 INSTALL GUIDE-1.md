@@ -1,6 +1,6 @@
 ## Most of this guide is done from the command line (terminal).
 
-1. Misc.
+**1. Misc.**
 
        # For those using an older version of ubuntu, php 5.4 is required. (Ubuntu 12.04 requires backports for php 5.4 a user reported.)  
         
