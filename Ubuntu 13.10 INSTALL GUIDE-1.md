@@ -107,7 +107,8 @@
        
                 sudo apt-get install postgresql php5-pgsql 
                 
-       # ONLY PROCEED WITH SECTION IF YOU INSTALL POSTGRESQL!         
+       # ONLY PROCEED WITH SECTION IF YOU INSTALL POSTGRESQL! 
+       
        # Login to PostgreSQL root user:  
        
                 sudo -i -u postgres  
