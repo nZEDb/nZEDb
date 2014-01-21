@@ -15,22 +15,25 @@
                 
 
        # For the threaded scripts you will require the Python cymysql module for mysql:
-                # Python 2.*  
+       # Python 2.*  
                 
                         sudo apt-get install python-setuptools python-pip
                         sudo python -m easy_install
                         sudo easy_install cymysql
-                        pip list
-                # Python 3.* - If Python 3 is installed, the module also must be installed  
+                        pip list  
+                        
+       # Python 3.* - If Python 3 is installed, the module also must be installed  
                 
                         sudo apt-get install python3-setuptools python3-pip
                         sudo python3 -m easy_install pip
                         sudo pip-3.2 install cymysql
                         pip-3.2 list
-                # -or-
+       # -or-  
+       
                         sudo pip-3.3 install cymysql
-                        pip-3.3 list
-                #For Ubuntu 13.10, python3 uses pip3, not pip3.2
+                        pip-3.3 list  
+                        
+       #For Ubuntu 13.10, python3 uses pip3, not pip3.2
 
         # Or the Python psycopg module for PostgreSQL(this is not currently supported)
                 sudo apt-get install postgresql postgresql-server-dev-all php5-pgsql python-dev python3-dev make
