@@ -56,19 +56,19 @@
                 
 2. Update and upgrade the operating system.
 
-        # Update the sources.  
+         # Update the sources.  
         
                 sudo apt-get update  
                 
-        # Upgrade the applications.  
+         # Upgrade the applications.  
         
                 sudo apt-get upgrade  
                 
-        # (OPTIONAL) Optionally run sudo apt-get dist-upgrade to upgrade the kernel.  
+         # (OPTIONAL) Optionally run sudo apt-get dist-upgrade to upgrade the kernel.  
         
                 sudo apt-get dist-upgrade  
                 
-        # Reboot.  
+         # Reboot.  
         
                 sudo reboot
                 
