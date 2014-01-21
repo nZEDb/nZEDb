@@ -93,7 +93,7 @@
         # Install PHP and the required extensions:    
         
         
-                sudo apt-get install -y php5 php5-dev php5-json php-pear php5-gd php5-mysql php5-curl php5-json  
+                sudo apt-get install -y php5 php5-dev php5-json php-pear php5-gd php5-mysql php5-curl 
                 
 
 
