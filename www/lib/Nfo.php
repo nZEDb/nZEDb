@@ -3,10 +3,8 @@
 /*
  * Class for handling fetching/storing of NFO files.
  */
-
 class Nfo
 {
-
 	public function __construct($echooutput = false)
 	{
 		$s = new Sites();
