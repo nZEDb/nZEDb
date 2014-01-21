@@ -63,7 +63,7 @@
                 sudo apt-get update
 
         # Install PHP and the required extensions:
-                sudo apt-get install -y php5 php5-dev php-pear php5-gd php5-mysql php5-curl
+                sudo apt-get install -y php5 php5-dev php-pear php5-gd php5-mysql php5-curl php5-json
 
 3. Install MySQL OR PostgreSQL.
 
@@ -97,8 +97,7 @@
 
         ## To search in nano, use control+w
 
-        # Change the following settings:
-                register_globals = Off
+        # Change the following settings
                 max_execution_time = 120
         # You can set 1024M to -1 if you have RAM to spare.
                 memory_limit = 1024M
@@ -148,10 +147,23 @@
 
         # Disable the default site, enable nZEDb, enable rewrite, restart apache:
 
+        ################
+        ## Apache 2.2 ##
+        ################
+        
         sudo a2dissite default
         sudo a2ensite nZEDb
         sudo a2enmod rewrite
         sudo service apache2 restart
+        
+        ################
+        ## Apache 2.4 ##
+        ################
+        
+        sudo a2dissite 00-default
+        sudo a2ensite nZEDb.conf
+        sudo a2enmod rewrite
+        sudo service apache2 restart       
 
         *****If you get the following error:**********
         (Could not reliably determine the server's fully qualified domain name, using 127.0.1.1 for ServerName)
@@ -190,7 +202,7 @@
                 sudo apt-get update
                 sudo apt-get install mediainfo
 
-6. Install memcache / apc.
+6. Install memcache / apc. (Optional)
         # APC:
                 sudo apt-get install php-apc
                 sudo service apache2 restart
