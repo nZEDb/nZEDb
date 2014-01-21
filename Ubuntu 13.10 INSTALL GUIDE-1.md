@@ -1,6 +1,6 @@
 ## Most of this guide is done from the command line (terminal).
 
-0. Misc.
+1. Misc.
 
         # For those using an older version of ubuntu, php 5.4 is required. (Ubuntu 12.04 requires backports for php 5.4 a user reported.)  
         
@@ -54,7 +54,7 @@
                 #For Ubuntu 13.10, python3 uses pip3, not pip3.2
                 
                 
- 1. Update and upgrade the operating system.
+2. Update and upgrade the operating system.
 
         # Update the sources.  
         
@@ -72,7 +72,7 @@
         
                 sudo reboot
                 
- 2. Install PHP and extensions.
+ 3. Install PHP and extensions.
 
          # (OPTIONAL) Add a repository to get apache 2.4 and php 5.5  
          
