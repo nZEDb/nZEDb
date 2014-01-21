@@ -153,7 +153,8 @@
        
                 memory_limit = 1024M  
                 
-       # Change Europe/London to your local timezone, see here for a list: http://php.net/manual/en/timezones.php
+       # Change Europe/London to your local timezone, see here for a list: http://php.net/manual/en/timezones.php  
+       
        # remove the ; if there is one preceding date.timezone
             
                 
