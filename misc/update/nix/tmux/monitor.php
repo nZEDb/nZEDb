@@ -2,8 +2,14 @@
 
 require_once dirname(__FILE__) . '/../../../../www/config.php';
 
-exec('git log | grep "^commit" | wc -l', $commit);
-$version = "0.3r" . $commit[0];
+//exec('git log | grep "^commit" | wc -l', $commit);
+//$version = "0.3r" . $commit[0];
+
+$versions = @new SimpleXMLElement(nZEDb_VERSIONS, 0, true);
+if ($versions === false) {
+	die("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n");
+}
+$version = $versions->nzedb->git->tag . 'r' . $versions->nzedb->git->commit;
 
 $db = new DB();
 $DIR = nZEDb_MISC;
