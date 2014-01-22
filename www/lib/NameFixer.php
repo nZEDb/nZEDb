@@ -94,25 +94,34 @@ class NameFixer
 		} else if ($db->dbSystem() == "pgsql") {
 			$uc = "nfo";
 		}
-		$query = "SELECT rel.id AS releaseid FROM releases rel "
-			. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-			. "WHERE categoryid != 5070 AND ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
-			//. "WHERE preid IS NULL";
-
+		if ($cats === 3) {
+			$query = "SELECT rel.id AS releaseid FROM releases rel "
+				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
+				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
+			$cats = 2;
+		} else {
+			$query = "SELECT rel.id AS releaseid FROM releases rel "
+				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
+				. "WHERE categoryid != 5070 AND ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
+		}
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
+			echo $this->c->header($query . $this->timeother . ";\n");
 			$relres = $db->queryDirect($query . $this->timeother);
 		}
 		//24 hours, all cats
 		else if ($time == 1 && $cats == 2) {
+			echo $this->c->header($query . $this->timeall . ";\n");
 			$relres = $db->queryDirect($query . $this->timeall);
 		}
 		//other cats
 		else if ($time == 2 && $cats == 1) {
+			echo $this->c->header($query . $this->fullother . ";\n");
 			$relres = $db->queryDirect($query . $this->fullother);
 		}
 		//all cats
 		if ($time == 2 && $cats == 2) {
+			echo $this->c->header($query . $this->fullall . ";\n");
 			$relres = $db->queryDirect($query . $this->fullall);
 		}
 		$total = $relres->rowCount();
@@ -163,26 +172,36 @@ class NameFixer
 
 		$db = $this->db;
 		$type = "Filenames, ";
-		$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
-			. "rel.id AS releaseid FROM releases rel "
-			. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
-			. "WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 128) = 0";
-			//. "WHERE preid IS NULL";
-
+		if ($cats === 3) {
+			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
+				. "rel.id AS releaseid FROM releases rel "
+				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
+				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
+			$cats = 2;
+		} else {
+			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
+				. "rel.id AS releaseid FROM releases rel "
+				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
+				. "WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 128) = 0";
+		}
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
+			echo $this->c->header($query . $this->timeother . ";\n");
 			$relres = $db->queryDirect($query . $this->timeother);
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2) {
+			echo $this->c->header($query . $this->timeall . ";\n");
 			$relres = $db->queryDirect($query . $this->timeall);
 		}
 		//other cats
 		if ($time == 2 && $cats == 1) {
+			echo $this->c->header($query . $this->fullother . ";\n");
 			$relres = $db->queryDirect($query . $this->fullother);
 		}
 		//all cats
 		if ($time == 2 && $cats == 2) {
+			echo $this->c->header($query . $this->fullall . ";\n");
 			$relres = $db->queryDirect($query . $this->fullall);
 		}
 		$total = $relres->rowCount();
@@ -225,23 +244,32 @@ class NameFixer
 		}
 
 		$db = $this->db;
-		$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 32) = 0";
+		if ($cats === 3) {
+			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE (bitwise & 256) = 256 AND preid IS NULL";
+			$cats = 2;
+		} else {
+			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 32) = 0";
+		}
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
+			echo $this->c->header($query . $this->timeother . ";\n");
 			$relres = $db->queryDirect($query . $this->timeother);
 		}
-		//24 hours, other cats
+		//24 hours, all cats
 		if ($time == 1 && $cats == 2) {
-			$relres = $db->queryDirect($query . $this->timeother);
+			echo $this->c->header($query . $this->timeall . ";\n");
+			$relres = $db->queryDirect($query . $this->timeall);
 		}
 		//other cats
 		if ($time == 2 && $cats == 1) {
+			echo $this->c->header($query . $this->fullother . ";\n");
 			$relres = $db->queryDirect($query . $this->fullother);
 		}
-		//other cats
+		//all cats
 		if ($time == 2 && $cats == 2) {
-			$relres = $db->queryDirect($query . $this->fullother);
+			echo $this->c->header($query . $this->fullall . ";\n");
+			$relres = $db->queryDirect($query . $this->fullall);
 		}
 		$total = $relres->rowCount();
 		if ($total > 0) {

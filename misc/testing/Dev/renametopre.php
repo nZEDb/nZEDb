@@ -15,7 +15,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
  */
 
 $c = new ColorCLI();
-if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || is_numeric($argv[1])))) {
+if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || $argv[1] == "preid" || is_numeric($argv[1])))) {
 	exit($c->error("\nThis script will attempt to rename releases using regexes first from ReleaseCleaning.php and then from this file.\n"
 			. "An optional last argument, show, will display the release name changes.\n\n"
 			. "php $argv[0] full                    ...: To process all releases not previously renamed.\n"
@@ -23,7 +23,8 @@ if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || is_numeric(
 			. "php $argv[0] all                     ...: To process all releases.\n"
 			. "php $argv[0] full 155                ...: To process all releases in groupid 155 not previously renamed.\n"
 			. "php $argv[0] all 155                 ...: To process all releases in groupid 155.\n"
-			. "php $argv[0] all '(155, 140)'        ...: To process all releases in groupids 155 and 140.\n"));
+			. "php $argv[0] all '(155, 140)'        ...: To process all releases in groupids 155 and 140.\n"
+			. "php $argv[0] preid                   ...: To process all releases where not matched to predb.\n"));
 }
 preName($argv, $argc);
 
@@ -42,17 +43,22 @@ function preName($argv, $argc)
 
 	$counter = 0;
 	$c = new ColorCLI();
-	$full = $all = false;
+	$full = $all = $preid = false;
 	$what = $where = $why = '';
 	if ($argv[1] === 'full') {
 		$full = true;
 	} else if ($argv[1] === 'all') {
 		$all = true;
+	} else if ($argv[1] === 'preid') {
+		$preid = true;
 	} else if (is_numeric($argv[1])) {
 		$what = ' AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR';
 	}
 
-	if (isset($argv[1]) && is_numeric($argv[1])) {
+	if ($preid === true) {
+		$where = '';
+		$why = ' WHERE preid IS NULL AND (bitwise & 256) = 256';
+	} else if (isset($argv[1]) && is_numeric($argv[1])) {
 		$where = '';
 		$why = ' WHERE (bitwise & 260) = 256';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
@@ -205,6 +211,8 @@ function preName($argv, $argc)
 		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 OR (bitwise & 1) = 0", true);
 	} else if (isset($argv[1]) && $argv[1] == "all") {
 		$relcount = categorizeRelease("searchname", "", true);
+	} else if (isset($argv[1]) && $argv[1] == "preid") {
+		$relcount = categorizeRelease("searchname", "WHERE preid IS NULL AND (bitwise & 256) = 256", true);
 	} else {
 		$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 701)0 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
