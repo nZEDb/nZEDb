@@ -171,7 +171,7 @@
        
                 sudo nano /etc/apache2/sites-available/nZEDb
                 
-       # Paste the following:  
+       # Paste the following (This is your VirtualHost):  
        
                 <VirtualHost *:80>
                         ServerAdmin webmaster@localhost
@@ -207,6 +207,22 @@
                  sudo nano /etc/apache2/apache2.conf  
                  
                  Under <Directory /var/www/>, change AllowOverride None to AllowOverride All  
+                 
+       # Create the site config:  
+       
+                 sudo nano /etc/apache2/sites-available/nZEDb.conf  
+                 
+       # Paste the same VirtialHost as above.
+       
+       # Disable the default site, enable nZEDb, enable rewrite, restart apache:  
+       
+                 sudo a2dissite 00-default
+                 sudo a2ensite nZEDb.conf
+                 sudo a2enmod rewrite
+                 sudo service apache2 restart  
+                 
+                 
+                 
                  
                  
                  
