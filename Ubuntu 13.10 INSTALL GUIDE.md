@@ -189,7 +189,15 @@
                           allow from all
                  </Directory>
 
-                </VirtualHost>
+                </VirtualHost>  
+                
+       # Save and exit nano.  
+       
+       # Disable the default site, enable nZEDb, enable rewrite, restart apache:  
+       
+                 
+
+
             
                 
                 
