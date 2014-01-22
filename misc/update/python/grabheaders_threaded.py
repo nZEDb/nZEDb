@@ -49,7 +49,7 @@ threads = 10
 #cur[0].execute("SELECT name FROM shortgroups order by last_record desc")
 #datas = cur[0].fetchall()
 #disconnect(cur[0], cur[1])
-datas = ("alt.binaries.teevee", "alt.binaries.tv", "alt.binaries.audiobooks", "alt.binaries.moovee", "alt.binaries.e-book",  "alt.binaries.e-book.technical",  "alt.binaries.ebook")
+datas = ("alt.binaries.teevee", "alt.binaries.tv", "alt.binaries.audiobooks", "alt.binaries.moovee", "alt.binaries.e-book",  "alt.binaries.e-book.technical",  "alt.binaries.ebook", "alt.binaries.e-book.magazines")
 if not datas:
 	print(bcolors.HEADER + "No Work to Process" + bcolors.ENDC)
 	sys.exit()
