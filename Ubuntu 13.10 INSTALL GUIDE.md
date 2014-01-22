@@ -165,7 +165,7 @@
        
                 sudo nano /etc/php5/apache2/php.ini  
                 
-       # Use the following setting if using Apache 2.2 as your webserver:  
+       # Use the following settings if using Apache 2.2 as your webserver:  
        
        # Create the site config:  
        
