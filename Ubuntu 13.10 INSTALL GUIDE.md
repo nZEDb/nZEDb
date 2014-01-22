@@ -164,14 +164,14 @@
        # Configure the PHP apache2 ini file (use the above settings):  
        
                 sudo nano /etc/php5/apache2/php.ini  
-                
+
+
         ################
         ## Apache 2.4 ##
         ################
 
         You must do the following change to /etc/apache2/apache2.conf:
         Under <Directory /var/www/>, change AllowOverride None to AllowOverride All
-                
                 
             
                 
