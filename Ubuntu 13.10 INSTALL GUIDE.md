@@ -174,22 +174,22 @@
        # Paste the following:  
        
                 <VirtualHost *:80>
-        ServerAdmin webmaster@localhost
-        ServerName localhost
+                        ServerAdmin webmaster@localhost
+                        ServerName localhost
 
-            DocumentRoot "/var/www/nZEDb/www"
-            LogLevel warn
-            ServerSignature Off
-        ErrorLog /var/log/apache2/error.log
+                        DocumentRoot "/var/www/nZEDb/www"
+                        LogLevel warn
+                        ServerSignature Off
+                        ErrorLog /var/log/apache2/error.log
 
-  <Directory "/var/www/nZEDb/www">
-         Options FollowSymLinks
-         AllowOverride All
-         Order allow,deny
-         allow from all
-  </Directory>
+                   <Directory "/var/www/nZEDb/www">
+                          Options FollowSymLinks
+                          AllowOverride All
+                          Order allow,deny
+                          allow from all
+                 </Directory>
 
-</VirtualHost>
+                </VirtualHost>
             
                 
                 
