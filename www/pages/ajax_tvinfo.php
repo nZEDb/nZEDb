@@ -8,7 +8,6 @@ if (!isset($_REQUEST["id"])) {
 	$page->show404();
 }
 
-//require_once nZEDb_LIB . 'releases.php';
 $r = new Releases();
 $rel = $r->getByGuid($_REQUEST["id"]);
 
@@ -23,7 +22,6 @@ if (!$rel) {
 
 
 	if ($rel["rageid"] > 0) {
-		require_once nZEDb_LIB . 'tvrage.php';
 		$t = new TvRage();
 		$rage = $t->getByRageID($rel["rageid"]);
 		if (count($rage) > 0) {
