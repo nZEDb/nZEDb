@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nzedb>
 	<versions>
-	<db>169</db>
-	<git-tag>0.3</git-tag>
-	<git-revision>5019</git-revision>
+		<db>169</db>
+		<git>
+			<tag>0.3</tag>
+			<commit>5019</commit>
+		</git>
 	</versions>
 </nzedb>
