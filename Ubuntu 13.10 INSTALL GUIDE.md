@@ -164,15 +164,32 @@
        # Configure the PHP apache2 ini file (use the above settings):  
        
                 sudo nano /etc/php5/apache2/php.ini  
-
-
-        ################
-        ## Apache 2.4 ##
-        ################
-
-        You must do the following change to /etc/apache2/apache2.conf:
-        Under <Directory /var/www/>, change AllowOverride None to AllowOverride All
                 
+       # Use the following setting if using Apache 2.2 as your webserver:  
+       
+       # Create the site config:  
+       
+                sudo nano /etc/apache2/sites-available/nZEDb
+                
+       # Paste the following:  
+       
+                <VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        ServerName localhost
+
+            DocumentRoot "/var/www/nZEDb/www"
+            LogLevel warn
+            ServerSignature Off
+        ErrorLog /var/log/apache2/error.log
+
+  <Directory "/var/www/nZEDb/www">
+         Options FollowSymLinks
+         AllowOverride All
+         Order allow,deny
+         allow from all
+  </Directory>
+
+</VirtualHost>
             
                 
                 
