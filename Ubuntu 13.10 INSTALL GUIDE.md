@@ -195,6 +195,13 @@
        
        # Disable the default site, enable nZEDb, enable rewrite, restart apache:  
        
+                 sudo a2dissite default
+                 sudo a2ensite nZEDb
+                 sudo a2enmod rewrite
+                 sudo service apache2 restart  
+                 
+                 
+       
                  
 
 
