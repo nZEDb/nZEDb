@@ -6,6 +6,7 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-01-22 -> egandt   -> added alt.binaries.pictures.erotica.anime and required regex
 2014-01-22 -> jonnyboy -> fixed bug in ajax_tvinfo.php, added simple_html_dom.php to easily iterate html dom
                           added usenet-crawler to predb, fixed but in Releases->searchbyRageId
                           added option to firReleaseName using preid, processing all releases not matched to preid, helpfull when new predb dump or regexes added
