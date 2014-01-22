@@ -1,5 +1,7 @@
 <?php
 
+require_once(nZEDb_LIB . "simple_html_dom.php");
+
 /*
  * Class for inserting names/categories/md5 etc from predb sources into the DB, also for matching names on files / subjects.
  */
@@ -63,7 +65,12 @@ Class PreDb
 			if ($this->echooutput) {
 				echo $this->c->primary($abgx . " \tRetrieved from abgx.");
 			}
-			$newnames = $newwomble + $newomgwtf + $newzenet + $newprelist + $neworly + $newsrr + $newpdme + $abgx;
+			$newUsenetCrawler = $this->retrieveUsenetCrawler();
+			if ($this->echooutput) {
+				echo $this->c->primary($newUsenetCrawler . " \tRetrieved from Usenet-Crawler.");
+			}
+			exit;
+			$newnames = $newwomble + $newomgwtf + $newzenet + $newprelist + $neworly + $newsrr + $newpdme + $abgx + $newUsenetCrawler;
 			if (count($newnames) > 0) {
 				$db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestrel['id']));
 			}
@@ -547,6 +554,57 @@ Class PreDb
 		return $newnames;
 	}
 
+	public function retrieveUsenetCrawler()
+	{
+		$db = new DB();
+		$newnames = 0;
+		$skipped = 0;
+		$html = str_get_html($this->getWebPage("http://www.usenet-crawler.com/predb?q=&c=&offset=0#results"));
+		$releases = @$html->find('table[id="browsetable"]');
+		if (!isset($releases[0])) {
+			return 0;
+		}
+		$rows = $releases[0]->find('tr');
+		$count = 0;
+		foreach ($rows as $post) {
+			if ($count == 0) {
+				//Skip the table header row
+				$count++;
+				continue;
+			}
+			$data = $post->find('td');
+			$predate = strtotime($data[0]->innertext);
+
+			$e = $data[1]->find('a');
+			if (isset($e[0])) {
+				$title = trim($e[0]->innertext);
+				$title = str_ireplace(array('<u>', '</u>'), '', $title);
+			} elseif (preg_match('/(.+)<\/br><sub>/', $data[1])) {
+				// title is nuked, so skip
+				$skipped++;
+				continue;
+			} else {
+				$title = trim($data[1]->innertext);
+			}
+			$e = $data[2]->find('a');
+			$categoryPrime = $e[0]->innertext;
+			preg_match('/([\d\.]+MB)/', $data[3]->innertext, $match);
+			$size = isset($match[1]) ? $match[1] : 'NULL';
+			$md5 = md5($title);
+			if ($categoryPrime != 'NUKED') {
+				$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($title)));
+				if ($oldname["title"] == $title) {
+					continue;
+				} else {
+					if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, category, size) VALUES (%s, %s, now(), %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($categoryPrime), $db->escapeString($size)))) {
+						$newnames++;
+					}
+				}
+			}
+		}
+		return $newnames;
+	}
+
 	// Update a single release as it's created.
 	public function matchPre($cleanerName, $releaseID)
 	{
@@ -583,7 +641,7 @@ Class PreDb
 			foreach ($res as $row) {
 				$db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $row['preid'], $row['releaseid']));
 				if ($this->echooutput) {
-					$consoletools->overWritePrimary('Matching up preDB titles with release searchnames: ' . $consoletools->percentString(++$updated, $total));
+					$consoletools->overWritePrimary('Matching up preDB titles with release searchnames: ' . $consoletools->percentString( ++$updated, $total));
 				}
 			}
 			echo "\n";
@@ -677,7 +735,7 @@ Class PreDb
 					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
 				}
 				if ($show === 2) {
-					$consoletools->overWritePrimary("Renamed Releases: [" . number_format($updated) . "] " . $consoletools->percentString( ++$checked, $total));
+					$consoletools->overWritePrimary("Renamed Releases: [" . number_format($updated) . "] " . $consoletools->percentString(++$checked, $total));
 				}
 			}
 		}
@@ -721,6 +779,16 @@ Class PreDb
 	{
 		$db = new DB();
 		return $db->queryOneRow(sprintf('SELECT * FROM predb WHERE id = %d', $preID));
+	}
+
+	public function getWebPage($url)
+	{
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$output = curl_exec($ch);
+		curl_close($ch);
+		return $output;
 	}
 
 	function fileContents($path, $use = false, $context = '')

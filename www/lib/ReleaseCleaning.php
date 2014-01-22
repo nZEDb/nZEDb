@@ -914,12 +914,23 @@ class ReleaseCleaning
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
-		else if ($groupName === "alt.binaries.e-book.rpg") {
-			//ATTN: falsifies RE: REQ:-Pathfinder RPG anything at all TIA [362/408] - "Pathfinder_-_PZO1110B_-_Pathfinder_RPG_-_Beta_Playtest_-_Prestige_Enhancement.pdf" yEnc
-			if (preg_match('/^.+?\[\d+\/(\d+\]) - "(.+?)\.(txt|pdf|mobi|epub|azw)" yEnc$/', $subject, $match))
-				return $match[2];
+        else if ($groupName === "alt.binaries.e-book.rpg") {
+            //ATTN: falsifies RE: REQ:-Pathfinder RPG anything at all TIA [362/408] - "Pathfinder_-_PZO1110B_-_Pathfinder_RPG_-_Beta_Playtest_-_Prestige_Enhancement.pdf" yEnc
+            if (preg_match('/^.+?\[\d+\/(\d+\]) - "(.+?)\.(txt|pdf|mobi|epub|azw)" yEnc$/', $subject, $match))
+                return $match[2];
+            else
+                return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+        }
+		else if ($groupName === "alt.binaries.e-book.magazines") {
+            // [Top.Gear.South.Africa-February.2014] - "Top.Gear.South.Africa-February.2014.pdf.vol00+1.par2" yEnc  - 809.32 KB
+            if (preg_match('/(\[.*\])/', $this->subject, $match))
+            {
+                return $match[1];
+            }
 			else
+            {
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+            }
 		}
 		else if ($groupName === "alt.binaries.e-book.technical") {
 			//ASST NEW MTLS 13 MAR 2012 A  -  [106/116] - "The Elements of Style, Illus. - W. Strunk Jr., E. White, M. Kalman (Penguin, 2005) WW.pdf" yEnc
