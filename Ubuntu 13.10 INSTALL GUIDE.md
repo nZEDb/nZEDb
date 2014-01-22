@@ -200,6 +200,16 @@
                  sudo a2enmod rewrite
                  sudo service apache2 restart  
                  
+       # Use the following settings if using Apache 2.4 as your webserver:  
+       
+       # You must do the following change to /etc/apache2/apache2.conf:  
+       
+                 sudo nano /etc/apache2/apache2.conf  
+                 
+       # Under <Directory /var/www/>, change AllowOverride None to AllowOverride All  
+       
+       
+                 
                  
        
                  
