@@ -212,7 +212,7 @@
        
                  sudo nano /etc/apache2/sites-available/nZEDb.conf  
                  
-       # Paste the same VirtialHost as above.
+       # Paste the same VirtualHost as above.
        
        # Disable the default site, enable nZEDb, enable rewrite, restart apache:  
        
