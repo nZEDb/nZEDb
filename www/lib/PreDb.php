@@ -641,7 +641,7 @@ Class PreDb
 			foreach ($res as $row) {
 				$db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $row['preid'], $row['releaseid']));
 				if ($this->echooutput) {
-					$consoletools->overWritePrimary('Matching up preDB titles with release searchnames: ' . $consoletools->percentString( ++$updated, $total));
+					$consoletools->overWritePrimary('Matching up preDB titles with release searchnames: ' . $consoletools->percentString(++$updated, $total));
 				}
 			}
 			echo "\n";
@@ -720,11 +720,20 @@ Class PreDb
 			$regex = "AND ((r.bitwise & 512) = 512 OR rf.name ~ '[a-fA-F0-9]{32}')";
 		}
 
-		$res = $db->queryDirect(sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
+		if ($cats === 3) {
+			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
-				. 'WHERE (bitwise & 260) = 256 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq));
+				. 'WHERE (bitwise & 256) = 256 AND preid IS NULL %s', $regex);
+		} else {
+			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
+				. 'dehashstatus, rf.name AS filename FROM releases r '
+				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
+				. 'WHERE (bitwise & 260) = 256 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
+		}
 
+		echo $this->c->header($query);
+		$res = $db->queryDirect($query);
 		$total = $res->rowCount();
 		echo $this->c->primary(number_format($total) . " releases to process.");
 		if ($total > 0) {
@@ -735,7 +744,7 @@ Class PreDb
 					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
 				}
 				if ($show === 2) {
-					$consoletools->overWritePrimary("Renamed Releases: [" . number_format($updated) . "] " . $consoletools->percentString(++$checked, $total));
+					$consoletools->overWritePrimary("Renamed Releases: [" . number_format($updated) . "] " . $consoletools->percentString( ++$checked, $total));
 				}
 			}
 		}
