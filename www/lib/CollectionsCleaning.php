@@ -890,7 +890,6 @@ class CollectionsCleaning
 	// the biggest general purpose issue is going to be parts as teh default of 250 is so small many managa would be eliminated so that has to be increased to 500
 	public function pictures_erotica_anime()
 	{
-print("pictures_erotica_anime: " . $this->subject . "\n");
 		// pictures.erotica.anime has really only header we care about in the form
 		// [ABPEA - Original] Arima Zin - Tennen Koiiro Alcohol [BB, Boy] - 005 of 229 - yEnc "Tennen_Koiiro_Alcohol-005.jpg"
 		// in this case we only need the title of the manga, not which image we are viewing or the post file name
@@ -899,7 +898,6 @@ print("pictures_erotica_anime: " . $this->subject . "\n");
 			return $match[1];
 		}
 		else {
-print("generic\n");		
 			return $this->generic();
 		}
 	}
