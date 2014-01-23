@@ -3,7 +3,8 @@ nZEDb automatically scans usenet comparable to the way google search bots scan t
 This project is a fork of the open source usenet indexer newznab plus: https://github.com/anth0/nnplus
 
 nZEDb improves upon the original design implementing several new features, including:
-	- Optional multi-threaded processing (header retrieval, release creation, post-processing etc)
+	
+- Optional multi-threaded processing (header retrieval, release creation, post-processing etc)
 - NNTP-Proxy providing connection pooling (greatly reduce NNTP session establishment & tear-down between nZEDb and the usenet service provider)
 - Advanced search features (name, subject, category, post-date etc)
 - Intelligent local caching of metadata
