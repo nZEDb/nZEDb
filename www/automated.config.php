@@ -43,14 +43,13 @@ define("ITEMS_PER_PAGE", "50");
 define("ITEMS_PER_COVER_PAGE", "20");
 
 require_once 'SPLClassLoader.php';
-$paths = [
+$paths = array(
 	nZEDb_LIB,
 	SMARTY_DIR,
 	SMARTY_DIR . 'plugins',
 	SMARTY_DIR . 'sysplugins'
-];
+);
 $classLoader = new SplClassLoader(null, $paths);
 $classLoader->register();
-
 define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml')
 ?>
