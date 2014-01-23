@@ -9,6 +9,8 @@ nZEDb improves upon the original design, implementing several new features inclu
 - Advanced search features (name, subject, category, post-date etc)
 - Intelligent local caching of metadata
 - Optional tmux (terminal session multiplexing) engine that provides thread, database and performance monitoring   ** link to tmux wiki page here **
+- Full sabnzbd integration web & API including pause/resume
+- Full CouchPotato integration web & API
 - ** extra feature marketing here **
   
 ## Prerequisites
