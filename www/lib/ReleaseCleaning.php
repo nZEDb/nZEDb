@@ -30,25 +30,6 @@ class ReleaseCleaning
 		$match = $matches = '';
 		$db = new DB();
 		// Get pre style name from releases.name
-/*		if (preg_match('/(\w+[\._](\w+[\._-])+\w+-\w+)/', $subject, $match)) {
-			$title = $db->queryOneRow("SELECT title, id from predb WHERE title = " . $db->escapeString(trim($match[1])));
-			if (isset($title['title'])) {
-				$cleanerName = $title['title'];
-				if (!empty($cleanerName)) {
-					return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false, "predb" => $title['id']);
-				}
-			}
-		}
-		if (preg_match('/(\w+[\s\._-](\w+[\s\._-])+\w+-\w+)/', $subject, $match)) {
-			$title = $db->queryOneRow("SELECT title, id from predb WHERE title = " . $db->escapeString(trim($match[1])));
-			if (isset($title['title'])) {
-				$cleanerName = $title['title'];
-				if (!empty($cleanerName)) {
-					return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false, "predb" => $title['id']);
-				}
-			}
-		}
-*/
 		if (preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $subject, $matches)) {
 			foreach ($matches as $match) {
 				foreach ($match as $val) {

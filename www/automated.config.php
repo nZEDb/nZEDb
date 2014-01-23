@@ -51,4 +51,5 @@ $paths = array(
 );
 $classLoader = new SplClassLoader(null, $paths);
 $classLoader->register();
+define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml')
 ?>
