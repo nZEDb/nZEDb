@@ -102,7 +102,7 @@ class NameFixer
 		} else {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-				. "WHERE categoryid != 5070 AND ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
+				. "WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
 		}
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
