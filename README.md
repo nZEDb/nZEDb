@@ -32,7 +32,7 @@ Specific installation guides for common Operating Systems can be found on the nZ
 
 ## Getting Started
 
-In general, it's best to start with the simple screen scripts running in single-thread mode. Enable one or two groups an slowly add more as you become familar with the applcation, you then as required enable mutli-threading and later try the various tmux modii.
+In general, it's best to start with the simple screen scripts running in single-thread mode. Enable one or two groups and slowly add more as you become familar with the applcation. Later, as required, enable mutli-threading and perhaps try the various tmux modii.
 
 ## Support
 
