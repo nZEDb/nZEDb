@@ -1014,6 +1014,9 @@ class CollectionsCleaning
 		//New eBooks 8 June 2013 - "Melody Carlson - [Carter House Girls 08] - Last Dance (mobi).rar"
 		if (preg_match('/^New eBooks.+[ _-]{0,3}("|#34;)(.+?.+)\.(par|vol|rar|nfo).*?("|#34;)/i', $this->subject, $match))
 			return $match[2]; //(Nora Roberts)"Black Rose - Nora Roberts.epub" yEnc
+		//Rowwendees post voor u op www.nzbworld.me - [0/6] - "Animaniacs - Lights, Camera, Action!.nzb" yEnc (1/1)
+		else if (preg_match('/www.nzbworld.me - \[\d+\/(\d+\] - ".+?)'.$this->e0.' yEnc/', $this->subject, $match))
+			return $match[1];
 		else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc$/', $this->subject, $match))
 			return $match[1] . $match[2]; //<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
 		//<TOWN><www.town.ag > <partner of www.ssl-news.info > [3/3] - "Career.Secrets.Exposed.by.Gavin.F..Redelman_.RedStarResume.vol0+1.par2" - 8,16 MB yEnc
@@ -1047,7 +1050,8 @@ class CollectionsCleaning
 			return $match[1] . $match[2]; //"Gabaldon, Diana - Outlander [5] The Fiery Cross.epub" yEnc
 		//Kiny Friedman "Friedman, Kinky - Prisoner of Vandam Street_ A Novel, The.epub" yEnc
 		else if (preg_match('/.*"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match))
-			return $match[1]; //Patterson flood - Mobi -  15/45  "James Patterson - AC 13 - Double Cross.mobi"
+			return $match[1];
+		//Patterson flood - Mobi -  15/45  "James Patterson - AC 13 - Double Cross.mobi"
 		else if (preg_match('/(.+?)[-_ ]{0,3}\d+\/(\d+[-_ ]{0,3}".+?)\.(txt|pdf|mobi|epub|azw)"( \(\d+\/\d+\))?( )?$/', $this->subject, $match))
 			return $match[1] . $match[2];
 		else
