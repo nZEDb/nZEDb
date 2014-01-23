@@ -48,14 +48,16 @@ class ReleaseCleaning
 				}
 			}
 		}
-*/		preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $subject, $matches);
-		foreach ($matches as $match) {
-			foreach ($match as $val) {
-				$title = $db->queryOneRow("SELECT title, id from predb WHERE title = " . $db->escapeString(trim($val)));
-				if (isset($title['title'])) {
-					$cleanerName = $title['title'];
-					if (!empty($cleanerName)) {
-						return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false, "predb" => $title['id']);
+*/
+		if (preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $subject, $matches)) {
+			foreach ($matches as $match) {
+				foreach ($match as $val) {
+					$title = $db->queryOneRow("SELECT title, id from predb WHERE title = " . $db->escapeString(trim($val)));
+					if (isset($title['title'])) {
+						$cleanerName = $title['title'];
+						if (!empty($cleanerName)) {
+							return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false, "predb" => $title['id']);
+						}
 					}
 				}
 			}
