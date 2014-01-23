@@ -10,16 +10,21 @@ if (PHP_SAPI == 'cli') {
 class UpdateVersions
 {
 	/**
+	 * These constants are bitwise for checking what was changed.
+	 */
+	const UPDATED_DB_REVISION	= 1;
+	const UPDATED_GIT_COMMIT	= 2;
+	const UPDATED_GIT_TAG		= 4;
+
+	/**
 	 * @var object ColorCLI
 	 */
 	public $out;
 
 	/**
-	 * Indicates whether any element of the XML has been changed/updated.
-	 * Any methods that alter the XML in any way should set this flag
-	 * @var boolean
+	 * @var integer Bitwise mask of elements that have been changed.
 	 */
-	protected $_changed = false;
+	protected $_changes = 0;
 
 	/**
 	 * @var string	Path and filename for the XML file.
@@ -30,7 +35,6 @@ class UpdateVersions
 	 * @var object Sites/Settings
 	 */
 	protected $_settings;
-
 	/**
 	 * @var object simpleXMLElement
 	 */
@@ -59,6 +63,11 @@ class UpdateVersions
 		$this->_settings = $s->get();
 	}
 
+	public function changes()
+	{
+		return $this->_changes;
+	}
+
 	/**
 	 * Run all checks
 	 * @param boolean $update Whether the XML should be updated by the check.
@@ -69,7 +78,7 @@ class UpdateVersions
 		$this->checkDb($update);
 		$this->checkGitCommit($update);
 		$this->checkGitTag($update);
-		return $this->isUpdated();
+		return $this->hasChanged();
 	}
 
 	/**
@@ -83,7 +92,7 @@ class UpdateVersions
 			if ($update) {
 				echo $this->out->primary("Updating Db revision\n");
 				$this->vers->nzedb->db = $this->_settings->sqlpatch;
-				$this->_changed = true;
+				$this->_changes |= self::UPDATED_DB_REVISION;
 			}
 			return true;
 		}
@@ -102,7 +111,7 @@ class UpdateVersions
 			if ($update) {
 				echo $this->out->primary("pdating commit number\n");
 				$this->vers->nzedb->commit = $output[0];
-				$this->_changed = true;
+				$this->_changes |= self::UPDATED_GIT_COMMIT;
 			}
 			return true;
 		}
@@ -129,7 +138,7 @@ class UpdateVersions
 			if ($update) {
 				echo $this->out->primary("Updating tagged version\n");
 				$this->vers->nzedb->tag = $match;
-				$this->_changed = true;
+				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
 			return true;
 		}
@@ -142,7 +151,7 @@ class UpdateVersions
 			if ($update) {
 				echo $this->out->primary("\n");
 				;
-				$this->_changed = true;
+				$this->_updated = true;
 			}
 			return true;
 		}
@@ -154,15 +163,16 @@ class UpdateVersions
 	 * Check whether the XML has been changed by one of the methods here.
 	 * @return boolean True if the XML has been changed.
 	 */
-	public function isUpdated()
+	public function hasChanged()
 	{
-		return $this->_changed === true;
+		return $this->_changes != 0;
 	}
 
 	public function save()
 	{
-		if ($this->isUpdateed()) {
+		if ($this->hasChanged()) {
 			$this->vers->asXML($this->_filespec);
+			$this->_changes = 0;
 		}
 	}
 }
