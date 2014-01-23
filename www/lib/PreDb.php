@@ -558,11 +558,10 @@ Class PreDb
 	{
 		$db = new DB();
 		$newnames = 0;
-		$skipped = 0;
 		$html = str_get_html($this->getWebPage("http://www.usenet-crawler.com/predb?q=&c=&offset=0#results"));
 		$releases = @$html->find('table[id="browsetable"]');
 		if (!isset($releases[0])) {
-			return 0;
+			return $newnames;
 		}
 		$rows = $releases[0]->find('tr');
 		$count = 0;
@@ -581,24 +580,18 @@ Class PreDb
 				$title = str_ireplace(array('<u>', '</u>'), '', $title);
 			} elseif (preg_match('/(.+)<\/br><sub>/', $data[1])) {
 				// title is nuked, so skip
-				$skipped++;
 				continue;
 			} else {
 				$title = trim($data[1]->innertext);
 			}
 			$e = $data[2]->find('a');
-			$categoryPrime = $e[0]->innertext;
+			$category = $e[0]->innertext;
 			preg_match('/([\d\.]+MB)/', $data[3]->innertext, $match);
 			$size = isset($match[1]) ? $match[1] : 'NULL';
 			$md5 = md5($title);
-			if ($categoryPrime != 'NUKED') {
-				$oldname = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE title = %s", $db->escapeString($title)));
-				if ($oldname["title"] == $title) {
-					continue;
-				} else {
-					if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, category, size) VALUES (%s, %s, now(), %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($categoryPrime), $db->escapeString($size)))) {
-						$newnames++;
-					}
+			if ($category != 'NUKED') {
+				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, category, size) VALUES (%s, %s, now(), %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($category), $db->escapeString($size)))) {
+					$newnames++;
 				}
 			}
 		}

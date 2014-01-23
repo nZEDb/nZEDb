@@ -6,9 +6,12 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-01-22 -> jonnyboy -> fixed bug in ajax_tvinfo.php, added simple_html_dom.php to easily iterate html dom
+2014-01-23 -> niel     -> Fixed minor typo
+2014-01-23 -> niel     -> Added script VersionUpdates.php in nZEDb/_build directory. It helps maintains an XML file of version info,  instead of having to put versions in the code.
+2014-01-22 -> jonnyboy -> updated regex for predb matching in ReleaseCleaning.php, added set preid during update
+                          fixed bug in ajax_tvinfo.php, added simple_html_dom.php to easily iterate html dom
                           added usenet-crawler to predb, fixed but in Releases->searchbyRageId
-                          added option to firReleaseName using preid, processing all releases not matched to preid, helpfull when new predb dump or regexes added
+                          added option to fixReleaseName using preid, processing all releases not matched to preid, helpfull when new predb dump or regexes added
                           fixed bug in test-memcache.php
 2014-01-21 -> egandt   -> regex fixes for the group alt.binaries.e-book.magazines as the generic format failed to match
 2014-01-21 -> jonnyboy -> removed early exit from fixReleaseNames
