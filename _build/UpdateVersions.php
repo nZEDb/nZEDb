@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../www/config.php';
 
 if (PHP_SAPI == 'cli') {
 	$vers = new UpdateVersions();
-	$vers->checkAll();
+	$vers->checkCheck();
 //	$vers->save();
 }
 
@@ -88,10 +88,11 @@ class UpdateVersions
 	 */
 	public function checkDb($update = true)
 	{
-		if ($this->vers->nzedb->db < $this->_settings->sqlpatch) {
+		// this assumes that any new patches were applied prior to committing
+		if ($this->_versions->nzedb->db < $this->_settings->sqlpatch) {
 			if ($update) {
 				echo $this->out->primary("Updating Db revision\n");
-				$this->vers->nzedb->db = $this->_settings->sqlpatch;
+				$this->_versions->nzedb->db = $this->_settings->sqlpatch;
 				$this->_changes |= self::UPDATED_DB_REVISION;
 			}
 			return true;
@@ -106,11 +107,12 @@ class UpdateVersions
 	 */
 	public function checkGitCommit($update = true)
 	{
+		// this should be plus one, since you are reading before the new commit is added
 		exec('git log | grep "^commit" | wc -l', $output);
-		if ($this->vers->nzedb->commit < $output[0]) {
+		if ($this->_versions->nzedb->commit < $output[0]) {
 			if ($update) {
-				echo $this->out->primary("pdating commit number\n");
-				$this->vers->nzedb->commit = $output[0];
+				echo $this->out->primary("Updating commit number\n");
+				$this->_versions->nzedb->commit = $output[0];
 				$this->_changes |= self::UPDATED_GIT_COMMIT;
 			}
 			return true;
@@ -137,7 +139,7 @@ class UpdateVersions
 		if (!empty($match) && $this->vers->nzedb->tag < $match) {
 			if ($update) {
 				echo $this->out->primary("Updating tagged version\n");
-				$this->vers->nzedb->tag = $match;
+				$this->_versions->nzedb->tag = $match;
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
 			return true;
@@ -147,7 +149,7 @@ class UpdateVersions
 /*
 	public function check($update = true)
 	{
-		if ($this->vers->setting) {
+		if ($this->_versions->setting) {
 			if ($update) {
 				echo $this->out->primary("\n");
 				;
@@ -171,9 +173,8 @@ class UpdateVersions
 	public function save()
 	{
 		if ($this->hasChanged()) {
-			$this->vers->asXML($this->_filespec);
+			$this->_versions->asXML($this->_filespec);
 			$this->_changes = 0;
 		}
 	}
 }
-?>

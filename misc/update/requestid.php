@@ -59,23 +59,25 @@ if ($total > 0) {
 			if ($requestID != 0 and $requestID != '') {
 				// Do a local lookup first
 				$newTitle = localLookup($requestID, $row['groupname'], $row['name']);
-				if ($newTitle != false && $newTitle != '') {
+				if (is_array($newTitle) && $newTitle['title'] != '') {
 					$bFound = true;
 				}
 			}
 		}
 
 		if ($bFound === true) {
+			$title = $newTitle['title'];
+			$preid = $newTitle['id'];
 			$groupname = $groups->getByNameByID($row['groupname']);
-			$determinedcat = $category->determineCategory($newTitle, $groupname);
-			$run = $db->queryDirect(sprintf('UPDATE releases set reqidstatus = 1, bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d where id = %d', $db->escapeString($newTitle), $determinedcat, $row['id']));
+			$determinedcat = $category->determineCategory($title, $groupname);
+			$run = $db->queryDirect(sprintf('UPDATE releases set preid = %d, reqidstatus = 1, bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d where id = %d', $preid, $db->escapeString($title), $determinedcat, $row['id']));
 			if ($row['name'] !== $newTitle) {
 				$counted++;
 				if (isset($argv[2]) && $argv[2] === 'show') {
 					$newcatname = $category->getNameByID($determinedcat);
 					$oldcatname = $category->getNameByID($row['categoryid']);
 
-					echo $c->headerOver("\nNew name:  ") . $c->primary($newTitle) .
+					echo $c->headerOver("\nNew name:  ") . $c->primary($title) .
 					$c->headerOver('Old name:  ') . $c->primary($row['name']) .
 					$c->headerOver('New cat:   ') . $c->primary($newcatname) .
 					$c->headerOver('Old cat:   ') . $c->primary($oldcatname) .
@@ -105,13 +107,13 @@ function localLookup($requestID, $groupName, $oldname)
 	$db = new DB();
 	$groups = new Groups();
 	$groupid = $groups->getIDByName($groupName);
-	$run = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
+	$run = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
 	if (isset($run['title']) && preg_match('/s\d+/i', $run['title']) && !preg_match('/s\d+e\d+/i', $run['title'])) {
 		return false;
 	}
 
 	if (isset($run['title'])) {
-		return $run['title'];
+		return array('title' => $run['title'], 'id' => $run['id']);
 	}
 	if (preg_match('/\[#?a\.b\.teevee\]/', $oldname)) {
 		$groupid = $groups->getIDByName('alt.binaries.teevee');
@@ -125,8 +127,8 @@ function localLookup($requestID, $groupName, $oldname)
 		$groupid = $groups->getIDByName('alt.binaries.teevee');
 	}
 
-	$run = $db->queryOneRow(sprintf("SELECT title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
+	$run = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
 	if (isset($run['title'])) {
-		return $run['title'];
+		return array('title' => $run['title'], 'id' => $run['id']);
 	}
 }

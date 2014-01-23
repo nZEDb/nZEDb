@@ -6,7 +6,11 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-01-23 -> jonnyboy -> changed array form from [] to array()
+2014-01-23 -> jonnyboy -> removed all predb titles 15 characters or less, set PreDb.php to not add any titles 15 characters or less
+                          most renaming scripts will set preid as it processes
+                          fixed 'Add to CouchPotato' in light->upcoming
+                          fixed bug in search where $searchsql not set
+                          changed array form from [] to array()
 2014-01-23 -> niel     -> Fixed minor typo
 2014-01-23 -> niel     -> Added script VersionUpdates.php in nZEDb/_build directory. It helps maintains an XML file of version info,  instead of having to put versions in the code.
 2014-01-22 -> jonnyboy -> updated regex for predb matching in ReleaseCleaning.php, added set preid during update
