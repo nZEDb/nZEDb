@@ -7,17 +7,9 @@ nZEDb improves upon the original design implementing several new features, inclu
 - NNTP-Proxy providing connection pooling (greatly reduce NNTP session establishment & tear-down between nZEDb and the usenet service provider)
 - Advanced search features (name, subject, category, post-date etc)
 - Intelligent local caching of metadata
-- Optional tmux (terminal session multiplexing) engine that provides thread, database and performance monitoring ** link to tmux wiki page here **
-- -->> ** extra feature marketing here **
-
-
-    - Optional multi-threaded processing (header retrieval, release creation, post-processing etc)
-    - NNTP-Proxy providing connection pooling (greatly reduce NNTP session establishment & tear-down between nZEDb and the usenet service provider)
-    - Advanced search features (name, subject, category, post-date etc)
-    - Intelligent local caching of metadata
-    - Optional tmux (terminal session multiplexing) engine that provides thread, database and performance monitoring ** link to tmux wiki page here **
-    - -->> ** extra feature marketing here **
-    
+- Optional tmux (terminal session multiplexing) engine that provides thread, database and performance monitoring   ** link to tmux wiki page here **
+- ** extra feature marketing here **
+  
 ## Prerequisites
 
 System Administration know-how. nZEDb is not plug-n-play software. Installation and operation requires a moderate amount administration experience. nZEDb is designed and developed with GNU/Linux operating systems. Certain features are not available are not available on other platforms. A competent Windows administrator should be able to run nZEDb on a Windows OS.
