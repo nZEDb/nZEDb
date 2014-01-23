@@ -11,15 +11,54 @@ nZEDb improves upon the original design implementing several new features, inclu
     -->> ** extra feature marketing here **
     
 ## Prerequisites
-	System Administration know-how. nZEDb is not plug-n-play software. Installation and operation requires a moderate amount administration experience. nZEDb is designed and developed with GNU/Linux operating systems. Certain features are not available are not available on other platforms. A competent Windows administrator should be able to run nZEDb on a Windows OS.
+
+System Administration know-how. nZEDb is not plug-n-play software. Installation and operation requires a moderate amount administration experience. nZEDb is designed and developed with GNU/Linux operating systems. Certain features are not available are not available on other platforms. A competent Windows administrator should be able to run nZEDb on a Windows OS.
     
 ### Hardware
 	
+    4GB RAM, 2 cores(threads) and 20GB disk space minimum.
+It does run on a Raspberry Pi for experienced users with very modest expectations.   
+    
+### Software
 
+	PHP 5.4+ (and various modules)
+    MySQL 5.5+ (Postgres support is Work-In-Progress)
+    Python 2.7 or 3.0 (and various modules)
+Refer below to the relevant installation guide for your OS for detailed information.
+
+## Installation
+
+Specific installation guides for common Operating Systems can be found on the nZEDb github wiki: https://github.com/nZEDb/nZEDb/wiki/Install-Guides
+
+## Getting Started
+
+In general, it's best to start with the simple screen scripts running in single-thread mode. Enable one or two groups an slowly add more as you become familar with the applcation, you then as required enable mutli-threading and later try the various tmux modii.
+
+## Support
+
+There is a web forum were you may search for issues previously encountered by others: 
+http://nzedb.com/
+
+Also on IRC: irc.synirc.net #nZEDb
+
+## Note
+
+The nZEDb team are not responsible for what is posted on the usenet. Best efforts are made to avoid hazardous content (e.g. virii) by nZEDb's automated processess. If you find any objectionable content, please direct any complaints to your usenet provider.
+
+## The Team
+
+Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo, Whitelighter and archer}<br /><br />
+Paypal: <a href="http://nzedb.com/index.php?action=treasury"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
+
+Bitcoin wallet: 1LrrFbXn4QfGUokLppHVPQHAzmnAPbgV2M
+
+<hr>
 
 
 
 ========= OLD Stuff below to be deleted or somehow inserted above ===============
+
+
 Some of the differences between that version of newznab and our indexer are:
 
 	The ability to create releases without the user having to create a regex. (That old version of newznab did not have updated regex.)
