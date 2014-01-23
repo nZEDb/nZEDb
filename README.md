@@ -1,4 +1,4 @@
-We have made a patcher for MYSQL, in misc/testing/DB_scripts (patchDB.php), please look out for patches as we add new features and run this script.
+nZEDb automatically scans usenet comparable to the way google search bots scan the internet. It does this by collecting usenet headers and temporarily storing them in a SQL database. It provides a web-based front-end providing 
 
 nZEDb is a fork of the open source usenet indexer newznab plus : https://github.com/anth0/nnplus
 
