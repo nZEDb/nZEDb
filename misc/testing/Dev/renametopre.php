@@ -215,7 +215,7 @@ function preName($argv, $argc)
 	} else if (isset($argv[1]) && $argv[1] == "preid") {
 		$relcount = categorizeRelease("searchname", "WHERE preid IS NULL AND (bitwise & 256) = 256", true);
 	} else {
-		$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 7010 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
 	$consoletools = new ConsoleTools();
 	$time = $consoletools->convertTime(TIME() - $timestart);
