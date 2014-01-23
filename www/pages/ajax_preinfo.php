@@ -8,7 +8,6 @@ if (!isset($_REQUEST["id"])) {
 	$page->show404();
 }
 
-//require_once nZEDb_LIB . 'predb.php';
 $pre = new PreDb();
 $predata = $pre->getOne($_REQUEST["id"]);
 

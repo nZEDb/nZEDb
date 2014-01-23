@@ -1,5 +1,7 @@
 <?php
 
+require_once(nZEDb_LIB . "simple_html_dom.php");
+
 /*
  * Class for inserting names/categories/md5 etc from predb sources into the DB, also for matching names on files / subjects.
  */
@@ -63,7 +65,12 @@ Class PreDb
 			if ($this->echooutput) {
 				echo $this->c->primary($abgx . " \tRetrieved from abgx.");
 			}
-			$newnames = $newwomble + $newomgwtf + $newzenet + $newprelist + $neworly + $newsrr + $newpdme + $abgx;
+			$newUsenetCrawler = $this->retrieveUsenetCrawler();
+			if ($this->echooutput) {
+				echo $this->c->primary($newUsenetCrawler . " \tRetrieved from Usenet-Crawler.");
+			}
+			exit;
+			$newnames = $newwomble + $newomgwtf + $newzenet + $newprelist + $neworly + $newsrr + $newpdme + $abgx + $newUsenetCrawler;
 			if (count($newnames) > 0) {
 				$db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestrel['id']));
 			}
@@ -547,6 +554,50 @@ Class PreDb
 		return $newnames;
 	}
 
+	public function retrieveUsenetCrawler()
+	{
+		$db = new DB();
+		$newnames = 0;
+		$html = str_get_html($this->getWebPage("http://www.usenet-crawler.com/predb?q=&c=&offset=0#results"));
+		$releases = @$html->find('table[id="browsetable"]');
+		if (!isset($releases[0])) {
+			return $newnames;
+		}
+		$rows = $releases[0]->find('tr');
+		$count = 0;
+		foreach ($rows as $post) {
+			if ($count == 0) {
+				//Skip the table header row
+				$count++;
+				continue;
+			}
+			$data = $post->find('td');
+			$predate = strtotime($data[0]->innertext);
+
+			$e = $data[1]->find('a');
+			if (isset($e[0])) {
+				$title = trim($e[0]->innertext);
+				$title = str_ireplace(array('<u>', '</u>'), '', $title);
+			} elseif (preg_match('/(.+)<\/br><sub>/', $data[1])) {
+				// title is nuked, so skip
+				continue;
+			} else {
+				$title = trim($data[1]->innertext);
+			}
+			$e = $data[2]->find('a');
+			$category = $e[0]->innertext;
+			preg_match('/([\d\.]+MB)/', $data[3]->innertext, $match);
+			$size = isset($match[1]) ? $match[1] : 'NULL';
+			$md5 = md5($title);
+			if ($category != 'NUKED') {
+				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, category, size) VALUES (%s, %s, now(), %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($category), $db->escapeString($size)))) {
+					$newnames++;
+				}
+			}
+		}
+		return $newnames;
+	}
+
 	// Update a single release as it's created.
 	public function matchPre($cleanerName, $releaseID)
 	{
@@ -662,11 +713,20 @@ Class PreDb
 			$regex = "AND ((r.bitwise & 512) = 512 OR rf.name ~ '[a-fA-F0-9]{32}')";
 		}
 
-		$res = $db->queryDirect(sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
+		if ($cats === 3) {
+			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
-				. 'WHERE (bitwise & 260) = 256 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq));
+				. 'WHERE (bitwise & 256) = 256 AND preid IS NULL %s', $regex);
+		} else {
+			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
+				. 'dehashstatus, rf.name AS filename FROM releases r '
+				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
+				. 'WHERE (bitwise & 260) = 256 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
+		}
 
+		echo $this->c->header($query);
+		$res = $db->queryDirect($query);
 		$total = $res->rowCount();
 		echo $this->c->primary(number_format($total) . " releases to process.");
 		if ($total > 0) {
@@ -721,6 +781,16 @@ Class PreDb
 	{
 		$db = new DB();
 		return $db->queryOneRow(sprintf('SELECT * FROM predb WHERE id = %d', $preID));
+	}
+
+	public function getWebPage($url)
+	{
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$output = curl_exec($ch);
+		curl_close($ch);
+		return $output;
 	}
 
 	function fileContents($path, $use = false, $context = '')
