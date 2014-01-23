@@ -42,6 +42,8 @@ define('THEMES_DIR', WWW_TOP . 'themes');
 define("ITEMS_PER_PAGE", "50");
 define("ITEMS_PER_COVER_PAGE", "20");
 
+define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml');
+
 require_once 'SPLClassLoader.php';
 $paths = array(
 	nZEDb_LIB,
@@ -51,5 +53,5 @@ $paths = array(
 );
 $classLoader = new SplClassLoader(null, $paths);
 $classLoader->register();
-define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml')
+
 ?>
