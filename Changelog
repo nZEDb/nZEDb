@@ -6,6 +6,7 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-01-23 -> bart39   -> fixed typo
 2014-01-23 -> jonnyboy -> removed all predb titles 15 characters or less, set PreDb.php to not add any titles 15 characters or less
                           most renaming scripts will set preid as it processes
                           fixed 'Add to CouchPotato' in light->upcoming

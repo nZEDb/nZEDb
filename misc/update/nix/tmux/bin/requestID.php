@@ -52,7 +52,7 @@ if ($bFound === true) {
 			. 'categoryid = %d where id = %d', $preid, $db->escapeString($title), $determinedcat, $pieces[0]));
 	$groupid = $groups->getIDByName($pieces[2]);
 	if ($groupid !== 0) {
-		$md5 = md5($newTitle);
+		$md5 = md5($title);
 		$db->queryDirect(sprintf("INSERT IGNORE INTO predb (title, adddate, source, md5, requestid, groupid) VALUES "
 				. "(%s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d", $db->escapeString($newTitle), $db->escapeString('requestWEB'), $db->escapeString($md5), $requestID, $groupid, $requestID));
 	} else if ($groupid === 0) {
