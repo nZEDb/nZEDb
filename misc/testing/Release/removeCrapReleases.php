@@ -207,8 +207,7 @@ if (isset($argv[1]) && $argv[1] == 'true') {
 	// Use the site blacklists to delete releases.
 	function deleteBlacklist($and) {
 		$db = new DB();
-		$regexes = $db->prepare('SELECT regex FROM binaryblacklist WHERE status = 1 AND optype = 1');
-		$regexes->execute();
+		$regexes = $db->queryDirect('SELECT regex FROM binaryblacklist WHERE status = 1 AND optype = 1');
 		$delcount = 0;
 		$count = $regexes->rowCount();
 		if ($count > 0) {
