@@ -354,11 +354,11 @@ class NameFixer
 						} else if ($type == "Filenames, ") {
 							$status = "bitwise = ((bitwise & ~133)|133),";
 						}
-						$run = $db->queryExec(sprintf("UPDATE releases SET preid = %d, searchname = %s, bitwise = ((bitwise & ~4)|4),"
+						$run = $db->queryExec(sprintf("UPDATE releases SET preid = %s, searchname = %s, bitwise = ((bitwise & ~4)|4),"
 								. " %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
 					} else {
-						$run = $db->queryExec(sprintf("UPDATE releases SET preid = %d, searchname = %s, bitwise = ((bitwise & ~1)|1), "
-								. "categoryid = %d WHERE id = %d", $preib, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
+						$run = $db->queryExec(sprintf("UPDATE releases SET preid = %s, searchname = %s, bitwise = ((bitwise & ~1)|1), "
+								. "categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
 					}
 				}
 			}
