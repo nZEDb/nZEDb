@@ -54,7 +54,7 @@ if ($bFound === true) {
 	if ($groupid !== 0) {
 		$md5 = md5($title);
 		$db->queryDirect(sprintf("INSERT IGNORE INTO predb (title, adddate, source, md5, requestid, groupid) VALUES "
-				. "(%s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d", $db->escapeString($newTitle), $db->escapeString('requestWEB'), $db->escapeString($md5), $requestID, $groupid, $requestID));
+				. "(%s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d", $db->escapeString($title), $db->escapeString('requestWEB'), $db->escapeString($md5), $requestID, $groupid, $requestID));
 	} else if ($groupid === 0) {
 		echo $requestID ."\n";
 	}
@@ -62,7 +62,7 @@ if ($bFound === true) {
 	$newcatname = $category->getNameByID($determinedcat);
 	$method = ($local === true) ? 'requestID local' : 'requestID web';
 
-	echo $c->headerOver($n . $n . 'New name:  ') . $c->primary($newTitle) .
+	echo $c->headerOver($n . $n . 'New name:  ') . $c->primary($title) .
 	$c->headerOver('Old name:  ') . $c->primary($pieces[1]) .
 	$c->headerOver('New cat:   ') . $c->primary($newcatname) .
 	$c->headerOver('Group:     ') . $c->primary(trim($pieces[2])) .
