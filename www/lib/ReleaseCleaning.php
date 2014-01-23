@@ -48,7 +48,7 @@ class ReleaseCleaning
 				}
 			}
 		}
-*/		preg_match_all('/([\w\(\)]+[\._]([\w\(\)]+[\._-])+[\w\(\)]+-\w+)/', $subject, $matches);
+*/		preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $subject, $matches);
 		foreach ($matches as $match) {
 			foreach ($match as $val) {
 				$title = $db->queryOneRow("SELECT title, id from predb WHERE title = " . $db->escapeString(trim($val)));
