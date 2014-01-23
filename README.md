@@ -1,7 +1,25 @@
-nZEDb automatically scans usenet comparable to the way google search bots scan the internet. It does this by collecting usenet headers and temporarily storing them in a SQL database. It provides a web-based front-end providing 
+nZEDb automatically scans usenet comparable to the way google search bots scan the internet. It does this by collecting usenet headers and temporarily storing them in a SQL database. It provides a web-based front-end providing search, browse and programmable (API) functionality.
 
-nZEDb is a fork of the open source usenet indexer newznab plus : https://github.com/anth0/nnplus
+This project is a fork of the open source usenet indexer newznab plus: https://github.com/anth0/nnplus
 
+nZEDb improves upon the original design implementing several new features, including:
+	Optional multi-threaded processing (header retrieval, release creation, post-processing etc)
+    NNTP-Proxy providing connection pooling (greatly reduce NNTP session establishment & tear-down between nZEDb and the usenet service provider)
+    Advanced search features (name, subject, category, post-date etc)
+    Intelligent local caching of metadata
+    Optional tmux (terminal session multiplexing) engine that provides thread, database and performance monitoring ** link to tmux wiki page here **
+    -->> ** extra feature marketing here **
+    
+## Prerequisites
+	System Administration know-how. nZEDb is not plug-n-play software. Installation and operation requires a moderate amount administration experience. nZEDb is designed and developed with GNU/Linux operating systems. Certain features are not available are not available on other platforms. A competent Windows administrator should be able to run nZEDb on a Windows OS.
+    
+### Hardware
+	
+
+
+
+
+========= OLD Stuff below to be deleted or somehow inserted above ===============
 Some of the differences between that version of newznab and our indexer are:
 
 	The ability to create releases without the user having to create a regex. (That old version of newznab did not have updated regex.)
