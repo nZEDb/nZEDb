@@ -4,7 +4,7 @@ require_once dirname(__FILE__) . '/../www/config.php';
 if (PHP_SAPI == 'cli') {
 	$vers = new UpdateVersions();
 	$vers->checkCheck();
-//	$vers->save();
+	$vers->save();
 }
 
 class UpdateVersions

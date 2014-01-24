@@ -4,10 +4,11 @@ if [ -e "nZEDbBase.php" ]
 then
 	export NZEDB_ROOT="$(pwd)"
 else
-	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
+	export NZEDB_ROOT="$(php ../../../../nZEDbBase.php)"
 fi
+echo "Site root is ${NZEDB_ROOT}\n"
 
-nano Changelog
+nano ${NZEDB_ROOT}/Changelog
 cd ${NZEDB_ROOT}
 #commit=`git log | grep "^commit" | wc -l`
 #commit=`expr $commit + 1`

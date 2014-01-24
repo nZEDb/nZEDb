@@ -6,6 +6,7 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-01-23 -> niel     -> Fixed commit.sh and UpdateVersions.php so they work.
 2014-01-23 -> bart39   -> fixed typos
                           added a.b.music to Category byGroup()
                           added a.b.town.cine & a.b.town.xx to ReleaseCleaning
