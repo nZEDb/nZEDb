@@ -57,10 +57,6 @@ Class PreDb
 			if ($this->echooutput) {
 				echo $this->c->primary($newpdme . " \tRetrieved from Predbme.");
 			}
-			$this->retrieveAllfilledMoovee();
-			$this->retrieveAllfilledTeevee();
-			$this->retrieveAllfilledErotica();
-			$this->retrieveAllfilledForeign();
 			$abgx = $this->retrieveAbgx();
 			if ($this->echooutput) {
 				echo $this->c->primary($abgx . " \tRetrieved from abgx.");
@@ -69,7 +65,10 @@ Class PreDb
 			if ($this->echooutput) {
 				echo $this->c->primary($newUsenetCrawler . " \tRetrieved from Usenet-Crawler.");
 			}
-			exit;
+			$this->retrieveAllfilledMoovee();
+			$this->retrieveAllfilledTeevee();
+			$this->retrieveAllfilledErotica();
+			$this->retrieveAllfilledForeign();
 			$newnames = $newwomble + $newomgwtf + $newzenet + $newprelist + $neworly + $newsrr + $newpdme + $abgx + $newUsenetCrawler;
 			if (count($newnames) > 0) {
 				$db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestrel['id']));
@@ -138,9 +137,11 @@ Class PreDb
 								} else {
 									$nfo = $db->escapeString('http://www.newshost.co.za/' . $matches2['nfo']);
 								}
-
-								$db->queryExec(sprintf('INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $nfo, $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('womble'), $db->escapeString($md5)));
-								$newnames++;
+								if (strlen($matches2['title']) > 15) {
+									if ($db->queryExec(sprintf('INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $nfo, $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('womble'), $db->escapeString($md5)))) {
+										$newnames++;
+									}
+								}
 							}
 						}
 					}
@@ -178,8 +179,11 @@ Class PreDb
 							} else {
 								$size = $db->escapeString(round($matches2['size1']) . $matches2['size2']);
 								$title = preg_replace('/\s+- omgwtfnzbs\.org/', '', $matches2['title']);
-								$db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($title), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('omgwtfnzbs'), $db->escapeString($md5)));
-								$newnames++;
+								if (strlen($title) > 15) {
+									if ($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($title), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('omgwtfnzbs'), $db->escapeString($md5)))) {
+										$newnames++;
+									}
+								}
 							}
 						}
 					}
@@ -223,9 +227,10 @@ Class PreDb
 									$category = 'NULL';
 								}
 
-								$run = $db->queryInsert(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $title, $size, $category, $predate, $db->escapeString('zenet'), $md5));
-								if ($run) {
-									$newnames++;
+								if (strlen($title) > 15) {
+									if ($run = $db->queryInsert(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $title, $size, $category, $predate, $db->escapeString('zenet'), $md5))) {
+										$newnames++;
+									}
 								}
 							}
 						}
@@ -261,8 +266,11 @@ Class PreDb
 									$size = $db->escapeString(round($matches2['size']));
 								}
 
-								$db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('prelist'), $db->escapeString($md5)));
-								$newnames++;
+								if (strlen($matches2['title']) > 15) {
+									if($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('prelist'), $db->escapeString($md5)))) {
+										$newnames++;
+									}
+								}
 							}
 						} else if (preg_match('/">\[ (?P<date>.+?) U.+?">(?P<category>.+?)<\/a>.+?">(?P<category1>.+?)<\/a.+">(?P<title>.+?)<\/a>/si', $m, $matches2)) {
 							$md5 = md5($matches2['title']);
@@ -272,8 +280,11 @@ Class PreDb
 							} else {
 								$category = $db->escapeString($matches2['category'] . ', ' . $matches2['category1']);
 
-								$db->queryExec(sprintf('INSERT INTO predb (title, category, predate, adddate, source, md5) VALUES (%s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $category, $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('prelist'), $db->escapeString($md5)));
-								$newnames++;
+								if (strlen($matches['title']) > 15) {
+									if ($db->queryExec(sprintf('INSERT INTO predb (title, category, predate, adddate, source, md5) VALUES (%s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $category, $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('prelist'), $db->escapeString($md5)))) {
+										$newnames++;
+									}
+								}
 							}
 						}
 					}
@@ -309,8 +320,11 @@ Class PreDb
 										$size = $db->escapeString($matches2['size']);
 									}
 
-									$db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('orlydb'), $db->escapeString($md5)));
-									$newnames++;
+									if (strlen($matches['title']) > 15) {
+										if($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('orlydb'), $db->escapeString($md5)))) {
+											$newnames++;
+										}
+									}
 								}
 							}
 						}
@@ -349,8 +363,11 @@ Class PreDb
 					if ($oldname !== false && $oldname['md5'] == $md5) {
 						continue;
 					} else {
-						$db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)', $db->escapeString($release->title), $db->from_unixtime(strtotime($release->pubDate)), $db->escapeString('srrdb'), $db->escapeString($md5)));
-						$newnames++;
+						if (strlen($release->title) > 15) {
+							if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, %s, now(), %s, %s)', $db->escapeString($release->title), $db->from_unixtime(strtotime($release->pubDate)), $db->escapeString('srrdb'), $db->escapeString($md5)))) {
+								$newnames++;
+							}
+						}
 					}
 				}
 			} else {
@@ -376,8 +393,11 @@ Class PreDb
 					if ($oldname !== false && $oldname['md5'] == $md5) {
 						continue;
 					} else {
-						$db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, now(), now(), %s, %s)', $db->escapeString($release->title), $db->escapeString('predbme'), $db->escapeString($md5)));
-						$newnames++;
+						if (strlen($release->title) > 15) {
+							if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5) VALUES (%s, now(), now(), %s, %s)', $db->escapeString($release->title), $db->escapeString('predbme'), $db->escapeString($md5)))) {
+								$newnames++;
+							}
+						}
 					}
 				}
 			} else {
@@ -406,7 +426,9 @@ Class PreDb
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
 								$source = $db->escapeString('allfilled');
-								$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+								if (strlen($title) > 15) {
+									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+								}
 							}
 						}
 					}
@@ -436,8 +458,10 @@ Class PreDb
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
 								$source = $db->escapeString('allfilled');
-								$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
-							}
+								if (strlen($title) > 15) {
+									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+								}
+								}
 						}
 					}
 				}
@@ -466,7 +490,9 @@ Class PreDb
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
 								$source = $db->escapeString('allfilled');
-								$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+								if (strlen($title) > 15) {
+									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+								}
 							}
 						}
 					}
@@ -496,7 +522,9 @@ Class PreDb
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
 								$source = $db->escapeString('allfilled');
-								$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+								if (strlen($title) > 15) {
+									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+								}
 							}
 						}
 					}
@@ -542,8 +570,10 @@ Class PreDb
 						$oldgroupid = $oldname['groupid'];
 						$db->queryExec(sprintf('UPDATE predb SET requestid = IF(%d = 0, %d, 0), groupid = IF(%d = 0, %d, 0) WHERE md5 = %s', $oldrequestid, $requestid, $oldgroupid, $groupid, $db->escapeString($md5)));
 					} else {
-						if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %d, %d)', $db->escapeString($title[1]), $db->from_unixtime(strtotime($predate)), $db->escapeString('abgx'), $db->escapeString($md5), $requestid, $groupid))) {
-							$newnames++;
+						if (strlen($title[1]) > 15) {
+							if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %d, %d)', $db->escapeString($title[1]), $db->from_unixtime(strtotime($predate)), $db->escapeString('abgx'), $db->escapeString($md5), $requestid, $groupid))) {
+								$newnames++;
+							}
 						}
 					}
 				}
@@ -589,7 +619,7 @@ Class PreDb
 			preg_match('/([\d\.]+MB)/', $data[3]->innertext, $match);
 			$size = isset($match[1]) ? $match[1] : 'NULL';
 			$md5 = md5($title);
-			if ($category != 'NUKED') {
+			if (strlen($title) > 15 && $category != 'NUKED') {
 				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, category, size) VALUES (%s, %s, now(), %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($category), $db->escapeString($size)))) {
 					$newnames++;
 				}
@@ -805,6 +835,10 @@ Class PreDb
 		} else {
 			return $str;
 		}
+	}
+
+	function updatePredb() {
+
 	}
 
 }

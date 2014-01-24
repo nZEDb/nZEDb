@@ -215,7 +215,7 @@ function preName($argv, $argc)
 	} else if (isset($argv[1]) && $argv[1] == "preid") {
 		$relcount = categorizeRelease("searchname", "WHERE preid IS NULL AND (bitwise & 256) = 256", true);
 	} else {
-		$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 701)0 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
 	$consoletools = new ConsoleTools();
 	$time = $consoletools->convertTime(TIME() - $timestart);
@@ -248,8 +248,8 @@ function resetSearchnames()
 	if ($tot > 0) {
 		echo $c->primary(number_format($tot) . " Releases had no searchname.");
 	}
-	echo $c->header("Resetting searchnames that are 5 characters or less.");
-	$run = $db->queryDirect("UPDATE releases SET preid = NULL, searchname = name, bitwise = ((bitwise & ~5)|0) WHERE LENGTH(searchname) <= 5");
+	echo $c->header("Resetting searchnames that are 15 characters or less.");
+	$run = $db->queryDirect("UPDATE releases SET preid = NULL, searchname = name, bitwise = ((bitwise & ~5)|0) WHERE LENGTH(searchname) <= 15");
 	$total = $run->rowCount();
 	if ($total > 0) {
 		echo $c->primary(number_format($total) . " Releases had searchnames that were 5 characters or less.");

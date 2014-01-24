@@ -75,7 +75,7 @@ class Binaries
 		}
 
 		$this->startGroup = microtime(true);
-		echo $this->c->primary('Processing ' . $groupArr['name']);
+		echo $this->c->primary('Processing ' . str_replace('alt.binaries', 'a.b', $groupArr['name']));
 
 		// Select the group, here, needed for processing the group
 		$data = $nntp->selectGroup($groupArr['name']);
@@ -696,7 +696,7 @@ class Binaries
 					$partsFailed = $result->rowCount();
 				}
 			}
-			echo $this->c->primary($partsRepaired . " parts repaired.");
+			echo $this->c->primary("\n" . number_format($partsRepaired) . " parts repaired.");
 		}
 
 		// Remove articles that we cant fetch after 5 attempts.

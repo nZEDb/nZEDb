@@ -67,10 +67,10 @@ class NameFixer
 			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC";
 		} else if ($db->dbSystem() == 'pgsql') {
 			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
-			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') GROUP BY rel.id ORDER BY postdate DESC";
+			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') GROUP BY rel.id ORDER BY postdate";
 		}
-		$this->fullother = " AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
-		$this->fullall = " ORDER BY postdate DESC";
+		$this->fullother = " AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id";
+		$this->fullall = "";
 		$this->done = $this->matched = false;
 		$this->c = new ColorCLI();
 		$this->consoletools = new ConsoleTools();
@@ -102,7 +102,7 @@ class NameFixer
 		} else {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-				. "WHERE categoryid != 5070 AND ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
+				. "WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
 		}
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
@@ -172,12 +172,14 @@ class NameFixer
 
 		$db = $this->db;
 		$type = "Filenames, ";
+		$preid = false;
 		if ($cats === 3) {
 			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
 				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
 			$cats = 2;
+			$preid = true;
 		} else {
 			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
@@ -210,7 +212,7 @@ class NameFixer
 			sleep(2);
 			foreach ($relres as $relrow) {
 				$this->done = $this->matched = false;
-				$this->checkName($relrow, $echo, $type, $namestatus, $show);
+				$this->checkName($relrow, $echo, $type, $namestatus, $show, $preid);
 				$this->checked++;
 				if ($this->checked % 500 == 0 && $show === 1) {
 					echo $this->c->alternate(number_format($this->checked) . " files processed.");
@@ -402,22 +404,28 @@ class NameFixer
 	}
 
 	//  Check the array using regex for a clean name.
-	public function checkName($release, $echo, $type, $namestatus, $show)
+	public function checkName($release, $echo, $type, $namestatus, $show, $preid = false)
 	{
 		// Get pre style name from releases.name
 		$matches = '';
-		preg_match_all('/([\w\(\)]+[\._]([\w\(\)]+[\._-])+[\w\(\)]+-\w+)/', $release['textstring'], $matches);
-		foreach ($matches as $match) {
-			foreach ($match as $val) {
-				$title = $this->db->queryOneRow("SELECT title, id from predb WHERE title = " . $this->db->escapeString(trim($val)));
-				if (isset($title['title'])) {
-					$this->cleanerName = $title['title'];
-					if (!empty($this->cleanerName)) {
-						$this->updateRelease($release, $title['title'], $method = "preDB: Match", $echo, $type, $namestatus, $show, $title['id']);
-						continue;
+		if (preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $release['textstring'], $matches)) {
+			foreach ($matches as $match) {
+				foreach ($match as $val) {
+					$title = $this->db->queryOneRow("SELECT title, id from predb WHERE title = " . $this->db->escapeString(trim($val)));
+					if (isset($title['title'])) {
+						$this->cleanerName = $title['title'];
+						if (!empty($this->cleanerName)) {
+							$this->updateRelease($release, $title['title'], $method = "preDB: Match", $echo, $type, $namestatus, $show, $title['id']);
+							continue;
+						}
 					}
 				}
 			}
+		}
+
+		// if processing preid on filename, do not continue
+		if ($preid === true) {
+			return false;
 		}
 
 		if ($type == "PAR2, ") {
@@ -817,6 +825,8 @@ class NameFixer
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: Title - SxxExx - Eptitle", $echo, $type, $namestatus, $show);
 		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\)\.nds/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus, $show);
+		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\.(pdf|html|epub|mobi|azw)/i', $release["textstring"], $result)) {
+			$this->updateRelease($release, $result["0"], $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
 		}
 	}
 
