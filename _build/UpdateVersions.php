@@ -128,7 +128,7 @@ class UpdateVersions
 	public function checkGitCommit($update = true)
 	{
 		exec('git log | grep "^commit" | wc -l', $output);
-		if ($this->_vers->git->commit < $output[0]) {
+		if ($this->_vers->git->commit <= $output[0]) {
 			if ($update) {
 				$output[0] += 1;
 				echo $this->out->primary("Updating commit number to {$output[0]}");
