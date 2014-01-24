@@ -34,7 +34,7 @@ if ($page->isPostBack()) {
 	}
 
 	$cfg->nntpCheck = $test->connect($cfg->NNTP_SERVER, $enc, $cfg->NNTP_PORT);
-	if ($pear_obj->($cfg->nntpCheck)) {
+	if ($pear_obj->isError($cfg->nntpCheck)) {
 		$cfg->error = true;
 	}
 	// Commented out until the issue is resolved

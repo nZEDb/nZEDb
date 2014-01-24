@@ -38,7 +38,7 @@ switch ($action) {
 				$errorStr = "Password Mismatch";
 			} else {
 				if ($_POST['password'] != "" && !$users->isValidPassword($_POST['password'])) {
-					$errorStr = "Your password must be longer than five characters.";
+					$errorStr = "Your password must be at least 8 characters.";
 				} else {
 					if (!$users->isValidEmail($_POST['email'])) {
 						$errorStr = "Your email is not a valid format.";
