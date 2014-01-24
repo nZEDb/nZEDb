@@ -421,7 +421,6 @@ class Category
 
 			if (preg_match('/alt\.binaries\..*(erotica|ijsklontje|xxx)/', $groupRes["name"])) {
 				if ($this->isXxx($releasename)) {
-					return true;
 					return $this->tmpCat;
 				}
 				$this->tmpCat = Category::CAT_XXX_OTHER;
@@ -511,6 +510,24 @@ class Category
 
 			if (preg_match('/alt\.binaries\.multimedia\.sports(\.boxing)?/', $groupRes["name"])) {
 				$this->tmpCat = Category::CAT_TV_SPORT;
+				return true;
+			}
+
+			if (preg_match('/alt\.binaries\.music/', $groupRes["name"])) {
+				if ($this->categorizeforeign) {
+					if ($this->isMusicForeign($releasename)) {
+						return $this->tmpCat;
+					}
+					if ($this->isMusic($releasename)) {
+						return $this->tmpCat;
+					}
+					$this->tmpCat = Category::CAT_MUSIC_MP3;
+					return true;
+				}
+				if ($this->isMusic($releasename)) {
+					return $this->tmpCat;
+				}
+				$this->tmpCat = Category::CAT_MUSIC_MP3;
 				return true;
 			}
 
@@ -1425,7 +1442,7 @@ class Category
 
 	public function isMagazine($releasename)
 	{
-		if (preg_match('/[a-z\-\._ ][-._ ](January|February|March|April|May|June|July|August|September|October|November|December)[-._ ](\d{1,2},)?20\d\d[-._ ]|^\(.+[ .]\d{1,2}[ .]20\d\d[ .].+\.scr|[-._ ](Catalogue|FHM|NUTS|Pictorial|Tatler|XXX)[-._ ]|^\(?(Allehanda|Club|Computer([a-z0-9]+)?|Connect \d+|Corriere|ct|Diario|Digit(al)?|Esquire|FHM|Gadgets|Galileo|Glam|GQ|Infosat|Inked|Instyle|io|Kicker|Liberation|New Scientist|NGV|Nuts|Popular|Professional|Reise|Sette(tv)?|Springer|Stuff|Studentlitteratur|Vegetarian|Vegetable|Videomarkt|Wired)[-._ ]|Brady(.+)?Games|Catalog|Columbus.+Dispatch|Correspondenten|Corriere[-._ ]Della[-._ ]Sera|Cosmopolitan|Dagbladet|Digital[-._ ]Guide|Economist|Eload ?24|ExtraTime|Fatto[-._ ]Quotidiano|Flight[-._ ](International|Journal)|Finanzwoche|France.+Football|Foto.+Video|Games?(Master|Markt|tar|TM)|Gardening|Gazzetta|Globe[-._ ]And[-._ ]Mail|Heimkino|Hustler|La.+(Lettura|Rblica|Stampa)|Le[-._ ](Monde|Temps)|Les[-._ ]Echos|e?Magazin(es?)?|Mac(life|welt)|Marie.+Claire|Maxim|Men.+(Health|Fitness)|Motocross|Motorcycle|Mountain[-._ ]Bike|MusikWoche|National[-._ ]Geographic|New[-._ ]Yorker|PC([-._ ](Gamer|Welt|World)|Games|Go|Tip)|Penthouse|Photograph(er|ic)|Playboy|Posten|Quotidiano|(Golf|Readers?).+Digest|SFX[-._ ]UK|Recipe(.+Guide|s)|SkyNews|Sport[-._ ]?Week|Strategy.+Guide|TabletPC|Tattoo[-._ ]Life|The[-._ ]Guardian|Tageszeitung|Tid(bits|ning)|Top[-._ ]Gear[-._ ]|Total[-._ ]Guitar|Travel[-._ ]Guides?|Tribune[-._ ]De[-._ ]|US[-._ ]Weekly|USA[-._ ]Today|Vogue|Verlag|Warcraft|Web.+Designer|What[-._ ]Car|Zeitung/i', $releasename)) {
+		if (preg_match('/[a-z\-\._ ][-._ ](January|February|March|April|May|June|July|August|September|October|November|December)[-._ ](\d{1,2},)?20\d\d[-._ ]|^\(.+[ .]\d{1,2}[ .]20\d\d[ .].+\.scr|[-._ ](Catalogue|FHM|NUTS|Pictorial|Tatler|XXX)[-._ ]|^\(?(Allehanda|Club|Computer([a-z0-9]+)?|Connect \d+|Corriere|ct|Diario|Digit(al)?|Esquire|FHM|Gadgets|Galileo|Glam|GQ|Infosat|Inked|Instyle|io|Kicker|Liberation|New Scientist|NGV|Nuts|Popular|Professional|Reise|Sette(tv)?|Springer|Stuff|Studentlitteratur|Vegetarian|Vegetable|Videomarkt|Wired)[-._ ]|Brady(.+)?Games|Catalog|Columbus.+Dispatch|Correspondenten|Corriere[-._ ]Della[-._ ]Sera|Cosmopolitan|Dagbladet|Digital[-._ ]Guide|Economist|Eload ?24|ExtraTime|Fatto[-._ ]Quotidiano|Flight[-._ ](International|Journal)|Finanzwoche|France.+Football|Foto.+Video|Games?(Master|Markt|tar|TM)|Gardening|Gazzetta|Globe[-._ ]And[-._ ]Mail|Guitar|Heimkino|Hustler|La.+(Lettura|Rblica|Stampa)|Le[-._ ](Monde|Temps)|Les[-._ ]Echos|e?Magazin(es?)?|Mac(life|welt)|Marie.+Claire|Maxim|Men.+(Health|Fitness)|Motocross|Motorcycle|Mountain[-._ ]Bike|MusikWoche|National[-._ ]Geographic|New[-._ ]Yorker|PC([-._ ](Gamer|Welt|World)|Games|Go|Tip)|Penthouse|Photograph(er|ic)|Playboy|Posten|Quotidiano|(Golf|Readers?).+Digest|SFX[-._ ]UK|Recipe(.+Guide|s)|SkyNews|Sport[-._ ]?Week|Strategy.+Guide|TabletPC|Tattoo[-._ ]Life|The[-._ ]Guardian|Tageszeitung|Tid(bits|ning)|Top[-._ ]Gear[-._ ]|Total[-._ ]Guitar|Travel[-._ ]Guides?|Tribune[-._ ]De[-._ ]|US[-._ ]Weekly|USA[-._ ]Today|Vogue|Verlag|Warcraft|Web.+Designer|What[-._ ]Car|Zeitung/i', $releasename)) {
 			if ($this->isBookForeign($releasename)) {
 				return true;
 			} else {

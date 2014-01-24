@@ -756,6 +756,7 @@ class Releases
 			$episode = sprintf(' AND releases.episode %s %s', $like, $db->escapeString('%' . $episode . '%'));
 		}
 
+		$searchsql = '';
 		if ($name !== '') {
 			$searchsql = $this->searchSQL($name, $db, 'searchname');
 		}

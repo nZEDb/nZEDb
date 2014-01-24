@@ -6,6 +6,11 @@ $db = new DB();
 $DIR = nZEDb_MISC;
 $c = new ColorCLI();
 
+$versions = @new SimpleXMLElement(nZEDb_VERSIONS, 0, true);
+if ($versions === false) {
+	die("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n");
+}
+
 passthru('clear');
 
 $s = new Sites();
@@ -19,7 +24,7 @@ if ($hashcheck != 1) {
 }
 
 // Check database patch version
-if ($patch < 169) {
+if ($patch < $versions->nzedb->db) {
 	exit($c->error("\nYour database is not up to date. Please update.\nphp ${DIR}testing/DB/patchDB.php\n"));
 }
 

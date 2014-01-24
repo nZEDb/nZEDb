@@ -1459,7 +1459,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','168');
+	('sqlpatch','170');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

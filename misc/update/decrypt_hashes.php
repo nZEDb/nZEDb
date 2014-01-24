@@ -43,10 +43,10 @@ function preName($argv)
 		foreach ($res as $row) {
 			$success = false;
 			if (preg_match('/([0-9a-fA-F]{32})/', $row['searchname'], $match) || preg_match('/([0-9a-fA-F]{32})/', $row['name'], $match)) {
-				$pre = $db->queryOneRow(sprintf('SELECT title, source FROM predb WHERE md5 = %s', $db->escapeString($match[1])));
+				$pre = $db->queryOneRow(sprintf('SELECT id, title, source FROM predb WHERE md5 = %s', $db->escapeString($match[1])));
 				if ($pre !== false) {
 					$determinedcat = $category->determineCategory($pre['title'], $row['groupid']);
-					$result = $db->queryDirect(sprintf('UPDATE releases SET dehashstatus = 1, bitwise = ((bitwise & ~37)|37), searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
+					$result = $db->queryDirect(sprintf('UPDATE releases SET preid = %d, dehashstatus = 1, bitwise = ((bitwise & ~37)|37), searchname = %s, categoryid = %d WHERE id = %d', $pre['id'], $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
 					if ($result->rowCount() > 0) {
 						if (isset($argv[2]) && $argv[2] === 'show') {
 							$namefixer->updateRelease($row, $pre["title"], $method = "predb md5 release name: " . $pre["source"], 1, "MD5, ", 1, 1);
