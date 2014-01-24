@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-01-24 -> jonnyboy -> added another pattern to regex for valid headers
+2014-01-24 -> jonnyboy -> fixed bug in reset_truncate.php when true not echoing tables truncated
+                          added another pattern to regex for valid headers
                           fixed UpdateVersions.php to update nZEDb.xml, fixed start.php and monitor.php to correctly get values from nZEDb.xml
                           changed DB.php to properlly set utf-8, may be the cause of some errors
                           set renametopre.php and rixReleaseNames.php that when using preid, it only compares to predb table
