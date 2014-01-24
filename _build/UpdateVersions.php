@@ -5,7 +5,7 @@ require_once dirname(__FILE__) . '/../www/config.php';
 if (PHP_SAPI == 'cli') {
 	$vers = new UpdateVersions();
 	$vers->checkCheck();
-//	$vers->save();
+	$vers->save();
 }
 
 class UpdateVersions
@@ -56,7 +56,7 @@ class UpdateVersions
 		$this->_filespec = $filepath;
 
 		$this->out = new ColorCLI();
-		$this->_vers = @new SimpleXMLElement($filepath, 0, true);
+		$this->_vers = @simplexml_load_file(nZEDb_VERSIONS);
 		if ($this->_vers === false) {
 			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n");
 			throw new Exception("Failed to open versions XML file '$filename'");
@@ -91,10 +91,10 @@ class UpdateVersions
 	 */
 	public function checkDb($update = true)
 	{
-		if ($this->_vers->nzedb->db < $this->_settings->sqlpatch) {
+		if ($this->_vers->versions->db < $this->_settings->sqlpatch) {
 			if ($update) {
 				echo $this->out->primary("Updating Db revision\n");
-				$this->_vers->nzedb->db = $this->_settings->sqlpatch;
+				$this->_vers->versions->db = $this->_settings->sqlpatch;
 				$this->_changes |= self::UPDATED_DB_REVISION;
 			}
 			return true;
@@ -110,10 +110,10 @@ class UpdateVersions
 	public function checkGitCommit($update = true)
 	{
 		exec('git log | grep "^commit" | wc -l', $output);
-		if ($this->_vers->nzedb->commit < $output[0]) {
+		if ($this->_vers->versions->commit < $output[0]) {
 			if ($update) {
 				echo $this->out->primary("Updating commit number\n");
-				$this->_vers->nzedb->commit = $output[0] + 1;
+				$this->_vers->versions->git->commit = $output[0] + 1;
 				$this->_changes |= self::UPDATED_GIT_COMMIT;
 			}
 			return true;
@@ -137,10 +137,10 @@ class UpdateVersions
 		}
 
 		// TODO this needs a better test. Think PHP has a way to do this, will update later.
-		if (!empty($match) && $this->_vers->nzedb->tag < $match) {
+		if (!empty($match) && $this->_vers->versions->tag < $match) {
 			if ($update) {
 				echo $this->out->primary("Updating tagged version\n");
-				$this->_vers->nzedb->tag = $match;
+				$this->_vers->versions->git->tag = $match;
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
 			return true;

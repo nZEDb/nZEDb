@@ -412,7 +412,7 @@ class Binaries
 					$subject = utf8_encode(trim($partless));
 
 					// Used for the sha1 hash (see below).
-					$cleansubject = $this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
+					$cleansubject = utf8_encode($this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles));
 
 					/*
 					  $ncarr = $this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
