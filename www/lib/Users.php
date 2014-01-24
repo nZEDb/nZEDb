@@ -219,7 +219,6 @@ class Users
         if ($cp_api !== false) {
             $sql[] = sprintf('cp_api = %s', $db->escapeString($cp_api));
         }
-		printf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id);
         $db->queryExec(sprintf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id));
 
         return Users::SUCCESS;
