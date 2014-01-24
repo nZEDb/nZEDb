@@ -1,4 +1,5 @@
 <?php
+
 require_once dirname(__FILE__) . '/../www/config.php';
 
 if (PHP_SAPI == 'cli') {
@@ -9,12 +10,13 @@ if (PHP_SAPI == 'cli') {
 
 class UpdateVersions
 {
+
 	/**
 	 * These constants are bitwise for checking what was changed.
 	 */
-	const UPDATED_DB_REVISION	= 1;
-	const UPDATED_GIT_COMMIT	= 2;
-	const UPDATED_GIT_TAG		= 4;
+	const UPDATED_DB_REVISION = 1;
+	const UPDATED_GIT_COMMIT = 2;
+	const UPDATED_GIT_TAG = 4;
 
 	/**
 	 * @var object ColorCLI
@@ -35,6 +37,7 @@ class UpdateVersions
 	 * @var object Sites/Settings
 	 */
 	protected $_settings;
+
 	/**
 	 * @var object simpleXMLElement
 	 */
@@ -53,8 +56,8 @@ class UpdateVersions
 		$this->_filespec = $filepath;
 
 		$this->out = new ColorCLI();
-		$this->_versions = @new SimpleXMLElement($filepath, 0, true);
-		if ($this->_versions === false) {
+		$this->_vers = @new SimpleXMLElement($filepath, 0, true);
+		if ($this->_vers === false) {
 			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n");
 			throw new Exception("Failed to open versions XML file '$filename'");
 		}
@@ -88,11 +91,10 @@ class UpdateVersions
 	 */
 	public function checkDb($update = true)
 	{
-		// this assumes that any new patches were applied prior to committing
-		if ($this->_versions->nzedb->db < $this->_settings->sqlpatch) {
+		if ($this->_vers->nzedb->db < $this->_settings->sqlpatch) {
 			if ($update) {
 				echo $this->out->primary("Updating Db revision\n");
-				$this->_versions->nzedb->db = $this->_settings->sqlpatch;
+				$this->_vers->nzedb->db = $this->_settings->sqlpatch;
 				$this->_changes |= self::UPDATED_DB_REVISION;
 			}
 			return true;
@@ -107,12 +109,11 @@ class UpdateVersions
 	 */
 	public function checkGitCommit($update = true)
 	{
-		// this should be plus one, since you are reading before the new commit is added
 		exec('git log | grep "^commit" | wc -l', $output);
-		if ($this->_versions->nzedb->commit < $output[0]) {
+		if ($this->_vers->nzedb->commit < $output[0]) {
 			if ($update) {
 				echo $this->out->primary("Updating commit number\n");
-				$this->_versions->nzedb->commit = $output[0];
+				$this->_vers->nzedb->commit = $output[0] + 1;
 				$this->_changes |= self::UPDATED_GIT_COMMIT;
 			}
 			return true;
@@ -131,35 +132,33 @@ class UpdateVersions
 		exec('git log --tags', $output);
 		$index = 0;
 		$count = count($output);
-		while (!preg_match('#v(\d+\.\d+\.\d+)#i', $output[$index], $match) && $count < $index ) {
+		while (!preg_match('#v(\d+\.\d+\.\d+)#i', $output[$index], $match) && $count < $index) {
 			$index++;
 		}
 
 		// TODO this needs a better test. Think PHP has a way to do this, will update later.
-		if (!empty($match) && $this->vers->nzedb->tag < $match) {
+		if (!empty($match) && $this->_vers->nzedb->tag < $match) {
 			if ($update) {
 				echo $this->out->primary("Updating tagged version\n");
-				$this->_versions->nzedb->tag = $match;
+				$this->_vers->nzedb->tag = $match;
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
 			return true;
 		}
 		return false;
 	}
-/*
+
 	public function check($update = true)
 	{
-		if ($this->_versions->setting) {
+		if ($this->_vers->setting) {
 			if ($update) {
 				echo $this->out->primary("\n");
-				;
 				$this->_updated = true;
 			}
 			return true;
 		}
 		return false;
 	}
- */
 
 	/**
 	 * Check whether the XML has been changed by one of the methods here.
@@ -173,8 +172,9 @@ class UpdateVersions
 	public function save()
 	{
 		if ($this->hasChanged()) {
-			$this->_versions->asXML($this->_filespec);
+			$this->_vers->asXML($this->_filespec);
 			$this->_changes = 0;
 		}
 	}
+
 }
