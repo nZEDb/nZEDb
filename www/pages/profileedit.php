@@ -31,35 +31,43 @@ switch ($action) {
 		$data["firstname"] = $_POST['firstname'];
 		$data["lastname"] = $_POST['lastname'];
 
-		if ($_POST['password'] != "" && $_POST['password'] != $_POST['confirmpassword']) {
-			$errorStr = "Password Mismatch";
+		if (!$users->isValidUsername($data["username"])) {
+			$errorStr = "Your username must be at least five characters. Contact an administrator to get it changed.";
 		} else {
-			if ($_POST['password'] != "" && !$users->isValidPassword($_POST['password'])) {
-				$errorStr = "Your password must be longer than five characters.";
+			if ($_POST['password'] != "" && $_POST['password'] != $_POST['confirmpassword']) {
+				$errorStr = "Password Mismatch";
 			} else {
-				if (!$users->isValidEmail($_POST['email'])) {
-					$errorStr = "Your email is not a valid format.";
+				if ($_POST['password'] != "" && !$users->isValidPassword($_POST['password'])) {
+					$errorStr = "Your password must be longer than five characters.";
 				} else {
-					$res = $users->getByEmail($_POST['email']);
-					if ($res && $res["id"] != $userid) {
-						$errorStr = "Sorry, the email is already in use.";
+					if (!$users->isValidEmail($_POST['email'])) {
+						$errorStr = "Your email is not a valid format.";
 					} else {
-						if (isset($_POST['sabsetting']) && $_POST['sabsetting'] == 2) {
-							$sab->setCookie($_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype']);
-							$_POST['saburl'] = $_POST['sabapikey'] = $_POST['sabpriority'] = $_POST['sabapikeytype'] = false;
+						$res = $users->getByEmail($_POST['email']);
+						if ($res && $res["id"] != $userid) {
+							$errorStr = "Sorry, the email is already in use.";
+						} else {
+							if ((empty($_POST['saburl']) && !empty($_POST['sabapikey'])) || (!empty($_POST['saburl']) && empty($_POST['sabapikey']))) {
+								$errorStr = "Insert a SABnzdb URL and API key.";
+							} else {
+								if (isset($_POST['sabsetting']) && $_POST['sabsetting'] == 2) {
+									$sab->setCookie($_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype']);
+									$_POST['saburl'] = $_POST['sabapikey'] = $_POST['sabpriority'] = $_POST['sabapikeytype'] = false;
+								}
+
+								$users->update($userid, $data["username"], $_POST['firstname'], $_POST['lastname'], $_POST['email'], $data["grabs"], $data["role"], $data["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"), $_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype'], $_POST['cp_url'], $_POST['cp_api']);
+
+								$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? array() : $_POST['exccat'];
+								$users->addCategoryExclusions($userid, $_POST['exccat']);
+
+								if ($_POST['password'] != "") {
+									$users->updatePassword($userid, $_POST['password']);
+								}
+
+								header("Location:" . WWW_TOP . "/profile");
+								die();
+							}
 						}
-
-						$users->update($userid, $data["username"], $_POST['firstname'], $_POST['lastname'], $_POST['email'], $data["grabs"], $data["role"], $data["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"), $_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype'], $_POST['cp_url'], $_POST['cp_api']);
-
-						$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? array() : $_POST['exccat'];
-						$users->addCategoryExclusions($userid, $_POST['exccat']);
-
-						if ($_POST['password'] != "") {
-							$users->updatePassword($userid, $_POST['password']);
-						}
-
-						header("Location:" . WWW_TOP . "/profile");
-						die();
 					}
 				}
 			}
