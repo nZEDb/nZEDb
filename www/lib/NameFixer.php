@@ -94,11 +94,13 @@ class NameFixer
 		} else if ($db->dbSystem() == "pgsql") {
 			$uc = "nfo";
 		}
+		$preid = false;
 		if ($cats === 3) {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
 				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
 			$cats = 2;
+			$preid = true;
 		} else {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
@@ -140,7 +142,7 @@ class NameFixer
 					$this->checked++;
 				} else {
 					$this->done = $this->matched = false;
-					$this->checkName($relrow, $echo, $type, $namestatus, $show);
+					$this->checkName($relrow, $echo, $type, $namestatus, $show, $preid);
 					$this->checked++;
 					if ($this->checked % 500 === 0 && $show === 1) {
 						echo $this->c->alternate(number_format($this->checked) . " NFOs processed.\n");
