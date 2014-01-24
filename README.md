@@ -10,8 +10,8 @@ nZEDb improves upon the original design, implementing several new features inclu
 - Intelligent local caching of metadata
 - Optional tmux (terminal session multiplexing) engine that provides thread, database and performance monitoring
 - Image and video samples
-- sabnzbd integration web & API including pause/resume
-- CouchPotato integration web & API
+- sabnzbd integration web, API and pause/resume
+- CouchPotato integration web and API
 
   
 ## Prerequisites
