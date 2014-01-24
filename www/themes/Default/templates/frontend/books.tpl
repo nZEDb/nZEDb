@@ -123,7 +123,7 @@
                                 {assign var="bpass" value=","|explode:$result.grp_release_password}
                                 {assign var="binnerfiles" value=","|explode:$result.grp_rarinnerfilecount}
                                 {assign var="bhaspreview" value=","|explode:$result.grp_haspreview}
-                                {foreach from=$bsplits item=m}
+                                {foreach from=$bsplits item=b}
                                     <tr id="guid{$bguid[$b@index]}" {if $b@index > 1}class="relextra"{/if}>
                                         <td>
                                             <div class="icon"><input type="checkbox" class="nzb_check"
