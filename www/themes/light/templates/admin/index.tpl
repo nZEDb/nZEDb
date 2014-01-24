@@ -16,23 +16,23 @@
     You can also <a href="{$smarty.const.WWW_TOP}/group-edit.php">add your own groups</a> manually.</li>
 <li style="margin-bottom: 15px;">You should populate the TVRage table:
     <div class="code">
-        php misc/testing/DB_scripts/populate_tvrage.php true
+        php misc/testing/DB/populate_tvrage.php true
     </div>
 </li>
 <li style="margin-bottom: 15px;">Next you will want to get the latest headers. <b>This should be done from the
         command line</b>, using the linux or windows shell scripts found in:</b>
     <div class="code">
-        misc/update_scripts/nix_scripts
-        <br />misc/update_scripts/windows_scripts
-        <br />misc/update_scripts/nix_scripts/tmux
+        misc/update/nix
+        <br />misc/update/win
+        <br />misc/update/nix/tmux
     </div>
     as it can take some time. If this is your first time don't bother with the init scripts just open a command prompt...
-    <div class="code">cd nZEDb/misc/update_scripts<br/>php update_binaries.php</div>
+    <div class="code">cd nZEDb/misc/update<br/>php update_binaries.php</div>
 </li>
 <li style="margin-bottom: 15px;">After obtaining headers, the next step is to create releases. <b>This is best done
         from the command line</b> using the linux or windows shell scripts. If this is your first time dont bother with
         the init scripts just open a command prompt...
-    <div class="code">cd misc/update_scripts
+    <div class="code">cd misc/update
         <br />php update_releases.php 1 true</div>
 </li>
 <li style="margin-bottom: 15px;">If you intend to keep using nZEDb, it is best to sign up for your own api keys from

@@ -77,7 +77,7 @@ function BackupDatabase()
 
 	//Backup based on database system
 	if ($db->dbSystem() == "mysql") {
-		system("$PHP ${DIR}testing/DB_scripts/mysqldump_tables.php db dump ../../../");
+		system("$PHP ${DIR}testing/DB/mysqldump_tables.php db dump ../../../");
 	} else if ($db->dbSystem() == "pgsql") {
 		exit($c->error("Currently not supported on this platform."));
 	}
@@ -118,9 +118,9 @@ if (isset($os) && $os == "unix") {
 	}
 
 	/* 	if ($db->dbSystem() == "mysql")
-	  $patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/mysql_patches/', nZEDb_ROOT);
+	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/mysql_patches/', nZEDb_ROOT);
 	  else if ($db->dbSystem() == "pgsql")
-	  $patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/pgsql_patches/', nZEDb_ROOT);
+	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/pgsql_patches/', nZEDb_ROOT);
 	 */ sort($patches);
 
 	foreach ($patches as $patch) {
@@ -192,6 +192,6 @@ if ($patched > 0) {
 	if ($cleared) {
 		echo $c->header("The smarty template cache has been cleaned for you");
 	} else {
-		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c");
+		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "template_c");
 	}
 }

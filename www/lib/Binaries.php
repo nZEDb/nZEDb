@@ -44,7 +44,7 @@ class Binaries
 		if ($this->hashcheck == 0) {
 			echo $this->c->warning("We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.");
 			if (trim(fgets(fopen('php://stdin', 'r'))) != 'yes') {
-				exit($this->c->primary("If you want to run this manually, there is a script in misc/testing/DB_scripts/ called reset_Collections.php"));
+				exit($this->c->primary("If you want to run this manually, there is a script in misc/testing/DB/ called reset_Collections.php"));
 			}
 			$relss = new Releases(true);
 			$relss->resetCollections();
