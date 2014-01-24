@@ -27,6 +27,8 @@ class Install
 	public $nZEDb_MISC;
 	public $INSTALL_DIR;
 	public $ADMIN_USER;
+	public $ADMIN_FNAME;
+	public $ADMIN_LNAME;
 	public $ADMIN_PASS;
 	public $ADMIN_EMAIL;
 	public $NZB_PATH;
