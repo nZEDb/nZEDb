@@ -157,7 +157,7 @@
        
        # remove the ; if there is one preceding date.timezone  
        
-                date.timezone = Europe/London  
+                date.timezone = YourLocalTimezone  
                 
        # Press control+x when you are done to save and exit.  
        
