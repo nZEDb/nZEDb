@@ -825,6 +825,8 @@ class NameFixer
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: Title - SxxExx - Eptitle", $echo, $type, $namestatus, $show);
 		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\)\.nds/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus, $show);
+		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\.(pdf|html|epub|mobi|azw)/i', $release["textstring"], $result)) {
+			$this->updateRelease($release, $result["0"], $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
 		}
 	}
 
