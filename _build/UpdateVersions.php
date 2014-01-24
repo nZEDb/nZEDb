@@ -35,10 +35,17 @@ class UpdateVersions
 	 * @var object Sites/Settings
 	 */
 	protected $_settings;
+
+	/**
+	 * Shortcut to the nzedb->versions node to make method work shorter.
+	 * @var object SimpleXMLElement
+	 */
+	protected $_vers;
+
 	/**
 	 * @var object simpleXMLElement
 	 */
-	protected $_vers;
+	protected $_xml;
 
 	/**
 	 * Class constructor initialises the SimpleXML object and sets a few properties.
@@ -53,10 +60,24 @@ class UpdateVersions
 		$this->_filespec = $filepath;
 
 		$this->out = new ColorCLI();
-		$this->_vers = @new SimpleXMLElement($filepath, 0, true);
-		if ($this->_vers === false) {
-			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n");
+		$this->_xml = @new SimpleXMLElement($filepath, 0, true);
+		if ($this->_xml === false) {
+			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
 			throw new Exception("Failed to open versions XML file '$filename'");
+		}
+
+		if ($this->_xml->count() > 0) {
+			$vers = $this->_xml->xpath('/nzedb/versions');
+
+			if ($vers[0]->count() == 0) {
+				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) does not contain versioning info, try updating from git.");
+				throw new Exception("Failed to find versions node in XML file '$filename'");
+			} else {
+				$this->out->primary("Your versioning XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
+				$this->_vers = &$this->_xml->versions;
+			}
+		} else {
+			exit("No elements in file!\n");
 		}
 
 		$s = new Sites();
@@ -88,10 +109,9 @@ class UpdateVersions
 	 */
 	public function checkDb($update = true)
 	{
-		// this assumes that any new patches were applied prior to committing
 		if ($this->_vers->db < $this->_settings->sqlpatch) {
 			if ($update) {
-				echo $this->out->primary("Updating Db revision");
+				echo $this->out->primary("Updating Db revision to " . $this->_settings->sqlpatch);
 				$this->_vers->db = $this->_settings->sqlpatch;
 				$this->_changes |= self::UPDATED_DB_REVISION;
 			}
@@ -108,10 +128,11 @@ class UpdateVersions
 	public function checkGitCommit($update = true)
 	{
 		exec('git log | grep "^commit" | wc -l', $output);
-		if ($this->_vers->commit < $output[0]) {
+		if ($this->_vers->git->commit < $output[0]) {
 			if ($update) {
-				echo $this->out->primary("Updating commit number");
-				$this->_vers->commit = $output[0] + 1;
+				$output[0] += 1;
+				echo $this->out->primary("Updating commit number to {$output[0]}");
+				$this->_vers->git->commit = $output[0];
 				$this->_changes |= self::UPDATED_GIT_COMMIT;
 			}
 			return true;
@@ -135,10 +156,10 @@ class UpdateVersions
 		}
 
 		// TODO this needs a better test. Think PHP has a way to do this, will update later.
-		if (!empty($match) && $this->vers->nzedb->tag < $match) {
+		if (!empty($match) && $this->_vers->git->tag < $match) {
 			if ($update) {
-				echo $this->out->primary("Updating tagged version");
-				$this->_vers->tag = $match;
+				echo $this->out->primary("Updating tag version to $match");
+				$this->_vers->git->tag = $match;
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
 			return true;
@@ -148,7 +169,7 @@ class UpdateVersions
 /*
 	public function check($update = true)
 	{
-		if ($this->_versions->setting) {
+		if ($this->vers->setting) {
 			if ($update) {
 				echo $this->out->primary("\n");
 				;
@@ -172,8 +193,9 @@ class UpdateVersions
 	public function save()
 	{
 		if ($this->hasChanged()) {
-			$this->_vers->asXML($this->_filespec);
+			$this->_xml->asXML($this->_filespec);
 			$this->_changes = 0;
 		}
 	}
 }
+?>
