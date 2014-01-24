@@ -192,6 +192,6 @@ if ($patched > 0) {
 	if ($cleared) {
 		echo $c->header("The smarty template cache has been cleaned for you");
 	} else {
-		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "template_c");
+		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c");
 	}
 }
