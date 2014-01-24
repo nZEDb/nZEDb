@@ -1,4 +1,4 @@
-nZEDb automatically scans the usenet in a manner comparable to the way google search bots scan the internet. It does this by collecting usenet headers and temporarily storing them in a SQL database. It provides a web-based front-end providing search, browse and programmable (API) functionality.
+nZEDb automatically scans the usenet similar to the way google search bots scan the internet. It does this by collecting usenet headers and temporarily storing them in a SQL database. It provides a web-based front-end providing search, browse and programmable (API) functionality.
 
 This project is a fork of the open source usenet indexer newznab plus: https://github.com/anth0/nnplus
 
@@ -8,10 +8,11 @@ nZEDb improves upon the original design, implementing several new features inclu
 - NNTP-Proxy providing connection pooling (greatly reduce NNTP session establishment & tear-down between nZEDb and the usenet service provider)
 - Advanced search features (name, subject, category, post-date etc)
 - Intelligent local caching of metadata
-- Optional tmux (terminal session multiplexing) engine that provides thread, database and performance monitoring   ** link to tmux wiki page here **
-- Full sabnzbd integration web & API including pause/resume
-- Full CouchPotato integration web & API
-- ** extra feature marketing here **
+- Optional tmux (terminal session multiplexing) engine that provides thread, database and performance monitoring
+- Image and video samples
+- sabnzbd integration web & API including pause/resume
+- CouchPotato integration web & API
+
   
 ## Prerequisites
 
@@ -37,18 +38,18 @@ Specific installation guides for common Operating Systems can be found on the nZ
 
 In general, it's best to start with the simple screen scripts running in single-threaded mode. Enable one or two groups and slowly add more as you become familar with the application. Later, as required, enable mutli-threading and perhaps try the various tmux modii.
 
-## Support
+### Support
 
 There is a web forum were you may search for issues previously encountered by others: 
 http://nzedb.com/
 
 Also on IRC: irc.synirc.net #nZEDb
 
-## Note
+### Note
 
 The nZEDb team are not responsible for what is posted on the usenet. Best efforts are made to avoid hazardous content (e.g. virii) by nZEDb's automated processess. If you find any objectionable content, please direct any complaints to your usenet provider.
 
-## The Team
+### The Team
 
 Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo, Whitelighter and archer}<br /><br />
 Paypal: <a href="http://nzedb.com/index.php?action=treasury"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
