@@ -219,7 +219,6 @@ class Users
         if ($cp_api !== false) {
             $sql[] = sprintf('cp_api = %s', $db->escapeString($cp_api));
         }
-		printf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id);
         $db->queryExec(sprintf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id));
 
         return Users::SUCCESS;
@@ -294,8 +293,8 @@ class Users
 
     public function isValidUsername($uname)
     {
-        // Username must be at least five characters
-        return preg_match("/^[a-z][a-z0-9]{4,}$/i", $uname);
+        // Username must be at least five characters and is alphanumeric
+        return ((ctype_alnum($uname) && strlen($uname) > 4) ? true : false);
     }
 
     public function isValidPassword($pass)

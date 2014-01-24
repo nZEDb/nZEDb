@@ -26,20 +26,20 @@ if ($page->isPostBack()) {
 
 	include $cfg->nZEDb_WWW . '/lib/Net_NNTP/NNTP/Client.php';
 	$test = new Net_NNTP_Client();
+	$pear_obj = new PEAR();
 
 	$enc = false;
 	if ($cfg->NNTP_SSLENABLED) {
 		$enc = "ssl";
 	}
-
 	$cfg->nntpCheck = $test->connect($cfg->NNTP_SERVER, $enc, $cfg->NNTP_PORT);
-	if (PEAR::isError($cfg->nntpCheck)) {
+	if ($pear_obj->isError($cfg->nntpCheck)) {
 		$cfg->error = true;
 	}
 	// Commented out until the issue is resolved
 	elseif ($cfg->NNTP_USERNAME != "") {
 		$cfg->nntpCheck = $test->authenticate($cfg->NNTP_USERNAME, $cfg->NNTP_PASSWORD);
-		if (PEAR::isError($cfg->nntpCheck)) {
+		if ($pear_obj->isError($cfg->nntpCheck)) {
 			$cfg->error = true;
 		}
 	}
