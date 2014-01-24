@@ -105,7 +105,7 @@ class UpdateVersions
 	/**
 	 * Checks the database sqlpatch setting against the XML's stored value.
 	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return boolean True if the database sqlpatch version is more than that of XML element (.i.e. needs updating).
+	 * @return boolean The new database sqlpatch version, or false.
 	 */
 	public function checkDb($update = true)
 	{
@@ -115,7 +115,7 @@ class UpdateVersions
 				$this->_vers->db = $this->_settings->sqlpatch;
 				$this->_changes |= self::UPDATED_DB_REVISION;
 			}
-			return true;
+			return $this->_vers->db;
 		}
 		return false;
 	}
@@ -123,7 +123,7 @@ class UpdateVersions
 	/**
 	 * Checks the git commit number against the XML's stored value.
 	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return boolean True if the dgit commit number is more than that of XML element (.i.e. needs updating).
+	 * @return integer The new git commit number, or false.
 	 */
 	public function checkGitCommit($update = true)
 	{
@@ -135,7 +135,7 @@ class UpdateVersions
 				$this->_vers->git->commit = $output[0];
 				$this->_changes |= self::UPDATED_GIT_COMMIT;
 			}
-			return true;
+			return $this->_vers->git->commit;
 		}
 		return false;
 	}
@@ -144,7 +144,7 @@ class UpdateVersions
 	 * Checks the git's latest version tag against the XML's stored value. Version should be
 	 * Major.Minor.Revision (Note commit number is NOT revision)
 	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return boolean True if the git's latest version tag is higher than that of XML element (.i.e. needs updating).
+	 * @return boolean The new git's latest version tag, or false.
 	 */
 	public function checkGitTag($update = true)
 	{
@@ -162,7 +162,7 @@ class UpdateVersions
 				$this->_vers->git->tag = $match;
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
-			return true;
+			return $this->_vers->git->tag;
 		}
 		return false;
 	}
