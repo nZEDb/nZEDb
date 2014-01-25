@@ -8,6 +8,8 @@ Each update goes to the top of the file
 
 2014-01-23 -> niel     -> Fixed commit.sh and UpdateVersions.php so they work.
                           Updated versions file manually.
+                          Added new script commitIt in base directory to help with committing changes. It uses interactive mode for adding files to the index so that only those relevant to a change can be committed.
+                          Additionally it opens the changelog for updating before performing the git commit. It relies upon a git hook (not written yet) to call the UpdateVersions class.
 2014-01-23 -> bart39   -> fixed typos
                           added a.b.music to Category byGroup()
                           added a.b.town.cine & a.b.town.xx to ReleaseCleaning
