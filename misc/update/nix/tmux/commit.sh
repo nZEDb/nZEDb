@@ -6,7 +6,7 @@ then
 else
 	export NZEDB_ROOT="$(php ../../../../nZEDbBase.php)"
 fi
-echo "Site root is ${NZEDB_ROOT}\n"
+echo -e "Site root is ${NZEDB_ROOT}\n"
 
 nano ${NZEDB_ROOT}/Changelog
 cd ${NZEDB_ROOT}

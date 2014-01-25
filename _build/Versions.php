@@ -132,13 +132,15 @@ class Versions
 	public function checkGitCommit($update = true)
 	{
 		exec('git log | grep "^commit" | wc -l', $output);
-		if ($this->_vers->git->commit < $output[0]) {
+		// I added this, because it was not updating to commit + 1, only current commit number
+		$gitver = $output[0] + 1;
+		if ($this->_vers->git->commit < $gitver) {
 			if ($update) {
 				if (GIT_PRE_COMMIT === true) { // only allow the pre-commit script to set the NEXT commit number
-					$output[0] += 1;
+					$gitver;
 				}
-				echo $this->out->primary("Updating commit number to {$output[0]}");
-				$this->_vers->git->commit = $output[0];
+				echo $this->out->primary("Updating commit number to ${gitver}");
+				$this->_vers->git->commit = $gitver;
 				$this->_changes |= self::UPDATED_GIT_COMMIT;
 			}
 			return $this->_vers->git->commit;
