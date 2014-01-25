@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/../www/config.php';
+require_once realpath(dirname(__FILE__) . '/../www/config.php');
 
 if (PHP_SAPI == 'cli') {
 	$vers = new UpdateVersions();
@@ -7,7 +7,7 @@ if (PHP_SAPI == 'cli') {
 	$vers->save();
 }
 
-class UpdateVersions
+class Versions
 {
 	/**
 	 * These constants are bitwise for checking what was changed.
