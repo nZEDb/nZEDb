@@ -2,7 +2,7 @@
 require_once realpath(dirname(__FILE__) . '/../www/config.php');
 
 if (PHP_SAPI == 'cli') {
-	$vers = new UpdateVersions();
+	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
 }

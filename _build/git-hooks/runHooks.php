@@ -23,11 +23,12 @@ require_once realpath(dirname(__FILE__) . '/../../www/config.php');
 $status = false;
 
 
+
 /**
  * Add all hooks BEFORE the versions are updated so they can be skipped on any errors
  */
 if ($status === false) {
-	$vers = new UpdateVersions();
+	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
 	exec('git add ' . nZEDb_VERSIONS);
