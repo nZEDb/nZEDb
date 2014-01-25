@@ -25,9 +25,6 @@
     <table style="width:100%;" class="data highlight icons" id="browsetable">
         {foreach $serieslist as $sletter => $series}
             <tr>
-                <td style="padding-top:15px;" colspan="10"><a href="#top" class="top_link">Top</a><h2>{$sletter}...</h2></td>
-            </tr>
-            <tr>
                 <th width="35%">Name</th>
                 <th>Country</th>
                 <th width="35%">Genre</th>

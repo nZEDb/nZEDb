@@ -7,6 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-01-24 -> jonnyboy -> fixed light->calendar, but can't figure the padding, if i add it, it borks the theme
+2014-01-24 -> bart39   -> fixed grabnzb's queries
 2014-01-24 -> jonnyboy -> removed _scripts from remaining files, updated paths shown in admin->index.php
                           fixed bug in reset_truncate.php when true not echoing tables truncated
                           added another pattern to regex for valid headers
