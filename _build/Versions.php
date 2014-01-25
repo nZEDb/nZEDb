@@ -1,6 +1,10 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../www/config.php');
 
+if (!defined('GIT_PRE_COMMIT')) {
+	define('GIT_PRE_COMMIT', false);
+}
+
 if (PHP_SAPI == 'cli') {
 	$vers = new Versions();
 	$vers->checkAll();
@@ -128,8 +132,8 @@ class Versions
 	public function checkGitCommit($update = true)
 	{
 		exec('git log | grep "^commit" | wc -l', $output);
-		if ($this->_vers->git->commit <= $output[0]) {
-			if ($update) {
+		if ($this->_vers->git->commit < $output[0]) {
+			if ($update && GIT_PRE_COMMIT === true) {
 				$output[0] += 1;
 				echo $this->out->primary("Updating commit number to {$output[0]}");
 				$this->_vers->git->commit = $output[0];
