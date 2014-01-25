@@ -6,7 +6,7 @@ $output = new ColorCLI();
 echo $output->primary("Checking for files in the renamed directories.");
 $status = 0;
 
-$dirs = [
+$dirs = array(
 	[
 		'old' => 'misc/testing/DB_scripts',
 		'newpath' => 'misc/testing/DB'
@@ -67,7 +67,7 @@ $dirs = [
 		'old' => 'misc/update_scripts',
 		'newpath' => 'misc/update'
 	],
-];
+);
 
 $tatus = 0;
 foreach ($dirs as $dir) {

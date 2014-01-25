@@ -15,9 +15,6 @@ define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 // Used to refer to the /www/lib class files.
 define('nZEDb_LIB', nZEDb_WWW . 'lib' . DS);
 
-// Used to refer to the /www/phpsysinfo class files.
-define('nZEDb_SYS', nZEDb_WWW . 'phpsysinfo' . DS);
-
 if (function_exists('ini_set') && function_exists('ini_get')) {
 	$ps = (strtolower(PHP_OS) == 'windows') ? ';' : ':';
 	ini_set('include_path', nZEDb_WWW . $ps . ini_get('include_path'));
@@ -45,13 +42,6 @@ define("ITEMS_PER_COVER_PAGE", "20");
 define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml');
 
 require_once 'SPLClassLoader.php';
-$paths = array(
-	nZEDb_LIB,
-	SMARTY_DIR,
-	SMARTY_DIR . 'plugins',
-	SMARTY_DIR . 'sysplugins'
-);
+$paths = array(nZEDb_LIB, SMARTY_DIR, SMARTY_DIR . 'plugins', SMARTY_DIR . 'sysplugins');
 $classLoader = new SplClassLoader(null, $paths);
 $classLoader->register();
-
-?>

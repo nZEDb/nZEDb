@@ -74,8 +74,8 @@ class DB extends PDO
 				if (defined('DB_PORT')) {
 					$dsn .= ';port=' . DB_PORT;
 				}
-				$dsn .= ';charset=utf8';
 			}
+			$dsn .= ';charset=utf8';
 		} else {
 			$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
 		}
@@ -83,7 +83,7 @@ class DB extends PDO
 		try {
 			$options = array(PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_LOCAL_INFILE => true);
 			if ($this->dbsystem == 'mysql') {
-				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'utf8'";
+				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			}
 
 			self::$pdo = new PDO($dsn, DB_USER, DB_PASSWORD, $options);

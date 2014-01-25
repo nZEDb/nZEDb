@@ -21,7 +21,7 @@ $bFound = false;
 $newTitle = '';
 $updated = 0;
 if (count($requestIDtmp) >= 1) {
-	$requestID = (int)$requestIDtmp[0];
+	$requestID = (int) $requestIDtmp[0];
 	if ($requestID != 0 and $requestID != '') {
 		// Do a local lookup first
 		$newTitle = localLookup($requestID, $pieces[2], $pieces[1]);
@@ -43,28 +43,29 @@ if ($bFound === true) {
 	$groupname = $groups->getByNameByID($pieces[2]);
 	$determinedcat = $category->determineCategory($title, $groupname);
 	$run = $db->queryDirect(sprintf('UPDATE releases set preid = %d, reqidstatus = 1, bitwise = ((bitwise & ~4)|4), searchname = %s, '
-		. 'categoryid = %d where id = %d', $preid, $db->escapeString($title), $determinedcat, $pieces[0]));
+			. 'categoryid = %d where id = %d', $preid, $db->escapeString($title), $determinedcat, $pieces[0]));
 	$groupid = $groups->getIDByName($pieces[2]);
 	if ($groupid !== 0) {
 		$md5 = md5($title);
 		$db->queryDirect(sprintf("INSERT IGNORE INTO predb (title, adddate, source, md5, requestid, groupid) VALUES "
-			. "(%s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d", $db->escapeString($title), $db->escapeString('requestWEB'), $db->escapeString($md5), $requestID, $groupid, $requestID));
+				. "(%s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d", $db->escapeString($title), $db->escapeString('requestWEB'), $db->escapeString($md5), $requestID, $groupid, $requestID));
 	} else if ($groupid === 0) {
 		echo $requestID . "\n";
 	}
 	$newcatname = $category->getNameByID($determinedcat);
 	$method = ($local === true) ? 'requestID local' : 'requestID web';
 	echo $c->headerOver($n . $n . 'New name:  ') . $c->primary($title) .
-		$c->headerOver('Old name:  ') . $c->primary($pieces[1]) .
-		$c->headerOver('New cat:   ') . $c->primary($newcatname) .
-		$c->headerOver('Group:     ') . $c->primary(trim($pieces[2])) .
-		$c->headerOver('Method:    ') . $c->primary($method) .
-		$c->headerOver('ReleaseID: ') . $c->primary($pieces[0]);
+	$c->headerOver('Old name:  ') . $c->primary($pieces[1]) .
+	$c->headerOver('New cat:   ') . $c->primary($newcatname) .
+	$c->headerOver('Group:     ') . $c->primary(trim($pieces[2])) .
+	$c->headerOver('Method:    ') . $c->primary($method) .
+	$c->headerOver('ReleaseID: ') . $c->primary($pieces[0]);
 	$updated++;
 } else {
 	$db->queryExec('UPDATE releases SET reqidstatus = -3 WHERE id = ' . $pieces[0]);
 	echo '.';
 }
+
 function getReleaseNameFromRequestID($site, $requestID, $groupName)
 {
 	$s = new Sites();

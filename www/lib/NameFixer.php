@@ -67,7 +67,7 @@ class NameFixer
 			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC";
 		} else if ($db->dbSystem() == 'pgsql') {
 			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
-			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') GROUP BY rel.id ORDER BY postdate";
+			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') GROUP BY rel.id ORDER BY postdate DESC";
 		}
 		$this->fullother = " AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id";
 		$this->fullall = "";
@@ -94,11 +94,13 @@ class NameFixer
 		} else if ($db->dbSystem() == "pgsql") {
 			$uc = "nfo";
 		}
+		$preid = false;
 		if ($cats === 3) {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
 				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
 			$cats = 2;
+			$preid = true;
 		} else {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
@@ -140,7 +142,7 @@ class NameFixer
 					$this->checked++;
 				} else {
 					$this->done = $this->matched = false;
-					$this->checkName($relrow, $echo, $type, $namestatus, $show);
+					$this->checkName($relrow, $echo, $type, $namestatus, $show, $preid);
 					$this->checked++;
 					if ($this->checked % 500 === 0 && $show === 1) {
 						echo $this->c->alternate(number_format($this->checked) . " NFOs processed.\n");
