@@ -20,7 +20,7 @@
  */
 require_once realpath(dirname(__FILE__) . '/../../www/config.php');
 
-$status = false;
+$error = true;
 
 
 
@@ -33,5 +33,5 @@ if ($status === false) {
 	$vers->save();
 	exec('git add ' . nZEDb_VERSIONS);
 }
-exit($status);
+exit($error);
 ?>

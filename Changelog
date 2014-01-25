@@ -8,6 +8,8 @@ Each update goes to the top of the file
 
 
 2014-01-25 -> niel     -> New: Added a git pre-commit hook file and a script to install/update it. I'll add more functionality to the hook as I can.
+                          New: Added a git/hooks/precommit entry to versions file.
+                          Fix: Changed UpdateVersions class to Versions, as it will be doing more than just updating.
 2014-01-24 -> niel     -> Fix: Changes to commit.sh and UpdateVersions.php so they work.
                           Fix: Updated versions file manually.
                           New: Added new script commit in base directory to help with committing changes. It uses interactive mode for adding files to the index so that only those relevant to a change can be committed.

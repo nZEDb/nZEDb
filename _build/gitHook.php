@@ -51,6 +51,7 @@ while ($index < $count) {
 		$index++;
 		$file[$index] = trim($file[$index]);
 		switch ($match[1]) {
+			case 'update version info':
 			case 'run hooks':
 				$hook = 'php ' . nZEDb_ROOT . '_build/git-hooks/runHooks.php)';
 				if ($hook != $file[$index]) {

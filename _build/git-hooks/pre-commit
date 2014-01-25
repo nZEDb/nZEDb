@@ -46,7 +46,7 @@ then
 	exit 1
 fi
 
-#nZEDb hook - update version info
+#nZEDb hook - run hooks
 # placeholder ;-)
 if [ $? != 0 ]
 then
