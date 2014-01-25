@@ -17,5 +17,3 @@ cd ${NZEDB_ROOT}
 php "${NZEDB_ROOT}/_build/UpdateVersions.php"
 
 git commit -a
-
-

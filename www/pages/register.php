@@ -44,7 +44,7 @@ if ($showregister == 0) {
 				} else {
 					switch ($ret) {
 						case Users::ERR_SIGNUP_BADUNAME:
-							$page->smarty->assign('error', "Your username must be longer than five characters.");
+							$page->smarty->assign('error', "Your username must be at least five characters.");
 							break;
 						case Users::ERR_SIGNUP_BADPASS:
 							$page->smarty->assign('error', "Your password must be longer than eight characters.");

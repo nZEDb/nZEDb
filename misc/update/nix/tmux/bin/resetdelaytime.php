@@ -1,9 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $db = new DB();
 $s = new Sites();
@@ -24,12 +21,12 @@ if ($tablepergroup == 1) {
 			$ran += $run->rowCount();
 		}
 	}
-	echo $c->primary($ran . " collections reset.");
+	echo $c->primary(number_format($ran) . " collections reset.");
 } else {
 	$run = $db->queryExec('update collections set dateadded = now()');
-	echo $c->primary($run->rowCount() . " collections reset.");
+	echo $c->primary(number_format($run->rowCount()) . " collections reset.");
 }
 
 $run = $db->queryExec('update nzbs set dateadded = now()');
-echo $c->primary($run->rowCount() . " nzbs reset.");
+echo $c->primary(number_format($run->rowCount()) . " nzbs reset.");
 sleep(2);

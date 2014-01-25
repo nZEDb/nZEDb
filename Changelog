@@ -6,12 +6,26 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-01-23 -> niel     -> Fix: Changes to commit.sh and UpdateVersions.php so they work.
+2014-01-24 -> niel     -> Fix: Changes to commit.sh and UpdateVersions.php so they work.
                           Fix: Updated versions file manually.
                           New: Added new script commit in base directory to help with committing changes. It uses interactive mode for adding files to the index so that only those relevant to a change can be committed.
                                Additionally it opens the changelog for updating before performing the git commit. It relies upon a git hook (not written yet) to call the UpdateVersions class.
                           Fix: Removed the crap at the end
                           Fix: Added explicit adding of the Changelog to staging after the editor is closed.
+2014-01-24 -> jonnyboy -> fixed light->calendar, but can't figure the padding, if i add it, it borks the theme
+2014-01-24 -> bart39   -> fixed grabnzb's queries
+2014-01-24 -> jonnyboy -> removed _scripts from remaining files, updated paths shown in admin->index.php
+                          fixed bug in reset_truncate.php when true not echoing tables truncated
+                          added another pattern to regex for valid headers
+                          fixed UpdateVersions.php to update nZEDb.xml, fixed start.php and monitor.php to correctly get values from nZEDb.xml
+                          changed DB.php to properlly set utf-8, may be the cause of some errors
+                          set renametopre.php and rixReleaseNames.php that when using preid, it only compares to predb table
+2014-01-14 -> egandt   -> typo in mis/testind/DB/patchDB for templates_c (was template_c)
+2014-01-24 -> bart39   -> fixed some collection cleaning regexes for requestid's
+2014-01-24 -> jonnyboy -> updated convert_to_mysql.php when using innodb compressed, to set releasenfo as innodb dynamic, since the content is compressed
+2014-01-24 -> bart39   -> changed book cover view so that books are grouped by bookinfoid (similar concept to movie cover view)
+                          fixed book order by clause for author
+2014-01-24 -> Draven714-> updated Username check, PHP 5.3 compatible install, SAB Url & API Key check
 2014-01-23 -> bart39   -> fixed typos
                           added a.b.music to Category byGroup()
                           added a.b.town.cine & a.b.town.xx to ReleaseCleaning
