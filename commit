@@ -5,6 +5,6 @@ export NZEDB_ROOT="$(pwd)"
 git add -i
 
 nano Changelog
+git add Changelog
 
 git commit
-apt-get install mariadb-server-5.5 mariadb-client-5.5 libmysqlclient18=5.5.34+maria-1~saucy mysql-common=5.5.34+maria-1~saucy
