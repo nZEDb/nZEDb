@@ -4,4 +4,4 @@ BEGIN
                 -- Ignore duplicate inserts.
 END;
 
-UPDATE `site` set `value` = '170' where `setting` = 'sqlpatch';
+UPDATE `site` set `value` = '171' where `setting` = 'sqlpatch';
