@@ -47,8 +47,8 @@ then
 fi
 
 #nZEDb hook - run hooks
-# placeholder ;-)
-if [ $? != 0 ]
+# placeholder for script to add command with correct path ;-)
+if [ $? -gt 0 ]
 then
   exit 1
 fi

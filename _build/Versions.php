@@ -133,8 +133,10 @@ class Versions
 	{
 		exec('git log | grep "^commit" | wc -l', $output);
 		if ($this->_vers->git->commit < $output[0]) {
-			if ($update && GIT_PRE_COMMIT === true) {
-				$output[0] += 1;
+			if ($update) {
+				if (GIT_PRE_COMMIT === true) { // only allow the pre-commit script to set the NEXT commit number
+					$output[0] += 1;
+				}
 				echo $this->out->primary("Updating commit number to {$output[0]}");
 				$this->_vers->git->commit = $output[0];
 				$this->_changes |= self::UPDATED_GIT_COMMIT;
