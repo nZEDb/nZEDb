@@ -20,8 +20,8 @@
  */
 require_once realpath(dirname(__FILE__) . '/../../www/config.php');
 
-$error = true;
-
+$error = false;
+echo "Running pre -commit hooks\n";
 
 
 /**
@@ -32,7 +32,7 @@ if ($status === false) {
 	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
-	exec('git add ' . nZEDb_VERSIONS);
+	passthru('git add ' . nZEDb_VERSIONS);
 }
 exit($error);
 ?>
