@@ -7,7 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-
+2014-01-25 -> niel     -> New: Added a git pre-commit hook file and a script to install/update it. I'll add more functionality to the hook as I can.
 2014-01-24 -> niel     -> Fix: Changes to commit.sh and UpdateVersions.php so they work.
                           Fix: Updated versions file manually.
                           New: Added new script commit in base directory to help with committing changes. It uses interactive mode for adding files to the index so that only those relevant to a change can be committed.
