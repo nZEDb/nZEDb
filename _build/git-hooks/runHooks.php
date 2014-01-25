@@ -28,6 +28,7 @@ $error = true;
  * Add all hooks BEFORE the versions are updated so they can be skipped on any errors
  */
 if ($status === false) {
+	define('GIT_PRE_COMMIT', true);
 	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
