@@ -4,7 +4,10 @@
 		<db>170</db>
 		<git>
 			<tag>0.3</tag>
-			<commit>5169</commit>
+			<commit>5171</commit>
+			<hooks>
+				<precommit>1</precommit>
+			</hooks>
 		</git>
 	</versions>
 </nzedb>
