@@ -70,6 +70,7 @@ class Nfo
 		if ($possibleNFO === false) {
 			return $r;
 		}
+
 		// Make sure it's not too big or small, size needs to be at least 12 bytes for header checking.
 		$size = strlen($possibleNFO);
 		if ($size < 100 * 1024 && $size > 12) {
@@ -87,11 +88,11 @@ class Nfo
 						$result = $result[0];
 					}
 				}
-				$test = preg_match('#^.*(ISO-8859|UTF-8 Unicode|ASCII( English|)) text.*$#i', $result);
+				$test = preg_match('#^.*(ISO-8859|UTF-8 Unicode( \(with BOM\)|)|ASCII)( English| C++ Program|) text.*$#i', $result);
 				// if the result is false, something went wrong, continue with getID3 tests.
 				if ($test !== false) {
 					if ($test === 0) {
-						copy($tmpPath, $this->tmpPath.$guid.'.tmp');
+						copy($tmpPath, nZEDb_ROOT . 'nzbfiles' . DS . $guid . '.nfo');
 					}
 					@unlink($tmpPath);
 					return $test;
