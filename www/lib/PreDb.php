@@ -385,7 +385,7 @@ Class PreDb
 		$newnames = 0;
 		$arr = array('http://predb.me/?cats=movies-sd&rss=1', 'http://predb.me/?cats=movies-hd&rss=1', 'http://predb.me/?cats=movies-discs&rss=1', 'http://predb.me/?cats=tv-sd&rss=1', 'http://predb.me/?cats=tv-hd&rss=1', 'http://predb.me/?cats=tv-discs&rss=1', 'http://predb.me/?cats=music-audio&rss=1', 'http://predb.me/?cats=music-video&rss=1', 'http://predb.me/?cats=music-discs&rss=1', 'http://predb.me/?cats=games-pc&rss=1', 'http://predb.me/?cats=games-xbox&rss=1', 'http://predb.me/?cats=games-playstation&rss=1', 'http://predb.me/?cats=games-nintendo&rss=1', 'http://predb.me/?cats=apps-windows&rss=1', 'http://predb.me/?cats=apps-linux&rss=1', 'http://predb.me/?cats=apps-mac&rss=1', 'http://predb.me/?cats=apps-mobile&rss=1', 'http://predb.me/?cats=books-ebooks&rss=1', 'http://predb.me/?cats=books-audio-books&rss=1', 'http://predb.me/?cats=xxx-videos&rss=1', 'http://predb.me/?cats=xxx-images&rss=1', 'http://predb.me/?cats=dox&rss=1', 'http://predb.me/?cats=unknown&rss=1');
 		foreach ($arr as &$value) {
-			$releases = simplexml_load_file($value);
+			$releases = @simplexml_load_file($value);
 			if ($releases !== false) {
 				foreach ($releases->channel->item as $release) {
 					$md5 = md5($release->title);
