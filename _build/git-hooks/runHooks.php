@@ -29,10 +29,15 @@ echo "Running pre -commit hooks\n";
  * Add all hooks BEFORE the versions are updated so they can be skipped on any errors
  */
 if ($error === false) {
-	$vers = new Versions();
-	$vers->checkAll();
-	$vers->save();
-	passthru('git add ' . nZEDb_VERSIONS);
+	exec("git branch -a | grep \*", $output);
+	if ($output == '* dev') { // Only update versions on the dev branch to lessen conflicts
+		$vers = new Versions();
+		$vers->checkAll();
+		$vers->save();
+		passthru('git add ' . nZEDb_VERSIONS);
+	} else {
+		echo "not dev branch, skipping version updates\n";
+	}
 }
 exit($error);
 ?>
