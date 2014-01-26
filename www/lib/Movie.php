@@ -768,7 +768,7 @@ class Movie
 					if ($traktimdbid !== false) {
 						$imdbId = $this->domovieupdate($traktimdbid, 'Trakt', $arr['id']);
 						if ($imdbId === false) {
-							// No imdb id found, set to all zeros so we dont process again.
+							// No imdb id found, set to all zeros so we don't process again.
 							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 						} else {
 							continue;
@@ -792,7 +792,7 @@ class Movie
 											$googlelimit++;
 											$imdbId = $this->domovieupdate($buffer, 'Google2', $arr["id"]);
 											if ($imdbId === false) {
-												//no imdb id found, set to all zeros so we dont process again
+												//no imdb id found, set to all zeros so we don't process again
 												$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 											} else {
 												continue;

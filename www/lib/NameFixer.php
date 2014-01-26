@@ -69,8 +69,8 @@ class NameFixer
 			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
 			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') GROUP BY rel.id ORDER BY postdate DESC";
 		}
-		$this->fullother = " AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
-		$this->fullall = " ORDER BY postdate DESC";
+		$this->fullother = " AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id";
+		$this->fullall = "";
 		$this->done = $this->matched = false;
 		$this->c = new ColorCLI();
 		$this->consoletools = new ConsoleTools();
@@ -94,25 +94,36 @@ class NameFixer
 		} else if ($db->dbSystem() == "pgsql") {
 			$uc = "nfo";
 		}
-		$query = "SELECT rel.id AS releaseid FROM releases rel "
-			. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-			. "WHERE categoryid != 5070 AND ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
-			//. "WHERE preid IS NULL";
-
+		$preid = false;
+		if ($cats === 3) {
+			$query = "SELECT rel.id AS releaseid FROM releases rel "
+				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
+				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
+			$cats = 2;
+			$preid = true;
+		} else {
+			$query = "SELECT rel.id AS releaseid FROM releases rel "
+				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
+				. "WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
+		}
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
+			echo $this->c->header($query . $this->timeother . ";\n");
 			$relres = $db->queryDirect($query . $this->timeother);
 		}
 		//24 hours, all cats
 		else if ($time == 1 && $cats == 2) {
+			echo $this->c->header($query . $this->timeall . ";\n");
 			$relres = $db->queryDirect($query . $this->timeall);
 		}
 		//other cats
 		else if ($time == 2 && $cats == 1) {
+			echo $this->c->header($query . $this->fullother . ";\n");
 			$relres = $db->queryDirect($query . $this->fullother);
 		}
 		//all cats
 		if ($time == 2 && $cats == 2) {
+			echo $this->c->header($query . $this->fullall . ";\n");
 			$relres = $db->queryDirect($query . $this->fullall);
 		}
 		$total = $relres->rowCount();
@@ -131,7 +142,7 @@ class NameFixer
 					$this->checked++;
 				} else {
 					$this->done = $this->matched = false;
-					$this->checkName($relrow, $echo, $type, $namestatus, $show);
+					$this->checkName($relrow, $echo, $type, $namestatus, $show, $preid);
 					$this->checked++;
 					if ($this->checked % 500 === 0 && $show === 1) {
 						echo $this->c->alternate(number_format($this->checked) . " NFOs processed.\n");
@@ -163,26 +174,38 @@ class NameFixer
 
 		$db = $this->db;
 		$type = "Filenames, ";
-		$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
-			. "rel.id AS releaseid FROM releases rel "
-			. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
-			. "WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 128) = 0";
-			//. "WHERE preid IS NULL";
-
+		$preid = false;
+		if ($cats === 3) {
+			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
+				. "rel.id AS releaseid FROM releases rel "
+				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
+				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
+			$cats = 2;
+			$preid = true;
+		} else {
+			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
+				. "rel.id AS releaseid FROM releases rel "
+				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
+				. "WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 128) = 0";
+		}
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
+			echo $this->c->header($query . $this->timeother . ";\n");
 			$relres = $db->queryDirect($query . $this->timeother);
 		}
 		//24 hours, all cats
 		if ($time == 1 && $cats == 2) {
+			echo $this->c->header($query . $this->timeall . ";\n");
 			$relres = $db->queryDirect($query . $this->timeall);
 		}
 		//other cats
 		if ($time == 2 && $cats == 1) {
+			echo $this->c->header($query . $this->fullother . ";\n");
 			$relres = $db->queryDirect($query . $this->fullother);
 		}
 		//all cats
 		if ($time == 2 && $cats == 2) {
+			echo $this->c->header($query . $this->fullall . ";\n");
 			$relres = $db->queryDirect($query . $this->fullall);
 		}
 		$total = $relres->rowCount();
@@ -191,7 +214,7 @@ class NameFixer
 			sleep(2);
 			foreach ($relres as $relrow) {
 				$this->done = $this->matched = false;
-				$this->checkName($relrow, $echo, $type, $namestatus, $show);
+				$this->checkName($relrow, $echo, $type, $namestatus, $show, $preid);
 				$this->checked++;
 				if ($this->checked % 500 == 0 && $show === 1) {
 					echo $this->c->alternate(number_format($this->checked) . " files processed.");
@@ -225,23 +248,32 @@ class NameFixer
 		}
 
 		$db = $this->db;
-		$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 32) = 0";
+		if ($cats === 3) {
+			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE (bitwise & 256) = 256 AND preid IS NULL";
+			$cats = 2;
+		} else {
+			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 32) = 0";
+		}
 
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
+			echo $this->c->header($query . $this->timeother . ";\n");
 			$relres = $db->queryDirect($query . $this->timeother);
 		}
-		//24 hours, other cats
+		//24 hours, all cats
 		if ($time == 1 && $cats == 2) {
-			$relres = $db->queryDirect($query . $this->timeother);
+			echo $this->c->header($query . $this->timeall . ";\n");
+			$relres = $db->queryDirect($query . $this->timeall);
 		}
 		//other cats
 		if ($time == 2 && $cats == 1) {
+			echo $this->c->header($query . $this->fullother . ";\n");
 			$relres = $db->queryDirect($query . $this->fullother);
 		}
-		//other cats
+		//all cats
 		if ($time == 2 && $cats == 2) {
-			$relres = $db->queryDirect($query . $this->fullother);
+			echo $this->c->header($query . $this->fullall . ";\n");
+			$relres = $db->queryDirect($query . $this->fullall);
 		}
 		$total = $relres->rowCount();
 		if ($total > 0) {
@@ -273,7 +305,7 @@ class NameFixer
 	}
 
 	//  Update the release with the new information.
-	public function updateRelease($release, $name, $method, $echo, $type, $namestatus, $show)
+	public function updateRelease($release, $name, $method, $echo, $type, $namestatus, $show, $preid = 'NULL')
 	{
 		if ($this->relid !== $release["releaseid"]) {
 			$namecleaning = new ReleaseCleaning();
@@ -326,11 +358,11 @@ class NameFixer
 						} else if ($type == "Filenames, ") {
 							$status = "bitwise = ((bitwise & ~133)|133),";
 						}
-						$run = $db->queryExec(sprintf("UPDATE releases SET searchname = %s, bitwise = ((bitwise & ~4)|4),"
-								. " %s categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
+						$run = $db->queryExec(sprintf("UPDATE releases SET preid = %s, searchname = %s, bitwise = ((bitwise & ~4)|4),"
+								. " %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
 					} else {
-						$run = $db->queryExec(sprintf("UPDATE releases SET searchname = %s, bitwise = ((bitwise & ~1)|1), "
-								. "categoryid = %d WHERE id = %d", $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
+						$run = $db->queryExec(sprintf("UPDATE releases SET preid = %s, searchname = %s, bitwise = ((bitwise & ~1)|1), "
+								. "categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
 					}
 				}
 			}
@@ -374,24 +406,30 @@ class NameFixer
 	}
 
 	//  Check the array using regex for a clean name.
-	public function checkName($release, $echo, $type, $namestatus, $show)
+	public function checkName($release, $echo, $type, $namestatus, $show, $preid = false)
 	{
 		// Get pre style name from releases.name
 		$matches = '';
-		preg_match_all('/([\w\(\)]+[\._]([\w\(\)]+[\._-])+[\w\(\)]+-\w+)/', $release['textstring'], $matches);
-		foreach ($matches as $match) {
-			foreach ($match as $val) {
-				$title = $this->db->queryOneRow("SELECT title from predb WHERE title = " . $this->db->escapeString(trim($val)));
-				if (isset($title['title'])) {
-					$this->cleanerName = $title['title'];
-					if (!empty($this->cleanerName)) {
-						$this->updateRelease($release, $title['title'], $method = "preDB: Match", $echo, $type, $namestatus, $show);
-						continue;
+		if (preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $release['textstring'], $matches)) {
+			foreach ($matches as $match) {
+				foreach ($match as $val) {
+					$title = $this->db->queryOneRow("SELECT title, id from predb WHERE title = " . $this->db->escapeString(trim($val)));
+					if (isset($title['title'])) {
+						$this->cleanerName = $title['title'];
+						if (!empty($this->cleanerName)) {
+							$this->updateRelease($release, $title['title'], $method = "preDB: Match", $echo, $type, $namestatus, $show, $title['id']);
+							continue;
+						}
 					}
 				}
 			}
 		}
-		return false;
+
+		// if processing preid on filename, do not continue
+		if ($preid === true) {
+			return false;
+		}
+
 		if ($type == "PAR2, ") {
 			$this->fileCheck($release, $echo, $type, $namestatus, $show);
 		} else {
@@ -789,6 +827,8 @@ class NameFixer
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: Title - SxxExx - Eptitle", $echo, $type, $namestatus, $show);
 		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\)\.nds/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus, $show);
+		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\.(pdf|html|epub|mobi|azw)/i', $release["textstring"], $result)) {
+			$this->updateRelease($release, $result["0"], $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
 		}
 	}
 

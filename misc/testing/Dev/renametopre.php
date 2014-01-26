@@ -15,7 +15,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
  */
 
 $c = new ColorCLI();
-if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || is_numeric($argv[1])))) {
+if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || $argv[1] == "preid" || is_numeric($argv[1])))) {
 	exit($c->error("\nThis script will attempt to rename releases using regexes first from ReleaseCleaning.php and then from this file.\n"
 			. "An optional last argument, show, will display the release name changes.\n\n"
 			. "php $argv[0] full                    ...: To process all releases not previously renamed.\n"
@@ -23,7 +23,8 @@ if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || is_numeric(
 			. "php $argv[0] all                     ...: To process all releases.\n"
 			. "php $argv[0] full 155                ...: To process all releases in groupid 155 not previously renamed.\n"
 			. "php $argv[0] all 155                 ...: To process all releases in groupid 155.\n"
-			. "php $argv[0] all '(155, 140)'        ...: To process all releases in groupids 155 and 140.\n"));
+			. "php $argv[0] all '(155, 140)'        ...: To process all releases in groupids 155 and 140.\n"
+			. "php $argv[0] preid                   ...: To process all releases where not matched to predb.\n"));
 }
 preName($argv, $argc);
 
@@ -42,17 +43,22 @@ function preName($argv, $argc)
 
 	$counter = 0;
 	$c = new ColorCLI();
-	$full = $all = false;
+	$full = $all = $usepre = false;
 	$what = $where = $why = '';
 	if ($argv[1] === 'full') {
 		$full = true;
 	} else if ($argv[1] === 'all') {
 		$all = true;
+	} else if ($argv[1] === 'preid') {
+		$usepre = true;
 	} else if (is_numeric($argv[1])) {
 		$what = ' AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR';
 	}
 
-	if (isset($argv[1]) && is_numeric($argv[1])) {
+	if ($usepre === true) {
+		$where = '';
+		$why = ' WHERE preid IS NULL AND (bitwise & 256) = 256';
+	} else if (isset($argv[1]) && is_numeric($argv[1])) {
 		$where = '';
 		$why = ' WHERE (bitwise & 260) = 256';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
@@ -87,22 +93,26 @@ function preName($argv, $argc)
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row) {
 			$groupname = $groups->getByNameByID($row['groupid']);
-			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $groupname);
+			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $groupname, $usepre);
+			$preid = "NULL";
+			$predb = $increment = false;
 			if (!is_array($cleanerName)) {
 				$cleanName = trim($cleanerName);
 				$propername = $increment = true;
+				$run = $db->queryOneRow("SELECT id FROM predb WHERE title = " . $db->escapeString($row['groupid']));
+				if (isset($run['id'])) {
+					$preid = $run["id"];
+					$predb = true;
+				}
 			} else {
 				$cleanName = trim($cleanerName["cleansubject"]);
 				$propername = $cleanerName["properlynamed"];
 				if (isset($cleanerName["increment"])) {
 					$increment = $cleanerName["increment"];
-				} else {
-					$increment = false;
 				}
 				if (isset($cleanerName["predb"])) {
-					$predb = $cleanerName["predb"];
-				} else {
-					$predb = false;
+					$preid = $cleanerName["predb"];
+					$predb = true;
 				}
 			}
 
@@ -128,19 +138,16 @@ function preName($argv, $argc)
 						//echo $row["name"] . "\n";
 					} else {
 						$determinedcat = $category->determineCategory($row["name"], $row["groupid"]);
-						if (isset($argv[2]) && $argv[2] === 'all') {
-							$preid = ', preid = NULL ';
-						} else {
-							$preid = ' ';
-						}
 						if ($cleanedBook == true && $propername == true) { // reset bookinfoid so it gets re-processed
-							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, bookinfoid = NULL" . $preid . "WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, bookinfoid = NULL, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
 						} else if ($cleanedBook == true && $propername == false) { // reset bookinfoid so it gets re-processed
-							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, bookinfoid = NULL" . $preid . "WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, bookinfoid = NULL, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
 						} else if ($propername == true) {
-							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d" . $preid . "WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+							//printf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d;\n", $db->escapeString($cleanName), $determinedcat, $row['id']);
+							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
 						} else if ($propername == false) {
-							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d" . $preid . "WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+							//printf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d;\n", $db->escapeString($cleanName), $determinedcat, $row['id']);
+							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
 						}
 
 						if ($increment === true) {
@@ -173,9 +180,12 @@ function preName($argv, $argc)
 			if ($cleanName == $row['name']) {
 				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $row['id']));
 			}
-			if ($show === 2) {
+			if ($show === 2 && $usepre === false) {
 				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
+			} else if ($show === 2 && $usepre === true) {
+				$consoletools->overWritePrimary("Renamed Releases:  [" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
 			}
+
 		}
 	}
 	echo $c->header("\n" . number_format($pre) . " renamed using preDB Match\n" . number_format($external) . " renamed using ReleaseCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
@@ -205,8 +215,10 @@ function preName($argv, $argc)
 		$relcount = categorizeRelease("searchname", "WHERE categoryID = 7010 OR (bitwise & 1) = 0", true);
 	} else if (isset($argv[1]) && $argv[1] == "all") {
 		$relcount = categorizeRelease("searchname", "", true);
+	} else if (isset($argv[1]) && $argv[1] == "preid") {
+		$relcount = categorizeRelease("searchname", "WHERE preid IS NULL AND (bitwise & 256) = 256", true);
 	} else {
-		$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 701)0 AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
 	$consoletools = new ConsoleTools();
 	$time = $consoletools->convertTime(TIME() - $timestart);
@@ -239,11 +251,11 @@ function resetSearchnames()
 	if ($tot > 0) {
 		echo $c->primary(number_format($tot) . " Releases had no searchname.");
 	}
-	echo $c->header("Resetting searchnames that are 5 characters or less.");
-	$run = $db->queryDirect("UPDATE releases SET preid = NULL, searchname = name, bitwise = ((bitwise & ~5)|0) WHERE LENGTH(searchname) <= 5");
+	echo $c->header("Resetting searchnames that are 15 characters or less.");
+	$run = $db->queryDirect("UPDATE releases SET preid = NULL, searchname = name, bitwise = ((bitwise & ~5)|0) WHERE LENGTH(searchname) <= 15");
 	$total = $run->rowCount();
 	if ($total > 0) {
-		echo $c->primary(number_format($total) . " Releases had searchnames that were 5 characters or less.");
+		echo $c->primary(number_format($total) . " Releases had searchnames that were 15 characters or less.");
 	}
 }
 
@@ -275,18 +287,21 @@ function categorizeRelease($type, $where, $echooutput = false)
 	return $relcount;
 }
 
-function releaseCleaner($subject, $groupid, $groupname)
+function releaseCleaner($subject, $groupid, $groupname, $usepre)
 {
 	$groups = new Groups();
 	$match = '';
 
 	$groupName = $groups->getByNameByID($groupid);
 	$releaseCleaning = new ReleaseCleaning();
-	$cleanerName = $releaseCleaning->releaseCleaner($subject, $groupname);
+	$cleanerName = $releaseCleaning->releaseCleaner($subject, $groupname, $usepre);
 	if (!empty($cleanerName) && !is_array($cleanerName)) {
 		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);
 	} else if (is_array($cleanerName)) {
 		return $cleanerName;
+	}
+	if ($usepre === true) {
+		return false;
 	}
 
 	if ($groupName == "alt.binaries.classic.tv.shows") {

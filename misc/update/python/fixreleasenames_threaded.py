@@ -36,19 +36,30 @@ cur = con.cursor()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 if len(sys.argv) == 1:
-	print(bcolors.ERROR + "\nAn argument is required\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n" + bcolors.ENDC)
+	print(bcolors.ERROR + "\nAn argument is required\n\n"
+		+ "python " + sys.argv[0] + " [md5, nfo, filename, par2, miscsorter]     ...: To process all previously unprocessed releases, using [md5, nfo, filename, par2, miscsorter].\n"
+		+ "python " + sys.argv[0] + " [nfo, filename, par2] preid                ...: To process all releases not matched to preid, using [nfo, filename, par2].\n"
+		+ "python " + sys.argv[0] + " nfo clean                                  ...: To process all releases processed by filename, using nfo.\n"
+		+ "python " + sys.argv[0] + " par2 clean                                 ...: To process all releases processed by filename and nfo, using par2.\n"
+		+ bcolors.ENDC)
 	sys.exit()
 
 if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" and sys.argv[1] != "par2" and sys.argv[1] != "miscsorter":
-	print(bcolors.ERROR + "\nAn invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n" + bcolors.ENDC)
+	print(bcolors.ERROR + "\n\An invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n" + bcolors.ENDC)
 	sys.exit()
 
 if len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "clean":
-	clean = " (bitwise & 384) = 384 AND "
+	clean = " (bitwise & 384) = 384 "
 elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "clean":
-	clean = " (bitwise & 384) = 384 AND (bitwise & 320) = 320 AND "
+	clean = " (bitwise & 384) = 384 AND (bitwise & 320) = 320 "
+elif len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "preid":
+	clean = " preid IS NULL "
+elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "preid":
+	clean = " preid IS NULL "
+elif len(sys.argv) == 3 and sys.argv[1] == "filename" and sys.argv[2] == "preid":
+	clean = " preid IS NULL "
 else:
-	clean = " "
+	clean = " ((bitwise & 4) = 0 OR categoryid = 7010) "
 
 print(bcolors.HEADER + "\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
@@ -61,7 +72,7 @@ datas = []
 maxtries = 0
 
 if len(sys.argv) > 1 and sys.argv[1] == "nfo":
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE (bitwise & 320) = 256 AND" + clean + "((bitwise & 4) = 0 OR categoryid = 7010) ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE (bitwise & 320) = 256 AND" + clean + "ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
@@ -69,7 +80,7 @@ elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE (bitwise & 384) = 256 AND ((bitwise & 4) = 0 OR categoryid = 7010) ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE (bitwise & 384) = 256 AND" + clean + "ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
@@ -80,7 +91,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 		maxtries = maxtries - 1
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
-	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE (bitwise & 288) = 256 AND" + clean + "((bitwise & 4) = 0  OR categoryid = 7010) ORDER BY postdate ASC LIMIT %s"
+	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE (bitwise & 288) = 256 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 

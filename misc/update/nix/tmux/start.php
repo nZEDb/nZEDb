@@ -6,6 +6,11 @@ $db = new DB();
 $DIR = nZEDb_MISC;
 $c = new ColorCLI();
 
+$versions = @simplexml_load_file(nZEDb_VERSIONS);
+if ($versions === false) {
+	exit($c->error("\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"));
+}
+
 passthru('clear');
 
 $s = new Sites();
@@ -19,7 +24,7 @@ if ($hashcheck != 1) {
 }
 
 // Check database patch version
-if ($patch < 169) {
+if ($patch < $versions->versions->db) {
 	exit($c->error("\nYour database is not up to date. Please update.\nphp ${DIR}testing/DB/patchDB.php\n"));
 }
 
@@ -116,14 +121,14 @@ if ($tablepergroup == 1) {
 			$ran += $run->rowCount();
 		}
 	}
-	echo $c->primary($ran . " collections reset.");
+	echo $c->primary(number_format($ran) . " collections reset.");
 } else {
 	$run = $db->queryDirect("update collections set dateadded = now()");
-	echo $c->primary($run->rowCount() . " collections reset.");
+	echo $c->primary(number_format($run->rowCount()) . " collections reset.");
 }
 
 $run = $db->queryDirect("update nzbs set dateadded = now()");
-echo $c->primary($run->rowCount() . " nzbs reset.");
+echo $c->primary(number_format($run->rowCount()) . " nzbs reset.");
 sleep(2);
 
 function start_apps($tmux_session)

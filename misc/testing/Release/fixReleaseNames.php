@@ -17,7 +17,12 @@ $c = new ColorCLI();
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 	$update = ($argv[2] == "true") ? 1 : 2;
-	$other = ($argv[3] == "other") ? 1 : 2;
+	$other = 1;
+	if ($argv[3] === 'all') {
+		$other = 2;
+	} else if ($argv[3] === 'preid') {
+		$other = 3;
+	}
 	$setStatus = ($argv[4] == "yes") ? 1 : 2;
 
 	$show = 2;
@@ -67,11 +72,11 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 } else {
 	exit($c->error("\nYou must supply 4 arguments.\n"
 			. "The 2nd argument, false, will display the results, but not change the name, type true to have the names changed.\n"
-			. "The 3rd argument, other, will only do against other categories, to do against all categories use all.\n"
+			. "The 3rd argument, other, will only do against other categories, to do against all categories use all, or preid to process all not matched to predb.\n"
 			. "The 4th argument, yes, will set the release as checked, so the next time you run it will not be processed, to not set as checked type no.\n"
 			. "The 5th argument (optional), show, wiil display the release changes or only show a counter.\n\n"
-			. "php $argv[0] 1 false other no ...: Fix release names, using the usenet subject in the past 3 hours with predb information.\n"
-			. "php $argv[0] 2 false other no ...: Fix release names, using the usenet subject with predb information.\n"
+			. "php $argv[0] 1 false other no ...: Fix release names using the usenet subject in the past 3 hours with predb information.\n"
+			. "php $argv[0] 2 false other no ...: Fix release names using the usenet subject with predb information.\n"
 			. "php $argv[0] 3 false other no ...: Fix release names using NFO in the past 6 hours.\n"
 			. "php $argv[0] 4 false other no ...: Fix release names using NFO.\n"
 			. "php $argv[0] 5 false other no ...: Fix release names in misc categories using File Name in the past 6 hours.\n"

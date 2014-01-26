@@ -11,6 +11,11 @@ $site = $s->get();
 if (!isset($_GET["id"])) {
 	$_GET["id"] = 1;
 }
+$user = $users->getById($users->currentUserId());
+$cpapi = $user['cp_api'];
+$cpurl = $user['cp_url'];
+$page->smarty->assign('cpapi', $cpapi);
+$page->smarty->assign('cpurl', $cpurl);
 
 $data = $m->getUpcoming($_GET["id"]);
 //print_r(json_decode($data["info"])->movies);die();

@@ -4,8 +4,62 @@ No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
+***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-01-25 -> jonnyboy -> added this patch for those that do not have the triggers
+                          updated patchDB.php to better read the output
+                          changed Versions.php to increment the current commit + 1
+2014-01-25 -> niel     -> New: Added a git pre-commit hook file and a script to install/update it. I'll add more functionality to the hook as I can.
+                          New: Added a git/hooks/precommit entry to versions file.
+                          Fix: Changed UpdateVersions class to Versions, as it will be doing more than just updating.
+                          Upd: Changed Versions to only allow the pre-commit hook to set the commit number to the *next* value instead of current one.
+2014-01-24 -> bart39   -> changed updateBookInfo query so that it checks if the bookinfo already exists (matching asin) this prevents a lot of duplicates
+                          previous change got reverted somehow by niel's commit
+2014-01-24 -> niel     -> Fix: Changes to commit.sh and UpdateVersions.php so they work.
+                          Fix: Updated versions file manually.
+                          New: Added new script commit in base directory to help with committing changes. It uses interactive mode for adding files to the index so that only those relevant to a change can be committed.
+                               Additionally it opens the changelog for updating before performing the git commit. It relies upon a git hook (not written yet) to call the UpdateVersions class.
+                          Fix: Removed the crap at the end
+                          Fix: Added explicit adding of the Changelog to staging after the editor is closed.
+                          Fix: Typo in date of egandt's changlog entry.
+                          Fix: manually updating versions before push
+2014-01-24 -> jonnyboy -> fixed light->calendar, but can't figure the padding, if i add it, it borks the theme
+2014-01-24 -> bart39   -> fixed grabnzb's queries
+2014-01-24 -> jonnyboy -> removed _scripts from remaining files, updated paths shown in admin->index.php
+                          fixed bug in reset_truncate.php when true not echoing tables truncated
+                          added another pattern to regex for valid headers
+                          fixed UpdateVersions.php to update nZEDb.xml, fixed start.php and monitor.php to correctly get values from nZEDb.xml
+                          changed DB.php to properlly set utf-8, may be the cause of some errors
+                          set renametopre.php and rixReleaseNames.php that when using preid, it only compares to predb table
+2014-01-24 -> egandt   -> typo in mis/testind/DB/patchDB for templates_c (was template_c)
+2014-01-24 -> bart39   -> fixed some collection cleaning regexes for requestid's
+2014-01-24 -> jonnyboy -> updated convert_to_mysql.php when using innodb compressed, to set releasenfo as innodb dynamic, since the content is compressed
+2014-01-24 -> bart39   -> changed book cover view so that books are grouped by bookinfoid (similar concept to movie cover view)
+                          fixed book order by clause for author
+2014-01-24 -> Draven714-> updated Username check, PHP 5.3 compatible install, SAB Url & API Key check
+2014-01-23 -> bart39   -> fixed typos
+                          added a.b.music to Category byGroup()
+                          added a.b.town.cine & a.b.town.xx to ReleaseCleaning
+                          added ebook to NameFixer filecheck
+                          added another regex to CollectionsCleaning
+2014-01-23 -> jonnyboy -> removed all predb titles 15 characters or less, set PreDb.php to not add any titles 15 characters or less
+                          most renaming scripts will set preid as it processes
+                          fixed 'Add to CouchPotato' in light->upcoming
+                          fixed bug in search where $searchsql not set
+                          changed array form from [] to array()
+2014-01-23 -> niel     -> Fixed minor typo
+2014-01-23 -> niel     -> Added script VersionUpdates.php in nZEDb/_build directory. It helps maintains an XML file of version info,  instead of having to put versions in the code.
+2014-01-22 -> jonnyboy -> updated regex for predb matching in ReleaseCleaning.php, added set preid during update
+                          fixed bug in ajax_tvinfo.php, added simple_html_dom.php to easily iterate html dom
+                          added usenet-crawler to predb, fixed but in Releases->searchbyRageId
+                          added option to fixReleaseName using preid, processing all releases not matched to preid, helpfull when new predb dump or regexes added
+                          fixed bug in test-memcache.php
+2014-01-21 -> egandt   -> regex fixes for the group alt.binaries.e-book.magazines as the generic format failed to match
+2014-01-21 -> jonnyboy -> removed early exit from fixReleaseNames
+2014-01-21 -> niel     -> Slight improvement to smarty fix.
+2014-01-20 -> niel     -> Updated autoloader for the path change to smarty.
+                          Added hacky fix for smarty throwing exception when trying to clear templates on PHP 5.3+
 2014-01-20 -> jonnyboy -> fixed bug in InstallPage.php
 2014-01-20 -> bart39   -> fixed missing braces on regex
 2014-01-20 -> jonnyboy -> added option to use fulltext ix_releases_name_searchname_ft(name, searchname) instead of 2 seaparate indexes

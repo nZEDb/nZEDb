@@ -223,8 +223,14 @@ class Smarty_Internal_Utility
         }
         $_count = 0;
         try {
-            $_compileDirs = new RecursiveDirectoryIterator(realpath(SMARTY_DIR . $_dir));
+			if (strtolower(substr(PHP_OS, 0, 3)) != 'win') {
+				$tmpDir = substr($_dir, 0, 1) == '/' ? $_dir : realpath(SMARTY_DIR . $_dir);
+			} else {
+				$tmpDir = $_dir;
+			}
+            $_compileDirs = new RecursiveDirectoryIterator($tmpDir);
         // NOTE: UnexpectedValueException thrown for PHP >= 5.3
+		// Not surprising as the value is crap most of the time ;-) RecursiveDirectoryIterator needs a whole path, not a relative one.
         } catch (Exception $e) {
             return 0;
         }

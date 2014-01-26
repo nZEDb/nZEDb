@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+export NZEDB_ROOT="$(pwd)"
+
+git add -i
+
+nano Changelog
+git add Changelog
+
+git commit

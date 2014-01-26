@@ -2,8 +2,12 @@
 
 require_once dirname(__FILE__) . '/../../../../www/config.php';
 
-exec('git log | grep "^commit" | wc -l', $commit);
-$version = "0.3r" . $commit[0];
+$c = new ColorCLI();
+$versions = @simplexml_load_file(nZEDb_VERSIONS);
+if ($versions === false) {
+	exit($c->error("\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"));
+}
+$version = $versions->versions->git->tag . 'r' . $versions->versions->git->commit;
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -15,7 +19,6 @@ $tmux = $t->get();
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
 $colors = (isset($tmux->colors)) ? $tmux->colors : 0;
-$c = new ColorCLI();
 
 $s = new Sites();
 $site = $s->get();
