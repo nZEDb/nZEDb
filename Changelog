@@ -7,6 +7,11 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-01-26 -> niel     -> Fix: Suppresing errors for I/O timeout for PreDb lookups
+                          Fix: Allow pre-commit hook to override commit number in Versions (branch numbers may be higher than dev's).
+2014-01-25 -> jonnyboy -> added this patch for those that do not have the triggers
+                          updated patchDB.php to better read the output
+                          changed Versions.php to increment the current commit + 1
 2014-01-25 -> niel     -> New: Added a git pre-commit hook file and a script to install/update it. I'll add more functionality to the hook as I can.
                           New: Added a git/hooks/precommit entry to versions file.
                           Fix: Changed UpdateVersions class to Versions, as it will be doing more than just updating.
