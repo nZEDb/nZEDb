@@ -796,7 +796,10 @@ class Releases
 
 		is_numeric($epno) ? $epno = sprintf(" AND releases.episode %s '%s' ", $like, $db->escapeString('%' . $epno . '%')) : '';
 
-		$searchsql = $this->searchSQL($name, $db, 'searchname');
+		$searchsql = '';
+		if ($name !== '') {
+			$searchsql = $this->searchSQL($name, $db, 'searchname');
+		}
 		$catsrch = $this->categorySQL($cat);
 
 		$maxagesql = '';
@@ -834,7 +837,10 @@ class Releases
 			$imdbId = '';
 		}
 
-		$searchsql = $this->searchSQL($name, $db, 'searchname');
+		$searchsql = '';
+		if ($name !== '') {
+			$searchsql = $this->searchSQL($name, $db, 'searchname');
+		}
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0) {

@@ -134,7 +134,7 @@ class Versions
 		exec('git log | grep "^commit" | wc -l', $output);
 		// I added this, because it was not updating to commit + 1, only current commit number
 		$gitver = $output[0] + 1;
-		if ($this->_vers->git->commit < $gitver) {
+		if ($this->_vers->git->commit < $gitver || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
 			if ($update) {
 				if (GIT_PRE_COMMIT === true) { // only allow the pre-commit script to set the NEXT commit number
 					$gitver;
