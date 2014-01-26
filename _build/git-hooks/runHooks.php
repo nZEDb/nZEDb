@@ -18,6 +18,7 @@
  * @author niel
  * @copyright 2014 nZEDb
  */
+define('GIT_PRE_COMMIT', true);
 require_once realpath(dirname(__FILE__) . '/../Versions.php');
 
 $error = false;
@@ -28,7 +29,6 @@ echo "Running pre -commit hooks\n";
  * Add all hooks BEFORE the versions are updated so they can be skipped on any errors
  */
 if ($error === false) {
-	define('GIT_PRE_COMMIT', true);
 	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
