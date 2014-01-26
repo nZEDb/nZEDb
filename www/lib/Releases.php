@@ -796,7 +796,10 @@ class Releases
 
 		is_numeric($epno) ? $epno = sprintf(" AND releases.episode %s '%s' ", $like, $db->escapeString('%' . $epno . '%')) : '';
 
-		$searchsql = $this->searchSQL($name, $db, 'searchname');
+		$searchsql = '';
+		if ($name !== '') {
+			$searchsql = $this->searchSQL($name, $db, 'searchname');
+		}
 		$catsrch = $this->categorySQL($cat);
 
 		$maxagesql = '';
@@ -834,7 +837,10 @@ class Releases
 			$imdbId = '';
 		}
 
-		$searchsql = $this->searchSQL($name, $db, 'searchname');
+		$searchsql = '';
+		if ($name !== '') {
+			$searchsql = $this->searchSQL($name, $db, 'searchname');
+		}
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0) {
@@ -847,6 +853,7 @@ class Releases
 			$maxage = '';
 		}
 
+		printf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $searchsql, $imdbId, $catsrch, $maxage, $limit, $offset);
 		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $searchsql, $imdbId, $catsrch, $maxage, $limit, $offset);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
