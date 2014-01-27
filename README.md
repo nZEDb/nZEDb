@@ -76,71 +76,7 @@ Bitcoin wallet: 1LrrFbXn4QfGUokLppHVPQHAzmnAPbgV2M
 
 
 
-o be exported
-	based on system categories.
-	
-GOOGLE ADS/ANALYTICS
-	to integrate google analytics and adsense provide enter the adsense ad module ids 
-	into the site table for the searchbox (bottom of menu). providing an analytics id will include 
-	the analytics js in the footer
-	
-ADMIN
-	admin functions all live in /admin/ which is only accessible by users with admin role.
-	set users.role to be 2 on the users you wish to be admins
-
-TVRAGE
-	after releases.processReleases() is called, an attempt is made to determine the tvrageids for every 
-	release	which looks like its tv. this also works out the series/episode columns. the data in the 
-	tvrage table will become populated from best guesses from the rage search api. if some of these
-	guesses are wrong, you can manually edit the rage data in the admin interface, and use the 
-	remove link to wipe any releases which have that rageid and then manually call 'process tv' which
-	will attempt to relink rage data. when a new release is created it goes in with a release.rageid of -1
-	when tv is processed, the rageid either goes to the best guess, or to -2, which indicates no match 
-	could be made, or the release isnt percieved to be tv.
-
-TVRAGE - SERIES/EPISODE INFO
-	information about a particular episode of a series is requested from services.tvrage.com a shared 
-	newznab api key is used to retrieve this data. it assigns an 'aired date' to each release if a match
-	is found.
-	
-NFO
-	nfos are attempted to be retrieved using a queuing method. there will be a number of attempts to get
-	an nfo before giving up
-	
-IMDB/TMDB/ROTTENTOMATOES
-	if enabled, and if an imdb id is found in the nfo, the application will attempt to use that imdb id to
-	get general data about the movie (title, year, genre, covers etc) from themoviedb.org. If no entry is 
-	available from tmdb then an attempt to gather the info from imdb.com is made. any results are stored
-	in the moveinfo table, with covers/backdrops being saved to the images/covers/.
-
-3RD PARTY API KEYS
-	in order to do lookups to tmdb, rotten tomatoes and amazon, api keys are used. newznab is shipped with 
-	some default keys, but due to the restrictions on use of api's, it is strongly suggested you go and get 
-	your own api keys and save them in the site edit page.
-
-CONTENT/CMS
-	pages can be added to the site with seo friendly urls via the /admin/ edit content links
-	
-SKINNING/THEMES
-	avoid custom edits to code and stylesheets to make updating painless. 
-	override any styles by creating a folder \www\theme\<yourtheme>\style.css. stick any custom images in
-	\www\theme\<yourtheme>\images\
-	pick the theme in the admin\site-edit page. your styles should override the existing style sheet, which
-	should always be loaded in.
-	
-API
-	www.sitename.com/api? provides api access to query and retrieve nzbs.
-	call www.sitename.com/apihelp to see help doc with all available options. users either have to be 
-	logged in or provide their rsstoken. users can use their rsstoken to access both rss + api.
-	full details of the api and how to implement it are provided in /misc/api/
-	
-FAQS
-	* authorisation rejected from nntp server - check you have enough available connections 
-	not currently in use
-	* white screen - probably php error not being displayed to browser or session timed out and 403 being throw
-	* Lots of binary headers processed but few releases created - The binary headers downloaded do not match
-	the regexes used to create a release. The message headers must follow popular formats in order for releases
-	to be created.
+ be created.
 	* search and rawsearch requests lose page css styling - use the provided apache vhost settings.
 	* Server did not return article numbers 1234567 - this isnt necessarily a bad thing, see section on missing parts
 	* connection timed out. Reconnecting... Cannot connect to server *******: Already connected, disconnect first! - 
