@@ -28,7 +28,7 @@ It does run on a Raspberry Pi for experienced users with very modest expectation
 	PHP 5.4+ (and various modules)
     MySQL 5.5+ (Postgres support is Work-In-Progress)
     Python 2.7 or 3.0 (and various modules)
-Refer below to the relevant installation guide for your OS for detailed information.
+The installation guides have more detailed software requirements.
 
 ## Installation
 
