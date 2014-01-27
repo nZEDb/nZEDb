@@ -7,6 +7,10 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-01-26 -> niel     -> Upd: Changing runHooks to only update version for the 'dev' branch, to reduce merge conflicts.
+                          Upd: Adding check to queryDirect for failure, to avoid invalid parameter passed to foreach errors when queries go wrong.
+2014-01-26 -> bart39   -> fixed typo in Releases.php
+                          moved music checks before movie checks in determineCategoryNormal as music videos were incorrectly being categorized as movies
 2014-01-26 -> jonnyboy -> fixed api queries, but i am considering adding a ft index check for fromname
 2014-01-26 -> niel     -> Fix: Suppresing errors for I/O timeout for PreDb lookups
                           Fix: Allow pre-commit hook to override commit number in Versions (branch numbers may be higher than dev's).
@@ -20,7 +24,7 @@ Each update goes to the top of the file
 2014-01-24 -> bart39   -> changed updateBookInfo query so that it checks if the bookinfo already exists (matching asin) this prevents a lot of duplicates
                           previous change got reverted somehow by niel's commit
 2014-01-24 -> niel     -> Fix: Changes to commit.sh and UpdateVersions.php so they work.
-                          Fix: Updated versions file manually.
+                          Upd: Updated versions file manually.
                           New: Added new script commit in base directory to help with committing changes. It uses interactive mode for adding files to the index so that only those relevant to a change can be committed.
                                Additionally it opens the changelog for updating before performing the git commit. It relies upon a git hook (not written yet) to call the UpdateVersions class.
                           Fix: Removed the crap at the end
