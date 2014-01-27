@@ -7,6 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+
+2014-01-27 -> jonnyboy -> fixed install not adding triggers
 2014-01-26 -> niel     -> Upd: Changing runHooks to only update version for the 'dev' branch, to reduce merge conflicts.
                           Upd: Adding check to queryDirect for failure, to avoid invalid parameter passed to foreach errors when queries go wrong.
 2014-01-26 -> bart39   -> fixed typo in Releases.php
