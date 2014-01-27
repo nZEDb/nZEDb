@@ -28,13 +28,13 @@ if (isset($argv[2]) && is_numeric($argv[2])) {
 
 //runs on every release
 if (isset($argv[1]) && $argv[1] === "all") {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1280) = 1280");
+	$qry = $db->queryDirect("SELECT r.id, r.searchname, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1280) = 1280");
 //runs on all releases not already renamed
 } else if (isset($argv[1]) && $argv[1] === "full") {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ((bitwise & 1284) = 1280 " . $time . " AND reqidstatus in (0, -1)");
+	$qry = $db->queryDirect("SELECT r.id, r.searchname, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ((bitwise & 1284) = 1280 " . $time . " AND reqidstatus in (0, -1)");
 //runs on all releases not already renamed limited by user
 } else if (isset($argv[1]) && is_numeric($argv[1])) {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ((bitwise & 1284) = 1280 " . $time . " AND reqidstatus in (0, -1) ORDER BY postdate DESC LIMIT " . $argv[1]);
+	$qry = $db->queryDirect("SELECT r.id, r.searchname, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE ((bitwise & 1284) = 1280 " . $time . " AND reqidstatus in (0, -1) ORDER BY postdate DESC LIMIT " . $argv[1]);
 }
 
 $total = $qry->rowCount();
@@ -44,13 +44,13 @@ if ($total > 0) {
 	sleep(2);
 
 	foreach ($qry as $row) {
-		if (!preg_match('/^\[\d+\]/', $row['name']) && !preg_match('/^\[ \d+ \]/', $row['name'])) {
+		if (!preg_match('/^\[\d+\]/', $row['searchname']) && !preg_match('/^\[ \d+ \]/', $row['searchname'])) {
 			$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $row['id']);
 			$counter++;
 			continue;
 		}
 
-		$requestIDtmp = explode(']', substr($row['name'], 1));
+		$requestIDtmp = explode(']', substr($row['searchname'], 1));
 		$bFound = false;
 		$newTitle = '';
 
@@ -58,7 +58,7 @@ if ($total > 0) {
 			$requestID = (int) trim($requestIDtmp[0]);
 			if ($requestID != 0 and $requestID != '') {
 				// Do a local lookup first
-				$newTitle = localLookup($requestID, $row['groupname'], $row['name']);
+				$newTitle = localLookup($requestID, $row['groupname'], $row['searchname']);
 				if (is_array($newTitle) && $newTitle['title'] != '') {
 					$bFound = true;
 				}
@@ -71,14 +71,14 @@ if ($total > 0) {
 			$groupname = $groups->getByNameByID($row['groupname']);
 			$determinedcat = $category->determineCategory($title, $groupname);
 			$run = $db->queryDirect(sprintf('UPDATE releases set preid = %d, reqidstatus = 1, bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d where id = %d', $preid, $db->escapeString($title), $determinedcat, $row['id']));
-			if ($row['name'] !== $newTitle) {
+			if ($row['searchname'] !== $newTitle) {
 				$counted++;
 				if (isset($argv[2]) && $argv[2] === 'show') {
 					$newcatname = $category->getNameByID($determinedcat);
 					$oldcatname = $category->getNameByID($row['categoryid']);
 
 					echo $c->headerOver("\nNew name:  ") . $c->primary($title) .
-					$c->headerOver('Old name:  ') . $c->primary($row['name']) .
+					$c->headerOver('Old name:  ') . $c->primary($row['searchname']) .
 					$c->headerOver('New cat:   ') . $c->primary($newcatname) .
 					$c->headerOver('Old cat:   ') . $c->primary($oldcatname) .
 					$c->headerOver('Group:     ') . $c->primary($row['groupname']) .
