@@ -3,5 +3,6 @@ BEGIN
         EXCEPTION WHEN unique_violation THEN
                 -- Ignore duplicate inserts.
 END;
+UPDATE predb SET nfo = REPLACE(nfo, 'nzb.isasecret.com', 'www.newshost.co.za');
 
-UPDATE `site` set `value` = '171' where `setting` = 'sqlpatch';
+UPDATE `site` SET `value` = '172' WHERE `setting` = 'sqlpatch';
