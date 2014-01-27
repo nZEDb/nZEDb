@@ -60,56 +60,6 @@ Bitcoin wallet: 1LrrFbXn4QfGUokLppHVPQHAzmnAPbgV2M
 
 
 
-========= OLD Stuff below to be deleted or somehow inserted above ===============
-
-
-Some of the differences between that version of newznab and our indexer are:
-
-	The ability to create releases without the user having to create a regex. (That old version of newznab did not have updated regex.)
-	Using the NZB file for post processing and fetching NFO files.
-	Finding NFO files without a .nfo extension.
-	Having both a subject name and a "clean" name and the ability to search either.
-	Advanced search, which is able to search by name, subject, poster, date, etc..
-	Importing NZB files directly to the NZB folder and the releases table.
-	Importing NZB files using the mysql load into file command.
-	Threading update_binaries, backfill and post processing using python. (soon update_releases)
-	Custom tmux and screen scripts.
-	Changing to php mysqli.
-	Using autocommit/rollback features of mysqli for innodb.
-	Postprocessing books, a book page (with book covers and book searching).
-	Fixing most of the post processing issues.
-	Using trakt.tv API to find missing IMDB and TVRage ID's.
-	Adding the amazon associate tag for fetching covers and xml information.
-	Script to fix release names using NFO's, file names and release names.
-	Better categorization of releases.
-	Most of the scripts in misc/update_scripts have been overhauled to have more options / better output.
-	Changes to the website. (too many to list)
-	XFeature GZIP compression, by wafflehouse : http://pastebin.com/A3YypDAJ
-	Etc.. (see the commits to see a full list of changes). More to come.
-
-Installation:
-
-	Please view one of the two installation files in this folder.
-	If you are on windows, you can attempt to use a newznab guide.
-	PHP 5.4 is required, do not post bugs reports if you are using PHP 5.3.
-
-Post-Installation:
-
-	(After you have installed nZEDb, went through the install steps and are on the admin page...)
-	
-	Most of the default settings are fine, I will mention the ones worth changing.
-	
-	The 2 amazon keys and the associate tag are needed to fetch anything from amazon. The trakt.tv key is optional,
-	but it can help fetching extra information when tvrage and the NFO fails.
-	
-	Setting the paths to unrar/ffmpeg/mediainfo is optional, but unrar is recommended for getting names out of releases
-	and finding passwords in releases.
-	
-	If you have set the path to unrar, deep rar inspection is recommended.
-	
-	Compressed headers is recommended if your provider supports XFeature gzip compression.
-	
-	----
 	
 	Once you have set all the options, you can enable groups, start with a few groups then
 	over the course of a few days you can enable more. I don't recommend enabling all the groups unless you have
@@ -121,114 +71,12 @@ Post-Installation:
 	
 	If you want an automated way of doing this, see the nix_scripts folder. win_scripts is non functional right now.
 
-	To clean up the release names, check out fixReleaseNames.php in misc/testing.
-	
-Notes:
-
-	We are not responsible for what is posted on the usenet.
-	
-	Everything indexed by this software is out of our control, if you have complaints, direct them to your usenet service provider.
-	
-	We are not responsible for what you do with this software.
-	
-	Windows is currently untested, we will not offer support for those having issues with windows.
-	
-	This software is offered as is, we classify it as "alpha", it has bugs, so be aware of this.
-
-<hr>
-The team:
-
-Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo and Whitelighter<br /><br />
-Paypal: <a href="http://nzedb.com/index.php?action=treasury"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
-
-Bitcoin wallet: 1LrrFbXn4QfGUokLppHVPQHAzmnAPbgV2M
-
-<hr>
-
-Original Newznab readme:
-
-ABOUT
-	Newznab is an nzbs.org clone PHP/Smarty application, which supports the indexing of 
-	usenet headers into a mysql database and provides a simple web based search interface 
-	onto the data.
-	
-	It includes simple CMS facilities, SEO friendly URLs and is designed with the intention 
-	of allowing users to create a community around their index.
-	
-	For information on how to install, please refer to INSTALL.txt
-	
-	To discuss use irc.synirc.net #newznab
-	
-	Newznab is licensed under terms of the GNU General Public License.  For details, please 
-	refer to LICENSE.txt.
 
 
-HOW IT WORKS
-	usenet groups are specified, message headers (binaries and parts) are downloaded for the 
-	groups, releases are created from completed sets of binaries by applying regex to the message subject.
-	releases are categorised by regexing the message subject. metadata from tvrage, tmdb, rotten tomatoes, 
-	imdb and amazon are applied toeach created release. after a configurable number of days the header 
-	data is deleted from the database, but the releases remain.
-	
-CHOOSING NEWSGROUPS
-	groups can be manually entered if you know the name. groups can also be bulk added when
-	specified as a regular expression. for example if you want to index the groups alt.bin.blah.* 
-	and alt.bin.other use the value 'alt.bin.blah.*|alt.bin.other'. 
-	
-UPDATING INDEX (populating binaries + parts)
-	the recommended way to schedule updates is via the dos and unix start scripts in 
-	/path/to/newznab/misc/update_scripts/. make sure you set the paths correctly to your installation.
-	
-CATEGORISATION
-	most categorisation of releases is done at the time of applying the regex. however if no category
-	is supplied for a regex then \www\lib\category.php contains the logic which attempts to map a 
-	release to a site category. site categories are used to make browsing nzbs easier. add new categories
-	by updating the category table, and adding a new Category::constant. Then map it in the
-	function determineCategory()
 
-MISSING PARTS
-	when headers are requested from the usenet provider, they are asked for in number ranges
-	e.g. 1-1000, 1001-2000 etc. for various reasons sometimes the provider does not return 
-	a header, this is not always because the header does not exist, there may be some synchronisation
-	going on at the providers end. if a header is requested but not returned, we store a record of this
-	in the table partrepair. each time update_binaries is ran an attempt is made to go back and get the 
-	missing parts. if after five attempts the parts can still not be obtained, newznab gives up.
-	when update_releases runs, if a release is seen to have missing parts it will not be released until
-	four hours after it was uploaded to usenet. this is so a chance has been made to repair all missing
-	parts. after four hours a release will be created anyway and its down to the quality of the par files
-	to determine whether a release can be correctly unpacked.
 
-BACKFILLING GROUPS
-	since most usenet providers have 800+ days of retention indexing all that information in one shot
-	is not practical. newznab provides a backfill feature that allow you to index past articles once
-	your initial index has been built. to use the feature first set the back fill days setting in the group(s)
-	to be backfilled to the number of day you wish to go back, making sure to set it higher than the number
-	of days listed in the first post column. once set run the backfill.php script in misc/update_scripts.
 
-REGEX MATCHING
-	releases are created by applying regexs to binary message subjects. different regexes 
-	are applied to binaries from different newsgroups. catchall regexes are applied to any
-	binaries left unmatched after the group specific matching. a category can be associated
-	with a regex, which will allow the processing of groups like inner-sanctum which contain a 
-	combination of different binary types.
-	
-REGEX UPDATING
-	regexes in the system in the range 0-10000 are system defined and are updated centrally.
-	everytime processreleases is ran, a check will be performed to see if you have the latest regexs.
-	if you do not want this check to be made then set site.latestregexurl to null
-	
-NZB FILE STORAGE
-	nzbs are saved to disk gzipped at the location specified by site.nzbpath in subdirs based on the 
-	first char of the release guid, this just makes the dirs a bit easier to manage when you have thousands
-	of nzb.gz files. the default path is /website/../nzbfiles
-
-SSL USENET CONNECTION
-	Install the OpenSSL extension, set config.php define ('NNTP_SSLENABLED', true);
-	
-IMPORTING/EXPORTING NZBS
-	.nzb files can be imported from the admin interface (or cli). importing is a convenient way to fill the
-	index without trawling a large backdated number of usenet messages. after running an import 
-	the processReleases() function must be run to create valid releases. nzbs can also be exported
+o be exported
 	based on system categories.
 	
 GOOGLE ADS/ANALYTICS
