@@ -42,7 +42,7 @@ Most of the default settings are fine, however some will need changing.
 
 The two amazon keys and the associate tag are needed to fetch anything from amazon. The trakt.tv key is optional, but it can help fetching extra information when tvrage and the NFO fails.
 
-Setting the paths to unrar/ffmpeg/mediainfo is optional, but unrar is recommended for retrieving release names and finding passwords. It's best to get the very latest versions of these utilities, whatever comes default with your distro is often not good enough.
+Setting the paths to unrar/ffmpeg/mediainfo is optional, but unrar is recommended for retrieving release names and finding passwords. It's best to get the very latest versions of these utilities, whatever comes as default with your distro is often not good enough.
 
 If you have set the path to unrar, deep rar inspection is recommended.
 
@@ -52,13 +52,13 @@ Once you have set all the options, you can enable one or two groups and start wi
 
 Once you become more familiar with the application, enable a few more groups and if needed enable multi-threading (with low thread counts). We do not recommend enabling all the groups unless you have performant hardware and strong database tuning knowledge.
 
-If you want an automated way of doing this, you can use the script in the nix, or tmux folder. The Windows scripts may work.
+If you want an automated way of doing this, you can use one of the scripts in the nix, or tmux folder. The Windows scripts may work.
 
 To clean up the release names, check out fixReleaseNames.php in misc/testing.
 
 For an overview of a complete process, look at the  misc/update/nix/screen/sequential/threaded.sh script.
 
-Advanced users may be interested yo try the tmux version of nZEDb in either Complete Sequential, Sequential or non-sequential (fully parallel) mode. Before start it, review the tmux setting in Site-Edit -> Tmux Settings.
+Advanced users may be interested to try the tmux version of nZEDb in either Complete Sequential, Sequential or non-Sequential (fully parallel) mode. Before starting it, review the tmux setting in Site-Edit -> Tmux Settings.
 
 
 ### Support
