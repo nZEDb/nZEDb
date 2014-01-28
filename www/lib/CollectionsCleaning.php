@@ -2,6 +2,7 @@
 
 /*
  * Cleans names for collections/imports/namefixer.
+ * Names of group functions should match between ReleaseCleaning and this file
  */
 class CollectionsCleaning
 {
@@ -235,6 +236,72 @@ class CollectionsCleaning
 				return $this->x264();
 			case 'dk.binaer.tv':
 				return $this->dk_tv();
+			case 'alt.binaries.bungabunga':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.cavebox':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.classic.comics.dcp':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.divx.french':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.dvd.movies':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.dvdr':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.dvd-german':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.e-book.technical':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.movies':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.multimedia.vintage-film.pre-1960':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.nl':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.test':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.town.cine':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.town.xxx':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.wii':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.tv.deutsch':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.u4e':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.u-4all':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.wii':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.wii.gamez':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.x':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
+			case 'alt.binaries.xbox360':
+				// add a case such that all groups handled by ReleaseCleaning are handled here, with generic
+				return $this->generic();
 			default:
 				return $this->generic();
 		}
