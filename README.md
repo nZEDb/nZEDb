@@ -79,19 +79,4 @@ Paypal: <a href="http://nzedb.com/index.php?action=treasury"><img src="https://w
 
 Bitcoin wallet: 1LrrFbXn4QfGUokLppHVPQHAzmnAPbgV2M
 
-<hr>
-
-
-
-	
-	Once you have set all the options, you can enable groups, start with a few groups then
-	over the course of a few days you can enable more. I don't recommend enabling all the groups unless you have
-	good hardware and mysql knowledge.
-	
-	At this point you are ready to use the scripts, try the scripts in misc/update_scripts,
-	update_binaries.php downloads usenet articles into the mysql database,
-	update_releases.php attempts to group these articles into releases and create NZB files.
-	
-	If you want an automated way of doing this, see the nix_scripts folder. win_scripts is non functional right now.
-
-
+<p>
