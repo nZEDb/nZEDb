@@ -187,6 +187,8 @@ class CollectionsCleaning
 				return $this->multimedia_scifi();
 			case 'alt.binaries.music':
 				return $this->music();
+			case 'alt.binaries.pictures.erotica.anime':
+				return $this->pictures_erotica_anime();
 			case 'alt.binaries.ps3':
 				return $this->ps3();
 			case 'alt.binaries.series.tv.french':
@@ -885,7 +887,21 @@ class CollectionsCleaning
 			return $this->generic();
 	}
 
-	// a.b.console.ps3
+	public function pictures_erotica_anime()
+	{
+		// pictures.erotica.anime has really only header we care about in the form
+		// [ABPEA - Original] Arima Zin - Tennen Koiiro Alcohol [BB, Boy] - 005 of 229 - yEnc "Tennen_Koiiro_Alcohol-005.jpg"
+		// in this case we only need the title of the manga, not which image we are viewing or the post file name
+		if(preg_match('/(.*)\s+-\s+\d+\s+of\s+\d+\s+-\s+yEnc\s+".*"/i', $this->subject, $match))
+		{
+			return $match[1];
+		}
+		else {
+			return $this->generic();
+		}
+	}
+
+        // a.b.console.ps3
 	public function console_ps3()
 	{
 		//[4062]-[ABGX.net] - "unlimited-skyrim.legendary.multi4.ps3.par2" - 17.10 GB - yEnc
