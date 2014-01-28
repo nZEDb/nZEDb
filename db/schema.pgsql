@@ -1301,7 +1301,7 @@ INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, descripti
 INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.warez.games', NULL, NULL, 'misc, mostly games and applications');
 INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.e-book.magazines', NULL, NULL, 'magazines, mostly english');
 INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.sounds.anime', NULL, NULL, 'music from Anime');
-
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.pictures.erotica.anime', NULL, NULL, 'Anime Manga, Adult');
 
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('search','Advanced Search','Search for releases.', 1, 10);
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('browsegroup','Groups List','Browse by Group.', 1, 25);
@@ -1459,7 +1459,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','171');
+	('sqlpatch','172');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

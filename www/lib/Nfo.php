@@ -112,7 +112,7 @@ class Nfo
 			}
 
 			// Use getid3 to check if it's an image/video/rar/zip etc..
-			require_once nZEDb_LIB . 'getid3/getid3/getid3.php';
+			require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
 			$getid3 = new getid3;
 			$check = $getid3->analyze($tmpPath);
 			unset($getid3);
@@ -120,12 +120,12 @@ class Nfo
 			unset($tmpPath);
 			if (isset($check['error'])) {
 				// Check if it's a par2.
-				require_once nZEDb_LIB . 'rarinfo/par2info.php';
+				require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 				$par2info = new Par2Info();
 				$par2info->setData($possibleNFO);
 				if ($par2info->error) {
 					// Check if it's an SFV.
-					require_once nZEDb_LIB . 'rarinfo/sfvinfo.php';
+					require_once nZEDb_LIBS . 'rarinfo/sfvinfo.php';
 					$sfv = new SfvInfo;
 					$sfv->setData($possibleNFO);
 					if ($sfv->error) {

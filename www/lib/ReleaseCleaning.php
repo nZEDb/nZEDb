@@ -1651,6 +1651,17 @@ class ReleaseCleaning
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
 		}
+		else if ($groupName === "alt.binaries.pictures.erotica.anime") {
+			// [ABPEA - Original] Arima Zin - Tennen Koiiro Alcohol [BB, Boy] - 005 of 229 - yEnc "Tennen_Koiiro_Alcohol-005.jpg" to [ABPEA - Original] Arima Zin - Tennen Koiiro Alcohol [BB, Boy]
+			if (preg_match('/(.*)\s+-\s+\d+\s+of\s+\d+\s+-\s+yEnc\s+".*"/i', $this->subject, $match))
+			{
+			      return $match[1];
+			}
+			else
+			{
+			      return array("cleansubject" => $this->releaseCleanerHelper($subject), "properlynamed" => false);
+			}
+		}
 		else if ($groupName === "alt.binaries.ps3") {
 			//[4197] [036/103] - "ant-mgstlcd2.r34" yEnc
 			if (preg_match('/^(\[\d+\] )\[\d+\/\d+\] - "(.+?)' . $this->e1, $subject, $match))

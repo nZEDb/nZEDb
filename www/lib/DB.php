@@ -262,24 +262,15 @@ class DB extends PDO
 		}
 
 		$result = $this->queryDirect($query);
+		if ($result === false) {
+			return false;
+		}
 		$rows = array();
 		foreach ($result as $row) {
 			$rows[] = $row;
 		}
 
 		return (!isset($rows)) ? false : $rows;
-	}
-
-	// Returns the first row of the query.
-	public function queryOneRow($query)
-	{
-		$rows = $this->query($query);
-
-		if (!$rows || count($rows) == 0) {
-			return false;
-		}
-
-		return ($rows) ? $rows[0] : $rows;
 	}
 
 	// Query without returning an empty array like our function query(). http://php.net/manual/en/pdo.query.php
@@ -297,6 +288,18 @@ class DB extends PDO
 			$result = false;
 		}
 		return $result;
+	}
+
+	// Returns the first row of the query.
+	public function queryOneRow($query)
+	{
+		$rows = $this->query($query);
+
+		if (!$rows || count($rows) == 0) {
+			return false;
+		}
+
+		return is_array($rows) ? $rows[0] : $rows;
 	}
 
 	/**
