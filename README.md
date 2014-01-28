@@ -36,17 +36,17 @@ Specific installation guides for common Operating Systems can be found on the nZ
 
 ## Getting Started
 
-After you have installed nZEDb and gone throught the initial web-based installation steps (step1, step2 etc), then review the setting on the Admin-Site-Edit page.
+After you have installed nZEDb and gone throught the initial web-based installation steps (step1, step2 etc.), then review the settings on the Admin-Site-Edit page.
 
 Most of the default settings are fine, however some will need changing.
 
 The two amazon keys and the associate tag are needed to fetch anything from amazon. The trakt.tv key is optional, but it can help fetching extra information when tvrage and the NFO fails.
 
-Setting the paths to unrar/ffmpeg/mediainfo is optional, but unrar is recommended for getting names out of releases and finding passwords in releases. It's best to get the very latest versions of these utilities.
+Setting the paths to unrar/ffmpeg/mediainfo is optional, but unrar is recommended for retrieving release names and finding passwords. It's best to get the very latest versions of these utilities, whatever comes default with your distro is often not good enough.
 
 If you have set the path to unrar, deep rar inspection is recommended.
 
-Compressed headers are recommended if your provider supports XFeature gzip compression, however header retrieval may hang if the nntp-proxy is not used.
+Compressed headers are recommended if your provider supports XFeature gzip compression, however header retrieval may periodically hang if the nntp-proxy is not used.
 
 Once you have set all the options, you can enable one or two groups and start with the simple screen script running in single-threaded mode. Look in the misc/update directory; update_binaries.php downloads usenet articles into the local database; update_releases.php attempts to group these articles into releases and create NZB files.
 
