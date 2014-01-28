@@ -35,12 +35,12 @@ function SplitSQL($file, $delimiter = ';')
 					try {
 						$qry = $db->prepare($query);
 						$qry->execute();
-						echo $c->primary('SUCCESS: ' . $query);
+						echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
 					} catch (PDOException $e) {
 						if ($e->errorInfo[1] == 1091 || $e->errorInfo[1] == 1060 || $e->errorInfo[1] == 1054 || $e->errorInfo[1] == 1061 || $e->errorInfo[1] == 1062 || $e->errorInfo[1] == 1071 || $e->errorInfo[1] == 1072 || $e->errorInfo[1] == 1146 || $e->errorInfo[0] == 23505 || $e->errorInfo[0] == 42701 || $e->errorInfo[0] == 42703 || $e->errorInfo[0] == '42P07' || $e->errorInfo[0] == '42P16') {
-							echo $c->error($query . " Skipped - Not Fatal.\n");
+							echo $c->error($query . " Skipped - Not Fatal {" . $e->errorInfo[1] . "}.\n");
 						} else {
-							exit($c->error($query . " Failed\n"));
+							exit($c->error($query . " Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 						}
 					}
 
@@ -77,7 +77,7 @@ function BackupDatabase()
 
 	//Backup based on database system
 	if ($db->dbSystem() == "mysql") {
-		system("$PHP ${DIR}testing/DB_scripts/mysqldump_tables.php db dump ../../../");
+		system("$PHP ${DIR}testing/DB/mysqldump_tables.php db dump ../../../");
 	} else if ($db->dbSystem() == "pgsql") {
 		exit($c->error("Currently not supported on this platform."));
 	}
@@ -118,9 +118,9 @@ if (isset($os) && $os == "unix") {
 	}
 
 	/* 	if ($db->dbSystem() == "mysql")
-	  $patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/mysql_patches/', nZEDb_ROOT);
+	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/mysql_patches/', nZEDb_ROOT);
 	  else if ($db->dbSystem() == "pgsql")
-	  $patchpath = preg_replace('/\/misc\/testing\/DB_scripts/i', '/db/pgsql_patches/', nZEDb_ROOT);
+	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/pgsql_patches/', nZEDb_ROOT);
 	 */ sort($patches);
 
 	foreach ($patches as $patch) {
@@ -188,10 +188,11 @@ if ($patched == 0) {
 if ($patched > 0) {
 	echo $c->header($patched . " patch(es) applied.");
 	$smarty = new Smarty;
+	// Ths does not appear to be working
 	$cleared = $smarty->clearAllCache();
 	if ($cleared) {
 		echo $c->header("The smarty template cache has been cleaned for you");
 	} else {
-		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "template_c");
+		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c");
 	}
 }

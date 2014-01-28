@@ -796,7 +796,10 @@ class Releases
 
 		is_numeric($epno) ? $epno = sprintf(" AND releases.episode %s '%s' ", $like, $db->escapeString('%' . $epno . '%')) : '';
 
-		$searchsql = $this->searchSQL($name, $db, 'searchname');
+		$searchsql = '';
+		if ($name !== '') {
+			$searchsql = $this->searchSQL($name, $db, 'searchname');
+		}
 		$catsrch = $this->categorySQL($cat);
 
 		$maxagesql = '';
@@ -834,7 +837,10 @@ class Releases
 			$imdbId = '';
 		}
 
-		$searchsql = $this->searchSQL($name, $db, 'searchname');
+		$searchsql = '';
+		if ($name !== '') {
+			$searchsql = $this->searchSQL($name, $db, 'searchname');
+		}
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0) {
@@ -1890,9 +1896,9 @@ class Releases
 		}
 
 		if ($this->echooutput && $this->completion > 0) {
-			echo $this->c->primary('Removed releases: ' . number_format($remcount) . ' past retention, ' . number_format($passcount) . ' passworded, ' . number_format($dupecount) . ' crossposted, ' . number_format($disabledcount) . ' from disabled categoteries, ' . number_format($disabledgenrecount) . ' from disabled music genres, ' . number_format($miscothercount) . ' from misc->other, ' . number_format($completioncount) . ' under ' . $this->completion . '% completion.');
+			echo $this->c->primary('Removed releases: ' . number_format($remcount) . ' past retention, ' . number_format($passcount) . ' passworded, ' . number_format($dupecount) . ' crossposted, ' . number_format($disabledcount) . ' from disabled categories, ' . number_format($disabledgenrecount) . ' from disabled music genres, ' . number_format($miscothercount) . ' from misc->other, ' . number_format($completioncount) . ' under ' . $this->completion . '% completion.');
 		} else if ($this->echooutput && $this->completion == 0) {
-			echo $this->c->primary('Removed releases: ' . number_format($remcount) . ' past retention, ' . number_format($passcount) . ' passworded, ' . number_format($dupecount) . ' crossposted, ' . number_format($disabledcount) . ' from disabled categoteries, ' . number_format($disabledgenrecount) . ' from disabled music genres, ' . number_format($miscothercount) . ' from misc->other');
+			echo $this->c->primary('Removed releases: ' . number_format($remcount) . ' past retention, ' . number_format($passcount) . ' passworded, ' . number_format($dupecount) . ' crossposted, ' . number_format($disabledcount) . ' from disabled categories, ' . number_format($disabledgenrecount) . ' from disabled music genres, ' . number_format($miscothercount) . ' from misc->other');
 		}
 		if ($this->echooutput && $reccount > 0) {
 			echo $this->c->primary("Removed " . number_format($reccount) . ' parts/binaries/collection rows.');

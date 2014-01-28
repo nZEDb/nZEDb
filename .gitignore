@@ -10,3 +10,4 @@ php-errors.log
 *~
 
 /nbproject/
+/smarty/lib/templates_c/*
