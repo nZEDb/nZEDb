@@ -51,7 +51,7 @@ class ReleaseCleaning
 		}
 		
 		$this->usepre = $usepre;
-		$this->subject = $this->subject;
+		$this->subject = $subject;
 		$this->groupname = $groupName;
 		switch ($groupName) {
 			case 'alt.binaries.0day.stuffz':
