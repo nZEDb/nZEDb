@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 
 
+2014-01-28 -> egandt   -> Refactored ReleaseCleaning and ensured all groups are sync'ed between ReleaseCleaning and CollectionCleaning
 2014-01-28 -> jonnyboy -> updated step3.php
                           added 'XFeature GZIP compression, by wafflehouse : http://pastebin.com/A3YypDAJ'
 2014-01-28 -> kaibosh  -> README.md rewrite
