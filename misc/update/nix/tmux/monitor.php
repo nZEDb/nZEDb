@@ -905,28 +905,33 @@ while ($i > 0) {
 
 	//get usenet connections
 	if ($alternate_nntp == "1") {
-		$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $host . ":" . $port . " | grep -c ESTAB"));
-		$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $host . ":" . $port . ""));
-		$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $host_a . ":" . $port_a . " | grep -c ESTAB"));
-		$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $host_a . ":" . $port_a . ""));
-		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0) {
-			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
-			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $ip . ":" . $port . ""));
-			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $ip_a . ":" . $port_a . " | grep -c ESTAB"));
-			$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $ip_a . ":" . $port_a . ""));
-		} else if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a) {
-			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $port . " | grep -c ESTAB"));
-			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $port . ""));
-			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $port_a . " | grep -c ESTAB"));
-			$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $port_a . ""));
+		$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
+		$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":" . $port . ""));
+		$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip_a . ":" . $port_a . " | grep -c ESTAB"));
+		$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip_a . ":" . $port_a . ""));
+		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a) {
+			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":https | grep -c ESTAB"));
+			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":https"));
+			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip_a . ":https | grep -c ESTAB"));
+			$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip_a . ":https"));
+		}
+		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a) {
+			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $port . " | grep -c ESTAB"));
+			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port . ""));
+			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $port_a . " | grep -c ESTAB"));
+			$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port_a . ""));
 		}
 	} else {
-		$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $host . ":" . $port . " | grep -c ESTAB"));
-		$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $host . ":" . $port . ""));
-		if ($usp1activeconnections == 0 && $usp1totalconnections == 0) {
-			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
-			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n --resolve | grep -c " . $ip . ":" . $port . ""));
-		}
+        $usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
+        $usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":" . $port . ""));
+        if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a) {
+            $usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":https | grep -c ESTAB"));
+            $usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":https"));
+        }
+        if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a) {
+            $usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $port . " | grep -c ESTAB"));
+            $usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port . ""));
+        }
 	}
 
 	//update display
