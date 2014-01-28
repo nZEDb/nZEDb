@@ -36,7 +36,30 @@ Specific installation guides for common Operating Systems can be found on the nZ
 
 ## Getting Started
 
-In general, it's best to start with the simple screen scripts running in single-threaded mode. Enable one or two groups and slowly add more as you become familar with the application. Later, as required, enable mutli-threading and perhaps try the various tmux modii.
+After you have installed nZEDb and gone throught the initial web-based installation steps (step1, step2 etc), then review the setting on the Admin-Site-Edit page.
+
+Most of the default settings are fine, however some will need changing.
+
+The two amazon keys and the associate tag are needed to fetch anything from amazon. The trakt.tv key is optional, but it can help fetching extra information when tvrage and the NFO fails.
+
+Setting the paths to unrar/ffmpeg/mediainfo is optional, but unrar is recommended for getting names out of releases and finding passwords in releases. It's best to get the very latest versions of these utilities.
+
+If you have set the path to unrar, deep rar inspection is recommended.
+
+Compressed headers are recommended if your provider supports XFeature gzip compression, however header retrieval may hang if the nntp-proxy is not used.
+
+Once you have set all the options, you can enable one or two groups and start with the simple screen script running in single-threaded mode. Look in the misc/update directory; update_binaries.php downloads usenet articles into the local database; update_releases.php attempts to group these articles into releases and create NZB files.
+
+Once you become more familiar with the application, enable a few more groups and if needed enable multi-threading (with low thread counts). We do not recommend enabling all the groups unless you have performant hardware and strong database tuning knowledge.
+
+If you want an automated way of doing this, you can use the script in the nix, or tmux folder. The Windows scripts may work.
+
+To clean up the release names, check out fixReleaseNames.php in misc/testing.
+
+For an overview of a complete process, look at the  misc/update/nix/screen/sequential/threaded.sh script.
+
+Advanced users may be interested yo try the tmux version of nZEDb in either Complete Sequential, Sequential or non-sequential (fully parallel) mode. Before start it, review the tmux setting in Site-Edit -> Tmux Settings.
+
 
 ### Support
 
