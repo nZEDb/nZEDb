@@ -74,7 +74,7 @@ The nZEDb team have no control over and are not responsible for what is posted o
 
 ### The Team
 
-Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo, Whitelighter and archer}<br /><br />
+Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo, Whitelighter and niel<br /><br />
 Paypal: <a href="http://nzedb.com/index.php?action=treasury"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
 
 Bitcoin wallet: 1LrrFbXn4QfGUokLppHVPQHAzmnAPbgV2M
