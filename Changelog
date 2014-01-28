@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 
 
+2014-01-28 -> kaibosh  -> README.ms rewrite
 2014-01-27 -> jonnyboy -> fixed install not adding triggers
                           merged egandts pr, fix bad link in predb table
 2014-01-26 -> niel     -> Upd: Changing runHooks to only update version for the 'dev' branch, to reduce merge conflicts.
