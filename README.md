@@ -70,7 +70,7 @@ Also on IRC: irc.synirc.net #nZEDb
 
 ### Note
 
-The nZEDb team are not responsible for what is posted on the usenet. Best efforts are made to avoid hazardous content (e.g. virii) by nZEDb's automated processess. If you find any objectionable content, please direct any complaints to your usenet provider.
+The nZEDb team have no control over and are not responsible for what is posted on the usenet. Best efforts are made to avoid hazardous content (e.g. virii) by nZEDb's automated processess. If you find any objectionable content, please direct any complaints to your usenet provider.
 
 ### The Team
 
