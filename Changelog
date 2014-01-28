@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-01-28 -> jonnyboy -> added parameter to Releases->searchSQL to choose ft index or not.
 2014-01-28 -> niel     -> Fix: git hook script correctly detects the dev branch now.
                        -> Upd: Partial reverting changes to tmux/monitor.php. It needs to show actual commit, not expected, i misunderstood the purpose :-(
 2014-01-28 -> jonnyboy -> updated step3.php

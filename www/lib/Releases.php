@@ -506,7 +506,7 @@ class Releases
 	}
 
 	// Creates part of a query for searches based on the type of search.
-	public function searchSQL($search, $db, $type)
+	public function searchSQL($search, $db, $type, $useft)
 	{
 		// If the query starts with a ^ it indicates the search is looking for items which start with the term
 		// still do the fulltext match, but mandate that all items returned must start with the provided word.
@@ -523,7 +523,7 @@ class Releases
 		}
 
 		if (count($words) > 0) {
-			if ($ft->rowCount() !== 0) {
+			if ($ft->rowCount() !== 0 && $useft === true) {
 				$searchwords = '';
 				foreach ($words as $word) {
 					$word = str_replace('!', '+', $word);
@@ -603,15 +603,15 @@ class Releases
 		$hasnfosql = $hascommentssql = $daysnewsql = $daysoldsql = $maxagesql = $exccatlist = $searchnamesql = $usenetnamesql = $posternamesql = $groupIDsql = '';
 
 		if ($searchname != '-1') {
-			$searchnamesql = $this->searchSQL($searchname, $db, 'searchname');
+			$searchnamesql = $this->searchSQL($searchname, $db, 'searchname', true);
 		}
 
 		if ($usenetname != '-1') {
-			$usenetnamesql = $this->searchSQL($usenetname, $db, 'name');
+			$usenetnamesql = $this->searchSQL($usenetname, $db, 'name', true);
 		}
 
 		if ($postername != '-1') {
-			$posternamesql = $this->searchSQL($postername, $db, 'fromname');
+			$posternamesql = $this->searchSQL($postername, $db, 'fromname', false);
 		}
 
 		if ($groupname != '-1') {
@@ -758,7 +758,7 @@ class Releases
 
 		$searchsql = '';
 		if ($name !== '') {
-			$searchsql = $this->searchSQL($name, $db, 'searchname');
+			$searchsql = $this->searchSQL($name, $db, 'searchname', false);
 		}
 		$catsrch = $this->categorySQL($cat);
 
@@ -798,7 +798,7 @@ class Releases
 
 		$searchsql = '';
 		if ($name !== '') {
-			$searchsql = $this->searchSQL($name, $db, 'searchname');
+			$searchsql = $this->searchSQL($name, $db, 'searchname', false);
 		}
 		$catsrch = $this->categorySQL($cat);
 
@@ -839,7 +839,7 @@ class Releases
 
 		$searchsql = '';
 		if ($name !== '') {
-			$searchsql = $this->searchSQL($name, $db, 'searchname');
+			$searchsql = $this->searchSQL($name, $db, 'searchname', false);
 		}
 		$catsrch = $this->categorySQL($cat);
 

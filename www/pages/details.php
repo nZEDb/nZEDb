@@ -4,9 +4,9 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-if (isset($_GET["id"])) {
+if (isset($_GET['id'])) {
 	$releases = new Releases();
-	$data = $releases->getByGuid($_GET["id"]);
+	$data = $releases->getByGuid($_GET['id']);
 
 	if (!$data) {
 		$page->show404();
@@ -14,21 +14,21 @@ if (isset($_GET["id"])) {
 
 	$rc = new ReleaseComments();
 	if ($page->isPostBack()) {
-		$rc->addComment($data["id"], $_POST["txtAddComment"], $users->currentUserId(), $_SERVER['REMOTE_ADDR']);
+		$rc->addComment($data['id'], $_POST['txtAddComment'], $users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 	}
 
-	$nfo = $releases->getReleaseNfo($data["id"], false);
+	$nfo = $releases->getReleaseNfo($data['id'], false);
 	$re = new ReleaseExtra;
-	$reVideo = $re->getVideo($data["id"]);
-	$reAudio = $re->getAudio($data["id"]);
-	$reSubs = $re->getSubs($data["id"]);
-	$comments = $rc->getComments($data["id"]);
-	$similars = $releases->searchSimilar($data["id"], $data["searchname"], 6, $page->userdata["categoryexclusions"]);
+	$reVideo = $re->getVideo($data['id']);
+	$reAudio = $re->getAudio($data['id']);
+	$reSubs = $re->getSubs($data['id']);
+	$comments = $rc->getComments($data['id']);
+	$similars = $releases->searchSimilar($data['id'], $data['searchname'], 6, $page->userdata['categoryexclusions']);
 
 	$rage = $ani = $mov = $mus = $con = $boo = '';
-	if ($data["rageid"] != '') {
+	if ($data['rageid'] != '') {
 		$tvrage = new TvRage();
-		$rageinfo = $tvrage->getByRageID($data["rageid"]);
+		$rageinfo = $tvrage->getByRageID($data['rageid']);
 		if (count($rageinfo) > 0) {
 			$seriesnames = $seriesdescription = $seriescountry = $seriesgenre = $seriesimg = $seriesid = array();
 			foreach ($rageinfo as $r) {
@@ -60,9 +60,9 @@ if (isset($_GET["id"])) {
 		}
 	}
 
-	if ($data["anidbid"] > 0) {
+	if ($data['anidbid'] > 0) {
 		$AniDB = new AniDB();
-		$ani = $AniDB->getAnimeInfo($data["anidbid"]);
+		$ani = $AniDB->getAnimeInfo($data['anidbid']);
 	}
 
 	if ($data['imdbid'] != '') {
@@ -93,7 +93,7 @@ if (isset($_GET["id"])) {
 	}
 
 	$rf = new ReleaseFiles();
-	$releasefiles = $rf->get($data["id"]);
+	$releasefiles = $rf->get($data['id']);
 
 	$predb = new PreDb();
 	$pre = $predb->getForRelease($data['preid']);
@@ -115,9 +115,9 @@ if (isset($_GET["id"])) {
 	$page->smarty->assign('similars', $similars);
 	$page->smarty->assign('searchname', $releases->getSimilarName($data['searchname']));
 
-	$page->meta_title = "View NZB";
-	$page->meta_keywords = "view,nzb,description,details";
-	$page->meta_description = "View NZB for" . $data["searchname"];
+	$page->meta_title = 'View NZB';
+	$page->meta_keywords = 'view,nzb,description,details';
+	$page->meta_description = 'View NZB for' . $data['searchname'];
 
 	$page->content = $page->smarty->fetch('viewnzb.tpl');
 	$page->render();

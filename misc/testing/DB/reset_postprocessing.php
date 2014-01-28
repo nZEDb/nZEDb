@@ -107,6 +107,7 @@ if (isset($argv[1]) && ($argv[1] === "misc" || $argv[1] === "all")) {
 		$where = " WHERE haspreview < -1 OR haspreview = 0 OR passwordstatus < -1 OR passwordstatus = 0 OR jpgstatus < 0 OR videostatus < 0 OR audiostatus < 0";
 	}
 
+	echo $c->primary("SELECT id FROM releases" . $where);
 	$qry = $db->queryDirect("SELECT id FROM releases" . $where);
 	$total = $qry->rowCount();
 	$concount = 0;
