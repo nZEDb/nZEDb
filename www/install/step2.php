@@ -143,6 +143,7 @@ if ($page->isPostBack()) {
 		if (file_exists($cfg->DB_DIR . '/schema.mysql') && file_exists($cfg->DB_DIR . '/schema.pgsql')) {
 			if ($dbtype == "mysql") {
 				$dbData = file_get_contents($cfg->DB_DIR . '/schema.mysql');
+				$dbData = str_replace(array('DELIMITER $$', 'DELIMITER ;', ' $$'), '', $dbData);
 			}
 			if ($dbtype == "pgsql") {
 				$pdo->query("DROP FUNCTION IF EXISTS hash_check() CASCADE");
@@ -159,8 +160,8 @@ if ($page->isPostBack()) {
 			if ($dbtype == "mysql") {
 				$pdo->query("USE " . $cfg->DB_NAME);
 			}
-
-			/* 			$queries = explode(";", $dbData);
+/*
+			$queries = explode(";", $dbData);
 			  $queries = array_map("trim", $queries);
 			  foreach($queries as $q)
 			  {
@@ -186,7 +187,7 @@ if ($page->isPostBack()) {
 			  }
 			  }
 			  }
-			 */
+*/
 			try {
 				$pdo->exec($dbData);
 			} catch (PDOException $err) {
