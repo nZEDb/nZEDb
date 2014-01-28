@@ -30,12 +30,13 @@ echo "Running pre -commit hooks\n";
  */
 if ($error === false) {
 	exec("git branch -a | grep \*", $output);
-	if ($output == '* dev') { // Only update versions on the dev branch to lessen conflicts
+	if ($output[0] == '* dev') { // Only update versions on the dev branch to lessen conflicts
 		$vers = new Versions();
 		$vers->checkAll();
 		$vers->save();
 		passthru('git add ' . nZEDb_VERSIONS);
 	} else {
+		var_dump($output);
 		echo "not dev branch, skipping version updates\n";
 	}
 }
