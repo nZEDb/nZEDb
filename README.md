@@ -58,7 +58,7 @@ To clean up the release names, check out fixReleaseNames.php in misc/testing.
 
 For an overview of a complete process, look at the  misc/update/nix/screen/sequential/threaded.sh script.
 
-Advanced users may be interested to try the tmux version of nZEDb in either Complete Sequential, Sequential or non-Sequential (fully parallel) mode. Before starting it, review the tmux setting in Site-Edit -> Tmux Settings.
+Advanced users may be interested to try the tmux version of nZEDb in either Complete Sequential, Sequential or non-Sequential (fully parallel) mode. Before starting, review the tmux settings in Site-Edit -> Tmux Settings.
 
 
 ### Support
