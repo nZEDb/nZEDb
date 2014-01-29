@@ -331,7 +331,8 @@ class DB extends PDO
 	{
 		$tablecnt = 0;
 		if ($this->dbsystem == 'mysql') {
-			$alltables = $this->query('SHOW table status WHERE Data_free > 0');
+			// only optimize if free space exceeds 5%
+			$alltables = $this->query('SHOW table status WHERE Data_free / Data_length > 0.005');
 			$tablecnt = count($alltables);
 			foreach ($alltables as $table) {
 				if ($admin === false) {

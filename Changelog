@@ -7,6 +7,20 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-01-29 -> niel     -> Upd: Merging in third party library move (from nZEDb/www/libs/... to nZEDb/libs/...).
+2014-01-29 -> jonnyboy -> updated Releases.php, seems Releases->processReleasesStage7b was not running unless running tmux scripts
+                          updated DB.php, db->optimise to only optimise tables with a min of 5% free space
+2014-01-28 -> jonnyboy -> minor change to Releases->searchSQL, for ft search, at least 1 term must have +
+2014-01-28 -> niel     -> Upd: Removing trailing white-space from README.md (It makes the pre-commit hook complain when merging).
+                       -> Upd: Fixing typo in runHooks
+2014-01-28 -> jonnyboy -> removed unnecessary resolve using ss, added another pass to try to get usp count
+                          fixed bug in details view when using ft index
+                          added parameter to Releases->searchSQL to choose ft index or not.
+2014-01-28 -> niel     -> Fix: git hook script correctly detects the dev branch now.
+                       -> Upd: Partial reverting changes to tmux/monitor.php. It needs to show actual commit, not expected, i misunderstood the purpose :-(
+2014-01-28 -> jonnyboy -> updated step3.php
+                          added 'XFeature GZIP compression, by wafflehouse : http://pastebin.com/A3YypDAJ'
+2014-01-28 -> kaibosh  -> README.md rewrite
 2014-01-27 -> jonnyboy -> fixed install not adding triggers
                           merged egandts pr, fix bad link in predb table
 2014-01-26 -> niel     -> Upd: Changing runHooks to only update version for the 'dev' branch, to reduce merge conflicts.

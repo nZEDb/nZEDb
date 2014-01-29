@@ -5,7 +5,7 @@ if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
 }
 
-if (PHP_SAPI == 'cli') {
+if (PHP_SAPI == 'cli' && GIT_PRE_COMMIT === false) {
 	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
@@ -133,15 +133,16 @@ class Versions
 	{
 		exec('git log | grep "^commit" | wc -l', $output);
 		// I added this, because it was not updating to commit + 1, only current commit number
-		$gitver = $output[0] + 1;
-		if ($this->_vers->git->commit < $gitver || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
+		if ($this->_vers->git->commit < $output[0] || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
 			if ($update) {
 				if (GIT_PRE_COMMIT === true) { // only allow the pre-commit script to set the NEXT commit number
-					$gitver;
+					$output[0] += 1;
 				}
-				echo $this->out->primary("Updating commit number to ${gitver}");
-				$this->_vers->git->commit = $gitver;
-				$this->_changes |= self::UPDATED_GIT_COMMIT;
+				if ($output[0] != $this->_vers->git->commit) {
+					echo $this->out->primary("Updating commit number to {$output[0]}");
+					$this->_vers->git->commit = $output[0];
+					$this->_changes |= self::UPDATED_GIT_COMMIT;
+				}
 			}
 			return $this->_vers->git->commit;
 		}
