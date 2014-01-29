@@ -22,7 +22,7 @@ define('GIT_PRE_COMMIT', true);
 require_once realpath(dirname(__FILE__) . '/../Versions.php');
 
 $error = false;
-echo "Running pre -commit hooks\n";
+echo "Running pre-commit hooks\n";
 
 
 /**
