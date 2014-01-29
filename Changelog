@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 
 2014-01-29 -> niel     -> Upd: Merging in third party library move (from nZEDb/www/libs/... to nZEDb/libs/...).
+                          Upd: Using file to check for text files in NFO, added check for non-printable characters after text check.
 2014-01-29 -> jonnyboy -> updated Releases.php, seems Releases->processReleasesStage7b was not running unless running tmux scripts
                           updated DB.php, db->optimise to only optimise tables with a min of 5% free space
 2014-01-28 -> jonnyboy -> minor change to Releases->searchSQL, for ft search, at least 1 term must have +
