@@ -394,10 +394,11 @@ class PostProcess
 
 			// Loop through the releases.
 			foreach ($result as $rel) {
-				if ($this->echooutput && $releaseToWork == '')
-					echo "\r" . str_pad('', 79, ' ') . "\r[" . $this->c->primaryOver($startCount--) . ']';
-				else if ($this->echooutput)
+				if ($this->echooutput && $releaseToWork == '') {
+					echo "\n[" . $this->c->primaryOver($startCount--) . ']';
+				} else if ($this->echooutput) {
 					echo '[' . $this->c->primaryOver($rel['id']) . ']';
+				}
 
 				// Per release defaults.
 				$this->tmpPath = $tmpPath . $rel['guid'] . '/';

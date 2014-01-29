@@ -506,12 +506,12 @@ class Releases
 	}
 
 	// Creates part of a query for searches based on the type of search.
-	public function searchSQL($search, $db, $type)
+	public function searchSQL($search, $db, $type, $useft)
 	{
 		// If the query starts with a ^ it indicates the search is looking for items which start with the term
 		// still do the fulltext match, but mandate that all items returned must start with the provided word.
 		$words = explode(' ', $search);
-		$searchsql = '';
+		$searchwords = $searchsql = '';
 		$intwordcount = 0;
 		$ft = $db->queryDirect("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_searchname_ft'");
 		if ($ft->rowCount() !== 2) {
@@ -522,25 +522,31 @@ class Releases
 			}
 		}
 
+
 		if (count($words) > 0) {
-			if ($ft->rowCount() !== 0) {
-				$searchwords = '';
+			if ($ft->rowCount() !== 0 && $useft === true) {
 				foreach ($words as $word) {
+					$word = trim(rtrim(trim($word), '-'));
 					$word = str_replace('!', '+', $word);
-					$searchwords .= sprintf('%s ', $word);
+					if ($word !== '' && $word !== '-') {
+						$searchwords .= sprintf('%s ', $word);
+					}
 				}
-				if ($ft->rowCount() === 2) {
+				$searchwords = trim($searchwords);
+				if ($ft->rowCount() === 2 && $searchwords != '') {
 					$searchsql .= sprintf(" AND MATCH(releases.name, releases.searchname) AGAINST('%s' IN BOOLEAN MODE)", $searchwords);
 				} else {
 					$searchsql .= sprintf(" AND MATCH(releases.%s) AGAINST('%s' IN BOOLEAN MODE)", $type, $searchwords);
 				}
-			} else {
+			}
+			if ($searchwords === '') {
 				$like = 'ILIKE';
 				if ($db->dbSystem() == 'mysql') {
 					$like = 'LIKE';
 				}
 				foreach ($words as $word) {
 					if ($word != '') {
+						$word = trim(rtrim(trim($word), '-'));
 						if ($intwordcount == 0 && (strpos($word, '^') === 0)) {
 							$searchsql .= sprintf(' AND releases.%s %s %s', $type, $like, $db->escapeString(substr($word, 1) . '%'));
 						} else if (substr($word, 0, 2) == '--') {
@@ -603,15 +609,15 @@ class Releases
 		$hasnfosql = $hascommentssql = $daysnewsql = $daysoldsql = $maxagesql = $exccatlist = $searchnamesql = $usenetnamesql = $posternamesql = $groupIDsql = '';
 
 		if ($searchname != '-1') {
-			$searchnamesql = $this->searchSQL($searchname, $db, 'searchname');
+			$searchnamesql = $this->searchSQL($searchname, $db, 'searchname', true);
 		}
 
 		if ($usenetname != '-1') {
-			$usenetnamesql = $this->searchSQL($usenetname, $db, 'name');
+			$usenetnamesql = $this->searchSQL($usenetname, $db, 'name', true);
 		}
 
 		if ($postername != '-1') {
-			$posternamesql = $this->searchSQL($postername, $db, 'fromname');
+			$posternamesql = $this->searchSQL($postername, $db, 'fromname', false);
 		}
 
 		if ($groupname != '-1') {
@@ -758,7 +764,7 @@ class Releases
 
 		$searchsql = '';
 		if ($name !== '') {
-			$searchsql = $this->searchSQL($name, $db, 'searchname');
+			$searchsql = $this->searchSQL($name, $db, 'searchname', false);
 		}
 		$catsrch = $this->categorySQL($cat);
 
@@ -798,7 +804,7 @@ class Releases
 
 		$searchsql = '';
 		if ($name !== '') {
-			$searchsql = $this->searchSQL($name, $db, 'searchname');
+			$searchsql = $this->searchSQL($name, $db, 'searchname', false);
 		}
 		$catsrch = $this->categorySQL($cat);
 
@@ -839,7 +845,7 @@ class Releases
 
 		$searchsql = '';
 		if ($name !== '') {
-			$searchsql = $this->searchSQL($name, $db, 'searchname');
+			$searchsql = $this->searchSQL($name, $db, 'searchname', false);
 		}
 		$catsrch = $this->categorySQL($cat);
 
