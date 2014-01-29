@@ -6,7 +6,11 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+
 2014-01-29 -> niel     -> Upd: Merging in third party library move (from nZEDb/www/libs/... to nZEDb/libs/...).
+2014-01-29 -> jonnyboy -> updated Releases.php, seems Releases->processReleasesStage7b was not running unless running tmux scripts
+                          updated DB.php, db->optimise to only optimise tables with a min of 5% free space
+2014-01-28 -> jonnyboy -> minor change to Releases->searchSQL, for ft search, at least 1 term must have +
 2014-01-28 -> niel     -> Upd: Removing trailing white-space from README.md (It makes the pre-commit hook complain when merging).
                        -> Upd: Fixing typo in runHooks
 2014-01-28 -> jonnyboy -> removed unnecessary resolve using ss, added another pass to try to get usp count
