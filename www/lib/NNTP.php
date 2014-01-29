@@ -1,7 +1,5 @@
 <?php
-//require_once nZEDb_LIB . 'site.php';
-require_once nZEDb_LIB . '/Net_NNTP/NNTP/Client.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
+require_once nZEDb_LIBS . '/Net_NNTP/NNTP/Client.php';
 
 /*
 * Class for connecting to the usenet, retrieving articles and article headers, decoding yEnc articles, decompressing article headers.
