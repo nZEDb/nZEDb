@@ -511,7 +511,9 @@ class Releases
 		// If the query starts with a ^ it indicates the search is looking for items which start with the term
 		// still do the fulltext match, but mandate that all items returned must start with the provided word.
 		$words = explode(' ', $search);
-		$searchsql = '';
+
+		//only used to get a count of words
+		$searchwords = $searchsql = '';
 		$intwordcount = 0;
 		$ft = $db->queryDirect("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_searchname_ft'");
 		if ($ft->rowCount() !== 2) {
@@ -522,25 +524,37 @@ class Releases
 			}
 		}
 
+
 		if (count($words) > 0) {
 			if ($ft->rowCount() !== 0) {
-				$searchwords = '';
-				foreach ($words as $word) {
-					$word = str_replace('!', '+', $word);
-					$searchwords .= sprintf('%s ', $word);
+				//at least 1 term needs to be mandatory
+				if (!preg_match('/[+|!]/', $search)) {
+					$search = '+' . $search;
+					$words = explode(' ', $search);
 				}
-				if ($ft->rowCount() === 2) {
+				foreach ($words as $word) {
+					$word = trim(rtrim(trim($word), '-'));
+					$word = str_replace('!', '+', $word);
+					if ($word !== '' && $word !== '-') {
+						$searchwords .= sprintf('%s ', $word);
+					}
+				}
+				$searchwords = trim($searchwords);
+				if ($ft->rowCount() === 2 && $searchwords != '') {
 					$searchsql .= sprintf(" AND MATCH(releases.name, releases.searchname) AGAINST('%s' IN BOOLEAN MODE)", $searchwords);
 				} else {
 					$searchsql .= sprintf(" AND MATCH(releases.%s) AGAINST('%s' IN BOOLEAN MODE)", $type, $searchwords);
 				}
-			} else {
+			}
+			if ($searchwords === '') {
+				$words = explode(' ', $search);
 				$like = 'ILIKE';
 				if ($db->dbSystem() == 'mysql') {
 					$like = 'LIKE';
 				}
 				foreach ($words as $word) {
 					if ($word != '') {
+						$word = trim(rtrim(trim($word), '-'));
 						if ($intwordcount == 0 && (strpos($word, '^') === 0)) {
 							$searchsql .= sprintf(' AND releases.%s %s %s', $type, $like, $db->escapeString(substr($word, 1) . '%'));
 						} else if (substr($word, 0, 2) == '--') {
