@@ -506,11 +506,13 @@ class Releases
 	}
 
 	// Creates part of a query for searches based on the type of search.
-	public function searchSQL($search, $db, $type, $useft)
+	public function searchSQL($search, $db, $type)
 	{
 		// If the query starts with a ^ it indicates the search is looking for items which start with the term
 		// still do the fulltext match, but mandate that all items returned must start with the provided word.
 		$words = explode(' ', $search);
+
+		//only used to get a count of words
 		$searchwords = $searchsql = '';
 		$intwordcount = 0;
 		$ft = $db->queryDirect("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_searchname_ft'");
@@ -524,7 +526,12 @@ class Releases
 
 
 		if (count($words) > 0) {
-			if ($ft->rowCount() !== 0 && $useft === true) {
+			if ($ft->rowCount() !== 0) {
+				//at least 1 term needs to be mandatory
+				if (!preg_match('/[+|!]/', $search)) {
+					$search = '+' . $search;
+					$words = explode(' ', $search);
+				}
 				foreach ($words as $word) {
 					$word = trim(rtrim(trim($word), '-'));
 					$word = str_replace('!', '+', $word);
@@ -540,6 +547,7 @@ class Releases
 				}
 			}
 			if ($searchwords === '') {
+				$words = explode(' ', $search);
 				$like = 'ILIKE';
 				if ($db->dbSystem() == 'mysql') {
 					$like = 'LIKE';
@@ -609,15 +617,15 @@ class Releases
 		$hasnfosql = $hascommentssql = $daysnewsql = $daysoldsql = $maxagesql = $exccatlist = $searchnamesql = $usenetnamesql = $posternamesql = $groupIDsql = '';
 
 		if ($searchname != '-1') {
-			$searchnamesql = $this->searchSQL($searchname, $db, 'searchname', true);
+			$searchnamesql = $this->searchSQL($searchname, $db, 'searchname');
 		}
 
 		if ($usenetname != '-1') {
-			$usenetnamesql = $this->searchSQL($usenetname, $db, 'name', true);
+			$usenetnamesql = $this->searchSQL($usenetname, $db, 'name');
 		}
 
 		if ($postername != '-1') {
-			$posternamesql = $this->searchSQL($postername, $db, 'fromname', false);
+			$posternamesql = $this->searchSQL($postername, $db, 'fromname');
 		}
 
 		if ($groupname != '-1') {
@@ -764,7 +772,7 @@ class Releases
 
 		$searchsql = '';
 		if ($name !== '') {
-			$searchsql = $this->searchSQL($name, $db, 'searchname', false);
+			$searchsql = $this->searchSQL($name, $db, 'searchname');
 		}
 		$catsrch = $this->categorySQL($cat);
 
@@ -804,7 +812,7 @@ class Releases
 
 		$searchsql = '';
 		if ($name !== '') {
-			$searchsql = $this->searchSQL($name, $db, 'searchname', false);
+			$searchsql = $this->searchSQL($name, $db, 'searchname');
 		}
 		$catsrch = $this->categorySQL($cat);
 
@@ -845,7 +853,7 @@ class Releases
 
 		$searchsql = '';
 		if ($name !== '') {
-			$searchsql = $this->searchSQL($name, $db, 'searchname', false);
+			$searchsql = $this->searchSQL($name, $db, 'searchname');
 		}
 		$catsrch = $this->categorySQL($cat);
 
