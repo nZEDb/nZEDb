@@ -6,7 +6,7 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-01-29 -> niel     -> Upd: Merging in third party library move (from nZEDb/www/libs/... to nZEDb/libs/...).
 2014-01-28 -> niel     -> Upd: Removing trailing white-space from README.md (It makes the pre-commit hook complain when merging).
                        -> Upd: Fixing typo in runHooks
 2014-01-28 -> jonnyboy -> removed unnecessary resolve using ss, added another pass to try to get usp count
@@ -20,11 +20,12 @@ Each update goes to the top of the file
 2014-01-27 -> jonnyboy -> fixed install not adding triggers
                           merged egandts pr, fix bad link in predb table
 2014-01-26 -> niel     -> Upd: Changing runHooks to only update version for the 'dev' branch, to reduce merge conflicts.
+                       -> Upd: Moving third party libraries from nZEDb/www/lib to nZEDb/libs.
                           Upd: Adding check to queryDirect for failure, to avoid invalid parameter passed to foreach errors when queries go wrong.
 2014-01-26 -> bart39   -> fixed typo in Releases.php
                           moved music checks before movie checks in determineCategoryNormal as music videos were incorrectly being categorized as movies
 2014-01-26 -> jonnyboy -> fixed api queries, but i am considering adding a ft index check for fromname
-2014-01-26 -> niel     -> Fix: Suppresing errors for I/O timeout for PreDb lookups
+2014-01-26 -> niel     -> Fix: Suppressing errors for I/O timeout for PreDb lookups
                           Fix: Allow pre-commit hook to override commit number in Versions (branch numbers may be higher than dev's).
 2014-01-25 -> jonnyboy -> added this patch for those that do not have the triggers
                           updated patchDB.php to better read the output

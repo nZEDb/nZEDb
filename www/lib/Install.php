@@ -2,7 +2,6 @@
 
 class Install
 {
-
 	public $DB_SYSTEM;
 	public $DB_TYPE;
 	public $DB_HOST = "127.0.0.1";
@@ -79,6 +78,7 @@ class Install
 		$this->nZEDb_MISC = dirname(realpath('..')) . '/misc';
 		$this->NZB_PATH = str_replace('\\', '/', dirname(realpath('..'))) . '/nzbfiles/';
 		$this->INSTALL_DIR = $this->nZEDb_WWW . '/install';
+		$this->nZEDb_LIBS = nZEDb_LIBS;
 	}
 
 	public function setSession()
