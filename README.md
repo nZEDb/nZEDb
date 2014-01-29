@@ -3,7 +3,7 @@ nZEDb automatically scans the usenet similar to the way google search bots scan 
 This project is a fork of the open source usenet indexer newznab plus: https://github.com/anth0/nnplus
 
 nZEDb improves upon the original design, implementing several new features including:
-	
+
 - Optional multi-threaded processing (header retrieval, release creation, post-processing etc)
 - NNTP-Proxy providing connection pooling (greatly reduces NNTP session establishment & tear-down between nZEDb and the usenet service provider)
 - Advanced search features (name, subject, category, post-date etc)
@@ -13,16 +13,16 @@ nZEDb improves upon the original design, implementing several new features inclu
 - sabnzbd integration web, API and pause/resume
 - CouchPotato integration web and API
 
-  
+
 ## Prerequisites
 
 System Administration know-how. nZEDb is not plug-n-play software. Installation and operation requires a moderate amount of administration experience. nZEDb is designed and developed with GNU/Linux operating systems. Certain features are not available are on other platforms. A competent Windows administrator should be able to run nZEDb on a Windows OS.
-    
+
 ### Hardware
-	
+
     4GB RAM, 2 cores(threads) and 20GB disk space minimum.
-It does run on a Raspberry Pi for experienced users with very modest expectations.   
-    
+It does run on a Raspberry Pi for experienced users with very modest expectations.
+
 ### Software
 
 	PHP 5.4+ (and various modules)
@@ -63,7 +63,7 @@ Advanced users may be interested to try the tmux version of nZEDb in either Comp
 
 ### Support
 
-There is a web forum were you may search for issues previously encountered by others: 
+There is a web forum were you may search for issues previously encountered by others:
 http://nzedb.com/
 
 Also on IRC: irc.synirc.net #nZEDb
