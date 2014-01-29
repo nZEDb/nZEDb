@@ -166,7 +166,8 @@ Class PreDb
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
 						if (preg_match('/<title>(?P<title>.+?)<\/title.+?pubDate>(?P<date>.+?)<\/pubDate.+?gory:<\/b> (?P<category>.+?)<br \/.+?<\/b> (?P<size1>.+?) (?P<size2>[a-zA-Z]+)<b/s', $m, $matches2)) {
-							$md5 = md5($matches2['title']);
+							$title = preg_replace('/\s+- omgwtfnzbs\.org/', '', $matches2['title']);
+							$md5 = md5($title);
 							$oldname = $db->queryOneRow(sprintf('SELECT md5, source, id FROM predb WHERE md5 = %s', $db->escapeString($md5)));
 							if ($oldname !== false && $oldname['md5'] == $md5) {
 								if ($oldname['source'] == 'womble' || $oldname['source'] == 'omgwtfnzbs') {
@@ -178,7 +179,6 @@ Class PreDb
 								}
 							} else {
 								$size = $db->escapeString(round($matches2['size1']) . $matches2['size2']);
-								$title = preg_replace('/\s+- omgwtfnzbs\.org/', '', $matches2['title']);
 								if (strlen($title) > 15) {
 									if ($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($title), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('omgwtfnzbs'), $db->escapeString($md5)))) {
 										$newnames++;
@@ -632,10 +632,12 @@ Class PreDb
 	public function matchPre($cleanerName, $releaseID)
 	{
 		$db = new DB();
-		$x = '';
-		if ($db->queryOneRow(sprintf('SELECT id FROM predb WHERE title = %s', $db->escapeString($cleanerName))) !== false) {
+		$x = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE title = %s', $db->escapeString($cleanerName)));
+		if (isset($x['id'])) {
 			$db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $x['id'], $releaseID));
+			return true;
 		}
+		return false;
 	}
 
 	// When a searchname is the same as the title, tie it to the predb. Try to update the categoryID at the same time.
