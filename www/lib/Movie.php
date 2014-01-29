@@ -289,7 +289,7 @@ class Movie
 		$ri = new ReleaseImage();
 
 		if ($this->echooutput && $this->service != '') {
-			echo "Fetching IMDB info from TMDB using IMDB ID: " . $imdbId . "\n";
+			echo $this->primary("Fetching IMDB info from TMDB using IMDB ID: " . $imdbId);
 		}
 
         //check themoviedb for imdb info

@@ -1779,7 +1779,7 @@ class Releases
 	}
 
 	// Queries that are not per group
-	public function processReleasesStage7b($groupID)
+	public function processReleasesStage7b()
 	{
 		$db = $this->db;
 
@@ -1992,7 +1992,7 @@ class Releases
 		$this->processReleasesStage3($groupID);
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $nntp);
 		$this->processReleasesStage4dot5($groupID);
-
+		$this->processReleasesStage7b();
 		$where = (!empty($groupID)) ? ' WHERE groupid = ' . $groupID : '';
 
 		//Print amount of added releases and time it took.

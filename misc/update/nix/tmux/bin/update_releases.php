@@ -66,6 +66,6 @@ if ($pieces[0] != 'Stage7b') {
 	$releases->processReleasesStage4dot5($groupid);
 	$releases->processReleasesStage5b($groupid);
 	$releases->processReleasesStage6(1, 0, $groupid, $nntp);
-	$releases->processReleasesStage7b($groupid);
+	$releases->processReleasesStage7b();
 	//echo 'Deleted '.number_format($deleted)." collections/binaries/parts.\n";
 }
