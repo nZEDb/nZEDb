@@ -4,9 +4,9 @@ require_once dirname(__FILE__) . '/../../www/config.php';
 $c = new ColorCLI();
 
 if (!isset($argv[1])) {
-	exit($c->error("nYou must supply a path as the first argument. Two additional, optional arguments can also be used.\n"
-			. "php $argv[0] /path/to/import true 1000            ...: To import using the filename as release searchname, limited to 1000"
-			. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname"));
+	exit($c->error("\nYou must supply a path as the first argument. Two additional, optional arguments can also be used.\n\n"
+			. "php $argv[0] /path/to/import true 1000            ...: To import using the filename as release searchname, limited to 1000\n"
+			. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname\n"));
 }
 
 $db = new DB();
@@ -217,16 +217,17 @@ if (!isset($groups) || count($groups) == 0) {
 			}
 			if ($nzb->copyNZBforImport($relguid, $nzba)) {
 				$nzbCount++;
-				if ($nzbCount % 100 == 0) {
+				if ($nzbCount % 100 == 0 || (($nzbCount >= $maxtoprocess) && ($maxtoprocess != 0))) {
 					$seconds = TIME() - $time;
 					if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 )) {
 						$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
-						echo "\n\033[38;5;" . $color_blacklist . "mAveraging " . $nzbsperhour . " imports per hour from " . $path . "\033[0m\n";
+						echo $c->header("\nAveraging " . $nzbsperhour . " imports per hour from " . $path);
 					} else if (( $nzbCount >= $maxtoprocess) && ( $maxtoprocess != 0 )) {
+						echo $c->header("\nImported " . number_format($nzbCount) . " nzb's in " . relativeTime($time));
 						$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
-						exit("\n\033[38;5;" . $color_blacklist . "mAveraging " . $nzbsperhour . " imports per hour from " . $path . "\033[0m\n");
+						exit($c->header("Averaging " . $nzbsperhour . " imports per hour from " . $path));
 					} else {
-						echo "\nImported #" . $nzbCount . " nzb's in " . relativeTime($time);
+						echo $c->header("\nImported " . number_format($nzbCount) . " nzb's in " . relativeTime($time));
 					}
 				} else {
 					echo ".";
@@ -234,7 +235,7 @@ if (!isset($groups) || count($groups) == 0) {
 				@unlink($nzbFile);
 			} else {
 				$db->queryExec(sprintf("DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d", $db->escapeString($relguid), $db->escapeString($totalsize)));
-				echo "\033[38;5;" . $color_write_error . "mFailed copying NZB, deleting release from DB.\033[0m\n";
+				echo $c-error("\nFailed copying NZB, deleting release from DB.\n");
 				@unlink($nzbFile);
 				flush();
 				$importfailed = true;

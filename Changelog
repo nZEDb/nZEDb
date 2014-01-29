@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-01-29 -> jonnyboy -> fixed bug in Movie.php, fixed bug in nzb-import.php
 2014-01-29 -> niel     -> Upd: Merging in third party library move (from nZEDb/www/libs/... to nZEDb/libs/...).
                           Upd: Using file to check for text files in NFO, added check for non-printable characters after text check.
                           Upd: Oops for got to remove my debugging copy file from Nfo.
