@@ -104,13 +104,13 @@ class Nfo
 					// non-printable characters should never appear in text, so rule them out.
 					$test = preg_match('#\x00|\x01|\x02|\x03|\x04|\x05|\x06|\x07|\x08|\x0B|\x0E|\x0F|\x12|\x13|\x14|\x15|\x16|\x17|\x18|\x19|\x1A|\x1B|\x1C|\x1D|\x1E|\x1F#', $possibleNFO);
 					if ($test) {
-						copy($tmpPath, nZEDb_ROOT . 'nzbfiles' . DS . 'noprint' . DS . $guid . '.nfo');
 						@unlink($tmpPath);
 						return false;
 					}
 				}
 			}
 
+			// If on Windows, or above checks couldn't  make a categorical identification,
 			// Use getid3 to check if it's an image/video/rar/zip etc..
 			require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
 			$getid3 = new getid3;
