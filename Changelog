@@ -8,7 +8,7 @@ Each update goes to the top of the file
 
 
 2014-01-28 -> niel     -> Upd: Removing trailing white-space from README.md (It makes the pre-commit hook complain when merging).
-                       -> Fix: Fixing typo in runHooks
+                       -> Upd: Fixing typo in runHooks
 2014-01-28 -> jonnyboy -> removed unnecessary resolve using ss, added another pass to try to get usp count
                           fixed bug in details view when using ft index
                           added parameter to Releases->searchSQL to choose ft index or not.
