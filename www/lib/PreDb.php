@@ -632,10 +632,12 @@ Class PreDb
 	public function matchPre($cleanerName, $releaseID)
 	{
 		$db = new DB();
-		$x = '';
-		if ($db->queryOneRow(sprintf('SELECT id FROM predb WHERE title = %s', $db->escapeString($cleanerName))) !== false) {
+		$x = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE title = %s', $db->escapeString($cleanerName)));
+		if (isset($x['id'])) {
 			$db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $x['id'], $releaseID));
+			return true;
 		}
+		return false;
 	}
 
 	// When a searchname is the same as the title, tie it to the predb. Try to update the categoryID at the same time.
