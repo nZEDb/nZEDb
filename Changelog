@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 
 2014-01-29 -> jonnyboy -> fixed bug in Movie.php, fixed bug in nzb-import.php
+                          fixed bug in PreDb.php allowing dupes from omgwthfnzbs, you may want to run misc/testing/Dev/update_predb_md5.php to clean the dupes
 2014-01-29 -> niel     -> Upd: Merging in third party library move (from nZEDb/www/libs/... to nZEDb/libs/...).
                           Upd: Using file to check for text files in NFO, added check for non-printable characters after text check.
                           Upd: Oops for got to remove my debugging copy file from Nfo.

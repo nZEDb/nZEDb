@@ -244,5 +244,5 @@ if (!isset($groups) || count($groups) == 0) {
 	}
 }
 
-exit("Processed " . $nzbCount . " nzbs in " . relativeTime($time) . "\n");
+exit($c->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time)));
 
