@@ -1879,26 +1879,8 @@ class ReleaseCleaning
 		}
 
 		public function moovee() {
-			//[135358]-[a.b.mooveeEFNet]-[  ]-[33/65] - "The.Sword.in.the.Stone.1963.720p.BluRay.DD5.1.x264-DON.part32.rar" yEnc
-			if (preg_match('/^\[\d+\]-\[.+\]-\[\s+\]-\[\d+\/\d+\] - "(.+)(\.par.+)?" yEnc$/', $this->subject, $match))
-				return $match[1];
-			//[133170]-[FULL]-[#a.b.moovee]-[ Hansel.And.Gretel.Witch.Hunters.DVDR-iGNiTiON ]-[032/117] "ign-witchhunters.r24" yEnc
-			//Re: [133388]-[FULL]-[#a.b.moovee]-[ Familiar.Grounds.2011.DVDRip.XViD-TWiST ]-[01/59] - "twist-xvid-terrainsconus.nfo" yEnc
-			//[134212]-[FULL]-[#a.b.moovee]-[ Monsters.Inc.2001.1080p.BluRay.x264-CiNEFiLE ] [80/83] - "monsters.inc.2001.1080p.bluray.x264-cinefile.vol015+16.par2" yEnc
-			//[135106]-[FULL]-[a.b.mooveeEFNet]-[ Bottle.Rocket.1996.720p.BluRay.DTS.x264-DON ]- [001/105] - "Bottle.Rocket.1996.720p.BluRay.DTS.x264-DON.nfo" yEnc
-			//[134914]-[a.b.mooveeEFNet]-[ Magic.Magic.2013.720p.WEB-DL.DD5.1.H.264-fiend ]-[74/74] - "Magic.Magic.2013.720p.WEB-DL.DD5.1.H.264-fiend.vol255+096.par2" yEnc
-			//[135740]-[FULL]-[a.b.moovee]-[ Germ.2013.1080p.BluRay.x264-iFPD ]--[REPOST][35/95] - "ifpd-germ.us-1080p.r20" yEnc
-			//[5746]-[a.b.hdtv.x264EFNet]-[Redbelt.1080p.Bluray.x264-1920]-[96/97] "1920-redbelt1080.vol45+40.PAR2" yEnc
-			else if (preg_match('/\[\d+\]-\[.+?\]-\[ (.+?) \][- ]+(\[REPOST\])?\[\d+\/\d+\]( -)? ".+?" yEnc$/', $this->subject, $match))
-				return $match[1];
-			//[5746]-[a.b.hdtv.x264EFNet]-[Redbelt.1080p.Bluray.x264-1920]-[96/97] "1920-redbelt1080.vol45+40.PAR2" yEnc
-			else if (preg_match('/\[\d+\]-\[.+?\]-\[(.+?)\][- ]+(\[REPOST\])?\[\d+\/\d+\]( -)? ".+?" yEnc$/', $this->subject, $match))
-				return $match[1];
-			//[42788]-[#altbin@EFNet]-[Full]- "margin-themasterb-xvid.par2" yEnc
-			else if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]- "(.+?)' . $this->e1, $this->subject, $match))
-				return $match[1];
-			///\[ENJOY\]-\[FULL\]-\[.+\]-\[ (.+) \]-\[\d+\/\d+\]-".+" yEnc$/
-			else if (preg_match('/\[ENJOY\]-\[FULL\]-\[.+\]-\[ (.+) \]-\[\d+\/\d+\]-".+" yEnc$/', $this->subject, $match))
+			//\[ENJOY\]-\[FULL\]-\[.+\]-\[ (.+) \]-\[\d+\/\d+\]-".+" yEnc$/
+			if (preg_match('/\[ENJOY\]-\[FULL\]-\[.+\]-\[ (.+) \]-\[\d+\/\d+\]-".+" yEnc$/', $this->subject, $match))
 				return $match[1];
 			///PROUT Movie (2010) NTSC DVD [157/15768] - "PROUTmovie_NTSC.part155.rar" yEnc
 			else if (preg_match('/^(.+DVD.*) \[\d+\/\d+\] - ".+" yEnc$/', $this->subject, $match))
@@ -2165,6 +2147,27 @@ class ReleaseCleaning
 			//[ TOWN ]-[ www.town.ag ]-[ partner of www.ssl-news.info ]-[ MOVIE ] [14/19] - "Night.Vision.2011.DVDRip.x264-IGUANA.part12.rar" - 660,80 MB yEnc
 			if (preg_match('/^\[ TOWN \][ _-]{0,3}\[ www\.town\.ag \][ _-]{0,3}\[ partner of www\.ssl-news\.info \][ _-]{0,3}\[ .* \] \[\d+\/\d+\][ _-]{0,3}("|#34;)(.+)((\.part\d+\.rar)|(\.vol\d+\+\d+\.par2))("|#34;)[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}yEnc$/i', $this->subject, $match))
 				return $match[2];
+			//( 80's Giga Hits Collection (32 CDs) By Dready Niek )  By Dready Niek ) [44/54] - "80's Giga Hits Collection (32 CDs) By Dready Niek.part43.rar" yEnc
+			else if (preg_match('/^.+By Dready Niek \) \[\d+\/\d+\] - "(.+?)' . $this->e1, $this->subject, $match))
+				return $match[1];
+			//(00/24]  Marco Mengoni - Prontoacorrere (2013) "Marco Mengoni - Prontoacorrere (2013).nzb" - nightsteff  yEnc
+			else if (preg_match('/^\(\d+\/\d+\]  (.+?) ".+?' . $this->e0.' - nightsteff  yEnc$/', $this->subject, $match))
+				return $match[1];
+			//(80's Disco-Soul-Funk) [136/426] - ["Level 42 - Lessons In Love.mp3"] yEnc
+			else if (preg_match('/^\((.+)\) \[\d+\/\d+\] - \[".+?' . $this->e0.'\] yEnc$/', $this->subject, $match))
+				return $match[1];
+			//(Jungle Fever Tapepacks) [67/79] - "Jungle Fever Tapepacks.part65.rar" yEnc
+			else if (preg_match('/^\((.+)\) \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match))
+				return $match[1];
+			//[1/8] - "Black Market Flowers - Bind (1993).sfv" yEnc
+			else if (preg_match('/^\[\d+\/\d+\] - "(.+?)' . $this->e1, $this->subject, $match))
+				return $match[1];
+			//[DreamPieter] (Glen Tipton - Two solo albums) [04/23] - "Glenn Tipton - Baptizm of Fire - 04 - Fuel Me Up.mp3" yEnc
+			else if (preg_match('/^\[DreamPieter\] \((.+)\) \[\d+\/\d+\] - ".+?' . $this->e1, $this->subject, $match))
+				return $match[1];
+			//<<< <ghost-of-usenet.org> <"Dream Dance Vol. 21-30 - 20CDs MP3 - Ghost.part20.rar"> >www.SSL-News.info<  - (22/32) - 2,45 GB yEnc
+			else if (preg_match('/^.+ghost-of-usenet\.org> <"(.+?)' . $this->e0.'> >www\.SSL-News\.info<  - \(\d+\/\d+\) - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $this->subject, $match))
+				return $match[1];
 			else
 				return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
 		}

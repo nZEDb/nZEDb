@@ -7,6 +7,10 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-01-29 -> bart39   -> added categorization for XXX Packs
+                          added regex for a.b.music for CollectionsCleaning/ReleaseCleaning
+                          removed ReleaseCleaning regex that was matching requestid releases in a.b.moovee
+                          corrected test-all-regexes to use CollectionsCleaning
 2014-01-29 -> jonnyboy -> pulled in egandts pr, partially
                           cleaned up output in nzb-import.php, fixed a typo
                           updated update_predb_md5.php to re-match predb to releases after removing duplicates

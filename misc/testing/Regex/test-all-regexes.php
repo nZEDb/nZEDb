@@ -48,7 +48,8 @@ function print_str($type, $str, $argv) {
 }
 
 function test_regex($name, $group, $argv) {
-	$file = nZEDb_WWW . 'lib/NameCleaning.php';
+	$file = nZEDb_WWW . 'lib/CollectionsCleaning.php';
+	/* TODO: add ReleaseCleaning */
 	$handle = fopen($file, "r");
 
 	$test_str = $name;
