@@ -1459,6 +1459,7 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
+	('showbacks', '0'),
 	('sqlpatch','172');
 
 

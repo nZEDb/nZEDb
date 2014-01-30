@@ -7,6 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+
+2014-01-29 -> jonnyboy -> updated schema for missing showbacks
 2014-01-29 -> bart39   -> added categorization for XXX Packs
                           added regex for a.b.music for CollectionsCleaning/ReleaseCleaning
                           removed ReleaseCleaning regex that was matching requestid releases in a.b.moovee
