@@ -43,8 +43,7 @@ do {
 				if (substr($path, strlen($path) - 1) != '/') {
 					$path = $path . "/";
 				}
-				//if (!file_exists($path . $rowrel['guid'] . ".nzb.gz") && file_exists($nzbpath)) {
-				if (file_exists($nzbpath)) {
+				if (!file_exists($path . $rowrel['guid'] . ".nzb.gz") && file_exists($nzbpath)) {
 					if (@copy($nzbpath, $path . $rowrel['guid'] . ".nzb.gz") !== true) {
 						exit("\n" . $c->error("\nUnable to write " . $path . $rowrel['guid'] . ".nzb.gz"));
 					}
