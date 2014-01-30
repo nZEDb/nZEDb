@@ -1356,6 +1356,7 @@ class Releases
 				}
 
 				if ($relid) {
+					// try to match to rpedb here
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
 					$db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' SET filecheck = 4, releaseid = %d WHERE id = %d', $relid, $rowcol['id']));
