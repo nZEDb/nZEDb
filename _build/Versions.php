@@ -1,22 +1,24 @@
 <?php
+require_once realpath(dirname(__FILE__) . '/../www/config.php');
 
-require_once dirname(__FILE__) . '/../www/config.php';
-
-if (PHP_SAPI == 'cli') {
-	$vers = new UpdateVersions();
-	$vers->checkCheck();
-//	$vers->save();
+if (!defined('GIT_PRE_COMMIT')) {
+	define('GIT_PRE_COMMIT', false);
 }
 
-class UpdateVersions
-{
+if (PHP_SAPI == 'cli' && GIT_PRE_COMMIT === false) {
+	$vers = new Versions();
+	$vers->checkAll();
+	$vers->save();
+}
 
+class Versions
+{
 	/**
 	 * These constants are bitwise for checking what was changed.
 	 */
-	const UPDATED_DB_REVISION = 1;
-	const UPDATED_GIT_COMMIT = 2;
-	const UPDATED_GIT_TAG = 4;
+	const UPDATED_DB_REVISION	= 1;
+	const UPDATED_GIT_COMMIT	= 2;
+	const UPDATED_GIT_TAG		= 4;
 
 	/**
 	 * @var object ColorCLI
@@ -39,9 +41,15 @@ class UpdateVersions
 	protected $_settings;
 
 	/**
-	 * @var object simpleXMLElement
+	 * Shortcut to the nzedb->versions node to make method work shorter.
+	 * @var object SimpleXMLElement
 	 */
 	protected $_vers;
+
+	/**
+	 * @var object simpleXMLElement
+	 */
+	protected $_xml;
 
 	/**
 	 * Class constructor initialises the SimpleXML object and sets a few properties.
@@ -56,10 +64,24 @@ class UpdateVersions
 		$this->_filespec = $filepath;
 
 		$this->out = new ColorCLI();
-		$this->_vers = @new SimpleXMLElement($filepath, 0, true);
-		if ($this->_vers === false) {
-			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n");
+		$this->_xml = @new SimpleXMLElement($filepath, 0, true);
+		if ($this->_xml === false) {
+			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
 			throw new Exception("Failed to open versions XML file '$filename'");
+		}
+
+		if ($this->_xml->count() > 0) {
+			$vers = $this->_xml->xpath('/nzedb/versions');
+
+			if ($vers[0]->count() == 0) {
+				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) does not contain versioning info, try updating from git.");
+				throw new Exception("Failed to find versions node in XML file '$filename'");
+			} else {
+				$this->out->primary("Your versioning XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
+				$this->_vers = &$this->_xml->versions;
+			}
+		} else {
+			exit("No elements in file!\n");
 		}
 
 		$s = new Sites();
@@ -76,7 +98,7 @@ class UpdateVersions
 	 * @param boolean $update Whether the XML should be updated by the check.
 	 * @return boolean	True if any of the checks actually caused an update (not if it indicated one was needed), flase otherwise
 	 */
-	public function checkCheck($update = true)
+	public function checkAll($update = true)
 	{
 		$this->checkDb($update);
 		$this->checkGitCommit($update);
@@ -87,17 +109,17 @@ class UpdateVersions
 	/**
 	 * Checks the database sqlpatch setting against the XML's stored value.
 	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return boolean True if the database sqlpatch version is more than that of XML element (.i.e. needs updating).
+	 * @return boolean The new database sqlpatch version, or false.
 	 */
 	public function checkDb($update = true)
 	{
-		if ($this->_vers->nzedb->db < $this->_settings->sqlpatch) {
+		if ($this->_vers->db < $this->_settings->sqlpatch) {
 			if ($update) {
-				echo $this->out->primary("Updating Db revision\n");
-				$this->_vers->nzedb->db = $this->_settings->sqlpatch;
+				echo $this->out->primary("Updating Db revision to " . $this->_settings->sqlpatch);
+				$this->_vers->db = $this->_settings->sqlpatch;
 				$this->_changes |= self::UPDATED_DB_REVISION;
 			}
-			return true;
+			return $this->_vers->db;
 		}
 		return false;
 	}
@@ -105,18 +127,24 @@ class UpdateVersions
 	/**
 	 * Checks the git commit number against the XML's stored value.
 	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return boolean True if the dgit commit number is more than that of XML element (.i.e. needs updating).
+	 * @return integer The new git commit number, or false.
 	 */
 	public function checkGitCommit($update = true)
 	{
 		exec('git log | grep "^commit" | wc -l', $output);
-		if ($this->_vers->nzedb->commit < $output[0]) {
+		// I added this, because it was not updating to commit + 1, only current commit number
+		if ($this->_vers->git->commit < $output[0] || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
 			if ($update) {
-				echo $this->out->primary("Updating commit number\n");
-				$this->_vers->nzedb->commit = $output[0] + 1;
-				$this->_changes |= self::UPDATED_GIT_COMMIT;
+				if (GIT_PRE_COMMIT === true) { // only allow the pre-commit script to set the NEXT commit number
+					$output[0] += 1;
+				}
+				if ($output[0] != $this->_vers->git->commit) {
+					echo $this->out->primary("Updating commit number to {$output[0]}");
+					$this->_vers->git->commit = $output[0];
+					$this->_changes |= self::UPDATED_GIT_COMMIT;
+				}
 			}
-			return true;
+			return $this->_vers->git->commit;
 		}
 		return false;
 	}
@@ -125,40 +153,42 @@ class UpdateVersions
 	 * Checks the git's latest version tag against the XML's stored value. Version should be
 	 * Major.Minor.Revision (Note commit number is NOT revision)
 	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return boolean True if the git's latest version tag is higher than that of XML element (.i.e. needs updating).
+	 * @return boolean The new git's latest version tag, or false.
 	 */
 	public function checkGitTag($update = true)
 	{
 		exec('git log --tags', $output);
 		$index = 0;
 		$count = count($output);
-		while (!preg_match('#v(\d+\.\d+\.\d+)#i', $output[$index], $match) && $count < $index) {
+		while (!preg_match('#v(\d+\.\d+\.\d+)#i', $output[$index], $match) && $count < $index ) {
 			$index++;
 		}
 
 		// TODO this needs a better test. Think PHP has a way to do this, will update later.
-		if (!empty($match) && $this->_vers->nzedb->tag < $match) {
+		if (!empty($match) && $this->_vers->git->tag < $match) {
 			if ($update) {
-				echo $this->out->primary("Updating tagged version\n");
-				$this->_vers->nzedb->tag = $match;
+				echo $this->out->primary("Updating tag version to $match");
+				$this->_vers->git->tag = $match;
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
-			return true;
+			return $this->_vers->git->tag;
 		}
 		return false;
 	}
-
+/*
 	public function check($update = true)
 	{
-		if ($this->_vers->setting) {
+		if ($this->vers->setting) {
 			if ($update) {
 				echo $this->out->primary("\n");
+				;
 				$this->_updated = true;
 			}
 			return true;
 		}
 		return false;
 	}
+ */
 
 	/**
 	 * Check whether the XML has been changed by one of the methods here.
@@ -172,9 +202,9 @@ class UpdateVersions
 	public function save()
 	{
 		if ($this->hasChanged()) {
-			$this->_vers->asXML($this->_filespec);
+			$this->_xml->asXML($this->_filespec);
 			$this->_changes = 0;
 		}
 	}
-
 }
+?>

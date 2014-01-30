@@ -1,4 +1,3 @@
-
 <h1>Browse {$catname}</h1>
 
 <form name="browseby" action="movies">
@@ -99,7 +98,7 @@
 									{/if}
                                 </div>
                                 </div>
-                                <h2>{$result.title|stripslashes|escape:"htmlall"} (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
+                                <h2><a title="{$result.title|stripslashes|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|stripslashes|escape:"htmlall"}</a> (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
                                     {foreach from=$result.languages item=movielanguage}
                                         {release_flag($movielanguage, browse)}
                                     {/foreach}</h2>

@@ -4,9 +4,9 @@ require_once dirname(__FILE__) . '/../../www/config.php';
 $c = new ColorCLI();
 
 if (!isset($argv[1])) {
-	exit($c->error("nYou must supply a path as the first argument. Two additional, optional arguments can also be used.\n"
-			. "php $argv[0] /path/to/import true 1000            ...: To import using the filename as release searchname, limited to 1000"
-			. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname"));
+	exit($c->error("\nYou must supply a path as the first argument. Two additional, optional arguments can also be used.\n\n"
+			. "php $argv[0] /path/to/import true 1000            ...: To import using the filename as release searchname, limited to 1000\n"
+			. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname\n"));
 }
 
 $db = new DB();
@@ -16,10 +16,11 @@ $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
 $releasecleaning = new ReleaseCleaning();
 $categorize = new Category();
-$maxtoprocess = 0;
+$nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
+$consoleTools = new ConsoleTools();
 
 if (isset($argv[2]) && is_numeric($argv[2])) {
-	exit("To use a max number to process, it must be the third argument. To run:\nphp nzb-import.php /path [true, fasle] 1000\n");
+	exit($c->error("\nTo use a max number to process, it must be the third argument. \nTo run:\nphp nzb-import.php /path [true, false] 1000\n"));
 }
 if (!isset($argv[2])) {
 	$pieces = explode("   ", $argv[1]);
@@ -38,11 +39,6 @@ $filestoprocess = Array();
 if (substr($path, strlen($path) - 1) != '/') {
 	$path = $path . "/";
 }
-
-$color_skipped = 190;
-$color_blacklist = 11;
-$color_group = 1;
-$color_write_error = 9;
 
 function relativeTime($_time)
 {
@@ -84,7 +80,7 @@ if (!isset($groups) || count($groups) == 0) {
 
 	//iterate over all nzb files in all folders and subfolders
 	if (!file_exists($path)) {
-		echo "ERROR: Unable to access " . $path . "  Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n";
+		echo $c->error("\nUnable to access " . $path . "  Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n");
 		return;
 	}
 	$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
@@ -100,7 +96,7 @@ if (!isset($groups) || count($groups) == 0) {
 			$compressed = false;
 		} else if ($nzbFile->getExtension() == "gz") {
 			$nzbc = 'compress.zlib://' . $nzbFile;
-			$nzba = file_get_contents($nzbc);
+			$nzba = @file_get_contents($nzbc);
 			$compressed = true;
 		} else {
 			continue;
@@ -164,13 +160,11 @@ if (!isset($groups) || count($groups) == 0) {
 				}
 			} else {
 				if ($isBlackListed) {
-					$errorMessage = "\n\033[38;5;" . $color_blacklist . "mSubject is blacklisted: " . $subject . "\033[0m\n";
-				} else {
-					$errorMessage = "\n\033[38;5;" . $color_group . "mNo group found for " . $subject . " (one of " . implode(', ', $groupArr) . " are missing)\033[0m\n";
+					$nzbSkipped++;
 				}
 
 				$importfailed = true;
-				echo $errorMessage . "\n";
+				echo $c->error($errorMessage);
 				break;
 			}
 		}
@@ -209,32 +203,26 @@ if (!isset($groups) || count($groups) == 0) {
 			}
 
 			if (isset($relid) && $relid == false) {
-				echo "\n\033[38;5;" . $color_skipped . "mSkipping " . $subject . ", it already exists in your database.\033[0m\n";
-				//echo "\033[38;5;".$color_skipped."m!\033[0m";
+				$nzbSkipped++;
 				@unlink($nzbFile);
 				flush();
 				continue;
 			}
 			if ($nzb->copyNZBforImport($relguid, $nzba)) {
 				$nzbCount++;
-				if ($nzbCount % 100 == 0) {
+				if (( $nzbCount % 100 == 0) && ( $nzbCount != 0 )) {
 					$seconds = TIME() - $time;
-					if (( $nzbCount % 1000 == 0) && ( $nzbCount != 0 )) {
-						$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
-						echo "\n\033[38;5;" . $color_blacklist . "mAveraging " . $nzbsperhour . " imports per hour from " . $path . "\033[0m\n";
-					} else if (( $nzbCount >= $maxtoprocess) && ( $maxtoprocess != 0 )) {
-						$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
-						exit("\n\033[38;5;" . $color_blacklist . "mAveraging " . $nzbsperhour . " imports per hour from " . $path . "\033[0m\n");
-					} else {
-						echo "\nImported #" . $nzbCount . " nzb's in " . relativeTime($time);
-					}
-				} else {
-					echo ".";
+					$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
 				}
+				if (( $nzbCount >= $maxtoprocess) && ( $maxtoprocess != 0 )) {
+					$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
+					exit($c->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time) . "\nAveraged " . $nzbsperhour . " imports per hour from " . $path));
+				}
+				$consoleTools->overWritePrimary('Imported ' . "[" . number_format($nzbSkipped) . "] " . number_format($nzbCount) . " NZBs (" . $nzbsperhour . "iph) in " . relativeTime($time));
 				@unlink($nzbFile);
 			} else {
 				$db->queryExec(sprintf("DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d", $db->escapeString($relguid), $db->escapeString($totalsize)));
-				echo "\033[38;5;" . $color_write_error . "mFailed copying NZB, deleting release from DB.\033[0m\n";
+				echo $c->error("\nFailed copying NZB, deleting release from DB.\n");
 				@unlink($nzbFile);
 				flush();
 				$importfailed = true;
@@ -243,5 +231,5 @@ if (!isset($groups) || count($groups) == 0) {
 	}
 }
 
-exit("Processed " . $nzbCount . " nzbs in " . relativeTime($time) . "\n");
+exit($c->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time)));
 

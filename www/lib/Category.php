@@ -269,13 +269,13 @@ class Category
 		if ($this->isTV($releasename)) {
 			return $this->tmpCat;
 		}
+		if ($this->isMusic($releasename)) {
+			return $this->tmpCat;
+		}
 		if ($this->isMovie($releasename)) {
 			return $this->tmpCat;
 		}
 		if ($this->isConsole($releasename)) {
-			return $this->tmpCat;
-		}
-		if ($this->isMusic($releasename)) {
 			return $this->tmpCat;
 		}
 		if ($this->isBook($releasename)) {
@@ -1034,6 +1034,9 @@ class Category
 			if ($this->isXxxImageset($releasename)) {
 				return true;
 			}
+			if ($this->isXxxPack($releasename)) {
+				return true;
+			}
 			if ($this->isXxxWMV($releasename)) {
 				return true;
 			}
@@ -1053,6 +1056,9 @@ class Category
 				return true;
 			}
 			if ($this->isXxxImageset($releasename)) {
+				return true;
+			}
+			if ($this->isXxxPack($releasename)) {
 				return true;
 			}
 			if ($this->isXxxWMV($releasename)) {
@@ -1110,6 +1116,15 @@ class Category
 	{
 		if (preg_match('/IMAGESET/i', $releasename)) {
 			$this->tmpCat = Category::CAT_XXX_IMAGESET;
+			return true;
+		}
+		return false;
+	}
+
+	public function isXxxPack($releasename)
+	{
+		if (preg_match('/[ \.]PACK[ \.]/i', $releasename)) {
+			$this->tmpCat = Category::CAT_XXX_PACKS;
 			return true;
 		}
 		return false;

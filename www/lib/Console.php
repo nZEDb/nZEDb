@@ -1,13 +1,6 @@
 <?php
 
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'amazon.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'genres.php';
-//require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'Util.php';
-//require_once nZEDb_LIB . 'releaseimage.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 class Console
 {
@@ -580,7 +573,7 @@ class Console
 		}
 		$result['release'] = $releasename;
 		array_map("trim", $result);
-		// Make sure we got a title and platform otherwise the resulting lookup will probably be shit. Other option is to pass the $release->categoryID here if we dont find a platform but that would require an extra lookup to determine the name. In either case we should have a title at the minimum.
+		// Make sure we got a title and platform otherwise the resulting lookup will probably be shit. Other option is to pass the $release->categoryID here if we don't find a platform but that would require an extra lookup to determine the name. In either case we should have a title at the minimum.
 		return (isset($result['title']) && !empty($result['title']) && isset($result['platform'])) ? $result : false;
 	}
 

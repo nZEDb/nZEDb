@@ -1,9 +1,9 @@
 <?php
 
 require_once nZEDb_LIB . 'Util.php';
-require_once nZEDb_LIB . 'rarinfo/archiveinfo.php';
-require_once nZEDb_LIB . 'rarinfo/par2info.php';
-require_once nZEDb_LIB . 'rarinfo/zipinfo.php';
+require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
+require_once nZEDb_LIBS . 'rarinfo/par2info.php';
+require_once nZEDb_LIBS . 'rarinfo/zipinfo.php';
 
 class PostProcess
 {
@@ -394,10 +394,11 @@ class PostProcess
 
 			// Loop through the releases.
 			foreach ($result as $rel) {
-				if ($this->echooutput && $releaseToWork == '')
-					echo "\r" . str_pad('', 79, ' ') . "\r[" . $this->c->primaryOver($startCount--) . ']';
-				else if ($this->echooutput)
+				if ($this->echooutput && $releaseToWork == '') {
+					echo "\n[" . $this->c->primaryOver($startCount--) . ']';
+				} else if ($this->echooutput) {
 					echo '[' . $this->c->primaryOver($rel['id']) . ']';
+				}
 
 				// Per release defaults.
 				$this->tmpPath = $tmpPath . $rel['guid'] . '/';

@@ -15,6 +15,9 @@ define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 // Used to refer to the /www/lib class files.
 define('nZEDb_LIB', nZEDb_WWW . 'lib' . DS);
 
+// Used to refer to the third party library files.
+define('nZEDb_LIBS', nZEDb_ROOT . 'libs' . DS);
+
 if (function_exists('ini_set') && function_exists('ini_get')) {
 	$ps = (strtolower(PHP_OS) == 'windows') ? ';' : ':';
 	ini_set('include_path', nZEDb_WWW . $ps . ini_get('include_path'));

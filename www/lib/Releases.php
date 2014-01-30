@@ -511,7 +511,9 @@ class Releases
 		// If the query starts with a ^ it indicates the search is looking for items which start with the term
 		// still do the fulltext match, but mandate that all items returned must start with the provided word.
 		$words = explode(' ', $search);
-		$searchsql = '';
+
+		//only used to get a count of words
+		$searchwords = $searchsql = '';
 		$intwordcount = 0;
 		$ft = $db->queryDirect("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_searchname_ft'");
 		if ($ft->rowCount() !== 2) {
@@ -522,25 +524,37 @@ class Releases
 			}
 		}
 
+
 		if (count($words) > 0) {
 			if ($ft->rowCount() !== 0) {
-				$searchwords = '';
-				foreach ($words as $word) {
-					$word = str_replace('!', '+', $word);
-					$searchwords .= sprintf('%s ', $word);
+				//at least 1 term needs to be mandatory
+				if (!preg_match('/[+|!]/', $search)) {
+					$search = '+' . $search;
+					$words = explode(' ', $search);
 				}
-				if ($ft->rowCount() === 2) {
+				foreach ($words as $word) {
+					$word = trim(rtrim(trim($word), '-'));
+					$word = str_replace('!', '+', $word);
+					if ($word !== '' && $word !== '-') {
+						$searchwords .= sprintf('%s ', $word);
+					}
+				}
+				$searchwords = trim($searchwords);
+				if ($ft->rowCount() === 2 && $searchwords != '') {
 					$searchsql .= sprintf(" AND MATCH(releases.name, releases.searchname) AGAINST('%s' IN BOOLEAN MODE)", $searchwords);
 				} else {
 					$searchsql .= sprintf(" AND MATCH(releases.%s) AGAINST('%s' IN BOOLEAN MODE)", $type, $searchwords);
 				}
-			} else {
+			}
+			if ($searchwords === '') {
+				$words = explode(' ', $search);
 				$like = 'ILIKE';
 				if ($db->dbSystem() == 'mysql') {
 					$like = 'LIKE';
 				}
 				foreach ($words as $word) {
 					if ($word != '') {
+						$word = trim(rtrim(trim($word), '-'));
 						if ($intwordcount == 0 && (strpos($word, '^') === 0)) {
 							$searchsql .= sprintf(' AND releases.%s %s %s', $type, $like, $db->escapeString(substr($word, 1) . '%'));
 						} else if (substr($word, 0, 2) == '--') {
@@ -796,7 +810,10 @@ class Releases
 
 		is_numeric($epno) ? $epno = sprintf(" AND releases.episode %s '%s' ", $like, $db->escapeString('%' . $epno . '%')) : '';
 
-		$searchsql = $this->searchSQL($name, $db, 'searchname');
+		$searchsql = '';
+		if ($name !== '') {
+			$searchsql = $this->searchSQL($name, $db, 'searchname');
+		}
 		$catsrch = $this->categorySQL($cat);
 
 		$maxagesql = '';
@@ -834,7 +851,10 @@ class Releases
 			$imdbId = '';
 		}
 
-		$searchsql = $this->searchSQL($name, $db, 'searchname');
+		$searchsql = '';
+		if ($name !== '') {
+			$searchsql = $this->searchSQL($name, $db, 'searchname');
+		}
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0) {
@@ -1336,6 +1356,7 @@ class Releases
 				}
 
 				if ($relid) {
+					// try to match to rpedb here
 					$predb->matchPre($cleanRelName, $relid);
 					// Update collections table to say we inserted the release.
 					$db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' SET filecheck = 4, releaseid = %d WHERE id = %d', $relid, $rowcol['id']));
@@ -1759,7 +1780,7 @@ class Releases
 	}
 
 	// Queries that are not per group
-	public function processReleasesStage7b($groupID)
+	public function processReleasesStage7b()
 	{
 		$db = $this->db;
 
@@ -1890,9 +1911,9 @@ class Releases
 		}
 
 		if ($this->echooutput && $this->completion > 0) {
-			echo $this->c->primary('Removed releases: ' . number_format($remcount) . ' past retention, ' . number_format($passcount) . ' passworded, ' . number_format($dupecount) . ' crossposted, ' . number_format($disabledcount) . ' from disabled categoteries, ' . number_format($disabledgenrecount) . ' from disabled music genres, ' . number_format($miscothercount) . ' from misc->other, ' . number_format($completioncount) . ' under ' . $this->completion . '% completion.');
+			echo $this->c->primary('Removed releases: ' . number_format($remcount) . ' past retention, ' . number_format($passcount) . ' passworded, ' . number_format($dupecount) . ' crossposted, ' . number_format($disabledcount) . ' from disabled categories, ' . number_format($disabledgenrecount) . ' from disabled music genres, ' . number_format($miscothercount) . ' from misc->other, ' . number_format($completioncount) . ' under ' . $this->completion . '% completion.');
 		} else if ($this->echooutput && $this->completion == 0) {
-			echo $this->c->primary('Removed releases: ' . number_format($remcount) . ' past retention, ' . number_format($passcount) . ' passworded, ' . number_format($dupecount) . ' crossposted, ' . number_format($disabledcount) . ' from disabled categoteries, ' . number_format($disabledgenrecount) . ' from disabled music genres, ' . number_format($miscothercount) . ' from misc->other');
+			echo $this->c->primary('Removed releases: ' . number_format($remcount) . ' past retention, ' . number_format($passcount) . ' passworded, ' . number_format($dupecount) . ' crossposted, ' . number_format($disabledcount) . ' from disabled categories, ' . number_format($disabledgenrecount) . ' from disabled music genres, ' . number_format($miscothercount) . ' from misc->other');
 		}
 		if ($this->echooutput && $reccount > 0) {
 			echo $this->c->primary("Removed " . number_format($reccount) . ' parts/binaries/collection rows.');
@@ -1972,7 +1993,7 @@ class Releases
 		$this->processReleasesStage3($groupID);
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $nntp);
 		$this->processReleasesStage4dot5($groupID);
-
+		$this->processReleasesStage7b();
 		$where = (!empty($groupID)) ? ' WHERE groupid = ' . $groupID : '';
 
 		//Print amount of added releases and time it took.
