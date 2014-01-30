@@ -39,8 +39,15 @@ do {
 		foreach ($resrel as $rowrel) {
 			$nzbpath = $nzb->getNZBPath($rowrel['guid'], $site->nzbpath, false, $site->nzbsplitlevel);
 			if (isset($argv[2]) && is_dir($argv[2])) {
-				if (!@copy($nzbpath, $argv[2] . $rowrel['guid'] . ".nzb.gz")) {
-					exit($c->error("\nUnable to write to ${argv[2]}."));
+				$path = $argv[2];
+				if (substr($path, strlen($path) - 1) != '/') {
+					$path = $path . "/";
+				}
+				//if (!file_exists($path . $rowrel['guid'] . ".nzb.gz") && file_exists($nzbpath)) {
+				if (file_exists($nzbpath)) {
+					if (@copy($nzbpath, $path . $rowrel['guid'] . ".nzb.gz") !== true) {
+						exit("\n" . $c->error("\nUnable to write " . $path . $rowrel['guid'] . ".nzb.gz"));
+					}
 				}
 			}
 			if ($releases->fastDelete($rowrel['id'], $rowrel['guid'], $site) !== false) {
