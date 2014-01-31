@@ -7,6 +7,10 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-01-30 -> bart39   -> check for requestid match before looping through group regex
+                          moved all www.town.ag regexes to generic_town and check them before looping through groups
+                          fixed duplicate case statement
+                          removed regexes that were renaming releases with requestid's
 2014-01-30 -> jonnyboy -> added remove_exact_dupes.php to remove duplicate releases that match on name, poster, group and size
                           fixed testing/nzb-import.php to not import import exact duplicates
                           changed Releases.php to use $db->queryDirect instead of $db->prepare/execute or $db->query
