@@ -1,10 +1,8 @@
 <?php
-
 require_once nZEDb_LIB . 'Util.php';
 
 class Console
 {
-
 	function __construct($echooutput = false)
 	{
 		$this->echooutput = $echooutput;
@@ -650,5 +648,5 @@ class Console
 		}
 		return ($str != '') ? $str : false;
 	}
-
 }
+?>

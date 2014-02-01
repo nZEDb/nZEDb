@@ -1,5 +1,4 @@
 <?php
-
 require_once nZEDb_LIB . 'Util.php';
 
 class Releases
@@ -2156,5 +2155,5 @@ class Releases
 		$db = new DB();
 		return $db->query("SELECT DISTINCT (a.bookinfoid), guid, name, b.title, searchname, size, completion, postdate, categoryid, comments, grabs, c.cover FROM releases a, category b, bookinfo c WHERE b.title = 'Books' and a.bookinfoid = c.id and a.bookinfoid != -2 GROUP BY a.bookinfoid ORDER BY a.postdate DESC LIMIT 12");
 	}
-
 }
+?>

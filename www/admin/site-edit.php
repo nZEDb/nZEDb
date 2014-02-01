@@ -1,10 +1,10 @@
 <?php
 require_once './config.php';
 //require_once nZEDb_LIB . 'adminpage.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'sabnzbd.php';
+
+
 // new to get information on books groups
-//require_once nZEDb_LIB . 'framework/db.php';
+
 
 $page = new AdminPage();
 $sites = new Sites();

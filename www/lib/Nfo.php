@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Class for handling fetching/storing of NFO files.
  */
@@ -270,3 +269,4 @@ class Nfo
 		}
 	}
 }
+?>

@@ -1,14 +1,11 @@
 <?php
-
-require_once(nZEDb_LIB . "simple_html_dom.php");
+require_once(nZEDb_LIBS . "simple_html_dom.php");
 
 /*
  * Class for inserting names/categories/md5 etc from predb sources into the DB, also for matching names on files / subjects.
  */
-
 Class PreDb
 {
-
 	function __construct($echooutput = false)
 	{
 		$s = new Sites();
@@ -842,5 +839,5 @@ Class PreDb
 	function updatePredb() {
 
 	}
-
 }
+?>

@@ -1,5 +1,4 @@
 <?php
-
 if (isset($_POST["useremail"])) {
 	// Send the contact info and report back to user.
 	$email = $_POST["useremail"];

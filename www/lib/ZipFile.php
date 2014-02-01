@@ -1,4 +1,6 @@
 <?php
+/* This should be moved to the nZEDb_LIBS directory */
+
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  *
@@ -189,3 +191,4 @@ class ZipFile
 	} // end of the 'file()' method
 
 } // end of the 'zipfile' class
+?>

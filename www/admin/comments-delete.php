@@ -1,6 +1,6 @@
 <?php
 require_once './config.php';
-//require_once nZEDb_LIB . 'releasecomments.php';
+
 //require_once nZEDb_LIB . 'adminpage.php';
 
 $page = new AdminPage();

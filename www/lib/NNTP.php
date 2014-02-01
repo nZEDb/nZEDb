@@ -4,7 +4,6 @@ require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
 /*
 * Class for connecting to the usenet, retrieving articles and article headers, decoding yEnc articles, decompressing article headers.
 */
-
 class NNTP extends Net_NNTP_Client
 {
 	public $Compression = false;
@@ -362,3 +361,4 @@ class NNTP extends Net_NNTP_Client
 		return $data;
 	}
 }
+?>

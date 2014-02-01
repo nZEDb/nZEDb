@@ -2,7 +2,6 @@
 
 class Tmux
 {
-
 	function __construct()
 	{
 		$this->db = new DB();
@@ -74,5 +73,5 @@ class Tmux
 		$sql = sprintf("UPDATE tmux SET value = %s WHERE setting = %s", $db->escapeString($value), $db->escapeString($setting));
 		return $db->queryExec($sql);
 	}
-
 }
+?>

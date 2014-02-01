@@ -2,7 +2,6 @@
 
 class Contents
 {
-
 	const TYPEUSEFUL = 1;
 	const TYPEARTICLE = 2;
 	const TYPEINDEX = 3;
@@ -207,6 +206,5 @@ class Contents
 		}
 		return $db->query(sprintf("SELECT * FROM content WHERE showinmenu = 1 AND status = 1 AND contenttype = %d %s ", $id, $role));
 	}
-
 }
 ?>

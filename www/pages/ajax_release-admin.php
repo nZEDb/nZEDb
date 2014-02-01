@@ -1,5 +1,4 @@
 <?php
-
 $page = new AdminPage(true);
 $releases = new Releases();
 $category = new Category();

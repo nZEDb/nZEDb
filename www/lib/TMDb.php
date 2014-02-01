@@ -1,4 +1,6 @@
 <?php
+/* This should be moved to the nZEDb_LIBS directory */
+
 /**
  * TMDb PHP API class - API 'themoviedb.org'
  * API Documentation: http://help.themoviedb.org/kb/api/
@@ -11,7 +13,6 @@
  * @version 1.6
  * @license BSD http://www.opensource.org/licenses/bsd-license.php
  */
-
 class TMDb
 {
 	const POST = 'post';
@@ -1188,4 +1189,7 @@ class TMDb
  *
  * @author Jonas De Smet - Glamorous
  */
-class TMDbException extends Exception{}
+class TMDbException extends Exception
+{
+}
+?>

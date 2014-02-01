@@ -1,5 +1,4 @@
 <?php
-
 if (is_file("config.php")) {
     require_once './config.php';
 } else {
@@ -10,7 +9,7 @@ if (is_file("config.php")) {
 }
 require_once 'automated.config.php';
 //require_once nZEDb_LIB . 'page.php';
-//require_once nZEDb_LIB . 'users.php';
+
 
 $page = new Page;
 $users = new Users;
