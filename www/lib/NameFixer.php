@@ -358,11 +358,11 @@ class NameFixer
 						} else if ($type == "Filenames, ") {
 							$status = "bitwise = ((bitwise & ~133)|133),";
 						}
-						$run = $db->queryExec(sprintf("UPDATE releases SET preid = %s, searchname = %s, bitwise = ((bitwise & ~4)|4),"
-								. " %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
+						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
+								. "anidbid = NULL, preid = %s, searchname = %s, bitwise = ((bitwise & ~4)|4), %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
 					} else {
-						$run = $db->queryExec(sprintf("UPDATE releases SET preid = %s, searchname = %s, bitwise = ((bitwise & ~1)|1), "
-								. "categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
+						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
+								. "anidbid = NULL, preid = %s, searchname = %s, bitwise = ((bitwise & ~1)|1), categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
 					}
 				}
 			}
@@ -387,9 +387,11 @@ class NameFixer
 					if ($echo == 1) {
 						$this->matched = true;
 						if ($namestatus == 1) {
-							$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, bitwise = ((bitwise & ~5)|5), dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
+							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+													. "searchname = %s, categoryid = %d, bitwise = ((bitwise & ~5)|5), dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
 						} else {
-							$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
+							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+													. "searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
 						}
 					}
 
