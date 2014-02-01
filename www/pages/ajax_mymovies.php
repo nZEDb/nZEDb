@@ -1,4 +1,6 @@
 <?php
+require_once nZEDb_LIBS . 'TMDb.php';
+
 if (!$users->isLoggedIn()) {
 	$page->show403();
 }
