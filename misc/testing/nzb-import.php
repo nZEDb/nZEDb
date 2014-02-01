@@ -174,6 +174,7 @@ if (!isset($groups) || count($groups) == 0) {
 			$relguid = sha1(uniqid('', true) . mt_rand());
 			$nzb = new NZB();
 			$propername = true;
+			$relid = false;
 			if ($usenzbname === true) {
 				$cleanerName = $usename;
 			} else {
@@ -196,20 +197,26 @@ if (!isset($groups) || count($groups) == 0) {
 				$posteddate = $postdate[0];
 			}
 			$category = $categorize->determineCategory($cleanName, $groupName);
-			if ($propername === true) {
-				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~261)|261)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($site->checkpasswordedrar == "1" ? -1 : 0), $category));
-			} else {
-				$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~257)|257)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($site->checkpasswordedrar == "1" ? -1 : 0), $category));
+
+			// look for match on name, poster and size
+			$dupecheck = $db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size = %s', $db->escapeString($subject), $db->escapeString($poster), $db->escapeString($totalsize)));
+			if ($dupecheck === false) {
+				if ($propername === true && $importfailed === false) {
+					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~261)|261)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($site->checkpasswordedrar == "1" ? -1 : 0), $category));
+				} else {
+					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~257)|257)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($site->checkpasswordedrar == "1" ? -1 : 0), $category));
+				}
 			}
 
-			if (isset($relid) && $relid == false) {
+			if ($relid === false || $dupecheck === false) {
 				$nzbSkipped++;
 				@unlink($nzbFile);
 				flush();
-				continue;
 			}
 			if ($nzb->copyNZBforImport($relguid, $nzba)) {
-				$nzbCount++;
+				if ($relid !== false) {
+					$nzbCount++;
+				}
 				if (( $nzbCount % 100 == 0) && ( $nzbCount != 0 )) {
 					$seconds = TIME() - $time;
 					$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
@@ -218,7 +225,6 @@ if (!isset($groups) || count($groups) == 0) {
 					$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
 					exit($c->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time) . "\nAveraged " . $nzbsperhour . " imports per hour from " . $path));
 				}
-				$consoleTools->overWritePrimary('Imported ' . "[" . number_format($nzbSkipped) . "] " . number_format($nzbCount) . " NZBs (" . $nzbsperhour . "iph) in " . relativeTime($time));
 				@unlink($nzbFile);
 			} else {
 				$db->queryExec(sprintf("DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d", $db->escapeString($relguid), $db->escapeString($totalsize)));
@@ -227,9 +233,13 @@ if (!isset($groups) || count($groups) == 0) {
 				flush();
 				$importfailed = true;
 			}
+			$consoleTools->overWritePrimary('Imported ' . "[" . number_format($nzbSkipped) . "] " . number_format($nzbCount) . " NZBs (" . $nzbsperhour . "iph) in " . relativeTime($time));
 		}
 	}
 }
 
-exit($c->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time)));
+exit($c->header("\nRunning Time: " . relativeTime($time) . "\n"
+		. "Processed:    " . number_format($nzbCount + $nzbSkipped) . "\n"
+		. "Imported:     " . number_format($nzbCount) . "\n"
+		. "Duplicates:   " . number_format($nzbSkipped)));
 
