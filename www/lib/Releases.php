@@ -1,4 +1,5 @@
 <?php
+require_once nZEDb_LIBS . 'ZipFile.php';
 require_once nZEDb_LIB . 'Util.php';
 
 class Releases
