@@ -100,12 +100,13 @@ class NNTP extends Net_NNTP_Client {
 	 *
 	 * @param boolean $compression Should we attempt to enable XFeature Gzip
 	 *     compression on this connection?
+	 * @param boolean $alternate   Use the alternate NNTP connection.
 	 *
 	 * @return boolean Did we sucesfully connect to the usenet?
 	 *
 	 * @access public
 	 */
-	public function doConnect($compression=true) {
+	public function doConnect($compression=true, $alternate=false) {
 		if ($compression === true && $this->_isConnected()) {
 			return true;
 		} else {
@@ -114,9 +115,15 @@ class NNTP extends Net_NNTP_Client {
 
 		$compressionstatus = $this->site->compressedheaders;
 		unset($s, $site);
-		$enc = $ret = $ret2 = $connected = false;
+		$enc = $ret = $ret2 = $connected = $SSL_ENABLED = false;
 
-		if (defined('NNTP_SSLENABLED') && NNTP_SSLENABLED == true) {
+		if (!$alternate) {
+			$SSL_ENABLED = (defined('NNTP_SSLENABLED') && NNTP_SSLENABLED ? true : false);
+		} else {
+			$SSL_ENABLED = (defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A ? true : false);
+		}
+
+		if ($SSL_ENABLED) {
 			$enc = 'ssl';
 		}
 
@@ -125,25 +132,37 @@ class NNTP extends Net_NNTP_Client {
 			$authent = false;
 			$retries--;
 			if ($connected === false) {
-				$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, 5);
+				if (!$alternate) {
+					$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, 5);
+				} else {
+					$ret = $this->connect(NNTP_SERVER_A, $enc, NNTP_PORT_A, 5);
+				}
 			}
 
 			if (PEAR::isError($ret) && $retries === 0) {
-				echo $this->c->error('Cannot connect to server ' . NNTP_SERVER
+				echo $this->c->error('Cannot connect to server ' 
+				. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
 				. (!$enc ? ' (nonssl) ' : '(ssl) ') . ': ' . $ret->getMessage());
 			} else {
 				$connected = true;
 			}
 
-			if ($connected === true && $authent === false && defined('NNTP_USERNAME')) {
-				if (NNTP_USERNAME == '') {
+			if ($connected === true && $authent === false 
+			&& (!$alternate ? defined('NNTP_USERNAME') : defined('NNTP_USERNAME_A'))) {
+				if ((!$alternate ? NNTP_USERNAME == '' : NNTP_USERNAME_A == '')) {
 					$authent = true;
 				} else {
-					$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
+					if (!$alternate) {
+						$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
+					} else {
+						$ret2 = $this->authenticate(NNTP_USERNAME_A, NNTP_PASSWORD_A);
+					}
 					if (PEAR::isError($ret2) && $retries === 0) {
 						echo $this->c->error('Cannot authenticate to server '
-						. NNTP_SERVER . (!$enc ? ' (nonssl) ' : ' (ssl) ')
-						. ' - ' . NNTP_USERNAME . ' (' . $ret2->getMessage() . ')');
+						. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A) 
+						. (!$enc ? ' (nonssl) ' : ' (ssl) ') . ' - ' 
+						. (!$alternate ? NNTP_USERNAME : NNTP_USERNAME_A)
+						. ' (' . $ret2->getMessage() . ')');
 					} else {
 						$authent = true;
 					}
@@ -175,59 +194,7 @@ class NNTP extends Net_NNTP_Client {
 	 *     re-use code.
 	 */
 	public function doConnect_A($compression=true) {
-		if ($compression === true && $this->_isConnected()) {
-			return true;
-		} else {
-			$this->doQuit();
-		}
-
-		$compressionstatus = $this->site->compressedheaders;
-		unset($s, $site);
-		$enc = $ret = $ret2 = $connected = false;
-
-		if (defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A == true) {
-			$enc = 'ssl';
-		}
-
-		$retries = $this->nntpretries;
-		while($retries >= 1) {
-			$authent = false;
-			$retries--;
-			if ($connected === false) {
-				$ret = $this->connect(NNTP_SERVER_A, $enc, NNTP_PORT_A, 5);
-			}
-
-			if (PEAR::isError($ret) && $retries === 0) {
-				echo $this->c->error('Cannot connect to server ' . NNTP_SERVER_A
-				. (!$enc ? ' (nonssl) ' : '(ssl) ') . ': ' . $ret->getMessage());
-			} else {
-				$connected = true;
-			}
-
-			if ($connected === true && $authent === false && defined('NNTP_USERNAME_A')) {
-				if (NNTP_USERNAME_A == '') {
-					$authent = true;
-				} else {
-					$ret2 = $this->authenticate(NNTP_USERNAME_A, NNTP_PASSWORD_A);
-					if (PEAR::isError($ret2) && $retries === 0) {
-						echo $this->c->error('Cannot authenticate to server '
-						. NNTP_SERVER_A . (!$enc ? ' (nonssl) ' : ' (ssl) ')
-						. ' - ' . NNTP_USERNAME_A . ' (' . $ret2->getMessage() . ')');
-					} else {
-						$authent = true;
-					}
-				}
-			}
-
-			if ($connected && $authent === true) {
-				if ($compression === true && $compressionstatus == '1') {
-					$this->_enableCompression();
-				}
-				return true;
-			}
-			usleep(200000);
-		}
-		return false;
+		return $this->doConnect($compression, true);
 	}
 
 	/**

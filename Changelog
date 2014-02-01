@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 2014-02-01 -> jonnyboy -> updated renaming scripts to reset id's when seachname is set
 2014-02-01 -> kevin    -> Upd: Added phpdoc notes to NNTP.php, changed some functions to protected, objects to private.
+                          Upd: Combined the doConnect and doConnectA methods in NNTP.php.
                           Del: Removed pdo_notes.txt
 2014-02-01 -> kaibosh  -> Update hardware section of README.md
                           Insert link to summary page produced by mymovielist
