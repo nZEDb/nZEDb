@@ -21,7 +21,14 @@ System Administration know-how. nZEDb is not plug-n-play software. Installation 
 ### Hardware
 
     4GB RAM, 2 cores(threads) and 20GB disk space minimum.
-It does run on a Raspberry Pi for experienced users with very modest expectations.
+
+As a general rule of thumb the database will need a minimum of 1-2G buffer RAM for every million releases you intend to store. That RAM should be assigned to these two parameters:
+- key_buffer_size			(MyISAM)
+- innodb_buffer_pool_size	(InnoDB)
+
+Use [mysqltuner.pl](http://mysqltuner.pl "MySQL tuner - Use it!") for recommendations for these and other important tuner parameters. Also refer to the project's wiki page: https://github.com/nZEDb/nZEDb/wiki/Database-tuning. This is particularly import before you start any large imports or backfills.
+
+If you wish to use more than 5 threads a quad core CPU is beneficial.
 
 ### Software
 
@@ -63,7 +70,7 @@ Advanced users may be interested to try the tmux version of nZEDb in either Comp
 
 ### Support
 
-There is a web forum were you may search for issues previously encountered by others:
+There is a web forum were you can search for issues previously encountered by others:
 http://nzedb.com/
 
 Also on IRC: irc.synirc.net #nZEDb
@@ -74,7 +81,7 @@ The nZEDb team have no control over and are not responsible for what is posted o
 
 ### The Team
 
-Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo, Whitelighter and archer (niel)<br /><br />
+Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo, Whitelighter, Bart39 and archer (niel)<br /><br />
 Paypal: <a href="http://nzedb.com/index.php?action=treasury"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
 
 Bitcoin wallet: 1LrrFbXn4QfGUokLppHVPQHAzmnAPbgV2M
