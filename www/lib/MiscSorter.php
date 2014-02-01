@@ -1,4 +1,5 @@
 <?php
+require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
 class MiscSorter
 {
