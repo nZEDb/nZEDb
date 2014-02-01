@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Cleans names for releases/imports/namefixer.
  * Names of group functions should match between CollectionsCleaning and this file
@@ -7,7 +6,6 @@
 
 class ReleaseCleaning
 {
-
 	function __construct()
 	{
 		// Extensions.
@@ -111,8 +109,6 @@ class ReleaseCleaning
 				return $this->cores();
 			case 'alt.binaries.console.ps3':
 				return $this->console_ps3();
-			case 'alt.binaries.country.mp3':
-				return $this->generic();
 			case 'alt.binaries.dc':
 				return $this->dc();
 			case 'alt.binaries.divx.french':
@@ -3099,5 +3095,5 @@ class ReleaseCleaning
 		$cleanerName = trim(utf8_encode(preg_replace('/[^(\x20-\x7F)]*/', '', $cleanerName)));
 		return $cleanerName;
 	}
-
 }
+?>

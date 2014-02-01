@@ -1,5 +1,4 @@
 <?php
-
 require_once nZEDb_LIB . 'Util.php';
 require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
@@ -7,7 +6,6 @@ require_once nZEDb_LIBS . 'rarinfo/zipinfo.php';
 
 class PostProcess
 {
-
 	public function __construct($echooutput = false)
 	{
 		$s = new Sites();
@@ -1503,5 +1501,5 @@ class PostProcess
 	{
 		$this->db->queryExec(sprintf('UPDATE releases SET haspreview = 1 WHERE guid = %s', $this->db->escapeString($guid)));
 	}
-
 }
+?>

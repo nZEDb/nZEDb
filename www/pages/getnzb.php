@@ -1,5 +1,4 @@
 <?php
-
 $nzb = new NZB();
 $rel = new Releases();
 $uid = 0;

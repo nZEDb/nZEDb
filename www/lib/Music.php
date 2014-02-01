@@ -1,10 +1,8 @@
 <?php
-
 require_once nZEDb_LIB . 'Util.php';
 
 class Music
 {
-
 	function __construct($echooutput = false)
 	{
 		$this->echooutput = $echooutput;
@@ -615,5 +613,5 @@ class Music
 		}
 		return ($str != '') ? $str : false;
 	}
-
 }
+?>

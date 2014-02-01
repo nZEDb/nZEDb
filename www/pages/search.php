@@ -1,5 +1,4 @@
 <?php
-
 if (!$users->isLoggedIn())
 	$page->show403();
 

@@ -15,6 +15,8 @@ $db = new DB();
 $category = new Category();
 $groups = new Groups();
 $consoletools = new ConsoleTools();
+$namefixer = new NameFixer();
+
 $timestart = TIME();
 $counter = $counted = 0;
 
@@ -70,8 +72,14 @@ if ($total > 0) {
 			$preid = $newTitle['id'];
 			$groupname = $groups->getByNameByID($row['groupname']);
 			$determinedcat = $category->determineCategory($title, $groupname);
+<<<<<<< HEAD
 			$run = $db->queryDirect(sprintf('UPDATE releases set preid = %d, reqidstatus = 1, bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d where id = %d', $preid, $db->escapeString($title), $determinedcat, $row['id']));
 			if ($row['searchname'] !== $newTitle) {
+=======
+			$run = $db->queryDirect(sprintf('UPDATE releases set rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, '
+											. 'preid = %d, reqidstatus = 1, bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d where id = %d', $preid, $db->escapeString($title), $determinedcat, $row['id']));
+			if ($row['name'] !== $newTitle) {
+>>>>>>> 4c32316ed15582b263d3d870ac97c90c72f662bf
 				$counted++;
 				if (isset($argv[2]) && $argv[2] === 'show') {
 					$newcatname = $category->getNameByID($determinedcat);

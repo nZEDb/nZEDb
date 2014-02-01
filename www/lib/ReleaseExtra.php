@@ -2,7 +2,6 @@
 
 class ReleaseExtra
 {
-
 	function __construct()
 	{
 		$this->db = new DB();
@@ -236,5 +235,5 @@ class ReleaseExtra
 			return $db->queryExec(sprintf('INSERT INTO releaseextrafull (releaseid, mediainfo) VALUES (%d, %s)', $id, $db->escapeString($xml)));
 		}
 	}
-
 }
+?>

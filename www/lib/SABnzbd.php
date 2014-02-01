@@ -1,10 +1,8 @@
 <?php
-
 require_once nZEDb_LIB . 'Util.php';
 
 class SABnzbd
 {
-
 	public $url = '';
 	public $apikey = '';
 	public $priority = '';
@@ -144,5 +142,5 @@ class SABnzbd
 		setcookie('sabnzbd_' . $this->uid . '__priority', '', (time() - 2592000));
 		setcookie('sabnzbd_' . $this->uid . '__apitype', '', (time() - 2592000));
 	}
-
 }
+?>

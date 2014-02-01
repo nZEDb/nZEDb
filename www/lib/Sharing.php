@@ -1,14 +1,9 @@
 <?php
-/* Class for sharing comments. */
-
 define('CUR_PATH', realpath(dirname(__FILE__)));
-//require_once(CUR_PATH."/../config.php");
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'yenc.php';
 
-/* TODO:
+/* Class for sharing comments.
+ *
+ * TODO:
  *
  * Create sharing table.
  * 		see function initSite()
@@ -30,7 +25,6 @@ define('CUR_PATH', realpath(dirname(__FILE__)));
  * Add a backfill function.
  *
  */
-
 class Sharing
 {
 	function __construct($echooutput=false)
@@ -444,3 +438,4 @@ class Sharing
 		return $ret;
 	}
 }
+?>

@@ -1,5 +1,4 @@
 <?php
-
 if ($page->isPostBack()) {
 	if (!isset($_POST["username"]) || !isset($_POST["password"])) {
 		$page->smarty->assign('error', "Please enter your username and password.");

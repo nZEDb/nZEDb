@@ -1,11 +1,9 @@
 <?php
-
 // Original taken from https://gist.github.com/donatj/1315354 by Jesse Donat.
 // Modified by ThePeePs.
 
 class ColorCLI
 {
-
 	static $foreground_colors = array(
 		'Black' => '30',
 		'Blue' => '34',
@@ -269,5 +267,5 @@ class ColorCLI
 	{
 		return "\033[0m";
 	}
-
 }
+?>

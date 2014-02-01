@@ -1,12 +1,9 @@
 <?php
-
 /*
  * Gets information contained within the NZB.
  */
-
 Class NZBContents
 {
-
 	public function __construct($echooutput = false)
 	{
 		$this->echooutput = $echooutput;
@@ -280,5 +277,5 @@ Class NZBContents
 			return false;
 		}
 	}
-
 }
+?>

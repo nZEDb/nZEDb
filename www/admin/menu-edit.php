@@ -1,8 +1,8 @@
 <?php
 require_once './config.php';
 //require_once nZEDb_LIB . 'adminpage.php';
-//require_once nZEDb_LIB . 'menu.php';
-//require_once nZEDb_LIB . 'users.php';
+
+
 
 $page = new AdminPage();
 $menu = new Menu();

@@ -1,10 +1,8 @@
 <?php
-
 require_once nZEDb_LIB . 'Util.php';
 
 class Users
 {
-
 	const ERR_SIGNUP_BADUNAME = -1;
 	const ERR_SIGNUP_BADPASS = -2;
 	const ERR_SIGNUP_BADEMAIL = -3;
@@ -730,5 +728,5 @@ class Users
 		$db = $this->db;
 		return $db->queryInsert(sprintf("INSERT INTO userdownloads (userid, timestamp) VALUES (%d, NOW())", $userid));
 	}
-
 }
+?>

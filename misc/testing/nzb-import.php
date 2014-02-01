@@ -164,7 +164,6 @@ if (!isset($groups) || count($groups) == 0) {
 				}
 
 				$importfailed = true;
-				echo $c->error($errorMessage);
 				break;
 			}
 		}

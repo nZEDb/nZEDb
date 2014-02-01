@@ -1,8 +1,7 @@
 <?php
-
 require_once './config.php';
 //require_once nZEDb_LIB . 'adminpage.php';
-//require_once nZEDb_LIB . 'binaries.php';
+
 
 // Login Check
 $admin = new AdminPage;
@@ -13,3 +12,4 @@ if (isset($_GET['action']) && $_GET['action'] == "2") {
 	$bin->deleteBlacklist($id);
 	print "Blacklist $id deleted.";
 }
+?>

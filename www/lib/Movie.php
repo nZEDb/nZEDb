@@ -1,20 +1,8 @@
 <?php
-
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'TMDb.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'nfo.php';
-//require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'Util.php';
-//require_once nZEDb_LIB . 'releaseimage.php';
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'rottentomato.php';
-//require_once nZEDb_LIB . 'trakttv.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 class Movie
 {
-
 	const SRC_BOXOFFICE = 1;
 	const SRC_INTHEATRE = 2;
 	const SRC_OPENING = 3;
@@ -1172,3 +1160,4 @@ class Movie
 		);
 	}
 }
+?>

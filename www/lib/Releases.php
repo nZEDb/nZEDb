@@ -1,5 +1,4 @@
 <?php
-
 require_once nZEDb_LIB . 'Util.php';
 
 class Releases
@@ -1652,7 +1651,7 @@ class Releases
 			$postprocess->processAll($nntp);
 		} else {
 			if ($this->echooutput) {
-				echo $this->c->primary("Post-processing is not running inside the releases.php file.\nIf you are using tmux or screen they might have their own files running Post-processing.");
+				echo $this->c->info("\nPost-processing is not running inside the releases.php file.\nIf you are using tmux or screen they might have their own files running Post-processing.");
 			}
 		}
 		if ($this->echooutput) {
@@ -2133,5 +2132,5 @@ class Releases
 		$db = new DB();
 		return $db->query("SELECT DISTINCT (a.bookinfoid), guid, name, b.title, searchname, size, completion, postdate, categoryid, comments, grabs, c.cover FROM releases a, category b, bookinfo c WHERE b.title = 'Books' and a.bookinfoid = c.id and a.bookinfoid != -2 GROUP BY a.bookinfoid ORDER BY a.postdate DESC LIMIT 12");
 	}
-
 }
+?>

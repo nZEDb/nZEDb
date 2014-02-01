@@ -1,9 +1,7 @@
 <?php
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 class ConsoleTools
 {
-
 	function __construct(){
 		$this->lastMessageLength = 0;
 		$this->c = new ColorCLI();
@@ -104,5 +102,5 @@ class ConsoleTools
 		}
 		echo "\n";
 	}
-
 }
+?>

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Class for handling connection to database (MySQL or PostgreSQL) using PDO.
  *
@@ -11,7 +10,6 @@
  */
 class DB extends PDO
 {
-
 	/**
 	 * @var object Instance of ColorCLI class.
 	 */
@@ -332,7 +330,7 @@ class DB extends PDO
 		$tablecnt = 0;
 		if ($this->dbsystem == 'mysql') {
 			// only optimize if free space exceeds 5%
-			$alltables = $this->query('SHOW table status WHERE Data_free / Data_length > 0.005');
+			$alltables = $this->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
 			$tablecnt = count($alltables);
 			foreach ($alltables as $table) {
 				if ($admin === false) {
@@ -581,13 +579,11 @@ class DB extends PDO
 			return $result;
 		}
 	}
-
 }
 
 // Class for caching queries into RAM using memcache.
 class Mcached
 {
-
 	// Make a connection to memcached server.
 	public function Mcached()
 	{
@@ -646,5 +642,5 @@ class Mcached
 	{
 		return $this->m->get($this->key($query));
 	}
-
 }
+?>

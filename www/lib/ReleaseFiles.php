@@ -1,5 +1,4 @@
 <?php
-//require_once nZEDb_LIB . 'framework/db.php';
 
 class ReleaseFiles
 {
@@ -31,5 +30,5 @@ class ReleaseFiles
 			return $db->queryInsert($sql);
 		}
 	}
-
 }
+?>

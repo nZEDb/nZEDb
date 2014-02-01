@@ -1,8 +1,8 @@
 <?php
 require_once './config.php';
 //require_once nZEDb_LIB . 'adminpage.php';
-//require_once nZEDb_LIB . 'groups.php';
-//require_once nZEDb_LIB . 'category.php';
+
+
 
 $page = new AdminPage();
 $groups = new Groups();

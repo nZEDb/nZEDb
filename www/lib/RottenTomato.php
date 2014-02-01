@@ -2,7 +2,6 @@
 
 class RottenTomato
 {
-
     const API_URL = "http://api.rottentomatoes.com/api/public/v1.0/";
 
     private $_apikey;
@@ -115,5 +114,5 @@ class RottenTomato
     {
         return $this->_apikey;
     }
-
 }
+?>
