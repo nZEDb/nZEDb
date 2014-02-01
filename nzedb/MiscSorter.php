@@ -746,7 +746,7 @@ class MiscSorter
 				if (count($set) > 1)
 				{
 					//var_dump($set);
- 					$ok = $this->doAmazon ($row['name'], $row['id'], $nfo, $set[2], $set[1], $case, $nfo, $row);
+					$ok = $this->doAmazon ($row['name'], $row['id'], $nfo, $set[2], $set[1], $case, $nfo, $row);
 				}
 				break;
 		}
