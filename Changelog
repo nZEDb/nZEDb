@@ -6,7 +6,7 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-02-01 -> jonnyboy -> fixed bug in nntpproxy.php
+2014-02-01 -> jonnyboy -> fixed bug in nntpproxy.php, added option to run python binaries_threaded.py alt.binaries.teevee
                           added dereferrer to movies list
                           updated renaming scripts to reset id's when seachname is set
 2014-02-01 -> kevin    -> Upd: Added phpdoc notes to NNTP.php, changed some functions to protected, objects to private.
