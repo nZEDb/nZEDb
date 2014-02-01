@@ -7,6 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-01 -> kaibosh  -> Update hardware section of README.md
+                          Insert link to summary page produced by mymovielist
 2014-02-01 -> niel     -> Upd: Moved one file (simple_html_dom.php) to nZEDb_LIBS. There are a few others we should move too.
                           Tidy up. Removed most commented out require_once lines.
                           Some formatting changes for coding standard
