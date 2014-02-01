@@ -53,18 +53,18 @@ class ReleaseImage
 			$new_height = intval($ratio*$height);
 			if ($new_width < $width && $new_width > 10 && $new_height > 10) {
 				$new_image = imagecreatetruecolor($new_width, $new_height);
-  				imagecopyresampled($new_image, $im, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-  				ob_start();
-  				imagejpeg($new_image, null, 85);
-  				$thumb = ob_get_clean();
-  				imagedestroy($new_image);
+				imagecopyresampled($new_image, $im, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+				ob_start();
+				imagejpeg($new_image, null, 85);
+				$thumb = ob_get_clean();
+				imagedestroy($new_image);
 
-  				if ($saveThumb)
-  					@file_put_contents($imgSavePath.$imgName.'_thumb.jpg', $thumb);
-  				else
-  					$cover = $thumb;
+				if ($saveThumb)
+					@file_put_contents($imgSavePath.$imgName.'_thumb.jpg', $thumb);
+				else
+					$cover = $thumb;
 
-  				unset($thumb);
+				unset($thumb);
 			}
 			imagedestroy($im);
 		}
