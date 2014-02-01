@@ -1,8 +1,9 @@
 <?php
-// Test if your amazon keys are working.
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'amazon.php';
-//require_once nZEDb_LIB . 'site.php';
+require_once nZEDb_LIBS . 'AmazonProductAPI.php';
+
+// Test if your amazon keys are working.
+
 
 $s = new Sites();
 $site = $s->get();
