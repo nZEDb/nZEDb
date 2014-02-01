@@ -511,7 +511,6 @@ class MiscSorter
 					$sub = preg_replace('/(\.vol\d{1,3}?\+\d{1,3}?|\.par2|\.[a-z][a-z0-9]{2})+?".+?/iU', '', $sub);
 					$m3u = preg_replace('/(?iU)^[^\"]+\"(0\d+?-?(00)??)??/iU', '', $sub);
 				}
-
 			}
 		}
 		$name = '';
@@ -875,9 +874,8 @@ class MiscSorter
 					$ok = $this->dodbupdate($row['id'], Category::CAT_MUSIC_MP3, $name);
 					return $ok;
 				}
-
 			}
 		}
 	}
 }
-
+?>

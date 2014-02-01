@@ -1,10 +1,5 @@
 <?php
 require_once nZEDb_LIB . 'Util.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'releaseimage.php';
-//require_once nZEDb_LIB . 'site.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 class AniDB
 {
@@ -271,7 +266,6 @@ class AniDB
 			// if no "'s were found then fall back to cleanFilename;
 			return $this->cleanFilename($searchname);
 		}
-
 	}
 
 
@@ -400,3 +394,4 @@ class AniDB
 		$this->processAnAnimeRelease($results);
 	}
 }
+?>

@@ -1,5 +1,4 @@
 <?php
-
 $page->title = "Terms and Conditions";
 $page->meta_title = $page->site->title . " - Terms and conditions";
 $page->meta_keywords = "terms,conditions";

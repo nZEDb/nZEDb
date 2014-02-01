@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Cleans names for releases/imports/namefixer.
  * Names of group functions should match between CollectionsCleaning and this file
@@ -7,7 +6,6 @@
 
 class ReleaseCleaning
 {
-
 	function __construct()
 	{
 		// Extensions.
@@ -3097,5 +3095,5 @@ class ReleaseCleaning
 		$cleanerName = trim(utf8_encode(preg_replace('/[^(\x20-\x7F)]*/', '', $cleanerName)));
 		return $cleanerName;
 	}
-
 }
+?>

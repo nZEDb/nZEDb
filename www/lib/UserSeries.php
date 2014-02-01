@@ -1,5 +1,4 @@
 <?php
-//require_once nZEDb_LIB . 'framework/db.php';
 
 class UserSeries
 {
@@ -52,3 +51,4 @@ class UserSeries
 		$db->queryExec(sprintf("UPDATE userseries SET categoryid = %s WHERE userid = %d AND rageid = %d", $catid, $uid, $rageid));
 	}
 }
+?>

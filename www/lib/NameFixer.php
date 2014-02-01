@@ -833,5 +833,5 @@ class NameFixer
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
 		}
 	}
-
 }
+?>

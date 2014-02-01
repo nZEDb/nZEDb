@@ -1,12 +1,9 @@
 <?php
-
 /*
  * Class for fetching book info from amazon.com.
  */
-
 class Books
 {
-
 	function __construct($echooutput = false)
 	{
 		$this->echooutput = $echooutput;
@@ -471,5 +468,5 @@ class Books
 		}
 		return $bookId;
 	}
-
 }
+?>

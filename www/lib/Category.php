@@ -2,7 +2,6 @@
 
 class Category
 {
-
 	const CAT_GAME_NDS = 1010;
 	const CAT_GAME_PSP = 1020;
 	const CAT_GAME_WII = 1030;
@@ -1516,12 +1515,10 @@ class Category
 		}
 		return false;
 	}
-
 }
 
 class CategoryDanish extends Category
 {
-
 	private $tmpCat = 0;
 
 	public function determineCategory($releasename = "", $groupID)
@@ -2074,12 +2071,10 @@ class CategoryDanish extends Category
 		}
 		return false;
 	}
-
 }
 
 class CategoryFrench extends Category
 {
-
 	private $tmpCat = 0;
 
 	public function determineCategory($releasename = "", $groupID)
@@ -2629,12 +2624,10 @@ class CategoryFrench extends Category
 		}
 		return false;
 	}
-
 }
 
 class CategoryGerman extends Category
 {
-
 	private $tmpCat = 0;
 
 	public function determineCategory($releasename = "", $groupID)
@@ -3199,5 +3192,5 @@ class CategoryGerman extends Category
 		}
 		return false;
 	}
-
 }
+?>

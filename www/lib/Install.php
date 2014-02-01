@@ -146,5 +146,5 @@ class Install
 	{
 		return @file_put_contents($this->INSTALL_DIR . '/install.lock', '');
 	}
-
 }
+?>

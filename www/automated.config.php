@@ -1,5 +1,4 @@
 <?php
-
 define('nZEDb_DEBUG', false);
 
 define('DS', DIRECTORY_SEPARATOR);

@@ -1,11 +1,9 @@
 <?php
-
 /*
  * Cleans names for collections/imports/namefixer.
  */
 class CollectionsCleaning
 {
-
 	function __construct()
 	{
 		// Extensions.
@@ -2589,3 +2587,4 @@ class CollectionsCleaning
 			return false;
 	}
 }
+?>

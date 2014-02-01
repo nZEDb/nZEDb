@@ -1,5 +1,4 @@
 <?php
-
 // Page is accessible only to logged in users.
 if (!$users->isLoggedIn()) {
 	$page->show403();

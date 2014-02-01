@@ -1,5 +1,4 @@
 <?php
-
 $category = new Category();
 $releases = new Releases();
 

@@ -1,4 +1,6 @@
-<?
+<?php
+/* This should be moved to the nZEDb_LIBS directory */
+
 /*
 * yenc.class.php - yEnc PHP Class.
 * Copyright (c) 2002 Ryan Grove <ryan@wonko.com>. All rights reserved.
@@ -31,7 +33,6 @@
 * @date November 26, 2002
 * @version 1.0.0
 */
-
 class Yenc
 {
 	/** Text of the most recent error message (if any). */
