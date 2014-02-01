@@ -118,9 +118,9 @@ class NNTP extends Net_NNTP_Client {
 		$enc = $ret = $ret2 = $connected = $SSL_ENABLED = false;
 
 		if (!$alternate) {
-			$SSL_ENABLED = (defined('NNTP_SSLENABLED') && NNTP_SSLENABLED ? true : false);
+			$SSL_ENABLED = ((defined('NNTP_SSLENABLED') && NNTP_SSLENABLED) ? true : false);
 		} else {
-			$SSL_ENABLED = (defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A ? true : false);
+			$SSL_ENABLED = ((defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A) ? true : false);
 		}
 
 		if ($SSL_ENABLED) {
