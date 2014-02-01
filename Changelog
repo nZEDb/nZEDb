@@ -11,6 +11,7 @@ Each update goes to the top of the file
 2014-02-01 -> kevin    -> Upd: Added phpdoc notes to NNTP.php, changed some functions to protected, objects to private.
                           Upd: Combined the doConnect and doConnectA methods in NNTP.php.
                           Upd: Encapsulate the evalution to make the expressions clearer.
+                          Upd: Mention that to decode yenc, the library is a better alternative, remove TODO on doconnect_a.
                           Del: Removed pdo_notes.txt
 2014-02-01 -> kaibosh  -> Update hardware section of README.md
                           Insert link to summary page produced by mymovielist
