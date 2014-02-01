@@ -183,20 +183,10 @@ Most of this guide is done from the command line (terminal).
 	## Ubuntu 13.04 & 13.10 : ##
 	############################
 
-	# X264 & FFMPEG:
+	# X264 & FFMPEG & Mediainfo:
 		sudo add-apt-repository ppa:jon-severinsson/ffmpeg
 		sudo apt-get update
-		sudo apt-get install ffmpeg x264
-
-	# For mediainfo:
-		sudo add-apt-repository ppa:shiki/mediainfo
-		sudo nano /etc/apt/sources.list.d/shiki-mediainfo-*
-
-	# Change the 2 raring or saucy words to quantal, save and exit nano.
-
-	# Install mediainfo:
-		sudo apt-get update
-		sudo apt-get install mediainfo
+		sudo apt-get install ffmpeg x264 mediainfo
 
 6. Install memcache / apc.
 	# APC:
