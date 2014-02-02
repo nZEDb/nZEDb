@@ -1,93 +1,204 @@
 <?php
 define('CUR_PATH', realpath(dirname(__FILE__)));
 
-/* Class for sharing comments.
- *
- * TODO:
- *
- * Create sharing table.
- * 		see function initSite()
- *
- * Create column shared in releasecomments.
- * 		shared = wether we shared the comment previously.
- * Create column shareid in releasecomments.
- * 		shareid = sha1 hash of comment+guid
- * Create column username in releasecomments.
- * 		username = the name of the user who posted the comment
- * Create column nzb_guid in releasecomments.
- * 		nzb_guid = the md5 hash of the first message-id in a nzb file
- *
- * Add site settings to DB.
- * 		something to toggle on and off the whole sharing system.
- * 		option to hide usernames
- * 		option to auto enable sites
- *
- * Add a backfill function.
- *
- */
-class Sharing
-{
-	function __construct($echooutput=false)
-	{
-		$s = new Sites();
-		$this->site = $s->get();
+ /**
+  * @TODO:
+  *
+  * Create sharing table.
+  *         see function initSite()
+  *
+  * Create column shared in releasecomments.
+  *         shared = wether we shared the comment previously.
+  * Create column shareid in releasecomments.
+  *         shareid = sha1 hash of comment+guid
+  * Create column username in releasecomments.
+  *         username = the name of the user who posted the comment
+  * Create column nzb_guid in releasecomments.
+  *         nzb_guid = the md5 hash of the first message-id in a nzb file
+  *
+  * Add site settings to DB.
+  *         something to toggle on and off the whole sharing system.
+  *         option to hide usernames
+  *         option to auto enable sites
+  *
+  * Add a backfill function.
+  *
+  * Fetch and post Metadata (imdbid / searchname / etc.)
+  */
+
+ /**
+  * Class for sharing various atributes of a release to other nZEDb sites.
+  *
+  * @access public
+  */
+
+class Sharing {
+	/**
+	 * The group to store/retrieve the articles.
+	 *
+	 * @note Not set in stone.
+	 *
+	 * @var constant string
+	 * @access public
+	 */
+	const group = 'alt.binaries.zines';
+
+	/**
+	 * Instance of class DB.
+	 *
+	 * @var object
+	 * @access private
+	 */
+	private $db;
+
+	/**
+	 * Instance of class site.
+	 *
+	 * @var object
+	 * @access private
+	 */
+	private $s;
+
+	/**
+	 * Site settings.
+	 *
+	 * @var object
+	 * @access private
+	 */
+	private $site;
+
+	/**
+	 * Display debug info to console?
+	 *
+	 * @var boolean
+	 * @access private
+	 */
+	private $debug;
+
+	/**
+	 * Display general info to console?
+	 *
+	 * @var boolean
+	 * @access private
+	 */
+	private $echooutput;
+
+	/**
+	 * Hide username of comment?
+	 *
+	 * @var boolean
+	 * @access private
+	 */
+	private $hideuser;
+
+	/**
+	 * Auto enable nZEDb website ?
+	 *
+	 * @var int
+	 * @access private
+	 */
+	private $autoenable;
+
+	/**
+	 * Default constructor.
+	 *
+	 * @access public
+	 */
+	public function __construct($echooutput=false) {
+		$this->db = new DB();
+		$this->s = new Sites();
+		$this->site = $this->s->get();
 		$this->debug = ($this->site->debuginfo == "0") ? false : true;
 		$this->echooutput = $echooutput;
-		$this->db = new DB();
 
 		// Will be a site setting.. hides username when posting
 		$this->hideuser = false;
 		// Will be a site setting.. Auto enable sites?
 		$this->autoenable = 1;
-
-		// Placeholder group.
-		$this->group = "alt.binaries.zines";
 	}
 
-	// For first run, initiate the site settings.
-	function initSite()
-	{
-		/* updatetime	= last time a site was updated
-		 * backfill		= our current backfill target
-		 * name 		= the name of the site
-		 * local		= wether the site is local or not (1 for local 2 for not loca)
-		 * status		= wether the non local site is enabled or not.
-		 * lastseen		= last time we have seen the non local site
-		 * comments		= how many comments the non local site has
-		 * firstseen	= the first time we have seen the non local site
-		 * f_comment	= 1 = enable fetching comments (change this to a site setting ?) 0 disabled
-		 * p_comments	= post comments (also change this to a site setting?)
-		 * lastpushtime	= last time we posted a comment
-		 * lasthash		= the hash of the last article -> contained in the subject
-		 * lastarticle	= our newest fetched article #
-		 * lastdate		= the unixtime of the last article -> contained in the subject
-		 * firsthash	= the hash of the oldest article
-		 * firstarticle	= our oldest fetched article #
-		 * firstdate	= the unixtime of the first article
+	/**
+	 * Initiate site settings for a first time run.
+	 *
+	 * @return bool If we were succesfull.
+	 *
+	 * @access protected
+	 */
+	protected function initSite() {
+		/* VARIOUS
+		 * ID           = The ID of the site.
+		 * local        = wether the site is local or not (1 for local 2 for not)
+		 *
+		 * LOCAL
+		 * lastpushtime = last time we posted metadata
+		 * firstuptime  = How far back should we upload metadata/comments the first time?
+		 * oldestlocal  = Oldest metadata we have locally posted.
+		 * newestlocal  = Newest metadata we have locally posted.
+		 *
+		 * NON LOCAL :
+		 * updatetime   = last time a site was updated
+		 * backfill     = our current backfill target
+		 * status       = wether the non local site is enabled or not
+		 * lastseen     = last time we have seen the non local site
+		 * firstseen    = the first time we have seen the non local site
+		 * lasthash     = the hash of the last article -> contained in the subject
+		 * lastarticle  = our newest fetched article #
+		 * lastdate     = the unixtime of the last article -> contained in the subject
+		 * firsthash    = the hash of the oldest article
+		 * firstarticle = our oldest fetched article #
+		 * firstdate    = the unixtime of the first article
+		 * real_name    = The name of the site, as sent by the site.
+		 * local_name   = The name of the site (a local name).
+		 * notes        = We can add notes on this site.
+		 *
+		 * COMMENTS :
+		 * comments     = how many comments the non local site has
+		 * f_comment    = 1 = enable fetching comments (change this to a site setting ?) 0 disabled
+		 * p_comments   = post comments (also change this to a site setting?)
+		 *
+		 * METADATA (for a guid) :
+		 * f_sname      = Should we download this sites searchnames?
+		 * p_sname      = Should we upload our searchnames?
+		 * f_cat_id     = Should we download categoryID's from this site?
+		 * p_cat_id     = Should we upload our categoryID's?
+		 * f_imdb       = Should we download IMDB id's from this site?
+		 * p_imdb       = Should we upload our IMDB id's?
+		 * f_tvrage     = Should we download tvrage id's from this site?
+		 * p_tvrage     = Should we upload our tvrage id's?
 		 */
 
-		$db = $this->db;
-		$t = $db->queryExec(sprintf("INSERT INTO sharing (updatetime, backfill, name, local, status, lasteen, comments, firstseen, f_comments, p_comments, lastpushtime, lasthash, lastarticle, lastdate, firsthash, firstarticle, firstdate) VALUES (NOW(), 0, %s, 1, 0, 0, NULL, NULL, NULL, NULL, NULL))", $db->escapeString(uniqid("nZEDb.", true))));
-		if ($t !== false)
+		if ($this->db->queryExec(sprintf(
+			  'INSERT INTO sharing (updatetime, backfill, name, local, status, '
+			. 'lasteen, comments, firstseen, f_comments, p_comments, lastpushtime,'
+			. ' lasthash, lastarticle, lastdate, firsthash, firstarticle, firstdate)'
+			. " VALUES (NOW(), 0, %s, 1, 0, 0, NULL, NULL, NULL, NULL, NULL))",
+			  $db->escapeString(uniqid('nZEDb.', true)))) !== false) {
+
 			return true;
-		else
+		} else {
 			return false;
+		}
 	}
 
-	// Match comments to releases.
-	function matchComments()
-	{
-		$db = $this->db;
+	/**
+	 * Try to match comments and releases together, setting the releases ID
+	 * to the comment.
+	 *
+	 * @return int How many releases were matched to comments?
+	 *
+	 * @access protected
+	 */
+	protected function matchComments() {
 		$ret = 0;
 
-		$res = $db->query("SELECT id FROM releases r INNER JOIN releasecomment rc ON rc.nzb_guid = r.nzb_guid WHERE rc.releaseid = NULL");
-		if (count($res) > 0)
-		{
-			foreach ($res as $row)
-			{
-				$i = $db->queryExec(sprintf("UPDATE releasecomment SET releaseid = %d", $row["id"]));
-				if ($i !== false)
+		$res = $this->db->query("SELECT id FROM releases r INNER JOIN releasecomment rc ON rc.nzb_guid = r.nzb_guid WHERE rc.releaseid = NULL");
+		if (count($res) > 0) {
+			foreach ($res as $row) {
+				if ($this->db->queryExec(sprintf(
+					"UPDATE releasecomment SET releaseid = %d", $row["id"]))
+					!== false){
 					$ret++;
+				}
 			}
 		}
 		return $ret;
@@ -95,85 +206,101 @@ class Sharing
 
 
 /* In post process it will send to this function and settings will be initiated. */
-	// Retrieve new content.
-	public function retrieveAll()
-	{
-		$db = $this->db;
+	/**
+	 * Download all new metadata.
+	 *
+	 * @return array int How much of various new metadata have we downloaded?
+	 *
+	 * @access public
+	 */
+	public function retrieveAll() {
+		$qty = array();
 
-		$settings = $db->queryOneRow("SELECT * FROM sharing WHERE local = 1");
-		if($settings === false)
-		{
-			if ($this->echooutput)
-			{
-				if ($this->init() === true)
+		$settings = $this->db->queryOneRow('SELECT * FROM sharing WHERE local = 1');
+		if($settings === false) {
+
+			$initiated = $this->initSite();
+			if ($this->echooutput) {
+				if ($initiated === true) {
 					echo "Sharing: Initiated new site settings.\n";
-				else
+				} else {
 					echo "Sharing: Error trying to initiate site settings.\n";
-
-				return 0;
+				}
+			}
+		} else {
+			if ($settings["f_comments"] == 1) {
+				return $this->scanForward($settings, $this->db);
 			}
 		}
-		else
-		{
-			if ($settings["f_comments"] == 1)
-				return $this->scanForward($settings, $db);
-		}
+		return $qty;
 	}
 
-	// Upload new content.
-	public function shareAll()
-	{
-		$db = $this->db;
+	/**
+	 * Upload all our new metadata.
+	 *
+	 * @return array int How much of various new metadata have we uploaded?
+	 *
+	 * @access public
+	 */
+	public function shareAll() {
+		$qty = array();
 
 		$settings = $db->queryOneRow("SELECT * FROM sharing WHERE local = 1");
-		if ($settings === false)
-		{
-			if ($this->echooutput)
-			{
-				if ($this->init() === true)
-					echo "Sharing: Initiated new site settings.\n";
-				else
-					echo "Sharing: Error trying to initiate site settings.\n";
+		if ($settings === false) {
 
-				return 0;
+			$initiated = $this->initSite();
+			if ($this->echooutput) {
+				if ($initiated === true) {
+					echo "Sharing: Initiated new site settings.\n";
+				} else {
+					echo "Sharing: Error trying to initiate site settings.\n";
+				}
 			}
+		} else {
+			$qty = $this->push($settings);
 		}
-		else
-		{
-			if ($settings["p_comments"] == 1)
-				return $this->push($settings, $db);
-		}
+		return $qty;
 	}
 
-	// Select new comments that are ready to upload.
-	function push($settings, $db)
-	{
+	/**
+	 * Select new metadata that we should upload, upload them then update
+	 * the DB to say they have been uploaded.
+	 *
+	 * @param array $settings The sharing table data.
+	 *
+	 * @return int How many articles have been uploaded?
+	 *
+	 * @access protected
+	 */
+	protected function push($settings) {
 		$ret = 0;
-		$last = $db->queryOneRow("SELECT createdate AS d FROM releasecomments ORDER BY createdate LIMIT 1");
-		if ($last === false)
+
+		$last = $this->db->queryOneRow(
+			"SELECT createdate AS d FROM releasecomments ORDER BY createdate LIMIT 1");
+
+		if ($last === false) {
 			return $ret;
-		else
-		{
-			if ($db->unix_timestamp($last["d"]) > $settings["lastpushtime"])
-			{
-				$res = $db->query(sprintf("SELECT rc.*, r.nzb_guid, FROM releasecomment rc INNER JOIN releases r ON r.id = rc.releaseid WHERE createdate > %s AND shared = 0", $db->escapeString($last["d"])));
-				if (count($res) > 0)
-				{
-					foreach ($res as $row)
-					{
+		} else {
+			if ($this->db->unix_timestamp($last["d"]) > $settings["lastpushtime"]) {
+
+				$res = $this->db->query(sprintf(
+					  "SELECT rc.*, r.nzb_guid, FROM releasecomment rc INNER JOIN"
+					. " releases r ON r.id = rc.releaseid WHERE createdate > %s AND shared = 0"
+					, $this->db->escapeString($last["d"])));
+
+				if (count($res) > 0) {
+					foreach ($res as $row) {
 						$article = $this->encodeArticle($row, $settings);
-						if ($article === false)
+						if ($article === false) {
 							continue;
-						else
-						{
+						} else {
 							$stat = $this->pushArticle($body, $row);
-							if ($stat === false)
+							if ($stat === false) {
 								continue;
-							else
-							{
+							} else {
 								$ret++;
 								// Update DB to say we uploaded the comment.
-								$db->queryExec("UPDATE releasecomments SET shared = 1");
+								$this->db->queryExec("UPDATE releasecomments SET shared = 1");
 							}
 						}
 					}
@@ -184,13 +311,13 @@ class Sharing
 	}
 
 	// gzip then yEnc encode the body, set up the subject then attempt to upload the comment.
-	function pushArticle($body, $row)
+	protected function pushArticle($body, $row)
 	{
 		$yenc = new Yenc;
 		$nntp = new NNTP();
 		$nntp->doConnect();
 		// group(s),                   subject                          ,            body                           , poster
-		$success = $nntp->post($this->group, $row['nzb_guid'].' - [1/1] "'.time().'" (1/1) yEnc', $yenc->encode(gzdeflate($body, 4), uniqid), "nZEDb");
+		$success = $nntp->post(self::group, $row['nzb_guid'].' - [1/1] "'.time().'" (1/1) yEnc', $yenc->encode(gzdeflate($body, 4), uniqid), "nZEDb");
 		$nntp->doQuit();
 		if ($success == false)
 			return false;
@@ -200,7 +327,7 @@ class Sharing
 	}
 
 	// Create a message containing the details we want to upload.
-	function encodeArticle($row, $settings)
+	protected function encodeArticle($row, $settings)
 	{
 		/* Example message:
 		{
@@ -239,7 +366,7 @@ class Sharing
 	}
 
 	// Decode a downloaded message and insert it.
-	function decodeBody($body)
+	protected function decodeBody($body)
 	{
 		$message = gzinflate($body);
 		if ($message !== false)
@@ -303,16 +430,15 @@ class Sharing
 	}
 
 	// Download article headers from usenet until we find the last article. Then download the body, parse it.
-	function scanForward($settings, $db)
+	protected function scanForward($settings, $db)
 	{
 		$ret = 0;
 		$nntp = new Nntp;
 		$nntp->doConnect();
-		$group = $this->group;
-		$data = $nntp->selectGroup($group);
+		$data = $nntp->selectGroup(self::group);
 		if(PEAR::isError($data))
 		{
-			$data = $nntp->dataError($nntp, $group);
+			$data = $nntp->dataError($nntp, self::group);
 			if ($data === false)
 				return $ret;
 		}
@@ -363,13 +489,13 @@ class Sharing
 
 			// Start downloading headers.
 			$nntp->doConnect();
-			$nntp->selectGroup($group);
+			$nntp->selectGroup(self::group);
 			$msgs = $nntp->getOverview($firstart."-".$lastart, true, false);
 			if(PEAR::isError($msgs))
 			{
 				$nntp->doQuit();
 				$nntp->doConnectNC();
-				$nntp->selectGroup($group);
+				$nntp->selectGroup(self::group);
 				$msgs = $nntp->getOverview($firstart."-".$lastart, true, false);
 				if(PEAR::isError($msgs))
 				{
@@ -405,8 +531,8 @@ class Sharing
 							else
 							{
 								$nntp->doConnect();
-								$nntp->selectGroup($group);
-								$body = $nntp->getMessage($group, $msg["Message-ID"]);
+								$nntp->selectGroup(self::group);
+								$body = $nntp->getMessage(self::group, $msg["Message-ID"]);
 								$nntp->doQuit();
 								// Continue if we don't receive the body.
 								if ($body === false)
