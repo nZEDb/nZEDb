@@ -277,7 +277,7 @@ Class PreDb
 							} else {
 								$category = $db->escapeString($matches2['category'] . ', ' . $matches2['category1']);
 
-								if (strlen($matches['title']) > 15) {
+								if (strlen($matches2['title']) > 15) {
 									if ($db->queryExec(sprintf('INSERT INTO predb (title, category, predate, adddate, source, md5) VALUES (%s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $category, $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('prelist'), $db->escapeString($md5)))) {
 										$newnames++;
 									}
@@ -317,7 +317,7 @@ Class PreDb
 										$size = $db->escapeString($matches2['size']);
 									}
 
-									if (strlen($matches['title']) > 15) {
+									if (strlen($matches2['title']) > 15) {
 										if($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('orlydb'), $db->escapeString($md5)))) {
 											$newnames++;
 										}

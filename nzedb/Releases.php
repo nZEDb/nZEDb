@@ -1652,7 +1652,7 @@ class Releases
 			$postprocess->processAll($nntp);
 		} else {
 			if ($this->echooutput) {
-				echo $this->c->primary("Post-processing is not running inside the releases.php file.\nIf you are using tmux or screen they might have their own files running Post-processing.");
+				echo $this->c->info("\nPost-processing is not running inside the releases.php file.\nIf you are using tmux or screen they might have their own files running Post-processing.");
 			}
 		}
 		if ($this->echooutput) {

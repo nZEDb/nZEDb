@@ -1,9 +1,6 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'tmux.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI();
 $db = new DB();
@@ -32,7 +29,7 @@ if (isset($argv[1])) {
 	$restart = 'false';
 
 	if ($running == '1' && $argv[1] == 'true') {
-		$db->queryExec('update tmux set value = \'0\' where setting = \'RUNNING\'');
+		$db->queryExec("UPDATE tmux SET value = '0' WHERE setting = 'RUNNING'');
 		$sleep = $delay;
 		echo $c->header("Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown");
 		$restart = 'true';
@@ -56,7 +53,7 @@ if (isset($argv[1])) {
 
 	$tablecnt = 0;
 	if ($db->dbSystem() == 'mysql') {
-		$alltables = $db->query('SHOW table status WHERE Data_free > 0');
+		$alltables = $db->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
 		$tablecnt = count($alltables);
 		foreach ($alltables as $table) {
 			if ($table['name'] != 'predb') {
@@ -69,7 +66,7 @@ if (isset($argv[1])) {
 		}
 		$db->queryDirect('FLUSH TABLES');
 	} else if ($db->dbSystem() == 'pgsql') {
-		$alltables = $db->query('SELECT table_name as name FROM information_schema.tables WHERE table_schema = \'public\'');
+		$alltables = $db->query('SELECT table_name AS name FROM information_schema.tables WHERE table_schema = \'public\'');
 		$tablecnt = count($alltables);
 		foreach ($alltables as $table) {
 			echo $c->primary('Vacuuming table: ' . $table['name']);

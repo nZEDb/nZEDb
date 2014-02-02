@@ -1,1 +1,0 @@
-Coalesce on the min / max etc files/size (stage 3 and 4.5) is wrong, it should be greatest/max.
