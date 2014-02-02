@@ -26,6 +26,8 @@ define('CUR_PATH', realpath(dirname(__FILE__)));
   * Add a backfill function.
   *
   * Fetch and post Metadata (imdbid / searchname / etc.)
+  *
+  * Encryption of body.
   */
 
  /**
@@ -58,7 +60,7 @@ define('CUR_PATH', realpath(dirname(__FILE__)));
   * firstarticle = our oldest fetched article #
   * firstdate    = the unixtime of the first article
   * real_name    = The name of the site, as sent by the site.
-  * local_name   = The name of the site (a local name).
+  * local_name   = The name of the site (a local name we can change).
   * notes        = We can add notes on this site.
   *
   * COMMENTS :
@@ -127,6 +129,18 @@ class Sharing {
 	private $debug;
 
 	/**
+	 * Debug priority.
+	 * 0 - Turn it off.
+	 * 1 - Non Important stuff.
+	 * 2 - Important stuff.
+	 * 3 - Everything.
+	 *
+	 * @var int
+	 * @access private
+	 */
+	private $dpriority = 3;
+
+	/**
 	 * Display general info to console?
 	 *
 	 * @var boolean
@@ -185,7 +199,7 @@ class Sharing {
 			. 'hideuser, autoenable)'
 			. 'VALUES (1, NULL, NOW(), NULL, NULL, '
 			. '0, 0, 0, 0, 0, '
-			. '0, 0)') !== false {
+			. '0, 0)') !== false) {
 			return true;
 		} else {
 			return false;
@@ -232,18 +246,18 @@ class Sharing {
 		if($settings === false) {
 
 			$initiated = $this->initSite();
-			if ($this->echooutput) {
-				if ($initiated === true) {
-					echo "Sharing: Initiated new site settings.\n";
-				} else {
-					echo "Sharing: Error trying to initiate site settings.\n";
-				}
+			if ($initiated === true) {
+				$this->debugEcho('Sharing: Initiated new site settings.', 1,
+				'retrieveAll');
+			} else {
+				$this->debugEcho('Sharing: Error trying to initiate site settings.', 2,
+				'retrieveAll');
 			}
 		} else {
 			if ($settings['override_f'] == '1') {
-				if ($this->debug) {
-					echo ("DEBUG: nZEDb.Sharing.retrieveALL() [Fetching comments is disabled by the user.]\n");
-				}
+				$this->debugEcho('Fetching comments is disabled by the user.',
+					1, 'retrieveAll');
+
 				return $qty;
 			}
 			if ($settings["f_comments"] == '1') {
@@ -267,12 +281,11 @@ class Sharing {
 		if ($settings === false) {
 
 			$initiated = $this->initSite();
-			if ($this->echooutput) {
-				if ($initiated === true) {
-					echo "Sharing: Initiated new site settings.\n";
-				} else {
-					echo "Sharing: Error trying to initiate site settings.\n";
-				}
+			if ($initiated === true) {
+				$this->debugEcho('Initiated new site settings.', 1, 'shareAll');
+			} else {
+				$this->debugEcho('Error trying to initiate site settings.', 2 ,
+				'shareAll');
 			}
 		} else {
 			$new = false;
@@ -356,6 +369,7 @@ class Sharing {
 			'SELECT createdate AS d FROM releasecomments ORDER BY createdate DESC LIMIT 1');
 
 		if ($last === false) {
+			$this->debugEcho(''
 			if ($this->debug) {
 				echo "DEBUG: nZEDB.Sharing.pushComments() [Could not select createdate from releasecomments.]\n";
 			}
@@ -378,7 +392,7 @@ class Sharing {
 
 		if (count($res) > 0) {
 			foreach ($res as $row) {
-				$body = $this->encodeArticle($row, $settings);
+				$body = $this->encodeArticle($row, $settings, true);
 				if ($body === false) {
 					continue;
 				} else {
@@ -434,10 +448,19 @@ class Sharing {
 		}
 	}
 
-	// Create a message containing the details we want to upload.
-	protected function encodeArticle($row, $settings)
-	{
-		/* Example message:
+	/**
+	 * Create an article body containing the metadata or comment and various other info.
+	 *
+	 * @param array $row      An array containg data from MySQL to form the article.
+	 * @param array $settings The sharing table settings.
+	 * @param bool  $comment  Is this for encoding a comment or metadata?
+	 *
+	 * @return string The json encoded document.
+	 *
+	 * @access protected
+	 */
+	protected function encodeArticle($row, $settings, $comment=false) {
+		/* Example message for a comment:
 		{
 			"SITE": "nZEDb.521d7818435830.65093125",
 			"GUID": "13781e319b79b1a19fec5ef4a931b163",
@@ -454,8 +477,35 @@ class Sharing {
 		//$guid = $row['nzb_guid'];
 		$guid = '13781e319b79b1a19fec5ef4a931b163';
 
-		//$comment = $row["text"];
-		$comment = "Testing uploading comments to usenet.";
+		$type = '';
+		$body = array();
+		if ($comment) {
+			$type = 'COMMENT';
+			$body = 'Testing uploading comments to usenet.';
+			//$body = $row['text'];
+		} else {
+			$type = 'META';
+			$body = array(
+				'IMDB'   => 'tt3337194',
+				'TVRAGE' => '34726',
+				'CATID'  => '8050',
+				'SNAME'  => 'Test'
+				);
+			/*$body = array(
+				'IMDB'   => (
+					($settings['p_imdb'] == '1' && $row['imdbid'] != 'NULL')
+					? $row['imdbid'] : 'NULL'),
+				'TVRAGE' => (
+					($settings['p_tvrage'] == '1' && $row['rageid'] != 'NULL')
+					? $row['rageid'] : 'NULL'),
+				'CATID'  => (
+					($settings['p_catid'] == '1' && $row['categoryid'] != '7010')
+					? $row['categoryid'] : 'NULL'),
+				'SNAME'  => (
+					($settings['p_tvrage'] == '1' && $row['searchname') ! = '')
+					? $row['searchname'] : 'NULL')
+				);*/
+		}
 
 		/*
 		if ($this->hideuser)
@@ -470,71 +520,91 @@ class Sharing {
 		//$cshareid = sha1($comment.$guid);
 		$cshareid = "a30c7201057fb208a1653f91c05d172bbfc096f1";
 
-		return json_encode(array('SITE' => $site, 'GUID' => $guid, 'TIME' => time(), 'COMMENT' => $comment, 'CUSER' => $cuser, 'CDATE' => $cdate, 'CSHAREID' => $cshareid));
+		return json_encode(
+				array(
+					'SITE'     => $site,
+					'GUID'     => $guid,
+					'TIME'     => time(),
+					$type      => $body,
+					'CUSER'    => $cuser,
+					'CDATE'    => $cdate,
+					'CSHAREID' => $cshareid
+					));
 	}
 
 	// Decode a downloaded message and insert it.
-	protected function decodeBody($body)
-	{
+	/**
+	 *
+	 */
+	protected function decodeBody($body) {
 		$message = gzinflate($body);
-		if ($message !== false)
-		{
+		if ($message !== false) {
+
 			$m = json_decode($message, true);
-			{
-				if (!isset($m["SITE"]))
-					return false;
-				else
-				{
-					// Check if we already have the site.
-					$scheck = $db->queryOneRow(sprintf("SELECT id, status FROM sharing WHERE name = %s", $db->escapeString($m["SITE"])));
+			if (!isset($m["SITE"])) {
+				return false;
+			} else {
+				// Check if we already have the site.
+				$scheck = $db->queryOneRow(sprintf("SELECT id, status FROM
+					sharing WHERE name = %s", $db->escapeString($m["SITE"])));
 
-					if (isset($scheck["status"]))
-						$sitestatus = $scheck["status"];
+				if (isset($scheck["status"])) {
+					$sitestatus = $scheck["status"];
+				}
 
-					if ($scheck === false)
-					{
-						$db->queryExec(sprintf("INSERT INTO sharing (name, local, lastseen, firstseen, comments, status) VALUES (%s, 2, NOW(), NOW(), 1, %d)", $db->escapeString($m["SITE"]), $this->autoenable));
-						if ($this->debug)
-							echo "Inserted new site ".$m["site"];
+				if ($scheck === false) {
+					$db->queryExec(sprintf(
+						"INSERT INTO sharing (name, local, lastseen, firstseen,
+						comments, status) VALUES (%s, 2, NOW(), NOW(), 1, %d)",
+						$db->escapeString($m["SITE"]), $this->autoenable));
 
-						$sitestatus = $this->autoenable;
-					}
+					$this->debugEcho('Inserted new site ' . $m['site'], 1,
+					'decodeBody');
 
-					// Only insert the comment if the site is enabled.
-					if ($sitestatus == 1)
-					{
-						// Check if we already have the comment.
-						$check = $db->queryOneRow(sprintf("SELECT id FROM releasecomment WHERE shareid = %s", $m["CSHAREID"]));
-						if ($check === false)
-						{
-							$i = $db->queryExec(sprintf("INSERT INTO releasecomment (text, username, createdate, shareid, nzb_guid, site) VALUES (%s, %s, %s, %s, %s, %s)", $db->escapeString($m["COMMENT"]), $db->escapeString($m["CUSER"]), $db->from_unixtime($m["CDATE"]), $db->escapeString($m["CSHAREID"]), $message["GUID"], $db->escapeString($m["SITE"])));
-							if ($i === false)
-								return false;
-							else
-							{
-								// Update the site.
-								$db->queryExec(sprintf("UPDATE sharing SET lastseen = NOW(), comments = comments + 1 WHERE site = %s", $db->escapeString($m['SITE'])));
-								return true;
-							}
-						}
-						else
-						{
-							if ($this->debug)
-								echo "We already have the comment with shareid ".$message["CSHAREID"];
+					$sitestatus = $this->autoenable;
+				}
+
+				// Only insert the comment if the site is enabled.
+				if ($sitestatus == 1) {
+
+					// Check if we already have the comment.
+					$check = $db->queryOneRow(sprintf("SELECT id FROM releasecomment
+					WHERE shareid = %s", $m["CSHAREID"]));
+					if ($check === false) {
+						$i = $db->queryExec(sprintf("INSERT INTO releasecomment
+							(text, username, createdate, shareid, nzb_guid, site)
+							VALUES (%s, %s, %s, %s, %s, %s)",
+							$db->escapeString($m["BODY"]),
+							$db->escapeString($m["CUSER"]),
+							$db->from_unixtime($m["CDATE"]),
+							$db->escapeString($m["CSHAREID"]),
+							$message["GUID"],
+							$db->escapeString($m["SITE"])));
+
+						if ($i === false) {
 							return false;
+						} else {
+							// Update the site.
+							$db->queryExec(sprintf("UPDATE sharing SET lastseen
+								= NOW(), comments = comments + 1 WHERE site = %s",
+								$db->escapeString($m['SITE'])));
+							return true;
 						}
-					}
-					else
-					{
-						if ($this->debug)
-							echo "We have skipped site ".$message["CSHAREID"]." because the user has disabled it in their settings.\n";
+					} else {
+						$this->debugEcho('We already have the comment with shareid '
+							. $message['CSHAREID'], 1, 'decodeBody');
 						return false;
 					}
+				} else {
+					$this->debugEcho('We have skipped site  ' . $message['CSHAREID']
+						. 'because the user has disabled it in their settings.', 1,
+						'decodeBody');
+					return false;
 				}
 			}
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	// Download article headers from usenet until we find the last article. Then download the body, parse it.
@@ -670,6 +740,32 @@ class Sharing {
 				break;
 		}
 		return $ret;
+	}
+
+	/**
+	 * Echo debug output.
+	 *
+	 * @param string $string   The text to output.
+	 * @param int    $priority The priority the text has.
+	 * @param string $function The name of the function.
+	 *
+	 * @return void
+	 *
+	 * @access protected
+	 */
+	protected function debugEcho($string, $priority, $function) {
+		if (!$this->debug || ($this->dpriority < $priority)) {
+			return;
+		} else {
+			$message = 'DEBUG: nZEDb.Sharing.' . $function . '() [' . $string . ']\n';
+			if ($this->dpriority === 3) {
+				echo $message;
+			} else if ($this->dpriority === 2 && $priority === 2) {
+				echo $message;
+			} else if ($this->dpriority === 1 && $priority === 1) {
+				echo $message;
+			}
+		}
 	}
 }
 ?>

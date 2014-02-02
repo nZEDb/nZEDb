@@ -29,7 +29,7 @@ if (isset($argv[1])) {
 	$restart = 'false';
 
 	if ($running == '1' && $argv[1] == 'true') {
-		$db->queryExec("UPDATE tmux SET value = '0' WHERE setting = 'RUNNING'');
+		$db->queryExec("UPDATE tmux SET value = '0' WHERE setting = 'RUNNING'");
 		$sleep = $delay;
 		echo $c->header("Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown");
 		$restart = 'true';
