@@ -63,7 +63,7 @@ else if (isset($argv[1]) && $argv[1] == "cinnodb")
 		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 		}
 	}
-	$sql = 'SHOW table status WHERE Name = "releasenfo" AND Row_format != "Dynamic"';
+	$sql = 'SHOW table status WHERE Name = "releasenfo" AND (Engine != "InnoDB" || Row_format != "Dynamic")';
 	$tables = $db->query($sql);
 	foreach($tables as $row)
 	{

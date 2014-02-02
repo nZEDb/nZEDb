@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+
+2014-02-02 -> jonnyboy -> fixed bug in convert_mysql_tables.php not converting releasenfo to dynamic innodb when using cinnodb
 2014-02-01 -> jonnyboy -> fixed bug in nntpproxy.php, added option to run python binaries_threaded.py alt.binaries.teevee
                           added dereferrer to movies list
                           updated renaming scripts to reset id's when seachname is set
