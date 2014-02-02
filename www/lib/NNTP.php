@@ -118,9 +118,9 @@ class NNTP extends Net_NNTP_Client {
 		$enc = $ret = $ret2 = $connected = $SSL_ENABLED = false;
 
 		if (!$alternate) {
-			$SSL_ENABLED = (defined('NNTP_SSLENABLED') && NNTP_SSLENABLED ? true : false);
+			$SSL_ENABLED = ((defined('NNTP_SSLENABLED') && NNTP_SSLENABLED) ? true : false);
 		} else {
-			$SSL_ENABLED = (defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A ? true : false);
+			$SSL_ENABLED = ((defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A) ? true : false);
 		}
 
 		if ($SSL_ENABLED) {
@@ -140,14 +140,14 @@ class NNTP extends Net_NNTP_Client {
 			}
 
 			if (PEAR::isError($ret) && $retries === 0) {
-				echo $this->c->error('Cannot connect to server ' 
+				echo $this->c->error('Cannot connect to server '
 				. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
 				. (!$enc ? ' (nonssl) ' : '(ssl) ') . ': ' . $ret->getMessage());
 			} else {
 				$connected = true;
 			}
 
-			if ($connected === true && $authent === false 
+			if ($connected === true && $authent === false
 			&& (!$alternate ? defined('NNTP_USERNAME') : defined('NNTP_USERNAME_A'))) {
 				if ((!$alternate ? NNTP_USERNAME == '' : NNTP_USERNAME_A == '')) {
 					$authent = true;
@@ -159,8 +159,8 @@ class NNTP extends Net_NNTP_Client {
 					}
 					if (PEAR::isError($ret2) && $retries === 0) {
 						echo $this->c->error('Cannot authenticate to server '
-						. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A) 
-						. (!$enc ? ' (nonssl) ' : ' (ssl) ') . ' - ' 
+						. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
+						. (!$enc ? ' (nonssl) ' : ' (ssl) ') . ' - '
 						. (!$alternate ? NNTP_USERNAME : NNTP_USERNAME_A)
 						. ' (' . $ret2->getMessage() . ')');
 					} else {
@@ -189,9 +189,6 @@ class NNTP extends Net_NNTP_Client {
 	 * @return boolean Did we sucesfully connect to the usenet?
 	 *
 	 * @access public
-	 *
-	 * @TODO: Modify function doConnect to have a 2nd function argument to
-	 *     re-use code.
 	 */
 	public function doConnect_A($compression=true) {
 		return $this->doConnect($compression, true);
@@ -310,7 +307,7 @@ class NNTP extends Net_NNTP_Client {
 	 */
 	public function getArticles($groupname, $msgIds) {
 		$body = '';
-/*		if ($this->articlegroup != $groupname) {
+/*      if ($this->articlegroup != $groupname) {
 			$this->articlegroup = $groupname;
 			$summary = $this->selectGroup($groupname);
 			if (PEAR::isError($summary)) {
@@ -484,12 +481,16 @@ class NNTP extends Net_NNTP_Client {
 	/**
 	 * Decoce a string of text encoded with yEnc.
 	 *
+	 * @note For usage outside of this class, please use the yenc library.
+	 *
 	 * @param string $yencodedvar The encoded text to decode.
 	 *
 	 * @return boolean If we have failed to decode the text.
 	 * @return string  The decoded result.
 	 *
 	 * @access protected
+	 *
+	 * @TODO: ? Maybe this function should be merged into the yenc class?
 	 */
 	protected function _decodeYenc($yencodedvar) {
 		$input = array();

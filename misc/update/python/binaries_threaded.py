@@ -37,7 +37,10 @@ start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 #get active groups
-cur.execute("SELECT name FROM groups WHERE active = 1")
+if len(sys.argv) == 2:
+	cur.execute("SELECT name FROM groups WHERE name = '" + sys.argv[1] + "'")
+else:
+	cur.execute("SELECT name FROM groups WHERE active = 1")
 datas = cur.fetchall()
 if len(datas) == 0:
 	print(bcolors.ERROR + "No Active Groups" + bcolors.ENDC)
