@@ -446,7 +446,17 @@ class Sharing {
 		}
 	}
 
-	// Create a message containing the details we want to upload.
+	/**
+	 * Create an article body containing the metadata or comment and various other info.
+	 *
+	 * @param array $row      An array containg data from MySQL to form the article.
+	 * @param array $settings The sharing table settings.
+	 * @param bool  $comment  Is this for encoding a comment or metadata?
+	 *
+	 * @return string The json encoded document.
+	 *
+	 * @access protected
+	 */
 	protected function encodeArticle($row, $settings, $comment=false) {
 		/* Example message for a comment:
 		{
@@ -521,6 +531,9 @@ class Sharing {
 	}
 
 	// Decode a downloaded message and insert it.
+	/**
+	 *
+	 */
 	protected function decodeBody($body) {
 		$message = gzinflate($body);
 		if ($message !== false) {
