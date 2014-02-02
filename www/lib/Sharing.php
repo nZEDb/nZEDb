@@ -27,6 +27,55 @@ define('CUR_PATH', realpath(dirname(__FILE__)));
   */
 
  /**
+  * Sharing table columns.
+  *
+  * VARIOUS
+  * ID           = The ID of the site.
+  * local        = wether the site is local or not (1 for local 2 for not)
+  *
+  * LOCAL
+  * lastpushtime = last time we posted metadata
+  * firstuptime  = How far back should we upload metadata/comments the first time?
+  * oldestlocal  = Oldest metadata we have locally posted.
+  * newestlocal  = Newest metadata we have locally posted.
+  * autoenable   = Should we auto enable new sites?
+  * hideuser     = Should we hide usernames when posting comments to usenet?
+  * override_p   = Turn off all posting.
+  * override_f   = Turn off all downloading.
+  *
+  * NON LOCAL :
+  * updatetime   = last time a site was updated
+  * backfill     = our current backfill target
+  * status       = wether the non local site is enabled or not
+  * lastseen     = last time we have seen the non local site
+  * firstseen    = the first time we have seen the non local site
+  * lasthash     = the hash of the last article -> contained in the subject
+  * lastarticle  = our newest fetched article #
+  * lastdate     = the unixtime of the last article -> contained in the subject
+  * firsthash    = the hash of the oldest article
+  * firstarticle = our oldest fetched article #
+  * firstdate    = the unixtime of the first article
+  * real_name    = The name of the site, as sent by the site.
+  * local_name   = The name of the site (a local name).
+  * notes        = We can add notes on this site.
+  *
+  * COMMENTS :
+  * comments     = how many comments the non local site has
+  * f_comments   = 1 = enable fetching comments (change this to a site setting ?) 0 disabled
+  * p_comments   = post comments (also change this to a site setting?)
+  *
+  * METADATA :
+  * f_sname      = Should we download this sites searchnames?
+  * p_sname      = Should we upload our searchnames?
+  * f_cat_id     = Should we download categoryID's from this site?
+  * p_cat_id     = Should we upload our categoryID's?
+  * f_imdb       = Should we download IMDB id's from this site?
+  * p_imdb       = Should we upload our IMDB id's?
+  * f_tvrage     = Should we download tvrage id's from this site?
+  * p_tvrage     = Should we upload our tvrage id's?
+  */
+
+ /**
   * Class for sharing various atributes of a release to other nZEDb sites.
   *
   * @access public
@@ -108,7 +157,8 @@ class Sharing {
 		$this->db = new DB();
 		$this->s = new Sites();
 		$this->site = $this->s->get();
-		$this->debug = ($this->site->debuginfo == "0") ? false : true;
+		$this->debug =
+			($this->site->debuginfo == "0" && $echooutput) ? false : true;
 		$this->echooutput = $echooutput;
 
 		// Will be a site setting.. hides username when posting
@@ -118,62 +168,22 @@ class Sharing {
 	}
 
 	/**
-	 * Initiate site settings for a first time run.
+	 * Initiate local site settings for a first time run (or if the user
+	 * resets his DB).
 	 *
 	 * @return bool If we were succesfull.
 	 *
 	 * @access protected
 	 */
 	protected function initSite() {
-		/* VARIOUS
-		 * ID           = The ID of the site.
-		 * local        = wether the site is local or not (1 for local 2 for not)
-		 *
-		 * LOCAL
-		 * lastpushtime = last time we posted metadata
-		 * firstuptime  = How far back should we upload metadata/comments the first time?
-		 * oldestlocal  = Oldest metadata we have locally posted.
-		 * newestlocal  = Newest metadata we have locally posted.
-		 *
-		 * NON LOCAL :
-		 * updatetime   = last time a site was updated
-		 * backfill     = our current backfill target
-		 * status       = wether the non local site is enabled or not
-		 * lastseen     = last time we have seen the non local site
-		 * firstseen    = the first time we have seen the non local site
-		 * lasthash     = the hash of the last article -> contained in the subject
-		 * lastarticle  = our newest fetched article #
-		 * lastdate     = the unixtime of the last article -> contained in the subject
-		 * firsthash    = the hash of the oldest article
-		 * firstarticle = our oldest fetched article #
-		 * firstdate    = the unixtime of the first article
-		 * real_name    = The name of the site, as sent by the site.
-		 * local_name   = The name of the site (a local name).
-		 * notes        = We can add notes on this site.
-		 *
-		 * COMMENTS :
-		 * comments     = how many comments the non local site has
-		 * f_comment    = 1 = enable fetching comments (change this to a site setting ?) 0 disabled
-		 * p_comments   = post comments (also change this to a site setting?)
-		 *
-		 * METADATA (for a guid) :
-		 * f_sname      = Should we download this sites searchnames?
-		 * p_sname      = Should we upload our searchnames?
-		 * f_cat_id     = Should we download categoryID's from this site?
-		 * p_cat_id     = Should we upload our categoryID's?
-		 * f_imdb       = Should we download IMDB id's from this site?
-		 * p_imdb       = Should we upload our IMDB id's?
-		 * f_tvrage     = Should we download tvrage id's from this site?
-		 * p_tvrage     = Should we upload our tvrage id's?
-		 */
-
-		if ($this->db->queryExec(sprintf(
-			  'INSERT INTO sharing (updatetime, backfill, name, local, status, '
-			. 'lasteen, comments, firstseen, f_comments, p_comments, lastpushtime,'
-			. ' lasthash, lastarticle, lastdate, firsthash, firstarticle, firstdate)'
-			. " VALUES (NOW(), 0, %s, 1, 0, 0, NULL, NULL, NULL, NULL, NULL))",
-			  $db->escapeString(uniqid('nZEDb.', true)))) !== false) {
-
+		if ($this->db->queryExec(
+			  'INSERT INTO sharing ('
+			. 'local, lastpushtime, firstuptime, oldestlocal, newestlocal, '
+			. 'p_comments, p_sname, p_cat_id, p_imdb, p_tvrage, '
+			. 'hideuser, autoenable)'
+			. 'VALUES (1, NULL, NOW(), NULL, NULL, '
+			. '0, 0, 0, 0, 0, '
+			. '0, 0)') !== false {
 			return true;
 		} else {
 			return false;
@@ -228,7 +238,13 @@ class Sharing {
 				}
 			}
 		} else {
-			if ($settings["f_comments"] == 1) {
+			if ($settings['override_f'] == '1') {
+				if ($this->debug) {
+					echo ("DEBUG: nZEDb.Sharing.retrieveALL() [Fetching comments is disabled by the user.]\n");
+				}
+				return $qty;
+			}
+			if ($settings["f_comments"] == '1') {
 				return $this->scanForward($settings, $this->db);
 			}
 		}
@@ -257,7 +273,14 @@ class Sharing {
 				}
 			}
 		} else {
-			$qty = $this->push($settings);
+			$new = false;
+			if ($settings['lastpushtime'] == 'NULL') {
+				$new = true;
+			}
+			// Metadata
+//			$qty = $this->pushMetadata($settings, $new);
+			// Comments
+			$qty['comments'] = $this->pushComments($settings, $new);
 		}
 		return $qty;
 	}
@@ -267,12 +290,14 @@ class Sharing {
 	 * the DB to say they have been uploaded.
 	 *
 	 * @param array $settings The sharing table data.
+	 * @param bool  $new      This is the first time we push metadata.
 	 *
 	 * @return int How many articles have been uploaded?
 	 *
 	 * @access protected
 	 */
-	protected function push($settings) {
+/*
+	protected function pushMetadata($settings, $new) {
 		$ret = 0;
 
 		$last = $this->db->queryOneRow(
@@ -309,21 +334,102 @@ class Sharing {
 			return $ret;
 		}
 	}
+*/
+
+	/**
+	 * Select new comments that we should upload, upload them then update
+	 * the DB to say they have been uploaded.
+	 *
+	 * @param array $settings The sharing table data.
+	 * @param bool  $new      This is the first time we push comments.
+	 *
+	 * @return int How many comments have been uploaded?
+	 *
+	 * @access protected
+	 */
+	protected function pushComments($settings, $new) {
+		$ret = 0;
+
+		$last = $this->db->queryOneRow(
+			'SELECT createdate AS d FROM releasecomments ORDER BY createdate DESC LIMIT 1');
+
+		if ($last === false) {
+			if ($this->debug) {
+				echo "DEBUG: nZEDB.Sharing.pushComments() [Could not select createdate from releasecomments.]\n";
+			}
+			return $ret;
+		}
+
+		$res = array();
+		if (!$new && $last['d'] > $settings['lastpushtime']) {
+
+			$res = $this->db->query(sprintf(
+				  'SELECT rc.*, r.nzb_guid, FROM releasecomment rc INNER JOIN'
+				. " releases r ON r.id = rc.releaseid WHERE createdate > %s AND shared = 0"
+				, $this->db->escapeString($last['d'])));
+		} else {
+			$res = $this->db->query(sprintf(
+				  'SELECT rc.*, r.nzb_guid, FROM releasecomment rc INNER JOIN'
+				. " releases r ON r.id = rc.releaseid WHERE createdate > %s AND shared = 0"
+				, $this->db->escapeString($settings['firstuptime'])));
+		}
+
+		if (count($res) > 0) {
+			foreach ($res as $row) {
+				$body = $this->encodeArticle($row, $settings);
+				if ($body === false) {
+					continue;
+				} else {
+					if ($this->pushArticle($body, $row) === false) {
+						continue;
+					} else {
+						$ret++;
+						// Update DB to say we uploaded the comment.
+						$this->db->queryExec(sprintf(
+							'UPDATE releasecomments SET shared = 1 WHERE releaseid = %d',
+							$row['releaseid']));
+					}
+				}
+			}
+		}
+		return $ret;
+	}
 
 	// gzip then yEnc encode the body, set up the subject then attempt to upload the comment.
-	protected function pushArticle($body, $row)
-	{
+	/**
+	 * GZIP an article body, then yEnc encode it, set up a subject, finally
+	 * upload the comment.
+	 *
+	 * @param string $body The message to gzip/yEncode.
+	 * @param array  $row  The comment/release info.
+	 *
+	 * @return bool  Have we uploaded the article?
+	 *
+	 * @access protected
+	 */
+	protected function pushArticle($body, $row) {
 		$yenc = new Yenc;
 		$nntp = new NNTP();
 		$nntp->doConnect();
-		// group(s),                   subject                          ,            body                           , poster
-		$success = $nntp->post(self::group, $row['nzb_guid'].' - [1/1] "'.time().'" (1/1) yEnc', $yenc->encode(gzdeflate($body, 4), uniqid), "nZEDb");
-		$nntp->doQuit();
-		if ($success == false)
-			return false;
-		else
-			return true;
 
+		$success =
+			$nntp->post(
+				// Group(s)
+				self::group,
+				// Subject
+				$row['nzb_guid'] . ' - [1/1] "' . time() . '" (1/1) yEnc',
+				// Body
+				$yenc->encode(gzdeflate($body, 4), uniqid),
+				// Poster
+				"nZEDb");
+
+		$nntp->doQuit();
+
+		if ($success == false) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	// Create a message containing the details we want to upload.
