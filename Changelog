@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-02 -> kevin    -> Add phpdoc to NZB.php, get closer to 80 chars per line, change a function to use the site class instance object instead of creating another instance of class site.
 2014-02-02 -> jonnyboy -> fixed bug in convert_mysql_tables.php not converting releasenfo to dynamic innodb when using cinnodb
 2014-02-01 -> jonnyboy -> fixed bug in nntpproxy.php, added option to run python binaries_threaded.py alt.binaries.teevee
                           added dereferrer to movies list
