@@ -2,7 +2,6 @@
 
 class Category
 {
-
 	const CAT_GAME_NDS = 1010;
 	const CAT_GAME_PSP = 1020;
 	const CAT_GAME_WII = 1030;
@@ -269,13 +268,13 @@ class Category
 		if ($this->isTV($releasename)) {
 			return $this->tmpCat;
 		}
+		if ($this->isMusic($releasename)) {
+			return $this->tmpCat;
+		}
 		if ($this->isMovie($releasename)) {
 			return $this->tmpCat;
 		}
 		if ($this->isConsole($releasename)) {
-			return $this->tmpCat;
-		}
-		if ($this->isMusic($releasename)) {
 			return $this->tmpCat;
 		}
 		if ($this->isBook($releasename)) {
@@ -1034,6 +1033,9 @@ class Category
 			if ($this->isXxxImageset($releasename)) {
 				return true;
 			}
+			if ($this->isXxxPack($releasename)) {
+				return true;
+			}
 			if ($this->isXxxWMV($releasename)) {
 				return true;
 			}
@@ -1053,6 +1055,9 @@ class Category
 				return true;
 			}
 			if ($this->isXxxImageset($releasename)) {
+				return true;
+			}
+			if ($this->isXxxPack($releasename)) {
 				return true;
 			}
 			if ($this->isXxxWMV($releasename)) {
@@ -1110,6 +1115,15 @@ class Category
 	{
 		if (preg_match('/IMAGESET/i', $releasename)) {
 			$this->tmpCat = Category::CAT_XXX_IMAGESET;
+			return true;
+		}
+		return false;
+	}
+
+	public function isXxxPack($releasename)
+	{
+		if (preg_match('/[ \.]PACK[ \.]/i', $releasename)) {
+			$this->tmpCat = Category::CAT_XXX_PACKS;
 			return true;
 		}
 		return false;
@@ -1501,12 +1515,10 @@ class Category
 		}
 		return false;
 	}
-
 }
 
 class CategoryDanish extends Category
 {
-
 	private $tmpCat = 0;
 
 	public function determineCategory($releasename = "", $groupID)
@@ -2059,12 +2071,10 @@ class CategoryDanish extends Category
 		}
 		return false;
 	}
-
 }
 
 class CategoryFrench extends Category
 {
-
 	private $tmpCat = 0;
 
 	public function determineCategory($releasename = "", $groupID)
@@ -2614,12 +2624,10 @@ class CategoryFrench extends Category
 		}
 		return false;
 	}
-
 }
 
 class CategoryGerman extends Category
 {
-
 	private $tmpCat = 0;
 
 	public function determineCategory($releasename = "", $groupID)
@@ -3184,5 +3192,5 @@ class CategoryGerman extends Category
 		}
 		return false;
 	}
-
 }
+?>

@@ -23,7 +23,7 @@ body
     z-index: 3;
     max-width: 95%;
     min-width: 1210px;
-    margin: 10px auto 0 auto;
+    margin: 15px auto 15px auto;
     padding: 10px 0 15px;
     border-radius: 25px;
     box-shadow: 0px 0px 60px 0px rgba(0,0,0,0.9);
@@ -331,7 +331,7 @@ select#headcat option.grouping { padding-left: 5px; font-weight: bold; }
 data tables, most lists.
 */
 #browsetable, #coverstable, #forumtable { margin-top: 10px; clear: both; }
-table.data { border-collapse:collapse; }
+table.datad { border-collapse:collapse; }
 
 table.data th
 {
@@ -346,6 +346,11 @@ table.data th
     text-transform:capitalize;
 }
 
+table.nopad th
+{
+    text-align: center;
+}
+
 table.data td
 {
     white-space:normal;
@@ -354,6 +359,11 @@ table.data td
     border-color: #AAA;
     border-width: 1px;
     border-style: solid;
+}
+
+table.nopad td
+{
+    padding: 0;
 }
 
 table.data td.less

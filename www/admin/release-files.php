@@ -1,9 +1,9 @@
 <?php
 require_once './config.php';
 //require_once nZEDb_LIB . 'adminpage.php';
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'users.php';
-//require_once nZEDb_LIB . 'binaries.php';
+
+
+
 
 $page = new AdminPage;
 $users = new Users;

@@ -2,7 +2,6 @@
 
 class Backfill
 {
-
 	public function __construct($site = null)
 	{
 		if (!isset($site)) {
@@ -593,5 +592,5 @@ class Backfill
 
 		echo $this->c->set256($this->primary) . $type . ' Safe Threaded for ' . $group . " completed.\n" . $this->c->rsetColor();
 	}
-
 }
+?>

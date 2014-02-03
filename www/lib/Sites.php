@@ -2,7 +2,6 @@
 
 class Sites
 {
-
 	const REGISTER_STATUS_OPEN = 0;
 	const REGISTER_STATUS_INVITE = 1;
 	const REGISTER_STATUS_CLOSED = 2;
@@ -134,5 +133,5 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 " . $n;
 	}
-
 }
+?>

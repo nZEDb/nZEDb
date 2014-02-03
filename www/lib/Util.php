@@ -1,5 +1,4 @@
 <?php
-
 /*
  * General util functions.
  */
@@ -506,3 +505,4 @@ function release_flag($x, $t)
 		}
 	}
 }
+?>

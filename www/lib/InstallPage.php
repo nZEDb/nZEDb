@@ -1,10 +1,9 @@
 <?php
-
+/* This is a smarty/www file and should be moved to the nZEDb_WWW/pages directory? */
 require_once '../../smarty/Smarty.class.php';
 
 class InstallPage
 {
-
 	public $title = '';
 	public $content = '';
 	public $head = '';
@@ -44,5 +43,5 @@ class InstallPage
 	{
 		return isset($_GET['success']);
 	}
-
 }
+?>

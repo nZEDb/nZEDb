@@ -1,20 +1,8 @@
 <?php
-
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'TMDb.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'nfo.php';
-//require_once nZEDb_LIB . 'site.php';
 require_once nZEDb_LIB . 'Util.php';
-//require_once nZEDb_LIB . 'releaseimage.php';
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'rottentomato.php';
-//require_once nZEDb_LIB . 'trakttv.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 class Movie
 {
-
 	const SRC_BOXOFFICE = 1;
 	const SRC_INTHEATRE = 2;
 	const SRC_OPENING = 3;
@@ -289,7 +277,7 @@ class Movie
 		$ri = new ReleaseImage();
 
 		if ($this->echooutput && $this->service != '') {
-			echo "Fetching IMDB info from TMDB using IMDB ID: " . $imdbId . "\n";
+			echo $this->c->primary("Fetching IMDB info from TMDB using IMDB ID: " . $imdbId);
 		}
 
         //check themoviedb for imdb info
@@ -768,7 +756,7 @@ class Movie
 					if ($traktimdbid !== false) {
 						$imdbId = $this->domovieupdate($traktimdbid, 'Trakt', $arr['id']);
 						if ($imdbId === false) {
-							// No imdb id found, set to all zeros so we dont process again.
+							// No imdb id found, set to all zeros so we don't process again.
 							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 						} else {
 							continue;
@@ -792,7 +780,7 @@ class Movie
 											$googlelimit++;
 											$imdbId = $this->domovieupdate($buffer, 'Google2', $arr["id"]);
 											if ($imdbId === false) {
-												//no imdb id found, set to all zeros so we dont process again
+												//no imdb id found, set to all zeros so we don't process again
 												$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 											} else {
 												continue;
@@ -1172,3 +1160,4 @@ class Movie
 		);
 	}
 }
+?>

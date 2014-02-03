@@ -1,5 +1,4 @@
 <?php
-//require_once nZEDb_LIB . 'framework/db.php';
 require_once nZEDb_LIB . 'Util.php';
 
 class ReleaseImage
@@ -82,5 +81,5 @@ class ReleaseImage
 		@unlink($this->jpgSavePath.$guid.'_thumb.jpg');
 		@unlink($this->jpgSavePath.$guid.'_thumb.jpg');
 	}
-
 }
+?>

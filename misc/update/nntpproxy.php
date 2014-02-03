@@ -10,6 +10,7 @@ $tmux = $t->get();
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
 $s = new Sites();
 $site = $s->get();
+$c = new ColorCLI();
 
 $tmux_session = 'NNTPProxy';
 

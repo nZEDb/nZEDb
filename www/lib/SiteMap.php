@@ -2,7 +2,6 @@
 
 class SiteMap
 {
-
 	public $type = '';
 	public $name = '';
 	public $loc = '';
@@ -17,5 +16,5 @@ class SiteMap
 		$this->priority = $p;
 		$this->changefreq = $c;
 	}
-
 }
+?>

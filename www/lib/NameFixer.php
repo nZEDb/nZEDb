@@ -94,11 +94,13 @@ class NameFixer
 		} else if ($db->dbSystem() == "pgsql") {
 			$uc = "nfo";
 		}
+		$preid = false;
 		if ($cats === 3) {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
 				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
 			$cats = 2;
+			$preid = true;
 		} else {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
@@ -140,7 +142,7 @@ class NameFixer
 					$this->checked++;
 				} else {
 					$this->done = $this->matched = false;
-					$this->checkName($relrow, $echo, $type, $namestatus, $show);
+					$this->checkName($relrow, $echo, $type, $namestatus, $show, $preid);
 					$this->checked++;
 					if ($this->checked % 500 === 0 && $show === 1) {
 						echo $this->c->alternate(number_format($this->checked) . " NFOs processed.\n");
@@ -356,11 +358,11 @@ class NameFixer
 						} else if ($type == "Filenames, ") {
 							$status = "bitwise = ((bitwise & ~133)|133),";
 						}
-						$run = $db->queryExec(sprintf("UPDATE releases SET preid = %s, searchname = %s, bitwise = ((bitwise & ~4)|4),"
-								. " %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
+						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
+								. "anidbid = NULL, preid = %s, searchname = %s, bitwise = ((bitwise & ~4)|4), %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
 					} else {
-						$run = $db->queryExec(sprintf("UPDATE releases SET preid = %s, searchname = %s, bitwise = ((bitwise & ~1)|1), "
-								. "categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
+						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
+								. "anidbid = NULL, preid = %s, searchname = %s, bitwise = ((bitwise & ~1)|1), categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
 					}
 				}
 			}
@@ -385,9 +387,11 @@ class NameFixer
 					if ($echo == 1) {
 						$this->matched = true;
 						if ($namestatus == 1) {
-							$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, bitwise = ((bitwise & ~5)|5), dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
+							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+													. "searchname = %s, categoryid = %d, bitwise = ((bitwise & ~5)|5), dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
 						} else {
-							$db->queryExec(sprintf("UPDATE releases SET searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
+							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+													. "searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
 						}
 					}
 
@@ -829,5 +833,5 @@ class NameFixer
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
 		}
 	}
-
 }
+?>

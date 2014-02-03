@@ -109,6 +109,9 @@ REQUIREMENTS
 		sudo service apache2 restart
 		sudo nano /var/www/nZEDb/www/config.php    -> change MEMCACHE_ENABLED to true
 
+	Tmux Scripts
+		sudo apt-get install tmux time
+
 INSTALLATION
 	there is an installer in \install\ try it first by creating your website,
 	copying the application files there, and browsing to http://yournewznabserver/install.

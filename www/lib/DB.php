@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Class for handling connection to database (MySQL or PostgreSQL) using PDO.
  *
@@ -11,7 +10,6 @@
  */
 class DB extends PDO
 {
-
 	/**
 	 * @var object Instance of ColorCLI class.
 	 */
@@ -74,8 +72,8 @@ class DB extends PDO
 				if (defined('DB_PORT')) {
 					$dsn .= ';port=' . DB_PORT;
 				}
-				$dsn .= ';charset=utf8';
 			}
+			$dsn .= ';charset=utf8';
 		} else {
 			$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
 		}
@@ -83,7 +81,7 @@ class DB extends PDO
 		try {
 			$options = array(PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_LOCAL_INFILE => true);
 			if ($this->dbsystem == 'mysql') {
-				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'utf8'";
+				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			}
 
 			self::$pdo = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
@@ -262,24 +260,15 @@ class DB extends PDO
 		}
 
 		$result = $this->queryDirect($query);
+		if ($result === false) {
+			return false;
+		}
 		$rows = array();
 		foreach ($result as $row) {
 			$rows[] = $row;
 		}
 
 		return (!isset($rows)) ? false : $rows;
-	}
-
-	// Returns the first row of the query.
-	public function queryOneRow($query)
-	{
-		$rows = $this->query($query);
-
-		if (!$rows || count($rows) == 0) {
-			return false;
-		}
-
-		return ($rows) ? $rows[0] : $rows;
 	}
 
 	// Query without returning an empty array like our function query(). http://php.net/manual/en/pdo.query.php
@@ -297,6 +286,18 @@ class DB extends PDO
 			$result = false;
 		}
 		return $result;
+	}
+
+	// Returns the first row of the query.
+	public function queryOneRow($query)
+	{
+		$rows = $this->query($query);
+
+		if (!$rows || count($rows) == 0) {
+			return false;
+		}
+
+		return is_array($rows) ? $rows[0] : $rows;
 	}
 
 	/**
@@ -328,7 +329,8 @@ class DB extends PDO
 	{
 		$tablecnt = 0;
 		if ($this->dbsystem == 'mysql') {
-			$alltables = $this->query('SHOW table status WHERE Data_free > 0');
+			// only optimize if free space exceeds 5%
+			$alltables = $this->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
 			$tablecnt = count($alltables);
 			foreach ($alltables as $table) {
 				if ($admin === false) {
@@ -577,13 +579,11 @@ class DB extends PDO
 			return $result;
 		}
 	}
-
 }
 
 // Class for caching queries into RAM using memcache.
 class Mcached
 {
-
 	// Make a connection to memcached server.
 	public function Mcached()
 	{
@@ -642,5 +642,5 @@ class Mcached
 	{
 		return $this->m->get($this->key($query));
 	}
-
 }
+?>

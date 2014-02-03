@@ -1,8 +1,8 @@
 <?php
 require_once './config.php';
 //require_once nZEDb_LIB . 'adminpage.php';
-//require_once nZEDb_LIB . 'releases.php';
-//require_once nZEDb_LIB . 'category.php';
+
+
 
 $page = new AdminPage(true);
 $releases = new Releases();

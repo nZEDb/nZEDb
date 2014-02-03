@@ -2,7 +2,6 @@
 
 class Binaries
 {
-
 	const BLACKLIST_FIELD_SUBJECT = 1;
 	const BLACKLIST_FIELD_FROM = 2;
 	const BLACKLIST_FIELD_MESSAGEID = 3;
@@ -44,7 +43,7 @@ class Binaries
 		if ($this->hashcheck == 0) {
 			echo $this->c->warning("We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.");
 			if (trim(fgets(fopen('php://stdin', 'r'))) != 'yes') {
-				exit($this->c->primary("If you want to run this manually, there is a script in misc/testing/DB_scripts/ called reset_Collections.php"));
+				exit($this->c->primary("If you want to run this manually, there is a script in misc/testing/DB/ called reset_Collections.php"));
 			}
 			$relss = new Releases(true);
 			$relss->resetCollections();
@@ -371,7 +370,7 @@ class Binaries
 				}
 				$matches = '';
 				// Not a binary post most likely.. continue.
-				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*| \[S\d+E\d+\] )\((\d+)\/(\d+)\)/', $msg['Subject'], $matches)) {
+				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*| \[S\d+E\d+\]|\s*".+"\s*)\((\d+)\/(\d+)\)/', $msg['Subject'], $matches)) {
 					//if (!preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject']) && preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1') {
 					if (!preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject']) && $this->showdroppedyencparts === '1') {
 						file_put_contents(nZEDb_ROOT . "not_yenc/" . $groupArr['name'] . ".dropped.txt", $msg['Subject'] . "\n", FILE_APPEND);
@@ -412,7 +411,7 @@ class Binaries
 					$subject = utf8_encode(trim($partless));
 
 					// Used for the sha1 hash (see below).
-					$cleansubject = $this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
+					$cleansubject = utf8_encode($this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles));
 
 					/*
 					  $ncarr = $this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
@@ -907,5 +906,5 @@ class Binaries
 		$db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id));
 		$db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $id));
 	}
-
 }
+?>

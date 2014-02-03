@@ -1,15 +1,9 @@
 <?php
-
+/* This is a smarty/www file and should be moved to the nZEDb_WWW/pages directory? */
 //require_once nZEDb_LIB . 'framework/basepage.php';
-//require_once nZEDb_LIB . 'content.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'users.php';
-//require_once nZEDb_LIB . 'menu.php';
-//require_once nZEDb_LIB . 'logging.php';
 
 class Page extends BasePage
 {
-
 	function __construct()
 	{
 		parent::BasePage();
@@ -57,5 +51,5 @@ class Page extends BasePage
 
 		parent::render();
 	}
-
 }
+?>

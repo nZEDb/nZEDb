@@ -1,11 +1,7 @@
 <?php
 
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'users.php';
-
 class Menu
 {
-
 	public function get($role, $serverurl)
 	{
 		$db = new DB();
@@ -62,5 +58,5 @@ class Menu
 		$db = new DB();
 		return $db->queryExec(sprintf("UPDATE menu SET href = %s, title = %s, tooltip = %s, role = %d, ordinal = %d, menueval = %s, newwindow = %d WHERE id = %d", $db->escapeString($menu["href"]), $db->escapeString($menu["title"]), $db->escapeString($menu["tooltip"]), $menu["role"], $menu["ordinal"], $db->escapeString($menu["menueval"]), $menu["newwindow"], $menu["id"]));
 	}
-
 }
+?>

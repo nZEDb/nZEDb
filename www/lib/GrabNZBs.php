@@ -2,7 +2,6 @@
 
 class GrabNZBs
 {
-
 	function __construct()
 	{
 		$this->db = new DB();
@@ -254,5 +253,5 @@ class GrabNZBs
 			}
 		}
 	}
-
 }
+?>

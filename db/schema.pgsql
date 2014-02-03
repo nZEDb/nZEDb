@@ -844,7 +844,7 @@ CREATE TABLE "users" (
   "sabpriority" smallint DEFAULT 0 NOT NULL,
   "userseed" character varying(50) NOT NULL,
   "cp_url" character varying(255),
-  "cp_api" character varying(255),
+  "cp_api" character varying(255)
 )
 WITHOUT OIDS;
 
@@ -1301,7 +1301,7 @@ INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, descripti
 INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.warez.games', NULL, NULL, 'misc, mostly games and applications');
 INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.e-book.magazines', NULL, NULL, 'magazines, mostly english');
 INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.sounds.anime', NULL, NULL, 'music from Anime');
-
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.pictures.erotica.anime', NULL, NULL, 'Anime Manga, Adult');
 
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('search','Advanced Search','Search for releases.', 1, 10);
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('browsegroup','Groups List','Browse by Group.', 1, 25);
@@ -1324,7 +1324,7 @@ INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('forum','Forum',
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('login','Login','Login.', 0, 100);
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('register','Register','Register.', 0, 110);
 INSERT INTO menu (href, title, tooltip, role, ordinal, menueval ) VALUES ('queue','Sab Queue','View Your Sabnzbd Queue.', 1, 81, '{if $sabapikeytype!=2}-1{/if}');
-INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('newposterwall', 'New Releases', "Newest Releases Poster Wall", 1, 11);
+INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('newposterwall', 'New Releases', 'Newest Releases Poster Wall', 1, 11);
 
 
 INSERT INTO site
@@ -1459,7 +1459,8 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','170');
+	('showbacks', '0'),
+	('sqlpatch','172');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

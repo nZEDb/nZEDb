@@ -43,19 +43,19 @@ function preName($argv, $argc)
 
 	$counter = 0;
 	$c = new ColorCLI();
-	$full = $all = $preid = false;
+	$full = $all = $usepre = false;
 	$what = $where = $why = '';
 	if ($argv[1] === 'full') {
 		$full = true;
 	} else if ($argv[1] === 'all') {
 		$all = true;
 	} else if ($argv[1] === 'preid') {
-		$preid = true;
+		$usepre = true;
 	} else if (is_numeric($argv[1])) {
 		$what = ' AND adddate > NOW() - INTERVAL ' . $argv[1] . ' HOUR';
 	}
 
-	if ($preid === true) {
+	if ($usepre === true) {
 		$where = '';
 		$why = ' WHERE preid IS NULL AND (bitwise & 256) = 256';
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
@@ -93,7 +93,7 @@ function preName($argv, $argc)
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row) {
 			$groupname = $groups->getByNameByID($row['groupid']);
-			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $groupname);
+			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $groupname, $usepre);
 			$preid = "NULL";
 			$predb = $increment = false;
 			if (!is_array($cleanerName)) {
@@ -117,37 +117,17 @@ function preName($argv, $argc)
 			}
 
 			if ($cleanName != '') {
-				$cleanedBook = false;
-				$match = '';
-				if ($groupname == 'alt.binaries.e-book' || $groupname == 'alt.binaries.e-book.flood') {
-					if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanName, $match)) {
-						$rf = new ReleaseFiles();
-						$files = $rf->get($row['id']);
-						if (count($files) == 1) {
-							foreach ($files as $f) {
-								if (preg_match('/^(?P<title>.+)\.(pdf|html|epub|mobi|azw)/', $f["name"], $match)) {
-									$cleanedBook = true;
-									$cleanName = $match['title'];
-								}
-							}
-						}
-					}
-				}
 				if ($cleanName != $row['name']) {
 					if (strlen(utf8_decode($cleanName)) <= 3) {
 						//echo $row["name"] . "\n";
 					} else {
 						$determinedcat = $category->determineCategory($row["name"], $row["groupid"]);
-						if ($cleanedBook == true && $propername == true) { // reset bookinfoid so it gets re-processed
-							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, bookinfoid = NULL, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
-						} else if ($cleanedBook == true && $propername == false) { // reset bookinfoid so it gets re-processed
-							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, bookinfoid = NULL, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
-						} else if ($propername == true) {
-							//printf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d;\n", $db->escapeString($cleanName), $determinedcat, $row['id']);
-							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
-						} else if ($propername == false) {
-							//printf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d;\n", $db->escapeString($cleanName), $determinedcat, $row['id']);
-							$run = $db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+						if ($propername == true) {
+							$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+															. "bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+						} else {
+							$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,  "
+															. "bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
 						}
 
 						if ($increment === true) {
@@ -180,9 +160,12 @@ function preName($argv, $argc)
 			if ($cleanName == $row['name']) {
 				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $row['id']));
 			}
-			if ($show === 2) {
+			if ($show === 2 && $usepre === false) {
 				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
+			} else if ($show === 2 && $usepre === true) {
+				$consoletools->overWritePrimary("Renamed Releases:  [" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
 			}
+
 		}
 	}
 	echo $c->header("\n" . number_format($pre) . " renamed using preDB Match\n" . number_format($external) . " renamed using ReleaseCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
@@ -243,16 +226,18 @@ function resetSearchnames()
 	$db = new DB();
 	$c = new ColorCLI();
 	echo $c->header("Resetting blank searchnames.");
-	$bad = $db->queryDirect("UPDATE releases SET preid = NULL, searchname = name, bitwise = ((bitwise & ~5)|0) WHERE searchname = ''");
+	$bad = $db->queryDirect("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+							. "preid = NULL, searchname = name, bitwise = ((bitwise & ~5)|0) WHERE searchname = ''");
 	$tot = $bad->rowCount();
 	if ($tot > 0) {
 		echo $c->primary(number_format($tot) . " Releases had no searchname.");
 	}
 	echo $c->header("Resetting searchnames that are 15 characters or less.");
-	$run = $db->queryDirect("UPDATE releases SET preid = NULL, searchname = name, bitwise = ((bitwise & ~5)|0) WHERE LENGTH(searchname) <= 15");
+	$run = $db->queryDirect("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+							. "preid = NULL, searchname = name, bitwise = ((bitwise & ~5)|0) WHERE LENGTH(searchname) <= 15");
 	$total = $run->rowCount();
 	if ($total > 0) {
-		echo $c->primary(number_format($total) . " Releases had searchnames that were 5 characters or less.");
+		echo $c->primary(number_format($total) . " Releases had searchnames that were 15 characters or less.");
 	}
 }
 
@@ -284,18 +269,21 @@ function categorizeRelease($type, $where, $echooutput = false)
 	return $relcount;
 }
 
-function releaseCleaner($subject, $groupid, $groupname)
+function releaseCleaner($subject, $groupid, $groupname, $usepre)
 {
 	$groups = new Groups();
 	$match = '';
 
 	$groupName = $groups->getByNameByID($groupid);
 	$releaseCleaning = new ReleaseCleaning();
-	$cleanerName = $releaseCleaning->releaseCleaner($subject, $groupname);
+	$cleanerName = $releaseCleaning->releaseCleaner($subject, $groupname, $usepre);
 	if (!empty($cleanerName) && !is_array($cleanerName)) {
 		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);
 	} else if (is_array($cleanerName)) {
 		return $cleanerName;
+	}
+	if ($usepre === true) {
+		return false;
 	}
 
 	if ($groupName == "alt.binaries.classic.tv.shows") {

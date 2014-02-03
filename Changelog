@@ -6,7 +6,102 @@ Each update goes to the top of the file
 ***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-01-23 -> Draven714-> updated Username check, PHP 5.3 compatible install, SAB Url & API Key check
+
+2014-02-02 -> niel     -> Fix: Missing quote in query.
+2014-02-02 -> kevin    -> Add phpdoc to NZB.php, get closer to 80 chars per line, change a function to use the site class instance object instead of creating another instance of class site.
+                       -> Quick cleanup of the ZipFile class.
+                       -> Work more on sharing class.
+                       -> Improve debug output on sharing class.
+2014-02-02 -> jonnyboy -> fixed bug in convert_mysql_tables.php not converting releasenfo to dynamic innodb when using cinnodb
+2014-02-01 -> jonnyboy -> fixed bug in nntpproxy.php, added option to run python binaries_threaded.py alt.binaries.teevee
+                          added dereferrer to movies list
+                          updated renaming scripts to reset id's when seachname is set
+2014-02-01 -> kevin    -> Upd: Added phpdoc notes to NNTP.php, changed some functions to protected, objects to private.
+                          Upd: Combined the doConnect and doConnectA methods in NNTP.php.
+                          Upd: Encapsulate the evalution to make the expressions clearer.
+                          Upd: Mention that to decode yenc, the library is a better alternative, remove TODO on doconnect_a.
+                          Del: Removed pdo_notes.txt
+2014-02-01 -> kaibosh  -> Update hardware section of README.md
+                          Insert link to summary page produced by mymovielist
+2014-02-01 -> niel     -> Upd: Moved one file (simple_html_dom.php) to nZEDb_LIBS. There are a few others we should move too.
+                          Tidy up. Removed most commented out require_once lines.
+                          Some formatting changes for coding standard
+2014-01-30 -> bart39   -> check for requestid match before looping through group regex
+                          moved all www.town.ag regexes to generic_town and check them before looping through groups
+                          fixed duplicate case statement
+                          removed regexes that were renaming releases with requestid's
+2014-01-30 -> jonnyboy -> added remove_exact_dupes.php to remove duplicate releases that match on name, poster, group and size
+                          fixed testing/nzb-import.php to not import import exact duplicates
+                          changed Releases.php to use $db->queryDirect instead of $db->prepare/execute or $db->query
+2014-01-29 -> jonnyboy -> added pr from KRUgold
+                          updated schema for missing showbacks
+2014-01-29 -> bart39   -> added categorization for XXX Packs
+                          added regex for a.b.music for CollectionsCleaning/ReleaseCleaning
+                          removed ReleaseCleaning regex that was matching requestid releases in a.b.moovee
+                          corrected test-all-regexes to use CollectionsCleaning
+2014-01-29 -> jonnyboy -> pulled in egandts pr, partially
+                          cleaned up output in nzb-import.php, fixed a typo
+                          updated update_predb_md5.php to re-match predb to releases after removing duplicates
+                          fixed bug in Movie.php, fixed bug in nzb-import.php
+                          fixed bug in PreDb.php allowing dupes from omgwthfnzbs, you may want to run misc/testing/Dev/update_predb_md5.php to clean the dupes
+2014-01-29 -> niel     -> Upd: Merging in third party library move (from nZEDb/www/libs/... to nZEDb/libs/...).
+                          Upd: Using file to check for text files in NFO, added check for non-printable characters after text check.
+                          Upd: Oops for got to remove my debugging copy file from Nfo.
+2014-01-29 -> jonnyboy -> updated Releases.php, seems Releases->processReleasesStage7b was not running unless running tmux scripts
+                          updated DB.php, db->optimise to only optimise tables with a min of 5% free space
+2014-01-28 -> jonnyboy -> minor change to Releases->searchSQL, for ft search, at least 1 term must have +
+2014-01-28 -> niel     -> Upd: Removing trailing white-space from README.md (It makes the pre-commit hook complain when merging).
+                       -> Upd: Fixing typo in runHooks
+2014-01-28 -> jonnyboy -> removed unnecessary resolve using ss, added another pass to try to get usp count
+                          fixed bug in details view when using ft index
+                          added parameter to Releases->searchSQL to choose ft index or not.
+2014-01-28 -> niel     -> Fix: git hook script correctly detects the dev branch now.
+                       -> Upd: Partial reverting changes to tmux/monitor.php. It needs to show actual commit, not expected, i misunderstood the purpose :-(
+2014-01-28 -> jonnyboy -> updated step3.php
+                          added 'XFeature GZIP compression, by wafflehouse : http://pastebin.com/A3YypDAJ'
+2014-01-28 -> kaibosh  -> README.md rewrite
+2014-01-27 -> jonnyboy -> fixed install not adding triggers
+                          merged egandts pr, fix bad link in predb table
+2014-01-26 -> niel     -> Upd: Changing runHooks to only update version for the 'dev' branch, to reduce merge conflicts.
+                       -> Upd: Moving third party libraries from nZEDb/www/lib to nZEDb/libs.
+                          Upd: Adding check to queryDirect for failure, to avoid invalid parameter passed to foreach errors when queries go wrong.
+2014-01-26 -> bart39   -> fixed typo in Releases.php
+                          moved music checks before movie checks in determineCategoryNormal as music videos were incorrectly being categorized as movies
+2014-01-26 -> jonnyboy -> fixed api queries, but i am considering adding a ft index check for fromname
+2014-01-26 -> niel     -> Fix: Suppressing errors for I/O timeout for PreDb lookups
+                          Fix: Allow pre-commit hook to override commit number in Versions (branch numbers may be higher than dev's).
+2014-01-25 -> jonnyboy -> added this patch for those that do not have the triggers
+                          updated patchDB.php to better read the output
+                          changed Versions.php to increment the current commit + 1
+2014-01-25 -> egandt   -> added new group that conatins Adult Manga, includes Collection and Release naming for the group
+2014-01-25 -> niel     -> New: Added a git pre-commit hook file and a script to install/update it. I'll add more functionality to the hook as I can.
+                          New: Added a git/hooks/precommit entry to versions file.
+                          Fix: Changed UpdateVersions class to Versions, as it will be doing more than just updating.
+                          Upd: Changed Versions to only allow the pre-commit hook to set the commit number to the *next* value instead of current one.
+2014-01-24 -> bart39   -> changed updateBookInfo query so that it checks if the bookinfo already exists (matching asin) this prevents a lot of duplicates
+                          previous change got reverted somehow by niel's commit
+2014-01-24 -> niel     -> Fix: Changes to commit.sh and UpdateVersions.php so they work.
+                          Upd: Updated versions file manually.
+                          New: Added new script commit in base directory to help with committing changes. It uses interactive mode for adding files to the index so that only those relevant to a change can be committed.
+                               Additionally it opens the changelog for updating before performing the git commit. It relies upon a git hook (not written yet) to call the UpdateVersions class.
+                          Fix: Removed the crap at the end
+                          Fix: Added explicit adding of the Changelog to staging after the editor is closed.
+                          Fix: Typo in date of egandt's changlog entry.
+                          Fix: manually updating versions before push
+2014-01-24 -> jonnyboy -> fixed light->calendar, but can't figure the padding, if i add it, it borks the theme
+2014-01-24 -> bart39   -> fixed grabnzb's queries
+2014-01-24 -> jonnyboy -> removed _scripts from remaining files, updated paths shown in admin->index.php
+                          fixed bug in reset_truncate.php when true not echoing tables truncated
+                          added another pattern to regex for valid headers
+                          fixed UpdateVersions.php to update nZEDb.xml, fixed start.php and monitor.php to correctly get values from nZEDb.xml
+                          changed DB.php to properlly set utf-8, may be the cause of some errors
+                          set renametopre.php and rixReleaseNames.php that when using preid, it only compares to predb table
+2014-01-24 -> egandt   -> typo in mis/testind/DB/patchDB for templates_c (was template_c)
+2014-01-24 -> bart39   -> fixed some collection cleaning regexes for requestid's
+2014-01-24 -> jonnyboy -> updated convert_to_mysql.php when using innodb compressed, to set releasenfo as innodb dynamic, since the content is compressed
+2014-01-24 -> bart39   -> changed book cover view so that books are grouped by bookinfoid (similar concept to movie cover view)
+                          fixed book order by clause for author
+2014-01-24 -> Draven714-> updated Username check, PHP 5.3 compatible install, SAB Url & API Key check
 2014-01-23 -> bart39   -> fixed typos
                           added a.b.music to Category byGroup()
                           added a.b.town.cine & a.b.town.xx to ReleaseCleaning

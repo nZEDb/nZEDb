@@ -1,7 +1,4 @@
 <?php
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'site.php';
-
 /**
  * Logs/Reports stuff
  */
@@ -48,3 +45,4 @@ class Logging
 		return $db->query('SELECT MAX(time) AS time, host, COUNT(host) AS count FROM logging GROUP BY host ORDER BY count DESC LIMIT 10');
 	}
 }
+?>

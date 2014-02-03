@@ -1,5 +1,4 @@
 <?php
-
 $te = $page->smarty;
 $arPages = array();
 $arPages[] = buildURL("Home", "Home Page", "/", 'daily', '1.0');

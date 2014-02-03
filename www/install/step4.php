@@ -1,5 +1,4 @@
 <?php
-
 require_once '../lib/InstallPage.php';
 require_once '../lib/Install.php';
 

@@ -58,8 +58,18 @@ else if (isset($argv[1]) && $argv[1] == "cinnodb")
 	foreach($tables as $row)
 	{
 		$tbl = $row['name'];
+		if ($tbl !== 'releasenfo') {
 		echo($c->header("Converting $tbl"));
 		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
+		}
+	}
+	$sql = 'SHOW table status WHERE Name = "releasenfo" AND (Engine != "InnoDB" || Row_format != "Dynamic")';
+	$tables = $db->query($sql);
+	foreach($tables as $row)
+	{
+		$tbl = $row['name'];
+		echo($c->header("Converting $tbl"));
+		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
 }
 else if (isset($argv[1]) && $argv[1] == "collections")

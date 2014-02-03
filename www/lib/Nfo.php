@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Class for handling fetching/storing of NFO files.
  */
@@ -40,7 +39,7 @@ class Nfo
 		return $db->queryExec(sprintf('DELETE FROM releasenfo WHERE releaseid = %d', $relid));
 	}
 
-	// Find an IMDB ID in a NFO file.
+	// Find an IMDb ID in a NFO file.
 	public function parseImdb($str)
 	{
 		$matches = '';
@@ -52,7 +51,7 @@ class Nfo
 		return false;
 	}
 
-	// Find a TVRage ID in a NFO.
+	// Find a TvRage ID in a NFO.
 	public function parseRageId($str)
 	{
 		$matches = '';
@@ -70,32 +69,62 @@ class Nfo
 		if ($possibleNFO === false) {
 			return $r;
 		}
+
 		// Make sure it's not too big or small, size needs to be at least 12 bytes for header checking.
 		$size = strlen($possibleNFO);
 		if ($size < 100 * 1024 && $size > 12) {
 			// Ignore common file types.
-			if (preg_match('/<\?xml|;\s*Generated\s*by.*SF\w|\A\s*PAR|\.[a-z0-9]{2,7}\s*[a-z0-9]{8}|\A\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i', $possibleNFO)) {
+			if (preg_match('/(^RIFF|)<\?xml|;\s*Generated\s*by.*SF\w|\A\s*PAR|\.[a-z0-9]{2,7}\s*[a-z0-9]{8}|\A\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i', $possibleNFO)) {
 				return $r;
 			}
 
-			// Use getid3 to check if it's an image/video/rar/zip etc..
-			require_once nZEDb_LIB . 'getid3/getid3/getid3.php';
-			$getid3 = new getid3;
-			// getid3 works with files, so save to disk
-			$tmpPath = $this->tmpPath . $guid . '.nfo';
+			// file/getid3 work with files, so save to disk
+			$tmpPath = $this->tmpPath.$guid.'.nfo';
 			file_put_contents($tmpPath, $possibleNFO);
+
+			// Linux boxes have 'file' (so should Macs)
+			if (strtolower(substr(PHP_OS, 0, 3)) != 'win') {
+				exec("file -b $tmpPath", $result);
+				if (is_array($result)) {
+					if (count($result) > 1) {
+						$result = implode(',', $result[0]);
+					} else {
+						$result = $result[0];
+					}
+				}
+				$test = preg_match('#^.*(ISO-8859|UTF-(?:8|16|32) Unicode(?: \(with BOM\)|)|ASCII)(?: English| C++ Program|) text.*$#i', $result);
+				// if the result is false, something went wrong, continue with getID3 tests.
+				if ($test !== false) {
+					if ($test == 1) {
+						@unlink($tmpPath);
+						return true;
+					}
+
+					// non-printable characters should never appear in text, so rule them out.
+					$test = preg_match('#\x00|\x01|\x02|\x03|\x04|\x05|\x06|\x07|\x08|\x0B|\x0E|\x0F|\x12|\x13|\x14|\x15|\x16|\x17|\x18|\x19|\x1A|\x1B|\x1C|\x1D|\x1E|\x1F#', $possibleNFO);
+					if ($test) {
+						@unlink($tmpPath);
+						return false;
+					}
+				}
+			}
+
+			// If on Windows, or above checks couldn't  make a categorical identification,
+			// Use getid3 to check if it's an image/video/rar/zip etc..
+			require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
+			$getid3 = new getid3;
 			$check = $getid3->analyze($tmpPath);
 			unset($getid3);
 			@unlink($tmpPath);
 			unset($tmpPath);
 			if (isset($check['error'])) {
 				// Check if it's a par2.
-				require_once nZEDb_LIB . 'rarinfo/par2info.php';
+				require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 				$par2info = new Par2Info();
 				$par2info->setData($possibleNFO);
 				if ($par2info->error) {
 					// Check if it's an SFV.
-					require_once nZEDb_LIB . 'rarinfo/sfvinfo.php';
+					require_once nZEDb_LIBS . 'rarinfo/sfvinfo.php';
 					$sfv = new SfvInfo;
 					$sfv->setData($possibleNFO);
 					if ($sfv->error) {
@@ -239,5 +268,5 @@ class Nfo
 			return $ret;
 		}
 	}
-
 }
+?>
