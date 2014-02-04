@@ -7,6 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-04 -> bart39   -> regex additions
+			  only reset searchnames <=15 if name is > 15 in renametopre
 2014-02-04 -> niel     -> Upd: Removing a left over debug message
 2014-02-04 -> jonnyboy -> fixed delete_disabled_category_releases.php, removed unneeded require statements
 2014-02-02 -> niel     -> Fix: Missing quote in query.
