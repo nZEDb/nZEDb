@@ -36,7 +36,6 @@ if ($error === false) {
 		$vers->save();
 		passthru('git add ' . nZEDb_VERSIONS);
 	} else {
-		var_dump($output);
 		echo "not dev branch, skipping version updates\n";
 	}
 }
