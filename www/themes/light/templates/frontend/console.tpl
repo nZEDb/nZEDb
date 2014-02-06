@@ -108,17 +108,17 @@
 
 							<div class="movextra">
 								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
-														 title="View Nfo" class="rndbtn modal_nfo" rel="nfo">
+														 title="View Nfo" class="rndbtnsml modal_nfo" rel="nfo">
 										Nfo</a>{/if}
-								<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}"
+								<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}{$result.url}"
 								   name="amazon{$result.consoleinfoid}" title="View amazon page">Amazon</a>
-								<a class="rndbtn" target="_blank"
+								<a class="rndbtnsml" target="_blank"
 								   href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}/"
 								   name="ign{$result.consoleinfoid}" title="View ign page">IGN</a>
-								<a class="rndbtn" target="_blank"
+								<a class="rndbtnsml" target="_blank"
 								   href="{$site->dereferrer_link}http://www.gamespot.com/search/?qs={$result.title|escape:"htmlall"}/"
 								   name="gamespot{$result.consoleinfoid}" title="View gamespot page">Gamespot</a>
-								<a class="rndbtn" target="_blank"
+								<a class="rndbtnsml" target="_blank"
 								   href="{$site->dereferrer_link}http://www.metacritic.com/search/game/{$result.title|escape:"htmlall"}/results"
 								   name="metacritic{$result.consoleinfoid}" title="View metacritic page">Metacritic</a>
 							</div>
