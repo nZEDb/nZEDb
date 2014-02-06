@@ -29,7 +29,13 @@ if (! WIN && file_exists($source)) {
 	setPerms($target);
 	setPerms($source);
 
-	passthru('mv ' . $source . ' ' . $target);
+	$contents = scandir($source);
+	if (count($contents) > 2) {
+		passthru('mv ' . $source . '/* ' . $target . '/covers', $status);
+		if ($status) {
+			die("Damn, something went wrong!\n");
+		}
+	}
 }
 
 $dirs = $files = array();
