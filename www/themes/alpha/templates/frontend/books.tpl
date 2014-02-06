@@ -86,7 +86,7 @@
                         {if $result.overview != "null"}<b>Overview:</b>{$result.overview|escape:'htmlall'}<br>{/if}
                         <br>
 
-                        <div class="movextra">
+                        <div class="relextra">
                             <table class="table table-condensed table-hover data">
                                 {assign var="msplits" value=","|explode:$result.grp_release_id}
                                 {assign var="mguid" value=","|explode:$result.grp_release_guid}
@@ -113,9 +113,9 @@
                                             <div class="container">
                                                 <div class="pull-left"><i class="icon-calendar"></i>
                                                     Posted {$mpostdate[$m@index]|timeago} | <i
-                                                            class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} |
-                                                    <i class="icon-file"></i> <a title="View file list"
-                                                                                 href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}
+                                                            class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} | <i
+                                                            class="icon-file"></i> <a title="View file list"
+                                                                                      href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}
                                                         files</a> | <i class="icon-comments"></i> <a
                                                             title="View comments for {$mname[$m@index]|escape:"htmlall"}"
                                                             href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]}
@@ -141,8 +141,7 @@
                                                                 href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg"
                                                                 name="name{$mguid[$m@index]}"
                                                                 title="Screenshot of {$mname[$m@index]|escape:"htmlall"}"
-                                                                class="modal_prev" rel="preview">Preview</a>
-                                                        </span> {/if}
+                                                                class="modal_prev" rel="preview">Preview</a></span> {/if}
                                                     {if $minnerfiles[$m@index] > 0}<span class="label label-default"><a
                                                                 href="#" onclick="return false;" class="mediainfo"
                                                                 title="{$mguid[$m@index]}">Media</a></span> {/if}
@@ -178,8 +177,6 @@
             {/foreach}
             </tbody>
         </table>
-
-
         {if $results|@count > 10}
             <div class="nzb_multi_operations">
                 {include file='multi-operations.tpl'}

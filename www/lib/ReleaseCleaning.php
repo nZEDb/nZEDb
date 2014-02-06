@@ -2062,7 +2062,7 @@ class ReleaseCleaning
 		else if (preg_match('/\( (.+?) \)[-_ ]{0,3}( |\().+\)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match))
 			return $match[1];
 		//Metallica - Ride The Lightning    "01 - Fight Fire With Fire.mp3" yEnc
-		else if (preg_match('/^(.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/', $this->subject, $match))
+		else if (preg_match('/^(.+?)[-_ ]{0,3}("|#34;)(.+?)' . $this->e1, $this->subject, $match))
 			return $match[3];
 		else
 			return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
