@@ -7,6 +7,18 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-05 -> bart39   -> removed un-needed dereferer link
+			  fixed console, books and movie templates in alpha theme
+			  fixed a.b.mp3 regex in ReleaseCleaning
+2014-02-05 -> jonnyboy -> fixed bug in backfill->daytopost where new groups were not starting when using 'Days'
+                          changed buttons in light theme console and music
+2014-02-04 -> bart39   -> regex additions
+                          only reset searchnames <=15 if name is > 15 in renametopre
+                          group console release in cover view (like movies)
+                          fixed book/movie cover view typos
+                          fixed duplicate consoleinfo records, you may want to run misc/testing/DB/reset_postprocessing.php consoles true truncate to reprocess
+2014-02-04 -> jonnyboy -> fixed tvrage edit
+2014-02-04 -> niel     -> Upd: Removing a left over debug message
 2014-02-04 -> jonnyboy -> fixed delete_disabled_category_releases.php, removed unneeded require statements
 2014-02-02 -> niel     -> Fix: Missing quote in query.
 2014-02-02 -> kevin    -> Add phpdoc to NZB.php, get closer to 80 chars per line, change a function to use the site class instance object instead of creating another instance of class site.
