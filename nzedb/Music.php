@@ -625,32 +625,3 @@ class Music
 }
 
 ?>
-'37':
-case '625092011':
-$str = 'Pop';
-break;
-case '39':
-case '625105011':
-$str = 'R&B';
-break;
-case '38':
-case '625117011':
-$str = 'Rap & Hip-Hop';
-break;
-case '40':
-case '625129011':
-$str = 'Rock';
-break;
-case '42':
-case '625144011':
-$str = 'Soundtracks';
-break;
-case '35':
-case '625061011':
-$str = 'Miscellaneous';
-break;
-}
-return ($str != '') ? $str : false;
-}
-}
-?>
