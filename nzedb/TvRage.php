@@ -129,7 +129,7 @@ class TvRage
 				$this->db->queryExec(sprintf('UPDATE tvrage SET releasetitle = %s, description = %s, genre = %s, country = %s, createddate = NOW() WHERE rageid = %d', $this->db->escapeString($releasename), $this->db->escapeString(substr($desc, 0, 10000)), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country), $rageid));
 			}
 			if ($imgbytes != '') {
-				$path = nZEDb_WWW . 'covers/tvrage/' . $id . '.jpg';
+				$path = nZEDb_COVERS . 'tvrage/' . $id . '.jpg';
 				if (file_exists($path)) {
 					unlink($path);
 				}
@@ -154,7 +154,7 @@ class TvRage
 		} else {
 			$this->db->queryExec(sprintf('UPDATE tvrage SET rageid = %d, releasetitle = %s, description = %s, genre = %s, country = %s WHERE id = %d', $rageid, $this->db->escapeString($releasename), $this->db->escapeString(substr($desc, 0, 10000)), $this->db->escapeString($genre), $this->db->escapeString($country), $id));
 			if ($imgbytes != '') {
-				$path = nZEDb_WWW . 'covers/tvrage/' . $id . '.jpg';
+				$path = nZEDb_COVERS . 'tvrage/' . $id . '.jpg';
 				if (file_exists($path)) {
 					unlink($path);
 				}

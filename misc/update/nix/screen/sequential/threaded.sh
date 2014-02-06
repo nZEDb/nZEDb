@@ -31,10 +31,10 @@ export PHP="nice -n$niceness $PHP"
 export PYTHON="nice -n$niceness $PYTHON"
 
 #delete stale tmpunrar folders
-export count=`find $NZEDB_PATH/../../nzbfiles/tmpunrar -type d -print| wc -l`
+export count=`find $NZEDB_ROOT/resources/tmp/unrar -type d -print| wc -l`
 if [ $count != 1 ]
 then
-	rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
+	rm -r $NZEDB_ROOT/resources/tmp/unrar/*
 fi
 if [[ $1 != "true" ]]
 then
