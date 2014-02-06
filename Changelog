@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-05 -> bart39   -> fixed console, books and movie templates in alpha theme
+2014-02-05 -> bart39   -> removed un-needed dereferer link
+			  fixed console, books and movie templates in alpha theme
 			  fixed a.b.mp3 regex in ReleaseCleaning
 2014-02-05 -> jonnyboy -> fixed bug in backfill->daytopost where new groups were not starting when using 'Days'
                           changed buttons in light theme console and music
