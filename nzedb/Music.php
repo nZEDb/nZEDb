@@ -170,13 +170,13 @@ class Music
 			. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
 			. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
 			. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
-			. "mus.*, r.musicinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
+			. "m.*, r.musicinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
 			. "LEFT OUTER JOIN groups ON groups.id = r.groupid "
 			. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
-			. "INNER JOIN musicinfo mus ON mus.id = r.musicinfoid "
-			. "WHERE (r.bitwise & 256) = 256 AND mus.cover = 1 AND mus.title != '' AND "
+			. "INNER JOIN musicinfo m ON m.id = r.musicinfoid "
+			. "WHERE (r.bitwise & 256) = 256 AND m.cover = 1 AND m.title != '' AND "
 			. "r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s "
-			. "GROUP BY mus.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
+			. "GROUP BY m.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
 	}
 
 	public function getMusicOrder($orderby)
@@ -315,7 +315,10 @@ class Music
 
 		$mus['artist'] = (string)$amaz->Items->Item->ItemAttributes->Artist;
 		if (empty($mus['artist'])) {
-			$mus['artist'] = "";
+			$mus['artist'] = (string)$amaz->Items->Item->ItemAttributes->Creator;
+			if (empty($mus['artist'])) {
+				$mus['artist'] = "";
+			}
 		}
 
 		$mus['publisher'] = (string)$amaz->Items->Item->ItemAttributes->Publisher;
