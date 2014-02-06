@@ -77,7 +77,7 @@
                                      src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
                                      width="120" border="0" alt="{$result.title|escape:"htmlall"}"></a>
 
-                            <div class="relextra" style="margin-top:5px;">
+                            <div class="movextra" style="margin-top:5px;">
                                 {if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
                                                          title="View Nfo" class="label modal_nfo" rel="nfo">
                                         Nfo</a> {/if}
@@ -112,7 +112,7 @@
                             {/if}
                         </div>
                         <hr>
-                        <div class="movextra">
+                        <div class="relextra">
                             <table class="table table-condensed table-hover data">
                                 {assign var="msplits" value=","|explode:$result.grp_release_id}
                                 {assign var="mguid" value=","|explode:$result.grp_release_guid}
@@ -140,8 +140,9 @@
                                                 <div class="pull-left"><i class="icon-calendar"></i>
                                                     Posted {$mpostdate[$m@index]|timeago} | <i
                                                             class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} |
-                                                    <i class="icon-file"></i> <a title="View file list"
-                                                                                 href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}
+                                                    <i
+                                                            class="icon-file"></i> <a title="View file list"
+                                                                                      href="{$smarty.const.WWW_TOP}/filelist/{$mguid[$m@index]}">{$mtotalparts[$m@index]}
                                                         files</a> | <i class="icon-comments"></i> <a
                                                             title="View comments for {$mname[$m@index]|escape:"htmlall"}"
                                                             href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}#comments">{$mcomments[$m@index]}
@@ -204,7 +205,6 @@
             {/foreach}
             </tbody>
         </table>
-
         {if $results|@count > 10}
             <div class="nzb_multi_operations">
                 {include file='multi-operations.tpl'}
