@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Cleans names for releases/imports/namefixer.
  * Names of group functions should match between CollectionsCleaning and this file
@@ -23,7 +24,6 @@ class ReleaseCleaning
 		$db = new DB();
 		$groups = new Groups();
 		$this->subject = $subject;
-
 		// Get pre style name from releases.name
 		if (preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $this->subject, $matches)) {
 			foreach ($matches as $match) {
@@ -38,7 +38,6 @@ class ReleaseCleaning
 				}
 			}
 		}
-
 		// Get pre style name from requestid
 		if (preg_match('/^\[(\d+)\]/', $this->subject, $match) || preg_match('/^\[ (\d+) \]/', $this->subject, $match)) {
 			$groupID = $groups->getIDByName($groupName);
@@ -50,16 +49,13 @@ class ReleaseCleaning
 				}
 			}
 		}
-
 		if ($usepre === true) {
 			return false;
 		}
-
 		//if www.town.ag releases check against generic_town regexes
-		if (preg_match('/www\.town\.ag/i', $this->subject, $match)) {
+		if (preg_match('/www\.town\.ag/i', $this->subject)) {
 			return $this->generic_town();
 		}
-
 		switch ($groupName) {
 			case 'alt.binaries.0day.stuffz':
 				return $this->_0daystuffz();
@@ -761,17 +757,8 @@ class ReleaseCleaning
 
 	public function cd_image()
 	{
-		//[27930]-[FULL]-[altbinEFNet]-[ Ubersoldier.UNCUT.PATCH-RELOADED ]-[3/5] "rld-usuc.par2" yEnc
-		//[27607]-[#altbin@EFNet]-[Full]-[ Cars.Radiator.Springs.Adventure.READNFO-CRIME ] - [02/49] - "crm-crsa.par2" yEnc
-		//[27774]-[FULL]-[altbinEFNet]-[ DVD4 ]-[01/61] "unl-totwar.sfv" yEnc
-		if (preg_match('/^\[\d+\]-\[.+?\]-\[.+?\]-\[ (.+?) \] ?- ?\[\d+\/\d+\] (- )?"(.+?)' . $this->e1, $this->subject, $match)) {
-			if (strlen($match[1]) > 7) {
-				return $match[1];
-			} else {
-				return $match[3];
-			}
-		} //[www.drlecter.tk]-[The_Night_of_the_Rabbit-FLT]-[01/67] "Dr.Lecter.nfo" - 5.61 GB - yEnc
-		else if (preg_match('/^\[www\..+?\]-\[(.+?)\]-\[\d+\/\d+\] ".+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
+		//[www.drlecter.tk]-[The_Night_of_the_Rabbit-FLT]-[01/67] "Dr.Lecter.nfo" - 5.61 GB - yEnc
+		if (preg_match('/^\[www\..+?\]-\[(.+?)\]-\[\d+\/\d+\] ".+?" - \d+[,.]\d+ [mMkKgG][bB] - yEnc$/', $this->subject, $match))
 			return $match[1];
 		//Slender.The.Arrival-WaLMaRT.PC - [01/26] - "wmt-stal.nfo" - yEnc
 		//The.Night.of.the.Rabbit-FLT - [03/66] - "flt-notr.r00" - FAiRLIGHT - 5,10 GB - yEnc
@@ -793,6 +780,9 @@ class ReleaseCleaning
 		//Trine.2.Complete.Story-SKIDROW - "sr-trine2completestory.nfo" - [01/78] - yEnc
 		else if (preg_match('/^(\[[A-Z ]+\] - )?([a-zA-Z0-9.-]{10,}) - ".+?" - \[\d+\/\d+\] - yEnc$/', $this->subject, $match))
 			return $match[2];
+		//Uploader.Presents-Metal.Gear.Rising.Revengeance-RELOADED(51/65]"rld-megerire.r48" yEnc
+		else if (preg_match('/^Uploader\.Presents-(.+)[\(\[]\d+\/\d+\]".+" yEnc$/', $this->subject, $match))
+			return $match[1];
 		else
 			return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
 	}
@@ -1524,6 +1514,12 @@ class ReleaseCleaning
 		//[16/62]  (CastleStorm.XBLA.XBOX360-MoNGoLS) - "mgl-cast.part15.rar" yEnc
 		else if (preg_match('/^\[\d+\/(\d+\])  \(([a-zA-Z0-9 -_\.]+)\) - ".+?' . $this->e1, $this->subject, $match))
 			return $match[2];
+		//GOGDump Wing Commander - Privateer (1993) [GOG] [03/14] - "Wing Commander - Privateer (1993) [GOG].part2.rar" yEnc
+		else if (preg_match('/^GOGDump (.+) \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match))
+			return $match[1];
+		//Uploader.Presents-Metal.Gear.Rising.Revengeance-RELOADED(51/65]"rld-megerire.r48" yEnc
+		else if (preg_match('/^Uploader\.Presents-(.+)[\(\[]\d+\/\d+\]".+" yEnc$/', $this->subject, $match))
+			return $match[1];
 		else
 			return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
 	}
@@ -2066,7 +2062,7 @@ class ReleaseCleaning
 		else if (preg_match('/\( (.+?) \)[-_ ]{0,3}( |\().+\)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}".+(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match))
 			return $match[1];
 		//Metallica - Ride The Lightning    "01 - Fight Fire With Fire.mp3" yEnc
-		else if (preg_match('/^(.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/', $this->subject, $match))
+		else if (preg_match('/^(.+?)[-_ ]{0,3}("|#34;)(.+?)' . $this->e1, $this->subject, $match))
 			return $match[3];
 		else
 			return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
@@ -3096,4 +3092,5 @@ class ReleaseCleaning
 		return $cleanerName;
 	}
 }
+
 ?>

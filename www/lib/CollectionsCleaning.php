@@ -1,7 +1,9 @@
 <?php
+
 /*
  * Cleans names for collections/imports/namefixer.
  */
+
 class CollectionsCleaning
 {
 	function __construct()
@@ -805,6 +807,9 @@ class CollectionsCleaning
 		//Trine.2.Complete.Story-SKIDROW - "sr-trine2completestory.nfo" - [01/78] - yEnc
 		else if (preg_match('/^((\[[A-Z ]+\] - )?[a-zA-Z0-9.-]{10,} - ").+?" - \[\d+\/\d+\] - yEnc$/', $this->subject, $match))
 			return $match[1];
+		//Uploader.Presents-Need.For.Speed.Rivals.XBOX360-PROTOCOL[10/94]"nfs.r-ptc.r07" yEnc
+		if (preg_match('/^(Uploader.Presents)[- ](.+?)[\(\[]\d+\/\d+\]".+?" yEnc$/', $this->subject, $match))
+			return $match[1] . $match[2];
 		else
 			return $this->generic();
 	}
@@ -957,7 +962,7 @@ class CollectionsCleaning
 		else if (preg_match('/^>+GOU<+ (.+?) >+www\..+?<+ - \(\d+\/\d+\) - ".+?" yEnc$/', $this->subject, $match))
 			return $match[1];
 		//<<<usenet-space-cowboys.info>>> USC <<<Powered by https://secretusenet.com>>> [22/26] - "Zombie.Tycoon.2.Brainhovs.Revenge-SKIDROW.vol00+1.par2" - 1,85 GB yEnc
-		else if (preg_match('/^<<<usenet-space-cowboys\.info.+secretusenet\.com>>> \[\d+\/(\d+\] - ".+?)'.$this->e2, $this->subject, $match))
+		else if (preg_match('/^<<<usenet-space-cowboys\.info.+secretusenet\.com>>> \[\d+\/(\d+\] - ".+?)' . $this->e2, $this->subject, $match))
 			return $match[1];
 		//Jipejans post voor u op www.Dreamplace.biz - [010/568] - "Alien-Antology-DC-Special-Edition-1979-1997-1080p-GER-HUN-HighCode.part009.rar" yEnc
 		//Egbert47 post voor u op www.nzbworld.me - [01/21] - "100 Hits - Lady Sings The Blues 2006 (5cd's).par2" yEnc
@@ -997,16 +1002,14 @@ class CollectionsCleaning
 		// pictures.erotica.anime has really only header we care about in the form
 		// [ABPEA - Original] Arima Zin - Tennen Koiiro Alcohol [BB, Boy] - 005 of 229 - yEnc "Tennen_Koiiro_Alcohol-005.jpg"
 		// in this case we only need the title of the manga, not which image we are viewing or the post file name
-		if(preg_match('/(.*)\s+-\s+\d+\s+of\s+\d+\s+-\s+yEnc\s+".*"/i', $this->subject, $match))
-		{
+		if (preg_match('/(.*)\s+-\s+\d+\s+of\s+\d+\s+-\s+yEnc\s+".*"/i', $this->subject, $match)) {
 			return $match[1];
-		}
-		else {
+		} else {
 			return $this->generic();
 		}
 	}
 
-		// a.b.console.ps3
+	// a.b.console.ps3
 	public function console_ps3()
 	{
 		//[4062]-[ABGX.net] - "unlimited-skyrim.legendary.multi4.ps3.par2" - 17.10 GB - yEnc
@@ -1153,7 +1156,7 @@ class CollectionsCleaning
 			return $match[2];
 		//(Nora Roberts)"Black Rose - Nora Roberts.epub" yEnc
 		//Rowwendees post voor u op www.nzbworld.me - [0/6] - "Animaniacs - Lights, Camera, Action!.nzb" yEnc (1/1)
-		else if (preg_match('/www.nzbworld.me - \[\d+\/(\d+\] - ".+?)'.$this->e0.' yEnc/', $this->subject, $match))
+		else if (preg_match('/www.nzbworld.me - \[\d+\/(\d+\] - ".+?)' . $this->e0 . ' yEnc/', $this->subject, $match))
 			return $match[1];
 		else if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc$/', $this->subject, $match))
 			return $match[1] . $match[2];
@@ -1372,16 +1375,13 @@ class CollectionsCleaning
 
 	public function ebook_magazines()
 	{
-			// e-book.magazines has really only header we care about in the form
-			// [Top.Gear.South.Africa-February.2014] - "Top.Gear.South.Africa-February.2014.pdf.vol00+1.par2" yEnc  - 809.32 KB
-			if (preg_match('/(\[.*\])/', $this->subject, $match))
-			{
-				return $match[1];
-			}
-			else
-			{
-				return $this->generic();
-			}
+		// e-book.magazines has really only header we care about in the form
+		// [Top.Gear.South.Africa-February.2014] - "Top.Gear.South.Africa-February.2014.pdf.vol00+1.par2" yEnc  - 809.32 KB
+		if (preg_match('/(\[.*\])/', $this->subject, $match)) {
+			return $match[1];
+		} else {
+			return $this->generic();
+		}
 	}
 
 	//a.b.e-book.rpg
@@ -1544,6 +1544,12 @@ class CollectionsCleaning
 			return $match[1] . $match[2];
 		//[16/62]  (CastleStorm.XBLA.XBOX360-MoNGoLS) - "mgl-cast.part15.rar" yEnc
 		else if (preg_match('/^\[\d+\/(\d+\])  \(([a-zA-Z0-9 -_\.]+)\) - ".+?' . $this->e1, $this->subject, $match))
+			return $match[1] . $match[2];
+		//GOGDump Wing Commander - Privateer (1993) [GOG] [03/14] - "Wing Commander - Privateer (1993) [GOG].part2.rar" yEnc
+		else if (preg_match('/^GOGDump (.+) \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match))
+			return $match[1] . $match[2];
+		//Uploader.Presents-Need.For.Speed.Rivals.XBOX360-PROTOCOL[10/94]"nfs.r-ptc.r07" yEnc
+		if (preg_match('/^(Uploader.Presents)[- ](.+?)[\(\[]\d+\/\d+\]".+?" yEnc$/', $this->subject, $match))
 			return $match[1] . $match[2];
 		else
 			return $this->generic();
@@ -2105,20 +2111,20 @@ class CollectionsCleaning
 		else if (preg_match('/^.+By Dready Niek \) \[\d+\/(\d+\] - ".+?)' . $this->e1, $this->subject, $match))
 			return $match[1];
 		//(00/24]  Marco Mengoni - Prontoacorrere (2013) "Marco Mengoni - Prontoacorrere (2013).nzb" - nightsteff  yEnc
-		else if (preg_match('/^\(\d+\/(\d+\]  .+?) ".+?' . $this->e0.' - nightsteff  yEnc$/', $this->subject, $match))
+		else if (preg_match('/^\(\d+\/(\d+\]  .+?) ".+?' . $this->e0 . ' - nightsteff  yEnc$/', $this->subject, $match))
 			return $match[1];
 		//(80's Disco-Soul-Funk) [136/426] - ["Level 42 - Lessons In Love.mp3"] yEnc
-		else if (preg_match('/^\((.+)\) \[\d+\/(\d+\]) - \[".+?' . $this->e0.'\] yEnc$/', $this->subject, $match))
-			return $match[1].$match[2];
+		else if (preg_match('/^\((.+)\) \[\d+\/(\d+\]) - \[".+?' . $this->e0 . '\] yEnc$/', $this->subject, $match))
+			return $match[1] . $match[2];
 		//(Jungle Fever Tapepacks) [67/79] - "Jungle Fever Tapepacks.part65.rar" yEnc
 		else if (preg_match('/^\((.+)\) \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match))
-			return $match[1].$match[2];
+			return $match[1] . $match[2];
 		//[1/8] - "Black Market Flowers - Bind (1993).sfv" yEnc
 		else if (preg_match('/^\[\d+\/(\d+\] - ".+?)' . $this->e1, $this->subject, $match))
 			return $match[1];
 		//[DreamPieter] (Glen Tipton - Two solo albums) [04/23] - "Glenn Tipton - Baptizm of Fire - 04 - Fuel Me Up.mp3" yEnc
 		else if (preg_match('/^\[DreamPieter\] \((.+)\) \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match))
-			return $match[1].$match[2];
+			return $match[1] . $match[2];
 		else
 			return $this->generic();
 	}
@@ -2571,8 +2577,7 @@ class CollectionsCleaning
 				$newname = preg_replace('/".+?"/', '', $subject);
 				$newname = preg_replace('/[a-z0-9]|' . $this->e0 . '/i', '', $newname);
 				return $cleansubject . $newname . $x;
-			}
-			else
+			} else
 				return $cleansubject;
 		}
 	}
@@ -2587,4 +2592,5 @@ class CollectionsCleaning
 			return false;
 	}
 }
+
 ?>
