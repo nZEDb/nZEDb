@@ -445,7 +445,6 @@ class Backfill
 		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(backfill->daytopost).\n"));
 		}
-
 		// DEBUG every postdate call?!?!
 		$pddebug = false;
 		if ($debug) {
