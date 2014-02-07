@@ -1,4 +1,6 @@
 <?php
+require_once nZEDb_LIBS . 'AmazonProductAPI.php';
+
 /*
  * Class for fetching book info from amazon.com.
  */
