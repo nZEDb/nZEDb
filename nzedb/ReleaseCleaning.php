@@ -2612,6 +2612,9 @@ class ReleaseCleaning
 		//[51/62] Morrissey.25.Live.Concert.2013.BDRip.x264-N0TSC3N3 - "n0tsc3n3-morrissey.25.live.2013.bdrip.x264.rar" yEnc
 		else if (preg_match('/^\[\d+\/\d+\] (.+) - ".+" yEnc$/', $this->subject, $match))
 			return $match[1];
+		//(01/19) - Description - "How I Met Your Mother S05E24 - Doppelgangers.part01.rar" - 175,05 MB - yEnc
+		else if (preg_match('/^\(\d+\/\d+\)[ -]+Description[ -]+"(.+)\.part\d+\.rar"[ -]+\d+[.,]\d+ [kKmMgG][bB][ -]+yEnc$/', $this->subject, $match))
+			return $match[1];
 		//(23/23) -The.Mindy.Project.S02E09.720p.WEB-DL.DD5.1.H.264 - "The.Mindy.Project.S02E09.720p.WEB-DL.DD5.1.H.264.vol31+29.PAR2" - 768.86 MB - yEnc
 		else if (preg_match('/^\(\d+\/\d+\) -(.+) - ".+" - \d+[.,]\d+ [MGK]B - yEnc$/', $this->subject, $match))
 			return $match[1];
