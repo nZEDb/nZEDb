@@ -1089,11 +1089,7 @@ class Category
 
 	public function isXxxImageset($releasename)
 	{
-		if (preg_match('/IMAGESET/i', $releasename)) {
-			$this->tmpCat = Category::CAT_XXX_IMAGESET;
-			return true;
-		} else if(preg_match('/ABPEA/i', $releasename)) {
-			/* a.b.pictures.erotica image sets */
+		if (preg_match('/IMAGESET|ABPEA/i', $releasename)) {
 			$this->tmpCat = Category::CAT_XXX_IMAGESET;
 			return true;
 		}
