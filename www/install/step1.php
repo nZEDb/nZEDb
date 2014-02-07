@@ -1,6 +1,5 @@
 <?php
-require_once '../pages/InstallPage.php';
-//require_once '../../nzedb/Install.php';
+require_once '../automated.config.php';
 
 $page = new InstallPage();
 $page->title = "Preflight Checklist";
