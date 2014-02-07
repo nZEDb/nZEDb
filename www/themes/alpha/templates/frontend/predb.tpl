@@ -62,7 +62,7 @@
 						Womble's NZB Index
 					</a>
 				{elseif {$result.source} == zenet}
-					<a title="Visit ZEnet" href="{$site->dereferrer_link} http://pre.zenet.org/?search={$result.title}" target="_blank">
+					<a title="Visit ZEnet" href="{$site->dereferrer_link}http://pre.zenet.org/?search={$result.title}" target="_blank">
 						ZEnet.org
 					</a>
 				{else}

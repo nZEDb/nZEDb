@@ -1023,31 +1023,7 @@ class Category
 	//	XXX.
 	public function isXxx($releasename)
 	{
-		if (preg_match('/(XXX|Porn|PORNOLATiON|SWE6RUS|masturbation|masturebate|lesbian|cumming|ClubSeventeen|Errotica|Erotica|EroticaX|nymph|sexontv|My_Stepfather_Made_Me|slut|\bwhore\b)/i', $releasename)) {
-			if ($this->isXxx264($releasename)) {
-				return true;
-			}
-			if ($this->isXxxXvid($releasename)) {
-				return true;
-			}
-			if ($this->isXxxImageset($releasename)) {
-				return true;
-			}
-			if ($this->isXxxPack($releasename)) {
-				return true;
-			}
-			if ($this->isXxxWMV($releasename)) {
-				return true;
-			}
-			if ($this->isXxxDVD($releasename)) {
-				return true;
-			}
-			if ($this->isXxxOther($releasename)) {
-				return true;
-			}
-			$this->tmpCat = Category::CAT_XXX_OTHER;
-			return true;
-		} else if (preg_match('/a\.b\.erotica|Imageset|Lesbian|Squirt|Transsexual/i', $releasename)) {
+		if (preg_match('/(XXX|Porn|PORNOLATiON|SWE6RUS|masturbation|masturebate|lesbian|Imageset|Squirt|Transsexual|a\.b\.erotica|pictures\.erotica\.anime|cumming|ClubSeventeen|Errotica|Erotica|EroticaX|nymph|sexontv|My_Stepfather_Made_Me|slut|\bwhore\b)/i', $releasename)) {
 			if ($this->isXxx264($releasename)) {
 				return true;
 			}
@@ -1113,7 +1089,7 @@ class Category
 
 	public function isXxxImageset($releasename)
 	{
-		if (preg_match('/IMAGESET/i', $releasename)) {
+		if (preg_match('/IMAGESET|ABPEA/i', $releasename)) {
 			$this->tmpCat = Category::CAT_XXX_IMAGESET;
 			return true;
 		}

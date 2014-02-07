@@ -1,6 +1,6 @@
 <?php
-require_once '../lib/InstallPage.php';
-require_once '../lib/Install.php';
+require_once '../pages/InstallPage.php';
+require_once '../../nzedb/Install.php';
 
 $page = new InstallPage();
 $page->title = "Save Settings";

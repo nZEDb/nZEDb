@@ -78,7 +78,7 @@ class Install
 		$this->nZEDb_MISC = dirname(realpath('..')) . '/misc';
 		$this->NZB_PATH = str_replace('\\', '/', dirname(realpath('..'))) . '/nzbfiles/';
 		$this->INSTALL_DIR = $this->nZEDb_WWW . '/install';
-		$this->nZEDb_LIBS = nZEDb_LIBS;
+		$this->nZEDb_LIBS = dirname(realpath('..')) . '/libs/';
 	}
 
 	public function setSession()
