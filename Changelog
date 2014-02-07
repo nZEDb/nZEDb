@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-07 -> jonnyboy -> removed extra space
 2014-02-06 -> jonnyboy -> add regex for teevee
                           fixing spaces to tabs, merged statments
 2014-02-06 -> egandt   -> fix for Categories when dealing with anime ImageSets
