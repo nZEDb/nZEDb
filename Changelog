@@ -6,7 +6,9 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+
 2014-02-07 -> kevin    -> Sharing.php Move yenc and nntp as objects, share the connections.
+                       -> Sharing.php Create the pushMetadata function, changes to the schema, some objects added to control articles uploaded/downloaded per run.    
 2014-02-07 -> jonnyboy -> fixed links to libs in install scripts, fixed more links
                           removed extra space
 2014-02-06 -> jonnyboy -> add regex for teevee

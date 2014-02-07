@@ -19,6 +19,9 @@ require_once nZEDb_LIBS . 'Yenc.php';
   * Encryption of body.
   *
   * Limit download / upload per run.
+  * 
+  * On metadata, retard the time before downloading to leave people time to get
+  *  the releases.
   */
 
  /**
@@ -54,7 +57,7 @@ require_once nZEDb_LIBS . 'Yenc.php';
   * notes        = We can add notes on this site.
   *
   * COMMENTS :
-  * comments     = how many comments the non local site has
+  * comments     = how many comments the non local site has given us so far
   * f_comments   = 1 = enable fetching comments (change this to a site setting ?) 0 disabled
   * p_comments   = post comments (also change this to a site setting?)
   * backfill_c   = our current backfill target (article number)
@@ -73,6 +76,7 @@ require_once nZEDb_LIBS . 'Yenc.php';
   * backfill_m   = our current backfill target (article number)
   * lasthash_m   = the hash of the last article -> contained in the subject
   * firsthash_m  = the hash of the oldest article
+  * metatime   = The last time we locally uploaded, or downloaded from a remote site.
   */
 
  /**
@@ -125,6 +129,7 @@ CREATE TABLE sharing (
 	backfill_m   INT(11) UNSIGNED NOT NULL DEFAULT '0',
 	lasthash_m   VARCHAR(40) NOT NULL DEFAULT '',
 	firsthash_m  VARCHAR(40) NOT NULL DEFAULT '',
+	metatime     DATETIME DEFAULT NOW(),
 	PRIMARY KEY  (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -135,8 +140,17 @@ CREATE TABLE sharing (
 
 ALTER TABLE releasecomment ADD shared TINYINT(1) NOT NULL DEFAULT '0';
 ALTER TABLE releasecomment ADD shareid VARCHAR(40) NOT NULL DEFAULT '';
+ALTER TABLE releasecomment ADD nzb_guid VARCHAR(40) NOT NULL DEFAULT '';
+ALTER TABLE releasecomment ADD site VARCHAR(255) NOT NULL DEFAULT '';
 
  */
+
+/**
+ * Alteration to release table:
+
+ALTER TABLE releases ADD shared TINYINT(1) NOT NULL DEFAULT '0';
+
+*/
 
  /**
   * Class for sharing various atributes of a release to other nZEDb sites.
@@ -158,15 +172,29 @@ class Sharing {
 	private $dpriority = 3;
 
 	/**
-	 * The group to store/retrieve the articles.
-	 *
-	 * @note Not set in stone.
-	 *
-	 * @var constant string
+	 * Max articles to download/upload the first time.
+	 * 
+	 * @var constant int
 	 * @access public
 	 */
-	const group = 'alt.binaries.zines';
-	
+	const maxfirstime = 20000;
+
+	/**
+	 * Max comments to upload per run.
+	 * 
+	 * @var constant int
+	 * @access public
+	 */
+	const c_maxupload = 100;
+
+	/**
+	 * Max meta to upload per run.
+	 * 
+	 * @var constant int
+	 * @access public
+	 */
+	const m_maxupload = 100;
+
 	/**
 	 * How many articles to download per loop.
 	 * 
@@ -174,6 +202,26 @@ class Sharing {
 	 * @access public
 	 */
 	const looparticles = 10000;
+
+	/**
+	 * The group to store/retrieve the articles for comments.
+	 *
+	 * @note Not set in stone.
+	 *
+	 * @var constant string
+	 * @access public
+	 */
+	const c_group = 'alt.binaries.zines';
+
+	/**
+	 * The group to store/retrieve the articles for metadata.
+	 *
+	 * @note Not set in stone.
+	 *
+	 * @var constant string
+	 * @access public
+	 */
+	const m_group = 'alt.binaries.xxxxxxxxxxxxxxxx';
 
 	/**
 	 * Instance of class DB.
@@ -246,6 +294,14 @@ class Sharing {
 	 * @access private
 	 */
 	private $autoenable;
+
+	/**
+	 * How many comments/meta have we uploaded this run.
+	 * 
+	 * @var int
+	 * @access private
+	 */
+	private $uploaded;
 
 	/**
 	 * Default constructor.
@@ -382,7 +438,7 @@ $this->debug = true;
 				$new = true;
 			}
 			// Metadata
-//			$qty = $this->pushMetadata($settings, $new);
+			$qty = $this->pushMetadata($settings, $new);
 			// Comments
 			$qty['comments'] = $this->pushComments($settings, $new);
 		}
@@ -400,45 +456,38 @@ $this->debug = true;
 	 *
 	 * @access protected
 	 */
-/*
 	protected function pushMetadata($settings, $new) {
 		$ret = 0;
 
-		$last = $this->db->queryOneRow(
-			"SELECT createddate AS d FROM releasecomment ORDER BY createddate LIMIT 1");
+		// If it's the first time we push, only push x amount of meta.
+		$new ? $max = self::maxfirstime : $max = self::m_maxupload;
 
-		if ($last === false) {
-			return $ret;
-		} else {
-			if ($this->db->unix_timestamp($last["d"]) > $settings["lastpushtime"]) {
+		// Select the metadata to upload.
+		$res = $this->db->query(sprintf("SELECT id, nzb_guid, rageid, imdbid,
+			categoryid, searchname FROM releases WHERE shared = 0
+			ORDER BY adddate desc LIMIT %d", $max));
 
-				$res = $this->db->query(sprintf(
-					  "SELECT rc.*, r.nzb_guid, FROM releasecomment rc INNER JOIN"
-					. " releases r ON r.id = rc.releaseid WHERE createddate > %s AND shared = 0"
-					, $this->db->escapeString($last["d"])));
-
-				if (count($res) > 0) {
-					foreach ($res as $row) {
-						$article = $this->encodeArticle($row, $settings);
-						if ($article === false) {
-							continue;
-						} else {
-							$stat = $this->pushArticle($body, $row);
-							if ($stat === false) {
-								continue;
-							} else {
-								$ret++;
-								// Update DB to say we uploaded the comment.
-								$this->db->queryExec("UPDATE releasecomment SET shared = 1");
-							}
-						}
+		// Loop the releases, upload their meta.
+		if (count($res) > 0) {
+			$this->nntp->doConnect();
+			foreach ($res as $row) {
+				$body = $this->encodeArticle($row, $settings);
+				if ($body === false) {
+					continue;
+				} else {
+					if ($this->pushArticle($body, $row) === false) {
+						continue;
+					} else {
+						$ret++;
+						$this->db->queryExec("UPDATE releases SET shared = 1
+							WHERE id = %d", $row['id']);
 					}
 				}
 			}
-			return $ret;
+			$this->nntp->doQuit();
 		}
+		return $ret;
 	}
-*/
 
 	/**
 	 * Select new comments that we should upload, upload them then update
@@ -464,21 +513,24 @@ $this->debug = true;
 		}
 
 		$res = array();
+		// If this is the first time we push comments...
 		if (!$new && $last['d'] > $settings['lastpushtime']) {
 
 			$res = $this->db->query(sprintf(
 				"SELECT rc.*, r.nzb_guid, u.username FROM releasecomment rc
 				INNER JOIN releases r ON r.id = rc.releaseid
 				INNER JOIN users u ON u.id = rc.userid 
-				WHERE rc.createddate > %s AND rc.shared = 0"
-				, $this->db->escapeString($last['d'])));
+				WHERE rc.createddate > %s AND rc.shared = 0 LIMIT %d"
+				, $this->db->escapeString($last['d'])
+				, self::c_maxupload));
 		} else {
 			$res = $this->db->query(sprintf(
 				"SELECT rc.*, r.nzb_guid, u.username FROM releasecomment rc 
 				INNER JOIN releases r ON r.id = rc.releaseid 
 				INNER JOIN users u ON u.id = rc.userid 
-				WHERE rc.createddate > %s AND rc.shared = 0"
-				, $this->db->escapeString($settings['firstuptime'])));
+				WHERE rc.createddate > %s AND rc.shared = 0 LIMIT %d"
+				, $this->db->escapeString($settings['firstuptime'])
+				, self::c_maxupload));
 		}
 
 		if (count($res) > 0) {
@@ -584,7 +636,7 @@ $this->debug = true;
 		$success =
 			$this->nntp->mail(
 				// Group(s)
-				self::group,
+				self::c_group,
 				// Subject
 				$type . '_' . $row['nzb_guid'] . ' - [1/1] "' . time() . '" (1/1) yEnc',
 				// Body
@@ -613,7 +665,7 @@ $this->debug = true;
 	 *
 	 * @access protected
 	 */
-	protected function decodeBody($body) {
+	protected function decodeBody($body, $comment=false) {
 		$message = gzinflate($body);
 		if ($message !== false) {
 
@@ -622,75 +674,109 @@ $this->debug = true;
 				return false;
 			} else {
 				// Check if we already have the site.
-				$scheck = $db->queryOneRow(sprintf("SELECT id, status FROM
-					sharing WHERE name = %s", $db->escapeString($m["SITE"])));
+				$scheck = $this->db->queryOneRow(sprintf("SELECT id, status FROM
+					sharing WHERE name = %s", $this->db->escapeString($m["SITE"])));
 
+				// Check if the site is enabled.
 				if (isset($scheck["status"])) {
 					$sitestatus = $scheck["status"];
 				}
 
+				// If we don't have the site, insert it.
 				if ($scheck === false) {
-					$db->queryExec(sprintf(
+					$this->db->queryExec(sprintf(
 						"INSERT INTO sharing (name, local, lastseen, firstseen,
 						comments, status) VALUES (%s, 2, NOW(), NOW(), 1, %d)",
-						$db->escapeString($m["SITE"]), $this->autoenable));
+						$this->db->escapeString($m["SITE"]), $this->autoenable));
 
 					$this->debugEcho('Inserted new site ' . $m['site'], 1,
 					'decodeBody');
 
+					// Check if we have auto site enabling on.
 					$sitestatus = $this->autoenable;
 				}
 
-				// Only insert the comment if the site is enabled.
+				// Only insert the comment/metadata if the site is enabled.
 				if ($sitestatus == 1) {
 
-					// Check if we already have the comment.
-					$check = $db->queryOneRow(sprintf("SELECT id FROM releasecomment
-					WHERE shareid = %s", $m["CSHAREID"]));
-					if ($check === false) {
-						$i = $db->queryExec(sprintf("INSERT INTO releasecomment
-							(text, username, createddate, shareid, nzb_guid, site)
-							VALUES (%s, %s, %s, %s, %s, %s)",
-							$db->escapeString($m["BODY"]),
-							$db->escapeString($m["CUSER"]),
-							$db->from_unixtime($m["CDATE"]),
-							$db->escapeString($m["CSHAREID"]),
-							$message["GUID"],
-							$db->escapeString($m["SITE"])));
+					// Is it a comment or metadata?
+					if ($comment === true) {
 
-						if ($i === false) {
-							return false;
+						// Check if we already have the comment.
+						$check = $this->db->queryOneRow(sprintf("SELECT id FROM
+							releasecomment
+							WHERE shareid = %s", $m["CSHAREID"]));
+						if ($check === false) {
+
+							// Try to insert the comment.
+							$i = $this->db->queryExec(sprintf("INSERT INTO releasecomment
+								(text, username, createddate, shareid, nzb_guid, site)
+								VALUES (%s, %s, %s, %s, %s, %s)",
+								$this->db->escapeString($m["BODY"]),
+								$this->db->escapeString($m["CUSER"]),
+								$this->db->from_unixtime($m["CDATE"]),
+								$this->db->escapeString($m["CSHAREID"]),
+								$this->db->escapeString($message["GUID"]),
+								$this->db->escapeString($m["SITE"])));
+
+							if ($i === false) {
+								return false;
+							} else {
+								// Update the site.
+								$this->db->queryExec(sprintf("
+									UPDATE sharing SET
+										lastseen = NOW(),
+										comments = comments + 1
+									WHERE site = %s",
+									$this->db->escapeString($m['SITE'])));
+								return true;
+							}
 						} else {
-							// Update the site.
-							$db->queryExec(sprintf("UPDATE sharing SET lastseen
-								= NOW(), comments = comments + 1 WHERE site = %s",
-								$db->escapeString($m['SITE'])));
+							$this->debugEcho(
+								'We already have the comment with shareid '
+								. $message['CSHAREID'], 1, 'decodeBody');
 							return true;
 						}
+
+					// This is metadata, update the release..
 					} else {
-						$this->debugEcho('We already have the comment with shareid '
-							. $message['CSHAREID'], 1, 'decodeBody');
-						return false;
+						$i = $this->db->queryExec(sprintf("
+							UPDATE releases SET
+								imdbid = %s,
+								rageid = %s,
+								categoryid = %s,
+								searchname = %s
+							WHERE nzb_guid = %s",
+							$this->db->escapeString($m['IMDB']),
+							$this->db->escapeString($m['TVRAGE']),
+							$this->db->escapeString($m['CATID']),
+							$this->db->escapeString($m['SNAME']),
+							$this->db->escapeString($m['GUID'])));
+						
+						// Update the site.
+						$this->db->queryExec(sprintf("UPDATE sharing SET
+							lastseen = NOW() WHERE site = %s",
+							$this->db->escapeString($m['SITE'])));
 					}
+
+					
 				} else {
 					$this->debugEcho('We have skipped site  ' . $message['CSHAREID']
 						. 'because the user has disabled it in their settings.', 1,
 						'decodeBody');
-					return false;
 				}
 			}
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	// Download article headers from usenet until we find the last article. Then download the body, parse it.
 	protected function scanForward($settings, $db) {
 		$ret = 0;
 		$this->nntp->doConnect();
-		$data = $this->nntp->selectGroup(self::group);
+		$data = $this->nntp->selectGroup(self::c_group);
 		if(PEAR::isError($data)) {
-			$data = $this->nntp->dataError($nntp, self::group);
+			$data = $this->nntp->dataError($nntp, self::c_group);
 			if ($data === false) {
 				$this->debugEcho("Error selecting news group, error follows: "
 						. $data->code . ' : ' . $data->message, 2, 'scanForward');
@@ -738,7 +824,7 @@ $this->debug = true;
 			if(PEAR::isError($msgs)) {
 				$this->nntp->doQuit();
 				$this->nntp->doConnectNC();
-				$this->nntp->selectGroup(self::group);
+				$this->nntp->selectGroup(self::c_group);
 				$msgs = $this->nntp->getOverview($firstart . '-' . $lastart, true, false);
 				if(PEAR::isError($msgs)) {
 					$nntp->doQuit();
@@ -768,7 +854,7 @@ $this->debug = true;
 								continue;
 							} else {
 								// Download article body using message-id.
-								$body = $this->nntp->getMessage(self::group,
+								$body = $this->nntp->getMessage(self::c_group,
 									$msg["Message-ID"]);
 								// Continue if we don't receive the body.
 								if ($body === false) {
