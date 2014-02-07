@@ -2,7 +2,7 @@
 
 require_once dirname(__FILE__) . '/../../../config.php';
 
-$c = new ColorCLI();
+$c = new ColorCLI;
 $db = new DB();
 $DIR = nZEDb_MISC;
 $ROOTDIR = nZEDb_ROOT;
