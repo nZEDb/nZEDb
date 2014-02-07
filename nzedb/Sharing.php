@@ -1,33 +1,24 @@
 <?php
 require_once nZEDb_LIBS . 'Yenc.php';
 
-define('CUR_PATH', realpath(dirname(__FILE__)));
+//define('CUR_PATH', realpath(dirname(__FILE__)));
 
  /**
   * @TODO:
   *
-  * Create sharing table.
-  *         see function initSite()
+  * Create patches for comments table and sharing table
   *
-  * Create column shared in releasecomments.
-  *         shared = wether we shared the comment previously.
-  * Create column shareid in releasecomments.
-  *         shareid = sha1 hash of comment+guid
-  * Create column username in releasecomments.
-  *         username = the name of the user who posted the comment
-  * Create column nzb_guid in releasecomments.
-  *         nzb_guid = the md5 hash of the first message-id in a nzb file
+  * Edit the schemas.
   *
-  * Add site settings to DB.
-  *         something to toggle on and off the whole sharing system.
-  *         option to hide usernames
-  *         option to auto enable sites
+  * Create a webpage in the admin section to administer everything.
   *
   * Add a backfill function.
   *
   * Fetch and post Metadata (imdbid / searchname / etc.)
   *
   * Encryption of body.
+  *
+  * Limit download / upload per run.
   */
 
  /**
@@ -40,8 +31,10 @@ define('CUR_PATH', realpath(dirname(__FILE__)));
   * LOCAL
   * lastpushtime = last time we posted metadata
   * firstuptime  = How far back should we upload metadata/comments the first time?
-  * oldestlocal  = Oldest metadata we have locally posted.
-  * newestlocal  = Newest metadata we have locally posted.
+  * omlocal      = Oldest metadata we have locally posted (release id).
+  * nmlocal      = Newest metadata we have locally posted (release id).
+  * oclocal      = Oldest comment we have locally posted (comment id).
+  * nclocal      = Newest comment we have locally posted (comment id).
   * autoenable   = Should we auto enable new sites?
   * hideuser     = Should we hide usernames when posting comments to usenet?
   * override_p   = Turn off all posting.
@@ -49,14 +42,11 @@ define('CUR_PATH', realpath(dirname(__FILE__)));
   *
   * NON LOCAL :
   * updatetime   = last time a site was updated
-  * backfill     = our current backfill target
   * status       = wether the non local site is enabled or not
   * lastseen     = last time we have seen the non local site
   * firstseen    = the first time we have seen the non local site
-  * lasthash     = the hash of the last article -> contained in the subject
   * lastarticle  = our newest fetched article #
   * lastdate     = the unixtime of the last article -> contained in the subject
-  * firsthash    = the hash of the oldest article
   * firstarticle = our oldest fetched article #
   * firstdate    = the unixtime of the first article
   * real_name    = The name of the site, as sent by the site.
@@ -67,6 +57,9 @@ define('CUR_PATH', realpath(dirname(__FILE__)));
   * comments     = how many comments the non local site has
   * f_comments   = 1 = enable fetching comments (change this to a site setting ?) 0 disabled
   * p_comments   = post comments (also change this to a site setting?)
+  * backfill_c   = our current backfill target (article number)
+  * lasthash_c   = the hash of the last article -> contained in the subject
+  * firsthash_c  = the hash of the oldest article
   *
   * METADATA :
   * f_sname      = Should we download this sites searchnames?
@@ -77,7 +70,73 @@ define('CUR_PATH', realpath(dirname(__FILE__)));
   * p_imdb       = Should we upload our IMDB id's?
   * f_tvrage     = Should we download tvrage id's from this site?
   * p_tvrage     = Should we upload our tvrage id's?
+  * backfill_m   = our current backfill target (article number)
+  * lasthash_m   = the hash of the last article -> contained in the subject
+  * firsthash_m  = the hash of the oldest article
   */
+
+ /**
+  * MySQL schema:
+  *
+
+DROP TABLE IF EXISTS sharing;
+CREATE TABLE sharing (
+	id    INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+	local TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+
+	lastpushtime DATETIME DEFAULT NULL,
+	firstuptime  DATETIME DEFAULT NULL,
+	omlocal      INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	nmlocal      INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	oclocal      INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	nclocal      INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	autoenable   TINYINT(1) NOT NULL DEFAULT '0',
+	hideuser     TINYINT(1) NOT NULL DEFAULT '0',
+	override_p   TINYINT(1) NOT NULL DEFAULT '0',
+	override_f   TINYINT(1) NOT NULL DEFAULT '0',
+
+	updatetime   DATETIME DEFAULT NULL,
+	status       TINYINT(1) NOT NULL DEFAULT '0',
+	lastseen     DATETIME DEFAULT NULL,
+	firstseen    DATETIME DEFAULT NULL,
+	lastarticle  INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	lastdate     DATETIME DEFAULT NULL,
+	firstarticle INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	firstdate    DATETIME DEFAULT NULL,
+	real_name    VARCHAR(255) NOT NULL DEFAULT '',
+	local_name   VARCHAR(255) NOT NULL DEFAULT '',
+	notes        VARCHAR(255) NOT NULL DEFAULT '',
+
+	comments     INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	f_comments   TINYINT(1) NOT NULL DEFAULT '0',
+	p_comments   TINYINT(1) NOT NULL DEFAULT '0',
+	backfill_c   INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	lasthash_c   VARCHAR(40) NOT NULL DEFAULT '',
+	firsthash_c  VARCHAR(40) NOT NULL DEFAULT '',
+
+	f_sname      TINYINT(1) NOT NULL DEFAULT '0',
+	p_sname      TINYINT(1) NOT NULL DEFAULT '0',
+	f_cat_id     TINYINT(1) NOT NULL DEFAULT '0',
+	p_cat_id     TINYINT(1) NOT NULL DEFAULT '0',
+	f_imdb       TINYINT(1) NOT NULL DEFAULT '0',
+	p_imdb       TINYINT(1) NOT NULL DEFAULT '0',
+	f_tvrage     TINYINT(1) NOT NULL DEFAULT '0',
+	p_tvrage     TINYINT(1) NOT NULL DEFAULT '0',
+	backfill_m   INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	lasthash_m   VARCHAR(40) NOT NULL DEFAULT '',
+	firsthash_m  VARCHAR(40) NOT NULL DEFAULT '',
+	PRIMARY KEY  (id)
+) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+ */
+
+ /**
+  * Alterations to the comment table:
+
+ALTER TABLE releasecomment ADD shared TINYINT(1) NOT NULL DEFAULT '0';
+ALTER TABLE releasecomment ADD shareid VARCHAR(40) NOT NULL DEFAULT '';
+
+ */
 
  /**
   * Class for sharing various atributes of a release to other nZEDb sites.
@@ -87,6 +146,18 @@ define('CUR_PATH', realpath(dirname(__FILE__)));
 
 class Sharing {
 	/**
+	 * Debug priority.
+	 * 0 - Turn it off.
+	 * 1 - Non Important stuff.
+	 * 2 - Important stuff.
+	 * 3 - Everything.
+	 *
+	 * @var int
+	 * @access private
+	 */
+	private $dpriority = 3;
+
+	/**
 	 * The group to store/retrieve the articles.
 	 *
 	 * @note Not set in stone.
@@ -95,6 +166,14 @@ class Sharing {
 	 * @access public
 	 */
 	const group = 'alt.binaries.zines';
+	
+	/**
+	 * How many articles to download per loop.
+	 * 
+	 * @var constant int
+	 * @access public
+	 */
+	const looparticles = 10000;
 
 	/**
 	 * Instance of class DB.
@@ -103,6 +182,22 @@ class Sharing {
 	 * @access private
 	 */
 	private $db;
+
+	/**
+	 * Instance of class NNTP.
+	 * 
+	 * @var object
+	 * @access private
+	 */
+	private $nntp;
+
+	/**
+	 * Instance of class Yenc.
+	 * 
+	 * @var object
+	 * @access private
+	 */
+	private $yenc;
 
 	/**
 	 * Instance of class site.
@@ -127,18 +222,6 @@ class Sharing {
 	 * @access private
 	 */
 	private $debug;
-
-	/**
-	 * Debug priority.
-	 * 0 - Turn it off.
-	 * 1 - Non Important stuff.
-	 * 2 - Important stuff.
-	 * 3 - Everything.
-	 *
-	 * @var int
-	 * @access private
-	 */
-	private $dpriority = 3;
 
 	/**
 	 * Display general info to console?
@@ -171,10 +254,14 @@ class Sharing {
 	 */
 	public function __construct($echooutput=false) {
 		$this->db = new DB();
+		$this->nntp = new NNTP();
+		$this->yenc = new Yenc();
 		$this->s = new Sites();
 		$this->site = $this->s->get();
-		$this->debug =
-			($this->site->debuginfo == "0" && $echooutput) ? false : true;
+/*		$this->debug =
+			($this->site->debuginfo == "0" && $echooutput) ? true : false;
+*/
+$this->debug = true;
 		$this->echooutput = $echooutput;
 
 		// Will be a site setting.. hides username when posting
@@ -192,14 +279,15 @@ class Sharing {
 	 * @access protected
 	 */
 	protected function initSite() {
-		if ($this->db->queryExec(
-			  'INSERT INTO sharing ('
-			. 'local, lastpushtime, firstuptime, oldestlocal, newestlocal, '
-			. 'p_comments, p_sname, p_cat_id, p_imdb, p_tvrage, '
-			. 'hideuser, autoenable)'
-			. 'VALUES (1, NULL, NOW(), NULL, NULL, '
-			. '0, 0, 0, 0, 0, '
-			. '0, 0)') !== false) {
+		$name = $this->db->escapeString(uniqid('nZEDb_', true));
+		if ($this->db->queryExec(sprintf(
+			"INSERT INTO sharing (
+			local, lastpushtime, firstuptime,
+			p_comments, p_sname, p_cat_id, p_imdb, p_tvrage,
+			hideuser, autoenable, real_name , local_name)
+			VALUES (1, NULL, NOW(),
+			0, 0, 0, 0, 0,
+			0, 0, %s, %s)", $name, $name)) !== false) {
 			return true;
 		} else {
 			return false;
@@ -217,7 +305,8 @@ class Sharing {
 	protected function matchComments() {
 		$ret = 0;
 
-		$res = $this->db->query("SELECT id FROM releases r INNER JOIN releasecomment rc ON rc.nzb_guid = r.nzb_guid WHERE rc.releaseid = NULL");
+		$res = $this->db->query("SELECT id FROM releases r INNER JOIN releasecomment
+			rc ON rc.nzb_guid = r.nzb_guid WHERE rc.releaseid = NULL");
 		if (count($res) > 0) {
 			foreach ($res as $row) {
 				if ($this->db->queryExec(sprintf(
@@ -277,7 +366,7 @@ class Sharing {
 	public function shareAll() {
 		$qty = array();
 
-		$settings = $db->queryOneRow("SELECT * FROM sharing WHERE local = 1");
+		$settings = $this->db->queryOneRow("SELECT * FROM sharing WHERE local = 1");
 		if ($settings === false) {
 
 			$initiated = $this->initSite();
@@ -289,7 +378,7 @@ class Sharing {
 			}
 		} else {
 			$new = false;
-			if ($settings['lastpushtime'] == 'NULL') {
+			if ($settings['lastpushtime'] == NULL) {
 				$new = true;
 			}
 			// Metadata
@@ -316,7 +405,7 @@ class Sharing {
 		$ret = 0;
 
 		$last = $this->db->queryOneRow(
-			"SELECT createdate AS d FROM releasecomments ORDER BY createdate LIMIT 1");
+			"SELECT createddate AS d FROM releasecomment ORDER BY createddate LIMIT 1");
 
 		if ($last === false) {
 			return $ret;
@@ -325,7 +414,7 @@ class Sharing {
 
 				$res = $this->db->query(sprintf(
 					  "SELECT rc.*, r.nzb_guid, FROM releasecomment rc INNER JOIN"
-					. " releases r ON r.id = rc.releaseid WHERE createdate > %s AND shared = 0"
+					. " releases r ON r.id = rc.releaseid WHERE createddate > %s AND shared = 0"
 					, $this->db->escapeString($last["d"])));
 
 				if (count($res) > 0) {
@@ -340,7 +429,7 @@ class Sharing {
 							} else {
 								$ret++;
 								// Update DB to say we uploaded the comment.
-								$this->db->queryExec("UPDATE releasecomments SET shared = 1");
+								$this->db->queryExec("UPDATE releasecomment SET shared = 1");
 							}
 						}
 					}
@@ -366,13 +455,11 @@ class Sharing {
 		$ret = 0;
 
 		$last = $this->db->queryOneRow(
-			'SELECT createdate AS d FROM releasecomments ORDER BY createdate DESC LIMIT 1');
+			'SELECT createddate AS d FROM releasecomment ORDER BY createddate DESC LIMIT 1');
 
 		if ($last === false) {
-			$this->debugEcho(''
-			if ($this->debug) {
-				echo "DEBUG: nZEDB.Sharing.pushComments() [Could not select createdate from releasecomments.]\n";
-			}
+			$this->debugEcho('Could not select createddate from releasecomment.',
+				2, 'pushComments');
 			return $ret;
 		}
 
@@ -380,72 +467,41 @@ class Sharing {
 		if (!$new && $last['d'] > $settings['lastpushtime']) {
 
 			$res = $this->db->query(sprintf(
-				  'SELECT rc.*, r.nzb_guid, FROM releasecomment rc INNER JOIN'
-				. " releases r ON r.id = rc.releaseid WHERE createdate > %s AND shared = 0"
+				"SELECT rc.*, r.nzb_guid, u.username FROM releasecomment rc
+				INNER JOIN releases r ON r.id = rc.releaseid
+				INNER JOIN users u ON u.id = rc.userid 
+				WHERE rc.createddate > %s AND rc.shared = 0"
 				, $this->db->escapeString($last['d'])));
 		} else {
 			$res = $this->db->query(sprintf(
-				  'SELECT rc.*, r.nzb_guid, FROM releasecomment rc INNER JOIN'
-				. " releases r ON r.id = rc.releaseid WHERE createdate > %s AND shared = 0"
+				"SELECT rc.*, r.nzb_guid, u.username FROM releasecomment rc 
+				INNER JOIN releases r ON r.id = rc.releaseid 
+				INNER JOIN users u ON u.id = rc.userid 
+				WHERE rc.createddate > %s AND rc.shared = 0"
 				, $this->db->escapeString($settings['firstuptime'])));
 		}
 
 		if (count($res) > 0) {
+			$this->nntp->doConnect();
 			foreach ($res as $row) {
 				$body = $this->encodeArticle($row, $settings, true);
 				if ($body === false) {
 					continue;
 				} else {
-					if ($this->pushArticle($body, $row) === false) {
+					if ($this->pushArticle($body, $row, 'c') === false) {
 						continue;
 					} else {
 						$ret++;
 						// Update DB to say we uploaded the comment.
 						$this->db->queryExec(sprintf(
-							'UPDATE releasecomments SET shared = 1 WHERE releaseid = %d',
+							'UPDATE releasecomment SET shared = 1 WHERE releaseid = %d',
 							$row['releaseid']));
 					}
 				}
 			}
+			$this->nntp->doQuit();
 		}
 		return $ret;
-	}
-
-	// gzip then yEnc encode the body, set up the subject then attempt to upload the comment.
-	/**
-	 * GZIP an article body, then yEnc encode it, set up a subject, finally
-	 * upload the comment.
-	 *
-	 * @param string $body The message to gzip/yEncode.
-	 * @param array  $row  The comment/release info.
-	 *
-	 * @return bool  Have we uploaded the article?
-	 *
-	 * @access protected
-	 */
-	protected function pushArticle($body, $row) {
-		$yenc = new Yenc;
-		$nntp = new NNTP();
-		$nntp->doConnect();
-
-		$success =
-			$nntp->post(
-				// Group(s)
-				self::group,
-				// Subject
-				$row['nzb_guid'] . ' - [1/1] "' . time() . '" (1/1) yEnc',
-				// Body
-				$yenc->encode(gzdeflate($body, 4), uniqid),
-				// Poster
-				"nZEDb");
-
-		$nntp->doQuit();
-
-		if ($success == false) {
-			return false;
-		} else {
-			return true;
-		}
 	}
 
 	/**
@@ -463,6 +519,7 @@ class Sharing {
 		/* Example message for a comment:
 		{
 			"SITE": "nZEDb.521d7818435830.65093125",
+			"NAME": "john's indexer",
 			"GUID": "13781e319b79b1a19fec5ef4a931b163",
 			"TIME": "1334663234",
 			"COMMENT": "example",
@@ -471,70 +528,90 @@ class Sharing {
 			*CSHAREID: "bcd5a37c022525b62956e6975127f8c12a0bd4b5"
 		}*/
 
-		//$site = $settings["name"];
-		$site = 'nZEDb.521d7818435830.65093125';
-
-		//$guid = $row['nzb_guid'];
-		$guid = '13781e319b79b1a19fec5ef4a931b163';
-
 		$type = '';
 		$body = array();
 		if ($comment) {
 			$type = 'COMMENT';
-			$body = 'Testing uploading comments to usenet.';
-			//$body = $row['text'];
+			$body = $row['text'];
 		} else {
 			$type = 'META';
 			$body = array(
-				'IMDB'   => 'tt3337194',
-				'TVRAGE' => '34726',
-				'CATID'  => '8050',
-				'SNAME'  => 'Test'
-				);
-			/*$body = array(
 				'IMDB'   => (
-					($settings['p_imdb'] == '1' && $row['imdbid'] != 'NULL')
+					($settings['p_imdb'] == '1' && $row['imdbid'] != NULL)
 					? $row['imdbid'] : 'NULL'),
 				'TVRAGE' => (
-					($settings['p_tvrage'] == '1' && $row['rageid'] != 'NULL')
+					($settings['p_tvrage'] == '1' && $row['rageid'] != NULL)
 					? $row['rageid'] : 'NULL'),
 				'CATID'  => (
 					($settings['p_catid'] == '1' && $row['categoryid'] != '7010')
 					? $row['categoryid'] : 'NULL'),
 				'SNAME'  => (
-					($settings['p_tvrage'] == '1' && $row['searchname') ! = '')
+					($settings['p_tvrage'] == '1' && $row['searchname'] != '')
 					? $row['searchname'] : 'NULL')
-				);*/
+				);
 		}
-
-		/*
-		if ($this->hideuser)
-			$cuser = "Anonymous User";
-		else
-			$cuser = $row["username"];*/
-		$cuser = "John Doe";
-
-		//$cdate = $db->unix_timestamp($row["createdate"]);
-		$cdate = "1377797670";
-
-		//$cshareid = sha1($comment.$guid);
-		$cshareid = "a30c7201057fb208a1653f91c05d172bbfc096f1";
 
 		return json_encode(
 				array(
-					'SITE'     => $site,
-					'GUID'     => $guid,
+					'SITE'     => $settings['real_name'],
+					'NAME'     => $settings ['local_name'],
+					'GUID'     => $row['nzb_guid'],
 					'TIME'     => time(),
 					$type      => $body,
-					'CUSER'    => $cuser,
-					'CDATE'    => $cdate,
-					'CSHAREID' => $cshareid
+					'CUSER'    => ($this->hideuser) ? "Anonymous" : $row["username"],
+					'CDATE'    => $this->db->unix_timestamp($row["createddate"]),
+					'CSHAREID' => $cshareid = sha1($comment.$row['nzb_guid'])
 					));
 	}
 
-	// Decode a downloaded message and insert it.
 	/**
+	 * GZIP an article body, then yEnc encode it, set up a subject, finally
+	 * upload the comment.
 	 *
+	 * @param string $body The message to gzip/yEncode.
+	 * @param array  $row  The comment/release info.
+	 * @param string $type c for comment m for meta.
+	 *
+	 * @return bool  Have we uploaded the article?
+	 *
+	 * @access protected
+	 */
+	protected function pushArticle($body, $row, $type) {
+
+		// Example subject (not set in stone) :
+		// c_13781e319b79b1a19fec5ef4a931b163 - [1/1] "1334663234" (1/1) yEnc
+
+		$success =
+			$this->nntp->mail(
+				// Group(s)
+				self::group,
+				// Subject
+				$type . '_' . $row['nzb_guid'] . ' - [1/1] "' . time() . '" (1/1) yEnc',
+				// Body
+				$this->yenc->encode(gzdeflate($body, 4), uniqid('', true)),
+				// From
+				'From: <anon@anon.com>'
+				);
+
+		if ($success == false) {
+			if(PEAR::isError($success)) {
+				$this->debugEcho('Error uploading comment to usenet, error follows: '
+				. $success->code . ' : ' . $success->message, 2, 'pushArticle');
+			}
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * Decodes an article body and inserts the content into the DB.
+	 *
+	 * @param string $body The body to decode.
+	 *
+	 * @return bool Did we decode and insert it?
+	 *
+	 * @access protected
 	 */
 	protected function decodeBody($body) {
 		$message = gzinflate($body);
@@ -572,7 +649,7 @@ class Sharing {
 					WHERE shareid = %s", $m["CSHAREID"]));
 					if ($check === false) {
 						$i = $db->queryExec(sprintf("INSERT INTO releasecomment
-							(text, username, createdate, shareid, nzb_guid, site)
+							(text, username, createddate, shareid, nzb_guid, site)
 							VALUES (%s, %s, %s, %s, %s, %s)",
 							$db->escapeString($m["BODY"]),
 							$db->escapeString($m["CUSER"]),
@@ -608,19 +685,18 @@ class Sharing {
 	}
 
 	// Download article headers from usenet until we find the last article. Then download the body, parse it.
-	protected function scanForward($settings, $db)
-	{
+	protected function scanForward($settings, $db) {
 		$ret = 0;
-		$nntp = new Nntp;
-		$nntp->doConnect();
-		$data = $nntp->selectGroup(self::group);
-		if(PEAR::isError($data))
-		{
-			$data = $nntp->dataError($nntp, self::group);
-			if ($data === false)
+		$this->nntp->doConnect();
+		$data = $this->nntp->selectGroup(self::group);
+		if(PEAR::isError($data)) {
+			$data = $this->nntp->dataError($nntp, self::group);
+			if ($data === false) {
+				$this->debugEcho("Error selecting news group, error follows: "
+						. $data->code . ' : ' . $data->message, 2, 'scanForward');
 				return $ret;
+			}
 		}
-		$nntp->doQuit();
 
 		// Our newest article.
 		$first = $settings["lastarticle"];
@@ -629,116 +705,99 @@ class Sharing {
 
 		$under = $subs = $done = false;
 		$lastart = $firstart = 0;
-		$art = 10000;
-		while ($done === false)
-		{
+		$art = $this->looparticles;
+		while ($done === false) {
 			// First run. Do 10000 articles max at a time.
-			if ($subs === false && $last - $first > $art)
-			{
+			if ($subs === false && $last - $first > $art) {
 				$subs = true;
 				// The newest article we want.
 				$lastart = $last;
 				// The oldest article we want.
 				$firstart = $last - $art;
-			}
-			else if ($subs === false && $last - $first <= $art)
-			{
+			} else if ($subs === false && $last - $first <= $art) {
 				$lastart = $last;
 				$firstart = $first;
 				$under = true;
 			}
 			// Subsequent runs.
-			else if ($lastart - $first > $art)
-			{
-				if ($firstart - $first <= $art)
-				{
+			else if ($lastart - $first > $art) {
+				if ($firstart - $first <= $art) {
 					$under = true;
 					$lastart = $lastart - $art;
 					$firstart = $first;
-				}
-				else
-				{
+				} else {
 					$lastart = $lastart - $art;
 					$firstart = $lastart - $art;
 				}
 			}
-			if ($this->debug && $this->echooutput)
-				echo "The newest article we want: ".$lastart."\nThe oldest article we want: ".$firstart."\n";
+			$this->debugEcho('The newest article we want:' . $lastart .
+				"\nThe oldest article we want: " . $firstart, 1, 'scanForward');
 
 			// Start downloading headers.
-			$nntp->doConnect();
-			$nntp->selectGroup(self::group);
-			$msgs = $nntp->getOverview($firstart."-".$lastart, true, false);
-			if(PEAR::isError($msgs))
-			{
-				$nntp->doQuit();
-				$nntp->doConnectNC();
-				$nntp->selectGroup(self::group);
-				$msgs = $nntp->getOverview($firstart."-".$lastart, true, false);
-				if(PEAR::isError($msgs))
-				{
+			$msgs = $this->nntp->getOverview($firstart . '-' . $lastart, true, false);
+			if(PEAR::isError($msgs)) {
+				$this->nntp->doQuit();
+				$this->nntp->doConnectNC();
+				$this->nntp->selectGroup(self::group);
+				$msgs = $this->nntp->getOverview($firstart . '-' . $lastart, true, false);
+				if(PEAR::isError($msgs)) {
 					$nntp->doQuit();
-					if ($this->echooutput)
-						echo "Error downloading headers for script 'Sharing'.\nError follows: {$msgs->code}: {$msgs->message}\n";
+					$this->debugEcho("Error downloading article headers, error follows: "
+						. $msgs->code . ' : ' . $msgs->message, 2, 'scanForward');
 					return $ret;
 				}
 			}
 
 			// We got the messages, filter through the subjects. Download new articles.
-			if (is_array($msgs) && count($msgs) > 0)
-			{
+			if (is_array($msgs) && count($msgs) > 0) {
 				$current = false;
 				$msgids = array();
-				foreach ($msgs as $msg)
-				{
-					/* The pattern : nzb_guid - [1/1] "unixtime" (1/1) yEnc */
+				foreach ($msgs as $msg) {
+					/* The pattern : type_nzb_guid - [1/1] "unixtime" (1/1) yEnc */
 					// Filter through headers.
-					if (preg_match('/^([a-f0-9]{40}) - \[\d+\/\d+\] "(\d+)" \(\d+\/\d+\) yEnc$/', $msg["Subject"], $matches))
-					{
-						if ($matches[2] < $settings["lastdate"])
+					if (preg_match(
+						'/^[cm]_([a-f0-9]{40}) - \[\d\/\d\] "(\d+)" \(\d\/\d\) yEnc$/'
+						,$msg["Subject"], $matches)) {
+						if ($matches[2] < $settings["lastdate"]) {
 							continue;
-						else
-						{
-							if ($current === false)
-							{
-								if ($matches[1] == $settings["lasthash"])
+						} else {
+							if ($current === false) {
+								if ($matches[1] == $settings["lasthash"]) {
 									$current = true;
+								}
 								continue;
-							}
-							// Download article body using message-id.
-							else
-							{
-								$nntp->doConnect();
-								$nntp->selectGroup(self::group);
-								$body = $nntp->getMessage(self::group, $msg["Message-ID"]);
-								$nntp->doQuit();
+							} else {
+								// Download article body using message-id.
+								$body = $this->nntp->getMessage(self::group,
+									$msg["Message-ID"]);
 								// Continue if we don't receive the body.
-								if ($body === false)
+								if ($body === false) {
+//TODO -> Debug output.
 									continue;
-								else
-								{
+								} else {
 									// Parse the body.
-									if ($this->decodeBody === false)
+									if ($this->decodeBody === false) {
+//TODO -> Debug output.
 										continue;
-									else
+									} else {
 										$ret++;
+									}
 								}
 							}
 						}
 					}
 				}
-			}
-			// Nntp didnt return anything?
-			else
-			{
-				$nntp->doQuit();
+			} else {
+				// Nntp didnt return anything?
+//TODO -> Debug output.
 				continue;
 			}
-
 			// Done so break out
-			if ($under === true || $firstart <= $first)
+			if ($under === true || $firstart <= $first) {
 				break;
+			}
 		}
+		$this->nntp->doQuit();
 		return $ret;
 	}
 
@@ -754,10 +813,11 @@ class Sharing {
 	 * @access protected
 	 */
 	protected function debugEcho($string, $priority, $function) {
-		if (!$this->debug || ($this->dpriority < $priority)) {
+		if (!$this->debug || ($this->dpriority < $priority ||
+			$this->dpriority > 3 || $this->dpriority < 0)) {
 			return;
 		} else {
-			$message = 'DEBUG: nZEDb.Sharing.' . $function . '() [' . $string . ']\n';
+			$message = 'DEBUG: nZEDb.Sharing.' . $function . '() [' . $string . "]\n";
 			if ($this->dpriority === 3) {
 				echo $message;
 			} else if ($this->dpriority === 2 && $priority === 2) {
