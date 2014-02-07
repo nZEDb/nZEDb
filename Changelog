@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+
+2014-02-06 -> jonnyboy -> fixing spaces to tabs
 2014-02-06 -> egandt   -> fix for Categories when dealing with anime ImageSets
 2014-02-06 -> bart39   -> fixed console/music search filters
                           paste error

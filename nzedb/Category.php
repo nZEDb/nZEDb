@@ -1092,12 +1092,11 @@ class Category
 		if (preg_match('/IMAGESET/i', $releasename)) {
 			$this->tmpCat = Category::CAT_XXX_IMAGESET;
 			return true;
+		} else if(preg_match('/ABPEA/i', $releasename)) {
+			/* a.b.pictures.erotica image sets */
+			$this->tmpCat = Category::CAT_XXX_IMAGESET;
+			return true;
 		}
-                else if(preg_match('/ABPEA/i', $releasename)) {
-                        /* a.b.pictures.erotica image sets */
-                        $this->tmpCat = Category::CAT_XXX_IMAGESET;
-                        return true;
-                }
 		return false;
 	}
 
