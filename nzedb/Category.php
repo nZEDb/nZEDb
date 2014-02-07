@@ -1047,7 +1047,7 @@ class Category
 			}
 			$this->tmpCat = Category::CAT_XXX_OTHER;
 			return true;
-		} else if (preg_match('/a\.b\.erotica|Imageset|Lesbian|Squirt|Transsexual/i', $releasename)) {
+		} else if (preg_match('/a\.b\.erotica|Imageset|Lesbian|Squirt|Transsexual|pictures\.erotica\.anime/i', $releasename)) {
 			if ($this->isXxx264($releasename)) {
 				return true;
 			}
@@ -1117,6 +1117,11 @@ class Category
 			$this->tmpCat = Category::CAT_XXX_IMAGESET;
 			return true;
 		}
+                else if(preg_match('/ABPEA/i', $releasename)) {
+                        /* a.b.pictures.erotica image sets */
+                        $this->tmpCat = Category::CAT_XXX_IMAGESET;
+                        return true;
+                }
 		return false;
 	}
 
