@@ -3,13 +3,24 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
-***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
+***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-07 -> jonnyboy -> fixed links to libs in install scripts, fixed more links
+                          removed extra space
+2014-02-06 -> jonnyboy -> add regex for teevee
+                          fixing spaces to tabs, merged statments
+2014-02-06 -> egandt   -> fix for Categories when dealing with anime ImageSets
+2014-02-06 -> bart39   -> fixed console/music search filters
+                          paste error
+                          accidently removed require_once nZEDb_LIBS . 'AmazonProductAPI.php'
+                          group music releases by musicinfo
+                          fixed duplicate musicinfo records, you may want to run misc/testing/DB/reset_postprocessing.php music true truncate to reprocess
+2014-02-06 -> niel     -> Upd: Part 2 (ish) of directory changes/moves
 2014-02-05 -> bart39   -> removed un-needed dereferer link
-			  fixed console, books and movie templates in alpha theme
-			  fixed a.b.mp3 regex in ReleaseCleaning
+                          fixed console, books and movie templates in alpha theme
+                          fixed a.b.mp3 regex in ReleaseCleaning
 2014-02-05 -> jonnyboy -> fixed bug in backfill->daytopost where new groups were not starting when using 'Days'
                           changed buttons in light theme console and music
 2014-02-04 -> bart39   -> regex additions

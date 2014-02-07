@@ -11,8 +11,8 @@ define('nZEDb_MISC', nZEDb_ROOT . 'misc' . DS);
 
 define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 
-// Used to refer to the /www/lib class files.
-define('nZEDb_LIB', nZEDb_WWW . 'lib' . DS);
+// Used to refer to the main lib class files.
+define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);
 
 // Used to refer to the third party library files.
 define('nZEDb_LIBS', nZEDb_ROOT . 'libs' . DS);
@@ -44,6 +44,6 @@ define("ITEMS_PER_COVER_PAGE", "20");
 define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml');
 
 require_once 'SPLClassLoader.php';
-$paths = array(nZEDb_LIB, SMARTY_DIR, SMARTY_DIR . 'plugins', SMARTY_DIR . 'sysplugins');
+$paths = array(nZEDb_LIB, nZEDb_WWW . 'pages', SMARTY_DIR, SMARTY_DIR . 'plugins', SMARTY_DIR . 'sysplugins');
 $classLoader = new SplClassLoader(null, $paths);
 $classLoader->register();
