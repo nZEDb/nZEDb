@@ -101,10 +101,7 @@ function rand_bool($loop, $chance = 60)
 }
 
 //totals per category in db, results by parentID
-$qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count '
-	. 'FROM category c, releases r '
-	. 'WHERE r.categoryid = c.id '
-	. 'GROUP BY c.parentid';
+$qry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid";
 
 //needs to be processed query
 $proc_work = "SELECT "
@@ -402,6 +399,13 @@ while ($i > 0) {
 	if ($db->ping(true) == false) {
 		unset($db);
 		$db = new DB();
+	}
+
+	// Ananlyze tables every 60 min
+	$time08 = TIME();
+	if ($i == 1 || (TIME() - $time08 >= 3600)) {
+		$db->optimise(true, 'analyze');
+		$time08 = TIME();
 	}
 
 	// These queries are very fast, run every loop
