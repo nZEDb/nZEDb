@@ -116,7 +116,7 @@ class queue_runner(threading.Thread):
 						subprocess.call(["php", pathname+"/../nix/tmux/bin/backfill_all_quick.php", ""+my_id])
 					else:
 						subprocess.call(["php", pathname+"/../nix/tmux/bin/backfill_interval.php", ""+my_id])
-					time.sleep(.05)
+					time.sleep(.03)
 					self.my_queue.task_done()
 
 def main(args):
@@ -140,7 +140,7 @@ def main(args):
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
-		time.sleep(.1)
+		time.sleep(.03)
 		my_queue.put("%s %s" % (gnames[0], type))
 
 	my_queue.join()

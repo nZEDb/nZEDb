@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-08 -> jonnyboy -> added option to optimize all tables at once, force optimize all tables or analyze only optimise.php
+2014-02-08 -> jonnyboy -> reduced sleep time in populating queue in python scripts
+                          added option to optimize all tables at once, force optimize all tables or analyze only optimise.php
                           added analyze tables every 60 min to monitor.php
 2014-02-07 -> niel     -> Upd: Updated install steps so that they correctly use the autoloader.
 2014-02-07 -> jonnyboy -> fixed links to libs in install scripts, fixed more links
