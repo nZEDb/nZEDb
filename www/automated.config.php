@@ -52,11 +52,6 @@ define("ITEMS_PER_COVER_PAGE", "20");
 
 define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml');
 
-//require_once 'SPLClassLoader.php';
-//$paths = array(nZEDb_LIB, nZEDb_ROOT, nZEDb_WWW . 'pages', SMARTY_DIR, SMARTY_DIR . 'plugins', SMARTY_DIR . 'sysplugins');
-//$classLoader = new SplClassLoader(null, $paths);
-//$classLoader->register();
-
 $paths = array(
 	nZEDb_ROOT . 'nzedb',
 	nZEDb_ROOT . 'nzedb' . DS . 'utility',
@@ -73,3 +68,9 @@ foreach ($paths as $path) {
 
  // Use default autoload implementation
  spl_autoload_register();
+
+require_once 'SPLClassLoader.php';
+//$paths = array(nZEDb_LIB, nZEDb_ROOT, nZEDb_WWW . 'pages', SMARTY_DIR, SMARTY_DIR . 'plugins', SMARTY_DIR . 'sysplugins');
+$paths = array(nZEDb_LIB);
+$classLoader = new SplClassLoader(null, $paths);
+$classLoader->register();
