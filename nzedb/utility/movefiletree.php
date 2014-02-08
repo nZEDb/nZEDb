@@ -49,7 +49,7 @@ class MoveFileTree
 		} else if (!is_array($source) && file_exists($source) && is_dir($source)) {
 			$contents = scandir($source);
 			if (count($contents) < 3) {
-				throw new \UnexpectedValueException('Source directory does not contain anything to move.', 5);
+				throw new \UnexpectedValueException('Source directory does not contain anything to move.');
 			}
 			$this->_source = substr($source, -1) == DS ? $source : $source . DS;
 		} else {
@@ -69,7 +69,7 @@ class MoveFileTree
 				$this->_target = $target;
 			}
 		} else {
-			throw new \UnexpectedValueException("Target value is required, it must be be a valid path to a directory\nTarget: $target\n", 4);
+			throw new \UnexpectedValueException("Target value is required, it must be be a valid path to a directory\nTarget: $target\n");
 		}
 	}
 
@@ -161,7 +161,7 @@ class MoveFileTree
 			while ($this->rItIt->valid()) {
 				if (!$this->rItIt->isDot()) {
 					echo "Copying to: $this->_target{$this->rItIt->getSubPathName()} ";
-					if (copy($this->rItIt->key(), $target . $this->rItIt->getSubPathName())) {
+					if (copy($this->rItIt->key(), $this->_target . $this->rItIt->getSubPathName())) {
 						echo "Done\n";
 						@unlink($this->rItIt->key());
 					} else {
