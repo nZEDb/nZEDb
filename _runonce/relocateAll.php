@@ -22,6 +22,8 @@ require_once realpath(dirname(__FILE__) . '/../www/config.php');
 
 //use \Nzedb\Utility;
 
+$s = new Sites();
+
 $dirs = array(
 	[	'basemv' => false,
 		'source' => nZEDb_MISC . 'testing/DB_scripts',
@@ -72,9 +74,10 @@ $dirs = array(
 	[	'source' => nZEDb_WWW . 'covers' . DS,
 		'target' =>	nZEDb_ROOT . 'resources' . DS . 'covers' . DS	],
 
-	[	'basemv' => false,
-		'source' => nZEDb_ROOT . 'nzbfiles',
-		'target' =>	nZEDb_RES . 'nzb'	]
+	// This moves the default nzbpath. If you use another location it will be unaffected
+	'nzb' => [	'basemv' => false,
+				'source' => nZEDb_ROOT . 'nzbfiles',
+				'target' =>	nZEDb_RES . 'nzb'	]
 /*
 	[	'source' => nZEDb_RES . 'tmp' . DS . 'dummy' . DS . 'covers' . DS,
 		'target' => nZEDb_RES . 'tmp' . DS	],
@@ -102,6 +105,14 @@ foreach ($dirs as $path)
 		echo "Checking directories are empty before deleting them.\n";
 		$mover->clearEmpty();
 	}
+}
+
+
+$site = $s->get();
+$db = new DB();
+if ($dirs['nzb']['source'] == $site['nzbpath']) {
+	// Update the nzbpath setting if it is the one in use.
+	$db->queryDirect(sprintf('UPDATE site SET value = %s WHERE setting = %s LIMIT 1', $dirs['nzb']['target'], 'nzbpath' ));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
