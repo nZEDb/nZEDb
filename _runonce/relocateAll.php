@@ -53,15 +53,16 @@ $dirs = array(
 		'target' => 'misc/update/win'	],
 	[	'source' => 'misc/update_scripts',
 		'target' => 'misc/update'	],
-/*
+
 	[	'source' => nZEDb_WWW . 'covers' . DS,
 		'target' =>	nZEDb_ROOT . 'resources' . DS . 'covers' . DS	],
 
 	[	'source' => nZEDb_ROOT . 'nzbfiles',
 		'target' =>	nZEDb_RES . 'nzb'	]
- */
+/*
 	[	'source' => nZEDb_RES . 'tmp' . DS . 'dummy' . DS . 'covers' . DS,
 		'target' => nZEDb_RES . 'tmp' . DS	],
+*/
 );
 
 
