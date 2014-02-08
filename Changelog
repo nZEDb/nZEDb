@@ -7,7 +7,9 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-08 -> jonnyboy -> reduced sleep time in populating queue in python scripts
+2014-02-08 -> jonnyboy -> removed persistant mysql connections from DB.php, not needed with mysql
+                          added another myisam row format to updated convert_mysql_tables.php and improved usage instructions
+                          reduced sleep time in populating queue in python scripts
                           added option to optimize all tables at once, force optimize all tables or analyze only optimise.php
                           added analyze tables every 60 min to monitor.php
 2014-02-07 -> niel     -> Upd: Updated install steps so that they correctly use the autoloader.
