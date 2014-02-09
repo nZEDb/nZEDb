@@ -19,8 +19,7 @@
  * @copyright 2014 nZEDb
  */
 require_once realpath(dirname(__FILE__) . '/../www/config.php');
-
-//use \Nzedb\Utility;
+require_once nZEDb_LIB . 'utility' . DS .'MoveFileTree.php';
 
 $s = new Sites();
 
@@ -72,7 +71,7 @@ $dirs = array(
 		'target' => nZEDb_MISC . 'update'	],
 
 	[	'source' => nZEDb_WWW . 'covers' . DS,
-		'target' =>	nZEDb_ROOT . 'resources' . DS . 'covers' . DS	],
+		'target' =>	nZEDb_RES	],
 
 	// This moves the default nzbpath. If you use another location it will be unaffected
 	'nzb' => [	'basemv' => false,
@@ -92,7 +91,7 @@ foreach ($dirs as $path)
 	$basemv = isset($path['basemv']) ? $path['basemv'] : true;
 
 	if (file_exists($source)) {
-		$mover = new \nzedb\Utility\MoveFileTree($source, $target);
+		$mover = new \nzedb\Utility\MoveFileTree($source, $target, $basemv);
 
 		if (!$mover->isWIndows()) {
 			setPerms($target);
@@ -110,7 +109,7 @@ foreach ($dirs as $path)
 
 $site = $s->get();
 $db = new DB();
-if ($dirs['nzb']['source'] == $site['nzbpath']) {
+if ($dirs['nzb']['source'] == $site->nzbpath) {
 	// Update the nzbpath setting if it is the one in use.
 	$db->queryDirect(sprintf('UPDATE site SET value = %s WHERE setting = %s LIMIT 1', $dirs['nzb']['target'], 'nzbpath' ));
 }
