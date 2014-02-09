@@ -95,7 +95,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+my_id])
-					time.sleep(.05)
+					time.sleep(.03)
 					self.my_queue.task_done()
 
 def main():
@@ -119,7 +119,7 @@ def main():
 	groups = []
 	s = name = ""
 	for group in datas:
-		time.sleep(.1)
+		time.sleep(.03)
 		#start new groups using binaries.php, no need to check nntp
 		if group[1] == 0:
 			run += 1

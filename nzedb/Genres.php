@@ -73,4 +73,3 @@ class Genres
 		return $db->query("SELECT id FROM genres WHERE disabled = 1");
 	}
 }
-?>

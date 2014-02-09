@@ -76,7 +76,7 @@ class queue_runner(threading.Thread):
 					time_of_last_run = time.time()
 					if len(sys.argv) > 1 and sys.argv[1] == "amazon":
 						subprocess.call(["php", pathname+"/../nix/tmux/bin/postprocess_amazon.php", ""+my_id])
-					time.sleep(.05)
+					time.sleep(.03)
 					self.my_queue.task_done()
 
 def main(args):
@@ -100,7 +100,7 @@ def main(args):
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
-		time.sleep(.1)
+		time.sleep(.03)
 		my_queue.put(str(gnames))
 
 	my_queue.join()

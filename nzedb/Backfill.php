@@ -592,4 +592,3 @@ class Backfill
 		echo $this->c->set256($this->primary) . $type . ' Safe Threaded for ' . $group . " completed.\n" . $this->c->rsetColor();
 	}
 }
-?>
