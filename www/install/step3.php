@@ -1,6 +1,5 @@
 <?php
-require_once '../lib/InstallPage.php';
-require_once '../lib/Install.php';
+require_once '../automated.config.php';
 
 $page = new InstallPage();
 $page->title = "News Server Setup";

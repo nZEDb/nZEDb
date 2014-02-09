@@ -7,6 +7,21 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-09 -> jonnyboy -> added nZEDb_THEMES for pointing to fs themes path
+                          changed browse->flags to work with all themes where flags are available, added tooltip to show country
+2014-02-08 -> niel     -> Fix: Adding the missing slash to the themes path.
+2014-02-08 -> bart39   -> regex addition/fixes
+                          fixed preg_replace in test-all-regexes.php
+                          removed extra space
+2014-02-08 -> jonnyboy -> updated show_table_sizes.php to show egine and format
+                          removed persistant mysql connections from DB.php, not needed or recommended with mysql
+                          added another myisam row format to updated convert_mysql_tables.php and improved usage instructions
+                          reduced sleep time in populating queue in python scripts
+                          added option to optimize all tables at once, force optimize all tables or analyze only optimise.php
+                          added analyze tables every 60 min to monitor.php
+2014-02-07 -> niel     -> Upd: Updated install steps so that they correctly use the autoloader.
+2014-02-07 -> jonnyboy -> fixed links to libs in install scripts, fixed more links
+                          removed extra space
 2014-02-06 -> jonnyboy -> add regex for teevee
                           fixing spaces to tabs, merged statments
 2014-02-06 -> egandt   -> fix for Categories when dealing with anime ImageSets

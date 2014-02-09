@@ -17,6 +17,9 @@ define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);
 // Used to refer to the third party library files.
 define('nZEDb_LIBS', nZEDb_ROOT . 'libs' . DS);
 
+// Used to refer to the /themes, this is full path in filesystem, not used for web.
+define('nZEDb_THEMES', nZEDb_WWW . 'themes' . DS);
+
 if (function_exists('ini_set') && function_exists('ini_get')) {
 	$ps = (strtolower(PHP_OS) == 'windows') ? ';' : ':';
 	ini_set('include_path', nZEDb_WWW . $ps . ini_get('include_path'));
@@ -34,8 +37,8 @@ if (strlen($www_top) == 1) {
 // Used everywhere an href is output, includes the full path to the nZEDb install.
 define('WWW_TOP', $www_top);
 
-// Path to themes directory.
-define('THEMES_DIR', WWW_TOP . 'themes');
+// Path to themes directory for web
+define('THEMES_DIR', WWW_TOP . '/themes');
 
 // Number of results per page.
 define("ITEMS_PER_PAGE", "50");

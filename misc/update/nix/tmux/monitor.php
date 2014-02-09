@@ -101,10 +101,7 @@ function rand_bool($loop, $chance = 60)
 }
 
 //totals per category in db, results by parentID
-$qry = 'SELECT c.parentid AS parentid, COUNT(r.id) AS count '
-	. 'FROM category c, releases r '
-	. 'WHERE r.categoryid = c.id '
-	. 'GROUP BY c.parentid';
+$qry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid";
 
 //needs to be processed query
 $proc_work = "SELECT "
@@ -402,6 +399,13 @@ while ($i > 0) {
 	if ($db->ping(true) == false) {
 		unset($db);
 		$db = new DB();
+	}
+
+	// Ananlyze tables every 60 min
+	$time08 = TIME();
+	if ($i == 1 || (TIME() - $time08 >= 3600)) {
+		$db->optimise(true, 'analyze');
+		$time08 = TIME();
 	}
 
 	// These queries are very fast, run every loop
@@ -976,7 +980,7 @@ while ($i > 0) {
 
 	if (((isset($monitor_path)) && (file_exists($monitor_path))) || ((isset($monitor_path_a)) && (file_exists($monitor_path_a))) || ((isset($monitor_path_b)) && (file_exists($monitor_path_b)))) {
 		echo "\n";
-		printf($mask3, "Ramdisk", "Used", "Free");
+		printf($mask3, "File System", "Used", "Free");
 		printf($mask3, "======================================", "=========================", "======================================");
 		if (isset($monitor_path) && $monitor_path != "" && file_exists($monitor_path)) {
 			$disk_use = decodeSize(disk_total_space($monitor_path) - disk_free_space($monitor_path));

@@ -75,7 +75,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix/tmux/bin/requestID.php", ""+my_id])
-					#time.sleep(.05)
+					time.sleep(.03)
 					self.my_queue.task_done()
 
 def main():
@@ -99,7 +99,7 @@ def main():
 
 	#now load some arbitrary jobs into the queue
 	for release in datas:
-		#time.sleep(.05)
+		time.sleep(.03)
 		my_queue.put("%s                       %s                       %s" % (release[0], release[1], release[2]))
 
 	my_queue.join()

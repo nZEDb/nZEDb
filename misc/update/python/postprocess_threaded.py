@@ -246,7 +246,7 @@ class queue_runner(threading.Thread):
                 if my_id:
                     time_of_last_run = time.time()
                     subprocess.call(["php", pathname+"/../nix/tmux/bin/postprocess_new.php", ""+my_id])
-                    time.sleep(.05)
+                    time.sleep(.02)
                     self.my_queue.task_done()
 
 def u(x):
@@ -283,19 +283,19 @@ def main(args):
     #now load some arbitrary jobs into the queue
     if sys.argv[1] == "additional":
         for release in datas:
-            time.sleep(.1)
+            time.sleep(.02)
             my_queue.put(u("%s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s           =+=            %s") % (release[0], release[1], release[2], release[3], release[4], release[5], release[6], release[7]))
     elif sys.argv[1] == "nfo":
         for release in datas:
-            time.sleep(.1)
+            time.sleep(.02)
             my_queue.put(u("%s           =+=            %s           =+=            %s           =+=            %s") % (release[0], release[1], release[2], release[3]))
     elif sys.argv[1] == "movie":
         for release in datas:
-            time.sleep(.1)
+            time.sleep(.02)
             my_queue.put(u("%s           =+=            %s           =+=            %s") % (release[0], release[1], release[2]))
     elif sys.argv[1] == "tv":
         for release in datas:
-            time.sleep(.1)
+            time.sleep(.02)
             my_queue.put(u("%s           =+=            %s") % (release[0], release[1]))
 
     my_queue.join()

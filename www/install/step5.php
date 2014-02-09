@@ -1,7 +1,5 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../config.php');
-require_once '../lib/InstallPage.php';
-require_once '../lib/Install.php';
 
 $page = new InstallPage();
 $page->title = "Setup Admin User";
@@ -27,7 +25,7 @@ if ($page->isPostBack()) {
 	if ($cfg->ADMIN_USER == '' || $cfg->ADMIN_PASS == '' || $cfg->ADMIN_EMAIL == '') {
 		$cfg->error = true;
 	} else {
-		require_once '../lib/Users.php';
+		require_once '../../nzedb/Users.php';
 		$user = new Users();
 		if (!$user->isValidUsername($cfg->ADMIN_USER)) {
 			$cfg->error = true;

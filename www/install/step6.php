@@ -1,7 +1,5 @@
 <?php
 require_once realpath(dirname(__FILE__) . '/../config.php');
-require_once '../lib/InstallPage.php';
-require_once '../lib/Install.php';
 
 $page = new InstallPage();
 
@@ -41,7 +39,6 @@ if ($page->isPostBack()) {
 				mkdir($cfg->NZB_PATH . "tmpunrar");
 			}
 
-			require_once $cfg->nZEDb_WWW . '/lib/DB.php';
 			$db = new DB();
 			$sql1 = sprintf("UPDATE site SET value = %s WHERE setting = 'nzbpath'", $db->escapeString($cfg->NZB_PATH));
 			$sql2 = sprintf("UPDATE site SET value = %s WHERE setting = 'tmpunrarpath'", $db->escapeString($cfg->NZB_PATH . "tmpunrar"));

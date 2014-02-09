@@ -79,7 +79,7 @@ class DB extends PDO
 		}
 
 		try {
-			$options = array(PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_LOCAL_INFILE => true);
+			$options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_LOCAL_INFILE => true);
 			if ($this->dbsystem == 'mysql') {
 				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			}
@@ -325,23 +325,47 @@ class DB extends PDO
 	}
 
 	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
-	public function optimise($admin = false)
+	public function optimise($admin = false, $type = '')
 	{
 		$tablecnt = 0;
 		if ($this->dbsystem == 'mysql') {
-			// only optimize if free space exceeds 5%
-			$alltables = $this->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
-			$tablecnt = count($alltables);
-			foreach ($alltables as $table) {
-				if ($admin === false) {
-					echo 'Optimizing table: ' . $table['name'] . ".\n";
-				}
-				if (strtolower($table['engine']) == 'myisam') {
-					$this->queryDirect('REPAIR TABLE `' . $table['name'] . '`');
-				}
-				$this->queryDirect('OPTIMIZE TABLE `' . $table['name'] . '`');
+			if ($type === 'true' || $type === 'full' || $type === 'analyze') {
+				$alltables = $this->query('SHOW TABLE STATUS');
+			} else {
+				$alltables = $this->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
 			}
-			$this->queryDirect('FLUSH TABLES');
+			$tablecnt = count($alltables);
+			if ($type === 'all' || $type === 'full') {
+				$tbls = '';
+				foreach ($alltables as $table) {
+					$tbls .= $table['name'] . ', ';
+				}
+				$tbls = rtrim(trim($tbls),',');
+				if ($admin === false) {
+					echo $this->c->primary('Optimizing tables: ' . $tbls);
+				}
+				$this->queryExec("OPTIMIZE LOCAL TABLE ${tbls}");
+			} else {
+				foreach ($alltables as $table) {
+					if ($type === 'analyze') {
+						if ($admin === false) {
+							echo $this->c->primary('Analyzing table: ' . $table['name']);
+						}
+						$this->queryExec('ANALYZE LOCAL TABLE `' . $table['name'] . '`');
+					} else {
+						if ($admin === false) {
+							echo $this->c->primary('Optimizing table: ' . $table['name']);
+						}
+						if (strtolower($table['engine']) == 'myisam') {
+							$this->queryExec('REPAIR TABLE `' . $table['name'] . '`');
+						}
+						$this->queryExec('OPTIMIZE LOCAL TABLE `' . $table['name'] . '`');
+					}
+				}
+			}
+			if ($type !== 'analyze') {
+				$this->queryExec('FLUSH TABLES');
+			}
 		} else if ($this->dbsystem == 'pgsql') {
 			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
 			$tablecnt = count($alltables);
