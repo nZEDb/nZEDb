@@ -500,7 +500,7 @@ function release_flag($x, $t)
 		$d = "Vietnamese";
 	}
 	if ($y !== "" && $t == "browse") {
-		if (file_exists(nZEDb_WWW . THEMES_DIR . DS . $site->style . DS . "images" . DS . "flags" . DS . $y . ".png")) {
+		if (file_exists(nZEDb_THEMES . $site->style . DS . "images" . DS . "flags" . DS . $y . ".png")) {
 			return '<img title=' . $d . ' src="' . THEMES_DIR . '/' . $site->style . '/images/flags/' . $y . '.png" />';
 		} else {
 			return '<img title=' . $d . ' src="' . THEMES_DIR . '/Default/images/flags/' . $y . '.png" />';
