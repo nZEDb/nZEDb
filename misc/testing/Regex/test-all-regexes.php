@@ -61,8 +61,8 @@ function test_regex($name, $group, $argv)
 			print_str('primary', $group . "\n", $argv);
 		}
 		while (($line1 = fgets($handle)) !== false) {
-			$line2 = preg_replace('/\$this->e0/', $e0, $line1);
-			$line = preg_replace('/\$this->e1/', $e1, $line2);
+			$line2 = preg_replace('/\' \. \$this->e0 \. \'/', $e0, $line1);
+			$line = preg_replace('/\' \. \$this->e1/', $e1 . '\'', $line2);
 			$matchName = $match = $match1 = '';
 			if (preg_match('/public function (.+)\(\)/', $line, $matchName)) {
 				$groupName = $matchName[1];
@@ -102,8 +102,8 @@ function test_regex($name, $group, $argv)
 	$groupName1 = 'renametopre';
 	if ($handle1) {
 		while (($line1 = fgets($handle1)) !== false) {
-			$line2 = preg_replace('/\$this->e0/', $e01, $line1);
-			$line = preg_replace('/\$this->e1/', $e11, $line2);
+			$line2 = preg_replace('/\' \. \$this->e0 \. \'/', $e01, $line1);
+			$line = preg_replace('/\' \. \$this->e1/', $e11 . '\'', $line2);
 			if (preg_match('/if \(preg_match\(\'(.+)\', \$this->subject\, \$match\)\)/', $line, $match) || preg_match('/if \(preg_match\(\'(.+)\', \$subject\, \$match\)\)/', $line, $match)) {
 				$regex = $match[1];
 				if (preg_match($regex, $test_str1, $match1)) {

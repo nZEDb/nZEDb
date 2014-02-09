@@ -76,7 +76,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+my_id])
-					time.sleep(.05)
+					time.sleep(.03)
 					self.my_queue.task_done()
 
 def main(args):
@@ -107,18 +107,18 @@ def main(args):
 	if len(datas) != 0:
 		if (int(use_true[0]) == 0 or int(use_true[0]) == 1) and len(sys.argv) == 1:
 			for gnames in datas:
-				time.sleep(.1)
+				time.sleep(.03)
 				my_queue.put(os.path.join(nzbs,gnames))
 		elif int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 			for gnames in datas:
-				time.sleep(.1)
+				time.sleep(.03)
 				my_queue.put("%s   %s" % (os.path.join(nzbs,gnames), "true"))
 	if len(datas) == 0:
 		if (int(use_true[0]) == 0 or int(use_true[0]) == 1) and len(sys.argv) == 1:
-			time.sleep(.1)
+			time.sleep(.03)
 			my_queue.put(nzbs)
 		elif int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
-			time.sleep(.1)
+			time.sleep(.03)
 			my_queue.put("%s   %s" % (nzbs, "true"))
 
 	my_queue.join()

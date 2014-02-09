@@ -85,7 +85,7 @@ Class PreDb
 		$nfos = $this->matchNfo($nntp);
 		if ($this->echooutput) {
 			$count = ($nfos > 0) ? $nfos : 0;
-			echo $this->c->header('Added ' . $count . ' missing NFOs from preDB sources.');
+			echo $this->c->header("\nAdded " . number_format($count) . ' missing NFOs from preDB sources.');
 		}
 	}
 
@@ -684,7 +684,7 @@ Class PreDb
 			echo $this->c->primary('Matching up predb NFOs with releases missing an NFO.');
 		}
 
-		$res = $db->queryDirect('SELECT r.id, p.nfo, r.completion, r.guid, r.groupid FROM releases r INNER JOIN predb p ON r.preid = p.id WHERE p.nfo IS NOT NULL AND r.nfostatus != 1 LIMIT 100');
+		$res = $db->queryDirect('SELECT r.id, p.nfo, r.completion, r.guid, r.groupid FROM releases r INNER JOIN predb p ON r.preid = p.id WHERE r.nfostatus != 1 AND p.nfo IS NOT NULL LIMIT 100');
 		$total = $res->rowCount();
 		if ($total > 0) {
 			$nfo = new Nfo($this->echooutput);

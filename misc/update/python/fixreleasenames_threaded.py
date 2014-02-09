@@ -124,7 +124,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix/tmux/bin/fixreleasenames.php", ""+my_id])
-					time.sleep(.05)
+					time.sleep(.03)
 					self.my_queue.task_done()
 
 def main():
@@ -152,23 +152,23 @@ def main():
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "nfo":
 		for release in datas:
-			time.sleep(.05)
+			time.sleep(.03)
 			my_queue.put("%s %s" % ("nfo", release[0]))
 	elif sys.argv[1] == "filename":
 		for release in datas:
-			time.sleep(.05)
+			time.sleep(.03)
 			my_queue.put("%s %s" % ("filename", release[0]))
 	elif sys.argv[1] == "md5":
 		for release in datas:
-			time.sleep(.05)
+			time.sleep(.03)
 			my_queue.put("%s %s" % ("md5", release[0]))
 	elif sys.argv[1] == "par2":
 		for release in datas:
-			time.sleep(.05)
+			time.sleep(.03)
 			my_queue.put("%s %s %s %s" % ("par2", release[0], release[1], release[2]))
 	elif sys.argv[1] == "miscsorter":
 		for release in datas:
-			time.sleep(.05)
+			time.sleep(.03)
 			my_queue.put("%s %s" % ("miscsorter", release[0]))
 
 	my_queue.join()

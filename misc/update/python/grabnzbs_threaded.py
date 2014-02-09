@@ -103,7 +103,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix/tmux/bin/grabnzbs.php", ""+my_id])
-					time.sleep(.05)
+					time.sleep(.03)
 					self.my_queue.task_done()
 
 def main():
@@ -128,7 +128,7 @@ def main():
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
-		time.sleep(.1)
+		time.sleep(.03)
 		my_queue.put(gnames[0])
 
 	my_queue.join()
