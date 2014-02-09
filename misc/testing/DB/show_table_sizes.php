@@ -51,6 +51,14 @@ $innodb = $db->queryOneRow("SELECT CONCAT(ROUND(KBS/POWER(1024,IF(pw<0,0,IF(pw>3
 	. "FROM information_schema.tables "
 	. "WHERE engine='InnoDB') A,(SELECT 3 pw) B;");
 
+$a = $myisam['recommended_key_buffer_size'];
+if ($myisam['recommended_key_buffer_size'] === null) {
+	$a = '12M';
+}
+$b = $innodb['recommended_innodb_buffer_pool_size'];
+if ($innodb['recommended_innodb_buffer_pool_size'] === null) {
+	$b = '12M';
+}
 echo $c->headerOver("\n\nThe recommended minimums are:\n");
-echo $c->primaryOver("MyISAM: key-buffer-size           = ") . $c->alternate($myisam['recommended_key_buffer_size']);
-echo $c->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $c->alternate($innodb['recommended_innodb_buffer_pool_size'] . "\n");
+echo $c->primaryOver("MyISAM: key-buffer-size           = ") . $c->alternate($a);
+echo $c->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $c->alternate($b . "\n");
