@@ -35,7 +35,7 @@ if (strlen($www_top) == 1) {
 define('WWW_TOP', $www_top);
 
 // Path to themes directory.
-define('THEMES_DIR', WWW_TOP . 'themes');
+define('THEMES_DIR', WWW_TOP . '/themes');
 
 // Number of results per page.
 define("ITEMS_PER_PAGE", "50");
