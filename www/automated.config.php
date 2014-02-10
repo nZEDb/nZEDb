@@ -18,12 +18,14 @@ define('nZEDb_MISC', nZEDb_ROOT . 'misc' . DS);
 
 define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 
-// Used to refer to the /misc class files.
+// Used to refer to the /resources dirs.
 define('nZEDb_RES', nZEDb_ROOT . 'resources' . DS);
 
 
-// Used to refer to the /misc class files.
-define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
+// Used to refer to the /resources/covers files.
+if (!defined('DB_USER')) { // If not included by config.php we probably have no Db to lookup
+	define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
+}
 
 // Used to refer to the /misc class files.
 define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);

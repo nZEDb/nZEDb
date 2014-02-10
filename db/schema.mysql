@@ -975,6 +975,7 @@ INSERT INTO site
 	('home_link','/'),
 	('dereferrer_link',''),
 	('nzbpath','/your/path/to/nzbs/'),
+	('coverspath','/your/path/to/covers/'),
 	('lookuptvrage', 1),
 	('lookupimdb', 1),
 	('lookupnfo', 1),
