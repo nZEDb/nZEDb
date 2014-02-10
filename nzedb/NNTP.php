@@ -405,21 +405,25 @@ class NNTP extends Net_NNTP_Client {
 	 */
 	protected function _getXfeatureTextResponse() {
 		$tries = $bytesreceived = $totalbytesreceived = 0;
-		$completed = false;
+		$completed = $possibleterm = false;
 		$data = null;
-		// String to hold a possible ending (.\r\n)
-		$possibleterm = '';
 
 		while (!feof($this->_socket)) {
-			$completed = false;
+			// Reset only if decompression has not failed.
+			if ($tries === 0) {
+				$completed = false;
+			}
 
 			// Did we find a possible ending ? (.\r\n)
-			if ($possibleterm != '') {
+			if ($possibleterm !== false) {
+
 				// If the socket is really empty, fgets will get stuck here,
 				// so set the socket to non blocking in case.
 				stream_set_blocking($this->_socket, 0);
+
 				// Now try to download from the socket.
 				$buffer = fgets($this->_socket);
+
 				// And set back the socket to blocking.
 				stream_set_blocking($this->_socket, 1);
 
@@ -431,11 +435,10 @@ class NNTP extends Net_NNTP_Client {
 				// The buffer was not empty, so we know this was not
 				// the real ending, so reset $possibleterm.
 				} else {
-					$possibleterm = '';
+					$possibleterm = false;
 				}
 			} else {
-				// Don't try to redownload from the socket
-				// if decompression failed.
+				// Don't try to redownload from the socket if decompression failed.
 				if ($tries === 0) {
 					// Get data from the stream.
 					$buffer = fgets($this->_socket);
@@ -490,8 +493,8 @@ class NNTP extends Net_NNTP_Client {
 				// Show bytes recieved
 				if ($totalbytesreceived > 10240 && $totalbytesreceived % 128 == 0) {
 					echo $this->c->setcolor($this->primary, 'Bold') . 'Receiving ' .
-					round($totalbytesreceived / 1024) . 'KB from ' .
-					$this->group() . ".\r" . $this->c->rsetcolor();
+						round($totalbytesreceived / 1024) . 'KB from ' .
+						$this->group() . ".\r" . $this->c->rsetcolor();
 				}
 
 				// Check to see if we have the magic terminator on the byte stream.
@@ -505,7 +508,7 @@ class NNTP extends Net_NNTP_Client {
 						}
 
 						// We have a possible ending, next loop check if it is.
-						$possibleterm = $buffer;
+						$possibleterm = true;
 						continue;
 					}
 				}
