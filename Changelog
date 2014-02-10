@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-10 -> jonnyboy -> attempt to revert some file path changes
 2014-02-09 -> jonnyboy -> changed populate nzbs to insert/update instead if check first then insert/update
 2014-02-09 -> kevin    -> changed nntp compression to verify end of stream before decompress
                           nzedb/NNTP.php ; Disconnect from usenet if still connected when the class goes out of scope.
