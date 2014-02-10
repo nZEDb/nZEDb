@@ -407,11 +407,40 @@ class NNTP extends Net_NNTP_Client {
 		$tries = $bytesreceived = $totalbytesreceived = 0;
 		$completed = false;
 		$data = null;
+		$possibleterm = '';
 
 		while (!feof($this->_socket)) {
 			$completed = false;
-			// Get data from the stream.
-			$buffer = fgets($this->_socket);
+
+			if ($possibleterm != '') {
+				stream_set_blocking($this->_socket, 0);
+				$buffer = fgets($this->_socket);
+				stream_set_blocking($this->_socket, 1);
+				if (empty($buffer)) {
+					$completed = true;
+				} else {
+					$possibleterm = '';
+				}
+			} else {
+				// Get data from the stream.
+				$buffer = fgets($this->_socket);
+			}
+
+			if ($completed === true) {
+				$decomp = gzuncompress(mb_substr($data , 0 , -3, '8bit'));
+				/* Split the string of headers into and array of
+				 * individual headers, then return it.
+				 */
+				if (!empty($decomp)) {
+					return explode("\r\n", trim($decomp));
+				} else {
+					// Try 5 times to decompress.
+					if ($tries++ > 5) {
+						return $this->throwError($this->c->error
+							('Decompression Failed after 5 tries, connection closed.'), 1000);
+					}
+				}
+			}
 
 			// Get byte count.
 			$bytesreceived = strlen($buffer);
@@ -456,28 +485,14 @@ class NNTP extends Net_NNTP_Client {
 							echo "\n";
 						}
 
-						$completed = true;
+						//$completed = true;
+						$possibleterm = $buffer;
+						continue;
 					}
 				}
 			} else {
 				return $this->throwError('Socket error: ' .
 					socket_strerror($errorcode), 1000);
-			}
-
-			if ($completed === true) {
-				$decomp = @gzuncompress(mb_substr($data , 0 , -3, '8bit'));
-				/* Split the string of headers into and array of
-				 * individual headers, then return it.
-				 */
-				if (!empty($decomp)) {
-					return explode("\r\n", trim($decomp));
-				} else {
-					// Try 5 times to decompress.
-					if ($tries++ > 5) {
-						return $this->throwError($this->c->error
-							('Decompression Failed after 5 tries, connection closed.'), 1000);
-					}
-				}
 			}
 		}
 		// Throw an error if we get out of the loop.
