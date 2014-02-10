@@ -24,7 +24,7 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 	while (1 === 1) {
 		$counted = $threads = 0;
 		passthru('clear');
-		exec('ps --no-header -eo pid,user,etime,command | grep $USER | grep "update_binaries.php\|backfill_all\|backfill.php\|backfill_interval\|safe_pull" | grep -v monitor_binaries_backfill.php | grep -v grep', $output);
+		exec('ps --no-header -eo pid,user,etime,command | grep $USER | grep "update_groups\|update_binaries.php\|backfill_all\|backfill.php\|backfill_interval\|safe_pull" | grep -v monitor_binaries_backfill.php | grep -v grep', $output);
 		if (isset($output[0]) && strlen($output[0]) > 8) {
 			foreach ($output as $line) {
 				preg_match('/(\d+):(\d+) /', $line, $time);

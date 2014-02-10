@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-10 -> jonnyboy -> added monitor_binaries_backfill.php, added 2 required arguments
+2014-02-10 -> jonnyboy -> added unique constraint to collectionhash
+                          added monitor_binaries_backfill.php, added 2 required arguments
                           added script to verify images exist for books, music and consoles
                           reverted more, fixing .gitignore
 2014-02-10 -> kevin    -> Comment/additional changes to xfeature gzip decompression.
