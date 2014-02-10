@@ -1811,7 +1811,7 @@ CREATE INDEX "collections_filecheck" ON "collections" ("filecheck");
 DROP INDEX IF EXISTS "collections_dateadded" CASCADE;
 CREATE INDEX "collections_dateadded" ON "collections" ("dateadded");
 DROP INDEX IF EXISTS "collections_collectionhash" CASCADE;
-CREATE INDEX "collections_collectionhash" ON "collections" ("collectionhash");
+CREATE UNIQUE INDEX "collections_collectionhash" ON "collections" ("collectionhash");
 DROP INDEX IF EXISTS "collections_releaseid" CASCADE;
 CREATE INDEX "collections_releaseid" ON "collections" ("releaseid");ALTER TABLE "consoleinfo" ADD CONSTRAINT "consoleinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "content" ADD CONSTRAINT "content_id_pkey" PRIMARY KEY("id");ALTER TABLE "forumpost" ADD CONSTRAINT "forumpost_id_pkey" PRIMARY KEY("id");
 DROP INDEX IF EXISTS "forumpost_parentid" CASCADE;
