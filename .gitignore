@@ -10,4 +10,6 @@ php-errors.log
 *~
 
 /nbproject/
+/nbproject/private/
+/resources/tmp/*
 /smarty/lib/templates_c/*

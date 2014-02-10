@@ -5,10 +5,6 @@
 
 require dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'Util.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'category.php';
-//require_once nZEDb_LIB . 'releaseimage.php';
-//require_once nZEDb_LIB . 'site.php';
 
 class AniDBstandAlone
 {
@@ -20,7 +16,7 @@ class AniDBstandAlone
 		$this->site = $s->get();
 		$this->aniqty = (!empty($this->site->maxanidbprocessed)) ? $this->site->maxanidbprocessed : 100;
 		$this->echooutput = $echooutput;
-		$this->imgSavePath = nZEDb_WWW.'covers/anime/';
+		$this->imgSavePath = nZEDb_COVERS . 'anime/';
 		$this->debug = ($this->site->debuginfo == '0') ? false : true;
 		$this->APIKEY = $this->site->anidbkey;
 		$this->db = new DB();
@@ -368,7 +364,7 @@ Holding on to this in case we want it again as it has some uses, but currently w
                 // Warning: missing date info is added to januari and day 01 (2008 -> 2008-01-01)
                 if (isset($type_startenddate[2][1]))
                 {
-                        if (($timestamp = strtotime($type_startenddate[2][1])) === false) 
+                        if (($timestamp = strtotime($type_startenddate[2][1])) === false)
                         {
                         // Timestamp not good->make it null";
 //                                echo "Null date ".$type_startenddate[2][1]."\n";
@@ -386,7 +382,7 @@ Holding on to this in case we want it again as it has some uses, but currently w
 
                 if (isset($type_startenddate[2][2]))
                 {
-                        if (($timestamp = strtotime($type_startenddate[2][2])) === false) 
+                        if (($timestamp = strtotime($type_startenddate[2][2])) === false)
                         {
                                 // Timestamp not good->make it null";
                                 echo "Null date ".$type_startenddate[2][2]."\n";
