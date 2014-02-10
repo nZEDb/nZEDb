@@ -15,10 +15,10 @@ LASTOPTIMIZE1=`date +%s`
 command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=`command -v php`; }
 
 #delete stale tmpunrar folders
-export count=`find $NZEDB_ROOT/nzbfiles/tmpunrar -type d -print| wc -l`
+export count=`find $NZEDB_ROOT/resources/tmp/unrar -type d -print| wc -l`
 if [ $count != 1 ]
 then
-	rm -r $NZEDB_ROOT/nzbfiles/tmpunrar/*
+	rm -r $NZEDB_ROOT/resources/tmp/unrar/*
 fi
 
 while :

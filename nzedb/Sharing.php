@@ -25,7 +25,7 @@ require_once nZEDb_LIBS . 'Yenc.php';
   *
   * When a release is edited on the site(searchname, imdbid, etc),
   *  reset shared to 0.
-  * 
+  *
   * Move local stuff to its own table.
   */
 
@@ -170,7 +170,6 @@ ALTER TABLE releases ADD shared TINYINT(1) NOT NULL DEFAULT '0';
   *
   * @access public
   */
-
 class Sharing {
 	/**
 	 * Debug priority.
@@ -912,11 +911,11 @@ $this->debug = true;
 	/**
 	 * Download article headers from usenet until we find the last article.
 	 * Then download the body, parse it.
-	 * 
+	 *
 	 * @param bool  $comments Are we looking for comments or metadata?
-	 * 
+	 *
 	 * @return int How many meta/comments have we fetched.
-	 * 
+	 *
 	 * @access protected.
 	 */
 	protected function scanForward($comments=false) {

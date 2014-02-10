@@ -21,11 +21,11 @@ export NZEDB_SLEEP_TIME="60"
 	   LASTOPTIMIZE1=`date +%s`
 	   LASTOPTIMIZE2=`date +%s`
 
-#delete stale tmpunrar folders
-export count=`find $NZEDB_PATH/../../nzbfiles/tmpunrar -type d -print| wc -l`
+#delete stale tmp/unrar folders
+export count=`find $NZEDB_ROOT/resources/tmp/unrar -type d -print| wc -l`
 if [ $count != 1 ]
 then
-	rm -r $NZEDB_PATH/../../nzbfiles/tmpunrar/*
+	rm -r $NZEDB_ROOT/resources/tmp/unrar/*
 fi
 
 while :
