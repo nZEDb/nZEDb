@@ -96,6 +96,17 @@ class NNTP extends Net_NNTP_Client {
 	}
 
 	/**
+	 * Default destructor, close the connection the NNTP server if still connected.
+	 *
+	 * @access public
+	 */
+	public function __destruct() {
+		if (self::_isConnected()) {
+			self::doQuit();
+		}
+	}
+
+	/**
 	 * Connect to a usenet server.
 	 *
 	 * @param boolean $compression Should we attempt to enable XFeature Gzip

@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-09 -> kevin    -> nzedb/NNTP.php ; Disconnect from usenet if still connected when the class goes out of scope.
 2014-02-09 -> jonnyboy -> changed order in if
                           added nZEDb_THEMES for pointing to fs themes path
                           changed browse->flags to work with all themes where flags are available, added tooltip to show country
