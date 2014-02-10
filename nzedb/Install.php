@@ -76,8 +76,9 @@ class Install
 		$this->SMARTY_DIR = SMARTY_DIR;
 		$this->DB_DIR = dirname(realpath('..')) . '/db';
 		$this->nZEDb_MISC = dirname(realpath('..')) . '/misc';
-		$this->NZB_PATH = str_replace('\\', '/', realpath(nZEDb_RES . 'nzb/'));
+		$this->NZB_PATH = str_replace('\\', '/', dirname(realpath('..'))) . '/nzbfiles/';
 		$this->INSTALL_DIR = $this->nZEDb_WWW . '/install';
+		$this->nZEDb_LIB = dirname(realpath('..')) . '/nzedb/';
 		$this->nZEDb_LIBS = str_replace('\\', '/', realpath(nZEDb_LIBS));
 	}
 
