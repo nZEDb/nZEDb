@@ -411,92 +411,100 @@ function cp437toUTF($str)
 function release_flag($x, $t)
 {
 	$y = "";
+	$s = new Sites();
+	$site = $s->get();
+
 	if (preg_match('/\bCzech\b/i', $x)) {
 		$y = "cz";
-	}
-	if (preg_match('/Chinese|Mandarin|\bc[hn]\b/i', $x)) {
+		$d = "Czech";
+	} else if (preg_match('/Chinese|Mandarin|\bc[hn]\b/i', $x)) {
 		$y = "cn";
-	}
-	if (preg_match('/German(bed)?|\bger\b/i', $x)) {
+		$d = "Chinese";
+	} else if (preg_match('/German(bed)?|\bger\b/i', $x)) {
 		$y = "de";
-	}
-	if (preg_match('/Danish/i', $x)) {
+		$d = "German";
+	} else if (preg_match('/Danish/i', $x)) {
 		$y = "dk";
-	}
-	if (preg_match('/English|\beng?\b/i', $x)) {
+		$d = "Danish";
+	} else if (preg_match('/English|\beng?\b/i', $x)) {
 		$y = "en";
-	}
-	if (preg_match('/Spanish/i', $x)) {
+		$d = "English";
+	} else if (preg_match('/Spanish/i', $x)) {
 		$y = "es";
-	}
-	if (preg_match('/Finnish/i', $x)) {
+		$d = "Spanish";
+	} else if (preg_match('/Finnish/i', $x)) {
 		$y = "fi";
-	}
-	if (preg_match('/French|Vostfr/i', $x)) {
+		$d = "Finnish";
+	} else if (preg_match('/French|Vostfr/i', $x)) {
 		$y = "fr";
-	}
-	if (preg_match('/\bGreek\b/i', $x)) {
+		$d = "French";
+	} else if (preg_match('/\bGreek\b/i', $x)) {
 		$y = "gr";
-	}
-	if (preg_match('/Hungarian|\bhun\b/i', $x)) {
+		$d = "Greek";
+	} else if (preg_match('/Hungarian|\bhun\b/i', $x)) {
 		$y = "hu";
-	}
-	if (preg_match('/Hebrew|Yiddish/i', $x)) {
+		$d = "Hungarian";
+	} else if (preg_match('/Hebrew|Yiddish/i', $x)) {
 		$y = "il";
-	}
-	if (preg_match('/\bHindi\b/i', $x)) {
+		$d = "Hebrew";
+	} else if (preg_match('/\bHindi\b/i', $x)) {
 		$y = "in";
-	}
-	if (preg_match('/Italian|\bita\b/i', $x)) {
+		$d = "Hindi";
+	} else if (preg_match('/Italian|\bita\b/i', $x)) {
 		$y = "it";
-	}
-	if (preg_match('/Japanese|\bjp\b/i', $x)) {
+		$d = "Italian";
+	} else if (preg_match('/Japanese|\bjp\b/i', $x)) {
 		$y = "jp";
-	}
-	if (preg_match('/Korean|\bkr\b/i', $x)) {
+		$d = "Japanese";
+	} else if (preg_match('/Korean|\bkr\b/i', $x)) {
 		$y = "kr";
-	}
-	if (preg_match('/Flemish|\b(Dutch|nl)\b|NlSub/i', $x)) {
+		$d = "Korean";
+	} else if (preg_match('/Flemish|\b(Dutch|nl)\b|NlSub/i', $x)) {
 		$y = "nl";
-	}
-	if (preg_match('/Norwegian/i', $x)) {
+		$d = "Dutch";
+	} else if (preg_match('/Norwegian/i', $x)) {
 		$y = "no";
-	}
-	if (preg_match('/Tagalog|Filipino/i', $x)) {
+		$d = "Norwegian";
+	} else if (preg_match('/Tagalog|Filipino/i', $x)) {
 		$y = "ph";
-	}
-	if (preg_match('/Arabic/i', $x)) {
+		$d = "Tagalog|Filipino";
+	} else if (preg_match('/Arabic/i', $x)) {
 		$y = "pk";
-	}
-	if (preg_match('/Polish/i', $x)) {
+		$d = "Arabic";
+	} else if (preg_match('/Polish/i', $x)) {
 		$y = "pl";
-	}
-	if (preg_match('/Portugese/i', $x)) {
+		$d = "Polish";
+	} else if (preg_match('/Portugese/i', $x)) {
 		$y = "pt";
-	}
-	if (preg_match('/Romanian/i', $x)) {
+		$d = "Portugese";
+	} else if (preg_match('/Romanian/i', $x)) {
 		$y = "ro";
-	}
-	if (preg_match('/Russian/i', $x)) {
+		$d = "Romanian";
+	} else if (preg_match('/Russian/i', $x)) {
 		$y = "ru";
-	}
-	if (preg_match('/Swe(dish|sub)/i', $x)) {
+		$d = "Russian";
+	} else if (preg_match('/Swe(dish|sub)/i', $x)) {
 		$y = "se";
-	}
-	if (preg_match('/\bThai\b/i', $x)) {
+		$d = "Swedish";
+	} else if (preg_match('/\bThai\b/i', $x)) {
 		$y = "th";
-	}
-	if (preg_match('/Turkish/i', $x)) {
+		$d = "Thai";
+	} else if (preg_match('/Turkish/i', $x)) {
 		$y = "tr";
-	}
-	if (preg_match('/Cantonese/i', $x)) {
+		$d = "Turkish";
+	} else if (preg_match('/Cantonese/i', $x)) {
 		$y = "tw";
-	}
-	if (preg_match('/Vietnamese/i', $x)) {
+		$d = "Cantonese";
+	} else if (preg_match('/Vietnamese/i', $x)) {
 		$y = "vn";
+		$d = "Vietnamese";
 	}
 	if ($y !== "" && $t == "browse") {
-		return '<img src="../themes/Default/images/flags/' . $y . '.png" />';
+		if (file_exists(nZEDb_THEMES . $site->style . DS . "images" . DS . "flags" . DS . $y . ".png")) {
+			return '<img title=' . $d . ' src="' . THEMES_DIR . '/' . $site->style . '/images/flags/' . $y . '.png" />';
+		} else {
+			return '<img title=' . $d . ' src="' . THEMES_DIR . '/Default/images/flags/' . $y . '.png" />';
+		}
 	} else if ($t == "search") {
 		if ($y == "") {
 			return false;
@@ -505,4 +513,3 @@ function release_flag($x, $t)
 		}
 	}
 }
-?>

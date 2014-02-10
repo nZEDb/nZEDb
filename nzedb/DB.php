@@ -363,7 +363,7 @@ class DB extends PDO
 					}
 				}
 			}
-			if ($type === 'analyze') {
+			if ($type !== 'analyze') {
 				$this->queryExec('FLUSH TABLES');
 			}
 		} else if ($this->dbsystem == 'pgsql') {

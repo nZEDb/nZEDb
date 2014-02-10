@@ -90,10 +90,11 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$db->queryExec("OPTIMIZE TABLE $tbl");
 	}
 } else {
-	exit($c->error("\nThis script will convert your tables to a new engine/format. Only tables not meeting the new engine/format will be converted.\n\n"
+	exit($c->error("\nThis script will convert your tables to a new engine/format. Only tables not meeting the new engine/format will be converted.\n"
+		. "A comparison of these, excluding TokuDB, https://github.com/nZEDb/nZEDb/wiki/MySQL-Storage-Engine-Comparison\n\n"
 		. "php convert_mysql_tables.php dmyisam                                        ...: Converts all the tables to Myisam Dynamic. This is the default and is recommended where ram is limited.\n"
 		. "php convert_mysql_tables.php fmyisam                                        ...: Converts all the tables to Myisam Fixed. This can be faster, but to fully convert all tables requires changing varchar columns to char.\n"
-		. "                                                                                 This will use more space than dynamic.\n"
+		. "                                                                                 This will use mucgh more space than dynamic.\n"
 		. "php convert_mysql_tables.php dinnodb                                        ...: Converts all the tables to InnoDB Dynamic. This is recommended when the total data and indexes can fit into the innodb_buffer_pool.\n"
 		. "php convert_mysql_tables.php cinnodb                                        ...: Converts all the tables to InnoDB Compressed. All tables except releasenfo will be converted to Compressed row format.\n"
         . "                                                                                 This is recommended when the total data and indexes can not fit into the innodb_buffer_pool using DYNAMIC row format.\n"

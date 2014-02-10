@@ -206,7 +206,8 @@ $proc_tmux = "SELECT "
 	. "(SELECT COUNT(DISTINCT(collectionhash)) FROM nzbs WHERE collectionhash IS NOT NULL) AS distinctnzbs, "
 	. "(SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL) AS totalnzbs, "
 	. "(SELECT COUNT(*) FROM (SELECT id FROM nzbs GROUP BY collectionhash, totalparts, id HAVING COUNT(*) >= totalparts) AS count) AS pendingnzbs, "
-	. "(SELECT value FROM site WHERE setting = 'grabnzbs') AS grabnzbs";
+	. "(SELECT value FROM site WHERE setting = 'grabnzbs') AS grabnzbs, "
+	. "(SELECT value FROM site WHERE setting = 'compressedheaders') AS compressed";
 
 //get microtime
 function microtime_float()
@@ -306,7 +307,7 @@ $active_groups = $all_groups = $running = 0;
 $backfilldays = $backfill_groups_date = $colors_exc =0;
 $book_diff = $book_percent = $book_releases_now = $book_releases_proc = 0;
 $console_diff = $console_percent = $console_releases_now = $console_releases_proc = 0;
-$misc_diff = $misc_percent = $misc_releases_now = $work_start = 0;
+$misc_diff = $misc_percent = $misc_releases_now = $work_start = $compressed = 0;
 $music_diff = $music_percent = $music_releases_proc = $music_releases_now = 0;
 $movie_diff = $movie_percent = $movie_releases_now = $movie_releases_proc = 0;
 $nfo_diff = $nfo_percent = $nfo_remaining_now = $nfo_now = $tvrage_releases_proc_start = 0;
@@ -334,8 +335,7 @@ $mask5 = $c->tmuxOrange("%-16.16s %25.25s %25.25s");
 //create display
 passthru('clear');
 //printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
-if ($running == 1)
-{
+if ($running == 1) {
 	printf($mask2, "Monitor Running v$version [" . $patch . "]: ", relativeTime("$time"));
 } else {
 	printf($mask2, "Monitor Off v$version [" . $patch . "]: ", relativeTime("$time"));
@@ -664,6 +664,9 @@ while ($i > 0) {
 	if ($proc_tmux_result[0]['grabnzbs'] != NULL) {
 		$grabnzbs = $proc_tmux_result[0]['grabnzbs'];
 	}
+	if ($proc_tmux_result[0]['compressed'] != NULL) {
+		$compressed = $proc_tmux_result[0]['compressed'];
+	}
 
 	if ($proc_tmux_result[0]['colors_start'] != NULL) {
 		$colors_start = $proc_tmux_result[0]['colors_start'];
@@ -948,6 +951,12 @@ while ($i > 0) {
 		}
 	}
 
+	if ($compressed === '1') {
+		$mask2 = $c->headerOver("%-20s")." ".$c->tmuxOrange("%-33.33s");
+	} else {
+		$mask2 = $c->alternateOver("%-20s")." ".$c->tmuxOrange("%-33.33s");
+	}
+
 	//update display
 	passthru('clear');
 	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
@@ -980,7 +989,7 @@ while ($i > 0) {
 
 	if (((isset($monitor_path)) && (file_exists($monitor_path))) || ((isset($monitor_path_a)) && (file_exists($monitor_path_a))) || ((isset($monitor_path_b)) && (file_exists($monitor_path_b)))) {
 		echo "\n";
-		printf($mask3, "Ramdisk", "Used", "Free");
+		printf($mask3, "File System", "Used", "Free");
 		printf($mask3, "======================================", "=========================", "======================================");
 		if (isset($monitor_path) && $monitor_path != "" && file_exists($monitor_path)) {
 			$disk_use = decodeSize(disk_total_space($monitor_path) - disk_free_space($monitor_path));

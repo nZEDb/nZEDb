@@ -394,4 +394,3 @@ class AniDB
 		$this->processAnAnimeRelease($results);
 	}
 }
-?>
