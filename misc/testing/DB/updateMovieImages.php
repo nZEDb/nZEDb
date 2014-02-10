@@ -1,11 +1,7 @@
 <?php
-
-//This script will update all records in the movieinfo table
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-$movie = new Movie(true);
-$db = new Db();
+$db = new DB();
 $covers = $updated = $deleted = 0;
 $c = new ColorCLI();
 
