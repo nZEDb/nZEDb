@@ -405,27 +405,47 @@ class NNTP extends Net_NNTP_Client {
 	 */
 	protected function _getXfeatureTextResponse() {
 		$tries = $bytesreceived = $totalbytesreceived = 0;
-		$completed = false;
+		$completed = $possibleterm = false;
 		$data = null;
-		$possibleterm = '';
 
 		while (!feof($this->_socket)) {
-			$completed = false;
-
-			if ($possibleterm != '') {
-				stream_set_blocking($this->_socket, 0);
-				$buffer = fgets($this->_socket);
-				stream_set_blocking($this->_socket, 1);
-				if (empty($buffer)) {
-					$completed = true;
-				} else {
-					$possibleterm = '';
-				}
-			} else {
-				// Get data from the stream.
-				$buffer = fgets($this->_socket);
+			// Reset only if decompression has not failed.
+			if ($tries === 0) {
+				$completed = false;
 			}
 
+			// Did we find a possible ending ? (.\r\n)
+			if ($possibleterm !== false) {
+
+				// If the socket is really empty, fgets will get stuck here,
+				// so set the socket to non blocking in case.
+				stream_set_blocking($this->_socket, 0);
+
+				// Now try to download from the socket.
+				$buffer = fgets($this->_socket);
+
+				// And set back the socket to blocking.
+				stream_set_blocking($this->_socket, 1);
+
+				// If the buffer was really empty, then we know $possibleterm
+				// was the real ending.
+				if (empty($buffer)) {
+					$completed = true;
+
+				// The buffer was not empty, so we know this was not
+				// the real ending, so reset $possibleterm.
+				} else {
+					$possibleterm = false;
+				}
+			} else {
+				// Don't try to redownload from the socket if decompression failed.
+				if ($tries === 0) {
+					// Get data from the stream.
+					$buffer = fgets($this->_socket);
+				}
+			}
+
+			// We found a ending, try to decompress the full buffer.
 			if ($completed === true) {
 				$decomp = gzuncompress(mb_substr($data , 0 , -3, '8bit'));
 				/* Split the string of headers into and array of
@@ -439,6 +459,8 @@ class NNTP extends Net_NNTP_Client {
 						return $this->throwError($this->c->error
 							('Decompression Failed after 5 tries, connection closed.'), 1000);
 					}
+					// Skip the loop to try decompressing again.
+					continue;
 				}
 			}
 
@@ -471,8 +493,8 @@ class NNTP extends Net_NNTP_Client {
 				// Show bytes recieved
 				if ($totalbytesreceived > 10240 && $totalbytesreceived % 128 == 0) {
 					echo $this->c->setcolor($this->primary, 'Bold') . 'Receiving ' .
-					round($totalbytesreceived / 1024) . 'KB from ' .
-					$this->group() . ".\r" . $this->c->rsetcolor();
+						round($totalbytesreceived / 1024) . 'KB from ' .
+						$this->group() . ".\r" . $this->c->rsetcolor();
 				}
 
 				// Check to see if we have the magic terminator on the byte stream.
@@ -485,8 +507,8 @@ class NNTP extends Net_NNTP_Client {
 							echo "\n";
 						}
 
-						//$completed = true;
-						$possibleterm = $buffer;
+						// We have a possible ending, next loop check if it is.
+						$possibleterm = true;
 						continue;
 					}
 				}
