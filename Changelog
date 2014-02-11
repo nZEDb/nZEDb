@@ -7,8 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-
-2014-02-11 -> jonnyboy -> updated monitor.php to force 'USE INDEX(ix_releases_status)'
+2014-02-11 -> jonnyboy -> updated delete_releases.php to echo query before running it
+                          updated monitor.php to force 'USE INDEX(ix_releases_status)'
                           updated remove_exact_dupes.php to delete to highest id first, might save some re-processing
                           updated nzb-imported.php to consider 1% variation in size to be the same when searching for existing release
                           updated remove_exact_dupes.php to allow purging releases with a variance of 1% in size
