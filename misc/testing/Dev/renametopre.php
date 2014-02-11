@@ -78,7 +78,7 @@ function preName($argv, $argc)
 	} else {
 		$why = ' WHERE 1=1';
 	}
-	resetSearchnames();
+//	resetSearchnames();
 	echo $c->header("SELECT id, name, searchname, groupid, categoryid FROM releases" . $why . $what . $where . ";\n");
 	$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases" . $why . $what . $where);
 	$total = $res->rowCount();
@@ -92,10 +92,12 @@ function preName($argv, $argc)
 			if (!is_array($cleanerName)) {
 				$cleanName = trim($cleanerName);
 				$propername = $increment = true;
-				$run = $db->queryOneRow("SELECT id FROM predb WHERE title = " . $db->escapeString($cleanerName));
-				if (isset($run['id'])) {
-					$preid = $run["id"];
-					$predb = true;
+				if ($cleanName != '' && $cleanerName != false) {
+					$run = $db->queryOneRow("SELECT id FROM predb WHERE title = " . $db->escapeString($cleanName));
+					if (isset($run['id'])) {
+						$preid = $run["id"];
+						$predb = true;
+					}
 				}
 			} else {
 				$cleanName = trim($cleanerName["cleansubject"]);
@@ -279,9 +281,9 @@ function releaseCleaner($subject, $groupid, $groupname, $usepre)
 	$groupName = $groups->getByNameByID($groupid);
 	$releaseCleaning = new ReleaseCleaning();
 	$cleanerName = $releaseCleaning->releaseCleaner($subject, $groupname, $usepre);
-	if (!empty($cleanerName) && !is_array($cleanerName)) {
+	if (!is_array($cleanerName) && $cleanerName != false) {
 		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);
-	} else if (is_array($cleanerName)) {
+	} else {
 		return $cleanerName;
 	}
 	if ($usepre === true) {
