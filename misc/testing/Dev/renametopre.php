@@ -109,6 +109,22 @@ function preName($argv, $argc)
 				}
 			}
 			if ($cleanName != '') {
+				$cleanedBook = false;
+				$match = '';
+				if ($groupname == 'alt.binaries.e-book' || $groupname == 'alt.binaries.e-book.flood') {
+					if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanName, $match)) {
+						$rf = new ReleaseFiles();
+						$files = $rf->get($row['id']);
+						if (count($files) == 1) {
+							foreach ($files as $f) {
+								if (preg_match('/^(?P<title>.+)\.(pdf|html|epub|mobi|azw)/', $f["name"], $match)) {
+									$cleanedBook = true;
+									$cleanName = $match['title'];
+								}
+							}
+						}
+					}
+				}
 				if ($cleanName != $row['name']) {
 					if (strlen(utf8_decode($cleanName)) <= 3) {
 						//echo $row["name"] . "\n";
