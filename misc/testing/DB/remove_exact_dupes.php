@@ -30,12 +30,12 @@ if ($argv[2] === 'near') {
 
 if ($crosspostt != 0) {
 	if ($db->dbSystem() == 'mysql') {
-		$query = sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name, fromname, groupid,' . $size . 'HAVING COUNT(*) > 1', $crosspostt);
+		$query = sprintf('SELECT max(id) AS id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name, fromname, groupid,' . $size . 'HAVING COUNT(*) > 1', $crosspostt);
 	} else {
-		$query = sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, fromname, groupid," . $size . "HAVING COUNT(name) > 1", $crosspostt);
+		$query = sprintf("SELECT max(id) AS id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, fromname, groupid," . $size . "HAVING COUNT(name) > 1", $crosspostt);
 	}
 } else {
-	$query = sprintf('SELECT id, guid FROM releases GROUP BY name, fromname, groupid,' . $size . 'HAVING COUNT(*) > 1');
+	$query = sprintf('SELECT max(id) AS id, guid FROM releases GROUP BY name, fromname, groupid,' . $size . 'HAVING COUNT(*) > 1');
 }
 
 do {
