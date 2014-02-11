@@ -5,6 +5,7 @@ $c = new ColorCLI();
 
 if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 	exit($c->error("\nThis script monirtors both the threaded and unthreaded update_binaries and backfill scripts.\n"
+		. "This will also kill any medianinfo/ffmpeg process running longer than 60 seconds."
 		. "The first argument is the time in minutes to allow before killing.\n"
 		. "The second argument is the time in seconds to sleep between each check.\n"
 		. "Compression will be enabled at the beginning of this script and will be (re-)enabled if disabled if\n"
