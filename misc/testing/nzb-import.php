@@ -197,8 +197,12 @@ if (!isset($groups) || count($groups) == 0) {
 			}
 			$category = $categorize->determineCategory($cleanName, $groupName);
 
-			// look for match on name, poster and size
-			$dupecheck = $db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size = %s', $db->escapeString($subject), $db->escapeString($poster), $db->escapeString($totalsize)));
+			// A 1% variance in size is considered the same size when the subject and poster are the same
+			$minsize = $totalsize * .99;
+			$maxsize = $totalsize * 1.01;
+
+			// Look for match on name, poster and size
+			$dupecheck = $db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $db->escapeString($subject), $db->escapeString($poster), $db->escapeString($minsize), $db->escapeString($maxsize)));
 			if ($dupecheck === false) {
 				if ($propername === true && $importfailed === false) {
 					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~261)|261)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($site->checkpasswordedrar == "1" ? -1 : 0), $category));
