@@ -7,6 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+
+2014-02-11 -> jonnyboy -> updated query to enforce the groupid
 2014-02-10 -> jonnyboy -> added routine to drop/create index when creating tpg collections tables
                           added unique constraint to collectionhash
                           added monitor_binaries_backfill.php, added 2 required arguments
