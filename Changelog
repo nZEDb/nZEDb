@@ -8,7 +8,7 @@ Each update goes to the top of the file
 
 
 
-2014-02-11 -> jonnyboy -> corrected query to compare name
+2014-02-11 -> jonnyboy -> corrected query to compare $cleanerName
                           updated query to enforce the groupid
 2014-02-10 -> jonnyboy -> added routine to drop/create index when creating tpg collections tables
                           added unique constraint to collectionhash

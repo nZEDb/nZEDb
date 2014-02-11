@@ -92,7 +92,7 @@ function preName($argv, $argc)
 			if (!is_array($cleanerName)) {
 				$cleanName = trim($cleanerName);
 				$propername = $increment = true;
-				$run = $db->queryOneRow("SELECT id FROM predb WHERE title = " . $db->escapeString($row['name']));
+				$run = $db->queryOneRow("SELECT id FROM predb WHERE title = " . $db->escapeString($cleanerName));
 				if (isset($run['id'])) {
 					$preid = $run["id"];
 					$predb = true;
