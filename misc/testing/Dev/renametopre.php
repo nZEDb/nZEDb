@@ -78,7 +78,7 @@ function preName($argv, $argc)
 	} else {
 		$why = ' WHERE 1=1';
 	}
-//	resetSearchnames();
+	resetSearchnames();
 	echo $c->header("SELECT id, name, searchname, groupid, categoryid FROM releases" . $why . $what . $where . ";\n");
 	$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases" . $why . $what . $where);
 	$total = $res->rowCount();
