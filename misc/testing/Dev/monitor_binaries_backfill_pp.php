@@ -5,6 +5,7 @@ $c = new ColorCLI();
 
 if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 	exit($c->error("\nThis script monirtors both the threaded and unthreaded update_binaries and backfill scripts.\n"
+		. "This will also kill any medianinfo/ffmpeg process running longer than 60 seconds."
 		. "The first argument is the time in minutes to allow before killing.\n"
 		. "The second argument is the time in seconds to sleep between each check.\n"
 		. "Compression will be enabled at the beginning of this script and will be (re-)enabled if disabled if\n"
@@ -22,6 +23,10 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 	$db->queryExec("UPDATE site SET value = 1 WHERE setting = 'compressedheaders'");
 
 	while (1 === 1) {
+		//kill mediainfo and ffmpeg if exceeds 60 sec
+		shell_exec("killall -o 60s -9 mediainfo 2>&1 1> /dev/null");
+		shell_exec("killall -o 60s -9 ffmpeg 2>&1 1> /dev/null");
+
 		$counted = $threads = 0;
 		passthru('clear');
 		exec('ps --no-header -eo pid,user,etime,command | grep $USER | grep "update_groups\|update_binaries.php\|backfill_all\|backfill.php\|backfill_interval\|safe_pull" | grep -v monitor_binaries_backfill.php | grep -v grep', $output);

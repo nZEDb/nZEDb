@@ -105,26 +105,26 @@ $qry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, rel
 
 //needs to be processed query
 $proc_work = "SELECT "
-	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv, "
-	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies, "
-	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 257) = 257 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio, "
-	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console, "
-	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND categoryid IN (" . $bookreqids . ") AND bookinfoid IS NULL) AS book, "
-	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) AS releases, "
-	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = 1) AS nfo, "
-	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
+	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv, "
+	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies, "
+	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 257) = 257 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio, "
+	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console, "
+	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND categoryid IN (" . $bookreqids . ") AND bookinfoid IS NULL) AS book, "
+	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256) AS releases, "
+	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND nfostatus = 1) AS nfo, "
+	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
 
 $proc_work2 = "SELECT "
-	. "(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
-	. "(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
-	. "(SELECT COUNT(*) FROM releases r, category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
+	. "(SELECT COUNT(*) FROM releases r USE INDEX(ix_releases_status), category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
+	. "(SELECT COUNT(*) FROM releases r USE INDEX(ix_releases_status), category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
+	. "(SELECT COUNT(*) FROM releases r USE INDEX(ix_releases_status), category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
 	. "(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table, "
 	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
 $proc_work3 = "SELECT "
-	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL ". $request_hours . " HOUR)) AS requestid_inprogress, "
-	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND reqidstatus = 1) AS requestid_matched, "
-	. "(SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256 AND preid IS NOT NULL) AS predb_matched, "
+	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL ". $request_hours . " HOUR)) AS requestid_inprogress, "
+	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND reqidstatus = 1) AS requestid_matched, "
+	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND preid IS NOT NULL) AS predb_matched, "
 	. "(SELECT COUNT(DISTINCT(preid)) FROM releases) AS distinct_predb_matched, "
 	. "(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
 
@@ -137,7 +137,7 @@ if ($dbtype == 'mysql') {
 		. "(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date, "
 		. "(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
 		. "(SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre, "
-		. "(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
+		. "(SELECT UNIX_TIMESTAMP(adddate) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
 		. "(SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
 } else if ($dbtype == 'pgsql') {
 	$split_query = "SELECT "
@@ -147,7 +147,7 @@ if ($dbtype == 'mysql') {
 		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM site WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date, "
 		. "(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
 		. "(SELECT extract(epoch FROM adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre, "
-		. "(SELECT extract(epoch FROM adddate) FROM releases WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
+		. "(SELECT extract(epoch FROM adddate) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
 		. "(SELECT extract(epoch FROM dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
 }
 
