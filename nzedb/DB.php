@@ -434,6 +434,9 @@ class DB extends PDO
 				try {
 					if ($this->queryExec('CREATE TABLE collections_' . $grpid . $like) !== false) {
 						$collections = true;
+						// Drop the UNIQUE Index and create a non UNIQUE one
+						$this->queryExec("DROP INDEX ix_collection_collectionhash ON collections_" . $grpid);
+						$this->queryExec("CREATE INDEX ix_collection_collectionhash ON collections_" . $grpid . "(collectionhash)");
 						$this->newtables($grpid);
 					}
 				} catch (PDOException $e) {
