@@ -80,12 +80,12 @@ elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE (bitwise & 384) = 256 AND" + clean + "ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE (bitwise & 384) = 256 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE (bitwise & 260) = 256 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND ((rel.bitwise & 512) = 512 OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE (bitwise & 260) = 256 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND ((rel.bitwise & 512) = 512 OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate ASC LIMIT %s"
 		cur.execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1
