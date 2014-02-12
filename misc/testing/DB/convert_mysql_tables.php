@@ -12,9 +12,9 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	printf($c->header("Converting $tbl"));
 	$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 } else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "dmyisam") {
-    $tbl = $argv[1];
-    printf($c->header("Converting $tbl"));
-    $db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=DYNAMIC");
+	$tbl = $argv[1];
+	printf($c->header("Converting $tbl"));
+	$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=DYNAMIC");
 } else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "cinnodb") {
 	$tbl = $argv[1];
 	printf($c->header("Converting $tbl"));
@@ -38,7 +38,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$tbl = $row['name'];
 		printf($c->header("Converting $tbl"));
 		$db->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=DYNAMIC");
-    }
+	}
 } else if (isset($argv[1]) && $argv[1] == "dinnodb") {
 	$sql = 'SHOW table status WHERE Engine != "InnoDB" OR Row_format != "Dynamic"';
 	$tables = $db->query($sql);
@@ -63,6 +63,30 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$tbl = $row['name'];
 		printf($c->header("Converting $tbl"));
 		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
+	}
+} else if (isset($argv[1]) && $argv[1] == "cinnodb-noparts") {
+	$sql = 'SHOW table status WHERE Engine != "InnoDB" OR Row_format != "Compressed"';
+	$tables = $db->query($sql);
+	foreach($tables as $row) {
+		$tbl = $row['name'];
+		if ($tbl !== 'releasenfo' && !preg_match('/parts/', $tbl)) {
+		printf($c->header("Converting $tbl"));
+		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
+		}
+	}
+	$sql = 'SHOW table status WHERE Name = "releasenfo" AND (Engine != "InnoDB" || Row_format != "Dynamic")';
+	$tables = $db->query($sql);
+	foreach($tables as $row) {
+		$tbl = $row['name'];
+		printf($c->header("Converting $tbl"));
+		$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
+	}
+	$sql = 'SHOW table status WHERE Name LIKE "parts%" AND (Engine != "MyISAM" || Row_format != "Dynamic")';
+	$tables = $db->query($sql);
+	foreach($tables as $row) {
+		$tbl = $row['name'];
+		printf($c->header("Converting $tbl"));
+		$db->queryExec("ALTER TABLE $tbl ENGINE=MyISAM ROW_FORMAT=DYNAMIC");
 	}
 } else if (isset($argv[1]) && $argv[1] == "collections") {
 	$arr = array("parts", "binaries", "collections");
@@ -97,7 +121,9 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		. "                                                                                 This will use mucgh more space than dynamic.\n"
 		. "php convert_mysql_tables.php dinnodb                                        ...: Converts all the tables to InnoDB Dynamic. This is recommended when the total data and indexes can fit into the innodb_buffer_pool.\n"
 		. "php convert_mysql_tables.php cinnodb                                        ...: Converts all the tables to InnoDB Compressed. All tables except releasenfo will be converted to Compressed row format.\n"
-        . "                                                                                 This is recommended when the total data and indexes can not fit into the innodb_buffer_pool using DYNAMIC row format.\n"
+		. "                                                                                 This is recommended when the total data and indexes can not fit into the innodb_buffer_pool using DYNAMIC row format.\n"
+		. "php convert_mysql_tables.php cinnodb-noparts                                ...: Converts all the tables to InnoDB Compressed. All tables except parts and releasenfo will be converted to Compressed row format.\n"
+		. "                                                                                 Alls parts* will be converted to MyISAM Dynamic. This is recommended when using Table Per Group.\n"
 		. "php convert_mysql_tables.php collections                                    ...: Converts collections, binaries, parts to MyIsam.\n"
 		. "php convert_mysql_tables.php mariadb-tokudb                                 ...: Converts all the tables to MariaDB Tokutek DB. Use this is you installed mariadb-tokudb-engine. \n"
 		. "                                                                                 The TokuDB engine needs to be activated first.\n"

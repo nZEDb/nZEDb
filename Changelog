@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-12 -> jonnyboy -> updated show_table_sizes.php to show current values
+2014-02-12 -> jonnyboy -> added method to convert_mysql_tables.php to convert all parts to MyISAM Dynamic, the rest same as cinnodb
+                          updated show_table_sizes.php to show current values
                           force 'USE INDEX(ix_releases_status)' in postprocess_threaded.py
                           updated Dev/*.php scripts to use ColorCLI() and removed unneeded requires
 2014-02-11 -> jonnyboy -> fixed monitor, inccorect placement of forced use index

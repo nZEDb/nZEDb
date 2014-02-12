@@ -403,6 +403,7 @@ while ($i > 0) {
 
 	// Ananlyze tables every 60 min
 	$time08 = TIME();
+	printf("Analyzing your tables to refresh your indexes.");
 	if ($i == 1 || (TIME() - $time08 >= 3600)) {
 		$db->optimise(true, 'analyze');
 		$time08 = TIME();
