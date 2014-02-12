@@ -55,6 +55,7 @@ if dorun:
 	#before we get the groups, lets update shortgroups
 	subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])
 else:
+	cur = connect()
 	cur[0].execute("SELECT name FROM shortgroups")
 	dorun = cur[0].fetchone()
 	disconnect(cur[0], cur[1])
