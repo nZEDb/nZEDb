@@ -2,7 +2,6 @@
 
 passthru('clear');
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'ColorCLI.php';
 $c = new ColorCLI();
 
 if (!isset($argv[1]) || (isset($argv[1]) && $argv[1] !== 'true')) {
@@ -20,9 +19,6 @@ if (trim($line) != 'BACKEDUP') {
 
 echo "\n";
 echo $c->header("Thank you, continuing...\n\n");
-
-require_once nZEDb_WWW . 'config.php';
-require_once nZEDb_LIB . 'framework/db.php';
 
 $db = new Db();
 $database = DB_NAME;

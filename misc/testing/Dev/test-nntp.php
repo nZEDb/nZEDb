@@ -1,12 +1,12 @@
 <?php
 // To troubleshoot what's actually on usenet.
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'backfill.php';
+$c = new ColorCLI();
 
-if (!isset($argv[2]) || !is_numeric($argv[2]))
-	exit("\nTest your nntp connection, get group information and postdate for specific article.\nTo run:\ntest-nntp.php groupname articlenumber.\n");
-
+if (!isset($argv[2]) || !is_numeric($argv[2])) {
+	exit($c->error("\nTest your nntp connection, get group information and postdate for specific article.\n\n"
+		. "php $argv[0] alt.binaries.teevee 595751142    ...: To test nntp on alt.binaries.teevee with artivle 595751142.\n"));
+}
 $nntp = new NNTP();
 $nntp->doConnect();
 
@@ -27,9 +27,9 @@ print_r($msg);
 $backfill = new Backfill();
 $newdate = $backfill->postdate($nntp, $first, false, $group, true, 'normal');
 
-if ($newdate != false)
-	echo "The posted date for ".$group.", article ".$first." is ".date('Y-m-d H:i:s', $newdate)."\n";
-else
-	echo "Server failed to return postdate\n";
-
+if ($newdate != false) {
+	echo $c->primary("The posted date for ".$group.", article ".$first." is ".date('Y-m-d H:i:s', $newdate));
+} else {
+	echo $c->info("Server failed to return postdate.");
+}
 $nntp->doQuit();

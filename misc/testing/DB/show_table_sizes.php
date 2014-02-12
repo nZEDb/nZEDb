@@ -59,6 +59,29 @@ $b = $innodb['recommended_innodb_buffer_pool_size'];
 if ($innodb['recommended_innodb_buffer_pool_size'] === null) {
 	$b = '12M';
 }
+
+// Get current variables
+$aa = $db->queryOneRow("SHOW VARIABLES WHERE Variable_name = 'key_buffer_size'");
+$bb = $db->queryOneRow("SHOW VARIABLES WHERE Variable_name = 'innodb_buffer_pool_size'");
+if ($aa >= 1073741824) {
+	$current_a = $aa['value'] / 1024 / 1024 / 1024;
+	$current_a .= "G";
+} else {
+	$current_a = $aa['value'] / 1024 / 1024;
+	$current_a .= "M";
+}
+if ($bb >= 1073741824) {
+	$current_b = $bb['value'] / 1024 / 1024 / 1024;
+	$current_b .= "G";
+} else {
+	$current_b = $bb['value'] / 1024 / 1024;
+	$current_b .= "M";
+}
+
 echo $c->headerOver("\n\nThe recommended minimums are:\n");
 echo $c->primaryOver("MyISAM: key-buffer-size           = ") . $c->alternate($a);
-echo $c->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $c->alternate($b . "\n");
+echo $c->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $c->alternate($b);
+
+echo $c->headerOver("\nYour current setting are:\n");
+echo $c->primaryOver("MyISAM: key-buffer-size           = ") . $c->alternate($current_a);
+echo $c->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $c->alternate($current_b);

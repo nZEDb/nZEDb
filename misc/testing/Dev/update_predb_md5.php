@@ -1,5 +1,4 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $db = new DB();
@@ -11,7 +10,6 @@ if (!isset($argv[1]) || $argv[1] != 'true') {
 	exit($c->error("\nThis script will recalculate and update the MD5 column for each pre.\n\n"
 					. "php $argv[0] true      ...: To reset every predb MD5.\n"));
 }
-
 
 // Drop the unique index
 $has_index = $db->queryDirect("SHOW INDEXES IN predb WHERE Key_name = 'ix_predb_md5'");
