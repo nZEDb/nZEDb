@@ -27,13 +27,13 @@ if ($site->nntpproxy != "1") {
 	$nntp->doQuit();
 }
 
+echo $c->header("Inserting new values into shortgroups table.");
+
 $db = new DB();
 $db->queryExec('TRUNCATE TABLE shortgroups');
 
 // Put into an array all active groups
-$res = $db->query('SELECT name FROM groups WHERE active = 1');
-
-echo $c->header("Inserting new values into shortgroups table.");
+$res = $db->query('SELECT name FROM groups WHERE active = 1 OR backfill = 1');
 
 foreach ($data as $newgroup) {
 	if (myInArray($res, $newgroup['group'], 'name')) {
@@ -52,9 +52,8 @@ function myInArray($array, $value, $key)
 			if (myInArray($val, $value, $key)) {
 				return true;
 			}
-		}
-		//else check if the given key has $value as value
-		else {
+		} else {
+			//else check if the given key has $value as value
 			if ($array[$key] == $value) {
 				return true;
 			}
