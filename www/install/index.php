@@ -1,6 +1,6 @@
 <?php
 @session_start();
-require_once '../automated.config.php';
+require_once realpath(__DIR__ . '/../automated.config.php');
 
 $page_title = "Welcome";
 
