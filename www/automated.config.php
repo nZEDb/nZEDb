@@ -6,18 +6,29 @@ define('DS', DIRECTORY_SEPARATOR);
 // These are file path constants
 define('nZEDb_ROOT', realpath(dirname(dirname(__FILE__))) . DS);
 
+
+// Used to refer to the main lib class files.
+define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);
+define('nZEDb_CORE', nZEDb_LIB);
+
+// Used to refer to the third party library files.
+define('nZEDb_LIBS', nZEDb_ROOT . 'libs' . DS);
+
 // Used to refer to the /misc class files.
 define('nZEDb_MISC', nZEDb_ROOT . 'misc' . DS);
 
 define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 
-// Used to refer to the main lib class files.
-define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);
+// Used to refer to the /misc class files.
+define('nZEDb_RES', nZEDb_ROOT . 'resources' . DS);
 
-// Used to refer to the third party library files.
-define('nZEDb_LIBS', nZEDb_ROOT . 'libs' . DS);
 
-// Used to refer to the /themes, this is full path in filesystem, not used for web.
+// Used to refer to the /misc class files.
+define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
+
+// Used to refer to the /misc class files.
+define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
+
 define('nZEDb_THEMES', nZEDb_WWW . 'themes' . DS);
 
 if (function_exists('ini_set') && function_exists('ini_get')) {
@@ -37,7 +48,7 @@ if (strlen($www_top) == 1) {
 // Used everywhere an href is output, includes the full path to the nZEDb install.
 define('WWW_TOP', $www_top);
 
-// Path to themes directory for web
+// Path to themes directory.
 define('THEMES_DIR', WWW_TOP . '/themes');
 
 // Number of results per page.
@@ -46,7 +57,8 @@ define("ITEMS_PER_COVER_PAGE", "20");
 
 define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml');
 
-require_once 'SPLClassLoader.php';
-$paths = array(nZEDb_LIB, nZEDb_WWW . 'pages', SMARTY_DIR, SMARTY_DIR . 'plugins', SMARTY_DIR . 'sysplugins');
-$classLoader = new SplClassLoader(null, $paths);
-$classLoader->register();
+require_once nZEDb_CORE . 'autoloader.php';
+require_once nZEDb_LIBS . 'autoloader.php';
+require_once SMARTY_DIR . 'autoloader.php';
+
+?>

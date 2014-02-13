@@ -7,7 +7,13 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-12 -> jonnyboy -> added method to convert_mysql_tables.php to convert all parts to MyISAM Dynamic, the rest same as cinnodb
+2014-02-13 -> niel     -> Upd: Changes to autoloading. Each "namespace" (nzedb, libs, and Smarty) gets its own autoloader.
+                       -> Fix: Replacing the theme path constant I inadvertantly killed :-(
+2014-02-12 -> kevin    -> NNTP.php Change failure returns to pear error (even though this is depreceated in PEAR, most of our scripts look for these), getArticles method was invalid (the return from the parent function was an array and we were trying to return a string), change getMessage method to verify if the selected group is the same using the parent's object, change grabNZB to use getMessages method.
+                       -> NNTP.php _decodeYenc() Return the input string if data is not yEnc.
+                       -> NNTP.php getMessage() Use the parent method group() to check if the group is already selected.
+2014-02-12 -> jonnyboy -> fixed bug in backfill_safe_threaded.py not running on correct group when binaries_safe.py not being used
+                          added method to convert_mysql_tables.php to convert all parts to MyISAM Dynamic, the rest same as cinnodb
                           updated show_table_sizes.php to show current values
                           force 'USE INDEX(ix_releases_status)' in postprocess_threaded.py
                           updated Dev/*.php scripts to use ColorCLI() and removed unneeded requires

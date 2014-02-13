@@ -48,16 +48,21 @@ pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 print(bcolors.HEADER + "\nBackfill Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 cur = connect()
-cur[0].execute("SELECT name FROM shortgroups")
+cur[0].execute("SELECT g.name FROM groups g LEFT JOIN shortgroups ON shortgroups.name = g.name WHERE shortgroups.name IS NULL AND backfill = 1")
 dorun = cur[0].fetchone()
 disconnect(cur[0], cur[1])
-if not dorun:
+if dorun:
 	#before we get the groups, lets update shortgroups
 	subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])
-elif len(sys.argv) > 1 and sys.argv[1] not in dorun:
-	#if not dorun:
-	#before we get the groups, lets update shortgroups
-	subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])
+else:
+	cur = connect()
+	cur[0].execute("SELECT name FROM shortgroups")
+	dorun = cur[0].fetchone()
+	disconnect(cur[0], cur[1])
+	if len(sys.argv) > 1 and sys.argv[1] not in dorun:
+		#if not dorun:
+		#before we get the groups, lets update shortgroups
+		subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])
 
 count = 0
 previous = "'alt.binaries.crap'"

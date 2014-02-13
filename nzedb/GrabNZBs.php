@@ -46,11 +46,11 @@ class GrabNZBs
 				echo "\nGetting " . sizeof($arr) . ' articles for ' . $hash . "\n";
 			}
 
-			$article = $nntp->getArticles($nzb['groupname'], $arr);
+			$article = $nntp->getMessages($nzb['groupname'], $arr);
 			if (PEAR::isError($article)) {
 				$nntp->doQuit();
 				$this->site->grabnzbs == '2' ? $nntp->doConnect_A() : $nntp->doConnect();
-				$article = $nntp->getArticles($nzb['groupname'], $arr);
+				$article = $nntp->getMessages($nzb['groupname'], $arr);
 				if (PEAR::isError($article)) {
 					$nntp->doQuit();
 					$article = false;
