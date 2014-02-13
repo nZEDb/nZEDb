@@ -490,17 +490,15 @@ class NNTP extends Net_NNTP_Client {
 	 *
 	 * @param string $yencodedvar The encoded text to decode.
 	 *
-	 * @return string  On success : The decoded result.
-	 * @return object  On failure : Pear error.
+	 * @return string  The decoded yEnc string, or the input, if it's not yEnc.
 	 *
 	 * @access protected
 	 *
 	 * @TODO: ? Maybe this function should be merged into the yenc class?
 	 */
 	protected function _decodeYenc($yencodedvar) {
-		$input = array();
-		preg_match('/^(=ybegin.*=yend[^$]*)$/ims', $yencodedvar, $input);
-		if (isset($input[1])) {
+		$ret = $yencodedvar;
+		if (preg_match('/^(=ybegin.*=yend[^$]*)$/ims', $yencodedvar, $input)) {
 			$ret = '';
 			$input = trim(preg_replace('/\r\n/im', '',
 							preg_replace('/(^=yend.*)/im', '',
@@ -512,11 +510,8 @@ class NNTP extends Net_NNTP_Client {
 				$ret .= ($input[$chr] != '=' ? chr(ord($input[$chr]) - 42)
 				: chr((ord($input[++$chr]) - 64) - 42));
 			}
-
-			return $ret;
 		}
-		return $this->throwError($this->c->error
-			('yEnc decoding error.'));
+		return $ret;
 	}
 
 	/**
