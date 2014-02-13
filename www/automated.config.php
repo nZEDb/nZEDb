@@ -19,14 +19,14 @@ define('nZEDb_MISC', nZEDb_ROOT . 'misc' . DS);
 
 define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 
-// Used to refer to the /misc class files.
+// Used to refer to the resource files location.
 define('nZEDb_RES', nZEDb_ROOT . 'resources' . DS);
 
 
-// Used to refer to the /misc class files.
+// Used to refer to the covers location.
 define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
 
-// Used to refer to the /misc class files.
+// Used to refer to the temporary files location.
 define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
 
 define('nZEDb_THEMES', nZEDb_WWW . 'themes' . DS);
