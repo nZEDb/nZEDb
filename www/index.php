@@ -8,7 +8,6 @@ if (is_file("config.php")) {
     }
 }
 require_once 'automated.config.php';
-//require_once nZEDb_LIB . 'page.php';
 
 
 $page = new Page;
