@@ -16,6 +16,8 @@ Each update goes to the top of the file
                           nZEDb->NNTP->getArticle() Fix for multiline header keys.
                           nZEDb->NNTP->getHeader() New method for downloading a full article header.
                           nZEDb->NNTP->formatMessageID() New method for checking if the message-ID has the required triangular brackets.
+                          nZEDb->NNTP->postArticle() New method for uploading articles to usenet.
+                          nZEDb->NNTP->splitLines() New method for spliting lines longer than 510 chars and appending \r\n
 2014-02-13 -> niel     -> Upd: Changes to autoloading. Each "namespace" (nzedb, libs, and Smarty) gets its own autoloader.
                        -> Fix: Replacing the theme path constant I inadvertantly killed :-(
 2014-02-12 -> kevin    -> NNTP.php Change failure returns to pear error (even though this is depreceated in PEAR, most of our scripts look for these), getArticles method was invalid (the return from the parent function was an array and we were trying to return a string), change getMessage method to verify if the selected group is the same using the parent's object, change grabNZB to use getMessages method.

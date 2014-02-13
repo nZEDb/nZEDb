@@ -341,7 +341,7 @@ class NNTP extends Net_NNTP_Client {
 	}
 
 	/**
-	 * Get a full article header.
+	 * Download a full article header.
 	 *
 	 * @param string $groupName The name of the group the article is in.
 	 * @param string/int $identifier (String)The message-ID of the article to download. or (Int) The article number.
@@ -386,22 +386,54 @@ class NNTP extends Net_NNTP_Client {
 	}
 
 	/**
-	 * Check if the Message-ID has the required opening and closing brackets.
+	 * Post an article to usenet.
 	 *
-	 * @param  string $messageID The Message-ID with or without brackets.
+	 * @param $groups   array/string (Array) Array of groups. or (String) Single group.
+	 *                                 ex.: (Array)  $groups = array('alt.test', 'alt.binaries.testing');
+	 *                                 ex.: (String) $groups = 'alt.test';
+	 * @param $subject  string       The subject.
+	 *                                 ex.: $subject = 'Test article';
+	 * @param $body     string       The message.
+	 *                                 ex.: $message = 'This is only a test, please disregard.';
+	 * @param $from     string       The person who is posting (must be in email format).
+	 *                                 ex.: $from = '<anon@anon.com>';
+	 * @param $extra    string       Extra stuff, separated by \r\n
+	 *                                 ex.: $extra  = 'Organization: <nZEDb>\r\nNNTP-Posting-Host: <127.0.0.1>';
+	 * @param $yEnc     bool         Encode the message with yEnc?
+	 * @param $compress bool         Compress the message with gzip.
 	 *
-	 * @return string            Message-ID with brackets.
+	 * @return          bool/object  True on success, Pear error on failure.
 	 *
-	 * @access protected
+	 * @access public
 	 */
-	protected function formatMessageID($messageID) {
-		if ($messageID[0] !== '<') {
-			$messageID = '<' . $messageID;
+	public function postArticle($groups, $subject, $body, $from, $yEnc=true, $compress=true, $extra='') {
+
+		if (strlen($subject) > 510) {
+			return $this->throwError($this->c->error('Max length of subject is 510 chars.'));
 		}
-		if (substr($messageID, -1) !== '<') {
-			$messageID = $messageID . '>';
+
+		if (strlen($from) > 510) {
+			return $this->throwError($this->c->error('Max length of from is 510 chars.'));
 		}
-		return $messageID;
+
+		if (is_array(($groups))) {
+			$groups = implode(', ', $groups);
+		}
+
+		if ($yEnc) {
+			$yenc = new Yenc();
+			$body = $yenc->encode($compress ? gzdeflate($body, 4) : $body, $subject);
+		} else {
+			$body = $this->splitLines($body, $compress);
+		}
+
+
+		$from = 'From: ' . $from;
+		if ($extra != '') {
+			$from = $from . "\r\n" . $extra;
+		}
+
+		return parent::mail($groups, $subject, $body, $from);
 	}
 
 	/**
@@ -623,6 +655,44 @@ class NNTP extends Net_NNTP_Client {
 			}
 		}
 		return $ret;
+	}
+
+	/**
+	 * Check if the Message-ID has the required opening and closing brackets.
+	 *
+	 * @param  string $messageID The Message-ID with or without brackets.
+	 *
+	 * @return string            Message-ID with brackets.
+	 *
+	 * @access protected
+	 */
+	protected function formatMessageID($messageID) {
+		if ($messageID[0] !== '<') {
+			$messageID = '<' . $messageID;
+		}
+		if (substr($messageID, -1) !== '<') {
+			$messageID = $messageID . '>';
+		}
+		return $messageID;
+	}
+
+	/**
+	 * Split a string into lines of 510 chars ending with \r\n.
+	 * Usenet limits lines to 512 chars, with \r\n that leaves us 510.
+	 *
+	 * @param string $string   The string to split.
+	 * @param bool   $compress Compress the string with gzip?
+	 *
+	 * @return string The split string.
+	 *
+	 * @access protected
+	 */
+	protected function splitLines($string, $compress=false) {
+		if (strlen($string) > 510) {
+			$string = chunk_split($string, 510, "\r\n");
+		}
+
+		return ($compress ? gzdeflate($string, 4) : $string);
 	}
 
 	/**
