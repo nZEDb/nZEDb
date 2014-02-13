@@ -227,7 +227,7 @@ class NNTP extends Net_NNTP_Client {
 	 * Download an article body (an article without the header).
 	 *
 	 * @param string $groupName The name of the group the article is in.
-	 *  @param string/int $identifier (String)The message-ID of the article to download. or (Int) The article number.
+	 * @param string/int $identifier (String)The message-ID of the article to download. or (Int) The article number.
 	 *
 	 * @return string On success : The article's body.
 	 * @return object On failure : Pear error.
@@ -395,10 +395,10 @@ class NNTP extends Net_NNTP_Client {
 	 * @access protected
 	 */
 	protected function formatMessageID($messageID) {
-		if ($messageID[0] != '<') {
+		if ($messageID[0] !== '<') {
 			$messageID = '<' . $messageID;
-			}
-		if (substr($messageID, -1) != '<') {
+		}
+		if (substr($messageID, -1) !== '<') {
 			$messageID = $messageID . '>';
 		}
 		return $messageID;
