@@ -75,14 +75,6 @@ class NNTP extends Net_NNTP_Client {
 	private $header = 'Yellow';
 
 	/**
-	 * Cache of the group name on the article/body functions.
-	 *
-	 * @var string
-	 * @access private
-	 */
-	private $articlegroup;
-
-	/**
 	 * Default constructor.
 	 *
 	 * @access public
@@ -101,8 +93,8 @@ class NNTP extends Net_NNTP_Client {
 	 * @access public
 	 */
 	public function __destruct() {
-		if (self::_isConnected()) {
-			self::doQuit();
+		if (parent::_isConnected()) {
+			parent::disconnect();
 		}
 	}
 
@@ -113,7 +105,8 @@ class NNTP extends Net_NNTP_Client {
 	 *     compression on this connection?
 	 * @param boolean $alternate   Use the alternate NNTP connection.
 	 *
-	 * @return boolean Did we sucesfully connect to the usenet?
+	 * @return boolean On success = Did we successfully connect to the usenet?
+	 * @return object  On failure = Pear error.
 	 *
 	 * @access public
 	 */
@@ -124,14 +117,13 @@ class NNTP extends Net_NNTP_Client {
 			$this->doQuit();
 		}
 
-		$compressionstatus = $this->site->compressedheaders;
-		unset($s, $site);
+		$compressionStatus = $this->site->compressedheaders;
 		$enc = $ret = $ret2 = $connected = $SSL_ENABLED = false;
 
 		if (!$alternate) {
-			$SSL_ENABLED = ((defined('NNTP_SSLENABLED') && NNTP_SSLENABLED) ? true : false);
+			$SSL_ENABLED = (defined('NNTP_SSLENABLED') && NNTP_SSLENABLED) ? true : false;
 		} else {
-			$SSL_ENABLED = ((defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A) ? true : false);
+			$SSL_ENABLED = (defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A) ? true : false;
 		}
 
 		if ($SSL_ENABLED) {
@@ -139,9 +131,8 @@ class NNTP extends Net_NNTP_Client {
 		}
 
 		$retries = $this->nntpretries;
-		while($retries >= 1) {
+		while($retries-- >= 1) {
 			$authent = false;
-			$retries--;
 			if ($connected === false) {
 				if (!$alternate) {
 					$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, 5);
@@ -150,16 +141,17 @@ class NNTP extends Net_NNTP_Client {
 				}
 			}
 
-			if (PEAR::isError($ret) && $retries === 0) {
-				echo $this->c->error('Cannot connect to server '
-				. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
-				. (!$enc ? ' (nonssl) ' : '(ssl) ') . ': ' . $ret->getMessage());
+			if ($retries === 0 && PEAR::isError($ret)) {
+				return $this->throwError($this->c->error('Cannot connect to server '
+					. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
+					. (!$enc ? ' (nonssl) ' : '(ssl) ') . ': ' . $ret->getMessage()));
 			} else {
 				$connected = true;
 			}
 
 			if ($connected === true && $authent === false
-			&& (!$alternate ? defined('NNTP_USERNAME') : defined('NNTP_USERNAME_A'))) {
+				&& (!$alternate ? defined('NNTP_USERNAME') : defined('NNTP_USERNAME_A'))) {
+
 				if ((!$alternate ? NNTP_USERNAME == '' : NNTP_USERNAME_A == '')) {
 					$authent = true;
 				} else {
@@ -168,12 +160,13 @@ class NNTP extends Net_NNTP_Client {
 					} else {
 						$ret2 = $this->authenticate(NNTP_USERNAME_A, NNTP_PASSWORD_A);
 					}
-					if (PEAR::isError($ret2) && $retries === 0) {
-						echo $this->c->error('Cannot authenticate to server '
-						. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
-						. (!$enc ? ' (nonssl) ' : ' (ssl) ') . ' - '
-						. (!$alternate ? NNTP_USERNAME : NNTP_USERNAME_A)
-						. ' (' . $ret2->getMessage() . ')');
+
+					if ($retries === 0 && PEAR::isError($ret2)) {
+						return $this->throwError($this->c->error('Cannot authenticate to server '
+							. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
+							. (!$enc ? ' (nonssl) ' : ' (ssl) ') . ' - '
+							. (!$alternate ? NNTP_USERNAME : NNTP_USERNAME_A)
+							. ' (' . $ret2->getMessage() . ')'));
 					} else {
 						$authent = true;
 					}
@@ -181,14 +174,14 @@ class NNTP extends Net_NNTP_Client {
 			}
 
 			if ($connected && $authent === true) {
-				if ($compression === true && $compressionstatus == '1') {
+				if ($compression === true && $compressionStatus == '1') {
 					$this->_enableCompression();
 				}
 				return true;
 			}
 			usleep(200000);
 		}
-		return false;
+		return $this->throwError($this->c->error('Unable to connect to usenet.'));
 	}
 
 	/**
@@ -197,7 +190,8 @@ class NNTP extends Net_NNTP_Client {
 	 * @param boolean $compression Should we attempt to enable XFeature Gzip
 	 *     compression on this connection?
 	 *
-	 * @return boolean Did we sucesfully connect to the usenet?
+	 * @return boolean On success : Did we successfully connect to the usenet?
+	 * @return object  On failure = Pear error.
 	 *
 	 * @access public
 	 */
@@ -208,7 +202,8 @@ class NNTP extends Net_NNTP_Client {
 	/**
 	 * Create a connection to the NNTP server without XFeature GZip Compression.
 	 *
-	 * @return boolean Did we sucesfully connect to the usenet?
+	 * @return boolean On success : Did we successfully connect to the usenet?
+	 * @return object  On failure = Pear error.
 	 *
 	 * @access public
 	 */
@@ -219,38 +214,38 @@ class NNTP extends Net_NNTP_Client {
 	/**
 	 * Disconnect from the current NNTP server.
 	 *
-	 * @void
+	 * @return bool   On success : Did we successfully disconnect from usenet?
+	 * @return object On Failure : Pear error.
 	 *
 	 * @access public
 	 */
 	public function doQuit() {
-		$this->disconnect();
+		return parent::disconnect();
 	}
 
 	/**
 	 * Download an article body (an article without the header).
 	 *
-	 * @param string $groupname The name of the group the article is in.
+	 * @param string $groupName The name of the group the article is in.
 	 * @param string $partMsgId The message-ID of the article body to download.
 	 *
-	 * @return boolean If we have failed to download the body or the body could
-	 *                 not be decoded (yenc).
-	 * @return string The article's body.
+	 * @return string On success : The article's body.
+	 * @return object On failure : Pear error.
 	 *
 	 * @access public
 	 */
-	public function getMessage($groupname, $partMsgId) {
-		if ($this->articlegroup != $groupname) {
-			$this->articlegroup = $groupname;
-			$summary = $this->selectGroup($groupname);
+	public function getMessage($groupName, $partMsgId) {
+		// Check if the selected group is the same as the requested one.
+		if (parent::$_selectedGroupSummary !== null && parent::$_selectedGroupSummary['group'] !== $groupName) {
+			$summary = $this->selectGroup($groupName);
 			if (PEAR::isError($summary)) {
-				return false;
+				return $summary;
 			}
 		}
 
 		$body = $this->getBody('<'.$partMsgId.'>', true);
 		if (PEAR::isError($body)) {
-			return false;
+			return $body;
 		}
 
 		return $this->_decodeYenc($body);
@@ -263,9 +258,8 @@ class NNTP extends Net_NNTP_Client {
 	 * @param array string $msgIds The message-ID's of the article
 	 *                              body's to download.
 	 *
-	 * @return boolean If we have failed to download the body's or they could
-	 *                 not be decoded (yenc).
-	 * @return string The article bodies.
+	 * @return string On success : The article bodies.
+	 * @return object On failure : Pear error.
 	 *
 	 * @access public
 	 */
@@ -273,10 +267,10 @@ class NNTP extends Net_NNTP_Client {
 		$body = '';
 		foreach ($msgIds as $m) {
 			$message = $this->getMessage($groupname, $m);
-			if ($message !== false) {
+			if (!PEAR::isError($message)) {
 				$body = $body . $message;
 			} else {
-				return false;
+				return $message;
 			}
 		}
 		return $body;
@@ -288,53 +282,15 @@ class NNTP extends Net_NNTP_Client {
 	 * @param string $groupname The name of the group the article is in.
 	 * @param string $partMsgId The message-ID of the article to download.
 	 *
-	 * @return boolean If we have failed to download the body or the body could
-	 *                 not be decoded (yenc).
-	 * @return string The article's body.
+	 * @note The body is not yEnc decoded.
+	 *
+	 * @return array  On success : The article.
+	 * @return object On failure : Pear error.
 	 *
 	 * @access public
 	 */
 	public function get_Article($groupname, $partMsgId) {
-		$body = $this->getArticle('<'.$partMsgId.'>', true);
-		if (PEAR::isError($body)) {
-			return false;
-		}
-
-		return $this->_decodeYenc($body);
-	}
-
-	/**
-	 * Download multiple articles and string them together.
-	 *
-	 * @param string $groupname The name of the group the articles are in.
-	 * @param array string $msgIds The message-ID's of the articles
-	 *                             to download.
-	 *
-	 * @return boolean If we have failed to download the body's or they could
-	 *                 not be decoded (yenc).
-	 * @return string The article bodies.
-	 *
-	 * @access public
-	 */
-	public function getArticles($groupname, $msgIds) {
-		$body = '';
-/*      if ($this->articlegroup != $groupname) {
-			$this->articlegroup = $groupname;
-			$summary = $this->selectGroup($groupname);
-			if (PEAR::isError($summary)) {
-				return false;
-			}
-		}
-*/
-		foreach ($msgIds as $m) {
-			$message = $this->get_Article($groupname, $m);
-			if ($message !== false) {
-				$body = $body . $message;
-			} else {
-				return false;
-			}
-		}
-		return $body;
+		return $this->getArticle('<'.$partMsgId.'>', true);
 	}
 
 	/**
@@ -345,8 +301,8 @@ class NNTP extends Net_NNTP_Client {
 	 * @param string $group Name of the group.
 	 * @param boolean $comp Use compression or not?
 	 *
-	 * @return boolean Have we failed rconnecting to usenet?
-	 * @return array(?) The group data.
+	 * @return array   On success : The group summary.
+	 * @return object  On Failure : Pear error.
 	 *
 	 * @access public
 	 */
@@ -361,7 +317,6 @@ class NNTP extends Net_NNTP_Client {
 			echo $this->c->error(
 			"Code {$data->code}: {$data->message}\nSkipping group: {$group}\n");
 			$nntp->doQuit();
-			return false;
 		}
 		return $data;
 	}
@@ -374,16 +329,15 @@ class NNTP extends Net_NNTP_Client {
 	 * @note Overrides parent function.
 	 * @note Function can not be protected because parent function is public.
 	 *
-	 * @return function Our function when compression is enabled, or parent
-	 *                  function when it is not.
+	 * @return self    Our overridden function when compression is enabled.
+	 * @return parent  Parent function when no compression.
 	 *
 	 * @access public
 	 */
 	public function _getTextResponse() {
 		if ($this->Compression === true
 			&& isset($this->_currentStatusResponse[1])
-			&& stripos($this->_currentStatusResponse[1], 'COMPRESS=GZIP')
-			!== false) {
+			&& stripos($this->_currentStatusResponse[1], 'COMPRESS=GZIP') !== false) {
 			return $this->_getXfeatureTextResponse();
 		} else {
 			return parent::_getTextResponse();
@@ -399,7 +353,9 @@ class NNTP extends Net_NNTP_Client {
 	 *
 	 * @return string/print Have we failed to decompress the data, was there a
 	 *                 problem downloading the data, etc..
-	 * @return array string The array of headers.
+
+	 * @return array  On success : The headers.
+	 * @return object On failure : Pear error.
 	 *
 	 * @access protected
 	 */
@@ -519,7 +475,8 @@ class NNTP extends Net_NNTP_Client {
 		}
 		// Throw an error if we get out of the loop.
 		if (!feof($this->_socket)) {
-			return "Error: Could not find the end-of-file pointer on the gzip stream.\n";
+			return $this->throwError($this->c->error(
+				"Error: Could not find the end-of-file pointer on the gzip stream."), 1000);
 		}
 
 		return $this->throwError($this->c->error
@@ -533,17 +490,15 @@ class NNTP extends Net_NNTP_Client {
 	 *
 	 * @param string $yencodedvar The encoded text to decode.
 	 *
-	 * @return boolean If we have failed to decode the text.
-	 * @return string  The decoded result.
+	 * @return string  The decoded yEnc string, or the input, if it's not yEnc.
 	 *
 	 * @access protected
 	 *
 	 * @TODO: ? Maybe this function should be merged into the yenc class?
 	 */
 	protected function _decodeYenc($yencodedvar) {
-		$input = array();
-		preg_match('/^(=ybegin.*=yend[^$]*)$/ims', $yencodedvar, $input);
-		if (isset($input[1])) {
+		$ret = $yencodedvar;
+		if (preg_match('/^(=ybegin.*=yend[^$]*)$/ims', $yencodedvar, $input)) {
 			$ret = '';
 			$input = trim(preg_replace('/\r\n/im', '',
 							preg_replace('/(^=yend.*)/im', '',
@@ -555,10 +510,8 @@ class NNTP extends Net_NNTP_Client {
 				$ret .= ($input[$chr] != '=' ? chr(ord($input[$chr]) - 42)
 				: chr((ord($input[++$chr]) - 64) - 42));
 			}
-
-			return $ret;
 		}
-		return false;
+		return $ret;
 	}
 
 	/**
@@ -567,14 +520,15 @@ class NNTP extends Net_NNTP_Client {
 	 *
 	 * @note Based on this script : http://pastebin.com/A3YypDAJ
 	 *
-	 * @return boolean Did the server understand our request?
+	 * @return boolean On success : The server understood and compression is enabled.
+	 * @return object  On failure : Pear error.
 	 *
 	 * @access protected
 	 */
 	protected function _enableCompression() {
 		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
 		if (PEAR::isError($response) || $response != 290) {
-			return false;
+			return $response;
 		}
 
 		$this->Compression = true;
