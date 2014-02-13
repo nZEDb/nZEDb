@@ -464,7 +464,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
 			if (!class_exists($class)) {
 				return $this->throwError("Class '$class' does not exist!");
-		}
+			}
 		}
 
 		$data = $this->cmdArticle($article);
