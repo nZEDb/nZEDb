@@ -70,14 +70,14 @@ class Install
 	public $saveLockCheck;
 	public $error = false;
 
-	function Install()
+	function __construct()
 	{
-		$this->nZEDb_WWW = dirname(realpath('.'));
-		$this->SMARTY_DIR = SMARTY_DIR;
 		$this->DB_DIR = dirname(realpath('..')) . '/db';
-		$this->nZEDb_MISC = dirname(realpath('..')) . '/misc';
-		$this->NZB_PATH = str_replace('\\', '/', dirname(realpath('..'))) . '/nzbfiles/';
 		$this->INSTALL_DIR = $this->nZEDb_WWW . '/install';
+		$this->SMARTY_DIR = SMARTY_DIR;
+		$this->NZB_PATH = nZEDb_RES . DS . 'nzb' . DS;
+		$this->nZEDb_WWW = nZEDb_WWW;
+		$this->nZEDb_MISC = dirname(realpath('..')) . '/misc';
 		$this->nZEDb_LIB = dirname(realpath('..')) . '/nzedb/';
 		$this->nZEDb_LIBS = str_replace('\\', '/', realpath(nZEDb_LIBS));
 	}
