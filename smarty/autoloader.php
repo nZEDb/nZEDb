@@ -4,8 +4,7 @@ spl_autoload_register(
 	function ($className)
 	{
 		if ($className == 'Smarty') {
-			require_once SMARTY_DIR . 'Smarty.class.php';
-			return;
+			$className = 'Smarty.class';
 		}
 
 		$paths = array(nZEDb_WWW . 'pages', SMARTY_DIR, SMARTY_DIR . 'plugins', SMARTY_DIR . 'sysplugins');
