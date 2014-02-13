@@ -51,6 +51,31 @@ class NNTP extends Net_NNTP_Client {
 	private $Compression = false;
 
 	/**
+	 * Primary color for console text output.
+	 *
+	 * @var string
+	 * @access private
+	 */
+	private $primary = 'Green';
+
+	/**
+	 * Color for warnings on console text output.
+	 *
+	 * @var string
+	 * @access private
+	 */
+	private $warning = 'Red';
+
+
+	/**
+	 * Color for headers(?) on console text output.
+	 *
+	 * @var string
+	 * @access private
+	 */
+	private $header = 'Yellow';
+
+	/**
 	 * Default constructor.
 	 *
 	 * @access public
