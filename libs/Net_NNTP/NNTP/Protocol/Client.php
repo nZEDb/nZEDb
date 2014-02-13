@@ -1,5 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 
 /**
  *
@@ -168,7 +167,6 @@ class Net_NNTP_Protocol_Client extends PEAR
 	 * @access public
 	 */
 	function Net_NNTP_Protocol_Client() {
-
 		//
 //    	parent::PEAR('Net_NNTP_Error');
 		parent::PEAR();

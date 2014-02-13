@@ -28,6 +28,24 @@ class Movie
 		$this->c = new ColorCLI();
 	}
 
+	/**
+	 * Look for an IMDB id in a string.
+	 *
+	 * @param $str    String containing the IMDB id.
+	 *
+	 * @return string IMDB id on success.
+	 * @return bool   False on failure.
+	 *
+	 * @access public
+	 */
+	public function parseImdb($str) {
+		if (preg_match('/(?:imdb.*?)?(?:tt|Title\?)(\d{5,7})/i', $str, $matches)) {
+			return trim($matches[1]);
+		}
+
+		return false;
+	}
+
 	public function getMovieInfo($imdbId)
 	{
 		return $this->db->queryOneRow(sprintf("SELECT * FROM movieinfo WHERE imdbid = %d", $imdbId));
@@ -614,11 +632,8 @@ class Movie
 		return false;
 	}
 
-	public function domovieupdate($buffer, $service, $id, $processImdb = 1)
-	{
-		$nfo = new Nfo();
-		$movieId = '';
-		$imdbId = $nfo->parseImdb($buffer);
+	public function domovieupdate($buffer, $service, $id, $processImdb = 1) {
+		$imdbId = $this->parseImdb($buffer);
 		if ($imdbId !== false) {
 			if ($service == 'nfo') {
 				$this->service = 'nfo';
@@ -633,11 +648,10 @@ class Movie
 			if ($processImdb == 1) {
 				$movCheck = $this->getMovieInfo($imdbId);
 				if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000)) {
-					$movieId = $this->updateMovieInfo($imdbId);
+					$this->updateMovieInfo($imdbId);
 				}
 			}
 		}
-		unset($nfo);
 		return $imdbId;
 	}
 
