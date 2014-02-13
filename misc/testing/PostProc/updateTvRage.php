@@ -2,8 +2,7 @@
 //This script will update all records in the tvrage table
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'tvrage.php';
+
 
 $tvrage = new TvRage(true);
 $db = new Db();

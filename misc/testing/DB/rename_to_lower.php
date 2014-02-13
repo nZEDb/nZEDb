@@ -2,8 +2,8 @@
 
 passthru('clear');
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
+
+
 $c = new ColorCLI();
 
 if (!isset($argv[1]) || (isset($argv[1]) && $argv[1] !== 'true')) {

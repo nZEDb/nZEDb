@@ -3,7 +3,7 @@ if (!isset($argv[1]) || $argv[1] != 'true')
 	exit("This script will download all tvrage shows and insert into the db.\nTo run:\nphp populate_tvrage.php true\n");
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
+
 
 $db = new DB();
 $newnames = $updated = 0;

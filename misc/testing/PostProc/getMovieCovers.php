@@ -2,8 +2,7 @@
 //This script will update all records in the movieinfo table where there is no cover
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'movie.php';
+
 
 $movie = new Movie(true);
 $db = new Db();

@@ -2,9 +2,8 @@
 //This script will update all records in the consoleinfo table
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'console.php';
-//require_once nZEDb_LIB . 'category.php';
+
+
 
 $console = new Console(true);
 $db = new Db();
