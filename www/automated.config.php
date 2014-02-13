@@ -9,10 +9,10 @@ define('nZEDb_ROOT', realpath(dirname(dirname(__FILE__))) . DS);
 
 // Used to refer to the main lib class files.
 define('nZEDb_LIB', nZEDb_ROOT . 'nzedb' . DS);
+define('nZEDb_CORE', nZEDb_LIB);
 
 // Used to refer to the third party library files.
 define('nZEDb_LIBS', nZEDb_ROOT . 'libs' . DS);
-define('nZEDb_CORE', nZEDb_LIB);
 
 // Used to refer to the /misc class files.
 define('nZEDb_MISC', nZEDb_ROOT . 'misc' . DS);
@@ -57,4 +57,6 @@ define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml');
 
 require_once nZEDb_CORE . 'autoloader.php';
 require_once nZEDb_LIBS . 'autoloader.php';
+require_once SMARTY_DIR . 'autoloader.php';
+
 ?>
