@@ -243,7 +243,7 @@ class NNTP extends Net_NNTP_Client {
 			}
 		}
 
-		$body = $this->getBody('<'.$partMsgId.'>', true);
+		$body = parent::getBody('<'.$partMsgId.'>', true);
 		if (PEAR::isError($body)) {
 			return $body;
 		}
@@ -266,7 +266,7 @@ class NNTP extends Net_NNTP_Client {
 	public function getMessages($groupname, $msgIds) {
 		$body = '';
 		foreach ($msgIds as $m) {
-			$message = parent::getMessage($groupname, $m);
+			$message = $this->getMessage($groupname, $m);
 			if (!PEAR::isError($message)) {
 				$body = $body . $message;
 			} else {
