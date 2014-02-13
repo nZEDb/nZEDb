@@ -281,7 +281,7 @@ class NNTP extends Net_NNTP_Client {
 	 * associated values, optionally decode the body using yEnc.
 	 *
 	 * @param string $groupName The name of the group the article is in.
-	 * @param string $partMsgId The message-ID of the article to download.
+	 * @param string $identifier (String)The message-ID of the article to download. or (Int) The article number.
 	 * @param bool   $yEnc      Attempt to yEnc decode the body.
 	 *
 	 * @return array  On success : The article.
@@ -289,7 +289,7 @@ class NNTP extends Net_NNTP_Client {
 	 *
 	 * @access public
 	 */
-	public function getArticle($groupName, $partMsgId, $yEnc=false) {
+	public function getArticle($groupName, $identifier, $yEnc=false) {
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
 			$summary = parent::selectGroup($groupName);
@@ -298,7 +298,10 @@ class NNTP extends Net_NNTP_Client {
 			}
 		}
 
-		$article = parent::getArticle('<'.$partMsgId.'>');
+		if (!is_numeric($identifier)) {
+			$identifier = '<' . $identifier . '>';
+		}
+		$article = parent::getArticle($identifier);
 		if (PEAR::isError($article)) {
 			return $article;
 		}
