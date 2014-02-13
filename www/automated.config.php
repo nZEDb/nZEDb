@@ -23,9 +23,6 @@ define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 define('nZEDb_RES', nZEDb_ROOT . 'resources' . DS);
 
 
-// Used to refer to the covers location.
-define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
-
 // Used to refer to the temporary files location.
 define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
 
