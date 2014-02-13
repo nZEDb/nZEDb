@@ -66,6 +66,7 @@ class NNTP extends Net_NNTP_Client {
 	 */
 	private $warning = 'Red';
 
+
 	/**
 	 * Color for headers(?) on console text output.
 	 *
@@ -227,23 +228,27 @@ class NNTP extends Net_NNTP_Client {
 	 * Download an article body (an article without the header).
 	 *
 	 * @param string $groupName The name of the group the article is in.
-	 * @param string $partMsgId The message-ID of the article body to download.
+	 * @param string/int $identifier (String)The message-ID of the article to download. or (Int) The article number.
 	 *
 	 * @return string On success : The article's body.
 	 * @return object On failure : Pear error.
 	 *
 	 * @access public
 	 */
-	public function getMessage($groupName, $partMsgId) {
-		// Check if the selected group is the same as the requested one.
-		if (parent::$_selectedGroupSummary !== null && parent::$_selectedGroupSummary['group'] !== $groupName) {
-			$summary = $this->selectGroup($groupName);
+	public function getMessage($groupName, $identifier) {
+		// Make sure the requested group is already selected, if not select it.
+		if (parent::group() !== $groupName) {
+			$summary = parent::selectGroup($groupName);
 			if (PEAR::isError($summary)) {
 				return $summary;
 			}
 		}
 
-		$body = $this->getBody('<'.$partMsgId.'>', true);
+		if (!is_numeric($identifier)) {
+			$identifier = $this->formatMessageID($identifier);
+		}
+
+		$body = parent::getBody($identifier, true);
 		if (PEAR::isError($body)) {
 			return $body;
 		}
@@ -277,20 +282,158 @@ class NNTP extends Net_NNTP_Client {
 	}
 
 	/**
-	 * Download a full article, the body and the header.
+	 * Download a full article, the body and the header, return an array with named keys and their
+	 * associated values, optionally decode the body using yEnc.
 	 *
-	 * @param string $groupname The name of the group the article is in.
-	 * @param string $partMsgId The message-ID of the article to download.
-	 *
-	 * @note The body is not yEnc decoded.
+	 * @param string $groupName The name of the group the article is in.
+	 * @param string/int $identifier (String)The message-ID of the article to download. or (Int) The article number.
+	 * @param bool   $yEnc      Attempt to yEnc decode the body.
 	 *
 	 * @return array  On success : The article.
 	 * @return object On failure : Pear error.
 	 *
 	 * @access public
 	 */
-	public function get_Article($groupname, $partMsgId) {
-		return $this->getArticle('<'.$partMsgId.'>', true);
+	public function getArticle($groupName, $identifier, $yEnc=false) {
+		// Make sure the requested group is already selected, if not select it.
+		if (parent::group() !== $groupName) {
+			$summary = parent::selectGroup($groupName);
+			if (PEAR::isError($summary)) {
+				return $summary;
+			}
+		}
+
+		if (!is_numeric($identifier)) {
+			$identifier = $this->formatMessageID($identifier);
+		}
+
+		$article = parent::getArticle($identifier);
+		if (PEAR::isError($article)) {
+			return $article;
+		}
+
+		$ret = $article;
+		if (sizeof($article) > 0) {
+			$ret = array();
+			$body = '';
+			$emptyLine = false;
+			foreach ($article as $line) {
+				if (!$emptyLine) {
+					if ($line === "") {
+						$emptyLine = True;
+						continue;
+					}
+
+					if (preg_match('/([A-Z-]+?): (.*)/i', $line, $matches)) {
+						if (array_key_exists($matches[1], $ret)) {
+							$ret[$matches[1]] = $ret[$matches[1]] .  $matches[2];
+						} else {
+							$ret[$matches[1]] = $matches[2];
+						}
+					}
+
+				} else {
+					$body = $body . $line;
+				}
+			}
+			$ret['Message'] = $yEnc ? $this->_decodeYenc($body) : $body;
+		}
+		return $ret;
+	}
+
+	/**
+	 * Download a full article header.
+	 *
+	 * @param string $groupName The name of the group the article is in.
+	 * @param string/int $identifier (String)The message-ID of the article to download. or (Int) The article number.
+	 *
+	 * @return array The header.
+	 *
+	 * @access public
+	 */
+	public function getHeader($groupName, $identifier) {
+		// Make sure the requested group is already selected, if not select it.
+		if (parent::group() !== $groupName) {
+			$summary = parent::selectGroup($groupName);
+			if (PEAR::isError($summary)) {
+				return $summary;
+			}
+		}
+
+		if (!is_numeric($identifier)) {
+			$identifier = $this->formatMessageID($identifier);
+		}
+
+		$header = parent::getHeader($identifier);
+		if (PEAR::isError($header)) {
+			return $header;
+		}
+
+		$ret = $header;
+		if (sizeof($header) > 0) {
+			$ret = array();
+			foreach ($header as $line) {
+				if (preg_match('/([A-Z-]+?): (.*)/i', $line, $matches)) {
+					if (array_key_exists($matches[1], $ret)) {
+						$ret[$matches[1]] = $ret[$matches[1]] .  $matches[2];
+					} else {
+						$ret[$matches[1]] = $matches[2];
+					}
+				}
+			}
+		}
+		return $ret;
+	}
+
+	/**
+	 * Post an article to usenet.
+	 *
+	 * @param $groups   array/string (Array) Array of groups. or (String) Single group.
+	 *                                 ex.: (Array)  $groups = array('alt.test', 'alt.binaries.testing');
+	 *                                 ex.: (String) $groups = 'alt.test';
+	 * @param $subject  string       The subject.
+	 *                                 ex.: $subject = 'Test article';
+	 * @param $body     string       The message.
+	 *                                 ex.: $message = 'This is only a test, please disregard.';
+	 * @param $from     string       The person who is posting (must be in email format).
+	 *                                 ex.: $from = '<anon@anon.com>';
+	 * @param $extra    string       Extra stuff, separated by \r\n
+	 *                                 ex.: $extra  = 'Organization: <nZEDb>\r\nNNTP-Posting-Host: <127.0.0.1>';
+	 * @param $yEnc     bool         Encode the message with yEnc?
+	 * @param $compress bool         Compress the message with gzip.
+	 *
+	 * @return          bool/object  True on success, Pear error on failure.
+	 *
+	 * @access public
+	 */
+	public function postArticle($groups, $subject, $body, $from, $yEnc=true, $compress=true, $extra='') {
+
+		if (strlen($subject) > 510) {
+			return $this->throwError($this->c->error('Max length of subject is 510 chars.'));
+		}
+
+		if (strlen($from) > 510) {
+			return $this->throwError($this->c->error('Max length of from is 510 chars.'));
+		}
+
+		if (is_array(($groups))) {
+			$groups = implode(', ', $groups);
+		}
+
+		if ($yEnc) {
+			$yenc = new Yenc();
+			$body = $yenc->encode($compress ? gzdeflate($body, 4) : $body, $subject);
+		} else {
+			$body = $this->splitLines($body, $compress);
+		}
+
+
+		$from = 'From: ' . $from;
+		if ($extra != '') {
+			$from = $from . "\r\n" . $extra;
+		}
+
+		return parent::mail($groups, $subject, $body, $from);
 	}
 
 	/**
@@ -512,6 +655,44 @@ class NNTP extends Net_NNTP_Client {
 			}
 		}
 		return $ret;
+	}
+
+	/**
+	 * Check if the Message-ID has the required opening and closing brackets.
+	 *
+	 * @param  string $messageID The Message-ID with or without brackets.
+	 *
+	 * @return string            Message-ID with brackets.
+	 *
+	 * @access protected
+	 */
+	protected function formatMessageID($messageID) {
+		if ($messageID[0] !== '<') {
+			$messageID = '<' . $messageID;
+		}
+		if (substr($messageID, -1) !== '<') {
+			$messageID = $messageID . '>';
+		}
+		return $messageID;
+	}
+
+	/**
+	 * Split a string into lines of 510 chars ending with \r\n.
+	 * Usenet limits lines to 512 chars, with \r\n that leaves us 510.
+	 *
+	 * @param string $string   The string to split.
+	 * @param bool   $compress Compress the string with gzip?
+	 *
+	 * @return string The split string.
+	 *
+	 * @access protected
+	 */
+	protected function splitLines($string, $compress=false) {
+		if (strlen($string) > 510) {
+			$string = chunk_split($string, 510, "\r\n");
+		}
+
+		return ($compress ? gzdeflate($string, 4) : $string);
 	}
 
 	/**

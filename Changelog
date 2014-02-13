@@ -7,10 +7,23 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-13 -> jonnyboy -> removed delete unique index when creating tpg collections tables
+                          updated smarty autoloader
+2014-02-13 -> kevin    -> nZEDb->NNTP->getArticle() (renamed from get_Article()) Parse the article, give the return array keys (From, Message, etc), optionally decode yEnc.
+                          PEAR->NET_NNTP_CLIENT->disconnect() Null the group summary when disconnecting.
+                          PEAR->NET_NNTP Remove deprecated method, resolve identation issues.
+                          nZEDb->NNTP->getArticle() Accept an article-number as well as a message-ID.
+                          nZEDb->NNTP->getArticle() Fix for multiline header keys.
+                          nZEDb->NNTP->getHeader() New method for downloading a full article header.
+                          nZEDb->NNTP->formatMessageID() New method for checking if the message-ID has the required triangular brackets.
+                          nZEDb->NNTP->postArticle() New method for uploading articles to usenet.
+                          nZEDb->NNTP->splitLines() New method for spliting lines longer than 510 chars and appending \r\n
+                          nZEDb->NFO Add PhpDoc.
 2014-02-13 -> niel     -> Upd: Changes to autoloading. Each "namespace" (nzedb, libs, and Smarty) gets its own autoloader.
                        -> Fix: Replacing the theme path constant I inadvertantly killed :-(
 2014-02-12 -> kevin    -> NNTP.php Change failure returns to pear error (even though this is depreceated in PEAR, most of our scripts look for these), getArticles method was invalid (the return from the parent function was an array and we were trying to return a string), change getMessage method to verify if the selected group is the same using the parent's object, change grabNZB to use getMessages method.
                        -> NNTP.php _decodeYenc() Return the input string if data is not yEnc.
+                       -> NNTP.php getMessage() Use the parent method group() to check if the group is already selected.
 2014-02-12 -> jonnyboy -> fixed bug in backfill_safe_threaded.py not running on correct group when binaries_safe.py not being used
                           added method to convert_mysql_tables.php to convert all parts to MyISAM Dynamic, the rest same as cinnodb
                           updated show_table_sizes.php to show current values
