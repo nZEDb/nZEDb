@@ -227,14 +227,14 @@ class NNTP extends Net_NNTP_Client {
 	 * Download an article body (an article without the header).
 	 *
 	 * @param string $groupName The name of the group the article is in.
-	 * @param string $partMsgId The message-ID of the article body to download.
+	 *  @param string/int $identifier (String)The message-ID of the article to download. or (Int) The article number.
 	 *
 	 * @return string On success : The article's body.
 	 * @return object On failure : Pear error.
 	 *
 	 * @access public
 	 */
-	public function getMessage($groupName, $partMsgId) {
+	public function getMessage($groupName, $identifier) {
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
 			$summary = parent::selectGroup($groupName);
@@ -243,7 +243,11 @@ class NNTP extends Net_NNTP_Client {
 			}
 		}
 
-		$body = parent::getBody('<'.$partMsgId.'>', true);
+		if (!is_numeric($identifier)) {
+			$identifier = $this->formatMessageID($identifier);
+		}
+
+		$body = parent::getBody($identifier, true);
 		if (PEAR::isError($body)) {
 			return $body;
 		}
@@ -281,7 +285,7 @@ class NNTP extends Net_NNTP_Client {
 	 * associated values, optionally decode the body using yEnc.
 	 *
 	 * @param string $groupName The name of the group the article is in.
-	 * @param string $identifier (String)The message-ID of the article to download. or (Int) The article number.
+	 * @param string/int $identifier (String)The message-ID of the article to download. or (Int) The article number.
 	 * @param bool   $yEnc      Attempt to yEnc decode the body.
 	 *
 	 * @return array  On success : The article.
@@ -299,8 +303,9 @@ class NNTP extends Net_NNTP_Client {
 		}
 
 		if (!is_numeric($identifier)) {
-			$identifier = '<' . $identifier . '>';
+			$identifier = $this->formatMessageID($identifier);
 		}
+
 		$article = parent::getArticle($identifier);
 		if (PEAR::isError($article)) {
 			return $article;
@@ -318,8 +323,12 @@ class NNTP extends Net_NNTP_Client {
 						continue;
 					}
 
-					if (preg_match('/([A-Z-]+): (.*)/i', $line, $matches)) {
-						$ret[$matches[1]] = $matches[2];
+					if (preg_match('/([A-Z-]+?): (.*)/i', $line, $matches)) {
+						if (array_key_exists($matches[1], $ret)) {
+							$ret[$matches[1]] = $ret[$matches[1]] .  $matches[2];
+						} else {
+							$ret[$matches[1]] = $matches[2];
+						}
 					}
 
 				} else {
@@ -329,6 +338,70 @@ class NNTP extends Net_NNTP_Client {
 			$ret['Message'] = $yEnc ? $this->_decodeYenc($body) : $body;
 		}
 		return $ret;
+	}
+
+	/**
+	 * Get a full article header.
+	 *
+	 * @param string $groupName The name of the group the article is in.
+	 * @param string/int $identifier (String)The message-ID of the article to download. or (Int) The article number.
+	 *
+	 * @return array The header.
+	 *
+	 * @access public
+	 */
+	public function getHeader($groupName, $identifier) {
+		// Make sure the requested group is already selected, if not select it.
+		if (parent::group() !== $groupName) {
+			$summary = parent::selectGroup($groupName);
+			if (PEAR::isError($summary)) {
+				return $summary;
+			}
+		}
+
+		if (!is_numeric($identifier)) {
+			$identifier = $this->formatMessageID($identifier);
+		}
+
+		$header = parent::getHeader($identifier);
+		if (PEAR::isError($header)) {
+			return $header;
+		}
+
+		var_dump($header);
+		$ret = $header;
+		if (sizeof($header) > 0) {
+			$ret = array();
+			foreach ($header as $line) {
+				if (preg_match('/([A-Z-]+?): (.*)/i', $line, $matches)) {
+					if (array_key_exists($matches[1], $ret)) {
+						$ret[$matches[1]] = $ret[$matches[1]] .  $matches[2];
+					} else {
+						$ret[$matches[1]] = $matches[2];
+					}
+				}
+			}
+		}
+		return $ret;
+	}
+
+	/**
+	 * Check if the Message-ID has the required opening and closing brackets.
+	 *
+	 * @param  string $messageID The Message-ID with or without brackets.
+	 *
+	 * @return string            Message-ID with brackets.
+	 *
+	 * @access protected
+	 */
+	protected function formatMessageID($messageID) {
+		if ($messageID[0] != '<') {
+			$messageID = '<' . $messageID;
+			}
+		if (substr($messageID, -1) != '<') {
+			$messageID = $messageID . '>';
+		}
+		return $messageID;
 	}
 
 	/**
