@@ -368,7 +368,6 @@ class NNTP extends Net_NNTP_Client {
 			return $header;
 		}
 
-		var_dump($header);
 		$ret = $header;
 		if (sizeof($header) > 0) {
 			$ret = array();
