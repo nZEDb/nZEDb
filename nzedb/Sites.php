@@ -139,7 +139,7 @@ GNU General Public License for more details.
 	{
 		if (!defined('nZEDb_COVERS')) {
 			$row = $this->db->query("SELECT value FROM site WHERE setting = 'coverspath'");
-			define('nZEDb_COVERS', $row['coverspath'] == '' ? nZEDb_WWW . 'covers' . DS : $row['coverspath']);
+			define('nZEDb_COVERS', $row[0]['value'] == '' ? nZEDb_WWW . 'covers' . DS : $row['coverspath']);
 		}
 
 	}
