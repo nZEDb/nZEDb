@@ -148,76 +148,76 @@ process_additional = run_threads * ppperrun
 process_nfo = run_threads * nfoperrun
 
 if sys.argv[1] == "additional":
-    run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -1 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+    run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid from releases r USE INDEX(ix_releases_status) LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -1 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
     cur.execute(run, process_additional)
     datas = cur.fetchall()
     maxtries = -1
     if len(datas) < process_additional:
-        run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -2 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+        run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid from releases r USE INDEX(ix_releases_status) LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -2 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
         cur.execute(run, (process_additional - len(datas)))
         datas += cur.fetchall()
         maxtries = -2
         if len(datas) < process_additional:
-            run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -3 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+            run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid from releases r USE INDEX(ix_releases_status) LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -3 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
             cur.execute(run, (process_additional - len(datas)))
             datas += cur.fetchall()
             maxtries = -3
             if len(datas) < process_additional:
-                run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -4 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+                run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid from releases r USE INDEX(ix_releases_status) LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -4 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
                 cur.execute(run, (process_additional - len(datas)))
                 datas += cur.fetchall()
                 maxtries = -4
                 if len(datas) < process_additional:
-                    run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -5 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+                    run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid from releases r USE INDEX(ix_releases_status) LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -5 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
                     cur.execute(run, (process_additional - len(datas)))
                     datas += cur.fetchall()
                     maxtries = -5
                     if len(datas) < process_additional:
-                        run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -6 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
+                        run = "SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.categoryid from releases r USE INDEX(ix_releases_status) LEFT JOIN category c ON c.id = r.categoryid WHERE (bitwise & 256) = 256 "+maxsize+" AND r.passwordstatus = -6 AND r.haspreview = -1 AND c.disablepreview = 0 "+groupID+" ORDER BY postdate DESC LIMIT %s"
                         cur.execute(run, (process_additional - len(datas)))
                         datas += cur.fetchall()
                         maxtries = -6
 
 elif sys.argv[1] == "nfo":
-    cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -1 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo))
+    cur.execute("SELECT id, guid, groupid, name from releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND nfostatus = -1 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo))
     datas = cur.fetchall()
     maxtries = -1
     if len(datas) < process_nfo:
-        cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -2 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
+        cur.execute("SELECT id, guid, groupid, name from releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND nfostatus = -2 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
         datas += cur.fetchall()
         maxtries = -2
         if len(datas) < process_nfo:
-            cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -3 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
+            cur.execute("SELECT id, guid, groupid, name from releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND nfostatus = -3 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
             datas += cur.fetchall()
             maxtries = -3
             if len(datas) < process_nfo:
-                cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -4 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
+                cur.execute("SELECT id, guid, groupid, name from releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND nfostatus = -4 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
                 datas += cur.fetchall()
                 maxtries = -4
                 if len(datas) < process_nfo:
-                    cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -5 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
+                    cur.execute("SELECT id, guid, groupid, name from releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND nfostatus = -5 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
                     datas += cur.fetchall()
                     maxtries = -5
                     if len(datas) < process_nfo:
-                        cur.execute("SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus = -6 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
+                        cur.execute("SELECT id, guid, groupid, name from releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND nfostatus = -6 "+groupID+" ORDER BY postdate DESC LIMIT "+str(process_nfo - len(datas)))
                         datas += cur.fetchall()
                         maxtries = -6
 
 
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-        run = "SELECT DISTINCT searchname AS name, id, categoryid FROM releases WHERE (bitwise & 260) = 260 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN (SELECT id FROM category WHERE parentid = 2000) ORDER BY postdate DESC LIMIT %s"
+        run = "SELECT DISTINCT searchname AS name, id, categoryid from releases USE INDEX(ix_releases_status) WHERE (bitwise & 260) = 260 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN (SELECT id FROM category WHERE parentid = 2000) ORDER BY postdate DESC LIMIT %s"
         cur.execute(run, (run_threads * movieperrun))
         datas = cur.fetchall()
 elif sys.argv[1] == "movie":
-        run = "SELECT searchname AS name, id, categoryid FROM releases WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN (SELECT id FROM category WHERE parentid = 2000) ORDER BY postdate DESC LIMIT %s"
+        run = "SELECT searchname AS name, id, categoryid from releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN (SELECT id FROM category WHERE parentid = 2000) ORDER BY postdate DESC LIMIT %s"
         cur.execute(run, (run_threads * movieperrun))
         datas = cur.fetchall()
 elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-        run = "SELECT searchname, id FROM releases WHERE (bitwise & 260) = 260 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN (SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
+        run = "SELECT searchname, id from releases USE INDEX(ix_releases_status) WHERE (bitwise & 260) = 260 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN (SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
         cur.execute(run, (run_threads * tvrageperrun))
         datas = cur.fetchall()
 elif sys.argv[1] == "tv":
-        run = "SELECT searchname, id FROM releases WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN (SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
+        run = "SELECT searchname, id from releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN (SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
         cur.execute(run, (run_threads * tvrageperrun))
         datas = cur.fetchall()
 
@@ -301,7 +301,7 @@ def main(args):
     my_queue.join()
 
     if sys.argv[1] == "nfo":
-        cur.execute("SELECT id FROM releases WHERE nfostatus <= -6")
+        cur.execute("SELECT id from releases USE INDEX(ix_releases_status) WHERE nfostatus <= -6")
         final = cur.fetchall()
         if len(datas) > 0:
             for item in final:

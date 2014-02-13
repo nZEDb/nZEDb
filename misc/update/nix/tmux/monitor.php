@@ -403,6 +403,7 @@ while ($i > 0) {
 
 	// Ananlyze tables every 60 min
 	$time08 = TIME();
+	printf("Analyzing your tables to refresh your indexes.");
 	if ($i == 1 || (TIME() - $time08 >= 3600)) {
 		$db->optimise(true, 'analyze');
 		$time08 = TIME();
@@ -1172,7 +1173,7 @@ while ($i > 0) {
 					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
 						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 				} else {
-					$fcmax = count($fix_crap) - 1;
+					$fcmax = count($fix_crap);
 					if (is_null($fcnum)) {
 						$fcnum = 0;
 					}
@@ -1194,7 +1195,7 @@ while ($i > 0) {
 					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
 						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 				} else {
-					$fcmax = count($fix_crap) - 1;
+					$fcmax = count($fix_crap);
 					if (is_null($fcnum)) {
 						$fcnum = 0;
 					}

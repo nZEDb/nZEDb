@@ -1,7 +1,5 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 passthru("clear");
 $c= new ColorCLI();
@@ -79,4 +77,3 @@ function command_exist($cmd)
 	$returnVal = exec("which $cmd 2>/dev/null");
 	return (empty($returnVal) ? false : true);
 }
-?>

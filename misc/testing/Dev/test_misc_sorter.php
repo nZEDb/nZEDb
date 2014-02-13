@@ -1,9 +1,5 @@
 <?php
 require dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'miscsorter.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
-//require_once nZEDb_LIB . 'site.php';
 
 $sorter = new MiscSorter(true);
 
