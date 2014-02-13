@@ -70,7 +70,7 @@ foreach ($files as $file)
 }
 
 echo $c->header("Deleting all images, previews and samples that still remain.");
-$dirItr = new RecursiveDirectoryIterator(nZEDb_WWW . 'covers');
+$dirItr = new RecursiveDirectoryIterator(nZEDb_COVERS);
 $itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
 $deleted = 0;
 foreach ($itr as $filePath)

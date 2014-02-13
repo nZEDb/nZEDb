@@ -12,7 +12,7 @@ class PostProcess
 		$this->site = $s->get();
 		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
 		$this->addpar2 = ($this->site->addpar2 == '0') ? false : true;
-		$this->audSavePath = nZEDb_WWW . 'covers/audiosample/';
+		$this->audSavePath = nZEDb_COVERS . 'audiosample/';
 		$this->consoleTools = new ConsoleTools();
 		$this->db = new DB();
 		$this->DEBUG_ECHO = ($this->site->debuginfo == '0') ? false : true;

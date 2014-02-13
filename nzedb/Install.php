@@ -74,6 +74,7 @@ class Install
 		$this->INSTALL_DIR = nZEDb_WWW . 'install' . DS;
 		$this->NZB_PATH = nZEDb_RES . DS . 'nzb' . DS;
 		$this->SMARTY_DIR = SMARTY_DIR;
+		$this->UNRAR_PATH = nZEDb_TMP . 'unrar';
 	}
 
 	public function setSession()

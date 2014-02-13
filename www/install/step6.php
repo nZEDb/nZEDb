@@ -35,8 +35,8 @@ if ($page->isPostBack()) {
 		}
 
 		if (!$cfg->error) {
-			if (!file_exists($cfg->NZB_PATH . "tmpunrar")) {
-				mkdir($cfg->NZB_PATH . "tmpunrar");
+			if (!file_exists($cfg->UNRAR_PATH)) {
+				mkdir($cfg->UNRAR_PATH);
 			}
 
 			$db = new DB();

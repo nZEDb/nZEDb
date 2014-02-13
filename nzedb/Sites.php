@@ -18,11 +18,12 @@ class Sites
 	function __construct()
 	{
 		$this->db = new DB();
+		$this->setCovers();
 	}
 
 	public function version()
 	{
-		return "0.0.3";
+		return "0.3.0";
 	}
 
 	public function update($form)
@@ -132,6 +133,15 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 " . $n;
+	}
+
+	public function setCovers()
+	{
+		if (!defined('nZEDb_COVERS')) {
+			$row = $this->db->query("SELECT value FROM site WHERE setting = 'coverspath'");
+			define('nZEDb_COVERS', $row['coverspath'] == '' ? nZEDb_WWW . 'covers' . DS : $row['coverspath']);
+		}
+
 	}
 }
 ?>
