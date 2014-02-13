@@ -235,12 +235,9 @@ class NNTP extends Net_NNTP_Client {
 	 * @access public
 	 */
 	public function getMessage($groupName, $partMsgId) {
-		// Check if the selected group is the same as the requested one.
-		if (parent::$_selectedGroupSummary !== null && parent::$_selectedGroupSummary['group'] !== $groupName) {
-			$summary = $this->selectGroup($groupName);
-			if (PEAR::isError($summary)) {
-				return $summary;
-			}
+		$summary = $this->selectGroup($groupName);
+		if (PEAR::isError($summary)) {
+			return $summary;
 		}
 
 		$body = $this->getBody('<'.$partMsgId.'>', true);
