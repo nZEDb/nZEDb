@@ -175,6 +175,10 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 */
 	function disconnect()
 	{
+		// Set the current group summary to null.
+		$this->_selectedGroupSummary = null;
+		// Set the overview format cache to null.
+		$this->_overviewFormatCache = null;
 		return parent::disconnect();
 	}
 

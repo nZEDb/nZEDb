@@ -235,8 +235,9 @@ class NNTP extends Net_NNTP_Client {
 	 * @access public
 	 */
 	public function getMessage($groupName, $partMsgId) {
+		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
-			$summary = $this->selectGroup($groupName);
+			$summary = parent::selectGroup($groupName);
 			if (PEAR::isError($summary)) {
 				return $summary;
 			}
@@ -265,7 +266,7 @@ class NNTP extends Net_NNTP_Client {
 	public function getMessages($groupname, $msgIds) {
 		$body = '';
 		foreach ($msgIds as $m) {
-			$message = $this->getMessage($groupname, $m);
+			$message = parent::getMessage($groupname, $m);
 			if (!PEAR::isError($message)) {
 				$body = $body . $message;
 			} else {
@@ -276,20 +277,55 @@ class NNTP extends Net_NNTP_Client {
 	}
 
 	/**
-	 * Download a full article, the body and the header.
+	 * Download a full article, the body and the header, return an array with named keys and their
+	 * associated values, optionally decode the body using yEnc.
 	 *
-	 * @param string $groupname The name of the group the article is in.
+	 * @param string $groupName The name of the group the article is in.
 	 * @param string $partMsgId The message-ID of the article to download.
-	 *
-	 * @note The body is not yEnc decoded.
+	 * @param bool   $yEnc      Attempt to yEnc decode the body.
 	 *
 	 * @return array  On success : The article.
 	 * @return object On failure : Pear error.
 	 *
 	 * @access public
 	 */
-	public function get_Article($groupname, $partMsgId) {
-		return $this->getArticle('<'.$partMsgId.'>', true);
+	public function getArticle($groupName, $partMsgId, $yEnc=false) {
+		// Make sure the requested group is already selected, if not select it.
+		if (parent::group() !== $groupName) {
+			$summary = parent::selectGroup($groupName);
+			if (PEAR::isError($summary)) {
+				return $summary;
+			}
+		}
+
+		$article = parent::getArticle('<'.$partMsgId.'>');
+		if (PEAR::isError($article)) {
+			return $article;
+		}
+
+		$ret = $article;
+		if (sizeof($article) > 0) {
+			$ret = array();
+			$body = '';
+			$emptyLine = false;
+			foreach ($article as $line) {
+				if (!$emptyLine) {
+					if ($line === "") {
+						$emptyLine = True;
+						continue;
+					}
+
+					if (preg_match('/([A-Z-]+): (.*)/i', $line, $matches)) {
+						$ret[$matches[1]] = $matches[2];
+					}
+
+				} else {
+					$body = $body . $line;
+				}
+			}
+			$ret['Message'] = $yEnc ? $this->_decodeYenc($body) : $body;
+		}
+		return $ret;
 	}
 
 	/**
