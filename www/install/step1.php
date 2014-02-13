@@ -38,78 +38,78 @@ $cfg->gdCheck = function_exists('imagecreatetruecolor');
 
 $cfg->curlCheck = function_exists('curl_init');
 
-$cfg->cacheCheck = is_writable($cfg->SMARTY_DIR . '/templates_c');
+$cfg->cacheCheck = is_writable(SMARTY_DIR . 'templates_c');
 if ($cfg->cacheCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->animeCoversCheck = is_writable($cfg->nZEDb_COVERS . 'anime');
+$cfg->animeCoversCheck = is_writable(nZEDb_COVERS . 'anime');
 if ($cfg->animeCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->audioCoversCheck = is_writable($cfg->nZEDb_COVERS . 'audio');
+$cfg->audioCoversCheck = is_writable(nZEDb_COVERS . 'audio');
 if ($cfg->audioCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->audiosampleCoversCheck = is_writable($cfg->nZEDb_COVERS . 'audiosample');
+$cfg->audiosampleCoversCheck = is_writable(nZEDb_COVERS . 'audiosample');
 if ($cfg->audiosampleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->bookCoversCheck = is_writable($cfg->nZEDb_COVERS . 'book');
+$cfg->bookCoversCheck = is_writable(nZEDb_COVERS . 'book');
 if ($cfg->bookCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->consoleCoversCheck = is_writable($cfg->nZEDb_COVERS . 'console');
+$cfg->consoleCoversCheck = is_writable(nZEDb_COVERS . 'console');
 if ($cfg->consoleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->movieCoversCheck = is_writable($cfg->nZEDb_COVERS . 'movies');
+$cfg->movieCoversCheck = is_writable(nZEDb_COVERS . 'movies');
 if ($cfg->movieCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->musicCoversCheck = is_writable($cfg->nZEDb_COVERS . 'music');
+$cfg->musicCoversCheck = is_writable(nZEDb_COVERS . 'music');
 if ($cfg->musicCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->previewCoversCheck = is_writable($cfg->nZEDb_COVERS . 'preview');
+$cfg->previewCoversCheck = is_writable(nZEDb_COVERS . 'preview');
 if ($cfg->previewCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->sampleCoversCheck = is_writable($cfg->nZEDb_COVERS . 'sample');
+$cfg->sampleCoversCheck = is_writable(nZEDb_COVERS . 'sample');
 if ($cfg->sampleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->videoCoversCheck = is_writable($cfg->nZEDb_COVERS . 'video');
+$cfg->videoCoversCheck = is_writable(nZEDb_COVERS . 'video');
 if ($cfg->videoCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->configCheck = is_writable($cfg->nZEDb_WWW . '/config.php');
+$cfg->configCheck = is_writable(nZEDb_WWW . 'config.php');
 if ($cfg->configCheck === false) {
-	$cfg->configCheck = is_file($cfg->nZEDb_WWW . '/config.php');
+	$cfg->configCheck = is_file(nZEDb_WWW . 'config.php');
 	if ($cfg->configCheck === true) {
 		$cfg->configCheck = false;
 		$cfg->error = true;
 	} else {
-		$cfg->configCheck = is_writable($cfg->nZEDb_WWW);
+		$cfg->configCheck = is_writable(nZEDb_WWW);
 		if ($cfg->configCheck === false) {
 			$cfg->error = true;
 		}
 	}
 }
 
-$cfg->lockCheck = is_writable($cfg->INSTALL_DIR . '/install.lock');
+$cfg->lockCheck = is_writable($cfg->INSTALL_DIR . 'install.lock');
 if ($cfg->lockCheck === false) {
-	$cfg->lockCheck = is_file($cfg->INSTALL_DIR . '/install.lock');
+	$cfg->lockCheck = is_file($cfg->INSTALL_DIR . 'install.lock');
 	if ($cfg->lockCheck === true) {
 		$cfg->lockCheck = false;
 		$cfg->error = true;
@@ -128,7 +128,7 @@ if (!$cfg->pearCheck) {
 }
 
 $cfg->schemaCheck = false;
-if (is_readable($cfg->DB_DIR . '/schema.mysql') && is_readable($cfg->DB_DIR . '/schema.pgsql')) {
+if (is_readable($cfg->DB_DIR . '/schema.mysql') && is_readable($cfg->DB_DIR . 'schema.pgsql')) {
 	$cfg->schemaCheck = true;
 }
 if ($cfg->schemaCheck === false) {
@@ -150,8 +150,8 @@ if (preg_match('/apache/i', $_SERVER['SERVER_SOFTWARE'])) {
 }
 
 // Load previous config.php.
-if (file_exists($cfg->nZEDb_WWW . '/config.php') && is_readable($cfg->nZEDb_WWW . '/config.php')) {
-	$tmpCfg = file_get_contents($cfg->nZEDb_WWW . '/config.php');
+if (file_exists(nZEDb_WWW . '/config.php') && is_readable(nZEDb_WWW . 'config.php')) {
+	$tmpCfg = file_get_contents(nZEDb_WWW . 'config.php');
 	$cfg->setConfig($tmpCfg);
 }
 

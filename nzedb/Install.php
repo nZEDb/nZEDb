@@ -20,10 +20,7 @@ class Install
 	public $NNTP_SERVER_A;
 	public $NNTP_PORT_A;
 	public $NNTP_SSLENABLED_A;
-	public $nZEDb_WWW;
-	public $SMARTY_DIR;
 	public $DB_DIR;
-	public $nZEDb_MISC;
 	public $INSTALL_DIR;
 	public $ADMIN_USER;
 	public $ADMIN_FNAME;
@@ -72,14 +69,11 @@ class Install
 
 	function __construct()
 	{
-		$this->DB_DIR = dirname(realpath('..')) . '/db';
-		$this->INSTALL_DIR = $this->nZEDb_WWW . '/install';
-		$this->SMARTY_DIR = SMARTY_DIR;
+		$this->COVERS_PATH = nZEDb_RES . DS . 'covers' . DS;
+		$this->DB_DIR = nZEDb_ROOT . 'db' . DS;
+		$this->INSTALL_DIR = nZEDb_WWW . 'install' . DS;
 		$this->NZB_PATH = nZEDb_RES . DS . 'nzb' . DS;
-		$this->nZEDb_WWW = nZEDb_WWW;
-		$this->nZEDb_MISC = dirname(realpath('..')) . '/misc';
-		$this->nZEDb_LIB = dirname(realpath('..')) . '/nzedb/';
-		$this->nZEDb_LIBS = str_replace('\\', '/', realpath(nZEDb_LIBS));
+		$this->SMARTY_DIR = SMARTY_DIR;
 	}
 
 	public function setSession()
@@ -102,7 +96,7 @@ class Install
 
 	public function isLocked()
 	{
-		return (file_exists($this->INSTALL_DIR . '/install.lock') ? true : false);
+		return (file_exists($this->INSTALL_DIR . 'install.lock') ? true : false);
 	}
 
 	public function setConfig($tmpCfg)
@@ -140,12 +134,12 @@ class Install
 		$tmpCfg = str_replace('%%NNTP_SSLENABLED_A%%', ($this->NNTP_SSLENABLED_A ? "true" : "false"), $tmpCfg);
 
 		$this->COMPILED_CONFIG = $tmpCfg;
-		return @file_put_contents($this->nZEDb_WWW . '/config.php', $tmpCfg);
+		return @file_put_contents(nZEDb_WWW . 'config.php', $tmpCfg);
 	}
 
 	public function saveInstallLock()
 	{
-		return @file_put_contents($this->INSTALL_DIR . '/install.lock', '');
+		return @file_put_contents($this->INSTALL_DIR . 'install.lock', '');
 	}
 }
 ?>
