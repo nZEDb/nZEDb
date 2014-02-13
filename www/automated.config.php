@@ -29,6 +29,8 @@ define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
 // Used to refer to the /misc class files.
 define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
 
+define('nZEDb_THEMES', nZEDb_WWW . 'themes' . DS);
+
 if (function_exists('ini_set') && function_exists('ini_get')) {
 	$ps = (strtolower(PHP_OS) == 'windows') ? ';' : ':';
 	ini_set('include_path', nZEDb_WWW . $ps . ini_get('include_path'));

@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 
 2014-02-13 -> niel     -> Upd: Changes to autoloading. Each "namespace" (nzedb, libs, and Smarty) gets its own autoloader.
+                       -> Fix: Replacing the theme path constant I inadvertantly killed :-(
 2014-02-12 -> kevin    -> NNTP.php Change failure returns to pear error (even though this is depreceated in PEAR, most of our scripts look for these), getArticles method was invalid (the return from the parent function was an array and we were trying to return a string), change getMessage method to verify if the selected group is the same using the parent's object, change grabNZB to use getMessages method.
                        -> NNTP.php _decodeYenc() Return the input string if data is not yEnc.
 2014-02-12 -> jonnyboy -> fixed bug in backfill_safe_threaded.py not running on correct group when binaries_safe.py not being used
