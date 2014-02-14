@@ -14,7 +14,7 @@ $number = 2500000;
 //exec("tmux kill-session -t NNTPProxy");
 
 $groupArr = $nntp->selectGroup($group);
-if (PEAR::isError($groupArr) || !isset($groupArr['first']) || !isset($groupArr['last'])) {
+if ($nntp->isError($groupArr) || !isset($groupArr['first']) || !isset($groupArr['last'])) {
 	exit();
 }
 

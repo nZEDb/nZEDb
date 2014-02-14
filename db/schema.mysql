@@ -416,6 +416,7 @@ CREATE TABLE movieinfo (
 	UNIQUE KEY imdbid (imdbid)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 CREATE INDEX ix_movieinfo_title ON movieinfo(title);
+CREATE UNIQUE INDEX ix_movieinfo_imdbid ON movieinfo(imdbid);
 
 DROP TABLE IF EXISTS animetitles;
 CREATE TABLE animetitles (
@@ -1089,7 +1090,7 @@ INSERT INTO site
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
 	('showbacks', '0'),
-	('sqlpatch','174');
+	('sqlpatch','175');
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (
@@ -1117,6 +1118,7 @@ CREATE TABLE consoleinfo (
 	updateddate datetime NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+ALTER IGNORE TABLE consoleinfo ADD UNIQUE INDEX ix_consoleinfo_asin(asin);
 
 DROP TABLE IF EXISTS bookinfo;
 CREATE TABLE bookinfo (
@@ -1138,6 +1140,7 @@ CREATE TABLE bookinfo (
 	updateddate datetime NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+ALTER IGNORE TABLE bookinfo ADD UNIQUE INDEX ix_bookinfo_asin(asin);
 
 DROP TABLE IF EXISTS musicinfo;
 CREATE TABLE musicinfo (
@@ -1158,7 +1161,7 @@ CREATE TABLE musicinfo (
 	updateddate datetime NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
-
+ALTER IGNORE TABLE musicinfo ADD UNIQUE INDEX ix_musicinfo_asin(asin);
 
 DROP TABLE IF EXISTS upcoming;
 CREATE TABLE upcoming (

@@ -77,7 +77,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 	}
 
 	if (!isset($nntp)) {
-		$nntp = new Nntp;
+		$nntp = new NNTP;
 		if ($nntp->doConnectNC() === false) {
 			return;
 		}
@@ -86,7 +86,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 	}
 
 	$data = $nntp->selectGroup($group);
-	if (PEAR::isError($data)) {
+	if ($nntp->isError($data)) {
 		$data = $nntp->dataError($nntp, $group, false);
 		if ($data === false) {
 			return;
