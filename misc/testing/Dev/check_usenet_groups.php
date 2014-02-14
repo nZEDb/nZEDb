@@ -12,7 +12,7 @@ $nntp = new NNTP();
 $nntp->doConnect();
 $data = $nntp->getGroups();
 
-if (PEAR::isError($data)) {
+if ($nntp->isError($data)) {
 	exit($c->error("\nFailed to getGroups() from nntp server.\n"));
 }
 if (!isset($data['group'])) {
