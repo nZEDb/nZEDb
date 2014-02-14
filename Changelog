@@ -7,6 +7,9 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-14 -> jonnyboy -> updated schema to add unique indexs on movieinfo->imdbid, consoleinfo->asin, musicinfo->asin
+                          changed SDTV/HDTV category regex
+2014-02-14 -> niel     -> Fix: Updating usage of PEAR::isError to use the instantiated class instead. This will prevent a bunch of Strict warnings.
 2014-02-13 -> jonnyboy -> removed delete unique index when creating tpg collections tables
                           updated smarty autoloader
 2014-02-13 -> kevin    -> nZEDb->NNTP->getArticle() (renamed from get_Article()) Parse the article, give the return array keys (From, Message, etc), optionally decode yEnc.

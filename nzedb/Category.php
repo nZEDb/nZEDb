@@ -770,7 +770,7 @@ class Category
 
 	public function isHDTV($releasename)
 	{
-		if (preg_match('/1080(i|p)|720p|HDTV|BDRip/i', $releasename)) {
+		if (preg_match('/1080(i|p)|720p/i', $releasename)) {
 			$this->tmpCat = Category::CAT_TV_HD;
 			return true;
 		}
@@ -785,7 +785,7 @@ class Category
 
 	public function isSDTV($releasename)
 	{
-		if (preg_match('/(360|480|576)p|Complete[-._ ]Season|dvdr(ip)?|dvd5|dvd9|SD[-._ ]TV|TVRip|xvid/i', $releasename)) {
+		if (preg_match('/(360|480|576)p|Complete[-._ ]Season|dvdr(ip)?|dvd5|dvd9|SD[-._ ]TV|TVRip|NTSC|BDRip|hdtv|xvid/i', $releasename)) {
 			$this->tmpCat = Category::CAT_TV_SD;
 			return true;
 		}
