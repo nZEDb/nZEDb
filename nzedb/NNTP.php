@@ -578,8 +578,8 @@ class NNTP extends Net_NNTP_Client {
 	 * @access protected
 	 */
 	protected function _getXfeatureTextResponse() {
-		$tries = $bytesreceived = $totalbytesreceived = 0;
-		$completed = $possibleterm = false;
+		$tries = $bytesReceived = $totalBytesReceived = 0;
+		$completed = $possibleTerm = false;
 		$data = null;
 
 		while (!feof($this->_socket)) {
@@ -589,7 +589,7 @@ class NNTP extends Net_NNTP_Client {
 			}
 
 			// Did we find a possible ending ? (.\r\n)
-			if ($possibleterm !== false) {
+			if ($possibleTerm !== false) {
 
 				// If the socket is really empty, fgets will get stuck here,
 				// so set the socket to non blocking in case.
@@ -601,18 +601,18 @@ class NNTP extends Net_NNTP_Client {
 				// And set back the socket to blocking.
 				stream_set_blocking($this->_socket, 1);
 
-				// If the buffer was really empty, then we know $possibleterm
+				// If the buffer was really empty, then we know $possibleTerm
 				// was the real ending.
 				if (empty($buffer)) {
 					$completed = true;
 
 				// The buffer was not empty, so we know this was not
-				// the real ending, so reset $possibleterm.
+				// the real ending, so reset $possibleTerm.
 				} else {
-					$possibleterm = false;
+					$possibleTerm = false;
 				}
 			} else {
-				// Don't try to redownload from the socket if decompression failed.
+				// Don't try to re-download from the socket if decompression failed.
 				if ($tries === 0) {
 					// Get data from the stream.
 					$buffer = fgets($this->_socket);
@@ -621,12 +621,10 @@ class NNTP extends Net_NNTP_Client {
 
 			// We found a ending, try to decompress the full buffer.
 			if ($completed === true) {
-				$decomp = gzuncompress(mb_substr($data , 0 , -3, '8bit'));
-				/* Split the string of headers into and array of
-				 * individual headers, then return it.
-				 */
-				if (!empty($decomp)) {
-					return explode("\r\n", trim($decomp));
+				$deComp = gzuncompress(mb_substr($data , 0 , -3, '8bit'));
+				// Split the string of headers into an array of individual headers, then return it.
+				if (!empty($deComp)) {
+					return explode("\r\n", trim($deComp));
 				} else {
 					// Try 5 times to decompress.
 					if ($tries++ > 5) {
@@ -639,56 +637,56 @@ class NNTP extends Net_NNTP_Client {
 			}
 
 			// Get byte count.
-			$bytesreceived = strlen($buffer);
+			$bytesReceived = strlen($buffer);
 
 			// If we got no bytes at all try one more time to pull data.
-			if ($bytesreceived == 0) {
+			if ($bytesReceived === 0) {
 				$buffer = fgets($this->_socket);
-				$bytesreceived = strlen($buffer);
+				$bytesReceived = strlen($buffer);
 			}
 
-			// Get any socket error codes.
-			 $errorcode = socket_last_error();
-
 			// If the buffer is zero it's zero, return error.
-			if ($bytesreceived === 0) {
+			if ($bytesReceived === 0) {
 				return $this->throwError($this->c->error
 					('The NNTP server has returned no data.'), 1000);
 			}
 
+			// Get any socket error codes.
+			$errorCode = socket_last_error();
+
 			// Keep going if no errors.
-			if ($errorcode === 0) {
+			if ($errorCode === 0) {
 				// Append buffer to final data object.
 				$data .= $buffer;
 
 				// Update total bytes received.
-				$totalbytesreceived += $bytesreceived;
+				$totalBytesReceived += $bytesReceived;
 
-				// Show bytes recieved
-				if ($totalbytesreceived > 10240 && $totalbytesreceived % 128 == 0) {
+				// Show bytes received
+				if ($totalBytesReceived > 10240 && $totalBytesReceived % 128 == 0) {
 					echo $this->c->setcolor($this->primary, 'Bold') . 'Receiving ' .
-						round($totalbytesreceived / 1024) . 'KB from ' .
+						round($totalBytesReceived / 1024) . 'KB from ' .
 						$this->group() . ".\r" . $this->c->rsetcolor();
 				}
 
-				// Check to see if we have the magic terminator on the byte stream.
-				if ($bytesreceived > 2) {
-					if (ord($buffer[$bytesreceived - 3]) == 0x2e
-						&& ord($buffer[$bytesreceived - 2]) == 0x0d
-						&& ord($buffer[$bytesreceived - 1]) == 0x0a) {
+				// Check if we have the ending (.\r\n)
+				if ($bytesReceived > 2) {
+					if (ord($buffer[$bytesReceived - 3]) == 0x2e
+						&& ord($buffer[$bytesReceived - 2]) == 0x0d
+						&& ord($buffer[$bytesReceived - 1]) == 0x0a) {
 						// We found the terminator.
-						if ($totalbytesreceived > 10240) {
+						if ($totalBytesReceived > 10240) {
 							echo "\n";
 						}
 
 						// We have a possible ending, next loop check if it is.
-						$possibleterm = true;
+						$possibleTerm = true;
 						continue;
 					}
 				}
 			} else {
-				return $this->throwError('Socket error: ' .
-					socket_strerror($errorcode), 1000);
+				return $this->throwError($this->c->error('Socket error: ' .
+					socket_strerror($errorCode)), 1000);
 			}
 		}
 		// Throw an error if we get out of the loop.

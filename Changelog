@@ -10,6 +10,7 @@ Each update goes to the top of the file
 2014-20-14 -> kevin    -> nZEDb->NNTP Remove obsolete methods for connecting.
                           nZEDb->NNTP Change destructor to use local method for disconnection, change local method of disconnect to verify if the connection is active.
                           nZEDb->NNTP->doConnect() Attempt to resolve retry issues, comment the code. Make sure we can reach 0 retries.
+                          nZEDb->NNTP->_getXfeatureTextResponse() Move $errorCode lower, if $bytesReceived is 0 it would run for no reason. Rename some variables and fix some typos.
 2014-02-14 -> jonnyboy -> updated schema to add unique indexs on movieinfo->imdbid, consoleinfo->asin, musicinfo->asin
                           changed SDTV/HDTV category regex
 2014-02-14 -> niel     -> Fix: Updating usage of PEAR::isError to use the instantiated class instead. This will prevent a bunch of Strict warnings.
