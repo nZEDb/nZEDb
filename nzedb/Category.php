@@ -770,7 +770,7 @@ class Category
 
 	public function isHDTV($releasename)
 	{
-		if (preg_match('/1080(i|p)|720p|720p\.HDTV|HDTV\.720p/i', $releasename)) {
+		if (preg_match('/1080(i|p)|720p/i', $releasename)) {
 			$this->tmpCat = Category::CAT_TV_HD;
 			return true;
 		}
