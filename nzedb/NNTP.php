@@ -40,15 +40,15 @@ class NNTP extends Net_NNTP_Client {
 	 * @var int
 	 * @access private
 	 */
-	private $nntpretries;
+	private $nntpRetries;
 
 	/**
-	 * Does the server support XFeature Gzip header compression?
+	 * Does the server support XFeature GZip header compression?
 	 *
 	 * @var boolean
 	 * @access private
 	 */
-	private $Compression = false;
+	private $compression = false;
 
 	/**
 	 * Primary color for console text output.
@@ -84,7 +84,7 @@ class NNTP extends Net_NNTP_Client {
 		$this->c = new ColorCLI();
 		$this->s = new Sites();
 		$this->site = $this->s->get();
-		$this->nntpretries =
+		$this->nntpRetries =
 			(!empty($this->site->nntpretries)) ? $this->site->nntpretries : 0;
 	}
 
@@ -116,20 +116,20 @@ class NNTP extends Net_NNTP_Client {
 			$this->doQuit();
 		}
 
-		$enc = $ret = $ret2 = $connected = $SSL_ENABLED = false;
+		$enc = $ret = $ret2 = $connected = $sslEnabled = false;
 
 		if (!$alternate) {
-			$SSL_ENABLED = (defined('NNTP_SSLENABLED') && NNTP_SSLENABLED) ? true : false;
+			$sslEnabled = (defined('NNTP_SSLENABLED') && NNTP_SSLENABLED) ? true : false;
 		} else {
-			$SSL_ENABLED = (defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A) ? true : false;
+			$sslEnabled = (defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A) ? true : false;
 		}
 
-		if ($SSL_ENABLED) {
+		if ($sslEnabled) {
 			$enc = 'ssl';
 		}
 
 		// Try to connect until we run of out tries.
-		$retries = ((int)$this->nntpretries + 1);
+		$retries = ((int)$this->nntpRetries + 1);
 		while(true) {
 			$retries--;
 			$authenticated = false;
@@ -161,7 +161,7 @@ class NNTP extends Net_NNTP_Client {
 			if ($retries === 0 && $connected === false) {
 				return $this->throwError($this->c->error('Cannot connect to server '
 					. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
-					. (!$enc ? ' (nonssl) ' : '(ssl) ') . ': ' . $ret->getMessage()));
+					. (!$enc ? ' (non-ssl) ' : '(ssl) ') . ': ' . $ret->getMessage()));
 			}
 
 			// If we are connected, try to authenticate.
@@ -198,7 +198,7 @@ class NNTP extends Net_NNTP_Client {
 					if ($retries === 0 && $authenticated === false) {
 						return $this->throwError($this->c->error('Cannot authenticate to server '
 							. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
-							. (!$enc ? ' (nonssl) ' : ' (ssl) ') . ' - '
+							. (!$enc ? ' (non-ssl) ' : ' (ssl) ') . ' - '
 							. (!$alternate ? NNTP_USERNAME : NNTP_USERNAME_A)
 							. ' (' . $ret2->getMessage() . ')'));
 					}
@@ -284,8 +284,7 @@ class NNTP extends Net_NNTP_Client {
 	 * Download multiple article bodies and string them together.
 	 *
 	 * @param string $groupName The name of the group the articles are in.
-	 * @param array string $msgIds The message-ID's of the article
-	 *                              body's to download.
+	 * @param array string $msgIds The message-ID's of the article body's to download.
 	 *
 	 * @return string On success : The article bodies.
 	 * @return object On failure : Pear error.
@@ -465,7 +464,7 @@ class NNTP extends Net_NNTP_Client {
 	 * @param $extra    string       Extra stuff, separated by \r\n
 	 *                                 ex.: $extra  = 'Organization: <nZEDb>\r\nNNTP-Posting-Host: <127.0.0.1>';
 	 * @param $yEnc     bool         Encode the message with yEnc?
-	 * @param $compress bool         Compress the message with gzip.
+	 * @param $compress bool         Compress the message with GZip.
 	 *
 	 * @return          bool/object  True on success, Pear error on failure.
 	 *
@@ -540,7 +539,7 @@ class NNTP extends Net_NNTP_Client {
 	}
 
 	/**
-	 * Override PEAR NNTP's function to use our _getXfeatureTextResponse instead
+	 * Override PEAR NNTP's function to use our _getXFeatureTextResponse instead
 	 * of their _getTextResponse function since it is incompatible at decoding
 	 * headers when XFeature GZip compression is enabled server side.
 	 *
@@ -553,17 +552,17 @@ class NNTP extends Net_NNTP_Client {
 	 * @access public
 	 */
 	public function _getTextResponse() {
-		if ($this->Compression === true
+		if ($this->compression === true
 			&& isset($this->_currentStatusResponse[1])
 			&& stripos($this->_currentStatusResponse[1], 'COMPRESS=GZIP') !== false) {
-			return $this->_getXfeatureTextResponse();
+			return $this->_getXFeatureTextResponse();
 		} else {
 			return parent::_getTextResponse();
 		}
 	}
 
 	/**
-	 * Loop over the compressed data when XFeature Gzip Compress is turned on,
+	 * Loop over the compressed data when XFeature GZip Compress is turned on,
 	 * string the data until we find a indicator
 	 * (period, carriage feed, line return ;; .\r\n), decompress the data,
 	 * split the data (bunch of headers in a string) into an array, finally
@@ -577,7 +576,7 @@ class NNTP extends Net_NNTP_Client {
 	 *
 	 * @access protected
 	 */
-	protected function _getXfeatureTextResponse() {
+	protected function _getXFeatureTextResponse() {
 		$tries = $bytesReceived = $totalBytesReceived = 0;
 		$completed = $possibleTerm = false;
 		$data = null;
@@ -702,7 +701,7 @@ class NNTP extends Net_NNTP_Client {
 	/**
 	 * Decoce a string of text encoded with yEnc.
 	 *
-	 * @note For usage outside of this class, please use the yenc library.
+	 * @note For usage outside of this class, please use the Yenc library.
 	 *
 	 * @param string $string The encoded text to decode.
 	 *
@@ -710,7 +709,7 @@ class NNTP extends Net_NNTP_Client {
 	 *
 	 * @access protected
 	 *
-	 * @TODO: ? Maybe this function should be merged into the yenc class?
+	 * @TODO: ? Maybe this function should be merged into the Yenc class?
 	 */
 	protected function _decodeYenc($string) {
 		$ret = $string;
@@ -793,7 +792,7 @@ class NNTP extends Net_NNTP_Client {
 			return $response;
 		}
 
-		$this->Compression = true;
+		$this->compression = true;
 		return true;
 	}
 }
