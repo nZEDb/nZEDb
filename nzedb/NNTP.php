@@ -142,7 +142,7 @@ class NNTP extends Net_NNTP_Client {
 				}
 			}
 
-			if ($retries === 0 && PEAR::isError($ret)) {
+			if ($retries === 0 && $this->isError($ret)) {
 				return $this->throwError($this->c->error('Cannot connect to server '
 					. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
 					. (!$enc ? ' (nonssl) ' : '(ssl) ') . ': ' . $ret->getMessage()));
@@ -162,7 +162,7 @@ class NNTP extends Net_NNTP_Client {
 						$ret2 = $this->authenticate(NNTP_USERNAME_A, NNTP_PASSWORD_A);
 					}
 
-					if ($retries === 0 && PEAR::isError($ret2)) {
+					if ($retries === 0 && $this->isError($ret2)) {
 						return $this->throwError($this->c->error('Cannot authenticate to server '
 							. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
 							. (!$enc ? ' (nonssl) ' : ' (ssl) ') . ' - '
@@ -239,7 +239,7 @@ class NNTP extends Net_NNTP_Client {
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
 			$summary = parent::selectGroup($groupName);
-			if (PEAR::isError($summary)) {
+			if ($this->isError($summary)) {
 				return $summary;
 			}
 		}
@@ -249,7 +249,7 @@ class NNTP extends Net_NNTP_Client {
 		}
 
 		$body = parent::getBody($identifier, true);
-		if (PEAR::isError($body)) {
+		if ($this->isError($body)) {
 			return $body;
 		}
 
@@ -272,7 +272,7 @@ class NNTP extends Net_NNTP_Client {
 		$body = '';
 		foreach ($msgIds as $m) {
 			$message = $this->getMessage($groupname, $m);
-			if (!PEAR::isError($message)) {
+			if (!$this->isError($message)) {
 				$body = $body . $message;
 			} else {
 				return $message;
@@ -298,7 +298,7 @@ class NNTP extends Net_NNTP_Client {
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
 			$summary = parent::selectGroup($groupName);
-			if (PEAR::isError($summary)) {
+			if ($this->isError($summary)) {
 				return $summary;
 			}
 		}
@@ -308,7 +308,7 @@ class NNTP extends Net_NNTP_Client {
 		}
 
 		$article = parent::getArticle($identifier);
-		if (PEAR::isError($article)) {
+		if ($this->isError($article)) {
 			return $article;
 		}
 
@@ -355,7 +355,7 @@ class NNTP extends Net_NNTP_Client {
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
 			$summary = parent::selectGroup($groupName);
-			if (PEAR::isError($summary)) {
+			if ($this->isError($summary)) {
 				return $summary;
 			}
 		}
@@ -365,7 +365,7 @@ class NNTP extends Net_NNTP_Client {
 		}
 
 		$header = parent::getHeader($identifier);
-		if (PEAR::isError($header)) {
+		if ($this->isError($header)) {
 			return $header;
 		}
 
@@ -456,7 +456,7 @@ class NNTP extends Net_NNTP_Client {
 		}
 
 		$data = $nntp->selectGroup($group);
-		if (PEAR::isError($data)) {
+		if ($this->isError($data)) {
 			echo $this->c->error(
 			"Code {$data->code}: {$data->message}\nSkipping group: {$group}\n");
 			$nntp->doQuit();
@@ -708,7 +708,7 @@ class NNTP extends Net_NNTP_Client {
 	 */
 	protected function _enableCompression() {
 		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
-		if (PEAR::isError($response) || $response != 290) {
+		if ($this->isError($response) || $response != 290) {
 			return $response;
 		}
 

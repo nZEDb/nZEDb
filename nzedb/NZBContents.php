@@ -156,11 +156,11 @@ Class NZBContents
 		$messageid = $this->NZBcompletion($guid, $relID, $groupID, $nntp, $db, true);
 		if ($messageid !== false) {
 			$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-			if (PEAR::isError($fetchedBinary)) {
+			if ($nntp->isError($fetchedBinary)) {
 				$nntp->doQuit();
 				$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 				$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-				if (PEAR::isError($fetchedBinary)) {
+				if ($nntp->isError($fetchedBinary)) {
 					$fetchedBinary = false;
 				}
 			}
@@ -191,11 +191,11 @@ Class NZBContents
 					$messageid = $nzbcontents->segments->segment;
 					if ($messageid !== false) {
 						$possibleNFO = $nntp->getMessage($groupName, $messageid);
-						if (PEAR::isError($possibleNFO)) {
+						if ($nntp->isError($possibleNFO)) {
 							$nntp->doQuit();
 							$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 							$possibleNFO = $nntp->getMessage($groupName, $messageid);
-							if (PEAR::isError($possibleNFO)) {
+							if ($nntp->isError($possibleNFO)) {
 								$nntp->doQuit();
 								$possibleNFO = false;
 							}

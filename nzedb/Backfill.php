@@ -70,7 +70,7 @@ class Backfill
 
 		// Select group, here, only once
 		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data)) {
+		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false) {
 				return;
@@ -232,7 +232,7 @@ class Backfill
 
 		// Select group, here, only once
 		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data)) {
+		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false) {
 				return;
@@ -336,7 +336,7 @@ class Backfill
 		do {
 			$msgs = $nntp->getOverview($post . "-" . $post, true, false);
 			$attempts++;
-			if (!PEAR::isError($msgs)) {
+			if (!$nntp->isError($msgs)) {
 				// Set table names
 				$groups = new Groups();
 				$groupID = $groups->getIDByName($group);
@@ -547,7 +547,7 @@ class Backfill
 
 		// Select group, here, only once
 		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data)) {
+		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false) {
 				return;
@@ -569,7 +569,7 @@ class Backfill
 
 		// Select group, here, only once
 		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data)) {
+		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false) {
 				return;

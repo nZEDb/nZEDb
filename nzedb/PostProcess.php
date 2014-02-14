@@ -186,11 +186,11 @@ class PostProcess
 
 		$groups = new Groups();
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
-		if (PEAR::isError($par2)) {
+		if ($nntp->isError($par2)) {
 			$nntp->doQuit();
 			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 			$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
-			if (PEAR::isError($par2)) {
+			if ($nntp->isError($par2)) {
 				$nntp->doQuit();
 				return false;
 			}
@@ -577,11 +577,11 @@ class PostProcess
 
 								$bingroup = $groupName;
 								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
-								if (PEAR::isError($fetchedBinary)) {
+								if ($nntp->isError($fetchedBinary)) {
 									$nntp->doQuit();
 									$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 									$fetchedBinary = $nntp->getMessages($bingroup, $mid);
-									if (PEAR::isError($fetchedBinary)) {
+									if ($nntp->isError($fetchedBinary)) {
 										$fetchedBinary = false;
 									}
 								}
@@ -711,11 +711,11 @@ class PostProcess
 					if ($blnTookSample === false || $blnTookVideo === false) {
 						if (!empty($samplemsgid)) {
 							$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
-							if (PEAR::isError($sampleBinary)) {
+							if ($nntp->isError($sampleBinary)) {
 								$nntp->doQuit();
 								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 								$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
-								if (PEAR::isError($sampleBinary))
+								if ($nntp->isError($sampleBinary))
 									$sampleBinary = false;
 							}
 
@@ -744,11 +744,11 @@ class PostProcess
 					if ($blnTookMediainfo === false || $blnTookSample === false || $blnTookVideo === false) {
 						if (!empty($mediamsgid)) {
 							$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
-							if (PEAR::isError($mediaBinary)) {
+							if ($nntp->isError($mediaBinary)) {
 								$nntp->doQuit();
 								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 								$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
-								if (PEAR::isError($mediaBinary))
+								if ($nntp->isError($mediaBinary))
 									$mediaBinary = false;
 							}
 							if ($mediaBinary !== false) {
@@ -776,11 +776,11 @@ class PostProcess
 				// Download audio file, use mediainfo to try to get the artist / album.
 				if ($processAudioinfo === true && !empty($audiomsgid) && $blnTookAudioinfo === false) {
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
-					if (PEAR::isError($audioBinary)) {
+					if ($nntp->isError($audioBinary)) {
 						$nntp->doQuit();
 						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 						$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
-						if (PEAR::isError($audioBinary))
+						if ($nntp->isError($audioBinary))
 							$audioBinary = false;
 					}
 					if ($audioBinary !== false) {
@@ -800,11 +800,11 @@ class PostProcess
 				// Download JPG file.
 				if ($processJPGSample === true && !empty($jpgmsgid) && $blnTookJPG === false) {
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
-					if (PEAR::isError($jpgBinary)) {
+					if ($nntp->isError($jpgBinary)) {
 						$nntp->doQuit();
 						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
 						$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
-						if (PEAR::isError($jpgBinary))
+						if ($nntp->isError($jpgBinary))
 							$jpgBinary = false;
 					}
 					if ($jpgBinary !== false) {

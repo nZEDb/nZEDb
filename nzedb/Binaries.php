@@ -78,7 +78,7 @@ class Binaries
 
 		// Select the group, here, needed for processing the group
 		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data)) {
+		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false) {
 				return;
@@ -264,7 +264,7 @@ class Binaries
 		// Download the headers.
 		$msgs = $nntp->getOverview($first . "-" . $last, true, false);
 		// If there ware an error, try to reconnect.
-		if ($type != 'partrepair' && PEAR::isError($msgs)) {
+		if ($type != 'partrepair' && $nntp->isError($msgs)) {
 			// This is usually a compression error, so try disabling compression.
 			$nntp->doQuit();
 			if ($nntp->doConnectNC() === false) {
@@ -273,7 +273,7 @@ class Binaries
 
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first . '-' . $last, true, false);
-			if (PEAR::isError($msgs)) {
+			if ($nntp->isError($msgs)) {
 				echo $this->c->error(" Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}");
 				return false;
 			}

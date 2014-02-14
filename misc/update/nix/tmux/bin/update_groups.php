@@ -19,7 +19,7 @@ if ($site->nntpproxy === "1") {
 
 echo $c->header("Getting first/last for all your active groups.");
 $data = $nntp->getGroups();
-if (PEAR::isError($data)) {
+if ($nntp->isError($data)) {
 	exit($c->error("Failed to getGroups() from nntp server."));
 }
 
