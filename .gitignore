@@ -9,6 +9,7 @@ php-errors.log
 *#
 *~
 
+/.idea/
 /nbproject/
 /nbproject/private/
 /resources/tmp/*
