@@ -188,7 +188,7 @@ if ($patched == 0) {
 if ($patched > 0) {
 	echo $c->header($patched . " patch(es) applied.");
 	$smarty = new Smarty;
-	$cleared = $smarty->clearAllCache();
+	$cleared = $smarty->clearCompiledTemplate();
 	if ($cleared) {
 		echo $c->header("The smarty template cache has been cleaned for you");
 	} else {
