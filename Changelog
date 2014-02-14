@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-14 -> jonnyboy -> redo of last patch, missed one for bookinfo
 2014-20-14 -> kevin    -> nZEDb->NNTP Remove obsolete methods for connecting.
                           nZEDb->NNTP Change destructor to use local method for disconnection, change local method of disconnect to verify if the connection is active.
                           nZEDb->NNTP->doConnect() Attempt to resolve retry issues, comment the code. Make sure we can reach 0 retries.
