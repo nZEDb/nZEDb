@@ -52,7 +52,7 @@ class NZB {
 	 * @param object $db      Instance of class DB.
 	 * @param string $version The current version number of nZEDb.
 	 * @param string $date    The current date and time.
-	 * @param strint $ctitle  The name of the category this release is in.
+	 * @param string $ctitle  The name of the category this release is in.
 	 * @param int    $group   The ID of the group this release is in.
 	 *
 	 * @return bool Have we succesfully written the NZB to the hard drive?
