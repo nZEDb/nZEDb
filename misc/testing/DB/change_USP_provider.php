@@ -78,7 +78,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 
 	if (!isset($nntp)) {
 		$nntp = new NNTP;
-		if ($nntp->doConnectNC() === false) {
+		if ($nntp->doConnect(false) === false) {
 			return;
 		}
 

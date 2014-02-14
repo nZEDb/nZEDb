@@ -979,7 +979,7 @@ $this->debug = true;
 			$msgs = $this->nntp->getOverview($firstart . '-' . $lastart, true, false);
 			if($this->nntp->isError($msgs)) {
 				$this->nntp->doQuit();
-				$this->nntp->doConnectNC();
+				$this->nntp->doConnect(false);
 				$this->nntp->selectGroup($group);
 				$msgs = $this->nntp->getOverview($firstart . '-' . $lastart, true, false);
 				if($this->nntp->isError($msgs)) {

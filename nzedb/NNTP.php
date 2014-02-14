@@ -94,9 +94,7 @@ class NNTP extends Net_NNTP_Client {
 	 * @access public
 	 */
 	public function __destruct() {
-		if (parent::_isConnected()) {
-			parent::disconnect();
-		}
+		$this->doQuit();
 	}
 
 	/**
@@ -186,33 +184,6 @@ class NNTP extends Net_NNTP_Client {
 	}
 
 	/**
-	 * Connect to a usenet server using alternate NNTP server info.
-	 *
-	 * @param boolean $compression Should we attempt to enable XFeature Gzip
-	 *     compression on this connection?
-	 *
-	 * @return boolean On success : Did we successfully connect to the usenet?
-	 * @return object  On failure = Pear error.
-	 *
-	 * @access public
-	 */
-	public function doConnect_A($compression=true) {
-		return $this->doConnect($compression, true);
-	}
-
-	/**
-	 * Create a connection to the NNTP server without XFeature GZip Compression.
-	 *
-	 * @return boolean On success : Did we successfully connect to the usenet?
-	 * @return object  On failure = Pear error.
-	 *
-	 * @access public
-	 */
-	public function doConnectNC() {
-		return $this->doConnect(false);
-	}
-
-	/**
 	 * Disconnect from the current NNTP server.
 	 *
 	 * @return bool   On success : Did we successfully disconnect from usenet?
@@ -221,7 +192,10 @@ class NNTP extends Net_NNTP_Client {
 	 * @access public
 	 */
 	public function doQuit() {
-		return parent::disconnect();
+		if (parent::_isConnected()) {
+			return parent::disconnect();
+		}
+		return true;
 	}
 
 	/**
