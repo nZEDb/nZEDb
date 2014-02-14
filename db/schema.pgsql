@@ -1461,7 +1461,7 @@ INSERT INTO site
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
 	('showbacks', '0'),
-	('sqlpatch','174');
+	('sqlpatch','175');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
@@ -1796,6 +1796,8 @@ DROP INDEX IF EXISTS "binaryblacklist_groupname" CASCADE;
 CREATE INDEX "binaryblacklist_groupname" ON "binaryblacklist" ("groupname");
 DROP INDEX IF EXISTS "binaryblacklist_status" CASCADE;
 CREATE INDEX "binaryblacklist_status" ON "binaryblacklist" ("status");ALTER TABLE "bookinfo" ADD CONSTRAINT "bookinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "category" ADD CONSTRAINT "category_id_pkey" PRIMARY KEY("id");
+DROP INDEX IF EXISTS "bookinfo_asin" CASCADE;
+CREATE UNIQUE INDEX "bookinfo_asin" ON "bookinfo" ("asin");
 DROP INDEX IF EXISTS "category_status" CASCADE;
 CREATE INDEX "category_status" ON "category" ("status");
 DROP INDEX IF EXISTS "category_parentid" CASCADE;
@@ -1814,6 +1816,8 @@ DROP INDEX IF EXISTS "collections_collectionhash" CASCADE;
 CREATE UNIQUE INDEX "collections_collectionhash" ON "collections" ("collectionhash");
 DROP INDEX IF EXISTS "collections_releaseid" CASCADE;
 CREATE INDEX "collections_releaseid" ON "collections" ("releaseid");ALTER TABLE "consoleinfo" ADD CONSTRAINT "consoleinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "content" ADD CONSTRAINT "content_id_pkey" PRIMARY KEY("id");ALTER TABLE "forumpost" ADD CONSTRAINT "forumpost_id_pkey" PRIMARY KEY("id");
+DROP INDEX IF EXISTS "consoleinfo_asin" CASCADE;
+CREATE UNIQUE INDEX "consoleinfo_asin" ON "consoleinfo" ("asin");
 DROP INDEX IF EXISTS "forumpost_parentid" CASCADE;
 CREATE INDEX "forumpost_parentid" ON "forumpost" ("parentid");
 DROP INDEX IF EXISTS "forumpost_userid" CASCADE;
@@ -1832,6 +1836,8 @@ DROP INDEX IF EXISTS "movieinfo_imdbid" CASCADE;
 CREATE UNIQUE INDEX "movieinfo_imdbid" ON "movieinfo" ("imdbid");
 DROP INDEX IF EXISTS "movieinfo_title" CASCADE;
 CREATE INDEX "movieinfo_title" ON "movieinfo" ("title");ALTER TABLE "musicinfo" ADD CONSTRAINT "musicinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "nzbs" ADD CONSTRAINT "id_pkey" PRIMARY KEY("id");
+DROP INDEX IF EXISTS "musicinfo_asin" CASCADE;
+CREATE UNIQUE INDEX "musicinfo_asin" ON "musicinfo" ("asin");
 DROP INDEX IF EXISTS "nzbs_partnumber" CASCADE;
 CREATE INDEX "nzbs_partnumber" ON "nzbs" ("partnumber");
 DROP INDEX IF EXISTS "nzbs_message" CASCADE;
