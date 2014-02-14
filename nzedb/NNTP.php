@@ -233,7 +233,9 @@ class NNTP extends Net_NNTP_Client {
 	 * @access public
 	 */
 	public function doQuit() {
+		// Check if we are connected to usenet.
 		if (parent::_isConnected()) {
+			// Disconnect from usenet.
 			return parent::disconnect();
 		}
 		return true;
@@ -253,28 +255,35 @@ class NNTP extends Net_NNTP_Client {
 	public function getMessage($groupName, $identifier) {
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
+			// Select the group.
 			$summary = parent::selectGroup($groupName);
+			// If there was an error selecting the group, return PEAR error object.
 			if ($this->isError($summary)) {
 				return $summary;
 			}
 		}
 
+		// Check if this is an article number or message-id.
 		if (!is_numeric($identifier)) {
+			// It's a message-id so check if it has the triangular brackets.
 			$identifier = $this->formatMessageID($identifier);
 		}
 
+		// Download the article body from usenet.
 		$body = parent::getBody($identifier, true);
+		// If there was an error, return the PEAR error object.
 		if ($this->isError($body)) {
 			return $body;
 		}
 
+		// Attempt to yEnc decode and return the body.
 		return $this->_decodeYenc($body);
 	}
 
 	/**
 	 * Download multiple article bodies and string them together.
 	 *
-	 * @param string $groupname The name of the group the articles are in.
+	 * @param string $groupName The name of the group the articles are in.
 	 * @param array string $msgIds The message-ID's of the article
 	 *                              body's to download.
 	 *
@@ -283,16 +292,37 @@ class NNTP extends Net_NNTP_Client {
 	 *
 	 * @access public
 	 */
-	public function getMessages($groupname, $msgIds) {
+	public function getMessages($groupName, $msgIds) {
+		// String to hold all the bodies.
 		$body = '';
-		foreach ($msgIds as $m) {
-			$message = $this->getMessage($groupname, $m);
-			if (!$this->isError($message)) {
-				$body = $body . $message;
-			} else {
-				return $message;
+
+		// Check if the msgIds are in an array.
+		if (is_array($msgIds)) {
+
+			// Loop over the message-ID's.
+			foreach ($msgIds as $m) {
+				// Download the body.
+				$message = $this->getMessage($groupName, $m);
+
+				// Append the body to $body.
+				if (!$this->isError($message)) {
+					$body = $body . $message;
+
+				// If there is an error return the PEAR error object.
+				} else {
+					return $message;
+				}
 			}
+
+		// If it's a string check if it's a valid message-ID.
+		} else if (is_string($msgIds) && preg_match('/^<[^\s]+>$/', $msgIds)) {
+			$body = $this->getMessage($groupName, $msgIds);
+
+		// Else return an error.
+		} else {
+			return $this->throwError($this->c->error('NNTP->getMessages() $msgIds must be Array.'));
 		}
+
 		return $body;
 	}
 
@@ -312,34 +342,44 @@ class NNTP extends Net_NNTP_Client {
 	public function getArticle($groupName, $identifier, $yEnc=false) {
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
+			// Select the group.
 			$summary = parent::selectGroup($groupName);
+			// If there was an error selecting the group, return PEAR error object.
 			if ($this->isError($summary)) {
 				return $summary;
 			}
 		}
 
+		// Check if it's an article number or message-ID.
 		if (!is_numeric($identifier)) {
+			// If it's a message-ID, check if it has the required triangular breackets.
 			$identifier = $this->formatMessageID($identifier);
 		}
 
+		// Download the article.
 		$article = parent::getArticle($identifier);
+		// If there was an error downloading the article, return a PEAR error object.
 		if ($this->isError($article)) {
 			return $article;
 		}
 
 		$ret = $article;
+		// Make sure the article is an array and has more than 1 element.
 		if (sizeof($article) > 0) {
 			$ret = array();
 			$body = '';
 			$emptyLine = false;
 			foreach ($article as $line) {
+				// If we found the empty line it means we are done reading the header and we will start reading the body.
 				if (!$emptyLine) {
 					if ($line === "") {
 						$emptyLine = True;
 						continue;
 					}
 
+					// Use the line type of the article as the array key (From, Subject, etc..).
 					if (preg_match('/([A-Z-]+?): (.*)/i', $line, $matches)) {
+						// If the line type takes more than 1 line, append the rest of the content to the same key.
 						if (array_key_exists($matches[1], $ret)) {
 							$ret[$matches[1]] = $ret[$matches[1]] .  $matches[2];
 						} else {
@@ -347,10 +387,12 @@ class NNTP extends Net_NNTP_Client {
 						}
 					}
 
+				// Now we have the header, so get the body from the rest of the lines.
 				} else {
 					$body = $body . $line;
 				}
 			}
+			// Finally we decode the message using yEnc.
 			$ret['Message'] = $yEnc ? $this->_decodeYenc($body) : $body;
 		}
 		return $ret;
@@ -369,17 +411,23 @@ class NNTP extends Net_NNTP_Client {
 	public function getHeader($groupName, $identifier) {
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
+			// Select the group.
 			$summary = parent::selectGroup($groupName);
+			// Return PEAR error object on failure.
 			if ($this->isError($summary)) {
 				return $summary;
 			}
 		}
 
+		// Check if it's an article number or message-id.
 		if (!is_numeric($identifier)) {
+			// Verify we have the required triangular brackets if it is a message-id.
 			$identifier = $this->formatMessageID($identifier);
 		}
 
+		// Download the header.
 		$header = parent::getHeader($identifier);
+		// If we failed, return PEAR error object.
 		if ($this->isError($header)) {
 			return $header;
 		}
@@ -387,8 +435,10 @@ class NNTP extends Net_NNTP_Client {
 		$ret = $header;
 		if (sizeof($header) > 0) {
 			$ret = array();
+			// Use the line types of the header as array keys (From, Subject, etc).
 			foreach ($header as $line) {
 				if (preg_match('/([A-Z-]+?): (.*)/i', $line, $matches)) {
+					// If the line type takes more than 1 line, re-use the same array key.
 					if (array_key_exists($matches[1], $ret)) {
 						$ret[$matches[1]] = $ret[$matches[1]] .  $matches[2];
 					} else {
@@ -423,6 +473,7 @@ class NNTP extends Net_NNTP_Client {
 	 */
 	public function postArticle($groups, $subject, $body, $from, $yEnc=true, $compress=true, $extra='') {
 
+		// Throw errors if subject or from are more than 510 chars.
 		if (strlen($subject) > 510) {
 			return $this->throwError($this->c->error('Max length of subject is 510 chars.'));
 		}
@@ -431,19 +482,25 @@ class NNTP extends Net_NNTP_Client {
 			return $this->throwError($this->c->error('Max length of from is 510 chars.'));
 		}
 
+		// Check if the group is string or array.
 		if (is_array(($groups))) {
 			$groups = implode(', ', $groups);
 		}
 
+		// Check if we should encode to yEnc.
 		if ($yEnc) {
 			$yenc = new Yenc();
 			$body = $yenc->encode($compress ? gzdeflate($body, 4) : $body, $subject);
+
+		// If not yEnc, then check if the body is 510+ chars, split it at 510 chars and separate with \r\n
 		} else {
 			$body = $this->splitLines($body, $compress);
 		}
 
 
+		// From is required by NNTP servers, but parent function mail does not require it, so format it.
 		$from = 'From: ' . $from;
+		// If we had extra stuff to post, format it with from.
 		if ($extra != '') {
 			$from = $from . "\r\n" . $extra;
 		}
@@ -465,11 +522,14 @@ class NNTP extends Net_NNTP_Client {
 	 * @access public
 	 */
 	public function dataError($nntp, $group, $comp=true) {
+		// Disconnect.
 		$nntp->doQuit();
+		// Try reconnecting.
 		if ($nntp->doConnect($comp) === false) {
 			return false;
 		}
 
+		// Try re-selecting the group.
 		$data = $nntp->selectGroup($group);
 		if ($this->isError($data)) {
 			echo $this->c->error(
@@ -646,7 +706,7 @@ class NNTP extends Net_NNTP_Client {
 	 *
 	 * @note For usage outside of this class, please use the yenc library.
 	 *
-	 * @param string $yencodedvar The encoded text to decode.
+	 * @param string $string The encoded text to decode.
 	 *
 	 * @return string  The decoded yEnc string, or the input, if it's not yEnc.
 	 *
@@ -654,9 +714,9 @@ class NNTP extends Net_NNTP_Client {
 	 *
 	 * @TODO: ? Maybe this function should be merged into the yenc class?
 	 */
-	protected function _decodeYenc($yencodedvar) {
-		$ret = $yencodedvar;
-		if (preg_match('/^(=ybegin.*=yend[^$]*)$/ims', $yencodedvar, $input)) {
+	protected function _decodeYenc($string) {
+		$ret = $string;
+		if (preg_match('/^(=ybegin.*=yend[^$]*)$/ims', $string, $input)) {
 			$ret = '';
 			$input = trim(preg_replace('/\r\n/im', '',
 							preg_replace('/(^=yend.*)/im', '',
@@ -682,10 +742,13 @@ class NNTP extends Net_NNTP_Client {
 	 * @access protected
 	 */
 	protected function formatMessageID($messageID) {
+		// Check if the first char is <, if not add it.
 		if ($messageID[0] !== '<') {
 			$messageID = '<' . $messageID;
 		}
-		if (substr($messageID, -1) !== '<') {
+
+		// Check if the last char is >, if not add it.
+		if (substr($messageID, -1) !== '>') {
 			$messageID = $messageID . '>';
 		}
 		return $messageID;
@@ -703,10 +766,13 @@ class NNTP extends Net_NNTP_Client {
 	 * @access protected
 	 */
 	protected function splitLines($string, $compress=false) {
+		// Check if the length is longer than 510 chars.
 		if (strlen($string) > 510) {
+			// If it is, split it @ 510 and terminate with \r\n.
 			$string = chunk_split($string, 510, "\r\n");
 		}
 
+		// Compress the string if requested.
 		return ($compress ? gzdeflate($string, 4) : $string);
 	}
 
@@ -722,7 +788,9 @@ class NNTP extends Net_NNTP_Client {
 	 * @access protected
 	 */
 	protected function _enableCompression() {
+		// Send this command to the usenet server.
 		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
+		// Check if it's good.
 		if ($this->isError($response) || $response != 290) {
 			return $response;
 		}
