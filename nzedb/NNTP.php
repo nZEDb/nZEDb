@@ -89,7 +89,7 @@ class NNTP extends Net_NNTP_Client {
 	}
 
 	/**
-	 * Default destructor, close the connection the NNTP server if still connected.
+	 * Default destructor, close the NNTP connection if still connected.
 	 *
 	 * @access public
 	 */
@@ -116,7 +116,6 @@ class NNTP extends Net_NNTP_Client {
 			$this->doQuit();
 		}
 
-		$compressionStatus = $this->site->compressedheaders;
 		$enc = $ret = $ret2 = $connected = $SSL_ENABLED = false;
 
 		if (!$alternate) {
@@ -129,10 +128,15 @@ class NNTP extends Net_NNTP_Client {
 			$enc = 'ssl';
 		}
 
+		// Try to connect until we run of out tries.
 		$retries = $this->nntpretries;
 		while($retries-- >= 1) {
-			$authent = false;
+
+			$authenticated = false;
+
+			// If we are not connected, try to connect.
 			if ($connected === false) {
+				// Check if we want to connect to the alternate server.
 				if (!$alternate) {
 					$ret = $this->connect(NNTP_SERVER, $enc, NNTP_PORT, 5);
 				} else {
@@ -140,19 +144,36 @@ class NNTP extends Net_NNTP_Client {
 				}
 			}
 
-			if ($retries === 0 && $this->isError($ret)) {
-				return $this->throwError($this->c->error('Cannot connect to server '
-					. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
-					. (!$enc ? ' (nonssl) ' : '(ssl) ') . ': ' . $ret->getMessage()));
-			} else {
+			// Check if we got an error while connecting.
+			$cErr = $this->isError($ret);
+
+			// If no error, we are connected.
+			if (!$cErr) {
 				$connected = true;
 			}
 
-			if ($connected === true && $authent === false
-				&& (!$alternate ? defined('NNTP_USERNAME') : defined('NNTP_USERNAME_A'))) {
+			// If error, try to connect again.
+			if ($cErr && $retries > 0) {
+				continue;
+			}
 
+			// If we have no more retries and could not connect, return an error.
+			if ($retries === 0 && $connected === false) {
+				return $this->throwError($this->c->error('Cannot connect to server '
+					. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
+					. (!$enc ? ' (nonssl) ' : '(ssl) ') . ': ' . $ret->getMessage()));
+			}
+
+			// If we are connected, try to authenticate.
+			if ($connected === true &&
+				$authenticated === false &&
+				(!$alternate ? defined('NNTP_USERNAME') : defined('NNTP_USERNAME_A'))) {
+
+				// If the username is empty it probably means the server does not require a username.
 				if ((!$alternate ? NNTP_USERNAME == '' : NNTP_USERNAME_A == '')) {
-					$authent = true;
+					$authenticated = true;
+
+				// Try to authenticate to usenet.
 				} else {
 					if (!$alternate) {
 						$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
@@ -160,26 +181,41 @@ class NNTP extends Net_NNTP_Client {
 						$ret2 = $this->authenticate(NNTP_USERNAME_A, NNTP_PASSWORD_A);
 					}
 
-					if ($retries === 0 && $this->isError($ret2)) {
+					// Check if there was an error authenticating.
+					$aErr = $this->isError($ret2);
+
+					// If there was no error, then we are authenticated.
+					if (!$aErr) {
+						$authenticated = true;
+					}
+
+					// If error, try to authenticate again.
+					if ($aErr && $retries > 0) {
+						continue;
+					}
+
+					// If we ran out of retries, return an error.
+					if ($retries === 0 && $authenticated === false) {
 						return $this->throwError($this->c->error('Cannot authenticate to server '
 							. (!$alternate ? NNTP_SERVER : NNTP_SERVER_A)
 							. (!$enc ? ' (nonssl) ' : ' (ssl) ') . ' - '
 							. (!$alternate ? NNTP_USERNAME : NNTP_USERNAME_A)
 							. ' (' . $ret2->getMessage() . ')'));
-					} else {
-						$authent = true;
 					}
 				}
 			}
 
-			if ($connected && $authent === true) {
-				if ($compression === true && $compressionStatus == '1') {
+			// If we are connected and authenticated, try enabling compression if we have it enabled.
+			if ($connected && $authenticated === true) {
+				if ($compression === true && $this->site->compressedheaders === '1') {
 					$this->_enableCompression();
 				}
 				return true;
 			}
+			// Sleep 2 seconds between retries.
 			usleep(200000);
 		}
+		// If we somehow got out of the loop, return an error.
 		return $this->throwError($this->c->error('Unable to connect to usenet.'));
 	}
 
