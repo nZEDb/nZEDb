@@ -771,7 +771,7 @@ $this->debug = true;
 				);
 
 		if ($success == false) {
-			if(PEAR::isError($success)) {
+			if($this->nntp->isError($success)) {
 				$this->debugEcho('Error uploading comment to usenet, error follows: '
 				. $success->code . ' : ' . $success->message, 2, 'pushArticle');
 			}
@@ -933,7 +933,7 @@ $this->debug = true;
 
 		$this->nntp->doConnect();
 		$data = $this->nntp->selectGroup($group);
-		if(PEAR::isError($data)) {
+		if($this->nntp->isError($data)) {
 			$data = $this->nntp->dataError($nntp, $group);
 			if ($data === false) {
 				$this->debugEcho('Error selecting news group, error follows: '
@@ -977,12 +977,12 @@ $this->debug = true;
 
 			// Start downloading headers.
 			$msgs = $this->nntp->getOverview($firstart . '-' . $lastart, true, false);
-			if(PEAR::isError($msgs)) {
+			if($this->nntp->isError($msgs)) {
 				$this->nntp->doQuit();
 				$this->nntp->doConnectNC();
 				$this->nntp->selectGroup($group);
 				$msgs = $this->nntp->getOverview($firstart . '-' . $lastart, true, false);
-				if(PEAR::isError($msgs)) {
+				if($this->nntp->isError($msgs)) {
 					$nntp->doQuit();
 					$this->debugEcho('Error downloading article headers, error follows: '
 						. $msgs->code . ' : ' . $msgs->message, 2, 'scanForward');

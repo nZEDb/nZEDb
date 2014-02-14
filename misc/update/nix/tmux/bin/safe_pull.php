@@ -26,7 +26,7 @@ if (!isset($argv[1])) {
 		$groupArr = $grp->getByName($groupName);
 		// Select group, here, only once
 		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data)) {
+		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false) {
 				return;
