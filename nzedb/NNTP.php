@@ -129,9 +129,9 @@ class NNTP extends Net_NNTP_Client {
 		}
 
 		// Try to connect until we run of out tries.
-		$retries = $this->nntpretries;
-		while($retries-- >= 1) {
-
+		$retries = ((int)$this->nntpretries + 1);
+		while(true) {
+			$retries--;
 			$authenticated = false;
 
 			// If we are not connected, try to connect.
@@ -212,6 +212,11 @@ class NNTP extends Net_NNTP_Client {
 				}
 				return true;
 			}
+			// If we reached this point and have not connected after all retries, break out of the loop.
+			if ($retries === 0) {
+				break;
+			}
+
 			// Sleep 2 seconds between retries.
 			usleep(200000);
 		}
