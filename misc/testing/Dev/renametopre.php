@@ -170,9 +170,9 @@ function preName($argv, $argc)
 				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $row['id']));
 			}
 			if ($show === 2 && $usepre === false) {
-				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
+				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString(++$counter, $total));
 			} else if ($show === 2 && $usepre === true) {
-				$consoletools->overWritePrimary("Renamed Releases:  [" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
+				$consoletools->overWritePrimary("Renamed Releases:  [" . number_format($pre) . "] " . $consoletools->percentString(++$counter, $total));
 			}
 		}
 	}
@@ -255,7 +255,8 @@ function categorizeRelease($type, $where, $echooutput = false)
 	$cat = new Category();
 	$consoletools = new consoleTools();
 	$relcount = 0;
-	printf("SELECT id, " . $type . ", groupid FROM releases " . $where . "\n");
+	$c = new ColorCLI();
+	echo $c->primary("SELECT id, " . $type . ", groupid FROM releases " . $where);
 	$resrel = $db->queryDirect("SELECT id, " . $type . ", groupid FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
