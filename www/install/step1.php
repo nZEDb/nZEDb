@@ -11,6 +11,7 @@ if (!$cfg->isInitialized()) {
 	die();
 }
 
+$cfg->setSession();
 $cfg = $cfg->getSession();
 
 // Start checks.
@@ -43,52 +44,52 @@ if ($cfg->cacheCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->animeCoversCheck = is_writable($cfg->nZEDb_COVERS . 'anime');
+$cfg->animeCoversCheck = is_writable($cfg->nZEDb_COVERS . '/anime');
 if ($cfg->animeCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->audioCoversCheck = is_writable($cfg->nZEDb_COVERS . 'audio');
+$cfg->audioCoversCheck = is_writable($cfg->nZEDb_COVERS . '/audio');
 if ($cfg->audioCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->audiosampleCoversCheck = is_writable($cfg->nZEDb_COVERS . 'audiosample');
+$cfg->audiosampleCoversCheck = is_writable($cfg->nZEDb_COVERS . '/audiosample');
 if ($cfg->audiosampleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->bookCoversCheck = is_writable($cfg->nZEDb_COVERS . 'book');
+$cfg->bookCoversCheck = is_writable($cfg->nZEDb_COVERS . '/book');
 if ($cfg->bookCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->consoleCoversCheck = is_writable($cfg->nZEDb_COVERS . 'console');
+$cfg->consoleCoversCheck = is_writable($cfg->nZEDb_COVERS . '/console');
 if ($cfg->consoleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->movieCoversCheck = is_writable($cfg->nZEDb_COVERS . 'movies');
+$cfg->movieCoversCheck = is_writable($cfg->nZEDb_COVERS . '/movies');
 if ($cfg->movieCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->musicCoversCheck = is_writable($cfg->nZEDb_COVERS . 'music');
+$cfg->musicCoversCheck = is_writable($cfg->nZEDb_COVERS . '/music');
 if ($cfg->musicCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->previewCoversCheck = is_writable($cfg->nZEDb_COVERS . 'preview');
+$cfg->previewCoversCheck = is_writable($cfg->nZEDb_COVERS . '/preview');
 if ($cfg->previewCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->sampleCoversCheck = is_writable($cfg->nZEDb_COVERS . 'sample');
+$cfg->sampleCoversCheck = is_writable($cfg->nZEDb_COVERS . '/sample');
 if ($cfg->sampleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->videoCoversCheck = is_writable($cfg->nZEDb_COVERS . 'video');
+$cfg->videoCoversCheck = is_writable($cfg->nZEDb_COVERS . '/video');
 if ($cfg->videoCoversCheck === false) {
 	$cfg->error = true;
 }

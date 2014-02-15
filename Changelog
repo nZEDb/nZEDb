@@ -7,7 +7,9 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-15 -> jonnyboy -> reverted changed to gitignore
+2014-02-15 -> jonnyboy -> reverted changes to gitignore, added extra selectgroup in binaries->scan
+                          changed light theme to redirect to list when nothing in cover view
+                          fixed install scripts, removed empty files, .gitignore instead
 2014-02-14 -> jonnyboy -> redo of last patch, missed one for bookinfo
 2014-20-14 -> kevin    -> nZEDb->NNTP Remove obsolete methods for connecting.
                           nZEDb->NNTP Change destructor to use local method for disconnection, change local method of disconnect to verify if the connection is active.
