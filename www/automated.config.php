@@ -16,13 +16,11 @@ define('nZEDb_LIBS', nZEDb_ROOT . 'libs' . DS);
 // Used to refer to the /misc class files.
 define('nZEDb_MISC', nZEDb_ROOT . 'misc' . DS);
 
+// Refers to the web root for the Smarty lib
 define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 
 // Used to refer to the resources folder
 define('nZEDb_RES', nZEDb_ROOT . 'resources' . DS);
-
-// Used to refer to the covers folder.
-define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
 
 // Used to refer to the tmp folder
 define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
