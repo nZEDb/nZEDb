@@ -652,7 +652,7 @@ class NNTP extends Net_NNTP_Client
 
 				// Show bytes received
 				if ($totalBytesReceived > 10240 && $totalBytesReceived % 128 == 0) {
-					echo $this->c->primary('Receiving ' . round($totalBytesReceived / 1024) . 'KB from ' . $this->group());
+					echo $this->c->primaryOver('Receiving ' . round($totalBytesReceived / 1024) . 'KB from ' . $this->group());
 				}
 
 				// Check if we have the ending (.\r\n)
