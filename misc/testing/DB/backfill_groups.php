@@ -64,4 +64,4 @@ if (isset($argv[1]) && ($argv[1] === "desc" || $argv[1] === "DESC")) {
 		}
 	}
 }
-echo "\033[0m\n";
+echo "\n";
