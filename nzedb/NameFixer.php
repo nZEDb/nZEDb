@@ -22,6 +22,7 @@ class NameFixer
 	  const NF_NF_NFO		=	  64;	0000 0000 0000 0100 0000 	Processed by namefixer NFO.
 	  const NF_NF_FILES		=	 128;	0000 0000 0000 1000 0000 	Processed by namefixer Files.
 
+	  // Removed
 	  const NZB_STATUS		=	 256;	0000 0000 0001 0000 0000 	NZBStatus 0 = no nzb, 256 = is an nzb
 	  const HASHED			=	 512;	0000 0000 0010 0000 0000 	hashed 0 = not hashed, 512 = is hashed
 	  const REQUEST			=   1024;	0000 0000 0100 0000 0000 	request 0 = not a requestid, 1024 = is a requestid
@@ -48,7 +49,7 @@ class NameFixer
 	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 32) = 32) as proc_by_par2,
 	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 64) = 64) as proc_by_nfo,
 	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 128) = 128) as proc_by_files,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) as has_nzb,
+	  (SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) as has_nzb,
 	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 512) = 512) as is_hashed,
 	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 1024) = 1024) as is_requestid;
 
@@ -98,7 +99,7 @@ class NameFixer
 		if ($cats === 3) {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
+				. "WHERE nzbstatus = 1 AND preid IS NULL";
 			$cats = 2;
 			$preid = true;
 		} else {
@@ -179,7 +180,7 @@ class NameFixer
 			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
-				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
+				. "WHERE nzbstatus = 1 AND preid IS NULL";
 			$cats = 2;
 			$preid = true;
 		} else {
@@ -249,7 +250,7 @@ class NameFixer
 
 		$db = $this->db;
 		if ($cats === 3) {
-			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE (bitwise & 256) = 256 AND preid IS NULL";
+			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE nzbstatus = 1 AND preid IS NULL";
 			$cats = 2;
 		} else {
 			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 32) = 0";
@@ -388,10 +389,10 @@ class NameFixer
 						$this->matched = true;
 						if ($namestatus == 1) {
 							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-													. "searchname = %s, categoryid = %d, bitwise = ((bitwise & ~5)|5), dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
+									. "searchname = %s, categoryid = %d, bitwise = ((bitwise & ~5)|5), dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
 						} else {
 							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-													. "searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
+									. "searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
 						}
 					}
 
@@ -833,5 +834,7 @@ class NameFixer
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
 		}
 	}
+
 }
+
 ?>

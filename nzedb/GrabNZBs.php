@@ -2,6 +2,7 @@
 
 class GrabNZBs
 {
+
 	function __construct()
 	{
 		$this->db = new DB();
@@ -228,7 +229,7 @@ class GrabNZBs
 						gzclose($fp);
 						if (file_exists($path)) {
 							chmod($path, 0777);
-							$this->db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~256)|256) WHERE id = %d', $relid));
+							$this->db->queryExec(sprintf('UPDATE releases SET nzbstatus = 1 AND WHERE id = %d', $relid));
 							if ($this->db->dbSystem() == 'mysql') {
 								$this->db->queryExec(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ' LEFT JOIN ' . $group['bname'] . ' ON ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid LEFT JOIN ' . $group['pname'] . ' ON ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid WHERE ' . $group['cname'] . '.collectionhash = %s', $this->db->escapeString($hash)));
 							} else if ($this->db->dbSystem() == 'pgsql') {
@@ -253,4 +254,5 @@ class GrabNZBs
 			}
 		}
 	}
+
 }

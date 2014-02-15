@@ -1,4 +1,5 @@
 <?php
+
 require_once dirname(__FILE__) . '/../../../www/config.php';
 /*
  *
@@ -14,16 +15,17 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 $c = new ColorCLI();
 if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || $argv[1] == "preid" || is_numeric($argv[1])))) {
 	exit($c->error("\nThis script will attempt to rename releases using regexes first from ReleaseCleaning.php and then from this file.\n"
-		. "An optional last argument, show, will display the release name changes.\n\n"
-		. "php $argv[0] full                    ...: To process all releases not previously renamed.\n"
-		. "php $argv[0] 2                       ...: To process all releases added in the previous 2 hours not previously renamed.\n"
-		. "php $argv[0] all                     ...: To process all releases.\n"
-		. "php $argv[0] full 155                ...: To process all releases in groupid 155 not previously renamed.\n"
-		. "php $argv[0] all 155                 ...: To process all releases in groupid 155.\n"
-		. "php $argv[0] all '(155, 140)'        ...: To process all releases in groupids 155 and 140.\n"
-		. "php $argv[0] preid                   ...: To process all releases where not matched to predb.\n"));
+			. "An optional last argument, show, will display the release name changes.\n\n"
+			. "php $argv[0] full                    ...: To process all releases not previously renamed.\n"
+			. "php $argv[0] 2                       ...: To process all releases added in the previous 2 hours not previously renamed.\n"
+			. "php $argv[0] all                     ...: To process all releases.\n"
+			. "php $argv[0] full 155                ...: To process all releases in groupid 155 not previously renamed.\n"
+			. "php $argv[0] all 155                 ...: To process all releases in groupid 155.\n"
+			. "php $argv[0] all '(155, 140)'        ...: To process all releases in groupids 155 and 140.\n"
+			. "php $argv[0] preid                   ...: To process all releases where not matched to predb.\n"));
 }
 preName($argv, $argc);
+
 function preName($argv, $argc)
 {
 	$db = new DB();
@@ -51,29 +53,29 @@ function preName($argv, $argc)
 	}
 	if ($usepre === true) {
 		$where = '';
-		$why = ' WHERE preid IS NULL AND (bitwise & 256) = 256';
+		$why = ' WHERE preid IS NULL AND nzbstatus = 1';
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
 		$where = '';
-		$why = ' WHERE (bitwise & 260) = 256';
+		$why = ' WHERE nzbstatus = 1 AND (bitwise & 4) = 0';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
 		$where = ' AND groupid = ' . $argv[2];
-		$why = ' WHERE (bitwise & 260) = 256';
+		$why = ' WHERE nzbstatus = 1 AND (bitwise & 4) = 0';
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
 		$where = ' AND groupid IN ' . $argv[2];
-		$why = ' WHERE (bitwise & 260) = 256';
+		$why = ' WHERE nzbstatus = 1 AND (bitwise & 4) = 0';
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
 		$where = ' AND groupid IN ' . $argv[2];
-		$why = ' WHERE (bitwise & 256) = 256';
+		$why = ' WHERE nzbstatus = 1';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $all === true) {
 		$where = ' AND groupid = ' . $argv[2];
-		$why = ' WHERE (bitwise & 256) = 256';
+		$why = ' WHERE nzbstatus = 1';
 	} else if (isset($argv[2]) && is_numeric($argv[2])) {
 		$where = ' AND groupid = ' . $argv[2];
-		$why = ' WHERE (bitwise & 260) = 256';
+		$why = ' WHERE nzbstatus = 1 AND (bitwise & 4) = 0';
 	} else if ($full === true) {
-		$why = ' WHERE ((bitwise & 260) = 256 OR categoryid between 7000 AND 7999)';
+		$why = ' WHERE nzbstatus = 1 AND ((bitwise & 4) = 0 OR categoryid between 7000 AND 7999)';
 	} else if ($all === true) {
-		$why = ' WHERE (bitwise & 256) = 256';
+		$why = ' WHERE nzbstatus = 1';
 	} else {
 		$why = ' WHERE 1=1';
 	}
@@ -133,10 +135,10 @@ function preName($argv, $argc)
 						$determinedcat = $category->determineCategory($row["name"], $row["groupid"]);
 						if ($propername == true) {
 							$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-								. "bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+									. "bitwise = ((bitwise & ~5)|5), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
 						} else {
 							$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,  "
-								. "bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+									. "bitwise = ((bitwise & ~1)|1), searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
 						}
 						if ($increment === true) {
 							$status = "renametopre Match";
@@ -152,12 +154,12 @@ function preName($argv, $argc)
 							$oldcatname = $category->getNameByID($row["categoryid"]);
 							$newcatname = $category->getNameByID($determinedcat);
 							echo $c->headerOver("\n\nNew name:  ") . $c->primary($cleanName) .
-								$c->headerOver("Old name:  ") . $c->primary($row["searchname"]) .
-								$c->headerOver("New cat:   ") . $c->primary($newcatname) .
-								$c->headerOver("Old cat:   ") . $c->primary($oldcatname) .
-								$c->headerOver("Group:     ") . $c->primary($groupname) .
-								$c->headerOver("Method:    ") . $c->primary($status) .
-								$c->headerOver("ReleaseID: ") . $c->primary($row["id"]);
+							$c->headerOver("Old name:  ") . $c->primary($row["searchname"]) .
+							$c->headerOver("New cat:   ") . $c->primary($newcatname) .
+							$c->headerOver("Old cat:   ") . $c->primary($oldcatname) .
+							$c->headerOver("Group:     ") . $c->primary($groupname) .
+							$c->headerOver("Method:    ") . $c->primary($status) .
+							$c->headerOver("ReleaseID: ") . $c->primary($row["id"]);
 						}
 					}
 				} else if ($show === 3 && preg_match('/^\[?\d*\].+?yEnc/i', $row['name'])) {
@@ -168,11 +170,10 @@ function preName($argv, $argc)
 				$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~5)|5) WHERE id = %d", $row['id']));
 			}
 			if ($show === 2 && $usepre === false) {
-				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString(++$counter, $total));
+				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
 			} else if ($show === 2 && $usepre === true) {
-				$consoletools->overWritePrimary("Renamed Releases:  [" . number_format($pre) . "] " . $consoletools->percentString(++$counter, $total));
+				$consoletools->overWritePrimary("Renamed Releases:  [" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
 			}
-
 		}
 	}
 	echo $c->header("\n" . number_format($pre) . " renamed using preDB Match\n" . number_format($external) . " renamed using ReleaseCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
@@ -201,7 +202,7 @@ function preName($argv, $argc)
 	} else if (isset($argv[1]) && $argv[1] == "all") {
 		$relcount = categorizeRelease("searchname", "", true);
 	} else if (isset($argv[1]) && $argv[1] == "preid") {
-		$relcount = categorizeRelease("searchname", "WHERE preid IS NULL AND (bitwise & 256) = 256", true);
+		$relcount = categorizeRelease("searchname", "WHERE preid IS NULL AND nzbstatus = 1", true);
 	} else {
 		$relcount = categorizeRelease("searchname", "WHERE ((bitwise & 1) = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}

@@ -166,7 +166,7 @@ function deletePassworded($and)
 	if ($db->dbSystem() == 'mysql') {
 		$like = 'LIKE';
 	}
-	$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE ( searchname " . $like . " '%passworded%' OR searchname " . $like . " '%password protect%' OR searchname " . $like . " '%password%' OR searchname " . $like . " '%passwort%' ) AND searchname NOT " . $like . " '%no password%' AND searchname NOT " . $like . " '%not passworded%' AND searchname NOT " . $like . " '%unlocker%' AND searchname NOT " . $like . " '%reset%' AND searchname NOT " . $like . " '%recovery%' AND searchname NOT " . $like . " '%keygen%' and searchname NOT " . $like . " '%advanced%' AND (bitwise & 256) = 256 AND categoryid NOT IN (4000, 4010, 4020, 4030, 4040, 4050, 4060, 4070, 7000, 7010)" . $and);
+	$sql = $db->prepare("SELECT id, guid, searchname FROM releases WHERE ( searchname " . $like . " '%passworded%' OR searchname " . $like . " '%password protect%' OR searchname " . $like . " '%password%' OR searchname " . $like . " '%passwort%' ) AND searchname NOT " . $like . " '%no password%' AND searchname NOT " . $like . " '%not passworded%' AND searchname NOT " . $like . " '%unlocker%' AND searchname NOT " . $like . " '%reset%' AND searchname NOT " . $like . " '%recovery%' AND searchname NOT " . $like . " '%keygen%' and searchname NOT " . $like . " '%advanced%' AND nzbstatus = 1 AND categoryid NOT IN (4000, 4010, 4020, 4030, 4040, 4050, 4060, 4070, 7000, 7010)" . $and);
 	$sql->execute();
 	$delcount = deleteReleases($sql, 'Passworded');
 	return $delcount;

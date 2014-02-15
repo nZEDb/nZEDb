@@ -1,11 +1,14 @@
 <?php
+
 require_once(nZEDb_LIBS . "simple_html_dom.php");
 
 /*
  * Class for inserting names/categories/md5 etc from predb sources into the DB, also for matching names on files / subjects.
  */
+
 Class PreDb
 {
+
 	function __construct($echooutput = false)
 	{
 		$s = new Sites();
@@ -264,7 +267,7 @@ Class PreDb
 								}
 
 								if (strlen($matches2['title']) > 15) {
-									if($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('prelist'), $db->escapeString($md5)))) {
+									if ($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('prelist'), $db->escapeString($md5)))) {
 										$newnames++;
 									}
 								}
@@ -318,7 +321,7 @@ Class PreDb
 									}
 
 									if (strlen($matches2['title']) > 15) {
-										if($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('orlydb'), $db->escapeString($md5)))) {
+										if ($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('orlydb'), $db->escapeString($md5)))) {
 											$newnames++;
 										}
 									}
@@ -458,7 +461,7 @@ Class PreDb
 								if (strlen($title) > 15) {
 									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
 								}
-								}
+							}
 						}
 					}
 				}
@@ -663,7 +666,7 @@ Class PreDb
 			foreach ($res as $row) {
 				$db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $row['preid'], $row['releaseid']));
 				if ($this->echooutput) {
-					$consoletools->overWritePrimary('Matching up preDB titles with release searchnames: ' . $consoletools->percentString(++$updated, $total));
+					$consoletools->overWritePrimary('Matching up preDB titles with release searchnames: ' . $consoletools->percentString( ++$updated, $total));
 				}
 			}
 			echo "\n";
@@ -746,12 +749,12 @@ Class PreDb
 			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
-				. 'WHERE (bitwise & 256) = 256 AND preid IS NULL %s', $regex);
+				. 'WHERE nzbstatus = 1 AND preid IS NULL %s', $regex);
 		} else {
 			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
-				. 'WHERE (bitwise & 260) = 256 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
+				. 'WHERE nzbstatus = 1 AND (bitwise & 4) = 0 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
 		}
 
 		echo $this->c->header($query);
@@ -766,7 +769,7 @@ Class PreDb
 					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
 				}
 				if ($show === 2) {
-					$consoletools->overWritePrimary("Renamed Releases: [" . number_format($updated) . "] " . $consoletools->percentString( ++$checked, $total));
+					$consoletools->overWritePrimary("Renamed Releases: [" . number_format($updated) . "] " . $consoletools->percentString(++$checked, $total));
 				}
 			}
 		}
@@ -836,8 +839,11 @@ Class PreDb
 		}
 	}
 
-	function updatePredb() {
+	function updatePredb()
+	{
 
 	}
+
 }
+
 ?>
