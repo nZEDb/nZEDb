@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-15 -> jonnyboy -> fixed backfill_groups.php
+2014-02-15 -> jonnyboy -> moved post processing scripts to correct path
+                          fixed backfill_groups.php
 2014-02-15 -> niel     -> Upd: Removing the covers constant from automatied.config.php. It will be generated from a Db setting in future.
 2014-02-15 -> jonnyboy -> colorized output
                           added disconnect after delete in grabnzbs_threaded.py
