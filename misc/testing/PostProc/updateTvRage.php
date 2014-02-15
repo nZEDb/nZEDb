@@ -52,6 +52,7 @@ foreach ($shows as $show) {
 	echo $c->primary("Updated: " . $name[0]['releasetitle']);
 	$diff = floor((microtime(true) - $starttime) * 1000000);
 	if (1000000 - $diff > 0) {
+		echo $c->alternate("Sleeping");
 		usleep(1000000 - $diff);
 	}
 }
