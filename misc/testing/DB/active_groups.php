@@ -52,14 +52,14 @@ printf($mask, "\nGroup Name => " . $active['count'] . "[" . $groups . "] (" . nu
 printf($mask, "==================================================", "======================", "======================", "======================", "======================", "======================", "======================", "======================");
 
 if ($rels = $db->queryDirect(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated,
-										CAST(last_record as SIGNED)-CAST(first_record as SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days,
-										COALESCE(rel.num, 0) AS num_releases,
-										COALESCE(pre.num, 0) AS pre_matches,
-										COALESCE(ren.num, 0) AS renamed FROM groups
-										LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases GROUP BY groupid ) rel ON rel.groupid = groups.id
-										LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE preid is not null GROUP BY groupid ) pre ON pre.groupid = groups.id
-										LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE (bitwise & 1) = 1 GROUP BY groupid ) ren ON ren.groupid = groups.id
-										WHERE active = 1 AND first_record_postdate %s %s %s", $order, $sort, $limit))) {
+		CAST(last_record as SIGNED)-CAST(first_record as SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days,
+		COALESCE(rel.num, 0) AS num_releases,
+		COALESCE(pre.num, 0) AS pre_matches,
+		COALESCE(ren.num, 0) AS renamed FROM groups
+		LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases GROUP BY groupid ) rel ON rel.groupid = groups.id
+		LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE preid is not null GROUP BY groupid ) pre ON pre.groupid = groups.id
+		LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE (bitwise & 1) = 1 GROUP BY groupid ) ren ON ren.groupid = groups.id
+		WHERE active = 1 AND first_record_postdate %s %s %s", $order, $sort, $limit))) {
 	foreach ($rels as $rel) {
 		//var_dump($rel);
 		$headers = number_format($rel['headers downloaded']);
