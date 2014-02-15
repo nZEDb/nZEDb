@@ -61,11 +61,13 @@ if grab == 0:
 	sys.exit()
 
 #delete from nzbs where size greater than x
-cur[0].execute("SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) > "+maxnzb)
+cur[0].execute("SELECT collectionhash FROM nzbs GROUP BY collectionhash HAVING COUNT(collectionhash) > "+maxnzb)
 delnzbs = cur[0].fetchall()
 for delnzb in delnzbs:
 	cur[0].execute("DELETE FROM nzbs WHERE collectionhash = '"+delnzb[0]+"'")
 print(bcolors.HEADER + "Deleted %s collections exceeding %s parts from nzbs " % (len(delnzbs), maxnzb))
+disconnect(cur[0], cur[1])
+cur = connect()
 
 if conf['DB_SYSTEM'] == "mysql":
 	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s HOUR"
