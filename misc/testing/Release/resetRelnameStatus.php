@@ -15,7 +15,7 @@ if (!isset($argv[1])) {
 
 $db = new DB();
 if ($argv[1] === 'true') {
-	$res = $db->queryExec('UPDATE releases SET iscategorized = 0');
+	$res = $db->queryExec('UPDATE releases SET bitwise = 0, iscategorized = 0, isrenamed = 0, nzbstatus = 0, ishashed = 0, isrequestid = 0');
 } else if ($argv[1] === 'rename') {
 	$res = $db->queryExec('UPDATE releases SET isrenamed = 0, bitwise = ((bitwise & ~248)|0)');
 } else if (is_numeric($argv[1])) {

@@ -362,7 +362,7 @@ class NameFixer
 								. "anidbid = NULL, preid = %s, searchname = %s, isrenamed = 1, %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
 					} else {
 						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
-								. "anidbid = NULL, preid = %s, searchname = %s, isrenamed = 1, categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
+								. "anidbid = NULL, preid = %s, searchname = %s, iscategorized = 1, categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
 					}
 				}
 			}
@@ -835,5 +835,3 @@ class NameFixer
 	}
 
 }
-
-?>

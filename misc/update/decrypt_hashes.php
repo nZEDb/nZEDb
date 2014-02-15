@@ -23,11 +23,11 @@ function preName($argv)
 	$namefixer = new NameFixer();
 
 	if (isset($argv[1]) && $argv[1] === "all") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE hashed = 1');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE hashed = 1 AND dehashstatus BETWEEN -6 AND 0');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE hashed = 1 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
 	$c = new ColorCLI();
 
@@ -61,7 +61,7 @@ function preName($argv)
 				$db->queryDirect(sprintf('UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d', $row['releaseid']));
 			}
 			if (!isset($argv[2]) || $argv[2] !== 'show') {
-				$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString(++$counter, $total));
+				$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString( ++$counter, $total));
 			}
 		}
 	}

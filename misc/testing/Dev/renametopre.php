@@ -138,7 +138,7 @@ function preName($argv, $argc)
 									. "iscategorized = 1, isrenamed = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
 						} else {
 							$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,  "
-									. "isrenamed = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+									. "iscategorized = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
 						}
 						if ($increment === true) {
 							$status = "renametopre Match";
@@ -170,9 +170,9 @@ function preName($argv, $argc)
 				$db->queryExec(sprintf("UPDATE releases SET isrenamed = 1, iscategorized = 1 WHERE id = %d", $row['id']));
 			}
 			if ($show === 2 && $usepre === false) {
-				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString(++$counter, $total));
+				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
 			} else if ($show === 2 && $usepre === true) {
-				$consoletools->overWritePrimary("Renamed Releases:  [" . number_format($pre) . "] " . $consoletools->percentString(++$counter, $total));
+				$consoletools->overWritePrimary("Renamed Releases:  [" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
 			}
 		}
 	}

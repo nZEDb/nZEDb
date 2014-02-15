@@ -1505,5 +1505,3 @@ class PostProcess
 	}
 
 }
-
-?>

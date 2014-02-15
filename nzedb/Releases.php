@@ -1568,7 +1568,7 @@ class Releases
 			}
 
 			// Look for records that potentially have requestID titles and have not been renamed by any other means
-			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "nzbstatus = 1 AND isrequestid = 1 AND (isrenamed = 0 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $hours . " HOUR)) LIMIT 100");
+			$resrel = $db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "nzbstatus = 1 AND isrenamed = 0 AND (isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $hours . " HOUR)) LIMIT 100");
 
 			if ($resrel->rowCount() > 0) {
 				echo $n;
