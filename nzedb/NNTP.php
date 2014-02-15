@@ -323,7 +323,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access public
 	 */
-	public function get_Article($groupName, $identifier, $yEnc = false)
+	public function getArticle($groupName, $identifier, $yEnc = false)
 	{
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
@@ -393,7 +393,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access public
 	 */
-	public function get_Header($groupName, $identifier)
+	public function getHeader($groupName, $identifier)
 	{
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
@@ -652,9 +652,7 @@ class NNTP extends Net_NNTP_Client
 
 				// Show bytes received
 				if ($totalBytesReceived > 10240 && $totalBytesReceived % 128 == 0) {
-					echo $this->c->setcolor($this->primary, 'Bold') . 'Receiving ' .
-					round($totalBytesReceived / 1024) . 'KB from ' .
-					$this->group() . ".\r" . $this->c->rsetcolor();
+					echo $this->c->primary('Receiving ' . round($totalBytesReceived / 1024) . 'KB from ' . $this->group());
 				}
 
 				// Check if we have the ending (.\r\n)
