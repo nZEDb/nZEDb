@@ -1,15 +1,18 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $db = new DB();
 $c = new ColorCLI();
 $count = $groups = 0;
 if (!isset($argv[1])) {
 	passthru("clear");
-	exit($c->error("\nThis script will show all Active Groups. There is 1 required argument and 2 optional arguments.\nThe first argument of [date, releases] is used to sort the display by first_record_postdate or by the number of releases.\nThe second argument [ASC, DESC] sorts by ascending or descending.\nThe third argument will limit the return to that number of groups.\nTo sort the active groups by first_record_postdate and display only 20 groups run:\nphp active_groups.php date desc 20\n"));
+	exit($c->error("\nThis script will show all Active Groups. There is 1 required argument and 2 optional arguments.\n"
+			. "The first argument of [date, releases] is used to sort the display by first_record_postdate or by the number of releases.\n"
+			. "The second argument [ASC, DESC] sorts by ascending or descending.\n"
+			. "The third argument will limit the return to that number of groups.\n"
+			. "To sort the active groups by first_record_postdate and display only 20 groups run:\n"
+			. "php $argv[0] date desc 20\n"));
 }
 passthru("clear");
 if (isset($argv[1]) && $argv[1] == "date") {
@@ -60,6 +63,6 @@ if ($rels = $db->queryDirect(sprintf("SELECT name, backfill_target, first_record
 	foreach ($rels as $rel) {
 		//var_dump($rel);
 		$headers = number_format($rel['headers downloaded']);
-		printf($mask, $rel['name'], $rel['backfill_target'] . "(" . $rel['days'] . ")", $rel['first_record_postdate'], $rel['last_updated'], $headers, $rel['num_releases'], $rel['renamed'] . "(" . floor($rel['renamed'] / $rel['num_releases'] * 100) . "%)", $rel['pre_matches'] . "(" . floor($rel['pre_matches'] / $rel['num_releases'] * 100) . "%)");
+		printf($mask, $rel['name'], $rel['backfill_target'] . "(" . $rel['days'] . ")", $rel['first_record_postdate'], $rel['last_updated'], $headers, $rel['num_releases'], $rel['num_releases'] == 0 ? $rel['num_releases'] : $rel['renamed'] . "(" . floor($rel['renamed'] / $rel['num_releases'] * 100) . "%)", $rel['num_releases'] == 0 ? $rel['num_releases'] : $rel['pre_matches'] . "(" . floor($rel['pre_matches'] / $rel['num_releases'] * 100) . "%)");
 	}
 }
