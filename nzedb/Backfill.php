@@ -443,7 +443,6 @@ class Backfill
 	// Returns article number based on # of days.
 	public function daytopost($nntp, $group, $days, $data, $debug = true)
 	{
-		var_dump($data);
 		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(backfill->daytopost).\n"));
 		}

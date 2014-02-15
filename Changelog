@@ -8,7 +8,6 @@ Each update goes to the top of the file
 
 
 2014-02-15 -> jonnyboy -> update $binaries->data, $backfill->data to correctly identify an error
-                          added check for empty $data in binaries->updateGroup
                           fixed output on failed movie->updateUpcoming
                           fixed typo in releases->searchSQL, changed search terms explanation to show only terms available
                           reverted changes to gitignore, added extra selectgroup in binaries->scan
