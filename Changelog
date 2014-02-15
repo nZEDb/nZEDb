@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-15 -> jonnyboy -> fixed output on failed movie->updateUpcoming
+2014-02-15 -> jonnyboy -> added check for empty $data in binaries->updateGroup
+                          fixed output on failed movie->updateUpcoming
                           fixed typo in releases->searchSQL, changed search terms explanation to show only terms available
                           reverted changes to gitignore, added extra selectgroup in binaries->scan
                           changed light theme to redirect to list when nothing in cover view

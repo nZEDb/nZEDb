@@ -79,7 +79,7 @@ class Binaries
 
 		// Select the group, here, needed for processing the group
 		$data = $nntp->selectGroup($groupArr['name']);
-		if ($nntp->isError($data)) {
+		if ($nntp->isError($data) || $data === false) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false) {
 				return;
