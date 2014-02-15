@@ -34,7 +34,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 		$s = new Sites();
 		$site = $s->get();
 		$nntp = new NNTP();
-		if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false) {
+		if (($site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
 			echo $c->error("Unable to connect to usenet.\n");
 			return;
 		}
