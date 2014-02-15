@@ -271,17 +271,13 @@ class Net_NNTP_Protocol_Client extends PEAR
 
 		// Check if connected
 		if (!$this->_isConnected()) {
-			//make it silent
-			//return $this->throwError('Failed to write to socket! (connection lost!)');
-			return false;
+			return $this->throwError('Failed to write to socket! (connection lost!)');
 		}
 
 		// Send the command
 		$R = @fwrite($this->_socket, $cmd . "\r\n");
 		if ($R === false) {
-			//make it silent
-			//return $this->throwError('Failed to write to socket!');
-			return false;
+			return $this->throwError('Failed to write to socket!');
 		}
 
 		//

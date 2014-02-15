@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-15 -> kevin    -> PEAR->Protocol->Client->_sendCommand() Wrong type returned, can cause unpredictable issues.
 2014-02-15 -> jonnyboy -> update $binaries->data, $backfill->data to correctly identify an error
                           fixed output on failed movie->updateUpcoming
                           fixed typo in releases->searchSQL, changed search terms explanation to show only terms available
