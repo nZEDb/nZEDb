@@ -24,9 +24,6 @@ define('nZEDb_RES', nZEDb_ROOT . 'resources' . DS);
 
 
 // Used to refer to the /misc class files.
-define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
-
-// Used to refer to the /misc class files.
 define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
 
 define('nZEDb_THEMES', nZEDb_WWW . 'themes' . DS);
