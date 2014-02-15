@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-15 -> jonnyboy -> updated autopatcher.php, fixed divide by 0 in active_groups.php
+2014-02-15 -> jonnyboy -> updated populate_tvrage.php
+                          updated autopatcher.php, fixed divide by 0 in active_groups.php
                           update $binaries->data, $backfill->data to correctly identify an error
                           fixed output on failed movie->updateUpcoming
                           fixed typo in releases->searchSQL, changed search terms explanation to show only terms available
