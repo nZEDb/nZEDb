@@ -11,6 +11,7 @@ if (!$cfg->isInitialized()) {
 	die();
 }
 
+$cfg->setSession();
 $cfg = $cfg->getSession();
 
 // Start checks.

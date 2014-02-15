@@ -67,7 +67,8 @@ class Install
 	public $saveLockCheck;
 	public $error = false;
 
-	function __construct()
+
+	public function __construct()
 	{
 		$this->COVERS_PATH = nZEDb_RES . DS . 'covers' . DS;
 		$this->DB_DIR = nZEDb_ROOT . 'db' . DS;
