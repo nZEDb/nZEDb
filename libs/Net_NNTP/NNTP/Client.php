@@ -67,7 +67,6 @@
  *
  * @filesource
  */
-
 /**
  *
  */
@@ -247,7 +246,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 */
 	function selectGroup($group, $articles = false)
 	{
-		// Select group (even if $articles is set, since many servers does not select groups when the listgroup command is run)
+		// Select group (even if $articles is set, since many servers do not select groups when the listgroup command is run)
 		$summary = $this->cmdGroup($group);
 		if (PEAR::isError($summary)) {
 			return $summary;
@@ -267,7 +266,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 			if ($summary2['group'] == $group) {
 				$summary = $summary2;
 
-			// ... even if server does not include summary in status reponce.
+				// ... even if server does not include summary in status response.
 			} else {
 				$summary['articles'] = $summary2['articles'];
 			}
@@ -309,7 +308,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
 		switch ($_ret) {
 			case -1:
-				return array('Number' => (int) $response[0], 'Message-ID' =>  (string) $response[1]);
+				return array('Number' => (int) $response[0], 'Message-ID' => (string) $response[1]);
 				break;
 			case 0:
 				return (int) $response[0];
@@ -355,7 +354,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
 		switch ($_ret) {
 			case -1:
-				return array('Number' => (int) $response[0], 'Message-ID' =>  (string) $response[1]);
+				return array('Number' => (int) $response[0], 'Message-ID' => (string) $response[1]);
 				break;
 			case 0:
 				return (int) $response[0];
@@ -401,7 +400,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
 		switch ($_ret) {
 			case -1:
-				return array('Number' => (int) $response[0], 'Message-ID' =>  (string) $response[1]);
+				return array('Number' => (int) $response[0], 'Message-ID' => (string) $response[1]);
 				break;
 			case 0:
 				return (int) $response[0];
@@ -685,7 +684,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 		}
 
 		// Construct header
-		$header  = "Newsgroups: $groups\r\n";
+		$header = "Newsgroups: $groups\r\n";
 		$header .= "Subject: $subject\r\n";
 		$header .= "X-poster: PEAR::Net_NNTP v1.5.0 (stable)\r\n";
 		if ($additional !== null) {
@@ -732,12 +731,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 				return $date;
 				break;
 			case 1:
-			return strtotime(substr($date, 0, 8).' '.substr($date, 8, 2).':'.substr($date, 10, 2).':'.substr($date, 12, 2));
+				return strtotime(substr($date, 0, 8) . ' ' . substr($date, 8, 2) . ':' . substr($date, 10, 2) . ':' . substr($date, 12, 2));
 				break;
 			case 2:
 				return array('y' => substr($date, 0, 4),
-							 'm' => substr($date, 4, 2),
-							 'd' => substr($date, 6, 2));
+					'm' => substr($date, 4, 2),
+					'd' => substr($date, 6, 2));
 				break;
 			default:
 				error();
@@ -856,8 +855,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 				case 500:
 				case 501:
 					$backup = true;
-			break;
-			default:
+					break;
+				default:
 					return $groups;
 			}
 		}
@@ -873,7 +872,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 			//
 			$groups2 = $this->cmdList();
 			if (PEAR::isError($groups2)) {
-			// Ignore...
+				// Ignore...
 			} else {
 				$groups = $groups2;
 			}
@@ -980,9 +979,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
 			case is_bool(func_get_arg(1)):
 
-			case !is_int(func_get_arg(1)) || (is_string(func_get_arg(1)) && ctype_digit(func_get_arg(1))):
+			case!is_int(func_get_arg(1)) || (is_string(func_get_arg(1)) && ctype_digit(func_get_arg(1))):
 
-			case !is_int(func_get_arg(0)) || (is_string(func_get_arg(0)) && ctype_digit(func_get_arg(0))):
+			case!is_int(func_get_arg(0)) || (is_string(func_get_arg(0)) && ctype_digit(func_get_arg(0))):
 				break;
 
 			default:
@@ -1021,7 +1020,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 			if (is_null($this->_overviewFormatCache)) {
 				// Fetch overview format
 				$format = $this->getOverviewFormat($_forceNames, true);
-				if (PEAR::isError($format)){
+				if (PEAR::isError($format)) {
 					return $format;
 				}
 
@@ -1031,7 +1030,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 				// Cache format
 				$this->_overviewFormatCache = $format;
 
-			//
+				//
 			} else {
 				$format = $this->_overviewFormatCache;
 			}
@@ -1053,7 +1052,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
 					// If prefixed by field name, remove it
 					if ($full === true) {
-						$f[$tag] = ltrim( substr($f[$tag], strpos($f[$tag], ':') + 1), " \t");
+						$f[$tag] = ltrim(substr($f[$tag], strpos($f[$tag], ':') + 1), " \t");
 					}
 				}
 
@@ -1117,13 +1116,13 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 		// Force name of first seven fields
 		if ($_forceNames) {
 			array_splice($format, 0, 7);
-			$format = array_merge(array('Subject'    => false,
-										'From'       => false,
-										'Date'       => false,
-										'Message-ID' => false,
-										'References' => false,
-										':bytes'     => false,
-										':lines'     => false), $format);
+			$format = array_merge(array('Subject' => false,
+				'From' => false,
+				'Date' => false,
+				'Message-ID' => false,
+				'References' => false,
+				':bytes' => false,
+				':lines' => false), $format);
 		}
 
 		if ($_full) {
@@ -1194,7 +1193,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	}
 
 	// }}}
-
 	// {{{ getGroupArticles()
 
 	/**
@@ -1286,7 +1284,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 		if ($backup == true) {
 			$references2 = $this->cmdXROver($range);
 			if (PEAR::isError($references2)) {
-			// Ignore...
+				// Ignore...
 			} else {
 				$references = $references2;
 			}
@@ -1327,7 +1325,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	}
 
 	// }}}
-
 	// {{{ count()
 
 	/**
@@ -1424,7 +1421,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	}
 
 	// }}}
-
 	// {{{ isConnected()
 
 	/**
@@ -1514,14 +1510,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 */
 	function getReferencesOverview($first, $last)
 	{
-	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getReferencesOverview() !', E_USER_NOTICE);
+		trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getReferencesOverview() !', E_USER_NOTICE);
 		return $this->getReferences($first . '-' . $last);
 	}
 
 	// }}}
-
 }
 
 // }}}
-
 ?>

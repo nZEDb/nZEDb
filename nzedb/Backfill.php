@@ -2,6 +2,7 @@
 
 class Backfill
 {
+
 	public function __construct($site = null)
 	{
 		if (!isset($site)) {
@@ -72,7 +73,7 @@ class Backfill
 		$data = $nntp->selectGroup($groupArr['name']);
 		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($data === false) {
+			if ($nntp->isError($data)) {
 				return;
 			}
 		}
@@ -234,7 +235,7 @@ class Backfill
 		$data = $nntp->selectGroup($groupArr['name']);
 		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($data === false) {
+			if ($nntp->isError($data)) {
 				return;
 			}
 		}
@@ -442,6 +443,7 @@ class Backfill
 	// Returns article number based on # of days.
 	public function daytopost($nntp, $group, $days, $data, $debug = true)
 	{
+		var_dump($data);
 		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(backfill->daytopost).\n"));
 		}
@@ -549,7 +551,7 @@ class Backfill
 		$data = $nntp->selectGroup($groupArr['name']);
 		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($data === false) {
+			if ($nntp->isError($data)) {
 				return;
 			}
 		}
@@ -571,7 +573,7 @@ class Backfill
 		$data = $nntp->selectGroup($groupArr['name']);
 		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($data === false) {
+			if ($nntp->isError($data)) {
 				return;
 			}
 		}
@@ -591,4 +593,5 @@ class Backfill
 
 		echo $this->c->set256($this->primary) . $type . ' Safe Threaded for ' . $group . " completed.\n" . $this->c->rsetColor();
 	}
+
 }
