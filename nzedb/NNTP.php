@@ -323,7 +323,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access public
 	 */
-	public function getArticle($groupName, $identifier, $yEnc = false)
+	public function get_Article($groupName, $identifier, $yEnc = false)
 	{
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
@@ -393,7 +393,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access public
 	 */
-	public function getHeader($groupName, $identifier)
+	public function get_Header($groupName, $identifier)
 	{
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
