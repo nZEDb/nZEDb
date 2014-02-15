@@ -1,7 +1,7 @@
 <?php
 // This script resets all collections and is required when changes are made to namecleaning.
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'releases.php';
+
 
 if(isset($argv[1]) && $argv[1] == "true")
 {

@@ -7,6 +7,20 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-15 -> jonnyboy -> moved post processing scripts to correct path
+                          fixed backfill_groups.php
+2014-02-15 -> niel     -> Upd: Removing the covers constant from automatied.config.php. It will be generated from a Db setting in future.
+2014-02-15 -> jonnyboy -> colorized output
+                          added disconnect after delete in grabnzbs_threaded.py
+                          updated populate_tvrage.php
+                          updated autopatcher.php, fixed divide by 0 in active_groups.php
+                          update $binaries->data, $backfill->data to correctly identify an error
+2014-02-15 -> kevin    -> PEAR->Protocol->Client->_sendCommand() Wrong type returned, can cause unpredictable issues.
+2014-02-15 -> jonnyboy -> fixed output on failed movie->updateUpcoming
+                          fixed typo in releases->searchSQL, changed search terms explanation to show only terms available
+                          reverted changes to gitignore, added extra selectgroup in binaries->scan
+                          changed light theme to redirect to list when nothing in cover view
+                          fixed install scripts, removed empty files, .gitignore instead
 2014-02-14 -> jonnyboy -> redo of last patch, missed one for bookinfo
 2014-20-14 -> kevin    -> nZEDb->NNTP Remove obsolete methods for connecting.
                           nZEDb->NNTP Change destructor to use local method for disconnection, change local method of disconnect to verify if the connection is active.

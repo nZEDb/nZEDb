@@ -1,6 +1,5 @@
 <?php
 require_once './config.php';
-//require_once nZEDb_LIB . 'adminpage.php';
 
 
 // new to get information on books groups

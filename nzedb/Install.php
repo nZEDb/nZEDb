@@ -21,6 +21,7 @@ class Install
 	public $NNTP_PORT_A;
 	public $NNTP_SSLENABLED_A;
 	public $nZEDb_WWW;
+	public $nZEDb_COVERS;
 	public $SMARTY_DIR;
 	public $DB_DIR;
 	public $nZEDb_MISC;
@@ -70,7 +71,7 @@ class Install
 	public $saveLockCheck;
 	public $error = false;
 
-	function Install()
+	public function __construct()
 	{
 		$this->nZEDb_WWW = dirname(realpath('.'));
 		$this->SMARTY_DIR = SMARTY_DIR;
@@ -80,6 +81,7 @@ class Install
 		$this->INSTALL_DIR = $this->nZEDb_WWW . '/install';
 		$this->nZEDb_LIB = dirname(realpath('..')) . '/nzedb/';
 		$this->nZEDb_LIBS = str_replace('\\', '/', realpath(nZEDb_LIBS));
+		$this->nZEDb_COVERS = dirname(realpath('..')) . '/resources/covers';
 	}
 
 	public function setSession()

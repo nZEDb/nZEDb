@@ -2,6 +2,7 @@
 
 class Binaries
 {
+
 	const BLACKLIST_FIELD_SUBJECT = 1;
 	const BLACKLIST_FIELD_FROM = 2;
 	const BLACKLIST_FIELD_MESSAGEID = 3;
@@ -80,7 +81,7 @@ class Binaries
 		$data = $nntp->selectGroup($groupArr['name']);
 		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($data === false) {
+			if ($nntp->isError($data)) {
 				return;
 			}
 		}
@@ -261,9 +262,19 @@ class Binaries
 			$group['pname'] = 'parts';
 		}
 
+		// Select the group before attempting to download
+		$data = $nntp->selectGroup($groupArr['name']);
+		if ($nntp->isError($data)) {
+			$data = $nntp->dataError($nntp, $groupArr['name']);
+			if ($nntp->isError($data)) {
+				return;
+			}
+		}
+
 		// Download the headers.
 		$msgs = $nntp->getOverview($first . "-" . $last, true, false);
-		// If there ware an error, try to reconnect.
+
+		// If there were an error, try to reconnect.
 		if ($type != 'partrepair' && $nntp->isError($msgs)) {
 			// This is usually a compression error, so try disabling compression.
 			$nntp->doQuit();
@@ -289,7 +300,8 @@ class Binaries
 				$colnames = $orignames = $notyenc = array();
 			}
 
-			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
+			// Sort the articles before processing, alphabetically by subject. This is to try to use the
+			// shortest subject and those without .vol01 in the subject
 			usort($msgs, function ($elem1, $elem2) {
 				return strcmp($elem1['Subject'], $elem2['Subject']);
 			});
@@ -902,4 +914,5 @@ class Binaries
 		$db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id));
 		$db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $id));
 	}
+
 }

@@ -90,14 +90,14 @@
 									<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >
 										<img class="movshadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" alt="{$result.title|escape:"htmlall"}" />
 									</a>
-								<div class="movextra">
-									<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtnsml modal_imdb" rel="movie" >Cover</a>
-									<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a>
-									<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
-									{if $cpurl != '' && $cpapi != ''}
-										<a class="rndbtnsml" target="blackhole" href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">CouchPotato</a>
-									{/if}
-								</div>
+									<div class="movextra">
+										<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtnsml modal_imdb" rel="movie" >Cover</a>
+										<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a>
+										<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
+										{if $cpurl != '' && $cpapi != ''}
+											<a class="rndbtnsml" target="blackhole" href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">CouchPotato</a>
+										{/if}
+									</div>
 								</div>
 								<h2><a title="{$result.title|stripslashes|escape:"htmlall"}" href="{$site->dereferrer_link}{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|stripslashes|escape:"htmlall"}</a> (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
 									{foreach from=$result.languages item=movielanguage}
@@ -173,9 +173,7 @@
 	</form>
 
 {else}
-
-	<h4>There doesn't seem to be any releases here. Please try the <a href="{$smarty.const.WWW_TOP}/browse?t={$category}">list</a> view.</h4>
-
+	{header("Location: {$smarty.const.WWW_TOP}/browse?t={$category}")}
 {/if}
 
 <br/><br/><br/>

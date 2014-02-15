@@ -1,38 +1,19 @@
-<h1>Browse Music</h1>
+<h1>Browse Books</h1>
 
-<form name="browseby" action="music">
+<form name="browseby" action="books">
     <table class="rndbtn" border="0" cellpadding="2" cellspacing="0">
         <tr>
-            <th class="left"><label for="musicartist">Artist</label></th>
-            <th class="left"><label for="musictitle">Title</label></th>
-            <th class="left"><label for="genre">Genre</label></th>
-            <th class="left"><label for="year">Year</label></th>
+            <th class="left"><label for="title">Title</label></th>
+            <th class="left"><label for="author">Author</label></th>
             <th class="left"><label for="category">Category</label></th>
             <th></th>
         </tr>
         <tr>
-            <td><input id="musicartist" type="text" name="artist" value="{$artist}" size="15"/></td>
-            <td><input id="musictitle" type="text" name="title" value="{$title}" size="15"/></td>
-            <td>
-                <select id="genre" name="genre">
-                    <option class="grouping" value=""></option>
-                    {foreach from=$genres item=gen}
-                        <option {if $gen.id == $genre}selected="selected"{/if}
-                                value="{$gen.id}">{$gen.title|escape:"htmlall"}</option>
-                    {/foreach}
-                </select>
-            </td>
-            <td>
-                <select id="year" name="year">
-                    <option class="grouping" value=""></option>
-                    {foreach from=$years item=yr}
-                        <option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
-                    {/foreach}
-                </select>
-            </td>
+            <td><input id="title" type="text" name="title" value="{$title}" size="15"/></td>
+            <td><input id="author" type="text" name="author" value="{$author}" size="15"/></td>
             <td>
                 <select id="category" name="t">
-                    <option class="grouping" value="3000"></option>
+                    <option class="grouping" value="8000"></option>
                     {foreach from=$catlist item=ct}
                         <option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
                     {/foreach}
@@ -63,19 +44,14 @@
         <table style="width:100%;" class="data highlight icons" id="coverstable">
             <tr>
                 <th width="130"><input type="checkbox" class="nzb_check_all"/></th>
-                <th>artist<br/><a title="Sort Descending" href="{$orderbyartist_desc}"><img
+                <th>title<br/><a title="Sort Descending" href="{$orderbytitle_desc}"><img
                                 src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
-                                alt=""/></a><a title="Sort Ascending" href="{$orderbyartist_asc}"><img
+                                alt=""/></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img
                                 src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
                 </th>
-                <th>year<br/><a title="Sort Descending" href="{$orderbyyear_desc}"><img
+                <th>author<br/><a title="Sort Descending" href="{$orderbyauthor_desc}"><img
                                 src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
-                                alt=""/></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img
-                                src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
-                </th>
-                <th>genre<br/><a title="Sort Descending" href="{$orderbygenre_desc}"><img
-                                src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
-                                alt=""/></a><a title="Sort Ascending" href="{$orderbygenre_asc}"><img
+                                alt=""/></a><a title="Sort Ascending" href="{$orderbyauthor_asc}"><img
                                 src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
                 </th>
                 <th>posted<br/><a title="Sort Descending" href="{$orderbyposted_desc}"><img
@@ -103,32 +79,34 @@
             {foreach from=$results item=result}
                 <tr class="{cycle values=",alt"}">
                     <td class="mid">
-                        <div class="movcover">
-                            <a class="title" title="View details"
-                               href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">
+                        <div class="bookcover">
+                            <a class="title thumbnail" title="View amazon page"
+                               href="{$site->dereferrer_link}{$result.url}">
                                 <img class="shadow"
-                                     src="{$smarty.const.WWW_TOP}/covers/music/{if $result.cover == 1}{$result.musicinfoid}.jpg{else}no-cover.jpg{/if}"
-                                     width="120" border="0"
-                                     alt="{$result.artist|escape:"htmlall"} - {$result.title|escape:"htmlall"}"/>
+                                     src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}no-cover.jpg{/if}"
+                                     width="120" border="0" alt="{$result.title|escape:"htmlall"}">
                             </a>
 
                             <div class="movextra">
                                 {if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
-                                                         title="View Nfo" class="rndbtnsml modal_nfo" rel="nfo">
+                                                         title="View Nfo" class="rndbtn modal_nfo" rel="nfo">
                                         Nfo</a>{/if}
-                                <a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}{$result.url}"
-                                   name="amazon{$result.musicinfoid}" title="View amazon page">Amazon</a>
-                                <a class="rndbtnsml" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}"
+                                <a class="rndbtn" target="_blank" href="{$site->dereferrer_link}{$result.url}"
+                                   name="amazon{$result.bookinfoid}" title="View amazon page">Amazon</a>
+                                <a class="rndbtn" href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name}"
                                    title="Browse releases in {$result.group_name|replace:"alt.binaries":"a.b"}">Grp</a>
                             </div>
                         </div>
                     </td>
-                    <td colspan="7" class="left" id="guid{$result.guid}">
-                        <h2>{$result.artist}{" - "}{$result.title}</h2>
-                        {if $result.genre != ""}<b>Genre:</b>{$result.genre|escape:"htmlall"}<br/>{/if}
-                        {if $result.publisher != ""}<b>Publisher:</b>{$result.publisher|escape:"htmlall"}<br/>{/if}
-                        {if $result.releasedate != ""}<b>Released:</b>{$result.releasedate|date_format}<br/>{/if}
-                        {if $result.review != ""}<b>Review:</b>{$result.review|escape:'htmlall'}<br>{/if}
+                    <td colspan="8" class="left" id="guid{$result.guid}">
+                        <h2>{$result.author|stripslashes|escape:"htmlall"}{" - "}{$result.title|stripslashes|escape:"htmlall"}
+                        </h2>
+                        {if $result.genre != "null"}<b>Genre:</b>{$result.genre|escape:'htmlall'}<br/>{/if}
+                        {if $result.publisher != ""}<b>Publisher:</b>{$result.publisher}<br/>{/if}
+                        {if $result.publishdate != ""}<b>Released:</b>{$result.publishdate|date_format}<br/>{/if}
+                        {if $result.pages != ""}<b>Pages:</b>{$result.pages}<br/>{/if}
+                        {if $result.salesrank != ""}<b>Amazon Rank:</b>{$result.salesrank}<br/>{/if}
+                        {if $result.overview != "null"}<b>Overview:</b>{$result.overview|escape:'htmlall'}<br/>{/if}
                         <br/>
 
                         <div class="movextra">
@@ -206,6 +184,7 @@
             {/foreach}
 
         </table>
+
         <br/>
 
         {$pager}
@@ -219,7 +198,7 @@
 
     </form>
 {else}
-   {header("Location: {$smarty.const.WWW_TOP}/browse?t={$category}")}
+	{header("Location: {$smarty.const.WWW_TOP}/browse?t={$category}")}
 {/if}
 
 <br/><br/><br/>

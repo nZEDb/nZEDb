@@ -223,8 +223,7 @@
 
 	</form>
 {else}
-	<h4>There doesn't seem to be any releases here. Please try the <a
-				href="{$smarty.const.WWW_TOP}/browse?t={$category}">list</a> view.</h4>
+	{header("Location: {$smarty.const.WWW_TOP}/browse?t={$category}")}
 {/if}
 
 <br/><br/><br/>
