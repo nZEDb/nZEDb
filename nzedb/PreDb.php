@@ -740,9 +740,9 @@ Class PreDb
 			echo $this->c->header('Fixing search names' . $te . " using the predb md5.");
 		}
 		if ($db->dbSystem() == 'mysql') {
-			$regex = "AND ((r.bitwise & 512) = 512 OR rf.name REGEXP'[a-fA-F0-9]{32}')";
+			$regex = "AND ((r.ishashed = 1 OR rf.name REGEXP'[a-fA-F0-9]{32}')";
 		} else if ($db->dbSystem() == 'pgsql') {
-			$regex = "AND ((r.bitwise & 512) = 512 OR rf.name ~ '[a-fA-F0-9]{32}')";
+			$regex = "AND ((r.ishashed = 1 OR rf.name ~ '[a-fA-F0-9]{32}')";
 		}
 
 		if ($cats === 3) {
@@ -754,7 +754,7 @@ Class PreDb
 			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
-				. 'WHERE nzbstatus = 1 AND (bitwise & 4) = 0 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
+				. 'WHERE nzbstatus = 1 AND isrenamed = 0 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
 		}
 
 		echo $this->c->header($query);

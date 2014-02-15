@@ -181,7 +181,7 @@ class PostProcess
 			$t = 'extract(epoch FROM postdate)';
 		}
 
-		$quer = $db->queryOneRow('SELECT id, groupid, categoryid, searchname, ' . $t . ' as postdate, id as releaseid  FROM releases WHERE (bitwise & 4) = 0 AND id = ' . $relID);
+		$quer = $db->queryOneRow('SELECT id, groupid, categoryid, searchname, ' . $t . ' as postdate, id as releaseid  FROM releases WHERE isrenamed = 0 AND id = ' . $relID);
 		if ($quer['categoryid'] != Category::CAT_MISC) {
 			return false;
 		}
@@ -222,7 +222,7 @@ class PostProcess
 				}
 				$quer['textstring'] = $file['name'];
 				//$namefixer->checkName($quer, 1, 'PAR2, ', 1);
-				//$stat = $db->queryOneRow('SELECT id FROM releases WHERE (bitwise & 4) = 4 AND id = '.$relID);
+				//$stat = $db->queryOneRow('SELECT id FROM releases WHERE isrenamed = 1 AND id = '.$relID);
 				//if ($stat['id'] === $relID)
 				if ($namefixer->checkName($quer, 1, 'PAR2, ', 1, $show) === true) {
 					$foundname = true;
@@ -1341,7 +1341,7 @@ class PostProcess
 										} else {
 											$newcat = $category->determineCategory($newname, $rquer['groupid']);
 										}
-										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, bitwise = ((bitwise & ~13)|13) WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
+										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, bitwise = ((bitwise & ~8)|8) WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
 
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID, $xmlarray);

@@ -43,7 +43,7 @@ pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 cur.execute("SELECT value FROM site WHERE setting = 'request_hours'")
 dbgrab = cur.fetchone()
 request_hours = str(dbgrab[0])
-cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (bitwise & 1028) = 1024 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " + request_hours + " HOUR) LIMIT 100000")
+cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND isrenamed = 0 AND isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " + request_hours + " HOUR) LIMIT 100000")
 datas = cur.fetchall()
 
 if not datas:

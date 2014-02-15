@@ -59,7 +59,7 @@ elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "preid":
 elif len(sys.argv) == 3 and sys.argv[1] == "filename" and sys.argv[2] == "preid":
 	clean = " preid IS NULL "
 else:
-	clean = " ((bitwise & 4) = 0 OR categoryid = 7010) "
+	clean = " (isrenamed = 0 OR categoryid = 7010) "
 
 print(bcolors.HEADER + "\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
@@ -76,7 +76,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "nfo":
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
-	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND (bitwise & 16) = 0 AND ((bitwise & 4) = 0 OR categoryid = 7010) ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND (bitwise & 16) = 0 AND (isrenamed = 0 OR categoryid = 7010) ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
@@ -85,7 +85,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND (bitwise & 4) = 0 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND ((rel.bitwise & 512) = 512 OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate ASC LIMIT %s"
+		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND isrenamed = 0 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (hashed = 1 OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate ASC LIMIT %s"
 		cur.execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur.fetchall()
 		maxtries = maxtries - 1

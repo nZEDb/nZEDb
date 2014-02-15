@@ -205,7 +205,7 @@ elif sys.argv[1] == "nfo":
 
 
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-        run = "SELECT DISTINCT searchname AS name, id, categoryid from releases WHERE nzbstatus = 1 AND (bitwise & 4) = 4 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN (SELECT id FROM category WHERE parentid = 2000) ORDER BY postdate DESC LIMIT %s"
+        run = "SELECT DISTINCT searchname AS name, id, categoryid from releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN (SELECT id FROM category WHERE parentid = 2000) ORDER BY postdate DESC LIMIT %s"
         cur.execute(run, (run_threads * movieperrun))
         datas = cur.fetchall()
 elif sys.argv[1] == "movie":
@@ -213,7 +213,7 @@ elif sys.argv[1] == "movie":
         cur.execute(run, (run_threads * movieperrun))
         datas = cur.fetchall()
 elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-        run = "SELECT searchname, id from releases WHERE nzbstatus = 1 AND (bitwise & 4) = 4 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN (SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
+        run = "SELECT searchname, id from releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN (SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
         cur.execute(run, (run_threads * tvrageperrun))
         datas = cur.fetchall()
 elif sys.argv[1] == "tv":

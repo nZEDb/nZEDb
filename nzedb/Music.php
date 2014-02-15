@@ -18,7 +18,7 @@ class Music
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->db = new DB();
 		$this->imgSavePath = nZEDb_WWW . 'covers/music/';
-		$this->cleanmusic = ($site->lookupmusic == 2) ? 4 : 0;
+		$this->cleanmusic = ($site->lookupmusic == 2) ? 1 : 0;
 		$this->c = new ColorCLI();
 	}
 
@@ -440,8 +440,8 @@ class Music
 	{
 		$db = $this->db;
 		$res = $db->queryDirect(sprintf('SELECT searchname, id FROM releases '
-				. 'WHERE musicinfoid IS NULL AND nzbstatus = 1 AND (bitwise & %d) = %d AND categoryid IN (3010, 3040, 3050) '
-				. 'ORDER BY postdate DESC LIMIT %d', $this->cleanmusic, $this->cleanmusic, $this->musicqty));
+				. 'WHERE musicinfoid IS NULL AND nzbstatus = 1 AND isrenamed = %d AND categoryid IN (3010, 3040, 3050) '
+				. 'ORDER BY postdate DESC LIMIT %d', $this->cleanmusic, $this->musicqty));
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
 				echo $this->c->header("\nProcessing " . $res->rowCount() . ' music release(s).');

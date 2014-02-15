@@ -80,6 +80,11 @@ CREATE TABLE releases (
 	dehashstatus TINYINT(1) NOT NULL DEFAULT 0,
 	reqidstatus TINYINT(1) NOT NULL DEFAULT '0',
 	nzb_guid VARCHAR(50) NULL,
+	nzbstatus BOOL NOT NULL DEFAULT '0';
+	iscategorized BOOL NOT NULL DEFAULT '0';
+	isrenamed BOOL NOT NULL DEFAULT '0';
+	ishashed BOOL NOT NULL DEFAULT '0';
+	isrequestid BOOL NOT NULL DEFAULT '0';
 	PRIMARY KEY  (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -100,7 +105,7 @@ CREATE INDEX ix_releases_musicinfoid ON releases (musicinfoid);
 CREATE INDEX ix_releases_consoleinfoid ON releases (consoleinfoid);
 CREATE INDEX ix_releases_bookinfoid ON releases (bookinfoid);
 CREATE INDEX ix_releases_haspreview ON releases (haspreview);
-CREATE INDEX ix_releases_status ON releases (nzbstatus, nfostatus, passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid, bookinfoid, haspreview, categoryid, imdbid, rageid, groupid);
+CREATE INDEX ix_releases_status ON releases (nzbstatus, categorized, renamed, nfostatus, passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid, bookinfoid, haspreview, categoryid, imdbid, rageid, groupid);
 CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
 CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);
 CREATE INDEX ix_releases_nzb_guid ON releases (nzb_guid);
