@@ -188,7 +188,7 @@ function preName($argv, $argc)
 	}
 	$timestart = TIME();
 	if (isset($argv[1]) && is_numeric($argv[1])) {
-		$relcount = categorizeRelease("searchname", "WHERE iscategorized = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
+		$relcount = categorizeRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
 		$relcount = categorizeRelease("searchname", str_replace(" AND", "WHERE", $where) . " AND iscategorized = 0 ", true);
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
