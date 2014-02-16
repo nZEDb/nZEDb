@@ -43,7 +43,16 @@ As a general rule of thumb the database will need a minimum of 1-2G buffer RAM f
 
 Use [mysqltuner.pl](http://mysqltuner.pl "MySQL tuner - Use it!") for recommendations for these and other important tuner parameters. Also refer to the project's wiki page: https://github.com/nZEDb/nZEDb/wiki/Database-tuning. This is particularly important before you start any large imports or backfills.
 
-MySQL is normally shipped using MyISAM tables by default. This is fine for running with one or a few threads and is a good way to start using nZEDb. If using thread counts > 5, or TPG (Table Per Group) mode, or 
+MySQL is normally shipped using MyISAM tables by default. This is fine for running with one or a few threads and is a good way to start using nZEDb. You should migrate to the InnoDB table format if nZEDB is configured to use one of the following:
+	thread counts > 5
+    TPG (Table Per Group) mode
+    tmux
+
+This conversion script is helpful
+	misc/testing/DB/convert_mysql_tables.php
+
+**Before** converting to InnoDB remember to set
+	innodb_file_per_table
 
 
 ## Installation
