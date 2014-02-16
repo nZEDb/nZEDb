@@ -115,9 +115,9 @@ $proc_work = "SELECT "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
 
 $proc_work2 = "SELECT "
-	. "(SELECT COUNT(*) FROM releases r, category c WHERE (r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
-	. "(SELECT COUNT(*) FROM releases r, category c WHERE (r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
-	. "(SELECT COUNT(*) FROM releases r, category c WHERE (r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
 	. "(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table, "
 	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
