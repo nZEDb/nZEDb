@@ -58,7 +58,7 @@ if ($rels = $db->queryDirect(sprintf("SELECT name, backfill_target, first_record
 		COALESCE(ren.num, 0) AS renamed FROM groups
 		LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases GROUP BY groupid ) rel ON rel.groupid = groups.id
 		LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE preid is not null GROUP BY groupid ) pre ON pre.groupid = groups.id
-		LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE (bitwise & 1) = 1 GROUP BY groupid ) ren ON ren.groupid = groups.id
+		LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE iscategorized = 1 GROUP BY groupid ) ren ON ren.groupid = groups.id
 		WHERE active = 1 AND first_record_postdate %s %s %s", $order, $sort, $limit))) {
 	foreach ($rels as $rel) {
 		//var_dump($rel);

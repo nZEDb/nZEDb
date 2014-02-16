@@ -53,7 +53,7 @@ Setting the paths to unrar/ffmpeg/mediainfo is optional, but unrar is recommende
 
 If you have set the path to unrar, deep rar inspection is recommended.
 
-Compressed headers are recommended if your provider supports XFeature gzip compression, however header retrieval may periodically hang if the nntp-proxy is not used. (XFeature GZIP compression, originally by wafflehouse : http://pastebin.com/A3YypDAJ)
+Compressed headers are recommended if your provider supports XFeature gzip compression, however header retrieval may periodically hang if the nntp-proxy is not used. (XFeature GZIP compression, originally by wafflehouse : link on pastebin was removed)
 
 Once you have set all the options, you can enable one or two groups and start with the simple screen script running in single-threaded mode. Look in the misc/update directory; update_binaries.php downloads usenet articles into the local database; update_releases.php attempts to group these articles into releases and create NZB files.
 
