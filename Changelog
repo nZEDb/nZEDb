@@ -7,7 +7,10 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-15 -> jonnyboy -> moved post processing scripts to correct path
+2014-02-15 -> jonnyboy -> updated README.md to show that the pastebin link to wafflehouse code was removed from pastebin
+                          removing nzbstatus, renamed, hashed, requestid, categorized from bitwise
+                          updated install scripts to point to correct tmpunrar path
+                          moved post processing scripts to correct path
                           fixed backfill_groups.php
 2014-02-15 -> niel     -> Upd: Removing the covers constant from automatied.config.php. It will be generated from a Db setting in future.
 2014-02-15 -> jonnyboy -> colorized output

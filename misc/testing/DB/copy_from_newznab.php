@@ -1,4 +1,5 @@
 <?php
+
 require dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'Util.php';
 
@@ -18,11 +19,11 @@ if (!isset($argv[1])) {
 	exit("$argv[1]) is an invalid path\n");
 } else {
 	$from = $argv[1];
-	echo "Copying nzbs from ".$from."\n";
-	system("cp -R ".$from."/* ".$dir."../nzbfiles/");
-	echo "Copying covers from ".$from."/../www/covers\n";
-	system("cp -R ".$from."/../www/covers/* ".$dir."/covers/");
+	echo "Copying nzbs from " . $from . "\n";
+	system("cp -R " . $from . "/* " . $dir . "../nzbfiles/");
+	echo "Copying covers from " . $from . "/../www/covers\n";
+	system("cp -R " . $from . "/../www/covers/* " . $dir . "/covers/");
 	echo "Setting nzbstatus for all releases\n";
-	$db->queryExec("UPDATE releases SET bitwise = (bitwise & ~256)|256");
-	system("php ".$misc."testing/DB/nzb-reorg.php ".$level." ".$dir."../nzbfiles/");
+	$db->queryExec("UPDATE releases SET nzbstatus = 1");
+	system("php " . $misc . "testing/DB/nzb-reorg.php " . $level . " " . $dir . "../nzbfiles/");
 }

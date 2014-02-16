@@ -80,6 +80,11 @@ CREATE TABLE releases (
 	dehashstatus TINYINT(1) NOT NULL DEFAULT 0,
 	reqidstatus TINYINT(1) NOT NULL DEFAULT '0',
 	nzb_guid VARCHAR(50) NULL,
+	nzbstatus BOOL NOT NULL DEFAULT '0',
+	iscategorized BOOL NOT NULL DEFAULT '0',
+	isrenamed BOOL NOT NULL DEFAULT '0',
+	ishashed BOOL NOT NULL DEFAULT '0',
+	isrequestid BOOL NOT NULL DEFAULT '0',
 	PRIMARY KEY  (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -92,16 +97,15 @@ CREATE INDEX ix_releases_guid ON releases (guid);
 CREATE INDEX ix_releases_name ON releases(name);
 CREATE INDEX ix_releases_searchname ON releases(searchname);
 CREATE INDEX ix_releases_groupid ON releases(groupid);
-CREATE INDEX ix_releases_bitwise on releases(bitwise);
 CREATE INDEX ix_releases_passwordstatus on releases(passwordstatus);
 CREATE INDEX ix_releases_dehashstatus ON releases(dehashstatus);
-CREATE INDEX ix_releases_reqidstatus ON releases(reqidstatus ASC) USING HASH ;
-CREATE INDEX ix_releases_nfostatus ON releases (nfostatus ASC) USING HASH;
+CREATE INDEX ix_releases_reqidstatus ON releases(reqidstatus);
+CREATE INDEX ix_releases_nfostatus ON releases (nfostatus);
 CREATE INDEX ix_releases_musicinfoid ON releases (musicinfoid);
 CREATE INDEX ix_releases_consoleinfoid ON releases (consoleinfoid);
 CREATE INDEX ix_releases_bookinfoid ON releases (bookinfoid);
-CREATE INDEX ix_releases_haspreview ON releases (haspreview ASC) USING HASH;
-CREATE INDEX ix_releases_status ON releases (id, nfostatus, bitwise, passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid, bookinfoid, haspreview, categoryid, imdbid, rageid, groupid);
+CREATE INDEX ix_releases_haspreview ON releases (haspreview);
+CREATE INDEX ix_releases_status ON releases (nzbstatus, iscategorized, isrenamed, nfostatus, ishashed, isrequestid, passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid, bookinfoid, haspreview, categoryid, imdbid, rageid);
 CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
 CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);
 CREATE INDEX ix_releases_nzb_guid ON releases (nzb_guid);
@@ -1713,6 +1717,6 @@ INSERT INTO country (code, name) VALUES ( 'AF', 'Afghanistan' ),
 	( 'ZW', 'Zimbabwe' );
 
 DELIMITER $$
-CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.bitwise = ((NEW.bitwise & ~512)|512);ELSEIF NEW.name REGEXP '^\\[[[:digit:]]+\\]' THEN SET NEW.bitwise = ((NEW.bitwise & ~1024)|1024); END IF; END; $$
-CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.bitwise = ((NEW.bitwise & ~512)|512);ELSEIF NEW.name REGEXP '^\\[[[:digit:]]+\\]' THEN SET NEW.bitwise = ((NEW.bitwise & ~1024)|1024); END IF; END; $$
+CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.ishashed = 1;ELSEIF NEW.name REGEXP '^\\[[[:digit:]]+\\]' THEN SET NEW.isrequestid = 1; END IF; END;
+CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.ishashed = 1;ELSEIF NEW.name REGEXP '^\\[[[:digit:]]+\\]' THEN SET NEW.isrequestid = 1; END IF; END;
 DELIMITER ;

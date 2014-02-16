@@ -1,4 +1,5 @@
 <?php
+
 require_once realpath(dirname(__FILE__) . '/../config.php');
 
 $page = new InstallPage();
@@ -35,13 +36,13 @@ if ($page->isPostBack()) {
 		}
 
 		if (!$cfg->error) {
-			if (!file_exists($cfg->NZB_PATH . "tmpunrar")) {
-				mkdir($cfg->NZB_PATH . "tmpunrar");
+			if (!file_exists($cfg->TMP_PATH . "unrar")) {
+				mkdir($cfg->TMP_PATH . "unrar");
 			}
 
 			$db = new DB();
 			$sql1 = sprintf("UPDATE site SET value = %s WHERE setting = 'nzbpath'", $db->escapeString($cfg->NZB_PATH));
-			$sql2 = sprintf("UPDATE site SET value = %s WHERE setting = 'tmpunrarpath'", $db->escapeString($cfg->NZB_PATH . "tmpunrar"));
+			$sql2 = sprintf("UPDATE site SET value = %s WHERE setting = 'tmpunrarpath'", $db->escapeString($cfg->TMP_PATH . "unrar"));
 			if ($db->queryExec($sql1) === false || $db->queryExec($sql2) === false) {
 				$cfg->error = true;
 			}
