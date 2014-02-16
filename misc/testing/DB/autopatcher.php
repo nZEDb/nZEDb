@@ -54,7 +54,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 
 	if ($restart == "true") {
 		echo $c->header("Starting tmux scripts.");
-		$db->queryExec("UPDATE tmux SET value = 'TRUE' WHERE setting = 'RUNNING'");
+		$db->queryExec("UPDATE tmux SET value = '1' WHERE setting = 'RUNNING'");
 	}
 } else {
 	exit($c->error("\nThis script will automatically do a git pull, patch the DB and delete the smarty folder contents.\n\n"
