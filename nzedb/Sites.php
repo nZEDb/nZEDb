@@ -14,6 +14,7 @@ class Sites
 	const ERR_BADTMPUNRARPATH = -6;
 	const ERR_BADNZBPATH_UNREADABLE = -7;
 	const ERR_BADNZBPATH_UNSET = -8;
+	const ERR_BAD_COVERS_PATH = -9;
 
 	function __construct()
 	{
@@ -139,7 +140,7 @@ GNU General Public License for more details.
 	{
 		if (!defined('nZEDb_COVERS')) {
 			$row = $this->db->query("SELECT value FROM site WHERE setting = 'coverspath'");
-			define('nZEDb_COVERS', $row[0]['value'] == '' ? nZEDb_WWW . 'covers' . DS : $row['coverspath']);
+			define('nZEDb_COVERS', $row[0]['value'] == '' ? nZEDb_WWW . 'covers' . DS : $row[0]['value']);
 		}
 
 	}

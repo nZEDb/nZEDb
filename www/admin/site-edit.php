@@ -41,6 +41,8 @@ switch($action)
 				$error = "The nzb path cannot be read from. Check the permissions.";
 			} else if ($ret == Sites::ERR_BADNZBPATH_UNSET) {
 				$error = "The nzb path is required, please set it.";
+			} else if ($ret == Sites::ERR_BAD_COVERS_PATH) {
+				$error = 'The covers&apos; path is required and must exist. Please set it.';
 			}
 		}
 
