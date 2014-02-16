@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 
 2014-02-16 -> ajoergensen -> add missing ( in renametopre.php
+                             Fix query in PreDB.php
 2014-02-16 -> jonnyboy -> fixed typo in show_table_sizes.php
 2014-02-16 -> bart39   -> fixed typos in queries
 2014-02-16 -> kaibosh  -> updated README.md add DB section, more info for noobs
