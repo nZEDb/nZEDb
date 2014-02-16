@@ -15,7 +15,7 @@ class Console
 		$this->gameqty = (!empty($site->maxgamesprocessed)) ? $site->maxgamesprocessed : 150;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->db = new DB();
-		$this->imgSavePath = nZEDb_COVERS . 'console/';
+		$this->imgSavePath = nZEDb_COVERS . 'console' . DS;
 		$this->cleanconsole = ($site->lookupgames == 2) ? 260 : 256;
 		$this->c = new ColorCLI();
 	}

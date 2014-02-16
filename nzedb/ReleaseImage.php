@@ -6,11 +6,11 @@ class ReleaseImage
 	function __construct()
 	{
 		$s = new Sites(); // Creates the nZEDb_COVERS constant
-		$this->movimgSavePath = nZEDb_COVERS . 'movies/';
-		$this->imgSavePath = nZEDb_COVERS . 'preview/';
-		$this->vidSavePath = nZEDb_COVERS . 'video/';
-		$this->jpgSavePath = nZEDb_COVERS . 'sample/';
-		$this->audSavePath = nZEDb_COVERS . 'audiosample/';
+		$this->movimgSavePath = nZEDb_COVERS . 'movies' . DS;
+		$this->imgSavePath = nZEDb_COVERS . 'preview' . DS;
+		$this->vidSavePath = nZEDb_COVERS . 'video' . DS;
+		$this->jpgSavePath = nZEDb_COVERS . 'sample' . DS;
+		$this->audSavePath = nZEDb_COVERS . 'audiosample' . DS;
 	}
 
 	public function fetchImage($imgLoc)

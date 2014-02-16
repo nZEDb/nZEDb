@@ -16,7 +16,7 @@ class Books
 		$this->asstag = $site->amazonassociatetag;
 		$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
-		$this->imgSavePath = nZEDb_COVERS . 'book/';
+		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
 		$this->db = new DB();
 		$this->bookreqids = ($site->book_reqids == NULL || $site->book_reqids == "") ? 8010 : $site->book_reqids;
 		$this->cleanbooks = ($site->lookupbooks == 2 ) ? 260 : 256;
