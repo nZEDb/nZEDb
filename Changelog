@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-16 -> kaibosh  -> updated README.md add DB section, more info for noobs
 2014-02-15 -> jonnyboy -> updated README.md to show that the pastebin link to wafflehouse code was removed from pastebin
                           removing nzbstatus, renamed, hashed, requestid, categorized from bitwise
                           updated install scripts to point to correct tmpunrar path
