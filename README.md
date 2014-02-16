@@ -35,7 +35,7 @@ The installation guides have more detailed software requirements.
 
 ### Database
 
-Most (if not all) distributions ship MySQL/Postgres with a default configuration that will perform well on a Raspberry Pi. If you wish to store more that 500K releases, these default setting will quickly lead to poor performance. Expect this. 
+Most (if not all) distributions ship MySQL/Postgres with a default configuration that will perform well on a Raspberry Pi. If you wish to store more that 500K releases, these default settings will quickly lead to poor performance. Expect this. 
 
 As a general rule of thumb the database will need a minimum of 1-2G buffer RAM for every million releases you intend to store. That RAM should be assigned to either of these two parameters:
 - key_buffer_size			(MyISAM)
@@ -44,16 +44,20 @@ As a general rule of thumb the database will need a minimum of 1-2G buffer RAM f
 Use [mysqltuner.pl](http://mysqltuner.pl "MySQL tuner - Use it!") for recommendations for these and other important tuner parameters. Also refer to the project's wiki page: https://github.com/nZEDb/nZEDb/wiki/Database-tuning. This is particularly important before you start any large imports or backfills.
 
 MySQL is normally shipped using MyISAM tables by default. This is fine for running with one or a few threads and is a good way to start using nZEDb. You should migrate to the InnoDB table format if nZEDB is configured to use one of the following:
-	- thread counts > 5
-    - TPG (Table Per Group) mode
-    - tmux mode
 
-This conversion script is helpful
+	thread counts > 5
+	TPG (Table Per Group) mode
+	tmux mode
+
+This conversion script is helpful:
+
 	misc/testing/DB/convert_mysql_tables.php
 
-**Before** converting to InnoDB remember to set
+Before converting to InnoDB be sure to set:
+
 	innodb_file_per_table
 
+<br>
 
 ## Installation
 
