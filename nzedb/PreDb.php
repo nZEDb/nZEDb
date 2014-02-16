@@ -740,9 +740,9 @@ Class PreDb
 			echo $this->c->header('Fixing search names' . $te . " using the predb md5.");
 		}
 		if ($db->dbSystem() == 'mysql') {
-			$regex = "AND ((r.ishashed = 1 OR rf.name REGEXP'[a-fA-F0-9]{32}')";
+			$regex = "AND (r.ishashed = 1 OR rf.name REGEXP'[a-fA-F0-9]{32}')";
 		} else if ($db->dbSystem() == 'pgsql') {
-			$regex = "AND ((r.ishashed = 1 OR rf.name ~ '[a-fA-F0-9]{32}')";
+			$regex = "AND (r.ishashed = 1 OR rf.name ~ '[a-fA-F0-9]{32}')";
 		}
 
 		if ($cats === 3) {
