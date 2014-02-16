@@ -187,6 +187,8 @@ class CollectionsCleaning
 				return $this->multimedia_scifi();
 			case 'alt.binaries.music':
 				return $this->music();
+            case 'alt.binaries.music.mp3':
+                return $this->music_mp3();
 			case 'alt.binaries.pictures.erotica.anime':
 				return $this->pictures_erotica_anime();
 			case 'alt.binaries.ps3':
@@ -1111,6 +1113,9 @@ class CollectionsCleaning
 		//Dark MatterDark Energy S02E06 - "Dark Matter_Dark Energy S02E06 - The Universe - History Channel.part1.rar"  51.0 MBytes yEnc
 		else if (preg_match('/.*"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}")  (\d+[,.]\d+ [kKmMgG][bB]ytes) yEnc$/', $this->subject, $match))
 			return $match[1] . $match[4];
+		//(35/45) - Keating Pt4 - "Keating Pt4.part34.rar" - 1.77 GB - yEnc
+		else if (preg_match('/\(\d+\/(\d+\) - .+) - "(.+?)' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] - yEnc$/', $this->subject, $match))
+			return $match[1];
 		else
 			return $this->generic();
 	}
@@ -1999,6 +2004,12 @@ class CollectionsCleaning
 		//DJ Neev - HedKandi_2013-06-08 (Ministry of Sound Radio) [01/13] - "DJ Neev - HedKandi_2013-06-08 (Ministry of Sound Radio).par2" yEnc
 		else if (preg_match('/^([a-zA-Z0-9 -_\(\)\.]+) \[\d+(\/| of )(\d+\])[-_ ]{0,3}".+?' . $this->e1, $this->subject, $match))
 			return $match[1] . $match[3];
+        //(www.Thunder-News.org) >Dee_And_Crane-Let_The_Music_Play-WEB-2012-UKHx< <Sponsored by Secretusenet> - "05-dee_and_crane-let_the_music_play_(jay_frogs_keep_the_groove_remix_edit).mp3" yEnc
+        else if (preg_match('/^\(www\.Thunder-News\.org\) >(.+?)< <Sponsored by Secretusenet> - ".+?' . $this->e1, $this->subject, $match))
+            return $match[1];
+        //VA 200 NRJ 2014 CD2 mp3_320kbps[18/27]VA 200 NRJ 2014 CD2 mp3_320kbps"(217) [Capital Cities] Safe And Sound.mp3"  yEnc
+        else if (preg_match('/^.+\[\d+\/(\d+\].+)"(.+?)' . $this->e0 . '  yEnc$/', $this->subject, $match))
+            return $match[1];
 		else
 			return $this->generic();
 	}
@@ -2129,7 +2140,41 @@ class CollectionsCleaning
 			return $this->generic();
 	}
 
-	// a.b.ps3
+    // a.b.music.mp3
+    public function music_mp3()
+    {
+        //(00/20]  Nomadi - Terzo Tempo (2012) "Nomadi - Terzo Tempo (2012).nzb" - nightsteff  yEnc
+        if (preg_match('/^[\(\[]\d+\/(\d+[\]\)][ -]{0,3}.+) ".+?' . $this->e0 . '[ -]{0,3}nightsteff  yEnc$/', $this->subject, $match))
+            return $match[1];
+        //(????) [19/22] - C.K.N. Demo 85  "19-rotten system.mp3" yEnc
+        else if (preg_match('/^\(\?+\) \[\d+\/(\d+\][ -]{0,3}.+)  ".+?' . $this->e1, $this->subject, $match))
+            return $match[1];
+        //(BierbauchFreddy Quwinn seine grÃ¶Ãten Coversongs Vol2) [22/60] - "040c - Freddy Quinn - Don't Forbid Me (1957) (NH 22 639, EPH 20 575).mp3" yEnc
+        else if (preg_match('/^\((.+)\) \[\d+\/(\d+\])[ -]{0,3}".+?' . $this->e1, $this->subject, $match))
+            return $match[1].$match[2];
+        //[ Spectrum (ft. Matthew Koma) (Extended Mix) - Zedd ] - [2012] - [256 Kbps MP3] [1 of 7] "Spectrum (ft. Matthew Koma) [Extended Mix].mp3" yEnc
+        else if (preg_match('/^\[ (.+) \] - \[\d+\] - \[\d+ Kbps MP3\] \[\d+ of (\d+\]) ".+?' . $this->e1, $this->subject, $match))
+            return $match[1].$match[2];
+        //[1/1] - (150 MP3 Album Charts) - "Atlantean Kodex - The White Goddess.rar"  yEnc
+        //[1/1] - (MP3 Album Charts) - "Black Sabbath - 13.rar"  yEnc
+        //[1/1] - (Top100 Album Charts) - "Bastille - Pompeii.rar"  yEnc
+        //[1/1] - (Top100 Charts) - "Beatrice Egli - Gluecksgefuehle.rar"  yEnc
+        else if (preg_match('/^\[\d+\/(\d+\][ -]{0,3}\(((Top)?\d+ )?(MP3 )?(Album )?Charts\)[ -]{0,3}".+?)' . $this->e0 . '  yEnc$/', $this->subject, $match))
+            return $match[1];
+        //[1/1] - Album Top 100 - "Amy MacDonald - Life In A Beautiful Light.rar"  yEnc
+        //[1/1] - Top 100 Album Charts 2012 - "Cro - Einmal Um Die Welt.rar"  yEnc
+        else if (preg_match('/^\[\d+\/(\d+\][ -]{0,3}(Album )?Top \d+( Album Charts \d+)?[ -]{0,3}".+?)' . $this->e0 . '  yEnc$/', $this->subject, $match))
+            return $match[1];
+        //[1/1] (Album Top 100 - 2012) - "Cro - Einmal Um Die Welt.rar"  yEnc
+        //[1/1] (Album Top 100 2012) - "Cro - Einmal Um Die Welt.rar"  yEnc
+        //[1/1] (Album Top 100) - "Cro - Raop.rar"  yEnc
+        else if (preg_match('/^\[\d+\/(\d+\][ -]{0,3}\(Album Top \d+(( -)? \d+)?\)[ -]{0,3}".+?)' . $this->e0 . '  yEnc$/', $this->subject, $match))
+            return $match[1];
+        else
+            return $this->generic();
+    }
+
+    // a.b.ps3
 	public function ps3()
 	{
 		//[4197] [036/103] - "ant-mgstlcd2.r34" yEnc
