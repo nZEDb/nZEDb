@@ -22,11 +22,7 @@ System Administration know-how. nZEDb is not plug-n-play software. Installation 
 
     4GB RAM, 2 cores(threads) and 20GB disk space minimum.
 
-As a general rule of thumb the database will need a minimum of 1-2G buffer RAM for every million releases you intend to store. That RAM should be assigned to either of these two parameters:
-- key_buffer_size			(MyISAM)
-- innodb_buffer_pool_size	(InnoDB)
-
-Use [mysqltuner.pl](http://mysqltuner.pl "MySQL tuner - Use it!") for recommendations for these and other important tuner parameters. Also refer to the project's wiki page: https://github.com/nZEDb/nZEDb/wiki/Database-tuning. This is particularly important before you start any large imports or backfills.
+The overall speed of nZEDb is largely governed by performance of the database. As many of database tables should be held within system RAM as possible. See Database Section below.
 
 If you wish to use more than 5 threads a quad core CPU is beneficial.
 
@@ -36,6 +32,17 @@ If you wish to use more than 5 threads a quad core CPU is beneficial.
     MySQL 5.5+ (Postgres support is Work-In-Progress)
     Python 2.7 or 3.0 (and various modules)
 The installation guides have more detailed software requirements.
+
+## Database
+
+Most (if not all) distributions ship MySQL/Postgress with a default configuration that will perform well on a Raspberry Pi. If you wish to store more that 500K releases, these default setting will quickly lead to poor performance. Expect this. 
+
+As a general rule of thumb the database will need a minimum of 1-2G buffer RAM for every million releases you intend to store. That RAM should be assigned to either of these two parameters:
+- key_buffer_size			(MyISAM)
+- innodb_buffer_pool_size	(InnoDB)
+
+Use [mysqltuner.pl](http://mysqltuner.pl "MySQL tuner - Use it!") for recommendations for these and other important tuner parameters. Also refer to the project's wiki page: https://github.com/nZEDb/nZEDb/wiki/Database-tuning. This is particularly important before you start any large imports or backfills.
+
 
 ## Installation
 
