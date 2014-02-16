@@ -22,9 +22,9 @@ System Administration know-how. nZEDb is not plug-n-play software. Installation 
 
     4GB RAM, 2 cores(threads) and 20GB disk space minimum.
 
-The overall speed of nZEDb is largely governed by performance of the database. As many of database tables should be held within system RAM as possible. See Database Section below.
-
 If you wish to use more than 5 threads a quad core CPU is beneficial.
+
+The overall speed of nZEDb is largely governed by performance of the database. As many of the database tables should be held within system RAM as possible. See Database Section below.
 
 ### Software
 
@@ -42,6 +42,8 @@ As a general rule of thumb the database will need a minimum of 1-2G buffer RAM f
 - innodb_buffer_pool_size	(InnoDB)
 
 Use [mysqltuner.pl](http://mysqltuner.pl "MySQL tuner - Use it!") for recommendations for these and other important tuner parameters. Also refer to the project's wiki page: https://github.com/nZEDb/nZEDb/wiki/Database-tuning. This is particularly important before you start any large imports or backfills.
+
+MySQL is normally shipped using MyISAM tables by default. This is fine for running with one or a few threads and is a good way to start using nZEDb. If using thread counts > 5, or TPG (Table Per Group) mode, or 
 
 
 ## Installation
