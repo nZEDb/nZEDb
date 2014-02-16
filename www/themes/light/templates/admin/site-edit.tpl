@@ -65,6 +65,14 @@
                 </td>
             </tr>
 
+			<tr>
+				<td style="width: 180px;"><label for="coverspath">Cover&apos;s path:</label></td>
+				<td>
+					<input id="coverspath" class="long" name="coverspath" type="text" value="{$coversPath}" />
+					<div class="hint">The absolute path to the place covers will be stored.</div>
+				</td>
+			</tr>
+
             <tr>
                 <td style="width:180px;"><label for="codename">Code Name:</label></td>
                 <td>
