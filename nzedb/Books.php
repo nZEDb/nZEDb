@@ -109,7 +109,7 @@ class Books
 
 		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r "
 				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' "
-				. "WHERE (r.nzbstatus = 1 AND  r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') "
+				. "WHERE r.nzbstatus = 1 AND  r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') "
 				. "AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
 		return $res['num'];
 	}
@@ -183,7 +183,7 @@ class Books
 				. "LEFT OUTER JOIN groups ON groups.id = r.groupid "
 				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid "
-				. "WHERE (r.nzbstatus = 1 AND boo.cover = 1 AND boo.title != '' AND "
+				. "WHERE r.nzbstatus = 1 AND boo.cover = 1 AND boo.title != '' AND "
 				. "r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s "
 				. "GROUP BY boo.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
 		} else {
