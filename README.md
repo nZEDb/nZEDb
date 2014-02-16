@@ -33,7 +33,7 @@ If you wish to use more than 5 threads a quad core CPU is beneficial.
     Python 2.7 or 3.0 (and various modules)
 The installation guides have more detailed software requirements.
 
-## Database
+### Database
 
 Most (if not all) distributions ship MySQL/Postgress with a default configuration that will perform well on a Raspberry Pi. If you wish to store more that 500K releases, these default setting will quickly lead to poor performance. Expect this. 
 
