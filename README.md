@@ -35,7 +35,7 @@ The installation guides have more detailed software requirements.
 
 ### Database
 
-Most (if not all) distributions ship MySQL/Postgress with a default configuration that will perform well on a Raspberry Pi. If you wish to store more that 500K releases, these default setting will quickly lead to poor performance. Expect this. 
+Most (if not all) distributions ship MySQL/Postgres with a default configuration that will perform well on a Raspberry Pi. If you wish to store more that 500K releases, these default setting will quickly lead to poor performance. Expect this. 
 
 As a general rule of thumb the database will need a minimum of 1-2G buffer RAM for every million releases you intend to store. That RAM should be assigned to either of these two parameters:
 - key_buffer_size			(MyISAM)
