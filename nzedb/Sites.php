@@ -1,5 +1,5 @@
 <?php
-require_once realpath(__DIR__ . 'Util.php');
+require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Util.php');
 
 class Sites
 {
