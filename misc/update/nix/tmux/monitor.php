@@ -391,6 +391,7 @@ if ($show_query == 1) {
 $monitor = 30;
 $i = 1;
 $fcfirstrun = true;
+$time08 = TIME();
 while ($i > 0) {
 	//kill mediainfo and ffmpeg if exceeds 60 sec
 	shell_exec("killall -o 60s -9 mediainfo 2>&1 1> /dev/null");
@@ -403,9 +404,8 @@ while ($i > 0) {
 	}
 
 	// Ananlyze tables every 60 min
-	$time08 = TIME();
-	printf($c->info("\nAnalyzing your tables to refresh your indexes."));
 	if ($i == 1 || (TIME() - $time08 >= 3600)) {
+		printf($c->info("\nAnalyzing your tables to refresh your indexes."));
 		$db->optimise(true, 'analyze');
 		$time08 = TIME();
 	}
