@@ -123,6 +123,8 @@ $page->smarty->assign('lookupmusic_names', array('Disabled', 'Lookup All Music',
 $page->smarty->assign('lookup_reqids_ids', array(0,1,2));
 $page->smarty->assign('lookup_reqids_names', array('Disabled', 'Lookup Request IDs', 'Lookup Request IDs Threaded'));
 
+$page->smarty->assign('coversPath', nZEDb_COVERS);
+
 // return a list of audiobooks, ebooks, technical and foreign books
 $db = new DB();
 $result = $db->query("SELECT id, title FROM category WHERE id in (3030, 8010, 8040, 8060)");
