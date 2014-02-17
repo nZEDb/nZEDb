@@ -1,4 +1,5 @@
 <?php
+require_once realpath(__DIR__ . 'Util.php');
 
 class Sites
 {
@@ -138,11 +139,9 @@ GNU General Public License for more details.
 
 	public function setCovers()
 	{
-		if (!defined('nZEDb_COVERS')) {
-			$row = $this->db->query("SELECT value FROM site WHERE setting = 'coverspath'");
-			define('nZEDb_COVERS', $row[0]['value'] == '' ? nZEDb_WWW . 'covers' . DS : $row[0]['value']);
-		}
-
+		$row = $this->db->query("SELECT value FROM site WHERE setting = 'coverspath'");
+		Util::setCoversConstant($row[0]['value']);
 	}
 }
+
 ?>
