@@ -5,17 +5,17 @@ $db = new DB();
 $covers = $updated = $deleted = 0;
 $c = new ColorCLI();
 
-$row = $db->queryDirect("SELECT value FROM site WHERE setting = 'coverspath'");
-if ($row) {
-	Util::setCoversConstant($row[0]['value']);
-} else {
-	die("Unable to set Covers' constant!\n");
-}
-$path2covers = nZEDb_COVERS . 'books' . DS;
-
 if ($argc == 1 || $argv[1] != 'true') {
     exit($c->error("\nThis script will check all images in covers/book and compare to db->bookinfo.\nTo run:\nphp $argv[0] true\n"));
 }
+
+$row = $db->queryOneRow("SELECT value FROM site WHERE setting = 'coverspath'");
+if ($row !== false) {
+	Util::setCoversConstant($row['value']);
+} else {
+	die("Unable to set Covers' constant!\n");
+}
+$path2covers = nZEDb_COVERS . 'book' . DS;
 
 $dirItr = new RecursiveDirectoryIterator($path2covers);
 $itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);

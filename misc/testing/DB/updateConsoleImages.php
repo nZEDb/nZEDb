@@ -9,9 +9,9 @@ if ($argc == 1 || $argv[1] != 'true') {
     exit($c->error("\nThis script will check all images in covers/console and compare to db->consoleinfo.\nTo run:\nphp $argv[0] true\n"));
 }
 
-$row = $db->queryDirect("SELECT value FROM site WHERE setting = 'coverspath'");
-if ($row) {
-	Util::setCoversConstant($row[0]['value']);
+$row = $db->queryOneRow("SELECT value FROM site WHERE setting = 'coverspath'");
+if ($row !== false) {
+	Util::setCoversConstant($row['value']);
 } else {
 	die("Unable to set Covers' constant!\n");
 }
