@@ -5,11 +5,19 @@ $db = new DB();
 $covers = $updated = $deleted = 0;
 $c = new ColorCLI();
 
+$row = $db->queryDirect("SELECT value FROM site WHERE setting = 'coverspath'");
+if ($row) {
+	Util::setCoversConstant($row[0]['value']);
+} else {
+	die("Unable to set Covers' constant!\n");
+}
+$path2covers = nZEDb_COVERS . 'movies' . DS;
+
 if ($argc == 1 || $argv[1] != 'true') {
     exit($c->error("\nThis script will check all images in covers/movies and compare to db->movieinfo.\nTo run:\nphp $argv[0] true\n"));
 }
 
-$dirItr = new RecursiveDirectoryIterator(nZEDb_ROOT . 'www/covers/movies/');
+$dirItr = new RecursiveDirectoryIterator($path2covers);
 $itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
 foreach ($itr as $filePath) {
     if (is_file($filePath) && preg_match('/-cover\.jpg/', $filePath)) {
@@ -45,17 +53,17 @@ foreach ($itr as $filePath) {
 
 $qry = $db->queryDirect("SELECT imdbid FROM movieinfo WHERE cover = 1");
 foreach ($qry as $rows) {
-    if (!is_file('/var/www/nZEDb/www/covers/movies/' . $rows['imdbid'] . '-cover.jpg')) {
+    if (!is_file($path2covers . $rows['imdbid'] . '-cover.jpg')) {
         $db->queryDirect("UPDATE movieinfo SET cover = 0 WHERE cover = 1 AND imdbid = " . $rows['imdbid']);
-        echo $c->info('/var/www/nZEDb/www/covers/movies/' . $rows['imdbid'] . "-cover.jpg does not exist.");
+        echo $c->info($path2covers . $rows['imdbid'] . "-cover.jpg does not exist.");
         $deleted++;
     }
 }
 $qry1 = $db->queryDirect("SELECT imdbid FROM movieinfo WHERE backdrop = 1");
 foreach ($qry1 as $rows) {
-    if (!is_file('/var/www/nZEDb/www/covers/movies/' . $rows['imdbid'] . '-backdrop.jpg')) {
+    if (!is_file($path2covers . $rows['imdbid'] . '-backdrop.jpg')) {
         $db->queryDirect("UPDATE movieinfo SET backdrop = 0 WHERE backdrop = 1 AND imdbid = " . $rows['imdbid']);
-        echo $c->info('/var/www/nZEDb/www/covers/movies/' . $rows['imdbid'] . "-backdrop.jpg does not exist.");
+        echo $c->info($path2covers . $rows['imdbid'] . "-backdrop.jpg does not exist.");
         $deleted++;
     }
 }
