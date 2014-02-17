@@ -40,7 +40,7 @@ $qry = $db->queryDirect("SELECT id FROM musicinfo WHERE cover = 1");
 foreach ($qry as $rows) {
     if (!is_file($path2covers . $rows['id'] . '.jpg')) {
         $db->queryDirect("UPDATE musicinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
-        echo $c->info($musiccovers . $rows['id'] . ".jpg does not exist.");
+        echo $c->info($path2covers . $rows['id'] . ".jpg does not exist.");
         $deleted++;
     }
 }
