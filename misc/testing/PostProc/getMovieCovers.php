@@ -20,7 +20,7 @@ foreach ($movies as $mov) {
 	// tmdb limits are 30 per 10 sec, not certain for imdb
 	$diff = floor((microtime(true) - $starttime) * 1000000);
 	if (333333 - $diff > 0) {
-		echo "sleeping\n";
+		echo "\nsleeping\n";
 		usleep(333333 - $diff);
 	}
 }
