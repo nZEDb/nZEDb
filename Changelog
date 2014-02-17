@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-17 -> jonnyboy -> update query to ignore %exes%
 2014-02-16 -> jonnyboy -> fixed monitor and analyzing tables timer
 2014-02-16 -> bart39   -> fixed typo in PreDB.php
                           changed resetSearchnames to 8 characters or less (some tv/book titles are 9 or more)

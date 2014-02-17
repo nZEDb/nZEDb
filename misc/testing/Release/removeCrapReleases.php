@@ -124,7 +124,7 @@ function deleteExecutable($and)
 	if ($db->dbSystem() == 'mysql') {
 		$like = 'LIKE';
 	}
-	$sql = $db->prepare("SELECT r.id, r.guid, r.searchname FROM releases r INNER JOIN releasefiles rf ON rf.releaseid = r.id WHERE rf.name " . $like . " '%.exe%' AND r.categoryid NOT IN (4000, 4010, 4020, 4050, 7010)" . $and);
+	$sql = $db->prepare("SELECT r.id, r.guid, r.searchname FROM releases r INNER JOIN releasefiles rf ON rf.releaseid = r.id WHERE r.searchname NOT " . $like . " '%.exes%' AND rf.name " . $like . " '%.exe%' AND r.categoryid NOT IN (4000, 4010, 4020, 4050, 7010)" . $and);
 	$sql->execute();
 	$delcount = deleteReleases($sql, 'Executable');
 	return $delcount;
