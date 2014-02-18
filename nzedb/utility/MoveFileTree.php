@@ -18,11 +18,10 @@
  * @author niel
  * @copyright 2014 nZEDb
  */
-namespace nzedb\Utility;
+namespace nzedb\utility;
 
 /**
  * Class to move the contents of one directory to another, including subdirectories.
- * It can also move a list (array) of files to a named directory.
  */
 class MoveFileTree
 {
@@ -51,7 +50,8 @@ class MoveFileTree
 			if (count($contents) < 3) {
 				throw new \UnexpectedValueException('Source directory does not contain anything to move.');
 			}
-			$this->_source = substr($source, -1) == DS ? $source : $source . DS;
+			$source = substr($source, -1) == DS ? $source : $source . DS;
+			$this->_source = realpath($source);
 		} else {
 			throw new \UnexpectedValueException("Source value is required! It must be a path to an existing directory\nSource: $source\n");
 		}
@@ -61,12 +61,12 @@ class MoveFileTree
 			$target2 = $target2 . basename($source);
 			if (!file_exists($target2) && $moveSourceBase) {
 				if (mkdir($target2)) {
-					$this->_target = $target2;
+					$this->_target = realpath($target2);
 				} else {
 					throw new \RuntimeException("Could not create '$target2' directory");
 				}
 			} else {
-				$this->_target = $target;
+				$this->_target = realpath($target);
 			}
 		} else {
 			throw new \UnexpectedValueException("Target value is required, it must be be a valid path to a directory\nTarget: $target\n");
@@ -144,8 +144,9 @@ class MoveFileTree
 
 	protected function _moveDir($pattern = '')
 	{
+		$pattern = empty($pattern) ? '*' : $pattern;
 		$filespec = $this->_source . $pattern;
-		$cmd = $this->isWIndows() ? 'move' : 'mv';
+		$cmd = $this->isWIndows() ? 'move /Y' : 'mv';
 		passthru("$cmd $filespec $this->_target", $status);
 		if ($status) {
 			die("Damn, something went wrong!\n");
