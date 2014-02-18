@@ -50,7 +50,7 @@ class GrabNZBs
 			$article = $nntp->getMessages($nzb['groupname'], $arr);
 			if ($nntp->isError($article)) {
 				$nntp->doQuit();
-				$this->site->grabnzbs == '2' ? $nntp->doConnect_A() : $nntp->doConnect();
+				$this->site->grabnzbs == '2' ? $nntp->doConnect(true, true) : $nntp->doConnect();
 				$article = $nntp->getMessages($nzb['groupname'], $arr);
 				if ($nntp->isError($article)) {
 					$nntp->doQuit();
