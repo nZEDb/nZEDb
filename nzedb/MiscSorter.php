@@ -189,7 +189,7 @@ class MiscSorter
 
 		$query = "UPDATE releases SET categoryid = {$cat}, bitwise = ((bitwise & ~16)|16)";
 		if ($name != '') {
-			$query .= ", isrenamed = 1, categorized =1, searchname = " . $this->db->escapeString($name);
+			$query .= ", isrenamed = 1, iscategorized = 1, searchname = " . $this->db->escapeString($name);
 			$name = preg_replace(array('/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'), '', $name);
 			echo $n . $n . $this->c->headerOver("New name:  ") . $this->c->primary($name) .
 			$this->c->headerOver("Old name:  ") . $this->c->primaryOver($release[0]["searchname"]);
