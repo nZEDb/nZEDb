@@ -1,4 +1,5 @@
 <?php
+
 require dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'utilty' . DS . 'CopyFileTree.php';
 
@@ -25,7 +26,7 @@ if (!isset($argv[1])) {
 	$files->copy('*');
 
 	echo "Setting nzbstatus for all releases\n";
-	$db->queryExec("UPDATE releases SET bitwise = (bitwise & ~256)|256");
+	$db->queryExec("UPDATE releases SET nzbstatus = 1");
 
 	system("php $reorg $level $nzbpath");
 }

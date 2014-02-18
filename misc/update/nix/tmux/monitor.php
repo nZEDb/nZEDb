@@ -105,26 +105,26 @@ $qry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, rel
 
 //needs to be processed query
 $proc_work = "SELECT "
-	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv, "
-	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies, "
-	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 257) = 257 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio, "
-	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console, "
-	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND categoryid IN (" . $bookreqids . ") AND bookinfoid IS NULL) AS book, "
-	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256) AS releases, "
-	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND nfostatus = 1) AS nfo, "
-	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (" . $bookreqids . ") AND bookinfoid IS NULL) AS book, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) AS releases, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
 
 $proc_work2 = "SELECT "
-	. "(SELECT COUNT(*) FROM releases r USE INDEX(ix_releases_status), category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
-	. "(SELECT COUNT(*) FROM releases r USE INDEX(ix_releases_status), category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
-	. "(SELECT COUNT(*) FROM releases r USE INDEX(ix_releases_status), category c WHERE (r.bitwise & 256) = 256 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
 	. "(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table, "
 	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
 $proc_work3 = "SELECT "
-	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL ". $request_hours . " HOUR)) AS requestid_inprogress, "
-	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND reqidstatus = 1) AS requestid_matched, "
-	. "(SELECT COUNT(*) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 AND preid IS NOT NULL) AS predb_matched, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrenamed = 0 AND isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $request_hours . " HOUR)) AS requestid_inprogress, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND reqidstatus = 1) AS requestid_matched, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND preid IS NOT NULL) AS predb_matched, "
 	. "(SELECT COUNT(DISTINCT(preid)) FROM releases) AS distinct_predb_matched, "
 	. "(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
 
@@ -137,7 +137,7 @@ if ($dbtype == 'mysql') {
 		. "(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date, "
 		. "(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
 		. "(SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre, "
-		. "(SELECT UNIX_TIMESTAMP(adddate) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
+		. "(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
 		. "(SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
 } else if ($dbtype == 'pgsql') {
 	$split_query = "SELECT "
@@ -147,7 +147,7 @@ if ($dbtype == 'mysql') {
 		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM site WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date, "
 		. "(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
 		. "(SELECT extract(epoch FROM adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre, "
-		. "(SELECT extract(epoch FROM adddate) FROM releases USE INDEX(ix_releases_status) WHERE (bitwise & 256) = 256 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
+		. "(SELECT extract(epoch FROM adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
 		. "(SELECT extract(epoch FROM dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
 }
 
@@ -219,7 +219,8 @@ function microtime_float()
 function decodeSize($bytes)
 {
 	$types = array('B', 'KB', 'MB', 'GB', 'TB');
-	for ($i = 0; $bytes >= 1024 && $i < (count($types) - 1); $bytes /= 1024, $i++);
+	for ($i = 0; $bytes >= 1024 && $i < (count($types) - 1); $bytes /= 1024, $i++)
+		;
 	return(round($bytes, 2) . " " . $types[$i]);
 }
 
@@ -304,7 +305,7 @@ $oldestcollection = TIME();
 $oldestnzb = TIME();
 
 $active_groups = $all_groups = $running = 0;
-$backfilldays = $backfill_groups_date = $colors_exc =0;
+$backfilldays = $backfill_groups_date = $colors_exc = 0;
 $book_diff = $book_percent = $book_releases_now = $book_releases_proc = 0;
 $console_diff = $console_percent = $console_releases_now = $console_releases_proc = 0;
 $misc_diff = $misc_percent = $misc_releases_now = $work_start = $compressed = 0;
@@ -312,7 +313,7 @@ $music_diff = $music_percent = $music_releases_proc = $music_releases_now = 0;
 $movie_diff = $movie_percent = $movie_releases_now = $movie_releases_proc = 0;
 $nfo_diff = $nfo_percent = $nfo_remaining_now = $nfo_now = $tvrage_releases_proc_start = 0;
 $pc_diff = $pc_percent = $pc_releases_now = $pc_releases_proc = $book_releases_proc_start = 0;
-$pre_diff = $pre_percent = $predb_matched = $predb_start = $predb = $distinct_predb_matched =0;
+$pre_diff = $pre_percent = $predb_matched = $predb_start = $predb = $distinct_predb_matched = 0;
 $pron_diff = $pron_remaining_start = $pron_remaining_now = $pron_start = $pron_percent = $pron_releases_now = 0;
 $nfo_remaining_start = $work_remaining_start = $releases_start = $releases_now = $releases_since_start = 0;
 $request_percent = $requestid_inprogress_start = $requestid_inprogress = $requestid_diff = $requestid_matched = 0;
@@ -326,8 +327,8 @@ $init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tp
 $console_releases_proc_start = $movie_releases_proc_start = $show_query = $run_releases = 0;
 $last_history = "";
 
-$mask1 = $c->headerOver("%-18s")." ".$c->tmuxOrange("%-48.48s");
-$mask2 = $c->headerOver("%-20s")." ".$c->tmuxOrange("%-33.33s");
+$mask1 = $c->headerOver("%-18s") . " " . $c->tmuxOrange("%-48.48s");
+$mask2 = $c->headerOver("%-20s") . " " . $c->tmuxOrange("%-33.33s");
 $mask3 = $c->header("%-16.16s %25.25s %25.25s");
 $mask4 = $c->primaryOver("%-16.16s") . " " . $c->tmuxOrange("%25.25s %25.25s");
 $mask5 = $c->tmuxOrange("%-16.16s %25.25s %25.25s");
@@ -390,6 +391,7 @@ if ($show_query == 1) {
 $monitor = 30;
 $i = 1;
 $fcfirstrun = true;
+$time08 = TIME();
 while ($i > 0) {
 	//kill mediainfo and ffmpeg if exceeds 60 sec
 	shell_exec("killall -o 60s -9 mediainfo 2>&1 1> /dev/null");
@@ -402,9 +404,8 @@ while ($i > 0) {
 	}
 
 	// Ananlyze tables every 60 min
-	$time08 = TIME();
-	printf($c->info("\nAnalyzing your tables to refresh your indexes."));
 	if ($i == 1 || (TIME() - $time08 >= 3600)) {
+		printf($c->info("\nAnalyzing your tables to refresh your indexes."));
 		$db->optimise(true, 'analyze');
 		$time08 = TIME();
 	}
@@ -744,7 +745,7 @@ while ($i > 0) {
 		$show_query = $proc_tmux_result[0]['show_query'];
 	}
 	if ($proc_tmux_result[0]['is_running'] != NULL) {
-		$running = (int)$proc_tmux_result[0]['is_running'];
+		$running = (int) $proc_tmux_result[0]['is_running'];
 	}
 
 	if ($split_result[0]['oldestnzb'] != NULL) {
@@ -928,24 +929,24 @@ while ($i > 0) {
 			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port));
 			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $port_a . " | grep -c ESTAB"));
 			$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port_a));
-        }
+		}
 		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a) {
-			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep ". $ip . " | grep -c ESTAB"));
+			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . " | grep -c ESTAB"));
 			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip));
-			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep ". $ip . " | grep -c ESTAB"));
-			$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c ". $ip));
+			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . " | grep -c ESTAB"));
+			$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip));
 		}
 	} else {
-        $usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
-        $usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":" . $port));
-        if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0) {
-            $usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":https | grep -c ESTAB"));
-            $usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":https"));
-        }
-        if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0) {
-            $usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $port . " | grep -c ESTAB"));
-            $usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port));
-        }
+		$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
+		$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":" . $port));
+		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0) {
+			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":https | grep -c ESTAB"));
+			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":https"));
+		}
+		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0) {
+			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $port . " | grep -c ESTAB"));
+			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port));
+		}
 		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0) {
 			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . " | grep -c ESTAB"));
 			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip));
@@ -953,16 +954,15 @@ while ($i > 0) {
 	}
 
 	if ($compressed === '1') {
-		$mask2 = $c->headerOver("%-20s")." ".$c->tmuxOrange("%-33.33s");
+		$mask2 = $c->headerOver("%-20s") . " " . $c->tmuxOrange("%-33.33s");
 	} else {
-		$mask2 = $c->alternateOver("%-20s")." ".$c->tmuxOrange("%-33.33s");
+		$mask2 = $c->alternateOver("%-20s") . " " . $c->tmuxOrange("%-33.33s");
 	}
 
 	//update display
 	passthru('clear');
 	//printf("\033[1;31m First insert:\033[0m ".relativeTime("$firstdate")."\n");
-	if ($running == 1)
-	{
+	if ($running == 1) {
 		printf($mask2, "Monitor Running v$version [" . $patch . "]: ", relativeTime("$time"));
 	} else {
 		printf($mask2, "Monitor Off v$version [" . $patch . "]: ", relativeTime("$time"));

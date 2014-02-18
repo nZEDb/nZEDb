@@ -564,7 +564,12 @@ CREATE TABLE "releases" (
   "audiostatus" smallint DEFAULT 0 NOT NULL,
   "dehashstatus" smallint DEFAULT 0 NOT NULL,
   "reqidstatus" smallint DEFAULT 0 NOT NULL,
-  "nzb_guid" character varying(50)
+  "nzb_guid" character varying(50),
+  "nzbstatus" BOOLEAN DEFAULT FALSE,
+  "iscategorized" BOOLEAN DEFAULT FALSE,
+  "isrenamed" BOOLEAN DEFAULT FALSE,
+  "ishashed" BOOLEAN DEFAULT FALSE,
+  "isrequestid" BOOLEAN DEFAULT FALSE
 )
 WITHOUT OIDS;
 

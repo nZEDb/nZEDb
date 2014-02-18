@@ -63,14 +63,15 @@ if ($innodb['recommended_innodb_buffer_pool_size'] === null) {
 // Get current variables
 $aa = $db->queryOneRow("SHOW VARIABLES WHERE Variable_name = 'key_buffer_size'");
 $bb = $db->queryOneRow("SHOW VARIABLES WHERE Variable_name = 'innodb_buffer_pool_size'");
-if ($aa >= 1073741824) {
+
+if ($aa['value'] >= 1073741824) {
 	$current_a = $aa['value'] / 1024 / 1024 / 1024;
 	$current_a .= "G";
 } else {
 	$current_a = $aa['value'] / 1024 / 1024;
 	$current_a .= "M";
 }
-if ($bb >= 1073741824) {
+if ($bb['value'] >= 1073741824) {
 	$current_b = $bb['value'] / 1024 / 1024 / 1024;
 	$current_b .= "G";
 } else {
