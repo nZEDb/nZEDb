@@ -49,9 +49,9 @@ if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" a
 	sys.exit()
 
 if len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "clean":
-	clean = " nzbstatus = 1 AND (bitwise & 128) = 128 "
+	clean = " isrenamed = 0 AND (bitwise & 128) = 128 "
 elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "clean":
-	clean = " nzbstatus = 1 AND (bitwise & 192) = 192 "
+	clean = " isrenamed = 0 AND (bitwise & 192) = 192 "
 elif len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "preid":
 	clean = " preid IS NULL "
 elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "preid":
@@ -59,7 +59,7 @@ elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "preid":
 elif len(sys.argv) == 3 and sys.argv[1] == "filename" and sys.argv[2] == "preid":
 	clean = " preid IS NULL "
 else:
-	clean = " (isrenamed = 0 OR categoryid = 7010) "
+	clean = " isrenamed = 0 "
 
 print(bcolors.HEADER + "\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
@@ -76,7 +76,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "nfo":
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
-	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND (bitwise & 16) = 0 AND (isrenamed = 0 OR categoryid = 7010) ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND (bitwise & 16) = 0 AND isrenamed = 0 ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
