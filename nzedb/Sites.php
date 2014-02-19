@@ -1,6 +1,5 @@
 <?php
 require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Util.php');
-require_once nZEDb_ROOT . '_build' . DS . 'Versions.php';
 
 class Sites
 {
@@ -24,7 +23,7 @@ class Sites
 	public function __construct()
 	{
 		$this->_db = new DB();
-		$this->_versions = new Versions();
+		$this->_versions = new \nzedb\utility\Versions();
 		$this->setCovers();
 	}
 
