@@ -36,11 +36,6 @@ class Versions
 	protected $_filespec;
 
 	/**
-	 * @var object Sites/Settings
-	 */
-	protected $_settings;
-
-	/**
 	 * Shortcut to the nzedb->versions node to make method work shorter.
 	 * @var object SimpleXMLElement
 	 */
@@ -83,9 +78,6 @@ class Versions
 		} else {
 			exit("No elements in file!\n");
 		}
-
-		$s = new Sites();
-		$this->_settings = $s->get();
 	}
 
 	public function changes()
@@ -113,10 +105,13 @@ class Versions
 	 */
 	public function checkDb($update = true)
 	{
-		if ($this->_vers->db < $this->_settings->sqlpatch) {
+		$s = new Sites();
+		$settings = $s->get();
+
+		if ($this->_vers->db < $settings->sqlpatch) {
 			if ($update) {
-				echo $this->out->primary("Updating Db revision to " . $this->_settings->sqlpatch);
-				$this->_vers->db = $this->_settings->sqlpatch;
+				echo $this->out->primary("Updating Db revision to " . $settings->sqlpatch);
+				$this->_vers->db = $settings->sqlpatch;
 				$this->_changes |= self::UPDATED_DB_REVISION;
 			}
 			return $this->_vers->db;
