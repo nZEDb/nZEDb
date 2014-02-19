@@ -14,7 +14,7 @@
 spl_autoload_register(function ($class) {
 
     // project-specific namespace prefix
-    $prefix = 'nzedb\\lib\\';
+    $prefix = '\\nzedb\\';
 
     // base directory for the namespace prefix
     $base_dir = __DIR__ . DIRECTORY_SEPARATOR;
