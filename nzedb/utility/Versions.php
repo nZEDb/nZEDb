@@ -59,10 +59,10 @@ class Versions
 		$this->_filespec = $filepath;
 
 		$this->out = new \ColorCLI();
-		$this->_xml = @new SimpleXMLElement($filepath, 0, true);
+		$this->_xml = @new \SimpleXMLElement($filepath, 0, true);
 		if ($this->_xml === false) {
 			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
-			throw new Exception("Failed to open versions XML file '$filename'");
+			throw new \Exception("Failed to open versions XML file '$filename'");
 		}
 
 		if ($this->_xml->count() > 0) {
@@ -70,7 +70,7 @@ class Versions
 
 			if ($vers[0]->count() == 0) {
 				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) does not contain versioning info, try updating from git.");
-				throw new Exception("Failed to find versions node in XML file '$filename'");
+				throw new \Exception("Failed to find versions node in XML file '$filename'");
 			} else {
 				$this->out->primary("Your versioning XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
 				$this->_vers = &$this->_xml->versions;
@@ -105,7 +105,7 @@ class Versions
 	 */
 	public function checkDb($update = true)
 	{
-		$s = new Sites();
+		$s = new \nzedb\Sites();
 		$settings = $s->get();
 
 		if ($this->_vers->db < $settings->sqlpatch) {
