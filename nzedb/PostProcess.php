@@ -190,7 +190,7 @@ class PostProcess
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 		if ($nntp->isError($par2)) {
 			$nntp->doQuit();
-			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+			$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 			$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
 			if ($nntp->isError($par2)) {
 				$nntp->doQuit();
@@ -581,7 +581,7 @@ class PostProcess
 								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 								if ($nntp->isError($fetchedBinary)) {
 									$nntp->doQuit();
-									$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+									$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 									$fetchedBinary = $nntp->getMessages($bingroup, $mid);
 									if ($nntp->isError($fetchedBinary)) {
 										$fetchedBinary = false;
@@ -715,7 +715,7 @@ class PostProcess
 							$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
 							if ($nntp->isError($sampleBinary)) {
 								$nntp->doQuit();
-								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+								$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 								$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
 								if ($nntp->isError($sampleBinary))
 									$sampleBinary = false;
@@ -748,7 +748,7 @@ class PostProcess
 							$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
 							if ($nntp->isError($mediaBinary)) {
 								$nntp->doQuit();
-								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+								$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 								$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
 								if ($nntp->isError($mediaBinary))
 									$mediaBinary = false;
@@ -780,7 +780,7 @@ class PostProcess
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
 					if ($nntp->isError($audioBinary)) {
 						$nntp->doQuit();
-						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+						$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 						$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
 						if ($nntp->isError($audioBinary))
 							$audioBinary = false;
@@ -804,7 +804,7 @@ class PostProcess
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
 					if ($nntp->isError($jpgBinary)) {
 						$nntp->doQuit();
-						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+						$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 						$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
 						if ($nntp->isError($jpgBinary))
 							$jpgBinary = false;
