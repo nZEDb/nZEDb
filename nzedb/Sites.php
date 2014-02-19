@@ -1,5 +1,6 @@
 <?php
 require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Util.php');
+require_once nZEDb_ROOT . '_build' . DS . 'Versions.php';
 
 class Sites
 {
@@ -17,20 +18,24 @@ class Sites
 	const ERR_BADNZBPATH_UNSET = -8;
 	const ERR_BAD_COVERS_PATH = -9;
 
+	protected $_db;
+	protected $_versions;
+
 	public function __construct()
 	{
-		$this->db = new DB();
+		$this->_db = new DB();
+		$this->_versions = new Versions();
 		$this->setCovers();
 	}
 
 	public function version()
 	{
-		return "0.3.0";
+		return $this->_versions->getTagVersion();
 	}
 
 	public function update($form)
 	{
-		$db = $this->db;
+		$db = $this->_db;
 		$site = $this->row2Object($form);
 
 		if (substr($site->nzbpath, strlen($site->nzbpath) - 1) != '/') {
@@ -85,7 +90,7 @@ class Sites
 
 	public function get()
 	{
-		$db = $this->db;
+		$db = $this->_db;
 		$rows = $db->query("SELECT * FROM site");
 
 		if ($rows === false) {
@@ -139,7 +144,7 @@ GNU General Public License for more details.
 
 	public function setCovers()
 	{
-		$row = $this->db->query("SELECT value FROM site WHERE setting = 'coverspath'");
+		$row = $this->_db->query("SELECT value FROM site WHERE setting = 'coverspath'");
 		Util::setCoversConstant($row[0]['value']);
 	}
 }
