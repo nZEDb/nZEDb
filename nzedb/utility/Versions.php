@@ -7,7 +7,7 @@ if (!defined('GIT_PRE_COMMIT')) {
 
 // Only set an argument if calling from bash or MS-DOS batch scripts. Otherwise
 // instantiate the class and use as below.
-if (PHP_SAPI == 'cli' && GIT_PRE_COMMIT === false  &&  $argc > 1 && $arv[1] == true) {
+if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && $arv[1] == true) {
 	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
