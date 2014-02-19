@@ -11,7 +11,7 @@ class CollectionsCleaning
 		// Extensions.
 		$this->e0 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
 		$this->e1 = $this->e0 . ' yEnc$/';
-		$this->e2 = $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/';
+        $this->e2 = $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/';
 		// this is no longer used so it could be commented out, but I'm only refactoring
 		$this->subject = $this->groupName = '';
 		$this->nofiles = false;
@@ -2136,6 +2136,9 @@ class CollectionsCleaning
 		//[DreamPieter] (Glen Tipton - Two solo albums) [04/23] - "Glenn Tipton - Baptizm of Fire - 04 - Fuel Me Up.mp3" yEnc
 		else if (preg_match('/^\[DreamPieter\] \((.+)\) \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match))
 			return $match[1] . $match[2];
+        //(01/10) "MylÃ¨ne Farmer - Monkey me (2012 Bluray Audio).rar" - 1,56 GB - yEnc
+        else if (preg_match('/^\(\d+\/(\d+\)[ -]{0,3}".+?)' . $this->e2, $this->subject, $match))
+            return $match[1];
 		else
 			return $this->generic();
 	}

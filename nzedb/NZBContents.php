@@ -158,7 +158,7 @@ Class NZBContents
 			$fetchedBinary = $nntp->getMessage($groupName, $messageid);
 			if ($nntp->isError($fetchedBinary)) {
 				$nntp->doQuit();
-				$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+				$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 				$fetchedBinary = $nntp->getMessage($groupName, $messageid);
 				if ($nntp->isError($fetchedBinary)) {
 					$fetchedBinary = false;
@@ -193,7 +193,7 @@ Class NZBContents
 						$possibleNFO = $nntp->getMessage($groupName, $messageid);
 						if ($nntp->isError($possibleNFO)) {
 							$nntp->doQuit();
-							$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+							$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 							$possibleNFO = $nntp->getMessage($groupName, $messageid);
 							if ($nntp->isError($possibleNFO)) {
 								$nntp->doQuit();
