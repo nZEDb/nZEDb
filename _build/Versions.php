@@ -190,6 +190,16 @@ class Versions
 	}
  */
 
+	public function getSQLVersion()
+	{
+		return $this->_vers->db;
+	}
+
+	public function getTagVersion()
+	{
+		return $this->_vers->git->tag;
+	}
+
 	/**
 	 * Check whether the XML has been changed by one of the methods here.
 	 * @return boolean True if the XML has been changed.
