@@ -11,8 +11,8 @@ class ReleaseCleaning
     {
         // Extensions.
         $this->e0 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
-        $this->e1 = $this->e0 . ' yEnc$/';
-        $this->e2 = $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB] yEnc$/';
+        $this->e1 = $this->e0 . '[- ]{0,3}yEnc$/';
+        $this->e2 = $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/';
         $this->subject = '';
         // this is no longer used so it could be commented out, but I'm only refactoring
         $this->nofiles = false;
@@ -753,6 +753,21 @@ class ReleaseCleaning
             return $match[1];
         } //Vera.3x03.Young.Gods.720p.HDTV.x264-FoV - "vera.3x03.young_gods.720p_hdtv_x264-fov.r00" yEnc
         else if (preg_match('/^[a-zA-Z0-9-\.]+ - "(.+?)' . $this->e1, $this->subject, $match)) {
+            return $match[1];
+        } //Heartbeat 9x23 Wise Guys.avi.015  yEnc
+        else if (preg_match('/^(.+ \d+x\d+.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})  yEnc$/', $this->subject, $match)) {
+            return $match[1];
+        } //Minder S10E10 [00/52] - "S10E10.nzb" yEnc
+        else if (preg_match('/^(.+ S\d+E\d+)[-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"(.+?)' . $this->e1, $this->subject, $match)) {
+            return $match[1];
+        } //Rosemary & Thyme.106..The Tree of Death....Read txt file for more info about this posting - File 03 of 51 - "Rosemary & Thyme.106.The Tree of Death.part01.rar" yEnc
+        else if (preg_match('/^.+File \d+ of \d+ - "(.+?)' . $this->e1, $this->subject, $match)) {
+            return $match[1];
+        } //The.Tudors.S01E04.2007.720p[33/57] - "The.Tudors.S01E04.2007.720p.part31.rar" yEnc
+        else if (preg_match('/^.+\[\d+\/\d+\] - "(.+?)' . $this->e1, $this->subject, $match)) {
+            return $match[1];
+        } //Happy_Halloween_The Ice House (1978).par2  yEnc
+        else if (preg_match('/^(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})  yEnc$/', $this->subject, $match)) {
             return $match[1];
         } else {
             return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
@@ -1509,6 +1524,32 @@ class ReleaseCleaning
         } //[2/4] Graham Masterton - Descendant.mobi
         else if (preg_match('/^\[\d+\/(\d+\]) (.+?)\.(txt|pdf|mobi|epub|azw)/', $this->subject, $match)) {
             return $match[2];
+        } //14. Alexander Kent - [Bolitho 12] - Signal Close Action (v2.0) (epub).epubAs Req Alexander Kent  yEnc
+        //22.The Darkening Sea - Alexander Kent.epubAs Req Alexander Kent  yEnc
+        else if (preg_match('/^\d+\. {0,1}(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})As Req.+yEnc$/i', $this->subject, $match)) {
+            return $match[1];
+        } //reposting 2012-10-31 new ebooks with 35.74 pars - AD&D - [Tomes] - The Rod of Seven Parts - Douglas Niles (mobi).rar  yEnc
+        else if (preg_match('/^reposting \d+-\d+-\d+ new ebooks.+ pars[- ]{0,3}(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})  yEnc$/i', $this->subject, $match)) {
+            return $match[1];
+        } //15 - Men at Arms.pdf  yEnc
+        else if (preg_match('/^\d+ - (.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})  yEnc$/i', $this->subject, $match)) {
+            return $match[1];
+        } //Filling Req for Delderfield- To Serve Them All My Days - R F Delderfield.mobi [6/6] -  yEnc
+        //Filling Request - Armistead Maupin - 1 - Tales of the City.mobi [1/8] -  yEnc
+        else if (preg_match('/^Filling Req(uest)?( for \w+)?[- ]{0,3}(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) \[\d+\/\d+\] -  yEnc$/i', $this->subject, $match)) {
+            return $match[3];
+        } //ATTN:Fozz E Bear Rogue - Danielle Steel.epub  yEnc
+        else if (preg_match('/^ATTN:Fozz E Bear (.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})  yEnc$/i', $this->subject, $match)) {
+            return $match[1];
+        } //As Requested - Silent Spring - Rachel Carson.epub [1/2] -  yEnc
+        else if (preg_match('/^As Requested - (.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) \[\d+\/\d+\] -  yEnc$/i', $this->subject, $match)) {
+            return $match[1];
+        } //Attn: fastpiety - your requests - Countess of Carnarvon - Lady Almina and the Real Downton Abbey- The Lost Legacy of Highclere Castle (epub).epub [1/1] -  yEnc
+        else if (preg_match('/^Attn: fastpiety - your requests[- ]{0,3}(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) \[\d+\/\d+\] -  yEnc$/i', $this->subject, $match)) {
+            return $match[1];
+        } //Amanda Ashley - [Night 02] - Night's Touch (v5.0) (epub).epub  yEnc
+        else if (preg_match('/^(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})  yEnc$/i', $this->subject, $match)) {
+            return $match[1];
         } else {
             return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
         }
@@ -2427,6 +2468,12 @@ class ReleaseCleaning
         } //(80's Disco-Soul-Funk) [136/426] - ["Level 42 - Lessons In Love.mp3"] yEnc
         else if (preg_match('/^\((.+)\) \[\d+\/\d+\] - \[".+?' . $this->e0 . '\] yEnc$/', $this->subject, $match)) {
             return $match[1];
+        } //(????) [001/153] - "C4 House Party Horse Meat Disco Set 6.nfo" C4 House Party Horse Meat Disco Set 6 yEnc
+        else if (preg_match('/^\(\?+\) \[\d+\/\d+\][ -]{0,3}"(.+?)' . $this->e0 . '.+yEnc$/', $this->subject, $match)) {
+            return $match[1];
+        } //(????) [19/22] - C.K.N. Demo 85  "19-rotten system.mp3" yEnc
+        else if (preg_match('/^\(\?+\) \[\d+\/\d+\][ -]{0,3}(.+)[ -]{0,3}".+?' . $this->e0 . '.+yEnc$/', $this->subject, $match)) {
+            return $match[1];
         } //(Jungle Fever Tapepacks) [67/79] - "Jungle Fever Tapepacks.part65.rar" yEnc
         else if (preg_match('/^\((.+)\) \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
             return $match[1];
@@ -2437,16 +2484,30 @@ class ReleaseCleaning
         else if (preg_match('/^\[DreamPieter\] \((.+)\) \[\d+\/\d+\] - ".+?' . $this->e1, $this->subject, $match)) {
             return $match[1];
         } //<<< <ghost-of-usenet.org> <"Dream Dance Vol. 21-30 - 20CDs MP3 - Ghost.part20.rar"> >www.SSL-News.info<  - (22/32) - 2,45 GB yEnc
-        else if (preg_match('/^.+ghost-of-usenet\.org> <"(.+?)' . $this->e0 . '> >www\.SSL-News\.info<  - \(\d+\/\d+\) - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $this->subject, $match)) {
-            return $match[1];
-        } //(????) [001/153] - "C4 House Party Horse Meat Disco Set 6.nfo" C4 House Party Horse Meat Disco Set 6 yEnc
-        else if (preg_match('/^\(\?+\) \[\d+\/\d+\][ -]{0,3}"(.+?)' . $this->e0 . '.+yEnc$/', $this->subject, $match)) {
-            return $match[1];
-        } //(????) [19/22] - C.K.N. Demo 85  "19-rotten system.mp3" yEnc
-        else if (preg_match('/^\(\?+\) \[\d+\/\d+\][ -]{0,3}(.+)[ -]{0,3}".+?' . $this->e0 . '.+yEnc$/', $this->subject, $match)) {
+        else if (preg_match('/^.+ghost-of-usenet\.org.+"(.+?)' . $this->e0 . '> >www\.SSL-News\.info<  - \(\d+\/\d+\) - \d+[.,]\d+ [kKmMgG][bB] yEnc$/', $this->subject, $match)) {
             return $match[1];
         } //"8 Wenn ich einmal gross bin .mp3" Koelschefetz postet.Die Filue -Immer Wigger  yEnc
         else if (preg_match('/^"(.+?)' . $this->e0 . '.+yEnc$/', $this->subject, $match)) {
+            return $match[1];
+        } //(01/10) "MylÃ¨ne Farmer - Monkey me (2012 Bluray Audio).rar" - 1,56 GB - yEnc
+        //(3/7) "DJ Taz3 - Your Choice Sendung Silvester 2012.mp3.vol00+01.PAR2" - 119,50 MB -RadioShows und Livesets yEnc
+        else if (preg_match('/^\(\d+\/\d+\)[ -]{0,3}"(.+?)' . $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}.+yEnc$/', $this->subject, $match)) {
+            return $match[1];
+        } //[00/20]  Nomadi - Terzo Tempo (2012) "Nomadi - Terzo Tempo (2012).nzb" - nightsteff  yEnc
+        //[02/56] - The Beatles - The Decca Tapes "Beatles - The Decca Tapes.part01.rar" yEnc
+        else if (preg_match('/^[\(\[]\d+\/\d+[\]\)][ -]{0,3}(.+) ".+?' . $this->e0 . '([ -]{0,3}nightsteff)?[ -]{0,3}yEnc$/', $this->subject, $match)) {
+            return $match[1];
+        } //[Marillion - Live From Cadogan Hall 2011 (DVD 1)] [981/98] - "Marillion - Live From Cadogan Hall 2011 (DVD 1).par2" yEnc
+        else if (preg_match('/^\[.+\] \[\d+\/\d+\] - "(.+?)' . $this->e1, $this->subject, $match)) {
+            return $match[1];
+        } //XTC - NMR - 2001 - Homegrown - The Wasp Star Home Demos [22 of 34] "2001 - Homegrown - The Wasp Star Home Demos.vol00+01.PAR2" yEnc
+        else if (preg_match('/^.+ \[\d+ of \d+\] "(.+?)' . $this->e1, $this->subject, $match)) {
+            return $match[1];
+        } //Wendy O Williams Bump n Grind - "Wendy.O.Williams.Bump.n.Grind.nfo"  yEnc
+        else if (preg_match('/^.+[ -]{0,3}"(.+?)' . $this->e1, $this->subject, $match)) {
+            return $match[1];
+        } //The Amity Affliction - Chasing Ghosts_lossless (01/11) - "The Amity Affliction - Chasing Ghosts_lossless.par2" - 321,40 MB - codari_4_usenetrevolution.info-Partner of SSL-News yEnc
+        else if (preg_match('/^.+ \(\d+\/\d+\) - "(.+?)' . $this->e0 . ' - \d+[.,]\d+ [kKmMgG][bB].+yEnc$/', $this->subject, $match)) {
             return $match[1];
         } else {
             return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
@@ -2486,8 +2547,7 @@ class ReleaseCleaning
         //[1/1] (Album Top 100) - "Cro - Raop.rar"  yEnc
         else if (preg_match('/^\[\d+\/\d+\][ -]{0,3}\(Album Top \d+(( -)? \d+)?\)[ -]{0,3}"(.+?)' . $this->e0 . '  yEnc$/', $this->subject, $match)) {
             return $match[3];
-        }
-        //100 Greatest One Hit Wonders 80s[mp3].rar  yEnc
+        } //100 Greatest One Hit Wonders 80s[mp3].rar  yEnc
         else if (preg_match('/^(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})  yEnc$/', $this->subject, $match)) {
             return $match[1];
         } else {
