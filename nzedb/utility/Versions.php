@@ -5,7 +5,9 @@ if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
 }
 
-if (PHP_SAPI == 'cli' && GIT_PRE_COMMIT === false) {
+// Only set an argument if calling from bash or MS-DOS batch scripts. Otherwise
+// instantiate the class and use as below.
+if (PHP_SAPI == 'cli' && GIT_PRE_COMMIT === false  &&  $argc > 1 && $arv[1] == true) {
 	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
@@ -105,7 +107,7 @@ class Versions
 	 */
 	public function checkDb($update = true)
 	{
-		$s = new \nzedb\Sites();
+		$s = new \Sites();
 		$settings = $s->get();
 
 		if ($this->_vers->db < $settings->sqlpatch) {
