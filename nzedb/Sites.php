@@ -17,7 +17,7 @@ class Sites
 	const ERR_BADNZBPATH_UNSET = -8;
 	const ERR_BAD_COVERS_PATH = -9;
 
-	function __construct()
+	public function __construct()
 	{
 		$this->db = new DB();
 		$this->setCovers();
