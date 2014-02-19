@@ -1,5 +1,5 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../www/config.php');
+namespace nzedb\utility;
 
 if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
@@ -58,7 +58,7 @@ class Versions
 		}
 		$this->_filespec = $filepath;
 
-		$this->out = new ColorCLI();
+		$this->out = new \ColorCLI();
 		$this->_xml = @new SimpleXMLElement($filepath, 0, true);
 		if ($this->_xml === false) {
 			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
