@@ -235,6 +235,17 @@
                  dpkg -i libmediainfo0_0.7.67-1_amd64.xUbuntu_13.10.deb
                  dpkg -i mediainfo_0.7.67-1_amd64.Debian_7.0.deb
                  
+      #FFmpeg/Lame  Run the script located here.  https://github.com/jonnyboy/installers/blob/master/compile_ffmpeg.sh  
+       
+       
+7. Install memcache / apc.  
+
+                 sudo apt-get install php-apc
+                 sudo service apache2 restart
+                 sudo cp /usr/share/doc/php-apc/apc.php /var/www/nZEDb/www/admin
+                 
+      # In the future you can go to localhost/admin/apc.php in your browser to view apc stats.
+                 
                  
                  
                  
