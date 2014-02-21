@@ -224,7 +224,17 @@
 6.  Install Unrar/FFmpeg/Mediainfo/Lame  
 
                  sudo apt-get install software-properties-common
-                 sudo apt-get install unrar python-software-properties
+                 sudo apt-get install unrar python-software-properties  
+                 
+    # Mediainfo
+    
+                 wget http://mediaarea.net/download/binary/libzen0/0.4.29/libzen0_0.4.29-1_amd64.xUbuntu_13.10.deb
+                 wget http://mediaarea.net/download/binary/libmediainfo0/0.7.67/libmediainfo0_0.7.67-1_amd64.xUbuntu_13.10.deb
+                 wget http://mediaarea.net/download/binary/mediainfo/0.7.67/mediainfo_0.7.67-1_amd64.Debian_7.0.deb
+                 dpkg -i libzen0_0.4.29-1_amd64.xUbuntu_13.10.deb
+                 dpkg -i libmediainfo0_0.7.67-1_amd64.xUbuntu_13.10.deb
+                 dpkg -i mediainfo_0.7.67-1_amd64.Debian_7.0.deb
+                 
                  
                  
                  
