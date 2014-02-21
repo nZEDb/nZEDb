@@ -154,5 +154,3 @@ class Install
 	}
 
 }
-
-?>

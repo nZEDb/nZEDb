@@ -729,4 +729,3 @@ class Users
 		return $db->queryInsert(sprintf("INSERT INTO userdownloads (userid, timestamp) VALUES (%d, NOW())", $userid));
 	}
 }
-?>

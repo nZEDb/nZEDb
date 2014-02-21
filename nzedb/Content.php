@@ -16,4 +16,3 @@ class Content
 	public $role = '';
 
 }
-?>

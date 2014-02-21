@@ -2136,5 +2136,3 @@ class Releases
 	}
 
 }
-
-?>

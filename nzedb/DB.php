@@ -667,4 +667,3 @@ class Mcached
 		return $this->m->get($this->key($query));
 	}
 }
-?>

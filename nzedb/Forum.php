@@ -104,4 +104,3 @@ class Forum
 			return $db->query(sprintf("SELECT forumpost.*, users.username FROM forumpost LEFT OUTER JOIN users ON users.id = forumpost.userid WHERE userid = %d ORDER BY forumpost.createddate DESC".$limit, $uid));
 		}
 }
-?>

@@ -2640,5 +2640,3 @@ class CollectionsCleaning
 			return false;
 	}
 }
-
-?>
