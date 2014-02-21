@@ -288,7 +288,9 @@
                     sudo chmod 777 /var/www/nZEDb/www/install
                     sudo chmod -R 777 /var/www/nZEDb/nzbfiles  
                     
-  9. Run the installer. 
+9. Run the installer. 
+                    
+  
                  
                  
                  
