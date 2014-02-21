@@ -261,8 +261,34 @@
       
                  sudo nano /var/www/nZEDb/www/config.php
                  
-8. Git clone the nZEDb source.
+8. Git clone the nZEDb source.  
+
+      # If /var/www/ does not exist, create it.
+      
+                 mkdir /var/www/
+                 cd /var/www/
+                 sudo chmod 777 .
                  
+      # Install git.  
+       
+                 sudo apt-get install git
+                 
+      # Clone the git.
+ 
+                 git clone https://github.com/nZEDb/nZEDb.git
+                 
+      # Set the permissions.  
+      
+                 	sudo chmod 777 nZEDb
+                    cd nZEDb
+                    sudo chmod -R 755 .
+                    sudo chmod 777 /var/www/nZEDb/smarty/templates_c
+                    sudo chmod -R 777 /var/www/nZEDb/www/covers
+                    sudo chmod 777 /var/www/nZEDb/www
+                    sudo chmod 777 /var/www/nZEDb/www/install
+                    sudo chmod -R 777 /var/www/nZEDb/nzbfiles  
+                    
+  9. Run the installer. 
                  
                  
                  
