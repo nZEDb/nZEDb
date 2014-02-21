@@ -1309,7 +1309,7 @@ class PostProcess
 		}
 
 		// Make sure the category is music or other->misc.
-		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, groupid FROM releases WHERE (bitwise & 8) = 0 '
+		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, groupid FROM releases WHERE proc_pp = 0 '
 				. 'AND id = %d', $releaseID));
 		if (!preg_match('/^3\d{3}|7010/', $rquer['id'])) {
 			return $retval;
@@ -1341,7 +1341,7 @@ class PostProcess
 										} else {
 											$newcat = $category->determineCategory($newname, $rquer['groupid']);
 										}
-										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, bitwise = ((bitwise & ~8)|8) WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
+										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1 WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
 
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID, $xmlarray);

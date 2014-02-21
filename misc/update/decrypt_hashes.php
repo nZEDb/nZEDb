@@ -47,7 +47,7 @@ function preName($argv)
 				if ($pre !== false) {
 					$determinedcat = $category->determineCategory($pre['title'], $row['groupid']);
 					$result = $db->queryDirect(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-							. "preid = %d, dehashstatus = 1, isrenamed = 1, iscategorized = 1, bitwise = ((bitwise & ~32)|32), searchname = %s, categoryid = %d WHERE id = %d", $pre['id'], $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
+							. "preid = %d, dehashstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s, categoryid = %d WHERE id = %d", $pre['id'], $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
 					if ($result->rowCount() > 0) {
 						if (isset($argv[2]) && $argv[2] === 'show') {
 							$namefixer->updateRelease($row, $pre["title"], $method = "predb md5 release name: " . $pre["source"], 1, "MD5, ", 1, 1);
