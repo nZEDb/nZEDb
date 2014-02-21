@@ -301,9 +301,9 @@ http://localhost/install
       
 11. Start indexing groups.  
 
-      Use scripts in misc/update_scripts (update_binaries to get article headers, update_releases to create releases).  
+      Use scripts in misc/update (update_binaries to get article headers, update_releases to create releases).  
       
-      Use scripts in misc/update_scipts/nix_scripts to automate it.
+      Use scripts in misc/update/nix to automate it.
 
 
                     
