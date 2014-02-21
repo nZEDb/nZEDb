@@ -221,7 +221,7 @@
                  sudo a2enmod rewrite
                  sudo service apache2 restart  
                  
-6.
+6.  Install Unrar/FFmpeg/Mediainfo/Lame
                  
                  
                  
