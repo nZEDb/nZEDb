@@ -38,7 +38,11 @@ function SplitSQL($file, $delimiter = ';')
 						echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
 					} catch (PDOException $e) {
 						if ($e->errorInfo[1] == 1091 || $e->errorInfo[1] == 1060 || $e->errorInfo[1] == 1054 || $e->errorInfo[1] == 1061 || $e->errorInfo[1] == 1062 || $e->errorInfo[1] == 1071 || $e->errorInfo[1] == 1072 || $e->errorInfo[1] == 1146 || $e->errorInfo[0] == 23505 || $e->errorInfo[0] == 42701 || $e->errorInfo[0] == 42703 || $e->errorInfo[0] == '42P07' || $e->errorInfo[0] == '42P16') {
-							echo $c->error($query . " Skipped - Not Fatal {" . $e->errorInfo[1] . "}.\n");
+							if ($e->errorInfo[1] == 1060) {
+								echo $c->error($query . " The column already exists - Not Fatal {" . $e->errorInfo[1] . "}.\n");
+							} else {
+								echo $c->error($query . " Skipped - Not Fatal {" . $e->errorInfo[1] . "}.\n");
+							}
 						} else {
 							exit($c->error($query . " Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 						}
