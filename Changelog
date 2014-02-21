@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 
 2014-02-20 -> jonnyboy -> removed remaining bitwise columns to their own columns, no indexes have been created for them
+                          removed tmux->monitor->analyze from each loop
 2014-02-19 -> jonnyboy -> possible fix to newposterwall.tpl
 2014-02-18 -> bart39   -> Tv/Music Regex additions
                           fixed typos in Books.php and TvRage.php queries
