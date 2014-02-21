@@ -288,7 +288,24 @@
                     sudo chmod 777 /var/www/nZEDb/www/install
                     sudo chmod -R 777 /var/www/nZEDb/nzbfiles  
                     
-9. Run the installer. 
+9. Run the installer.  
+
+	  # Change localhost for the server's IP if you are browsing on another computer.
+http://localhost/install  
+
+10. Configure the site.  
+
+      Enable some groups in view groups.  
+      
+      Change settings in edit site (set api keys, set paths to unrar etc..)
+      
+11. Start indexing groups.  
+
+      Use scripts in misc/update_scripts (update_binaries to get article headers, update_releases to create releases).  
+      
+      Use scripts in misc/update_scipts/nix_scripts to automate it.
+
+
                     
   
                  
