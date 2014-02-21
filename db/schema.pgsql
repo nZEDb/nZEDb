@@ -559,9 +559,9 @@ CREATE TABLE "releases" (
   "haspreview" smallint DEFAULT 0 NOT NULL,
   "nfostatus" smallint DEFAULT 0 NOT NULL,
   "bitwise" smallint DEFAULT 0 NOT NULL,
-  "jpgstatus" smallint DEFAULT 0 NOT NULL,
-  "videostatus" smallint DEFAULT 0 NOT NULL,
-  "audiostatus" smallint DEFAULT 0 NOT NULL,
+  "jpgstatus" BOOLEAN DEFAULT FALSE,
+  "videostatus" BOOLEAN DEFAULT FALSE,
+  "audiostatus" BOOLEAN DEFAULT FALSE,
   "dehashstatus" smallint DEFAULT 0 NOT NULL,
   "reqidstatus" smallint DEFAULT 0 NOT NULL,
   "nzb_guid" character varying(50),
@@ -570,6 +570,11 @@ CREATE TABLE "releases" (
   "isrenamed" BOOLEAN DEFAULT FALSE,
   "ishashed" BOOLEAN DEFAULT FALSE,
   "isrequestid" BOOLEAN DEFAULT FALSE
+  "proc_pp" BOOLEAN DEFAULT FALSE
+  "proc_sorter" BOOLEAN DEFAULT FALSE
+  "proc_par2" BOOLEAN DEFAULT FALSE
+  "proc_nfo" BOOLEAN DEFAULT FALSE
+  "proc_files" BOOLEAN DEFAULT FALSE
 )
 WITHOUT OIDS;
 
@@ -1466,7 +1471,7 @@ INSERT INTO site
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
 	('showbacks', '0'),
-	('sqlpatch','176');
+	('sqlpatch','178');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

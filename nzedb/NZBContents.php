@@ -70,14 +70,14 @@ Class NZBContents
 			foreach ($nzbfile->file as $nzbcontents) {
 				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $nzbcontents->attributes()->subject)) {
 					if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp, $show) === true && $namestatus === 1) {
-						$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~32)|32) WHERE id = %d', $relID));
+						$db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 						return true;
 					}
 				}
 			}
 		}
 		if ($namestatus === 1) {
-			$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~32)|32) WHERE id = %d', $relID));
+			$db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 		}
 		return false;
 	}

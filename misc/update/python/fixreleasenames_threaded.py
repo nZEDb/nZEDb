@@ -49,9 +49,9 @@ if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" a
 	sys.exit()
 
 if len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "clean":
-	clean = " isrenamed = 0 AND (bitwise & 128) = 128 "
+	clean = " isrenamed = 0 AND proc_files = 1 "
 elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "clean":
-	clean = " isrenamed = 0 AND (bitwise & 192) = 192 "
+	clean = " isrenamed = 0 AND proc_files = 1 AND proc_nfo = 1 "
 elif len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "preid":
 	clean = " preid IS NULL "
 elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "preid":
@@ -72,15 +72,15 @@ datas = []
 maxtries = 0
 
 if len(sys.argv) > 1 and sys.argv[1] == "nfo":
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE nzbstatus = 1 AND (bitwise & 64) = 0 AND" + clean + "ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE nzbstatus = 1 AND proc_nfo = 0 AND" + clean + "ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
-	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND (bitwise & 16) = 0 AND isrenamed = 0 ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND proc_sorter = 0 AND isrenamed = 0 ORDER BY postdate DESC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE nzbstatus = 1 AND (bitwise & 128) = 0 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE nzbstatus = 1 AND proc_files = 0 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
@@ -91,7 +91,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 		maxtries = maxtries - 1
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
-	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE nzbstatus = 1 AND (bitwise & 32) = 0 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
+	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE nzbstatus = 1 AND proc_par2 = 0 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
 	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur.fetchall()
 

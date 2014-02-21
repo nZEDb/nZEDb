@@ -187,7 +187,7 @@ class MiscSorter
 		$oldcatname = $this->category->getNameByID($release[0]['cat']);
 		$newcatname = $this->category->getNameByID($cat);
 
-		$query = "UPDATE releases SET categoryid = {$cat}, bitwise = ((bitwise & ~16)|16)";
+		$query = "UPDATE releases SET categoryid = {$cat}, proc_sorter = 1";
 		if ($name != '') {
 			$query .= ", isrenamed = 1, iscategorized = 1, searchname = " . $this->db->escapeString($name);
 			$name = preg_replace(array('/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'), '', $name);
@@ -757,7 +757,7 @@ class MiscSorter
 
 						if ($ret = $this->matchnfo($case, $nfo, $row))
 							return $ret;
-						$this->db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~16)|16) WHERE id = %d', $res[0]['id']));
+						$this->db->queryExec(sprintf('UPDATE releases SET proc_sorter = 1 WHERE id = %d', $res[0]['id']));
 						return false;
 					}
 				}

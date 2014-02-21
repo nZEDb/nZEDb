@@ -2,7 +2,7 @@
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-
+exit('Needs to be rewritten');
 $c = new ColorCLI();
 
 

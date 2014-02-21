@@ -1608,7 +1608,7 @@ class Releases
 							$groupID = $this->groups->getIDByName($rowrel['groupname']);
 						}
 						$determinedcat = $category->determineCategory($newTitle, $groupID);
-						$db->queryExec(sprintf('UPDATE releases SET reqidstatus = 1, isrenamed = 1, bitwise = ((bitwise & ~128)|128), searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($newTitle), $determinedcat, $rowrel['id']));
+						$db->queryExec(sprintf('UPDATE releases SET reqidstatus = 1, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d WHERE id = %d', $db->escapeString($newTitle), $determinedcat, $rowrel['id']));
 						$newcatname = $category->getNameByID($determinedcat);
 						$method = ($local === true) ? 'requestID local' : 'requestID web';
 						if ($this->echooutput) {
