@@ -226,7 +226,7 @@
                  sudo apt-get install software-properties-common
                  sudo apt-get install unrar python-software-properties  
                  
-    # Mediainfo
+      # Mediainfo
     
                  wget http://mediaarea.net/download/binary/libzen0/0.4.29/libzen0_0.4.29-1_amd64.xUbuntu_13.10.deb
                  wget http://mediaarea.net/download/binary/libmediainfo0/0.7.67/libmediainfo0_0.7.67-1_amd64.xUbuntu_13.10.deb
