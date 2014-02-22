@@ -475,5 +475,3 @@ class Books
 	}
 
 }
-
-?>

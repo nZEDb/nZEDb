@@ -845,5 +845,3 @@ Class PreDb
 	}
 
 }
-
-?>

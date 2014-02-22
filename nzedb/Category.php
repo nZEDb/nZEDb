@@ -3172,4 +3172,3 @@ class CategoryGerman extends Category
         return false;
     }
 }
-?>
