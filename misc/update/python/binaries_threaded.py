@@ -31,6 +31,15 @@ elif conf['DB_SYSTEM'] == "pgsql":
 		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
 cur = con.cursor()
 
+if len(sys.argv) == 1:
+    print(bcolors.HEADER + "\nThis script will run update_binaries per group."
+        "\nThis script can run on 1 group, an array of groups or all groups.\n"
+        "\nEach group is processed in a single thread, for all groups. For example, 10 groups, 10 threads, upto max threads.\n"
+        "\npython " + sys.argv[0] + " 155              ...: To run against groupid 155."
+        "\npython " + sys.argv[0] + " '(155, 52)'      ...: To run against groupid 155 and 52."
+		"\npython " + sys.argv[0] + " alt.binaries.tv  ...: To run against group alt.binaries.teevee."
+        "\npython " + sys.argv[0] + "                  ...: To run against all active groups." + bcolors.ENDC)
+
 print(bcolors.HEADER + "\nBinaries Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 start_time = time.time()
@@ -38,10 +47,20 @@ pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 #get active groups
 if len(sys.argv) == 2:
-	cur.execute("SELECT name FROM groups WHERE name = '" + sys.argv[1] + "'")
+	try:
+		cur.execute("SELECT name FROM groups WHERE id IN " + sys.argv[1])
+		datas = cur.fetchall()
+	except:
+		cur.execute("SELECT name FROM groups WHERE name = '" + sys.argv[1] + "'")
+		datas = cur.fetchall()
+		if len(datas) == 0:
+			cur.execute("SELECT name FROM groups WHERE id = " + sys.argv[1])
+			datas = cur.fetchall()
+			if len(datas) == 0:
+				print(bcolors.ERROR + "No Active Groups" + bcolors.ENDC)
 else:
 	cur.execute("SELECT name FROM groups WHERE active = 1")
-datas = cur.fetchall()
+	datas = cur.fetchall()
 if len(datas) == 0:
 	print(bcolors.ERROR + "No Active Groups" + bcolors.ENDC)
 
