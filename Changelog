@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 
 2014-02-22 -> jonnyboy -> updated mysqldump_tables.php to use ColorCLI()
+                          fixed typo in schema.mysql
                           updated binaries_threaded.py to accept groupid, array of groupids, group name or all active groups
                           updated active_groups.php, removed Ubuntu 13.10 INSTALL GUIDE.txt
 2014-02-21 -> bart39   -> added BigMarlin's Ubuntu 13.10 install guide
