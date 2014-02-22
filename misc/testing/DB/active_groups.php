@@ -63,6 +63,6 @@ if ($rels = $db->queryDirect(sprintf("SELECT name, backfill_target, first_record
 	foreach ($rels as $rel) {
 		//var_dump($rel);
 		$headers = number_format($rel['headers downloaded']);
-		printf($mask, $rel['name'], $rel['backfill_target'] . "(" . $rel['days'] . ")", $rel['first_record_postdate'], $rel['last_updated'], $headers, $rel['num_releases'], $rel['num_releases'] == 0 ? $rel['num_releases'] : $rel['renamed'] . "(" . floor($rel['renamed'] / $rel['num_releases'] * 100) . "%)", $rel['num_releases'] == 0 ? $rel['num_releases'] : $rel['pre_matches'] . "(" . floor($rel['pre_matches'] / $rel['num_releases'] * 100) . "%)");
+		printf($mask, $rel['name'], $rel['backfill_target'] . "(" . $rel['days'] . ")", $rel['first_record_postdate'], $rel['last_updated'], $headers, number_format($rel['num_releases']), $rel['num_releases'] == 0 ? number_format($rel['num_releases']) : number_format($rel['renamed']) . "(" . floor($rel['renamed'] / $rel['num_releases'] * 100) . "%)", $rel['num_releases'] == 0 ? number_format($rel['num_releases']) : number_format($rel['pre_matches']) . "(" . floor($rel['pre_matches'] / $rel['num_releases'] * 100) . "%)");
 	}
 }
