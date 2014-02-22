@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-22 -> jonnyboy -> updated binaries_threaded.py to accept groupid, array of groupids, group name or all active groups
+2014-02-22 -> jonnyboy -> fixed typo in schema.mysql
+                          updated binaries_threaded.py to accept groupid, array of groupids, group name or all active groups
                           updated active_groups.php, removed Ubuntu 13.10 INSTALL GUIDE.txt
 2014-02-21 -> bart39   -> added BigMarlin's Ubuntu 13.10 install guide
 2014-02-20 -> jonnyboy -> removed remaining bitwise columns to their own columns, no indexes have been created for them
