@@ -297,8 +297,8 @@ def main(args):
 				cur[0].execute(run, (item[0]))
 				final = cur[0].fetchall()
 
-	#close connection to mysql
-	info.disconnect(cur[0], cur[1])
+		#close connection to mysql
+		info.disconnect(cur[0], cur[1])
 
 	print(bcolors.HEADER + "\nPostProcess {} Threaded Completed at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
