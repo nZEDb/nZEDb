@@ -16,17 +16,16 @@ import datetime
 import lib.info as info
 from lib.info import bcolors
 conf = info.readConfig()
-
-print(bcolors.HEADER + "\nPostProcess Old Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
-
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
+run_threads = 1
 
 #get number of threads from db
-if len(sys.argv) > 1 and sys.argv[1] != "amazon":
+if len(sys.argv) == 1 or sys.argv[1] != "amazon":
 	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_old_threaded.py amazon\n" + bcolors.ENDC)
 	sys.exit()
-run_threads = 1
+
+print(bcolors.HEADER + "\nPostProcess Old Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 #create a list
 try:
