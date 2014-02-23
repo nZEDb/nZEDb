@@ -781,5 +781,3 @@ class NNTP extends Net_NNTP_Client
 	}
 
 }
-
-?>

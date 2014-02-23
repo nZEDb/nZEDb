@@ -15,48 +15,26 @@ import datetime
 import lib.info as info
 from lib.info import bcolors
 conf = info.readConfig()
-def connect():
-	con = None
-	if conf['DB_SYSTEM'] == "mysql":
-		try:
-			import cymysql as mdb
-			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
-		except ImportError:
-			print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-			sys.exit()
-	elif conf['DB_SYSTEM'] == "pgsql":
-		try:
-			import psycopg2 as mdb
-			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
-		except ImportError:
-			print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-			sys.exit()
-	cur = con.cursor()
-	return cur, con
-
-def disconnect(cur, con):
-	con.close()
-	con = None
-	cur.close()
-	cur = None
-
+cur = info.connect()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 print(bcolors.HEADER + "\nUpdate Releases Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
-cur = connect()
 cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'tablepergroup') AS a, (SELECT value FROM site WHERE setting = 'releasesthreads') AS b")
 dbgrab = cur[0].fetchall()
 allowed = int(dbgrab[0][0])
 threads = int(dbgrab[0][1])
 if allowed == 0:
 	print(bcolors.ERROR + "Table per group not enabled" + bcolors.ENDC)
+	info.disconnect(cur[0], cur[1])
 	sys.exit()
 
 cur[0].execute("SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '"+conf['DB_NAME']+"' AND table_rows > 0 AND table_name LIKE 'collections_%'")
 datas = cur[0].fetchall()
-disconnect(cur[0], cur[1])
+
+#close connection to mysql
+info.disconnect(cur[0], cur[1])
 
 if not datas:
 	print(bcolors.HEADER + "No Work to Process" + bcolors.ENDC)

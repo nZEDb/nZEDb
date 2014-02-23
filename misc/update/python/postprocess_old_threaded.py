@@ -16,43 +16,22 @@ import datetime
 import lib.info as info
 from lib.info import bcolors
 conf = info.readConfig()
-con = None
-if conf['DB_SYSTEM'] == "mysql":
-	try:
-		import cymysql as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.ext()
-elif conf['DB_SYSTEM'] == "pgsql":
-	try:
-		import psycopg2 as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.exit()
-cur = con.cursor()
-
-print(bcolors.HEADER + "\nPostProcess Old Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
-
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
+run_threads = 1
 
 #get number of threads from db
-if len(sys.argv) > 1 and sys.argv[1] != "amazon":
+if len(sys.argv) == 1 or sys.argv[1] != "amazon":
 	print(bcolors.ERROR + "\nAn argument is required, \npostprocess_old_threaded.py amazon\n" + bcolors.ENDC)
 	sys.exit()
-run_threads = 1
+
+print(bcolors.HEADER + "\nPostProcess Old Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 #create a list
 try:
 	datas = list(range(1, int(run_threads) + 1))
 except:
 	datas = list(xrange(1, int(run_threads) + 1))
-
-#close connection to mysql
-cur.close()
-con.close()
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()

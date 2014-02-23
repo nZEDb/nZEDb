@@ -1072,4 +1072,3 @@ $this->debug = true;
 		}
 	}
 }
-?>

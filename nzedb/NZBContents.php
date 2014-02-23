@@ -278,4 +278,3 @@ Class NZBContents
 		}
 	}
 }
-?>

@@ -16,31 +16,15 @@ import datetime
 import lib.info as info
 from lib.info import bcolors
 conf = info.readConfig()
-con = None
-if conf['DB_SYSTEM'] == "mysql":
-	try:
-		import cymysql as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install cymysql for python [2, 3], \nInformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.exit()
-elif conf['DB_SYSTEM'] == "pgsql":
-	try:
-		import psycopg2 as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.exit()
-cur = con.cursor()
-
-print(bcolors.HEADER + "\nBackfill Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
-
+cur = info.connect()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
+print(bcolors.HEADER + "\nBackfill Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+
 #get values from db
-cur.execute("SELECT (SELECT value FROM site WHERE setting = 'backfillthreads') as a, (SELECT value FROM tmux WHERE setting = 'backfill') as c, (SELECT value FROM tmux WHERE setting = 'backfill_groups') as d, (SELECT value FROM tmux WHERE setting = 'backfill_order') as e, (SELECT value FROM tmux WHERE setting = 'backfill_days') as f")
-dbgrab = cur.fetchall()
+cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'backfillthreads') as a, (SELECT value FROM tmux WHERE setting = 'backfill') as c, (SELECT value FROM tmux WHERE setting = 'backfill_groups') as d, (SELECT value FROM tmux WHERE setting = 'backfill_order') as e, (SELECT value FROM tmux WHERE setting = 'backfill_days') as f")
+dbgrab = cur[0].fetchall()
 run_threads = int(dbgrab[0][0])
 type = int(dbgrab[0][1])
 groups = int(dbgrab[0][2])
@@ -70,27 +54,29 @@ elif intbackfilltype == 2:
 #exit is set to safe backfill
 if len(sys.argv) == 1 and type == 4:
 	print(bcolors.ERROR + "Tmux is set for Safe Backfill, no groups to process." + bcolors.ENDC)
+	info.disconnect(cur[0], cur[1])
 	sys.exit()
 
 #query to grab backfill groups
 if len(sys.argv) > 1 and sys.argv[1] == "all":
 	# Using string formatting is not the correct way to do this, but using +group is even worse
 	# removing the % before the variables at the end of the query adds quotes/escapes strings
-	cur.execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND backfill = 1 %s" % (group))
+	cur[0].execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND backfill = 1 %s" % (group))
 else:
 	if conf['DB_SYSTEM'] == "mysql":
-		cur.execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND first_record_postdate IS NOT NULL AND backfill = 1 AND (NOW() - interval %s DAY) < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
+		cur[0].execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND first_record_postdate IS NOT NULL AND backfill = 1 AND (NOW() - interval %s DAY) < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
 	elif conf['DB_SYSTEM'] == "pgsql":
-		cur.execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND first_record_postdate IS NOT NULL AND backfill = 1 AND (NOW() - interval '%s DAYS') < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
+		cur[0].execute("SELECT name, first_record FROM groups WHERE first_record != 0 AND first_record_postdate IS NOT NULL AND backfill = 1 AND (NOW() - interval '%s DAYS') < first_record_postdate %s LIMIT %s" % (backfilldays, group, groups))
 
-datas = cur.fetchall()
+datas = cur[0].fetchall()
+
+#close connection to mysql
+info.disconnect(cur[0], cur[1])
+
 if not datas:
 	print(bcolors.ERROR + "No Groups enabled for backfill" + bcolors.ENDC)
 	sys.exit()
 
-#close connection to mysql
-cur.close()
-con.close()
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()

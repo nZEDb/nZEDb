@@ -123,7 +123,7 @@
                     </td>
                     <td colspan="3" class="left">
                         <h2><a title="{$result.title|stripslashes|escape:"htmlall"}"
-                               href="{$site->dereferrer_link}{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|stripslashes|escape:"htmlall"}</a>
+                               href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|stripslashes|escape:"htmlall"}</a>
                             (<a class="title" title="{$result.year}"
                                 href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
                             {foreach from=$result.languages item=movielanguage}
