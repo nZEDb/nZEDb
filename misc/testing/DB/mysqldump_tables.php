@@ -6,8 +6,9 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $db = new DB();
 $c = new ColorCLI();
-if ($db->dbSystem() == "pgsql")
+if ($db->dbSystem() == "pgsql") {
 	exit($c->error("\nThis script is only for mysql.\n"));
+}
 
 $exportopts = "";
 $mysqlplatform = "";
@@ -55,9 +56,16 @@ function builddefaultsfile()
 
 $dbhost = DB_HOST;
 $dbport = DB_PORT;
+$dbsocket = DB_SOCKET;
 $dbuser = DB_USER;
 $dbpass = DB_PASSWORD;
 $dbname = DB_NAME;
+
+if (DB_SOCKET != '') {
+	$use = "-S $dbsocket";
+} else {
+	$use = "-P$dbport";
+}
 
 if($db->dbSystem() == "mysql") {
 	//generate defaults file used to store database login information so it is not in cleartext in ps command for mysqldump
@@ -70,13 +78,13 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	if (file_exists($filename)) {
 		newname($filename);
 	}
-	$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname | gzip -9 > $filename";
+	$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost $use "."$dbname | gzip -9 > $filename";
 	system($command);
 } else if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3]))) {
 	$filename = $argv[3]."/".$dbname.".gz";
 	if (file_exists($filename)) {
 		echo $c->header("Restoring $dbname.");
-		$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
+		$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost $use $dbname";
 		$db->queryExec("SET FOREIGN_KEY_CHECKS=0");
 		system($command);
 		$db->queryExec("SET FOREIGN_KEY_CHECKS=1");
@@ -91,7 +99,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 		if (file_exists($filename)) {
 			newname($filename);
 		}
-		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname $tbl | gzip -9 > $filename";
+		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost $use "."$dbname $tbl | gzip -9 > $filename";
 		system($command);
 	}
 } else if((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3]))) {
@@ -103,7 +111,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 		$filename = $argv[3]."/".$tbl.".gz";
 		if (file_exists($filename)) {
 			echo $c->header("Restoring $tbl.");
-			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
+			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost $use $dbname";
 			system($command);
 		}
 	}
@@ -116,7 +124,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 		if (file_exists($filename)) {
 			newname($filename);
 		}
-		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost -P$dbport "."$dbname $tbl | gzip -9 > $filename";
+		$command = "mysqldump --defaults-file=mysql-defaults.txt $exportopts -h$dbhost $use "."$dbname $tbl | gzip -9 > $filename";
 		system($command);
 	}
 } else if((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3]))) {
@@ -126,7 +134,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 		$filename = $argv[3]."/".$tbl.".gz";
 		if (file_exists($filename)) {
 			echo $c->header("Restoring $tbl.");
-			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
+			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost $use $dbname";
 			system($command);
 		}
 	}

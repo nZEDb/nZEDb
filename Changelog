@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-23 -> jonnyboy -> updated mysqldump_tables.php to use socket if set
 2014-02-22 -> jonnyboy -> updated mysqldump_tables.php usage
                           updated mysqldump_tables.php to use zcat instead of gunzip
                           fixed mysqldump_tables.php to properlly identify Percona
