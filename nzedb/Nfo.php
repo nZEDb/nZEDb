@@ -4,9 +4,97 @@
  */
 class Nfo
 {
-	public function __construct($echooutput = false)
-	{
+	/**
+	 * Site settings.
+	 *
+	 * @var bool|stdClass
+	 * @access private
+	 */
+	private $site;
+
+	/**
+	 * How many nfo's to process per run.
+	 *
+	 * @var int
+	 * @access private
+	 */
+	private $nzbs;
+
+	/**
+	 * Max NFO size to process.
+	 *
+	 * @var int
+	 * @access private
+	 */
+	private $maxsize;
+
+	/**
+	 * Echo to CLI.
+	 *
+	 * @var bool
+	 * @access private
+	 */
+	private $echooutput;
+
+	/**
+	 * Path to temporarily store files.
+	 *
+	 * @var string
+	 * @access private
+	 */
+	private $tmpPath;
+
+	/**
+	 * Instance of class ColorCLI
+	 *
+	 * @var ColorCLI
+	 * @access private
+	 */
+	private $c;
+
+	/**
+	 * Instance of class DB
+	 *
+	 * @var DB
+	 * @access private
+	 */
+	private $db;
+
+	/**
+	 * Primary color for console text output.
+	 *
+	 * @var string
+	 * @access private
+	 */
+	private $primary = 'Green';
+
+	/**
+	 * Color for warnings on console text output.
+	 *
+	 * @var string
+	 * @access private
+	 */
+	private $warning = 'Red';
+
+	/**
+	 * Color for headers(?) on console text output.
+	 *
+	 * @var string
+	 * @access private
+	 */
+	private $header = 'Yellow';
+
+	/**
+	 * Default constructor.
+	 *
+	 * @param bool $echooutput Echo to cli?
+	 *
+	 * @access public
+	 */
+	public function __construct($echooutput = false) {
 		$s = new Sites();
+		$this->c = new ColorCLI();
+		$this->db = new DB();
 		$this->site = $s->get();
 		$this->nzbs = (!empty($this->site->maxnfoprocessed)) ? $this->site->maxnfoprocessed : 100;
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
@@ -15,56 +103,34 @@ class Nfo
 		if (substr($this->tmpPath, -strlen('/')) != '/') {
 			$this->tmpPath = $this->tmpPath . '/';
 		}
-		$this->c = new ColorCLI();
-		$this->primary = 'Green';
-		$this->warning = 'Red';
-		$this->header = 'Yellow';
-		$this->db = new DB();
 	}
 
-	public function addReleaseNfo($relid)
-	{
-		$db = $this->db;
-		$res = $db->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $relid));
-		if ($res == false) {
-			return $db->queryInsert(sprintf('INSERT INTO releasenfo (releaseid) VALUES (%d)', $relid));
-		} else {
-			return $res['id'];
-		}
-	}
-
-	public function deleteReleaseNfo($relid)
-	{
-		$db = $this->db;
-		return $db->queryExec(sprintf('DELETE FROM releasenfo WHERE releaseid = %d', $relid));
-	}
-
-	// Find an IMDb ID in a NFO file.
-	public function parseImdb($str)
-	{
-		$matches = '';
-		preg_match('/(?:imdb.*?)?(?:tt|Title\?)(\d{5,7})/i', $str, $matches);
-		if (isset($matches[1]) && !empty($matches[1])) {
-			return trim($matches[1]);
-		}
-
-		return false;
-	}
-
-	// Find a TvRage ID in a NFO.
-	public function parseRageId($str)
-	{
-		$matches = '';
-		preg_match('/tvrage\.com\/shows\/id-(\d{1,6})/i', $str, $matches);
-		if (isset($matches[1])) {
+	/**
+	 * Look for a TvRage ID in a string.
+	 *
+	 * @param  $str   The string with a TvRage ID.
+	 * @return string The TVRage ID on success.
+	 * @return bool   False on failure.
+	 *
+	 * @access public
+	 */
+	public function parseRageId($str) {
+		if (preg_match('/tvrage\.com\/shows\/id-(\d{1,6})/i', $str, $matches)) {
 			return trim($matches[1]);
 		}
 		return false;
 	}
 
-	// Confirm that the .nfo file is not something else.
-	public function isNFO($possibleNFO, $guid)
-	{
+	/**
+	 * Confirm this is an NFO file.
+	 *
+	 * @param string $possibleNFO The nfo.
+	 * @param string $guid        The guid of the release.
+	 * @return bool               True on success, False on failure.
+	 *
+	 * @access public
+	 */
+	public function isNFO($possibleNFO, $guid) {
 		$r = false;
 		if ($possibleNFO === false) {
 			return $r;
@@ -74,7 +140,9 @@ class Nfo
 		$size = strlen($possibleNFO);
 		if ($size < 100 * 1024 && $size > 12) {
 			// Ignore common file types.
-			if (preg_match('/(^RIFF|)<\?xml|;\s*Generated\s*by.*SF\w|\A\s*PAR|\.[a-z0-9]{2,7}\s*[a-z0-9]{8}|\A\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i', $possibleNFO)) {
+			if (preg_match(
+				'/(^RIFF|)<\?xml|;\s*Generated\s*by.*SF\w|\A\s*PAR|\.[a-z0-9]{2,7}\s*[a-z0-9]{8}|\A\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i'
+				, $possibleNFO)) {
 				return $r;
 			}
 
@@ -136,11 +204,21 @@ class Nfo
 		return $r;
 	}
 
-	// Adds an NFO found from predb, rar, zip etc...
-	public function addAlternateNfo($db, $nfo, $release, $nntp)
-	{
+	/**
+	 * Add an NFO from alternate sources. ex.: PreDB, rar, zip, etc...
+	 *
+	 * @param object $db      Instance of class DB.
+	 * @param string $nfo     The nfo.
+	 * @param array  $release The SQL row for this release.
+	 * @param object $nntp    Instance of class NNTP.
+	 *
+	 * @return bool           True on success, False on failure.
+	 *
+	 * @access public
+	 */
+	public function addAlternateNfo($db, $nfo, $release, $nntp) {
 		if (!isset($nntp)) {
-			exit($this->c->error("Unable to connect to usenet.\n"));
+			exit($this->c->error("NFO->addAlternateNfo() Not connected to usenet.\n"));
 		}
 
 		if ($release['id'] > 0) {
@@ -169,9 +247,20 @@ class Nfo
 		}
 	}
 
-	// Loop through releases, look for NFO's in the NZB file.
-	public function processNfoFiles($releaseToWork = '', $processImdb = 1, $processTvrage = 1, $groupID = '', $nntp)
-	{
+	/**
+	 * Attempt to find NFO files inside the NZB's of releases.
+	 *
+	 * @param string $releaseToWork
+	 * @param int $processImdb       Attempt to find IMDB id's in the NZB?
+	 * @param int $processTvrage     Attempt to find TvRage id's in the NZB?
+	 * @param string $groupID        (optional) The group ID to work on.
+	 * @param object $nntp           Instance of class NNTP.
+	 *
+	 * @return int                   How many NFO's were processed?
+	 *
+	 * @access public
+	 */
+	public function processNfoFiles($releaseToWork = '', $processImdb = 1, $processTvrage = 1, $groupID = '', $nntp) {
 		if (!isset($nntp)) {
 			exit($this->c->error("Unable to connect to usenet.\n"));
 		}
@@ -183,7 +272,7 @@ class Nfo
 		if ($releaseToWork == '') {
 			$i = -1;
 			while (($nfocount != $this->nzbs) && ($i >= -6)) {
-				$res = $db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE (bitwise & 256) = 256 AND nfostatus between %d AND -1 AND size < %s ' . $groupid . ' LIMIT %d', $i, $this->maxsize * 1073741824, $this->nzbs));
+				$res = $db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE nzbstatus = 1 AND nfostatus between %d AND -1 AND size < %s ' . $groupid . ' LIMIT %d', $i, $this->maxsize * 1073741824, $this->nzbs));
 				$nfocount = count($res);
 				$i--;
 			}
@@ -252,7 +341,7 @@ class Nfo
 
 		// Remove nfo that we cant fetch after 5 attempts.
 		if ($releaseToWork == '') {
-			$relres = $db->query('SELECT id FROM releases WHERE (bitwise & 256) = 256 AND nfostatus < -6');
+			$relres = $db->query('SELECT id FROM releases WHERE nzbstatus = 1 AND nfostatus < -6');
 			foreach ($relres as $relrow) {
 				$db->queryExec(sprintf('DELETE FROM releasenfo WHERE nfo IS NULL and releaseid = %d', $relrow['id']));
 			}
@@ -269,4 +358,3 @@ class Nfo
 		}
 	}
 }
-?>

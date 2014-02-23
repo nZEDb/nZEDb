@@ -109,4 +109,3 @@ class ReleaseComments
 		return $db->query(sprintf("SELECT releasecomment.*, users.username FROM releasecomment LEFT OUTER JOIN users ON users.id = releasecomment.userid WHERE userid = %d ORDER BY releasecomment.createddate DESC".$limit, $uid));
 	}
 }
-?>

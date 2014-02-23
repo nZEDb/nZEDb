@@ -1,13 +1,13 @@
 <?php
+
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'tmux.php';
 
 $db = new DB();
 $DIR = nZEDb_MISC;
-$smarty = SMARTY_DIR . 'templates_c/';
+$smarty = new Smarty;
 $dbname = DB_NAME;
 $restart = "false";
+$c = new ColorCLI();
 
 function command_exist($cmd)
 {
@@ -15,52 +15,49 @@ function command_exist($cmd)
 	return (empty($returnVal) ? false : true);
 }
 
-if(isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe"))
-{
+if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 	$tmux = new Tmux();
 	$running = $tmux->get()->running;
 	$delay = $tmux->get()->monitor_delay;
 
-	if ( $running == "TRUE" )
-	{
-		$db->queryExec("UPDATE tmux SET value = 'FALSE' WHERE setting = 'RUNNING'");
+	if ($running == "1") {
+		$db->queryExec("UPDATE tmux SET value = '0' WHERE setting = 'RUNNING'");
 		$sleep = $delay;
-		echo "Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown\n";
+		echo $c->header("Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown.");
 		sleep($sleep);
 		$restart = "true";
 	}
 
 	system("cd $DIR && git pull");
 
-	// Remove folders from smarty.
-	if ((count(glob("${smarty}*"))) > 0)
-	{
-		echo "Removing old stuff from ".$smarty."\n";
-		system("rm -rf ".$smarty."*");
-	}
-	else
-		echo "Nothing to remove from ".$smarty."\n";
-
-	if (command_exist("php5"))
+	if (command_exist("php5")) {
 		$PHP = "php5";
-	else
+	} else {
 		$PHP = "php";
-
-	echo "Patching database - $dbname\n";
-
-	if($argv[1] == "safe")
-		system("$PHP ${DIR}testing/DB/patchDB.php safe");
-	else
-		system("$PHP ${DIR}testing/DB/patchDB.php");
-
-
-	if ($restart == "true")
-	{
-		echo "Starting tmux scripts\n";
-		$db->queryExec("UPDATE tmux SET value = 'TRUE' WHERE setting = 'RUNNING'");
 	}
-}
-else
-	exit("This script will automatically do a git pull, patch the DB and delete the smarty folder contents.\nIf you are sure you want to run it, type php autopatcher.php true\nIf you want to run a backup of your database and then update, type php autopatcher.php safe\n");
 
-?>
+	echo $c->header("Patching database - ${dbname}.");
+
+	if ($argv[1] == "safe") {
+		system("$PHP ${DIR}testing/DB/patchDB.php safe");
+	} else {
+		system("$PHP ${DIR}testing/DB/patchDB.php");
+	}
+
+	// Remove folders from smarty.
+	$cleared = $smarty->clearCompiledTemplate();
+	if ($cleared) {
+		echo $c->header("The smarty template cache has been cleaned for you");
+	} else {
+		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c");
+	}
+
+	if ($restart == "true") {
+		echo $c->header("Starting tmux scripts.");
+		$db->queryExec("UPDATE tmux SET value = '1' WHERE setting = 'RUNNING'");
+	}
+} else {
+	exit($c->error("\nThis script will automatically do a git pull, patch the DB and delete the smarty folder contents.\n\n"
+			. "php $argv[0] true   ...: To run.\n"
+			. "php $argv[0] safe   ...: Tto run a backup of your database and then update.\n"));
+}

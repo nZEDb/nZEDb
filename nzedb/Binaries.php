@@ -2,6 +2,7 @@
 
 class Binaries
 {
+
 	const BLACKLIST_FIELD_SUBJECT = 1;
 	const BLACKLIST_FIELD_FROM = 2;
 	const BLACKLIST_FIELD_MESSAGEID = 3;
@@ -78,9 +79,9 @@ class Binaries
 
 		// Select the group, here, needed for processing the group
 		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data)) {
+		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($data === false) {
+			if ($nntp->isError($data)) {
 				return;
 			}
 		}
@@ -261,19 +262,29 @@ class Binaries
 			$group['pname'] = 'parts';
 		}
 
+		// Select the group before attempting to download
+		$data = $nntp->selectGroup($groupArr['name']);
+		if ($nntp->isError($data)) {
+			$data = $nntp->dataError($nntp, $groupArr['name']);
+			if ($nntp->isError($data)) {
+				return;
+			}
+		}
+
 		// Download the headers.
 		$msgs = $nntp->getOverview($first . "-" . $last, true, false);
-		// If there ware an error, try to reconnect.
-		if ($type != 'partrepair' && PEAR::isError($msgs)) {
+
+		// If there were an error, try to reconnect.
+		if ($type != 'partrepair' && $nntp->isError($msgs)) {
 			// This is usually a compression error, so try disabling compression.
 			$nntp->doQuit();
-			if ($nntp->doConnectNC() === false) {
+			if ($nntp->doConnect(false) === false) {
 				return false;
 			}
 
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first . '-' . $last, true, false);
-			if (PEAR::isError($msgs)) {
+			if ($nntp->isError($msgs)) {
 				echo $this->c->error(" Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}");
 				return false;
 			}
@@ -289,7 +300,8 @@ class Binaries
 				$colnames = $orignames = $notyenc = array();
 			}
 
-			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
+			// Sort the articles before processing, alphabetically by subject. This is to try to use the
+			// shortest subject and those without .vol01 in the subject
 			usort($msgs, function ($elem1, $elem2) {
 				return strcmp($elem1['Subject'], $elem2['Subject']);
 			});
@@ -372,7 +384,7 @@ class Binaries
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*| \[S\d+E\d+\]|\s*".+"\s*)\((\d+)\/(\d+)\)/', $msg['Subject'], $matches)) {
 					//if (!preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject']) && preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1') {
-					if (!preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject']) && $this->showdroppedyencparts === '1') {
+					if ($this->showdroppedyencparts === '1' && !preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject'])) {
 						file_put_contents(nZEDb_ROOT . "not_yenc/" . $groupArr['name'] . ".dropped.txt", $msg['Subject'] . "\n", FILE_APPEND);
 					}
 
@@ -400,7 +412,7 @@ class Binaries
 				if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $partless, $filecnt)) {
 					$filecnt[2] = $filecnt[6] = 0;
 					$nofiles = true;
-					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1') {
+					if ($this->showdroppedyencparts === '1' && preg_match('/yEnc/i', $msg['Subject'])) {
 						file_put_contents("/var/www/nZEDb/not_yenc/" . $groupArr['name'] . ".no_parts.txt", $msg['Subject'] . "\n", FILE_APPEND);
 					}
 				}
@@ -447,11 +459,7 @@ class Binaries
 					}
 
 					if ($this->grabnzbs && preg_match('/.+\.nzb/', $subject)) {
-						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'], 1, -1))));
-						if (!isset($ckmsg['message_id'])) {
-							$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())', $db->escapeString(substr($msg['Message-ID'], 1, -1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject, 0, 255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int) $bytes, (int) $matches[3], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
-							$updatenzb = $db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
-						}
+						$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW()) ON DUPLICATE KEY UPDATE dateadded = NOW()', $db->escapeString(substr($msg['Message-ID'], 1, -1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject, 0, 255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int) $bytes, (int) $matches[3], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
 					}
 					if ((int) $matches[3] > 0) {
 						$this->message[$subject]['Parts'][(int) $matches[3]] = array('Message-ID' => substr($msg['Message-ID'], 1, -1), 'number' => $msg['Number'], 'part' => (int) $matches[3], 'size' => $bytes);
@@ -906,5 +914,5 @@ class Binaries
 		$db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id));
 		$db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $id));
 	}
+
 }
-?>

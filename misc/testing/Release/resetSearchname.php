@@ -49,7 +49,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	}
 } else if (isset($argv[1]) && $argv[1] == "limited") {
 	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE (bitwise & 4) = 0");
+	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE isrenamed = 0");
 
 	if (count($res) > 0) {
 		echo $c->header("Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.");
@@ -70,8 +70,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		echo $c->header($done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
 		$releases = new Releases();
-		$releases->resetCategorize("WHERE (bitwise & 4) = 0");
-		$categorized = $releases->categorizeRelease("name", "WHERE (bitwise & 4) = 0", true);
+		$releases->resetCategorize("WHERE isrenamed = 0");
+		$categorized = $releases->categorizeRelease("name", "WHERE isrenamed = 0", true);
 		$timecat = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->header("Finished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 

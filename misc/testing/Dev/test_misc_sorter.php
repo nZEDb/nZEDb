@@ -1,16 +1,12 @@
 <?php
 require dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'miscsorter.php';
-//require_once nZEDb_LIB . 'nntp.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
-//require_once nZEDb_LIB . 'site.php';
 
 $sorter = new MiscSorter(true);
 
 $s = new Sites();
 $site = $s->get();
 $nntp = new NNTP();
-if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false)
+if (($site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false)
 {
 	echo $c->error("Unable to connect to usenet.\n");
 	return;

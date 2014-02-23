@@ -1,10 +1,12 @@
 <?php
+
 if (!$users->isLoggedIn())
 	$page->show403();
 
 $releases = new Releases();
 $grp = new Groups();
 $c = new Category();
+$db = new DB();
 
 $page->meta_title = "Search Nzbs";
 $page->meta_keywords = "search,nzb,description,details";
@@ -189,11 +191,18 @@ $sizelist = array(-1 => '--Select--',
 	9 => '16GB',
 	10 => '32GB',
 	11 => '64GB'
-	);
+);
 
 $page->smarty->assign('sizelist', $sizelist);
 $page->smarty->assign('results', $results);
 $page->smarty->assign('sadvanced', ($searchtype != "basic"));
+
+$ft1 = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_searchname_ft'");
+$ft2 = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_ft'");
+$ft3 = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_searchname_ft'");
+if (isset($ft1['key_name']) || (isset($ft2['key_name']) && isset($ft3['key_name']))) {
+	$page->smarty->assign('fulltext', true);
+}
 
 $page->content = $page->smarty->fetch('search.tpl');
 $page->render();

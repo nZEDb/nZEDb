@@ -5,7 +5,7 @@
 		<p>Continue to the <a href="../admin/">admin home page</a> to give your site a name and learn how to start indexing usenet.</p>
 		<br/><br/>
 		<p><b >Note:</b> It is a good idea to remove the www/install directory after setup</p>
-	</div>   
+	</div>
 {else}
 
 <p>You must set the NZB file path. This is the location where the NZB files are stored:</p>

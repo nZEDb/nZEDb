@@ -143,4 +143,3 @@ class SABnzbd
 		setcookie('sabnzbd_' . $this->uid . '__apitype', '', (time() - 2592000));
 	}
 }
-?>

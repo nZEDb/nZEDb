@@ -4,7 +4,6 @@ if (!$users->isLoggedIn()) {
 }
 
 
-
 $rc = new ReleaseComments();
 $sab = new SABnzbd($page);
 

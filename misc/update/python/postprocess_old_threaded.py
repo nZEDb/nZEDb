@@ -20,7 +20,10 @@ con = None
 if conf['DB_SYSTEM'] == "mysql":
 	try:
 		import cymysql as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
+			if conf['DB_PORT'] != '':
+				con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
+			else:
+				con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], unix_socket=conf['DB_SOCKET'], charset="utf8")
 	except ImportError:
 		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
 		sys.ext()
@@ -76,7 +79,7 @@ class queue_runner(threading.Thread):
 					time_of_last_run = time.time()
 					if len(sys.argv) > 1 and sys.argv[1] == "amazon":
 						subprocess.call(["php", pathname+"/../nix/tmux/bin/postprocess_amazon.php", ""+my_id])
-					time.sleep(.05)
+					time.sleep(.03)
 					self.my_queue.task_done()
 
 def main(args):
@@ -100,7 +103,7 @@ def main(args):
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
-		time.sleep(.1)
+		time.sleep(.03)
 		my_queue.put(str(gnames))
 
 	my_queue.join()

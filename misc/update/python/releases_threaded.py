@@ -20,7 +20,10 @@ def connect():
 	if conf['DB_SYSTEM'] == "mysql":
 		try:
 			import cymysql as mdb
-			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
+			if conf['DB_PORT'] != '':
+				con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
+			else:
+				con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], unix_socket=conf['DB_SOCKET'], charset="utf8")
 		except ImportError:
 			print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
 			sys.exit()
@@ -51,7 +54,7 @@ dbgrab = cur[0].fetchall()
 allowed = int(dbgrab[0][0])
 threads = int(dbgrab[0][1])
 if allowed == 0:
-	print(bcolors.ERROR + "Table per group not enabled")
+	print(bcolors.ERROR + "Table per group not enabled" + bcolors.ENDC)
 	sys.exit()
 
 cur[0].execute("SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '"+conf['DB_NAME']+"' AND table_rows > 0 AND table_name LIKE 'collections_%'")
