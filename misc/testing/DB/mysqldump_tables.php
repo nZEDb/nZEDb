@@ -160,17 +160,18 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	passthru("clear");
 	echo $c->error("\nThis script can dump/restore all tables, compressed or OUTFILE/INFILE, or just collections/binaries/parts.\n\n"
 	. "**Single File\n"
-	. "php $argv[0] db dump /path/to/save/to            ...: To dump the database.\n"
-	. "php $argv[0] db restore /path/to/save/to         ...: To restore the database.\n\n"
+	. "php $argv[0] db dump /path/to/save/to              ...: To dump the database.\n"
+	. "php $argv[0] db restore /path/to/restore/from      ...: To restore the database.\n\n"
 	. "**Individual Table Files\n"
-	. "php $argv[0] all dump /path/to/save/to           ...: To dump all tables.\n"
-	. "php $argv[0] all restore /path/to/save/to        ...: To restore all tables.\n\n"
+	. "php $argv[0] all dump /path/to/save/to             ...: To dump all tables.\n"
+	. "php $argv[0] all restore /path/to/restore/from     ...: To restore all tables.\n\n"
 	. "**Three Tables (collections, binaries, parts)\n"
-	. "php $argv[0] test dump /path/to/save/to          ...: To dump collections, binaries, parts tables.\n"
-	. "php $argv[0] test restore /path/to/save/to       ...: To restore collections, binaries, parts tables.\n\n"
+	. "php $argv[0] test dump /path/to/save/to            ...: To dump collections, binaries, parts tables.\n"
+	. "php $argv[0] test restore /path/to/restore/from    ...: To restore collections, binaries, parts tables.\n\n"
 	. "**Individal Files - OUTFILE/INFILE - No schema\n"
-	. "php $argv[0] all outfile /path/to/save/to        ...: To dump all tables, using OUTFILE.\n"
-	. "php $argv[0] all infile /path/to/save/to         ...: To restore all tables, using INFILE.\n\n");
+	. "**MySQL MUST have write permissions to this path\n"
+	. "php $argv[0] all outfile /path/to/save/to          ...: To dump all tables, using OUTFILE.\n"
+	. "php $argv[0] all infile /path/to/restore/from      ...: To restore all tables, using INFILE.\n\n");
 }
 
 if(file_exists("mysql-defaults.txt")) {
