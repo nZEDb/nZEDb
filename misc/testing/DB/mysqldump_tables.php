@@ -12,11 +12,10 @@ if ($db->dbSystem() == "pgsql")
 $exportopts = "";
 $mysqlplatform = "";
 
-//determine mysql platform (oracle, percona, mariadb etc) This doesn't work, so all show as generic
-if($db->dbSystem() == "mysql")
-{
-	$mysqlplatform = mysql_get_client_info();
-	if(strpos($mysqlplatform, "Percona")) {
+//determine mysql platform Percona or Other
+if($db->dbSystem() == "mysql") {
+	$mysqlplatform = exec('mysqladmin version | grep "Percona"', $mysqlplatform);
+	if (count($mysqlplatform) > 0) {
 		//Percona only has --innodb-optimize-keys
 		$exportopts = "--opt --innodb-optimize-keys --complete-insert --skip-quick";
 	} else {
@@ -78,7 +77,9 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	if (file_exists($filename)) {
 		echo $c->header("Restoring $dbname.");
 		$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
+		$db->queryExec("SET FOREIGN_KEY_CHECKS=0");
 		system($command);
+		$db->queryExec("SET FOREIGN_KEY_CHECKS=1");
 	}
 } else if((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3]))) {
 	$sql = "SHOW tables";
@@ -96,15 +97,18 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 } else if((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3]))) {
 	$sql = "SHOW tables";
 	$tables = $db->query($sql);
+	$db->queryExec("SET FOREIGN_KEY_CHECKS=0");
 	foreach($tables as $row) {
 		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3]."/".$tbl.".gz";
 		if (file_exists($filename)) {
 			echo $c->header("Restoring $tbl.");
-			$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
+			//$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
+			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 			system($command);
 		}
 	}
+	$db->queryExec("SET FOREIGN_KEY_CHECKS=1");
 } else if((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "dump") && (isset($argv[3]) && file_exists($argv[3]))) {
 	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
 	foreach ($arr as &$tbl) {
