@@ -1,8 +1,7 @@
 <?php
 require dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'consoletools.php';
-//require_once nZEDb_LIB . 'predb.php';
-//require_once nZEDb_LIB . 'framework/db.php';
+
+
 
 // Downloads predb titles from github and stores them in the predb table.
 if (isset($argv[1]) && is_numeric($argv[1]))

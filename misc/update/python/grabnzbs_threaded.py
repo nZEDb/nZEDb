@@ -22,7 +22,10 @@ def connect():
 	if conf['DB_SYSTEM'] == "mysql":
 		try:
 			import cymysql as mdb
-			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
+			if conf['DB_PORT'] != '':
+				con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
+			else:
+				con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], unix_socket=conf['DB_SOCKET'], charset="utf8")
 		except ImportError:
 			print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
 			sys.exit()
@@ -61,11 +64,13 @@ if grab == 0:
 	sys.exit()
 
 #delete from nzbs where size greater than x
-cur[0].execute("SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) > "+maxnzb)
+cur[0].execute("SELECT collectionhash FROM nzbs GROUP BY collectionhash HAVING COUNT(collectionhash) > "+maxnzb)
 delnzbs = cur[0].fetchall()
 for delnzb in delnzbs:
 	cur[0].execute("DELETE FROM nzbs WHERE collectionhash = '"+delnzb[0]+"'")
 print(bcolors.HEADER + "Deleted %s collections exceeding %s parts from nzbs " % (len(delnzbs), maxnzb))
+disconnect(cur[0], cur[1])
+cur = connect()
 
 if conf['DB_SYSTEM'] == "mysql":
 	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s HOUR"
@@ -103,7 +108,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../nix/tmux/bin/grabnzbs.php", ""+my_id])
-					time.sleep(.05)
+					time.sleep(.03)
 					self.my_queue.task_done()
 
 def main():
@@ -128,7 +133,7 @@ def main():
 
 	#now load some arbitrary jobs into the queue
 	for gnames in datas:
-		time.sleep(.1)
+		time.sleep(.03)
 		my_queue.put(gnames[0])
 
 	my_queue.join()

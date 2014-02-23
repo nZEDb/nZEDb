@@ -1,3 +1,3 @@
 @echo off
 
-php runonce\relocateOldDirectoryContents.php
+php _runonce\relocateOldDirectoryContents.php

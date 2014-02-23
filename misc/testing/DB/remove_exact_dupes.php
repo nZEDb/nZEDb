@@ -3,12 +3,14 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $c = new ColorCLI();
-if (!isset($agrv[1]) && !is_numeric($argv[1])) {
+if ($argc < 3 || !isset($argv[1]) || (isset($argv[1]) && !is_numeric($argv[1]))) {
 	exit($c->error("\nIncorrect argument suppplied. This script will delete all duplicate releases matching on name, fromname, groupid and size.\n"
 		. "Unfortunately, I can not guarantee which copy will be deleted.\n\n"
-		. "php $argv[0] 10         ...: To delete all duplicates added within the last 10 hours.\n"
-		. "php $argv[0] 0          ...: To delete all duplicates.\n"
-		. "php $argv[0] 10 dupes/  ...: To delete all duplicates added within the last 10 hours and save a copy of the nzb to dupes folder.\n"));
+		. "php $argv[0] 10 exact             ...: To delete all duplicates added within the last 10 hours.\n"
+		. "php $argv[0] 10 near              ...: To delete all duplicates with size variation of 1% and added within the last 10 hours.\n"
+		. "php $argv[0] 0 exact              ...: To delete all duplicates.\n"
+		. "php $argv[0] 0 near               ...: To delete all duplicates with size variation of 1%.\n"
+		. "php $argv[0] 10 exact dupes/      ...: To delete all duplicates added within the last 10 hours and save a copy of the nzb to dupes folder.\n"));
 }
 
 $crosspostt = $argv[1];
@@ -21,15 +23,19 @@ $ri = new ReleaseImage();
 $s = new Sites();
 $site = $s->get();
 $consoleTools = new ConsoleTools();
+$size = ' size ';
+if ($argv[2] === 'near') {
+	$size = ' size between (size *.99) AND (size * 1.01) ';
+}
 
 if ($crosspostt != 0) {
 	if ($db->dbSystem() == 'mysql') {
-		$query = sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name, fromname, groupid, size HAVING COUNT(*) > 1', $crosspostt);
+		$query = sprintf('SELECT max(id) AS id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name, fromname, groupid,' . $size . 'HAVING COUNT(*) > 1', $crosspostt);
 	} else {
-		$query = sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, fromname, groupid, size HAVING COUNT(name) > 1", $crosspostt);
+		$query = sprintf("SELECT max(id) AS id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, fromname, groupid," . $size . "HAVING COUNT(name) > 1", $crosspostt);
 	}
 } else {
-	$query = sprintf('SELECT id, guid FROM releases GROUP BY name, fromname, groupid, size HAVING COUNT(*) > 1 ORDER BY id DESC');
+	$query = sprintf('SELECT max(id) AS id, guid FROM releases GROUP BY name, fromname, groupid,' . $size . 'HAVING COUNT(*) > 1');
 }
 
 do {
@@ -39,8 +45,8 @@ do {
 	if (count($resrel) > 0) {
 		foreach ($resrel as $rowrel) {
 			$nzbpath = $nzb->getNZBPath($rowrel['guid'], $site->nzbpath, false, $site->nzbsplitlevel);
-			if (isset($argv[2]) && is_dir($argv[2])) {
-				$path = $argv[2];
+			if (isset($argv[3]) && is_dir($argv[3])) {
+				$path = $argv[3];
 				if (substr($path, strlen($path) - 1) != '/') {
 					$path = $path . "/";
 				}

@@ -53,8 +53,10 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 		}
 	}
 
-	$delcount = $db->queryDirect("DELETE FROM releases WHERE (bitwise & 256) = 0");
+	$delcount = $db->queryDirect("DELETE FROM releases WHERE nzbstatus = 0");
 	echo $c->primary($delcount->rowCount() . " releases had no nzb, deleted.");
 } else {
-	exit($c->error("\nThis script removes releases with no NZBs, resets all groups, truncates or drops(tpg) article tables. All other releases are left alone.\nIf you are sure you want to run it, type php reset_truncate.php [true, drop]\n"));
+	exit($c->error("\nThis script removes releases with no NZBs, resets all groups, truncates or drops(tpg) \n"
+			. "article tables. All other releases are left alone.\n"
+			. "php $argv[0] [true, drop]   ...: To reset all groups and truncate/drop the tables.\n"));
 }

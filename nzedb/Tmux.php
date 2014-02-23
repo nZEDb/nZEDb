@@ -74,4 +74,3 @@ class Tmux
 		return $db->queryExec($sql);
 	}
 }
-?>

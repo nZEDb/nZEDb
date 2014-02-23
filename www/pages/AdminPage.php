@@ -1,7 +1,7 @@
 <?php
 /* This is a smarty/www file and should be moved to the nZEDb_WWW/pages directory? */
 require_once './config.php';
-//require_once nZEDb_LIB . 'framework/basepage.php';
+
 
 class AdminPage extends BasePage
 {

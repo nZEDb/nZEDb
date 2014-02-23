@@ -8,7 +8,7 @@ $c = new ColorCLI();
 
 // Create the connection here and pass, this is for post processing, so check for alternate
 $nntp = new NNTP();
-if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false) {
+if (($site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
 	exit($c->error("Unable to connect to usenet."));
 }
 if ($site->nntpproxy === "1") {

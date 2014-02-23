@@ -20,22 +20,44 @@ System Administration know-how. nZEDb is not plug-n-play software. Installation 
 
 ### Hardware
 
-    4GB RAM, 2 cores(threads) and 20GB disk space minimum.
-
-As a general rule of thumb the database will need a minimum of 1-2G buffer RAM for every million releases you intend to store. That RAM should be assigned to these two parameters:
-- key_buffer_size			(MyISAM)
-- innodb_buffer_pool_size	(InnoDB)
-
-Use [mysqltuner.pl](http://mysqltuner.pl "MySQL tuner - Use it!") for recommendations for these and other important tuner parameters. Also refer to the project's wiki page: https://github.com/nZEDb/nZEDb/wiki/Database-tuning. This is particularly import before you start any large imports or backfills.
+	4GB RAM, 2 cores(threads) and 20GB disk space minimum.
 
 If you wish to use more than 5 threads a quad core CPU is beneficial.
+
+The overall speed of nZEDb is largely governed by performance of the database. As many of the database tables should be held within system RAM as possible. See Database Section below.
 
 ### Software
 
 	PHP 5.4+ (and various modules)
-    MySQL 5.5+ (Postgres support is Work-In-Progress)
-    Python 2.7 or 3.0 (and various modules)
+	MySQL 5.5+ (Postgres support is Work-In-Progress)
+	Python 2.7 or 3.0 (and various modules)
 The installation guides have more detailed software requirements.
+
+### Database
+
+Most (if not all) distributions ship MySQL/Postgres with a default configuration that will perform well on a Raspberry Pi. If you wish to store more that 500K releases, these default settings will quickly lead to poor performance. Expect this.
+
+As a general rule of thumb the database will need a minimum of 1-2G buffer RAM for every million releases you intend to store. That RAM should be assigned to either of these two parameters:
+- key_buffer_size			(MyISAM)
+- innodb_buffer_pool_size	(InnoDB)
+
+Use [mysqltuner.pl](http://mysqltuner.pl "MySQL tuner - Use it!") for recommendations for these and other important tuner parameters. Also refer to the project's wiki page: https://github.com/nZEDb/nZEDb/wiki/Database-tuning. This is particularly important before you start any large imports or backfills.
+
+MySQL is normally shipped using MyISAM tables by default. This is fine for running with one or a few threads and is a good way to start using nZEDb. You should migrate to the InnoDB table format if nZEDB is configured to use one of the following:
+
+	thread counts > 5
+	TPG (Table Per Group) mode
+	tmux mode
+
+This conversion script is helpful:
+
+	misc/testing/DB/convert_mysql_tables.php
+
+Before converting to InnoDB be sure to set:
+
+	innodb_file_per_table
+
+<br>
 
 ## Installation
 
@@ -53,7 +75,7 @@ Setting the paths to unrar/ffmpeg/mediainfo is optional, but unrar is recommende
 
 If you have set the path to unrar, deep rar inspection is recommended.
 
-Compressed headers are recommended if your provider supports XFeature gzip compression, however header retrieval may periodically hang if the nntp-proxy is not used. (XFeature GZIP compression, originally by wafflehouse : http://pastebin.com/A3YypDAJ)
+Compressed headers are recommended if your provider supports XFeature gzip compression, however header retrieval may periodically hang if the nntp-proxy is not used. (XFeature GZIP compression, originally by wafflehouse : link on pastebin was removed)
 
 Once you have set all the options, you can enable one or two groups and start with the simple screen script running in single-threaded mode. Look in the misc/update directory; update_binaries.php downloads usenet articles into the local database; update_releases.php attempts to group these articles into releases and create NZB files.
 

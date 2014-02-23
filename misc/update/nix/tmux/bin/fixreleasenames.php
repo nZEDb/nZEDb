@@ -15,7 +15,7 @@ if (!isset($argv[1])) {
 			//ignore encrypted nfos
 			if (preg_match('/^=newz\[NZB\]=\w+/', $res['textstring'])) {
 				$namefixer->done = $namefixer->matched = false;
-				$db->queryDirect(sprintf('UPDATE releases SET bitwise = ((bitwise & ~64)|64) WHERE id = %d', $res['releaseid']));
+				$db->queryDirect(sprintf('UPDATE releases SET proc_nfo = 1 WHERE id = %d', $res['releaseid']));
 				$namefixer->checked++;
 				echo '.';
 			} else {
@@ -53,7 +53,7 @@ if (!isset($argv[1])) {
 		$s = new Sites();
 		$site = $s->get();
 		$nntp = new NNTP();
-		if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false) {
+		if (($site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
 			exit($c->error("Unable to connect to usenet."));
 		}
 		if ($site->nntpproxy === "1") {
@@ -76,7 +76,7 @@ if (!isset($argv[1])) {
 		$s = new Sites();
 		$site = $s->get();
 		$nntp = new NNTP();
-		if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false) {
+		if (($site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
 			exit($c->error("Unable to connect to usenet."));
 		}
 		if ($site->nntpproxy === "1") {
@@ -87,7 +87,7 @@ if (!isset($argv[1])) {
 		$relID = $pieces[1];
 		$res = $sorter->nfosorter(null, $relID, $nntp);
 		if ($res != true) {
-			$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~16)|16) WHERE id = %d', $relID));
+			$db->queryExec(sprintf('UPDATE releases SET proc_sorter = 1 WHERE id = %d', $relID));
 			echo '.';
 		}
 		if ($site->nntpproxy != "1") {

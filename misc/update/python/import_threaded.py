@@ -20,7 +20,10 @@ con = None
 if conf['DB_SYSTEM'] == "mysql":
 	try:
 		import cymysql as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
+			if conf['DB_PORT'] != '':
+				con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
+			else:
+				con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], unix_socket=conf['DB_SOCKET'], charset="utf8")
 	except ImportError:
 		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
 		sys.exit()
@@ -76,7 +79,7 @@ class queue_runner(threading.Thread):
 				if my_id:
 					time_of_last_run = time.time()
 					subprocess.call(["php", pathname+"/../../testing/nzb-import.php", ""+my_id])
-					time.sleep(.05)
+					time.sleep(.03)
 					self.my_queue.task_done()
 
 def main(args):
@@ -107,18 +110,18 @@ def main(args):
 	if len(datas) != 0:
 		if (int(use_true[0]) == 0 or int(use_true[0]) == 1) and len(sys.argv) == 1:
 			for gnames in datas:
-				time.sleep(.1)
+				time.sleep(.03)
 				my_queue.put(os.path.join(nzbs,gnames))
 		elif int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
 			for gnames in datas:
-				time.sleep(.1)
+				time.sleep(.03)
 				my_queue.put("%s   %s" % (os.path.join(nzbs,gnames), "true"))
 	if len(datas) == 0:
 		if (int(use_true[0]) == 0 or int(use_true[0]) == 1) and len(sys.argv) == 1:
-			time.sleep(.1)
+			time.sleep(.03)
 			my_queue.put(nzbs)
 		elif int(use_true[0]) == 2 or ( len(sys.argv) >= 2 and sys.argv[1] == "true"):
-			time.sleep(.1)
+			time.sleep(.03)
 			my_queue.put("%s   %s" % (nzbs, "true"))
 
 	my_queue.join()

@@ -2,6 +2,7 @@
 
 class Install
 {
+
 	public $DB_SYSTEM;
 	public $DB_TYPE;
 	public $DB_HOST = "127.0.0.1";
@@ -21,6 +22,7 @@ class Install
 	public $NNTP_PORT_A;
 	public $NNTP_SSLENABLED_A;
 	public $nZEDb_WWW;
+	public $nZEDb_COVERS;
 	public $SMARTY_DIR;
 	public $DB_DIR;
 	public $nZEDb_MISC;
@@ -31,6 +33,7 @@ class Install
 	public $ADMIN_PASS;
 	public $ADMIN_EMAIL;
 	public $NZB_PATH;
+	public $TMP_PATH;
 	public $COMPILED_CONFIG;
 	public $doCheck = false;
 	public $sha1Check;
@@ -70,16 +73,18 @@ class Install
 	public $saveLockCheck;
 	public $error = false;
 
-	function Install()
+	public function __construct()
 	{
 		$this->nZEDb_WWW = dirname(realpath('.'));
 		$this->SMARTY_DIR = SMARTY_DIR;
 		$this->DB_DIR = dirname(realpath('..')) . '/db';
 		$this->nZEDb_MISC = dirname(realpath('..')) . '/misc';
-		$this->NZB_PATH = str_replace('\\', '/', dirname(realpath('..'))) . '/nzbfiles/';
+		$this->NZB_PATH = str_replace('\\', '/', dirname(realpath('..'))) . '/resources/nzb/';
+		$this->TMP_PATH = str_replace('\\', '/', dirname(realpath('..'))) . '/resources/tmp/';
 		$this->INSTALL_DIR = $this->nZEDb_WWW . '/install';
-		$this->nZEDb_LIBS = dirname(realpath('..')) . '/libs/';
 		$this->nZEDb_LIB = dirname(realpath('..')) . '/nzedb/';
+		$this->nZEDb_LIBS = str_replace('\\', '/', realpath(nZEDb_LIBS));
+		$this->nZEDb_COVERS = dirname(realpath('..')) . '/resources/covers';
 	}
 
 	public function setSession()
@@ -147,5 +152,5 @@ class Install
 	{
 		return @file_put_contents($this->INSTALL_DIR . '/install.lock', '');
 	}
+
 }
-?>

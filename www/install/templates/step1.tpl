@@ -60,47 +60,47 @@
 		<td>{if $cfg->cacheCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that anime covers dir is writeable:{if !$cfg->animeCoversCheck}<br /><span class="error">The covers/anime dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}/covers/anime</span>{/if}</td>
+		<td>Checking that anime covers dir is writeable:{if !$cfg->animeCoversCheck}<br /><span class="error">The covers/anime dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_COVERS}/anime</span>{/if}</td>
 		<td>{if $cfg->animeCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that audio covers dir is writeable:{if !$cfg->audioCoversCheck}<br /><span class="error">The covers/audio dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}/covers/audio</span>{/if}</td>
+		<td>Checking that audio covers dir is writeable:{if !$cfg->audioCoversCheck}<br /><span class="error">The covers/audio dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_COVERS}/audio</span>{/if}</td>
 		<td>{if $cfg->audioCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that audio sample dir is writeable:{if !$cfg->audiosampleCoversCheck}<br /><span class="error">The covers/audiosample dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}/covers/audiosample</span>{/if}</td>
+		<td>Checking that audio sample dir is writeable:{if !$cfg->audiosampleCoversCheck}<br /><span class="error">The covers/audiosample dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_COVERS}/audiosample</span>{/if}</td>
 		<td>{if $cfg->audiosampleCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that book covers dir is writeable:{if !$cfg->bookCoversCheck}<br /><span class="error">The covers/book dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}/covers/book</span>{/if}</td>
+		<td>Checking that book covers dir is writeable:{if !$cfg->bookCoversCheck}<br /><span class="error">The covers/book dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_COVERS}/book</span>{/if}</td>
 		<td>{if $cfg->bookCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that console covers dir is writeable:{if !$cfg->consoleCoversCheck}<br /><span class="error">The covers/console dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}/covers/console</span>{/if}</td>
+		<td>Checking that console covers dir is writeable:{if !$cfg->consoleCoversCheck}<br /><span class="error">The covers/console dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_COVERS}/console</span>{/if}</td>
 		<td>{if $cfg->consoleCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that movie covers dir is writeable:{if !$cfg->movieCoversCheck}<br /><span class="error">The covers/movies dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}/covers/movies</span>{/if}</td>
+		<td>Checking that movie covers dir is writeable:{if !$cfg->movieCoversCheck}<br /><span class="error">The covers/movies dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_COVERS}/movies</span>{/if}</td>
 		<td>{if $cfg->movieCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that music covers dir is writeable:{if !$cfg->musicCoversCheck}<br /><span class="error">The covers/music dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}/covers/music</span>{/if}</td>
+		<td>Checking that music covers dir is writeable:{if !$cfg->musicCoversCheck}<br /><span class="error">The covers/music dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_COVERS}/music</span>{/if}</td>
 		<td>{if $cfg->musicCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that preview picture dir is writeable:{if !$cfg->previewCoversCheck}<br /><span class="error">The covers/preview dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}/covers/preview</span>{/if}</td>
+		<td>Checking that preview picture dir is writeable:{if !$cfg->previewCoversCheck}<br /><span class="error">The covers/preview dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_COVERS}/preview</span>{/if}</td>
 		<td>{if $cfg->previewCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that sample picture dir is writeable:{if !$cfg->sampleCoversCheck}<br /><span class="error">The covers/sample dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}/covers/sample</span>{/if}</td>
+		<td>Checking that sample picture dir is writeable:{if !$cfg->sampleCoversCheck}<br /><span class="error">The covers/sample dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_COVERS}/sample</span>{/if}</td>
 		<td>{if $cfg->sampleCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that video sample dir is writeable:{if !$cfg->videoCoversCheck}<br /><span class="error">The covers/video dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}/covers/video</span>{/if}</td>
+		<td>Checking that video sample dir is writeable:{if !$cfg->videoCoversCheck}<br /><span class="error">The covers/video dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_COVERS}/video</span>{/if}</td>
 		<td>{if $cfg->videoCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that config.php is writeable:{if !$cfg->configCheck}<br /><span class="error">The installer cannot write to {$cfg->nZEDb_WWW}/config.php. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}</span>{/if}</td>
+		<td>Checking that config.php is writeable:{if !$cfg->configCheck}<br /><span class="error">The installer cannot write to {$cfg->nZEDb_WWW}/config.php. A quick solution is to run:<br />chmod 777 {$cfg->nZEDb_WWW}/config.php</span>{/if}</td>
 		<td>{if $cfg->configCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">

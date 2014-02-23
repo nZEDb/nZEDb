@@ -5,27 +5,26 @@ class ReleaseImage
 {
 	function __construct()
 	{
-		$this->movimgSavePath = nZEDb_WWW.'covers/movies/';
-		$this->imgSavePath = nZEDb_WWW.'covers/preview/';
-		$this->vidSavePath = nZEDb_WWW.'covers/video/';
-		$this->jpgSavePath = nZEDb_WWW.'covers/sample/';
-		$this->audSavePath = nZEDb_WWW.'covers/audiosample/';
+		$this->movimgSavePath = nZEDb_WWW . 'covers/movies/';
+		$this->imgSavePath = nZEDb_WWW . 'covers/preview/';
+		$this->vidSavePath = nZEDb_WWW . 'covers/video/';
+		$this->jpgSavePath = nZEDb_WWW . 'covers/sample/';
+		$this->audSavePath = nZEDb_WWW . 'covers/audiosample/';
 	}
 
 	public function fetchImage($imgLoc)
 	{
 		$img = false;
 
-		if (preg_match('/^http:/i', $imgLoc))
+		if (preg_match('/^http:/i', $imgLoc)) {
 			$img = getUrl($imgLoc);
-		else if (file_exists($imgLoc))
+		} else if (file_exists($imgLoc)) {
 			$img = @file_get_contents($imgLoc);
+		}
 
-		if ($img !== false)
-		{
+		if ($img !== false) {
 			$im = @imagecreatefromstring($img);
-			if ($im !== false)
-			{
+			if ($im !== false) {
 				imagedestroy($im);
 				return $img;
 			}
@@ -37,11 +36,11 @@ class ReleaseImage
 	public function saveImage($imgName, $imgLoc, $imgSavePath, $imgMaxWidth='', $imgMaxHeight='', $saveThumb=false)
 	{
 		$cover = $this->fetchImage($imgLoc);
-		if ($cover === false)
+		if ($cover === false) {
 			return 0;
+		}
 
-		if ($imgMaxWidth != '' && $imgMaxHeight != '')
-		{
+		if ($imgMaxWidth != '' && $imgMaxHeight != '') {
 			$im = @imagecreatefromstring($cover);
 			$width = imagesx($im);
 			$height = imagesy($im);
@@ -59,10 +58,11 @@ class ReleaseImage
 				$thumb = ob_get_clean();
 				imagedestroy($new_image);
 
-				if ($saveThumb)
+				if ($saveThumb) {
 					@file_put_contents($imgSavePath.$imgName.'_thumb.jpg', $thumb);
-				else
+				} else {
 					$cover = $thumb;
+				}
 
 				unset($thumb);
 			}
@@ -82,4 +82,3 @@ class ReleaseImage
 		@unlink($this->jpgSavePath.$guid.'_thumb.jpg');
 	}
 }
-?>

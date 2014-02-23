@@ -1,8 +1,10 @@
 <?php
+
 require_once nZEDb_LIB . 'Util.php';
 
 class TvRage
 {
+
 	const APIKEY = '7FwjZ8loweFcOhHfnU3E';
 	const MATCH_PROBABILITY = 75;
 
@@ -551,7 +553,7 @@ class TvRage
 
 		// Get all releases without a rageid which are in a tv category.
 		if ($releaseToWork == '') {
-			$res = $this->db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE (r.bitwise & 256) = 256 AND r.rageid = -1 AND c.parentid = %d ORDER BY postdate DESC LIMIT %d", Category::CAT_PARENT_TV, $this->rageqty));
+			$res = $this->db->query(sprintf("SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE r.nzbstatus = 1 AND r.rageid = -1 AND c.parentid = %d ORDER BY postdate DESC LIMIT %d", Category::CAT_PARENT_TV, $this->rageqty));
 			$tvcount = count($res);
 		} else {
 			$pieces = explode("           =+=            ", $releaseToWork);
@@ -1045,5 +1047,7 @@ class TvRage
 			'Horror/Supernatural', 'Housing/Building', 'How To/Do It Yourself', 'Interview', 'Lifestyle', 'Literature', 'Medical', 'Military/War', 'Music', 'Mystery', 'Pets/Animals', 'Politics', 'Puppets',
 			'Religion', 'Romance/Dating', 'Sci-Fi', 'Sketch/Improv', 'Soaps', 'Sports', 'Super Heroes', 'Talent', 'Tech/Gaming', 'Teens', 'Thriller', 'Travel', 'Western', 'Wildlife');
 	}
+
 }
+
 ?>
