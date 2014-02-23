@@ -76,7 +76,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	$filename = $argv[3]."/".$dbname.".gz";
 	if (file_exists($filename)) {
 		echo $c->header("Restoring $dbname.");
-		$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
+		$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 		$db->queryExec("SET FOREIGN_KEY_CHECKS=0");
 		system($command);
 		$db->queryExec("SET FOREIGN_KEY_CHECKS=1");
@@ -103,7 +103,6 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 		$filename = $argv[3]."/".$tbl.".gz";
 		if (file_exists($filename)) {
 			echo $c->header("Restoring $tbl.");
-			//$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 			system($command);
 		}
@@ -122,14 +121,16 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 	}
 } else if((isset($argv[1]) && $argv[1] == "test") && (isset($argv[2]) && $argv[2] == "restore") && (isset($argv[3]) && file_exists($argv[3]))) {
 	$arr = array("parts", "binaries", "collections", "partrepair", "groups");
+	$db->queryExec("SET FOREIGN_KEY_CHECKS=0");
 	foreach ($arr as &$tbl) {
 		$filename = $argv[3]."/".$tbl.".gz";
 		if (file_exists($filename)) {
 			echo $c->header("Restoring $tbl.");
-			$command = "gunzip < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
+			$command = "zcat < $filename | mysql --defaults-file=mysql-defaults.txt -h$dbhost -P$dbport $dbname";
 			system($command);
 		}
 	}
+	$db->queryExec("SET FOREIGN_KEY_CHECKS=1");
 } else if((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "outfile") && (isset($argv[3]) && file_exists($argv[3]))) {
 	$sql = "SHOW tables";
 	$tables = $db->query($sql);
@@ -145,6 +146,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 } else if((isset($argv[1]) && $argv[1] == "all") && (isset($argv[2]) && $argv[2] == "infile") && (isset($argv[3]) && is_dir($argv[3]))) {
 	$sql = "SHOW tables";
 	$tables = $db->query($sql);
+	$db->queryExec("SET FOREIGN_KEY_CHECKS=0");
 	foreach($tables as $row) {
 		$tbl = $row['tables_in_'.DB_NAME];
 		$filename = $argv[3].$tbl.".csv";
@@ -153,6 +155,7 @@ if((isset($argv[1]) && $argv[1] == "db") && (isset($argv[2]) && $argv[2] == "dum
 			$db->queryExec(sprintf("LOAD DATA INFILE %s INTO TABLE %s", $db->escapeString($filename), $tbl));
 		}
 	}
+	$db->queryExec("SET FOREIGN_KEY_CHECKS=1");
 } else {
 	passthru("clear");
 	echo $c->error("\nThis script can dump/restore all tables, compressed or OUTFILE/INFILE, or just collections/binaries/parts.\n\n"
