@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-24 -> bart39   -> fixed unnecessary join in query when browsing Releases
 2014-02-23 -> bart39   -> updated dump_predb.php to remove any records where title <=15 when importing predb dump
 2014-02-23 -> jonnyboy -> fixed usage in postprocess_old_threaded.py
                           updated python scripts to use connection from info.py
