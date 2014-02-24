@@ -44,7 +44,16 @@ function SplitSQL($file, $delimiter = ';')
 								echo $c->error($query . " Skipped - Not Fatal {" . $e->errorInfo[1] . "}.\n");
 							}
 						} else {
-							exit($c->error($query . " Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+							if (preg_match('/ALTER IGNORE/I', $query)) {
+								$db->queryExec("SET SESSION old_alter_table = 1");
+								try {
+									$qry = $db->prepare($query);
+									$qry->execute();
+									echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
+								} catch (PDOException $e) {
+									exit($c->error($query . " Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+								}
+							}
 						}
 					}
 
