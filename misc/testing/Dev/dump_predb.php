@@ -60,6 +60,10 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 		$db->queryDirect("LOAD DATA INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, category, predate, adddate, source, md5, requestid, groupname)");
 	}
 
+    // Remove any titles where length <=15
+    echo $c->info("Deleting any records where title <=15 from Temporary Table");
+    $db->queryDirect("DELETE FROM tmp_pre WHERE LENGTH(title) <= 15");
+
 	// Insert and update table
 	echo $c->primary('INSERT INTO ' . $table . " (title, nfo, size, category, predate, adddate, source, md5, requestid, groupid) SELECT t.title, t.nfo, t.size, t.category, t.predate, t.adddate, t.source, t.md5, t.requestid, IF(g.id IS NOT NULL, g.id, 0) FROM tmp_pre t LEFT OUTER JOIN groups g ON t.groupname = g.name ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo is null, t.nfo, predb.nfo), predb.size = IF(predb.size is null, t.size, predb.size), predb.category = IF(predb.category is null, t.category, predb.category), predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid), predb.groupid = IF(g.id IS NOT NULL, g.id, 0);\n");
 	$db->queryDirect('INSERT INTO ' . $table . ' (title, nfo, size, category, predate, adddate, source, md5, requestid, groupid) SELECT t.title, t.nfo, t.size, t.category, t.predate, t.adddate, t.source, t.md5, t.requestid, IF(g.id IS NOT NULL, g.id, 0) FROM tmp_pre t LEFT OUTER JOIN groups g ON t.groupname = g.name ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo is null, t.nfo, predb.nfo), predb.size = IF(predb.size is null, t.size, predb.size), predb.category = IF(predb.category is null, t.category, predb.category), predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid), predb.groupid = IF(g.id IS NOT NULL, g.id, 0)');
