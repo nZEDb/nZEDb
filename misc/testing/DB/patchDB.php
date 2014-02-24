@@ -53,6 +53,8 @@ function SplitSQL($file, $delimiter = ';')
 								} catch (PDOException $e) {
 									exit($c->error($query . " Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 								}
+							} else {
+								exit($c->error($query . " Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 							}
 						}
 					}
