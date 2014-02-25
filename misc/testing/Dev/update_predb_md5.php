@@ -36,7 +36,7 @@ echo "\n" . $c->info("Creating index ix_predb_md5.");
 $db->queryDirect("ALTER IGNORE TABLE predb ADD CONSTRAINT ix_predb_md5 UNIQUE (md5)");
 echo $c->info("Updating Predb matches in releases.");
 
-$releases = $db->queryDirect("SELECT id, searchname FROM releases WHERE preid IS NOT NULL");
+$releases = $db->queryDirect("SELECT id, searchname FROM releases WHERE preid > 0");
 $newtotal = $releases->rowCount();
 $matched = $counter = 0;
 foreach ($releases as $release) {
