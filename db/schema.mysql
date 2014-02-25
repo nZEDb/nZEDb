@@ -66,7 +66,7 @@ CREATE TABLE releases (
 	consoleinfoid INT NULL,
 	bookinfoid INT NULL,
 	anidbid INT NULL,
-	preid INT NULL,
+	preid INT UNSIGNED NOT NULL DEFAULT '0',
 	grabs INT UNSIGNED NOT NULL DEFAULT '0',
 	comments INT NOT NULL DEFAULT 0,
 	passwordstatus TINYINT NOT NULL DEFAULT 0,
@@ -113,6 +113,7 @@ CREATE INDEX ix_releases_status ON releases (nzbstatus, iscategorized, isrenamed
 CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
 CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);
 CREATE INDEX ix_releases_nzb_guid ON releases (nzb_guid);
+CREATE INDEX ix_releases_preid_searchname ON releases (preid, searchname);
 
 DROP TABLE IF EXISTS releasefiles;
 CREATE TABLE releasefiles (
@@ -1098,7 +1099,7 @@ INSERT INTO site
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
 	('showbacks', '0'),
-	('sqlpatch','178');
+	('sqlpatch','179');
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (

@@ -21,7 +21,11 @@ threads = 10
 
 print(bcolors.HEADER + "\nGrab Headers Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
-datas = ("alt.binaries.teevee", "alt.binaries.tv", "alt.binaries.audiobooks", "alt.binaries.moovee", "alt.binaries.e-book",  "alt.binaries.e-book.technical",  "alt.binaries.ebook", "alt.binaries.e-book.magazines")
+if len(sys.argv) > 1:
+	datas = []
+	datas.append(sys.argv[1])
+else:
+	datas = ("alt.binaries.teevee", "alt.binaries.tv", "alt.binaries.audiobooks", "alt.binaries.moovee", "alt.binaries.e-book",  "alt.binaries.e-book.technical",  "alt.binaries.ebook", "alt.binaries.e-book.magazines")
 if not datas:
 	print(bcolors.HEADER + "No Work to Process" + bcolors.ENDC)
 	sys.exit()
@@ -55,7 +59,6 @@ def main():
 
 	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} groups".format(threads, "{:,}".format(len(datas))) + bcolors.ENDC)
 	time.sleep(2)
-
 	def signal_handler(signal, frame):
 		sys.exit(0)
 

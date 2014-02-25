@@ -124,7 +124,7 @@ $proc_work2 = "SELECT "
 $proc_work3 = "SELECT "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrenamed = 0 AND isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $request_hours . " HOUR)) AS requestid_inprogress, "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND reqidstatus = 1) AS requestid_matched, "
-	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND preid IS NOT NULL) AS predb_matched, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND preid > 0) AS predb_matched, "
 	. "(SELECT COUNT(DISTINCT(preid)) FROM releases) AS distinct_predb_matched, "
 	. "(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
 

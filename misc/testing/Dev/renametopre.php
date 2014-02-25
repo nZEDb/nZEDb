@@ -53,7 +53,7 @@ function preName($argv, $argc)
 	}
 	if ($usepre === true) {
 		$where = '';
-		$why = ' WHERE preid IS NULL AND nzbstatus = 1';
+		$why = ' WHERE preid = 0 AND nzbstatus = 1';
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
 		$where = '';
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
@@ -202,7 +202,7 @@ function preName($argv, $argc)
 	} else if (isset($argv[1]) && $argv[1] == "all") {
 		$relcount = categorizeRelease("searchname", "", true);
 	} else if (isset($argv[1]) && $argv[1] == "preid") {
-		$relcount = categorizeRelease("searchname", "WHERE preid IS NULL AND nzbstatus = 1", true);
+		$relcount = categorizeRelease("searchname", "WHERE preid = 0 AND nzbstatus = 1", true);
 	} else {
 		$relcount = categorizeRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}

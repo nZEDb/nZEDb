@@ -38,11 +38,11 @@ if len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "clean":
 elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "clean":
 	clean = " isrenamed = 0 AND proc_files = 1 AND proc_nfo = 1 "
 elif len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "preid":
-	clean = " preid IS NULL "
+	clean = " preid = 0 "
 elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "preid":
-	clean = " preid IS NULL "
+	clean = " preid = 0 "
 elif len(sys.argv) == 3 and sys.argv[1] == "filename" and sys.argv[2] == "preid":
-	clean = " preid IS NULL "
+	clean = " preid = 0 "
 else:
 	clean = " isrenamed = 0 "
 
