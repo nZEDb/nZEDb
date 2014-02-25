@@ -42,7 +42,7 @@ $matched = $counter = 0;
 foreach ($releases as $release) {
 	$run = $predb->matchPre($release['searchname'], $release['id']);
 	if ($run === false) {
-		$db->queryExec(sprintf('UPDATE releases SET preid = NULL WHERE id = %d', $release['id']));
+		$db->queryExec(sprintf('UPDATE releases SET preid = 0 WHERE id = %d', $release['id']));
 	} else {
 		$matched++;
 	}

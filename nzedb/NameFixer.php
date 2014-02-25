@@ -253,7 +253,7 @@ class NameFixer
 	}
 
 	//  Update the release with the new information.
-	public function updateRelease($release, $name, $method, $echo, $type, $namestatus, $show, $preid = 'NULL')
+	public function updateRelease($release, $name, $method, $echo, $type, $namestatus, $show, $preid = 0)
 	{
 		if ($this->relid !== $release["releaseid"]) {
 			$namecleaning = new ReleaseCleaning();
