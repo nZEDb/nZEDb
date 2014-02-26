@@ -119,7 +119,7 @@ class Install
 
 	public function saveConfig()
 	{
-		$tmpCfg = file_get_contents($this->INSTALL_DIR . '/config.php.tpl');
+		$tmpCfg = file_get_contents($this->INSTALL_DIR . DS .'config.php.tpl');
 		$tmpCfg = str_replace('%%DB_SYSTEM%%', $this->DB_SYSTEM, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_HOST%%', $this->DB_HOST, $tmpCfg);
 		$tmpCfg = str_replace('%%DB_PORT%%', $this->DB_PORT, $tmpCfg);
