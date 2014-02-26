@@ -39,7 +39,7 @@ if ($page->isPostBack()) {
 	if ($cfg->COVERS_PATH == '') {
 		$cfg->error = true;
 	} else {
-		\nzedb\util::trailingSlash($cfg->COVERS_PATH);
+		Util::trailingSlash($cfg->COVERS_PATH);
 
 		$cfg->coverPathCheck = is_writable($cfg->COVERS_PATH);
 		if ($cfg->coverPathCheck === false) {
@@ -58,6 +58,16 @@ if ($page->isPostBack()) {
 		$sql3 = sprintf("UPDATE site SET value = %s WHERE setting = 'coverspath'", $db->escapeString($cfg->COVERS_PATH));
 		if ($db->queryExec($sql1) === false || $db->queryExec($sql2) === false || $db->queryExec($sql3) === false) {
 			$cfg->error = true;
+		}
+
+		if ($cfg->error !== true) {
+			if ($cfg->COVERS_PATH != nZEDb_WWW . 'covers' . DS) {
+				// TODO clean up old covers location if 'empty' (i.e. only contains the versioned files).
+			}
+
+			if ($cfg->NZB_PATH != nZEDb_ROOT . 'nzbfiles' . DS) {
+				// TODO clean up old nzbfiles location if 'empty' (i.e. only contains the versioned files).
+			}
 		}
 	}
 
