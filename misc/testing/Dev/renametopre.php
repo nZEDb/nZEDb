@@ -53,7 +53,7 @@ function preName($argv, $argc)
 	}
 	if ($usepre === true) {
 		$where = '';
-		$why = ' WHERE preid IS NULL AND nzbstatus = 1';
+		$why = ' WHERE preid = 0 AND nzbstatus = 1';
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
 		$where = '';
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
@@ -88,7 +88,7 @@ function preName($argv, $argc)
 		foreach ($res as $row) {
 			$groupname = $groups->getByNameByID($row['groupid']);
 			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $groupname, $usepre);
-			$preid = "NULL";
+			$preid = 0;
 			$predb = $increment = false;
 			if (!is_array($cleanerName)) {
 				$cleanName = trim($cleanerName);
@@ -202,7 +202,7 @@ function preName($argv, $argc)
 	} else if (isset($argv[1]) && $argv[1] == "all") {
 		$relcount = categorizeRelease("searchname", "", true);
 	} else if (isset($argv[1]) && $argv[1] == "preid") {
-		$relcount = categorizeRelease("searchname", "WHERE preid IS NULL AND nzbstatus = 1", true);
+		$relcount = categorizeRelease("searchname", "WHERE preid = 0 AND nzbstatus = 1", true);
 	} else {
 		$relcount = categorizeRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
@@ -232,14 +232,14 @@ function resetSearchnames()
 	$c = new ColorCLI();
 	echo $c->header("Resetting blank searchnames.");
 	$bad = $db->queryDirect("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-		. "preid = NULL, searchname = name, isrenamed = 0, iscategorized = 0 WHERE searchname = ''");
+		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE searchname = ''");
 	$tot = $bad->rowCount();
 	if ($tot > 0) {
 		echo $c->primary(number_format($tot) . " Releases had no searchname.");
 	}
 	echo $c->header("Resetting searchnames that are 8 characters or less.");
 	$run = $db->queryDirect("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-		. "preid = NULL, searchname = name, isrenamed = 0, iscategorized = 0 WHERE LENGTH(searchname) <= 8 AND LENGTH(name) > 8");
+		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE LENGTH(searchname) <= 8 AND LENGTH(name) > 8");
 	$total = $run->rowCount();
 	if ($total > 0) {
 		echo $c->primary(number_format($total) . " Releases had searchnames that were 8 characters or less.");

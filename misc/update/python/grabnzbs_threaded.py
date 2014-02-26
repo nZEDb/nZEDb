@@ -88,7 +88,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} nzbs".format(run_threads[0], "{:,}".format(len(datas))) + bcolors.ENDC)
+	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} nzbs".format(run_threads, "{:,}".format(len(datas))) + bcolors.ENDC)
 	print(bcolors.HEADER + "+ = nzb imported, - = probably not nzb, ! = duplicate, f = download failed" + bcolors.ENDC)
 	time.sleep(2)
 
@@ -99,7 +99,7 @@ def main():
 
 	if True:
 		#spawn a pool of place worker threads
-		for i in range(int(run_threads[0])):
+		for i in range(int(run_threads)):
 			p = queue_runner(my_queue)
 			p.setDaemon(False)
 			p.start()

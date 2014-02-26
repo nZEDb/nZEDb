@@ -60,7 +60,7 @@ class Releases
 
 		$catsrch = $this->categorySQL($cat);
 
-		$maxagesql = $exccatlist = $grpsql = '';
+		$maxagesql = $exccatlist = $grpjoin = $grpsql = '';
 		if ($maxage > 0) {
 			if ($db->dbSystem() == 'mysql') {
 				$maxagesql = sprintf(' AND postdate > NOW() - INTERVAL %d DAY ', $maxage);
@@ -70,6 +70,7 @@ class Releases
 		}
 
 		if ($grp != '') {
+            $grpjoin = 'LEFT OUTER JOIN groups ON groups.id = releases.groupid';
 			$grpsql = sprintf(' AND groups.name = %s ', $db->escapeString($grp));
 		}
 
@@ -77,7 +78,7 @@ class Releases
 			$exccatlist = ' AND categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$res = $db->queryOneRow(sprintf('SELECT COUNT(releases.id) AS num FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid WHERE nzbstatus = 1 AND releases.passwordstatus <= %d %s %s %s %s', $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql));
+		$res = $db->queryOneRow(sprintf('SELECT COUNT(releases.id) AS num FROM releases %s WHERE nzbstatus = 1 AND releases.passwordstatus <= %d %s %s %s %s', $grpjoin, $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql));
 		return $res['num'];
 	}
 
@@ -1692,7 +1693,8 @@ class Releases
 		// Completed releases and old collections that were missed somehow.
 		if ($db->dbSystem() == 'mysql') {
 			$delq = $db->queryDirect(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ' INNER JOIN ' . $group['bname'] . ' ON ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid INNER JOIN ' . $group['pname'] . ' on ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid WHERE' . $where . $group['cname'] . '.filecheck = 5'));
-			$reccount = $delq->rowCount();
+            //$delq = $db->queryDirect(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' WHERE' . $where . $group['cname'] . '.filecheck = 5 AND ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid AND ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid'));
+            $reccount = $delq->rowCount();
 		} else {
 			$idr = $db->queryDirect('SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
 			if ($idr->rowCount() > 0) {

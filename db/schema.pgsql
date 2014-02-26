@@ -551,7 +551,7 @@ CREATE TABLE "releases" (
   "consoleinfoid" integer,
   "bookinfoid" integer,
   "anidbid" integer,
-  "preid" integer,
+  "preid" bigint DEFAULT 0 NOT NULL,
   "grabs" bigint DEFAULT 0 NOT NULL,
   "comments" integer DEFAULT 0 NOT NULL,
   "passwordstatus" smallint DEFAULT 0 NOT NULL,
@@ -1471,7 +1471,7 @@ INSERT INTO site
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
 	('showbacks', '0'),
-	('sqlpatch','178');
+	('sqlpatch','179');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
@@ -1988,6 +1988,8 @@ DROP INDEX IF EXISTS "ix_releases_postdate_name" CASCADE;
 CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);
 DROP INDEX IF EXISTS "ix_releases_nzb_guid" CASCADE;
 CREATE INDEX ix_releases_nzb_guid ON releases (nzb_guid);
+DROP INDEX IF EXISTS "ix_releases_preid_searchname" CASCADE;
+CREATE INDEX ix_releases_preid_searchname ON releases (preid, searchname);
 
 CREATE FUNCTION hash_check() RETURNS trigger AS $hash_check$ BEGIN IF NEW.searchname ~ '[a-fA-F0-9]{32}' OR NEW.name ~ '[a-fA-F0-9]{32}' THEN SET NEW.bitwise = "((NEW.bitwise & ~512)|512)"; END IF; END; $hash_check$ LANGUAGE plpgsql;
 CREATE FUNCTION request_check() RETURNS trigger AS $request_check$ BEGIN IF NEW.searchname ~'^\\[[[:digit:]]+\\]' OR NEW.name ~'^\\[[[:digit:]]+\\]' THEN SET NEW.bitwise = "((NEW.bitwise & ~1024)|1024)"; END IF; END; $request_check$ LANGUAGE plpgsql;

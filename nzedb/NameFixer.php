@@ -46,7 +46,7 @@ class NameFixer
 		if ($cats === 3) {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-				. "WHERE nzbstatus = 1 AND preid IS NULL";
+				. "WHERE nzbstatus = 1 AND preid = 0";
 			$cats = 2;
 			$preid = true;
 		} else {
@@ -127,7 +127,7 @@ class NameFixer
 			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
-				. "WHERE nzbstatus = 1 AND preid IS NULL";
+				. "WHERE nzbstatus = 1 AND preid = 0";
 			$cats = 2;
 			$preid = true;
 		} else {
@@ -197,7 +197,7 @@ class NameFixer
 
 		$db = $this->db;
 		if ($cats === 3) {
-			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE nzbstatus = 1 AND preid IS NULL";
+			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE nzbstatus = 1 AND preid = 0";
 			$cats = 2;
 		} else {
 			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_par2 = 0";
@@ -253,7 +253,7 @@ class NameFixer
 	}
 
 	//  Update the release with the new information.
-	public function updateRelease($release, $name, $method, $echo, $type, $namestatus, $show, $preid = 'NULL')
+	public function updateRelease($release, $name, $method, $echo, $type, $namestatus, $show, $preid = 0)
 	{
 		if ($this->relid !== $release["releaseid"]) {
 			$namecleaning = new ReleaseCleaning();

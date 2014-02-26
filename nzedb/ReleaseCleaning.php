@@ -107,6 +107,8 @@ class ReleaseCleaning
 				return $this->chello();
 			case 'alt.binaries.classic.tv.shows':
 				return $this->classic_tv_shows();
+			case 'alt.binaries.comics':
+				return $this->comics();
 			case 'alt.binaries.classic.comics.dcp':
 				return $this->comics_dcp();
 			case 'alt.binaries.comp':
@@ -1127,6 +1129,28 @@ class ReleaseCleaning
 		//Andy Griffith Show,The   1x05....Irresistible Andy - (DVD).part04.rar
 		else if (preg_match('/^(.+\d+x\d+.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})( yEnc)?( (Series|Season) Finale)?$/', $this->subject, $match)) {
 			return $match[1];
+		} else {
+			return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
+		}
+	}
+
+	public function comics()
+	{
+		//(The Walking Dead Comics Volume 1) [10/18] - "walking dead 002.cbr" yEnc
+		if (preg_match('/^\((.+)\)[ -]+\[\d+\/\d+\][ -]+".+"[ -]+yEnc$/', $this->subject, $match)) {
+			return $match[1];
+		}
+		//The Strain -1-9 [Comic] [1/2] - "TSC.nfo" yEnc
+		else if (preg_match('/^(.+)[ -]+\[COMIC\][ -]+\[\d+\/\d+\][ -]+".+"[ -]+yEnc$/i', $this->subject, $match)) {
+			return $match[1];
+		}
+		// Return anything between the quotes.
+		else if (preg_match('/.*"(.+?)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match)) {
+			if (strlen($match[1]) > 7 && !preg_match('/\.vol.+/', $match[1])) {
+				return $match[1];
+			} else {
+				return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
+			}
 		} else {
 			return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
 		}
