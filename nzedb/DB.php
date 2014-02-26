@@ -41,13 +41,14 @@ class DB extends PDO
 	 */
 	public function __construct()
 	{
+		$this->c = new ColorCLI();
+
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		} else {
 			exit($this->c->error("\nconfig.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
 		}
 
-		$this->c = new ColorCLI();
 		if (!(self::$pdo instanceof PDO)) {
 			$this->initialiseDatabase();
 		}
