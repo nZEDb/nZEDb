@@ -44,52 +44,52 @@ if ($cfg->cacheCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->animeCoversCheck = is_writable($this->COVERS_PATH . 'anime');
+$cfg->animeCoversCheck = is_writable($cfg->COVERS_PATH . 'anime');
 if ($cfg->animeCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->audioCoversCheck = is_writable($this->COVERS_PATH . 'audio');
+$cfg->audioCoversCheck = is_writable($cfg->COVERS_PATH . 'audio');
 if ($cfg->audioCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->audiosampleCoversCheck = is_writable($this->COVERS_PATH . 'audiosample');
+$cfg->audiosampleCoversCheck = is_writable($cfg->COVERS_PATH . 'audiosample');
 if ($cfg->audiosampleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->bookCoversCheck = is_writable($this->COVERS_PATH . 'book');
+$cfg->bookCoversCheck = is_writable($cfg->COVERS_PATH . 'book');
 if ($cfg->bookCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->consoleCoversCheck = is_writable($this->COVERS_PATH . 'console');
+$cfg->consoleCoversCheck = is_writable($cfg->COVERS_PATH . 'console');
 if ($cfg->consoleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->movieCoversCheck = is_writable($this->COVERS_PATH . 'movies');
+$cfg->movieCoversCheck = is_writable($cfg->COVERS_PATH . 'movies');
 if ($cfg->movieCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->musicCoversCheck = is_writable($this->COVERS_PATH . 'music');
+$cfg->musicCoversCheck = is_writable($cfg->COVERS_PATH . 'music');
 if ($cfg->musicCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->previewCoversCheck = is_writable($this->COVERS_PATH . 'preview');
+$cfg->previewCoversCheck = is_writable($cfg->COVERS_PATH . 'preview');
 if ($cfg->previewCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->sampleCoversCheck = is_writable($this->COVERS_PATH . 'sample');
+$cfg->sampleCoversCheck = is_writable($cfg->COVERS_PATH . 'sample');
 if ($cfg->sampleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->videoCoversCheck = is_writable($this->COVERS_PATH . 'video');
+$cfg->videoCoversCheck = is_writable($cfg->COVERS_PATH . 'video');
 if ($cfg->videoCoversCheck === false) {
 	$cfg->error = true;
 }
