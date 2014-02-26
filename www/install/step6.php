@@ -20,6 +20,7 @@ if ($page->isPostBack()) {
 	$cfg->doCheck = true;
 
 	$cfg->NZB_PATH = trim($_POST['nzbpath']);
+	$cfg->COVERS_PATH = trim($_POST['coverspath']);
 
 	if ($cfg->NZB_PATH == '') {
 		$cfg->error = true;
@@ -33,19 +34,30 @@ if ($page->isPostBack()) {
 		if ($lastchar != "/") {
 			$cfg->NZB_PATH = $cfg->NZB_PATH . "/";
 		}
+	}
 
-		if (!$cfg->error) {
-			if (!file_exists($cfg->UNRAR_PATH)) {
-				mkdir($cfg->UNRAR_PATH);
-			}
+	if ($cfg->COVERS_PATH == '') {
+		$cfg->error = true;
+	} else {
+		\nzedb\Util::trailingSlash($cfg->COVERS_PATH);
 
-			$db = new DB();
-			$sql1 = sprintf("UPDATE site SET value = %s WHERE setting = 'nzbpath'", $db->escapeString($cfg->NZB_PATH));
-			$sql2 = sprintf("UPDATE site SET value = %s WHERE setting = 'tmpunrarpath'", $db->escapeString($this->UNRAR_PATH));
-			$sql3 = sprintf("UPDATE site SET value = %s WHERE setting = 'coverspath'", $db->escapeString($this->COVERS_PATH));
-			if ($db->queryExec($sql1) === false || $db->queryExec($sql2) === false || $db->queryExec($sql3) === false) {
-				$cfg->error = true;
-			}
+		$cfg->coverPathCheck = is_writable($cfg->COVERS_PATH);
+		if ($cfg->coverPathCheck === false) {
+			$cfg->error = true;
+		}
+	}
+
+	if (!$cfg->error) {
+		if (!file_exists($cfg->UNRAR_PATH)) {
+			mkdir($cfg->UNRAR_PATH);
+		}
+
+		$db = new DB();
+		$sql1 = sprintf("UPDATE site SET value = %s WHERE setting = 'nzbpath'", $db->escapeString($cfg->NZB_PATH));
+		$sql2 = sprintf("UPDATE site SET value = %s WHERE setting = 'tmpunrarpath'", $db->escapeString($this->UNRAR_PATH));
+		$sql3 = sprintf("UPDATE site SET value = %s WHERE setting = 'coverspath'", $db->escapeString($this->COVERS_PATH));
+		if ($db->queryExec($sql1) === false || $db->queryExec($sql2) === false || $db->queryExec($sql3) === false) {
+			$cfg->error = true;
 		}
 	}
 
