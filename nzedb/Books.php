@@ -1,5 +1,4 @@
 <?php
-
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
 /*
@@ -400,47 +399,44 @@ class Books
 			return false;
 		}
 
-		$book['title'] = (string) $amaz->Items->Item->ItemAttributes->Title;
-
-		$book['author'] = (string) $amaz->Items->Item->ItemAttributes->Author;
-
-		$book['asin'] = (string) $amaz->Items->Item->ASIN;
-
-		$book['isbn'] = (string) $amaz->Items->Item->ItemAttributes->ISBN;
+		$book['title'] = (string)$amaz->Items->Item->ItemAttributes->Title;
+		$book['author'] = (string)$amaz->Items->Item->ItemAttributes->Author;
+		$book['asin'] = (string)$amaz->Items->Item->ASIN;
+		$book['isbn'] = (string)$amaz->Items->Item->ItemAttributes->ISBN;
 		if ($book['isbn'] == '') {
 			$book['isbn'] = 'null';
 		}
 
-		$book['ean'] = (string) $amaz->Items->Item->ItemAttributes->EAN;
+		$book['ean'] = (string)$amaz->Items->Item->ItemAttributes->EAN;
 		if ($book['ean'] == '') {
 			$book['ean'] = 'null';
 		}
 
-		$book['url'] = (string) $amaz->Items->Item->DetailPageURL;
+		$book['url'] = (string)$amaz->Items->Item->DetailPageURL;
 		$book['url'] = str_replace("%26tag%3Dws", "%26tag%3Dopensourceins%2D21", $book['url']);
 
-		$book['salesrank'] = (string) $amaz->Items->Item->SalesRank;
+		$book['salesrank'] = (string)$amaz->Items->Item->SalesRank;
 		if ($book['salesrank'] == '') {
 			$book['salesrank'] = 'null';
 		}
 
-		$book['publisher'] = (string) $amaz->Items->Item->ItemAttributes->Publisher;
+		$book['publisher'] = (string)$amaz->Items->Item->ItemAttributes->Publisher;
 		if ($book['publisher'] == '') {
 			$book['publisher'] = 'null';
 		}
 
-		$book['publishdate'] = date('Y-m-d', strtotime((string) $amaz->Items->Item->ItemAttributes->PublicationDate));
+		$book['publishdate'] = date('Y-m-d', strtotime((string)$amaz->Items->Item->ItemAttributes->PublicationDate));
 		if ($book['publishdate'] == '') {
 			$book['publishdate'] = 'null';
 		}
 
-		$book['pages'] = (string) $amaz->Items->Item->ItemAttributes->NumberOfPages;
+		$book['pages'] = (string)$amaz->Items->Item->ItemAttributes->NumberOfPages;
 		if ($book['pages'] == '') {
 			$book['pages'] = 'null';
 		}
 
 		if (isset($amaz->Items->Item->EditorialReviews->EditorialReview->Content)) {
-			$book['overview'] = strip_tags((string) $amaz->Items->Item->EditorialReviews->EditorialReview->Content);
+			$book['overview'] = strip_tags((string)$amaz->Items->Item->EditorialReviews->EditorialReview->Content);
 			if ($book['overview'] == '') {
 				$book['overview'] = 'null';
 			}
@@ -449,7 +445,7 @@ class Books
 		}
 
 		if (isset($amaz->Items->Item->BrowseNodes->BrowseNode->Name)) {
-			$book['genre'] = (string) $amaz->Items->Item->BrowseNodes->BrowseNode->Name;
+			$book['genre'] = (string)$amaz->Items->Item->BrowseNodes->BrowseNode->Name;
 			if ($book['genre'] == '') {
 				$book['genre'] = 'null';
 			}
@@ -457,7 +453,7 @@ class Books
 			$book['genre'] = 'null';
 		}
 
-		$book['coverurl'] = (string) $amaz->Items->Item->LargeImage->URL;
+		$book['coverurl'] = (string)$amaz->Items->Item->LargeImage->URL;
 		if ($book['coverurl'] != '') {
 			$book['cover'] = 1;
 		} else {
