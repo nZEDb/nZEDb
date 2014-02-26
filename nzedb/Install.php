@@ -2,7 +2,6 @@
 
 class Install
 {
-
 	public $DB_SYSTEM;
 	public $DB_TYPE;
 	public $DB_HOST = "127.0.0.1";
@@ -75,16 +74,13 @@ class Install
 
 	public function __construct()
 	{
-		$this->nZEDb_WWW = dirname(realpath('.'));
-		$this->SMARTY_DIR = SMARTY_DIR;
+		if (!defined('nZEDb_COVERS')) {
+			define('nZEDb_COVERS', nZEDb_RES . DS . 'covers' . DS);
+		}
 		$this->DB_DIR = dirname(realpath('..')) . '/db';
-		$this->nZEDb_MISC = dirname(realpath('..')) . '/misc';
-		$this->NZB_PATH = str_replace('\\', '/', dirname(realpath('..'))) . '/resources/nzb/';
-		$this->TMP_PATH = str_replace('\\', '/', dirname(realpath('..'))) . '/resources/tmp/';
-		$this->INSTALL_DIR = $this->nZEDb_WWW . '/install';
-		$this->nZEDb_LIB = dirname(realpath('..')) . '/nzedb/';
-		$this->nZEDb_LIBS = str_replace('\\', '/', realpath(nZEDb_LIBS));
-		$this->nZEDb_COVERS = dirname(realpath('..')) . '/resources/covers';
+		$this->NZB_PATH = nZEDb_RES . DS . 'nzb' . DS;
+		$this->TMP_PATH = nZEDb_RES . DS . 'tmp' . DS;
+		$this->INSTALL_DIR = nZEDb_WWW . 'install';
 	}
 
 	public function setSession()
@@ -145,12 +141,12 @@ class Install
 		$tmpCfg = str_replace('%%NNTP_SSLENABLED_A%%', ($this->NNTP_SSLENABLED_A ? "true" : "false"), $tmpCfg);
 
 		$this->COMPILED_CONFIG = $tmpCfg;
-		return @file_put_contents($this->nZEDb_WWW . '/config.php', $tmpCfg);
+		return @file_put_contents(nZEDb_WWW . DS .'config.php', $tmpCfg);
 	}
 
 	public function saveInstallLock()
 	{
-		return @file_put_contents($this->INSTALL_DIR . '/install.lock', '');
+		return @file_put_contents($this->INSTALL_DIR . DS .'install.lock', '');
 	}
 
 }
