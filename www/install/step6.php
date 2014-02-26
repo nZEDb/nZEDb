@@ -39,7 +39,7 @@ if ($page->isPostBack()) {
 	if ($cfg->COVERS_PATH == '') {
 		$cfg->error = true;
 	} else {
-		\nzedb\Util::trailingSlash($cfg->COVERS_PATH);
+		\nzedb\util::trailingSlash($cfg->COVERS_PATH);
 
 		$cfg->coverPathCheck = is_writable($cfg->COVERS_PATH);
 		if ($cfg->coverPathCheck === false) {
@@ -54,8 +54,8 @@ if ($page->isPostBack()) {
 
 		$db = new DB();
 		$sql1 = sprintf("UPDATE site SET value = %s WHERE setting = 'nzbpath'", $db->escapeString($cfg->NZB_PATH));
-		$sql2 = sprintf("UPDATE site SET value = %s WHERE setting = 'tmpunrarpath'", $db->escapeString($this->UNRAR_PATH));
-		$sql3 = sprintf("UPDATE site SET value = %s WHERE setting = 'coverspath'", $db->escapeString($this->COVERS_PATH));
+		$sql2 = sprintf("UPDATE site SET value = %s WHERE setting = 'tmpunrarpath'", $db->escapeString($cfg->UNRAR_PATH));
+		$sql3 = sprintf("UPDATE site SET value = %s WHERE setting = 'coverspath'", $db->escapeString($cfg->COVERS_PATH));
 		if ($db->queryExec($sql1) === false || $db->queryExec($sql2) === false || $db->queryExec($sql3) === false) {
 			$cfg->error = true;
 		}
