@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for handling connection to database (MySQL or PostgreSQL) using PDO.
  *
@@ -45,8 +46,10 @@ class DB extends PDO
 
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
 			$this->dbsystem = strtolower(DB_SYSTEM);
-		} else {
+		} else if (PHP_SAPI == 'cli') {
 			exit($this->c->error("\nconfig.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
+		} else {
+			echo "<div class=\"error\">config.php is missing the DB_SYSTEM setting. Add the following in that file:<br/> define('DB_SYSTEM', 'mysql');</div>";
 		}
 
 		if (!(self::$pdo instanceof PDO)) {
@@ -93,7 +96,11 @@ class DB extends PDO
 			self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 		} catch (PDOException $e) {
-			exit($this->c->error("\nConnection to the SQL server failed, error follows: (" . $e->getMessage() . ")"));
+			if (PHP_SAPI == 'cli') {
+				exit($this->c->error("\nConnection to the SQL server failed, error was: (" . $e->getMessage() . ")"));
+			} else {
+				echo "<div class=\"error\">Connection to the SQL server failed, error was: ({$e->getMessage()});</div>";
+			}
 		}
 	}
 
