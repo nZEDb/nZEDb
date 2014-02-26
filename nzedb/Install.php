@@ -20,11 +20,10 @@ class Install
 	public $NNTP_SERVER_A;
 	public $NNTP_PORT_A;
 	public $NNTP_SSLENABLED_A;
-	public $nZEDb_WWW;
-	public $nZEDb_COVERS;
+	public $COVERS_PATH;
+	public $coverPathCheck = false;
 	public $SMARTY_DIR;
 	public $DB_DIR;
-	public $nZEDb_MISC;
 	public $INSTALL_DIR;
 	public $ADMIN_USER;
 	public $ADMIN_FNAME;
@@ -79,6 +78,7 @@ class Install
 		$this->INSTALL_DIR = nZEDb_WWW . 'install';
 		$this->NZB_PATH = nZEDb_RES . 'nzb' . DS;
 		$this->TMP_PATH = nZEDb_RES . 'tmp' . DS;
+		$this->UNRAR_PATH = TMP_PATH . 'unrar' . DS;
 	}
 
 	public function setSession()
