@@ -495,3 +495,4 @@ class Books
 		return $bookId;
 	}
 }
+?>
