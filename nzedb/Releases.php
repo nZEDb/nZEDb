@@ -1338,8 +1338,8 @@ class Releases
 
 				// Look for duplicates, duplicates match on releases.name, releases.fromname and releases.size
 				// A 1% variance in size is considered the same size when the subject and poster are the same
-				$minsize = $totalsize * .99;
-				$maxsize = $totalsize * 1.01;
+				$minsize = $rowcol['filesize'] * .99;
+				$maxsize = $rowcol['filesize'] * 1.01;
 
 				$dupecheck = $this->db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $db->escapeString($cleanRelName), $this->db->escapeString($fromname), $db->escapeString($minsize), $db->escapeString($maxsize)));
 				if (!$dupecheck) {
