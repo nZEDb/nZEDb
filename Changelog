@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-27 -> jonnyboy -> converted column to partcheck->bit, filecheck->tinyint
+2014-02-27 -> jonnyboy -> updated releases->stage7a to remove inner join
+                          converted column to partcheck->bit, filecheck->tinyint
                           updated binaries/backfill to highlight time
                           updated monitor, moved analyze tables before initial display
                           updated releases->stage7a to loop over deletes instead of 1 massive delete(mysql)

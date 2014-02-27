@@ -145,7 +145,7 @@ class DB extends PDO
 				$this->queryInsert($query, $i++);
 			}
 			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205) {
-				//echo "Error: Deadlock or lock wait timeout.";
+				//echo "Error: Deadlock or lock wait timeout, try increasing innodb_lock_wait_timeout";
 				return false;
 			} else if ($e->errorInfo[1] == 1062 || $e->errorInfo[0] == 23000) {
 				//echo "\nError: Insert would create duplicate row, skipping\n";
