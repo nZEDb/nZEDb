@@ -149,7 +149,7 @@ class GrabNZBs
 				$minsize = $totalsize * .99;
 				$maxsize = $totalsize * 1.01;
 
-				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $db->escapeString($minsize), $db->escapeString($maxsize)));
+				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($minsize), $this->db->escapeString($maxsize)));
 				if ($this->replacenzbs == 1) {
 					$releases = new Releases();
 					foreach ($res as $rel) {
