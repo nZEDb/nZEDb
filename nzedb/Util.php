@@ -536,3 +536,4 @@ function release_flag($x, $t)
 		}
 	}
 }
+?>
