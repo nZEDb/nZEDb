@@ -51,7 +51,7 @@ CREATE TABLE "binaries" (
   "filenumber" bigint DEFAULT 0 NOT NULL,
   "totalparts" bigint DEFAULT 0 NOT NULL,
   "binaryhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
-  "partcheck" bigint DEFAULT 0 NOT NULL,
+  "partcheck" BOOLEAN DEFAULT FALSE,
   "partsize" numeric(20, 0) DEFAULT 0 NOT NULL
 )
 WITHOUT OIDS;
@@ -136,7 +136,7 @@ CREATE TABLE "collections" (
   "groupid" bigint DEFAULT 0 NOT NULL,
   "collectionhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "dateadded" timestamp without time zone,
-  "filecheck" bigint DEFAULT 0 NOT NULL,
+  "filecheck" smallint DEFAULT 0 NOT NULL,
   "filesize" numeric(20, 0) DEFAULT 0 NOT NULL,
   "releaseid" integer
 )
@@ -558,7 +558,6 @@ CREATE TABLE "releases" (
   "rarinnerfilecount" integer DEFAULT 0 NOT NULL,
   "haspreview" smallint DEFAULT 0 NOT NULL,
   "nfostatus" smallint DEFAULT 0 NOT NULL,
-  "bitwise" smallint DEFAULT 0 NOT NULL,
   "jpgstatus" BOOLEAN DEFAULT FALSE,
   "videostatus" BOOLEAN DEFAULT FALSE,
   "audiostatus" BOOLEAN DEFAULT FALSE,
