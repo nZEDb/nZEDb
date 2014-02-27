@@ -1099,13 +1099,15 @@ INSERT INTO site
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
 	('showbacks', '0'),
-	('sqlpatch','180');
+	('sqlpatch','181');
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (
+	id int(10) unsigned NOT NULL AUTO_INCREMENT,
 	time datetime DEFAULT NULL,
 	username varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-	host varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL
+	host varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL,
+	PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 

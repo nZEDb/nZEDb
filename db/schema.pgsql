@@ -250,9 +250,15 @@ CREATE TABLE "groups" (
 )
 WITHOUT OIDS;
 
+DROP SEQUENCE IF EXISTS "logging_id_seq" CASCADE;
+CREATE SEQUENCE "logging_id_seq" INCREMENT BY 1
+                                  NO MAXVALUE NO MINVALUE CACHE 1;
+SELECT pg_catalog.setval('logging_id_seq', 1, true);
+
 -- Table: logging
 DROP TABLE IF EXISTS "logging" CASCADE;
 CREATE TABLE "logging" (
+  "id" bigint DEFAULT nextval('logging_id_seq'::regclass) NOT NULL,
   "time" timestamp without time zone,
   "username" character varying(50),
   "host" character varying(40)
