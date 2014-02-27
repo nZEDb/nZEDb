@@ -1337,7 +1337,11 @@ class Releases
 				$fromname = utf8_encode($fromname);
 
 				// Look for duplicates, duplicates match on releases.name, releases.fromname and releases.size
-				$dupecheck = $this->db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size = %s', $db->escapeString($cleanRelName), $this->db->escapeString($fromname), $this->db->escapeString($rowcol['filesize'])));
+				// A 1% variance in size is considered the same size when the subject and poster are the same
+				$minsize = $totalsize * .99;
+				$maxsize = $totalsize * 1.01;
+
+				$dupecheck = $this->db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $db->escapeString($cleanRelName), $this->db->escapeString($fromname), $db->escapeString($minsize), $db->escapeString($maxsize)));
 				if (!$dupecheck) {
 					if ($propername == true) {
 						$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, isrenamed, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $this->db->escapeString($rowcol['filesize']), ($this->site->checkpasswordedrar == '1' ? -1 : 0), $category));

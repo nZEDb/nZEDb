@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-27 -> jonnyboy -> fixed CollectionsCleaning.php to not group teevee rips where requestid is same but release is different
+2014-02-27 -> jonnyboy -> updated GrabNZBs and Releases to see 1% variation in size as the same size
+                          fixed CollectionsCleaning.php to not group rips where requestid is same but release is different
                           updated releases->stage7a to remove inner join
                           converted column to partcheck->bit, filecheck->tinyint
                           updated binaries/backfill to highlight time
