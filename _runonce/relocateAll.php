@@ -70,16 +70,14 @@ $dirs = array(
 		'source' => nZEDb_MISC . 'update_scripts',
 		'target' => nZEDb_MISC . 'update'	],
 
-	[	'source' => nZEDb_WWW . 'covers' . DS,
+/*
+	'covers' =>	[	'source' => nZEDb_WWW . 'covers' . DS,
 		'target' =>	nZEDb_RES	],
 
 	// This moves the default nzbpath. If you use another location it will be unaffected
 	'nzb' => [	'basemv' => false,
 				'source' => nZEDb_ROOT . 'nzbfiles',
 				'target' =>	nZEDb_RES . 'nzb'	]
-/*
-	[	'source' => nZEDb_RES . 'tmp' . DS . 'dummy' . DS . 'covers' . DS,
-		'target' => nZEDb_RES . 'tmp' . DS	],
 */
 );
 
