@@ -20,7 +20,8 @@ if ($_GET["type"] == "tvrage") {
 
 		$imgdata = $r["imgdata"];
 	} else if ($db->dbSystem() == 'pgsql') {
-		$imgdata = @file_get_contents(nZEDb_WWW . 'covers/tvrage/' . $_GET['id'] . '.jpg');
+		$s = new Sites(); // Creates the nZEDb_COVERS constant
+		$imgdata = @file_get_contents(nZEDb_COVERS . 'tvrage/' . $_GET['id'] . '.jpg');
 		if ($imgdata === false) {
 			$page->show404();
 		}

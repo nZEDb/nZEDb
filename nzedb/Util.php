@@ -3,6 +3,23 @@
  * General util functions.
  */
 
+class Util
+{
+	static public function setCoversConstant($path)
+	{
+		if (!defined('nZEDb_COVERS')) {
+			define('nZEDb_COVERS', $path == '' ? nZEDb_WWW . 'covers' . DS : $path);
+		}
+	}
+
+	static public function trailingSlash(&$path)
+	{
+		if (substr($path, strlen($path) - 1) != '/') {
+			$path .= '/';
+		}
+	}
+}
+
 // Central function for sending site email.
 function sendEmail($to, $subject, $contents, $from)
 {

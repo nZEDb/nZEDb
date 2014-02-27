@@ -31,6 +31,7 @@ export PHP="nice -n$niceness $PHP"
 export PYTHON="nice -n$niceness $PYTHON"
 
 #delete stale tmpunrar folders
+# we need to have this use the Db setting. No idea how yet, but this fails too often otherwise.
 export count=`find $NZEDB_PATH/../../nzbfiles/tmpunrar -type d -print| wc -l`
 if [ $count != 1 ]
 then

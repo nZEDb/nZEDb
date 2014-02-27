@@ -1,5 +1,5 @@
 <?php
-require_once '../automated.config.php';
+require_once realpath(__DIR__ . '/../automated.config.php');
 
 $page = new InstallPage();
 $page->title = "Save Settings";
