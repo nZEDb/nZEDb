@@ -327,6 +327,10 @@ $init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tp
 $console_releases_proc_start = $movie_releases_proc_start = $show_query = $run_releases = 0;
 $last_history = "";
 
+// Ananlyze tables
+printf($c->info("\nAnalyzing your tables to refresh your indexes."));
+$db->optimise(true, 'analyze');
+
 $mask1 = $c->headerOver("%-18s") . " " . $c->tmuxOrange("%-48.48s");
 $mask2 = $c->headerOver("%-20s") . " " . $c->tmuxOrange("%-33.33s");
 $mask3 = $c->header("%-16.16s %25.25s %25.25s");
@@ -391,10 +395,6 @@ if ($show_query == 1) {
 $monitor = 30;
 $i = 1;
 $fcfirstrun = true;
-
-// Ananlyze tables
-printf($c->info("\nAnalyzing your tables to refresh your indexes."));
-$db->optimise(true, 'analyze');
 
 while ($i > 0) {
 	//kill mediainfo and ffmpeg if exceeds 60 sec
