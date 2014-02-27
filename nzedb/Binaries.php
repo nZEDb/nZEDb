@@ -617,7 +617,7 @@ class Binaries
 			$timeLoop = number_format(microtime(true) - $this->startLoop, 2);
 
 			if ($type != 'partrepair') {
-				echo $this->c->primary($timeHeaders . 's to download articles, ' . $timeCleaning . 's to process articles, ' . $timeUpdate . 's to insert articles, ' . $timeLoop . 's total.');
+				echo $this->c->alternateOver($timeHeaders . 's') . $this->c->primaryOver(' to download articles, ') . $this->c->alternateOver($timeCleaning . 's') . $this->c->primaryOver(' to process articles, ') . $this->c->alternateOver($timeUpdate . 's') . $this->c->primaryOver(' to insert articles, ') . $this->c->alternateOver($timeLoop . 's') . $this->c->primary(' total.');
 			}
 
 			unset($this->message, $data);
