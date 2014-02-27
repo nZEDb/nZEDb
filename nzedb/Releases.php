@@ -1337,7 +1337,11 @@ class Releases
 				$fromname = utf8_encode($fromname);
 
 				// Look for duplicates, duplicates match on releases.name, releases.fromname and releases.size
-				$dupecheck = $this->db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size = %s', $db->escapeString($cleanRelName), $this->db->escapeString($fromname), $this->db->escapeString($rowcol['filesize'])));
+				// A 1% variance in size is considered the same size when the subject and poster are the same
+				$minsize = $rowcol['filesize'] * .99;
+				$maxsize = $rowcol['filesize'] * 1.01;
+
+				$dupecheck = $this->db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $db->escapeString($cleanRelName), $this->db->escapeString($fromname), $db->escapeString($minsize), $db->escapeString($maxsize)));
 				if (!$dupecheck) {
 					if ($propername == true) {
 						$relid = $db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, isrenamed, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1)', $db->escapeString($cleanRelName), $db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $db->escapeString($relguid), $db->escapeString($rowcol['date']), $db->escapeString($fromname), $this->db->escapeString($rowcol['filesize']), ($this->site->checkpasswordedrar == '1' ? -1 : 0), $category));
@@ -1694,7 +1698,7 @@ class Releases
 		if ($db->dbSystem() == 'mysql') {
 			$fc5s = $db->queryDirect("SELECT ${group['cname']}.id FROM ${group['cname']} WHERE ${where} ${group['cname']}.filecheck = 5");
 			foreach ($fc5s as $fc5) {
-				$delq = $db->queryDirect("DELETE ${group['cname']}, ${group['bname']}, ${group['pname']} FROM ${group['cname']} INNER JOIN ${group['bname']} ON ${group['cname']}.id = ${group['bname']}.collectionid INNER JOIN ${group['pname']} ON ${group['bname']}.id = ${group['pname']}.binaryid WHERE ${group['cname']}.id = ${fc5['id']}");
+				$delq = $db->queryDirect("DELETE ${group['cname']}, ${group['bname']}, ${group['pname']} FROM ${group['cname']}, ${group['bname']}, ${group['pname']} WHERE ${group['cname']}.id = ${group['bname']}.collectionid AND ${group['bname']}.id = ${group['pname']}.binaryid AND ${group['cname']}.id = ${fc5['id']}");
 				$reccount += $delq->rowCount();
 			}
 		} else {
@@ -1715,7 +1719,7 @@ class Releases
 		if ($db->dbSystem() == 'mysql') {
 			$olds = $db->queryDirect(sprintf("SELECT ${group['cname']}.id FROM ${group['cname']} WHERE ${where} ${group['cname']}.dateadded < (NOW() - INTERVAL %d HOUR)", $this->site->partretentionhours));
 			foreach ($olds as $old) {
-				$delq = $db->queryDirect("DELETE ${group['cname']}, ${group['bname']}, ${group['pname']} FROM ${group['cname']} INNER JOIN ${group['bname']} ON ${group['cname']}.id = ${group['bname']}.collectionid INNER JOIN ${group['pname']} ON ${group['bname']}.id = ${group['pname']}.binaryid WHERE ${group['cname']}.id = ${old['id']}");
+				$delq = $db->queryDirect("DELETE ${group['cname']}, ${group['bname']}, ${group['pname']} FROM ${group['cname']}, ${group['bname']}, ${group['pname']} WHERE ${group['cname']}.id = ${group['bname']}.collectionid AND ${group['bname']}.id = ${group['pname']}.binaryid AND ${group['cname']}.id = ${old['id']}");
 				$reccount += $delq->rowCount();
 			}
 		} else {

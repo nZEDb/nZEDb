@@ -515,7 +515,7 @@ class Binaries
 				$maxnum = $first;
 				$pBinaryID = $pNumber = $pMessageID = $pPartNumber = $pSize = 1;
 				// Insert collections, binaries and parts into database. When collection exists, only insert new binaries, when binary already exists, only insert new parts.
-				$insPartsStmt = $db->Prepare('INSERT INTO ' . $group['pname'] . ' (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)');
+				$insPartsStmt = $db->Prepare("INSERT INTO ${group['pname']} (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)");
 				$insPartsStmt->bindParam(1, $pBinaryID, PDO::PARAM_INT);
 				$insPartsStmt->bindParam(2, $pNumber, PDO::PARAM_INT);
 				$insPartsStmt->bindParam(3, $pMessageID, PDO::PARAM_STR);
@@ -537,24 +537,24 @@ class Binaries
 							$lastBinaryHash = '';
 							$lastBinaryID = -1;
 
-							$cres = $db->queryOneRow(sprintf('SELECT id, subject FROM ' . $group['cname'] . ' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
+							$cres = $db->queryOneRow(sprintf("SELECT id, subject FROM ${group['cname']} WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if (array_key_exists($collectionHash, $collectionHashes)) {
 								$collectionID = $collectionHashes[$collectionHash];
 								if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
-									$db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' set subject = %s WHERE id = %s', $db->escapeString(substr($subject, 0, 255)), $collectionID));
+									$db->queryExec(sprintf("UPDATE ${group['cname']} SET subject = %s WHERE id = %s", $db->escapeString(substr($subject, 0, 255)), $collectionID));
 								}
 							} else {
 								if (!$cres) {
 									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
-									$csql = sprintf('INSERT INTO ' . $group['cname'] . ' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject, 0, 255)), $db->escapeString(utf8_encode($data['From'])), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'], 0, 255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
+									$csql = sprintf("INSERT INTO ${group['cname']} (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())", $db->escapeString(substr($subject, 0, 255)), $db->escapeString(utf8_encode($data['From'])), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'], 0, 255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
 									$collectionID = $db->queryInsert($csql);
 								} else {
 									$collectionID = $cres['id'];
 									//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
 									if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
-										$db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' set subject = %s WHERE id = %s', $db->escapeString(substr($subject, 0, 255)), $collectionID));
+										$db->queryExec(sprintf("UPDATE ${group['cname']} SET subject = %s WHERE id = %s", $db->escapeString(substr($subject, 0, 255)), $collectionID));
 									} else {
-										$db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' set dateadded = NOW() WHERE id = %s', $collectionID));
+										$db->queryExec(sprintf("UPDATE ${group['cname']} SET dateadded = NOW() WHERE id = %s", $collectionID));
 									}
 								}
 								$collectionHashes[$collectionHash] = $collectionID;
@@ -571,9 +571,9 @@ class Binaries
 							} else {
 								$lastBinaryHash = $binaryHash;
 
-								$bres = $db->queryOneRow(sprintf('SELECT id FROM ' . $group['bname'] . ' WHERE binaryhash = %s', $db->escapeString($binaryHash)));
+								$bres = $db->queryOneRow(sprintf("SELECT id FROM ${group['bname']} WHERE binaryhash = %s", $db->escapeString($binaryHash)));
 								if (!$bres) {
-									$bsql = sprintf('INSERT INTO ' . $group['bname'] . ' (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
+									$bsql = sprintf("INSERT INTO ${group['bname']} (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
 									$binaryID = $db->queryInsert($bsql);
 								} else {
 									$binaryID = $bres['id'];
@@ -617,7 +617,7 @@ class Binaries
 			$timeLoop = number_format(microtime(true) - $this->startLoop, 2);
 
 			if ($type != 'partrepair') {
-				echo $this->c->primary($timeHeaders . 's to download articles, ' . $timeCleaning . 's to process articles, ' . $timeUpdate . 's to insert articles, ' . $timeLoop . 's total.');
+				echo $this->c->alternateOver($timeHeaders . 's') . $this->c->primaryOver(' to download articles, ') . $this->c->alternateOver($timeCleaning . 's') . $this->c->primaryOver(' to process articles, ') . $this->c->alternateOver($timeUpdate . 's') . $this->c->primaryOver(' to insert articles, ') . $this->c->alternateOver($timeLoop . 's') . $this->c->primary(' total.');
 			}
 
 			unset($this->message, $data);
@@ -697,7 +697,7 @@ class Binaries
 
 			// Update attempts on remaining parts for active group
 			if (isset($missingParts[sizeof($missingParts) - 1]['id'])) {
-				$sql = sprintf('UPDATE ' . $group['prname'] . ' SET attempts=attempts+1 WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts) - 1]['numberid']);
+				$sql = sprintf("UPDATE ${group['prname']} SET attempts=attempts+1 WHERE groupid=%d AND numberid <= %d", $groupArr['id'], $missingParts[sizeof($missingParts) - 1]['numberid']);
 				$result = $db->queryExec($sql);
 				if ($result) {
 					$partsFailed = $result->rowCount();
@@ -724,7 +724,7 @@ class Binaries
 			$group['prname'] = 'partrepair';
 		}
 
-		$insertStr = 'INSERT INTO ' . $group['prname'] . ' (numberid, groupid) VALUES ';
+		$insertStr = "INSERT INTO ${group['prname']} (numberid, groupid) VALUES ";
 		foreach ($numbers as $number) {
 			$insertStr .= sprintf('(%d, %d), ', $number, $groupID);
 		}

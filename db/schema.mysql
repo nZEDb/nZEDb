@@ -9,7 +9,7 @@ CREATE TABLE collections (
 	groupid INT(11) UNSIGNED NOT NULL DEFAULT '0',
 	collectionhash VARCHAR(255) NOT NULL DEFAULT '0',
 	dateadded DATETIME DEFAULT NULL,
-	filecheck INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	filecheck TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
 	filesize BIGINT UNSIGNED NOT NULL DEFAULT '0',
 	releaseid INT NULL,
 	PRIMARY KEY  (id),
@@ -31,7 +31,7 @@ CREATE TABLE binaries (
 	filenumber INT UNSIGNED NOT NULL DEFAULT '0',
 	totalparts INT(11) UNSIGNED NOT NULL DEFAULT '0',
 	binaryhash VARCHAR(255) NOT NULL DEFAULT '0',
-	partcheck INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	partcheck BIT NOT NULL DEFAULT '0',
 	partsize BIGINT UNSIGNED NOT NULL DEFAULT '0',
 	PRIMARY KEY  (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
@@ -1099,13 +1099,15 @@ INSERT INTO site
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
 	('showbacks', '0'),
-	('sqlpatch','179');
+	('sqlpatch','181');
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (
+	id int(10) unsigned NOT NULL AUTO_INCREMENT,
 	time datetime DEFAULT NULL,
 	username varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-	host varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL
+	host varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL,
+	PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 

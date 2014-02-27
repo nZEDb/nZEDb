@@ -13,6 +13,7 @@ class GrabNZBs
 		$this->ReleaseCleaning = new ReleaseCleaning();
 		//$this->CollectionsCleaning = new CollectionsCleaning();
 		$this->categorize = new Category();
+		$this->c = new ColorCLI();
 	}
 
 	public function Import($hash = '', $nntp)
@@ -44,7 +45,7 @@ class GrabNZBs
 		}
 		if ($nzb && array_key_exists('groupname', $nzb)) {
 			if (sizeof($arr) > 10) {
-				echo "\nGetting " . sizeof($arr) . ' articles for ' . $hash . "\n";
+				echo $this->c->header("Getting " . sizeof($arr) . ' articles for ' . $hash);
 			}
 
 			$article = $nntp->getMessages($nzb['groupname'], $arr);
@@ -144,7 +145,11 @@ class GrabNZBs
 
 			// To get accurate size to check for true duplicates, we need to process the entire nzb first
 			if ($importfailed === false) {
-				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size = %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($totalsize)));
+				// A 1% variance in size is considered the same size when the subject and poster are the same
+				$minsize = $totalsize * .99;
+				$maxsize = $totalsize * 1.01;
+
+				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($minsize), $this->db->escapeString($maxsize)));
 				if ($this->replacenzbs == 1) {
 					$releases = new Releases();
 					foreach ($res as $rel) {

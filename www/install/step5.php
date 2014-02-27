@@ -1,5 +1,5 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../config.php');
+require_once realpath(__DIR__ . '/../automated.config.php');
 
 $page = new InstallPage();
 $page->title = "Setup Admin User";

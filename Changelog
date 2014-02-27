@@ -7,7 +7,18 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-27 -> jonnyboy -> updated monitor, moved analyze tables before initial display
+2014-02-27 -> jonnyboy -> added pk to logging
+2014-02-27 -> bart39   -> regex additions
+                          don't categorize as pc if it looks like audio/console
+2014-02-27 -> niel     -> Upd: Changing default locations for covers, nzb, and temp files to use nZEDb/resources.
+                          New installs will use these locations unless you change them. Existing installs will continue to use their current locations.
+                          If you want to move files from the old locations to the new look at _runonce/relocateAll.php and uncomment the locations you want to move.
+2014-02-27 -> jonnyboy -> updated GrabNZBs and Releases to see 1% variation in size as the same size
+                          fixed CollectionsCleaning.php to not group rips where requestid is same but release is different
+                          updated releases->stage7a to remove inner join
+                          converted column to partcheck->bit, filecheck->tinyint
+                          updated binaries/backfill to highlight time
+                          updated monitor, moved analyze tables before initial display
                           updated releases->stage7a to loop over deletes instead of 1 massive delete(mysql)
 2014-02-26 -> niel     -> Upd: Fixing indentation in Books.php to use tabs not spaces.
 2014-02-25 -> jonnyboy -> changed preid column default 0, added 3 regexes for a.b.comics, added index

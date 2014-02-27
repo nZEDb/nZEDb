@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for handling connection to database (MySQL or PostgreSQL) using PDO.
  *
@@ -41,13 +42,16 @@ class DB extends PDO
 	 */
 	public function __construct()
 	{
+		$this->c = new ColorCLI();
+
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
 			$this->dbsystem = strtolower(DB_SYSTEM);
-		} else {
+		} else if (PHP_SAPI == 'cli') {
 			exit($this->c->error("\nconfig.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
+		} else {
+			echo "<div class=\"error\">config.php is missing the DB_SYSTEM setting. Add the following in that file:<br/> define('DB_SYSTEM', 'mysql');</div>";
 		}
 
-		$this->c = new ColorCLI();
 		if (!(self::$pdo instanceof PDO)) {
 			$this->initialiseDatabase();
 		}
@@ -92,7 +96,11 @@ class DB extends PDO
 			self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 		} catch (PDOException $e) {
-			exit($this->c->error("\nConnection to the SQL server failed, error follows: (" . $e->getMessage() . ")"));
+			if (PHP_SAPI == 'cli') {
+				exit($this->c->error("\nConnection to the SQL server failed, error was: (" . $e->getMessage() . ")"));
+			} else {
+				echo "<div class=\"error\">Connection to the SQL server failed, error was: ({$e->getMessage()});</div>";
+			}
 		}
 	}
 
@@ -145,7 +153,7 @@ class DB extends PDO
 				$this->queryInsert($query, $i++);
 			}
 			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205) {
-				//echo "Error: Deadlock or lock wait timeout.";
+				//echo "Error: Deadlock or lock wait timeout, try increasing innodb_lock_wait_timeout";
 				return false;
 			} else if ($e->errorInfo[1] == 1062 || $e->errorInfo[0] == 23000) {
 				//echo "\nError: Insert would create duplicate row, skipping\n";
