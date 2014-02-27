@@ -34,4 +34,4 @@ define('MEMCACHE_EXPIRY', '900');
 // To compress the queries using zlib or not (more cpu usage and less ram usage if set to true, inverse for false);
 define('MEMCACHE_COMPRESSION', true);
 
-require 'automated.config.php';
+require_once 'automated.config.php';

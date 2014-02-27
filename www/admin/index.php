@@ -1,5 +1,5 @@
 <?php
-require_once './config.php';
+require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'config.php');
 
 
 $page = new AdminPage();

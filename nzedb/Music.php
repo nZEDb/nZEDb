@@ -17,7 +17,7 @@ class Music
 		$this->musicqty = (!empty($site->maxmusicprocessed)) ? $site->maxmusicprocessed : 150;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->db = new DB();
-		$this->imgSavePath = nZEDb_WWW . 'covers/music/';
+		$this->imgSavePath = nZEDb_COVERS . 'music' . DS;
 		$this->cleanmusic = ($site->lookupmusic == 2) ? 1 : 0;
 		$this->c = new ColorCLI();
 	}

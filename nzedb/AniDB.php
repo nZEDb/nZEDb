@@ -9,9 +9,10 @@ class AniDB
 	{
 		$s = new Sites();
 		$site = $s->get();
+
 		$this->aniqty = (!empty($site->maxanidbprocessed)) ? $site->maxanidbprocessed : 100;
 		$this->echooutput = $echooutput;
-		$this->imgSavePath = nZEDb_WWW . 'covers/anime/';
+		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
 		$this->db = new DB();
 		$this->c = new ColorCLI();
 	}

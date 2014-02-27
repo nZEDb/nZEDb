@@ -1,14 +1,11 @@
 <?php
-
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
 /*
- * Class for fetching book info from amazon.com.
+ * Class for processing book info.
  */
-
 class Books
 {
-
 	function __construct($echooutput = false)
 	{
 		$this->echooutput = $echooutput;
@@ -19,10 +16,10 @@ class Books
 		$this->asstag = $site->amazonassociatetag;
 		$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
-		$this->imgSavePath = nZEDb_WWW . 'covers/book/';
+		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
 		$this->db = new DB();
 		$this->bookreqids = ($site->book_reqids == null || $site->book_reqids == "") ? 8010 : $site->book_reqids;
-		$this->cleanbooks = ($site->lookupbooks == 2) ? 1 : 0;
+		$this->cleanbooks = ($site->lookupbooks == 2 ) ? 1 : 0;
 		$this->c = new ColorCLI();
 	}
 
@@ -331,8 +328,7 @@ class Books
 
 					// Update release.
 					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
-				} // Could not parse release title.
-				else {
+				} else { // Could not parse release title.
 					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
 					echo '.';
 				}
@@ -404,11 +400,8 @@ class Books
 		}
 
 		$book['title'] = (string)$amaz->Items->Item->ItemAttributes->Title;
-
 		$book['author'] = (string)$amaz->Items->Item->ItemAttributes->Author;
-
 		$book['asin'] = (string)$amaz->Items->Item->ASIN;
-
 		$book['isbn'] = (string)$amaz->Items->Item->ItemAttributes->ISBN;
 		if ($book['isbn'] == '') {
 			$book['isbn'] = 'null';
@@ -497,5 +490,5 @@ class Books
 		}
 		return $bookId;
 	}
-
 }
+?>

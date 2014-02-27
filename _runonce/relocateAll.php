@@ -89,7 +89,7 @@ foreach ($dirs as $path)
 	$basemv = isset($path['basemv']) ? $path['basemv'] : true;
 
 	if (file_exists($source)) {
-		$mover = new \nzedb\Utility\MoveFileTree($source, $target, $basemv);
+		$mover = new \nzedb\utility\MoveFileTree($source, $target, $basemv);
 
 		if (!$mover->isWIndows()) {
 			setPerms($target);

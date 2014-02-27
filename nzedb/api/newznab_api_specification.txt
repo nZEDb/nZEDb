@@ -1,15 +1,13 @@
 
 
 
-					nZEDB Usenet Searching Web API
+					nZEDb Usenet Searching Web API
 
 
 							   v0.3
 							 22/8/2010
 
-
-Owner:  bb   at #nZEDB        (irc.synirc.org)   info@nZEDB.com
-Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
+Author: ensi ensisoft@gmail.com
 
 1.  Introduction
 2.  Functions
@@ -23,7 +21,7 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 4.  Predefined Attributes
 4.1 List of Attributes
 4.2 Attribute example
-5.  nZEDB Error Codes
+5.  nZEDb Error Codes
 5.1 Error code example
 
 1. Introduction
@@ -31,7 +29,7 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
    This document describes the nZEDb Usenet Searching Web API. The API is designed to be implemented
    by Usenet indexing sites, i.e. sites that index Usenet newsgroups through some means, typically
    by downloading and inspecting the NTTP headers. The API is aimed for NZB aware client applications
-   to allow them to perform Usenet searches against nZEDB servers and receive NZB information in order
+   to allow them to perform Usenet searches against nZEDb servers and receive NZB information in order
    to facilitate direct downloading from Usenet without having to download any NTTP headers.
 
    This document does not describe the actual implementation of either the client or the server but just
@@ -50,7 +48,7 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 2. Functions
 
    All functions are executed as HTTP(S) requests over TCP. All parameters are to be passed
-   as query parmeters unless otherwise indicated. All returned XML/JSON data is UTF-8 encoded
+   as query parameters unless otherwise indicated. All returned XML/JSON data is UTF-8 encoded
    unless otherwise specified. All query parameters should be UTF-8 and URL encoded, i.e.
    query-param = URL-ENCODE(UTF8-ENCODE(param=value)).
 
@@ -66,7 +64,7 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 
    Description:
 	 CAPS function is used to query the server for supported features and the protocol version and other
-	 meta data relevant to the implementation. This function doesn't require the client to provide any
+	 meta data relevant to the implementation. This function does not require the client to provide any
 	 login information but can be executed out of "login session".
 
    Important fields of the returned data:
@@ -100,8 +98,8 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 		<?xml version="1.0" encoding="UTF-8"?>
 		  <caps>
 			<!-- server information -->
-			<server version="1.0" title="nZEDB" strapline="A great usenet indexer"
-					email="info@nZEDB.com" url="http://servername.com/"
+			<server version="1.0" title="nZEDb" strapline="A great usenet indexer"
+					email="info@nZEDb.com" url="http://servername.com/"
 					image="http://servername.com/theme/black/images/banner.jpg"/>
 
 			<!-- limit parameter range -->
@@ -273,7 +271,7 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 			<!-- offset is the current offset of the response
 				 total is the total number of items found by the query
 			 -->
-			<nZEDB:response offset="0" total="2344"/>
+			<nZEDb:response offset="0" total="2344"/>
 
 			<item>
 			  <!-- Standard RSS 2.0 Data -->
@@ -287,9 +285,9 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 			  <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
 
 			  <!-- Additional attributes -->
-			  <nZEDB:attr name="category" value="2000"/>
-			  <nZEDB:attr name="category" value="2030"/>
-			  <nZEDB:attr name="size"     value="4294967295"/>
+			  <nZEDb:attr name="category" value="2000"/>
+			  <nZEDb:attr name="category" value="2030"/>
+			  <nZEDb:attr name="size"     value="4294967295"/>
 		   </item>
 		 </channel>
 		 </rss>
@@ -301,7 +299,7 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 		  <?xml version="1.0" encoding="UTF-8"?>
 		  <rss>
 			<channel>
-				<nZEDB:response offset="0" total="0"/>
+				<nZEDb:response offset="0" total="0"/>
 			</channel>
 		  </rss>
 
@@ -368,7 +366,7 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 			<!-- offset is the current offset of the response
 				 total is the total number of items found by the query
 			-->
-			<nZEDB:response offset="0" total="1234"/>
+			<nZEDb:response offset="0" total="1234"/>
 
 			<item>
 			  <!-- Standard RSS 2.0 data -->
@@ -382,10 +380,10 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 			  <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
 
 			  <!-- Additional attributes -->
-			  <nZEDB:attr name="category" value="5030"/>
-			  <nZEDB:attr name="size"     value="154653309"/>
-			  <nZEDB:attr name="season"   value="3"/>
-			  <nZEDB:attr name="episode"  value="2"/>
+			  <nZEDb:attr name="category" value="5030"/>
+			  <nZEDb:attr name="size"     value="154653309"/>
+			  <nZEDb:attr name="season"   value="3"/>
+			  <nZEDb:attr name="episode"  value="2"/>
 			</item>
 
 			<item>
@@ -400,11 +398,11 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 			  <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
 
 			  <!-- Additional attributes -->
-			  <nZEDB:attr name="category" value="5000" />
-			  <nZEDB:attr name="category" value="5030" />
-			  <nZEDB:attr name="size"     value="4294967295" />
-			  <nZEDB:attr name="season"   value="3"/>
-			  <nZEDB:attr name="episode"  value="1"/>
+			  <nZEDb:attr name="category" value="5000" />
+			  <nZEDb:attr name="category" value="5030" />
+			  <nZEDb:attr name="size"     value="4294967295" />
+			  <nZEDb:attr name="season"   value="3"/>
+			  <nZEDb:attr name="episode"  value="1"/>
 			</item>
 
 			<!-- more items to follow -->
@@ -416,7 +414,7 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 
    Description:
 	 MOVIE-SEARCH function searches the index for items matching an imdb id or search query.
-	 On succesful search the response contains a list of items that matched the query. Even if the
+	 On successful search the response contains a list of items that matched the query. Even if the
 	 search matched nothing an empty but valid response is created and returned. This function
 	 requires passing the user credentials.
 
@@ -459,7 +457,7 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 			<!-- offset is the current offset of the response
 				 total is the total number of items found by the query
 			-->
-			<nZEDB:response offset="0" total="1234"/>
+			<nZEDb:response offset="0" total="1234"/>
 
 			<item>
 			  <!-- Standard RSS 2.0 data -->
@@ -473,9 +471,9 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 			  <enclosure url="http://servername.com/rss/nzb/e9c515e02346086e3a477a5436d7bc8c&amp;i=1&amp;r=18cf9f0a736041465e3bd521d00a90b9" length="154653309" type="application/x-nzb" />
 
 			  <!-- Additional attributes -->
-			  <nZEDB:attr name="category" value="2000" />
-			  <nZEDB:attr name="category" value="2030" />
-			  <nZEDB:attr name="size"     value="4294967295" />
+			  <nZEDb:attr name="category" value="2000" />
+			  <nZEDb:attr name="category" value="2030" />
+			  <nZEDb:attr name="size"     value="4294967295" />
 			</item>
 
 		 </channel>
@@ -524,15 +522,15 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 					 Details function returns all possible attributes that are 1) known and 2) applicable
 					 for the item requested.
 				-->
-				<nZEDB:attr name="category"   value="2000" />
-				<nZEDB:attr name="category"   value="2030" />
-				<nZEDB:attr name="size"       value="4294967295" />
-				<nZEDB:attr name="files"      value="107" />
-				<nZEDB:attr name="poster"     value="example@4u.net (example)" />
-				<nZEDB:attr name="grabs"      value="1" />
-				<nZEDB:attr name="comments"   value="0" />
-				<nZEDB:attr name="usenetdate" value="Tue, 22 Jun 2010 06:54:22 +0100" />
-				<nZEDB:attr name="group"      value="alt.binaries.movies.divx" />
+				<nZEDb:attr name="category"   value="2000" />
+				<nZEDb:attr name="category"   value="2030" />
+				<nZEDb:attr name="size"       value="4294967295" />
+				<nZEDb:attr name="files"      value="107" />
+				<nZEDb:attr name="poster"     value="example@4u.net (example)" />
+				<nZEDb:attr name="grabs"      value="1" />
+				<nZEDb:attr name="comments"   value="0" />
+				<nZEDb:attr name="usenetdate" value="Tue, 22 Jun 2010 06:54:22 +0100" />
+				<nZEDb:attr name="group"      value="alt.binaries.movies.divx" />
 
 			  </item>
 			</channel>
@@ -635,7 +633,7 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
    category items.
 
    All attributes are defined using XML namespace syntax.
-   e.g. xmlns:nZEDB="http://www.nZEDB.com/DTD/2010/feeds/attributes/"
+   e.g. xmlns:nZEDb="http://www.nZEDb.com/DTD/2010/feeds/attributes/"
 
    4.1 List of Attributes
 
@@ -673,20 +671,20 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 
    Example attribute declarations within <item> element.
 
-   <nZEDB:attr name="category" value="2000" />
-   <nZEDB:attr name="category" value="2030" />
-   <nZEDB:attr name="size"     value="4294967295" />
+   <nZEDb:attr name="category" value="2000" />
+   <nZEDb:attr name="category" value="2030" />
+   <nZEDb:attr name="size"     value="4294967295" />
 
 
-5. nZEDB Error Codes
+5. nZEDb Error Codes
 
-   Under normal circumstances i.e. when the HTTP requst/response sequence is succesfully completed
-   nZEDB implementations always respond with HTTP 200 OK. However this doesn't mean that the
-   query was semantically correct. It simply means that the HTTP part of the sequence was succesful.
+   Under normal circumstances i.e. when the HTTP requst/response sequence is successfully completed
+   nZEDb implementations always respond with HTTP 200 OK. However this does not mean that the
+   query was semantically correct. It simply means that the HTTP part of the sequence was successful.
    One then must check the actual response body/data to see if the request was completed
    without errors.
 
-   In case of a nZEDB error the response contains an error code and an a description of the error.
+   In case of a nZEDb error the response contains an error code and an a description of the error.
 
    The error codes have been defined into different ranges. 100-199 Account/user credentials specific
    error codes, 200-299 API call specific error codes, 300-399 content specific error codes and finally
@@ -696,7 +694,7 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
 
    100                  Incorrect user credentials
    101                  Account suspended
-   102                  Insufficient priviledges/not authorized
+   102                  Insufficient privileges/not authorised
    103                  Registration denied
    104                  Registrations are closed
    105                  Invalid registration (Email Address Taken)
@@ -719,4 +717,3 @@ Author: ensi at #nZEDB        (irc.synirc.org)   ensisoft@gmail.com
    <-- 200 OK
 	   <?xml version="1.0" encoding="UTF-8"?>
 	   <error code="100" description="Incorrect user credentials"/>
-
