@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-02-27 -> jonnyboy -> added pk to logging
+2014-02-27 -> jonnyboy -> added tooltips for group-list
+                          added pk to logging
 2014-02-27 -> bart39   -> regex additions
                           don't categorize as pc if it looks like audio/console
 2014-02-27 -> niel     -> Upd: Changing default locations for covers, nzb, and temp files to use nZEDb/resources.

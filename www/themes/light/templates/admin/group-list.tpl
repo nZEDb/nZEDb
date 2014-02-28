@@ -19,11 +19,12 @@
         <div style="position:absolute;">
             {$pager}
         </div>
-			<a title="Reset all groups" href="javascript:ajax_all_reset()" class="all_reset" onclick="return confirm('Are you sure? This will reset all groups, deleting all collections/binaries/parts (does not delete releases).');" >Reset all</a> | <a href="javascript:ajax_all_purge()" class="all_purge" onclick="return confirm('Are you sure? This will delete all releases, collections/binaries/parts.');">Purge all</a><br /><a href="{$smarty.const.WWW_TOP}/group-list-active.php">Active Groups</a> | <a href="{$smarty.const.WWW_TOP}/group-list-inactive.php">Inactive Groups</a> | <a href="{$smarty.const.WWW_TOP}/group-list.php">All Groups</a>
-
-				</td></center>
-    </div>
-
+			<a title="Reset all groups" href="javascript:ajax_all_reset()" class="all_reset" onclick="return confirm('Are you sure? This will reset all groups, deleting all collections/binaries/parts (does not delete releases).');" >Reset all</a> | 
+			<a title="Delete all releases, collections/binaries/parts from all groups" href="javascript:ajax_all_purge()" class="all_purge" onclick="return confirm('Are you sure? This will delete all releases, collections/binaries/parts.');">Purge all</a><br />
+			<a title="List all groups Activated for Update_Binaries" href="{$smarty.const.WWW_TOP}/group-list-active.php">Active Groups</a> | 
+			<a title="List all groups NOT Activated for Update_Binaries" href="{$smarty.const.WWW_TOP}/group-list-inactive.php">Inactive Groups</a> | 
+			<a title="List all groups" href="{$smarty.const.WWW_TOP}/group-list.php">All Groups</a>
+	</div>
     <div id="message">msg</div>
     <table style="width:100%;" class="data highlight Sortable">
 
@@ -56,7 +57,10 @@
 			<td class="less">{if $group.minfilestoformrelease==""}n/a{else}{$group.minfilestoformrelease}{/if}</td>
 			<td class="less">{if $group.minsizetoformrelease==""}n/a{else}{$group.minsizetoformrelease|fsize_format:"MB"}{/if}</td>
             <td class="less">{$group.backfill_target}</td>
-            <td class="less" id="groupdel-{$group.id}"><a title="Reset this group" href="javascript:ajax_group_reset({$group.id})" class="group_reset">Reset</a> | <a href="javascript:ajax_group_delete({$group.id})" class="group_delete" onclick="return confirm('Are you sure? This will delete the group from this list.');" >Delete</a> | <a href="javascript:ajax_group_purge({$group.id})" class="group_purge" onclick="return confirm('Are you sure? This will delete all releases, binaries/parts in the selected group');" >Purge</a></td>
+            <td class="less" id="groupdel-{$group.id}">
+				<a title="Reset this group" href="javascript:ajax_group_reset({$group.id})" class="group_reset">Reset</a> | 
+				<a title="Delete this group and all of its releases" href="javascript:ajax_group_delete({$group.id})" class="group_delete" onclick="return confirm('Are you sure? This will delete the group from this list.');" >Delete</a> | 
+				<a title="Remove all releases from this group" href="javascript:ajax_group_purge({$group.id})" class="group_purge" onclick="return confirm('Are you sure? This will delete all releases, binaries/parts in the selected group');" >Purge</a></td>
         </tr>
         {/foreach}
 
