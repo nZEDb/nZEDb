@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-02-28 -> jonnyboy -> missed tooltips
 2014-02-28 -> bart39   -> changed query for requestid in-progress count to use a UNION instead of OR so that it makes use of indexes
                           fixed query in releases->stage7a
 2014-02-27 -> jonnyboy -> fixed queries in releases->stage7a
