@@ -45,7 +45,7 @@ class GrabNZBs
 		}
 		if ($nzb && array_key_exists('groupname', $nzb)) {
 			if (sizeof($arr) > 10) {
-				echo $this->c->header("Getting " . sizeof($arr) . ' articles for ' . $hash);
+				echo $this->c->header("\nGetting " . sizeof($arr) . ' articles for ' . $hash);
 			}
 
 			$article = $nntp->getMessages($nzb['groupname'], $arr);
