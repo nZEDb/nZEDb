@@ -1770,7 +1770,7 @@ class Releases
 		//printf("SELECT ${group['cname']}.id FROM ${group['cname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.collectionid = ${group['cname']}.id WHERE ${group['bname']}.collectionid IS NULL\n");
 		$nobins2 = $db->queryDirect("SELECT ${group['cname']}.id FROM ${group['cname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.collectionid = ${group['cname']}.id WHERE ${group['bname']}.collectionid IS NULL");
 		foreach ($nobins2 as $nobin2) {
-			$delqi = $db->queryDirect("DELETE FROM ${group['cname']} WHERE ${group['cname']}.id = ${nobin['id']}");
+			$delqi = $db->queryDirect("DELETE FROM ${group['cname']} WHERE ${group['cname']}.id = ${nobin2['id']}");
 			$reccount += $delqi->rowCount();
 		}
 
