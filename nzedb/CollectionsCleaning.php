@@ -1264,8 +1264,8 @@ class CollectionsCleaning
 	public function dvd()
 	{
 		//thnx to original poster [00/98] - "2669DFKKFD2008.nzb ` 2669DFKKFD2008 " yEnc
-		if (preg_match('/^thnx to original poster \[\d+(\/\d+\] - ".+?)(\.part\d*|\.rar)?(\.vol.+?|\.[A-Za-z0-9]{2,4})("| `).+? yEnc$/', $this->subject, $match)) {
-			return $match[1];
+		if (preg_match('/^(thnx to original poster )?\[\d+(\/\d+\] - ".+?)(\.part\d*|\.rar)?(\.vol.+?|\.[A-Za-z0-9]{2,4})("| `).* yEnc$/', $this->subject, $match)) {
+			return $match[2];
 		} else {
 			return $this->generic();
 		}
