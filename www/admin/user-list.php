@@ -62,7 +62,7 @@ $page->smarty->assign('pager', $pager);
 foreach($ordering as $ordertype)
 	$page->smarty->assign('orderby'.$ordertype, WWW_TOP."/user-list.php?ob=".$ordertype."&amp;offset=0");
 
-$userlist = $users->getRange($offset, ITEMS_PER_PAGE, $orderby, $username, $email, $host, $role);
+$userlist = $users->getRange($offset, ITEMS_PER_PAGE, $orderby, $username, $email, $host, $role, true);
 $page->smarty->assign('userlist',$userlist);
 
 $page->content = $page->smarty->fetch('user-list.tpl');
