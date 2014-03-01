@@ -719,12 +719,7 @@ class Users
 	{
 		// Clear old requests.
 		$this->clearApiRequests($userid);
-
-		if ($this->db->dbSystem() == 'mysql') {
-			return $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
-		} else {
-			return $this->db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d AND timestamp > (NOW() - INTERVAL '1 DAY')", $userid));
-		}
+		return $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d)', $userid));
 	}
 
 	/**

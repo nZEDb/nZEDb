@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 
 2014-03-01 -> kevin    -> Addition: #1201 Api requests # on user-list page.
+                       -> Remove redundant part of query.
 2014-03-01 -> niel     -> Fix: fixing constants in Install/step1.
                        -> Chg: Changed button text for instal step 6.
                        -> New: Added covers and tmpunrarpath to install step 6
