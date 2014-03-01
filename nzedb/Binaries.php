@@ -458,7 +458,7 @@ class Binaries
 						$this->message[$subject]['File'] = (int) $filecnt[2];
 					}
 
-					if ($this->grabnzbs && preg_match('/.+\.nzb/', $subject)) {
+					if ($this->grabnzbs && preg_match('/.+\.nzb"/', $subject)) {
 						$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW()) ON DUPLICATE KEY UPDATE dateadded = NOW()', $db->escapeString(substr($msg['Message-ID'], 1, -1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject, 0, 255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int) $bytes, (int) $matches[3], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
 					}
 					if ((int) $matches[3] > 0) {
