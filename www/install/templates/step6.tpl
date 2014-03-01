@@ -30,7 +30,7 @@
 				<br />
 			</div>
 			{/if}
-			<input type="submit" value="Set NZB File Path" />
+			<input type="submit" value="Set file paths" />
 	</div>
 
 </form>
