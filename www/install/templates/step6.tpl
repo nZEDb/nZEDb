@@ -19,6 +19,10 @@
 			<td><label for="coverspath">Location:</label></td>
 			<td><input type="text" name="coverspath" value="{$cfg->COVERS_PATH}" size="70" /></td>
 		</tr>
+		<tr class="alt">
+			<td><label for="tmpunrarpath">Location:</label></td>
+			<td><input type="text" name="tmpunrarpath" value="{$cfg->UNRAR_PATH}" size="70" /></td>
+		</tr>
 	</table>
 
 	<div style="padding-top:20px; text-align:center;">
@@ -27,6 +31,7 @@
 				The following error was encountered:<br />
 				{if !$cfg->nzbPathCheck}<br /><span class="error">The installer cannot write to {$cfg->NZB_PATH}. A quick solution is to run:<br />chmod -R 777 {$cfg->NZB_PATH}</span><br />{/if}
 				{if !$cfg->coverPathCheck}<br /><span class="error">The installer cannot write to {$cfg->COVERS_PATH}. A quick solution is to run:<br />chmod -R 777 {$cfg->COVERS_PATH}</span><br />{/if}
+				{if !$cfg->unrarPathCheck}<br /><span class="error">The installer cannot write to {$cfg->UNRAR_PATH}. A quick solution is to run:<br />chmod -R 777 {$cfg->UNRAR_PATH}</span><br />{/if}
 				<br />
 			</div>
 			{/if}

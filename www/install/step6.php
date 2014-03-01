@@ -21,6 +21,7 @@ if ($page->isPostBack()) {
 
 	$cfg->NZB_PATH = trim($_POST['nzbpath']);
 	$cfg->COVERS_PATH = trim($_POST['coverspath']);
+	$cfg->UNRAR_PATH = trim($_POST['tmpunrarpath']);
 
 	if ($cfg->NZB_PATH == '') {
 		$cfg->error = true;
