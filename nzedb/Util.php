@@ -5,6 +5,16 @@
 
 class Util
 {
+	static public function hasCommand($cmd)
+	{
+		if (!isWindows()) {
+			$returnVal = shell_exec("which $cmd");
+			return (empty($returnVal) ? false : true);
+		} else {
+			return null;
+		}
+	}
+
 	static public function setCoversConstant($path)
 	{
 		if (!defined('nZEDb_COVERS')) {
@@ -48,11 +58,7 @@ function sendEmail($to, $subject, $contents, $from)
 // Check if O/S is windows.
 function isWindows()
 {
-	if (strpos(PHP_OS, "WIN") === false) {
-		return false;
-	} else {
-		return true;
-	}
+	return (strtolower(substr(php_uname('s'), 0, 3)) === 'win');
 }
 
 // Convert obj to array.
@@ -530,3 +536,4 @@ function release_flag($x, $t)
 		}
 	}
 }
+?>

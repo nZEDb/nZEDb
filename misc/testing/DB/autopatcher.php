@@ -1,5 +1,4 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $db = new DB();
@@ -8,12 +7,6 @@ $smarty = new Smarty;
 $dbname = DB_NAME;
 $restart = "false";
 $c = new ColorCLI();
-
-function command_exist($cmd)
-{
-	$returnVal = shell_exec("which $cmd");
-	return (empty($returnVal) ? false : true);
-}
 
 if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 	$tmux = new Tmux();
@@ -30,7 +23,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 
 	system("cd $DIR && git pull");
 
-	if (command_exist("php5")) {
+	if (nzedb\utility\Util::hasCommand("php5")) {
 		$PHP = "php5";
 	} else {
 		$PHP = "php";
@@ -61,3 +54,4 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 			. "php $argv[0] true   ...: To run.\n"
 			. "php $argv[0] safe   ...: Tto run a backup of your database and then update.\n"));
 }
+?>
