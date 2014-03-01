@@ -2,9 +2,15 @@
 
 export NZEDB_ROOT="$(pwd)"
 
+sed -i '/nZEDb_DEBUG/s/true/false/' $NZEDB_ROOT/www/automated.config.php
+sed -i '/nZEDb_LOGGING/s/true/false/' $NZEDB_ROOT/www/automated.config.php
+
 git add -i
 
 nano Changelog
 git add Changelog
 
 git commit
+
+sed -i '/nZEDb_DEBUG/s/false/true/' $NZEDB_ROOT/www/automated.config.php
+sed -i '/nZEDb_LOGGING/s/false/true/' $NZEDB_ROOT/www/automated.config.php

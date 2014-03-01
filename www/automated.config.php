@@ -1,5 +1,8 @@
 <?php
+// Show debug messages in CLI.
 define('nZEDb_DEBUG', false);
+// Log debug messages to nzedb/resources/debug.log.
+define('nZEDb_LOGGING', false);
 
 define('DS', DIRECTORY_SEPARATOR);
 
