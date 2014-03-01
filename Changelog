@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 
 2014-03-01 -> kevin    -> Addition: Logging to NNTP.php, Turn on debugging in site->admin if you want to use it, logs are in resources/logs
+                       -> Addition: Displaying debug messages to CLI, edit nzedb/Logging.php for options.
                        -> Change:   Comment out the debug info in binaries.php -> maybe add it later on to a log file?
                        -> Addition: #1201 Api requests # on user-list page.
                        -> Remove:   Redundant part of query in apirequests method.
