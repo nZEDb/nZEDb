@@ -86,14 +86,16 @@ class Users
 		$order = $this->getBrowseOrder($orderby);
 		if ($apiRequests) {
 			$this->clearApiRequests(false);
+
 			$ret = $this->db->query(sprintf("
 				SELECT users.*,
 				userroles.name AS rolename,
 				COUNT(userrequests.id) AS apirequests
 				FROM users
 				INNER JOIN userroles ON userroles.id = users.role
-				INNER JOIN userrequests ON userrequests.userid = users.id
-				WHERE 1=1 %s %s %s %s
+				LEFT JOIN userrequests ON userrequests.userid = users.id
+				WHERE users.id != 0 %s %s %s %s
+				GROUP BY users.id
 				ORDER BY %s %s" .
 				$limit,
 				$usql, $esql, $hsql, $rsql,
