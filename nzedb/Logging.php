@@ -221,7 +221,7 @@ class Logging
 		}
 
 		// Strip new lines/ line returns.
-		$message = trim(preg_replace('/\s{2,}/', ' ', str_replace(array('\r', '\n'), ' ', $message)));
+		$message = trim(preg_replace('/\s{2,}/', ' ', str_replace(array("\n", "\r", '\r', '\n'), ' ', $message)));
 
 		// Create message : [Sat, 1 Mar 2014 16:01:07 +0500] [ERROR] [NNTP.doConnect() Could not connect to news.tweaknews.com (ssl) Password is wrong.]
 		$data = $time . $severity . $class . '.' . $method . '() ' . $message . ']' . $this->newLine;
