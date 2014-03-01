@@ -8,7 +8,7 @@
 	</div>
 {else}
 
-<p>You must accept or change these file paths. This is the location where the NZB files are stored:</p>
+<p>You must accept or change these file paths. This is the location where your covers, NZB, and temporary files are stored:</p>
 <form action="?" method="post">
 	<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
 		<tr class="alt">
