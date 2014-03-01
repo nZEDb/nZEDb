@@ -8,16 +8,16 @@
 	</div>
 {else}
 
-<p>You must set the NZB file path. This is the location where the NZB files are stored:</p>
+<p>You must accept or change these file paths. This is the location where the NZB files are stored:</p>
 <form action="?" method="post">
 	<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
 		<tr class="alt">
-			<td><label for="nzbpath">Location:</label></td>
-			<td><input type="text" name="nzbpath" value="{$cfg->NZB_PATH}" size="70" /></td>
-		</tr>
-		<tr class="alt">
 			<td><label for="coverspath">Location:</label></td>
 			<td><input type="text" name="coverspath" value="{$cfg->COVERS_PATH}" size="70" /></td>
+		</tr>
+		<tr class="alt">
+			<td><label for="nzbpath">Location:</label></td>
+			<td><input type="text" name="nzbpath" value="{$cfg->NZB_PATH}" size="70" /></td>
 		</tr>
 		<tr class="alt">
 			<td><label for="tmpunrarpath">Location:</label></td>
