@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-01 -> niel     -> Upd: Fixing trailing white-space introduced to group-list.tpl.
 2014-03-01 -> bart39   -> tv/music regex additions
 2014-02-28 -> jonnyboy -> changed to catch all variations
                           updated GrabNZBs to remove '#' fro '#a.b.teevee' for dupe checking
