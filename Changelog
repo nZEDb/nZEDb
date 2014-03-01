@@ -11,6 +11,7 @@ Each update goes to the top of the file
                        -> Chg: Changed button text for instal step 6.
                        -> New: Added covers and tmpunrarpath to install step 6
                        -> Fix: Updating some template text that I missed before.
+                       -> Fix: Util::hasCommand doesn't need the namespace.
 2014-03-01 -> jonnyboy -> fixed typo in Binaries.php
                           fixed typo in schema
 2014-03-01 -> niel     -> Upd: Fixing trailing white-space introduced to group-list.tpl.
