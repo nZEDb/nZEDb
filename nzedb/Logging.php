@@ -85,6 +85,16 @@ class Logging
 	private $db;
 
 	/**
+	 * @var bool|stdClass Class instance.
+	 */
+	private $site;
+
+	/**
+	 * @var object Class instance.
+	 */
+	private $colorCLI;
+
+	/**
 	 * Constructor.
 	 *
 	 * @return void
@@ -94,6 +104,7 @@ class Logging
 		$site = new Sites();
 		$this->site = $site->get();
 		$this->db = new DB();
+		$this->colorCLI = new ColorCLI();
 
 		$this->siteDebug = ($this->site->debuginfo == '0') ? false : true;
 		if ($this->debugLogging) {
@@ -214,11 +225,11 @@ class Logging
 		$time = '[' . Date('r');
 
 		// Create message : [Sat, 1 Mar 2014 16:01:07 +0500] [ERROR] [NNTP.doConnect() Could not connect to news.tweaknews.com (ssl) Password is wrong.]
-		$data = $time . $severity . $class . '.' . $method . '() ' . $message . ']' . $this->newLine;
+		$data = $time . $severity . $class . '.' . $method . '() ' . $message . ']';
 
 		// Check if we want to echo the message.
 		if ($this->debugCLI) {
-			echo $data;
+			echo $this->colorCLI->debug($data);
 		}
 
 		// Check if debug logging is on.
@@ -275,7 +286,7 @@ class Logging
 		}
 
 		// Append the message to the log.
-		if (!file_put_contents($fileLocation, $data, FILE_APPEND)) {
+		if (!file_put_contents($fileLocation, $data . $this->newLine, FILE_APPEND)) {
 // Error appending message to log file.
 			return;
 		}
