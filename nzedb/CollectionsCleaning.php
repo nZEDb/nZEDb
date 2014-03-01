@@ -2567,6 +2567,12 @@ class CollectionsCleaning
 		} //Metallica - Ride The Lightning    "01 - Fight Fire With Fire.mp3" yEnc
 		else if (preg_match('/^(.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[1];
+		} //(01/11) "Der Kleine Vampir Komplett - Folge 01 bis 18 www.brothers-of-usenet.org - empfehlen - Newsconnection.eu.nfo" yEnc
+		else if (preg_match('/^\(\d+\/(\d+\) ".+?) www\.brothers-of-usenet\.org - empfehlen - Newsconnection(\.eu)?' . $this->e1, $this->subject, $match)) {
+			return $match[1];
+		} //(D The Best Of Leon Russell [23/28] - The Best Of Leon Russell.vol00+01.PAR2  yEnc
+		else if (preg_match('/^\(D(\))? (.+) {1,2}\[\d+\/(\d+\]) - .+?([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4}) {1,2}yEnc$/', $this->subject, $match)) {
+			return $match[2] . $match[3];
 		} else {
 			return $this->generic();
 		}
@@ -2621,6 +2627,9 @@ class CollectionsCleaning
 		//Criminal.Minds.S03E01.Doubt.PROPER.DVDRip.XviD-SAiNTS - [01/33] - "Criminal.Minds.S03E01.Doubt.PROPER.DVDRip.XviD-SAiNTS.par2" yEnc
 		else if (preg_match('/^(Re: )?([a-zA-Z0-9._-]+([{}A-Z_]+)?( -)? \[)\d+(\/| of )\d+\]( -)? ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[2];
+		} //[ Anthony.Bourdain.Parts.Unknown.S01.480p.HDTV.x264-mSD ] MKV.h264 (03/17) - "Anthony.Bourdain.Parts.Unknown.S01E01.480p.HDTV.x264-mSD.mkv" yEnc
+		else if (preg_match('/^\[ (.+?) \] .+ \(\d+\/(\d+\)) - ".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
 		} //Silent Witness S15E02 Death has no dominion.par2 [01/44] - yEnc
 		else if (preg_match('/^([a-zA-Z0-9 ]+)(\.part\d*|\.rar)?(\.vol.+? |\.[A-Za-z0-9]{2,4} )\[\d+(\/\d+\] - yEnc)$/', $this->subject, $match)) {
 			return $match[1] . $match[4];

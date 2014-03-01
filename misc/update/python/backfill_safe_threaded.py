@@ -37,7 +37,6 @@ else:
 	dorun = cur[0].fetchone()
 	info.disconnect(cur[0], cur[1])
 	if len(sys.argv) > 1 and sys.argv[1] not in dorun:
-		#if not dorun:
 		#before we get the groups, lets update shortgroups
 		subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])
 

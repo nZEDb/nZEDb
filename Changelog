@@ -7,8 +7,16 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-01 -> bart39   -> tv/music regex additions
+2014-02-28 -> jonnyboy -> changed to catch all variations
+                          updated GrabNZBs to remove '#' fro '#a.b.teevee' for dupe checking
+                          missed tooltips
+2014-02-28 -> bart39   -> changed query for requestid in-progress count to use a UNION instead of OR so that it makes use of indexes
+                          fixed query in releases->stage7a
 2014-02-27 -> niel     -> Upd: Moving duplicated function to Util.php and renaming.
-2014-02-27 -> jonnyboy -> added pk to logging
+2014-02-27 -> jonnyboy -> fixed queries in releases->stage7a
+                          added tooltips for group-list
+                          added pk to logging
 2014-02-27 -> bart39   -> regex additions
                           don't categorize as pc if it looks like audio/console
 2014-02-27 -> niel     -> Upd: Changing default locations for covers, nzb, and temp files to use nZEDb/resources.

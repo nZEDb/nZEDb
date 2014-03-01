@@ -1751,26 +1751,26 @@ class Releases
 		}
 
 		// Parts that somehow have no binaries.
-		//printf("SELECT ${group['pname']}.id FROM ${group['pname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.id = ${group['pname']}.binaryid WHERE ${group['pname']}.binaryid IS NULL\n");
-		$nobins = $db->queryDirect("SELECT ${group['pname']}.id FROM ${group['pname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.id = ${group['pname']}.binaryid WHERE ${group['pname']}.binaryid IS NULL");
+		//printf("SELECT ${group['pname']}.id FROM ${group['pname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.id = ${group['pname']}.binaryid WHERE ${group['bname']}.id IS NULL\n");
+		$nobins = $db->queryDirect("SELECT ${group['pname']}.id FROM ${group['pname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.id = ${group['pname']}.binaryid WHERE ${group['bname']}.id IS NULL");
 		foreach ($nobins as $nobin) {
 			$delqg = $db->queryDirect("DELETE FROM ${group['pname']} WHERE ${group['pname']}.id = ${nobin['id']}");
 			$reccount += $delqg->rowCount();
 		}
 
 		// Binaries that somehow have no collection.
-		//printf("SELECT ${group['bname']}.id FROM ${group['bname']} LEFT OUTER JOIN ${group['cname']} ON ${group['cname']}.id = ${group['bname']}.collectionid WHERE ${group['bname']}.collectionid IS NULL\n");
-		$nocolls = $db->queryDirect("SELECT ${group['bname']}.id FROM ${group['bname']} LEFT OUTER JOIN ${group['cname']} ON ${group['cname']}.id = ${group['bname']}.collectionid WHERE ${group['bname']}.collectionid IS NULL");
+		//printf("SELECT ${group['bname']}.id FROM ${group['bname']} LEFT OUTER JOIN ${group['cname']} ON ${group['cname']}.id = ${group['bname']}.collectionid WHERE ${group['cname']}.id IS NULL\n");
+		$nocolls = $db->queryDirect("SELECT ${group['bname']}.id FROM ${group['bname']} LEFT OUTER JOIN ${group['cname']} ON ${group['cname']}.id = ${group['bname']}.collectionid WHERE ${group['cname']}.id IS NULL");
 		foreach ($nocolls as $nocoll) {
 			$delqh = $db->queryDirect("DELETE FROM ${group['bname']} WHERE ${group['bname']}.id = ${nocoll['id']}");
 			$reccount += $delqh->rowCount();
 		}
 
 		// Collections that somehow have no binaries.
-		//printf("SELECT ${group['cname']}.id FROM ${group['cname']} LEFT OUTER JOIN ${group['bname']} ON ${group['cname']}.id = ${group['bname']}.collectionid WHERE ${group['bname']}.collectionid IS NULL\n");
-		$nobins2 = $db->queryDirect("SELECT ${group['cname']}.id FROM ${group['cname']} LEFT OUTER JOIN ${group['bname']} ON ${group['cname']}.id = ${group['bname']}.collectionid WHERE ${group['bname']}.collectionid IS NULL");
+		//printf("SELECT ${group['cname']}.id FROM ${group['cname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.collectionid = ${group['cname']}.id WHERE ${group['bname']}.collectionid IS NULL\n");
+		$nobins2 = $db->queryDirect("SELECT ${group['cname']}.id FROM ${group['cname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.collectionid = ${group['cname']}.id WHERE ${group['bname']}.collectionid IS NULL");
 		foreach ($nobins2 as $nobin2) {
-			$delqi = $db->queryDirect("DELETE FROM ${group['cname']} WHERE ${group['cname']}.id = ${nobin['id']}");
+			$delqi = $db->queryDirect("DELETE FROM ${group['cname']} WHERE ${group['cname']}.id = ${nobin2['id']}");
 			$reccount += $delqi->rowCount();
 		}
 

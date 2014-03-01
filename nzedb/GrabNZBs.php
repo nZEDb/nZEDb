@@ -45,7 +45,7 @@ class GrabNZBs
 		}
 		if ($nzb && array_key_exists('groupname', $nzb)) {
 			if (sizeof($arr) > 10) {
-				echo $this->c->header("Getting " . sizeof($arr) . ' articles for ' . $hash);
+				echo $this->c->header("\nGetting " . sizeof($arr) . ' articles for ' . $hash);
 			}
 
 			$article = $nntp->getMessages($nzb['groupname'], $arr);
@@ -113,6 +113,7 @@ class GrabNZBs
 				$postdate[] = $date;
 				$partless = preg_replace('/(\(\d+\/\d+\))*$/', 'yEnc', $firstname['0']);
 				$partless = preg_replace('/yEnc.*?$/', 'yEnc', $partless);
+				$partless = preg_replace('/\[#?a\.b\.teevee@?EFNet\]/', '[#a.b.teevee@EFNet]', $partless);
 				$subject = utf8_encode(trim($partless));
 
 				// Make a fake message object to use to check the blacklist.
