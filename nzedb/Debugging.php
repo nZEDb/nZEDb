@@ -68,14 +68,12 @@ class Debugging
 
 	/**
 	 * Should we echo to CLI or web?
-	 *
 	 * @var bool
 	 */
 	private $outputCLI = true;
 
 	/**
 	 * Cache of the date.
-	 *
 	 * @var string
 	 */
 	private $dateCache = '';
@@ -216,7 +214,7 @@ class Debugging
 	}
 
 	/**
-	 * Check if the logs folder exists.
+	 * Check if a folder exists, if not create it.
 	 *
 	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
 	 *
@@ -266,6 +264,7 @@ class Debugging
 	protected function rotateLog($path, $name)
 	{
 		$file = $path . $name . self::logFileExtension;
+
 		// Check if we need to rotate the log if it exceeds max size..
 		$logSize = filesize($file);
 		if ($logSize === false) {
@@ -273,16 +272,17 @@ class Debugging
 			return false;
 		} else if ($logSize >= (self::logFileSize * 1024 * 1024)) {
 			if (!$this->compressLog($path, $name)) {
-// Error renaming log.
+// Error compressing/renaming old log.
 				return false;
 			}
 
 			// Create a new log.
 			if (!$this->initiateLog($path, $name)) {
-// Error creating log file.
+// Error creating new log file.
 				return false;
 			}
 
+			// Delete old logs.
 			$this->pruneLogs($path, $name);
 		}
 		return true;
@@ -299,25 +299,31 @@ class Debugging
 	protected function compressLog($path, $name)
 	{
 		$file = $path . $name . self::logFileExtension;
+
+		// Get the log as a string.
 		$log = file_get_contents($file);
 		if (!$log) {
 // Error reading log file.
 			return false;
 		}
 
+		// Create an empty gz file.
 		$gz = gzopen($path . $name . '.' . time() . '.gz', 'w6');
 		if (!$gz) {
 // Error creating gz file.
 			return false;
 		}
 
+		// Write the log's data into the gz file.
 		gzwrite($gz, $log);
 
+		// Close the gz file.
 		if (!gzclose($gz)) {
 // Error closing gz file.
 			return false;
 		}
 
+		// Delete the original log file.
 		return unlink($file);
 	}
 
