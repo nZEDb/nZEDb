@@ -25,6 +25,15 @@ class Debugging
 	const logFileSize = 4;
 
 	/**
+	 * Extension for log files.
+	 *
+	 * @default .log
+	 *
+	 * @const string
+	 */
+	const logFileExtension = '.log';
+
+	/**
 	 * Base name of debug log file.
 	 *
 	 * @default debug
@@ -153,7 +162,7 @@ class Debugging
 		}
 
 		// Full path to the log file.
-		$fileLocation = $path . self::debugLogName . '.log';
+		$fileLocation = $path . self::debugLogName . self::logFileExtension;
 
 		// Check if we need to initiate a new log if we don't have one.
 		if (!$this->initiateLog($fileLocation)) {
@@ -161,7 +170,7 @@ class Debugging
 		}
 
 		// Check if we need to rotate the log if it exceeds max size..
-		if (!$this->rotateLog($fileLocation)) {
+		if (!$this->rotateLog($path, self::debugLogName)) {
 			return false;
 		}
 
@@ -218,30 +227,32 @@ class Debugging
 	/**
 	 * Rotate log file if it exceeds a certain size.
 	 *
-	 * @param $fullPath /The path to the file (/var/www/nZEDb/resources/logs/debug.log) MUST END IN .log or .txt
+	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $name The name of the log without extensions. ex.: debug
 	 *
 	 * @return bool
 	 */
-	protected function rotateLog($fullPath)
+	protected function rotateLog($path, $name)
 	{
+		$file = $path . $name . self::logFileExtension;
 		// Check if we need to rotate the log if it exceeds max size..
-		$logSize = filesize($fullPath);
+		$logSize = filesize($file);
 		if ($logSize === false) {
 // Error getting log size.
 			return false;
 		} else if ($logSize >= (self::logFileSize * 1024 * 1024)) {
-			if (!$this->compressLog($fullPath)) {
+			if (!$this->compressLog(nZEDb_LOGS, $name)) {
 // Error renaming log.
 				return false;
 			}
 
 			// Create a new log.
-			if (!$this->initiateLog($fullPath)) {
+			if (!$this->initiateLog($file)) {
 // Error creating log file.
 				return false;
 			}
 
-			$this->pruneLogs(nZEDb_LOGS, self::debugLogName);
+			$this->pruneLogs(nZEDb_LOGS, $name);
 		}
 		return true;
 	}
@@ -249,19 +260,21 @@ class Debugging
 	/**
 	 * Compress the old log using GZip.
 	 *
-	 * @param $fullPath /The path to the file (/var/www/nZEDb/resources/logs/debug.log) MUST END IN .log or .txt
+	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $name The name of the log without extensions. ex.: debug
 	 *
 	 * @return bool
 	 */
-	protected function compressLog($fullPath)
+	protected function compressLog($path, $name)
 	{
-		$log = file_get_contents($fullPath);
+		$file = $path . $name . self::logFileExtension;
+		$log = file_get_contents($file);
 		if (!$log) {
 // Error reading log file.
 			return false;
 		}
 
-		$gz = gzopen(str_replace(array('.log', '.txt'), '.' . time() . '.gz', $fullPath),'w6');
+		$gz = gzopen($path . $name . '.' . time() . '.gz', 'w6');
 		if (!$gz) {
 // Error creating gz file.
 			return false;
@@ -274,13 +287,13 @@ class Debugging
 			return false;
 		}
 
-		return unlink($fullPath);
+		return unlink($file);
 	}
 
 	/**
 	 * Delete old logs.
 	 *
-	 * @param string $path Path where all the log files are.        ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
 	 * @param string $name The name of the log without extensions. ex.: debug
 	 *
 	 * @return bool
@@ -288,7 +301,7 @@ class Debugging
 	protected function pruneLogs($path, $name)
 	{
 		// Get all the logs with the name.
-		$logs = glob($path . $name . '.[0-9]*.gzip');
+		$logs = glob($path . $name . '.[0-9]*.gz');
 
 		// If there are no old logs or less than maxLogs return false.
 		if (!$logs || count($logs) < self::maxLogs) {
