@@ -387,7 +387,7 @@ class Debugging
 	protected function formMessage($method, $message)
 	{
 		$this->debugMessage =
-			// Current time. RFC2822 style ; [Thu, 21 Dec 2000 16:01:07 +0200
+			// Current date/time ; [02/Mar/2014 14:50 EST
 			'[' . $this->getDate() .
 
 			// The severity.
