@@ -1222,7 +1222,7 @@ class PostProcess
 		else {
 			// Not a rar file, try it as a ZIP file.
 			$files = $this->processReleaseZips($fetchedBinary, false, false, $release, $nntp);
-			if ($files !== false) {
+			if ($files !== false && isset($files[0]['name'])) {
 				$this->name = $files[0]['name'];
 				$this->size = $files[0]['size'] * 0.95;
 				$this->sum = $this->adj = 0;
