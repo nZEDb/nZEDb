@@ -16,6 +16,8 @@ define('nZEDb_LOGWARNING', false);
 define('nZEDb_LOGERROR', false);
 // Log and or echo Fatal messages.
 define('nZEDb_LOGFATAL', false);
+// Log and or echo failed SQL queries.
+define('nZEDb_LOGQUERIES', false);
 
 
 define('DS', DIRECTORY_SEPARATOR);

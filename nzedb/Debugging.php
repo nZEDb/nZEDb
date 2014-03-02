@@ -87,6 +87,7 @@ class Debugging
 	 *               3 Warning - Not an error, but something we can probably fix.
 	 *               4 Notice  - User errors - the user did not enable any groups for example.
 	 *               5 Info    - General info, like we logged in to usenet for example.
+	 *               6 Query   - Failed SQL queries. (the full query).
 	 *               Anything else causes the script to return void.
 	 *
 	 * @return void
@@ -211,7 +212,7 @@ class Debugging
 	 * Delete old logs.
 	 *
 	 * @param string $path Path where all the log files are.        ex.: /var/www/nZEDb/resources/logs/
-	 * @param string $name The name of the name without extensions. ex.: debug
+	 * @param string $name The name of the log without extensions. ex.: debug
 	 *
 	 * @return bool
 	 */
@@ -301,6 +302,12 @@ class Debugging
 	{
 		$this->message = '';
 		switch ($severity) {
+			case 6:
+				if (nZEDb_LOGQUERIES) {
+					$this->message = '] [SQLQUERY] [';
+					return true;
+				}
+				return false;
 			case 1:
 				if (nZEDb_LOGFATAL) {
 					$this->message = '] [FATAL]    [';

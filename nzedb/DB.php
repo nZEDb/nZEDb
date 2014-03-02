@@ -172,17 +172,15 @@ class DB extends PDO
 			}
 			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205) {
 				$this->debugging->start("queryInsert", "Deadlock or lock wait timeout, try increasing innodb_lock_wait_timeout.", 4);
-				return false;
 			} else if ($e->errorInfo[1] == 1062 || $e->errorInfo[0] == 23000) {
 				$this->debugging->start("queryInsert", "Insert would create duplicate row, skipping.", 4);
-				return false;
 			} else if ($e->errorInfo[1] == 1406 || $e->errorInfo[0] == 22001) {
 				$this->debugging->start("queryInsert", "Too large to fit column length.", 4);
-				return false;
 			} else {
 				$this->debugging->start("queryInsert", $e->getMessage(), 4);
 				echo $this->c->error("\n" . $e->getMessage());
 			}
+			$this->debugging->start("queryInsert", $query, 6);
 			return false;
 		}
 	}
@@ -209,17 +207,15 @@ class DB extends PDO
 			}
 			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205) {
 				$this->debugging->start("queryExec", "Deadlock or lock wait timeout.", 4);
-				return false;
 			} else if ($e->errorInfo[1] == 1062 || $e->errorInfo[0] == 23000) {
 				$this->debugging->start("queryExec", "Update would create duplicate row, skipping.", 4);
-				return false;
 			} else if ($e->errorInfo[1] == 1406 || $e->errorInfo[0] == 22001) {
 				$this->debugging->start("queryExec", "Too large to fit column length.", 4);
-				return false;
 			} else {
 				$this->debugging->start("queryExec", $e->getMessage(), 4);
 				echo $this->c->error("\n" . $e->getMessage());
 			}
+			$this->debugging->start("queryExec", $query, 6);
 			return false;
 		}
 	}
@@ -236,6 +232,7 @@ class DB extends PDO
 		} catch (PDOException $e) {
 			echo $this->c->error("\n" . $e->getMessage());
 			$this->debugging->start("Exec", $e->getMessage(), 4);
+			$this->debugging->start("Exec", $query, 6);
 			return false;
 		}
 	}
@@ -267,6 +264,7 @@ class DB extends PDO
 			} catch (Exception $er) {
 				echo $this->c->error("\n" . $er->getMessage());
 				$this->debugging->start("query", $er->getMessage(), 4);
+				$this->debugging->start("query", $query, 6);
 			}
 		}
 
@@ -316,7 +314,8 @@ class DB extends PDO
 			//echo $query."\n";
 			$error = "\nqueryDirect: " . $e->getMessage() . "\n";
 			echo $this->c->error($error);
-			$this->debugging->start("queryDirect", $error + ' ' + $query, 4);
+			$this->debugging->start("queryDirect", $error, 4);
+			$this->debugging->start("queryDirect", $query, 6);
 			$result = false;
 		}
 		return $result;
