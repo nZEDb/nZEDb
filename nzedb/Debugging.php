@@ -140,14 +140,19 @@ class Debugging
 	/**
 	 * Base method for logging to files.
 	 *
-	 * @param string $path    Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
-	 * @param string $name The name of the log type. ex.: debug
+	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $name The name of the log type.         ex.: debug
 	 * @param string $message The message to log.
 	 *
 	 * @return bool
 	 */
 	protected function logMain($path, $name, $message)
 	{
+		// Check if the log folder exists, create it if not.
+		if (!$this->createFolder($path)) {
+			return false;
+		}
+
 		// Check if we need to initiate a new log if we don't have one.
 		if (!$this->initiateLog($path, $name)) {
 			return false;
@@ -178,15 +183,7 @@ class Debugging
 			return false;
 		}
 
-		// Path to folder where log files are stored..
-		$path = nZEDb_LOGS;
-
-		// Check if the log folder exists, create it if not.
-		if (!$this->createFolder($path)) {
-			return false;
-		}
-
-		if (!$this->logMain($path, self::debugLogName, $this->debugMessage)) {
+		if (!$this->logMain(nZEDb_LOGS, self::debugLogName, $this->debugMessage)) {
 			return false;
 		}
 		return true;
@@ -210,6 +207,7 @@ class Debugging
 
 	/**
 	 * Form a date in this format: 02/Mar/2014 14:50 EST
+	 *
 	 * @return string
 	 */
 	protected  function formDate()
@@ -220,7 +218,7 @@ class Debugging
 	/**
 	 * Check if the logs folder exists.
 	 *
-	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
 	 *
 	 * @return bool
 	 */
@@ -240,8 +238,8 @@ class Debugging
 	/**
 	 * Initiate a log file.
 	 *
-	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
-	 * @param string $name The name of the log type. ex.: debug
+	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
 	 */
@@ -260,8 +258,8 @@ class Debugging
 	/**
 	 * Rotate log file if it exceeds a certain size.
 	 *
-	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
-	 * @param string $name The name of the log type. ex.: debug
+	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
 	 */
@@ -293,8 +291,8 @@ class Debugging
 	/**
 	 * Compress the old log using GZip.
 	 *
-	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
-	 * @param string $name The name of the log type. ex.: debug
+	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
 	 */
@@ -326,8 +324,8 @@ class Debugging
 	/**
 	 * Delete old logs.
 	 *
-	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
-	 * @param string $name The name of the log type. ex.: debug
+	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
 	 */
