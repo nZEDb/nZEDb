@@ -16,13 +16,13 @@ class Debugging
 	const maxLogs = 50;
 
 	/**
-	 * Max log size in KiloBytes
+	 * Max log size in MegaBytes
 	 *
-	 * @default 1024
+	 * @default 4
 	 *
 	 * @const int
 	 */
-	const logFileSize = 1024;
+	const logFileSize = 4;
 
 	/**
 	 * Base name of debug log file.
@@ -229,8 +229,8 @@ class Debugging
 		if ($logSize === false) {
 // Error getting log size.
 			return false;
-		} else if ($logSize >= (self::logFileSize * 1024)) {
-			if (!rename($fullPath, str_replace(array('.log', '.txt'), '.old.', $fullPath) . time())) {
+		} else if ($logSize >= (self::logFileSize * 1024 * 1024)) {
+			if (!$this->compressLog($fullPath)) {
 // Error renaming log.
 				return false;
 			}
@@ -247,6 +247,37 @@ class Debugging
 	}
 
 	/**
+	 * Compress the old log using GZip.
+	 *
+	 * @param $fullPath /The path to the file (/var/www/nZEDb/resources/logs/debug.log) MUST END IN .log or .txt
+	 *
+	 * @return bool
+	 */
+	protected function compressLog($fullPath)
+	{
+		$log = file_get_contents($fullPath);
+		if (!$log) {
+// Error reading log file.
+			return false;
+		}
+
+		$gz = gzopen(str_replace(array('.log', '.txt'), '.' . time() . '.gz', $fullPath),'w6');
+		if (!$gz) {
+// Error creating gz file.
+			return false;
+		}
+
+		gzwrite($gz, $log);
+
+		if (!gzclose($gz)) {
+// Error closing gz file.
+			return false;
+		}
+
+		return unlink($fullPath);
+	}
+
+	/**
 	 * Delete old logs.
 	 *
 	 * @param string $path Path where all the log files are.        ex.: /var/www/nZEDb/resources/logs/
@@ -257,7 +288,7 @@ class Debugging
 	protected function pruneLogs($path, $name)
 	{
 		// Get all the logs with the name.
-		$logs = glob($path . $name . '.old.[0-9]*');
+		$logs = glob($path . $name . '.[0-9]*.gzip');
 
 		// If there are no old logs or less than maxLogs return false.
 		if (!$logs || count($logs) < self::maxLogs) {
