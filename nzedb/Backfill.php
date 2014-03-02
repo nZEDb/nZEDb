@@ -200,7 +200,7 @@ class Backfill
 
 		// If our estimate comes back with stuff we already have, finish.
 		if ($targetpost >= $groupArr['first_record']) {
-			$dmessage = "Nothing to do, we already have the target post\n\n";
+			$dmessage = "Nothing to do, we already have the target post.\n";
 			echo $this->c->notice($dmessage);
 			$this->debugging->start("backfillGroup", $dmessage, 4);
 			return;
@@ -734,15 +734,13 @@ class Backfill
 
 		$this->debugging->start(
 			"postdate",
-			'postdate for post: ' .
+			'Article (' .
 			$post .
-			' came back ' .
+			"'s) date is (" .
 			$date .
-			' (' .
-			strtotime($date) .
-			' seconds unixtime or ' .
+			') (' .
 			$this->daysOld($date) .
-			" days)",
+			" days old)",
 			5);
 
 		$date = strtotime($date);
@@ -779,15 +777,15 @@ class Backfill
 
 		$this->debugging->start(
 			"daytopost",
-			'Total Articles: ' .
+			'Total Articles: (' .
 			number_format($totalnumberofarticles) .
-			' Newest: ' .
+			') Newest: (' .
 			number_format($upperbound) .
-			' Oldest: ' .
+			') Oldest: (' .
 			number_format($lowerbound) .
-			"\nGoal: " .
-			date('r', $goaldate) .
-			" ({$goaldate}).",
+			") Goal: (" .
+			date('r', $goaldate)
+			.')',
 			5);
 
 		if ($data['last'] == PHP_INT_MAX) {
@@ -822,17 +820,14 @@ class Backfill
 		}
 
 		$this->debugging->start("daytopost",
-			'Searching for postdate. Goaldate: ' .
-			$goaldate .
+			'Searching for postdate. Goal: ' .
 			'(' .
 			date('r',  $goaldate) .
 			') Firstdate: ' .
-			$firstDate .
 			'(' .
 			((is_int($firstDate)) ? date('r', $firstDate) : 'n/a') .
 			')' .
 			' Lastdate: ' .
-			$lastDate .
 			'(' .
 			date('r', $lastDate) .
 			')',
@@ -870,9 +865,9 @@ class Backfill
 				$interval = ceil(($interval / 2));
 				$this->debugging->start(
 					"daytopost",
-					'Checking interval at: ' .
+					'Checking interval at: (' .
 					number_format($interval) .
-					' articles.',
+					') articles.',
 					5);
 			}
 			$dateofnextone = $this->postdate($nntp, ($upperbound - 1), $pddebug, $group, false, 'oldest');
@@ -882,9 +877,9 @@ class Backfill
 		}
 
 		$dmessage =
-			'Determined to be article:' .
+			'Determined to be article: ' .
 			number_format($upperbound) .
-			'which is ' .
+			' which is ' .
 			$this->daysOld($dateofnextone) .
 			' days old (' .
 			date('r', $dateofnextone) .
@@ -895,12 +890,15 @@ class Backfill
 	}
 
 	/**
-	 * @param int $timestamp
+	 * Convert unix time to days ago.
+	 *
+	 * @param int $timestamp unix time
+	 *
 	 * @return float
 	 */
 	private function daysOld($timestamp)
 	{
-		return round((time() - $timestamp) / 86400, 1);
+		return round((time() - (!is_numeric($timestamp) ? strtotime($timestamp) : $timestamp)) / 86400, 1);
 	}
 
 	/**

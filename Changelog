@@ -14,6 +14,7 @@ Each update goes to the top of the file
                        -> Add pruning of old logs.
                        -> Log failed queries.
                        -> Compress old log files.
+                       -> Fix bug in backfill daysOld method, most of the time it was trying to do math using a date in string of text.
 2014-03-01 -> jonnyboy -> silence error
 2014-03-01 -> bart39   -> Fix: fixed query in getAPIRequests
 2014-03-01 -> kevin    -> Change:   Debugging in its own class, start logging in DB.
