@@ -19,31 +19,6 @@ class Debugging
 	private $debugLogging = true;
 
 	/**
-	 * Do you want to log all the types of debug messages?
-	 * If set to false, change $debugLogLevel
-	 *
-	 * @default true
-	 *
-	 * @const bool
-	 */
-	const debugLogAll = true;
-
-	/**
-	 * What types of debug messages do you want to log, if $debugLogAll is set to false.
-	 *
-	 * @default 4
-	 *
-	 * 1 Info     (Events like connecting to usenet).
-	 * 2 Notice   (Minor things like failed queries?).
-	 * 3 Warning  (Wrong usage of api's, libraries, etc?)
-	 * 4 Error    (Errors that can cause issues?)
-	 * 5 Fatal    (This caused the program to close?).
-	 *
-	 * @const int
-	 */
-	const debugLogLevel = 4;
-
-	/**
 	 * Do you want to display the debug messages to the CLI?
 	 *
 	 * @default true
@@ -95,7 +70,7 @@ class Debugging
 	 *               3 Warning - Not an error, but something we can probably fix.
 	 *               4 Notice  - Like warning but not as bad?
 	 *               5 Info    - General info, like we logged in to usenet for example.
-	 *               Anything else is unknown.
+	 *               Anything else returns.
 	 *
 	 * @return void
 	 */
@@ -106,26 +81,47 @@ class Debugging
 			return;
 		}
 
-		// Create a string based on the severity of the this message.
+		// Check if the user wants to log or echo this message and format the string.
 		switch ($severity) {
 			case 1:
-				$severity = '] [FATAL]    [';
-				break;
+				if (nZEDb_LOGFATAL) {
+					$severity = '] [FATAL]    [';
+					break;
+				} else {
+					return;
+				}
 			case 2:
-				$severity = '] [ERROR]    [';
-				break;
+				if (nZEDb_LOGERROR) {
+					$severity = '] [ERROR]    [';
+					break;
+				} else {
+					return;
+				}
 			case 3:
-				$severity = '] [WARNING]  [';
-				break;
+				if (nZEDb_LOGWARNING) {
+					$severity = '] [WARNING]  [';
+					break;
+				} else {
+					return;
+				}
 			case 4:
-				$severity = '] [NOTICE]   [';
-				break;
+				if (nZEDb_LOGNOTICE) {
+					$severity = '] [NOTICE]   [';
+					break;
+				} else {
+					return;
+				}
 			case 5:
-				$severity = '] [INFO]     [';
-				break;
+				if (nZEDb_LOGINFO) {
+					$severity = '] [INFO]     [';
+					break;
+				} else {
+					return;
+				}
 			default:
-				$severity = '] [UNKNOWN]  [';
+				return;
 		}
+
 		// Strip \r \n , multiple spaces and trim the message.
 		$message = trim(preg_replace('/\s{2,}/', ' ', str_replace(array("\n", "\r", '\r', '\n'), ' ', $message)));
 
@@ -142,11 +138,6 @@ class Debugging
 
 		// Check if debug logging is on.
 		if (!$this->debugLogging) {
-			return;
-		}
-
-		// Check if we should log this type of message if the setting is on in the top of this script.
-		if (!self::debugLogAll && self::debugLogLevel !== $severity) {
 			return;
 		}
 

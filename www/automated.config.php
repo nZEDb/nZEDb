@@ -4,6 +4,20 @@ define('nZEDb_DEBUG', false);
 // Log debug messages to nzedb/resources/debug.log.
 define('nZEDb_LOGGING', false);
 
+// If one of the above settings is true, then these will work:
+
+// Log and or echo Info messages.
+define('nZEDb_LOGINFO', false);
+// Log and or echo Notice messages.
+define('nZEDb_LOGNOTICE', false);
+// Log and or echo Warning messages.
+define('nZEDb_LOGWARNING', false);
+// Log and or echo Error messages.
+define('nZEDb_LOGERROR', false);
+// Log and or echo Fatal messages.
+define('nZEDb_LOGFATAL', false);
+
+
 define('DS', DIRECTORY_SEPARATOR);
 
 // These are file path constants
