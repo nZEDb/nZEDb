@@ -11,6 +11,7 @@ Each update goes to the top of the file
 2014-03-02 -> kevin    -> Refactor debugging.
                        -> Debugging to Binaries.
                        -> Debugging to backfill.
+                       -> Add pruning of old logs.
 2014-03-01 -> jonnyboy -> silence error
 2014-03-01 -> bart39   -> Fix: fixed query in getAPIRequests
 2014-03-01 -> kevin    -> Change:   Debugging in its own class, start logging in DB.

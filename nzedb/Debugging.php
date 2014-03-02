@@ -6,6 +6,16 @@
 class Debugging
 {
 	/**
+	 * How many old logs can we have max in the logs folder.
+	 * (per log type, ex.: debug can have 50 logs, not_yenc can have 50 logs, etc)
+	 *
+	 * @default 50
+	 *
+	 * @const int
+	 */
+	const maxLogs = 50;
+
+	/**
 	 * Max log size in KiloBytes
 	 *
 	 * @default 1024
@@ -13,6 +23,15 @@ class Debugging
 	 * @const int
 	 */
 	const logFileSize = 1024;
+
+	/**
+	 * Base name of debug log file.
+	 *
+	 * @default debug
+	 *
+	 * @const string
+	 */
+	const debugLogName = 'debug';
 
 	/**
 	 * Name of class that created an instance of debugging.
@@ -120,7 +139,7 @@ class Debugging
 		}
 
 		// Full path to the log file.
-		$fileLocation = $path . 'debug.log';
+		$fileLocation = $path . self::debugLogName . '.log';
 
 		// Check if we need to initiate a new log if we don't have one.
 		if (!$this->initiateLog($fileLocation)) {
@@ -160,29 +179,61 @@ class Debugging
 	/**
 	 * Rotate log file if it exceeds a certain size.
 	 *
-	 * @param $path /The path to the file (/example/debug.log) MUST END IN .log or .txt
+	 * @param $fullPath /The path to the file (/var/www/nZEDb/resources/logs/debug.log) MUST END IN .log or .txt
 	 *
 	 * @return bool
 	 */
-	protected function rotateLog($path)
+	protected function rotateLog($fullPath)
 	{
 		// Check if we need to rotate the log if it exceeds max size..
-		$logSize = filesize($path);
+		$logSize = filesize($fullPath);
 		if ($logSize === false) {
 // Error getting log size.
 			return false;
 		} else if ($logSize >= (self::logFileSize * 1024)) {
-			if (!rename($path, str_replace(array('.log', '.txt'), '.old.', $path) . time())) {
+			if (!rename($fullPath, str_replace(array('.log', '.txt'), '.old.', $fullPath) . time())) {
 // Error renaming log.
 				return false;
 			}
 
 			// Create a new log.
-			if (!$this->initiateLog($path)) {
+			if (!$this->initiateLog($fullPath)) {
 // Error creating log file.
 				return false;
 			}
+
+			$this->pruneLogs(nZEDb_LOGS, self::debugLogName);
 		}
+		return true;
+	}
+
+	/**
+	 * Delete old logs.
+	 *
+	 * @param string $path Path where all the log files are.        ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $name The name of the name without extensions. ex.: debug
+	 *
+	 * @return bool
+	 */
+	protected function pruneLogs($path, $name)
+	{
+		// Get all the logs with the name.
+		$logs = glob($path . $name . '.old.[0-9]*');
+
+		// If there are no old logs or less than maxLogs return false.
+		if (!$logs || count($logs) < self::maxLogs) {
+			return false;
+		}
+
+		// Sort the logs alphabetically.
+		asort($logs);
+
+		// Remove all old logs.
+		array_splice($logs, -self::maxLogs+1);
+
+		// Delete the logs.
+		array_map('unlink', $logs);
+
 		return true;
 	}
 
