@@ -49,17 +49,19 @@ class Debugging
 		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli') ? true : false;
 	}
 
-	/*
+	/**
+	 * Public method for logging and/or echoing debug messages.
+	 *
 	 * @param string $class    The class this is coming from.
 	 * @param string $method   The method this is coming from.
-	 * @param string $message  The message to log.
+	 * @param string $message  The message to log/echo.
 	 * @param int    $severity How severe is this message?
 	 *               1 Fatal   - The program had to stop.
 	 *               2 Error   - Something went very wrong but we recovered.
 	 *               3 Warning - Not an error, but something we can probably fix.
 	 *               4 Notice  - Like warning but not as bad?
 	 *               5 Info    - General info, like we logged in to usenet for example.
-	 *               Anything else returns false.
+	 *               Anything else causes the script to return.void.
 	 *
 	 * @return void
 	 */
