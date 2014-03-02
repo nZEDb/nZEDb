@@ -858,9 +858,9 @@ class Backfill
 				$upperbound = $upperbound - $interval;
 				$this->debugging->start(
 					"daytopost",
-					'New upperbound:' .
+					'New upperbound: ' .
 					number_format($upperbound) .
-					'is ' .
+					' is ' .
 					$this->daysOld($tmpDate) .
 					' days old.',
 					5);
@@ -870,9 +870,9 @@ class Backfill
 				$interval = ceil(($interval / 2));
 				$this->debugging->start(
 					"daytopost",
-					'Checking interval at:' .
+					'Checking interval at: ' .
 					number_format($interval) .
-					'articles.',
+					' articles.',
 					5);
 			}
 			$dateofnextone = $this->postdate($nntp, ($upperbound - 1), $pddebug, $group, false, 'oldest');
