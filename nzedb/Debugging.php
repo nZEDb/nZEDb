@@ -52,7 +52,7 @@ class Debugging
 	 * The debug message.
 	 * @var string
 	 */
-	private $message = '';
+	private $debugMessage = '';
 
 	/**
 	 * "\n" for unix, "\r\n" for windows.
@@ -81,7 +81,7 @@ class Debugging
 	private $dateCache = '';
 
 	/**
-	 * Cache of unixtime.
+	 * Cache of unix time.
 	 * @var int
 	 */
 	private $timeCache;
@@ -121,8 +121,6 @@ class Debugging
 			return;
 		}
 
-		// Reset debug message.
-		$this->message = '';
 		// Check the severity of the message, if disabled return, if enabled create part of the debug message.
 		if (!$this->checkSeverity($severity)) {
 			return;
@@ -136,6 +134,35 @@ class Debugging
 
 		// Log debug message to file if user enabled it.
 		$this->logDebug();
+	}
+
+	/**
+	 * Base method for logging to files.
+	 *
+	 * @param string $path    Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $name    The name of the log without extensions. ex.: debug
+	 * @param string $message The message to log.
+	 *
+	 * @return bool
+	 */
+	protected function logMain($path, $name, $message)
+	{
+		// Check if we need to initiate a new log if we don't have one.
+		if (!$this->initiateLog($path, $name)) {
+			return false;
+		}
+
+		// Check if we need to rotate the log if it exceeds max size..
+		if (!$this->rotateLog($path, $name)) {
+			return false;
+		}
+
+		// Append the message to the log.
+		if (!file_put_contents($path . $name . self::logFileExtension, $message . $this->newLine, FILE_APPEND)) {
+// Error appending message to log file.
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -154,29 +181,11 @@ class Debugging
 		$path = nZEDb_LOGS;
 
 		// Check if the log folder exists, create it if not.
-		if (!is_dir($path)) {
-			if (!mkdir($path)) {
-// Error creating log folder.
-				return false;
-			}
-		}
-
-		// Full path to the log file.
-		$fileLocation = $path . self::debugLogName . self::logFileExtension;
-
-		// Check if we need to initiate a new log if we don't have one.
-		if (!$this->initiateLog($fileLocation)) {
+		if (!$this->createFolder($path)) {
 			return false;
 		}
 
-		// Check if we need to rotate the log if it exceeds max size..
-		if (!$this->rotateLog($path, self::debugLogName)) {
-			return false;
-		}
-
-		// Append the message to the log.
-		if (!file_put_contents($fileLocation, $this->message . $this->newLine, FILE_APPEND)) {
-// Error appending message to log file.
+		if (!$this->logMain($path, self::debugLogName, $this->debugMessage)) {
 			return false;
 		}
 		return true;
@@ -208,16 +217,39 @@ class Debugging
 	}
 
 	/**
-	 * Initiate a log file.
+	 * Check if the logs folder exists.
 	 *
-	 * @param string $path The full path to the log file.
+	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
 	 *
 	 * @return bool
 	 */
-	protected function initiateLog($path)
+	protected function createFolder($path)
+	{
+		// Check if the log folder exists, create it if not.
+		if (!is_dir($path)) {
+			if (!mkdir($path)) {
+// Error creating log folder.
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Initiate a log file.
+	 *
+	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $name The name of the log type. ex.: debug
+	 *
+	 * @return bool
+	 */
+	protected function initiateLog($path, $name)
 	{
 		if (!file_exists($path)) {
-			if (!file_put_contents($path, '[' . $this->getDate() . '] [INIT]   [Initiating new log file.]' . $this->newLine)) {
+			if (!file_put_contents(
+					$path . $name . self::logFileExtension,
+					'[' . $this->getDate() . '] [INIT]   [Initiating new log file.]' . $this->newLine)) {
 				return false;
 			}
 		}
@@ -228,7 +260,7 @@ class Debugging
 	 * Rotate log file if it exceeds a certain size.
 	 *
 	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
-	 * @param string $name The name of the log without extensions. ex.: debug
+	 * @param string $name The name of the log type. ex.: debug
 	 *
 	 * @return bool
 	 */
@@ -241,18 +273,18 @@ class Debugging
 // Error getting log size.
 			return false;
 		} else if ($logSize >= (self::logFileSize * 1024 * 1024)) {
-			if (!$this->compressLog(nZEDb_LOGS, $name)) {
+			if (!$this->compressLog($path, $name)) {
 // Error renaming log.
 				return false;
 			}
 
 			// Create a new log.
-			if (!$this->initiateLog($file)) {
+			if (!$this->initiateLog($path, $name)) {
 // Error creating log file.
 				return false;
 			}
 
-			$this->pruneLogs(nZEDb_LOGS, $name);
+			$this->pruneLogs($path, $name);
 		}
 		return true;
 	}
@@ -261,7 +293,7 @@ class Debugging
 	 * Compress the old log using GZip.
 	 *
 	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
-	 * @param string $name The name of the log without extensions. ex.: debug
+	 * @param string $name The name of the log type. ex.: debug
 	 *
 	 * @return bool
 	 */
@@ -294,7 +326,7 @@ class Debugging
 	 * Delete old logs.
 	 *
 	 * @param string $path Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
-	 * @param string $name The name of the log without extensions. ex.: debug
+	 * @param string $name The name of the log type. ex.: debug
 	 *
 	 * @return bool
 	 */
@@ -333,9 +365,9 @@ class Debugging
 
 		// Check if this is CLI or web.
 		if ($this->outputCLI) {
-			echo $this->colorCLI->debug($this->message);
+			echo $this->colorCLI->debug($this->debugMessage);
 		} else {
-			echo '<pre>' . $this->message . '</pre>';
+			echo '<pre>' . $this->debugMessage . '</pre>';
 		}
 	}
 
@@ -349,12 +381,12 @@ class Debugging
 	 */
 	protected function formMessage($method, $message)
 	{
-		$this->message =
+		$this->debugMessage =
 			// Current time. RFC2822 style ; [Thu, 21 Dec 2000 16:01:07 +0200
 			'[' . $this->getDate() .
 
 			// The severity.
-			$this->message .
+			$this->debugMessage .
 
 			// The class/function.
 			$this->class . '.' . $method . '] [' .
@@ -381,41 +413,41 @@ class Debugging
 	 */
 	protected function checkSeverity($severity)
 	{
-		$this->message = '';
+		$this->debugMessage = '';
 		switch ($severity) {
 			case 6:
 				if (nZEDb_LOGQUERIES) {
-					$this->message = '] [SQL]    [';
+					$this->debugMessage = '] [SQL]    [';
 					return true;
 				}
 				return false;
 			case 1:
 				if (nZEDb_LOGFATAL) {
-					$this->message = '] [FATAL]  [';
+					$this->debugMessage = '] [FATAL]  [';
 					return true;
 				}
 				return false;
 			case 2:
 				if (nZEDb_LOGERROR) {
-					$this->message = '] [ERROR]  [';
+					$this->debugMessage = '] [ERROR]  [';
 					return true;
 				}
 				return false;
 			case 3:
 				if (nZEDb_LOGWARNING) {
-					$this->message = '] [WARN]   [';
+					$this->debugMessage = '] [WARN]   [';
 					return true;
 				}
 				return false;
 			case 4:
 				if (nZEDb_LOGNOTICE) {
-					$this->message = '] [NOTICE] [';
+					$this->debugMessage = '] [NOTICE] [';
 					return true;
 				}
 				return false;
 			case 5:
 				if (nZEDb_LOGINFO) {
-					$this->message = '] [INFO]   [';
+					$this->debugMessage = '] [INFO]   [';
 					return true;
 				}
 				return false;
