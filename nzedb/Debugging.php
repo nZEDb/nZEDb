@@ -64,9 +64,17 @@ class Debugging
 	 */
 	private $outputCLI = true;
 
+	/**
+	 * Cache of the date.
+	 *
+	 * @var string
+	 */
 	private $dateCache = '';
 
-
+	/**
+	 * Cache of unixtime.
+	 * @var int
+	 */
 	private $timeCache;
 
 	/**
