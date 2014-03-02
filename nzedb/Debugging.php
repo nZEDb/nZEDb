@@ -243,13 +243,14 @@ class Debugging
 	 */
 	protected function initiateLog($path, $name)
 	{
-		if (!file_exists($path)) {
+		if (!file_exists($path . $name)) {
 			if (!file_put_contents(
 					$path . $name . self::logFileExtension,
 					'[' . $this->getDate() . '] [INIT]   [Initiating new log file.]' . $this->newLine)) {
 				return false;
 			}
 		}
+
 		return true;
 	}
 
