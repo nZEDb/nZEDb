@@ -45,6 +45,9 @@ define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
 // Full path is fs to the themes folder
 define('nZEDb_THEMES', nZEDb_WWW . 'themes' . DS);
 
+// Path where log files are stored.
+define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
+
 if (function_exists('ini_set') && function_exists('ini_get')) {
 	$ps = (strtolower(PHP_OS) == 'windows') ? ';' : ':';
 	ini_set('include_path', nZEDb_WWW . $ps . ini_get('include_path'));

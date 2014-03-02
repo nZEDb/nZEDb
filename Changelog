@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-02 -> kevin    -> Refactor debugging.
 2014-03-01 -> jonnyboy -> silence error
 2014-03-01 -> bart39   -> Fix: fixed query in getAPIRequests
 2014-03-01 -> kevin    -> Change:   Debugging in its own class, start logging in DB.

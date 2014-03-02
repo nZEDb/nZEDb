@@ -1,38 +1,10 @@
 <?php
 /**
  * Show debug to CLI and log it to a file.
+ * Turn these on in automated.config.php
  */
 class Debugging
 {
-	////////////////////// START OF USER CHANGEABLE VARS ///////////////////
-	////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////
-	/**
-	 * Turn on/off logging of debug messages.
-	 *
-	 * @default true
-	 *
-	 * @note You must turn on the debug setting in automated.config.php, otherwise logging will not occur regardless of this setting.
-	 *
-	 * @var bool $debugLogging
-	 */
-	private $debugLogging = true;
-
-	/**
-	 * Do you want to display the debug messages to the CLI?
-	 *
-	 * @default true
-	 *
-	 * @note Debugging must be on in automated.config.php.
-	 *
-	 * @var bool
-	 */
-	private $debugCLI = true;
-
-	////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////
-	////////////////////// END OF USER CHANGEABLE VARS /////////////////////
-
 	/**
 	 * Max log size in KiloBytes
 	 *
@@ -43,19 +15,24 @@ class Debugging
 	const logFileSize = 512;
 
 	/**
+	 * The debug message.
+	 * @var string
+	 */
+	private $message = '';
+
+	/**
+	 * "\n" for unix, "\r\n" for windows.
+	 * @var string
+	 */
+	private $newLine;
+
+	/**
 	 * Constructor.
 	 *
 	 * @return void
 	 */
 	public function __construct()
 	{
-		if ($this->debugCLI) {
-			$this->debugCLI = nZEDb_DEBUG;
-		}
-		if ($this->debugLogging) {
-			$this->debugLogging = nZEDb_LOGGING;
-		}
-
 		$this->colorCLI = new ColorCLI();
 		$this->newLine = ((strtolower(substr(php_uname('s'), 0, 3)) === 'win') ? "\r\n" : "\n");
 	}
@@ -70,142 +47,220 @@ class Debugging
 	 *               3 Warning - Not an error, but something we can probably fix.
 	 *               4 Notice  - Like warning but not as bad?
 	 *               5 Info    - General info, like we logged in to usenet for example.
-	 *               Anything else returns.
+	 *               Anything else returns false.
 	 *
 	 * @return void
 	 */
-	public function logDebug ($class, $method, $message, $severity)
+	public function start($class, $method, $message, $severity)
 	{
-		// Check debugging or logging is on.
-		if (!$this->debugLogging && !$this->debugCLI) {
+		// Check if echo debugging or logging is on.
+		if (!nZEDb_DEBUG && !nZEDb_LOGGING) {
 			return;
 		}
 
-		// Check if the user wants to log or echo this message and format the string.
-		switch ($severity) {
-			case 1:
-				if (nZEDb_LOGFATAL) {
-					$severity = '] [FATAL]    [';
-					break;
-				} else {
-					return;
-				}
-			case 2:
-				if (nZEDb_LOGERROR) {
-					$severity = '] [ERROR]    [';
-					break;
-				} else {
-					return;
-				}
-			case 3:
-				if (nZEDb_LOGWARNING) {
-					$severity = '] [WARNING]  [';
-					break;
-				} else {
-					return;
-				}
-			case 4:
-				if (nZEDb_LOGNOTICE) {
-					$severity = '] [NOTICE]   [';
-					break;
-				} else {
-					return;
-				}
-			case 5:
-				if (nZEDb_LOGINFO) {
-					$severity = '] [INFO]     [';
-					break;
-				} else {
-					return;
-				}
-			default:
-				return;
+		// Reset object.
+		$this->message = '';
+		// Check the severity of the message, if disabled return, if enabled create part of the debug message.
+		if (!$this->checkSeverity($severity)) {
+			return;
 		}
 
-		// Strip \r \n , multiple spaces and trim the message.
-		$message = trim(preg_replace('/\s{2,}/', ' ', str_replace(array("\n", "\r", '\r', '\n'), ' ', $message)));
+		// Form the debug message.
+		$this->formMessage($class, $method, $message);
 
-		// Current time. RFC2822 style ; Thu, 21 Dec 2000 16:01:07 +0200
-		$time = '[' . Date('r');
+		// Echo debug if user enabled it.
+		$this->echoDebug();
 
-		// Create message : [Sat, 1 Mar 2014 16:01:07 +0500] [ERROR] [NNTP.doConnect() Could not connect to news.tweaknews.com (ssl) Password is wrong.]
-		$data = $time . $severity . $class . '.' . $method . '() ' . $message . ']';
+		// Log debug to file if user enabled it.
+		$this->logDebug();
+	}
 
-		// Check if we want to echo the message.
-		if ($this->debugCLI) {
-			echo $this->colorCLI->debug($data);
-		}
-
+	/**
+	 * Log debug to file.
+	 *
+	 * @return bool
+	 */
+	protected function logDebug()
+	{
 		// Check if debug logging is on.
-		if (!$this->debugLogging) {
-			return;
+		if (!nZEDb_LOGGING) {
+			return false;
 		}
 
 		// Path to folder where log files are stored..
-		$path = nZEDb_RES . DS . 'logs' . DS;
+		$path = nZEDb_LOGS;
 
-		// Check if the folder exists.
+		// Check if the log folder exists, create it if not.
 		if (!is_dir($path)) {
 			if (!mkdir($path)) {
 // Error creating log folder.
-				return;
+				return false;
 			}
 		}
 
-		// Name of the log file.
-		$fileName = 'debug.log';
-
 		// Full path to the log file.
-		$fileLocation = $path.$fileName;
+		$fileLocation = $path . 'debug.log';
 
-		// Initiate a new log file if we don't have one.
-		if (!file_exists($fileLocation)) {
-			if (!$this->initiateLog($fileLocation, $time)) {
-// Error creating log file.
-				return;
-			}
+		// Check if we need to initiate a new log if we don't have one.
+		if (!$this->initiateLog($fileLocation)) {
+			return false;
 		}
 
 		// Check if we need to rotate the log if it exceeds max size..
-		$logSize = filesize($fileLocation);
-		if ($logSize === false) {
-// Error getting log size.
-			return;
-		} else if ($logSize >= (self::logFileSize * 1024)) {
-			if (!rename($fileLocation, $path . 'debug.old.' . time())) {
-// Error renaming log.
-				return;
-			}
-
-			// Create a new log.
-			if (!$this->initiateLog($fileLocation, $time)) {
-// Error creating log file.
-				return;
-			}
+		if (!$this->rotateLog($fileLocation)) {
+			return false;
 		}
 
 		// Append the message to the log.
-		if (!file_put_contents($fileLocation, $data . $this->newLine, FILE_APPEND)) {
+		if (!file_put_contents($fileLocation, $this->message . $this->newLine, FILE_APPEND)) {
 // Error appending message to log file.
-			return;
+			return false;
 		}
+		return true;
 	}
 
 	/**
 	 * Initiate a log file.
 	 *
 	 * @param string $path The full path to the log file.
-	 * @param string $time The time in RFC2822 style.
 	 *
 	 * @return bool
 	 */
-	protected function initiateLog($path, $time)
+	protected function initiateLog($path)
 	{
 		if (!file_exists($path)) {
-			if (file_put_contents($path, $time . '] [INITIATE] [Initiating new log file.]' . $this->newLine)) {
+			if (file_put_contents($path, '[' . Date('r') . '] [INITIATE] [Initiating new log file.]' . $this->newLine)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Rotate log file if it exceeds a certain size.
+	 *
+	 * @param $path /The path to the file (/example/debug.log) MUST END IN .log or .txt
+	 *
+	 * @return bool
+	 */
+	protected function rotateLog($path)
+	{
+		// Check if we need to rotate the log if it exceeds max size..
+		$logSize = filesize($path);
+		if ($logSize === false) {
+// Error getting log size.
+			return false;
+		} else if ($logSize >= (self::logFileSize * 1024)) {
+			if (!rename($path, str_replace(array('.log', '.txt'), '.old.', $path) . time())) {
+// Error renaming log.
+				return false;
+			}
+
+			// Create a new log.
+			if (!$this->initiateLog($path)) {
+// Error creating log file.
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Echo debug message to CLI or web.
+	 *
+	 * @return void
+	 */
+	protected  function echoDebug()
+	{
+		if (!nZEDb_DEBUG) {
+			return;
+		}
+
+		// Check if this is CLI or web.
+		if (PHP_SAPI === 'cli') {
+			echo $this->colorCLI->debug($this->message);
+		} else {
+			echo '<pre>' . $this->message . '</pre>';
+		}
+	}
+
+	/**
+	 * Sets the message object to the debug message,
+	 *
+	 * @param string $class
+	 * @param string $method
+	 * @param string $message
+	 *
+	 * @return void
+	 */
+	protected function formMessage($class, $method, $message)
+	{
+		$this->message =
+			// Current time. RFC2822 style ; [Thu, 21 Dec 2000 16:01:07 +0200
+			'[' . Date('r') .
+
+			// The severity.
+			$this->message .
+
+			// The class/function.
+			$class . '.' . $method . '() ' .
+
+			// Now reformat the debug message, first stripping leading spaces.
+			trim(
+
+				// Removing 2 or more spaces.
+				preg_replace('/\s{2,}/', ' ',
+
+					// Removing new lines and carriage returns.
+					str_replace(array("\n", '\n', "\r", '\r'), ' ', $message)))
+
+			// Finally, add a closing brace.
+			. ']';
+	}
+
+	/**
+	 * Check if the user wants to echo or log this message, form part of the debug message at the same time.
+	 *
+	 * @param int $severity
+	 *
+	 * @return bool
+	 */
+	protected function checkSeverity($severity)
+	{
+		$this->message = '';
+		switch ($severity) {
+			case 1:
+				if (nZEDb_LOGFATAL) {
+					$this->message = '] [FATAL]    [';
+					return true;
+				}
+				return false;
+			case 2:
+				if (nZEDb_LOGERROR) {
+					$this->message = '] [ERROR]    [';
+					return true;
+				}
+				return false;
+			case 3:
+				if (nZEDb_LOGWARNING) {
+					$this->message = '] [WARNING]  [';
+					return true;
+				}
+				return false;
+			case 4:
+				if (nZEDb_LOGNOTICE) {
+					$this->message = '] [NOTICE]   [';
+					return true;
+				}
+				return false;
+			case 5:
+				if (nZEDb_LOGINFO) {
+					$this->message = '] [INFO]     [';
+					return true;
+				}
+				return false;
+			default:
+				return false;
+		}
 	}
 }
