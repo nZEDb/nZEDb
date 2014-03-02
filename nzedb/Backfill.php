@@ -732,11 +732,20 @@ class Backfill
 			return false;
 		}
 
-		$this->debugging->start("postdate", 'postdate for post: ' . $post . ' came back ' . $date . ' (', 5);
+		$this->debugging->start(
+			"postdate",
+			'postdate for post: ' .
+			$post .
+			' came back ' .
+			$date .
+			' (' .
+			strtotime($date) .
+			' seconds unixtime or ' .
+			$this->daysOld($date) .
+			" days)",
+			5);
 
 		$date = strtotime($date);
-
-		$this->debugging->start("postdate", $date . ' seconds unixtime or ' . $this->daysOld($date) . " days)", 5);
 		return $date;
 	}
 
