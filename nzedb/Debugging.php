@@ -15,6 +15,12 @@ class Debugging
 	const logFileSize = 512;
 
 	/**
+	 * Name of class that created an instance of debugging.
+	 * @var string
+	 */
+	private $class = '';
+
+	/**
 	 * The debug message.
 	 * @var string
 	 */
@@ -41,9 +47,11 @@ class Debugging
 
 	/**
 	 * Constructor.
+	 * @param string $class The name of the class. ex,: $d = new Debugging("Binaries");
 	 */
-	public function __construct()
+	public function __construct($class)
 	{
+		$this->class = $class;
 		$this->colorCLI = new ColorCLI();
 		$this->newLine = (strtolower(substr(php_uname('s'), 0, 3)) === 'win') ? "\r\n" : "\n";
 		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli') ? true : false;
@@ -52,7 +60,6 @@ class Debugging
 	/**
 	 * Public method for logging and/or echoing debug messages.
 	 *
-	 * @param string $class    The class this is coming from.
 	 * @param string $method   The method this is coming from.
 	 * @param string $message  The message to log/echo.
 	 * @param int    $severity How severe is this message?
@@ -61,11 +68,11 @@ class Debugging
 	 *               3 Warning - Not an error, but something we can probably fix.
 	 *               4 Notice  - Like warning but not as bad?
 	 *               5 Info    - General info, like we logged in to usenet for example.
-	 *               Anything else causes the script to return.void.
+	 *               Anything else causes the script to return void.
 	 *
 	 * @return void
 	 */
-	public function start($class, $method, $message, $severity)
+	public function start($method, $message, $severity)
 	{
 		// Check if echo debugging or logging is on.
 		if (!nZEDb_DEBUG && !nZEDb_LOGGING) {
@@ -80,7 +87,7 @@ class Debugging
 		}
 
 		// Form the debug message.
-		$this->formMessage($class, $method, $message);
+		$this->formMessage($method, $message);
 
 		// Echo debug message if user enabled it.
 		$this->echoDebug();
@@ -207,7 +214,7 @@ class Debugging
 	 *
 	 * @return void
 	 */
-	protected function formMessage($class, $method, $message)
+	protected function formMessage($method, $message)
 	{
 		$this->message =
 			// Current time. RFC2822 style ; [Thu, 21 Dec 2000 16:01:07 +0200
@@ -217,7 +224,7 @@ class Debugging
 			$this->message .
 
 			// The class/function.
-			$class . '.' . $method . '() ' .
+			$this->class . '.' . $method . '() ' .
 
 			// Now reformat the debug message, first stripping leading spaces.
 			trim(

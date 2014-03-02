@@ -48,16 +48,16 @@ class DB extends PDO
 	public function __construct()
 	{
 		$this->c = new ColorCLI();
-		$this->debugging = new Debugging();
+		$this->debugging = new Debugging("DB");
 
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
 			$this->dbsystem = strtolower(DB_SYSTEM);
 		} else if (PHP_SAPI == 'cli') {
 			$message = "\nconfig.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');";
-			$this->debugging->start("DB", "__construct", $message, 1);
+			$this->debugging->start("__construct", $message, 1);
 			exit($this->c->error($message));
 		} else {
-			$this->debugging->start("DB", "__construct", "config.php is missing the DB_SYSTEM setting. Add the following in that file: define('DB_SYSTEM', 'mysql');", 1);
+			$this->debugging->start("__construct", "config.php is missing the DB_SYSTEM setting. Add the following in that file: define('DB_SYSTEM', 'mysql');", 1);
 			echo "<div class=\"error\">config.php is missing the DB_SYSTEM setting. Add the following in that file:<br/> define('DB_SYSTEM', 'mysql');</div>";
 			exit();
 		}
@@ -101,7 +101,7 @@ class DB extends PDO
 			self::$pdo = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
 			if (self::$pdo === false) { // In case PDO is not set to produce exceptions (PHP's default behaviour).
 				$message = "Unable to create connection to the Database!\n";
-				$this->debugging->start("DB", "initialiseDatabase", $message, 1);
+				$this->debugging->start("initialiseDatabase", $message, 1);
 				exit($message);
 			}
 			// For backwards compatibility, no need for a patch.
@@ -110,10 +110,10 @@ class DB extends PDO
 		} catch (PDOException $e) {
 			if (PHP_SAPI == 'cli') {
 				$message = "\nConnection to the SQL server failed, error was: (" . $e->getMessage() . ")";
-				$this->debugging->start("DB", "initialiseDatabase", $message, 1);
+				$this->debugging->start("initialiseDatabase", $message, 1);
 				exit($message);
 			} else {
-				$this->debugging->start("DB", "initialiseDatabase", "Connection to the SQL server failed, error was: (" . $e->getMessage() . ")", 1);
+				$this->debugging->start("initialiseDatabase", "Connection to the SQL server failed, error was: (" . $e->getMessage() . ")", 1);
 				echo "<div class=\"error\">Connection to the SQL server failed, error was: ({$e->getMessage()});</div>";
 				exit();
 			}
@@ -165,22 +165,22 @@ class DB extends PDO
 			// Deadlock or lock wait timeout, try 10 times.
 			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205 || $e->getMessage() == 'SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10) {
 				$message = "\nA Deadlock or lock wait timeout has occurred, sleeping.\n";
-				$this->debugging->start("DB", "queryInsert", $message, 4);
+				$this->debugging->start("queryInsert", $message, 4);
 				echo $this->c->error($message);
 				$this->consoletools->showsleep($i * $i);
 				$this->queryInsert($query, $i++);
 			}
 			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205) {
-				$this->debugging->start("DB", "queryInsert", "Deadlock or lock wait timeout, try increasing innodb_lock_wait_timeout.", 4);
+				$this->debugging->start("queryInsert", "Deadlock or lock wait timeout, try increasing innodb_lock_wait_timeout.", 4);
 				return false;
 			} else if ($e->errorInfo[1] == 1062 || $e->errorInfo[0] == 23000) {
-				$this->debugging->start("DB", "queryInsert", "Insert would create duplicate row, skipping.", 4);
+				$this->debugging->start("queryInsert", "Insert would create duplicate row, skipping.", 4);
 				return false;
 			} else if ($e->errorInfo[1] == 1406 || $e->errorInfo[0] == 22001) {
-				$this->debugging->start("DB", "queryInsert", "Too large to fit column length.", 4);
+				$this->debugging->start("queryInsert", "Too large to fit column length.", 4);
 				return false;
 			} else {
-				$this->debugging->start("DB", "queryInsert", $e->getMessage(), 4);
+				$this->debugging->start("queryInsert", $e->getMessage(), 4);
 				echo $this->c->error("\n" . $e->getMessage());
 			}
 			return false;
@@ -202,22 +202,22 @@ class DB extends PDO
 			// Deadlock or lock wait timeout, try 10 times.
 			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205 || $e->getMessage() == 'SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10) {
 				$message = "\nA Deadlock or lock wait timeout has occurred, sleeping.\n";
-				$this->debugging->start("DB", "queryExec", $message, 4);
+				$this->debugging->start("queryExec", $message, 4);
 				echo $this->c->error($message);
 				$this->consoletools->showsleep($i * $i);
 				$this->queryInsert($query, $i++);
 			}
 			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205) {
-				$this->debugging->start("DB", "queryExec", "Deadlock or lock wait timeout.", 4);
+				$this->debugging->start("queryExec", "Deadlock or lock wait timeout.", 4);
 				return false;
 			} else if ($e->errorInfo[1] == 1062 || $e->errorInfo[0] == 23000) {
-				$this->debugging->start("DB", "queryExec", "Update would create duplicate row, skipping.", 4);
+				$this->debugging->start("queryExec", "Update would create duplicate row, skipping.", 4);
 				return false;
 			} else if ($e->errorInfo[1] == 1406 || $e->errorInfo[0] == 22001) {
-				$this->debugging->start("DB", "queryExec", "Too large to fit column length.", 4);
+				$this->debugging->start("queryExec", "Too large to fit column length.", 4);
 				return false;
 			} else {
-				$this->debugging->start("DB", "queryExec", $e->getMessage(), 4);
+				$this->debugging->start("queryExec", $e->getMessage(), 4);
 				echo $this->c->error("\n" . $e->getMessage());
 			}
 			return false;
@@ -235,7 +235,7 @@ class DB extends PDO
 			return self::$pdo->exec($query);
 		} catch (PDOException $e) {
 			echo $this->c->error("\n" . $e->getMessage());
-			$this->debugging->start("DB", "Exec", $e->getMessage(), 4);
+			$this->debugging->start("Exec", $e->getMessage(), 4);
 			return false;
 		}
 	}
@@ -266,7 +266,7 @@ class DB extends PDO
 				}
 			} catch (Exception $er) {
 				echo $this->c->error("\n" . $er->getMessage());
-				$this->debugging->start("DB", "query", $er->getMessage(), 4);
+				$this->debugging->start("query", $er->getMessage(), 4);
 			}
 		}
 
@@ -316,7 +316,7 @@ class DB extends PDO
 			//echo $query."\n";
 			$error = "\nqueryDirect: " . $e->getMessage() . "\n";
 			echo $this->c->error($error);
-			$this->debugging->start("DB", "queryDirect", $error + ' ' + $query, 4);
+			$this->debugging->start("queryDirect", $error + ' ' + $query, 4);
 			$result = false;
 		}
 		return $result;
@@ -378,7 +378,7 @@ class DB extends PDO
 				if ($admin === false) {
 					$message = 'Optimizing tables: ' . $tbls;
 					echo $this->c->primary($message);
-					$this->debugging->start("DB", "optimise", $message, 5);
+					$this->debugging->start("optimise", $message, 5);
 				}
 				$this->queryExec("OPTIMIZE LOCAL TABLE ${tbls}");
 			} else {
@@ -387,14 +387,14 @@ class DB extends PDO
 						if ($admin === false) {
 							$message = 'Analyzing table: ' . $table['name'];
 							echo $this->c->primary($message);
-							$this->debugging->start("DB", "optimise", $message, 5);
+							$this->debugging->start("optimise", $message, 5);
 						}
 						$this->queryExec('ANALYZE LOCAL TABLE `' . $table['name'] . '`');
 					} else {
 						if ($admin === false) {
 							$message = 'Optimizing table: ' . $table['name'];
 							echo $this->c->primary($message);
-							$this->debugging->start("DB", "optimise", $message, 5);
+							$this->debugging->start("optimise", $message, 5);
 						}
 						if (strtolower($table['engine']) == 'myisam') {
 							$this->queryExec('REPAIR TABLE `' . $table['name'] . '`');
@@ -413,7 +413,7 @@ class DB extends PDO
 				if ($admin === false) {
 					$message = 'Vacuuming table: ' . $table['name'] . ".\n";
 					echo $message;
-					$this->debugging->start("DB", "optimise", $message, 5);
+					$this->debugging->start("optimise", $message, 5);
 				}
 				$this->query('VACUUM (ANALYZE) ' . $table['name']);
 			}
@@ -626,7 +626,7 @@ class DB extends PDO
 		try {
 			$PDOstatement = self::$pdo->prepare($query, $options);
 		} catch (PDOException $e) {
-			$this->debugging->start("DB", "Prepare", $e->getMessage(), 5);
+			$this->debugging->start("Prepare", $e->getMessage(), 5);
 			echo $this->c->error("\n" . $e->getMessage());
 			$PDOstatement = false;
 		}
@@ -640,7 +640,7 @@ class DB extends PDO
 			try {
 				$result = self::$pdo->getAttribute($attribute);
 			} catch (PDOException $e) {
-				$this->debugging->start("DB", "getAttribute", $e->getMessage(), 5);
+				$this->debugging->start("getAttribute", $e->getMessage(), 5);
 				echo $this->c->error("\n" . $e->getMessage());
 				$result = false;
 			}

@@ -2,49 +2,210 @@
 
 class Binaries
 {
-
+	/**
+	 * @const int
+	 */
 	const BLACKLIST_FIELD_SUBJECT = 1;
+
+	/**
+	 * @const int
+	 */
 	const BLACKLIST_FIELD_FROM = 2;
+
+	/**
+	 * @const int
+	 */
 	const BLACKLIST_FIELD_MESSAGEID = 3;
 
+	/**
+	 * Instance of class Backfill.
+	 * @var object
+	 */
+	private $backfill;
+
+	/**
+	 * Instance of class colorCLI
+	 * @var object
+	 */
+	private $c;
+
+	/**
+	 * Instance of class CollectionsCleaning
+	 * @var object
+	 */
+	private $collectionsCleaning;
+
+	/**
+	 * Instance of class ConsoleTools
+	 * @var object
+	 */
+	private $consoleTools;
+
+	/**
+	 * Instance of class DB
+	 * @var object
+	 */
+	private $db;
+
+	/**
+	 * Instance of class Debugging.
+	 * @var object
+	 */
+	private $debugging;
+
+	/**
+	 * Instance of class Groups.
+	 * @var object
+	 */
+	private $groups;
+
+	/**
+	 * Array with site settings.
+	 * @var bool|stdClass
+	 */
+	private $site;
+
+
+	/**
+	 * The cache of the blacklist.
+	 * @var array
+	 */
+	private $blackList = array();
+
+	/**
+	 * Is the blacklist already cached?
+	 * @var bool
+	 */
+	private $blackListLoaded = false;
+
+	/**
+	 * Should we use header compression?
+	 * @var bool
+	 */
+	private $compressedHeaders;
+
+	/**
+	 * @note Deprecated.
+	 * @var bool
+	 */
+	private $debug;
+
+	/**
+	 * Should we use part repair?
+	 * @var bool
+	 */
+	private $DoPartRepair;
+
+	/**
+	 * Should we use grabnzbs?
+	 * @var bool
+	 */
+	private $grabnzbs;
+
+	/**
+	 * Do we need to reset collection hash?
+	 * @var int
+	 */
+	private $hashcheck;
+
+	/**
+	 * The cache for headers.
+	 * @var array
+	 */
+	private $message = array();
+
+	/**
+	 * How many headers do we download per loop?
+	 * @var int
+	 */
+	private $messagebuffer;
+
+	/**
+	 * How many days to go back on a new group?
+	 * @var bool
+	 */
+	private $NewGroupScanByDays;
+
+	/**
+	 * How many headers to download on new groups?
+	 * @var int
+	 */
+	private $NewGroupMsgsToScan;
+
+	/**
+	 * How many headers to download per run of part repair?
+	 * @var int
+	 */
+	private $partrepairlimit;
+
+	/**
+	 * Should we show dropped yEnc to CLI?
+	 * @var int
+	 */
+	private $showdroppedyencparts;
+
+	/**
+	 * Should we use table per group?
+	 * @var int
+	 */
+	private $tablepergroup;
+
+	/**
+	 * Constructor.
+	 */
 	public function __construct()
 	{
-		$this->db = new DB();
-		$s = new Sites();
-		$this->site = $s->get();
 		$this->backfill = new Backfill($this->site);
-		$this->groups = new Groups($this->db);
+		$this->c = new ColorCLI();
 		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->consoleTools = new ConsoleTools();
+		$this->db = new DB();
+		$this->debugging = new Debugging("Binaries");
+		$this->groups = new Groups($this->db);
+
+		$s = new Sites();
+		$this->site = $s->get();
+
 		$this->compressedHeaders = ($this->site->compressedheaders == '1') ? true : false;
+		$this->debug = ($this->site->debuginfo == '0') ? false : true;
+		$this->DoPartRepair = ($this->site->partrepair == '0') ? false : true;
+		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
+		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
 		$this->messagebuffer = (!empty($this->site->maxmssgs)) ? $this->site->maxmssgs : 20000;
 		$this->NewGroupScanByDays = ($this->site->newgroupscanmethod == '1') ? true : false;
 		$this->NewGroupMsgsToScan = (!empty($this->site->newgroupmsgstoscan)) ? $this->site->newgroupmsgstoscan : 50000;
 		$this->NewGroupDaysToScan = (!empty($this->site->newgroupdaystoscan)) ? $this->site->newgroupdaystoscan : 3;
-		$this->DoPartRepair = ($this->site->partrepair == '0') ? false : true;
 		$this->partrepairlimit = (!empty($this->site->maxpartrepair)) ? $this->site->maxpartrepair : 15000;
-		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
-		$this->debug = ($this->site->debuginfo == '0') ? false : true;
-		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
-		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->showdroppedyencparts = (!empty($this->site->showdroppedyencparts)) ? $this->site->showdroppedyencparts : 0;
-		$this->c = new ColorCLI();
+		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 
-		// Cache of our black/white list.
 		$this->blackList = $this->message = array();
 		$this->blackListLoaded = false;
 	}
 
+	/**
+	 * Download new headers for all active groups.
+	 * @param object $nntp Instance of class NNTP
+	 *
+	 * @return void
+	 */
 	public function updateAllGroups($nntp)
 	{
 		if (!isset($nntp)) {
-			exit($this->c->error("Not connected to usenet(binaries->updateAllGroups)."));
+			$message = "Not connected to usenet(binaries->updateAllGroups).";
+			$this->debugging->start("updateAllGroups", $message, 1);
+			exit($this->c->error($message));
 		}
 
 		if ($this->hashcheck == 0) {
-			echo $this->c->warning("We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.");
+			$message = "We have updated the way collections are created, the collection table has to be updated to
+				use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.";
+			$this->debugging->start("updateAllGroups", $message, 5);
+			echo $this->c->warning($message);
 			if (trim(fgets(fopen('php://stdin', 'r'))) != 'yes') {
-				exit($this->c->primary("If you want to run this manually, there is a script in misc/testing/DB/ called reset_Collections.php"));
+				$message = "If you want to run this manually, there is a script in misc/testing/DB/ called reset_Collections.php";
+				$this->debugging->start("updateAllGroups", $message, 1);
+				exit($this->c->primary($message));
 			}
 			$relss = new Releases(true);
 			$relss->resetCollections();
@@ -68,10 +229,20 @@ class Binaries
 		}
 	}
 
+	/**
+	 * Download new headers for a single group.
+	 *
+	 * @param array $groupArr Array of MySQL results for a single group.
+	 * @param object $nntp Instance of class NNTP
+	 *
+	 * @return void
+	 */
 	public function updateGroup($groupArr, $nntp)
 	{
 		if (!isset($nntp)) {
-			exit($this->c->error("Not connected to usenet(binaries->updateGroup)."));
+			$message = "Not connected to usenet(binaries->updateGroup).";
+			$this->debugging->start("updateGroup", $message, 1);
+			exit($this->c->error($message));
 		}
 
 		$this->startGroup = microtime(true);
