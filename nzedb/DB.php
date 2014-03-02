@@ -37,12 +37,18 @@ class DB extends PDO
 	private static $pdo = null;
 
 	/**
+	 * @var object Class instance debugging.
+	 */
+	private $debugging;
+
+	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
 	 */
 	public function __construct()
 	{
 		$this->c = new ColorCLI();
+		$this->debugging = new Debugging();
 
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
 			$this->dbsystem = strtolower(DB_SYSTEM);
@@ -290,7 +296,9 @@ class DB extends PDO
 			$result = self::$pdo->query($query);
 		} catch (PDOException $e) {
 			//echo $query."\n";
-			echo $this->c->error("\nqueryDirect: " . $e->getMessage() . "\n");
+			$error = "\nqueryDirect: " . $e->getMessage() . "\n";
+			echo $this->c->error($error);
+			$this->debugging->logDebug("DB", "queryDirect", $error + ' ' + $query, 4);
 			$result = false;
 		}
 		return $result;
