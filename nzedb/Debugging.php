@@ -27,19 +27,26 @@ class Debugging
 	private $newLine;
 
 	/**
-	 * @var object Class instance of colorCLI
+	 * Class instance of colorCLI
+	 * @var object
 	 */
 	private $colorCLI;
 
 	/**
-	 * Constructor.
+	 * Should we echo to CLI or web?
 	 *
-	 * @return void
+	 * @var bool
+	 */
+	private $outputCLI = true;
+
+	/**
+	 * Constructor.
 	 */
 	public function __construct()
 	{
 		$this->colorCLI = new ColorCLI();
-		$this->newLine = ((strtolower(substr(php_uname('s'), 0, 3)) === 'win') ? "\r\n" : "\n");
+		$this->newLine = (strtolower(substr(php_uname('s'), 0, 3)) === 'win') ? "\r\n" : "\n";
+		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli') ? true : false;
 	}
 
 	/*
@@ -182,7 +189,7 @@ class Debugging
 		}
 
 		// Check if this is CLI or web.
-		if (PHP_SAPI === 'cli') {
+		if ($this->outputCLI) {
 			echo $this->colorCLI->debug($this->message);
 		} else {
 			echo '<pre>' . $this->message . '</pre>';
