@@ -70,7 +70,7 @@ class Binaries
 	 * The cache of the blacklist.
 	 * @var array
 	 */
-	private $blackList = array();
+	public $blackList = array();
 
 	/**
 	 * Is the blacklist already cached?
@@ -83,12 +83,6 @@ class Binaries
 	 * @var bool
 	 */
 	private $compressedHeaders;
-
-	/**
-	 * @note Deprecated.
-	 * @var bool
-	 */
-	private $debug;
 
 	/**
 	 * Should we use part repair?
@@ -112,13 +106,13 @@ class Binaries
 	 * The cache for headers.
 	 * @var array
 	 */
-	private $message = array();
+	public $message = array();
 
 	/**
 	 * How many headers do we download per loop?
 	 * @var int
 	 */
-	private $messagebuffer;
+	public $messagebuffer;
 
 	/**
 	 * How many days to go back on a new group?
