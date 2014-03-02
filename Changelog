@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-01 -> bart39   -> Fix: fixed query in getAPIRequests
 2014-03-01 -> kevin    -> Change:   Commit.sh change debug/logging to false before committing, true after.
                        -> Addition: Logging to NNTP.php, Turn on debugging in site->admin if you want to use it, logs are in resources/logs
                        -> Addition: Displaying debug messages to CLI, edit nzedb/Logging.php for options.
