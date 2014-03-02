@@ -1,6 +1,6 @@
 <?php
 /**
- * Show debug to CLI and log it to a file.
+ * Show debug to CLI/Web and log it to a file.
  * Turn these on in automated.config.php
  */
 class Debugging
@@ -25,6 +25,11 @@ class Debugging
 	 * @var string
 	 */
 	private $newLine;
+
+	/**
+	 * @var object Class instance of colorCLI
+	 */
+	private $colorCLI;
 
 	/**
 	 * Constructor.
@@ -58,7 +63,7 @@ class Debugging
 			return;
 		}
 
-		// Reset object.
+		// Reset debug message.
 		$this->message = '';
 		// Check the severity of the message, if disabled return, if enabled create part of the debug message.
 		if (!$this->checkSeverity($severity)) {
@@ -68,15 +73,15 @@ class Debugging
 		// Form the debug message.
 		$this->formMessage($class, $method, $message);
 
-		// Echo debug if user enabled it.
+		// Echo debug message if user enabled it.
 		$this->echoDebug();
 
-		// Log debug to file if user enabled it.
+		// Log debug message to file if user enabled it.
 		$this->logDebug();
 	}
 
 	/**
-	 * Log debug to file.
+	 * Log debug message to file.
 	 *
 	 * @return bool
 	 */
@@ -129,11 +134,11 @@ class Debugging
 	protected function initiateLog($path)
 	{
 		if (!file_exists($path)) {
-			if (file_put_contents($path, '[' . Date('r') . '] [INITIATE] [Initiating new log file.]' . $this->newLine)) {
-				return true;
+			if (!file_put_contents($path, '[' . Date('r') . '] [INITIATE] [Initiating new log file.]' . $this->newLine)) {
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 
 	/**
