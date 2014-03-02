@@ -295,10 +295,10 @@ class Binaries
 		$rangerequested = range($first, $last);
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 		if (is_array($msgs)) {
-			// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
+			/*// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
 			if ($this->debug) {
 				$colnames = $orignames = $notyenc = array();
-			}
+			}*/
 
 			// Sort the articles before processing, alphabetically by subject. This is to try to use the
 			// shortest subject and those without .vol01 in the subject
@@ -431,7 +431,7 @@ class Binaries
 					 */
 
 					// For looking at the difference between $subject and $cleansubject.
-					if ($this->debug) {
+					/*if ($this->debug) {
 						if (!in_array($cleansubject, $colnames)) {
 							// Uncomment this to only show articles matched by generic function of collectioncleaning (might show some that match by collectionsCleaner, but rare). Helps when making regex.
 
@@ -439,13 +439,13 @@ class Binaries
 							  {
 							  $colnames[] = $cleansubject;
 							  $orignames[] = $msg['Subject'];
-							  } */
+							  }
 
-							/* If you uncommented the above, comment following 2 lines.. */
+							/* If you uncommented the above, comment following 2 lines..
 							$colnames[] = $cleansubject;
 							$orignames[] = $msg['Subject'];
 						}
-					}
+					}*/
 
 					// Set up the info for inserting into parts/binaries/collections tables.
 					if (!isset($this->message[$subject])) {
@@ -458,7 +458,7 @@ class Binaries
 						$this->message[$subject]['File'] = (int) $filecnt[2];
 					}
 
-					if ($this->grabnzbs && preg_match('/.+\.nzb/', $subject)) {
+					if ($this->grabnzbs && preg_match('/.+\.nzb"/', $subject)) {
 						$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW()) ON DUPLICATE KEY UPDATE dateadded = NOW()', $db->escapeString(substr($msg['Message-ID'], 1, -1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject, 0, 255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int) $bytes, (int) $matches[3], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
 					}
 					if ((int) $matches[3] > 0) {
@@ -471,11 +471,11 @@ class Binaries
 			//if ($this->debug && count($notyenc) > 1)
 			//	print_r($notyenc);
 			// For looking at the difference between $subject and $cleansubject.
-			if ($this->debug && count($colnames) > 1 && count($orignames) > 1) {
+			/*if ($this->debug && count($colnames) > 1 && count($orignames) > 1) {
 				$arr = array_combine($colnames, $orignames);
 				ksort($arr);
 				print_r($arr);
-			}
+			}*/
 			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
 
 			unset($msg, $msgs);

@@ -216,7 +216,7 @@ function deleteScr($and)
 function deleteBlacklist($and)
 {
 	$db = new DB();
-	$regexes = $db->queryDirect('SELECT regex FROM binaryblacklist WHERE status = 1 AND optype = 1');
+	$regexes = $db->queryDirect('SELECT regex, id FROM binaryblacklist WHERE status = 1 AND optype = 1');
 	$delcount = 0;
 	$count = $regexes->rowCount();
 	if ($count > 0) {
@@ -228,7 +228,7 @@ function deleteBlacklist($and)
 			}
 			$sql = $db->prepare("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regexsql} " . $and);
 			$sql->execute();
-			$delcount += deleteReleases($sql, 'Blacklist');
+			$delcount += deleteReleases($sql, 'Blacklist ' . $regex['id']);
 		}
 	}
 	return $delcount;

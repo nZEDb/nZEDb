@@ -4,7 +4,7 @@ require_once realpath(__DIR__ . '/../automated.config.php');
 $page = new InstallPage();
 
 if (!isset($_REQUEST["success"])) {
-	$page->title = "NZB File Path";
+	$page->title = "File Paths";
 }
 
 $cfg = new Install();
@@ -21,6 +21,7 @@ if ($page->isPostBack()) {
 
 	$cfg->NZB_PATH = trim($_POST['nzbpath']);
 	$cfg->COVERS_PATH = trim($_POST['coverspath']);
+	$cfg->UNRAR_PATH = trim($_POST['tmpunrarpath']);
 
 	if ($cfg->NZB_PATH == '') {
 		$cfg->error = true;

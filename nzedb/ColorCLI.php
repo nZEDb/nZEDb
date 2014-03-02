@@ -187,7 +187,7 @@ class ColorCLI
 
 	public static function debug($str)
 	{
-		$debugstring = "\033[" . self::$foreground_colors['Purple'] . "mDebug: $str\033[0m\n";
+		$debugstring = "\033[" . self::$foreground_colors['Gray'] . "mDebug: $str\033[0m\n";
 		return $debugstring;
 	}
 

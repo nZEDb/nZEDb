@@ -52,10 +52,8 @@ class Users
 		$db->queryExec(sprintf("DELETE FROM users WHERE id = %d", $id));
 	}
 
-	public function getRange($start, $num, $orderby, $username = '', $email = '', $host = '', $role = '')
+	public function getRange($start, $num, $orderby, $username = '', $email = '', $host = '', $role = '', $apiRequests = false)
 	{
-		$db = $this->db;
-
 		if ($start === false) {
 			$limit = "";
 		} else {
@@ -63,29 +61,50 @@ class Users
 		}
 
 		$like = 'ILIKE';
-		if ($db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() == 'mysql') {
 			$like = 'LIKE';
 		}
 
 		$usql = $esql = $hsql = $rsql = '';
 		if ($username != '') {
-			$usql = sprintf(" AND users.username %s %s ", $like, $db->escapeString("%" . $username . "%"));
+			$usql = sprintf(" AND users.username %s %s ", $like, $this->db->escapeString("%" . $username . "%"));
 		}
 
 		if ($email != '') {
-			$esql = sprintf(" AND users.email %s %s ", $like, $db->escapeString("%" . $email . "%"));
+			$esql = sprintf(" AND users.email %s %s ", $like, $this->db->escapeString("%" . $email . "%"));
 		}
 
 		if ($host != '') {
-			$hsql = sprintf(" AND users.host %s %s ", $like, $db->escapeString("%" . $host . "%"));
+			$hsql = sprintf(" AND users.host %s %s ", $like, $this->db->escapeString("%" . $host . "%"));
 		}
 
 		if ($role != '') {
 			$rsql = sprintf(" AND users.role = %d ", $role);
 		}
 
+		$ret = array();
 		$order = $this->getBrowseOrder($orderby);
-		return $db->query(sprintf("SELECT users.*, userroles.name AS rolename FROM users INNER JOIN userroles ON userroles.id = users.role WHERE 1=1 %s %s %s %s ORDER BY %s %s" . $limit, $usql, $esql, $hsql, $rsql, $order[0], $order[1]));
+		if ($apiRequests) {
+			$this->clearApiRequests(false);
+
+			$ret = $this->db->query(sprintf("
+				SELECT users.*,
+				userroles.name AS rolename,
+				COUNT(userrequests.id) AS apirequests
+				FROM users
+				INNER JOIN userroles ON userroles.id = users.role
+				LEFT JOIN userrequests ON userrequests.userid = users.id
+				WHERE users.id != 0 %s %s %s %s
+				GROUP BY users.id
+				ORDER BY %s %s" .
+				$limit,
+				$usql, $esql, $hsql, $rsql,
+				$order[0], $order[1]));
+		} else {
+			$ret = $this->db->query(sprintf("SELECT users.*, userroles.name AS rolename FROM users INNER JOIN userroles ON userroles.id = users.role WHERE 1=1 %s %s %s %s ORDER BY %s %s" . $limit, $usql, $esql, $hsql, $rsql, $order[0], $order[1]));
+		}
+
+		return $ret;
 	}
 
 	public function getBrowseOrder($orderby)
@@ -691,16 +710,42 @@ class Users
 		return $db->queryExec(sprintf("DELETE FROM userroles WHERE id = %d", $id));
 	}
 
+	/**
+	 * Get the quantity of API requests in the last day for the userid.
+	 *
+	 * @param int $userid
+	 *
+	 * @return array|bool
+	 */
 	public function getApiRequests($userid)
 	{
-		$db = $this->db;
 		// Clear old requests.
-		if ($db->dbSystem() == 'mysql') {
-			$db->queryExec(sprintf('DELETE FROM userrequests WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
-			return $db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
+		$this->clearApiRequests($userid);
+		return $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d', $userid));
+	}
+
+	/**
+	 * Delete api requests older than a day.
+	 *
+	 * @param int  $userid The users ID.
+	 * @param bool $userid If false do all user ID's..
+	 *
+	 * @return void
+	 */
+	protected function clearApiRequests($userid)
+	{
+		if ($this->db->dbSystem() == 'mysql') {
+			if ($userid === false) {
+				$this->db->queryExec('DELETE FROM userrequests WHERE timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)');
+			} else {
+				$this->db->queryExec(sprintf('DELETE FROM userrequests WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
+			}
 		} else {
-			$db->queryExec(sprintf("DELETE FROM userrequests WHERE userid = %d AND timestamp < (NOW() - INTERVAL '1 DAY')", $userid));
-			return $db->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d AND timestamp > (NOW() - INTERVAL '1 DAY')", $userid));
+			if ($userid === false) {
+				$this->db->queryExec("DELETE FROM userrequests WHERE timestamp < (NOW() - INTERVAL '1 DAY')");
+			} else {
+				$this->db->queryExec(sprintf("DELETE FROM userrequests WHERE userid = %d AND timestamp < (NOW() - INTERVAL '1 DAY')", $userid));
+			}
 		}
 	}
 
