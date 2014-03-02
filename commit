@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 
 export NZEDB_ROOT="$(pwd)"
+export NZEDB_A_CONFIG=$NZEDB_ROOT/www/automated.config.php
 
-sed -i '/nZEDb_DEBUG/s/true/false/' $NZEDB_ROOT/www/automated.config.php
-sed -i '/nZEDb_LOGGING/s/true/false/' $NZEDB_ROOT/www/automated.config.php
+# Get the user values in automated.config.php.
+nZEDb_DEBUG=`grep -e "define('nZEDb_DEBUG', .*);" $NZEDB_A_CONFIG`
+nZEDb_LOGGING=`grep -e "define('nZEDb_LOGGING', .*);" $NZEDB_A_CONFIG`
 
+# Change them to the default values.
+sed -i "s/define('nZEDb_DEBUG', true);/define('nZEDb_DEBUG', false);/" $NZEDB_ROOT/www/automated.config.php
+sed -i "s/define('nZEDb_LOGGING', true);/define('nZEDb_LOGGING', false);/" $NZEDB_ROOT/www/automated.config.php
+
+# Commit changes.
 git add -i
 
 nano Changelog
@@ -12,5 +19,6 @@ git add Changelog
 
 git commit
 
-sed -i '/nZEDb_DEBUG/s/false/true/' $NZEDB_ROOT/www/automated.config.php
-sed -i '/nZEDb_LOGGING/s/false/true/' $NZEDB_ROOT/www/automated.config.php
+# Set back the users values in automated.config.php
+sed -i "s/define('nZEDb_DEBUG', false);/$nZEDb_DEBUG/" $NZEDB_ROOT/www/automated.config.php
+sed -i "s/define('nZEDb_LOGGING', false);/$nZEDb_LOGGING/" $NZEDB_ROOT/www/automated.config.php
