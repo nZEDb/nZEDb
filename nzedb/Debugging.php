@@ -64,6 +64,11 @@ class Debugging
 	 */
 	private $outputCLI = true;
 
+	private $dateCache = '';
+
+
+	private $timeCache;
+
 	/**
 	 * Constructor.
 	 * @param string $class The name of the class. ex,: $d = new Debugging("Binaries");
@@ -161,13 +166,28 @@ class Debugging
 	}
 
 	/**
-	 * Date in this format: 02/Mar/2014 14:50:32 EST
+	 * Get the date and cache it.
 	 *
-	 * @return bool|string
+	 * @return string
 	 */
 	protected function getDate()
 	{
-		return date('d/M/Y H:i:s T');
+		// Cache the date, update it every 1 minute, since date() is extremely slow and time() is extremely fast.
+		if ($this->dateCache === '' || $this->timeCache < (time() - 60)) {
+			$this->dateCache = $this->formDate();
+			$this->timeCache = time();
+		}
+
+		return $this->dateCache;
+	}
+
+	/**
+	 * Form a date in this format: 02/Mar/2014 14:50 EST
+	 * @return string
+	 */
+	protected  function formDate()
+	{
+		return date('d/M/Y H:i T');
 	}
 
 	/**
