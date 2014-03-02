@@ -161,6 +161,16 @@ class Debugging
 	}
 
 	/**
+	 * Date in this format: 02/Mar/2014 14:50:32 EST
+	 *
+	 * @return bool|string
+	 */
+	protected function getDate()
+	{
+		return date('d/M/Y H:i:s T');
+	}
+
+	/**
 	 * Initiate a log file.
 	 *
 	 * @param string $path The full path to the log file.
@@ -170,7 +180,7 @@ class Debugging
 	protected function initiateLog($path)
 	{
 		if (!file_exists($path)) {
-			if (!file_put_contents($path, '[' . Date('r') . '] [INIT]   [Initiating new log file.]' . $this->newLine)) {
+			if (!file_put_contents($path, '[' . $this->getDate() . '] [INIT]   [Initiating new log file.]' . $this->newLine)) {
 				return false;
 			}
 		}
@@ -269,13 +279,13 @@ class Debugging
 	{
 		$this->message =
 			// Current time. RFC2822 style ; [Thu, 21 Dec 2000 16:01:07 +0200
-			'[' . Date('r') .
+			'[' . $this->getDate() .
 
 			// The severity.
 			$this->message .
 
 			// The class/function.
-			$this->class . '.' . $method . '() ' .
+			$this->class . '.' . $method . '] [' .
 
 			// Now reformat the debug message, first stripping leading spaces.
 			trim(
