@@ -8,11 +8,11 @@ class Debugging
 	/**
 	 * Max log size in KiloBytes
 	 *
-	 * @default 512
+	 * @default 1024
 	 *
 	 * @const int
 	 */
-	const logFileSize = 512;
+	const logFileSize = 1024;
 
 	/**
 	 * Name of class that created an instance of debugging.

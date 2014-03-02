@@ -167,7 +167,6 @@ class Binaries
 		$this->site = $s->get();
 
 		$this->compressedHeaders = ($this->site->compressedheaders == '1') ? true : false;
-		$this->debug = ($this->site->debuginfo == '0') ? false : true;
 		$this->DoPartRepair = ($this->site->partrepair == '0') ? false : true;
 		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
 		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
@@ -493,7 +492,7 @@ class Binaries
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 		if (is_array($msgs)) {
 			/*// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
-			if ($this->debug) {
+			if (nZEDb_DEBUG) {
 				$colnames = $orignames = $notyenc = array();
 			}*/
 
@@ -586,7 +585,7 @@ class Binaries
 					}
 
 					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
-					/* if ($this->debug)
+					/* if (nZEDb_DEBUG)
 					  {
 					  preg_match('/(.+)\(\d+\/\d+\)$/i', $msg['Subject'], $ny);
 					  if(!in_array($ny[1], $notyenc))
@@ -628,7 +627,7 @@ class Binaries
 					 */
 
 					// For looking at the difference between $subject and $cleansubject.
-					/*if ($this->debug) {
+					/*if (nZEDb_DEBUG) {
 						if (!in_array($cleansubject, $colnames)) {
 							// Uncomment this to only show articles matched by generic function of collectioncleaning (might show some that match by collectionsCleaner, but rare). Helps when making regex.
 
@@ -665,10 +664,10 @@ class Binaries
 			}
 
 			// Uncomment this to see which articles are not yEnc.
-			//if ($this->debug && count($notyenc) > 1)
+			//if (nZEDb_DEBUG && count($notyenc) > 1)
 			//	print_r($notyenc);
 			// For looking at the difference between $subject and $cleansubject.
-			/*if ($this->debug && count($colnames) > 1 && count($orignames) > 1) {
+			/*if (nZEDb_DEBUG && count($colnames) > 1 && count($orignames) > 1) {
 				$arr = array_combine($colnames, $orignames);
 				ksort($arr);
 				print_r($arr);
