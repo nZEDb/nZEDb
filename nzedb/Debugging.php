@@ -18,7 +18,7 @@ class Debugging
 	 * Name of class that created an instance of debugging.
 	 * @var string
 	 */
-	private $class = '';
+	private $class;
 
 	/**
 	 * The debug message.
@@ -49,7 +49,7 @@ class Debugging
 	 * Constructor.
 	 * @param string $class The name of the class. ex,: $d = new Debugging("Binaries");
 	 */
-	public function __construct($class)
+	public function __construct($class="")
 	{
 		$this->class = $class;
 		$this->colorCLI = new ColorCLI();
@@ -63,10 +63,10 @@ class Debugging
 	 * @param string $method   The method this is coming from.
 	 * @param string $message  The message to log/echo.
 	 * @param int    $severity How severe is this message?
-	 *               1 Fatal   - The program had to stop.
+	 *               1 Fatal   - The program had to stop (exit).
 	 *               2 Error   - Something went very wrong but we recovered.
 	 *               3 Warning - Not an error, but something we can probably fix.
-	 *               4 Notice  - Like warning but not as bad?
+	 *               4 Notice  - User errors - the user did not enable any groups for example.
 	 *               5 Info    - General info, like we logged in to usenet for example.
 	 *               Anything else causes the script to return void.
 	 *
