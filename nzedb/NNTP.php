@@ -204,6 +204,7 @@ class NNTP extends Net_NNTP_Client
 				if ($compression === true && $this->site->compressedheaders === '1') {
 					$this->_enableCompression();
 				}
+				$this->debugging->logDebug("NNTP", "doConnect", "Connected to usenet.", 5);
 				return true;
 			}
 			// If we reached this point and have not connected after all retries, break out of the loop.
@@ -230,6 +231,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function doQuit()
 	{
+		$this->debugging->logDebug("NNTP", "doQuit", "Disconnecting from usenet.", 5);
 		// Check if we are connected to usenet.
 		if (parent::_isConnected()) {
 			// Disconnect from usenet.

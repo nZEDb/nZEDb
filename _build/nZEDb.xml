@@ -4,7 +4,7 @@
 		<db>181</db>
 		<git>
 			<tag>0.3</tag>
-			<commit>5804</commit>
+			<commit>5805</commit>
 			<hooks>
 				<precommit>1</precommit>
 			</hooks>
