@@ -7,7 +7,7 @@ class Debugging
 {
 	/**
 	 * How many old logs can we have max in the logs folder.
-	 * (per log type, ex.: debug can have 50 logs, not_yenc can have 50 logs, etc)
+	 * (per log type, ex.: debug can have 50 logs, not_yEnc can have 50 logs, etc)
 	 *
 	 * @default 50
 	 *
@@ -170,7 +170,7 @@ class Debugging
 	protected function initiateLog($path)
 	{
 		if (!file_exists($path)) {
-			if (!file_put_contents($path, '[' . Date('r') . '] [INITIATE] [Initiating new log file.]' . $this->newLine)) {
+			if (!file_put_contents($path, '[' . Date('r') . '] [INIT]   [Initiating new log file.]' . $this->newLine)) {
 				return false;
 			}
 		}
@@ -260,7 +260,6 @@ class Debugging
 	/**
 	 * Sets the message object to the debug message,
 	 *
-	 * @param string $class
 	 * @param string $method
 	 * @param string $message
 	 *
@@ -304,37 +303,37 @@ class Debugging
 		switch ($severity) {
 			case 6:
 				if (nZEDb_LOGQUERIES) {
-					$this->message = '] [SQLQUERY] [';
+					$this->message = '] [SQL]    [';
 					return true;
 				}
 				return false;
 			case 1:
 				if (nZEDb_LOGFATAL) {
-					$this->message = '] [FATAL]    [';
+					$this->message = '] [FATAL]  [';
 					return true;
 				}
 				return false;
 			case 2:
 				if (nZEDb_LOGERROR) {
-					$this->message = '] [ERROR]    [';
+					$this->message = '] [ERROR]  [';
 					return true;
 				}
 				return false;
 			case 3:
 				if (nZEDb_LOGWARNING) {
-					$this->message = '] [WARNING]  [';
+					$this->message = '] [WARN]   [';
 					return true;
 				}
 				return false;
 			case 4:
 				if (nZEDb_LOGNOTICE) {
-					$this->message = '] [NOTICE]   [';
+					$this->message = '] [NOTICE] [';
 					return true;
 				}
 				return false;
 			case 5:
 				if (nZEDb_LOGINFO) {
-					$this->message = '] [INFO]     [';
+					$this->message = '] [INFO]   [';
 					return true;
 				}
 				return false;
