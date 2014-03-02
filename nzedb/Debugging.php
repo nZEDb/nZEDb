@@ -88,6 +88,7 @@ class Debugging
 
 	/**
 	 * Constructor.
+	 *
 	 * @param string $class The name of the class. ex,: $d = new Debugging("Binaries");
 	 */
 	public function __construct($class="")
@@ -140,7 +141,7 @@ class Debugging
 	 * Base method for logging to files.
 	 *
 	 * @param string $path    Path where all the log files are.       ex.: /var/www/nZEDb/resources/logs/
-	 * @param string $name    The name of the log without extensions. ex.: debug
+	 * @param string $name The name of the log type. ex.: debug
 	 * @param string $message The message to log.
 	 *
 	 * @return bool
@@ -374,8 +375,8 @@ class Debugging
 	/**
 	 * Sets the message object to the debug message,
 	 *
-	 * @param string $method
-	 * @param string $message
+	 * @param string $method  The function this debug message came from.
+	 * @param string $message The actual debug message.
 	 *
 	 * @return void
 	 */
@@ -407,7 +408,7 @@ class Debugging
 	/**
 	 * Check if the user wants to echo or log this message, form part of the debug message at the same time.
 	 *
-	 * @param int $severity
+	 * @param int $severity How severe is this debug message?
 	 *
 	 * @return bool
 	 */
