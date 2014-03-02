@@ -215,7 +215,7 @@ class Binaries
 
 		if ($res) {
 			$alltime = microtime(true);
-			$message = "\nUpdating: " . sizeof($res) . ' group(s) - Using compression? ' . ($this->compressedHeaders) ? 'Yes' : 'No';
+			$message = "\nUpdating: " . sizeof($res) . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No');
 			$this->debugging->start("updateAllGroups", $message, 5);
 			echo $this->c->header($message);
 
