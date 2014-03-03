@@ -231,9 +231,9 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function doQuit()
 	{
-		$this->debugging->start("doQuit", "Disconnecting from usenet.", 5);
 		// Check if we are connected to usenet.
 		if (parent::_isConnected()) {
+			$this->debugging->start("doQuit", "Disconnecting from usenet.", 5);
 			// Disconnect from usenet.
 			return parent::disconnect();
 		}
@@ -798,6 +798,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @return boolean On success : The server understood and compression is enabled.
 	 * @return object  On failure : Pear error.
+	 * @return int     On failure : Response code. (should be 500)
 	 *
 	 * @access protected
 	 */
@@ -805,9 +806,13 @@ class NNTP extends Net_NNTP_Client
 	{
 		// Send this command to the usenet server.
 		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
+
 		// Check if it's good.
-		if ($this->isError($response) || $response != 290) {
+		if ($this->isError($response)) {
 			$this->debugging->start("_enableCompression", $response->getMessage(), 4);
+			return $response;
+		} else if ($response !== 290) {
+			$this->debugging->start("_enableCompression", "XFeature GZip Compression not supported.", 4);
 			return $response;
 		}
 

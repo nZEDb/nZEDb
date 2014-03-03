@@ -50,7 +50,6 @@ if ($users->isLoggedIn()) {
 			if (!isset($_GET['apikey'])) {
 				showApiError(100);
 			}
-
 			$res = $users->getByRssToken($_GET['apikey']);
 			$apikey = $_GET['apikey'];
 		}
