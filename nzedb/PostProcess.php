@@ -1344,7 +1344,7 @@ class PostProcess
 						$zipdata = $zip->extractFile($file['name']);
 						if ($zipdata !== false && strlen($zipdata) > 5)
 							; {
-							if ($this->nfo->addAlternateNfo($this->db, $zipdata, $release, $nntp)) {
+							if ($this->Nfo->addAlternateNfo($this->db, $zipdata, $release, $nntp)) {
 								$this->debug('Added compressed zip NFO.');
 								if ($this->echooutput)
 									echo 'n';
@@ -1933,8 +1933,4 @@ class PostProcess
 		return $retval;
 	}
 
-	protected function alternateRetry()
-	{
-
-	}
 }
