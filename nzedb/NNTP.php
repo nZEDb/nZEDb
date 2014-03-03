@@ -808,7 +808,7 @@ class NNTP extends Net_NNTP_Client
 		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
 
 		// Check if it's good.
-		if ($this->isError($response) || $response !== 290) {
+		if ($this->isError($response)) {
 			$this->debugging->start("_enableCompression", $response->getMessage(), 4);
 			return $response;
 		} else if ($response !== 290) {
