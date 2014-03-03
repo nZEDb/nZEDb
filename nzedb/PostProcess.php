@@ -1417,22 +1417,39 @@ class PostProcess
 					$output = exec($ffmpeginfo . ' -i "' . $samplefile . '" -loglevel quiet -vframes 1 -ss ' . $sample_duration . ' -y "' . $output_file . '"');*/
 
 					// Get the exact time of this video, using the header is not precise so use -vcodec.
-					$time = exec($ffmpeginfo . ' -i "' . $samplefile . '" -vcodec copy -f null /dev/null 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \'');
+					$time = exec(
+						$ffmpeginfo .
+						' -i "' .
+						$samplefile .
+						'" -vcodec copy -f null /dev/null 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
+					);
+
 					// If it's 11 chars long, it's good (00:00:00.00)
 					if (strlen($time) !== 11) {
 						// If not set it to 1 second.
 						$time = '00:00:01';
 					}
 
-					// Create a path/filename to store the image.
-					$output_file = $ramdrive . 'zzzz' . mt_rand(5, 12) . mt_rand(5, 12) . '.jpg';
 					// Get the image.
-					exec($ffmpeginfo . ' -i "' . $samplefile . '" -ss ' . $time . ' -loglevel quiet -vframes 1 "' . $output_file . '"');
+					exec(
+						$ffmpeginfo .
+						' -i "' .
+						$samplefile .
+						'" -ss ' .
+						$time .
+						' -loglevel quiet -vframes 1 -y "' .
+						$ramdrive .
+						'zzzz' .
+						mt_rand(5, 12) .
+						mt_rand(5, 12) .
+						'.jpg' .
+						'"'
+					);
 
 					if (is_dir($ramdrive)) {
 						$all_files = @scandir($ramdrive, 1);
 						foreach ($all_files as $file) {
-							if (preg_match('/zzzz\d{3}\.jpg/', $file) && $retval === false) {
+							if (preg_match('/zzzz\d*\.jpg/', $file) && $retval === false) {
 								if (filesize($ramdrive . $file) < 15)
 									continue;
 								if (exif_imagetype($ramdrive . $file) === false)
