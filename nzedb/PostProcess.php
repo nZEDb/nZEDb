@@ -9,13 +9,8 @@ class PostProcess
 {
 
 	/**
-	 * @TODO: Remove ffmpeg_image_time from DB, remove DEBUG_ECHO.
+	 * @TODO: Remove ffmpeg_image_time from DB..
 	 */
-
-	/**
-	 * @var ArchiveInfo
-	 */
-	private $archiveInfo;
 
 	/**
 	 * @var ColorCLI
@@ -23,14 +18,18 @@ class PostProcess
 	private $c;
 
 	/**
-	 * @var ConsoleTools
-	 */
-	private $consoleTools;
-
-	/**
 	 * @var DB
 	 */
 	private $db;
+	/**
+	 * @var Groups
+	 */
+	private $groups;
+
+	/**
+	 * @var Nfo
+	 */
+	private $Nfo;
 
 	/**
 	 * @var ReleaseFiles
@@ -50,6 +49,12 @@ class PostProcess
 	private $addqty;
 
 	/**
+	 * Have we initiated the objects used for processAdditional?
+	 * @var bool
+	 */
+	private $additionalInitiated;
+
+	/**
 	 * Add par2 info to rar list?
 	 * @var bool
 	 */
@@ -62,16 +67,324 @@ class PostProcess
 	private $alternateNNTP;
 
 	/**
-	 * How long should the video sample be?
-	 * @var int
+	 * Should we echo to CLI?
+	 * @var bool
 	 */
-	private $ffmpeg_duration;
+	private $echooutput;
 
 	/**
 	 * Max file size to post process.
 	 * @var int
 	 */
 	private $maxsize;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param bool $echoOutput Echo to CLI or not?
+	 */
+	public function __construct($echoOutput = false)
+	{
+		//\\ Class instances.
+		$this->c = new ColorCLI();
+		$this->db = new DB();
+		$this->groups = new Groups();
+		$this->Nfo = new Nfo($echoOutput);
+		$this->releaseFiles = new ReleaseFiles();
+		$s = new sites();
+		//\\
+
+		//\\ Site object.
+		$this->site = $s->get();
+		//\\
+
+		//\\ Site settings.
+		$this->addqty = (!empty($this->site->maxaddprocessed)) ? (int)$this->site->maxaddprocessed : 25;
+		$this->addpar2 = ($this->site->addpar2 === '0') ? false : true;
+		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
+		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? (int)$this->site->maxsizetopostprocess : 100;
+		//\\
+
+		//\\ Various.
+		$this->echooutput = $echoOutput;
+		$this->additionalInitiated = false;
+		//\\
+	}
+
+	/**
+	 * Go through every type of post proc.
+	 *
+	 * @param $nntp
+	 *
+	 * @return void
+	 */
+	public function processAll($nntp)
+	{
+		if (!isset($nntp)) {
+			exit($this->c->error("Not connected to usenet(postprocess->processAll).\n"));
+		}
+
+		$this->processPredb($nntp);
+		$this->processAdditional($releaseToWork = '', $id = '', $gui = false, $groupID = '', $nntp);
+		$this->processNfos($releaseToWork = '', $nntp);
+		$this->processMovies($releaseToWork = '');
+		$this->processMusic();
+		$this->processGames();
+		$this->processAnime();
+		$this->processTv($releaseToWork = '');
+		$this->processBooks();
+	}
+
+	/**
+	 * Lookup anidb if enabled - always run before tvrage.
+	 *
+	 * @return void
+	 */
+	public function processAnime()
+	{
+		if ($this->site->lookupanidb === '1') {
+			$anidb = new AniDB($this->echooutput);
+			$anidb->animetitlesUpdate();
+			$anidb->processAnimeReleases();
+		}
+	}
+
+	/**
+	 * Process books using amazon.com.
+	 *
+	 * @return void
+	 */
+	public function processBooks()
+	{
+		if ($this->site->lookupbooks !== '0') {
+			$books = new Books($this->echooutput);
+			$books->processBookReleases();
+		}
+	}
+
+	/**
+	 * Lookup games if enabled.
+	 *
+	 * @return void
+	 */
+	public function processGames()
+	{
+		if ($this->site->lookupgames !== '0') {
+			$console = new Console($this->echooutput);
+			$console->processConsoleReleases();
+		}
+	}
+
+	/**
+	 * Lookup imdb if enabled.
+	 *
+	 * @param string $releaseToWork
+	 *
+	 * @return void
+	 */
+	public function processMovies($releaseToWork = '')
+	{
+		if ($this->site->lookupimdb === '1') {
+			$movie = new Movie($this->echooutput);
+			$movie->processMovieReleases($releaseToWork);
+		}
+	}
+
+	/**
+	 * Lookup music if enabled.
+	 *
+	 * @return void
+	 */
+	public function processMusic()
+	{
+		if ($this->site->lookupmusic !== '0') {
+			$music = new Music($this->echooutput);
+			$music->processMusicReleases();
+		}
+	}
+
+	/**
+	 * Process nfo files.
+	 *
+	 * @param string $releaseToWork
+	 * @param $nntp
+	 *
+	 * @return void
+	 */
+	public function processNfos($releaseToWork = '', $nntp)
+	{
+		if (!isset($nntp)) {
+			exit($this->c->error("Not connected to usenet(postprocess->processNfos).\n"));
+		}
+
+		if ($this->site->lookupnfo === '1') {
+			$this->Nfo->processNfoFiles($releaseToWork, $this->site->lookupimdb, $this->site->lookuptvrage, $groupID = '', $nntp);
+		}
+	}
+
+	/**
+	 * Fetch titles from predb sites.
+	 *
+	 * @param $nntp
+	 *
+	 * @return void
+	 */
+	public function processPredb($nntp)
+	{
+		if (!isset($nntp)) {
+			exit($this->c->error("Not connected to usenet(postprocess->processPredb).\n"));
+		}
+
+		$predb = new PreDb($this->echooutput);
+		$titles = $predb->updatePre();
+		$predb->checkPre($nntp);
+		if ($titles > 0) {
+			$this->doecho($this->c->header('Fetched ' . number_format($titles) . ' new title(s) from predb sources.'));
+		}
+	}
+
+	/**
+	 * Process all TV related releases which will assign their series/episode/rage data.
+	 *
+	 * @param string $releaseToWork
+	 *
+	 * @return void
+	 */
+	public function processTv($releaseToWork = '')
+	{
+		if ($this->site->lookuptvrage === '1') {
+			$tvrage = new TvRage($this->echooutput);
+			$tvrage->processTvReleases($releaseToWork, $this->site->lookuptvrage === '1');
+		}
+	}
+
+	/**
+	 * Attempt to get a better name from a par2 file and categorize the release.
+	 *
+	 * @note Called from NZBContents.php
+	 *
+	 * @param $messageID
+	 * @param $relID
+	 * @param $groupID
+	 * @param $nntp
+	 * @param $show
+	 *
+	 * @return bool
+	 */
+	public function parsePAR2($messageID, $relID, $groupID, $nntp, $show)
+	{
+		if (!isset($nntp)) {
+			exit($this->c->error("Not connected to usenet(postprocess->parsePAR2).\n"));
+		}
+
+		if ($messageID === '') {
+			return false;
+		}
+
+		if ($this->db->dbSystem() === 'mysql') {
+			$t = 'UNIX_TIMESTAMP(postdate)';
+		} else {
+			$t = 'extract(epoch FROM postdate)';
+		}
+
+		$quer = $this->db->queryOneRow('SELECT id, groupid, categoryid, searchname, ' . $t . ' as postdate, id as releaseid  FROM releases WHERE isrenamed = 0 AND id = ' . $relID);
+		if ($quer['categoryid'] != Category::CAT_MISC) {
+			return false;
+		}
+
+		$par2 = $nntp->getMessage($this->groups->getByNameByID($groupID), $messageID);
+		if ($nntp->isError($par2)) {
+			$nntp->doQuit();
+			$this->alternateNNTP ? $nntp->doConnect(true, true) : $nntp->doConnect();
+			$par2 = $nntp->getMessage($this->groups->getByNameByID($groupID), $messageID);
+			if ($nntp->isError($par2)) {
+				$nntp->doQuit();
+				return false;
+			}
+		}
+
+		$par2info = new Par2Info();
+		$par2info->setData($par2);
+		if ($par2info->error) {
+			return false;
+		}
+
+		$files = $par2info->getFileList();
+		if ($files !== false && count($files) > 0) {
+			$namefixer = new NameFixer($this->echooutput);
+			$relfiles = 0;
+			$foundname = false;
+			foreach ($files as $fileID => $file) {
+
+				if (!array_key_exists('name', $file)) {
+					return false;
+				}
+
+				// Add to releasefiles.
+				if ($this->addpar2 && $relfiles < 11 && $this->db->queryOneRow(sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s', $relID, $this->db->escapeString($file['name']))) === false) {
+					if ($this->releaseFiles->add($relID, $file['name'], $file['size'], $quer['postdate'], 0)) {
+						$relfiles++;
+					}
+				}
+
+				$quer['textstring'] = $file['name'];
+				if ($namefixer->checkName($quer, 1, 'PAR2, ', 1, $show) === true) {
+					$foundname = true;
+					break;
+				}
+			}
+			if ($relfiles > 0) {
+				$this->debug('Added ' . $relfiles . ' releasefiles from PAR2 for ' . $quer['searchname']);
+				$cnt = $this->db->queryOneRow('SELECT COUNT(releaseid) AS count FROM releasefiles WHERE releaseid = ' . $relID);
+				$count = $relfiles;
+				if ($cnt !== false && $cnt['count'] > 0) {
+					$count = $relfiles + $cnt['count'];
+				}
+				$this->db->queryExec(sprintf('UPDATE releases SET rarinnerfilecount = %d where id = %d', $count, $relID));
+			}
+			if ($foundname === true) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Echo messages if echo is on.
+	 *
+	 * @param $str
+	 */
+	protected function doecho($str)
+	{
+		if ($this->echooutput) {
+			echo $this->c->header($str);
+		}
+	}
+
+	/**
+	 * Echo debug messages if debug is on.
+	 *
+	 * @param $str
+	 */
+	protected function debug($str)
+	{
+		if (nZEDb_DEBUG) {
+			echo $this->c->debug($str);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////// Start of ProcessAdditional methods ////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * How long should the video sample be?
+	 * @var int
+	 */
+	private $ffmpeg_duration;
 
 	/**
 	 * How many parts to download before giving up.
@@ -110,10 +423,9 @@ class PostProcess
 	private $tmpPath;
 
 	/**
-	 * Should we echo to CLI?
-	 * @var bool
+	 * @var ReleaseImage
 	 */
-	private $echooutput;
+	private $releaseImage;
 
 	/**
 	 * @var int
@@ -161,39 +473,24 @@ class PostProcess
 	private $sigregex;
 
 	/**
-	 * Constructor.
+	 * Initiate objects used in processAdditional.
 	 *
-	 * @param bool $echoOutput Echo to CLI or not?
+	 * @return void
 	 */
-	public function __construct($echoOutput = false)
+	protected  function initAdditional()
 	{
-		//\\ Class instances.
-		$this->archiveInfo = new ArchiveInfo();
-		$this->c = new ColorCLI();
-		$this->consoleTools = new ConsoleTools();
-		$this->db = new DB();
-		$this->releaseFiles = new ReleaseFiles();
-		$s = new Sites();
-		//\\
-
-		//\\ Site object.
-		$this->site = $s->get();
-		//\\
-
-		//\\ To deprecate:
-		$this->ffmpeg_image_time = (!empty($this->site->ffmpeg_image_time)) ? $this->site->ffmpeg_image_time : 5;
-		$this->DEBUG_ECHO = ($this->site->debuginfo === '0') ? false : true;
-		if (defined('DEBUG_ECHO') && DEBUG_ECHO === true) {
-			$this->DEBUG_ECHO = true;
+		// Check if the objects are already initiated.
+		if ($this->additionalInitiated) {
+			return;
 		}
+
+		//\\ Class instances.
+		$this->releaseExtra = new ReleaseExtra();
+		$this->releaseImage = new ReleaseImage();
 		//\\
 
 		//\\ Site settings.
-		$this->addqty = (!empty($this->site->maxaddprocessed)) ? (int)$this->site->maxaddprocessed : 25;
-		$this->addpar2 = ($this->site->addpar2 === '0') ? false : true;
-		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
 		$this->ffmpeg_duration = (!empty($this->site->ffmpeg_duration)) ? (int)$this->site->ffmpeg_duration : 5;
-		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? (int)$this->site->maxsizetopostprocess : 100;
 		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? (int)$this->site->maxpartsprocessed : 3;
 		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? (int)$this->site->passchkattempts : 1;
 		$this->processAudioSample = ($this->site->processaudiosample === '0') ? false : true;
@@ -209,7 +506,6 @@ class PostProcess
 		//\\
 
 		//\\ Various.
-		$this->echooutput = $echoOutput;
 		$this->filesadded = 0;
 		$this->nonfo = $this->password = false;
 		//\\
@@ -229,7 +525,7 @@ class PostProcess
 				array('01', '00', '09', '00'),
 				array('30', '26', 'B2', '75'),
 				array('A6', 'D9', '00', 'AA')
-		);
+			);
 		$sigstr = '';
 		foreach ($sigs as $sig) {
 			$str = '';
@@ -241,84 +537,19 @@ class PostProcess
 		$sigstr1 = "/^ftyp|mp4|^riff|avi|matroska|.rec|.rmf|^oggs|moov|dvd|^0&²u|free|mdat|pnot|skip|wide$sigstr/i";
 		$this->sigregex = $sigstr1;
 		//\\
+
+		// Not that we initiated the objects.
+		$this->additionalInitiated = true;
 	}
 
-	public function processAll($nntp)
-	{
-		if (!isset($nntp)) {
-			exit($this->c->error("Not connected to usenet(postprocess->processAll).\n"));
-		}
-
-		$this->processPredb($nntp);
-		$this->processAdditional($releaseToWork = '', $id = '', $gui = false, $groupID = '', $nntp);
-		$this->processNfos($releaseToWork = '', $nntp);
-		$this->processMovies($releaseToWork = '');
-		$this->processMusic();
-		$this->processGames();
-		$this->processAnime();
-		$this->processTv($releaseToWork = '');
-		$this->processBooks();
-	}
-
-	// Lookup anidb if enabled - always run before tvrage.
-	public function processAnime()
-	{
-		if ($this->site->lookupanidb === '1') {
-			$anidb = new AniDB($this->echooutput);
-			$anidb->animetitlesUpdate();
-			$anidb->processAnimeReleases();
-		}
-	}
-
-	// Process books using amazon.com.
-	public function processBooks()
-	{
-		if ($this->site->lookupbooks !== '0') {
-			$books = new Books($this->echooutput);
-			$books->processBookReleases();
-		}
-	}
-
-	// Lookup games if enabled.
-	public function processGames()
-	{
-		if ($this->site->lookupgames !== '0') {
-			$console = new Console($this->echooutput);
-			$console->processConsoleReleases();
-		}
-	}
-
-	// Lookup imdb if enabled.
-	public function processMovies($releaseToWork = '')
-	{
-		if ($this->site->lookupimdb === '1') {
-			$movie = new Movie($this->echooutput);
-			$movie->processMovieReleases($releaseToWork);
-		}
-	}
-
-	// Lookup music if enabled.
-	public function processMusic()
-	{
-		if ($this->site->lookupmusic !== '0') {
-			$music = new Music($this->echooutput);
-			$music->processMusicReleases();
-		}
-	}
-
-	// Process nfo files.
-	public function processNfos($releaseToWork = '', $nntp)
-	{
-		if (!isset($nntp))
-			exit($this->c->error("Not connected to usenet(postprocess->processNfos).\n"));
-
-		if ($this->site->lookupnfo === '1') {
-			$nfo = new Nfo($this->echooutput);
-			$nfo->processNfoFiles($releaseToWork, $this->site->lookupimdb, $this->site->lookuptvrage, $groupID = '', $nntp);
-		}
-	}
-
-	// Process nfo files.
+	/**
+	 * Run processAdditional threaded.
+	 *
+	 * @param string $releaseToWork
+	 * @param $nntp
+	 *
+	 * @return void
+	 */
 	public function processAdditionalThreaded($releaseToWork = '', $nntp)
 	{
 		if (!isset($nntp)) {
@@ -328,175 +559,29 @@ class PostProcess
 		$this->processAdditional($releaseToWork, $id = '', $gui = false, $groupID = '', $nntp);
 	}
 
-	// Fetch titles from predb sites.
-	public function processPredb($nntp)
-	{
-		if (!isset($nntp)) {
-			exit($this->c->error("Not connected to usenet(postprocess->processPredb).\n"));
-		}
-
-		$predb = new PreDb($this->echooutput);
-		$titles = $predb->updatePre();
-		$predb->checkPre($nntp);
-		if ($titles > 0) {
-			$this->doecho($this->c->header('Fetched ' . number_format($titles) . ' new title(s) from predb sources.'));
-		}
-	}
-
-	// Process all TV related releases which will assign their series/episode/rage data.
-	public function processTv($releaseToWork = '')
-	{
-		if ($this->site->lookuptvrage === '1') {
-			$tvrage = new TvRage($this->echooutput);
-			$tvrage->processTvReleases($releaseToWork, $this->site->lookuptvrage === '1');
-		}
-	}
-
-	// Attempt to get a better name from a par2 file and categorize the release.
-	public function parsePAR2($messageID, $relID, $groupID, $nntp, $show)
-	{
-		if (!isset($nntp)) {
-			exit($this->c->error("Not connected to usenet(postprocess->parsePAR2).\n"));
-		}
-
-		if ($messageID === '') {
-			return false;
-		}
-		$db = $this->db;
-		if ($db->dbSystem() === 'mysql') {
-			$t = 'UNIX_TIMESTAMP(postdate)';
-		} else {
-			$t = 'extract(epoch FROM postdate)';
-		}
-
-		$quer = $db->queryOneRow('SELECT id, groupid, categoryid, searchname, ' . $t . ' as postdate, id as releaseid  FROM releases WHERE isrenamed = 0 AND id = ' . $relID);
-		if ($quer['categoryid'] != Category::CAT_MISC) {
-			return false;
-		}
-
-		$groups = new Groups();
-		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
-		if ($nntp->isError($par2)) {
-			$nntp->doQuit();
-			$this->alternateNNTP ? $nntp->doConnect(true, true) : $nntp->doConnect();
-			$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
-			if ($nntp->isError($par2)) {
-				$nntp->doQuit();
-				return false;
-			}
-		}
-
-		$par2info = new Par2Info();
-		$par2info->setData($par2);
-		if ($par2info->error) {
-			return false;
-		}
-
-		$files = $par2info->getFileList();
-		if ($files !== false && count($files) > 0) {
-			$namefixer = new NameFixer($this->echooutput);
-			$relfiles = 0;
-			$foundname = false;
-			foreach ($files as $fileID => $file) {
-
-				if (!array_key_exists('name', $file)) {
-					return false;
-				}
-
-				// Add to releasefiles.
-				if ($this->addpar2 && $relfiles < 11 && $db->queryOneRow(sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s', $relID, $this->db->escapeString($file['name']))) === false) {
-					if ($this->releaseFiles->add($relID, $file['name'], $file['size'], $quer['postdate'], 0)) {
-						$relfiles++;
-					}
-				}
-
-				$quer['textstring'] = $file['name'];
-				if ($namefixer->checkName($quer, 1, 'PAR2, ', 1, $show) === true) {
-					$foundname = true;
-					break;
-				}
-			}
-			if ($relfiles > 0) {
-				$this->debug('Added ' . $relfiles . ' releasefiles from PAR2 for ' . $quer['searchname']);
-				$cnt = $db->queryOneRow('SELECT COUNT(releaseid) AS count FROM releasefiles WHERE releaseid = ' . $relID);
-				$count = $relfiles;
-				if ($cnt !== false && $cnt['count'] > 0) {
-					$count = $relfiles + $cnt['count'];
-				}
-				$db->queryExec(sprintf('UPDATE releases SET rarinnerfilecount = %d where id = %d', $count, $relID));
-			}
-			if ($foundname === true) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-
-	// Comparison function for usort, for sorting nzb file content.
-	public function sortrar($a, $b)
-	{
-		$pos = 0;
-		$af = $bf = false;
-		$a = preg_replace('/\d+[- ._]?(\/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)/i', ' ', $a['title']);
-		$b = preg_replace('/\d+[- ._]?(\/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)/i', ' ', $b['title']);
-
-		if (preg_match("/\.(part\d+|r\d+)(\.rar)*($|[ \")\]-])/i", $a))
-			$af = true;
-		if (preg_match("/\.(part\d+|r\d+)(\.rar)*($|[ \")\]-])/i", $b))
-			$bf = true;
-
-		if (!$af && preg_match("/\.(rar)($|[ \")\]-])/i", $a)) {
-			$a = preg_replace('/\.(rar)(?:$|[ \")\]-])/i', '.*rar', $a);
-			$af = true;
-		}
-		if (!$bf && preg_match("/\.(rar)($|[ \")\]-])/i", $b)) {
-			$b = preg_replace('/\.(rar)(?:$|[ \")\]-])/i', '.*rar', $b);
-			$bf = true;
-		}
-
-		if (!$af && !$bf)
-			return strnatcasecmp($a, $b);
-		else if (!$bf)
-			return -1;
-		else if (!$af)
-			return 1;
-
-		if ($af && $bf)
-			$pos = strnatcasecmp($a, $b);
-		else if ($af)
-			$pos = -1;
-		else if ($bf)
-			$pos = 1;
-
-		return $pos;
-	}
-
-	// Sort a multidimensional array using one subkey.
-	public function subval_sort($a, $subkey)
-	{
-		foreach ($a as $k => $v)
-			$b[$k] = strtolower($v[$subkey]);
-
-		natcasesort($b);
-
-		foreach ($b as $k => $v)
-			$c[] = $a[$k];
-
-		return $c;
-	}
-
-	// Check for passworded releases, RAR contents and Sample/Media info.
+	/**
+	 * Check for passworded releases, RAR contents and Sample/Media info.
+	 *
+	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
+	 *
+	 * @param string $releaseToWork
+	 * @param string $id
+	 * @param bool $gui
+	 * @param string $groupID
+	 * @param $nntp
+	 *
+	 * @return void
+	 */
 	public function processAdditional($releaseToWork = '', $id = '', $gui = false, $groupID = '', $nntp)
 	{
+
 		if (!isset($nntp))
 			exit($this->c->error("Not connected to usenet(postprocess->processAdditional).\n"));
 
 		$like = 'ILIKE';
-		if ($this->db->dbSystem() === 'mysql')
+		if ($this->db->dbSystem() === 'mysql') {
 			$like = 'LIKE';
+		}
 
 		// not sure if ugo ever implemented this in the ui, other that his own
 		if ($gui) {
@@ -552,6 +637,9 @@ class PostProcess
 
 		$rescount = $startCount = $totresults;
 		if ($rescount > 0) {
+			$this->initAdditional();
+
+
 			if ($this->echooutput && $rescount > 1) {
 				$this->doecho('Additional post-processing, started at: ' . date('D M d, Y G:i a'));
 				$this->doecho('Downloaded: b = yEnc article, f= failed ;Processing: z = zip file, r = rar file');
@@ -567,10 +655,8 @@ class PostProcess
 				$this->doecho('Available to process: -6 = ' . number_format($pw6[0]['count']) . ', -5 = ' . number_format($pw5[0]['count']) . ', -4 = ' . number_format($pw4[0]['count']) . ', -3 = ' . number_format($pw3[0]['count']) . ', -2 = ' . number_format($pw2[0]['count']) . ', -1 = ' . number_format($pw1[0]['count']));
 			}
 
-			$ri = new ReleaseImage();
 			$nzbcontents = new NZBContents($this->echooutput);
 			$nzb = new NZB($this->echooutput);
-			$groups = new Groups();
 			$processSample = ($this->site->ffmpegpath !== '') ? true : false;
 			$processVideo = ($this->site->processvideos === '0') ? false : true;
 			$processMediainfo = ($this->site->mediainfopath !== '') ? true : false;
@@ -663,7 +749,7 @@ class PostProcess
 					$this->nonfo = true;
 				}
 
-				$groupName = $groups->getByNameByID($rel['groupid']);
+				$groupName = $this->groups->getByNameByID($rel['groupid']);
 				// Go through the nzb for this release looking for a rar, a sample etc...
 				foreach ($nzbfiles as $nzbcontents) {
 					// Check if it's not a nfo, nzb, par2 etc...
@@ -816,12 +902,13 @@ class PostProcess
 						foreach ($files as $file) {
 							if (is_file($this->tmpPath . $file)) {
 								if (substr($file, -4) === '.rar') {
-									$this->archiveInfo->open($this->tmpPath . $file, true);
-									if ($this->archiveInfo->error) {
+									$archInfo = new ArchiveInfo();
+									$archInfo->open($this->tmpPath . $file, true);
+									if ($archInfo->error) {
 										continue;
 									}
 
-									$tmpfiles = $this->archiveInfo->getArchiveFileList();
+									$tmpfiles = $archInfo->getArchiveFileList();
 									if (isset($tmpfiles[0]['name'])) {
 										foreach ($tmpfiles as $r) {
 											if (isset($r['range'])) {
@@ -832,7 +919,7 @@ class PostProcess
 
 											$r['range'] = $range;
 											if (!isset($r['error']) && !preg_match($this->supportfiles . '|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i', $r['name'])) {
-												$this->addfile($r, $rel, $this->archiveInfo, $nntp);
+												$this->addfile($r, $rel, $archInfo, $nntp);
 											}
 										}
 									}
@@ -865,7 +952,7 @@ class PostProcess
 
 								// JGP file sample.
 								if ($processJPGSample === true && $blnTookJPG === false && preg_match('/\.(jpg|jpeg)$/', $file)) {
-									$blnTookJPG = $ri->saveImage($rel['guid'] . '_thumb', $this->tmpPath . $file, $ri->jpgSavePath, 650, 650);
+									$blnTookJPG = $this->releaseImage->saveImage($rel['guid'] . '_thumb', $this->tmpPath . $file, $this->releaseImage->jpgSavePath, 650, 650);
 									if ($blnTookJPG !== false) {
 										$this->db->queryExec(sprintf('UPDATE releases SET jpgstatus = %d WHERE id = %d', 1, $rel['id']));
 									}
@@ -1018,7 +1105,7 @@ class PostProcess
 						$this->addmediafile($this->tmpPath . 'samplepicture.jpg', $jpgBinary);
 						if (is_file($this->tmpPath . 'samplepicture.jpg')) {
 							if ($blnTookJPG === false) {
-								$blnTookJPG = $ri->saveImage($rel['guid'] . '_thumb', $this->tmpPath . 'samplepicture.jpg', $ri->jpgSavePath, 650, 650);
+								$blnTookJPG = $$this->releaseImage->saveImage($rel['guid'] . '_thumb', $this->tmpPath . 'samplepicture.jpg', $this->releaseImage->jpgSavePath, 650, 650);
 								if ($blnTookJPG !== false)
 									$this->db->queryExec(sprintf('UPDATE releases SET jpgstatus = %d WHERE id = %d', 1, $rel['id']));
 							}
@@ -1038,7 +1125,7 @@ class PostProcess
 				// Set up release values.
 				$hpsql = $isql = $vsql = $jsql = '';
 				if ($processSample === true && $blnTookSample !== false) {
-					$this->updateReleaseHasPreview($rel['guid']);
+					$this->db->queryExec(sprintf('UPDATE releases SET haspreview = 1 WHERE guid = %s', $this->db->escapeString($rel['guid'])));
 				} else {
 					$hpsql = ', haspreview = 0';
 				}
@@ -1050,13 +1137,13 @@ class PostProcess
 				}
 
 				// If samples exist from previous runs, set flags.
-				if (file_exists($ri->imgSavePath . $rel['guid'] . '_thumb.jpg')) {
+				if (file_exists($this->releaseImage->imgSavePath . $rel['guid'] . '_thumb.jpg')) {
 					$isql = ', haspreview = 1';
 				}
-				if (file_exists($ri->vidSavePath . $rel['guid'] . '.ogv')) {
+				if (file_exists($this->releaseImage->vidSavePath . $rel['guid'] . '.ogv')) {
 					$vsql = ', videostatus = 1';
 				}
-				if (file_exists($ri->jpgSavePath . $rel['guid'] . '_thumb.jpg')) {
+				if (file_exists($this->releaseImage->jpgSavePath . $rel['guid'] . '_thumb.jpg')) {
 					$jsql = ', jpgstatus = 1';
 				}
 
@@ -1092,23 +1179,66 @@ class PostProcess
 			$this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting %s 'currentppticket1'", $ticket + 1, $like));
 		}
 
-		unset($this->consoleTools, $rar, $nzbcontents, $groups, $ri);
+		unset($rar, $nzbcontents);
 	}
 
-	function doecho($str)
+	/**
+	 * Comparison function for usort, for sorting nzb file content.
+	 *
+	 * @note used in processAdditional
+	 *
+	 * @param $a
+	 * @param $b
+	 *
+	 * @return int
+	 */
+	protected function sortrar($a, $b)
 	{
-		if ($this->echooutput)
-			echo $this->c->header($str);
-	}
+		$pos = 0;
+		$af = $bf = false;
+		$a = preg_replace('/\d+[- ._]?(\/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)/i', ' ', $a['title']);
+		$b = preg_replace('/\d+[- ._]?(\/|\||[o0]f)[- ._]?\d+?(?![- ._]\d)/i', ' ', $b['title']);
 
-	function debug($str)
-	{
-		if ($this->echooutput && $this->DEBUG_ECHO) {
-			echo $this->c->debug($str);
+		if (preg_match("/\.(part\d+|r\d+)(\.rar)*($|[ \")\]-])/i", $a))
+			$af = true;
+		if (preg_match("/\.(part\d+|r\d+)(\.rar)*($|[ \")\]-])/i", $b))
+			$bf = true;
+
+		if (!$af && preg_match("/\.(rar)($|[ \")\]-])/i", $a)) {
+			$a = preg_replace('/\.(rar)(?:$|[ \")\]-])/i', '.*rar', $a);
+			$af = true;
 		}
+		if (!$bf && preg_match("/\.(rar)($|[ \")\]-])/i", $b)) {
+			$b = preg_replace('/\.(rar)(?:$|[ \")\]-])/i', '.*rar', $b);
+			$bf = true;
+		}
+
+		if (!$af && !$bf)
+			return strnatcasecmp($a, $b);
+		else if (!$bf)
+			return -1;
+		else if (!$af)
+			return 1;
+
+		if ($af && $bf)
+			$pos = strnatcasecmp($a, $b);
+		else if ($af)
+			$pos = -1;
+		else if ($bf)
+			$pos = 1;
+
+		return $pos;
 	}
 
-	function addmediafile($file, $data)
+	/**
+	 * @note Called by addfile, getRar, processAdditional
+	 *
+	 * @param $file
+	 * @param $data
+	 *
+	 * @return void
+	 */
+	protected function addmediafile($file, $data)
 	{
 		if (@file_put_contents($file, $data) !== false) {
 			$xmlarray = @runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $file . '"');
@@ -1123,7 +1253,17 @@ class PostProcess
 		}
 	}
 
-	function addfile($v, $release, $rar = false, $nntp)
+	/**
+	 * @note Called by processAdditional, processReleaseFiles, processReleaseZips.
+	 *
+	 * @param $v
+	 * @param $release
+	 * @param bool $rar
+	 * @param $nntp
+	 *
+	 * @return void
+	 */
+	protected function addfile($v, $release, $rar = false, $nntp)
 	{
 		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(postprocess->addfile).\n"));
@@ -1142,8 +1282,7 @@ class PostProcess
 			// Check if we already have the file or not.
 			// Also make sure we don't add too many files, some releases have 100's of files, like PS3 releases.
 			if ($this->filesadded < 11 && $this->db->queryOneRow(sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s AND size = %d', $release['id'], $this->db->escapeString($v['name']), $v['size'])) === false) {
-				$rf = new ReleaseFiles();
-				if ($rf->add($release['id'], $v['name'], $v['size'], $v['date'], $v['pass'])) {
+				if ($this->releaseFiles->add($release['id'], $v['name'], $v['size'], $v['date'], $v['pass'])) {
 					$this->filesadded++;
 					$this->newfiles = true;
 					if ($this->echooutput) {
@@ -1155,8 +1294,7 @@ class PostProcess
 			if ($tmpdata !== false) {
 				// Extract a NFO from the rar.
 				if ($this->nonfo === true && $v['size'] > 100 && $v['size'] < 100000 && preg_match('/(\.(nfo|inf|ofn)|info.txt)$/i', $v['name'])) {
-					$nfo = new Nfo($this->echooutput);
-					if ($nfo->addAlternateNfo($this->db, $tmpdata, $release, $nntp)) {
+					if ($this->Nfo->addAlternateNfo($this->db, $tmpdata, $release, $nntp)) {
 						$this->debug('added rar nfo');
 						if ($this->echooutput)
 							echo 'n';
@@ -1176,8 +1314,20 @@ class PostProcess
 		}
 	}
 
-	// Open the zip, see if it has a password, attempt to get a file.
-	function processReleaseZips($fetchedBinary, $open = false, $data = false, $release, $nntp)
+	/**
+	 * Open the zip, see if it has a password, attempt to get a file.
+	 *
+	 * @note Called by processReleaseFiles
+	 *
+	 * @param $fetchedBinary
+	 * @param bool $open
+	 * @param bool $data
+	 * @param $release
+	 * @param $nntp
+	 *
+	 * @return array|bool
+	 */
+	protected function processReleaseZips($fetchedBinary, $open = false, $data = false, $release, $nntp)
 	{
 		if (!isset($nntp))
 			exit($this->c->error("Not connected to usenet(postprocess->processReleaseZips).\n"));
@@ -1203,10 +1353,9 @@ class PostProcess
 		$files = $zip->getFileList();
 		$dataarray = array();
 		if ($files !== false) {
-			if ($this->echooutput)
+			if ($this->echooutput) {
 				echo 'z';
-			if ($this->nonfo === true)
-				$nfo = new Nfo($this->echooutput);
+			}
 			foreach ($files as $file) {
 				$thisdata = $zip->getFileData($file['name']);
 				$dataarray[] = array('zip' => $file, 'data' => $thisdata);
@@ -1214,7 +1363,7 @@ class PostProcess
 				//Extract a NFO from the zip.
 				if ($this->nonfo === true && $file['size'] < 100000 && preg_match('/\.(nfo|inf|ofn)$/i', $file['name'])) {
 					if ($file['compressed'] !== 1) {
-						if ($nfo->addAlternateNfo($this->db, $thisdata, $release, $nntp)) {
+						if ($this->Nfo->addAlternateNfo($this->db, $thisdata, $release, $nntp)) {
 							$this->debug('Added zip NFO.');
 							if ($this->echooutput)
 								echo 'n';
@@ -1226,7 +1375,7 @@ class PostProcess
 						$zipdata = $zip->extractFile($file['name']);
 						if ($zipdata !== false && strlen($zipdata) > 5)
 							; {
-							if ($nfo->addAlternateNfo($this->db, $zipdata, $release, $nntp)) {
+							if ($this->nfo->addAlternateNfo($this->db, $zipdata, $release, $nntp)) {
 								$this->debug('Added compressed zip NFO.');
 								if ($this->echooutput)
 									echo 'n';
@@ -1260,7 +1409,16 @@ class PostProcess
 		return $files;
 	}
 
-	function getRar($fetchedBinary)
+	/**
+	 * Get contents of rar file.
+	 *
+	 * @note Called by processReleaseFiles and processReleaseZips
+	 *
+	 * @param $fetchedBinary
+	 *
+	 * @return array|bool
+	 */
+	protected function getRar($fetchedBinary)
 	{
 		$rar = new ArchiveInfo();
 		$files = $retval = false;
@@ -1316,15 +1474,25 @@ class PostProcess
 		return $retval;
 	}
 
-	// Open the rar, see if it has a password, attempt to get a file.
-	function processReleaseFiles($fetchedBinary, $release, $name, $nntp)
+	/**
+	 * Open the rar, see if it has a password, attempt to get a file.
+	 *
+	 * @note Only called by processAddtional
+	 *
+	 * @param $fetchedBinary
+	 * @param $release
+	 * @param $name
+	 * @param $nntp
+	 *
+	 * @return array|bool
+	 */
+	protected function processReleaseFiles($fetchedBinary, $release, $name, $nntp)
 	{
 		if (!isset($nntp))
 			exit($this->c->error("Not connected to usenet(postprocess->processReleaseFiles).\n"));
 
 		$retval = array();
 		$rar = new ArchiveInfo();
-		$rf = new ReleaseFiles();
 		$this->password = false;
 
 		if (preg_match("/\.(part\d+|rar|r\d{1,3})($|[ \")\]-])|\"[a-f0-9]{32}\.[1-9]\d{1,2}\".*\(\d+\/\d{2,}\)$/i", $name)) {
@@ -1487,12 +1655,22 @@ class PostProcess
 
 		if (count($retval) === 0)
 			$retval = false;
-		unset($fetchedBinary, $rar, $rf, $nfo);
+		unset($fetchedBinary, $rar, $nfo);
 		return $retval;
 	}
 
-	// Attempt to get mediafio xml from a video file.
-	public function getMediainfo($ramdrive, $mediainfo, $releaseID)
+	/**
+	 * Attempt to get mediafio xml from a video file.
+	 *
+	 * @note Only called by processAddtional
+	 *
+	 * @param $ramdrive
+	 * @param $mediainfo
+	 * @param $releaseID
+	 *
+	 * @return bool
+	 */
+	protected function getMediainfo($ramdrive, $mediainfo, $releaseID)
 	{
 		$retval = false;
 		if ($mediainfo === '' && !is_dir($ramdrive) && $releaseID <= 0)
@@ -1505,9 +1683,8 @@ class PostProcess
 					$xmlarray = @runCmd('"' . $mediainfo . '" --Output=XML "' . $mediafile . '"');
 					if (is_array($xmlarray)) {
 						$xmlarray = implode("\n", $xmlarray);
-						$re = new ReleaseExtra();
-						$re->addFull($releaseID, $xmlarray);
-						$re->addFromXml($releaseID, $xmlarray);
+						$this->releaseExtra->addFull($releaseID, $xmlarray);
+						$this->releaseExtra->addFromXml($releaseID, $xmlarray);
 						$retval = true;
 						if ($this->echooutput)
 							echo 'm';
@@ -1519,8 +1696,20 @@ class PostProcess
 		return $retval;
 	}
 
-	// Attempt to get mediainfo/sample/title from a audio file.
-	public function getAudioinfo($ramdrive, $ffmpeginfo, $audioinfo, $releaseguid, $releaseID)
+	/**
+	 * Attempt to get mediainfo/sample/title from a audio file.
+	 *
+	 * @note Only called by processAddtional
+	 *
+	 * @param $ramdrive
+	 * @param $ffmpeginfo
+	 * @param $audioinfo
+	 * @param $releaseguid
+	 * @param $releaseID
+	 *
+	 * @return bool
+	 */
+	protected function getAudioinfo($ramdrive, $ffmpeginfo, $audioinfo, $releaseguid, $releaseID)
 	{
 		$retval = $audval = false;
 		if (!is_dir($ramdrive) && $releaseID <= 0) {
@@ -1562,8 +1751,7 @@ class PostProcess
 										}
 										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1 WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
 
-										$re = new ReleaseExtra();
-										$re->addFromXml($releaseID, $xmlarray);
+										$this->releaseExtra->addFromXml($releaseID, $xmlarray);
 										$retval = true;
 										if ($this->echooutput) {
 											echo 'a';
@@ -1577,30 +1765,28 @@ class PostProcess
 					// Create an audio sample in ogg format.
 					if ($this->processAudioSample && $audval === false) {
 						$output = @runCmd('"' . $ffmpeginfo . '" -t 30 -i "' . $audiofile . '" -acodec libvorbis -loglevel quiet -y "' . $ramdrive . $releaseguid . '.ogg"');
-						if (is_dir($ramdrive)) {
-							$all_files = @scandir($ramdrive, 1);
-							foreach ($all_files as $file) {
-								if (preg_match('/' . $releaseguid . '\.ogg/', $file)) {
-									if (filesize($ramdrive . $file) < 15) {
-										continue;
-									}
+						$all_files = @scandir($ramdrive, 1);
+						foreach ($all_files as $file) {
+							if (preg_match('/' . $releaseguid . '\.ogg/', $file)) {
+								if (filesize($ramdrive . $file) < 15) {
+									continue;
+								}
 
-									@copy($ramdrive . $releaseguid . '.ogg', $this->audSavePath . $releaseguid . '.ogg');
-									if (@file_exists($this->audSavePath . $releaseguid . '.ogg')) {
-										chmod($this->audSavePath . $releaseguid . '.ogg', 0764);
-										$this->db->queryExec(sprintf('UPDATE releases SET audiostatus = 1 WHERE id = %d', $releaseID));
-										$audval = true;
-										if ($this->echooutput) {
-											echo 'A';
-										}
-										break;
+								@copy($ramdrive . $releaseguid . '.ogg', $this->audSavePath . $releaseguid . '.ogg');
+								if (@file_exists($this->audSavePath . $releaseguid . '.ogg')) {
+									chmod($this->audSavePath . $releaseguid . '.ogg', 0764);
+									$this->db->queryExec(sprintf('UPDATE releases SET audiostatus = 1 WHERE id = %d', $releaseID));
+									$audval = true;
+									if ($this->echooutput) {
+										echo 'A';
 									}
+									break;
 								}
 							}
-							// Clean up all files.
-							foreach (glob($ramdrive . '*.ogg') as $v) {
-								@unlink($v);
-							}
+						}
+						// Clean up all files.
+						foreach (glob($ramdrive . '*.ogg') as $v) {
+							@unlink($v);
 						}
 					}
 					if ($retval === true && $audval === true) {
@@ -1612,15 +1798,24 @@ class PostProcess
 		return $retval;
 	}
 
-	// Attempt to get a sample image from a video file.
-	public function getSample($ramdrive, $ffmpeginfo, $releaseguid)
+	/**
+	 * Attempt to get a sample image from a video file.
+	 *
+	 * @note Only called by processAddtional
+	 *
+	 * @param $ramdrive
+	 * @param $ffmpeginfo
+	 * @param $releaseguid
+	 *
+	 * @return bool
+	 */
+	protected function getSample($ramdrive, $ffmpeginfo, $releaseguid)
 	{
 		$retval = false;
 		if ($ffmpeginfo === '' && !is_dir($ramdrive) && strlen($releaseguid) <= 0) {
 			return $retval;
 		}
 
-		$ri = new ReleaseImage();
 		$samplefiles = glob($ramdrive . '*.*');
 		if (is_array($samplefiles)) {
 			foreach ($samplefiles as $samplefile) {
@@ -1629,8 +1824,6 @@ class PostProcess
 					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) < 30) {
 						continue;
 					}
-
-					// @TODO Remove $this->ffmpeg_image_time and associated DB row.
 
 					// Get the exact time of this video, using the header is not precise so use -vcodec.
 					$time = exec(
@@ -1664,11 +1857,12 @@ class PostProcess
 
 					if (is_dir($ramdrive)) {
 						$all_files = @scandir($ramdrive, 1);
+						$x = 0;
 						foreach ($all_files as $file) {
 							if (preg_match('/zzzz\d+\.jpg/', $file) && $retval === false) {
+								$saved = $this->releaseImage->saveImage($releaseguid . '_thumb', $ramdrive . $file, $this->releaseImage->imgSavePath, 800, 600);
+								if ($saved === 1 && file_exists($this->releaseImage->imgSavePath . $releaseguid . '_thumb.jpg')) {
 
-								$saved = $ri->saveImage($releaseguid . '_thumb', $ramdrive . $file, $ri->imgSavePath, 800, 600);
-								if ($saved === 1 && file_exists($ri->imgSavePath . $releaseguid . '_thumb.jpg')) {
 									$retval = true;
 									if ($this->echooutput) {
 										echo 's';
@@ -1693,16 +1887,28 @@ class PostProcess
 		return $retval;
 	}
 
-	public function getVideo($ramdrive, $ffmpeginfo, $releaseguid)
+	/**
+	 * Get a video sample.
+	 *
+	 * @note Only called by processAddtional
+	 *
+	 * @param $ramdrive
+	 * @param $ffmpeginfo
+	 * @param $releaseguid
+	 *
+	 * @return bool
+	 */
+	protected function getVideo($ramdrive, $ffmpeginfo, $releaseguid)
 	{
+		// Return value.
 		$retval = false;
 		if ($ffmpeginfo === '' && !is_dir($ramdrive) && strlen($releaseguid) <= 0) {
 			return $retval;
 		}
 
-		$ri = new ReleaseImage();
 		$sampleFiles = glob($ramdrive . '*.*');
 		if (is_array($sampleFiles)) {
+			$fileName = 'zzzz' . $releaseguid . '.ogv';
 			foreach ($sampleFiles as $sampleFile) {
 				if (is_file($sampleFile) && preg_match('/' . $this->videofileregex . '$/i', $sampleFile)) {
 					// Get the file as a string.
@@ -1722,33 +1928,33 @@ class PostProcess
 						$this->ffmpeg_duration .
 						' -acodec libvorbis -loglevel quiet -y "' .
 						$ramdrive .
-						'zzzz' .
-						$releaseguid .
-						'.ogv"'
+						$fileName .
+						'"'
 					);
 
-					if (is_dir($ramdrive)) {
-						$all_files = @scandir($ramdrive, 1);
-						foreach ($all_files as $file) {
-							if (preg_match('/zzzz' . $releaseguid . '\.ogv/', $file)) {
-								if (filesize($ramdrive . 'zzzz' . $releaseguid . '.ogv') > 4096) {
-									@copy($ramdrive . 'zzzz' . $releaseguid . '.ogv', $ri->vidSavePath . $releaseguid . '.ogv');
-									if (@file_exists($ri->vidSavePath . $releaseguid . '.ogv')) {
-										chmod($ri->vidSavePath . $releaseguid . '.ogv', 0764);
-										$this->db->queryExec(sprintf('UPDATE releases SET videostatus = 1 WHERE guid = %s', $this->db->escapeString($releaseguid)));
-										$retval = true;
-										if ($this->echooutput)
-											echo 'v';
-										break;
+					$all_files = @scandir($ramdrive, 1);
+					foreach ($all_files as $file) {
+						if ($file === $fileName) {
+							if (filesize($ramdrive . $fileName) > 4096) {
+								$newFile = $this->releaseImage->vidSavePath . $releaseguid . '.ogv';
+								@copy($ramdrive . $fileName, $newFile);
+								if (@file_exists($newFile)) {
+									chmod($newFile, 0764);
+									$this->db->queryExec(sprintf('UPDATE releases SET videostatus = 1 WHERE guid = %s', $this->db->escapeString($releaseguid)));
+									$retval = true;
+									if ($this->echooutput) {
+										echo 'v';
 									}
+									break;
 								}
 							}
-							// Clean up all files.
-							foreach (glob($ramdrive . '*.ogv') as $v) {
-								@unlink($v);
-							}
-							if ($retval === true)
-								break;
+						}
+						// Clean up all files.
+						foreach (glob($ramdrive . '*.ogv') as $v) {
+							@unlink($v);
+						}
+						if ($retval === true) {
+							break;
 						}
 					}
 				}
@@ -1756,11 +1962,6 @@ class PostProcess
 		}
 		// If an video was made, return true, else return false.
 		return $retval;
-	}
-
-	public function updateReleaseHasPreview($guid)
-	{
-		$this->db->queryExec(sprintf('UPDATE releases SET haspreview = 1 WHERE guid = %s', $this->db->escapeString($guid)));
 	}
 
 }
