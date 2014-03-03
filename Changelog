@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-02 -> bart39   -> Fix: fixed queries in nzb-import
 2014-03-02 -> jonnyboy -> removed delete releases from Admin page, never finished
 2014-03-02 -> kevin    -> Change how sample previews are taken, get the last possible frame, which means most of the pictures are not black anymore.
                        -> Refactor debugging.
