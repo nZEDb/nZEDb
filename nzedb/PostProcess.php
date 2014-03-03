@@ -292,15 +292,9 @@ class PostProcess
 			return false;
 		}
 
-		$par2 = $nntp->getMessage($this->groups->getByNameByID($groupID), $messageID);
+		$par2 = $nntp->getMessages($this->groups->getByNameByID($groupID), $messageID, $this->alternateNNTP);
 		if ($nntp->isError($par2)) {
-			$nntp->doQuit();
-			$this->alternateNNTP ? $nntp->doConnect(true, true) : $nntp->doConnect();
-			$par2 = $nntp->getMessage($this->groups->getByNameByID($groupID), $messageID);
-			if ($nntp->isError($par2)) {
-				$nntp->doQuit();
-				return false;
-			}
+			return false;
 		}
 
 		$par2info = new Par2Info();
@@ -857,18 +851,13 @@ class PostProcess
 								$mid = array_slice((array) $rarFile['segments'], 0, $this->segmentstodownload);
 
 								$bingroup = $groupName;
-								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
+								$fetchedBinary = $nntp->getMessages($bingroup, $mid, $this->alternateNNTP);
 								if ($nntp->isError($fetchedBinary)) {
-									$nntp->doQuit();
-									$this->alternateNNTP ? $nntp->doConnect(true, true) : $nntp->doConnect();
-									$fetchedBinary = $nntp->getMessages($bingroup, $mid);
-									if ($nntp->isError($fetchedBinary)) {
-										$fetchedBinary = false;
-									}
+									$fetchedBinary = false;
 								}
 
 								if ($fetchedBinary !== false) {
-									$this->debug("\nProcessing " . $rarFile['title']);
+									$this->debug("Processing " . $rarFile['title']);
 									if ($this->echooutput) {
 										echo 'b';
 									}
@@ -987,14 +976,9 @@ class PostProcess
 				if ($processSample === true || $processVideo === true) {
 					if ($blnTookSample === false || $blnTookVideo === false) {
 						if (!empty($samplemsgid)) {
-							$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
+							$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid, $this->alternateNNTP);
 							if ($nntp->isError($sampleBinary)) {
-								$nntp->doQuit();
-								$this->alternateNNTP ? $nntp->doConnect(true, true) : $nntp->doConnect();
-								$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
-								if ($nntp->isError($sampleBinary)) {
-									$sampleBinary = false;
-								}
+								$sampleBinary = false;
 							}
 
 							if ($sampleBinary !== false) {
@@ -1025,14 +1009,9 @@ class PostProcess
 				if ($processMediainfo === true || $processSample === true || $processVideo === true) {
 					if ($blnTookMediainfo === false || $blnTookSample === false || $blnTookVideo === false) {
 						if (!empty($mediamsgid)) {
-							$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
+							$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid, $this->alternateNNTP);
 							if ($nntp->isError($mediaBinary)) {
-								$nntp->doQuit();
-								$this->alternateNNTP ? $nntp->doConnect(true, true) : $nntp->doConnect();
-								$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
-								if ($nntp->isError($mediaBinary)) {
-									$mediaBinary = false;
-								}
+								$mediaBinary = false;
 							}
 							if ($mediaBinary !== false) {
 								if ($this->echooutput) {
@@ -1062,14 +1041,9 @@ class PostProcess
 
 				// Download audio file, use mediainfo to try to get the artist / album.
 				if ($processAudioinfo === true && !empty($audiomsgid) && $blnTookAudioinfo === false) {
-					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
+					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid, $this->alternateNNTP);
 					if ($nntp->isError($audioBinary)) {
-						$nntp->doQuit();
-						$this->alternateNNTP ? $nntp->doConnect(true, true) : $nntp->doConnect();
-						$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
-						if ($nntp->isError($audioBinary)) {
-							$audioBinary = false;
-						}
+						$audioBinary = false;
 					}
 					if ($audioBinary !== false) {
 						if ($this->echooutput) {
@@ -1089,14 +1063,9 @@ class PostProcess
 
 				// Download JPG file.
 				if ($processJPGSample === true && !empty($jpgmsgid) && $blnTookJPG === false) {
-					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
+					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid, $this->alternateNNTP);
 					if ($nntp->isError($jpgBinary)) {
-						$nntp->doQuit();
-						$this->alternateNNTP ? $nntp->doConnect(true, true) : $nntp->doConnect();
-						$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
-						if ($nntp->isError($jpgBinary)) {
-							$jpgBinary = false;
-						}
+						$jpgBinary = false;
 					}
 					if ($jpgBinary !== false) {
 						if ($this->echooutput) {
@@ -1105,7 +1074,7 @@ class PostProcess
 						$this->addmediafile($this->tmpPath . 'samplepicture.jpg', $jpgBinary);
 						if (is_file($this->tmpPath . 'samplepicture.jpg')) {
 							if ($blnTookJPG === false) {
-								$blnTookJPG = $$this->releaseImage->saveImage($rel['guid'] . '_thumb', $this->tmpPath . 'samplepicture.jpg', $this->releaseImage->jpgSavePath, 650, 650);
+								$blnTookJPG = $this->releaseImage->saveImage($rel['guid'] . '_thumb', $this->tmpPath . 'samplepicture.jpg', $this->releaseImage->jpgSavePath, 650, 650);
 								if ($blnTookJPG !== false)
 									$this->db->queryExec(sprintf('UPDATE releases SET jpgstatus = %d WHERE id = %d', 1, $rel['id']));
 							}
@@ -1964,4 +1933,8 @@ class PostProcess
 		return $retval;
 	}
 
+	protected function alternateRetry()
+	{
+
+	}
 }

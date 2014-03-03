@@ -1012,7 +1012,7 @@ $this->debug = true;
 						} else {
 
 							// Download article body using message-id.
-							$body = $this->nntp->getMessage($group,
+							$body = $this->nntp->getMessages($group,
 								$msg['Message-ID']);
 							// Continue if we don't receive the body.
 							if ($body === false) {
