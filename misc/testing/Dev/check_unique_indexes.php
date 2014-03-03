@@ -110,7 +110,13 @@ if ($handle) {
 						run_query($qry, $argv[1]);
 					}
 				} else {
-					echo $c->primary("A Unique Index exists for " . trim($match[3]) . " on " . trim($match[4]));
+					$check = $db->queryOneRow("SHOW INDEXES IN " . trim($match[3]) . " WHERE non_unique = 1 AND column_name = '" . trim($column) . "'");
+					if (isset($check['key_name'])) {
+						echo $c->error("\nA NON-UNIQUE index exists for " . trim($match[3]) . " on " . trim($match[4]) . "\n"
+									. "You will need to manually frop the index and re-run this script if you want to correct it");
+					} else {
+						echo $c->primary("A Unique Index exists for " . trim($match[3]) . " on " . trim($match[4]));
+					}
 				}
 			}
 		}
