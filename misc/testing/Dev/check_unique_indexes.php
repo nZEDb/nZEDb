@@ -109,6 +109,8 @@ if ($handle) {
 						$qry = "ALTER IGNORE TABLE " . trim($match[3]) . " ADD CONSTRAINT " . trim($match[2]) ." UNIQUE (${match[4]})";
 						run_query($qry, $argv[1]);
 					}
+				} else {
+					echo $c->primary("A Unique Index exists for " . trim($match[3]) . " on " . trim($match[4]));
 				}
 			}
 		}
