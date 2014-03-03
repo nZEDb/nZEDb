@@ -1397,8 +1397,9 @@ class PostProcess
 	public function getSample($ramdrive, $ffmpeginfo, $releaseguid)
 	{
 		$retval = false;
-		if ($ffmpeginfo == '' && !is_dir($ramdrive) && strlen($releaseguid) <= 0)
+		if ($ffmpeginfo == '' && !is_dir($ramdrive) && strlen($releaseguid) <= 0) {
 			return $retval;
+		}
 
 		$ri = new ReleaseImage();
 		$samplefiles = glob($ramdrive . '*.*');
@@ -1406,15 +1407,11 @@ class PostProcess
 			foreach ($samplefiles as $samplefile) {
 				if (is_file($samplefile) && preg_match('/' . $this->videofileregex . '$/i', $samplefile)) {
 					$filecont = @file_get_contents($samplefile, true, null, 0, 40);
-					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) < 30)
+					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) < 30) {
 						continue;
+					}
 
-					/*$sample_duration = exec($ffmpeginfo . ' -i "' . $samplefile . "\" 2>&1 | grep \"Duration\"| cut -d ' ' -f 4 | sed s/,// | awk '{ split($1, A, \":\"); split(A[3], B, \".\"); print 3600*A[1] + 60*A[2] + B[1] }'");
-					if ($sample_duration > 100 || $sample_duration == 0 || $sample_duration == '')
-						$sample_duration = 2;
-					$output_file = $ramdrive . 'zzzz' . mt_rand(0, 9) . mt_rand(0, 9) . mt_rand(0, 9) . '.jpg';
-					$output = exec($ffmpeginfo . ' -i "' . $samplefile . '" -loglevel quiet -vframes 250 -y "' . $output_file . '"');
-					$output = exec($ffmpeginfo . ' -i "' . $samplefile . '" -loglevel quiet -vframes 1 -ss ' . $sample_duration . ' -y "' . $output_file . '"');*/
+					// @TODO Remove $this->ffmpeg_image_time and associated DB row.
 
 					// Get the exact time of this video, using the header is not precise so use -vcodec.
 					$time = exec(
@@ -1450,16 +1447,13 @@ class PostProcess
 						$all_files = @scandir($ramdrive, 1);
 						foreach ($all_files as $file) {
 							if (preg_match('/zzzz\d+\.jpg/', $file) && $retval === false) {
-								if (filesize($ramdrive . $file) < 15)
-									continue;
-								if (exif_imagetype($ramdrive . $file) === false)
-									continue;
 
-								$ri->saveImage($releaseguid . '_thumb', $ramdrive . $file, $ri->imgSavePath, 800, 600);
-								if (file_exists($ri->imgSavePath . $releaseguid . '_thumb.jpg')) {
+								$saved = $ri->saveImage($releaseguid . '_thumb', $ramdrive . $file, $ri->imgSavePath, 800, 600);
+								if ($saved === 1 && file_exists($ri->imgSavePath . $releaseguid . '_thumb.jpg')) {
 									$retval = true;
-									if ($this->echooutput)
+									if ($this->echooutput) {
 										echo 's';
+									}
 									break;
 								}
 							}
@@ -1469,8 +1463,9 @@ class PostProcess
 						foreach (glob($ramdrive . '*.jpg') as $v) {
 							@unlink($v);
 						}
-						if ($retval === true)
+						if ($retval === true) {
 							break;
+						}
 					}
 				}
 			}
