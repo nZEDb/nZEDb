@@ -8,46 +8,92 @@ require_once nZEDb_LIBS . 'rarinfo/zipinfo.php';
 class PostProcess
 {
 
-	public function __construct($echooutput = false)
+	/**
+	 * @TODO: Remove ffmpeg_image_time from DB, remove DEBUG_ECHO.
+	 */
+
+	/**
+	 * Object containing site settings.
+	 * @var bool|stdClass
+	 */
+	private $site;
+
+	/**
+	 * How many additional to process per run.
+	 * @var int
+	 */
+	private $addqty;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param bool $echoOutput Echo to CLI or not?
+	 */
+	public function __construct($echoOutput = false)
 	{
-		$s = new Sites();
-		$this->site = $s->get();
-		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
-		$this->addpar2 = ($this->site->addpar2 === '0') ? false : true;
-		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
-		$this->audSavePath = nZEDb_COVERS . 'audiosample' . DS;
+		//\\ Class instances.
 		$this->archiveInfo = new ArchiveInfo();
+		$this->c = new ColorCLI();
 		$this->consoleTools = new ConsoleTools();
 		$this->db = new DB();
+		$this->releaseFiles = new ReleaseFiles();
+		$s = new Sites();
+		//\\
+
+		//\\ Site object.
+		$this->site = $s->get();
+		//\\
+
+		//\\ To deprecate:
+		$this->ffmpeg_image_time = (!empty($this->site->ffmpeg_image_time)) ? $this->site->ffmpeg_image_time : 5;
 		$this->DEBUG_ECHO = ($this->site->debuginfo === '0') ? false : true;
 		if (defined('DEBUG_ECHO') && DEBUG_ECHO === true) {
 			$this->DEBUG_ECHO = true;
 		}
-		$this->echooutput = $echooutput;
-		$this->ffmpeg_duration = (!empty($this->site->ffmpeg_duration)) ? $this->site->ffmpeg_duration : 5;
+		//\\
 
-		// Deprecated.
-		$this->ffmpeg_image_time = (!empty($this->site->ffmpeg_image_time)) ? $this->site->ffmpeg_image_time : 5;
-
-		$this->filesadded = 0;
-		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
-		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? $this->site->maxpartsprocessed : 3;
-		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? $this->site->passchkattempts : 1;
-		$this->password = $this->nonfo = false;
+		//\\ Site settings.
+		$this->addqty = (!empty($this->site->maxaddprocessed)) ? (int)$this->site->maxaddprocessed : 25;
+		$this->addpar2 = ($this->site->addpar2 === '0') ? false : true;
+		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
+		$this->ffmpeg_duration = (!empty($this->site->ffmpeg_duration)) ? (int)$this->site->ffmpeg_duration : 5;
+		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? (int)$this->site->maxsizetopostprocess : 100;
+		$this->partsqty = (!empty($this->site->maxpartsprocessed)) ? (int)$this->site->maxpartsprocessed : 3;
+		$this->passchkattempts = (!empty($this->site->passchkattempts)) ? (int)$this->site->passchkattempts : 1;
 		$this->processAudioSample = ($this->site->processaudiosample === '0') ? false : true;
-		$this->releaseFiles = new ReleaseFiles();
-		$this->segmentstodownload = (!empty($this->site->segmentstodownload)) ? $this->site->segmentstodownload : 2;
+		$this->segmentstodownload = (!empty($this->site->segmentstodownload)) ? (int)$this->site->segmentstodownload : 2;
+		//\\
+
+		//\\ Paths.
+		$this->audSavePath = nZEDb_COVERS . 'audiosample' . DS;
 		$this->tmpPath = $this->site->tmpunrarpath;
 		if (substr($this->tmpPath, -strlen('/')) !== '/') {
 			$this->tmpPath = $this->tmpPath . '/';
 		}
+		//\\
 
+		//\\ Various.
+		$this->echooutput = $echoOutput;
+		$this->filesadded = 0;
+		$this->nonfo = $this->password = false;
+		//\\
+
+		//\\ Regex.
 		$this->audiofileregex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
 		$this->ignorebookregex = '/\b(epub|lit|mobi|pdf|sipdf|html)\b.*\.rar(?!.{20,})/i';
 		$this->supportfiles = '/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb';
 		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
 
-		$sigs = array(array('00', '00', '01', 'BA'), array('00', '00', '01', 'B3'), array('00', '00', '01', 'B7'), array('1A', '45', 'DF', 'A3'), array('01', '00', '09', '00'), array('30', '26', 'B2', '75'), array('A6', 'D9', '00', 'AA'));
+		$sigs =
+			array(
+				array('00', '00', '01', 'BA'),
+				array('00', '00', '01', 'B3'),
+				array('00', '00', '01', 'B7'),
+				array('1A', '45', 'DF', 'A3'),
+				array('01', '00', '09', '00'),
+				array('30', '26', 'B2', '75'),
+				array('A6', 'D9', '00', 'AA')
+		);
 		$sigstr = '';
 		foreach ($sigs as $sig) {
 			$str = '';
@@ -58,7 +104,7 @@ class PostProcess
 		}
 		$sigstr1 = "/^ftyp|mp4|^riff|avi|matroska|.rec|.rmf|^oggs|moov|dvd|^0&²u|free|mdat|pnot|skip|wide$sigstr/i";
 		$this->sigregex = $sigstr1;
-		$this->c = new ColorCLI();
+		//\\
 	}
 
 	public function processAll($nntp)
