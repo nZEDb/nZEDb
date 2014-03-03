@@ -1409,14 +1409,25 @@ class PostProcess
 					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) < 30)
 						continue;
 
-					//$cmd = '"'.$ffmpeginfo.'" -i "'.$samplefile.'" -loglevel quiet -f image2 -ss ' . $this->ffmpeg_image_time . ' -vframes 1 -y "'.$ramdrive.'"zzzz"'.mt_rand(0,9).mt_rand(0,9).mt_rand(0,9).'".jpg';
-					//$output = @runCmd($cmd);
-					$sample_duration = exec($ffmpeginfo . ' -i "' . $samplefile . "\" 2>&1 | grep \"Duration\"| cut -d ' ' -f 4 | sed s/,// | awk '{ split($1, A, \":\"); split(A[3], B, \".\"); print 3600*A[1] + 60*A[2] + B[1] }'");
+					/*$sample_duration = exec($ffmpeginfo . ' -i "' . $samplefile . "\" 2>&1 | grep \"Duration\"| cut -d ' ' -f 4 | sed s/,// | awk '{ split($1, A, \":\"); split(A[3], B, \".\"); print 3600*A[1] + 60*A[2] + B[1] }'");
 					if ($sample_duration > 100 || $sample_duration == 0 || $sample_duration == '')
 						$sample_duration = 2;
 					$output_file = $ramdrive . 'zzzz' . mt_rand(0, 9) . mt_rand(0, 9) . mt_rand(0, 9) . '.jpg';
 					$output = exec($ffmpeginfo . ' -i "' . $samplefile . '" -loglevel quiet -vframes 250 -y "' . $output_file . '"');
-					$output = exec($ffmpeginfo . ' -i "' . $samplefile . '" -loglevel quiet -vframes 1 -ss ' . $sample_duration . ' -y "' . $output_file . '"');
+					$output = exec($ffmpeginfo . ' -i "' . $samplefile . '" -loglevel quiet -vframes 1 -ss ' . $sample_duration . ' -y "' . $output_file . '"');*/
+
+					// Get the exact time of this video, using the header is not precise so use -vcodec.
+					$time = exec($ffmpeginfo . ' -i "' . $samplefile . '" -vcodec copy -f null /dev/null 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \'');
+					// If it's 11 chars long, it's good (00:00:00.00)
+					if (strlen($time) !== 11) {
+						// If not set it to 1 second.
+						$time = '00:00:01';
+					}
+
+					// Create a path/filename to store the image.
+					$output_file = $ramdrive . 'zzzz' . mt_rand(5, 12) . mt_rand(5, 12) . '.jpg';
+					// Get the image.
+					exec($ffmpeginfo . ' -i "' . $samplefile . '" -ss ' . $time . ' -loglevel quiet -vframes 1 "' . $output_file . '"');
 
 					if (is_dir($ramdrive)) {
 						$all_files = @scandir($ramdrive, 1);
