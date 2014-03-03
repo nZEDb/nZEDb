@@ -20,7 +20,7 @@ function python_module_exist($module)
 }
 
 $nntpproxy = $site->nntpproxy;
-if ($nntpproxy == 0) {
+if ($nntpproxy === '0') {
 	exit();
 } else {
 	$modules = array("nntp", "socketpool");
@@ -52,9 +52,7 @@ function window_proxy($tmux_session, $powerline)
 		}
 	}
 
-	$alternate_nntp = $site->alternate_nntp;
-	$grabnzbs = $site->grabnzbs;
-	if ($nntpproxy == '1' && ($alternate_nntp == '1' || $grabnzbs == '2')) {
+	if ($nntpproxy === '1' && ($site->alternate_nntp === '1' || $site->grabnzbs === '2')) {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy_a.conf")) {

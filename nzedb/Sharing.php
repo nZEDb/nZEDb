@@ -316,6 +316,12 @@ class Sharing {
 	private $settings;
 
 	/**
+	 * Use alternate NNTP server when failing to get article bodies?
+	 * @var bool
+	 */
+	private $alternateNNTP;
+
+	/**
 	 * Default constructor.
 	 *
 	 * @access public
@@ -336,6 +342,8 @@ $this->debug = true;
 		$this->hideuser = false;
 		// Will be a site setting.. Auto enable sites?
 		$this->autoenable = 1;
+
+		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
 	}
 
 /* In post process it will send to this function and settings will be initiated. */
@@ -1013,7 +1021,7 @@ $this->debug = true;
 
 							// Download article body using message-id.
 							$body = $this->nntp->getMessages($group,
-								$msg['Message-ID']);
+								$msg['Message-ID'], $this->alternateNNTP);
 							// Continue if we don't receive the body.
 							if ($body === false) {
 //TODO -> Debug output.
