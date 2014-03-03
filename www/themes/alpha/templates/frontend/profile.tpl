@@ -33,6 +33,7 @@
 <th>Grabs:</th>
 <td>{$user.grabs}</td>
 </tr>
+<tr><th>API Requests Today:</th><td>{$apirequests}</td></tr>
 
 {if ($user.id==$userdata.id || $userdata.role==2) && $site->registerstatus==1}
 <tr>

@@ -24,6 +24,13 @@ if (!$data) {
 	$page->show404();
 }
 
+// Get the users API request count for the day.
+$apiRequests = $users->getApiRequests($userid);
+if (!$apiRequests) {
+	$apiRequests = 0;
+}
+$page->smarty->assign('apirequests', $apiRequests['num']);
+
 $invitedby = '';
 if ($data["invitedby"] != "") {
 	$invitedby = $users->getById($data["invitedby"]);

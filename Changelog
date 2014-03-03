@@ -7,7 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-03-02 -> kevin    -> Fix: #1204 When there's a problem enabling compression and the response is 500, it is not reported as an error to PEAR, so the getMessage property doesn't exist.
+2014-03-02 -> kevin    -> Add: API requests count on profile page.
+                       -> Fix: #1204 When there's a problem enabling compression and the response is 500, it is not reported as an error to PEAR, so the getMessage property doesn't exist.
                        -> Don't log NNTP disconnects unless we are already connected.
                        -> Minor changes to getSample, add -y to ffmpeg to overwrite, change the regex in the loop.
 2014-03-02 -> bart39   -> Fix: fixed queries in nzb-import
