@@ -1,5 +1,5 @@
 <?php
-// Show debug messages in CLI.
+// Show debug messages on CLI/Web.
 define('nZEDb_DEBUG', false);
 // Log debug messages to nzedb/resources/debug.log.
 define('nZEDb_LOGGING', false);
@@ -16,6 +16,8 @@ define('nZEDb_LOGWARNING', false);
 define('nZEDb_LOGERROR', false);
 // Log and or echo Fatal messages.
 define('nZEDb_LOGFATAL', false);
+// Log and or echo failed SQL queries.
+define('nZEDb_LOGQUERIES', false);
 
 
 define('DS', DIRECTORY_SEPARATOR);
@@ -44,6 +46,9 @@ define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
 
 // Full path is fs to the themes folder
 define('nZEDb_THEMES', nZEDb_WWW . 'themes' . DS);
+
+// Path where log files are stored.
+define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
 
 if (function_exists('ini_set') && function_exists('ini_get')) {
 	$ps = (strtolower(PHP_OS) == 'windows') ? ';' : ':';

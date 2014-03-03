@@ -11,6 +11,7 @@ nZEDb_LOGNOTICE=`grep -e "define('nZEDb_LOGNOTICE', .*);" $NZEDB_A_CONFIG`
 nZEDb_LOGWARNING=`grep -e "define('nZEDb_LOGWARNING', .*);" $NZEDB_A_CONFIG`
 nZEDb_LOGERROR=`grep -e "define('nZEDb_LOGERROR', .*);" $NZEDB_A_CONFIG`
 nZEDb_LOGFATAL=`grep -e "define('nZEDb_LOGFATAL', .*);" $NZEDB_A_CONFIG`
+nZEDb_LOGQUERIES=`grep -e "define('nZEDb_LOGQUERIES', .*);" $NZEDB_A_CONFIG`
 
 # Change them to the default values.
 sed -i "s/define('nZEDb_DEBUG', true);/define('nZEDb_DEBUG', false);/" $NZEDB_ROOT/www/automated.config.php
@@ -20,13 +21,18 @@ sed -i "s/define('nZEDb_LOGNOTICE', true);/define('nZEDb_LOGNOTICE', false);/" $
 sed -i "s/define('nZEDb_LOGWARNING', true);/define('nZEDb_LOGWARNING', false);/" $NZEDB_ROOT/www/automated.config.php
 sed -i "s/define('nZEDb_LOGERROR', true);/define('nZEDb_LOGERROR', false);/" $NZEDB_ROOT/www/automated.config.php
 sed -i "s/define('nZEDb_LOGFATAL', true);/define('nZEDb_LOGFATAL', false);/" $NZEDB_ROOT/www/automated.config.php
+sed -i "s/define('nZEDb_LOGQUERIES', true);/define('nZEDb_LOGQUERIES', false);/" $NZEDB_ROOT/www/automated.config.php
 
-# Commit changes.
+# Add changes.
 git add -i
 
+# Edit changelog.
 nano Changelog
+
+# Add changes to changelog.
 git add Changelog
 
+# Commit changes.
 git commit
 
 # Set back the users values in automated.config.php
@@ -37,3 +43,4 @@ sed -i "s/define('nZEDb_LOGNOTICE', false);/$nZEDb_LOGNOTICE/" $NZEDB_ROOT/www/a
 sed -i "s/define('nZEDb_LOGWARNING', false);/$nZEDb_LOGWARNING/" $NZEDB_ROOT/www/automated.config.php
 sed -i "s/define('nZEDb_LOGERROR', false);/$nZEDb_LOGERROR/" $NZEDB_ROOT/www/automated.config.php
 sed -i "s/define('nZEDb_LOGFATAL', false);/$nZEDb_LOGFATAL/" $NZEDB_ROOT/www/automated.config.php
+sed -i "s/define('nZEDb_LOGQUERIES', false);/$nZEDb_LOGQUERIES/" $NZEDB_ROOT/www/automated.config.php

@@ -2,49 +2,203 @@
 
 class Binaries
 {
-
+	/**
+	 * @const int
+	 */
 	const BLACKLIST_FIELD_SUBJECT = 1;
+
+	/**
+	 * @const int
+	 */
 	const BLACKLIST_FIELD_FROM = 2;
+
+	/**
+	 * @const int
+	 */
 	const BLACKLIST_FIELD_MESSAGEID = 3;
 
+	/**
+	 * Instance of class Backfill.
+	 * @var object
+	 */
+	private $backfill;
+
+	/**
+	 * Instance of class colorCLI
+	 * @var object
+	 */
+	private $c;
+
+	/**
+	 * Instance of class CollectionsCleaning
+	 * @var object
+	 */
+	private $collectionsCleaning;
+
+	/**
+	 * Instance of class ConsoleTools
+	 * @var object
+	 */
+	private $consoleTools;
+
+	/**
+	 * Instance of class DB
+	 * @var object
+	 */
+	private $db;
+
+	/**
+	 * Instance of class Debugging.
+	 * @var object
+	 */
+	private $debugging;
+
+	/**
+	 * Instance of class Groups.
+	 * @var object
+	 */
+	private $groups;
+
+	/**
+	 * Array with site settings.
+	 * @var bool|stdClass
+	 */
+	private $site;
+
+
+	/**
+	 * The cache of the blacklist.
+	 * @var array
+	 */
+	public $blackList = array();
+
+	/**
+	 * Is the blacklist already cached?
+	 * @var bool
+	 */
+	private $blackListLoaded = false;
+
+	/**
+	 * Should we use header compression?
+	 * @var bool
+	 */
+	private $compressedHeaders;
+
+	/**
+	 * Should we use part repair?
+	 * @var bool
+	 */
+	private $DoPartRepair;
+
+	/**
+	 * Should we use grabnzbs?
+	 * @var bool
+	 */
+	private $grabnzbs;
+
+	/**
+	 * Do we need to reset collection hash?
+	 * @var int
+	 */
+	private $hashcheck;
+
+	/**
+	 * The cache for headers.
+	 * @var array
+	 */
+	public $message = array();
+
+	/**
+	 * How many headers do we download per loop?
+	 * @var int
+	 */
+	public $messagebuffer;
+
+	/**
+	 * How many days to go back on a new group?
+	 * @var bool
+	 */
+	private $NewGroupScanByDays;
+
+	/**
+	 * How many headers to download on new groups?
+	 * @var int
+	 */
+	private $NewGroupMsgsToScan;
+
+	/**
+	 * How many headers to download per run of part repair?
+	 * @var int
+	 */
+	private $partrepairlimit;
+
+	/**
+	 * Should we show dropped yEnc to CLI?
+	 * @var int
+	 */
+	private $showdroppedyencparts;
+
+	/**
+	 * Should we use table per group?
+	 * @var int
+	 */
+	private $tablepergroup;
+
+	/**
+	 * Constructor.
+	 */
 	public function __construct()
 	{
-		$this->db = new DB();
-		$s = new Sites();
-		$this->site = $s->get();
 		$this->backfill = new Backfill($this->site);
-		$this->groups = new Groups($this->db);
+		$this->c = new ColorCLI();
 		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->consoleTools = new ConsoleTools();
+		$this->db = new DB();
+		$this->debugging = new Debugging("Binaries");
+		$this->groups = new Groups($this->db);
+
+		$s = new Sites();
+		$this->site = $s->get();
+
 		$this->compressedHeaders = ($this->site->compressedheaders == '1') ? true : false;
+		$this->DoPartRepair = ($this->site->partrepair == '0') ? false : true;
+		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
+		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
 		$this->messagebuffer = (!empty($this->site->maxmssgs)) ? $this->site->maxmssgs : 20000;
 		$this->NewGroupScanByDays = ($this->site->newgroupscanmethod == '1') ? true : false;
 		$this->NewGroupMsgsToScan = (!empty($this->site->newgroupmsgstoscan)) ? $this->site->newgroupmsgstoscan : 50000;
 		$this->NewGroupDaysToScan = (!empty($this->site->newgroupdaystoscan)) ? $this->site->newgroupdaystoscan : 3;
-		$this->DoPartRepair = ($this->site->partrepair == '0') ? false : true;
 		$this->partrepairlimit = (!empty($this->site->maxpartrepair)) ? $this->site->maxpartrepair : 15000;
-		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
-		$this->debug = ($this->site->debuginfo == '0') ? false : true;
-		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
-		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->showdroppedyencparts = (!empty($this->site->showdroppedyencparts)) ? $this->site->showdroppedyencparts : 0;
-		$this->c = new ColorCLI();
+		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 
-		// Cache of our black/white list.
 		$this->blackList = $this->message = array();
 		$this->blackListLoaded = false;
 	}
 
+	/**
+	 * Download new headers for all active groups.
+	 * @param object $nntp Instance of class NNTP
+	 *
+	 * @return void
+	 */
 	public function updateAllGroups($nntp)
 	{
 		if (!isset($nntp)) {
-			exit($this->c->error("Not connected to usenet(binaries->updateAllGroups)."));
+			$message = "Not connected to usenet(binaries->updateAllGroups).";
+			$this->debugging->start("updateAllGroups", $message, 1);
+			exit($this->c->error($message));
 		}
 
 		if ($this->hashcheck == 0) {
-			echo $this->c->warning("We have updated the way collections are created, the collection table has to be updated to use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.");
+			$message = "We have updated the way collections are created, the collection table has to be updated to
+				use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.";
+			$this->debugging->start("updateAllGroups", $message, 5);
+			echo $this->c->warning($message);
 			if (trim(fgets(fopen('php://stdin', 'r'))) != 'yes') {
-				exit($this->c->primary("If you want to run this manually, there is a script in misc/testing/DB/ called reset_Collections.php"));
+				$message = "If you want to run this manually, there is a script in misc/testing/DB/ called reset_Collections.php";
+				$this->debugging->start("updateAllGroups", $message, 1);
+				exit($this->c->primary($message));
 			}
 			$relss = new Releases(true);
 			$relss->resetCollections();
@@ -54,24 +208,42 @@ class Binaries
 
 		if ($res) {
 			$alltime = microtime(true);
-			echo $this->c->header("\nUpdating: " . sizeof($res) . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No'));
+			$message = "\nUpdating: " . sizeof($res) . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No');
+			$this->debugging->start("updateAllGroups", $message, 5);
+			echo $this->c->header($message);
 
 			foreach ($res as $groupArr) {
 				$this->message = array();
-				echo $this->c->header("\nStarting group " . $counter . ' of ' . sizeof($res));
+				$message = "\nStarting group " . $counter . ' of ' . sizeof($res);
+				$this->debugging->start("updateAllGroups", $message, 5);
+				echo $this->c->header($message);
 				$this->updateGroup($groupArr, $nntp);
 				$counter++;
 			}
-			echo $this->c->primary('Updating completed in ' . number_format(microtime(true) - $alltime, 2) . " seconds.");
+			$message = 'Updating completed in ' . number_format(microtime(true) - $alltime, 2) . " seconds.";
+			$this->debugging->start("updateAllGroups", $message, 5);
+			echo $this->c->primary($message);
 		} else {
-			echo $this->c->warning("No groups specified. Ensure groups are added to nZEDb's database for updating.");
+			$message = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
+			$this->debugging->start("updateAllGroups", $message, 4);
+			echo $this->c->warning($message);
 		}
 	}
 
+	/**
+	 * Download new headers for a single group.
+	 *
+	 * @param array $groupArr Array of MySQL results for a single group.
+	 * @param object $nntp Instance of class NNTP
+	 *
+	 * @return void
+	 */
 	public function updateGroup($groupArr, $nntp)
 	{
 		if (!isset($nntp)) {
-			exit($this->c->error("Not connected to usenet(binaries->updateGroup)."));
+			$message = "Not connected to usenet(binaries->updateGroup).";
+			$this->debugging->start("updateGroup", $message, 1);
+			exit($this->c->error($message));
 		}
 
 		$this->startGroup = microtime(true);
@@ -236,12 +408,26 @@ class Binaries
 		}
 	}
 
+	/**
+	 * Loop over range of wanted headers, insert headers into DB.
+	 *
+	 * @param object $nntp        Instance of class NNTP
+	 * @param array $groupArr     The group info from mysql.
+	 * @param int $first          The oldest wanted header.
+	 * @param int $last           The newest wanted header.
+	 * @param string $type        Is this partrepair or update?
+	 * @param null $missingParts
+	 *
+	 * @return array|bool
+	 */
 	public function scan($nntp, $groupArr, $first, $last, $type = 'update', $missingParts = null)
 	{
 		$returnArray = array();
 
 		if (!isset($nntp)) {
-			exit($this->c->error("Not connected to usenet(binaries->scan)."));
+			$dmessage = "Not connected to usenet(binaries->scan).";
+			$this->debugging->start("scan", $dmessage, 1);
+			exit($this->c->error($dmessage));
 		}
 
 		$db = $this->db;
@@ -251,7 +437,9 @@ class Binaries
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
 			if ($db->newtables($groupArr['id']) === false) {
-				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
+				$dmessage = "There is a problem creating new parts/files tables for this group.";
+				$this->debugging->start("scan", $dmessage, 1);
+				exit($this->c->error($dmessage));
 			}
 			$group['cname'] = 'collections_' . $groupArr['id'];
 			$group['bname'] = 'binaries_' . $groupArr['id'];
@@ -285,7 +473,9 @@ class Binaries
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first . '-' . $last, true, false);
 			if ($nntp->isError($msgs)) {
-				echo $this->c->error(" Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}");
+				$dmessage = "Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}";
+				echo $this->c->error($dmessage);
+				$this->debugging->start("scan", $dmessage, 3);
 				return false;
 			}
 		}
@@ -296,7 +486,7 @@ class Binaries
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 		if (is_array($msgs)) {
 			/*// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
-			if ($this->debug) {
+			if (nZEDb_DEBUG) {
 				$colnames = $orignames = $notyenc = array();
 			}*/
 
@@ -389,7 +579,7 @@ class Binaries
 					}
 
 					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
-					/* if ($this->debug)
+					/* if (nZEDb_DEBUG)
 					  {
 					  preg_match('/(.+)\(\d+\/\d+\)$/i', $msg['Subject'], $ny);
 					  if(!in_array($ny[1], $notyenc))
@@ -431,7 +621,7 @@ class Binaries
 					 */
 
 					// For looking at the difference between $subject and $cleansubject.
-					/*if ($this->debug) {
+					/*if (nZEDb_DEBUG) {
 						if (!in_array($cleansubject, $colnames)) {
 							// Uncomment this to only show articles matched by generic function of collectioncleaning (might show some that match by collectionsCleaner, but rare). Helps when making regex.
 
@@ -468,10 +658,10 @@ class Binaries
 			}
 
 			// Uncomment this to see which articles are not yEnc.
-			//if ($this->debug && count($notyenc) > 1)
+			//if (nZEDb_DEBUG && count($notyenc) > 1)
 			//	print_r($notyenc);
 			// For looking at the difference between $subject and $cleansubject.
-			/*if ($this->debug && count($colnames) > 1 && count($orignames) > 1) {
+			/*if (nZEDb_DEBUG && count($colnames) > 1 && count($orignames) > 1) {
 				$arr = array_combine($colnames, $orignames);
 				ksort($arr);
 				print_r($arr);
@@ -599,6 +789,7 @@ class Binaries
 								}
 							} catch (PDOException $e) {
 								if ($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205) {
+									$this->debugging->start("scan", $e->getMessage(), 3);
 									continue;
 								}
 							}
@@ -607,7 +798,9 @@ class Binaries
 					}
 				}
 				if (sizeof($msgsnotinserted) > 0) {
-					echo $this->c->warning("" . sizeof($msgsnotinserted) . " parts failed to insert.");
+					$dmessage = sizeof($msgsnotinserted) . " parts failed to insert.";
+					echo $this->c->warning($dmessage);
+					$this->debugging->start("scan", $dmessage, 3);
 					if ($this->DoPartRepair) {
 						$this->addMissingParts($msgsnotinserted, $groupArr['id']);
 					}
@@ -624,15 +817,27 @@ class Binaries
 			return $returnArray;
 		} else {
 			if ($type != 'partrepair') {
-				echo $this->c->error("Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}");
+				$dmessage = "Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}";
+				$this->debugging->start("scan", $dmessage, 3);
+				echo $this->c->error($dmessage);
 				return false;
 			}
 		}
 	}
 
+	/**
+	 * Attempt to get missing headers.
+	 *
+	 * @param $nntp     Instance of class NNTP.
+	 * @param $groupArr The info for this group from mysql.
+	 *
+	 * @return void
+	 */
 	public function partRepair($nntp, $groupArr)
 	{
 		if (!isset($nntp)) {
+			$dmessage = "Not connected to usenet(binaries->partRepair).";
+			$this->debugging->start("partRepair", $dmessage, 1);
 			exit($this->c->error("Not connected to usenet(binaries->partRepair)."));
 		}
 
@@ -642,7 +847,9 @@ class Binaries
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
 			if ($db->newtables($groupArr['id']) === false) {
-				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
+				$dmessage = "There is a problem creating new parts/files tables for this group.";
+				$this->debugging->start("partRepair", $dmessage, 1);
+				exit($this->c->error($dmessage));
 			}
 			$group['prname'] = 'partrepair_' . $groupArr['id'];
 		} else {
@@ -710,6 +917,14 @@ class Binaries
 		$db->queryExec(sprintf('DELETE FROM ' . $group['prname'] . ' WHERE attempts >= 5 AND groupid = %d', $groupArr['id']));
 	}
 
+	/**
+	 * Add missing headers to DB.
+	 *
+	 * @param array $numbers The article numbers of the missing headers.
+	 * @param int $groupID   The ID of this groups.
+	 *
+	 * @return bool
+	 */
 	private function addMissingParts($numbers, $groupID)
 	{
 		$db = $this->db;
@@ -717,7 +932,9 @@ class Binaries
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
 			if ($db->newtables($groupID) === false) {
-				exit($this->c->error("There is a problem creating new parts/files tables for this group."));
+				$dmessage = "There is a problem creating new parts/files tables for this group.";
+				$this->debugging->start("addMissingParts", $dmessage, 1);
+				exit($this->c->error($dmessage));
 			}
 			$group['prname'] = 'partrepair_' . $groupID;
 		} else {
@@ -740,6 +957,14 @@ class Binaries
 		}
 	}
 
+	/**
+	 * Clean up part repair table.
+	 *
+	 * @param array $numbers The article numbers.
+	 * @param int$groupID     The ID of the group.
+	 *
+	 * @return void
+	 */
 	private function removeRepairedParts($numbers, $groupID)
 	{
 		$db = $this->db;
@@ -758,6 +983,11 @@ class Binaries
 		$db->queryExec($sql);
 	}
 
+	/**
+	 * Get blacklist cache.
+	 *
+	 * @return array
+	 */
 	public function retrieveBlackList()
 	{
 		if ($this->blackListLoaded) {
@@ -769,6 +999,14 @@ class Binaries
 		return $blackList;
 	}
 
+	/**
+	 * Check if article is blacklisted.
+	 *
+	 * @param array $msg        The article header.
+	 * @param string $groupName The group.
+	 *
+	 * @return bool
+	 */
 	public function isBlackListed($msg, $groupName)
 	{
 		$blackList = $this->retrieveBlackList();
@@ -805,6 +1043,13 @@ class Binaries
 		return $omitBinary;
 	}
 
+	/**
+	 * @param $search
+	 * @param int $limit
+	 * @param array $excludedcats
+	 *
+	 * @return array
+	 */
 	public function search($search, $limit = 1000, $excludedcats = array())
 	{
 		$db = $this->db;
@@ -838,18 +1083,33 @@ class Binaries
 		return $db->query(sprintf("SELECT b.*, g.name AS group_name, r.guid, (SELECT COUNT(id) FROM parts p WHERE p.binaryid = b.id) as 'binnum' FROM binaries b INNER JOIN groups g ON g.id = b.groupid LEFT OUTER JOIN releases r ON r.id = b.releaseid WHERE 1=1 %s %s order by DATE DESC LIMIT %d", $searchsql, $exccatlist, $limit));
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array
+	 */
 	public function getForReleaseId($id)
 	{
 		$db = $this->db;
 		return $db->query(sprintf('SELECT binaries.* FROM binaries WHERE releaseid = %d ORDER BY relpart', $id));
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array|bool
+	 */
 	public function getById($id)
 	{
 		$db = $this->db;
 		return $db->queryOneRow(sprintf('SELECT binaries.*, collections.groupid, groups.name AS groupname FROM binaries, collections LEFT OUTER JOIN groups ON collections.groupid = groups.id WHERE binaries.id = %d', $id));
 	}
 
+	/**
+	 * @param bool $activeonly
+	 *
+	 * @return array
+	 */
 	public function getBlacklist($activeonly = true)
 	{
 		$db = $this->db;
@@ -862,18 +1122,33 @@ class Binaries
 		return $db->query('SELECT binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description, binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS groupid, binaryblacklist.msgcol FROM binaryblacklist LEFT OUTER JOIN groups ON groups.name = binaryblacklist.groupname ' . $where . " ORDER BY coalesce(groupname,'zzz')");
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array|bool
+	 */
 	public function getBlacklistByID($id)
 	{
 		$db = $this->db;
 		return $db->queryOneRow(sprintf('SELECT * FROM binaryblacklist WHERE id = %d', $id));
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return bool
+	 */
 	public function deleteBlacklist($id)
 	{
 		$db = $this->db;
 		return $db->queryExec(sprintf('DELETE FROM binaryblacklist WHERE id = %d', $id));
 	}
 
+	/**
+	 * @param $regex
+	 *
+	 * @return void
+	 */
 	public function updateBlacklist($regex)
 	{
 		$db = $this->db;
@@ -889,6 +1164,11 @@ class Binaries
 		$db->queryExec(sprintf('UPDATE binaryblacklist SET groupname = %s, regex = %s, status = %d, description = %s, optype = %d, msgcol = %d WHERE id = %d ', $groupname, $db->escapeString($regex['regex']), $regex['status'], $db->escapeString($regex['description']), $regex['optype'], $regex['msgcol'], $regex['id']));
 	}
 
+	/**
+	 * @param $rege
+	 * x
+	 * @return bool
+	 */
 	public function addBlacklist($regex)
 	{
 		$db = $this->db;
@@ -904,6 +1184,11 @@ class Binaries
 		return $db->queryInsert(sprintf('INSERT INTO binaryblacklist (groupname, regex, status, description, optype, msgcol) VALUES (%s, %s, %d, %s, %d, %d)', $groupname, $db->escapeString($regex['regex']), $regex['status'], $db->escapeString($regex['description']), $regex['optype'], $regex['msgcol']));
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return void
+	 */
 	public function delete($id)
 	{
 		$db = $this->db;

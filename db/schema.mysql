@@ -12,7 +12,7 @@ CREATE TABLE collections (
 	filecheck TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
 	filesize BIGINT UNSIGNED NOT NULL DEFAULT '0',
 	releaseid INT NULL,
-	PRIMARY KEY  (id),
+	PRIMARY KEY (id),
 	KEY fromname (fromname),
 	KEY date (date),
 	KEY groupid (groupid)
@@ -33,7 +33,7 @@ CREATE TABLE binaries (
 	binaryhash VARCHAR(255) NOT NULL DEFAULT '0',
 	partcheck BIT NOT NULL DEFAULT 0,
 	partsize BIGINT UNSIGNED NOT NULL DEFAULT '0',
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_binary_binaryhash ON binaries (binaryhash);
@@ -89,7 +89,7 @@ CREATE TABLE releases (
 	proc_par2 BIT NOT NULL DEFAULT 0,
 	proc_nfo BIT NOT NULL DEFAULT 0,
 	proc_files BIT NOT NULL DEFAULT 0,
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_releases_adddate ON releases (adddate);
@@ -191,7 +191,7 @@ CREATE TABLE releasecomment (
 	userid INT(11) UNSIGNED NOT NULL,
 	createddate DATETIME DEFAULT NULL,
 	host VARCHAR(15) NULL,
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_releasecomment_releaseid ON releasecomment (releaseid);
@@ -231,7 +231,7 @@ CREATE TABLE menu (
 	role INT(11) UNSIGNED NOT NULL,
 	ordinal INT(11) UNSIGNED NOT NULL,
 	menueval VARCHAR(2000) NOT NULL DEFAULT '',
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 
@@ -371,7 +371,7 @@ CREATE TABLE tvrage (
 	previnfo VARCHAR( 255 ) NULL,
 	nextdate DATETIME NULL,
 	nextinfo VARCHAR( 255 ) NULL,
-	PRIMARY KEY  (id),
+	PRIMARY KEY (id),
 	UNIQUE KEY rageid (rageid, releasetitle)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -391,7 +391,7 @@ CREATE TABLE IF NOT EXISTS forumpost (
 	replies INT(11) UNSIGNED NOT NULL DEFAULT '0',
 	createddate DATETIME NOT NULL,
 	updateddate DATETIME NOT NULL,
-	PRIMARY KEY  (id),
+	PRIMARY KEY (id),
 	KEY parentid (parentid),
 	KEY userid (userid),
 	KEY createddate (createddate),
@@ -476,13 +476,11 @@ CREATE TABLE groups (
 	active TINYINT(1) NOT NULL DEFAULT '0',
 	backfill TINYINT(1) NOT NULL DEFAULT '0',
 	description VARCHAR(255) NULL DEFAULT '',
-	PRIMARY KEY  (id),
+	PRIMARY KEY (id),
 	KEY active (active)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
-
 CREATE INDEX ix_groups_id ON groups(id);
-
-ALTER TABLE groups ADD UNIQUE (NAME);
+CREATE UNIQUE INDEX ix_groups_name ON groups(name);
 
 INSERT INTO groups (name, description, minfilestoformrelease, minsizetoformrelease) VALUES ('alt.binaries.0day.stuffz','This group contains mostly 0day software.', 2, NULL);
 INSERT INTO groups (name, description, minfilestoformrelease, minsizetoformrelease) VALUES ('alt.binaries.anime','This group contains mostly Anime Television.', NULL, NULL);
@@ -684,7 +682,7 @@ CREATE TABLE parts (
 	number BIGINT UNSIGNED NOT NULL DEFAULT '0',
 	partnumber INT UNSIGNED NOT NULL DEFAULT '0',
 	size BIGINT UNSIGNED NOT NULL DEFAULT '0',
-	PRIMARY KEY  (id),
+	PRIMARY KEY (id),
 	KEY binaryid (binaryid)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -697,7 +695,7 @@ CREATE TABLE partrepair (
 	numberid BIGINT unsigned NOT NULL,
 	groupid int(11) unsigned NOT NULL,
 	attempts tinyint(1) NOT NULL default '0',
-	PRIMARY KEY  (id),
+	PRIMARY KEY (id),
 	UNIQUE KEY ix_partrepair_numberid_groupid (numberid,groupid)
 ) ENGINE=MyISAM  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -816,7 +814,7 @@ CREATE TABLE users (
 	userseed VARCHAR(50) NOT NULL,
 	cp_url VARCHAR(255) NULL DEFAULT NULL,
 	cp_api VARCHAR(255) NULL DEFAULT NULL,
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 DROP TABLE IF EXISTS userseries;
@@ -826,7 +824,7 @@ CREATE TABLE userseries (
 	rageid int(16) NOT NULL,
 	categoryid VARCHAR(64) NULL DEFAULT NULL,
 	createddate DATETIME NOT NULL,
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_userseries_userid ON userseries (userid, rageid);
@@ -838,7 +836,7 @@ CREATE TABLE usermovies (
 	imdbid MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
 	categoryid VARCHAR(64) NULL DEFAULT NULL,
 	createddate DATETIME NOT NULL,
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_usermovies_userid ON usermovies (userid, imdbid);
@@ -908,7 +906,7 @@ CREATE TABLE usercart (
 	userid INT NOT NULL ,
 	releaseid INT NOT NULL,
 	createddate DATETIME NOT NULL,
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 CREATE UNIQUE INDEX ix_usercart_userrelease ON usercart (userid, releaseid);
 
@@ -918,7 +916,7 @@ CREATE TABLE userexcat (
 	userid INT NOT NULL ,
 	categoryid INT NOT NULL,
 	createddate DATETIME NOT NULL,
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 CREATE UNIQUE INDEX ix_userexcat_usercat ON userexcat (userid, categoryid);
 
@@ -1129,7 +1127,7 @@ CREATE TABLE consoleinfo (
 	updateddate datetime NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-ALTER IGNORE TABLE consoleinfo ADD UNIQUE INDEX ix_consoleinfo_asin(asin);
+CREATE UNIQUE INDEX ix_consoleinfo_asin ON consoleinfo (asin);
 
 DROP TABLE IF EXISTS bookinfo;
 CREATE TABLE bookinfo (
@@ -1151,7 +1149,7 @@ CREATE TABLE bookinfo (
 	updateddate datetime NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-ALTER IGNORE TABLE bookinfo ADD UNIQUE INDEX ix_bookinfo_asin(asin);
+CREATE UNIQUE INDEX ix_bookinfo_asin ON bookinfo (asin);
 
 DROP TABLE IF EXISTS musicinfo;
 CREATE TABLE musicinfo (
@@ -1172,7 +1170,7 @@ CREATE TABLE musicinfo (
 	updateddate datetime NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
-ALTER IGNORE TABLE musicinfo ADD UNIQUE INDEX ix_musicinfo_asin(asin);
+CREATE UNIQUE INDEX ix_musicinfo_asin ON musicinfo(asin);
 
 DROP TABLE IF EXISTS upcoming;
 CREATE TABLE upcoming (
@@ -1182,7 +1180,7 @@ CREATE TABLE upcoming (
 	info TEXT NULL,
 	updateddate TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (id),
-	unique key (source, typeid)
+	UNIQUE KEY (source, typeid)
 ) ENGINE=MYISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 
@@ -1455,7 +1453,7 @@ CREATE TABLE allgroups (
 	first_record BIGINT UNSIGNED NOT NULL DEFAULT "0",
 	last_record BIGINT UNSIGNED NOT NULL DEFAULT "0",
 	updated DATETIME DEFAULT NULL,
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_allgroups_id ON allgroups(id);
@@ -1468,7 +1466,7 @@ CREATE TABLE shortgroups (
 	first_record BIGINT UNSIGNED NOT NULL DEFAULT "0",
 	last_record BIGINT UNSIGNED NOT NULL DEFAULT "0",
 	updated DATETIME DEFAULT NULL,
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_shortgroups_id ON shortgroups(id);
@@ -1479,7 +1477,7 @@ CREATE TABLE country (
 	id INT(11) NOT NULL AUTO_INCREMENT,
 	name VARCHAR(255) NOT NULL DEFAULT "",
 	code CHAR(2) NOT NULL DEFAULT "",
-	PRIMARY KEY  (id)
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE INDEX ix_country_name ON country(name);
