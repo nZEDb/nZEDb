@@ -30,6 +30,7 @@ function run_query($query, $test)
 		} catch (PDOException $e) {
 			if ($e->errorInfo[1] == 1061) {
 				// Duplicate key exists
+				echo $c->alternateOver('SKIPPED Index name exists: ') . $c->primary($query);
 			} else {
 				echo $c->alternateOver('FAILED: ') . $c->primary($query);
 			}
@@ -110,13 +111,7 @@ if ($handle) {
 						run_query($qry, $argv[1]);
 					}
 				} else {
-					$check = $db->queryOneRow("SHOW INDEXES IN " . trim($match[3]) . " WHERE non_unique = 1 AND column_name = '" . trim($column) . "'");
-					if (isset($check['key_name'])) {
-						echo $c->error("\nA NON-UNIQUE index exists for " . trim($match[3]) . " on " . trim($match[4]) . "\n"
-									. "You will need to manually frop the index and re-run this script if you want to correct it");
-					} else {
-						echo $c->primary("A Unique Index exists for " . trim($match[3]) . " on " . trim($match[4]));
-					}
+					echo $c->primary("A Unique Index exists for " . trim($match[3]) . " on " . trim($match[4]));
 				}
 			}
 		}
