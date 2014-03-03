@@ -37,7 +37,7 @@ class ReleaseImage
 	public function saveImage($imgName, $imgLoc, $imgSavePath, $imgMaxWidth='', $imgMaxHeight='', $saveThumb=false)
 	{
 		// Check that it's at least 12 bytes.
-		$size = filesize($imgLoc);
+		$size = @filesize($imgLoc);
 		if ($size === false || $size < 12) {
 			return 0;
 		}
