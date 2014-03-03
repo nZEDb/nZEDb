@@ -1449,7 +1449,7 @@ class PostProcess
 					if (is_dir($ramdrive)) {
 						$all_files = @scandir($ramdrive, 1);
 						foreach ($all_files as $file) {
-							if (preg_match('/zzzz\d*\.jpg/', $file) && $retval === false) {
+							if (preg_match('/zzzz\d+\.jpg/', $file) && $retval === false) {
 								if (filesize($ramdrive . $file) < 15)
 									continue;
 								if (exif_imagetype($ramdrive . $file) === false)
