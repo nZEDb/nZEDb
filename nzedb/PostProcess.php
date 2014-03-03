@@ -13,6 +13,31 @@ class PostProcess
 	 */
 
 	/**
+	 * @var ArchiveInfo
+	 */
+	private $archiveInfo;
+
+	/**
+	 * @var ColorCLI
+	 */
+	private $c;
+
+	/**
+	 * @var ConsoleTools
+	 */
+	private $consoleTools;
+
+	/**
+	 * @var DB
+	 */
+	private $db;
+
+	/**
+	 * @var ReleaseFiles
+	 */
+	private $releaseFiles;
+
+	/**
 	 * Object containing site settings.
 	 * @var bool|stdClass
 	 */
@@ -23,6 +48,117 @@ class PostProcess
 	 * @var int
 	 */
 	private $addqty;
+
+	/**
+	 * Add par2 info to rar list?
+	 * @var bool
+	 */
+	private $addpar2;
+
+	/**
+	 * Use alternate NNTP provider when download fails?
+	 * @var bool
+	 */
+	private $alternateNNTP;
+
+	/**
+	 * How long should the video sample be?
+	 * @var int
+	 */
+	private $ffmpeg_duration;
+
+	/**
+	 * Max file size to post process.
+	 * @var int
+	 */
+	private $maxsize;
+
+	/**
+	 * How many parts to download before giving up.
+	 * @var int
+	 */
+	private $partsqty;
+
+	/**
+	 * How many attempts to check for a password.
+	 * @var int
+	 */
+	private $passchkattempts;
+
+	/**
+	 * Should we process audio samples?
+	 * @var bool
+	 */
+	private $processAudioSample;
+
+	/**
+	 * How many articles to download when getting a JPG.
+	 * @var int
+	 */
+	private $segmentstodownload;
+
+	/**
+	 * Path to store audio samples.
+	 * @var string
+	 */
+	private $audSavePath;
+
+	/**
+	 * Path to store files temporarily.
+	 * @var string
+	 */
+	private $tmpPath;
+
+	/**
+	 * Should we echo to CLI?
+	 * @var bool
+	 */
+	private $echooutput;
+
+	/**
+	 * @var int
+	 */
+	private $filesadded;
+
+	/**
+	 * @var bool
+	 */
+	private $nonfo;
+
+	/**
+	 * @var bool
+	 */
+	private $password;
+
+	/**
+	 * Regex of common audio file extensions.
+	 * @var string
+	 */
+	private $audiofileregex;
+
+	/**
+	 * Regex of common book extensions.
+	 * @var string
+	 */
+	private $ignorebookregex;
+
+	/**
+	 * Regex of common usenet binary extensions,
+	 * @var string
+	 */
+	private $supportfiles;
+
+	/**
+	 * Regex of common video file extensions.
+	 * @var string
+	 */
+	private $videofileregex;
+
+	/**
+	 * Sigs regex.
+	 * @var string
+	 */
+	private $sigregex;
 
 	/**
 	 * Constructor.
