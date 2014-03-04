@@ -582,14 +582,14 @@ class PostProcess
 		$groupid = $groupID == '' ? '' : 'AND groupid = ' . $groupID;
 		// Get out all releases which have not been checked more than max attempts for password.
 		if ($id != '')
-			$result = $this->db->queryDirect('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = ' . $id);
+			$result = $this->db->queryDirect('SELECT r.searchname, r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = ' . $id);
 		else {
 			$result = $totresults = 0;
 			if ($releaseToWork == '') {
 				$i = -1;
 				$tries = (5 * -1) - 1;
 				while (($totresults !== $this->addqty) && ($i >= $tries)) {
-					$result = $this->db->queryDirect(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE nzbstatus = 1 AND r.size < %d ' . $groupid . ' AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) ORDER BY postdate DESC LIMIT %d', $this->maxsize * 1073741824, $i, $this->addqty));
+					$result = $this->db->queryDirect(sprintf('SELECT r.searchname, r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE nzbstatus = 1 AND r.size < %d ' . $groupid . ' AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) ORDER BY postdate DESC LIMIT %d', $this->maxsize * 1073741824, $i, $this->addqty));
 					$totresults = $result->rowCount();
 					if ($totresults > 0)
 						$this->doecho('Passwordstatus = ' . $i . ': Available to process = ' . $totresults);
@@ -641,7 +641,7 @@ class PostProcess
 					echo '[' . $this->c->primaryOver($rel['id']) . ']';
 				}
 
-				$this->debugging->start('processAdditional', 'Processing ' . $rel['name'], 5);
+				$this->debugging->start('processAdditional', 'Processing ' . $rel['searchname'], 5);
 
 				// Per release defaults.
 				$this->tmpPath = $tmpPath . $rel['guid'] . '/';
