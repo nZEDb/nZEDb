@@ -341,6 +341,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 	function _getTextResponse() {
 		$data = array();
 		$line = '';
+		$bytesReceived = 0;
 
 		//
 		$debug = $this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG);
@@ -355,6 +356,11 @@ class Net_NNTP_Protocol_Client extends PEAR
 				return $this->throwError('Failed to read line from socket.', null);
 			}
 
+			$bytesReceived += strlen($recieved);
+			// Show bytes received
+			if (isset($this->_selectedGroupSummary) && $bytesReceived > 10240 && $bytesReceived % 128 == 0) {
+				echo 'Receiving ' . round($bytesReceived / 1024) . 'KB from ' . $this->group() . "\r";
+			}
 			$line .= $recieved;
 
 			// Continue if the line is not terminated by CRLF
@@ -381,6 +387,10 @@ class Net_NNTP_Protocol_Client extends PEAR
 
 				if ($this->_logger) {
 					$this->_logger->debug('T: ' . $line);
+				}
+
+				if ($bytesReceived > 10240) {
+					echo "\n";
 				}
 
 				// return all previous lines
@@ -587,6 +597,9 @@ class Net_NNTP_Protocol_Client extends PEAR
 				$transport = 'tcp';
 				$port = is_null($port) ? 119 : $port;
 				break;
+
+			case true:
+				$encryption = 'ssl';
 
 			case 'ssl':
 
