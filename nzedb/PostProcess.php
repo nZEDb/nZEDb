@@ -335,7 +335,7 @@ class PostProcess
 				}
 			}
 			if ($relfiles > 0) {
-				$this->debug('Added ' . $relfiles . ' releasefiles from PAR2 for ' . $quer['searchname']);
+				$this->debugging->start('parsePAR2', 'Added ' . $relfiles . ' releasefiles from PAR2 for ' . $quer['searchname'], 5);
 				$cnt = $this->db->queryOneRow('SELECT COUNT(releaseid) AS count FROM releasefiles WHERE releaseid = ' . $relID);
 				$count = $relfiles;
 				if ($cnt !== false && $cnt['count'] > 0) {
@@ -362,18 +362,6 @@ class PostProcess
 	{
 		if ($this->echooutput) {
 			echo $this->c->header($str);
-		}
-	}
-
-	/**
-	 * Echo debug messages if debug is on.
-	 *
-	 * @param $str
-	 */
-	protected function debug($str)
-	{
-		if (nZEDb_DEBUG) {
-			echo $this->c->debug($str);
 		}
 	}
 
@@ -796,7 +784,6 @@ class PostProcess
 
 				// Ignore massive book NZB's.
 				if (count($nzbfiles) > 40 && ($ignoredbooks * 2) >= count($nzbfiles)) {
-					$this->debug(' skipping book flood');
 					if (isset($rel['categoryid']) && substr($rel['categoryid'], 0, 1) === '8') {
 						$this->db->queryExec(sprintf('UPDATE releases SET passwordstatus = 0, haspreview = 0, categoryid = 8050 WHERE id = %d', $rel['id']));
 					}
@@ -1282,7 +1269,7 @@ class PostProcess
 				// Extract a NFO from the rar.
 				if ($this->nonfo === true && $v['size'] > 100 && $v['size'] < 100000 && preg_match('/(\.(nfo|inf|ofn)|info.txt)$/i', $v['name'])) {
 					if ($this->Nfo->addAlternateNfo($this->db, $tmpdata, $release, $nntp)) {
-						$this->debug('added rar nfo');
+						$this->debugging->start('addfile', 'Added NFO from RAR for ' . $release['id'], 5);
 						if ($this->echooutput)
 							echo 'n';
 						$this->nonfo = false;
@@ -1316,8 +1303,9 @@ class PostProcess
 	 */
 	protected function processReleaseZips($fetchedBinary, $open = false, $data = false, $release, $nntp)
 	{
-		if (!isset($nntp))
+		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(postprocess->processReleaseZips).\n"));
+		}
 
 		// Load the ZIP file or data.
 		$zip = new ZipInfo();
@@ -1327,12 +1315,12 @@ class PostProcess
 			$zip->setData($fetchedBinary, true);
 
 		if ($zip->error) {
-			$this->debug('Error: ' . $zip->error);
+			$this->debugging->start('processReleaseZips', 'ZIP Error: ' . $zip->error, 4);
 			return false;
 		}
 
 		if (!empty($zip->isEncrypted)) {
-			$this->debug('ZIP archive is password encrypted.');
+			$this->debugging->start('processReleaseZips', 'ZIP archive is password encrypted for release ' . $release['id'], 4);
 			$this->password = true;
 			return false;
 		}
@@ -1351,7 +1339,7 @@ class PostProcess
 				if ($this->nonfo === true && $file['size'] < 100000 && preg_match('/\.(nfo|inf|ofn)$/i', $file['name'])) {
 					if ($file['compressed'] !== 1) {
 						if ($this->Nfo->addAlternateNfo($this->db, $thisdata, $release, $nntp)) {
-							$this->debug('Added zip NFO.');
+							$this->debugging->start('processReleaseZips', 'Added NFO from ZIP file for release ' . $release['id'], 5);
 							if ($this->echooutput)
 								echo 'n';
 							$this->nonfo = false;
@@ -1363,7 +1351,7 @@ class PostProcess
 						if ($zipdata !== false && strlen($zipdata) > 5)
 							; {
 							if ($this->Nfo->addAlternateNfo($this->db, $zipdata, $release, $nntp)) {
-								$this->debug('Added compressed zip NFO.');
+								$this->debugging->start('processReleaseZips', 'Added compressed NFO from ZIP file for release ' . $release['id'], 5);
 								if ($this->echooutput)
 									echo 'n';
 								$this->nonfo = false;
@@ -1412,18 +1400,18 @@ class PostProcess
 		if ($rar->setData($fetchedBinary, true))
 			$files = $rar->getArchiveFileList();
 		if ($rar->error) {
-			$this->debug('Error: ' . $rar->error);
+			$this->debugging->start('getRar', 'RAR Error: ' . $rar->error, 4);
 			return $retval;
 		}
 		if (!empty($rar->isEncrypted)) {
-			$this->debug('Archive is password encrypted.');
+			$this->debugging->start('getRar', 'Archive is password encrypted.', 4);
 			$this->password = true;
 			return $retval;
 		}
 		$tmp = $rar->getSummary(true, false);
 
 		if (isset($tmp['is_encrypted']) && $tmp['is_encrypted'] != 0) {
-			$this->debug('Archive is password encrypted.');
+			$this->debugging->start('getRar', 'Archive is password encrypted.', 4);
 			$this->password = true;
 			return $retval;
 		}
@@ -1435,7 +1423,7 @@ class PostProcess
 			foreach ($files as $file) {
 				if (isset($file['name'])) {
 					if (isset($file['error'])) {
-						$this->debug("Error: {$file['error']} (in: {$file['source']})");
+						$this->debugging->start('getRar', "Error: {$file['error']} (in: {$file['source']})", 4);
 						continue;
 					}
 					if (isset($file['pass']) && $file['pass'] == true) {
@@ -1475,8 +1463,9 @@ class PostProcess
 	 */
 	protected function processReleaseFiles($fetchedBinary, $release, $name, $nntp)
 	{
-		if (!isset($nntp))
+		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(postprocess->processReleaseFiles).\n"));
+		}
 
 		$retval = array();
 		$rar = new ArchiveInfo();
@@ -1485,7 +1474,7 @@ class PostProcess
 		if (preg_match("/\.(part\d+|rar|r\d{1,3})($|[ \")\]-])|\"[a-f0-9]{32}\.[1-9]\d{1,2}\".*\(\d+\/\d{2,}\)$/i", $name)) {
 			$rar->setData($fetchedBinary, true);
 			if ($rar->error) {
-				$this->debug("\nError: {$rar->error}.");
+				$this->debugging->start('processReleaseFiles', "\nError: {$rar->error}.", 4);
 				return false;
 			}
 
@@ -1494,13 +1483,13 @@ class PostProcess
 				return false;
 
 			if (isset($tmp['is_encrypted']) && $tmp['is_encrypted'] != 0) {
-				$this->debug('Archive is password encrypted.');
+				$this->debugging->start('processReleaseFiles', 'Archive is password encrypted.', 4);
 				$this->password = true;
 				return false;
 			}
 
 			if (!empty($rar->isEncrypted)) {
-				$this->debug('Archive is password encrypted.');
+				$this->debugging->start('processReleaseFiles', 'Archive is password encrypted.', 4);
 				$this->password = true;
 				return false;
 			}
@@ -1520,7 +1509,7 @@ class PostProcess
 				foreach ($files as $file) {
 					if (isset($file['name'])) {
 						if (isset($file['error'])) {
-							$this->debug("Error: {$file['error']} (in: {$file['source']})");
+							$this->debugging->start('processReleaseFiles', "Error: {$file['error']} (in: {$file['source']})", 4);
 							continue;
 						}
 						if ($file['pass'] == true) {
