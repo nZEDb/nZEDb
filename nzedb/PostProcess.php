@@ -641,6 +641,8 @@ class PostProcess
 					echo '[' . $this->c->primaryOver($rel['id']) . ']';
 				}
 
+				$this->debugging->start('processAdditional', 'Processing ' . $rel['name'], 5);
+
 				// Per release defaults.
 				$this->tmpPath = $tmpPath . $rel['guid'] . '/';
 				if (!is_dir($this->tmpPath)) {
@@ -841,8 +843,6 @@ class PostProcess
 								}
 
 								if ($fetchedBinary !== false) {
-
-									$this->debugging->start('processAdditional', "Processing " . $rarFile['title'], 5);
 
 									if ($this->echooutput) {
 										echo 'b';
@@ -1474,7 +1474,7 @@ class PostProcess
 		if (preg_match("/\.(part\d+|rar|r\d{1,3})($|[ \")\]-])|\"[a-f0-9]{32}\.[1-9]\d{1,2}\".*\(\d+\/\d{2,}\)$/i", $name)) {
 			$rar->setData($fetchedBinary, true);
 			if ($rar->error) {
-				$this->debugging->start('processReleaseFiles', "\nError: {$rar->error}.", 4);
+				$this->debugging->start('processReleaseFiles', "Error: {$rar->error}.", 4);
 				return false;
 			}
 
