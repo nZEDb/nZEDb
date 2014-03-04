@@ -1990,20 +1990,94 @@ class PostProcess
 				// Try to find an avi file.
 				if (preg_match('/\.avi$/i', $sampleFile) && is_file($sampleFile)) {
 
-					// Try to create an ogv video using the avi video.
-					$output = @runCmd
-					(
-						'"' .
-						$this->site->ffmpegpath .
-						'" -i "' .
-						$sampleFile .
-						'" -vcodec libtheora -filter:v scale=320:-1 -t ' .
-						$this->ffmpeg_duration .
-						' -acodec libvorbis -loglevel quiet -y "' .
-						$this->tmpPath .
-						$fileName .
-						'"'
-					);
+					// If wanted sample length is less than 60, try to get sample from the end of the video.
+					if ($this->ffmpeg_duration < 60) {
+						// Get the real duration of the file.
+						$time = exec(
+							'"' .
+							$this->site->ffmpegpath .
+							'" -i "' .
+							$sampleFile .
+							'" -vcodec copy -f null /dev/null 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
+						);
+
+						// If we don't get the time create the sample the old way (gets the start of the video).
+						$numbers = array();
+						if (!preg_match('/^\d{2}:\d{2}:(\d{2}).(\d{2})$/', $time, $numbers)) {
+							@runCmd
+							(
+								'"' .
+								$this->site->ffmpegpath .
+								'" -i "' .
+								$sampleFile .
+								'" -vcodec libtheora -filter:v scale=320:-1 -t ' .
+								$this->ffmpeg_duration .
+								' -acodec libvorbis -loglevel quiet -y "' .
+								$this->tmpPath .
+								$fileName .
+								'"'
+							);
+						} else {
+							// Get the max seconds from the video clip.
+							$maxLength = (int)$numbers[1];
+
+							// If the clip is shorter than the length we want.
+							if ($maxLength < $this->ffmpeg_duration) {
+								// The lowest we want is 0.
+								$lowestLength = '00:00:00.00';
+
+							// If it's longer.
+							} else {
+								// The lowest we want is the the difference .
+								$lowestLength = ($maxLength - $this->ffmpeg_duration);
+
+								// Form the time string.
+								$end = '.' . $numbers[2];
+								switch (strlen($lowestLength)) {
+									case 1:
+										$lowestLength = '00:00:0' . (string)$lowestLength . $end;
+										break;
+									case 2:
+
+										$lowestLength = '00:00:' . (string)$lowestLength . $end;
+										break;
+									default:
+										$lowestLength = '00:00:60.00';
+								}
+							}
+
+							// Try to get the sample (from the end instead of the start).
+							@runCmd
+							(
+								'"' .
+								$this->site->ffmpegpath .
+								'" -i "' .
+								$sampleFile .
+								'" -ss ' . $lowestLength .
+								' -t ' . $this->ffmpeg_duration .
+								' -vcodec libtheora -filter:v scale=320:-1 ' .
+								' -acodec libvorbis -loglevel quiet -y "' .
+								$this->tmpPath .
+								$fileName .
+								'"'
+							);
+						}
+					} else {
+						// If longer than 60, then run the old way.
+						@runCmd
+						(
+							'"' .
+							$this->site->ffmpegpath .
+							'" -i "' .
+							$sampleFile .
+							'" -vcodec libtheora -filter:v scale=320:-1 -t ' .
+							$this->ffmpeg_duration .
+							' -acodec libvorbis -loglevel quiet -y "' .
+							$this->tmpPath .
+							$fileName .
+							'"'
+						);
+					}
 
 					// Get all the files in the temp dir.
 					$all_files = @scandir($this->tmpPath, 1);
