@@ -698,7 +698,7 @@ class NNTP extends Net_NNTP_Client
 
 			// We found a ending, try to decompress the full buffer.
 			if ($completed === true) {
-				$deComp = gzuncompress(mb_substr($data, 0, -3, '8bit'));
+				$deComp = @gzuncompress(mb_substr($data, 0, -3, '8bit'));
 				// Split the string of headers into an array of individual headers, then return it.
 				if (!empty($deComp)) {
 					return explode("\r\n", trim($deComp));
