@@ -79,6 +79,12 @@ class PostProcess
 	private $maxsize;
 
 	/**
+	 * Class instance of logging.
+	 * @var Logging
+	 */
+	protected $logging;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param bool $echoOutput Echo to CLI or not?
@@ -89,6 +95,7 @@ class PostProcess
 		$this->c = new ColorCLI();
 		$this->db = new DB();
 		$this->groups = new Groups();
+		$this->logging = new Logging();
 		$this->Nfo = new Nfo($echoOutput);
 		$this->releaseFiles = new ReleaseFiles();
 		$s = new sites();
@@ -494,8 +501,9 @@ class PostProcess
 		//\\ Paths.
 		$this->audSavePath = nZEDb_COVERS . 'audiosample' . DS;
 		$this->tmpPath = $this->site->tmpunrarpath;
-		if (substr($this->tmpPath, -strlen('/')) !== '/') {
-			$this->tmpPath = $this->tmpPath . '/';
+		// Check if it ends with a dir separator.
+		if (!preg_match('/[\/\\\\]$/', $this->tmpPath)) {
+			$this->tmpPath = $this->tmpPath . DS;
 		}
 		//\\
 
@@ -509,37 +517,6 @@ class PostProcess
 		$this->ignorebookregex = '/\b(epub|lit|mobi|pdf|sipdf|html)\b.*\.rar(?!.{20,})/i';
 		$this->supportfiles = '/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb';
 		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
-
-		/*// These are pieces of text that can be found inside of a video file.
-		$sigs =
-			array(
-				// .mpg
-				array('00', '00', '01', 'BA'),
-				array('00', '00', '01', 'B3'),
-				array('00', '00', '01', 'B7'),
-				array('00', '00', '01', 'B9'),
-
-				//wma
-				array('30', '26', 'B2', '75'),
-				array('A6', 'D9', '00', 'AA'),
-
-				// mkv
-				array('1A', '45', 'DF', 'A3'),
-
-				// ??
-				array('01', '00', '09', '00')
-			);
-		$sigstr = '';
-		foreach ($sigs as $sig) {
-			$str = '';
-			foreach ($sig as $s) {
-				$str = $str . "\x$s";
-			}
-			$sigstr = $sigstr . '|' . $str;
-		}
-		$sigstr1 = "/^(0&²u|ftyp|oggs|riff)|\.(rec|rmf)|avi|dvd|free|matroska|mdat|moov|mp4|pnot|skip|wide$sigstr/i";
-		$this->sigregex = $sigstr1;
-		//\\*/
 
 		// Note that we initiated the objects.
 		$this->additionalInitiated = true;
@@ -1790,11 +1767,11 @@ class PostProcess
 						}
 					}
 
-					// File name to store audio file.
-					$audioFileName = $releaseGuid . '.ogg';
-
 					// Check if creating audio samples is enabled.
 					if ($audVal === false) {
+
+						// File name to store audio file.
+						$audioFileName = $releaseGuid . '.ogg';
 
 						// Create an audio sample.
 						@runCmd(
