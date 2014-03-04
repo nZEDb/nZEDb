@@ -663,7 +663,7 @@ class PostProcess
 				$nzbpath = $nzb->getNZBPath($rel['guid'], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
 				if (!file_exists($nzbpath)) {
 					// The nzb was not located. decrement the passwordstatus.
-					$this->debugging->start('processAdditional', 'NZB not found for release: ' . $rel['guid'], 3);
+					$this->debugging->start('processAdditional', 'NZB not found for releaseGUID: ' . $rel['guid'], 3);
 					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = ' . $rel['id']);
 					continue;
 				}
@@ -1269,7 +1269,7 @@ class PostProcess
 				// Extract a NFO from the rar.
 				if ($this->nonfo === true && $v['size'] > 100 && $v['size'] < 100000 && preg_match('/(\.(nfo|inf|ofn)|info.txt)$/i', $v['name'])) {
 					if ($this->Nfo->addAlternateNfo($this->db, $tmpdata, $release, $nntp)) {
-						$this->debugging->start('addfile', 'Added NFO from RAR for ' . $release['id'], 5);
+						$this->debugging->start('addfile', 'Added NFO from RAR for releaseID ' . $release['id'], 5);
 						if ($this->echooutput)
 							echo 'n';
 						$this->nonfo = false;
@@ -1339,7 +1339,7 @@ class PostProcess
 				if ($this->nonfo === true && $file['size'] < 100000 && preg_match('/\.(nfo|inf|ofn)$/i', $file['name'])) {
 					if ($file['compressed'] !== 1) {
 						if ($this->Nfo->addAlternateNfo($this->db, $thisdata, $release, $nntp)) {
-							$this->debugging->start('processReleaseZips', 'Added NFO from ZIP file for release ' . $release['id'], 5);
+							$this->debugging->start('processReleaseZips', 'Added NFO from ZIP file for releaseID ' . $release['id'], 5);
 							if ($this->echooutput)
 								echo 'n';
 							$this->nonfo = false;
@@ -1351,7 +1351,7 @@ class PostProcess
 						if ($zipdata !== false && strlen($zipdata) > 5)
 							; {
 							if ($this->Nfo->addAlternateNfo($this->db, $zipdata, $release, $nntp)) {
-								$this->debugging->start('processReleaseZips', 'Added compressed NFO from ZIP file for release ' . $release['id'], 5);
+								$this->debugging->start('processReleaseZips', 'Added compressed NFO from ZIP file for releaseID ' . $release['id'], 5);
 								if ($this->echooutput)
 									echo 'n';
 								$this->nonfo = false;
