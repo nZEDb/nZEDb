@@ -510,15 +510,24 @@ class PostProcess
 		$this->supportfiles = '/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb';
 		$this->videofileregex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
 
+		/*// These are pieces of text that can be found inside of a video file.
 		$sigs =
 			array(
+				// .mpg
 				array('00', '00', '01', 'BA'),
 				array('00', '00', '01', 'B3'),
 				array('00', '00', '01', 'B7'),
-				array('1A', '45', 'DF', 'A3'),
-				array('01', '00', '09', '00'),
+				array('00', '00', '01', 'B9'),
+
+				//wma
 				array('30', '26', 'B2', '75'),
-				array('A6', 'D9', '00', 'AA')
+				array('A6', 'D9', '00', 'AA'),
+
+				// mkv
+				array('1A', '45', 'DF', 'A3'),
+
+				// ??
+				array('01', '00', '09', '00')
 			);
 		$sigstr = '';
 		foreach ($sigs as $sig) {
@@ -528,11 +537,11 @@ class PostProcess
 			}
 			$sigstr = $sigstr . '|' . $str;
 		}
-		$sigstr1 = "/^ftyp|mp4|^riff|avi|matroska|.rec|.rmf|^oggs|moov|dvd|^0&²u|free|mdat|pnot|skip|wide$sigstr/i";
+		$sigstr1 = "/^(0&²u|ftyp|oggs|riff)|\.(rec|rmf)|avi|dvd|free|matroska|mdat|moov|mp4|pnot|skip|wide$sigstr/i";
 		$this->sigregex = $sigstr1;
-		//\\
+		//\\*/
 
-		// Not that we initiated the objects.
+		// Note that we initiated the objects.
 		$this->additionalInitiated = true;
 	}
 
@@ -935,8 +944,7 @@ class PostProcess
 								// Audio sample.
 								if ($processAudioinfo === true && $blnTookAudioinfo === false && preg_match('/(.*)' . $this->audiofileregex . '$/i', $file, $name)) {
 									@rename($this->tmpPath . $name[0], $this->tmpPath . 'audiofile.' . $name[2]);
-									$blnTookAudioinfo = $this->getAudioinfo($this->tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel['guid'], $rel['id']);
-									@unlink($this->tmpPath . 'sample.' . $name[2]);
+									$blnTookAudioinfo = $this->getAudioinfo($rel['guid'], $rel['id'], $name[2]);
 								}
 
 								// JGP file sample.
@@ -952,13 +960,13 @@ class PostProcess
 									if (preg_match('/(.*)' . $this->videofileregex . '$/i', $file, $name)) {
 										rename($this->tmpPath . $name[0], $this->tmpPath . 'sample.avi');
 										if ($processSample && $blnTookSample === false) {
-											$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+											$blnTookSample = $this->getSample($rel['guid']);
 										}
 										if ($processVideo && $blnTookVideo === false) {
-											$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+											$blnTookVideo = $this->getVideo($rel['guid']);
 										}
 										if ($processMediainfo && $blnTookMediainfo === false) {
-											$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel['id']);
+											$blnTookMediainfo = $this->getMediainfo($rel['id']);
 										}
 										@unlink($this->tmpPath . 'sample.avi');
 									}
@@ -988,10 +996,13 @@ class PostProcess
 								if (strlen($sampleBinary) > 100) {
 									$this->addmediafile($this->tmpPath . 'sample_' . mt_rand(0, 99999) . '.avi', $sampleBinary);
 									if ($processSample === true && $blnTookSample === false) {
-										$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+										$blnTookSample = $this->getSample($rel['guid']);
 									}
 									if ($processVideo === true && $blnTookVideo === false) {
-										$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+										$blnTookVideo = $this->getVideo($rel['guid']);
+									}
+									if ($processMediainfo === true && $blnTookMediainfo === false) {
+										$blnTookMediainfo = $this->getMediainfo($rel['id']);
 									}
 								}
 								unset($sampleBinary);
@@ -1020,13 +1031,13 @@ class PostProcess
 								if (strlen($mediaBinary) > 100) {
 									$this->addmediafile($this->tmpPath . 'media.avi', $mediaBinary);
 									if ($processMediainfo === true && $blnTookMediainfo === false) {
-										$blnTookMediainfo = $this->getMediainfo($this->tmpPath, $this->site->mediainfopath, $rel['id']);
+										$blnTookMediainfo = $this->getMediainfo($rel['id']);
 									}
 									if ($processSample === true && $blnTookSample === false) {
-										$blnTookSample = $this->getSample($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+										$blnTookSample = $this->getSample($rel['guid']);
 									}
 									if ($processVideo === true && $blnTookVideo === false) {
-										$blnTookVideo = $this->getVideo($this->tmpPath, $this->site->ffmpegpath, $rel['guid']);
+										$blnTookVideo = $this->getVideo($rel['guid']);
 									}
 								}
 								unset($mediaBinary);
@@ -1051,7 +1062,7 @@ class PostProcess
 						}
 						if (strlen($audioBinary) > 100) {
 							$this->addmediafile($this->tmpPath . 'audio.' . $audiotype, $audioBinary);
-							$blnTookAudioinfo = $this->getAudioinfo($this->tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath, $rel['guid'], $rel['id']);
+							$blnTookAudioinfo = $this->getAudioinfo($rel['guid'], $rel['id'], $audiotype);
 						}
 						unset($audioBinary);
 					} else {
@@ -1622,8 +1633,9 @@ class PostProcess
 				unset($retval[$k]);
 		}
 
-		if (count($retval) === 0)
+		if (count($retval) === 0) {
 			$retval = false;
+		}
 		unset($fetchedBinary, $rar, $nfo);
 		return $retval;
 	}
@@ -1633,36 +1645,50 @@ class PostProcess
 	 *
 	 * @note Only called by processAddtional
 	 *
-	 * @param $ramdrive
-	 * @param $mediainfo
 	 * @param $releaseID
 	 *
 	 * @return bool
 	 */
-	protected function getMediainfo($ramdrive, $mediainfo, $releaseID)
+	protected function getMediainfo($releaseID)
 	{
-		$retval = false;
-		if ($mediainfo === '' && !is_dir($ramdrive) && $releaseID <= 0)
-			return $retval;
+		// Return value.
+		$retVal = false;
 
-		$mediafiles = glob($ramdrive . '*.*');
-		if (is_array($mediafiles)) {
-			foreach ($mediafiles as $mediafile) {
-				if (is_file($mediafile) && filesize($mediafile) > 15 && preg_match('/' . $this->videofileregex . '$/i', $mediafile)) {
-					$xmlarray = @runCmd('"' . $mediainfo . '" --Output=XML "' . $mediafile . '"');
-					if (is_array($xmlarray)) {
-						$xmlarray = implode("\n", $xmlarray);
-						$this->releaseExtra->addFull($releaseID, $xmlarray);
-						$this->releaseExtra->addFromXml($releaseID, $xmlarray);
-						$retval = true;
-						if ($this->echooutput)
+		// Get all the files in the temp folder.
+		$mediaFiles = glob($this->tmpPath . '*.*');
+
+		// Check if we got them.
+		if ($mediaFiles !== false) {
+
+			// Loop over them.
+			foreach ($mediaFiles as $mediaFile) {
+
+				// Look for the video file.
+				if (preg_match('/\.avi$/i', $mediaFile) && is_file($mediaFile)) {
+
+					// Run media info on it.
+					$xmlArray = @runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $mediaFile . '"');
+
+					// Check if we got it.
+					if (is_array($xmlArray)) {
+
+						// Convert it to string.
+						$xmlArray = implode("\n", $xmlArray);
+
+						// Insert it into the DB.
+						$this->releaseExtra->addFull($releaseID, $xmlArray);
+						$this->releaseExtra->addFromXml($releaseID, $xmlArray);
+
+						$retVal = true;
+						if ($this->echooutput) {
 							echo 'm';
+						}
 						break;
 					}
 				}
 			}
 		}
-		return $retval;
+		return $retVal;
 	}
 
 	/**
@@ -1670,46 +1696,76 @@ class PostProcess
 	 *
 	 * @note Only called by processAddtional
 	 *
-	 * @param $ramdrive
-	 * @param $ffmpeginfo
-	 * @param $audioinfo
-	 * @param $releaseguid
+	 * @param $releaseGuid
 	 * @param $releaseID
+	 * @param string $extension, the extension (mp3, flac, etc).
 	 *
 	 * @return bool
 	 */
-	protected function getAudioinfo($ramdrive, $ffmpeginfo, $audioinfo, $releaseguid, $releaseID)
+	protected function getAudioinfo($releaseGuid, $releaseID, $extension)
 	{
-		$retval = $audval = false;
-		if (!is_dir($ramdrive) && $releaseID <= 0) {
-			return $retval;
+		//this->tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath
+
+		// Return values.
+		$retVal = $audVal = false;
+
+		// Check if audio sample fetching is on.
+		if (!$this->processAudioSample) {
+			$audVal = true;
+		}
+
+		// Check if media info fetching is on.
+		if ($this->site->mediainfopath === '') {
+			$retVal = true;
 		}
 
 		// Make sure the category is music or other->misc.
-		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, groupid FROM releases WHERE proc_pp = 0 '
-				. 'AND id = %d', $releaseID));
+		$rquer = $this->db->queryOneRow(sprintf(
+			'SELECT categoryid as id, groupid FROM releases WHERE proc_pp = 0 AND id = %d', $releaseID));
 		if (!preg_match('/^3\d{3}|7010/', $rquer['id'])) {
-			return $retval;
+			return $retVal;
 		}
 
-		$audiofiles = glob($ramdrive . '*.*');
-		if (is_array($audiofiles)) {
+		// Get all the files in temp folder.
+		$audiofiles = glob($this->tmpPath . '*.*');
+
+		// Check that we got some files.
+		if ($audiofiles !== false) {
+
+			// Loop over the files.
 			foreach ($audiofiles as $audiofile) {
-				if (is_file($audiofile) && preg_match('/' . $this->audiofileregex . '$/i', $audiofile, $ext)) {
-					// Process audio info, change searchname if we find a group/album name in the tags.
-					if ($this->site->mediainfopath !== '' && $retval === false) {
-						$xmlarray = @runCmd('"' . $audioinfo . '" --Output=XML "' . $audiofile . '"');
+
+				// Check if we find the file.
+				if (preg_match('/' . $extension . '$/i', $audiofile) && is_file($audiofile)) {
+
+					// Check if mediainfo is enabled.
+					if ($retVal === false) {
+
+						//  Get the mediainfo for the file.
+						$xmlarray = @runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $audiofile . '"');
 						if (is_array($xmlarray)) {
+
+							// Convert to array.
 							$arrXml = objectsIntoArray(@simplexml_load_string(implode("\n", $xmlarray)));
+
+
 							if (isset($arrXml['File']['track'])) {
+
 								foreach ($arrXml['File']['track'] as $track) {
+
 									if (isset($track['Album']) && isset($track['Performer'])) {
-										$ext = strtoupper($ext[1]);
+
+										// Make the extension upper case.
+										$ext = strtoupper($extension);
+
+										// Form a new search name.
 										if (!empty($track['Recorded_date']) && preg_match('/(?:19|20)\d\d/', $track['Recorded_date'], $Year)) {
 											$newname = $track['Performer'] . ' - ' . $track['Album'] . ' (' . $Year[0] . ') ' . $ext;
 										} else {
 											$newname = $track['Performer'] . ' - ' . $track['Album'] . ' ' . $ext;
 										}
+
+										// Get the category or try to determine it.
 										$category = new Category();
 										if ($ext === 'MP3') {
 											$newcat = Category::CAT_MUSIC_MP3;
@@ -1718,10 +1774,14 @@ class PostProcess
 										} else {
 											$newcat = $category->determineCategory($newname, $rquer['groupid']);
 										}
+
+										// Update the search name.
 										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1 WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
 
+										// Add the mediainfo.
 										$this->releaseExtra->addFromXml($releaseID, $xmlarray);
-										$retval = true;
+
+										$retVal = true;
 										if ($this->echooutput) {
 											echo 'a';
 										}
@@ -1731,40 +1791,78 @@ class PostProcess
 							}
 						}
 					}
-					// Create an audio sample in ogg format.
-					if ($this->processAudioSample && $audval === false) {
-						$output = @runCmd('"' . $ffmpeginfo . '" -t 30 -i "' . $audiofile . '" -acodec libvorbis -loglevel quiet -y "' . $ramdrive . $releaseguid . '.ogg"');
-						$all_files = @scandir($ramdrive, 1);
+
+					// File name to store audio file.
+					$audioFileName = $releaseGuid . '.ogg';
+
+					// Check if creating audio samples is enabled.
+					if ($audVal === false) {
+
+						// Create an audio sample.
+						@runCmd(
+							'"' .
+							$this->site->ffmpegpath .
+							'" -t 30 -i "' .
+							$audiofile .
+							'" -acodec libvorbis -loglevel quiet -y "' .
+							$this->tmpPath .
+							$audioFileName .
+							'"');
+
+						// Get all the files in the temp path.
+						$all_files = @scandir($this->tmpPath, 1);
+
+						// If it's false, continue.
+						if ($all_files === false) {
+							continue;
+						}
+
+						// Loop over the temp files.
 						foreach ($all_files as $file) {
-							if (preg_match('/' . $releaseguid . '\.ogg/', $file)) {
-								if (filesize($ramdrive . $file) < 15) {
-									continue;
+
+							// Try to find the temp audio file.
+							if ($file === $audioFileName) {
+
+								// Try to move the temp audio file.
+								$renamed = @rename($this->tmpPath . $audioFileName, $this->audSavePath . $audioFileName);
+
+								if (!$renamed) {
+									// Try to copy it if it fails.
+									$copied = @copy($this->tmpPath . $audioFileName, $this->audSavePath . $audioFileName);
+
+									// Delete the old file.
+									unlink($this->tmpPath . $audioFileName);
+
+									// If it didn't copy continue.
+									if (!$copied) {
+										continue;
+									}
 								}
 
-								@copy($ramdrive . $releaseguid . '.ogg', $this->audSavePath . $releaseguid . '.ogg');
-								if (@file_exists($this->audSavePath . $releaseguid . '.ogg')) {
-									chmod($this->audSavePath . $releaseguid . '.ogg', 0764);
-									$this->db->queryExec(sprintf('UPDATE releases SET audiostatus = 1 WHERE id = %d', $releaseID));
-									$audval = true;
-									if ($this->echooutput) {
-										echo 'A';
-									}
-									break;
+								// Try to set the file perms.
+								chmod($this->audSavePath . $audioFileName, 0764);
+
+								// Update DB to said we got a audio sample.
+								$this->db->queryExec(sprintf('UPDATE releases SET audiostatus = 1 WHERE id = %d', $releaseID));
+
+								$audVal = true;
+
+								if ($this->echooutput) {
+									echo 'A';
 								}
+
+								break;
 							}
 						}
-						// Clean up all files.
-						foreach (glob($ramdrive . '*.ogg') as $v) {
-							@unlink($v);
-						}
 					}
-					if ($retval === true && $audval === true) {
+					// If we got both, break.
+					if ($retVal === true && $audVal === true) {
 						break;
 					}
 				}
 			}
 		}
-		return $retval;
+		return ($retVal && $audVal);
 	}
 
 	/**
@@ -1772,33 +1870,36 @@ class PostProcess
 	 *
 	 * @note Only called by processAddtional
 	 *
-	 * @param $ramdrive
-	 * @param $ffmpeginfo
-	 * @param $releaseguid
+	 * @param $releaseGuid
 	 *
 	 * @return bool
 	 */
-	protected function getSample($ramdrive, $ffmpeginfo, $releaseguid)
+	protected function getSample($releaseGuid)
 	{
-		$retval = false;
-		if ($ffmpeginfo === '' && !is_dir($ramdrive) && strlen($releaseguid) <= 0) {
-			return $retval;
-		}
+		// Return value.
+		$retVal = false;
 
-		$samplefiles = glob($ramdrive . '*.*');
-		if (is_array($samplefiles)) {
-			foreach ($samplefiles as $samplefile) {
-				if (is_file($samplefile) && preg_match('/' . $this->videofileregex . '$/i', $samplefile)) {
-					$filecont = @file_get_contents($samplefile, true, null, 0, 40);
-					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) < 30) {
-						continue;
-					}
+		// Get all file in temp folder.
+		$sampleFiles = glob($this->tmpPath . '*.*');
+
+		// Check if it failed.
+		if ($sampleFiles !== false) {
+
+			// Create path to temp file.
+			$fileName = 'zzzz' . mt_rand(5, 12) . mt_rand(5, 12) . '.jpg';
+
+			// Loop over all the files.
+			foreach ($sampleFiles as $sampleFile) {
+
+				// Look for a file ending with .avi, check if it's really a file.
+				if (preg_match('/\.avi$/i', $sampleFile) && is_file($sampleFile)) {
 
 					// Get the exact time of this video, using the header is not precise so use -vcodec.
-					$time = exec(
-						$ffmpeginfo .
-						' -i "' .
-						$samplefile .
+					$time = @exec(
+						'"' .
+						$this->site->ffmpegpath .
+						'" -i "' .
+						$sampleFile .
 						'" -vcodec copy -f null /dev/null 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
 					);
 
@@ -1808,52 +1909,56 @@ class PostProcess
 						$time = '00:00:01';
 					}
 
-					// Get the image.
-					exec(
-						$ffmpeginfo .
-						' -i "' .
-						$samplefile .
+					// Create the image.
+					@exec(
+						'"' .
+						$this->site->ffmpegpath .
+						'" -i "' .
+						$sampleFile .
 						'" -ss ' .
 						$time .
 						' -loglevel quiet -vframes 1 -y "' .
-						$ramdrive .
-						'zzzz' .
-						mt_rand(5, 12) .
-						mt_rand(5, 12) .
-						'.jpg' .
+						$this->tmpPath .
+						$fileName .
 						'"'
 					);
 
-					if (is_dir($ramdrive)) {
-						$all_files = @scandir($ramdrive, 1);
-						$x = 0;
-						foreach ($all_files as $file) {
-							if (preg_match('/zzzz\d+\.jpg/', $file) && $retval === false) {
-								$saved = $this->releaseImage->saveImage($releaseguid . '_thumb', $ramdrive . $file, $this->releaseImage->imgSavePath, 800, 600);
-								if ($saved === 1 && file_exists($this->releaseImage->imgSavePath . $releaseguid . '_thumb.jpg')) {
+					// Get all the files in the temp folder.
+					$all_files = @scandir($this->tmpPath, 1);
 
-									$retval = true;
-									if ($this->echooutput) {
-										echo 's';
-									}
-									break;
+					// Loop all the files.
+					foreach ($all_files as $file) {
+
+						// Check if the file is the file we created.
+						if ($file === $fileName) {
+
+							// Try to resize/move the image.
+							$saved =
+								$this->releaseImage->saveImage(
+									$releaseGuid . '_thumb',
+									$this->tmpPath .$file,
+									$this->releaseImage->imgSavePath, 800, 600
+								);
+
+							// Delete the temp file we created.
+							unlink($this->tmpPath . $fileName);
+
+							// Check if it saved.
+							if ($saved === 1 && is_file($this->releaseImage->imgSavePath . $releaseGuid . '_thumb.jpg')) {
+
+								$retVal = true;
+								if ($this->echooutput) {
+									echo 's';
 								}
+								return $retVal;
 							}
-						}
-
-						// Clean up all files.
-						foreach (glob($ramdrive . '*.jpg') as $v) {
-							@unlink($v);
-						}
-						if ($retval === true) {
-							break;
 						}
 					}
 				}
 			}
 		}
 		// If an image was made, return true, else return false.
-		return $retval;
+		return $retVal;
 	}
 
 	/**
@@ -1861,76 +1966,92 @@ class PostProcess
 	 *
 	 * @note Only called by processAddtional
 	 *
-	 * @param $ramdrive
-	 * @param $ffmpeginfo
-	 * @param $releaseguid
+	 * @param $releaseGuid Guid of the release.
 	 *
 	 * @return bool
 	 */
-	protected function getVideo($ramdrive, $ffmpeginfo, $releaseguid)
+	protected function getVideo($releaseGuid)
 	{
 		// Return value.
-		$retval = false;
-		if ($ffmpeginfo === '' && !is_dir($ramdrive) && strlen($releaseguid) <= 0) {
-			return $retval;
-		}
+		$retVal = false;
 
-		$sampleFiles = glob($ramdrive . '*.*');
-		if (is_array($sampleFiles)) {
-			$fileName = 'zzzz' . $releaseguid . '.ogv';
+		// Get all the files in the temp dir.
+		$sampleFiles = glob($this->tmpPath . '*.*');
+		if ($sampleFiles !== false) {
+
+			// Create a filename to store the temp file.
+			$fileName = 'zzzz' . $releaseGuid . '.ogv';
+
+			// Loop all the files in the temp folder.
 			foreach ($sampleFiles as $sampleFile) {
-				if (is_file($sampleFile) && preg_match('/' . $this->videofileregex . '$/i', $sampleFile)) {
-					// Get the file as a string.
-					$filecont = @file_get_contents($sampleFile, true, null, 0, 40);
-					// Check if it's a potential video or if it's smaller than 30 bytes.
-					if (!preg_match($this->sigregex, $filecont) || strlen($filecont) < 30) {
-						continue;
-					}
 
+				// Try to find an avi file.
+				if (preg_match('/\.avi$/i', $sampleFile) && is_file($sampleFile)) {
+
+					// Try to create an ogv video using the avi video.
 					$output = @runCmd
 					(
 						'"' .
-						$ffmpeginfo .
+						$this->site->ffmpegpath .
 						'" -i "' .
 						$sampleFile .
 						'" -vcodec libtheora -filter:v scale=320:-1 -t ' .
 						$this->ffmpeg_duration .
 						' -acodec libvorbis -loglevel quiet -y "' .
-						$ramdrive .
+						$this->tmpPath .
 						$fileName .
 						'"'
 					);
 
-					$all_files = @scandir($ramdrive, 1);
+					// Get all the files in the temp dir.
+					$all_files = @scandir($this->tmpPath, 1);
+					if ($all_files === false ) {
+						continue;
+					}
+
+					// Loop over them.
 					foreach ($all_files as $file) {
+
+						// Until we find the video file.
 						if ($file === $fileName) {
-							if (filesize($ramdrive . $fileName) > 4096) {
-								$newFile = $this->releaseImage->vidSavePath . $releaseguid . '.ogv';
-								@copy($ramdrive . $fileName, $newFile);
-								if (@file_exists($newFile)) {
-									chmod($newFile, 0764);
-									$this->db->queryExec(sprintf('UPDATE releases SET videostatus = 1 WHERE guid = %s', $this->db->escapeString($releaseguid)));
-									$retval = true;
-									if ($this->echooutput) {
-										echo 'v';
-									}
-									break;
+
+							// Create a path to where the file should be moved.
+							$newFile = $this->releaseImage->vidSavePath . $releaseGuid . '.ogv';
+
+							// Try to move the file to the new path.
+							$renamed = @rename($this->tmpPath . $fileName, $newFile);
+
+							// If we couldn't rename it, try to copy it.
+							if (!$renamed) {
+
+								$copied = @copy($this->tmpPath . $fileName, $newFile);
+
+								// Delete the old file.
+								unlink($this->tmpPath . $fileName);
+
+								// If it didn't copy, continue.
+								if (!$copied) {
+									continue;
 								}
 							}
-						}
-						// Clean up all files.
-						foreach (glob($ramdrive . '*.ogv') as $v) {
-							@unlink($v);
-						}
-						if ($retval === true) {
-							break;
+
+							// Change the permissions.
+							chmod($newFile, 0764);
+
+							// Update query to say we got the video.
+							$this->db->queryExec(sprintf('UPDATE releases SET videostatus = 1 WHERE guid = %s', $this->db->escapeString($releaseGuid)));
+							$retVal = true;
+							if ($this->echooutput) {
+								echo 'v';
+							}
+							return $retVal;
 						}
 					}
 				}
 			}
 		}
 		// If an video was made, return true, else return false.
-		return $retval;
+		return $retVal;
 	}
 
 }

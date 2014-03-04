@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-04 -> kevin    -> Remove checks that were redone multiple times or checks that were not useful in postprocess to speed it up.
 2014-03-03 -> jonnyboy -> added script check_unique_indexes.php to check/add UNIQUE INDEXES missing from db that are in the schema
 2014-03-03 -> kevin    -> Rework how alternate NNTP server works. Don't enable compression if server is tweaknews.
                        -> Change: Remove inneficienies from postproc.
