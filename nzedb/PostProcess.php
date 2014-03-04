@@ -1215,7 +1215,7 @@ class PostProcess
 	protected function addmediafile($file, $data)
 	{
 		if (@file_put_contents($file, $data) !== false) {
-			$xmlarray = @runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $file . '"');
+			$xmlarray = @exec('"' . $this->site->mediainfopath . '" --Output=XML "' . $file . '"');
 			if (is_array($xmlarray)) {
 				$xmlarray = implode("\n", $xmlarray);
 				$xmlObj = @simplexml_load_string($xmlarray);
@@ -1397,8 +1397,10 @@ class PostProcess
 	{
 		$rar = new ArchiveInfo();
 		$files = $retval = false;
-		if ($rar->setData($fetchedBinary, true))
+		if ($rar->setData($fetchedBinary, true)) {
+			// Useless?
 			$files = $rar->getArchiveFileList();
+		}
 		if ($rar->error) {
 			$this->debugging->start('getRar', 'RAR Error: ' . $rar->error, 4);
 			return $retval;
@@ -1418,8 +1420,9 @@ class PostProcess
 		$files = $rar->getArchiveFileList();
 		if ($files !== false) {
 			$retval = array();
-			if ($this->echooutput !== false)
+			if ($this->echooutput !== false) {
 				echo 'r';
+			}
 			foreach ($files as $file) {
 				if (isset($file['name'])) {
 					if (isset($file['error'])) {
@@ -1430,16 +1433,19 @@ class PostProcess
 						$this->password = true;
 						break;
 					}
-					if (preg_match($this->supportfiles . ')(?!.{20,})/i', $file['name']))
+					if (preg_match($this->supportfiles . ')(?!.{20,})/i', $file['name'])) {
 						continue;
+					}
 					if (preg_match('/([^\/\\\\]+)(\.[a-z][a-z0-9]{2,3})$/i', $file['name'], $name)) {
 						$rarfile = $this->tmpPath . $name[1] . mt_rand(0, 99999) . $name[2];
 						$fetchedBinary = $rar->getFileData($file['name'], $file['source']);
-						if ($this->site->mediainfopath !== '')
+						if ($this->site->mediainfopath !== '') {
 							$this->addmediafile($rarfile, $fetchedBinary);
+						}
 					}
-					if (!preg_match('/\.(r\d+|part\d+)$/i', $file['name']))
+					if (!preg_match('/\.(r\d+|part\d+)$/i', $file['name'])) {
 						$retval[] = $file;
+					}
 				}
 			}
 		}
@@ -1495,16 +1501,18 @@ class PostProcess
 			}
 
 			$files = $rar->getArchiveFileList();
-			if (count($files) === 0 || !is_array($files) || !isset($files[0]['compressed']))
+			if (count($files) === 0 || !is_array($files) || !isset($files[0]['compressed'])) {
 				return false;
+			}
 
 			if ($files[0]['compressed'] == 0 && $files[0]['name'] != $this->name) {
 				$this->name = $files[0]['name'];
 				$this->size = $files[0]['size'] * 0.95;
 				$this->adj = $this->sum = 0;
 
-				if ($this->echooutput)
+				if ($this->echooutput) {
 					echo 'r';
+				}
 				// If archive is not stored compressed, process data
 				foreach ($files as $file) {
 					if (isset($file['name'])) {
@@ -1563,17 +1571,20 @@ class PostProcess
 				$rarfile = $this->tmpPath . 'rarfile' . mt_rand(0, 99999) . '.rar';
 				if (@file_put_contents($rarfile, $fetchedBinary)) {
 					$execstring = '"' . $this->site->unrarpath . '" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' . $rarfile . '" "' . $this->tmpPath . '"';
-					$output = @runCmd($execstring, false, true);
+					runCmd($execstring);
 					if (isset($files[0]['name'])) {
-						if ($this->echooutput)
+						if ($this->echooutput) {
 							echo 'r';
+						}
 						foreach ($files as $file) {
 							if (isset($file['name'])) {
-								if (!isset($file['next_offset']))
+								if (!isset($file['next_offset'])) {
 									$file['next_offset'] = 0;
+								}
 								$range = mt_rand(0, 99999);
-								if (isset($file['range']))
+								if (isset($file['range'])) {
 									$range = $file['range'];
+								}
 
 								$retval[] = array('name' => $file['name'], 'source' => $file['source'], 'range' => $range, 'size' => $file['size'], 'date' => $file['date'], 'pass' => $file['pass'], 'next_offset' => $file['next_offset']);
 							}
@@ -1596,10 +1607,12 @@ class PostProcess
 						break;
 					}
 
-					if (!isset($file['next_offset']))
+					if (!isset($file['next_offset'])) {
 						$file['next_offset'] = 0;
-					if (!isset($file['range']))
+					}
+					if (!isset($file['range'])) {
 						$file['range'] = 0;
+					}
 
 					$retval[] = array('name' => $file['name'], 'source ' => 'main', 'range' => $file['range'], 'size' => $file['size'], 'date' => $file['date'], 'pass' => $file['pass'], 'next_offset' => $file['next_offset']);
 					$this->adj = $file['next_offset'] + $this->adj;
@@ -1608,25 +1621,29 @@ class PostProcess
 
 				$this->size = $this->sum;
 				$this->sum = $this->adj;
-				if ($this->segsize !== 0)
+				if ($this->segsize !== 0) {
 					$this->adj = $this->adj / $this->segsize;
-				else
+				} else {
 					$this->adj = 0;
+				}
 
-				if ($this->adj < .7)
+				if ($this->adj < .7) {
 					$this->adj = 1;
+				}
 			}
 			// Not a compressed file, but segmented.
-			else
+			else {
 				$this->ignorenumbered = true;
+			}
 		}
 
 		// Use found content to populate releasefiles, nfo, and create multimedia files.
 		foreach ($retval as $k => $v) {
-			if (!preg_match($this->supportfiles . '|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i', $v['name']) && count($retval) > 0)
+			if (!preg_match($this->supportfiles . '|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i', $v['name']) && count($retval) > 0) {
 				$this->addfile($v, $release, $rar, $nntp);
-			else
+			} else {
 				unset($retval[$k]);
+			}
 		}
 
 		if (count($retval) === 0) {
@@ -1663,7 +1680,7 @@ class PostProcess
 				if (preg_match('/\.avi$/i', $mediaFile) && is_file($mediaFile)) {
 
 					// Run media info on it.
-					$xmlArray = @runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $mediaFile . '"');
+					$xmlArray = @exec('"' . $this->site->mediainfopath . '" --Output=XML "' . $mediaFile . '"');
 
 					// Check if we got it.
 					if (is_array($xmlArray)) {
@@ -1745,7 +1762,7 @@ class PostProcess
 					if ($retVal === false) {
 
 						//  Get the mediainfo for the file.
-						$xmlarray = @runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $audiofile . '"');
+						$xmlarray = @exec('"' . $this->site->mediainfopath . '" --Output=XML "' . $audiofile . '"');
 						if (is_array($xmlarray)) {
 
 							// Convert to array.
@@ -1801,7 +1818,7 @@ class PostProcess
 						$audioFileName = $releaseGuid . '.ogg';
 
 						// Create an audio sample.
-						@runCmd(
+						runCmd(
 							'"' .
 							$this->site->ffmpegpath .
 							'" -t 30 -i "' .
@@ -1912,7 +1929,7 @@ class PostProcess
 					}
 
 					// Create the image.
-					@exec(
+					runCmd(
 						'"' .
 						$this->site->ffmpegpath .
 						'" -i "' .
@@ -1993,7 +2010,7 @@ class PostProcess
 					// If wanted sample length is less than 60, try to get sample from the end of the video.
 					if ($this->ffmpeg_duration < 60) {
 						// Get the real duration of the file.
-						$time = exec(
+						$time = @exec(
 							'"' .
 							$this->site->ffmpegpath .
 							'" -i "' .
@@ -2004,7 +2021,7 @@ class PostProcess
 						// If we don't get the time create the sample the old way (gets the start of the video).
 						$numbers = array();
 						if (!preg_match('/^\d{2}:\d{2}:(\d{2}).(\d{2})$/', $time, $numbers)) {
-							@runCmd
+							runCmd
 							(
 								'"' .
 								$this->site->ffmpegpath .
@@ -2022,7 +2039,7 @@ class PostProcess
 							$maxLength = (int)$numbers[1];
 
 							// If the clip is shorter than the length we want.
-							if ($maxLength < $this->ffmpeg_duration) {
+							if ($maxLength <= $this->ffmpeg_duration) {
 								// The lowest we want is 0.
 								$lowestLength = '00:00:00.00';
 
@@ -2047,7 +2064,7 @@ class PostProcess
 							}
 
 							// Try to get the sample (from the end instead of the start).
-							@runCmd
+							runCmd
 							(
 								'"' .
 								$this->site->ffmpegpath .
@@ -2064,7 +2081,7 @@ class PostProcess
 						}
 					} else {
 						// If longer than 60, then run the old way.
-						@runCmd
+						runCmd
 						(
 							'"' .
 							$this->site->ffmpegpath .
