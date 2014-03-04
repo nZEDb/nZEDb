@@ -53,7 +53,7 @@ if (!isset($argv[1])) {
 		$s = new Sites();
 		$site = $s->get();
 		$nntp = new NNTP();
-		if (($site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
+		if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
 			exit($c->error("Unable to connect to usenet."));
 		}
 		if ($site->nntpproxy === "1") {
@@ -76,7 +76,7 @@ if (!isset($argv[1])) {
 		$s = new Sites();
 		$site = $s->get();
 		$nntp = new NNTP();
-		if (($site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
+		if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
 			exit($c->error("Unable to connect to usenet."));
 		}
 		if ($site->nntpproxy === "1") {

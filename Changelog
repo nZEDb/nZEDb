@@ -8,7 +8,8 @@ Each update goes to the top of the file
 
 
 2014-03-03 -> jonnyboy -> added script check_unique_indexes.php to check/add UNIQUE INDEXES missing from db that are in the schema
-2014-03-03 -> kevin    -> Change: Remove inneficienies from postproc.
+2014-03-03 -> kevin    -> Rework how alternate NNTP server works. Don't enable compression if server is tweaknews.
+                       -> Change: Remove inneficienies from postproc.
                        -> Add: API requests count on profile page.
                        -> Fix: #1204 When there's a problem enabling compression and the response is 500, it is not reported as an error to PEAR, so the getMessage property doesn't exist.
                        -> Don't log NNTP disconnects unless we are already connected.
