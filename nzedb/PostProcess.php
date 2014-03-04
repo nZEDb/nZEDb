@@ -1215,7 +1215,7 @@ class PostProcess
 	protected function addmediafile($file, $data)
 	{
 		if (@file_put_contents($file, $data) !== false) {
-			$xmlarray = @exec('"' . $this->site->mediainfopath . '" --Output=XML "' . $file . '"');
+			$xmlarray = runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $file . '"');
 			if (is_array($xmlarray)) {
 				$xmlarray = implode("\n", $xmlarray);
 				$xmlObj = @simplexml_load_string($xmlarray);
@@ -1680,7 +1680,7 @@ class PostProcess
 				if (preg_match('/\.avi$/i', $mediaFile) && is_file($mediaFile)) {
 
 					// Run media info on it.
-					$xmlArray = @exec('"' . $this->site->mediainfopath . '" --Output=XML "' . $mediaFile . '"');
+					$xmlArray = runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $mediaFile . '"');
 
 					// Check if we got it.
 					if (is_array($xmlArray)) {
@@ -1762,7 +1762,7 @@ class PostProcess
 					if ($retVal === false) {
 
 						//  Get the mediainfo for the file.
-						$xmlarray = @exec('"' . $this->site->mediainfopath . '" --Output=XML "' . $audiofile . '"');
+						$xmlarray = runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $audiofile . '"');
 						if (is_array($xmlarray)) {
 
 							// Convert to array.
