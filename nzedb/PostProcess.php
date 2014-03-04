@@ -1704,8 +1704,6 @@ class PostProcess
 	 */
 	protected function getAudioinfo($releaseGuid, $releaseID, $extension)
 	{
-		//this->tmpPath, $this->site->ffmpegpath, $this->site->mediainfopath
-
 		// Return values.
 		$retVal = $audVal = false;
 

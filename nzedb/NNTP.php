@@ -118,6 +118,7 @@ class NNTP extends Net_NNTP_Client
 		}
 
 		$ret = $ret2 = $connected = $sslEnabled = false;
+		$error = 'Unspecified error.';
 
 		if (!$alternate) {
 			$sslEnabled = NNTP_SSLENABLED ? true : false;
@@ -159,6 +160,8 @@ class NNTP extends Net_NNTP_Client
 				// If no error, we are connected.
 				if (!$cErr) {
 					$connected = true;
+				} else {
+					$error = $ret->getMessage();
 				}
 
 				// If error, try to connect again.
@@ -175,7 +178,7 @@ class NNTP extends Net_NNTP_Client
 					$this->currentServer .
 					$enc .
 					': ' .
-					$ret->getMessage();
+					$error;
 				$this->debugging->start("doConnect", $message, 2);
 				return $this->throwError($this->c->error($message));
 			}
@@ -197,6 +200,8 @@ class NNTP extends Net_NNTP_Client
 					// If there was no error, then we are authenticated.
 					if (!$aErr) {
 						$authenticated = true;
+					} else {
+						$error = $ret2->getMessage();
 					}
 
 					// If error, try to authenticate again.
@@ -214,7 +219,7 @@ class NNTP extends Net_NNTP_Client
 							' - ' .
 							$userName .
 							' (' .
-							$ret2->getMessage() .
+							$error .
 							')';
 						$this->debugging->start("doConnect", $message, 2);
 						return $this->throwError($this->c->error($message));
