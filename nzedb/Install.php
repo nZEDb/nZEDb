@@ -73,7 +73,7 @@ class Install
 
 	public function __construct()
 	{
-		$this->COVERS_PATH = nZEDb_RES . 'covers' . DS;
+		$this->COVERS_PATH = nZEDb_WWW . 'covers' . DS;
 		$this->DB_DIR = nZEDb_ROOT . 'db' . DS;
 		$this->INSTALL_DIR = nZEDb_WWW . 'install';
 		$this->NZB_PATH = nZEDb_RES . 'nzb' . DS;
