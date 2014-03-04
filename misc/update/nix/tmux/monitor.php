@@ -25,7 +25,7 @@ $colors = (isset($tmux->colors)) ? $tmux->colors : 0;
 $s = new Sites();
 $site = $s->get();
 $patch = $site->sqlpatch;
-$alternate_nntp = (isset($site->alternate_nntp)) ? $site->alternate_nntp : 0;
+$alternate_nntp = ($site->alternate_nntp === '1') ? true : false;
 $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 $delay = (isset($site->delaytime)) ? $site->delaytime : 2;
 $nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
@@ -48,7 +48,7 @@ if ($nntpproxy == 0) {
 	$port = NNTP_PORT;
 	$host = NNTP_SERVER;
 	$ip = gethostbyname($host);
-	if ($alternate_nntp == "1") {
+	if ($alternate_nntp) {
 		$port_a = NNTP_PORT_A;
 		$host_a = NNTP_SERVER_A;
 		$ip_a = gethostbyname($host_a);
@@ -67,7 +67,7 @@ if ($nntpproxy == 0) {
 		}
 	}
 
-	if ($alternate_nntp == 1) {
+	if ($alternate_nntp) {
 		$filename = $DIR . "update/python/lib/nntpproxy_a.conf";
 		$fp = fopen($filename, "r") or die("Couldn't open $filename");
 		while (!feof($fp)) {
@@ -82,7 +82,7 @@ if ($nntpproxy == 0) {
 		}
 	}
 	$ip = gethostbyname($host);
-	if ($alternate_nntp == 1) {
+	if ($alternate_nntp) {
 		$ip_a = gethostbyname($host_a);
 	}
 }
@@ -346,8 +346,8 @@ if ($running == 1) {
 	printf($mask2, "Monitor Off v$version [" . $patch . "]: ", relativeTime("$time"));
 }
 printf($mask1, "USP Connections:", $usp1activeconnections . " active (" . $usp1totalconnections . " total) - " . $host . ":" . $port);
-if ($alternate_nntp == "1") {
-	printf($mask1, "USP Alternate:", $usp2activeconnections . " active (" . $usp2totalconnections . " total) - " . (($alternate_nntp == "1") ? $host_a . ":" . $port_a : "n/a"));
+if ($alternate_nntp) {
+	printf($mask1, "USP Alternate:", $usp2activeconnections . " active (" . $usp2totalconnections . " total) - " . (($alternate_nntp) ? $host_a . ":" . $port_a : "n/a"));
 }
 printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd") . "ago");
@@ -910,7 +910,7 @@ while ($i > 0) {
 	}
 
 	//get usenet connections
-	if ($alternate_nntp == "1") {
+	if ($alternate_nntp) {
 		$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
 		$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":" . $port));
 		$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip_a . ":" . $port_a . " | grep -c ESTAB"));
@@ -965,8 +965,8 @@ while ($i > 0) {
 		printf($mask2, "Monitor Off v$version [" . $patch . "]: ", relativeTime("$time"));
 	}
 	printf($mask1, "USP Connections:", $usp1activeconnections . " active (" . $usp1totalconnections . " total) - " . $host . ":" . $port);
-	if ($alternate_nntp == "1") {
-		printf($mask1, "USP Alternate:", $usp2activeconnections . " active (" . $usp2totalconnections . " total) - " . (($alternate_nntp == "1") ? $host_a . ":" . $port_a : "n/a"));
+	if ($alternate_nntp) {
+		printf($mask1, "USP Alternate:", $usp2activeconnections . " active (" . $usp2totalconnections . " total) - " . (($alternate_nntp) ? $host_a . ":" . $port_a : "n/a"));
 	}
 
 	printf($mask1, "Newest Release:", "$newestname");

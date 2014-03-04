@@ -10,6 +10,7 @@ Class NZBContents
 		$s = new Sites();
 		$this->site = $s->get();
 		$this->lookuppar2 = (isset($this->site->lookuppar2)) ? $this->site->lookuppar2 : 0;
+		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
 	}
 
 	public function getNfoFromNZB($guid, $relID, $groupID, $nntp, $groupName, $db, $nfo)
@@ -107,14 +108,14 @@ Class NZBContents
 
 				if ($nfocheck !== false && $foundnfo !== true) {
 					if (preg_match('/\.\b(nfo|inf|ofn)\b(?![ .-])/i', $subject)) {
-						$messageid = $nzbcontents->segments->segment;
+						$messageid = (string)$nzbcontents->segments->segment;
 						$foundnfo = true;
 					}
 				}
 				if ($this->lookuppar2 == 1 && $foundpar2 === false) {
 					if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $subject)) {
 						$pp = new PostProcess($this->echooutput);
-						if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp, 1) === true) {
+						if ($pp->parsePAR2((string)$nzbcontents->segments->segment, $relID, $groupID, $nntp, 1) === true) {
 							$foundpar2 = true;
 						}
 					}
@@ -154,15 +155,11 @@ Class NZBContents
 		}
 
 		$messageid = $this->NZBcompletion($guid, $relID, $groupID, $nntp, $db, true);
+
 		if ($messageid !== false) {
-			$fetchedBinary = $nntp->getMessage($groupName, $messageid);
+			$fetchedBinary = $nntp->getMessages($groupName, $messageid, $this->alternateNNTP);
 			if ($nntp->isError($fetchedBinary)) {
-				$nntp->doQuit();
-				$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
-				$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-				if ($nntp->isError($fetchedBinary)) {
 					$fetchedBinary = false;
-				}
 			}
 			if ($nfo->isNFO($fetchedBinary, $guid) === true) {
 				if ($this->echooutput) {
@@ -188,17 +185,11 @@ Class NZBContents
 				$subject = $nzbcontents->attributes()->subject;
 				// Look for a subject with 1 part, ignore common file extensions.
 				if (preg_match('/\(1\/1\)$/i', $subject) && !preg_match('/\.(apk|bat|bmp|cbr|cbz|cfg|css|csv|cue|db|dll|doc|epub|exe|gif|htm|ico|idx|ini|jpg|lit|log|m3u|mid|mobi|mp3|nib|nzb|odt|opf|otf|par|par2|pdf|psd|pps|png|ppt|r\d{2,4}|rar|sfv|srr|sub|srt|sql|rom|rtf|tif|torrent|ttf|txt|vb|vol\d+\+\d+|wps|xml|zip)/i', $subject)) {
-					$messageid = $nzbcontents->segments->segment;
+					$messageid = (string)$nzbcontents->segments->segment;
 					if ($messageid !== false) {
-						$possibleNFO = $nntp->getMessage($groupName, $messageid);
+						$possibleNFO = $nntp->getMessages($groupName, $messageid, $this->alternateNNTP);
 						if ($nntp->isError($possibleNFO)) {
-							$nntp->doQuit();
-							$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
-							$possibleNFO = $nntp->getMessage($groupName, $messageid);
-							if ($nntp->isError($possibleNFO)) {
-								$nntp->doQuit();
-								$possibleNFO = false;
-							}
+							$possibleNFO = false;
 						}
 						if ($possibleNFO !== false) {
 							if ($nfo->isNFO($possibleNFO, $guid) == true) {

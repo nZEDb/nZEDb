@@ -10,6 +10,7 @@ class GrabNZBs
 		$this->site = $s->get();
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->replacenzbs = (isset($this->site->replacenzbs)) ? $this->site->replacenzbs : 0;
+		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
 		$this->ReleaseCleaning = new ReleaseCleaning();
 		//$this->CollectionsCleaning = new CollectionsCleaning();
 		$this->categorize = new Category();
@@ -48,15 +49,9 @@ class GrabNZBs
 				echo $this->c->header("\nGetting " . sizeof($arr) . ' articles for ' . $hash);
 			}
 
-			$article = $nntp->getMessages($nzb['groupname'], $arr);
+			$article = $nntp->getMessages($nzb['groupname'], $arr, $this->alternateNNTP);
 			if ($nntp->isError($article)) {
-				$nntp->doQuit();
-				$this->site->grabnzbs == '2' ? $nntp->doConnect(true, true) : $nntp->doConnect();
-				$article = $nntp->getMessages($nzb['groupname'], $arr);
-				if ($nntp->isError($article)) {
-					$nntp->doQuit();
-					$article = false;
-				}
+				$article = false;
 			}
 
 			// If article downloaded, import it, else delete from nzbs table

@@ -8,8 +8,34 @@ Each update goes to the top of the file
 
 
 2013-03-04 -> niel     -> Fix: Reverting default covers path change
-2014-03-01 -> kevin    -> Addition: #1201 Api requests # on user-list page.
-                       -> Remove redundant part of query.
+2014-03-04 -> kevin    -> Remove checks that were redone multiple times or checks that were not useful in postprocess to speed it up.
+2014-03-03 -> jonnyboy -> added script check_unique_indexes.php to check/add UNIQUE INDEXES missing from db that are in the schema
+2014-03-03 -> kevin    -> Rework how alternate NNTP server works. Don't enable compression if server is tweaknews.
+                       -> Change: Remove inneficienies from postproc.
+                       -> Add: API requests count on profile page.
+                       -> Fix: #1204 When there's a problem enabling compression and the response is 500, it is not reported as an error to PEAR, so the getMessage property doesn't exist.
+                       -> Don't log NNTP disconnects unless we are already connected.
+                       -> Minor changes to getSample, add -y to ffmpeg to overwrite, change the regex in the loop.
+2014-03-02 -> bart39   -> Fix: fixed queries in nzb-import
+2014-03-02 -> jonnyboy -> removed delete releases from Admin page, never finished
+2014-03-02 -> kevin    -> Change how sample previews are taken, get the last possible frame, which means most of the pictures are not black anymore.
+                       -> Refactor debugging.
+                       -> Debugging to Binaries.
+                       -> Debugging to backfill.
+                       -> Add pruning of old logs.
+                       -> Log failed queries.
+                       -> Compress old log files.
+                       -> Fix bug in backfill daysOld method, most of the time it was trying to do math using a date in string of text.
+2014-03-01 -> jonnyboy -> silence error
+2014-03-01 -> bart39   -> Fix: fixed query in getAPIRequests
+2014-03-01 -> kevin    -> Change:   Debugging in its own class, start logging in DB.
+                       -> Change:   Commit.sh change debug/logging to false before committing, true after.
+                       -> Addition: Logging to NNTP.php, Turn on debugging in site->admin if you want to use it, logs are in resources/logs
+                       -> Addition: Displaying debug messages to CLI, edit nzedb/Logging.php for options.
+                       -> Change:   Comment out the debug info in binaries.php -> maybe add it later on to a log file?
+                       -> Addition: #1201 Api requests # on user-list page.
+                       -> Remove:   Redundant part of query in apirequests method.
+                       -> New:      Logging to files for debug info.
 2014-03-01 -> niel     -> Fix: fixing constants in Install/step1.
                        -> Chg: Changed button text for instal step 6.
                        -> New: Added covers and tmpunrarpath to install step 6
