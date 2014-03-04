@@ -30,7 +30,7 @@ echo "Running pre-commit hooks\n";
  */
 if ($error === false) {
 	exec("git branch -a | grep \*", $output);
-	if ($output[0] == '* dev') { // Only update versions on the dev branch to lessen conflicts
+	if (in_array(substr($output[0], 2), ['dev', 'next-master', 'master'])) { // Only update versions on specific branches to lessen conflicts
 		$vers = new \nzedb\utility\Versions();
 		$vers->checkAll();
 		$vers->save();
@@ -39,5 +39,6 @@ if ($error === false) {
 		echo "not dev branch, skipping version updates\n";
 	}
 }
+
 exit($error);
 ?>
