@@ -95,7 +95,7 @@ class PostProcess
 		$this->c = new ColorCLI();
 		$this->db = new DB();
 		$this->groups = new Groups();
-		$this->debugging = new Debugging();
+		$this->debugging = new Debugging('PostProcess');
 		$this->Nfo = new Nfo($echoOutput);
 		$this->releaseFiles = new ReleaseFiles();
 		$s = new sites();
@@ -673,6 +673,7 @@ class PostProcess
 				$nzbpath = $nzb->getNZBPath($rel['guid'], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
 				if (!file_exists($nzbpath)) {
 					// The nzb was not located. decrement the passwordstatus.
+					$this->debugging->start('processAdditional', 'NZB not found for release: ' . $rel['guid'], 3);
 					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = ' . $rel['id']);
 					continue;
 				}
@@ -693,6 +694,7 @@ class PostProcess
 				$nzbfiles = $nzb->nzbFileList($nzbfile);
 				if (count($nzbfiles) === 0) {
 					// There does not appear to be any files in the nzb, decrement passwordstatus
+					$this->debugging->start('processAdditional', 'NZB file is empty: ' . $rel['guid'], 3);
 					$this->db->queryExec('UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = ' . $rel['id']);
 					continue;
 				}
