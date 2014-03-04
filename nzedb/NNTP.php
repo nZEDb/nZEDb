@@ -336,7 +336,14 @@ class NNTP extends Net_NNTP_Client
 				} else {
 					if ($alternate) {
 						if (!$aConnected) {
-							$nntp->doConnect(true, true);
+							// Check if the current connected server is the alternate or not.
+							if ($this->currentServer === NNTP_SERVER) {
+								// It's the main so connect to the alternate.
+								$nntp->doConnect(true, true);
+							} else {
+								// It's the alternate so connect to the main.
+								$nntp->doConnect();
+							}
 							$aConnected = true;
 						}
 						$body = $nntp->getMessage($groupName, $m);
