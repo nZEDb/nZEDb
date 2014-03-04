@@ -1694,10 +1694,19 @@ class PostProcess
 			$retVal = true;
 		}
 
+		$category = new Category();
+		$musicParent = (string)Category::CAT_PARENT_MUSIC;
 		// Make sure the category is music or other->misc.
 		$rquer = $this->db->queryOneRow(sprintf(
 			'SELECT categoryid as id, groupid FROM releases WHERE proc_pp = 0 AND id = %d', $releaseID));
-		if (!preg_match('/^3\d{3}|7010/', $rquer['id'])) {
+		if (!preg_match(
+			'/^' .
+			$musicParent[0].
+			'\d{3}|' .
+			Category::CAT_MISC .
+			'/',
+			$rquer['id'])) {
+
 			return $retVal;
 		}
 
@@ -1741,7 +1750,6 @@ class PostProcess
 										}
 
 										// Get the category or try to determine it.
-										$category = new Category();
 										if ($ext === 'MP3') {
 											$newcat = Category::CAT_MUSIC_MP3;
 										} else if ($ext === 'FLAC') {
