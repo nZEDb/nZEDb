@@ -6,7 +6,7 @@ $c = new ColorCLI();
 if (!isset($argv[1])) {
 	if ($argv[1] !== 'test' || $argv[1] !== 'alter') {
 		exit($c->error("\nThis script will scan schema.mysql for all UNIQUE INDEXES.\n"
-						. "It will verify that you have them. If you do not, you can choode to run manually or allow the script to run them.\n\n"
+						. "It will verify that you have them. If you do not, you can choose to run manually or allow the script to run them.\n\n"
 						. "php $argv[0] test      ...: To verify all unique indexes.\n"
 						. "php $argv[0] alter     ...: To add missing unique indexes.\n"));
 	}
@@ -69,8 +69,8 @@ if ($handle) {
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/binaries_\d+/', $tbl)) {
-								$check_binaries = $db->queryOneRow("SHOW INDEXES IN " . trim($tbl) . " WHERE non_unique = 0 AND column_name = '" . trim($column) . "'");
-								if (!isset($check_binaries['key_name'])) {
+								$checkBinaries = $db->queryOneRow("SHOW INDEXES IN " . trim($tbl) . " WHERE non_unique = 0 AND column_name = '" . trim($column) . "'");
+								if (!isset($checkBinaries['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT $match[2] UNIQUE (${match[4]})";
 									run_query($qry, $argv[1]);
 								}
@@ -83,8 +83,8 @@ if ($handle) {
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/parts_\d+/', $tbl)) {
-								$check_parts = $db->queryOneRow("SHOW INDEXES IN " . trim($tbl) . " WHERE non_unique = 0 AND column_name = '" . trim($column) . "'");
-								if (!isset($check_parts['key_name'])) {
+								$checkParts = $db->queryOneRow("SHOW INDEXES IN " . trim($tbl) . " WHERE non_unique = 0 AND column_name = '" . trim($column) . "'");
+								if (!isset($checkParts['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT $match[2] UNIQUE (${match[4]})";
 									run_query($qry, $argv[1]);
 								}
@@ -97,8 +97,8 @@ if ($handle) {
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/partrepair_\d+/', $tbl)) {
-								$check_partrepair = $db->queryOneRow("SHOW INDEXES IN " . trim($tbl) . " WHERE non_unique = 0 AND column_name = '" . trim($column) . "'");
-								if (!isset($check_partrepair['key_name'])) {
+								$checkPartRepair = $db->queryOneRow("SHOW INDEXES IN " . trim($tbl) . " WHERE non_unique = 0 AND column_name = '" . trim($column) . "'");
+								if (!isset($checkPartRepair['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT $match[2] UNIQUE (${match[4]})";
 									run_query($qry, $argv[1]);
 								}
