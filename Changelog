@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2013-03-04 -> niel     -> Fix: Reverting default covers path change
 2014-03-01 -> kevin    -> Addition: #1201 Api requests # on user-list page.
                        -> Remove redundant part of query.
 2014-03-01 -> niel     -> Fix: fixing constants in Install/step1.
