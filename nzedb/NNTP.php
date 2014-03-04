@@ -314,6 +314,8 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function getMessages($groupName, $identifiers, $alternate=false)
 	{
+		$this->checkConnection();
+
 		// String to hold all the bodies.
 		$body = '';
 
@@ -398,6 +400,8 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function get_Article($groupName, $identifier, $yEnc = false)
 	{
+		$this->checkConnection();
+
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
 			// Select the group.
@@ -470,6 +474,8 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function get_Header($groupName, $identifier)
 	{
+		$this->checkConnection();
+
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
 			// Select the group.
@@ -536,6 +542,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function postArticle($groups, $subject, $body, $from, $yEnc = true, $compress = true, $extra = '')
 	{
+		$this->checkConnection();
 
 		// Throw errors if subject or from are more than 510 chars.
 		if (strlen($subject) > 510) {
@@ -768,6 +775,27 @@ class NNTP extends Net_NNTP_Client
 		$message = 'Decompression Failed, connection closed.';
 		$this->debugging->start("_getXFeatureTextResponse", $message, 2);
 		return $this->throwError($this->c->error($message), 1000);
+	}
+
+	/**
+	 * Check if we are still connected. Reconnect if not.
+	 *
+	 * @return bool
+	 */
+	protected function checkConnection()
+	{
+		if (parent::_isConnected()) {
+			return true;
+		} else {
+			switch($this->currentServer) {
+				case NNTP_SERVER:
+					return $this->doConnect();
+				case NNTP_SERVER_A:
+					return $this->doConnect(true, true);
+				default:
+					return false;
+			}
+		}
 	}
 
 	/**
