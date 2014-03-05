@@ -82,9 +82,9 @@ class NNTP extends Net_NNTP_Client
 		$this->s = new Sites();
 		$this->site = $this->s->get();
 		$this->debugging = new Debugging("NNTP");
-		$this->nntpRetries = (!empty($this->site->nntpretries)) ? $this->site->nntpretries : 0;
-		$this->currentServer = '';
-		$this->currentPort = 119;
+		$this->nntpRetries = ((!empty($this->site->nntpretries)) ? (int)$this->site->nntpretries : 0) + 1;
+		$this->currentServer = NNTP_SERVER;
+		$this->currentPort = NNTP_PORT;
 	}
 
 	/**
@@ -117,77 +117,82 @@ class NNTP extends Net_NNTP_Client
 			$this->doQuit();
 		}
 
-		$enc = $ret = $ret2 = $connected = $sslEnabled = false;
+		$ret = $ret2 = $connected = $sslEnabled = false;
+		$error = 'Unspecified error.';
 
 		if (!$alternate) {
-			$sslEnabled = (defined('NNTP_SSLENABLED') && NNTP_SSLENABLED) ? true : false;
+			$sslEnabled = NNTP_SSLENABLED ? true : false;
 			$this->currentServer = NNTP_SERVER;
 			$this->currentPort = NNTP_PORT;
+			$userName = NNTP_USERNAME;
+			$password = NNTP_PASSWORD;
 		} else {
-			$sslEnabled = (defined('NNTP_SSLENABLED_A') && NNTP_SSLENABLED_A) ? true : false;
+			$sslEnabled = NNTP_SSLENABLED_A ? true : false;
 			$this->currentServer = NNTP_SERVER_A;
 			$this->currentPort = NNTP_PORT_A;
+			$userName = NNTP_USERNAME_A;
+			$password = NNTP_PASSWORD_A;
 		}
 
-		if ($sslEnabled) {
-			$enc = 'ssl';
-		}
+		$enc = ($sslEnabled ? ' (ssl)' : ' (non-ssl)');
 
-		// Tweaknews doesn't support compression so don't try.
-		if (strpos($this->currentServer, 'tweaknews')) {
+		// Some providers don't support XFeature GZip don't try to enable it since it's slow.
+		if (preg_match('/tweaknews|xsusenet/i', $this->currentServer)) {
 			$compression = false;
 		}
 
 		// Try to connect until we run of out tries.
-		$retries = ((int) $this->nntpRetries + 1);
+		$retries = $this->nntpRetries;
+
 		while (true) {
 			$retries--;
 			$authenticated = false;
 
 			// If we are not connected, try to connect.
 			if (!$connected) {
-				$ret = $this->connect($this->currentServer, $enc, $this->currentPort, 5);
+				$ret = $this->connect($this->currentServer, $sslEnabled, $this->currentPort, 5);
 			}
 
-			// Check if we got an error while connecting.
-			$cErr = $this->isError($ret);
+			if ($ret !== false) {
+				// Check if we got an error while connecting.
+				$cErr = $this->isError($ret);
 
-			// If no error, we are connected.
-			if (!$cErr) {
-				$connected = true;
-			}
+				// If no error, we are connected.
+				if (!$cErr) {
+					$connected = true;
+				} else {
+					$error = $ret->getMessage();
+				}
 
-			// If error, try to connect again.
-			if ($cErr && $retries > 0) {
-				continue;
+				// If error, try to connect again.
+				if ($cErr && $retries > 0) {
+					continue;
+				}
 			}
 
 			// If we have no more retries and could not connect, return an error.
 			// This error message is never used, the return dends back and then dataerror takes over
 			if ($retries === 0 && !$connected) {
-				$message = "\nCannot connect to server "
-					. $this->currentServer
-					. (!$enc ? ' (non-ssl) ' : '(ssl) ') . ': ' . $ret->getMessage();
+				$message =
+					"Cannot connect to server " .
+					$this->currentServer .
+					$enc .
+					': ' .
+					$error;
 				$this->debugging->start("doConnect", $message, 2);
 				return $this->throwError($this->c->error($message));
 			}
 
 			// If we are connected, try to authenticate.
-			if ($connected === true &&
-				$authenticated === false &&
-				(!$alternate ? defined('NNTP_USERNAME') : defined('NNTP_USERNAME_A'))) {
+			if ($connected === true && $authenticated === false) {
 
 				// If the username is empty it probably means the server does not require a username.
-				if ((!$alternate ? NNTP_USERNAME == '' : NNTP_USERNAME_A == '')) {
+				if ($userName === '') {
 					$authenticated = true;
 
 					// Try to authenticate to usenet.
 				} else {
-					if (!$alternate) {
-						$ret2 = $this->authenticate(NNTP_USERNAME, NNTP_PASSWORD);
-					} else {
-						$ret2 = $this->authenticate(NNTP_USERNAME_A, NNTP_PASSWORD_A);
-					}
+					$ret2 = $this->authenticate($userName, $password);
 
 					// Check if there was an error authenticating.
 					$aErr = $this->isError($ret2);
@@ -195,6 +200,8 @@ class NNTP extends Net_NNTP_Client
 					// If there was no error, then we are authenticated.
 					if (!$aErr) {
 						$authenticated = true;
+					} else {
+						$error = $ret2->getMessage();
 					}
 
 					// If error, try to authenticate again.
@@ -205,11 +212,15 @@ class NNTP extends Net_NNTP_Client
 					// If we ran out of retries, return an error.
 					// This error message is never used, the return dends back and then dataerror takes over
 					if ($retries === 0 && $authenticated === false) {
-						$message = "\nCannot authenticate to server "
-							. $this->currentServer
-							. (!$enc ? ' (non-ssl) ' : ' (ssl) ') . ' - '
-							. (!$alternate ? NNTP_USERNAME : NNTP_USERNAME_A)
-							. ' (' . $ret2->getMessage() . ')';
+						$message =
+							"Cannot authenticate to server " .
+							$this->currentServer .
+							$enc .
+							' - ' .
+							$userName .
+							' (' .
+							$error .
+							')';
 						$this->debugging->start("doConnect", $message, 2);
 						return $this->throwError($this->c->error($message));
 					}
@@ -217,7 +228,7 @@ class NNTP extends Net_NNTP_Client
 			}
 
 			// If we are connected and authenticated, try enabling compression if we have it enabled.
-			if ($connected && $authenticated === true) {
+			if ($connected === true && $authenticated === true) {
 				if ($compression === true && $this->site->compressedheaders === '1') {
 					$this->_enableCompression();
 				}
@@ -229,11 +240,11 @@ class NNTP extends Net_NNTP_Client
 				break;
 			}
 
-			// Sleep 2 seconds between retries.
-			usleep(200000);
+			// Sleep .4 seconds between retries.
+			usleep(400000);
 		}
 		// If we somehow got out of the loop, return an error.
-		$message = 'Unable to connect to ' . $this->currentServer;
+		$message = 'Unable to connect to ' . $this->currentServer . $enc;
 		$this->debugging->start("doConnect", $message, 2);
 		return $this->throwError($this->c->error($message));
 	}
@@ -255,6 +266,24 @@ class NNTP extends Net_NNTP_Client
 			return parent::disconnect();
 		}
 		return true;
+	}
+
+	/**
+	 * Fetch an overview of article(s) in the currently selected group.
+	 *
+	 * @param null $range
+	 * @param bool $names
+	 * @param bool $forceNames
+	 *
+	 * @return mixed
+	 *
+	 * @access public
+	 */
+	public function getOverview($range = null, $names = true, $forceNames = true)
+	{
+		$this->checkConnection();
+
+		return parent::getOverview($range, $names, $forceNames);
 	}
 
 	/**
@@ -348,15 +377,23 @@ class NNTP extends Net_NNTP_Client
 							}
 							$aConnected = true;
 						}
-						$body = $nntp->getMessage($groupName, $m);
-						if ($nntp->isError($body)) {
+						$newBody = $nntp->getMessage($groupName, $m);
+						if ($nntp->isError($newBody)) {
 							if ($aConnected) {
 								$nntp->doQuit();
 							}
-							$this->debugging->start("getMessages", $body->getMessage(), 3);
-							return $body;
+							// If we got some data, return it.
+							if ($body !== '') {
+								return $body;
+							}
+							$this->debugging->start("getMessages", $newBody->getMessage(), 3);
+							return $newBody;
 						}
 					} else {
+						// If we got some data, return it.
+						if ($body !== '') {
+							return $body;
+						}
 						return $message;
 					}
 				}
@@ -631,7 +668,10 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function _getTextResponse()
 	{
-		if ($this->compression === true && isset($this->_currentStatusResponse[1]) && stripos($this->_currentStatusResponse[1], 'COMPRESS=GZIP') !== false) {
+		if ($this->compression === true &&
+			isset($this->_currentStatusResponse[1]) &&
+			stripos($this->_currentStatusResponse[1], 'COMPRESS=GZIP') !== false) {
+
 			return $this->_getXFeatureTextResponse();
 		} else {
 			return parent::_getTextResponse();
@@ -743,12 +783,16 @@ class NNTP extends Net_NNTP_Client
 
 				// Show bytes received
 				if ($totalBytesReceived > 10240 && $totalBytesReceived % 128 == 0) {
-					echo $this->c->primaryOver('Receiving ' . round($totalBytesReceived / 1024) . 'KB from ' . $this->group() . "\r");
+					echo $this->c->primaryOver(
+						'Receiving ' . round($totalBytesReceived / 1024) . 'KB from ' . $this->group() . "\r");
 				}
 
 				// Check if we have the ending (.\r\n)
 				if ($bytesReceived > 2) {
-					if (ord($buffer[$bytesReceived - 3]) == 0x2e && ord($buffer[$bytesReceived - 2]) == 0x0d && ord($buffer[$bytesReceived - 1]) == 0x0a) {
+					if (ord($buffer[$bytesReceived - 3]) == 0x2e &&
+						ord($buffer[$bytesReceived - 2]) == 0x0d &&
+						ord($buffer[$bytesReceived - 1]) == 0x0a) {
+
 						// We found the terminator.
 						if ($totalBytesReceived > 10240) {
 							echo "\n";
@@ -784,6 +828,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function checkConnection()
 	{
+		// Check if we are connected.
 		if (parent::_isConnected()) {
 			return true;
 		} else {
@@ -816,7 +861,22 @@ class NNTP extends Net_NNTP_Client
 		$ret = $string;
 		if (preg_match('/^(=ybegin.*=yend[^$]*)$/ims', $string, $input)) {
 			$ret = '';
-			$input = trim(preg_replace('/\r\n/im', '', preg_replace('/(^=yend.*)/im', '', preg_replace('/(^=ypart.*\\r\\n)/im', '', preg_replace('/(^=ybegin.*\\r\\n)/im', '', $input[1], 1), 1), 1)));
+			$input =
+				trim(
+					preg_replace(
+						'/\r\n/im', '',
+						preg_replace(
+							'/(^=yend.*)/im', '',
+							preg_replace(
+								'/(^=ypart.*\\r\\n)/im', '',
+								preg_replace(
+									'/(^=ybegin.*\\r\\n)/im', '',
+									$input[1],
+								1),
+							1),
+						1)
+					)
+				);
 
 			for ($chr = 0; $chr < strlen($input); $chr++) {
 				$ret .= ($input[$chr] != '=' ? chr(ord($input[$chr]) - 42) : chr((ord($input[++$chr]) - 64) - 42));

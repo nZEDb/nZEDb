@@ -11,10 +11,10 @@
 <p>You must accept or change these file paths. This is the location where your covers, NZB, and temporary files are stored:</p>
 <form action="?" method="post">
 	<table width="100%" border="0" style="margin-top:10px;" class="data highlight">
-		<tr class="alt">
+		<!--tr class="alt">
 			<td><label for="coverspath">Place to save Covers\Posters etc.:</label></td>
 			<td><input type="text" name="coverspath" value="{$cfg->COVERS_PATH}" size="70" /></td>
-		</tr>
+		</tr-->
 		<tr class="alt">
 			<td><label for="nzbpath">Place to create NZB files:</label></td>
 			<td><input type="text" name="nzbpath" value="{$cfg->NZB_PATH}" size="70" /></td>
@@ -30,7 +30,7 @@
 			<div>
 				The following error was encountered:<br />
 				{if !$cfg->nzbPathCheck}<br /><span class="error">The installer cannot write to {$cfg->NZB_PATH}. A quick solution is to run:<br />chmod -R 777 {$cfg->NZB_PATH}</span><br />{/if}
-				{if !$cfg->coverPathCheck}<br /><span class="error">The installer cannot write to {$cfg->COVERS_PATH}. A quick solution is to run:<br />chmod -R 777 {$cfg->COVERS_PATH}</span><br />{/if}
+				{if !$cfg->coverPathCheck}<!--br /><span class="error">The installer cannot write to {$cfg->COVERS_PATH}. A quick solution is to run:<br />chmod -R 777 {$cfg->COVERS_PATH}</span><br /-->{/if}
 				{if !$cfg->unrarPathCheck}<br /><span class="error">The installer cannot write to {$cfg->UNRAR_PATH}. A quick solution is to run:<br />chmod -R 777 {$cfg->UNRAR_PATH}</span><br />{/if}
 				<br />
 			</div>

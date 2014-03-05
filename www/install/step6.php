@@ -20,7 +20,7 @@ if ($page->isPostBack()) {
 	$cfg->doCheck = true;
 
 	$cfg->NZB_PATH = trim($_POST['nzbpath']);
-	$cfg->COVERS_PATH = trim($_POST['coverspath']);
+	//$cfg->COVERS_PATH = trim($_POST['coverspath']);
 	$cfg->UNRAR_PATH = trim($_POST['tmpunrarpath']);
 
 	if ($cfg->NZB_PATH == '') {
@@ -37,6 +37,7 @@ if ($page->isPostBack()) {
 		}
 	}
 
+/*
 	if ($cfg->COVERS_PATH == '') {
 		$cfg->error = true;
 	} else {
@@ -47,6 +48,7 @@ if ($page->isPostBack()) {
 			$cfg->error = true;
 		}
 	}
+ */
 
 	if (!$cfg->error) {
 		if (!file_exists($cfg->UNRAR_PATH)) {

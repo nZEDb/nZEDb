@@ -588,6 +588,9 @@ class Net_NNTP_Protocol_Client extends PEAR
 				$port = is_null($port) ? 119 : $port;
 				break;
 
+			case true:
+				$encryption = 'ssl';
+
 			case 'ssl':
 
 			case 'tls':
