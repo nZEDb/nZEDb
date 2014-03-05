@@ -842,9 +842,17 @@ class PostProcess
 						if (isset($nzbContents['segments'])) {
 							$sampleMsgID[] = $nzbContents['segments'][0];
 
-							for ($i = 1; $i < $this->segmentsToDownload; $i++) {
-								if (count($nzbContents['segments']) > $i) {
-									$sampleMsgID[] = $nzbContents['segments'][$i];
+							// Get the amount of segments for this file.
+							$segCount = count($nzbContents['segments']);
+							if ($segCount > 1) {
+
+								// If it's more than 1 try to get up to the site specified value of segments.
+								for ($i = 1; $i < $this->segmentsToDownload; $i++) {
+									if ($segCount > $i) {
+										$sampleMsgID[] = $nzbContents['segments'][$i];
+									} else {
+										break;
+									}
 								}
 							}
 						}
