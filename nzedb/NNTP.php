@@ -377,15 +377,23 @@ class NNTP extends Net_NNTP_Client
 							}
 							$aConnected = true;
 						}
-						$body = $nntp->getMessage($groupName, $m);
-						if ($nntp->isError($body)) {
+						$newBody = $nntp->getMessage($groupName, $m);
+						if ($nntp->isError($newBody)) {
 							if ($aConnected) {
 								$nntp->doQuit();
 							}
-							$this->debugging->start("getMessages", $body->getMessage(), 3);
+							// If we got some data, return it.
+							if ($body !== '') {
+								return $body;
+							}
+							$this->debugging->start("getMessages", $newBody->getMessage(), 3);
 							return $body;
 						}
 					} else {
+						// If we got some data, return it.
+						if ($body !== '') {
+							return $body;
+						}
 						return $message;
 					}
 				}

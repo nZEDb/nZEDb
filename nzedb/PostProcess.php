@@ -1101,8 +1101,8 @@ class PostProcess
 											$this->blnTookSample = $this->getSample($rel['guid']);
 										}
 
-										// Try to get a video with it.
-										if ($this->blnTookVideo === false) {
+										// Try to get a video with it. Don't get it here if $sampleMsgID is not empty.
+										if ($this->blnTookVideo === false && empty($sampleMsgID)) {
 											$this->blnTookVideo = $this->getVideo($rel['guid']);
 										}
 
@@ -1163,8 +1163,8 @@ class PostProcess
 									$this->blnTookVideo = $this->getVideo($rel['guid']);
 								}
 
-								// Try to get media info.
-								if ($this->blnTookMediainfo === false) {
+								// Try to get media info. Don't get it here if $mediaMsgID is not empty.
+								if ($this->blnTookMediainfo === false && empty($mediaMsgID)) {
 									$this->blnTookMediainfo = $this->getMediaInfo($rel['id']);
 								}
 
