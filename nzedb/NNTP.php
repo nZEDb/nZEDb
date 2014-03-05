@@ -387,7 +387,7 @@ class NNTP extends Net_NNTP_Client
 								return $body;
 							}
 							$this->debugging->start("getMessages", $newBody->getMessage(), 3);
-							return $body;
+							return $newBody;
 						}
 					} else {
 						// If we got some data, return it.
