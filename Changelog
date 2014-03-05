@@ -12,6 +12,7 @@ Each update goes to the top of the file
                        -> Fix some issues connecting to usenet.
                        -> Add a script to use NET_NNTP's debug when debugging NNTP.
                        -> Check if XFeature GZip Compress is in the list of capabilities.
+                       -> If we switch of NNTP server on the same instance, reset the capabilities.
 2014-03-05 -> bart39   -> Fix: fixed issue with postprocess_threaded.py
 2013-03-04 -> niel     -> Chg: Reverting default covers path change
                        -> Chg: Adding next-master and master to branches that allow pre-commit to update the commit number.

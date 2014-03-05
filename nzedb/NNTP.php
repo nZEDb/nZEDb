@@ -79,10 +79,10 @@ class NNTP extends Net_NNTP_Client
 	protected $postingAllowed = false;
 
 	/**
-	 * List of supported capacities;
+	 * List of supported capabilities;
 	 * @var array
 	 */
-	protected $Capabilities = array();
+	protected $capabilities = array();
 
 	/**
 	 * Default constructor.
@@ -132,13 +132,20 @@ class NNTP extends Net_NNTP_Client
 
 		$ret = $ret2 = $connected = $sslEnabled = $cError = $aError = false;
 
+		// If we switched servers, reset objects.
 		if (!$alternate) {
+			if ($this->currentServer !== NNTP_SERVER) {
+				$this->capabilities = array();
+			}
 			$sslEnabled = NNTP_SSLENABLED ? true : false;
 			$this->currentServer = NNTP_SERVER;
 			$this->currentPort = NNTP_PORT;
 			$userName = NNTP_USERNAME;
 			$password = NNTP_PASSWORD;
 		} else {
+			if ($this->currentServer !== NNTP_SERVER_A) {
+				$this->capabilities = array();
+			}
 			$sslEnabled = NNTP_SSLENABLED_A ? true : false;
 			$this->currentServer = NNTP_SERVER_A;
 			$this->currentPort = NNTP_PORT_A;
@@ -274,6 +281,9 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function doQuit()
 	{
+		// Set this to false so we recheck next time.
+		$this->compression = false;
+
 		// Check if we are connected to usenet.
 		if (parent::_isConnected()) {
 			$this->debugging->start("doQuit", "Disconnecting from " . $this->currentServer, 5);
@@ -966,30 +976,33 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function _enableCompression()
 	{
-		// Get the list of capabilities.
-		$caps = $this->Capabilities;
-		if (empty($caps)) {
-			$caps = $this->Capabilities = $this->cmdCapabilities();
-		}
+		$msg = "XFeature GZip Compression not supported. Consider disabling compression in site settings.";
 
-		// Check if we find xFeature gzip in the list.
-		$foundCap = false;
-		if (!$this->isError($caps)) {
-			foreach ($caps as $cap) {
-				if (preg_match('/xfeature.*(gzip|compress|terminator)/i', $cap)) {
-					$foundCap = true;
-					break;
+		// If we already checked, don't check again.
+		if (empty($this->capabilities)) {
+			// Get the list of capabilities.
+			$this->capabilities = $this->cmdCapabilities();
+
+			// Check if we find xFeature gzip in the list.
+			$foundCap = false;
+			if (!$this->isError($this->capabilities)) {
+				foreach ($this->capabilities as $cap) {
+					if (preg_match('/xfeature.*(gzip|compress|terminator)/i', $cap)) {
+						$foundCap = true;
+						break;
+					}
+
 				}
-
+				if (!$foundCap) {
+					echo $this->c->error($msg);
+					$this->debugging->start("_enableCompression", $msg, 4);
+					return $this->throwError($msg);
+				}
+			} else {
+				$msg = 'Problem fetching capabilities.';
+				$this->debugging->start("_enableCompression", $msg, 2);
+				return $this->throwError($msg);
 			}
-			if (!$foundCap) {
-				$this->debugging->start("_enableCompression", "XFeature GZip Compression not supported.", 4);
-				return false;
-			}
-		} else {
-			$msg = 'Problem fetching capabilities.';
-			$this->debugging->start("_enableCompression", $msg, 2);
-			return $this->throwError($msg);
 		}
 
 		// Send this command to the usenet server.
@@ -1000,7 +1013,8 @@ class NNTP extends Net_NNTP_Client
 			$this->debugging->start("_enableCompression", $response->getMessage(), 4);
 			return $response;
 		} else if ($response !== 290) {
-			$this->debugging->start("_enableCompression", "XFeature GZip Compression not supported.", 4);
+			echo $this->c->error($msg);
+			$this->debugging->start("_enableCompression", $msg, 4);
 			return $response;
 		}
 
