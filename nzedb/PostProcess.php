@@ -732,7 +732,7 @@ class PostProcess
 			$processMediaInfo = ($this->site->mediainfopath !== '') ? true : false;
 			$processAudioInfo = ($this->site->mediainfopath !== '') ? true : false;
 			$processJPGSample = ($this->site->processjpg === '0') ? false : true;
-			$processPasswords = ($this->site->checkpasswordedrar === '0') ? false : true;
+			$processPasswords = ((($this->site->checkpasswordedrar === '0') ? false : true) && ($this->site->unrarpath !== '' ? true : false));
 
 			// Loop through the releases.
 			foreach ($result as $rel) {
