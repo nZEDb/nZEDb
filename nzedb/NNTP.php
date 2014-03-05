@@ -969,7 +969,7 @@ class NNTP extends Net_NNTP_Client
 		// Get the list of capabilities.
 		$caps = $this->Capabilities;
 		if (empty($caps)) {
-			$caps = $this->cmdCapabilities();
+			$caps = $this->Capabilities = $this->cmdCapabilities();
 		}
 
 		// Check if we find xFeature gzip in the list.
