@@ -490,7 +490,9 @@ $this->debug = true;
 			$max = self::maxfirstime;
 		}
 
-		$this->nntp->doConnect();
+		if ($this->nntp->doConnect() !== true) {
+			return $ret;
+		}
 
 		$perart = 50;
 		while(true) {
@@ -565,7 +567,9 @@ $this->debug = true;
 			return $ret;
 		}
 
-		$this->nntp->doConnect();
+		if ($this->nntp->doConnect() !== true) {
+			return $ret;
+		}
 
 		$res = array();
 		// How many comments to upload per article.
@@ -939,7 +943,9 @@ $this->debug = true;
 			$first = $this->settings['lastarticle_c'];
 		}
 
-		$this->nntp->doConnect();
+		if ($this->nntp->doConnect() !== true) {
+			return $ret;
+		}
 		$data = $this->nntp->selectGroup($group);
 		if($this->nntp->isError($data)) {
 			$data = $this->nntp->dataError($nntp, $group);
@@ -987,7 +993,10 @@ $this->debug = true;
 			$msgs = $this->nntp->getOverview($firstart . '-' . $lastart, true, false);
 			if($this->nntp->isError($msgs)) {
 				$this->nntp->doQuit();
-				$this->nntp->doConnect(false);
+
+				if ($this->nntp->doConnect(false) !== true) {
+					return $ret;
+				}
 				$this->nntp->selectGroup($group);
 				$msgs = $this->nntp->getOverview($firstart . '-' . $lastart, true, false);
 				if($this->nntp->isError($msgs)) {

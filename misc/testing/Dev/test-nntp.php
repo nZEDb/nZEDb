@@ -8,7 +8,9 @@ if (!isset($argv[2]) || !is_numeric($argv[2])) {
 		. "php $argv[0] alt.binaries.teevee 595751142    ...: To test nntp on alt.binaries.teevee with artivle 595751142.\n"));
 }
 $nntp = new NNTP();
-$nntp->doConnect();
+if ($nntp->doConnect() !== true) {
+	exit();
+}
 
 $first = $argv[2];
 $group = $argv[1];
@@ -32,4 +34,3 @@ if ($newdate != false) {
 } else {
 	echo $c->info("Server failed to return postdate.");
 }
-$nntp->doQuit();

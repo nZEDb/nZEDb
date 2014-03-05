@@ -72,6 +72,13 @@ class NNTP extends Net_NNTP_Client
 	private $compression = false;
 
 	/**
+	 * Are we allowed to post to usenet?
+	 *
+	 * @var bool
+	 */
+	protected $postingAllowed = false;
+
+	/**
 	 * Default constructor.
 	 *
 	 * @access public
@@ -117,8 +124,7 @@ class NNTP extends Net_NNTP_Client
 			$this->doQuit();
 		}
 
-		$ret = $ret2 = $connected = $sslEnabled = false;
-		$error = 'Unspecified error.';
+		$ret = $ret2 = $connected = $sslEnabled = $cError = $aError = false;
 
 		if (!$alternate) {
 			$sslEnabled = NNTP_SSLENABLED ? true : false;
@@ -135,6 +141,7 @@ class NNTP extends Net_NNTP_Client
 		}
 
 		$enc = ($sslEnabled ? ' (ssl)' : ' (non-ssl)');
+		$sslEnabled = ($sslEnabled ? 'tls' : false);
 
 		// Some providers don't support XFeature GZip don't try to enable it since it's slow.
 		if (preg_match('/tweaknews|xsusenet/i', $this->currentServer)) {
@@ -150,24 +157,28 @@ class NNTP extends Net_NNTP_Client
 
 			// If we are not connected, try to connect.
 			if (!$connected) {
-				$ret = $this->connect($this->currentServer, $sslEnabled, $this->currentPort, 5);
+				 $ret = $this->connect($this->currentServer, $sslEnabled, $this->currentPort, 5);
 			}
 
-			if ($ret !== false) {
-				// Check if we got an error while connecting.
-				$cErr = $this->isError($ret);
+			// Check if we got an error while connecting.
+			$cErr = $this->isError($ret);
 
-				// If no error, we are connected.
-				if (!$cErr) {
-					$connected = true;
-				} else {
-					$error = $ret->getMessage();
+			// If no error, we are connected.
+			if (!$cErr) {
+				// Say that we are connected so we don't retry.
+				$connected = true;
+				// When there is no error it returns bool if we are allowed to post or not.
+				$this->postingAllowed = $ret;
+			} else {
+				// Only fetch the message once.
+				if (!$cError) {
+					$cError = $ret->getMessage();
 				}
+			}
 
-				// If error, try to connect again.
-				if ($cErr && $retries > 0) {
-					continue;
-				}
+			// If error, try to connect again.
+			if ($cErr && $retries > 0) {
+				continue;
 			}
 
 			// If we have no more retries and could not connect, return an error.
@@ -178,7 +189,7 @@ class NNTP extends Net_NNTP_Client
 					$this->currentServer .
 					$enc .
 					': ' .
-					$error;
+					$cError;
 				$this->debugging->start("doConnect", $message, 2);
 				return $this->throwError($this->c->error($message));
 			}
@@ -201,7 +212,9 @@ class NNTP extends Net_NNTP_Client
 					if (!$aErr) {
 						$authenticated = true;
 					} else {
-						$error = $ret2->getMessage();
+						if (!$aError) {
+							$aError = $ret2->getMessage();
+						}
 					}
 
 					// If error, try to authenticate again.
@@ -219,7 +232,7 @@ class NNTP extends Net_NNTP_Client
 							' - ' .
 							$userName .
 							' (' .
-							$error .
+							$aError .
 							')';
 						$this->debugging->start("doConnect", $message, 2);
 						return $this->throwError($this->c->error($message));
@@ -229,10 +242,11 @@ class NNTP extends Net_NNTP_Client
 
 			// If we are connected and authenticated, try enabling compression if we have it enabled.
 			if ($connected === true && $authenticated === true) {
+				// Try to enable compression.
 				if ($compression === true && $this->site->compressedheaders === '1') {
 					$this->_enableCompression();
 				}
-				$this->debugging->start("doConnect", "Connected to " . $this->currentServer . ".", 5);
+				$this->debugging->start("doConnect", "Connected to " . $this->currentServer . '.', 5);
 				return true;
 			}
 			// If we reached this point and have not connected after all retries, break out of the loop.
@@ -579,6 +593,12 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function postArticle($groups, $subject, $body, $from, $yEnc = true, $compress = true, $extra = '')
 	{
+		if (!$this->postingAllowed) {
+			$message = 'You do not have the right to post articles on server ' . $this->currentServer;
+			$this->debugging->start("postArticle", $message, 4);
+			return $this->throwError($this->c->error($message));
+		}
+
 		$this->checkConnection();
 
 		// Throw errors if subject or from are more than 510 chars.
@@ -638,7 +658,7 @@ class NNTP extends Net_NNTP_Client
 		// Disconnect.
 		$nntp->doQuit();
 		// Try reconnecting. This uses another round of max retries.
-		if ($nntp->doConnect($comp) === false) {
+		if ($nntp->doConnect($comp) !== true) {
 			return false;
 		}
 

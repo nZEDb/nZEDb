@@ -6,7 +6,7 @@ $sorter = new MiscSorter(true);
 $s = new Sites();
 $site = $s->get();
 $nntp = new NNTP();
-if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false)
+if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true)
 {
 	echo $c->error("Unable to connect to usenet.\n");
 	return;

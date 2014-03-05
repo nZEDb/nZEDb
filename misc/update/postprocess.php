@@ -7,7 +7,7 @@ $c = new ColorCLI();
 
 // Don't use alternate here, if a article fails in post proc it will use alternate on its own.
 $nntp = new NNTP();
-if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
+if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }
 if ($site->nntpproxy === "1") {
