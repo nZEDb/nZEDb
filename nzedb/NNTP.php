@@ -79,6 +79,12 @@ class NNTP extends Net_NNTP_Client
 	protected $postingAllowed = false;
 
 	/**
+	 * List of supported capacities;
+	 * @var array
+	 */
+	protected $Capabilities = array();
+
+	/**
 	 * Default constructor.
 	 *
 	 * @access public
@@ -142,11 +148,6 @@ class NNTP extends Net_NNTP_Client
 
 		$enc = ($sslEnabled ? ' (ssl)' : ' (non-ssl)');
 		$sslEnabled = ($sslEnabled ? 'tls' : false);
-
-		// Some providers don't support XFeature GZip don't try to enable it since it's slow.
-		if (preg_match('/tweaknews|xsusenet/i', $this->currentServer)) {
-			$compression = false;
-		}
 
 		// Try to connect until we run of out tries.
 		$retries = $this->nntpRetries;
@@ -965,6 +966,32 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function _enableCompression()
 	{
+		// Get the list of capabilities.
+		$caps = $this->Capabilities;
+		if (empty($caps)) {
+			$caps = $this->cmdCapabilities();
+		}
+
+		// Check if we find xFeature gzip in the list.
+		$foundCap = false;
+		if (!$this->isError($caps)) {
+			foreach ($caps as $cap) {
+				if (preg_match('/xfeature.*(gzip|compress|terminator)/i', $cap)) {
+					$foundCap = true;
+					break;
+				}
+
+			}
+			if (!$foundCap) {
+				$this->debugging->start("_enableCompression", "XFeature GZip Compression not supported.", 4);
+				return false;
+			}
+		} else {
+			$msg = 'Problem fetching capabilities.';
+			$this->debugging->start("_enableCompression", $msg, 2);
+			return $this->throwError($msg);
+		}
+
 		// Send this command to the usenet server.
 		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
 
