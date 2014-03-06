@@ -8,7 +8,7 @@ require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
 /**
  * Class for connecting to the usenet, retrieving articles and article headers,
  * decoding yEnc articles, decompressing article headers.
- * Extends PEAR's Net_NNTP_Client class, overides some functions.
+ * Extends PEAR's Net_NNTP_Client class, overrides some functions.
  */
 class NNTP extends Net_NNTP_Client
 {
@@ -190,7 +190,6 @@ class NNTP extends Net_NNTP_Client
 			}
 
 			// If we have no more retries and could not connect, return an error.
-			// This error message is never used, the return dends back and then dataerror takes over
 			if ($retries === 0 && !$connected) {
 				$message =
 					"Cannot connect to server " .
@@ -231,7 +230,6 @@ class NNTP extends Net_NNTP_Client
 					}
 
 					// If we ran out of retries, return an error.
-					// This error message is never used, the return dends back and then dataerror takes over
 					if ($retries === 0 && $authenticated === false) {
 						$message =
 							"Cannot authenticate to server " .
@@ -349,7 +347,7 @@ class NNTP extends Net_NNTP_Client
 		}
 
 		// Attempt to yEnc decode and return the body.
-		return $this->_decodeYenc($body);
+		return $this->_decodeYEnc($body);
 	}
 
 	/**
@@ -475,7 +473,7 @@ class NNTP extends Net_NNTP_Client
 
 		// Check if it's an article number or message-ID.
 		if (!is_numeric($identifier)) {
-			// If it's a message-ID, check if it has the required triangular breackets.
+			// If it's a message-ID, check if it has the required triangular brackets.
 			$identifier = $this->formatMessageID($identifier);
 		}
 
@@ -517,7 +515,7 @@ class NNTP extends Net_NNTP_Client
 				}
 			}
 			// Finally we decode the message using yEnc.
-			$ret['Message'] = $yEnc ? $this->_decodeYenc($body) : $body;
+			$ret['Message'] = $yEnc ? $this->_decodeYEnc($body) : $body;
 		}
 		return $ret;
 	}
@@ -630,8 +628,8 @@ class NNTP extends Net_NNTP_Client
 
 		// Check if we should encode to yEnc.
 		if ($yEnc) {
-			$yenc = new Yenc();
-			$body = $yenc->encode(($compress ? gzdeflate($body, 4) : $body), $subject);
+			$y = new Yenc();
+			$body = $y->encode(($compress ? gzdeflate($body, 4) : $body), $subject);
 
 			// If not yEnc, then check if the body is 510+ chars, split it at 510 chars and separate with \r\n
 		} else {
@@ -737,7 +735,7 @@ class NNTP extends Net_NNTP_Client
 			// Did we find a possible ending ? (.\r\n)
 			if ($possibleTerm !== false) {
 
-				// If the socket is really empty, fgets will get stuck here,
+				// If the socket is really empty, fGets will get stuck here,
 				// so set the socket to non blocking in case.
 				stream_set_blocking($this->_socket, 0);
 
@@ -873,9 +871,9 @@ class NNTP extends Net_NNTP_Client
 	}
 
 	/**
-	 * Decoce a string of text encoded with yEnc.
+	 * Decode a string of text encoded with yEnc.
 	 *
-	 * @note For usage outside of this class, please use the Yenc library.
+	 * @note For usage outside of this class, please use the YEnc library.
 	 *
 	 * @param string $string The encoded text to decode.
 	 *
@@ -883,23 +881,23 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access protected
 	 *
-	 * @TODO: ? Maybe this function should be merged into the Yenc class?
+	 * @TODO: ? Maybe this function should be merged into the YEnc class?
 	 */
-	protected function _decodeYenc($string)
+	protected function _decodeYEnc($string)
 	{
 		$ret = $string;
-		if (preg_match('/^(=ybegin.*=yend[^$]*)$/ims', $string, $input)) {
+		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $string, $input)) {
 			$ret = '';
 			$input =
 				trim(
 					preg_replace(
 						'/\r\n/im', '',
 						preg_replace(
-							'/(^=yend.*)/im', '',
+							'/(^=yEnd.*)/im', '',
 							preg_replace(
-								'/(^=ypart.*\\r\\n)/im', '',
+								'/(^=yPart.*\\r\\n)/im', '',
 								preg_replace(
-									'/(^=ybegin.*\\r\\n)/im', '',
+									'/(^=yBegin.*\\r\\n)/im', '',
 									$input[1],
 								1),
 							1),
@@ -985,7 +983,7 @@ class NNTP extends Net_NNTP_Client
 			$foundCap = false;
 			if (!$this->isError($this->capabilities)) {
 				foreach ($this->capabilities as $cap) {
-					if (preg_match('/xfeature.*(gzip|compress|terminator)/i', $cap)) {
+					if (preg_match('/xFeature.*(gzip|compress|terminator)/i', $cap)) {
 						$foundCap = true;
 						break;
 					}
