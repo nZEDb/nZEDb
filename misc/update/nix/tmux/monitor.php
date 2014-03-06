@@ -1178,7 +1178,7 @@ while ($i > 0) {
 					if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1) {
 						shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
 							echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-							php ${DIR}testing/Release/removeCrapReleases.php true full $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+							$_php ${DIR}testing/Release/removeCrapReleases.php true full $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 						$fcnum++;
 					}
 					if ($fcnum == $fcmax) {
