@@ -356,9 +356,7 @@ class NNTP extends Net_NNTP_Client
 	 * Download multiple article bodies and string them together.
 	 *
 	 * @param string $groupName The name of the group the articles are in.
-	 * @param array string|int $identifiers The message-ID's or article numbers of the article body's to download.
-	 * @param string $identifiers A message-ID
-	 * @param int $identifiers A article number
+	 * @param array|string|int $identifiers Message-ID(string) or article number(int), or array containing M-ID's or A-Numbers.
 	 * @param bool $alternate Use the alternate NNTP provider?
 	 *
 	 * @return string On success : The article bodies.
@@ -633,7 +631,7 @@ class NNTP extends Net_NNTP_Client
 		// Check if we should encode to yEnc.
 		if ($yEnc) {
 			$yenc = new Yenc();
-			$body = $yenc->encode($compress ? gzdeflate($body, 4) : $body, $subject);
+			$body = $yenc->encode(($compress ? gzdeflate($body, 4) : $body), $subject);
 
 			// If not yEnc, then check if the body is 510+ chars, split it at 510 chars and separate with \r\n
 		} else {
@@ -728,7 +726,7 @@ class NNTP extends Net_NNTP_Client
 	{
 		$tries = $bytesReceived = $totalBytesReceived = 0;
 		$completed = $possibleTerm = false;
-		$data = null;
+		$data = $buffer = null;
 
 		while (!feof($this->_socket)) {
 			// Reset only if decompression has not failed.
