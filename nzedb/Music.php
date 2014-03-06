@@ -18,9 +18,8 @@ class Music
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->db = new DB();
 		$this->imgSavePath = nZEDb_COVERS . 'music' . DS;
-		$this->cleanmusic = ($site->lookupmusic == 2) ? 1 : 0;
 		$this->renamed = '';
-		if ($site->lookupbooks == 2) {
+		if ($site->lookupmusic == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		$this->c = new ColorCLI();

@@ -20,7 +20,7 @@ class Books
 		$this->db = new DB();
 		$this->bookreqids = ($site->book_reqids == null || $site->book_reqids == "") ? 8010 : $site->book_reqids;
 		$this->renamed = '';
-		if ($site->lookupgames == 2) {
+		if ($site->lookupbooks == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		$this->c = new ColorCLI();
