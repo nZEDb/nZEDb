@@ -19,7 +19,10 @@ class Books
 		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
 		$this->db = new DB();
 		$this->bookreqids = ($site->book_reqids == null || $site->book_reqids == "") ? 8010 : $site->book_reqids;
-		$this->cleanbooks = ($site->lookupbooks == 2 ) ? 1 : 0;
+		$this->renamed = '';
+		if ($site->lookupgames == 2) {
+			$this->renamed = 'AND isrenamed = 1';
+		}
 		$this->c = new ColorCLI();
 	}
 
@@ -289,7 +292,7 @@ class Books
 		$db = $this->db;
 
 		// include results for all book types selected in the site edit UI, this could be audio, ebooks, foregin or technical currently
-		$res = $db->queryDirect(sprintf('SELECT searchname, id, categoryid FROM releases WHERE nzbstatus = 1 AND isrenamed = %d AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d', $this->cleanbooks, $this->bookreqids, $this->bookqty));
+		$res = $db->queryDirect(sprintf('SELECT searchname, id, categoryid FROM releases WHERE nzbstatus = 1 %s AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d', $this->renamed, $this->bookreqids, $this->bookqty));
 
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
