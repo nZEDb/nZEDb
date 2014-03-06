@@ -25,7 +25,7 @@ echo "You have $numofgroups active, it takes about 2 minutes on average to proce
 foreach ($groups as $group) {
 	$starttime = microtime(true);
 	$nntp = new NNTP();
-	if ($nntp->doConnect() === false) {
+	if ($nntp->doConnect() !== true) {
 		return;
 	}
 	//printf("Updating group ".$group['name']."..\n");
@@ -78,7 +78,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 
 	if (!isset($nntp)) {
 		$nntp = new NNTP;
-		if ($nntp->doConnect(false) === false) {
+		if ($nntp->doConnect(false) !== true) {
 			return;
 		}
 

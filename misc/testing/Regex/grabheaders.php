@@ -6,7 +6,7 @@ $group = $argv[1];
 //$cleaner = new CollectionsCleaning();
 $nntp = new NNTP();
 $c = new ColorCLI();
-if ($nntp->doConnect() === false) {
+if ($nntp->doConnect() !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }
 

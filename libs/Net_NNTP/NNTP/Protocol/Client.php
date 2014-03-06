@@ -583,13 +583,14 @@ class Net_NNTP_Protocol_Client extends PEAR
 		switch ($encryption) {
 			case null:
 
+			case 'tcp':
+
 			case false:
 				$transport = 'tcp';
 				$port = is_null($port) ? 119 : $port;
 				break;
 
-			case true:
-				$encryption = 'ssl';
+			case 'sslv3':
 
 			case 'ssl':
 
@@ -599,18 +600,22 @@ class Net_NNTP_Protocol_Client extends PEAR
 				break;
 
 			default:
-				trigger_error('$encryption parameter must be either '
-				.'tcp, tls or ssl.', E_USER_ERROR);
+				$message = '$encryption parameter must be either tcp, tls, ssl or sslv3.';
+				trigger_error($message, E_USER_ERROR);
+				return $this->throwError($message);
 		}
 
 		// Open Connection
 		$R = @stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout);
 		if ($R === false) {
-			if ($this->_logger) {
-				$this->_logger->notice
-					("Connection to $transport://$host:$port failed.");
+			$message = "Connection to $transport://$host:$port failed.";
+			if (preg_match('/tls|ssl/', $transport)) {
+				$message .= ' Try disabling SSL/TLS, and/or a different port.';
 			}
-			return $R;
+			if ($this->_logger) {
+				$this->_logger->notice($message);
+			}
+			return $this->throwError($message);
 		}
 
 		$this->_socket = $R;
@@ -618,8 +623,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 
 		//
 		if ($this->_logger) {
-			$this->_logger->info("Connection to $transport://$host:"
-				."$port has been established.");
+			$this->_logger->info("Connection to $transport://$host:$port has been established.");
 		}
 
 		// Retrive the server's initial response.

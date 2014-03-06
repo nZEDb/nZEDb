@@ -18,7 +18,7 @@ function dogroup($name, $articles)
 	$s = new Sites();
 	$site = $s->get();
 	$nntp = new NNTP();
-	if ($nntp->doConnect() === false) {
+	if ($nntp->doConnect() !== true) {
 		exit($c->error("Unable to connect to usenet."));
 	}
 	if ($site->nntpproxy === "1") {

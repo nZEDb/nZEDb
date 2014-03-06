@@ -4,7 +4,9 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 
 $nntp = new NNTP();
-$nntp->doConnect();
+if ($nntp->doConnect() !== true) {
+	exit();
+}
 $data = $nntp->getGroups();
 
 $db = new DB();

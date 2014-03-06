@@ -14,7 +14,9 @@ else
 		$nntp = new NNTP();
 		foreach ($grouplist as $group)
 		{
-			$nntp->doConnect();
+			if ($nntp->doConnect() !== true) {
+				exit();
+			}
 			dogroup($group, $nntp);
 			$nntp->doQuit();
 		}
@@ -22,7 +24,9 @@ else
 	else
 	{
 		$nntp = new NNTP();
-		$nntp->doConnect();
+		if ($nntp->doConnect() !== true) {
+			exit();
+		}
 		dogroup($argv[1], $nntp);
 		$nntp->doQuit();
 	}
@@ -31,7 +35,7 @@ else
 function dogroup($group, $nntp)
 {
 	$binaries = new Binaries();
-	$binaries->updateGroup($group);
+	$binaries->updateGroup($group, $nntp);
 	echo "Press enter to continue, type n and press enter to quit.\n";
 	$cmd = trim(fgets(fopen("php://stdin","r")));
 	if($cmd == '')
