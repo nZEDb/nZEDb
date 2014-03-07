@@ -9,6 +9,7 @@ Each update goes to the top of the file
 
 2014-03-07 -> kevin    -> Fix: Error message not set in NNTP.
                        -> Change: More checks in postproc.
+                       -> Refactor ReleaseImage.php, fix bug where it wasn't deleting preview images and it was trying to delete imdb images, don't use imagecreatefromstring 2 times.
 2014-03-06 -> bart39   -> Fix: fixed typos in previous change
                           Fix: fixed music / book processing where "Lookup All" only checked those not renamed
                           Fix: fixed issue with "Lookup all Console" only checking those not renamed

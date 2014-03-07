@@ -1,39 +1,98 @@
 <?php
 require_once nZEDb_LIB . 'Util.php';
 
+/**
+ * Resize/save/delete images to disk.
+ *
+ * Class ReleaseImage
+ */
 class ReleaseImage
 {
-	function __construct()
+	/**
+	 * Path to save ogg audio samples.
+	 *
+	 * @var string
+	 */
+	public $audSavePath;
+
+	/**
+	 * Path to save video preview jpg pictures.
+	 *
+	 * @var string
+	 */
+	public $imgSavePath;
+
+	/**
+	 * Path to save large jpg pictures(xxx).
+	 *
+	 * @var string
+	 */
+	public $jpgSavePath;
+
+	/**
+	 * Path to save movie jpg covers.
+	 *
+	 * @var string
+	 */
+	public $moveimgSavePath;
+
+	/**
+	 * Path to save video ogv files.
+	 *
+	 * @var string
+	 */
+	public $vidSavePath;
+
+	/**
+	 * Construct.
+	 */
+	public function __construct()
 	{
 		$s = new Sites(); // Creates the nZEDb_COVERS constant
-		$this->movimgSavePath = nZEDb_COVERS . 'movies' . DS;
-		$this->imgSavePath = nZEDb_COVERS . 'preview' . DS;
-		$this->vidSavePath = nZEDb_COVERS . 'video' . DS;
-		$this->jpgSavePath = nZEDb_COVERS . 'sample' . DS;
-		$this->audSavePath = nZEDb_COVERS . 'audiosample' . DS;
+		$this->audSavePath    = nZEDb_COVERS . 'audiosample' . DS;
+		$this->imgSavePath    = nZEDb_COVERS . 'preview'     . DS;
+		$this->jpgSavePath    = nZEDb_COVERS . 'sample'      . DS;
+		$this->movimgSavePath = nZEDb_COVERS . 'movies'      . DS;
+		$this->vidSavePath    = nZEDb_COVERS . 'video'       . DS;
 	}
 
-	public function fetchImage($imgLoc)
+	/**
+	 * Get a URL or file image and convert it to string.
+	 *
+	 * @param string $imgLoc URL or file location.
+	 *
+	 * @return bool|mixed|string
+	 */
+	protected function fetchImage($imgLoc)
 	{
 		$img = false;
 
-		if (preg_match('/^http:/i', $imgLoc)) {
+		if (strpos($imgLoc, 'http:') === 0) {
 			$img = getUrl($imgLoc);
-		} else if (file_exists($imgLoc)) {
+		} else if (is_file($imgLoc)) {
 			$img = @file_get_contents($imgLoc);
 		}
 
 		if ($img !== false) {
-			$im = @imagecreatefromstring($img);
-			if ($im !== false) {
-				imagedestroy($im);
+			$img = @imagecreatefromstring($img);
+			if ($img !== false) {
 				return $img;
 			}
-			return false;
 		}
 		return false;
 	}
 
+	/**
+	 * Save an image to disk, optionally resizing it.
+	 * @param string $imgName      What to name the new image.
+	 * @param string $imgLoc       URL or location on the disk the original image is in.
+	 * @param string $imgSavePath  Folder to save the new image in.
+	 * @param string $imgMaxWidth  Max width to resize image to.   (OPTIONAL)
+	 * @param string $imgMaxHeight Max height to resize image to.  (OPTIONAL)
+	 * @param bool   $saveThumb    Save a thumbnail of this image? (OPTIONAL)
+	 *
+	 * @return int 1 on success, 0 on failure Used on site to check if there is an image.
+	 */
 	public function saveImage($imgName, $imgLoc, $imgSavePath, $imgMaxWidth='', $imgMaxHeight='', $saveThumb=false)
 	{
 		$cover = $this->fetchImage($imgLoc);
@@ -42,12 +101,10 @@ class ReleaseImage
 		}
 
 		if ($imgMaxWidth != '' && $imgMaxHeight != '') {
-			$im = @imagecreatefromstring($cover);
+			$im = $cover;
 			$width = imagesx($im);
 			$height = imagesy($im);
-			$ratioh = $imgMaxHeight/$height;
-			$ratiow = $imgMaxWidth/$width;
-			$ratio = min($ratioh, $ratiow);
+			$ratio = min($imgMaxHeight/$height, $imgMaxWidth/$width);
 			// New dimensions
 			$new_width = intval($ratio*$width);
 			$new_height = intval($ratio*$height);
@@ -74,12 +131,33 @@ class ReleaseImage
 		return ($coverSave !== false || ($coverSave === false && file_exists($coverPath))) ? 1 : 0;
 	}
 
+	/**
+	 * Delete images for the release.
+	 *
+	 * @param string      $guid   The GUID of the release.
+	 * @param null|string $imdbid The IMDBid of the release. (OPTIONAL)
+	 *
+	 * @return void
+	 */
 	public function delete($guid, $imdbid=null)
 	{
-		@unlink($this->movimgSavePath.$imdbid.'-cover.jpg');
-		@unlink($this->vidSavePath.$guid.'.ogv');
-		@unlink($this->audSavePath.$guid.'.ogg');
-		@unlink($this->jpgSavePath.$guid.'_thumb.jpg');
-		@unlink($this->jpgSavePath.$guid.'_thumb.jpg');
+		$thumb = $guid . '_thumb.jpg';
+
+		// Audiosample folder.
+		@unlink($this->audSavePath . $guid . '.ogg');
+
+		// Movies folder.
+		if (!is_null($imdbid)) {
+			@unlink($this->movimgSavePath.$imdbid.'-cover.jpg');
+		}
+
+		// Preview folder.
+		@unlink($this->imgSavePath . $thumb);
+
+		// Sample folder.
+		@unlink($this->jpgSavePath . $thumb);
+
+		// Video folder.
+		@unlink($this->vidSavePath . $guid . '.ogv');
 	}
 }
