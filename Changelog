@@ -12,6 +12,8 @@ Each update goes to the top of the file
                           Fix: fixed issue with "Lookup all Console" only checking those not renamed
                           Fix: fixed issue updating bookInfo
 2014-03-06 -> kevin    -> Remove check for images smaller than 12 bytes in releaseimage, causes issues with amazon.
+                       -> Remove checking of capabilities, too many servers don't support it.
+                       -> Fix issue where postproc was running ffmpeg when the path wasn't set.
 2014-03-05 -> kevin    -> More refactor of post proc.
                        -> Use TLS instead of SSL on the nntp connection, TLS is more secure.
                        -> Fix some issues connecting to usenet.
