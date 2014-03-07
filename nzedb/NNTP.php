@@ -79,12 +79,6 @@ class NNTP extends Net_NNTP_Client
 	protected $postingAllowed = false;
 
 	/**
-	 * List of supported capabilities;
-	 * @var array
-	 */
-	protected $capabilities = array();
-
-	/**
 	 * Default constructor.
 	 *
 	 * @access public
@@ -134,18 +128,12 @@ class NNTP extends Net_NNTP_Client
 
 		// If we switched servers, reset objects.
 		if (!$alternate) {
-			if ($this->currentServer !== NNTP_SERVER) {
-				$this->capabilities = array();
-			}
 			$sslEnabled = NNTP_SSLENABLED ? true : false;
 			$this->currentServer = NNTP_SERVER;
 			$this->currentPort = NNTP_PORT;
 			$userName = NNTP_USERNAME;
 			$password = NNTP_PASSWORD;
 		} else {
-			if ($this->currentServer !== NNTP_SERVER_A) {
-				$this->capabilities = array();
-			}
 			$sslEnabled = NNTP_SSLENABLED_A ? true : false;
 			$this->currentServer = NNTP_SERVER_A;
 			$this->currentPort = NNTP_PORT_A;
@@ -972,35 +960,6 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function _enableCompression()
 	{
-		$msg = "XFeature GZip Compression not supported. Consider disabling compression in site settings.";
-
-		// If we already checked, don't check again.
-		if (empty($this->capabilities)) {
-			// Get the list of capabilities.
-			$this->capabilities = $this->cmdCapabilities();
-
-			// Check if we find xFeature gzip in the list.
-			$foundCap = false;
-			if (!$this->isError($this->capabilities)) {
-				foreach ($this->capabilities as $cap) {
-					if (preg_match('/xFeature.*(gzip|compress|terminator)/i', $cap)) {
-						$foundCap = true;
-						break;
-					}
-
-				}
-				if (!$foundCap) {
-					echo $this->c->error($msg);
-					$this->debugging->start("_enableCompression", $msg, 4);
-					return $this->throwError($msg);
-				}
-			} else {
-				$msg = 'Problem fetching capabilities.';
-				$this->debugging->start("_enableCompression", $msg, 2);
-				return $this->throwError($msg);
-			}
-		}
-
 		// Send this command to the usenet server.
 		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
 
@@ -1010,7 +969,8 @@ class NNTP extends Net_NNTP_Client
 			return $response;
 		} else if ($response !== 290) {
 			echo $this->c->error($msg);
-			$this->debugging->start("_enableCompression", $msg, 4);
+			$this->debugging->start("_enableCompression",
+				"XFeature GZip Compression not supported. Consider disabling compression in site settings.", 4);
 			return $response;
 		}
 
