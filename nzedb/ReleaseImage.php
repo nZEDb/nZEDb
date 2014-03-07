@@ -67,7 +67,7 @@ class ReleaseImage
 	{
 		$img = false;
 
-		if (strpos($imgLoc, 'http:') === 0) {
+		if (strpos(strtolower($imgLoc), 'http:') === 0) {
 			$img = getUrl($imgLoc);
 		} else if (is_file($imgLoc)) {
 			$img = @file_get_contents($imgLoc);
