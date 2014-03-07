@@ -701,7 +701,7 @@ class PostProcess
 				usort($nzbfiles, 'PostProcess::sortrar');
 
 				// Only process for samples, previews and images if not disabled.
-				$blnTookSample = ($rel['disablepreview'] === 1) ? true : false;
+				$blnTookSample = ($rel['disablepreview'] == 1) ? true : false;
 				$blnTookMediainfo = $blnTookAudioinfo = $blnTookJPG = $blnTookVideo = false;
 				if ($processSample === false) {
 					$blnTookSample = true;
