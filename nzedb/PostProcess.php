@@ -963,7 +963,8 @@ class PostProcess
 							} else {
 								if ($notInfinite > $this->partsQTY) {
 									if ($this->echooutput) {
-										echo $this->c->info("\nMax parts to pp reached");
+										echo "\n";
+										echo $this->c->info("Ran out of tries to download yEnc articles for the RAR files.");
 									}
 									break;
 								}
@@ -987,10 +988,28 @@ class PostProcess
 							} else {
 								$this->segsize = 0;
 							}
+
 							$this->sum = $this->sum + $this->adj * $this->segsize;
 							if ($this->sum > $this->size || $this->adj === 0) {
-								$mID = array_slice((array) $rarFile['segments'], 0, $this->segmentsToDownload);
 
+								// Get the message-id's we want. If we failed previously, try getting different M-ID's.
+								if ($failed > 0) {
+									$segments = count($rarFile['segments']);
+									if ($segments > $failed) {
+										$mID =
+											array_slice(
+												(array) $rarFile['segments'],
+												$failed,
+												(($this->segmentsToDownload + $failed) > $segments ? $segments : $this->segmentsToDownload)
+											);
+									} else {
+										$mID = array_slice((array) $rarFile['segments'], 0, $this->segmentsToDownload);
+									}
+								} else {
+									$mID = array_slice((array) $rarFile['segments'], 0, $this->segmentsToDownload);
+								}
+
+								// Download the article(s) from usenet.
 								$fetchedBinary = $nntp->getMessages($groupName, $mID, $this->alternateNNTP);
 								if ($nntp->isError($fetchedBinary)) {
 									$fetchedBinary = false;
@@ -998,12 +1017,14 @@ class PostProcess
 
 								if ($fetchedBinary !== false) {
 
+									// Echo we downloaded rar/zip.
 									if ($this->echooutput) {
 										echo '(rB)';
 									}
 
 									$notInfinite++;
 
+									// Process the rar/zip file.
 									$relFiles = $this->processReleaseFiles($fetchedBinary, $rel, $rarFile['title'], $nntp);
 
 									if ($this->password === true) {
@@ -1018,10 +1039,10 @@ class PostProcess
 								} else {
 
 									if ($this->echooutput) {
-										echo $this->c->alternateOver("f(" . $notInfinite . ")");
+										echo 'f(' . $notInfinite . ')';
 									}
 
-									$notInfinite = $notInfinite + 0.2;
+									$notInfinite += 0.2;
 									$failed++;
 								}
 							}
