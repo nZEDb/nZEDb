@@ -228,7 +228,7 @@ Class PreDb
 								}
 
 								if (strlen($title) > 15) {
-									if ($run = $db->queryInsert(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $title, $size, $category, $predate, $db->escapeString('zenet'), $md5))) {
+									if ($db->queryInsert(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $title, $size, $category, $predate, $db->escapeString('zenet'), $md5))) {
 										$newnames++;
 									}
 								}
@@ -614,11 +614,18 @@ Class PreDb
 			} else {
 				$title = trim($data[1]->innertext);
 			}
+
+			$md5 = md5($title);
+			// Check DB if we already have it.
+			$check = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $db->escapeString($md5)));
+			if ($check !== false) {
+				continue;
+			}
+
 			$e = $data[2]->find('a');
 			$category = $e[0]->innertext;
 			preg_match('/([\d\.]+MB)/', $data[3]->innertext, $match);
 			$size = isset($match[1]) ? $match[1] : 'NULL';
-			$md5 = md5($title);
 			if (strlen($title) > 15 && $category != 'NUKED') {
 				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, category, size) VALUES (%s, %s, now(), %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($category), $db->escapeString($size)))) {
 					$newnames++;

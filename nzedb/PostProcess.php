@@ -1917,6 +1917,10 @@ class PostProcess
 		// Return value.
 		$retVal = false;
 
+		if (!$this->processMediaInfo) {
+			return $retVal;
+		}
+
 		// Get all the files in the temp folder.
 		$mediaFiles = glob($this->tmpPath . '*.*');
 
@@ -1976,7 +1980,7 @@ class PostProcess
 		}
 
 		// Check if media info fetching is on.
-		if ($this->site->mediainfopath === '') {
+		if ($this->processMediaInfo) {
 			$retVal = true;
 		}
 
@@ -2148,7 +2152,7 @@ class PostProcess
 		// Return value.
 		$retVal = false;
 
-		if (!$this->processVideo) {
+		if (!$this->processSample) {
 			return $retVal;
 		}
 
@@ -2206,8 +2210,7 @@ class PostProcess
 						if ($file === $fileName) {
 
 							// Try to resize/move the image.
-							$saved =
-								$this->releaseImage->saveImage(
+							$saved = $this->releaseImage->saveImage(
 									$releaseGUID . '_thumb',
 									$this->tmpPath .$file,
 									$this->releaseImage->imgSavePath, 800, 600
@@ -2217,7 +2220,7 @@ class PostProcess
 							@unlink($this->tmpPath . $fileName);
 
 							// Check if it saved.
-							if ($saved === 1 && is_file($this->releaseImage->imgSavePath . $releaseGUID . '_thumb.jpg')) {
+							if ($saved === 1) {
 
 								$retVal = true;
 								if ($this->echooutput) {
@@ -2247,6 +2250,10 @@ class PostProcess
 	{
 		// Return value.
 		$retVal = false;
+
+		if (!$this->processVideo) {
+			return $retVal;
+		}
 
 		// Get all the files in the temp dir.
 		$sampleFiles = glob($this->tmpPath . '*.*');

@@ -968,9 +968,9 @@ class NNTP extends Net_NNTP_Client
 			$this->debugging->start("_enableCompression", $response->getMessage(), 4);
 			return $response;
 		} else if ($response !== 290) {
+			$msg = "XFeature GZip Compression not supported. Consider disabling compression in site settings.";
 			echo $this->c->error($msg);
-			$this->debugging->start("_enableCompression",
-				"XFeature GZip Compression not supported. Consider disabling compression in site settings.", 4);
+			$this->debugging->start("_enableCompression", $msg, 4);
 			return $response;
 		}
 
