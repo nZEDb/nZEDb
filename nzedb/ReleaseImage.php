@@ -125,6 +125,8 @@ class ReleaseImage
 				unset($thumb);
 			}
 			imagedestroy($im);
+		} else {
+			imagedestroy($cover);
 		}
 		$coverPath = $imgSavePath.$imgName.'.jpg';
 		$coverSave = @file_put_contents($coverPath, $cover);
