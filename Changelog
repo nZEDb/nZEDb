@@ -7,6 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-07 -> kevin    -> Fix: Error message not set in NNTP.
+                       -> Change: More checks in postproc.
 2014-03-06 -> bart39   -> Fix: fixed typos in previous change
                           Fix: fixed music / book processing where "Lookup All" only checked those not renamed
                           Fix: fixed issue with "Lookup all Console" only checking those not renamed

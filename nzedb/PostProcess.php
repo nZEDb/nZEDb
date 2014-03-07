@@ -1917,6 +1917,10 @@ class PostProcess
 		// Return value.
 		$retVal = false;
 
+		if (!$this->processMediaInfo) {
+			return $retVal;
+		}
+
 		// Get all the files in the temp folder.
 		$mediaFiles = glob($this->tmpPath . '*.*');
 
@@ -1976,7 +1980,7 @@ class PostProcess
 		}
 
 		// Check if media info fetching is on.
-		if ($this->site->mediainfopath === '') {
+		if ($this->processMediaInfo) {
 			$retVal = true;
 		}
 
@@ -2148,7 +2152,7 @@ class PostProcess
 		// Return value.
 		$retVal = false;
 
-		if (!$this->processVideo) {
+		if (!$this->processSample) {
 			return $retVal;
 		}
 
@@ -2247,6 +2251,10 @@ class PostProcess
 	{
 		// Return value.
 		$retVal = false;
+
+		if (!$this->processVideo) {
+			return $retVal;
+		}
 
 		// Get all the files in the temp dir.
 		$sampleFiles = glob($this->tmpPath . '*.*');
