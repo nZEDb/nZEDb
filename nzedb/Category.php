@@ -899,7 +899,7 @@ class Category
 
 	public function isMovie3D($releasename)
 	{
-		if (preg_match('/[-._ ]3D\s?[\.\-_\[ ](1080p|(19|20)\d\d|AVC|BD(25|50)|Blu[-._ ]?ray|CEE|Complete|GER|MVC|MULTi|SBS)[-._ ]/i', $releasename)) {
+		if (preg_match('/[-._ ]3D\s?[\.\-_\[ ](1080p|(19|20)\d\d|AVC|BD(25|50)|Blu[-._ ]?ray|CEE|Complete|GER|MVC|MULTi|SBS|H(-)?SBS)[-._ ]/i', $releasename)) {
 			$this->tmpCat = Category::CAT_MOVIE_3D;
 			return true;
 		}
@@ -1030,6 +1030,9 @@ class Category
 	public function isXxx($releasename)
 	{
 		if (preg_match('/(XXX|Porn|PORNOLATiON|SWE6RUS|masturbation|masturebate|lesbian|Imageset|Squirt|Transsexual|a\.b\.erotica|pictures\.erotica\.anime|cumming|ClubSeventeen|Errotica|Erotica|EroticaX|nymph|sexontv|My_Stepfather_Made_Me|slut|\bwhore\b)/i', $releasename)) {
+			if ($this->isXxxPack($releasename)) {
+				return true;
+			}
 			if ($this->isXxx264($releasename)) {
 				return true;
 			}
@@ -1037,9 +1040,6 @@ class Category
 				return true;
 			}
 			if ($this->isXxxImageset($releasename)) {
-				return true;
-			}
-			if ($this->isXxxPack($releasename)) {
 				return true;
 			}
 			if ($this->isXxxWMV($releasename)) {
