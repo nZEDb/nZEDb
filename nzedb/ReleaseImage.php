@@ -100,7 +100,9 @@ class ReleaseImage
 			return 0;
 		}
 
+		$noHW = true;
 		if ($imgMaxWidth != '' && $imgMaxHeight != '') {
+			$noHW =false;
 			$im = $cover;
 			$width = imagesx($im);
 			$height = imagesy($im);
@@ -125,11 +127,12 @@ class ReleaseImage
 				unset($thumb);
 			}
 			imagedestroy($im);
-		} else {
-			imagedestroy($cover);
 		}
 		$coverPath = $imgSavePath.$imgName.'.jpg';
 		$coverSave = @file_put_contents($coverPath, $cover);
+		if ($noHW) {
+			imagedestroy($cover);
+		}
 		return ($coverSave !== false || ($coverSave === false && file_exists($coverPath))) ? 1 : 0;
 	}
 
