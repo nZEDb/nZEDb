@@ -74,8 +74,9 @@ class ReleaseImage
 		}
 
 		if ($img !== false) {
-			$img = @imagecreatefromstring($img);
-			if ($img !== false) {
+			$im = @imagecreatefromstring($img);
+			if ($im !== false) {
+				imagedestroy($im);
 				return $img;
 			}
 		}
@@ -95,15 +96,15 @@ class ReleaseImage
 	 */
 	public function saveImage($imgName, $imgLoc, $imgSavePath, $imgMaxWidth='', $imgMaxHeight='', $saveThumb=false)
 	{
+		// Try to get the image as a string.
 		$cover = $this->fetchImage($imgLoc);
 		if ($cover === false) {
 			return 0;
 		}
 
-		$noHW = true;
+		// Check if we need to resize it.
 		if ($imgMaxWidth != '' && $imgMaxHeight != '') {
-			$noHW =false;
-			$im = $cover;
+			$im = @imagecreatefromstring($cover);
 			$width = imagesx($im);
 			$height = imagesy($im);
 			$ratio = min($imgMaxHeight/$height, $imgMaxWidth/$width);
@@ -128,12 +129,15 @@ class ReleaseImage
 			}
 			imagedestroy($im);
 		}
+		// Store it on the hard drive.
 		$coverPath = $imgSavePath.$imgName.'.jpg';
-		$coverSave = @file_put_contents($coverPath, $cover);
-		if ($noHW) {
-			imagedestroy($cover);
+		$coverSave =@ file_put_contents($coverPath, $cover);
+
+		// Check if it's on the drive.
+		if ($coverSave === false || !is_file($coverPath)) {
+			return 0;
 		}
-		return ($coverSave !== false || ($coverSave === false && file_exists($coverPath))) ? 1 : 0;
+		return 1;
 	}
 
 	/**

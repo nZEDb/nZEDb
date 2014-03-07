@@ -2210,8 +2210,7 @@ class PostProcess
 						if ($file === $fileName) {
 
 							// Try to resize/move the image.
-							$saved =
-								$this->releaseImage->saveImage(
+							$saved = $this->releaseImage->saveImage(
 									$releaseGUID . '_thumb',
 									$this->tmpPath .$file,
 									$this->releaseImage->imgSavePath, 800, 600
@@ -2221,7 +2220,7 @@ class PostProcess
 							@unlink($this->tmpPath . $fileName);
 
 							// Check if it saved.
-							if ($saved === 1 && is_file($this->releaseImage->imgSavePath . $releaseGUID . '_thumb.jpg')) {
+							if ($saved === 1) {
 
 								$retVal = true;
 								if ($this->echooutput) {
