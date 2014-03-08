@@ -1088,14 +1088,14 @@ class PostProcess
 											$r['range'] = $range;
 											if (!isset($r['error'])) {
 
-												//if ($rel['categoryid'] !== Category::CAT_MISC) {
+												if ($rel['categoryid'] !== Category::CAT_MISC) {
 													// Check if it's a par2.
 													if (preg_match('/\.par2/i', $file['name'])) {
 														$par2 = $archInfo->getFileData($file['name'], $file['source']);
 														// Try to get a release name.
 														$this->siftPAR2($par2, $rel);
 													}
-												//}
+												}
 
 												if (preg_match(
 													$this->supportFiles .
@@ -1820,14 +1820,14 @@ class PostProcess
 							break;
 						}
 
-						//if ($release['categoryid'] == Category::CAT_MISC) {
+						if ($release['categoryid'] == Category::CAT_MISC) {
 							// Check if it's a par2.
 							if (preg_match('/\.par2/i', $file['name'])) {
 								$par2 = $rar->getFileData($file['name'], $file['source']);
 								// Try to get a release name.
 								$this->siftPAR2($par2, $release);
 							}
-						//}
+						}
 
 						if (preg_match($this->supportFiles . ')(?!.{20,})/i', $file['name'])) {
 							continue;
