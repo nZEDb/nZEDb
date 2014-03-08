@@ -1090,8 +1090,8 @@ class PostProcess
 
 												if ($rel['categoryid'] !== Category::CAT_MISC) {
 													// Check if it's a par2.
-													if (preg_match('/\.par2/i', $file['name'])) {
-														$par2 = $archInfo->getFileData($file['name'], $file['source']);
+													if (preg_match('/\.par2/i', $r['name'])) {
+														$par2 = $archInfo->getFileData($r['name'], $r['source']);
 														// Try to get a release name.
 														$this->siftPAR2($par2, $rel);
 													}
