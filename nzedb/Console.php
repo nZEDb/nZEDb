@@ -18,7 +18,11 @@ class Console
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->db = new DB();
 		$this->imgSavePath = nZEDb_COVERS . 'console' . DS;
-		$this->cleanconsole = ($site->lookupgames == 2) ? 1 : 0;
+		$this->renamed = '';
+		if ($site->lookupgames == 2) {
+			$this->renamed = 'AND isrenamed = 1';
+		}
+		//$this->cleanconsole = ($site->lookupgames == 2) ? 'AND isrenamed = 1' : '';
 		$this->c = new ColorCLI();
 	}
 
@@ -497,7 +501,7 @@ class Console
 	public function processConsoleReleases()
 	{
 		$db = $this->db;
-		$res = $db->queryDirect(sprintf('SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE nzbstatus = 1 AND isrenamed = %d AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d', $this->cleanconsole, Category::CAT_PARENT_GAME, $this->gameqty));
+		$res = $db->queryDirect(sprintf('SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE nzbstatus = 1 %s AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d', $this->renamed, Category::CAT_PARENT_GAME, $this->gameqty));
 
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {

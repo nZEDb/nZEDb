@@ -257,7 +257,6 @@ class NZB
 		return $nzbpath . $releaseGuid . '.nzb.gz';
 	}
 
-	// Check if the NZB is there, returns path, else false.
 	/**
 	 * Determine is an NZB exists, returning the path+filename, if not return false.
 	 *
@@ -294,7 +293,7 @@ class NZB
 
 		$nzb = str_replace("\x0F", '', $nzb);
 		$xml = @simplexml_load_string($nzb);
-		if (!$xml || strtolower($xml->getName()) != 'nzb') {
+		if (!$xml || strtolower($xml->getName()) !== 'nzb') {
 			return $result;
 		}
 
@@ -302,7 +301,7 @@ class NZB
 			// Subject.
 			$title = $file->attributes()->subject;
 
-			// Amoune of pars.
+			// Amount of pars.
 			if (preg_match('/\.par2/i', $title)) {
 				$num_pars++;
 			}
@@ -314,7 +313,7 @@ class NZB
 					'/\.(\d{2,3}|7z|ace|ai7|srr|srt|sub|aiff|asc|avi|audio|bin|bz2|'
 					. 'c|cfc|cfm|chm|class|conf|cpp|cs|css|csv|cue|deb|divx|doc|dot|'
 					. 'eml|enc|exe|file|gif|gz|hlp|htm|html|image|iso|jar|java|jpeg|'
-					. 'jpg|js|lua|m|m3u|mm|mov|mp3|mpg|nfo|nzb|odc|odf|odg|odi|odp|'
+					. 'jpg|js|lua|m|m3u|mkv|mm|mov|mp3|mp4|mpg|nfo|nzb|odc|odf|odg|odi|odp|'
 					. 'ods|odt|ogg|par2|parity|pdf|pgp|php|pl|png|ppt|ps|py|r\d{2,3}|'
 					. 'ram|rar|rb|rm|rpm|rtf|sfv|sig|sql|srs|swf|sxc|sxd|sxi|sxw|tar|'
 					. 'tex|tgz|txt|vcf|video|vsd|wav|wma|wmv|xls|xml|xpi|xvid|zip7|zip)'

@@ -466,7 +466,7 @@ class Binaries
 		if ($type != 'partrepair' && $nntp->isError($msgs)) {
 			// This is usually a compression error, so try disabling compression.
 			$nntp->doQuit();
-			if ($nntp->doConnect(false) === false) {
+			if ($nntp->doConnect(false) !== true) {
 				return false;
 			}
 

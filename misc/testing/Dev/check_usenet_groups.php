@@ -9,7 +9,9 @@ if (!isset($argv[1])) {
 }
 
 $nntp = new NNTP();
-$nntp->doConnect();
+if ($nntp->doConnect() !== true) {
+	exit();
+}
 $data = $nntp->getGroups();
 
 if ($nntp->isError($data)) {

@@ -19,7 +19,10 @@ class Books
 		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
 		$this->db = new DB();
 		$this->bookreqids = ($site->book_reqids == null || $site->book_reqids == "") ? 8010 : $site->book_reqids;
-		$this->cleanbooks = ($site->lookupbooks == 2 ) ? 1 : 0;
+		$this->renamed = '';
+		if ($site->lookupbooks == 2) {
+			$this->renamed = 'AND isrenamed = 1';
+		}
 		$this->c = new ColorCLI();
 	}
 
@@ -289,7 +292,7 @@ class Books
 		$db = $this->db;
 
 		// include results for all book types selected in the site edit UI, this could be audio, ebooks, foregin or technical currently
-		$res = $db->queryDirect(sprintf('SELECT searchname, id, categoryid FROM releases WHERE nzbstatus = 1 AND isrenamed = %d AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d', $this->cleanbooks, $this->bookreqids, $this->bookqty));
+		$res = $db->queryDirect(sprintf('SELECT searchname, id, categoryid FROM releases WHERE nzbstatus = 1 %s AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d', $this->renamed, $this->bookreqids, $this->bookqty));
 
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
@@ -465,7 +468,7 @@ class Books
 			$bookId = $db->queryInsert(sprintf("INSERT INTO bookinfo (title, author, asin, isbn, ean, url, salesrank, publisher, publishdate, pages, overview, genre, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover']));
 		} else {
 			$bookId = $check['id'];
-			$db->queryExec(sprintf('UPDATE bookinfo SET title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s, pages = %s, overview = %s, genre = %s, cover = %d, updateddate = NOW() WHERE id = %d', $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $bookId));
+			$db->queryExec(sprintf('UPDATE bookinfo SET title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s, publishdate = %s, pages = %s, overview = %s, genre = %s, cover = %d, updateddate = NOW() WHERE id = %d', $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $bookId));
 		}
 
 		if ($bookId) {

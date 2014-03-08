@@ -267,9 +267,12 @@ class NameFixer
 
 				if ($type === "PAR2, ") {
 					$newname = ucwords($newname);
+					if (preg_match('/(.+?)\.[a-z0-9]{2,3}(PAR2)?$/i', $name, $match)) {
+						$newname = $match[1];
+					}
 				}
 
-				$this->fixed ++;
+				$this->fixed++;
 
 				$this->checkedname = explode("\\", $newname);
 				$newname = $this->checkedname[0];

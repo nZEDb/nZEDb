@@ -8,7 +8,7 @@ require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
 /**
  * Class for connecting to the usenet, retrieving articles and article headers,
  * decoding yEnc articles, decompressing article headers.
- * Extends PEAR's Net_NNTP_Client class, overides some functions.
+ * Extends PEAR's Net_NNTP_Client class, overrides some functions.
  */
 class NNTP extends Net_NNTP_Client
 {
@@ -72,6 +72,13 @@ class NNTP extends Net_NNTP_Client
 	private $compression = false;
 
 	/**
+	 * Are we allowed to post to usenet?
+	 *
+	 * @var bool
+	 */
+	protected $postingAllowed = false;
+
+	/**
 	 * Default constructor.
 	 *
 	 * @access public
@@ -117,9 +124,9 @@ class NNTP extends Net_NNTP_Client
 			$this->doQuit();
 		}
 
-		$ret = $ret2 = $connected = $sslEnabled = false;
-		$error = 'Unspecified error.';
+		$ret = $ret2 = $connected = $sslEnabled = $cError = $aError = false;
 
+		// If we switched servers, reset objects.
 		if (!$alternate) {
 			$sslEnabled = NNTP_SSLENABLED ? true : false;
 			$this->currentServer = NNTP_SERVER;
@@ -135,11 +142,7 @@ class NNTP extends Net_NNTP_Client
 		}
 
 		$enc = ($sslEnabled ? ' (ssl)' : ' (non-ssl)');
-
-		// Some providers don't support XFeature GZip don't try to enable it since it's slow.
-		if (preg_match('/tweaknews|xsusenet/i', $this->currentServer)) {
-			$compression = false;
-		}
+		$sslEnabled = ($sslEnabled ? 'tls' : false);
 
 		// Try to connect until we run of out tries.
 		$retries = $this->nntpRetries;
@@ -150,35 +153,38 @@ class NNTP extends Net_NNTP_Client
 
 			// If we are not connected, try to connect.
 			if (!$connected) {
-				$ret = $this->connect($this->currentServer, $sslEnabled, $this->currentPort, 5);
+				 $ret = $this->connect($this->currentServer, $sslEnabled, $this->currentPort, 5);
 			}
 
-			if ($ret !== false) {
-				// Check if we got an error while connecting.
-				$cErr = $this->isError($ret);
+			// Check if we got an error while connecting.
+			$cErr = $this->isError($ret);
 
-				// If no error, we are connected.
-				if (!$cErr) {
-					$connected = true;
-				} else {
-					$error = $ret->getMessage();
+			// If no error, we are connected.
+			if (!$cErr) {
+				// Say that we are connected so we don't retry.
+				$connected = true;
+				// When there is no error it returns bool if we are allowed to post or not.
+				$this->postingAllowed = $ret;
+			} else {
+				// Only fetch the message once.
+				if (!$cError) {
+					$cError = $ret->getMessage();
 				}
+			}
 
-				// If error, try to connect again.
-				if ($cErr && $retries > 0) {
-					continue;
-				}
+			// If error, try to connect again.
+			if ($cErr && $retries > 0) {
+				continue;
 			}
 
 			// If we have no more retries and could not connect, return an error.
-			// This error message is never used, the return dends back and then dataerror takes over
 			if ($retries === 0 && !$connected) {
 				$message =
 					"Cannot connect to server " .
 					$this->currentServer .
 					$enc .
 					': ' .
-					$error;
+					$cError;
 				$this->debugging->start("doConnect", $message, 2);
 				return $this->throwError($this->c->error($message));
 			}
@@ -201,7 +207,9 @@ class NNTP extends Net_NNTP_Client
 					if (!$aErr) {
 						$authenticated = true;
 					} else {
-						$error = $ret2->getMessage();
+						if (!$aError) {
+							$aError = $ret2->getMessage();
+						}
 					}
 
 					// If error, try to authenticate again.
@@ -210,7 +218,6 @@ class NNTP extends Net_NNTP_Client
 					}
 
 					// If we ran out of retries, return an error.
-					// This error message is never used, the return dends back and then dataerror takes over
 					if ($retries === 0 && $authenticated === false) {
 						$message =
 							"Cannot authenticate to server " .
@@ -219,7 +226,7 @@ class NNTP extends Net_NNTP_Client
 							' - ' .
 							$userName .
 							' (' .
-							$error .
+							$aError .
 							')';
 						$this->debugging->start("doConnect", $message, 2);
 						return $this->throwError($this->c->error($message));
@@ -229,10 +236,11 @@ class NNTP extends Net_NNTP_Client
 
 			// If we are connected and authenticated, try enabling compression if we have it enabled.
 			if ($connected === true && $authenticated === true) {
+				// Try to enable compression.
 				if ($compression === true && $this->site->compressedheaders === '1') {
 					$this->_enableCompression();
 				}
-				$this->debugging->start("doConnect", "Connected to " . $this->currentServer . ".", 5);
+				$this->debugging->start("doConnect", "Connected to " . $this->currentServer . '.', 5);
 				return true;
 			}
 			// If we reached this point and have not connected after all retries, break out of the loop.
@@ -259,6 +267,9 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function doQuit()
 	{
+		// Set this to false so we recheck next time.
+		$this->compression = false;
+
 		// Check if we are connected to usenet.
 		if (parent::_isConnected()) {
 			$this->debugging->start("doQuit", "Disconnecting from " . $this->currentServer, 5);
@@ -324,16 +335,14 @@ class NNTP extends Net_NNTP_Client
 		}
 
 		// Attempt to yEnc decode and return the body.
-		return $this->_decodeYenc($body);
+		return $this->_decodeYEnc($body);
 	}
 
 	/**
 	 * Download multiple article bodies and string them together.
 	 *
 	 * @param string $groupName The name of the group the articles are in.
-	 * @param array string|int $identifiers The message-ID's or article numbers of the article body's to download.
-	 * @param string $identifiers A message-ID
-	 * @param int $identifiers A article number
+	 * @param array|string|int $identifiers Message-ID(string) or article number(int), or array containing M-ID's or A-Numbers.
 	 * @param bool $alternate Use the alternate NNTP provider?
 	 *
 	 * @return string On success : The article bodies.
@@ -377,15 +386,23 @@ class NNTP extends Net_NNTP_Client
 							}
 							$aConnected = true;
 						}
-						$body = $nntp->getMessage($groupName, $m);
-						if ($nntp->isError($body)) {
+						$newBody = $nntp->getMessage($groupName, $m);
+						if ($nntp->isError($newBody)) {
 							if ($aConnected) {
 								$nntp->doQuit();
 							}
-							$this->debugging->start("getMessages", $body->getMessage(), 3);
-							return $body;
+							// If we got some data, return it.
+							if ($body !== '') {
+								return $body;
+							}
+							$this->debugging->start("getMessages", $newBody->getMessage(), 3);
+							return $newBody;
 						}
 					} else {
+						// If we got some data, return it.
+						if ($body !== '') {
+							return $body;
+						}
 						return $message;
 					}
 				}
@@ -444,7 +461,7 @@ class NNTP extends Net_NNTP_Client
 
 		// Check if it's an article number or message-ID.
 		if (!is_numeric($identifier)) {
-			// If it's a message-ID, check if it has the required triangular breackets.
+			// If it's a message-ID, check if it has the required triangular brackets.
 			$identifier = $this->formatMessageID($identifier);
 		}
 
@@ -486,7 +503,7 @@ class NNTP extends Net_NNTP_Client
 				}
 			}
 			// Finally we decode the message using yEnc.
-			$ret['Message'] = $yEnc ? $this->_decodeYenc($body) : $body;
+			$ret['Message'] = $yEnc ? $this->_decodeYEnc($body) : $body;
 		}
 		return $ret;
 	}
@@ -571,6 +588,12 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function postArticle($groups, $subject, $body, $from, $yEnc = true, $compress = true, $extra = '')
 	{
+		if (!$this->postingAllowed) {
+			$message = 'You do not have the right to post articles on server ' . $this->currentServer;
+			$this->debugging->start("postArticle", $message, 4);
+			return $this->throwError($this->c->error($message));
+		}
+
 		$this->checkConnection();
 
 		// Throw errors if subject or from are more than 510 chars.
@@ -593,8 +616,8 @@ class NNTP extends Net_NNTP_Client
 
 		// Check if we should encode to yEnc.
 		if ($yEnc) {
-			$yenc = new Yenc();
-			$body = $yenc->encode($compress ? gzdeflate($body, 4) : $body, $subject);
+			$y = new Yenc();
+			$body = $y->encode(($compress ? gzdeflate($body, 4) : $body), $subject);
 
 			// If not yEnc, then check if the body is 510+ chars, split it at 510 chars and separate with \r\n
 		} else {
@@ -630,7 +653,7 @@ class NNTP extends Net_NNTP_Client
 		// Disconnect.
 		$nntp->doQuit();
 		// Try reconnecting. This uses another round of max retries.
-		if ($nntp->doConnect($comp) === false) {
+		if ($nntp->doConnect($comp) !== true) {
 			return false;
 		}
 
@@ -689,7 +712,7 @@ class NNTP extends Net_NNTP_Client
 	{
 		$tries = $bytesReceived = $totalBytesReceived = 0;
 		$completed = $possibleTerm = false;
-		$data = null;
+		$data = $buffer = null;
 
 		while (!feof($this->_socket)) {
 			// Reset only if decompression has not failed.
@@ -700,7 +723,7 @@ class NNTP extends Net_NNTP_Client
 			// Did we find a possible ending ? (.\r\n)
 			if ($possibleTerm !== false) {
 
-				// If the socket is really empty, fgets will get stuck here,
+				// If the socket is really empty, fGets will get stuck here,
 				// so set the socket to non blocking in case.
 				stream_set_blocking($this->_socket, 0);
 
@@ -836,9 +859,9 @@ class NNTP extends Net_NNTP_Client
 	}
 
 	/**
-	 * Decoce a string of text encoded with yEnc.
+	 * Decode a string of text encoded with yEnc.
 	 *
-	 * @note For usage outside of this class, please use the Yenc library.
+	 * @note For usage outside of this class, please use the YEnc library.
 	 *
 	 * @param string $string The encoded text to decode.
 	 *
@@ -846,23 +869,23 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access protected
 	 *
-	 * @TODO: ? Maybe this function should be merged into the Yenc class?
+	 * @TODO: ? Maybe this function should be merged into the YEnc class?
 	 */
-	protected function _decodeYenc($string)
+	protected function _decodeYEnc($string)
 	{
 		$ret = $string;
-		if (preg_match('/^(=ybegin.*=yend[^$]*)$/ims', $string, $input)) {
+		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $string, $input)) {
 			$ret = '';
 			$input =
 				trim(
 					preg_replace(
 						'/\r\n/im', '',
 						preg_replace(
-							'/(^=yend.*)/im', '',
+							'/(^=yEnd.*)/im', '',
 							preg_replace(
-								'/(^=ypart.*\\r\\n)/im', '',
+								'/(^=yPart.*\\r\\n)/im', '',
 								preg_replace(
-									'/(^=ybegin.*\\r\\n)/im', '',
+									'/(^=yBegin.*\\r\\n)/im', '',
 									$input[1],
 								1),
 							1),
@@ -945,7 +968,9 @@ class NNTP extends Net_NNTP_Client
 			$this->debugging->start("_enableCompression", $response->getMessage(), 4);
 			return $response;
 		} else if ($response !== 290) {
-			$this->debugging->start("_enableCompression", "XFeature GZip Compression not supported.", 4);
+			$msg = "XFeature GZip Compression not supported. Consider disabling compression in site settings.";
+			echo $this->c->error($msg);
+			$this->debugging->start("_enableCompression", $msg, 4);
 			return $response;
 		}
 

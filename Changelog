@@ -1,3 +1,4 @@
+
 * Note *
 No pull requests will be accepted without this file being updated to reflect what you changed and when.
 No pull requests will be accepted to any branch except the dev branch.
@@ -7,6 +8,28 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-07 -> bart39   -> Fix: #1203 add Half SBS to 3d Category
+2014-03-07 -> kevin    -> Fix: Error message not set in NNTP.
+                       -> Change: More checks in postproc.
+                       -> Refactor ReleaseImage.php, fix bug where it wasn't deleting preview images and it was trying to delete imdb images, don't use imagecreatefromstring 2 times.
+                       -> Check for duplicate predb rows when inserting usenet crawler.
+                       -> When we fail to download yEnc articles for the rar in postprocess, try different articles. Fix spacing in movie.php echo's.
+                       -> Decompress par2, run the binary data through namefixer.
+2014-03-06 -> bart39   -> Fix: fixed typos in previous change
+                          Fix: fixed music / book processing where "Lookup All" only checked those not renamed
+                          Fix: fixed issue with "Lookup all Console" only checking those not renamed
+                          Fix: fixed issue updating bookInfo
+2014-03-06 -> kevin    -> Remove check for images smaller than 12 bytes in releaseimage, causes issues with amazon.
+                       -> Remove checking of capabilities, too many servers don't support it.
+                       -> Fix issue where postproc was running ffmpeg when the path wasn't set.
+2014-03-05 -> kevin    -> More refactor of post proc.
+                       -> Use TLS instead of SSL on the nntp connection, TLS is more secure.
+                       -> Fix some issues connecting to usenet.
+                       -> Add a script to use NET_NNTP's debug when debugging NNTP.
+                       -> Check if XFeature GZip Compress is in the list of capabilities.
+                       -> If we switch of NNTP server on the same instance, reset the capabilities.
+                       -> Change phpdoc in yenc causing weak warnings in nntp.
+2014-03-05 -> bart39   -> Fix: fixed issue with postprocess_threaded.py
 2013-03-04 -> niel     -> Chg: Reverting default covers path change
                        -> Chg: Adding next-master and master to branches that allow pre-commit to update the commit number.
 2014-03-04 -> kevin    -> Remove checks that were redone multiple times or checks that were not useful in postprocess to speed it up.
