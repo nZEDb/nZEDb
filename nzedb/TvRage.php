@@ -14,7 +14,7 @@ class TvRage
 		$s = new Sites();
 		$site = $s->get();
 		$this->rageqty = (!empty($site->maxrageprocessed)) ? $site->maxrageprocessed : 75;
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->c = new ColorCLI();
 
 		$this->xmlFullSearchUrl = "http://services.tvrage.com/feeds/full_search.php?show=";

@@ -1,10 +1,13 @@
 <?php
+// Show echo's on CLI output.
+define('nZEDb_ECHOCLI', true);
+
 // Show debug messages on CLI/Web.
 define('nZEDb_DEBUG', false);
 // Log debug messages to nzedb/resources/debug.log.
 define('nZEDb_LOGGING', false);
 
-// If one of the above settings is true, then these will work:
+// If nZEDb_DEBUG or nZEDb_LOGGING is true, then these will work:
 
 // Log and or echo Info messages.
 define('nZEDb_LOGINFO', false);

@@ -13,9 +13,9 @@ class MiscSorter
 			'mpg', 'ntsc', 'pal', 'proper', 'ppv', 'ppv[\- ]?rip', 'r\d{1}', 'repack', 'repacked', 'scr', 'screener', 'tc', 'telecine', 'telesync', 'ts',
 			'tv[\- ]?rip', 'unrated', 'vhs( ?rip)', 'video_ts', 'video ts', 'x264', 'xvid', 'web[\- ]?rip');
 
-		$this->echooutput = $echooutput;
+		$this->echooutput = (nZEDb_ECHOCLI && $echooutput);
 		$this->qty = 100;
-		$this->DEBUGGING = false;
+		$this->DEBUGGING = nZEDb_DEBUG;
 
 		$this->db = new DB($this->echooutput);
 		$this->category = new Category($this->echooutput);
@@ -383,7 +383,7 @@ class MiscSorter
 				$query = "SELECT id FROM bookinfo WHERE asin = '" . (string) $amaz->Items->Item->ASIN . "'";
 				$rel = $this->db->query($query);
 				if (count($rel) == 0) {
-					$book = new Books();
+					$book = new Books($this->echooutput);
 					$bookId = $book->updateBookInfo('', $amaz);
 					unset($book);
 				} else {
@@ -443,7 +443,7 @@ class MiscSorter
 
 	function domusicfiles($row)
 	{
-		$nzbcontents = new NZBContents();
+		$nzbcontents = new NZBContents($this->echooutput);
 
 		$m3u = $alt = $mp3name = '';
 		$mp3 = false;

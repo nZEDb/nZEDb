@@ -145,10 +145,17 @@ class Binaries
 	private $tablepergroup;
 
 	/**
+	 * Echo to cli?
+	 * @var bool
+	 */
+	protected $echo;
+
+	/**
 	 * Constructor.
 	 */
-	public function __construct()
+	public function __construct($echo = true)
 	{
+		$this->echo = ($echo && nZEDb_ECHOCLI);
 		$this->backfill = new Backfill($this->site);
 		$this->c = new ColorCLI();
 		$this->collectionsCleaning = new CollectionsCleaning();
@@ -200,7 +207,7 @@ class Binaries
 				$this->debugging->start("updateAllGroups", $message, 1);
 				exit($this->c->primary($message));
 			}
-			$relss = new Releases(true);
+			$relss = new Releases($this->echo);
 			$relss->resetCollections();
 		}
 		$res = $this->groups->getActive();
@@ -436,7 +443,7 @@ class Binaries
 
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
-			if ($db->newtables($groupArr['id']) === false) {
+			if ($this->db->newtables($groupArr['id']) === false) {
 				$dmessage = "There is a problem creating new parts/files tables for this group.";
 				$this->debugging->start("scan", $dmessage, 1);
 				exit($this->c->error($dmessage));

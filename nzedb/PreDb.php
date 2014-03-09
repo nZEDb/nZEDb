@@ -13,7 +13,7 @@ Class PreDb
 	{
 		$s = new Sites();
 		$this->site = $s->get();
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->db = new DB();
 		$this->c = new ColorCLI();
 	}
@@ -721,7 +721,7 @@ Class PreDb
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
 		$db = new DB();
-		$namefixer = new NameFixer();
+		$namefixer = new NameFixer($this->echooutput);
 		$consoletools = new ConsoleTools();
 		$updated = $checked = 0;
 		$matches = '';
@@ -844,11 +844,6 @@ Class PreDb
 		} else {
 			return $str;
 		}
-	}
-
-	function updatePredb()
-	{
-
 	}
 
 }

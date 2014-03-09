@@ -93,7 +93,7 @@ class Debugging
 	{
 		$this->class = $class;
 		$this->colorCLI = new ColorCLI();
-		$this->newLine = (strtolower(substr(php_uname('s'), 0, 3)) === 'win') ? "\r\n" : "\n";
+		$this->newLine = PHP_EOL;
 		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli') ? true : false;
 	}
 

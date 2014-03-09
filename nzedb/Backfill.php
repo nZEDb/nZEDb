@@ -64,12 +64,20 @@ class Backfill
 	private $tablepergroup;
 
 	/**
+	 * Echo to cli?
+	 * @var bool
+	 */
+	protected $echo;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param null $site
+	 * @param null $site Object with site settings.
+	 * @param bool $echo Echo to cli?
 	 */
-	public function __construct($site = null)
+	public function __construct($site = null, $echo = true)
 	{
+		$this->echo = ($echo && nZEDb_ECHOCLI);
 		$this->c = new ColorCLI();
 		$this->db = new DB();
 		$this->debugging = new Debugging("Backfill");
@@ -128,7 +136,7 @@ class Backfill
 		if ($res) {
 			$counter = 1;
 			$db = $this->db;
-			$binaries = new Binaries();
+			$binaries = new Binaries($this->echo);
 			foreach ($res as $groupArr) {
 				if ($groupName === '') {
 					$dmessage = "\nStarting group " . $counter . ' of ' . sizeof($res) . ".\n";
@@ -392,15 +400,14 @@ class Backfill
 
 		if ($res) {
 			$counter = 1;
-			$db = $this->db;
-			$binaries = new Binaries();
+			$binaries = new Binaries($this->echo);
 			foreach ($res as $groupArr) {
 				if ($groupName === '') {
 					$dmessage =  "\nStarting group " . $counter . ' of ' . sizeof($res) . ".\n";
 					$this->debugging->start("backfillPostAllGroups", $dmessage, 5);
 					echo $this->c->set256($this->header) . $dmessage . $this->c->rsetColor();
 				}
-				$this->backfillPostGroup($nntp, $db, $binaries, $groupArr, sizeof($res) - $counter, $articles);
+				$this->backfillPostGroup($nntp, $this->db, $binaries, $groupArr, sizeof($res) - $counter, $articles);
 				$counter++;
 			}
 		} else {
@@ -918,7 +925,7 @@ class Backfill
 
 		$groups = new Groups();
 		$this->startGroup = microtime(true);
-		$binaries = new Binaries();
+		$binaries = new Binaries($this->echo);
 		$groupArr = $groups->getByName($group);
 		$process = $this->safepartrepair ? 'update' : 'backfill';
 

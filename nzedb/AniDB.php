@@ -11,7 +11,7 @@ class AniDB
 		$site = $s->get();
 
 		$this->aniqty = (!empty($site->maxanidbprocessed)) ? $site->maxanidbprocessed : 100;
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
 		$this->db = new DB();
 		$this->c = new ColorCLI();

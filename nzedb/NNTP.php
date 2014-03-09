@@ -79,12 +79,21 @@ class NNTP extends Net_NNTP_Client
 	protected $postingAllowed = false;
 
 	/**
+	 * Echo to cli?
+	 * @var
+	 */
+	protected $echo;
+
+	/**
 	 * Default constructor.
+	 *
+	 * @param bool $echo Echo to cli?
 	 *
 	 * @access public
 	 */
-	public function __construct()
+	public function __construct($echo = true)
 	{
+		$this->echo = $echo;
 		$this->c = new ColorCLI();
 		$this->s = new Sites();
 		$this->site = $this->s->get();
@@ -358,7 +367,7 @@ class NNTP extends Net_NNTP_Client
 		$body = '';
 
 		$aConnected = false;
-		$nntp = new NNTP();
+		$nntp = new NNTP($this->echo);
 
 		// Check if the msgIds are in an array.
 		if (is_array($identifiers)) {

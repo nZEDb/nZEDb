@@ -3,6 +3,9 @@
 require_once nZEDb_LIBS . 'ZipFile.php';
 require_once nZEDb_LIB . 'Util.php';
 
+/**
+ * Class Releases
+ */
 class Releases
 {
 	/* RAR/ZIP Passworded indicator. */
@@ -10,11 +13,14 @@ class Releases
 	const PASSWD_NONE = 0;  // No password.
 	const PASSWD_POTENTIAL = 1; // Might have a password.
 	const BAD_FILE = 2;   // Possibly broken RAR/ZIP.
-	const PASSWD_RAR = 10;  // Definately passworded.
+	const PASSWD_RAR = 10;  // Definitely passworded.
 
+	/**
+	 * @param bool $echooutput
+	 */
 	function __construct($echooutput = false)
 	{
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->db = new DB();
 		$this->s = new Sites();
 		$this->site = $this->s->get();
@@ -1312,7 +1318,7 @@ class Releases
 		}
 
 		if ($rescol->rowCount() > 0) {
-			$predb = new PreDb();
+			$predb = new PreDb($this->echooutput);
 			foreach ($rescol as $rowcol) {
 				$propername = true;
 				$relid = false;
@@ -1654,7 +1660,7 @@ class Releases
 		}
 
 		if ($postproc == 1) {
-			$postprocess = new PostProcess(true);
+			$postprocess = new PostProcess($this->echooutput);
 			$postprocess->processAll($nntp);
 		} else {
 			if ($this->echooutput) {

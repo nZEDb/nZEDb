@@ -6,7 +6,7 @@ class NameFixer
 
 	function __construct($echooutput = true)
 	{
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->relid = $this->fixed = $this->checked = 0;
 		$this->db = new DB();
 		$db = $this->db;
