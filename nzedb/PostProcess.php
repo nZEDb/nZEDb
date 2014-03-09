@@ -373,9 +373,7 @@ class PostProcess
 	 */
 	protected function doEcho($str)
 	{
-		if ($this->echooutput) {
-			echo $this->c->header($str);
-		}
+		$this->c->doEcho($this->c->header($str));
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -773,7 +771,7 @@ class PostProcess
 			// Loop through the releases.
 			foreach ($result as $rel) {
 				if ($this->echooutput && $releaseToWork === '') {
-					echo "\n[" . $this->c->primaryOver($startCount--) . ']';
+					echo "[" . $this->c->primaryOver($startCount--) . ']';
 				} else if ($this->echooutput) {
 					echo '[' . $this->c->primaryOver($rel['id']) . ']';
 				}

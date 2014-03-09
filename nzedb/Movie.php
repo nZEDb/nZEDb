@@ -3,6 +3,9 @@
 require_once nZEDb_LIBS . 'TMDb.php';
 require_once nZEDb_LIB . 'Util.php';
 
+/**
+ * Class Movie
+ */
 class Movie
 {
 
@@ -12,6 +15,9 @@ class Movie
 	const SRC_UPCOMING = 4;
 	const SRC_DVD = 5;
 
+	/**
+	 * @param bool $echooutput
+	 */
 	function __construct($echooutput = false)
 	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
@@ -21,7 +27,7 @@ class Movie
 		$this->apikey = $site->tmdbkey;
 		$this->fanartapikey = $site->fanarttvkey;
 		$this->binglimit = $this->yahoolimit = 0;
-		$this->debug = ($site->debuginfo == "0") ? false : true;
+		$this->debug = nZEDb_DEBUG;
 		$this->imdburl = ($site->imdburl == "0") ? false : true;
 		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
 		$this->imgSavePath = nZEDb_COVERS . 'movies' . DS;
@@ -297,7 +303,7 @@ class Movie
 		$ri = new ReleaseImage();
 
 		if ($this->echooutput && $this->service != '') {
-			echo $this->c->primary("Fetching IMDB info from TMDB using IMDB ID: " . $imdbId);
+			$this->c->doEcho($this->c->primary("Fetching IMDB info from TMDB using IMDB ID: " . $imdbId));
 		}
 
 		//check themoviedb for imdb info
@@ -307,7 +313,13 @@ class Movie
 		$imdb = $this->fetchImdbProperties($imdbId);
 		if (!$imdb && !$tmdb) {
 			if ($this->echooutput && $this->service != '') {
-				echo $this->c->info("Unable to get movie information for IMDB ID: " . $imdbId . " on tmdb or imdb.com");
+				$this->c->doEcho(
+					$this->c->info(
+						"Unable to get movie information for IMDB ID: " .
+						$imdbId .
+						" on tmdb or imdb.com"
+					)
+				);
 			}
 			return false;
 		}
@@ -436,17 +448,38 @@ class Movie
 
 		if ($movieId) {
 			if ($this->echooutput && $this->service != '') {
-				echo $this->c->headerOver("Added/updated movie: ") . $this->c->primary($movtitle . " (" . $mov['year'] . ") - " . $mov['imdb_id']);
+				$this->c->doEcho(
+					$this->c->headerOver("Added/updated movie: ") .
+					$this->c->primary($movtitle .
+						" (" .
+						$mov['year'] .
+						") - " .
+						$mov['imdb_id']
+					)
+				);
 			}
 		} else {
 			if ($this->echooutput && $this->service != '') {
-				echo $this->c->headerOver("Nothing to update for movie: ") . $this->c->primary($movtitle . " (" . $mov['year'] . ") - " . $mov['imdb_id']);
+				$this->c->doEcho(
+					$this->c->headerOver("Nothing to update for movie: ") .
+					$this->c->primary($movtitle .
+						" (" .
+						$mov['year'] .
+						") - " .
+						$mov['imdb_id']
+					)
+				);
 			}
 		}
 
 		return $movieId;
 	}
 
+	/**
+	 * @param $imdbId
+	 *
+	 * @return bool
+	 */
 	public function fetchFanartTVProperties($imdbId)
 	{
 		if ($this->fanartapikey != '') {
@@ -475,7 +508,7 @@ class Movie
 				$ret['title'] = $art->movie['name'];
 			}
 			if ($this->echooutput) {
-				echo $this->c->alternateOver("Fanart Found ") . $this->c->headerOver($ret['title']) . "\n";
+				$this->c->doEcho($this->c->alternateOver("Fanart Found ") . $this->c->headerOver($ret['title']));
 			}
 			return $ret;
 		} else {
@@ -535,11 +568,16 @@ class Movie
 			$ret['backdrop'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original" . $tmdbLookup['backdrop_path'];
 		}
 		if ($this->echooutput) {
-			echo $this->c->primaryOver("TMDb Found ") . $this->c->headerOver($ret['title']) . "\n";
+			$this->c->doEcho($this->c->primaryOver("TMDb Found ") . $this->c->headerOver($ret['title']), true);
 		}
 		return $ret;
 	}
 
+	/**
+	 * @param $imdbId
+	 *
+	 * @return array|bool
+	 */
 	public function fetchImdbProperties($imdbId)
 	{
 		$matches = $match = $hit = $results = '';
@@ -610,7 +648,7 @@ class Movie
 				}
 			}
 			if ($this->echooutput && isset($ret['title'])) {
-				echo $this->c->headerOver("IMDb Found ") . $this->c->primaryOver($ret['title']) . "\n";
+				$this->c->doEcho($this->c->headerOver("IMDb Found ") . $this->c->primaryOver($ret['title']), true);
 			}
 			return $ret;
 		}
@@ -625,7 +663,7 @@ class Movie
 				$this->service = 'nfo';
 			}
 			if ($this->echooutput && $this->service != '') {
-				echo $this->c->headerOver($service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId) . "\n";
+				$this->c->doEcho($this->c->headerOver($service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId), true);
 			}
 
 			$this->db->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', $this->db->escapeString($imdbId), $id));
@@ -661,7 +699,7 @@ class Movie
 
 		if ($moviecount > 0) {
 			if ($this->echooutput && $moviecount > 1) {
-				echo $this->c->header("Processing " . $moviecount . " movie release(s).");
+				$this->c->doEcho($this->c->header("Processing " . $moviecount . " movie release(s)."));
 			}
 
 			$like = 'ILIKE';
@@ -729,12 +767,15 @@ class Movie
 						if ($imdbId === false) {
 							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 						}
-						echo $this->c->alternateOver("Found Local: ") . $this->c->headerOver($moviename) . "\n";
+
+						if ($this->echooutput) {
+							$this->c->doEcho($this->c->alternateOver("Found Local: ") . $this->c->headerOver($moviename));
+						}
 						continue;
 					}
 
 					if ($this->echooutput) {
-						echo $this->c->primaryOver("Looking up: ") . $this->c->headerOver($moviename) . "\n";
+						$this->c->doEcho($this->c->primaryOver("Looking up: ") . $this->c->headerOver($moviename));
 					}
 
 					// Check OMDbapi first
@@ -834,7 +875,9 @@ class Movie
 							continue;
 						}
 					} else {
-						echo $this->c->error("Exceeded request limits on google.com bing.com and yahoo.com.");
+						if ($this->echooutput) {
+							$this->c->doEcho($this->c->error("Exceeded request limits on google.com bing.com and yahoo.com."));
+						}
 						break;
 					}
 				} else {
@@ -972,7 +1015,7 @@ class Movie
 				$year = (isset($matches['year'])) ? $matches['year'] : '';
 				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 					if ($this->debug && $this->echooutput) {
-						echo "DB name: {$releasename}\n";
+						$this->c->doEcho("DB name: {$releasename}");
 					}
 					return array('title' => trim($name), 'year' => $year);
 				}
@@ -998,7 +1041,7 @@ class Movie
 		$s = new Sites();
 		$site = $s->get();
 		if ($this->echooutput) {
-			echo $this->c->header("Updating movie schedule using rotten tomatoes.");
+			$this->c->doEcho($this->c->header("Updating movie schedule using rotten tomatoes."));
 		}
 		if (isset($site->rottentomatokey)) {
 			$rt = new RottenTomato($site->rottentomatokey);
@@ -1018,10 +1061,10 @@ class Movie
 			if ($test) {
 				$cnt1 = $this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $retbo);
 				if ($this->echooutput && $cnt1 > 0) {
-					echo $this->c->header("Added/updated movies to the box office list.");
+					$this->c->doEcho($this->c->header("Added/updated movies to the box office list."));
 				} else {
 					if ($this->echooutput) {
-						echo $this->c->primary("No new updates for box office list.");
+						$this->c->doEcho($this->c->primary("No new updates for box office list."));
 					}
 				}
 			}
@@ -1044,7 +1087,7 @@ class Movie
 					echo $this->c->header("Added/updated movies to the theaters list.");
 				} else {
 					if ($this->echooutput) {
-						echo $this->c->primary("No new updates for theaters list.");
+						$this->c->doEcho($this->c->primary("No new updates for theaters list."));
 					}
 				}
 			}
@@ -1064,10 +1107,10 @@ class Movie
 			if ($test) {
 				$cnt3 = $this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $reto);
 				if ($this->echooutput && $cnt3 > 0) {
-					echo $this->c->header("Added/updated movies to the opening list.");
+					$this->c->doEcho($this->c->header("Added/updated movies to the opening list."));
 				} else {
 					if ($this->echooutput) {
-						echo $this->c->primary("No new updates for upcoming list.");
+						$this->c->doEcho($this->c->primary("No new updates for upcoming list."));
 					}
 				}
 			}
@@ -1087,10 +1130,10 @@ class Movie
 			if ($test) {
 				$cnt4 = $this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $retu);
 				if ($this->echooutput && $cnt4 > 0) {
-					echo $this->c->header("Added/updated movies to the upcoming list.");
+					$this->c->doEcho($this->c->header("Added/updated movies to the upcoming list."));
 				} else {
 					if ($this->echooutput) {
-						echo $this->c->primary("No new updates for upcoming list.");
+						$this->c->doEcho($this->c->primary("No new updates for upcoming list."));
 					}
 				}
 			}
@@ -1110,16 +1153,16 @@ class Movie
 			if ($test) {
 				$cnt5 = $this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $retr);
 				if ($this->echooutput && $cnt5 > 0) {
-					echo $this->c->header("Added/updated movies to the DVD list.");
+					$this->c->doEcho($this->c->header("Added/updated movies to the DVD list."));
 				} else {
 					if ($this->echooutput) {
-						echo $this->c->primary("No new updates for upcoming list.");
+						$this->c->doEcho($this->c->primary("No new updates for upcoming list."));
 					}
 				}
 			}
 
 			if ($this->echooutput) {
-				echo $this->c->header("Updated successfully.");
+				$this->c->doEcho($this->c->header("Updated successfully."));
 			}
 		}
 	}
@@ -1171,5 +1214,3 @@ class Movie
 	}
 
 }
-
-?>

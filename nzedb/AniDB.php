@@ -21,7 +21,7 @@ class AniDB
 	{
 		// this should not be run as it should be handled by populate_anidb
 		if ($this->echooutput) {
-			$this->c->doEcho("Skipped update aniTitles as it is handled by populate_anidb in misc/testing/DB");
+			$this->c->doEcho("Skipped update aniTitles as it is handled by populate_anidb in misc/testing/DB", true);
 		}
 		return;
 	}
@@ -248,7 +248,7 @@ class AniDB
 			return $cleanFilename;
 		} else {
 			if ($this->echooutput) {
-				$this->c->doEcho("\tFalling back to Pure REGEX method to determine name.");
+				$this->c->doEcho("\tFalling back to Pure REGEX method to determine name.", true);
 			}
 
 			// if no "'s were found then fall back to cleanFilename;
@@ -276,7 +276,7 @@ class AniDB
 
 		if (count($results) > 0) {
 			if ($this->echooutput) {
-				$this->c->doEcho('Processing ' . count($results) . " anime releases.");
+				$this->c->doEcho('Processing ' . count($results) . " anime releases.", true);
 			}
 
 			foreach ($results as $arr) {
@@ -288,7 +288,7 @@ class AniDB
 				$getReleaseName = $this->getReleaseName($arr['searchname']);
 
 				if ($this->echooutput) {
-					$this->c->doEcho("\tProcessing Anime entitled: " . $getReleaseName['title']);
+					$this->c->doEcho("\tProcessing Anime entitled: " . $getReleaseName['title'], true);
 				}
 
 				// get anidb number for the title of the naime
@@ -300,7 +300,7 @@ class AniDB
 				}
 
 				if ($this->echooutput) {
-					$this->c->doEcho('Looking up: ' . $arr['searchname']);
+					$this->c->doEcho('Looking up: ' . $arr['searchname'], true);
 				}
 
 				$AniDBAPIArray = $this->getAnimeInfo($anidbID);
@@ -328,7 +328,7 @@ class AniDB
 					$tvtitle = ($episodetitle !== 'Complete Movie' && $episodetitle !== $cleanFilename['epno']) ? $cleanFilename['epno'] . ' - ' . $episodetitle : $episodetitle;
 
 					if ($this->echooutput) {
-						$this->c->doEcho('- found ' . $AniDBAPIArray['anidbid']);
+						$this->c->doEcho('- found ' . $AniDBAPIArray['anidbid'], true);
 					}
 
 					// lastly update the information, we also want a better readable name, AKA search name so we can use the title we cleaned
@@ -341,7 +341,7 @@ class AniDB
 			} // foreach
 
 			if ($this->echooutput) {
-				$this->c->doEcho('Processed ' . count($results) . " anime releases.");
+				$this->c->doEcho('Processed ' . count($results) . " anime releases.", true);
 			}
 		} // if
 		else {

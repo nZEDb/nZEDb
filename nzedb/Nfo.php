@@ -285,7 +285,7 @@ class Nfo
 
 		if ($nfoCount > 0) {
 			if ($releaseToWork === '') {
-				$this->doEcho($this->c->primary(
+				$this->c->doEcho($this->c->primary(
 					'Processing ' . $nfoCount .
 					' NFO(s), starting at ' . $this->nzbs .
 					' * = hidden NFO, + = NFO, - = no NFO, f = download failed.'
@@ -297,7 +297,7 @@ class Nfo
 					$ns =  $this->db->query('SELECT COUNT(*) AS count FROM releases WHERE nfostatus = ' . $i);
 					$outString .= ', ' . $i . ' = ' . number_format($ns[0]['count']);
 				}
-				$this->doEcho($this->c->header($outString . '.'));
+				$this->c->doEcho($this->c->header($outString . '.'));
 			}
 			$groups = new Groups();
 			$nzbContents = new NZBContents($this->echo);
@@ -357,24 +357,11 @@ class Nfo
 					echo "\n";
 				}
 				if ($ret > 0 && $releaseToWork === '') {
-					$this->doEcho($ret . ' NFO file(s) found/processed.');
+					$this->c->doEcho($ret . ' NFO file(s) found/processed.', true);
 				}
 			}
 		}
 		return $ret;
 	}
 
-	/**
-	 * Output a message to CLI.
-	 *
-	 * @param string $message
-	 *
-	 * @return void
-	 */
-	protected function doEcho($message)
-	{
-		if ($this->echo) {
-			echo $message . PHP_EOL;
-		}
-	}
 }

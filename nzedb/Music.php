@@ -3,9 +3,15 @@
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 require_once nZEDb_LIB . 'Util.php';
 
+/**
+ * Class Music
+ */
 class Music
 {
 
+	/**
+	 * @param bool $echooutput
+	 */
 	function __construct($echooutput = false)
 	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
@@ -25,22 +31,39 @@ class Music
 		$this->c = new ColorCLI();
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array|bool
+	 */
 	public function getMusicInfo($id)
 	{
 		$db = $this->db;
 		return $db->queryOneRow(sprintf("SELECT musicinfo.*, genres.title AS genres FROM musicinfo LEFT OUTER JOIN genres ON genres.id = musicinfo.genreid WHERE musicinfo.id = %d ", $id));
 	}
 
+	/**
+	 * @param $artist
+	 * @param $album
+	 *
+	 * @return array|bool
+	 */
 	public function getMusicInfoByName($artist, $album)
 	{
 		$db = $this->db;
 		$like = 'ILIKE';
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 		return $db->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title LIKE %s AND artist %s %s", $db->escapeString("%" . $artist . "%"), $like, $db->escapeString("%" . $album . "%")));
 	}
 
+	/**
+	 * @param $start
+	 * @param $num
+	 *
+	 * @return array
+	 */
 	public function getRange($start, $num)
 	{
 		$db = $this->db;
@@ -54,6 +77,9 @@ class Music
 		return $db->query(" SELECT * FROM musicinfo ORDER BY createddate DESC" . $limit);
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getCount()
 	{
 		$db = $this->db;
@@ -61,6 +87,13 @@ class Music
 		return $res["num"];
 	}
 
+	/**
+	 * @param       $cat
+	 * @param       $maxage
+	 * @param array $excludedcats
+	 *
+	 * @return mixed
+	 */
 	public function getMusicCount($cat, $maxage = -1, $excludedcats = array())
 	{
 		$db = $this->db;
@@ -111,6 +144,16 @@ class Music
 		return $res["num"];
 	}
 
+	/**
+	 * @param       $cat
+	 * @param       $start
+	 * @param       $num
+	 * @param       $orderby
+	 * @param       $maxage
+	 * @param array $excludedcats
+	 *
+	 * @return array
+	 */
 	public function getMusicRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
 	{
 		$db = $this->db;
@@ -184,6 +227,11 @@ class Music
 					. "GROUP BY m.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
 	}
 
+	/**
+	 * @param $orderby
+	 *
+	 * @return array
+	 */
 	public function getMusicOrder($orderby)
 	{
 		$order = ($orderby == '') ? 'r.postdate' : $orderby;
@@ -216,16 +264,25 @@ class Music
 		return array($orderfield, $ordersort);
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getMusicOrdering()
 	{
 		return array('artist_asc', 'artist_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc', 'files_asc', 'files_desc', 'stats_asc', 'stats_desc', 'year_asc', 'year_desc', 'genre_asc', 'genre_desc');
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getBrowseByOptions()
 	{
 		return array('artist' => 'artist', 'title' => 'title', 'genre' => 'genreid', 'year' => 'year');
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getBrowseBy()
 	{
 		$db = new DB();
@@ -250,6 +307,12 @@ class Music
 		return $browseby;
 	}
 
+	/**
+	 * @param $data
+	 * @param $field
+	 *
+	 * @return string
+	 */
 	public function makeFieldLinks($data, $field)
 	{
 		$tmpArr = explode(', ', $data[$field]);
@@ -265,12 +328,33 @@ class Music
 		return implode(', ', $newArr);
 	}
 
+	/**
+	 * @param $id
+	 * @param $title
+	 * @param $asin
+	 * @param $url
+	 * @param $salesrank
+	 * @param $artist
+	 * @param $publisher
+	 * @param $releasedate
+	 * @param $year
+	 * @param $tracks
+	 * @param $cover
+	 * @param $genreID
+	 */
 	public function update($id, $title, $asin, $url, $salesrank, $artist, $publisher, $releasedate, $year, $tracks, $cover, $genreID)
 	{
 		$db = $this->db;
 		$db->queryExec(sprintf("UPDATE musicinfo SET title = %s, asin = %s, url = %s, salesrank = %s, artist = %s, publisher = %s, releasedate = %s, year = %s, tracks = %s, cover = %d, genreid = %d, updateddate = NOW() WHERE id = %d", $db->escapeString($title), $db->escapeString($asin), $db->escapeString($url), $salesrank, $db->escapeString($artist), $db->escapeString($publisher), $db->escapeString($releasedate), $db->escapeString($year), $db->escapeString($tracks), $cover, $genreID, $id));
 	}
 
+	/**
+	 * @param      $title
+	 * @param      $year
+	 * @param null $amazdata
+	 *
+	 * @return bool
+	 */
 	public function updateMusicInfo($title, $year, $amazdata = null)
 	{
 		$db = $this->db;
@@ -403,10 +487,15 @@ class Music
 				} else {
 					$artist = "Artist: " . $mus['artist'] . ", Album: ";
 				}
-				echo $this->c->header("\nAdded/updated album: ") .
-				$this->c->alternateOver("   Artist: ") . $this->c->primary($mus['artist']) .
-				$this->c->alternateOver("   Title:  ") . $this->c->primary($mus['title']) .
-				$this->c->alternateOver("   Year:   ") . $this->c->primary($mus['year']);
+				$this->c->doEcho(
+					$this->c->header("\nAdded/updated album: ") .
+					$this->c->alternateOver("   Artist: ") .
+					$this->c->primary($mus['artist']) .
+					$this->c->alternateOver("   Title:  ") .
+					$this->c->primary($mus['title']) .
+					$this->c->alternateOver("   Year:   ") .
+					$this->c->primary($mus['year'])
+				);
 			}
 			$mus['cover'] = $ri->saveImage($musicId, $mus['coverurl'], $this->imgSavePath, 250, 250);
 		} else {
@@ -416,13 +505,27 @@ class Music
 				} else {
 					$artist = "Artist: " . $mus['artist'] . ", Album: ";
 				}
-				echo $this->c->headerOver("\nNothing to update: ") . $this->c->primaryOver($artist . $mus['title'] . " (" . $mus['year'] . ")");
+				$this->c->doEcho(
+					$this->c->headerOver("Nothing to update: ") .
+					$this->c->primaryOver(
+						$artist .
+						$mus['title'] .
+						" (" .
+						$mus['year'] .
+						")"
+					)
+				);
 			}
 		}
 
 		return $musicId;
 	}
 
+	/**
+	 * @param $title
+	 *
+	 * @return bool|mixed
+	 */
 	public function fetchAmazonProperties($title)
 	{
 		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
@@ -439,6 +542,9 @@ class Music
 		return $result;
 	}
 
+	/**
+	 *
+	 */
 	public function processMusicReleases()
 	{
 		$db = $this->db;
@@ -447,7 +553,10 @@ class Music
 				. 'ORDER BY postdate DESC LIMIT %d', $this->renamed, $this->musicqty));
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
-				echo $this->c->header("\nProcessing " . $res->rowCount() . ' music release(s).');
+				$this->c->doEcho(
+					$this->c->header("Processing " . $res->rowCount() .' music release(s).'
+					)
+				);
 			}
 
 			foreach ($res as $arr) {
@@ -458,7 +567,7 @@ class Music
 					$newname = $album["name"] . ' (' . $album["year"] . ')';
 
 					if ($this->echooutput) {
-						echo $this->c->headerOver('Looking up: ') . $this->c->primary($newname);
+						$this->c->doEcho($this->c->headerOver('Looking up: ') . $this->c->primary($newname));
 					}
 
 					// Do a local lookup first
@@ -488,12 +597,23 @@ class Music
 					usleep($this->sleeptime * 1000 - $diff);
 				}
 			}
-		} else
-		if ($this->echooutput) {
-			echo $this->c->header('No music releases to process.');
+
+			if ($this->echooutput) {
+				echo "\n";
+			}
+
+		} else {
+			if ($this->echooutput) {
+				$this->c->doEcho($this->c->header('No music releases to process.'));
+			}
 		}
 	}
 
+	/**
+	 * @param $releasename
+	 *
+	 * @return array|bool
+	 */
 	public function parseArtist($releasename)
 	{
 		$name = '';
@@ -520,6 +640,11 @@ class Music
 		}
 	}
 
+	/**
+	 * @param bool $activeOnly
+	 *
+	 * @return array
+	 */
 	public function getGenres($activeOnly = false)
 	{
 		$db = $this->db;
@@ -530,6 +655,11 @@ class Music
 		}
 	}
 
+	/**
+	 * @param $nodeId
+	 *
+	 * @return bool|string
+	 */
 	public function matchBrowseNode($nodeId)
 	{
 		$str = '';

@@ -296,7 +296,7 @@ class Books
 
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
-				echo $this->c->header("\nProcessing " . $res->rowCount() . ' book release(s).');
+				$this->c->doEcho($this->c->header("\nProcessing " . $res->rowCount() . ' book release(s).'));
 			}
 
 			foreach ($res as $arr) {
@@ -313,7 +313,7 @@ class Books
 
 				if ($bookInfo !== false) {
 					if ($this->echooutput) {
-						echo $this->c->headerOver('Looking up: ') . $this->c->primary($bookInfo);
+						$this->c->doEcho($this->c->headerOver('Looking up: ') . $this->c->primary($bookInfo));
 					}
 
 					// Do a local lookup first
@@ -333,7 +333,9 @@ class Books
 					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
 				} else { // Could not parse release title.
 					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
-					echo '.';
+					if ($this->echooutput) {
+						echo '.';
+					}
 				}
 				// Sleep to not flood amazon.
 				$diff = floor((microtime(true) - $startTime) * 1000000);
@@ -342,7 +344,7 @@ class Books
 				}
 			}
 		} else if ($this->echooutput) {
-			echo $this->c->header('No book releases to process.');
+			$this->c->doEcho($this->c->header('No book releases to process.'));
 		}
 	}
 
@@ -361,12 +363,22 @@ class Books
 		// the default existing type was ebook, this handles that in the same manor as before
 		if ($releasetype == 'ebook') {
 			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename)) {
-				echo $this->c->headerOver('Changing category to misc books: ') . $this->c->primary($releasename);
+
+				if ($this->echooutput) {
+					$this->c->doEcho(
+						$this->c->headerOver('Changing category to misc books: ') . $this->c->primary($releasename)
+					);
+				}
 				$db = $this->db;
 				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8050, $releaseID));
 				return false;
 			} else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename)) {
-				echo $this->c->headerOver('Changing category to magazines: ') . $this->c->primary($releasename);
+
+				if ($this->echooutput) {
+					$this->c->doEcho(
+						$this->c->headerOver('Changing category to magazines: ') . $this->c->primary($releasename)
+					);
+				}
 				$db = $this->db;
 				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8030, $releaseID));
 				return false;
@@ -392,6 +404,7 @@ class Books
 
 		$book = array();
 
+		$amaz = false;
 		if ($bookInfo != '') {
 			$amaz = $this->fetchAmazonProperties($bookInfo);
 		} else if ($amazdata != null) {
@@ -473,7 +486,7 @@ class Books
 
 		if ($bookId) {
 			if ($this->echooutput) {
-				echo $this->c->header("\nAdded/updated book: ");
+				echo $this->c->header("Added/updated book: ");
 				if ($book['author'] !== '') {
 					echo $this->c->alternateOver("   Author: ") . $this->c->primary($book['author']);
 				}
@@ -481,17 +494,21 @@ class Books
 				if ($book['genre'] !== 'null') {
 					echo $this->c->alternateOver("   Genre: ") . $this->c->primary(" " . $book['genre'] . "\n");
 				} else {
-					echo "\n\n";
+					echo "\n";
 				}
 			}
 
 			$book['cover'] = $ri->saveImage($bookId, $book['coverurl'], $this->imgSavePath, 250, 250);
 		} else {
 			if ($this->echooutput) {
-				echo $this->c->header('Nothing to update: ') . $this->c->header($book['author'] . ' - ' . $book['title']);
+				$this->c->doEcho(
+					$this->c->header('Nothing to update: ') .
+					$this->c->header($book['author'] .
+						' - ' .
+						$book['title'])
+				);
 			}
 		}
 		return $bookId;
 	}
 }
-?>

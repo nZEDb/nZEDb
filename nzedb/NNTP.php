@@ -669,9 +669,12 @@ class NNTP extends Net_NNTP_Client
 		// Try re-selecting the group.
 		$data = $nntp->selectGroup($group);
 		if ($this->isError($data)) {
-			$message = "\nCode {$data->code}: {$data->message}\nSkipping group: {$group}\n";
+			$message = "Code {$data->code}: {$data->message}\nSkipping group: {$group}";
 			$this->debugging->start("dataError", $message, 3);
-			echo $this->c->error($message);
+
+			if ($this->echo) {
+				$this->c->doEcho($this->c->error($message), true);
+			}
 			$nntp->doQuit();
 		}
 		return $data;
@@ -806,9 +809,16 @@ class NNTP extends Net_NNTP_Client
 				$totalBytesReceived += $bytesReceived;
 
 				// Show bytes received
-				if ($totalBytesReceived > 10240 && $totalBytesReceived % 128 == 0) {
-					echo $this->c->primaryOver(
-						'Receiving ' . round($totalBytesReceived / 1024) . 'KB from ' . $this->group() . "\r");
+				if ($this->echo && $totalBytesReceived > 10240 && $totalBytesReceived % 128 == 0) {
+					$this->c->doEcho(
+						$this->c->primaryOver(
+							'Receiving ' .
+							round($totalBytesReceived / 1024) .
+							'KB from ' .
+							$this->group() .
+							"\r"
+						)
+					);
 				}
 
 				// Check if we have the ending (.\r\n)
@@ -818,7 +828,7 @@ class NNTP extends Net_NNTP_Client
 						ord($buffer[$bytesReceived - 1]) == 0x0a) {
 
 						// We found the terminator.
-						if ($totalBytesReceived > 10240) {
+						if ($this->echo && $totalBytesReceived > 10240) {
 							echo "\n";
 						}
 
@@ -978,8 +988,11 @@ class NNTP extends Net_NNTP_Client
 			return $response;
 		} else if ($response !== 290) {
 			$msg = "XFeature GZip Compression not supported. Consider disabling compression in site settings.";
-			echo $this->c->error($msg);
 			$this->debugging->start("_enableCompression", $msg, 4);
+
+			if ($this->echo) {
+				$this->c->doEcho($this->c->error($msg), true);
+			}
 			return $response;
 		}
 

@@ -218,11 +218,11 @@ class Binaries
 
 		if ($res) {
 			$alltime = microtime(true);
-			$message = "\nUpdating: " . sizeof($res) . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No');
+			$message = "Updating: " . sizeof($res) . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No');
 			$this->debugging->start("updateAllGroups", $message, 5);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->header($message));
+				$this->c->doEcho($this->c->header($message), true);
 			}
 
 			foreach ($res as $groupArr) {
@@ -482,7 +482,7 @@ class Binaries
 			}
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 			if ($this->echo) {
-				$this->c->doEcho($this->c->primary("\n" . $data['group'] . ' processed in ' . $timeGroup . " seconds."));
+				$this->c->doEcho($this->c->primary($data['group'] . ' processed in ' . $timeGroup . " seconds."), true);
 			}
 		} else {
 			if ($this->echo) {

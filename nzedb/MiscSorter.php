@@ -2,9 +2,15 @@
 
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
+/**
+ * Class MiscSorter
+ */
 class MiscSorter
 {
 
+	/**
+	 * @param bool $echooutput
+	 */
 	function __construct($echooutput = false)
 	{
 		$this->qualities = array('(:?..)?tv', '480[ip]?', '640[ip]?', '720[ip]?', '1080[ip]?', 'ac3', 'audio_ts', 'avi', 'bd[\- ]?rip', 'bd25', 'bd50',
