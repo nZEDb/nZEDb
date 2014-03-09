@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class Binaries
+ */
 class Binaries
 {
 	/**
@@ -217,23 +220,35 @@ class Binaries
 			$alltime = microtime(true);
 			$message = "\nUpdating: " . sizeof($res) . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No');
 			$this->debugging->start("updateAllGroups", $message, 5);
-			echo $this->c->header($message);
+
+			if ($this->echo) {
+				$this->c->doEcho($this->c->header($message));
+			}
 
 			foreach ($res as $groupArr) {
 				$this->message = array();
-				$message = "\nStarting group " . $counter . ' of ' . sizeof($res);
+				$message = "Starting group " . $counter . ' of ' . sizeof($res);
 				$this->debugging->start("updateAllGroups", $message, 5);
-				echo $this->c->header($message);
+
+				if ($this->echo) {
+					$this->c->doEcho($this->c->header($message));
+				}
 				$this->updateGroup($groupArr, $nntp);
 				$counter++;
 			}
 			$message = 'Updating completed in ' . number_format(microtime(true) - $alltime, 2) . " seconds.";
 			$this->debugging->start("updateAllGroups", $message, 5);
-			echo $this->c->primary($message);
+
+			if ($this->echo) {
+				$this->c->doEcho($this->c->primary($message));
+			}
 		} else {
 			$message = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
 			$this->debugging->start("updateAllGroups", $message, 4);
-			echo $this->c->warning($message);
+
+			if ($this->echo) {
+				$this->c->doEcho($this->c->warning($message));
+			}
 		}
 	}
 
@@ -254,7 +269,9 @@ class Binaries
 		}
 
 		$this->startGroup = microtime(true);
-		echo $this->c->primary('Processing ' . str_replace('alt.binaries', 'a.b', $groupArr['name']));
+		if ($this->echo) {
+			$this->c->doEcho($this->c->primary('Processing ' . str_replace('alt.binaries', 'a.b', $groupArr['name'])));
+		}
 
 		// Select the group, here, needed for processing the group
 		$data = $nntp->selectGroup($groupArr['name']);
@@ -268,10 +285,14 @@ class Binaries
 		// Attempt to repair any missing parts before grabbing new ones.
 		if ($groupArr['last_record'] != 0) {
 			if ($this->DoPartRepair) {
-				echo $this->c->primary("Part repair enabled. Checking for missing parts.");
+				if ($this->echo) {
+					$this->c->doEcho($this->c->primary("Part repair enabled. Checking for missing parts."));
+				}
 				$this->partRepair($nntp, $groupArr);
 			} else {
-				echo $this->c->primary("Part repair disabled by user.");
+				if ($this->echo) {
+					$this->c->doEcho($this->c->primary("Part repair disabled by user."));
+				}
 			}
 		}
 
@@ -283,7 +304,9 @@ class Binaries
 			if ($this->NewGroupScanByDays) {
 				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, $data, true);
 				if ($first == '') {
-					echo $this->c->warning("Skipping group: {$groupArr['name']}");
+					if ($this->echo) {
+						$this->c->doEcho($this->c->warning("Skipping group: {$groupArr['name']}"));
+					}
 					return;
 				}
 			} else {
@@ -352,10 +375,44 @@ class Binaries
 
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if ($total > 0) {
-			if ($groupArr['last_record'] == 0) {
-				echo $this->c->primary('New group ' . $data['group'] . ' starting with ' . (($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan . ' days' : number_format($this->NewGroupMsgsToScan) . ' messages') . " worth. Leaving " . number_format($left) . " for next pass.\nServer oldest: " . number_format($data['first']) . ' Server newest: ' . number_format($data['last']) . ' Local newest: ' . number_format($groupArr['last_record']));
-			} else {
-				echo $this->c->primary('Group ' . $data['group'] . ' has ' . number_format($realtotal) . " new articles. Leaving " . number_format($left) . " for next pass.\nServer oldest: " . number_format($data['first']) . ' Server newest: ' . number_format($data['last']) . ' Local newest: ' . number_format($groupArr['last_record']));
+			if ($this->echo) {
+				if ($groupArr['last_record'] == 0) {
+					$this->c->doEcho(
+						$this->c->primary(
+							'New group ' .
+							$data['group'] .
+							' starting with ' .
+							(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan
+								. ' days' : number_format($this->NewGroupMsgsToScan) .
+								' messages'
+							) .
+							" worth. Leaving " .
+							number_format($left) .
+							" for next pass.\nServer oldest: " .
+							number_format($data['first']) .
+							' Server newest: ' .
+							number_format($data['last']) .
+							' Local newest: ' .
+							number_format($groupArr['last_record'])
+						)
+					);
+				} else {
+					$this->c->doEcho(
+						$this->c->primary(
+							'Group ' .
+							$data['group'] .
+							' has ' .
+							number_format($realtotal) .
+							" new articles. Leaving " .
+							number_format($left) .
+							" for next pass.\nServer oldest: " .
+							number_format($data['first']) . ' Server newest: ' .
+							number_format($data['last']) .
+							' Local newest: ' .
+							number_format($groupArr['last_record'])
+						)
+					);
+				}
 			}
 
 			$done = false;
@@ -371,7 +428,23 @@ class Binaries
 					}
 				}
 				$first++;
-				echo $this->c->header("\nGetting " . number_format($last - $first + 1) . ' articles (' . number_format($first) . ' to ' . number_format($last) . ') from ' . str_replace('alt.binaries', 'a.b', $data['group']) . " - (" . number_format($grouplast - $last) . " articles in queue).");
+
+				if ($this->echo) {
+					$this->c->doEcho(
+						$this->c->header(
+							"\nGetting " .
+							number_format($last - $first + 1) .
+							' articles (' . number_format($first) .
+							' to ' .
+							number_format($last) .
+							') from ' .
+							str_replace('alt.binaries', 'a.b', $data['group']) .
+							" - (" .
+							number_format($grouplast - $last) .
+							" articles in queue)."
+						)
+					);
+				}
 				flush();
 
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab
@@ -408,10 +481,32 @@ class Binaries
 				}
 			}
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
-			echo $this->c->primary("\n" . $data['group'] . ' processed in ' . $timeGroup . " seconds.\n");
+			if ($this->echo) {
+				$this->c->doEcho($this->c->primary("\n" . $data['group'] . ' processed in ' . $timeGroup . " seconds."));
+			}
 		} else {
-			echo $this->c->primary('No new articles for ' . $data['group'] . ' (first ' . number_format($first) . ' last ' . number_format($last) . ' grouplast ' . number_format($groupArr['last_record']) . ' total ' . number_format($total) . ")");
-			echo $this->c->primary("Server oldest: " . number_format($data['first']) . ' Server newest: ' . number_format($data['last']) . ' Local newest: ' . number_format($groupArr['last_record']) . "\n");
+			if ($this->echo) {
+				$this->c->doEcho(
+					$this->c->primary(
+						'No new articles for ' .
+						$data['group'] .
+						' (first ' .
+						number_format($first) .
+						' last ' .
+						number_format($last) .
+						' grouplast ' .
+						number_format($groupArr['last_record']) .
+						' total ' . number_format($total) .
+						")\n" .
+						"Server oldest: " .
+						number_format($data['first']) .
+						' Server newest: ' .
+						number_format($data['last']) .
+						' Local newest: ' .
+						number_format($groupArr['last_record'])
+					)
+				);
+			}
 		}
 	}
 
@@ -462,7 +557,7 @@ class Binaries
 		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($nntp->isError($data)) {
-				return;
+				return false;
 			}
 		}
 
@@ -481,8 +576,11 @@ class Binaries
 			$msgs = $nntp->getOverview($first . '-' . $last, true, false);
 			if ($nntp->isError($msgs)) {
 				$dmessage = "Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}";
-				echo $this->c->error($dmessage);
 				$this->debugging->start("scan", $dmessage, 3);
+
+				if ($this->echo) {
+					$this->c->doEcho($this->c->error($dmessage));
+				}
 				return false;
 			}
 		}
@@ -679,8 +777,20 @@ class Binaries
 			$maxnum = $last;
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
 
-			if ($type != 'partrepair') {
-				echo $this->c->primary('Received ' . number_format(sizeof($msgsreceived)) . ' articles of ' . (number_format($last - $first + 1)) . ' requested, ' . sizeof($msgsblacklisted) . ' blacklisted, ' . sizeof($msgsignored) . " not yEnc.");
+			if ($this->echo && $type != 'partrepair') {
+				$this->c->doEcho(
+					$this->c->primary(
+						'Received ' .
+						number_format(sizeof($msgsreceived)) .
+						' articles of ' .
+						(number_format($last - $first + 1)) .
+						' requested, ' .
+						sizeof($msgsblacklisted) .
+						' blacklisted, ' .
+						sizeof($msgsignored) .
+						" not yEnc."
+					)
+				);
 			}
 
 			if (sizeof($msgrepaired) > 0) {
@@ -702,8 +812,17 @@ class Binaries
 						}
 						break;
 				}
-				if ($type != 'partrepair') {
-					echo $this->c->alternate('Server did not return ' . sizeof($rangenotreceived) . " articles from " . str_replace('alt.binaries', 'a.b', $groupArr['name']) . ".");
+
+				if ($this->echo && $type != 'partrepair') {
+					$this->c->doEcho(
+						$this->c->alternate(
+							'Server did not return ' .
+							sizeof($rangenotreceived) .
+							" articles from " .
+							str_replace('alt.binaries', 'a.b', $groupArr['name']) .
+							"."
+						)
+					);
 				}
 			}
 
@@ -806,8 +925,12 @@ class Binaries
 				}
 				if (sizeof($msgsnotinserted) > 0) {
 					$dmessage = sizeof($msgsnotinserted) . " parts failed to insert.";
-					echo $this->c->warning($dmessage);
 					$this->debugging->start("scan", $dmessage, 3);
+
+					if ($this->echo) {
+						$this->c->doEcho($this->c->warning($dmessage));
+					}
+
 					if ($this->DoPartRepair) {
 						$this->addMissingParts($msgsnotinserted, $groupArr['id']);
 					}
@@ -816,8 +939,17 @@ class Binaries
 			$timeUpdate = number_format(microtime(true) - $this->startUpdate, 2);
 			$timeLoop = number_format(microtime(true) - $this->startLoop, 2);
 
-			if ($type != 'partrepair') {
-				echo $this->c->alternateOver($timeHeaders . 's') . $this->c->primaryOver(' to download articles, ') . $this->c->alternateOver($timeCleaning . 's') . $this->c->primaryOver(' to process articles, ') . $this->c->alternateOver($timeUpdate . 's') . $this->c->primaryOver(' to insert articles, ') . $this->c->alternateOver($timeLoop . 's') . $this->c->primary(' total.');
+			if ($this->echo && $type != 'partrepair') {
+				$this->c->doEcho(
+					$this->c->alternateOver($timeHeaders . 's') .
+					$this->c->primaryOver(' to download articles, ') .
+					$this->c->alternateOver($timeCleaning . 's') .
+					$this->c->primaryOver(' to process articles, ') .
+					$this->c->alternateOver($timeUpdate . 's') .
+					$this->c->primaryOver(' to insert articles, ') .
+					$this->c->alternateOver($timeLoop . 's') .
+					$this->c->primary(' total.')
+				);
 			}
 
 			unset($this->message, $data);
@@ -826,7 +958,10 @@ class Binaries
 			if ($type != 'partrepair') {
 				$dmessage = "Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}";
 				$this->debugging->start("scan", $dmessage, 3);
-				echo $this->c->error($dmessage);
+
+				if ($this->echo) {
+					$this->c->doEcho($this->c->error($dmessage));
+				}
 				return false;
 			}
 		}
@@ -867,7 +1002,13 @@ class Binaries
 		$partsRepaired = $partsFailed = 0;
 
 		if (sizeof($missingParts) > 0) {
-			echo $this->consoleTools->overWritePrimary('Attempting to repair ' . number_format(sizeof($missingParts)) . " parts.");
+			if ($this->echo) {
+				$this->consoleTools->overWritePrimary(
+					'Attempting to repair ' .
+					number_format(sizeof($missingParts)) .
+					" parts."
+				);
+			}
 
 			// Loop through each part to group into continuous ranges with a maximum range of messagebuffer/4.
 			$ranges = array();
@@ -917,7 +1058,16 @@ class Binaries
 					$partsFailed = $result->rowCount();
 				}
 			}
-			echo $this->c->primary("\n" . number_format($partsRepaired) . " parts repaired.");
+
+			if ($this->echo) {
+				$this->c->doEcho(
+					$this->c->primary(
+						"\n" .
+						number_format($partsRepaired) .
+						" parts repaired."
+					)
+				);
+			}
 		}
 
 		// Remove articles that we cant fetch after 5 attempts.
