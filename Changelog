@@ -10,6 +10,7 @@ Each update goes to the top of the file
 
 2014-03-09 -> kevin    -> Option for hiding CLI output in automated.config.php(for post proc right now).
                        -> Hiding of CLI output in AniDb.php, Backfill.php, Binaries.php, etc
+                       -> Check if the user put the wrong setting for grabnzbs.
 2014-03-09 -> bart39   -> refactor query
 			  regex addition/fixes
 			  typo in reset_postprocessing.php

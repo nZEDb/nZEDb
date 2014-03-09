@@ -10,10 +10,27 @@ if (!isset($argv[1])) {
 $s = new Sites();
 $site = $s->get();
 
+$alternate = false;
+switch ($site->grabnzbs) {
+	case '0':
+		exit($c->error("Grabnzbs is disabled in site."));
+	case '1':
+		break;
+	case '2':
+		if (empty(NNTP_SERVER_A)) {
+			exit($c->error("You have enabled grabnzbs using the alternate provider, but no provider is set in config.php"));
+		}
+		$alternate = true;
+		break;
+	default:
+		exit($c->error("Unexpected value for grabnzbs site setting."));
+}
+
 $nntp = new NNTP();
-if (($site->grabnzbs === '2' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+if (($alternate ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }
+
 if ($site->nntpproxy === "1") {
 	usleep(500000);
 }
