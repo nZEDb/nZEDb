@@ -486,15 +486,13 @@ class Books
 
 		if ($bookId) {
 			if ($this->echooutput) {
-				echo $this->c->header("Added/updated book: ");
+				$this->c->doEcho($this->c->header("Added/updated book: "));
 				if ($book['author'] !== '') {
-					echo $this->c->alternateOver("   Author: ") . $this->c->primary($book['author']);
+					$this->c->doEcho($this->c->alternateOver("   Author: ") . $this->c->primary($book['author']));
 				}
 				echo $this->c->alternateOver("   Title: ") . $this->c->primary(" " . $book['title']);
 				if ($book['genre'] !== 'null') {
-					echo $this->c->alternateOver("   Genre: ") . $this->c->primary(" " . $book['genre'] . "\n");
-				} else {
-					echo "\n";
+					$this->c->doEcho($this->c->alternateOver("   Genre: ") . $this->c->primary(" " . $book['genre']));
 				}
 			}
 

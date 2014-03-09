@@ -769,13 +769,13 @@ class Movie
 						}
 
 						if ($this->echooutput) {
-							$this->c->doEcho($this->c->alternateOver("Found Local: ") . $this->c->headerOver($moviename));
+							$this->c->doEcho($this->c->alternateOver("Found Local: ") . $this->c->headerOver($moviename), true);
 						}
 						continue;
 					}
 
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->primaryOver("Looking up: ") . $this->c->headerOver($moviename));
+						$this->c->doEcho($this->c->primaryOver("Looking up: ") . $this->c->headerOver($moviename), true);
 					}
 
 					// Check OMDbapi first
