@@ -12,7 +12,7 @@ if (isset($argv[1]) && $argv[1] === "all") {
 		$ran = true;
 		$where = '';
 		if (isset($argv[3]) && $argv[3] === "truncate") {
-			echo "Trancating tables\n";
+			echo "Truncating tables\n";
 			$db->queryExec("TRUNCATE TABLE consoleinfo");
 			$db->queryExec("TRUNCATE TABLE movieinfo");
 			$db->queryExec("TRUNCATE TABLE releasevideo");

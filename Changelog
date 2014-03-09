@@ -10,6 +10,7 @@ Each update goes to the top of the file
 
 2014-03-09 -> bart39   -> refactor query
 			  regex addition/fixes
+			  typo in reset_postprocessing.php
 2014-03-07 -> bart39   -> Fix: #1203 add Half SBS to 3d Category
 2014-03-07 -> kevin    -> Fix: Error message not set in NNTP.
                        -> Change: More checks in postproc.
