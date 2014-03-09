@@ -3,9 +3,9 @@
 require_once dirname(__FILE__) . '/../../../config.php';
 
 $c = new ColorCLI();
-if (!isset($argv[1])) {
+/*if (!isset($argv[1])) {
 	exit($c->error("This script is not intended to be run manually, it is called from grabnzbs_threaded.py."));
-}
+}*/
 
 $s = new Sites();
 $site = $s->get();
@@ -17,7 +17,8 @@ switch ($site->grabnzbs) {
 	case '1':
 		break;
 	case '2':
-		if (empty(NNTP_SERVER_A)) {
+		$alt = NNTP_SERVER_A;
+		if ($alt == '') {
 			exit($c->error("You have enabled grabnzbs using the alternate provider, but no provider is set in config.php"));
 		}
 		$alternate = true;
