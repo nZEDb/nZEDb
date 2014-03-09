@@ -143,7 +143,7 @@ class Backfill
 					$this->debugging->start("backfillAllGroups", $dmessage, 5);
 
 					if ($this->echo) {
-						$this->doEcho($this->c->set256($this->header) .$dmessage . $this->c->rsetColor());
+						$this->c->doEcho($this->c->set256($this->header) .$dmessage . $this->c->rsetColor());
 					}
 				}
 				$this->backfillGroup($nntp, $db, $binaries, $groupArr, sizeof($res) - $counter);
@@ -154,7 +154,7 @@ class Backfill
 			$this->debugging->start("backfillAllGroups", $dmessage, 1);
 
 			if ($this->echo) {
-				$this->doEcho($this->c->set256($this->primary) . $dmessage . $this->c->rsetColor());
+				$this->c->doEcho($this->c->set256($this->primary) . $dmessage . $this->c->rsetColor());
 			}
 		}
 	}
@@ -200,7 +200,7 @@ class Backfill
 			$this->debugging->start("backfillGroup", $dmessage, 3);
 
 			if ($this->echo) {
-				$this->doEcho($this->c->warning($dmessage));
+				$this->c->doEcho($this->c->warning($dmessage));
 			}
 			return;
 		}
@@ -211,7 +211,7 @@ class Backfill
 			$this->debugging->start("backfillGroup", $dmessage, 4);
 
 			if ($this->echo) {
-				$this->doEcho($this->c->notice($dmessage));
+				$this->c->doEcho($this->c->notice($dmessage));
 			}
 			//$groups = new Groups();
 			//$groups->disableForPost($groupArr['name']);
@@ -224,13 +224,13 @@ class Backfill
 			$this->debugging->start("backfillGroup", $dmessage, 4);
 
 			if ($this->echo) {
-				$this->doEcho($this->c->notice($dmessage));
+				$this->c->doEcho($this->c->notice($dmessage));
 			}
 			return;
 		}
 
 		if ($this->echo) {
-			$this->doEcho(
+			$this->c->doEcho(
 				'Group ' .
 				$data['group'] .
 				': server has ' .
@@ -282,7 +282,7 @@ class Backfill
 			$binaries->startLoop = microtime(true);
 
 			if ($this->echo) {
-				$this->doEcho(
+				$this->c->doEcho(
 					$this->c->set256($this->header) .
 					'Getting ' .
 					(number_format($last - $first + 1)) .
@@ -323,7 +323,7 @@ class Backfill
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 
 		if ($this->echo) {
-			$this->doEcho(
+			$this->c->doEcho(
 				$this->c->set256($this->primary) .
 				'Group processed in ' .
 				$timeGroup .
@@ -417,7 +417,7 @@ class Backfill
 					$this->debugging->start("backfillPostAllGroups", $dmessage, 5);
 
 					if ($this->echo) {
-						$this->doEcho($this->c->set256($this->header) . $dmessage . $this->c->rsetColor());
+						$this->c->doEcho($this->c->set256($this->header) . $dmessage . $this->c->rsetColor());
 					}
 				}
 				$this->backfillPostGroup($nntp, $this->db, $binaries, $groupArr, sizeof($res) - $counter, $articles);
@@ -428,7 +428,7 @@ class Backfill
 			$this->debugging->start("backfillPostAllGroups", $dmessage, 3);
 
 			if ($this->echo) {
-				$this->doEcho($this->c->warning($dmessage));
+				$this->c->doEcho($this->c->warning($dmessage));
 			}
 		}
 	}
@@ -453,7 +453,7 @@ class Backfill
 		$this->startGroup = microtime(true);
 
 		if ($this->echo) {
-			$this->doEcho(
+			$this->c->doEcho(
 				$this->c->set256($this->header) .
 				'Processing ' .
 				$groupArr['name'] .
@@ -484,7 +484,7 @@ class Backfill
 			$this->debugging->start("backfillPostGroup", $dmessage, 2);
 
 			if ($this->echo) {
-				$this->doEcho($this->c->error($dmessage));
+				$this->c->doEcho($this->c->error($dmessage));
 			}
 			return;
 		}
@@ -498,7 +498,7 @@ class Backfill
 			$this->debugging->start("backfillPostGroup", $dmessage, 4);
 
 			if ($this->echo) {
-				$this->doEcho($this->c->notice($dmessage));
+				$this->c->doEcho($this->c->notice($dmessage));
 			}
 			//$groups = new Groups();
 			//$groups->disableForPost($groupArr['name']);
@@ -511,13 +511,13 @@ class Backfill
 			$this->debugging->start("backfillPostGroup", $dmessage, 4);
 
 			if ($this->echo) {
-				$this->doEcho($this->c->notice($dmessage));
+				$this->c->doEcho($this->c->notice($dmessage));
 			}
 			return;
 		}
 
 		if ($this->echo) {
-			$this->doEcho(
+			$this->c->doEcho(
 				$this->c->set256($this->primary) .
 				'Group ' . $data['group'] .
 				"'s oldest article is " .
@@ -576,7 +576,7 @@ class Backfill
 			$binaries->startLoop = microtime(true);
 
 			if ($this->echo) {
-				$this->doEcho(
+				$this->c->doEcho(
 					$this->c->set256($this->header) .
 					"\nGetting " .
 					($last - $first + 1) .
@@ -617,7 +617,7 @@ class Backfill
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 
 		if ($this->echo) {
-			$this->doEcho(
+			$this->c->doEcho(
 				$this->c->set256($this->header) .
 				$data['group'] .
 				' processed in ' .
@@ -648,7 +648,7 @@ class Backfill
 			$this->debugging->start("postdate", $dmessage, 2);
 
 			if ($this->echo) {
-				$this->doEcho($this->c->error($dmessage));
+				$this->c->doEcho($this->c->error($dmessage));
 			}
 			return false;
 		}
@@ -671,7 +671,7 @@ class Backfill
 						$this->debugging->start("postdate", $dmessage, 2);
 
 						if ($this->echo) {
-							$this->doEcho($this->c->error($dmessage));
+							$this->c->doEcho($this->c->error($dmessage));
 						}
 					}
 					$groupa = array();
@@ -697,7 +697,7 @@ class Backfill
 							$this->debugging->start("postdate", $dmessage, 4);
 
 							if ($this->echo) {
-								$this->doEcho($this->c->info($dmessage));
+								$this->c->doEcho($this->c->info($dmessage));
 							}
 						}
 					} else {
@@ -711,7 +711,7 @@ class Backfill
 							$this->debugging->start("postdate", $dmessage, 5);
 
 							if ($this->echo) {
-								$this->doEcho($this->c->info($dmessage));
+								$this->c->doEcho($this->c->info($dmessage));
 							}
 						}
 					}
@@ -729,7 +729,7 @@ class Backfill
 							$this->debugging->start("postdate", $dmessage, 5);
 
 							if ($this->echo) {
-								$this->doEcho($this->c->info($dmessage));
+								$this->c->doEcho($this->c->info($dmessage));
 							}
 							if (strlen($date) > 0) {
 								$success = true;
@@ -746,7 +746,7 @@ class Backfill
 							$this->debugging->start("postdate", $dmessage, 5);
 
 							if ($this->echo) {
-								$this->doEcho($this->c->info($dmessage));
+								$this->c->doEcho($this->c->info($dmessage));
 							}
 							if (strlen($date) > 0) {
 								$success = true;
@@ -763,7 +763,7 @@ class Backfill
 				}
 
 				if ($debug && $this->echo && $attempts > 0) {
-					$this->doEcho($this->c->debug('Retried ' . $attempts . " time(s)."));
+					$this->c->doEcho($this->c->debug('Retried ' . $attempts . " time(s)."));
 				}
 			}
 		} while ($attempts <= 20 && $success === false);
@@ -782,7 +782,7 @@ class Backfill
 					$this->debugging->start("postdate", $dmessage, 5);
 
 					if ($this->echo) {
-						$this->doEcho($this->c->info($dmessage));
+						$this->c->doEcho($this->c->info($dmessage));
 					}
 					return strtotime($res['first_record_postdate']);
 				} else {
@@ -801,7 +801,7 @@ class Backfill
 					$this->debugging->start("postdate", $dmessage, 5);
 
 					if ($this->echo) {
-						$this->doEcho($this->c->info($dmessage));
+						$this->c->doEcho($this->c->info($dmessage));
 					}
 					return strtotime($res['last_record_postdate']);
 				} else {
@@ -885,7 +885,7 @@ class Backfill
 			$this->debugging->start("daytopost", $dmessage, 3);
 
 			if ($this->echo) {
-				$this->doEcho($this->c->warning($dmessage));
+				$this->c->doEcho($this->c->warning($dmessage));
 			}
 			return $data['first'];
 		} else if ($goaldate > $lastDate) {
@@ -900,7 +900,7 @@ class Backfill
 			$this->debugging->start("daytopost", $dmessage, 2);
 
 			if ($this->echo) {
-				$this->doEcho($this->c->error($dmessage));
+				$this->c->doEcho($this->c->error($dmessage));
 			}
 			return '';
 		}
@@ -973,7 +973,7 @@ class Backfill
 		$this->debugging->start("daytopost", $dmessage, 5);
 
 		if ($this->echo) {
-			$this->doEcho($dmessage);
+			$this->c->doEcho($dmessage);
 		}
 		return $upperbound;
 	}
@@ -1013,7 +1013,7 @@ class Backfill
 
 		if ($this->echo) {
 			if ($this->nntpproxy == 0) {
-				$this->doEcho(
+				$this->c->doEcho(
 					$this->c->set256($this->header) .
 					'Processing ' .
 					str_replace('alt.binaries', 'a.b', $groupArr['name']) .
@@ -1027,7 +1027,7 @@ class Backfill
 					$this->c->rsetColor()
 				);
 			} else {
-				$this->doEcho(
+				$this->c->doEcho(
 					$this->c->set256($this->header) .
 					'Processing ' .
 					str_replace('alt.binaries', 'a.b', $groupArr['name']) .
@@ -1096,7 +1096,7 @@ class Backfill
 		}
 
 		if ($this->echo) {
-			$this->doEcho(
+			$this->c->doEcho(
 				$this->c->set256($this->primary) .
 				$type .
 				' Safe Threaded for ' .
@@ -1105,16 +1105,5 @@ class Backfill
 				$this->c->rsetColor()
 			);
 		}
-	}
-
-	/**
-	 * Echo message to CLI.
-	 *
-	 * @param string $message The message.
-	 * @void
-	 */
-	protected function doEcho($message)
-	{
-		echo $message . PHP_EOL;
 	}
 }
