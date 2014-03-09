@@ -85,6 +85,12 @@ class PostProcess
 	protected $debugging;
 
 	/**
+	 * Instance of NameFixer.
+	 * @var NameFixer
+	 */
+	protected $nameFixer;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param bool $echoOutput Echo to CLI or not?
@@ -96,6 +102,7 @@ class PostProcess
 		$this->db = new DB();
 		$this->groups = new Groups();
 		$this->debugging = new Debugging('PostProcess');
+		$this->nameFixer = new NameFixer($echoOutput);
 		$this->Nfo = new Nfo($echoOutput);
 		$this->releaseFiles = new ReleaseFiles();
 		$s = new sites();
@@ -313,7 +320,7 @@ class PostProcess
 
 		$files = $par2info->getFileList();
 		if ($files !== false && count($files) > 0) {
-			$nameFixer = new NameFixer($this->echooutput);
+
 			$relFiles = 0;
 			$foundName = false;
 			foreach ($files as $fileID => $file) {
@@ -335,7 +342,7 @@ class PostProcess
 				}
 
 				$query['textstring'] = $file['name'];
-				if ($nameFixer->checkName($query, 1, 'PAR2, ', 1, $show) === true) {
+				if ($this->nameFixer->checkName($query, 1, 'PAR2, ', 1, $show) === true) {
 					$foundName = true;
 					break;
 				}
@@ -963,7 +970,8 @@ class PostProcess
 							} else {
 								if ($notInfinite > $this->partsQTY) {
 									if ($this->echooutput) {
-										echo $this->c->info("\nMax parts to pp reached");
+										echo "\n";
+										echo $this->c->info("Ran out of tries to download yEnc articles for the RAR files.");
 									}
 									break;
 								}
@@ -987,10 +995,28 @@ class PostProcess
 							} else {
 								$this->segsize = 0;
 							}
+
 							$this->sum = $this->sum + $this->adj * $this->segsize;
 							if ($this->sum > $this->size || $this->adj === 0) {
-								$mID = array_slice((array) $rarFile['segments'], 0, $this->segmentsToDownload);
 
+								// Get the message-id's we want. If we failed previously, try getting different M-ID's.
+								if ($failed > 0) {
+									$segments = count($rarFile['segments']);
+									if ($segments > $failed) {
+										$mID =
+											array_slice(
+												(array) $rarFile['segments'],
+												$failed,
+												(($this->segmentsToDownload + $failed) > $segments ? $segments : $this->segmentsToDownload)
+											);
+									} else {
+										$mID = array_slice((array) $rarFile['segments'], 0, $this->segmentsToDownload);
+									}
+								} else {
+									$mID = array_slice((array) $rarFile['segments'], 0, $this->segmentsToDownload);
+								}
+
+								// Download the article(s) from usenet.
 								$fetchedBinary = $nntp->getMessages($groupName, $mID, $this->alternateNNTP);
 								if ($nntp->isError($fetchedBinary)) {
 									$fetchedBinary = false;
@@ -998,12 +1024,14 @@ class PostProcess
 
 								if ($fetchedBinary !== false) {
 
+									// Echo we downloaded rar/zip.
 									if ($this->echooutput) {
 										echo '(rB)';
 									}
 
 									$notInfinite++;
 
+									// Process the rar/zip file.
 									$relFiles = $this->processReleaseFiles($fetchedBinary, $rel, $rarFile['title'], $nntp);
 
 									if ($this->password === true) {
@@ -1018,10 +1046,10 @@ class PostProcess
 								} else {
 
 									if ($this->echooutput) {
-										echo $this->c->alternateOver("f(" . $notInfinite . ")");
+										echo 'f(' . $notInfinite . ')';
 									}
 
-									$notInfinite = $notInfinite + 0.2;
+									$notInfinite += 0.2;
 									$failed++;
 								}
 							}
@@ -1058,10 +1086,23 @@ class PostProcess
 											}
 
 											$r['range'] = $range;
-											if (!isset($r['error']) &&
-												!preg_match(
+											if (!isset($r['error'])) {
+
+												if ($rel['categoryid'] !== Category::CAT_MISC) {
+													// Check if it's a par2.
+													if (preg_match('/\.par2/i', $r['name'])) {
+														$par2 = $archInfo->getFileData($r['name'], $r['source']);
+														// Try to get a release name.
+														$this->siftPAR2($par2, $rel);
+													}
+												}
+
+												if (preg_match(
 													$this->supportFiles .
-													'|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i', $r['name'])) {
+													'|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i', $r['name'])
+												) {
+													continue;
+												}
 
 												$this->addFile($r, $rel, $archInfo, $nntp);
 											}
@@ -1728,7 +1769,11 @@ class PostProcess
 		$this->password = false;
 
 		if (preg_match("/\.(part\d+|rar|r\d{1,3})($|[ \")\]-])|\"[a-f0-9]{32}\.[1-9]\d{1,2}\".*\(\d+\/\d{2,}\)$/i", $name)) {
-			$rar->setData($fetchedBinary, true);
+			// Give the data to archiveinfo so it can check if it's a rar.
+			if ($rar->setData($fetchedBinary, true) === false) {
+				return false;
+			}
+
 			if ($rar->error) {
 				$this->debugging->start('processReleaseFiles', "Error: {$rar->error}.", 4);
 				return false;
@@ -1775,8 +1820,18 @@ class PostProcess
 							break;
 						}
 
-						if (preg_match($this->supportFiles . ')(?!.{20,})/i', $file['name']))
+						if ($release['categoryid'] == Category::CAT_MISC) {
+							// Check if it's a par2.
+							if (preg_match('/\.par2/i', $file['name'])) {
+								$par2 = $rar->getFileData($file['name'], $file['source']);
+								// Try to get a release name.
+								$this->siftPAR2($par2, $release);
+							}
+						}
+
+						if (preg_match($this->supportFiles . ')(?!.{20,})/i', $file['name'])) {
 							continue;
+						}
 
 						if (preg_match('/\.zip$/i', $file['name'])) {
 							$zipData = $rar->getFileData($file['name'], $file['source']);
@@ -1784,8 +1839,9 @@ class PostProcess
 
 							if ($data != false) {
 								foreach ($data as $d) {
-									if (preg_match('/\.(part\d+|r\d+|rar)(\.rar)?$/i', $d['zip']['name']))
+									if (preg_match('/\.(part\d+|r\d+|rar)(\.rar)?$/i', $d['zip']['name'])) {
 										$tmpFiles = $this->getRar($d['data']);
+									}
 								}
 							}
 						}
@@ -1901,6 +1957,25 @@ class PostProcess
 		}
 		unset($fetchedBinary, $rar, $nfo);
 		return $retVal;
+	}
+
+	/**
+	 * Go through PAR2 data find a releasename.
+	 *
+	 * @param string $PAR2    PAR2 binary data.
+	 * @param array  $release Row from DB with release info.
+	 *
+	 * @return bool
+	 */
+	protected function siftPAR2($PAR2, $release)
+	{
+		// Run it through namefixer.
+		$release['textstring'] = $PAR2;
+		$release['releaseid'] = $release['id'];
+		if ($this->nameFixer->tvCheck($release, 1, 'PAR2, ', 1, 1) !== true) {
+			return false;
+		}
+		return true;
 	}
 
 	/**

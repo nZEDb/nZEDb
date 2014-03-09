@@ -267,9 +267,12 @@ class NameFixer
 
 				if ($type === "PAR2, ") {
 					$newname = ucwords($newname);
+					if (preg_match('/(.+?)\.[a-z0-9]{2,3}(PAR2)?$/i', $name, $match)) {
+						$newname = $match[1];
+					}
 				}
 
-				$this->fixed ++;
+				$this->fixed++;
 
 				$this->checkedname = explode("\\", $newname);
 				$newname = $this->checkedname[0];
@@ -778,7 +781,8 @@ class NameFixer
 		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\)\.nds/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus, $show);
 		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\.(pdf|html|epub|mobi|azw)/i', $release["textstring"], $result)) {
-			$this->updateRelease($release, $result["0"], $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
+			$result = str_replace("." . $result["1"], " (" . $result["1"] . ")", $result['0']);
+			$this->updateRelease($release, $result, $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
 		}
 	}
 

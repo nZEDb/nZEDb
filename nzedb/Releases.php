@@ -1719,7 +1719,7 @@ class Releases
 		if ($db->dbSystem() == 'mysql') {
 			$olds = $db->queryDirect(sprintf("SELECT ${group['cname']}.id FROM ${group['cname']} WHERE ${where} ${group['cname']}.dateadded < (NOW() - INTERVAL %d HOUR)", $this->site->partretentionhours));
 			foreach ($olds as $old) {
-				$delq = $db->queryDirect("DELETE ${group['cname']}, ${group['bname']}, ${group['pname']} FROM ${group['cname']}, ${group['bname']}, ${group['pname']} WHERE ${group['cname']}.id = ${group['bname']}.collectionid AND ${group['bname']}.id = ${group['pname']}.binaryid AND ${group['cname']}.id = ${old['id']}");
+				$delq = $db->queryDirect("DELETE ${group['cname']}, ${group['bname']}, ${group['pname']} FROM ${group['cname']}, ${group['bname']}, ${group['pname']} WHERE ${group['cname']}.id = ${old['id']} AND ${group['cname']}.id = ${group['bname']}.collectionid AND ${group['bname']}.id = ${group['pname']}.binaryid");
 				$reccount += $delq->rowCount();
 			}
 		} else {

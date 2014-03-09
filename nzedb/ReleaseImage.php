@@ -105,19 +105,19 @@ class ReleaseImage
 		// Check if we need to resize it.
 		if ($imgMaxWidth != '' && $imgMaxHeight != '') {
 			$im = @imagecreatefromstring($cover);
-			$width = imagesx($im);
-			$height = imagesy($im);
+			$width = @imagesx($im);
+			$height = @imagesy($im);
 			$ratio = min($imgMaxHeight/$height, $imgMaxWidth/$width);
 			// New dimensions
 			$new_width = intval($ratio*$width);
 			$new_height = intval($ratio*$height);
 			if ($new_width < $width && $new_width > 10 && $new_height > 10) {
-				$new_image = imagecreatetruecolor($new_width, $new_height);
-				imagecopyresampled($new_image, $im, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+				$new_image = @imagecreatetruecolor($new_width, $new_height);
+				@imagecopyresampled($new_image, $im, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 				ob_start();
-				imagejpeg($new_image, null, 85);
+				@imagejpeg($new_image, null, 85);
 				$thumb = ob_get_clean();
-				imagedestroy($new_image);
+				@imagedestroy($new_image);
 
 				if ($saveThumb) {
 					@file_put_contents($imgSavePath.$imgName.'_thumb.jpg', $thumb);
@@ -127,11 +127,11 @@ class ReleaseImage
 
 				unset($thumb);
 			}
-			imagedestroy($im);
+			@imagedestroy($im);
 		}
 		// Store it on the hard drive.
 		$coverPath = $imgSavePath.$imgName.'.jpg';
-		$coverSave =@ file_put_contents($coverPath, $cover);
+		$coverSave = @file_put_contents($coverPath, $cover);
 
 		// Check if it's on the drive.
 		if ($coverSave === false || !is_file($coverPath)) {

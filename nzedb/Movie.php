@@ -475,7 +475,7 @@ class Movie
 				$ret['title'] = $art->movie['name'];
 			}
 			if ($this->echooutput) {
-				echo $this->c->alternateOver("\nFanart Found ") . $this->c->headerOver($ret['title']);
+				echo $this->c->alternateOver("Fanart Found ") . $this->c->headerOver($ret['title']) . "\n";
 			}
 			return $ret;
 		} else {
@@ -535,7 +535,7 @@ class Movie
 			$ret['backdrop'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original" . $tmdbLookup['backdrop_path'];
 		}
 		if ($this->echooutput) {
-			echo $this->c->primaryOver("\nTMDb Found ") . $this->c->headerOver($ret['title']);
+			echo $this->c->primaryOver("TMDb Found ") . $this->c->headerOver($ret['title']) . "\n";
 		}
 		return $ret;
 	}
@@ -610,7 +610,7 @@ class Movie
 				}
 			}
 			if ($this->echooutput && isset($ret['title'])) {
-				echo $this->c->headerOver("\nIMDb Found ") . $this->c->primaryOver($ret['title']);
+				echo $this->c->headerOver("IMDb Found ") . $this->c->primaryOver($ret['title']) . "\n";
 			}
 			return $ret;
 		}
@@ -625,7 +625,7 @@ class Movie
 				$this->service = 'nfo';
 			}
 			if ($this->echooutput && $this->service != '') {
-				echo $this->c->headerOver("\n" . $service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId);
+				echo $this->c->headerOver($service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId) . "\n";
 			}
 
 			$this->db->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', $this->db->escapeString($imdbId), $id));
@@ -729,12 +729,12 @@ class Movie
 						if ($imdbId === false) {
 							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 						}
-						echo $this->c->alternateOver("\nFound Local: ") . $this->c->headerOver($moviename);
+						echo $this->c->alternateOver("Found Local: ") . $this->c->headerOver($moviename) . "\n";
 						continue;
 					}
 
 					if ($this->echooutput) {
-						echo $this->c->primaryOver("\nLooking up: ") . $this->c->headerOver($moviename);
+						echo $this->c->primaryOver("Looking up: ") . $this->c->headerOver($moviename) . "\n";
 					}
 
 					// Check OMDbapi first
