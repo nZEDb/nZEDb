@@ -65,6 +65,8 @@ class CollectionsCleaning
 		switch ($groupName) {
 			case 'alt.binaries.0day.stuffz':
 				return $this->_0daystuffz();
+			case 'alt.binaries.3d':
+				return $this->_3d();
 			case 'alt.binaries.anime':
 				return $this->anime();
 			case 'alt.binaries.astronomy':
@@ -264,6 +266,22 @@ class CollectionsCleaning
 		else if (preg_match('/^([a-zA-Z0-9].+?)\(\d+(\/\d+\) - ").+?" yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[2];
 		} //return array('hash' => $match[1].$match[2], 'subject' => $match[1], 'rstatus' => Namefixer::NF_NAMECLEANING, 'cat' => Category::CAT_PC_0DAY);
+		else {
+			return $this->generic();
+		}
+	}
+
+	// a.b.3d
+	public function _3d()
+	{
+		//ugMBqtZw3vFnmrmr16EQhaAz9mMri9mD - File 01 of 98: "1vJ7wswi9ZG6YrzE5OGBFPKeuRv9X86xgYdK.par2" yEnc
+		if (preg_match('/^(.+)File \d+ (of \d+): ".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1].$match[2];
+		}
+		//999XL[074/103] - "LLKJ678CCDE1223ss.part073.rar" yEnc
+		else if (preg_match('/^(.+)\[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1].$match[2];
+		}
 		else {
 			return $this->generic();
 		}
@@ -1112,6 +1130,9 @@ class CollectionsCleaning
 		} //Doobz Europa_Universalis_IV_Conquest_of_Paradise-FLT [10/54] - "flt-eucp.001" yEnc
 		else if (preg_match('/^Doobz ([a-zA-z-_]+) \[\d+\/(\d+\]) - ".+' . $this->e1, $this->subject, $match)) {
 			return $match[1] . $match[2];
+		} //[01/10] - "Wondershare.Video.Converter.Ultimate.v6.7.1.0.Multilanguage.par2" - 45,44 MB yEnc
+		else if (preg_match('/^\[\d+\/(\d+\] - ".+?)' . $this->e0 . '.+yEnc$/i', $this->subject, $match)) {
+			return $match[1];
 		} else {
 			return $this->generic();
 		}
@@ -2446,6 +2467,9 @@ class CollectionsCleaning
 		} //"Terraplane Sun - Funnel of Love.mp3" - 21.55 MB - (1/6) - yEnc
 		else if (preg_match('/^"(.+?)' . $this->e0 . '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}\(\d+\/(\d+\))[ _-]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[7];
+		} //jean ferrat  annÃ©e 1967 Ã  1969  meil29 "17 Rien Ã  voir.mp3" yEnc
+		else if (preg_match('/^(.+? meil29) ".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1];
 		} else {
 			return $this->generic();
 		}
