@@ -1,4 +1,3 @@
- 
 <h1>{$page->title}</h1>
 
 <h2>For {$rel.searchname|escape:'htmlall'}</h2>
@@ -13,12 +12,12 @@
 	</tr>
 
 	{foreach from=$binaries item=binary}
-	<tr>
-		<td width="20" title="{$binary.relpart}/{$binary.reltotalpart}">{$binary.relpart}</td>
-		<td title="{$binary.name|escape:'htmlall'}">{$binary.filename}</td>
-		<td class="less">{$binary.size|fsize_format:"MB"}</td>
-		<td class="less" title="{$binary.date}">{$binary.date|date_format}</td>
-	</tr>
+		<tr>
+			<td width="20" title="{$binary.relpart}/{$binary.reltotalpart}">{$binary.relpart}</td>
+			<td title="{$binary.name|escape:'htmlall'}">{$binary.filename}</td>
+			<td class="less">{$binary.size|fsize_format:"MB"}</td>
+			<td class="less" title="{$binary.date}">{$binary.date|date_format}</td>
+		</tr>
 	{/foreach}
 
-</table>	
+</table>

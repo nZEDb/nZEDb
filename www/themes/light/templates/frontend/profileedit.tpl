@@ -19,7 +19,7 @@
 	<tr><th>Password:</th>
 		<td>
 			<input autocomplete="off" id="password" name="password" type="password" value=""></input>
-			<div class="hint">Only enter your password if you want to change it.</div>
+			<div class="hint">Only enter a password if you want to change it.</div>
 		</td>
 	</tr>
 	<tr><th>Confirm Password:</th><td><input autocomplete="off" id="confirmpassword" name="confirmpassword" type="password" value=""></input>

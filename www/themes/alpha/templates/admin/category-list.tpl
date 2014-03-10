@@ -1,4 +1,3 @@
- 
 <h1>{$page->title}</h1>
 
 <p>
@@ -15,23 +14,22 @@
 		<th>disable preview</th>
 		<th>minimum size</th>
 	</tr>
-	
-	{foreach from=$categorylist item=category}
-	<tr class="{cycle values=",alt"}">
-		<td>{$category.id}</td>
-		<td><a href="{$smarty.const.WWW_TOP}/category-edit.php?id={$category.id}">{$category.title}</a></td>
-		<td>
-			{if $category.parentid != null}
-				{$category.parentName}
-			{else}
-				n/a
-			{/if}
-		</td>
-		<td>{if $category.status == "1"}Active{elseif $category.status == "2"}Disabled{else}Hidden{/if}</td>
-		<td>{if $category.disablepreview == "1"}Yes{else}No{/if}</td>
-		<td>{$category.minsize}</td>
-	</tr>
-	{/foreach}
 
+	{foreach from=$categorylist item=category}
+		<tr class="{cycle values=",alt"}">
+			<td>{$category.id}</td>
+			<td><a href="{$smarty.const.WWW_TOP}/category-edit.php?id={$category.id}">{$category.title}</a></td>
+			<td>
+				{if $category.parentid != null}
+					{$category.parentName}
+				{else}
+					n/a
+				{/if}
+			</td>
+			<td>{if $category.status == "1"}Active{elseif $category.status == "2"}Disabled{else}Hidden{/if}</td>
+			<td>{if $category.disablepreview == "1"}Yes{else}No{/if}</td>
+			<td>{$category.minsize}</td>
+		</tr>
+	{/foreach}
 
 </table>

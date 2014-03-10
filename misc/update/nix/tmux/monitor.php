@@ -1171,7 +1171,7 @@ while ($i > 0) {
 						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 				} else {
 					$fcmax = count($fix_crap);
-					if (is_null($fcnum)) {
+					if (!isset($fcnum)) {
 						$fcnum = 0;
 					}
 					//Check to see if the pane is dead, if so resawn it.
@@ -1193,7 +1193,7 @@ while ($i > 0) {
 						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 				} else {
 					$fcmax = count($fix_crap);
-					if (is_null($fcnum)) {
+					if (!isset($fcnum)) {
 						$fcnum = 0;
 					}
 					//Check to see if the pane is dead, if so respawn it.
