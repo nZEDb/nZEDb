@@ -1773,11 +1773,8 @@ class Releases
 
 		// Completed releases and old collections that were missed somehow.
 		if ($db->dbSystem() == 'mysql') {
-			$fc5s = $db->queryDirect("SELECT ${group['cname']}.id FROM ${group['cname']} WHERE ${where} ${group['cname']}.filecheck = 5");
-			foreach ($fc5s as $fc5) {
-				$delq = $db->queryDirect("DELETE ${group['cname']}, ${group['bname']}, ${group['pname']} FROM ${group['cname']}, ${group['bname']}, ${group['pname']} WHERE ${group['cname']}.id = ${group['bname']}.collectionid AND ${group['bname']}.id = ${group['pname']}.binaryid AND ${group['cname']}.id = ${fc5['id']}");
-				$reccount += $delq->rowCount();
-			}
+			$delq = $db->queryDirect(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' WHERE' . $where . $group['cname'] . '.filecheck = 5 AND ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid AND ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid'));
+			$reccount += $delq->rowCount();
 		} else {
 			$idr = $db->queryDirect('SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
 			if ($idr->rowCount() > 0) {
@@ -1794,11 +1791,8 @@ class Releases
 
 		// Old collections that were missed somehow.
 		if ($db->dbSystem() == 'mysql') {
-			$olds = $db->queryDirect(sprintf("SELECT ${group['cname']}.id FROM ${group['cname']} WHERE ${where} ${group['cname']}.dateadded < (NOW() - INTERVAL %d HOUR)", $this->site->partretentionhours));
-			foreach ($olds as $old) {
-				$delq = $db->queryDirect("DELETE ${group['cname']}, ${group['bname']}, ${group['pname']} FROM ${group['cname']}, ${group['bname']}, ${group['pname']} WHERE ${group['cname']}.id = ${old['id']} AND ${group['cname']}.id = ${group['bname']}.collectionid AND ${group['bname']}.id = ${group['pname']}.binaryid");
-				$reccount += $delq->rowCount();
-			}
+			$delq = $db->queryDirect(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' WHERE ' . $group['cname'] . '.dateadded < (NOW() - INTERVAL %d HOUR) AND '. $group['cname'] . '.id = ' . $group['bname'] . '.collectionid AND ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid' . $where1, $this->site->partretentionhours));
+			$reccount += $delq->rowCount();
 		} else {
 			$idr = $db->queryDirect(sprintf("SELECT id FROM " . $group['cname'] . " WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" . $where1, $this->site->partretentionhours));
 			if ($idr->rowCount() > 0) {
@@ -1815,11 +1809,8 @@ class Releases
 
 		// Binaries/parts that somehow have no collection.
 		if ($db->dbSystem() == 'mysql') {
-			$nobinsparts = $db->queryDirect("SELECT ${group['bname']}.id FROM ${group['bname']} WHERE ${group['bname']}.collectionid = 0");
-			foreach ($nobinsparts as $nobinspart) {
-				$delqd = $db->queryDirect("DELETE ${group['bname']}, ${group['pname']} FROM ${group['bname']} LEFT JOIN ${group['pname']} ON ${group['bname']}.id = ${group['pname']}.binaryid WHERE ${group['bname']}.id = ${nobinspart['id']}");
-				$reccount += $delqd->rowCount();
-			}
+			$delqd = $db->queryDirect('DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['bname'] . ', ' . $group['pname'] . ' WHERE ' . $group['bname'] . '.collectionid = 0 AND ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid');
+			$reccount += $delqd->rowCount();
 		} else {
 			$delqe = $db->queryDirect('DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] . ' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' . $group['bname'] . '.collectionid = 0)');
 			$reccount += $delqe->rowCount();
@@ -1828,28 +1819,18 @@ class Releases
 		}
 
 		// Parts that somehow have no binaries.
-		//printf("SELECT ${group['pname']}.id FROM ${group['pname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.id = ${group['pname']}.binaryid WHERE ${group['bname']}.id IS NULL\n");
-		$nobins = $db->queryDirect("SELECT ${group['pname']}.id FROM ${group['pname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.id = ${group['pname']}.binaryid WHERE ${group['bname']}.id IS NULL");
-		foreach ($nobins as $nobin) {
-			$delqg = $db->queryDirect("DELETE FROM ${group['pname']} WHERE ${group['pname']}.id = ${nobin['id']}");
+		if (mt_rand(1, 100) % 3 == 0) {
+			$delqg = $db->queryDirect('DELETE FROM ' . $group['pname'] . ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)');
 			$reccount += $delqg->rowCount();
 		}
 
 		// Binaries that somehow have no collection.
-		//printf("SELECT ${group['bname']}.id FROM ${group['bname']} LEFT OUTER JOIN ${group['cname']} ON ${group['cname']}.id = ${group['bname']}.collectionid WHERE ${group['cname']}.id IS NULL\n");
-		$nocolls = $db->queryDirect("SELECT ${group['bname']}.id FROM ${group['bname']} LEFT OUTER JOIN ${group['cname']} ON ${group['cname']}.id = ${group['bname']}.collectionid WHERE ${group['cname']}.id IS NULL");
-		foreach ($nocolls as $nocoll) {
-			$delqh = $db->queryDirect("DELETE FROM ${group['bname']} WHERE ${group['bname']}.id = ${nocoll['id']}");
-			$reccount += $delqh->rowCount();
-		}
+		$delqh = $db->queryDirect('DELETE FROM ' . $group['bname'] . ' WHERE collectionid NOT IN (SELECT c.id FROM ' . $group['cname'] . ' c)');
+		$reccount += $delqh->rowCount();
 
 		// Collections that somehow have no binaries.
-		//printf("SELECT ${group['cname']}.id FROM ${group['cname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.collectionid = ${group['cname']}.id WHERE ${group['bname']}.collectionid IS NULL\n");
-		$nobins2 = $db->queryDirect("SELECT ${group['cname']}.id FROM ${group['cname']} LEFT OUTER JOIN ${group['bname']} ON ${group['bname']}.collectionid = ${group['cname']}.id WHERE ${group['bname']}.collectionid IS NULL");
-		foreach ($nobins2 as $nobin2) {
-			$delqi = $db->queryDirect("DELETE FROM ${group['cname']} WHERE ${group['cname']}.id = ${nobin2['id']}");
-			$reccount += $delqi->rowCount();
-		}
+		$delqi = $db->queryDirect('DELETE FROM ' . $group['cname'] . ' WHERE ' . $group['cname'] . '.id NOT IN (SELECT ' . $group['bname'] . '.collectionid FROM ' . $group['bname'] . ') ' . $where1);
+		$reccount += $delqi->rowCount();
 
 		if ($this->echooutput) {
 			$this->c->doEcho(
