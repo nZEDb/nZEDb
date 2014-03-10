@@ -13,7 +13,7 @@ Class PreDb
 	{
 		$s = new Sites();
 		$this->site = $s->get();
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->db = new DB();
 		$this->c = new ColorCLI();
 	}
@@ -88,7 +88,7 @@ Class PreDb
 		$nfos = $this->matchNfo($nntp);
 		if ($this->echooutput) {
 			$count = ($nfos > 0) ? $nfos : 0;
-			echo $this->c->header("\nAdded " . number_format($count) . ' missing NFOs from preDB sources.');
+			echo $this->c->header("Added " . number_format($count) . ' missing NFOs from preDB sources.');
 		}
 	}
 
@@ -676,7 +676,9 @@ Class PreDb
 					$consoletools->overWritePrimary('Matching up preDB titles with release searchnames: ' . $consoletools->percentString( ++$updated, $total));
 				}
 			}
-			echo "\n";
+			if ($this->echooutput) {
+				echo "\n";
+			}
 		}
 		return $updated;
 	}
@@ -721,7 +723,7 @@ Class PreDb
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
 		$db = new DB();
-		$namefixer = new NameFixer();
+		$namefixer = new NameFixer($this->echooutput);
 		$consoletools = new ConsoleTools();
 		$updated = $checked = 0;
 		$matches = '';
@@ -844,11 +846,6 @@ Class PreDb
 		} else {
 			return $str;
 		}
-	}
-
-	function updatePredb()
-	{
-
 	}
 
 }

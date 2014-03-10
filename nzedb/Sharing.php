@@ -327,16 +327,13 @@ class Sharing {
 	 * @access public
 	 */
 	public function __construct($echooutput=false) {
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->db = new DB();
-		$this->nntp = new NNTP();
+		$this->nntp = new NNTP($this->echooutput);
 		$this->yenc = new Yenc();
 		$this->s = new Sites();
 		$this->site = $this->s->get();
-/*		$this->debug =
-			($this->site->debuginfo == '0' && $echooutput) ? true : false;
-*/
-$this->debug = true;
-		$this->echooutput = $echooutput;
+		$this->debug = nZEDb_DEBUG;
 
 		// Will be a site setting.. hides username when posting
 		$this->hideuser = false;

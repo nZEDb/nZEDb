@@ -97,13 +97,18 @@ class PostProcess
 	 */
 	public function __construct($echoOutput = false)
 	{
+		//\\ Various.
+		$this->echooutput = ($echoOutput && nZEDb_ECHOCLI);
+		$this->additionalInitiated = false;
+		//\\
+
 		//\\ Class instances.
 		$this->c = new ColorCLI();
 		$this->db = new DB();
 		$this->groups = new Groups();
 		$this->debugging = new Debugging('PostProcess');
-		$this->nameFixer = new NameFixer($echoOutput);
-		$this->Nfo = new Nfo($echoOutput);
+		$this->nameFixer = new NameFixer($this->echooutput);
+		$this->Nfo = new Nfo($this->echooutput);
 		$this->releaseFiles = new ReleaseFiles();
 		$s = new sites();
 		//\\
@@ -117,11 +122,6 @@ class PostProcess
 		$this->addpar2 = ($this->site->addpar2 === '0') ? false : true;
 		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? (int)$this->site->maxsizetopostprocess : 100;
-		//\\
-
-		//\\ Various.
-		$this->echooutput = $echoOutput;
-		$this->additionalInitiated = false;
 		//\\
 	}
 
@@ -373,9 +373,7 @@ class PostProcess
 	 */
 	protected function doEcho($str)
 	{
-		if ($this->echooutput) {
-			echo $this->c->header($str);
-		}
+		$this->c->doEcho($this->c->header($str));
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -773,7 +771,7 @@ class PostProcess
 			// Loop through the releases.
 			foreach ($result as $rel) {
 				if ($this->echooutput && $releaseToWork === '') {
-					echo "\n[" . $this->c->primaryOver($startCount--) . ']';
+					echo "[" . $this->c->primaryOver($startCount--) . ']';
 				} else if ($this->echooutput) {
 					echo '[' . $this->c->primaryOver($rel['id']) . ']';
 				}

@@ -21,15 +21,13 @@ class Logging
 
 	/**
 	 * Constructor.
-	 *
-	 * @return void
 	 */
 	public function __construct()
 	{
 		$this->db = new DB();
 		$this->colorCLI = new ColorCLI();
 
-		$this->newLine = ((strtolower(substr(php_uname('s'), 0, 3)) === 'win') ? "\r\n" : "\n");
+		$this->newLine = PHP_EOL;
 	}
 
 	/**
