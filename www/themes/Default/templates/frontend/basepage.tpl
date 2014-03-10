@@ -16,8 +16,8 @@
     {if $loggedin=="true"}<link rel="alternate" type="application/rss+xml" title="{$site->title} Full Rss Feed" href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{/if}
 
     <!-- Included CSS files - Bootstrap 2.3.2 - Font Awesome 3.2.0 - plugins master style.css -->
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/font-awesome.min.css" rel="stylesheet">
     <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/jquery.qtip.css" rel="stylesheet" media="screen">
     <!-- <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/subnav.css" rel="stylesheet" media="screen"> -->
     <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
@@ -99,9 +99,9 @@
 </div>
 
     <!-- Moved The Script Files to end of site for faster page loading -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery-1.9.1.js"></script>
     {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes/Default/scripts/vendor/jquery-1.9.1.js"><\/script>')</script>{/literal}
-    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+		<script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/bootstrap.min.js"></script>
     {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes/Default/scripts/vendor/bootstrap.min.js"><\/script>')</script>{/literal}
     <!-- <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/subnav.js"></script> -->
     <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.colorbox-min.js"></script>

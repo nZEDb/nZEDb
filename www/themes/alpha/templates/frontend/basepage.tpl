@@ -199,7 +199,7 @@
 		<!-- JS and analytics only. -->
 		<!-- Bootstrap core JavaScript
 		================================================== -->
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery-1.9.1.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/bootstrap.min.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/holder.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.pnotify.min.js"></script>

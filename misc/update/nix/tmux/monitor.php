@@ -1170,12 +1170,8 @@ while ($i > 0) {
 					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
 						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 				} else {
-					if (isset($fix_crap)) {
-						$fcmax = count($fix_crap);
-					} else {
-						$fcmax = 0;
-					}
-					if (is_null($fcnum)) {
+					$fcmax = count($fix_crap);
+					if (!isset($fcnum)) {
 						$fcnum = 0;
 					}
 					//Check to see if the pane is dead, if so resawn it.
@@ -1197,7 +1193,7 @@ while ($i > 0) {
 						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 				} else {
 					$fcmax = count($fix_crap);
-					if (is_null($fcnum)) {
+					if (!isset($fcnum)) {
 						$fcnum = 0;
 					}
 					//Check to see if the pane is dead, if so respawn it.
