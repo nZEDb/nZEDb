@@ -1183,9 +1183,9 @@ while ($i > 0) {
 					if ($fcmax > 0) {
 
 						// If this is the first run, do a full run, else run on last 2 hours of releases.
-						$time = '2';
+						$fctime = '2';
 						if ((($i == 1) || $fcfirstrun)) {
-							$time = 'full';
+							$fctime = 'full';
 						}
 
 						//Check to see if the pane is dead, if so resawn it.
@@ -1194,7 +1194,7 @@ while ($i > 0) {
 							// Run remove crap releases.
 							shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
 								echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-								php ${DIR}testing/Release/removeCrapReleases.php true $time $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+								php ${DIR}testing/Release/removeCrapReleases.php true $fctime $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 
 							// Increment so we know which type to run next.
 							$fcnum++;
