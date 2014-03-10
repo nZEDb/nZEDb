@@ -7,7 +7,7 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-03-10 -> kevin    -> Change min username/password length to work better with people who converted from newznab.
 2014-03-09 -> kevin    -> Option for hiding CLI output in automated.config.php(for post proc right now).
                        -> Hiding of CLI output in AniDb.php, Backfill.php, Binaries.php, etc
                        -> Check if the user put the wrong setting for grabnzbs.

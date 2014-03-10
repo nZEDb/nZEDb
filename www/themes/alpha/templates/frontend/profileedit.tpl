@@ -26,7 +26,7 @@
             <th>Password:</th>
             <td>
                 <input autocomplete="off" class="form-control" id="password" name="password" type="password" value="">
-                <span class="help-block">Only enter your password if you want to change it.</span>
+                <span class="help-block">Only enter a password if you want to change it.</span>
             </td>
         </tr>
         <tr>

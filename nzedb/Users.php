@@ -310,14 +310,14 @@ class Users
 
 	public function isValidUsername($uname)
 	{
-		// Username must be at least five characters and is alphanumeric
-		return ((ctype_alnum($uname) && strlen($uname) > 4) ? true : false);
+		// Username must be at least three characters and is alphanumeric
+		return ((ctype_alnum($uname) && strlen($uname) > 2) ? true : false);
 	}
 
 	public function isValidPassword($pass)
 	{
-		// Password must be at least 8 characters
-		return (strlen($pass) > 7);
+		// Password must be at least 6 characters
+		return (strlen($pass) > 5);
 	}
 
 	public function isDisabled($username)
