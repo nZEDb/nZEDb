@@ -1,4 +1,3 @@
- 
 <h1>{$page->title}</h1>
 
 <p>
@@ -6,15 +5,15 @@
 </p>
 
 <div style="position:relative;margin-bottom:5px;">
-        <td class="less" id="alldel">
+	<td class="less" id="alldel">
 
 		<div>
 			{$pager}
 		</div>
 
-                <a href="{$smarty.const.WWW_TOP}/musicgenre-list.php?activeonly=1">Genres With Releases</a> | <a href="{$smarty.const.WWW_TOP}/musicgenr
+		<a href="{$smarty.const.WWW_TOP}/musicgenre-list.php?activeonly=1">Genres With Releases</a> | <a href="{$smarty.const.WWW_TOP}/musicgenr
 e-list.php">All Genres</a>
-        </td>
+	</td>
 </div>
 
 
@@ -25,13 +24,13 @@ e-list.php">All Genres</a>
 		<th>title</th>
 		<th>disabled</th>
 	</tr>
-	
+
 	{foreach from=$genrelist item=genre}
-	<tr class="{cycle values=",alt"}">
-		<td>{$genre.id}</td>
-		<td><a href="{$smarty.const.WWW_TOP}/musicgenre-edit.php?id={$genre.id}">{$genre.title}</a></td>
-		<td>{if $genre.disabled == "1"}Yes{else}No{/if}</td>
-	</tr>
+		<tr class="{cycle values=",alt"}">
+			<td>{$genre.id}</td>
+			<td><a href="{$smarty.const.WWW_TOP}/musicgenre-edit.php?id={$genre.id}">{$genre.title}</a></td>
+			<td>{if $genre.disabled == "1"}Yes{else}No{/if}</td>
+		</tr>
 	{/foreach}
 
 

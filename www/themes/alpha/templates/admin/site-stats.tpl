@@ -1,4 +1,3 @@
- 
 <h1>{$page->title}</h1>
 
 <h2>Top Grabbers</h2>
@@ -15,7 +14,7 @@
 			<td>{$result.grabs}</td>
 		</tr>
 	{/foreach}
-	
+
 </table>
 
 <br/><br/>
@@ -32,72 +31,72 @@
 	{foreach from=$topdownloads item=result}
 		<tr class="{cycle values=",alt"}">
 			<td width="75%"><a href="{$smarty.const.WWW_TOP}/../details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
-			{if $isadmin}<a href="{$smarty.const.WWW_TOP}/release-edit.php?id={$result.id}">[Edit]</a>{/if}</td>
+				{if $isadmin}<a href="{$smarty.const.WWW_TOP}/release-edit.php?id={$result.id}">[Edit]</a>{/if}</td>
 			<td>{$result.grabs}</td>
 			<td>{$result.adddate|timeago}</td>
 		</tr>
 	{/foreach}
-	
+
 </table>
 
 <br/><br/>
 {if $isadmin and $loggingon}
-<h2>Top Failed Logins and IP's</h2>
-<table width="100%" border="0" cellspacing="0" cellpadding="5">
-    <tr>
-        <td width="50%">
-        <!-- left table -->
-        <table style="width:100%;margin-top:10px;" class="data highlight">
-            <tr>
-                <th colspan="4">
-                    <h3<br>Top Login Falures by Username and IP</h3>
-                </th>
-            </tr>
-        <tr>
-            <th>Last Attempt</th>
-            <th>Username</th>
-            <th>IP Address</th>
-            <th>Count</th>
-        </tr>
+	<h2>Top Failed Logins and IP's</h2>
+	<table width="100%" border="0" cellspacing="0" cellpadding="5">
+		<tr>
+			<td width="50%">
+				<!-- left table -->
+				<table style="width:100%;margin-top:10px;" class="data highlight">
+					<tr>
+						<th colspan="4">
+							<h3<br>Top Login Falures by Username and IP</h3>
+						</th>
+					</tr>
+					<tr>
+						<th>Last Attempt</th>
+						<th>Username</th>
+						<th>IP Address</th>
+						<th>Count</th>
+					</tr>
 
-        {foreach from=$toplogincombined item=result}
-            <tr class="{cycle values=",alt"}">
-                <td>{$result.time}</td>
-                <td>{$result.username}</td>
-                <td><a href="http://network-tools.com/default.asp?prog=network&host={$result.host}" target="_blank" alt="WHOIS info on {$result.host}">{$result.host}</a></td>
-                <td>{$result.count}</td>
-            </tr>
-        {/foreach}
-    </table>
+					{foreach from=$toplogincombined item=result}
+						<tr class="{cycle values=",alt"}">
+							<td>{$result.time}</td>
+							<td>{$result.username}</td>
+							<td><a href="http://network-tools.com/default.asp?prog=network&host={$result.host}" target="_blank" alt="WHOIS info on {$result.host}">{$result.host}</a></td>
+							<td>{$result.count}</td>
+						</tr>
+					{/foreach}
+				</table>
 
-        </td>
-        <td width="50%">
+			</td>
+			<td width="50%">
 
-        <!-- right table -->
-        <table style="width:100%;margin-top:10px;" class="data highlight">
-            <tr>
-                <th colspan="3">
-                    <h3<br>Top Login Falures by IP</h3>
-                </th>
-            </tr>
-            <tr>
-                <th>Last Attempt</th>
-                <th>IP Address</th>
-                <th>Count</th>
-            </tr>
+				<!-- right table -->
+				<table style="width:100%;margin-top:10px;" class="data highlight">
+					<tr>
+						<th colspan="3">
+							<h3<br>Top Login Falures by IP</h3>
+						</th>
+					</tr>
+					<tr>
+						<th>Last Attempt</th>
+						<th>IP Address</th>
+						<th>Count</th>
+					</tr>
 
-            {foreach from=$toploginips item=result}
-                <tr class="{cycle values=",alt"}">
-                    <td>{$result.time}</td>
-                    <td><a href="http://network-tools.com/default.asp?prog=network&host={$result.host}" target="_blank" alt="WHOIS info on {$result.host}">{$result.host}</a></td>
-                    <td>{$result.count}</td>
-                </tr>
-            {/foreach}
-        </table>
-        </td>
-    </tr>
-</table>
-<br><br>
+					{foreach from=$toploginips item=result}
+						<tr class="{cycle values=",alt"}">
+							<td>{$result.time}</td>
+							<td><a href="http://network-tools.com/default.asp?prog=network&host={$result.host}" target="_blank" alt="WHOIS info on {$result.host}">{$result.host}</a></td>
+							<td>{$result.count}</td>
+						</tr>
+					{/foreach}
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br><br>
 {/if}
 
 
@@ -115,7 +114,7 @@
 			<td>{$result.count}</td>
 		</tr>
 	{/foreach}
-	
+
 </table>
 
 <br/><br/>
@@ -136,5 +135,5 @@
 			<td>{$result.adddate|timeago}</td>
 		</tr>
 	{/foreach}
-	
+
 </table>
