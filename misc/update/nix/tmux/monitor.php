@@ -1173,6 +1173,9 @@ while ($i > 0) {
 					if (isset($fix_crap)) {
 						$fcmax = count($fix_crap);
 					} else {
+						$fcmax = 0;
+					}
+					if (is_null($fcnum)) {
 						$fcnum = 0;
 					}
 					//Check to see if the pane is dead, if so resawn it.
