@@ -13,8 +13,8 @@
     <meta name="application-name" content="nZEDb-v{$site->version}">
     <meta name="viewport" content="width=device-width">
 
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{$smarty.const.WWW_TOP}/../themes/alpha/styles/bootstrap-combined.no-icons.min.css" rel="stylesheet" media="screen">
+    <link href="{$smarty.const.WWW_TOP}/../themes/alpha/styles/font-awesome.min.css" rel="stylesheet" media="screen">
     <link href="{$smarty.const.WWW_TOP}/../themes/alpha/styles/old-style.css" rel="stylesheet" media="screen">
     <link href="{$smarty.const.WWW_TOP}/../themes/alpha/styles/admin.css" rel="stylesheet" media="screen">
 
@@ -66,7 +66,7 @@
 	</div>
 	<!-- end #page -->
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    <script src="{$smarty.const.WWW_TOP}/../themes/alpha/scripts/jquery-1.9.1.js"></script>
     {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/alpha/scripts/vendor/jquery-1.9.1.js"><\/script>')</script>{/literal}
     {*<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/alpha/scripts/vendor/bootstrap.min.js"><\/script>')</script>{/literal}*}

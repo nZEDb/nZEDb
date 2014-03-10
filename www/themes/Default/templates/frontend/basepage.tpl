@@ -101,7 +101,7 @@
     <!-- Moved The Script Files to end of site for faster page loading -->
     <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery-1.9.1.js"></script>
     {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes/Default/scripts/vendor/jquery-1.9.1.js"><\/script>')</script>{/literal}
-		<script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/bootstrap.min.js"></script>
+	<script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/bootstrap.min.js"></script>
     {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes/Default/scripts/vendor/bootstrap.min.js"><\/script>')</script>{/literal}
     <!-- <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/subnav.js"></script> -->
     <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.colorbox-min.js"></script>
