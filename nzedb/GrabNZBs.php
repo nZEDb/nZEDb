@@ -48,7 +48,7 @@ class GrabNZBs
 		if ($nzb && array_key_exists('groupname', $nzb)) {
 			if (sizeof($arr) > 10) {
 				if ($this->echo) {
-					$this->c->doEcho($this->c->header("Getting " . sizeof($arr) . ' articles for ' . $hash));
+					$this->c->doEcho($this->c->header("\nGetting " . sizeof($arr) . ' articles for ' . $hash));
 				}
 			}
 

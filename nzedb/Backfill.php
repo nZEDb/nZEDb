@@ -458,6 +458,7 @@ class Backfill
 				'Processing ' .
 				$groupArr['name'] .
 				$this->c->rsetColor()
+				, true
 			);
 		}
 
@@ -1025,6 +1026,7 @@ class Backfill
 					' to ' .
 					number_format($last) .
 					$this->c->rsetColor()
+					, true
 				);
 			} else {
 				$this->c->doEcho(
@@ -1038,6 +1040,7 @@ class Backfill
 					' to ' .
 					number_format($last) .
 					$this->c->rsetColor()
+					, true
 				);
 			}
 		}
@@ -1103,6 +1106,7 @@ class Backfill
 				$group .
 				" completed." .
 				$this->c->rsetColor()
+				, true
 			);
 		}
 	}
