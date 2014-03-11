@@ -59,12 +59,33 @@
 					<td style="width:100%;text-align:left;">
 						<a class="title" title="View details"  href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}"><strong>{$result.searchname|escape:"htmlall"|replace:".":" "}</strong></a>
 						<div class="resextra">
-							{if $result.passwordstatus == 1}<span class="icon-stack" title="Probably Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlock-alt"></i></span> {elseif $result.passwordstatus == 2}<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span> {elseif $result.passwordstatus == 10}<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span> {/if}
+							{if $result.passwordstatus == 1}
+								<span class="icon-stack" title="Probably Passworded">
+									<i class="icon-check-empty icon-stack-base"></i>
+									<i class="icon-unlock-alt"></i>
+								</span>
+							{elseif $result.passwordstatus == 2}
+								<span class="icon-stack" title="Broken Post">
+									<i class="icon-check-empty icon-stack-base"></i>
+									<i class="icon-unlink"></i>
+								</span>
+							{elseif $result.passwordstatus == 10}
+								<span class="icon-stack" title="Passworded Archive">
+									<i class="icon-check-empty icon-stack-base"></i>
+									<i class="icon-lock"></i>
+								</span>
+							{/if}
 							{release_flag($result.searchname, browse)}
-							{if $result.videostatus == 1}
-								<a class="label label-default model_prev" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview" rel="preview"><i class="icon-youtube-play"></i></a> {/if}
+							{if $result.videostatus > 0}
+								<a class="label label-default model_prev" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}" title="This release has a video preview" rel="preview">
+									<i class="icon-youtube-play"></i>
+								</a>
+							{/if}
 							{if $result.nfoid > 0}
-								<a class="label label-default modal_nfo" href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" rel="nfo"><i class="icon-info-sign"></i></a> {/if}
+								<a class="label label-default modal_nfo" href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" rel="nfo">
+									<i class="icon-info-sign"></i>
+								</a>
+							{/if}
 							{if $result.imdbid > 0}
 								<a class="label label-default modal_imdb" href="#" name="name{$result.imdbid}" title="View movie info" rel="movie" >Cover</a> {/if}
 							{if $result.musicinfoid > 0}
