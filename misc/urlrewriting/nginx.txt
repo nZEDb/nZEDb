@@ -16,8 +16,12 @@ server {
 		index index.php;
 		try_files $uri $uri/ @rewrites;
 
-		location ~ /(?:\.|lib|pages) {
+		location ~ /(?:\.|pages) {
 			deny all;
+		}
+
+		location /covers {
+			root /home/www/example.com//resources
 		}
 
 		location ~* \.(?:css|jpe?g|gif|ogg|ogv|png|js|ico|ttf|eot|woff|svg) { 
