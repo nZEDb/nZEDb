@@ -22,7 +22,7 @@
 		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/style.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/wip.css" rel="stylesheet" media="screen">
 		<!-- nZEDb extras -->
-		{if $site->google_adsense_acc != ''}<link href="http://www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">{/if}
+		{if $site->google_adsense_acc != ''}<link href="//www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">{/if}
 		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/jquery.pnotify.default.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/jquery.qtip.css" rel="stylesheet" media="screen">
 
@@ -199,7 +199,7 @@
 		<!-- JS and analytics only. -->
 		<!-- Bootstrap core JavaScript
 		================================================== -->
-		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+		<script src="//code.jquery.com/jquery-1.9.1.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/bootstrap.min.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/holder.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.pnotify.min.js"></script>

@@ -83,10 +83,14 @@
 																 href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/"
 																 name="trakt{$result.imdbid}" title="View trakt page">Trakt</a></span>
 							{if $cpurl != '' && $cpapi != ''}
-								<span class="label label-default"><a target="blackhole"
-																	 href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
-																	 name="CP{$result.imdbid}"
-																	 title="Add to CouchPotato">Couch</a></span>
+								<span class="label label-default">
+									<a target="blackhole"
+										href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
+										name="CP{$result.imdbid}"
+										title="Add to CouchPotato">
+										Couch
+									</a>
+								</span>
 							{/if}
 						</div>
 					</div>
