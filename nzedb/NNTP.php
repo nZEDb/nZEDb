@@ -93,7 +93,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function __construct($echo = true)
 	{
-		$this->echo = $echo;
+		$this->echo = ($echo && nZEDb_ECHOCLI);
 		$this->c = new ColorCLI();
 		$this->s = new Sites();
 		$this->site = $this->s->get();

@@ -17,7 +17,7 @@
 
 		<!-- nZEDb core CSS -->
 		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/bootstrap.min.css" rel="stylesheet" media="screen">
-		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/font-awesome.css" rel="stylesheet" media="screen">
+		<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_TOP}/themes/Default/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
 		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/style.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/wip.css" rel="stylesheet" media="screen">
@@ -199,7 +199,7 @@
 		<!-- JS and analytics only. -->
 		<!-- Bootstrap core JavaScript
 		================================================== -->
-		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery-1.9.1.js"></script>
+		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/bootstrap.min.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/holder.js"></script>
 		<script src="{$smarty.const.WWW_TOP}/themes/alpha/scripts/jquery.pnotify.min.js"></script>

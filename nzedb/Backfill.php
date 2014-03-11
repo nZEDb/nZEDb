@@ -139,11 +139,11 @@ class Backfill
 			$binaries = new Binaries($this->echo);
 			foreach ($res as $groupArr) {
 				if ($groupName === '') {
-					$dmessage = "\nStarting group " . $counter . ' of ' . sizeof($res);
+					$dmessage = "Starting group " . $counter . ' of ' . sizeof($res);
 					$this->debugging->start("backfillAllGroups", $dmessage, 5);
 
 					if ($this->echo) {
-						$this->c->doEcho($this->c->set256($this->header) .$dmessage . $this->c->rsetColor());
+						$this->c->doEcho($this->c->set256($this->header) .$dmessage . $this->c->rsetColor(), true);
 					}
 				}
 				$this->backfillGroup($nntp, $db, $binaries, $groupArr, sizeof($res) - $counter);
@@ -154,7 +154,7 @@ class Backfill
 			$this->debugging->start("backfillAllGroups", $dmessage, 1);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->set256($this->primary) . $dmessage . $this->c->rsetColor());
+				$this->c->doEcho($this->c->set256($this->primary) . $dmessage . $this->c->rsetColor(), true);
 			}
 		}
 	}
@@ -200,7 +200,7 @@ class Backfill
 			$this->debugging->start("backfillGroup", $dmessage, 3);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->warning($dmessage));
+				$this->c->doEcho($this->c->warning($dmessage), true);
 			}
 			return;
 		}
@@ -211,7 +211,7 @@ class Backfill
 			$this->debugging->start("backfillGroup", $dmessage, 4);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->notice($dmessage));
+				$this->c->doEcho($this->c->notice($dmessage), true);
 			}
 			//$groups = new Groups();
 			//$groups->disableForPost($groupArr['name']);
@@ -224,7 +224,7 @@ class Backfill
 			$this->debugging->start("backfillGroup", $dmessage, 4);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->notice($dmessage));
+				$this->c->doEcho($this->c->notice($dmessage), true);
 			}
 			return;
 		}
@@ -256,7 +256,7 @@ class Backfill
 				' days).  Backfill target of ' .
 				$groupArr['backfill_target'] .
 				' days is post ' .
-				$targetpost
+				$targetpost, true
 			);
 		}
 
@@ -292,7 +292,7 @@ class Backfill
 					" group(s) left. (" .
 					(number_format($first - $targetpost)) .
 					" articles in queue)." .
-					$this->c->rsetColor()
+					$this->c->rsetColor(), true
 				);
 			}
 
@@ -328,7 +328,7 @@ class Backfill
 				'Group processed in ' .
 				$timeGroup .
 				" seconds." .
-				$this->c->rsetColor()
+				$this->c->rsetColor(), true
 			);
 		}
 	}
@@ -417,7 +417,7 @@ class Backfill
 					$this->debugging->start("backfillPostAllGroups", $dmessage, 5);
 
 					if ($this->echo) {
-						$this->c->doEcho($this->c->set256($this->header) . $dmessage . $this->c->rsetColor());
+						$this->c->doEcho($this->c->set256($this->header) . $dmessage . $this->c->rsetColor(), true);
 					}
 				}
 				$this->backfillPostGroup($nntp, $this->db, $binaries, $groupArr, sizeof($res) - $counter, $articles);
@@ -428,7 +428,7 @@ class Backfill
 			$this->debugging->start("backfillPostAllGroups", $dmessage, 3);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->warning($dmessage));
+				$this->c->doEcho($this->c->warning($dmessage), true);
 			}
 		}
 	}
@@ -485,7 +485,7 @@ class Backfill
 			$this->debugging->start("backfillPostGroup", $dmessage, 2);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->error($dmessage));
+				$this->c->doEcho($this->c->error($dmessage), true);
 			}
 			return;
 		}
@@ -499,7 +499,7 @@ class Backfill
 			$this->debugging->start("backfillPostGroup", $dmessage, 4);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->notice($dmessage));
+				$this->c->doEcho($this->c->notice($dmessage), true);
 			}
 			//$groups = new Groups();
 			//$groups->disableForPost($groupArr['name']);
@@ -512,7 +512,7 @@ class Backfill
 			$this->debugging->start("backfillPostGroup", $dmessage, 4);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->notice($dmessage));
+				$this->c->doEcho($this->c->notice($dmessage), true);
 			}
 			return;
 		}
@@ -588,7 +588,7 @@ class Backfill
 					" group(s) left. (" .
 					(number_format($first - $targetpost)) .
 					" articles in queue)" .
-					$this->c->rsetColor()
+					$this->c->rsetColor(), true
 				);
 			}
 
@@ -624,7 +624,7 @@ class Backfill
 				' processed in ' .
 				$timeGroup .
 				" seconds." .
-				$this->c->rsetColor()
+				$this->c->rsetColor(), true
 			);
 		}
 	}
@@ -649,7 +649,7 @@ class Backfill
 			$this->debugging->start("postdate", $dmessage, 2);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->error($dmessage));
+				$this->c->doEcho($this->c->error($dmessage), true);
 			}
 			return false;
 		}
@@ -672,7 +672,7 @@ class Backfill
 						$this->debugging->start("postdate", $dmessage, 2);
 
 						if ($this->echo) {
-							$this->c->doEcho($this->c->error($dmessage));
+							$this->c->doEcho($this->c->error($dmessage), true);
 						}
 					}
 					$groupa = array();
@@ -698,7 +698,7 @@ class Backfill
 							$this->debugging->start("postdate", $dmessage, 4);
 
 							if ($this->echo) {
-								$this->c->doEcho($this->c->info($dmessage));
+								$this->c->doEcho($this->c->info($dmessage), true);
 							}
 						}
 					} else {
@@ -712,7 +712,7 @@ class Backfill
 							$this->debugging->start("postdate", $dmessage, 5);
 
 							if ($this->echo) {
-								$this->c->doEcho($this->c->info($dmessage));
+								$this->c->doEcho($this->c->info($dmessage), true);
 							}
 						}
 					}
@@ -730,7 +730,7 @@ class Backfill
 							$this->debugging->start("postdate", $dmessage, 5);
 
 							if ($this->echo) {
-								$this->c->doEcho($this->c->info($dmessage));
+								$this->c->doEcho($this->c->info($dmessage), true);
 							}
 							if (strlen($date) > 0) {
 								$success = true;
@@ -747,7 +747,7 @@ class Backfill
 							$this->debugging->start("postdate", $dmessage, 5);
 
 							if ($this->echo) {
-								$this->c->doEcho($this->c->info($dmessage));
+								$this->c->doEcho($this->c->info($dmessage), true);
 							}
 							if (strlen($date) > 0) {
 								$success = true;
@@ -764,7 +764,7 @@ class Backfill
 				}
 
 				if ($debug && $this->echo && $attempts > 0) {
-					$this->c->doEcho($this->c->debug('Retried ' . $attempts . " time(s)."));
+					$this->c->doEcho($this->c->debug('Retried ' . $attempts . " time(s)."), true);
 				}
 			}
 		} while ($attempts <= 20 && $success === false);
@@ -783,7 +783,7 @@ class Backfill
 					$this->debugging->start("postdate", $dmessage, 5);
 
 					if ($this->echo) {
-						$this->c->doEcho($this->c->info($dmessage));
+						$this->c->doEcho($this->c->info($dmessage), true);
 					}
 					return strtotime($res['first_record_postdate']);
 				} else {
@@ -802,7 +802,7 @@ class Backfill
 					$this->debugging->start("postdate", $dmessage, 5);
 
 					if ($this->echo) {
-						$this->c->doEcho($this->c->info($dmessage));
+						$this->c->doEcho($this->c->info($dmessage), true);
 					}
 					return strtotime($res['last_record_postdate']);
 				} else {
@@ -886,7 +886,7 @@ class Backfill
 			$this->debugging->start("daytopost", $dmessage, 3);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->warning($dmessage));
+				$this->c->doEcho($this->c->warning($dmessage), true);
 			}
 			return $data['first'];
 		} else if ($goaldate > $lastDate) {
@@ -901,7 +901,7 @@ class Backfill
 			$this->debugging->start("daytopost", $dmessage, 2);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->error($dmessage));
+				$this->c->doEcho($this->c->error($dmessage), true);
 			}
 			return '';
 		}
@@ -974,7 +974,7 @@ class Backfill
 		$this->debugging->start("daytopost", $dmessage, 5);
 
 		if ($this->echo) {
-			$this->c->doEcho($dmessage);
+			$this->c->doEcho($dmessage, true);
 		}
 		return $upperbound;
 	}
