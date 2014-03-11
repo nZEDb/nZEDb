@@ -231,7 +231,7 @@ class Binaries
 				$this->debugging->start("updateAllGroups", $message, 5);
 
 				if ($this->echo) {
-					$this->c->doEcho($this->c->header($message));
+					$this->c->doEcho($this->c->header($message), true);
 				}
 				$this->updateGroup($groupArr, $nntp);
 				$counter++;
@@ -240,14 +240,14 @@ class Binaries
 			$this->debugging->start("updateAllGroups", $message, 5);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->primary($message));
+				$this->c->doEcho($this->c->primary($message), true);
 			}
 		} else {
 			$message = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
 			$this->debugging->start("updateAllGroups", $message, 4);
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->warning($message));
+				$this->c->doEcho($this->c->warning($message), true);
 			}
 		}
 	}
@@ -270,7 +270,7 @@ class Binaries
 
 		$this->startGroup = microtime(true);
 		if ($this->echo) {
-			$this->c->doEcho($this->c->primary('Processing ' . str_replace('alt.binaries', 'a.b', $groupArr['name'])));
+			$this->c->doEcho($this->c->primary('Processing ' . str_replace('alt.binaries', 'a.b', $groupArr['name'])), true);
 		}
 
 		// Select the group, here, needed for processing the group
@@ -286,12 +286,12 @@ class Binaries
 		if ($groupArr['last_record'] != 0) {
 			if ($this->DoPartRepair) {
 				if ($this->echo) {
-					$this->c->doEcho($this->c->primary("Part repair enabled. Checking for missing parts."));
+					$this->c->doEcho($this->c->primary("Part repair enabled. Checking for missing parts."), true);
 				}
 				$this->partRepair($nntp, $groupArr);
 			} else {
 				if ($this->echo) {
-					$this->c->doEcho($this->c->primary("Part repair disabled by user."));
+					$this->c->doEcho($this->c->primary("Part repair disabled by user."), true);
 				}
 			}
 		}
@@ -305,7 +305,7 @@ class Binaries
 				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, $data, true);
 				if ($first == '') {
 					if ($this->echo) {
-						$this->c->doEcho($this->c->warning("Skipping group: {$groupArr['name']}"));
+						$this->c->doEcho($this->c->warning("Skipping group: {$groupArr['name']}"), true);
 					}
 					return;
 				}
@@ -393,7 +393,7 @@ class Binaries
 							' Server newest: ' .
 							number_format($data['last']) .
 							' Local newest: ' .
-							number_format($groupArr['last_record'])
+							number_format($groupArr['last_record']), true
 						)
 					);
 				} else {
@@ -409,7 +409,7 @@ class Binaries
 							number_format($data['first']) . ' Server newest: ' .
 							number_format($data['last']) .
 							' Local newest: ' .
-							number_format($groupArr['last_record'])
+							number_format($groupArr['last_record']), true
 						)
 					);
 				}
@@ -442,7 +442,7 @@ class Binaries
 							" - (" .
 							number_format($grouplast - $last) .
 							" articles in queue)."
-						)
+						), true
 					);
 				}
 				flush();
@@ -504,7 +504,7 @@ class Binaries
 						number_format($data['last']) .
 						' Local newest: ' .
 						number_format($groupArr['last_record'])
-					)
+					), true
 				);
 			}
 		}
@@ -579,7 +579,7 @@ class Binaries
 				$this->debugging->start("scan", $dmessage, 3);
 
 				if ($this->echo) {
-					$this->c->doEcho($this->c->error($dmessage));
+					$this->c->doEcho($this->c->error($dmessage), true);
 				}
 				return false;
 			}
@@ -789,7 +789,7 @@ class Binaries
 						' blacklisted, ' .
 						sizeof($msgsignored) .
 						" not yEnc."
-					)
+					), true
 				);
 			}
 
@@ -821,7 +821,7 @@ class Binaries
 							" articles from " .
 							str_replace('alt.binaries', 'a.b', $groupArr['name']) .
 							"."
-						)
+						), true
 					);
 				}
 			}
@@ -928,7 +928,7 @@ class Binaries
 					$this->debugging->start("scan", $dmessage, 3);
 
 					if ($this->echo) {
-						$this->c->doEcho($this->c->warning($dmessage));
+						$this->c->doEcho($this->c->warning($dmessage), true);
 					}
 
 					if ($this->DoPartRepair) {
@@ -948,7 +948,7 @@ class Binaries
 					$this->c->alternateOver($timeUpdate . 's') .
 					$this->c->primaryOver(' to insert articles, ') .
 					$this->c->alternateOver($timeLoop . 's') .
-					$this->c->primary(' total.')
+					$this->c->primary(' total.'), true
 				);
 			}
 
@@ -960,7 +960,7 @@ class Binaries
 				$this->debugging->start("scan", $dmessage, 3);
 
 				if ($this->echo) {
-					$this->c->doEcho($this->c->error($dmessage));
+					$this->c->doEcho($this->c->error($dmessage), true);
 				}
 				return false;
 			}
@@ -1065,7 +1065,7 @@ class Binaries
 						"\n" .
 						number_format($partsRepaired) .
 						" parts repaired."
-					)
+					), true
 				);
 			}
 		}
