@@ -7,7 +7,22 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-03-10 -> bart39   -> fixed some echo CLI formatting
+2014-03-10 -> ruhllatio-> Remove unnecessary join from fixreleasenames_threaded.py
+2014-03-10 -> bart39   -> reverted previous change to releases->stage7a as one big delete is quicker than looping in php
+2014-03-10 -> kevin    -> Change min username/password length to work better with people who converted from newznab.
+                       -> Fix indent in alpha theme.
+                       -> Check if a var is set in monitor.php
+                       -> Update jquery qtip URL.
+                       -> Use some local stylesheets and scripts.
+                       -> Add missing fontawesome-webfont.woff file on alpha theme.
+2014-03-09 -> kevin    -> Option for hiding CLI output in automated.config.php(for post proc right now).
+                       -> Hiding of CLI output in AniDb.php, Backfill.php, Binaries.php, etc
+                       -> Check if the user put the wrong setting for grabnzbs.
+                       -> NNTP only echo data received once we have it.
+2014-03-09 -> bart39   -> refactor query
+                       -> regex addition/fixes
+		       -> typo in reset_postprocessing.php
 2014-03-07 -> bart39   -> Fix: #1203 add Half SBS to 3d Category
 2014-03-07 -> kevin    -> Fix: Error message not set in NNTP.
                        -> Change: More checks in postproc.

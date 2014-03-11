@@ -267,4 +267,16 @@ class ColorCLI
 	{
 		return "\033[0m";
 	}
+
+	/**
+	 * Echo message to CLI.
+	 *
+	 * @param string $message The message.
+	 * @param bool $nl Add a new line?
+	 * @void
+	 */
+	public static function doEcho($message, $nl = false)
+	{
+		echo $message . ($nl ? PHP_EOL : '');
+	}
 }

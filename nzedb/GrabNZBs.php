@@ -5,6 +5,7 @@ class GrabNZBs
 
 	function __construct()
 	{
+		$this->echo = nZEDb_ECHOCLI;
 		$this->db = new DB();
 		$s = new Sites();
 		$this->site = $s->get();
@@ -46,7 +47,9 @@ class GrabNZBs
 		}
 		if ($nzb && array_key_exists('groupname', $nzb)) {
 			if (sizeof($arr) > 10) {
-				echo $this->c->header("\nGetting " . sizeof($arr) . ' articles for ' . $hash);
+				if ($this->echo) {
+					$this->c->doEcho($this->c->header("\nGetting " . sizeof($arr) . ' articles for ' . $hash));
+				}
 			}
 
 			$article = $nntp->getMessages($nzb['groupname'], $arr, $this->alternateNNTP);
@@ -61,7 +64,10 @@ class GrabNZBs
 				$this->processGrabNZBs($article, $hash, $realgroupid);
 			} else {
 				$this->db->queryExec(sprintf('DELETE FROM nzbs WHERE collectionhash = %s', $this->db->escapeString($hash)));
-				echo 'f';
+
+				if ($this->echo) {
+					echo 'f';
+				}
 				return;
 			}
 		} else {
@@ -90,7 +96,10 @@ class GrabNZBs
 		// If article is not a valid xml, delete from nzbs
 		if (!$xml) {
 			$this->db->queryExec(sprintf('DELETE FROM nzbs WHERE collectionhash = %s', $this->db->escapeString($hash)));
-			echo '-';
+
+			if ($this->echo) {
+				echo '-';
+			}
 			return;
 		} else {
 			$totalFiles = $totalsize = 0;
@@ -156,7 +165,10 @@ class GrabNZBs
 				} else if ($res->rowCount() > 0 && $this->replacenzbs == 0) {
 					flush();
 					$importfailed = true;
-					echo '!';
+
+					if ($this->echo) {
+						echo '!';
+					}
 				}
 			}
 
@@ -218,7 +230,10 @@ class GrabNZBs
 						}
 					}
 					$this->db->queryExec(sprintf('DELETE from nzbs where collectionhash = %s', $this->db->escapeString($hash)));
-					echo '!';
+
+					if ($this->echo) {
+						echo '!';
+					}
 					return;
 				} else if (count($relid) > 0) {
 					$path = $nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
@@ -244,11 +259,17 @@ class GrabNZBs
 								}
 							}
 							$this->db->queryExec(sprintf('DELETE from nzbs where collectionhash = %s', $this->db->escapeString($hash)));
-							echo '+';
+
+							if ($this->echo) {
+								echo '+';
+							}
 						} else {
 							$this->db->queryExec(sprintf('DELETE FROM releases WHERE id = %d', $relid));
 							$importfailed = true;
-							echo '-';
+
+							if ($this->echo) {
+								echo '-';
+							}
 						}
 					}
 				}

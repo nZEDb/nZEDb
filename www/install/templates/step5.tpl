@@ -6,10 +6,10 @@
 {else}
 
 <p>You must setup an admin user.</p>
-<p>The username must start with a letter followed by a letter or number.<br />
+<p>The username must start with a letter followed by a letter or number, it must be 3 characters or longer.<br />
 The real first name is optional.<br />
 The real last name is optional.<br />
-The password must be at least 8 characters long.<br />
+The password must be at least 6 characters long.<br />
 The email address is used in case you forget your password.<br />
 <p>Please provide the following information:</p>
 <form action="?" method="post">

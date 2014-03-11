@@ -79,12 +79,21 @@ class NNTP extends Net_NNTP_Client
 	protected $postingAllowed = false;
 
 	/**
+	 * Echo to cli?
+	 * @var
+	 */
+	protected $echo;
+
+	/**
 	 * Default constructor.
+	 *
+	 * @param bool $echo Echo to cli?
 	 *
 	 * @access public
 	 */
-	public function __construct()
+	public function __construct($echo = true)
 	{
+		$this->echo = ($echo && nZEDb_ECHOCLI);
 		$this->c = new ColorCLI();
 		$this->s = new Sites();
 		$this->site = $this->s->get();
@@ -118,7 +127,14 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function doConnect($compression = true, $alternate = false)
 	{
-		if ($compression === true && $this->_isConnected()) {
+		if (// Don't reconnect to usenet if:
+			// We are already connected to usenet. AND
+			$this->_isConnected() &&
+			// (If compression is wanted and on,                    OR    Compression is not wanted and off.) AND
+			(($compression && $this->compression)                   || (!$compression && !$this->compression)) &&
+			// (Alternate is wanted, AND current server is alt,     OR    Alternate is not wanted AND current is main.)
+			(($alternate && $this->currentServer === NNTP_SERVER_A) || (!$alternate && $this->currentServer === NNTP_SERVER))
+		) {
 			return true;
 		} else {
 			$this->doQuit();
@@ -358,7 +374,7 @@ class NNTP extends Net_NNTP_Client
 		$body = '';
 
 		$aConnected = false;
-		$nntp = new NNTP();
+		$nntp = new NNTP($this->echo);
 
 		// Check if the msgIds are in an array.
 		if (is_array($identifiers)) {
@@ -660,9 +676,12 @@ class NNTP extends Net_NNTP_Client
 		// Try re-selecting the group.
 		$data = $nntp->selectGroup($group);
 		if ($this->isError($data)) {
-			$message = "\nCode {$data->code}: {$data->message}\nSkipping group: {$group}\n";
+			$message = "Code {$data->code}: {$data->message}\nSkipping group: {$group}";
 			$this->debugging->start("dataError", $message, 3);
-			echo $this->c->error($message);
+
+			if ($this->echo) {
+				$this->c->doEcho($this->c->error($message), true);
+			}
 			$nntp->doQuit();
 		}
 		return $data;
@@ -731,7 +750,7 @@ class NNTP extends Net_NNTP_Client
 				$buffer = fgets($this->_socket);
 
 				// And set back the socket to blocking.
-				stream_set_blocking($this->_socket, 1);
+				stream_set_blocking($this->_socket, 15);
 
 				// If the buffer was really empty, then we know $possibleTerm
 				// was the real ending.
@@ -756,6 +775,20 @@ class NNTP extends Net_NNTP_Client
 				$deComp = @gzuncompress(mb_substr($data, 0, -3, '8bit'));
 				// Split the string of headers into an array of individual headers, then return it.
 				if (!empty($deComp)) {
+
+					if ($this->echo && $totalBytesReceived > 10240) {
+						$this->c->doEcho(
+							$this->c->primaryOver(
+								'Received ' .
+								round($totalBytesReceived / 1024) .
+								'KB from group (' .
+								$this->group() .
+								")."
+							), true
+						);
+					}
+
+					// Return array of headers.
 					return explode("\r\n", trim($deComp));
 				} else {
 					// Try 5 times to decompress.
@@ -796,27 +829,16 @@ class NNTP extends Net_NNTP_Client
 				// Update total bytes received.
 				$totalBytesReceived += $bytesReceived;
 
-				// Show bytes received
-				if ($totalBytesReceived > 10240 && $totalBytesReceived % 128 == 0) {
-					echo $this->c->primaryOver(
-						'Receiving ' . round($totalBytesReceived / 1024) . 'KB from ' . $this->group() . "\r");
-				}
-
 				// Check if we have the ending (.\r\n)
-				if ($bytesReceived > 2) {
-					if (ord($buffer[$bytesReceived - 3]) == 0x2e &&
-						ord($buffer[$bytesReceived - 2]) == 0x0d &&
-						ord($buffer[$bytesReceived - 1]) == 0x0a) {
+				if ($bytesReceived > 2 &&
+					ord($buffer[$bytesReceived - 3]) == 0x2e &&
+					ord($buffer[$bytesReceived - 2]) == 0x0d &&
+					ord($buffer[$bytesReceived - 1]) == 0x0a) {
 
-						// We found the terminator.
-						if ($totalBytesReceived > 10240) {
-							echo "\n";
-						}
 
-						// We have a possible ending, next loop check if it is.
-						$possibleTerm = true;
-						continue;
-					}
+					// We have a possible ending, next loop check if it is.
+					$possibleTerm = true;
+					continue;
 				}
 			} else {
 				$message = 'Socket error: ' . socket_strerror($errorCode);
@@ -969,8 +991,11 @@ class NNTP extends Net_NNTP_Client
 			return $response;
 		} else if ($response !== 290) {
 			$msg = "XFeature GZip Compression not supported. Consider disabling compression in site settings.";
-			echo $this->c->error($msg);
 			$this->debugging->start("_enableCompression", $msg, 4);
+
+			if ($this->echo) {
+				$this->c->doEcho($this->c->error($msg), true);
+			}
 			return $response;
 		}
 
