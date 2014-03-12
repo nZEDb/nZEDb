@@ -1,31 +1,58 @@
 <?php
+
 require_once nZEDb_LIBS . 'TMDb.php';
 require_once nZEDb_LIB . 'Util.php';
 
+/**
+ * Class Movie
+ */
 class Movie
 {
+
 	const SRC_BOXOFFICE = 1;
 	const SRC_INTHEATRE = 2;
 	const SRC_OPENING = 3;
 	const SRC_UPCOMING = 4;
 	const SRC_DVD = 5;
 
+	/**
+	 * @param bool $echooutput
+	 */
 	function __construct($echooutput = false)
 	{
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->db = new DB();
 		$s = new Sites();
 		$site = $s->get();
 		$this->apikey = $site->tmdbkey;
 		$this->fanartapikey = $site->fanarttvkey;
 		$this->binglimit = $this->yahoolimit = 0;
-		$this->debug = ($site->debuginfo == "0") ? false : true;
+		$this->debug = nZEDb_DEBUG;
 		$this->imdburl = ($site->imdburl == "0") ? false : true;
 		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
-		$this->imgSavePath = nZEDb_WWW . 'covers/movies/';
+		$this->imgSavePath = nZEDb_COVERS . 'movies' . DS;
 		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
 		$this->service = '';
 		$this->c = new ColorCLI();
+	}
+
+	/**
+	 * Look for an IMDB id in a string.
+	 *
+	 * @param $str    String containing the IMDB id.
+	 *
+	 * @return string IMDB id on success.
+	 * @return bool   False on failure.
+	 *
+	 * @access public
+	 */
+	public function parseImdb($str)
+	{
+		if (preg_match('/(?:imdb.*?)?(?:tt|Title\?)(\d{5,7})/i', $str, $matches)) {
+			return trim($matches[1]);
+		}
+
+		return false;
 	}
 
 	public function getMovieInfo($imdbId)
@@ -101,12 +128,11 @@ class Movie
 			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
 		}
 
-		$rel = new Releases();
+		$rel = new Releases($this->echooutput);
 
 		$sql = sprintf("SELECT COUNT(DISTINCT r.imdbid) AS num FROM releases r "
 			. "INNER JOIN movieinfo m ON m.imdbid = r.imdbid "
-			. "WHERE (r.bitwise & 256) = 256 AND m.cover = 1 AND m.title != '' AND r.passwordstatus <= %d AND %s %s %s %s ",
-			$rel->showPasswords(), $browseby, $catsrch, $maxage, $exccatlist);
+			. "WHERE r.nzbstatus = 1 AND m.cover = 1 AND m.title != '' AND r.passwordstatus <= %d AND %s %s %s %s ", $rel->showPasswords(), $browseby, $catsrch, $maxage, $exccatlist);
 		$res = $this->db->queryOneRow($sql);
 		return $res["num"];
 	}
@@ -161,7 +187,8 @@ class Movie
 
 		$order = $this->getMovieOrder($orderby);
 		if ($this->db->dbSystem() == 'mysql') {
-			$sql = sprintf("SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
+			$sql = sprintf("SELECT "
+				. "GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
 				. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
 				. "GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
 				. "GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
@@ -176,14 +203,14 @@ class Movie
 				. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
 				. "m.*, groups.name AS group_name, rn.id as nfoid FROM releases r "
 				. "LEFT OUTER JOIN groups ON groups.id = r.groupid "
-                . "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
+				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 				. "INNER JOIN movieinfo m ON m.imdbid = r.imdbid "
-				. "WHERE (r.bitwise & 256) = 256 AND m.cover = 1 AND m.title != '' AND "
-                . "r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s "
+				. "WHERE r.nzbstatus = 1 AND m.cover = 1 AND m.title != '' AND "
+				. "r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s "
 				. "GROUP BY m.imdbid ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
 		} else {
-			$rel = new Releases();
-			$sql = sprintf("SELECT STRING_AGG(r.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_id, STRING_AGG(r.rarinnerfilecount::text, ',' ORDER BY r.postdate DESC) as grp_rarinnerfilecount, STRING_AGG(r.haspreview::text, ',' ORDER BY r.postdate DESC) AS grp_haspreview, STRING_AGG(r.passwordstatus::text, ',' ORDER BY r.postdate) AS grp_release_password, STRING_AGG(r.guid, ',' ORDER BY r.postdate DESC) AS grp_release_guid, STRING_AGG(rn.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_nfoid, STRING_AGG(groups.name, ',' ORDER BY r.postdate DESC) AS grp_release_grpname, STRING_AGG(r.searchname, '#' ORDER BY r.postdate) AS grp_release_name, STRING_AGG(r.postdate::text, ',' ORDER BY r.postdate DESC) AS grp_release_postdate, STRING_AGG(r.size::text, ',' ORDER BY r.postdate DESC) AS grp_release_size, STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts, STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments, STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs, m.*, groups.name AS group_name, rn.id as nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= %s AND %s %s %s %s GROUP BY m.imdbid, m.id, groups.name, rn.id ORDER BY %s %s" . $limit, $rel->showPasswords(), $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
+			$rel = new Releases($this->echooutput);
+			$sql = sprintf("SELECT STRING_AGG(r.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_id, STRING_AGG(r.rarinnerfilecount::text, ',' ORDER BY r.postdate DESC) as grp_rarinnerfilecount, STRING_AGG(r.haspreview::text, ',' ORDER BY r.postdate DESC) AS grp_haspreview, STRING_AGG(r.passwordstatus::text, ',' ORDER BY r.postdate) AS grp_release_password, STRING_AGG(r.guid, ',' ORDER BY r.postdate DESC) AS grp_release_guid, STRING_AGG(rn.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_nfoid, STRING_AGG(groups.name, ',' ORDER BY r.postdate DESC) AS grp_release_grpname, STRING_AGG(r.searchname, '#' ORDER BY r.postdate) AS grp_release_name, STRING_AGG(r.postdate::text, ',' ORDER BY r.postdate DESC) AS grp_release_postdate, STRING_AGG(r.size::text, ',' ORDER BY r.postdate DESC) AS grp_release_size, STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts, STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments, STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs, m.*, groups.name AS group_name, rn.id as nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL WHERE r.nzbstatus = 1 AND r.passwordstatus <= %s AND %s %s %s %s GROUP BY m.imdbid, m.id, groups.name, rn.id ORDER BY %s %s" . $limit, $rel->showPasswords(), $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
 		}
 		return $this->db->queryDirect($sql);
 	}
@@ -267,10 +294,8 @@ class Movie
 	public function update($id, $title, $tagline, $plot, $year, $rating, $genre, $director, $actors, $language, $cover, $backdrop)
 	{
 		$this->db->queryExec(sprintf("UPDATE movieinfo SET title = %s, tagline = %s, plot = %s, year = %s, rating = %s, "
-			. "genre = %s, director = %s, actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW() "
-			. "WHERE imdbid = %d", $this->db->escapeString($title), $this->db->escapeString($tagline), $this->db->escapeString($plot),
-			$this->db->escapeString($year), $this->db->escapeString($rating), $this->db->escapeString($genre),
-			$this->db->escapeString($director), $this->db->escapeString($actors), $this->db->escapeString($language), $cover, $backdrop, $id));
+				. "genre = %s, director = %s, actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW() "
+				. "WHERE imdbid = %d", $this->db->escapeString($title), $this->db->escapeString($tagline), $this->db->escapeString($plot), $this->db->escapeString($year), $this->db->escapeString($rating), $this->db->escapeString($genre), $this->db->escapeString($director), $this->db->escapeString($actors), $this->db->escapeString($language), $cover, $backdrop, $id));
 	}
 
 	public function updateMovieInfo($imdbId)
@@ -278,23 +303,29 @@ class Movie
 		$ri = new ReleaseImage();
 
 		if ($this->echooutput && $this->service != '') {
-			echo $this->c->primary("Fetching IMDB info from TMDB using IMDB ID: " . $imdbId);
+			$this->c->doEcho($this->c->primary("Fetching IMDB info from TMDB using IMDB ID: " . $imdbId));
 		}
 
-        //check themoviedb for imdb info
+		//check themoviedb for imdb info
 		$tmdb = $this->fetchTmdbProperties($imdbId);
 
 		//check imdb for movie info
 		$imdb = $this->fetchImdbProperties($imdbId);
 		if (!$imdb && !$tmdb) {
 			if ($this->echooutput && $this->service != '') {
-				echo $this->c->info("Unable to get movie information for IMDB ID: " . $imdbId . " on tmdb or imdb.com");
+				$this->c->doEcho(
+					$this->c->info(
+						"Unable to get movie information for IMDB ID: " .
+						$imdbId .
+						" on tmdb or imdb.com"
+					)
+				);
 			}
 			return false;
 		}
 
-        //check fanarttv for background
-        $fanart = $this->fetchFanartTVProperties($imdbId);
+		//check fanarttv for background
+		$fanart = $this->fetchFanartTVProperties($imdbId);
 
 		$mov = array();
 		$mov['imdb_id'] = $imdbId;
@@ -397,53 +428,58 @@ class Movie
 		$movtitle = str_replace(array('/', '\\'), '', $mov['title']);
 		if ($this->db->dbSystem() == 'mysql') {
 			$movieId = $this->db->queryInsert(sprintf("INSERT INTO movieinfo (imdbid, tmdbid, title, rating, tagline, plot, "
-				. "year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate) VALUES "
-				. "(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW()) ON DUPLICATE KEY UPDATE imdbid = %d, "
-				. "tmdbid = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s, type = %s, director = %s, "
-				. "actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()", $mov['imdb_id'], $mov['tmdb_id'],
-				$this->db->escapeString($movtitle), $this->db->escapeString($mov['rating']), $this->db->escapeString($mov['tagline']),
-				$this->db->escapeString($mov['plot']), $this->db->escapeString($mov['year']), $this->db->escapeString(substr($mov['genre'], 0, 64)),
-				$this->db->escapeString($mov['type']), $this->db->escapeString($mov['director']), $this->db->escapeString($mov['actors']),
-				$this->db->escapeString(substr($mov['language'], 0, 64)), $mov['cover'], $mov['backdrop'], $mov['imdb_id'], $mov['tmdb_id'],
-				$this->db->escapeString($movtitle), $this->db->escapeString($mov['rating']), $this->db->escapeString($mov['tagline']),
-				$this->db->escapeString($mov['plot']), $this->db->escapeString($mov['year']), $this->db->escapeString(substr($mov['genre'], 0, 64)),
-				$this->db->escapeString($mov['type']), $this->db->escapeString($mov['director']), $this->db->escapeString($mov['actors']),
-				$this->db->escapeString(substr($mov['language'], 0, 64)), $mov['cover'], $mov['backdrop']));
+					. "year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate) VALUES "
+					. "(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW()) ON DUPLICATE KEY UPDATE imdbid = %d, "
+					. "tmdbid = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s, type = %s, director = %s, "
+					. "actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()", $mov['imdb_id'], $mov['tmdb_id'], $this->db->escapeString($movtitle), $this->db->escapeString($mov['rating']), $this->db->escapeString($mov['tagline']), $this->db->escapeString($mov['plot']), $this->db->escapeString($mov['year']), $this->db->escapeString(substr($mov['genre'], 0, 64)), $this->db->escapeString($mov['type']), $this->db->escapeString($mov['director']), $this->db->escapeString($mov['actors']), $this->db->escapeString(substr($mov['language'], 0, 64)), $mov['cover'], $mov['backdrop'], $mov['imdb_id'], $mov['tmdb_id'], $this->db->escapeString($movtitle), $this->db->escapeString($mov['rating']), $this->db->escapeString($mov['tagline']), $this->db->escapeString($mov['plot']), $this->db->escapeString($mov['year']), $this->db->escapeString(substr($mov['genre'], 0, 64)), $this->db->escapeString($mov['type']), $this->db->escapeString($mov['director']), $this->db->escapeString($mov['actors']), $this->db->escapeString(substr($mov['language'], 0, 64)), $mov['cover'], $mov['backdrop']));
 		} else if ($this->db->dbSystem() == 'pgsql') {
 			$ckid = $this->db->queryOneRow(sprintf('SELECT id FROM movieinfo WHERE imdbid = %d', $mov['imdb_id']));
 			if (!isset($ckid['id'])) {
 				$movieId = $this->db->queryInsert(sprintf("INSERT INTO movieinfo (imdbid, tmdbid, title, rating, tagline, "
-					. "plot, year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate) "
-					. "VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())", $mov['imdb_id'],
-					$mov['tmdb_id'], $this->db->escapeString($movtitle), $this->db->escapeString($mov['rating']),
-					$this->db->escapeString($mov['tagline']), $this->db->escapeString($mov['plot']), $this->db->escapeString($mov['year']),
-					$this->db->escapeString($mov['genre']), $this->db->escapeString($mov['type']), $this->db->escapeString($mov['director']),
-					$this->db->escapeString($mov['actors']), $this->db->escapeString($mov['language']), $mov['cover'], $mov['backdrop']));
+						. "plot, year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate) "
+						. "VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())", $mov['imdb_id'], $mov['tmdb_id'], $this->db->escapeString($movtitle), $this->db->escapeString($mov['rating']), $this->db->escapeString($mov['tagline']), $this->db->escapeString($mov['plot']), $this->db->escapeString($mov['year']), $this->db->escapeString($mov['genre']), $this->db->escapeString($mov['type']), $this->db->escapeString($mov['director']), $this->db->escapeString($mov['actors']), $this->db->escapeString($mov['language']), $mov['cover'], $mov['backdrop']));
 			} else {
 				$movieId = $ckid['id'];
 				$this->db->queryExec(sprintf('UPDATE movieinfo SET tmdbid = %d, title = %s, rating = %s, tagline = %s, '
-					. 'plot = %s, year = %s, genre = %s, type = %s, director = %s, actors = %s, language = %s, cover = %d, '
-					. 'backdrop = %d, updateddate = NOW() WHERE id = %d', $mov['tmdb_id'], $this->db->escapeString($movtitle),
-					$this->db->escapeString($mov['rating']), $this->db->escapeString($mov['tagline']), $this->db->escapeString($mov['plot']),
-					$this->db->escapeString($mov['year']), $this->db->escapeString($mov['genre']), $this->db->escapeString($mov['type']),
-					$this->db->escapeString($mov['director']), $this->db->escapeString($mov['actors']), $this->db->escapeString($mov['language']),
-					$mov['cover'], $mov['backdrop'], $movieId));
+						. 'plot = %s, year = %s, genre = %s, type = %s, director = %s, actors = %s, language = %s, cover = %d, '
+						. 'backdrop = %d, updateddate = NOW() WHERE id = %d', $mov['tmdb_id'], $this->db->escapeString($movtitle), $this->db->escapeString($mov['rating']), $this->db->escapeString($mov['tagline']), $this->db->escapeString($mov['plot']), $this->db->escapeString($mov['year']), $this->db->escapeString($mov['genre']), $this->db->escapeString($mov['type']), $this->db->escapeString($mov['director']), $this->db->escapeString($mov['actors']), $this->db->escapeString($mov['language']), $mov['cover'], $mov['backdrop'], $movieId));
 			}
 		}
 
 		if ($movieId) {
 			if ($this->echooutput && $this->service != '') {
-				echo $this->c->headerOver("Added/updated movie: ") . $this->c->primary($movtitle . " (" . $mov['year'] . ") - " . $mov['imdb_id']);
+				$this->c->doEcho(
+					$this->c->headerOver("Added/updated movie: ") .
+					$this->c->primary($movtitle .
+						" (" .
+						$mov['year'] .
+						") - " .
+						$mov['imdb_id']
+					)
+				);
 			}
 		} else {
 			if ($this->echooutput && $this->service != '') {
-				echo $this->c->headerOver("Nothing to update for movie: ") . $this->c->primary($movtitle . " (" . $mov['year'] . ") - " . $mov['imdb_id']);
+				$this->c->doEcho(
+					$this->c->headerOver("Nothing to update for movie: ") .
+					$this->c->primary($movtitle .
+						" (" .
+						$mov['year'] .
+						") - " .
+						$mov['imdb_id']
+					)
+				);
 			}
 		}
 
 		return $movieId;
 	}
 
+	/**
+	 * @param $imdbId
+	 *
+	 * @return bool
+	 */
 	public function fetchFanartTVProperties($imdbId)
 	{
 		if ($this->fanartapikey != '') {
@@ -472,7 +508,7 @@ class Movie
 				$ret['title'] = $art->movie['name'];
 			}
 			if ($this->echooutput) {
-				echo $this->c->alternateOver("\nFanart Found ") . $this->c->headerOver($ret['title']);
+				$this->c->doEcho($this->c->alternateOver("Fanart Found ") . $this->c->headerOver($ret['title']));
 			}
 			return $ret;
 		} else {
@@ -480,7 +516,7 @@ class Movie
 		}
 	}
 
-    public function fetchTmdbProperties($imdbId, $text = false)
+	public function fetchTmdbProperties($imdbId, $text = false)
 	{
 		$tmdb = new TMDb($this->apikey, $this->imdblanguage);
 		if ($text == false) {
@@ -532,11 +568,16 @@ class Movie
 			$ret['backdrop'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original" . $tmdbLookup['backdrop_path'];
 		}
 		if ($this->echooutput) {
-			echo $this->c->primaryOver("\nTMDb Found ") . $this->c->headerOver($ret['title']);
+			$this->c->doEcho($this->c->primaryOver("TMDb Found ") . $this->c->headerOver($ret['title']), true);
 		}
 		return $ret;
 	}
 
+	/**
+	 * @param $imdbId
+	 *
+	 * @return array|bool
+	 */
 	public function fetchImdbProperties($imdbId)
 	{
 		$matches = $match = $hit = $results = '';
@@ -555,16 +596,16 @@ class Movie
 			'type' => '/<meta property=\'og\:type\' content=\"(.+)\" \/>/i'
 		);
 
-	$options = array(
-	  'http'=>array(
-		'method'=>"GET",
-		'header'=>"Accept-language: en\r\n" .
-				  "Cookie: foo=bar\r\n" .  // check function.stream-context-create on php.net
-				  "User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10\r\n" // i.e. An iPad
-	  )
-	);
+		$options = array(
+			'http' => array(
+				'method' => "GET",
+				'header' => "Accept-language: en\r\n" .
+				"Cookie: foo=bar\r\n" . // check function.stream-context-create on php.net
+				"User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10\r\n" // i.e. An iPad
+			)
+		);
 
-	$context = stream_context_create($options);
+		$context = stream_context_create($options);
 
 		if ($this->imdburl === false) {
 			// i don't know how to use the language, but this is broken
@@ -607,7 +648,7 @@ class Movie
 				}
 			}
 			if ($this->echooutput && isset($ret['title'])) {
-				echo $this->c->headerOver("\nIMDb Found ") . $this->c->primaryOver($ret['title']);
+				$this->c->doEcho($this->c->headerOver("IMDb Found ") . $this->c->primaryOver($ret['title']), true);
 			}
 			return $ret;
 		}
@@ -616,15 +657,13 @@ class Movie
 
 	public function domovieupdate($buffer, $service, $id, $processImdb = 1)
 	{
-		$nfo = new Nfo();
-		$movieId = '';
-		$imdbId = $nfo->parseImdb($buffer);
+		$imdbId = $this->parseImdb($buffer);
 		if ($imdbId !== false) {
 			if ($service == 'nfo') {
 				$this->service = 'nfo';
 			}
 			if ($this->echooutput && $this->service != '') {
-				echo $this->c->headerOver("\n" . $service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId);
+				$this->c->doEcho($this->c->headerOver($service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId), true);
 			}
 
 			$this->db->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', $this->db->escapeString($imdbId), $id));
@@ -633,11 +672,10 @@ class Movie
 			if ($processImdb == 1) {
 				$movCheck = $this->getMovieInfo($imdbId);
 				if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000)) {
-					$movieId = $this->updateMovieInfo($imdbId);
+					$this->updateMovieInfo($imdbId);
 				}
 			}
 		}
-		unset($nfo);
 		return $imdbId;
 	}
 
@@ -650,9 +688,8 @@ class Movie
 
 		if ($releaseToWork == '') {
 			$res = $this->db->query(sprintf("SELECT r.searchname AS name, r.id FROM releases r "
-				. "INNER JOIN category c ON r.categoryid = c.id "
-				. "WHERE r.imdbid IS NULL AND (r.bitwise & 256) = 256 AND c.parentid = %d LIMIT %d",
-				Category::CAT_PARENT_MOVIE, $this->movieqty));
+					. "INNER JOIN category c ON r.categoryid = c.id "
+					. "WHERE r.imdbid IS NULL AND r.nzbstatus = 1 AND c.parentid = %d LIMIT %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
 			$moviecount = count($res);
 		} else {
 			$pieces = explode("           =+=            ", $releaseToWork);
@@ -662,7 +699,7 @@ class Movie
 
 		if ($moviecount > 0) {
 			if ($this->echooutput && $moviecount > 1) {
-				echo $this->c->header("Processing " . $moviecount . " movie release(s).");
+				$this->c->doEcho($this->c->header("Processing " . $moviecount . " movie release(s)."));
 			}
 
 			$like = 'ILIKE';
@@ -694,10 +731,10 @@ class Movie
 						}
 						$ystr .= $end . ')';
 						$ckimdbid = $this->db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo '
-							. 'WHERE title %s %s AND %s IN %s', $like, "'%" . $parsed['title'] . "%'", $inyear, $ystr));
+								. 'WHERE title %s %s AND %s IN %s', $like, "'%" . $parsed['title'] . "%'", $inyear, $ystr));
 					} else {
 						$ckimdbid = $this->db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo '
-							. 'WHERE title %s %s', $like, "'%" . $parsed['title'] . "%'"));
+								. 'WHERE title %s %s', $like, "'%" . $parsed['title'] . "%'"));
 					}
 
 					// Try lookup by %name%
@@ -730,12 +767,15 @@ class Movie
 						if ($imdbId === false) {
 							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
 						}
-						echo $this->c->alternateOver("\nFound Local: ") . $this->c->headerOver($moviename);
+
+						if ($this->echooutput) {
+							$this->c->doEcho($this->c->alternateOver("Found Local: ") . $this->c->headerOver($moviename), true);
+						}
 						continue;
 					}
 
 					if ($this->echooutput) {
-						echo $this->c->primaryOver("\nLooking up: ") . $this->c->headerOver($moviename);
+						$this->c->doEcho($this->c->primaryOver("Looking up: ") . $this->c->headerOver($moviename), true);
 					}
 
 					// Check OMDbapi first
@@ -835,7 +875,9 @@ class Movie
 							continue;
 						}
 					} else {
-						echo $this->c->error("Exceeded request limits on google.com bing.com and yahoo.com.");
+						if ($this->echooutput) {
+							$this->c->doEcho($this->c->error("Exceeded request limits on google.com bing.com and yahoo.com."));
+						}
 						break;
 					}
 				} else {
@@ -973,7 +1015,7 @@ class Movie
 				$year = (isset($matches['year'])) ? $matches['year'] : '';
 				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 					if ($this->debug && $this->echooutput) {
-						echo "DB name: {$releasename}\n";
+						$this->c->doEcho("DB name: {$releasename}");
 					}
 					return array('title' => trim($name), 'year' => $year);
 				}
@@ -999,118 +1041,128 @@ class Movie
 		$s = new Sites();
 		$site = $s->get();
 		if ($this->echooutput) {
-			echo $this->c->header("Updating movie schedule using rotten tomatoes.");
+			$this->c->doEcho($this->c->header("Updating movie schedule using rotten tomatoes."));
 		}
 		if (isset($site->rottentomatokey)) {
 			$rt = new RottenTomato($site->rottentomatokey);
 
 			$retbo = $rt->getBoxOffice();
 			$test = @json_decode($retbo);
-			if (!$test) {
+			if (!$test || $retbo === "") {
 				sleep(1);
 				$retbo = $rt->getBoxOffice();
 				$test = @json_decode($retbo);
-				if (!$test) {
-					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				if (!$test || $retbo === "") {
+					if ($this->echooutput) {
+						exit($this->c->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
+					}
 				}
 			}
-			if ($test && $retbo != "") {
+			if ($test) {
 				$cnt1 = $this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $retbo);
 				if ($this->echooutput && $cnt1 > 0) {
-					echo $this->c->header("Added/updated movies to the box office list.");
+					$this->c->doEcho($this->c->header("Added/updated movies to the box office list."));
 				} else {
 					if ($this->echooutput) {
-						echo $this->c->primary("No new updates for box office list.");
+						$this->c->doEcho($this->c->primary("No new updates for box office list."));
 					}
 				}
 			}
 
 			$rett = $rt->getInTheaters();
 			$test = @json_decode($rett);
-			if (!$test) {
+			if (!$test || $rett === "") {
 				sleep(1);
 				$rett = $rt->getInTheaters();
 				$test = @json_decode($rett);
-				if (!$test) {
-					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				if (!$test || $rett === "") {
+					if ($this->echooutput) {
+						exit($this->c->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
+					}
 				}
 			}
-			if ($test && $rett != "") {
+			if ($test) {
 				$cnt2 = $this->updateInsUpcoming('rottentomato', Movie::SRC_INTHEATRE, $rett);
 				if ($this->echooutput && $cnt2 > 0) {
 					echo $this->c->header("Added/updated movies to the theaters list.");
 				} else {
 					if ($this->echooutput) {
-						echo $this->c->primary("No new updates for theaters list.");
+						$this->c->doEcho($this->c->primary("No new updates for theaters list."));
 					}
 				}
 			}
 
 			$reto = $rt->getOpening();
 			$test = @json_decode($reto);
-			if (!$test) {
+			if (!$test || $reto === "") {
 				sleep(1);
 				$reto = $rt->getOpening();
 				$test = @json_decode($reto);
-				if (!$test) {
-					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				if (!$test || $reto === "") {
+					if ($this->echooutput) {
+						exit($this->c->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
+					}
 				}
 			}
-			if ($test && $reto != "") {
+			if ($test) {
 				$cnt3 = $this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $reto);
 				if ($this->echooutput && $cnt3 > 0) {
-					echo $this->c->header("Added/updated movies to the opening list.");
+					$this->c->doEcho($this->c->header("Added/updated movies to the opening list."));
 				} else {
 					if ($this->echooutput) {
-						echo $this->c->primary("No new updates for opening list.");
+						$this->c->doEcho($this->c->primary("No new updates for upcoming list."));
 					}
 				}
 			}
 
 			$retu = $rt->getUpcoming();
 			$test = @json_decode($retu);
-			if (!$test) {
+			if (!$test || $retu === "") {
 				sleep(1);
 				$retu = $rt->getUpcoming();
 				$test = @json_decode($retu);
-				if (!$test) {
-					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				if (!$test || $retu === "") {
+					if ($this->echooutput) {
+						exit($this->c->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
+					}
 				}
 			}
-			if ($test && $retu != "") {
+			if ($test) {
 				$cnt4 = $this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $retu);
 				if ($this->echooutput && $cnt4 > 0) {
-					echo $this->c->header("Added/updated movies to the upcoming list.");
+					$this->c->doEcho($this->c->header("Added/updated movies to the upcoming list."));
 				} else {
 					if ($this->echooutput) {
-						echo $this->c->primary("No new updates for upcoming list.");
+						$this->c->doEcho($this->c->primary("No new updates for upcoming list."));
 					}
 				}
 			}
 
 			$retr = $rt->getDVDReleases();
 			$test = @json_decode($retr);
-			if (!$test) {
+			if (!$test || $retr === "") {
 				sleep(1);
 				$retr = $rt->getDVDReleases();
 				$test = @json_decode($retr);
-				if (!$test) {
-					$this->c->error("Unable to fetch from Rotten Tomatoes");
+				if (!$test || $retr === "") {
+					if ($this->echooutput) {
+						exit($this->c->error("\nUnable to fetch from Rotten Tomatoes, verify your API Key\n"));
+					}
 				}
 			}
-			if ($test && $retr != "") {
+			if ($test) {
 				$cnt5 = $this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $retr);
 				if ($this->echooutput && $cnt5 > 0) {
-					echo $this->c->header("Added/updated movies to the DVD list.");
+					$this->c->doEcho($this->c->header("Added/updated movies to the DVD list."));
 				} else {
 					if ($this->echooutput) {
-						echo $this->c->primary("No new updates for upcoming list.");
+						$this->c->doEcho($this->c->primary("No new updates for upcoming list."));
 					}
 				}
 			}
 
 			if ($this->echooutput) {
-				echo $this->c->header("Updated successfully.");
+				$this->c->doEcho($this->c->header("Updated successfully."));
 			}
 		}
 	}
@@ -1160,5 +1212,5 @@ class Movie
 			'Western'
 		);
 	}
+
 }
-?>

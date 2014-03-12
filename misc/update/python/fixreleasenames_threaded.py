@@ -16,25 +16,10 @@ import datetime
 import lib.info as info
 from lib.info import bcolors
 conf = info.readConfig()
-con = None
-if conf['DB_SYSTEM'] == "mysql":
-	try:
-		import cymysql as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.exit()
-elif conf['DB_SYSTEM'] == "pgsql":
-	try:
-		import psycopg2 as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.exit()
-cur = con.cursor()
-
+cur = info.connect()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
+
 if len(sys.argv) == 1:
 	print(bcolors.ERROR + "\nAn argument is required\n\n"
 		+ "python " + sys.argv[0] + " [md5, nfo, filename, par2, miscsorter]     ...: To process all previously unprocessed releases, using [md5, nfo, filename, par2, miscsorter].\n"
@@ -49,55 +34,54 @@ if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" a
 	sys.exit()
 
 if len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "clean":
-	clean = " (bitwise & 384) = 384 "
+	clean = " isrenamed = 0 AND proc_files = 1 "
 elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "clean":
-	clean = " (bitwise & 384) = 384 AND (bitwise & 320) = 320 "
+	clean = " isrenamed = 0 AND proc_files = 1 AND proc_nfo = 1 "
 elif len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "preid":
-	clean = " preid IS NULL "
+	clean = " preid = 0 "
 elif len(sys.argv) == 3 and sys.argv[1] == "par2" and sys.argv[2] == "preid":
-	clean = " preid IS NULL "
+	clean = " preid = 0 "
 elif len(sys.argv) == 3 and sys.argv[1] == "filename" and sys.argv[2] == "preid":
-	clean = " preid IS NULL "
+	clean = " preid = 0 "
 else:
-	clean = " ((bitwise & 4) = 0 OR categoryid = 7010) "
+	clean = " isrenamed = 0 "
 
 print(bcolors.HEADER + "\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
-cur.execute("SELECT value FROM site WHERE setting = 'fixnamethreads'")
-run_threads = cur.fetchone()
-cur.execute("SELECT value FROM site WHERE setting = 'fixnamesperrun'")
-perrun = cur.fetchone()
+cur[0].execute("SELECT value FROM site WHERE setting = 'fixnamethreads'")
+run_threads = cur[0].fetchone()
+cur[0].execute("SELECT value FROM site WHERE setting = 'fixnamesperrun'")
+perrun = cur[0].fetchone()
 
 datas = []
 maxtries = 0
 
 if len(sys.argv) > 1 and sys.argv[1] == "nfo":
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) WHERE (bitwise & 320) = 256 AND" + clean + "ORDER BY postdate DESC LIMIT %s"
-	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
-	datas = cur.fetchall()
+	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND proc_nfo = 0 AND nfostatus = 1 AND" + clean + "ORDER BY postdate DESC LIMIT %s"
+	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
+	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
-	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE (bitwise & 272) = 256 AND ((bitwise & 4) = 0 OR categoryid = 7010) ORDER BY postdate DESC LIMIT %s"
-	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
-	datas = cur.fetchall()
+	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND proc_sorter = 0 AND isrenamed = 0 ORDER BY postdate DESC LIMIT %s"
+	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
+	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
-	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE (bitwise & 384) = 256 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
-	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
-	datas = cur.fetchall()
+	run = "SELECT DISTINCT rel.id AS releaseid FROM releases rel INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) WHERE nzbstatus = 1 AND proc_files = 0 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
+	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
+	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE (bitwise & 260) = 256 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND ((rel.bitwise & 512) = 512 OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate ASC LIMIT %s"
-		cur.execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
-		datas = cur.fetchall()
+		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND isrenamed = 0 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (ishashed = 1 OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate ASC LIMIT %s"
+		cur[0].execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
+		datas = cur[0].fetchall()
 		maxtries = maxtries - 1
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
-	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE (bitwise & 288) = 256 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
-	cur.execute(run, (int(perrun[0]) * int(run_threads[0])))
-	datas = cur.fetchall()
+	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE nzbstatus = 1 AND proc_par2 = 0 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
+	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
+	datas = cur[0].fetchall()
 
 #close connection to mysql
-cur.close()
-con.close()
+info.disconnect(cur[0], cur[1])
 
 if not datas:
 	print(bcolors.HEADER + "No Work to Process" + bcolors.ENDC)

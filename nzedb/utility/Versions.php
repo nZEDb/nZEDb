@@ -1,11 +1,13 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../www/config.php');
+namespace nzedb\utility;
 
 if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
 }
 
-if (PHP_SAPI == 'cli' && GIT_PRE_COMMIT === false) {
+// Only set an argument if calling from bash or MS-DOS batch scripts. Otherwise
+// instantiate the class and use as below.
+if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && $arv[1] == true) {
 	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
@@ -36,11 +38,6 @@ class Versions
 	protected $_filespec;
 
 	/**
-	 * @var object Sites/Settings
-	 */
-	protected $_settings;
-
-	/**
 	 * Shortcut to the nzedb->versions node to make method work shorter.
 	 * @var object SimpleXMLElement
 	 */
@@ -63,11 +60,11 @@ class Versions
 		}
 		$this->_filespec = $filepath;
 
-		$this->out = new ColorCLI();
-		$this->_xml = @new SimpleXMLElement($filepath, 0, true);
+		$this->out = new \ColorCLI();
+		$this->_xml = @new \SimpleXMLElement($filepath, 0, true);
 		if ($this->_xml === false) {
 			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
-			throw new Exception("Failed to open versions XML file '$filename'");
+			throw new \Exception("Failed to open versions XML file '$filename'");
 		}
 
 		if ($this->_xml->count() > 0) {
@@ -75,7 +72,7 @@ class Versions
 
 			if ($vers[0]->count() == 0) {
 				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) does not contain versioning info, try updating from git.");
-				throw new Exception("Failed to find versions node in XML file '$filename'");
+				throw new \Exception("Failed to find versions node in XML file '$filename'");
 			} else {
 				$this->out->primary("Your versioning XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
 				$this->_vers = &$this->_xml->versions;
@@ -83,9 +80,6 @@ class Versions
 		} else {
 			exit("No elements in file!\n");
 		}
-
-		$s = new Sites();
-		$this->_settings = $s->get();
 	}
 
 	public function changes()
@@ -113,10 +107,13 @@ class Versions
 	 */
 	public function checkDb($update = true)
 	{
-		if ($this->_vers->db < $this->_settings->sqlpatch) {
+		$s = new \Sites();
+		$settings = $s->get();
+
+		if ($this->_vers->db < $settings->sqlpatch) {
 			if ($update) {
-				echo $this->out->primary("Updating Db revision to " . $this->_settings->sqlpatch);
-				$this->_vers->db = $this->_settings->sqlpatch;
+				echo $this->out->primary("Updating Db revision to " . $settings->sqlpatch);
+				$this->_vers->db = $settings->sqlpatch;
 				$this->_changes |= self::UPDATED_DB_REVISION;
 			}
 			return $this->_vers->db;
@@ -189,6 +186,16 @@ class Versions
 		return false;
 	}
  */
+
+	public function getSQLVersion()
+	{
+		return $this->_vers->db;
+	}
+
+	public function getTagVersion()
+	{
+		return $this->_vers->git->tag;
+	}
 
 	/**
 	 * Check whether the XML has been changed by one of the methods here.

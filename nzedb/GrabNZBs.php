@@ -2,16 +2,20 @@
 
 class GrabNZBs
 {
+
 	function __construct()
 	{
+		$this->echo = nZEDb_ECHOCLI;
 		$this->db = new DB();
 		$s = new Sites();
 		$this->site = $s->get();
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->replacenzbs = (isset($this->site->replacenzbs)) ? $this->site->replacenzbs : 0;
+		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
 		$this->ReleaseCleaning = new ReleaseCleaning();
 		//$this->CollectionsCleaning = new CollectionsCleaning();
 		$this->categorize = new Category();
+		$this->c = new ColorCLI();
 	}
 
 	public function Import($hash = '', $nntp)
@@ -43,18 +47,14 @@ class GrabNZBs
 		}
 		if ($nzb && array_key_exists('groupname', $nzb)) {
 			if (sizeof($arr) > 10) {
-				echo "\nGetting " . sizeof($arr) . ' articles for ' . $hash . "\n";
+				if ($this->echo) {
+					$this->c->doEcho($this->c->header("\nGetting " . sizeof($arr) . ' articles for ' . $hash));
+				}
 			}
 
-			$article = $nntp->getMessages($nzb['groupname'], $arr);
-			if (PEAR::isError($article)) {
-				$nntp->doQuit();
-				$this->site->grabnzbs == '2' ? $nntp->doConnect_A() : $nntp->doConnect();
-				$article = $nntp->getMessages($nzb['groupname'], $arr);
-				if (PEAR::isError($article)) {
-					$nntp->doQuit();
-					$article = false;
-				}
+			$article = $nntp->getMessages($nzb['groupname'], $arr, $this->alternateNNTP);
+			if ($nntp->isError($article)) {
+				$article = false;
 			}
 
 			// If article downloaded, import it, else delete from nzbs table
@@ -64,7 +64,10 @@ class GrabNZBs
 				$this->processGrabNZBs($article, $hash, $realgroupid);
 			} else {
 				$this->db->queryExec(sprintf('DELETE FROM nzbs WHERE collectionhash = %s', $this->db->escapeString($hash)));
-				echo 'f';
+
+				if ($this->echo) {
+					echo 'f';
+				}
 				return;
 			}
 		} else {
@@ -93,7 +96,10 @@ class GrabNZBs
 		// If article is not a valid xml, delete from nzbs
 		if (!$xml) {
 			$this->db->queryExec(sprintf('DELETE FROM nzbs WHERE collectionhash = %s', $this->db->escapeString($hash)));
-			echo '-';
+
+			if ($this->echo) {
+				echo '-';
+			}
 			return;
 		} else {
 			$totalFiles = $totalsize = 0;
@@ -111,6 +117,7 @@ class GrabNZBs
 				$postdate[] = $date;
 				$partless = preg_replace('/(\(\d+\/\d+\))*$/', 'yEnc', $firstname['0']);
 				$partless = preg_replace('/yEnc.*?$/', 'yEnc', $partless);
+				$partless = preg_replace('/\[#?a\.b\.teevee@?EFNet\]/', '[#a.b.teevee@EFNet]', $partless);
 				$subject = utf8_encode(trim($partless));
 
 				// Make a fake message object to use to check the blacklist.
@@ -143,7 +150,11 @@ class GrabNZBs
 
 			// To get accurate size to check for true duplicates, we need to process the entire nzb first
 			if ($importfailed === false) {
-				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size = %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($totalsize)));
+				// A 1% variance in size is considered the same size when the subject and poster are the same
+				$minsize = $totalsize * .99;
+				$maxsize = $totalsize * 1.01;
+
+				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($minsize), $this->db->escapeString($maxsize)));
 				if ($this->replacenzbs == 1) {
 					$releases = new Releases();
 					foreach ($res as $rel) {
@@ -154,7 +165,10 @@ class GrabNZBs
 				} else if ($res->rowCount() > 0 && $this->replacenzbs == 0) {
 					flush();
 					$importfailed = true;
-					echo '!';
+
+					if ($this->echo) {
+						echo '!';
+					}
 				}
 			}
 
@@ -184,9 +198,9 @@ class GrabNZBs
 				$category = $this->categorize->determineCategory($cleanName, $groupName);
 				// If a release exists, delete the nzb/collection/binaries/parts
 				if ($propername === true) {
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~5)|5)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($this->site->checkpasswordedrar === '1' ? -1 : 0), $category));
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, isrenamed, iscategorized) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($this->site->checkpasswordedrar === '1' ? -1 : 0), $category));
 				} else {
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~1)|1)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($this->site->checkpasswordedrar === '1' ? -1 : 0), $category));
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, iscategorized) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($this->site->checkpasswordedrar === '1' ? -1 : 0), $category));
 				}
 
 				// Set table names
@@ -216,7 +230,10 @@ class GrabNZBs
 						}
 					}
 					$this->db->queryExec(sprintf('DELETE from nzbs where collectionhash = %s', $this->db->escapeString($hash)));
-					echo '!';
+
+					if ($this->echo) {
+						echo '!';
+					}
 					return;
 				} else if (count($relid) > 0) {
 					$path = $nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
@@ -228,7 +245,7 @@ class GrabNZBs
 						gzclose($fp);
 						if (file_exists($path)) {
 							chmod($path, 0777);
-							$this->db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~256)|256) WHERE id = %d', $relid));
+							$this->db->queryExec(sprintf('UPDATE releases SET nzbstatus = 1 WHERE id = %d', $relid));
 							if ($this->db->dbSystem() == 'mysql') {
 								$this->db->queryExec(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ' LEFT JOIN ' . $group['bname'] . ' ON ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid LEFT JOIN ' . $group['pname'] . ' ON ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid WHERE ' . $group['cname'] . '.collectionhash = %s', $this->db->escapeString($hash)));
 							} else if ($this->db->dbSystem() == 'pgsql') {
@@ -242,15 +259,22 @@ class GrabNZBs
 								}
 							}
 							$this->db->queryExec(sprintf('DELETE from nzbs where collectionhash = %s', $this->db->escapeString($hash)));
-							echo '+';
+
+							if ($this->echo) {
+								echo '+';
+							}
 						} else {
 							$this->db->queryExec(sprintf('DELETE FROM releases WHERE id = %d', $relid));
 							$importfailed = true;
-							echo '-';
+
+							if ($this->echo) {
+								echo '-';
+							}
 						}
 					}
 				}
 			}
 		}
 	}
+
 }

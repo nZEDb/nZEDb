@@ -17,42 +17,25 @@ except ImportError:
 import lib.info as info
 from lib.info import bcolors
 conf = info.readConfig()
-con = None
-if conf['DB_SYSTEM'] == "mysql":
-	try:
-		import cymysql as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.exit()
-elif conf['DB_SYSTEM'] == "pgsql":
-	try:
-		import psycopg2 as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.exit()
-con.autocommit(True)
-cur = con.cursor()
+cur = info.connect()
+start_time = time.time()
+pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
+threads = 5
 
 print(bcolors.HEADER + "\n\nRequestID Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
-threads = 5
-start_time = time.time()
-pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-cur.execute("SELECT value FROM site WHERE setting = 'request_hours'")
-dbgrab = cur.fetchone()
+cur[0].execute("SELECT value FROM site WHERE setting = 'request_hours'")
+dbgrab = cur[0].fetchone()
 request_hours = str(dbgrab[0])
-cur.execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE (bitwise & 1284) = 1280 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " + request_hours + " HOUR) LIMIT 100000")
-datas = cur.fetchall()
+cur[0].execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND isrenamed = 0 AND isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " + request_hours + " HOUR) LIMIT 100000")
+datas = cur[0].fetchall()
+
+#close connection to mysql
+info.disconnect(cur[0], cur[1])
 
 if not datas:
 	print(bcolors.HEADER + "No Work to Process" + bcolors.ENDC)
 	sys.exit()
-
-#close connection to mysql
-cur.close()
-con.close()
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()

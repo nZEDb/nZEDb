@@ -16,60 +16,36 @@ import math
 import lib.info as info
 from lib.info import bcolors
 conf = info.readConfig()
-
-def connect():
-	con = None
-	if conf['DB_SYSTEM'] == "mysql":
-		try:
-			import cymysql as mdb
-			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
-		except ImportError:
-			print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-			sys.exit()
-	elif conf['DB_SYSTEM'] == "pgsql":
-		try:
-			import psycopg2 as mdb
-			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
-		except ImportError:
-			print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-			sys.exit()
-	cur = con.cursor()
-	return cur, con
-
-def disconnect(cur, con):
-	con.close()
-	con = None
-	cur.close()
-	cur = None
-
+cur = info.connect()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
+count = 0
 
 print(bcolors.HEADER + "\nBinaries Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
-count = 0
-
 #get values from db
-cur = connect()
 cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'binarythreads') AS a, (SELECT value FROM site WHERE setting = 'maxmssgs') AS b, (SELECT value FROM site WHERE setting = 'hashcheck') AS c")
 dbgrab = cur[0].fetchall()
-disconnect(cur[0], cur[1])
+
 run_threads = int(dbgrab[0][0])
 maxmssgs = int(dbgrab[0][1])
 hashcheck = int(dbgrab[0][2])
 
 if hashcheck == 0:
 	print(bcolors.ERROR + "We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB/reset_Collections.php true" + bcolors.ENDC)
+	info.disconnect(cur[0], cur[1])
 	sys.exit()
 
 #before we get the groups, lets update shortgroups
 subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])
 
 #query to grab all active groups
-cur = connect()
+cur = info.connect()
 cur[0].execute("SELECT g.name AS groupname, g.last_record AS our_last, a.last_record AS their_last FROM groups g INNER JOIN shortgroups a ON g.active = 1 AND g.name = a.name ORDER BY a.last_record DESC")
 datas = cur[0].fetchall()
-disconnect(cur[0], cur[1])
+
+#close connection to mysql
+info.disconnect(cur[0], cur[1])
 
 if not datas:
 	print(bcolors.ERROR + "No Groups activated" + bcolors.ENDC)

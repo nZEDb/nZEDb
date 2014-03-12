@@ -3,6 +3,33 @@
  * General util functions.
  */
 
+class Util
+{
+	static public function hasCommand($cmd)
+	{
+		if (!isWindows()) {
+			$returnVal = shell_exec("which $cmd");
+			return (empty($returnVal) ? false : true);
+		} else {
+			return null;
+		}
+	}
+
+	static public function setCoversConstant($path)
+	{
+		if (!defined('nZEDb_COVERS')) {
+			define('nZEDb_COVERS', $path == '' ? nZEDb_WWW . 'covers' . DS : $path);
+		}
+	}
+
+	static public function trailingSlash(&$path)
+	{
+		if (substr($path, strlen($path) - 1) != '/') {
+			$path .= '/';
+		}
+	}
+}
+
 // Central function for sending site email.
 function sendEmail($to, $subject, $contents, $from)
 {
@@ -31,11 +58,7 @@ function sendEmail($to, $subject, $contents, $from)
 // Check if O/S is windows.
 function isWindows()
 {
-	if (strpos(PHP_OS, "WIN") === false) {
-		return false;
-	} else {
-		return true;
-	}
+	return (strtolower(substr(php_uname('s'), 0, 3)) === 'win');
 }
 
 // Convert obj to array.
@@ -126,7 +149,7 @@ function getUrl($url, $method = 'get', $postdata = '', $language = "")
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
 	$buffer = curl_exec($ch);
 	$err = curl_errno($ch);
@@ -513,3 +536,4 @@ function release_flag($x, $t)
 		}
 	}
 }
+?>

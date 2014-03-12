@@ -41,13 +41,13 @@ class Yenc
 	/**
 	 * yEncodes a string and returns it.
 	 *
-	 * @param string String to encode.
-	 * @param filename Name to use as the filename in the yEnc header (this
-	 *   does not have to be an actual file).
-	 * @param linelen Line length to use (can be up to 254 characters).
-	 * @param crc32 Set to <i>true</i> to include a CRC checksum in the
-	 *   trailer to allow decoders to verify data integrity.
-	 * @return yEncoded string or <i>false</i> on error.
+	 * @param string $string String to encode.
+	 * @param string $filename Name to use as the filename in the yEnc header (this does not have to be an actual file).
+	 * @param int    $linelen Line length to use (can be up to 254 characters).
+	 * @param bool   $crc32 Set to <i>true</i> to include a CRC checksum in the trailer to allow decoders to verify data integrity.
+	 *
+	 * @return bool|string <i>false</i> on error or string (yEncoded).
+	 *
 	 * @see decode()
 	 */
 	function encode($string, $filename, $linelen = 128, $crc32 = true)
@@ -94,22 +94,22 @@ class Yenc
 	 * yDecodes an encoded string and either writes the result to a file
 	 * or returns it as a string.
 	 *
-	 * @param string yEncoded string to decode.
-	 * @param destination Destination directory where the decoded file will
+	 * @param string $string yEncoded string to decode.
+	 * @param string $destination Destination directory where the decoded file will
 	 *   be written. This must be a valid directory <b>with no trailing
 	 *   slash</b> to which PHP has write access. If <i>destination</i> is
 	 *   not specified, the decoded file will be returned rather than
 	 *   written to the disk.
-	 * @return If <i>destination</i> is not set, the decoded file will be
+	 *
+	 * @return bool If <i>destination</i> is not set, the decoded file will be
 	 *   returned as a string. Otherwise, <i>true</i> will be returned on
 	 *   success. In either case, <i>false</i> will be returned on error.
+	 *
 	 * @see encode()
 	 */
 	function decode($string, $destination = "")
 	{
-		$encoded = array();
-		$header  = array();
-		$trailer = array();
+		$encoded = $header = $trailer = array();
 
 		// Extract the yEnc string itself.
 		preg_match("/^(=ybegin.*=yend[^$]*)$/ims", $string, $encoded);
@@ -191,7 +191,8 @@ class Yenc
 
 			// Write the file.
 			// TODO: Replace invalid characters in $filename with underscores.
-			if ($fp = @fopen("$destination/$filename", "wb"))
+			$fp = @fopen("$destination/$filename", "wb");
+			if ($fp)
 			{
 				fwrite($fp, $decoded);
 				fclose($fp);
@@ -208,19 +209,23 @@ class Yenc
 	/**
 	 * yEncodes a file and returns it as a string.
 	 *
-	 * @param filename Full path and filename of the file to be encoded.
+	 * @param string $filename Full path and filename of the file to be encoded.
 	 *   This can also be a URL (http:// or ftp://).
-	 * @param linelen Line length to use (can be up to 254 characters).
-	 * @param crc32 Set to <i>true</i> to include a CRC checksum in the
+	 * @param int $linelen Line length to use (can be up to 254 characters).
+	 * @param bool $crc32 Set to <i>true</i> to include a CRC checksum in the
 	 *   trailer to allow decoders to verify data integrity.
-	 * @return yEncoded file, or <i>false</i> on error.
+	 *
+	 * @return string|bool yEncoded file, or <i>false</i> on error.
+	 *
 	 * @see decodeFile()
 	 */
 	function encodeFile($filename, $linelen = 128, $crc32 = true)
 	{
 		// Read the file into memory.
-		if ($fp = @fopen($filename, "rb"))
+		$fp = @fopen($filename, "rb");
+		if ($fp)
 		{
+			$file = '';
 			while (!feof($fp))
 				$file .= fread($fp, 8192);
 
@@ -241,29 +246,34 @@ class Yenc
 	 * specified directory, or returns it as a string if no directory is
 	 * specified.
 	 *
-	 * @param filename Full path and filename of the file to be decoded.
-	 * @param destination Destination directory where the decoded file will
+	 * @param string $filename Full path and filename of the file to be decoded.
+	 * @param string $destination Destination directory where the decoded file will
 	 *   be written. This must be a valid directory <b>with no trailing
 	 *   slash</b> to which PHP has write access. If <i>destination</i> is
 	 *   not specified, the decoded file will be returned rather than
 	 *   written to the disk.
-	 * @return If <i>destination</i> is not set, the decoded file will be
+	 *
+	 * @return bool|string If <i>destination</i> is not set, the decoded file will be
 	 *   returned as a string. Otherwise, <i>true</i> will be returned on
 	 *   success. In either case, <i>false</i> will be returned on error.
+	 *
 	 * @see encodeFile()
 	 */
 	function decodeFile($filename, $destination = "")
 	{
 		// Read the encoded file into memory.
-		if ($fp = @fopen($filename, "rb"))
+		$fp = @fopen($filename, "rb");
+		if ($fp)
 		{
+			$infile = '';
 			while (!feof($fp))
 				$infile .= fread($fp, 8192);
 
 			fclose($fp);
 
 			// Send the file to the decoder.
-			if ($out = $this->decode($infile, $destination))
+			$out = $this->decode($infile, $destination);
+			if ($out)
 			{
 				return $out;
 			}
@@ -352,4 +362,3 @@ class Yenc
 * with this program; if not, write to the Free Software Foundation, Inc.,
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-?>

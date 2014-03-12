@@ -1,10 +1,10 @@
 <?php
-require_once realpath(dirname(__FILE__) . '/../config.php');
+require_once realpath(__DIR__ . '/../automated.config.php');
 
 $page = new InstallPage();
 
 if (!isset($_REQUEST["success"])) {
-	$page->title = "NZB File Path";
+	$page->title = "File Paths";
 }
 
 $cfg = new Install();
@@ -20,6 +20,8 @@ if ($page->isPostBack()) {
 	$cfg->doCheck = true;
 
 	$cfg->NZB_PATH = trim($_POST['nzbpath']);
+	//$cfg->COVERS_PATH = trim($_POST['coverspath']);
+	$cfg->UNRAR_PATH = trim($_POST['tmpunrarpath']);
 
 	if ($cfg->NZB_PATH == '') {
 		$cfg->error = true;
@@ -33,17 +35,41 @@ if ($page->isPostBack()) {
 		if ($lastchar != "/") {
 			$cfg->NZB_PATH = $cfg->NZB_PATH . "/";
 		}
+	}
 
-		if (!$cfg->error) {
-			if (!file_exists($cfg->NZB_PATH . "tmpunrar")) {
-				mkdir($cfg->NZB_PATH . "tmpunrar");
+/*
+	if ($cfg->COVERS_PATH == '') {
+		$cfg->error = true;
+	} else {
+		Util::trailingSlash($cfg->COVERS_PATH);
+
+		$cfg->coverPathCheck = is_writable($cfg->COVERS_PATH);
+		if ($cfg->coverPathCheck === false) {
+			$cfg->error = true;
+		}
+	}
+ */
+
+	if (!$cfg->error) {
+		if (!file_exists($cfg->UNRAR_PATH)) {
+			mkdir($cfg->UNRAR_PATH);
+		}
+
+		$db = new DB();
+		$sql1 = sprintf("UPDATE site SET value = %s WHERE setting = 'nzbpath'", $db->escapeString($cfg->NZB_PATH));
+		$sql2 = sprintf("UPDATE site SET value = %s WHERE setting = 'tmpunrarpath'", $db->escapeString($cfg->UNRAR_PATH));
+		$sql3 = sprintf("UPDATE site SET value = %s WHERE setting = 'coverspath'", $db->escapeString($cfg->COVERS_PATH));
+		if ($db->queryExec($sql1) === false || $db->queryExec($sql2) === false || $db->queryExec($sql3) === false) {
+			$cfg->error = true;
+		}
+
+		if ($cfg->error !== true) {
+			if ($cfg->COVERS_PATH != nZEDb_WWW . 'covers' . DS) {
+				// TODO clean up old covers location if 'empty' (i.e. only contains the versioned files).
 			}
 
-			$db = new DB();
-			$sql1 = sprintf("UPDATE site SET value = %s WHERE setting = 'nzbpath'", $db->escapeString($cfg->NZB_PATH));
-			$sql2 = sprintf("UPDATE site SET value = %s WHERE setting = 'tmpunrarpath'", $db->escapeString($cfg->NZB_PATH . "tmpunrar"));
-			if ($db->queryExec($sql1) === false || $db->queryExec($sql2) === false) {
-				$cfg->error = true;
+			if ($cfg->NZB_PATH != nZEDb_ROOT . 'nzbfiles' . DS) {
+				// TODO clean up old nzbfiles location if 'empty' (i.e. only contains the versioned files).
 			}
 		}
 	}

@@ -19,7 +19,7 @@
  * @copyright 2014 nZEDb
  */
 define('GIT_PRE_COMMIT', true);
-require_once realpath(dirname(__FILE__) . '/../Versions.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTORY_SEPARATOR . 'autoloader.php');
 
 $error = false;
 echo "Running pre-commit hooks\n";
@@ -30,8 +30,8 @@ echo "Running pre-commit hooks\n";
  */
 if ($error === false) {
 	exec("git branch -a | grep \*", $output);
-	if ($output[0] == '* dev') { // Only update versions on the dev branch to lessen conflicts
-		$vers = new Versions();
+	if (in_array(substr($output[0], 2), ['dev', 'next-master', 'master'])) { // Only update versions on specific branches to lessen conflicts
+		$vers = new \nzedb\utility\Versions();
 		$vers->checkAll();
 		$vers->save();
 		passthru('git add ' . nZEDb_VERSIONS);
@@ -39,5 +39,6 @@ if ($error === false) {
 		echo "not dev branch, skipping version updates\n";
 	}
 }
+
 exit($error);
 ?>

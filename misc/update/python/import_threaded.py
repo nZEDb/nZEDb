@@ -12,37 +12,20 @@ import subprocess
 import string
 import signal
 import datetime
-
 import lib.info as info
 from lib.info import bcolors
 conf = info.readConfig()
-con = None
-if conf['DB_SYSTEM'] == "mysql":
-	try:
-		import cymysql as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.exit()
-elif conf['DB_SYSTEM'] == "pgsql":
-	try:
-		import psycopg2 as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.exit()
-cur = con.cursor()
-
-print(bcolors.HEADER + "\nNZB Import Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
-
+cur = info.connect()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
+print(bcolors.HEADER + "\nNZB Import Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+
 #get values from db
-cur.execute("SELECT value FROM tmux WHERE setting = 'import'")
-use_true = cur.fetchone()
-cur.execute("SELECT (SELECT value FROM site WHERE setting = 'nzbthreads') AS a, (SELECT value FROM tmux WHERE setting = 'nzbs') AS b")
-dbgrab = cur.fetchall()
+cur[0].execute("SELECT value FROM tmux WHERE setting = 'import'")
+use_true = cur[0].fetchone()
+cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'nzbthreads') AS a, (SELECT value FROM tmux WHERE setting = 'nzbs') AS b")
+dbgrab = cur[0].fetchall()
 run_threads = int(dbgrab[0][0])
 nzbs = dbgrab[0][1]
 
@@ -52,8 +35,7 @@ print(bcolors.HEADER + "Sorting Folders in {}, be patient.".format(nzbs) + bcolo
 datas = [name for name in os.listdir(nzbs) if os.path.isdir(os.path.join(nzbs, name))]
 
 #close connection to mysql
-cur.close()
-con.close()
+info.disconnect(cur[0], cur[1])
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()

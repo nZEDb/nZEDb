@@ -1,7 +1,7 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
+
 
 $db = new DB();
 if ($db->dbSystem() == "pgsql")
@@ -137,8 +137,8 @@ function truncateTable($db, $tableName, $runQueries)
 	convertTable($db, $nZEDB_schema, "musicinfo", "INSERT INTO ".$nZEDB_schema.".musicinfo (artist, asin, cover, createddate, genreid, id, publisher, releasedate, review, salesrank, title, tracks, updateddate, url, year) ".
 		"SELECT artist, asin, cover, createddate, genreID, ID, publisher, releasedate, review, salesrank, title, tracks, updateddate, url, year FROM ".$nn_schema.".musicinfo", $runQueries);
 
-	echo "Skipping partrepair table: No coversion needed due to nZEDb changes\n";
-	echo "Skipping parts table: No coversion needed due to nZEDb changes\n";
+	echo "Skipping partrepair table: No conversion needed due to nZEDb changes\n";
+	echo "Skipping parts table: No conversion needed due to nZEDb changes\n";
 	echo "Skipping predb table: Not in NZEDb\n";
 
 	convertTable($db, $nZEDB_schema, "releaseaudio", "INSERT INTO ".$nZEDB_schema.".releaseaudio (releaseid, audioid, audioformat, audiomode, audiobitratemode, audiobitrate, audiochannels, audiosamplerate, audiolibrary, audiolanguage, audiotitle) ".

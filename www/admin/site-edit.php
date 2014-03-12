@@ -1,6 +1,5 @@
 <?php
 require_once './config.php';
-//require_once nZEDb_LIB . 'adminpage.php';
 
 
 // new to get information on books groups
@@ -42,6 +41,8 @@ switch($action)
 				$error = "The nzb path cannot be read from. Check the permissions.";
 			} else if ($ret == Sites::ERR_BADNZBPATH_UNSET) {
 				$error = "The nzb path is required, please set it.";
+			} else if ($ret == Sites::ERR_BAD_COVERS_PATH) {
+				$error = 'The covers&apos; path is required and must exist. Please set it.';
 			}
 		}
 
@@ -121,6 +122,8 @@ $page->smarty->assign('lookupmusic_names', array('Disabled', 'Lookup All Music',
 
 $page->smarty->assign('lookup_reqids_ids', array(0,1,2));
 $page->smarty->assign('lookup_reqids_names', array('Disabled', 'Lookup Request IDs', 'Lookup Request IDs Threaded'));
+
+$page->smarty->assign('coversPath', nZEDb_COVERS);
 
 // return a list of audiobooks, ebooks, technical and foreign books
 $db = new DB();

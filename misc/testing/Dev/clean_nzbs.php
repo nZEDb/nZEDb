@@ -19,7 +19,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath) {
 		if (is_file($filePath) && preg_match('/\.nzb\.gz/', $filePath)) {
-			$nzbpath = 'compress.zlib://'.$filePath;
+			$nzbpath = 'compress.zlib://' . $filePath;
 			$nzbfile = @simplexml_load_file($nzbpath);
 			if ($nzbfile && preg_match('/([a-f0-9]+)\.nzb/', $filePath, $guid)) {
 				$res = $db->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
@@ -30,7 +30,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 						$deleted++;
 					}
 				} else if (isset($res)) {
-					$db->queryExec(sprintf("UPDATE releases SET bitwise = (bitwise & ~256)|256 WHERE id = %s", $res['id']));
+					$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %s", $res['id']));
 				}
 			} else {
 				if ($argv[1] === "delete") {
@@ -40,10 +40,10 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 				}
 			}
 			$time = $consoletools->convertTime(TIME() - $timestart);
-			$consoletools->overWritePrimary('Checking NZBs: ' . $deleted . ' nzbs of ' . ++$checked . ' releases checked '. $couldbe . 'deleted from disk,  Running time: ' . $time);
+			$consoletools->overWritePrimary('Checking NZBs: ' . $deleted . ' nzbs of ' . ++$checked . ' releases checked ' . $couldbe . 'deleted from disk,  Running time: ' . $time);
 		}
 	}
-	echo $c->header("\n".number_format($checked).' nzbs checked, '.number_format($deleted).' nzbs '.$couldbe.'deleted.');
+	echo $c->header("\n" . number_format($checked) . ' nzbs checked, ' . number_format($deleted) . ' nzbs ' . $couldbe . 'deleted.');
 
 	$timestart = TIME();
 	$checked = $deleted = 0;
@@ -61,16 +61,16 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 				}
 				$deleted++;
 			} else if (file_exists($nzbpath) && isset($row)) {
-				$db->queryExec(sprintf("UPDATE releases SET bitwise = (bitwise & ~256)|256 WHERE id = %s", $row['id']));
+				$db->queryExec(sprintf("UPDATE releases SET nzbstatus = 1 WHERE id = %s", $row['id']));
 			}
 
 			$time = $consoletools->convertTime(TIME() - $timestart);
 			$consoletools->overWritePrimary('Checking Releases: ' . $deleted . " releases have no nzb of " . ++$checked . " and " . $couldbe . "deleted from db,  Running time: " . $time);
 		}
 	}
-	echo $c->header("\n".number_format($checked)." releases checked, ".number_format($deleted)." releases ".$couldbe."deleted.");
+	echo $c->header("\n" . number_format($checked) . " releases checked, " . number_format($deleted) . " releases " . $couldbe . "deleted.");
 } else {
 	exit($c->error("\nThis script can remove all nzbs not found in the db and all releases with no nzbs found. It can also delete invalid nzbs.\n\n"
-		. "php $argv[0] true     ...: For a dry run, to see how many would be deleted.\n"
-		. "php $argv[0] delete   ...: To delete all affected.\n"));
+			. "php $argv[0] true     ...: For a dry run, to see how many would be deleted.\n"
+			. "php $argv[0] delete   ...: To delete all affected.\n"));
 }

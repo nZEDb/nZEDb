@@ -1,8 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../www/config.php';
-//require_once nZEDb_LIB . 'binaries.php';
-//require_once nZEDb_LIB . 'groups.php';
-//require_once nZEDb_LIB . 'nntp.php';
+
+
 
 if(!isset($argv[1]))
 	exit("You must start the script like this : php test-backfillcleansubject.php true for all groups, replace true for the group name if you want to do 1 group.\n");
@@ -15,7 +14,9 @@ else
 		$nntp = new NNTP();
 		foreach ($grouplist as $group)
 		{
-			$nntp->doConnect();
+			if ($nntp->doConnect() !== true) {
+				exit();
+			}
 			dogroup($group, $nntp);
 			$nntp->doQuit();
 		}
@@ -23,7 +24,9 @@ else
 	else
 	{
 		$nntp = new NNTP();
-		$nntp->doConnect();
+		if ($nntp->doConnect() !== true) {
+			exit();
+		}
 		dogroup($argv[1], $nntp);
 		$nntp->doQuit();
 	}
@@ -32,7 +35,7 @@ else
 function dogroup($group, $nntp)
 {
 	$binaries = new Binaries();
-	$binaries->updateGroup($group);
+	$binaries->updateGroup($group, $nntp);
 	echo "Press enter to continue, type n and press enter to quit.\n";
 	$cmd = trim(fgets(fopen("php://stdin","r")));
 	if($cmd == '')

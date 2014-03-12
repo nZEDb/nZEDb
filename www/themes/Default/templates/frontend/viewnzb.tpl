@@ -43,7 +43,12 @@
 		<div style="margin-top:10px;">
 			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbid}/" title="View at IMDB">IMDB</a>
 			{if $movie.tmdbid != ''}<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbid}" title="View at TMDb">TMDb</a>{/if}
-			<a class="rndbtn" target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}" name="CP{$release.imdbid}" title="Add to CouchPotato">CouchPotato</a>
+			<a
+				class="rndbtn" target="blackhole"
+				href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}"
+				name="CP{$release.imdbid}" title="Add to CouchPotato">
+				CouchPotato
+			</a>
 		</div>
 	</td></tr>
 	{/if}

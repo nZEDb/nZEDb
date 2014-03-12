@@ -1,5 +1,5 @@
 <?php
-require_once '../automated.config.php';
+require_once realpath(__DIR__ . '/../automated.config.php');
 
 $page = new InstallPage();
 $page->title = "News Server Setup";
@@ -22,7 +22,7 @@ if ($page->isPostBack()) {
 	$cfg->NNTP_PORT = (trim($_POST['port']) == '') ? 119 : trim($_POST['port']);
 	$cfg->NNTP_SSLENABLED = (isset($_POST['ssl']) ? (trim($_POST['ssl']) == '1' ? true : false) : false);
 
-	include $cfg->nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
+	require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
 	$test = new Net_NNTP_Client();
 	$pear_obj = new PEAR();
 

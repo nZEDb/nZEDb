@@ -1,4 +1,5 @@
 <?php
+
 require_once dirname(__FILE__) . '/config.php';
 
 $c = new ColorCLI();
@@ -22,11 +23,11 @@ function preName($argv)
 	$namefixer = new NameFixer();
 
 	if (isset($argv[1]) && $argv[1] === "all") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 512) = 512');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 512) = 512 AND dehashstatus BETWEEN -6 AND 0');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE (bitwise & 512) = 512 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
 	$c = new ColorCLI();
 
@@ -46,7 +47,7 @@ function preName($argv)
 				if ($pre !== false) {
 					$determinedcat = $category->determineCategory($pre['title'], $row['groupid']);
 					$result = $db->queryDirect(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-														. "preid = %d, dehashstatus = 1, bitwise = ((bitwise & ~37)|37), searchname = %s, categoryid = %d WHERE id = %d", $pre['id'], $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
+							. "preid = %d, dehashstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s, categoryid = %d WHERE id = %d", $pre['id'], $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
 					if ($result->rowCount() > 0) {
 						if (isset($argv[2]) && $argv[2] === 'show') {
 							$namefixer->updateRelease($row, $pre["title"], $method = "predb md5 release name: " . $pre["source"], 1, "MD5, ", 1, 1);
@@ -60,7 +61,7 @@ function preName($argv)
 				$db->queryDirect(sprintf('UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d', $row['releaseid']));
 			}
 			if (!isset($argv[2]) || $argv[2] !== 'show') {
-				$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString(++$counter, $total));
+				$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString( ++$counter, $total));
 			}
 		}
 	}

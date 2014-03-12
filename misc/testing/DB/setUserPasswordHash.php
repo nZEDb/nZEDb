@@ -8,7 +8,7 @@
  */
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
+
 $c = new ColorCLI();
 
 if ($argc < 3)
@@ -23,7 +23,6 @@ if (is_numeric($password))
 	exit($c->error("\nPassword cannot be numbers only!"));
 }
 
-//require_once nZEDb_LIB . 'framework/db.php';
 
 $field = is_numeric($identifier) ? 'id' : 'username';
 $db = new DB();

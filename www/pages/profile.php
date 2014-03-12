@@ -4,7 +4,6 @@ if (!$users->isLoggedIn()) {
 }
 
 
-
 $rc = new ReleaseComments();
 $sab = new SABnzbd($page);
 
@@ -24,6 +23,13 @@ $data = $users->getById($userid);
 if (!$data) {
 	$page->show404();
 }
+
+// Get the users API request count for the day.
+$apiRequests = $users->getApiRequests($userid);
+if (!$apiRequests) {
+	$apiRequests = 0;
+}
+$page->smarty->assign('apirequests', $apiRequests['num']);
 
 $invitedby = '';
 if ($data["invitedby"] != "") {

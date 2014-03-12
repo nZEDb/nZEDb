@@ -97,6 +97,10 @@ if (isset($_GET['id'])) {
 	$predb = new PreDb();
 	$pre = $predb->getForRelease($data['preid']);
 
+	$user = $users->getById($users->currentUserId());
+
+	$page->smarty->assign('cpapi',  $user['cp_api']);
+	$page->smarty->assign('cpurl', $user['cp_url']);
 	$page->smarty->assign('releasefiles', $releasefiles);
 	$page->smarty->assign('release', $data);
 	$page->smarty->assign('reVideo', $reVideo);

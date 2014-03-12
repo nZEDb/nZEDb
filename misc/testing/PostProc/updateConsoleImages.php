@@ -9,7 +9,15 @@ if ($argc == 1 || $argv[1] != 'true') {
     exit($c->error("\nThis script will check all images in covers/console and compare to db->consoleinfo.\nTo run:\nphp $argv[0] true\n"));
 }
 
-$dirItr = new RecursiveDirectoryIterator(nZEDb_ROOT . 'www/covers/console/');
+$row = $db->queryOneRow("SELECT value FROM site WHERE setting = 'coverspath'");
+if ($row !== false) {
+	Util::setCoversConstant($row['value']);
+} else {
+	die("Unable to set Covers' constant!\n");
+}
+$path2covers = nZEDb_COVERS . 'console' . DS;
+
+$dirItr = new RecursiveDirectoryIterator($path2covers);
 $itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
 foreach ($itr as $filePath) {
     if (is_file($filePath) && preg_match('/\d+\.jpg/', $filePath)) {
@@ -30,9 +38,9 @@ foreach ($itr as $filePath) {
 
 $qry = $db->queryDirect("SELECT id FROM consoleinfo WHERE cover = 1");
 foreach ($qry as $rows) {
-    if (!is_file('/var/www/nZEDb/www/covers/console/' . $rows['id'] . '.jpg')) {
+    if (!is_file($path2covers . $rows['id'] . '.jpg')) {
         $db->queryDirect("UPDATE consoleinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
-        echo $c->info('/var/www/nZEDb/www/covers/console/' . $rows['id'] . ".jpg does not exist.");
+        echo $c->info($path2covers . $rows['id'] . ".jpg does not exist.");
         $deleted++;
     }
 }

@@ -11,7 +11,7 @@ if (!isset($argv[1])) {
 } else if (isset($argv[1])) {
 	// Create the connection here and pass
 	$nntp = new NNTP();
-	if ($nntp->doConnect() === false) {
+	if ($nntp->doConnect() !== true) {
 		exit($c->error("Unable to connect to usenet."));
 	}
 	if ($site->nntpproxy === "1") {
@@ -26,7 +26,7 @@ if (!isset($argv[1])) {
 		$groupArr = $grp->getByName($groupName);
 		// Select group, here, only once
 		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data)) {
+		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
 			if ($data === false) {
 				return;

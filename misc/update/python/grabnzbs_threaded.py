@@ -16,56 +16,35 @@ import math
 import lib.info as info
 from lib.info import bcolors
 conf = info.readConfig()
-
-def connect():
-	con = None
-	if conf['DB_SYSTEM'] == "mysql":
-		try:
-			import cymysql as mdb
-			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
-		except ImportError:
-			print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-			sys.exit()
-	elif conf['DB_SYSTEM'] == "pgsql":
-		try:
-			import psycopg2 as mdb
-			con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
-		except ImportError:
-			print(bcolors.ERROR + "\nPlease install psycopg for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-			sys.exit()
-	con.autocommit(True)
-	cur = con.cursor()
-	return cur, con
-
-def disconnect(cur, con):
-	con.close()
-	con = None
-	cur.close()
-	cur = None
-
+cur = info.connect()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 print(bcolors.HEADER + "\n\nGrabNZBs Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 #get array of collectionhash
-cur = connect()
-cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'grabnzbs') AS a, (SELECT value FROM site WHERE setting = 'delaytime') AS b, (SELECT value FROM site WHERE setting = 'maxgrabnzbs') AS c")
+cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'grabnzbs') AS a, (SELECT value FROM site WHERE setting = 'delaytime') AS b, (SELECT value FROM site WHERE setting = 'maxgrabnzbs') AS c, (SELECT value FROM site WHERE setting = 'grabnzbthreads') AS d")
 dbgrab = cur[0].fetchall()
 grab = int(dbgrab[0][0])
 delay = int(dbgrab[0][1])
 maxnzb = dbgrab[0][2]
+run_threads = dbgrab[0][3]
 
 if grab == 0:
 	print(bcolors.ERROR + "GrabNZBs is disabled" + bcolors.ENDC)
+	info.disconnect(cur[0], cur[1])
 	sys.exit()
 
 #delete from nzbs where size greater than x
-cur[0].execute("SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) > "+maxnzb)
+cur[0].execute("SELECT collectionhash FROM nzbs GROUP BY collectionhash HAVING COUNT(collectionhash) > "+maxnzb)
 delnzbs = cur[0].fetchall()
 for delnzb in delnzbs:
 	cur[0].execute("DELETE FROM nzbs WHERE collectionhash = '"+delnzb[0]+"'")
 print(bcolors.HEADER + "Deleted %s collections exceeding %s parts from nzbs " % (len(delnzbs), maxnzb))
+
+#reconnect to mysql
+info.disconnect(cur[0], cur[1])
+cur = info.connect()
 
 if conf['DB_SYSTEM'] == "mysql":
 	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL %s HOUR"
@@ -73,14 +52,13 @@ elif conf['DB_SYSTEM'] == "pgsql":
 	run = "SELECT collectionhash FROM nzbs GROUP BY collectionhash, totalparts HAVING COUNT(*) >= totalparts UNION SELECT DISTINCT(collectionhash) FROM nzbs WHERE dateadded < NOW() - INTERVAL '%s HOURS'"
 cur[0].execute(run, (delay))
 datas = cur[0].fetchall()
+
+#close connection to mysql
+info.disconnect(cur[0], cur[1])
+
 if len(datas) == 0:
 	print(bcolors.ERROR + "No NZBs to Grab\n" + bcolors.ENDC)
 	sys.exit()
-
-#get threads for update_binaries
-cur[0].execute("SELECT value FROM site WHERE setting = 'grabnzbthreads'")
-run_threads = cur[0].fetchone()
-disconnect(cur[0], cur[1])
 
 my_queue = queue.Queue()
 time_of_last_run = time.time()
@@ -110,7 +88,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} nzbs".format(run_threads[0], "{:,}".format(len(datas))) + bcolors.ENDC)
+	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} nzbs".format(run_threads, "{:,}".format(len(datas))) + bcolors.ENDC)
 	print(bcolors.HEADER + "+ = nzb imported, - = probably not nzb, ! = duplicate, f = download failed" + bcolors.ENDC)
 	time.sleep(2)
 
@@ -121,7 +99,7 @@ def main():
 
 	if True:
 		#spawn a pool of place worker threads
-		for i in range(int(run_threads[0])):
+		for i in range(int(run_threads)):
 			p = queue_runner(my_queue)
 			p.setDaemon(False)
 			p.start()

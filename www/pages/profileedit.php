@@ -31,13 +31,13 @@ switch ($action) {
 		$data["lastname"] = $_POST['lastname'];
 
 		if (!$users->isValidUsername($data["username"])) {
-			$errorStr = "Your username must be at least five characters. Contact an administrator to get it changed.";
+			$errorStr = "Your username must be at least 3 characters. Contact an administrator to get it changed.";
 		} else {
 			if ($_POST['password'] != "" && $_POST['password'] != $_POST['confirmpassword']) {
 				$errorStr = "Password Mismatch";
 			} else {
 				if ($_POST['password'] != "" && !$users->isValidPassword($_POST['password'])) {
-					$errorStr = "Your password must be at least 8 characters.";
+					$errorStr = "Your password must be at least 6 characters.";
 				} else {
 					if (!$users->isValidEmail($_POST['email'])) {
 						$errorStr = "Your email is not a valid format.";

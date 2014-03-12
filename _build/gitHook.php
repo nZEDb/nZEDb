@@ -18,7 +18,7 @@
  * @author niel
  * @copyright 2014 nZEDb
  */
-require_once realpath(dirname(__FILE__) . '/../www/config.php');
+require_once realpath(__DIR__ . '/../www/config.php');
 
 define('nZEDb_GIT', nZEDb_ROOT . '.git' . DS);
 define('nZEDb_HOOKS', nZEDb_GIT . 'hooks' . DS);
@@ -30,7 +30,7 @@ if ($argc > 1 && $argv[1]) {
 }
 
 $changed = false;
-$source = dirname(__FILE__) . DS . 'git-hooks' . DS . PRE_COMMIT_HOOK;
+$source = __DIR__ . DS . 'git-hooks' . DS . PRE_COMMIT_HOOK;
 $target = nZEDb_HOOKS . DS . PRE_COMMIT_HOOK;
 
 if (!file_exists(nZEDb_HOOKS . PRE_COMMIT_HOOK)) {

@@ -1,3 +1,4 @@
+
 * Note *
 No pull requests will be accepted without this file being updated to reflect what you changed and when.
 No pull requests will be accepted to any branch except the dev branch.
@@ -6,9 +7,184 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-03-11 -> kevin    -> Fix issues in viewnzb (couchpotato details are wrong and getting wrong titles for some stuff).
+                       -> Add nzbindex and binsearch icons to predb instead of text.
+                       -> Add more category links to predb and add link to usenet-crawler predb.
+2014-03-11             -> Remove vendor from script literal, path doesn't exist.
+2014-03-10 -> bart39   -> fixed some echo CLI formatting
+2014-03-10 -> ruhllatio-> Remove unnecessary join from fixreleasenames_threaded.py
+2014-03-10 -> bart39   -> reverted previous change to releases->stage7a as one big delete is quicker than looping in php
+2014-03-10 -> kevin    -> Change min username/password length to work better with people who converted from newznab.
+                       -> Fix indent in alpha theme.
+                       -> Check if a var is set in monitor.php
+                       -> Update jquery qtip URL.
+                       -> Use some local stylesheets and scripts.
+                       -> Add missing fontawesome-webfont.woff file on alpha theme.
+2014-03-09 -> kevin    -> Option for hiding CLI output in automated.config.php(for post proc right now).
+                       -> Hiding of CLI output in AniDb.php, Backfill.php, Binaries.php, etc
+                       -> Check if the user put the wrong setting for grabnzbs.
+                       -> NNTP only echo data received once we have it.
+2014-03-09 -> bart39   -> refactor query
+                       -> regex addition/fixes
+		       -> typo in reset_postprocessing.php
+2014-03-07 -> bart39   -> Fix: #1203 add Half SBS to 3d Category
+2014-03-07 -> kevin    -> Fix: Error message not set in NNTP.
+                       -> Change: More checks in postproc.
+                       -> Refactor ReleaseImage.php, fix bug where it wasn't deleting preview images and it was trying to delete imdb images, don't use imagecreatefromstring 2 times.
+                       -> Check for duplicate predb rows when inserting usenet crawler.
+                       -> When we fail to download yEnc articles for the rar in postprocess, try different articles. Fix spacing in movie.php echo's.
+                       -> Decompress par2, run the binary data through namefixer.
+2014-03-06 -> bart39   -> Fix: fixed typos in previous change
+                          Fix: fixed music / book processing where "Lookup All" only checked those not renamed
+                          Fix: fixed issue with "Lookup all Console" only checking those not renamed
+                          Fix: fixed issue updating bookInfo
+2014-03-06 -> kevin    -> Remove check for images smaller than 12 bytes in releaseimage, causes issues with amazon.
+                       -> Remove checking of capabilities, too many servers don't support it.
+                       -> Fix issue where postproc was running ffmpeg when the path wasn't set.
+2014-03-05 -> kevin    -> More refactor of post proc.
+                       -> Use TLS instead of SSL on the nntp connection, TLS is more secure.
+                       -> Fix some issues connecting to usenet.
+                       -> Add a script to use NET_NNTP's debug when debugging NNTP.
+                       -> Check if XFeature GZip Compress is in the list of capabilities.
+                       -> If we switch of NNTP server on the same instance, reset the capabilities.
+                       -> Change phpdoc in yenc causing weak warnings in nntp.
+2014-03-05 -> bart39   -> Fix: fixed issue with postprocess_threaded.py
+2013-03-04 -> niel     -> Chg: Reverting default covers path change
+                       -> Chg: Adding next-master and master to branches that allow pre-commit to update the commit number.
+2014-03-04 -> kevin    -> Remove checks that were redone multiple times or checks that were not useful in postprocess to speed it up.
+2014-03-03 -> jonnyboy -> added script check_unique_indexes.php to check/add UNIQUE INDEXES missing from db that are in the schema
+2014-03-03 -> kevin    -> Rework how alternate NNTP server works. Don't enable compression if server is tweaknews.
+                       -> Change: Remove inneficienies from postproc.
+                       -> Add: API requests count on profile page.
+                       -> Fix: #1204 When there's a problem enabling compression and the response is 500, it is not reported as an error to PEAR, so the getMessage property doesn't exist.
+                       -> Don't log NNTP disconnects unless we are already connected.
+                       -> Minor changes to getSample, add -y to ffmpeg to overwrite, change the regex in the loop.
+2014-03-02 -> bart39   -> Fix: fixed queries in nzb-import
+2014-03-02 -> jonnyboy -> removed delete releases from Admin page, never finished
+2014-03-02 -> kevin    -> Change how sample previews are taken, get the last possible frame, which means most of the pictures are not black anymore.
+                       -> Refactor debugging.
+                       -> Debugging to Binaries.
+                       -> Debugging to backfill.
+                       -> Add pruning of old logs.
+                       -> Log failed queries.
+                       -> Compress old log files.
+                       -> Fix bug in backfill daysOld method, most of the time it was trying to do math using a date in string of text.
+2014-03-01 -> jonnyboy -> silence error
+2014-03-01 -> bart39   -> Fix: fixed query in getAPIRequests
+2014-03-01 -> kevin    -> Change:   Debugging in its own class, start logging in DB.
+                       -> Change:   Commit.sh change debug/logging to false before committing, true after.
+                       -> Addition: Logging to NNTP.php, Turn on debugging in site->admin if you want to use it, logs are in resources/logs
+                       -> Addition: Displaying debug messages to CLI, edit nzedb/Logging.php for options.
+                       -> Change:   Comment out the debug info in binaries.php -> maybe add it later on to a log file?
+                       -> Addition: #1201 Api requests # on user-list page.
+                       -> Remove:   Redundant part of query in apirequests method.
+                       -> New:      Logging to files for debug info.
+2014-03-01 -> niel     -> Fix: fixing constants in Install/step1.
+                       -> Chg: Changed button text for instal step 6.
+                       -> New: Added covers and tmpunrarpath to install step 6
+                       -> Fix: Updating some template text that I missed before.
+                       -> Fix: Util::hasCommand doesn't need the namespace.
+2014-03-01 -> jonnyboy -> fixed typo in Binaries.php
+                          fixed typo in schema
+2014-03-01 -> niel     -> Upd: Fixing trailing white-space introduced to group-list.tpl.
+2014-03-01 -> bart39   -> tv/music regex additions
+2014-02-28 -> jonnyboy -> changed to catch all variations
+                          updated GrabNZBs to remove '#' fro '#a.b.teevee' for dupe checking
+                          missed tooltips
+2014-02-28 -> bart39   -> changed query for requestid in-progress count to use a UNION instead of OR so that it makes use of indexes
+                          fixed query in releases->stage7a
+2014-02-27 -> niel     -> Upd: Moving duplicated function to Util.php and renaming.
+2014-02-27 -> jonnyboy -> fixed queries in releases->stage7a
+                          added tooltips for group-list
+                          added pk to logging
+2014-02-27 -> bart39   -> regex additions
+                          don't categorize as pc if it looks like audio/console
+2014-02-27 -> niel     -> Upd: Changing default locations for covers, nzb, and temp files to use nZEDb/resources.
+                          New installs will use these locations unless you change them. Existing installs will continue to use their current locations.
+                          If you want to move files from the old locations to the new look at _runonce/relocateAll.php and uncomment the locations you want to move.
+2014-02-27 -> jonnyboy -> updated GrabNZBs and Releases to see 1% variation in size as the same size
+                          fixed CollectionsCleaning.php to not group rips where requestid is same but release is different
+                          updated releases->stage7a to remove inner join
+                          converted column to partcheck->bit, filecheck->tinyint
+                          updated binaries/backfill to highlight time
+                          updated monitor, moved analyze tables before initial display
+                          updated releases->stage7a to loop over deletes instead of 1 massive delete(mysql)
+2014-02-26 -> niel     -> Upd: Fixing indentation in Books.php to use tabs not spaces.
+2014-02-25 -> jonnyboy -> changed preid column default 0, added 3 regexes for a.b.comics, added index
+2014-02-24 -> jonnyboy -> fixed bug in grabnzbs_threaded.py
+                          updated patchDB.php to catch ALTER IGNORE errors and retry
+2014-02-24 -> bart39   -> cleaned up book titles for more matches against amazon
+                          fixed unnecessary join in query when browsing Releases
+2014-02-23 -> bart39   -> updated dump_predb.php to remove any records where title <=15 when importing predb dump
+2014-02-23 -> jonnyboy -> fixed usage in postprocess_old_threaded.py
+                          updated python scripts to use connection from info.py
+2014-02-23 -> bart39   -> fixed remaining invalid indents in threaded scripts
+                          removed invalid indents
+2014-02-23 -> kaibosh  -> remove unecessary derefer call to local movie links in default & light themes
+2014-02-23 -> jonnyboy -> updated python scripts to use socket when port is null
+                          updated mysqldump_tables.php to use socket if set
+2014-02-22 -> jonnyboy -> updated mysqldump_tables.php usage
+                          updated mysqldump_tables.php to use zcat instead of gunzip
+                          fixed mysqldump_tables.php to properlly identify Percona
+                          updated mysqldump_tables.php to use ColorCLI()
+                          fixed typo in schema.mysql
+                          updated binaries_threaded.py to accept groupid, array of groupids, group name or all active groups
+                          updated active_groups.php, removed Ubuntu 13.10 INSTALL GUIDE.txt
+2014-02-21 -> bart39   -> added BigMarlin's Ubuntu 13.10 install guide
+2014-02-20 -> jonnyboy -> removed remaining bitwise columns to their own columns, no indexes have been created for them
+                          removed tmux->monitor->analyze from each loop
+2014-02-19 -> jonnyboy -> possible fix to newposterwall.tpl
+2014-02-18 -> bart39   -> Tv/Music Regex additions
+                          fixed typos in Books.php and TvRage.php queries
+2014-02-18 -> kevin    -> Fix : Calling obsolete method name doConnect_A in various scripts. Resolves #1195
+2014-02-17 -> bart39   -> fixed typo in fixreleasenames_threaded
+2014-02-17 -> jonnyboy -> update query to ignore %exes%
+2014-02-16 -> jonnyboy -> fixed monitor and analyzing tables timer
+2014-02-16 -> bart39   -> fixed typo in PreDB.php
+                          changed resetSearchnames to 8 characters or less (some tv/book titles are 9 or more)
+                          added more music regex
+                          add pc category check for ebook groups in byGroup()
+2014-02-16 -> ajoergensen -> add missing ( in renametopre.php
+2014-02-16 -> jonnyboy -> fixed typo in show_table_sizes.php
+2014-02-16 -> bart39   -> fixed typos in queries
+2014-02-16 -> kaibosh  -> updated README.md add DB section, more info for noobs
+2014-02-15 -> jonnyboy -> updated README.md to show that the pastebin link to wafflehouse code was removed from pastebin
+                          removing nzbstatus, renamed, hashed, requestid, categorized from bitwise
+                          updated install scripts to point to correct tmpunrar path
+                          moved post processing scripts to correct path
+                          fixed backfill_groups.php
+2014-02-15 -> niel     -> Upd: Removing the covers constant from automatied.config.php. It will be generated from a Db setting in future.
+2014-02-15 -> jonnyboy -> colorized output
+                          added disconnect after delete in grabnzbs_threaded.py
+                          updated populate_tvrage.php
+                          updated autopatcher.php, fixed divide by 0 in active_groups.php
+                          update $binaries->data, $backfill->data to correctly identify an error
+2014-02-15 -> kevin    -> PEAR->Protocol->Client->_sendCommand() Wrong type returned, can cause unpredictable issues.
+2014-02-15 -> jonnyboy -> fixed output on failed movie->updateUpcoming
+                          fixed typo in releases->searchSQL, changed search terms explanation to show only terms available
+                          reverted changes to gitignore, added extra selectgroup in binaries->scan
+                          changed light theme to redirect to list when nothing in cover view
+                          fixed install scripts, removed empty files, .gitignore instead
+2014-02-14 -> jonnyboy -> redo of last patch, missed one for bookinfo
+2014-20-14 -> kevin    -> nZEDb->NNTP Remove obsolete methods for connecting.
+                          nZEDb->NNTP Change destructor to use local method for disconnection, change local method of disconnect to verify if the connection is active.
+                          nZEDb->NNTP->doConnect() Attempt to resolve retry issues, comment the code. Make sure we can reach 0 retries.
+                          nZEDb->NNTP->_getXfeatureTextResponse() Move $errorCode lower, if $bytesReceived is 0 it would run for no reason. Rename some variables and fix some typos.
+2014-02-14 -> jonnyboy -> updated schema to add unique indexs on movieinfo->imdbid, consoleinfo->asin, musicinfo->asin
+                          changed SDTV/HDTV category regex
+2014-02-14 -> niel     -> Fix: Updating usage of PEAR::isError to use the instantiated class instead. This will prevent a bunch of Strict warnings.
+2014-02-13 -> jonnyboy -> removed delete unique index when creating tpg collections tables
+                          updated smarty autoloader
 2014-02-13 -> kevin    -> nZEDb->NNTP->getArticle() (renamed from get_Article()) Parse the article, give the return array keys (From, Message, etc), optionally decode yEnc.
                           PEAR->NET_NNTP_CLIENT->disconnect() Null the group summary when disconnecting.
+                          PEAR->NET_NNTP Remove deprecated method, resolve identation issues.
+                          nZEDb->NNTP->getArticle() Accept an article-number as well as a message-ID.
+                          nZEDb->NNTP->getArticle() Fix for multiline header keys.
+                          nZEDb->NNTP->getHeader() New method for downloading a full article header.
+                          nZEDb->NNTP->formatMessageID() New method for checking if the message-ID has the required triangular brackets.
+                          nZEDb->NNTP->postArticle() New method for uploading articles to usenet.
+                          nZEDb->NNTP->splitLines() New method for spliting lines longer than 510 chars and appending \r\n
+                          nZEDb->NFO Add PhpDoc.
 2014-02-13 -> niel     -> Upd: Changes to autoloading. Each "namespace" (nzedb, libs, and Smarty) gets its own autoloader.
                        -> Fix: Replacing the theme path constant I inadvertantly killed :-(
 2014-02-12 -> kevin    -> NNTP.php Change failure returns to pear error (even though this is depreceated in PEAR, most of our scripts look for these), getArticles method was invalid (the return from the parent function was an array and we were trying to return a string), change getMessage method to verify if the selected group is the same using the parent's object, change grabNZB to use getMessages method.

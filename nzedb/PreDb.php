@@ -1,16 +1,19 @@
 <?php
+
 require_once(nZEDb_LIBS . "simple_html_dom.php");
 
 /*
  * Class for inserting names/categories/md5 etc from predb sources into the DB, also for matching names on files / subjects.
  */
+
 Class PreDb
 {
+
 	function __construct($echooutput = false)
 	{
 		$s = new Sites();
 		$this->site = $s->get();
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->db = new DB();
 		$this->c = new ColorCLI();
 	}
@@ -85,7 +88,7 @@ Class PreDb
 		$nfos = $this->matchNfo($nntp);
 		if ($this->echooutput) {
 			$count = ($nfos > 0) ? $nfos : 0;
-			echo $this->c->header("\nAdded " . number_format($count) . ' missing NFOs from preDB sources.');
+			echo $this->c->header("Added " . number_format($count) . ' missing NFOs from preDB sources.');
 		}
 	}
 
@@ -208,8 +211,8 @@ Class PreDb
 							$predate = $db->escapeString($matches2['predate']);
 							$md5 = $db->escapeString(md5($matches2['title']));
 							$title = $db->escapeString($matches2['title']);
-							$oldname = $db->queryOneRow(sprintf('SELECT md5 FROM predb WHERE md5 = %s', $db->escapeString($md5)));
-							if ($oldname !== false && $oldname['md5'] == $md5) {
+							$oldname = $db->queryOneRow(sprintf('SELECT md5 FROM predb WHERE md5 = %s', $md5));
+							if ($oldname !== false && "'" . $oldname['md5'] . "'" === $md5) {
 								continue;
 							} else {
 								if (!isset($matches2['size1']) && empty($matches2['size1'])) {
@@ -225,7 +228,7 @@ Class PreDb
 								}
 
 								if (strlen($title) > 15) {
-									if ($run = $db->queryInsert(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $title, $size, $category, $predate, $db->escapeString('zenet'), $md5))) {
+									if ($db->queryInsert(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $title, $size, $category, $predate, $db->escapeString('zenet'), $md5))) {
 										$newnames++;
 									}
 								}
@@ -264,7 +267,7 @@ Class PreDb
 								}
 
 								if (strlen($matches2['title']) > 15) {
-									if($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('prelist'), $db->escapeString($md5)))) {
+									if ($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('prelist'), $db->escapeString($md5)))) {
 										$newnames++;
 									}
 								}
@@ -318,7 +321,7 @@ Class PreDb
 									}
 
 									if (strlen($matches2['title']) > 15) {
-										if($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('orlydb'), $db->escapeString($md5)))) {
+										if ($db->queryExec(sprintf('INSERT INTO predb (title, size, category, predate, adddate, source, md5) VALUES (%s, %s, %s, %s, now(), %s, %s)', $db->escapeString($matches2['title']), $size, $db->escapeString($matches2['category']), $db->from_unixtime(strtotime($matches2['date'])), $db->escapeString('orlydb'), $db->escapeString($md5)))) {
 											$newnames++;
 										}
 									}
@@ -458,7 +461,7 @@ Class PreDb
 								if (strlen($title) > 15) {
 									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
 								}
-								}
+							}
 						}
 					}
 				}
@@ -611,11 +614,18 @@ Class PreDb
 			} else {
 				$title = trim($data[1]->innertext);
 			}
+
+			$md5 = md5($title);
+			// Check DB if we already have it.
+			$check = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $db->escapeString($md5)));
+			if ($check !== false) {
+				continue;
+			}
+
 			$e = $data[2]->find('a');
 			$category = $e[0]->innertext;
 			preg_match('/([\d\.]+MB)/', $data[3]->innertext, $match);
 			$size = isset($match[1]) ? $match[1] : 'NULL';
-			$md5 = md5($title);
 			if (strlen($title) > 15 && $category != 'NUKED') {
 				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, category, size) VALUES (%s, %s, now(), %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($category), $db->escapeString($size)))) {
 					$newnames++;
@@ -656,17 +666,19 @@ Class PreDb
 			echo $this->c->header('Querying DB for release searchnames not matched with preDB titles.');
 		}
 
-		$res = $db->queryDirect('SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.preid IS NULL');
+		$res = $db->queryDirect('SELECT p.id AS preid, r.id AS releaseid FROM predb p INNER JOIN releases r ON p.title = r.searchname WHERE r.preid = 0');
 		$total = $res->rowCount();
 		echo $this->c->primary(number_format($total) . ' releases to match.');
 		if ($total > 0) {
 			foreach ($res as $row) {
 				$db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $row['preid'], $row['releaseid']));
 				if ($this->echooutput) {
-					$consoletools->overWritePrimary('Matching up preDB titles with release searchnames: ' . $consoletools->percentString(++$updated, $total));
+					$consoletools->overWritePrimary('Matching up preDB titles with release searchnames: ' . $consoletools->percentString( ++$updated, $total));
 				}
 			}
-			echo "\n";
+			if ($this->echooutput) {
+				echo "\n";
+			}
 		}
 		return $updated;
 	}
@@ -711,7 +723,7 @@ Class PreDb
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
 		$db = new DB();
-		$namefixer = new NameFixer();
+		$namefixer = new NameFixer($this->echooutput);
 		$consoletools = new ConsoleTools();
 		$updated = $checked = 0;
 		$matches = '';
@@ -737,21 +749,21 @@ Class PreDb
 			echo $this->c->header('Fixing search names' . $te . " using the predb md5.");
 		}
 		if ($db->dbSystem() == 'mysql') {
-			$regex = "AND ((r.bitwise & 512) = 512 OR rf.name REGEXP'[a-fA-F0-9]{32}')";
+			$regex = "AND (r.ishashed = 1 OR rf.name REGEXP'[a-fA-F0-9]{32}')";
 		} else if ($db->dbSystem() == 'pgsql') {
-			$regex = "AND ((r.bitwise & 512) = 512 OR rf.name ~ '[a-fA-F0-9]{32}')";
+			$regex = "AND (r.ishashed = 1 OR rf.name ~ '[a-fA-F0-9]{32}')";
 		}
 
 		if ($cats === 3) {
 			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
-				. 'WHERE (bitwise & 256) = 256 AND preid IS NULL %s', $regex);
+				. 'WHERE nzbstatus = 1 AND preid = 0 %s', $regex);
 		} else {
 			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
-				. 'WHERE (bitwise & 260) = 256 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
+				. 'WHERE nzbstatus = 1 AND isrenamed = 0 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
 		}
 
 		echo $this->c->header($query);
@@ -766,7 +778,7 @@ Class PreDb
 					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
 				}
 				if ($show === 2) {
-					$consoletools->overWritePrimary("Renamed Releases: [" . number_format($updated) . "] " . $consoletools->percentString( ++$checked, $total));
+					$consoletools->overWritePrimary("Renamed Releases: [" . number_format($updated) . "] " . $consoletools->percentString(++$checked, $total));
 				}
 			}
 		}
@@ -836,8 +848,4 @@ Class PreDb
 		}
 	}
 
-	function updatePredb() {
-
-	}
 }
-?>
