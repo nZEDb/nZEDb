@@ -58,7 +58,15 @@
 						<div style="margin-top:10px;">
 							<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbid}/" title="View at IMDB">IMDB</a></span>
 							{if $movie.tmdbid != ''}<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbid}" title="View at TMDb">TMDb</a></span>{/if}
-							<span class"label label-default"><a target="blackhole" href="{$site->dereferrer_link}{$site->CPurl}/api/{$site->CPapikey}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}" name="CP{$release.imdbid}" title="Add to CouchPotato">CouchPotato</a></span>
+							<span class"label label-default">
+							<a
+									target="blackhole"
+									href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}"
+									name="CP{$release.imdbid}"
+									title="Add to CouchPotato">
+								CouchPotato
+							</a>
+							</span>
 						</div>
 					</td>
 				</tr>
@@ -147,22 +155,27 @@
 		</table>
 	</div>
 	<div class="col-xs-4" style="text-align:center" >
-		{if $rage && $release.rageid > 0 && $rage.imgdata != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+		{if $rage && $release.rageid > 0 && $rage.imgdata != ""}
+			<img
+					class="shadow img-thumbnail"
+					style="vertical-align:top" src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}"
+					alt="{$rage.releasetitle|escape:"htmlall"}">
+		{/if}
 		{*src="{$smarty.const.WWW_TOP}/getimage?type=tvrage&amp;id={$rage.id}" alt="{$rage.releasetitle|escape:"htmlall"}"*}
 
-		{if $movie && $release.rageid < 0 && $movie.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+		{if $movie && $release.rageid < 0 && $movie.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}"*}
 
-		{if $anidb && $release.anidbid > 0 && $anidb.picture != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+		{if $anidb && $release.anidbid > 0 && $anidb.picture != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" alt="{$anidb.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" alt="{$anidb.title|escape:"htmlall"}*}
 
-		{if $con && $con.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/console/{$con.id}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+		{if $con && $con.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/console/{$con.id}.jpg" alt="{$con.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/console/{$con.id}.jpg" width="160" alt="{$con.title|escape:"htmlall"}*}
 
-		{if $music && $music.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/music/{$music.id}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+		{if $music && $music.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/music/{$music.id}.jpg" alt="{$music.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WW>{/if}W_TOP}/covers/music/{$music.id}.jpg" width="160" alt="{$music.title|escape:"htmlall"}*}
 
-		{if $book && $book.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg" alt="{$rage.releasetitle|escape:"htmlall"}">{/if}
+		{if $book && $book.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg" alt="{$book.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg" width="160" alt="{$book.title|escape:"htmlall"}*}
 
 	</div>
