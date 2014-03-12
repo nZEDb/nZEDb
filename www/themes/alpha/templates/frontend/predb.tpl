@@ -23,12 +23,29 @@
 					{else}
 						{$result.title|escape:"htmlall"}
 					{/if}
+					{* Hide this, not sure why it's here?
 					{if $isadmin || $ismod}
 						<a style="float: right;" title="NzbIndex" href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}" target="_blank">Nzbindex&nbsp;</a>
 						<a style="float: right;" title="BinSearch" href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}" target="_blank">Binsearch&nbsp;</a>
-					{/if}
-					<a style="float: right;" title="NzbIndex" href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}" target="_blank">Nzbindex&nbsp;</a>
-					<a style="float: right;" title="BinSearch" href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}" target="_blank">Binsearch&nbsp;</a>
+					{/if}*}
+					<a
+						style="float: right;"
+						title="NzbIndex"
+						href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
+						target="_blank"
+					>
+						<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/nzbindex.png" />
+						&nbsp;
+					</a>
+					<a
+						style="float: right;"
+						title="BinSearch"
+						href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
+						target="_blank"
+					>
+						<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/binsearch.png" />
+						&nbsp;
+					</a>
 				</td>
 				<td style="width:120px;text-align:center;" class="predb">{$result.adddate|date_format:"%D"}</td>
 				<td style="width:120px;text-align:center;" class="predb">{$result.predate|date_format:"%D"}</td>
@@ -57,6 +74,10 @@
 						<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}" target="_blank">
 							srrDB.com
 						</a>
+					{elseif {$result.source} == "usenet-crawler"}
+						<a title="Visit Usenet-Crawler" href="{$site->dereferrer_link}http://www.usenet-crawler.com/predb?q={$result.title}" target="_blank">
+							Usenet-Crawler
+						</a>
 					{elseif {$result.source} == womble}
 						<a title="Visit Womble" href="{$site->dereferrer_link}http://www.newshost.co.za/?s={$result.title}" target="_blank">
 							Womble's NZB Index
@@ -70,50 +91,52 @@
 					{/if}
 				</td>
 				<td style="width:120px;text-align:center;" class="predb">
-					{if {$result.category} == 'MP3'}
-						<a class="title" title="View category MP3" href="{$smarty.const.WWW_TOP}/browse?t=3010">{$result.category}</a>
-					{elseif {$result.category} == 'XXX'}
-						<a class="title" title="View category XXX" href="{$smarty.const.WWW_TOP}/browse?t=6000">{$result.category}</a>
-					{elseif {$result.category} == 'DVDR'}
+
+					{if {$result.category} == '0DAY'}
+						<a class="title" title="View category PC 0day" href="{$smarty.const.WWW_TOP}/browse?t=4010">{$result.category}</a>
+					{elseif {$result.category} == 'BLURAY'}
+						<a class="title" title="View category BluRay" href="{$smarty.const.WWW_TOP}/browse?t=2060">{$result.category}</a>
+					{elseif in_array({$result.category}, array('DVDR', 'Movies: DVD'))}
 						<a class="title" title="View category DVDR" href="{$smarty.const.WWW_TOP}/browse?t=2070">{$result.category}</a>
-					{elseif {$result.category} == 'TV-X264'}
-						<a class="title" title="View category TV HD" href="{$smarty.const.WWW_TOP}/browse?t=5040">{$result.category}</a>
-					{elseif {$result.category} == 'TV-x264'}
-						<a class="title" title="View category TV HD" href="{$smarty.const.WWW_TOP}/browse?t=5040">{$result.category}</a>
-					{elseif {$result.category} == 'tv-hd'}
-						<a class="title" title="View category TV HD" href="{$smarty.const.WWW_TOP}/browse?t=5040">{$result.category}</a>
-					{elseif {$result.category} == 'XVID'}
-						<a class="title" title="View category Movies SD" href="{$smarty.const.WWW_TOP}/browse?t=2030">{$result.category}</a>
+					{elseif {$result.category} == 'EBOOK'}
+						<a class="title" title="View category Books" href="{$smarty.const.WWW_TOP}/browse?t=8000">{$result.category}</a>
+					{elseif in_array({$result.category}, array('FLAC', 'Music: FLAC'))}
+						<a class="title" title="View category Music Lossless" href="{$smarty.const.WWW_TOP}/browse?t=3040">{$result.category}</a>
+					{elseif in_array({$result.category}, array('GAMES', 'Games: PC'))}
+						<a class="title" title="View category PC Games" href="{$smarty.const.WWW_TOP}/browse?t=4050">{$result.category}</a>
 					{elseif {$result.category} == 'movies-sd'}
 						<a class="title" title="View category Movies SD" href="{$smarty.const.WWW_TOP}/browse?t=2030">{$result.category}</a>
-					{elseif {$result.category} == 'X264'}
-						<a class="title" title="View category Movies HD" href="{$smarty.const.WWW_TOP}/browse?t=2040">{$result.category}</a>
-					{elseif {$result.category} == '0DAY'}
-						<a class="title" title="View category PC 0day" href="{$smarty.const.WWW_TOP}/browse?t=4010">{$result.category}</a>
-					{elseif {$result.category} == 'TV-XVID'}
+					{elseif in_array({$result.category}, array('MP3', 'Music: MP3'))}
+						<a class="title" title="View category MP3" href="{$smarty.const.WWW_TOP}/browse?t=3010">{$result.category}</a>
+					{elseif {$result.category} == 'music-audio'}
+						<a class="title" title="View category Music" href="{$smarty.const.WWW_TOP}/music">{$result.category}</a>
+					{elseif {$result.category} == 'MVID'}
+						<a class="title" title="View category Audio Video" href="{$smarty.const.WWW_TOP}/browse?t=3020">{$result.category}</a>
+					{elseif {$result.category} == 'PDA'}
+						<a class="title" title="View category Phone Other" href="{$smarty.const.WWW_TOP}/browse?t=4040">{$result.category}</a>
+					{elseif in_array({$result.category}, array('tv-hd', 'TV: HD', 'TV-x264', 'TV-X264'))}
+						<a class="title" title="View category TV HD" href="{$smarty.const.WWW_TOP}/browse?t=5040">{$result.category}</a>
+					{elseif in_array({$result.category}, array('tv-sd', 'TV: STD', 'TV-XVID'))}
 						<a class="title" title="View category TV SD" href="{$smarty.const.WWW_TOP}/browse?t=5030">{$result.category}</a>
 					{elseif {$result.category} == 'tv-sd'}
 						<a class="title" title="View category TV SD" href="{$smarty.const.WWW_TOP}/browse?t=5030">{$result.category}</a>
+					{elseif {$result.category} == 'X264'}
+						<a class="title" title="View category Movies HD" href="{$smarty.const.WWW_TOP}/browse?t=2040">{$result.category}</a>
 					{elseif {$result.category} == 'XBOX360'}
 						<a class="title" title="View category XBOX 360" href="{$smarty.const.WWW_TOP}/browse?t=1050">{$result.category}</a>
-					{elseif {$result.category} == 'PDA'}
-						<a class="title" title="View category Phone Other" href="{$smarty.const.WWW_TOP}/browse?t=4040">{$result.category}</a>
-					{elseif {$result.category} == 'BLURAY'}
-						<a class="title" title="View category BluRay" href="{$smarty.const.WWW_TOP}/browse?t=2060">{$result.category}</a>
-					{elseif {$result.category} == 'MVID'}
-						<a class="title" title="View category Audio Video" href="{$smarty.const.WWW_TOP}/browse?t=3020">{$result.category}</a>
-					{elseif {$result.category} == 'GAMES'}
-						<a class="title" title="View category PC Games" href="{$smarty.const.WWW_TOP}/browse?t=4050">{$result.category}</a>
-					{elseif {$result.category} == 'EBOOK'}
-						<a class="title" title="View category Books" href="{$smarty.const.WWW_TOP}/browse?t=8000">{$result.category}</a>
-					{elseif {$result.category} == 'FLAC'}
-						<a class="title" title="View category Music Lossless" href="{$smarty.const.WWW_TOP}/browse?t=3040">{$result.category}</a>
+					{elseif {$result.category} == 'XVID'}
+						<a class="title" title="View category Movies SD" href="{$smarty.const.WWW_TOP}/browse?t=2030">{$result.category}</a>
+					{elseif {$result.category} == 'XXX'}
+						<a class="title" title="View category XXX" href="{$smarty.const.WWW_TOP}/browse?t=6000">{$result.category}</a>
+					{elseif {$result.category} == 'XXX-IMGSET'}
+						<a class="title" title="View category XXX Imageset" href="{$smarty.const.WWW_TOP}/browse?t=6060">{$result.category}</a>
 					{else}{$result.category}
 					{/if}
 				</td>
 				<td class="predb" style="width:60px;text-align:right;overflow:hidden;">
-					{if $result.size > 0}{$result.size|replace:'MB':'000000'|fsize_format:"MB"}{/if}
-
+					{if $result.size > 0}
+						{$result.size|replace:'MB':'000000'|fsize_format:"MB"}
+					{/if}
 				</td>
 			</tr>
 		{/foreach}

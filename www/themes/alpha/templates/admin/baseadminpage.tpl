@@ -22,7 +22,7 @@
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<script>window.html5 || document.write('<script src="{$smarty.const.WWW_TOP}/../themes/alpha/scripts/vendor/html5shiv.js"><\/script>')</script>
+	<script>window.html5 || document.write('<script src="{$smarty.const.WWW_TOP}/../themes/alpha/scripts/html5shiv.js"><\/script>')</script>
 	<![endif]-->
 
 	{$page->head}
@@ -67,9 +67,9 @@
 <!-- end #page -->
 
 <script src="//code.jquery.com/jquery-1.9.1.js"></script>
-{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/alpha/scripts/vendor/jquery-1.9.1.js"><\/script>')</script>{/literal}
+{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/alpha/scripts/jquery-1.9.1.js"><\/script>')</script>{/literal}
 {*<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/alpha/scripts/vendor/bootstrap.min.js"><\/script>')</script>{/literal}*}
+{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/alpha/scripts/bootstrap.min.js"><\/script>')</script>{/literal}*}
 <script src="{$smarty.const.WWW_TOP}/../themes/alpha/scripts/sorttable.js"></script>
 <script src="{$smarty.const.WWW_TOP}/../themes/alpha/scripts/utils-admin.js"></script>
 <script src="{$smarty.const.WWW_TOP}/../themes/alpha/scripts/jquery.multifile.js"></script>
