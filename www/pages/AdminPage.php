@@ -23,6 +23,17 @@ class AdminPage extends BasePage
 		if (($this->userdata['role'] != Users::ROLE_ADMIN && $this->userdata['role'] != Users::ROLE_MODERATOR) || ($this->userdata['role'] == Users::ROLE_MODERATOR && $allowmod === false))
 			$this->show403(true);
 
+		// Set the users style.
+		$style = $users->getStyle($users->currentUserId());
+		if (isset($style['style']) && $style['style'] !== 'None') {
+			$this->smarty->setTemplateDir(
+				array(
+					'user_admin' => nZEDb_WWW . 'themes/' . $style['style'] . '/templates/admin',
+					'admin' => nZEDb_WWW . 'themes/Default/templates/admin',
+					'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend',
+				)
+			);
+		}
 	}
 
 	public function render()

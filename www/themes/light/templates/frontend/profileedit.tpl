@@ -30,7 +30,15 @@
 <fieldset class="notop">
 <legend>Site Preferences</legend>
 <table class="input">
-	<tr><th>View Movie Page:</th>
+	<tr>
+		<th>Site theme:</th>
+		<td>
+			{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
+			<span class="help-block">Change the site theme, None will use the theme the administrator set.</span>
+		</td>
+	</tr>
+	<tr>
+		<th>View Movie Page:</th>
 		<td>
 			<input id="movieview" name="movieview" value="1" type="checkbox" {if $user.movieview=="1"}checked="checked"{/if}></input>
 			<div class="hint">Browse movie covers. Only shows movies with known IMDB info.</div>
