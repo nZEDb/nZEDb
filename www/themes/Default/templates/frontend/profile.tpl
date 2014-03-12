@@ -7,6 +7,7 @@
 	<tr><th>Registered:</th><td title="{$user.createddate}">{$user.createddate|date_format}  ({$user.createddate|timeago} ago)</td></tr>
 	<tr><th>Last Login:</th><td title="{$user.lastlogin}">{$user.lastlogin|date_format}  ({$user.lastlogin|timeago} ago)</td></tr>
 	<tr><th>Role:</th><td>{$user.rolename}</td></tr>
+	<tr><th>Theme:</th><td>{$user.style}</td></tr>
 	{if $user.id==$userdata.id || $userdata.role==2}<tr><th title="Not public">Site Api/Rss Key:</th><td><a href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$user.rsstoken}</a></td></tr>{/if}
 	<tr><th>Grabs:</th><td>{$user.grabs}</td></tr>
 	<tr><th>API Requests Today:</th><td>{$apirequests}</td></tr>

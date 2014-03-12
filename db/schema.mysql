@@ -814,6 +814,7 @@ CREATE TABLE users (
 	userseed VARCHAR(50) NOT NULL,
 	cp_url VARCHAR(255) NULL DEFAULT NULL,
 	cp_api VARCHAR(255) NULL DEFAULT NULL,
+	style VARCHAR(255) NULL DEFAULT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
@@ -1098,7 +1099,7 @@ INSERT INTO site
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
 	('showbacks', '0'),
-	('sqlpatch','181');
+	('sqlpatch','182');
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (

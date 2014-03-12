@@ -6,7 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-03-12 -> kevin    -> Make predb template easier to maintain, add changes to other themes and fix for showing the size, add N/A when no size or no category.
+2014-03-12 -> kevin    -> User changeable themes in profile edit. (Apply the SQL patch).
+                       -> Make predb template easier to maintain, add changes to other themes and fix for showing the size, add N/A when no size or no category.
                        -> Change predb page to show all info to all users, put rest of the changes in all the themes (nzbindex/binsearch icons, N/A when no category or size, fix for some sizes not showing, more category links, usenet-crawler link, requestid link).
                        -> Use defined category names in predb template to make it look better. 
                        -> Fix register bug in alpha theme.

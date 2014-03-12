@@ -859,7 +859,8 @@ CREATE TABLE "users" (
   "sabpriority" smallint DEFAULT 0 NOT NULL,
   "userseed" character varying(50) NOT NULL,
   "cp_url" character varying(255),
-  "cp_api" character varying(255)
+  "cp_api" character varying(255),
+  "style" character varying(255)
 )
 WITHOUT OIDS;
 
@@ -1476,7 +1477,7 @@ INSERT INTO site
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
 	('showbacks', '0'),
-	('sqlpatch','179');
+	('sqlpatch','182');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
