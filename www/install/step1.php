@@ -129,7 +129,7 @@ if (!$cfg->pearCheck) {
 }
 
 $cfg->schemaCheck = false;
-if (is_readable($cfg->DB_DIR . 'schema.mysql') && is_readable($cfg->DB_DIR . 'schema.pgsql')) {
+if (is_readable($cfg->DB_DIR . 'mysql.sql') && is_readable($cfg->DB_DIR . 'pgsql.sql')) {
 	$cfg->schemaCheck = true;
 }
 if ($cfg->schemaCheck === false) {

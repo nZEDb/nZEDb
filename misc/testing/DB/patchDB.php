@@ -110,9 +110,9 @@ if (isset($os) && $os == "unix") {
 	$c = new ColorCLI();
 
 	if ($db->dbSystem() == "mysql") {
-		$path = nZEDb_ROOT . 'db/mysql_patches/';
+		$path = nZEDb_ROOT . 'db/patches/mysql/';
 	} else if ($db->dbSystem() == "pgsql") {
-		$path = nZEDb_ROOT . 'db/pgsql_patches/';
+		$path = nZEDb_ROOT . 'db/patches/pgsql/';
 	}
 
 	// Open the patch folder.
@@ -126,9 +126,10 @@ if (isset($os) && $os == "unix") {
 	}
 
 	/* 	if ($db->dbSystem() == "mysql")
-	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/mysql_patches/', nZEDb_ROOT);
+	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/patches/mysql/',
+	nZEDb_ROOT);
 	  else if ($db->dbSystem() == "pgsql")
-	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/pgsql_patches/', nZEDb_ROOT);
+	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/patches/pgsql/', nZEDb_ROOT);
 	 */ sort($patches);
 
 	foreach ($patches as $patch) {
