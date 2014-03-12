@@ -108,7 +108,6 @@ if (isset($_GET['id'])) {
 	$page->smarty->assign('reSubs', $reSubs);
 	$page->smarty->assign('nfo', $nfo);
 	$page->smarty->assign('rage', $rage);
-	var_dump($rage);
 	$page->smarty->assign('movie', $mov);
 	$page->smarty->assign('anidb', $ani);
 	$page->smarty->assign('music', $mus);

@@ -8,6 +8,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-03-11 -> kevin    -> Fix issues in viewnzb (couchpotato details are wrong and getting wrong titles for some stuff).
+2014-03-11             -> Remove vendor from script literal, path doesn't exist.
 2014-03-10 -> bart39   -> fixed some echo CLI formatting
 2014-03-10 -> ruhllatio-> Remove unnecessary join from fixreleasenames_threaded.py
 2014-03-10 -> bart39   -> reverted previous change to releases->stage7a as one big delete is quicker than looping in php
