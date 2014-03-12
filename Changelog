@@ -9,6 +9,7 @@ Each update goes to the top of the file
 
 2014-03-11 -> kevin    -> Fix issues in viewnzb (couchpotato details are wrong and getting wrong titles for some stuff).
                        -> Add nzbindex and binsearch icons to predb instead of text.
+                       -> Add more category links to predb and add link to usenet-crawler predb.
 2014-03-11             -> Remove vendor from script literal, path doesn't exist.
 2014-03-10 -> bart39   -> fixed some echo CLI formatting
 2014-03-10 -> ruhllatio-> Remove unnecessary join from fixreleasenames_threaded.py
