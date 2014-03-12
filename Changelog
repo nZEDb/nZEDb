@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-03-12 -> kevin    -> Make predb template easier to maintain, add changes to other themes and fix for showing the size, add N/A when no size or no category.
 2014-03-11 -> kevin    -> Fix issues in viewnzb (couchpotato details are wrong and getting wrong titles for some stuff).
                        -> Add nzbindex and binsearch icons to predb instead of text.
                        -> Add more category links to predb and add link to usenet-crawler predb.
