@@ -21,9 +21,11 @@ if ($showregister == 0) {
 	switch ($action) {
 		case 'submit':
 
+			$firstName = (isset($_POST['firstname']) ? $_POST['firstname'] : '');
+			$lastName = (isset($_POST['lastname']) ? $_POST['lastname'] : '');
 			$page->smarty->assign('username', $_POST['username']);
-			$page->smarty->assign('firstname', $_POST['firstname']);
-			$page->smarty->assign('lastname', $_POST['lastname']);
+			$page->smarty->assign('firstname', $firstName);
+			$page->smarty->assign('lastname', $lastName);
 			$page->smarty->assign('password', $_POST['password']);
 			$page->smarty->assign('confirmpassword', $_POST['confirmpassword']);
 			$page->smarty->assign('email', $_POST['email']);
