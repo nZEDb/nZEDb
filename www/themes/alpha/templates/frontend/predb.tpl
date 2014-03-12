@@ -109,64 +109,64 @@
 					{* Console *}
 					{* Xbox 360 *}
 					{if {$result.category} == 'XBOX360'}
-						<a class="title" title="View category XBOX 360" href="{$smarty.const.WWW_TOP}/browse?t=1050">{$result.category}</a>
+						<a class="title" title="View category XBOX 360" href="{$smarty.const.WWW_TOP}/browse?t=1050">Console Xbox 360</a>
 
 					{* Movies *}
 					{* SD *}
 					{elseif in_array({$result.category}, array('movies-sd', 'XVID'))}
-						<a class="title" title="View category Movies SD" href="{$smarty.const.WWW_TOP}/browse?t=2030">{$result.category}</a>
+						<a class="title" title="View category Movies SD" href="{$smarty.const.WWW_TOP}/browse?t=2030">Movies SD</a>
 					{* HD *}
 					{elseif {$result.category} == 'X264'}
-						<a class="title" title="View category Movies HD" href="{$smarty.const.WWW_TOP}/browse?t=2040">{$result.category}</a>
+						<a class="title" title="View category Movies HD" href="{$smarty.const.WWW_TOP}/browse?t=2040">Movies HD</a>
 					{* BluRay *}
 					{elseif in_array({$result.category}, array('BLURAY'))}
-						<a class="title" title="View category BluRay" href="{$smarty.const.WWW_TOP}/browse?t=2060">{$result.category}</a>
+						<a class="title" title="View category BluRay" href="{$smarty.const.WWW_TOP}/browse?t=2060">Movies BluRay</a>
 					{* DVD *}
 					{elseif in_array({$result.category}, array('DVDR', 'Movies: DVD'))}
-						<a class="title" title="View category DVDR" href="{$smarty.const.WWW_TOP}/browse?t=2070">{$result.category}</a>
+						<a class="title" title="View category DVDR" href="{$smarty.const.WWW_TOP}/browse?t=2070">DVD</a>
 
 					{* Audio *}
 					{elseif in_array({$result.category}, array('music-audio'))}
-						<a class="title" title="View category Music" href="{$smarty.const.WWW_TOP}/music">{$result.category}</a>
+						<a class="title" title="View category Music" href="{$smarty.const.WWW_TOP}/music">Audio</a>
 					{* MP3 *}
 					{elseif in_array({$result.category}, array('MP3', 'Music: MP3'))}
-						<a class="title" title="View category MP3" href="{$smarty.const.WWW_TOP}/browse?t=3010">{$result.category}</a>
+						<a class="title" title="View category MP3" href="{$smarty.const.WWW_TOP}/browse?t=3010">MP3</a>
 					{* Video *}
 					{elseif {$result.category} == 'MVID'}
-						<a class="title" title="View category Audio Video" href="{$smarty.const.WWW_TOP}/browse?t=3020">{$result.category}</a>
+						<a class="title" title="View category Audio Video" href="{$smarty.const.WWW_TOP}/browse?t=3020">Music Videos</a>
 					{* Lossless *}
 					{elseif in_array({$result.category}, array('FLAC', 'Music: FLAC'))}
-						<a class="title" title="View category Music Lossless" href="{$smarty.const.WWW_TOP}/browse?t=3040">{$result.category}</a>
+						<a class="title" title="View category Music Lossless" href="{$smarty.const.WWW_TOP}/browse?t=3040">Lossless Music</a>
 
 					{* PC *}
 					{* 0day *}
 					{elseif {$result.category} == '0DAY'}
-						<a class="title" title="View category PC 0day" href="{$smarty.const.WWW_TOP}/browse?t=4010">{$result.category}</a>
+						<a class="title" title="View category PC 0day" href="{$smarty.const.WWW_TOP}/browse?t=4010">PC 0DAY</a>
 					{* Phone-Other *}
 					{elseif {$result.category} == 'PDA'}
-						<a class="title" title="View category Phone Other" href="{$smarty.const.WWW_TOP}/browse?t=4040">{$result.category}</a>
+						<a class="title" title="View category Phone Other" href="{$smarty.const.WWW_TOP}/browse?t=4040">Phone Other</a>
 					{* Games *}
 					{elseif in_array({$result.category}, array('GAMES', 'Games: PC'))}
-						<a class="title" title="View category PC Games" href="{$smarty.const.WWW_TOP}/browse?t=4050">{$result.category}</a>
+						<a class="title" title="View category PC Games" href="{$smarty.const.WWW_TOP}/browse?t=4050">PC Games</a>
 
 					{* TV *}
 					{* SD *}
 					{elseif in_array({$result.category}, array('tv-sd', 'TV: STD', 'TV-XVID'))}
-						<a class="title" title="View category TV SD" href="{$smarty.const.WWW_TOP}/browse?t=5030">{$result.category}</a>
+						<a class="title" title="View category TV SD" href="{$smarty.const.WWW_TOP}/browse?t=5030">SDTV</a>
 					{* HD *}
 					{elseif in_array({$result.category}, array('tv-hd', 'TV: HD', 'TV-x264', 'TV-X264'))}
-						<a class="title" title="View category TV HD" href="{$smarty.const.WWW_TOP}/browse?t=5040">{$result.category}</a>
+						<a class="title" title="View category TV HD" href="{$smarty.const.WWW_TOP}/browse?t=5040">HDTV</a>
 
 					{* XXX *}
 					{elseif {$result.category} == 'XXX'}
-						<a class="title" title="View category XXX" href="{$smarty.const.WWW_TOP}/browse?t=6000">{$result.category}</a>
+						<a class="title" title="View category XXX" href="{$smarty.const.WWW_TOP}/browse?t=6000">XXX</a>
 					{* Imageset *}
 					{elseif {$result.category} == 'XXX-IMGSET'}
-						<a class="title" title="View category XXX Imageset" href="{$smarty.const.WWW_TOP}/browse?t=6060">{$result.category}</a>
+						<a class="title" title="View category XXX Imageset" href="{$smarty.const.WWW_TOP}/browse?t=6060">XXX Imagesets</a>
 
 					{* Books *}
 					{elseif in_array({$result.category}, array('EBOOK'))}
-						<a class="title" title="View category Books" href="{$smarty.const.WWW_TOP}/browse?t=8000">{$result.category}</a>
+						<a class="title" title="View category Books" href="{$smarty.const.WWW_TOP}/browse?t=8000">Ebooks</a>
 
 					{elseif {$result.category} == ''}
 						N/A
