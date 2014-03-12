@@ -3,14 +3,15 @@
 	{$pager}
 	<table style="margin-bottom:10px; margin-top:5px;" class="table table-condensed table-highlight table-striped data Sortable">
 		<thead>
-		<tr>
-			<th>title</th>
-			<th style="width:120px;text-align:center;">added</th>
-			<th style="width:120px;text-align:center;">pre-date</th>
-			<th style="width:120px;text-align:center;">source</th>
-			<th style="width:120px;text-align:center;">category</th>
-			<th style="width:60px;text-align:right;">size</th>
-		</tr>
+			<tr>
+				<th>title</th>
+				<th>requestid</th>
+				<th style="width:120px;text-align:center;">added</th>
+				<th style="width:120px;text-align:center;">pre-date</th>
+				<th style="width:120px;text-align:center;">source</th>
+				<th style="width:120px;text-align:center;">category</th>
+				<th style="width:60px;text-align:right;">size</th>
+			</tr>
 		</thead>
 		<tbody>
 		{foreach from=$results item=result}
@@ -23,18 +24,13 @@
 					{else}
 						{$result.title|escape:"htmlall"}
 					{/if}
-					{* Hide this, not sure why it's here?
-					{if $isadmin || $ismod}
-						<a style="float: right;" title="NzbIndex" href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}" target="_blank">Nzbindex&nbsp;</a>
-						<a style="float: right;" title="BinSearch" href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}" target="_blank">Binsearch&nbsp;</a>
-					{/if}*}
 					<a
 						style="float: right;"
 						title="NzbIndex"
 						href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
 						target="_blank"
 					>
-						<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/nzbindex.png" />
+						<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/nzbindex.png" />
 						&nbsp;
 					</a>
 					<a
@@ -43,12 +39,31 @@
 						href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
 						target="_blank"
 					>
-						<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/binsearch.png" />
+						<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/binsearch.png" />
 						&nbsp;
 					</a>
 				</td>
-				<td style="width:120px;text-align:center;" class="predb">{$result.adddate|date_format:"%D"}</td>
-				<td style="width:120px;text-align:center;" class="predb">{$result.predate|date_format:"%D"}</td>
+				<td class="predb">
+					{if is_numeric({$result.requestid}) && {$result.requestid} != 0}
+						<a
+							class="requestid"
+							title="{$result.requestid}"
+							href="{$smarty.const.WWW_TOP}/search?searchadvr=&searchadvsubject=[{$result.requestid}]
+							&searchadvposter=&searchadvdaysnew=&searchadvdaysold=&searchadvgroups=-1&searchadvcat=-1
+							&searchadvsizefrom=-1&searchadvsizeto=-1&searchadvhasnfo=0&searchadvhascomments=0&search_type=adv"
+						>
+							{$result.requestid}
+						</a>
+					{else}
+						N/A
+					{/if}
+				</td>
+				<td style="width:120px;text-align:center;" class="predb">
+					{$result.adddate|date_format:"%D"}
+				</td>
+				<td style="width:120px;text-align:center;" class="predb">
+					{$result.predate|date_format:"%D"}
+				</td>
 				<td style="width:120px;text-align:center;" class="predb">
 					{if {$result.source} == abgx}
 						<a title="Visit abgx" href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss">
@@ -91,7 +106,6 @@
 					{/if}
 				</td>
 				<td style="width:120px;text-align:center;" class="predb">
-
 					{* Console *}
 					{* Xbox 360 *}
 					{if {$result.category} == 'XBOX360'}
