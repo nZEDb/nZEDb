@@ -23,12 +23,29 @@
 					{else}
 						{$result.title|escape:"htmlall"}
 					{/if}
+					{* Hide this, not sure why it's here?
 					{if $isadmin || $ismod}
 						<a style="float: right;" title="NzbIndex" href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}" target="_blank">Nzbindex&nbsp;</a>
 						<a style="float: right;" title="BinSearch" href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}" target="_blank">Binsearch&nbsp;</a>
-					{/if}
-					<a style="float: right;" title="NzbIndex" href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}" target="_blank">Nzbindex&nbsp;</a>
-					<a style="float: right;" title="BinSearch" href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}" target="_blank">Binsearch&nbsp;</a>
+					{/if}*}
+					<a
+						style="float: right;"
+						title="NzbIndex"
+						href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
+						target="_blank"
+					>
+						<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/nzbindex.png" />
+						&nbsp;
+					</a>
+					<a
+						style="float: right;"
+						title="BinSearch"
+						href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
+						target="_blank"
+					>
+						<img src="{$smarty.const.WWW_TOP}/themes/alpha/images/icons/binsearch.png" />
+						&nbsp;
+					</a>
 				</td>
 				<td style="width:120px;text-align:center;" class="predb">{$result.adddate|date_format:"%D"}</td>
 				<td style="width:120px;text-align:center;" class="predb">{$result.predate|date_format:"%D"}</td>
@@ -112,8 +129,9 @@
 					{/if}
 				</td>
 				<td class="predb" style="width:60px;text-align:right;overflow:hidden;">
-					{if $result.size > 0}{$result.size|replace:'MB':'000000'|fsize_format:"MB"}{/if}
-
+					{if $result.size > 0}
+						{$result.size|replace:'MB':'000000'|fsize_format:"MB"}
+					{/if}
 				</td>
 			</tr>
 		{/foreach}
