@@ -10,7 +10,7 @@
 <form action="profileedit?action=submit" method="post">
 
 <fieldset>
-<legend>User Details</legend>
+<nZEDblegend>User Details</nZEDblegend>
 <table class="input">
 	<tr><th width="100">Username:</th><td>{$user.username|escape:"htmlall"}</td></tr>
     <tr><th>First Name:</th><td><input id="firstname" class="form-control" name="firstname" type="text" value="{$user.firstname}"></td></tr>
@@ -28,7 +28,7 @@
 </table>
 </fieldset>
 <fieldset>
-<legend>Site Preferences</legend>
+<nZEDblegend>Site Preferences</nZEDblegend>
 <table class="input">
 	<tr>
 		<th>Site theme:</th>
@@ -73,7 +73,7 @@
 
 {if $page->site->sabintegrationtype == 2}
 <fieldset>
-<legend>SABnzbd Integration</legend>
+<nZEDblegend>SABnzbd Integration</nZEDblegend>
 <table class="input">
 	<tr>
 		<th width="100"><label for="saburl">SABnzbd Url:</label></th>
@@ -117,7 +117,7 @@
 </fieldset>
 {/if}
 <fieldset class="notop">
-<legend>CouchPotato Integration</legend>
+<nZEDblegend>CouchPotato Integration</nZEDblegend>
 <table class="input">
 	<tr>
 		<td style="width:180px;"><label for="cp_api">CouchPotato API key:</label></td>
