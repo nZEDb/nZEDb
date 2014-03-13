@@ -74,7 +74,7 @@
 
             <p><em>{$site->strapline}</em></p>
 
-            {$site->adheader}
+
 
         </div>
 
