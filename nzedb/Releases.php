@@ -1636,7 +1636,7 @@ class Releases
 			$hours = (isset($this->site->request_hours)) ? $this->site->request_hours : 1;
 
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5b -> Request ID lookup."));
+				$this->c->doEcho($this->c->header("Stage 5b -> Request ID lookup. "));
 			}
 
 			// Look for records that potentially have requestID titles and have not been renamed by any other means
@@ -1644,6 +1644,12 @@ class Releases
 
 			if ($resrel->rowCount() > 0) {
 				$bFound = false;
+				$web = true;
+
+				if (!getUrl('http://predb_irc.nzedb.com/')) {
+					$web = false;
+				}
+
 				foreach ($resrel as $rowrel) {
 					// Try to get reqid.
 					$requestIDtmp = explode(']', substr($rowrel['name'], 1));
@@ -1660,7 +1666,7 @@ class Releases
 								$bFound = true;
 								$local = true;
 								$iFoundcnt++;
-							} else {
+							} else if ($web) {
 								$newTitle = $this->getReleaseNameFromRequestID($this->site, $requestID, $rowrel['groupname']);
 								if ($newTitle != false && $newTitle != '') {
 									if (strtolower($newTitle) != strtolower($rowrel['searchname'])) {

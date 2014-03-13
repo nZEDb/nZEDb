@@ -25,6 +25,10 @@
 		<th>Role:</th>
 		<td>{$user.rolename}</td>
 	</tr>
+	<tr>
+		<th>Theme:</th>
+		<td>{$user.style}</td>
+	</tr>
 	{if $user.id==$userdata.id || $userdata.role==2}<tr>
 		<th title="Not public">Site Api/Rss Key:</th>
 		<td><a href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{$user.rsstoken}</a></td>

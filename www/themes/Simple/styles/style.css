@@ -2,10 +2,10 @@
 site wide html styles
 */
 
-body 
-{ 
-	margin: 0; 
-	padding: 0; 
+body
+{
+	margin: 0;
+	padding: 0;
 	background: -moz-linear-gradient(left,  rgba(43,43,43,0.93) 0%, rgba(45,45,45,0.93) 1%, rgba(130,130,130,0.93) 49%, rgba(40,40,40,0.93) 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(43,43,43,0.93)), color-stop(1%,rgba(45,45,45,0.93)), color-stop(49%,rgba(130,130,130,0.93)), color-stop(100%,rgba(40,40,40,0.93))); /* Chrome,Safari4+ */
 	background: -webkit-linear-gradient(left,  rgba(43,43,43,0.93) 0%,rgba(45,45,45,0.93) 1%,rgba(130,130,130,0.93) 49%,rgba(40,40,40,0.93) 100%); /* Chrome10+,Safari5.1+ */
@@ -13,15 +13,15 @@ body
 	background: -ms-linear-gradient(left,  rgba(43,43,43,0.93) 0%,rgba(45,45,45,0.93) 1%,rgba(130,130,130,0.93) 49%,rgba(40,40,40,0.93) 100%); /* IE10+ */
 	background: linear-gradient(to right,  rgba(43,43,43,0.93) 0%,rgba(45,45,45,0.93) 1%,rgba(130,130,130,0.93) 49%,rgba(40,40,40,0.93) 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ed2b2b2b', endColorstr='#ed282828',GradientType=1 ); /* IE6-9 */
-	font-family: Calibri, Arial, Helvetica, sans-serif;	
-	font-size: 12px; color: #000; 
+	font-family: Calibri, Arial, Helvetica, sans-serif;
+	font-size: 12px; color: #000;
 }
 
-#outer 
+#outer
 {
 	position: relative;
 	z-index: 3;
-	max-width: 95%; 
+	max-width: 95%;
 	min-width: 1210px;
 	margin: 10px auto 0 auto;
 	padding: 10px 0 15px;
@@ -30,7 +30,7 @@ body
 	box-shadow: 0px 0px 60px 0px rgba(0,0,0,0.9);
 }
 
-#outer2 
+#outer2
 {
 	position: relative;
 	z-index: 3;
@@ -42,23 +42,23 @@ body
 h1, h2, h3
 {
 	margin: 0;
-	font-weight: normal; 
-	color: #485459; 
+	font-weight: normal;
+	color: #485459;
 }
 
 h4
 {
 	margin: 0;
-	font-weight: normal; 
-	color: #fff; 
+	font-weight: normal;
+	color: #fff;
 }
 
 input, select, textarea { font-family: Calibri, Arial, Helvetica, sans-serif;}
 textarea { height:100px; width:300px;}
 
-h1 
-{ 
-	font-size: 44px; 
+h1
+{
+	font-size: 44px;
 	padding-bottom:0px;
 }
 
@@ -69,9 +69,9 @@ ul, ol { }
 blockquote { }
 a.group_deactive { color: rgb(0, 140, 0) }
 
-a 
-{ 
-	color: #0082E1; 
+a
+{
+	color: #0082E1;
 	font-size: 1.0em;
 	text-decoration: none;
 	font-weight: normal;
@@ -93,30 +93,30 @@ input[type=text], input[type=password], textarea, select { background: #fff; bac
 /*
 page structure
 */
-#header 
-{ 
-	max-width: 95%; 
+#header
+{
+	max-width: 95%;
 	min-width: 1100px;
-	margin: 0 auto; 
+	margin: 0 auto;
 }
 
-#page 
-{ 
-	max-width: 95%; 
+#page
+{
+	max-width: 95%;
 	min-width: 1100px;
-	margin: 0 auto; 
+	margin: 0 auto;
 	padding: 50px 0px 5px 0px;
 }
 
-#logo 
-{ 
-	max-width: 95%; 
+#logo
+{
+	max-width: 95%;
 	min-width: 1100px;
-	height: 55px; 
-	margin: 0 auto; 
-	padding-left:5px; 
-	margin-top:4px; 
-	background:url("../../Default/images/logo.png") no-repeat bottom left; 
+	height: 55px;
+	margin: 0 auto;
+	padding-left:5px;
+	margin-top:4px;
+	background:url("../../Default/images/logo.png") no-repeat bottom left;
 }
 
 #logo h1, #logo p { display:none; margin: 0px; line-height: normal; text-transform: lowercase; font-weight: normal; color: #485459;}
@@ -124,7 +124,7 @@ page structure
 #logo h1 { padding-top: 10px; font-size: 48px;}
 #logo a { text-decoration: none; color: #A8A8A8;}
 
-#logo .logolink 
+#logo .logolink
 {
 	float: left;
 	margin: 0px 0px 0px -12px;
@@ -133,12 +133,12 @@ page structure
 #logo img { margxin-top:15px; }
 #logo h1 a { text-decoration: none; color: #485459;}
 #logo .banner { float: right; }
-#statusbar 
-{ 
+#statusbar
+{
 	max-width: 90%;
-	min-width: 1100px; 
-	margin: 0 auto; 
-	text-align: right; 
+	min-width: 1100px;
+	margin: 0 auto;
+	text-align: right;
 /*	display: none; */
 	padding: 5px 10px 0 0;
 }
@@ -185,82 +185,82 @@ page structure
 browse by category top menu
 */
 
-#menu 
-{ 
-	height:33px; 
-	float: left; 
-	width: 100%; 
-	background-color:#000; 
+#menu
+{
+	height:33px;
+	float: left;
+	width: 100%;
+	background-color:#000;
 	border-radius: 4px;
 }
 
-#menu 
-{ 
+#menu
+{
 	margin-right:1px;
 	background-color:#222;
 }
 
 .menupic {padding-left:15px;}
 
-#menulink 
-{ 
-	float: left; 
+#menulink
+{
+	float: left;
 	padding: 0px 0px 0px 12px;
 }
 
 #menulink ul { list-style-type: none; padding: 0; margin: 0; }
 #menulink li { float: left; position: relative; z-index: 100; }
 
-#menulink a, #menulink :visited 
+#menulink a, #menulink :visited
 {
-	height:32px; 
-	display: block; 
-	font-size: 0.9em; 
+	height:32px;
+	display: block;
+	font-size: 0.9em;
 	font-weight: bold;
-	width: 75px; 
-	padding: 1px 0px 0px 5px; 
-	background-color: #222; 
-	text-decoration: none; 
-	text-align: left; 
-	vertical-align: middle; 
+	width: 75px;
+	padding: 1px 0px 0px 5px;
+	background-color: #222;
+	text-decoration: none;
+	text-align: left;
+	vertical-align: middle;
 	line-height: 28px;
-	color: #fff; 
+	color: #fff;
 }
 
-#menulink :hover, #menulink a.selected 
+#menulink :hover, #menulink a.selected
 {
-	color: #0082E1; 
-	background-color: #222; 
+	color: #0082E1;
+	background-color: #222;
 }
 
-#menulink ul ul 
-{ 
-	visibility: hidden; 
-	position: absolute; 
-	width: 60px; 
-	height: 0; 
+#menulink ul ul
+{
+	visibility: hidden;
+	position: absolute;
+	width: 60px;
+	height: 0;
 	padding: 0px;
 }
 
 #menulink ul li:hover ul, #menulink ul a:hover ul { visibility: visible; }
 
-#menusearchlink 
-{ 
-	padding: 4px 8px 0px 0px; 
-	float:right; 
+#menusearchlink
+{
+	padding: 4px 8px 0px 0px;
+	float:right;
 }
 
-#menusearchlink input, #menusearchlink select 
-{ 
-	font-size: 0.9em; 
-	color:#000; 
+#menusearchlink input, #menusearchlink select
+{
+	font-size: 0.9em;
+	color:#000;
 }
 
-#menucontainer 
-{ 
-	max-width: 100%; 
+#menucontainer
+{
+	max-width: 100%;
 	min-width: 1100px;
-	height:10px; 
+	height:10px;
 }
 
 select#headcat {width:120px; float:right; margin-left:5px; height:25px;}
@@ -270,29 +270,29 @@ select#headcat option.grouping { padding-left: 5px; font-weight: bold; }
 
 .gobutton {display:inline;float:right;margin-left:5px;}
 
-.gobutton input 
-{ 
-	background:url('../../Default/images/icons/go.png') no-repeat; 
-	cursor:pointer; 
-	border: none;	 
-	width:26px; 
-	height:26px; 
+.gobutton input
+{
+	background:url('../../Default/images/icons/go.png') no-repeat;
+	cursor:pointer;
+	border: none;
+	width:26px;
+	height:26px;
 }
 
-#statusbar ul 
-{ 
-	list-style-type: none; 
-	float:left; 
-	margin: 0 0 1px 0; 
-	padding:0; 
-	line-height: normal; 
-	text-align: right; 
+#statusbar ul
+{
+	list-style-type: none;
+	float:left;
+	margin: 0 0 1px 0;
+	padding:0;
+	line-height: normal;
+	text-align: right;
 }
 
 #statusbar ul li h2 {display:none;}
 #statusbar ul li ul li {float: left; margin-left: 1em; padding-right:5px;  }
 
-#statusbar ul li a 
+#statusbar ul li a
 {
 	color:#000;
 }
@@ -322,13 +322,13 @@ table.data th
 	text-transform:capitalize;
 }
 
-table.data td 
-{ 
-	white-space:normal; 
-	vertical-align:top; 
-	padding:5px; 
-	border-color: #AAA; 
-	border-width: 1px; 
+table.data td
+{
+	white-space:normal;
+	vertical-align:top;
+	padding:5px;
+	border-color: #AAA;
+	border-width: 1px;
 	border-style: solid;
 }
 
@@ -371,8 +371,8 @@ table td.item { padding:5px 5px 2px 5px; }
 
 
 label a.title
-{ 
-	font-weight: bold; 
+{
+	font-weight: bold;
 }
 
 
@@ -383,9 +383,9 @@ table td.static { background-color: #FFF; }
 
 .nowrap {white-space:nowrap;}
 
-#detailstable 
-{ 
-	width: 80%; 
+#detailstable
+{
+	width: 80%;
 }
 
 
@@ -415,6 +415,7 @@ input.short { width:40px; }
 input.tiny { width: 25px; }
 input.date { width:70px; }
 fieldset { margin-bottom:20px; border:1px solid #999;}
+nZEDblegend { font-weight:bold; text-align:right; padding-left:1px; text-decoration:underline;}
 legend { padding: 0.4em 0.6em; border:1px solid #999; font-weight:bold; text-align:left; }
 
 /*
@@ -424,12 +425,12 @@ div.pager {display:inline;}
 
 div.pager a {font-weight:bold; background-color:#eee; padding:0 3px 0px 4px; border:1px #555 solid;}
 
-div.pager .current 
+div.pager .current
 {
-	color:#fff; 
-	font-weight:bold; 
-	background-color:#aaa; 
-	padding:0 4px 0px 4px; 
+	color:#fff;
+	font-weight:bold;
+	background-color:#aaa;
+	padding:0 4px 0px 4px;
 	border:1px #555 solid;
 }
 
@@ -465,20 +466,20 @@ a.title
 
 pre#nfo { font-family: "Courier New", "DejaVu Sans Mono", monospace; font-size: 12px; line-height: 13px; }
 
-div.resextra 
-{ 
-	padding-top:2px; 
-	color: #555; 
-	font-size: 0.9em; 
+div.resextra
+{
+	padding-top:2px;
+	color: #555;
+	font-size: 0.9em;
 	height:16px;
 }
 div.resextra a.browsename { color: #B22222; font-size: 0.9em; }
 a.browsename:active {text-decoration: none}
 a.browsename:hover {text-decoration: underline}
-div.resextra a 
-{ 
-	color: #555; 
-	text-decoration:none; 
+div.resextra a
+{
+	color: #555;
+	text-decoration:none;
 }
 div.resextra div.admin { float:right; }
 div.resextra div.btns {float:left; }
@@ -565,13 +566,13 @@ icons and multioperation buttons
 input.nzb_check { margin: 0 0 8px; }
 input.nzb_check_all { margin-left: 2.5px; }
 #nzb_multi_operations_form { clear: both; }
-div.nzb_multi_operations 
-{ 
-	color:#000; 
-	display:inline; 
-	float:right; 
-	text-align: right; 
-	clear: both; 
+div.nzb_multi_operations
+{
+	color:#000;
+	display:inline;
+	float:right;
+	text-align: right;
+	clear: both;
 }
 div.nzb_multi_operations input { color:#888; background-color:#fff; border:1px solid #ddd; }
 div.nzb_multi_operations input:hover { color:#000; border:1px solid #000; cursor:pointer; }
