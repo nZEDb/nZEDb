@@ -7,7 +7,7 @@ if (!defined('GIT_PRE_COMMIT')) {
 
 // Only set an argument if calling from bash or MS-DOS batch scripts. Otherwise
 // instantiate the class and use as below.
-if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && $arv[1] == true) {
+if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && $argv[1] == true) {
 	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
@@ -51,7 +51,7 @@ class Versions
 	/**
 	 * Class constructor initialises the SimpleXML object and sets a few properties.
 	 * @param string $filepath Optional filespec for the XML file to use. Will use default otherwise.
-	 * @throws Exception If the XML is invalid.
+	 * @throws \Exception If the XML is invalid.
 	 */
 	public function __construct($filepath = null)
 	{
@@ -64,7 +64,7 @@ class Versions
 		$this->_xml = @new \SimpleXMLElement($filepath, 0, true);
 		if ($this->_xml === false) {
 			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
-			throw new \Exception("Failed to open versions XML file '$filename'");
+			throw new \Exception("Failed to open versions XML file '$filepath'");
 		}
 
 		if ($this->_xml->count() > 0) {
@@ -72,7 +72,7 @@ class Versions
 
 			if ($vers[0]->count() == 0) {
 				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) does not contain versioning info, try updating from git.");
-				throw new \Exception("Failed to find versions node in XML file '$filename'");
+				throw new \Exception("Failed to find versions node in XML file '$filepath'");
 			} else {
 				$this->out->primary("Your versioning XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
 				$this->_vers = &$this->_xml->versions;
@@ -129,10 +129,9 @@ class Versions
 	public function checkGitCommit($update = true)
 	{
 		exec('git log | grep "^commit" | wc -l', $output);
-		// I added this, because it was not updating to commit + 1, only current commit number
 		if ($this->_vers->git->commit < $output[0] || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
 			if ($update) {
-				if (GIT_PRE_COMMIT === true) { // only allow the pre-commit script to set the NEXT commit number
+				if (GIT_PRE_COMMIT === true) { // only the pre-commit script is allowed to set the NEXT commit number
 					$output[0] += 1;
 				}
 				if ($output[0] != $this->_vers->git->commit) {
@@ -161,8 +160,8 @@ class Versions
 			$index++;
 		}
 
-		// TODO this needs a better test. Think PHP has a way to do this, will update later.
-		if (!empty($match) && $this->_vers->git->tag < $match) {
+		// Check if version file's entry is less than the last tag
+		if (!empty($match) && version_compare($this->_vers->git->tag, $match, '<')) {
 			if ($update) {
 				echo $this->out->primary("Updating tag version to $match");
 				$this->_vers->git->tag = $match;
