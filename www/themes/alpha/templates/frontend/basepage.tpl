@@ -190,8 +190,10 @@
 					<li><a href="{$smarty.const.WWW_TOP}/sitemap">Site Map</a></li>
 					<li class="muted"> | </li>
 					<li><a href="{$smarty.const.WWW_TOP}/apihelp">API</a></li>
-					<li class="muted"> | </li>
-					<li><a href="{$smarty.const.WWW_TOP}/login">Login</a></li>
+					{if $loggedin != "true"}
+						<li class="muted"> | </li>
+						<li><a href="{$smarty.const.WWW_TOP}/login">Login</a></li>
+					{/if}
 				</ul>
 			</div>
 		</footer>

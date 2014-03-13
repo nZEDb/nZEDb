@@ -21,6 +21,7 @@ Each update goes to the top of the file
                        -> Removecrapreleases run on the groups the blacklist have.
                        -> Fix the contact us pages (they had all kind of issues.)
                        -> Fix typo in sitemap.php causing the page to not load.
+                       -> Don't show login at bottom of alpha theme if user is logged in.
 2014-03-11 -> kevin    -> Fix issues in viewnzb (couchpotato details are wrong and getting wrong titles for some stuff).
                        -> Add nzbindex and binsearch icons to predb instead of text.
                        -> Add more category links to predb and add link to usenet-crawler predb.
