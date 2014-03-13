@@ -3,6 +3,7 @@ if (isset($_POST["useremail"])) {
 	// Send the contact info and report back to user.
 	$email = $_POST["useremail"];
 	$mailto = $page->site->email;
+
 	$mailsubj = "Contact Form Submitted";
 	$mailhead = "From: $email\n";
 	$mailbody = "Values submitted from contact form:\n";
@@ -15,7 +16,7 @@ if (isset($_POST["useremail"])) {
 		@mail($mailto, $mailsubj, $mailbody, $mailhead);
 	}
 
-	$page->smarty->assign("msg", "<h2 style='padding-top:25px;'>Thanks for getting in touch with " . $page->site->title . ".</h2>");
+	$page->smarty->assign("msg", "<h2 style='text-align:center;'>Thank you for getting in touch with " . $page->site->title . ".</h2>");
 }
 
 $page->title = "Contact " . $page->site->title;
