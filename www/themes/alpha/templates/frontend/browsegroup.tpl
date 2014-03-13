@@ -1,10 +1,10 @@
-<fieldset class="adbanner">
-	<legend class="adbanner">Advertisement</legend>
-	{$site->adbrowse}
-</fieldset>
-
+{if {$site->adbrowse} != ''}
+	<fieldset class="adbanner">
+		<legend class="adbanner">Advertisement</legend>
+		{$site->adbrowse}
+	</fieldset>
+{/if}
 {if $results|@count > 0}
-
 	<table class="table-striped table-condensed table-highlight data Sortable table" id="browsetable">
 		<thead>
 		<tr>
@@ -31,5 +31,4 @@
 		{/foreach}
 		</tbody>
 	</table>
-
 {/if}

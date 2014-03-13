@@ -5,7 +5,7 @@ $c = new ColorCLI();
 
 if (!isset($argv[1])) {
 	if ($argv[1] !== 'test' || $argv[1] !== 'alter') {
-		exit($c->error("\nThis script will scan mysql.sql for all UNIQUE INDEXES.\n"
+		exit($c->error("\nThis script will scan mysql-ddl.sql for all UNIQUE INDEXES.\n"
 						. "It will verify that you have them. If you do not, you can choose to run manually or allow the script to run them.\n\n"
 						. "php $argv[0] test      ...: To verify all unique indexes.\n"
 						. "php $argv[0] alter     ...: To add missing unique indexes.\n"));
@@ -41,7 +41,7 @@ function run_query($query, $test)
 }
 
 $match = '';
-$path = nZEDb_ROOT . DS . 'db' . DS . 'mysql.sql';
+$path = nZEDb_RES . 'db' . DS . 'mysql-ddl.sql';
 $handle = fopen($path, "r");
 if ($handle) {
 	while (($line = fgets($handle)) !== false) {
@@ -117,5 +117,5 @@ if ($handle) {
 		}
 	}
 } else {
-	echo $c->error("\nCan not open mysql.sql.");
+	echo $c->error("\nCan not open mysql-ddl.sql.");
 }

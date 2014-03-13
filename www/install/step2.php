@@ -138,16 +138,19 @@ if ($page->isPostBack()) {
 		$cfg->setSession();
 
 		// Load schema.sql.
-		if (file_exists($cfg->DB_DIR . '/mysql.sql') && file_exists($cfg->DB_DIR . '/pgsql.sql')) {
+		if (file_exists($cfg->DB_DIR . '/mysql-ddl.sql') && file_exists($cfg->DB_DIR . '/pgsql-ddl.sql')) {
 			if ($dbtype == "mysql") {
-				$dbData = file_get_contents($cfg->DB_DIR . '/mysql.sql');
-				$dbData = str_replace(array('DELIMITER $$', 'DELIMITER ;', ' $$'), '', $dbData);
-			}
+                $dbDDL = file_get_contents($cfg->DB_DIR . '/mysql-ddl.sql');
+                $dbDDL = str_replace(array('DELIMITER $$', 'DELIMITER ;', ' $$'), '', $dbDDL);
+                $dbData = file_get_contents($cfg->DB_DIR . '/mysql-data.sql');
+                $dbData = str_replace(array('DELIMITER $$', 'DELIMITER ;', ' $$'), '', $dbData);
+            }
 			if ($dbtype == "pgsql") {
 				$pdo->query("DROP FUNCTION IF EXISTS hash_check() CASCADE");
 				$pdo->query("DROP FUNCTION IF EXISTS request_check() CASCADE");
-				$dbData = file_get_contents($cfg->DB_DIR . '/pgsql.sql');
-			}
+                $dbDDL = file_get_contents($cfg->DB_DIR . '/pgsql-ddl.sql');
+                $dbData = file_get_contents($cfg->DB_DIR . '/pgsql-data.sql');
+            }
 			// Fix to remove BOM in UTF8 files.
 			$bom = pack("CCC", 0xef, 0xbb, 0xbf);
 			if (0 == strncmp($dbData, $bom, 3)) {
@@ -187,8 +190,9 @@ if ($page->isPostBack()) {
 			  }
 */
 			try {
-				$pdo->exec($dbData);
-			} catch (PDOException $err) {
+                $pdo->exec($dbDDL);
+                $pdo->exec($dbData);
+            } catch (PDOException $err) {
 				printf("Error inserting: (" . $err->getMessage() . ")");
 				exit();
 			}

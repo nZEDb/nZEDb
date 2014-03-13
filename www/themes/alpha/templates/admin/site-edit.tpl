@@ -615,6 +615,14 @@
 </tr>
 
 <tr>
+    <td style="width:180px;"><label for="request_hours">Max hours to recheck Request IDs:</label></td>
+    <td>
+        <input id="request_hours" class="short" name="request_hours" type="text" value="{$fsite->request_hours}" />
+        <div class="hint">The maximum hours after a release is added to recheck for a Request ID match.</div>
+    </td>
+</tr>
+
+<tr>
 	<td style="width:180px;"><label for="style">Request ID Link:</label></td>
 	<td>
 		<input id="request_url" class="long" name="request_url" type="text" value="{$fsite->request_url}" />

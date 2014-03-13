@@ -631,6 +631,14 @@
             </tr>
 
             <tr>
+                <td style="width:180px;"><label for="request_hours">Max hours to recheck Request IDs:</label></td>
+                <td>
+                    <input id="request_hours" class="short" name="request_hours" type="text" value="{$fsite->request_hours}" />
+                    <div class="hint">The maximum hours after a release is added to recheck for a Request ID match.</div>
+                </td>
+            </tr>
+
+            <tr>
                 <td style="width:180px;"><label for="newgroupscanmethod">Where to start new groups:</label></td>
                 <td>
                     {html_radios id="newgroupscanmethod" name='newgroupscanmethod' values=$yesno_ids output=$newgroupscan_names selected=$fsite->newgroupscanmethod separator='<br />'}

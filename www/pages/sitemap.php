@@ -62,6 +62,6 @@ if (isset($_GET["type"]) && $_GET["type"] == "xml") {
 
 function buildURL($type, $name, $url, $freq = 'daily', $p = '1.0')
 {
-	$s = new Sitemap($type, $name, $url, $freq, $p);
+	$s = new SiteMap($type, $name, $url, $freq, $p);
 	return $s;
 }
