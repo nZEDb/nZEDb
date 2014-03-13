@@ -37,7 +37,7 @@ function SplitSQL($file, $delimiter = ';')
 								echo $c->error($query . " Skipped - Not Fatal {" . $e->errorInfo[1] . "}.\n");
 							}
 						} else {
-							if (preg_match('/ALTER IGNORE/I', $query)) {
+							if (preg_match('/ALTER IGNORE/i', $query)) {
 								$db->queryExec("SET SESSION old_alter_table = 1");
 								try {
 									$qry = $db->prepare($query);
