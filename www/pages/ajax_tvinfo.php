@@ -15,7 +15,9 @@ if (!$rel) {
 } else {
 	//print "<h3 class=\"tooltiphead\">episode info...</h3>\n";
 	print "<ul>\n";
-	print "<li>" . htmlentities($rel["tvtitle"], ENT_QUOTES) . "</li>\n";
+	if (isset($rel['tvtitle'])) {
+		print "<li>" . htmlentities($rel["tvtitle"], ENT_QUOTES) . "</li>\n";
+	}
 	print "<li>Aired on " . date("F j, Y", strtotime($rel["tvairdate"])) . "</li>\n";
 	print "</ul>";
 

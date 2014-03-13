@@ -6,7 +6,6 @@
 		</fieldset></div>
 	<br>
 {/if}
-
 {* {if $covergrp != ''}
 <div class="accordion" id="searchtoggle">
 	<div class="accordion-group">
@@ -24,7 +23,6 @@
 	</div>
 </div>
 {/if} *}
-
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
 		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
@@ -33,8 +31,8 @@
 					<i class="icon-th-list"></i>
 				</a>
 				&nbsp;&nbsp;
-				<span
-					><i class="icon-align-justify"></i>
+				<span>
+					<i class="icon-align-justify"></i>
 				</span>
 			{/if}
 			{if $isadmin || $ismod}
@@ -47,38 +45,38 @@
 		{include file='multi-operations.tpl'}
 		<table class="table table-striped table-bordered table-condensed table-hover data" id="browsetable">
 			<thead>
-			<tr>
-				<th>
-					<div class="icon">
-						<input id="chkSelectAll" type="checkbox" class="nzb_check_all">
-					</div>
-				</th>
-				<th style="vertical-align:top;">name
-					<a title="Sort Descending" href="{$orderbyname_desc}"><i class="icon-chevron-down"></i></a>
-					<a title="Sort Ascending" href="{$orderbyname_asc}"><i class="icon-chevron-up"></i></a>
-				</th>
-				<th style="vertical-align:top;text-align:center;">category<br>
-					<a title="Sort Descending" href="{$orderbycat_desc}"><i class="icon-chevron-down"></i></a>
-					<a title="Sort Ascending" href="{$orderbycat_asc}"><i class="icon-chevron-up"></i></a>
-				</th>
-				<th style="vertical-align:top;text-align:center;">posted<br>
-					<a title="Sort Descending" href="{$orderbyposted_desc}"><i class="icon-chevron-down"></i></a>
-					<a title="Sort Ascending" href="{$orderbyposted_asc}"><i class="icon-chevron-up"></i></a>
-				</th>
-				<th style="vertical-align:top;text-align:center;">size<br>
-					<a title="Sort Descending" href="{$orderbysize_desc}"><i class="icon-chevron-down"></i></a>
-					<a title="Sort Ascending" href="{$orderbysize_asc}"><i class="icon-chevron-up"></i></a>
-				</th>
-				<th style="vertical-align:top;text-align:center;">files<br>
-					<a title="Sort Descending" href="{$orderbyfiles_desc}"><i class="icon-chevron-down"></i></a>
-					<a title="Sort Ascending" href="{$orderbyfiles_asc}"><i class="icon-chevron-up"></i></a>
-				</th>
-				<th style="vertical-align:top;text-align:center;">stats<br>
-					<a title="Sort Descending" href="{$orderbystats_desc}"><i class="icon-chevron-down"></i></a>
-					<a title="Sort Ascending" href="{$orderbystats_asc}"><i class="icon-chevron-up"></i></a>
-				</th>
-				<th style="vertical-align:top;text-align:center;">action</th>
-			</tr>
+				<tr>
+					<th>
+						<div class="icon">
+							<input id="chkSelectAll" type="checkbox" class="nzb_check_all">
+						</div>
+					</th>
+					<th style="vertical-align:top;">name
+						<a title="Sort Descending" href="{$orderbyname_desc}"><i class="icon-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbyname_asc}"><i class="icon-chevron-up"></i></a>
+					</th>
+					<th style="vertical-align:top;text-align:center;">category<br>
+						<a title="Sort Descending" href="{$orderbycat_desc}"><i class="icon-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbycat_asc}"><i class="icon-chevron-up"></i></a>
+					</th>
+					<th style="vertical-align:top;text-align:center;">posted<br>
+						<a title="Sort Descending" href="{$orderbyposted_desc}"><i class="icon-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbyposted_asc}"><i class="icon-chevron-up"></i></a>
+					</th>
+					<th style="vertical-align:top;text-align:center;">size<br>
+						<a title="Sort Descending" href="{$orderbysize_desc}"><i class="icon-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbysize_asc}"><i class="icon-chevron-up"></i></a>
+					</th>
+					<th style="vertical-align:top;text-align:center;">files<br>
+						<a title="Sort Descending" href="{$orderbyfiles_desc}"><i class="icon-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbyfiles_asc}"><i class="icon-chevron-up"></i></a>
+					</th>
+					<th style="vertical-align:top;text-align:center;">stats<br>
+						<a title="Sort Descending" href="{$orderbystats_desc}"><i class="icon-chevron-down"></i></a>
+						<a title="Sort Ascending" href="{$orderbystats_asc}"><i class="icon-chevron-up"></i></a>
+					</th>
+					<th style="vertical-align:top;text-align:center;">action</th>
+				</tr>
 			</thead>
 			<tbody>
 			{foreach from=$results item=result}
