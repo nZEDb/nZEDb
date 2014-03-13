@@ -110,9 +110,9 @@ if (isset($os) && $os == "unix") {
 	$c = new ColorCLI();
 
 	if ($db->dbSystem() == "mysql") {
-		$path = nZEDb_ROOT . 'db/patches/mysql/';
+		$path = nZEDb_RES . 'db/patches/mysql/';
 	} else if ($db->dbSystem() == "pgsql") {
-		$path = nZEDb_ROOT . 'db/patches/pgsql/';
+		$path = nZEDb_RES . 'db/patches/pgsql/';
 	}
 
 	// Open the patch folder.
