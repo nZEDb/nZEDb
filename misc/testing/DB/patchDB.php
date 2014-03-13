@@ -77,7 +77,7 @@ function BackupDatabase()
 	$c = new ColorCLI();
 	$DIR = nZEDb_MISC;
 
-	if (nzedb\utility\Util::hasCommand("php5")) {
+	if (Util::hasCommand("php5")) {
 		$PHP = "php5";
 	} else {
 		$PHP = "php";
@@ -204,4 +204,3 @@ if ($patched > 0) {
 		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c");
 	}
 }
-?>
