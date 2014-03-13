@@ -81,19 +81,19 @@
 						</a>
 					{elseif {$result.source} == orlydb}
 						<a title="Visit ORLYDB" href="{$site->dereferrer_link}http://orlydb.com/?q={$result.title}" target="_blank">
-							ORLYDB.com
+							ORLYDB
 						</a>
 					{elseif {$result.source} == predbme}
 						<a title="Visit PreDB.me" href="{$site->dereferrer_link}http://predb.me/?search={$result.title}" target="_blank">
-							PreDB.me
+							PreDB
 						</a>
 					{elseif {$result.source} == prelist}
 						<a title="Visit Prelist" href="{$site->dereferrer_link}http://www.prelist.ws/?search={$result.title}" target="_blank">
-							Prelist.ws
+							Prelist
 						</a>
 					{elseif {$result.source} == srrdb}
 						<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}" target="_blank">
-							srrDB.com
+							srrDB
 						</a>
 					{elseif {$result.source} == "usenet-crawler"}
 						<a title="Visit Usenet-Crawler" href="{$site->dereferrer_link}http://www.usenet-crawler.com/predb?q={$result.title}" target="_blank">
@@ -105,7 +105,7 @@
 						</a>
 					{elseif {$result.source} == zenet}
 						<a title="Visit ZEnet" href="{$site->dereferrer_link}http://pre.zenet.org/?search={$result.title}" target="_blank">
-							ZEnet.org
+							ZEnet
 						</a>
 					{else}
 						{$result.source}
