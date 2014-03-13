@@ -683,7 +683,7 @@ class Releases
 				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
-var_dump($daysnewsql);
+
 
 		if ($groupname != '-1') {
 			$groupID = $this->groups->getIDByName($groupname);
