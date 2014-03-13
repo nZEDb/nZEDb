@@ -1,3 +1,10 @@
+<form method="get" action="{$smarty.const.WWW_TOP}/predb">
+	<div id="search" style="text-align:center;">
+		<label for="presearch" style="display:none;">Search</label>
+		<input id="presearch" name="presearch" value="{$lastSearch|escape:'html'}" type="text"/>
+		<input id="presearch_button" type="submit" value="Search" />&nbsp;&nbsp;&nbsp;
+	</div>
+</form>
 <h4>{$page->title}</h4>
 <div class="container">
 	{$pager}

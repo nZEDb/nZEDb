@@ -826,17 +826,33 @@ Class PreDb
 		return $updated;
 	}
 
-	public function getAll($offset, $offset2)
+	/**
+	 * @param int    $offset  OFFSET
+	 * @param int    $offset2 LIMIT
+	 * @param string $search  Optional title search.
+	 *
+	 * @return array The row count and the query results.
+	 */
+	public function getAll($offset, $offset2, $search = '')
 	{
 		$db = new DB();
-		if ($db->dbSystem() == 'mysql') {
-			$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $offset2, $offset));
-			$count = $db->queryOneRow("SELECT COUNT(*) AS cnt FROM predb");
-			return array('arr' => $parr, 'count' => $count['cnt']);
+		if ($search !== '') {
+			$like = ($db->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE');
+			$search = explode(' ', trim($search));
+			if (count($search > 1)) {
+				$search = "$like '%" . implode("%' AND title $like '%", $search) . "%'";
+			} else {
+				$search = "$like '%" . $search . "%'";
+			}
+			$search = 'WHERE title ' . $search;
+			$count = $db->queryOneRow(sprintf('SELECT COUNT(*) AS cnt FROM predb %s', $search));
+			$count = $count['cnt'];
 		} else {
-			$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $offset2, $offset));
-			return array('arr' => $parr, 'count' => $this->getCount());
+			$count = $this->getCount();
 		}
+
+		$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid %s ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $search, $offset2, $offset));
+		return array('arr' => $parr, 'count' => $count);
 	}
 
 	public function getCount()
