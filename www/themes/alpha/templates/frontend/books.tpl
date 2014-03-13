@@ -7,7 +7,6 @@
 	</div>
 	<br>
 {/if}
-
 <div class="panel">
 	<div class="panel-heading">
 		<h4 class="panel-title">
