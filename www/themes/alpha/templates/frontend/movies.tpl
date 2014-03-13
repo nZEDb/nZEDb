@@ -266,6 +266,7 @@
 											<a
 												title="Download Nzb"
 												href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
+											>
 											</a>
 										</div>
 										{if $sabintegrated}
@@ -278,6 +279,7 @@
 										<a class="label confirm_action label-danger" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Delete</a>
 										{/if}*}
 									</td>
+									<td class="icons" style="width:80px;text-align:center;white-space:nowrap;">
 								</tr>
 								{if $m@index == 1 && $m@total > 2}
 									<tr>
