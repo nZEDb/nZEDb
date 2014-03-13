@@ -556,8 +556,11 @@ Class PreDb
 								$predate = $db->escapeString($matches2["predate"]);
 								$source = $db->escapeString('abForeign');
 								if (strlen($title) > 15) {
-									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
-									$newnames++;
+									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+									if ($dupeCheck === false ) {
+										$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+										$newnames++;
+									}
 								}
 							}
 						}
