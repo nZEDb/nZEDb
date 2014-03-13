@@ -69,18 +69,32 @@ class Groups
 		return $db->queryOneRow(sprintf("SELECT * FROM groups WHERE name = %s", $db->escapeString($grp)));
 	}
 
+	/**
+	 * Get a group name using its ID.
+	 *
+	 * @param int|string $id The group ID.
+	 *
+	 * @return string Empty string on failure, groupName on success.
+	 */
 	public function getByNameByID($id)
 	{
 		$db = new DB();
 		$res = $db->queryOneRow(sprintf("SELECT name FROM groups WHERE id = %d ", $id));
-		return $res["name"];
+		return ($res === false ? '' : $res["name"]);
 	}
 
+	/**
+	 * Get a group name using its name.
+	 *
+	 * @param string $name The group name.
+	 *
+	 * @return string Empty string on failure, groupID on success.
+	 */
 	public function getIDByName($name)
 	{
 		$db = new DB();
 		$res = $db->queryOneRow(sprintf("SELECT id FROM groups WHERE name = %s", $db->escapeString($name)));
-		return $res["id"];
+		return ($res === false ? '' : $res["id"]);
 	}
 
 	// Set the backfill to 0 when the group is backfilled to max.
