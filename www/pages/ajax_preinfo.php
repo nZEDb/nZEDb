@@ -23,7 +23,7 @@ if (!$predata) {
 		if (preg_match('/\d+/', $predata["size"], $size)) {
 			;
 		}
-		if ($size[0] > 0) {
+		if (isset($size[0]) && $size[0] > 0) {
 			print "<tr><th>Size:</th><td>" . htmlentities($predata["size"], ENT_QUOTES) . "</td></tr>\n";
 		}
 	}

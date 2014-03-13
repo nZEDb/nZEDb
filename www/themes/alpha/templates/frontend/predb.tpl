@@ -1,3 +1,12 @@
+{if {$site->adbrowse} != ''}
+	<div class="container" style="width:500px;">
+		<fieldset class="adbanner div-center">
+			<legend class="adbanner">Advertisement</legend>
+			{$site->adbrowse}
+		</fieldset></div>
+	<br>
+{/if}
+<h4>{$page->title}</h4>
 <form name="presearch" method="get" action="{$smarty.const.WWW_TOP}/predb" id="custom-search-form" class="form-search form-horizontal col-4 col-lg-4 pull-right">
 	<div id="search" class="input-group col-12 col-lg-12">
 		<input type="text" class="form-control" placeholder="Search PreDB" id="presearch" name="presearch" value="{$lastSearch|escape:'html'}">
@@ -8,7 +17,6 @@
 		</span>
 	</div>
 </form>
-<h4>{$page->title}</h4>
 <div class="container">
 	{$pager}
 	<table style="margin-bottom:10px; margin-top:5px;" class="table table-condensed table-highlight table-striped data Sortable">
