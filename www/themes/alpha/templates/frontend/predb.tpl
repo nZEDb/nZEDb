@@ -1,3 +1,10 @@
+<form method="get" action="{$smarty.const.WWW_TOP}/predb">
+	<div id="search" style="text-align:center;">
+		<label for="presearch" style="display:none;">Search</label>
+		<input id="presearch" name="presearch" value="{$lastSearch|escape:'html'}" type="text"/>
+		<input id="presearch_button" type="submit" value="Search" />&nbsp;&nbsp;&nbsp;
+	</div>
+</form>
 <h4>{$page->title}</h4>
 <div class="container">
 	{$pager}
@@ -19,10 +26,10 @@
 				<td class="predb">
 					{if isset($result.guid)}
 						<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.title|escape:"htmlall"}">
-							{$result.title|escape:"htmlall"}
+							{$result.title|escape:"htmlall"|truncate:90}
 						</a>
 					{else}
-						{$result.title|escape:"htmlall"}
+						{$result.title|escape:"htmlall"|truncate:90}
 					{/if}
 					<a
 						style="float: right;"
@@ -69,6 +76,10 @@
 						<a title="Visit abgx" href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss">
 							abgx.net
 						</a>
+					{elseif in_array({$result.source}, array('abErotica', 'abMoovee', 'abTeevee', 'abForeign'))}
+						<a title="Visit allfilled {$result.source}" href="{$site->dereferrer_link}http://{$result.source}.allfilled.com/search.php?q={$result.title}&Search=Search">
+							{$result.source}
+						</a>
 					{elseif {$result.source} == omgwtfnzbs}
 						<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php">
 							omgwtfnzbs.org
@@ -112,6 +123,8 @@
 						<a class="title" title="View category XBOX 360" href="{$smarty.const.WWW_TOP}/browse?t=1050">Console Xbox 360</a>
 
 					{* Movies *}
+					{elseif in_array({$result.category}, array('Movies'))}
+						<a class="title" title="View category Movies" href="{$smarty.const.WWW_TOP}/browse?t=2000">Movies</a>
 					{* SD *}
 					{elseif in_array({$result.category}, array('movies-sd', 'Movies: STD', 'XVID'))}
 						<a class="title" title="View category Movies SD" href="{$smarty.const.WWW_TOP}/browse?t=2030">Movies SD</a>
@@ -156,6 +169,8 @@
 						<a class="title" title="View category PC Games" href="{$smarty.const.WWW_TOP}/browse?t=4050">PC Games</a>
 
 					{* TV *}
+					{elseif in_array({$result.category}, array('TV'))}
+						<a class="title" title="View category TV" href="{$smarty.const.WWW_TOP}/browse?t=5000">TV</a>
 					{* SD *}
 					{elseif in_array({$result.category}, array('TV-DVDRIP', 'tv-sd', 'TV: STD', 'TV-XVID'))}
 						<a class="title" title="View category TV SD" href="{$smarty.const.WWW_TOP}/browse?t=5030">SDTV</a>

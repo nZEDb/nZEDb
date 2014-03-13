@@ -651,96 +651,26 @@ class Releases
 			}
 		}
 
-		$hasnfosql = $hascommentssql = $daysnewsql = $daysoldsql = $maxagesql = $exccatlist = $searchnamesql = $usenetnamesql = $posternamesql = $groupIDsql = '';
+		$daysnewsql = $daysoldsql = $maxagesql = $groupIDsql = '';
 
-		if ($searchname != '-1') {
-			$searchnamesql = $this->searchSQL($searchname, $db, 'searchname');
-		}
-
-		if ($usenetname != '-1') {
-			$usenetnamesql = $this->searchSQL($usenetname, $db, 'name');
-		}
-
-		if ($postername != '-1') {
-			$posternamesql = $this->searchSQL($postername, $db, 'fromname');
-		}
-
-		if ($groupname != '-1') {
-			$groupID = $this->groups->getIDByName($db->escapeString($groupname));
-			$groupIDsql = sprintf(' AND releases.groupid = %d ', $groupID);
-		}
-
-		if ($sizefrom == '-1') {
-			$sizefromsql = ('');
-		} else if ($sizefrom == '1') {
-			$sizefromsql = (' AND releases.size > 104857600 ');
-		} else if ($sizefrom == '2') {
-			$sizefromsql = (' AND releases.size > 262144000 ');
-		} else if ($sizefrom == '3') {
-			$sizefromsql = (' AND releases.size > 524288000 ');
-		} else if ($sizefrom == '4') {
-			$sizefromsql = (' AND releases.size > 1073741824 ');
-		} else if ($sizefrom == '5') {
-			$sizefromsql = (' AND releases.size > 2147483648 ');
-		} else if ($sizefrom == '6') {
-			$sizefromsql = (' AND releases.size > 3221225472 ');
-		} else if ($sizefrom == '7') {
-			$sizefromsql = (' AND releases.size > 4294967296 ');
-		} else if ($sizefrom == '8') {
-			$sizefromsql = (' AND releases.size > 8589934592 ');
-		} else if ($sizefrom == '9') {
-			$sizefromsql = (' AND releases.size > 17179869184 ');
-		} else if ($sizefrom == '10') {
-			$sizefromsql = (' AND releases.size > 34359738368 ');
-		} else if ($sizefrom == '11') {
-			$sizefromsql = (' AND releases.size > 68719476736 ');
-		}
-
-		if ($sizeto == '-1') {
-			$sizetosql = ('');
-		} else if ($sizeto == '1') {
-			$sizetosql = (' AND releases.size < 104857600 ');
-		} else if ($sizeto == '2') {
-			$sizetosql = (' AND releases.size < 262144000 ');
-		} else if ($sizeto == '3') {
-			$sizetosql = (' AND releases.size < 524288000 ');
-		} else if ($sizeto == '4') {
-			$sizetosql = (' AND releases.size < 1073741824 ');
-		} else if ($sizeto == '5') {
-			$sizetosql = (' AND releases.size < 2147483648 ');
-		} else if ($sizeto == '6') {
-			$sizetosql = (' AND releases.size < 3221225472 ');
-		} else if ($sizeto == '7') {
-			$sizetosql = (' AND releases.size < 4294967296 ');
-		} else if ($sizeto == '8') {
-			$sizetosql = (' AND releases.size < 8589934592 ');
-		} else if ($sizeto == '9') {
-			$sizetosql = (' AND releases.size < 17179869184 ');
-		} else if ($sizeto == '10') {
-			$sizetosql = (' AND releases.size < 34359738368 ');
-		} else if ($sizeto == '11') {
-			$sizetosql = (' AND releases.size < 68719476736 ');
-		}
-
-		if ($hasnfo != '0') {
-			$hasnfosql = ' AND releases.nfostatus = 1 ';
-		}
-
-		if ($hascomments != '0') {
-			$hascommentssql = ' AND releases.comments > 0 ';
-		}
+		$searchnamesql  = ($searchname  != '-1' ? $this->searchSQL($searchname, $db, 'searchname') : '');
+		$usenetnamesql  = ($usenetname  != '-1' ? $this->searchSQL($usenetname, $db, 'name') : '');
+		$posternamesql  = ($postername  != '-1' ? $this->searchSQL($postername, $db, 'fromname') : '');
+		$hasnfosql      = ($hasnfo      != '0'  ? ' AND releases.nfostatus = 1 ' : '');
+		$hascommentssql = ($hascomments != '0'  ? ' AND releases.comments > 0 ' : '');
+		$exccatlist = (count($excludedcats) > 0 ? ' AND releases.categoryid NOT IN (' . implode(',', $excludedcats) . ')' : '');
 
 		if ($daysnew != '-1') {
 			if ($db->dbSystem() == 'mysql') {
-				$daysnewsql = sprintf(' AND releases.postdate < NOW() - INTERVAL %d DAY ', $daysnew);
+				$daysnewsql = sprintf(' AND releases.postdate < (NOW() - INTERVAL %d DAY) ', $daysnew);
 			} else {
-				$daysnewsql = sprintf(" AND releases.postdate < NOW() - INTERVAL '%d DAYS ", $daysnew);
+				$daysnewsql = sprintf(" AND releases.postdate < NOW() - INTERVAL '%d DAYS' ", $daysnew);
 			}
 		}
 
 		if ($daysold != '-1') {
 			if ($db->dbSystem() == 'mysql') {
-				$daysoldsql = sprintf(' AND releases.postdate > NOW() - INTERVAL %d DAY ', $daysold);
+				$daysoldsql = sprintf(' AND releases.postdate > (NOW() - INTERVAL %d DAY) ', $daysold);
 			} else {
 				$daysoldsql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $daysold);
 			}
@@ -748,14 +678,54 @@ class Releases
 
 		if ($maxage > 0) {
 			if ($db->dbSystem() == 'mysql') {
-				$maxagesql = sprintf(' AND releases.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+				$maxagesql = sprintf(' AND releases.postdate > (NOW() - INTERVAL %d DAY) ', $maxage);
 			} else {
-				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS ", $maxage);
+				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
 
-		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND releases.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
+
+		if ($groupname != '-1') {
+			$groupID = $this->groups->getIDByName($groupname);
+			$groupIDsql = sprintf(' AND releases.groupid = %d ', $groupID);
+		}
+
+		$sizefromsql = '';
+		switch ($sizefrom) {
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+			case '10':
+			case '11':
+			$sizefromsql = ' AND releases.size > ' . (string)(104857600 * (int)$sizefrom) . ' ';
+				break;
+			default:
+				break;
+		}
+
+		$sizetosql = '';
+		switch ($sizeto) {
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+			case '10':
+			case '11':
+			$sizetosql = ' AND releases.size < ' . (string)(104857600 * (int)$sizeto) . ' ';
+				break;
+			default:
+				break;
 		}
 
 		if ($orderby == '') {
