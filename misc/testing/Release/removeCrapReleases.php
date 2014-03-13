@@ -230,7 +230,7 @@ function deleteBlacklist($and)
 
 			// Get the group ID if the regex is set to work against a group.
 			$groupID = '';
-			if ($regex['groupname'] !== strtolower('alt.binaries.*')) {
+			if (strtolower($regex['groupname']) !== 'alt.binaries.*') {
 				$groupID = $groups->getIDByName($regex['groupname']);
 				$groupID = ($groupID === '' ? '' : ' AND r.groupid = ' . $groupID . ' ');
 			}
