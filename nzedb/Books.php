@@ -287,16 +287,50 @@ class Books
 		return $result;
 	}
 
+	/**
+	 * Process book releases, 1 category at a time.
+	 */
 	public function processBookReleases()
 	{
+		$bookids = array();
+		if (preg_match('/^\d+$/', $this->bookreqids)) {
+			$bookids[] = $this->bookreqids;
+		} else {
+			$bookids = explode(', ', $this->bookreqids);
+		}
+
+		$total = count($bookids);
+		if ($total > 0) {
+			for ($i = 0; $i < $total; $i++) {
+				$this->processBookReleasesHelper(
+					$this->db->queryDirect(
+						sprintf('
+						SELECT searchname, id, categoryid
+						FROM releases
+						WHERE nzbstatus = 1 %s
+						AND bookinfoid IS NULL
+						AND categoryid in (%s)
+						ORDER BY POSTDATE
+						DESC LIMIT %d', $this->renamed, $bookids[$i], $this->bookqty)
+					), $bookids[$i]
+				);
+			}
+		}
+	}
+
+	/**
+	 * Process book releases.
+	 *
+	 * @param array $res      Array containing unprocessed book SQL data set.
+	 * @param int   $categoryID The category id.
+	 * @void
+	 */
+	protected function processBookReleasesHelper($res, $categoryID)
+	{
 		$db = $this->db;
-
-		// include results for all book types selected in the site edit UI, this could be audio, ebooks, foregin or technical currently
-		$res = $db->queryDirect(sprintf('SELECT searchname, id, categoryid FROM releases WHERE nzbstatus = 1 %s AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d', $this->renamed, $this->bookreqids, $this->bookqty));
-
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("\nProcessing " . $res->rowCount() . ' book release(s).'));
+				$this->c->doEcho($this->c->header("\nProcessing " . $res->rowCount() . ' book release(s) for category ID ' . $categoryID));
 			}
 
 			foreach ($res as $arr) {
@@ -344,7 +378,7 @@ class Books
 				}
 			}
 		} else if ($this->echooutput) {
-			$this->c->doEcho($this->c->header('No book releases to process.'));
+			$this->c->doEcho($this->c->header('No book releases to process for category id ' . $categoryID));
 		}
 	}
 
