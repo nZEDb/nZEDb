@@ -29,6 +29,8 @@
 				<th style="width:120px;text-align:center;">source</th>
 				<th style="width:120px;text-align:center;">category</th>
 				<th style="width:60px;text-align:right;">size</th>
+				<th></th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -37,29 +39,11 @@
 				<td class="predb">
 					{if isset($result.guid)}
 						<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.title|escape:"htmlall"}">
-							{$result.title|escape:"htmlall"|truncate:90}
+							<span title="{$result.title|escape:"htmlall"}">{$result.title|escape:"htmlall"|truncate:55}</span>
 						</a>
 					{else}
-						{$result.title|escape:"htmlall"|truncate:90}
+						<span title="{$result.title|escape:"htmlall"}">{$result.title|escape:"htmlall"|truncate:55}</span>
 					{/if}
-					<a
-						style="float: right;"
-						title="NzbIndex"
-						href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
-						target="_blank"
-					>
-						<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/nzbindex.png" />
-						&nbsp;
-					</a>
-					<a
-						style="float: right;"
-						title="BinSearch"
-						href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
-						target="_blank"
-					>
-						<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/binsearch.png" />
-						&nbsp;
-					</a>
 				</td>
 				<td class="predb">
 					{if is_numeric({$result.requestid}) && {$result.requestid} != 0}
@@ -222,11 +206,37 @@
 					{/if}
 				</td>
 				<td class="predb" style="width:60px;text-align:right;overflow:hidden;">
-					{if {$result.size} != 'NULL' && {$result.size} != ''}
-						{$result.size}
+					{if not in_array({$result.size}, array('NULL', '', '0MB'))}
+						{if strpos($result.size, 'MB') != false && {$result.size|regex_replace:"/\.\d+/":''|replace:'MB':''|count_characters} > 3}
+							{math equation=($result.size|regex_replace:'/\.\d+/':''|replace:'MB':'' / 1024)|round}GB
+						{else}
+							{$result.size|regex_replace:"/\.\d+/":''}
+						{/if}
 					{else}
 						N/A
 					{/if}
+				</td>
+				<td class="predb">
+					<a
+						style="float: left;"
+						title="NzbIndex"
+						href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
+						target="_blank"
+					>
+						<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/nzbindex.png" />
+						&nbsp;
+					</a>
+				</td>
+				<td class="predb">
+					<a
+						style="float: left;"
+						title="BinSearch"
+						href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
+						target="_blank"
+					>
+						<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/binsearch.png" />
+						&nbsp;
+					</a>
 				</td>
 			</tr>
 		{/foreach}
