@@ -1,13 +1,14 @@
 <div class="container">
 	<div class="col-sm-6 col-sm-offset-3">
 		<div class="well">
-			<form class="form-signin" action="contact-us" method="post">
-				<h2 class="form-signin-heading">Getting in touch</h2>
+			{$msg} {* This is a message that appears if a email is sent. *}
+			{if $msg == ""}
+			<h2 class="form-signin-heading">Getting in touch</h2>
+			{if $site->email != ''}
 				<p>Please send any questions or comments you have in an email to {mailto address=$site->email text=$site->title}.</p>
-				{$msg}
-				{if $msg == ""}
 				<p>Alternatively use our contact form to get in touch.</p>
-
+			{/if}
+			<form class="form-signin" action="contact-us" method="post">
 				<fieldset>
 					<div class="form-group">
 						<label for="username">Your Name</label>
@@ -26,7 +27,7 @@
 					</div>
 				</fieldset>
 			</form>
+			{/if}
 		</div>
 	</div>
 </div><!-- container -->
-{/if}

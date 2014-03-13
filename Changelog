@@ -19,6 +19,7 @@ Each update goes to the top of the file
                        -> Use defined category names in predb template to make it look better.
                        -> Fix register bug in alpha theme.
                        -> Removecrapreleases run on the groups the blacklist have.
+                       -> Fix the contact us pages (they had all kind of issues.)
 2014-03-11 -> kevin    -> Fix issues in viewnzb (couchpotato details are wrong and getting wrong titles for some stuff).
                        -> Add nzbindex and binsearch icons to predb instead of text.
                        -> Add more category links to predb and add link to usenet-crawler predb.
