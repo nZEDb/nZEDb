@@ -65,11 +65,25 @@ Class PreDb
 			if ($this->echooutput) {
 				echo $this->c->primary($newUsenetCrawler . " \tRetrieved from Usenet-Crawler.");
 			}
-			$this->retrieveAllfilledMoovee();
-			$this->retrieveAllfilledTeevee();
-			$this->retrieveAllfilledErotica();
-			$this->retrieveAllfilledForeign();
-			$newnames = $newwomble + $newomgwtf + $newzenet + $newprelist + $neworly + $newsrr + $newpdme + $abgx + $newUsenetCrawler;
+			$newMoovee = $this->retrieveAllfilledMoovee();
+			if ($this->echooutput) {
+				echo $this->c->primary($newMoovee . " \tRetrieved from Allfilled Moove.");
+			}
+			$newTeevee = $this->retrieveAllfilledTeevee();
+			if ($this->echooutput) {
+				echo $this->c->primary($newTeevee . " \tRetrieved from Allfilled Teevee.");
+			}
+			$newErotica = $this->retrieveAllfilledErotica();
+			if ($this->echooutput) {
+				echo $this->c->primary($newErotica . " \tRetrieved from Allfilled Erotica.");
+			}
+			$newForeign = $this->retrieveAllfilledForeign();
+			$newnames = $newwomble + $newomgwtf + $newzenet + $newprelist + $neworly + $newsrr + $newpdme + $abgx +
+				$newUsenetCrawler + $newMoovee + $newTeevee + $newErotica + $newForeign;
+			if ($this->echooutput) {
+				echo $this->c->primary($newForeign . " \tRetrieved from Allfilled Foreign.\n");
+				echo $this->c->primary($newnames . " \tRetrieved from all the above sources..");
+			}
 			if (count($newnames) > 0) {
 				$db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestrel['id']));
 			}
@@ -411,6 +425,7 @@ Class PreDb
 	{
 		$db = new DB();
 		$matches2 = $matches = $match = $m = '';
+		$newnames = 0;
 		$groups = new Groups();
 		$groupid = $groups->getIDByName('alt.binaries.moovee');
 
@@ -425,9 +440,13 @@ Class PreDb
 								$title = $db->escapeString($matches2["title"]);
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
-								$source = $db->escapeString('allfilled');
+								$source = $db->escapeString('abMooVee');
 								if (strlen($title) > 15) {
-									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+									if ($dupeCheck === false) {
+										$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'Movies') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+										$newnames++;
+									}
 								}
 							}
 						}
@@ -437,12 +456,14 @@ Class PreDb
 		} else {
 			echo $this->c->error("Update from Moovee failed.");
 		}
+		return $newnames;
 	}
 
 	public function retrieveAllfilledTeevee()
 	{
 		$db = new DB();
 		$matches2 = $matches = $match = $m = '';
+		$newnames = 0;
 		$groups = new Groups();
 		$groupid = $groups->getIDByName('alt.binaries.teevee');
 
@@ -457,9 +478,13 @@ Class PreDb
 								$title = $db->escapeString($matches2["title"]);
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
-								$source = $db->escapeString('allfilled');
+								$source = $db->escapeString('abTeeVee');
 								if (strlen($title) > 15) {
-									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+									if ($dupeCheck === false) {
+										$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'TV') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+										$newnames++;
+									}
 								}
 							}
 						}
@@ -469,12 +494,14 @@ Class PreDb
 		} else {
 			echo $this->c->error("Update from Teevee failed.");
 		}
+		return $newnames;
 	}
 
 	public function retrieveAllfilledErotica()
 	{
 		$db = new DB();
 		$matches2 = $matches = $match = $m = '';
+		$newnames = 0;
 		$groups = new Groups();
 		$groupid = $groups->getIDByName('alt.binaries.erotica');
 
@@ -489,9 +516,13 @@ Class PreDb
 								$title = $db->escapeString($matches2["title"]);
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
-								$source = $db->escapeString('allfilled');
+								$source = $db->escapeString('abErotica');
 								if (strlen($title) > 15) {
-									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+									if ($dupeCheck === false) {
+										$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'XXX') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+										$newnames++;
+									}
 								}
 							}
 						}
@@ -501,12 +532,14 @@ Class PreDb
 		} else {
 			echo $this->c->error("Update from Erotica failed.");
 		}
+		return $newnames;
 	}
 
 	public function retrieveAllfilledForeign()
 	{
 		$db = new DB();
 		$matches2 = $matches = $match = $m = '';
+		$newnames = 0;
 		$groups = new Groups();
 		$groupid = $groups->getIDByName('alt.binaries.mom');
 
@@ -521,9 +554,13 @@ Class PreDb
 								$title = $db->escapeString($matches2["title"]);
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								$predate = $db->escapeString($matches2["predate"]);
-								$source = $db->escapeString('allfilled');
+								$source = $db->escapeString('abForeign');
 								if (strlen($title) > 15) {
-									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+									if ($dupeCheck === false ) {
+										$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+										$newnames++;
+									}
 								}
 							}
 						}
@@ -533,6 +570,7 @@ Class PreDb
 		} else {
 			echo $this->c->error("Update from Foreign failed.");
 		}
+		return $newnames;
 	}
 
 	public function retrieveAbgx()
@@ -791,17 +829,33 @@ Class PreDb
 		return $updated;
 	}
 
-	public function getAll($offset, $offset2)
+	/**
+	 * @param int    $offset  OFFSET
+	 * @param int    $offset2 LIMIT
+	 * @param string $search  Optional title search.
+	 *
+	 * @return array The row count and the query results.
+	 */
+	public function getAll($offset, $offset2, $search = '')
 	{
 		$db = new DB();
-		if ($db->dbSystem() == 'mysql') {
-			$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $offset2, $offset));
-			$count = $db->queryOneRow("SELECT COUNT(*) AS cnt FROM predb");
-			return array('arr' => $parr, 'count' => $count['cnt']);
+		if ($search !== '') {
+			$like = ($db->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE');
+			$search = explode(' ', trim($search));
+			if (count($search > 1)) {
+				$search = "$like '%" . implode("%' AND title $like '%", $search) . "%'";
+			} else {
+				$search = "$like '%" . $search . "%'";
+			}
+			$search = 'WHERE title ' . $search;
+			$count = $db->queryOneRow(sprintf('SELECT COUNT(*) AS cnt FROM predb %s', $search));
+			$count = $count['cnt'];
 		} else {
-			$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $offset2, $offset));
-			return array('arr' => $parr, 'count' => $this->getCount());
+			$count = $this->getCount();
 		}
+
+		$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid %s ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $search, $offset2, $offset));
+		return array('arr' => $parr, 'count' => $count);
 	}
 
 	public function getCount()

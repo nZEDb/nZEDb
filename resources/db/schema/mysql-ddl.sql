@@ -89,29 +89,35 @@ CREATE TABLE releases (
 	proc_par2 BIT NOT NULL DEFAULT 0,
 	proc_nfo BIT NOT NULL DEFAULT 0,
 	proc_files BIT NOT NULL DEFAULT 0,
-	PRIMARY KEY (id)
-) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
+	PRIMARY KEY (id, categoryid)
+	) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1
+	PARTITION BY RANGE (categoryid) (
+	PARTITION unused VALUES LESS THAN (1000),
+	PARTITION console VALUES LESS THAN (2000),
+	PARTITION movies VALUES LESS THAN (3000),
+	PARTITION audio VALUES LESS THAN (4000),
+	PARTITION pc VALUES LESS THAN (5000),
+	PARTITION tv VALUES LESS THAN (6000),
+	PARTITION xxx VALUES LESS THAN (7000),
+	PARTITION misc VALUES LESS THAN (8000),
+	PARTITION books VALUES LESS THAN (9000)
+	) ;
 
 CREATE INDEX ix_releases_adddate ON releases (adddate);
-CREATE INDEX ix_releases_categoryid ON releases (categoryid);
 CREATE INDEX ix_releases_rageid ON releases (rageid);
 CREATE INDEX ix_releases_imdbid ON releases (imdbid);
-CREATE INDEX ix_releases_preid ON releases (preid);
 CREATE INDEX ix_releases_guid ON releases (guid);
-CREATE INDEX ix_releases_name ON releases(name);
-CREATE INDEX ix_releases_searchname ON releases (searchname);
+CREATE INDEX ix_releases_name ON releases (name);
 CREATE INDEX ix_releases_groupid ON releases (groupid);
-CREATE INDEX ix_releases_passwordstatus on releases (passwordstatus);
 CREATE INDEX ix_releases_dehashstatus ON releases (dehashstatus);
 CREATE INDEX ix_releases_reqidstatus ON releases (reqidstatus);
 CREATE INDEX ix_releases_nfostatus ON releases (nfostatus);
 CREATE INDEX ix_releases_musicinfoid ON releases (musicinfoid);
 CREATE INDEX ix_releases_consoleinfoid ON releases (consoleinfoid);
 CREATE INDEX ix_releases_bookinfoid ON releases (bookinfoid);
-CREATE INDEX ix_releases_haspreview ON releases (haspreview);
+CREATE INDEX ix_releases_haspreview_passwordstatus ON releases (haspreview, passwordstatus);
 CREATE INDEX ix_releases_status ON releases (nzbstatus, iscategorized, isrenamed, nfostatus, ishashed, isrequestid, passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid, bookinfoid, haspreview, categoryid, imdbid, rageid);
 CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
-CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);
 CREATE INDEX ix_releases_nzb_guid ON releases (nzb_guid);
 CREATE INDEX ix_releases_preid_searchname ON releases (preid, searchname);
 
@@ -234,6 +240,7 @@ CREATE TABLE menu (
 	menueval VARCHAR(2000) NOT NULL DEFAULT '',
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
+
 
 DROP TABLE IF EXISTS releasenfo;
 CREATE TABLE releasenfo (
@@ -455,6 +462,7 @@ CREATE TABLE users (
 	userseed VARCHAR(50) NOT NULL,
 	cp_url VARCHAR(255) NULL DEFAULT NULL,
 	cp_api VARCHAR(255) NULL DEFAULT NULL,
+	style VARCHAR(255) NULL DEFAULT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
@@ -748,6 +756,7 @@ CREATE TABLE country (
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
 CREATE INDEX ix_country_name ON country (name);
+
 
 DELIMITER $$
 CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.ishashed = 1;ELSEIF NEW.name REGEXP '^\\[[[:digit:]]+\\]' THEN SET NEW.isrequestid = 1; END IF; END; $$

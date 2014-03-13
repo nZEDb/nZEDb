@@ -37,7 +37,7 @@ function SplitSQL($file, $delimiter = ';')
 								echo $c->error($query . " Skipped - Not Fatal {" . $e->errorInfo[1] . "}.\n");
 							}
 						} else {
-							if (preg_match('/ALTER IGNORE/I', $query)) {
+							if (preg_match('/ALTER IGNORE/i', $query)) {
 								$db->queryExec("SET SESSION old_alter_table = 1");
 								try {
 									$qry = $db->prepare($query);
@@ -77,7 +77,7 @@ function BackupDatabase()
 	$c = new ColorCLI();
 	$DIR = nZEDb_MISC;
 
-	if (nzedb\utility\Util::hasCommand("php5")) {
+	if (Util::hasCommand("php5")) {
 		$PHP = "php5";
 	} else {
 		$PHP = "php";
@@ -204,4 +204,3 @@ if ($patched > 0) {
 		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c");
 	}
 }
-?>
