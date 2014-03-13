@@ -65,6 +65,10 @@
 					<a title="Visit abgx" href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss">
 						abgx.net
 					</a>
+				{elseif in_array({$result.source}, array('abErotica', 'abMoovee', 'abTeevee', 'abForeign'))}
+					<a title="Visit allfilled {$result.source}" href="{$site->dereferrer_link}http://{$result.source}.allfilled.com/search.php?q={$result.title}&Search=Search">
+						{$result.source}
+					</a>
 				{elseif {$result.source} == omgwtfnzbs}
 					<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php">
 						omgwtfnzbs.org

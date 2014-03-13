@@ -65,11 +65,25 @@ Class PreDb
 			if ($this->echooutput) {
 				echo $this->c->primary($newUsenetCrawler . " \tRetrieved from Usenet-Crawler.");
 			}
-			$this->retrieveAllfilledMoovee();
-			$this->retrieveAllfilledTeevee();
-			$this->retrieveAllfilledErotica();
-			$this->retrieveAllfilledForeign();
-			$newnames = $newwomble + $newomgwtf + $newzenet + $newprelist + $neworly + $newsrr + $newpdme + $abgx + $newUsenetCrawler;
+			$newMoovee = $this->retrieveAllfilledMoovee();
+			if ($this->echooutput) {
+				echo $this->c->primary($newMoovee . " \tRetrieved from Allfilled Moove.");
+			}
+			$newTeevee = $this->retrieveAllfilledTeevee();
+			if ($this->echooutput) {
+				echo $this->c->primary($newTeevee . " \tRetrieved from Allfilled Teevee.");
+			}
+			$newErotica = $this->retrieveAllfilledErotica();
+			if ($this->echooutput) {
+				echo $this->c->primary($newErotica . " \tRetrieved from Allfilled Erotica.");
+			}
+			$newForeign = $this->retrieveAllfilledForeign();
+			$newnames = $newwomble + $newomgwtf + $newzenet + $newprelist + $neworly + $newsrr + $newpdme + $abgx +
+				$newUsenetCrawler + $newMoovee + $newTeevee + $newErotica + $newForeign;
+			if ($this->echooutput) {
+				echo $this->c->primary($newForeign . " \tRetrieved from Allfilled Foreign.\n");
+				echo $this->c->primary($newnames . " \tRetrieved from all the above sources..");
+			}
 			if (count($newnames) > 0) {
 				$db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestrel['id']));
 			}
@@ -411,6 +425,7 @@ Class PreDb
 	{
 		$db = new DB();
 		$matches2 = $matches = $match = $m = '';
+		$newnames = 0;
 		$groups = new Groups();
 		$groupid = $groups->getIDByName('alt.binaries.moovee');
 
@@ -428,6 +443,7 @@ Class PreDb
 								$source = $db->escapeString('abMooVee');
 								if (strlen($title) > 15) {
 									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'Movies') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+									$newnames++;
 								}
 							}
 						}
@@ -437,12 +453,14 @@ Class PreDb
 		} else {
 			echo $this->c->error("Update from Moovee failed.");
 		}
+		return $newnames;
 	}
 
 	public function retrieveAllfilledTeevee()
 	{
 		$db = new DB();
 		$matches2 = $matches = $match = $m = '';
+		$newnames = 0;
 		$groups = new Groups();
 		$groupid = $groups->getIDByName('alt.binaries.teevee');
 
@@ -460,6 +478,7 @@ Class PreDb
 								$source = $db->escapeString('abTeeVee');
 								if (strlen($title) > 15) {
 									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'TV') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+									$newnames++;
 								}
 							}
 						}
@@ -469,12 +488,14 @@ Class PreDb
 		} else {
 			echo $this->c->error("Update from Teevee failed.");
 		}
+		return $newnames;
 	}
 
 	public function retrieveAllfilledErotica()
 	{
 		$db = new DB();
 		$matches2 = $matches = $match = $m = '';
+		$newnames = 0;
 		$groups = new Groups();
 		$groupid = $groups->getIDByName('alt.binaries.erotica');
 
@@ -492,6 +513,7 @@ Class PreDb
 								$source = $db->escapeString('abErotica');
 								if (strlen($title) > 15) {
 									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'XXX') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+									$newnames++;
 								}
 							}
 						}
@@ -501,12 +523,14 @@ Class PreDb
 		} else {
 			echo $this->c->error("Update from Erotica failed.");
 		}
+		return $newnames;
 	}
 
 	public function retrieveAllfilledForeign()
 	{
 		$db = new DB();
 		$matches2 = $matches = $match = $m = '';
+		$newnames = 0;
 		$groups = new Groups();
 		$groupid = $groups->getIDByName('alt.binaries.mom');
 
@@ -524,6 +548,7 @@ Class PreDb
 								$source = $db->escapeString('abForeign');
 								if (strlen($title) > 15) {
 									$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+									$newnames++;
 								}
 							}
 						}
@@ -533,6 +558,7 @@ Class PreDb
 		} else {
 			echo $this->c->error("Update from Foreign failed.");
 		}
+		return $newnames;
 	}
 
 	public function retrieveAbgx()
