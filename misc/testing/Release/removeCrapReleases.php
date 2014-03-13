@@ -216,7 +216,8 @@ function deleteScr($and)
 function deleteBlacklist($and)
 {
 	$db = new DB();
-	$regexes = $db->queryDirect('SELECT regex, id FROM binaryblacklist WHERE status = 1 AND optype = 1');
+	$groups = new Groups();
+	$regexes = $db->queryDirect('SELECT regex, id, groupname FROM binaryblacklist WHERE status = 1 AND optype = 1');
 	$delcount = 0;
 	$count = $regexes->rowCount();
 	if ($count > 0) {
@@ -226,7 +227,15 @@ function deleteBlacklist($and)
 			} else {
 				$regexsql = "(rf.name ~ " . $db->escapeString($regex['regex']) . " OR r.name ~ " . $db->escapeString($regex['regex']) . ")";
 			}
-			$sql = $db->prepare("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regexsql} " . $and);
+
+			// Get the group ID if the regex is set to work against a group.
+			$groupID = '';
+			if ($regex['groupname'] !== strtolower('alt.binaries.*')) {
+				$groupID = $groups->getIDByName($regex['groupname']);
+				$groupID = ($groupID === '' ? '' : ' AND r.groupid = ' . $groupID . ' ');
+			}
+
+			$sql = $db->prepare("SELECT r.id, r.guid, r.searchname FROM releases r LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE {$regexsql} " . $groupID . $and);
 			$sql->execute();
 			$delcount += deleteReleases($sql, 'Blacklist ' . $regex['id']);
 		}
