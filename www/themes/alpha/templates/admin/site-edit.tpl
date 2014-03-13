@@ -7,7 +7,7 @@
 {/if}
 
 <fieldset>
-	<legend>Main Site Settings, Html Layout, Tags</legend>
+	<nZEDblegend>Main Site Settings, Html Layout, Tags</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="title">Title:</label></td>
@@ -140,7 +140,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Language/Categorization options</legend>
+	<nZEDblegend>Language/Categorization options</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="catlanguage">Categorize Language:</label></td>
@@ -185,7 +185,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Google Adsense, Analytics and 3rd Party Banners</legend>
+	<nZEDblegend>Google Adsense, Analytics and 3rd Party Banners</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="google_analytics_acc">Google Analytics:</label></td>
@@ -240,7 +240,7 @@
 
 
 <fieldset>
-	<legend>3<sup>rd</sup> Party API Keys</legend>
+	<nZEDblegend>3<sup>rd</sup> Party API Keys</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="tmdbkey">TMDB Key:</label></td>
@@ -311,7 +311,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>3<sup>rd</sup> Party Application Paths</legend>
+	<nZEDblegend>3<sup>rd</sup> Party Application Paths</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="unrarpath">Unrar Path:</label></td>
@@ -363,7 +363,7 @@
 
 
 <fieldset>
-	<legend>SABnzbd Integration Settings</legend>
+	<nZEDblegend>SABnzbd Integration Settings</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="sabintegrationtype">Integration Type:</label></td>
@@ -410,7 +410,7 @@
 
 
 <fieldset>
-<legend>Usenet Settings</legend>
+<nZEDblegend>Usenet Settings</nZEDblegend>
 <table class="input">
 
 <tr>
@@ -643,7 +643,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Advanced Settings - For advanced users</legend>
+	<nZEDblegend>Advanced Settings - For advanced users</nZEDblegend>
 	<table class="input">
 
 		<tr>
@@ -781,7 +781,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Advanced - Postprocessing Settings</legend>
+	<nZEDblegend>Advanced - Postprocessing Settings</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="maxaddprocessed">Maximum add PP per run:</label></td>
@@ -883,7 +883,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Connection Settings</legend>
+	<nZEDblegend>Connection Settings</nZEDblegend>
 	<table class="input">
 
 		<tr>
@@ -948,7 +948,7 @@
 
 
 <fieldset>
-	<legend>Advanced - Threaded Settings</legend>
+	<nZEDblegend>Advanced - Threaded Settings</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="binarythreads">Update Binaries Threads:</label></td>
@@ -1018,7 +1018,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>User Settings</legend>
+	<nZEDblegend>User Settings</nZEDblegend>
 	<table class="input">
 
 		<tr>

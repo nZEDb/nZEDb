@@ -138,15 +138,15 @@ if ($page->isPostBack()) {
 		$cfg->setSession();
 
 		// Load schema.sql.
-		if (file_exists($cfg->DB_DIR . '/schema.mysql') && file_exists($cfg->DB_DIR . '/schema.pgsql')) {
+		if (file_exists($cfg->DB_DIR . '/mysql.sql') && file_exists($cfg->DB_DIR . '/pgsql.sql')) {
 			if ($dbtype == "mysql") {
-				$dbData = file_get_contents($cfg->DB_DIR . '/schema.mysql');
+				$dbData = file_get_contents($cfg->DB_DIR . '/mysql.sql');
 				$dbData = str_replace(array('DELIMITER $$', 'DELIMITER ;', ' $$'), '', $dbData);
 			}
 			if ($dbtype == "pgsql") {
 				$pdo->query("DROP FUNCTION IF EXISTS hash_check() CASCADE");
 				$pdo->query("DROP FUNCTION IF EXISTS request_check() CASCADE");
-				$dbData = file_get_contents($cfg->DB_DIR . '/schema.pgsql');
+				$dbData = file_get_contents($cfg->DB_DIR . '/pgsql.sql');
 			}
 			// Fix to remove BOM in UTF8 files.
 			$bom = pack("CCC", 0xef, 0xbb, 0xbf);

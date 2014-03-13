@@ -15,6 +15,18 @@
 				</div>
 				<br>
 				<div class="form-group">
+					<label class="sr-only" for="firstname">First Name</label>
+					<input type="text" class="form-control" placeholder="Firstname" autocomplete="off" id="firstname" name="firstname" value="{$firstname}">
+					<span class="help-block">Optional real first name.</span>
+				</div>
+				<br>
+				<div class="form-group">
+					<label class="sr-only" for="lastname">First Name</label>
+					<input type="text" class="form-control" placeholder="Lastname" autocomplete="off" id="lastname" name="lastname" value="{$lastname}">
+					<span class="help-block">Optional real last name.</span>
+				</div>
+				<br>
+				<div class="form-group">
 					<label class="sr-only" for="password">Password</label>
 					<input type="password" class="form-control" placeholder="Password" id="password" autocomplete="off" name="password" value="{$password}">
 					<span class="help-block">Should be at least six characters long.</span>
