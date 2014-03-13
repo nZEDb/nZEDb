@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-12 -> bart39   -> Fix: only do requestid web lookup if predb_irc.nzedb.com is up
 2014-03-12 -> niel     -> Chg: Moving .../db dir to .../resources/db
                        -> Upd: Fixing trailing white-space from previous commit ;-)
                        -> Fix: Moving missed files added before my push ;-)
