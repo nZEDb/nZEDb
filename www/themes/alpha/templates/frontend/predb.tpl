@@ -1,8 +1,11 @@
-<form method="get" action="{$smarty.const.WWW_TOP}/predb">
-	<div id="search" style="text-align:center;">
-		<label for="presearch" style="display:none;">Search</label>
-		<input id="presearch" name="presearch" value="{$lastSearch|escape:'html'}" type="text"/>
-		<input id="presearch_button" type="submit" value="Search" />&nbsp;&nbsp;&nbsp;
+<form name="presearch" method="get" action="{$smarty.const.WWW_TOP}/predb" id="custom-search-form" class="form-search form-horizontal col-4 col-lg-4 pull-right">
+	<div id="search" class="input-group col-12 col-lg-12">
+		<input type="text" class="form-control" placeholder="Search PreDB" id="presearch" name="presearch" value="{$lastSearch|escape:'html'}">
+		<span class="input-group-btn">
+			<button type="submit" value="Go" class="btn btn-default">
+				<i class="icon-search"></i>
+			</button>
+		</span>
 	</div>
 </form>
 <h4>{$page->title}</h4>
@@ -76,7 +79,7 @@
 						<a title="Visit abgx" href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss">
 							abgx.net
 						</a>
-					{elseif in_array({$result.source}, array('abErotica', 'abMoovee', 'abTeevee', 'abForeign'))}
+					{elseif in_array({$result.source}, array('abErotica', 'abMooVee', 'abTeeVee', 'abForeign'))}
 						<a title="Visit allfilled {$result.source}" href="{$site->dereferrer_link}http://{$result.source}.allfilled.com/search.php?q={$result.title}&Search=Search">
 							{$result.source}
 						</a>

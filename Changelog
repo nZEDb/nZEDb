@@ -6,7 +6,7 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-03-13 -> ruhllatio-> Optimize Monitor.php work queries to use partitions...
 2014-03-13 -> kevin    -> Fix bad path to schema in check unique indexex.
                        -> Add category and names of allfilled predb to DB.
                        -> Parse allfilled sites in predb templates.
@@ -15,6 +15,7 @@ Each update goes to the top of the file
                        -> Clean up/fix bugs in search.
                        -> Check for dupes in allfilled. (so it doesn't echo 100 each time)
                        -> Add search to PreDB.
+                       -> Nicer looking PreDB search box.
 2014-03-13 -> niel     -> Chg: Seperating data and definition from Db schema files.
 2014-03-12 -> ruhllatio-> Change mysql schema partition releases table by categoryid -- Many ALTERs
 2014-03-12 -> bart39   -> Fix: only do requestid web lookup if predb_irc.nzedb.com is up
