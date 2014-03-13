@@ -108,6 +108,8 @@
 					<a class="title" title="View category XBOX 360" href="{$smarty.const.WWW_TOP}/browse?t=1050">Console Xbox 360</a>
 
 				{* Movies *}
+				{elseif in_array({$result.category}, array('Movies'))}
+					<a class="title" title="View category Movies" href="{$smarty.const.WWW_TOP}/browse?t=2000">Movies</a>
 				{* SD *}
 				{elseif in_array({$result.category}, array('movies-sd', 'Movies: STD', 'XVID'))}
 					<a class="title" title="View category Movies SD" href="{$smarty.const.WWW_TOP}/browse?t=2030">Movies SD</a>
@@ -152,6 +154,8 @@
 					<a class="title" title="View category PC Games" href="{$smarty.const.WWW_TOP}/browse?t=4050">PC Games</a>
 
 				{* TV *}
+				{elseif in_array({$result.category}, array('TV'))}
+					<a class="title" title="View category TV" href="{$smarty.const.WWW_TOP}/browse?t=5000">TV</a>
 				{* SD *}
 				{elseif in_array({$result.category}, array('TV-DVDRIP', 'tv-sd', 'TV: STD', 'TV-XVID'))}
 					<a class="title" title="View category TV SD" href="{$smarty.const.WWW_TOP}/browse?t=5030">SDTV</a>

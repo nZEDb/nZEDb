@@ -7,6 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-13 -> kevin    -> Fix bad path to schema in check unique indexex.
+                       -> Add category and names of allfilled predb to DB.
 2014-03-13 -> niel     -> Chg: Seperating data and definition from Db schema files.
 2014-03-12 -> ruhllatio-> Change mysql schema partition releases table by categoryid -- Many ALTERs
 2014-03-12 -> bart39   -> Fix: only do requestid web lookup if predb_irc.nzedb.com is up
