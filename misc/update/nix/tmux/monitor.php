@@ -1170,32 +1170,6 @@ while ($i > 0) {
 				case 'All':
 					$log = writelog($panes1[1]);
 					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-<<<<<<< HEAD
-						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-				} else {
-					$fcmax = count($fix_crap);
-					if (!isset($fcnum)) {
-						$fcnum = 0;
-					}
-					//Check to see if the pane is dead, if so resawn it.
-					if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1) {
-						shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-							echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-							$_php ${DIR}testing/Release/removeCrapReleases.php true full $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-						$fcnum++;
-					}
-					if ($fcnum == $fcmax) {
-						$fcnum = 0;
-						$fcfirstrun = false;
-					}
-				}
-			} else if ($fix_crap_opt != 'Disabled') {
-				$log = writelog($panes1[1]);
-				if ($fix_crap_opt == 'All') {
-					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-				} else {
-=======
 							$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
 					break;
 				// The user has specified custom types.
@@ -1203,7 +1177,6 @@ while ($i > 0) {
 					$log = writelog($panes1[1]);
 
 					// Check how many types the user picked.
->>>>>>> 3cc6ba9f354318c0c3efa72a6e330ce3ba51ac8a
 					$fcmax = count($fix_crap);
 
 					// Make sure he actually selected some.
