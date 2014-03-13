@@ -68,7 +68,7 @@
 					</a>
 				{elseif {$result.source} == omgwtfnzbs}
 					<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php">
-						omgwtfnzbs.org
+						omgwtfnzbs
 					</a>
 				{elseif {$result.source} == orlydb}
 					<a title="Visit ORLYDB" href="{$site->dereferrer_link}http://orlydb.com/?q={$result.title}" target="_blank">
@@ -92,7 +92,7 @@
 					</a>
 				{elseif {$result.source} == womble}
 					<a title="Visit Womble" href="{$site->dereferrer_link}http://www.newshost.co.za/?s={$result.title}" target="_blank">
-						Womble's NZB Index
+						Womble
 					</a>
 				{elseif {$result.source} == zenet}
 					<a title="Visit ZEnet" href="{$site->dereferrer_link}http://pre.zenet.org/?search={$result.title}" target="_blank">
@@ -142,7 +142,7 @@
 
 				{* PC *}
 				{* 0day *}
-				{elseif in_array({$result.category}, array('0DAY', 'Apps: PC', 'Apps: Linux', 'DOX'))}
+				{elseif in_array({$result.category}, array('0DAY', 'APPS', 'Apps: PC', 'Apps: Linux', 'DOX'))}
 					<a class="title" title="View category PC 0day" href="{$smarty.const.WWW_TOP}/browse?t=4010">PC 0DAY</a>
 				{* Mac *}
 				{elseif in_array({$result.category}, array('Apps: MAC', 'Games: MAC'))}
