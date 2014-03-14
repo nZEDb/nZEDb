@@ -1,6 +1,6 @@
 <div class="category" style="padding-bottom:20px;">
 	<h2 class="main-title">
-		<a class="see-more" href="{$smarty.const.WWW_TOP}{$goto}">see more &raquo;</a>
+		<a class="see-more" href="{$smarty.const.WWW_TOP}/{$goto}">see more &raquo;</a>
 		The <strong>newest releases</strong> for
 		<strong>
 			<tr>
