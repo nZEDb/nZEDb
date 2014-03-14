@@ -94,7 +94,7 @@
 						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}
-								<spanclass="icon-stack" title="Probably Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlock-alt"></i></span>
+								<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlock-alt"></i></span>
 							{elseif $result.passwordstatus == 2}
 								<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span>
 							{elseif $result.passwordstatus == 10}

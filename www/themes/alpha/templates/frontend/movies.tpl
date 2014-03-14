@@ -182,7 +182,7 @@
 											<b>{$mname[$m@index]|escape:"htmlall"}</b>
 										</a>
 										<br>
-										<div class="container">
+										<div class="resextra">
 											<div class="pull-left">
 												<i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} |
 												<i class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} |
@@ -205,39 +205,43 @@
 													<span class="label label-default">
 														<a
 															href="{$smarty.const.WWW_TOP}/nfo/{$mguid[$m@index]}"
-															title="View Nfo" class="modal_nfo" rel="nfo">Nfo
-														</a>
-													</span>
+															title="View Nfo"
+															class="modal_nfo"
+															rel="nfo"
+														><i class="icon-info-sign"></i></a></span
+													>
 												{/if}
-												{if $mpass[$m@index] == 1}
-													<span class="label label-default">Passworded</span>
-												{elseif $mpass[$m@index] == 2}
-													<span class="label label-default">Potential Password</span>
-												{/if}
-													<span class="label label-default">
-														<a
-															href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
-															title="Browse releases in {$mgrp[$m@index]|replace:"alt.binaries":"a.b"}">Grp
-														</a>
-													</span>
 												{if $mhaspreview[$m@index] == 1 && $userdata.canpreview == 1}
-													<span
-														class="label label-default">
+													<span class="label label-default">
 														<a
 															href="{$smarty.const.WWW_TOP}/covers/preview/{$mguid[$m@index]}_thumb.jpg"
 															name="name{$mguid[$m@index]}"
 															title="Screenshot of {$mname[$m@index]|escape:"htmlall"}"
-															class="modal_prev" rel="preview">Preview
-														</a>
-													</span>
+															class="modal_prev"
+															rel="preview"
+														><i class="icon-camera"></i></a></span
+													>
 												{/if}
 												{if $minnerfiles[$m@index] > 0}
 													<span class="label label-default">
 														<a
 															href="#" onclick="return false;" class="mediainfo"
-															title="{$mguid[$m@index]}">Media
-														</a>
-													</span>
+															title="{$mguid[$m@index]}"
+														><i class="icon-list-alt"></i></a></span
+													>
+												{/if}
+												<span class="label label-default">
+													<a
+															href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
+															title="Browse releases in {$mgrp[$m@index]}"
+													><i class="icon-share-alt"></i></a></span
+												>
+												{if $mpass[$m@index] == 1}
+													<span class="icon-stack" title="Potentially Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlock-alt"></i></span>
+												{elseif $mpass[$m@index] == 2}
+													<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span>
+												{elseif $mpass[$m@index] == 10}
+													<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span>
 												{/if}
 											</div>
 										</div>
@@ -247,8 +251,7 @@
 											<a
 												title="Download Nzb"
 												href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}"
-											>
-											</a>
+											></a>
 										</div>
 										{if $sabintegrated}
 											<div class="icon icon_sab float-right" title="Send to my Sabnzbd"></div>
