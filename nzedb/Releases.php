@@ -2229,7 +2229,7 @@ class Releases
 		return $db->query("SELECT DISTINCT (a.imdbID), guid, name, b.title, searchname, size, completion, postdate, "
 				. "categoryid, comments, grabs, c.cover FROM releases a, category b, movieinfo c "
 				. "WHERE b.title = 'Movies'  AND a.imdbid = c.imdbid AND a.imdbid !='NULL' AND a.imdbid != 0 AND c.cover = 1 "
-				. "GROUP BY a.imdbid ORDER BY a.postdate DESC LIMIT 20");
+				. "GROUP BY a.imdbid ORDER BY a.postdate DESC LIMIT 24");
 	}
 
 	public function getNewestConsole()
@@ -2241,13 +2241,13 @@ class Releases
 	public function getNewestMP3s()
 	{
 		$db = new DB();
-		return $db->query("SELECT DISTINCT (a.musicinfoid), guid, name, b.title, searchname, size, completion, postdate, categoryid, comments, grabs, c.cover FROM releases a, category b, musicinfo c WHERE b.title = 'Audio' and a.musicinfoid = c.id and a.musicinfoid != -2 GROUP BY a.musicinfoid ORDER BY a.postdate DESC LIMIT 10");
+		return $db->query("SELECT DISTINCT (a.musicinfoid), guid, name, b.title, searchname, size, completion, postdate, categoryid, comments, grabs, c.cover FROM releases a, category b, musicinfo c WHERE c.cover > 0 AND b.title = 'Audio' and a.musicinfoid = c.id and a.musicinfoid != -2 GROUP BY a.musicinfoid ORDER BY a.postdate DESC LIMIT 24");
 	}
 
 	public function getNewestBooks()
 	{
 		$db = new DB();
-		return $db->query("SELECT DISTINCT (a.bookinfoid), guid, name, b.title, searchname, size, completion, postdate, categoryid, comments, grabs, c.cover FROM releases a, category b, bookinfo c WHERE b.title = 'Books' and a.bookinfoid = c.id and a.bookinfoid != -2 GROUP BY a.bookinfoid ORDER BY a.postdate DESC LIMIT 12");
+		return $db->query("SELECT DISTINCT (a.bookinfoid), guid, name, b.title, searchname, size, completion, postdate, categoryid, comments, grabs, c.cover FROM releases a, category b, bookinfo c WHERE c.cover > 0 AND b.title = 'Books' and a.bookinfoid = c.id and a.bookinfoid != -2 GROUP BY a.bookinfoid ORDER BY a.postdate DESC LIMIT 12");
 	}
 
 }

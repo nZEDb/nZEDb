@@ -206,6 +206,12 @@ br.clear{
     margin: 0px;
 }
 
+.library-music {
+    display:inline-block;
+    width: 250px;
+    height: 250px;
+}
+
 .library-wrapper .library-show{
     display:inline-block;
     margin:10px 10px 0 10px;

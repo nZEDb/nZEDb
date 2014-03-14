@@ -1,18 +1,42 @@
 <div class="category" style="padding-bottom:20px;">
 	<h2 class="main-title">
-		<a class="see-more" href="#">see more &raquo;</a>
-		The <strong>newest releases</strong> for <strong>{$type}</strong>...
+		<a class="see-more" href="{$smarty.const.WWW_TOP}{$goto}">see more &raquo;</a>
+		The <strong>newest releases</strong> for
+		<strong>
+			<tr>
+				<td>
+					<select name="MySelect" id="MySelect" onchange="window.location='{$smarty.const.WWW_TOP}/newposterwall?t=' + this.value;">
+						{foreach from=$types item=newtype}
+							<option {if $type == $newtype}selected="selected"{/if} value="{$newtype}">
+								{$newtype}
+							</option>
+						{/foreach}
+					</select>
+				</td>
+			</tr>
+		</strong>
 	</h2>
 	<div class="main-wrapper">
 		<div class="main-content">
 			<!-- library -->
 			<div class="library-wrapper">
 				{foreach from=$newest item=result}
-					<div class="library-show">
+					<div
+						class=
+							{if $type == 'Movies'}
+								"library-show"
+							{elseif $type == 'Music'}
+								"library-music"
+							{/if}
+					>
 						<div class="poster">
 							{if $type == 'Movies'}
 								<a class="titleinfo" title="{$result.guid}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
 									<img alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg" />
+								</a>
+							{elseif $type = 'Music'}
+								<a class="titleinfo" title="{$result.guid}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
+									<img alt="" src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfoid}.jpg" />
 								</a>
 							{/if}
 						</div>

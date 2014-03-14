@@ -11,6 +11,7 @@ Each update goes to the top of the file
                        -> Change automated.config.php to be easier to understand for end-users.
                        -> Fix bugs in audio post processing.
                        -> Increase chances of post processing music drastically.
+                       -> Add music to new poster wall.
 2014-03-13 -> bart39   -> revert monitor.php changes as only compatible with mysql 5.6+
 2014-03-13 -> ruhllatio-> Optimize Monitor.php work queries to use partitions...
 2014-03-13 -> kevin    -> Fix bad path to schema in check unique indexex.
