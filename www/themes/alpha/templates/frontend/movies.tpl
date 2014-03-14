@@ -90,31 +90,21 @@
 						</a>
 
 						<div class="relextra" style="margin-top:5px;">
-							<span class="label label-default">
-								<a
-									target="_blank"
-									href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"
-									name="imdb{$result.imdbid}"
-									title="View imdb page">Imdb
-								</a>
-							</span>
-							<span class="label label-default">
-								<a
-									target="_blank"
-									href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/"
-									name="trakt{$result.imdbid}" title="View trakt page">Trakt
-								</a>
-							</span>
+							<a
+								target="_blank"
+								href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"
+								name="imdb{$result.imdbid}"
+								title="View imdb page"><i class="icon_imdb2"></i></a>
+							<a
+								target="_blank"
+								href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/"
+								name="trakt{$result.imdbid}" title="View trakt page"><i class="icon_trakt2"></i></a>
 							{if $cpurl != '' && $cpapi != ''}
-								<span class="label label-default">
-									<a
-										target="blackhole"
-										href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
-										name="CP{$result.imdbid}"
-										title="Add to CouchPotato">
-										Couch
-									</a>
-								</span>
+								<a
+									target="blackhole"
+									href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
+									name="CP{$result.imdbid}"
+									title="Add to CouchPotato"><i class="icon_couch2"></i></a>
 							{/if}
 						</div>
 					</div>
