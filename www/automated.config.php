@@ -1,27 +1,71 @@
 <?php
-// Show echo's on CLI output.
-define('nZEDb_ECHOCLI', true);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////// Start of user changeable settings. //////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * How many releases to show per page in list view.
+ * @default 50
+ */
+define("ITEMS_PER_PAGE", "50");
+/**
+ * How many releases to show per page in cover view.
+ * @default 20
+ */
+define("ITEMS_PER_COVER_PAGE", "20");
 
-// Show debug messages on CLI/Web.
+/**
+ * Display text to console(terminal) output.
+ * @default true
+ */
+define('nZEDb_ECHOCLI', true);
+/**
+ * Display debug messages on console or web page.
+ * @default false
+ */
 define('nZEDb_DEBUG', false);
-// Log debug messages to nzedb/resources/debug.log.
+
+/**
+ * Log debug messages to nzedb/resources/debug.log
+ * @default false
+ */
 define('nZEDb_LOGGING', false);
 
-// If nZEDb_DEBUG or nZEDb_LOGGING is true, then these will work:
-
-// Log and or echo Info messages.
+/*********************************************************************************
+ * The following options require either nZEDb_DEBUG OR nZEDb_LOGGING to be true: *
+ *********************************************************************************/
+/**
+ * Log and/or echo debug Info messages.
+ * @default false
+ */
 define('nZEDb_LOGINFO', false);
-// Log and or echo Notice messages.
+/**
+ * Log and/or echo debug Notice messages.
+ * @default false
+ */
 define('nZEDb_LOGNOTICE', false);
-// Log and or echo Warning messages.
+/**
+ * Log and/or echo debug Warning messages.
+ * @default false
+ */
 define('nZEDb_LOGWARNING', false);
-// Log and or echo Error messages.
+/**
+ * Log and/or echo debug Error messages.
+ * @default false
+ */
 define('nZEDb_LOGERROR', false);
-// Log and or echo Fatal messages.
+/**
+ * Log and/or echo debug Fatal messages.
+ * @default false
+ */
 define('nZEDb_LOGFATAL', false);
-// Log and or echo failed SQL queries.
+/**
+ * Log and/or echo debug failed SQL queries.
+ * @default false
+ */
 define('nZEDb_LOGQUERIES', false);
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////// End of user changeable settings./ //////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 define('DS', DIRECTORY_SEPARATOR);
 
@@ -72,10 +116,6 @@ if (strlen($www_top) == 1) {
 
 // Used everywhere an href is output, includes the full path to the nZEDb install.
 define('WWW_TOP', $www_top);
-
-// Number of results per page.
-define("ITEMS_PER_PAGE", "50");
-define("ITEMS_PER_COVER_PAGE", "20");
 
 define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml');
 
