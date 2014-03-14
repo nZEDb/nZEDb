@@ -1317,21 +1317,17 @@ class PostProcess
 						$audioBinary = false;
 					}
 
-
 					if ($audioBinary !== false) {
 						if ($this->echooutput) {
 							echo '(aB)';
 						}
 
-						// Check that it's more than 40 bytes.
-						if (strlen($audioBinary) > 40) {
+						// Create a file with it.
+						$this->addMediaFile($this->tmpPath . 'audio.' . $audioType, $audioBinary);
 
-							// Create a file with it.
-							$this->addMediaFile($this->tmpPath . 'audio.' . $audioType, $audioBinary);
+						// Try to get media info / sample of the audio file.
+						$this->getAudioInfo($rel['guid'], $rel['id'], $audioType);
 
-							// Try to get media info / sample of the audio file.
-							$this->getAudioInfo($rel['guid'], $rel['id'], $audioType);
-						}
 						unset($audioBinary);
 					} else {
 						if ($this->echooutput) {
@@ -2068,12 +2064,16 @@ class PostProcess
 		$musicParent = (string)Category::CAT_PARENT_MUSIC;
 		// Make sure the category is music or other->misc.
 		$rQuery = $this->db->queryOneRow(sprintf(
-			'SELECT categoryid as id, groupid FROM releases WHERE proc_pp = 0 AND id = %d', $releaseID));
+			'SELECT searchname, categoryid as id, groupid FROM releases WHERE proc_pp = 0 AND id = %d', $releaseID));
 		if (!preg_match(
 			'/^' .
 			$musicParent[0].
 			'\d{3}|' .
 			Category::CAT_MISC .
+			'|' .
+			Category::CAT_MOVIE_OTHER .
+			'|' .
+			Category::CAT_TV_OTHER .
 			'/',
 			$rQuery['id'])) {
 
@@ -2130,6 +2130,17 @@ class PostProcess
 
 										// Update the search name.
 										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1 WHERE id = %d', $this->db->escapeString(substr($newName, 0, 255)), $newCat, $releaseID));
+
+										$this->debugging->start(
+											'getAudioInfo',
+											"New name:(" . $newName .
+											") Old name:(" . $rQuery["searchname"] .
+											") New cat:(" . $newCat .
+											") Old cat:(" . $rQuery['id'] .
+											") Group:(" . $rQuery['groupid'] .
+											") Method:(" . 'PostProccess getAudioInfo' .
+											") ReleaseID:(" . $releaseID . ')'
+										, 5);
 
 										// Add the media info.
 										$this->releaseExtra->addFromXml($releaseID, $xmlArray);
