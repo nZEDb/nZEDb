@@ -105,18 +105,18 @@ $qry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, rel
 
 //needs to be processed query
 $proc_work = "SELECT "
-	. "(SELECT COUNT(*) FROM releases PARTITION (tv) WHERE nzbstatus = 1 AND rageid = -1) AS tv, "
-	. "(SELECT COUNT(*) FROM releases PARTITION (movies) WHERE nzbstatus = 1 AND imdbid IS NULL) AS movies, "
-	. "(SELECT COUNT(*) FROM releases PARTITION (audio) WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio, "
-	. "(SELECT COUNT(*) FROM releases PARTITION (console) WHERE nzbstatus = 1 AND consoleinfoid IS NULL) AS console, "
-	. "(SELECT COUNT(*) FROM releases PARTITION (books) WHERE nzbstatus = 1 AND categoryid IN (" . $bookreqids . ") AND bookinfoid IS NULL) AS book, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (" . $bookreqids . ") AND bookinfoid IS NULL) AS book, "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) AS releases, "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo, "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
 
 $proc_work2 = "SELECT "
-	. "(SELECT COUNT(*) FROM releases PARTITION (pc) r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
-	. "(SELECT COUNT(*) FROM releases PARTITION (xxx) r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
 	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
 	. "(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table, "
 	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
