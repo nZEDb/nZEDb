@@ -399,12 +399,6 @@ class PostProcess
 	private $passChkAttempts;
 
 	/**
-	 * Should we process audio samples?
-	 * @var bool
-	 */
-	private $processAudioSample;
-
-	/**
 	 * How many articles to download when getting a JPG.
 	 * @var int
 	 */
@@ -485,6 +479,11 @@ class PostProcess
 	/**
 	 * @var bool
 	 */
+	protected $blnTookAudioSample;
+
+	/**
+	 * @var bool
+	 */
 	private $blnTookMediainfo;
 
 	/**
@@ -550,6 +549,11 @@ class PostProcess
 	/**
 	 * @var bool
 	 */
+	protected $processAudioSample;
+
+	/**
+	 * @var bool
+	 */
 	protected $processJPGSample;
 
 	/**
@@ -578,11 +582,11 @@ class PostProcess
 		$this->ffMPEGDuration = (!empty($this->site->ffmpeg_duration)) ? (int)$this->site->ffmpeg_duration : 5;
 		$this->partsQTY = (!empty($this->site->maxpartsprocessed)) ? (int)$this->site->maxpartsprocessed : 3;
 		$this->passChkAttempts = (!empty($this->site->passchkattempts)) ? (int)$this->site->passchkattempts : 1;
-		$this->processAudioSample = ($this->site->processaudiosample === '0') ? false : true;
 		$this->segmentsToDownload = (!empty($this->site->segmentstodownload)) ? (int)$this->site->segmentstodownload : 2;
 		$this->processSample = empty($this->site->ffmpegpath) ? false : true;
 		$this->processVideo = ($this->site->processvideos === '0') ? false : true;
 		$this->processMediaInfo = $this->processAudioInfo = empty($this->site->mediainfopath) ? false : true;
+		$this->processAudioSample = ($this->site->processaudiosample == '0' ) ? false : true;
 		$this->processJPGSample = ($this->site->processjpg === '0') ? false : true;
 		$this->processPasswords = ((($this->site->checkpasswordedrar === '0') ? false : true) && (empty($this->site->unrarpath) ? false : true));
 		//\\
@@ -838,6 +842,7 @@ class PostProcess
 				$this->blnTookVideo = ($this->processVideo ? false : true);
 				$this->blnTookMediainfo = ($this->processMediaInfo ? false : true);
 				$this->blnTookAudioinfo = ($this->processAudioInfo ? false : true);
+				$this->blnTookAudioSample = ($this->processAudioSample ? false : true);
 				$this->blnTookJPG = ($this->processJPGSample ? false : true);
 
 				// Reset and set certain variables.
@@ -1117,7 +1122,8 @@ class PostProcess
 					$this->blnTookAudioinfo === false ||
 					$this->blnTookMediainfo === false ||
 					$this->blnTookJPG === false ||
-					$this->blnTookVideo === false) {
+					$this->blnTookVideo === false ||
+					$this->blnTookAudioSample === false) {
 
 					// Get all the names of the files in the temp dir.
 					$files = @scandir($this->tmpPath);
@@ -1131,13 +1137,13 @@ class PostProcess
 								$name = '';
 
 								// Audio sample.
-								if ($this->blnTookAudioinfo === false &&
+								if (($this->blnTookAudioinfo === false || $this->blnTookAudioSample === false) &&
 									preg_match('/(.*)' . $this->audioFileRegex . '$/i', $file, $name)) {
 
 									// Move the file.
 									@rename($this->tmpPath . $name[0], $this->tmpPath . 'audiofile.' . $name[2]);
 									// Try to get audio sample/audio media info.
-									$this->blnTookAudioinfo = $this->getAudioInfo($rel['guid'], $rel['id'], $name[2]);
+									$this->getAudioInfo($rel['guid'], $rel['id'], $name[2]);
 									// Delete the file.
 									@unlink($this->tmpPath . 'audiofile.' . $name[2]);
 								}
@@ -1192,6 +1198,7 @@ class PostProcess
 								// If we got it all, break out.
 								if ($this->blnTookJPG === true &&
 									$this->blnTookAudioinfo === true &&
+									$this->blnTookAudioSample === true &&
 									$this->blnTookMediainfo === true &&
 									$this->blnTookVideo === true &&
 									$this->blnTookSample === true) {
@@ -1302,7 +1309,7 @@ class PostProcess
 				}
 
 				// Download audio file, use media info to try to get the artist / album.
-				if ($this->blnTookAudioinfo === false && !empty($audioMsgID)) {
+				if (($this->blnTookAudioinfo === false || $this->blnTookAudioSample === false) && !empty($audioMsgID)) {
 
 					// Try to download it from usenet.
 					$audioBinary = $nntp->getMessages($groupName, $audioMsgID, $this->alternateNNTP);
@@ -1323,7 +1330,7 @@ class PostProcess
 							$this->addMediaFile($this->tmpPath . 'audio.' . $audioType, $audioBinary);
 
 							// Try to get media info / sample of the audio file.
-							$this->blnTookAudioinfo = $this->getAudioInfo($rel['guid'], $rel['id'], $audioType);
+							$this->getAudioInfo($rel['guid'], $rel['id'], $audioType);
 						}
 						unset($audioBinary);
 					} else {
@@ -2053,7 +2060,7 @@ class PostProcess
 		}
 
 		// Check if media info fetching is on.
-		if ($this->processMediaInfo) {
+		if (!$this->processAudioInfo) {
 			$retVal = true;
 		}
 
@@ -2070,7 +2077,7 @@ class PostProcess
 			'/',
 			$rQuery['id'])) {
 
-			return $retVal;
+			return false;
 		}
 
 		// Get all the files in temp folder.
@@ -2128,6 +2135,7 @@ class PostProcess
 										$this->releaseExtra->addFromXml($releaseID, $xmlArray);
 
 										$retVal = true;
+										$this->blnTookAudioinfo = true;
 										if ($this->echooutput) {
 											echo 'a';
 										}
@@ -2192,6 +2200,7 @@ class PostProcess
 								$this->db->queryExec(sprintf('UPDATE releases SET audiostatus = 1 WHERE id = %d', $releaseID));
 
 								$audVal = true;
+								$this->blnTookAudioSample = true;
 
 								if ($this->echooutput) {
 									echo 'A';
