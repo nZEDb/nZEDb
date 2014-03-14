@@ -9,7 +9,7 @@
 <webMaster>{$site->email} ({$site->title|escape})</webMaster>
 <category>{$site->meta_keywords}</category>
 <image>
-	<url>{if $site->style != "" && $site->style != "/"}{$serverroot}themes/{$site->style}/images/logo.png{else}{$serverroot}themes/Default/images/logo.png{/if}</url>
+	<url>{$serverroot}themes_shared/images/logo.png</url>
 	<title>{$site->title|escape}</title>
 	<link>{$serverroot}</link>
 	<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
@@ -20,9 +20,9 @@
 	<title>{$release.searchname|escape:html}</title>
 	<guid isPermaLink="true">{$serverroot}details/{$release.guid}</guid>
 	<link>{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}</link>
-	<comments>{$serverroot}details/{$release.guid}#comments</comments> 	
-	<pubDate>{$release.adddate|phpdate_format:"DATE_RSS"}</pubDate> 
-	<category>{$release.category_name|escape:html}</category> 	
+	<comments>{$serverroot}details/{$release.guid}#comments</comments>
+	<pubDate>{$release.adddate|phpdate_format:"DATE_RSS"}</pubDate>
+	<category>{$release.category_name|escape:html}</category>
 	<description>{$release.searchname|escape:html}</description>
 	<enclosure url="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}" length="{$release.size}" type="application/x-nzb" />
 
@@ -48,7 +48,7 @@
 	<newznab:attr name="grabs" value="{$release.grabs}" />
 	<newznab:attr name="comments" value="{$release.comments}" />
 	<newznab:attr name="password" value="{$release.passwordstatus}" />
-	<newznab:attr name="usenetdate" value="{$release.postdate|phpdate_format:"DATE_RSS"}" />	
+	<newznab:attr name="usenetdate" value="{$release.postdate|phpdate_format:"DATE_RSS"}" />
 	<newznab:attr name="group" value="{$release.group_name|escape:html}" />
 {/if}
 </item>

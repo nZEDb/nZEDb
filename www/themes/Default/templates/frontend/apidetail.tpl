@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?> 
+<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/" encoding="utf-8">
 <channel>
 <atom:link href="{$serverroot}api" rel="self" type="application/rss+xml" />
@@ -9,7 +9,7 @@
 <webMaster>{$site->email} ({$site->title|escape})</webMaster>
 <category>{$site->meta_keywords}</category>
 <image>
-	<url>{if $site->style != "" && $site->style != "/"}{$serverroot}themes/{$site->style}/images/logo.png{else}{$serverroot}themes/Default/images/logo.png{/if}</url>
+	<url>{$serverroot}themes_shared/images/logo.png</url>
 	<title>{$site->title|escape}</title>
 	<link>{$serverroot}</link>
 	<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
@@ -20,12 +20,12 @@
 	<title>{$release.searchname}</title>
 	<guid isPermaLink="true">{$serverroot}details/{$release.guid}</guid>
 	<link>{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del=="1"}&amp;del=1{/if}</link>
-	<comments>{$serverroot}details/{$release.guid}#comments</comments> 	
-	<pubDate>{$release.adddate|phpdate_format:"DATE_RSS"}</pubDate> 
-	<category>{$release.category_name|escape:html}</category> 	
+	<comments>{$serverroot}details/{$release.guid}#comments</comments>
+	<pubDate>{$release.adddate|phpdate_format:"DATE_RSS"}</pubDate>
+	<category>{$release.category_name|escape:html}</category>
 	<description>{$release.searchname}</description>
 	<enclosure url="{$serverroot}getnzb/{$release.guid}.nzb&amp;i={$uid}&amp;r={$rsstoken}{if $del=="1"}&amp;del=1{/if}" length="{$release.size}" type="application/x-nzb" />
-	
+
 	{foreach from=$release.category_ids|parray:"," item=cat}
 <newznab:attr name="category" value="{$cat}" />
 	{/foreach}
@@ -47,7 +47,7 @@
 	<newznab:attr name="grabs" value="{$release.grabs}" />
 	<newznab:attr name="comments" value="{$release.comments}" />
 	<newznab:attr name="password" value="{$release.passwordstatus}" />
-	<newznab:attr name="usenetdate" value="{$release.postdate|phpdate_format:"DATE_RSS"}" />	
+	<newznab:attr name="usenetdate" value="{$release.postdate|phpdate_format:"DATE_RSS"}" />
 	<newznab:attr name="group" value="{$release.group_name|escape:html}" />
 
 </item>

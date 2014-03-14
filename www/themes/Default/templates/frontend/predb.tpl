@@ -207,24 +207,28 @@
 					N/A
 				{/if}
 			</td>
-			<a
-				style="float: right;"
-				title="NzbIndex"
-				href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
-				target="_blank"
-			>
-				<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/nzbindex.png" />
-				&nbsp;
-			</a>
-			<a
-				style="float: right;"
-				title="BinSearch"
-				href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
-				target="_blank"
-			>
-				<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/binsearch.png" />
-				&nbsp;
-			</a>
+			<td class="predb">
+				<a
+					style="float: right;"
+					title="NzbIndex"
+					href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
+					target="_blank"
+				>
+					<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/nzbindex.png" />
+					&nbsp;
+				</a>
+			</td>
+			<td class="predb">
+				<a
+					style="float: right;"
+					title="BinSearch"
+					href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
+					target="_blank"
+				>
+					<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/binsearch.png" />
+					&nbsp;
+				</a>
+			</td>
 		</tr>
 	{/foreach}
 </table>

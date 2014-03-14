@@ -523,11 +523,7 @@ function release_flag($x, $t)
 		$d = "Vietnamese";
 	}
 	if ($y !== "" && $t == "browse") {
-		if (file_exists(nZEDb_THEMES . $site->style . DS . "images" . DS . "flags" . DS . $y . ".png")) {
-			return '<img title=' . $d . ' src="' . THEMES_DIR . '/' . $site->style . '/images/flags/' . $y . '.png" />';
-		} else {
-			return '<img title=' . $d . ' src="' . THEMES_DIR . '/Default/images/flags/' . $y . '.png" />';
-		}
+		return '<img title=' . $d . ' src="' . nZEDb_THEMES_SHARED . '/images/flags/' . $y . '.png" />';
 	} else if ($t == "search") {
 		if ($y == "") {
 			return false;
@@ -536,4 +532,3 @@ function release_flag($x, $t)
 		}
 	}
 }
-?>

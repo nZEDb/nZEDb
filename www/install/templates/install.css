@@ -1,7 +1,7 @@
 /*
 site wide html styles
 */
-body { 	margin: 0;	padding: 0;	background: #FFFFFF url(../../themes/Default/images/menu.gif) repeat-x;	font-family: Calibri, Arial, Helvetica, sans-serif;	font-size: 14px;	color: #515151; }
+body { 	margin: 0;	padding: 0;	background: #FFFFFF url(../../themes_shared/images/menu.gif) repeat-x;	font-family: Calibri, Arial, Helvetica, sans-serif;	font-size: 14px;	color: #515151; }
 input, select, textarea { font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 14px;}
 a { 	text-decoration: none; 	color: blue; }
 h1, h2, h3 {	margin: 0;	font-weight: normal;	color: #485459; }

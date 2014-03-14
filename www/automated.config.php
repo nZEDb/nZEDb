@@ -50,6 +50,9 @@ define('nZEDb_TMP', nZEDb_RES . 'tmp' . DS);
 // Full path is fs to the themes folder
 define('nZEDb_THEMES', nZEDb_WWW . 'themes' . DS);
 
+// Shared theme items (pictures, scripts).
+define('nZEDb_THEMES_SHARED', nZEDb_WWW . 'themes_shared' . DS);
+
 // Path where log files are stored.
 define('nZEDb_LOGS', nZEDb_RES . 'logs' . DS);
 
@@ -69,9 +72,6 @@ if (strlen($www_top) == 1) {
 
 // Used everywhere an href is output, includes the full path to the nZEDb install.
 define('WWW_TOP', $www_top);
-
-// Path to themes directory.
-define('THEMES_DIR', WWW_TOP . '/themes');
 
 // Number of results per page.
 define("ITEMS_PER_PAGE", "50");

@@ -432,7 +432,7 @@ class Binaries
 				if ($this->echo) {
 					$this->c->doEcho(
 						$this->c->header(
-							"\nGetting " .
+							"Getting " .
 							number_format($last - $first + 1) .
 							' articles (' . number_format($first) .
 							' to ' .
@@ -442,7 +442,7 @@ class Binaries
 							" - (" .
 							number_format($grouplast - $last) .
 							" articles in queue)."
-						), true
+						)
 					);
 				}
 				flush();
@@ -947,7 +947,7 @@ class Binaries
 					$this->c->alternateOver($timeUpdate . 's') .
 					$this->c->primaryOver(' to insert articles, ') .
 					$this->c->alternateOver($timeLoop . 's') .
-					$this->c->primary(' total.'), true
+					$this->c->primary(' total.')
 				);
 			}
 

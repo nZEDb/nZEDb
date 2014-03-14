@@ -6,20 +6,50 @@ if (!$users->isLoggedIn()) {
 $releases = new Releases();
 $contents = new Contents();
 
-$getnewestmovies = $releases->getNewestMovies();
-$page->smarty->assign('newestmovies', $getnewestmovies);
+if (!isset($_REQUEST['t'])) {
+	$_REQUEST['t'] = 'Movies';
+}
 
-/* $getnewestconsole = $releases->getNewestConsole();
-  $page->smarty->assign('newestconsole', $getnewestconsole);
+if (!in_array($_REQUEST['t'], array('Books', 'Console', 'Movies', 'MP3', 'Recent'))) {
+	$_REQUEST['t'] = 'Movies';
+}
 
-  $getnewestmp3 = $releases->getnewestMP3s();
-  $page->smarty->assign('newestmp3s', $getnewestmp3);
+$page->smarty->assign('type', $_REQUEST['t']);
 
-  $getnewestbooks = $releases->getNewestBooks();
-  $page->smarty->assign('newestbooks', $getnewestbooks);
+switch ($_REQUEST['t']) {
+	case 'Movies':
+		$getnewestmovies = $releases->getNewestMovies();
+		$page->smarty->assign('newest', $getnewestmovies);
 
-  $recent = $releases->getRecentlyAdded();
-  $page->smarty->assign('recent', $recent);
- */
+		$user = $users->getById($users->currentUserId());
+		$page->smarty->assign('cpapi', $user['cp_api']);
+		$page->smarty->assign('cpurl', $user['cp_url']);
+		break;
+
+	case 'Console':
+		$getnewestconsole = $releases->getNewestConsole();
+		$page->smarty->assign('newest', $getnewestconsole);
+		break;
+
+	case 'MP3':
+		$getnewestmp3 = $releases->getnewestMP3s();
+		$page->smarty->assign('newest', $getnewestmp3);
+		break;
+
+	case 'Books':
+		$getnewestbooks = $releases->getNewestBooks();
+		$page->smarty->assign('newest', $getnewestbooks);
+		break;
+
+	case 'Recent':
+		$recent = $releases->getRecentlyAdded();
+		$page->smarty->assign('newest', $recent);
+		break;
+
+	default:
+		$getnewestmovies = $releases->getNewestMovies();
+		$page->smarty->assign('newest', $getnewestmovies);
+}
+
 $page->content = $page->smarty->fetch('newposterwall.tpl');
 $page->render();
