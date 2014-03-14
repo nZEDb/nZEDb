@@ -81,29 +81,24 @@
 			<tbody>
 			{foreach from=$results item=result}
 				<tr class="{if $lastvisit|strtotime<$result.adddate|strtotime}success{/if}" id="guid{$result.guid}">
-					<td style="width:26px;text-align:center;white-space:nowrap;">
+					<td class="check" style="width:26px;text-align:center;white-space:nowrap;">
 						<input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" value="{$result.guid}">
 					</td>
-					<td style="width:100%;text-align:left;">
-						<a class="title" title="View details"  href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"seourl"}">
-							<strong>{$result.searchname|escape:"htmlall"|replace:".":" "}</strong>
-						</a>
+					<td class="item" style="width:100%;text-align:left;">
+						<label for="chk{$result.guid|substr:0:7}">
+							<a
+								class="title"
+								title="View details"
+								href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
+							>{$result.searchname|escape:"htmlall"|truncate:150:"...":true}</a>
+						</label>
 						<div class="resextra">
 							{if $result.passwordstatus == 1}
-								<span class="icon-stack" title="Probably Passworded">
-									<i class="icon-check-empty icon-stack-base"></i>
-									<i class="icon-unlock-alt"></i>
-								</span>
+								<spanclass="icon-stack" title="Probably Passworded"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlock-alt"></i></span>
 							{elseif $result.passwordstatus == 2}
-								<span class="icon-stack" title="Broken Post">
-									<i class="icon-check-empty icon-stack-base"></i>
-									<i class="icon-unlink"></i>
-								</span>
+								<span class="icon-stack" title="Broken Post"><i class="icon-check-empty icon-stack-base"></i><i class="icon-unlink"></i></span>
 							{elseif $result.passwordstatus == 10}
-								<span class="icon-stack" title="Passworded Archive">
-									<i class="icon-check-empty icon-stack-base"></i>
-									<i class="icon-lock"></i>
-								</span>
+								<span class="icon-stack" title="Passworded Archive"><i class="icon-check-empty icon-stack-base"></i><i class="icon-lock"></i></span>
 							{/if}
 							{release_flag($result.searchname, browse)}
 							{if $result.videostatus > 0}
@@ -112,23 +107,40 @@
 									href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}"
 									title="This release has a video preview"
 									rel="preview"
-								>
-									<i class="icon-youtube-play"></i>
-								</a>
+								><i class="icon-youtube-play"></i></a>
 							{/if}
 							{if $result.nfoid > 0}
-								<a class="label label-default modal_nfo" href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" rel="nfo">
-									<i class="icon-info-sign"></i>
-								</a>
+								<a
+									class="label label-default modal_nfo"
+									href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
+									title="View Nfo" rel="nfo"
+								><i class="icon-info-sign"></i></a>
 							{/if}
 							{if $result.imdbid > 0}
-								<a class="label label-default modal_imdb" href="#" name="name{$result.imdbid}" title="View movie info" rel="movie" >Cover</a>
+								<a
+									class="label label-default modal_imdb"
+									href="#" name="name{$result.imdbid}"
+									title="View movie info"
+									rel="movie"
+								><i class="icon-film"></i></a>
 							{/if}
 							{if $result.musicinfoid > 0}
-								<a class="label label-default modal_music" href="#" name="name{$result.musicinfoid}" title="View music info" rel="music" >Cover</a>
+								<a
+									class="label label-default modal_music"
+									href="#"
+									name="name{$result.musicinfoid}"
+									title="View music info"
+									rel="music"
+								><i class="icon-music"></i></a>
 							{/if}
 							{if $result.consoleinfoid > 0}
-								<a class="label label-default modal_console" href="#" name="name{$result.consoleinfoid}" title="View console info" rel="console" >Cover</a>
+								<a
+									class="label label-default modal_console"
+									href="#"
+									name="name{$result.consoleinfoid}"
+									title="View console info"
+									rel="console"
+								><i class="icon-off"></i></a>
 							{/if}
 							{if $result.haspreview == 1 && $userdata.canpreview == 1}
 								<a
@@ -137,9 +149,7 @@
 									name="name{$result.guid}"
 									title="Screenshot of {$result.searchname|escape:"htmlall"}"
 									rel="preview"
-								>
-									Preview
-								</a>
+								><i class="icon-camera"></i></a>
 							{/if}
 							{if $result.jpgstatus == 1 && $userdata.canpreview == 1}
 								<a
@@ -148,38 +158,46 @@
 									name="name{$result.guid}"
 									title="Sample of {$result.searchname|escape:"htmlall"}"
 									rel="preview"
-								>
-									Sample
-								</a>
+								><i class="icon-picture"></i></a>
 							{/if}
 							{if $result.rageid > 0}
-								<a class="label label-default" href="{$smarty.const.WWW_TOP}/series/{$result.rageid}" title="View all episodes">View Series</a>
+								<a
+									class="label label-default"
+									href="{$smarty.const.WWW_TOP}/series/{$result.rageid}"
+									title="View all episodes"
+								><i class="icon-bookmark"></i></a>
 							{/if}
 							{if $result.anidbid > 0}
-								<a class="label label-default" href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}" title="View all episodes">View Anime</a>
+								<a
+									class="label label-default"
+									href="{$smarty.const.WWW_TOP}/anime/{$result.anidbid}"
+									title="View all anime"
+								><i class="icon-font"></i></a>
 							{/if}
 							{if $result.tvairdate != ""}
 								<span
 									class="label label-default seriesinfo"
 									title="{$result.guid}"
-								>
-									Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}
-								</span>
+								>Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>
 							{/if}
 							{if $result.reid > 0}
-								<span class="label label-default mediainfo" title="{$result.guid}">Media</span>
+								<span
+									class="label label-default mediainfo"
+									title="{$result.guid}"
+								><i class="icon-list-alt"></i></span>
 							{/if}
 							{if $result.preid > 0}
-								<span class="label label-default preinfo rndbtn" title="{$result.preid}">PreDB</span>
+								<span
+									class="label label-default preinfo rndbtn"
+									title="{$result.preid}"
+								><i class="icon-eye-open"></i></span>
 							{/if}
 							{if $result.group_name != ""}
 								<a
 									class="label label-default"
 									href="{$smarty.const.WWW_TOP}/browse?g={$result.group_name|escape:"htmlall"}"
 									title="Browse {$result.group_name}"
-								>
-									{$result.group_name|escape:"htmlall"|replace:"alt.binaries.":"a.b."}
-								</a>
+								><i class="icon-share-alt"></i></a>
 							{/if}
 						</div>
 					</td>
