@@ -679,7 +679,7 @@ class Binaries
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*| \[S\d+E\d+\]|\s*".+"\s*)\((\d+)\/(\d+)\)/', $msg['Subject'], $matches)) {
 					if ($this->showdroppedyencparts === '1' && !preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject'])) {
-						file_put_contents(nZEDb_RES . 'logs' . DS . 'not_yenc' . $groupArr['name'] . ".dropped.logs", $msg['Subject'] . PHP_EOL, FILE_APPEND);
+						file_put_contents(nZEDb_RES . 'logs' . DS . 'not_yenc' . $groupArr['name'] . ".dropped.log", $msg['Subject'] . PHP_EOL, FILE_APPEND);
 					}
 
 					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
@@ -707,7 +707,7 @@ class Binaries
 					$filecnt[2] = $filecnt[6] = 0;
 					$nofiles = true;
 					if ($this->showdroppedyencparts === '1' && preg_match('/yEnc/i', $msg['Subject'])) {
-						file_put_contents("/var/www/nZEDb/not_yenc/" . $groupArr['name'] . ".no_parts.txt", $msg['Subject'] . "\n", FILE_APPEND);
+						file_put_contents(nZEDb_RES . "logs" . DS . 'no_parts' . $groupArr['name'] . ".log", $msg['Subject'] . PHP_EOL, FILE_APPEND);
 					}
 				}
 
