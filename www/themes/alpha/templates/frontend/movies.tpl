@@ -182,7 +182,6 @@
 											<b>{$mname[$m@index]|escape:"htmlall"}</b>
 										</a>
 										<br>
-
 										<div class="container">
 											<div class="pull-left">
 												<i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} |

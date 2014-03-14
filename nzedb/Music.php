@@ -676,7 +676,7 @@ class Music
 			$e = preg_replace('/ (\d{1,2} \d{1,2} )?(DAB|DE|DVBC|EP|FIX|IT|Jap|NL|PL|(Pure )?FM|SSL|VLS) /i', ' ', $d);
 			$f = preg_replace('/ (\d{1,2} \d{1,2} )?(CD(A|EP|M|R|S)?|QEDCD|SBD) /i', ' ', $e);
 			$g = trim(preg_replace('/\s\s+/', ' ', $f));
-			$newname = trim(preg_Replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$/i', '', $g));
+			$newname = trim(preg_Replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$|-WEB$/i', '', $g));
 			if (!preg_match('/^[a-z0-9]+$/i', $newname) && strlen($newname) > 10) {
 				$result["name"] = $newname;
 				return $result;
