@@ -207,7 +207,6 @@
 							{elseif $result.passwordstatus == 10}
 								<span class="label label-default" title="Passworded Archive"><i class="icon-lock"></i></span>
 							{/if}
-							{release_flag($result.searchname, browse)}
 							{if $result.videostatus > 0}
 								<a
 									class="model_prev label label-default"
@@ -308,6 +307,7 @@
 									title="Browse {$result.group_name}"
 								><i class="icon-share-alt"></i></a>
 							{/if}
+							{release_flag($result.searchname, browse)}
 						</div>
 					</td>
 					<td class="category" style="width:auto;text-align:center;white-space:nowrap;">
