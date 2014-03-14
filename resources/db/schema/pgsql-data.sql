@@ -553,7 +553,6 @@ INSERT INTO site
 	('safebackfilldate','2012-06-24'),
 	('processjpg', 0),
 	('hashcheck', 1),
-	('debuginfo', 0),
 	('processvideos', 0),
 	('imdburl', 0),
 	('imdblanguage','en'),

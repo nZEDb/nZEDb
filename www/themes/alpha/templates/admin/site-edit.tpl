@@ -759,14 +759,6 @@
 		</tr>
 
 		<tr>
-			<td style="width:180px;"><label for="debuginfo">Debug information:</label></td>
-			<td>
-				{html_radios id="debuginfo" name='debuginfo' values=$yesno_ids output=$yesno_names selected=$fsite->debuginfo separator='<br />'}
-				<div class="hint">For developers. Whether to echo debug information in some scripts.</div>
-			</td>
-		</tr>
-
-		<tr>
 			<td style="width:180px;"><label for="showdroppedyencparts">Log Dropped Headers:</label></td>
 			<td>
 				{html_radios id="showdroppedyencparts" name='showdroppedyencparts' values=$yesno_ids output=$yesno_names selected=$fsite->showdroppedyencparts separator='<br />'}

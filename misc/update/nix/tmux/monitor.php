@@ -187,7 +187,6 @@ $proc_tmux = "SELECT "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'dehash') as dehash, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'dehash_timer') as dehash_timer, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'backfill_days') as backfilldays, "
-	. "(SELECT VALUE FROM site WHERE SETTING = 'debuginfo') as debug, "
 	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupbooks') as processbooks, "
 	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupmusic') as processmusic, "
 	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupgames') as processgames, "
@@ -782,9 +781,6 @@ while ($i > 0) {
 		$monitor_path_b = $proc_tmux_result[0]['monitor_path_b'];
 	}
 
-	if ($proc_tmux_result[0]['debug'] != NULL) {
-		$debug = $proc_tmux_result[0]['debug'];
-	}
 	if ($proc_tmux_result[0]['post_amazon'] != NULL) {
 		$post_amazon = $proc_tmux_result[0]['post_amazon'];
 	}
@@ -1078,7 +1074,7 @@ while ($i > 0) {
 		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
 	}
 
-	if ($debug == "1") {
+	if (nZEDb_DEBUG) {
 		$show_time = "/usr/bin/time";
 	} else {
 		$show_time = "";

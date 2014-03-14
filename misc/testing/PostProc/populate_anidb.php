@@ -16,7 +16,6 @@ class AniDBstandAlone
 		$this->aniqty = (!empty($this->site->maxanidbprocessed)) ? $this->site->maxanidbprocessed : 100;
 		$this->echooutput = $echooutput;
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
-		$this->debug = ($this->site->debuginfo == '0') ? false : true;
 		$this->APIKEY = $this->site->anidbkey;
 		$this->db = new DB();
 	}
