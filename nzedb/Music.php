@@ -522,23 +522,71 @@ class Music
 	}
 
 	/**
+	 * Check if amazon is throttling us.
+	 *
+	 * @param string $error The error message.
+	 *
+	 * @return bool
+	 */
+	public function checkThrottled($error)
+	{
+		if (strpos(strtolower($error), 'throttle') !== false) {
+			sleep(3);
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * @param $title
 	 *
 	 * @return bool|mixed
 	 */
 	public function fetchAmazonProperties($title)
 	{
+		$result = false;
 		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
+		// Try Music category.
 		try {
 			$result = $obj->searchProducts($title, AmazonProductAPI::MUSIC, "TITLE");
 		} catch (Exception $e) {
-			//if first search failed try the mp3downloads section
-			try {
-				$result = $obj->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
-			} catch (Exception $e2) {
-				$result = false;
+			if ($this->checkThrottled($e->getMessage())) {
+				return $this->fetchAmazonProperties($title);
 			}
 		}
+
+		// Try MP3 category.
+		if ($result === false) {
+			usleep(700000);
+			try {
+				$result = $obj->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
+			} catch (Exception $e) {
+				if ($this->checkThrottled($e->getMessage())) {
+					return $this->fetchAmazonProperties($title);
+				}
+			}
+		}
+
+		// Try Digital Music category.
+		if ($result === false) {
+			usleep(700000);
+			try {
+				$result = $obj->searchProducts($title, AmazonProductAPI::DIGITALMUS, "TITLE");
+			} catch (Exception $e) {
+				$this->checkThrottled($e->getMessage());
+			}
+		}
+
+		// Try Music Tracks category.
+		if ($result === false) {
+			usleep(700000);
+			try {
+				$result = $obj->searchProducts($title, AmazonProductAPI::MUSICTRACKS, "TITLE");
+			} catch (Exception $e) {
+				$this->checkThrottled($e->getMessage());
+			}
+		}
+
 		return $result;
 	}
 

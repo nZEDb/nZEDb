@@ -67,9 +67,11 @@ class AmazonProductAPI
 		http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/APPNDX_SearchIndexValues.html
 	*/
 	const BOOKS = "Books";
+	const DIGITALMUS = "DigitalMusic";
 	const DVD   = "DVD";
 	// This can be DigitalDownloads as well.
 	const MP3	= "MP3Downloads";
+	const MUSICTRACKS	= "MusicTracks";
 	const MUSIC = "Music";
 	const GAMES = "VideoGames";
 
@@ -90,6 +92,10 @@ class AmazonProductAPI
 	 */
 	private function verifyXmlResponse($response)
 	{
+		if (isset($response->Error)) {
+			echo $response->Error->Message . "\n";
+			throw new Exception($response->Error->Message);
+		}
 		if ($response === False)
 			throw new Exception("Could not connect to Amazon.");
 		else if ($response == "missingkey")
@@ -150,6 +156,14 @@ class AmazonProductAPI
 												"SearchIndex"	=> $category,
 												"ResponseGroup"	=> "Large");
 							break;
+
+			case "TITLE2" :  $parameters = array("Operation"		=> "ItemSearch",
+												"Title"		=> $search,
+												//"Keywords"	 	=> $search,
+												"Sort"			=> "relevancerank",
+												"SearchIndex"	=> $category,
+												"ResponseGroup"	=> "Large");
+				break;
 
 			// Same as TITLE but add BrowseNodeID param.
 			case "NODE" :  $parameters = array("Operation"		=> "ItemSearch",
@@ -266,6 +280,7 @@ function  aws_signed_request($region, $params, $public_key, $private_key, $assoc
 
 		// Create request.
 		$request = "http://".$host.$uri."?".$canonicalized_query."&Signature=".$signature;
+
 		// I prefer using CURL.
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL,$request);
