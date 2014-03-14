@@ -35,7 +35,6 @@ class Releases
 		$this->requestids = $this->site->lookup_reqids;
 		$this->hashcheck = (isset($this->site->hashcheck)) ? $this->site->hashcheck : 0;
 		$this->delaytimet = (isset($this->site->delaytime)) ? $this->site->delaytime : 2;
-		$this->debug = ($this->site->debuginfo == '0') ? false : true;
 		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
 		$this->c = new ColorCLI();
 	}

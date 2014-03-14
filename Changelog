@@ -18,6 +18,11 @@ Each update goes to the top of the file
                        -> Nicer looking PreDB search box.
                        -> Many bug fixes in browse/search pages.
                        -> Changes to make predb pages nicer.
+                       -> More uniform ad placement accros pages.
+                       -> Clean up movie pages a bit.
+                       -> Split book processing by categoryID.
+                       -> Move failed-logins and droppedyenc logs to resources/logs.
+                       -> Deprecate debuginfo DB setting in favor of nZEDb_DEBUG constant.
 2014-03-13 -> niel     -> Chg: Seperating data and definition from Db schema files.
 2014-03-12 -> ruhllatio-> Change mysql schema partition releases table by categoryid -- Many ALTERs
 2014-03-12 -> bart39   -> Fix: only do requestid web lookup if predb_irc.nzedb.com is up

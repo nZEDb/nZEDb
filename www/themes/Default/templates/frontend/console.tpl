@@ -1,3 +1,6 @@
+{if $site->adbrowse}
+	{$site->adbrowse}
+{/if}
 <h1>Browse Console</h1>
 
 <form name="browseby" action="console">
@@ -33,8 +36,6 @@
 	</table>
 </form>
 <p></p>
-
-{$site->adbrowse}
 
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">

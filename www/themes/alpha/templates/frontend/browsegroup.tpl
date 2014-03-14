@@ -1,8 +1,11 @@
 {if {$site->adbrowse} != ''}
-	<fieldset class="adbanner">
-		<legend class="adbanner">Advertisement</legend>
-		{$site->adbrowse}
-	</fieldset>
+	<div class="container" style="width:500px;">
+		<fieldset class="adbanner div-center">
+			<legend class="adbanner">Advertisement</legend>
+			{$site->adbrowse}
+		</fieldset>
+	</div>
+	<br>
 {/if}
 {if $results|@count > 0}
 	<table class="table-striped table-condensed table-highlight data Sortable table" id="browsetable">

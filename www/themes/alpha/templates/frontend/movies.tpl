@@ -80,7 +80,7 @@
 				<td style="vertical-align:top;text-align:center;width:150px;padding:10px;">
 					<div class="movcover">
 						<a
-							target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"
+							target="_blank" href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}"
 							name="name{$result.imdbid}" title="View movie info" class="modal_imdb thumbnail" rel="movie">
 							<img
 								class="shadow" style="margin: 3px 0;"
@@ -90,14 +90,6 @@
 						</a>
 
 						<div class="relextra" style="margin-top:5px;">
-							<span class="label label-default">
-								<a
-									target="_blank"
-									href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"
-									name="name{$result.imdbid}" title="View movie info"
-									class="modal_imdb" rel="movie">Cover
-								</a>
-							</span>
 							<span class="label label-default">
 								<a
 									target="_blank"
