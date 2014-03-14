@@ -523,7 +523,7 @@ function release_flag($x, $t)
 		$d = "Vietnamese";
 	}
 	if ($y !== "" && $t == "browse") {
-		return '<img title=' . $d . ' src="' . nZEDb_THEMES_SHARED . '/images/flags/' . $y . '.png" />';
+		return '<img title=' . $d . ' src="' . nZEDb_THEMES_SHARED . 'images/flags/' . $y . '.png" />';
 	} else if ($t == "search") {
 		if ($y == "") {
 			return false;
