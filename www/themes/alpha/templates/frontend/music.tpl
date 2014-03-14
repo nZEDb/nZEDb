@@ -7,7 +7,6 @@
 	</div>
 	<br>
 {/if}
-
 <div class="panel">
 	<div class="panel-heading">
 		<h4 class="panel-title">
@@ -22,10 +21,7 @@
 		</div>
 	</div>
 </div>
-
-
 {if $results|@count > 0}
-
 	<form id="nzb_multi_operations_form" action="get">
 	<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
 		View:

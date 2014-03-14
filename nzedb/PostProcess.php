@@ -1611,6 +1611,7 @@ class PostProcess
 		$files = $zip->getFileList();
 		$dataArray = array();
 		if ($files !== false) {
+
 			if ($this->echooutput) {
 				echo 'z';
 			}
@@ -1618,8 +1619,25 @@ class PostProcess
 				$thisData = $zip->getFileData($file['name']);
 				$dataArray[] = array('zip' => $file, 'data' => $thisData);
 
+				// Process RARs inside the ZIP.
+				if (preg_match('/\.(r\d+|part\d+|rar)$/i', $file['name']) || preg_match('/\bRAR\b/i', $thisData)) {
+
+					$tmpFiles = $this->getRar($thisData);
+					if ($tmpFiles !== false) {
+
+						$limit = 0;
+						foreach ($tmpFiles as $f) {
+
+							if ($limit++ > 11) {
+								break;
+							}
+							$this->addFile($f, $release, $rar = false, $nntp);
+							$files[] = $f;
+						}
+					}
+				}
 				//Extract a NFO from the zip.
-				if ($this->noNFO === true && $file['size'] < 100000 && preg_match('/\.(nfo|inf|ofn)$/i', $file['name'])) {
+				else if ($this->noNFO === true && $file['size'] < 100000 && preg_match('/\.(nfo|inf|ofn)$/i', $file['name'])) {
 					if ($file['compressed'] !== 1) {
 						if ($this->Nfo->addAlternateNfo($this->db, $thisData, $release, $nntp)) {
 							$this->debugging->start('processReleaseZips', 'Added NFO from ZIP file for releaseID ' . $release['id'], 5);
@@ -1628,8 +1646,7 @@ class PostProcess
 							}
 							$this->noNFO = false;
 						}
-					}
-					else if ($this->site->zippath !== '' && $file['compressed'] === 1) {
+					} else if ($this->site->zippath !== '' && $file['compressed'] === 1) {
 
 						$zip->setExternalClient($this->site->zippath);
 						$zipData = $zip->extractFile($file['name']);
@@ -1643,24 +1660,6 @@ class PostProcess
 
 								$this->noNFO = false;
 							}
-						}
-					}
-				}
-
-				// Process RARs inside the ZIP.
-				else if (preg_match('/\.(r\d+|part\d+|rar)$/i', $file['name'])) {
-
-					$tmpFiles = $this->getRar($thisData);
-					if ($tmpFiles !== false) {
-
-						$limit = 0;
-						foreach ($tmpFiles as $f) {
-
-							if ($limit++ > 11) {
-								break;
-							}
-							$this->addFile($f, $release, $rar = false, $nntp);
-							$files[] = $f;
 						}
 					}
 				}
