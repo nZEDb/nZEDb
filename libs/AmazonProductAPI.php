@@ -56,13 +56,64 @@ class AmazonProductAPI
 	private $associate_tag = "";
 
 	/**
+	 * The current search string.
+	 * @var string
+	 */
+	private $searchString;
+
+	/**
+	 * The current search category.
+	 * @var string
+	 */
+	private $category;
+
+	/**
+	 * The current search type.
+	 * @var string
+	 */
+	private $searchType;
+
+	/**
+	 * The current search node.
+	 * @var string
+	 */
+	private $searchNode;
+
+	/**
+	 * How many times have we tried to query amazon after being throttled
+	 * @var int
+	 */
+	private $tries;
+
+	/**
+	 * How many seconds must will we sleep currently while throttled.
+	 * @var int
+	 */
+	private $currentSleepTime = 0;
+
+	/**
+	 * How many times should we try to query after being throttled.
+	 * @var int
+	 */
+	const maxTries = 3;
+
+	/**
+	 * How many seconds should we wait after being throttled.
+	 * @var int
+	 */
+	const sleepTime = 3;
+
+	/**
+	 * Every time we are throttled, increase current sleep time by this much.
+	 */
+	const sleepIncrease = 1;
+
+	/**
 	 * Constants for product types
 	 * @access public
 	 * @var string
 	 */
-
 	/*
-		Only three categories are listed here.
 		More categories can be found here:
 		http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/APPNDX_SearchIndexValues.html
 	*/
@@ -75,11 +126,27 @@ class AmazonProductAPI
 	const MUSIC = "Music";
 	const GAMES = "VideoGames";
 
+	/**
+	 * Reset some class objects.
+	 */
+	private function resetVars()
+	{
+		$this->currentSleepTime = self::sleepTime;
+		$this->tries = 0;
+	}
+
+	/**
+	 * @param $pubk
+	 * @param $privk
+	 * @param $associatetag
+	 */
 	public function __construct($pubk, $privk, $associatetag)
 	{
 		$this->public_key = (string) $pubk;
 		$this->private_key = (string) $privk;
 		$this->associate_tag = (string) $associatetag;
+		$this->tries = 0;
+		$this->currentSleepTime = self::sleepTime;
 	}
 
 	/**
@@ -92,20 +159,48 @@ class AmazonProductAPI
 	 */
 	private function verifyXmlResponse($response)
 	{
+		// Check if there's an error.
 		if (isset($response->Error)) {
+			// Check if we are throttled.
+			if (strpos(strtolower($response->Error->Message), 'throttle') !== false) {
+
+				// Check if we exceeded max tries.
+				if ($this->tries >= self::maxTries) {
+					// Reset vars for next use of this class instance.
+					$this->resetVars();
+					throw new Exception($response->Error->Message);
+				}
+
+				// Sleep to let the throttle wear off.
+				sleep($this->currentSleepTime);
+
+				// Increase next sleep time.
+				$this->currentSleepTime += self::sleepIncrease;
+
+				// Increment max tries.
+				$this->tries++;
+
+				// Try again.
+				return $this->searchProducts($this->searchString, $this->category, $this->searchType, $this->searchNode);
+			}
+			// Echo the message.
 			echo $response->Error->Message . "\n";
+			$this->resetVars();
 			throw new Exception($response->Error->Message);
-		}
-		if ($response === False)
+		} else if ($response === False) {
+			$this->resetVars();
 			throw new Exception("Could not connect to Amazon.");
-		else if ($response == "missingkey")
+		} else if ($response == "missingkey") {
+			$this->resetVars();
 			throw new Exception("Missing Amazon API key or associate tag.");
-		else
-		{
-			if (isset($response->Items->Item->ItemAttributes->Title))
+		} else {
+			if (isset($response->Items->Item->ItemAttributes->Title)) {
+				$this->resetVars();
 				return ($response);
-			else
+			} else {
+				$this->resetVars();
 				throw new Exception("Invalid xml response.");
+			}
 		}
 	}
 
@@ -130,6 +225,11 @@ class AmazonProductAPI
 	 */
 	public function searchProducts($search, $category, $searchType = "UPC", $searchNode="")
 	{
+		$this->searchString = $search;
+		$this->category = $category;
+		$this->searchType = $searchType;
+		$this->searchNode = $searchNode;
+
 		$allowedTypes		= array("UPC", "TITLE", "ARTIST", "KEYWORD", "NODE", "ISBN");
 		$allowedCategories	= array("Music", "DVD", "VideoGames", "MP3Downloads");
 

@@ -372,6 +372,15 @@ class Music
 			return false;
 		}
 
+		if (isset($amaz->Items->Item->ItemAttributes->Title)) {
+			$mus['title'] = (string) $amaz->Items->Item->ItemAttributes->Title;
+			if (empty($mus['title'])) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+
 		// Load genres.
 		$defaultGenres = $gen->getGenres(Genres::MUSIC_TYPE);
 		$genreassoc = array();
@@ -385,11 +394,6 @@ class Music
 			$mus['cover'] = 1;
 		} else {
 			$mus['cover'] = 0;
-		}
-
-		$mus['title'] = (string) $amaz->Items->Item->ItemAttributes->Title;
-		if (empty($mus['title'])) {
-			return false;
 		}
 
 		$mus['asin'] = (string) $amaz->Items->Item->ASIN;
@@ -522,22 +526,6 @@ class Music
 	}
 
 	/**
-	 * Check if amazon is throttling us.
-	 *
-	 * @param string $error The error message.
-	 *
-	 * @return bool
-	 */
-	public function checkThrottled($error)
-	{
-		if (strpos(strtolower($error), 'throttle') !== false) {
-			sleep(3);
-			return true;
-		}
-		return false;
-	}
-
-	/**
 	 * @param $title
 	 *
 	 * @return bool|mixed
@@ -550,9 +538,6 @@ class Music
 		try {
 			$result = $obj->searchProducts($title, AmazonProductAPI::MUSIC, "TITLE");
 		} catch (Exception $e) {
-			if ($this->checkThrottled($e->getMessage())) {
-				return $this->fetchAmazonProperties($title);
-			}
 		}
 
 		// Try MP3 category.
@@ -561,9 +546,6 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
 			} catch (Exception $e) {
-				if ($this->checkThrottled($e->getMessage())) {
-					return $this->fetchAmazonProperties($title);
-				}
 			}
 		}
 
@@ -573,7 +555,6 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::DIGITALMUS, "TITLE");
 			} catch (Exception $e) {
-				$this->checkThrottled($e->getMessage());
 			}
 		}
 
@@ -583,7 +564,6 @@ class Music
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::MUSICTRACKS, "TITLE");
 			} catch (Exception $e) {
-				$this->checkThrottled($e->getMessage());
 			}
 		}
 

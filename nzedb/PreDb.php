@@ -416,6 +416,8 @@ Class PreDb
 				}
 			} else {
 				echo $this->c->error("Update from Predbme failed.");
+				// If the site is down, don't try the other URLs.
+				return $newnames;
 			}
 		}
 		return $newnames;
