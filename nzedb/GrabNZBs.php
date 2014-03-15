@@ -235,7 +235,7 @@ class GrabNZBs
 					}
 					return;
 				} else if (count($relid) > 0) {
-					$path = $nzb->getNZBPath($relguid, true, $nzbsplitlevel);
+					$path = $nzb->getNZBPath($relguid, $nzbsplitlevel, true);
 					$fp = gzopen($path, 'w5');
 					if ($fp) {
 						$date1 = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');

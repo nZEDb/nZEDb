@@ -32,7 +32,7 @@ foreach($objects as $filestoprocess => $nzbFile)
 	if($nzbFile->getExtension() != "gz")
 		continue;
 
-	$newFileName = $nzb->getNZBPath(str_replace(".nzb.gz", "", $nzbFile->getBasename()), true, $newLevel);
+	$newFileName = $nzb->getNZBPath(str_replace(".nzb.gz", "", $nzbFile->getBasename()), $newLevel, true);
 	if ($newFileName != $nzbFile)
 	{
 		rename($nzbFile, $newFileName);

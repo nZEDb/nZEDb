@@ -16,7 +16,8 @@ if (isset($argv[1]) && $argv[1] == "true")
 	foreach ($guids as $guid)
 	{
 		$nzb = new NZB();
-		if(file_exists($nzbpath = $nzb->NZBPath($guid["guid"]))) {
+		$nzbpath = $nzb->NZBPath($guid["guid"]);
+		if($nzbpath !== false) {
 			$nzbcount++;
 			$nzbpathc = 'compress.zlib://'.$nzbpath;
 			$nzbfile = file_get_contents($nzbpathc);
