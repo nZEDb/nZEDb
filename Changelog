@@ -14,6 +14,7 @@ Each update goes to the top of the file
                        -> Add console to new post wall, and clean it up a bit.
                        -> Make sending to couchpotato not open a tab.
                        -> NewPosterWall Verify if the admin has disabled the category.
+                       -> Improve NZB creation.
 2014-03-14 -> kevin    -> Move all shared content from themes into 1 folder. YOU MUST DELETE SMARTY TEMPLATE CACHE. If you had a custom logo you must add it back (www/themes_shares/images/logo.png)
                        -> Add glyphicons instead of text on browse/search pages in alpha theme.
                        -> Change automated.config.php to be easier to understand for end-users.

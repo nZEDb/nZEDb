@@ -53,7 +53,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	if ($res->rowCount() > 0) {
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row) {
-			$nzbpath = $nzb->getNZBPath($row["guid"], $site->nzbpath, false, $site->nzbsplitlevel);
+			$nzbpath = $nzb->getNZBPath($row["guid"], false, $site->nzbsplitlevel);
 			if (!file_exists($nzbpath)) {
 				if ($argv[1] === "delete") {
 					@copy($nzbpath, "/var/www/nZEDb/pooped/" . $guid[1] . ".nzb.gz");
