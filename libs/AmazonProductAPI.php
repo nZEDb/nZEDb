@@ -1,6 +1,4 @@
 <?php
-/* This should be moved to the nZEDb_LIBS directory */
-
 /**
  * Class to access Amazons Product Advertising API
  * @author Sameer Borate
@@ -11,25 +9,25 @@
  */
 
 /*
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+	Permission is hereby granted, free of charge, to any person obtaining a
+	copy of this software and associated documentation files (the "Software"),
+	to deal in the Software without restriction, including without limitation
+	the rights to use, copy, modify, merge, publish, distribute, sublicense,
+	and/or sell copies of the Software, and to permit persons to whom the
+	Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+	THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+	DEALINGS IN THE SOFTWARE.
 
-http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/BasicAuthProcess.html
+	http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/BasicAuthProcess.html
 */
 
 class AmazonProductAPI
@@ -110,13 +108,12 @@ class AmazonProductAPI
 
 	/**
 	 * Constants for product types
-	 * @access public
+	 *
+     * @note More categories can be found here:
+	 *       http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/APPNDX_SearchIndexValues.html
+	 *
 	 * @var string
 	 */
-	/*
-		More categories can be found here:
-		http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/APPNDX_SearchIndexValues.html
-	*/
 	const BOOKS = "Books";
 	const DIGITALMUS = "DigitalMusic";
 	const DVD   = "DVD";
@@ -127,18 +124,11 @@ class AmazonProductAPI
 	const GAMES = "VideoGames";
 
 	/**
-	 * Reset some class objects.
-	 */
-	private function resetVars()
-	{
-		$this->currentSleepTime = self::sleepTime;
-		$this->tries = 0;
-	}
-
-	/**
-	 * @param $pubk
-	 * @param $privk
-	 * @param $associatetag
+	 * Construct.
+	 *
+	 * @param string $pubk Amazon public key.
+	 * @param string $privk Amazon private key.
+	 * @param string $associatetag Amazon associate tag.
 	 */
 	public function __construct($pubk, $privk, $associatetag)
 	{
@@ -150,12 +140,166 @@ class AmazonProductAPI
 	}
 
 	/**
+	 * Return details of products searched by various types
+	 *
+	 * @param string $search search term
+	 * @param string $category search category
+	 * @param string $searchType type of search
+	 * @param string $searchNode
+	 *
+	 * @return bool|mixed
+	 */
+	public function searchProducts($search, $category, $searchType = "UPC", $searchNode="")
+	{
+		// Set class vars.
+		$this->searchString = $search;
+		$this->category = $category;
+		$this->searchType = $searchType;
+		$this->searchNode = $searchNode;
+
+		switch($searchType)
+		{
+			case "UPC" :
+				$parameters =
+					array(
+						"Operation"     => "ItemLookup",
+						"ItemId"        => $search,
+						"SearchIndex"   => $category,
+						"IdType"        => "UPC",
+						"ResponseGroup" => "Medium");
+				break;
+
+			case "ISBN" :
+				$parameters =
+					array(
+						"Operation" => "ItemLookup",
+						"ItemId"        => $search,
+						"SearchIndex"   => AmazonProductAPI::BOOKS,
+						"IdType"        => "ISBN",
+						"ResponseGroup" => "Medium"
+					);
+				break;
+
+			case "TITLE" :
+				$parameters =
+					array(
+						"Operation"     => "ItemSearch",
+						//"Title"       => $search,
+						"Keywords"      => $search,
+						"Sort"          => "relevancerank",
+						"SearchIndex"   => $category,
+						"ResponseGroup" => "Large"
+					);
+				break;
+
+			case "TITLE2" :
+				$parameters =
+					array(
+						"Operation"      => "ItemSearch",
+						"Title"          => $search,
+						//"Keywords"     => $search,
+						"Sort"           => "relevancerank",
+						"SearchIndex"    => $category,
+						"ResponseGroup"  => "Large"
+					);
+				break;
+
+			// Same as TITLE but add BrowseNodeID param.
+			case "NODE" :
+				$parameters =
+					array(
+						"Operation"     => "ItemSearch",
+						//"Title"       => $search,
+						"Keywords"      => $search,
+						"SearchIndex"   => $category,
+						"BrowseNode"    => $searchNode,
+						"ResponseGroup" => "Large"
+					);
+				break;
+		}
+		return $this->verifyXmlResponse($this->queryAmazon($parameters));
+	}
+
+	/**
+	 * Return details of a product searched by UPC
+	 *
+	 * @param int $upc_code UPC code of the product to search
+	 * @param string $product_type type of the product
+	 * @return mixed simpleXML object
+	 */
+	public function getItemByUpc($upc_code, $product_type)
+	{
+		$parameters =
+			array(
+				"Operation"     => "ItemLookup",
+				"ItemId"        => $upc_code,
+				"SearchIndex"   => $product_type,
+				"IdType"        => "UPC",
+				"ResponseGroup" => "Medium"
+			);
+
+		$xml_response = $this->queryAmazon($parameters);
+		return $this->verifyXmlResponse($xml_response);
+	}
+
+	/**
+	 * Return details of a product searched by ASIN.
+	 *
+	 * @param int    $asin_code ASIN code of the product to search
+	 * @param string $region Domain name extension (com, ca, etc).
+	 *
+	 * @return bool|mixed
+	 */
+	public function getItemByAsin($asin_code, $region = "com")
+	{
+		$parameters =
+			array(
+				"Operation"      => "ItemLookup",
+				"ItemId"         => $asin_code,
+				"ResponseGroup"  => "Medium"
+			);
+
+		$xml_response = $this->queryAmazon($parameters, $region);
+		return $this->verifyXmlResponse($xml_response);
+	}
+
+	/**
+	 * Return details of a product searched by keyword
+	 *
+	 * @param string $keyword keyword to search
+	 * @param string $product_type type of the product
+	 * @return mixed simpleXML object
+	 */
+	public function getItemByKeyword($keyword, $product_type)
+	{
+		$parameters =
+			array(
+				"Operation"    => "ItemSearch",
+				"Keywords"     => $keyword,
+				"SearchIndex"  => $product_type
+			);
+
+		$xml_response = $this->queryAmazon($parameters);
+		return $this->verifyXmlResponse($xml_response);
+	}
+
+	/**
+	 * Reset some class object variables.
+	 * @void
+	 */
+	private function resetVars()
+	{
+		$this->currentSleepTime = self::sleepTime;
+		$this->tries = 0;
+	}
+
+	/**
 	 * Check if the xml received from Amazon is valid
 	 *
 	 * @param mixed $response xml response to check
-	 * @return bool false if the xml is invalid
-	 * @return mixed the xml response if it is valid
-	 * @return exception if we could not connect to Amazon
+	 *
+	 * @return bool|mixed false if the xml is invalid, mixed if the xml response if it is valid
+	 * @throws exception if we could not connect to Amazon
 	 */
 	private function verifyXmlResponse($response)
 	{
@@ -200,198 +344,88 @@ class AmazonProductAPI
 	/**
 	 * Query Amazon with the issued parameters
 	 *
-	 * @param array $parameters parameters to query around
-	 * @return simpleXmlObject xml query response
+	 * @param array  $parameters parameters to query around
+	 * @param string $region Domain name extension (com, ca, etc).
+	 *
+	 * @return bool|SimpleXMLElement|string xml query response
 	 */
 	private function queryAmazon($parameters, $region = "com")
 	{
-		return aws_signed_request($region, $parameters, $this->public_key, $this->private_key, $this->associate_tag);
+		return $this->aws_signed_request($region, $parameters, $this->public_key, $this->private_key, $this->associate_tag);
 	}
 
 	/**
-	 * Return details of products searched by various types
+	 * @param        $region
+	 * @param        $params
+	 * @param        $public_key
+	 * @param        $private_key
+	 * @param string $associate_tag
 	 *
-	 * @param string $search search term
-	 * @param string $category search category
-	 * @param string $searchType type of search
-	 * @return mixed simpleXML object
+	 * @return bool|SimpleXMLElement|string
 	 */
-	public function searchProducts($search, $category, $searchType = "UPC", $searchNode="")
+	private function aws_signed_request($region, $params, $public_key, $private_key, $associate_tag = "")
 	{
-		$this->searchString = $search;
-		$this->category = $category;
-		$this->searchType = $searchType;
-		$this->searchNode = $searchNode;
 
-		$allowedTypes		= array("UPC", "TITLE", "ARTIST", "KEYWORD", "NODE", "ISBN");
-		$allowedCategories	= array("Music", "DVD", "VideoGames", "MP3Downloads");
-
-		switch($searchType)
+		if ($public_key !== "" && $private_key !== "" && $associate_tag !== "")
 		{
-			case "UPC" :	$parameters = array("Operation"		=> "ItemLookup",
-												"ItemId"		=> $search,
-												"SearchIndex"	=> $category,
-												"IdType"		=> "UPC",
-												"ResponseGroup"	=> "Medium");
-							break;
+			$method = "GET";
+			// Must be in small case.
+			$host = "ecs.amazonaws.".$region;
+			$uri = "/onca/xml";
 
-			case "ISBN" :	$parameters = array("Operation"		=> "ItemLookup",
-												"ItemId"		=> $search,
-												"SearchIndex"	=> AmazonProductAPI::BOOKS,
-												"IdType"		=> "ISBN",
-												"ResponseGroup"	=> "Medium");
-							break;
+			$params["Service"]        = "AWSECommerceService";
+			$params["AWSAccessKeyId"] = $public_key;
+			$params["AssociateTag"]   = $associate_tag;
+			$params["Timestamp"]      = gmdate("Y-m-d\TH:i:s\Z");
+			$params["Version"]        = "2009-03-31";
 
-			case "TITLE" :  $parameters = array("Operation"		=> "ItemSearch",
-												//"Title"		=> $search,
-												"Keywords"	 	=> $search,
-												"Sort"			=> "relevancerank",
-												"SearchIndex"	=> $category,
-												"ResponseGroup"	=> "Large");
-							break;
+			/* The params need to be sorted by the key, as Amazon does this at
+			their end and then generates the hash of the same. If the params
+			are not in order then the generated hash will be different thus
+			failing the authetication process.
+			*/
+			ksort($params);
 
-			case "TITLE2" :  $parameters = array("Operation"		=> "ItemSearch",
-												"Title"		=> $search,
-												//"Keywords"	 	=> $search,
-												"Sort"			=> "relevancerank",
-												"SearchIndex"	=> $category,
-												"ResponseGroup"	=> "Large");
-				break;
+			$canonicalized_query = array();
 
-			// Same as TITLE but add BrowseNodeID param.
-			case "NODE" :  $parameters = array("Operation"		=> "ItemSearch",
-												//"Title"		=> $search,
-												"Keywords"		=> $search,
-												"SearchIndex"	=> $category,
-												"BrowseNode"	=> $searchNode,
-												"ResponseGroup"	=> "Large");
-							break;
+			foreach ($params as $param=>$value)
+			{
+				$param = str_replace("%7E", "~", rawurlencode($param));
+				$value = str_replace("%7E", "~", rawurlencode($value));
+				$canonicalized_query[] = $param."=".$value;
+			}
+
+			$canonicalized_query = implode("&", $canonicalized_query);
+
+			$string_to_sign = $method."\n".$host."\n".$uri."\n".$canonicalized_query;
+
+			/* Calculate the signature using HMAC with SHA256 and base64-encoding.
+			* The 'hash_hmac' function is only available from PHP 5 >= 5.1.2.
+			*/
+			$signature = base64_encode(hash_hmac("sha256", $string_to_sign, $private_key, True));
+
+			// Encode the signature for the request.
+			$signature = str_replace("%7E", "~", rawurlencode($signature));
+
+			// Create request.
+			$request = "http://".$host.$uri."?".$canonicalized_query."&Signature=".$signature;
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL,$request);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+
+			$xml_response = curl_exec($ch);
+			if ($xml_response === False) {
+				return False;
+			} else {
+				// Parse XML.
+				$parsed_xml = @simplexml_load_string($xml_response);
+				return ($parsed_xml === False) ? False : $parsed_xml;
+			}
+		} else {
+			return "missingkey";
 		}
-		$xml_response = $this->queryAmazon($parameters);
-		return $this->verifyXmlResponse($xml_response);
-	}
-
-
-	/**
-	 * Return details of a product searched by UPC
-	 *
-	 * @param int $upc_code UPC code of the product to search
-	 * @param string $product_type type of the product
-	 * @return mixed simpleXML object
-	 */
-	public function getItemByUpc($upc_code, $product_type)
-	{
-		$parameters = array("Operation"		=> "ItemLookup",
-							"ItemId"		=> $upc_code,
-							"SearchIndex"	=> $product_type,
-							"IdType"		=> "UPC",
-							"ResponseGroup"	=> "Medium");
-
-		$xml_response = $this->queryAmazon($parameters);
-		return $this->verifyXmlResponse($xml_response);
-	}
-
-	/**
-	 * Return details of a product searched by ASIN
-	 *
-	 * @param int $asin_code ASIN code of the product to search
-	 * @return mixed simpleXML object
-	 */
-	public function getItemByAsin($asin_code, $region = "com")
-	{
-		$parameters = array("Operation"		=> "ItemLookup",
-							"ItemId"		=> $asin_code,
-							"ResponseGroup" => "Medium");
-
-		$xml_response = $this->queryAmazon($parameters, $region);
-		return $this->verifyXmlResponse($xml_response);
-	}
-
-
-	/**
-	 * Return details of a product searched by keyword
-	 *
-	 * @param string $keyword keyword to search
-	 * @param string $product_type type of the product
-	 * @return mixed simpleXML object
-	 */
-	public function getItemByKeyword($keyword, $product_type)
-	{
-		$parameters = array("Operation"		=> "ItemSearch",
-							"Keywords"		=> $keyword,
-							"SearchIndex"	=> $product_type);
-
-		$xml_response = $this->queryAmazon($parameters);
-		return $this->verifyXmlResponse($xml_response);
 	}
 }
-
-
-function  aws_signed_request($region, $params, $public_key, $private_key, $associate_tag = "")
-{
-
-	if ($public_key !== "" && $private_key !== "" && $associate_tag !== "")
-	{
-		$method = "GET";
-		// Must be in small case.
-		$host = "ecs.amazonaws.".$region;
-		$uri = "/onca/xml";
-
-		$params["Service"]		  = "AWSECommerceService";
-		$params["AWSAccessKeyId"]   = $public_key;
-		$params["AssociateTag"]		= $associate_tag;
-		$params["Timestamp"]		= gmdate("Y-m-d\TH:i:s\Z");
-		$params["Version"]		  = "2009-03-31";
-
-		/* The params need to be sorted by the key, as Amazon does this at
-		their end and then generates the hash of the same. If the params
-		are not in order then the generated hash will be different thus
-		failing the authetication process.
-		*/
-		ksort($params);
-
-		$canonicalized_query = array();
-
-		foreach ($params as $param=>$value)
-		{
-			$param = str_replace("%7E", "~", rawurlencode($param));
-			$value = str_replace("%7E", "~", rawurlencode($value));
-			$canonicalized_query[] = $param."=".$value;
-		}
-
-		$canonicalized_query = implode("&", $canonicalized_query);
-
-		$string_to_sign = $method."\n".$host."\n".$uri."\n".$canonicalized_query;
-
-		/* Calculate the signature using HMAC with SHA256 and base64-encoding.
-		* The 'hash_hmac' function is only available from PHP 5 >= 5.1.2.
-		*/
-		$signature = base64_encode(hash_hmac("sha256", $string_to_sign, $private_key, True));
-
-		// Encode the signature for the request.
-		$signature = str_replace("%7E", "~", rawurlencode($signature));
-
-		// Create request.
-		$request = "http://".$host.$uri."?".$canonicalized_query."&Signature=".$signature;
-
-		// I prefer using CURL.
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL,$request);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-
-		$xml_response = curl_exec($ch);
-		if ($xml_response === False)
-			return False;
-		else
-		{
-			// Parse XML.
-			$parsed_xml = @simplexml_load_string($xml_response);
-			return ($parsed_xml === False) ? False : $parsed_xml;
-		}
-	}
-	else
-		return "missingkey";
-}
-?>
