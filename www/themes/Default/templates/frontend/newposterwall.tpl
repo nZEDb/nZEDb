@@ -53,10 +53,10 @@
 										<a class="divlink" title="Find on IGN" href="{$site->dereferrer_link}http://ign.com/search?q={$result.searchname|escape:"url"}&page=0&count=10&type=object&objectType=game&filter=games&" target="_blank" ></a>
 									</div>
 									<div class="icon icon_gamespot">
-										<a class="divlink" title="Find on Gamespot" href="{$site->dereferrer_link}http://www.gamespot.com/search/?q={$result.searchname|escape:"url"}/" target="_blank" ></a>
+										<a class="divlink" title="Find on Gamespot" href="{$site->dereferrer_link}http://www.gamespot.com/search/?q={$result.searchname|escape:"url"}" target="_blank" ></a>
 									</div>
 									<div class="icon icon_predbme">
-										<a class="divlink" title="Find on Predb.me" href="{$site->dereferrer_link}http://predb.me/?cats=games&search={$result.searchname|escape:"url"}/" target="_blank" ></a>
+										<a class="divlink" title="Find on Predb.me" href="{$site->dereferrer_link}http://predb.me/?cats=games&search={$result.searchname|escape:"url"}" target="_blank" ></a>
 									</div>
 								{elseif $type == 'Movies'}
 									<div class="icon icon_imdb">
@@ -72,13 +72,13 @@
 									{/if}
 								{elseif $type == 'Music'}
 									<div class="icon icon_discogs">
-										<a class="divlink" title="Find on Discogs" href="{$site->dereferrer_link}http://www.discogs.com/search/?q={$result.searchname|escape:"url"}/" target="_blank" ></a>
+										<a class="divlink" title="Find on Discogs" href="{$site->dereferrer_link}http://www.discogs.com/search/?q={$result.searchname|regex_replace:"/ ?(\(?\d\d\d\d\)?)? ?(MP3|FLAC)/i":""|escape:"url"}" target="_blank" ></a>
 									</div>
 									<div class="icon icon_allmusic">
-										<a class="divlink" title="Find on AllMusic" href="{$site->dereferrer_link}http://www.allmusic.com/search/all/{$result.searchname|escape:"url"}/" target="_blank" ></a>
+										<a class="divlink" title="Find on AllMusic" href="{$site->dereferrer_link}http://www.allmusic.com/search/all/{$result.searchname|regex_replace:"/ ?(\(?\d\d\d\d\)?)? ?(MP3|FLAC)/i":""|escape:"url"}" target="_blank" ></a>
 									</div>
 									<div class="icon icon_lastfm">
-										<a class="divlink" title="Find on Last.FM" href="{$site->dereferrer_link}http://www.last.fm/search?q={$result.searchname|escape:"url"}&from=ac/" target="_blank" ></a>
+										<a class="divlink" title="Find on Last.FM" href="{$site->dereferrer_link}http://www.last.fm/search?q={$result.searchname|regex_replace:"/ ?(\(?\d\d\d\d\)?)? ?(MP3|FLAC)/i":""|escape:"url"}&from=ac/" target="_blank" ></a>
 									</div>
 								{/if}
 							</div>
