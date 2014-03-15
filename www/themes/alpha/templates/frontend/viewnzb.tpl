@@ -59,13 +59,15 @@
 							<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbid}/" title="View at IMDB">IMDB</a></span>
 							{if $movie.tmdbid != ''}<span class"label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbid}" title="View at TMDb">TMDb</a></span>{/if}
 							<span class"label label-default">
-							<a
+							{if $cpurl != "" && $cpapi != ""}
+								<a
+									class="sendtocouch"
 									target="blackhole"
-									href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}"
+									href="javascript:;"
+									rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$release.imdbid}&title={$movie.title}"
 									name="CP{$release.imdbid}"
-									title="Add to CouchPotato">
-								CouchPotato
-							</a>
+									title="Add to CouchPotato">CouchPotato</a>
+							{/if}
 							</span>
 						</div>
 					</td>

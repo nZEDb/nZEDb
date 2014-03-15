@@ -111,8 +111,10 @@
 									Trakt
 								</a>
 								{if $cpurl != '' && $cpapi != ''}
-									<a class="rndbtn" target="blackhole"
-										href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
+									<a
+										class="rndbtn sendtocouch" target="blackhole"
+										href="javascript:;"
+										rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
 										name="CP{$result.imdbid}" title="Add to CouchPotato">
 										Couch
 									</a>

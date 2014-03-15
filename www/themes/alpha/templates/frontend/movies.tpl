@@ -81,8 +81,10 @@
 							><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/trakt.png"></a>
 							{if $cpurl != '' && $cpapi != ''}
 								<a
+									class="sendtocouch"
 									target="blackhole"
-									href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
+									href="javascript:;"
+									rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
 									name="CP{$result.imdbid}"
 									title="Add to CouchPotato"
 								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/couch.png"></a>
