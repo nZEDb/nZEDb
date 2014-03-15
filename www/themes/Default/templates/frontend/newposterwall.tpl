@@ -32,11 +32,11 @@
 						<div class="poster">
 							{if $type == 'Movies'}
 								<a class="titleinfo" title="{$result.guid}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
-									<img alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg" />
+									<img width="140x" height="205px" alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg" />
 								</a>
 							{elseif $type = 'Music'}
 								<a class="titleinfo" title="{$result.guid}" href="{$smarty.const.WWW_TOP}/details/{$result.guid}">
-									<img alt="" src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfoid}.jpg" />
+									<img height="250px" width="250px" alt="" src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfoid}.jpg" />
 								</a>
 							{/if}
 						</div>

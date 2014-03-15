@@ -113,9 +113,7 @@
 					<h4>{$result.artist}{" - "}{$result.title}</h4>
 					{if $result.genre != ""}
 						<b>Genre:</b>
-						<a
-							href="{$smarty.const.WWW_TOP}/music/?genre={$result.genreid}"
-						>{$result.genre|escape:"htmlall"}</a>
+						<a href="{$smarty.const.WWW_TOP}/music/?genre={$result.genreid}">{$result.genre|escape:"htmlall"}</a>
 						<br>
 					{/if}
 					{if $result.publisher != ""}
@@ -166,7 +164,7 @@
 											<b>{$mname[$m@index]|escape:"htmlall"}</b>
 										</a>
 										<br>
-										<div class="container">
+										<div class="resextra">
 											<div class="pull-left">
 												<i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} |
 												<i class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} |
@@ -270,14 +268,15 @@
 	{/if}
 	</form>
 {else}
-	<div class="alert">
+	<div class="alert alert-link" style="vertical-align:middle;">
 		<button type="button" class="close" data-dismiss="alert">&times;</button>
-		<h4>
-			There doesn't seem to be any releases here. Please try the
-			<a
-				href="{$smarty.const.WWW_TOP}/browse?t={$category}"
-			>list</a> view.
-		</h4>
-		<strong>Sorry!</strong> There is nothing in this section.
+		<div class="pull-left" style="margin-right: 15px;">
+			<h2 style="margin-top: 7px;"> ಠ_ಠ </h2>
+		</div>
+		<p>Either some amazon key is wrong, or there is nothing in this section.
+			<br>Please try looking in the<a
+					href="{$smarty.const.WWW_TOP}/browse?t={$category}"
+					style="font-weight:strong;text-decoration:underline;"> list view</a>.
+		</p>
 	</div>
 {/if}

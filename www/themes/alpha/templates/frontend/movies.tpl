@@ -57,7 +57,8 @@
 				<td style="vertical-align:top;text-align:center;width:150px;padding:10px;">
 					<div class="movcover">
 						<a
-							target="_blank" href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}"
+							target="_blank"
+							href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}"
 							name="name{$result.imdbid}"
 							title="View movie info"
 							class="modal_imdb thumbnail" rel="movie"
@@ -270,13 +271,15 @@
 	{/if}
 	</form>
 {else}
-	<div class="alert">
+	<div class="alert alert-link" style="vertical-align:middle;">
 		<button type="button" class="close" data-dismiss="alert">&times;</button>
-		<h4>There doesn't seem to be any releases here. Please try the
-			<a
-				href="{$smarty.const.WWW_TOP}/browse?t={$category}"
-			>list</a> view.
-		</h4>
-		<strong>Sorry!</strong> There is nothing in this section.
+		<div class="pull-left" style="margin-right: 15px;">
+			<h2 style="margin-top: 7px;"> ಠ_ಠ </h2>
+		</div>
+		<p>Either some amazon key is wrong, or there is nothing in this section.
+			<br>Please try looking in the<a
+					href="{$smarty.const.WWW_TOP}/browse?t={$category}"
+					style="font-weight:strong;text-decoration:underline;"> list view</a>.
+		</p>
 	</div>
 {/if}
