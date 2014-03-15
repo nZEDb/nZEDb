@@ -91,7 +91,7 @@
 						<div>
 							<a
 								class="label label-info"
-								href="{$smarty.const.WWW_TOP}/movies?title={$result.title|escape:"url"}"
+								href="{$smarty.const.WWW_TOP}/search/{$result.title|escape:"url"}?t=2000"
 								title="View similar nzbs"
 							>Similar</a>
 						</div>

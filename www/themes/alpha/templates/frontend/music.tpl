@@ -105,7 +105,7 @@
 						<a
 							class="label label-info"
 							href="{$smarty.const.WWW_TOP}/music?artist={$result.artist|escape:"url"}"
-							title="View similar nzbs"
+							title="View albums from this artist"
 						>Similar</a>
 					</div>
 				</td>
