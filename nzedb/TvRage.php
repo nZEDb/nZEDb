@@ -4,9 +4,28 @@ require_once nZEDb_LIB . 'Util.php';
 
 class TvRage
 {
-
 	const APIKEY = '7FwjZ8loweFcOhHfnU3E';
 	const MATCH_PROBABILITY = 75;
+
+	/**
+	 * @var ColorCLI objct
+	 */
+	public $c;
+
+	/**
+	 * @var Database object
+	 */
+	public $db;
+
+	public $echooutput;
+	public $getShowURL          = '';
+	public $rageqty;
+	public $showInfoUrl         = 'http://www.tvrage.com/shows/id-';
+	public $xmlFullSearchUrl    = 'http://services.tvrage.com/feeds/full_search.php?show=';
+	public $xmlShowInfoUrl      = 'http://services.tvrage.com/feeds/showinfo.php?sid=';
+	public $xmlFullShowInfoUrl  = 'http://services.tvrage.com/feeds/full_show_info.php?sid=';
+	public $xmlEpisodeInfoUrl;
+	public $xmlFullScheduleUrl  = 'http://services.tvrage.com/feeds/fullschedule.php?country=';
 
 	function __construct($echooutput = false)
 	{
@@ -17,13 +36,8 @@ class TvRage
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->c = new ColorCLI();
 
-		$this->xmlFullSearchUrl = "http://services.tvrage.com/feeds/full_search.php?show=";
-		$this->xmlShowInfoUrl = "http://services.tvrage.com/feeds/showinfo.php?sid=";
-		$this->xmlFullShowInfoUrl = "http://services.tvrage.com/feeds/full_show_info.php?sid=";
-		$this->xmlEpisodeInfoUrl = "http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
-		$this->xmlFullScheduleUrl = "http://services.tvrage.com/feeds/fullschedule.php?country=";
-
-		$this->showInfoUrl = "http://www.tvrage.com/shows/id-";
+		$this->xmlEpisodeInfoUrl =
+			"http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
 	}
 
 	public function getByID($id)
