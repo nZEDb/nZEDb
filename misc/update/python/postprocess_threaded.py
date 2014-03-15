@@ -189,19 +189,19 @@ elif sys.argv[1] == "nfo":
 
 
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-		run = "SELECT DISTINCT searchname AS name, id, categoryid from releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN (SELECT id FROM category WHERE parentid = 2000) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT DISTINCT searchname AS name, id, categoryid from releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 ORDER BY postdate DESC LIMIT %s"
 		cur[0].execute(run, (run_threads * movieperrun))
 		datas = cur[0].fetchall()
 elif sys.argv[1] == "movie":
-		run = "SELECT searchname AS name, id, categoryid from releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid IN (SELECT id FROM category WHERE parentid = 2000) ORDER BY postdate DESC LIMIT %s"
+		run = "SELECT searchname AS name, id, categoryid from releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 ORDER BY postdate DESC LIMIT %s"
 		cur[0].execute(run, (run_threads * movieperrun))
 		datas = cur[0].fetchall()
 elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-		run = "SELECT searchname, id from releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN (SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
+		run = "SELECT searchname, id from releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid BETWEEN 5000 AND 5999 "+orderBY+" LIMIT %s"
 		cur[0].execute(run, (run_threads * tvrageperrun))
 		datas = cur[0].fetchall()
 elif sys.argv[1] == "tv":
-		run = "SELECT searchname, id from releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid IN (SELECT id FROM category WHERE parentid = 5000 ) "+orderBY+" LIMIT %s"
+		run = "SELECT searchname, id from releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid BETWEEN 5000 AND 5999 "+orderBY+" LIMIT %s"
 		cur[0].execute(run, (run_threads * tvrageperrun))
 		datas = cur[0].fetchall()
 
