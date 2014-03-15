@@ -22,7 +22,7 @@
 							class="library-console"
 						{elseif $type == 'Movies'}
 							class="library-show"
-						{elseif $type == 'Music'}
+						{elseif $type == 'Audio'}
 							class="library-music"
 						{/if}
 					>
@@ -32,7 +32,7 @@
 									<img width="130px" alt="" src="{$smarty.const.WWW_TOP}/covers/console/{$result.consoleinfoid}.jpg" />
 								{elseif $type == 'Movies'}
 									<img width="140x" height="205px" alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg" />
-								{elseif $type == 'Music'}
+								{elseif $type == 'Audio'}
 									<img height="250px" width="250px" alt="" src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfoid}.jpg" />
 								{/if}
 							</a>
@@ -70,7 +70,7 @@
 											<a class="divlink sendtocouch" target="_blank" title="Send to CouchPotato" href="javascript:;" rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.searchname|escape:"url"}" ></a>
 										</div>
 									{/if}
-								{elseif $type == 'Music'}
+								{elseif $type == 'Audio'}
 									<div class="icon icon_discogs">
 										<a class="divlink" title="Find on Discogs" href="{$site->dereferrer_link}http://www.discogs.com/search/?q={$result.searchname|regex_replace:"/ ?(\(?\d\d\d\d\)?)? ?(MP3|FLAC)/i":""|escape:"url"}" target="_blank" ></a>
 									</div>
