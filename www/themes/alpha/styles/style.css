@@ -13,20 +13,24 @@ h3.heading             { margin-top: 0; }
 /* Icons */
 div.icon { width:16px; height:16px; background-repeat:no-repeat; cursor:pointer; position:relative; float:left; margin:2px; }
 .data .icons .icon   { opacity:.30; }
+.icon_allmusic       { background-image:url('../../../themes_shared/images/icons/allmusic.png'); }
+.icon_allmusic2      { content:url('../../../themes_shared/images/icons/allmusic.png'); }
+.icon_amazon         { background-image:url('../../../themes_shared/images/icons/amazon.png'); }
+.icon_amazon2        { content:url('../../../themes_shared/images/icons/amazon.png'); }
 .icon_cart           { background-image:url('../../../themes_shared/images/icons/cartup.png'); }
 .icon_cart_clicked   { background-image:url('../../../themes_shared/images/icons/cartdown.png'); }
-.icon_couch           { background-image:url('../../../themes_shared/images/icons/couch.png'); }
-.icon_couch2           { content:url('../../../themes_shared/images/icons/couch.png'); }
+.icon_couch          { background-image:url('../../../themes_shared/images/icons/couch.png'); }
+.icon_couch2         { content:url('../../../themes_shared/images/icons/couch.png'); }
 .icon_nzb            { background-image:url('../../../themes_shared/images/icons/nzbup.png'); }
 .icon_nzb_clicked    { background-image:url('../../../themes_shared/images/icons/nzbdown.png'); }
 .icon_nzb a          { text-decoration:none; padding-bottom:2px; padding-right:12px; }
 .icon_imdb           { background-image:url('../../../themes_shared/images/icons/imdb.png'); }
-.icon_imdb2           { content:url('../../../themes_shared/images/icons/imdb.png'); }
+.icon_imdb2          { content:url('../../../themes_shared/images/icons/imdb.png'); }
 .icon_imdb a         { text-decoration:none; padding-bottom:2px; padding-right:12px; }
 .icon_sab            { background-image:url('../../../themes_shared/images/icons/sabup.png'); }
 .icon_sab_clicked    { background-image:url('../../../themes_shared/images/icons/sabdown.png'); }
-.icon_trakt           { background-image:url('../../../themes_shared/images/icons/trakt.png'); }
-.icon_trakt2           { content:url('../../../themes_shared/images/icons/trakt.png'); }
+.icon_trakt          { background-image:url('../../../themes_shared/images/icons/trakt.png'); }
+.icon_trakt2         { content:url('../../../themes_shared/images/icons/trakt.png'); }
 .icon_tvrage         { background-image:url('../../../themes_shared/images/icons/tvrage.png'); }
 .icon_check          { background-image:url('../../../themes_shared/images/icons/check.png'); }
 .icon_cp             { background-image:url('../../../themes_shared/images/icons/couch.png'); }

@@ -7,13 +7,15 @@
 	</div>
 	<br>
 {/if}
-
 <div class="panel">
 	<div class="panel-heading">
 		<h4 class="panel-title">
-			<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#searchtoggle">
-				<i class="icon-search"></i> Search Filter
-			</a>
+			<a
+				class="accordion-toggle"
+				data-toggle="collapse"
+				data-parent="#accordion"
+				href="#searchtoggle"
+			><i class="icon-search"></i> Search Filter</a>
 		</h4>
 	</div>
 	<div id="searchtoggle" class="panel-collapse collapse">
@@ -22,20 +24,13 @@
 		</div>
 	</div>
 </div>
-
-
 {if $results|@count > 0}
-
 	<form id="nzb_multi_operations_form" action="get">
 	<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
 		View:
-		<span>
-			<i class="icon-th-list"></i>
-		</span>
+		<span><i class="icon-th-list"></i></span>
 		&nbsp;&nbsp;
-		<a href="{$smarty.const.WWW_TOP}/browse?t={$category}">
-			<i class="icon-align-justify"></i>
-		</a>
+		<a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
 		{if $isadmin || $ismod}
 			&nbsp;&nbsp;
 			Admin:
@@ -46,33 +41,15 @@
 	{include file='multi-operations.tpl'}
 	<table class="table table-striped table-condensed data" id="coverstable">
 		<thead>
-		<tr>
-			<th><input type="checkbox" class="nzb_check_all"></th>
-			<th>title
-				<a title="Sort Descending" href="{$orderbytitle_desc}">
-					<i class="icon-chevron-down icon-black"></i>
-				</a>
-				<a title="Sort Ascending" href="{$orderbytitle_asc}">
-					<i class="icon-chevron-up icon-black"></i>
-				</a>
-			</th>
-			<th>year
-				<a title="Sort Descending" href="{$orderbyyear_desc}">
-					<i class="icon-chevron-down icon-black"></i>
-				</a>
-				<a title="Sort Ascending" href="{$orderbyyear_asc}">
-					<i class="icon-chevron-up icon-black"></i>
-				</a>
-			</th>
-			<th>rating
-				<a title="Sort Descending" href="{$orderbyrating_desc}">
-					<i class="icon-chevron-down icon-black"></i>
-				</a>
-				<a title="Sort Ascending" href="{$orderbyrating_asc}">
-					<i class="icon-chevron-up icon-black"></i>
-				</a>
-			</th>
-		</tr>
+			<tr>
+				<th><input type="checkbox" class="nzb_check_all"></th>
+				<th>title<a title="Sort Descending" href="{$orderbytitle_desc}"><i class="icon-chevron-down icon-black"></i></a><a
+							title="Sort Ascending" href="{$orderbytitle_asc}"><i class="icon-chevron-up icon-black"></i></a></th>
+				<th>year<a title="Sort Descending" href="{$orderbyyear_desc}"><i class="icon-chevron-down icon-black"></i></a><a
+							title="Sort Ascending" href="{$orderbyyear_asc}"><i class="icon-chevron-up icon-black"></i></a></th>
+				<th>rating<a title="Sort Descending" href="{$orderbyrating_desc}"><i class="icon-chevron-down icon-black"></i></a><a
+							title="Sort Ascending" href="{$orderbyrating_asc}"><i class="icon-chevron-up icon-black"></i></a></th>
+			</tr>
 		</thead>
 		<tbody>
 		{foreach from=$results item=result}
@@ -81,31 +58,42 @@
 					<div class="movcover">
 						<a
 							target="_blank" href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}"
-							name="name{$result.imdbid}" title="View movie info" class="modal_imdb thumbnail" rel="movie">
-							<img
+							name="name{$result.imdbid}"
+							title="View movie info"
+							class="modal_imdb thumbnail" rel="movie"
+						><img
 								class="shadow" style="margin: 3px 0;"
 								src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}"
 								width="160" border="0" alt="{$result.title|escape:"htmlall"}"
-							>
-						</a>
-
+						></a>
 						<div class="relextra" style="margin-top:5px;">
 							<a
 								target="_blank"
 								href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/"
 								name="imdb{$result.imdbid}"
-								title="View imdb page"><i class="icon_imdb2"></i></a>
+								title="View imdb page"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/imdb.png"></a>
 							<a
 								target="_blank"
 								href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/"
-								name="trakt{$result.imdbid}" title="View trakt page"><i class="icon_trakt2"></i></a>
+								name="trakt{$result.imdbid}"
+								title="View trakt page"
+							><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/trakt.png"></a>
 							{if $cpurl != '' && $cpapi != ''}
 								<a
 									target="blackhole"
 									href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
 									name="CP{$result.imdbid}"
-									title="Add to CouchPotato"><i class="icon_couch2"></i></a>
+									title="Add to CouchPotato"
+								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/couch.png"></a>
 							{/if}
+						</div>
+						<hr>
+						<div>
+							<a
+								class="label label-info"
+								href="{$smarty.const.WWW_TOP}/movies?title={$result.title|escape:"url"}"
+								title="View similar nzbs"
+							>Similar</a>
 						</div>
 					</div>
 				</td>
@@ -122,7 +110,6 @@
 						{if $result.rating != ''}
 							{$result.rating}/10
 						{/if}
-
 						{foreach from=$result.languages item=movielanguage}
 							{release_flag($movielanguage, browse)}
 						{/foreach}
@@ -152,7 +139,6 @@
 						<br>
 					{/if}
 					<br>
-
 					<div class="relextra">
 						<table class="table table-condensed table-hover data">
 							{assign var="msplits" value=","|explode:$result.grp_release_id}
@@ -170,15 +156,12 @@
 							{assign var="mhaspreview" value=","|explode:$result.grp_haspreview}
 							<tbody>
 							{foreach from=$msplits item=m}
-								<tr
-									id="guid{$mguid[$m@index]}"
-									{if $m@index > 1}class="mlextra"{/if}>
+								<tr id="guid{$mguid[$m@index]}" {if $m@index > 1}class="mlextra"{/if}>
 									<td style="width: 27px;">
 										<input type="checkbox" class="nzb_check" value="{$mguid[$m@index]}">
 									</td>
 									<td class="name">
-										<a
-											href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
+										<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">
 											<b>{$mname[$m@index]|escape:"htmlall"}</b>
 										</a>
 										<br>
@@ -232,8 +215,8 @@
 												{/if}
 												<span class="label label-default">
 													<a
-															href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
-															title="Browse releases in {$mgrp[$m@index]}"
+														href="{$smarty.const.WWW_TOP}/browse?g={$mgrp[$m@index]}"
+														title="Browse releases in {$mgrp[$m@index]}"
 													><i class="icon-share-alt"></i></a></span
 												>
 												{if $mpass[$m@index] == 1}
@@ -291,9 +274,8 @@
 		<button type="button" class="close" data-dismiss="alert">&times;</button>
 		<h4>There doesn't seem to be any releases here. Please try the
 			<a
-				href="{$smarty.const.WWW_TOP}/browse?t={$category}">list
-			</a>
-			view.
+				href="{$smarty.const.WWW_TOP}/browse?t={$category}"
+			>list</a> view.
 		</h4>
 		<strong>Sorry!</strong> There is nothing in this section.
 	</div>
