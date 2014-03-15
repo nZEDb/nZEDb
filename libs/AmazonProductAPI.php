@@ -109,7 +109,7 @@ class AmazonProductAPI
 	/**
 	 * Constants for product types
 	 *
-     * @note More categories can be found here:
+	 * @note More categories can be found here:
 	 *       http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/APPNDX_SearchIndexValues.html
 	 *
 	 * @var string
