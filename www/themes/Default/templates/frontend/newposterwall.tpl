@@ -70,7 +70,7 @@
 										</div>
 										{if $cpapi != '' && $cpurl != ''}
 											<div class="icon icon_cp">
-												<a class="divlink sendtocouch" target="_blank" title="Send to CouchPotato" href="javascript:;" rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.searchname|escape:"url"}" ></a>
+												<a class="divlink sendtocouch" target="_blank" title="Send to CouchPotato" href="javascript:;" rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.searchname|escape:"url"}" ></a>
 											</div>
 										{/if}
 									{elseif $type == 'Audio'}

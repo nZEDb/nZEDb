@@ -114,7 +114,7 @@
 									<a
 										class="rndbtn sendtocouch" target="blackhole"
 										href="javascript:;"
-										rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
+										rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
 										name="CP{$result.imdbid}" title="Add to CouchPotato">
 										Couch
 									</a>

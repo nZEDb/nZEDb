@@ -84,7 +84,7 @@
 									class="sendtocouch"
 									target="blackhole"
 									href="javascript:;"
-									rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
+									rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
 									name="CP{$result.imdbid}"
 									title="Add to CouchPotato"
 								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/couch.png"></a>
