@@ -16,7 +16,7 @@
 			<td>{$smarty.foreach.iteration.index+1}</td>
 			<td>{$file.title|escape:'htmlall'}</td>
 
-			{assign var="icon" value='templates/alpha/images/fileicons/'|cat:$file.ext|cat:".png"}
+			{assign var="icon" value='themes_shared/images/fileicons/'|cat:$file.ext|cat:".png"}
 			{if $file.ext == "" || !is_file("$icon")}
 				{assign var="icon" value='file'}
 			{else}
@@ -25,7 +25,7 @@
 
 			{assign var="completion" value=($file.partsactual/$file.partstotal*100)|number_format:1}
 
-			<td><img title=".{$file.ext}" alt="{$file.ext}" src="{$smarty.const.WWW_TOP}/themes/alpha/images/fileicons/{$icon}.png"></td>
+			<td><img title=".{$file.ext}" alt="{$file.ext}" src="{$smarty.const.WWW_TOP}/themes_shared/images/fileicons/{$icon}.png"></td>
 			<td><span class="label {if $completion < 100}label-danger{else}label-success{/if}">{$completion}%</span></td>
 			<td>{if $file.size < 100000}{$file.size|fsize_format:"KB"}{else}{$file.size|fsize_format:"MB"}{/if}</td>
 		</tr>

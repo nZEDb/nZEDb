@@ -9,7 +9,7 @@
 <webMaster>{$site->email} ({$site->title|escape})</webMaster>
 <category>{$site->meta_keywords}</category>
 <image>
-	<url>{$serverroot}themes/{if $site->style != "" && $site->style != "/" && $site->style != "Default"}{$site->style}/images/logo.png{else}Default/images/logo.png{/if}</url>
+	<url>{$serverroot}themes_shared/images/logo.png</url>
 	<title>{$site->title|escape}</title>
 	<link>{$serverroot}</link>
 	<description>Visit {$site->title|escape} - {$site->strapline|escape}</description>
@@ -20,9 +20,9 @@
 	<title>{$release.searchname|escape:html}</title>
 	<guid isPermaLink="true">{$serverroot}details/{$release.guid}</guid>
 	<link>{$serverroot}{if $dl=="1"}getnzb{else}details{/if}/{$release.guid}{if $dl=="1"}.nzb&amp;i={$uid}&amp;r={$rsstoken}{/if}{if $del=="1"}&amp;del=1{/if}</link>
-	<comments>{$serverroot}details/{$release.guid}#comments</comments> 	
-	<pubDate>{$release.adddate|phpdate_format:"DATE_RSS"}</pubDate> 
-	<category>{$release.category_name|escape:html}</category> 	
+	<comments>{$serverroot}details/{$release.guid}#comments</comments>
+	<pubDate>{$release.adddate|phpdate_format:"DATE_RSS"}</pubDate>
+	<category>{$release.category_name|escape:html}</category>
 	<description>{if $api=="1"}{$release.searchname}{else}
 <![CDATA[{strip}
 	<div>
@@ -31,13 +31,13 @@
 	{/if}
 	{if $release.mu_cover == 1}
 		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/music/{$release.musicinfoid}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
-	{/if}	
+	{/if}
 	{if $release.co_cover == 1}
 		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/console/{$release.consoleinfoid}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
 	{/if}
 	{if $release.bo_cover == 1}
 		<img style="margin-left:10px;margin-bottom:10px;float:right;" src="{$serverroot}covers/book/{$release.bookinfoid}.jpg" width="120" border="0" alt="{$release.searchname|escape:"htmlall"}" />
-	{/if}	
+	{/if}
 	<ul>
 	<li>ID: <a href="{$serverroot}details/{$release.guid}">{$release.guid}</a></li>
 	<li>Name: {$release.searchname}</li>
@@ -47,14 +47,14 @@
 	<li>Poster: {$release.fromname|escape:"htmlall"}</li>
 	<li>PostDate: {$release.postdate|phpdate_format:"DATE_RSS"}</li>
 	<li>Password: {if $release.passwordstatus == 0}None{elseif $release.passwordstatus == 1}Possibly Passworded Archive{elseif $release.passwordstatus == 2}Probably not viable{elseif $release.passwordstatus == 10}Passworded Archive{else}Unknown{/if}</li>
-	
+
 	{if $release.nfoid != ""}
 		<li>Nfo: <a href="{$serverroot}api?t=getnfo&amp;id={$release.guid}&amp;raw=1&amp;i={$uid}&amp;r={$rsstoken}">{$release.searchname}.nfo</a></li>
 	{/if}
-	
+
 	{if $release.parentCategoryid == 2000}
 		{if $release.imdbid != ""}
-		<li>Imdb Info: 
+		<li>Imdb Info:
 			<ul>
 				<li>IMDB Link: <a href="http://www.imdb.com/title/tt{$release.imdbid}/">{$release.searchname}</a></li>
 				{if $release.rating != ""}<li>Rating: {$release.rating}</li>{/if}
@@ -67,10 +67,10 @@
 		</li>
 		{/if}
 	{/if}
-	
+
 	{if $release.parentCategoryid == 3000}
 		{if $release.musicinfoid > 0}
-		<li>Music Info: 
+		<li>Music Info:
 			<ul>
 				{if $release.mu_url != ""}<li>Amazon: <a href="{$release.mu_url}">{$release.mu_title}</a></li>{/if}
 				{if $release.mu_artist != ""}<li>Artist: {$release.mu_artist}</li>{/if}
@@ -84,18 +84,18 @@
 						{assign var="tracksplits" value="|"|explode:$release.mu_tracks}
 						{foreach from=$tracksplits item=tracksplit}
 						<li>{$tracksplit|trim}</li>
-						{/foreach}		
+						{/foreach}
 					</ol>
-				</li>				
+				</li>
 				{/if}
 			</ul>
 		</li>
 		{/if}
-	{/if}	
+	{/if}
 
 	{if $release.parentCategoryid == 1000}
 		{if $release.consoleinfoid > 0}
-		<li>Console Info: 
+		<li>Console Info:
 			<ul>
 				{if $release.co_url != ""}<li>Amazon: <a href="{$release.co_url}">{$release.co_title}</a></li>{/if}
 				{if $release.co_genre != ""}<li>Genre: {$release.co_genre}</li>{/if}
@@ -105,10 +105,10 @@
 			</ul>
 		</li>
 		{/if}
-	{/if}	
+	{/if}
 
 	</ul>
-	
+
 	</div>
 	<div style="clear:both;">
 	{/strip}]]>
@@ -138,9 +138,9 @@
 	<nZEDb:attr name="grabs" value="{$release.grabs}" />
 	<nZEDb:attr name="comments" value="{$release.comments}" />
 	<nZEDb:attr name="password" value="{$release.passwordstatus}" />
-	<nZEDb:attr name="usenetdate" value="{$release.postdate|phpdate_format:"DATE_RSS"}" />	
+	<nZEDb:attr name="usenetdate" value="{$release.postdate|phpdate_format:"DATE_RSS"}" />
 	<nZEDb:attr name="group" value="{$release.group_name|escape:html}" />
-		
+
 </item>
 {/foreach}
 

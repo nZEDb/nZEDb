@@ -416,6 +416,8 @@ Class PreDb
 				}
 			} else {
 				echo $this->c->error("Update from Predbme failed.");
+				// If the site is down, don't try the other URLs.
+				return $newnames;
 			}
 		}
 		return $newnames;
@@ -804,7 +806,6 @@ Class PreDb
 				. 'WHERE nzbstatus = 1 AND isrenamed = 0 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
 		}
 
-		echo $this->c->header($query);
 		$res = $db->queryDirect($query);
 		$total = $res->rowCount();
 		echo $this->c->primary(number_format($total) . " releases to process.");

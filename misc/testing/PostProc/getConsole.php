@@ -8,7 +8,7 @@ $console = new Console(true);
 $db = new Db();
 $c = new ColorCLI();
 
-$res = $db->queryDirect(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND categoryid IN ( SELECT id FROM category WHERE parentid = %d ) ORDER BY id DESC", Category::CAT_PARENT_GAME));
+$res = $db->queryDirect(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ORDER BY id DESC" ));
 if ($res->rowCount() > 0) {
 	echo $c->header("Updating console info for " . number_format($res->rowCount()) . " releases.");
 

@@ -121,6 +121,15 @@ class Category
 		return $db->query(sprintf("SELECT c.* FROM category c WHERE parentid = %d", $cid));
 	}
 
+	/**
+	 * Get names of enabled parent categories.
+	 * @return array
+	 */
+	public function getEnabledParentNames()
+	{
+		return $this->db->query("SELECT title FROM category WHERE parentid IS NULL AND status = 1");
+	}
+
 	// Returns ID's for site disabled categories.
 	public function getDisabledIDs()
 	{

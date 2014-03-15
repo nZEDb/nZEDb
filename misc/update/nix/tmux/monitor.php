@@ -115,8 +115,8 @@ $proc_work = "SELECT "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
 
 $proc_work2 = "SELECT "
-	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
-	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.categoryid BETWEEN 4000 AND 4999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.categoryid BETWEEN 6000 AND 6999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
 	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
 	. "(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table, "
 	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
@@ -491,6 +491,16 @@ while ($i > 0) {
 		$time1 = TIME();
 	}
 
+	if (!isset($proc_work_result[0])) {
+		$proc_work_result = $db->query($proc_work, rand_bool($i));
+	}
+	if (!isset($proc_work_result2[0])) {
+		$proc_work_result2 = $db->query($proc_work2, rand_bool($i));
+	}
+	if (!isset($proc_work_result3[0])) {
+		$proc_work_result3 = $db->query($proc_work3, rand_bool($i));
+	}
+
 	//get start values from $qry
 	if ($i == 1) {
 		if ($proc_work_result[0]['nforemains'] != NULL) {
@@ -565,6 +575,7 @@ while ($i > 0) {
 		}
 	}
 
+
 	//get values from $proc
 	if ($proc_work_result[0]['console'] != NULL) {
 		$console_releases_proc = $proc_work_result[0]['console'];
@@ -614,6 +625,7 @@ while ($i > 0) {
 			$partrepair_table = $proc_work_result2[0]['partrepair_table'];
 		}
 	}
+
 
 	if ($split_result[0]['predb'] != NULL) {
 		$predb = $split_result[0]['predb'];

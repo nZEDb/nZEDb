@@ -73,19 +73,19 @@
 			<tr>
 				<th width="130"><input type="checkbox" class="nzb_check_all"/></th>
 				<th>title<br/><a title="Sort Descending" href="{$orderbytitle_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>year<br/><a title="Sort Descending" href="{$orderbyyear_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>rating<br/><a title="Sort Descending" href="{$orderbyrating_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 			</tr>
 			{foreach from=$results item=result}
@@ -111,8 +111,10 @@
 									Trakt
 								</a>
 								{if $cpurl != '' && $cpapi != ''}
-									<a class="rndbtn" target="blackhole"
-										href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
+									<a
+										class="rndbtn sendtocouch" target="blackhole"
+										href="javascript:;"
+										rel="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}"
 										name="CP{$result.imdbid}" title="Add to CouchPotato">
 										Couch
 									</a>

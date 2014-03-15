@@ -394,6 +394,7 @@ class Backfill
 			exit($this->c->error($dmessage));
 		}
 
+		$res = false;
 		$groups = new Groups();
 		if ($groupName != '') {
 			$grp = $groups->getByName($groupName);
