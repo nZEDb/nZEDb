@@ -162,14 +162,7 @@ class AmazonProductAPI
 		// Check if there's an error.
 		if (isset($response->Error)) {
 			// Check if we are throttled.
-			if (strpos(strtolower($response->Error->Message), 'throttle') !== false) {
-
-				// Check if we exceeded max tries.
-				if ($this->tries >= self::maxTries) {
-					// Reset vars for next use of this class instance.
-					$this->resetVars();
-					throw new Exception($response->Error->Message);
-				}
+			if (strpos(strtolower($response->Error->Message), 'throttle') !== false && $this->tries <= self::maxTries) {
 
 				// Sleep to let the throttle wear off.
 				sleep($this->currentSleepTime);
