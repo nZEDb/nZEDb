@@ -2235,7 +2235,7 @@ class Releases
 	public function getNewestConsole()
 	{
 		$db = new DB();
-		return $db->query("SELECT DISTINCT (a.consoleinfoid), guid, name, b.title, searchname, size, completion, postdate, categoryid, comments, grabs, c.cover FROM releases a, category b, consoleinfo c WHERE b.title = 'Console' and a.consoleinfoid = c.id and a.consoleinfoid != -2 and a.consoleinfoid != 0 GROUP BY a.consoleinfoid ORDER BY a.postdate DESC LIMIT 35");
+		return $db->query("SELECT DISTINCT (a.consoleinfoid), guid, name, b.title, searchname, size, completion, postdate, categoryid, comments, grabs, c.cover FROM releases a, category b, consoleinfo c WHERE c.cover > 0 AND b.title = 'Console' and a.consoleinfoid = c.id and a.consoleinfoid != -2 and a.consoleinfoid != 0 GROUP BY a.consoleinfoid ORDER BY a.postdate DESC LIMIT 35");
 	}
 
 	public function getNewestMP3s()
