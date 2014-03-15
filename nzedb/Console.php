@@ -514,7 +514,11 @@ class Console
 	public function processConsoleReleases()
 	{
 		$db = $this->db;
+<<<<<<< HEAD
 		$res = $db->queryDirect(sprintf('SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE nzbstatus = 1 AND isrenamed = %s AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d', $this->renamed, Category::CAT_PARENT_GAME, $this->gameqty));
+=======
+		$res = $db->queryDirect(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 %s AND consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ORDER BY postdate DESC LIMIT %d', $this->renamed, $this->gameqty));
+>>>>>>> 904824e79ffa9671dfc2e1c6f646bf5832fb9130
 
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
