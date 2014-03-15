@@ -491,6 +491,16 @@ while ($i > 0) {
 		$time1 = TIME();
 	}
 
+	if (!isset($proc_work_result[0])) {
+		$proc_work_result = $db->query($proc_work, rand_bool($i));
+	}
+	if (!isset($proc_work_result2[0])) {
+		$proc_work_result2 = $db->query($proc_work2, rand_bool($i));
+	}
+	if (!isset($proc_work_result3[0])) {
+		$proc_work_result3 = $db->query($proc_work3, rand_bool($i));
+	}
+
 	//get start values from $qry
 	if ($i == 1) {
 		if ($proc_work_result[0]['nforemains'] != NULL) {
@@ -565,6 +575,7 @@ while ($i > 0) {
 		}
 	}
 
+
 	//get values from $proc
 	if ($proc_work_result[0]['console'] != NULL) {
 		$console_releases_proc = $proc_work_result[0]['console'];
@@ -614,6 +625,7 @@ while ($i > 0) {
 			$partrepair_table = $proc_work_result2[0]['partrepair_table'];
 		}
 	}
+
 
 	if ($split_result[0]['predb'] != NULL) {
 		$predb = $split_result[0]['predb'];
