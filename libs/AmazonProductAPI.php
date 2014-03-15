@@ -90,6 +90,12 @@ class AmazonProductAPI
 	private $currentSleepTime = 0;
 
 	/**
+	 * Are we using this method currently?
+	 * @var bool
+	 */
+	private $searchProducts = false;
+
+	/**
 	 * How many times should we try to query after being throttled.
 	 * @var int
 	 */
@@ -156,6 +162,7 @@ class AmazonProductAPI
 		$this->category = $category;
 		$this->searchType = $searchType;
 		$this->searchNode = $searchNode;
+		$this->searchProducts = true;
 
 		switch($searchType)
 		{
@@ -291,6 +298,7 @@ class AmazonProductAPI
 	{
 		$this->currentSleepTime = self::sleepTime;
 		$this->tries = 0;
+		$this->searchProducts = false;
 	}
 
 	/**
@@ -306,7 +314,7 @@ class AmazonProductAPI
 		// Check if there's an error.
 		if (isset($response->Error)) {
 			// Check if we are throttled.
-			if (strpos(strtolower($response->Error->Message), 'throttle') !== false && $this->tries <= self::maxTries) {
+			if ($this->searchProducts && strpos(strtolower($response->Error->Message), 'throttle') !== false && $this->tries <= self::maxTries) {
 
 				// Sleep to let the throttle wear off.
 				sleep($this->currentSleepTime);
@@ -314,7 +322,7 @@ class AmazonProductAPI
 				// Increase next sleep time.
 				$this->currentSleepTime += self::sleepIncrease;
 
-				// Increment max tries.
+				// Increment current tries.
 				$this->tries++;
 
 				// Try again.
