@@ -10,7 +10,7 @@ if (!isset($_REQUEST['t'])) {
 	$_REQUEST['t'] = 'Movies';
 }
 
-$types = array(/*'Books', 'Console', */'Movies', 'Music'/*, 'Recent'*/);
+$types = array(/*'Books', */'Console', 'Movies', 'Music'/*, 'Recent'*/);
 
 if (!in_array($_REQUEST['t'], $types)) {
 	$_REQUEST['t'] = 'Movies';

@@ -70,10 +70,12 @@
 								class="title thumbnail"
 								title="View amazon page"
 								href="{$site->dereferrer_link}{$result.url}"
+								width="130px"
+								height="180px"
 							><img
 									class="shadow"
 									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
-									 width="120"
+									 width="130px"
 									 border="0"
 									 alt="{$result.title|escape:"htmlall"}"
 							></a>

@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 2014-03-15 -> kevin    -> Revamp music page on alpha theme.
                        -> And console page.
+                       -> Add console to new post wall, and clean it up a bit.
 2014-03-14 -> kevin    -> Move all shared content from themes into 1 folder. YOU MUST DELETE SMARTY TEMPLATE CACHE. If you had a custom logo you must add it back (www/themes_shares/images/logo.png)
                        -> Add glyphicons instead of text on browse/search pages in alpha theme.
                        -> Change automated.config.php to be easier to understand for end-users.
