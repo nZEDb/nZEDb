@@ -10,9 +10,12 @@
 <div class="panel">
 	<div class="panel-heading">
 		<h4 class="panel-title">
-			<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#searchtoggle">
-				<i class="icon-search"></i> Search Filter</a>
-			</a>
+			<a
+				class="accordion-toggle"
+				data-toggle="collapse"
+				data-parent="#accordion"
+				href="#searchtoggle"
+			><i class="icon-search"></i> Search Filter</a>
 		</h4>
 	</div>
 	<div id="searchtoggle" class="panel-collapse collapse">
@@ -21,12 +24,12 @@
 		</div>
 	</div>
 </div>
-
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
 		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
 			View:
-			<span><i class="icon-th-list"></i></span>&nbsp;&nbsp;
+			<span><i class="icon-th-list"></i></span>
+			&nbsp;&nbsp;
 			<a href="{$smarty.const.WWW_TOP}/browse?t={$category}"><i class="icon-align-justify"></i></a>
 			{if $isadmin || $ismod}
 				&nbsp;&nbsp;
@@ -36,37 +39,16 @@
 			{/if}
 		</div>
 		{include file='multi-operations.tpl'}
-
-
-
 		<table class="table table-condensed table-striped data" id="coverstable">
 			<thead>
 				<tr>
 					<th><input type="checkbox" class="nzb_check_all"></th>
-					<th>author
-						<a title="Sort Descending" href="{$orderbyauthor_desc}">
-							<i class="icon-chevron-down"></i>
-						</a>
-						<a title="Sort Ascending" href="{$orderbyauthor_asc}">
-							<i class="icon-chevron-up"></i>
-						</a>
-					</th>
-					<th>genre
-						<a title="Sort Descending" href="{$orderbygenre_desc}">
-							<i class="icon-chevron-down"></i>
-						</a>
-						<a title="Sort Ascending" href="{$orderbygenre_asc}">
-							<i class="icon-chevron-up"></i>
-						</a>
-					</th>
-					<th>posted
-						<a title="Sort Descending" href="{$orderbyposted_desc}">
-							<i class="icon-chevron-down"></i>
-						</a>
-						<a title="Sort Ascending" href="{$orderbyposted_asc}">
-							<i class="icon-chevron-up"></i>
-						</a>
-					</th>
+					<th>author<a title="Sort Descending" href="{$orderbyauthor_desc}"><i class="icon-chevron-down"></i></a><a
+								title="Sort Ascending" href="{$orderbyauthor_asc}"><i class="icon-chevron-up"></i></a></th>
+					<th>genre<a title="Sort Descending" href="{$orderbygenre_desc}"><i class="icon-chevron-down"></i></a><a
+								title="Sort Ascending" href="{$orderbygenre_asc}"><i class="icon-chevron-up"></i></a></th>
+					<th>posted<a title="Sort Descending" href="{$orderbyposted_desc}"><i class="icon-chevron-down"></i></a><a
+								title="Sort Ascending" href="{$orderbyposted_asc}"><i class="icon-chevron-up"></i></a></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -74,10 +56,17 @@
 					<tr>
 						<td style="text-align:center;width:150px;padding:10px;">
 							<div class="bookcover">
-								<a class="title thumbnail" title="View amazon page" href="{$site->dereferrer_link}{$result.url}">
-									<img class="shadow" src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}no-cover.jpg{/if}" width="120" border="0" alt="{$result.title|escape:"htmlall"}">
-								</a>
-
+								<a
+									class="title thumbnail"
+									title="View amazon page"
+									href="{$site->dereferrer_link}{$result.url}"
+								><img
+										class="shadow"
+										src="{$smarty.const.WWW_TOP}/covers/book/{if $result.cover == 1}{$result.bookinfoid}.jpg{else}no-cover.jpg{/if}"
+										width="120"
+										border="0"
+										alt="{$result.title|escape:"htmlall"}"
+								></a>
 								<div class="relextra" style="margin-top:5px;">
 									{if $result.nfoid > 0}
 										<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="label modal_nfo" rel="nfo">

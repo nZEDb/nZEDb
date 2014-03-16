@@ -13,7 +13,9 @@
 		<meta name="application-name" content="nZEDb-v{$site->version}">
 		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
 		<title>{$page->meta_title}{if $site->metatitle != ""} - {$site->metatitle}{/if}</title>
-		{if $loggedin=="true"}<link rel="alternate" type="application/rss+xml" title="{$site->title} Full Rss Feed" href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{/if}
+		{if $loggedin=="true"}
+			<link rel="alternate" type="application/rss+xml" title="{$site->title} Full Rss Feed" href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" />
+		{/if}
 
 		<!-- nZEDb core CSS -->
 		<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -22,12 +24,13 @@
 		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/style.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_TOP}/themes/alpha/styles/wip.css" rel="stylesheet" media="screen">
 		<!-- nZEDb extras -->
-		{if $site->google_adsense_acc != ''}<link href="//www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">{/if}
+		{if $site->google_adsense_acc != ''}
+			<link href="//www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">
+		{/if}
 		<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/jquery.pnotify.default.css" rel="stylesheet" media="screen">
 		<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/jquery.qtip.css" rel="stylesheet" media="screen">
 
 		<style type="text/css">
-
 			/* Sticky footer styles
 			-------------------------------------------------- */
 			html, body { height: 100%; }    /* The html and body elements cannot have any padding or margin. */
@@ -38,7 +41,7 @@
 			/* Lastly, apply responsive CSS fixes as necessary */
 			@media (max-width: 767px) { footer { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; }}
 
-			/* Custon styles */
+			/* Custom styles */
 			legend.adbanner { font-size: 11px !important; font-weight: bold !important; text-align: left !important; width:auto; padding: 0 px; margin: 0 15px; border: 1px groove #ddd !important; }
 			.footer-links { margin: 10px 0; padding-left: 0; }
 			.footer-links li { display: inline; padding: 0 2px; }
@@ -51,7 +54,6 @@
 		</style>
 
 		<!-- Favicons WWWIIIPPP Larger Icons-->
-
 		<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes_shared/images/favicon.ico">
 
 		<!-- Additional nZEDb -->
@@ -77,20 +79,23 @@
 		<div id="wrap">
 			<!-- Status and Top Menu Area
 			================================================== -->
-
 			<nav class="navbar navbar-inverse navbar-static-top" role="navigation" style="min-height:30px;height:30px;min-width:1120px;background:none;margin-bottom:0;">
 				<div class="container">
 					<div class="navbar-header">
 						<a class="navbar-brand" href="/">{$site->title|default:'ಠ_ಠ'}</a>
 					</div>
-					{if $site->menuposition == 2}{include file='topmenu.tpl'}{/if}
+					{if $site->menuposition == 2}
+						{include file='topmenu.tpl'}
+					{/if}
 					<ul class="nav navbar-nav navbar-right">
 						{if $loggedin=="true"}
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i> Profile <b class="caret"></b></a>
 								<ul class="dropdown-menu pull-right">
 									<li><a href="{$smarty.const.WWW_TOP}/profile"><i class="icon-home"></i> My Profile</a></li>
-									{if $isadmin}<li><a href="{$smarty.const.WWW_TOP}/admin"><i class="icon-gears"></i> Admin Panel</a></li>{/if}
+									{if $isadmin
+										}<li><a href="{$smarty.const.WWW_TOP}/admin"><i class="icon-gears"></i> Admin Panel</a></li>
+									{/if}
 									<li class="divider"></li>
 									<li><a href="{$smarty.const.WWW_TOP}/mymovies"><i class="icon-ticket"></i> My Movies</a></li>
 									<li><a href="{$smarty.const.WWW_TOP}/myshows"><i class="icon-desktop"></i> My Shows</a></li>
@@ -100,8 +105,15 @@
 								</ul>
 							</li>
 						{else}
-							<li><a href="{$smarty.const.WWW_TOP}/login"><i class="icon-signin"></i> Login</a></li>{/if}
-						<li>{if $loggedin=="true"}<a href="{$smarty.const.WWW_TOP}/logout"><i class="icon-signout"></i> Logout</a>{else}<a href="{$smarty.const.WWW_TOP}/register"><i class="icon-sign-edit"></i> Register</a>{/if}</li>
+							<li><a href="{$smarty.const.WWW_TOP}/login"><i class="icon-signin"></i> Login</a></li>
+						{/if}
+						<li>
+							{if $loggedin=="true"}
+								<a href="{$smarty.const.WWW_TOP}/logout"><i class="icon-signout"></i> Logout</a>
+							{else}
+								<a href="{$smarty.const.WWW_TOP}/register"><i class="icon-sign-edit"></i> Register</a>
+							{/if}
+						</li>
 					</ul>
 				</div><!-- /.container -->
 			</nav><!-- /.navbar -->
@@ -127,7 +139,6 @@
 				</div><!-- end header-wrapper -->
 			</header>
 
-
 			<!-- Navigation Menu containing HeaderMenu and HeaderSearch
 			================================================== -->
 			<div class="navbar navbar-inverse navbar-static-top">
@@ -136,16 +147,15 @@
 				</div><!--/.navbar -->
 			</div><!-- end Navigation -->
 
-
 			<!-- Content Area containing Side Menu and Main Content Panel
 			================================================== -->
 			<div class="container">
 				{if $site->menuposition == 1}<!-- Side Menu Framework -->
-				<div class="col-xs-2">
-					{$main_menu}<!-- SIDE MENU -->
-					{$article_menu}<!-- SIDE ARTICLES -->
-					{$useful_menu}<!-- SIDE USEFUL -->
-				</div><!--/.col-xs-2 -->
+					<div class="col-xs-2">
+						{$main_menu}<!-- SIDE MENU -->
+						{$article_menu}<!-- SIDE ARTICLES -->
+						{$useful_menu}<!-- SIDE USEFUL -->
+					</div><!--/.col-xs-2 -->
 				{/if}
 				<!--Start Main Content - Tables, Detailed Views-->
 				<div class="{if $site->menuposition == 1 or $site->menuposition == 0}col-xs-10{else}col-xs-12{/if}">
