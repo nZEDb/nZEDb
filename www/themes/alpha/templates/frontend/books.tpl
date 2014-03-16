@@ -199,8 +199,15 @@
 		{/if}
 	</form>
 {else}
-	<div class="alert">
+	<div class="alert alert-link" style="vertical-align:middle;">
 		<button type="button" class="close" data-dismiss="alert">&times;</button>
-		<strong>Sorry!</strong> Either some amazon key is wrong, or there is nothing in this section.
+		<div class="pull-left" style="margin-right: 15px;">
+			<h2 style="margin-top: 7px;"> ಠ_ಠ </h2>
+		</div>
+		<p>Either some amazon key is wrong, or there is nothing in this section.
+			<br>Please try looking in the<a
+					href="{$smarty.const.WWW_TOP}/browse?t={$category}"
+					style="font-weight:strong;text-decoration:underline;"> list view</a>.
+		</p>
 	</div>
 {/if}
