@@ -15,6 +15,7 @@ Each update goes to the top of the file
                        -> Revert boolean bit types to tinyint due to smarty errors
                        -> PG schema accidental rename fix
                        -> Fix mysql patch typo proc_sorter where proc_par2 should be
+                       -> Added idx_releases_multi_name_fromname_size to drop sequence from partitioning
 2014-03-16 -> kevin    -> Possible fix for missing NZB file.
                        -> Start cleaning up books.tpl
                        -> Don't try subsequent abgx URL's when it's down.

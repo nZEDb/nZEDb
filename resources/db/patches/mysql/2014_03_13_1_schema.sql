@@ -21,6 +21,7 @@ DROP INDEX ix_releases_postdate_searchname ON releases;
 DROP INDEX ix_releases_postdate_name ON releases;
 DROP INDEX ix_releases_nzb_guid ON releases;
 DROP INDEX ix_releases_preid_searchname ON releases;
+DROP INDEX idx_releases_multi_name_fromname_size ON releases;
 
 ALTER TABLE releases MODIFY id INT(11) UNSIGNED NOT NULL;
 ALTER TABLE releases DROP PRIMARY KEY;
