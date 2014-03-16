@@ -40,10 +40,13 @@ $cfg->gdCheck = function_exists('imagecreatetruecolor');
 $cfg->curlCheck = function_exists('curl_init');
 
 if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
-	$user = posix_getpwuid(posix_getuid());
 	$group = posix_getgrgid(posix_getgid());
-	$fixString = '<br /><br />Another solution is to run:<br />chown -R ' . $group['name'] . ':' . $user['name']  . ' ';
+	$fixString = '<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name']  . ' ' . nZEDb_ROOT .
+		'<br />Then give your user access to the group:<br />usermod -a -G ' . $group['name'] . ' YourUnixUserName' .
+		'<br />Finally give read/write access to your user/group:<br />chmod -R 774 ' . nZEDb_ROOT;
 	$page->smarty->assign('fixString', $fixString);
+	$page->smarty->assign('unixGroup', $group['name']);
+	$page->smarty->assign('rootPath', nZEDb_ROOT);
 } else {
 	$page->smarty->assign('fixString', false);
 }

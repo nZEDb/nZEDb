@@ -24,9 +24,8 @@ if ($page->isPostBack()) {
 	$cfg->UNRAR_PATH = trim($_POST['tmpunrarpath']);
 
 	if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
-		$user = posix_getpwuid(posix_getuid());
 		$group = posix_getgrgid(posix_getgid());
-		$fixString = '<br /><br />Another solution is to run:<br />chown -R ' . $group['name'] . ':' . $user['name']  . ' ';
+		$fixString = '<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name']  . ' ';
 		$page->smarty->assign('fixString', $fixString);
 	}
 
@@ -57,18 +56,18 @@ if ($page->isPostBack()) {
 			$cfg->UNRAR_PATH = $cfg->UNRAR_PATH . "/";
 		}
 	}
-/*
-	if ($cfg->COVERS_PATH == '') {
-		$cfg->error = true;
-	} else {
-		Util::trailingSlash($cfg->COVERS_PATH);
-
-		$cfg->coverPathCheck = is_writable($cfg->COVERS_PATH);
-		if ($cfg->coverPathCheck === false) {
+	/*
+		if ($cfg->COVERS_PATH == '') {
 			$cfg->error = true;
+		} else {
+			Util::trailingSlash($cfg->COVERS_PATH);
+
+			$cfg->coverPathCheck = is_writable($cfg->COVERS_PATH);
+			if ($cfg->coverPathCheck === false) {
+				$cfg->error = true;
+			}
 		}
-	}
- */
+	 */
 
 	if (!$cfg->error) {
 		if (!file_exists($cfg->UNRAR_PATH)) {
