@@ -316,7 +316,7 @@ class NZB
 	 *
 	 * @access public
 	 */
-	public function NZBPath($releaseGuid, $levelsToSplit = 1)
+	public function NZBPath($releaseGuid, $levelsToSplit)
 	{
 		$nzbfile = $this->getNZBPath($releaseGuid, $levelsToSplit);
 		return !is_file($nzbfile) ? false : $nzbfile;

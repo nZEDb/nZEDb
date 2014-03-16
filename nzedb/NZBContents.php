@@ -33,7 +33,7 @@ Class NZBContents
 	{
 		$nzb = new NZB();
 		// Fetch the NZB location using the GUID.
-		$nzbpath = $nzb->NZBPath($guid);
+		$nzbpath = $nzb->NZBPath($guid, $this->site->nzbsplitlevel);
 		if ($nzbpath === false) {
 			if ($this->echooutput) {
 				echo "\n" . $guid . " appears to be missing the nzb file, skipping.\n";

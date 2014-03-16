@@ -7,7 +7,7 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-03-16 -> kevin    -> Possible fix for missing NZB file.
 2014-03-15 -> bart39   -> fixed issues where dbsystem renamed to dbSystem
 2014-03-16 -> niel     -> Fix: Cleaning up white-space issues.
                        -> New: Adding server version checking code to DB class.
