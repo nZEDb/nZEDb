@@ -619,6 +619,7 @@ Class PreDb
 				}
 			} else {
 				echo $this->c->error("Update from ABGX failed.");
+				return $newnames;
 			}
 		}
 		return $newnames;
