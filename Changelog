@@ -8,6 +8,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-16 -> niel     -> Fix: Cleaning up white-space issues.
+                       -> New: Adding server version checking code to DB class.
 2014-03-15 -> bart39   -> fix send to couchpotato on new releases / movies
 2014-03-15 -> ruhllatio-> Modify category selections in postproc scripts
 2014-03-15 -> ruhllatio-> Fix one more slow console query
