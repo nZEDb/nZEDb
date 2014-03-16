@@ -4,9 +4,28 @@ require_once nZEDb_LIB . 'Util.php';
 
 class TvRage
 {
-
 	const APIKEY = '7FwjZ8loweFcOhHfnU3E';
 	const MATCH_PROBABILITY = 75;
+
+	/**
+	 * @var ColorCLI objct
+	 */
+	public $c;
+
+	/**
+	 * @var Database object
+	 */
+	public $db;
+
+	public $echooutput;
+	public $rageqty;
+	public $showInfoUrl         = 'http://www.tvrage.com/shows/id-';
+	public $showQuickInfoURL    = 'http://services.tvrage.com/tools/quickinfo.php?show=';
+	public $xmlFullSearchUrl    = 'http://services.tvrage.com/feeds/full_search.php?show=';
+	public $xmlShowInfoUrl      = 'http://services.tvrage.com/feeds/showinfo.php?sid=';
+	public $xmlFullShowInfoUrl  = 'http://services.tvrage.com/feeds/full_show_info.php?sid=';
+	public $xmlEpisodeInfoUrl;
+	public $xmlFullScheduleUrl  = 'http://services.tvrage.com/feeds/fullschedule.php?country=';
 
 	function __construct($echooutput = false)
 	{
@@ -17,13 +36,8 @@ class TvRage
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->c = new ColorCLI();
 
-		$this->xmlFullSearchUrl = "http://services.tvrage.com/feeds/full_search.php?show=";
-		$this->xmlShowInfoUrl = "http://services.tvrage.com/feeds/showinfo.php?sid=";
-		$this->xmlFullShowInfoUrl = "http://services.tvrage.com/feeds/full_show_info.php?sid=";
-		$this->xmlEpisodeInfoUrl = "http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
-		$this->xmlFullScheduleUrl = "http://services.tvrage.com/feeds/fullschedule.php?country=";
-
-		$this->showInfoUrl = "http://www.tvrage.com/shows/id-";
+		$this->xmlEpisodeInfoUrl =
+			"http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
 	}
 
 	public function getByID($id)
@@ -172,6 +186,85 @@ class TvRage
 	public function delete($id)
 	{
 		return $this->db->queryExec(sprintf("DELETE FROM tvrage WHERE id = %d", $id));
+	}
+
+	public function fetchShowQuickInfo($show, array $options = array())
+	{
+		$defaults = array('exact' => '', 'episode' => '');
+		$options += $defaults;
+		$ret = [];
+
+		if (!$show) {
+			return FALSE;
+		}
+
+		$url = $this->showQuickInfoURL . urlencode($show);
+		$url .= !empty($options['episode']) ? '&ep=' . urlencode($options['episode']) : '';
+		$url .= !empty($options['exact']) ? '&exact=' . urlencode($options['exact']) : '';
+		if ($fp = fopen($url, "r")) {
+			while (!feof($fp)) {
+				$line = fgets($fp, 1024);
+				list ($sec, $val) = explode('@', $line, 2);
+				$val = trim($val);
+
+				switch ($sec) {
+					case 'Show ID':
+						$ret['rageid'] = $val;
+						break;
+					case 'Show Name':
+						$ret['name'] = $val;
+						break;
+					case 'Show URL':
+						$ret['url'] = $val;
+						break;
+					case 'Premiered':
+						$ret['premier'] = $val;
+						break;
+					case 'Country':
+						$ret['country'] = $val;
+						break;
+					case 'Status':
+						$ret['status'] = $val;
+						break;
+					case 'Classification':
+						$ret['classification'] = $val;
+						break;
+					case 'Genres':
+						$ret['genres'] = $val;
+						break;
+					case 'Network':
+						$ret['network'] = $val;
+						break;
+					case 'Airtime':
+						$ret['airtime'] = $val;
+						break;
+					case 'Latest Episode':
+						list ($ep, $title, $airdate) = explode('^', $val);
+						$ret['episode']['latest'] =
+								$ep . ", \"" . $title . "\" aired on " . $airdate;
+						break;
+					case 'Next Episode':
+						list ($ep, $title, $airdate) = explode('^', $val);
+						$ret['episode']['next'] = $ep . ", \"" . $title . "\" airs on " . $airdate;
+						break;
+					case 'Episode Info':
+						list ($ep, $title, $airdate) = explode('^', $val);
+						$ret['episode']['info'] = $ep . ", \"" . $title . "\" aired on " . $airdate;
+						break;
+					case 'Episode URL':
+						$ret['episode']['url'] = $val;
+						break;
+					case '':
+						break;
+
+					default:
+						break;
+				}
+			}
+			fclose($fp);
+
+			return $ret;
+		}
 	}
 
 	public function getRange($start, $num, $ragename = "")

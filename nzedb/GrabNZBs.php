@@ -83,7 +83,6 @@ class GrabNZBs
 
 		$binaries = new Binaries();
 		$nzbsplitlevel = $this->site->nzbsplitlevel;
-		$nzbpath = $this->site->nzbpath;
 		$version = $this->site->version;
 
 		$groups = $this->db->queryDirect('SELECT id, name FROM groups');
@@ -236,7 +235,7 @@ class GrabNZBs
 					}
 					return;
 				} else if (count($relid) > 0) {
-					$path = $nzb->getNZBPath($relguid, $nzbpath, true, $nzbsplitlevel);
+					$path = $nzb->getNZBPath($relguid, $nzbsplitlevel, true);
 					$fp = gzopen($path, 'w5');
 					if ($fp) {
 						$date1 = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');

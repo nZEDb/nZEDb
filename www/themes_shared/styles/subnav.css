@@ -1,5 +1,5 @@
 section {
-	padding-top: 60px;	
+	padding-top: 60px;
 }
 
 .subnav {
@@ -107,7 +107,7 @@ section {
 }
 
 @media (min-width: 980px) {
-  
+
 	.subnav-fixed {
 		position: fixed;
 		top: 40px;
@@ -124,13 +124,13 @@ section {
 		box-shadow: inset 0 1px 0 #fff, 0 1px 5px rgba(0,0,0,.1);
 		filter: progid:DXImageTransform.Microsoft.gradient(enabled=false); /* IE6-9 */
 	}
-  
+
 	.subnav-fixed .nav {
 		width: 938px;
 		margin: 0 auto;
 		padding: 0 1px;
 	}
-  
+
 	.subnav .nav > li:first-child > a,
 	.subnav .nav > li:first-child > a:hover {
 		-webkit-border-radius: 0;

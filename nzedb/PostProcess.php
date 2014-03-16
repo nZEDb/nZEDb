@@ -804,7 +804,7 @@ class PostProcess
 					}
 				}
 
-				$nzbPath = $nzb->getNZBPath($rel['guid'], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
+				$nzbPath = $nzb->getNZBPath($rel['guid'], $this->site->nzbsplitlevel);
 				if (!is_file($nzbPath)) {
 					// The nzb was not located. decrement the password status.
 					$this->debugging->start('processAdditional', 'NZB not found for releaseGUID: ' . $rel['guid'], 3);

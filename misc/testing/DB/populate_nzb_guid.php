@@ -40,7 +40,8 @@ function create_guids($live, $delete = false)
 		$reccnt = 0;
 		foreach ($relrecs as $relrec) {
 			$reccnt++;
-			if (file_exists($nzbpath = $nzb->NZBPath($relrec['guid']))) {
+			$nzbpath = $nzb->NZBPath($relrec['guid']);
+			if ($nzbpath !== false) {
 				$nzbpath = 'compress.zlib://' . $nzbpath;
 				$nzbfile = @simplexml_load_file($nzbpath);
 				if (!$nzbfile) {

@@ -104,7 +104,7 @@ function ts_resortTable(lnk,clid) {
 	// configures the up/down arrow
     if (span.getAttribute("sortdir") == 'down')
     {
-       	// ARROW = '&nbsp;&nbsp;&uarr;';
+        // ARROW = '&nbsp;&nbsp;&uarr;';
 		ARROW = '<img src="' + WWW_TOP + '/themes_shared/images/sorting/arrow_up.gif" />';
         newRows.reverse();
         span.setAttribute('sortdir','up');
@@ -232,4 +232,3 @@ function F_ColourRows ( objTable )
 		n_AltCount ++;
 	}
 }
-

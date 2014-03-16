@@ -155,7 +155,7 @@ function ajax_group_purge(id)
 /**
  * ajax_all_reset()
  *
- * 
+ *
  */
 function ajax_all_reset()
 {
@@ -178,8 +178,6 @@ function ajax_all_reset()
 
 /**
  * ajax_all_purge()
- *
- * 
  */
 function ajax_all_purge()
 {

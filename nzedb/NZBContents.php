@@ -34,7 +34,7 @@ Class NZBContents
 		$nzb = new NZB();
 		// Fetch the NZB location using the GUID.
 		$nzbpath = $nzb->NZBPath($guid);
-		if (!file_exists($nzbpath)) {
+		if ($nzbpath === false) {
 			if ($this->echooutput) {
 				echo "\n" . $guid . " appears to be missing the nzb file, skipping.\n";
 			}
@@ -245,10 +245,10 @@ Class NZBContents
 		}
 
 		$nzb1 = new NZB();
-		$nzbpath = $nzb1->getNZBPath($guid);
+		$nzbpath = $nzb1->NZBPath($guid, $this->site->nzbsplitlevel);
 		$nzb = array();
 
-		if (file_exists($nzbpath)) {
+		if ($nzbpath !== false) {
 			$xmlObj = @simplexml_load_file('compress.zlib://' . $nzbpath);
 			if ($xmlObj && strtolower($xmlObj->getName()) == 'nzb') {
 				foreach ($xmlObj->file as $file) {

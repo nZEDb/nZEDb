@@ -24,7 +24,7 @@ class DB extends PDO
 	/**
 	 * @var string Lower-cased name of DBMS in use.
 	 */
-	public $dbsystem;
+	public $dbSystem;
 
 	/**
 	 * @var bool	Whether memcache is enabled.
@@ -42,16 +42,21 @@ class DB extends PDO
 	private $debugging;
 
 	/**
+	 * @var string Vversion of the Db server.
+	 */
+	private $dbVersion;
+
+	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
 	 */
-	public function __construct()
+	public function __construct($checkVersion = false)
 	{
 		$this->c = new ColorCLI();
 		$this->debugging = new Debugging("DB");
 
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
-			$this->dbsystem = strtolower(DB_SYSTEM);
+			$this->dbSystem = strtolower(DB_SYSTEM);
 		} else if (PHP_SAPI == 'cli') {
 			$message = "\nconfig.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');";
 			$this->debugging->start("__construct", $message, 1);
@@ -73,28 +78,32 @@ class DB extends PDO
 		}
 		$this->consoletools = new ConsoleTools();
 
+		if ($checkVersion) {
+			$this->fetchDbVersion();
+		}
+
 		return self::$pdo;
 	}
 
 	private function initialiseDatabase()
 	{
-		if ($this->dbsystem == 'mysql') {
+		if ($this->dbSystem == 'mysql') {
 			if (defined('DB_SOCKET') && DB_SOCKET != '') {
-				$dsn = $this->dbsystem . ':unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME;
+				$dsn = $this->dbSystem . ':unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME;
 			} else {
-				$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
+				$dsn = $this->dbSystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
 				if (defined('DB_PORT')) {
 					$dsn .= ';port=' . DB_PORT;
 				}
 			}
 			$dsn .= ';charset=utf8';
 		} else {
-			$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
+			$dsn = $this->dbSystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
 		}
 
 		try {
 			$options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_LOCAL_INFILE => true);
-			if ($this->dbsystem == 'mysql') {
+			if ($this->dbSystem == 'mysql') {
 				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			}
 
@@ -125,7 +134,7 @@ class DB extends PDO
 	 */
 	public function dbSystem()
 	{
-		return $this->dbsystem;
+		return $this->dbSystem;
 	}
 
 	// Returns a string, escaped with single quotes, false on failure. http://www.php.net/manual/en/pdo.quote.php
@@ -151,7 +160,7 @@ class DB extends PDO
 		}
 
 		try {
-			if ($this->dbsystem() == 'mysql') {
+			if ($this->dbSystem() == 'mysql') {
 				$ins = self::$pdo->prepare($query);
 				$ins->execute();
 				return self::$pdo->lastInsertId();
@@ -361,7 +370,7 @@ class DB extends PDO
 	public function optimise($admin = false, $type = '')
 	{
 		$tablecnt = 0;
-		if ($this->dbsystem == 'mysql') {
+		if ($this->dbSystem == 'mysql') {
 			if ($type === 'true' || $type === 'full' || $type === 'analyze') {
 				$alltables = $this->query('SHOW TABLE STATUS');
 			} else {
@@ -405,7 +414,7 @@ class DB extends PDO
 			if ($type !== 'analyze') {
 				$this->queryExec('FLUSH TABLES');
 			}
-		} else if ($this->dbsystem == 'pgsql') {
+		} else if ($this->dbSystem == 'pgsql') {
 			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
 			$tablecnt = count($alltables);
 			foreach ($alltables as $table) {
@@ -429,7 +438,7 @@ class DB extends PDO
 
 		if (!is_null($grpid) && is_numeric($grpid)) {
 			$binaries = $parts = $collections = $partrepair = false;
-			if ($this->dbsystem == 'pgsql') {
+			if ($this->dbSystem == 'pgsql') {
 				$like = ' (LIKE collections INCLUDING ALL)';
 			} else {
 				$like = ' LIKE collections';
@@ -483,7 +492,7 @@ class DB extends PDO
 			}
 
 			if ($collections === true) {
-				if ($this->dbsystem == 'pgsql') {
+				if ($this->dbSystem == 'pgsql') {
 					$like = ' (LIKE binaries INCLUDING ALL)';
 				} else {
 					$like = ' LIKE binaries';
@@ -500,7 +509,7 @@ class DB extends PDO
 			}
 
 			if ($binaries === true) {
-				if ($this->dbsystem == 'pgsql') {
+				if ($this->dbSystem == 'pgsql') {
 					$like = ' (LIKE parts INCLUDING ALL)';
 				} else {
 					$like = ' LIKE parts';
@@ -517,7 +526,7 @@ class DB extends PDO
 			}
 
 			if ($DoPartRepair === true && $parts === true) {
-				if ($this->dbsystem == 'pgsql') {
+				if ($this->dbSystem == 'pgsql') {
 					$like = ' (LIKE partrepair INCLUDING ALL)';
 				} else {
 					$like = ' LIKE partrepair';
@@ -564,9 +573,9 @@ class DB extends PDO
 	public function from_unixtime($utime, $escape = true)
 	{
 		if ($escape === true) {
-			if ($this->dbsystem == 'mysql') {
+			if ($this->dbSystem == 'mysql') {
 				return 'FROM_UNIXTIME(' . $utime . ')';
-			} else if ($this->dbsystem == 'pgsql') {
+			} else if ($this->dbSystem == 'pgsql') {
 				return 'TO_TIMESTAMP(' . $utime . ')::TIMESTAMP';
 			}
 		} else {
@@ -644,6 +653,40 @@ class DB extends PDO
 				$result = false;
 			}
 			return $result;
+		}
+	}
+
+	/**
+	 * @return string Returns the stored Db version string.
+	 */
+	public function getDbVersion ()
+	{
+		return $this->dbVersion;
+	}
+
+	/**
+	 * @param $requiredVersion	The minimum version to compare against
+	 *
+	 * @return boolen|null        TRUE if Db version is greater than or eaqual to $requiredVersion,
+	 * false if not, and null if the version isn't available to check against.
+	 */
+	public function isDbVersionAtLeast ($requiredVersion)
+	{
+		if (empty($this->dbVersion)) {
+			return null;
+		}
+		return version_compare($requiredVersion, $this->dbVersion, '<=');
+	}
+
+	/**
+	 * Performs the fetch from the Db server and stores the resulting Major.Minor.Version number.
+	 */
+	private function fetchDbVersion ()
+	{
+		$result          = $this->queryOneRow("SELECT VERSION() AS version");
+		if (!empty($result)) {
+			$dummy = explode('-', $result['version'], 2);
+			$this->dbVersion = $dummy[0];
 		}
 	}
 }

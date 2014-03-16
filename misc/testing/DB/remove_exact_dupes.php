@@ -44,7 +44,7 @@ do {
 	echo $c->header(number_format($total) . " Releases have Duplicates");
 	if (count($resrel) > 0) {
 		foreach ($resrel as $rowrel) {
-			$nzbpath = $nzb->getNZBPath($rowrel['guid'], $site->nzbpath, false, $site->nzbsplitlevel);
+			$nzbpath = $nzb->getNZBPath($rowrel['guid'], $site->nzbsplitlevel);
 			if (isset($argv[3]) && is_dir($argv[3])) {
 				$path = $argv[3];
 				if (substr($path, strlen($path) - 1) != '/') {
