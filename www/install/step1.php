@@ -39,6 +39,13 @@ $cfg->gdCheck = function_exists('imagecreatetruecolor');
 
 $cfg->curlCheck = function_exists('curl_init');
 
+if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
+	$user = posix_getpwuid(posix_getuid());
+	$group = posix_getgrgid(posix_getgid());
+	$fixString = '<br /><br />Another solution is to run:<br />chown -R ' . $group['name'] . ':' . $user['name']  . ' ';
+	$page->smarty->assign('fixString', $fixString);
+}
+
 $cfg->cacheCheck = is_writable(SMARTY_DIR . 'templates_c');
 if ($cfg->cacheCheck === false) {
 	$cfg->error = true;

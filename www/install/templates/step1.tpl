@@ -56,55 +56,172 @@
 		<td>{if $cfg->memlimitCheck}<span class="success">OK</span>{else}<span class="warn">Warning</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that Smarty cache is writeable:{if !$cfg->cacheCheck}<br /><span class="error">The template cache folder must be writable. A quick solution is to run:<br />chmod 777 {$cfg->SMARTY_DIR}/templates_c</span>{/if}</td>
+		<td>Checking if the Smarty compile dir is writeable:
+			{if !$cfg->cacheCheck}<br />
+				<span class="error">
+					The template compile dir must be writable.<br /><br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->SMARTY_DIR}/templates_c
+					{$fixString} {$cfg->SMARTY_DIR}/templates_c
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->cacheCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that anime covers dir is writeable:{if !$cfg->animeCoversCheck}<br /><span class="error">The covers/anime dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->COVERS_PATH}anime</span>{/if}</td>
+		<td>Checking if the anime covers dir is writeable:
+			{if !$cfg->animeCoversCheck}<br />
+				<span class="error">
+					The covers/anime dir must be writable.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->COVERS_PATH}anime
+					{$fixString} {$cfg->COVERS_PATH}anime
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->animeCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that audio covers dir is writeable:{if !$cfg->audioCoversCheck}<br /><span class="error">The covers/audio dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->COVERS_PATH}audio</span>{/if}</td>
+		<td>Checking if the audio covers dir is writeable:
+			{if !$cfg->audioCoversCheck}<br />
+				<span class="error">
+					The covers/audio dir must be writable.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->COVERS_PATH}audio
+					{$fixString} {$cfg->COVERS_PATH}audio
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->audioCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that audio sample dir is writeable:{if !$cfg->audiosampleCoversCheck}<br /><span class="error">The covers/audiosample dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->COVERS_PATH}audiosample</span>{/if}</td>
+		<td>Checking if the audio sample dir is writeable:
+			{if !$cfg->audiosampleCoversCheck}<br />
+				<span class="error">
+					The covers/audiosample dir must be writable.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->COVERS_PATH}audiosample
+					{$fixString} {$cfg->COVERS_PATH}audiosample
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->audiosampleCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that book covers dir is writeable:{if !$cfg->bookCoversCheck}<br /><span class="error">The covers/book dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->COVERS_PATH}book</span>{/if}</td>
+		<td>Checking if the book covers dir is writeable:
+			{if !$cfg->bookCoversCheck}<br />
+				<span class="error">
+					The covers/book dir must be writable.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->COVERS_PATH}book
+					{$fixString} {$cfg->COVERS_PATH}book
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->bookCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that console covers dir is writeable:{if !$cfg->consoleCoversCheck}<br /><span class="error">The covers/console dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->COVERS_PATH}console</span>{/if}</td>
+		<td>Checking if the console covers dir is writeable:
+			{if !$cfg->consoleCoversCheck}<br />
+				<span class="error">
+					The covers/console dir must be writable.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->COVERS_PATH}console
+					{$fixString} {$cfg->COVERS_PATH}console
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->consoleCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that movie covers dir is writeable:{if !$cfg->movieCoversCheck}<br /><span class="error">The covers/movies dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->COVERS_PATH}movies</span>{/if}</td>
+		<td>Checking if the movie covers dir is writeable:
+			{if !$cfg->movieCoversCheck}<br />
+				<span class="error">
+					The covers/movies dir must be writable.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->COVERS_PATH}movies
+					{$fixString} {$cfg->COVERS_PATH}movies
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->movieCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that music covers dir is writeable:{if !$cfg->musicCoversCheck}<br /><span class="error">The covers/music dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->COVERS_PATH}music</span>{/if}</td>
+		<td>Checking if the music covers dir is writeable:
+			{if !$cfg->musicCoversCheck}<br />
+				<span class="error">
+					The covers/music dir must be writable.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->COVERS_PATH}music
+					{$fixString} {$cfg->COVERS_PATH}music
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->musicCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that preview picture dir is writeable:{if !$cfg->previewCoversCheck}<br /><span class="error">The covers/preview dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->COVERS_PATH}preview</span>{/if}</td>
+		<td>Checking if the preview picture dir is writeable:
+			{if !$cfg->previewCoversCheck}<br />
+				<span class="error">
+					The covers/preview dir must be writable.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->COVERS_PATH}preview
+					{$fixString} {$cfg->COVERS_PATH}preview
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->previewCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that sample picture dir is writeable:{if !$cfg->sampleCoversCheck}<br /><span class="error">The covers/sample dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->COVERS_PATH}sample</span>{/if}</td>
+		<td>Checking if the sample picture dir is writeable:
+			{if !$cfg->sampleCoversCheck}<br />
+				<span class="error">
+					The covers/sample dir must be writable.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->COVERS_PATH}sample
+					{$fixString} {$cfg->COVERS_PATH}sample
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->sampleCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that video sample dir is writeable:{if !$cfg->videoCoversCheck}<br /><span class="error">The covers/video dir must be writable. A quick solution is to run:<br />chmod 777 {$cfg->COVERS_PATH}video</span>{/if}</td>
+		<td>Checking if the video sample dir is writeable:
+			{if !$cfg->videoCoversCheck}<br />
+				<span class="error">
+					The covers/video dir must be writable.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->COVERS_PATH}video
+					{$fixString} {$cfg->COVERS_PATH}video
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->videoCoversCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">
-		<td>Checking that config.php location is writeable:{if !$cfg->configCheck}<br /><span class="error">The installer cannot write to {$cfg->WWW_TOP}. A quick solution is to run:<br />chmod 777 {$cfg->WWW_TOP}</span>{/if}</td>
+		<td>Checking if the config.php file is writeable:
+			{if !$cfg->configCheck}<br />
+				<span class="error">
+					The installer cannot write to {$cfg->WWW_TOP}.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->WWW_TOP}
+					{$fixString} {$cfg->WWW_TOP}
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->configCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="alt">
-		<td>Checking that install.lock is writeable:{if !$cfg->lockCheck}<br /><span class="error">The installer cannot write to {$cfg->INSTALL_DIR}/install.lock. A quick solution is to run:<br />chmod 777 {$cfg->INSTALL_DIR}</span>{/if}</td>
+		<td>Checking if the install.lock file is writeable:
+			{if !$cfg->lockCheck}<br />
+				<span class="error">
+					The installer cannot write to {$cfg->INSTALL_DIR}/install.lock.<br />
+					A quick solution is to run:<br />
+					chmod 777 {$cfg->INSTALL_DIR}
+					{$fixString} {$cfg->INSTALL_DIR}
+				</span>
+			{/if}
+		</td>
 		<td>{if $cfg->lockCheck}<span class="success">OK</span>{else}<span class="error">Error</span>{/if}</td>
 	</tr>
 	<tr class="">

@@ -62,9 +62,18 @@ if (!$cfg->error) {
 				} else {
 					if (!$cfg->cacheCheck) {
 						?>
-						<div class="error">The template compile folder must be writable. A quick solution is to run:
+						<div class="error">
+							The template compile dir must be writable.<br />A quick solution is to run:
 							<br />
-							<?php echo 'chmod 777 ' . SMARTY_DIR . 'templates_c'; ?>
+							<?php
+								echo '(as root): chmod 777 ' . SMARTY_DIR . 'templates_c';
+								if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
+									echo '<br /><br />Another solution is to run:<br />';
+									$user = posix_getpwuid(posix_getuid());
+									$group = posix_getgrgid(posix_getgid());
+									echo '(as root): chown -R ' . $group['name'] . ':' . $user['name']  . ' ' . SMARTY_DIR . 'templates_c';
+								}
+							?>
 						</div>
 						<?php
 					} else {

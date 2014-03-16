@@ -17,6 +17,7 @@ Each update goes to the top of the file
                        -> Don't try subsequent abgx URL's when it's down.
                        -> Finish cleaning up books page (alpha)
                        -> Update schemas to make alpha the new default theme.
+                       -> Show chown string in install.
 2014-03-15 -> bart39   -> fixed issues where dbsystem renamed to dbSystem
 2014-03-16 -> niel     -> Fix: Cleaning up white-space issues.
                        -> New: Adding server version checking code to DB class.
