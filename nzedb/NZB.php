@@ -269,14 +269,14 @@ class NZB
 	private function buildNZBPath($releaseGuid, $levelsToSplit, $createIfDoesntExist)
 	{
 		$sitenzbpath = $this->site->nzbpath;
-		if (substr($sitenzbpath, strlen($sitenzbpath) - 1) != '/') {
-			$sitenzbpath = $sitenzbpath . '/';
+		if (substr($sitenzbpath, strlen($sitenzbpath) - 1) !== DS) {
+			$sitenzbpath = $sitenzbpath . DS;
 		}
 
 		$subpath = '';
 
 		for ($i = 0; $i < $levelsToSplit; $i++) {
-			$subpath = $subpath . substr($releaseGuid, $i, 1) . '/';
+			$subpath = $subpath . substr($releaseGuid, $i, 1) . DS;
 		}
 
 		$nzbpath = $sitenzbpath . $subpath;
