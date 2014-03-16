@@ -525,8 +525,8 @@ CREATE TABLE "releasenfo" (
 )
 WITHOUT OIDS;
 
-DROP SEQUENCE IF EXISTS "ix_releases_id_seq" CASCADE;
-CREATE SEQUENCE "ix_releases_id_seq" INCREMENT BY 1
+DROP SEQUENCE IF EXISTS "releases_id_seq" CASCADE;
+CREATE SEQUENCE "releases_id_seq" INCREMENT BY 1
 								  NO MAXVALUE NO MINVALUE CACHE 1;
 SELECT pg_catalog.setval('releases_id_seq', 1, true);
 
