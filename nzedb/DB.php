@@ -160,7 +160,7 @@ class DB extends PDO
 		}
 
 		try {
-			if ($this->dbsystem() == 'mysql') {
+			if ($this->dbSystem() == 'mysql') {
 				$ins = self::$pdo->prepare($query);
 				$ins->execute();
 				return self::$pdo->lastInsertId();

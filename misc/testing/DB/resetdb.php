@@ -37,7 +37,7 @@ foreach ($arr as &$value)
 }
 unset($value);
 
-if ($db->dbsystem == 'mysql') {
+if ($db->dbSystem == 'mysql') {
 	$sql = "SHOW table status";
 } else {
 	$sql = "SELECT relname FROM pg_class WHERE relname !~ '^(pg_|sql_)' AND relkind = 'r'";
@@ -45,7 +45,7 @@ if ($db->dbsystem == 'mysql') {
 $tables = $db->query($sql);
 foreach($tables as $row)
 {
-	if ($db->dbsystem == 'mysql')
+	if ($db->dbSystem == 'mysql')
 		$tbl = $row['name'];
 	else
 		$tbl = $row['relname'];
