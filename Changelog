@@ -10,6 +10,7 @@ Each update goes to the top of the file
 2014-03-16 -> ruhllatio-> Fix PG schema errors proc_pp
                        -> More PG schema fixes and rearrange primary key alters
                        -> Update patch readme.
+                       -> Revert boolean bit types to tinyint due to smarty errors
 2014-03-16 -> kevin    -> Possible fix for missing NZB file.
                        -> Start cleaning up books.tpl
                        -> Don't try subsequent abgx URL's when it's down.
