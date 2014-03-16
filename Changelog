@@ -1,3 +1,4 @@
+
 * Note *
 No pull requests will be accepted without this file being updated to reflect what you changed and when.
 No pull requests will be accepted to any branch except the dev branch.
@@ -6,6 +7,27 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+
+2014-03-15 -> bart39   -> fix send to couchpotato on new releases / movies
+2014-03-15 -> ruhllatio-> Modify category selections in postproc scripts
+2014-03-15 -> ruhllatio-> Fix one more slow console query
+2014-03-15 -> kevin    -> Revamp music page on alpha theme.
+                       -> And console page.
+                       -> Add console to new post wall, and clean it up a bit.
+                       -> Make sending to couchpotato not open a tab.
+                       -> NewPosterWall Verify if the admin has disabled the category.
+                       -> Improve NZB creation.
+2014-03-14 -> kevin    -> Move all shared content from themes into 1 folder. YOU MUST DELETE SMARTY TEMPLATE CACHE. If you had a custom logo you must add it back (www/themes_shares/images/logo.png)
+                       -> Add glyphicons instead of text on browse/search pages in alpha theme.
+                       -> Change automated.config.php to be easier to understand for end-users.
+                       -> Fix bugs in audio post processing.
+                       -> Increase chances of post processing music drastically.
+                       -> Add music to new poster wall.
+                       -> Start adding icons to movies page.
+                       -> Fix for some rars having zip extensions. (they have setup.exe in them)
+                       -> Implement throttle checking directly into the amazon class.
+                       -> Check if predbme is down on the first link.
+2014-03-13 -> bart39   -> revert monitor.php changes as only compatible with mysql 5.6+
 2014-03-13 -> niel     -> Fix: Variable name typoes in utility/Versions.php
 2014-03-13 -> ruhllatio-> Optimize Monitor.php work queries to use partitions...
 2014-03-13 -> kevin    -> Fix bad path to schema in check unique indexex.
@@ -19,6 +41,11 @@ Each update goes to the top of the file
                        -> Nicer looking PreDB search box.
                        -> Many bug fixes in browse/search pages.
                        -> Changes to make predb pages nicer.
+                       -> More uniform ad placement accros pages.
+                       -> Clean up movie pages a bit.
+                       -> Split book processing by categoryID.
+                       -> Move failed-logins and droppedyenc logs to resources/logs.
+                       -> Deprecate debuginfo DB setting in favor of nZEDb_DEBUG constant.
 2014-03-13 -> niel     -> Chg: Seperating data and definition from Db schema files.
 2014-03-12 -> ruhllatio-> Change mysql schema partition releases table by categoryid -- Many ALTERs
 2014-03-12 -> bart39   -> Fix: only do requestid web lookup if predb_irc.nzedb.com is up

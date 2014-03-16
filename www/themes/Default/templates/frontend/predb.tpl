@@ -68,23 +68,23 @@
 					</a>
 				{elseif {$result.source} == omgwtfnzbs}
 					<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php">
-						omgwtfnzbs.org
+						omgwtfnzbs
 					</a>
 				{elseif {$result.source} == orlydb}
 					<a title="Visit ORLYDB" href="{$site->dereferrer_link}http://orlydb.com/?q={$result.title}" target="_blank">
-						ORLYDB.com
+						ORLYDB
 					</a>
 				{elseif {$result.source} == predbme}
 					<a title="Visit PreDB.me" href="{$site->dereferrer_link}http://predb.me/?search={$result.title}" target="_blank">
-						PreDB.me
+						PreDB
 					</a>
 				{elseif {$result.source} == prelist}
 					<a title="Visit Prelist" href="{$site->dereferrer_link}http://www.prelist.ws/?search={$result.title}" target="_blank">
-						Prelist.ws
+						Prelist
 					</a>
 				{elseif {$result.source} == srrdb}
 					<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}" target="_blank">
-						srrDB.com
+						srrDB
 					</a>
 				{elseif {$result.source} == "usenet-crawler"}
 					<a title="Visit Usenet-Crawler" href="{$site->dereferrer_link}http://www.usenet-crawler.com/predb?q={$result.title}" target="_blank">
@@ -92,11 +92,11 @@
 					</a>
 				{elseif {$result.source} == womble}
 					<a title="Visit Womble" href="{$site->dereferrer_link}http://www.newshost.co.za/?s={$result.title}" target="_blank">
-						Womble's NZB Index
+						Womble
 					</a>
 				{elseif {$result.source} == zenet}
 					<a title="Visit ZEnet" href="{$site->dereferrer_link}http://pre.zenet.org/?search={$result.title}" target="_blank">
-						ZEnet.org
+						ZEnet
 					</a>
 				{else}
 					{$result.source}
@@ -142,7 +142,7 @@
 
 				{* PC *}
 				{* 0day *}
-				{elseif in_array({$result.category}, array('0DAY', 'Apps: PC', 'Apps: Linux', 'DOX'))}
+				{elseif in_array({$result.category}, array('0DAY', 'APPS', 'Apps: PC', 'Apps: Linux', 'DOX'))}
 					<a class="title" title="View category PC 0day" href="{$smarty.const.WWW_TOP}/browse?t=4010">PC 0DAY</a>
 				{* Mac *}
 				{elseif in_array({$result.category}, array('Apps: MAC', 'Games: MAC'))}
@@ -207,24 +207,28 @@
 					N/A
 				{/if}
 			</td>
-			<a
-				style="float: right;"
-				title="NzbIndex"
-				href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
-				target="_blank"
-			>
-				<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/nzbindex.png" />
-				&nbsp;
-			</a>
-			<a
-				style="float: right;"
-				title="BinSearch"
-				href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
-				target="_blank"
-			>
-				<img src="{$smarty.const.WWW_TOP}/themes/Default/images/icons/binsearch.png" />
-				&nbsp;
-			</a>
+			<td class="predb">
+				<a
+					style="float: right;"
+					title="NzbIndex"
+					href="{$site->dereferrer_link}http://nzbindex.com/search/?q={$result.title}"
+					target="_blank"
+				>
+					<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/nzbindex.png" />
+					&nbsp;
+				</a>
+			</td>
+			<td class="predb">
+				<a
+					style="float: right;"
+					title="BinSearch"
+					href="{$site->dereferrer_link}http://binsearch.info/?q={$result.title}"
+					target="_blank"
+				>
+					<img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/binsearch.png" />
+					&nbsp;
+				</a>
+			</td>
 		</tr>
 	{/foreach}
 </table>

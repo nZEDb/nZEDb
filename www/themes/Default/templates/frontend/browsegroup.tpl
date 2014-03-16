@@ -1,10 +1,8 @@
- 
+{if $site->adbrowse}
+	{$site->adbrowse}
+{/if}
 <h1>Browse Groups</h1>
-
-{$site->adbrowse}	
-	
 {if $results|@count > 0}
-
 <table style="width:100%;" class="data highlight Sortable" id="browsetable">
 	<tr>
 		<th>name</th>
@@ -27,7 +25,7 @@
 		</tr>
 		{/if}
 	{/foreach}
-	
+
 </table>
 
 {/if}

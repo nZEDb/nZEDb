@@ -71,6 +71,10 @@ jQuery(function($){
 		});
 		return false;
 	});
+    $('.sendtocouch').click(function(e){
+        e.preventDefault();
+        $.get($(this).attr('rel'));
+    });
 	$("table.data a.modal_nfo").colorbox({	 // NFO modal
 		href: function(){ return $(this).attr('href') +'&modal'; },
 		title: function(){ return $(this).parent().parent().children('a.title').text(); },

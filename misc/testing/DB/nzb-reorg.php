@@ -5,12 +5,10 @@ if (!isset($argv[1]) || !isset($argv[2]))
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $db = new DB();
-$s = new Sites();
 $nzb = new NZB();
 $consoleTools = new ConsoleTools();
 
-$site = $s->get();
-$sitenzbpath = $site->nzbpath;
+
 $newLevel = $argv[1];
 $sourcePath = $argv[2];
 $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($sourcePath));
@@ -34,7 +32,7 @@ foreach($objects as $filestoprocess => $nzbFile)
 	if($nzbFile->getExtension() != "gz")
 		continue;
 
-	$newFileName = $nzb->getNZBPath(str_replace(".nzb.gz", "", $nzbFile->getBasename()), $sitenzbpath, true, $newLevel);
+	$newFileName = $nzb->getNZBPath(str_replace(".nzb.gz", "", $nzbFile->getBasename()), $newLevel, true);
 	if ($newFileName != $nzbFile)
 	{
 		rename($nzbFile, $newFileName);

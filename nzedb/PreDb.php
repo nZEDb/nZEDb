@@ -416,6 +416,8 @@ Class PreDb
 				}
 			} else {
 				echo $this->c->error("Update from Predbme failed.");
+				// If the site is down, don't try the other URLs.
+				return $newnames;
 			}
 		}
 		return $newnames;
@@ -557,7 +559,7 @@ Class PreDb
 								$source = $db->escapeString('abForeign');
 								if (strlen($title) > 15) {
 									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
-									if ($dupeCheck === false ) {
+									if ($dupeCheck === false) {
 										$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
 										$newnames++;
 									}
@@ -804,7 +806,6 @@ Class PreDb
 				. 'WHERE nzbstatus = 1 AND isrenamed = 0 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
 		}
 
-		echo $this->c->header($query);
 		$res = $db->queryDirect($query);
 		$total = $res->rowCount();
 		echo $this->c->primary(number_format($total) . " releases to process.");

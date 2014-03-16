@@ -88,6 +88,11 @@ jQuery(function ($) {
         return false;
     });
 
+    $('.sendtocouch').click(function(e){
+        e.preventDefault();
+        $.get($(this).attr('rel'));
+    });
+
     // viewnzb.tpl,
     $('.icon_nzb_cart').click(function (e) {
         if ($(this).hasClass('icon_cart_clicked')) {

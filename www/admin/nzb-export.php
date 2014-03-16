@@ -61,7 +61,7 @@ if (!empty($argc) || $page->isPostBack() )
 				mkdir($path.$catname);
 
 			ob_start();
-			@readgzfile($nzb->getNZBPath($release["guid"], $site->nzbpath, false, $site->nzbsplitlevel));
+			@readgzfile($nzb->getNZBPath($release["guid"], $site->nzbsplitlevel));
 			$nzbfile = ob_get_contents();
 			ob_end_clean();
 			$fh = fopen($path.$catname."/".safeFilename($release["searchname"]).".nzb", 'w');

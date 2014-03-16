@@ -67,7 +67,7 @@ if (isset($_GET["id"]) && isset($_GET["zip"]) && $_GET["zip"] == "1") {
 
 if (isset($_GET["id"])) {
 	$reldata = $rel->getByGuid($_GET["id"]);
-	$nzbpath = $nzb->getNZBPath($_GET["id"], $page->site->nzbpath, false, $page->site->nzbsplitlevel);
+	$nzbpath = $nzb->getNZBPath($_GET["id"], $page->site->nzbsplitlevel);
 
 	if (!file_exists($nzbpath)) {
 		$page->show404();

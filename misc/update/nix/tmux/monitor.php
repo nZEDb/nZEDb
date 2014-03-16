@@ -105,18 +105,18 @@ $qry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, rel
 
 //needs to be processed query
 $proc_work = "SELECT "
-	. "(SELECT COUNT(*) FROM releases PARTITION (tv) WHERE nzbstatus = 1 AND rageid = -1) AS tv, "
-	. "(SELECT COUNT(*) FROM releases PARTITION (movies) WHERE nzbstatus = 1 AND imdbid IS NULL) AS movies, "
-	. "(SELECT COUNT(*) FROM releases PARTITION (audio) WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio, "
-	. "(SELECT COUNT(*) FROM releases PARTITION (console) WHERE nzbstatus = 1 AND consoleinfoid IS NULL) AS console, "
-	. "(SELECT COUNT(*) FROM releases PARTITION (books) WHERE nzbstatus = 1 AND categoryid IN (" . $bookreqids . ") AND bookinfoid IS NULL) AS book, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS console, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (" . $bookreqids . ") AND bookinfoid IS NULL) AS book, "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) AS releases, "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo, "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
 
 $proc_work2 = "SELECT "
-	. "(SELECT COUNT(*) FROM releases PARTITION (pc) r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
-	. "(SELECT COUNT(*) FROM releases PARTITION (xxx) r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.categoryid BETWEEN 4000 AND 4999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.categoryid BETWEEN 6000 AND 6999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
 	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
 	. "(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table, "
 	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
@@ -187,7 +187,6 @@ $proc_tmux = "SELECT "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'dehash') as dehash, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'dehash_timer') as dehash_timer, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'backfill_days') as backfilldays, "
-	. "(SELECT VALUE FROM site WHERE SETTING = 'debuginfo') as debug, "
 	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupbooks') as processbooks, "
 	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupmusic') as processmusic, "
 	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupgames') as processgames, "
@@ -492,6 +491,16 @@ while ($i > 0) {
 		$time1 = TIME();
 	}
 
+	if (!isset($proc_work_result[0])) {
+		$proc_work_result = $db->query($proc_work, rand_bool($i));
+	}
+	if (!isset($proc_work_result2[0])) {
+		$proc_work_result2 = $db->query($proc_work2, rand_bool($i));
+	}
+	if (!isset($proc_work_result3[0])) {
+		$proc_work_result3 = $db->query($proc_work3, rand_bool($i));
+	}
+
 	//get start values from $qry
 	if ($i == 1) {
 		if ($proc_work_result[0]['nforemains'] != NULL) {
@@ -566,6 +575,7 @@ while ($i > 0) {
 		}
 	}
 
+
 	//get values from $proc
 	if ($proc_work_result[0]['console'] != NULL) {
 		$console_releases_proc = $proc_work_result[0]['console'];
@@ -615,6 +625,7 @@ while ($i > 0) {
 			$partrepair_table = $proc_work_result2[0]['partrepair_table'];
 		}
 	}
+
 
 	if ($split_result[0]['predb'] != NULL) {
 		$predb = $split_result[0]['predb'];
@@ -782,9 +793,6 @@ while ($i > 0) {
 		$monitor_path_b = $proc_tmux_result[0]['monitor_path_b'];
 	}
 
-	if ($proc_tmux_result[0]['debug'] != NULL) {
-		$debug = $proc_tmux_result[0]['debug'];
-	}
 	if ($proc_tmux_result[0]['post_amazon'] != NULL) {
 		$post_amazon = $proc_tmux_result[0]['post_amazon'];
 	}
@@ -1078,7 +1086,7 @@ while ($i > 0) {
 		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
 	}
 
-	if ($debug == "1") {
+	if (nZEDb_DEBUG) {
 		$show_time = "/usr/bin/time";
 	} else {
 		$show_time = "";

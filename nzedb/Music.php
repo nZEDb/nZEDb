@@ -372,6 +372,15 @@ class Music
 			return false;
 		}
 
+		if (isset($amaz->Items->Item->ItemAttributes->Title)) {
+			$mus['title'] = (string) $amaz->Items->Item->ItemAttributes->Title;
+			if (empty($mus['title'])) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+
 		// Load genres.
 		$defaultGenres = $gen->getGenres(Genres::MUSIC_TYPE);
 		$genreassoc = array();
@@ -385,11 +394,6 @@ class Music
 			$mus['cover'] = 1;
 		} else {
 			$mus['cover'] = 0;
-		}
-
-		$mus['title'] = (string) $amaz->Items->Item->ItemAttributes->Title;
-		if (empty($mus['title'])) {
-			return false;
 		}
 
 		$mus['asin'] = (string) $amaz->Items->Item->ASIN;
@@ -528,17 +532,41 @@ class Music
 	 */
 	public function fetchAmazonProperties($title)
 	{
+		$result = false;
 		$obj = new AmazonProductAPI($this->pubkey, $this->privkey, $this->asstag);
+		// Try Music category.
 		try {
 			$result = $obj->searchProducts($title, AmazonProductAPI::MUSIC, "TITLE");
 		} catch (Exception $e) {
-			//if first search failed try the mp3downloads section
+		}
+
+		// Try MP3 category.
+		if ($result === false) {
+			usleep(700000);
 			try {
 				$result = $obj->searchProducts($title, AmazonProductAPI::MP3, "TITLE");
-			} catch (Exception $e2) {
-				$result = false;
+			} catch (Exception $e) {
 			}
 		}
+
+		// Try Digital Music category.
+		if ($result === false) {
+			usleep(700000);
+			try {
+				$result = $obj->searchProducts($title, AmazonProductAPI::DIGITALMUS, "TITLE");
+			} catch (Exception $e) {
+			}
+		}
+
+		// Try Music Tracks category.
+		if ($result === false) {
+			usleep(700000);
+			try {
+				$result = $obj->searchProducts($title, AmazonProductAPI::MUSICTRACKS, "TITLE");
+			} catch (Exception $e) {
+			}
+		}
+
 		return $result;
 	}
 
@@ -617,7 +645,7 @@ class Music
 	public function parseArtist($releasename)
 	{
 		$name = '';
-		if (preg_match('/(.+?)(\d{1,2} \d{1,2} )?(19\d{2}|20[0-1][0-9])/', $releasename, $name)) {
+		if (preg_match('/(.+?)(\d{1,2} \d{1,2} )?\(?(19\d{2}|20[0-1][0-9])/', $releasename, $name)) {
 			$result = array();
 			$result["year"] = $name[3];
 
@@ -628,7 +656,7 @@ class Music
 			$e = preg_replace('/ (\d{1,2} \d{1,2} )?(DAB|DE|DVBC|EP|FIX|IT|Jap|NL|PL|(Pure )?FM|SSL|VLS) /i', ' ', $d);
 			$f = preg_replace('/ (\d{1,2} \d{1,2} )?(CD(A|EP|M|R|S)?|QEDCD|SBD) /i', ' ', $e);
 			$g = trim(preg_replace('/\s\s+/', ' ', $f));
-			$newname = trim(preg_Replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$/i', '', $g));
+			$newname = trim(preg_Replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$|-WEB$/i', '', $g));
 			if (!preg_match('/^[a-z0-9]+$/i', $newname) && strlen($newname) > 10) {
 				$result["name"] = $newname;
 				return $result;

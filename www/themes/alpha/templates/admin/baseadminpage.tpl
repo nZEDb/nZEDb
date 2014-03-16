@@ -18,11 +18,11 @@
 	<link href="{$smarty.const.WWW_TOP}/../themes/alpha/styles/old-style.css" rel="stylesheet" media="screen">
 	<link href="{$smarty.const.WWW_TOP}/../themes/alpha/styles/admin.css" rel="stylesheet" media="screen">
 
-	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/../themes/alpha/images/favicon.ico">
+	<link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/../themes_shared/images/favicon.ico">
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<script>window.html5 || document.write('<script src="{$smarty.const.WWW_TOP}/../themes/alpha/scripts/html5shiv.js"><\/script>')</script>
+	<script>window.html5 || document.write('<script src="{$smarty.const.WWW_TOP}/../themes_shared/scripts/html5shiv.js"><\/script>')</script>
 	<![endif]-->
 
 	{$page->head}
@@ -67,12 +67,12 @@
 <!-- end #page -->
 
 <script src="//code.jquery.com/jquery-1.9.1.js"></script>
-{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/alpha/scripts/jquery-1.9.1.js"><\/script>')</script>{/literal}
+{literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes_shared/scripts/jquery-1.9.1.js"><\/script>')</script>{/literal}
 {*<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/../themes/alpha/scripts/bootstrap.min.js"><\/script>')</script>{/literal}*}
-<script src="{$smarty.const.WWW_TOP}/../themes/alpha/scripts/sorttable.js"></script>
-<script src="{$smarty.const.WWW_TOP}/../themes/alpha/scripts/utils-admin.js"></script>
-<script src="{$smarty.const.WWW_TOP}/../themes/alpha/scripts/jquery.multifile.js"></script>
+<script src="{$smarty.const.WWW_TOP}/../themes_shared/scripts/sorttable.js"></script>
+<script src="{$smarty.const.WWW_TOP}/../themes_shared/scripts/utils-admin.js"></script>
+<script src="{$smarty.const.WWW_TOP}/../themes_shared/scripts/jquery.multifile.js"></script>
 <script>var WWW_TOP = "{$smarty.const.WWW_TOP}/..";</script>
 
 {if $site->google_analytics_acc != ''}
