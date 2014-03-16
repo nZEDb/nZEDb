@@ -452,7 +452,7 @@ while ($i > 0) {
 			$age = TIME();
 			if (count($tables) > 0) {
 				foreach ($tables as $row) {
-					if ($db->dbSystem4 == 'mysql') {
+					if ($db->dbSystem == 'mysql') {
 						$tbl = $row['name'];
 						$stamp = 'UNIX_TIMESTAMP(dateadded)';
 					} else {
