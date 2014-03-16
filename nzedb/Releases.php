@@ -418,8 +418,8 @@ class Releases
 		$ri = new ReleaseImage();
 
 		// Delete from disk.
-		$nzbpath = $nzb->getNZBPath($guid, false, $site->nzbsplitlevel);
-		if (file_exists($nzbpath)) {
+		$nzbpath = $nzb->getNZBPath($guid, $site->nzbsplitlevel);
+		if (is_file($nzbpath)) {
 			unlink($nzbpath);
 		}
 
@@ -906,9 +906,9 @@ class Releases
 		$zipfile = new ZipFile();
 
 		foreach ($guids as $guid) {
-			$nzbpath = $nzb->getNZBPath($guid, false, $this->site->nzbsplitlevel);
+			$nzbpath = $nzb->getNZBPath($guid, $this->site->nzbsplitlevel);
 
-			if (file_exists($nzbpath)) {
+			if (is_file($nzbpath)) {
 				ob_start();
 				@readgzfile($nzbpath);
 				$nzbfile = ob_get_contents();
@@ -1514,7 +1514,7 @@ class Releases
 			$nzb->initiateForWrite($this->db, htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8'), $groupID);
 			foreach ($resrel as $rowrel) {
 				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $rowrel['title']);
-				if ($nzb_create != false) {
+				if ($nzb_create !== false) {
 					$this->db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']));
 					$nzbcount++;
 					if ($this->echooutput) {

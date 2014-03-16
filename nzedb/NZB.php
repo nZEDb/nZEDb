@@ -115,7 +115,7 @@ class NZB
 			return false;
 		}
 
-		$path = $this->getNZBPath($relGuid, true, $this->site->nzbsplitlevel);
+		$path = $this->getNZBPath($relGuid, $this->site->nzbsplitlevel, true);
 		$fp = gzopen($path, 'w5');
 		if ($fp) {
 			$nzb_guid = '';
@@ -227,9 +227,7 @@ class NZB
 	public function copyNZBforImport($relguid, $nzb)
 	{
 		$path =
-			$this->getNZBPath(
-				$relguid, true, $this->site->nzbsplitlevel
-			);
+			$this->getNZBPath($relguid, $this->site->nzbsplitlevel, true);
 		$fp = gzopen($path, 'w5');
 		if ($fp && $nzb) {
 			$date1 = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');
@@ -261,32 +259,29 @@ class NZB
 	 * Build a folder path on the hard drive where the NZB file will be stored.
 	 *
 	 * @param string $releaseGuid         The guid of the release.
-	 * @param bool   $createIfDoesntExist Create the folder if it doesn't exist.
 	 * @param int    $levelsToSplit       How many sub-paths the folder will be in.
+	 * @param bool   $createIfDoesntExist Create the folder if it doesn't exist.
 	 *
 	 * @return string $nzbpath The path to store the NZB file.
 	 *
 	 * @access public
 	 */
-	public function buildNZBPath($releaseGuid, $createIfDoesntExist = false, $levelsToSplit = 1)
+	private function buildNZBPath($releaseGuid, $levelsToSplit, $createIfDoesntExist)
 	{
 		$sitenzbpath = $this->site->nzbpath;
-		if ($sitenzbpath == '') {
-			if (substr($sitenzbpath, strlen($sitenzbpath) - 1) != '/') {
-				$sitenzbpath = $sitenzbpath . '/';
-			}
-			$levelsToSplit = $this->site->nzbsplitlevel;
+		if (substr($sitenzbpath, strlen($sitenzbpath) - 1) !== DS) {
+			$sitenzbpath = $sitenzbpath . DS;
 		}
 
 		$subpath = '';
 
 		for ($i = 0; $i < $levelsToSplit; $i++) {
-			$subpath = $subpath . substr($releaseGuid, $i, 1) . '/';
+			$subpath = $subpath . substr($releaseGuid, $i, 1) . DS;
 		}
 
 		$nzbpath = $sitenzbpath . $subpath;
 
-		if ($createIfDoesntExist && !file_exists($nzbpath)) {
+		if ($createIfDoesntExist && !is_dir($nzbpath)) {
 			mkdir($nzbpath, 0777, true);
 		}
 
@@ -297,16 +292,16 @@ class NZB
 	 * Retrieve path + filename of the NZB to be stored.
 	 *
 	 * @param string $releaseGuid         The guid of the release.
-	 * @param bool   $createIfDoesntExist Create the folder if it doesn't exist.
 	 * @param int    $levelsToSplit       How many sub-paths the folder will be in.
+	 * @param bool   $createIfDoesntExist Create the folder if it doesn't exist.
 	 *
 	 * @return string Path+filename.
 	 *
 	 * @access public
 	 */
-	public function getNZBPath($releaseGuid, $createIfDoesntExist = false, $levelsToSplit = 1)
+	public function getNZBPath($releaseGuid, $levelsToSplit, $createIfDoesntExist = false)
 	{
-		$nzbpath = $this->buildNZBPath($releaseGuid, $createIfDoesntExist, $levelsToSplit);
+		$nzbpath = $this->buildNZBPath($releaseGuid, $levelsToSplit, $createIfDoesntExist);
 		return $nzbpath . $releaseGuid . '.nzb.gz';
 	}
 
@@ -323,8 +318,8 @@ class NZB
 	 */
 	public function NZBPath($releaseGuid, $levelsToSplit = 1)
 	{
-		$nzbfile = $this->getNZBPath($releaseGuid, false, $levelsToSplit);
-		return !file_exists($nzbfile) ? false : $nzbfile;
+		$nzbfile = $this->getNZBPath($releaseGuid, $levelsToSplit);
+		return !is_file($nzbfile) ? false : $nzbfile;
 	}
 
 	/**
