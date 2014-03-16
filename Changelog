@@ -14,6 +14,7 @@ Each update goes to the top of the file
                        -> Update patch readme.
                        -> Revert boolean bit types to tinyint due to smarty errors
                        -> PG schema accidental rename fix
+                       -> Fix mysql patch typo proc_sorter where proc_par2 should be
 2014-03-16 -> kevin    -> Possible fix for missing NZB file.
                        -> Start cleaning up books.tpl
                        -> Don't try subsequent abgx URL's when it's down.
