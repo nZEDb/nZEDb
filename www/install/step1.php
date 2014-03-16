@@ -44,6 +44,8 @@ if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
 	$group = posix_getgrgid(posix_getgid());
 	$fixString = '<br /><br />Another solution is to run:<br />chown -R ' . $group['name'] . ':' . $user['name']  . ' ';
 	$page->smarty->assign('fixString', $fixString);
+} else {
+	$page->smarty->assign('fixString', false);
 }
 
 $cfg->cacheCheck = is_writable(SMARTY_DIR . 'templates_c');

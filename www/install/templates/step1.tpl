@@ -242,7 +242,7 @@
 
 <div align="center">
 {if !$cfg->error}
-	<p>No problems were found and you are ready to install.</p>
+	<p>No problems were found and you are ready to install.{if $fixString}<br />If you used the chown commands, you might have to give your user access to that group.{/if}</p>
 	<form action="step2.php"><input type="submit" value="Go to step two: Set up the database" /></form>
 {else}
 	<div class="error">Errors encountered - nZEDb will not function correctly unless these problems are solved.</div>
