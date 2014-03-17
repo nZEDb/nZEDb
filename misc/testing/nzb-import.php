@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../../www/config.php';
 $n = PHP_EOL;
 
 // Print usage.
-if (count($argv) !== 5) {
+if (count($argv) !== 6) {
 	exit(
 		'Usage: ' . $n .
 		$_SERVER['_'] . ' ' . __FILE__ . ' arg1 arg2 arg3 arg4 arg5' . $n . $n .
