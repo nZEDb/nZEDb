@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . '/../../www/config.php';
+require_once dirname(__FILE__) . '/../../../../www/config.php';
 $c = new ColorCLI();
 
 if (!isset($argv[1])) {
