@@ -5,6 +5,7 @@ $n = PHP_EOL;
 // Print usage.
 if (count($argv) !== 6) {
 	exit(
+		'This will import NZB files(.nzb or .nzb.gz) into your nZEDb site.'. $n . $n .
 		'Usage: ' . $n .
 		$_SERVER['_'] . ' ' . __FILE__ . ' arg1 arg2 arg3 arg4 arg5' . $n . $n .
 		'arg1 : Path to folder where NZB files are stored.                | a folder path' . $n .
@@ -43,7 +44,7 @@ if (substr($path, -1) !== DS) {
 }
 
 // Get the files from the user specified path.
-$filesToProcess = glob($path . "*.nzb");
+$filesToProcess = glob($path . "*.{nzb,nzb.gz}", GLOB_BRACE);
 $totalFiles = count($filesToProcess);
 if ($totalFiles > 0) {
 

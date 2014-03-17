@@ -86,10 +86,11 @@ class NZBImport
 	 * @param bool|string $useNzbName Use the NZB file name as release name?
 	 * @param bool $delete Delete the NZB when done?
 	 * @param bool $deleteFailed Delete the NZB if failed importing?
+	 * @param bool $decompress Decompress nzb.gz file?
 	 *
 	 * @return string|bool
 	 */
-	public function beginImport($filesToProcess, $useNzbName = false, $delete = true, $deleteFailed = true)
+	public function beginImport($filesToProcess, $useNzbName = false, $delete = true, $deleteFailed = true, $decompress = false)
 	{
 		// Get all the groups in the DB.
 		if (!$this->getAllGroups()) {
@@ -110,7 +111,12 @@ class NZBImport
 			if (is_file($nzbFile)) {
 
 				// Get the contents of the NZB file as a string.
-				$nzbString = file_get_contents($nzbFile);
+				if (strtolower(substr($nzbFile, -7)) === '.nzb.gz') {
+					$nzbString = $this->deZipNzb($nzbFile);
+				} else {
+					$nzbString = file_get_contents($nzbFile);
+				}
+
 				if ($nzbString === false) {
 					$this->echoOut('ERROR: Unable to read: ' . $nzbFile);
 
@@ -200,6 +206,31 @@ class NZBImport
 		} else {
 			return true;
 		}
+	}
+
+	/**
+	 * Decompress a gzip'ed NZB.
+	 * @param string $path Path to the zipped NZB.
+	 *
+	 * @return string|bool
+	 */
+	protected function deZipNzb($path)
+	{
+		// String to hold the NZB contents.
+		$string = '';
+
+		// Open the gzip file.
+		$nzb = @gzopen($path, 'rb', 0);
+		if ($nzb) {
+			// Append the decompressed data to the string until we find the end of file pointer.
+			while (!gzeof($nzb)) {
+				$string .= gzread($nzb, 1024);
+			}
+			// Close the gzip file.
+			gzclose($nzb);
+		}
+		// Return the string.
+		return ($string === '' ? false : $string);
 	}
 
 	/**
