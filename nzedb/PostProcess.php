@@ -1,4 +1,5 @@
 <?php
+
 require_once nZEDb_LIB . 'Util.php';
 require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
@@ -6,13 +7,14 @@ require_once nZEDb_LIBS . 'rarinfo/zipinfo.php';
 
 class PostProcess
 {
+
 	public function __construct($echooutput = false)
 	{
 		$s = new Sites();
 		$this->site = $s->get();
 		$this->addqty = (!empty($this->site->maxaddprocessed)) ? $this->site->maxaddprocessed : 25;
 		$this->addpar2 = ($this->site->addpar2 == '0') ? false : true;
-		$this->audSavePath = nZEDb_WWW . 'covers/audiosample/';
+		$this->audSavePath = nZEDb_COVERS . 'audiosample' . DS;
 		$this->consoleTools = new ConsoleTools();
 		$this->db = new DB();
 		$this->DEBUG_ECHO = ($this->site->debuginfo == '0') ? false : true;
@@ -179,18 +181,18 @@ class PostProcess
 			$t = 'extract(epoch FROM postdate)';
 		}
 
-		$quer = $db->queryOneRow('SELECT id, groupid, categoryid, searchname, ' . $t . ' as postdate, id as releaseid  FROM releases WHERE (bitwise & 4) = 0 AND id = ' . $relID);
+		$quer = $db->queryOneRow('SELECT id, groupid, categoryid, searchname, ' . $t . ' as postdate, id as releaseid  FROM releases WHERE isrenamed = 0 AND id = ' . $relID);
 		if ($quer['categoryid'] != Category::CAT_MISC) {
 			return false;
 		}
 
 		$groups = new Groups();
 		$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
-		if (PEAR::isError($par2)) {
+		if ($nntp->isError($par2)) {
 			$nntp->doQuit();
-			$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+			$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 			$par2 = $nntp->getMessage($groups->getByNameByID($groupID), $messageID);
-			if (PEAR::isError($par2)) {
+			if ($nntp->isError($par2)) {
 				$nntp->doQuit();
 				return false;
 			}
@@ -220,7 +222,7 @@ class PostProcess
 				}
 				$quer['textstring'] = $file['name'];
 				//$namefixer->checkName($quer, 1, 'PAR2, ', 1);
-				//$stat = $db->queryOneRow('SELECT id FROM releases WHERE (bitwise & 4) = 4 AND id = '.$relID);
+				//$stat = $db->queryOneRow('SELECT id FROM releases WHERE isrenamed = 1 AND id = '.$relID);
 				//if ($stat['id'] === $relID)
 				if ($namefixer->checkName($quer, 1, 'PAR2, ', 1, $show) === true) {
 					$foundname = true;
@@ -347,7 +349,7 @@ class PostProcess
 				$i = -1;
 				$tries = (5 * -1) - 1;
 				while (($totresults != $this->addqty) && ($i >= $tries)) {
-					$result = $this->db->queryDirect(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.size < %d ' . $groupid . ' AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) AND (bitwise & 256) = 256 ORDER BY postdate DESC LIMIT %d', $this->maxsize * 1073741824, $i, $this->addqty));
+					$result = $this->db->queryDirect(sprintf('SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion, r.categoryid FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE nzbstatus = 1 AND r.size < %d ' . $groupid . ' AND r.passwordstatus BETWEEN %d AND -1 AND (r.haspreview = -1 AND c.disablepreview = 0) ORDER BY postdate DESC LIMIT %d', $this->maxsize * 1073741824, $i, $this->addqty));
 					$totresults = $result->rowCount();
 					if ($totresults > 0)
 						$this->doecho('Passwordstatus = ' . $i . ': Available to process = ' . $totresults);
@@ -577,11 +579,11 @@ class PostProcess
 
 								$bingroup = $groupName;
 								$fetchedBinary = $nntp->getMessages($bingroup, $mid);
-								if (PEAR::isError($fetchedBinary)) {
+								if ($nntp->isError($fetchedBinary)) {
 									$nntp->doQuit();
-									$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+									$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 									$fetchedBinary = $nntp->getMessages($bingroup, $mid);
-									if (PEAR::isError($fetchedBinary)) {
+									if ($nntp->isError($fetchedBinary)) {
 										$fetchedBinary = false;
 									}
 								}
@@ -711,11 +713,11 @@ class PostProcess
 					if ($blnTookSample === false || $blnTookVideo === false) {
 						if (!empty($samplemsgid)) {
 							$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
-							if (PEAR::isError($sampleBinary)) {
+							if ($nntp->isError($sampleBinary)) {
 								$nntp->doQuit();
-								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+								$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 								$sampleBinary = $nntp->getMessages($samplegroup, $samplemsgid);
-								if (PEAR::isError($sampleBinary))
+								if ($nntp->isError($sampleBinary))
 									$sampleBinary = false;
 							}
 
@@ -744,11 +746,11 @@ class PostProcess
 					if ($blnTookMediainfo === false || $blnTookSample === false || $blnTookVideo === false) {
 						if (!empty($mediamsgid)) {
 							$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
-							if (PEAR::isError($mediaBinary)) {
+							if ($nntp->isError($mediaBinary)) {
 								$nntp->doQuit();
-								$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+								$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 								$mediaBinary = $nntp->getMessages($mediagroup, $mediamsgid);
-								if (PEAR::isError($mediaBinary))
+								if ($nntp->isError($mediaBinary))
 									$mediaBinary = false;
 							}
 							if ($mediaBinary !== false) {
@@ -776,11 +778,11 @@ class PostProcess
 				// Download audio file, use mediainfo to try to get the artist / album.
 				if ($processAudioinfo === true && !empty($audiomsgid) && $blnTookAudioinfo === false) {
 					$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
-					if (PEAR::isError($audioBinary)) {
+					if ($nntp->isError($audioBinary)) {
 						$nntp->doQuit();
-						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+						$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 						$audioBinary = $nntp->getMessages($audiogroup, $audiomsgid);
-						if (PEAR::isError($audioBinary))
+						if ($nntp->isError($audioBinary))
 							$audioBinary = false;
 					}
 					if ($audioBinary !== false) {
@@ -800,11 +802,11 @@ class PostProcess
 				// Download JPG file.
 				if ($processJPGSample === true && !empty($jpgmsgid) && $blnTookJPG === false) {
 					$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
-					if (PEAR::isError($jpgBinary)) {
+					if ($nntp->isError($jpgBinary)) {
 						$nntp->doQuit();
-						$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+						$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 						$jpgBinary = $nntp->getMessages($jpggroup, $jpgmsgid);
-						if (PEAR::isError($jpgBinary))
+						if ($nntp->isError($jpgBinary))
 							$jpgBinary = false;
 					}
 					if ($jpgBinary !== false) {
@@ -1307,7 +1309,7 @@ class PostProcess
 		}
 
 		// Make sure the category is music or other->misc.
-		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, groupid FROM releases WHERE (bitwise & 8) = 0 '
+		$rquer = $this->db->queryOneRow(sprintf('SELECT categoryid as id, groupid FROM releases WHERE proc_pp = 0 '
 				. 'AND id = %d', $releaseID));
 		if (!preg_match('/^3\d{3}|7010/', $rquer['id'])) {
 			return $retval;
@@ -1339,7 +1341,7 @@ class PostProcess
 										} else {
 											$newcat = $category->determineCategory($newname, $rquer['groupid']);
 										}
-										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, bitwise = ((bitwise & ~13)|13) WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
+										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1 WHERE id = %d', $this->db->escapeString(substr($newname, 0, 255)), $newcat, $releaseID));
 
 										$re = new ReleaseExtra();
 										$re->addFromXml($releaseID, $xmlarray);
@@ -1501,5 +1503,5 @@ class PostProcess
 	{
 		$this->db->queryExec(sprintf('UPDATE releases SET haspreview = 1 WHERE guid = %s', $this->db->escapeString($guid)));
 	}
+
 }
-?>

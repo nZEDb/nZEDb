@@ -59,4 +59,3 @@ class Menu
 		return $db->queryExec(sprintf("UPDATE menu SET href = %s, title = %s, tooltip = %s, role = %d, ordinal = %d, menueval = %s, newwindow = %d WHERE id = %d", $db->escapeString($menu["href"]), $db->escapeString($menu["title"]), $db->escapeString($menu["tooltip"]), $menu["role"], $menu["ordinal"], $db->escapeString($menu["menueval"]), $menu["newwindow"], $menu["id"]));
 	}
 }
-?>

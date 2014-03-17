@@ -1,33 +1,40 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $c = new ColorCLI();
 $db = new DB();
 $type = $db->dbSystem();
-if (isset($argv[1]) && $argv[1] === "run")
-{
-	if ($type == 'mysql')
-	{
+if (isset($argv[1]) && ($argv[1] === "run" || $argv[1] === "true" || $argv[1] === "all" || $argv[1] === "full" || $argv[1] === "analyze")) {
+	if ($type == 'mysql') {
 		$a = 'MySQL';
 		$b = 'Optimizing';
 		$d = 'Optimized';
-	}
-	else if ($type == 'pgsql')
-	{
+	} else if ($type == 'pgsql') {
 		$a = 'PostgreSQL';
 		$b = 'Vacuuming';
 		$d = 'Vacuumed';
 	}
-	echo $c->header($b." ".$a." tables, this can take a while...");
-	$tablecnt = $db->optimise();
-	if ($tablecnt > 0)
-		exit($c->primary("{$d} {$tablecnt} {$a} tables succesfuly."));
-	else
-		exit($c->notice("No {$a} tables to optimize."));
+	$e = 'Analyzed';
+	$f = 'Analyzing';
+
+	if ($argv[1] === 'analyze') {
+		echo $c->header($f." ".$a." tables, this can take a while...");
+	} else {
+		echo $c->header($b." ".$a." tables, should be quick...");
+	}
+	$tablecnt = $db->optimise(false, $argv[1]);
+	if ($tablecnt > 0 && $argv[1] === 'analyze') {
+		exit($c->header("\n{$e} {$tablecnt} {$a} tables succesfuly."));
+	} else if ($tablecnt > 0) {
+		exit($c->header("\n{$d} {$tablecnt} {$a} tables succesfuly."));
+	} else {
+		exit($c->notice("\nNo {$a} tables to optimize."));
+	}
+} else {
+	exit($c->error("\nThis script will optimise the tables.\n\n"
+		. "php $argv[0] run          ...: Optimise the tables that have freespace > 5%.\n"
+		. "php $argv[0] true         ...: Force Optimise on all tables.\n"
+		. "php $argv[0] all          ...: Optimise all tables at once that have freespace > 5%.\n"
+		. "php $argv[0] full         ...: Force Optimise all tables at once.\n"
+		. "php $argv[0] analyze      ...: Analyze tables to rebuild statistics.\n"));
 }
-else
-	exit($c->error("\nWrong set of arguments.\n"
-		."php optimise_db.php run		...: Optimise the database.\n"));
-?>

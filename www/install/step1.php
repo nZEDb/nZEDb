@@ -1,6 +1,5 @@
 <?php
-require_once '../pages/InstallPage.php';
-require_once '../../nzedb/Install.php';
+require_once realpath(__DIR__ . '/../automated.config.php');
 
 $page = new InstallPage();
 $page->title = "Preflight Checklist";
@@ -12,6 +11,7 @@ if (!$cfg->isInitialized()) {
 	die();
 }
 
+$cfg->setSession();
 $cfg = $cfg->getSession();
 
 // Start checks.
@@ -39,78 +39,78 @@ $cfg->gdCheck = function_exists('imagecreatetruecolor');
 
 $cfg->curlCheck = function_exists('curl_init');
 
-$cfg->cacheCheck = is_writable($cfg->SMARTY_DIR . '/templates_c');
+$cfg->cacheCheck = is_writable(SMARTY_DIR . 'templates_c');
 if ($cfg->cacheCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->animeCoversCheck = is_writable($cfg->nZEDb_WWW . '/covers/anime');
+$cfg->animeCoversCheck = is_writable($cfg->COVERS_PATH . 'anime');
 if ($cfg->animeCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->audioCoversCheck = is_writable($cfg->nZEDb_WWW . '/covers/audio');
+$cfg->audioCoversCheck = is_writable($cfg->COVERS_PATH . 'audio');
 if ($cfg->audioCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->audiosampleCoversCheck = is_writable($cfg->nZEDb_WWW . '/covers/audiosample');
+$cfg->audiosampleCoversCheck = is_writable($cfg->COVERS_PATH . 'audiosample');
 if ($cfg->audiosampleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->bookCoversCheck = is_writable($cfg->nZEDb_WWW . '/covers/book');
+$cfg->bookCoversCheck = is_writable($cfg->COVERS_PATH . 'book');
 if ($cfg->bookCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->consoleCoversCheck = is_writable($cfg->nZEDb_WWW . '/covers/console');
+$cfg->consoleCoversCheck = is_writable($cfg->COVERS_PATH . 'console');
 if ($cfg->consoleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->movieCoversCheck = is_writable($cfg->nZEDb_WWW . '/covers/movies');
+$cfg->movieCoversCheck = is_writable($cfg->COVERS_PATH . 'movies');
 if ($cfg->movieCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->musicCoversCheck = is_writable($cfg->nZEDb_WWW . '/covers/music');
+$cfg->musicCoversCheck = is_writable($cfg->COVERS_PATH . 'music');
 if ($cfg->musicCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->previewCoversCheck = is_writable($cfg->nZEDb_WWW . '/covers/preview');
+$cfg->previewCoversCheck = is_writable($cfg->COVERS_PATH . 'preview');
 if ($cfg->previewCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->sampleCoversCheck = is_writable($cfg->nZEDb_WWW . '/covers/sample');
+$cfg->sampleCoversCheck = is_writable($cfg->COVERS_PATH . 'sample');
 if ($cfg->sampleCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->videoCoversCheck = is_writable($cfg->nZEDb_WWW . '/covers/video');
+$cfg->videoCoversCheck = is_writable($cfg->COVERS_PATH . 'video');
 if ($cfg->videoCoversCheck === false) {
 	$cfg->error = true;
 }
 
-$cfg->configCheck = is_writable($cfg->nZEDb_WWW . '/config.php');
+$cfg->configCheck = is_writable(nZEDb_WWW);
 if ($cfg->configCheck === false) {
-	$cfg->configCheck = is_file($cfg->nZEDb_WWW . '/config.php');
+	$cfg->configCheck = is_file(nZEDb_WWW);
 	if ($cfg->configCheck === true) {
 		$cfg->configCheck = false;
 		$cfg->error = true;
 	} else {
-		$cfg->configCheck = is_writable($cfg->nZEDb_WWW);
+		$cfg->configCheck = is_writable(nZEDb_WWW);
 		if ($cfg->configCheck === false) {
 			$cfg->error = true;
 		}
 	}
 }
 
-$cfg->lockCheck = is_writable($cfg->INSTALL_DIR . '/install.lock');
+$cfg->lockCheck = is_writable($cfg->INSTALL_DIR . 'install.lock');
 if ($cfg->lockCheck === false) {
-	$cfg->lockCheck = is_file($cfg->INSTALL_DIR . '/install.lock');
+	$cfg->lockCheck = is_file($cfg->INSTALL_DIR . 'install.lock');
 	if ($cfg->lockCheck === true) {
 		$cfg->lockCheck = false;
 		$cfg->error = true;
@@ -129,7 +129,7 @@ if (!$cfg->pearCheck) {
 }
 
 $cfg->schemaCheck = false;
-if (is_readable($cfg->DB_DIR . '/schema.mysql') && is_readable($cfg->DB_DIR . '/schema.pgsql')) {
+if (is_readable($cfg->DB_DIR . 'schema.mysql') && is_readable($cfg->DB_DIR . 'schema.pgsql')) {
 	$cfg->schemaCheck = true;
 }
 if ($cfg->schemaCheck === false) {
@@ -151,8 +151,8 @@ if (preg_match('/apache/i', $_SERVER['SERVER_SOFTWARE'])) {
 }
 
 // Load previous config.php.
-if (file_exists($cfg->nZEDb_WWW . '/config.php') && is_readable($cfg->nZEDb_WWW . '/config.php')) {
-	$tmpCfg = file_get_contents($cfg->nZEDb_WWW . '/config.php');
+if (file_exists(nZEDb_WWW . 'config.php') && is_readable(nZEDb_WWW . 'config.php')) {
+	$tmpCfg = file_get_contents(nZEDb_WWW . 'config.php');
 	$cfg->setConfig($tmpCfg);
 }
 

@@ -2,6 +2,7 @@
 
 class GrabNZBs
 {
+
 	function __construct()
 	{
 		$this->db = new DB();
@@ -12,6 +13,7 @@ class GrabNZBs
 		$this->ReleaseCleaning = new ReleaseCleaning();
 		//$this->CollectionsCleaning = new CollectionsCleaning();
 		$this->categorize = new Category();
+		$this->c = new ColorCLI();
 	}
 
 	public function Import($hash = '', $nntp)
@@ -43,15 +45,15 @@ class GrabNZBs
 		}
 		if ($nzb && array_key_exists('groupname', $nzb)) {
 			if (sizeof($arr) > 10) {
-				echo "\nGetting " . sizeof($arr) . ' articles for ' . $hash . "\n";
+				echo $this->c->header("\nGetting " . sizeof($arr) . ' articles for ' . $hash);
 			}
 
-			$article = $nntp->getArticles($nzb['groupname'], $arr);
-			if (PEAR::isError($article)) {
+			$article = $nntp->getMessages($nzb['groupname'], $arr);
+			if ($nntp->isError($article)) {
 				$nntp->doQuit();
-				$this->site->grabnzbs == '2' ? $nntp->doConnect_A() : $nntp->doConnect();
-				$article = $nntp->getArticles($nzb['groupname'], $arr);
-				if (PEAR::isError($article)) {
+				$this->site->grabnzbs == '2' ? $nntp->doConnect(true, true) : $nntp->doConnect();
+				$article = $nntp->getMessages($nzb['groupname'], $arr);
+				if ($nntp->isError($article)) {
 					$nntp->doQuit();
 					$article = false;
 				}
@@ -111,6 +113,7 @@ class GrabNZBs
 				$postdate[] = $date;
 				$partless = preg_replace('/(\(\d+\/\d+\))*$/', 'yEnc', $firstname['0']);
 				$partless = preg_replace('/yEnc.*?$/', 'yEnc', $partless);
+				$partless = preg_replace('/\[#?a\.b\.teevee@?EFNet\]/', '[#a.b.teevee@EFNet]', $partless);
 				$subject = utf8_encode(trim($partless));
 
 				// Make a fake message object to use to check the blacklist.
@@ -143,7 +146,11 @@ class GrabNZBs
 
 			// To get accurate size to check for true duplicates, we need to process the entire nzb first
 			if ($importfailed === false) {
-				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size = %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($totalsize)));
+				// A 1% variance in size is considered the same size when the subject and poster are the same
+				$minsize = $totalsize * .99;
+				$maxsize = $totalsize * 1.01;
+
+				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $this->db->escapeString($subject), $this->db->escapeString($fromname), $this->db->escapeString($minsize), $this->db->escapeString($maxsize)));
 				if ($this->replacenzbs == 1) {
 					$releases = new Releases();
 					foreach ($res as $rel) {
@@ -184,9 +191,9 @@ class GrabNZBs
 				$category = $this->categorize->determineCategory($cleanName, $groupName);
 				// If a release exists, delete the nzb/collection/binaries/parts
 				if ($propername === true) {
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~5)|5)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($this->site->checkpasswordedrar === '1' ? -1 : 0), $category));
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, isrenamed, iscategorized) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($this->site->checkpasswordedrar === '1' ? -1 : 0), $category));
 				} else {
-					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, bitwise) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, (bitwise & ~1)|1)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($this->site->checkpasswordedrar === '1' ? -1 : 0), $category));
+					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, iscategorized) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($this->site->checkpasswordedrar === '1' ? -1 : 0), $category));
 				}
 
 				// Set table names
@@ -228,7 +235,7 @@ class GrabNZBs
 						gzclose($fp);
 						if (file_exists($path)) {
 							chmod($path, 0777);
-							$this->db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~256)|256) WHERE id = %d', $relid));
+							$this->db->queryExec(sprintf('UPDATE releases SET nzbstatus = 1 WHERE id = %d', $relid));
 							if ($this->db->dbSystem() == 'mysql') {
 								$this->db->queryExec(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ' LEFT JOIN ' . $group['bname'] . ' ON ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid LEFT JOIN ' . $group['pname'] . ' ON ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid WHERE ' . $group['cname'] . '.collectionhash = %s', $this->db->escapeString($hash)));
 							} else if ($this->db->dbSystem() == 'pgsql') {
@@ -253,5 +260,5 @@ class GrabNZBs
 			}
 		}
 	}
+
 }
-?>

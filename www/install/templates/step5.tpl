@@ -1,7 +1,7 @@
 {if $page->isSuccess()}
 	<div align="center">
 		<p>The admin user has been setup, you may continue to the next step.</p>
-		<form action="step6.php"><input type="submit" value="Step Six: Set NZB File Path" /></form>
+		<form action="step6.php"><input type="submit" value="Step Six: Set file paths" /></form>
 	</div>
 {else}
 

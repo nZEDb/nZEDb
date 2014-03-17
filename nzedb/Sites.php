@@ -1,4 +1,5 @@
 <?php
+require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Util.php');
 
 class Sites
 {
@@ -14,20 +15,26 @@ class Sites
 	const ERR_BADTMPUNRARPATH = -6;
 	const ERR_BADNZBPATH_UNREADABLE = -7;
 	const ERR_BADNZBPATH_UNSET = -8;
+	const ERR_BAD_COVERS_PATH = -9;
 
-	function __construct()
+	protected $_db;
+	protected $_versions;
+
+	public function __construct()
 	{
-		$this->db = new DB();
+		$this->_db = new DB();
+		$this->_versions = new \nzedb\utility\Versions();
+		$this->setCovers();
 	}
 
 	public function version()
 	{
-		return "0.0.3";
+		return $this->_versions->getTagVersion();
 	}
 
 	public function update($form)
 	{
-		$db = $this->db;
+		$db = $this->_db;
 		$site = $this->row2Object($form);
 
 		if (substr($site->nzbpath, strlen($site->nzbpath) - 1) != '/') {
@@ -82,7 +89,7 @@ class Sites
 
 	public function get()
 	{
-		$db = $this->db;
+		$db = $this->_db;
 		$rows = $db->query("SELECT * FROM site");
 
 		if ($rows === false) {
@@ -133,5 +140,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 " . $n;
 	}
+
+	public function setCovers()
+	{
+		$row = $this->_db->query("SELECT value FROM site WHERE setting = 'coverspath'");
+		Util::setCoversConstant($row[0]['value']);
+	}
 }
+
 ?>

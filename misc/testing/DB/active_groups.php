@@ -1,15 +1,18 @@
 <?php
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-//require_once nZEDb_LIB . 'framework/db.php';
-//require_once nZEDb_LIB . 'ColorCLI.php';
 
 $db = new DB();
 $c = new ColorCLI();
 $count = $groups = 0;
 if (!isset($argv[1])) {
 	passthru("clear");
-	exit($c->error("\nThis script will show all Active Groups. There is 1 required argument and 2 optional arguments.\nThe first argument of [date, releases] is used to sort the display by first_record_postdate or by the number of releases.\nThe second argument [ASC, DESC] sorts by ascending or descending.\nThe third argument will limit the return to that number of groups.\nTo sort the active groups by first_record_postdate and display only 20 groups run:\nphp active_groups.php date desc 20\n"));
+	exit($c->error("\nThis script will show all Active Groups. There is 1 required argument and 2 optional arguments.\n"
+			. "The first argument of [date, releases] is used to sort the display by first_record_postdate or by the number of releases.\n"
+			. "The second argument [ASC, DESC] sorts by ascending or descending.\n"
+			. "The third argument will limit the return to that number of groups.\n"
+			. "To sort the active groups by first_record_postdate and display only 20 groups run:\n"
+			. "php $argv[0] date desc 20\n"));
 }
 passthru("clear");
 if (isset($argv[1]) && $argv[1] == "date") {
@@ -49,17 +52,17 @@ printf($mask, "\nGroup Name => " . $active['count'] . "[" . $groups . "] (" . nu
 printf($mask, "==================================================", "======================", "======================", "======================", "======================", "======================", "======================", "======================");
 
 if ($rels = $db->queryDirect(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated,
-										CAST(last_record as SIGNED)-CAST(first_record as SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days,
-										COALESCE(rel.num, 0) AS num_releases,
-										COALESCE(pre.num, 0) AS pre_matches,
-										COALESCE(ren.num, 0) AS renamed FROM groups
-										LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases GROUP BY groupid ) rel ON rel.groupid = groups.id
-										LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE preid is not null GROUP BY groupid ) pre ON pre.groupid = groups.id
-										LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE (bitwise & 1) = 1 GROUP BY groupid ) ren ON ren.groupid = groups.id
-										WHERE active = 1 AND first_record_postdate %s %s %s", $order, $sort, $limit))) {
+		CAST(last_record as SIGNED)-CAST(first_record as SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days,
+		COALESCE(rel.num, 0) AS num_releases,
+		COALESCE(pre.num, 0) AS pre_matches,
+		COALESCE(ren.num, 0) AS renamed FROM groups
+		LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases GROUP BY groupid ) rel ON rel.groupid = groups.id
+		LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE preid > 0 GROUP BY groupid ) pre ON pre.groupid = groups.id
+		LEFT OUTER JOIN ( SELECT groupid, COUNT(id) AS num FROM releases WHERE iscategorized = 1 GROUP BY groupid ) ren ON ren.groupid = groups.id
+		WHERE active = 1 AND first_record_postdate %s %s %s", $order, $sort, $limit))) {
 	foreach ($rels as $rel) {
 		//var_dump($rel);
 		$headers = number_format($rel['headers downloaded']);
-		printf($mask, $rel['name'], $rel['backfill_target'] . "(" . $rel['days'] . ")", $rel['first_record_postdate'], $rel['last_updated'], $headers, $rel['num_releases'], $rel['renamed'] . "(" . floor($rel['renamed'] / $rel['num_releases'] * 100) . "%)", $rel['pre_matches'] . "(" . floor($rel['pre_matches'] / $rel['num_releases'] * 100) . "%)");
+		printf($mask, $rel['name'], $rel['backfill_target'] . "(" . $rel['days'] . ")", $rel['first_record_postdate'], $rel['last_updated'], $headers, number_format($rel['num_releases']), $rel['num_releases'] == 0 ? number_format($rel['num_releases']) : number_format($rel['renamed']) . "(" . floor($rel['renamed'] / $rel['num_releases'] * 100) . "%)", $rel['num_releases'] == 0 ? number_format($rel['num_releases']) : number_format($rel['pre_matches']) . "(" . floor($rel['pre_matches'] / $rel['num_releases'] * 100) . "%)");
 	}
 }

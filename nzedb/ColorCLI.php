@@ -268,4 +268,3 @@ class ColorCLI
 		return "\033[0m";
 	}
 }
-?>

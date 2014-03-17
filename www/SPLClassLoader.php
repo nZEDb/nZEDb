@@ -125,6 +125,9 @@ class SplClassLoader
 	 */
 	public function loadClass($className)
 	{
+		if (preg_match('#\\\#', $className)) {	// Looks like it's a namespaced class. just clean pathsepearator for now.
+			$className = str_replace('#\\#', DS, $className);
+		}
 		if ($className == 'Smarty') {
 			require_once SMARTY_DIR . 'Smarty.class.php';
 			return;

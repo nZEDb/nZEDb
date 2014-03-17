@@ -70,14 +70,14 @@ Class NZBContents
 			foreach ($nzbfile->file as $nzbcontents) {
 				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $nzbcontents->attributes()->subject)) {
 					if ($pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $nntp, $show) === true && $namestatus === 1) {
-						$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~32)|32) WHERE id = %d', $relID));
+						$db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 						return true;
 					}
 				}
 			}
 		}
 		if ($namestatus === 1) {
-			$db->queryExec(sprintf('UPDATE releases SET bitwise = ((bitwise & ~32)|32) WHERE id = %d', $relID));
+			$db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 		}
 		return false;
 	}
@@ -156,11 +156,11 @@ Class NZBContents
 		$messageid = $this->NZBcompletion($guid, $relID, $groupID, $nntp, $db, true);
 		if ($messageid !== false) {
 			$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-			if (PEAR::isError($fetchedBinary)) {
+			if ($nntp->isError($fetchedBinary)) {
 				$nntp->doQuit();
-				$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+				$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 				$fetchedBinary = $nntp->getMessage($groupName, $messageid);
-				if (PEAR::isError($fetchedBinary)) {
+				if ($nntp->isError($fetchedBinary)) {
 					$fetchedBinary = false;
 				}
 			}
@@ -191,11 +191,11 @@ Class NZBContents
 					$messageid = $nzbcontents->segments->segment;
 					if ($messageid !== false) {
 						$possibleNFO = $nntp->getMessage($groupName, $messageid);
-						if (PEAR::isError($possibleNFO)) {
+						if ($nntp->isError($possibleNFO)) {
 							$nntp->doQuit();
-							$this->site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect();
+							$this->site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect();
 							$possibleNFO = $nntp->getMessage($groupName, $messageid);
-							if (PEAR::isError($possibleNFO)) {
+							if ($nntp->isError($possibleNFO)) {
 								$nntp->doQuit();
 								$possibleNFO = false;
 							}
@@ -278,4 +278,3 @@ Class NZBContents
 		}
 	}
 }
-?>

@@ -1,14 +1,7 @@
 <?php
-
 //This inserts the patches into MySQL and PostgreSQL.
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
-
-function command_exist($cmd)
-{
-	$returnVal = shell_exec("which $cmd");
-	return (empty($returnVal) ? false : true);
-}
 
 // Function inspired by : http://stackoverflow.com/questions/1883079/best-practice-import-mysql-file-in-php-split-queries/2011454#2011454
 function SplitSQL($file, $delimiter = ';')
@@ -38,9 +31,24 @@ function SplitSQL($file, $delimiter = ';')
 						echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
 					} catch (PDOException $e) {
 						if ($e->errorInfo[1] == 1091 || $e->errorInfo[1] == 1060 || $e->errorInfo[1] == 1054 || $e->errorInfo[1] == 1061 || $e->errorInfo[1] == 1062 || $e->errorInfo[1] == 1071 || $e->errorInfo[1] == 1072 || $e->errorInfo[1] == 1146 || $e->errorInfo[0] == 23505 || $e->errorInfo[0] == 42701 || $e->errorInfo[0] == 42703 || $e->errorInfo[0] == '42P07' || $e->errorInfo[0] == '42P16') {
-							echo $c->error($query . " Skipped - Not Fatal {" . $e->errorInfo[1] . "}.\n");
+							if ($e->errorInfo[1] == 1060) {
+								echo $c->error($query . " The column already exists - Not Fatal {" . $e->errorInfo[1] . "}.\n");
+							} else {
+								echo $c->error($query . " Skipped - Not Fatal {" . $e->errorInfo[1] . "}.\n");
+							}
 						} else {
-							exit($c->error($query . " Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+							if (preg_match('/ALTER IGNORE/I', $query)) {
+								$db->queryExec("SET SESSION old_alter_table = 1");
+								try {
+									$qry = $db->prepare($query);
+									$qry->execute();
+									echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
+								} catch (PDOException $e) {
+									exit($c->error($query . " Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+								}
+							} else {
+								exit($c->error($query . " Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+							}
 						}
 					}
 
@@ -69,7 +77,7 @@ function BackupDatabase()
 	$c = new ColorCLI();
 	$DIR = nZEDb_MISC;
 
-	if (command_exist("php5")) {
+	if (nzedb\utility\Util::hasCommand("php5")) {
 		$PHP = "php5";
 	} else {
 		$PHP = "php";
@@ -188,11 +196,11 @@ if ($patched == 0) {
 if ($patched > 0) {
 	echo $c->header($patched . " patch(es) applied.");
 	$smarty = new Smarty;
-	// Ths does not appear to be working
-	$cleared = $smarty->clearAllCache();
+	$cleared = $smarty->clearCompiledTemplate();
 	if ($cleared) {
 		echo $c->header("The smarty template cache has been cleaned for you");
 	} else {
 		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c");
 	}
 }
+?>

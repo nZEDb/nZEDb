@@ -2,7 +2,7 @@
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
 /*
- * Class for fetching book info from amazon.com.
+ * Class for processing book info.
  */
 class Books
 {
@@ -16,10 +16,10 @@ class Books
 		$this->asstag = $site->amazonassociatetag;
 		$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
-		$this->imgSavePath = nZEDb_WWW . 'covers/book/';
+		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
 		$this->db = new DB();
-		$this->bookreqids = ($site->book_reqids == NULL || $site->book_reqids == "") ? 8010 : $site->book_reqids;
-		$this->cleanbooks = ($site->lookupbooks == 2 ) ? 260 : 256;
+		$this->bookreqids = ($site->book_reqids == null || $site->book_reqids == "") ? 8010 : $site->book_reqids;
+		$this->cleanbooks = ($site->lookupbooks == 2 ) ? 1 : 0;
 		$this->c = new ColorCLI();
 	}
 
@@ -104,10 +104,14 @@ class Books
 			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r "
+		$res = $db->queryOneRow(
+			sprintf(
+				"SELECT COUNT(r.id) AS num FROM releases r "
 				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' "
-				. "WHERE (r.bitwise & 256) = 256 AND  r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') "
-				. "AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
+				. "WHERE r.nzbstatus = 1 AND  r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') "
+				. "AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist
+			)
+		);
 		return $res['num'];
 	}
 
@@ -163,7 +167,8 @@ class Books
 
 		$order = $this->getBookOrder($orderby);
 		if ($this->db->dbSystem() == 'mysql') {
-			$sql = sprintf("SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
+			$sql = sprintf(
+				"SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
 				. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
 				. "GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
 				. "GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
@@ -180,12 +185,13 @@ class Books
 				. "LEFT OUTER JOIN groups ON groups.id = r.groupid "
 				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid "
-				. "WHERE (r.bitwise & 256) = 256 AND boo.cover = 1 AND boo.title != '' AND "
+				. "WHERE r.nzbstatus = 1 AND boo.cover = 1 AND boo.title != '' AND "
 				. "r.passwordstatus <= (SELECT value FROM site WHERE setting='showpasswordedrelease') AND %s %s %s %s "
-				. "GROUP BY boo.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
+				. "GROUP BY boo.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]
+			);
 		} else {
 			$rel = new Releases();
-			$sql = sprintf("SELECT STRING_AGG(r.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_id, STRING_AGG(r.rarinnerfilecount::text, ',' ORDER BY r.postdate DESC) as grp_rarinnerfilecount, STRING_AGG(r.haspreview::text, ',' ORDER BY r.postdate DESC) AS grp_haspreview, STRING_AGG(r.passwordstatus::text, ',' ORDER BY r.postdate) AS grp_release_password, STRING_AGG(r.guid, ',' ORDER BY r.postdate DESC) AS grp_release_guid, STRING_AGG(rn.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_nfoid, STRING_AGG(groups.name, ',' ORDER BY r.postdate DESC) AS grp_release_grpname, STRING_AGG(r.searchname, '#' ORDER BY r.postdate) AS grp_release_name, STRING_AGG(r.postdate::text, ',' ORDER BY r.postdate DESC) AS grp_release_postdate, STRING_AGG(r.size::text, ',' ORDER BY r.postdate DESC) AS grp_release_size, STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts, STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments, STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs, m.*, groups.name AS group_name, rn.id as nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL WHERE (r.bitwise & 256) = 256 AND r.passwordstatus <= %s AND %s %s %s %s GROUP BY m.imdbid, m.id, groups.name, rn.id ORDER BY %s %s" . $limit, $rel->showPasswords(), $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
+			$sql = sprintf("SELECT STRING_AGG(r.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_id, STRING_AGG(r.rarinnerfilecount::text, ',' ORDER BY r.postdate DESC) as grp_rarinnerfilecount, STRING_AGG(r.haspreview::text, ',' ORDER BY r.postdate DESC) AS grp_haspreview, STRING_AGG(r.passwordstatus::text, ',' ORDER BY r.postdate) AS grp_release_password, STRING_AGG(r.guid, ',' ORDER BY r.postdate DESC) AS grp_release_guid, STRING_AGG(rn.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_nfoid, STRING_AGG(groups.name, ',' ORDER BY r.postdate DESC) AS grp_release_grpname, STRING_AGG(r.searchname, '#' ORDER BY r.postdate) AS grp_release_name, STRING_AGG(r.postdate::text, ',' ORDER BY r.postdate DESC) AS grp_release_postdate, STRING_AGG(r.size::text, ',' ORDER BY r.postdate DESC) AS grp_release_size, STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts, STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments, STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs, m.*, groups.name AS group_name, rn.id as nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL WHERE r.nzbstatus = 1 AND r.passwordstatus <= %s AND %s %s %s %s GROUP BY m.imdbid, m.id, groups.name, rn.id ORDER BY %s %s" . $limit, $rel->showPasswords(), $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
 		}
 		return $this->db->queryDirect($sql);
 	}
@@ -224,8 +230,22 @@ class Books
 
 	public function getBookOrdering()
 	{
-		return array('title_asc', 'title_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc', 'files_asc',
-			'files_desc', 'stats_asc', 'stats_desc', 'releasedate_asc', 'releasedate_desc', 'author_asc', 'author_desc');
+		return array(
+			'title_asc',
+			'title_desc',
+			'posted_asc',
+			'posted_desc',
+			'size_asc',
+			'size_desc',
+			'files_asc',
+			'files_desc',
+			'stats_asc',
+			'stats_desc',
+			'releasedate_asc',
+			'releasedate_desc',
+			'author_asc',
+			'author_desc'
+		);
 	}
 
 	public function getBrowseByOptions()
@@ -269,7 +289,7 @@ class Books
 		$db = $this->db;
 
 		// include results for all book types selected in the site edit UI, this could be audio, ebooks, foregin or technical currently
-		$res = $db->queryDirect(sprintf('SELECT searchname, id, categoryid FROM releases WHERE (bitwise & %d) = %d AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d', $this->cleanbooks, $this->cleanbooks, $this->bookreqids, $this->bookqty));
+		$res = $db->queryDirect(sprintf('SELECT searchname, id, categoryid FROM releases WHERE nzbstatus = 1 AND isrenamed = %d AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d', $this->cleanbooks, $this->bookreqids, $this->bookqty));
 
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
@@ -308,9 +328,7 @@ class Books
 
 					// Update release.
 					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
-				}
-				// Could not parse release title.
-				else {
+				} else { // Could not parse release title.
 					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
 					echo '.';
 				}
@@ -320,8 +338,7 @@ class Books
 					usleep($this->sleeptime * 1000 - $diff);
 				}
 			}
-		} else
-		if ($this->echooutput) {
+		} else if ($this->echooutput) {
 			echo $this->c->header('No book releases to process.');
 		}
 	}
@@ -330,7 +347,13 @@ class Books
 	{
 		$a = preg_replace('/\d{1,2} \d{1,2} \d{2,4}|(19|20)\d\d|anybody got .+?[a-z]\? |[-._ ](Novel|TIA)([-._ ]|$)|( |\.)HQ(-|\.| )|[\(\)\.\-_ ](AVI|DOC|EPUB|LIT|MOBI|NFO|RETAIL|(si)?PDF|RTF|TXT)[\)\]\.\-_ ](?![a-z0-9])|compleet|DAGSTiDNiNGEN|DiRFiX|\+ extra|r?e ?Books?([\.\-_ ]English|ers)?|ePu(b|p)s?|html|mobi|^NEW[\.\-_ ]|PDF([\.\-_ ]English)?|Please post more|Post description|Proper|Repack(fix)?|[\.\-_ ](Chinese|English|French|German|Italian|Retail|Scan|Swedish)|^R4 |Repost|Skytwohigh|TIA!+|TruePDF|V413HAV|(would someone )?please (re)?post.+? "|with the authors name right/i', '', $release_name);
 		$b = preg_replace('/^(As Req |conversion |eq |Das neue Abenteuer \d+|Fixed version( ignore previous post)?|Full |Per Req As Found|(\s+)?R4 |REQ |revised |version |\d+(\s+)?$)|(COMPLETE|INTERNAL|RELOADED| (AZW3|eB|docx|ENG?|exe|FR|Fix|gnv64|MU|NIV|R\d\s+\d{1,2} \d{1,2}|R\d|Req|TTL|UC|v(\s+)?\d))(\s+)?$/i', '', $a);
-		$releasename = trim(preg_replace('/\s\s+/i', ' ', $b));
+
+		//remove book series from title as this gets more matches on amazon
+		$c = preg_replace('/ - \[.+\]|\[.+\]/', '', $b);
+
+		//remove any brackets left behind
+		$d = preg_replace('/(\(\)|\[\])/', '', $c);
+		$releasename = trim(preg_replace('/\s\s+/i', ' ', $d));
 
 		// the default existing type was ebook, this handles that in the same manor as before
 		if ($releasetype == 'ebook') {
@@ -376,47 +399,44 @@ class Books
 			return false;
 		}
 
-		$book['title'] = (string) $amaz->Items->Item->ItemAttributes->Title;
-
-		$book['author'] = (string) $amaz->Items->Item->ItemAttributes->Author;
-
-		$book['asin'] = (string) $amaz->Items->Item->ASIN;
-
-		$book['isbn'] = (string) $amaz->Items->Item->ItemAttributes->ISBN;
+		$book['title'] = (string)$amaz->Items->Item->ItemAttributes->Title;
+		$book['author'] = (string)$amaz->Items->Item->ItemAttributes->Author;
+		$book['asin'] = (string)$amaz->Items->Item->ASIN;
+		$book['isbn'] = (string)$amaz->Items->Item->ItemAttributes->ISBN;
 		if ($book['isbn'] == '') {
 			$book['isbn'] = 'null';
 		}
 
-		$book['ean'] = (string) $amaz->Items->Item->ItemAttributes->EAN;
+		$book['ean'] = (string)$amaz->Items->Item->ItemAttributes->EAN;
 		if ($book['ean'] == '') {
 			$book['ean'] = 'null';
 		}
 
-		$book['url'] = (string) $amaz->Items->Item->DetailPageURL;
+		$book['url'] = (string)$amaz->Items->Item->DetailPageURL;
 		$book['url'] = str_replace("%26tag%3Dws", "%26tag%3Dopensourceins%2D21", $book['url']);
 
-		$book['salesrank'] = (string) $amaz->Items->Item->SalesRank;
+		$book['salesrank'] = (string)$amaz->Items->Item->SalesRank;
 		if ($book['salesrank'] == '') {
 			$book['salesrank'] = 'null';
 		}
 
-		$book['publisher'] = (string) $amaz->Items->Item->ItemAttributes->Publisher;
+		$book['publisher'] = (string)$amaz->Items->Item->ItemAttributes->Publisher;
 		if ($book['publisher'] == '') {
 			$book['publisher'] = 'null';
 		}
 
-		$book['publishdate'] = date('Y-m-d', strtotime((string) $amaz->Items->Item->ItemAttributes->PublicationDate));
+		$book['publishdate'] = date('Y-m-d', strtotime((string)$amaz->Items->Item->ItemAttributes->PublicationDate));
 		if ($book['publishdate'] == '') {
 			$book['publishdate'] = 'null';
 		}
 
-		$book['pages'] = (string) $amaz->Items->Item->ItemAttributes->NumberOfPages;
+		$book['pages'] = (string)$amaz->Items->Item->ItemAttributes->NumberOfPages;
 		if ($book['pages'] == '') {
 			$book['pages'] = 'null';
 		}
 
 		if (isset($amaz->Items->Item->EditorialReviews->EditorialReview->Content)) {
-			$book['overview'] = strip_tags((string) $amaz->Items->Item->EditorialReviews->EditorialReview->Content);
+			$book['overview'] = strip_tags((string)$amaz->Items->Item->EditorialReviews->EditorialReview->Content);
 			if ($book['overview'] == '') {
 				$book['overview'] = 'null';
 			}
@@ -425,7 +445,7 @@ class Books
 		}
 
 		if (isset($amaz->Items->Item->BrowseNodes->BrowseNode->Name)) {
-			$book['genre'] = (string) $amaz->Items->Item->BrowseNodes->BrowseNode->Name;
+			$book['genre'] = (string)$amaz->Items->Item->BrowseNodes->BrowseNode->Name;
 			if ($book['genre'] == '') {
 				$book['genre'] = 'null';
 			}
@@ -433,7 +453,7 @@ class Books
 			$book['genre'] = 'null';
 		}
 
-		$book['coverurl'] = (string) $amaz->Items->Item->LargeImage->URL;
+		$book['coverurl'] = (string)$amaz->Items->Item->LargeImage->URL;
 		if ($book['coverurl'] != '') {
 			$book['cover'] = 1;
 		} else {

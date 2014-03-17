@@ -280,10 +280,10 @@ class Category
 		if ($this->isBook($releasename)) {
 			return $this->tmpCat;
 		}
-        //Try against all functions, if still nothing, return Cat Misc.
-        if ($this->isMisc($releasename)) {
-            return $this->tmpCat;
-        }
+		//Try against all functions, if still nothing, return Cat Misc.
+		if ($this->isMisc($releasename)) {
+			return $this->tmpCat;
+		}
 	}
 
 	//	Groups.
@@ -404,6 +404,12 @@ class Category
 			}
 
 			if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupRes["name"])) {
+				if (!preg_match('/(pdf|html|epub|mobi|azw)/', $releasename)) {
+					if ($this->isPC($releasename)) {
+						return $this->tmpCat;
+					}
+					return false;
+				}
 				if ($this->isBook($releasename)) {
 					return $this->tmpCat;
 				}
@@ -770,7 +776,7 @@ class Category
 
 	public function isHDTV($releasename)
 	{
-		if (preg_match('/1080(i|p)|720p|HDTV|BDRip/i', $releasename)) {
+		if (preg_match('/1080(i|p)|720p/i', $releasename)) {
 			$this->tmpCat = Category::CAT_TV_HD;
 			return true;
 		}
@@ -785,7 +791,7 @@ class Category
 
 	public function isSDTV($releasename)
 	{
-		if (preg_match('/(360|480|576)p|Complete[-._ ]Season|dvdr(ip)?|dvd5|dvd9|SD[-._ ]TV|TVRip|xvid/i', $releasename)) {
+		if (preg_match('/(360|480|576)p|Complete[-._ ]Season|dvdr(ip)?|dvd5|dvd9|SD[-._ ]TV|TVRip|NTSC|BDRip|hdtv|xvid/i', $releasename)) {
 			$this->tmpCat = Category::CAT_TV_SD;
 			return true;
 		}
@@ -937,9 +943,9 @@ class Category
 			if ($this->isMac($releasename)) {
 				return true;
 			}
-            if ($this->isISO($releasename)) {
-                return true;
-            }
+			if ($this->isISO($releasename)) {
+				return true;
+			}
 			if ($this->is0day($releasename)) {
 				return true;
 			}
@@ -969,14 +975,14 @@ class Category
 		return false;
 	}
 
-    public function isISO($releasename)
-    {
-        if (preg_match('/\biso\b/i', $releasename)) {
-            $this->tmpCat = Category::CAT_PC_ISO;
-            return true;
-        }
-        return false;
-    }
+	public function isISO($releasename)
+	{
+		if (preg_match('/\biso\b/i', $releasename)) {
+			$this->tmpCat = Category::CAT_PC_ISO;
+			return true;
+		}
+		return false;
+	}
 
 	public function is0day($releasename)
 	{
@@ -1013,7 +1019,7 @@ class Category
 			return true;
 		}
 
-		if (preg_match('/[-._ ](0x0007|ALiAS|BACKLASH|BAT|CPY|FASiSO|FLT([-._ ]|COGENT)|GENESIS|HI2U|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PROPHET|RAiN|RELOADED|RiTUELYPOGEiOS|SKIDROW|TiNYiSO|FLTDOX|INLAWS)/i', $releasename)) {
+		if (preg_match('/[-._ ](0x0007|ALiAS|BACKLASH|BAT|CPY|FASiSO|FLT([-._ ]|COGENT)|GENESIS|HI2U|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PROPHET|RAiN|RELOADED|RiTUELYPOGEiOS|SKIDROW|TiNYiSO|FLTDOX|INLAWS)/i', $releasename) && !preg_match('/[-._ ]PSP|WII|XBOX|MP3|FLAC/i', $releasename)) {
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
 		}
@@ -1524,9 +1530,9 @@ class CategoryDanish extends Category
 		if (Category::isBook($releasename)) {
 			return $this->tmpCat;
 		}
-        if (Category::isMisc($releasename)) {
-            return $this->tmpCat;
-        }
+		if (Category::isMisc($releasename)) {
+			return $this->tmpCat;
+		}
 	}
 
 	// Groups.
@@ -2080,9 +2086,9 @@ class CategoryFrench extends Category
 		if (Category::isBook($releasename)) {
 			return $this->tmpCat;
 		}
-        if (Category::isMisc($releasename)) {
-            return $this->tmpCat;
-        }
+		if (Category::isMisc($releasename)) {
+			return $this->tmpCat;
+		}
 	}
 
 	// Groups.
@@ -2633,9 +2639,9 @@ class CategoryGerman extends Category
 		if (Category::isBook($releasename)) {
 			return $this->tmpCat;
 		}
-        if (Category::isMisc($releasename)) {
-            return $this->tmpCat;
-        }
+		if (Category::isMisc($releasename)) {
+			return $this->tmpCat;
+		}
 	}
 
 	public function byGroup($releasename, $groupID)
@@ -3169,4 +3175,3 @@ class CategoryGerman extends Category
 		return false;
 	}
 }
-?>

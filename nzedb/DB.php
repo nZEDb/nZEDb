@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for handling connection to database (MySQL or PostgreSQL) using PDO.
  *
@@ -41,13 +42,16 @@ class DB extends PDO
 	 */
 	public function __construct()
 	{
+		$this->c = new ColorCLI();
+
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
 			$this->dbsystem = strtolower(DB_SYSTEM);
-		} else {
+		} else if (PHP_SAPI == 'cli') {
 			exit($this->c->error("\nconfig.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
+		} else {
+			echo "<div class=\"error\">config.php is missing the DB_SYSTEM setting. Add the following in that file:<br/> define('DB_SYSTEM', 'mysql');</div>";
 		}
 
-		$this->c = new ColorCLI();
 		if (!(self::$pdo instanceof PDO)) {
 			$this->initialiseDatabase();
 		}
@@ -79,7 +83,7 @@ class DB extends PDO
 		}
 
 		try {
-			$options = array(PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_LOCAL_INFILE => true);
+			$options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_LOCAL_INFILE => true);
 			if ($this->dbsystem == 'mysql') {
 				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			}
@@ -92,7 +96,11 @@ class DB extends PDO
 			self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 		} catch (PDOException $e) {
-			exit($this->c->error("\nConnection to the SQL server failed, error follows: (" . $e->getMessage() . ")"));
+			if (PHP_SAPI == 'cli') {
+				exit($this->c->error("\nConnection to the SQL server failed, error was: (" . $e->getMessage() . ")"));
+			} else {
+				echo "<div class=\"error\">Connection to the SQL server failed, error was: ({$e->getMessage()});</div>";
+			}
 		}
 	}
 
@@ -145,7 +153,7 @@ class DB extends PDO
 				$this->queryInsert($query, $i++);
 			}
 			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205) {
-				//echo "Error: Deadlock or lock wait timeout.";
+				//echo "Error: Deadlock or lock wait timeout, try increasing innodb_lock_wait_timeout";
 				return false;
 			} else if ($e->errorInfo[1] == 1062 || $e->errorInfo[0] == 23000) {
 				//echo "\nError: Insert would create duplicate row, skipping\n";
@@ -325,23 +333,47 @@ class DB extends PDO
 	}
 
 	// Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
-	public function optimise($admin = false)
+	public function optimise($admin = false, $type = '')
 	{
 		$tablecnt = 0;
 		if ($this->dbsystem == 'mysql') {
-			// only optimize if free space exceeds 5%
-			$alltables = $this->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
-			$tablecnt = count($alltables);
-			foreach ($alltables as $table) {
-				if ($admin === false) {
-					echo 'Optimizing table: ' . $table['name'] . ".\n";
-				}
-				if (strtolower($table['engine']) == 'myisam') {
-					$this->queryDirect('REPAIR TABLE `' . $table['name'] . '`');
-				}
-				$this->queryDirect('OPTIMIZE TABLE `' . $table['name'] . '`');
+			if ($type === 'true' || $type === 'full' || $type === 'analyze') {
+				$alltables = $this->query('SHOW TABLE STATUS');
+			} else {
+				$alltables = $this->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
 			}
-			$this->queryDirect('FLUSH TABLES');
+			$tablecnt = count($alltables);
+			if ($type === 'all' || $type === 'full') {
+				$tbls = '';
+				foreach ($alltables as $table) {
+					$tbls .= $table['name'] . ', ';
+				}
+				$tbls = rtrim(trim($tbls),',');
+				if ($admin === false) {
+					echo $this->c->primary('Optimizing tables: ' . $tbls);
+				}
+				$this->queryExec("OPTIMIZE LOCAL TABLE ${tbls}");
+			} else {
+				foreach ($alltables as $table) {
+					if ($type === 'analyze') {
+						if ($admin === false) {
+							echo $this->c->primary('Analyzing table: ' . $table['name']);
+						}
+						$this->queryExec('ANALYZE LOCAL TABLE `' . $table['name'] . '`');
+					} else {
+						if ($admin === false) {
+							echo $this->c->primary('Optimizing table: ' . $table['name']);
+						}
+						if (strtolower($table['engine']) == 'myisam') {
+							$this->queryExec('REPAIR TABLE `' . $table['name'] . '`');
+						}
+						$this->queryExec('OPTIMIZE LOCAL TABLE `' . $table['name'] . '`');
+					}
+				}
+			}
+			if ($type !== 'analyze') {
+				$this->queryExec('FLUSH TABLES');
+			}
 		} else if ($this->dbsystem == 'pgsql') {
 			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
 			$tablecnt = count($alltables);
@@ -643,4 +675,3 @@ class Mcached
 		return $this->m->get($this->key($query));
 	}
 }
-?>

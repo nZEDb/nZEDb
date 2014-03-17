@@ -2,6 +2,7 @@
 
 class Binaries
 {
+
 	const BLACKLIST_FIELD_SUBJECT = 1;
 	const BLACKLIST_FIELD_FROM = 2;
 	const BLACKLIST_FIELD_MESSAGEID = 3;
@@ -78,9 +79,9 @@ class Binaries
 
 		// Select the group, here, needed for processing the group
 		$data = $nntp->selectGroup($groupArr['name']);
-		if (PEAR::isError($data)) {
+		if ($nntp->isError($data)) {
 			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($data === false) {
+			if ($nntp->isError($data)) {
 				return;
 			}
 		}
@@ -261,19 +262,29 @@ class Binaries
 			$group['pname'] = 'parts';
 		}
 
+		// Select the group before attempting to download
+		$data = $nntp->selectGroup($groupArr['name']);
+		if ($nntp->isError($data)) {
+			$data = $nntp->dataError($nntp, $groupArr['name']);
+			if ($nntp->isError($data)) {
+				return;
+			}
+		}
+
 		// Download the headers.
 		$msgs = $nntp->getOverview($first . "-" . $last, true, false);
-		// If there ware an error, try to reconnect.
-		if ($type != 'partrepair' && PEAR::isError($msgs)) {
+
+		// If there were an error, try to reconnect.
+		if ($type != 'partrepair' && $nntp->isError($msgs)) {
 			// This is usually a compression error, so try disabling compression.
 			$nntp->doQuit();
-			if ($nntp->doConnectNC() === false) {
+			if ($nntp->doConnect(false) === false) {
 				return false;
 			}
 
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first . '-' . $last, true, false);
-			if (PEAR::isError($msgs)) {
+			if ($nntp->isError($msgs)) {
 				echo $this->c->error(" Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}");
 				return false;
 			}
@@ -289,7 +300,8 @@ class Binaries
 				$colnames = $orignames = $notyenc = array();
 			}
 
-			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
+			// Sort the articles before processing, alphabetically by subject. This is to try to use the
+			// shortest subject and those without .vol01 in the subject
 			usort($msgs, function ($elem1, $elem2) {
 				return strcmp($elem1['Subject'], $elem2['Subject']);
 			});
@@ -372,7 +384,7 @@ class Binaries
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*| \[S\d+E\d+\]|\s*".+"\s*)\((\d+)\/(\d+)\)/', $msg['Subject'], $matches)) {
 					//if (!preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject']) && preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1') {
-					if (!preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject']) && $this->showdroppedyencparts === '1') {
+					if ($this->showdroppedyencparts === '1' && !preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject'])) {
 						file_put_contents(nZEDb_ROOT . "not_yenc/" . $groupArr['name'] . ".dropped.txt", $msg['Subject'] . "\n", FILE_APPEND);
 					}
 
@@ -400,7 +412,7 @@ class Binaries
 				if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $partless, $filecnt)) {
 					$filecnt[2] = $filecnt[6] = 0;
 					$nofiles = true;
-					if (preg_match('/yEnc/i', $msg['Subject']) && $this->showdroppedyencparts === '1') {
+					if ($this->showdroppedyencparts === '1' && preg_match('/yEnc/i', $msg['Subject'])) {
 						file_put_contents("/var/www/nZEDb/not_yenc/" . $groupArr['name'] . ".no_parts.txt", $msg['Subject'] . "\n", FILE_APPEND);
 					}
 				}
@@ -446,12 +458,8 @@ class Binaries
 						$this->message[$subject]['File'] = (int) $filecnt[2];
 					}
 
-					if ($this->grabnzbs && preg_match('/.+\.nzb/', $subject)) {
-						$ckmsg = $db->queryOneRow(sprintf('SELECT message_id FROM nzbs WHERE message_id = %s', $db->escapeString(substr($msg['Message-ID'], 1, -1))));
-						if (!isset($ckmsg['message_id'])) {
-							$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW())', $db->escapeString(substr($msg['Message-ID'], 1, -1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject, 0, 255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int) $bytes, (int) $matches[3], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
-							$updatenzb = $db->queryExec(sprintf('UPDATE nzbs SET dateadded = NOW() WHERE collectionhash = %s', $db->escapeString($this->message[$subject]['CollectionHash'])));
-						}
+					if ($this->grabnzbs && preg_match('/.+\.nzb"/', $subject)) {
+						$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW()) ON DUPLICATE KEY UPDATE dateadded = NOW()', $db->escapeString(substr($msg['Message-ID'], 1, -1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject, 0, 255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int) $bytes, (int) $matches[3], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
 					}
 					if ((int) $matches[3] > 0) {
 						$this->message[$subject]['Parts'][(int) $matches[3]] = array('Message-ID' => substr($msg['Message-ID'], 1, -1), 'number' => $msg['Number'], 'part' => (int) $matches[3], 'size' => $bytes);
@@ -507,7 +515,7 @@ class Binaries
 				$maxnum = $first;
 				$pBinaryID = $pNumber = $pMessageID = $pPartNumber = $pSize = 1;
 				// Insert collections, binaries and parts into database. When collection exists, only insert new binaries, when binary already exists, only insert new parts.
-				$insPartsStmt = $db->Prepare('INSERT INTO ' . $group['pname'] . ' (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)');
+				$insPartsStmt = $db->Prepare("INSERT INTO ${group['pname']} (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)");
 				$insPartsStmt->bindParam(1, $pBinaryID, PDO::PARAM_INT);
 				$insPartsStmt->bindParam(2, $pNumber, PDO::PARAM_INT);
 				$insPartsStmt->bindParam(3, $pMessageID, PDO::PARAM_STR);
@@ -529,24 +537,24 @@ class Binaries
 							$lastBinaryHash = '';
 							$lastBinaryID = -1;
 
-							$cres = $db->queryOneRow(sprintf('SELECT id, subject FROM ' . $group['cname'] . ' WHERE collectionhash = %s', $db->escapeString($collectionHash)));
+							$cres = $db->queryOneRow(sprintf("SELECT id, subject FROM ${group['cname']} WHERE collectionhash = %s", $db->escapeString($collectionHash)));
 							if (array_key_exists($collectionHash, $collectionHashes)) {
 								$collectionID = $collectionHashes[$collectionHash];
 								if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
-									$db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' set subject = %s WHERE id = %s', $db->escapeString(substr($subject, 0, 255)), $collectionID));
+									$db->queryExec(sprintf("UPDATE ${group['cname']} SET subject = %s WHERE id = %s", $db->escapeString(substr($subject, 0, 255)), $collectionID));
 								}
 							} else {
 								if (!$cres) {
 									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
-									$csql = sprintf('INSERT INTO ' . $group['cname'] . ' (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())', $db->escapeString(substr($subject, 0, 255)), $db->escapeString(utf8_encode($data['From'])), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'], 0, 255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
+									$csql = sprintf("INSERT INTO ${group['cname']} (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())", $db->escapeString(substr($subject, 0, 255)), $db->escapeString(utf8_encode($data['From'])), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'], 0, 255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
 									$collectionID = $db->queryInsert($csql);
 								} else {
 									$collectionID = $cres['id'];
 									//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
 									if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
-										$db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' set subject = %s WHERE id = %s', $db->escapeString(substr($subject, 0, 255)), $collectionID));
+										$db->queryExec(sprintf("UPDATE ${group['cname']} SET subject = %s WHERE id = %s", $db->escapeString(substr($subject, 0, 255)), $collectionID));
 									} else {
-										$db->queryExec(sprintf('UPDATE ' . $group['cname'] . ' set dateadded = NOW() WHERE id = %s', $collectionID));
+										$db->queryExec(sprintf("UPDATE ${group['cname']} SET dateadded = NOW() WHERE id = %s", $collectionID));
 									}
 								}
 								$collectionHashes[$collectionHash] = $collectionID;
@@ -563,9 +571,9 @@ class Binaries
 							} else {
 								$lastBinaryHash = $binaryHash;
 
-								$bres = $db->queryOneRow(sprintf('SELECT id FROM ' . $group['bname'] . ' WHERE binaryhash = %s', $db->escapeString($binaryHash)));
+								$bres = $db->queryOneRow(sprintf("SELECT id FROM ${group['bname']} WHERE binaryhash = %s", $db->escapeString($binaryHash)));
 								if (!$bres) {
-									$bsql = sprintf('INSERT INTO ' . $group['bname'] . ' (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)', $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
+									$bsql = sprintf("INSERT INTO ${group['bname']} (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
 									$binaryID = $db->queryInsert($bsql);
 								} else {
 									$binaryID = $bres['id'];
@@ -609,7 +617,7 @@ class Binaries
 			$timeLoop = number_format(microtime(true) - $this->startLoop, 2);
 
 			if ($type != 'partrepair') {
-				echo $this->c->primary($timeHeaders . 's to download articles, ' . $timeCleaning . 's to process articles, ' . $timeUpdate . 's to insert articles, ' . $timeLoop . 's total.');
+				echo $this->c->alternateOver($timeHeaders . 's') . $this->c->primaryOver(' to download articles, ') . $this->c->alternateOver($timeCleaning . 's') . $this->c->primaryOver(' to process articles, ') . $this->c->alternateOver($timeUpdate . 's') . $this->c->primaryOver(' to insert articles, ') . $this->c->alternateOver($timeLoop . 's') . $this->c->primary(' total.');
 			}
 
 			unset($this->message, $data);
@@ -689,7 +697,7 @@ class Binaries
 
 			// Update attempts on remaining parts for active group
 			if (isset($missingParts[sizeof($missingParts) - 1]['id'])) {
-				$sql = sprintf('UPDATE ' . $group['prname'] . ' SET attempts=attempts+1 WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts) - 1]['numberid']);
+				$sql = sprintf("UPDATE ${group['prname']} SET attempts=attempts+1 WHERE groupid=%d AND numberid <= %d", $groupArr['id'], $missingParts[sizeof($missingParts) - 1]['numberid']);
 				$result = $db->queryExec($sql);
 				if ($result) {
 					$partsFailed = $result->rowCount();
@@ -716,7 +724,7 @@ class Binaries
 			$group['prname'] = 'partrepair';
 		}
 
-		$insertStr = 'INSERT INTO ' . $group['prname'] . ' (numberid, groupid) VALUES ';
+		$insertStr = "INSERT INTO ${group['prname']} (numberid, groupid) VALUES ";
 		foreach ($numbers as $number) {
 			$insertStr .= sprintf('(%d, %d), ', $number, $groupID);
 		}
@@ -906,5 +914,5 @@ class Binaries
 		$db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id));
 		$db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $id));
 	}
+
 }
-?>

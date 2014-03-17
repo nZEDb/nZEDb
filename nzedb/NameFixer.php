@@ -2,58 +2,6 @@
 
 class NameFixer
 {
-	/* These constants can not be used as they are
-	 * To select where false            - 'SELECT * FROM releases WHERE (bitwise & 4) = 0;' - selects all that have not been renamed
-	 * To select where true             - 'SELECT * FROM releases WHERE (bitwise & 1) = 1;' - selects all that have been categorized
-	 * To select multiple true or false - 'SELECT * FROM releases WHERE (bitwise & 5) = 0;' - selects all that have not been renamed and have not been categorized
-	 *
-	 * To set false                     - 'UPDATE releases SET bitwise = ((bitwise & ~4)|0);' - sets all releases to not renamed
-	 * To set true                      - 'UPDATE releases SET bitwise = ((bitwise & ~1)|1);' - sets all releases to categorized
-	 * To set multiple true or false    - 'UPDATE releases SET bitwise = ((bitwise & ~5)|1);' - sets all releases to categorized true and renamed false
-
-	  // One bit each, max 32, limited by 32 bit OS's
-	  const NF_NEW			=	   0;	0000 0000 0000 0000 0000 	New release, just inserted into the table.
-	  const NF_CATEGORIZED	=	   1;	0000 0000 0000 0000 0001 	Categorized release.
-	  0000 0000 0000 0000 0010 	Spare - Previously 2 (now split into 8,9,10) : Fixed with namefixer.
-	  const NF_RENAMED		=	   4;	0000 0000 0000 0000 0100 	Renamed using any script.
-	  const NF_POST_PROC	=	   8;	0000 0000 0000 0000 1000 	Processed by post proc (from mp3 tags or music.php).
-	  const NF_MISC_SORTER	=	  16;	0000 0000 0000 0001 0000 	Processed by misc_sorter.
-	  const NF_PAR2			=	  32;	0000 0000 0000 0010 0000 	Processed by namefixer PAR2.
-	  const NF_NF_NFO		=	  64;	0000 0000 0000 0100 0000 	Processed by namefixer NFO.
-	  const NF_NF_FILES		=	 128;	0000 0000 0000 1000 0000 	Processed by namefixer Files.
-
-	  const NZB_STATUS		=	 256;	0000 0000 0001 0000 0000 	NZBStatus 0 = no nzb, 256 = is an nzb
-	  const HASHED			=	 512;	0000 0000 0010 0000 0000 	hashed 0 = not hashed, 512 = is hashed
-	  const REQUEST			=   1024;	0000 0000 0100 0000 0000 	request 0 = not a requestid, 1024 = is a requestid
-
-	  // To display counts for false
-	  SELECT
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 1) = 0) as not_categorized,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 4) = 0) as not_renamed,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 8) = 0) as not_proc_by_pp,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 16) = 0) as not_proc_by_sorter,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 32) = 0) as not_proc_by_par2,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 64) = 0) as not_proc_by_nfo,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 128) = 0) as not_proc_by_files,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 0) as no_nzb,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 512) = 0) as not_hashed,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 1024) = 0) as not_requestid;
-
-	  // To display counts for true
-	  SELECT
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 1) = 1) as categorized,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 4) = 4) as renamed,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 8) = 8) as proc_by_pp,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 16) = 16) as proc_by_sorter,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 32) = 32) as proc_by_par2,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 64) = 64) as proc_by_nfo,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 128) = 128) as proc_by_files,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 256) = 256) as has_nzb,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 512) = 512) as is_hashed,
-	  (SELECT COUNT(*) FROM releases WHERE (bitwise & 1024) = 1024) as is_requestid;
-
-	 */
-
 	CONST PREDB_REGEX = "/([\w\(\)]+[\._]([\w\(\)]+[\._-])+[\w\(\)]+-\w+)/";
 
 	function __construct($echooutput = true)
@@ -98,13 +46,13 @@ class NameFixer
 		if ($cats === 3) {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
+				. "WHERE nzbstatus = 1 AND preid = 0";
 			$cats = 2;
 			$preid = true;
 		} else {
 			$query = "SELECT rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-				. "WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 64) = 0";
+				. "WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_nfo = 0";
 		}
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
@@ -138,7 +86,7 @@ class NameFixer
 
 				//ignore encrypted nfos
 				if (preg_match('/^=newz\[NZB\]=\w+/', $relrow['textstring'])) {
-					$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~64)|64) WHERE id = %d", $relrow['rel.id']));
+					$db->queryExec(sprintf("UPDATE releases SET proc_nfo = 1 WHERE id = %d", $relrow['rel.id']));
 					$this->checked++;
 				} else {
 					$this->done = $this->matched = false;
@@ -179,14 +127,14 @@ class NameFixer
 			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
-				. "WHERE (bitwise & 256) = 256 AND preid IS NULL";
+				. "WHERE nzbstatus = 1 AND preid = 0";
 			$cats = 2;
 			$preid = true;
 		} else {
 			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
-				. "WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 128) = 0";
+				. "WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_files = 0";
 		}
 		//24 hours, other cats
 		if ($time == 1 && $cats == 1) {
@@ -249,10 +197,10 @@ class NameFixer
 
 		$db = $this->db;
 		if ($cats === 3) {
-			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE (bitwise & 256) = 256 AND preid IS NULL";
+			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE nzbstatus = 1 AND preid = 0";
 			$cats = 2;
 		} else {
-			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE ((bitwise & 4) = 0 OR rel.categoryid = 7010) AND (bitwise & 32) = 0";
+			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_par2 = 0";
 		}
 
 		//24 hours, other cats
@@ -305,7 +253,7 @@ class NameFixer
 	}
 
 	//  Update the release with the new information.
-	public function updateRelease($release, $name, $method, $echo, $type, $namestatus, $show, $preid = 'NULL')
+	public function updateRelease($release, $name, $method, $echo, $type, $namestatus, $show, $preid = 0)
 	{
 		if ($this->relid !== $release["releaseid"]) {
 			$namecleaning = new ReleaseCleaning();
@@ -352,17 +300,17 @@ class NameFixer
 					if ($namestatus == 1) {
 						$status = '';
 						if ($type == "NFO, ") {
-							$status = "bitwise = ((bitwise & ~69)|69),";
+							$status = "isrenamed = 1, iscategorized = 1, proc_nfo = 1,";
 						} else if ($type == "PAR2, ") {
-							$status = "bitwise = ((bitwise & ~37)|37),";
+							$status = "isrenamed = 1, iscategorized = 1, proc_par2 = 1,";
 						} else if ($type == "Filenames, ") {
-							$status = "bitwise = ((bitwise & ~133)|133),";
+							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
 						}
 						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
-								. "anidbid = NULL, preid = %s, searchname = %s, bitwise = ((bitwise & ~4)|4), %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
+								. "anidbid = NULL, preid = %s, searchname = %s, isrenamed = 1, %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
 					} else {
 						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
-								. "anidbid = NULL, preid = %s, searchname = %s, bitwise = ((bitwise & ~1)|1), categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
+								. "anidbid = NULL, preid = %s, searchname = %s, iscategorized = 1, categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
 					}
 				}
 			}
@@ -388,10 +336,10 @@ class NameFixer
 						$this->matched = true;
 						if ($namestatus == 1) {
 							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-													. "searchname = %s, categoryid = %d, bitwise = ((bitwise & ~5)|5), dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
+									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
 						} else {
 							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-													. "searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
+									. "searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
 						}
 					}
 
@@ -452,20 +400,20 @@ class NameFixer
 			$this->gameCheck($release, $echo, $type, $namestatus, $show);
 			$this->appCheck($release, $echo, $type, $namestatus, $show);
 		}
-		// The release didn't match so set bitwise 64 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
+		// The release didn't match so set proc_nfo = 1 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		if ($namestatus == 1 && $this->matched === false && $type == "NFO, ") {
 			$db = $this->db;
-			$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~64)|64) WHERE id = %d", $release["releaseid"]));
+			$db->queryExec(sprintf("UPDATE releases SET proc_nfo = 1 WHERE id = %d", $release["releaseid"]));
 		}
-		// The release didn't match so set bitwise 128 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
+		// The release didn't match so set proc_files = 1 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		else if ($namestatus == 1 && $this->matched === false && $type == "Filenames, ") {
 			$db = $this->db;
-			$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~128)|128) WHERE id = %d", $release["releaseid"]));
+			$db->queryExec(sprintf("UPDATE releases SET proc_files = 1 WHERE id = %d", $release["releaseid"]));
 		}
-		// The release didn't match so set bitwise 32 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
+		// The release didn't match so set proc_par2 = 1 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		else if ($namestatus == 1 && $this->matched === false && $type == "PAR2, ") {
 			$db = $this->db;
-			$db->queryExec(sprintf("UPDATE releases SET bitwise = ((bitwise & ~32)|32) WHERE id = %d", $release["releaseid"]));
+			$db->queryExec(sprintf("UPDATE releases SET proc_par2 = 1 WHERE id = %d", $release["releaseid"]));
 		}
 		return $this->matched;
 	}
@@ -833,5 +781,5 @@ class NameFixer
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
 		}
 	}
+
 }
-?>

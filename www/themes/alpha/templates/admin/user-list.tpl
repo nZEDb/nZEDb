@@ -1,4 +1,4 @@
- 
+
 <h1>{$page->title}</h1>
 
 <div style="float:right;">
@@ -36,13 +36,14 @@
 		<th>join date<br/><a title="Sort Descending" href="{$orderbycreateddate_desc}"><img src="{$smarty.const.WWW_TOP}/../themes/alpha/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbycreateddate_asc}"><img src="{$smarty.const.WWW_TOP}/../themes/alpha/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>last login<br/><a title="Sort Descending" href="{$orderbylastlogin_desc}"><img src="{$smarty.const.WWW_TOP}/../themes/alpha/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbylastlogin_asc}"><img src="{$smarty.const.WWW_TOP}/../themes/alpha/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>api access<br/><a title="Sort Descending" href="{$orderbyapiaccess_desc}"><img src="{$smarty.const.WWW_TOP}/../themes/alpha/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyapiaccess_asc}"><img src="{$smarty.const.WWW_TOP}/../themes/alpha/images/sorting/arrow_up.gif" alt="" /></a></th>
+		<th>api requests<br/><a title="Sort Descending" href="{$orderbyapirequests_desc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyapirequests_asc}"><img src="{$smarty.const.WWW_TOP}/../themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>grabs<br/><a title="Sort Descending" href="{$orderbygrabs_desc}"><img src="{$smarty.const.WWW_TOP}/../themes/alpha/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbygrabs_asc}"><img src="{$smarty.const.WWW_TOP}/../themes/alpha/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>invites</th>
 		<th>role<br/><a title="Sort Descending" href="{$orderbyrole_desc}"><img src="{$smarty.const.WWW_TOP}/../themes/alpha/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrole_asc}"><img src="{$smarty.const.WWW_TOP}/../themes/alpha/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>options</th>
 	</tr>
 
-	
+
 	{foreach from=$userlist item=user}
 	<tr class="{cycle values=",alt"}">
 		<td><a href="{$smarty.const.WWW_TOP}/user-edit.php?id={$user.id}">{$user.username}</a></td>
@@ -51,6 +52,7 @@
 		<td title="{$user.createddate}">{$user.createddate|date_format}</td>
 		<td title="{$user.lastlogin}">{$user.lastlogin|date_format}</td>
 		<td title="{$user.apiaccess}">{$user.apiaccess|date_format}</td>
+		<td>{$user.apirequests}</td>
 		<td>{$user.grabs}</td>
 		<td>{$user.invites}</td>
 		<td>{$user.rolename}</td>
