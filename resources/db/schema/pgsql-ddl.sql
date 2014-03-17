@@ -51,7 +51,7 @@ CREATE TABLE "binaries" (
   "filenumber" bigint DEFAULT 0 NOT NULL,
   "totalparts" bigint DEFAULT 0 NOT NULL,
   "binaryhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
-  "partcheck" BOOLEAN DEFAULT FALSE,
+  "partcheck" smallint DEFAULT 0 NOT NULL,
   "partsize" numeric(20, 0) DEFAULT 0 NOT NULL
 )
 WITHOUT OIDS;
