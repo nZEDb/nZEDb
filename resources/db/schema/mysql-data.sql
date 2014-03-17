@@ -613,7 +613,7 @@ INSERT INTO site (setting, value)
   ('google_adsense_acc', ''),
   ('tandc', '<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do come across obscene, incorrect or objectionable results, let us know by using the contact form.</p>'),
   ('registerstatus', 0),
-  ('style', 'Default'),
+  ('style', 'alpha'),
   ('home_link', '/'),
   ('dereferrer_link', ''),
   ('nzbpath', '/your/path/to/nzbs/'),
@@ -730,7 +730,7 @@ INSERT INTO site (setting, value)
   ('showdroppedyencparts', '0'),
   ('book_reqids', '8010'),
   ('showbacks', '0'),
-  ('sqlpatch', '181');
+  ('sqlpatch', '185');
 
 INSERT INTO genres (title, type)
   VALUES

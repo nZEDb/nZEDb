@@ -7,7 +7,21 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-03-15 -> bart39   -> fixed issue with dehashstatus being set lower than -7
+                       -> manually update patch version
+2014-03-16 -> ruhllatio-> Fix PG schema errors proc_pp
+                       -> More PG schema fixes and rearrange primary key alters
+                       -> Update patch readme.
+                       -> Revert boolean bit types to tinyint due to smarty errors
+                       -> PG schema accidental rename fix
+                       -> Fix mysql patch typo proc_sorter where proc_par2 should be
+                       -> Added idx_releases_multi_name_fromname_size to drop sequence from partitioning
+2014-03-16 -> kevin    -> Possible fix for missing NZB file.
+                       -> Start cleaning up books.tpl
+                       -> Don't try subsequent abgx URL's when it's down.
+                       -> Finish cleaning up books page (alpha)
+                       -> Update schemas to make alpha the new default theme.
+                       -> Show chown string in install.
 2014-03-15 -> bart39   -> fixed issues where dbsystem renamed to dbSystem
 2014-03-16 -> niel     -> Fix: Cleaning up white-space issues.
                        -> New: Adding server version checking code to DB class.
