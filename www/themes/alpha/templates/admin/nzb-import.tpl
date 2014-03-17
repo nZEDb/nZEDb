@@ -37,9 +37,17 @@
 			</tr>
 
 			<tr>
+				<td><label for="deleteNZB">Delete NZBs:</label></td>
+				<td>
+					<input type="checkbox" name="deleteNZB" />
+					<div class="hint">Delete the NZB when we have successfully imported it?</div>
+				</td>
+			</tr>
+
+			<tr>
 				<td></td>
 				<td>
-					<input type="submit" value="Import" />&nbsp;&nbsp;&nbsp;<b>Once imported the NZB will be deleted.</b>
+					<input type="submit" value="Import" />
 				</td>
 			</tr>
 
@@ -65,16 +73,9 @@
 			</tr>
 
 			<tr>
-				<td><label for="usefilename">Use Filename:</label></td>
-				<td>
-					<input type="checkbox" name="usefilename" />
-					<div class="hint">Use the NZB's filename as the release name. Else the name inside the NZB will be used.</div>
-				</td>
-			</tr>
-
-			<tr>
 				<td></td>
 				<td>
+					<b>These NZBs will not be deleted once imported.</b><br />
 					<input type="submit" value="Import" />
 				</td>
 			</tr>
