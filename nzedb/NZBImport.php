@@ -86,11 +86,10 @@ class NZBImport
 	 * @param bool|string $useNzbName Use the NZB file name as release name?
 	 * @param bool $delete Delete the NZB when done?
 	 * @param bool $deleteFailed Delete the NZB if failed importing?
-	 * @param bool $decompress Decompress nzb.gz file?
 	 *
 	 * @return string|bool
 	 */
-	public function beginImport($filesToProcess, $useNzbName = false, $delete = true, $deleteFailed = true, $decompress = false)
+	public function beginImport($filesToProcess, $useNzbName = false, $delete = true, $deleteFailed = true)
 	{
 		// Get all the groups in the DB.
 		if (!$this->getAllGroups()) {
