@@ -117,7 +117,7 @@ if (strlen($www_top) == 1) {
 // Used everywhere an href is output, includes the full path to the nZEDb install.
 define('WWW_TOP', $www_top);
 
-define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml');
+define('nZEDb_VERSIONS', nZEDb_LIB . '_build' . DS . 'nZEDb.xml');
 
 require_once nZEDb_CORE . 'autoloader.php';
 require_once nZEDb_LIBS . 'autoloader.php';

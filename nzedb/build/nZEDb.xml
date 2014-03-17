@@ -7,6 +7,7 @@
 			<commit>6132</commit>
 			<hooks>
 				<precommit>1</precommit>
+                <!-- this is the version of the pre-commit file in githooks NOT the files it calls -->
 			</hooks>
 		</git>
 	</versions>

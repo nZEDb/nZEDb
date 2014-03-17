@@ -19,7 +19,7 @@
  * @copyright 2014 nZEDb
  */
 define('GIT_PRE_COMMIT', true);
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'nzedb' . DIRECTORY_SEPARATOR . 'autoloader.php');
+require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'autoloader.php');
 
 $error = false;
 echo "Running pre-commit hooks\n";
@@ -36,7 +36,7 @@ if ($error === false) {
 		$vers->save();
 		passthru('git add ' . nZEDb_VERSIONS);
 	} else {
-		echo "not dev branch, skipping version updates\n";
+		echo "not 'dev', 'next-master', or 'master' branch, skipping version updates\n";
 	}
 }
 
