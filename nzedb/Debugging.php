@@ -138,7 +138,7 @@ class Debugging
 	/**
 	 * Base method for logging to files.
 	 *
-	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $path Path where all the log files are. ex.: .../nZEDb/resources/logs/
 	 * @param string $name The name of the log type.         ex.: debug
 	 * @param string $message The message to log.
 	 *
@@ -216,7 +216,7 @@ class Debugging
 	/**
 	 * Check if a folder exists, if not create it.
 	 *
-	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $path Path where all the log files are. ex.: .../nZEDb/resources/logs/
 	 *
 	 * @return bool
 	 */
@@ -236,7 +236,7 @@ class Debugging
 	/**
 	 * Initiate a log file.
 	 *
-	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $path Path where all the log files are. ex.: .../nZEDb/resources/logs/
 	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
@@ -257,7 +257,7 @@ class Debugging
 	/**
 	 * Rotate log file if it exceeds a certain size.
 	 *
-	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $path Path where all the log files are. ex.: .../nZEDb/resources/logs/
 	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
@@ -292,7 +292,7 @@ class Debugging
 	/**
 	 * Compress the old log using GZip.
 	 *
-	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $path Path where all the log files are. ex.: .../nZEDb/resources/logs/
 	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
@@ -331,7 +331,7 @@ class Debugging
 	/**
 	 * Delete old logs.
 	 *
-	 * @param string $path Path where all the log files are. ex.: /var/www/nZEDb/resources/logs/
+	 * @param string $path Path where all the log files are. ex.: .../nZEDb/resources/logs/
 	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
