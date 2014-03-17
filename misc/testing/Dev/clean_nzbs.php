@@ -25,7 +25,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 				$res = $db->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $db->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
 				if ($res === false) {
 					if ($argv[1] === "delete") {
-						@copy($nzbpath, "/var/www/nZEDb/pooped/" . $guid[1] . ".nzb.gz");
+						@copy($nzbpath, nZEDb_ROOT . "pooped/" . $guid[1] . ".nzb.gz");
 						$releases->fastDelete(null, $guid[1], $site);
 						$deleted++;
 					}
@@ -34,7 +34,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 				}
 			} else {
 				if ($argv[1] === "delete") {
-					@copy($nzbpath, "/var/www/nZEDb/pooped/" . $guid[1] . ".nzb.gz");
+					@copy($nzbpath, nZEDb_ROOT . "pooped/" . $guid[1] . ".nzb.gz");
 					unlink($filePath);
 					$deleted++;
 				}
@@ -56,7 +56,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 			$nzbpath = $nzb->getNZBPath($row["guid"], $site->nzbsplitlevel);
 			if (!file_exists($nzbpath)) {
 				if ($argv[1] === "delete") {
-					@copy($nzbpath, "/var/www/nZEDb/pooped/" . $guid[1] . ".nzb.gz");
+					@copy($nzbpath, nZEDb_ROOT . "pooped/" . $guid[1] . ".nzb.gz");
 					$releases->fastDelete($row['id'], $row['guid'], $site);
 				}
 				$deleted++;
