@@ -14,7 +14,7 @@
 </ul>
 
 <fieldset>
-	<legend>Import From Directory</legend>
+	<nZEDblegend>Import From Directory</nZEDblegend>
 
 	<form action="{$SCRIPT_NAME}#results" method="POST">
 
@@ -58,7 +58,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Import From Browser</legend>
+	<nZEDblegend>Import From Browser</nZEDblegend>
 
 	<form action="{$SCRIPT_NAME}#results" method="POST" enctype="multipart/form-data">
 
