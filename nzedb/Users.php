@@ -721,7 +721,7 @@ class Users
 	{
 		// Clear old requests.
 		$this->clearApiRequests($userid);
-		return $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d)', $userid));
+		return $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d', $userid));
 	}
 
 	/**
