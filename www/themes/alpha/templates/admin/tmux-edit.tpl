@@ -7,7 +7,7 @@
 {/if}
 
 <fieldset>
-	<legend>Tmux - How It Works</legend>
+	<nZEDblegend>Tmux - How It Works</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="explain">Information:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -23,7 +23,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Monitor</legend>
+	<nZEDblegend>Monitor</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="running">Tmux Scripts Running:</label></td>
@@ -84,7 +84,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Sequential</legend>
+	<nZEDblegend>Sequential</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="sequential">Run Sequential:</label></td>
@@ -112,7 +112,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Update Binaries</legend>
+	<nZEDblegend>Update Binaries</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="binaries">Update Binaries:</label></td>
@@ -133,7 +133,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Backfill</legend>
+	<nZEDblegend>Backfill</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="backfill">Backfill:</label></td>
@@ -190,7 +190,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Import nzbs</legend>
+	<nZEDblegend>Import nzbs</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="import">Import nzbs:</label></td>
@@ -225,7 +225,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Update Releases</legend>
+	<nZEDblegend>Update Releases</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="releases">Update Releases:</label></td>
@@ -246,7 +246,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Postprocessing</legend>
+	<nZEDblegend>Postprocessing</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="post">Postprocess Additional:</label></td>
@@ -307,7 +307,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Fix Release Names</legend>
+	<nZEDblegend>Fix Release Names</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="fix_names">Fix Release Names:</label></td>
@@ -328,7 +328,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Remove Crap Releases</legend>
+	<nZEDblegend>Remove Crap Releases</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="fix_crap">Remove Crap Releases:</label></td>
@@ -357,7 +357,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Decrypt Hashes</legend>
+	<nZEDblegend>Decrypt Hashes</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="dehash">Decrypt Hash Based Release Names:</label></td>
@@ -386,7 +386,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Update TV/Theater</legend>
+	<nZEDblegend>Update TV/Theater</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="update_tv">Update TV and Theater Schedules:</label></td>
@@ -407,7 +407,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Miscellaneous</legend>
+	<nZEDblegend>Miscellaneous</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="niceness">Niceness:</label></td>
@@ -452,7 +452,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Server Monitors</legend>
+	<nZEDblegend>Server Monitors</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="showquery">Display Query Times:</label></td>
@@ -532,7 +532,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>Tmux Colors</legend>
+	<nZEDblegend>Tmux Colors</nZEDblegend>
 	<table class="input">
 		<tr>
 			<td style="width:180px;"><label for="colors">256 Colors:</label></td>

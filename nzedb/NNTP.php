@@ -1003,4 +1003,16 @@ class NNTP extends Net_NNTP_Client
 		return true;
 	}
 
+	/**
+	 * Extend to not get weak warnings.
+	 *
+	 * @param object $data Data to check for error.
+	 * @param int $code Error code.
+	 *
+	 * @return mixed
+	 */
+	public function isError($data, $code = null)
+	{
+		return parent::isError($data, $code);
+	}
 }
