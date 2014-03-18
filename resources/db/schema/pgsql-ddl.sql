@@ -1099,27 +1099,23 @@ CREATE INDEX ix_shortgroups_id ON shortgroups(id);
 DROP INDEX IF EXISTS "ix_shortgroups_name" CASCADE;
 CREATE INDEX ix_shortgroups_name ON shortgroups(name);
 
-CREATE OR REPLACE FUNCTION hash_check() RETURNS trigger AS $hash_check$ 
-BEGIN 
-	IF NEW.searchname ~ '[a-fA-F0-9]{32}' OR NEW.name ~ '[a-fA-F0-9]{32}' 
+CREATE OR REPLACE FUNCTION check_hashreqid() RETURNS trigger AS $hash_reqid$
+BEGIN
+	IF NEW.searchname ~ '[a-fA-F0-9]{32}' OR NEW.name ~ '[a-fA-F0-9]{32}'
 	THEN SET NEW.ishashed = 1;
         ELSE SET NEW.ishashed = 0;
+	END IF;
+
+        IF NEW.searchname ~'^\\[[[:digit:]]+\\]' OR NEW.name ~'^\\[[[:digit:]]+\\]'
+        THEN SET NEW.isrequestid = 1;
+        ELSE SET NEW.isrequestid = 0;
+        END IF;
+
 	RETURN NEW;
-	END IF; 
-END; 
-$hash_check$ 
+
+END;
+$hash_reqid$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION request_check() RETURNS trigger AS $request_check$ 
-BEGIN 
-	IF NEW.searchname ~'^\\[[[:digit:]]+\\]' OR NEW.name ~'^\\[[[:digit:]]+\\]' 
-	THEN SET NEW.isrequestid = 1;
-	ELSE SET NEW.isrequestid = 0;
-	RETURN NEW;
-	END IF; 
-END; 
-$request_check$ 
-LANGUAGE plpgsql;
-
-CREATE TRIGGER request_check BEFORE INSERT OR UPDATE ON releases FOR EACH ROW EXECUTE PROCEDURE request_check();
-CREATE TRIGGER hash_check BEFORE INSERT OR UPDATE ON releases FOR EACH ROW EXECUTE PROCEDURE hash_check();
+CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW EXECUTE PROCEDURE check_hashreqid();
+CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW EXECUTE PROCEDURE check_hashreqid();

@@ -1131,7 +1131,7 @@ class Releases
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$checked = $this->db->queryDirect('UPDATE ' . $group['cname'] . ' c SET filesize =
-									IFNULL((SELECT SUM(p.size) FROM ' . $group['pname'] . ' p LEFT JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id), 0),
+									(SELECT SUM(p.size) FROM ' . $group['pname'] . ' p LEFT JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id),
 									filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0' . $where);
 		if ($this->echooutput) {
 			$this->c->doEcho($this->c->primary($checked->rowCount() . " collections set to filecheck = 3(size calculated)"));
@@ -1577,7 +1577,11 @@ class Releases
 			}
 
 			// Look for records that potentially have requestID titles and have not been renamed by any other means
+			if ($this->db->dbSystem() == 'mysql') {
 			$resrel = $this->db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "nzbstatus = 1 AND isrenamed = 0 AND (isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $hours . " HOUR)) LIMIT 100");
+			} else {
+			$resrel = $this->db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "nzbstatus = 1 AND isrenamed = 0 AND (isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL '" . $hours . " HOUR')) LIMIT 100");
+			}
 
 			if ($resrel->rowCount() > 0) {
 				$bFound = false;
@@ -1842,7 +1846,7 @@ class Releases
 				if ($this->db->dbSystem() == 'mysql') {
 					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1', $this->crosspostt));
 				} else {
-					$resrel = $this->db->queryDriect(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
+					$resrel = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, id HAVING COUNT(name) > 1", $this->crosspostt));
 				}
 				$total = $resrel->rowCount();
 				if ($total > 0) {
