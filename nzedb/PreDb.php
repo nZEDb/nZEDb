@@ -446,7 +446,7 @@ Class PreDb
 								if (strlen($title) > 15) {
 									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
 									if ($dupeCheck === false) {
-										$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'Movies') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'Movies') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
 										$newnames++;
 									}
 								}
@@ -484,7 +484,7 @@ Class PreDb
 								if (strlen($title) > 15) {
 									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
 									if ($dupeCheck === false) {
-										$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'TV') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'TV') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
 										$newnames++;
 									}
 								}
@@ -522,7 +522,7 @@ Class PreDb
 								if (strlen($title) > 15) {
 									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
 									if ($dupeCheck === false) {
-										$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'XXX') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'XXX') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
 										$newnames++;
 									}
 								}
@@ -560,7 +560,7 @@ Class PreDb
 								if (strlen($title) > 15) {
 									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
 									if ($dupeCheck === false) {
-										$db->queryExec(sprintf("INSERT IGNORE INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
+										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $predate, $source, $md5, $requestid, $groupid, $requestid, $groupid));
 										$newnames++;
 									}
 								}
@@ -608,7 +608,7 @@ Class PreDb
 					if ($oldname !== false && $oldname['md5'] == $md5) {
 						$oldrequestid = $oldname['requestid'];
 						$oldgroupid = $oldname['groupid'];
-						$db->queryExec(sprintf('UPDATE predb SET requestid = IF(%d = 0, %d, 0), groupid = IF(%d = 0, %d, 0) WHERE md5 = %s', $oldrequestid, $requestid, $oldgroupid, $groupid, $db->escapeString($md5)));
+						$db->queryExec(sprintf('UPDATE predb SET requestid = %d, groupid = %d WHERE md5 = %s', max($oldrequestid, $requestid), max($oldgroupid, $groupid), $db->escapeString($md5)));
 					} else {
 						if (strlen($title[1]) > 15) {
 							if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %d, %d)', $db->escapeString($title[1]), $db->from_unixtime(strtotime($predate)), $db->escapeString('abgx'), $db->escapeString($md5), $requestid, $groupid))) {
