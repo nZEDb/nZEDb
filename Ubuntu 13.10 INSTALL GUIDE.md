@@ -103,7 +103,7 @@
 
                 sudo apt-get install mysql-server mysql-client libmysqlclient-dev
 
-       # Or PostgreSQL:
+       # Or PostgreSQL(currently WIP, use MySQL for now):
 
                 sudo apt-get install postgresql php5-pgsql
 
