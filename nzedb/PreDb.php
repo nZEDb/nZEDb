@@ -25,7 +25,7 @@ Class PreDb
 		$db = $this->db;
 		$newnames = 0;
 		$newestrel = $db->queryOneRow('SELECT adddate, id FROM predb ORDER BY adddate DESC LIMIT 1');
-		if (strtotime($newestrel['adddate']) < time() - 1 || is_null($newestrel['adddate'])) {
+		if (strtotime($newestrel['adddate']) < time() - 600 || is_null($newestrel['adddate'])) {
 			if ($this->echooutput) {
 				echo $this->c->header("Retrieving titles from preDB sources.");
 			}
