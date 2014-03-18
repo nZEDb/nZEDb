@@ -52,6 +52,9 @@ class TvRage
 
 	public function getByTitle($title)
 	{
+		// Set string to differentiate between mysql and PG for string replacement matching operations
+		$string = ($this->db->dbSystem() === 'mysql' ? '"\'"' :  "E'\''");
+
 		// Check if we already have an entry for this show.
 		$res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE LOWER(releasetitle) = LOWER(%s)", $this->db->escapeString($title)));
 		if (isset($res['rageid'])) {
@@ -69,7 +72,7 @@ class TvRage
 			foreach ($pieces as $piece) {
 				$title4 .= str_replace(array("'", "!"), "", $piece) . '%';
 			}
-			$res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, \"'\", ''), '!', '') LIKE %s", $this->db->escapeString($title4)));
+			$res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string ,$this->db->escapeString($title4)));
 			if (isset($res['rageid'])) {
 				return $res['rageid'];
 			}
@@ -88,7 +91,7 @@ class TvRage
 			foreach ($pieces as $piece) {
 				$title4 .= str_replace(array("'", "!"), "", $piece) . '%';
 			}
-			$res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, \"'\", ''), '!', '') LIKE %s", $this->db->escapeString($title4)));
+			$res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string ,$this->db->escapeString($title4)));
 			if (isset($res['rageid'])) {
 				return $res['rageid'];
 			}
@@ -101,7 +104,7 @@ class TvRage
 		foreach ($pieces as $piece) {
 			$title4 .= str_replace(array("'", "!"), "", $piece) . '%';
 		}
-		$res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, \"'\", ''), '!', '') LIKE %s", $this->db->escapeString($title4)));
+		$res = $this->db->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string ,$this->db->escapeString($title4)));
 		if (isset($res['rageid'])) {
 			return $res['rageid'];
 		}

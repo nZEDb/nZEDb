@@ -16,6 +16,7 @@ Each update goes to the top of the file
                        -> Change on duplicate to updates in predb to work with MySQL and PgSQL.
 2014-03-18 -> ruhllatio-> Fix PG triggers for hash/requestid.
                        -> Fix pg schema triggers again - fix Releases for PG and whitespaces
+                       -> Change TvRage lookup querying for PP in PgSQL
 2014-03-17 -> ruhllatio-> Fix Releases Stage1 for PG / change b.partcheck type in schema.
                        -> Remove pgsql patches until PG is actually ready and useable
 2014-03-17 -> kevin    -> Refactor nzb-import.
