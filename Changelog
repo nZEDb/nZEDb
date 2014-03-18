@@ -9,6 +9,7 @@ Each update goes to the top of the file
 
 2014-03-18 -> kevin    -> Catch RecursiveIteratorIterator exceptions in resetdb.php if paths are not found.
                        -> Only have 1 admin theme (less maintenance).
+                       -> Log patching errors.
 2014-03-18 -> ruhllatio-> Fix PG triggers for hash/requestid.
                        -> Fix pg schema triggers again - fix Releases for PG and whitespaces
 2014-03-17 -> ruhllatio-> Fix Releases Stage1 for PG / change b.partcheck type in schema.
