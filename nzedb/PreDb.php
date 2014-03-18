@@ -25,7 +25,7 @@ Class PreDb
 		$db = $this->db;
 		$newnames = 0;
 		$newestrel = $db->queryOneRow('SELECT adddate, id FROM predb ORDER BY adddate DESC LIMIT 1');
-		if (strtotime($newestrel['adddate']) < time() - 600 || is_null($newestrel['adddate'])) {
+		if (strtotime($newestrel['adddate']) < time() - 1 || is_null($newestrel['adddate'])) {
 			if ($this->echooutput) {
 				echo $this->c->header("Retrieving titles from preDB sources.");
 			}
@@ -440,10 +440,12 @@ Class PreDb
 								$title = $db->escapeString($matches2["title"]);
 								$md5 = $db->escapeString(md5($matches2["title"]));
 								if (strlen($title) > 15) {
-									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+									$dupeCheck = $db->queryOneRow(sprintf('SELECT id, requestid FROM predb WHERE md5 = %s', $md5));
 									if ($dupeCheck === false) {
-										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'Movies') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abMooVee'), $md5, $matches2["requestid"], $groupid, $matches2["requestid"], $groupid));
+										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'Movies')", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abMooVee'), $md5, $matches2["requestid"], $groupid));
 										$newnames++;
+									} else {
+										$db->queryExec(sprintf('UPDATE predb SET requestid = %s WHERE md5 = %s', $matches2["requestid"], $md5));
 									}
 								}
 							}
@@ -477,8 +479,10 @@ Class PreDb
 								if (strlen($title) > 15) {
 									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
 									if ($dupeCheck === false) {
-										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'TV') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abTeeVee'), $md5, $matches2["requestid"], $groupid, $matches2["requestid"], $groupid));
+										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'TV')", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abTeeVee'), $md5, $matches2["requestid"], $groupid));
 										$newnames++;
+									} else {
+										$db->queryExec(sprintf('UPDATE predb SET requestid = %s WHERE md5 = %s', $matches2["requestid"], $md5));
 									}
 								}
 							}
@@ -512,8 +516,10 @@ Class PreDb
 								if (strlen($title) > 15) {
 									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
 									if ($dupeCheck === false) {
-										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'XXX') ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abErotica'), $md5, $matches2["requestid"], $groupid, $matches2["requestid"], $groupid));
+										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'XXX')", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abErotica'), $md5, $matches2["requestid"], $groupid));
 										$newnames++;
+									} else {
+										$db->queryExec(sprintf('UPDATE predb SET requestid = %s WHERE md5 = %s', $matches2["requestid"], $md5));
 									}
 								}
 							}
@@ -547,8 +553,10 @@ Class PreDb
 								if (strlen($title) > 15) {
 									$dupeCheck = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
 									if ($dupeCheck === false) {
-										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d, groupid = %d", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abForeign'), $md5, $matches2["requestid"], $groupid, $matches2["requestid"], $groupid));
+										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d)", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abForeign'), $md5, $matches2["requestid"], $groupid));
 										$newnames++;
+									} else {
+										$db->queryExec(sprintf('UPDATE predb SET requestid = %s WHERE md5 = %s', $matches2["requestid"], $md5));
 									}
 								}
 							}

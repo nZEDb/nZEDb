@@ -12,6 +12,7 @@ Each update goes to the top of the file
                        -> Log patching errors.
                        -> Fix queries in predb to work in both pgsql and mysql.
                        -> Remove double dupe checks in predb.
+                       -> Change on duplicate to updates in predb to work with MySQL and PgSQL.
 2014-03-18 -> ruhllatio-> Fix PG triggers for hash/requestid.
                        -> Fix pg schema triggers again - fix Releases for PG and whitespaces
 2014-03-17 -> ruhllatio-> Fix Releases Stage1 for PG / change b.partcheck type in schema.
