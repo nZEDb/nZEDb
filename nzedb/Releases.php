@@ -1042,33 +1042,57 @@ class Releases
 		$stage1 = TIME();
 		$where = (!empty($groupID)) ? ' AND c.groupid = ' . $groupID . ' ' : ' ';
 
-		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-		$this->db->queryExec('UPDATE ' . $group['cname'] . ' c INNER JOIN (SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' . $group['bname'] . ' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0' . $where . 'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r ON c.id = r.id SET filecheck = 1');
-		//$this->db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b, '.$group['cname'].' c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
-		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
-		$this->db->queryExec('UPDATE ' . $group['cname'] . ' c INNER JOIN(SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' . $group['bname'] . ' b ON b.collectionid = c.id WHERE b.filenumber = 0 AND c.totalfiles > 0 AND c.filecheck = 1' . $where . 'GROUP BY c.id) r ON c.id = r.id SET c.filecheck = 16');
-
-		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-		$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 15 WHERE filecheck = 1' . $where);
-
-		// If we have all the parts set partcheck to 1.
-		// If filecheck 15, check if we have all the parts for a file then set partcheck.
-		$this->db->queryExec('UPDATE ' . $group['bname'] . ' b INNER JOIN(SELECT b.id FROM ' . $group['bname'] . ' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] . ' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0' . $where . 'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) = b.totalparts) r ON b.id = r.id SET b.partcheck = 1');
-
-		// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-		$this->db->queryExec('UPDATE ' . $group['bname'] . ' b INNER JOIN(SELECT b.id FROM ' . $group['bname'] . ' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] . ' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0' . $where . 'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r ON b.id = r.id SET b.partcheck = 1');
-
-		// Set filecheck to 2 if partcheck = 1.
-		$this->db->queryExec('UPDATE ' . $group['cname'] . ' c INNER JOIN(SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' . $group['bname'] . ' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)' . $where . 'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) r ON c.id = r.id SET filecheck = 2');
-
-		// Set filecheck to 1 if we don't have all the parts.
-		$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 1 WHERE filecheck in (15, 16)' . $where);
-
-		// If a collection has not been updated in X hours, set filecheck to 2.
 		if ($this->db->dbSystem() == 'mysql') {
+			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
+			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c INNER JOIN (SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' . $group['bname'] . ' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0' . $where . 'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r ON c.id = r.id SET filecheck = 1');
+			//$this->db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b, '.$group['cname'].' c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
+
+			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
+			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c INNER JOIN(SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' . $group['bname'] . ' b ON b.collectionid = c.id WHERE b.filenumber = 0 AND c.totalfiles > 0 AND c.filecheck = 1' . $where . 'GROUP BY c.id) r ON c.id = r.id SET c.filecheck = 16');
+
+			// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
+			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 15 WHERE filecheck = 1' . $where);
+
+			// If we have all the parts set partcheck to 1.
+			// If filecheck 15, check if we have all the parts for a file then set partcheck.
+			$this->db->queryExec('UPDATE ' . $group['bname'] . ' b INNER JOIN(SELECT b.id FROM ' . $group['bname'] . ' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] . ' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0' . $where . 'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) = b.totalparts) r ON b.id = r.id SET b.partcheck = 1');
+
+			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
+			$this->db->queryExec('UPDATE ' . $group['bname'] . ' b INNER JOIN(SELECT b.id FROM ' . $group['bname'] . ' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] . ' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0' . $where . 'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r ON b.id = r.id SET b.partcheck = 1');
+
+			// Set filecheck to 2 if partcheck = 1.
+			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c INNER JOIN(SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' . $group['bname'] . ' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)' . $where . 'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) r ON c.id = r.id SET filecheck = 2');
+
+			// Set filecheck to 1 if we don't have all the parts.
+			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 1 WHERE filecheck in (15, 16)' . $where);
+
+			// If a collection has not been updated in X hours, set filecheck to 2.
 			$query = $this->db->queryDirect(sprintf("UPDATE " . $group['cname'] . " c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM " . $group['bname'] . " b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)" . $where, $this->delaytimet));
 		} else {
-			$query = $this->db->queryDirect(sprintf("UPDATE " . $group['cname'] . " c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM " . $group['bname'] . " b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d HOURS' AND c.filecheck IN (0, 1, 10)" . $where, $this->delaytimet));
+			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
+			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 1 FROM (SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' . $group['bname'] . ' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0' . $where . 'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r WHERE c.id = r.id');
+
+			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
+			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 16 FROM (SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' . $group['bname'] . ' b ON b.collectionid = c.id WHERE b.filenumber = 0 AND c.totalfiles > 0 AND c.filecheck = 1' . $where . 'GROUP BY c.id) r WHERE c.id = r.id');
+
+			// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
+			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 15 WHERE filecheck = 1' . $where);
+
+			// If we have all the parts set partcheck to 1.
+			// If filecheck 15, check if we have all the parts for a file then set partcheck.
+			$this->db->queryExec('UPDATE ' . $group['bname'] . ' b  SET partcheck = 1 FROM (SELECT b.id FROM ' . $group['bname'] . ' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] . ' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0' . $where . 'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) = b.totalparts) r WHERE b.id = r.id');
+
+			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
+			$this->db->queryExec('UPDATE ' . $group['bname'] . ' b  SET partcheck = 1 FROM (SELECT b.id FROM ' . $group['bname'] . ' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] . ' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0' . $where . 'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r WHERE b.id = r.id');
+
+			// Set filecheck to 2 if partcheck = 1.
+			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c  SET filecheck = 2 FROM (SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' . $group['bname'] . ' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)' . $where . 'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) r WHERE c.id = r.id');
+
+			// Set filecheck to 1 if we don't have all the parts.
+			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 1 WHERE filecheck in (15, 16)' . $where);
+
+			// If a collection has not been updated in X hours, set filecheck to 2.
+			$query = $this->db->queryDirect(sprintf("UPDATE " . $group['cname'] . " c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM " . $group['bname'] . " b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)" . $where, $this->delaytimet));
 		}
 
 		if ($this->echooutput) {
@@ -1107,7 +1131,7 @@ class Releases
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$checked = $this->db->queryDirect('UPDATE ' . $group['cname'] . ' c SET filesize =
-									IFNULL((SELECT SUM(p.size) FROM ' . $group['pname'] . ' p LEFT JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id), 0),
+									(SELECT SUM(p.size) FROM ' . $group['pname'] . ' p LEFT JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id),
 									filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0' . $where);
 		if ($this->echooutput) {
 			$this->c->doEcho($this->c->primary($checked->rowCount() . " collections set to filecheck = 3(size calculated)"));
@@ -1553,7 +1577,11 @@ class Releases
 			}
 
 			// Look for records that potentially have requestID titles and have not been renamed by any other means
+			if ($this->db->dbSystem() == 'mysql') {
 			$resrel = $this->db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "nzbstatus = 1 AND isrenamed = 0 AND (isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $hours . " HOUR)) LIMIT 100");
+			} else {
+			$resrel = $this->db->queryDirect("SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" . $where . "nzbstatus = 1 AND isrenamed = 0 AND (isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL '" . $hours . " HOUR')) LIMIT 100");
+			}
 
 			if ($resrel->rowCount() > 0) {
 				$bFound = false;
@@ -1818,7 +1846,7 @@ class Releases
 				if ($this->db->dbSystem() == 'mysql') {
 					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1', $this->crosspostt));
 				} else {
-					$resrel = $this->db->queryDriect(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name HAVING COUNT(name) > 1", $this->crosspostt));
+					$resrel = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, id HAVING COUNT(name) > 1", $this->crosspostt));
 				}
 				$total = $resrel->rowCount();
 				if ($total > 0) {

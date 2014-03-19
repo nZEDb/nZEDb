@@ -7,6 +7,21 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-03-18 -> bart39   -> fixed issue with predb.me updates being blocked
+2014-03-18 -> kevin    -> Catch RecursiveIteratorIterator exceptions in resetdb.php if paths are not found.
+                       -> Only have 1 admin theme (less maintenance).
+                       -> Log patching errors.
+                       -> Fix queries in predb to work in both pgsql and mysql.
+                       -> Remove double dupe checks in predb.
+                       -> Change on duplicate to updates in predb to work with MySQL and PgSQL.
+2014-03-18 -> ruhllatio-> Fix PG triggers for hash/requestid.
+                       -> Fix pg schema triggers again - fix Releases for PG and whitespaces
+                       -> Change TvRage lookup querying for PP in PgSQL
+2014-03-17 -> ruhllatio-> Fix Releases Stage1 for PG / change b.partcheck type in schema.
+                       -> Remove pgsql patches until PG is actually ready and useable
+2014-03-17 -> kevin    -> Refactor nzb-import.
+                       -> Small changes to processAdditional.
+                       -> Add de-gzip-ing of NZB files in NZB import.
 2014-03-15 -> bart39   -> fixed issue with dehashstatus being set lower than -7
                        -> manually update patch version
 2014-03-16 -> ruhllatio-> Fix PG schema errors proc_pp
