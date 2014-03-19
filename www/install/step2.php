@@ -99,7 +99,6 @@ if ($page->isPostBack()) {
 		$pdoString .= ($cfg->DB_SYSTEM === 'mysql' ? ';charset=utf8' : ';dbname=' . $cfg->DB_NAME);
 
 		// Connect to the SQL server.
-		$pdo = null;
 		try {
 			$pdo = new PDO($pdoString, $cfg->DB_USER, $cfg->DB_PASSWORD);
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
