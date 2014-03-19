@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-19 -> kevin             ->      Move documentation into docs folder.
 2014-03-18 -> niel		->	Moving and renaming _build directory to .../nzedb/build
 							NOTE: This impacts  committing hooks, devs should run:
 								php nzedb/build/gitHooks.php
