@@ -67,7 +67,7 @@ Class PreDb
 			}
 			$newMoovee = $this->retrieveAllfilledMoovee();
 			if ($this->echooutput) {
-				echo $this->c->primary($newMoovee . " \tRetrieved from Allfilled Moove.");
+				echo $this->c->primary($newMoovee . " \tRetrieved from Allfilled Moovee.");
 			}
 			$newTeevee = $this->retrieveAllfilledTeevee();
 			if ($this->echooutput) {
