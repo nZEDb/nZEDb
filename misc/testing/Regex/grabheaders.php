@@ -28,8 +28,8 @@ if ($groupArr['last'] - $number > $groupArr['first']) {
 	$first = $groupArr['first'];
 }
 $last = $groupArr['last'];
-@unlink("/var/www/nZEDb/not_yenc/" . $group . ".txt");
-@unlink("/var/www/nZEDb/not_yenc/" . $group . ".failed.regex.txt");
+@unlink(nZEDb_RES . 'logs' . DS . 'not_yenc' . DS . $group . '.txt');
+@unlink(nZEDb_RES . 'logs' . DS . 'not_yenc' . DS . $group . '.failed.regex.txt');
 
 $count = $last - $first;
 echo "\nGrabbing " . $count . " headers from " . $argv[1] . "\n";
@@ -56,10 +56,10 @@ for ($x = $first; $x <= $last; $x += 5000) {
 			if (preg_match('/yEnc/', $header )) {
 				echo $header;
 			}
-			file_put_contents("/var/www/nZEDb/not_yenc/" . $group . ".txt", $header, FILE_APPEND);
+			file_put_contents(nZEDb_RES . 'logs' . DS . 'not_yenc' . DS . $group . '.txt', $header, FILE_APPEND);
 			//var_dump($msg);
 		} else {
-			$fp = fopen("/var/www/nZEDb/not_yenc/" . $group . ".txt", 'w');
+			$fp = fopen(nZEDb_RES . 'logs' . DS . 'not_yenc' . DS . $group . '.txt', 'w');
 			fwrite($fp, print_r($msg, TRUE));
 			fclose($fp);
 		}

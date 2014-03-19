@@ -106,7 +106,7 @@ if (function_exists('ini_set') && function_exists('ini_get')) {
 }
 
 // Path to smarty files. (not prefixed with nZEDb as the name is needed in smarty files).
-define('SMARTY_DIR', nZEDb_ROOT . 'smarty' . DS);
+define('SMARTY_DIR', nZEDb_LIBS . 'smarty' . DS);
 
 // These are site constants
 $www_top = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']));
@@ -117,7 +117,7 @@ if (strlen($www_top) == 1) {
 // Used everywhere an href is output, includes the full path to the nZEDb install.
 define('WWW_TOP', $www_top);
 
-define('nZEDb_VERSIONS', nZEDb_ROOT . '_build' . DS . 'nZEDb.xml');
+define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
 
 require_once nZEDb_CORE . 'autoloader.php';
 require_once nZEDb_LIBS . 'autoloader.php';

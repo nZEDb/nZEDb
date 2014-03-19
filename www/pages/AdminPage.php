@@ -10,10 +10,10 @@ class AdminPage extends BasePage
 		parent::BasePage();
 
 		$this->smarty->setTemplateDir(array(
-			'user_admin' => nZEDb_WWW.'themes/'.$this->site->style.'/templates/admin',
-			'admin' => nZEDb_WWW.'themes/Default/templates/admin',
-			'frontend' => nZEDb_WWW.'themes/Default/templates/frontend',
-		));
+				'user_admin' => nZEDb_WWW.'themes/'.$this->site->style.'/templates/admin',
+				'admin' => nZEDb_WWW.'themes_shared/templates/admin',
+				'frontend' => nZEDb_WWW.'themes/Default/templates/frontend',
+			));
 
 		$users = new Users();
 		if (!$users->isLoggedIn() || !isset($this->userdata['role']))
@@ -29,7 +29,7 @@ class AdminPage extends BasePage
 			$this->smarty->setTemplateDir(
 				array(
 					'user_admin' => nZEDb_WWW . 'themes/' . $style['style'] . '/templates/admin',
-					'admin' => nZEDb_WWW . 'themes/Default/templates/admin',
+					'admin' => nZEDb_WWW . 'themes_shared/templates/admin',
 					'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend',
 				)
 			);

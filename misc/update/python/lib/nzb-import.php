@@ -245,4 +245,3 @@ exit($c->header("\nRunning Time: " . relativeTime($time) . "\n"
 		. "Processed:    " . number_format($nzbCount + $nzbSkipped) . "\n"
 		. "Imported:     " . number_format($nzbCount) . "\n"
 		. "Duplicates:   " . number_format($nzbSkipped)));
-

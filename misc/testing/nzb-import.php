@@ -14,7 +14,7 @@ if (count($argv) !== 6) {
 		'arg4 : Use NZB file name as release name.(not recommended)       | true/false' . $n .
 		'arg5 : Import this many NZB files. 0 for all                     | a number' . $n . $n .
 		'ie: ' . $_SERVER['_'] . ' ' . __FILE__ . ' ' . nZEDb_ROOT . 'nzbToImport' . DS . ' true false false 1000' . $n
- 	);
+	);
 }
 
 // Verify arguments.

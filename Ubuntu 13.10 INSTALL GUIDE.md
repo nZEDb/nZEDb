@@ -103,9 +103,11 @@
 
                 sudo apt-get install mysql-server mysql-client libmysqlclient-dev
 
-       # Or PostgreSQL:
+       # Or PostgreSQL(currently WIP, use MySQL for now.) Version 9.3 or higher is required:
 
-                sudo apt-get install postgresql php5-pgsql
+                sudo add-apt-repository ppa:chris-lea/postgresql-9.3
+                sudo apt-get update
+                sudo apt-get install postgresql-9.3 php5-pgsql
 
        # ONLY PROCEED WITH SECTION IF YOU INSTALLED POSTGRESQL!
 
