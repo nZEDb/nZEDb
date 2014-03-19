@@ -12,6 +12,8 @@ Each update goes to the top of the file
 								php nzedb/build/gitHooks.php
 							again, to fix the hooks.
 						->	Moving other dirs too.
+							NOTE: You may need to fix permissions on the smarty template_c dir as
+							 it has moved to .../libs/smarty/template_c from .../smarty/template_c
 2014-03-18 -> bart39	->	fixed issue with predb.me updates being blocked
 2014-03-18 -> kevin		->	Catch RecursiveIteratorIterator exceptions in resetdb.php if paths are not found.
 						->	Only have 1 admin theme (less maintenance).
