@@ -157,7 +157,11 @@ if ($page->isPostBack()) {
 		if (databaseCheck($cfg->DB_NAME, $cfg->DB_SYSTEM, $pdo) === false) {
 			$cfg->dbNameCheck = false;
 			$cfg->error = true;
-			$cfg->emessage = 'Could not find your database called : ' . $cfg->DB_NAME;
+			$cfg->emessage =
+				'Could not find your database called : ' .
+				$cfg->DB_NAME .
+				', please see Install.txt for instructions to create a database.'
+			;
 		}
 	}
 
