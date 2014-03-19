@@ -139,13 +139,13 @@ class PostProcess
 		}
 
 		$this->processPredb($nntp);
-		$this->processAdditional($releaseToWork = '', $id = '', $gui = false, $groupID = '', $nntp);
-		$this->processNfos($releaseToWork = '', $nntp);
-		$this->processMovies($releaseToWork = '');
+		$this->processAdditional($nntp);
+		$this->processNfos('', $nntp);
+		$this->processMovies();
 		$this->processMusic();
 		$this->processGames();
 		$this->processAnime();
-		$this->processTv($releaseToWork = '');
+		$this->processTv();
 		$this->processBooks();
 	}
 
@@ -277,11 +277,11 @@ class PostProcess
 	 *
 	 * @note Called from NZBContents.php
 	 *
-	 * @param $messageID
-	 * @param $relID
-	 * @param $groupID
-	 * @param $nntp
-	 * @param $show
+	 * @param string $messageID MessageID from NZB file.
+	 * @param int    $relID     ID of the release.
+	 * @param int    $groupID   Group ID of the release.
+	 * @param NNTP   $nntp      Class NNTP
+	 * @param int    $show      Only show result or apply iy.
 	 *
 	 * @return bool
 	 */
@@ -295,75 +295,82 @@ class PostProcess
 			return false;
 		}
 
-		if ($this->db->dbSystem() === 'mysql') {
-			$t = 'UNIX_TIMESTAMP(postdate)';
-		} else {
-			$t = 'extract(epoch FROM postdate)';
-		}
+		$query = $this->db->queryOneRow(
+			'SELECT id, groupid, categoryid, searchname, ' .
+			($this->db->dbSystem() === 'mysql' ? 'UNIX_TIMESTAMP(postdate)' : 'extract(epoch FROM postdate)') .
+			' as postdate, id as releaseid  FROM releases WHERE isrenamed = 0 AND id = ' .
+			$relID
+		);
 
-		$query = $this->db->queryOneRow('SELECT id, groupid, categoryid, searchname, ' . $t .
-			' as postdate, id as releaseid  FROM releases WHERE isrenamed = 0 AND id = ' . $relID);
 		if ($query['categoryid'] != Category::CAT_MISC) {
 			return false;
 		}
 
+		// Get the PAR2 file.
 		$par2 = $nntp->getMessages($this->groups->getByNameByID($groupID), $messageID, $this->alternateNNTP);
 		if ($nntp->isError($par2)) {
 			return false;
 		}
 
+		// Put the PAR2 into Par2Info, check if there's an error.
 		$par2info = new Par2Info();
 		$par2info->setData($par2);
 		if ($par2info->error) {
 			return false;
 		}
 
+		// Get the file list from Par2Info.
 		$files = $par2info->getFileList();
 		if ($files !== false && count($files) > 0) {
 
 			$relFiles = 0;
 			$foundName = false;
-			foreach ($files as $fileID => $file) {
+
+			// Loop through the files.
+			foreach ($files as $file) {
+
+				// If we found a name and have more than 10 files in the DB break out.
+				if ($foundName === true && $relFiles > 10) {
+					break;
+				}
 
 				if (!array_key_exists('name', $file)) {
-					return false;
+					continue;
 				}
 
 				// Add to release files.
-				if ($this->addpar2 &&
-					$relFiles < 11 &&
-					$this->db->queryOneRow(sprintf(
-						'SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
-						$relID, $this->db->escapeString($file['name']))) === false) {
+				if ($this->addpar2 && $relFiles < 11 &&
+					$this->db->queryOneRow(
+						sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
+							$relID, $this->db->escapeString($file['name']))) === false) {
 
+					// Try to add the files to the DB.
 					if ($this->releaseFiles->add($relID, $file['name'], $file['size'], $query['postdate'], 0)) {
 						$relFiles++;
 					}
 				}
 
-				$query['textstring'] = $file['name'];
-				if ($this->nameFixer->checkName($query, 1, 'PAR2, ', 1, $show) === true) {
-					$foundName = true;
-					break;
+				// Try to get a new name.
+				if ($foundName === false) {
+					$query['textstring'] = $file['name'];
+					if ($this->nameFixer->checkName($query, 1, 'PAR2, ', 1, $show) === true) {
+						$foundName = true;
+					}
 				}
 			}
+
+			// If we found some files.
 			if ($relFiles > 0) {
 				$this->debugging->start('parsePAR2', 'Added ' . $relFiles . ' releasefiles from PAR2 for ' . $query['searchname'], 5);
-				$cnt = $this->db->queryOneRow('SELECT COUNT(releaseid) AS count FROM releasefiles WHERE releaseid = ' . $relID);
-				$count = $relFiles;
-				if ($cnt !== false && $cnt['count'] > 0) {
-					$count = $relFiles + $cnt['count'];
-				}
-				$this->db->queryExec(sprintf('UPDATE releases SET rarinnerfilecount = %d where id = %d', $count, $relID));
+
+				// Update the file count with the new file count + old file count.
+				$this->db->queryExec(sprintf('UPDATE releases SET rarinnerfilecount = rarinnerfilecount + %d WHERE id = %d', $relFiles, $relID));
 			}
 			if ($foundName === true) {
 				return true;
-			} else {
-				return false;
 			}
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -632,7 +639,7 @@ class PostProcess
 			exit($this->c->error("Not connected to usenet(PostProcess->processAdditionalThreaded).\n"));
 		}
 
-		$this->processAdditional($releaseToWork, $id = '', $gui = false, $groupID = '', $nntp);
+		$this->processAdditional($nntp, $releaseToWork);
 	}
 
 	/**
@@ -640,113 +647,86 @@ class PostProcess
 	 *
 	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
 	 *
-	 * @param string $releaseToWork
-	 * @param string $id
-	 * @param bool $gui
-	 * @param string $groupID
-	 * @param $nntp
+	 * @param NNTP $nntp Class NNTP
+	 * @param string $releaseToWork String containing SQL results. Optional.
+	 * @param string $groupID Group ID. Optional
 	 *
 	 * @return void
 	 */
-	public function processAdditional($releaseToWork = '', $id = '', $gui = false, $groupID = '', $nntp)
+	public function processAdditional($nntp, $releaseToWork = '', $groupID = '')
 	{
 
 		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(PostProcess->processAdditional).\n"));
 		}
 
-		$like = 'ILIKE';
-		if ($this->db->dbSystem() === 'mysql') {
-			$like = 'LIKE';
-		}
-
-		// Not sure if ugo ever implemented this in the ui, other that his own.
-		if ($gui) {
-			$ok = false;
-			$ticket = null;
-			while (!$ok) {
-				usleep(mt_rand(10, 300));
-				$this->db->setAutoCommit(false);
-				$ticket = $this->db->queryOneRow('SELECT value  FROM site WHERE setting ' . $like . " 'nextppticket'");
-				$ticket = $ticket['value'];
-				$upCnt = $this->db->queryExec(sprintf(
-					"UPDATE site SET value = %d WHERE setting %s 'nextppticket' AND value = %d", $ticket + 1, $like, $ticket));
-
-				if (count($upCnt) === 1) {
-					$ok = true;
-					$this->db->Commit();
-				} else
-					$this->db->Rollback();
-			}
-			$this->db->setAutoCommit(true);
-			$sleep = 1;
-			$delay = 100;
-
-			do {
-				sleep($sleep);
-				$serving = $this->db->queryOneRow('SELECT * FROM site WHERE setting ' . $like . " 'currentppticket1'");
-				$time = strtotime($serving['updateddate']);
-				$serving = $serving['value'];
-				$sleep = min(max(($time + $delay - time()) / 5, 2), 15);
-			} while ($serving > $ticket && ($time + $delay + 5 * ($ticket - $serving)) > time());
-		}
-
 		$totResults = null;
 		$passwordStatus = -6;
 		$groupID = ($groupID === '' ? '' : 'AND groupid = ' . $groupID);
+
 		// Get out all releases which have not been checked more than max attempts for password.
-		if ($id !== '') {
+		$totResults = 0;
+		$result = [];
+		if ($releaseToWork === '') {
 
-			$result = $this->db->queryDirect(
-				'SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion,
-						r.categoryid, r.searchname FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = ' . $id);
+			$i = -6;
+			$limit = $this->addqty;
+			// Get releases starting from -6 password status until we reach our max limit set in site or we reach -1 password status.
+			while (($totResults <= $limit) && ($i <= -1)) {
 
-		} else {
-
-			$result = $totResults = 0;
-			if ($releaseToWork === '') {
-
-				$i = -1;
-				while (($totResults !== $this->addqty) && ($i >= $passwordStatus)) {
-
-					$result = $this->db->queryDirect(sprintf('
+				$qResult = $this->db->query(
+					sprintf('
 						SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid,
 							r.nfostatus, r.completion, r.categoryid, r.searchname
 						FROM releases r
 						LEFT JOIN category c ON c.id = r.categoryid
 						WHERE nzbstatus = 1
-						AND r.size < %d ' . $groupID . '
-						AND r.passwordstatus BETWEEN %d
-						AND -1 AND (r.haspreview = -1
-						AND c.disablepreview = 0)
-						ORDER BY postdate DESC
-						LIMIT %d', $this->maxsize * 1073741824, $i, $this->addqty)
-					);
-
-					$totResults = $result->rowCount();
-					if ($totResults > 0) {
-						$this->doEcho('Passwordstatus = ' . $i . ': Available to process = ' . $totResults);
-					}
-					$i--;
-				}
-			} else {
-
-				$pieces = explode('           =+=            ', $releaseToWork);
-				$result = array(
-					array(
-						'id' => $pieces[0],
-						'guid' => $pieces[1],
-						'name' => $pieces[2],
-						'disablepreview' => $pieces[3],
-						'size' => $pieces[4],
-						'groupid' => $pieces[5],
-						'nfostatus' => $pieces[6],
-						'categoryid' => $pieces[7],
-						'searchname' => $pieces[8]
+						AND r.size < %d
+						%s
+						AND r.passwordstatus = %d
+						AND (r.haspreview = -1 AND c.disablepreview = 0)
+						ORDER BY postdate
+						DESC LIMIT %d',
+						$this->maxsize * 1073741824, $groupID, $i, $limit
 					)
 				);
-				$totResults = 1;
+
+				// Get the count of rows we got from the query.
+				$currentCount = count($qResult);
+
+				if ($currentCount > 0) {
+
+					// Merge the results.
+					$result += $qResult;
+
+					// Decrement so we don't get more than the max user specified value.
+					$limit -= $currentCount;
+
+					// Update the total results.
+					$totResults += $currentCount;
+
+					// Echo how many we got for this query.
+					$this->doEcho('Passwordstatus = ' . $i . ': Available to process = ' .$currentCount);
+				}
+				$i++;
 			}
+		} else {
+
+			$pieces = explode('           =+=            ', $releaseToWork);
+			$result = array(
+				array(
+					'id' => $pieces[0],
+					'guid' => $pieces[1],
+					'name' => $pieces[2],
+					'disablepreview' => $pieces[3],
+					'size' => $pieces[4],
+					'groupid' => $pieces[5],
+					'nfostatus' => $pieces[6],
+					'categoryid' => $pieces[7],
+					'searchname' => $pieces[8]
+				)
+			);
+			$totResults = 1;
 		}
 
 		$resCount = $startCount = $totResults;
@@ -759,14 +739,6 @@ class PostProcess
 				$this->doEcho('Downloaded: (xB) = yEnc article, f= failed ;Processing: z = zip file, r = rar file');
 				$this->doEcho('Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample');
 				$this->doEcho('Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip');
-
-				// Get count of releases per password status
-				$echoString = 'Available to process';
-				for ($i = -1; $i >= $passwordStatus; $i--) {
-					$pw = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = ' . $i);
-					$echoString .= ', ' . $i . ' = ' . number_format($pw[0]['count']);
-				}
-				$this->doEcho($echoString . '.');
 			}
 
 			$nzbContents = new NZBContents($this->echooutput);
@@ -1426,10 +1398,6 @@ class PostProcess
 			if ($this->echooutput) {
 				echo "\n";
 			}
-		}
-
-		if ($gui) {
-			$this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting %s 'currentppticket1'", $ticket + 1, $like));
 		}
 
 		unset($rar, $nzbContents);

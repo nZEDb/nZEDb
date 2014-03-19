@@ -58,27 +58,33 @@ foreach($tables as $row)
 }
 
 echo $c->header("Deleting nzbfiles subfolders.");
-$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($site->nzbpath, RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
-$deleted = 0;
-foreach ($files as $file)
-{
-	if (basename($file) != '.gitignore' && basename($file) != 'tmpunrar')
+try {
+	$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($site->nzbpath, RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+	foreach ($files as $file)
 	{
-		$todo = ($file->isDir() ? 'rmdir' : 'unlink');
-		@$todo($file);
+		if (basename($file) != '.gitignore' && basename($file) != 'tmpunrar')
+		{
+			$todo = ($file->isDir() ? 'rmdir' : 'unlink');
+			@$todo($file);
+		}
 	}
+} catch(UnexpectedValueException $e) {
+	echo $c->error($e->getMessage());
 }
 
 echo $c->header("Deleting all images, previews and samples that still remain.");
-$dirItr = new RecursiveDirectoryIterator(nZEDb_COVERS);
-$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
-$deleted = 0;
-foreach ($itr as $filePath)
-{
-	if (basename($filePath) != '.gitignore' && basename($filePath) != 'no-cover.jpg' && basename($filePath) != 'no-backdrop.jpg')
+try {
+	$dirItr = new RecursiveDirectoryIterator(nZEDb_COVERS);
+	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
+	foreach ($itr as $filePath)
 	{
-		@unlink($filePath);
+		if (basename($filePath) != '.gitignore' && basename($filePath) != 'no-cover.jpg' && basename($filePath) != 'no-backdrop.jpg')
+		{
+			@unlink($filePath);
+		}
 	}
+} catch (UnexpectedValueException $e) {
+	echo $c->error($e->getMessage());
 }
 
 echo $c->header("Getting Updated List of TV Shows from TVRage.");

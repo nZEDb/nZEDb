@@ -1,7 +1,6 @@
 <?php
 /* This is a smarty/www file and should be moved to the nZEDb_WWW/pages directory? */
 
-
 class Page extends BasePage
 {
 	function __construct()

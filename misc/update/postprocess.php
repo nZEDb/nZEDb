@@ -109,7 +109,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 		$postprocess = new PostProcess();
 	}
 
-	$postprocess->processAdditional($releaseToWork = '', $id = '', $gui = false, $groupID = '', $nntp);
+	$postprocess->processAdditional($nntp);
 } else {
 	exit($c->error("\nIncorrect arguments.\n"
 			. "The second argument (true/false) determines wether to echo or not.\n\n"
