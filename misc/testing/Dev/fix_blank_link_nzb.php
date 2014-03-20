@@ -3,8 +3,6 @@
 
 require dirname(__FILE__) . '/../../../www/config.php';
 $c = new ColorCLI();
-$s = new Site();
-$site = $s->get();
 
 if (isset($argv[1]) && $argv[1] == "true")
 {
@@ -18,7 +16,7 @@ if (isset($argv[1]) && $argv[1] == "true")
 	foreach ($guids as $guid)
 	{
 		$nzb = new NZB();
-		$nzbpath = $nzb->NZBPath($guid["guid"], $site->nzbsplitlevel);
+		$nzbpath = $nzb->NZBPath($guid["guid"]);
 		if($nzbpath !== false) {
 			$nzbcount++;
 			$nzbpathc = 'compress.zlib://'.$nzbpath;

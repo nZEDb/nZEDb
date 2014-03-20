@@ -79,11 +79,9 @@ if ($totalResults <= 0) {
 // Start deleting releases.
 $releases = new Releases();
 $consoleTools = new ConsoleTools();
-$s = new Sites();
-$site = $s->get();
 $deletedCount = 0;
 foreach ($result as $release) {
-	$releases->fastDelete($release['id'], $release['guid'], $site);
+	$releases->fastDelete($release['id'], $release['guid']);
 	$deletedCount++;
 	$consoleTools->overWriteHeader(
 		"Deleting: " . $consoleTools->percentString($deletedCount, $totalResults) .
@@ -95,7 +93,7 @@ echo $c->headerOver("Deleted " . $deletedCount . " release(s). This script ran f
 echo $c->header($consoleTools->convertTime(TIME() - $timeStart));
 
 /**
- * Go over the usere's argument list, format part of the query.
+ * Go over the user's argument list, format part of the query.
  *
  * @param string $argument An argument passed to CLI.
  * @param string $like     LIKE for MySQL, ILIKE for PgSQL.
