@@ -210,7 +210,16 @@ class Releases
 			$group = '';
 		}
 
-		return $this->db->query(sprintf("SELECT searchname, guid, CONCAT(cp.title,'_',category.title) AS catName FROM releases INNER JOIN category ON releases.categoryid = category.id LEFT OUTER JOIN category cp ON cp.id = category.parentid WHERE nzbstatus = 1 %s %s %s", $postfrom, $postto, $group));
+		return $this->db->query(
+			sprintf("
+				SELECT searchname, guid, groups.name AS gname, CONCAT(cp.title,'_',category.title) AS catName
+				FROM releases
+				INNER JOIN category ON releases.categoryid = category.id
+				INNER JOIN groups ON releases.groupid = groups.id
+				LEFT OUTER JOIN category cp ON cp.id = category.parentid
+				WHERE nzbstatus = 1 %s %s %s", $postfrom, $postto, $group
+			)
+		);
 	}
 
 	public function getEarliestUsenetPostDate()

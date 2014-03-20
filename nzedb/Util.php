@@ -86,17 +86,16 @@ function objectsIntoArray($arrObjData, $arrSkipIndices = array())
 	return $arrData;
 }
 
+/**
+ * Remove unsafe chars from a filename.
+ *
+ * @param string $filename
+ *
+ * @return string
+ */
 function safeFilename($filename)
 {
-	$temp = $filename;
-	$result = '';
-	for ($i = 0; $i < strlen($temp); $i++) {
-		if (preg_match('([a-zA-Z0-9\s\.\-])', $temp[$i])) {
-			$result = $result . $temp[$i];
-		}
-	}
-
-	return $result;
+	return trim(preg_replace('/[^\w\s.-]*/i', '', $filename));
 }
 
 function runCmd($command, $debug = false)
