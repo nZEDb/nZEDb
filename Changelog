@@ -7,6 +7,19 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-03-19 niel
+	* Moving some files from base into new docs directory.
+2014-03-19 bart39
+	* update groupid on existing predb records when adding requestid from allfilled.
+2014-03-19 kevin
+	* Move documentation into docs folder.
+	* Fix bug where install was not working on dev.
+	* Refactor step2 of the install.
+	* Use PEAR directly for isError method.
+	* Possible fix for wrong identifier types in getMessages NNTP.
+	* Show identifier type when identifier type is wrong.
+	* Refactor and fix shit tons of bugs in groups.php
+	* Comment out nzb_check_all script in alpha theme, does not work correctly.
 2014-03-18 niel
 	* Moving and renaming _build directory to .../nzedb/build
 	NOTE: This impacts  committing hooks, devs should run:
@@ -210,7 +223,8 @@ Each update goes to the top of the file
 	* Log failed queries.
 	* Compress old log files.
 	* Fix bug in backfill daysOld method, most of the time it was trying to do math using a date in string of text.
-2014-03-01 -> jonnyboy	-> silence error
+2014-03-01 jonnyboy
+	* silence error
 2014-03-01 bart39
 	* Fix: fixed query in getAPIRequests
 2014-03-01 kevin

@@ -1,7 +1,7 @@
 {if $page->isSuccess()}
 	<div align="center">
 		<p>The database setup is correct, you may continue to the next step.</p>
-		<form action="step3.php"><input type="submit" value="Step three: Setup news server connection" /></form> 
+		<form action="step3.php"><input type="submit" value="Step three: Setup news server connection" /></form>
 	</div>
 {else}
 
@@ -15,9 +15,15 @@
 			{if $cfg->error}
 			<div>
 				The following error(s) were encountered:<br />
-				{if $cfg->dbConnCheck === false}<span class="error">&bull; Unable to connect to database:<br />{$cfg->emessage}</span><br />{/if}
-				{if $cfg->dbNameCheck === false}<span class="error">&bull; Unable to select database:<br />{$cfg->emessage}</span><br />{/if}
-				{if $cfg->dbCreateCheck === false}<span class="error">&bull; Unable to create database and data. Check permissions of your mysql user.</span><br />{/if}
+				{if $cfg->dbConnCheck === false}
+					<span class="error">&bull; Unable to connect to database:<br />{$cfg->emessage}</span><br />
+				{elseif $cfg->dbNameCheck === false}
+					<span class="error">&bull; Unable to select database:<br />{$cfg->emessage}</span><br />
+				{elseif $cfg->dbCreateCheck === false}
+					<span class="error">&bull; Unable to create database and data. Check permissions of your mysql user.</span><br />
+				{else}
+					<span class="error">{$cfg->emessage}</span><br />
+				{/if}
 				<br />
 			</div>
 			{/if}
