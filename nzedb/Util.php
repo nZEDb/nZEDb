@@ -33,7 +33,7 @@ class Util
 // Central function for sending site email.
 function sendEmail($to, $subject, $contents, $from)
 {
-	if (isWindows) {
+	if (isWindows()) {
 		$n = "\r\n";
 	} else {
 		$n = "\n";
@@ -432,9 +432,7 @@ function cp437toUTF($str)
 // Function inpsired by c0r3@newznabforums adds country flags on the browse page.
 function release_flag($x, $t)
 {
-	$y = "";
-	$s = new Sites();
-	$site = $s->get();
+	$y = $d = "";
 
 	if (preg_match('/\bCzech\b/i', $x)) {
 		$y = "cz";
@@ -535,4 +533,5 @@ function release_flag($x, $t)
 			return $y;
 		}
 	}
+	return '';
 }
