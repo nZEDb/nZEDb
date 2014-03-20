@@ -435,7 +435,7 @@ class NNTP extends Net_NNTP_Client
 
 			// Else return an error.
 		} else {
-			$message = 'Wrong Identifier type, array, int or string accepted.';
+			$message = 'Wrong Identifier type, array, int or string accepted. This type of var was passed: ' . gettype($identifiers);
 			$this->debugging->start("getMessages", $message, 3);
 			return $this->throwError($this->c->error($message));
 		}
@@ -1013,6 +1013,6 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function isError($data, $code = null)
 	{
-		return parent::isError($data, $code);
+		return PEAR::isError($data, $code);
 	}
 }

@@ -7,14 +7,24 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
-2014-03-19 -> kevin             ->      Move documentation into docs folder.
+2014-03-20 -> kevin		->	Remake delete_releases.php, was not working #1227
+2014-03-19 -> niel		->	Moving some files from base into new docs directory.
+2014-03-19 -> bart39	->	update groupid on existing predb records when adding requestid from allfilled.
+2014-03-19 -> kevin 	->	Move documentation into docs folder.
+						->	Fix bug where install was not working on dev.
+						->	Refactor step2 of the install.
+						->	Use PEAR directly for isError method.
+						->	Possible fix for wrong identifier types in getMessages NNTP.
+						->	Show identifier type when identifier type is wrong.
+						->	Refactor and fix shit tons of bugs in groups.php
+						->	Comment out nzb_check_all script in alpha theme, does not work correctly.
 2014-03-18 -> niel		->	Moving and renaming _build directory to .../nzedb/build
 							NOTE: This impacts  committing hooks, devs should run:
 								php nzedb/build/gitHooks.php
 							again, to fix the hooks.
 						->	Moving other dirs too.
 							NOTE: You may need to fix permissions on the smarty template_c dir as
-							 it has moved to .../libs/smarty/templates_c from .../smarty/templates_c
+							it has moved to .../libs/smarty/templates_c from .../smarty/templates_c
 2014-03-18 -> bart39	->	fixed issue with predb.me updates being blocked
 2014-03-18 -> kevin		->	Catch RecursiveIteratorIterator exceptions in resetdb.php if paths are not found.
 						->	Only have 1 admin theme (less maintenance).

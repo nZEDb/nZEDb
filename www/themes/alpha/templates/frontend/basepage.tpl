@@ -223,7 +223,7 @@
 
 		<!-- Additional nZEDb JS -->
 		<script> Holder.add_theme("dark", { background: "black", foreground: "gray", size: 16 } )</script>
-		<script>
+		<!-- <script>
 			jQuery(function(){
 				jQuery('.nzb_check, .nzb_check_all').click(function(){
 					btb();
@@ -245,7 +245,7 @@
 				}
 				btb();
 			});
-		</script>
+		</script> -->
 
 		{if $site->google_analytics_acc != ''}
 			<!-- Analytics
