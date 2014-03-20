@@ -5,9 +5,15 @@ $n = PHP_EOL;
 // Time the script started.
 $timeStart = TIME();
 
+// Include config.php
+require_once dirname(__FILE__) . '/../../../www/config.php';
+
+// ColorCLI class.
+$c = new ColorCLI();
+
 // Print arguments/usage.
 if (count($argv) < 2) {
-	exit(
+	exit($c->info($n .
 		'This deletes releases based on a list of criteria you pass.' . $n .
 		'Usage:' . $n . $n.
 		'List of supported criteria:' . $n .
@@ -27,12 +33,9 @@ if (count($argv) < 2) {
 		'Examples:' . $n .
 		$_SERVER['_'] . ' ' . $argv[0] . ' groupname=equals="alt.binaries.teevee" searchname=like="olympics 2014" postdate=bigger="5"' . $n .
 		$_SERVER['_'] . ' ' . $argv[0] . ' guid=equals="8fb5956bae3de4fb94edcc69da44d6883d586fd0"' . $n .
-		$_SERVER['_'] . ' ' . $argv[0] . ' size=smaller="104857600" size=bigger="2048" groupname=like="movies"' . $n
-	);
+		$_SERVER['_'] . ' ' . $argv[0] . ' size=smaller="104857600" size=bigger="2048" groupname=like="movies"'
+	));
 }
-
-// Include config.php
-require_once dirname(__FILE__) . '/../../../www/config.php';
 
 // Class of DB.
 $db = new DB();
@@ -55,22 +58,22 @@ foreach($argv as $arg) {
 $query = trim(preg_replace('/\s{2,}/', ' ', $query));
 
 // Print the query to the user, ask them if they want to continue using it.
-echo
+echo $c->primary(
 	'This is the query we have formatted using your list of criteria, you can run this in SQL to see if you like the results:' . $n .
 	$query . ';' . $n .
-	'If you are satisfied, types yes and press enter.' . $n;
+	'If you are satisfied, type yes and press enter.');
 
 // Check the users response.
 $userInput = trim(fgets(fopen('php://stdin', 'r')));
 if ($userInput !== 'yes') {
-	exit('You typed: "' . $userInput . '", the program will exit.' . $n);
+	exit($c->primary('You typed: "' . $userInput . '", the program will exit.'));
 }
 
 // Run the query, check if it picked up anything.
 $result = $db->query($query);
 $totalResults = count($result);
 if ($totalResults <= 0) {
-	exit('No releases were found to delete, try changing your criteria.' . $n);
+	exit($c->primary('No releases were found to delete, try changing your criteria.'));
 }
 
 // Start deleting releases.
@@ -88,10 +91,8 @@ foreach ($result as $release) {
 	);
 }
 echo $n;
-$c = new ColorCLI();
 echo $c->headerOver("Deleted " . $deletedCount . " release(s). This script ran for ");
 echo $c->header($consoleTools->convertTime(TIME() - $timeStart));
-echo $n;
 
 /**
  * Go over the usere's argument list, format part of the query.
