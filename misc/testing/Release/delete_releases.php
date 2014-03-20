@@ -228,6 +228,7 @@ function formatArgument($argument, $like, $db) {
  * @return string
  */
 function formatLike($string, $type, $like) {
+	$string = trim($string);
 	$newString = explode(' ', $string);
 	if (count($newString) > 1) {
 		$string = implode("%' AND {$type} {$like} '%", $newString);
