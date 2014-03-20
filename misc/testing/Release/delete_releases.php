@@ -231,7 +231,7 @@ function formatLike($string, $type, $like) {
 	$string = trim(preg_replace('/\s{2,}/', ' ', $string));
 	$newString = explode(' ', $string);
 	if (count($newString) > 1) {
-		$string = implode("%' AND {$type} {$like} '%", $newString);
+		$string = implode("%' AND {$type} {$like} '%", array_unique($newString));
 	}
 	return " {$like} '%" . $string . "%' ";
 }
