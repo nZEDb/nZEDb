@@ -1,36 +1,32 @@
 <?php
 require_once './config.php';
 
-
-
 $page = new AdminPage();
 $groups = new Groups();
-$category = new Category();
 $id = 0;
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action)
-{
+switch($action) {
 	case 'submit':
-		if ($_POST["id"] == "")
+		if ($_POST["id"] == "") {
+			// Add a new group.
 			$groups->add($_POST);
-		else
+		} else {
+			// Update an existing group.
 			$groups->update($_POST);
+		}
 		header("Location:".WWW_TOP."/group-list.php");
 		break;
 
 	case 'view':
 	default:
-			if (isset($_GET["id"]))
-			{
+			if (isset($_GET["id"])) {
 				$page->title = "Newsgroup Edit";
 				$id = $_GET["id"];
 				$group = $groups->getByID($id);
-			}
-			else
-			{
+			} else {
 				$page->title = "Newsgroup Add";
 				$group = array();
 				$group["active"] = "0";

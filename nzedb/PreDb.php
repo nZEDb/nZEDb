@@ -67,7 +67,7 @@ Class PreDb
 			}
 			$newMoovee = $this->retrieveAllfilledMoovee();
 			if ($this->echooutput) {
-				echo $this->c->primary($newMoovee . " \tRetrieved from Allfilled Moove.");
+				echo $this->c->primary($newMoovee . " \tRetrieved from Allfilled Moovee.");
 			}
 			$newTeevee = $this->retrieveAllfilledTeevee();
 			if ($this->echooutput) {
@@ -455,7 +455,7 @@ Class PreDb
 										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'Movies')", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abMooVee'), $md5, $matches2["requestid"], $groupid));
 										$newnames++;
 									} else {
-										$db->queryExec(sprintf('UPDATE predb SET requestid = %s WHERE md5 = %s', $matches2["requestid"], $md5));
+										$db->queryExec(sprintf('UPDATE predb SET requestid = %s, groupid = %s WHERE md5 = %s', $matches2["requestid"], $groupid, $md5));
 									}
 								}
 							}
@@ -492,7 +492,7 @@ Class PreDb
 										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'TV')", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abTeeVee'), $md5, $matches2["requestid"], $groupid));
 										$newnames++;
 									} else {
-										$db->queryExec(sprintf('UPDATE predb SET requestid = %s WHERE md5 = %s', $matches2["requestid"], $md5));
+										$db->queryExec(sprintf('UPDATE predb SET requestid = %s, groupid = %s WHERE md5 = %s', $matches2["requestid"], $groupid, $md5));
 									}
 								}
 							}
@@ -529,7 +529,7 @@ Class PreDb
 										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category) VALUES (%s, %s, now(), %s, %s, %s, %d, 'XXX')", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abErotica'), $md5, $matches2["requestid"], $groupid));
 										$newnames++;
 									} else {
-										$db->queryExec(sprintf('UPDATE predb SET requestid = %s WHERE md5 = %s', $matches2["requestid"], $md5));
+										$db->queryExec(sprintf('UPDATE predb SET requestid = %s, groupid = %s WHERE md5 = %s', $matches2["requestid"], $groupid, $md5));
 									}
 								}
 							}
@@ -566,7 +566,7 @@ Class PreDb
 										$db->queryExec(sprintf("INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid) VALUES (%s, %s, now(), %s, %s, %s, %d)", $title, $db->escapeString($matches2["predate"]), $db->escapeString('abForeign'), $md5, $matches2["requestid"], $groupid));
 										$newnames++;
 									} else {
-										$db->queryExec(sprintf('UPDATE predb SET requestid = %s WHERE md5 = %s', $matches2["requestid"], $md5));
+										$db->queryExec(sprintf('UPDATE predb SET requestid = %s, groupid = %s WHERE md5 = %s', $matches2["requestid"], $groupid, $md5));
 									}
 								}
 							}
