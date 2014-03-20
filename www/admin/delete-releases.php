@@ -64,38 +64,19 @@ $page->content = $page->smarty->fetch('delete-releases.tpl');
 $page->render();
 
 function parseResponse($response) {
-	$options = array(
-		'fromname'   => array ('value' => '', 'type' => ''),
-		'groupname'  => array ('value' => '', 'type' => ''),
-		'guid'       => array ('value' => '', 'type' => ''),
-		'name'       => array ('value' => '', 'type' => ''),
-		'searchname' => array ('value' => '', 'type' => ''),
-		'size'       => array ('value' => '', 'type' => ''),
-		'adddate'    => array ('value' => '', 'type' => ''),
-		'postdate'   => array ('value' => '', 'type' => '')
-	);
+	$options = array();
 	foreach ($response as $key => $value) {
 		switch ($key) {
 			case 'name':
-				$options['name']['value'] = $value;
-				break;
 			case 'searchname':
-				$options['searchname']['value'] = $value;
-				break;
 			case 'fromname':
-				$options['fromname']['value'] = $value;
-				break;
 			case 'groupname':
-				$options['groupname']['value'] = $value;
+			case 'adddate':
+			case 'postdate':
+				$options[$key]['value'] = $value;
 				break;
 			case 'relsize':
 				$options['size']['value'] = $value;
-				break;
-			case 'adddate':
-				$options['adddate']['value'] = $value;
-				break;
-			case 'postdate':
-				$options['postdate']['value'] = $value;
 				break;
 			case 'relguid':
 				$options['guid']['value'] = $value;

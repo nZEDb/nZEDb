@@ -1,7 +1,7 @@
 <h1>{$page->title}</h1>
 <p>
 	Delete releases with their covers/nzbs/etc based on these criteria (all fields are optional, leave them blank if you want).<br />
-	With "like" you can specify multiple words separated by spaces.
+	With "like" you can specify multiple words separated by spaces.<br />
 	It's faster and you have more options using the script in /misc/testing/release/delete_releases.php<br />
 	<strong>This can take a long time, don't reload the page! Consider running this in another tab or running the above script.</strong>
 </p>
