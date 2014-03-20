@@ -128,11 +128,16 @@ function formatArgument($argument, $like, $db) {
 					}
 					return ' AND groupid = ' . $group['id'];
 				case 'like':
-					$group = $db->queryOneRow('SELECT id FROM groups WHERE name ' . formatLike($args[2], 'name', $like));
-					if ($group === false) {
+					$groups = $db->query('SELECT id FROM groups WHERE name ' . formatLike($args[2], 'name', $like));
+					if (count($groups) === 0) {
 						exit('No groups were found with this pattern in your database: ' . $args[2] . PHP_EOL);
 					}
-					return ' AND groupid ' . $like . $group['id'];
+					$gQuery = ' AND groupid IN (';
+					foreach ($groups as $group) {
+						$gQuery .= $group['id'] . ',';
+					}
+					$gQuery = substr($gQuery, 0, strlen($gQuery) - 1) . ')';
+					return $gQuery;
 				default:
 					argumentError($argument);
 			}
