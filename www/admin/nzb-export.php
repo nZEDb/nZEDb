@@ -1,9 +1,5 @@
 <?php
 require_once './config.php';
-
-
-
-
 require_once nZEDb_LIB . 'Util.php';
 
 $db = new DB();
@@ -48,9 +44,7 @@ if (!empty($argc) || $page->isPostBack() )
 			$path = $path."/";
 
 		$releases = $rel->getForExport($postfrom, $postto, $group);
-		$s = new Sites();
 		$nzb = new NZB;
-		$site = $s->get();
 		$nzbCount = 0;
 		$total = count($releases);
 
@@ -61,7 +55,7 @@ if (!empty($argc) || $page->isPostBack() )
 				mkdir($path.$catname);
 
 			ob_start();
-			@readgzfile($nzb->getNZBPath($release["guid"], $site->nzbsplitlevel));
+			@readgzfile($nzb->getNZBPath($release["guid"]));
 			$nzbfile = ob_get_contents();
 			ob_end_clean();
 			$fh = fopen($path.$catname."/".safeFilename($release["searchname"]).".nzb", 'w');
