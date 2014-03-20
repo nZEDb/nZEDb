@@ -137,9 +137,9 @@ class ReleaseRemover
 		}
 
 		// Delete the releases.
-		$this->deleteReleases();
+		$string = $this->deleteReleases();
 
-		return true;
+		return ($this->browser ? $string : true);
 	}
 
 	/**
@@ -160,7 +160,7 @@ class ReleaseRemover
 		}
 
 		if ($this->browser) {
-			return 'Deleted ' . $deletedCount . ' release(s) in ' . $this->consoleTools->convertTime(TIME() - $this->timeStart);
+			return 'Success! Deleted ' . $deletedCount . ' release(s) in ' . $this->consoleTools->convertTime(TIME() - $this->timeStart);
 		} else {
 			echo self::N;
 			echo $this->color->headerOver("Deleted " . $deletedCount . " release(s). This script ran for ");
@@ -322,7 +322,7 @@ class ReleaseRemover
 	 */
 	protected function checkUserResponse()
 	{
-		if ($this->ignoreUserCheck) {
+		if ($this->ignoreUserCheck || $this->browser) {
 			return true;
 		}
 

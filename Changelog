@@ -10,6 +10,7 @@ Each update goes to the top of the file
 2014-03-20 -> kevin		->	Remake delete_releases.php, was not working #1227
 				->	Simplify NZB path methods.
 				->	Move delete_releases contents into a class so it can eventually be used on the browser, add an option to ignore the user check.
+				->	Add GUI version of delere releases in admin section of site.
 2014-03-19 -> niel		->	Moving some files from base into new docs directory.
 2014-03-19 -> bart39	->	update groupid on existing predb records when adding requestid from allfilled.
 2014-03-19 -> kevin 	->	Move documentation into docs folder.
