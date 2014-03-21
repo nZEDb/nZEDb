@@ -999,24 +999,41 @@ class Movie
 
 	public function parseMovieSearchName($releasename)
 	{
-		$matches = '';
+		// Check if it's a TV release.
 		if (preg_match('/\b[Ss]\d+[-._Ee]|\bE\d+\b/', $releasename)) {
 			return false;
 		}
+
+		// Check if it's foreign ?
 		$cat = new Category();
 		if (!$cat->isMovieForeign($releasename)) {
-			preg_match('/(?P<name>[\w. -]+)[-._( ](?P<year>(19|20)\d\d)/i', $releasename, $matches);
-			if (!isset($matches['year'])) {
-				preg_match('/^(?P<name>[\w. -]+[-._ ]((bd|br|dvd)rip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?(fix|pack)|ac3d|unrated|1080[ip]|720p))/i', $releasename, $matches);
+
+			$name = $year = '';
+			$followingList = '((1080|480|720)p|AC3D|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]264|xvid)';
+
+			// Initial scan of getting a year/name.
+			if (preg_match('/(?P<name>[\w. -]+)[-._( ](?P<year>(19|20)\d\d)/i', $releasename, $matches)) {
+				$name = $matches['name'];
+				$year = $matches['year'];
+
+			// If we didn't find a year, try to get a name.
+			} else if (preg_match('/^(?P<name>[\w. -]+[-._ ]' . $followingList . ')/i', $releasename, $matches)) {
+				$name = $matches['name'];
 			}
 
-			if (isset($matches['name'])) {
-				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $matches['name']);
-				$year = (isset($matches['year'])) ? $matches['year'] : '';
+			if ($name !== '') {
+				// Check if these are still in the name, remove them.
+				if (preg_match('/^(.+?) ' . $followingList . '\b/i', $name, $matches)) {
+					$name = $matches[1];
+				}
+
+				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
+
 				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 					if ($this->debug && $this->echooutput) {
-						$this->c->doEcho("DB name: {$releasename}");
+						$this->c->doEcho("DB name: {$releasename}", true);
 					}
+
 					return array('title' => trim($name), 'year' => $year);
 				}
 			}
