@@ -519,11 +519,8 @@ class Category
 			}
 
 			if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $group)) {
-				if (!preg_match('/(pdf|html|epub|mobi|azw)/', $this->releaseName)) {
-					if ($this->isPC()) {
-						return true;
-					}
-					return false;
+				if ($this->is0day($releasename)) {
+					return $this->tmpCat;
 				}
 
 				if ($this->isBook()) {
@@ -533,7 +530,7 @@ class Category
 				if ($this->categorizeforeign && $this->isBookForeign()) {
 					return true;
 				}
-				$this->tmpCat = Category::CAT_BOOKS_EBOOK;
+				$this->tmpCat = Category::CAT_MISC;
 				return true;
 			}
 

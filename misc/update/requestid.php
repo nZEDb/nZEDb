@@ -33,10 +33,10 @@ if (isset($argv[1]) && $argv[1] === "all") {
 	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND isrequestid = 1");
 //runs on all releases not already renamed
 } else if (isset($argv[1]) && $argv[1] === "full") {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1)");
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3)");
 //runs on all releases not already renamed limited by user
 } else if (isset($argv[1]) && is_numeric($argv[1])) {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1) ORDER BY postdate DESC LIMIT " . $argv[1]);
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3) ORDER BY postdate DESC LIMIT " . $argv[1]);
 }
 
 $total = $qry->rowCount();
