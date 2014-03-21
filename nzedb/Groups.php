@@ -343,8 +343,8 @@ class Groups
 				$this->db->escapeString($group["name"]),
 				$this->db->escapeString($group["description"]),
 				$this->formatNumberString($group["backfill_target"]),
-				$this->formatNumberString($group["active"]),
-				$this->formatNumberString($group["backfill"]),
+				$group["active"],
+				$group["backfill"],
 				$this->formatNumberString($group["minfilestoformrelease"], true),
 				$this->formatNumberString($group["minsizetoformrelease"], true),
 				$group["id"])

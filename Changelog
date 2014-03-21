@@ -19,6 +19,7 @@ Each update goes to the top of the file
 	* Put check in movies.php to see if title is at least 40% similar, add regex for a.b.moovee
 	* Changes to make Backfill.php and Binaries.php faster.
 	* Fix warnings and other stuff in binaries.php
+	* Fix bug where groups deactivate on save. #1226
 2014-03-20 ruhllatio
 	* Change DISTINCT preid count in monitor.php to reflect preid > 0 as matched - drastic speed improvement
 2014-03-20 niel
