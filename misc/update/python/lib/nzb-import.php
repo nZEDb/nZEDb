@@ -195,7 +195,7 @@ if (!isset($groups) || count($groups) == 0) {
 			} else {
 				$posteddate = $postdate[0];
 			}
-			$category = $categorize->determineCategory($cleanName, $groupName);
+			$category = $categorize->determineCategory($cleanName, $groupID);
 
 			// A 1% variance in size is considered the same size when the subject and poster are the same
 			$minsize = $totalsize * .99;

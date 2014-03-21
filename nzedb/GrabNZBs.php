@@ -99,7 +99,7 @@ class GrabNZBs
 			}
 			return;
 		} else {
-			$totalFiles = $totalsize = 0;
+			$totalFiles = $totalsize = $groupID =0;
 			$firstname = $postername = $postdate = array();
 
 			foreach ($xml->file as $file) {
@@ -171,7 +171,7 @@ class GrabNZBs
 
 			if ($importfailed === true) {
 				$this->db->queryExec(sprintf('DELETE from nzbs where collectionhash = %s', $this->db->escapeString($hash)));
-				$return;
+				return;
 			} else {
 				$propername = true;
 				$relguid = sha1(uniqid('', true) . mt_rand());
@@ -192,7 +192,7 @@ class GrabNZBs
 				$cleanName = utf8_encode($cleanName);
 				$fromname = utf8_encode($fromname);
 
-				$category = $this->categorize->determineCategory($cleanName, $groupName);
+				$category = $this->categorize->determineCategory($cleanName, $groupID);
 				// If a release exists, delete the nzb/collection/binaries/parts
 				if ($propername === true) {
 					$relid = $this->db->queryInsert(sprintf('INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, isrenamed, iscategorized) values (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1)', $this->db->escapeString($subject), $this->db->escapeString($cleanName), $totalFiles, $realgroupid, $this->db->escapeString($relguid), $this->db->escapeString($postdate['0']), $this->db->escapeString($fromname), $this->db->escapeString($totalsize), ($this->site->checkpasswordedrar === '1' ? -1 : 0), $category));

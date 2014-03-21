@@ -43,10 +43,10 @@ if ($bFound === true) {
 	$title = $newTitle['title'];
 	$preid = $newTitle['id'];
 	$groupname = $groups->getByNameByID($pieces[2]);
-	$determinedcat = $category->determineCategory($title, $groupname);
+	$groupid = $groups->getIDByName($pieces[2]);
+	$determinedcat = $category->determineCategory($title, $groupid);
 	$run = $db->queryDirect(sprintf("UPDATE releases set rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
 			. "preid = %d, reqidstatus = 1, isrenamed = 1, searchname = %s, categoryid = %d where id = %d", $preid, $db->escapeString($title), $determinedcat, $pieces[0]));
-	$groupid = $groups->getIDByName($pieces[2]);
 	if ($groupid !== 0) {
 		$md5 = md5($title);
 		$db->queryDirect(sprintf("INSERT IGNORE INTO predb (title, adddate, source, md5, requestid, groupid) VALUES "

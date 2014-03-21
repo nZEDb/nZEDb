@@ -381,7 +381,7 @@ class NZBImport
 					$this->db->escapeString($nzbDetails['from']),
 					$this->db->escapeString($nzbDetails['totalSize']),
 					($this->site->checkpasswordedrar == "1" ? -1 : 0),
-					$this->category->determineCategory($cleanName, $nzbDetails['groupName']),
+					$this->category->determineCategory($cleanName, $nzbDetails['groupID']),
 					$renamed
 				)
 			);
