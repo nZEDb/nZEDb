@@ -624,9 +624,8 @@ class Users
 			$contents = $sender["username"] . " has sent an invite to join " . $sitetitle . " to this email address.<br>To accept the invitation click <a href=\"$url\">this link</a>\n";
 		}
 
-		if (sendEmail($emailto, $subject, $contents, $siteemail)) {
-			$this->addInvite($uid, $token);
-		}
+		sendEmail($emailto, $subject, $contents, $siteemail);
+		$this->addInvite($uid, $token);
 
 		return $url;
 	}
