@@ -260,32 +260,19 @@ class Backfill
 
 		if ($this->echo) {
 			$this->c->doEcho(
-				'Group ' .
-				$data['group'] .
-				': server has ' .
+				$this->c->set256($this->primary) .
+				'Group ' . $data['group'] .
+				"'s oldest article is " .
 				number_format($data['first']) .
-				' - ' .
+				', newest is ' .
 				number_format($data['last']) .
-				', or ~' .
-				((int)
-					((
-						$this->postdate($this->nntp, $data['last'], false, $groupArr['name'], false, 'oldest') -
-						$this->postdate($this->nntp, $data['first'], false, $groupArr['name'], false, 'oldest')) /
-						86400
-					)) .
-				" days.\nLocal first = " .
+				".\nOur target article is " .
+
+				number_format($targetpost) .
+				'. Our oldest article is article ' .
 				number_format($groupArr['first_record']) .
-				' (' .
-				((int)
-					((
-						date('U') -
-						$this->postdate($this->nntp, $groupArr['first_record'], false, $groupArr['name'], false, 'oldest')) /
-						86400
-					)) .
-				' days).  Backfill target of ' .
-				$groupArr['backfill_target'] .
-				' days is post ' .
-				$targetpost, true
+				'.' .
+				$this->c->rsetColor()
 			);
 		}
 
@@ -298,13 +285,6 @@ class Backfill
 		// Just in case this is the last chunk we needed.
 		if ($targetpost > $first) {
 			$first = $targetpost;
-		}
-
-		// In case postdate doesn't get a date.
-		if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL') {
-			$firstr_date = time();
-		} else {
-			$firstr_date = strtotime($groupArr['first_record_postdate']);
 		}
 
 		while ($done === false) {
@@ -327,14 +307,27 @@ class Backfill
 
 			flush();
 			$process = $this->safepartrepair ? 'update' : 'backfill';
-			$this->binaries->scan($this->nntp, $groupArr, $first, $last, $process);
-			$newdate = $this->postdate($this->nntp, $first, false, $groupArr['name'], true, 'oldest');
+			$lastMsg = $this->binaries->scan($this->nntp, $groupArr, $first, $last, $process);
 
-			if ($newdate !== false) {
-				$firstr_date = $newdate;
+			// Get the oldest date.
+			if (isset($lastMsg['firstArticleDate'])) {
+				// Try to get it from the oldest pulled article.
+				$newdate = strtotime($lastMsg['firstArticleDate']);
+			} else {
+				// If above failed, try to get it with postdate method.
+				$newdate = $this->postdate($this->nntp, $first, false, $groupArr['name'], true, 'oldest');
+
+				if ($newdate === false) {
+					// If above failed, try to get the old date, and if that fails set the current date.
+					if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL') {
+						$newdate = time();
+					} else {
+						$newdate = strtotime($groupArr['first_record_postdate']);
+					}
+				}
 			}
 
-			$this->db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $this->db->from_unixtime($firstr_date), $this->db->escapeString($first), $groupArr['id']));
+			$this->db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $this->db->from_unixtime($newdate), $this->db->escapeString($first), $groupArr['id']));
 			if ($first == $targetpost) {
 				$done = true;
 			} else {
@@ -346,8 +339,6 @@ class Backfill
 				}
 			}
 		}
-		// Set group's first postdate.
-		$this->db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d', $this->db->from_unixtime($firstr_date), $groupArr['id']));
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 
@@ -600,13 +591,6 @@ class Backfill
 			$first = $targetpost;
 		}
 
-		// In case postdate doesn't get a date.
-		if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL') {
-			$firstr_date = time();
-		} else {
-			$firstr_date = strtotime($groupArr['first_record_postdate']);
-		}
-
 		while ($done === false) {
 			$this->binaries->startLoop = microtime(true);
 
@@ -632,16 +616,23 @@ class Backfill
 
 			// Get the oldest date.
 			if (isset($lastMsg['firstArticleDate'])) {
+				// Try to get it from the oldest pulled article.
 				$newdate = strtotime($lastMsg['firstArticleDate']);
 			} else {
+				// If above failed, try to get it with postdate method.
 				$newdate = $this->postdate($this->nntp, $first, false, $groupArr['name'], true, 'oldest');
+
+				if ($newdate === false) {
+					// If above failed, try to get the old date, and if that fails set the current date.
+					if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL') {
+						$newdate = time();
+					} else {
+						$newdate = strtotime($groupArr['first_record_postdate']);
+					}
+				}
 			}
 
-			if ($newdate !== false) {
-				$firstr_date = $newdate;
-			}
-
-			$this->db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $this->db->from_unixtime($firstr_date), $this->db->escapeString($first), $groupArr['id']));
+			$this->db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $this->db->from_unixtime($newdate), $this->db->escapeString($first), $groupArr['id']));
 			if ($first == $targetpost) {
 				$done = true;
 			} else {
@@ -653,8 +644,6 @@ class Backfill
 				}
 			}
 		}
-		// Set group's first postdate.
-		$this->db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, last_updated = NOW() WHERE id = %d', $this->db->from_unixtime($firstr_date), $groupArr['id']));
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 

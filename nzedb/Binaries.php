@@ -801,7 +801,7 @@ class Binaries
 						' blacklisted, ' .
 						count($msgsignored) .
 						" not yEnc."
-					), true
+					)
 				);
 			}
 
