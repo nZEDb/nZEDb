@@ -101,8 +101,8 @@ class Backfill
 		$this->echo = ($echo && nZEDb_ECHOCLI);
 		$this->c = new ColorCLI();
 		$this->db = new DB();
-		if (nZEDb_DEBUG || nZEDb_LOGGING) {
-			$this->debug = true;
+		$this->debug = (nZEDb_LOGGING || nZEDb_DEBUG);
+		if ($this->debug) {
 			$this->debugging = new Debugging("Backfill");
 		}
 
