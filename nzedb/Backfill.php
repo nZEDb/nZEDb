@@ -91,6 +91,11 @@ class Backfill
 	protected $startGroup;
 
 	/**
+	 * @var int
+	 */
+	protected $startLoop;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param null $site Object with site settings.
@@ -920,10 +925,12 @@ class Backfill
 		}
 
 		if ($data['last'] == PHP_INT_MAX) {
+
+			$dmessage = "Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug.\n";
+
 			if ($this->debug) {
-				$dmessage = "Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug.\n";
+				$this->debugging->start("daytopost", $dmessage, 1);
 			}
-			$this->debugging->start("daytopost", $dmessage, 1);
 			exit($this->c->info($dmessage));
 		}
 
