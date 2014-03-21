@@ -37,6 +37,8 @@ foreach ($arr as &$value)
 }
 unset($value);
 
+$db->optimise(false, 'full');
+
 if ($db->dbSystem == 'mysql') {
 	$sql = "SHOW table status";
 } else {
