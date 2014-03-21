@@ -19,7 +19,7 @@ class Movie
 	 * Current title being passed through various sites/api's.
 	 * @var string
 	 */
-	protected $currentTitle;
+	protected $currentTitle = '';
 
 	/**
 	 * @var Debugging
@@ -560,22 +560,24 @@ class Movie
 		$ret = array();
 		$ret['title'] = $tmdbLookup['title'];
 
-		// Check the similarity.
-		similar_text($this->currentTitle, $ret['title'], $percent);
-		if ($percent < 40) {
-			if ($this->debug) {
-				$this->debugging->start(
-					'fetchTmdbProperties',
-					'Found :(' .
-					$ret['title'] .
-					') from TMDB, but it\'s only ' .
-					$percent .
-					'% similar to (' .
-					$this->currentTitle . ')',
-					5
-				);
+		if ($this->currentTitle !== '') {
+			// Check the similarity.
+			similar_text($this->currentTitle, $ret['title'], $percent);
+			if ($percent < 40) {
+				if ($this->debug) {
+					$this->debugging->start(
+						'fetchTmdbProperties',
+						'Found :(' .
+						$ret['title'] .
+						') from TMDB, but it\'s only ' .
+						$percent .
+						'% similar to (' .
+						$this->currentTitle . ')',
+						5
+					);
+				}
+				return false;
 			}
-			return false;
 		}
 
 		$ret['tmdb_id'] = $tmdbLookup['id'];
@@ -673,7 +675,7 @@ class Movie
 				}
 			}
 
-			if (isset($ret['title'])) {
+			if ($this->currentTitle !== '' && isset($ret['title'])) {
 				// Check the similarity.
 				similar_text($this->currentTitle, $ret['title'], $percent);
 				if ($percent < 40) {
