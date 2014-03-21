@@ -636,10 +636,6 @@ class Binaries
 
 		$msgCount = count($msgs);
 		if ($msgCount > 0) {
-			/*// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
-			if (nZEDb_DEBUG) {
-				$colnames = $orignames = $notyenc = array();
-			}*/
 
 			// Get highest and lowest article numbers/dates.
 			$iterator1 = 0;
@@ -858,11 +854,16 @@ class Binaries
 				$lastCollectionHash = $lastBinaryHash = "";
 				$lastCollectionID = $lastBinaryID = -1;
 
+				// Loop through the reformed article headers.
 				foreach ($this->message AS $subject => $data) {
 					if (isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '') {
+
 						$this->db->beginTransaction();
+
 						$collectionHash = $data['CollectionHash'];
-						if ($lastCollectionHash == $collectionHash) {
+
+						// Check if the last collection hash is the same.
+						if ($lastCollectionHash == $collectionHash && $lastCollectionID !== -1) {
 							$collectionID = $lastCollectionID;
 						} else {
 							$lastCollectionHash = $collectionHash;
@@ -870,7 +871,7 @@ class Binaries
 							$lastBinaryID = -1;
 
 							$cres = $this->db->queryOneRow(sprintf("SELECT id, subject FROM ${group['cname']} WHERE collectionhash = %s", $this->db->escapeString($collectionHash)));
-							if (array_key_exists($collectionHash, $collectionHashes)) {
+							if ($cres && array_key_exists($collectionHash, $collectionHashes)) {
 								$collectionID = $collectionHashes[$collectionHash];
 								if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
 									$this->db->queryExec(sprintf("UPDATE ${group['cname']} SET subject = %s WHERE id = %s", $this->db->escapeString(substr($subject, 0, 255)), $collectionID));
