@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 2014-03-21 kevin
 	* Fix Math bug in predb pages.
+	* Get rid of duplicate api/rss templates.
 2014-03-20 ruhllatio
 	* Change DISTINCT preid count in monitor.php to reflect preid > 0 as matched - drastic speed improvement
 2014-03-20 niel
