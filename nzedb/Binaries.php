@@ -302,7 +302,7 @@ class Binaries
 		if ($groupArr['last_record'] == 0) {
 			// For new newsgroups - determine here how far you want to go back.
 			if ($this->NewGroupScanByDays) {
-				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, $data, true);
+				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, $data);
 				if ($first == '') {
 					if ($this->echo) {
 						$this->c->doEcho($this->c->warning("Skipping group: {$groupArr['name']}"), true);
@@ -589,50 +589,50 @@ class Binaries
 		$this->startCleaning = microtime(true);
 		$rangerequested = range($first, $last);
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
-		if (is_array($msgs)) {
+
+		$msgCount = count($msgs);
+		if ($msgCount > 0) {
 			/*// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
 			if (nZEDb_DEBUG) {
 				$colnames = $orignames = $notyenc = array();
 			}*/
 
-			// Sort the articles before processing, alphabetically by subject. This is to try to use the
-			// shortest subject and those without .vol01 in the subject
-			usort($msgs, function ($elem1, $elem2) {
-				return strcmp($elem1['Subject'], $elem2['Subject']);
-			});
+			// Get highest and lowest article numbers/dates.
+			$iterator1 = 0;
+			$iterator2 = $msgCount-1;
+			while (true) {
+				if (!isset($returnArray['firstArticleNumber']) && isset($msgs[$iterator1]['Number'])) {
+					$returnArray['firstArticleNumber'] = $msgs[$iterator1]['Number'];
+					$returnArray['firstArticleDate'] = $msgs[$iterator1]['Date'];
+				}
+
+				if (!isset($returnArray['lastArticleNumber']) && isset($msgs[$iterator2]['Number'])) {
+					$returnArray['lastArticleNumber'] = $msgs[$iterator2]['Number'];
+					$returnArray['lastArticleDate'] = $msgs[$iterator2]['Date'];
+				}
+
+				// Break if we found non empty articles.
+				if (isset($returnArray['firstArticleNumber']) && isset($returnArray['lastArticleNumber'])) {
+					break;
+				}
+
+				// Break out if we couldn't find anything.
+				if ($iterator1++ >= $msgCount-1 || $iterator2-- <= 0) {
+					break;
+				}
+			}
+
+			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
+			usort($msgs,
+				function ($elem1, $elem2) {
+					return strcmp($elem1['Subject'], $elem2['Subject']);
+				}
+			);
 
 			// Loop articles, figure out files/parts.
 			foreach ($msgs AS $msg) {
 				if (!isset($msg['Number'])) {
 					continue;
-				}
-
-				if (isset($returnArray['firstArticleNumber'])) {
-					if ($msg['Number'] < $returnArray['firstArticleNumber']) {
-						$returnArray['firstArticleNumber'] = $msg['Number'];
-					}
-					if (isset($msg['Date'])) {
-						$returnArray['firstArticleDate'] = $msg['Date'];
-					}
-				} else {
-					$returnArray['firstArticleNumber'] = $msg['Number'];
-					if (isset($msg['Date'])) {
-						$returnArray['firstArticleDate'] = $msg['Date'];
-					}
-				}
-
-				if (isset($returnArray['lastArticleNumber'])) {
-					if ($msg['Number'] > $returnArray['lastArticleNumber']) {
-						$returnArray['lastArticleNumber'] = $msg['Number'];
-					}
-					if (isset($msg['Date'])) {
-						$returnArray['lastArticleDate'] = $msg['Date'];
-					}
-				} else {
-					$returnArray['lastArticleNumber'] = $msg['Number'];
-					if (isset($msg['Date'])) {
-						$returnArray['lastArticleDate'] = $msg['Date'];
-					}
 				}
 
 				// If set we are running in partRepair mode
@@ -653,32 +653,19 @@ class Binaries
 				$msgsreceived[] = $msg['Number'];
 				$partnumber = '';
 				// Add yEnc to headers that do not have them, but are nzbs and that have the part number at the end of the header
-				if (!preg_match('/yEnc/i', $msg['Subject'])) {
-					if (preg_match('/.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
+				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
 						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
-					}
 				}
 
-				/* 				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+nzb.+\(\d+\/\d+\)$/', $msg['Subject'])) {
-				  if (preg_match('/.+\.nzb.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
-				  $msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
-				  }
-				  }
-				  if (preg_match('/"(Usenet Index Post) \d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
-				  $msg['Subject'] = preg_replace('/Usenet Index Post/', $number[1] . '.nzb ', $msg['Subject']);
-				  }
-
-				  if (preg_match('/"(Usenet Index Post) \d+_\d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
-				  continue;
-				  }
-				 */
 				if (preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
 					continue;
 				}
+
 				$matches = '';
 				// Not a binary post most likely.. continue.
 				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*| \[S\d+E\d+\]|\s*".+"\s*)\((\d+)\/(\d+)\)/', $msg['Subject'], $matches)) {
-					if ($this->showdroppedyencparts === '1' && !preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject'])) {
+
+					if ($this->showdroppedyencparts === '1') {
 						file_put_contents(nZEDb_RES . 'logs' . DS . 'not_yenc' . $groupArr['name'] . ".dropped.log", $msg['Subject'] . PHP_EOL, FILE_APPEND);
 					}
 
@@ -706,7 +693,8 @@ class Binaries
 				if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $partless, $filecnt)) {
 					$filecnt[2] = $filecnt[6] = 0;
 					$nofiles = true;
-					if ($this->showdroppedyencparts === '1' && preg_match('/yEnc/i', $msg['Subject'])) {
+
+					if ($this->showdroppedyencparts === '1') {
 						file_put_contents(nZEDb_RES . "logs" . DS . 'no_parts' . $groupArr['name'] . ".log", $msg['Subject'] . PHP_EOL, FILE_APPEND);
 					}
 				}
