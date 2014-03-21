@@ -332,15 +332,6 @@ class Movie
 		//check imdb for movie info
 		$imdb = $this->fetchImdbProperties($imdbId);
 		if (!$imdb && !$tmdb) {
-			if ($this->echooutput && $this->service != '') {
-				$this->c->doEcho(
-					$this->c->info(
-						"Unable to get movie information for IMDB ID: " .
-						$imdbId .
-						" on tmdb or imdb.com"
-					)
-				);
-			}
 			return false;
 		}
 
