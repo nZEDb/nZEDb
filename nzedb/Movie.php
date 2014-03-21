@@ -16,6 +16,22 @@ class Movie
 	const SRC_DVD = 5;
 
 	/**
+	 * Current title being passed through various sites/api's.
+	 * @var string
+	 */
+	protected $currentTitle;
+
+	/**
+	 * @var Debugging
+	 */
+	protected $debugging;
+
+	/**
+	 * @var bool
+	 */
+	protected $debug;
+
+	/**
 	 * @param bool $echooutput
 	 */
 	function __construct($echooutput = false)
@@ -34,6 +50,10 @@ class Movie
 		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
 		$this->service = '';
 		$this->c = new ColorCLI();
+		if (nZEDb_DEBUG || nZEDb_LOGGING) {
+			$this->debug = true;
+			$this->debugging = new Debugging('Movie');
+		}
 	}
 
 	/**
@@ -539,6 +559,25 @@ class Movie
 		}
 		$ret = array();
 		$ret['title'] = $tmdbLookup['title'];
+
+		// Check the similarity.
+		similar_text($this->currentTitle, $ret['title'], $percent);
+		if ($percent < 40) {
+			if ($this->debug) {
+				$this->debugging->start(
+					'fetchTmdbProperties',
+					'Found :(' .
+					$ret['title'] .
+					') from TMDB, but it\'s only ' .
+					$percent .
+					'% similar to (' .
+					$this->currentTitle . ')',
+					5
+				);
+			}
+			return false;
+		}
+
 		$ret['tmdb_id'] = $tmdbLookup['id'];
 		$ImdbID = str_replace('tt', '', $tmdbLookup['imdb_id']);
 		$ret['imdb_id'] = $ImdbID;
@@ -634,6 +673,26 @@ class Movie
 				}
 			}
 
+			if (isset($ret['title'])) {
+				// Check the similarity.
+				similar_text($this->currentTitle, $ret['title'], $percent);
+				if ($percent < 40) {
+					if ($this->debug) {
+						$this->debugging->start(
+							'fetchImdbProperties',
+							'Found :(' .
+							$ret['title'] .
+							') from IMDB, but it\'s only ' .
+							$percent .
+							'% similar to (' .
+							$this->currentTitle . ')',
+							5
+						);
+					}
+					return false;
+				}
+			}
+
 			//actors
 			if (preg_match('/<table class="cast_list">(.+)<\/table>/s', $buffer, $hit)) {
 				if (preg_match_all('/<a.*?href="\/name\/(nm\d{1,8})\/.+"name">(.+)<\/span>/i', $hit[0], $results, PREG_PATTERN_ORDER)) {
@@ -659,11 +718,9 @@ class Movie
 	{
 		$imdbId = $this->parseImdb($buffer);
 		if ($imdbId !== false) {
-			if ($service == 'nfo') {
-				$this->service = 'nfo';
-			}
+			$this->service = $service;
 			if ($this->echooutput && $this->service != '') {
-				$this->c->doEcho($this->c->headerOver($service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId), true);
+				$this->c->doEcho($this->c->headerOver($service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId));
 			}
 
 			$this->db->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', $this->db->escapeString($imdbId), $id));
@@ -672,7 +729,9 @@ class Movie
 			if ($processImdb == 1) {
 				$movCheck = $this->getMovieInfo($imdbId);
 				if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000)) {
-					$this->updateMovieInfo($imdbId);
+					if ($this->updateMovieInfo($imdbId) === false) {
+						$this->db->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', 0000000, $id));
+					}
 				}
 			}
 		}
@@ -713,7 +772,7 @@ class Movie
 				$parsed = $this->parseMovieSearchName($arr['name']);
 				if ($parsed !== false) {
 					$year = false;
-					$moviename = $parsed['title'];
+					$this->currentTitle = $moviename = $parsed['title'];
 					$movienameonly = $moviename;
 					if ($parsed['year'] != '') {
 						$year = true;
@@ -1009,7 +1068,7 @@ class Movie
 		if (!$cat->isMovieForeign($releasename)) {
 
 			$name = $year = '';
-			$followingList = '((1080|480|720)p|AC3D|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]264|xvid)';
+			$followingList = '((1080|480|720)p|AC3D|Directors|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]264|xvid)';
 
 			// Initial scan of getting a year/name.
 			if (preg_match('/(?P<name>[\w. -]+)[-._( ](?P<year>(19|20)\d\d)/i', $releasename, $matches)) {
@@ -1017,13 +1076,13 @@ class Movie
 				$year = $matches['year'];
 
 			// If we didn't find a year, try to get a name.
-			} else if (preg_match('/^(?P<name>[\w. -]+[-._ ]' . $followingList . ')/i', $releasename, $matches)) {
+			} else if (preg_match('/(?P<name>[\w. -]+[-._ ]' . $followingList . ')/i', $releasename, $matches)) {
 				$name = $matches['name'];
 			}
 
 			if ($name !== '') {
 				// Check if these are still in the name, remove them.
-				if (preg_match('/^(.+?) ' . $followingList . '\b/i', $name, $matches)) {
+				if (preg_match('/(.+?)' . $followingList . '/i', $name, $matches)) {
 					$name = $matches[1];
 				}
 
