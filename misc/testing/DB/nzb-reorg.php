@@ -8,7 +8,6 @@ $db = new DB();
 $nzb = new NZB();
 $consoleTools = new ConsoleTools();
 
-
 $newLevel = $argv[1];
 $sourcePath = $argv[2];
 $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($sourcePath));

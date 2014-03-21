@@ -20,8 +20,6 @@ $releases = new Releases();
 $count = $total = $all = 0;
 $nzb = new NZB();
 $ri = new ReleaseImage();
-$s = new Sites();
-$site = $s->get();
 $consoleTools = new ConsoleTools();
 $size = ' size ';
 if ($argv[2] === 'near') {
@@ -44,7 +42,7 @@ do {
 	echo $c->header(number_format($total) . " Releases have Duplicates");
 	if (count($resrel) > 0) {
 		foreach ($resrel as $rowrel) {
-			$nzbpath = $nzb->getNZBPath($rowrel['guid'], $site->nzbsplitlevel);
+			$nzbpath = $nzb->getNZBPath($rowrel['guid']);
 			if (isset($argv[3]) && is_dir($argv[3])) {
 				$path = $argv[3];
 				if (substr($path, strlen($path) - 1) != '/') {
@@ -56,7 +54,7 @@ do {
 					}
 				}
 			}
-			if ($releases->fastDelete($rowrel['id'], $rowrel['guid'], $site) !== false) {
+			if ($releases->fastDelete($rowrel['id'], $rowrel['guid']) !== false) {
 				$consoleTools->overWritePrimary('Deleted: ' . number_format(++$count) . " Duplicate Releases");
 			}
 		}

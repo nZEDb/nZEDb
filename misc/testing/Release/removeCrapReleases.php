@@ -52,14 +52,12 @@ function deleteReleases($sql, $type)
 {
 	global $delete;
 	$releases = new Releases();
-	$s = new Sites();
-	$site = $s->get();
 	$c = new ColorCLI();
 	$delcount = 0;
 	foreach ($sql as $rel) {
 		if ($delete == 1) {
 			echo $c->primary('Deleting: ' . $type . ': ' . $rel['searchname']);
-			$releases->fastDelete($rel['id'], $rel['guid'], $site);
+			$releases->fastDelete($rel['id'], $rel['guid']);
 		} else {
 			echo $c->primary('Would be deleting: ' . $type . ': ' . $rel['searchname']);
 		}
