@@ -420,6 +420,11 @@ class Category
 	//	Groups.
 	public function byGroup()
 	{
+		// RequestID does not send a group.
+		if ($this->groupID === '') {
+			return false;
+		}
+
 		$group = $this->db->queryOneRow('SELECT LOWER(name) AS name FROM groups WHERE id = ' . $this->groupID);
 		if ($group !== false) {
 			$group = $group['name'];
