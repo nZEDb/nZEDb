@@ -519,8 +519,8 @@ class Category
 			}
 
 			if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $group)) {
-				if ($this->is0day($releasename)) {
-					return $this->tmpCat;
+				if ($this->is0day()) {
+					return true;
 				}
 
 				if ($this->isBook()) {
