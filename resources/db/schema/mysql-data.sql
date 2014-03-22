@@ -73,6 +73,8 @@ INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, descr
   VALUES (8, 'alt.binaries.*', 'hdnectar|nzbcave', 1, 1, 0, 'Bad releases.');
 INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, description)
   VALUES (9, 'alt.binaries.*', 'Passworded', 1, 1, 0, 'Removes passworded releases.');
+INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, description)
+  VALUES (10, 'alt\\.binaries\\.(boneless|movies\\.divx)', '((Frkz|info)@XviD2?|x?VIDZ?@pwrpst|movies@movies?)\\.net|(hsv\\.stoned@hotmail|unequal87@gmail|ilove@movies)\\.com', 2, 1, 0, 'Virus codec posters.');
 
 INSERT INTO forumpost (forumid, parentid, userid, subject, message, locked, sticky, replies, createddate, updateddate)
   VALUES (1, 0, 1, 'Welcome to nZEDb!', 'Feel free to leave a message.', 0, 0, 0, NOW(), NOW());

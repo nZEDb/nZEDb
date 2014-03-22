@@ -154,17 +154,50 @@ class Binaries
 	protected $echo;
 
 	/**
+	 * @var bool
+	 */
+	protected $debug = false;
+
+	/**
+	 * @var int
+	 */
+	protected $startHeaders;
+
+	/**
+	 * @var int
+	 */
+	public $startLoop;
+
+	/**
+	 * @var int
+	 */
+	protected $startGroup;
+
+	/**
+	 * @var int
+	 */
+	protected $startCleaning;
+
+	/**
+	 * @var int
+	 */
+	protected $startUpdate;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct($echo = true)
 	{
 		$this->echo = ($echo && nZEDb_ECHOCLI);
+		$this->debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 		$this->backfill = new Backfill($this->site);
 		$this->c = new ColorCLI();
 		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->consoleTools = new ConsoleTools();
 		$this->db = new DB();
-		$this->debugging = new Debugging("Binaries");
+		if ($this->debug) {
+			$this->debugging = new Debugging("Binaries");
+		}
 		$this->groups = new Groups($this->db);
 
 		$s = new Sites();
@@ -195,20 +228,26 @@ class Binaries
 	public function updateAllGroups($nntp)
 	{
 		if (!isset($nntp)) {
-			$message = "Not connected to usenet(binaries->updateAllGroups).";
-			$this->debugging->start("updateAllGroups", $message, 1);
-			exit($this->c->error($message));
+			$dMessage = "Not connected to usenet(binaries->updateAllGroups).";
+			if ($this->debug) {
+				$this->debugging->start("updateAllGroups", $dMessage, 1);
+			}
+			exit($this->c->error($dMessage));
 		}
 
 		if ($this->hashcheck == 0) {
-			$message = "We have updated the way collections are created, the collection table has to be updated to
+			$dMessage = "We have updated the way collections are created, the collection table has to be updated to
 				use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.";
-			$this->debugging->start("updateAllGroups", $message, 5);
-			echo $this->c->warning($message);
+			if ($this->debug) {
+				$this->debugging->start("updateAllGroups", $dMessage, 5);
+			}
+			echo $this->c->warning($dMessage);
 			if (trim(fgets(fopen('php://stdin', 'r'))) != 'yes') {
-				$message = "If you want to run this manually, there is a script in misc/testing/DB/ called reset_Collections.php";
-				$this->debugging->start("updateAllGroups", $message, 1);
-				exit($this->c->primary($message));
+				$dMessage = "If you want to run this manually, there is a script in misc/testing/DB/ called reset_Collections.php";
+				if ($this->debug) {
+					$this->debugging->start("updateAllGroups", $dMessage, 1);
+				}
+				exit($this->c->primary($dMessage));
 			}
 			$relss = new Releases($this->echo);
 			$relss->resetCollections();
@@ -218,36 +257,44 @@ class Binaries
 
 		if ($res) {
 			$alltime = microtime(true);
-			$message = "Updating: " . sizeof($res) . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No');
-			$this->debugging->start("updateAllGroups", $message, 5);
+			$dMessage = "Updating: " . count($res) . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No');
+			if ($this->debug) {
+				$this->debugging->start("updateAllGroups", $dMessage, 5);
+			}
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->header($message), true);
+				$this->c->doEcho($this->c->header($dMessage), true);
 			}
 
 			foreach ($res as $groupArr) {
 				$this->message = array();
-				$message = "Starting group " . $counter . ' of ' . sizeof($res);
-				$this->debugging->start("updateAllGroups", $message, 5);
+				$dMessage = "Starting group " . $counter . ' of ' . count($res);
+				if ($this->debug) {
+					$this->debugging->start("updateAllGroups", $dMessage, 5);
+				}
 
 				if ($this->echo) {
-					$this->c->doEcho($this->c->header($message), true);
+					$this->c->doEcho($this->c->header($dMessage), true);
 				}
 				$this->updateGroup($groupArr, $nntp);
 				$counter++;
 			}
-			$message = 'Updating completed in ' . number_format(microtime(true) - $alltime, 2) . " seconds.";
-			$this->debugging->start("updateAllGroups", $message, 5);
+			$dMessage = 'Updating completed in ' . number_format(microtime(true) - $alltime, 2) . " seconds.";
+			if ($this->debug) {
+				$this->debugging->start("updateAllGroups", $dMessage, 5);
+			}
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->primary($message), true);
+				$this->c->doEcho($this->c->primary($dMessage), true);
 			}
 		} else {
-			$message = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
-			$this->debugging->start("updateAllGroups", $message, 4);
+			$dMessage = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
+			if ($this->debug) {
+				$this->debugging->start("updateAllGroups", $dMessage, 4);
+			}
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->warning($message), true);
+				$this->c->doEcho($this->c->warning($dMessage), true);
 			}
 		}
 	}
@@ -263,9 +310,11 @@ class Binaries
 	public function updateGroup($groupArr, $nntp)
 	{
 		if (!isset($nntp)) {
-			$message = "Not connected to usenet(binaries->updateGroup).";
-			$this->debugging->start("updateGroup", $message, 1);
-			exit($this->c->error($message));
+			$dMessage = "Not connected to usenet(binaries->updateGroup).";
+			if ($this->debug) {
+				$this->debugging->start("updateGroup", $dMessage, 1);
+			}
+			exit($this->c->error($dMessage));
 		}
 
 		$this->startGroup = microtime(true);
@@ -297,12 +346,10 @@ class Binaries
 		}
 
 		// Get first and last part numbers from newsgroup.
-		$db = $this->db;
-
 		if ($groupArr['last_record'] == 0) {
 			// For new newsgroups - determine here how far you want to go back.
 			if ($this->NewGroupScanByDays) {
-				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, $data, true);
+				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, $data);
 				if ($first == '') {
 					if ($this->echo) {
 						$this->c->doEcho($this->c->warning("Skipping group: {$groupArr['name']}"), true);
@@ -317,14 +364,14 @@ class Binaries
 				}
 			}
 
-			$left = $this->messagebuffer;
-			$last = $grouplast = $data['last'] - $left;
+			$left = (int)$this->messagebuffer;
+			$last = (int)($grouplast = $data['last'] - $left);
 		} else {
-			$first = $groupArr['last_record'];
+			$first = (int)$groupArr['last_record'];
 
 			// Leave 50%+ of the new articles on the server for next run (allow server enough time to actually make parts available).
 			$newcount = $data['last'] - $first;
-			$left = 0;
+
 			if ($newcount > $this->messagebuffer) {
 				// Drop the remaining plus $this->messagebuffer, pick them up on next run
 				if ($newcount < (2 * $this->messagebuffer)) {
@@ -352,7 +399,7 @@ class Binaries
 
 			$groupArr['first_record_postdate'] = $first_record_postdate;
 
-			$db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s WHERE id = %d', $db->from_unixtime($first_record_postdate), $groupArr['id']));
+			$this->db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s WHERE id = %d', $this->db->from_unixtime($first_record_postdate), $groupArr['id']));
 		}
 
 		// Defaults for post record first/last postdate
@@ -465,14 +512,14 @@ class Binaries
 
 					$groupArr['first_record_postdate'] = $first_record_postdate;
 
-					$db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $scanSummary['firstArticleNumber'], $db->from_unixtime($db->escapeString($first_record_postdate)), $groupArr['id']));
+					$this->db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $scanSummary['firstArticleNumber'], $this->db->from_unixtime($this->db->escapeString($first_record_postdate)), $groupArr['id']));
 				}
 
 				if (isset($scanSummary['lastArticleDate'])) {
 					$last_record_postdate = strtotime($scanSummary['lastArticleDate']);
 				}
 
-				$db->queryExec(sprintf('UPDATE groups SET last_record = %s, last_record_postdate = %s, last_updated = NOW() WHERE id = %d', $db->escapeString($scanSummary['lastArticleNumber']), $db->from_unixtime($last_record_postdate), $groupArr['id']));
+				$this->db->queryExec(sprintf('UPDATE groups SET last_record = %s, last_record_postdate = %s, last_updated = NOW() WHERE id = %d', $this->db->escapeString($scanSummary['lastArticleNumber']), $this->db->from_unixtime($last_record_postdate), $groupArr['id']));
 
 				if ($last == $grouplast) {
 					$done = true;
@@ -526,22 +573,17 @@ class Binaries
 	{
 		$returnArray = array();
 
-		if (!isset($nntp)) {
-			$dmessage = "Not connected to usenet(binaries->scan).";
-			$this->debugging->start("scan", $dmessage, 1);
-			exit($this->c->error($dmessage));
-		}
-
-		$db = $this->db;
 		$this->startHeaders = microtime(true);
 		$this->startLoop = microtime(true);
 
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
 			if ($this->db->newtables($groupArr['id']) === false) {
-				$dmessage = "There is a problem creating new parts/files tables for this group.";
-				$this->debugging->start("scan", $dmessage, 1);
-				exit($this->c->error($dmessage));
+				$dMessage = "There is a problem creating new parts/files tables for this group.";
+				if ($this->debug) {
+					$this->debugging->start("scan", $dMessage, 1);
+				}
+				exit($this->c->error($dMessage));
 			}
 			$group['cname'] = 'collections_' . $groupArr['id'];
 			$group['bname'] = 'binaries_' . $groupArr['id'];
@@ -575,11 +617,13 @@ class Binaries
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first . '-' . $last, true, false);
 			if ($nntp->isError($msgs)) {
-				$dmessage = "Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}";
-				$this->debugging->start("scan", $dmessage, 3);
+				$dMessage = "Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}";
+				if ($this->debug) {
+					$this->debugging->start("scan", $dMessage, 3);
+				}
 
 				if ($this->echo) {
-					$this->c->doEcho($this->c->error($dmessage), true);
+					$this->c->doEcho($this->c->error($dMessage), true);
 				}
 				return false;
 			}
@@ -589,50 +633,46 @@ class Binaries
 		$this->startCleaning = microtime(true);
 		$rangerequested = range($first, $last);
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
-		if (is_array($msgs)) {
-			/*// For looking at the difference between $subject/$cleansubject and to show non yEnc posts.
-			if (nZEDb_DEBUG) {
-				$colnames = $orignames = $notyenc = array();
-			}*/
 
-			// Sort the articles before processing, alphabetically by subject. This is to try to use the
-			// shortest subject and those without .vol01 in the subject
-			usort($msgs, function ($elem1, $elem2) {
-				return strcmp($elem1['Subject'], $elem2['Subject']);
-			});
+		$msgCount = count($msgs);
+		if ($msgCount > 0) {
+
+			// Get highest and lowest article numbers/dates.
+			$iterator1 = 0;
+			$iterator2 = $msgCount-1;
+			while (true) {
+				if (!isset($returnArray['firstArticleNumber']) && isset($msgs[$iterator1]['Number'])) {
+					$returnArray['firstArticleNumber'] = $msgs[$iterator1]['Number'];
+					$returnArray['firstArticleDate'] = $msgs[$iterator1]['Date'];
+				}
+
+				if (!isset($returnArray['lastArticleNumber']) && isset($msgs[$iterator2]['Number'])) {
+					$returnArray['lastArticleNumber'] = $msgs[$iterator2]['Number'];
+					$returnArray['lastArticleDate'] = $msgs[$iterator2]['Date'];
+				}
+
+				// Break if we found non empty articles.
+				if (isset($returnArray['firstArticleNumber']) && isset($returnArray['lastArticleNumber'])) {
+					break;
+				}
+
+				// Break out if we couldn't find anything.
+				if ($iterator1++ >= $msgCount-1 || $iterator2-- <= 0) {
+					break;
+				}
+			}
+
+			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
+			usort($msgs,
+				function ($elem1, $elem2) {
+					return strcmp($elem1['Subject'], $elem2['Subject']);
+				}
+			);
 
 			// Loop articles, figure out files/parts.
 			foreach ($msgs AS $msg) {
 				if (!isset($msg['Number'])) {
 					continue;
-				}
-
-				if (isset($returnArray['firstArticleNumber'])) {
-					if ($msg['Number'] < $returnArray['firstArticleNumber']) {
-						$returnArray['firstArticleNumber'] = $msg['Number'];
-					}
-					if (isset($msg['Date'])) {
-						$returnArray['firstArticleDate'] = $msg['Date'];
-					}
-				} else {
-					$returnArray['firstArticleNumber'] = $msg['Number'];
-					if (isset($msg['Date'])) {
-						$returnArray['firstArticleDate'] = $msg['Date'];
-					}
-				}
-
-				if (isset($returnArray['lastArticleNumber'])) {
-					if ($msg['Number'] > $returnArray['lastArticleNumber']) {
-						$returnArray['lastArticleNumber'] = $msg['Number'];
-					}
-					if (isset($msg['Date'])) {
-						$returnArray['lastArticleDate'] = $msg['Date'];
-					}
-				} else {
-					$returnArray['lastArticleNumber'] = $msg['Number'];
-					if (isset($msg['Date'])) {
-						$returnArray['lastArticleDate'] = $msg['Date'];
-					}
 				}
 
 				// If set we are running in partRepair mode
@@ -653,42 +693,21 @@ class Binaries
 				$msgsreceived[] = $msg['Number'];
 				$partnumber = '';
 				// Add yEnc to headers that do not have them, but are nzbs and that have the part number at the end of the header
-				if (!preg_match('/yEnc/i', $msg['Subject'])) {
-					if (preg_match('/.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
-						$msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
-					}
+				if (!stristr($msg['Subject'], 'yEnc') && preg_match('/(.+)(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
+						$msg['Subject'] = $partnumber[1] . ' yEnc ' . $partnumber[2];
 				}
 
-				/* 				if (!preg_match('/yEnc/i', $msg['Subject']) && preg_match('/.+nzb.+\(\d+\/\d+\)$/', $msg['Subject'])) {
-				  if (preg_match('/.+\.nzb.+(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
-				  $msg['Subject'] = preg_replace('/\(\d+\/\d+\)$/', ' yEnc ' . $partnumber[1], $msg['Subject']);
-				  }
-				  }
-				  if (preg_match('/"(Usenet Index Post) \d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
-				  $msg['Subject'] = preg_replace('/Usenet Index Post/', $number[1] . '.nzb ', $msg['Subject']);
-				  }
-
-				  if (preg_match('/"(Usenet Index Post) \d+_\d+ yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
-				  continue;
-				  }
-				 */
-				if (preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $msg['Subject'], $number)) {
-					continue;
-				}
 				$matches = '';
 				// Not a binary post most likely.. continue.
-				if (!isset($msg['Subject']) || !preg_match('/(.+yEnc)(\.\s*|\s*by xMas\s*|_|\s*--\s*READ NFO!\s*|\s*| \[S\d+E\d+\]|\s*".+"\s*)\((\d+)\/(\d+)\)/', $msg['Subject'], $matches)) {
-					if ($this->showdroppedyencparts === '1' && !preg_match('/"Usenet Index Post [\d_]+ yEnc \(\d+\/\d+\)"/', $msg['Subject'])) {
+				if (!isset($msg['Subject']) ||
+					!preg_match('/(.+yEnc).*\((\d+)\/(\d+)\)/', $msg['Subject'], $matches) ||
+					preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $msg['Subject'], $UIP)
+				) {
+
+					if ($this->showdroppedyencparts === '1' && !isset($UIP[1])) {
 						file_put_contents(nZEDb_RES . 'logs' . DS . 'not_yenc' . $groupArr['name'] . ".dropped.log", $msg['Subject'] . PHP_EOL, FILE_APPEND);
 					}
 
-					// Uncomment this and the print_r about 80 lines down to see which posts are not yenc.
-					/* if (nZEDb_DEBUG)
-					  {
-					  preg_match('/(.+)\(\d+\/\d+\)$/i', $msg['Subject'], $ny);
-					  if(!in_array($ny[1], $notyenc))
-					  $notyenc[] = $ny[1];
-					  } */
 					$msgsignored[] = $msg['Number'];
 					continue;
 				}
@@ -706,12 +725,14 @@ class Binaries
 				if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $partless, $filecnt)) {
 					$filecnt[2] = $filecnt[6] = 0;
 					$nofiles = true;
-					if ($this->showdroppedyencparts === '1' && preg_match('/yEnc/i', $msg['Subject'])) {
+
+					if ($this->showdroppedyencparts === '1') {
 						file_put_contents(nZEDb_RES . "logs" . DS . 'no_parts' . $groupArr['name'] . ".log", $msg['Subject'] . PHP_EOL, FILE_APPEND);
 					}
 				}
 
-				if (is_numeric($matches[3]) && is_numeric($matches[4])) {
+				if (is_numeric($matches[2]) && is_numeric($matches[3])) {
+
 					array_map('trim', $matches);
 					// Inserted into the collections table as the subject.
 					$subject = utf8_encode(trim($partless));
@@ -719,32 +740,10 @@ class Binaries
 					// Used for the sha1 hash (see below).
 					$cleansubject = utf8_encode($this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles));
 
-					/*
-					  $ncarr = $this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles);
-					  $cleansubject = $ncarr['hash'];
-					 */
-
-					// For looking at the difference between $subject and $cleansubject.
-					/*if (nZEDb_DEBUG) {
-						if (!in_array($cleansubject, $colnames)) {
-							// Uncomment this to only show articles matched by generic function of collectioncleaning (might show some that match by collectionsCleaner, but rare). Helps when making regex.
-
-							/* if (preg_match('/yEnc$/', $cleansubject))
-							  {
-							  $colnames[] = $cleansubject;
-							  $orignames[] = $msg['Subject'];
-							  }
-
-							/* If you uncommented the above, comment following 2 lines..
-							$colnames[] = $cleansubject;
-							$orignames[] = $msg['Subject'];
-						}
-					}*/
-
 					// Set up the info for inserting into parts/binaries/collections tables.
 					if (!isset($this->message[$subject])) {
 						$this->message[$subject] = $msg;
-						$this->message[$subject]['MaxParts'] = (int) $matches[4];
+						$this->message[$subject]['MaxParts'] = (int) $matches[3];
 						$this->message[$subject]['Date'] = strtotime($msg['Date']);
 						// (hash) Groups articles together when forming the release/nzb.
 						$this->message[$subject]['CollectionHash'] = sha1($cleansubject . $msg['From'] . $groupArr['id'] . $filecnt[6]);
@@ -752,24 +751,38 @@ class Binaries
 						$this->message[$subject]['File'] = (int) $filecnt[2];
 					}
 
-					if ($this->grabnzbs && preg_match('/.+\.nzb"/', $subject)) {
-						$db->queryInsert(sprintf('INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW()) ON DUPLICATE KEY UPDATE dateadded = NOW()', $db->escapeString(substr($msg['Message-ID'], 1, -1)), $db->escapeString($groupArr['name']), $db->escapeString(substr($subject, 0, 255)), $db->escapeString($this->message[$subject]['CollectionHash']), (int) $bytes, (int) $matches[3], $this->message[$subject]['MaxParts'], $db->from_unixtime($this->message[$subject]['Date'])));
+					$nowPart = (int) $matches[2];
+					if ($this->grabnzbs && stristr($subject, '.nzb"')) {
+						$this->db->queryInsert(
+							sprintf(
+								'INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded)
+								VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW()) ON DUPLICATE KEY UPDATE dateadded = NOW()',
+								// Remove < and > from Message-ID.
+								$this->db->escapeString(substr($msg['Message-ID'], 1, -1)),
+								$this->db->escapeString($groupArr['name']),
+								// Cut the subject if it's too long.
+								$this->db->escapeString(substr($subject, 0, 255)),
+								$this->db->escapeString($this->message[$subject]['CollectionHash']),
+								(int) $bytes,
+								$nowPart,
+								$this->message[$subject]['MaxParts'],
+								$this->db->from_unixtime($this->message[$subject]['Date'])
+							)
+						);
 					}
-					if ((int) $matches[3] > 0) {
-						$this->message[$subject]['Parts'][(int) $matches[3]] = array('Message-ID' => substr($msg['Message-ID'], 1, -1), 'number' => $msg['Number'], 'part' => (int) $matches[3], 'size' => $bytes);
+
+					if ($nowPart > 0) {
+						$this->message[$subject]['Parts'][$nowPart] =
+							array(
+								'Message-ID' => substr($msg['Message-ID'], 1, -1),
+								'number' => $msg['Number'],
+								'part' => $nowPart,
+								'size' => $bytes
+							);
 					}
 				}
 			}
 
-			// Uncomment this to see which articles are not yEnc.
-			//if (nZEDb_DEBUG && count($notyenc) > 1)
-			//	print_r($notyenc);
-			// For looking at the difference between $subject and $cleansubject.
-			/*if (nZEDb_DEBUG && count($colnames) > 1 && count($orignames) > 1) {
-				$arr = array_combine($colnames, $orignames);
-				ksort($arr);
-				print_r($arr);
-			}*/
 			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
 
 			unset($msg, $msgs);
@@ -780,23 +793,23 @@ class Binaries
 				$this->c->doEcho(
 					$this->c->primary(
 						'Received ' .
-						number_format(sizeof($msgsreceived)) .
+						number_format(count($msgsreceived)) .
 						' articles of ' .
 						(number_format($last - $first + 1)) .
 						' requested, ' .
-						sizeof($msgsblacklisted) .
+						count($msgsblacklisted) .
 						' blacklisted, ' .
-						sizeof($msgsignored) .
+						count($msgsignored) .
 						" not yEnc."
-					), true
+					)
 				);
 			}
 
-			if (sizeof($msgrepaired) > 0) {
+			if (count($msgrepaired) > 0) {
 				$this->removeRepairedParts($msgrepaired, $groupArr['id']);
 			}
 
-			if (sizeof($rangenotreceived) > 0) {
+			if (count($rangenotreceived) > 0) {
 				switch ($type) {
 					case 'backfill':
 						// Don't add missing articles.
@@ -816,7 +829,7 @@ class Binaries
 					$this->c->doEcho(
 						$this->c->alternate(
 							'Server did not return ' .
-							sizeof($rangenotreceived) .
+							count($rangenotreceived) .
 							" articles from " .
 							str_replace('alt.binaries', 'a.b', $groupArr['name']) .
 							"."
@@ -826,11 +839,11 @@ class Binaries
 			}
 
 			$this->startUpdate = microtime(true);
-			if (isset($this->message) && count($this->message)) {
+			if (isset($this->message) && count($this->message) > 0) {
 				$maxnum = $first;
 				$pBinaryID = $pNumber = $pMessageID = $pPartNumber = $pSize = 1;
 				// Insert collections, binaries and parts into database. When collection exists, only insert new binaries, when binary already exists, only insert new parts.
-				$insPartsStmt = $db->Prepare("INSERT INTO ${group['pname']} (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)");
+				$insPartsStmt = $this->db->Prepare("INSERT INTO ${group['pname']} (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)");
 				$insPartsStmt->bindParam(1, $pBinaryID, PDO::PARAM_INT);
 				$insPartsStmt->bindParam(2, $pNumber, PDO::PARAM_INT);
 				$insPartsStmt->bindParam(3, $pMessageID, PDO::PARAM_STR);
@@ -841,35 +854,40 @@ class Binaries
 				$lastCollectionHash = $lastBinaryHash = "";
 				$lastCollectionID = $lastBinaryID = -1;
 
+				// Loop through the reformed article headers.
 				foreach ($this->message AS $subject => $data) {
 					if (isset($data['Parts']) && count($data['Parts']) > 0 && $subject != '') {
-						$db->beginTransaction();
+
+						$this->db->beginTransaction();
+
 						$collectionHash = $data['CollectionHash'];
-						if ($lastCollectionHash == $collectionHash) {
+
+						// Check if the last collection hash is the same.
+						if ($lastCollectionHash == $collectionHash && $lastCollectionID !== -1) {
 							$collectionID = $lastCollectionID;
 						} else {
 							$lastCollectionHash = $collectionHash;
 							$lastBinaryHash = '';
 							$lastBinaryID = -1;
 
-							$cres = $db->queryOneRow(sprintf("SELECT id, subject FROM ${group['cname']} WHERE collectionhash = %s", $db->escapeString($collectionHash)));
-							if (array_key_exists($collectionHash, $collectionHashes)) {
+							$cres = $this->db->queryOneRow(sprintf("SELECT id, subject FROM ${group['cname']} WHERE collectionhash = %s", $this->db->escapeString($collectionHash)));
+							if ($cres && array_key_exists($collectionHash, $collectionHashes)) {
 								$collectionID = $collectionHashes[$collectionHash];
 								if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
-									$db->queryExec(sprintf("UPDATE ${group['cname']} SET subject = %s WHERE id = %s", $db->escapeString(substr($subject, 0, 255)), $collectionID));
+									$this->db->queryExec(sprintf("UPDATE ${group['cname']} SET subject = %s WHERE id = %s", $this->db->escapeString(substr($subject, 0, 255)), $collectionID));
 								}
 							} else {
 								if (!$cres) {
 									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
-									$csql = sprintf("INSERT INTO ${group['cname']} (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())", $db->escapeString(substr($subject, 0, 255)), $db->escapeString(utf8_encode($data['From'])), $db->from_unixtime($data['Date']), $db->escapeString(substr($data['Xref'], 0, 255)), $groupArr['id'], $data['MaxFiles'], $db->escapeString($collectionHash));
-									$collectionID = $db->queryInsert($csql);
+									$csql = sprintf("INSERT INTO ${group['cname']} (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())", $this->db->escapeString(substr($subject, 0, 255)), $this->db->escapeString(utf8_encode($data['From'])), $this->db->from_unixtime($data['Date']), $this->db->escapeString(substr($data['Xref'], 0, 255)), $groupArr['id'], $data['MaxFiles'], $this->db->escapeString($collectionHash));
+									$collectionID = $this->db->queryInsert($csql);
 								} else {
 									$collectionID = $cres['id'];
 									//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
 									if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
-										$db->queryExec(sprintf("UPDATE ${group['cname']} SET subject = %s WHERE id = %s", $db->escapeString(substr($subject, 0, 255)), $collectionID));
+										$this->db->queryExec(sprintf("UPDATE ${group['cname']} SET subject = %s WHERE id = %s", $this->db->escapeString(substr($subject, 0, 255)), $collectionID));
 									} else {
-										$db->queryExec(sprintf("UPDATE ${group['cname']} SET dateadded = NOW() WHERE id = %s", $collectionID));
+										$this->db->queryExec(sprintf("UPDATE ${group['cname']} SET dateadded = NOW() WHERE id = %s", $collectionID));
 									}
 								}
 								$collectionHashes[$collectionHash] = $collectionID;
@@ -886,10 +904,23 @@ class Binaries
 							} else {
 								$lastBinaryHash = $binaryHash;
 
-								$bres = $db->queryOneRow(sprintf("SELECT id FROM ${group['bname']} WHERE binaryhash = %s", $db->escapeString($binaryHash)));
+								$bres = $this->db->queryOneRow(
+									sprintf("SELECT id FROM ${group['bname']} WHERE binaryhash = %s",
+										$this->db->escapeString($binaryHash)
+									)
+								);
 								if (!$bres) {
-									$bsql = sprintf("INSERT INTO ${group['bname']} (binaryhash, name, collectionid, totalparts, filenumber) VALUES (%s, %s, %d, %s, %s)", $db->escapeString($binaryHash), $db->escapeString($subject), $collectionID, $db->escapeString($data['MaxParts']), $db->escapeString(round($data['File'])));
-									$binaryID = $db->queryInsert($bsql);
+									$bsql = sprintf(
+										"INSERT INTO ${group['bname']} (binaryhash, name, collectionid, totalparts, filenumber)
+										VALUES (%s, %s, %d, %s, %s)",
+										$this->db->escapeString($binaryHash),
+										$this->db->escapeString($subject),
+										$collectionID,
+										$this->db->escapeString($data['MaxParts']),
+										$this->db->escapeString(round($data['File'])
+										)
+									);
+									$binaryID = $this->db->queryInsert($bsql);
 								} else {
 									$binaryID = $bres['id'];
 								}
@@ -900,6 +931,7 @@ class Binaries
 						}
 
 						foreach ($data['Parts'] AS $partdata) {
+							// These show as not used in PHPStorm, but they are, the query is prepared above with mock values, the values are set here.
 							$pBinaryID = $binaryID;
 							$pMessageID = $partdata['Message-ID'];
 							$pNumber = $partdata['number'];
@@ -914,20 +946,25 @@ class Binaries
 								}
 							} catch (PDOException $e) {
 								if ($e->errorInfo[0] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[0] == 1205) {
-									$this->debugging->start("scan", $e->getMessage(), 3);
+									if ($this->debug) {
+										$this->debugging->start("scan", $e->getMessage(), 3);
+									}
 									continue;
 								}
 							}
 						}
-						$db->Commit();
+						$this->db->Commit();
 					}
 				}
-				if (sizeof($msgsnotinserted) > 0) {
-					$dmessage = sizeof($msgsnotinserted) . " parts failed to insert.";
-					$this->debugging->start("scan", $dmessage, 3);
+				$notInsertedCount = count($msgsnotinserted);
+				if ($notInsertedCount > 0) {
+					$dMessage = $notInsertedCount . " parts failed to insert.";
+					if ($this->debug) {
+						$this->debugging->start("scan", $dMessage, 3);
+					}
 
 					if ($this->echo) {
-						$this->c->doEcho($this->c->warning($dmessage), true);
+						$this->c->doEcho($this->c->warning($dMessage), true);
 					}
 
 					if ($this->DoPartRepair) {
@@ -955,56 +992,68 @@ class Binaries
 			return $returnArray;
 		} else {
 			if ($type != 'partrepair') {
-				$dmessage = "Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}";
-				$this->debugging->start("scan", $dmessage, 3);
+				$dMessage = "Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}";
+				if ($this->debug) {
+					$this->debugging->start("scan", $dMessage, 3);
+				}
 
 				if ($this->echo) {
-					$this->c->doEcho($this->c->error($dmessage), true);
+					$this->c->doEcho($this->c->error($dMessage), true);
 				}
-				return false;
 			}
 		}
+		return $returnArray;
 	}
 
 	/**
 	 * Attempt to get missing headers.
 	 *
-	 * @param $nntp     Instance of class NNTP.
-	 * @param $groupArr The info for this group from mysql.
+	 * @param NNTP|object  $nntp     Instance of class NNTP.
+	 * @param array        $groupArr The info for this group from mysql.
 	 *
 	 * @return void
 	 */
 	public function partRepair($nntp, $groupArr)
 	{
 		if (!isset($nntp)) {
-			$dmessage = "Not connected to usenet(binaries->partRepair).";
-			$this->debugging->start("partRepair", $dmessage, 1);
+			$dMessage = "Not connected to usenet(binaries->partRepair).";
+			if ($this->debug) {
+				$this->debugging->start("partRepair", $dMessage, 1);
+			}
 			exit($this->c->error("Not connected to usenet(binaries->partRepair)."));
 		}
 
-		// Get all parts in partrepair table.
-		$db = $this->db;
-
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
-			if ($db->newtables($groupArr['id']) === false) {
-				$dmessage = "There is a problem creating new parts/files tables for this group.";
-				$this->debugging->start("partRepair", $dmessage, 1);
-				exit($this->c->error($dmessage));
+			if ($this->db->newtables($groupArr['id']) === false) {
+				$dMessage = "There is a problem creating new parts/files tables for this group.";
+				if ($this->debug) {
+					$this->debugging->start("partRepair", $dMessage, 1);
+				}
+				exit($this->c->error($dMessage));
 			}
 			$group['prname'] = 'partrepair_' . $groupArr['id'];
 		} else {
 			$group['prname'] = 'partrepair';
 		}
 
-		$missingParts = $db->query(sprintf('SELECT * FROM ' . $group['prname'] . ' WHERE groupid = %d AND attempts < 5 ORDER BY numberid ASC LIMIT %d', $groupArr['id'], $this->partrepairlimit));
-		$partsRepaired = $partsFailed = 0;
+		// Get all parts in partrepair table.
+		$missingParts = $this->db->query(
+			sprintf(
+				'SELECT * FROM ' . $group['prname'] . '
+				WHERE groupid = %d AND attempts < 5
+				ORDER BY numberid ASC LIMIT %d',
+				$groupArr['id'],
+				$this->partrepairlimit
+			)
+		);
+		$partsRepaired = 0;
 
-		if (sizeof($missingParts) > 0) {
+		if (count($missingParts) > 0) {
 			if ($this->echo) {
 				$this->consoleTools->overWritePrimary(
 					'Attempting to repair ' .
-					number_format(sizeof($missingParts)) .
+					number_format(count($missingParts)) .
 					" parts."
 				);
 			}
@@ -1033,29 +1082,46 @@ class Binaries
 				$partfrom = $range['partfrom'];
 				$partto = $range['partto'];
 				$partlist = $range['partlist'];
-				$count = sizeof($range['partlist']);
+				$count = count($range['partlist']);
 
 				$num_attempted += $count;
-				$this->consoleTools->overWritePrimary("Attempting repair: " . $this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted, sizeof($missingParts)) . ': ' . $partfrom . ' to ' . $partto);
+				$this->consoleTools->overWritePrimary(
+					"Attempting repair: " .
+					$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted, count($missingParts)) .
+					': ' . $partfrom . ' to ' . $partto
+				);
 
 				// Get article from newsgroup.
 				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);
 			}
 
 			// Calculate parts repaired
-			$sql = sprintf('SELECT COUNT(id) AS num FROM ' . $group['prname'] . ' WHERE groupid=%d AND numberid <= %d', $groupArr['id'], $missingParts[sizeof($missingParts) - 1]['numberid']);
-			$result = $db->queryOneRow($sql);
+			$result = $this->db->queryOneRow(
+				sprintf(
+					'SELECT COUNT(id) AS num
+					FROM ' . $group['prname'] . '
+					WHERE groupid=%d
+					AND numberid <= %d',
+					$groupArr['id'],
+					$missingParts[count($missingParts) - 1]['numberid']
+				)
+			);
 			if (isset($result['num'])) {
-				$partsRepaired = (sizeof($missingParts)) - $result['num'];
+				$partsRepaired = (count($missingParts)) - $result['num'];
 			}
 
 			// Update attempts on remaining parts for active group
-			if (isset($missingParts[sizeof($missingParts) - 1]['id'])) {
-				$sql = sprintf("UPDATE ${group['prname']} SET attempts=attempts+1 WHERE groupid=%d AND numberid <= %d", $groupArr['id'], $missingParts[sizeof($missingParts) - 1]['numberid']);
-				$result = $db->queryExec($sql);
-				if ($result) {
-					$partsFailed = $result->rowCount();
-				}
+			if (isset($missingParts[count($missingParts) - 1]['id'])) {
+				$this->db->queryExec(
+					sprintf(
+						"UPDATE ${group['prname']}
+						SET attempts=attempts+1
+						WHERE groupid=%d
+						AND numberid <= %d",
+						$groupArr['id'],
+						$missingParts[count($missingParts) - 1]['numberid']
+					)
+				);
 			}
 
 			if ($this->echo) {
@@ -1070,7 +1136,7 @@ class Binaries
 		}
 
 		// Remove articles that we cant fetch after 5 attempts.
-		$db->queryExec(sprintf('DELETE FROM ' . $group['prname'] . ' WHERE attempts >= 5 AND groupid = %d', $groupArr['id']));
+		$this->db->queryExec(sprintf('DELETE FROM ' . $group['prname'] . ' WHERE attempts >= 5 AND groupid = %d', $groupArr['id']));
 	}
 
 	/**
@@ -1083,14 +1149,14 @@ class Binaries
 	 */
 	private function addMissingParts($numbers, $groupID)
 	{
-		$db = $this->db;
-
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
-			if ($db->newtables($groupID) === false) {
-				$dmessage = "There is a problem creating new parts/files tables for this group.";
-				$this->debugging->start("addMissingParts", $dmessage, 1);
-				exit($this->c->error($dmessage));
+			if ($this->db->newtables($groupID) === false) {
+				$dMessage = "There is a problem creating new parts/files tables for this group.";
+				if ($this->debug) {
+					$this->debugging->start("addMissingParts", $dMessage, 1);
+				}
+				exit($this->c->error($dMessage));
 			}
 			$group['prname'] = 'partrepair_' . $groupID;
 		} else {
@@ -1103,12 +1169,12 @@ class Binaries
 		}
 
 		$insertStr = substr($insertStr, 0, -2);
-		if ($db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() == 'mysql') {
 			$insertStr .= ' ON DUPLICATE KEY UPDATE attempts=attempts+1';
-			return $db->queryInsert($insertStr);
+			return $this->db->queryInsert($insertStr);
 		} else {
-			$id = $db->queryInsert($insertStr);
-			$db->Exec('UPDATE partrepair SET attempts = attempts+1 WHERE id = ' . $id);
+			$id = $this->db->queryInsert($insertStr);
+			$this->db->Exec('UPDATE partrepair SET attempts = attempts+1 WHERE id = ' . $id);
 			return $id;
 		}
 	}
@@ -1123,7 +1189,6 @@ class Binaries
 	 */
 	private function removeRepairedParts($numbers, $groupID)
 	{
-		$db = $this->db;
 		if ($this->tablepergroup == 1) {
 			$group['prname'] = 'partrepair_' . $groupID;
 		} else {
@@ -1136,7 +1201,7 @@ class Binaries
 		}
 		$sql = substr($sql, 0, -2);
 		$sql .= sprintf(') AND groupid = %d', $groupID);
-		$db->queryExec($sql);
+		$this->db->queryExec($sql);
 	}
 
 	/**
@@ -1208,23 +1273,23 @@ class Binaries
 	 */
 	public function search($search, $limit = 1000, $excludedcats = array())
 	{
-		$db = $this->db;
-
-		// If the query starts with a ^ it indicates the search is looking for items which start with the term still do the like match, but mandate that all items returned must start with the provided word.
+		/* If the query starts with a ^ it indicates the search is looking for items which start with the term still do
+		 * the like match, but mandate that all items returned must start with the provided word.
+		 */
 		$words = explode(' ', $search);
 		$searchsql = '';
 		$intwordcount = 0;
 		if (count($words) > 0) {
 			$like = 'ILIKE';
-			if ($db->dbSystem() == 'mysql') {
+			if ($this->db->dbSystem() == 'mysql') {
 				$like = 'LIKE';
 			}
 			foreach ($words as $word) {
 				// See if the first word had a caret, which indicates search must start with term.
 				if ($intwordcount == 0 && (strpos($word, '^') === 0)) {
-					$searchsql.= sprintf(' AND b.name %s %s', $like, $db->escapeString(substr($word, 1) . '%'));
+					$searchsql.= sprintf(' AND b.name %s %s', $like, $this->db->escapeString(substr($word, 1) . '%'));
 				} else {
-					$searchsql.= sprintf(' AND b.name %s %s', $like, $db->escapeString('%' . $word . '%'));
+					$searchsql.= sprintf(' AND b.name %s %s', $like, $this->db->escapeString('%' . $word . '%'));
 				}
 
 				$intwordcount++;
@@ -1236,7 +1301,17 @@ class Binaries
 			$exccatlist = ' AND b.categoryid NOT IN (' . implode(',', $excludedcats) . ') ';
 		}
 
-		return $db->query(sprintf("SELECT b.*, g.name AS group_name, r.guid, (SELECT COUNT(id) FROM parts p WHERE p.binaryid = b.id) as 'binnum' FROM binaries b INNER JOIN groups g ON g.id = b.groupid LEFT OUTER JOIN releases r ON r.id = b.releaseid WHERE 1=1 %s %s order by DATE DESC LIMIT %d", $searchsql, $exccatlist, $limit));
+		return $this->db->query(
+			sprintf("
+				SELECT b.*, g.name AS group_name, r.guid,
+				(SELECT COUNT(id) FROM parts p WHERE p.binaryid = b.id) as 'binnum'
+				FROM binaries b
+				INNER JOIN groups g ON g.id = b.groupid
+				LEFT OUTER JOIN releases r ON r.id = b.releaseid
+				WHERE 1=1 %s %s
+				order by DATE DESC LIMIT %d", $searchsql, $exccatlist, $limit
+			)
+		);
 	}
 
 	/**
@@ -1246,8 +1321,14 @@ class Binaries
 	 */
 	public function getForReleaseId($id)
 	{
-		$db = $this->db;
-		return $db->query(sprintf('SELECT binaries.* FROM binaries WHERE releaseid = %d ORDER BY relpart', $id));
+		return $this->db->query(
+			sprintf(
+				'SELECT binaries.*
+				FROM binaries
+				WHERE releaseid = %d
+				ORDER BY relpart', $id
+			)
+		);
 	}
 
 	/**
@@ -1257,8 +1338,14 @@ class Binaries
 	 */
 	public function getById($id)
 	{
-		$db = $this->db;
-		return $db->queryOneRow(sprintf('SELECT binaries.*, collections.groupid, groups.name AS groupname FROM binaries, collections LEFT OUTER JOIN groups ON collections.groupid = groups.id WHERE binaries.id = %d', $id));
+		return $this->db->queryOneRow(
+			sprintf(
+				'SELECT binaries.*, collections.groupid, groups.name AS groupname
+				FROM binaries, collections
+				LEFT OUTER JOIN groups ON collections.groupid = groups.id
+				WHERE binaries.id = %d', $id
+			)
+		);
 	}
 
 	/**
@@ -1268,14 +1355,17 @@ class Binaries
 	 */
 	public function getBlacklist($activeonly = true)
 	{
-		$db = $this->db;
-
 		$where = '';
 		if ($activeonly) {
 			$where = ' WHERE binaryblacklist.status = 1 ';
 		}
 
-		return $db->query('SELECT binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description, binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS groupid, binaryblacklist.msgcol FROM binaryblacklist LEFT OUTER JOIN groups ON groups.name = binaryblacklist.groupname ' . $where . " ORDER BY coalesce(groupname,'zzz')");
+		return $this->db->query(
+			'SELECT binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description,
+			binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS groupid, binaryblacklist.msgcol
+			FROM binaryblacklist LEFT OUTER JOIN groups ON groups.name = binaryblacklist.groupname ' . $where . "
+			ORDER BY coalesce(groupname,'zzz')"
+		);
 	}
 
 	/**
@@ -1285,8 +1375,7 @@ class Binaries
 	 */
 	public function getBlacklistByID($id)
 	{
-		$db = $this->db;
-		return $db->queryOneRow(sprintf('SELECT * FROM binaryblacklist WHERE id = %d', $id));
+		return $this->db->queryOneRow(sprintf('SELECT * FROM binaryblacklist WHERE id = %d', $id));
 	}
 
 	/**
@@ -1296,8 +1385,7 @@ class Binaries
 	 */
 	public function deleteBlacklist($id)
 	{
-		$db = $this->db;
-		return $db->queryExec(sprintf('DELETE FROM binaryblacklist WHERE id = %d', $id));
+		return $this->db->queryExec(sprintf('DELETE FROM binaryblacklist WHERE id = %d', $id));
 	}
 
 	/**
@@ -1307,37 +1395,56 @@ class Binaries
 	 */
 	public function updateBlacklist($regex)
 	{
-		$db = $this->db;
-
 		$groupname = $regex['groupname'];
 		if ($groupname == '') {
 			$groupname = 'null';
 		} else {
 			$groupname = preg_replace('/a\.b\./i', 'alt.binaries.', $groupname);
-			$groupname = sprintf('%s', $db->escapeString($groupname));
+			$groupname = sprintf('%s', $this->db->escapeString($groupname));
 		}
 
-		$db->queryExec(sprintf('UPDATE binaryblacklist SET groupname = %s, regex = %s, status = %d, description = %s, optype = %d, msgcol = %d WHERE id = %d ', $groupname, $db->escapeString($regex['regex']), $regex['status'], $db->escapeString($regex['description']), $regex['optype'], $regex['msgcol'], $regex['id']));
+		$this->db->queryExec(
+			sprintf('
+				UPDATE binaryblacklist
+				SET groupname = %s, regex = %s, status = %d, description = %s, optype = %d, msgcol = %d
+				WHERE id = %d ',
+				$groupname,
+				$this->db->escapeString($regex['regex']), $regex['status'],
+				$this->db->escapeString($regex['description']),
+				$regex['optype'],
+				$regex['msgcol'],
+				$regex['id']
+			)
+		);
 	}
 
 	/**
-	 * @param $rege
-	 * x
+	 * @param $regex
+	 *
 	 * @return bool
 	 */
 	public function addBlacklist($regex)
 	{
-		$db = $this->db;
-
 		$groupname = $regex['groupname'];
 		if ($groupname == '') {
 			$groupname = 'null';
 		} else {
 			$groupname = preg_replace('/a\.b\./i', 'alt.binaries.', $groupname);
-			$groupname = sprintf('%s', $db->escapeString($groupname));
+			$groupname = sprintf('%s', $this->db->escapeString($groupname));
 		}
 
-		return $db->queryInsert(sprintf('INSERT INTO binaryblacklist (groupname, regex, status, description, optype, msgcol) VALUES (%s, %s, %d, %s, %d, %d)', $groupname, $db->escapeString($regex['regex']), $regex['status'], $db->escapeString($regex['description']), $regex['optype'], $regex['msgcol']));
+		return $this->db->queryInsert(
+			sprintf('
+				INSERT INTO binaryblacklist (groupname, regex, status, description, optype, msgcol)
+				VALUES (%s, %s, %d, %s, %d, %d)',
+				$groupname,
+				$this->db->escapeString($regex['regex']),
+				$regex['status'],
+				$this->db->escapeString($regex['description']),
+				$regex['optype'],
+				$regex['msgcol']
+			)
+		);
 	}
 
 	/**
@@ -1347,13 +1454,12 @@ class Binaries
 	 */
 	public function delete($id)
 	{
-		$db = $this->db;
-		$bins = $db->query(sprintf('SELECT id FROM binaries WHERE collectionid = %d', $id));
+		$bins = $this->db->query(sprintf('SELECT id FROM binaries WHERE collectionid = %d', $id));
 		foreach ($bins as $bin) {
-			$db->queryExec(sprintf('DELETE FROM parts WHERE binaryid = %d', $bin['id']));
+			$this->db->queryExec(sprintf('DELETE FROM parts WHERE binaryid = %d', $bin['id']));
 		}
-		$db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id));
-		$db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $id));
+		$this->db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id));
+		$this->db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $id));
 	}
 
 }

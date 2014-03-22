@@ -334,20 +334,36 @@ class Groups
 	 */
 	public function update($group)
 	{
+
+		$minFileString =
+			($group["minfilestoformrelease"] == '' ?
+				"minfilestoformrelease = NULL," :
+				sprintf(" minfilestoformrelease = %d,", $this->formatNumberString($group["minfilestoformrelease"], false))
+			);
+
+		$minSizeString =
+			($group["minsizetoformrelease"] == '' ?
+				"minsizetoformrelease = NULL" :
+				sprintf(" minsizetoformrelease = %d", $this->formatNumberString($group["minsizetoformrelease"], false))
+			);
+
 		return $this->db->queryExec(
 			sprintf(
 				"UPDATE groups
-				SET name = %s, description = %s, backfill_target = %s , active = %d,
-				backfill = %d, minfilestoformrelease = %s, minsizetoformrelease = %s
-				Where id = %d ",
-				$this->db->escapeString($group["name"]),
-				$this->db->escapeString($group["description"]),
+				SET name = %s, description = %s, backfill_target = %s, first_record = %s, last_record = %s,
+				last_updated = NOW(), active = %s, backfill = %s, %s %s
+				WHERE id = %d",
+				$this->db->escapeString(trim($group["name"])),
+				$this->db->escapeString(trim($group["description"])),
 				$this->formatNumberString($group["backfill_target"]),
+				$this->formatNumberString($group["first_record"]),
+				$this->formatNumberString($group["last_record"]),
 				$this->formatNumberString($group["active"]),
 				$this->formatNumberString($group["backfill"]),
-				$this->formatNumberString($group["minfilestoformrelease"], true),
-				$this->formatNumberString($group["minsizetoformrelease"], true),
-				$group["id"])
+				$minFileString,
+				$minSizeString,
+				$group["id"]
+			)
 		);
 	}
 
@@ -360,21 +376,34 @@ class Groups
 	 */
 	public function add($group)
 	{
+		$minFileString =
+			($group["minfilestoformrelease"] == '' ?
+				"NULL" :
+				sprintf("%d", $this->formatNumberString($group["minfilestoformrelease"], false))
+			);
+
+		$minSizeString =
+			($group["minsizetoformrelease"] == '' ?
+				"NULL" :
+				sprintf("%d", $this->formatNumberString($group["minsizetoformrelease"], false))
+			);
+
 		return $this->db->queryInsert(
 			sprintf("
-			INSERT INTO groups
-				(name, description, backfill_target, first_record, last_record, last_updated,
-				active, backfill, minfilestoformrelease, minsizetoformrelease)
-			VALUES (%s, %s, %s, %s, %s, NOW(), %s, %s, %s, %s) ",
-			$this->db->escapeString(trim($group["name"])),
-			$this->db->escapeString(trim($group["description"])),
-			$this->formatNumberString($group["backfill_target"]),
-			$this->formatNumberString($group["first_record"]),
-			$this->formatNumberString($group["last_record"]),
-			$this->formatNumberString($group["active"]),
-			$this->formatNumberString($group["backfill"]),
-			$this->formatNumberString($group["minfilestoformrelease"], true),
-			$this->formatNumberString($group["minsizetoformrelease"], true))
+				INSERT INTO groups
+					(name, description, backfill_target, first_record, last_record, last_updated,
+					active, backfill, minfilestoformrelease, minsizetoformrelease)
+				VALUES (%s, %s, %s, %s, %s, NOW(), %s, %s, %s, %s)",
+				$this->db->escapeString(trim($group["name"])),
+				$this->db->escapeString(trim($group["description"])),
+				$this->formatNumberString($group["backfill_target"]),
+				$this->formatNumberString($group["first_record"]),
+				$this->formatNumberString($group["last_record"]),
+				$this->formatNumberString($group["active"]),
+				$this->formatNumberString($group["backfill"]),
+				$minFileString,
+				$minSizeString
+			)
 		);
 	}
 
@@ -382,20 +411,18 @@ class Groups
 	 * Format numeric string when adding/updating groups.
 	 *
 	 * @param string $setting
-	 * @param bool   $null    Does this column require to be NULL if not set?
+	 * @param bool   $escape
 	 *
-	 * @return string
+	 * @return string|int
 	 */
-	protected function formatNumberString($setting, $null=false)
+	protected function formatNumberString($setting, $escape=true)
 	{
 		$setting = trim($setting);
 		if ($setting === "0" || !is_numeric($setting)) {
-			$setting = ($null ? $this->db->escapeString('NULL') : '0');
-		} else {
-			$setting = $this->db->escapeString($setting);
+			$setting = '0';
 		}
 
-		return $setting;
+		return ($escape ? $this->db->escapeString($setting) : (int)$setting);
 	}
 
 	/**
