@@ -33,7 +33,7 @@ class Util
 // Central function for sending site email.
 function sendEmail($to, $subject, $contents, $from)
 {
-	if (isWindows) {
+	if (isWindows()) {
 		$n = "\r\n";
 	} else {
 		$n = "\n";
@@ -86,17 +86,16 @@ function objectsIntoArray($arrObjData, $arrSkipIndices = array())
 	return $arrData;
 }
 
+/**
+ * Remove unsafe chars from a filename.
+ *
+ * @param string $filename
+ *
+ * @return string
+ */
 function safeFilename($filename)
 {
-	$temp = $filename;
-	$result = '';
-	for ($i = 0; $i < strlen($temp); $i++) {
-		if (preg_match('([a-zA-Z0-9\s\.\-])', $temp[$i])) {
-			$result = $result . $temp[$i];
-		}
-	}
-
-	return $result;
+	return trim(preg_replace('/[^\w\s.-]*/i', '', $filename));
 }
 
 function runCmd($command, $debug = false)
@@ -433,9 +432,7 @@ function cp437toUTF($str)
 // Function inpsired by c0r3@newznabforums adds country flags on the browse page.
 function release_flag($x, $t)
 {
-	$y = "";
-	$s = new Sites();
-	$site = $s->get();
+	$y = $d = "";
 
 	if (preg_match('/\bCzech\b/i', $x)) {
 		$y = "cz";
@@ -536,4 +533,5 @@ function release_flag($x, $t)
 			return $y;
 		}
 	}
+	return '';
 }

@@ -8,11 +8,9 @@ $c = new ColorCLI();
 if (isset($argv[1]) && $argv[1] == "true") {
 
 	$timestart = TIME();
-	$s = new Sites();
 	$db = new DB();
 	$releases = new Releases();
 	$category = new Category();
-	$site = $s->get();
 	$catlist = $category->getDisabledIDs();
 	$relsdeleted = 0;
 	if (count($catlist > 0)) {
@@ -20,7 +18,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 			if ($rels = $db->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $cat['id']))) {
 				foreach ($rels as $rel) {
 					$relsdeleted++;
-					$releases->fastDelete($rel['id'], $rel['guid'], $site);
+					$releases->fastDelete($rel['id'], $rel['guid']);
 				}
 			}
 		}

@@ -10,6 +10,7 @@
 	<li><a href="{$smarty.const.WWW_TOP}/group-list.php">View</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/group-edit.php">Add</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/group-bulk.php">BulkAdd</a> Groups</li>
 	<li><a href="{$smarty.const.WWW_TOP}/binaryblacklist-list.php">View</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/binaryblacklist-edit.php?action=add">Add</a> Blacklist</li>
 	<li><a href="{$smarty.const.WWW_TOP}/release-list.php">View Releases</a></li>
+	<li><a href="{$smarty.const.WWW_TOP}/delete-releases.php">Delete Releases</a></li>
 	<li><a href="{$smarty.const.WWW_TOP}/rage-list.php">View</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/rage-edit.php?action=add">Add</a> TVRage List</li>
 	<li><a href="{$smarty.const.WWW_TOP}/movie-list.php">View</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/movie-add.php">Add</a> Movie List</li>
 	<li><a href="{$smarty.const.WWW_TOP}/anidb-list.php">View AniDB List</a></li>

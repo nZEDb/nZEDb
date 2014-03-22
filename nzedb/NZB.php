@@ -226,8 +226,7 @@ class NZB
 	 */
 	public function copyNZBforImport($relguid, $nzb)
 	{
-		$path =
-			$this->getNZBPath($relguid, $this->site->nzbsplitlevel, true);
+		$path = $this->getNZBPath($relguid, 0, true);
 		$fp = gzopen($path, 'w5');
 		if ($fp && $nzb) {
 			$date1 = htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8');
@@ -292,15 +291,19 @@ class NZB
 	 * Retrieve path + filename of the NZB to be stored.
 	 *
 	 * @param string $releaseGuid         The guid of the release.
-	 * @param int    $levelsToSplit       How many sub-paths the folder will be in.
-	 * @param bool   $createIfDoesntExist Create the folder if it doesn't exist.
+	 * @param int    $levelsToSplit       How many sub-paths the folder will be in. (optional)
+	 * @param bool   $createIfDoesntExist Create the folder if it doesn't exist. (optional)
 	 *
 	 * @return string Path+filename.
 	 *
 	 * @access public
 	 */
-	public function getNZBPath($releaseGuid, $levelsToSplit, $createIfDoesntExist = false)
+	public function getNZBPath($releaseGuid, $levelsToSplit=0, $createIfDoesntExist = false)
 	{
+		if ($levelsToSplit === 0) {
+			$levelsToSplit = $this->site->nzbsplitlevel;
+		}
+
 		$nzbpath = $this->buildNZBPath($releaseGuid, $levelsToSplit, $createIfDoesntExist);
 		return $nzbpath . $releaseGuid . '.nzb.gz';
 	}
@@ -309,15 +312,19 @@ class NZB
 	 * Determine is an NZB exists, returning the path+filename, if not return false.
 	 *
 	 * @param string $releaseGuid   The guid of the release.
-	 * @param int    $levelsToSplit How many sub-paths the folder will be in.
+	 * @param int    $levelsToSplit How many sub-paths the folder will be in. (optional)
 	 *
 	 * @return bool   If false.
 	 * @return string Path+file name of the nzb.
 	 *
 	 * @access public
 	 */
-	public function NZBPath($releaseGuid, $levelsToSplit)
+	public function NZBPath($releaseGuid, $levelsToSplit=0)
 	{
+		if ($levelsToSplit === 0) {
+			$levelsToSplit = $this->site->nzbsplitlevel;
+		}
+
 		$nzbfile = $this->getNZBPath($releaseGuid, $levelsToSplit);
 		return !is_file($nzbfile) ? false : $nzbfile;
 	}

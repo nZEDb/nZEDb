@@ -198,10 +198,10 @@
 			</td>
 			<td class="predb">
 				{if not in_array({$result.size}, array('NULL', '', '0MB'))}
-					{if strpos($result.size, 'MB') != false && {$result.size|regex_replace:"/\.\d+/":''|replace:'MB':''|count_characters} > 3}
-						{math equation=($result.size|regex_replace:'/\.\d+/':''|replace:'MB':'' / 1024)|round}GB
+					{if strpos($result.size, 'MB') != false && {$result.size|regex_replace:"/(\.\d|,|MB)+/":''|count_characters} > 3}
+						{math equation=($result.size|regex_replace:'/(\.\d|,|MB)+/':'' / 1024)|round}GB
 					{else}
-						{$result.size|regex_replace:"/\.\d+/":''}
+						{$result.size|regex_replace:"/(\.\d|,)+/":''}
 					{/if}
 				{else}
 					N/A

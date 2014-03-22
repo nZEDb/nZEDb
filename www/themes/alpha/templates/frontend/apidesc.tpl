@@ -1,12 +1,10 @@
-<h3>API Overview</h3>
+<h3>{$page->title}</h3>
 <p>Here lives the documentation for the api for accessing nzb and index data. Api functions can be called by either logged in users, or by providing an apikey.</p>
-<br>
 <br>
 {if $loggedin=="true"}
 	<h3>API Credentials</h3>
 	<p>Your credentials should be provided as <span style="font-family:courier;">?apikey={$userdata.rsstoken}</span></p>
 {/if}
-<br>
 <br>
 <h3>Available Functions</h3>
 <p>Use the parameter <span style="font-family:courier;">?t=</span> to specify the function being called.</p>
@@ -26,7 +24,6 @@
 	<dt>Get <span style="font-family:courier;"><a href="{$smarty.const.WWW_TOP}/api?t=get&amp;id=9ca52909ba9b9e5e6758d815fef4ecda">?t=get&amp;id=9ca52909ba9b9e5e6758d815fef4ecda</a></span></dt>
 	<dd>Downloads the nzb file associated with an Id.</dd>
 </dl>
-<br>
 <br>
 <h3>Output Format</h3>
 <p>Obviously not appropriate to functions which return an nzb file.</p>

@@ -26,7 +26,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 				if ($res === false) {
 					if ($argv[1] === "delete") {
 						@copy($nzbpath, nZEDb_ROOT . "pooped/" . $guid[1] . ".nzb.gz");
-						$releases->fastDelete(null, $guid[1], $site);
+						$releases->fastDelete(null, $guid[1]);
 						$deleted++;
 					}
 				} else if (isset($res)) {
@@ -53,11 +53,11 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	if ($res->rowCount() > 0) {
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row) {
-			$nzbpath = $nzb->getNZBPath($row["guid"], $site->nzbsplitlevel);
+			$nzbpath = $nzb->getNZBPath($row["guid"]);
 			if (!file_exists($nzbpath)) {
 				if ($argv[1] === "delete") {
 					@copy($nzbpath, nZEDb_ROOT . "pooped/" . $guid[1] . ".nzb.gz");
-					$releases->fastDelete($row['id'], $row['guid'], $site);
+					$releases->fastDelete($row['id'], $row['guid']);
 				}
 				$deleted++;
 			} else if (file_exists($nzbpath) && isset($row)) {

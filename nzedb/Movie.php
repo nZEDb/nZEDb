@@ -16,6 +16,22 @@ class Movie
 	const SRC_DVD = 5;
 
 	/**
+	 * Current title being passed through various sites/api's.
+	 * @var string
+	 */
+	protected $currentTitle = '';
+
+	/**
+	 * @var Debugging
+	 */
+	protected $debugging;
+
+	/**
+	 * @var bool
+	 */
+	protected $debug;
+
+	/**
 	 * @param bool $echooutput
 	 */
 	function __construct($echooutput = false)
@@ -34,6 +50,10 @@ class Movie
 		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
 		$this->service = '';
 		$this->c = new ColorCLI();
+		if (nZEDb_DEBUG || nZEDb_LOGGING) {
+			$this->debug = true;
+			$this->debugging = new Debugging('Movie');
+		}
 	}
 
 	/**
@@ -312,15 +332,6 @@ class Movie
 		//check imdb for movie info
 		$imdb = $this->fetchImdbProperties($imdbId);
 		if (!$imdb && !$tmdb) {
-			if ($this->echooutput && $this->service != '') {
-				$this->c->doEcho(
-					$this->c->info(
-						"Unable to get movie information for IMDB ID: " .
-						$imdbId .
-						" on tmdb or imdb.com"
-					)
-				);
-			}
 			return false;
 		}
 
@@ -539,6 +550,27 @@ class Movie
 		}
 		$ret = array();
 		$ret['title'] = $tmdbLookup['title'];
+
+		if ($this->currentTitle !== '') {
+			// Check the similarity.
+			similar_text($this->currentTitle, $ret['title'], $percent);
+			if ($percent < 40) {
+				if ($this->debug) {
+					$this->debugging->start(
+						'fetchTmdbProperties',
+						'Found (' .
+						$ret['title'] .
+						') from TMDB, but it\'s only ' .
+						$percent .
+						'% similar to (' .
+						$this->currentTitle . ')',
+						5
+					);
+				}
+				return false;
+			}
+		}
+
 		$ret['tmdb_id'] = $tmdbLookup['id'];
 		$ImdbID = str_replace('tt', '', $tmdbLookup['imdb_id']);
 		$ret['imdb_id'] = $ImdbID;
@@ -634,6 +666,26 @@ class Movie
 				}
 			}
 
+			if ($this->currentTitle !== '' && isset($ret['title'])) {
+				// Check the similarity.
+				similar_text($this->currentTitle, $ret['title'], $percent);
+				if ($percent < 40) {
+					if ($this->debug) {
+						$this->debugging->start(
+							'fetchImdbProperties',
+							'Found (' .
+							$ret['title'] .
+							') from IMDB, but it\'s only ' .
+							$percent .
+							'% similar to (' .
+							$this->currentTitle . ')',
+							5
+						);
+					}
+					return false;
+				}
+			}
+
 			//actors
 			if (preg_match('/<table class="cast_list">(.+)<\/table>/s', $buffer, $hit)) {
 				if (preg_match_all('/<a.*?href="\/name\/(nm\d{1,8})\/.+"name">(.+)<\/span>/i', $hit[0], $results, PREG_PATTERN_ORDER)) {
@@ -659,11 +711,9 @@ class Movie
 	{
 		$imdbId = $this->parseImdb($buffer);
 		if ($imdbId !== false) {
-			if ($service == 'nfo') {
-				$this->service = 'nfo';
-			}
+			$this->service = $service;
 			if ($this->echooutput && $this->service != '') {
-				$this->c->doEcho($this->c->headerOver($service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId), true);
+				$this->c->doEcho($this->c->headerOver($service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId));
 			}
 
 			$this->db->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', $this->db->escapeString($imdbId), $id));
@@ -672,7 +722,9 @@ class Movie
 			if ($processImdb == 1) {
 				$movCheck = $this->getMovieInfo($imdbId);
 				if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000)) {
-					$this->updateMovieInfo($imdbId);
+					if ($this->updateMovieInfo($imdbId) === false) {
+						$this->db->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', 0000000, $id));
+					}
 				}
 			}
 		}
@@ -713,7 +765,7 @@ class Movie
 				$parsed = $this->parseMovieSearchName($arr['name']);
 				if ($parsed !== false) {
 					$year = false;
-					$moviename = $parsed['title'];
+					$this->currentTitle = $moviename = $parsed['title'];
 					$movienameonly = $moviename;
 					if ($parsed['year'] != '') {
 						$year = true;
@@ -999,25 +1051,45 @@ class Movie
 
 	public function parseMovieSearchName($releasename)
 	{
-		$matches = '';
-		if (preg_match('/\b[Ss]\d+[-._Ee]|\bE\d+\b/', $releasename)) {
-			return false;
-		}
+		// Check if it's foreign ?
 		$cat = new Category();
 		if (!$cat->isMovieForeign($releasename)) {
-			preg_match('/(?P<name>[\w. -]+)[-._( ](?P<year>(19|20)\d\d)/i', $releasename, $matches);
-			if (!isset($matches['year'])) {
-				preg_match('/^(?P<name>[\w. -]+[-._ ]((bd|br|dvd)rip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?(fix|pack)|ac3d|unrated|1080[ip]|720p))/i', $releasename, $matches);
+			$name = $year = '';
+			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';
+
+			/* Initial scan of getting a year/name.
+			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
+			 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
+			 * Then we look up the year, (19|20)\d\d, so $matches[1] would be Coraline $matches[2] 2009
+			 */
+			if (preg_match('/(?P<name>[\w. -]+)[^\w](?P<year>(19|20)\d\d)/i', $releasename, $matches)) {
+				$name = $matches['name'];
+				$year = $matches['year'];
+
+			/* If we didn't find a year, try to get a name anyways.
+			 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
+			 */
+			} else if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releasename, $matches)) {
+				$name = $matches['name'];
 			}
 
-			if (isset($matches['name'])) {
-				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $matches['name']);
-				$year = (isset($matches['year'])) ? $matches['year'] : '';
+			// Check if we got something.
+			if ($name !== '') {
+
+				// If we still have any of the words in $followingList, remove them.
+				$name = preg_replace('/' . $followingList . '/i', ' ', $name);
+				// Remove periods, underscored, anything between parenthesis.
+				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
+				// Finally remove multiple spaces and trim leading spaces.
+				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
+
+				// Check if the name is long enough and not just numbers.
 				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 					if ($this->debug && $this->echooutput) {
-						$this->c->doEcho("DB name: {$releasename}");
+						$this->c->doEcho("DB name: {$releasename}", true);
 					}
-					return array('title' => trim($name), 'year' => $year);
+
+					return array('title' => $name, 'year' => $year);
 				}
 			}
 		}

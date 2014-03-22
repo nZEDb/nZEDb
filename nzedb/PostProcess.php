@@ -776,7 +776,7 @@ class PostProcess
 					}
 				}
 
-				$nzbPath = $nzb->getNZBPath($rel['guid'], $this->site->nzbsplitlevel);
+				$nzbPath = $nzb->getNZBPath($rel['guid']);
 				if (!is_file($nzbPath)) {
 					// The nzb was not located. decrement the password status.
 					$this->debugging->start('processAdditional', 'NZB not found for releaseGUID: ' . $rel['guid'], 3);
@@ -819,7 +819,8 @@ class PostProcess
 
 				// Reset and set certain variables.
 				$passStatus = array(Releases::PASSWD_NONE);
-				$sampleMsgID = $mediaMsgID = $audioMsgID = $jpgMsgID = $audioType = $mID = array();
+				$sampleMsgID = $jpgMsgID = $audioType = $mID = array();
+				$mediaMsgID = $audioMsgID = '';
 				$hasRar = $ignoredBooks = $failed = $this->filesAdded = 0;
 				$this->password = $this->noNFO = $bookFlood = false;
 				$groupName = $this->groups->getByNameByID($rel['groupid']);
@@ -852,7 +853,7 @@ class PostProcess
 						preg_match('/sample/i', $nzbContents['title'])) {
 
 						if (isset($nzbContents['segments'])) {
-							$sampleMsgID[] = $nzbContents['segments'][0];
+							$sampleMsgID[] = (string)$nzbContents['segments'][0];
 
 							// Get the amount of segments for this file.
 							$segCount = count($nzbContents['segments']);
@@ -861,7 +862,7 @@ class PostProcess
 								// If it's more than 1 try to get up to the site specified value of segments.
 								for ($i = 1; $i < $this->segmentsToDownload; $i++) {
 									if ($segCount > $i) {
-										$sampleMsgID[] = $nzbContents['segments'][$i];
+										$sampleMsgID[] = (string)$nzbContents['segments'][$i];
 									} else {
 										break;
 									}
@@ -877,7 +878,7 @@ class PostProcess
 						preg_match('/' . $this->videoFileRegex . '[. ")\]]/i', $nzbContents['title'])) {
 
 						if (isset($nzbContents['segments'])) {
-							$mediaMsgID[] = $nzbContents['segments'][0];
+							$mediaMsgID = (string)$nzbContents['segments'][0];
 						}
 					}
 
@@ -889,7 +890,7 @@ class PostProcess
 						if (isset($nzbContents['segments'])) {
 							// Get the extension.
 							$audioType = $type[1];
-							$audioMsgID[] = $nzbContents['segments'][0];
+							$audioMsgID = (string)$nzbContents['segments'][0];
 						}
 					}
 
@@ -901,10 +902,10 @@ class PostProcess
 
 						if (isset($nzbContents['segments'])) {
 
-							$jpgMsgID[] = $nzbContents['segments'][0];
+							$jpgMsgID[] = (string)$nzbContents['segments'][0];
 							// If there's more than 1 part, get 2.
 							if (count($nzbContents['segments']) > 1) {
-								$jpgMsgID[] = $nzbContents['segments'][1];
+								$jpgMsgID[] = (string)$nzbContents['segments'][1];
 							}
 						}
 					}

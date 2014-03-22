@@ -210,7 +210,16 @@ class Releases
 			$group = '';
 		}
 
-		return $this->db->query(sprintf("SELECT searchname, guid, CONCAT(cp.title,'_',category.title) AS catName FROM releases INNER JOIN category ON releases.categoryid = category.id LEFT OUTER JOIN category cp ON cp.id = category.parentid WHERE nzbstatus = 1 %s %s %s", $postfrom, $postto, $group));
+		return $this->db->query(
+			sprintf("
+				SELECT searchname, guid, groups.name AS gname, CONCAT(cp.title,'_',category.title) AS catName
+				FROM releases
+				INNER JOIN category ON releases.categoryid = category.id
+				INNER JOIN groups ON releases.groupid = groups.id
+				LEFT OUTER JOIN category cp ON cp.id = category.parentid
+				WHERE nzbstatus = 1 %s %s %s", $postfrom, $postto, $group
+			)
+		);
 	}
 
 	public function getEarliestUsenetPostDate()
@@ -407,26 +416,38 @@ class Releases
 			} else {
 				$rel = $this->getById($identifier);
 			}
-			$this->fastDelete($rel['id'], $rel['guid'], $this->site);
+			$this->fastDelete($rel['id'], $rel['guid']);
 		}
 	}
 
 	// For most scripts needing to delete a release.
-	public function fastDelete($id, $guid, $site)
+	public function fastDelete($id, $guid)
 	{
 		$nzb = new NZB();
-		$ri = new ReleaseImage();
-
-		// Delete from disk.
-		$nzbpath = $nzb->getNZBPath($guid, $site->nzbsplitlevel);
+		// Delete NZB from disk.
+		$nzbpath = $nzb->getNZBPath($guid);
 		if (is_file($nzbpath)) {
 			unlink($nzbpath);
 		}
 
 		if (isset($id)) {
 			// Delete from DB.
-			if ($this->db->dbSystem() == 'mysql') {
-				$this->db->queryExec('DELETE releases, releasenfo, releasecomment, usercart, releasefiles, releaseaudio, releasesubs, releasevideo, releaseextrafull FROM releases LEFT OUTER JOIN releasenfo ON releasenfo.releaseid = releases.id LEFT OUTER JOIN releasecomment ON releasecomment.releaseid = releases.id LEFT OUTER JOIN usercart ON usercart.releaseid = releases.id LEFT OUTER JOIN releasefiles ON releasefiles.releaseid = releases.id LEFT OUTER JOIN releaseaudio ON releaseaudio.releaseid = releases.id LEFT OUTER JOIN releasesubs ON releasesubs.releaseid = releases.id LEFT OUTER JOIN releasevideo ON releasevideo.releaseid = releases.id LEFT OUTER JOIN releaseextrafull ON releaseextrafull.releaseid = releases.id WHERE releases.id = ' . $id);
+			if ($this->db->dbSystem() === 'mysql') {
+				$this->db->queryExec(
+					'DELETE
+						releases, releasenfo, releasecomment, usercart, releasefiles,
+						releaseaudio, releasesubs, releasevideo, releaseextrafull
+					FROM releases
+					LEFT OUTER JOIN releasenfo ON releasenfo.releaseid = releases.id
+					LEFT OUTER JOIN releasecomment ON releasecomment.releaseid = releases.id
+					LEFT OUTER JOIN usercart ON usercart.releaseid = releases.id
+					LEFT OUTER JOIN releasefiles ON releasefiles.releaseid = releases.id
+					LEFT OUTER JOIN releaseaudio ON releaseaudio.releaseid = releases.id
+					LEFT OUTER JOIN releasesubs ON releasesubs.releaseid = releases.id
+					LEFT OUTER JOIN releasevideo ON releasevideo.releaseid = releases.id
+					LEFT OUTER JOIN releaseextrafull ON releaseextrafull.releaseid = releases.id
+					WHERE releases.id = ' . $id
+				);
 			} else {
 				$this->db->queryExec('DELETE FROM releasenfo WHERE releaseid = ' . $id);
 				$this->db->queryExec('DELETE FROM releasecomment WHERE releaseid = ' . $id);
@@ -442,6 +463,7 @@ class Releases
 
 		// This deletes a file so not in the query.
 		if (isset($guid)) {
+			$ri = new ReleaseImage();
 			$ri->delete($guid);
 		}
 	}
@@ -459,7 +481,7 @@ class Releases
 			} else {
 				$rel = $this->getByGuid($identifier);
 			}
-			$this->fastDelete($rel['id'], $rel['guid'], $this->site);
+			$this->fastDelete($rel['id'], $rel['guid']);
 		}
 	}
 
@@ -906,7 +928,7 @@ class Releases
 		$zipfile = new ZipFile();
 
 		foreach ($guids as $guid) {
-			$nzbpath = $nzb->getNZBPath($guid, $this->site->nzbsplitlevel);
+			$nzbpath = $nzb->getNZBPath($guid);
 
 			if (is_file($nzbpath)) {
 				ob_start();
@@ -1391,7 +1413,7 @@ class Releases
 				//printf("SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d\n", $catrowrel['id'], $catrowrel['minsize']);
 				$resrel = $this->db->queryDirect(sprintf('SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d', $catrowrel['id'], $catrowrel['minsize']));
 				foreach ($resrel as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$catminsizecount ++;
 				}
 			}
@@ -1413,7 +1435,7 @@ class Releases
 				}
 				if ($resrel->rowCount() > 0) {
 					foreach ($resrel as $rowrel) {
-						$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+						$this->fastDelete($rowrel['id'], $rowrel['guid']);
 						$minsizecount ++;
 					}
 				}
@@ -1423,7 +1445,7 @@ class Releases
 					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE groupid = %d AND size > %d', $groupID['id'], $maxfilesizeres['value']));
 					if ($resrel->rowCount() > 0) {
 						foreach ($resrel as $rowrel) {
-							$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+							$this->fastDelete($rowrel['id'], $rowrel['guid']);
 							$maxsizecount ++;
 						}
 					}
@@ -1440,7 +1462,7 @@ class Releases
 				}
 				if ($resrel->rowCount() > 0) {
 					foreach ($resrel as $rowrel) {
-						$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+						$this->fastDelete($rowrel['id'], $rowrel['guid']);
 						$minfilecount ++;
 					}
 				}
@@ -1457,7 +1479,7 @@ class Releases
 			}
 			if ($resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$minsizecount ++;
 				}
 			}
@@ -1467,7 +1489,7 @@ class Releases
 				$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE groupid = %d AND size > %s', $groupID, $this->db->escapeString($maxfilesizeres['value'])));
 				if ($resrel->rowCount() > 0) {
 					foreach ($resrel as $rowrel) {
-						$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+						$this->fastDelete($rowrel['id'], $rowrel['guid']);
 						$maxsizecount ++;
 					}
 				}
@@ -1484,7 +1506,7 @@ class Releases
 			}
 			if ($resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$minfilecount ++;
 				}
 			}
@@ -1812,7 +1834,7 @@ class Releases
 			}
 			if ($result->rowCount() > 0) {
 				foreach ($result as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$remcount ++;
 				}
 			}
@@ -1823,7 +1845,7 @@ class Releases
 			$result = $this->db->queryDirect('SELECT id, guid FROM releases WHERE passwordstatus = ' . Releases::PASSWD_RAR);
 			if ($result->rowCount() > 0) {
 				foreach ($result as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$passcount ++;
 				}
 			}
@@ -1834,7 +1856,7 @@ class Releases
 			$result = $this->db->queryDirect('SELECT id, guid FROM releases WHERE passwordstatus = ' . Releases::PASSWD_POTENTIAL);
 			if ($result->rowCount() > 0) {
 				foreach ($result as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$passcount ++;
 				}
 			}
@@ -1851,7 +1873,7 @@ class Releases
 				$total = $resrel->rowCount();
 				if ($total > 0) {
 					foreach ($resrel as $rowrel) {
-						$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+						$this->fastDelete($rowrel['id'], $rowrel['guid']);
 						$dupecount ++;
 					}
 				}
@@ -1867,7 +1889,7 @@ class Releases
 			$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion));
 			if ($resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$completioncount ++;
 				}
 			}
@@ -1881,7 +1903,7 @@ class Releases
 				if ($res->rowCount() > 0) {
 					foreach ($res as $rel) {
 						$disabledcount++;
-						$this->fastDelete($rel['id'], $rel['guid'], $this->site);
+						$this->fastDelete($rel['id'], $rel['guid']);
 					}
 				}
 			}
@@ -1895,7 +1917,7 @@ class Releases
 				if ($rels->rowCount() > 0) {
 					foreach ($rels as $rel) {
 						$disabledgenrecount++;
-						$this->fastDelete($rel['id'], $rel['guid'], $this->site);
+						$this->fastDelete($rel['id'], $rel['guid']);
 					}
 				}
 			}
@@ -1910,7 +1932,7 @@ class Releases
 			}
 			if ($resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid'], $this->site);
+					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$miscothercount ++;
 				}
 			}
