@@ -214,13 +214,11 @@ function deleteScr($and)
 function deleteBlacklist($and)
 {
 	$db = new DB();
-	$groups = new Groups();
+	//$binaries = new Binaries();
 
-	$binaries = new Binaries();
-
-	$regexes = $db->queryDirect('SELECT regex, id, groupname, msgcol FROM binaryblacklist WHERE status = 1 AND optype = 1');
+	$regexes = $db->query('SELECT regex, id, groupname, msgcol FROM binaryblacklist WHERE status = 1 AND optype = 1');
 	$delcount = 0;
-	$count = $regexes->rowCount();
+	$count = count($regexes);
 	if ($count > 0) {
 		foreach ($regexes as $regex) {
 
@@ -232,6 +230,8 @@ function deleteBlacklist($and)
 					$regexsql = "LEFT JOIN releasefiles rf ON rf.releaseid = r.id WHERE (rf.name {$rMethod} " .
 						$db->escapeString($regex['regex']) .
 						" OR r.name {$rMethod} " .
+						$db->escapeString($regex['regex']) .
+						" OR r.searchname {$rMethod} " .
 						$db->escapeString($regex['regex']) .
 						")";
 					break;
