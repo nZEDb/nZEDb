@@ -558,7 +558,7 @@ class Movie
 				if ($this->debug) {
 					$this->debugging->start(
 						'fetchTmdbProperties',
-						'Found :(' .
+						'Found (' .
 						$ret['title'] .
 						') from TMDB, but it\'s only ' .
 						$percent .
@@ -673,7 +673,7 @@ class Movie
 					if ($this->debug) {
 						$this->debugging->start(
 							'fetchImdbProperties',
-							'Found :(' .
+							'Found (' .
 							$ret['title'] .
 							') from IMDB, but it\'s only ' .
 							$percent .
@@ -1051,42 +1051,45 @@ class Movie
 
 	public function parseMovieSearchName($releasename)
 	{
-		// Check if it's a TV release.
-		if (preg_match('/\b[Ss]\d+[-._Ee]|\bE\d+\b/', $releasename)) {
-			return false;
-		}
-
 		// Check if it's foreign ?
 		$cat = new Category();
 		if (!$cat->isMovieForeign($releasename)) {
-
 			$name = $year = '';
-			$followingList = '((1080|480|720)p|AC3D|Directors|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]264|xvid)';
+			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';
 
-			// Initial scan of getting a year/name.
-			if (preg_match('/(?P<name>[\w. -]+)[-._( ](?P<year>(19|20)\d\d)/i', $releasename, $matches)) {
+			/* Initial scan of getting a year/name.
+			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
+			 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
+			 * Then we look up the year, (19|20)\d\d, so $matches[1] would be Coraline $matches[2] 2009
+			 */
+			if (preg_match('/(?P<name>[\w. -]+)[^\w](?P<year>(19|20)\d\d)/i', $releasename, $matches)) {
 				$name = $matches['name'];
 				$year = $matches['year'];
 
-			// If we didn't find a year, try to get a name.
-			} else if (preg_match('/(?P<name>[\w. -]+[-._ ]' . $followingList . ')/i', $releasename, $matches)) {
+			/* If we didn't find a year, try to get a name anyways.
+			 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
+			 */
+			} else if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releasename, $matches)) {
 				$name = $matches['name'];
 			}
 
+			// Check if we got something.
 			if ($name !== '') {
-				// Check if these are still in the name, remove them.
-				if (preg_match('/(.+?)' . $followingList . '/i', $name, $matches)) {
-					$name = $matches[1];
-				}
 
+				// If we still have any of the words in $followingList, remove them.
+				$name = preg_replace('/' . $followingList . '/i', ' ', $name);
+				// Remove periods, underscored, anything between parenthesis.
 				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
+				// Finally remove multiple spaces and trim leading spaces.
+				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
 
+				// Check if the name is long enough and not just numbers.
 				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 					if ($this->debug && $this->echooutput) {
 						$this->c->doEcho("DB name: {$releasename}", true);
 					}
 
-					return array('title' => trim($name), 'year' => $year);
+					return array('title' => $name, 'year' => $year);
 				}
 			}
 		}
