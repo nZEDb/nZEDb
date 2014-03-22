@@ -1,4 +1,3 @@
-
 <h1>{$page->title}</h1>
 
 <form action="{$SCRIPT_NAME}?action=submit" method="POST">
