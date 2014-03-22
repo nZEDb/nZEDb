@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-03-22 kevin
+	* Issue where group edit first/last id was not updating. #1226
 2014-03-31 ruhllatio
 	* Change monitor.php query that runs for 10 seconds needlessly and an additional index is a waste for nzbstatus
 2014-03-21 bart39

@@ -337,17 +337,20 @@ class Groups
 		return $this->db->queryExec(
 			sprintf(
 				"UPDATE groups
-				SET name = %s, description = %s, backfill_target = %s , active = %d,
-				backfill = %d, minfilestoformrelease = %s, minsizetoformrelease = %s
-				Where id = %d ",
-				$this->db->escapeString($group["name"]),
-				$this->db->escapeString($group["description"]),
+				SET name = %s, description = %s, backfill_target = %s, first_record = %s, last_record = %s,
+				last_updated = NOW(), active = %s, backfill = %s, minfilestoformrelease = %s, minsizetoformrelease = %s
+				WHERE id = %d",
+				$this->db->escapeString(trim($group["name"])),
+				$this->db->escapeString(trim($group["description"])),
 				$this->formatNumberString($group["backfill_target"]),
-				$group["active"],
-				$group["backfill"],
+				$this->formatNumberString($group["first_record"]),
+				$this->formatNumberString($group["last_record"]),
+				$this->formatNumberString($group["active"]),
+				$this->formatNumberString($group["backfill"]),
 				$this->formatNumberString($group["minfilestoformrelease"], true),
 				$this->formatNumberString($group["minsizetoformrelease"], true),
-				$group["id"])
+				$group["id"]
+			)
 		);
 	}
 
@@ -365,7 +368,7 @@ class Groups
 			INSERT INTO groups
 				(name, description, backfill_target, first_record, last_record, last_updated,
 				active, backfill, minfilestoformrelease, minsizetoformrelease)
-			VALUES (%s, %s, %s, %s, %s, NOW(), %s, %s, %s, %s) ",
+			VALUES (%s, %s, %s, %s, %s, NOW(), %s, %s, %s, %s)",
 			$this->db->escapeString(trim($group["name"])),
 			$this->db->escapeString(trim($group["description"])),
 			$this->formatNumberString($group["backfill_target"]),
@@ -390,12 +393,10 @@ class Groups
 	{
 		$setting = trim($setting);
 		if ($setting === "0" || !is_numeric($setting)) {
-			$setting = ($null ? $this->db->escapeString('NULL') : '0');
-		} else {
-			$setting = $this->db->escapeString($setting);
+			$setting = ($null ? 'NULL' : '0');
 		}
 
-		return $setting;
+		return $this->db->escapeString($setting);
 	}
 
 	/**
