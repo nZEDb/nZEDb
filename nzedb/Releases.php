@@ -242,6 +242,13 @@ class Releases
 		return $row['postdate'];
 	}
 
+	/**
+	 * Gets all groups for drop down selection on NZB-Export web page.
+	 *
+	 * @param bool $blnIncludeAll
+	 *
+	 * @return array
+	 */
 	public function getReleasedGroupsForSelect($blnIncludeAll = true)
 	{
 		$groups = $this->db->query('SELECT DISTINCT groups.id, groups.name FROM releases INNER JOIN groups on groups.id = releases.groupid');
