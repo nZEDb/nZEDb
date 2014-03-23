@@ -835,11 +835,15 @@ class Movie
 					} else {
 						$url = 'http://www.omdbapi.com/?t=' . str_replace(' ', '%20', $movienameonly) . '&r=json';
 					}
-					$omdbid = json_decode(file_get_contents($url));
-					if (isset($omdbid->imdbID)) {
-						$imdbId = $this->domovieupdate($omdbid->imdbID, 'OMDbAPI', $arr['id']);
-						if ($imdbId !== false) {
-							continue;
+					$omdbData = getUrl($url);
+					if ($omdbData !== false) {
+						$omdbid = json_decode($omdbData);
+
+						if (isset($omdbid->imdbID)) {
+							$imdbId = $this->domovieupdate($omdbid->imdbID, 'OMDbAPI', $arr['id']);
+							if ($imdbId !== false) {
+								continue;
+							}
 						}
 					}
 
