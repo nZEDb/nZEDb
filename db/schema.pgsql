@@ -51,7 +51,7 @@ CREATE TABLE "binaries" (
   "filenumber" bigint DEFAULT 0 NOT NULL,
   "totalparts" bigint DEFAULT 0 NOT NULL,
   "binaryhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
-  "partcheck" bigint DEFAULT 0 NOT NULL,
+  "partcheck" BOOLEAN DEFAULT FALSE,
   "partsize" numeric(20, 0) DEFAULT 0 NOT NULL
 )
 WITHOUT OIDS;
@@ -136,7 +136,7 @@ CREATE TABLE "collections" (
   "groupid" bigint DEFAULT 0 NOT NULL,
   "collectionhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "dateadded" timestamp without time zone,
-  "filecheck" bigint DEFAULT 0 NOT NULL,
+  "filecheck" smallint DEFAULT 0 NOT NULL,
   "filesize" numeric(20, 0) DEFAULT 0 NOT NULL,
   "releaseid" integer
 )
@@ -250,9 +250,15 @@ CREATE TABLE "groups" (
 )
 WITHOUT OIDS;
 
+DROP SEQUENCE IF EXISTS "logging_id_seq" CASCADE;
+CREATE SEQUENCE "logging_id_seq" INCREMENT BY 1
+                                  NO MAXVALUE NO MINVALUE CACHE 1;
+SELECT pg_catalog.setval('logging_id_seq', 1, true);
+
 -- Table: logging
 DROP TABLE IF EXISTS "logging" CASCADE;
 CREATE TABLE "logging" (
+  "id" bigint DEFAULT nextval('logging_id_seq'::regclass) NOT NULL,
   "time" timestamp without time zone,
   "username" character varying(50),
   "host" character varying(40)
@@ -551,20 +557,29 @@ CREATE TABLE "releases" (
   "consoleinfoid" integer,
   "bookinfoid" integer,
   "anidbid" integer,
-  "preid" integer,
+  "preid" bigint DEFAULT 0 NOT NULL,
   "grabs" bigint DEFAULT 0 NOT NULL,
   "comments" integer DEFAULT 0 NOT NULL,
   "passwordstatus" smallint DEFAULT 0 NOT NULL,
   "rarinnerfilecount" integer DEFAULT 0 NOT NULL,
   "haspreview" smallint DEFAULT 0 NOT NULL,
   "nfostatus" smallint DEFAULT 0 NOT NULL,
-  "bitwise" smallint DEFAULT 0 NOT NULL,
-  "jpgstatus" smallint DEFAULT 0 NOT NULL,
-  "videostatus" smallint DEFAULT 0 NOT NULL,
-  "audiostatus" smallint DEFAULT 0 NOT NULL,
+  "jpgstatus" BOOLEAN DEFAULT FALSE,
+  "videostatus" BOOLEAN DEFAULT FALSE,
+  "audiostatus" BOOLEAN DEFAULT FALSE,
   "dehashstatus" smallint DEFAULT 0 NOT NULL,
   "reqidstatus" smallint DEFAULT 0 NOT NULL,
-  "nzb_guid" character varying(50)
+  "nzb_guid" character varying(50),
+  "nzbstatus" BOOLEAN DEFAULT FALSE,
+  "iscategorized" BOOLEAN DEFAULT FALSE,
+  "isrenamed" BOOLEAN DEFAULT FALSE,
+  "ishashed" BOOLEAN DEFAULT FALSE,
+  "isrequestid" BOOLEAN DEFAULT FALSE
+  "proc_pp" BOOLEAN DEFAULT FALSE
+  "proc_sorter" BOOLEAN DEFAULT FALSE
+  "proc_par2" BOOLEAN DEFAULT FALSE
+  "proc_nfo" BOOLEAN DEFAULT FALSE
+  "proc_files" BOOLEAN DEFAULT FALSE
 )
 WITHOUT OIDS;
 
@@ -1301,7 +1316,7 @@ INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, descripti
 INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.warez.games', NULL, NULL, 'misc, mostly games and applications');
 INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.e-book.magazines', NULL, NULL, 'magazines, mostly english');
 INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.sounds.anime', NULL, NULL, 'music from Anime');
-
+INSERT INTO groups (name, minfilestoformrelease, minsizetoformrelease, description) VALUES ('alt.binaries.pictures.erotica.anime', NULL, NULL, 'Anime Manga, Adult');
 
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('search','Advanced Search','Search for releases.', 1, 10);
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('browsegroup','Groups List','Browse by Group.', 1, 25);
@@ -1347,6 +1362,7 @@ INSERT INTO site
 	('home_link','/'),
 	('dereferrer_link',''),
 	('nzbpath','/your/path/to/nzbs/'),
+	('coverspath','/your/path/to/covers/'),
 	('lookuptvrage', 1),
 	('lookupimdb', 1),
 	('lookupnfo', 1),
@@ -1459,7 +1475,8 @@ INSERT INTO site
 	('maxgrabnzbs', '100'),
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
-	('sqlpatch','170');
+	('showbacks', '0'),
+	('sqlpatch','179');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
@@ -1794,6 +1811,8 @@ DROP INDEX IF EXISTS "binaryblacklist_groupname" CASCADE;
 CREATE INDEX "binaryblacklist_groupname" ON "binaryblacklist" ("groupname");
 DROP INDEX IF EXISTS "binaryblacklist_status" CASCADE;
 CREATE INDEX "binaryblacklist_status" ON "binaryblacklist" ("status");ALTER TABLE "bookinfo" ADD CONSTRAINT "bookinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "category" ADD CONSTRAINT "category_id_pkey" PRIMARY KEY("id");
+DROP INDEX IF EXISTS "bookinfo_asin" CASCADE;
+CREATE UNIQUE INDEX "bookinfo_asin" ON "bookinfo" ("asin");
 DROP INDEX IF EXISTS "category_status" CASCADE;
 CREATE INDEX "category_status" ON "category" ("status");
 DROP INDEX IF EXISTS "category_parentid" CASCADE;
@@ -1809,9 +1828,11 @@ CREATE INDEX "collections_filecheck" ON "collections" ("filecheck");
 DROP INDEX IF EXISTS "collections_dateadded" CASCADE;
 CREATE INDEX "collections_dateadded" ON "collections" ("dateadded");
 DROP INDEX IF EXISTS "collections_collectionhash" CASCADE;
-CREATE INDEX "collections_collectionhash" ON "collections" ("collectionhash");
+CREATE UNIQUE INDEX "collections_collectionhash" ON "collections" ("collectionhash");
 DROP INDEX IF EXISTS "collections_releaseid" CASCADE;
 CREATE INDEX "collections_releaseid" ON "collections" ("releaseid");ALTER TABLE "consoleinfo" ADD CONSTRAINT "consoleinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "content" ADD CONSTRAINT "content_id_pkey" PRIMARY KEY("id");ALTER TABLE "forumpost" ADD CONSTRAINT "forumpost_id_pkey" PRIMARY KEY("id");
+DROP INDEX IF EXISTS "consoleinfo_asin" CASCADE;
+CREATE UNIQUE INDEX "consoleinfo_asin" ON "consoleinfo" ("asin");
 DROP INDEX IF EXISTS "forumpost_parentid" CASCADE;
 CREATE INDEX "forumpost_parentid" ON "forumpost" ("parentid");
 DROP INDEX IF EXISTS "forumpost_userid" CASCADE;
@@ -1830,6 +1851,8 @@ DROP INDEX IF EXISTS "movieinfo_imdbid" CASCADE;
 CREATE UNIQUE INDEX "movieinfo_imdbid" ON "movieinfo" ("imdbid");
 DROP INDEX IF EXISTS "movieinfo_title" CASCADE;
 CREATE INDEX "movieinfo_title" ON "movieinfo" ("title");ALTER TABLE "musicinfo" ADD CONSTRAINT "musicinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "nzbs" ADD CONSTRAINT "id_pkey" PRIMARY KEY("id");
+DROP INDEX IF EXISTS "musicinfo_asin" CASCADE;
+CREATE UNIQUE INDEX "musicinfo_asin" ON "musicinfo" ("asin");
 DROP INDEX IF EXISTS "nzbs_partnumber" CASCADE;
 CREATE INDEX "nzbs_partnumber" ON "nzbs" ("partnumber");
 DROP INDEX IF EXISTS "nzbs_message" CASCADE;
@@ -1970,6 +1993,8 @@ DROP INDEX IF EXISTS "ix_releases_postdate_name" CASCADE;
 CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);
 DROP INDEX IF EXISTS "ix_releases_nzb_guid" CASCADE;
 CREATE INDEX ix_releases_nzb_guid ON releases (nzb_guid);
+DROP INDEX IF EXISTS "ix_releases_preid_searchname" CASCADE;
+CREATE INDEX ix_releases_preid_searchname ON releases (preid, searchname);
 
 CREATE FUNCTION hash_check() RETURNS trigger AS $hash_check$ BEGIN IF NEW.searchname ~ '[a-fA-F0-9]{32}' OR NEW.name ~ '[a-fA-F0-9]{32}' THEN SET NEW.bitwise = "((NEW.bitwise & ~512)|512)"; END IF; END; $hash_check$ LANGUAGE plpgsql;
 CREATE FUNCTION request_check() RETURNS trigger AS $request_check$ BEGIN IF NEW.searchname ~'^\\[[[:digit:]]+\\]' OR NEW.name ~'^\\[[[:digit:]]+\\]' THEN SET NEW.bitwise = "((NEW.bitwise & ~1024)|1024)"; END IF; END; $request_check$ LANGUAGE plpgsql;

@@ -15,43 +15,28 @@ import datetime
 import lib.info as info
 from lib.info import bcolors
 conf = info.readConfig()
-con = None
-if conf['DB_SYSTEM'] == "mysql":
-	try:
-		import cymysql as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], passwd=conf['DB_PASSWORD'], db=conf['DB_NAME'], port=int(conf['DB_PORT']), unix_socket=conf['DB_SOCKET'], charset="utf8")
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install cymysql for python 3, \ninformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.exit()
-elif conf['DB_SYSTEM'] == "pgsql":
-	try:
-		import psycopg2 as mdb
-		con = mdb.connect(host=conf['DB_HOST'], user=conf['DB_USER'], password=conf['DB_PASSWORD'], dbname=conf['DB_NAME'], port=int(conf['DB_PORT']))
-	except ImportError:
-		print(bcolors.ERROR + "\nPlease install cymysql for python [2, 3], \nInformation can be found in INSTALL.txt\n" + bcolors.ENDC)
-		sys.exit()
-cur = con.cursor()
-
-threads = 15
-print(bcolors.HEADER + "\nUpdate Per Group Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
-
+cur = info.connect()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-conf = info.readConfig()
+threads = 15
 
-cur.execute("SELECT value FROM site WHERE setting = 'tablepergroup'")
-allowed = cur.fetchone()
+print(bcolors.HEADER + "\nUpdate Per Group Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+
+cur[0].execute("SELECT value FROM site WHERE setting = 'tablepergroup'")
+allowed = cur[0].fetchone()
 if int(allowed[0]) == 0:
 	print(bcolors.ERROR + "Table per group not enabled" + bcolors.ENDC)
+	info.disconnect(cur[0], cur[1])
 	sys.exit()
 
-cur.execute("SELECT id FROM groups WHERE active = 1 ORDER by cast(last_record as signed) - cast(first_record as signed) DESC")
-datas = cur.fetchall()
+cur[0].execute("SELECT id FROM groups WHERE active = 1 ORDER by cast(last_record as signed) - cast(first_record as signed) DESC")
+datas = cur[0].fetchall()
+
+#close connection to mysql
+info.disconnect(cur[0], cur[1])
 
 if not datas:
 	print(bcolors.HEADER + "No Work to Process" + bcolors.ENDC)
-	cur.close()
-	con.close()
 	sys.exit()
 
 my_queue = queue.Queue()

@@ -1,7 +1,6 @@
 <?php
 require_once './config.php';
-//require_once nZEDb_LIB . 'adminpage.php';
-//require_once nZEDb_LIB . 'movie.php';
+
 
 $page = new AdminPage();
 $movie = new Movie();

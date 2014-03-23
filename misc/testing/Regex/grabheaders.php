@@ -10,11 +10,11 @@ if ($nntp->doConnect() === false) {
 	exit($c->error("Unable to connect to usenet."));
 }
 
-$number = 2500000;
+$number = 1000000;
 //exec("tmux kill-session -t NNTPProxy");
 
 $groupArr = $nntp->selectGroup($group);
-if (PEAR::isError($groupArr) || !isset($groupArr['first']) || !isset($groupArr['last'])) {
+if ($nntp->isError($groupArr) || !isset($groupArr['first']) || !isset($groupArr['last'])) {
 	exit();
 }
 
@@ -53,7 +53,9 @@ for ($x = $first; $x <= $last; $x += 5000) {
 		//$header = $msg['Number']."\t\t".$msg['Subject']."\t\t".$msg['From']."\t\t".$msg['Date']."\t\t".$msg['Message-ID']."\t\t".$bytes."\t\t".$msg['Xref']."\n";
 		if (isset($msg['Subject'])) {
 			$header = $msg['Subject'] . "\n";
-			//echo $header;
+			if (preg_match('/yEnc/', $header )) {
+				echo $header;
+			}
 			file_put_contents("/var/www/nZEDb/not_yenc/" . $group . ".txt", $header, FILE_APPEND);
 			//var_dump($msg);
 		} else {
@@ -66,7 +68,7 @@ for ($x = $first; $x <= $last; $x += 5000) {
 	}
 }
 
-passthru("php /var/www/nZEDb/parseheaders.php ${group}");
+passthru("php /var/www/nZEDb/misc/testing/Regex/parseheaders.php ${group}");
 //$msgs = $nntp->getOverview(29668562-29668572, true, false);
 //var_dump($msgs);
 /*

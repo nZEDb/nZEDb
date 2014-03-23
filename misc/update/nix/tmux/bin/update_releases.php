@@ -25,7 +25,7 @@ if ($releases->hashcheck == 0) {
 
 // Create the connection here and pass, this is for post processing, so check for alternate
 $nntp = new NNTP();
-if (($site->alternate_nntp == 1 ? $nntp->doConnect_A() : $nntp->doConnect()) === false) {
+if (($site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
 	exit($c->error("Unable to connect to usenet."));
 }
 if ($site->nntpproxy === "1") {
@@ -66,6 +66,6 @@ if ($pieces[0] != 'Stage7b') {
 	$releases->processReleasesStage4dot5($groupid);
 	$releases->processReleasesStage5b($groupid);
 	$releases->processReleasesStage6(1, 0, $groupid, $nntp);
-	$releases->processReleasesStage7b($groupid);
+	$releases->processReleasesStage7b();
 	//echo 'Deleted '.number_format($deleted)." collections/binaries/parts.\n";
 }

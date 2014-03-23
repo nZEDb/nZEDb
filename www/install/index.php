@@ -1,7 +1,7 @@
 <?php
 @session_start();
-require_once '../automated.config.php';
-//require_once '../lib/install.php';
+require_once realpath(__DIR__ . '/../automated.config.php');
+
 $page_title = "Welcome";
 
 $cfg = new Install();
@@ -9,7 +9,7 @@ if ($cfg->isLocked()) {
 	$cfg->error = true;
 }
 
-$cfg->cacheCheck = is_writable($cfg->SMARTY_DIR . '/templates_c');
+$cfg->cacheCheck = is_writable(SMARTY_DIR . 'templates_c');
 if ($cfg->cacheCheck === false) {
 	$cfg->error = true;
 }
@@ -62,9 +62,9 @@ if (!$cfg->error) {
 				} else {
 					if (!$cfg->cacheCheck) {
 						?>
-						<div class="error">The template cache folder must be writable. A quick solution is to run:
+						<div class="error">The template compile folder must be writable. A quick solution is to run:
 							<br />
-							<?php echo 'chmod 777 ' . $cfg->SMARTY_DIR . 'templates_c'; ?>
+							<?php echo 'chmod 777 ' . SMARTY_DIR . 'templates_c'; ?>
 						</div>
 						<?php
 					} else {

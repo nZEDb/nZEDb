@@ -3,10 +3,283 @@ No pull requests will be accepted without this file being updated to reflect wha
 No pull requests will be accepted to any branch except the dev branch.
 Each update goes to the top of the file
 
-***Please run runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
+***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-01-23 -> Draven714-> updated Username check, PHP 5.3 compatible install, SAB Url & API Key check
+
+2013-03-04 -> niel     -> Chg: Reverting default covers path change
+                       -> Chg: Adding next-master and master to branches that allow pre-commit to update the commit number.
+2014-03-01 -> kevin    -> Addition: #1201 Api requests # on user-list page.
+                       -> Remove redundant part of query.
+2014-03-01 -> niel     -> Fix: fixing constants in Install/step1.
+                       -> Chg: Changed button text for instal step 6.
+                       -> New: Added covers and tmpunrarpath to install step 6
+                       -> Fix: Updating some template text that I missed before.
+                       -> Fix: Util::hasCommand doesn't need the namespace.
+2014-03-01 -> jonnyboy -> fixed typo in Binaries.php
+                          fixed typo in schema
+2014-03-01 -> niel     -> Upd: Fixing trailing white-space introduced to group-list.tpl.
+2014-03-01 -> bart39   -> tv/music regex additions
+2014-02-28 -> jonnyboy -> changed to catch all variations
+                          updated GrabNZBs to remove '#' fro '#a.b.teevee' for dupe checking
+                          missed tooltips
+2014-02-28 -> bart39   -> changed query for requestid in-progress count to use a UNION instead of OR so that it makes use of indexes
+                          fixed query in releases->stage7a
+2014-02-27 -> niel     -> Upd: Moving duplicated function to Util.php and renaming.
+2014-02-27 -> jonnyboy -> fixed queries in releases->stage7a
+                          added tooltips for group-list
+                          added pk to logging
+2014-02-27 -> bart39   -> regex additions
+                          don't categorize as pc if it looks like audio/console
+2014-02-27 -> niel     -> Upd: Changing default locations for covers, nzb, and temp files to use nZEDb/resources.
+                          New installs will use these locations unless you change them. Existing installs will continue to use their current locations.
+                          If you want to move files from the old locations to the new look at _runonce/relocateAll.php and uncomment the locations you want to move.
+2014-02-27 -> jonnyboy -> updated GrabNZBs and Releases to see 1% variation in size as the same size
+                          fixed CollectionsCleaning.php to not group rips where requestid is same but release is different
+                          updated releases->stage7a to remove inner join
+                          converted column to partcheck->bit, filecheck->tinyint
+                          updated binaries/backfill to highlight time
+                          updated monitor, moved analyze tables before initial display
+                          updated releases->stage7a to loop over deletes instead of 1 massive delete(mysql)
+2014-02-26 -> niel     -> Upd: Fixing indentation in Books.php to use tabs not spaces.
+2014-02-25 -> jonnyboy -> changed preid column default 0, added 3 regexes for a.b.comics, added index
+2014-02-24 -> jonnyboy -> fixed bug in grabnzbs_threaded.py
+                          updated patchDB.php to catch ALTER IGNORE errors and retry
+2014-02-24 -> bart39   -> cleaned up book titles for more matches against amazon
+                          fixed unnecessary join in query when browsing Releases
+2014-02-23 -> bart39   -> updated dump_predb.php to remove any records where title <=15 when importing predb dump
+2014-02-23 -> jonnyboy -> fixed usage in postprocess_old_threaded.py
+                          updated python scripts to use connection from info.py
+2014-02-23 -> bart39   -> fixed remaining invalid indents in threaded scripts
+                          removed invalid indents
+2014-02-23 -> kaibosh  -> remove unecessary derefer call to local movie links in default & light themes
+2014-02-23 -> jonnyboy -> updated python scripts to use socket when port is null
+                          updated mysqldump_tables.php to use socket if set
+2014-02-22 -> jonnyboy -> updated mysqldump_tables.php usage
+                          updated mysqldump_tables.php to use zcat instead of gunzip
+                          fixed mysqldump_tables.php to properlly identify Percona
+                          updated mysqldump_tables.php to use ColorCLI()
+                          fixed typo in schema.mysql
+                          updated binaries_threaded.py to accept groupid, array of groupids, group name or all active groups
+                          updated active_groups.php, removed Ubuntu 13.10 INSTALL GUIDE.txt
+2014-02-21 -> bart39   -> added BigMarlin's Ubuntu 13.10 install guide
+2014-02-20 -> jonnyboy -> removed remaining bitwise columns to their own columns, no indexes have been created for them
+                          removed tmux->monitor->analyze from each loop
+2014-02-19 -> jonnyboy -> possible fix to newposterwall.tpl
+2014-02-18 -> bart39   -> Tv/Music Regex additions
+                          fixed typos in Books.php and TvRage.php queries
+2014-02-18 -> kevin    -> Fix : Calling obsolete method name doConnect_A in various scripts. Resolves #1195
+2014-02-17 -> bart39   -> fixed typo in fixreleasenames_threaded
+2014-02-17 -> jonnyboy -> update query to ignore %exes%
+2014-02-16 -> jonnyboy -> fixed monitor and analyzing tables timer
+2014-02-16 -> bart39   -> fixed typo in PreDB.php
+                          changed resetSearchnames to 8 characters or less (some tv/book titles are 9 or more)
+                          added more music regex
+                          add pc category check for ebook groups in byGroup()
+2014-02-16 -> ajoergensen -> add missing ( in renametopre.php
+2014-02-16 -> jonnyboy -> fixed typo in show_table_sizes.php
+2014-02-16 -> bart39   -> fixed typos in queries
+2014-02-16 -> kaibosh  -> updated README.md add DB section, more info for noobs
+2014-02-15 -> jonnyboy -> updated README.md to show that the pastebin link to wafflehouse code was removed from pastebin
+                          removing nzbstatus, renamed, hashed, requestid, categorized from bitwise
+                          updated install scripts to point to correct tmpunrar path
+                          moved post processing scripts to correct path
+                          fixed backfill_groups.php
+2014-02-15 -> niel     -> Upd: Removing the covers constant from automatied.config.php. It will be generated from a Db setting in future.
+2014-02-15 -> jonnyboy -> colorized output
+                          added disconnect after delete in grabnzbs_threaded.py
+                          updated populate_tvrage.php
+                          updated autopatcher.php, fixed divide by 0 in active_groups.php
+                          update $binaries->data, $backfill->data to correctly identify an error
+2014-02-15 -> kevin    -> PEAR->Protocol->Client->_sendCommand() Wrong type returned, can cause unpredictable issues.
+2014-02-15 -> jonnyboy -> fixed output on failed movie->updateUpcoming
+                          fixed typo in releases->searchSQL, changed search terms explanation to show only terms available
+                          reverted changes to gitignore, added extra selectgroup in binaries->scan
+                          changed light theme to redirect to list when nothing in cover view
+                          fixed install scripts, removed empty files, .gitignore instead
+2014-02-14 -> jonnyboy -> redo of last patch, missed one for bookinfo
+2014-20-14 -> kevin    -> nZEDb->NNTP Remove obsolete methods for connecting.
+                          nZEDb->NNTP Change destructor to use local method for disconnection, change local method of disconnect to verify if the connection is active.
+                          nZEDb->NNTP->doConnect() Attempt to resolve retry issues, comment the code. Make sure we can reach 0 retries.
+                          nZEDb->NNTP->_getXfeatureTextResponse() Move $errorCode lower, if $bytesReceived is 0 it would run for no reason. Rename some variables and fix some typos.
+2014-02-14 -> jonnyboy -> updated schema to add unique indexs on movieinfo->imdbid, consoleinfo->asin, musicinfo->asin
+                          changed SDTV/HDTV category regex
+2014-02-14 -> niel     -> Fix: Updating usage of PEAR::isError to use the instantiated class instead. This will prevent a bunch of Strict warnings.
+2014-02-13 -> jonnyboy -> removed delete unique index when creating tpg collections tables
+                          updated smarty autoloader
+2014-02-13 -> kevin    -> nZEDb->NNTP->getArticle() (renamed from get_Article()) Parse the article, give the return array keys (From, Message, etc), optionally decode yEnc.
+                          PEAR->NET_NNTP_CLIENT->disconnect() Null the group summary when disconnecting.
+                          PEAR->NET_NNTP Remove deprecated method, resolve identation issues.
+                          nZEDb->NNTP->getArticle() Accept an article-number as well as a message-ID.
+                          nZEDb->NNTP->getArticle() Fix for multiline header keys.
+                          nZEDb->NNTP->getHeader() New method for downloading a full article header.
+                          nZEDb->NNTP->formatMessageID() New method for checking if the message-ID has the required triangular brackets.
+                          nZEDb->NNTP->postArticle() New method for uploading articles to usenet.
+                          nZEDb->NNTP->splitLines() New method for spliting lines longer than 510 chars and appending \r\n
+                          nZEDb->NFO Add PhpDoc.
+2014-02-13 -> niel     -> Upd: Changes to autoloading. Each "namespace" (nzedb, libs, and Smarty) gets its own autoloader.
+                       -> Fix: Replacing the theme path constant I inadvertantly killed :-(
+2014-02-12 -> kevin    -> NNTP.php Change failure returns to pear error (even though this is depreceated in PEAR, most of our scripts look for these), getArticles method was invalid (the return from the parent function was an array and we were trying to return a string), change getMessage method to verify if the selected group is the same using the parent's object, change grabNZB to use getMessages method.
+                       -> NNTP.php _decodeYenc() Return the input string if data is not yEnc.
+                       -> NNTP.php getMessage() Use the parent method group() to check if the group is already selected.
+2014-02-12 -> jonnyboy -> fixed bug in backfill_safe_threaded.py not running on correct group when binaries_safe.py not being used
+                          added method to convert_mysql_tables.php to convert all parts to MyISAM Dynamic, the rest same as cinnodb
+                          updated show_table_sizes.php to show current values
+                          force 'USE INDEX(ix_releases_status)' in postprocess_threaded.py
+                          updated Dev/*.php scripts to use ColorCLI() and removed unneeded requires
+2014-02-11 -> jonnyboy -> fixed monitor, inccorect placement of forced use index
+                          updated delete_releases.php to echo query before running it
+                          updated monitor.php to force 'USE INDEX(ix_releases_status)'
+                          updated remove_exact_dupes.php to delete to highest id first, might save some re-processing
+                          updated nzb-imported.php to consider 1% variation in size to be the same when searching for existing release
+                          updated remove_exact_dupes.php to allow purging releases with a variance of 1% in size
+                          added mediainfo/ffmpg monitoring to monitor_binaries_backfill_pp.php
+                          corrected query to compare $cleanerName, removed unnecessary queries
+                          updated query to enforce the groupid
+2014-02-10 -> jonnyboy -> added routine to drop/create index when creating tpg collections tables
+                          added unique constraint to collectionhash
+                          added monitor_binaries_backfill.php, added 2 required arguments
+                          added script to verify images exist for books, music and consoles
+                          reverted more, fixing .gitignore
+2014-02-10 -> kevin    -> Comment/additional changes to xfeature gzip decompression.
+2014-02-10 -> jonnyboy -> attempt to revert some file path changes
+2014-02-09 -> jonnyboy -> changed populate nzbs to insert/update instead if check first then insert/update
+2014-02-09 -> kevin    -> changed nntp compression to verify end of stream before decompress
+                          nzedb/NNTP.php ; Disconnect from usenet if still connected when the class goes out of scope.
+2014-02-09 -> niel     -> Upd: Adding 'coverspath' setting to schema.
+2014-02-09 -> jonnyboy -> changed order in if
+                          added nZEDb_THEMES for pointing to fs themes path
+                          changed browse->flags to work with all themes where flags are available, added tooltip to show country
+2014-02-08 -> niel     -> Fix: Adding the missing slash to the themes path.
+2014-02-08 -> bart39   -> regex addition/fixes
+                          fixed preg_replace in test-all-regexes.php
+                          removed extra space
+2014-02-08 -> jonnyboy -> updated show_table_sizes.php to show egine and format
+                          removed persistant mysql connections from DB.php, not needed or recommended with mysql
+                          added another myisam row format to updated convert_mysql_tables.php and improved usage instructions
+                          reduced sleep time in populating queue in python scripts
+                          added option to optimize all tables at once, force optimize all tables or analyze only optimise.php
+                          added analyze tables every 60 min to monitor.php
+2014-02-07 -> niel     -> Upd: Updated install steps so that they correctly use the autoloader.
+2014-02-07 -> jonnyboy -> fixed links to libs in install scripts, fixed more links
+                          removed extra space
+2014-02-06 -> jonnyboy -> add regex for teevee
+                          fixing spaces to tabs, merged statments
+2014-02-06 -> egandt   -> fix for Categories when dealing with anime ImageSets
+2014-02-06 -> bart39   -> fixed console/music search filters
+                          paste error
+                          accidently removed require_once nZEDb_LIBS . 'AmazonProductAPI.php'
+                          group music releases by musicinfo
+                          fixed duplicate musicinfo records, you may want to run misc/testing/DB/reset_postprocessing.php music true truncate to reprocess
+2014-02-06 -> niel     -> Upd: Part 2 (ish) of directory changes/moves
+2014-02-05 -> bart39   -> removed un-needed dereferer link
+                          fixed console, books and movie templates in alpha theme
+                          fixed a.b.mp3 regex in ReleaseCleaning
+2014-02-05 -> jonnyboy -> fixed bug in backfill->daytopost where new groups were not starting when using 'Days'
+                          changed buttons in light theme console and music
+2014-02-04 -> bart39   -> regex additions
+                          only reset searchnames <=15 if name is > 15 in renametopre
+                          group console release in cover view (like movies)
+                          fixed book/movie cover view typos
+                          fixed duplicate consoleinfo records, you may want to run misc/testing/DB/reset_postprocessing.php consoles true truncate to reprocess
+2014-02-04 -> jonnyboy -> fixed tvrage edit
+2014-02-04 -> niel     -> Upd: Removing a left over debug message
+2014-02-04 -> jonnyboy -> fixed delete_disabled_category_releases.php, removed unneeded require statements
+2014-02-02 -> niel     -> Fix: Missing quote in query.
+2014-02-02 -> kevin    -> Add phpdoc to NZB.php, get closer to 80 chars per line, change a function to use the site class instance object instead of creating another instance of class site.
+                       -> Quick cleanup of the ZipFile class.
+                       -> Work more on sharing class.
+                       -> Improve debug output on sharing class.
+2014-02-02 -> jonnyboy -> fixed bug in convert_mysql_tables.php not converting releasenfo to dynamic innodb when using cinnodb
+2014-02-01 -> jonnyboy -> fixed bug in nntpproxy.php, added option to run python binaries_threaded.py alt.binaries.teevee
+                          added dereferrer to movies list
+                          updated renaming scripts to reset id's when seachname is set
+2014-02-01 -> kevin    -> Upd: Added phpdoc notes to NNTP.php, changed some functions to protected, objects to private.
+                          Upd: Combined the doConnect and doConnectA methods in NNTP.php.
+                          Upd: Encapsulate the evalution to make the expressions clearer.
+                          Upd: Mention that to decode yenc, the library is a better alternative, remove TODO on doconnect_a.
+                          Del: Removed pdo_notes.txt
+2014-02-01 -> kaibosh  -> Update hardware section of README.md
+                          Insert link to summary page produced by mymovielist
+2014-02-01 -> niel     -> Upd: Moved one file (simple_html_dom.php) to nZEDb_LIBS. There are a few others we should move too.
+                          Tidy up. Removed most commented out require_once lines.
+                          Some formatting changes for coding standard
+2014-01-30 -> bart39   -> check for requestid match before looping through group regex
+                          moved all www.town.ag regexes to generic_town and check them before looping through groups
+                          fixed duplicate case statement
+                          removed regexes that were renaming releases with requestid's
+2014-01-30 -> jonnyboy -> added remove_exact_dupes.php to remove duplicate releases that match on name, poster, group and size
+                          fixed testing/nzb-import.php to not import import exact duplicates
+                          changed Releases.php to use $db->queryDirect instead of $db->prepare/execute or $db->query
+2014-01-29 -> jonnyboy -> added pr from KRUgold
+                          updated schema for missing showbacks
+2014-01-29 -> bart39   -> added categorization for XXX Packs
+                          added regex for a.b.music for CollectionsCleaning/ReleaseCleaning
+                          removed ReleaseCleaning regex that was matching requestid releases in a.b.moovee
+                          corrected test-all-regexes to use CollectionsCleaning
+2014-01-29 -> jonnyboy -> pulled in egandts pr, partially
+                          cleaned up output in nzb-import.php, fixed a typo
+                          updated update_predb_md5.php to re-match predb to releases after removing duplicates
+                          fixed bug in Movie.php, fixed bug in nzb-import.php
+                          fixed bug in PreDb.php allowing dupes from omgwthfnzbs, you may want to run misc/testing/Dev/update_predb_md5.php to clean the dupes
+2014-01-29 -> niel     -> Upd: Merging in third party library move (from nZEDb/www/libs/... to nZEDb/libs/...).
+                          Upd: Using file to check for text files in NFO, added check for non-printable characters after text check.
+                          Upd: Oops for got to remove my debugging copy file from Nfo.
+2014-01-29 -> jonnyboy -> updated Releases.php, seems Releases->processReleasesStage7b was not running unless running tmux scripts
+                          updated DB.php, db->optimise to only optimise tables with a min of 5% free space
+2014-01-28 -> jonnyboy -> minor change to Releases->searchSQL, for ft search, at least 1 term must have +
+2014-01-28 -> niel     -> Upd: Removing trailing white-space from README.md (It makes the pre-commit hook complain when merging).
+                       -> Upd: Fixing typo in runHooks
+2014-01-28 -> jonnyboy -> removed unnecessary resolve using ss, added another pass to try to get usp count
+                          fixed bug in details view when using ft index
+                          added parameter to Releases->searchSQL to choose ft index or not.
+2014-01-28 -> niel     -> Fix: git hook script correctly detects the dev branch now.
+                       -> Upd: Partial reverting changes to tmux/monitor.php. It needs to show actual commit, not expected, i misunderstood the purpose :-(
+2014-01-28 -> jonnyboy -> updated step3.php
+                          added 'XFeature GZIP compression, by wafflehouse : http://pastebin.com/A3YypDAJ'
+2014-01-28 -> kaibosh  -> README.md rewrite
+2014-01-27 -> jonnyboy -> fixed install not adding triggers
+                          merged egandts pr, fix bad link in predb table
+2014-01-26 -> niel     -> Upd: Changing runHooks to only update version for the 'dev' branch, to reduce merge conflicts.
+                       -> Upd: Moving third party libraries from nZEDb/www/lib to nZEDb/libs.
+                          Upd: Adding check to queryDirect for failure, to avoid invalid parameter passed to foreach errors when queries go wrong.
+2014-01-26 -> bart39   -> fixed typo in Releases.php
+                          moved music checks before movie checks in determineCategoryNormal as music videos were incorrectly being categorized as movies
+2014-01-26 -> jonnyboy -> fixed api queries, but i am considering adding a ft index check for fromname
+2014-01-26 -> niel     -> Fix: Suppressing errors for I/O timeout for PreDb lookups
+                          Fix: Allow pre-commit hook to override commit number in Versions (branch numbers may be higher than dev's).
+2014-01-25 -> jonnyboy -> added this patch for those that do not have the triggers
+                          updated patchDB.php to better read the output
+                          changed Versions.php to increment the current commit + 1
+2014-01-25 -> egandt   -> added new group that conatins Adult Manga, includes Collection and Release naming for the group
+2014-01-25 -> niel     -> New: Added a git pre-commit hook file and a script to install/update it. I'll add more functionality to the hook as I can.
+                          New: Added a git/hooks/precommit entry to versions file.
+                          Fix: Changed UpdateVersions class to Versions, as it will be doing more than just updating.
+                          Upd: Changed Versions to only allow the pre-commit hook to set the commit number to the *next* value instead of current one.
+2014-01-24 -> bart39   -> changed updateBookInfo query so that it checks if the bookinfo already exists (matching asin) this prevents a lot of duplicates
+                          previous change got reverted somehow by niel's commit
+2014-01-24 -> niel     -> Fix: Changes to commit.sh and UpdateVersions.php so they work.
+                          Upd: Updated versions file manually.
+                          New: Added new script commit in base directory to help with committing changes. It uses interactive mode for adding files to the index so that only those relevant to a change can be committed.
+                               Additionally it opens the changelog for updating before performing the git commit. It relies upon a git hook (not written yet) to call the UpdateVersions class.
+                          Fix: Removed the crap at the end
+                          Fix: Added explicit adding of the Changelog to staging after the editor is closed.
+                          Fix: Typo in date of egandt's changlog entry.
+                          Fix: manually updating versions before push
+2014-01-24 -> jonnyboy -> fixed light->calendar, but can't figure the padding, if i add it, it borks the theme
+2014-01-24 -> bart39   -> fixed grabnzb's queries
+2014-01-24 -> jonnyboy -> removed _scripts from remaining files, updated paths shown in admin->index.php
+                          fixed bug in reset_truncate.php when true not echoing tables truncated
+                          added another pattern to regex for valid headers
+                          fixed UpdateVersions.php to update nZEDb.xml, fixed start.php and monitor.php to correctly get values from nZEDb.xml
+                          changed DB.php to properlly set utf-8, may be the cause of some errors
+                          set renametopre.php and rixReleaseNames.php that when using preid, it only compares to predb table
+2014-01-24 -> egandt   -> typo in mis/testind/DB/patchDB for templates_c (was template_c)
+2014-01-24 -> bart39   -> fixed some collection cleaning regexes for requestid's
+2014-01-24 -> jonnyboy -> updated convert_to_mysql.php when using innodb compressed, to set releasenfo as innodb dynamic, since the content is compressed
+2014-01-24 -> bart39   -> changed book cover view so that books are grouped by bookinfoid (similar concept to movie cover view)
+                          fixed book order by clause for author
+2014-01-24 -> Draven714-> updated Username check, PHP 5.3 compatible install, SAB Url & API Key check
 2014-01-23 -> bart39   -> fixed typos
                           added a.b.music to Category byGroup()
                           added a.b.town.cine & a.b.town.xx to ReleaseCleaning

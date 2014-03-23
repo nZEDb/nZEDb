@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nzedb>
 	<versions>
-		<db>170</db>
+		<db>181</db>
 		<git>
 			<tag>0.3</tag>
-			<commit>5140</commit>
+			<commit>5795</commit>
+			<hooks>
+				<precommit>1</precommit>
+			</hooks>
 		</git>
 	</versions>
 </nzedb>

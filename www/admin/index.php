@@ -1,6 +1,6 @@
 <?php
-require_once './config.php';
-//require_once nZEDb_LIB . 'adminpage.php';
+require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'config.php');
+
 
 $page = new AdminPage();
 

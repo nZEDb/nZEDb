@@ -1,5 +1,4 @@
 <?php
-
 $page->title = "RSS Info";
 $page->meta_title = "RSS Help Topics";
 $page->meta_keywords = "view,nzb,api,details,help,json,rss,atom";

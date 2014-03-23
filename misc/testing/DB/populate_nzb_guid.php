@@ -13,8 +13,8 @@ if (isset($argv[1])) {
 	create_guids($argv[1], $del);
 } else {
 	exit($c->error("\nThis script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\n\n"
-		. "php $argv[0] true         ...: To create missing nzb_guids.\n"
-		. "php $argv[0] true delete  ...: To create missing nzb_guids and delete invalid nzbs and releases.\n"));
+			. "php $argv[0] true         ...: To create missing nzb_guids.\n"
+			. "php $argv[0] true delete  ...: To create missing nzb_guids and delete invalid nzbs and releases.\n"));
 }
 
 function create_guids($live, $delete = false)
@@ -28,13 +28,13 @@ function create_guids($live, $delete = false)
 	$c = new ColorCLI();
 
 	if ($live == "true") {
-		$relrecs = $db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND (bitwise & 256) = 256 ORDER BY id DESC"));
+		$relrecs = $db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC"));
 	} else if ($live == "limited") {
-		$relrecs = $db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzb_guid IS NULL AND (bitwise & 256) = 256 ORDER BY id DESC LIMIT 10000"));
+		$relrecs = $db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC LIMIT 10000"));
 	}
 	$total = $relrecs->rowCount();
 	if ($total > 0) {
-		echo "\nUpdating " . $total . " release guids\n";
+		echo $c->header("Creating nzb_guids for " . number_format($total) . " releases.");
 		$releases = new Releases();
 		$nzb = new NZB();
 		$reccnt = 0;
@@ -73,13 +73,13 @@ function create_guids($live, $delete = false)
 
 						$db->queryExec("UPDATE releases set nzb_guid = " . $db->escapestring($nzb_guid) . " WHERE id = " . $relrec["id"]);
 						$relcount++;
-						$consoletools->overWritePrimary("Updating: [" . $deleted . "] " . $consoletools->percentString($reccnt, $total) . " Time:" . $consoletools->convertTimer(TIME() - $timestart));
+						$consoletools->overWritePrimary("Created: [" . $deleted . "] " . $consoletools->percentString($reccnt, $total) . " Time:" . $consoletools->convertTimer(TIME() - $timestart));
 						break;
 					}
 				}
 			} else {
 				if (isset($delete) && $delete == 'delete') {
-					echo $c->primary($nzb->NZBPath($relrec['guid']) . " does not have an nzb, deleting.");
+					//echo $c->primary($nzb->NZBPath($relrec['guid']) . " does not have an nzb, deleting.");
 					$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
 				}
 			}

@@ -1,5 +1,4 @@
 <?php
-
 // API functions.
 $function = 's';
 if (isset($_GET['t'])) {

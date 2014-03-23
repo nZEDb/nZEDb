@@ -1,8 +1,6 @@
 <?php
-
 require_once './config.php';
-//require_once nZEDb_LIB . 'adminpage.php';
-//require_once nZEDb_LIB . 'framework/db.php';
+
 
 $page = new AdminPage();
 $db = new DB();

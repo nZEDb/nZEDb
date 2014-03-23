@@ -1,7 +1,5 @@
 <?php
-
-require_once '../lib/InstallPage.php';
-require_once '../lib/Install.php';
+require_once realpath(__DIR__ . '/../automated.config.php');
 
 $page = new InstallPage();
 $page->title = "News Server Setup";
@@ -24,7 +22,7 @@ if ($page->isPostBack()) {
 	$cfg->NNTP_PORT = (trim($_POST['port']) == '') ? 119 : trim($_POST['port']);
 	$cfg->NNTP_SSLENABLED = (isset($_POST['ssl']) ? (trim($_POST['ssl']) == '1' ? true : false) : false);
 
-	include $cfg->nZEDb_WWW . '/lib/Net_NNTP/NNTP/Client.php';
+	require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
 	$test = new Net_NNTP_Client();
 	$pear_obj = new PEAR();
 
@@ -33,12 +31,13 @@ if ($page->isPostBack()) {
 		$enc = "ssl";
 	}
 
+	// test connection
 	$cfg->nntpCheck = $test->connect($cfg->NNTP_SERVER, $enc, $cfg->NNTP_PORT);
 	if ($pear_obj->isError($cfg->nntpCheck)) {
 		$cfg->error = true;
-	}
-	// Commented out until the issue is resolved
-	elseif ($cfg->NNTP_USERNAME != "") {
+    }
+	//test authentication if username and password are provided
+	else if ($cfg->NNTP_USERNAME != '' && $cfg->NNTP_PASSWORD != '') {
 		$cfg->nntpCheck = $test->authenticate($cfg->NNTP_USERNAME, $cfg->NNTP_PASSWORD);
 		if ($pear_obj->isError($cfg->nntpCheck)) {
 			$cfg->error = true;

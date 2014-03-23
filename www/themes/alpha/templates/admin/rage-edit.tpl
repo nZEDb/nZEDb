@@ -8,10 +8,10 @@
 <table class="input">
 
 <tr>
-	<td><label for="rageID">Rage Id:</label></td>
+	<td><label for="rageid">Rage Id:</label></td>
 	<td>
+		<input id="rageid" class="short" name="rageid" type="text" value="{$rage.rageid}" />
 		<input type="hidden" name="id" value="{$rage.id}" />
-		<input id="rageID" class="short" name="rageID" type="text" value="{$rage.rageid}" />
 		<div class="hint">The numeric TVRage Id.</div>
 	</td>
 </tr>

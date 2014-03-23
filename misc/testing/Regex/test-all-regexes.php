@@ -1,12 +1,12 @@
 <?php
 
 if (!isset($argv[1])) {
-	exit("This script will test a string(release name), single quoted, against all regexes in lib/namecleaning.php. To test a string run:\nphp test_all_regexes.php '[Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf]-[#a.b.g.w@efnet]-[www.abgx.net]-[001/176] - \"Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf.par2\" yEnc'\n");
+	exit("This script will test a string(release name), single quoted, against all regexes in NameCleaning.php. To test a string run:\nphp test_all_regexes.php '[Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf]-[#a.b.g.w@efnet]-[www.abgx.net]-[001/176] - \"Samurai.Warriors.3.PROPER.USA.Wii-CLANDESTiNE-Scrubbed-xeroxmalf.par2\" yEnc'\n");
 }
+
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 passthru('clear');
-
 if ($argv[1] == 'file' && isset($argv[2]) && file_exists($argv[2])) {
 	$filename = $argv[2];
 	$fp = fopen($filename, "r") or die("Couldn't open $filename");
@@ -23,7 +23,6 @@ if ($argv[1] == 'file' && isset($argv[2]) && file_exists($argv[2])) {
 } else if ($argv[1] == 'file') {
 	exit("The file $argv[1] does not exist or and invalid file was specified.\n");
 }
-
 if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] != 'file') {
 	$groups = new Groups();
 	$group = $groups->getByNameByID($argv[2]);
@@ -31,8 +30,8 @@ if (isset($argv[2]) && is_numeric($argv[2]) && $argv[1] != 'file') {
 } else if ($argv[1] != 'file') {
 	test_regex($argv[1], null, $argv);
 }
-
-function print_str($type, $str, $argv) {
+function print_str($type, $str, $argv)
+{
 	if ($argv[1] != 'file') {
 		$c = new ColorCLI();
 		if ($type == "primary") {
@@ -47,34 +46,33 @@ function print_str($type, $str, $argv) {
 	}
 }
 
-function test_regex($name, $group, $argv) {
-	$file = nZEDb_WWW . 'lib/NameCleaning.php';
+function test_regex($name, $group, $argv)
+{
+	$file = nZEDb_LIB . 'ReleaseCleaning.php';
+	/* TODO: add CollectionCleaning */
 	$handle = fopen($file, "r");
-
 	$test_str = $name;
-
 	$e0 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
 	$e1 = $e0 . ' yEnc$/';
 	$groupName = '';
-
 	if ($handle) {
 		print_str('header', $name, $argv);
 		if (!is_null($group)) {
 			print_str('primary', $group . "\n", $argv);
 		}
 		while (($line1 = fgets($handle)) !== false) {
-			$line2 = preg_replace('/\$this->e0/', $e0, $line1);
-			$line = preg_replace('/\$this->e1/', $e1, $line2);
+			$line2 = preg_replace('/\' \. \$this->e0 \. \'/', $e0, $line1);
+			$line = preg_replace('/\' \. \$this->e1/', $e1 . '\'', $line2);
 			$matchName = $match = $match1 = '';
-			if (preg_match('/if \(\$groupName === "(.+)"\)/', $line, $matchName)) {
+			if (preg_match('/public function (.+)\(\)/', $line, $matchName)) {
 				$groupName = $matchName[1];
-			} else if (preg_match('/if \(preg_match\(\'(.+)\', \$subject\, \$match\)\)/', $line, $match)) {
+			} else if (preg_match('/if \(preg_match\(\'(.+)\', \$this->subject\, \$match\)\)/', $line, $match)) {
 				$regex = $match[1];
 				if (preg_match($regex, $test_str, $match1)) {
 					if ($groupName != '') {
 						print_str('header', "Group regex => " . $groupName, $argv);
 					} else {
-						print_str('header', "Group regex => collectionCleaner", $argv);
+						print_str('header', "Group regex => ReleaseCleaner", $argv);
 					}
 					if ($match1) {
 						print_str('alternate', $regex, $argv);
@@ -96,20 +94,16 @@ function test_regex($name, $group, $argv) {
 			}
 		}
 	}
-
 	$file = nZEDb_MISC . 'testing/Dev/renametopre.php';
 	$handle1 = fopen($file, "r");
-
 	$test_str1 = $name;
-
 	$e01 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
 	$e11 = $e01 . ' yEnc$/';
 	$groupName1 = 'renametopre';
-
 	if ($handle1) {
 		while (($line1 = fgets($handle1)) !== false) {
-			$line2 = preg_replace('/\$this->e0/', $e01, $line1);
-			$line = preg_replace('/\$this->e1/', $e11, $line2);
+			$line2 = preg_replace('/\' \. \$this->e0 \. \'/', $e01, $line1);
+			$line = preg_replace('/\' \. \$this->e1/', $e11 . '\'', $line2);
 			if (preg_match('/if \(preg_match\(\'(.+)\', \$this->subject\, \$match\)\)/', $line, $match) || preg_match('/if \(preg_match\(\'(.+)\', \$subject\, \$match\)\)/', $line, $match)) {
 				$regex = $match[1];
 				if (preg_match($regex, $test_str1, $match1)) {
