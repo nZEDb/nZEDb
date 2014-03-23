@@ -772,7 +772,7 @@
 					{html_radios id="tablepergroup" name='tablepergroup' values=$yesno_ids output=$yesno_names selected=$fsite->tablepergroup separator='<br />'}
 					<div class="hint">This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.
 						<br />Run: show variables like '%open%files%'; results should be higher than 10k, twice that if you are using TokuDB.;
-						<br /><b>You may need to increase table_open_cache, open_files_limit and max_allowed_packet in my.cnf. Also, you may need to add the following to /etc/security/limits.conf<br />mysql    soft    nofile  24000<br />mysql  hard    nofile32000</b>
+						<br /><b>You may need to increase table_open_cache, open_files_limit and max_allowed_packet in my.cnf. Also, you may need to add the following to /etc/security/limits.conf<br />mysql    soft    nofile  24000<br />mysql  hard    nofile 32000</b>
 					</div>
 				</td>
 			</tr>

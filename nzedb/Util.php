@@ -1,8 +1,8 @@
 <?php
 /*
  * General util functions.
+ * Class Util
  */
-
 class Util
 {
 	static public function hasCommand($cmd)
@@ -27,6 +27,16 @@ class Util
 		if (substr($path, strlen($path) - 1) != '/') {
 			$path .= '/';
 		}
+	}
+
+	/**
+	 * Check if user is running from CLI.
+	 *
+	 * @return bool
+	 */
+	static public function isCLI()
+	{
+		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
 }
 
@@ -98,6 +108,14 @@ function safeFilename($filename)
 	return trim(preg_replace('/[^\w\s.-]*/i', '', $filename));
 }
 
+/**
+ * Run CLI command.
+ *
+ * @param string $command
+ * @param bool   $debug
+ *
+ * @return array
+ */
 function runCmd($command, $debug = false)
 {
 	$nl = PHP_EOL;
@@ -125,42 +143,85 @@ function checkStatus($code)
 	return ($code == 0) ? true : false;
 }
 
-function getUrl($url, $method = 'get', $postdata = '', $language = "")
+/**
+ * Use cURL To download a web page into a string.
+ *
+ * @param string $url       The URL to download.
+ * @param string $method    get/post
+ * @param string $postdata  If using POST, post your POST data here.
+ * @param string $language  Use alternate langauge in header.
+ * @param bool   $debug     Show debug info.
+ *
+ * @return bool|mixed
+ */
+function getUrl($url, $method = 'get', $postdata = '', $language = "", $debug = false)
 {
-	$ch = curl_init();
-	if ($method == 'post') {
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-	}
-	curl_setopt($ch, CURLOPT_URL, $url);
-	if ($language == "") {
-		$language = "en-us";
-	} else if ($language == "en") {
-		$language = "en-us";
-	} else if ($language == "fr") {
-		$language = "fr-fr";
-	} else if ($language == "de") {
-		$language = "de-de";
+	switch($language) {
+		case 'fr':
+		case 'fr-fr':
+			$language = "fr-fr";
+			break;
+		case 'de':
+		case 'de-de':
+			$language = "de-de";
+			break;
+		case '':
+		case 'en':
+		case 'en-us':
+		default:
+			$language = "en-us";
 	}
 	$header[] = "Accept-Language: " . $language;
-	curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
+	$ch = curl_init();
+	$options = array(
+		CURLOPT_URL            => $url,
+		CURLOPT_HTTPHEADER     => $header,
+		CURLOPT_RETURNTRANSFER => 1,
+		CURLOPT_FOLLOWLOCATION => 1,
+		CURLOPT_TIMEOUT        => 15,
+		CURLOPT_SSL_VERIFYPEER => false,
+		CURLOPT_SSL_VERIFYHOST => false,
+	);
+
+	if ($method === 'post') {
+		$options = array_merge(array(
+				CURLOPT_POST       => 1,
+				CURLOPT_POSTFIELDS => $postdata
+			), $options
+		);
+	}
+
+	if ($debug) {
+		$options = array_merge($options,
+			array(
+				CURLOPT_HEADER      => true,
+				CURLINFO_HEADER_OUT => true,
+				CURLOPT_NOPROGRESS  => false,
+				CURLOPT_VERBOSE     => true
+			)
+		);
+	}
+
+	curl_setopt_array($ch, $options);
 	$buffer = curl_exec($ch);
 	$err = curl_errno($ch);
 	curl_close($ch);
 
-	if ($err != 0) {
+	if ($err !== 0) {
 		return false;
 	} else {
 		return $buffer;
 	}
 }
 
+/**
+ * Convert Code page 437 chars to UTF.
+ *
+ * @param string $str
+ *
+ * @return string
+ */
 function cp437toUTF($str)
 {
 	$out = '';

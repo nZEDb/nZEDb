@@ -68,19 +68,19 @@ class NZBExport
 		// Check if it's a directory.
 		if (!is_dir($path)) {
 			$this->echoOut('Folder does not exist: ' . $path);
-			return false;
+			return $this->returnValue();
 		}
 
 		// Check if we can write to it.
 		if (!is_writable($path)) {
 			$this->echoOut('Folder is not writable: ' . $path);
-			return false;
+			return $this->returnValue();
 		}
 
 		// Check if the from date is the proper format.
 		if (isset($params[1]) && $params[1] !== '') {
 			if (!$this->checkDate($params[1])) {
-				return false;
+				return $this->returnValue();
 			}
 			$fromDate = $params[1];
 		}
@@ -88,7 +88,7 @@ class NZBExport
 		// Check if the to date is the proper format.
 		if (isset($params[2]) && $params[2] !== '') {
 			if (!$this->checkDate($params[2])) {
-				return false;
+				return $this->returnValue();
 			}
 			$toDate = $params[2];
 		}
@@ -97,12 +97,12 @@ class NZBExport
 		if (isset($params[3]) && $params[3] !== 0) {
 			if (!is_numeric($params[3])) {
 				$this->echoOut('The group ID is not a number: ' . $params[3]);
-				return false;
+				return $this->returnValue();
 			}
 			$groups = $this->db->query('SELECT id, name FROM groups WHERE id = ' . $params[3]);
 			if (count($groups) === 0) {
 				$this->echoOut('The group ID is not in the DB: ' . $params[3]);
-				return false;
+				return $this->returnValue();
 			}
 		} else {
 			$groups = $this->db->query('SELECT id, name FROM groups');
@@ -180,7 +180,19 @@ class NZBExport
 				echo 'Exported ' . $currentExport . ' releases for group: ' . $group['name'] . PHP_EOL;
 			}
 		}
+		if ($exported > 0) {
+			$this->echoOut('Exported total of ' . $exported . ' NZB files to ' . $path);
+		}
 
+		return $this->returnValue();
+	}
+
+	/**
+	 * Return bool on CLI, string on browser.
+	 * @return bool|string
+	 */
+	protected function returnValue()
+	{
 		return ($this->browser ? $this->retVal : true);
 	}
 
