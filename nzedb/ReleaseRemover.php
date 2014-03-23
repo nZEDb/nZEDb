@@ -225,7 +225,7 @@ class ReleaseRemover
 				}
 				$this->crapTime =
 					' AND adddate > (NOW() - INTERVAL ' .
-					($this->mysql ? $time . 'HOUR)' : $this->db->escapeString($time . 'HOURS')) .
+					($this->mysql ? $time . ' HOUR)' : $this->db->escapeString($time . ' HOURS')) .
 					' ORDER BY id ASC';
 				break;
 		}
@@ -714,7 +714,11 @@ class ReleaseRemover
 		// Run the query, check if it picked up anything.
 		$result = $this->db->query($this->query);
 		if (count($result) <= 0) {
-			$this->error = 'No releases were found to delete for ' . $this->method;
+			if ($this->method === 'userCriteria') {
+				$this->error = 'No releases were found to delete, try changing your criteria.';
+			} else {
+				$this->error = '';
+			}
 			return false;
 		}
 		$this->result = $result;
@@ -917,7 +921,9 @@ class ReleaseRemover
 		if ($this->browser) {
 			return $this->error . '<br />';
 		} else {
-			echo $this->color->error($this->error);
+			if ($this->error !== '') {
+				echo $this->color->error($this->error);
+			}
 			return false;
 		}
 
