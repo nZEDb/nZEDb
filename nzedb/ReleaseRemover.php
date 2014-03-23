@@ -679,7 +679,7 @@ class ReleaseRemover
 				);
 
 				if ($this->checkSelectQuery() === false) {
-					return $this->returnError();
+					continue;
 				}
 				$this->deleteReleases();
 			}
