@@ -10,6 +10,7 @@ Each update goes to the top of the file
 	* Change work release queries for movie/tv to leverage partitioning (5.5+ safe)
 2014-03-23 kevin
 	* Use NZBExport class for web export.
+	* Refactor removecrapreleases to the ReleaseRemover class.
 2014-03-22 niel
 	* Moving newznab_api-specification from .../nzedb/api to .../docs
 2014-03-22 kevin
