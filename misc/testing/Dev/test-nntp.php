@@ -27,7 +27,7 @@ print_r($msg);
 
 // get postdate for an article
 $backfill = new Backfill();
-$newdate = $backfill->postdate($nntp, $first, false, $group, true, 'normal');
+$newdate = $backfill->postdate($nntp, $first, $group, true, 'normal');
 
 if ($newdate != false) {
 	echo $c->primary("The posted date for ".$group.", article ".$first." is ".date('Y-m-d H:i:s', $newdate));

@@ -390,7 +390,7 @@ class Binaries
 
 		// Generate postdate for first record, for those that upgraded.
 		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] != '0') {
-			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true, 'oldest');
+			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], $groupArr['name'], true, 'oldest');
 			if ($newdate !== false) {
 				$first_record_postdate = $newdate;
 			} else {

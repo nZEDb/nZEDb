@@ -350,7 +350,7 @@ class Backfill
 				$newdate = strtotime($lastMsg['firstArticleDate']);
 			} else {
 				// If above failed, try to get it with postdate method.
-				$newdate = $this->postdate($this->nntp, $first, false, $groupArr['name'], true, 'oldest');
+				$newdate = $this->postdate($this->nntp, $first, $groupArr['name'], true, 'oldest');
 
 				if ($newdate === false) {
 					// If above failed, try to get the old date, and if that fails set the current date.
@@ -452,14 +452,13 @@ class Backfill
 	 *
 	 * @param object $nntp
 	 * @param int $post
-	 * @param bool $debug
 	 * @param string $group
 	 * @param bool $old
 	 * @param string $type
 	 *
 	 * @return bool|int
 	 */
-	public function postdate($nntp, $post, $debug = true, $group, $old = false, $type)
+	public function postdate($nntp, $post, $group, $old = false, $type)
 	{
 		if (!isset($nntp)) {
 			$dMessage = "Not connected to usenet(backfill->postdate).";
@@ -591,7 +590,7 @@ class Backfill
 					}
 				}
 
-				if ($debug && $this->echo && $attempts > 0) {
+				if ($this->debug && $attempts > 0) {
 					$this->c->doEcho($this->c->debug('Retried ' . $attempts . " time(s)."), true);
 				}
 			}
@@ -681,8 +680,7 @@ class Backfill
 			}
 			exit($this->c->error($dMessage));
 		}
-		// DEBUG every postdate call?!?!
-		$pddebug = false;
+
 		if ($this->debug) {
 			$this->debugging->start("daytopost", 'Finding article for ' . $group . ' ' . $days . " days back.", 5);
 		}
@@ -718,8 +716,8 @@ class Backfill
 			exit($this->c->info($dMessage));
 		}
 
-		$firstDate = $this->postdate($nntp, $data['first'], $pddebug, $group, false, 'oldest');
-		$lastDate = $this->postdate($nntp, $data['last'], $pddebug, $group, false, 'oldest');
+		$firstDate = $this->postdate($nntp, $data['first'], $group, false, 'oldest');
+		$lastDate = $this->postdate($nntp, $data['last'], $group, false, 'oldest');
 
 		if ($goaldate < $firstDate) {
 			$dMessage =
@@ -787,7 +785,7 @@ class Backfill
 
 		// Match on days not timestamp to speed things up.
 		while ($this->daysOld($dateofnextone) < $days) {
-			while (($tmpDate = $this->postdate($nntp, ($upperbound - $interval), $pddebug, $group, false, 'oldest')) > $goaldate) {
+			while (($tmpDate = $this->postdate($nntp, ($upperbound - $interval), $group, false, 'oldest')) > $goaldate) {
 				$upperbound = $upperbound - $interval;
 
 				if ($this->debug) {
@@ -813,9 +811,9 @@ class Backfill
 						5);
 				}
 			}
-			$dateofnextone = $this->postdate($nntp, ($upperbound - 1), $pddebug, $group, false, 'oldest');
+			$dateofnextone = $this->postdate($nntp, ($upperbound - 1), $group, false, 'oldest');
 			while (!$dateofnextone) {
-				$dateofnextone = $this->postdate($nntp, ($upperbound - 1), $pddebug, $group, false, 'oldest');
+				$dateofnextone = $this->postdate($nntp, ($upperbound - 1),  $group, false, 'oldest');
 			}
 		}
 
@@ -943,9 +941,9 @@ class Backfill
 		}
 
 		if ($type == 'Backfill') {
-			$postsdate = $this->postdate($nntp, $first, false, $group, true, 'oldest');
+			$postsdate = $this->postdate($nntp, $first, $group, true, 'oldest');
 		} else {
-			$postsdate = $this->postdate($nntp, $first, false, $group, true, 'newest');
+			$postsdate = $this->postdate($nntp, $first, $group, true, 'newest');
 		}
 		$postsdate = $this->db->from_unixtime($postsdate);
 
