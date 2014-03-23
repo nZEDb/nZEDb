@@ -44,13 +44,13 @@ if (!isset($argv[1])) {
 		$backfill->getFinal($pieces[0], $pieces[1], $pieces[2], $nntp);
 	} else if (isset($pieces[2]) && $pieces[2] == 'BackfillAll') {
 		$backfill = new Backfill();
-		$backfill->backfillPostAllGroups($nntp, $pieces[0], $pieces[1], $type = '');
+		$backfill->backfillAllGroups($nntp, $pieces[0], $pieces[1]);
 	} else if (isset($pieces[3])) {
 		$backfill = new Backfill();
 		$backfill->getRange($pieces[0], $pieces[1], $pieces[2], $pieces[3], $nntp);
 	} else if (isset($pieces[1])) {
 		$backfill = new Backfill();
-		$backfill->backfillPostAllGroups($nntp, $pieces[0], $pieces[1], $type = '');
+		$backfill->backfillAllGroups($nntp, $pieces[0], $pieces[1]);
 	}
 	if ($site->nntpproxy != "1") {
 		$nntp->doQuit();

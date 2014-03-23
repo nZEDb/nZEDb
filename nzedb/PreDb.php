@@ -102,7 +102,7 @@ Class PreDb
 		$nfos = $this->matchNfo($nntp);
 		if ($this->echooutput) {
 			$count = ($nfos > 0) ? $nfos : 0;
-			echo $this->c->header("Added " . number_format($count) . ' missing NFOs from preDB sources.');
+			echo $this->c->header("\nAdded " . number_format($count) . ' missing NFOs from preDB sources.');
 		}
 	}
 

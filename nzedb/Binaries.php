@@ -190,7 +190,7 @@ class Binaries
 	{
 		$this->echo = ($echo && nZEDb_ECHOCLI);
 		$this->debug = (nZEDb_DEBUG || nZEDb_LOGGING);
-		$this->backfill = new Backfill($this->site);
+		$this->backfill = new Backfill($echo);
 		$this->c = new ColorCLI();
 		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->consoleTools = new ConsoleTools();

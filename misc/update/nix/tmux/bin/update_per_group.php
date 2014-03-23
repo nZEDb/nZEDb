@@ -38,7 +38,7 @@ if ($pieces[0] != 'Stage7b') {
 	$binaries->updateGroup($group, $nntp);
 
 	// Backfill per group
-	$backfill->backfillPostAllGroups($nntp, $groupname, 20000, 'normal');
+	$backfill->backfillAllGroups($nntp, $groupname, 20000, 'normal');
 
 	// Update Releases per group
 	try {
