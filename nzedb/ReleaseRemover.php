@@ -176,13 +176,14 @@ class ReleaseRemover
 		$this->deleteReleases();
 
 		if (!$this->browser) {
-			echo $this->color->headerOver("Deleted " . $this->deletedCount . " release(s). This script ran for ");
+			echo $this->color->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
 			echo $this->color->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
 
 		return ($this->browser
 			?
-				'Success! Deleted ' .
+				'Success! ' .
+				($this->delete ? "Deleted " : "Would have deleted ") .
 				$this->deletedCount .
 				' release(s) in ' .
 				$this->consoleTools->convertTime(TIME() - $this->timeStart)
@@ -283,13 +284,14 @@ class ReleaseRemover
 		}
 
 		if (!$this->browser) {
-			echo $this->color->headerOver("Deleted " . $this->deletedCount . " release(s). This script ran for ");
+			echo $this->color->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
 			echo $this->color->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
 
 		return ($this->browser
 			?
-			'Success! Deleted ' .
+			'Success! ' .
+			($this->delete ? "Deleted " : "Would have deleted ") .
 			$this->deletedCount .
 			' release(s) in ' .
 			$this->consoleTools->convertTime(TIME() - $this->timeStart)
@@ -699,9 +701,6 @@ class ReleaseRemover
 		}
 
 		$this->deletedCount += $deletedCount;
-		if (!$this->browser && $deletedCount > 0) {
-			echo self::N;
-		}
 		return true;
 	}
 
