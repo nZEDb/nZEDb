@@ -6,7 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-03-23 ruhllatio
+	* Change work release queries for movie/tv to leverage partitioning (5.5+ safe)
 2014-03-23 kevin
 	* Use NZBExport class for web export.
 2014-03-22 niel

@@ -740,8 +740,7 @@ class Movie
 
 		if ($releaseToWork == '') {
 			$res = $this->db->query(sprintf("SELECT r.searchname AS name, r.id FROM releases r "
-					. "INNER JOIN category c ON r.categoryid = c.id "
-					. "WHERE r.imdbid IS NULL AND r.nzbstatus = 1 AND c.parentid = %d LIMIT %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
+					. "WHERE r.imdbid IS NULL AND r.nzbstatus = 1 AND r.categoryid BETWEEN 2000 AND 2999 LIMIT %d", $this->movieqty));
 			$moviecount = count($res);
 		} else {
 			$pieces = explode("           =+=            ", $releaseToWork);
