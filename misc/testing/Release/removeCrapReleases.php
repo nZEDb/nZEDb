@@ -53,4 +53,4 @@ if ($argCnt < 3) {
 }
 
 $RR = new ReleaseRemover();
-$RR->removeCrap($argv[1], $argv[2], (isset($argv[3]) ? $argv[3] : ''));
+$RR->removeCrap(($argv[1] === 'true' ? true : false), $argv[2], (isset($argv[3]) ? $argv[3] : ''));
