@@ -676,7 +676,9 @@ class Backfill
 	{
 		if (!isset($nntp)) {
 			$dMessage = "Not connected to usenet(backfill->daytopost).\n";
-			$this->debugging->start("daytopost", $dMessage, 1);
+			if ($this->debug) {
+				$this->debugging->start("daytopost", $dMessage, 1);
+			}
 			exit($this->c->error($dMessage));
 		}
 		// DEBUG every postdate call?!?!
