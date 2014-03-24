@@ -679,7 +679,7 @@ INSERT INTO userroles (id, name, apirequests, downloadrequests, defaultinvites, 
 
 UPDATE userroles SET  id =  id-1;
 
-INSERT INTO country (code, name) VALUES ( 'AF', 'Afghanistan' ),
+INSERT INTO countries (code, name) VALUES ( 'AF', 'Afghanistan' ),
 	( 'AX', 'Aland Islands' ),
 	( 'AL', 'Albania' ),
 	( 'DZ', 'Algeria' ),

@@ -249,7 +249,7 @@ if ($page->isPostBack()) {
 
 				// Check one of the standard tables was created and has data.
 				$dbInstallWorked = false;
-				$reschk = $pdo->query("SELECT COUNT(*) AS num FROM country");
+				$reschk = $pdo->query("SELECT COUNT(*) AS num FROM countries");
 				if ($reschk === false) {
 					$cfg->dbCreateCheck = false;
 					$cfg->error = true;
