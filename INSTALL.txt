@@ -9,6 +9,7 @@ REQUIREMENTS
 		OpenSSL (if connecting to ssl usenet provider)
 		php register_globals off
 		exif support (check the ini file).
+		/usr/bin/time binary - linux
 
 	GD Imaging Library w/PHP integration
 
