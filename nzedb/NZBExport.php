@@ -176,16 +176,16 @@ class NZBExport
 					fclose($fh);
 				}
 
-				$exported++;
 				$currentExport++;
 
-				if ($this->echoCLI && $currentExport % 100 === 0) {
-					echo "Exported " . $currentExport . " of "  . $totalFound . " nzbs for group " . $group['name']. PHP_EOL;
+				if ($this->echoCLI && $currentExport % 10 === 0) {
+					echo 'Exported ' . $currentExport . ' of ' . $totalFound . ' nzbs for group: ' . $group['name'] . "\r";
 				}
 			}
 			if ($this->echoCLI && $currentExport > 0) {
-				echo 'Exported ' . $currentExport . ' releases for group: ' . $group['name'] . PHP_EOL;
+				echo 'Exported ' . $currentExport . ' of ' . $totalFound . ' nzbs for group: ' . $group['name'] . PHP_EOL;
 			}
+			$exported += $currentExport;
 		}
 		if ($exported > 0) {
 			$this->echoOut('Exported total of ' . $exported . ' NZB files to ' . $path);
