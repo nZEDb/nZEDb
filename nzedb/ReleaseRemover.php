@@ -1,5 +1,4 @@
 <?php
-// TODO: Move RemoveCrapReleases and possible others into here.
 
 /**
  * Handles removing of various unwanted releases.

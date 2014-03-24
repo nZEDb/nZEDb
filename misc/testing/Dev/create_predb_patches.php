@@ -13,9 +13,9 @@ $wp = "144";
 if (!file_exists(nZEDb_WWW."/a"))
 	mkdir(nZEDb_WWW."/a", 0755, true);
 
-if ($db->dbSystem() == "mysql")
+if ($db->dbSystem() === "mysql")
 	$uta = "UNIX_TIMESTAMP(adddate)";
-else if ($db->dbSystem() == "pgsql")
+else if ($db->dbSystem() === "pgsql")
 	$uta = "extract(epoch FROM adddate)";
 
 foreach (range($lppo, $wp) as $number)

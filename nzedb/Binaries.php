@@ -1169,7 +1169,7 @@ class Binaries
 		}
 
 		$insertStr = substr($insertStr, 0, -2);
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			$insertStr .= ' ON DUPLICATE KEY UPDATE attempts=attempts+1';
 			return $this->db->queryInsert($insertStr);
 		} else {
@@ -1281,7 +1281,7 @@ class Binaries
 		$intwordcount = 0;
 		if (count($words) > 0) {
 			$like = 'ILIKE';
-			if ($this->db->dbSystem() == 'mysql') {
+			if ($this->db->dbSystem() === 'mysql') {
 				$like = 'LIKE';
 			}
 			foreach ($words as $word) {

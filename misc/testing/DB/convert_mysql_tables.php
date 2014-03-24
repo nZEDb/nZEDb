@@ -4,7 +4,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 $c = new ColorCLI();
 
 $db = new DB();
-if($db->dbSystem() == "pgsql")
+if($db->dbSystem() === "pgsql")
 	exit($c->error("\nCurrently only for mysql."));
 
 if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {

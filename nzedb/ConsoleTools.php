@@ -100,7 +100,7 @@ class ConsoleTools
 	{
 		for ($i = $seconds; $i >= 0; $i--) {
 			$this->overWriteHeader("Sleeping for " . $i . " seconds.");
-			usleep(1000000);
+			sleep($seconds);
 		}
 		echo "\n";
 	}
