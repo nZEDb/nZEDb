@@ -64,8 +64,9 @@ class NZBImport
 	 * Construct.
 	 *
 	 * @param bool $browser Was this started from the browser?
+	 * @param bool $echo    Echo to CLI?
 	 */
-	public function __construct($browser = false)
+	public function __construct($browser = false, $echo = true)
 	{
 		$this->db = new DB();
 		$this->binaries = new Binaries();
@@ -79,6 +80,7 @@ class NZBImport
 		$this->crossPostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
 		$this->browser = $browser;
 		$this->retVal = '';
+		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
 	}
 
 	/**
@@ -423,7 +425,7 @@ class NZBImport
 	{
 		if ($this->browser) {
 			$this->retVal .= $message . "<br />";
-		} else {
+		} elseif ($this->echoCLI) {
 			echo $message . PHP_EOL;
 		}
 	}

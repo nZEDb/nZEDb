@@ -33,14 +33,21 @@ class NZBExport
 	protected $releases;
 
 	/**
-	 * @param bool $browser Started from browser?
+	 * @var bool
 	 */
-	public function __construct($browser=false)
+	protected $echoCLI;
+
+	/**
+	 * @param bool $browser Started from browser?
+	 * @param bool $echo    Echo to CLI?
+	 */
+	public function __construct($browser=false, $echo = true)
 	{
 		$this->browser = $browser;
 		$this->db = new DB();
 		$this->releases = new Releases();
 		$this->nzb = new NZB();
+		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
 	}
 
 	/**
@@ -116,12 +123,12 @@ class NZBExport
 			$releases = $this->releases->getForExport($fromDate, $toDate, $group['id']);
 			$totalFound = count($releases);
 			if ($totalFound === 0) {
-				if (!$this->browser) {
+				if ($this->echoCLI) {
 					echo 'No releases found to export for group: ' . $group['name'] . PHP_EOL;
 				}
 				continue;
 			}
-			if (!$this->browser) {
+			if ($this->echoCLI) {
 				echo 'Found ' . $totalFound . ' releases to export for group: ' . $group['name'] . PHP_EOL;
 			}
 
@@ -136,7 +143,7 @@ class NZBExport
 				$nzbFile = $this->nzb->NZBPath($release["guid"]);
 				// Check if it exists.
 				if ($nzbFile === false) {
-					if (!$this->browser) {
+					if ($this->echoCLI) {
 						echo 'Unable to find NZB for release with GUID: ' . $release['guid'];
 					}
 					continue;
@@ -148,7 +155,7 @@ class NZBExport
 				// Check if the user wants them in gzip, copy it if so.
 				if ($gzip) {
 					if (!copy($nzbFile, $currentFile . '.nzb.gz')) {
-						if (!$this->browser) {
+						if ($this->echoCLI) {
 							echo 'Unable to export NZB with GUID: ' . $release['guid'];
 						}
 						continue;
@@ -157,7 +164,7 @@ class NZBExport
 				} else {
 					ob_start();
 					if (!@readgzfile($nzbFile)) {
-						if (!$this->browser) {
+						if ($this->echoCLI) {
 							echo 'Unable to export NZB with GUID: ' . $release['guid'];
 						}
 						continue;
@@ -172,11 +179,11 @@ class NZBExport
 				$exported++;
 				$currentExport++;
 
-				if (!$this->browser && $currentExport % 10 === 0) {
+				if ($this->echoCLI && $currentExport % 100 === 0) {
 					echo "Exported " . $currentExport . " of "  . $totalFound . " nzbs for group " . $group['name']. PHP_EOL;
 				}
 			}
-			if (!$this->browser && $currentExport > 0) {
+			if ($this->echoCLI && $currentExport > 0) {
 				echo 'Exported ' . $currentExport . ' releases for group: ' . $group['name'] . PHP_EOL;
 			}
 		}
@@ -221,7 +228,7 @@ class NZBExport
 	{
 		if ($this->browser) {
 			$this->retVal .= $message . "<br />";
-		} else {
+		} elseif ($this->echoCLI) {
 			echo $message . PHP_EOL;
 		}
 	}

@@ -102,6 +102,11 @@ class ReleaseRemover
 	protected $delete;
 
 	/**
+	 * @var bool
+	 */
+	protected $echoCLI;
+
+	/**
 	 * @const New line.
 	 */
 	const N = PHP_EOL;
@@ -110,8 +115,9 @@ class ReleaseRemover
 	 * Construct.
 	 *
 	 * @param bool $browser Is is run from the browser?
+	 * @param bool $echo    Echo to CLI?
 	 */
-	public function __construct($browser = false)
+	public function __construct($browser = false, $echo = true)
 	{
 		$this->db = new DB();
 		$this->color = new ColorCLI();
@@ -125,6 +131,7 @@ class ReleaseRemover
 		$this->error = '';
 		$this->ignoreUserCheck = false;
 		$this->browser = $browser;
+		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
 	}
 
 	/**
@@ -175,7 +182,7 @@ class ReleaseRemover
 		// Delete the releases.
 		$this->deleteReleases();
 
-		if (!$this->browser) {
+		if ($this->echoCLI) {
 			echo $this->color->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
 			echo $this->color->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
@@ -211,7 +218,7 @@ class ReleaseRemover
 		$this->crapTime = '';
 		switch ($time) {
 			case 'full':
-				if (!$this->browser) {
+				if ($this->echoCLI) {
 					echo $this->color->header("Removing crap releases - no time limit.");
 				}
 				break;
@@ -220,7 +227,7 @@ class ReleaseRemover
 					$this->error = 'Error, time must be a number or full.';
 					return $this->returnError();
 				}
-				if (!$this->browser) {
+				if ($this->echoCLI) {
 					echo $this->color->header('Removing crap releases from the past ' . $time . " hour(s).");
 				}
 				$this->crapTime =
@@ -283,7 +290,7 @@ class ReleaseRemover
 				return $this->returnError();
 		}
 
-		if (!$this->browser) {
+		if ($this->echoCLI) {
 			echo $this->color->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
 			echo $this->color->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
@@ -696,10 +703,10 @@ class ReleaseRemover
 		foreach ($this->result as $release) {
 			if ($this->delete) {
 				$this->releases->fastDelete($release['id'], $release['guid']);
-				if (!$this->browser) {
+				if ($this->echoCLI) {
 					echo $this->color->primary('Deleting: ' . $this->method . ': ' . $release['searchname']);
 				}
-			} elseif (!$this->browser) {
+			} elseif ($this->echoCLI) {
 				echo $this->color->primary('Would be deleting: ' . $this->method . ': ' . $release['searchname']);
 			}
 			$deletedCount++;
@@ -926,7 +933,7 @@ class ReleaseRemover
 		if ($this->browser) {
 			return $this->error . '<br />';
 		} else {
-			if ($this->error !== '') {
+			if ($this->echoCLI && $this->error !== '') {
 				echo $this->color->error($this->error);
 			}
 			return false;
