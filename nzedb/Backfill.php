@@ -645,9 +645,9 @@ class Backfill
 	/**
 	 * Returns article number based on # of days.
 	 *
-	 * @param string $group
-	 * @param int $days
-	 * @param array $data
+	 * @param string $group Group name.
+	 * @param int $days     How many days back we want to go.
+	 * @param array $data   Group data from usenet.
 	 *
 	 * @return string
 	 */
@@ -657,8 +657,16 @@ class Backfill
 			$this->debugging->start("daytopost", 'Finding article for ' . $group . ' ' . $days . " days back.", 5);
 		}
 
-		// Goal timestamp.
-		$goaldate = date('U') - (86400 * $days);
+		// The date we want.
+		$goaldate =
+			//current unix time (ex. 1395699114)
+			time()
+			//minus
+			-
+			// 86400 (seconds in a day) times days wanted. (ie 1395699114 - 2592000 (30days)) = 1393107114
+			(86400 * $days);
+
+		// The total
 		$totalnumberofarticles = $data['last'] - $data['first'];
 		$upperbound = $data['last'];
 		$lowerbound = $data['first'];
