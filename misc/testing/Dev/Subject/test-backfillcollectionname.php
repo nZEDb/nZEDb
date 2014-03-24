@@ -25,7 +25,7 @@ function dogroup($name, $articles)
 		usleep(500000);
 	}
 	$backfill = new Backfill();
-	$backfill->backfillPostAllGroups($nntp, $name, $articles);
+	$backfill->backfillAllGroups($nntp, $name, $articles);
 	echo $c->primaryOver("Type y and press enter to continue, n to quit.\n");
 	if (trim(fgets(fopen("php://stdin", "r"))) == 'y') {
 		return true;

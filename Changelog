@@ -12,6 +12,10 @@ Each update goes to the top of the file
 	* Use NZBExport class for web export.
 	* Refactor removecrapreleases to the ReleaseRemover class.
 	* Check if OMDB is down.
+	* Refactor backfill.php, move post methods into date methods, fix some issues with target date/post.
+	* Fix issue in ReleaseRemover blacklist where if no results were found subsequent blacklists were skipped.
+	* Check nZEDb_ECHOCLI constant in various classes.
+	* Use carriage return (rewrite) on nzb_export echo, looks better.
 2014-03-22 niel
 	* Moving newznab_api-specification from .../nzedb/api to .../docs
 2014-03-22 kevin

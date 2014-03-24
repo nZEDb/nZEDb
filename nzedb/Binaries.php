@@ -190,7 +190,7 @@ class Binaries
 	{
 		$this->echo = ($echo && nZEDb_ECHOCLI);
 		$this->debug = (nZEDb_DEBUG || nZEDb_LOGGING);
-		$this->backfill = new Backfill($this->site);
+		$this->backfill = new Backfill($echo);
 		$this->c = new ColorCLI();
 		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->consoleTools = new ConsoleTools();
@@ -390,7 +390,7 @@ class Binaries
 
 		// Generate postdate for first record, for those that upgraded.
 		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] != '0') {
-			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], false, $groupArr['name'], true, 'oldest');
+			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], $groupArr['name'], true, 'oldest');
 			if ($newdate !== false) {
 				$first_record_postdate = $newdate;
 			} else {

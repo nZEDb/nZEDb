@@ -102,6 +102,11 @@ class ReleaseRemover
 	protected $delete;
 
 	/**
+	 * @var bool
+	 */
+	protected $echoCLI;
+
+	/**
 	 * @const New line.
 	 */
 	const N = PHP_EOL;
@@ -110,8 +115,9 @@ class ReleaseRemover
 	 * Construct.
 	 *
 	 * @param bool $browser Is is run from the browser?
+	 * @param bool $echo    Echo to CLI?
 	 */
-	public function __construct($browser = false)
+	public function __construct($browser = false, $echo = true)
 	{
 		$this->db = new DB();
 		$this->color = new ColorCLI();
@@ -125,6 +131,7 @@ class ReleaseRemover
 		$this->error = '';
 		$this->ignoreUserCheck = false;
 		$this->browser = $browser;
+		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
 	}
 
 	/**
@@ -175,7 +182,7 @@ class ReleaseRemover
 		// Delete the releases.
 		$this->deleteReleases();
 
-		if (!$this->browser) {
+		if ($this->echoCLI) {
 			echo $this->color->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
 			echo $this->color->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
@@ -211,7 +218,7 @@ class ReleaseRemover
 		$this->crapTime = '';
 		switch ($time) {
 			case 'full':
-				if (!$this->browser) {
+				if ($this->echoCLI) {
 					echo $this->color->header("Removing crap releases - no time limit.");
 				}
 				break;
@@ -220,13 +227,13 @@ class ReleaseRemover
 					$this->error = 'Error, time must be a number or full.';
 					return $this->returnError();
 				}
-				if (!$this->browser) {
+				if ($this->echoCLI) {
 					echo $this->color->header('Removing crap releases from the past ' . $time . " hour(s).");
 				}
 				$this->crapTime =
-					' AND adddate > (NOW() - INTERVAL ' .
+					' AND r.adddate > (NOW() - INTERVAL ' .
 					($this->mysql ? $time . ' HOUR)' : $this->db->escapeString($time . ' HOURS')) .
-					' ORDER BY id ASC';
+					' ORDER BY r.id ASC';
 				break;
 		}
 
@@ -283,7 +290,7 @@ class ReleaseRemover
 				return $this->returnError();
 		}
 
-		if (!$this->browser) {
+		if ($this->echoCLI) {
 			echo $this->color->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
 			echo $this->color->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
@@ -308,15 +315,15 @@ class ReleaseRemover
 	protected function removeGibberish()
 	{
 		$this->method = 'Gibberish';
-		$regex = sprintf("searchname %s '^[a-zA-Z0-9]{15,}$'", $this->regexp);
+		$regex = sprintf("r.searchname %s '^[a-zA-Z0-9]{15,}$'", $this->regexp);
 		$this->query = sprintf(
-			"SELECT id, guid, searchname
-			FROM releases
+			"SELECT r.id, r.guid, r.searchname
+			FROM releases r
 			WHERE %s
-			AND nfostatus = 0
-			AND iscategorized = 1
-			AND rarinnerfilecount = 0
-			AND categoryid NOT IN (%d) %s",
+			AND r.nfostatus = 0
+			AND r.iscategorized = 1
+			AND r.rarinnerfilecount = 0
+			AND r.categoryid NOT IN (%d) %s",
 			$regex, Category::CAT_MISC, $this->crapTime
 		);
 
@@ -334,15 +341,15 @@ class ReleaseRemover
 	protected function removeHashed()
 	{
 		$this->method = 'Hashed';
-		$regex = sprintf("searchname %s '[a-zA-Z0-9]{25,}'", $this->regexp);
+		$regex = sprintf("r.searchname %s '[a-zA-Z0-9]{25,}'", $this->regexp);
 		$this->query = sprintf(
-			"SELECT id, guid, searchname
-			FROM releases
+			"SELECT r.id, r.guid, r.searchname
+			FROM releases r
 			WHERE %s
-			AND nfostatus = 0
-			AND iscategorized = 1
-			AND rarinnerfilecount = 0
-			AND categoryid NOT IN (%d) %s",
+			AND r.nfostatus = 0
+			AND r.iscategorized = 1
+			AND r.rarinnerfilecount = 0
+			AND r.categoryid NOT IN (%d) %s",
 			$regex, Category::CAT_MISC, $this->crapTime
 		);
 
@@ -360,15 +367,15 @@ class ReleaseRemover
 	protected function removeShort()
 	{
 		$this->method = 'Short';
-		$regex = sprintf("searchname %s '^[a-zA-Z0-9]{0,5}$'", $this->regexp);
+		$regex = sprintf("r.searchname %s '^[a-zA-Z0-9]{0,5}$'", $this->regexp);
 		$this->query = sprintf(
-			"SELECT id, guid, searchname
-			FROM releases
+			"SELECT r.id, r.guid, r.searchname
+			FROM releases r
 			WHERE %s
-			AND nfostatus = 0
-			AND iscategorized = 1
-			AND rarinnerfilecount = 0
-			AND categoryid NOT IN (%d) %s",
+			AND r.nfostatus = 0
+			AND r.iscategorized = 1
+			AND r.rarinnerfilecount = 0
+			AND r.categoryid NOT IN (%d) %s",
 			$regex, Category::CAT_MISC, $this->crapTime
 		);
 
@@ -467,17 +474,17 @@ class ReleaseRemover
 	{
 		$this->method = 'Passworded';
 		$this->query = sprintf(
-			"SELECT id, guid, searchname
-			FROM releases
-			WHERE searchname %s %s
-			AND searchname NOT %s %s
-			AND searchname NOT %s %s
-			AND searchname NOT %s %s
-			AND searchname NOT %s %s
-			AND searchname NOT %s %s
-			AND searchname NOT %s %s
-			AND nzbstatus = 1
-			AND categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d) %s",
+			"SELECT r.id, r.guid, r.searchname
+			FROM releases r
+			WHERE r.searchname %s %s
+			AND r.searchname NOT %s %s
+			AND r.searchname NOT %s %s
+			AND r.searchname NOT %s %s
+			AND r.searchname NOT %s %s
+			AND r.searchname NOT %s %s
+			AND r.searchname NOT %s %s
+			AND r.nzbstatus = 1
+			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d) %s",
 			$this->like,
 			// Matches passwort / passworded / etc also.
 			"'passwor'",
@@ -519,11 +526,11 @@ class ReleaseRemover
 	{
 		$this->method = 'Size';
 		$this->query = sprintf(
-			"SELECT id, guid, searchname
-			FROM releases
-			WHERE totalpart = 1
-			AND size < 1000000
-			AND categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d) %s",
+			"SELECT r.id, r.guid, r.searchname
+			FROM releases r
+			WHERE r.totalpart = 1
+			AND r.size < 1000000
+			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d) %s",
 			Category::CAT_MUSIC_MP3,
 			Category::CAT_BOOKS_COMICS,
 			Category::CAT_BOOKS_EBOOK,
@@ -550,12 +557,12 @@ class ReleaseRemover
 	{
 		$this->method = 'Sample';
 		$this->query = sprintf(
-			"SELECT id, guid, searchname
-			FROM releases
-			WHERE totalpart > 1
-			AND size < 40000000
-			AND name %s %s
-			AND categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
+			"SELECT r.id, r.guid, r.searchname
+			FROM releases r
+			WHERE r.totalpart > 1
+			AND r.size < 40000000
+			AND r.name %s %s
+			AND r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
 			$this->like,
 			"'sample'",
 			Category::CAT_TV_ANIME,
@@ -650,7 +657,12 @@ class ReleaseRemover
 				// Get the group ID if the regex is set to work against a group.
 				$groupID = '';
 				if (strtolower($regex['groupname']) !== 'alt.binaries.*') {
-					$groupIDs = $this->db->query('SELECT id FROM groups WHERE name ' . $this->regexp . $this->db->escapeString($regex['groupname']));
+					$groupIDs = $this->db->query(
+						'SELECT id FROM groups WHERE name ' .
+						$this->regexp .
+						' ' .
+						$this->db->escapeString($regex['groupname'])
+					);
 					$gIDcount = count($groupIDs);
 					if ($gIDcount === 0) {
 						continue;
@@ -674,7 +686,7 @@ class ReleaseRemover
 				);
 
 				if ($this->checkSelectQuery() === false) {
-					return $this->returnError();
+					continue;
 				}
 				$this->deleteReleases();
 			}
@@ -691,10 +703,10 @@ class ReleaseRemover
 		foreach ($this->result as $release) {
 			if ($this->delete) {
 				$this->releases->fastDelete($release['id'], $release['guid']);
-				if (!$this->browser) {
+				if ($this->echoCLI) {
 					echo $this->color->primary('Deleting: ' . $this->method . ': ' . $release['searchname']);
 				}
-			} elseif (!$this->browser) {
+			} elseif ($this->echoCLI) {
 				echo $this->color->primary('Would be deleting: ' . $this->method . ': ' . $release['searchname']);
 			}
 			$deletedCount++;
@@ -712,7 +724,7 @@ class ReleaseRemover
 	protected function checkSelectQuery()
 	{
 		// Run the query, check if it picked up anything.
-		$result = $this->db->query($this->query);
+		$result = $this->db->query($this->cleanSpaces($this->query));
 		if (count($result) <= 0) {
 			if ($this->method === 'userCriteria') {
 				$this->error = 'No releases were found to delete, try changing your criteria.';
@@ -921,7 +933,7 @@ class ReleaseRemover
 		if ($this->browser) {
 			return $this->error . '<br />';
 		} else {
-			if ($this->error !== '') {
+			if ($this->echoCLI && $this->error !== '') {
 				echo $this->color->error($this->error);
 			}
 			return false;

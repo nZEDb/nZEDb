@@ -20,7 +20,7 @@ if ($site->nntpproxy === "1") {
 
 $pieces = explode(' ', $argv[1]);
 $backfill = new Backfill();
-$backfill->backfillPostAllGroups($nntp, $pieces[0], 10000, 'normal');
+$backfill->backfillAllGroups($nntp, $pieces[0], 10000, 'normal');
 if ($site->nntpproxy != "1") {
 	$nntp->doQuit();
 }

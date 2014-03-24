@@ -17,22 +17,19 @@ if ($site->nntpproxy === "1") {
 
 if (isset($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && !isset($argv[2])) {
 	$backfill = new Backfill();
-	$groupName = '';
-	$backfill->backfillAllGroups($nntp, $groupName);
+	$backfill->backfillAllGroups($nntp, '');
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && !isset($argv[2])) {
 	$backfill = new Backfill();
 	$backfill->backfillAllGroups($nntp, $argv[1]);
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
 	$backfill = new Backfill();
-	$backfill->backfillPostAllGroups($nntp, $argv[1], $argv[2], 'groupname');
+	$backfill->backfillAllGroups($nntp, $argv[1], $argv[2]);
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] == 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
 	$backfill = new Backfill();
-	$groupName = '';
-	$backfill->backfillPostAllGroups($nntp, $groupName, $argv[2], 'normal');
+	$backfill->backfillAllGroups($nntp, '', $argv[2], 'normal');
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] == 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
 	$backfill = new Backfill();
-	$groupName = '';
-	$backfill->backfillPostAllGroups($nntp, $groupName, $argv[2], 'date');
+	$backfill->backfillAllGroups($nntp, '', $argv[2], 'date');
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] == 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
 	$backfill = new Backfill();
 	$backfill->safeBackfill($nntp, $argv[2]);
