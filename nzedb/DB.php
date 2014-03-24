@@ -83,8 +83,9 @@ class DB extends PDO
 		}
 
 		try {
-			$options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_LOCAL_INFILE => true);
+			$options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
 			if ($this->dbsystem == 'mysql') {
+                $options[PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
 				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			}
 
