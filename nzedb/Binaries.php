@@ -468,7 +468,6 @@ class Binaries
 			$done = false;
 			// Get all the parts (in portions of $this->messagebuffer to not use too much memory).
 			while ($done === false) {
-				$this->startLoop = microtime(true);
 
 				if ($total > $this->messagebuffer) {
 					if ($first + $this->messagebuffer > $grouplast) {
@@ -584,10 +583,13 @@ class Binaries
 	 */
 	public function scan($groupArr, $first, $last, $type = 'update', $missingParts = null)
 	{
-		$returnArray = array();
-
-		$this->startHeaders = microtime(true);
+		// Start time of scan method.
 		$this->startLoop = microtime(true);
+
+		// Start time of getting data from usenet.
+		$this->startHeaders = $this->startLoop;
+
+		$returnArray = array();
 
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
@@ -659,14 +661,18 @@ class Binaries
 					$this->db->queryExec($query);
 
 				}
-
 				return false;
 			}
 		}
-		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
-
+		// Start of processing headers.
 		$this->startCleaning = microtime(true);
+
+		// End of the getting data from usenet.
+		$timeHeaders = number_format($this->startCleaning - $this->startHeaders, 2);
+
+		// Array of all the requested article numbers.
 		$rangerequested = range($first, $last);
+
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 
 		$msgCount = count($msgs);
@@ -818,8 +824,6 @@ class Binaries
 				}
 			}
 
-			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
-
 			unset($msg, $msgs);
 			$maxnum = $last;
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
@@ -873,7 +877,13 @@ class Binaries
 				}
 			}
 
+			// Start of inserting into SQL.
 			$this->startUpdate = microtime(true);
+
+			// End of processing headers.
+			$timeCleaning = number_format($this->startUpdate - $this->startCleaning, 2);
+
+
 			if (isset($this->message) && count($this->message) > 0) {
 				$maxnum = $first;
 				$pBinaryID = $pNumber = $pMessageID = $pPartNumber = $pSize = 1;
@@ -1007,18 +1017,17 @@ class Binaries
 					}
 				}
 			}
-			$timeUpdate = number_format(microtime(true) - $this->startUpdate, 2);
-			$timeLoop = number_format(microtime(true) - $this->startLoop, 2);
 
+			$currentMicroTime = microtime(true);
 			if ($this->echo && $type != 'partrepair') {
 				$this->c->doEcho(
 					$this->c->alternateOver($timeHeaders . 's') .
 					$this->c->primaryOver(' to download articles, ') .
 					$this->c->alternateOver($timeCleaning . 's') .
 					$this->c->primaryOver(' to process articles, ') .
-					$this->c->alternateOver($timeUpdate . 's') .
+					$this->c->alternateOver(number_format($currentMicroTime - $this->startUpdate, 2) . 's') .
 					$this->c->primaryOver(' to insert articles, ') .
-					$this->c->alternateOver($timeLoop . 's') .
+					$this->c->alternateOver(number_format($currentMicroTime - $this->startLoop, 2) . 's') .
 					$this->c->primary(' total.')
 				);
 			}
@@ -1104,7 +1113,6 @@ class Binaries
 
 			// Download missing parts in ranges.
 			foreach ($ranges as $range) {
-				$this->startLoop = microtime(true);
 
 				$partfrom = $range['partfrom'];
 				$partto = $range['partto'];

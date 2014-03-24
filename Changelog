@@ -14,6 +14,7 @@ Each update goes to the top of the file
 	* Store NNTP instance as object in Binaries/Backfill classes.
 	* Temp solution for those with unusable sites because of nZEDb.xml
 	* Change echo's in backfill/binaries to be similar.
+	* Binaries/backfill get rid of some microtime's and reuse some.
 2014-03-23 ruhllatio
 	* Change work release queries for movie/tv to leverage partitioning (5.5+ safe)
 2014-03-23 kevin

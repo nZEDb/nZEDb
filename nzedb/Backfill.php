@@ -91,11 +91,6 @@ class Backfill
 	protected $startGroup;
 
 	/**
-	 * @var int
-	 */
-	protected $startLoop;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param NNTP $nntp Class instance of NNTP.
@@ -328,7 +323,6 @@ class Backfill
 
 		$done = false;
 		while ($done === false) {
-			$this->binaries->startLoop = microtime(true);
 
 			if ($this->echo) {
 				$this->c->doEcho(
@@ -389,7 +383,6 @@ class Backfill
 			}
 		}
 
-		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 		if ($this->echo) {
 			$this->c->doEcho(
 				$this->c->primary(
@@ -397,7 +390,7 @@ class Backfill
 					'Group ' .
 					$groupName .
 					' processed in ' .
-					$timeGroup .
+					number_format(microtime(true) - $this->startGroup, 2) .
 					" seconds."
 				), true
 			);
@@ -837,7 +830,6 @@ class Backfill
 	public function getRange($group, $first, $last, $threads)
 	{
 		$groups = new Groups();
-		$this->startGroup = microtime(true);
 		$binaries = new Binaries($this->nntp, $this->echo, $this);
 		$groupArr = $groups->getByName($group);
 		$process = $this->safepartrepair ? 'update' : 'backfill';
@@ -874,7 +866,6 @@ class Backfill
 				);
 			}
 		}
-		$this->startLoop = microtime(true);
 
 		// Select group, here, only once
 		$data = $this->nntp->selectGroup($groupArr['name']);
