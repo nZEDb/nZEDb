@@ -19,17 +19,24 @@ class Sites
 
 	protected $_db;
 	protected $_versions;
+	protected $_versionSuccess;
 
 	public function __construct()
 	{
 		$this->_db = new DB();
-		$this->_versions = new \nzedb\utility\Versions();
+		$this->_versionSuccess = false;
+		try {
+			$this->_versions = new \nzedb\utility\Versions();
+			$this->_versionSuccess = true;
+		} catch (Exception $e) {
+			//echo $e->getMessage() . PHP_EOL;
+		}
 		$this->setCovers();
 	}
 
 	public function version()
 	{
-		return $this->_versions->getTagVersion();
+		return ($this->_versionSuccess ? $this->_versions->getTagVersion() : '0.3');
 	}
 
 	public function update($form)

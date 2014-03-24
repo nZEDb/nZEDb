@@ -7,7 +7,7 @@ if (!defined('GIT_PRE_COMMIT')) {
 
 // Only set an argument if calling from bash or MS-DOS batch scripts. Otherwise
 // instantiate the class and use as below.
-if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && $argv[1] == true) {
+if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
 	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
@@ -61,7 +61,12 @@ class Versions
 		$this->_filespec = $filepath;
 
 		$this->out = new \ColorCLI();
-		$this->_xml = @new \SimpleXMLElement($filepath, 0, true);
+		try {
+			$this->_xml = @new \SimpleXMLElement($filepath, 0, true);
+		} catch(\Exception $e) {
+			throw new \Exception("Failed to open versions XML file '$filepath' :" . $e->getMessage());
+		}
+
 		if ($this->_xml === false) {
 			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
 			throw new \Exception("Failed to open versions XML file '$filepath'");
