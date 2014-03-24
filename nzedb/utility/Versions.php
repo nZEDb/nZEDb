@@ -61,11 +61,10 @@ class Versions
 		$this->_filespec = $filepath;
 
 		$this->out = new \ColorCLI();
-		try {
-			$this->_xml = @new \SimpleXMLElement($filepath, 0, true);
-		} catch(\Exception $e) {
-			throw new \Exception("Failed to open versions XML file '$filepath' :" . $e->getMessage());
-		}
+
+		$temp = libxml_use_internal_errors(true);
+		$this->_xml = simplexml_load_file($filepath);
+		libxml_use_internal_errors($temp);
 
 		if ($this->_xml === false) {
 			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
