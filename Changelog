@@ -10,6 +10,7 @@ Each update goes to the top of the file
 	* Update DB.php to check if the current SAPI is cli, echo accordingly, strict checking on dbSystem()
 	* PHPdoc in ConsoleTools.php
 	* Fix some issues with partrepair ignoring pear errors.
+	* Check for debug constant on NNTP class.
 2014-03-23 ruhllatio
 	* Change work release queries for movie/tv to leverage partitioning (5.5+ safe)
 2014-03-23 kevin
