@@ -69,6 +69,16 @@ class BasePage
 			$this->userdata = $users->getById($users->currentUserId());
 			$this->userdata['categoryexclusions'] = $users->getCategoryExclusion($users->currentUserId());
 
+			// Change the theme to user's selected theme.
+			if (isset($this->userdata['style']) && $this->userdata['style'] !== 'None') {
+				$this->smarty->setTemplateDir(
+					array(
+						'user_frontend' => nZEDb_WWW . 'themes/' . $this->userdata['style'] . '/templates/frontend',
+						'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend'
+					)
+				);
+			}
+
 			// Update lastlogin every 15 mins.
 			if (strtotime($this->userdata['now'])-900 > strtotime($this->userdata['lastlogin']))
 				$users->updateSiteAccessed($this->userdata['id']);

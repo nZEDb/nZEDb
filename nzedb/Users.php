@@ -31,6 +31,19 @@ class Users
 		return $db->query("SELECT * FROM users");
 	}
 
+
+	/**
+	 * Get the users selected theme.
+	 *
+	 * @param string|int $userID The id of the user.
+	 *
+	 * @return array|bool The users selected theme.
+	 */
+	public function getStyle($userID)
+	{
+		return $this->db->queryOneRow("SELECT style FROM users WHERE id = " . $userID);
+	}
+
 	public function delete($id)
 	{
 		$db = $this->db;
@@ -61,7 +74,7 @@ class Users
 		}
 
 		$like = 'ILIKE';
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 
@@ -168,7 +181,9 @@ class Users
 		return $db->queryInsert(sprintf("INSERT INTO users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed, firstname, lastname) VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)", $db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby, $db->escapeString($db->uuid()), $db->escapeString($fname), $db->escapeString($lname)));
 	}
 
-	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites, $movieview, $musicview, $consoleview, $bookview, $saburl = false, $sabapikey = false, $sabpriority = false, $sabapikeytype = false, $cp_url = false, $cp_api = false)
+	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites, $movieview, $musicview,
+		$consoleview, $bookview, $saburl = false, $sabapikey = false, $sabpriority = false, $sabapikeytype = false,
+		$cp_url = false, $cp_api = false, $style = 'None')
 	{
 		$db = $this->db;
 
@@ -216,6 +231,7 @@ class Users
 		$sql[] = sprintf('musicview = %d', $musicview);
 		$sql[] = sprintf('consoleview = %d', $consoleview);
 		$sql[] = sprintf('bookview = %d', $bookview);
+		$sql[] = sprintf('style = %s', $db->escapeString($style));
 
 		if ($saburl !== false) {
 			$sql[] = sprintf('saburl = %s', $db->escapeString($saburl));
@@ -287,8 +303,7 @@ class Users
 
 	public function getById($id)
 	{
-		$db = $this->db;
-		return $db->queryOneRow(sprintf("SELECT users.*, userroles.name AS rolename, userroles.canpreview, userroles.apirequests, userroles.downloadrequests, NOW() AS now FROM users INNER JOIN userroles ON userroles.id = users.role WHERE users.id = %d", $id));
+		return $this->db->queryOneRow(sprintf("SELECT users.*, userroles.name AS rolename, userroles.canpreview, userroles.apirequests, userroles.downloadrequests, NOW() AS now FROM users INNER JOIN userroles ON userroles.id = users.role WHERE users.id = %d", $id));
 	}
 
 	public function getByIdAndRssToken($id, $rsstoken)
@@ -609,9 +624,8 @@ class Users
 			$contents = $sender["username"] . " has sent an invite to join " . $sitetitle . " to this email address.<br>To accept the invitation click <a href=\"$url\">this link</a>\n";
 		}
 
-		if (sendEmail($emailto, $subject, $contents, $siteemail)) {
-			$this->addInvite($uid, $token);
-		}
+		sendEmail($emailto, $subject, $contents, $siteemail);
+		$this->addInvite($uid, $token);
 
 		return $url;
 	}
@@ -620,7 +634,7 @@ class Users
 	{
 		$db = $this->db;
 		// Tidy any old invites sent greater than DEFAULT_INVITE_EXPIRY_DAYS days ago.
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$db->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL %d DAY", Users::DEFAULT_INVITE_EXPIRY_DAYS));
 		} else {
 			$db->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL '%d DAYS'", Users::DEFAULT_INVITE_EXPIRY_DAYS));
@@ -734,7 +748,7 @@ class Users
 	 */
 	protected function clearApiRequests($userid)
 	{
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			if ($userid === false) {
 				$this->db->queryExec('DELETE FROM userrequests WHERE timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)');
 			} else {
@@ -759,7 +773,7 @@ class Users
 	{
 		$db = $this->db;
 		// Clear old requests.
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$db->queryExec(sprintf('DELETE FROM userdownloads WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
 			return $db->queryOneRow(sprintf('select COUNT(id) AS num FROM userdownloads WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
 		} else {

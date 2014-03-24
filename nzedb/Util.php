@@ -1,8 +1,8 @@
 <?php
 /*
  * General util functions.
+ * Class Util
  */
-
 class Util
 {
 	static public function hasCommand($cmd)
@@ -28,12 +28,22 @@ class Util
 			$path .= '/';
 		}
 	}
+
+	/**
+	 * Check if user is running from CLI.
+	 *
+	 * @return bool
+	 */
+	static public function isCLI()
+	{
+		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
+	}
 }
 
 // Central function for sending site email.
 function sendEmail($to, $subject, $contents, $from)
 {
-	if (isWindows) {
+	if (isWindows()) {
 		$n = "\r\n";
 	} else {
 		$n = "\n";
@@ -86,19 +96,26 @@ function objectsIntoArray($arrObjData, $arrSkipIndices = array())
 	return $arrData;
 }
 
+/**
+ * Remove unsafe chars from a filename.
+ *
+ * @param string $filename
+ *
+ * @return string
+ */
 function safeFilename($filename)
 {
-	$temp = $filename;
-	$result = '';
-	for ($i = 0; $i < strlen($temp); $i++) {
-		if (preg_match('([a-zA-Z0-9\s\.\-])', $temp[$i])) {
-			$result = $result . $temp[$i];
-		}
-	}
-
-	return $result;
+	return trim(preg_replace('/[^\w\s.-]*/i', '', $filename));
 }
 
+/**
+ * Run CLI command.
+ *
+ * @param string $command
+ * @param bool   $debug
+ *
+ * @return array
+ */
 function runCmd($command, $debug = false)
 {
 	$nl = PHP_EOL;
@@ -126,42 +143,85 @@ function checkStatus($code)
 	return ($code == 0) ? true : false;
 }
 
-function getUrl($url, $method = 'get', $postdata = '', $language = "")
+/**
+ * Use cURL To download a web page into a string.
+ *
+ * @param string $url       The URL to download.
+ * @param string $method    get/post
+ * @param string $postdata  If using POST, post your POST data here.
+ * @param string $language  Use alternate langauge in header.
+ * @param bool   $debug     Show debug info.
+ *
+ * @return bool|mixed
+ */
+function getUrl($url, $method = 'get', $postdata = '', $language = "", $debug = false)
 {
-	$ch = curl_init();
-	if ($method == 'post') {
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-	}
-	curl_setopt($ch, CURLOPT_URL, $url);
-	if ($language == "") {
-		$language = "en-us";
-	} else if ($language == "en") {
-		$language = "en-us";
-	} else if ($language == "fr") {
-		$language = "fr-fr";
-	} else if ($language == "de") {
-		$language = "de-de";
+	switch($language) {
+		case 'fr':
+		case 'fr-fr':
+			$language = "fr-fr";
+			break;
+		case 'de':
+		case 'de-de':
+			$language = "de-de";
+			break;
+		case '':
+		case 'en':
+		case 'en-us':
+		default:
+			$language = "en-us";
 	}
 	$header[] = "Accept-Language: " . $language;
-	curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
+	$ch = curl_init();
+	$options = array(
+		CURLOPT_URL            => $url,
+		CURLOPT_HTTPHEADER     => $header,
+		CURLOPT_RETURNTRANSFER => 1,
+		CURLOPT_FOLLOWLOCATION => 1,
+		CURLOPT_TIMEOUT        => 15,
+		CURLOPT_SSL_VERIFYPEER => false,
+		CURLOPT_SSL_VERIFYHOST => false,
+	);
+
+	if ($method === 'post') {
+		$options = array_merge(array(
+				CURLOPT_POST       => 1,
+				CURLOPT_POSTFIELDS => $postdata
+			), $options
+		);
+	}
+
+	if ($debug) {
+		$options = array_merge($options,
+			array(
+				CURLOPT_HEADER      => true,
+				CURLINFO_HEADER_OUT => true,
+				CURLOPT_NOPROGRESS  => false,
+				CURLOPT_VERBOSE     => true
+			)
+		);
+	}
+
+	curl_setopt_array($ch, $options);
 	$buffer = curl_exec($ch);
 	$err = curl_errno($ch);
 	curl_close($ch);
 
-	if ($err != 0) {
+	if ($err !== 0) {
 		return false;
 	} else {
 		return $buffer;
 	}
 }
 
+/**
+ * Convert Code page 437 chars to UTF.
+ *
+ * @param string $str
+ *
+ * @return string
+ */
 function cp437toUTF($str)
 {
 	$out = '';
@@ -433,9 +493,7 @@ function cp437toUTF($str)
 // Function inpsired by c0r3@newznabforums adds country flags on the browse page.
 function release_flag($x, $t)
 {
-	$y = "";
-	$s = new Sites();
-	$site = $s->get();
+	$y = $d = "";
 
 	if (preg_match('/\bCzech\b/i', $x)) {
 		$y = "cz";
@@ -523,11 +581,12 @@ function release_flag($x, $t)
 		$d = "Vietnamese";
 	}
 	if ($y !== "" && $t == "browse") {
-		if (file_exists(nZEDb_THEMES . $site->style . DS . "images" . DS . "flags" . DS . $y . ".png")) {
-			return '<img title=' . $d . ' src="' . THEMES_DIR . '/' . $site->style . '/images/flags/' . $y . '.png" />';
-		} else {
-			return '<img title=' . $d . ' src="' . THEMES_DIR . '/Default/images/flags/' . $y . '.png" />';
+		$www = WWW_TOP;
+		if (!in_array(substr($www, -1), array('\\', '/'))) {
+			$www .= DS;
 		}
+
+		return '<img title=' . $d . ' src="' . $www . 'themes_shared/images/flags/' . $y . '.png" />';
 	} else if ($t == "search") {
 		if ($y == "") {
 			return false;
@@ -535,5 +594,5 @@ function release_flag($x, $t)
 			return $y;
 		}
 	}
+	return '';
 }
-?>

@@ -20,9 +20,7 @@ if (isset($argv[1])) {
 function create_guids($live, $delete = false)
 {
 	$db = new DB();
-	$s = new Sites();
 	$consoletools = new ConsoleTools();
-	$site = $s->get();
 	$timestart = TIME();
 	$relcount = $deleted = 0;
 	$c = new ColorCLI();
@@ -40,13 +38,14 @@ function create_guids($live, $delete = false)
 		$reccnt = 0;
 		foreach ($relrecs as $relrec) {
 			$reccnt++;
-			if (file_exists($nzbpath = $nzb->NZBPath($relrec['guid']))) {
+			$nzbpath = $nzb->NZBPath($relrec['guid']);
+			if ($nzbpath !== false) {
 				$nzbpath = 'compress.zlib://' . $nzbpath;
 				$nzbfile = @simplexml_load_file($nzbpath);
 				if (!$nzbfile) {
 					if (isset($delete) && $delete == 'delete') {
 						//echo "\n".$nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";
-						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+						$releases->fastDelete($relrec['id'], $relrec['guid']);
 						$deleted++;
 					}
 					continue;
@@ -58,7 +57,7 @@ function create_guids($live, $delete = false)
 				if (count($binary_names) == 0) {
 					if (isset($delete) && $delete == 'delete') {
 						//echo "\n".$nzb->NZBPath($relrec['guid'])." has no binaries, deleting release.\n";
-						$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+						$releases->fastDelete($relrec['id'], $relrec['guid']);
 						$deleted++;
 					}
 					continue;
@@ -80,7 +79,7 @@ function create_guids($live, $delete = false)
 			} else {
 				if (isset($delete) && $delete == 'delete') {
 					//echo $c->primary($nzb->NZBPath($relrec['guid']) . " does not have an nzb, deleting.");
-					$releases->fastDelete($relrec['id'], $relrec['guid'], $site);
+					$releases->fastDelete($relrec['id'], $relrec['guid']);
 				}
 			}
 		}

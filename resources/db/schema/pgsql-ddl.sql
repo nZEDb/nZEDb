@@ -51,7 +51,7 @@ CREATE TABLE "binaries" (
   "filenumber" bigint DEFAULT 0 NOT NULL,
   "totalparts" bigint DEFAULT 0 NOT NULL,
   "binaryhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
-  "partcheck" BOOLEAN DEFAULT FALSE,
+  "partcheck" smallint DEFAULT 0 NOT NULL,
   "partsize" numeric(20, 0) DEFAULT 0 NOT NULL
 )
 WITHOUT OIDS;
@@ -564,22 +564,22 @@ CREATE TABLE "releases" (
   "rarinnerfilecount" integer DEFAULT 0 NOT NULL,
   "haspreview" smallint DEFAULT 0 NOT NULL,
   "nfostatus" smallint DEFAULT 0 NOT NULL,
-  "jpgstatus" BOOLEAN DEFAULT FALSE,
-  "videostatus" BOOLEAN DEFAULT FALSE,
-  "audiostatus" BOOLEAN DEFAULT FALSE,
+  "jpgstatus" smallint DEFAULT 0 NOT NULL,
+  "videostatus" smallint DEFAULT 0 NOT NULL,
+  "audiostatus" smallint DEFAULT 0 NOT NULL,
   "dehashstatus" smallint DEFAULT 0 NOT NULL,
   "reqidstatus" smallint DEFAULT 0 NOT NULL,
   "nzb_guid" character varying(50),
-  "nzbstatus" BOOLEAN DEFAULT FALSE,
-  "iscategorized" BOOLEAN DEFAULT FALSE,
-  "isrenamed" BOOLEAN DEFAULT FALSE,
-  "ishashed" BOOLEAN DEFAULT FALSE,
-  "isrequestid" BOOLEAN DEFAULT FALSE
-  "proc_pp" BOOLEAN DEFAULT FALSE
-  "proc_sorter" BOOLEAN DEFAULT FALSE
-  "proc_par2" BOOLEAN DEFAULT FALSE
-  "proc_nfo" BOOLEAN DEFAULT FALSE
-  "proc_files" BOOLEAN DEFAULT FALSE
+  "nzbstatus" smallint DEFAULT 0 NOT NULL,
+  "iscategorized" smallint DEFAULT 0 NOT NULL,
+  "isrenamed" smallint DEFAULT 0 NOT NULL,
+  "ishashed" smallint DEFAULT 0 NOT NULL,
+  "isrequestid" smallint DEFAULT 0 NOT NULL,
+  "proc_pp" smallint DEFAULT 0 NOT NULL,
+  "proc_sorter" smallint DEFAULT 0 NOT NULL,
+  "proc_par2" smallint DEFAULT 0 NOT NULL,
+  "proc_nfo" smallint DEFAULT 0 NOT NULL,
+  "proc_files" smallint DEFAULT 0 NOT NULL
 )
 WITHOUT OIDS;
 
@@ -859,7 +859,8 @@ CREATE TABLE "users" (
   "sabpriority" smallint DEFAULT 0 NOT NULL,
   "userseed" character varying(50) NOT NULL,
   "cp_url" character varying(255),
-  "cp_api" character varying(255)
+  "cp_api" CHARACTER VARYING(255),
+  "style" CHARACTER VARYING(255)
 )
 WITHOUT OIDS;
 
@@ -879,25 +880,64 @@ CREATE TABLE "userseries" (
 )
 WITHOUT OIDS;
 
+ALTER TABLE "binaries" ADD CONSTRAINT "binaries_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "binaryblacklist" ADD CONSTRAINT "binaryblacklist_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "bookinfo" ADD CONSTRAINT "bookinfo_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "category" ADD CONSTRAINT "category_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "collections" ADD CONSTRAINT "collections_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "consoleinfo" ADD CONSTRAINT "consoleinfo_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "content" ADD CONSTRAINT "content_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "forumpost" ADD CONSTRAINT "forumpost_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "genres" ADD CONSTRAINT "genres_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "groups" ADD CONSTRAINT "groups_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "menu" ADD CONSTRAINT "menu_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "movieinfo" ADD CONSTRAINT "movieinfo_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "musicinfo" ADD CONSTRAINT "musicinfo_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "nzbs" ADD CONSTRAINT "id_pkey" PRIMARY KEY("id");
+ALTER TABLE "partrepair" ADD CONSTRAINT "partrepair_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "parts" ADD CONSTRAINT "parts_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "predb" ADD CONSTRAINT "predb_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "releaseaudio" ADD CONSTRAINT "releaseaudio_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "releasecomment" ADD CONSTRAINT "releasecomment_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "releaseextrafull" ADD CONSTRAINT "releaseextrafull_releaseid_pkey" PRIMARY KEY("releaseid");
+ALTER TABLE "releasefiles" ADD CONSTRAINT "releasefiles_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "releasenfo" ADD CONSTRAINT "releasenfo_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "releases" ADD CONSTRAINT "ix_releases_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "releasesubs" ADD CONSTRAINT "releasesubs_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "releasevideo" ADD CONSTRAINT "releasevideo_releaseid_pkey" PRIMARY KEY("releaseid");
+ALTER TABLE "site" ADD CONSTRAINT "site_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "tmux" ADD CONSTRAINT "tmux_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "tvrage" ADD CONSTRAINT "tvrage_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "tvrageepisodes" ADD CONSTRAINT "tvrageepisodes_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "upcoming" ADD CONSTRAINT "upcoming_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "usercart" ADD CONSTRAINT "usercart_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "userdownloads" ADD CONSTRAINT "userdownloads_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "userexcat" ADD CONSTRAINT "userexcat_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "userinvite" ADD CONSTRAINT "userinvite_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "usermovies" ADD CONSTRAINT "usermovies_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "userrequests" ADD CONSTRAINT "userrequests_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "userroles" ADD CONSTRAINT "userroles_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "users" ADD CONSTRAINT "users_id_pkey" PRIMARY KEY("id");
+ALTER TABLE "userseries" ADD CONSTRAINT "userseries_id_pkey" PRIMARY KEY("id");
 
 DROP INDEX IF EXISTS "animetitles_title" CASCADE;
-CREATE UNIQUE INDEX "animetitles_title" ON "animetitles" ("title");ALTER TABLE "binaries" ADD CONSTRAINT "binaries_id_pkey" PRIMARY KEY("id");
+CREATE UNIQUE INDEX "animetitles_title" ON "animetitles" ("title");
 DROP INDEX IF EXISTS "binaries_binaryhash" CASCADE;
 CREATE INDEX "binaries_binaryhash" ON "binaries" ("binaryhash");
 DROP INDEX IF EXISTS "binaries_partcheck" CASCADE;
 CREATE INDEX "binaries_partcheck" ON "binaries" ("partcheck");
 DROP INDEX IF EXISTS "binaries_collectionid" CASCADE;
-CREATE INDEX "binaries_collectionid" ON "binaries" ("collectionid");ALTER TABLE "binaryblacklist" ADD CONSTRAINT "binaryblacklist_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "binaries_collectionid" ON "binaries" ("collectionid");
 DROP INDEX IF EXISTS "binaryblacklist_groupname" CASCADE;
 CREATE INDEX "binaryblacklist_groupname" ON "binaryblacklist" ("groupname");
 DROP INDEX IF EXISTS "binaryblacklist_status" CASCADE;
-CREATE INDEX "binaryblacklist_status" ON "binaryblacklist" ("status");ALTER TABLE "bookinfo" ADD CONSTRAINT "bookinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "category" ADD CONSTRAINT "category_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "binaryblacklist_status" ON "binaryblacklist" ("status");
 DROP INDEX IF EXISTS "bookinfo_asin" CASCADE;
 CREATE UNIQUE INDEX "bookinfo_asin" ON "bookinfo" ("asin");
 DROP INDEX IF EXISTS "category_status" CASCADE;
 CREATE INDEX "category_status" ON "category" ("status");
 DROP INDEX IF EXISTS "category_parentid" CASCADE;
-CREATE INDEX "category_parentid" ON "category" ("parentid");ALTER TABLE "collections" ADD CONSTRAINT "collections_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "category_parentid" ON "category" ("parentid");
 DROP INDEX IF EXISTS "collections_fromname" CASCADE;
 CREATE INDEX "collections_fromname" ON "collections" ("fromname");
 DROP INDEX IF EXISTS "collections_date" CASCADE;
@@ -911,7 +951,7 @@ CREATE INDEX "collections_dateadded" ON "collections" ("dateadded");
 DROP INDEX IF EXISTS "collections_collectionhash" CASCADE;
 CREATE UNIQUE INDEX "collections_collectionhash" ON "collections" ("collectionhash");
 DROP INDEX IF EXISTS "collections_releaseid" CASCADE;
-CREATE INDEX "collections_releaseid" ON "collections" ("releaseid");ALTER TABLE "consoleinfo" ADD CONSTRAINT "consoleinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "content" ADD CONSTRAINT "content_id_pkey" PRIMARY KEY("id");ALTER TABLE "forumpost" ADD CONSTRAINT "forumpost_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "collections_releaseid" ON "collections" ("releaseid");
 DROP INDEX IF EXISTS "consoleinfo_asin" CASCADE;
 CREATE UNIQUE INDEX "consoleinfo_asin" ON "consoleinfo" ("asin");
 DROP INDEX IF EXISTS "forumpost_parentid" CASCADE;
@@ -921,17 +961,17 @@ CREATE INDEX "forumpost_userid" ON "forumpost" ("userid");
 DROP INDEX IF EXISTS "forumpost_createddate" CASCADE;
 CREATE INDEX "forumpost_createddate" ON "forumpost" ("createddate");
 DROP INDEX IF EXISTS "forumpost_updateddate" CASCADE;
-CREATE INDEX "forumpost_updateddate" ON "forumpost" ("updateddate");ALTER TABLE "genres" ADD CONSTRAINT "genres_id_pkey" PRIMARY KEY("id");ALTER TABLE "groups" ADD CONSTRAINT "groups_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "forumpost_updateddate" ON "forumpost" ("updateddate");
 DROP INDEX IF EXISTS "groups_name" CASCADE;
 CREATE UNIQUE INDEX "groups_name" ON "groups" ("name");
 DROP INDEX IF EXISTS "groups_active" CASCADE;
 CREATE INDEX "groups_active" ON "groups" ("active");
 DROP INDEX IF EXISTS "groups_id" CASCADE;
-CREATE INDEX "groups_id" ON "groups" ("id");ALTER TABLE "menu" ADD CONSTRAINT "menu_id_pkey" PRIMARY KEY("id");ALTER TABLE "movieinfo" ADD CONSTRAINT "movieinfo_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "groups_id" ON "groups" ("id");
 DROP INDEX IF EXISTS "movieinfo_imdbid" CASCADE;
 CREATE UNIQUE INDEX "movieinfo_imdbid" ON "movieinfo" ("imdbid");
 DROP INDEX IF EXISTS "movieinfo_title" CASCADE;
-CREATE INDEX "movieinfo_title" ON "movieinfo" ("title");ALTER TABLE "musicinfo" ADD CONSTRAINT "musicinfo_id_pkey" PRIMARY KEY("id");ALTER TABLE "nzbs" ADD CONSTRAINT "id_pkey" PRIMARY KEY("id");
+CREATE INDEX "movieinfo_title" ON "movieinfo" ("title");
 DROP INDEX IF EXISTS "musicinfo_asin" CASCADE;
 CREATE UNIQUE INDEX "musicinfo_asin" ON "musicinfo" ("asin");
 DROP INDEX IF EXISTS "nzbs_partnumber" CASCADE;
@@ -939,23 +979,21 @@ CREATE INDEX "nzbs_partnumber" ON "nzbs" ("partnumber");
 DROP INDEX IF EXISTS "nzbs_message" CASCADE;
 CREATE UNIQUE INDEX "nzbs_message" ON "nzbs" ("message_id");
 DROP INDEX IF EXISTS "nzbs_collectionhash" CASCADE;
-CREATE INDEX "nzbs_collectionhash" ON "nzbs" ("collectionhash");ALTER TABLE "partrepair" ADD CONSTRAINT "partrepair_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "nzbs_collectionhash" ON "nzbs" ("collectionhash");
 DROP INDEX IF EXISTS "partrepair_numberid_groupid" CASCADE;
 CREATE UNIQUE INDEX "partrepair_numberid_groupid" ON "partrepair" ("numberid", "groupid");
 DROP INDEX IF EXISTS "partrepair_attempts" CASCADE;
-CREATE INDEX "partrepair_attempts" ON "partrepair" ("attempts");ALTER TABLE "parts" ADD CONSTRAINT "parts_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "partrepair_attempts" ON "partrepair" ("attempts");
 DROP INDEX IF EXISTS "partrepair_groupid_attempts" CASCADE;
 CREATE INDEX "partrepair_groupid_attempts" ON "partrepair" ("groupid", "attempts");
 DROP INDEX IF EXISTS "partrepair_numberid_groupid_attempts" CASCADE;
 CREATE INDEX "partrepair_numberid_groupid_attempts" ON "partrepair" ("numberid", "groupid", "attempts");
-
 DROP INDEX IF EXISTS "parts_binaryid" CASCADE;
 CREATE INDEX "parts_binaryid" ON "parts" ("binaryid");
 DROP INDEX IF EXISTS "parts_number" CASCADE;
 CREATE INDEX "parts_number" ON "parts" ("number");
 DROP INDEX IF EXISTS "parts_messageid" CASCADE;
 CREATE INDEX "parts_messageid" ON "parts" ("messageid");
-ALTER TABLE "predb" ADD CONSTRAINT "predb_id_pkey" PRIMARY KEY("id");
 DROP INDEX IF EXISTS "predb_title" CASCADE;
 CREATE INDEX "predb_title" ON "predb" ("title");
 DROP INDEX IF EXISTS "predb_nfo" CASCADE;
@@ -969,89 +1007,85 @@ CREATE INDEX "predb_source" ON "predb" ("source");
 DROP INDEX IF EXISTS "predb_requestid" CASCADE;
 CREATE INDEX predb_requestid on predb(requestid, groupid);
 DROP INDEX IF EXISTS "predb_md5" CASCADE;
-CREATE UNIQUE INDEX "predb_md5" ON "predb" ("md5");ALTER TABLE "releaseaudio" ADD CONSTRAINT "releaseaudio_id_pkey" PRIMARY KEY("id");
+CREATE UNIQUE INDEX "predb_md5" ON "predb" ("md5");
 DROP INDEX IF EXISTS "releaseaudio_releaseid_audioid" CASCADE;
-CREATE UNIQUE INDEX "releaseaudio_releaseid_audioid" ON "releaseaudio" ("releaseid", "audioid");ALTER TABLE "releasecomment" ADD CONSTRAINT "releasecomment_id_pkey" PRIMARY KEY("id");
+CREATE UNIQUE INDEX "releaseaudio_releaseid_audioid" ON "releaseaudio" ("releaseid", "audioid");
 DROP INDEX IF EXISTS "releasecomment_releaseid" CASCADE;
 CREATE INDEX "releasecomment_releaseid" ON "releasecomment" ("releaseid");
 DROP INDEX IF EXISTS "releasecomment_userid" CASCADE;
-CREATE INDEX "releasecomment_userid" ON "releasecomment" ("userid");ALTER TABLE "releaseextrafull" ADD CONSTRAINT "releaseextrafull_releaseid_pkey" PRIMARY KEY("releaseid");ALTER TABLE "releasefiles" ADD CONSTRAINT "releasefiles_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "releasecomment_userid" ON "releasecomment" ("userid");
 DROP INDEX IF EXISTS "releasefiles_name_releaseid" CASCADE;
 CREATE UNIQUE INDEX "releasefiles_name_releaseid" ON "releasefiles" ("name", "releaseid");
 DROP INDEX IF EXISTS "releasefiles_releaseid" CASCADE;
 CREATE INDEX "releasefiles_releaseid" ON "releasefiles" ("releaseid");
 DROP INDEX IF EXISTS "releasefiles_name" CASCADE;
-CREATE INDEX "releasefiles_name" ON "releasefiles" ("name");ALTER TABLE "releasenfo" ADD CONSTRAINT "releasenfo_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "releasefiles_name" ON "releasefiles" ("name");
 DROP INDEX IF EXISTS "releasenfo_releaseid" CASCADE;
-CREATE UNIQUE INDEX "releasenfo_releaseid" ON "releasenfo" ("releaseid");ALTER TABLE "releases" ADD CONSTRAINT "releases_id_pkey" PRIMARY KEY("id");
-DROP INDEX IF EXISTS "releases_adddate" CASCADE;
-CREATE INDEX "releases_adddate" ON "releases" ("adddate");
-DROP INDEX IF EXISTS "releases_postdate" CASCADE;
-CREATE INDEX "releases_postdate" ON "releases" ("postdate");
-DROP INDEX IF EXISTS "releases_categoryid" CASCADE;
-CREATE INDEX "releases_categoryid" ON "releases" ("categoryid");
-DROP INDEX IF EXISTS "releases_rageid" CASCADE;
-CREATE INDEX "releases_rageid" ON "releases" ("rageid");
-DROP INDEX IF EXISTS "releases_imdbid" CASCADE;
-CREATE INDEX "releases_imdbid" ON "releases" ("imdbid");
-DROP INDEX IF EXISTS "releases_preid" CASCADE;
-CREATE INDEX "releases_preid" ON "releases" ("preid");
-DROP INDEX IF EXISTS "releases_guid" CASCADE;
-CREATE INDEX "releases_guid" ON "releases" ("guid");
-DROP INDEX IF EXISTS "releases_name" CASCADE;
-CREATE INDEX "releases_name" ON "releases" ("name");
-DROP INDEX IF EXISTS "releases_searchname" CASCADE;
-CREATE INDEX "releases_searchname" ON "releases" ("searchname");
-DROP INDEX IF EXISTS "releases_groupid" CASCADE;
-CREATE INDEX "releases_groupid" ON "releases" ("groupid");
-DROP INDEX IF EXISTS "releases_bitwise" CASCADE;
-CREATE INDEX "releases_bitwise" ON "releases" ("bitwise");
-DROP INDEX IF EXISTS "releases_passwordstatus" CASCADE;
-CREATE INDEX "releases_passwordstatus" ON "releases" ("passwordstatus");
-DROP INDEX IF EXISTS "releases_dehashstatus" CASCADE;
-CREATE INDEX "releases_dehashstatus" ON "releases" ("dehashstatus");
-DROP INDEX IF EXISTS "releases_reqidstatus" CASCADE;
-CREATE INDEX "releases_reqidstatus" ON "releases" ("reqidstatus");
-DROP INDEX IF EXISTS "releases_nfostatus" CASCADE;
-CREATE INDEX "releases_nfostatus" ON "releases" ("nfostatus");
-DROP INDEX IF EXISTS "releases_musicinfoid" CASCADE;
-CREATE INDEX "releases_musicinfoid" ON "releases" ("musicinfoid");
-DROP INDEX IF EXISTS "releases_consoleinfoid" CASCADE;
-CREATE INDEX "releases_consoleinfoid" ON "releases" ("consoleinfoid");
-DROP INDEX IF EXISTS "releases_bookinfoid" CASCADE;
-CREATE INDEX "releases_bookinfoid" ON "releases" ("bookinfoid");
-DROP INDEX IF EXISTS "releases_haspreview" CASCADE;
-CREATE INDEX "releases_haspreview" ON "releases" ("haspreview");ALTER TABLE "releasesubs" ADD CONSTRAINT "releasesubs_id_pkey" PRIMARY KEY("id");
+CREATE UNIQUE INDEX "releasenfo_releaseid" ON "releasenfo" ("releaseid");
+DROP INDEX IF EXISTS "ix_releases_adddate" CASCADE;
+CREATE INDEX "ix_releases_adddate" ON "releases" ("adddate");
+DROP INDEX IF EXISTS "ix_releases_rageid" CASCADE;
+CREATE INDEX "ix_releases_rageid" ON "releases" ("rageid");
+DROP INDEX IF EXISTS "ix_releases_imdbid" CASCADE;
+CREATE INDEX "ix_releases_imdbid" ON "releases" ("imdbid");
+DROP INDEX IF EXISTS "ix_releases_guid" CASCADE;
+CREATE INDEX "ix_releases_guid" ON "releases" ("guid");
+DROP INDEX IF EXISTS "ix_releases_name" CASCADE;
+CREATE INDEX "ix_releases_name" ON "releases" ("name");
+DROP INDEX IF EXISTS "ix_releases_groupid" CASCADE;
+CREATE INDEX "ix_releases_groupid" ON "releases" ("groupid");
+DROP INDEX IF EXISTS "ix_releases_dehashstatus" CASCADE;
+CREATE INDEX "ix_releases_dehashstatus" ON "releases" ("dehashstatus");
+DROP INDEX IF EXISTS "ix_releases_reqidstatus" CASCADE;
+CREATE INDEX "ix_releases_reqidstatus" ON "releases" ("reqidstatus");
+DROP INDEX IF EXISTS "ix_releases_nfostatus" CASCADE;
+CREATE INDEX "ix_releases_nfostatus" ON "releases" ("nfostatus");
+DROP INDEX IF EXISTS "ix_releases_musicinfoid" CASCADE;
+CREATE INDEX "ix_releases_musicinfoid" ON "releases" ("musicinfoid");
+DROP INDEX IF EXISTS "ix_releases_consoleinfoid" CASCADE;
+CREATE INDEX "ix_releases_consoleinfoid" ON "releases" ("consoleinfoid");
+DROP INDEX IF EXISTS "ix_releases_bookinfoid" CASCADE;
+CREATE INDEX "ix_releases_bookinfoid" ON "releases" ("bookinfoid");
+DROP INDEX IF EXISTS "ix_releases_haspreview_passwordstatus" CASCADE;
+CREATE INDEX "ix_releases_haspreview_passwordstatus" ON "releases" (haspreview, passwordstatus);
+DROP INDEX IF EXISTS "ix_releases_status" CASCADE;
+CREATE INDEX ix_releases_status ON releases (nzbstatus, iscategorized, isrenamed, nfostatus, ishashed, isrequestid, passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid, bookinfoid, haspreview, categoryid, imdbid, rageid);
+DROP INDEX IF EXISTS "ix_releases_postdate_searchname" CASCADE;
+CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
+DROP INDEX IF EXISTS "ix_releases_nzb_guid" CASCADE;
+CREATE INDEX ix_releases_nzb_guid ON releases (nzb_guid);
+DROP INDEX IF EXISTS "ix_releases_preid_searchname" CASCADE;
+CREATE INDEX ix_releases_preid_searchname ON releases (preid, searchname);
 DROP INDEX IF EXISTS "releasesubs_releaseid_subsid" CASCADE;
-CREATE UNIQUE INDEX "releasesubs_releaseid_subsid" ON "releasesubs" ("releaseid", "subsid");ALTER TABLE "releasevideo" ADD CONSTRAINT "releasevideo_releaseid_pkey" PRIMARY KEY("releaseid");ALTER TABLE "site" ADD CONSTRAINT "site_id_pkey" PRIMARY KEY("id");
+CREATE UNIQUE INDEX "releasesubs_releaseid_subsid" ON "releasesubs" ("releaseid", "subsid");
 DROP INDEX IF EXISTS "site_setting" CASCADE;
-CREATE UNIQUE INDEX "site_setting" ON "site" ("setting");ALTER TABLE "tmux" ADD CONSTRAINT "tmux_id_pkey" PRIMARY KEY("id");
+CREATE UNIQUE INDEX "site_setting" ON "site" ("setting");
 DROP INDEX IF EXISTS "tmux_setting" CASCADE;
-CREATE UNIQUE INDEX "tmux_setting" ON "tmux" ("setting");ALTER TABLE "tvrage" ADD CONSTRAINT "tvrage_id_pkey" PRIMARY KEY("id");
+CREATE UNIQUE INDEX "tmux_setting" ON "tmux" ("setting");
 DROP INDEX IF EXISTS "tvrage_rageid_releasetitle" CASCADE;
 CREATE UNIQUE INDEX "tvrage_rageid_releasetitle" ON "tvrage" ("rageid", "releasetitle");
 DROP INDEX IF EXISTS "tvrage_rageid" CASCADE;
 CREATE INDEX "tvrage_rageid" ON "tvrage" ("rageid");
 DROP INDEX IF EXISTS "tvrage_releasetitle" CASCADE;
-CREATE INDEX "tvrage_releasetitle" ON "tvrage" ("releasetitle");ALTER TABLE "tvrageepisodes" ADD CONSTRAINT "tvrageepisodes_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "tvrage_releasetitle" ON "tvrage" ("releasetitle");
 DROP INDEX IF EXISTS "tvrageepisodes_rageid_fullep" CASCADE;
-CREATE UNIQUE INDEX "tvrageepisodes_rageid_fullep" ON "tvrageepisodes" ("rageid", "fullep");ALTER TABLE "upcoming" ADD CONSTRAINT "upcoming_id_pkey" PRIMARY KEY("id");
+CREATE UNIQUE INDEX "tvrageepisodes_rageid_fullep" ON "tvrageepisodes" ("rageid", "fullep");
 DROP INDEX IF EXISTS "upcoming_source_typeid" CASCADE;
-CREATE UNIQUE INDEX "upcoming_source_typeid" ON "upcoming" ("source", "typeid");ALTER TABLE "usercart" ADD CONSTRAINT "usercart_id_pkey" PRIMARY KEY("id");
+CREATE UNIQUE INDEX "upcoming_source_typeid" ON "upcoming" ("source", "typeid");
 DROP INDEX IF EXISTS "usercart_userid_releaseid" CASCADE;
-CREATE UNIQUE INDEX "usercart_userid_releaseid" ON "usercart" ("userid", "releaseid");ALTER TABLE "userdownloads" ADD CONSTRAINT "userdownloads_id_pkey" PRIMARY KEY("id");
+CREATE UNIQUE INDEX "usercart_userid_releaseid" ON "usercart" ("userid", "releaseid");
 DROP INDEX IF EXISTS "userdownloads_userid" CASCADE;
 CREATE INDEX "userdownloads_userid" ON "userdownloads" ("userid");
 DROP INDEX IF EXISTS "userdownloads_timestamp" CASCADE;
-CREATE INDEX "userdownloads_timestamp" ON "userdownloads" ("timestamp");ALTER TABLE "userexcat" ADD CONSTRAINT "userexcat_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "userdownloads_timestamp" ON "userdownloads" ("timestamp");
 DROP INDEX IF EXISTS "userexcat_userid_categoryid" CASCADE;
-CREATE UNIQUE INDEX "userexcat_userid_categoryid" ON "userexcat" ("userid", "categoryid");ALTER TABLE "userinvite" ADD CONSTRAINT "userinvite_id_pkey" PRIMARY KEY("id");ALTER TABLE "usermovies" ADD CONSTRAINT "usermovies_id_pkey" PRIMARY KEY("id");
+CREATE UNIQUE INDEX "userexcat_userid_categoryid" ON "userexcat" ("userid", "categoryid");
 DROP INDEX IF EXISTS "usermovies_userid_imdbid" CASCADE;
-CREATE INDEX "usermovies_userid_imdbid" ON "usermovies" ("userid", "imdbid");ALTER TABLE "userrequests" ADD CONSTRAINT "userrequests_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "usermovies_userid_imdbid" ON "usermovies" ("userid", "imdbid");
 DROP INDEX IF EXISTS "userrequests_userid" CASCADE;
 CREATE INDEX "userrequests_userid" ON "userrequests" ("userid");
 DROP INDEX IF EXISTS "userrequests_timestamp" CASCADE;
-CREATE INDEX "userrequests_timestamp" ON "userrequests" ("timestamp");ALTER TABLE "userroles" ADD CONSTRAINT "userroles_id_pkey" PRIMARY KEY("id");ALTER TABLE "users" ADD CONSTRAINT "users_id_pkey" PRIMARY KEY("id");ALTER TABLE "userseries" ADD CONSTRAINT "userseries_id_pkey" PRIMARY KEY("id");
+CREATE INDEX "userrequests_timestamp" ON "userrequests" ("timestamp");
 DROP INDEX IF EXISTS "userseries_userid_rageid" CASCADE;
 CREATE INDEX "userseries_userid_rageid" ON "userseries" ("userid", "rageid");
 DROP INDEX IF EXISTS "ix_allgroups_id" CASCADE;
@@ -1064,20 +1098,24 @@ DROP INDEX IF EXISTS "ix_shortgroups_id" CASCADE;
 CREATE INDEX ix_shortgroups_id ON shortgroups(id);
 DROP INDEX IF EXISTS "ix_shortgroups_name" CASCADE;
 CREATE INDEX ix_shortgroups_name ON shortgroups(name);
-DROP INDEX IF EXISTS "ix_releases_status" CASCADE;
-CREATE INDEX ix_releases_status ON releases (id, nfostatus, bitwise, passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid, bookinfoid, haspreview, categoryid);
-DROP INDEX IF EXISTS "ix_releases_postdate" CASCADE;
-CREATE INDEX ix_releases_postdate ON releases (name, searchname, id, postdate);
-DROP INDEX IF EXISTS "ix_releases_postdate_searchname" CASCADE;
-CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
-DROP INDEX IF EXISTS "ix_releases_postdate_name" CASCADE;
-CREATE INDEX ix_releases_postdate_name ON releases (postdate, name);
-DROP INDEX IF EXISTS "ix_releases_nzb_guid" CASCADE;
-CREATE INDEX ix_releases_nzb_guid ON releases (nzb_guid);
-DROP INDEX IF EXISTS "ix_releases_preid_searchname" CASCADE;
-CREATE INDEX ix_releases_preid_searchname ON releases (preid, searchname);
 
-CREATE FUNCTION hash_check() RETURNS trigger AS $hash_check$ BEGIN IF NEW.searchname ~ '[a-fA-F0-9]{32}' OR NEW.name ~ '[a-fA-F0-9]{32}' THEN SET NEW.bitwise = "((NEW.bitwise & ~512)|512)"; END IF; END; $hash_check$ LANGUAGE plpgsql;
-CREATE FUNCTION request_check() RETURNS trigger AS $request_check$ BEGIN IF NEW.searchname ~'^\\[[[:digit:]]+\\]' OR NEW.name ~'^\\[[[:digit:]]+\\]' THEN SET NEW.bitwise = "((NEW.bitwise & ~1024)|1024)"; END IF; END; $request_check$ LANGUAGE plpgsql;
-CREATE TRIGGER request_check BEFORE INSERT OR UPDATE ON releases FOR EACH ROW EXECUTE PROCEDURE request_check();
-CREATE TRIGGER hash_check BEFORE INSERT OR UPDATE ON releases FOR EACH ROW EXECUTE PROCEDURE hash_check();
+CREATE OR REPLACE FUNCTION check_hashreqid() RETURNS trigger AS $hash_reqid$
+BEGIN
+	IF NEW.searchname ~ '[a-fA-F0-9]{32}' OR NEW.name ~ '[a-fA-F0-9]{32}'
+	THEN SET NEW.ishashed = 1;
+        ELSE SET NEW.ishashed = 0;
+	END IF;
+
+        IF NEW.searchname ~'^\\[[[:digit:]]+\\]' OR NEW.name ~'^\\[[[:digit:]]+\\]'
+        THEN SET NEW.isrequestid = 1;
+        ELSE SET NEW.isrequestid = 0;
+        END IF;
+
+	RETURN NEW;
+
+END;
+$hash_reqid$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW EXECUTE PROCEDURE check_hashreqid();
+CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW EXECUTE PROCEDURE check_hashreqid();

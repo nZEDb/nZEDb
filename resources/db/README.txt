@@ -1,15 +1,13 @@
 When making patches:
 
-Do not use `
+1. Do NOT use the tilde character : `
 
-Update patch in tmux start.php and update sqlpatch # in schema.pgsql and schema.mysql
+2. Edit the schema files, but do not copy paste your patch files into them,
+   if you had an ALTER in your patch for example, change the INSERT in the data file
+   and the CREATE in the ddl file (if applicable).
 
-monitor.php is updated by the repository masters, not via pull requests.
+3. Make sure the 'sqlpatch' setting in the site is changed in BOTH data files and you must add an ALTER
+   in your patch file to update the 'sqlpatch' number.
 
-Update both schema.pgsql and schema.mysql
-
-Update sqlpatch in schema.mysql, schema.pgsql, additional patch SQL in sub folders with updated sqlpatch
-
-Do not copy paste patch contents into the schema, add the info where appropriate.
-
-Use correct syntax for postgresql or mysql (some queries in postgresql are not compatible with mysql, vice versa)
+4. MySQL and PostgreSQL have different syntax, DO NOT COPY MySQL patches into the PostgreSQL folder,
+   look up the syntax first.

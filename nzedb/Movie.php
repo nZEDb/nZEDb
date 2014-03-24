@@ -16,6 +16,22 @@ class Movie
 	const SRC_DVD = 5;
 
 	/**
+	 * Current title being passed through various sites/api's.
+	 * @var string
+	 */
+	protected $currentTitle = '';
+
+	/**
+	 * @var Debugging
+	 */
+	protected $debugging;
+
+	/**
+	 * @var bool
+	 */
+	protected $debug;
+
+	/**
 	 * @param bool $echooutput
 	 */
 	function __construct($echooutput = false)
@@ -34,6 +50,10 @@ class Movie
 		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
 		$this->service = '';
 		$this->c = new ColorCLI();
+		if (nZEDb_DEBUG || nZEDb_LOGGING) {
+			$this->debug = true;
+			$this->debugging = new Debugging('Movie');
+		}
 	}
 
 	/**
@@ -114,9 +134,9 @@ class Movie
 		}
 
 		if ($maxage > 0) {
-			if ($this->db->dbSystem() == 'mysql') {
+			if ($this->db->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($this->db->dbSystem() == 'pgsql') {
+			} else if ($this->db->dbSystem() === 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		} else {
@@ -173,7 +193,7 @@ class Movie
 
 		$maxage = '';
 		if ($maxage > 0) {
-			if ($this->db->dbSystem() == 'mysql') {
+			if ($this->db->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
@@ -186,7 +206,7 @@ class Movie
 		}
 
 		$order = $this->getMovieOrder($orderby);
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			$sql = sprintf("SELECT "
 				. "GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
 				. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
@@ -253,7 +273,7 @@ class Movie
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
 		$like = ' ILIKE(';
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			$like = ' LIKE(';
 		}
 		foreach ($browsebyArr as $bb) {
@@ -312,15 +332,6 @@ class Movie
 		//check imdb for movie info
 		$imdb = $this->fetchImdbProperties($imdbId);
 		if (!$imdb && !$tmdb) {
-			if ($this->echooutput && $this->service != '') {
-				$this->c->doEcho(
-					$this->c->info(
-						"Unable to get movie information for IMDB ID: " .
-						$imdbId .
-						" on tmdb or imdb.com"
-					)
-				);
-			}
 			return false;
 		}
 
@@ -426,13 +437,13 @@ class Movie
 		$mov['language'] = html_entity_decode($mov['language'], ENT_QUOTES, 'UTF-8');
 
 		$movtitle = str_replace(array('/', '\\'), '', $mov['title']);
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			$movieId = $this->db->queryInsert(sprintf("INSERT INTO movieinfo (imdbid, tmdbid, title, rating, tagline, plot, "
 					. "year, genre, type, director, actors, language, cover, backdrop, createddate, updateddate) VALUES "
 					. "(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW()) ON DUPLICATE KEY UPDATE imdbid = %d, "
 					. "tmdbid = %s, title = %s, rating = %s, tagline = %s, plot = %s, year = %s, genre = %s, type = %s, director = %s, "
 					. "actors = %s, language = %s, cover = %d, backdrop = %d, updateddate = NOW()", $mov['imdb_id'], $mov['tmdb_id'], $this->db->escapeString($movtitle), $this->db->escapeString($mov['rating']), $this->db->escapeString($mov['tagline']), $this->db->escapeString($mov['plot']), $this->db->escapeString($mov['year']), $this->db->escapeString(substr($mov['genre'], 0, 64)), $this->db->escapeString($mov['type']), $this->db->escapeString($mov['director']), $this->db->escapeString($mov['actors']), $this->db->escapeString(substr($mov['language'], 0, 64)), $mov['cover'], $mov['backdrop'], $mov['imdb_id'], $mov['tmdb_id'], $this->db->escapeString($movtitle), $this->db->escapeString($mov['rating']), $this->db->escapeString($mov['tagline']), $this->db->escapeString($mov['plot']), $this->db->escapeString($mov['year']), $this->db->escapeString(substr($mov['genre'], 0, 64)), $this->db->escapeString($mov['type']), $this->db->escapeString($mov['director']), $this->db->escapeString($mov['actors']), $this->db->escapeString(substr($mov['language'], 0, 64)), $mov['cover'], $mov['backdrop']));
-		} else if ($this->db->dbSystem() == 'pgsql') {
+		} else if ($this->db->dbSystem() === 'pgsql') {
 			$ckid = $this->db->queryOneRow(sprintf('SELECT id FROM movieinfo WHERE imdbid = %d', $mov['imdb_id']));
 			if (!isset($ckid['id'])) {
 				$movieId = $this->db->queryInsert(sprintf("INSERT INTO movieinfo (imdbid, tmdbid, title, rating, tagline, "
@@ -539,6 +550,27 @@ class Movie
 		}
 		$ret = array();
 		$ret['title'] = $tmdbLookup['title'];
+
+		if ($this->currentTitle !== '') {
+			// Check the similarity.
+			similar_text($this->currentTitle, $ret['title'], $percent);
+			if ($percent < 40) {
+				if ($this->debug) {
+					$this->debugging->start(
+						'fetchTmdbProperties',
+						'Found (' .
+						$ret['title'] .
+						') from TMDB, but it\'s only ' .
+						$percent .
+						'% similar to (' .
+						$this->currentTitle . ')',
+						5
+					);
+				}
+				return false;
+			}
+		}
+
 		$ret['tmdb_id'] = $tmdbLookup['id'];
 		$ImdbID = str_replace('tt', '', $tmdbLookup['imdb_id']);
 		$ret['imdb_id'] = $ImdbID;
@@ -634,6 +666,26 @@ class Movie
 				}
 			}
 
+			if ($this->currentTitle !== '' && isset($ret['title'])) {
+				// Check the similarity.
+				similar_text($this->currentTitle, $ret['title'], $percent);
+				if ($percent < 40) {
+					if ($this->debug) {
+						$this->debugging->start(
+							'fetchImdbProperties',
+							'Found (' .
+							$ret['title'] .
+							') from IMDB, but it\'s only ' .
+							$percent .
+							'% similar to (' .
+							$this->currentTitle . ')',
+							5
+						);
+					}
+					return false;
+				}
+			}
+
 			//actors
 			if (preg_match('/<table class="cast_list">(.+)<\/table>/s', $buffer, $hit)) {
 				if (preg_match_all('/<a.*?href="\/name\/(nm\d{1,8})\/.+"name">(.+)<\/span>/i', $hit[0], $results, PREG_PATTERN_ORDER)) {
@@ -659,11 +711,9 @@ class Movie
 	{
 		$imdbId = $this->parseImdb($buffer);
 		if ($imdbId !== false) {
-			if ($service == 'nfo') {
-				$this->service = 'nfo';
-			}
+			$this->service = $service;
 			if ($this->echooutput && $this->service != '') {
-				$this->c->doEcho($this->c->headerOver($service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId), true);
+				$this->c->doEcho($this->c->headerOver($service . ' found IMDBid: ') . $this->c->primary('tt' . $imdbId));
 			}
 
 			$this->db->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', $this->db->escapeString($imdbId), $id));
@@ -672,7 +722,9 @@ class Movie
 			if ($processImdb == 1) {
 				$movCheck = $this->getMovieInfo($imdbId);
 				if ($movCheck === false || (isset($movCheck['updateddate']) && (time() - strtotime($movCheck['updateddate'])) > 2592000)) {
-					$this->updateMovieInfo($imdbId);
+					if ($this->updateMovieInfo($imdbId) === false) {
+						$this->db->queryExec(sprintf('UPDATE releases SET imdbid = %s WHERE id = %d', 0000000, $id));
+					}
 				}
 			}
 		}
@@ -688,8 +740,7 @@ class Movie
 
 		if ($releaseToWork == '') {
 			$res = $this->db->query(sprintf("SELECT r.searchname AS name, r.id FROM releases r "
-					. "INNER JOIN category c ON r.categoryid = c.id "
-					. "WHERE r.imdbid IS NULL AND r.nzbstatus = 1 AND c.parentid = %d LIMIT %d", Category::CAT_PARENT_MOVIE, $this->movieqty));
+					. "WHERE r.imdbid IS NULL AND r.nzbstatus = 1 AND r.categoryid BETWEEN 2000 AND 2999 LIMIT %d", $this->movieqty));
 			$moviecount = count($res);
 		} else {
 			$pieces = explode("           =+=            ", $releaseToWork);
@@ -704,7 +755,7 @@ class Movie
 
 			$like = 'ILIKE';
 			$inyear = 'year::int';
-			if ($this->db->dbSystem() == 'mysql') {
+			if ($this->db->dbSystem() === 'mysql') {
 				$like = 'LIKE';
 				$inyear = 'year';
 			}
@@ -713,7 +764,7 @@ class Movie
 				$parsed = $this->parseMovieSearchName($arr['name']);
 				if ($parsed !== false) {
 					$year = false;
-					$moviename = $parsed['title'];
+					$this->currentTitle = $moviename = $parsed['title'];
 					$movienameonly = $moviename;
 					if ($parsed['year'] != '') {
 						$year = true;
@@ -784,11 +835,15 @@ class Movie
 					} else {
 						$url = 'http://www.omdbapi.com/?t=' . str_replace(' ', '%20', $movienameonly) . '&r=json';
 					}
-					$omdbid = json_decode(file_get_contents($url));
-					if (isset($omdbid->imdbID)) {
-						$imdbId = $this->domovieupdate($omdbid->imdbID, 'OMDbAPI', $arr['id']);
-						if ($imdbId !== false) {
-							continue;
+					$omdbData = getUrl($url);
+					if ($omdbData !== false) {
+						$omdbid = json_decode($omdbData);
+
+						if (isset($omdbid->imdbID)) {
+							$imdbId = $this->domovieupdate($omdbid->imdbID, 'OMDbAPI', $arr['id']);
+							if ($imdbId !== false) {
+								continue;
+							}
 						}
 					}
 
@@ -999,25 +1054,45 @@ class Movie
 
 	public function parseMovieSearchName($releasename)
 	{
-		$matches = '';
-		if (preg_match('/\b[Ss]\d+[-._Ee]|\bE\d+\b/', $releasename)) {
-			return false;
-		}
+		// Check if it's foreign ?
 		$cat = new Category();
 		if (!$cat->isMovieForeign($releasename)) {
-			preg_match('/(?P<name>[\w. -]+)[-._( ](?P<year>(19|20)\d\d)/i', $releasename, $matches);
-			if (!isset($matches['year'])) {
-				preg_match('/^(?P<name>[\w. -]+[-._ ]((bd|br|dvd)rip|bluray|hdtv|divx|xvid|proper|repack|real\.proper|sub\.?(fix|pack)|ac3d|unrated|1080[ip]|720p))/i', $releasename, $matches);
+			$name = $year = '';
+			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';
+
+			/* Initial scan of getting a year/name.
+			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
+			 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
+			 * Then we look up the year, (19|20)\d\d, so $matches[1] would be Coraline $matches[2] 2009
+			 */
+			if (preg_match('/(?P<name>[\w. -]+)[^\w](?P<year>(19|20)\d\d)/i', $releasename, $matches)) {
+				$name = $matches['name'];
+				$year = $matches['year'];
+
+			/* If we didn't find a year, try to get a name anyways.
+			 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
+			 */
+			} else if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releasename, $matches)) {
+				$name = $matches['name'];
 			}
 
-			if (isset($matches['name'])) {
-				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $matches['name']);
-				$year = (isset($matches['year'])) ? $matches['year'] : '';
+			// Check if we got something.
+			if ($name !== '') {
+
+				// If we still have any of the words in $followingList, remove them.
+				$name = preg_replace('/' . $followingList . '/i', ' ', $name);
+				// Remove periods, underscored, anything between parenthesis.
+				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
+				// Finally remove multiple spaces and trim leading spaces.
+				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
+
+				// Check if the name is long enough and not just numbers.
 				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 					if ($this->debug && $this->echooutput) {
-						$this->c->doEcho("DB name: {$releasename}");
+						$this->c->doEcho("DB name: {$releasename}", true);
 					}
-					return array('title' => trim($name), 'year' => $year);
+
+					return array('title' => $name, 'year' => $year);
 				}
 			}
 		}
@@ -1169,7 +1244,7 @@ class Movie
 
 	public function updateInsUpcoming($source, $type, $info)
 	{
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			return $this->db->Exec(sprintf("INSERT INTO upcoming (source, typeid, info, updateddate) VALUES (%s, %d, %s, NOW()) ON DUPLICATE KEY UPDATE info = %s", $this->db->escapeString($source), $type, $this->db->escapeString($info), $this->db->escapeString($info)));
 		} else {
 			$ckid = $this->db->queryOneRow(sprintf('SELECT id FROM upcoming WHERE source = %s AND typeid = %d AND info = %s', $this->db->escapeString($source), $type, $this->db->escapeString($info)));

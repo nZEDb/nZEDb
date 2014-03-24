@@ -38,7 +38,7 @@ if ($pieces[0] != 'Stage7b') {
 	$binaries->updateGroup($group, $nntp);
 
 	// Backfill per group
-	$backfill->backfillPostAllGroups($nntp, $groupname, 20000, 'normal');
+	$backfill->backfillAllGroups($nntp, $groupname, 20000, 'normal');
 
 	// Update Releases per group
 	try {
@@ -69,7 +69,7 @@ if ($pieces[0] != 'Stage7b') {
 //		printf($mask, str_replace('alt.binaries', 'a.b', $groupname), $first);
 
 	$postprocess = new PostProcess(true);
-	$postprocess->processAdditional(null, null, null, $groupid, $nntp);
+	$postprocess->processAdditional($nntp, '', $groupid);
 	$nfopostprocess = new Nfo(true);
 	$nfopostprocess->processNfoFiles(null, null, null, $groupid, $nntp);
 	if ($site->nntpproxy != "1") {

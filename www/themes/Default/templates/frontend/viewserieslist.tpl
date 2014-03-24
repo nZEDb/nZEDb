@@ -1,9 +1,12 @@
+{if $site->adbrowse}
+	{$site->adbrowse}
+{/if}
 <h1>{$page->title}</h1>
 
 <p><b>Jump to</b>:
-&nbsp;&nbsp;[ {if $seriesletter == '0-9'}<b><u>{/if}<a href="{$smarty.const.WWW_TOP}/series/0-9">0-9</a>{if $seriesletter == '0-9'}</u></b>{/if} 
+&nbsp;&nbsp;[ {if $seriesletter == '0-9'}<b><u>{/if}<a href="{$smarty.const.WWW_TOP}/series/0-9">0-9</a>{if $seriesletter == '0-9'}</u></b>{/if}
 {foreach $seriesrange as $range}
-{if $range == $seriesletter}<b><u>{/if}<a href="{$smarty.const.WWW_TOP}/series/{$range}">{$range}</a>{if $range == $seriesletter}</u></b>{/if} 
+{if $range == $seriesletter}<b><u>{/if}<a href="{$smarty.const.WWW_TOP}/series/{$range}">{$range}</a>{if $range == $seriesletter}</u></b>{/if}
 {/foreach}]
 &nbsp;&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows" title="List my watched shows">My Shows</a> ]
 &nbsp;&nbsp;[ <a href="{$smarty.const.WWW_TOP}/myshows/browse" title="browse your shows">Browse My Shows</a> ]
@@ -17,9 +20,6 @@
 		<input type="submit" value="Go" />
 	</form>
 </div>
-
-{$site->adbrowse}	
-
 {if $serieslist|@count > 0}
 
 <table style="width:100%;" class="data highlight icons" id="browsetable">

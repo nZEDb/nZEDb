@@ -139,13 +139,13 @@ class PostProcess
 		}
 
 		$this->processPredb($nntp);
-		$this->processAdditional($releaseToWork = '', $id = '', $gui = false, $groupID = '', $nntp);
-		$this->processNfos($releaseToWork = '', $nntp);
-		$this->processMovies($releaseToWork = '');
+		$this->processAdditional($nntp);
+		$this->processNfos('', $nntp);
+		$this->processMovies();
 		$this->processMusic();
 		$this->processGames();
 		$this->processAnime();
-		$this->processTv($releaseToWork = '');
+		$this->processTv();
 		$this->processBooks();
 	}
 
@@ -277,11 +277,11 @@ class PostProcess
 	 *
 	 * @note Called from NZBContents.php
 	 *
-	 * @param $messageID
-	 * @param $relID
-	 * @param $groupID
-	 * @param $nntp
-	 * @param $show
+	 * @param string $messageID MessageID from NZB file.
+	 * @param int    $relID     ID of the release.
+	 * @param int    $groupID   Group ID of the release.
+	 * @param NNTP   $nntp      Class NNTP
+	 * @param int    $show      Only show result or apply iy.
 	 *
 	 * @return bool
 	 */
@@ -295,75 +295,82 @@ class PostProcess
 			return false;
 		}
 
-		if ($this->db->dbSystem() === 'mysql') {
-			$t = 'UNIX_TIMESTAMP(postdate)';
-		} else {
-			$t = 'extract(epoch FROM postdate)';
-		}
+		$query = $this->db->queryOneRow(
+			'SELECT id, groupid, categoryid, searchname, ' .
+			($this->db->dbSystem() === 'mysql' ? 'UNIX_TIMESTAMP(postdate)' : 'extract(epoch FROM postdate)') .
+			' as postdate, id as releaseid  FROM releases WHERE isrenamed = 0 AND id = ' .
+			$relID
+		);
 
-		$query = $this->db->queryOneRow('SELECT id, groupid, categoryid, searchname, ' . $t .
-			' as postdate, id as releaseid  FROM releases WHERE isrenamed = 0 AND id = ' . $relID);
 		if ($query['categoryid'] != Category::CAT_MISC) {
 			return false;
 		}
 
+		// Get the PAR2 file.
 		$par2 = $nntp->getMessages($this->groups->getByNameByID($groupID), $messageID, $this->alternateNNTP);
 		if ($nntp->isError($par2)) {
 			return false;
 		}
 
+		// Put the PAR2 into Par2Info, check if there's an error.
 		$par2info = new Par2Info();
 		$par2info->setData($par2);
 		if ($par2info->error) {
 			return false;
 		}
 
+		// Get the file list from Par2Info.
 		$files = $par2info->getFileList();
 		if ($files !== false && count($files) > 0) {
 
 			$relFiles = 0;
 			$foundName = false;
-			foreach ($files as $fileID => $file) {
+
+			// Loop through the files.
+			foreach ($files as $file) {
+
+				// If we found a name and have more than 10 files in the DB break out.
+				if ($foundName === true && $relFiles > 10) {
+					break;
+				}
 
 				if (!array_key_exists('name', $file)) {
-					return false;
+					continue;
 				}
 
 				// Add to release files.
-				if ($this->addpar2 &&
-					$relFiles < 11 &&
-					$this->db->queryOneRow(sprintf(
-						'SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
-						$relID, $this->db->escapeString($file['name']))) === false) {
+				if ($this->addpar2 && $relFiles < 11 &&
+					$this->db->queryOneRow(
+						sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
+							$relID, $this->db->escapeString($file['name']))) === false) {
 
+					// Try to add the files to the DB.
 					if ($this->releaseFiles->add($relID, $file['name'], $file['size'], $query['postdate'], 0)) {
 						$relFiles++;
 					}
 				}
 
-				$query['textstring'] = $file['name'];
-				if ($this->nameFixer->checkName($query, 1, 'PAR2, ', 1, $show) === true) {
-					$foundName = true;
-					break;
+				// Try to get a new name.
+				if ($foundName === false) {
+					$query['textstring'] = $file['name'];
+					if ($this->nameFixer->checkName($query, 1, 'PAR2, ', 1, $show) === true) {
+						$foundName = true;
+					}
 				}
 			}
+
+			// If we found some files.
 			if ($relFiles > 0) {
 				$this->debugging->start('parsePAR2', 'Added ' . $relFiles . ' releasefiles from PAR2 for ' . $query['searchname'], 5);
-				$cnt = $this->db->queryOneRow('SELECT COUNT(releaseid) AS count FROM releasefiles WHERE releaseid = ' . $relID);
-				$count = $relFiles;
-				if ($cnt !== false && $cnt['count'] > 0) {
-					$count = $relFiles + $cnt['count'];
-				}
-				$this->db->queryExec(sprintf('UPDATE releases SET rarinnerfilecount = %d where id = %d', $count, $relID));
+
+				// Update the file count with the new file count + old file count.
+				$this->db->queryExec(sprintf('UPDATE releases SET rarinnerfilecount = rarinnerfilecount + %d WHERE id = %d', $relFiles, $relID));
 			}
 			if ($foundName === true) {
 				return true;
-			} else {
-				return false;
 			}
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -397,12 +404,6 @@ class PostProcess
 	 * @var int
 	 */
 	private $passChkAttempts;
-
-	/**
-	 * Should we process audio samples?
-	 * @var bool
-	 */
-	private $processAudioSample;
 
 	/**
 	 * How many articles to download when getting a JPG.
@@ -485,6 +486,11 @@ class PostProcess
 	/**
 	 * @var bool
 	 */
+	protected $blnTookAudioSample;
+
+	/**
+	 * @var bool
+	 */
 	private $blnTookMediainfo;
 
 	/**
@@ -550,6 +556,11 @@ class PostProcess
 	/**
 	 * @var bool
 	 */
+	protected $processAudioSample;
+
+	/**
+	 * @var bool
+	 */
 	protected $processJPGSample;
 
 	/**
@@ -578,11 +589,11 @@ class PostProcess
 		$this->ffMPEGDuration = (!empty($this->site->ffmpeg_duration)) ? (int)$this->site->ffmpeg_duration : 5;
 		$this->partsQTY = (!empty($this->site->maxpartsprocessed)) ? (int)$this->site->maxpartsprocessed : 3;
 		$this->passChkAttempts = (!empty($this->site->passchkattempts)) ? (int)$this->site->passchkattempts : 1;
-		$this->processAudioSample = ($this->site->processaudiosample === '0') ? false : true;
 		$this->segmentsToDownload = (!empty($this->site->segmentstodownload)) ? (int)$this->site->segmentstodownload : 2;
 		$this->processSample = empty($this->site->ffmpegpath) ? false : true;
 		$this->processVideo = ($this->site->processvideos === '0') ? false : true;
 		$this->processMediaInfo = $this->processAudioInfo = empty($this->site->mediainfopath) ? false : true;
+		$this->processAudioSample = ($this->site->processaudiosample == '0' ) ? false : true;
 		$this->processJPGSample = ($this->site->processjpg === '0') ? false : true;
 		$this->processPasswords = ((($this->site->checkpasswordedrar === '0') ? false : true) && (empty($this->site->unrarpath) ? false : true));
 		//\\
@@ -628,7 +639,7 @@ class PostProcess
 			exit($this->c->error("Not connected to usenet(PostProcess->processAdditionalThreaded).\n"));
 		}
 
-		$this->processAdditional($releaseToWork, $id = '', $gui = false, $groupID = '', $nntp);
+		$this->processAdditional($nntp, $releaseToWork);
 	}
 
 	/**
@@ -636,113 +647,86 @@ class PostProcess
 	 *
 	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
 	 *
-	 * @param string $releaseToWork
-	 * @param string $id
-	 * @param bool $gui
-	 * @param string $groupID
-	 * @param $nntp
+	 * @param NNTP $nntp Class NNTP
+	 * @param string $releaseToWork String containing SQL results. Optional.
+	 * @param string $groupID Group ID. Optional
 	 *
 	 * @return void
 	 */
-	public function processAdditional($releaseToWork = '', $id = '', $gui = false, $groupID = '', $nntp)
+	public function processAdditional($nntp, $releaseToWork = '', $groupID = '')
 	{
 
 		if (!isset($nntp)) {
 			exit($this->c->error("Not connected to usenet(PostProcess->processAdditional).\n"));
 		}
 
-		$like = 'ILIKE';
-		if ($this->db->dbSystem() === 'mysql') {
-			$like = 'LIKE';
-		}
-
-		// Not sure if ugo ever implemented this in the ui, other that his own.
-		if ($gui) {
-			$ok = false;
-			$ticket = null;
-			while (!$ok) {
-				usleep(mt_rand(10, 300));
-				$this->db->setAutoCommit(false);
-				$ticket = $this->db->queryOneRow('SELECT value  FROM site WHERE setting ' . $like . " 'nextppticket'");
-				$ticket = $ticket['value'];
-				$upCnt = $this->db->queryExec(sprintf(
-					"UPDATE site SET value = %d WHERE setting %s 'nextppticket' AND value = %d", $ticket + 1, $like, $ticket));
-
-				if (count($upCnt) === 1) {
-					$ok = true;
-					$this->db->Commit();
-				} else
-					$this->db->Rollback();
-			}
-			$this->db->setAutoCommit(true);
-			$sleep = 1;
-			$delay = 100;
-
-			do {
-				sleep($sleep);
-				$serving = $this->db->queryOneRow('SELECT * FROM site WHERE setting ' . $like . " 'currentppticket1'");
-				$time = strtotime($serving['updateddate']);
-				$serving = $serving['value'];
-				$sleep = min(max(($time + $delay - time()) / 5, 2), 15);
-			} while ($serving > $ticket && ($time + $delay + 5 * ($ticket - $serving)) > time());
-		}
-
 		$totResults = null;
 		$passwordStatus = -6;
 		$groupID = ($groupID === '' ? '' : 'AND groupid = ' . $groupID);
+
 		// Get out all releases which have not been checked more than max attempts for password.
-		if ($id !== '') {
+		$totResults = 0;
+		$result = [];
+		if ($releaseToWork === '') {
 
-			$result = $this->db->queryDirect(
-				'SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid, r.nfostatus, r.completion,
-						r.categoryid, r.searchname FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.id = ' . $id);
+			$i = -6;
+			$limit = $this->addqty;
+			// Get releases starting from -6 password status until we reach our max limit set in site or we reach -1 password status.
+			while (($totResults <= $limit) && ($i <= -1)) {
 
-		} else {
-
-			$result = $totResults = 0;
-			if ($releaseToWork === '') {
-
-				$i = -1;
-				while (($totResults !== $this->addqty) && ($i >= $passwordStatus)) {
-
-					$result = $this->db->queryDirect(sprintf('
+				$qResult = $this->db->query(
+					sprintf('
 						SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid,
 							r.nfostatus, r.completion, r.categoryid, r.searchname
 						FROM releases r
 						LEFT JOIN category c ON c.id = r.categoryid
 						WHERE nzbstatus = 1
-						AND r.size < %d ' . $groupID . '
-						AND r.passwordstatus BETWEEN %d
-						AND -1 AND (r.haspreview = -1
-						AND c.disablepreview = 0)
-						ORDER BY postdate DESC
-						LIMIT %d', $this->maxsize * 1073741824, $i, $this->addqty)
-					);
-
-					$totResults = $result->rowCount();
-					if ($totResults > 0) {
-						$this->doEcho('Passwordstatus = ' . $i . ': Available to process = ' . $totResults);
-					}
-					$i--;
-				}
-			} else {
-
-				$pieces = explode('           =+=            ', $releaseToWork);
-				$result = array(
-					array(
-						'id' => $pieces[0],
-						'guid' => $pieces[1],
-						'name' => $pieces[2],
-						'disablepreview' => $pieces[3],
-						'size' => $pieces[4],
-						'groupid' => $pieces[5],
-						'nfostatus' => $pieces[6],
-						'categoryid' => $pieces[7],
-						'searchname' => $pieces[8]
+						AND r.size < %d
+						%s
+						AND r.passwordstatus = %d
+						AND (r.haspreview = -1 AND c.disablepreview = 0)
+						ORDER BY postdate
+						DESC LIMIT %d',
+						$this->maxsize * 1073741824, $groupID, $i, $limit
 					)
 				);
-				$totResults = 1;
+
+				// Get the count of rows we got from the query.
+				$currentCount = count($qResult);
+
+				if ($currentCount > 0) {
+
+					// Merge the results.
+					$result += $qResult;
+
+					// Decrement so we don't get more than the max user specified value.
+					$limit -= $currentCount;
+
+					// Update the total results.
+					$totResults += $currentCount;
+
+					// Echo how many we got for this query.
+					$this->doEcho('Passwordstatus = ' . $i . ': Available to process = ' .$currentCount);
+				}
+				$i++;
 			}
+		} else {
+
+			$pieces = explode('           =+=            ', $releaseToWork);
+			$result = array(
+				array(
+					'id' => $pieces[0],
+					'guid' => $pieces[1],
+					'name' => $pieces[2],
+					'disablepreview' => $pieces[3],
+					'size' => $pieces[4],
+					'groupid' => $pieces[5],
+					'nfostatus' => $pieces[6],
+					'categoryid' => $pieces[7],
+					'searchname' => $pieces[8]
+				)
+			);
+			$totResults = 1;
 		}
 
 		$resCount = $startCount = $totResults;
@@ -755,14 +739,6 @@ class PostProcess
 				$this->doEcho('Downloaded: (xB) = yEnc article, f= failed ;Processing: z = zip file, r = rar file');
 				$this->doEcho('Added: s = sample image, j = jpeg image, A = audio sample, a = audio mediainfo, v = video sample');
 				$this->doEcho('Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip');
-
-				// Get count of releases per password status
-				$echoString = 'Available to process';
-				for ($i = -1; $i >= $passwordStatus; $i--) {
-					$pw = $this->db->query('SELECT count(*) as count FROM releases WHERE haspreview = -1 and passwordstatus = ' . $i);
-					$echoString .= ', ' . $i . ' = ' . number_format($pw[0]['count']);
-				}
-				$this->doEcho($echoString . '.');
 			}
 
 			$nzbContents = new NZBContents($this->echooutput);
@@ -800,7 +776,7 @@ class PostProcess
 					}
 				}
 
-				$nzbPath = $nzb->getNZBPath($rel['guid'], $this->site->nzbpath, false, $this->site->nzbsplitlevel);
+				$nzbPath = $nzb->getNZBPath($rel['guid']);
 				if (!is_file($nzbPath)) {
 					// The nzb was not located. decrement the password status.
 					$this->debugging->start('processAdditional', 'NZB not found for releaseGUID: ' . $rel['guid'], 3);
@@ -838,11 +814,13 @@ class PostProcess
 				$this->blnTookVideo = ($this->processVideo ? false : true);
 				$this->blnTookMediainfo = ($this->processMediaInfo ? false : true);
 				$this->blnTookAudioinfo = ($this->processAudioInfo ? false : true);
+				$this->blnTookAudioSample = ($this->processAudioSample ? false : true);
 				$this->blnTookJPG = ($this->processJPGSample ? false : true);
 
 				// Reset and set certain variables.
 				$passStatus = array(Releases::PASSWD_NONE);
-				$sampleMsgID = $mediaMsgID = $audioMsgID = $jpgMsgID = $audioType = $mID = array();
+				$sampleMsgID = $jpgMsgID = $audioType = $mID = array();
+				$mediaMsgID = $audioMsgID = '';
 				$hasRar = $ignoredBooks = $failed = $this->filesAdded = 0;
 				$this->password = $this->noNFO = $bookFlood = false;
 				$groupName = $this->groups->getByNameByID($rel['groupid']);
@@ -875,7 +853,7 @@ class PostProcess
 						preg_match('/sample/i', $nzbContents['title'])) {
 
 						if (isset($nzbContents['segments'])) {
-							$sampleMsgID[] = $nzbContents['segments'][0];
+							$sampleMsgID[] = (string)$nzbContents['segments'][0];
 
 							// Get the amount of segments for this file.
 							$segCount = count($nzbContents['segments']);
@@ -884,7 +862,7 @@ class PostProcess
 								// If it's more than 1 try to get up to the site specified value of segments.
 								for ($i = 1; $i < $this->segmentsToDownload; $i++) {
 									if ($segCount > $i) {
-										$sampleMsgID[] = $nzbContents['segments'][$i];
+										$sampleMsgID[] = (string)$nzbContents['segments'][$i];
 									} else {
 										break;
 									}
@@ -900,7 +878,7 @@ class PostProcess
 						preg_match('/' . $this->videoFileRegex . '[. ")\]]/i', $nzbContents['title'])) {
 
 						if (isset($nzbContents['segments'])) {
-							$mediaMsgID[] = $nzbContents['segments'][0];
+							$mediaMsgID = (string)$nzbContents['segments'][0];
 						}
 					}
 
@@ -912,7 +890,7 @@ class PostProcess
 						if (isset($nzbContents['segments'])) {
 							// Get the extension.
 							$audioType = $type[1];
-							$audioMsgID[] = $nzbContents['segments'][0];
+							$audioMsgID = (string)$nzbContents['segments'][0];
 						}
 					}
 
@@ -924,10 +902,10 @@ class PostProcess
 
 						if (isset($nzbContents['segments'])) {
 
-							$jpgMsgID[] = $nzbContents['segments'][0];
+							$jpgMsgID[] = (string)$nzbContents['segments'][0];
 							// If there's more than 1 part, get 2.
 							if (count($nzbContents['segments']) > 1) {
-								$jpgMsgID[] = $nzbContents['segments'][1];
+								$jpgMsgID[] = (string)$nzbContents['segments'][1];
 							}
 						}
 					}
@@ -1117,7 +1095,8 @@ class PostProcess
 					$this->blnTookAudioinfo === false ||
 					$this->blnTookMediainfo === false ||
 					$this->blnTookJPG === false ||
-					$this->blnTookVideo === false) {
+					$this->blnTookVideo === false ||
+					$this->blnTookAudioSample === false) {
 
 					// Get all the names of the files in the temp dir.
 					$files = @scandir($this->tmpPath);
@@ -1131,13 +1110,13 @@ class PostProcess
 								$name = '';
 
 								// Audio sample.
-								if ($this->blnTookAudioinfo === false &&
+								if (($this->blnTookAudioinfo === false || $this->blnTookAudioSample === false) &&
 									preg_match('/(.*)' . $this->audioFileRegex . '$/i', $file, $name)) {
 
 									// Move the file.
 									@rename($this->tmpPath . $name[0], $this->tmpPath . 'audiofile.' . $name[2]);
 									// Try to get audio sample/audio media info.
-									$this->blnTookAudioinfo = $this->getAudioInfo($rel['guid'], $rel['id'], $name[2]);
+									$this->getAudioInfo($rel['guid'], $rel['id'], $name[2]);
 									// Delete the file.
 									@unlink($this->tmpPath . 'audiofile.' . $name[2]);
 								}
@@ -1192,6 +1171,7 @@ class PostProcess
 								// If we got it all, break out.
 								if ($this->blnTookJPG === true &&
 									$this->blnTookAudioinfo === true &&
+									$this->blnTookAudioSample === true &&
 									$this->blnTookMediainfo === true &&
 									$this->blnTookVideo === true &&
 									$this->blnTookSample === true) {
@@ -1302,7 +1282,7 @@ class PostProcess
 				}
 
 				// Download audio file, use media info to try to get the artist / album.
-				if ($this->blnTookAudioinfo === false && !empty($audioMsgID)) {
+				if (($this->blnTookAudioinfo === false || $this->blnTookAudioSample === false) && !empty($audioMsgID)) {
 
 					// Try to download it from usenet.
 					$audioBinary = $nntp->getMessages($groupName, $audioMsgID, $this->alternateNNTP);
@@ -1310,21 +1290,17 @@ class PostProcess
 						$audioBinary = false;
 					}
 
-
 					if ($audioBinary !== false) {
 						if ($this->echooutput) {
 							echo '(aB)';
 						}
 
-						// Check that it's more than 40 bytes.
-						if (strlen($audioBinary) > 40) {
+						// Create a file with it.
+						$this->addMediaFile($this->tmpPath . 'audio.' . $audioType, $audioBinary);
 
-							// Create a file with it.
-							$this->addMediaFile($this->tmpPath . 'audio.' . $audioType, $audioBinary);
+						// Try to get media info / sample of the audio file.
+						$this->getAudioInfo($rel['guid'], $rel['id'], $audioType);
 
-							// Try to get media info / sample of the audio file.
-							$this->blnTookAudioinfo = $this->getAudioInfo($rel['guid'], $rel['id'], $audioType);
-						}
 						unset($audioBinary);
 					} else {
 						if ($this->echooutput) {
@@ -1423,10 +1399,6 @@ class PostProcess
 			if ($this->echooutput) {
 				echo "\n";
 			}
-		}
-
-		if ($gui) {
-			$this->db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting %s 'currentppticket1'", $ticket + 1, $like));
 		}
 
 		unset($rar, $nzbContents);
@@ -1608,6 +1580,7 @@ class PostProcess
 		$files = $zip->getFileList();
 		$dataArray = array();
 		if ($files !== false) {
+
 			if ($this->echooutput) {
 				echo 'z';
 			}
@@ -1615,8 +1588,25 @@ class PostProcess
 				$thisData = $zip->getFileData($file['name']);
 				$dataArray[] = array('zip' => $file, 'data' => $thisData);
 
+				// Process RARs inside the ZIP.
+				if (preg_match('/\.(r\d+|part\d+|rar)$/i', $file['name']) || preg_match('/\bRAR\b/i', $thisData)) {
+
+					$tmpFiles = $this->getRar($thisData);
+					if ($tmpFiles !== false) {
+
+						$limit = 0;
+						foreach ($tmpFiles as $f) {
+
+							if ($limit++ > 11) {
+								break;
+							}
+							$this->addFile($f, $release, $rar = false, $nntp);
+							$files[] = $f;
+						}
+					}
+				}
 				//Extract a NFO from the zip.
-				if ($this->noNFO === true && $file['size'] < 100000 && preg_match('/\.(nfo|inf|ofn)$/i', $file['name'])) {
+				else if ($this->noNFO === true && $file['size'] < 100000 && preg_match('/\.(nfo|inf|ofn)$/i', $file['name'])) {
 					if ($file['compressed'] !== 1) {
 						if ($this->Nfo->addAlternateNfo($this->db, $thisData, $release, $nntp)) {
 							$this->debugging->start('processReleaseZips', 'Added NFO from ZIP file for releaseID ' . $release['id'], 5);
@@ -1625,8 +1615,7 @@ class PostProcess
 							}
 							$this->noNFO = false;
 						}
-					}
-					else if ($this->site->zippath !== '' && $file['compressed'] === 1) {
+					} else if ($this->site->zippath !== '' && $file['compressed'] === 1) {
 
 						$zip->setExternalClient($this->site->zippath);
 						$zipData = $zip->extractFile($file['name']);
@@ -1640,24 +1629,6 @@ class PostProcess
 
 								$this->noNFO = false;
 							}
-						}
-					}
-				}
-
-				// Process RARs inside the ZIP.
-				else if (preg_match('/\.(r\d+|part\d+|rar)$/i', $file['name'])) {
-
-					$tmpFiles = $this->getRar($thisData);
-					if ($tmpFiles !== false) {
-
-						$limit = 0;
-						foreach ($tmpFiles as $f) {
-
-							if ($limit++ > 11) {
-								break;
-							}
-							$this->addFile($f, $release, $rar = false, $nntp);
-							$files[] = $f;
 						}
 					}
 				}
@@ -2053,7 +2024,7 @@ class PostProcess
 		}
 
 		// Check if media info fetching is on.
-		if ($this->processMediaInfo) {
+		if (!$this->processAudioInfo) {
 			$retVal = true;
 		}
 
@@ -2061,16 +2032,20 @@ class PostProcess
 		$musicParent = (string)Category::CAT_PARENT_MUSIC;
 		// Make sure the category is music or other->misc.
 		$rQuery = $this->db->queryOneRow(sprintf(
-			'SELECT categoryid as id, groupid FROM releases WHERE proc_pp = 0 AND id = %d', $releaseID));
+			'SELECT searchname, categoryid as id, groupid FROM releases WHERE proc_pp = 0 AND id = %d', $releaseID));
 		if (!preg_match(
 			'/^' .
 			$musicParent[0].
 			'\d{3}|' .
 			Category::CAT_MISC .
+			'|' .
+			Category::CAT_MOVIE_OTHER .
+			'|' .
+			Category::CAT_TV_OTHER .
 			'/',
 			$rQuery['id'])) {
 
-			return $retVal;
+			return false;
 		}
 
 		// Get all the files in temp folder.
@@ -2124,10 +2099,22 @@ class PostProcess
 										// Update the search name.
 										$this->db->queryExec(sprintf('UPDATE releases SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1 WHERE id = %d', $this->db->escapeString(substr($newName, 0, 255)), $newCat, $releaseID));
 
+										$this->debugging->start(
+											'getAudioInfo',
+											"New name:(" . $newName .
+											") Old name:(" . $rQuery["searchname"] .
+											") New cat:(" . $newCat .
+											") Old cat:(" . $rQuery['id'] .
+											") Group:(" . $rQuery['groupid'] .
+											") Method:(" . 'PostProccess getAudioInfo' .
+											") ReleaseID:(" . $releaseID . ')'
+										, 5);
+
 										// Add the media info.
 										$this->releaseExtra->addFromXml($releaseID, $xmlArray);
 
 										$retVal = true;
+										$this->blnTookAudioinfo = true;
 										if ($this->echooutput) {
 											echo 'a';
 										}
@@ -2192,6 +2179,7 @@ class PostProcess
 								$this->db->queryExec(sprintf('UPDATE releases SET audiostatus = 1 WHERE id = %d', $releaseID));
 
 								$audVal = true;
+								$this->blnTookAudioSample = true;
 
 								if ($this->echooutput) {
 									echo 'A';

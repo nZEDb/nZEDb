@@ -36,7 +36,7 @@ class Books
 	{
 		$db = $this->db;
 		$like = 'ILIKE';
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 		return $db->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title %s %s', $db->escapeString('%' . $author . '%'), $like, $db->escapeString('%' . $title . '%')));
@@ -93,9 +93,9 @@ class Books
 		}
 
 		if ($maxage > 0) {
-			if ($db->dbSystem() == 'mysql') {
+			if ($db->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() == 'pgsql') {
+			} else if ($db->dbSystem() === 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		} else {
@@ -156,9 +156,9 @@ class Books
 
 		$maxage = '';
 		if ($maxage > 0) {
-			if ($db->dbSystem() == 'mysql') {
+			if ($db->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() == 'pgsql') {
+			} else if ($db->dbSystem() === 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
@@ -169,7 +169,7 @@ class Books
 		}
 
 		$order = $this->getBookOrder($orderby);
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			$sql = sprintf(
 				"SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
 				. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
@@ -261,7 +261,7 @@ class Books
 		$db = $this->db;
 
 		$like = 'ILIKE';
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 
@@ -287,16 +287,50 @@ class Books
 		return $result;
 	}
 
+	/**
+	 * Process book releases, 1 category at a time.
+	 */
 	public function processBookReleases()
 	{
+		$bookids = array();
+		if (preg_match('/^\d+$/', $this->bookreqids)) {
+			$bookids[] = $this->bookreqids;
+		} else {
+			$bookids = explode(', ', $this->bookreqids);
+		}
+
+		$total = count($bookids);
+		if ($total > 0) {
+			for ($i = 0; $i < $total; $i++) {
+				$this->processBookReleasesHelper(
+					$this->db->queryDirect(
+						sprintf('
+						SELECT searchname, id, categoryid
+						FROM releases
+						WHERE nzbstatus = 1 %s
+						AND bookinfoid IS NULL
+						AND categoryid in (%s)
+						ORDER BY POSTDATE
+						DESC LIMIT %d', $this->renamed, $bookids[$i], $this->bookqty)
+					), $bookids[$i]
+				);
+			}
+		}
+	}
+
+	/**
+	 * Process book releases.
+	 *
+	 * @param array $res      Array containing unprocessed book SQL data set.
+	 * @param int   $categoryID The category id.
+	 * @void
+	 */
+	protected function processBookReleasesHelper($res, $categoryID)
+	{
 		$db = $this->db;
-
-		// include results for all book types selected in the site edit UI, this could be audio, ebooks, foregin or technical currently
-		$res = $db->queryDirect(sprintf('SELECT searchname, id, categoryid FROM releases WHERE nzbstatus = 1 %s AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d', $this->renamed, $this->bookreqids, $this->bookqty));
-
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("\nProcessing " . $res->rowCount() . ' book release(s).'));
+				$this->c->doEcho($this->c->header("\nProcessing " . $res->rowCount() . ' book release(s) for category ID ' . $categoryID));
 			}
 
 			foreach ($res as $arr) {
@@ -344,7 +378,7 @@ class Books
 				}
 			}
 		} else if ($this->echooutput) {
-			$this->c->doEcho($this->c->header('No book releases to process.'));
+			$this->c->doEcho($this->c->header('No book releases to process for category id ' . $categoryID));
 		}
 	}
 

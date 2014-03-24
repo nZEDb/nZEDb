@@ -25,7 +25,7 @@ if (!isset($argv[1])) {
 		$tmux = new Tmux();
 		$count = $tmux->get()->backfill_qty;
 		$backfill = new Backfill();
-		$backfill->backfillPostAllGroups($nntp, $pieces[0], $count, $type = '');
+		$backfill->backfillAllGroups($nntp, $pieces[0], $count, $type = '');
 	}
 	if ($site->nntpproxy != "1") {
 		$nntp->doQuit();

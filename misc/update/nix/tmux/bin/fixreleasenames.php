@@ -19,7 +19,6 @@ if (!isset($argv[1])) {
 				$namefixer->checked++;
 				echo '.';
 			} else {
-				//echo $res['textstring']."\n";
 				$namefixer->done = $namefixer->matched = false;
 				if ($namefixer->checkName($res, true, 'NFO, ', 1, 1) !== true) {
 					echo '.';
