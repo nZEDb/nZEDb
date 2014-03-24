@@ -1,12 +1,12 @@
 <h1>
-{if $isadmin || $ismod}
-	<a title="Edit AniDB data" href="{$smarty.const.WWW_TOP}/admin/anidb-edit.php?id={$animeAnidbID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$animeTitle} </a>
-	
-{else}
-	{$animeTitle}
-{/if}
+	{if $isadmin || $ismod}
+		<a title="Edit AniDB data" href="{$smarty.const.WWW_TOP}/admin/anidb-edit.php?id={$animeAnidbID}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}">{$animeTitle} </a>
 
-{if $catname != ''} in {$catname|escape:"htmlall"}{/if}
+	{else}
+		{$animeTitle}
+	{/if}
+
+	{if $catname != ''} in {$catname|escape:"htmlall"}{/if}
 </h1>
 
 <div class="tvseriesheading">
@@ -24,54 +24,54 @@
 
 <form id="nzb_multi_operations_form" action="get">
 
-<div class="nzb_multi_operations">
-	<div style="padding-bottom:10px;" >
-		<a target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$animeAnidbID}" title="View in AniDB">View in AniDB</a> | 
-		<a href="{$smarty.const.WWW_TOP}/rss?anidb={$animeAnidbID}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS feed for this Anime</a>
+	<div class="nzb_multi_operations">
+		<div style="padding-bottom:10px;" >
+			<a target="_blank" href="{$site->dereferrer_link}http://anidb.net/perl-bin/animedb.pl?show=anime&amp;aid={$animeAnidbID}" title="View in AniDB">View in AniDB</a> |
+			<a href="{$smarty.const.WWW_TOP}/rss?anidb={$animeAnidbID}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">RSS feed for this Anime</a>
+		</div>
+		<small>With Selected:</small>
+		<input type="button" class="nzb_multi_operations_download" value="Download NZBs" />
+		<input type="button" class="nzb_multi_operations_cart" value="Add to Cart" />
+		{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB" />{/if}
+		{if $isadmin || $ismod}
+			&nbsp;&nbsp;
+			<input type="button" class="nzb_multi_operations_edit" value="Edit" />
+			<input type="button" class="nzb_multi_operations_delete" value="Del" />
+		{/if}
 	</div>
-	<small>With Selected:</small>
-	<input type="button" class="nzb_multi_operations_download" value="Download NZBs" />
-	<input type="button" class="nzb_multi_operations_cart" value="Add to Cart" />
-	{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB" />{/if}
-	{if $isadmin || $ismod}
-	&nbsp;&nbsp;
-	<input type="button" class="nzb_multi_operations_edit" value="Edit" />
-	<input type="button" class="nzb_multi_operations_delete" value="Del" />
-	{/if}	
-</div>
 
 
-<table style="width:100%;" class="data highlight icons" id="browsetable">
-	{foreach $animeEpisodeTitles as $animeEpno => $animeEpisodeTitle}
-		<tr>
-			<td style="padding-top:15px;" colspan="10"><a href="#top" class="top_link">Top</a><h2>{$animeEpno}</h2></td>
-		</tr>
-		<tr>
-			<th>Name</th>
-			<th></th>
-			<th>Category</th>
-			<th style="text-align:center;">Posted</th>
-			<th>Size</th>
-			<th>Files</th>
-			<th>Stats</th>
-			<th></th>
-		</tr>
+	<table style="width:100%;" class="data highlight icons" id="browsetable">
+		{foreach $animeEpisodeTitles as $animeEpno => $animeEpisodeTitle}
+			<tr>
+				<td style="padding-top:15px;" colspan="10"><a href="#top" class="top_link">Top</a><h2>{$animeEpno}</h2></td>
+			</tr>
+			<tr>
+				<th>Name</th>
+				<th></th>
+				<th>Category</th>
+				<th style="text-align:center;">Posted</th>
+				<th>Size</th>
+				<th>Files</th>
+				<th>Stats</th>
+				<th></th>
+			</tr>
 			{foreach $animeEpisodeTitle as $result}
 				<tr class="{cycle values=",alt"}" id="guid{$result.guid}">
 					<td>
 						<a title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.searchname|escape:"htmlall"}">{$result.searchname|escape:"htmlall"|replace:".":" "}</a>
-					
+
 						<div class="resextra">
 							<div class="btns">
 								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}" title="View Nfo" class="modal_nfo rndbtn" rel="nfo">Nfo</a>{/if}
 								{if $result.tvairdate != ""}<span class="rndbtn" title="{$result.tvtitle} Aired on {$result.tvairdate|date_format}">Aired {if $result.tvairdate|strtotime > $smarty.now}in future{else}{$result.tvairdate|daysago}{/if}</span>{/if}
 							</div>
-			
+
 							{if $isadmin || $ismod}
-							<div class="admin">
-								<a class="rndbtn" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a>
-							</div>
-							{/if}			
+								<div class="admin">
+									<a class="rndbtn" href="{$smarty.const.WWW_TOP}/admin/release-edit.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Edit Release">Edit</a> <a class="rndbtn confirm_action" href="{$smarty.const.WWW_TOP}/admin/release-delete.php?id={$result.id}&amp;from={$smarty.server.REQUEST_URI|escape:"url"}" title="Delete Release">Del</a>
+								</div>
+							{/if}
 						</div>
 					</td>
 					<td class="check"><input id="chk{$result.guid|substr:0:7}" type="checkbox" class="nzb_check" name="{$seasonnum}" value="{$result.guid}" /></td>
@@ -86,8 +86,8 @@
 						<div class="icon icon_cart" title="Add to Cart"></div>
 					</td>
 				</tr>
+			{/foreach}
 		{/foreach}
-	{/foreach}
-</table>
+	</table>
 
 </form>

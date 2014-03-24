@@ -31,13 +31,13 @@ switch ($action) {
 		$data["lastname"] = $_POST['lastname'];
 
 		if (!$users->isValidUsername($data["username"])) {
-			$errorStr = "Your username must be at least five characters. Contact an administrator to get it changed.";
+			$errorStr = "Your username must be at least 3 characters. Contact an administrator to get it changed.";
 		} else {
 			if ($_POST['password'] != "" && $_POST['password'] != $_POST['confirmpassword']) {
 				$errorStr = "Password Mismatch";
 			} else {
 				if ($_POST['password'] != "" && !$users->isValidPassword($_POST['password'])) {
-					$errorStr = "Your password must be at least 8 characters.";
+					$errorStr = "Your password must be at least 6 characters.";
 				} else {
 					if (!$users->isValidEmail($_POST['email'])) {
 						$errorStr = "Your email is not a valid format.";
@@ -54,7 +54,26 @@ switch ($action) {
 									$_POST['saburl'] = $_POST['sabapikey'] = $_POST['sabpriority'] = $_POST['sabapikeytype'] = false;
 								}
 
-								$users->update($userid, $data["username"], $_POST['firstname'], $_POST['lastname'], $_POST['email'], $data["grabs"], $data["role"], $data["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"), $_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype'], $_POST['cp_url'], $_POST['cp_api']);
+								$users->update(
+									$userid,
+									$data["username"],
+									$_POST['firstname'],
+									$_POST['lastname'],
+									$_POST['email'],
+									$data["grabs"],
+									$data["role"],
+									$data["invites"],
+									(isset($_POST['movieview']) ? "1" : "0"),
+									(isset($_POST['musicview']) ? "1" : "0"),
+									(isset($_POST['consoleview']) ? "1" : "0"),
+									(isset($_POST['bookview']) ? "1" : "0"),
+									$_POST['saburl'], $_POST['sabapikey'],
+									$_POST['sabpriority'],
+									$_POST['sabapikeytype'],
+									$_POST['cp_url'],
+									$_POST['cp_api'],
+									$_POST['style']
+								);
 
 								$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? array() : $_POST['exccat'];
 								$users->addCategoryExclusions($userid, $_POST['exccat']);
@@ -78,6 +97,17 @@ switch ($action) {
 	default:
 		break;
 }
+
+// Get the list of themes.
+$themeList[] = 'None';
+$themes = scandir(nZEDb_WWW . '/themes');
+foreach ($themes as $theme) {
+	if (strpos($theme, ".") === false && is_dir(nZEDb_WWW . '/themes/' .$theme)) {
+		$themeList[] = $theme;
+	}
+}
+
+$page->smarty->assign('themelist', $themeList);
 
 $page->smarty->assign('error', $errorStr);
 $page->smarty->assign('user', $data);

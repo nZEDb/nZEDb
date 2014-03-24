@@ -65,6 +65,8 @@ class CollectionsCleaning
 		switch ($groupName) {
 			case 'alt.binaries.0day.stuffz':
 				return $this->_0daystuffz();
+			case 'alt.binaries.3d':
+				return $this->_3d();
 			case 'alt.binaries.anime':
 				return $this->anime();
 			case 'alt.binaries.astronomy':
@@ -264,6 +266,22 @@ class CollectionsCleaning
 		else if (preg_match('/^([a-zA-Z0-9].+?)\(\d+(\/\d+\) - ").+?" yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[2];
 		} //return array('hash' => $match[1].$match[2], 'subject' => $match[1], 'rstatus' => Namefixer::NF_NAMECLEANING, 'cat' => Category::CAT_PC_0DAY);
+		else {
+			return $this->generic();
+		}
+	}
+
+	// a.b.3d
+	public function _3d()
+	{
+		//ugMBqtZw3vFnmrmr16EQhaAz9mMri9mD - File 01 of 98: "1vJ7wswi9ZG6YrzE5OGBFPKeuRv9X86xgYdK.par2" yEnc
+		if (preg_match('/^(.+)File \d+ (of \d+): ".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1].$match[2];
+		}
+		//999XL[074/103] - "LLKJ678CCDE1223ss.part073.rar" yEnc
+		else if (preg_match('/^(.+)\[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1].$match[2];
+		}
 		else {
 			return $this->generic();
 		}
@@ -1112,6 +1130,9 @@ class CollectionsCleaning
 		} //Doobz Europa_Universalis_IV_Conquest_of_Paradise-FLT [10/54] - "flt-eucp.001" yEnc
 		else if (preg_match('/^Doobz ([a-zA-z-_]+) \[\d+\/(\d+\]) - ".+' . $this->e1, $this->subject, $match)) {
 			return $match[1] . $match[2];
+		} //[01/10] - "Wondershare.Video.Converter.Ultimate.v6.7.1.0.Multilanguage.par2" - 45,44 MB yEnc
+		else if (preg_match('/^\[\d+\/(\d+\] - ".+?)' . $this->e0 . '.+yEnc$/i', $this->subject, $match)) {
+			return $match[1];
 		} else {
 			return $this->generic();
 		}
@@ -2384,6 +2405,18 @@ class CollectionsCleaning
 		//[1/1] (Album Top 100) - "Cro - Raop.rar"  yEnc
 		else if (preg_match('/^\[\d+\/(\d+\][ -]{0,3}\(Album Top \d+(( -)? \d+)?\)[ -]{0,3}".+?)' . $this->e0 . '  yEnc$/', $this->subject, $match)) {
 			return $match[1];
+		} //[ech0park]-[spotnet]-[Snow Patrol 2012 Tour Sampler - 2012-iND] [02/20] - "02-snow_patrol-ill_never_let_go.mp3" yEnc
+		else if (preg_match('/^\[ech0park\]-\[spotnet\]-\[(.+?)\] \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //40 Italo Dance Tunes (2CD) - "00. 40 Italo Dance Tunes 2011.nfo" [02/ 50] nightsteff  yEnc
+		else if (preg_match('/^(.+?)[- ]{0,3}".+?' . $this->e0 . '[- ]{0,3}\[\d+\/ (\d+\]) nightsteff[- ]{0,3}yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[7];
+		} //Bud Spencer & Terence Hill - Greatest Hits Vol 1 (1995) "04 - Just A Good Boy.mp3" nightsteff  yEnc
+		else if (preg_match('/^(.+?) ".+?' . $this->e0 . '[ -]{0,3}nightsteff  yEnc$/', $this->subject, $match)) {
+			return $match[1];
+		} //Attn: bearcat - Avenged Sevenfold - Avenged Sevenfold 320[17/18] - .vol15+16.par2 5.9Mb yEnc
+		else if (preg_match('/^Attn: \w+ - (.+?)\[\d+\/(\d+\]) - .+?([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}\d+[.,]\d+[kKmMgG][bB][- ]{0,3}yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
 		} else {
 			return $this->generic();
 		}
@@ -2446,6 +2479,9 @@ class CollectionsCleaning
 		} //"Terraplane Sun - Funnel of Love.mp3" - 21.55 MB - (1/6) - yEnc
 		else if (preg_match('/^"(.+?)' . $this->e0 . '[ _-]{0,3}\d+[.,]\d+ [kKmMgG][bB][ _-]{0,3}\(\d+\/(\d+\))[ _-]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[7];
+		} //jean ferrat  annÃ©e 1967 Ã  1969  meil29 "17 Rien Ã  voir.mp3" yEnc
+		else if (preg_match('/^(.+? meil29) ".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1];
 		} else {
 			return $this->generic();
 		}

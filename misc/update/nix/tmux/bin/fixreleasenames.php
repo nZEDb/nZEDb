@@ -19,7 +19,6 @@ if (!isset($argv[1])) {
 				$namefixer->checked++;
 				echo '.';
 			} else {
-				//echo $res['textstring']."\n";
 				$namefixer->done = $namefixer->matched = false;
 				if ($namefixer->checkName($res, true, 'NFO, ', 1, 1) !== true) {
 					echo '.';
@@ -53,7 +52,7 @@ if (!isset($argv[1])) {
 		$s = new Sites();
 		$site = $s->get();
 		$nntp = new NNTP();
-		if (($site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
+		if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 			exit($c->error("Unable to connect to usenet."));
 		}
 		if ($site->nntpproxy === "1") {
@@ -76,7 +75,7 @@ if (!isset($argv[1])) {
 		$s = new Sites();
 		$site = $s->get();
 		$nntp = new NNTP();
-		if (($site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
+		if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 			exit($c->error("Unable to connect to usenet."));
 		}
 		if ($site->nntpproxy === "1") {

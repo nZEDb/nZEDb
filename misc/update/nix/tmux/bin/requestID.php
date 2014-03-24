@@ -6,6 +6,8 @@ if (!isset($argv[1])) {
 	exit($c->error("This script is not intended to be run manually, it is called from requestid_threaded.py."));
 }
 $pieces = explode('                       ', $argv[1]);
+$web = $pieces[3];
+
 $db = new DB();
 $s = new Sites();
 $site = $s->get();
@@ -28,7 +30,7 @@ if (count($requestIDtmp) >= 1) {
 		if (is_array($newTitle) && $newTitle['title'] != '') {
 			$bFound = true;
 			$local = true;
-		} else {
+		} else if ($web == "True") {
 			$newTitle = getReleaseNameFromRequestID($site, $requestID, $pieces[2]);
 			if (is_array($newTitle) && $newTitle['title'] != '') {
 				$bFound = true;
@@ -41,10 +43,10 @@ if ($bFound === true) {
 	$title = $newTitle['title'];
 	$preid = $newTitle['id'];
 	$groupname = $groups->getByNameByID($pieces[2]);
-	$determinedcat = $category->determineCategory($title, $groupname);
+	$groupid = $groups->getIDByName($pieces[2]);
+	$determinedcat = $category->determineCategory($title, $groupid);
 	$run = $db->queryDirect(sprintf("UPDATE releases set rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
 			. "preid = %d, reqidstatus = 1, isrenamed = 1, searchname = %s, categoryid = %d where id = %d", $preid, $db->escapeString($title), $determinedcat, $pieces[0]));
-	$groupid = $groups->getIDByName($pieces[2]);
 	if ($groupid !== 0) {
 		$md5 = md5($title);
 		$db->queryDirect(sprintf("INSERT IGNORE INTO predb (title, adddate, source, md5, requestid, groupid) VALUES "
@@ -76,7 +78,7 @@ function getReleaseNameFromRequestID($site, $requestID, $groupName)
 	// Build Request URL
 	$req_url1 = str_ireplace('[GROUP_NM]', urlencode($groupName), $site->request_url);
 	$req_url = str_ireplace('[REQUEST_ID]', urlencode($requestID), $req_url1);
-	$xml = simplexml_load_file($req_url);
+	$xml = @simplexml_load_file($req_url);
 	if (($xml == false) || (count($xml) == 0)) {
 		return false;
 	}

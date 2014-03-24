@@ -16,11 +16,11 @@
         {if $loggedin=="true"}<link rel="alternate" type="application/rss+xml" title="{$site->title} Full Rss Feed" href="{$smarty.const.WWW_TOP}/rss?t=0&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}">{/if}
 
         <!-- Included CSS files - Bootstrap 2.3.2 - Font Awesome 3.2.1 - plugins master style.css -->
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-        <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-        <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/jquery.qtip.css" rel="stylesheet" media="screen">
-        <!-- <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/subnav.css" rel="stylesheet" media="screen"> -->
-        <link href="{$smarty.const.WWW_TOP}/themes/Default/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
+		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+		<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" media="screen">
+		<link href="{$smarty.const.WWW_TOP}/themes_shared/styles/jquery.qtip.css" rel="stylesheet" media="screen">
+        <!-- <link href="{$smarty.const.WWW_TOP}/themes_shared/styles/subnav.css" rel="stylesheet" media="screen"> -->
+        <link href="{$smarty.const.WWW_TOP}/themes_shared/styles/posterwall.css" rel="stylesheet" type="text/css" media="screen" />
         <link href="{$smarty.const.WWW_TOP}/themes/light/styles/style.css" rel="stylesheet" media="screen">
 
         <!-- Manual Adjustment for Search input fields on browse pages. -->
@@ -30,13 +30,13 @@
         </style>
 
         <!-- Site Icon files -->
-        <link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes/Default/images/favicon.ico">
+        <link rel="shortcut icon" href="{$smarty.const.WWW_TOP}/themes_shared/images/favicon.ico">
 
         <!-- Additional site files -->
         {if $site->google_adsense_acc != ''}<link href="http://www.google.com/cse/api/branding.css" rel="stylesheet" media="screen">{/if}
         <!--[if lt IE 9]>
         <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-        <script>window.html5 || document.write('<script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/vendor/html5shiv.js"><\/script>')</script>
+        <script>window.html5 || document.write('<script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/html5shiv.js"><\/script>')</script>
         <![endif]-->
 
         <script>
@@ -68,13 +68,12 @@
 
             <!-- Header Logo Area Including Main Menu -->
             <div id="logo">
-                <a class="logolink" title="{$site->title} Logo" href="{$smarty.const.WWW_TOP}{$site->home_link}"><img class="logoimg" alt="{$site->title} Logo" src="{$smarty.const.WWW_TOP}/themes/Default/images/clearlogo.png" /></a>
+                <a class="logolink" title="{$site->title} Logo" href="{$smarty.const.WWW_TOP}{$site->home_link}"><img class="logoimg" alt="{$site->title} Logo" src="{$smarty.const.WWW_TOP}/themes_shared/images/clearlogo.png" /></a>
 
                 <h1><a href="{$smarty.const.WWW_TOP}{$site->home_link}">{$site->title}</a></h1>
 
                 <p><em>{$site->strapline}</em></p>
 
-                {$site->adheader}
 
             </div>
 
@@ -99,15 +98,15 @@
             </div>
 
             <!-- Moved The Script Files to end of site for faster page loading -->
-            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
-            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes/Default/scripts/vendor/jquery-1.9.1.js"><\/script>')</script>{/literal}
-            <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes/Default/scripts/vendor/bootstrap.min.js"><\/script>')</script>{/literal}
-            <!-- <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/subnav.js"></script> -->
-            <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.colorbox-min.js"></script>
-            <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/jquery.qtip.min.js"></script>
+			<script src="//code.jquery.com/jquery-1.9.1.js"></script>
+            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes_shared/scripts/jquery-1.9.1.js"><\/script>')</script>{/literal}
+			<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+            {literal}<script>window.jQuery || document.write('<script src="{/literal}{$smarty.const.WWW_TOP}{literal}/themes/Default/scripts/bootstrap.min.js"><\/script>')</script>{/literal}
+            <!-- <script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/subnav.js"></script> -->
+            <script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.colorbox-min.js"></script>
+            <script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/jquery.qtip.min.js"></script>
             <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/utils.js"></script>
-            <script src="{$smarty.const.WWW_TOP}/themes/Default/scripts/sorttable.js"></script>
+            <script src="{$smarty.const.WWW_TOP}/themes_shared/scripts/sorttable.js"></script>
 
             <!-- Google Analytics Tracking Code -->
             {if $site->google_analytics_acc != ''}

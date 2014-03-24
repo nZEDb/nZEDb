@@ -23,6 +23,14 @@ if ($page->isPostBack()) {
 	//$cfg->COVERS_PATH = trim($_POST['coverspath']);
 	$cfg->UNRAR_PATH = trim($_POST['tmpunrarpath']);
 
+	if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
+		$group = posix_getgrgid(posix_getgid());
+		$fixString = '<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name']  . ' ' . nZEDb_ROOT .
+		'<br />Then give your user access to the group:<br />usermod -a -G ' . $group['name'] . ' YourUnixUserName' .
+		'<br />Finally give read/write access to your user/group:<br />chmod -R 774 ' . nZEDb_ROOT;
+		$page->smarty->assign('fixString', $fixString);
+	}
+
 	if ($cfg->NZB_PATH == '') {
 		$cfg->error = true;
 	} else {
@@ -37,18 +45,31 @@ if ($page->isPostBack()) {
 		}
 	}
 
-/*
-	if ($cfg->COVERS_PATH == '') {
+	if ($cfg->UNRAR_PATH == '') {
 		$cfg->error = true;
 	} else {
-		Util::trailingSlash($cfg->COVERS_PATH);
-
-		$cfg->coverPathCheck = is_writable($cfg->COVERS_PATH);
-		if ($cfg->coverPathCheck === false) {
+		$cfg->unrarPathCheck = is_writable($cfg->NZB_PATH);
+		if ($cfg->unrarPathCheck === false) {
 			$cfg->error = true;
 		}
+
+		$lastchar = substr($cfg->UNRAR_PATH, strlen($cfg->UNRAR_PATH) - 1);
+		if ($lastchar != "/") {
+			$cfg->UNRAR_PATH = $cfg->UNRAR_PATH . "/";
+		}
 	}
- */
+	/*
+		if ($cfg->COVERS_PATH == '') {
+			$cfg->error = true;
+		} else {
+			Util::trailingSlash($cfg->COVERS_PATH);
+
+			$cfg->coverPathCheck = is_writable($cfg->COVERS_PATH);
+			if ($cfg->coverPathCheck === false) {
+				$cfg->error = true;
+			}
+		}
+	 */
 
 	if (!$cfg->error) {
 		if (!file_exists($cfg->UNRAR_PATH)) {

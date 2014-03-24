@@ -1,4 +1,3 @@
-
 <h1>Edit your profile</h1>
 
 {if $error != ''}
@@ -19,7 +18,7 @@
 	<tr><th>Password:</th>
 		<td>
 			<input autocomplete="off" id="password" name="password" type="password" value=""></input>
-			<div class="hint">Only enter your password if you want to change it.</div>
+			<div class="hint">Only enter a password if you want to change it.</div>
 		</td>
 	</tr>
 	<tr><th>Confirm Password:</th><td><input autocomplete="off" id="confirmpassword" name="confirmpassword" type="password" value=""></input>
@@ -30,7 +29,15 @@
 <fieldset class="notop">
 <legend>Site Preferences</legend>
 <table class="input">
-	<tr><th>View Movie Page:</th>
+	<tr>
+		<th>Site theme:</th>
+		<td>
+			{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
+			<span class="help-block">Change the site theme, None will use the theme the administrator set.</span>
+		</td>
+	</tr>
+	<tr>
+		<th>View Movie Page:</th>
 		<td>
 			<input id="movieview" name="movieview" value="1" type="checkbox" {if $user.movieview=="1"}checked="checked"{/if}></input>
 			<div class="hint">Browse movie covers. Only shows movies with known IMDB info.</div>

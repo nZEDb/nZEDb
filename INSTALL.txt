@@ -20,7 +20,10 @@ REQUIREMENTS
 			group_concat_max_len=8192
 			timezone set to php's
 	OR
-		PostgreSQL(this is not currently supported)
+		PostgreSQL(this is currently WIP, use mysql instead)
+
+			Note: PostgreSQL 9.3 or higher is required.
+
 			To determine the IP / port ; on linux as root, run:
 				netstat -plunt |grep postgres
 			To set it up ; on linux as root, run:
@@ -32,6 +35,8 @@ REQUIREMENTS
 					(the single quotes for the password are needed)
 				ALTER USER EnterYourUserNameHere WITH ENCRYPTED PASSWORD 'EnterYourPasswordHere';
 			To exit psql enter: \q
+			Switch back to your user:
+				su EnterYourUserNameHere
 
 
 	Apache

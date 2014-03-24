@@ -1,3 +1,6 @@
+{if $site->adbrowse}
+	{$site->adbrowse}
+{/if}
 <h1>{$page->title}</h1>
 
 <p>
@@ -7,8 +10,6 @@
 <a href="{$smarty.const.WWW_TOP}/upcoming/4">Upcoming</a> |
 <a href="{$smarty.const.WWW_TOP}/upcoming/5">DVD Releases</a>
 </p>
-
-{$site->adbrowse}
 
 {if $data|@count > 0}
 

@@ -41,6 +41,9 @@ if (isset($_REQUEST["id"]) && !isset($_REQUEST["searchadvr"]) && !isset($_REQUES
 		$page->smarty->assign('category', $categoryId);
 		$page->smarty->assign('pagerquerybase', WWW_TOP . "/search/" . htmlentities($searchStr) . "?t=" . (implode(',', $categoryId)) . "&amp;ob=" . $orderby . "&amp;offset=");
 		$page->smarty->assign('search', $searchStr);
+		if (isset ($_REQUEST['subject'])) {
+			$page->smarty->assign('subject', $_REQUEST['subject']);
+		}
 		$results = $releases->search($searchStr, -1, -1, -1, $categoryId, -1, -1, 0, 0, -1, -1, $offset, ITEMS_PER_PAGE, $orderby, -1, $page->userdata["categoryexclusions"]);
 	}
 

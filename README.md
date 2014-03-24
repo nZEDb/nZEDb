@@ -103,9 +103,7 @@ The nZEDb team have no control over and are not responsible for what is posted o
 
 ### The Team
 
-Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo, Whitelighter, Bart39 and archer (niel)<br /><br />
-Paypal: <a href="http://nzedb.com/index.php?action=treasury"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
-
-Bitcoin wallet: 1LrrFbXn4QfGUokLppHVPQHAzmnAPbgV2M
+Kevin123, jonnyboy, Miatrix, zombu2, Codeslave, sinfuljosh, ugo, Whitelighter, Bart39, archer(niel), ThePeePs, ruhllatio<br /><br />
+<a href="https://flattr.com/submit/auto?user_id=nzedb&url=https%3A%2F%2Fgithub.com%2FnZEDb%2FnZEDb" target="_blank"><img src="//api.flattr.com/button/flattr-badge-large.png" alt="Donations." title="Donations." border="0"></a>
 
 <p>

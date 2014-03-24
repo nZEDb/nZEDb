@@ -8,7 +8,7 @@ class Books
 {
 	function __construct($echooutput = false)
 	{
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$s = new Sites();
 		$site = $s->get();
 		$this->pubkey = $site->amazonpubkey;
@@ -19,7 +19,10 @@ class Books
 		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
 		$this->db = new DB();
 		$this->bookreqids = ($site->book_reqids == null || $site->book_reqids == "") ? 8010 : $site->book_reqids;
-		$this->cleanbooks = ($site->lookupbooks == 2 ) ? 1 : 0;
+		$this->renamed = '';
+		if ($site->lookupbooks == 2) {
+			$this->renamed = 'AND isrenamed = 1';
+		}
 		$this->c = new ColorCLI();
 	}
 
@@ -190,7 +193,7 @@ class Books
 				. "GROUP BY boo.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]
 			);
 		} else {
-			$rel = new Releases();
+			$rel = new Releases($this->echooutput);
 			$sql = sprintf("SELECT STRING_AGG(r.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_id, STRING_AGG(r.rarinnerfilecount::text, ',' ORDER BY r.postdate DESC) as grp_rarinnerfilecount, STRING_AGG(r.haspreview::text, ',' ORDER BY r.postdate DESC) AS grp_haspreview, STRING_AGG(r.passwordstatus::text, ',' ORDER BY r.postdate) AS grp_release_password, STRING_AGG(r.guid, ',' ORDER BY r.postdate DESC) AS grp_release_guid, STRING_AGG(rn.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_nfoid, STRING_AGG(groups.name, ',' ORDER BY r.postdate DESC) AS grp_release_grpname, STRING_AGG(r.searchname, '#' ORDER BY r.postdate) AS grp_release_name, STRING_AGG(r.postdate::text, ',' ORDER BY r.postdate DESC) AS grp_release_postdate, STRING_AGG(r.size::text, ',' ORDER BY r.postdate DESC) AS grp_release_size, STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts, STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments, STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs, m.*, groups.name AS group_name, rn.id as nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.groupid INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL WHERE r.nzbstatus = 1 AND r.passwordstatus <= %s AND %s %s %s %s GROUP BY m.imdbid, m.id, groups.name, rn.id ORDER BY %s %s" . $limit, $rel->showPasswords(), $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
 		}
 		return $this->db->queryDirect($sql);
@@ -284,16 +287,50 @@ class Books
 		return $result;
 	}
 
+	/**
+	 * Process book releases, 1 category at a time.
+	 */
 	public function processBookReleases()
 	{
+		$bookids = array();
+		if (preg_match('/^\d+$/', $this->bookreqids)) {
+			$bookids[] = $this->bookreqids;
+		} else {
+			$bookids = explode(', ', $this->bookreqids);
+		}
+
+		$total = count($bookids);
+		if ($total > 0) {
+			for ($i = 0; $i < $total; $i++) {
+				$this->processBookReleasesHelper(
+					$this->db->queryDirect(
+						sprintf('
+						SELECT searchname, id, categoryid
+						FROM releases
+						WHERE nzbstatus = 1 %s
+						AND bookinfoid IS NULL
+						AND categoryid in (%s)
+						ORDER BY POSTDATE
+						DESC LIMIT %d', $this->renamed, $bookids[$i], $this->bookqty)
+					), $bookids[$i]
+				);
+			}
+		}
+	}
+
+	/**
+	 * Process book releases.
+	 *
+	 * @param array $res      Array containing unprocessed book SQL data set.
+	 * @param int   $categoryID The category id.
+	 * @void
+	 */
+	protected function processBookReleasesHelper($res, $categoryID)
+	{
 		$db = $this->db;
-
-		// include results for all book types selected in the site edit UI, this could be audio, ebooks, foregin or technical currently
-		$res = $db->queryDirect(sprintf('SELECT searchname, id, categoryid FROM releases WHERE nzbstatus = 1 AND isrenamed = %d AND bookinfoid IS NULL AND categoryid in (%s) ORDER BY POSTDATE DESC LIMIT %d', $this->cleanbooks, $this->bookreqids, $this->bookqty));
-
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
-				echo $this->c->header("\nProcessing " . $res->rowCount() . ' book release(s).');
+				$this->c->doEcho($this->c->header("\nProcessing " . $res->rowCount() . ' book release(s) for category ID ' . $categoryID));
 			}
 
 			foreach ($res as $arr) {
@@ -310,7 +347,7 @@ class Books
 
 				if ($bookInfo !== false) {
 					if ($this->echooutput) {
-						echo $this->c->headerOver('Looking up: ') . $this->c->primary($bookInfo);
+						$this->c->doEcho($this->c->headerOver('Looking up: ') . $this->c->primary($bookInfo));
 					}
 
 					// Do a local lookup first
@@ -330,7 +367,9 @@ class Books
 					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
 				} else { // Could not parse release title.
 					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
-					echo '.';
+					if ($this->echooutput) {
+						echo '.';
+					}
 				}
 				// Sleep to not flood amazon.
 				$diff = floor((microtime(true) - $startTime) * 1000000);
@@ -339,7 +378,7 @@ class Books
 				}
 			}
 		} else if ($this->echooutput) {
-			echo $this->c->header('No book releases to process.');
+			$this->c->doEcho($this->c->header('No book releases to process for category id ' . $categoryID));
 		}
 	}
 
@@ -358,12 +397,22 @@ class Books
 		// the default existing type was ebook, this handles that in the same manor as before
 		if ($releasetype == 'ebook') {
 			if (preg_match('/^([a-z0-9] )+$|ArtofUsenet|ekiosk|(ebook|mobi).+collection|erotica|Full Video|ImwithJamie|linkoff org|Mega.+pack|^[a-z0-9]+ (?!((January|February|March|April|May|June|July|August|September|O(c|k)tober|November|De(c|z)ember)))[a-z]+( (ebooks?|The))?$|NY Times|(Book|Massive) Dump|Sexual/i', $releasename)) {
-				echo $this->c->headerOver('Changing category to misc books: ') . $this->c->primary($releasename);
+
+				if ($this->echooutput) {
+					$this->c->doEcho(
+						$this->c->headerOver('Changing category to misc books: ') . $this->c->primary($releasename)
+					);
+				}
 				$db = $this->db;
 				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8050, $releaseID));
 				return false;
 			} else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename)) {
-				echo $this->c->headerOver('Changing category to magazines: ') . $this->c->primary($releasename);
+
+				if ($this->echooutput) {
+					$this->c->doEcho(
+						$this->c->headerOver('Changing category to magazines: ') . $this->c->primary($releasename)
+					);
+				}
 				$db = $this->db;
 				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8030, $releaseID));
 				return false;
@@ -389,6 +438,7 @@ class Books
 
 		$book = array();
 
+		$amaz = false;
 		if ($bookInfo != '') {
 			$amaz = $this->fetchAmazonProperties($bookInfo);
 		} else if ($amazdata != null) {
@@ -465,30 +515,32 @@ class Books
 			$bookId = $db->queryInsert(sprintf("INSERT INTO bookinfo (title, author, asin, isbn, ean, url, salesrank, publisher, publishdate, pages, overview, genre, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover']));
 		} else {
 			$bookId = $check['id'];
-			$db->queryExec(sprintf('UPDATE bookinfo SET title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s, pages = %s, overview = %s, genre = %s, cover = %d, updateddate = NOW() WHERE id = %d', $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $bookId));
+			$db->queryExec(sprintf('UPDATE bookinfo SET title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s, publishdate = %s, pages = %s, overview = %s, genre = %s, cover = %d, updateddate = NOW() WHERE id = %d', $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $bookId));
 		}
 
 		if ($bookId) {
 			if ($this->echooutput) {
-				echo $this->c->header("\nAdded/updated book: ");
+				$this->c->doEcho($this->c->header("Added/updated book: "));
 				if ($book['author'] !== '') {
-					echo $this->c->alternateOver("   Author: ") . $this->c->primary($book['author']);
+					$this->c->doEcho($this->c->alternateOver("   Author: ") . $this->c->primary($book['author']));
 				}
 				echo $this->c->alternateOver("   Title: ") . $this->c->primary(" " . $book['title']);
 				if ($book['genre'] !== 'null') {
-					echo $this->c->alternateOver("   Genre: ") . $this->c->primary(" " . $book['genre'] . "\n");
-				} else {
-					echo "\n\n";
+					$this->c->doEcho($this->c->alternateOver("   Genre: ") . $this->c->primary(" " . $book['genre']));
 				}
 			}
 
 			$book['cover'] = $ri->saveImage($bookId, $book['coverurl'], $this->imgSavePath, 250, 250);
 		} else {
 			if ($this->echooutput) {
-				echo $this->c->header('Nothing to update: ') . $this->c->header($book['author'] . ' - ' . $book['title']);
+				$this->c->doEcho(
+					$this->c->header('Nothing to update: ') .
+					$this->c->header($book['author'] .
+						' - ' .
+						$book['title'])
+				);
 			}
 		}
 		return $bookId;
 	}
 }
-?>

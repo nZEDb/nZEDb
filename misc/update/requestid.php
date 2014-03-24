@@ -30,13 +30,13 @@ if (isset($argv[2]) && is_numeric($argv[2])) {
 
 //runs on every release
 if (isset($argv[1]) && $argv[1] === "all") {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND isrequestid = 1");
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND isrequestid = 1");
 //runs on all releases not already renamed
 } else if (isset($argv[1]) && $argv[1] === "full") {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1)");
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3)");
 //runs on all releases not already renamed limited by user
 } else if (isset($argv[1]) && is_numeric($argv[1])) {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1) ORDER BY postdate DESC LIMIT " . $argv[1]);
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3) ORDER BY postdate DESC LIMIT " . $argv[1]);
 }
 
 $total = $qry->rowCount();
@@ -70,8 +70,7 @@ if ($total > 0) {
 		if ($bFound === true) {
 			$title = $newTitle['title'];
 			$preid = $newTitle['id'];
-			$groupname = $groups->getByNameByID($row['groupname']);
-			$determinedcat = $category->determineCategory($title, $groupname);
+			$determinedcat = $category->determineCategory($title, $row['gid']);
 			$run = $db->queryDirect(sprintf('UPDATE releases set rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, '
 					. 'preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s, categoryid = %d where id = %d', $preid, $db->escapeString($title), $determinedcat, $row['id']));
 			if ($row['name'] !== $newTitle) {

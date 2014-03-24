@@ -8,7 +8,7 @@ class Console
 
 	function __construct($echooutput = false)
 	{
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$s = new Sites();
 		$site = $s->get();
 		$this->pubkey = $site->amazonpubkey;
@@ -18,7 +18,11 @@ class Console
 		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
 		$this->db = new DB();
 		$this->imgSavePath = nZEDb_COVERS . 'console' . DS;
-		$this->cleanconsole = ($site->lookupgames == 2) ? 1 : 0;
+		$this->renamed = '';
+		if ($site->lookupgames == 2) {
+			$this->renamed = 'AND isrenamed = 1';
+		}
+		//$this->cleanconsole = ($site->lookupgames == 2) ? 'AND isrenamed = 1' : '';
 		$this->c = new ColorCLI();
 	}
 
@@ -366,9 +370,10 @@ class Console
 			}
 		}
 
-		/* Show the percentages.
+		/* Show the percentages. **
 		  echo("Matched: Title Percentage: $titlepercent%");
-		  echo("Matched: Platform Percentage: $platformpercent%"); */
+		  echo("Matched: Platform Percentage: $platformpercent%");
+		**/
 
 		// If the Title is less than 80% Platform must be 100% unless it is XBLA.
 		if ($titlepercent < 70) {
@@ -469,15 +474,27 @@ class Console
 
 		if ($consoleId) {
 			if ($this->echooutput) {
-				echo $this->c->header("Added/updated game: ") .
-				$this->c->alternateOver("   Title:    ") . $this->c->primary($con['title']) .
-				$this->c->alternateOver("   Platform: ") . $this->c->primary($con['platform']);
+				$this->c->doEcho(
+					$this->c->header("Added/updated game: ") .
+					$this->c->alternateOver("   Title:    ") .
+					$this->c->primary($con['title']) .
+					$this->c->alternateOver("   Platform: ") .
+					$this->c->primary($con['platform'])
+				);
 			}
 
 			$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
 		} else {
 			if ($this->echooutput) {
-				echo $this->c->headerOver("Nothing to update: ") . $this->c->primary($con['title'] . " (" . $con['platform']);
+				$this->c->doEcho(
+					$this->c->headerOver("Nothing to update: ") .
+					$this->c->primary(
+						$con['title'] .
+						" (" .
+						$con['platform'] .
+						')'
+					)
+				);
 			}
 		}
 		return $consoleId;
@@ -497,11 +514,11 @@ class Console
 	public function processConsoleReleases()
 	{
 		$db = $this->db;
-		$res = $db->queryDirect(sprintf('SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE nzbstatus = 1 AND isrenamed = %d AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d', $this->cleanconsole, Category::CAT_PARENT_GAME, $this->gameqty));
+		$res = $db->queryDirect(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 %s AND consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ORDER BY postdate DESC LIMIT %d', $this->renamed, $this->gameqty));
 
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
-				echo $this->c->header("\nProcessing " . $res->rowCount() . ' console release(s).');
+				$this->c->doEcho($this->c->header("Processing " . $res->rowCount() . ' console release(s).'));
 			}
 
 			foreach ($res as $arr) {
@@ -511,7 +528,13 @@ class Console
 				if ($gameInfo !== false) {
 
 					if ($this->echooutput) {
-						echo $this->c->headerOver('Looking up: ') . $this->c->primary($gameInfo['title'] . ' (' . $gameInfo['platform'] . ')');
+						$this->c->doEcho(
+							$this->c->headerOver('Looking up: ') .
+							$this->c->primary($gameInfo['title'] .
+								' (' .
+								$gameInfo['platform'] . ')'
+							)
+						);
 					}
 
 					// Check for existing console entry.
@@ -532,7 +555,10 @@ class Console
 				} else {
 					// Could not parse release title.
 					$db->queryExec(sprintf('UPDATE releases SET consoleinfoid = %d WHERE id = %d', -2, $arr['id']));
-					echo '.';
+
+					if ($this->echooutput) {
+						echo '.';
+					}
 				}
 
 				// Sleep to not flood amazon.
@@ -543,7 +569,7 @@ class Console
 			}
 		} else
 		if ($this->echooutput) {
-			echo $this->c->header('No console releases to process.');
+			$this->c->doEcho($this->c->header('No console releases to process.'));
 		}
 	}
 
@@ -667,5 +693,3 @@ class Console
 	}
 
 }
-
-?>
