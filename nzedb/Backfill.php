@@ -163,18 +163,30 @@ class Backfill
 			}
 		}
 
-		if ($articles !== '') {
-			if (!is_numeric($articles)) {
-				$articles = 20000;
-			} else {
-				$articles = (int) $articles;
-			}
-		}
-
 		$groupCount = count($res);
 		if ($groupCount > 0) {
 			$counter = 1;
+			$allTime = microtime(true);
+			$dMessage = "Backfilling: " . $groupCount . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No');
+			if ($this->debug) {
+				$this->debugging->start("backfillAllGroups", $dMessage, 5);
+			}
+
+			if ($this->echo) {
+				$this->c->doEcho($this->c->header($dMessage), true);
+			}
+
 			$this->binaries = new Binaries($this->nntp, $this->echo, $this);
+
+			if ($articles !== '') {
+				if (!is_numeric($articles)) {
+					$articles = 20000;
+				} else {
+					$articles = (int) $articles;
+				}
+			}
+
+			// Loop through groups.
 			foreach ($res as $groupArr) {
 				if ($groupName === '') {
 					$dMessage = "Starting group " . $counter . ' of ' . $groupCount;
@@ -183,11 +195,20 @@ class Backfill
 					}
 
 					if ($this->echo) {
-						$this->c->doEcho($this->c->set256($this->header) .$dMessage . $this->c->rsetColor(), true);
+						$this->c->doEcho($this->c->header($dMessage), true);
 					}
 				}
 				$this->backfillGroup($groupArr, $groupCount - $counter, $articles);
 				$counter++;
+			}
+
+			$dMessage = 'Backfilling completed in ' . number_format(microtime(true) - $allTime, 2) . " seconds.";
+			if ($this->debug) {
+				$this->debugging->start("backfillAllGroups", $dMessage, 5);
+			}
+
+			if ($this->echo) {
+				$this->c->doEcho($this->c->primary($dMessage));
 			}
 		} else {
 			$dMessage = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
@@ -214,7 +235,6 @@ class Backfill
 	{
 		// Start time for this group.
 		$this->startGroup = microtime(true);
-
 		$groupName = str_replace('alt.binaries', 'a.b', $groupArr['name']);
 
 		// If our local oldest article 0, it means we never ran update_binaries on the group.
@@ -233,16 +253,6 @@ class Backfill
 			return;
 		}
 
-		if ($this->echo) {
-			$this->c->doEcho(
-				$this->c->set256($this->header) .
-				'Processing ' .
-				$groupName .
-				$this->c->rsetColor()
-				, true
-			);
-		}
-
 		// Select group, here, only once
 		$data = $this->nntp->selectGroup($groupArr['name']);
 		if ($this->nntp->isError($data)) {
@@ -250,6 +260,10 @@ class Backfill
 			if ($this->nntp->isError($data)) {
 				return;
 			}
+		}
+
+		if ($this->echo) {
+			$this->c->doEcho($this->c->primary('Processing ' . $groupName), true);
 		}
 
 		// Check if this is days or post backfill.
@@ -286,23 +300,23 @@ class Backfill
 
 		if ($this->echo) {
 			$this->c->doEcho(
-				$this->c->set256($this->primary) .
-				'Group ' .
-				$groupName .
-				"'s oldest article is " .
-				number_format($data['first']) .
-				', newest is ' .
-				number_format($data['last']) .
-				".\nOur target article is " .
-				number_format($targetpost) .
-				'. Our oldest article is article ' .
-				number_format($groupArr['first_record']) .
-				'.' .
-				$this->c->rsetColor()
+				$this->c->primary(
+					'Group ' .
+					$groupName .
+					"'s oldest article is " .
+					number_format($data['first']) .
+					', newest is ' .
+					number_format($data['last']) .
+					".\nOur target article is " .
+					number_format($targetpost) .
+					'. Our oldest article is article ' .
+					number_format($groupArr['first_record']) .
+					'.'
+				)
 			);
 		}
 
-		// Set first and last, moving the window by maxxMsgs.
+		// Set first and last, moving the window by max messages.
 		$last = $groupArr['first_record'] - 1;
 		// Set the initial "chunk".
 		$first = $last - $this->binaries->messagebuffer + 1;
@@ -376,14 +390,16 @@ class Backfill
 		}
 
 		$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
-
 		if ($this->echo) {
 			$this->c->doEcho(
-				$this->c->set256($this->primary) .
-				'Group processed in ' .
-				$timeGroup .
-				" seconds." .
-				$this->c->rsetColor(), true
+				$this->c->primary(
+					PHP_EOL .
+					'Group ' .
+					$groupName .
+					' processed in ' .
+					$timeGroup .
+					" seconds."
+				), true
 			);
 		}
 	}
