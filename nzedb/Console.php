@@ -36,7 +36,7 @@ class Console
 	{
 		$db = $this->db;
 		$like = 'ILIKE';
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 		return $db->queryOneRow(sprintf("SELECT * FROM consoleinfo WHERE title LIKE %s AND platform %s %s", $db->escapeString("%" . $title . "%"), $like, $db->escapeString("%" . $platform . "%")));
@@ -93,9 +93,9 @@ class Console
 		}
 
 		if ($maxage > 0) {
-			if ($db->dbSystem() == 'mysql') {
+			if ($db->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() == 'pgsql') {
+			} else if ($db->dbSystem() === 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		} else {
@@ -149,9 +149,9 @@ class Console
 
 		$maxage = '';
 		if ($maxage > 0) {
-			if ($db->dbSystem() == 'mysql') {
+			if ($db->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() == 'pgsql') {
+			} else if ($db->dbSystem() === 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
@@ -236,7 +236,7 @@ class Console
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
 		$like = 'ILIKE';
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 		foreach ($browsebyArr as $bbk => $bbv) {

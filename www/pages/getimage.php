@@ -11,7 +11,7 @@ if (!isset($_GET["type"]) || !isset($_GET["id"]) || !ctype_digit($_GET["id"])) {
 // User requested a tvrage image.
 if ($_GET["type"] == "tvrage") {
 	$db = new DB();
-	if ($db->dbSystem() == 'mysql') {
+	if ($db->dbSystem() === 'mysql') {
 		$rage = new TvRage();
 		$r = $rage->getByID($_GET["id"]);
 		if (!$r) {
@@ -19,7 +19,7 @@ if ($_GET["type"] == "tvrage") {
 		}
 
 		$imgdata = $r["imgdata"];
-	} else if ($db->dbSystem() == 'pgsql') {
+	} else if ($db->dbSystem() === 'pgsql') {
 		$s = new Sites(); // Creates the nZEDb_COVERS constant
 		$imgdata = @file_get_contents(nZEDb_COVERS . 'tvrage/' . $_GET['id'] . '.jpg');
 		if ($imgdata === false) {

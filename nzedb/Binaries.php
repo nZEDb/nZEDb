@@ -184,13 +184,27 @@ class Binaries
 	protected $startUpdate;
 
 	/**
-	 * Constructor.
+	 * @var NNTP
 	 */
-	public function __construct($echo = true)
+	protected $nntp;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param NNTP $nntp Class instance of NNTP.
+	 * @param bool $echo Echo to cli?
+	 * @param bool|Backfill $backfill Pass Backfill class if started from there.
+	 */
+	public function __construct($nntp = null, $echo = true, $backfill = false)
 	{
+		$this->nntp = $nntp;
 		$this->echo = ($echo && nZEDb_ECHOCLI);
 		$this->debug = (nZEDb_DEBUG || nZEDb_LOGGING);
-		$this->backfill = new Backfill($echo);
+		if ($backfill === false) {
+			$this->backfill = new Backfill($this->nntp, $echo);
+		} else {
+			$this->backfill = $backfill;
+		}
 		$this->c = new ColorCLI();
 		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->consoleTools = new ConsoleTools();
@@ -221,20 +235,11 @@ class Binaries
 
 	/**
 	 * Download new headers for all active groups.
-	 * @param object $nntp Instance of class NNTP
 	 *
 	 * @return void
 	 */
-	public function updateAllGroups($nntp)
+	public function updateAllGroups()
 	{
-		if (!isset($nntp)) {
-			$dMessage = "Not connected to usenet(binaries->updateAllGroups).";
-			if ($this->debug) {
-				$this->debugging->start("updateAllGroups", $dMessage, 1);
-			}
-			exit($this->c->error($dMessage));
-		}
-
 		if ($this->hashcheck == 0) {
 			$dMessage = "We have updated the way collections are created, the collection table has to be updated to
 				use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.";
@@ -276,7 +281,7 @@ class Binaries
 				if ($this->echo) {
 					$this->c->doEcho($this->c->header($dMessage), true);
 				}
-				$this->updateGroup($groupArr, $nntp);
+				$this->updateGroup($groupArr);
 				$counter++;
 			}
 			$dMessage = 'Updating completed in ' . number_format(microtime(true) - $alltime, 2) . " seconds.";
@@ -303,30 +308,21 @@ class Binaries
 	 * Download new headers for a single group.
 	 *
 	 * @param array $groupArr Array of MySQL results for a single group.
-	 * @param object $nntp Instance of class NNTP
 	 *
 	 * @return void
 	 */
-	public function updateGroup($groupArr, $nntp)
+	public function updateGroup($groupArr)
 	{
-		if (!isset($nntp)) {
-			$dMessage = "Not connected to usenet(binaries->updateGroup).";
-			if ($this->debug) {
-				$this->debugging->start("updateGroup", $dMessage, 1);
-			}
-			exit($this->c->error($dMessage));
-		}
-
 		$this->startGroup = microtime(true);
 		if ($this->echo) {
 			$this->c->doEcho($this->c->primary('Processing ' . str_replace('alt.binaries', 'a.b', $groupArr['name'])), true);
 		}
 
 		// Select the group, here, needed for processing the group
-		$data = $nntp->selectGroup($groupArr['name']);
-		if ($nntp->isError($data)) {
-			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($nntp->isError($data)) {
+		$data = $this->nntp->selectGroup($groupArr['name']);
+		if ($this->nntp->isError($data)) {
+			$data = $this->nntp->dataError($this->nntp, $groupArr['name']);
+			if ($this->nntp->isError($data)) {
 				return;
 			}
 		}
@@ -337,7 +333,7 @@ class Binaries
 				if ($this->echo) {
 					$this->c->doEcho($this->c->primary("Part repair enabled. Checking for missing parts."), true);
 				}
-				$this->partRepair($nntp, $groupArr);
+				$this->partRepair($groupArr);
 			} else {
 				if ($this->echo) {
 					$this->c->doEcho($this->c->primary("Part repair disabled by user."), true);
@@ -349,7 +345,7 @@ class Binaries
 		if ($groupArr['last_record'] == 0) {
 			// For new newsgroups - determine here how far you want to go back.
 			if ($this->NewGroupScanByDays) {
-				$first = $this->backfill->daytopost($nntp, $groupArr['name'], $this->NewGroupDaysToScan, $data);
+				$first = $this->backfill->daytopost($groupArr['name'], $this->NewGroupDaysToScan, $data);
 				if ($first == '') {
 					if ($this->echo) {
 						$this->c->doEcho($this->c->warning("Skipping group: {$groupArr['name']}"), true);
@@ -390,7 +386,7 @@ class Binaries
 
 		// Generate postdate for first record, for those that upgraded.
 		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] != '0') {
-			$newdate = $this->backfill->postdate($nntp, $groupArr['first_record'], $groupArr['name'], true, 'oldest');
+			$newdate = $this->backfill->postdate($groupArr['first_record'], $groupArr['name'], true, 'oldest');
 			if ($newdate !== false) {
 				$first_record_postdate = $newdate;
 			} else {
@@ -495,7 +491,7 @@ class Binaries
 				flush();
 
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab
-				$scanSummary = $this->scan($nntp, $groupArr, $first, $last);
+				$scanSummary = $this->scan($groupArr, $first, $last);
 
 				// Scan failed - skip group.
 				if ($scanSummary == false) {
@@ -560,7 +556,6 @@ class Binaries
 	/**
 	 * Loop over range of wanted headers, insert headers into DB.
 	 *
-	 * @param object $nntp        Instance of class NNTP
 	 * @param array $groupArr     The group info from mysql.
 	 * @param int $first          The oldest wanted header.
 	 * @param int $last           The newest wanted header.
@@ -569,7 +564,7 @@ class Binaries
 	 *
 	 * @return array|bool
 	 */
-	public function scan($nntp, $groupArr, $first, $last, $type = 'update', $missingParts = null)
+	public function scan($groupArr, $first, $last, $type = 'update', $missingParts = null)
 	{
 		$returnArray = array();
 
@@ -595,36 +590,58 @@ class Binaries
 		}
 
 		// Select the group before attempting to download
-		$data = $nntp->selectGroup($groupArr['name']);
-		if ($nntp->isError($data)) {
-			$data = $nntp->dataError($nntp, $groupArr['name']);
-			if ($nntp->isError($data)) {
+		$data = $this->nntp->selectGroup($groupArr['name']);
+		if ($this->nntp->isError($data)) {
+			$data = $this->nntp->dataError($this->nntp, $groupArr['name']);
+			if ($this->nntp->isError($data)) {
 				return false;
 			}
 		}
 
 		// Download the headers.
-		$msgs = $nntp->getOverview($first . "-" . $last, true, false);
+		$msgs = $this->nntp->getOverview($first . "-" . $last, true, false);
 
 		// If there were an error, try to reconnect.
-		if ($type != 'partrepair' && $nntp->isError($msgs)) {
+		if ($this->nntp->isError($msgs)) {
 			// This is usually a compression error, so try disabling compression.
-			$nntp->doQuit();
-			if ($nntp->doConnect(false) !== true) {
+			$this->nntp->doQuit();
+			if ($this->nntp->doConnect(false) !== true) {
 				return false;
 			}
 
-			$nntp->selectGroup($groupArr['name']);
-			$msgs = $nntp->getOverview($first . '-' . $last, true, false);
-			if ($nntp->isError($msgs)) {
-				$dMessage = "Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}";
-				if ($this->debug) {
-					$this->debugging->start("scan", $dMessage, 3);
+			$this->nntp->selectGroup($groupArr['name']);
+			$msgs = $this->nntp->getOverview($first . '-' . $last, true, false);
+			if ($this->nntp->isError($msgs)) {
+				if ($type !== 'partrepair') {
+
+					$dMessage = "Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}";
+					if ($this->debug) {
+						$this->debugging->start("scan", $dMessage, 3);
+					}
+
+					if ($this->echo) {
+						$this->c->doEcho($this->c->error($dMessage), true);
+					}
+
+				// If partrepair, increment attempts.
+				} else {
+
+					$query = sprintf(
+						'UPDATE partrepair SET attempts = attempts + 1 WHERE groupid = %d AND numberid ',
+						$groupArr['id']
+					);
+
+					// Check if it's more than 1 article.
+					if ($first !== $last) {
+						$query .= 'IN (' . implode(',', range($first, $last)) . ')';
+					} else {
+						$query .= '= ' . $first;
+					}
+
+					$this->db->queryExec($query);
+
 				}
 
-				if ($this->echo) {
-					$this->c->doEcho($this->c->error($dMessage), true);
-				}
 				return false;
 			}
 		}
@@ -1008,21 +1025,12 @@ class Binaries
 	/**
 	 * Attempt to get missing headers.
 	 *
-	 * @param NNTP|object  $nntp     Instance of class NNTP.
 	 * @param array        $groupArr The info for this group from mysql.
 	 *
 	 * @return void
 	 */
-	public function partRepair($nntp, $groupArr)
+	public function partRepair($groupArr)
 	{
-		if (!isset($nntp)) {
-			$dMessage = "Not connected to usenet(binaries->partRepair).";
-			if ($this->debug) {
-				$this->debugging->start("partRepair", $dMessage, 1);
-			}
-			exit($this->c->error("Not connected to usenet(binaries->partRepair)."));
-		}
-
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
 			if ($this->db->newtables($groupArr['id']) === false) {
@@ -1049,7 +1057,8 @@ class Binaries
 		);
 		$partsRepaired = 0;
 
-		if (count($missingParts) > 0) {
+		$missingCount = count($missingParts);
+		if ($missingCount > 0) {
 			if ($this->echo) {
 				$this->consoleTools->overWritePrimary(
 					'Attempting to repair ' .
@@ -1088,11 +1097,11 @@ class Binaries
 				$this->consoleTools->overWritePrimary(
 					"Attempting repair: " .
 					$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted, count($missingParts)) .
-					': ' . $partfrom . ' to ' . $partto
+					': ' . $partfrom . ' to ' . $partto . ' .'
 				);
 
 				// Get article from newsgroup.
-				$this->scan($nntp, $groupArr, $partfrom, $partto, 'partrepair', $partlist);
+				$this->scan($groupArr, $partfrom, $partto, 'partrepair', $partlist);
 			}
 
 			// Calculate parts repaired
@@ -1169,7 +1178,7 @@ class Binaries
 		}
 
 		$insertStr = substr($insertStr, 0, -2);
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			$insertStr .= ' ON DUPLICATE KEY UPDATE attempts=attempts+1';
 			return $this->db->queryInsert($insertStr);
 		} else {
@@ -1281,7 +1290,7 @@ class Binaries
 		$intwordcount = 0;
 		if (count($words) > 0) {
 			$like = 'ILIKE';
-			if ($this->db->dbSystem() == 'mysql') {
+			if ($this->db->dbSystem() === 'mysql') {
 				$like = 'LIKE';
 			}
 			foreach ($words as $word) {

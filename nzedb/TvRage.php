@@ -134,7 +134,7 @@ class TvRage
 			$ckid = $this->db->queryOneRow('SELECT id FROM tvrage WHERE releasetitle = ' . $this->db->escapeString($releasename));
 		}
 
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			if (!isset($ckid['id']) || $rageid == -2) {
 				$this->db->queryExec(sprintf('INSERT INTO tvrage (rageid, releasetitle, description, genre, country, createddate, imgdata) VALUES (%s, %s, %s, %s, %s, NOW(), %s)', $rageid, $this->db->escapeString($releasename), $this->db->escapeString(substr($desc, 0, 10000)), $this->db->escapeString(substr($genre, 0, 64)), $this->db->escapeString($country), $this->db->escapeString($imgbytes)));
 			} else {
@@ -164,7 +164,7 @@ class TvRage
 	public function update($id, $rageid, $releasename, $desc, $genre, $country, $imgbytes)
 	{
 		$country = $this->countryCode($country);
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			if ($imgbytes != '') {
 				$imgbytes = ', imgdata = ' . $this->db->escapeString($imgbytes);
 			}
@@ -281,7 +281,7 @@ class TvRage
 		$rsql = '';
 		if ($ragename != "") {
 			$like = 'ILIKE';
-			if ($this->db->dbSystem() == 'mysql') {
+			if ($this->db->dbSystem() === 'mysql') {
 				$like = 'LIKE';
 			}
 			$rsql .= sprintf("AND tvrage.releasetitle %s %s ", $like, $this->db->escapeString("%" . $ragename . "%"));
@@ -295,7 +295,7 @@ class TvRage
 		$rsql = '';
 		if ($ragename != "") {
 			$like = 'ILIKE';
-			if ($this->db->dbSystem() == 'mysql') {
+			if ($this->db->dbSystem() === 'mysql') {
 				$like = 'LIKE';
 			}
 			$rsql .= sprintf("AND tvrage.releasetitle %s %s ", $like, $this->db->escapeString("%" . $ragename . "%"));
@@ -322,7 +322,7 @@ class TvRage
 				$letter = '[0-9]';
 			}
 
-			if ($this->db->dbSystem() == "mysql") {
+			if ($this->db->dbSystem() === "mysql") {
 				$rsql .= sprintf("AND tvrage.releasetitle REGEXP %s", $this->db->escapeString('^' . $letter));
 			} else {
 				$rsql .= sprintf("AND tvrage.releasetitle ~ %s", $this->db->escapeString('^' . $letter));
@@ -333,7 +333,7 @@ class TvRage
 			$tsql .= sprintf("AND tvrage.releasetitle LIKE %s", $this->db->escapeString("%" . $ragename . "%"));
 		}
 
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			return $this->db->query(sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageid FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql));
 		} else {
 			return $this->db->query(sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageid FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid, tvrage.id, userseries.id ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql));
@@ -380,9 +380,9 @@ class TvRage
 
 							// Only stick current shows and new shows in there.
 							if (in_array($currShowId, $showarray)) {
-								if ($this->db->dbSystem() == 'mysql') {
+								if ($this->db->dbSystem() === 'mysql') {
 									$this->db->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE airdate = %s, link = %s ,eptitle = %s, showtitle = %s", $sShow->sid, $this->db->escapeString($currShowName), $this->db->escapeString($sShow->ep), $this->db->escapeString(date("Y-m-d H:i:s", $day_time)), $this->db->escapeString($sShow->link), $this->db->escapeString($sShow->title), $this->db->escapeString(date("Y-m-d H:i:s", $day_time)), $this->db->escapeString($sShow->link), $this->db->escapeString($sShow->title), $this->db->escapeString($currShowName)));
-								} else if ($this->db->dbSystem() == 'pgsql') {
+								} else if ($this->db->dbSystem() === 'pgsql') {
 									$check = $this->db->queryOneRow(sprintf('SELECT id FROM tvrageepisodes WHERE rageid = %d', $sShow->sid));
 									if ($check === false) {
 										$this->db->queryExec(sprintf("INSERT INTO tvrageepisodes (rageid, showtitle, fullep, airdate, link, eptitle) VALUES (%d, %s, %s, %s, %s, %s)", $sShow->sid, $this->db->escapeString($currShowName), $this->db->escapeString($sShow->ep), $this->db->escapeString(date("Y-m-d H:i:s", $day_time)), $this->db->escapeString($sShow->link), $this->db->escapeString($sShow->title)));
