@@ -220,14 +220,14 @@ class Binaries
 		$this->compressedHeaders = ($this->site->compressedheaders == '1') ? true : false;
 		$this->DoPartRepair = ($this->site->partrepair == '0') ? false : true;
 		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
-		$this->hashcheck = (!empty($this->site->hashcheck)) ? $this->site->hashcheck : 0;
-		$this->messagebuffer = (!empty($this->site->maxmssgs)) ? $this->site->maxmssgs : 20000;
+		$this->hashcheck = (!empty($this->site->hashcheck)) ? (int)$this->site->hashcheck : 0;
+		$this->messagebuffer = (!empty($this->site->maxmssgs)) ? (int)$this->site->maxmssgs : 20000;
 		$this->NewGroupScanByDays = ($this->site->newgroupscanmethod == '1') ? true : false;
-		$this->NewGroupMsgsToScan = (!empty($this->site->newgroupmsgstoscan)) ? $this->site->newgroupmsgstoscan : 50000;
-		$this->NewGroupDaysToScan = (!empty($this->site->newgroupdaystoscan)) ? $this->site->newgroupdaystoscan : 3;
-		$this->partrepairlimit = (!empty($this->site->maxpartrepair)) ? $this->site->maxpartrepair : 15000;
-		$this->showdroppedyencparts = (!empty($this->site->showdroppedyencparts)) ? $this->site->showdroppedyencparts : 0;
-		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
+		$this->NewGroupMsgsToScan = (!empty($this->site->newgroupmsgstoscan)) ? (int)$this->site->newgroupmsgstoscan : 50000;
+		$this->NewGroupDaysToScan = (!empty($this->site->newgroupdaystoscan)) ? (int)$this->site->newgroupdaystoscan : 3;
+		$this->partrepairlimit = (!empty($this->site->maxpartrepair)) ? (int)$this->site->maxpartrepair : 15000;
+		$this->showdroppedyencparts = (!empty($this->site->showdroppedyencparts)) ? (int)$this->site->showdroppedyencparts : 0;
+		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? (int)$this->site->tablepergroup : 0;
 
 		$this->blackList = $this->message = array();
 		$this->blackListLoaded = false;
@@ -240,7 +240,7 @@ class Binaries
 	 */
 	public function updateAllGroups()
 	{
-		if ($this->hashcheck == 0) {
+		if ($this->hashcheck === 0) {
 			$dMessage = "We have updated the way collections are created, the collection table has to be updated to
 				use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.";
 			if ($this->debug) {
@@ -257,12 +257,14 @@ class Binaries
 			$relss = new Releases($this->echo);
 			$relss->resetCollections();
 		}
-		$res = $this->groups->getActive();
-		$counter = 1;
 
-		if ($res) {
-			$alltime = microtime(true);
-			$dMessage = "Updating: " . count($res) . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No');
+		$res = $this->groups->getActive();
+
+		$groupCount = count($res);
+		if ($groupCount > 0) {
+			$counter = 1;
+			$allTime = microtime(true);
+			$dMessage = "Updating: " . $groupCount . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No');
 			if ($this->debug) {
 				$this->debugging->start("updateAllGroups", $dMessage, 5);
 			}
@@ -271,9 +273,10 @@ class Binaries
 				$this->c->doEcho($this->c->header($dMessage), true);
 			}
 
+			// Loop through groups.
 			foreach ($res as $groupArr) {
 				$this->message = array();
-				$dMessage = "Starting group " . $counter . ' of ' . count($res);
+				$dMessage = "Starting group " . $counter . ' of ' . $groupCount;
 				if ($this->debug) {
 					$this->debugging->start("updateAllGroups", $dMessage, 5);
 				}
@@ -284,13 +287,14 @@ class Binaries
 				$this->updateGroup($groupArr);
 				$counter++;
 			}
-			$dMessage = 'Updating completed in ' . number_format(microtime(true) - $alltime, 2) . " seconds.";
+
+			$dMessage = 'Updating completed in ' . number_format(microtime(true) - $allTime, 2) . " seconds.";
 			if ($this->debug) {
 				$this->debugging->start("updateAllGroups", $dMessage, 5);
 			}
 
 			if ($this->echo) {
-				$this->c->doEcho($this->c->primary($dMessage), true);
+				$this->c->doEcho($this->c->primary($dMessage));
 			}
 		} else {
 			$dMessage = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
@@ -314,9 +318,6 @@ class Binaries
 	public function updateGroup($groupArr)
 	{
 		$this->startGroup = microtime(true);
-		if ($this->echo) {
-			$this->c->doEcho($this->c->primary('Processing ' . str_replace('alt.binaries', 'a.b', $groupArr['name'])), true);
-		}
 
 		// Select the group, here, needed for processing the group
 		$data = $this->nntp->selectGroup($groupArr['name']);
@@ -325,6 +326,11 @@ class Binaries
 			if ($this->nntp->isError($data)) {
 				return;
 			}
+		}
+
+		$groupName = str_replace('alt.binaries', 'a.b', $groupArr['name']);
+		if ($this->echo) {
+			$this->c->doEcho($this->c->primary('Processing ' . $groupName), true);
 		}
 
 		// Attempt to repair any missing parts before grabbing new ones.
@@ -343,15 +349,16 @@ class Binaries
 
 		// Get first and last part numbers from newsgroup.
 		if ($groupArr['last_record'] == 0) {
-			// For new newsgroups - determine here how far you want to go back.
+			// For new newsgroups - determine here how far you want to go back using date.
 			if ($this->NewGroupScanByDays) {
 				$first = $this->backfill->daytopost($groupArr['name'], $this->NewGroupDaysToScan, $data);
 				if ($first == '') {
 					if ($this->echo) {
-						$this->c->doEcho($this->c->warning("Skipping group: {$groupArr['name']}"), true);
+						$this->c->doEcho($this->c->warning("Skipping group: {$groupName}"), true);
 					}
 					return;
 				}
+			// If not using date, use post count.
 			} else {
 				if ($data['first'] > ($data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer))) {
 					$first = $data['first'];
@@ -461,7 +468,6 @@ class Binaries
 			$done = false;
 			// Get all the parts (in portions of $this->messagebuffer to not use too much memory).
 			while ($done === false) {
-				$this->startLoop = microtime(true);
 
 				if ($total > $this->messagebuffer) {
 					if ($first + $this->messagebuffer > $grouplast) {
@@ -475,7 +481,7 @@ class Binaries
 				if ($this->echo) {
 					$this->c->doEcho(
 						$this->c->header(
-							"Getting " .
+							"\nGetting " .
 							number_format($last - $first + 1) .
 							' articles (' . number_format($first) .
 							' to ' .
@@ -523,23 +529,34 @@ class Binaries
 					$first = $last;
 				}
 			}
+
 			$timeGroup = number_format(microtime(true) - $this->startGroup, 2);
 			if ($this->echo) {
-				$this->c->doEcho($this->c->primary($data['group'] . ' processed in ' . $timeGroup . " seconds."), true);
+				$this->c->doEcho(
+					$this->c->primary(
+						PHP_EOL .
+						'Group ' .
+						$groupName .
+						' processed in ' .
+						$timeGroup .
+						" seconds."
+					), true
+				);
 			}
 		} else {
 			if ($this->echo) {
 				$this->c->doEcho(
 					$this->c->primary(
 						'No new articles for ' .
-						$data['group'] .
+						$groupName .
 						' (first ' .
 						number_format($first) .
 						' last ' .
 						number_format($last) .
 						' grouplast ' .
 						number_format($groupArr['last_record']) .
-						' total ' . number_format($total) .
+						' total ' .
+						number_format($total) .
 						")\n" .
 						"Server oldest: " .
 						number_format($data['first']) .
@@ -566,10 +583,13 @@ class Binaries
 	 */
 	public function scan($groupArr, $first, $last, $type = 'update', $missingParts = null)
 	{
-		$returnArray = array();
-
-		$this->startHeaders = microtime(true);
+		// Start time of scan method.
 		$this->startLoop = microtime(true);
+
+		// Start time of getting data from usenet.
+		$this->startHeaders = $this->startLoop;
+
+		$returnArray = array();
 
 		// Check that tables exist, create if they do not
 		if ($this->tablepergroup == 1) {
@@ -641,14 +661,18 @@ class Binaries
 					$this->db->queryExec($query);
 
 				}
-
 				return false;
 			}
 		}
-		$timeHeaders = number_format(microtime(true) - $this->startHeaders, 2);
-
+		// Start of processing headers.
 		$this->startCleaning = microtime(true);
+
+		// End of the getting data from usenet.
+		$timeHeaders = number_format($this->startCleaning - $this->startHeaders, 2);
+
+		// Array of all the requested article numbers.
 		$rangerequested = range($first, $last);
+
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 
 		$msgCount = count($msgs);
@@ -800,8 +824,6 @@ class Binaries
 				}
 			}
 
-			$timeCleaning = number_format(microtime(true) - $this->startCleaning, 2);
-
 			unset($msg, $msgs);
 			$maxnum = $last;
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
@@ -855,7 +877,13 @@ class Binaries
 				}
 			}
 
+			// Start of inserting into SQL.
 			$this->startUpdate = microtime(true);
+
+			// End of processing headers.
+			$timeCleaning = number_format($this->startUpdate - $this->startCleaning, 2);
+
+
 			if (isset($this->message) && count($this->message) > 0) {
 				$maxnum = $first;
 				$pBinaryID = $pNumber = $pMessageID = $pPartNumber = $pSize = 1;
@@ -989,18 +1017,17 @@ class Binaries
 					}
 				}
 			}
-			$timeUpdate = number_format(microtime(true) - $this->startUpdate, 2);
-			$timeLoop = number_format(microtime(true) - $this->startLoop, 2);
 
+			$currentMicroTime = microtime(true);
 			if ($this->echo && $type != 'partrepair') {
 				$this->c->doEcho(
 					$this->c->alternateOver($timeHeaders . 's') .
 					$this->c->primaryOver(' to download articles, ') .
 					$this->c->alternateOver($timeCleaning . 's') .
 					$this->c->primaryOver(' to process articles, ') .
-					$this->c->alternateOver($timeUpdate . 's') .
+					$this->c->alternateOver(number_format($currentMicroTime - $this->startUpdate, 2) . 's') .
 					$this->c->primaryOver(' to insert articles, ') .
-					$this->c->alternateOver($timeLoop . 's') .
+					$this->c->alternateOver(number_format($currentMicroTime - $this->startLoop, 2) . 's') .
 					$this->c->primary(' total.')
 				);
 			}
@@ -1086,7 +1113,6 @@ class Binaries
 
 			// Download missing parts in ranges.
 			foreach ($ranges as $range) {
-				$this->startLoop = microtime(true);
 
 				$partfrom = $range['partfrom'];
 				$partto = $range['partto'];
