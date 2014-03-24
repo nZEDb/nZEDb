@@ -26,8 +26,8 @@ $msg = $nntp->getOverview($first.'-'.$first,true,false);
 print_r($msg);
 
 // get postdate for an article
-$backfill = new Backfill();
-$newdate = $backfill->postdate($nntp, $first, $group, true, 'normal');
+$backfill = new Backfill($nntp);
+$newdate = $backfill->postdate($first, $group, true, 'normal');
 
 if ($newdate != false) {
 	echo $c->primary("The posted date for ".$group.", article ".$first." is ".date('Y-m-d H:i:s', $newdate));

@@ -6,11 +6,17 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-03-24 ruhllatio
+	* Partially optimize queries for Site Stats being painfully slow with large number of releases
 2014-03-24 kevin
 	* Update DB.php to check if the current SAPI is cli, echo accordingly, strict checking on dbSystem()
 	* PHPdoc in ConsoleTools.php
 	* Fix some issues with partrepair ignoring pear errors.
 	* Check for debug constant on NNTP class.
+	* Store NNTP instance as object in Binaries/Backfill classes.
+	* Temp solution for those with unusable sites because of nZEDb.xml
+	* Change echo's in backfill/binaries to be similar.
+	* Binaries/backfill get rid of some microtime's and reuse some.
 2014-03-23 ruhllatio
 	* Change work release queries for movie/tv to leverage partitioning (5.5+ safe)
 2014-03-23 kevin
