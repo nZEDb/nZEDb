@@ -1,7 +1,7 @@
-DROP INDEX ix_movieinfo_imdbid ON movieinfo;
-DROP INDEX ix_consoleinfo_asin ON consoleinfo;
-DROP INDEX ix_musicinfo_asin ON musicinfo;
-DROP INDEX ix_bookinfo_asin ON bookinfo;
+DROP INDEX IF EXISTS movieinfo_imdbid;
+DROP INDEX IF EXISTS consoleinfo_asin;
+DROP INDEX IF EXISTS musicinfo_asin;
+DROP INDEX IF EXISTS bookinfo_asin;
 
 CREATE UNIQUE INDEX ix_movieinfo_imdbid ON movieinfo(imdbid);
 CREATE UNIQUE INDEX ix_consoleinfo_asin ON consoleinfo(asin);

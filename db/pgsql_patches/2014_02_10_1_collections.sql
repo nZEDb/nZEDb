@@ -1,4 +1,4 @@
-DROP INDEX ix_collection_collectionhash ON collections;
-CREATE UNIQUE INDEX ix_collection_collectionhash ON collections(collectionhash);
+DROP INDEX collections_collectionhash;
+CREATE UNIQUE INDEX ix_collections_collectionhash ON collections(collectionhash);
 
 UPDATE site SET value = '174' WHERE setting = 'sqlpatch';
