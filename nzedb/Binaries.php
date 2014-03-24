@@ -607,7 +607,7 @@ class Binaries
 		$msgs = $nntp->getOverview($first . "-" . $last, true, false);
 
 		// If there were an error, try to reconnect.
-		if ($type != 'partrepair' && $nntp->isError($msgs)) {
+		if ($nntp->isError($msgs)) {
 			// This is usually a compression error, so try disabling compression.
 			$nntp->doQuit();
 			if ($nntp->doConnect(false) !== true) {
@@ -617,14 +617,36 @@ class Binaries
 			$nntp->selectGroup($groupArr['name']);
 			$msgs = $nntp->getOverview($first . '-' . $last, true, false);
 			if ($nntp->isError($msgs)) {
-				$dMessage = "Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}";
-				if ($this->debug) {
-					$this->debugging->start("scan", $dMessage, 3);
+				if ($type !== 'partrepair') {
+
+					$dMessage = "Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}";
+					if ($this->debug) {
+						$this->debugging->start("scan", $dMessage, 3);
+					}
+
+					if ($this->echo) {
+						$this->c->doEcho($this->c->error($dMessage), true);
+					}
+
+				// If partrepair, increment attempts.
+				} else {
+
+					$query = sprintf(
+						'UPDATE partrepair SET attempts = attempts + 1 WHERE groupid = %d AND numberid ',
+						$groupArr['id']
+					);
+
+					// Check if it's more than 1 article.
+					if ($first !== $last) {
+						$query .= 'IN (' . implode(',', range($first, $last)) . ')';
+					} else {
+						$query .= '= ' . $first;
+					}
+
+					$this->db->queryExec($query);
+
 				}
 
-				if ($this->echo) {
-					$this->c->doEcho($this->c->error($dMessage), true);
-				}
 				return false;
 			}
 		}
@@ -1049,7 +1071,8 @@ class Binaries
 		);
 		$partsRepaired = 0;
 
-		if (count($missingParts) > 0) {
+		$missingCount = count($missingParts);
+		if ($missingCount > 0) {
 			if ($this->echo) {
 				$this->consoleTools->overWritePrimary(
 					'Attempting to repair ' .
@@ -1088,7 +1111,7 @@ class Binaries
 				$this->consoleTools->overWritePrimary(
 					"Attempting repair: " .
 					$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted, count($missingParts)) .
-					': ' . $partfrom . ' to ' . $partto
+					': ' . $partfrom . ' to ' . $partto . ' .'
 				);
 
 				// Get article from newsgroup.
