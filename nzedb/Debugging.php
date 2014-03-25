@@ -43,6 +43,26 @@ class Debugging
 	const debugLogName = 'debug';
 
 	/**
+	 * Show memory usage in log/cli out?
+	 *
+	 * @default true
+	 *
+	 * @const bool
+	 */
+	const showMemoryUsage = true;
+
+	/**
+	 * Show average load in log/cli out?
+	 *
+	 * @note Does not work in windows.
+	 *
+	 * @default true
+	 *
+	 * @const bool
+	 */
+	const showAverageLoad = true;
+
+	/**
 	 * Name of class that created an instance of debugging.
 	 * @var string
 	 */
@@ -85,6 +105,12 @@ class Debugging
 	private $timeCache;
 
 	/**
+	 * Is this the windows O/S?
+	 * @var bool
+	 */
+	private $isWindows;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $class The name of the class. ex,: $d = new Debugging("Binaries");
@@ -94,7 +120,8 @@ class Debugging
 		$this->class = $class;
 		$this->colorCLI = new ColorCLI();
 		$this->newLine = PHP_EOL;
-		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli') ? true : false;
+		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli');
+		$this->isWindows = (strtolower(substr(PHP_OS, 0, 3)) === 'win');
 	}
 
 	/**
@@ -133,6 +160,60 @@ class Debugging
 
 		// Log debug message to file if user enabled it.
 		$this->logDebug();
+	}
+
+	/**
+	 * Return current/peak memory usage or difference between current/peak memory usage and previous usage.
+	 *
+	 * @param int  $oldUsage  Output from a previous memory_get_usage().
+	 * @param bool $realUsage Use (true)system memory usage or (false)emalloc() usage, use emalloc() for debugging.
+	 * @param bool $peak      Get peak memory usage.
+	 *
+	 * @return string
+	 */
+	public function showMemUsage($oldUsage = 0, $realUsage = false, $peak = false)
+	{
+		$currentUsage = ($peak ? memory_get_peak_usage($realUsage)  : memory_get_usage($realUsage));
+		$actualUsage = ($oldUsage > 0 ? $currentUsage - $oldUsage : $currentUsage);
+
+		$units = [
+			'B',
+			'KiB',
+			'MiB',
+			'GiB',
+			'TiB',
+			'PiB'
+		];
+		return
+			round(
+				$actualUsage
+				/
+				pow(
+					1024,
+					($i =
+						floor(
+							log(
+								$actualUsage,
+								1024
+							)
+						)
+					)
+				), 2
+			) .
+			$units[(int)$i];
+	}
+
+	/**
+	 * Get system load.
+	 *
+	 * @return string|bool
+	 */
+	public function getSystemLoad()
+	{
+		if (!$this->isWindows) {
+			return implode(', ', sys_getloadavg());
+		}
+		return false;
 	}
 
 	/**
@@ -395,7 +476,15 @@ class Debugging
 			$this->debugMessage .
 
 			// The class/function.
-			$this->class . '.' . $method . '] [' .
+			$this->class . '.' . $method . ']' .
+
+			// Show memory usage for PHP.
+			(self::showMemoryUsage ? ' [PHP MEM: ' . $this->showMemUsage(0, true) . ']' : '') .
+
+			// Show average load.
+			(self::showAverageLoad ? ' [LOAD: ' . $this->getSystemLoad() . ']' : '') .
+
+			' [' .
 
 			// Now reformat the debug message, first stripping leading spaces.
 			trim(
@@ -461,4 +550,5 @@ class Debugging
 				return false;
 		}
 	}
+
 }

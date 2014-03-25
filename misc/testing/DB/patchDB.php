@@ -34,14 +34,14 @@ function SplitSQL($file, $delimiter = ';')
 						// Log the problem.
 						file_put_contents(
 							nZEDb_LOGS . 'patcherrors.log',
-							'[' . date('r') . '] [' . $e->getMessage() . ']',
+							'[' . date('r') . '] [ERROR] [' . $e->getMessage() . ']' . PHP_EOL,
 							FILE_APPEND
 						);
 
 						// And the query..
 						file_put_contents(
 							nZEDb_LOGS . 'patcherrors.log',
-							'[' . date('r') . '] [' . $query . ']',
+							'[' . date('r') . '] [QUERY] [' . $query . ']' . PHP_EOL,
 							FILE_APPEND
 						);
 
