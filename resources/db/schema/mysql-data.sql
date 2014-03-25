@@ -732,7 +732,7 @@ INSERT INTO site (setting, value)
   ('showdroppedyencparts', '0'),
   ('book_reqids', '8010'),
   ('showbacks', '0'),
-  ('sqlpatch', '185');
+  ('sqlpatch', '188');
 
 INSERT INTO genres (title, type)
   VALUES
