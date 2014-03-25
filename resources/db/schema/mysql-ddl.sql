@@ -131,6 +131,7 @@ CREATE TABLE releasesearch (
 ) ENGINE=MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
 CREATE FULLTEXT INDEX ix_releasesearch_name_searchname_ft ON releasesearch (name, searchname);
+CREATE INDEX ix_releasesearch_releaseid ON releasesearch (releaseid);
 
 DROP TABLE IF EXISTS releasefiles;
 CREATE TABLE releasefiles (
