@@ -9,6 +9,7 @@ Each update goes to the top of the file
 2014-03-25 kevin
 	* Add PHP memory usage to logging/debugging.
 	* Clean up logging of failed patches.
+	* Even better logging of failed patches.
 2014-03-25 ruhllatio
 	* Add FT Search table schema update and clean up a few schema issues in releases
 	* Fixed typo in FT search schema pre-git commit
