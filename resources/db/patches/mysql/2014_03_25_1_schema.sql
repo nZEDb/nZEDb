@@ -17,4 +17,4 @@ CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW BEGIN IF NEW.
 CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW BEGIN DELETE FROM releasesearch WHERE releaseid = OLD.id; END; $$
 DELIMITER ;
 
-UPDATE site SET vlaue = '187' WHERE setting = 'sqlpatch';
+UPDATE site SET value = '187' WHERE setting = 'sqlpatch';
