@@ -482,7 +482,7 @@ class Debugging
 			(self::showMemoryUsage ? ' [PHP MEM: ' . $this->showMemUsage(0, true) . ']' : '') .
 
 			// Show average load.
-			(self::showAverageLoad ? ' [LOAD: ' . $this->getSystemLoad() . ']' : '') .
+			((self::showAverageLoad && !$this->isWindows) ? ' [LOAD: ' . $this->getSystemLoad() . ']' : '') .
 
 			' [' .
 
