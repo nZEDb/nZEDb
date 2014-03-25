@@ -502,27 +502,27 @@ class Backfill
 				if (isset($header[0]['Date']) && strlen($header[0]['Date'] > 0)) {
 					$date = $header[0]['Date'];
 					break;
-				} else {
-				// Try to get locally.
-					$local = $this->db->queryOneRow(
-						'SELECT c.date AS date FROM ' .
-						$groupA['cname'] .
-						' c, ' .
-						$groupA['bname'] .
-						' b, ' .
-						$groupA['pname'] .
-						' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = ' .
-						$groupID .
-						' AND p.number = ' .
-						$post .
-						' LIMIT 1'
-					);
+				}
+			} else {
+			// Try to get locally.
+				$local = $this->db->queryOneRow(
+					'SELECT c.date AS date FROM ' .
+					$groupA['cname'] .
+					' c, ' .
+					$groupA['bname'] .
+					' b, ' .
+					$groupA['pname'] .
+					' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = ' .
+					$groupID .
+					' AND p.number = ' .
+					$currentPost .
+					' LIMIT 1'
+				);
 
-					// If the row exists return.
-					if ($local !== false) {
-						$date = $local['date'];
-						break;
-					}
+				// If the row exists return.
+				if ($local !== false) {
+					$date = $local['date'];
+					break;
 				}
 			}
 
