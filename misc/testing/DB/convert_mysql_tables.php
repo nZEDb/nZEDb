@@ -65,7 +65,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		foreach ($tables as $row) {
 			$tbl = $row['name'];
 			printf($c->header("Converting $tbl"));
-			$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
+			$db->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 		}
 	} else {
 		printf($c->header("Not converting releasesearch as your INNODB version does not support fulltext indexes"));
