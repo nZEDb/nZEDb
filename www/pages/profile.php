@@ -3,7 +3,6 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-
 $rc = new ReleaseComments();
 $sab = new SABnzbd($page);
 
@@ -24,13 +23,25 @@ if (!$data) {
 	$page->show404();
 }
 
+// Get the users API request count for the day.
+$apiRequests = $users->getApiRequests($userid);
+if (!$apiRequests) {
+	$apiRequests = 0;
+}
+$page->smarty->assign('apirequests', $apiRequests['num']);
+
 $invitedby = '';
 if ($data["invitedby"] != "") {
 	$invitedby = $users->getById($data["invitedby"]);
 }
 
+// Check if the user selected a theme.
+if (!isset($data['style']) || $data['style'] == 'None') {
+	$data['style'] = 'Using the admin selected theme.';
+}
+
 $page->smarty->assign('userinvitedby',$invitedby);
-$page->smarty->assign('user',$data);
+$page->smarty->assign('user', $data);
 
 $commentcount = $rc->getCommentCountForUser($userid);
 $offset = isset($_REQUEST["offset"]) ? $_REQUEST["offset"] : 0;

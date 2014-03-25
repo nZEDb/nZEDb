@@ -187,7 +187,7 @@ class ColorCLI
 
 	public static function debug($str)
 	{
-		$debugstring = "\033[" . self::$foreground_colors['Purple'] . "mDebug: $str\033[0m\n";
+		$debugstring = "\033[" . self::$foreground_colors['Gray'] . "mDebug: $str\033[0m\n";
 		return $debugstring;
 	}
 
@@ -266,5 +266,17 @@ class ColorCLI
 	public static function rsetColor()
 	{
 		return "\033[0m";
+	}
+
+	/**
+	 * Echo message to CLI.
+	 *
+	 * @param string $message The message.
+	 * @param bool $nl Add a new line?
+	 * @void
+	 */
+	public static function doEcho($message, $nl = false)
+	{
+		echo $message . ($nl ? PHP_EOL : '');
 	}
 }

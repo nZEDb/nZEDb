@@ -22,7 +22,7 @@ $db = new DB();
 
 // Create the connection here and pass, this is for post processing, so check for alternate
 $nntp = new NNTP();
-if (($site->alternate_nntp == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === false) {
+if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }
 if ($site->nntpproxy === "1") {
@@ -69,7 +69,7 @@ if ($pieces[0] != 'Stage7b') {
 //		printf($mask, str_replace('alt.binaries', 'a.b', $groupname), $first);
 
 	$postprocess = new PostProcess(true);
-	$postprocess->processAdditional(null, null, null, $groupid, $nntp);
+	$postprocess->processAdditional($nntp, '', $groupid);
 	$nfopostprocess = new Nfo(true);
 	$nfopostprocess->processNfoFiles(null, null, null, $groupid, $nntp);
 	if ($site->nntpproxy != "1") {

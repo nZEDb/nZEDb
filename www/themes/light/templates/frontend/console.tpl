@@ -1,5 +1,7 @@
+{if $site->adbrowse}
+	{$site->adbrowse}
+{/if}
 <h1>Browse Console</h1>
-
 <form name="browseby" action="console">
 	<table class="rndbtn" border="0" cellpadding="2" cellspacing="0">
 		<tr>
@@ -33,9 +35,6 @@
 	</table>
 </form>
 <p></p>
-
-{$site->adbrowse}
-
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
 
@@ -47,54 +46,51 @@
 			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB"/>{/if}
 		</div>
 		<br/>
-
 		{$pager}
-
 		<table style="width:100%;" class="data highlight icons" id="coverstable">
 			<tr>
 				<th width="130"><input type="checkbox" class="nzb_check_all"/></th>
 				<th>title<br/><a title="Sort Descending" href="{$orderbytitle_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>platform<br/><a title="Sort Descending" href="{$orderbyplatform_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyplatform_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>genre<br/><a title="Sort Descending" href="{$orderbygenre_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbygenre_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>release date<br/><a title="Sort Descending" href="{$orderbyreleasedate_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyreleasedate_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>posted<br/><a title="Sort Descending" href="{$orderbyposted_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyposted_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>size<br/><a title="Sort Descending" href="{$orderbysize_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbysize_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>files<br/><a title="Sort Descending" href="{$orderbyfiles_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyfiles_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 				<th>stats<br/><a title="Sort Descending" href="{$orderbystats_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif"
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
 								alt=""/></a><a title="Sort Ascending" href="{$orderbystats_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt=""/></a>
+								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
 			</tr>
-
 			{foreach from=$results item=result}
 				<tr class="{cycle values=",alt"}">
 					<td class="mid">
@@ -105,7 +101,6 @@
 									 src="{$smarty.const.WWW_TOP}/covers/console/{if $result.cover == 1}{$result.consoleinfoid}.jpg{else}no-cover.jpg{/if}"
 									 width="120" border="0" alt="{$result.title|escape:"htmlall"}"/>
 							</a>
-
 							<div class="movextra">
 								{if $result.nfoid > 0}<a href="{$smarty.const.WWW_TOP}/nfo/{$result.guid}"
 														 title="View Nfo" class="rndbtnsml modal_nfo" rel="nfo">
@@ -134,7 +129,6 @@
 						{if $result.releasedate != ""}<b>Released:</b>{$result.releasedate|date_format}<br/>{/if}
 						{if $result.review != ""}<b>Review:</b>{$result.review|stripslashes|escape:'htmlall'}<br/>{/if}
 						<br/>
-
 						<div class="movextra">
 							<table>
 								{assign var="msplits" value=","|explode:$result.grp_release_id}
@@ -158,7 +152,6 @@
 										</td>
 										<td>
 											<a href="{$smarty.const.WWW_TOP}/details/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">{$mname[$m@index]|escape:"htmlall"}</a>
-
 											<div>
 												<i class="icon-calendar"></i> Posted {$mpostdate[$m@index]|timeago} | <i
 														class="icon-hdd"></i> {$msize[$m@index]|fsize_format:"MB"} | <i
@@ -208,22 +201,17 @@
 					</td>
 				</tr>
 			{/foreach}
-
 		</table>
 		<br/>
-
 		{$pager}
-
 		<div class="nzb_multi_operations">
 			<small>With Selected:</small>
 			<input type="button" class="nzb_multi_operations_download" value="Download NZBs"/>
 			<input type="button" class="nzb_multi_operations_cart" value="Add to Cart"/>
 			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB"/>{/if}
 		</div>
-
 	</form>
 {else}
 	{header("Location: {$smarty.const.WWW_TOP}/browse?t={$category}")}
 {/if}
-
 <br/><br/><br/>

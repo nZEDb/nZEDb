@@ -1,4 +1,4 @@
-<div id="menucontainer"> 
+<div id="menucontainer">
 	<div id="menusearchlink">
 		<form id="headsearch_form" action="{$smarty.const.WWW_TOP}/search/" method="get">
 
@@ -16,11 +16,11 @@
 			</select>
 
 			<label style="display:none;" for="headsearch">Search Text</label>
-			<input id="headsearch" name="search" value="{if $header_menu_search == ""}Enter keywords{else}{$header_menu_search|escape:"htmlall"}{/if}" style="width:85px;" type="text" tabindex="1" /> 
+			<input id="headsearch" name="search" value="{if $header_menu_search == ""}Enter keywords{else}{$header_menu_search|escape:"htmlall"}{/if}" style="width:85px;" type="text" tabindex="1" />
 
 		</form>
 	</div>
-	<div id="menulink"> 
+	<div id="menulink">
 		<ul>
 		{foreach from=$parentcatlist item=parentcat}
 			{if $parentcat.id == 1000 && $userdata.consoleview=="1" && $site->lookupgames=="1"}
@@ -56,7 +56,7 @@
 				<ul>
 					{foreach from=$parentcat.subcatlist item=subcat}
 						{if $subcat.id == 8010}
-							<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books?t={$subcat.id}">{$subcat.title}</a></li>
+							<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/books">{$subcat.title}</a></li>
 						{else}
 							<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
 						{/if}

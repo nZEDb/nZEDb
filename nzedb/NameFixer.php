@@ -1,12 +1,18 @@
 <?php
 
+/**
+ * Class NameFixer
+ */
 class NameFixer
 {
 	CONST PREDB_REGEX = "/([\w\(\)]+[\._]([\w\(\)]+[\._-])+[\w\(\)]+-\w+)/";
 
+	/**
+	 * @param bool $echooutput
+	 */
 	function __construct($echooutput = true)
 	{
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->relid = $this->fixed = $this->checked = 0;
 		$this->db = new DB();
 		$db = $this->db;
@@ -24,7 +30,15 @@ class NameFixer
 		$this->consoletools = new ConsoleTools();
 	}
 
-	//  Attempts to fix release names using the NFO.
+	/**
+	 * Attempts to fix release names using the NFO.
+	 *
+	 * @param $time
+	 * @param $echo
+	 * @param $cats
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function fixNamesWithNfo($time, $echo, $cats, $namestatus, $show)
 	{
 
@@ -111,7 +125,15 @@ class NameFixer
 		}
 	}
 
-	//  Attempts to fix release names using the File name.
+	/**
+	 * Attempts to fix release names using the File name.
+	 *
+	 * @param $time
+	 * @param $echo
+	 * @param $cats
+	 * @param $namestatus
+	 * @param $show
+	 */
 	public function fixNamesWithFiles($time, $echo, $cats, $namestatus, $show)
 	{
 		if ($time == 1) {
@@ -182,7 +204,16 @@ class NameFixer
 		}
 	}
 
-	//  Attempts to fix release names using the Par2 File.
+	/**
+	 * Attempts to fix release names using the Par2 File.
+	 *
+	 * @param $time
+	 * @param $echo
+	 * @param $cats
+	 * @param $namestatus
+	 * @param $show
+	 * @param $nntp
+	 */
 	public function fixNamesWithPar2($time, $echo, $cats, $namestatus, $show, $nntp)
 	{
 		if (!isset($nntp)) {
@@ -252,7 +283,18 @@ class NameFixer
 		}
 	}
 
-	//  Update the release with the new information.
+	/**
+	 * Update the release with the new information.
+	 *
+	 * @param     $release
+	 * @param     $name
+	 * @param     $method
+	 * @param     $echo
+	 * @param     $type
+	 * @param     $namestatus
+	 * @param     $show
+	 * @param int $preid
+	 */
 	public function updateRelease($release, $name, $method, $echo, $type, $namestatus, $show, $preid = 0)
 	{
 		if ($this->relid !== $release["releaseid"]) {
@@ -267,9 +309,12 @@ class NameFixer
 
 				if ($type === "PAR2, ") {
 					$newname = ucwords($newname);
+					if (preg_match('/(.+?)\.[a-z0-9]{2,3}(PAR2)?$/i', $name, $match)) {
+						$newname = $match[1];
+					}
 				}
 
-				$this->fixed ++;
+				$this->fixed++;
 
 				$this->checkedname = explode("\\", $newname);
 				$newname = $this->checkedname[0];
@@ -280,16 +325,27 @@ class NameFixer
 					$groupname = $groups->getByNameByID($release["groupid"]);
 					$oldcatname = $this->category->getNameByID($release["categoryid"]);
 					$newcatname = $this->category->getNameByID($determinedcat);
+
 					if ($type === "PAR2, ") {
 						echo "\n";
 					}
-					echo $this->c->headerOver("\nNew name:  ") . $this->c->primary($newname) .
-					$this->c->headerOver("Old name:  ") . $this->c->primary($release["searchname"]) .
-					$this->c->headerOver("New cat:   ") . $this->c->primary($newcatname) .
-					$this->c->headerOver("Old cat:   ") . $this->c->primary($oldcatname) .
-					$this->c->headerOver("Group:     ") . $this->c->primary($groupname) .
-					$this->c->headerOver("Method:    ") . $this->c->primary($type . $method) .
-					$this->c->headerOver("ReleaseID: ") . $this->c->primary($release["releaseid"]);
+
+					echo
+						$this->c->headerOver("\nNew name:  ") .
+						$this->c->primary($newname) .
+						$this->c->headerOver("Old name:  ") .
+						$this->c->primary($release["searchname"]) .
+						$this->c->headerOver("New cat:   ") .
+						$this->c->primary($newcatname) .
+						$this->c->headerOver("Old cat:   ") .
+						$this->c->primary($oldcatname) .
+						$this->c->headerOver("Group:     ") .
+						$this->c->primary($groupname) .
+						$this->c->headerOver("Method:    ") .
+						$this->c->primary($type . $method) .
+						$this->c->headerOver("ReleaseID: ") .
+						$this->c->primary($release["releaseid"]);
+
 					if ($type !== "PAR2, ") {
 						echo "\n";
 					}
@@ -708,6 +764,7 @@ class NameFixer
 	public function nfoCheckMisc($release, $echo, $type, $namestatus, $show)
 	{
 		if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/Supplier.+?IGUANA/i', $release["textstring"])) {
+			$releasename = '';
 			$result = '';
 			if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w[-\w`~!@#$%^&*()+={}|:"<>?\[\]\\;\',.\/ ]+\s\((19|20)\d\d\)/i', $release["textstring"], $result)) {
 				$releasename = $result[0];
@@ -727,7 +784,7 @@ class NameFixer
 				}
 				$releasename = $releasename . "." . $result[1];
 			}
-			$releasename = $releasename . ".IGUANA";
+			$result = $releasename . ".IGUANA";
 			$this->updateRelease($release, $result, $method = "nfoCheck: IGUANA", $echo, $type, $namestatus, $show);
 		}
 	}
@@ -777,8 +834,9 @@ class NameFixer
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: Title - SxxExx - Eptitle", $echo, $type, $namestatus, $show);
 		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\)\.nds/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus, $show);
-		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\.(pdf|html|epub|mobi|azw)/i', $release["textstring"], $result)) {
-			$this->updateRelease($release, $result["0"], $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
+		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\.(pdf|html|epub|mobi|azw|tif|docx|lit|rtf|opf)/i', $release["textstring"], $result)) {
+			$result = str_replace("." . $result["1"], " (" . $result["1"] . ")", $result['0']);
+			$this->updateRelease($release, $result, $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
 		}
 	}
 

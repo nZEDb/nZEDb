@@ -1,6 +1,7 @@
-
+{if $site->adbrowse}
+	{$site->adbrowse}
+{/if}
 <h1>Browse {$catname}</h1>
-
 <form name="browseby" action="movies">
 	<table class="nobutton" border="0" cellpadding="2" cellspacing="0">
 		<tr>
@@ -54,13 +55,8 @@
 	</table>
 </form>
 <p></p>
-
-{$site->adbrowse}
-
 {if $results|@count > 0}
-
 	<form id="nzb_multi_operations_form" action="get">
-
 		<div class="nzb_multi_operations">
 			View: <b>Covers</b> | <a href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br />
 			<input type="button" style="margin-bottom:10px;" class="nzb_multi_operations_download" value="Download NZBs" />
@@ -74,9 +70,9 @@
 		<table style="width:100%;" class="data highlight icons" id="coverstable">
 			<tr>
 				<th width="5%" style="border-right: none;"><input type="checkbox" class="nzb_check_all" /></th>
-				<th style="border-left: none; border-right: none;">title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-				<th style="border-left: none; border-right: none;">year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
-				<th style="border-left: none;">rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes/Default/images/sorting/arrow_up.gif" alt="" /></a></th>
+				<th style="border-left: none; border-right: none;">title&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbytitle_desc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbytitle_asc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="" /></a></th>
+				<th style="border-left: none; border-right: none;">year&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyyear_desc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyyear_asc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="" /></a></th>
+				<th style="border-left: none;">rating&nbsp;&nbsp;&nbsp;<a title="Sort Descending" href="{$orderbyrating_desc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrating_asc}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt="" /></a></th>
 			</tr>
 
 			{foreach from=$results item=result}
@@ -87,15 +83,14 @@
 							{/if}
 							<div class="movoverlay">
 								<div class="movcover" style="float:right;">
-									<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >
+									<a target="_blank" href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}" name="name{$result.imdbid}" title="View movie info" class="modal_imdb" rel="movie" >
 										<img class="movshadow" src="{$smarty.const.WWW_TOP}/covers/movies/{if $result.cover == 1}{$result.imdbid}-cover.jpg{else}no-cover.jpg{/if}" alt="{$result.title|escape:"htmlall"}" />
 									</a>
 									<div class="movextra">
-										<a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="name{$result.imdbid}" title="View movie info" class="rndbtnsml modal_imdb" rel="movie" >Cover</a>
 										<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.imdbid}/" name="imdb{$result.imdbid}" title="View imdb page">Imdb</a>
 										<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.imdbid}/" name="trakt{$result.imdbid}" title="View trakt page">Trakt</a>
 										{if $cpurl != '' && $cpapi != ''}
-											<a class="rndbtnsml" target="blackhole" href="{$site->dereferrer_link}{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">CouchPotato</a>
+											<a class="rndbtnsml sendtocouch" target="blackhole" href="javascript:;" rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.title}" name="CP{$result.imdbid}" title="Add to CouchPotato">Couch</a>
 										{/if}
 									</div>
 								</div>

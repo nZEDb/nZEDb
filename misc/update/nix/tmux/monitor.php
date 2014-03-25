@@ -25,7 +25,7 @@ $colors = (isset($tmux->colors)) ? $tmux->colors : 0;
 $s = new Sites();
 $site = $s->get();
 $patch = $site->sqlpatch;
-$alternate_nntp = (isset($site->alternate_nntp)) ? $site->alternate_nntp : 0;
+$alternate_nntp = ($site->alternate_nntp === '1') ? true : false;
 $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 $delay = (isset($site->delaytime)) ? $site->delaytime : 2;
 $nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
@@ -48,7 +48,7 @@ if ($nntpproxy == 0) {
 	$port = NNTP_PORT;
 	$host = NNTP_SERVER;
 	$ip = gethostbyname($host);
-	if ($alternate_nntp == "1") {
+	if ($alternate_nntp) {
 		$port_a = NNTP_PORT_A;
 		$host_a = NNTP_SERVER_A;
 		$ip_a = gethostbyname($host_a);
@@ -67,7 +67,7 @@ if ($nntpproxy == 0) {
 		}
 	}
 
-	if ($alternate_nntp == 1) {
+	if ($alternate_nntp) {
 		$filename = $DIR . "update/python/lib/nntpproxy_a.conf";
 		$fp = fopen($filename, "r") or die("Couldn't open $filename");
 		while (!feof($fp)) {
@@ -82,7 +82,7 @@ if ($nntpproxy == 0) {
 		}
 	}
 	$ip = gethostbyname($host);
-	if ($alternate_nntp == 1) {
+	if ($alternate_nntp) {
 		$ip_a = gethostbyname($host_a);
 	}
 }
@@ -115,8 +115,8 @@ $proc_work = "SELECT "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
 
 $proc_work2 = "SELECT "
-	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 4000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
-	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND c.parentid = 6000 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.categoryid BETWEEN 4000 AND 4999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pc, "
+	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.categoryid BETWEEN 6000 AND 6999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
 	. "(SELECT COUNT(*) FROM releases r, category c WHERE r.nzbstatus = 1 AND c.id = r.categoryid AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
 	. "(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table, "
 	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
@@ -124,8 +124,8 @@ $proc_work2 = "SELECT "
 $proc_work3 = "SELECT "
 	. "(SELECT COUNT(*) from (SELECT * FROM releases WHERE nzbstatus = 1 AND isrenamed = 0 AND isrequestid = 1 AND reqidstatus in (0, -1) UNION SELECT * FROM releases WHERE nzbstatus = 1 AND isrenamed = 0 AND isrequestid = 1 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $request_hours . " HOUR) as temp ) AS requestid_inprogress, "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND reqidstatus = 1) AS requestid_matched, "
-	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND preid > 0) AS predb_matched, "
-	. "(SELECT COUNT(DISTINCT(preid)) FROM releases) AS distinct_predb_matched, "
+	. "(SELECT COUNT(*) FROM releases WHERE preid > 0) AS predb_matched, "
+	. "(SELECT COUNT(DISTINCT(preid)) FROM releases WHERE preid > 0) AS distinct_predb_matched, "
 	. "(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
 
 if ($dbtype == 'mysql') {
@@ -187,7 +187,6 @@ $proc_tmux = "SELECT "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'dehash') as dehash, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'dehash_timer') as dehash_timer, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'backfill_days') as backfilldays, "
-	. "(SELECT VALUE FROM site WHERE SETTING = 'debuginfo') as debug, "
 	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupbooks') as processbooks, "
 	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupmusic') as processmusic, "
 	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupgames') as processgames, "
@@ -346,8 +345,8 @@ if ($running == 1) {
 	printf($mask2, "Monitor Off v$version [" . $patch . "]: ", relativeTime("$time"));
 }
 printf($mask1, "USP Connections:", $usp1activeconnections . " active (" . $usp1totalconnections . " total) - " . $host . ":" . $port);
-if ($alternate_nntp == "1") {
-	printf($mask1, "USP Alternate:", $usp2activeconnections . " active (" . $usp2totalconnections . " total) - " . (($alternate_nntp == "1") ? $host_a . ":" . $port_a : "n/a"));
+if ($alternate_nntp) {
+	printf($mask1, "USP Alternate:", $usp2activeconnections . " active (" . $usp2totalconnections . " total) - " . (($alternate_nntp) ? $host_a . ":" . $port_a : "n/a"));
 }
 printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd") . "ago");
@@ -395,6 +394,7 @@ if ($show_query == 1) {
 $monitor = 30;
 $i = 1;
 $fcfirstrun = true;
+$fcnum = 0;
 
 while ($i > 0) {
 	//kill mediainfo and ffmpeg if exceeds 60 sec
@@ -442,7 +442,7 @@ while ($i > 0) {
 
 		$time07 = TIME();
 		if ($tablepergroup == 1) {
-			if ($db->dbsystem == 'mysql') {
+			if ($db->dbSystem == 'mysql') {
 				$sql = 'SHOW table status';
 			} else {
 				$sql = "SELECT relname FROM pg_class WHERE relname !~ '^(pg_|sql_)' AND relkind = 'r'";
@@ -452,7 +452,7 @@ while ($i > 0) {
 			$age = TIME();
 			if (count($tables) > 0) {
 				foreach ($tables as $row) {
-					if ($db->dbsystem == 'mysql') {
+					if ($db->dbSystem == 'mysql') {
 						$tbl = $row['name'];
 						$stamp = 'UNIX_TIMESTAMP(dateadded)';
 					} else {
@@ -489,6 +489,16 @@ while ($i > 0) {
 			}
 		}
 		$time1 = TIME();
+	}
+
+	if (!isset($proc_work_result[0])) {
+		$proc_work_result = $db->query($proc_work, rand_bool($i));
+	}
+	if (!isset($proc_work_result2[0])) {
+		$proc_work_result2 = $db->query($proc_work2, rand_bool($i));
+	}
+	if (!isset($proc_work_result3[0])) {
+		$proc_work_result3 = $db->query($proc_work3, rand_bool($i));
 	}
 
 	//get start values from $qry
@@ -565,6 +575,7 @@ while ($i > 0) {
 		}
 	}
 
+
 	//get values from $proc
 	if ($proc_work_result[0]['console'] != NULL) {
 		$console_releases_proc = $proc_work_result[0]['console'];
@@ -614,6 +625,7 @@ while ($i > 0) {
 			$partrepair_table = $proc_work_result2[0]['partrepair_table'];
 		}
 	}
+
 
 	if ($split_result[0]['predb'] != NULL) {
 		$predb = $split_result[0]['predb'];
@@ -781,9 +793,6 @@ while ($i > 0) {
 		$monitor_path_b = $proc_tmux_result[0]['monitor_path_b'];
 	}
 
-	if ($proc_tmux_result[0]['debug'] != NULL) {
-		$debug = $proc_tmux_result[0]['debug'];
-	}
 	if ($proc_tmux_result[0]['post_amazon'] != NULL) {
 		$post_amazon = $proc_tmux_result[0]['post_amazon'];
 	}
@@ -910,7 +919,7 @@ while ($i > 0) {
 	}
 
 	//get usenet connections
-	if ($alternate_nntp == "1") {
+	if ($alternate_nntp) {
 		$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
 		$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":" . $port));
 		$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip_a . ":" . $port_a . " | grep -c ESTAB"));
@@ -965,8 +974,8 @@ while ($i > 0) {
 		printf($mask2, "Monitor Off v$version [" . $patch . "]: ", relativeTime("$time"));
 	}
 	printf($mask1, "USP Connections:", $usp1activeconnections . " active (" . $usp1totalconnections . " total) - " . $host . ":" . $port);
-	if ($alternate_nntp == "1") {
-		printf($mask1, "USP Alternate:", $usp2activeconnections . " active (" . $usp2totalconnections . " total) - " . (($alternate_nntp == "1") ? $host_a . ":" . $port_a : "n/a"));
+	if ($alternate_nntp) {
+		printf($mask1, "USP Alternate:", $usp2activeconnections . " active (" . $usp2totalconnections . " total) - " . (($alternate_nntp) ? $host_a . ":" . $port_a : "n/a"));
 	}
 
 	printf($mask1, "Newest Release:", "$newestname");
@@ -1077,7 +1086,7 @@ while ($i > 0) {
 		$panes1 = str_replace("\n", '', explode(" ", $panes_win_2));
 	}
 
-	if ($debug == "1") {
+	if (nZEDb_DEBUG) {
 		$show_time = "/usr/bin/time";
 	} else {
 		$show_time = "";
@@ -1163,53 +1172,56 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\n${panes1[3]} has been disabled/terminated by Decrypt Hashes\"'");
 			}
 
-			//remove crap releases
-			if (($fix_crap_opt != "Disabled") && (($i == 1) || $fcfirstrun)) {
-				$log = writelog($panes1[1]);
-				if ($fix_crap_opt == 'All') {
+			// Remove crap releases.
+			switch ($fix_crap_opt) {
+				// Do all types up to 2 hours.
+				case 'All':
+					$log = writelog($panes1[1]);
 					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-				} else {
+							$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+					break;
+				// The user has specified custom types.
+				case 'Custom':
+					$log = writelog($panes1[1]);
+
+					// Check how many types the user picked.
 					$fcmax = count($fix_crap);
-					if (is_null($fcnum)) {
-						$fcnum = 0;
+
+					// Make sure he actually selected some.
+					if ($fcmax > 0) {
+
+						// If this is the first run, do a full run, else run on last 2 hours of releases.
+						$fctime = '2';
+						if ((($i == 1) || $fcfirstrun)) {
+							$fctime = 'full';
+						}
+
+						//Check to see if the pane is dead, if so resawn it.
+						if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1) {
+
+							// Run remove crap releases.
+							shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
+								echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
+								php ${DIR}testing/Release/removeCrapReleases.php true $fctime $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+
+							// Increment so we know which type to run next.
+							$fcnum++;
+						}
+
+						// If we reached the end, reset the type.
+						if ($fcnum == $fcmax) {
+							$fcnum = 0;
+
+							// And say we are not on the first run, so we run 2 hours the next times.
+							$fcfirstrun = false;
+						}
 					}
-					//Check to see if the pane is dead, if so resawn it.
-					if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1) {
-						shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-							echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-							php ${DIR}testing/Release/removeCrapReleases.php true full $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-						$fcnum++;
-					}
-					if ($fcnum == $fcmax) {
-						$fcnum = 0;
-						$fcfirstrun = false;
-					}
-				}
-			} else if ($fix_crap_opt != 'Disabled') {
-				$log = writelog($panes1[1]);
-				if ($fix_crap_opt == 'All') {
-					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-				} else {
-					$fcmax = count($fix_crap);
-					if (is_null($fcnum)) {
-						$fcnum = 0;
-					}
-					//Check to see if the pane is dead, if so respawn it.
-					if (shell_exec("tmux list-panes -t${tmux_session}:1 | grep ^1 | grep -c dead") == 1) {
-						shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-							echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-							$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
-						$fcnum++;
-					}
-					if ($fcnum == $fcmax) {
-						$fcnum = 0;
-					}
-				}
-			} else {
-				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
+					break;
+				case 'Disabled':
+				default:
+					$color = get_color($colors_start, $colors_end, $colors_exc);
+					shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Remove Crap Releases\"'");
+					break;
 			}
 
 			if ($post == 1 && ($work_remaining_now + $pc_releases_proc + $pron_remaining_now) > 0) {

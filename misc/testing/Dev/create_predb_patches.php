@@ -28,9 +28,9 @@ foreach (range($lppo, $wp) as $number)
 		$db->query("select {$uta},title,category,replace(size,'[a-zA-Z]',''),predate from predb where adddate > '".$lpdpo."' limit ${loop}, 10000 INTO OUTFILE 'data${number2}.txt' FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n'");
 
 	$fp = gzopen (nZEDb_WWW."/a/data".$number2.".gz", 'w9');
-	gzwrite ($fp, file_get_contents("/var/lib/mysql/nzedb/data".$number2.".txt"));
+	gzwrite ($fp, file_get_contents("/var/lib/mysql/nzedb/data".$number2.'.txt'));
 	gzclose($fp);
 	chmod(nZEDb_WWW."/a/data".$number2.".gz", 0777);
-	unlink("/var/lib/mysql/nzedb/data".$number2.".txt");
+	unlink("/var/lib/mysql/nzedb/data".$number2.'.txt');
 }
 */

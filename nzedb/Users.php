@@ -31,6 +31,19 @@ class Users
 		return $db->query("SELECT * FROM users");
 	}
 
+
+	/**
+	 * Get the users selected theme.
+	 *
+	 * @param string|int $userID The id of the user.
+	 *
+	 * @return array|bool The users selected theme.
+	 */
+	public function getStyle($userID)
+	{
+		return $this->db->queryOneRow("SELECT style FROM users WHERE id = " . $userID);
+	}
+
 	public function delete($id)
 	{
 		$db = $this->db;
@@ -168,7 +181,9 @@ class Users
 		return $db->queryInsert(sprintf("INSERT INTO users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed, firstname, lastname) VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)", $db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby, $db->escapeString($db->uuid()), $db->escapeString($fname), $db->escapeString($lname)));
 	}
 
-	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites, $movieview, $musicview, $consoleview, $bookview, $saburl = false, $sabapikey = false, $sabpriority = false, $sabapikeytype = false, $cp_url = false, $cp_api = false)
+	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites, $movieview, $musicview,
+		$consoleview, $bookview, $saburl = false, $sabapikey = false, $sabpriority = false, $sabapikeytype = false,
+		$cp_url = false, $cp_api = false, $style = 'None')
 	{
 		$db = $this->db;
 
@@ -216,6 +231,7 @@ class Users
 		$sql[] = sprintf('musicview = %d', $musicview);
 		$sql[] = sprintf('consoleview = %d', $consoleview);
 		$sql[] = sprintf('bookview = %d', $bookview);
+		$sql[] = sprintf('style = %s', $db->escapeString($style));
 
 		if ($saburl !== false) {
 			$sql[] = sprintf('saburl = %s', $db->escapeString($saburl));
@@ -287,8 +303,7 @@ class Users
 
 	public function getById($id)
 	{
-		$db = $this->db;
-		return $db->queryOneRow(sprintf("SELECT users.*, userroles.name AS rolename, userroles.canpreview, userroles.apirequests, userroles.downloadrequests, NOW() AS now FROM users INNER JOIN userroles ON userroles.id = users.role WHERE users.id = %d", $id));
+		return $this->db->queryOneRow(sprintf("SELECT users.*, userroles.name AS rolename, userroles.canpreview, userroles.apirequests, userroles.downloadrequests, NOW() AS now FROM users INNER JOIN userroles ON userroles.id = users.role WHERE users.id = %d", $id));
 	}
 
 	public function getByIdAndRssToken($id, $rsstoken)
@@ -310,14 +325,14 @@ class Users
 
 	public function isValidUsername($uname)
 	{
-		// Username must be at least five characters and is alphanumeric
-		return ((ctype_alnum($uname) && strlen($uname) > 4) ? true : false);
+		// Username must be at least three characters and is alphanumeric
+		return ((ctype_alnum($uname) && strlen($uname) > 2) ? true : false);
 	}
 
 	public function isValidPassword($pass)
 	{
-		// Password must be at least 8 characters
-		return (strlen($pass) > 7);
+		// Password must be at least 6 characters
+		return (strlen($pass) > 5);
 	}
 
 	public function isDisabled($username)
@@ -609,9 +624,8 @@ class Users
 			$contents = $sender["username"] . " has sent an invite to join " . $sitetitle . " to this email address.<br>To accept the invitation click <a href=\"$url\">this link</a>\n";
 		}
 
-		if (sendEmail($emailto, $subject, $contents, $siteemail)) {
-			$this->addInvite($uid, $token);
-		}
+		sendEmail($emailto, $subject, $contents, $siteemail);
+		$this->addInvite($uid, $token);
 
 		return $url;
 	}

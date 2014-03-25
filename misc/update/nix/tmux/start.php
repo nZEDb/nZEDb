@@ -186,7 +186,7 @@ function window_proxy($tmux_session, $window)
 	$s = new Sites();
 	$site = $s->get();
 	$nntpproxy = $site->nntpproxy;
-	if ($nntpproxy == 1) {
+	if ($nntpproxy === '1') {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy.conf")) {
@@ -194,9 +194,8 @@ function window_proxy($tmux_session, $window)
 			exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
 	}
-	$alternate_nntp = $site->alternate_nntp;
-	$grabnzbs = $site->grabnzbs;
-	if ($nntpproxy == 1 && ($alternate_nntp == 1 || $grabnzbs == 2)) {
+
+	if ($nntpproxy === '1' && ($site->alternate_nntp === '1' || $site->grabnzbs === '2')) {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy_a.conf")) {

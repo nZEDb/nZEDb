@@ -1,13 +1,9 @@
-
 <h1>Register</h1>
-
 {if $error != ''}
 	<div class="error">{$error}</div>
 {/if}
-
 {if $showregister != "0"}
 	<form method="post" action="register?action=submit">
-
 		<table style="width:500px;" class="data">
 			<tr><th width="75px;"><label for="username">Username: <em>*</em></label></th>
 				<td>
@@ -37,10 +33,8 @@
 			<tr><th><label for="confirmpassword">Confirm Password: <em>*</em></label></th><td><input autocomplete="off" id="confirmpassword" name="confirmpassword" value="{$confirmpassword}" type="password"/></td></tr>
 			<tr><th><label for="email">Email: <em>*</em></label></th><td><input autocomplete="off" id="email" name="email" value="{$email}" type="text" /></td></tr>
 		</table>
-
 		<table style="width:500px; margin-top:10px;" class="data">
-                    <tr><th width="75px;"></th><td><input class="rndbtn" type="submit" value="Register"/><br /><br /><div style="float:left;" class="hint"><em>*</em> Indicates mandatory field.</div></td></tr>
+			<tr><th width="75px;"></th><td><input class="rndbtn" type="submit" value="Register"/><br /><br /><div style="float:left;" class="hint"><em>*</em> Indicates mandatory field.</div></td></tr>
 		</table>
-
 	</form>
 {/if}

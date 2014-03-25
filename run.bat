@@ -1,3 +1,3 @@
 @echo off
 
-php _runonce\relocateOldDirectoryContents.php
+php nzedb\build\_runonce\relocateOldDirectoryContents.php

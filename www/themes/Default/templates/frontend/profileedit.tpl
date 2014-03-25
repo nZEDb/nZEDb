@@ -10,7 +10,7 @@
 <form action="profileedit?action=submit" method="post">
 
 <fieldset>
-<legend>User Details</legend>
+<nZEDblegend>User Details</nZEDblegend>
 <table class="input">
 	<tr><th width="100">Username:</th><td>{$user.username|escape:"htmlall"}</td></tr>
     <tr><th>First Name:</th><td><input id="firstname" class="form-control" name="firstname" type="text" value="{$user.firstname}"></td></tr>
@@ -19,7 +19,7 @@
 	<tr><th>Password:</th>
 		<td>
 			<input autocomplete="off" id="password" name="password" type="password" value=""></input>
-			<div class="hint">Only enter your password if you want to change it.</div>
+			<div class="hint">Only enter a password if you want to change it.</div>
 		</td>
 	</tr>
 	<tr><th>Confirm Password:</th><td><input autocomplete="off" id="confirmpassword" name="confirmpassword" type="password" value=""></input>
@@ -28,9 +28,17 @@
 </table>
 </fieldset>
 <fieldset>
-<legend>Site Preferences</legend>
+<nZEDblegend>Site Preferences</nZEDblegend>
 <table class="input">
-	<tr><th>View Movie Page:</th>
+	<tr>
+		<th>Site theme:</th>
+		<td>
+			{html_options id="style" name='style' values=$themelist output=$themelist selected=$user.style}
+			<span class="help-block">Change the site theme, None will use the theme the administrator set.</span>
+		</td>
+	</tr>
+	<tr>
+		<th>View Movie Page:</th>
 		<td>
 			<input id="movieview" name="movieview" value="1" type="checkbox" {if $user.movieview=="1"}checked="checked"{/if}></input>
 			<div class="hint">Browse movie covers. Only shows movies with known IMDB info.</div>
@@ -65,7 +73,7 @@
 
 {if $page->site->sabintegrationtype == 2}
 <fieldset>
-<legend>SABnzbd Integration</legend>
+<nZEDblegend>SABnzbd Integration</nZEDblegend>
 <table class="input">
 	<tr>
 		<th width="100"><label for="saburl">SABnzbd Url:</label></th>
@@ -109,7 +117,7 @@
 </fieldset>
 {/if}
 <fieldset class="notop">
-<legend>CouchPotato Integration</legend>
+<nZEDblegend>CouchPotato Integration</nZEDblegend>
 <table class="input">
 	<tr>
 		<td style="width:180px;"><label for="cp_api">CouchPotato API key:</label></td>

@@ -48,7 +48,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 				{
 					if($handle = gzopen($zippath, "rb"))
 					{
-						$file = nZEDb_WWW."data".$filenump.".txt";
+						$file = nZEDb_WWW."data".$filenump.'.txt';
 						$txthandle = fopen($file, "w");
 
 						while($string = gzread($handle, 4096))

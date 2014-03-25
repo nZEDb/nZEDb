@@ -24,7 +24,7 @@ class DB extends PDO
 	/**
 	 * @var string Lower-cased name of DBMS in use.
 	 */
-	public $dbsystem;
+	public $dbSystem;
 
 	/**
 	 * @var bool	Whether memcache is enabled.
@@ -37,19 +37,34 @@ class DB extends PDO
 	private static $pdo = null;
 
 	/**
+	 * @var object Class instance debugging.
+	 */
+	private $debugging;
+
+	/**
+	 * @var string Vversion of the Db server.
+	 */
+	private $dbVersion;
+
+	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
 	 */
-	public function __construct()
+	public function __construct($checkVersion = false)
 	{
 		$this->c = new ColorCLI();
+		$this->debugging = new Debugging("DB");
 
 		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
-			$this->dbsystem = strtolower(DB_SYSTEM);
+			$this->dbSystem = strtolower(DB_SYSTEM);
 		} else if (PHP_SAPI == 'cli') {
-			exit($this->c->error("\nconfig.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');"));
+			$message = "\nconfig.php is missing the DB_SYSTEM setting. Add the following in that file:\n define('DB_SYSTEM', 'mysql');";
+			$this->debugging->start("__construct", $message, 1);
+			exit($this->c->error($message));
 		} else {
+			$this->debugging->start("__construct", "config.php is missing the DB_SYSTEM setting. Add the following in that file: define('DB_SYSTEM', 'mysql');", 1);
 			echo "<div class=\"error\">config.php is missing the DB_SYSTEM setting. Add the following in that file:<br/> define('DB_SYSTEM', 'mysql');</div>";
+			exit();
 		}
 
 		if (!(self::$pdo instanceof PDO)) {
@@ -63,43 +78,53 @@ class DB extends PDO
 		}
 		$this->consoletools = new ConsoleTools();
 
+		if ($checkVersion) {
+			$this->fetchDbVersion();
+		}
+
 		return self::$pdo;
 	}
 
 	private function initialiseDatabase()
 	{
-		if ($this->dbsystem == 'mysql') {
+		if ($this->dbSystem == 'mysql') {
 			if (defined('DB_SOCKET') && DB_SOCKET != '') {
-				$dsn = $this->dbsystem . ':unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME;
+				$dsn = $this->dbSystem . ':unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME;
 			} else {
-				$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
+				$dsn = $this->dbSystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
 				if (defined('DB_PORT')) {
 					$dsn .= ';port=' . DB_PORT;
 				}
 			}
 			$dsn .= ';charset=utf8';
 		} else {
-			$dsn = $this->dbsystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
+			$dsn = $this->dbSystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
 		}
 
 		try {
 			$options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180, PDO::MYSQL_ATTR_LOCAL_INFILE => true);
-			if ($this->dbsystem == 'mysql') {
+			if ($this->dbSystem == 'mysql') {
 				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			}
 
 			self::$pdo = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
 			if (self::$pdo === false) { // In case PDO is not set to produce exceptions (PHP's default behaviour).
-				die("Unable to create connection to the Database!\n");
+				$message = "Unable to create connection to the Database!\n";
+				$this->debugging->start("initialiseDatabase", $message, 1);
+				exit($message);
 			}
 			// For backwards compatibility, no need for a patch.
 			self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 		} catch (PDOException $e) {
 			if (PHP_SAPI == 'cli') {
-				exit($this->c->error("\nConnection to the SQL server failed, error was: (" . $e->getMessage() . ")"));
+				$message = "\nConnection to the SQL server failed, error was: (" . $e->getMessage() . ")";
+				$this->debugging->start("initialiseDatabase", $message, 1);
+				exit($message);
 			} else {
+				$this->debugging->start("initialiseDatabase", "Connection to the SQL server failed, error was: (" . $e->getMessage() . ")", 1);
 				echo "<div class=\"error\">Connection to the SQL server failed, error was: ({$e->getMessage()});</div>";
+				exit();
 			}
 		}
 	}
@@ -109,7 +134,7 @@ class DB extends PDO
 	 */
 	public function dbSystem()
 	{
-		return $this->dbsystem;
+		return $this->dbSystem;
 	}
 
 	// Returns a string, escaped with single quotes, false on failure. http://www.php.net/manual/en/pdo.quote.php
@@ -135,7 +160,7 @@ class DB extends PDO
 		}
 
 		try {
-			if ($this->dbsystem() == 'mysql') {
+			if ($this->dbSystem() == 'mysql') {
 				$ins = self::$pdo->prepare($query);
 				$ins->execute();
 				return self::$pdo->lastInsertId();
@@ -148,22 +173,23 @@ class DB extends PDO
 		} catch (PDOException $e) {
 			// Deadlock or lock wait timeout, try 10 times.
 			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205 || $e->getMessage() == 'SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10) {
-				echo $this->c->error("\nA Deadlock or lock wait timeout has occurred, sleeping.\n");
+				$message = "\nA Deadlock or lock wait timeout has occurred, sleeping.\n";
+				$this->debugging->start("queryInsert", $message, 4);
+				echo $this->c->error($message);
 				$this->consoletools->showsleep($i * $i);
 				$this->queryInsert($query, $i++);
 			}
 			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205) {
-				//echo "Error: Deadlock or lock wait timeout, try increasing innodb_lock_wait_timeout";
-				return false;
+				$this->debugging->start("queryInsert", "Deadlock or lock wait timeout, try increasing innodb_lock_wait_timeout.", 4);
 			} else if ($e->errorInfo[1] == 1062 || $e->errorInfo[0] == 23000) {
-				//echo "\nError: Insert would create duplicate row, skipping\n";
-				return false;
+				$this->debugging->start("queryInsert", "Insert would create duplicate row, skipping.", 4);
 			} else if ($e->errorInfo[1] == 1406 || $e->errorInfo[0] == 22001) {
-				//echo "\nError: Too large to fit column length\n";
-				return false;
+				$this->debugging->start("queryInsert", "Too large to fit column length.", 4);
 			} else {
+				$this->debugging->start("queryInsert", $e->getMessage(), 4);
 				echo $this->c->error("\n" . $e->getMessage());
 			}
+			$this->debugging->start("queryInsert", $query, 6);
 			return false;
 		}
 	}
@@ -182,22 +208,23 @@ class DB extends PDO
 		} catch (PDOException $e) {
 			// Deadlock or lock wait timeout, try 10 times.
 			while (($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205 || $e->getMessage() == 'SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction') && $i <= 10) {
-				echo $this->c->error("\nA Deadlock or lock wait timeout has occurred, sleeping.\n");
+				$message = "\nA Deadlock or lock wait timeout has occurred, sleeping.\n";
+				$this->debugging->start("queryExec", $message, 4);
+				echo $this->c->error($message);
 				$this->consoletools->showsleep($i * $i);
 				$this->queryInsert($query, $i++);
 			}
 			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205) {
-				//echo "Error: Deadlock or lock wait timeout.";
-				return false;
+				$this->debugging->start("queryExec", "Deadlock or lock wait timeout.", 4);
 			} else if ($e->errorInfo[1] == 1062 || $e->errorInfo[0] == 23000) {
-				//echo "\nError: Update would create duplicate row, skipping\n";
-				return false;
+				$this->debugging->start("queryExec", "Update would create duplicate row, skipping.", 4);
 			} else if ($e->errorInfo[1] == 1406 || $e->errorInfo[0] == 22001) {
-				//echo "\nError: Too large to fit column length\n";
-				return false;
+				$this->debugging->start("queryExec", "Too large to fit column length.", 4);
 			} else {
+				$this->debugging->start("queryExec", $e->getMessage(), 4);
 				echo $this->c->error("\n" . $e->getMessage());
 			}
+			$this->debugging->start("queryExec", $query, 6);
 			return false;
 		}
 	}
@@ -213,6 +240,8 @@ class DB extends PDO
 			return self::$pdo->exec($query);
 		} catch (PDOException $e) {
 			echo $this->c->error("\n" . $e->getMessage());
+			$this->debugging->start("Exec", $e->getMessage(), 4);
+			$this->debugging->start("Exec", $query, 6);
 			return false;
 		}
 	}
@@ -243,6 +272,8 @@ class DB extends PDO
 				}
 			} catch (Exception $er) {
 				echo $this->c->error("\n" . $er->getMessage());
+				$this->debugging->start("query", $er->getMessage(), 4);
+				$this->debugging->start("query", $query, 6);
 			}
 		}
 
@@ -290,7 +321,10 @@ class DB extends PDO
 			$result = self::$pdo->query($query);
 		} catch (PDOException $e) {
 			//echo $query."\n";
-			echo $this->c->error("\nqueryDirect: " . $e->getMessage() . "\n");
+			$error = "\nqueryDirect: " . $e->getMessage() . "\n";
+			echo $this->c->error($error);
+			$this->debugging->start("queryDirect", $error, 4);
+			$this->debugging->start("queryDirect", $query, 6);
 			$result = false;
 		}
 		return $result;
@@ -336,7 +370,7 @@ class DB extends PDO
 	public function optimise($admin = false, $type = '')
 	{
 		$tablecnt = 0;
-		if ($this->dbsystem == 'mysql') {
+		if ($this->dbSystem == 'mysql') {
 			if ($type === 'true' || $type === 'full' || $type === 'analyze') {
 				$alltables = $this->query('SHOW TABLE STATUS');
 			} else {
@@ -350,19 +384,25 @@ class DB extends PDO
 				}
 				$tbls = rtrim(trim($tbls),',');
 				if ($admin === false) {
-					echo $this->c->primary('Optimizing tables: ' . $tbls);
+					$message = 'Optimizing tables: ' . $tbls;
+					echo $this->c->primary($message);
+					$this->debugging->start("optimise", $message, 5);
 				}
 				$this->queryExec("OPTIMIZE LOCAL TABLE ${tbls}");
 			} else {
 				foreach ($alltables as $table) {
 					if ($type === 'analyze') {
 						if ($admin === false) {
-							echo $this->c->primary('Analyzing table: ' . $table['name']);
+							$message = 'Analyzing table: ' . $table['name'];
+							echo $this->c->primary($message);
+							$this->debugging->start("optimise", $message, 5);
 						}
 						$this->queryExec('ANALYZE LOCAL TABLE `' . $table['name'] . '`');
 					} else {
 						if ($admin === false) {
-							echo $this->c->primary('Optimizing table: ' . $table['name']);
+							$message = 'Optimizing table: ' . $table['name'];
+							echo $this->c->primary($message);
+							$this->debugging->start("optimise", $message, 5);
 						}
 						if (strtolower($table['engine']) == 'myisam') {
 							$this->queryExec('REPAIR TABLE `' . $table['name'] . '`');
@@ -374,12 +414,14 @@ class DB extends PDO
 			if ($type !== 'analyze') {
 				$this->queryExec('FLUSH TABLES');
 			}
-		} else if ($this->dbsystem == 'pgsql') {
+		} else if ($this->dbSystem == 'pgsql') {
 			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
 			$tablecnt = count($alltables);
 			foreach ($alltables as $table) {
 				if ($admin === false) {
-					echo 'Vacuuming table: ' . $table['name'] . ".\n";
+					$message = 'Vacuuming table: ' . $table['name'] . ".\n";
+					echo $message;
+					$this->debugging->start("optimise", $message, 5);
 				}
 				$this->query('VACUUM (ANALYZE) ' . $table['name']);
 			}
@@ -396,7 +438,7 @@ class DB extends PDO
 
 		if (!is_null($grpid) && is_numeric($grpid)) {
 			$binaries = $parts = $collections = $partrepair = false;
-			if ($this->dbsystem == 'pgsql') {
+			if ($this->dbSystem == 'pgsql') {
 				$like = ' (LIKE collections INCLUDING ALL)';
 			} else {
 				$like = ' LIKE collections';
@@ -450,7 +492,7 @@ class DB extends PDO
 			}
 
 			if ($collections === true) {
-				if ($this->dbsystem == 'pgsql') {
+				if ($this->dbSystem == 'pgsql') {
 					$like = ' (LIKE binaries INCLUDING ALL)';
 				} else {
 					$like = ' LIKE binaries';
@@ -467,7 +509,7 @@ class DB extends PDO
 			}
 
 			if ($binaries === true) {
-				if ($this->dbsystem == 'pgsql') {
+				if ($this->dbSystem == 'pgsql') {
 					$like = ' (LIKE parts INCLUDING ALL)';
 				} else {
 					$like = ' LIKE parts';
@@ -484,7 +526,7 @@ class DB extends PDO
 			}
 
 			if ($DoPartRepair === true && $parts === true) {
-				if ($this->dbsystem == 'pgsql') {
+				if ($this->dbSystem == 'pgsql') {
 					$like = ' (LIKE partrepair INCLUDING ALL)';
 				} else {
 					$like = ' LIKE partrepair';
@@ -531,9 +573,9 @@ class DB extends PDO
 	public function from_unixtime($utime, $escape = true)
 	{
 		if ($escape === true) {
-			if ($this->dbsystem == 'mysql') {
+			if ($this->dbSystem == 'mysql') {
 				return 'FROM_UNIXTIME(' . $utime . ')';
-			} else if ($this->dbsystem == 'pgsql') {
+			} else if ($this->dbSystem == 'pgsql') {
 				return 'TO_TIMESTAMP(' . $utime . ')::TIMESTAMP';
 			}
 		} else {
@@ -592,6 +634,7 @@ class DB extends PDO
 		try {
 			$PDOstatement = self::$pdo->prepare($query, $options);
 		} catch (PDOException $e) {
+			$this->debugging->start("Prepare", $e->getMessage(), 5);
 			echo $this->c->error("\n" . $e->getMessage());
 			$PDOstatement = false;
 		}
@@ -605,10 +648,45 @@ class DB extends PDO
 			try {
 				$result = self::$pdo->getAttribute($attribute);
 			} catch (PDOException $e) {
+				$this->debugging->start("getAttribute", $e->getMessage(), 5);
 				echo $this->c->error("\n" . $e->getMessage());
 				$result = false;
 			}
 			return $result;
+		}
+	}
+
+	/**
+	 * @return string Returns the stored Db version string.
+	 */
+	public function getDbVersion ()
+	{
+		return $this->dbVersion;
+	}
+
+	/**
+	 * @param $requiredVersion	The minimum version to compare against
+	 *
+	 * @return boolen|null        TRUE if Db version is greater than or eaqual to $requiredVersion,
+	 * false if not, and null if the version isn't available to check against.
+	 */
+	public function isDbVersionAtLeast ($requiredVersion)
+	{
+		if (empty($this->dbVersion)) {
+			return null;
+		}
+		return version_compare($requiredVersion, $this->dbVersion, '<=');
+	}
+
+	/**
+	 * Performs the fetch from the Db server and stores the resulting Major.Minor.Version number.
+	 */
+	private function fetchDbVersion ()
+	{
+		$result          = $this->queryOneRow("SELECT VERSION() AS version");
+		if (!empty($result)) {
+			$dummy = explode('-', $result['version'], 2);
+			$this->dbVersion = $dummy[0];
 		}
 	}
 }

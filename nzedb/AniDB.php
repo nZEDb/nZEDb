@@ -11,7 +11,7 @@ class AniDB
 		$site = $s->get();
 
 		$this->aniqty = (!empty($site->maxanidbprocessed)) ? $site->maxanidbprocessed : 100;
-		$this->echooutput = $echooutput;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
 		$this->db = new DB();
 		$this->c = new ColorCLI();
@@ -20,8 +20,9 @@ class AniDB
 	public function animetitlesUpdate()
 	{
 		// this should not be run as it should be handled by populate_anidb
-		if ($this->echooutput)
-			echo "Skipped update aniTitles as it is handled by populate_anidb in misc/testing/DB\n";
+		if ($this->echooutput) {
+			$this->c->doEcho("Skipped update aniTitles as it is handled by populate_anidb in misc/testing/DB", true);
+		}
 		return;
 	}
 
@@ -246,8 +247,9 @@ class AniDB
 
 			return $cleanFilename;
 		} else {
-			if ($this->echooutput)
-				echo "\tFalling back to Pure REGEX method to determine name\n";
+			if ($this->echooutput) {
+				$this->c->doEcho("\tFalling back to Pure REGEX method to determine name.", true);
+			}
 
 			// if no "'s were found then fall back to cleanFilename;
 			return $this->cleanFilename($searchname);
@@ -273,8 +275,9 @@ class AniDB
 		$site = new Sites();
 
 		if (count($results) > 0) {
-			if ($this->echooutput)
-				echo 'Processing ' . count($results) . " anime releases.\n";
+			if ($this->echooutput) {
+				$this->c->doEcho('Processing ' . count($results) . " anime releases.", true);
+			}
 
 			foreach ($results as $arr) {
 
@@ -284,7 +287,9 @@ class AniDB
 				// Get a release name to update the DB with, this is more than the title as it includes group size ... or worst case the same as the title
 				$getReleaseName = $this->getReleaseName($arr['searchname']);
 
-				echo "\tProcessing Anime entitled: " . $getReleaseName['title'] . "\n";
+				if ($this->echooutput) {
+					$this->c->doEcho("\tProcessing Anime entitled: " . $getReleaseName['title'], true);
+				}
 
 				// get anidb number for the title of the naime
 				$anidbID = $this->getanidbID($cleanFilename['title']);
@@ -294,8 +299,9 @@ class AniDB
 					continue;
 				}
 
-				if ($this->echooutput)
-					echo 'Looking up: ' . $arr['searchname'] . "\n";
+				if ($this->echooutput) {
+					$this->c->doEcho('Looking up: ' . $arr['searchname'], true);
+				}
 
 				$AniDBAPIArray = $this->getAnimeInfo($anidbID);
 
@@ -321,8 +327,9 @@ class AniDB
 					//set the TV title to that of the episode
 					$tvtitle = ($episodetitle !== 'Complete Movie' && $episodetitle !== $cleanFilename['epno']) ? $cleanFilename['epno'] . ' - ' . $episodetitle : $episodetitle;
 
-					if ($this->echooutput)
-						echo '- found ' . $AniDBAPIArray['anidbid'] . "\n";
+					if ($this->echooutput) {
+						$this->c->doEcho('- found ' . $AniDBAPIArray['anidbid'], true);
+					}
 
 					// lastly update the information, we also want a better readable name, AKA search name so we can use the title we cleaned
 					$db->queryExec(sprintf('UPDATE releases SET searchname = %s, episode = %s, tvtitle = %s, tvairdate = %s, anidbid = %d, rageid = %d WHERE id = %d', $db->escapeString($getReleaseName['title']), $db->escapeString($cleanFilename['epno']), $db->escapeString($tvtitle), $db->escapeString($airdate), $AniDBAPIArray['anidbid'], -2, $arr['id']));
@@ -333,12 +340,13 @@ class AniDB
 				}
 			} // foreach
 
-			if ($this->echooutput)
-				echo 'Processed ' . count($results) . " anime releases.\n";
+			if ($this->echooutput) {
+				$this->c->doEcho('Processed ' . count($results) . " anime releases.", true);
+			}
 		} // if
 		else {
 			if ($this->echooutput) {
-				echo $this->c->header('No anime releases to process.');
+				$this->c->doEcho($this->c->header('No anime releases to process.'));
 			}
 		}
 	}

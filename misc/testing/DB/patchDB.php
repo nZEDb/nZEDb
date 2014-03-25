@@ -30,6 +30,21 @@ function SplitSQL($file, $delimiter = ';')
 						$qry->execute();
 						echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
 					} catch (PDOException $e) {
+
+						// Log the problem.
+						file_put_contents(
+							nZEDb_LOGS . 'patcherrors.log',
+							'[' . date('r') . '] [' . $e->getMessage() . ']',
+							FILE_APPEND
+						);
+
+						// And the query..
+						file_put_contents(
+							nZEDb_LOGS . 'patcherrors.log',
+							'[' . date('r') . '] [' . $query . ']',
+							FILE_APPEND
+						);
+
 						if ($e->errorInfo[1] == 1091 || $e->errorInfo[1] == 1060 || $e->errorInfo[1] == 1054 || $e->errorInfo[1] == 1061 || $e->errorInfo[1] == 1062 || $e->errorInfo[1] == 1071 || $e->errorInfo[1] == 1072 || $e->errorInfo[1] == 1146 || $e->errorInfo[0] == 23505 || $e->errorInfo[0] == 42701 || $e->errorInfo[0] == 42703 || $e->errorInfo[0] == '42P07' || $e->errorInfo[0] == '42P16') {
 							if ($e->errorInfo[1] == 1060) {
 								echo $c->error($query . " The column already exists - Not Fatal {" . $e->errorInfo[1] . "}.\n");
@@ -37,7 +52,7 @@ function SplitSQL($file, $delimiter = ';')
 								echo $c->error($query . " Skipped - Not Fatal {" . $e->errorInfo[1] . "}.\n");
 							}
 						} else {
-							if (preg_match('/ALTER IGNORE/I', $query)) {
+							if (preg_match('/ALTER IGNORE/i', $query)) {
 								$db->queryExec("SET SESSION old_alter_table = 1");
 								try {
 									$qry = $db->prepare($query);
@@ -77,7 +92,7 @@ function BackupDatabase()
 	$c = new ColorCLI();
 	$DIR = nZEDb_MISC;
 
-	if (nzedb\utility\Util::hasCommand("php5")) {
+	if (Util::hasCommand("php5")) {
 		$PHP = "php5";
 	} else {
 		$PHP = "php";
@@ -110,9 +125,9 @@ if (isset($os) && $os == "unix") {
 	$c = new ColorCLI();
 
 	if ($db->dbSystem() == "mysql") {
-		$path = nZEDb_ROOT . 'db/mysql_patches/';
+		$path = nZEDb_RES . 'db/patches/mysql/';
 	} else if ($db->dbSystem() == "pgsql") {
-		$path = nZEDb_ROOT . 'db/pgsql_patches/';
+		$path = nZEDb_RES . 'db/patches/pgsql/';
 	}
 
 	// Open the patch folder.
@@ -126,9 +141,10 @@ if (isset($os) && $os == "unix") {
 	}
 
 	/* 	if ($db->dbSystem() == "mysql")
-	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/mysql_patches/', nZEDb_ROOT);
+	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/patches/mysql/',
+	nZEDb_ROOT);
 	  else if ($db->dbSystem() == "pgsql")
-	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/pgsql_patches/', nZEDb_ROOT);
+	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/patches/pgsql/', nZEDb_ROOT);
 	 */ sort($patches);
 
 	foreach ($patches as $patch) {
@@ -203,4 +219,3 @@ if ($patched > 0) {
 		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c");
 	}
 }
-?>
