@@ -475,19 +475,6 @@ class Backfill
 
 		$currentPost = $post;
 
-		// Get direction for increment/decrement based on distance to oldest or newest post.
-		$diff = array (
-			'old' => ($currentPost - (int)$groupData['first']),
-			'new' => ((int)$groupData['last'] - $currentPost)
-		);
-
-		// True = ++ , False = --
-		if (max($diff['old'], $diff['new']) === $diff['old']) {
-			$direction = true;
-		} else {
-			$direction = false;
-		}
-
 		$attempts = $date = 0;
 		do {
 			$attempts++;
@@ -527,47 +514,33 @@ class Backfill
 			}
 
 			// Increment $currentPost if closer to oldest post.
-			if ($direction) {
-				$minPossible = ($currentPost - $groupData['first']);
-				if ($minPossible <= 1) {
-					break;
-				} else {
-					$currentPost += round((1 / 100) * $minPossible, 0 , PHP_ROUND_HALF_UP);
-					if ($currentPost >= $groupData['last']) {
-						break;
-					}
-				}
-			} else {
-			// Decrement $currentPost if closer to newest post.
+			$minPossible = ($currentPost - $groupData['first']);
+			if ($minPossible <= 1) {
+				// If we hit the minimum, try to decrement instead.
 				$maxPossible = ($groupData['last'] - $currentPost);
 				if ($maxPossible <= 1) {
 					break;
 				} else {
-					$currentPost -= round((1 / 100) * $maxPossible, 0 , PHP_ROUND_HALF_UP);
+					$currentPost -= round((1.01 / 100) * $maxPossible, 0 , PHP_ROUND_HALF_UP);
 					if ($currentPost <= $groupData['first']) {
 						break;
 					}
 				}
+			} else {
+				$currentPost += round((1.01 / 100) * $minPossible, 0 , PHP_ROUND_HALF_UP);
+				if ($currentPost >= $groupData['last']) {
+					break;
+				}
 			}
 
-			if ($this->debug && $attempts > 0) {
+			if ($this->debug) {
 				$this->c->doEcho($this->c->debug('Postdate retried ' . $attempts . " time(s)."));
 			}
 		} while ($attempts <= 20);
 
-		// If we didn't get a date, get the oldest/newest date from our groups DB.
+		// If we didn't get a date, set it to now.
 		if ($date === 0) {
-			// BackFill
-			if ($direction) {
-				$date = $groupData['first_record_postdate'];
-			} else {
-			// Update
-				$date = $groupData['last_record_postdate'];
-			}
-			// If it's null, set it to now.
-			if (is_null($date)) {
-				$date = Date('r');
-			}
+			$date = Date('r');
 		}
 
 		$date = strtotime($date);
