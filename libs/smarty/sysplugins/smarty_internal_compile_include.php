@@ -81,7 +81,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
                 $_parent_scope = Smarty::SCOPE_GLOBAL;
             }
         }
-        
+
         $_caching = Smarty::CACHING_OFF;
 
         // flag if included template code should be merged into caller
@@ -182,8 +182,6 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
                 // make sure whole chain gets compiled
                 $tpl->mustCompile = true;
                 if (!($tpl->source->uncompiled) && $tpl->source->exists) {
-
-
                     // get compiled code
                     $compiled_code = $tpl->compiler->compileTemplate($tpl, $nocache);
                     // release compiler object to free memory

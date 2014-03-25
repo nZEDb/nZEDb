@@ -269,7 +269,7 @@ class Backfill
 			?
 				round($groupArr['first_record'] - $articles)
 			:
-				$this->daytopost($groupArr['name'], $groupArr['backfill_target'], $data)
+				$this->daytopost($groupArr['backfill_target'], $data)
 		);
 
 		// Check if target post is smaller than server's oldest, set it to oldest if so.
@@ -350,7 +350,7 @@ class Backfill
 				$newdate = strtotime($lastMsg['firstArticleDate']);
 			} else {
 				// If above failed, try to get it with postdate method.
-				$newdate = $this->postdate($first, $groupArr['name'], true, 'oldest');
+				$newdate = $this->postdate($first, $data);
 
 				if ($newdate === false) {
 					// If above failed, try to get the old date, and if that fails set the current date.
@@ -443,189 +443,109 @@ class Backfill
 	 * Returns a single timestamp from a local article number.
 	 * If the article is missing, you can pass $old as true to return false (then use the last known date).
 	 *
-	 * @param int $post
-	 * @param string $group
-	 * @param bool $old
-	 * @param string $type
+	 * @param int    $post      The article number to download.
+	 * @param array  $groupData Usenet group info from NNTP selectGroup method.
 	 *
 	 * @return bool|int
 	 */
-	public function postdate($post, $group, $old = false, $type)
+	public function postdate($post, $groupData)
 	{
-
-		$keeppost = $post;
-
-		$attempts = $date = 0;
-		$success = $record = false;
-		do {
-			$msgs = $this->nntp->getOverview($post . "-" . $post, true, false);
-			$attempts++;
-			if (!$this->nntp->isError($msgs)) {
-				// Set table names
-				$groups = new Groups();
-				$groupID = $groups->getIDByName($group);
-				if ($this->tablepergroup == 1) {
-					if ($this->db->newtables($groupID) === false) {
-						$dMessage = "There is a problem creating new parts/files tables for this group.";
-						if ($this->debug) {
-							$this->debugging->start("postdate", $dMessage, 2);
-						}
-
-						if ($this->echo) {
-							$this->c->doEcho($this->c->error($dMessage), true);
-						}
-					}
-					$groupa = array();
-					$groupa['cname'] = 'collections_' . $groupID;
-					$groupa['bname'] = 'binaries_' . $groupID;
-					$groupa['pname'] = 'parts_' . $groupID;
-				} else {
-					$groupa = array();
-					$groupa['cname'] = 'collections';
-					$groupa['bname'] = 'binaries';
-					$groupa['pname'] = 'parts';
-				}
-				if ((!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date'])) && $attempts == 0) {
-					$old_post = $post;
-					if ($type == 'newest') {
-						$res = $this->db->queryOneRow('SELECT p.number AS number FROM ' . $groupa['cname'] . ' c, ' . $groupa['bname'] . ' b, ' . $groupa['pname'] . ' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = ' . $groupID . ' ORDER BY p.number DESC LIMIT 1');
-						if (isset($res['number']) && is_numeric($res['number'])) {
-							$post = $res['number'];
-							$dMessage =
-								"Unable to fetch article $old_post from " .
-								str_replace('alt.binaries', 'a.b', $group) .
-								". Retrying with newest article, from parts table, [$post] from ${groupa['pname']}";
-							if ($this->debug) {
-								$this->debugging->start("postdate", $dMessage, 4);
-							}
-
-							if ($this->echo) {
-								$this->c->doEcho($this->c->info($dMessage), true);
-							}
-						}
-					} else {
-						$res = $this->db->queryOneRow('SELECT p.number FROM ' . $groupa['cname'] . ' c, ' . $groupa['bname'] . ' b, ' . $groupa['pname'] . ' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = ' . $groupID . ' ORDER BY p.number ASC LIMIT 1');
-						if (isset($res['number']) && is_numeric($res['number'])) {
-							$post = $res['number'];
-							$dMessage =
-								"Unable to fetch article $old_post from " .
-								str_replace('alt.binaries', 'a.b', $group) .
-								". Retrying with oldest article, from parts table, [$post] from ${groupa['pname']}.";
-							if ($this->debug) {
-								$this->debugging->start("postdate", $dMessage, 5);
-							}
-
-							if ($this->echo) {
-								$this->c->doEcho($this->c->info($dMessage), true);
-							}
-						}
-					}
-					$success = false;
-				}
-				if ((!isset($msgs[0]['Date']) || $msgs[0]['Date'] == '' || is_null($msgs[0]['Date'])) && $attempts != 0) {
-					if ($type == 'newest') {
-						$res = $this->db->queryOneRow('SELECT date FROM ' . $groupa['cname'] . ' ORDER BY date DESC LIMIT 1');
-						if (isset($res['date'])) {
-							$date = $res['date'];
-							$dMessage =
-								"Unable to fetch article $post from " .
-								str_replace('alt.binaries', 'a.b', $group) .
-								". Using newest date from ${groupa['cname']}.";
-							if ($this->debug) {
-								$this->debugging->start("postdate", $dMessage, 5);
-							}
-
-							if ($this->echo) {
-								$this->c->doEcho($this->c->info($dMessage), true);
-							}
-							if (strlen($date) > 0) {
-								$success = true;
-							}
-						}
-					} else {
-						$res = $this->db->queryOneRow('SELECT date FROM ' . $groupa['cname'] . ' ORDER BY date ASC LIMIT 1');
-						if (isset($res['date'])) {
-							$date = $res['date'];
-							$dMessage =
-								"Unable to fetch article $post from " .
-								str_replace('alt.binaries', 'a.b', $group) .
-								". Using oldest date from ${groupa['cname']}.";
-							if ($this->debug) {
-								$this->debugging->start("postdate", $dMessage, 5);
-							}
-
-							if ($this->echo) {
-								$this->c->doEcho($this->c->info($dMessage), true);
-							}
-							if (strlen($date) > 0) {
-								$success = true;
-							}
-						}
-					}
+		// Set table names
+		$groups = new Groups();
+		$groupID = $groups->getIDByName($groupData['group']);
+		if ($this->tablepergroup === 1) {
+			if ($this->db->newtables($groupID) === false) {
+				$dMessage = "There is a problem creating new parts/files tables for this group.";
+				if ($this->debug) {
+					$this->debugging->start("postdate", $dMessage, 2);
 				}
 
-				if (isset($msgs[0]['Date']) && $msgs[0]['Date'] != '' && $success === false) {
-					$date = $msgs[0]['Date'];
-					if (strlen($date) > 0) {
-						$success = true;
-					}
-				}
-
-				if ($this->debug && $attempts > 0) {
-					$this->c->doEcho($this->c->debug('Retried ' . $attempts . " time(s)."), true);
+				if ($this->echo) {
+					$this->c->doEcho($this->c->error($dMessage), true);
 				}
 			}
-		} while ($attempts <= 20 && $success === false);
-
-		if ($success === false && $old === true) {
-			if ($type == 'oldest') {
-				$res = $this->db->queryOneRow(sprintf("SELECT first_record_postdate from groups where name = '%s'", $group));
-				if (array_key_exists('first_record_postdate', $res)) {
-					$dMessage =
-						'Unable to fetch article ' .
-						$keeppost . ' from ' .
-						str_replace('alt.binaries', 'a.b', $group) .
-						'. Using current first_record_postdate[' .
-						$res['first_record_postdate'] .
-						"], instead.";
-					if ($this->debug) {
-						$this->debugging->start("postdate", $dMessage, 5);
-					}
-
-					if ($this->echo) {
-						$this->c->doEcho($this->c->info($dMessage), true);
-					}
-					return strtotime($res['first_record_postdate']);
-				} else {
-					return false;
-				}
-			} else {
-				$res = $this->db->queryOneRow(sprintf("SELECT last_record_postdate from groups where name = '%s'", $group));
-				if (array_key_exists('last_record_postdate', $res)) {
-					$dMessage =
-						'Unable to fetch article ' .
-						$keeppost . ' from ' .
-						str_replace('alt.binaries', 'a.b', $group) .
-						'. Using current last_record_postdate[' .
-						$res['last_record_postdate'] .
-						"], instead.";
-					if ($this->debug) {
-						$this->debugging->start("postdate", $dMessage, 5);
-					}
-
-					if ($this->echo) {
-						$this->c->doEcho($this->c->info($dMessage), true);
-					}
-					return strtotime($res['last_record_postdate']);
-				} else {
-					return false;
-				}
-			}
-		} else if ($success === false) {
-			return false;
+			$groupA['cname'] = 'collections_' . $groupID;
+			$groupA['bname'] = 'binaries_' . $groupID;
+			$groupA['pname'] = 'parts_' . $groupID;
+		} else {
+			$groupA['cname'] = 'collections';
+			$groupA['bname'] = 'binaries';
+			$groupA['pname'] = 'parts';
 		}
 
-		if ($this->debug) {
+		$currentPost = $post;
+
+		$attempts = $date = 0;
+		do {
+			$attempts++;
+
+			// Download a single article.
+			$header = $this->nntp->getOverview($currentPost . "-" . $currentPost, true, false);
+
+			// Check if the article is missing, if it is, retry downloading it.
+			if (!$this->nntp->isError($header)) {
+
+				// Check if the date is set.
+				if (isset($header[0]['Date']) && strlen($header[0]['Date'] > 0)) {
+					$date = $header[0]['Date'];
+					break;
+				}
+			} else {
+			// Try to get locally.
+				$local = $this->db->queryOneRow(
+					'SELECT c.date AS date FROM ' .
+					$groupA['cname'] .
+					' c, ' .
+					$groupA['bname'] .
+					' b, ' .
+					$groupA['pname'] .
+					' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = ' .
+					$groupID .
+					' AND p.number = ' .
+					$currentPost .
+					' LIMIT 1'
+				);
+
+				// If the row exists return.
+				if ($local !== false) {
+					$date = $local['date'];
+					break;
+				}
+			}
+
+			// Increment $currentPost if closer to oldest post.
+			$minPossible = ($currentPost - $groupData['first']);
+			if ($minPossible <= 1) {
+				// If we hit the minimum, try to decrement instead.
+				$maxPossible = ($groupData['last'] - $currentPost);
+				if ($maxPossible <= 1) {
+					break;
+				} else {
+					$currentPost -= round((1.01 / 100) * $maxPossible, 0 , PHP_ROUND_HALF_UP);
+					if ($currentPost <= $groupData['first']) {
+						break;
+					}
+				}
+			} else {
+				$currentPost += round((1.01 / 100) * $minPossible, 0 , PHP_ROUND_HALF_UP);
+				if ($currentPost >= $groupData['last']) {
+					break;
+				}
+			}
+
+			if ($this->debug) {
+				$this->c->doEcho($this->c->debug('Postdate retried ' . $attempts . " time(s)."));
+			}
+		} while ($attempts <= 20);
+
+		// If we didn't get a date, set it to now.
+		if ($date === 0) {
+			$date = Date('r');
+		}
+
+		$date = strtotime($date);
+
+		if ($this->debug && $date !== false) {
 			$this->debugging->start(
 				"postdate",
 				'Article (' .
@@ -638,29 +558,38 @@ class Backfill
 				5);
 		}
 
-		$date = strtotime($date);
 		return $date;
 	}
 
 	/**
 	 * Returns article number based on # of days.
 	 *
-	 * @param string $group
-	 * @param int $days
-	 * @param array $data
+	 * @param int   $days      How many days back we want to go.
+	 * @param array $data      Group data from usenet.
 	 *
 	 * @return string
 	 */
-	public function daytopost($group, $days, $data)
+	public function daytopost($days, $data)
 	{
 		if ($this->debug) {
-			$this->debugging->start("daytopost", 'Finding article for ' . $group . ' ' . $days . " days back.", 5);
+			$this->debugging->start("daytopost", 'Finding article for ' . $data['group'] . ' ' . $days . " days back.", 5);
 		}
 
-		// Goal timestamp.
-		$goaldate = date('U') - (86400 * $days);
+		// The date we want.
+		$goaldate =
+			//current unix time (ex. 1395699114)
+			time()
+			//minus
+			-
+			// 86400 (seconds in a day) times days wanted. (ie 1395699114 - 2592000 (30days)) = 1393107114
+			(86400 * $days);
+
+		// The total number of articles in this group.
 		$totalnumberofarticles = $data['last'] - $data['first'];
+
+		//The newest article.
 		$upperbound = $data['last'];
+		// The oldest article.
 		$lowerbound = $data['first'];
 
 		if ($this->debug) {
@@ -688,9 +617,12 @@ class Backfill
 			exit($this->c->info($dMessage));
 		}
 
-		$firstDate = $this->postdate($data['first'], $group, false, 'oldest');
-		$lastDate = $this->postdate($data['last'], $group, false, 'oldest');
+		// The servers oldest date.
+		$firstDate = $this->postdate($data['first'], $data);
+		// The servers newest date.
+		$lastDate = $this->postdate($data['last'], $data);
 
+		// If the date we want is older than the oldest date in the group return the groups oldest article.
 		if ($goaldate < $firstDate) {
 			$dMessage =
 				"Backfill target of $days day(s) is older than the first article stored on your news server.\nStarting from the first available article (" .
@@ -704,6 +636,8 @@ class Backfill
 				$this->c->doEcho($this->c->warning($dMessage), true);
 			}
 			return $data['first'];
+
+		// If the date we want is newer than the groups newest date, return the groups newest article.
 		} else if ($goaldate > $lastDate) {
 			$dMessage =
 				'Backfill target of ' .
@@ -720,7 +654,7 @@ class Backfill
 			if ($this->echo) {
 				$this->c->doEcho($this->c->error($dMessage), true);
 			}
-			return '';
+			return $data['last'];
 		}
 
 		if ($this->debug) {
@@ -755,9 +689,10 @@ class Backfill
 				5);
 		}
 
-		// Match on days not timestamp to speed things up.
+		// Loop until wanted days is bigger than found days.
 		while ($this->daysOld($dateofnextone) < $days) {
-			while (($tmpDate = $this->postdate(($upperbound - $interval), $group, false, 'oldest')) > $goaldate) {
+
+			while (($tmpDate = $this->postdate(($upperbound - $interval), $data)) > $goaldate) {
 				$upperbound = $upperbound - $interval;
 
 				if ($this->debug) {
@@ -783,9 +718,10 @@ class Backfill
 						5);
 				}
 			}
-			$dateofnextone = $this->postdate(($upperbound - 1), $group, false, 'oldest');
+
+			$dateofnextone = $this->postdate(($upperbound - 1), $data);
 			while (!$dateofnextone) {
-				$dateofnextone = $this->postdate(($upperbound - 1),  $group, false, 'oldest');
+				$dateofnextone = $this->postdate(($upperbound - 1), $data);
 			}
 		}
 
@@ -901,9 +837,9 @@ class Backfill
 		}
 
 		if ($type == 'Backfill') {
-			$postsdate = $this->postdate($first, $group, true, 'oldest');
+			$postsdate = $this->postdate($first, $data);
 		} else {
-			$postsdate = $this->postdate($first, $group, true, 'newest');
+			$postsdate = $this->postdate($first, $data);
 		}
 		$postsdate = $this->db->from_unixtime($postsdate);
 

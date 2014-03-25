@@ -8,12 +8,10 @@
 * @subpackage Compiler
 * @author Uwe Tews
 */
-
 class TP_yyToken implements ArrayAccess
 {
     public $string = '';
     public $metadata = array();
-
     public function __construct($s, $m = array())
     {
         if ($s instanceof TP_yyToken) {
@@ -28,22 +26,18 @@ class TP_yyToken implements ArrayAccess
             }
         }
     }
-
     public function __toString()
     {
         return $this->_string;
     }
-
     public function offsetExists($offset)
     {
         return isset($this->metadata[$offset]);
     }
-
     public function offsetGet($offset)
     {
         return $this->metadata[$offset];
     }
-
     public function offsetSet($offset, $value)
     {
         if ($offset === null) {
@@ -51,7 +45,6 @@ class TP_yyToken implements ArrayAccess
                 $x = ($value instanceof TP_yyToken) ?
                     $value->metadata : $value;
                 $this->metadata = array_merge($this->metadata, $x);
-
                 return;
             }
             $offset = count($this->metadata);
@@ -67,13 +60,11 @@ class TP_yyToken implements ArrayAccess
             $this->metadata[$offset] = $value;
         }
     }
-
     public function offsetUnset($offset)
     {
         unset($this->metadata[$offset]);
     }
 }
-
 class TP_yyStackEntry
 {
     public $stateno;       /* The state-number */
@@ -82,13 +73,10 @@ class TP_yyStackEntry
     public $minor; /* The user-supplied minor token value.  This
                      ** is the value of the token  */
 };
-
-
 #line 13 "smarty_internal_templateparser.y"
 class Smarty_Internal_Templateparser#line 80 "smarty_internal_templateparser.php"
 {
 #line 15 "smarty_internal_templateparser.y"
-
     const Err1 = "Security error: Call to private object member not allowed";
     const Err2 = "Security error: Call to dynamic object member not allowed";
     const Err3 = "PHP in template not allowed. Use SmartyBC to enable it";
@@ -99,7 +87,6 @@ class Smarty_Internal_Templateparser#line 80 "smarty_internal_templateparser.php
     private $lex;
     private $internalError = false;
     private $strip = false;
-
     function __construct($lex, $compiler) {
         $this->lex = $lex;
         $this->compiler = $compiler;
@@ -117,16 +104,13 @@ class Smarty_Internal_Templateparser#line 80 "smarty_internal_templateparser.php
         $this->asp_tags = (ini_get('asp_tags') != '0');
         $this->current_buffer = $this->root_buffer = new _smarty_template_buffer($this);
     }
-
     public static function escape_start_tag($tag_text) {
         $tag = preg_replace('/\A<\?(.*)\z/', '<<?php ?>?\1', $tag_text, -1 , $count); //Escape tag
         return $tag;
     }
-
     public static function escape_end_tag($tag_text) {
         return '?<?php ?>>';
     }
-
     public function compileVariable($variable) {
         if (strpos($variable,'(') == 0) {
             // not a variable variable
@@ -138,7 +122,6 @@ class Smarty_Internal_Templateparser#line 80 "smarty_internal_templateparser.php
         return '$_smarty_tpl->tpl_vars['. $variable .']->value';
     }
 #line 133 "smarty_internal_templateparser.php"
-
     const TP_VERT                           =  1;
     const TP_COLON                          =  2;
     const TP_RDEL                           =  3;
@@ -223,7 +206,6 @@ class Smarty_Internal_Templateparser#line 80 "smarty_internal_templateparser.php
     const YY_NO_ACTION = 570;
     const YY_ACCEPT_ACTION = 569;
     const YY_ERROR_ACTION = 568;
-
     const YY_SZ_ACTTAB = 2407;
 static public $yy_action = array(
  /*     0 */   219,  309,  305,  301,  302,  303,  304,  310,  311,  317,
@@ -1189,53 +1171,49 @@ static public $yy_action = array(
         $this->yyTraceFILE = $TraceFILE;
         $this->yyTracePrompt = $zTracePrompt;
     }
-
     public function PrintTrace()
     {
         $this->yyTraceFILE = fopen('php://output', 'w');
         $this->yyTracePrompt = '<br>';
     }
-
     public $yyTraceFILE;
     public $yyTracePrompt;
     public $yyidx;                    /* Index of top element in stack */
     public $yyerrcnt;                 /* Shifts left before out of the error */
     public $yystack = array();  /* The parser's stack */
-
     public $yyTokenName = array(
-  '$',             'VERT',          'COLON',         'RDEL',        
-  'COMMENT',       'PHPSTARTTAG',   'PHPENDTAG',     'ASPSTARTTAG', 
-  'ASPENDTAG',     'FAKEPHPSTARTTAG',  'XMLTAG',        'TEXT',        
+  '$',             'VERT',          'COLON',         'RDEL',
+  'COMMENT',       'PHPSTARTTAG',   'PHPENDTAG',     'ASPSTARTTAG',
+  'ASPENDTAG',     'FAKEPHPSTARTTAG',  'XMLTAG',        'TEXT',
   'STRIPON',       'STRIPOFF',      'BLOCKSOURCE',   'LITERALSTART',
-  'LITERALEND',    'LITERAL',       'LDEL',          'DOLLAR',      
-  'ID',            'EQUAL',         'PTR',           'LDELIF',      
-  'LDELFOR',       'SEMICOLON',     'INCDEC',        'TO',          
-  'STEP',          'LDELFOREACH',   'SPACE',         'AS',          
-  'APTR',          'LDELSETFILTER',  'SMARTYBLOCKCHILDPARENT',  'LDELSLASH',   
-  'ATTR',          'INTEGER',       'COMMA',         'OPENP',       
-  'CLOSEP',        'MATH',          'UNIMATH',       'ANDSYM',      
-  'ISIN',          'ISDIVBY',       'ISNOTDIVBY',    'ISEVEN',      
-  'ISNOTEVEN',     'ISEVENBY',      'ISNOTEVENBY',   'ISODD',       
-  'ISNOTODD',      'ISODDBY',       'ISNOTODDBY',    'INSTANCEOF',  
-  'QMARK',         'NOT',           'TYPECAST',      'HEX',         
-  'DOT',           'SINGLEQUOTESTRING',  'DOUBLECOLON',   'AT',          
-  'HATCH',         'OPENB',         'CLOSEB',        'EQUALS',      
+  'LITERALEND',    'LITERAL',       'LDEL',          'DOLLAR',
+  'ID',            'EQUAL',         'PTR',           'LDELIF',
+  'LDELFOR',       'SEMICOLON',     'INCDEC',        'TO',
+  'STEP',          'LDELFOREACH',   'SPACE',         'AS',
+  'APTR',          'LDELSETFILTER',  'SMARTYBLOCKCHILDPARENT',  'LDELSLASH',
+  'ATTR',          'INTEGER',       'COMMA',         'OPENP',
+  'CLOSEP',        'MATH',          'UNIMATH',       'ANDSYM',
+  'ISIN',          'ISDIVBY',       'ISNOTDIVBY',    'ISEVEN',
+  'ISNOTEVEN',     'ISEVENBY',      'ISNOTEVENBY',   'ISODD',
+  'ISNOTODD',      'ISODDBY',       'ISNOTODDBY',    'INSTANCEOF',
+  'QMARK',         'NOT',           'TYPECAST',      'HEX',
+  'DOT',           'SINGLEQUOTESTRING',  'DOUBLECOLON',   'AT',
+  'HATCH',         'OPENB',         'CLOSEB',        'EQUALS',
   'NOTEQUALS',     'GREATERTHAN',   'LESSTHAN',      'GREATEREQUAL',
-  'LESSEQUAL',     'IDENTITY',      'NONEIDENTITY',  'MOD',         
-  'LAND',          'LOR',           'LXOR',          'QUOTE',       
-  'BACKTICK',      'DOLLARID',      'error',         'start',       
-  'template',      'template_element',  'smartytag',     'literal',     
+  'LESSEQUAL',     'IDENTITY',      'NONEIDENTITY',  'MOD',
+  'LAND',          'LOR',           'LXOR',          'QUOTE',
+  'BACKTICK',      'DOLLARID',      'error',         'start',
+  'template',      'template_element',  'smartytag',     'literal',
   'literal_elements',  'literal_element',  'value',         'modifierlist',
-  'attributes',    'expr',          'varindexed',    'statement',   
-  'statements',    'optspace',      'varvar',        'foraction',   
-  'modparameters',  'attribute',     'ternary',       'array',       
-  'ifcond',        'lop',           'variable',      'function',    
-  'doublequoted_with_quotes',  'static_class_access',  'object',        'arrayindex',  
+  'attributes',    'expr',          'varindexed',    'statement',
+  'statements',    'optspace',      'varvar',        'foraction',
+  'modparameters',  'attribute',     'ternary',       'array',
+  'ifcond',        'lop',           'variable',      'function',
+  'doublequoted_with_quotes',  'static_class_access',  'object',        'arrayindex',
   'indexdef',      'varvarele',     'objectchain',   'objectelement',
   'method',        'params',        'modifier',      'modparameter',
   'arrayelements',  'arrayelement',  'doublequoted',  'doublequotedcontent',
     );
-
     public static $yyRuleName = array(
  /*   0 */ "start ::= template",
  /*   1 */ "template ::= template_element",
@@ -1443,7 +1421,6 @@ static public $yy_action = array(
  /* 203 */ "optspace ::= SPACE",
  /* 204 */ "optspace ::=",
     );
-
     public function tokenName($tokenType)
     {
         if ($tokenType === 0) {
@@ -1455,14 +1432,12 @@ static public $yy_action = array(
             return "Unknown";
         }
     }
-
     public static function yy_destructor($yymajor, $yypminor)
     {
         switch ($yymajor) {
             default:  break;   /* If no destructor action specified: do nothing */
         }
     }
-
     public function yy_pop_parser_stack()
     {
         if (!count($this->yystack)) {
@@ -1477,10 +1452,8 @@ static public $yy_action = array(
         $yymajor = $yytos->major;
         self::yy_destructor($yymajor, $yytos->minor);
         $this->yyidx--;
-
         return $yymajor;
     }
-
     public function __destruct()
     {
         while ($this->yystack !== Array()) {
@@ -1490,7 +1463,6 @@ static public $yy_action = array(
             fclose($this->yyTraceFILE);
         }
     }
-
     public function yy_get_expected_tokens($token)
     {
         $state = $this->yystack[$this->yyidx]->stateno;
@@ -1524,7 +1496,6 @@ static public $yy_action = array(
                                   self::$yyExpectedTokens[$nextstate], true)) {
                             $this->yyidx = $yyidx;
                             $this->yystack = $stack;
-
                             return array_unique($expected);
                         }
                     }
@@ -1557,10 +1528,8 @@ static public $yy_action = array(
         } while (true);
     $this->yyidx = $yyidx;
     $this->yystack = $stack;
-
         return array_unique($expected);
     }
-
     public function yy_is_expected_token($token)
     {
         if ($token === 0) {
@@ -1594,7 +1563,6 @@ static public $yy_action = array(
                           in_array($token, self::$yyExpectedTokens[$nextstate], true)) {
                         $this->yyidx = $yyidx;
                         $this->yystack = $stack;
-
                         return true;
                     }
                     if ($nextstate < self::YYNSTATE) {
@@ -1630,14 +1598,11 @@ static public $yy_action = array(
         } while (true);
         $this->yyidx = $yyidx;
         $this->yystack = $stack;
-
         return true;
     }
-
    public function yy_find_shift_action($iLookAhead)
     {
         $stateno = $this->yystack[$this->yyidx]->stateno;
-
         /* if ($this->yyidx < 0) return self::YY_NO_ACTION;  */
         if (!isset(self::$yy_shift_ofst[$stateno])) {
             // no shift actions
@@ -1660,20 +1625,16 @@ static public $yy_action = array(
                         $this->yyTokenName[$iLookAhead] . " => " .
                         $this->yyTokenName[$iFallback] . "\n");
                 }
-
                 return $this->yy_find_shift_action($iFallback);
             }
-
             return self::$yy_default[$stateno];
         } else {
             return self::$yy_action[$i];
         }
     }
-
     public function yy_find_reduce_action($stateno, $iLookAhead)
     {
         /* $stateno = $this->yystack[$this->yyidx]->stateno; */
-
         if (!isset(self::$yy_reduce_ofst[$stateno])) {
             return self::$yy_default[$stateno];
         }
@@ -1692,7 +1653,6 @@ static public $yy_action = array(
             return self::$yy_action[$i];
         }
     }
-
     public function yy_shift($yyNewState, $yyMajor, $yypMinor)
     {
         $this->yyidx++;
@@ -1705,11 +1665,9 @@ static public $yy_action = array(
                 $this->yy_pop_parser_stack();
             }
 #line 85 "smarty_internal_templateparser.y"
-
     $this->internalError = true;
     $this->compiler->trigger_template_error("Stack overflow in template parser");
 #line 1707 "smarty_internal_templateparser.php"
-
             return;
         }
         $yytos = new TP_yyStackEntry;
@@ -1728,7 +1686,6 @@ static public $yy_action = array(
             fwrite($this->yyTraceFILE,"\n");
         }
     }
-
     public static $yyRuleInfo = array(
   array( 'lhs' => 83, 'rhs' => 1 ),
   array( 'lhs' => 84, 'rhs' => 1 ),
@@ -1936,7 +1893,6 @@ static public $yy_action = array(
   array( 'lhs' => 97, 'rhs' => 1 ),
   array( 'lhs' => 97, 'rhs' => 0 ),
     );
-
     public static $yyReduceMap = array(
         0 => 0,
         1 => 1,
@@ -2160,9 +2116,9 @@ static public $yy_action = array(
     if ($this->compiler->has_code) {
         $tmp =''; foreach ($this->compiler->prefix_code as $code) {$tmp.=$code;} $this->compiler->prefix_code=array();
         $this->_retvalue = new _smarty_tag($this, $this->compiler->processNocacheCode($tmp.$this->yystack[$this->yyidx + -1]->minor,true));
-    } else { 
+    } else {
         $this->_retvalue = null;
-    }  
+    }
     $this->compiler->has_variable_string = false;
     $this->block_nesting_level = count($this->compiler->_tag_stack);
     }
@@ -2196,11 +2152,11 @@ static public $yy_action = array(
 #line 162 "smarty_internal_templateparser.y"
     function yy_r8(){
     if ($this->is_xml) {
-        $this->compiler->tag_nocache = true; 
+        $this->compiler->tag_nocache = true;
         $this->is_xml = false;
-        $save = $this->template->has_nocache_code; 
+        $save = $this->template->has_nocache_code;
         $this->_retvalue = new _smarty_text($this, $this->compiler->processNocacheCode("<?php echo '?>';?>\n", $this->compiler, true));
-        $this->template->has_nocache_code = $save; 
+        $this->template->has_nocache_code = $save;
     } elseif ($this->php_handling == Smarty::PHP_PASSTHRU) {
         $this->_retvalue = new _smarty_text($this, '?<?php ?>>');
     } elseif ($this->php_handling == Smarty::PHP_QUOTE) {
@@ -2260,17 +2216,17 @@ static public $yy_action = array(
 #line 225 "smarty_internal_templateparser.y"
     function yy_r11(){
     if ($this->strip) {
-        $this->_retvalue = new _smarty_text($this, preg_replace('![\t ]*[\r\n]+[\t ]*!', '', self::escape_start_tag($this->yystack[$this->yyidx + 0]->minor))); 
+        $this->_retvalue = new _smarty_text($this, preg_replace('![\t ]*[\r\n]+[\t ]*!', '', self::escape_start_tag($this->yystack[$this->yyidx + 0]->minor)));
     } else {
-        $this->_retvalue = new _smarty_text($this, self::escape_start_tag($this->yystack[$this->yyidx + 0]->minor));  
+        $this->_retvalue = new _smarty_text($this, self::escape_start_tag($this->yystack[$this->yyidx + 0]->minor));
     }
     }
 #line 2264 "smarty_internal_templateparser.php"
 #line 234 "smarty_internal_templateparser.y"
     function yy_r12(){
     $this->compiler->tag_nocache = true;
-    $this->is_xml = true; 
-    $save = $this->template->has_nocache_code; 
+    $this->is_xml = true;
+    $save = $this->template->has_nocache_code;
     $this->_retvalue = new _smarty_text($this, $this->compiler->processNocacheCode("<?php echo '<?xml';?>", $this->compiler, true));
     $this->template->has_nocache_code = $save;
     }
@@ -2407,7 +2363,7 @@ static public $yy_action = array(
 #line 2403 "smarty_internal_templateparser.php"
 #line 386 "smarty_internal_templateparser.y"
     function yy_r42(){
-    $tag = trim(substr($this->yystack[$this->yyidx + -1]->minor,$this->lex->ldel_length)); 
+    $tag = trim(substr($this->yystack[$this->yyidx + -1]->minor,$this->lex->ldel_length));
     $this->_retvalue = $this->compiler->compileTag(($tag == 'else if')? 'elseif' : $tag,array(),array('if condition'=>$this->yystack[$this->yyidx + 0]->minor));
     }
 #line 2409 "smarty_internal_templateparser.php"
@@ -2677,7 +2633,7 @@ static public $yy_action = array(
             $this->_retvalue = $this->smarty->registered_classes[$this->yystack[$this->yyidx + -2]->minor].'::'.$this->yystack[$this->yyidx + 0]->minor;
         } else {
             $this->_retvalue = $this->yystack[$this->yyidx + -2]->minor.'::'.$this->yystack[$this->yyidx + 0]->minor;
-        } 
+        }
     } else {
         $this->compiler->trigger_template_error ("static class '".$this->yystack[$this->yyidx + -2]->minor."' is undefined or not allowed by security setting");
     }
@@ -2705,7 +2661,7 @@ static public $yy_action = array(
         $smarty_var = $this->compiler->compileTag('private_special_variable',array(),$this->yystack[$this->yyidx + 0]->minor['smarty_internal_index']);
         $this->_retvalue = $smarty_var;
     } else {
-        // used for array reset,next,prev,end,current 
+        // used for array reset,next,prev,end,current
         $this->last_variable = $this->yystack[$this->yyidx + 0]->minor['var'];
         $this->last_index = $this->yystack[$this->yyidx + 0]->minor['smarty_internal_index'];
         $this->_retvalue = $this->compileVariable($this->yystack[$this->yyidx + 0]->minor['var']).$this->yystack[$this->yyidx + 0]->minor['smarty_internal_index'];
@@ -3023,7 +2979,7 @@ static public $yy_action = array(
     }
 #line 3020 "smarty_internal_templateparser.php"
 #line 1196 "smarty_internal_templateparser.y"
-    function yy_r190(){ 
+    function yy_r190(){
     $this->_retvalue = '\''.$this->yystack[$this->yyidx + -2]->minor.'\'=>'.$this->yystack[$this->yyidx + 0]->minor;
     }
 #line 3025 "smarty_internal_templateparser.php"
@@ -3073,9 +3029,7 @@ static public $yy_action = array(
     $this->_retvalue = new _smarty_dq_content($this, $this->yystack[$this->yyidx + 0]->minor);
     }
 #line 3071 "smarty_internal_templateparser.php"
-
     private $_retvalue;
-
     public function yy_reduce($yyruleno)
     {
         $yymsp = $this->yystack[$this->yyidx];
@@ -3085,7 +3039,6 @@ static public $yy_action = array(
                 $this->yyTracePrompt, $yyruleno,
                 self::$yyRuleName[$yyruleno]);
         }
-
         $this->_retvalue = $yy_lefthand_side = null;
         if (array_key_exists($yyruleno, self::$yyReduceMap)) {
             // call the action
@@ -3116,7 +3069,6 @@ static public $yy_action = array(
             $this->yy_accept();
         }
     }
-
     public function yy_parse_failed()
     {
         if ($this->yyTraceFILE) {
@@ -3125,17 +3077,14 @@ static public $yy_action = array(
             $this->yy_pop_parser_stack();
         }
     }
-
     public function yy_syntax_error($yymajor, $TOKEN)
     {
 #line 78 "smarty_internal_templateparser.y"
-
     $this->internalError = true;
     $this->yymajor = $yymajor;
     $this->compiler->trigger_template_error();
 #line 3133 "smarty_internal_templateparser.php"
     }
-
     public function yy_accept()
     {
         if ($this->yyTraceFILE) {
@@ -3144,18 +3093,15 @@ static public $yy_action = array(
             $stack = $this->yy_pop_parser_stack();
         }
 #line 70 "smarty_internal_templateparser.y"
-
     $this->successful = !$this->internalError;
     $this->internalError = false;
     $this->retvalue = $this->_retvalue;
     //echo $this->retvalue."\n\n";
 #line 3150 "smarty_internal_templateparser.php"
     }
-
     public function doParse($yymajor, $yytokenvalue)
     {
         $yyerrorhit = 0;   /* True if yymajor has invoked an error */
-
         if ($this->yyidx === null || $this->yyidx < 0) {
             $this->yyidx = 0;
             $this->yyerrcnt = -1;
@@ -3166,12 +3112,10 @@ static public $yy_action = array(
             array_push($this->yystack, $x);
         }
         $yyendofinput = ($yymajor==0);
-
         if ($this->yyTraceFILE) {
             fprintf($this->yyTraceFILE, "%sInput %s\n",
                 $this->yyTracePrompt, $this->yyTokenName[$yymajor]);
         }
-
         do {
             $yyact = $this->yy_find_shift_action($yymajor);
             if ($yymajor < self::YYERRORSYMBOL &&

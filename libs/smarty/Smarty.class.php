@@ -302,7 +302,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     /**
      * template inheritance merge compiled includes
      * @var boolean
-     */    
+     */
     public $inheritance_merge_compiled_includes = true;
     /**
      * cache lifetime in seconds
