@@ -201,7 +201,7 @@ class ColorCLI
 	public static function debug($str)
 	{
 		if (self::isWindows()) {
-			return $str;
+			return $str . PHP_EOL;
 		}
 
 		$debugstring = "\033[" . self::$foreground_colors['Gray'] . "mDebug: $str\033[0m\n";
@@ -211,7 +211,7 @@ class ColorCLI
 	public static function info($str)
 	{
 		if (self::isWindows()) {
-			return $str;
+			return $str . PHP_EOL;
 		}
 
 		$infostring = "\033[" . self::$foreground_colors['Purple'] . "mInfo: $str\033[0m\n";
@@ -221,7 +221,7 @@ class ColorCLI
 	public static function notice($str)
 	{
 		if (self::isWindows()) {
-			return $str;
+			return $str . PHP_EOL;
 		}
 
 		$noticstring = "\033[38;5;" . self::$colors256['Blue'] . "mNotice: $str\033[0m\n";
@@ -231,7 +231,7 @@ class ColorCLI
 	public static function warning($str)
 	{
 		if (self::isWindows()) {
-			return $str;
+			return $str . PHP_EOL;
 		}
 
 		$warnstring = "\033[" . self::$foreground_colors['Yellow'] . "mWarning: $str\033[0m\n";
@@ -241,7 +241,7 @@ class ColorCLI
 	public static function error($str)
 	{
 		if (self::isWindows()) {
-			return $str;
+			return $str . PHP_EOL;
 		}
 
 		$errorstring = "\033[" . self::$foreground_colors['Red'] . "mError: $str\033[0m\n";
@@ -251,7 +251,7 @@ class ColorCLI
 	public static function primary($str)
 	{
 		if (self::isWindows()) {
-			return $str;
+			return $str . PHP_EOL;
 		}
 
 		$str = "\033[38;5;" . self::$colors256['Green'] . "m$str\033[0m\n";
@@ -261,7 +261,7 @@ class ColorCLI
 	public static function header($str)
 	{
 		if (self::isWindows()) {
-			return $str;
+			return $str . PHP_EOL;
 		}
 
 		$str = "\033[38;5;" . self::$colors256['Yellow'] . "m$str\033[0m\n";
@@ -271,7 +271,7 @@ class ColorCLI
 	public static function alternate($str)
 	{
 		if (self::isWindows()) {
-			return $str;
+			return $str . PHP_EOL;
 		}
 
 		$str = "\033[38;5;" . self::$colors256['DeepPink1'] . "m$str\033[0m\n";
@@ -281,7 +281,7 @@ class ColorCLI
 	public static function tmuxOrange($str)
 	{
 		if (self::isWindows()) {
-			return $str;
+			return $str . PHP_EOL;
 		}
 
 		$str = "\033[38;5;" . self::$colors256['Orange'] . "m$str\033[0m\n";
