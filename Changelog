@@ -6,7 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-03-25 ruhllatio
+	* Add FT Search table schema update and clean up a few schema issues in releases
 2014-03-24 niel
 	* Fix: Prevent loading XML in Versions from causing an exception directly.
 2014-03-24 ruhllatio
