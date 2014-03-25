@@ -954,7 +954,7 @@ class TvRage
 		// For names that don't start with the title.
 		if (preg_match('/[^a-z0-9]{2,}(?P<name>[\w .-]*?)' . $following . '/i', $relname, $matches)) {
 			$showInfo['name'] = $matches[1];
-		} else if (preg_match('/^(?P<name>[\w .-]*?)' . $following . '/i', $relname, $matches)) {
+		} else if (preg_match('/^(?P<name>[a-z0-9][\w .-]*?)' . $following . '/i', $relname, $matches)) {
 		// For names that start with the title.
 			$showInfo['name'] = $matches[1];
 		}
