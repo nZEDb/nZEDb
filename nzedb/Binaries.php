@@ -351,7 +351,7 @@ class Binaries
 		if ($groupArr['last_record'] == 0) {
 			// For new newsgroups - determine here how far you want to go back using date.
 			if ($this->NewGroupScanByDays) {
-				$first = $this->backfill->daytopost($groupArr['name'], $this->NewGroupDaysToScan, $data);
+				$first = $this->backfill->daytopost($this->NewGroupDaysToScan, $data);
 				if ($first == '') {
 					if ($this->echo) {
 						$this->c->doEcho($this->c->warning("Skipping group: {$groupName}"), true);
@@ -393,7 +393,7 @@ class Binaries
 
 		// Generate postdate for first record, for those that upgraded.
 		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] != '0') {
-			$newdate = $this->backfill->postdate($groupArr['first_record'], $groupArr['name'], true, 'oldest');
+			$newdate = $this->backfill->postdate($groupArr['first_record'], $data);
 			if ($newdate !== false) {
 				$first_record_postdate = $newdate;
 			} else {
