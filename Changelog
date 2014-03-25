@@ -9,6 +9,7 @@ Each update goes to the top of the file
 2014-03-25 ruhllatio
 	* Add FT Search table schema update and clean up a few schema issues in releases
 	* Fixed typo in FT search schema pre-git commit
+	* Remove DELIMITER from patch is it appears PatchDB accounts for this
 2014-03-24 niel
 	* Fix: Prevent loading XML in Versions from causing an exception directly.
 2014-03-24 ruhllatio
