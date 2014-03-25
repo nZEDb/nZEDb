@@ -534,7 +534,9 @@ class DB extends PDO
 						if ($admin === false) {
 							$message = 'Analyzing table: ' . $table['name'];
 							echo $this->c->primary($message);
-							$this->debugging->start("optimise", $message, 5);
+							if ($this->debug) {
+								$this->debugging->start("optimise", $message, 5);
+							}
 						}
 						$this->queryExec('ANALYZE LOCAL TABLE `' . $table['name'] . '`');
 					} else {
@@ -825,7 +827,9 @@ class DB extends PDO
 		try {
 			$PDOstatement = self::$pdo->prepare($query, $options);
 		} catch (PDOException $e) {
-			$this->debugging->start("Prepare", $e->getMessage(), 5);
+			if ($this->debug) {
+				$this->debugging->start("Prepare", $e->getMessage(), 5);
+			}
 			echo $this->c->error("\n" . $e->getMessage());
 			$PDOstatement = false;
 		}
@@ -845,7 +849,9 @@ class DB extends PDO
 			try {
 				$result = self::$pdo->getAttribute($attribute);
 			} catch (PDOException $e) {
-				$this->debugging->start("getAttribute", $e->getMessage(), 5);
+				if ($this->debug) {
+					$this->debugging->start("getAttribute", $e->getMessage(), 5);
+				}
 				echo $this->c->error("\n" . $e->getMessage());
 				$result = false;
 			}
