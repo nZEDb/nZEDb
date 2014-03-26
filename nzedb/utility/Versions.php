@@ -111,13 +111,13 @@ class Versions
 	 */
 	public function checkDb($update = true)
 	{
-		$s = new \Sites();
-		$settings = $s->get();
+		$site = new \Sites();
+		$setting = $site->getSetting('sqlpatch');
 
-		if ($this->_vers->db < $settings->sqlpatch) {
+		if ($this->_vers->db < $setting) {
 			if ($update) {
-				echo $this->out->primary("Updating Db revision to " . $settings->sqlpatch);
-				$this->_vers->db = $settings->sqlpatch;
+				echo $this->out->primary("Updating Db revision to " . $setting);
+				$this->_vers->db = $setting;
 				$this->_changes |= self::UPDATED_DB_REVISION;
 			}
 			return $this->_vers->db;
