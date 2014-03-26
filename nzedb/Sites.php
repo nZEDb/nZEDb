@@ -23,11 +23,8 @@ class Sites
 	public function __construct()
 	{
 		$this->_db = new DB();
-		$this->_versionSuccess = false;
-		try {
-			$this->_versions = new \nzedb\utility\Versions();
-		} catch (Exception $e) {
-			//echo $e->getMessage() . PHP_EOL;
+		if (defined('nZEDb_VERSIONS')) {
+			$this->_versions = new \nzedb\utility\Versions(nZEDb_VERSIONS);
 		}
 		$this->setCovers();
 	}
