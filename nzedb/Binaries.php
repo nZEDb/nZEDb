@@ -644,7 +644,7 @@ class Binaries
 		}
 
 		// Download the headers.
-		$msgs = $this->nntp->getOverview($first . "-" . $last, true, false);
+		$msgs = $this->nntp->getOverview((int)$first . "-" . (int)$last, true, false);
 
 		// If there were an error, try to reconnect.
 		if ($this->nntp->isError($msgs)) {
@@ -655,7 +655,7 @@ class Binaries
 			}
 
 			$this->nntp->selectGroup($groupArr['name']);
-			$msgs = $this->nntp->getOverview($first . '-' . $last, true, false);
+			$msgs = $this->nntp->getOverview((int)$first . '-' . (int)$last, true, false);
 			if ($this->nntp->isError($msgs)) {
 				if ($type !== 'partrepair') {
 
