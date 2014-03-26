@@ -13,6 +13,7 @@ Each update goes to the top of the file
 	* Chg: Renaming 'country' table to 'countries'
 	* New: Adding a MySQL function to convert 'Country Name' to two character country code.
 	* Fix: Adding checks to prevent instantiating of Versions without a file available.
+	* Fix: renaming the property I missed before :-(
 2014-03-26 kevin
 	* Increase preciseness of daytopost.
 2014-03-25 bart39
