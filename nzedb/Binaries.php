@@ -370,7 +370,7 @@ class Binaries
 			$left = $this->messagebuffer;
 			$last = $grouplast = round($data['last'] - $left, 0, PHP_ROUND_HALF_UP);
 		} else {
-			$first = (string)$groupArr['last_record'];
+			$first = $groupArr['last_record'];
 
 			// Leave 50%+ of the new articles on the server for next run (allow server enough time to actually make parts available).
 			$newcount = $data['last'] - $first;

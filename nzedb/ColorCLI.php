@@ -154,11 +154,6 @@ class ColorCLI
 		'Hidden' => '8', 'Crossout' => '9',
 	);
 
-	private static function isWindows()
-	{
-		return (strtolower(substr(PHP_OS, 0, 3)) === 'win');
-	}
-
 	public static function bell($count = 1)
 	{
 		echo str_repeat("\007", $count);
@@ -166,10 +161,6 @@ class ColorCLI
 
 	public static function setColor($fg, $opt = "None", $bg = "None")
 	{
-		if (self::isWindows()) {
-			return $fg;
-		}
-
 		$colored_string = "\033[" . self::$foreground_colors[$fg];
 		if (isset(self::$options[$opt])) {
 			$colored_string .= ";" . self::$options[$opt];
@@ -183,10 +174,6 @@ class ColorCLI
 
 	public static function set256($fg, $opt = "None", $bg = "None")
 	{
-		if (self::isWindows()) {
-			return $fg;
-		}
-
 		$colored_string = "\033[38;5;" . self::$colors256[$fg];
 		if (isset(self::$options[$opt]) && $opt != 'Norm') {
 			$colored_string .= ";" . self::$options[$opt];
@@ -200,140 +187,84 @@ class ColorCLI
 
 	public static function debug($str)
 	{
-		if (self::isWindows()) {
-			return $str . PHP_EOL;
-		}
-
 		$debugstring = "\033[" . self::$foreground_colors['Gray'] . "mDebug: $str\033[0m\n";
 		return $debugstring;
 	}
 
 	public static function info($str)
 	{
-		if (self::isWindows()) {
-			return $str . PHP_EOL;
-		}
-
 		$infostring = "\033[" . self::$foreground_colors['Purple'] . "mInfo: $str\033[0m\n";
 		return $infostring;
 	}
 
 	public static function notice($str)
 	{
-		if (self::isWindows()) {
-			return $str . PHP_EOL;
-		}
-
 		$noticstring = "\033[38;5;" . self::$colors256['Blue'] . "mNotice: $str\033[0m\n";
 		return $noticstring;
 	}
 
 	public static function warning($str)
 	{
-		if (self::isWindows()) {
-			return $str . PHP_EOL;
-		}
-
 		$warnstring = "\033[" . self::$foreground_colors['Yellow'] . "mWarning: $str\033[0m\n";
 		return $warnstring;
 	}
 
 	public static function error($str)
 	{
-		if (self::isWindows()) {
-			return $str . PHP_EOL;
-		}
-
 		$errorstring = "\033[" . self::$foreground_colors['Red'] . "mError: $str\033[0m\n";
 		return $errorstring;
 	}
 
 	public static function primary($str)
 	{
-		if (self::isWindows()) {
-			return $str . PHP_EOL;
-		}
-
 		$str = "\033[38;5;" . self::$colors256['Green'] . "m$str\033[0m\n";
 		return $str;
 	}
 
 	public static function header($str)
 	{
-		if (self::isWindows()) {
-			return $str . PHP_EOL;
-		}
-
 		$str = "\033[38;5;" . self::$colors256['Yellow'] . "m$str\033[0m\n";
 		return $str;
 	}
 
 	public static function alternate($str)
 	{
-		if (self::isWindows()) {
-			return $str . PHP_EOL;
-		}
-
 		$str = "\033[38;5;" . self::$colors256['DeepPink1'] . "m$str\033[0m\n";
 		return $str;
 	}
 
 	public static function tmuxOrange($str)
 	{
-		if (self::isWindows()) {
-			return $str . PHP_EOL;
-		}
-
 		$str = "\033[38;5;" . self::$colors256['Orange'] . "m$str\033[0m\n";
 		return $str;
 	}
 
 	public static function primaryOver($str)
 	{
-		if (self::isWindows()) {
-			return $str;
-		}
-
 		$str = "\033[38;5;" . self::$colors256['Green'] . "m$str\033[0m";
 		return $str;
 	}
 
 	public static function headerOver($str)
 	{
-		if (self::isWindows()) {
-			return $str;
-		}
-
 		$str = "\033[38;5;" . self::$colors256['Yellow'] . "m$str\033[0m";
 		return $str;
 	}
 
 	public static function alternateOver($str)
 	{
-		if (self::isWindows()) {
-			return $str;
-		}
-
 		$str = "\033[38;5;" . self::$colors256['DeepPink1'] . "m$str\033[0m";
 		return $str;
 	}
 
 	public static function warningOver($str)
 	{
-		if (self::isWindows()) {
-			return $str;
-		}
-
 		$str = "\033[38;5;" . self::$colors256['Red'] . "m";
 		return $str;
 	}
 
 	public static function rsetColor()
 	{
-		if (self::isWindows()) {
-			return '';
-		}
-
 		return "\033[0m";
 	}
 

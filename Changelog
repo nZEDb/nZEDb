@@ -16,6 +16,7 @@ Each update goes to the top of the file
 	* TVRage class, don't process releases less than 1MB.
 	* Removing casting to int (for 32 bit php compat) on some vars has caused issues since some of them were float, I rounded them, but this might cause issues again with 32 bit PHP's.
 	* Add running time to debugging.
+	* Redo daytopost function making it faster. Remove windows check from colorcli.
 2014-03-25 ruhllatio
 	* Add FT Search table schema update and clean up a few schema issues in releases
 	* Fixed typo in FT search schema pre-git commit
