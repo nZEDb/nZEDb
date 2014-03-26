@@ -10,15 +10,15 @@ class Releases
 {
 	/* RAR/ZIP Passworded indicator. */
 
-	const PASSWD_NONE = 0;  // No password.
-	const PASSWD_POTENTIAL = 1; // Might have a password.
-	const BAD_FILE = 2;   // Possibly broken RAR/ZIP.
-	const PASSWD_RAR = 10;  // Definitely passworded.
+	const PASSWD_NONE      = 0;  // No password.
+	const PASSWD_POTENTIAL = 1;  // Might have a password.
+	const BAD_FILE         = 2;  // Possibly broken RAR/ZIP.
+	const PASSWD_RAR       = 10; // Definitely passworded.
 
 	/**
 	 * @param bool $echooutput
 	 */
-	function __construct($echooutput = false)
+	public function __construct($echooutput = false)
 	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->db = new DB();
@@ -28,14 +28,14 @@ class Releases
 		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->releaseCleaning = new ReleaseCleaning();
 		$this->consoleTools = new ConsoleTools();
-		$this->stage5limit = (isset($this->site->maxnzbsprocessed)) ? $this->site->maxnzbsprocessed : 1000;
-		$this->completion = (isset($this->site->releasecompletion)) ? $this->site->releasecompletion : 0;
-		$this->crosspostt = (isset($this->site->crossposttime)) ? $this->site->crossposttime : 2;
+		$this->stage5limit = (isset($this->site->maxnzbsprocessed)) ? (int)$this->site->maxnzbsprocessed : 1000;
+		$this->completion = (isset($this->site->releasecompletion)) ? (int)$this->site->releasecompletion : 0;
+		$this->crosspostt = (isset($this->site->crossposttime)) ? (int)$this->site->crossposttime : 2;
 		$this->updategrabs = ($this->site->grabstatus == '0') ? false : true;
 		$this->requestids = $this->site->lookup_reqids;
-		$this->hashcheck = (isset($this->site->hashcheck)) ? $this->site->hashcheck : 0;
-		$this->delaytimet = (isset($this->site->delaytime)) ? $this->site->delaytime : 2;
-		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
+		$this->hashcheck = (isset($this->site->hashcheck)) ? (int)$this->site->hashcheck : 0;
+		$this->delaytimet = (isset($this->site->delaytime)) ? (int)$this->site->delaytime : 2;
+		$this->tablepergroup = (isset($this->site->tablepergroup)) ? (int)$this->site->tablepergroup : 0;
 		$this->c = new ColorCLI();
 	}
 
@@ -44,7 +44,13 @@ class Releases
 	 */
 	public function get()
 	{
-		return $this->db->query('SELECT releases.*, g.name AS group_name, c.title AS category_name FROM releases LEFT OUTER JOIN category c on c.id = releases.categoryid LEFT OUTER JOIN groups g on g.id = releases.groupid WHERE nzbstatus = 1');
+		return $this->db->query('
+			SELECT releases.*, g.name AS group_name, c.title AS category_name
+			FROM releases
+			LEFT OUTER JOIN category c ON c.id = releases.categoryid
+			LEFT OUTER JOIN groups g ON g.id = releases.groupid
+			WHERE nzbstatus = 1'
+		);
 	}
 
 	/**
@@ -55,13 +61,17 @@ class Releases
 	 */
 	public function getRange($start, $num)
 	{
-		if ($start === false) {
-			$limit = '';
-		} else {
-			$limit = ' LIMIT ' . $num . ' OFFSET ' . $start;
-		}
-
-		return $this->db->query("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name FROM releases LEFT OUTER JOIN category c on c.id = releases.categoryid LEFT OUTER JOIN category cp on cp.id = c.parentid WHERE nzbstatus = 1 ORDER BY postdate DESC" . $limit);
+		return $this->db->query(
+			sprintf("
+				SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name
+				FROM releases
+				LEFT OUTER JOIN category c ON c.id = releases.categoryid
+				LEFT OUTER JOIN category cp ON cp.id = c.parentid
+				WHERE nzbstatus = 1
+				ORDER BY postdate DESC %s",
+				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
+			)
+		);
 	}
 
 	/**
@@ -77,14 +87,14 @@ class Releases
 	{
 		$catsrch = $this->categorySQL($cat);
 
-		$maxagesql = $exccatlist = $grpjoin = $grpsql = '';
-		if ($maxage > 0) {
-			if ($this->db->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else {
-				$maxagesql = sprintf(" AND postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
-		}
+		$exccatlist = $grpjoin = $grpsql = '';
+
+		$maxagesql = (
+			$maxage > 0
+				? " AND postdate > NOW() - INTERVAL " .
+					($this->db->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
+				: ''
+		);
 
 		if ($grp != '') {
 			$grpjoin = 'LEFT OUTER JOIN groups ON groups.id = releases.groupid';
@@ -95,8 +105,16 @@ class Releases
 			$exccatlist = ' AND categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(releases.id) AS num FROM releases %s WHERE nzbstatus = 1 AND releases.passwordstatus <= %d %s %s %s %s', $grpjoin, $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql));
-		return $res['num'];
+		$res = $this->db->queryOneRow(
+			sprintf('
+				SELECT COUNT(releases.id) AS num
+				FROM releases %s
+				WHERE nzbstatus = 1
+				AND releases.passwordstatus <= %d %s %s %s %s',
+				$grpjoin, $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql
+			)
+		);
+		return ($res === false ? 0 : $res['num']);
 	}
 
 	/**
@@ -114,22 +132,17 @@ class Releases
 	 */
 	public function getBrowseRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array(), $grp = '')
 	{
-		if ($start === false) {
-			$limit = '';
-		} else {
-			$limit = ' LIMIT ' . $num . ' OFFSET ' . $start;
-		}
+		$limit = ($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start);
 
 		$catsrch = $this->categorySQL($cat);
 
-		$maxagesql = $grpsql = $exccatlist = '';
-		if ($maxage > 0) {
-			if ($this->db->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else {
-				$maxagesql = sprintf(" AND postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
-			}
-		}
+		$grpsql = $exccatlist = '';
+		$maxagesql = (
+			$maxage > 0
+				? " AND postdate > NOW() - INTERVAL " .
+					($this->db->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
+				: ''
+		);
 
 		if ($grp != '') {
 			$grpsql = sprintf(' AND groups.name = %s ', $this->db->escapeString($grp));
@@ -140,16 +153,47 @@ class Releases
 		}
 
 		$order = $this->getBrowseOrder($orderby);
-		return $this->db->query(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE nzbstatus = 1 AND releases.passwordstatus <= %d %s %s %s %s ORDER BY %s %s %s", $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql, $order[0], $order[1], $limit), true);
+		return $this->db->query(
+			sprintf("
+				SELECT releases.*,
+					CONCAT(cp.title, ' > ', c.title) AS category_name,
+					CONCAT(cp.id, ',', c.id) AS category_ids,
+					groups.name AS group_name,
+					rn.id AS nfoid,
+					re.releaseid AS reid
+				FROM releases
+				LEFT OUTER JOIN groups ON groups.id = releases.groupid
+				LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
+				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id
+					AND rn.nfo IS NOT NULL
+				LEFT OUTER JOIN category c ON c.id = releases.categoryid
+				LEFT OUTER JOIN category cp ON cp.id = c.parentid
+				WHERE nzbstatus = 1
+				AND releases.passwordstatus <= %d %s %s %s %s
+				ORDER BY %s %s %s",
+				$this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql, $order[0], $order[1], $limit
+			), true
+		);
 	}
 
-	// Return site setting for hiding/showing passworded releases.
+	/**
+	 * Return site setting for hiding/showing passworded releases.
+	 *
+	 * @return int
+	 */
 	public function showPasswords()
 	{
 		$res = $this->db->queryOneRow("SELECT value FROM site WHERE setting = 'showpasswordedrelease'");
-		return $res['value'];
+		return ($res === false ? 0 : $res['value']);
 	}
 
+	/**
+	 * Use to order releases on site.
+	 *
+	 * @param string $orderby
+	 *
+	 * @return array
+	 */
 	public function getBrowseOrder($orderby)
 	{
 		$order = ($orderby == '') ? 'posted_desc' : $orderby;
@@ -179,17 +223,47 @@ class Releases
 		return array($orderfield, $ordersort);
 	}
 
+	/**
+	 * Return ordering types usable on site.
+	 *
+	 * @return array
+	 */
 	public function getBrowseOrdering()
 	{
-		return array('name_asc', 'name_desc', 'cat_asc', 'cat_desc', 'posted_asc', 'posted_desc', 'size_asc', 'size_desc', 'files_asc', 'files_desc', 'stats_asc', 'stats_desc');
+		return array(
+			'name_asc',
+			'name_desc',
+			'cat_asc',
+			'cat_desc',
+			'posted_asc',
+			'posted_desc',
+			'size_asc',
+			'size_desc',
+			'files_asc',
+			'files_desc',
+			'stats_asc',
+			'stats_desc'
+		);
 	}
 
-	public function getForExport($postfrom, $postto, $group)
+	/**
+	 * Get list of releases avaible for export.
+	 *
+	 * @param string $postfrom (optional) Date in this format : 01/01/2014
+	 * @param string $postto   (optional) Date in this format : 01/01/2014
+	 * @param string $group    (optional) Group ID.
+	 *
+	 * @return array
+	 */
+	public function getForExport($postfrom = '', $postto = '', $group = '')
 	{
 		if ($postfrom != '') {
 			$dateparts = explode('/', $postfrom);
 			if (count($dateparts) == 3) {
-				$postfrom = sprintf(' AND postdate > %s ', $this->db->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' . $dateparts[0] . ' 00:00:00'));
+				$postfrom = sprintf(
+					' AND postdate > %s ',
+					$this->db->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' . $dateparts[0] . ' 00:00:00')
+				);
 			} else {
 				$postfrom = '';
 			}
@@ -198,7 +272,10 @@ class Releases
 		if ($postto != '') {
 			$dateparts = explode('/', $postto);
 			if (count($dateparts) == 3) {
-				$postto = sprintf(' AND postdate < %s ', $this->db->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' . $dateparts[0] . ' 23:59:59'));
+				$postto = sprintf(
+					' AND postdate < %s ',
+					$this->db->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' . $dateparts[0] . ' 23:59:59')
+				);
 			} else {
 				$postto = '';
 			}
@@ -217,29 +294,48 @@ class Releases
 				INNER JOIN category ON releases.categoryid = category.id
 				INNER JOIN groups ON releases.groupid = groups.id
 				LEFT OUTER JOIN category cp ON cp.id = category.parentid
-				WHERE nzbstatus = 1 %s %s %s", $postfrom, $postto, $group
+				WHERE nzbstatus = 1 %s %s %s",
+				$postfrom, $postto, $group
 			)
 		);
 	}
 
+	/**
+	 * Get date in this format : 01/01/2014 of the oldest release.
+	 *
+	 * @return mixed
+	 */
 	public function getEarliestUsenetPostDate()
 	{
-		if ($this->db->dbSystem() === 'mysql') {
-			$row = $this->db->queryOneRow("SELECT DATE_FORMAT(min(postdate), '%d/%m/%Y') AS postdate FROM releases");
-		} else {
-			$row = $this->db->queryOneRow("SELECT to_char(min(postdate), 'dd/mm/yyyy') AS postdate FROM releases");
-		}
-		return $row['postdate'];
+		$row = $this->db->queryOneRow(
+			sprintf("
+				SELECT %s AS postdate FROM releases",
+				($this->db->dbSystem() === 'mysql'
+					? "DATE_FORMAT(min(postdate), '%d/%m/%Y')"
+					: "to_char(min(postdate), 'dd/mm/yyyy')"
+				)
+			)
+		);
+		return ($row === false ? '01/01/2014' : $row['postdate']);
 	}
 
+	/**
+	 * Get date in this format : 01/01/2014 of the newest release.
+	 *
+	 * @return mixed
+	 */
 	public function getLatestUsenetPostDate()
 	{
-		if ($this->db->dbSystem() === 'mysql') {
-			$row = $this->db->queryOneRow("SELECT DATE_FORMAT(max(postdate), '%d/%m/%Y') AS postdate FROM releases");
-		} else {
-			$row = $this->db->queryOneRow("SELECT to_char(max(postdate), 'dd/mm/yyyy') AS postdate FROM releases");
-		}
-		return $row['postdate'];
+		$row = $this->db->queryOneRow(
+			sprintf("
+				SELECT %s AS postdate FROM releases",
+				($this->db->dbSystem() === 'mysql'
+					? "DATE_FORMAT(max(postdate), '%d/%m/%Y')"
+					: "to_char(max(postdate), 'dd/mm/yyyy')"
+				)
+			)
+		);
+		return ($row === false ? '01/01/2014' : $row['postdate']);
 	}
 
 	/**
@@ -265,6 +361,18 @@ class Releases
 		return $temp_array;
 	}
 
+	/**
+	 * Get releases for RSS.
+	 *
+	 * @param     $cat
+	 * @param     $num
+	 * @param int $uid
+	 * @param int $rageid
+	 * @param int $anidbid
+	 * @param int $airdate
+	 *
+	 * @return array
+	 */
 	public function getRss($cat, $num, $uid = 0, $rageid, $anidbid, $airdate = -1)
 	{
 		if ($this->db->dbSystem() === 'mysql') {
@@ -310,17 +418,43 @@ class Releases
 			$airdate = ($airdate > -1) ? sprintf(" AND releases.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
 		}
 
-		$sql = sprintf("SELECT releases.*, m.cover, m.imdbid, m.rating, m.plot, m.year, m.genre, m.director, m.actors, g.name as group_name, CONCAT(cp.title, ' > ', c.title) AS category_name, concat(cp.id, ',', c.id) AS category_ids, COALESCE(cp.id,0) AS parentCategoryid, mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist, mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate, mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover, mug.title AS mu_genre, co.title AS co_title, co.url AS co_url, co.publisher AS co_publisher, co.releasedate AS co_releasedate, co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre FROM releases LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid
-						LEFT OUTER JOIN groups g ON g.id = releases.groupid
-						LEFT OUTER JOIN movieinfo m ON m.imdbid = releases.imdbid AND m.title != ''
-						LEFT OUTER JOIN musicinfo mu ON mu.id = releases.musicinfoid
-						LEFT OUTER JOIN genres mug ON mug.id = mu.genreid
-						LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid
-						LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s
-						WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s", $cartsrch, $this->showPasswords(), $catsrch, $rage, $anidb, $airdate, $limit);
-		return $this->db->query($sql);
+		return $this->db->query(
+			sprintf("
+				SELECT releases.*, m.cover, m.imdbid, m.rating, m.plot,
+						m.year, m.genre, m.director, m.actors, g.name AS group_name,
+						CONCAT(cp.title, ' > ', c.title) AS category_name,
+						CONCAT(cp.id, ',', c.id) AS category_ids,
+						COALESCE(cp.id,0) AS parentCategoryid,
+						mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist,
+						mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate,
+						mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover,
+						mug.title AS mu_genre, co.title AS co_title, co.url AS co_url,
+						co.publisher AS co_publisher, co.releasedate AS co_releasedate,
+						co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre
+				FROM releases
+				LEFT OUTER JOIN category c ON c.id = releases.categoryid
+				LEFT OUTER JOIN category cp ON cp.id = c.parentid
+				LEFT OUTER JOIN groups g ON g.id = releases.groupid
+				LEFT OUTER JOIN movieinfo m ON m.imdbid = releases.imdbid AND m.title != ''
+				LEFT OUTER JOIN musicinfo mu ON mu.id = releases.musicinfoid
+				LEFT OUTER JOIN genres mug ON mug.id = mu.genreid
+				LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid
+				LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s
+				WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s",
+				$cartsrch, $this->showPasswords(), $catsrch, $rage, $anidb, $airdate, $limit
+			)
+		);
 	}
 
+	/**
+	 * Get TV shows for RSS.
+	 * @param       $num
+	 * @param int   $uid
+	 * @param array $excludedcats
+	 * @param       $airdate
+	 *
+	 * @return array
+	 */
 	public function getShowsRss($num, $uid = 0, $excludedcats = array(), $airdate = -1)
 	{
 		$exccatlist = '';
@@ -336,12 +470,34 @@ class Releases
 		}
 		$limit = ' LIMIT ' . ($num > 100 ? 100 : $num) . ' OFFSET 0';
 
-		$sql = sprintf("SELECT releases.*, tvr.rageid, tvr.releasetitle, g.name AS group_name, CONCAT(cp.title, '-', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, COALESCE(cp.id,0)
-						AS parentCategoryid FROM releases LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid LEFT OUTER JOIN groups g ON g.id = releases.groupid
-						LEFT OUTER JOIN tvrage tvr ON tvr.rageid = releases.rageid WHERE %s %s %s AND releases.passwordstatus <= %d ORDER BY postdate DESC %s", $usql, $exccatlist, $airdate, $this->showPasswords(), $limit);
-		return $this->db->query($sql);
+		return $this->db->query(
+			sprintf("
+				SELECT releases.*, tvr.rageid, tvr.releasetitle, g.name AS group_name,
+					CONCAT(cp.title, '-', c.title) AS category_name,
+					CONCAT(cp.id, ',', c.id) AS category_ids,
+					COALESCE(cp.id,0) AS parentCategoryid
+				FROM releases
+				LEFT OUTER JOIN category c ON c.id = releases.categoryid
+				LEFT OUTER JOIN category cp ON cp.id = c.parentid
+				LEFT OUTER JOIN groups g ON g.id = releases.groupid
+				LEFT OUTER JOIN tvrage tvr ON tvr.rageid = releases.rageid
+				WHERE %s %s %s
+				AND releases.passwordstatus <= %d
+				ORDER BY postdate DESC %s",
+				$usql, $exccatlist, $airdate, $this->showPasswords(), $limit
+			)
+		);
 	}
 
+	/**
+	 * Get movies for RSS.
+	 *
+	 * @param       $num
+	 * @param int   $uid
+	 * @param array $excludedcats
+	 *
+	 * @return array
+	 */
 	public function getMyMoviesRss($num, $uid = 0, $excludedcats = array())
 	{
 		$exccatlist = '';
@@ -352,10 +508,37 @@ class Releases
 		$usql = $this->uSQL($this->db->query(sprintf('SELECT imdbid, categoryid FROM usermovies WHERE userid = %d', $uid), true), 'imdbid');
 		$limit = ' LIMIT ' . ($num > 100 ? 100 : $num) . ' OFFSET 0';
 
-		$sql = sprintf("SELECT releases.*, mi.title AS releasetitle, g.name AS group_name, concat(cp.title, '-', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, COALESCE(cp.id,0) AS parentCategoryid FROM releases LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid LEFT OUTER JOIN groups g ON g.id = releases.groupid LEFT OUTER JOIN movieinfo mi ON mi.imdbid = releases.imdbid WHERE %s %s AND releases.passwordstatus <= %d ORDER BY postdate DESC %s", $usql, $exccatlist, $this->showPasswords(), $limit);
-		return $this->db->query($sql);
+		return $this->db->query(
+			sprintf("
+				SELECT releases.*, mi.title AS releasetitle, g.name AS group_name,
+					CONCAT(cp.title, '-', c.title) AS category_name,
+					CONCAT(cp.id, ',', c.id) AS category_ids,
+					COALESCE(cp.id,0) AS parentCategoryid
+				FROM releases
+				LEFT OUTER JOIN category c ON c.id = releases.categoryid
+				LEFT OUTER JOIN category cp ON cp.id = c.parentid
+				LEFT OUTER JOIN groups g ON g.id = releases.groupid
+				LEFT OUTER JOIN movieinfo mi ON mi.imdbid = releases.imdbid
+				WHERE %s %s
+				AND releases.passwordstatus <= %d
+				ORDER BY postdate DESC %s",
+				$usql, $exccatlist, $this->showPasswords(), $limit
+			)
+		);
 	}
 
+	/**
+	 * Get TV for my shows page.
+	 *
+	 * @param       $usershows
+	 * @param       $start
+	 * @param       $num
+	 * @param       $orderby
+	 * @param       $maxage
+	 * @param array $excludedcats
+	 *
+	 * @return array
+	 */
 	public function getShowsRange($usershows, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
 	{
 		if ($start === false) {
@@ -380,10 +563,34 @@ class Releases
 		}
 
 		$order = $this->getBrowseOrder($orderby);
-		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, '-', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name as group_name, rn.id as nfoid, re.releaseid as reid FROM releases LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE %s %s AND releases.passwordstatus <= %d %s ORDER BY %s %s %s", $usql, $exccatlist, $this->showPasswords(), $maxagesql, $order[0], $order[1], $limit);
-		return $this->db->query($sql, true);
+		return $this->db->query(
+			sprintf("
+				SELECT releases.*, CONCAT(cp.title, '-', c.title) AS category_name,
+					CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name,
+					rn.id AS nfoid, re.releaseid AS reid
+				FROM releases
+				LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
+				LEFT OUTER JOIN groups ON groups.id = releases.groupid
+				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL
+				LEFT OUTER JOIN category c ON c.id = releases.categoryid
+				LEFT OUTER JOIN category cp ON cp.id = c.parentid
+				WHERE %s %s
+				AND releases.passwordstatus <= %d %s
+				ORDER BY %s %s %s",
+				$usql, $exccatlist, $this->showPasswords(), $maxagesql, $order[0], $order[1], $limit
+			)
+		);
 	}
 
+	/**
+	 * Get count for my shows page pagination.
+	 *
+	 * @param       $usershows
+	 * @param       $maxage
+	 * @param array $excludedcats
+	 *
+	 * @return int
+	 */
 	public function getShowsCount($usershows, $maxage = -1, $excludedcats = array())
 	{
 		$exccatlist = $maxagesql = '';
@@ -401,16 +608,34 @@ class Releases
 			}
 		}
 
-		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(releases.id) AS num FROM releases WHERE %s %s AND releases.passwordstatus <= %d %s', $usql, $exccatlist, $this->showPasswords(), $maxagesql), true);
-		return $res['num'];
+		$res = $this->db->queryOneRow(
+			sprintf('
+				SELECT COUNT(releases.id) AS num
+				FROM releases
+				WHERE %s %s
+				AND releases.passwordstatus <= %d %s',
+				$usql, $exccatlist, $this->showPasswords(), $maxagesql), true
+		);
+		return ($res === false ? 0 : $res['num']);
 	}
 
+	/**
+	 * Get count for admin release list page.
+	 *
+	 * @return int
+	 */
 	public function getCount()
 	{
 		$res = $this->db->queryOneRow('SELECT COUNT(id) AS num FROM releases');
-		return $res['num'];
+		return ($res === false ? 0 : $res['num']);
 	}
 
+	/**
+	 * Delete a release or multiple releases.
+	 *
+	 * @param int|string $id
+	 * @param bool       $isGuid
+	 */
 	public function delete($id, $isGuid = false)
 	{
 		if (!is_array($id)) {
@@ -427,20 +652,29 @@ class Releases
 		}
 	}
 
-	// For most scripts needing to delete a release.
+	/**
+	 * Deletes a single release, and all the corresponding files.
+	 *
+	 * @param int    $id   release id
+	 * @param string $guid release guid
+	 */
 	public function fastDelete($id, $guid)
 	{
 		$nzb = new NZB();
 		// Delete NZB from disk.
 		$nzbpath = $nzb->getNZBPath($guid);
 		if (is_file($nzbpath)) {
-			unlink($nzbpath);
+			@unlink($nzbpath);
 		}
 
-		if (isset($id)) {
-			// Delete from DB.
-			if ($this->db->dbSystem() === 'mysql') {
-				$this->db->queryExec(
+		// Delete images.
+		$ri = new ReleaseImage();
+		$ri->delete($guid);
+
+		// Delete from DB.
+		if ($this->db->dbSystem() === 'mysql') {
+			$this->db->queryExec(
+				sprintf(
 					'DELETE
 						releases, releasenfo, releasecomment, usercart, releasefiles,
 						releaseaudio, releasesubs, releasevideo, releaseextrafull
@@ -453,57 +687,86 @@ class Releases
 					LEFT OUTER JOIN releasesubs ON releasesubs.releaseid = releases.id
 					LEFT OUTER JOIN releasevideo ON releasevideo.releaseid = releases.id
 					LEFT OUTER JOIN releaseextrafull ON releaseextrafull.releaseid = releases.id
-					WHERE releases.id = ' . $id
-				);
-			} else {
-				$this->db->queryExec('DELETE FROM releasenfo WHERE releaseid = ' . $id);
-				$this->db->queryExec('DELETE FROM releasecomment WHERE releaseid = ' . $id);
-				$this->db->queryExec('DELETE FROM usercart WHERE releaseid = ' . $id);
-				$this->db->queryExec('DELETE FROM releasefiles WHERE releaseid = ' . $id);
-				$this->db->queryExec('DELETE FROM releaseaudio WHERE releaseid = ' . $id);
-				$this->db->queryExec('DELETE FROM releasesubs WHERE releaseid = ' . $id);
-				$this->db->queryExec('DELETE FROM releasevideo WHERE releaseid = ' . $id);
-				$this->db->queryExec('DELETE FROM releaseextrafull WHERE releaseid = ' . $id);
-				$this->db->queryExec('DELETE FROM releases WHERE id = ' . $id);
-			}
-		}
-
-		// This deletes a file so not in the query.
-		if (isset($guid)) {
-			$ri = new ReleaseImage();
-			$ri->delete($guid);
+					WHERE releases.id = %d',
+					$id
+				)
+			);
+		} else {
+			$this->db->queryExec('DELETE FROM releasenfo WHERE releaseid = ' . $id);
+			$this->db->queryExec('DELETE FROM releasecomment WHERE releaseid = ' . $id);
+			$this->db->queryExec('DELETE FROM usercart WHERE releaseid = ' . $id);
+			$this->db->queryExec('DELETE FROM releasefiles WHERE releaseid = ' . $id);
+			$this->db->queryExec('DELETE FROM releaseaudio WHERE releaseid = ' . $id);
+			$this->db->queryExec('DELETE FROM releasesubs WHERE releaseid = ' . $id);
+			$this->db->queryExec('DELETE FROM releasevideo WHERE releaseid = ' . $id);
+			$this->db->queryExec('DELETE FROM releaseextrafull WHERE releaseid = ' . $id);
+			$this->db->queryExec('DELETE FROM releases WHERE id = ' . $id);
 		}
 	}
 
-	// For the site delete button.
-	public function deleteSite($id, $isGuid = false)
+	/**
+	 * Used for release edit page on site.
+	 *
+	 * @param $id
+	 * @param $name
+	 * @param $searchname
+	 * @param $fromname
+	 * @param $category
+	 * @param $parts
+	 * @param $grabs
+	 * @param $size
+	 * @param $posteddate
+	 * @param $addeddate
+	 * @param $rageid
+	 * @param $seriesfull
+	 * @param $season
+	 * @param $episode
+	 * @param $imdbid
+	 * @param $anidbid
+	 */
+	public function update($id, $name, $searchname, $fromname, $category, $parts, $grabs, $size,
+						$posteddate, $addeddate, $rageid, $seriesfull, $season, $episode, $imdbid, $anidbid)
 	{
-		if (!is_array($id)) {
-			$id = array($id);
-		}
-
-		foreach ($id as $identifier) {
-			if ($isGuid !== false) {
-				$rel = $this->getById($identifier);
-			} else {
-				$rel = $this->getByGuid($identifier);
-			}
-			$this->fastDelete($rel['id'], $rel['guid']);
-		}
+		$this->db->queryExec(
+			sprintf('
+				UPDATE releases
+					SET name = %s, searchname = %s, fromname = %s, categoryid = %d,
+					totalpart = %d, grabs = %d, size = %s, postdate = %s, adddate = %s, rageid = %d,
+					seriesfull = %s, season = %s, episode = %s, imdbid = %d, anidbid = %d
+				WHERE id = %d',
+				$this->db->escapeString($name), $this->db->escapeString($searchname), $this->db->escapeString($fromname),
+				$category, $parts, $grabs, $this->db->escapeString($size), $this->db->escapeString($posteddate),
+				$this->db->escapeString($addeddate), $rageid, $this->db->escapeString($seriesfull),
+				$this->db->escapeString($season), $this->db->escapeString($episode), $imdbid, $anidbid, $id
+			)
+		);
 	}
 
-	public function update($id, $name, $searchname, $fromname, $category, $parts, $grabs, $size, $posteddate, $addeddate, $rageid, $seriesfull, $season, $episode, $imdbid, $anidbid)
-	{
-		$this->db->queryExec(sprintf('UPDATE releases SET name = %s, searchname = %s, fromname = %s, categoryid = %d, totalpart = %d, grabs = %d, size = %s, postdate = %s, adddate = %s, rageid = %d, seriesfull = %s, season = %s, episode = %s, imdbid = %d, anidbid = %d WHERE id = %d', $this->db->escapeString($name), $this->db->escapeString($searchname), $this->db->escapeString($fromname), $category, $parts, $grabs, $this->db->escapeString($size), $this->db->escapeString($posteddate), $this->db->escapeString($addeddate), $rageid, $this->db->escapeString($seriesfull), $this->db->escapeString($season), $this->db->escapeString($episode), $imdbid, $anidbid, $id));
-	}
-
+	/**
+	 * Used for updating releases on site.
+	 *
+	 * @param $guids
+	 * @param $category
+	 * @param $grabs
+	 * @param $rageid
+	 * @param $season
+	 * @param $imdbid
+	 *
+	 * @return array|bool|int
+	 */
 	public function updatemulti($guids, $category, $grabs, $rageid, $season, $imdbid)
 	{
 		if (!is_array($guids) || sizeof($guids) < 1) {
 			return false;
 		}
 
-		$update = array('categoryid' => (($category == '-1') ? '' : $category), 'grabs' => $grabs, 'rageid' => $rageid, 'season' => $season, 'imdbid' => $imdbid);
+		$update = array(
+			'categoryid' => (($category == '-1') ? '' : $category),
+			'grabs' => $grabs,
+			'rageid' => $rageid,
+			'season' => $season,
+			'imdbid' => $imdbid
+		);
 
 		$updateSql = array();
 		foreach ($update as $updk => $updv) {
@@ -512,7 +775,7 @@ class Releases
 			}
 		}
 
-		if (sizeof($updateSql) < 1) {
+		if (count($updateSql) < 1) {
 			return -1;
 		}
 
@@ -521,11 +784,23 @@ class Releases
 			$updateGuids[] = $this->db->escapeString($guid);
 		}
 
-		$sql = sprintf('UPDATE releases SET ' . implode(', ', $updateSql) . ' WHERE guid IN (%s)', implode(', ', $updateGuids));
-		return $this->db->query($sql);
+		return $this->db->query(
+			sprintf('
+				UPDATE releases SET %s WHERE guid IN (%s)',
+				implode(', ', $updateSql),
+				implode(', ', $updateGuids)
+			)
+		);
 	}
 
-	// Creates part of a query for some functions.
+	/**
+	 * Creates part of a query for some functions.
+	 *
+	 * @param $userquery
+	 * @param $type
+	 *
+	 * @return string
+	 */
 	public function uSQL($userquery, $type)
 	{
 		$usql = '(1=2 ';
@@ -541,10 +816,18 @@ class Releases
 			}
 			$usql .= ') ';
 		}
-		return $usql .= ') ';
+		$usql .= ') ';
+		return $usql;
 	}
 
-	// Creates part of a query for searches based on the type of search.
+	/**
+	 * Creates part of a query for searches based on the type of search.
+	 *
+	 * @param $search
+	 * @param $type
+	 *
+	 * @return string
+	 */
 	public function searchSQL($search, $type)
 	{
 		// If the query starts with a ^ it indicates the search is looking for items which start with the term
@@ -562,7 +845,6 @@ class Releases
 				$ft = $this->db->queryDirect("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_searchname_ft'");
 			}
 		}
-
 
 		if (count($words) > 0) {
 			if ($ft->rowCount() !== 0) {
@@ -1048,7 +1330,7 @@ class Releases
 	public function processReleasesStage1($groupID)
 	{
 		// Set table names
-		if ($this->tablepergroup == 1) {
+		if ($this->tablepergroup === 1) {
 			if ($groupID == '') {
 				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			}
@@ -1140,7 +1422,7 @@ class Releases
 		$where = (!empty($groupID)) ? ' AND c.groupid = ' . $groupID : ' ';
 
 		// Set table names
-		if ($this->tablepergroup == 1) {
+		if ($this->tablepergroup === 1) {
 			if ($groupID == '') {
 				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			}
@@ -1173,7 +1455,7 @@ class Releases
 		$minsizecounts = $maxsizecounts = $minfilecounts = 0;
 
 		// Set table names
-		if ($this->tablepergroup == 1) {
+		if ($this->tablepergroup === 1) {
 			if ($groupID == '') {
 				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			}
@@ -1308,7 +1590,7 @@ class Releases
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID . ' AND ' : ' ';
 
 		// Set table names
-		if ($this->tablepergroup == 1) {
+		if ($this->tablepergroup === 1) {
 			if ($groupID == '') {
 				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			}
@@ -1540,7 +1822,7 @@ class Releases
 		$where = (!empty($groupID)) ? ' r.groupid = ' . $groupID . ' AND ' : ' ';
 
 		// Set table names
-		if ($this->tablepergroup == 1) {
+		if ($this->tablepergroup === 1) {
 			if ($groupID == '') {
 				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			}
@@ -1724,7 +2006,7 @@ class Releases
 		$reccount = $delq = 0;
 
 		// Set table names
-		if ($this->tablepergroup == 1) {
+		if ($this->tablepergroup === 1) {
 			if ($groupID == '') {
 				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			}

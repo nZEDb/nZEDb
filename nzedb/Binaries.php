@@ -613,6 +613,7 @@ class Binaries
 		// Start time of getting data from usenet.
 		$this->startHeaders = $this->startLoop;
 
+		// Empty array, will contain return values.
 		$returnArray = array();
 
 		// Check that tables exist, create if they do not
@@ -1083,7 +1084,7 @@ class Binaries
 	public function partRepair($groupArr)
 	{
 		// Check that tables exist, create if they do not
-		if ($this->tablepergroup == 1) {
+		if ($this->tablepergroup === 1) {
 			if ($this->db->newtables($groupArr['id']) === false) {
 				$dMessage = "There is a problem creating new parts/files tables for this group.";
 				if ($this->debug) {
@@ -1209,7 +1210,7 @@ class Binaries
 	private function addMissingParts($numbers, $groupID)
 	{
 		// Check that tables exist, create if they do not
-		if ($this->tablepergroup == 1) {
+		if ($this->tablepergroup === 1) {
 			if ($this->db->newtables($groupID) === false) {
 				$dMessage = "There is a problem creating new parts/files tables for this group.";
 				if ($this->debug) {
@@ -1248,7 +1249,7 @@ class Binaries
 	 */
 	private function removeRepairedParts($numbers, $groupID)
 	{
-		if ($this->tablepergroup == 1) {
+		if ($this->tablepergroup === 1) {
 			$group['prname'] = 'partrepair_' . $groupID;
 		} else {
 			$group['prname'] = 'partrepair';

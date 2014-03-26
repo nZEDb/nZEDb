@@ -57,7 +57,7 @@ class NZB
 	{
 		$this->s = new Sites();
 		$this->site = $this->s->get();
-		$this->tablePerGroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
+		$this->tablePerGroup = (isset($this->site->tablepergroup)) ? (int)$this->site->tablepergroup : 0;
 	}
 
 	/**
@@ -98,7 +98,7 @@ class NZB
 	public function writeNZBforReleaseId($relID, $relGuid, $name, $cTitle)
 	{
 		// Set table names
-		if ($this->tablePerGroup == 1) {
+		if ($this->tablePerGroup === 1) {
 			if ($this->groupID == '') {
 				exit("$this->groupID is missing, are you running grabnzbs_threaded.py\n");
 			}

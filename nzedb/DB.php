@@ -24,7 +24,7 @@ class DB extends PDO
 	/**
 	 * @var string Lower-cased name of DBMS in use.
 	 */
-	public $dbSystem;
+	protected $dbSystem;
 
 	/**
 	 * @var bool	Whether memcache is enabled.
