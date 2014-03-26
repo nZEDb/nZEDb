@@ -367,10 +367,10 @@ class Binaries
 				}
 			}
 
-			$left = (int)$this->messagebuffer;
-			$last = (int)($grouplast = $data['last'] - $left);
+			$left = $this->messagebuffer;
+			$last = $grouplast = round($data['last'] - $left, 0, PHP_ROUND_HALF_UP);
 		} else {
-			$first = (int)$groupArr['last_record'];
+			$first = $groupArr['last_record'];
 
 			// Leave 50%+ of the new articles on the server for next run (allow server enough time to actually make parts available).
 			$newcount = $data['last'] - $first;
@@ -378,16 +378,16 @@ class Binaries
 			if ($newcount > $this->messagebuffer) {
 				// Drop the remaining plus $this->messagebuffer, pick them up on next run
 				if ($newcount < (2 * $this->messagebuffer)) {
-					$left = ((int) ($newcount / 2));
-					$last = $grouplast = ($data['last'] - $left);
+					$left = $newcount / 2;
+					$last = $grouplast = round(($data['last'] - $left), 0, PHP_ROUND_HALF_UP);
 				} else {
 					$remainingcount = $newcount % $this->messagebuffer;
 					$left = $remainingcount + $this->messagebuffer;
-					$last = $grouplast = ($data['last'] - $left);
+					$last = $grouplast = round(($data['last'] - $left), 0, PHP_ROUND_HALF_UP);
 				}
 			} else {
-				$left = ((int) ($newcount / 2));
-				$last = $grouplast = ($data['last'] - $left);
+				$left = (($newcount / 2));
+				$last = $grouplast = round(($data['last'] - $left), 0, PHP_ROUND_HALF_UP);
 			}
 		}
 

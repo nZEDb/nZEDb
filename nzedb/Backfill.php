@@ -486,7 +486,7 @@ class Backfill
 			if (!$this->nntp->isError($header)) {
 
 				// Check if the date is set.
-				if (isset($header[0]['Date']) && strlen($header[0]['Date'] > 0)) {
+				if (isset($header[0]['Date']) && strlen($header[0]['Date']) > 0) {
 					$date = $header[0]['Date'];
 					break;
 				}
@@ -521,13 +521,13 @@ class Backfill
 				if ($maxPossible <= 1) {
 					break;
 				} else {
-					$currentPost -= round((1.01 / 100) * $maxPossible, 0 , PHP_ROUND_HALF_UP);
+					$currentPost -= round(((mt_rand(101, 105) / 100) / 100) * $maxPossible, 0 , PHP_ROUND_HALF_UP);
 					if ($currentPost <= $groupData['first']) {
 						break;
 					}
 				}
 			} else {
-				$currentPost += round((1.01 / 100) * $minPossible, 0 , PHP_ROUND_HALF_UP);
+				$currentPost += round(((mt_rand(101, 105) / 100) / 100) * $minPossible, 0 , PHP_ROUND_HALF_UP);
 				if ($currentPost >= $groupData['last']) {
 					break;
 				}
@@ -587,9 +587,9 @@ class Backfill
 		// The total number of articles in this group.
 		$totalnumberofarticles = $data['last'] - $data['first'];
 
-		//The newest article.
+		// The newest article in the group.
 		$upperbound = $data['last'];
-		// The oldest article.
+		// The oldest article in the group.
 		$lowerbound = $data['first'];
 
 		if ($this->debug) {
@@ -605,16 +605,6 @@ class Backfill
 				date('r', $goaldate)
 				.')',
 				5);
-		}
-
-		if ($data['last'] == PHP_INT_MAX) {
-
-			$dMessage = "Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug.\n";
-
-			if ($this->debug) {
-				$this->debugging->start("daytopost", $dMessage, 1);
-			}
-			exit($this->c->info($dMessage));
 		}
 
 		// The servers oldest date.
@@ -673,8 +663,8 @@ class Backfill
 				5);
 		}
 
+		// Half of total groups articles.
 		$interval = floor(($upperbound - $lowerbound) * 0.5);
-		$templowered = '';
 		$dateofnextone = $lastDate;
 
 		if ($this->debug) {
@@ -689,39 +679,48 @@ class Backfill
 				5);
 		}
 
+		$endTries = 0;
+		$done = false;
 		// Loop until wanted days is bigger than found days.
-		while ($this->daysOld($dateofnextone) < $days) {
+		while (!$done) {
 
-			while (($tmpDate = $this->postdate(($upperbound - $interval), $data)) > $goaldate) {
-				$upperbound = $upperbound - $interval;
+			// Keep going half way from oldest to newest article, trying to get a date until we have a date newer than the goal.
+			$tmpDate =$this->postdate(($upperbound - $interval), $data);
+			if ($tmpDate > $goaldate) {
 
-				if ($this->debug) {
-					$this->debugging->start(
-						"daytopost",
-						'New upperbound: ' .
-						number_format($upperbound) .
-						' is ' .
-						$this->daysOld($tmpDate) .
-						' days old.',
-						5);
+				// Now we found a date newer than the goal, so try going back older (in smaller stepps) until we get closer to the target date.
+				while (true) {
+					$interval = ceil(($interval * 1.1));
+					if ($this->debug) {
+						$this->debugging->start(
+							"daytopost",
+							'Increased interval to: (' .
+							number_format($interval) .
+							') articles, article ' .
+							($upperbound - $interval),
+							5);
+					}
+
+					$tmpDate =$this->postdate(($upperbound - $interval), $data);
+
+					if ($tmpDate < $goaldate || $endTries++ > 10) {
+						$dateofnextone = $tmpDate;
+						$upperbound = ($upperbound - $interval);
+						$done = true;
+						break;
+					}
 				}
-			}
-
-			if (!$templowered) {
+			} else {
 				$interval = ceil(($interval / 2));
 				if ($this->debug) {
 					$this->debugging->start(
 						"daytopost",
-						'Checking interval at: (' .
+						'Reduced interval to: (' .
 						number_format($interval) .
-						') articles.',
+						') articles, article ' .
+						($upperbound - $interval),
 						5);
 				}
-			}
-
-			$dateofnextone = $this->postdate(($upperbound - 1), $data);
-			while (!$dateofnextone) {
-				$dateofnextone = $this->postdate(($upperbound - 1), $data);
 			}
 		}
 
