@@ -19,6 +19,7 @@ function SplitSQL($file, $delimiter = ';')
 
 			while (feof($file) === false) {
 				$query[] = fgets($file);
+
 				if (preg_match('~' . preg_quote($delimiter, '~') . '\s*$~iS', end($query)) === 1) {
 					$query = trim(implode('', $query));
 
@@ -34,14 +35,14 @@ function SplitSQL($file, $delimiter = ';')
 						// Log the problem.
 						file_put_contents(
 							nZEDb_LOGS . 'patcherrors.log',
-							'[' . date('r') . '] [' . $e->getMessage() . ']',
+							'[' . date('r') . '] [ERROR] [' . trim(preg_replace('/\s+/', ' ', $e->getMessage())) . ']' . PHP_EOL,
 							FILE_APPEND
 						);
 
 						// And the query..
 						file_put_contents(
 							nZEDb_LOGS . 'patcherrors.log',
-							'[' . date('r') . '] [' . $query . ']',
+							'[' . date('r') . '] [QUERY] [' . trim(preg_replace('/\s+/', ' ', $query)) . ']' . PHP_EOL,
 							FILE_APPEND
 						);
 

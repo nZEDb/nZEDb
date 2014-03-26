@@ -18,18 +18,23 @@ class Sites
 	const ERR_BAD_COVERS_PATH = -9;
 
 	protected $_db;
-	protected $_versions;
+	protected $_versions = false;
 
 	public function __construct()
 	{
 		$this->_db = new DB();
-		$this->_versions = new \nzedb\utility\Versions();
+		$this->_versionSuccess = false;
+		try {
+			$this->_versions = new \nzedb\utility\Versions();
+		} catch (Exception $e) {
+			//echo $e->getMessage() . PHP_EOL;
+		}
 		$this->setCovers();
 	}
 
 	public function version()
 	{
-		return $this->_versions->getTagVersion();
+		return ($this->_versionSuccess !== false ? '0.0.0' : $this->_versions->getTagVersion());
 	}
 
 	public function update($form)
@@ -97,6 +102,32 @@ class Sites
 		}
 
 		return $this->rows2Object($rows);
+	}
+
+	/**
+	 * Retrieve one or all settings from the Db as a string or an array;
+	 *
+	 * @param null $setting	Name of setting to retrieve, or null for all settings
+	 *
+	 * @return string|array|bool
+	 */
+	function getSetting($setting = null)
+	{
+		$sql = 'SELECT setting, value FROM site ';
+		if ($setting !== null) {
+			$sql .= "WHERE setting = '$setting' ";
+		}
+		$sql .= 'ORDER BY setting';
+
+		$result = $this->_db->queryArray($sql);
+		if ($result !== false) {
+			foreach($result as $row) {
+				$results[$row['setting']] = $row['value'];
+			}
+
+		}
+
+		return (count($results) === 1 ? $results[$setting] : $results);
 	}
 
 	public function rows2Object($rows)
