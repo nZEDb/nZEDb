@@ -18,8 +18,7 @@ class Sites
 	const ERR_BAD_COVERS_PATH = -9;
 
 	protected $_db;
-	protected $_versions;
-	protected $_versionSuccess;
+	protected $_versions = false;
 
 	public function __construct()
 	{
@@ -27,7 +26,6 @@ class Sites
 		$this->_versionSuccess = false;
 		try {
 			$this->_versions = new \nzedb\utility\Versions();
-			$this->_versionSuccess = true;
 		} catch (Exception $e) {
 			//echo $e->getMessage() . PHP_EOL;
 		}
@@ -36,7 +34,7 @@ class Sites
 
 	public function version()
 	{
-		return ($this->_versionSuccess ? $this->_versions->getTagVersion() : '0.3');
+		return ($this->_versionSuccess !== false ? '0.0.0' : $this->_versions->getTagVersion());
 	}
 
 	public function update($form)
@@ -104,6 +102,29 @@ class Sites
 		}
 
 		return $this->rows2Object($rows);
+	}
+
+	/**
+	 * Retrieve one or all settings from the Db as a string or an array;
+	 *
+	 * @param null $setting	Name of setting to retrieve, or null for all settings
+	 *
+	 * @return string|array|bool
+	 */
+	function getSetting($setting = null)
+	{
+		$sql = 'SELECT setting, value FROM sites ';
+		if ($setting !== null) {
+			$sql .= "WHERE setting = '$setting' ";
+		}
+		$sql .= 'ORDER BY setting';
+
+		$result = $this->_db->queryArray($sql);
+		if ($result !== false && count($result) < 2) {
+			$result = $result[0][$setting];
+		}
+
+		return $result;
 	}
 
 	public function rows2Object($rows)
