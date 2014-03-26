@@ -113,7 +113,7 @@ class Sites
 	 */
 	function getSetting($setting = null)
 	{
-		$sql = 'SELECT setting, value FROM sites ';
+		$sql = 'SELECT setting, value FROM site ';
 		if ($setting !== null) {
 			$sql .= "WHERE setting = '$setting' ";
 		}
