@@ -56,7 +56,13 @@ class Versions
 	public function __construct($filepath = null)
 	{
 		if (empty($filepath)) {
-			$filepath = nZEDb_VERSIONS;
+			if (defined('nZEDb_VERSIONS')) {
+				$filepath = nZEDb_VERSIONS;
+			}
+		}
+
+		if (!file_exists($filepath)) {
+			throw \RuntimeException("Versions file '$filepath' does not exist!'");
 		}
 		$this->_filespec = $filepath;
 

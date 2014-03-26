@@ -115,7 +115,8 @@ class TvRage
 	public function countryCode($country)
 	{
 		if (!is_array($country) && strlen($country) > 2) {
-			$code = $this->db->queryOneRow('SELECT code FROM country WHERE LOWER(name) = LOWER(' . $this->db->escapeString($country) . ')');
+			$code = $this->db->queryOneRow('SELECT code FROM countries WHERE LOWER(name) = LOWER('
+										   . $this->db->escapeString($country) . ')');
 			if (isset($code['code'])) {
 				return $code['code'];
 			}

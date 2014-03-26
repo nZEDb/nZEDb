@@ -10,6 +10,10 @@ Each update goes to the top of the file
 	* New: Adding method to Sites class to fetch single setting.
 	* Chg: Switching Versions to use Sites->getSetting() for checking 'sqlpatch'.
 	* Fix: Making Sites::getSetting retun single value for one setting, array for all.
+	* Chg: Renaming 'country' table to 'countries'
+	* New: Adding a MySQL function to convert 'Country Name' to two character country code.
+	* Fix: Adding checks to prevent instantiating of Versions without a file available.
+	* Fix: renaming the property I missed before :-(
 2014-03-26 kevin
 	* Increase preciseness of daytopost.
 2014-03-25 bart39
