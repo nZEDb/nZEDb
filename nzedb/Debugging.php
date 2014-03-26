@@ -63,6 +63,15 @@ class Debugging
 	const showAverageLoad = true;
 
 	/**
+	 * Show running time of script on log/cli out?
+	 *
+	 * @default true
+	 *
+	 * @const bool
+	 */
+	const showTimeRunning = true;
+
+	/**
 	 * Name of class that created an instance of debugging.
 	 * @var string
 	 */
@@ -111,6 +120,13 @@ class Debugging
 	private $isWindows;
 
 	/**
+	 * Unix time instance was created.
+	 *
+	 * @var int
+	 */
+	private $timeStart;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $class The name of the class. ex,: $d = new Debugging("Binaries");
@@ -122,6 +138,7 @@ class Debugging
 		$this->newLine = PHP_EOL;
 		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli');
 		$this->isWindows = (strtolower(substr(PHP_OS, 0, 3)) === 'win');
+		$this->timeStart = time();
 	}
 
 	/**
@@ -478,6 +495,7 @@ class Debugging
 			// The class/function.
 			$this->class . '.' . $method . ']' .
 
+			(self::showTimeRunning ? ' [TIME: ' . $this->formatRunningTime() : '') .
 			// Show memory usage for PHP.
 			(self::showMemoryUsage ? ' [PHP MEM: ' . $this->showMemUsage(0, true) . ']' : '') .
 
@@ -497,6 +515,25 @@ class Debugging
 
 			// Finally, add a closing brace.
 			. ']';
+	}
+
+	/**
+	 * Return string of running time for log/cli.
+	 *
+	 * @return string
+	 */
+	protected function formatRunningTime()
+	{
+		$timeSpent = time() - $this->timeStart;
+		$time = '';
+		if ($timeSpent > 3600) {
+			$time .= (($timeSpent % 86400) / 3600) . 'H:';
+		}
+		if ($timeSpent > 60) {
+			$time .= (($timeSpent % 3600) / 60) . 'M:';
+		}
+		$time .= ($timeSpent % 60) . 'S]';
+		return $time;
 	}
 
 	/**
