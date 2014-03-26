@@ -120,11 +120,14 @@ class Sites
 		$sql .= 'ORDER BY setting';
 
 		$result = $this->_db->queryArray($sql);
-		if ($result !== false && count($result) < 2) {
-			$result = $result[0][$setting];
+		if ($result !== false) {
+			foreach($result as $row) {
+				$results[$row['setting']] = $row['value'];
+			}
+
 		}
 
-		return $result;
+		return (count($results) === 1 ? $results[$setting] : $results);
 	}
 
 	public function rows2Object($rows)
