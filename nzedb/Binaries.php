@@ -368,7 +368,7 @@ class Binaries
 			}
 
 			$left = $this->messagebuffer;
-			$last = $grouplast = round($data['last'] - $left, 0, PHP_ROUND_HALF_UP);
+			$last = $grouplast = ($data['last'] - $left);
 		} else {
 			$first = $groupArr['last_record'];
 
@@ -378,31 +378,34 @@ class Binaries
 			if ($newcount > $this->messagebuffer) {
 				// Drop the remaining plus $this->messagebuffer, pick them up on next run
 				if ($newcount < (2 * $this->messagebuffer)) {
-					$left = $newcount / 2;
-					$last = $grouplast = round(($data['last'] - $left), 0, PHP_ROUND_HALF_UP);
+					$left = ($newcount / 2);
 				} else {
 					$remainingcount = $newcount % $this->messagebuffer;
 					$left = $remainingcount + $this->messagebuffer;
-					$last = $grouplast = round(($data['last'] - $left), 0, PHP_ROUND_HALF_UP);
 				}
 			} else {
-				$left = (($newcount / 2));
-				$last = $grouplast = round(($data['last'] - $left), 0, PHP_ROUND_HALF_UP);
+				$left = ($newcount / 2);
 			}
+		}
+		$last = $grouplast = ($data['last'] - $left);
+		if ($last < $first) {
+			$last= $first;
 		}
 
 		// Generate postdate for first record, for those that upgraded.
 		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] != '0') {
-			$newdate = $this->backfill->postdate($groupArr['first_record'], $data);
-			if ($newdate !== false) {
-				$first_record_postdate = $newdate;
-			} else {
-				$first_record_postdate = time();
-			}
 
-			$groupArr['first_record_postdate'] = $first_record_postdate;
+			$groupArr['first_record_postdate'] = $first_record_postdate = $this->backfill->postdate($groupArr['first_record'], $data);
 
-			$this->db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s WHERE id = %d', $this->db->from_unixtime($first_record_postdate), $groupArr['id']));
+			$this->db->queryExec(
+				sprintf('
+					UPDATE groups
+					SET first_record_postdate = %s
+					WHERE id = %d',
+					$this->db->from_unixtime($first_record_postdate),
+					$groupArr['id']
+				)
+			);
 		}
 
 		// Defaults for post record first/last postdate
@@ -417,7 +420,6 @@ class Binaries
 		} else {
 			$last_record_postdate = strtotime($groupArr['last_record_postdate']);
 		}
-
 
 		// Calculate total number of parts.
 		$total = $grouplast - $first;
@@ -510,18 +512,40 @@ class Binaries
 
 					if (isset($scanSummary['firstArticleDate'])) {
 						$first_record_postdate = strtotime($scanSummary['firstArticleDate']);
+					} else {
+						$first_record_postdate = $this->backfill->postdate($groupArr['first_record'], $data);
 					}
 
 					$groupArr['first_record_postdate'] = $first_record_postdate;
 
-					$this->db->queryExec(sprintf('UPDATE groups SET first_record = %s, first_record_postdate = %s WHERE id = %d', $scanSummary['firstArticleNumber'], $this->db->from_unixtime($this->db->escapeString($first_record_postdate)), $groupArr['id']));
+					$this->db->queryExec(
+						sprintf('
+							UPDATE groups
+							SET first_record = %s, first_record_postdate = %s
+							WHERE id = %d',
+							$scanSummary['firstArticleNumber'],
+							$this->db->from_unixtime($this->db->escapeString($first_record_postdate)),
+							$groupArr['id']
+						)
+					);
 				}
 
 				if (isset($scanSummary['lastArticleDate'])) {
 					$last_record_postdate = strtotime($scanSummary['lastArticleDate']);
+				} else {
+					$last_record_postdate = $this->backfill->postdate($scanSummary['lastArticleNumber'], $data);
 				}
 
-				$this->db->queryExec(sprintf('UPDATE groups SET last_record = %s, last_record_postdate = %s, last_updated = NOW() WHERE id = %d', $this->db->escapeString($scanSummary['lastArticleNumber']), $this->db->from_unixtime($last_record_postdate), $groupArr['id']));
+				$this->db->queryExec(
+					sprintf('
+						UPDATE groups
+						SET last_record = %s, last_record_postdate = %s, last_updated = NOW()
+						WHERE id = %d',
+						$this->db->escapeString($scanSummary['lastArticleNumber']),
+						$this->db->from_unixtime($last_record_postdate),
+						$groupArr['id']
+					)
+				);
 
 				if ($last == $grouplast) {
 					$done = true;
@@ -592,7 +616,7 @@ class Binaries
 		$returnArray = array();
 
 		// Check that tables exist, create if they do not
-		if ($this->tablepergroup == 1) {
+		if ($this->tablepergroup === 1) {
 			if ($this->db->newtables($groupArr['id']) === false) {
 				$dMessage = "There is a problem creating new parts/files tables for this group.";
 				if ($this->debug) {

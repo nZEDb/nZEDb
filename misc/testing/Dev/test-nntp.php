@@ -28,9 +28,4 @@ print_r($msg);
 // get postdate for an article
 $backfill = new Backfill($nntp);
 $newdate = $backfill->postdate($first, $groupArr);
-
-if ($newdate != false) {
-	echo $c->primary("The posted date for ".$group.", article ".$first." is ".date('Y-m-d H:i:s', $newdate));
-} else {
-	echo $c->info("Server failed to return postdate.");
-}
+echo $c->primary("The posted date for ".$group.", article ".$first." is ".date('Y-m-d H:i:s', $newdate));

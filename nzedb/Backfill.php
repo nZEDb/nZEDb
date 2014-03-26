@@ -351,15 +351,6 @@ class Backfill
 			} else {
 				// If above failed, try to get it with postdate method.
 				$newdate = $this->postdate($first, $data);
-
-				if ($newdate === false) {
-					// If above failed, try to get the old date, and if that fails set the current date.
-					if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL') {
-						$newdate = time();
-					} else {
-						$newdate = strtotime($groupArr['first_record_postdate']);
-					}
-				}
 			}
 
 			$this->db->queryExec(
@@ -521,13 +512,15 @@ class Backfill
 				if ($maxPossible <= 1) {
 					break;
 				} else {
-					$currentPost -= round(((mt_rand(101, 105) / 100) / 100) * $maxPossible, 0 , PHP_ROUND_HALF_UP);
+					// Change current post to 0.5 to 2.5% lower.
+					$currentPost = round($currentPost / (mt_rand(1005, 1025) / 1000), 0 , PHP_ROUND_HALF_UP);
 					if ($currentPost <= $groupData['first']) {
 						break;
 					}
 				}
 			} else {
-				$currentPost += round(((mt_rand(101, 105) / 100) / 100) * $minPossible, 0 , PHP_ROUND_HALF_UP);
+				// Change current post to 0.5 to 2.5% higher.
+				$currentPost += round((mt_rand(1005, 1025) / 1000) * $currentPost, 0 , PHP_ROUND_HALF_UP);
 				if ($currentPost >= $groupData['last']) {
 					break;
 				}
@@ -679,18 +672,18 @@ class Backfill
 				5);
 		}
 
-		$endTries = 0;
+		$firstTries = $middleTries = $endTries = 0;
 		$done = false;
 		// Loop until wanted days is bigger than found days.
 		while (!$done) {
 
 			// Keep going half way from oldest to newest article, trying to get a date until we have a date newer than the goal.
 			$tmpDate =$this->postdate(($upperbound - $interval), $data);
-			if ($tmpDate > $goaldate) {
+			if (round($tmpDate) >= $goaldate || $firstTries++ >= 30) {
 
-				// Now we found a date newer than the goal, so try going back older (in smaller stepps) until we get closer to the target date.
+				// Now we found a date newer than the goal, so try going back older (in smaller steps) until we get closer to the target date.
 				while (true) {
-					$interval = ceil(($interval * 1.1));
+					$interval = ceil(($interval * 1.08));
 					if ($this->debug) {
 						$this->debugging->start(
 							"daytopost",
@@ -703,10 +696,30 @@ class Backfill
 
 					$tmpDate =$this->postdate(($upperbound - $interval), $data);
 
-					if ($tmpDate < $goaldate || $endTries++ > 10) {
-						$dateofnextone = $tmpDate;
-						$upperbound = ($upperbound - $interval);
-						$done = true;
+					// Go newer again, in even smaller steps.
+					if (round($tmpDate) <= $goaldate || $middleTries++ >= 20) {
+						while (true) {
+							$interval = ceil(($interval / 1.008));
+							if ($this->debug) {
+								$this->debugging->start(
+									"daytopost",
+									'Increased interval to: (' .
+									number_format($interval) .
+									') articles, article ' .
+									($upperbound - $interval),
+									5);
+							}
+
+							$tmpDate =$this->postdate(($upperbound - $interval), $data);
+							if (round($tmpDate) >= $goaldate || $endTries++ > 10) {
+								$dateofnextone = $tmpDate;
+								$upperbound = ($upperbound - $interval);
+								$done = true;
+								break;
+							}
+						}
+					}
+					if ($done) {
 						break;
 					}
 				}
