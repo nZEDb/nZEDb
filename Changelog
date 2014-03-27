@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-03-27 bart39
+	* Chg: add guid to releasesearch for future use as per suggestion #1236
 	* Chg: improved fulltext search as there are differences in myisam versus innodb
 2014-03-27 niel
 	* Fix: Preventing failure to instatiate Versions from blocking web page generation.
