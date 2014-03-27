@@ -740,12 +740,12 @@ class PostProcess
 			// Loop through the releases.
 			foreach ($result as $rel) {
 				if ($this->echooutput) {
-					echo "[" . $this->c->primaryOver(
+					echo  $this->c->primaryOver("[" .
 							($releaseToWork === ''
 								? $startCount--
 								: $rel['id']
 							) . '(' . $this->readableBytesString($rel['size']) . ')'
-						) . ']';
+						. ']');
 				}
 
 				$this->debugging->start('processAdditional', 'Processing ' . $rel['searchname'], 5);

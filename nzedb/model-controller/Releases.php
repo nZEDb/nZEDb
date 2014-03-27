@@ -2430,7 +2430,7 @@ class Releases
 
 		// Parts that somehow have no binaries.
 		if (mt_rand(1, 100) % 3 == 0) {
-			$delqg = $this->db->queryExec(
+			$delqg = $this->db->queryDirect(
 				'DELETE FROM ' . $group['pname'] . ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)'
 			);
 			if ($delqg !== false) {

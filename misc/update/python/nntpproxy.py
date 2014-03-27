@@ -117,7 +117,7 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 						self.wfile.write(".\r\n")
 					except Exception as e:
 						print(bcolors.ERROR + str(e) + bcolors.ENDC)
-						self.wfile.write(str(e) + "\r\n")
+						self.wfile.write("430 No Such Article\r\n")
 				elif data.startswith("LIST OVERVIEW.FMT"):
 					fmt = nntp_client.list_overview_fmt()
 					self.wfile.write("215 Order of fields in overview database.\r\n")

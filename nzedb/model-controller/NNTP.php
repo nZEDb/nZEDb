@@ -450,8 +450,12 @@ class NNTP extends Net_NNTP_Client
 		// Check if the msgIds are in an array.
 		if (is_array($identifiers)) {
 
-			// Loop over the message-ID's.
+			$iCount = count($identifiers);
+			$iDents = 0;
+
+			// Loop over the message-ID's or article numbers.
 			foreach ($identifiers as $m) {
+				$iDents++;
 				// Download the body.
 				$message = $this->getMessage($groupName, $m, $alternate);
 
@@ -481,16 +485,23 @@ class NNTP extends Net_NNTP_Client
 							// If we got some data, return it.
 							if ($body !== '') {
 								return $body;
+							// Try until we possibly find data.
+							} elseif ($iCount > $iDents) {
+								continue;
 							}
 							if ($this->debug) {
 								$this->debugging->start("getMessages", $newBody->getMessage(), 3);
 							}
 							return $newBody;
 						}
+						$body .= $newBody;
 					} else {
 						// If we got some data, return it.
 						if ($body !== '') {
 							return $body;
+						// Try until we possibly find data.
+						} elseif ($iCount > $iDents) {
+							continue;
 						}
 						return $message;
 					}
