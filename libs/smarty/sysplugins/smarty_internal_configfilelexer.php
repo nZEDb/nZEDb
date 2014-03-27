@@ -2,10 +2,10 @@
 /**
 * Smarty Internal Plugin Configfilelexer
 *
-* This is the lexer to break the config file source into tokens 
+* This is the lexer to break the config file source into tokens
 * @package Smarty
 * @subpackage Config
-* @author Uwe Tews 
+* @author Uwe Tews
 */
 /**
 * Smarty Internal Plugin Configfilelexer
@@ -24,17 +24,16 @@ class Smarty_Internal_Configfilelexer
     public $yyTracePrompt;
     public $state_name = array (1 => 'START', 2 => 'VALUE', 3 => 'NAKED_STRING_VALUE', 4 => 'COMMENT', 5 => 'SECTION', 6 => 'TRIPPLE');
     public $smarty_token_names = array (		// Text for parser error messages
-   				);
-    				
-    				
+	);
+
     function __construct($data, $smarty)
     {
         // set instance object
-        self::instance($this); 
+        self::instance($this);
         $this->data = $data . "\n"; //now all lines are \n-terminated
         $this->counter = 0;
         $this->line = 1;
-        $this->smarty = $smarty; 
+        $this->smarty = $smarty;
         $this->mbstring_overload = ini_get('mbstring.func_overload') & 2;
     }
     public static function &instance($new_instance = null)
@@ -43,14 +42,12 @@ class Smarty_Internal_Configfilelexer
         if (isset($new_instance) && is_object($new_instance))
             $instance = $new_instance;
         return $instance;
-    } 
+    }
     public function PrintTrace()
     {
         $this->yyTraceFILE = fopen('php://output', 'w');
         $this->yyTracePrompt = '<br>';
     }
-
-
 
     private $_yy_state = 1;
     private $_yy_stack = array();
@@ -269,7 +266,6 @@ class Smarty_Internal_Configfilelexer
         } while (true);
 
     } // end function
-
 
     const VALUE = 2;
     function yy_r2_1($yy_subpatterns)
@@ -614,14 +610,12 @@ class Smarty_Internal_Configfilelexer
     const TRIPPLE = 6;
     function yy_r6_1($yy_subpatterns)
     {
-
     $this->token = Smarty_Internal_Configfileparser::TPC_TRIPPLE_QUOTES_END;
     $this->yypopstate();
     $this->yypushstate(self::START);
     }
     function yy_r6_2($yy_subpatterns)
     {
-
   if ($this->mbstring_overload) {
     $to = mb_strlen($this->data,'latin1');
   } else {
@@ -632,7 +626,7 @@ class Smarty_Internal_Configfilelexer
     $to = $match[0][1];
   } else {
     $this->compiler->trigger_template_error ("missing or misspelled literal closing tag");
-  }  
+  }
   if ($this->mbstring_overload) {
     $this->value = mb_substr($this->data,$this->counter,$to-$this->counter,'latin1');
   } else {
@@ -640,7 +634,4 @@ class Smarty_Internal_Configfilelexer
   }
   $this->token = Smarty_Internal_Configfileparser::TPC_TRIPPLE_TEXT;
     }
-
-
 }
-

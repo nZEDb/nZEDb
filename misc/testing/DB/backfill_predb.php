@@ -66,9 +66,9 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 							if ($ins === false)
 								exit();
 							$db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
-							if ($db->dbSystem() == 'mysql')
+							if ($db->dbSystem() === 'mysql')
 								$db->queryExec('UPDATE predb SET adddate = (NOW() - INTERVAL 1 day) WHERE (adddate > (NOW() - INTERVAL 2 HOUR) OR adddate < (NOW() - INTERVAL 6 YEAR))');
-							else if ($db->dbSystem() == 'pgsql')
+							else if ($db->dbSystem() === 'pgsql')
 								$db->queryExec("UPDATE predb SET adddate = (NOW() - INTERVAL '1 DAYS') WHERE (adddate > (NOW() - INTERVAL '2 HOURS') OR adddate < (NOW() - INTERVAL '6 YEARS'))");
 							$predb->parseTitles(2, 1, 2, 1, 1);
 							$predb->matchPredb();

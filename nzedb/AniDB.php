@@ -48,7 +48,7 @@ class AniDB
 	{
 		$db = $this->db;
 		$anidbID = "";
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1', $db->escapeString('^' . $title . '$'));
 			$anidbID = $db->queryOneRow($query);
 
@@ -69,7 +69,7 @@ class AniDB
 	{
 		$db = $this->db;
 
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$regex = 'REGEXP';
 			$like = 'LIKE';
 		} else {
@@ -103,7 +103,7 @@ class AniDB
 
 		$rsql = '';
 		if ($animetitle != '') {
-			if ($db->dbSystem() == 'mysql')
+			if ($db->dbSystem() === 'mysql')
 				$rsql = sprintf('AND anidb.title LIKE %s', $db->escapeString('%' . $animetitle . '%'));
 			else
 				$rsql = sprintf('AND anidb.title ILIKE %s', $db->escapeString('%' . $animetitle . '%'));
@@ -118,7 +118,7 @@ class AniDB
 
 		$rsql = '';
 		if ($animetitle != '') {
-			if ($db->dbSystem() == 'mysql')
+			if ($db->dbSystem() === 'mysql')
 				$rsql .= sprintf('AND anidb.title LIKE %s', $db->escapeString('%' . $animetitle . '%'));
 			else
 				$rsql .= sprintf('AND anidb.title ILIKE %s', $db->escapeString('%' . $animetitle . '%'));

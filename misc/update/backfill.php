@@ -1,7 +1,6 @@
 <?php
 require dirname(__FILE__) . '/config.php';
 
-$binaries = new Binaries();
 $c = new ColorCLI();
 $s = new Sites();
 $site = $s->get();
@@ -11,31 +10,29 @@ $nntp = new NNTP();
 if ($nntp->doConnect() !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }
+
 if ($site->nntpproxy === "1") {
 	usleep(500000);
 }
 
 if (isset($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && !isset($argv[2])) {
-	$backfill = new Backfill();
-	$groupName = '';
-	$backfill->backfillAllGroups($nntp, $groupName);
+	$backfill = new Backfill($nntp);
+	$backfill->backfillAllGroups();
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && !isset($argv[2])) {
-	$backfill = new Backfill();
-	$backfill->backfillAllGroups($nntp, $argv[1]);
+	$backfill = new Backfill($nntp);
+	$backfill->backfillAllGroups($argv[1]);
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
-	$backfill = new Backfill();
-	$backfill->backfillPostAllGroups($nntp, $argv[1], $argv[2], 'groupname');
+	$backfill = new Backfill($nntp);
+	$backfill->backfillAllGroups($argv[1], $argv[2]);
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] == 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
-	$backfill = new Backfill();
-	$groupName = '';
-	$backfill->backfillPostAllGroups($nntp, $groupName, $argv[2], 'normal');
+	$backfill = new Backfill($nntp);
+	$backfill->backfillAllGroups('', $argv[2], 'normal');
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] == 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
-	$backfill = new Backfill();
-	$groupName = '';
-	$backfill->backfillPostAllGroups($nntp, $groupName, $argv[2], 'date');
+	$backfill = new Backfill($nntp);
+	$backfill->backfillAllGroups('', $argv[2], 'date');
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] == 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
-	$backfill = new Backfill();
-	$backfill->safeBackfill($nntp, $argv[2]);
+	$backfill = new Backfill($nntp);
+	$backfill->safeBackfill($argv[2]);
 } else {
 	exit($c->error("\nWrong set of arguments.\n"
 			. 'php backfill.php safe 200000		 ...: Backfill an active group alphabetically, x articles, the script stops,' . "\n"

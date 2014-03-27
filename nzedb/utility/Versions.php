@@ -7,7 +7,7 @@ if (!defined('GIT_PRE_COMMIT')) {
 
 // Only set an argument if calling from bash or MS-DOS batch scripts. Otherwise
 // instantiate the class and use as below.
-if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && $argv[1] == true) {
+if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
 	$vers = new Versions();
 	$vers->checkAll();
 	$vers->save();
@@ -56,14 +56,26 @@ class Versions
 	public function __construct($filepath = null)
 	{
 		if (empty($filepath)) {
-			$filepath = nZEDb_VERSIONS;
+			if (defined('nZEDb_VERSIONS')) {
+				$filepath = nZEDb_VERSIONS;
+			}
+		}
+
+		if (!file_exists($filepath)) {
+			throw \RuntimeException("Versions file '$filepath' does not exist!'");
 		}
 		$this->_filespec = $filepath;
 
 		$this->out = new \ColorCLI();
-		$this->_xml = @new \SimpleXMLElement($filepath, 0, true);
+
+		$temp = libxml_use_internal_errors(true);
+		$this->_xml = simplexml_load_file($filepath);
+		libxml_use_internal_errors($temp);
+
 		if ($this->_xml === false) {
-			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
+			if (PHP_SAPI == 'cli') {
+				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
+			}
 			throw new \Exception("Failed to open versions XML file '$filepath'");
 		}
 
@@ -107,13 +119,13 @@ class Versions
 	 */
 	public function checkDb($update = true)
 	{
-		$s = new \Sites();
-		$settings = $s->get();
+		$site = new \Sites();
+		$setting = $site->getSetting('sqlpatch');
 
-		if ($this->_vers->db < $settings->sqlpatch) {
+		if ($this->_vers->db < $setting) {
 			if ($update) {
-				echo $this->out->primary("Updating Db revision to " . $settings->sqlpatch);
-				$this->_vers->db = $settings->sqlpatch;
+				echo $this->out->primary("Updating Db revision to " . $setting);
+				$this->_vers->db = $setting;
 				$this->_changes |= self::UPDATED_DB_REVISION;
 			}
 			return $this->_vers->db;

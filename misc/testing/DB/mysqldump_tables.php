@@ -6,7 +6,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $db = new DB();
 $c = new ColorCLI();
-if ($db->dbSystem() == "pgsql") {
+if ($db->dbSystem() === "pgsql") {
 	exit($c->error("\nThis script is only for mysql.\n"));
 }
 
@@ -14,7 +14,7 @@ $exportopts = "";
 $mysqlplatform = "";
 
 //determine mysql platform Percona or Other
-if($db->dbSystem() == "mysql") {
+if($db->dbSystem() === "mysql") {
 	$mysqlplatform = exec('mysqladmin version | grep "Percona"', $mysqlplatform);
 	if (count($mysqlplatform) > 0) {
 		//Percona only has --innodb-optimize-keys
@@ -67,7 +67,7 @@ if (DB_SOCKET != '') {
 	$use = "-P$dbport";
 }
 
-if($db->dbSystem() == "mysql") {
+if($db->dbSystem() === "mysql") {
 	//generate defaults file used to store database login information so it is not in cleartext in ps command for mysqldump
 	builddefaultsfile();
 }

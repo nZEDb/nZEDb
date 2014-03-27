@@ -125,9 +125,9 @@ class Music
 		}
 
 		if ($maxage > 0) {
-			if ($db->dbSystem() == 'mysql') {
+			if ($db->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() == 'pgsql') {
+			} else if ($db->dbSystem() === 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		} else {
@@ -192,9 +192,9 @@ class Music
 
 		$maxage = '';
 		if ($maxage > 0) {
-			if ($db->dbSystem() == 'mysql') {
+			if ($db->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() == 'pgsql') {
+			} else if ($db->dbSystem() === 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
@@ -288,7 +288,7 @@ class Music
 		$db = new DB();
 
 		$like = ' ILIKE(';
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$like = ' LIKE(';
 		}
 

@@ -442,7 +442,7 @@ while ($i > 0) {
 
 		$time07 = TIME();
 		if ($tablepergroup == 1) {
-			if ($db->dbSystem == 'mysql') {
+			if ($db->dbSystem() === 'mysql') {
 				$sql = 'SHOW table status';
 			} else {
 				$sql = "SELECT relname FROM pg_class WHERE relname !~ '^(pg_|sql_)' AND relkind = 'r'";
@@ -452,7 +452,7 @@ while ($i > 0) {
 			$age = TIME();
 			if (count($tables) > 0) {
 				foreach ($tables as $row) {
-					if ($db->dbSystem == 'mysql') {
+					if ($db->dbSystem() === 'mysql') {
 						$tbl = $row['name'];
 						$stamp = 'UNIX_TIMESTAMP(dateadded)';
 					} else {

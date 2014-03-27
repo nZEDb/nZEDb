@@ -33,14 +33,21 @@ class NZBExport
 	protected $releases;
 
 	/**
-	 * @param bool $browser Started from browser?
+	 * @var bool
 	 */
-	public function __construct($browser=false)
+	protected $echoCLI;
+
+	/**
+	 * @param bool $browser Started from browser?
+	 * @param bool $echo    Echo to CLI?
+	 */
+	public function __construct($browser=false, $echo = true)
 	{
 		$this->browser = $browser;
 		$this->db = new DB();
 		$this->releases = new Releases();
 		$this->nzb = new NZB();
+		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
 	}
 
 	/**
@@ -68,19 +75,19 @@ class NZBExport
 		// Check if it's a directory.
 		if (!is_dir($path)) {
 			$this->echoOut('Folder does not exist: ' . $path);
-			return false;
+			return $this->returnValue();
 		}
 
 		// Check if we can write to it.
 		if (!is_writable($path)) {
 			$this->echoOut('Folder is not writable: ' . $path);
-			return false;
+			return $this->returnValue();
 		}
 
 		// Check if the from date is the proper format.
 		if (isset($params[1]) && $params[1] !== '') {
 			if (!$this->checkDate($params[1])) {
-				return false;
+				return $this->returnValue();
 			}
 			$fromDate = $params[1];
 		}
@@ -88,7 +95,7 @@ class NZBExport
 		// Check if the to date is the proper format.
 		if (isset($params[2]) && $params[2] !== '') {
 			if (!$this->checkDate($params[2])) {
-				return false;
+				return $this->returnValue();
 			}
 			$toDate = $params[2];
 		}
@@ -97,12 +104,12 @@ class NZBExport
 		if (isset($params[3]) && $params[3] !== 0) {
 			if (!is_numeric($params[3])) {
 				$this->echoOut('The group ID is not a number: ' . $params[3]);
-				return false;
+				return $this->returnValue();
 			}
 			$groups = $this->db->query('SELECT id, name FROM groups WHERE id = ' . $params[3]);
 			if (count($groups) === 0) {
 				$this->echoOut('The group ID is not in the DB: ' . $params[3]);
-				return false;
+				return $this->returnValue();
 			}
 		} else {
 			$groups = $this->db->query('SELECT id, name FROM groups');
@@ -116,12 +123,12 @@ class NZBExport
 			$releases = $this->releases->getForExport($fromDate, $toDate, $group['id']);
 			$totalFound = count($releases);
 			if ($totalFound === 0) {
-				if (!$this->browser) {
+				if ($this->echoCLI) {
 					echo 'No releases found to export for group: ' . $group['name'] . PHP_EOL;
 				}
 				continue;
 			}
-			if (!$this->browser) {
+			if ($this->echoCLI) {
 				echo 'Found ' . $totalFound . ' releases to export for group: ' . $group['name'] . PHP_EOL;
 			}
 
@@ -136,7 +143,7 @@ class NZBExport
 				$nzbFile = $this->nzb->NZBPath($release["guid"]);
 				// Check if it exists.
 				if ($nzbFile === false) {
-					if (!$this->browser) {
+					if ($this->echoCLI) {
 						echo 'Unable to find NZB for release with GUID: ' . $release['guid'];
 					}
 					continue;
@@ -148,7 +155,7 @@ class NZBExport
 				// Check if the user wants them in gzip, copy it if so.
 				if ($gzip) {
 					if (!copy($nzbFile, $currentFile . '.nzb.gz')) {
-						if (!$this->browser) {
+						if ($this->echoCLI) {
 							echo 'Unable to export NZB with GUID: ' . $release['guid'];
 						}
 						continue;
@@ -157,7 +164,7 @@ class NZBExport
 				} else {
 					ob_start();
 					if (!@readgzfile($nzbFile)) {
-						if (!$this->browser) {
+						if ($this->echoCLI) {
 							echo 'Unable to export NZB with GUID: ' . $release['guid'];
 						}
 						continue;
@@ -169,18 +176,30 @@ class NZBExport
 					fclose($fh);
 				}
 
-				$exported++;
 				$currentExport++;
 
-				if (!$this->browser && $currentExport % 10 === 0) {
-					echo "Exported " . $currentExport . " of "  . $totalFound . " nzbs for group " . $group['name']. PHP_EOL;
+				if ($this->echoCLI && $currentExport % 10 === 0) {
+					echo 'Exported ' . $currentExport . ' of ' . $totalFound . ' nzbs for group: ' . $group['name'] . "\r";
 				}
 			}
-			if (!$this->browser && $currentExport > 0) {
-				echo 'Exported ' . $currentExport . ' releases for group: ' . $group['name'] . PHP_EOL;
+			if ($this->echoCLI && $currentExport > 0) {
+				echo 'Exported ' . $currentExport . ' of ' . $totalFound . ' nzbs for group: ' . $group['name'] . PHP_EOL;
 			}
+			$exported += $currentExport;
+		}
+		if ($exported > 0) {
+			$this->echoOut('Exported total of ' . $exported . ' NZB files to ' . $path);
 		}
 
+		return $this->returnValue();
+	}
+
+	/**
+	 * Return bool on CLI, string on browser.
+	 * @return bool|string
+	 */
+	protected function returnValue()
+	{
 		return ($this->browser ? $this->retVal : true);
 	}
 
@@ -209,7 +228,7 @@ class NZBExport
 	{
 		if ($this->browser) {
 			$this->retVal .= $message . "<br />";
-		} else {
+		} elseif ($this->echoCLI) {
 			echo $message . PHP_EOL;
 		}
 	}

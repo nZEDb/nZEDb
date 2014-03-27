@@ -20,17 +20,12 @@ $groupArr = $nntp->selectGroup($group);
 print_r($groupArr);
 
 // Insert actual local part numbers here.
-$msg = $nntp->getOverview($first.'-'.$first,true,false);
+$msg = $nntp->getOverview((int)$first.'-'.(int)$first,true,false);
 
 // Print out the array of headers.
 print_r($msg);
 
 // get postdate for an article
-$backfill = new Backfill();
-$newdate = $backfill->postdate($nntp, $first, false, $group, true, 'normal');
-
-if ($newdate != false) {
-	echo $c->primary("The posted date for ".$group.", article ".$first." is ".date('Y-m-d H:i:s', $newdate));
-} else {
-	echo $c->info("Server failed to return postdate.");
-}
+$backfill = new Backfill($nntp);
+$newdate = $backfill->postdate($first, $groupArr);
+echo $c->primary("The posted date for ".$group.", article ".$first." is ".date('Y-m-d H:i:s', $newdate));

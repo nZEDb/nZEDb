@@ -6,7 +6,65 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-03-27 niel
+	* Fix: Preventing failure to instatiate Versions from blocking web page generation.
+2013-03-27 kevin
+	* New: NNTP, return group summary cache if same group is selected. Reselect group if connection dies.
+2014-03-27 bart39
+	* Chg: Improve nzb details / searches by using releasesearch table and fulltext search against name/searchnam
+2014-03-26 niel
+	* New: Adding method to Sites class to fetch single setting.
+	* Chg: Switching Versions to use Sites->getSetting() for checking 'sqlpatch'.
+	* Fix: Making Sites::getSetting retun single value for one setting, array for all.
+	* Chg: Renaming 'country' table to 'countries'
+	* New: Adding a MySQL function to convert 'Country Name' to two character country code.
+	* Fix: Adding checks to prevent instantiating of Versions without a file available.
+	* Fix: renaming the property I missed before :-(
+2014-03-26 kevin
+	* Increase preciseness of daytopost.
+	* Clean up / add phpdoc to some releases.php methods, list all the cover folders in releaseimage.php
+	* Cast to int before sending to getOverview, resolves the nntpproxy issue. If your PHP has a PHP_INT_MAX of 2147483647 you will have issues on some groups.
+	* Some cleanup of predb class.
+2014-03-25 bart39
+	* updated convert_mysql_tables.php to not convert releasesearch table if converting to tokudb or to innodb if innodb version < 5.6 as FT indexes are not supported.
+2014-03-25 kevin
+	* Add PHP memory usage to logging/debugging.
+	* Clean up logging of failed patches.
+	* Even better logging of failed patches.
+	* Better processing of release titles on tvrage by first filtering the release name then the season/episode.
+	* TVRage class, don't process releases less than 1MB.
+	* Removing casting to int (for 32 bit php compat) on some vars has caused issues since some of them were float, I rounded them, but this might cause issues again with 32 bit PHP's.
+	* Add running time to debugging.
+	* Redo daytopost function making it faster. Remove windows check from colorcli.
+2014-03-25 ruhllatio
+	* Add FT Search table schema update and clean up a few schema issues in releases
+	* Fixed typo in FT search schema pre-git commit
+	* Remove DELIMITER from patch is it appears PatchDB accounts for this
+	* Add index to fix slow trigger updates for FT search
+2014-03-24 niel
+	* Fix: Prevent loading XML in Versions from causing an exception directly.
+2014-03-24 ruhllatio
+	* Partially optimize queries for Site Stats being painfully slow with large number of releases
+2014-03-24 kevin
+	* Improve postdate function.
+	* Update DB.php to check if the current SAPI is cli, echo accordingly, strict checking on dbSystem()
+	* PHPdoc in ConsoleTools.php
+	* Fix some issues with partrepair ignoring pear errors.
+	* Check for debug constant on NNTP class.
+	* Store NNTP instance as object in Binaries/Backfill classes.
+	* Temp solution for those with unusable sites because of nZEDb.xml
+	* Change echo's in backfill/binaries to be similar.
+	* Binaries/backfill get rid of some microtime's and reuse some.
+2014-03-23 ruhllatio
+	* Change work release queries for movie/tv to leverage partitioning (5.5+ safe)
+2014-03-23 kevin
+	* Use NZBExport class for web export.
+	* Refactor removecrapreleases to the ReleaseRemover class.
+	* Check if OMDB is down.
+	* Refactor backfill.php, move post methods into date methods, fix some issues with target date/post.
+	* Fix issue in ReleaseRemover blacklist where if no results were found subsequent blacklists were skipped.
+	* Check nZEDb_ECHOCLI constant in various classes.
+	* Use carriage return (rewrite) on nzb_export echo, looks better.
 2014-03-22 niel
 	* Moving newznab_api-specification from .../nzedb/api to .../docs
 2014-03-22 kevin

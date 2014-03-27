@@ -22,13 +22,13 @@ define('nZEDb_ECHOCLI', true);
  * Display debug messages on console or web page.
  * @default false
  */
-define('nZEDb_DEBUG', false);
+define('nZEDb_DEBUG', true);
 
 /**
  * Log debug messages to nzedb/resources/debug.log
  * @default false
  */
-define('nZEDb_LOGGING', false);
+define('nZEDb_LOGGING', true);
 
 /*********************************************************************************
  * The following options require either nZEDb_DEBUG OR nZEDb_LOGGING to be true: *
@@ -37,32 +37,32 @@ define('nZEDb_LOGGING', false);
  * Log and/or echo debug Info messages.
  * @default false
  */
-define('nZEDb_LOGINFO', false);
+define('nZEDb_LOGINFO', true);
 /**
  * Log and/or echo debug Notice messages.
  * @default false
  */
-define('nZEDb_LOGNOTICE', false);
+define('nZEDb_LOGNOTICE', true);
 /**
  * Log and/or echo debug Warning messages.
  * @default false
  */
-define('nZEDb_LOGWARNING', false);
+define('nZEDb_LOGWARNING', true);
 /**
  * Log and/or echo debug Error messages.
  * @default false
  */
-define('nZEDb_LOGERROR', false);
+define('nZEDb_LOGERROR', true);
 /**
  * Log and/or echo debug Fatal messages.
  * @default false
  */
-define('nZEDb_LOGFATAL', false);
+define('nZEDb_LOGFATAL', true);
 /**
  * Log and/or echo debug failed SQL queries.
  * @default false
  */
-define('nZEDb_LOGQUERIES', false);
+define('nZEDb_LOGQUERIES', true);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////// End of user changeable settings./ //////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

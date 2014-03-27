@@ -27,7 +27,9 @@ if ($connected !== true) {
 
 $group = $nntp->selectGroup('alt.binaries.teevee');
 if (!$nntp->isError($group)) {
-	$headers = $nntp->getOverview(((int)$group['last'] - 2) . '-' . $group['last']);
+	$headers = $nntp->getOverview(((int)$group['last'] - 2) . '-' . (int)$group['last']);
+} else {
+	echo 'Error: ' . $group->getMessage() . PHP_EOL;
 }
 
 /**/
