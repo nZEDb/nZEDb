@@ -35,7 +35,7 @@ class Sites
 
 	public function version()
 	{
-		return ($this->_versions !== false ? '0.0.0' : $this->_versions->getTagVersion());
+		return ($this->_versions === false ? '0.0.0' : $this->_versions->getTagVersion());
 	}
 
 	public function update($form)
