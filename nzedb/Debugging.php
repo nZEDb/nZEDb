@@ -239,6 +239,11 @@ class Debugging
 			$units[(int)$i];
 	}
 
+	/**
+	 * Get resource usage string.
+	 *
+	 * @return bool|string
+	 */
 	public function getResUsage()
 	{
 		if (!$this->isWindows) {
