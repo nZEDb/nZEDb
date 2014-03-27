@@ -85,7 +85,7 @@ class Debugging
 	 *
 	 * @const bool
 	 */
-	const showGetResUsage = false;
+	const showGetResUsage = true;
 
 	/**
 	 * Name of class that created an instance of debugging.
@@ -530,7 +530,7 @@ class Debugging
 	{
 		$this->debugMessage =
 			// Current date/time ; [02/Mar/2014 14:50 EST
-			'[' . $this->getDate() . ']' .
+			'[' . $this->getDate() . '] ' .
 
 			// The severity.
 			$this->severity .
@@ -602,37 +602,37 @@ class Debugging
 		switch ($severity) {
 			case self::DEBUG_FATAL:
 				if (nZEDb_LOGFATAL) {
-					$this->severity = ' [FATAL]  ';
+					$this->severity = '[FATAL] ';
 					return true;
 				}
 				return false;
 			case self::DEBUG_ERROR:
 				if (nZEDb_LOGERROR) {
-					$this->severity = ' [ERROR]  ';
+					$this->severity = '[ERROR] ';
 					return true;
 				}
 				return false;
 			case self::DEBUG_WARNING:
 				if (nZEDb_LOGWARNING) {
-					$this->severity = ' [WARN]   ';
+					$this->severity = '[WARN]  ';
 					return true;
 				}
 				return false;
 			case self::DEBUG_NOTICE:
 				if (nZEDb_LOGNOTICE) {
-					$this->severity = ' [NOTICE] ';
+					$this->severity = '[NOTICE]';
 					return true;
 				}
 				return false;
 			case self::DEBUG_INFO:
 				if (nZEDb_LOGINFO) {
-					$this->severity = ' [INFO]   ';
+					$this->severity = '[INFO]  ';
 					return true;
 				}
 				return false;
 			case self::DEBUG_SQL:
 				if (nZEDb_LOGQUERIES) {
-					$this->severity = ' [SQL]    ';
+					$this->severity = '[SQL]   ';
 					return true;
 				}
 				return false;
