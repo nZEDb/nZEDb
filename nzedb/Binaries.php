@@ -687,7 +687,15 @@ class Binaries
 		$timeHeaders = number_format($this->startCleaning - $this->startHeaders, 2);
 
 		// Array of all the requested article numbers.
-		$rangerequested = range($first, $last);
+		$rangerequested = array();
+		$total = ($last - $first);
+		if ($total > 1) {
+			$rangerequested = range($first, $last);
+		} elseif ($total === 1) {
+			$rangerequested = array($first, $last);
+		} else {
+			$rangerequested[] = $first;
+		}
 
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 
