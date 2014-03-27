@@ -85,7 +85,7 @@ class Debugging
 	 *
 	 * @const bool
 	 */
-	const showGetResUsage = true;
+	const showGetResUsage = false;
 
 	/**
 	 * Name of class that created an instance of debugging.
