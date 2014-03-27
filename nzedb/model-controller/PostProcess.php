@@ -1,6 +1,6 @@
 <?php
 
-require_once nZEDb_LIB . 'Util.php';
+require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 require_once nZEDb_LIBS . 'rarinfo/zipinfo.php';

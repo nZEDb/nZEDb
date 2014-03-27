@@ -1,7 +1,7 @@
 <?php
 
 require_once nZEDb_LIBS . 'ZipFile.php';
-require_once nZEDb_LIB . 'Util.php';
+require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 
 /**
  * Class Releases

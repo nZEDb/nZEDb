@@ -1,6 +1,6 @@
 <?php
 require_once './config.php';
-require_once nZEDb_LIB . 'Util.php';
+require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 
 if (Util::isCLI()) {
 	exit ('This script is only for exporting from the web, use the script in misc/testing'. PHP_EOL);
