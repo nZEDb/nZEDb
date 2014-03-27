@@ -18,6 +18,7 @@ Each update goes to the top of the file
 	* Increase preciseness of daytopost.
 	* Clean up / add phpdoc to some releases.php methods, list all the cover folders in releaseimage.php
 	* Cast to int before sending to getOverview, resolves the nntpproxy issue. If your PHP has a PHP_INT_MAX of 2147483647 you will have issues on some groups.
+	* Some cleanup of predb class.
 2014-03-25 bart39
 	* updated convert_mysql_tables.php to not convert releasesearch table if converting to tokudb or to innodb if innodb version < 5.6 as FT indexes are not supported.
 2014-03-25 kevin
