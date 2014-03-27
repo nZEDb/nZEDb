@@ -137,7 +137,7 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 					for entry in active_gen:
 						self.wfile.write("%s %d %d %s\r\n" % entry)
 					self.wfile.write(".\r\n")
-						self.wfile.write(str(e) + "\r\n")
+					self.wfile.write(str(e) + "\r\n")
 				elif data.startswith("QUIT"):
 					self.wfile.write("205 Connection closing\r\n")
 					break
