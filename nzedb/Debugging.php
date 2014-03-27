@@ -72,6 +72,15 @@ class Debugging
 	const showTimeRunning = true;
 
 	/**
+	 * Show resource usages.
+	 *
+	 * @default false
+	 *
+	 * @const bool
+	 */
+	const showGetResUsage = false;
+
+	/**
 	 * Name of class that created an instance of debugging.
 	 * @var string
 	 */
@@ -228,6 +237,20 @@ class Debugging
 				), 3, '~~', STR_PAD_LEFT
 			) .
 			$units[(int)$i];
+	}
+
+	public function getResUsage()
+	{
+		if (!$this->isWindows) {
+			$usage = getrusage();
+
+			return
+				'USR: '  . $this->formatTimeString($usage['ru_utime.tv_sec']) .
+				' SYS: ' . $this->formatTimeString($usage['ru_stime.tv_sec']) .
+				' FAULTS: ' . $usage['ru_majflt'] .
+				' SWAPS: ' . $usage['ru_nswap'];
+		}
+		return false;
 	}
 
 	/**
@@ -506,10 +529,13 @@ class Debugging
 			((self::showAverageLoad && !$this->isWindows) ? ' [' . $this->getSystemLoad() . ']' : '') .
 
 			// Script running time.
-			(self::showTimeRunning ? ' [' . $this->formatRunningTime() . ']' : '') .
+			(self::showTimeRunning ? ' [' . $this->formatTimeString(time() - $this->timeStart) . ']' : '') .
 
 			// PHP memory usage.
 			(self::showMemoryUsage ? ' [MEM: ' . $this->showMemUsage(0, true) . ']' : '') .
+
+			// Resource usage (user time, system time, major page faults, memory swaps).
+			(self::showGetResUsage ? ' [' . $this->getResUsage() . ']' : '') .
 
 			// The class/function.
 			' [' . $this->class . '.' . $method . ']' .
@@ -530,25 +556,26 @@ class Debugging
 	}
 
 	/**
-	 * Return string of running time for log/cli.
+	 * Convert seconds to hours minutes seconds string.
+	 *
+	 * @param int $seconds
 	 *
 	 * @return string
 	 */
-	protected function formatRunningTime()
+	protected function formatTimeString($seconds)
 	{
-		$timeSpent = time() - $this->timeStart;
 		$time = '';
-		if ($timeSpent > 3600) {
-			$time .= str_pad((($timeSpent % 86400) / 3600), 2, '0', STR_PAD_LEFT) . 'H:';
+		if ($seconds > 3600) {
+			$time .= str_pad((($seconds % 86400) / 3600), 2, '0', STR_PAD_LEFT) . 'H:';
 		} else {
 			$time .= '00H:';
 		}
-		if ($timeSpent > 60) {
-			$time .= str_pad((($timeSpent % 3600) / 60), 2 , '0', STR_PAD_LEFT) . 'M:';
+		if ($seconds > 60) {
+			$time .= str_pad((($seconds % 3600) / 60), 2 , '0', STR_PAD_LEFT) . 'M:';
 		} else {
 			$time .= '00M:';
 		}
-		$time .= str_pad($timeSpent % 60, 2 , '0', STR_PAD_LEFT) . 'S';
+		$time .= str_pad($seconds % 60, 2 , '0', STR_PAD_LEFT) . 'S';
 		return $time;
 	}
 
