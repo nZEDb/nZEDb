@@ -2,6 +2,13 @@
 /**
  * Show debug to CLI/Web and log it to a file.
  * Turn these on in automated.config.php
+ *
+ * @example usage:
+ *          (in constructor, initiate instance)
+ *          $this->Debugging = new Debugging("MyClassName");
+ *
+ *          (in method, DEBUG_INFO would be the severity of your error, see below)
+ *          $this->Debugging->start("MyMethodName", "My debug message.", DEBUG_INFO);
  */
 class Debugging
 {
@@ -140,6 +147,14 @@ class Debugging
 	 * @var int
 	 */
 	private $timeStart;
+
+	// You can use these constants when using the start method.
+	const DEBUG_FATAL   = 1; // Fatal error, the program exited.
+	const DEBUG_ERROR   = 2; // Recoverable error.
+	const DEBUG_WARNING = 3; // Warnings.
+	const DEBUG_NOTICE  = 4; // Notices.
+	const DEBUG_INFO    = 5; // Info message, not important.
+	const DEBUG_SQL     = 6; // Full SQL query when it fails.
 
 	/**
 	 * Constructor.
@@ -594,37 +609,37 @@ class Debugging
 	protected function checkSeverity($severity)
 	{
 		switch ($severity) {
-			case 1:
+			case self::DEBUG_FATAL:
 				if (nZEDb_LOGFATAL) {
 					$this->severity = ' [FATAL]  ';
 					return true;
 				}
 				return false;
-			case 2:
+			case self::DEBUG_ERROR:
 				if (nZEDb_LOGERROR) {
 					$this->severity = ' [ERROR]  ';
 					return true;
 				}
 				return false;
-			case 3:
+			case self::DEBUG_WARNING:
 				if (nZEDb_LOGWARNING) {
 					$this->severity = ' [WARN]   ';
 					return true;
 				}
 				return false;
-			case 4:
+			case self::DEBUG_NOTICE:
 				if (nZEDb_LOGNOTICE) {
 					$this->severity = ' [NOTICE] ';
 					return true;
 				}
 				return false;
-			case 5:
+			case self::DEBUG_INFO:
 				if (nZEDb_LOGINFO) {
 					$this->severity = ' [INFO]   ';
 					return true;
 				}
 				return false;
-			case 6:
+			case self::DEBUG_SQL:
 				if (nZEDb_LOGQUERIES) {
 					$this->severity = ' [SQL]    ';
 					return true;
