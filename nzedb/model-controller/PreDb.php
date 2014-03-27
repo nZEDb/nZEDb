@@ -1,7 +1,7 @@
 <?php
 
-require_once(nZEDb_LIBS . "simple_html_dom.php");
-require_once(nZEDb_LIB . 'Util.php');
+require_once nZEDb_LIBS . "simple_html_dom.php";
+require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 
 /*
  * Class for inserting names/categories/md5 etc from PreDB sources into the DB, also for matching names on files / subjects.
