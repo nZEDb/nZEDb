@@ -48,8 +48,8 @@ class Releases
 			'
 						SELECT releases.*, g.name AS group_name, c.title AS category_name
 						FROM releases
-						LEFT OUTER JOIN category c ON c.id = releases.categoryid
-						LEFT OUTER JOIN groups g ON g.id = releases.groupid
+						INNER JOIN category c ON c.id = releases.categoryid
+						INNER JOIN groups g ON g.id = releases.groupid
 						WHERE nzbstatus = 1'
 		);
 	}
@@ -67,8 +67,8 @@ class Releases
 				"
 								SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name
 								FROM releases
-								LEFT OUTER JOIN category c ON c.id = releases.categoryid
-								LEFT OUTER JOIN category cp ON cp.id = c.parentid
+								INNER JOIN category c ON c.id = releases.categoryid
+								INNER JOIN category cp ON cp.id = c.parentid
 								WHERE nzbstatus = 1
 								ORDER BY postdate DESC %s",
 				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
@@ -166,12 +166,12 @@ class Releases
 									rn.id AS nfoid,
 									re.releaseid AS reid
 								FROM releases
-								LEFT OUTER JOIN groups ON groups.id = releases.groupid
+								INNER JOIN groups ON groups.id = releases.groupid
 								LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
 								LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id
 									AND rn.nfo IS NOT NULL
-								LEFT OUTER JOIN category c ON c.id = releases.categoryid
-								LEFT OUTER JOIN category cp ON cp.id = c.parentid
+								INNER JOIN category c ON c.id = releases.categoryid
+								INNER JOIN category cp ON cp.id = c.parentid
 								WHERE nzbstatus = 1
 								AND releases.passwordstatus <= %d %s %s %s %s
 								ORDER BY %s %s %s",
@@ -298,7 +298,7 @@ class Releases
 								FROM releases
 								INNER JOIN category ON releases.categoryid = category.id
 								INNER JOIN groups ON releases.groupid = groups.id
-								LEFT OUTER JOIN category cp ON cp.id = category.parentid
+								INNER JOIN category cp ON cp.id = category.parentid
 								WHERE nzbstatus = 1 %s %s %s",
 				$postfrom, $postto, $group
 			)
@@ -441,9 +441,9 @@ class Releases
 										co.publisher AS co_publisher, co.releasedate AS co_releasedate,
 										co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre
 								FROM releases
-								LEFT OUTER JOIN category c ON c.id = releases.categoryid
-								LEFT OUTER JOIN category cp ON cp.id = c.parentid
-								LEFT OUTER JOIN groups g ON g.id = releases.groupid
+								INNER JOIN category c ON c.id = releases.categoryid
+								INNER JOIN category cp ON cp.id = c.parentid
+								INNER JOIN groups g ON g.id = releases.groupid
 								LEFT OUTER JOIN movieinfo m ON m.imdbid = releases.imdbid AND m.title != ''
 								LEFT OUTER JOIN musicinfo mu ON mu.id = releases.musicinfoid
 								LEFT OUTER JOIN genres mug ON mug.id = mu.genreid
@@ -489,9 +489,9 @@ class Releases
 									CONCAT(cp.id, ',', c.id) AS category_ids,
 									COALESCE(cp.id,0) AS parentCategoryid
 								FROM releases
-								LEFT OUTER JOIN category c ON c.id = releases.categoryid
-								LEFT OUTER JOIN category cp ON cp.id = c.parentid
-								LEFT OUTER JOIN groups g ON g.id = releases.groupid
+								INNER JOIN category c ON c.id = releases.categoryid
+								INNER JOIN category cp ON cp.id = c.parentid
+								INNER JOIN groups g ON g.id = releases.groupid
 								LEFT OUTER JOIN tvrage tvr ON tvr.rageid = releases.rageid
 								WHERE %s %s %s
 								AND releases.passwordstatus <= %d
@@ -528,9 +528,9 @@ class Releases
 									CONCAT(cp.id, ',', c.id) AS category_ids,
 									COALESCE(cp.id,0) AS parentCategoryid
 								FROM releases
-								LEFT OUTER JOIN category c ON c.id = releases.categoryid
-								LEFT OUTER JOIN category cp ON cp.id = c.parentid
-								LEFT OUTER JOIN groups g ON g.id = releases.groupid
+								INNER JOIN category c ON c.id = releases.categoryid
+								INNER JOIN category cp ON cp.id = c.parentid
+								INNER JOIN groups g ON g.id = releases.groupid
 								LEFT OUTER JOIN movieinfo mi ON mi.imdbid = releases.imdbid
 								WHERE %s %s
 								AND releases.passwordstatus <= %d
@@ -584,10 +584,10 @@ class Releases
 									rn.id AS nfoid, re.releaseid AS reid
 								FROM releases
 								LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
-								LEFT OUTER JOIN groups ON groups.id = releases.groupid
+								INNER JOIN groups ON groups.id = releases.groupid
 								LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL
-								LEFT OUTER JOIN category c ON c.id = releases.categoryid
-								LEFT OUTER JOIN category cp ON cp.id = c.parentid
+								INNER JOIN category c ON c.id = releases.categoryid
+								INNER JOIN category cp ON cp.id = c.parentid
 								WHERE %s %s
 								AND releases.passwordstatus <= %d %s
 								ORDER BY %s %s %s",
@@ -859,22 +859,19 @@ class Releases
 		if (count($words) > 0) {
 			if ($type === 'name' || $type === 'searchname') {
 				//at least 1 term needs to be mandatory
-				if (!preg_match('/[+|!]/', $search)) {
-					$search = '+' . $search;
-					$words = explode(' ', $search);
-				}
+//				if (!preg_match('/[+|!]/', $search)) {
+//					$search = '+' . $search;
+//					$words = explode(' ', $search);
+//				}
 				foreach ($words as $word) {
 					$word = trim(rtrim(trim($word), '-'));
 					$word = str_replace('!', '+', $word);
 
-					if ($word !== '' && $word !== '-') {
-						if (!preg_match('/[+|!]/', $word) && strlen($word) >=2) {
-							$word = '+' . $word;
-						}
+					if ($word !== '' && $word !== '-' && strlen($word) >= 2) {
 						$searchwords .= sprintf('%s ', $word);
 					}
 				}
-				$searchwords = trim($searchwords);
+				$searchwords = '"' . trim($searchwords) . '"';
 				$searchsql .= sprintf(" AND MATCH(rs.name, rs.searchname) AGAINST('%s' IN BOOLEAN MODE)", $searchwords);
 			}
 			if ($searchwords === '') {
@@ -1056,7 +1053,8 @@ class Releases
 			WHERE releases.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s LIMIT %d OFFSET %d",
 			$this->showPasswords(), $searchnamesql, $usenetnamesql, $maxagesql, $posternamesql, $groupIDsql, $sizefromsql,
 			$sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $orderbyclause,
-			$order[0], $order[1], $limit, $offset);
+			$order[0], $order[1], $limit, $offset
+		);
 		$wherepos = strpos($sql, 'WHERE');
 		$countres = $this->db->queryOneRow(
 			'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' .
@@ -1112,7 +1110,7 @@ class Releases
 				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid FROM releases LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $rageIdsql, $series, $episode, $searchsql, $catsrch, $maxagesql, $limit, $offset);
+		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid FROM releases INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $rageIdsql, $series, $episode, $searchsql, $catsrch, $maxagesql, $limit, $offset);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
 		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases ' . substr($sql, $wherepos, $orderpos - $wherepos);
@@ -1156,7 +1154,7 @@ class Releases
 			}
 		}
 
-		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id and rn.nfo IS NOT NULL LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $anidbID, $epno, $searchsql, $catsrch, $maxage, $limit, $offset);
+		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id and rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $anidbID, $epno, $searchsql, $catsrch, $maxage, $limit, $offset);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
 		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases ' . substr($sql, $wherepos, $orderpos - $wherepos);
@@ -1196,7 +1194,7 @@ class Releases
 			$maxage = '';
 		}
 
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $searchsql, $imdbId, $catsrch, $maxage, $limit, $offset);
+		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $searchsql, $imdbId, $catsrch, $maxage, $limit, $offset);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
 		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases ' . substr($sql, $wherepos, $orderpos - $wherepos);
@@ -1219,8 +1217,10 @@ class Releases
 		$parentCat = $catrow['parentid'];
 
 		$name = $this->getSimilarName($name);
-		$results = $this->search($name, -1, -1, -1, array($parentCat), -1, -1, 0, 0, -1, -1, 0, $limit, '', -1,
-			$excludedcats);
+		$results = $this->search(
+			$name, -1, -1, -1, array($parentCat), -1, -1, 0, 0, -1, -1, 0, $limit, '', -1,
+			$excludedcats
+		);
 		if (!$results) {
 			return $results;
 		}
@@ -1253,7 +1253,7 @@ class Releases
 		} else {
 			$gsql = sprintf('guid = %s', $this->db->escapeString($guid));
 		}
-		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE %s ", $gsql);
+		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE %s ", $gsql);
 		return (is_array($guid)) ? $this->db->query($sql) : $this->db->queryOneRow($sql);
 	}
 
@@ -1303,7 +1303,7 @@ class Releases
 
 			$episode = sprintf(' AND UPPER(releases.episode) = UPPER(%s)', $this->db->escapeString($episode));
 		}
-		return $this->db->queryOneRow(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, groups.name AS group_name FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN category c ON c.id = releases.categoryid LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d AND rageid = %d %s %s", $this->showPasswords(), $rageid, $series, $episode));
+		return $this->db->queryOneRow(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d AND rageid = %d %s %s", $this->showPasswords(), $rageid, $series, $episode));
 	}
 
 	public function removeRageIdFromReleases($rageid)
@@ -1322,7 +1322,7 @@ class Releases
 
 	public function getById($id)
 	{
-		return $this->db->queryOneRow(sprintf('SELECT releases.*, groups.name AS group_name FROM releases LEFT OUTER JOIN groups ON groups.id = releases.groupid WHERE releases.id = %d ', $id));
+		return $this->db->queryOneRow(sprintf('SELECT releases.*, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.groupid WHERE releases.id = %d ', $id));
 	}
 
 	public function getReleaseNfo($id, $incnfo = true)
@@ -1913,7 +1913,7 @@ class Releases
 
 		$stage4dot5 = TIME();
 		// Delete smaller than min sizes
-		$catresrel = $this->db->queryDirect('SELECT c.id AS id, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize FROM category c LEFT OUTER JOIN category cp ON cp.id = c.parentid WHERE c.parentid IS NOT NULL');
+		$catresrel = $this->db->queryDirect('SELECT c.id AS id, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize FROM category c INNER JOIN category cp ON cp.id = c.parentid WHERE c.parentid IS NOT NULL');
 		foreach ($catresrel as $catrowrel) {
 			if ($catrowrel['minsize'] > 0) {
 				//printf("SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d\n", $catrowrel['id'], $catrowrel['minsize']);
@@ -2785,9 +2785,9 @@ class Releases
 	public function getRecentlyAdded()
 	{
 		if ($this->db->dbSystem() === 'mysql') {
-			return $this->db->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category LEFT OUTER JOIN category cp on cp.id = category.parentid INNER JOIN releases ON releases.categoryid = category.id WHERE releases.adddate > NOW() - INTERVAL 1 WEEK GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
+			return $this->db->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases ON releases.categoryid = category.id WHERE releases.adddate > NOW() - INTERVAL 1 WEEK GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
 		} else {
-			return $this->db->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category LEFT OUTER JOIN category cp on cp.id = category.parentid INNER JOIN releases ON releases.categoryid = category.id WHERE releases.adddate > NOW() - INTERVAL '1 WEEK' GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
+			return $this->db->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases ON releases.categoryid = category.id WHERE releases.adddate > NOW() - INTERVAL '1 WEEK' GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
 		}
 	}
 
