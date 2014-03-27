@@ -10,6 +10,7 @@ Each update goes to the top of the file
 	* Chg: improved fulltext search as there are differences in myisam versus innodb
 2014-03-27 niel
 	* Fix: Preventing failure to instatiate Versions from blocking web page generation.
+	* Chg: Moving main files from .../nzedb to .../nzedb/model-controller.
 2013-03-27 kevin
 	* New: NNTP, return group summary cache if same group is selected. Reselect group if connection dies.
 	* Fix: Fix for PHP bug with range on 1 or 2 number differences.
