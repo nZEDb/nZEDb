@@ -287,7 +287,7 @@ class Debugging
 				$strLen = strlen($load);
 				if ($strLen === 1) {
 					$string .= $load . '.00,';
-				} elseif ($strLen === 2 || $strLen === 3) {
+				} elseif ($strLen === 3) {
 					$string .= str_pad($load, 4, '0', STR_PAD_RIGHT) . ',';
 				} else {
 					$string .= $load . ',';
