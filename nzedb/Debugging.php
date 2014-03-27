@@ -577,12 +577,12 @@ class Debugging
 	{
 		$time = '';
 		if ($seconds > 3600) {
-			$time .= str_pad((($seconds % 86400) / 3600), 2, '0', STR_PAD_LEFT) . 'H:';
+			$time .= str_pad(round((($seconds % 86400) / 3600)), 2, '0', STR_PAD_LEFT) . 'H:';
 		} else {
 			$time .= '00H:';
 		}
 		if ($seconds > 60) {
-			$time .= str_pad((($seconds % 3600) / 60), 2 , '0', STR_PAD_LEFT) . 'M:';
+			$time .= str_pad(round((($seconds % 3600) / 60)), 2 , '0', STR_PAD_LEFT) . 'M:';
 		} else {
 			$time .= '00M:';
 		}
