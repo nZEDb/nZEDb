@@ -475,7 +475,7 @@ class Binaries
 					if ($first + $this->messagebuffer > $grouplast) {
 						$last = $grouplast;
 					} else {
-						$last = $first + $this->messagebuffer;
+						$last = (int)$first + $this->messagebuffer;
 					}
 				}
 				$first++;
@@ -634,15 +634,6 @@ class Binaries
 			$group['pname'] = 'parts';
 		}
 
-		// Select the group before attempting to download
-		$data = $this->nntp->selectGroup($groupArr['name']);
-		if ($this->nntp->isError($data)) {
-			$data = $this->nntp->dataError($this->nntp, $groupArr['name']);
-			if ($this->nntp->isError($data)) {
-				return false;
-			}
-		}
-
 		// Download the headers.
 		$msgs = $this->nntp->getOverview((int)$first . "-" . (int)$last, true, false);
 
@@ -696,7 +687,15 @@ class Binaries
 		$timeHeaders = number_format($this->startCleaning - $this->startHeaders, 2);
 
 		// Array of all the requested article numbers.
-		$rangerequested = range($first, $last);
+		$rangerequested = array();
+		$total = ($last - $first);
+		if ($total > 1) {
+			$rangerequested = range($first, $last);
+		} elseif ($total === 1) {
+			$rangerequested = array($first, $last);
+		} else {
+			$rangerequested[] = $first;
+		}
 
 		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 

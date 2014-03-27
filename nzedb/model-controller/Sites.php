@@ -1,5 +1,5 @@
 <?php
-require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Util.php');
+require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 
 class Sites
 {
@@ -24,14 +24,18 @@ class Sites
 	{
 		$this->_db = new DB();
 		if (defined('nZEDb_VERSIONS')) {
-			$this->_versions = new \nzedb\utility\Versions(nZEDb_VERSIONS);
+			try {
+				$this->_versions = new \nzedb\utility\Versions(nZEDb_VERSIONS);
+			} catch (Exception $e) {
+				$this->_versions = false;
+			}
 		}
 		$this->setCovers();
 	}
 
 	public function version()
 	{
-		return ($this->_versions !== false ? '0.0.0' : $this->_versions->getTagVersion());
+		return ($this->_versions === false ? '0.0.0' : $this->_versions->getTagVersion());
 	}
 
 	public function update($form)

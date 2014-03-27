@@ -306,7 +306,7 @@ class DB extends PDO
 					) &&
 				$i <= 10
 			) {
-				$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping.", 'queryExec', 4);
+				$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping. ($i)", 'queryExec', 4);
 				$this->consoletools->showsleep($i * $i);
 				$this->queryExec($query, $i++);
 			}

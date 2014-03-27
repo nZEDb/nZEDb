@@ -3,7 +3,7 @@
  * IF you are using this script then then you also want to edit anidb.php in www/lib and locate "604800" and replace it with 1204400, this will make sure it never tries to connect to anidb as this will fail
  */
 require dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'Util.php';
+require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 
 class AniDBstandAlone
 {

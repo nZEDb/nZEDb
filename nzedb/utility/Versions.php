@@ -73,7 +73,9 @@ class Versions
 		libxml_use_internal_errors($temp);
 
 		if ($this->_xml === false) {
-			$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
+			if (PHP_SAPI == 'cli') {
+				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
+			}
 			throw new \Exception("Failed to open versions XML file '$filepath'");
 		}
 

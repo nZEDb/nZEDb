@@ -2,6 +2,13 @@
 /**
  * Show debug to CLI/Web and log it to a file.
  * Turn these on in automated.config.php
+ *
+ * @example usage:
+ *          (in constructor, initiate instance)
+ *          $this->Debugging = new Debugging("MyClassName");
+ *
+ *          (in method, DEBUG_INFO would be the severity of your error, see below)
+ *          $this->Debugging->start("MyMethodName", "My debug message.", DEBUG_INFO);
  */
 class Debugging
 {
@@ -72,6 +79,15 @@ class Debugging
 	const showTimeRunning = true;
 
 	/**
+	 * Show resource usages.
+	 *
+	 * @default false
+	 *
+	 * @const bool
+	 */
+	const showGetResUsage = false;
+
+	/**
 	 * Name of class that created an instance of debugging.
 	 * @var string
 	 */
@@ -82,6 +98,12 @@ class Debugging
 	 * @var string
 	 */
 	private $debugMessage = '';
+
+	/**
+	 * Severity level.
+	 * @var string
+	 */
+	private $severity = '';
 
 	/**
 	 * "\n" for unix, "\r\n" for windows.
@@ -125,6 +147,14 @@ class Debugging
 	 * @var int
 	 */
 	private $timeStart;
+
+	// You can use these constants when using the start method.
+	const DEBUG_FATAL   = 1; // Fatal error, the program exited.
+	const DEBUG_ERROR   = 2; // Recoverable error.
+	const DEBUG_WARNING = 3; // Warnings.
+	const DEBUG_NOTICE  = 4; // Notices.
+	const DEBUG_INFO    = 5; // Info message, not important.
+	const DEBUG_SQL     = 6; // Full SQL query when it fails.
 
 	/**
 	 * Constructor.
@@ -194,7 +224,7 @@ class Debugging
 		$actualUsage = ($oldUsage > 0 ? $currentUsage - $oldUsage : $currentUsage);
 
 		$units = [
-			'B',
+			'B  ',
 			'KiB',
 			'MiB',
 			'GiB',
@@ -202,22 +232,45 @@ class Debugging
 			'PiB'
 		];
 		return
-			round(
-				$actualUsage
-				/
-				pow(
-					1024,
-					($i =
-						floor(
-							log(
-								$actualUsage,
-								1024
+			str_pad(
+				number_format(
+					round(
+						$actualUsage
+						/
+						pow(
+							1024,
+							($i =
+								floor(
+									log(
+										$actualUsage,
+										1024
+									)
+								)
 							)
-						)
+						), 2
 					)
-				), 2
+				), 3, '~~', STR_PAD_LEFT
 			) .
 			$units[(int)$i];
+	}
+
+	/**
+	 * Get resource usage string.
+	 *
+	 * @return bool|string
+	 */
+	public function getResUsage()
+	{
+		if (!$this->isWindows) {
+			$usage = getrusage();
+
+			return
+				'USR: '  . $this->formatTimeString($usage['ru_utime.tv_sec']) .
+				' SYS: ' . $this->formatTimeString($usage['ru_stime.tv_sec']) .
+				' FAULTS: ' . $usage['ru_majflt'] .
+				' SWAPS: ' . $usage['ru_nswap'];
+		}
+		return false;
 	}
 
 	/**
@@ -228,7 +281,7 @@ class Debugging
 	public function getSystemLoad()
 	{
 		if (!$this->isWindows) {
-			return implode(', ', sys_getloadavg());
+			return str_pad(implode(',', sys_getloadavg()), 14, ' ', STR_PAD_LEFT);
 		}
 		return false;
 	}
@@ -294,21 +347,11 @@ class Debugging
 	{
 		// Cache the date, update it every 1 minute, since date() is extremely slow and time() is extremely fast.
 		if ($this->dateCache === '' || $this->timeCache < (time() - 60)) {
-			$this->dateCache = $this->formDate();
+			$this->dateCache = date('d/M/Y H:i');
 			$this->timeCache = time();
 		}
 
 		return $this->dateCache;
-	}
-
-	/**
-	 * Form a date in this format: 02/Mar/2014 14:50 EST
-	 *
-	 * @return string
-	 */
-	protected  function formDate()
-	{
-		return date('d/M/Y H:i T');
 	}
 
 	/**
@@ -422,7 +465,7 @@ class Debugging
 			return false;
 		}
 
-		// Delete the original log file.
+		// Delete the original uncompressed log file.
 		return unlink($file);
 	}
 
@@ -440,17 +483,17 @@ class Debugging
 		$logs = glob($path . $name . '.[0-9]*.gz');
 
 		// If there are no old logs or less than maxLogs return false.
-		if (!$logs || count($logs) < self::maxLogs) {
+		if (!$logs || (count($logs) < self::maxLogs)) {
 			return false;
 		}
 
-		// Sort the logs alphabetically.
+		// Sort the logs alphabetically, so the oldest ones are at the top, the new at the bottom.
 		asort($logs);
 
-		// Remove all old logs.
+		// Remove all new logs from array (all elements under the last 51 elements of the array).
 		array_splice($logs, -self::maxLogs+1);
 
-		// Delete the logs.
+		// Delete all the logs left in the array.
 		array_map('unlink', $logs);
 
 		return true;
@@ -471,7 +514,7 @@ class Debugging
 		if ($this->outputCLI) {
 			echo $this->colorCLI->debug($this->debugMessage);
 		} else {
-			echo '<pre>' . $this->debugMessage . '</pre>';
+			echo '<pre>' . $this->debugMessage . '</pre><br />';
 		}
 	}
 
@@ -487,20 +530,25 @@ class Debugging
 	{
 		$this->debugMessage =
 			// Current date/time ; [02/Mar/2014 14:50 EST
-			'[' . $this->getDate() .
+			'[' . $this->getDate() . '] ' .
 
 			// The severity.
-			$this->debugMessage .
+			$this->severity .
+
+			// Average system load.
+			((self::showAverageLoad && !$this->isWindows) ? ' [' . $this->getSystemLoad() . ']' : '') .
+
+			// Script running time.
+			(self::showTimeRunning ? ' [' . $this->formatTimeString(time() - $this->timeStart) . ']' : '') .
+
+			// PHP memory usage.
+			(self::showMemoryUsage ? ' [MEM: ' . $this->showMemUsage(0, true) . ']' : '') .
+
+			// Resource usage (user time, system time, major page faults, memory swaps).
+			((self::showGetResUsage && !$this->isWindows) ? ' [' . $this->getResUsage() . ']' : '') .
 
 			// The class/function.
-			$this->class . '.' . $method . ']' .
-
-			(self::showTimeRunning ? ' [TIME: ' . $this->formatRunningTime() : '') .
-			// Show memory usage for PHP.
-			(self::showMemoryUsage ? ' [PHP MEM: ' . $this->showMemUsage(0, true) . ']' : '') .
-
-			// Show average load.
-			((self::showAverageLoad && !$this->isWindows) ? ' [LOAD: ' . $this->getSystemLoad() . ']' : '') .
+			' [' . $this->class . '.' . $method . ']' .
 
 			' [' .
 
@@ -511,28 +559,34 @@ class Debugging
 				preg_replace('/\s{2,}/', ' ',
 
 					// Removing new lines and carriage returns.
-					str_replace(array("\n", '\n', "\r", '\r'), ' ', $message)))
+					str_replace(array("\n", '\n', "\r", '\r'), ' ', $message)
+				)
+			) .
 
-			// Finally, add a closing brace.
-			. ']';
+			']';
 	}
 
 	/**
-	 * Return string of running time for log/cli.
+	 * Convert seconds to hours minutes seconds string.
+	 *
+	 * @param int $seconds
 	 *
 	 * @return string
 	 */
-	protected function formatRunningTime()
+	protected function formatTimeString($seconds)
 	{
-		$timeSpent = time() - $this->timeStart;
 		$time = '';
-		if ($timeSpent > 3600) {
-			$time .= (($timeSpent % 86400) / 3600) . 'H:';
+		if ($seconds > 3600) {
+			$time .= str_pad(round((($seconds % 86400) / 3600)), 2, '0', STR_PAD_LEFT) . 'H:';
+		} else {
+			$time .= '00H:';
 		}
-		if ($timeSpent > 60) {
-			$time .= (($timeSpent % 3600) / 60) . 'M:';
+		if ($seconds > 60) {
+			$time .= str_pad(round((($seconds % 3600) / 60)), 2 , '0', STR_PAD_LEFT) . 'M:';
+		} else {
+			$time .= '00M:';
 		}
-		$time .= ($timeSpent % 60) . 'S]';
+		$time .= str_pad($seconds % 60, 2 , '0', STR_PAD_LEFT) . 'S';
 		return $time;
 	}
 
@@ -545,41 +599,40 @@ class Debugging
 	 */
 	protected function checkSeverity($severity)
 	{
-		$this->debugMessage = '';
 		switch ($severity) {
-			case 1:
+			case self::DEBUG_FATAL:
 				if (nZEDb_LOGFATAL) {
-					$this->debugMessage = '] [FATAL]  [';
+					$this->severity = '[FATAL] ';
 					return true;
 				}
 				return false;
-			case 2:
+			case self::DEBUG_ERROR:
 				if (nZEDb_LOGERROR) {
-					$this->debugMessage = '] [ERROR]  [';
+					$this->severity = '[ERROR] ';
 					return true;
 				}
 				return false;
-			case 3:
+			case self::DEBUG_WARNING:
 				if (nZEDb_LOGWARNING) {
-					$this->debugMessage = '] [WARN]   [';
+					$this->severity = '[WARN]  ';
 					return true;
 				}
 				return false;
-			case 4:
+			case self::DEBUG_NOTICE:
 				if (nZEDb_LOGNOTICE) {
-					$this->debugMessage = '] [NOTICE] [';
+					$this->severity = '[NOTICE]';
 					return true;
 				}
 				return false;
-			case 5:
+			case self::DEBUG_INFO:
 				if (nZEDb_LOGINFO) {
-					$this->debugMessage = '] [INFO]   [';
+					$this->severity = '[INFO]  ';
 					return true;
 				}
 				return false;
-			case 6:
+			case self::DEBUG_SQL:
 				if (nZEDb_LOGQUERIES) {
-					$this->debugMessage = '] [SQL]    [';
+					$this->severity = '[SQL]   ';
 					return true;
 				}
 				return false;

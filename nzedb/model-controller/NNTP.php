@@ -91,6 +91,13 @@ class NNTP extends Net_NNTP_Client
 	protected $debug;
 
 	/**
+	 * Currently selected group.
+	 *
+	 * @var string
+	 */
+	protected $currentGroup = '';
+
+	/**
 	 * Default constructor.
 	 *
 	 * @param bool $echo Echo to cli?
@@ -293,18 +300,19 @@ class NNTP extends Net_NNTP_Client
 	/**
 	 * Disconnect from the current NNTP server.
 	 *
+	 * @param  bool $force Force quit even if not connected?
+	 *
 	 * @return bool   On success : Did we successfully disconnect from usenet?
 	 * @return object On Failure : Pear error.
 	 *
 	 * @access public
 	 */
-	public function doQuit()
+	public function doQuit($force = false)
 	{
-		// Set this to false so we recheck next time.
-		$this->compression = false;
+		$this->resetProperties();
 
 		// Check if we are connected to usenet.
-		if (parent::_isConnected()) {
+		if ($force === true || parent::_isConnected()) {
 			if ($this->debug) {
 				$this->debugging->start("doQuit", "Disconnecting from " . $this->currentServer, 5);
 			}
@@ -312,6 +320,38 @@ class NNTP extends Net_NNTP_Client
 			return parent::disconnect();
 		}
 		return true;
+	}
+
+	/**
+	 * Reset some properties when disconnecting from usenet.
+	 */
+	protected function resetProperties()
+	{
+		$this->compression = false;
+		$this->currentGroup = '';
+		$this->postingAllowed = false;
+		parent::resetProperties();
+	}
+
+	/**
+	 * @param string $group    Name of the group to select.
+	 * @param bool   $articles (optional) experimental! When true the article numbers is returned in 'articles'.
+	 *
+	 * @return array|object
+	 */
+	public function selectGroup($group, $articles = false)
+	{
+		$connected = $this->checkConnection(false);
+		if ($connected !== true) {
+			return $connected;
+		}
+
+		if ($this->currentGroup !== $group || is_null($this->_selectedGroupSummary)) {
+			$this->currentGroup = $group;
+			return parent::selectGroup($group, $articles);
+		} else {
+			return $this->_selectedGroupSummary;
+		}
 	}
 
 	/**
@@ -327,7 +367,10 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function getOverview($range = null, $names = true, $forceNames = true)
 	{
-		$this->checkConnection();
+		$connected = $this->checkConnection();
+		if ($connected !== true) {
+			return $connected;
+		}
 
 		return parent::getOverview($range, $names, $forceNames);
 	}
@@ -348,7 +391,7 @@ class NNTP extends Net_NNTP_Client
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
 			// Select the group.
-			$summary = parent::selectGroup($groupName);
+			$summary = $this->selectGroup($groupName);
 			// If there was an error selecting the group, return PEAR error object.
 			if ($this->isError($summary)) {
 				if ($this->debug) {
@@ -389,13 +432,20 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function getMessages($groupName, $identifiers, $alternate=false)
 	{
-		$this->checkConnection();
+		$connected = $this->checkConnection();
+		if ($connected !== true) {
+			return $connected;
+		}
 
 		// String to hold all the bodies.
 		$body = '';
 
 		$aConnected = false;
-		$nntp = new NNTP($this->echo);
+		if ($alternate === true) {
+			$nntp = new NNTP($this->echo);
+		} else {
+			$nntp = null;
+		}
 
 		// Check if the msgIds are in an array.
 		if (is_array($identifiers)) {
@@ -411,8 +461,8 @@ class NNTP extends Net_NNTP_Client
 
 					// If there is an error return the PEAR error object.
 				} else {
-					if ($alternate) {
-						if (!$aConnected) {
+					if ($alternate === true) {
+						if ($aConnected === false) {
 							// Check if the current connected server is the alternate or not.
 							if ($this->currentServer === NNTP_SERVER) {
 								// It's the main so connect to the alternate.
@@ -450,7 +500,7 @@ class NNTP extends Net_NNTP_Client
 			// If it's a string check if it's a valid message-ID.
 		} else if (is_string($identifiers) || is_numeric($identifiers)) {
 			$body = $this->getMessage($groupName, $identifiers, $alternate);
-			if ($alternate && $this->isError($body)) {
+			if ($alternate === true && $this->isError($body)) {
 				$nntp->doConnect(true, true);
 				$body = $nntp->getMessage($groupName, $identifiers);
 				$aConnected = true;
@@ -465,7 +515,7 @@ class NNTP extends Net_NNTP_Client
 			return $this->throwError($this->c->error($message));
 		}
 
-		if ($aConnected) {
+		if ($aConnected === true) {
 			$nntp->doQuit();
 		}
 
@@ -487,12 +537,15 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function get_Article($groupName, $identifier, $yEnc = false)
 	{
-		$this->checkConnection();
+		$connected = $this->checkConnection();
+		if ($connected !== true) {
+			return $connected;
+		}
 
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
 			// Select the group.
-			$summary = parent::selectGroup($groupName);
+			$summary = $this->selectGroup($groupName);
 			// If there was an error selecting the group, return PEAR error object.
 			if ($this->isError($summary)) {
 				if ($this->debug) {
@@ -565,12 +618,15 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function get_Header($groupName, $identifier)
 	{
-		$this->checkConnection();
+		$connected = $this->checkConnection();
+		if ($connected !== true) {
+			return $connected;
+		}
 
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
 			// Select the group.
-			$summary = parent::selectGroup($groupName);
+			$summary = $this->selectGroup($groupName);
 			// Return PEAR error object on failure.
 			if ($this->isError($summary)) {
 				if ($this->debug) {
@@ -645,7 +701,10 @@ class NNTP extends Net_NNTP_Client
 			return $this->throwError($this->c->error($message));
 		}
 
-		$this->checkConnection();
+		$connected = $this->checkConnection();
+		if ($connected !== true) {
+			return $connected;
+		}
 
 		// Throw errors if subject or from are more than 510 chars.
 		if (strlen($subject) > 510) {
@@ -863,34 +922,21 @@ class NNTP extends Net_NNTP_Client
 				return $this->throwError($this->c->error($message), 1000);
 			}
 
-			// Get any socket error codes.
-			$errorCode = socket_last_error();
+			// Append buffer to final data object.
+			$data .= $buffer;
 
-			// Keep going if no errors.
-			if ($errorCode === 0) {
-				// Append buffer to final data object.
-				$data .= $buffer;
+			// Update total bytes received.
+			$totalBytesReceived += $bytesReceived;
 
-				// Update total bytes received.
-				$totalBytesReceived += $bytesReceived;
+			// Check if we have the ending (.\r\n)
+			if ($bytesReceived > 2 &&
+				ord($buffer[$bytesReceived - 3]) == 0x2e &&
+				ord($buffer[$bytesReceived - 2]) == 0x0d &&
+				ord($buffer[$bytesReceived - 1]) == 0x0a) {
 
-				// Check if we have the ending (.\r\n)
-				if ($bytesReceived > 2 &&
-					ord($buffer[$bytesReceived - 3]) == 0x2e &&
-					ord($buffer[$bytesReceived - 2]) == 0x0d &&
-					ord($buffer[$bytesReceived - 1]) == 0x0a) {
-
-
-					// We have a possible ending, next loop check if it is.
-					$possibleTerm = true;
-					continue;
-				}
-			} else {
-				$message = 'Socket error: ' . socket_strerror($errorCode);
-				if ($this->debug) {
-					$this->debugging->start("_getXFeatureTextResponse", $message, 2);
-				}
-				return $this->throwError($this->c->error($message), 1000);
+				// We have a possible ending, next loop check if it is.
+				$possibleTerm = true;
+				continue;
 			}
 		}
 		// Throw an error if we get out of the loop.
@@ -912,9 +958,11 @@ class NNTP extends Net_NNTP_Client
 	/**
 	 * Check if we are still connected. Reconnect if not.
 	 *
+	 * @var bool $reSelectGroup Select back the group after connecting?
+	 *
 	 * @return bool
 	 */
-	protected function checkConnection()
+	protected function checkConnection($reSelectGroup=true)
 	{
 		// Check if we are connected.
 		if (parent::_isConnected()) {
@@ -922,11 +970,30 @@ class NNTP extends Net_NNTP_Client
 		} else {
 			switch($this->currentServer) {
 				case NNTP_SERVER:
-					return $this->doConnect();
+					if (is_resource($this->_socket)) {
+						$this->doQuit(true);
+					}
+					$connected =  $this->doConnect();
+					break;
 				case NNTP_SERVER_A:
-					return $this->doConnect(true, true);
+					if (is_resource($this->_socket)) {
+						$this->doQuit(true);
+					}
+					$connected = $this->doConnect(true, true);
+					break;
 				default:
-					return false;
+					$connected = $this->throwError('Wrong server constant used in NNTP checkConnection()!');
+			}
+			if ($connected !== true){
+				return $connected;
+			} else {
+				if ($reSelectGroup && $this->currentGroup !== '') {
+					$group = $this->selectGroup($this->currentGroup);
+					if ($this->isError($group)) {
+						return $group;
+					}
+				}
+				return $connected;
 			}
 		}
 	}
@@ -1070,4 +1137,5 @@ class NNTP extends Net_NNTP_Client
 	{
 		return PEAR::isError($data, $code);
 	}
+
 }
