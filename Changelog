@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2013-03-27 kevin
+	* NNTP, return group summary cache if same group is selected. Reselect group if connection dies.
 2014-03-26 niel
 	* New: Adding method to Sites class to fetch single setting.
 	* Chg: Switching Versions to use Sites->getSetting() for checking 'sqlpatch'.
