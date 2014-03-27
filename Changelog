@@ -20,6 +20,10 @@ Each update goes to the top of the file
 	* Fix: Bug in NNTPROXY, BODY errors not being returned causing php's feof to return false (since it expects the socket to return data). (todo)All the other commands should be edited to return errors.
 	* Add: Change other commands to return errors in nntpproxy.
 	* Chg: Show release size on postproc additional.
+	* Fix: Regex for alt.binaries.comics.dcp
+	* Add: Regex to alt.binaries.comics.dcp (run script bellow)
+	* Add: Script to test ReleaseCleaner.php or rename releases with it (to rename comics.dcp, run php test-ReleaseCleaner.php alt.binaries.comics.dcp 100000 true)
+	* Fix: Not checking for failed queries before running rowCount in Releases.php causing program to exit fatally.
 2014-03-27 bart39
 	* Chg: Improve nzb details / searches by using releasesearch table and fulltext search against name/searchname
 2014-03-26 niel

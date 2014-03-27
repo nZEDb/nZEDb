@@ -1357,8 +1357,11 @@ class Releases
 		$cat = new Category();
 		$relcount = 0;
 		$resrel = $this->db->queryDirect('SELECT id, ' . $type . ', groupid FROM releases ' . $where);
-		$total = $resrel->rowCount();
-		if (count($resrel) > 0) {
+		$total = 0;
+		if ($resrel !== false) {
+			$total = $resrel->rowCount();
+		}
+		if ($total > 0) {
 			foreach ($resrel as $rowrel) {
 				$catId = $cat->determineCategory($rowrel[$type], $rowrel['groupid']);
 				$this->db->queryExec(sprintf('UPDATE releases SET categoryid = %d, iscategorized = 1 WHERE id = %d', $catId, $rowrel['id']));
@@ -1522,7 +1525,7 @@ class Releases
 			);
 		}
 
-		if ($this->echooutput) {
+		if ($query !== false && $this->echooutput) {
 			$this->c->doEcho(
 				$this->c->primary(
 					$query->rowCount() + $query->rowCount() .
@@ -1562,7 +1565,7 @@ class Releases
 									(SELECT SUM(p.size) FROM ' . $group['pname'] . ' p INNER JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id),
 									filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0' . $where
 		);
-		if ($this->echooutput) {
+		if ($checked !== false && $this->echooutput) {
 			$this->c->doEcho(
 				$this->c->primary(
 					$checked->rowCount() . " collections set to filecheck = 3(size calculated)"
@@ -1610,7 +1613,9 @@ class Releases
 							" c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND groupid = " .
 							$groupID['id']
 						);
-						$minsizecount = $mscq->rowCount();
+						if ($mscq !== false) {
+							$minsizecount = $mscq->rowCount();
+						}
 					} else {
 						$s = $this->db->queryOneRow(
 							"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM site s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
@@ -1624,7 +1629,9 @@ class Releases
 									$groupID['id'], $s['size']
 								)
 							);
-							$minsizecount = $mscq->rowCount();
+							if ($mscq !== false) {
+								$minsizecount = $mscq->rowCount();
+							}
 						}
 					}
 					if ($minsizecount < 1) {
@@ -1640,7 +1647,10 @@ class Releases
 								' SET filecheck = 5 WHERE filecheck = 3 AND groupid = %d AND filesize > %d ', $groupID['id'], $maxfilesizeres['value']
 							)
 						);
-						$maxsizecount = $mascq->rowCount();
+						$maxsizecount = 0;
+						if ($mascq !== false) {
+							$maxsizecount = $mascq->rowCount();
+						}
 						if ($maxsizecount < 1) {
 							$maxsizecount = 0;
 						}
@@ -1654,7 +1664,9 @@ class Releases
 							" c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND groupid = " .
 							$groupID['id']
 						);
-						$minfilecount = $mifcq->rowCount();
+						if ($mifcq !== false) {
+							$minfilecount = $mifcq->rowCount();
+						}
 					} else {
 						$f = $this->db->queryOneRow(
 							"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM site s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
@@ -1668,7 +1680,9 @@ class Releases
 									$groupID['id'], $s['size']
 								)
 							);
-							$minfilecount = $mifcq->rowCount();
+							if ($mifcq !== false) {
+								$minfilecount = $mifcq->rowCount();
+							}
 						}
 					}
 					if ($minfilecount < 1) {
@@ -1681,29 +1695,33 @@ class Releases
 			$res = $this->db->queryDirect(
 				'SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 3 AND filesize > 0 AND groupid = ' . $groupID
 			);
-			if ($res->rowCount() > 0) {
+			if ($res !== false && $res->rowCount() > 0) {
 				$minsizecount = 0;
 				if ($this->db->dbSystem() === 'mysql') {
-					$mscq = $this->db->queryDirect(
+					$mscq = $this->db->queryExec(
 						"UPDATE " . $group['cname'] .
 						" c LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND groupid = " .
 						$groupID
 					);
-					$minsizecount = $mscq->rowCount();
+					if ($mscq !== false) {
+						$minsizecount = $mscq->rowCount();
+					}
 				} else {
 					$s = $this->db->queryOneRow(
 						"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM site s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
 						$groupID
 					);
 					if ($s['size'] > 0) {
-						$mscq = $this->db->queryDirect(
+						$mscq = $this->db->queryExec(
 							sprintf(
 								'UPDATE ' . $group['cname'] .
 								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ' .
 								$groupID, $s['size']
 							)
 						);
-						$minsizecount = $mscq->rowCount();
+						if ($mscq !== false) {
+							$minsizecount = $mscq->rowCount();
+						}
 					}
 				}
 				if ($minsizecount < 0) {
@@ -1713,13 +1731,15 @@ class Releases
 
 				$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0) {
-					$mascq = $this->db->queryDirect(
+					$mascq = $this->db->queryExec(
 						sprintf(
 							'UPDATE ' . $group['cname'] .
 							' SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d ', $maxfilesizeres['value']
 						)
 					);
-					$maxsizecount = $mascq->rowCount();
+					if ($mascq !== false) {
+						$maxsizecount = $mascq->rowCount();
+					}
 					if ($maxsizecount < 0) {
 						$maxsizecount = 0;
 					}
@@ -1728,26 +1748,30 @@ class Releases
 
 				$minfilecount = 0;
 				if ($this->db->dbSystem() === 'mysql') {
-					$mifcq = $this->db->queryDirect(
+					$mifcq = $this->db->queryExec(
 						"UPDATE " . $group['cname'] .
 						" c LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND groupid = " .
 						$groupID
 					);
-					$minfilecount = $mifcq->rowCount();
+					if ($mifcq !== false) {
+						$minfilecount = $mifcq->rowCount();
+					}
 				} else {
 					$f = $this->db->queryOneRow(
 						"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM site s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
 						$groupID
 					);
 					if ($f['files'] > 0) {
-						$mifcq = $this->db->queryDirect(
+						$mifcq = $this->db->queryExec(
 							sprintf(
 								'UPDATE ' . $group['cname'] .
 								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ' .
 								$groupID, $s['size']
 							)
 						);
-						$minfilecount = $mifcq->rowCount();
+						if ($mifcq !== false) {
+							$minfilecount = $mifcq->rowCount();
+						}
 					}
 				}
 				if ($minfilecount < 0) {
@@ -1801,11 +1825,11 @@ class Releases
 			' INNER JOIN groups ON ' . $group['cname'] . '.groupid = groups.id WHERE' . $where .
 			'filecheck = 3 AND filesize > 0 LIMIT ' . $this->stage5limit
 		);
-		if ($this->echooutput) {
+		if ($rescol !== false && $this->echooutput) {
 			echo $this->c->primary($rescol->rowCount() . " Collections ready to be converted to releases.");
 		}
 
-		if ($rescol->rowCount() > 0) {
+		if ($rescol !== false && $rescol->rowCount() > 0) {
 			$predb = new PreDb($this->echooutput);
 			foreach ($rescol as $rowcol) {
 				$propername = true;
@@ -1938,7 +1962,7 @@ class Releases
 						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND groupid = %d', $s['size'], $groupID['id']));
 					}
 				}
-				if ($resrel->rowCount() > 0) {
+				if ($resrel !== false && $resrel->rowCount() > 0) {
 					foreach ($resrel as $rowrel) {
 						$this->fastDelete($rowrel['id'], $rowrel['guid']);
 						$minsizecount++;
@@ -1948,7 +1972,7 @@ class Releases
 				$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0) {
 					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE groupid = %d AND size > %d', $groupID['id'], $maxfilesizeres['value']));
-					if ($resrel->rowCount() > 0) {
+					if ($resrel !== false && $resrel->rowCount() > 0) {
 						foreach ($resrel as $rowrel) {
 							$this->fastDelete($rowrel['id'], $rowrel['guid']);
 							$maxsizecount++;
@@ -1968,7 +1992,7 @@ class Releases
 						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND groupid = %d', $f['files'], $groupID['id']));
 					}
 				}
-				if ($resrel->rowCount() > 0) {
+				if ($resrel !== false && $resrel->rowCount() > 0) {
 					foreach ($resrel as $rowrel) {
 						$this->fastDelete($rowrel['id'], $rowrel['guid']);
 						$minfilecount++;
@@ -1988,7 +2012,7 @@ class Releases
 					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND groupid = %d', $s['size'], $groupID));
 				}
 			}
-			if ($resrel->rowCount() > 0) {
+			if ($resrel !== false && $resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$minsizecount++;
@@ -1998,7 +2022,7 @@ class Releases
 			$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 			if ($maxfilesizeres['value'] != 0) {
 				$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE groupid = %d AND size > %s', $groupID, $this->db->escapeString($maxfilesizeres['value'])));
-				if ($resrel->rowCount() > 0) {
+				if ($resrel !== false && $resrel->rowCount() > 0) {
 					foreach ($resrel as $rowrel) {
 						$this->fastDelete($rowrel['id'], $rowrel['guid']);
 						$maxsizecount++;
@@ -2018,7 +2042,7 @@ class Releases
 					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND groupid = %d', $f['files'], $groupID));
 				}
 			}
-			if ($resrel->rowCount() > 0) {
+			if ($resrel !== false && $resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$minfilecount++;
@@ -2070,7 +2094,10 @@ class Releases
 			"SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE" .
 			$where . "nzbstatus = 0"
 		);
-		$total = $resrel->rowCount();
+		$total = 0;
+		if ($resrel !== false) {
+			$total = $resrel->rowCount();
+		}
 		if ($total > 0) {
 			$nzb = new NZB();
 			// Init vars for writing the NZB's.
@@ -2139,7 +2166,7 @@ class Releases
 				);
 			}
 
-			if ($resrel->rowCount() > 0) {
+			if ($resrel !== false && $resrel->rowCount() > 0) {
 				$bFound = false;
 				$web = true;
 
@@ -2281,7 +2308,7 @@ class Releases
 
 		// Completed releases and old collections that were missed somehow.
 		if ($this->db->dbSystem() === 'mysql') {
-			$delq = $this->db->queryDirect(
+			$delq = $this->db->queryExec(
 				sprintf(
 					'DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' .
 					$group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' WHERE' . $where .
@@ -2289,34 +2316,42 @@ class Releases
 					'.collectionid AND ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid'
 				)
 			);
-			$reccount += $delq->rowCount();
+			if ($delq !== false) {
+				$reccount += $delq->rowCount();
+			}
 		} else {
 			$idr = $this->db->queryDirect('SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
-			if ($idr->rowCount() > 0) {
+			if ($idr !== false && $idr->rowCount() > 0) {
 				foreach ($idr as $id) {
-					$delqa = $this->db->queryDirect(
+					$delqa = $this->db->queryExec(
 						sprintf(
 							'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
 							' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' .
 							$group['bname'] . '.collectionid = %d)', $id['id']
 						)
 					);
-					$reccount += $delqa->rowCount();
-					$delqb = $this->db->queryDirect(
+					if ($delqa !== false) {
+						$reccount += $delqa->rowCount();
+					}
+					$delqb = $this->db->queryExec(
 						sprintf(
 							'DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']
 						)
 					);
-					$reccount += $delqb->rowCount();
+					if ($delqb !== false) {
+						$reccount += $delqb->rowCount();
+					}
 				}
-				$delqc = $this->db->queryDirect('DELETE FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
-				$reccount += $delqc->rowCount();
+				$delqc = $this->db->queryExec('DELETE FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
+				if ($delqc !== false) {
+					$reccount += $delqc->rowCount();
+				}
 			}
 		}
 
 		// Old collections that were missed somehow.
 		if ($this->db->dbSystem() === 'mysql') {
-			$delq = $this->db->queryDirect(
+			$delq = $this->db->queryExec(
 				sprintf(
 					'DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' .
 					$group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' WHERE ' . $group['cname'] .
@@ -2325,7 +2360,9 @@ class Releases
 					$where1, $this->site->partretentionhours
 				)
 			);
-			$reccount += $delq->rowCount();
+			if ($delq !== false) {
+				$reccount += $delq->rowCount();
+			}
 		} else {
 			$idr = $this->db->queryDirect(
 				sprintf(
@@ -2333,71 +2370,90 @@ class Releases
 					$where1, $this->site->partretentionhours
 				)
 			);
-			if ($idr->rowCount() > 0) {
+
+			if ($idr !== false && $idr->rowCount() > 0) {
 				foreach ($idr as $id) {
-					$delqa = $this->db->queryDirect(
+					$delqa = $this->db->queryExec(
 						sprintf(
 							'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
 							' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' .
 							$group['bname'] . '.collectionid = %d)', $id['id']
 						)
 					);
-					$reccount += $delqa->rowCount();
-					$delqb = $this->db->queryDirect(
+					if ($delqa !== false) {
+						$reccount += $delqa->rowCount();
+					}
+					$delqb = $this->db->queryExec(
 						sprintf(
 							'DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']
 						)
 					);
-					$reccount += $delqb->rowCount();
+					if ($delqb !== false) {
+						$reccount += $delqb->rowCount();
+					}
 				}
 			}
-			$delqc = $this->db->queryDirect(
+			$delqc = $this->db->queryExec(
 				sprintf(
 					"DELETE FROM " . $group['cname'] . " WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" .
 					$where1, $this->site->partretentionhours
 				)
 			);
-			$reccount += $delqc->rowCount();
+			if ($delqc !== false) {
+				$reccount += $delqc->rowCount();
+			}
 		}
 
 		// Binaries/parts that somehow have no collection.
 		if ($this->db->dbSystem() === 'mysql') {
-			$delqd = $this->db->queryDirect(
+			$delqd = $this->db->queryExec(
 				'DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['bname'] . ', ' .
 				$group['pname'] . ' WHERE ' . $group['bname'] . '.collectionid = 0 AND ' . $group['bname'] . '.id = ' .
 				$group['pname'] . '.binaryid'
 			);
-			$reccount += $delqd->rowCount();
+			if ($delqd !== false) {
+				$reccount += $delqd->rowCount();
+			}
 		} else {
-			$delqe = $this->db->queryDirect(
+			$delqe = $this->db->queryExec(
 				'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] . ' WHERE ' .
 				$group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' . $group['bname'] . '.collectionid = 0)'
 			);
-			$reccount += $delqe->rowCount();
-			$delqf = $this->db->queryDirect('DELETE FROM ' . $group['bname'] . ' WHERE collectionid = 0');
-			$reccount += $delqf->rowCount();
+			if ($delqe !== false) {
+				$reccount += $delqe->rowCount();
+			}
+			$delqf = $this->db->queryExec('DELETE FROM ' . $group['bname'] . ' WHERE collectionid = 0');
+			if ($delqf !== false) {
+				$reccount += $delqf->rowCount();
+			}
 		}
 
 		// Parts that somehow have no binaries.
 		if (mt_rand(1, 100) % 3 == 0) {
-			$delqg = $this->db->queryDirect(
+			$delqg = $this->db->queryExec(
 				'DELETE FROM ' . $group['pname'] . ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)'
 			);
-			$reccount += $delqg->rowCount();
+			if ($delqg !== false) {
+				$reccount += $delqg->rowCount();
+			}
 		}
 
 		// Binaries that somehow have no collection.
 		$delqh = $this->db->queryDirect(
 			'DELETE FROM ' . $group['bname'] . ' WHERE collectionid NOT IN (SELECT c.id FROM ' . $group['cname'] . ' c)'
 		);
-		$reccount += $delqh->rowCount();
+		if ($delqh !== false) {
+			$reccount += $delqh->rowCount();
+		}
 
 		// Collections that somehow have no binaries.
-		$delqi = $this->db->queryDirect(
+		$delqi = $this->db->queryExec(
 			'DELETE FROM ' . $group['cname'] . ' WHERE ' . $group['cname'] . '.id NOT IN (SELECT ' . $group['bname'] .
 			'.collectionid FROM ' . $group['bname'] . ') ' . $where1
 		);
-		$reccount += $delqi->rowCount();
+		if ($delqi !== false) {
+			$reccount += $delqi->rowCount();
+		}
 
 		if ($this->echooutput) {
 			$this->c->doEcho(
@@ -2431,7 +2487,7 @@ class Releases
 			} else {
 				$result = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL '%d DAYS')", $this->site->releaseretentiondays));
 			}
-			if ($result->rowCount() > 0) {
+			if ($result !== false && $result->rowCount() > 0) {
 				foreach ($result as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$remcount++;
@@ -2444,7 +2500,7 @@ class Releases
 			$result = $this->db->queryDirect(
 				'SELECT id, guid FROM releases WHERE passwordstatus = ' . Releases::PASSWD_RAR
 			);
-			if ($result->rowCount() > 0) {
+			if ($result !== false && $result->rowCount() > 0) {
 				foreach ($result as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$passcount++;
@@ -2457,7 +2513,7 @@ class Releases
 			$result = $this->db->queryDirect(
 				'SELECT id, guid FROM releases WHERE passwordstatus = ' . Releases::PASSWD_POTENTIAL
 			);
-			if ($result->rowCount() > 0) {
+			if ($result !== false && $result->rowCount() > 0) {
 				foreach ($result as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$passcount++;
@@ -2473,7 +2529,10 @@ class Releases
 				} else {
 					$resrel = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, id HAVING COUNT(name) > 1", $this->crosspostt));
 				}
-				$total = $resrel->rowCount();
+				$total = 0;
+				if ($resrel !== false) {
+					$total = $resrel->rowCount();
+				}
 				if ($total > 0) {
 					foreach ($resrel as $rowrel) {
 						$this->fastDelete($rowrel['id'], $rowrel['guid']);
@@ -2490,7 +2549,7 @@ class Releases
 		}
 		if ($this->completion > 0) {
 			$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion));
-			if ($resrel->rowCount() > 0) {
+			if ($resrel !== false && $resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$completioncount++;
@@ -2503,7 +2562,7 @@ class Releases
 		if (count($catlist) > 0) {
 			foreach ($catlist as $cat) {
 				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d', $cat['id']));
-				if ($res->rowCount() > 0) {
+				if ($res !== false && $res->rowCount() > 0) {
 					foreach ($res as $rel) {
 						$disabledcount++;
 						$this->fastDelete($rel['id'], $rel['guid']);
@@ -2517,7 +2576,7 @@ class Releases
 		if (count($genrelist) > 0) {
 			foreach ($genrelist as $genre) {
 				$rels = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genreid = %d) mi ON releases.musicinfoid = mid', $genre['id']));
-				if ($rels->rowCount() > 0) {
+				if ($rels !== false && $rels->rowCount() > 0) {
 					foreach ($rels as $rel) {
 						$disabledgenrecount++;
 						$this->fastDelete($rel['id'], $rel['guid']);
@@ -2533,7 +2592,7 @@ class Releases
 			} else {
 				$resrel = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL '%d HOURS'", CATEGORY::CAT_MISC, $this->site->miscotherretentionhours));
 			}
-			if ($resrel->rowCount() > 0) {
+			if ($resrel !== false && $resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$miscothercount++;
@@ -2698,7 +2757,7 @@ class Releases
 	public function resetCollections()
 	{
 		$res = $this->db->queryDirect('SELECT b.id as bid, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionid = c.id');
-		if ($res->rowCount() > 0) {
+		if ($res !== false && $res->rowCount() > 0) {
 			$timestart = TIME();
 			if ($this->echooutput) {
 				echo "Going to remake all the collections. This can be a long process, be patient. DO NOT STOP THIS SCRIPT!\n";
