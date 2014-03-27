@@ -13,6 +13,7 @@ Each update goes to the top of the file
 	* Fix: Preventing failure to instatiate Versions from blocking web page generation.
 	* Chg: Moving main files from .../nzedb to .../nzedb/model-controller.
 2013-03-27 kevin
+	* Add: Show running process ID on debug/logging output.
 	* Chg: Clean up load string on debugging.
 	* New: Log NNTP getMessage when succesful.
 	* Chg: Use debug constants instead of numbers in NNTP.
