@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-03-27 niel
+	* Fix: Preventing failure to instatiate Versions from blocking web page generation.
 2014-03-27 bart39
 	* Chg: Improve nzb details / searches by using releasesearch table and fulltext search against name/searchname
 2014-03-26 niel
