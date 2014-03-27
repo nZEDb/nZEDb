@@ -91,6 +91,11 @@ class Backfill
 	protected $startGroup;
 
 	/**
+	 * @var Groups
+	 */
+	protected $groups;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param NNTP $nntp Class instance of NNTP.
@@ -102,6 +107,7 @@ class Backfill
 		$this->echo = ($echo && nZEDb_ECHOCLI);
 		$this->c = new ColorCLI();
 		$this->db = new DB();
+		$this->groups = new Groups($this->db);
 		$this->debug = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->debug) {
 			$this->debugging = new Debugging("Backfill");
@@ -142,19 +148,17 @@ class Backfill
 			exit($this->c->error($dMessage));
 		}
 
-		$groups = new Groups();
-
 		$res = array();
 		if ($groupName !== '') {
-			$grp = $groups->getByName($groupName);
+			$grp = $this->groups->getByName($groupName);
 			if ($grp) {
 				$res = array($grp);
 			}
 		} else {
 			if ($type === 'normal' || $type === '') {
-				$res = $groups->getActiveBackfill();
+				$res = $this->groups->getActiveBackfill();
 			} else if ($type === 'date') {
-				$res = $groups->getActiveByDateBackfill();
+				$res = $this->groups->getActiveByDateBackfill();
 			}
 		}
 
@@ -442,8 +446,7 @@ class Backfill
 	public function postdate($post, $groupData)
 	{
 		// Set table names
-		$groups = new Groups();
-		$groupID = $groups->getIDByName($groupData['group']);
+		$groupID = $this->groups->getIDByName($groupData['group']);
 		if ($this->tablepergroup === 1) {
 			if ($this->db->newtables($groupID) === false) {
 				$dMessage = "There is a problem creating new parts/files tables for this group.";
@@ -471,7 +474,7 @@ class Backfill
 			$attempts++;
 
 			// Download a single article.
-			$header = $this->nntp->getOverview($currentPost . "-" . $currentPost, true, false);
+			$header = $this->nntp->getOverview((int)$currentPost . "-" . (int)$currentPost, true, false);
 
 			// Check if the article is missing, if it is, retry downloading it.
 			if (!$this->nntp->isError($header)) {
@@ -777,9 +780,8 @@ class Backfill
 	 */
 	public function getRange($group, $first, $last, $threads)
 	{
-		$groups = new Groups();
 		$binaries = new Binaries($this->nntp, $this->echo, $this);
-		$groupArr = $groups->getByName($group);
+		$groupArr = $this->groups->getByName($group);
 		$process = $this->safepartrepair ? 'update' : 'backfill';
 
 		if ($this->echo) {
@@ -836,8 +838,7 @@ class Backfill
 	 */
 	public function getFinal($group, $first, $type)
 	{
-		$groups = new Groups();
-		$groupArr = $groups->getByName($group);
+		$groupArr = $this->groups->getByName($group);
 
 		// Select group, here, only once
 		$data = $this->nntp->selectGroup($groupArr['name']);
