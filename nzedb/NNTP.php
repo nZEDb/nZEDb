@@ -309,9 +309,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function doQuit($force = false)
 	{
-		// Set this to false so we recheck next time.
-		$this->compression = false;
-		$this->currentGroup = '';
+		$this->resetProperties();
 
 		// Check if we are connected to usenet.
 		if ($force === true || parent::_isConnected()) {
@@ -322,6 +320,17 @@ class NNTP extends Net_NNTP_Client
 			return parent::disconnect();
 		}
 		return true;
+	}
+
+	/**
+	 * Reset some properties when disconnecting from usenet.
+	 */
+	protected function resetProperties()
+	{
+		$this->compression = false;
+		$this->currentGroup = '';
+		$this->postingAllowed = false;
+		parent::resetProperties();
 	}
 
 	/**
@@ -956,7 +965,7 @@ class NNTP extends Net_NNTP_Client
 	protected function checkConnection($reSelectGroup=true)
 	{
 		// Check if we are connected.
-		if ($this->_isConnected()) {
+		if (parent::_isConnected()) {
 			return true;
 		} else {
 			switch($this->currentServer) {

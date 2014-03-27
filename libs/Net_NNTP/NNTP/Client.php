@@ -159,6 +159,15 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 		return parent::connect($host, $encryption, $port, $timeout);
 	}
 
+	/**
+	 * Reset some properties.
+	 */
+	protected function resetProperties()
+	{
+		$this->_selectedGroupSummary = null;
+		$this->_overviewFormatCache = null;
+	}
+
 	// }}}
 	// {{{ disconnect()
 
@@ -173,10 +182,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 */
 	function disconnect()
 	{
-		// Set the current group summary to null.
-		$this->_selectedGroupSummary = null;
-		// Set the overview format cache to null.
-		$this->_overviewFormatCache = null;
+		$this->resetProperties();
 		return parent::disconnect();
 	}
 

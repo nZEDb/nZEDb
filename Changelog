@@ -17,6 +17,7 @@ Each update goes to the top of the file
 	* New: Option for showing resource usage (user/system CPU time, memory swaps, page faults) in debug logging, disabled by default.
 	* Fix: Bug in NNTPROXY disconnects us from it when an article is missing, the bug is still there, but put local changes to deal with the bug.
 	* Fix: Bug in NNTPROXY, BODY errors not being returned causing php's feof to return false (since it expects the socket to return data). (todo)All the other commands should be edited to return errors.
+	* Add: Change other commands to return errors in nntpproxy.
 2014-03-27 bart39
 	* Chg: Improve nzb details / searches by using releasesearch table and fulltext search against name/searchname
 2014-03-26 niel
