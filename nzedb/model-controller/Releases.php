@@ -1028,16 +1028,14 @@ class Releases
 		}
 
 		if ($orderby == '') {
-			$orderbyclause = '';
-			$order[0] = '';
-			$order[1] = '';
+			$order[0] = 'postdate ';
+			$order[1] = 'desc ';
 		} else {
-			$orderbyclause = 'ORDER BY';
 			$order = $this->getBrowseOrder($orderby);
 		}
 
 		$sql = sprintf(
-			"SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
+			"SELECT * FROM (SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
 			CONCAT(cp.id, ',', c.id) AS category_ids,
 			groups.name AS group_name, rn.id AS nfoid,
 			re.releaseid AS reid, cp.id AS categoryparentid
@@ -1048,10 +1046,10 @@ class Releases
 			INNER JOIN groups ON groups.id = releases.groupid
 			INNER JOIN category c ON c.id = releases.categoryid
 			INNER JOIN category cp ON cp.id = c.parentid
-			WHERE releases.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s LIMIT %d OFFSET %d",
+			WHERE releases.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s LIMIT %d OFFSET %d) r
+			ORDER BY r.%s %s",
 			$this->showPasswords(), $searchnamesql, $usenetnamesql, $maxagesql, $posternamesql, $groupIDsql, $sizefromsql,
-			$sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $orderbyclause,
-			$order[0], $order[1], $limit, $offset
+			$sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $limit, $offset, $order[0], $order[1]
 		);
 		$wherepos = strpos($sql, 'WHERE');
 		$countres = $this->db->queryOneRow(

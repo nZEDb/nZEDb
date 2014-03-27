@@ -32,6 +32,10 @@ if (!$nntp->isError($group)) {
 	echo 'Error: ' . $group->getMessage() . PHP_EOL;
 }
 
+$nntp->doQuit();
+$nntp->doConnect();
+$nntp->cmdHelp();
+
 /**/
 
 ////////////////////////////////////////////////////////////////////////////////
