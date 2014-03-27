@@ -347,21 +347,11 @@ class Debugging
 	{
 		// Cache the date, update it every 1 minute, since date() is extremely slow and time() is extremely fast.
 		if ($this->dateCache === '' || $this->timeCache < (time() - 60)) {
-			$this->dateCache = $this->formDate();
+			$this->dateCache = date('d/M/Y H:i');
 			$this->timeCache = time();
 		}
 
 		return $this->dateCache;
-	}
-
-	/**
-	 * Form a date in this format: 02/Mar/2014 14:50 EST
-	 *
-	 * @return string
-	 */
-	protected  function formDate()
-	{
-		return date('d/M/Y H:i');
 	}
 
 	/**
@@ -475,7 +465,7 @@ class Debugging
 			return false;
 		}
 
-		// Delete the original log file.
+		// Delete the original uncompressed log file.
 		return unlink($file);
 	}
 
@@ -493,17 +483,17 @@ class Debugging
 		$logs = glob($path . $name . '.[0-9]*.gz');
 
 		// If there are no old logs or less than maxLogs return false.
-		if (!$logs || count($logs) < self::maxLogs) {
+		if (!$logs || (count($logs) < self::maxLogs)) {
 			return false;
 		}
 
-		// Sort the logs alphabetically.
+		// Sort the logs alphabetically, so the oldest ones are at the top, the new at the bottom.
 		asort($logs);
 
-		// Remove all old logs.
+		// Remove all new logs from array (all elements under the last 51 elements of the array).
 		array_splice($logs, -self::maxLogs+1);
 
-		// Delete the logs.
+		// Delete all the logs left in the array.
 		array_map('unlink', $logs);
 
 		return true;
@@ -524,7 +514,7 @@ class Debugging
 		if ($this->outputCLI) {
 			echo $this->colorCLI->debug($this->debugMessage);
 		} else {
-			echo '<pre>' . $this->debugMessage . '</pre>';
+			echo '<pre>' . $this->debugMessage . '</pre><br />';
 		}
 	}
 
@@ -555,7 +545,7 @@ class Debugging
 			(self::showMemoryUsage ? ' [MEM: ' . $this->showMemUsage(0, true) . ']' : '') .
 
 			// Resource usage (user time, system time, major page faults, memory swaps).
-			(self::showGetResUsage ? ' [' . $this->getResUsage() . ']' : '') .
+			((self::showGetResUsage && !$this->isWindows) ? ' [' . $this->getResUsage() . ']' : '') .
 
 			// The class/function.
 			' [' . $this->class . '.' . $method . ']' .
@@ -569,10 +559,11 @@ class Debugging
 				preg_replace('/\s{2,}/', ' ',
 
 					// Removing new lines and carriage returns.
-					str_replace(array("\n", '\n', "\r", '\r'), ' ', $message)))
+					str_replace(array("\n", '\n', "\r", '\r'), ' ', $message)
+				)
+			) .
 
-			// Finally, add a closing brace.
-			. ']';
+			']';
 	}
 
 	/**
