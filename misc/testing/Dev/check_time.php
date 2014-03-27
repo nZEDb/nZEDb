@@ -1,7 +1,7 @@
 <?php
 // Shitty script to check time/date in php mysql and system...
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'Util.php';
+require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 $n = PHP_EOL;
 
 if (!isWindows()) {

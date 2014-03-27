@@ -91,6 +91,11 @@ class Backfill
 	protected $startGroup;
 
 	/**
+	 * @var Groups
+	 */
+	protected $groups;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param NNTP $nntp Class instance of NNTP.
@@ -102,6 +107,7 @@ class Backfill
 		$this->echo = ($echo && nZEDb_ECHOCLI);
 		$this->c = new ColorCLI();
 		$this->db = new DB();
+		$this->groups = new Groups($this->db);
 		$this->debug = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->debug) {
 			$this->debugging = new Debugging("Backfill");
@@ -142,19 +148,17 @@ class Backfill
 			exit($this->c->error($dMessage));
 		}
 
-		$groups = new Groups();
-
 		$res = array();
 		if ($groupName !== '') {
-			$grp = $groups->getByName($groupName);
+			$grp = $this->groups->getByName($groupName);
 			if ($grp) {
 				$res = array($grp);
 			}
 		} else {
 			if ($type === 'normal' || $type === '') {
-				$res = $groups->getActiveBackfill();
+				$res = $this->groups->getActiveBackfill();
 			} else if ($type === 'date') {
-				$res = $groups->getActiveByDateBackfill();
+				$res = $this->groups->getActiveByDateBackfill();
 			}
 		}
 
@@ -351,15 +355,6 @@ class Backfill
 			} else {
 				// If above failed, try to get it with postdate method.
 				$newdate = $this->postdate($first, $data);
-
-				if ($newdate === false) {
-					// If above failed, try to get the old date, and if that fails set the current date.
-					if (is_null($groupArr['first_record_postdate']) || $groupArr['first_record_postdate'] == 'NULL') {
-						$newdate = time();
-					} else {
-						$newdate = strtotime($groupArr['first_record_postdate']);
-					}
-				}
 			}
 
 			$this->db->queryExec(
@@ -451,8 +446,7 @@ class Backfill
 	public function postdate($post, $groupData)
 	{
 		// Set table names
-		$groups = new Groups();
-		$groupID = $groups->getIDByName($groupData['group']);
+		$groupID = $this->groups->getIDByName($groupData['group']);
 		if ($this->tablepergroup === 1) {
 			if ($this->db->newtables($groupID) === false) {
 				$dMessage = "There is a problem creating new parts/files tables for this group.";
@@ -480,13 +474,13 @@ class Backfill
 			$attempts++;
 
 			// Download a single article.
-			$header = $this->nntp->getOverview($currentPost . "-" . $currentPost, true, false);
+			$header = $this->nntp->getOverview((int)$currentPost . "-" . (int)$currentPost, true, false);
 
 			// Check if the article is missing, if it is, retry downloading it.
 			if (!$this->nntp->isError($header)) {
 
 				// Check if the date is set.
-				if (isset($header[0]['Date']) && strlen($header[0]['Date'] > 0)) {
+				if (isset($header[0]['Date']) && strlen($header[0]['Date']) > 0) {
 					$date = $header[0]['Date'];
 					break;
 				}
@@ -521,13 +515,15 @@ class Backfill
 				if ($maxPossible <= 1) {
 					break;
 				} else {
-					$currentPost -= round((1.01 / 100) * $maxPossible, 0 , PHP_ROUND_HALF_UP);
+					// Change current post to 0.5 to 2.5% lower.
+					$currentPost = round($currentPost / (mt_rand(1005, 1025) / 1000), 0 , PHP_ROUND_HALF_UP);
 					if ($currentPost <= $groupData['first']) {
 						break;
 					}
 				}
 			} else {
-				$currentPost += round((1.01 / 100) * $minPossible, 0 , PHP_ROUND_HALF_UP);
+				// Change current post to 0.5 to 2.5% higher.
+				$currentPost += round((mt_rand(1005, 1025) / 1000) * $currentPost, 0 , PHP_ROUND_HALF_UP);
 				if ($currentPost >= $groupData['last']) {
 					break;
 				}
@@ -587,9 +583,9 @@ class Backfill
 		// The total number of articles in this group.
 		$totalnumberofarticles = $data['last'] - $data['first'];
 
-		//The newest article.
+		// The newest article in the group.
 		$upperbound = $data['last'];
-		// The oldest article.
+		// The oldest article in the group.
 		$lowerbound = $data['first'];
 
 		if ($this->debug) {
@@ -605,16 +601,6 @@ class Backfill
 				date('r', $goaldate)
 				.')',
 				5);
-		}
-
-		if ($data['last'] == PHP_INT_MAX) {
-
-			$dMessage = "Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug.\n";
-
-			if ($this->debug) {
-				$this->debugging->start("daytopost", $dMessage, 1);
-			}
-			exit($this->c->info($dMessage));
 		}
 
 		// The servers oldest date.
@@ -673,8 +659,8 @@ class Backfill
 				5);
 		}
 
+		// Half of total groups articles.
 		$interval = floor(($upperbound - $lowerbound) * 0.5);
-		$templowered = '';
 		$dateofnextone = $lastDate;
 
 		if ($this->debug) {
@@ -689,39 +675,68 @@ class Backfill
 				5);
 		}
 
+		$firstTries = $middleTries = $endTries = 0;
+		$done = false;
 		// Loop until wanted days is bigger than found days.
-		while ($this->daysOld($dateofnextone) < $days) {
+		while (!$done) {
 
-			while (($tmpDate = $this->postdate(($upperbound - $interval), $data)) > $goaldate) {
-				$upperbound = $upperbound - $interval;
+			// Keep going half way from oldest to newest article, trying to get a date until we have a date newer than the goal.
+			$tmpDate =$this->postdate(($upperbound - $interval), $data);
+			if (round($tmpDate) >= $goaldate || $firstTries++ >= 30) {
 
-				if ($this->debug) {
-					$this->debugging->start(
-						"daytopost",
-						'New upperbound: ' .
-						number_format($upperbound) .
-						' is ' .
-						$this->daysOld($tmpDate) .
-						' days old.',
-						5);
+				// Now we found a date newer than the goal, so try going back older (in smaller steps) until we get closer to the target date.
+				while (true) {
+					$interval = ceil(($interval * 1.08));
+					if ($this->debug) {
+						$this->debugging->start(
+							"daytopost",
+							'Increased interval to: (' .
+							number_format($interval) .
+							') articles, article ' .
+							($upperbound - $interval),
+							5);
+					}
+
+					$tmpDate =$this->postdate(($upperbound - $interval), $data);
+
+					// Go newer again, in even smaller steps.
+					if (round($tmpDate) <= $goaldate || $middleTries++ >= 20) {
+						while (true) {
+							$interval = ceil(($interval / 1.008));
+							if ($this->debug) {
+								$this->debugging->start(
+									"daytopost",
+									'Increased interval to: (' .
+									number_format($interval) .
+									') articles, article ' .
+									($upperbound - $interval),
+									5);
+							}
+
+							$tmpDate =$this->postdate(($upperbound - $interval), $data);
+							if (round($tmpDate) >= $goaldate || $endTries++ > 10) {
+								$dateofnextone = $tmpDate;
+								$upperbound = ($upperbound - $interval);
+								$done = true;
+								break;
+							}
+						}
+					}
+					if ($done) {
+						break;
+					}
 				}
-			}
-
-			if (!$templowered) {
+			} else {
 				$interval = ceil(($interval / 2));
 				if ($this->debug) {
 					$this->debugging->start(
 						"daytopost",
-						'Checking interval at: (' .
+						'Reduced interval to: (' .
 						number_format($interval) .
-						') articles.',
+						') articles, article ' .
+						($upperbound - $interval),
 						5);
 				}
-			}
-
-			$dateofnextone = $this->postdate(($upperbound - 1), $data);
-			while (!$dateofnextone) {
-				$dateofnextone = $this->postdate(($upperbound - 1), $data);
 			}
 		}
 
@@ -765,9 +780,8 @@ class Backfill
 	 */
 	public function getRange($group, $first, $last, $threads)
 	{
-		$groups = new Groups();
 		$binaries = new Binaries($this->nntp, $this->echo, $this);
-		$groupArr = $groups->getByName($group);
+		$groupArr = $this->groups->getByName($group);
 		$process = $this->safepartrepair ? 'update' : 'backfill';
 
 		if ($this->echo) {
@@ -824,8 +838,7 @@ class Backfill
 	 */
 	public function getFinal($group, $first, $type)
 	{
-		$groups = new Groups();
-		$groupArr = $groups->getByName($group);
+		$groupArr = $this->groups->getByName($group);
 
 		// Select group, here, only once
 		$data = $this->nntp->selectGroup($groupArr['name']);

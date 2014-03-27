@@ -786,6 +786,8 @@ class Net_NNTP_Protocol_Client extends PEAR
 				if ($this->_logger) {
 					$this->_logger->info('Connection closed.');
 				}
+				$this->_currentStatusResponse = null;
+				$this->_socket = null;
 				return true;
 				break;
 

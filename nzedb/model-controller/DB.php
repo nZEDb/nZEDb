@@ -24,7 +24,7 @@ class DB extends PDO
 	/**
 	 * @var string Lower-cased name of DBMS in use.
 	 */
-	public $dbSystem;
+	protected $dbSystem;
 
 	/**
 	 * @var bool	Whether memcache is enabled.
@@ -306,7 +306,7 @@ class DB extends PDO
 					) &&
 				$i <= 10
 			) {
-				$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping.", 'queryExec', 4);
+				$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping. ($i)", 'queryExec', 4);
 				$this->consoletools->showsleep($i * $i);
 				$this->queryExec($query, $i++);
 			}
@@ -534,7 +534,9 @@ class DB extends PDO
 						if ($admin === false) {
 							$message = 'Analyzing table: ' . $table['name'];
 							echo $this->c->primary($message);
-							$this->debugging->start("optimise", $message, 5);
+							if ($this->debug) {
+								$this->debugging->start("optimise", $message, 5);
+							}
 						}
 						$this->queryExec('ANALYZE LOCAL TABLE `' . $table['name'] . '`');
 					} else {
@@ -825,7 +827,9 @@ class DB extends PDO
 		try {
 			$PDOstatement = self::$pdo->prepare($query, $options);
 		} catch (PDOException $e) {
-			$this->debugging->start("Prepare", $e->getMessage(), 5);
+			if ($this->debug) {
+				$this->debugging->start("Prepare", $e->getMessage(), 5);
+			}
 			echo $this->c->error("\n" . $e->getMessage());
 			$PDOstatement = false;
 		}
@@ -845,7 +849,9 @@ class DB extends PDO
 			try {
 				$result = self::$pdo->getAttribute($attribute);
 			} catch (PDOException $e) {
-				$this->debugging->start("getAttribute", $e->getMessage(), 5);
+				if ($this->debug) {
+					$this->debugging->start("getAttribute", $e->getMessage(), 5);
+				}
 				echo $this->c->error("\n" . $e->getMessage());
 				$result = false;
 			}

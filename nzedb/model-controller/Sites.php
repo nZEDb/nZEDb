@@ -1,5 +1,5 @@
 <?php
-require_once realpath(__DIR__ . DIRECTORY_SEPARATOR . 'Util.php');
+require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 
 class Sites
 {
@@ -18,25 +18,24 @@ class Sites
 	const ERR_BAD_COVERS_PATH = -9;
 
 	protected $_db;
-	protected $_versions;
-	protected $_versionSuccess;
+	protected $_versions = false;
 
 	public function __construct()
 	{
 		$this->_db = new DB();
-		$this->_versionSuccess = false;
-		try {
-			$this->_versions = new \nzedb\utility\Versions();
-			$this->_versionSuccess = true;
-		} catch (Exception $e) {
-			//echo $e->getMessage() . PHP_EOL;
+		if (defined('nZEDb_VERSIONS')) {
+			try {
+				$this->_versions = new \nzedb\utility\Versions(nZEDb_VERSIONS);
+			} catch (Exception $e) {
+				$this->_versions = false;
+			}
 		}
 		$this->setCovers();
 	}
 
 	public function version()
 	{
-		return ($this->_versionSuccess ? $this->_versions->getTagVersion() : '0.3');
+		return ($this->_versions === false ? '0.0.0' : $this->_versions->getTagVersion());
 	}
 
 	public function update($form)
@@ -104,6 +103,32 @@ class Sites
 		}
 
 		return $this->rows2Object($rows);
+	}
+
+	/**
+	 * Retrieve one or all settings from the Db as a string or an array;
+	 *
+	 * @param null $setting	Name of setting to retrieve, or null for all settings
+	 *
+	 * @return string|array|bool
+	 */
+	function getSetting($setting = null)
+	{
+		$sql = 'SELECT setting, value FROM site ';
+		if ($setting !== null) {
+			$sql .= "WHERE setting = '$setting' ";
+		}
+		$sql .= 'ORDER BY setting';
+
+		$result = $this->_db->queryArray($sql);
+		if ($result !== false) {
+			foreach($result as $row) {
+				$results[$row['setting']] = $row['value'];
+			}
+
+		}
+
+		return (count($results) === 1 ? $results[$setting] : $results);
 	}
 
 	public function rows2Object($rows)

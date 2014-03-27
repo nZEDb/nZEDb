@@ -1,6 +1,6 @@
 <?php
 
-require_once nZEDb_LIB . 'Util.php';
+require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 require_once nZEDb_LIBS . 'rarinfo/zipinfo.php';
@@ -655,13 +655,6 @@ class PostProcess
 	 */
 	public function processAdditional($nntp, $releaseToWork = '', $groupID = '')
 	{
-
-		if (!isset($nntp)) {
-			exit($this->c->error("Not connected to usenet(PostProcess->processAdditional).\n"));
-		}
-
-		$totResults = null;
-		$passwordStatus = -6;
 		$groupID = ($groupID === '' ? '' : 'AND groupid = ' . $groupID);
 
 		// Get out all releases which have not been checked more than max attempts for password.
@@ -706,7 +699,7 @@ class PostProcess
 					$totResults += $currentCount;
 
 					// Echo how many we got for this query.
-					$this->doEcho('Passwordstatus = ' . $i . ': Available to process = ' .$currentCount);
+					$this->doEcho('Passwordstatus = ' . $i . ': Available to process = ' . $currentCount);
 				}
 				$i++;
 			}
@@ -746,10 +739,13 @@ class PostProcess
 
 			// Loop through the releases.
 			foreach ($result as $rel) {
-				if ($this->echooutput && $releaseToWork === '') {
-					echo "[" . $this->c->primaryOver($startCount--) . ']';
-				} else if ($this->echooutput) {
-					echo '[' . $this->c->primaryOver($rel['id']) . ']';
+				if ($this->echooutput) {
+					echo "[" . $this->c->primaryOver(
+							($releaseToWork === ''
+								? $startCount--
+								: $rel['id']
+							) . '(' . $this->readableBytesString($rel['size']) . ')'
+						) . ']';
 				}
 
 				$this->debugging->start('processAdditional', 'Processing ' . $rel['searchname'], 5);
@@ -975,22 +971,8 @@ class PostProcess
 							$this->sum = $this->sum + $this->adj * $this->segsize;
 							if ($this->sum > $this->size || $this->adj === 0) {
 
-								// Get the message-id's we want. If we failed previously, try getting different M-ID's.
-								if ($failed > 0) {
-									$segments = count($rarFile['segments']);
-									if ($segments > $failed) {
-										$mID =
-											array_slice(
-												(array) $rarFile['segments'],
-												$failed,
-												(($this->segmentsToDownload + $failed) > $segments ? $segments : $this->segmentsToDownload)
-											);
-									} else {
-										$mID = array_slice((array) $rarFile['segments'], 0, $this->segmentsToDownload);
-									}
-								} else {
-									$mID = array_slice((array) $rarFile['segments'], 0, $this->segmentsToDownload);
-								}
+								// Get message-id's for the rar file.
+								$mID = array_slice((array) $rarFile['segments'], 0, $this->segmentsToDownload);
 
 								// Download the article(s) from usenet.
 								$fetchedBinary = $nntp->getMessages($groupName, $mID, $this->alternateNNTP);
@@ -1402,6 +1384,32 @@ class PostProcess
 		}
 
 		unset($rar, $nzbContents);
+	}
+
+	/**
+	 * Convert bytes to kb/mb/gb/tb and return in human readable format.
+	 *
+	 * @param int $bytes
+	 *
+	 * @return string
+	 */
+	protected function readableBytesString($bytes)
+	{
+		$kb = 1024;
+		$mb = $kb * $kb;
+		$gb = $kb * $mb;
+		$tb = $kb * $gb;
+		if ($bytes < $kb) {
+			return $bytes . 'B';
+		} else if ($bytes < ($mb)) {
+			return round($bytes / $kb, 1) . 'KB';
+		} else if ($bytes < $gb) {
+			return round($bytes / $mb, 1) . 'MB';
+		} else if ($bytes < $tb) {
+			return round($bytes / $gb, 1) . 'GB';
+		} else {
+			return round($bytes / $tb, 1) . 'TB';
+		}
 	}
 
 	/**
@@ -2031,8 +2039,11 @@ class PostProcess
 		$category = new Category();
 		$musicParent = (string)Category::CAT_PARENT_MUSIC;
 		// Make sure the category is music or other->misc.
-		$rQuery = $this->db->queryOneRow(sprintf(
-			'SELECT searchname, categoryid as id, groupid FROM releases WHERE proc_pp = 0 AND id = %d', $releaseID));
+		$rQuery = $this->db->queryOneRow(
+			sprintf(
+				'SELECT searchname, categoryid as id, groupid FROM releases WHERE proc_pp = 0 AND id = %d', $releaseID
+			)
+		);
 		if (!preg_match(
 			'/^' .
 			$musicParent[0].
@@ -2108,7 +2119,7 @@ class PostProcess
 											") Group:(" . $rQuery['groupid'] .
 											") Method:(" . 'PostProccess getAudioInfo' .
 											") ReleaseID:(" . $releaseID . ')'
-										, 5);
+											, 5);
 
 										// Add the media info.
 										$this->releaseExtra->addFromXml($releaseID, $xmlArray);
@@ -2272,10 +2283,10 @@ class PostProcess
 
 							// Try to resize/move the image.
 							$saved = $this->releaseImage->saveImage(
-									$releaseGUID . '_thumb',
-									$this->tmpPath .$file,
-									$this->releaseImage->imgSavePath, 800, 600
-								);
+								$releaseGUID . '_thumb',
+								$this->tmpPath .$file,
+								$this->releaseImage->imgSavePath, 800, 600
+							);
 
 							// Delete the temp file we created.
 							@unlink($this->tmpPath . $fileName);

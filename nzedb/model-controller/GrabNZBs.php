@@ -9,7 +9,7 @@ class GrabNZBs
 		$this->db = new DB();
 		$s = new Sites();
 		$this->site = $s->get();
-		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
+		$this->tablepergroup = (isset($this->site->tablepergroup)) ? (int)$this->site->tablepergroup : 0;
 		$this->replacenzbs = (isset($this->site->replacenzbs)) ? $this->site->replacenzbs : 0;
 		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
 		$this->ReleaseCleaning = new ReleaseCleaning();
@@ -201,7 +201,7 @@ class GrabNZBs
 				}
 
 				// Set table names
-				if ($this->tablepergroup == 1) {
+				if ($this->tablepergroup === 1) {
 					$group = array();
 					$group['cname'] = 'collections_' . $realgroupid;
 					$group['bname'] = 'binaries_' . $realgroupid;

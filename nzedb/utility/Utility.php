@@ -151,10 +151,12 @@ function checkStatus($code)
  * @param string $postdata  If using POST, post your POST data here.
  * @param string $language  Use alternate langauge in header.
  * @param bool   $debug     Show debug info.
+ * @param string $userAgent User agent.
+ * @param string $cookie    Cookie.
  *
  * @return bool|mixed
  */
-function getUrl($url, $method = 'get', $postdata = '', $language = "", $debug = false)
+function getUrl($url, $method = 'get', $postdata = '', $language = "", $debug = false, $userAgent = '', $cookie = '')
 {
 	switch($language) {
 		case 'fr':
@@ -165,8 +167,10 @@ function getUrl($url, $method = 'get', $postdata = '', $language = "", $debug = 
 		case 'de-de':
 			$language = "de-de";
 			break;
-		case '':
 		case 'en':
+			$language = 'en';
+			break;
+		case '':
 		case 'en-us':
 		default:
 			$language = "en-us";
@@ -183,27 +187,35 @@ function getUrl($url, $method = 'get', $postdata = '', $language = "", $debug = 
 		CURLOPT_SSL_VERIFYPEER => false,
 		CURLOPT_SSL_VERIFYHOST => false,
 	);
+	curl_setopt_array($ch, $options);
+
+	if ($userAgent !== '') {
+		curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
+	}
+
+	if ($cookie !== '') {
+		curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+	}
 
 	if ($method === 'post') {
-		$options = array_merge(array(
-				CURLOPT_POST       => 1,
-				CURLOPT_POSTFIELDS => $postdata
-			), $options
+		$options = array(
+			CURLOPT_POST       => 1,
+			CURLOPT_POSTFIELDS => $postdata
 		);
+		curl_setopt_array($ch, $options);
 	}
 
 	if ($debug) {
-		$options = array_merge($options,
+		$options =
 			array(
-				CURLOPT_HEADER      => true,
-				CURLINFO_HEADER_OUT => true,
-				CURLOPT_NOPROGRESS  => false,
-				CURLOPT_VERBOSE     => true
-			)
+			CURLOPT_HEADER      => true,
+			CURLINFO_HEADER_OUT => true,
+			CURLOPT_NOPROGRESS  => false,
+			CURLOPT_VERBOSE     => true
 		);
+		curl_setopt_array($ch, $options);
 	}
 
-	curl_setopt_array($ch, $options);
 	$buffer = curl_exec($ch);
 	$err = curl_errno($ch);
 	curl_close($ch);

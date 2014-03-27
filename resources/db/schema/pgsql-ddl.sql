@@ -651,8 +651,8 @@ CREATE SEQUENCE "country_id_seq" INCREMENT BY 1
 SELECT pg_catalog.setval('country_id_seq', 1, true);
 
 -- Table: country
-DROP TABLE IF EXISTS "country" CASCADE;
-CREATE TABLE "country" (
+DROP TABLE IF EXISTS "countries" CASCADE;
+CREATE TABLE "countries" (
   "id" bigint DEFAULT nextval('country_id_seq'::regclass) NOT NULL,
   "name" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "code" character varying(2) NOT NULL

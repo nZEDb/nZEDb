@@ -956,7 +956,7 @@ INSERT INTO tmux (setting, value) VALUES ('defrag_cache', '900'),
 ('showprocesslist', '0'),
 ('processupdate', '2');
 
-INSERT INTO country (code, name) VALUES ('AF', 'Afghanistan'),
+INSERT INTO countries (code, name) VALUES ('AF', 'Afghanistan'),
 ('AX', 'Aland Islands'),
 ('AL', 'Albania'),
 ('DZ', 'Algeria'),
