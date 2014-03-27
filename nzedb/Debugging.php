@@ -84,6 +84,12 @@ class Debugging
 	private $debugMessage = '';
 
 	/**
+	 * Severity level.
+	 * @var string
+	 */
+	private $severity = '';
+
+	/**
 	 * "\n" for unix, "\r\n" for windows.
 	 * @var string
 	 */
@@ -194,7 +200,7 @@ class Debugging
 		$actualUsage = ($oldUsage > 0 ? $currentUsage - $oldUsage : $currentUsage);
 
 		$units = [
-			'B',
+			'B  ',
 			'KiB',
 			'MiB',
 			'GiB',
@@ -202,20 +208,24 @@ class Debugging
 			'PiB'
 		];
 		return
-			round(
-				$actualUsage
-				/
-				pow(
-					1024,
-					($i =
-						floor(
-							log(
-								$actualUsage,
-								1024
+			str_pad(
+				number_format(
+					round(
+						$actualUsage
+						/
+						pow(
+							1024,
+							($i =
+								floor(
+									log(
+										$actualUsage,
+										1024
+									)
+								)
 							)
-						)
+						), 2
 					)
-				), 2
+				), 3, '~~', STR_PAD_LEFT
 			) .
 			$units[(int)$i];
 	}
@@ -228,7 +238,7 @@ class Debugging
 	public function getSystemLoad()
 	{
 		if (!$this->isWindows) {
-			return implode(', ', sys_getloadavg());
+			return str_pad(implode(',', sys_getloadavg()), 14, ' ', STR_PAD_LEFT);
 		}
 		return false;
 	}
@@ -308,7 +318,7 @@ class Debugging
 	 */
 	protected  function formDate()
 	{
-		return date('d/M/Y H:i T');
+		return date('d/M/Y H:i');
 	}
 
 	/**
@@ -487,20 +497,22 @@ class Debugging
 	{
 		$this->debugMessage =
 			// Current date/time ; [02/Mar/2014 14:50 EST
-			'[' . $this->getDate() .
+			'[' . $this->getDate() . ']' .
 
 			// The severity.
-			$this->debugMessage .
+			$this->severity .
+
+			// Average system load.
+			((self::showAverageLoad && !$this->isWindows) ? ' [' . $this->getSystemLoad() . ']' : '') .
+
+			// Script running time.
+			(self::showTimeRunning ? ' [' . $this->formatRunningTime() . ']' : '') .
+
+			// PHP memory usage.
+			(self::showMemoryUsage ? ' [MEM: ' . $this->showMemUsage(0, true) . ']' : '') .
 
 			// The class/function.
-			$this->class . '.' . $method . ']' .
-
-			(self::showTimeRunning ? ' [TIME: ' . $this->formatRunningTime() : '') .
-			// Show memory usage for PHP.
-			(self::showMemoryUsage ? ' [PHP MEM: ' . $this->showMemUsage(0, true) . ']' : '') .
-
-			// Show average load.
-			((self::showAverageLoad && !$this->isWindows) ? ' [LOAD: ' . $this->getSystemLoad() . ']' : '') .
+			' [' . $this->class . '.' . $method . ']' .
 
 			' [' .
 
@@ -527,12 +539,16 @@ class Debugging
 		$timeSpent = time() - $this->timeStart;
 		$time = '';
 		if ($timeSpent > 3600) {
-			$time .= (($timeSpent % 86400) / 3600) . 'H:';
+			$time .= str_pad((($timeSpent % 86400) / 3600), 2, '0', STR_PAD_LEFT) . 'H:';
+		} else {
+			$time .= '00H:';
 		}
 		if ($timeSpent > 60) {
-			$time .= (($timeSpent % 3600) / 60) . 'M:';
+			$time .= str_pad((($timeSpent % 3600) / 60), 2 , '0', STR_PAD_LEFT) . 'M:';
+		} else {
+			$time .= '00M:';
 		}
-		$time .= ($timeSpent % 60) . 'S]';
+		$time .= str_pad($timeSpent % 60, 2 , '0', STR_PAD_LEFT) . 'S';
 		return $time;
 	}
 
@@ -545,41 +561,40 @@ class Debugging
 	 */
 	protected function checkSeverity($severity)
 	{
-		$this->debugMessage = '';
 		switch ($severity) {
 			case 1:
 				if (nZEDb_LOGFATAL) {
-					$this->debugMessage = '] [FATAL]  [';
+					$this->severity = ' [FATAL]  ';
 					return true;
 				}
 				return false;
 			case 2:
 				if (nZEDb_LOGERROR) {
-					$this->debugMessage = '] [ERROR]  [';
+					$this->severity = ' [ERROR]  ';
 					return true;
 				}
 				return false;
 			case 3:
 				if (nZEDb_LOGWARNING) {
-					$this->debugMessage = '] [WARN]   [';
+					$this->severity = ' [WARN]   ';
 					return true;
 				}
 				return false;
 			case 4:
 				if (nZEDb_LOGNOTICE) {
-					$this->debugMessage = '] [NOTICE] [';
+					$this->severity = ' [NOTICE] ';
 					return true;
 				}
 				return false;
 			case 5:
 				if (nZEDb_LOGINFO) {
-					$this->debugMessage = '] [INFO]   [';
+					$this->severity = ' [INFO]   ';
 					return true;
 				}
 				return false;
 			case 6:
 				if (nZEDb_LOGQUERIES) {
-					$this->debugMessage = '] [SQL]    [';
+					$this->severity = ' [SQL]    ';
 					return true;
 				}
 				return false;
