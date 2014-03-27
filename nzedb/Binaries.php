@@ -475,7 +475,7 @@ class Binaries
 					if ($first + $this->messagebuffer > $grouplast) {
 						$last = $grouplast;
 					} else {
-						$last = $first + $this->messagebuffer;
+						$last = (int)$first + $this->messagebuffer;
 					}
 				}
 				$first++;
@@ -632,15 +632,6 @@ class Binaries
 			$group['cname'] = 'collections';
 			$group['bname'] = 'binaries';
 			$group['pname'] = 'parts';
-		}
-
-		// Select the group before attempting to download
-		$data = $this->nntp->selectGroup($groupArr['name']);
-		if ($this->nntp->isError($data)) {
-			$data = $this->nntp->dataError($this->nntp, $groupArr['name']);
-			if ($this->nntp->isError($data)) {
-				return false;
-			}
 		}
 
 		// Download the headers.
