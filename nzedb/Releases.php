@@ -858,21 +858,19 @@ class Releases
 
 		if (count($words) > 0) {
 			if ($type === 'name' || $type === 'searchname') {
-				//at least 1 term needs to be mandatory
-//				if (!preg_match('/[+|!]/', $search)) {
-//					$search = '+' . $search;
-//					$words = explode(' ', $search);
-//				}
+
 				foreach ($words as $word) {
 					$word = trim(rtrim(trim($word), '-'));
 					$word = str_replace('!', '+', $word);
+					$word = str_replace("'", "\\'", $word);
 
 					if ($word !== '' && $word !== '-' && strlen($word) >= 2) {
 						$searchwords .= sprintf('%s ', $word);
 					}
 				}
 				$searchwords = '"' . trim($searchwords) . '"';
-				$searchsql .= sprintf(" AND MATCH(rs.name, rs.searchname) AGAINST('%s' IN BOOLEAN MODE)", $searchwords);
+				$searchsql .= sprintf(" AND MATCH(rs.name, rs.searchname) AGAINST('%s' IN BOOLEAN MODE)",
+					$searchwords);
 			}
 			if ($searchwords === '') {
 				$words = explode(' ', $search);
