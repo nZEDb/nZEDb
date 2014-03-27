@@ -78,52 +78,36 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 				elif data.startswith("XFEATURE"):
 					self.wfile.write("290 feature enabled\r\n")
 				elif data.startswith("GROUP"):
-					try:
-						total, first, last, group = nntp_client.group(data.split(None, 1)[1])
-						self.wfile.write("211 %d %d %d %s\r\n" % (total, first, last, group))
-					except Exception as e:
-						print(bcolors.ERROR + str(e) + bcolors.ENDC)
-						self.wfile.write(str(e) + "\r\n")
+					total, first, last, group = nntp_client.group(data.split(None, 1)[1])
+					self.wfile.write("211 %d %d %d %s\r\n" % (total, first, last, group))
 				elif data.startswith("XOVER"):
-					try:
-						rng = data.split(None, 1)[1]
-						rng = tuple(map(int, rng.split("-")))
-						xover_gen = nntp_client.xover_gen(rng)
-						self.wfile.write("224 data follows\r\n")
-						for entry in xover_gen:
-							self.wfile.write("\t".join(entry) + "\r\n")
-						self.wfile.write(".\r\n")
-					except Exception as e:
-						print(bcolors.ERROR + str(e) + bcolors.ENDC)
-						self.wfile.write(str(e) + "\r\n")
+					rng = data.split(None, 1)[1]
+					rng = tuple(map(int, rng.split("-")))
+					xover_gen = nntp_client.xover_gen(rng)
+					self.wfile.write("224 data follows\r\n")
+					for entry in xover_gen:
+						self.wfile.write("\t".join(entry) + "\r\n")
+					self.wfile.write(".\r\n")
 				elif data.startswith("ARTICLE"):
-					try:
-						msgid = data.split(None, 1)[1]
-						article = nntp_client.article(msgid, False)
-						# check no of return values for compatibility with pynntp<=0.8.3
-						if len(article) == 2:
-							articleno, head, body = 0, article[0], article[1]
-						else:
-							articleno, head, body = article
-						self.wfile.write("220 %d %s\r\n" % (articleno, msgid))
-						head = "\r\n".join([": ".join(item) for item in head.items()]) + "\r\n\r\n"
-						self.wfile.write(head)
-						self.wfile.write(body.replace("\r\n.", "\r\n.."))
-						self.wfile.write(".\r\n")
-					except Exception as e:
-						print(bcolors.ERROR + str(e) + bcolors.ENDC)
-						self.wfile.write(str(e) + "\r\n")
+					msgid = data.split(None, 1)[1]
+					article = nntp_client.article(msgid, False)
+					# check no of return values for compatibility with pynntp<=0.8.3
+					if len(article) == 2:
+						articleno, head, body = 0, article[0], article[1]
+					else:
+						articleno, head, body = article
+					self.wfile.write("220 %d %s\r\n" % (articleno, msgid))
+					head = "\r\n".join([": ".join(item) for item in head.items()]) + "\r\n\r\n"
+					self.wfile.write(head)
+					self.wfile.write(body.replace("\r\n.", "\r\n.."))
+					self.wfile.write(".\r\n")
 				elif data.startswith("HEAD"):
-					try:
-						msgid = data.split(None, 1)[1]
-						head = nntp_client.head(msgid)
-						self.wfile.write("221 %s\r\n" % (msgid))
-						head = "\r\n".join([": ".join(item) for item in head.items()]) + "\r\n\r\n"
-						self.wfile.write(head)
-						self.wfile.write(".\r\n")
-					except Exception as e:
-						print(bcolors.ERROR + str(e) + bcolors.ENDC)
-						self.wfile.write(str(e) + "\r\n")
+					msgid = data.split(None, 1)[1]
+					head = nntp_client.head(msgid)
+					self.wfile.write("221 %s\r\n" % (msgid))
+					head = "\r\n".join([": ".join(item) for item in head.items()]) + "\r\n\r\n"
+					self.wfile.write(head)
+					self.wfile.write(".\r\n")
 				elif data.startswith("BODY"):
 					msgid = data.split(None, 1)[1]
 					try:
@@ -135,35 +119,24 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 						print(bcolors.ERROR + str(e) + bcolors.ENDC)
 						self.wfile.write(str(e) + "\r\n")
 				elif data.startswith("LIST OVERVIEW.FMT"):
-					try:
-						fmt = nntp_client.list_overview_fmt()
-						self.wfile.write("215 Order of fields in overview database.\r\n")
-						fmt = "\r\n".join(["%s:%s" % (f[0], "full" if f[1] else "") for f in fmt]) + "\r\n"
-						self.wfile.write(fmt)
-						self.wfile.write(".\r\n")
-					except Exception as e:
-						print(bcolors.ERROR + str(e) + bcolors.ENDC)
-						self.wfile.write(str(e) + "\r\n")
+					fmt = nntp_client.list_overview_fmt()
+					self.wfile.write("215 Order of fields in overview database.\r\n")
+					fmt = "\r\n".join(["%s:%s" % (f[0], "full" if f[1] else "") for f in fmt]) + "\r\n"
+					self.wfile.write(fmt)
+					self.wfile.write(".\r\n")
 				elif data == "LIST":
-					try:
-						list_gen = nntp_client.list_gen()
-						self.wfile.write("215 list of newsgroups follows\r\n")
-						for entry in list_gen:
-							self.wfile.write("%s %d %d %s\r\n" % entry)
-						self.wfile.write(".\r\n")
-					except Exception as e:
-						print(bcolors.ERROR + str(e) + bcolors.ENDC)
-						self.wfile.write(str(e) + "\r\n")
+					list_gen = nntp_client.list_gen()
+					self.wfile.write("215 list of newsgroups follows\r\n")
+					for entry in list_gen:
+						self.wfile.write("%s %d %d %s\r\n" % entry)
+					self.wfile.write(".\r\n")
 				elif data.startswith("LIST ACTIVE") and not data.startswith("LIST ACTIVE.TIMES"):
-					try:
-						pattern = data[11:].strip() or None
-						active_gen = nntp_client.list_active_gen(pattern)
-						self.wfile.write("215 list of newsgroups follows\r\n")
-						for entry in active_gen:
-							self.wfile.write("%s %d %d %s\r\n" % entry)
-						self.wfile.write(".\r\n")
-					except Exception as e:
-						print(bcolors.ERROR + str(e) + bcolors.ENDC)
+					pattern = data[11:].strip() or None
+					active_gen = nntp_client.list_active_gen(pattern)
+					self.wfile.write("215 list of newsgroups follows\r\n")
+					for entry in active_gen:
+						self.wfile.write("%s %d %d %s\r\n" % entry)
+					self.wfile.write(".\r\n")
 						self.wfile.write(str(e) + "\r\n")
 				elif data.startswith("QUIT"):
 					self.wfile.write("205 Connection closing\r\n")
