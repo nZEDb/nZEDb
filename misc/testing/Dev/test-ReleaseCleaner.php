@@ -29,7 +29,7 @@ $db = new DB();
 $group = $db->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $db->escapeString($argv[1])));
 
 if ($group === false) {
-	exit('No group with name ' . $argv[2] . ' found in the database.');
+	exit('No group with name ' . $argv[1] . ' found in the database.');
 }
 
 $releases = $db->query(sprintf('SELECT name, searchname, id FROM releases WHERE groupid = %d ORDER BY postdate LIMIT %d', $group['id'], $argv[2]));
