@@ -744,7 +744,7 @@ class PostProcess
 							($releaseToWork === ''
 								? $startCount--
 								: $rel['id']
-							) . '(' . $this->readableBytesString($rel['size']) . ')'
+							) . '][' . $this->readableBytesString($rel['size'])
 						. ']');
 				}
 
