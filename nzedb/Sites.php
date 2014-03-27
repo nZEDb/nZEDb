@@ -24,7 +24,11 @@ class Sites
 	{
 		$this->_db = new DB();
 		if (defined('nZEDb_VERSIONS')) {
-			$this->_versions = new \nzedb\utility\Versions(nZEDb_VERSIONS);
+			try {
+				$this->_versions = new \nzedb\utility\Versions(nZEDb_VERSIONS);
+			} catch (Exception $e) {
+				$this->_versions = false;
+			}
 		}
 		$this->setCovers();
 	}
