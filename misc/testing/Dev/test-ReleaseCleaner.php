@@ -11,7 +11,7 @@ $message =
 if ($argc < 5) {
 	exit($message);
 }
-if (!is_numeric($argv[2]) || !is_numeric($argv[4]) || strlen($argv[4]) !== 4) {
+if (!is_numeric($argv[2]) || !is_numeric($argv[4])) {
 	exit($message);
 }
 if (!in_array($argv[3], array('true', 'false'))) {
@@ -19,7 +19,7 @@ if (!in_array($argv[3], array('true', 'false'))) {
 }
 
 $category = '';
-if ($argv[4] !== '0') {
+if ($argv[4] !== '0' && strlen($argv[4]) === 4) {
 	$category = 'AND categoryid = ' . $argv[4];
 }
 
