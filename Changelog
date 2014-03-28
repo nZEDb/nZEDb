@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2013-03-28 kevin
+	* Fix issue where group would not be reselected on reconnect.
 2014-03-27 bart39
 	* Chg: add guid to releasesearch for future use as per suggestion #1236
 	* Chg: improved fulltext search as there are differences in myisam versus innodb

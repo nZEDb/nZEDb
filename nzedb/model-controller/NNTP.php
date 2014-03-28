@@ -978,6 +978,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function checkConnection($reSelectGroup=true)
 	{
+		$currentGroup = $this->currentGroup;
 		// Check if we are connected.
 		if (parent::_isConnected()) {
 			return true;
@@ -1001,8 +1002,8 @@ class NNTP extends Net_NNTP_Client
 			if ($connected !== true){
 				return $connected;
 			} else {
-				if ($reSelectGroup && $this->currentGroup !== '') {
-					$group = $this->selectGroup($this->currentGroup);
+				if ($reSelectGroup) {
+					$group = $this->selectGroup($currentGroup);
 					if ($this->isError($group)) {
 						return $group;
 					}
