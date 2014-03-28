@@ -66,7 +66,8 @@ if ($file !== false) {
 $page->smarty->assign(
 	array(
 		'data' => $data,
-		'types' => array('all', 'info', 'notice', 'warning', 'error', 'fatal', 'sql')
+		'types' => array('all', 'info', 'notice', 'warning', 'error', 'fatal', 'sql'),
+		'path' => nZEDb_WWW . 'automated.config.php'
 	)
 );
 
