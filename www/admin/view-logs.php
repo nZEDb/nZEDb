@@ -37,8 +37,10 @@ switch($type) {
 		break;
 }
 
-$data = false;
-$file = file($logPath);
+$data = $file = false;
+if (is_file($logPath)) {
+	$file = file($logPath);
+}
 $total = 0;
 if ($file !== false) {
 	rsort($file);
