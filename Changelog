@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-03-28 bart39
+	* Fix: LIMIT in wrong place in release searches
 2013-03-28 kevin
 	* Possibles fixes for msgs not array problem.
 	* Fix issue where group would not be reselected on reconnect.

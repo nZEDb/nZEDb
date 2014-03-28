@@ -858,7 +858,11 @@ class Releases
 
 		if (count($words) > 0) {
 			if ($type === 'name' || $type === 'searchname') {
-
+				//at least 1 term needs to be mandatory
+				if (!preg_match('/[+|!]/', $search)) {
+					$search = '+' . $search;
+					$words = explode(' ', $search);
+				}
 				foreach ($words as $word) {
 					$word = trim(rtrim(trim($word), '-'));
 					$word = str_replace('!', '+', $word);
@@ -868,7 +872,8 @@ class Releases
 						$searchwords .= sprintf('%s ', $word);
 					}
 				}
-				$searchwords = '"' . trim($searchwords) . '"';
+				$searchwords = trim($searchwords);
+
 				$searchsql .= sprintf(" AND MATCH(rs.name, rs.searchname) AGAINST('%s' IN BOOLEAN MODE)",
 					$searchwords);
 			}
@@ -1046,15 +1051,16 @@ class Releases
 			INNER JOIN groups ON groups.id = releases.groupid
 			INNER JOIN category c ON c.id = releases.categoryid
 			INNER JOIN category cp ON cp.id = c.parentid
-			WHERE releases.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s LIMIT %d OFFSET %d) r
-			ORDER BY r.%s %s",
+			WHERE releases.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s) r
+			ORDER BY r.%s %s LIMIT %d OFFSET %d",
 			$this->showPasswords(), $searchnamesql, $usenetnamesql, $maxagesql, $posternamesql, $groupIDsql, $sizefromsql,
-			$sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $limit, $offset, $order[0], $order[1]
+			$sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0],
+			$order[1], $limit, $offset
 		);
 		$wherepos = strpos($sql, 'WHERE');
 		$countres = $this->db->queryOneRow(
 			'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' .
-			substr($sql, $wherepos, strpos($sql, 'LIMIT') - $wherepos)
+			substr($sql, $wherepos, strpos($sql, '\)') - $wherepos)
 		);
 		$res = $this->db->query($sql);
 		if (count($res) > 0) {
@@ -1234,7 +1240,7 @@ class Releases
 	public function getSimilarName($name)
 	{
 		$words = str_word_count(str_replace(array('.', '_'), ' ', $name), 2);
-		$firstwords = array_slice($words, 0, 3);
+		$firstwords = array_slice($words, 0, 2);
 		return implode(' ', $firstwords);
 	}
 
