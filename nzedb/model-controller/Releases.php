@@ -848,7 +848,7 @@ class Releases
 	 */
 	public function searchSQL($search, $type)
 	{
-		// If the query starts with a ^ it indicates the search is looking for items which start with the term
+		// If the query starts with a ^ or ! it indicates the search is looking for items which start with the term
 		// still do the fulltext match, but mandate that all items returned must start with the provided word.
 		$words = explode(' ', $search);
 
@@ -859,13 +859,14 @@ class Releases
 		if (count($words) > 0) {
 			if ($type === 'name' || $type === 'searchname') {
 				//at least 1 term needs to be mandatory
-				if (!preg_match('/[+|!]/', $search)) {
+				if (!preg_match('/[+|!|\^]/', $search)) {
 					$search = '+' . $search;
 					$words = explode(' ', $search);
 				}
 				foreach ($words as $word) {
 					$word = trim(rtrim(trim($word), '-'));
 					$word = str_replace('!', '+', $word);
+					$word = str_replace('^', '+', $word);
 					$word = str_replace("'", "\\'", $word);
 
 					if ($word !== '' && $word !== '-' && strlen($word) >= 2) {
@@ -1060,7 +1061,7 @@ class Releases
 		$wherepos = strpos($sql, 'WHERE');
 		$countres = $this->db->queryOneRow(
 			'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' .
-			substr($sql, $wherepos, strpos($sql, '\)') - $wherepos)
+			substr($sql, $wherepos, strrpos($sql, ')') - $wherepos)
 		);
 		$res = $this->db->query($sql);
 		if (count($res) > 0) {
