@@ -221,9 +221,9 @@ class Binaries
 		$this->DoPartRepair = ($this->site->partrepair == '0') ? false : true;
 		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
 		$this->hashcheck = (!empty($this->site->hashcheck)) ? (int)$this->site->hashcheck : 0;
-		$this->messagebuffer = (!empty($this->site->maxmssgs)) ? (int)$this->site->maxmssgs : 20000;
+		$this->messagebuffer = (!empty($this->site->maxmssgs)) ? $this->site->maxmssgs : 20000;
 		$this->NewGroupScanByDays = ($this->site->newgroupscanmethod == '1') ? true : false;
-		$this->NewGroupMsgsToScan = (!empty($this->site->newgroupmsgstoscan)) ? (int)$this->site->newgroupmsgstoscan : 50000;
+		$this->NewGroupMsgsToScan = (!empty($this->site->newgroupmsgstoscan)) ? $this->site->newgroupmsgstoscan : 50000;
 		$this->NewGroupDaysToScan = (!empty($this->site->newgroupdaystoscan)) ? (int)$this->site->newgroupdaystoscan : 3;
 		$this->partrepairlimit = (!empty($this->site->maxpartrepair)) ? (int)$this->site->maxpartrepair : 15000;
 		$this->showdroppedyencparts = (!empty($this->site->showdroppedyencparts)) ? (int)$this->site->showdroppedyencparts : 0;
@@ -347,51 +347,6 @@ class Binaries
 			}
 		}
 
-		// Get first and last part numbers from newsgroup.
-		if ($groupArr['last_record'] == 0) {
-			// For new newsgroups - determine here how far you want to go back using date.
-			if ($this->NewGroupScanByDays) {
-				$first = $this->backfill->daytopost($this->NewGroupDaysToScan, $data);
-				if ($first == '') {
-					if ($this->echo) {
-						$this->c->doEcho($this->c->warning("Skipping group: {$groupName}"), true);
-					}
-					return;
-				}
-			// If not using date, use post count.
-			} else {
-				if ($data['first'] > ($data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer))) {
-					$first = $data['first'];
-				} else {
-					$first = $data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer);
-				}
-			}
-
-			$left = $this->messagebuffer;
-			$last = $grouplast = ($data['last'] - $left);
-		} else {
-			$first = $groupArr['last_record'];
-
-			// Leave 50%+ of the new articles on the server for next run (allow server enough time to actually make parts available).
-			$newcount = $data['last'] - $first;
-
-			if ($newcount > $this->messagebuffer) {
-				// Drop the remaining plus $this->messagebuffer, pick them up on next run
-				if ($newcount < (2 * $this->messagebuffer)) {
-					$left = ($newcount / 2);
-				} else {
-					$remainingcount = $newcount % $this->messagebuffer;
-					$left = $remainingcount + $this->messagebuffer;
-				}
-			} else {
-				$left = ($newcount / 2);
-			}
-		}
-		$last = $grouplast = ($data['last'] - $left);
-		if ($last < $first) {
-			$last= $first;
-		}
-
 		// Generate postdate for first record, for those that upgraded.
 		if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] != '0') {
 
@@ -408,63 +363,88 @@ class Binaries
 			);
 		}
 
-		// Defaults for post record first/last postdate
-		if (is_null($groupArr['first_record_postdate'])) {
-			$first_record_postdate = time();
+		// Get first article we want aka the oldest.
+		if ($groupArr['last_record'] == 0) {
+		// For new newsgroups - determine here how far you want to go back using date.
+			if ($this->NewGroupScanByDays) {
+				$first = $this->backfill->daytopost($this->NewGroupDaysToScan, $data);
+			// If not using date, use post count.
+			} else {
+				// If what we want is lower than the groups first article, set the wanted first to the first.
+				if ($data['first'] > ($data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer))) {
+					$first = $data['first'];
+				// Or else, use the newest article minus how much we should get for new groups.
+				} else {
+					$first = $data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer);
+				}
+			}
+
+			// We will use this to subtract so we leave articles for the next time (in case the server doesn't have them yet)
+			$leaveOver = $this->messagebuffer;
+
+		// If this is not a new group, go from our newest to the servers newest.
 		} else {
-			$first_record_postdate = strtotime($groupArr['first_record_postdate']);
+			// Set our oldest wanted to our newest local article.
+			$first = $groupArr['last_record'];
+
+			// This is how many articles we will grab. (the servers newest minus our newest).
+			$totalCount = $data['last'] - $first;
+
+			// Check if the server has more articles than our loop limit x 2.
+			if ($totalCount > ($this->messagebuffer * 2)) {
+					// Get the remainder of $totalCount / $this->message buffer
+					$leaveOver = round(($totalCount % $this->messagebuffer), 0, PHP_ROUND_HALF_DOWN) + $this->messagebuffer;
+			// Else get half of the available.
+			} else {
+				// Use this to subtract group's newest so we don't grab articles not yet on the server.
+				$leaveOver = round(($totalCount / 2), 0, PHP_ROUND_HALF_DOWN);
+			}
 		}
 
-		if (is_null($groupArr['last_record_postdate'])) {
-			$last_record_postdate = time();
-		} else {
-			$last_record_postdate = strtotime($groupArr['last_record_postdate']);
+		// The last article we want, aka the newest.
+		$last = $groupLast = ($data['last'] - $leaveOver);
+
+		// If the newest we want is older than the oldest we want somehow.. set them equal.
+		if ($last < $first) {
+			$last = $groupLast = $first;
 		}
 
-		// Calculate total number of parts.
-		$total = $grouplast - $first;
-		$realtotal = $data['last'] - $first;
+		// This is how many articles we are going to get.
+		$total = $groupLast - $first;
+		// This is how many articles are available (without $leaveOver).
+		$realTotal = $data['last'] - $first;
 
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if ($total > 0) {
 			if ($this->echo) {
-				if ($groupArr['last_record'] == 0) {
-					$this->c->doEcho(
-						$this->c->primary(
-							'New group ' .
-							$data['group'] .
-							' starting with ' .
-							(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan
-								. ' days' : number_format($this->NewGroupMsgsToScan) .
-								' messages'
-							) .
-							" worth. Leaving " .
-							number_format($left) .
-							" for next pass.\nServer oldest: " .
-							number_format($data['first']) .
-							' Server newest: ' .
-							number_format($data['last']) .
-							' Local newest: ' .
-							number_format($groupArr['last_record']), true
-						)
-					);
-				} else {
-					$this->c->doEcho(
-						$this->c->primary(
-							'Group ' .
-							$data['group'] .
-							' has ' .
-							number_format($realtotal) .
-							" new articles. Leaving " .
-							number_format($left) .
-							" for next pass.\nServer oldest: " .
-							number_format($data['first']) . ' Server newest: ' .
-							number_format($data['last']) .
-							' Local newest: ' .
-							number_format($groupArr['last_record']), true
-						)
-					);
-				}
+				$this->c->doEcho(
+					$this->c->primary(
+						($groupArr['last_record'] == 0
+							?
+								'New group ' .
+								$data['group'] .
+								' starting with ' .
+								(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan
+									. ' days' : number_format($this->NewGroupMsgsToScan) .
+									' messages'
+								) .
+								" worth."
+							:
+								'Group ' .
+								$data['group'] .
+								' has ' .
+								number_format($realTotal) .
+								" new articles."
+						) .
+						" Leaving "  .
+						number_format($leaveOver) .
+						" for next pass.\nServer oldest: " .
+						number_format($data['first']) . ' Server newest: ' .
+						number_format($data['last']) .
+						' Local newest: ' .
+						number_format($groupArr['last_record']), true
+					)
+				);
 			}
 
 			$done = false;
@@ -472,12 +452,13 @@ class Binaries
 			while ($done === false) {
 
 				if ($total > $this->messagebuffer) {
-					if ($first + $this->messagebuffer > $grouplast) {
-						$last = $grouplast;
+					if ($first + $this->messagebuffer > $groupLast) {
+						$last = $groupLast;
 					} else {
-						$last = (int)$first + $this->messagebuffer;
+						$last = $first + $this->messagebuffer;
 					}
 				}
+				// Increment first so we don't get an article we already had.
 				$first++;
 
 				if ($this->echo) {
@@ -491,7 +472,7 @@ class Binaries
 							') from ' .
 							str_replace('alt.binaries', 'a.b', $data['group']) .
 							" - (" .
-							number_format($grouplast - $last) .
+							number_format($groupLast - $last) .
 							" articles in queue)."
 						)
 					);
@@ -547,7 +528,7 @@ class Binaries
 					)
 				);
 
-				if ($last == $grouplast) {
+				if ($last == $groupLast) {
 					$done = true;
 				} else {
 					$first = $last;
@@ -635,7 +616,7 @@ class Binaries
 		}
 
 		// Download the headers.
-		$msgs = $this->nntp->getOverview((int)$first . "-" . (int)$last, true, false);
+		$msgs = $this->nntp->getOverview($first . "-" . $last, true, false);
 
 		// If there were an error, try to reconnect.
 		if ($this->nntp->isError($msgs)) {
@@ -646,7 +627,7 @@ class Binaries
 			}
 
 			$this->nntp->selectGroup($groupArr['name']);
-			$msgs = $this->nntp->getOverview((int)$first . '-' . (int)$last, true, false);
+			$msgs = $this->nntp->getOverview($first . '-' . $last, true, false);
 			if ($this->nntp->isError($msgs)) {
 				if ($type !== 'partrepair') {
 

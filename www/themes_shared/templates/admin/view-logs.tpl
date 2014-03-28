@@ -23,7 +23,7 @@
 	<br />
 	{$pager}
 {else}
-	<h2>No logs found, try enabling logging in www/automated.config.php</h2>
+	<h3>Nothing found, maybe you need to turn on logging in : {$path}</h3>
 	<select name="logtype" id="logtype" onchange="window.location='{$smarty.const.WWW_TOP}/view-logs.php?t=' + this.value;">
 		{foreach from=$types item=newtype}
 			<option {if $type == $newtype}selected="selected"{/if} value="{$newtype}">
