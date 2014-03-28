@@ -1313,7 +1313,7 @@ while ($i > 0) {
 			}
 
 			//update tv and theaters
-			if (($update_tv == 0) && ((TIME() - $time3 >= $tv_timer) || ($i == 1))) {
+			if (($update_tv == 1) && ((TIME() - $time3 >= $tv_timer) || ($i == 1))) {
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.2 ' \
 						$_phpn ${DIR}update/update_theaters.php $log; $_phpn ${DIR}update/update_tvschedule.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
