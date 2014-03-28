@@ -12,6 +12,7 @@ Each update goes to the top of the file
 2014-03-28 bart39
 	* Fix: LIMIT in wrong place in release searches
 2013-03-28 kevin
+	* Chg: Better categorization/naming of inner-sanctum music.
 	* Fix: Query in releaseremover
 	* Chg: Some changes to categorization.
 	* Add: New blacklist to schemas.
