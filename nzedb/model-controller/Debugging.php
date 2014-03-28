@@ -224,12 +224,12 @@ class Debugging
 		$actualUsage = ($oldUsage > 0 ? $currentUsage - $oldUsage : $currentUsage);
 
 		$units = [
-			'B  ',
-			'KiB',
-			'MiB',
-			'GiB',
-			'TiB',
-			'PiB'
+			'B ',
+			'KB',
+			'MB',
+			'GB',
+			'TB',
+			'PB'
 		];
 		return
 			str_pad(
@@ -249,7 +249,7 @@ class Debugging
 							)
 						), 2
 					)
-				), 3, '~~', STR_PAD_LEFT
+				), 4, '~~~', STR_PAD_LEFT
 			) .
 			$units[(int)$i];
 	}
@@ -281,7 +281,19 @@ class Debugging
 	public function getSystemLoad()
 	{
 		if (!$this->isWindows) {
-			return str_pad(implode(',', sys_getloadavg()), 14, ' ', STR_PAD_LEFT);
+			$string = '';
+			// Fix for single digits (2) or single float (2.1).
+			foreach(sys_getloadavg() as $load) {
+				$strLen = strlen($load);
+				if ($strLen === 1) {
+					$string .= $load . '.00,';
+				} elseif ($strLen === 3) {
+					$string .= str_pad($load, 4, '0', STR_PAD_RIGHT) . ',';
+				} else {
+					$string .= $load . ',';
+				}
+			}
+			return substr($string, 0, -1);
 		}
 		return false;
 	}
@@ -528,6 +540,8 @@ class Debugging
 	 */
 	protected function formMessage($method, $message)
 	{
+		$pid = getmypid();
+
 		$this->debugMessage =
 			// Current date/time ; [02/Mar/2014 14:50 EST
 			'[' . $this->getDate() . '] ' .
@@ -542,10 +556,13 @@ class Debugging
 			(self::showTimeRunning ? ' [' . $this->formatTimeString(time() - $this->timeStart) . ']' : '') .
 
 			// PHP memory usage.
-			(self::showMemoryUsage ? ' [MEM: ' . $this->showMemUsage(0, true) . ']' : '') .
+			(self::showMemoryUsage ? ' [MEM:' . $this->showMemUsage(0, true) . ']' : '') .
 
 			// Resource usage (user time, system time, major page faults, memory swaps).
 			((self::showGetResUsage && !$this->isWindows) ? ' [' . $this->getResUsage() . ']' : '') .
+
+			// Running process ID.
+			($pid ? ' [PID:' . $pid . ']' : '') .
 
 			// The class/function.
 			' [' . $this->class . '.' . $method . ']' .

@@ -25,16 +25,23 @@ if ($connected !== true) {
 
 /** Example: **/
 
-$group = $nntp->selectGroup('alt.binaries.teevee');
+$group = $nntp->selectGroup('alt.binaries.cores');
 if (!$nntp->isError($group)) {
-	$headers = $nntp->getOverview(((int)$group['last'] - 2) . '-' . (int)$group['last']);
+
+	$nntp->getMessages($group['group'],
+		array(
+			'KxNLXZarL1w9UofcwpDr_4o111@JBinUp.local',
+			$group['last']-1,
+			$group['last']
+		)
+	);
+
+	//$nntp->getOverview($group['last']-1 . '-' . $group['last']);
+
 } else {
 	echo 'Error: ' . $group->getMessage() . PHP_EOL;
 }
 
-$nntp->doQuit();
-$nntp->doConnect();
-$nntp->cmdHelp();
 
 /**/
 

@@ -249,7 +249,7 @@ class DB extends PDO
 						$e->getMessage() == 'SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction'
 					) && $i <= 10
 			) {
-				$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping.", 'queryInsert', 4);
+				$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping.($i)", 'queryInsert', 4);
 				$this->consoletools->showsleep($i * $i);
 				$this->queryInsert($query, $i++);
 			}
@@ -306,7 +306,7 @@ class DB extends PDO
 					) &&
 				$i <= 10
 			) {
-				$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping. ($i)", 'queryExec', 4);
+				$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping.($i)", 'queryExec', 4);
 				$this->consoletools->showsleep($i * $i);
 				$this->queryExec($query, $i++);
 			}
