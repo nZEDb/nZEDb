@@ -55,15 +55,14 @@ if ($file !== false) {
 			$data[] = $line;
 		}
 	}
-	if ($data === '') {
+	if (count($data) === 0) {
 		$data = false;
-	}
-	if ($data !== false) {
+	} else {
 		$total = count($data);
 		$data = array_slice($data, $offset, ITEMS_PER_PAGE);
 	}
 }
-$pager = $page->smarty->fetch("pager.tpl");
+
 $page->smarty->assign(
 	array(
 		'data' => $data,
