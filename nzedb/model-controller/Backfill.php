@@ -474,7 +474,7 @@ class Backfill
 			$attempts++;
 
 			// Download a single article.
-			$header = $this->nntp->getOverview((int)$currentPost . "-" . (int)$currentPost, true, false);
+			$header = $this->nntp->getOverview($currentPost . "-" . $currentPost, true, false);
 
 			// Check if the article is missing, if it is, retry downloading it.
 			if (!$this->nntp->isError($header)) {
