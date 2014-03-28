@@ -2303,7 +2303,7 @@ class ReleaseCleaning
 			return $match[1];
 		}
 		//[ f680631754c469e49d3447bf0beadb8e ] [1/8] - "00-chris_carreiro-dirty-web-2014.m3u" yEnc
-		else if (preg_match('/^\[ [a-z0-9]{32} \] \[\d+\/\d+\] - "\d+[-_](.+?)\.[a-z0-9]{3,4}" yEnc$/i', $this->subject, $match)) {
+		else if (preg_match('/^\[ [a-f0-9]{32} \] \[\d+\/\d+\] - "\d+[-_](.+?)\.[a-z0-9]{3,4}" yEnc$/i', $this->subject, $match)) {
 			return $match[1];
 		} else {
 			return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
