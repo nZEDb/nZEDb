@@ -1569,7 +1569,7 @@ class Releases
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$checked = $this->db->queryExec(
 			'UPDATE ' . $group['cname'] . ' c SET filesize =
-									(SELECT SUM(p.size) FROM ' . $group['pname'] . ' p INNER JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id),
+									(SELECT SUM(p.size) FROM ' . $group['pname'] . ' p INNER JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id HAVING count(p.id) > 0),
 									filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0' . $where
 		);
 		if ($checked !== false && $this->echooutput) {
