@@ -22,5 +22,6 @@
 	<li><a href="{$smarty.const.WWW_TOP}/user-list.php">View</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/user-edit.php?action=add">Add</a> Users</li>
 	<li><a href="{$smarty.const.WWW_TOP}/role-list.php">View</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/role-edit.php?action=add">Add</a> Roles</li>
 	<li><a href="{$smarty.const.WWW_TOP}/site-stats.php">Site Stats</a></li>
+	<li><a href="{$smarty.const.WWW_TOP}/view-logs.php">View Logs</a></li>
 	<li><a href="{$smarty.const.WWW_TOP}/tmux-edit.php">Tmux Settings</a>
 </ul>
