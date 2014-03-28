@@ -1549,7 +1549,7 @@ class Category
 	//	Misc, all hash/misc go in other misc.
 	public function isMisc()
 	{
-		if (!preg_match('/\W((480|720|1080)[ip]|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ]))\W/i', $this->releaseName)) {
+		if (!preg_match('/[^a-z0-9]((480|720|1080)[ip]|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ]))[^a-z0-9]/i', $this->releaseName)) {
 			if (preg_match('/[a-z0-9]{20,}/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_MISC;
 				return true;
