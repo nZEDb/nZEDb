@@ -9,6 +9,7 @@ INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, descr
 INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, description) VALUES (8, 'alt.binaries.*','hdnectar|nzbcave', 1, 1, 0, 'Bad releases.');
 INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, description) VALUES (9, 'alt.binaries.*','Passworded', 1, 1, 0, 'Removes passworded releases.');
 INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, description) VALUES (10, 'alt\\.binaries\\.(boneless|movies\\.divx)', '((Frkz|info)@XviD2?|x?VIDZ?@pwrpst|movies@movies?)\\.net|(hsv\\.stoned@hotmail|unequal87@gmail|ilove@movies)\\.com', 2, 1, 0, 'Virus codec posters.');
+INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, description) VALUES (11, 'alt\\.binaries\\.tun','\\[PRiVATE\\]\\s+[a-z0-9]+ ', 1, 1, 0, 'Passworded/Encrypted junk.');
 
 
 INSERT INTO category (id, title) VALUES (1000, 'Console');
