@@ -67,8 +67,9 @@ class IRCScraper
 	 * Main method for scraping.
 	 *
 	 * @param Net_SmartIRC $irc Instance of class Net_SmartIRC
+	 * @param string $servertype efnet | corrupt
 	 */
-	public function startScraping(&$irc)
+	public function startScraping(&$irc, $servertype)
 	{
 
 		// Show debug in CLI.
@@ -87,8 +88,31 @@ class IRCScraper
 			$this, 'check_type'
 		);
 
+		$server = $port = $channelList = '';
+		switch($servertype) {
+			case 'efnet':
+				$server = SCRAPE_IRC_EFNET_SERVER;
+				$port = SCRAPE_IRC_EFNET_PORT;
+				$channelList = array(
+					'#alt.binaries.inner-sanctum',
+					'#alt.binaries.cd.image',
+					'#alt.binaries.movies.divx',
+					'#alt.binaries.sounds.mp3.complete_cd',
+					'#alt.binaries.warez'
+				);
+				break;
+			case 'corrupt':
+				$server = SCRAPE_IRC_CORRUPT_SERVER;
+				$port= SCRAPE_IRC_CORRUPT_PORT;
+				$channelList = array(
+					'#pre'
+				);
+				break;
+			default:
+				return;
+		}
 		// Connect to IRC.
-		$irc->connect(SCRAPE_IRC_SERVER, SCRAPE_IRC_PORT);
+		$irc->connect($server, $port);
 
 		// Login to IRC.
 		$irc->login(
@@ -105,17 +129,9 @@ class IRCScraper
 		);
 
 		// Join channels.
-		$irc->join(
-			array(
-				'#alt.binaries.inner-sanctum',
-				'#alt.binaries.cd.image',
-				'#alt.binaries.movies.divx',
-				'#alt.binaries.sounds.mp3.complete_cd',
-				'#alt.binaries.warez'
-			)
-		);
+		$irc->join($channelList);
 
-		echo '[' . date('r') . '] [Scraping of IRC channels for PRE started.]' . PHP_EOL;
+		echo '[' . date('r') . '] [Scraping of IRC channels for ' . $servertype .' started.]' . PHP_EOL;
 
 		// Wait for action handlers.
 		$irc->listen();

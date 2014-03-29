@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 2014-03-29 kevin
 	* Add: Script for scraping pre/reqid data from IRC (look in /misc/testing/IRCScraper/ change settings to your liking in settings.php, run with php scrape.php)
+	* Chg: Rename above script to scrapEfnet.php (so we can add scraping of other servers).
 2014-03-28 ruhllatio
 	* Fix small bug in monitor.php that prevents Theater/TV update from running in basic sequential tmux mode
 	* Fix filesize constraint violation bug in Releases.php Stage 2
