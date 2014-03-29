@@ -181,7 +181,7 @@ class IRCScraper
 
 			$this->CurMD5      = $this->db->escapeString(md5($matches['title']));
 			$this->CurTitle    = $matches['title'];
-			$this->CurSource   = 'a.b.inner-sanctum';
+			$this->CurSource   = '#a.b.inner-sanctum';
 			$this->CurCategory = $matches['category'];
 			$this->CurGroupID  = $this->getGroupID('alt.binaries.inner-sanctum');
 			$this->CurReqID    = $matches['reqid'];
@@ -209,7 +209,7 @@ class IRCScraper
 			$this->CurTitle = $matches['title'];
 			$this->CurReqID = $matches['reqid'];
 			$this->CurGroupID  = $this->getGroupID(str_replace('#', '', $channel));
-			$this->CurSource = str_replace('#alt.binaries', 'a.b', $channel);
+			$this->CurSource = str_replace('#alt.binaries', '#a.b', $channel);
 
 			if ($this->checkForDupe() === false) {
 				$this->insertNewPre();
@@ -246,7 +246,7 @@ class IRCScraper
 
 		$this->db->queryExec($query);
 
-		echo '[' . date('r') . '] [Updated PRE] [' . $this->CurTitle . '] [#' . $this->CurSource . ']' . PHP_EOL;
+		echo '[' . date('r') . '] [Updated PRE] [' . $this->CurTitle . '] [' . $this->CurSource . ']' . PHP_EOL;
 
 		$this->resetPreVariables();
 	}
@@ -287,7 +287,7 @@ class IRCScraper
 			)
 		);
 
-		echo '[' . date('r') . '] [New PRE] [' . $this->CurTitle . '] [#' . $this->CurSource . ']' . PHP_EOL;
+		echo '[' . date('r') . '] [New PRE] [' . $this->CurTitle . '] [' . $this->CurSource . ']' . PHP_EOL;
 
 		$this->resetPreVariables();
 	}
