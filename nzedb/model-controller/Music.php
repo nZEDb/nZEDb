@@ -645,18 +645,33 @@ class Music
 	public function parseArtist($releasename)
 	{
 		$name = '';
-		if (preg_match('/(.+?)(\d{1,2} \d{1,2} )?\(?(19\d{2}|20[0-1][0-9])/', $releasename, $name)) {
+		if (preg_match('/(.+?)(\d{1,2} \d{1,2} )?\(?(19\d{2}|20[0-1][0-9])\b/', $releasename, $name)) {
 			$result = array();
 			$result["year"] = $name[3];
 
 			$a = preg_replace('/ (\d{1,2} \d{1,2} )?(Bootleg|Boxset|Clean.+Version|Compiled by.+|\dCD|Digipak|DIRFIX|DVBS|FLAC|(Ltd )?(Deluxe|Limited|Special).+Edition|Promo|PROOF|Reissue|Remastered|REPACK|RETAIL(.+UK)?|SACD|Sampler|SAT|Summer.+Mag|UK.+Import|Deluxe.+Version|VINYL|WEB)/i', ' ', $name[1]);
 			$b = preg_replace('/ ([a-z]+[0-9]+[a-z]+[0-9]+.+|[a-z]{2,}[0-9]{2,}?.+|3FM|B00[a-z0-9]+|BRC482012|H056|UXM1DW086|(4WCD|ATL|bigFM|CDP|DST|ERE|FIM|MBZZ|MSOne|MVRD|QEDCD|RNB|SBD|SFT|ZYX) \d.+)/i', ' ', $a);
-			$c = preg_replace('/ (\d{1,2} \d{1,2} )?([A-Z])( ?$)|[0-9]{8,}| (CABLE|FREEWEB|LINE|MAG|MCD|YMRSMILES)/', ' ', $b);
+			$c = preg_replace('/ (\d{1,2} \d{1,2} )?([A-Z])( ?$)|\(?[0-9]{8,}\)?| (CABLE|FREEWEB|LINE|MAG|MCD|YMRSMILES)|\(([a-z]{2,}[0-9]{2,}|ost)\)|-web-/', ' ', $b);
 			$d = preg_replace('/VA( |-)/', 'Various Artists ', $c);
 			$e = preg_replace('/ (\d{1,2} \d{1,2} )?(DAB|DE|DVBC|EP|FIX|IT|Jap|NL|PL|(Pure )?FM|SSL|VLS) /i', ' ', $d);
 			$f = preg_replace('/ (\d{1,2} \d{1,2} )?(CD(A|EP|M|R|S)?|QEDCD|SBD) /i', ' ', $e);
-			$g = trim(preg_replace('/\s\s+/', ' ', $f));
-			$newname = trim(preg_Replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$|-WEB$/i', '', $g));
+			$g = str_replace(array('_', '-'), ' ', $f);
+			$h = trim(preg_replace('/\s\s+/', ' ', $g));
+			$newname = trim(preg_Replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$|-WEB$/i', '', $h));
+
+			/*var_dump($releasename);
+			var_dump($name[1]);
+			var_dump($a);
+			var_dump($b);
+			var_dump($c);
+			var_dump($d);
+			var_dump($e);
+			var_dump($f);
+			var_dump($g);
+			var_dump($h);
+			var_dump($newname);
+			//exit();*/
+
 			if (!preg_match('/^[a-z0-9]+$/i', $newname) && strlen($newname) > 10) {
 				$result["name"] = $newname;
 				return $result;

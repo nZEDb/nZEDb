@@ -217,119 +217,122 @@ class DB extends PDO
 	 * For inserting a row. Returns last insert ID. queryExec is better if you do not need the id.
 	 *
 	 * @param string $query
-	 * @param int    $i
 	 *
 	 * @return bool
 	 */
-	public function queryInsert($query, $i = 1)
+	public function queryInsert($query)
 	{
 		if (empty($query)) {
 			return false;
 		}
 
-		try {
-			if ($this->dbSystem === 'mysql') {
-				$ins = self::$pdo->prepare($query);
-				$ins->execute();
-				return self::$pdo->lastInsertId();
+		$i = 2;
+		$error = '';
+		while($i < 11) {
+			$result = $this->queryExecHelper($query, true);
+			if (is_array($result) && isset($result['deadlock'])) {
+				$error = $result['message'];
+				if ($result['deadlock'] === true) {
+					$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping.(" . ($i-1) . ")", 'queryInsert', 4);
+					$this->consoletools->showsleep($i * ($i/2));
+					$i++;
+				} else {
+					break;
+				}
+			} elseif ($result === false) {
+				$error = 'Unspecified error.';
+				break;
 			} else {
-				$p = self::$pdo->prepare($query . ' RETURNING id');
-				$p->execute();
-				$r = $p->fetch(PDO::FETCH_ASSOC);
-				return $r['id'];
+				return $result;
 			}
-
-		} catch (PDOException $e) {
-			// Deadlock or lock wait timeout, try 10 times.
-			while (
-					(
-						$e->errorInfo[1] == 1213 ||
-						$e->errorInfo[0] == 40001 ||
-						$e->errorInfo[1] == 1205 ||
-						$e->getMessage() == 'SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction'
-					) && $i <= 10
-			) {
-				$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping.($i)", 'queryInsert', 4);
-				$this->consoletools->showsleep($i * $i);
-				$this->queryInsert($query, $i++);
-			}
-
-			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205) {
-				if ($this->debug) {
-					$this->debugging->start("queryInsert", "Deadlock or lock wait timeout, try increasing innodb_lock_wait_timeout.", 4);
-				}
-			} else if ($e->errorInfo[1] == 1062 || $e->errorInfo[0] == 23000) {
-				if ($this->debug) {
-					$this->debugging->start("queryInsert", "Insert would create duplicate row, skipping.", 4);
-				}
-			} else if ($e->errorInfo[1] == 1406 || $e->errorInfo[0] == 22001) {
-				if ($this->debug) {
-					$this->debugging->start("queryInsert", "Too large to fit column length.", 4);
-				}
-			} else {
-				$this->echoError($e->getMessage(), 'queryInsert', 4);
-			}
-			if ($this->debug) {
-				$this->debugging->start("queryInsert", $query, 6);
-			}
-			return false;
 		}
+		if ($this->debug) {
+			$this->echoError($error, 'queryInsert', 4);
+			$this->debugging->start("queryInsert", $query, 6);
+		}
+		return false;
 	}
 
 	/**
 	 * Used for deleting, updating (and inserting without needing the last insert id).
 	 *
 	 * @param string $query
-	 * @param int    $i
 	 *
 	 * @return bool
 	 */
-	public function queryExec($query, $i = 1)
+	public function queryExec($query)
 	{
 		if (empty($query)) {
 			return false;
 		}
 
+		$i = 2;
+		$error = '';
+		while($i < 11) {
+			$result = $this->queryExecHelper($query);
+			if (is_array($result) && isset($result['deadlock'])) {
+				$error = $result['message'];
+				if ($result['deadlock'] === true) {
+					$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping.(" . ($i-1) . ")", 'queryExec', 4);
+					$this->consoletools->showsleep($i * ($i/2));
+					$i++;
+				} else {
+					break;
+				}
+			} elseif ($result === false) {
+				$error = 'Unspecified error.';
+				break;
+			} else {
+				return $result;
+			}
+		}
+		if ($this->debug) {
+			$this->echoError($error, 'queryExec', 4);
+			$this->debugging->start("queryExec", $query, 6);
+		}
+		return false;
+	}
+
+	/**
+	 * Helper method for queryInsert and queryExec, checks for deadlocks.
+	 *
+	 * @param string $query
+	 * @param bool   $insert
+	 *
+	 * @return array
+	 */
+	protected function queryExecHelper($query, $insert = false)
+	{
 		try {
-			$run = self::$pdo->prepare($query);
-			$run->execute();
-			return $run;
+			if ($insert === false ) {
+				$run = self::$pdo->prepare($query);
+				$run->execute();
+				return $run;
+			} else {
+				if ($this->dbSystem === 'mysql') {
+					$ins = self::$pdo->prepare($query);
+					$ins->execute();
+					return self::$pdo->lastInsertId();
+				} else {
+					$p = self::$pdo->prepare($query . ' RETURNING id');
+					$p->execute();
+					$r = $p->fetch(PDO::FETCH_ASSOC);
+					return $r['id'];
+				}
+			}
 
 		} catch (PDOException $e) {
 			// Deadlock or lock wait timeout, try 10 times.
-			while (
-					(
-						$e->errorInfo[1] == 1213 ||
-						$e->errorInfo[0] == 40001 ||
-						$e->errorInfo[1] == 1205 ||
-						$e->getMessage() == 'SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction'
-					) &&
-				$i <= 10
+			if (
+				$e->errorInfo[1] == 1213 ||
+				$e->errorInfo[0] == 40001 ||
+				$e->errorInfo[1] == 1205 ||
+				$e->getMessage() == 'SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction'
 			) {
-				$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping.($i)", 'queryExec', 4);
-				$this->consoletools->showsleep($i * $i);
-				$this->queryExec($query, $i++);
+				return array('deadlock' => true, 'message' => $e->getMessage());
 			}
 
-			if ($e->errorInfo[1] == 1213 || $e->errorInfo[0] == 40001 || $e->errorInfo[1] == 1205) {
-				if ($this->debug) {
-					$this->debugging->start("queryExec", "Deadlock or lock wait timeout.", 4);
-				}
-			} else if ($e->errorInfo[1] == 1062 || $e->errorInfo[0] == 23000) {
-				if ($this->debug) {
-					$this->debugging->start("queryExec", "Update would create duplicate row, skipping.", 4);
-				}
-			} else if ($e->errorInfo[1] == 1406 || $e->errorInfo[0] == 22001) {
-				if ($this->debug) {
-					$this->debugging->start("queryExec", "Too large to fit column length.", 4);
-				}
-			} else {
-				$this->echoError($e->getMessage(), 'queryExec', 4);
-			}
-			if ($this->debug) {
-				$this->debugging->start("queryExec", $query, 6);
-			}
-			return false;
+			return array ('deadlock' => false, 'message' => $e->getMessage());
 		}
 	}
 

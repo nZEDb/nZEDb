@@ -848,7 +848,7 @@ class Releases
 	 */
 	public function searchSQL($search, $type)
 	{
-		// If the query starts with a ^ it indicates the search is looking for items which start with the term
+		// If the query starts with a ^ or ! it indicates the search is looking for items which start with the term
 		// still do the fulltext match, but mandate that all items returned must start with the provided word.
 		$words = explode(' ', $search);
 
@@ -859,13 +859,14 @@ class Releases
 		if (count($words) > 0) {
 			if ($type === 'name' || $type === 'searchname') {
 				//at least 1 term needs to be mandatory
-				if (!preg_match('/[+|!]/', $search)) {
+				if (!preg_match('/[+|!|\^]/', $search)) {
 					$search = '+' . $search;
 					$words = explode(' ', $search);
 				}
 				foreach ($words as $word) {
 					$word = trim(rtrim(trim($word), '-'));
 					$word = str_replace('!', '+', $word);
+					$word = str_replace('^', '+', $word);
 					$word = str_replace("'", "\\'", $word);
 
 					if ($word !== '' && $word !== '-' && strlen($word) >= 2) {
@@ -1060,7 +1061,7 @@ class Releases
 		$wherepos = strpos($sql, 'WHERE');
 		$countres = $this->db->queryOneRow(
 			'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' .
-			substr($sql, $wherepos, strpos($sql, '\)') - $wherepos)
+			substr($sql, $wherepos, strrpos($sql, ')') - $wherepos)
 		);
 		$res = $this->db->query($sql);
 		if (count($res) > 0) {
@@ -1462,7 +1463,7 @@ class Releases
 			);
 
 			// If a collection has not been updated in X hours, set filecheck to 2.
-			$query = $this->db->queryDirect(
+			$query = $this->db->queryExec(
 				sprintf(
 					"UPDATE " . $group['cname'] . " c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM " .
 					$group['bname'] .
@@ -1521,7 +1522,7 @@ class Releases
 			);
 
 			// If a collection has not been updated in X hours, set filecheck to 2.
-			$query = $this->db->queryDirect(
+			$query = $this->db->queryExec(
 				sprintf(
 					"UPDATE " . $group['cname'] . " c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM " .
 					$group['bname'] .
@@ -1566,9 +1567,9 @@ class Releases
 
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
-		$checked = $this->db->queryDirect(
+		$checked = $this->db->queryExec(
 			'UPDATE ' . $group['cname'] . ' c SET filesize =
-									(SELECT SUM(p.size) FROM ' . $group['pname'] . ' p INNER JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id),
+									(SELECT SUM(p.size) FROM ' . $group['pname'] . ' p INNER JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id HAVING count(p.id) > 0),
 									filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0' . $where
 		);
 		if ($checked !== false && $this->echooutput) {
@@ -1614,7 +1615,7 @@ class Releases
 				if (count($res) > 0) {
 					$minsizecount = 0;
 					if ($this->db->dbSystem() === 'mysql') {
-						$mscq = $this->db->queryDirect(
+						$mscq = $this->db->queryExec(
 							"UPDATE " . $group['cname'] .
 							" c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM site WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND groupid = " .
 							$groupID['id']
@@ -1628,7 +1629,7 @@ class Releases
 							$groupID['id']
 						);
 						if ($s['size'] > 0) {
-							$mscq = $this->db->queryDirect(
+							$mscq = $this->db->queryExec(
 								sprintf(
 									'UPDATE ' . $group['cname'] .
 									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ' .
@@ -1647,7 +1648,7 @@ class Releases
 
 					$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM site WHERE setting = 'maxsizetoformrelease'");
 					if ($maxfilesizeres['value'] != 0) {
-						$mascq = $this->db->queryDirect(
+						$mascq = $this->db->queryExec(
 							sprintf(
 								'UPDATE ' . $group['cname'] .
 								' SET filecheck = 5 WHERE filecheck = 3 AND groupid = %d AND filesize > %d ', $groupID['id'], $maxfilesizeres['value']
@@ -1665,7 +1666,7 @@ class Releases
 
 					$minfilecount = 0;
 					if ($this->db->dbSystem() === 'mysql') {
-						$mifcq = $this->db->queryDirect(
+						$mifcq = $this->db->queryExec(
 							"UPDATE " . $group['cname'] .
 							" c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM site WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND groupid = " .
 							$groupID['id']
@@ -1679,7 +1680,7 @@ class Releases
 							$groupID['id']
 						);
 						if ($f['files'] > 0) {
-							$mifcq = $this->db->queryDirect(
+							$mifcq = $this->db->queryExec(
 								sprintf(
 									'UPDATE ' . $group['cname'] .
 									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ' .
@@ -2436,7 +2437,7 @@ class Releases
 
 		// Parts that somehow have no binaries.
 		if (mt_rand(1, 100) % 3 == 0) {
-			$delqg = $this->db->queryDirect(
+			$delqg = $this->db->queryExec(
 				'DELETE FROM ' . $group['pname'] . ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)'
 			);
 			if ($delqg !== false) {
@@ -2445,7 +2446,7 @@ class Releases
 		}
 
 		// Binaries that somehow have no collection.
-		$delqh = $this->db->queryDirect(
+		$delqh = $this->db->queryExec(
 			'DELETE FROM ' . $group['bname'] . ' WHERE collectionid NOT IN (SELECT c.id FROM ' . $group['cname'] . ' c)'
 		);
 		if ($delqh !== false) {
