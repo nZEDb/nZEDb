@@ -1,7 +1,7 @@
 <?php
 
 if (!is_file('settings.php')) {
-	exit('Copy settings_example.php to settings.php and change the settings.');
+	exit('Copy settings_example.php to settings.php and change the settings.' . PHP_EOL);
 }
 
 if (!isset($argv[1])) {
