@@ -92,7 +92,7 @@ class IRCScraper
 
 		// Login to IRC.
 		$irc->login(
-		// Nick name.
+			// Nick name.
 			SCRAPE_IRC_NICKNAME,
 			// Real name.
 			SCRAPE_IRC_REALNAME,
@@ -104,18 +104,16 @@ class IRCScraper
 			(SCRAPE_IRC_PASSWORD === false ? null : SCRAPE_IRC_PASSWORD)
 		);
 
-		// List of channels to join.
-		$channelList =
+		// Join channels.
+		$irc->join(
 			array(
 				'#alt.binaries.inner-sanctum',
 				'#alt.binaries.cd.image',
 				'#alt.binaries.movies.divx',
 				'#alt.binaries.sounds.mp3.complete_cd',
 				'#alt.binaries.warez'
-			);
-
-		// Join channels.
-		$irc->join($channelList);
+			)
+		);
 
 		echo '[' . date('r') . '] [Scraping of IRC channels for PRE started.]' . PHP_EOL;
 
@@ -314,8 +312,7 @@ class IRCScraper
 	protected function getGroupID($groupName)
 	{
 		if (!isset($this->groupList[$groupName])) {
-			$groups = new Groups();
-			$this->groupList[$groupName] = $groups->getIDByName($groupName);
+			$this->groupList[$groupName] = $this->groups->getIDByName($groupName);
 		}
 		return $this->groupList[$groupName];
 	}
