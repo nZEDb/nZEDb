@@ -190,11 +190,7 @@ class IRCScraper
 			$this->CurCategory = $matches['category'];
 			$this->CurSource   = '#pre@corrupt';
 
-			if ($this->checkForDupe() === false) {
-				$this->insertNewPre();
-			} else {
-				$this->updatePre();
-			}
+			$this->checkForDupe();
 		}
 	}
 
@@ -235,11 +231,7 @@ class IRCScraper
 			$this->CurGroupID  = $this->getGroupID('alt.binaries.inner-sanctum');
 			$this->CurReqID    = $matches['reqid'];
 
-			if ($this->checkForDupe() === false) {
-				$this->insertNewPre();
-			} else {
-				$this->updatePre();
-			}
+			$this->checkForDupe();
 		}
 	}
 
@@ -260,44 +252,22 @@ class IRCScraper
 			$this->CurGroupID  = $this->getGroupID(str_replace('#', '', $channel));
 			$this->CurSource = str_replace('#alt.binaries', '#a.b', $channel);
 
-			if ($this->checkForDupe() === false) {
-				$this->insertNewPre();
-			} else {
-				$this->updatePre();
-			}
+			$this->checkForDupe();
 		}
 	}
 
 	/**
-	 * Updates PRE data in the DB.
+	 * Check if we already have the PRE.
+	 *
+	 * @return bool True if we already have, false if we don't.
 	 */
-	protected function updatePre()
+	protected function checkForDupe()
 	{
-		if (empty($this->CurTitle)) {
-			return;
+		if ($this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $this->CurMD5)) === false) {
+			$this->insertNewPre();
+		} else {
+			$this->updatePre();
 		}
-
-		$query = 'UPDATE predb SET ';
-
-		$query .= (!empty($this->CurSize)     ? 'size = '      . $this->CurSize                              . ', ' : '');
-		$query .= (!empty($this->CurCategory) ? 'category = '  . $this->db->escapeString($this->CurCategory) . ', ' : '');
-		$query .= (!empty($this->CurSource)   ? 'source = '    . $this->db->escapeString($this->CurSource)   . ', ' : '');
-		$query .= (!empty($this->CurReqID)    ? 'requestid = ' . $this->CurReqID                             . ', ' : '');
-		$query .= (!empty($this->CurGroupID)  ? 'groupid = '   . $this->CurGroupID                           . ', ' : '');
-		$query .= (!empty($this->CurPreDate)  ? 'predate = '   . $this->CurPreDate                           . ', ' : '');
-
-		if ($query === 'UPDATE predb SET '){
-			return;
-		}
-
-		$query .= 'title = ' . $this->db->escapeString($this->CurTitle);
-		$query .= ' WHERE md5 = ' . $this->CurMD5;
-
-		$this->db->queryExec($query);
-
-		echo '[' . date('r') . '] [Updated PRE] [' . $this->CurTitle . '] [' . $this->CurSource . ']' . PHP_EOL;
-
-		$this->resetPreVariables();
 	}
 
 	/**
@@ -342,13 +312,35 @@ class IRCScraper
 	}
 
 	/**
-	 * Check if we already have the PRE.
-	 *
-	 * @return bool True if we already have, false if we don't.
+	 * Updates PRE data in the DB.
 	 */
-	protected function checkForDupe()
+	protected function updatePre()
 	{
-		return ($this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $this->CurMD5)) === false ? false : true);
+		if (empty($this->CurTitle)) {
+			return;
+		}
+
+		$query = 'UPDATE predb SET ';
+
+		$query .= (!empty($this->CurSize)     ? 'size = '      . $this->CurSize                              . ', ' : '');
+		$query .= (!empty($this->CurCategory) ? 'category = '  . $this->db->escapeString($this->CurCategory) . ', ' : '');
+		$query .= (!empty($this->CurSource)   ? 'source = '    . $this->db->escapeString($this->CurSource)   . ', ' : '');
+		$query .= (!empty($this->CurReqID)    ? 'requestid = ' . $this->CurReqID                             . ', ' : '');
+		$query .= (!empty($this->CurGroupID)  ? 'groupid = '   . $this->CurGroupID                           . ', ' : '');
+		$query .= (!empty($this->CurPreDate)  ? 'predate = '   . $this->CurPreDate                           . ', ' : '');
+
+		if ($query === 'UPDATE predb SET '){
+			return;
+		}
+
+		$query .= 'title = ' . $this->db->escapeString($this->CurTitle);
+		$query .= ' WHERE md5 = ' . $this->CurMD5;
+
+		$this->db->queryExec($query);
+
+		echo '[' . date('r') . '] [Updated PRE] [' . $this->CurTitle . '] [' . $this->CurSource . ']' . PHP_EOL;
+
+		$this->resetPreVariables();
 	}
 
 	/**
