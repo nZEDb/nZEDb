@@ -306,7 +306,7 @@ class IRCScraper
 			)
 		);
 
-		echo '[' . date('r') . '] [New PRE] [' . $this->CurTitle . '] [' . $this->CurSource . ']' . PHP_EOL;
+		echo '[' . date('r') . '] [New PRE] [' . $this->CurSource . '] [' . $this->CurTitle . ']' . PHP_EOL;
 
 		$this->resetPreVariables();
 	}
@@ -338,7 +338,7 @@ class IRCScraper
 
 		$this->db->queryExec($query);
 
-		echo '[' . date('r') . '] [Updated PRE] [' . $this->CurTitle . '] [' . $this->CurSource . ']' . PHP_EOL;
+		echo '[' . date('r') . '] [Updated PRE] [' . $this->CurSource . '] [' . $this->CurTitle . ']' . PHP_EOL;
 
 		$this->resetPreVariables();
 	}
