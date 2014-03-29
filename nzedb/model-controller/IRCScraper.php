@@ -107,7 +107,7 @@ class IRCScraper
 				$channelList = array(
 					'#pre'
 				);
-				$regex = 'PRE:.*\[.*\]'; //#pre
+				$regex = '/PRE:.+?\[.+?\]/i'; // #pre
 				break;
 			default:
 				return;
@@ -184,7 +184,7 @@ class IRCScraper
 	protected function corrupt_pre(&$message)
 	{
 		//PRE: [TV-X264] Tinga.Tinga.Fabeln.S02E11.Warum.Bienen.stechen.GERMAN.WS.720p.HDTV.x264-RFG
-		if (preg_match('/PRE:\s+\[(?P<category>.+?)\]\s+(?P<title>.+)/i', $message, $matches)) {
+		if (preg_match('/PRE:.+?\[.*?\d{2}(?P<category>.+?)\]\s+(?P<title>.+)/i', $message, $matches)) {
 			$this->CurMD5 = $this->db->escapeString(md5($matches['title']));
 			$this->CurTitle = $matches['title'];
 			$this->CurCategory = $matches['category'];

@@ -2551,7 +2551,7 @@ class Net_SmartIRC_base
                 $regex = '/'.$handlerobject->message.'/';
             }
 
-            $ircdata->message = preg_replace("/[^\w~`!@#$%^&*()+={}\[\]|\\\\;'\"<>,.\/? -]/", "", $ircdata->message);
+            $ircdata->message = preg_replace("/[^\w~`!@#$%^&*()+={}\[\]|\\\\;:'\"<>,.\/? -]/", "", $ircdata->message);
             if (($handlerobject->type & $ircdata->type) &&
                 (preg_match($regex, $ircdata->message) == 1)) {
 
