@@ -71,28 +71,21 @@ class IRCScraper
 	 */
 	public function startScraping(&$irc, $servertype)
 	{
-
 		// Show debug in CLI.
 		//$irc->setDebug(SMARTIRC_DEBUG_ALL);
 
 		// Use real sockets instead of fsock.
 		$irc->setUseSockets(true);
 
-		// Put quick regex matches here, this will check the channel against these regex.
-		$irc->registerActionhandler(
-			SMARTIRC_TYPE_CHANNEL,
-
-			'/FILLED.*Pred.*ago|' . // a.b.inner-sanctum
-			'Thank.*you.*Req.*Id.*Request/', // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
-
-			$this, 'check_type'
-		);
-
-		$server = $port = $channelList = '';
+		$server = $nickname = $username = $realname = $password =  $port = $channelList = $regex = '';
 		switch($servertype) {
 			case 'efnet':
 				$server = SCRAPE_IRC_EFNET_SERVER;
 				$port = SCRAPE_IRC_EFNET_PORT;
+				$nickname = SCRAPE_IRC_EFNET_NICKNAME;
+				$username = SCRAPE_IRC_EFNET_USERNAME;
+				$realname = SCRAPE_IRC_EFNET_REALNAME;
+				$password = SCRAPE_IRC_EFNET_PASSWORD;
 				$channelList = array(
 					'#alt.binaries.inner-sanctum',
 					'#alt.binaries.cd.image',
@@ -100,32 +93,44 @@ class IRCScraper
 					'#alt.binaries.sounds.mp3.complete_cd',
 					'#alt.binaries.warez'
 				);
+				$regex =
+					'/FILLED.*Pred.*ago|' .          // a.b.inner-sanctum
+					'Thank.*you.*Req.*Id.*Request/'; // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
 				break;
 			case 'corrupt':
 				$server = SCRAPE_IRC_CORRUPT_SERVER;
 				$port= SCRAPE_IRC_CORRUPT_PORT;
+				$nickname = SCRAPE_IRC_CORRUPT_NICKNAME;
+				$username = SCRAPE_IRC_CORRUPT_USERNAME;
+				$realname = SCRAPE_IRC_CORRUPT_REALNAME;
+				$password = SCRAPE_IRC_CORRUPT_PASSWORD;
 				$channelList = array(
 					'#pre'
 				);
+				$regex = 'PRE:.*\[.*\]'; //#pre
 				break;
 			default:
 				return;
 		}
+
+		// This will scan channel messages for the regexes above.
+		$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, $regex, $this, 'check_type');
+
 		// Connect to IRC.
 		$irc->connect($server, $port);
 
 		// Login to IRC.
 		$irc->login(
 			// Nick name.
-			SCRAPE_IRC_NICKNAME,
+			$nickname,
 			// Real name.
-			SCRAPE_IRC_REALNAME,
+			$realname,
 			// User mode.
 			0,
 			// User name.
-			SCRAPE_IRC_USERNAME,
+			$username,
 			// Password.
-			(SCRAPE_IRC_PASSWORD === false ? null : SCRAPE_IRC_PASSWORD)
+			($password === false ? null : $password)
 		);
 
 		// Join channels.
@@ -157,11 +162,39 @@ class IRCScraper
 					$this->inner_sanctum($data->message);
 				}
 				break;
+
 			case 'alt-bin':
 				$this->alt_bin($data->message, $channel);
 				break;
+
+			case 'pr3':
+				$this->corrupt_pre($data->message);
+				break;
+
 			default:
 				break;
+		}
+	}
+
+	/**
+	 * Gets new PRE from #a.b.inner-sanctum.
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function corrupt_pre(&$message)
+	{
+		//PRE: [TV-X264] Tinga.Tinga.Fabeln.S02E11.Warum.Bienen.stechen.GERMAN.WS.720p.HDTV.x264-RFG
+		if (preg_match('/PRE:\s+\[(?P<category>.+?)\]\s+(?P<title>.+)/i', $message, $matches)) {
+			$this->CurMD5 = $this->db->escapeString(md5($matches['title']));
+			$this->CurTitle = $matches['title'];
+			$this->CurCategory = $matches['category'];
+			$this->CurSource   = '#pre@corrupt';
+
+			if ($this->checkForDupe() === false) {
+				$this->insertNewPre();
+			} else {
+				$this->updatePre();
+			}
 		}
 	}
 
@@ -251,7 +284,7 @@ class IRCScraper
 		$query .= (!empty($this->CurSource)   ? 'source = '    . $this->db->escapeString($this->CurSource)   . ', ' : '');
 		$query .= (!empty($this->CurReqID)    ? 'requestid = ' . $this->CurReqID                             . ', ' : '');
 		$query .= (!empty($this->CurGroupID)  ? 'groupid = '   . $this->CurGroupID                           . ', ' : '');
-		$query .= (!empty($this->CurGroupID)  ? 'predate = '   . $this->CurPreDate                           . ', ' : '');
+		$query .= (!empty($this->CurPreDate)  ? 'predate = '   . $this->CurPreDate                           . ', ' : '');
 
 		if ($query === 'UPDATE predb SET '){
 			return;
