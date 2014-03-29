@@ -12,6 +12,10 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIBS . 'Net_SmartIRC/Net/SmartIRC.php';
 require_once 'settings.php';
 
+if (SCRAPE_IRC_EFNET_NICKNAME == '' || SCRAPE_IRC_CORRUPT_NICKNAME == '') {
+	exit("ERROR! You must put a username in settings.php" . PHP_EOL);
+}
+
 $scraper = new IRCScraper();
 // Net_SmartIRC started here, or else globals are not properly set.
 $scraper->startScraping(new Net_SmartIRC(), $argv[1]);

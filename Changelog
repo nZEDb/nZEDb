@@ -7,6 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-03-29 kevin
+	* Chg: Force user to put username on IRCScraper, so no www-data / root in IRC channels.
+	* Chg: Smartirc to accept password per channel.
 	* Add: Script for scraping pre/reqid data from IRC (look in /misc/testing/IRCScraper/ change settings to your liking in settings.php, run with php scrape.php)
 	* Chg: Rename above script to scrapEfnet.php (so we can add scraping of other servers).
 	* Chg: Rename it again, but have argument : efnet or corrupt , add individual username/password per server.

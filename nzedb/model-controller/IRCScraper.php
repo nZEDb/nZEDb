@@ -87,15 +87,24 @@ class IRCScraper
 				$realname = SCRAPE_IRC_EFNET_REALNAME;
 				$password = SCRAPE_IRC_EFNET_PASSWORD;
 				$channelList = array(
-					'#alt.binaries.inner-sanctum',
-					'#alt.binaries.cd.image',
-					'#alt.binaries.movies.divx',
-					'#alt.binaries.sounds.mp3.complete_cd',
-					'#alt.binaries.warez'
+					// Channel                             Password.
+					'#alt.binaries.inner-sanctum'          => null,
+					'#alt.binaries.cd.image'               => null,
+					'#alt.binaries.movies.divx'            => null,
+					'#alt.binaries.sounds.mp3.complete_cd' => null,
+					'#alt.binaries.warez'                  => null,
+					//'#alt.binaries.teevee'                 => 'teevee',
+					//'#alt.binaries.moovee'                 => 'moovee',
+					//'#alt.binaries.erotica'                => 'erotica',
+					//'#alt.binaries.flac'                   => 'flac',
+					//'#alt.binaries.foreign'                => 'foreign'
 				);
 				$regex =
-					'/FILLED.*Pred.*ago|' .          // a.b.inner-sanctum
-					'Thank.*you.*Req.*Id.*Request/'; // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
+					// Simple regex, more advanced regex below when doing the real checks.
+					'/FILLED.*Pred.*ago|' .           // a.b.inner-sanctum
+					'Thank.*you.*Req.*Id.*Request' . // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
+					//'Thanks.*?you.*?You.*are.*Filling.*Pred.*ago' .
+					'/';
 				break;
 			case 'corrupt':
 				$server = SCRAPE_IRC_CORRUPT_SERVER;
@@ -105,7 +114,7 @@ class IRCScraper
 				$realname = SCRAPE_IRC_CORRUPT_REALNAME;
 				$password = SCRAPE_IRC_CORRUPT_PASSWORD;
 				$channelList = array(
-					'#pre'
+					'#pre' => null
 				);
 				$regex = '/PRE:.+?\[.+?\]/i'; // #pre
 				break;

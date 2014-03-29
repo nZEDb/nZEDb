@@ -14,7 +14,7 @@ echo "This started scrapeCorrupt in the background, if you cancel this script, i
 echo "scrapeEfnet, will close however, since it was not started in the background."
 echo ""
 echo `ps aux | grep 'php corrupt' | awk '{print $2}'`
-echo "To kill it, in the message above, you see a number, in a command line, type kill theNumber"
+echo "To kill it, in the message above, you see a number, in a command line, type kill theNumber  (theNumber, is the number over this line, the one to the left)"
 echo ""
 sleep 3
 $cmd2
