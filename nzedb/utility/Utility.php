@@ -1,4 +1,6 @@
 <?php
+namespace nzedb\utility;
+
 /*
  * General util functions.
  * Class Util
