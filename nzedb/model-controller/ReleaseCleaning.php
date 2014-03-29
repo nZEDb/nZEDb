@@ -2301,6 +2301,10 @@ class ReleaseCleaning
 		} //Big.Brother.IL.S05E01.WS.PDTV.XviD-Silver007 [1/1] - "Big.Brother.IL.S05E01.WS.PDTV.XviD-Silver007.avi" yEnc
 		else if (preg_match('/^[a-zA-Z0-9._-]+ \[\d+\/\d+\] - "(.+?)' . $this->e1, $this->subject, $match) && !preg_match('/[a-fA-F0-9]{32}/', $this->subject)) {
 			return $match[1];
+		}
+		//[ f680631754c469e49d3447bf0beadb8e ] [1/8] - "00-chris_carreiro-dirty-web-2014.m3u" yEnc
+		else if (preg_match('/^\[ [a-f0-9]{32} \] \[\d+\/\d+\] - "\d+[-_](.+?)\.[a-z0-9]{3,4}" yEnc$/i', $this->subject, $match)) {
+			return $match[1];
 		} else {
 			return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
 		}
@@ -2355,6 +2359,12 @@ class ReleaseCleaning
 			return $match[2];
 		} //[002/161] - "Rayman_Legends_USA_PS3-CLANDESTiNE.nfo" yEnc
 		else if (preg_match('/^\[\d+\/\d+\][ _-]{0,3}"(.+?)' . $this->e1, $this->subject, $match)) {
+			return $match[1];
+		}
+		//NetVideoGirls.13.08.05.Julia.XXX.MP4-KTR - [1/1] - "NetVideoGirls.13.08.05.Julia.XXX.MP4-KTR.rar" yEnc
+		//FemaleAgent.E136.Rollie.XXX.1080p.MOV-KTR - [1/1] - "FemaleAgent.E136.Rollie.XXX.1080p.MOV-KTR.rar" yEnc
+		//Penthouse.13.07.13.Natalia.Starr.Pet.Of.Month.July.2013.XXX.3D.WMV-TBP - [1/1] - "Penthouse.13.07.13.Natalia.Starr.Pet.Of.Month.July.2013.XXX.3D.WMV-TBP.rar" yEnc
+		else if (preg_match('/^([a-z0-9].+?\.XXX.*?\.[a-z0-9]{3,4}-[a-z0-9]+) - \[\d+\/\d+\] - ".+?" yEnc$/i', $this->subject, $match)) {
 			return $match[1];
 		} else {
 			return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);

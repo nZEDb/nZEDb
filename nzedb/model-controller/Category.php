@@ -581,6 +581,20 @@ class Category
 				return true;
 			}
 
+			if ($group === 'alt.binaries.inner-sanctum') {
+				if ($this->isMusic()) {
+					return true;
+				}
+				if (preg_match('/-+(19|20)\d\d-\(?(album.*?|back|cover|front)\)?-+/i', $this->releaseName)) {
+					$this->tmpCat = Category::CAT_MUSIC_OTHER;
+					return true;
+				} else if (preg_match('/(19|20)\d\d$/', $this->releaseName) && ctype_lower(preg_replace('/[^a-z]/i', '', $this->releaseName))) {
+					$this->tmpCat = Category::CAT_MUSIC_OTHER;
+					return true;
+				}
+				return false;
+			}
+
 			if (preg_match('/alt\.binaries\.ipod\.videos\.tvshows/', $group)) {
 				$this->tmpCat = Category::CAT_TV_OTHER;
 				return true;
@@ -1426,7 +1440,7 @@ class Category
 				return true;
 			}
 		}
-		if (preg_match('/\s(19|20)\d\d\s([a-z0-9]{3}|[a-z]{2,})$|\-(19|20)\d\d\-(C4|MTD)(\s|\.)|[-._ ]FM.+MP3[-._ ]|\-web\-(19|20)\d\d(\.|\s)|[-._ ](SAT|WEB).+(19|20)\d\d([-._ ]|$)|[-._ ](19|20)\d\d.+(SAT|WEB)([-._ ]|$)| MP3$/i', $this->releaseName)) {
+		if (preg_match('/\s(19|20)\d\d\s([a-z0-9]{3}|[a-z]{2,})$|\-(19|20)\d\d\-(C4|MTD)(\s|\.)|[-._ ]FM.+MP3[-._ ]|-web-(19|20)\d\d(\.|\s|$)|[-._ ](SAT|WEB).+(19|20)\d\d([-._ ]|$)|[-._ ](19|20)\d\d.+(SAT|WEB)([-._ ]|$)| MP3$/i', $this->releaseName)) {
 			if ($this->isMusicForeign()) {
 				return true;
 			} else {
@@ -1446,6 +1460,9 @@ class Category
 				$this->tmpCat = Category::CAT_MUSIC_OTHER;
 				return true;
 			}
+		} else if (preg_match('/\(pure_fm\)|-+\(?(2lp|cd[ms]([-_ .][a-z]{2})?|cover|ep|ltd_ed|mix|original|ost|.*?(edit(ion)?|remix(es)?|vinyl)|web)\)?-+((19|20)\d\d|you$)/i', $this->releaseName)) {
+			$this->tmpCat = Category::CAT_MUSIC_OTHER;
+			return true;
 		}
 		return false;
 	}
