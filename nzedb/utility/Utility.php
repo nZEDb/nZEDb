@@ -3,7 +3,7 @@
  * General util functions.
  * Class Util
  */
-class Util
+class Utility
 {
 	static public function hasCommand($cmd)
 	{

@@ -93,7 +93,7 @@ function BackupDatabase()
 	$c = new ColorCLI();
 	$DIR = nZEDb_MISC;
 
-	if (Util::hasCommand("php5")) {
+	if (Utility::hasCommand("php5")) {
 		$PHP = "php5";
 	} else {
 		$PHP = "php";

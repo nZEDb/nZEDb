@@ -176,7 +176,7 @@ GNU General Public License for more details.
 	public function setCovers()
 	{
 		$row = $this->_db->query("SELECT value FROM site WHERE setting = 'coverspath'");
-		Util::setCoversConstant($row[0]['value']);
+		Utility::setCoversConstant($row[0]['value']);
 	}
 }
 
