@@ -7,6 +7,38 @@ namespace nzedb\utility;
  */
 class Utility
 {
+	static public function getFileList (array $options = null)
+	{
+		$defaults = array(
+			'dir'   => false,
+			'ext'   => '',
+			'files' => array(),
+			'path'  => '',
+			'regex' => '',
+		);
+		$options += $defaults;
+
+		$di    = new DirectoryIterator($options['path']);
+		$files = array();
+		foreach ($di as $file) {
+			$base = empty($options['ext']) ? $file->getBasename() : $file->getBasename
+				($options['ext']);
+			switch (true) {
+				case $file->isDot:
+					break;
+				case !$options['dir'] && $file->isDir:
+					break;
+				case $base != $file->getBasename():
+					break;
+				case !preg_match($options['regex'], $base):
+					break;
+				default:
+					$files[$file->getFilename()] = $file;
+			}
+		}
+		return $files;
+	}
+
 	static public function hasCommand($cmd)
 	{
 		if (!isWindows()) {
