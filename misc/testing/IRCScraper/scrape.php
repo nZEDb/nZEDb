@@ -1,5 +1,9 @@
 <?php
 
+if (!is_file('settings.php')) {
+	exit('Copy settings_example.php to settings.php and change the settings.');
+}
+
 if (!isset($argv[1])) {
 	exit('Type in corrupt or efnet for the type of server to scrape, you can run this script 2 times to scrape both at the same time.' . PHP_EOL);
 }
