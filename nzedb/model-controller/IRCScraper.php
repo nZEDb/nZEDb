@@ -1,0 +1,337 @@
+<?php
+
+/**
+ * Class IRCScraperRun
+ */
+class IRCScraper
+{
+	/**
+	 * @var string
+	 */
+	protected $CurTitle;
+
+	/**
+	 * @var string
+	 */
+	protected $CurSize;
+
+	/**
+	 * @var string
+	 */
+	protected $CurCategory;
+
+	/**
+	 * @var string
+	 */
+	protected $CurPreDate;
+
+	/**
+	 * @var string
+	 */
+	protected $CurSource;
+
+	/**
+	 * @var string
+	 */
+	protected $CurMD5;
+
+	/**
+	 * @var string
+	 */
+	protected $CurReqID;
+
+	/**
+	 * @var string
+	 */
+	protected $CurGroupID;
+
+	/**
+	 * List of groups and their ID's
+	 * @var array
+	 */
+	protected $groupList;
+
+	/**
+	 * Construct
+	 */
+	public function __construct()
+	{
+		$this->db = new DB();
+		$this->groups = new Groups();
+
+		$this->resetPreVariables();
+		$this->groupList = array();
+	}
+
+	/**
+	 * Main method for scraping.
+	 *
+	 * @param Net_SmartIRC $irc Instance of class Net_SmartIRC
+	 */
+	public function startScraping(&$irc)
+	{
+
+		// Show debug in CLI.
+		//$irc->setDebug(SMARTIRC_DEBUG_ALL);
+
+		// Use real sockets instead of fsock.
+		$irc->setUseSockets(true);
+
+		// Put quick regex matches here, this will check the channel against these regex.
+		$irc->registerActionhandler(
+			SMARTIRC_TYPE_CHANNEL,
+
+			'/FILLED.*Pred.*ago|' . // a.b.inner-sanctum
+			'Thank.*you.*Req.*Id.*Request/', // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
+
+			$this, 'check_type'
+		);
+
+		// Connect to IRC.
+		$irc->connect(SCRAPE_IRC_SERVER, SCRAPE_IRC_PORT);
+
+		// Login to IRC.
+		$irc->login(
+		// Nick name.
+			SCRAPE_IRC_NICKNAME,
+			// Real name.
+			SCRAPE_IRC_REALNAME,
+			// User mode.
+			0,
+			// User name.
+			SCRAPE_IRC_USERNAME,
+			// Password.
+			(SCRAPE_IRC_PASSWORD === false ? null : SCRAPE_IRC_PASSWORD)
+		);
+
+		// List of channels to join.
+		$channelList =
+			array(
+				'#alt.binaries.inner-sanctum',
+				'#alt.binaries.cd.image',
+				'#alt.binaries.movies.divx',
+				'#alt.binaries.sounds.mp3.complete_cd',
+				'#alt.binaries.warez'
+			);
+
+		// Join channels.
+		$irc->join($channelList);
+
+		echo '[' . date('r') . '] [Scraping of IRC channels for PRE started.]' . PHP_EOL;
+
+		// Wait for action handlers.
+		$irc->listen();
+
+		// If we return from action handlers, disconnect from IRC.
+		$irc->disconnect();
+	}
+
+	/**
+	 * Check channel and poster, send to right method.
+	 *
+	 * @param object $irc
+	 * @param object $data
+	 */
+	public function check_type($irc, $data)
+	{
+		$channel = strtolower($data->channel);
+		$poster  = strtolower($data->nick);
+
+		switch ($poster) {
+			case 'sanctum':
+				if ($channel === '#alt.binaries.inner-sanctum') {
+					$this->inner_sanctum($data->message);
+				}
+				break;
+			case 'alt-bin':
+				$this->alt_bin($data->message, $channel);
+				break;
+			default:
+				break;
+		}
+	}
+
+	/**
+	 * Gets new PRE from #a.b.inner-sanctum.
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function inner_sanctum(&$message)
+	{	//[FILLED] [ 341953 | Emilie_Simon-Mue-CD-FR-2014-JUST | 16x79 | MP3 | *Anonymous* ] [ Pred 10m 54s ago ]
+		//06[FILLED] [ 342184 06| DJ_Tuttle--Optoswitches_(FF_011)-VINYL-1997-CMC_INT 06| 7x47 06| MP3 06| *Anonymous* 06] 06[ Pred 5h 46m 10s ago 06]"
+		if (preg_match('/FILLED.*?\]\s+\[\s+(?P<reqid>\d+)\s+.*?\|\s+(?P<title>.+?)\s+.*?\|\s+.+?\s+.*?\|\s+(?P<category>.+?)\s+.*?\|\s+.+?\s+.*?\]\s+.*?\[\s+Pred\s+(?P<pred>.+?)\s+ago\s+.*?\]/i', $message, $matches)) {
+
+			$predate = 0;
+			// Get pre date from this format : 10m 54s
+			if (preg_match('/((?P<day>\d+)d)?\s*((?P<hour>\d+)h)?\s*((?P<min>\d+)m)?\s*(?P<sec>\d+)s/i', $matches['pred'], $dateMatch)) {
+				if (!empty($dateMatch['day'])) {
+					$predate += ((int)($dateMatch['day']) * 86400);
+				}
+				if (!empty($dateMatch['hour'])) {
+					$predate += ((int)($dateMatch['hour']) * 3600);
+				}
+				if (!empty($dateMatch['min'])) {
+					$predate += ((int)($dateMatch['min']) * 60);
+				}
+				if (!empty($dateMatch['sec'])) {
+					$predate += (int)$dateMatch['sec'];
+				}
+				if ($predate !== 0) {
+					$this->CurPreDate = $this->db->from_unixtime((time() - $predate));
+				}
+			}
+
+			$this->CurMD5      = $this->db->escapeString(md5($matches['title']));
+			$this->CurTitle    = $matches['title'];
+			$this->CurSource   = 'a.b.inner-sanctum';
+			$this->CurCategory = $matches['category'];
+			$this->CurGroupID  = $this->getGroupID('alt.binaries.inner-sanctum');
+			$this->CurReqID    = $matches['reqid'];
+
+			if ($this->checkForDupe() === false) {
+				$this->insertNewPre();
+			} else {
+				$this->updatePre();
+			}
+		}
+	}
+
+	/**
+	 * Get new PRE from Alt-Bin groups.
+	 *
+	 * @param string $message The IRC message from the bot.
+	 * @param string $channel The IRC channel name.
+	 */
+	protected function alt_bin(&$message, &$channel)
+	{
+		//Thank you<Bijour> Req Id<137732> Request<The_Blueprint-Phenomenology-(Retail)-2004-KzT *Pars Included*> Files<19> Dates<Req:2014-03-24 Filling:2014-03-29> Points<Filled:1393 Score:25604>
+		//Thank you<gizka> Req Id<42948> Request<Bloodsport.IV.1999.FS.DVDRip.XviD.iNT-EwDp *Pars Included*> Files<55> Dates<Req:2014-03-22 Filling:2014-03-29> Points<Filled:93 Score:5607>
+		if (preg_match('/Req.+?Id.*?<.*?(?P<reqid>\d+).*?>.*?Request.*?<(?P<title>.+?)(\s+\*Pars\s+Included\*>|>)\s+/i', $message, $matches)) {
+			$this->CurMD5 = $this->db->escapeString(md5($matches['title']));
+			$this->CurTitle = $matches['title'];
+			$this->CurReqID = $matches['reqid'];
+			$this->CurGroupID  = $this->getGroupID(str_replace('#', '', $channel));
+			$this->CurSource = str_replace('#alt.binaries', 'a.b', $channel);
+
+			if ($this->checkForDupe() === false) {
+				$this->insertNewPre();
+			} else {
+				$this->updatePre();
+			}
+		}
+	}
+
+	/**
+	 * Updates PRE data in the DB.
+	 */
+	protected function updatePre()
+	{
+		if (empty($this->CurTitle)) {
+			return;
+		}
+
+		$query = 'UPDATE predb SET ';
+
+		$query .= (!empty($this->CurSize)     ? 'size = '      . $this->CurSize                              . ', ' : '');
+		$query .= (!empty($this->CurCategory) ? 'category = '  . $this->db->escapeString($this->CurCategory) . ', ' : '');
+		$query .= (!empty($this->CurSource)   ? 'source = '    . $this->db->escapeString($this->CurSource)   . ', ' : '');
+		$query .= (!empty($this->CurReqID)    ? 'requestid = ' . $this->CurReqID                             . ', ' : '');
+		$query .= (!empty($this->CurGroupID)  ? 'groupid = '   . $this->CurGroupID                           . ', ' : '');
+		$query .= (!empty($this->CurGroupID)  ? 'predate = '   . $this->CurPreDate                           . ', ' : '');
+
+		if ($query === 'UPDATE predb SET '){
+			return;
+		}
+
+		$query .= 'title = ' . $this->db->escapeString($this->CurTitle);
+		$query .= ' WHERE md5 = ' . $this->CurMD5;
+
+		$this->db->queryExec($query);
+
+		echo '[' . date('r') . '] [Updated PRE] [' . $this->CurTitle . '] [#' . $this->CurSource . ']' . PHP_EOL;
+
+		$this->resetPreVariables();
+	}
+
+	/**
+	 * Insert new PRE into the DB.
+	 */
+	protected function insertNewPre()
+	{
+		if (empty($this->CurTitle)) {
+			return;
+		}
+
+		$query = 'INSERT INTO predb (';
+
+		$query .= (!empty($this->CurSize)     ? 'size, '      : '');
+		$query .= (!empty($this->CurCategory) ? 'category, '  : '');
+		$query .= (!empty($this->CurSource)   ? 'source, '    : '');
+		$query .= (!empty($this->CurReqID)    ? 'requestid, ' : '');
+		$query .= (!empty($this->CurGroupID)  ? 'groupid, '   : '');
+
+		$query .= 'predate, md5, title, adddate) VALUES (';
+
+		$query .= (!empty($this->CurSize)     ? $this->CurSize . ', '   : '');
+		$query .= (!empty($this->CurCategory) ? $this->db->escapeString($this->CurCategory) . ', '   : '');
+		$query .= (!empty($this->CurSource)   ? $this->db->escapeString($this->CurSource) . ', '    : '');
+		$query .= (!empty($this->CurReqID)    ? $this->CurReqID . ', '   : '');
+		$query .= (!empty($this->CurGroupID)  ? $this->CurGroupID . ', '   : '');
+		$query .= (!empty($this->CurPreDate)  ? $this->CurPreDate . ', '   : 'NOW(), ');
+
+		$query .= '%s, %s, NOW())';
+
+		$this->db->queryExec(
+			sprintf(
+				$query,
+				$this->CurMD5,
+				$this->db->escapeString($this->CurTitle)
+			)
+		);
+
+		echo '[' . date('r') . '] [New PRE] [' . $this->CurTitle . '] [#' . $this->CurSource . ']' . PHP_EOL;
+
+		$this->resetPreVariables();
+	}
+
+	/**
+	 * Check if we already have the PRE.
+	 *
+	 * @return bool True if we already have, false if we don't.
+	 */
+	protected function checkForDupe()
+	{
+		return ($this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $this->CurMD5)) === false ? false : true);
+	}
+
+	/**
+	 * Get a group ID for a group name.
+	 *
+	 * @param string $groupName
+	 *
+	 * @return mixed
+	 */
+	protected function getGroupID($groupName)
+	{
+		if (!isset($this->groupList[$groupName])) {
+			$groups = new Groups();
+			$this->groupList[$groupName] = $groups->getIDByName($groupName);
+		}
+		return $this->groupList[$groupName];
+	}
+
+	/**
+	 * After updating or inserting new PRE, reset these.
+	 */
+	protected function resetPreVariables()
+	{
+		$this->CurTitle    = '';
+		$this->CurSize     = '';
+		$this->CurCategory = '';
+		$this->CurPreDate  = '';
+		$this->CurSource   = '';
+		$this->CurMD5      = '';
+		$this->CurReqID    = '';
+		$this->CurGroupID  = '';
+	}
+}
