@@ -1,6 +1,6 @@
 <?php
 // If you are lazy, just change this, or else go and change everything else you need to.
-$username = 'kevin2839';
+$username = '';
 
 // IRC EFNET server address. Change this only if you have issues.
 define('SCRAPE_IRC_EFNET_SERVER', 'irc.Prison.NET');
