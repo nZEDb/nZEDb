@@ -32,42 +32,36 @@ define('SCRAPE_IRC_ZENET_PASSWORD', false);
 ########################################################################################################################
 ########################################################################################################################
 
-// Try to generate a random username for you.
+// Try to generate a random username for you (up to 9 chars long).
 function getRandomUsername() {
-	$first = array(
+	$username = array(
 		'John', 'Jeff', 'Mike', 'Micheal', 'Simon', 'Eric', 'Jennifer',
 		'Robert', 'Natasha', 'James', 'Ozzy', 'Dana', 'Patricia', 'Patrick',
 		'Bill', 'Anita', 'Bart', 'Billy', 'Aaron', 'Chris', 'Chipper', 'Edge',
-		'Vin', 'Zhed', 'Scott', 'One', 'David', 'Willie', 'Rod', 'Stewart',
-		'Sophia', 'Emma', 'Olivia', 'Isabella', 'Ava', 'Lily', 'Zoe', 'Chloe',
-		'Mia', 'Madison', 'Emily', 'Ella', 'Madelyn', 'Abigail', 'Aubrey',
+		'Zhed', 'Scott', 'David', 'Willie', 'Stewart',
+		'Sophia', 'Emma', 'Olivia', 'Isabella', 'Lily', 'Chloe',
+		'Madison', 'Emily', 'Ella', 'Madelyn', 'Abigail', 'Aubrey',
 		'Addison', 'Avery', 'Layla', 'Hailey', 'Amelia', 'Hannah', 'Charlotte',
 		'Kaitlyn', 'Harper', 'Kaylee', 'Sophie', 'Mackenzie', 'Peyton', 'Riley',
 		'Grace', 'Brooklyn', 'Sarah', 'Aaliyah', 'Anna', 'Arianna', 'Ellie',
 		'Natalie', 'Isabelle', 'Lillian', 'Evelyn', 'Elizabeth', 'Lyla', 'Lucy',
-		'Claire', 'Makayla', 'Kylie', 'Audrey', 'Maya',  'Aiden', 'Jackson',
+		'Claire', 'Makayla', 'Kylie', 'Audrey', 'Maya', 'Aiden', 'Jackson',
 		'Ethan', 'Liam', 'Mason', 'Noah', 'Lucas', 'Jacob', 'Jayden', 'Jack',
 		'Logan', 'Ryan', 'Caleb', 'Benjamin', 'William', 'Michael', 'Alexander',
 		'Elijah', 'Matthew', 'Dylan', 'James', 'Owen', 'Connor', 'Brayden',
 		'Carter', 'Landon', 'Joshua', 'Luke', 'Daniel', 'Gabriel', 'Nicholas',
-		'Nathan', 'Oliver', 'Henry', 'Andrew', 'Gavin', 'Cameron', 'Eli', 'Max',
+		'Nathan', 'Oliver', 'Henry', 'Andrew', 'Gavin', 'Cameron',
 		'Isaac', 'Evan', 'Samuel', 'Grayson', 'Tyler', 'Zachary', 'Wyatt',
 		'Joseph', 'Charlie', 'Hunter', 'David', 'Gabriella', 'Annabelle'
 	);
-	$last = array(
-		'Clipper', 'Burn', 'Red', 'Grinch', 'Sucks', 'Now', 'Top', 'Beats',
-		'Orange', 'Star', 'Dough', 'Lush', 'Felon', 'Sauce', 'Killer', 'Tron',
-		'Pad', 'Think', 'Carbo', 'Tyle', 'Use', 'Diesel', 'Gas', 'Panda', 'Bear',
-		'Bigot', 'Sex', 'Fascism', 'Pedantic', 'Irony', 'Love', 'Dumb',
-		'Empathy', 'Nostalgia', 'Savvy', 'Paradigm', 'Culture', 'Ethic', 'Divergent',
-		'Integrity', 'Visceral', 'Hegemony', 'Comradery', 'Socialism', 'Ubiquitous',
-		'Holistic', 'Butt', 'Sex', 'Irony', 'Pedantic', 'Empathy', 'Synonym',
-		'Nostalgia', 'Biweekly', 'Comradery', 'Holistic', 'Socialism', 'Divergent',
-		'Integrity', 'Operate', 'Love', 'Indisposed', 'Ethic', 'Paradigm', 'Ubiquitous',
-		'Pragmatic', 'Metaphor', 'Pragmatic', 'Disposition', 'Comradery', 'Paradigm',
-		'Opportunity', 'Didactic', 'Irony', 'Integrity', 'Esoteric', 'Ubiquitous',
-		'Caveat', 'Democracy', 'Fascism', 'Diversity', 'Bona', 'Fide',
-		'Marriage', 'Insidious', 'Hypocrite', 'Metaphor', 'Pretentious'
-	);
-	return ($first[mt_rand(0, count($first)-1)] . $last[mt_rand(0, count($last)-1)] . rand(0,20).rand(0,20));
+	$username = $username[mt_rand(0, count($username) - 1)];
+	$current = strlen($username);
+	if ($current >= 7) {
+		$username = substr($username, 0, 6);
+		$current = 6;
+	}
+	for ($i = 0; $i < (9 - $current); $i++) {
+		$username .= rand(0,9);
+	}
+	return $username;
 }
