@@ -87,7 +87,7 @@ class IRCScraper
 						'|' .
 						'Thank.*you.*Req.*Id.*Request' .               // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
 						'|' .
-						'Thank.*?you.*?You.*are.*Filling.*Pred.*ago' . // a.b.flac a.b.teevee
+						'Thank.*?you.*?You.*?are.*?now.*?Filling.*?ReqId.*?Pred.*?ago' . // a.b.flac a.b.teevee
 						'|' .
 						'Thank.*?You.*?Request.*?Filled!.*?ReqId' .    // a.b.moovee
 						'|' .
@@ -272,7 +272,7 @@ class IRCScraper
 	protected function ab_flac(&$message)
 	{
 		//Thank You [*Anonymous*] You are now Filling ReqId:[42548] [FULL VA-Diablo_III_Reaper_of_Souls_Collectors_Edition_Soundtrack-CD-FLAC-2014-BUDDHA] [Pred 55s ago]
-		if (preg_match('/ReqID:.*?\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
+		if (preg_match('/You\s+are\s+now\s+Filling\s+ReqID:.*?\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.flac';
 			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.flac');
 			$this->siftMatches($matches);
