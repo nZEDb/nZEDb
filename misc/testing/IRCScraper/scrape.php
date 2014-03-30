@@ -20,7 +20,6 @@ if (!isset($argv[1])) {
 	);
 }
 
-// Leave corrupt/zenet for backwards compatibility.
 if (!in_array($argv[1], array('efnet', 'cz'))) {
 	exit('Error, must be efnet or cz, you typed: ' . $argv[1] . PHP_EOL);
 }
