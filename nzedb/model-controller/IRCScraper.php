@@ -93,16 +93,20 @@ class IRCScraper
 					'#alt.binaries.sounds.mp3.complete_cd' => null,
 					'#alt.binaries.warez'                  => null,
 					//'#alt.binaries.teevee'                 => 'teevee',
-					//'#alt.binaries.moovee'                 => 'moovee',
+					'#alt.binaries.moovee'                 => 'moovee',
 					//'#alt.binaries.erotica'                => 'erotica',
 					'#alt.binaries.flac'                   => 'flac',
 					//'#alt.binaries.foreign'                => 'foreign'
 				);
 				$regex =
 					// Simple regex, more advanced regex below when doing the real checks.
-					'/FILLED.*Pred.*ago|' .                         // a.b.inner-sanctum
-					'Thank.*you.*Req.*Id.*Request|' .               // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
-					'Thanks.*?you.*?You.*are.*Filling.*Pred.*ago' . // a.b.flac
+					'/FILLED.*Pred.*ago' .                         // a.b.inner-sanctum
+					'|' .
+					'Thank.*you.*Req.*Id.*Request' .               // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
+					'|' .
+					'Thank.*?you.*?You.*are.*Filling.*Pred.*ago' .  // a.b.flac
+					'|' .
+					'Thank.*?You.*?Request.*?Filled!.*?ReqId' .     // a.b.moovee
 					'/';
 				break;
 			case 'corrupt':
@@ -185,6 +189,12 @@ class IRCScraper
 				}
 				break;
 
+			case 'abking':
+				if ($channel === '#alt.binaries.moove') {
+					$this->ab_moove($data->message);
+				}
+				break;
+
 			default:
 				break;
 		}
@@ -233,6 +243,25 @@ class IRCScraper
 			$this->CurSource = '#a.b.flac';
 			$this->getTimeFromAgo($matches['pred']);
 			$this->CurGroupID  = ($this->getGroupID('alt.binaries.flac') === false ? '' : $this->getGroupID('alt.binaries.flac'));
+			$this->checkForDupe();
+		}
+	}
+
+	/**
+	 * Gets new PRE from #a.b.moovee
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function ab_moove(&$message)
+	{
+		//Thank You [*Anonymous*] Request Filled! ReqId:[140431] [FULL 118x150MB Pandorum.2009.Hybrid.1080p.BluRay.x264-DON] Requested by:[*Anonymous* 8h 33m ago] Comments:[0]
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+\d+x\d+[MGPTK]?[B]\s+(?P<title>.+?)\]\s+.+?by:\[.+?\s+(?P<pred>.+?)\s+ago\]/i', $message, $matches)) {
+			$this->CurMD5 = $this->db->escapeString(md5($matches['title']));
+			$this->CurTitle = $matches['title'];
+			$this->CurReqID = $matches['reqid'];
+			$this->CurSource = '#a.b.moovee';
+			$this->getTimeFromAgo($matches['pred']);
+			$this->CurGroupID  = ($this->getGroupID('alt.binaries.moovee') === false ? '' : $this->getGroupID('alt.binaries.moovee'));
 			$this->checkForDupe();
 		}
 	}
