@@ -23,7 +23,7 @@ class IRCScraper
 
 	/**
 	 * Current server.
-	 * efnet | corrupt
+	 * efnet | corrupt | zenet
 	 * @var string
 	 */
 	protected $serverType;
@@ -38,7 +38,7 @@ class IRCScraper
 	 * Construct
 	 *
 	 * @param Net_SmartIRC $irc          Instance of class Net_SmartIRC
-	 * @param string       $serverType   efnet | corrupt
+	 * @param string       $serverType   efnet | corrupt | zenet
 	 * @param bool         $silent       Run this in silent mode (no text output).
 	 * @param bool         $debug        Turn on Net_SmartIRC debug?
 	 * @param bool         $socket       Use real sockets or fsock?
@@ -118,6 +118,7 @@ class IRCScraper
 						'That.*?was.*?awesome.*?Shall.*?ReqId' .       // a.b.erotica
 					'/i';
 				break;
+
 			case 'corrupt':
 				$server      = SCRAPE_IRC_CORRUPT_SERVER;
 				$port        = SCRAPE_IRC_CORRUPT_PORT;
@@ -128,6 +129,18 @@ class IRCScraper
 				$channelList = array('#pre' => null);
 				$regex       = '/PRE:.+?\[.+?\]/i'; // #pre
 				break;
+
+			case 'zenet':
+				$server      = SCRAPE_IRC_ZENET_SERVER;
+				$port        = SCRAPE_IRC_ZENET_PORT;
+				$nickname    = SCRAPE_IRC_ZENET_NICKNAME;
+				$username    = SCRAPE_IRC_ZENET_USERNAME;
+				$realname    = SCRAPE_IRC_ZENET_REALNAME;
+				$password    = SCRAPE_IRC_ZENET_PASSWORD;
+				$channelList = array('#Pre' => null);
+				$regex       = '/^\(PRE\)\s+\(/'; // #Pre
+				break;
+
 			default:
 				return;
 		}
@@ -174,7 +187,7 @@ class IRCScraper
 			// User name.
 			$username,
 			// Password.
-			($password === false ? null : $password)
+			(empty($password) ? null : $password)
 		);
 
 		// Join channels.
@@ -244,6 +257,12 @@ class IRCScraper
 			case 'abgod':
 				if ($channel === '#alt.binaries.teevee') {
 					$this->ab_teevee($data->message);
+				}
+				break;
+
+			case 'theannouncer':
+				if ($channel === '#pre') {
+					$this->zenet_pre($data->message);
 				}
 				break;
 
@@ -367,8 +386,23 @@ class IRCScraper
 			$this->siftMatches($matches);
 		}
 	}
+
 	/**
-	 * Gets new PRE from #a.b.inner-sanctum.
+	 * Gets new PRE from #Pre on zenet
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function zenet_pre(&$message)
+	{
+		//(PRE) (XXX) (The.Golden.Age.Of.Porn.Candy.Samples.XXX.WEBRIP.WMV-GUSH)
+		if (preg_match('/^\(PRE\)\s+\((?P<category>.+?)\)\s+\((?P<title>.+?)\)$/', $message, $matches)) {
+			$this->CurPre['source'] = '#Pre@zenet';
+			$this->siftMatches($matches);
+		}
+	}
+
+	/**
+	 * Gets new PRE from #pre on Corrupt-net
 	 *
 	 * @param string $message The IRC message to parse.
 	 */

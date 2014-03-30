@@ -6,7 +6,8 @@ if (!is_file('settings.php')) {
 
 if (!isset($argv[1])) {
 	exit(
-		'Argument 1: corrupt|efnet         ; Scrape corrupt or efnet, you can run this script 2 times to scrap both.' . PHP_EOL .
+		'Argument 1: corrupt|efnet         ; Scrape corrupt, efnet or zenet. Both zenet and corrupt pre the same, so only run one or the other.' . PHP_EOL .
+		'                                  ; You can run efnet at the same time as corrupt or zenet.' . PHP_EOL .
 		'Argument 2: (optional) false|true ; True runs in silent mode (no text output)' . PHP_EOL .
 		'Argument 3: (optional) false|true ; True turns on debug (not recommended)' . PHP_EOL .
 		'Argument 4: (optional) false|true ; True uses real sockets(faster), false uses fsock. If you have issues with real sockets, try fsock.' . PHP_EOL .
@@ -18,15 +19,19 @@ if (!isset($argv[1])) {
 	);
 }
 
-if (!in_array($argv[1], array('efnet', 'corrupt'))) {
-	exit('Error, must be efnet or corrupt, you typed: ' . $argv[1] . PHP_EOL);
+if (!in_array($argv[1], array('efnet', 'corrupt', 'zenet'))) {
+	exit('Error, must be efnet, corrupt or zenet, you typed: ' . $argv[1] . PHP_EOL);
 }
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIBS . 'Net_SmartIRC/Net/SmartIRC.php';
 require_once 'settings.php';
 
-if (SCRAPE_IRC_EFNET_NICKNAME == '' || SCRAPE_IRC_CORRUPT_NICKNAME == '') {
+if (!defined('SCRAPE_IRC_EFNET_NICKNAME') || !defined('SCRAPE_IRC_CORRUPT_NICKNAME') || !defined('SCRAPE_IRC_ZENET_NICKNAME')) {
+	exit ('ERROR! You must update your settings.php using settings_example.php' . PHP_EOL);
+}
+
+if (SCRAPE_IRC_EFNET_NICKNAME == '' || SCRAPE_IRC_CORRUPT_NICKNAME == '' || SCRAPE_IRC_ZENET_NICKNAME == '') {
 	exit("ERROR! You must put a username in settings.php" . PHP_EOL);
 }
 
