@@ -23,7 +23,7 @@ class IRCScraper
 
 	/**
 	 * Current server.
-	 * efnet | corrupt
+	 * efnet | corrupt | zenet
 	 * @var string
 	 */
 	protected $serverType;
@@ -38,11 +38,12 @@ class IRCScraper
 	 * Construct
 	 *
 	 * @param Net_SmartIRC $irc          Instance of class Net_SmartIRC
-	 * @param string       $serverType   efnet | corrupt
+	 * @param string       $serverType   efnet | corrupt | zenet
 	 * @param bool         $silent       Run this in silent mode (no text output).
 	 * @param bool         $debug        Turn on Net_SmartIRC debug?
+	 * @param bool         $socket       Use real sockets or fsock?
 	 */
-	public function __construct(&$irc, $serverType, &$silent, &$debug)
+	public function __construct(&$irc, $serverType, &$silent = false, &$debug = false, &$socket = true)
 	{
 		$this->db = new DB();
 		$this->groups = new Groups();
@@ -54,7 +55,7 @@ class IRCScraper
 		$this->serverType = $serverType;
 		$this->silent = $silent;
 		$this->resetPreVariables();
-		$this->startScraping();
+		$this->startScraping($socket);
 	}
 
 	/**
@@ -63,7 +64,14 @@ class IRCScraper
 	public function __destruct()
 	{
 		// Disconnect from IRC cleanly.
-		if (!is_null($this->IRC) && is_resource($this->IRC)) {
+		if (!is_null($this->IRC)) {
+			if (!$this->silent) {
+				echo
+					'Disconnecting from ' .
+					$this->serverType .
+					'.' .
+					PHP_EOL;
+			}
 			$this->IRC->disconnect();
 		}
 	}
@@ -71,16 +79,14 @@ class IRCScraper
 	/**
 	 * Main method for scraping.
 	 *
+	 * @param bool $socket  Use real sockets or fsock?
 	 */
-	public function startScraping()
+	protected function startScraping(&$socket)
 	{
-		// Use real sockets instead of fsock.
-		$this->IRC->setUseSockets(true);
-
 		switch($this->serverType) {
 			case 'efnet':
-				$server = SCRAPE_IRC_EFNET_SERVER;
-				$port = SCRAPE_IRC_EFNET_PORT;
+				$server   = SCRAPE_IRC_EFNET_SERVER;
+				$port     = SCRAPE_IRC_EFNET_PORT;
 				$nickname = SCRAPE_IRC_EFNET_NICKNAME;
 				$username = SCRAPE_IRC_EFNET_USERNAME;
 				$realname = SCRAPE_IRC_EFNET_REALNAME;
@@ -112,19 +118,35 @@ class IRCScraper
 						'That.*?was.*?awesome.*?Shall.*?ReqId' .       // a.b.erotica
 					'/i';
 				break;
+
 			case 'corrupt':
-				$server = SCRAPE_IRC_CORRUPT_SERVER;
-				$port= SCRAPE_IRC_CORRUPT_PORT;
-				$nickname = SCRAPE_IRC_CORRUPT_NICKNAME;
-				$username = SCRAPE_IRC_CORRUPT_USERNAME;
-				$realname = SCRAPE_IRC_CORRUPT_REALNAME;
-				$password = SCRAPE_IRC_CORRUPT_PASSWORD;
+				$server      = SCRAPE_IRC_CORRUPT_SERVER;
+				$port        = SCRAPE_IRC_CORRUPT_PORT;
+				$nickname    = SCRAPE_IRC_CORRUPT_NICKNAME;
+				$username    = SCRAPE_IRC_CORRUPT_USERNAME;
+				$realname    = SCRAPE_IRC_CORRUPT_REALNAME;
+				$password    = SCRAPE_IRC_CORRUPT_PASSWORD;
 				$channelList = array('#pre' => null);
-				$regex = '/PRE:.+?\[.+?\]/i'; // #pre
+				$regex       = '/PRE:.+?\[.+?\]/i'; // #pre
 				break;
+
+			case 'zenet':
+				$server      = SCRAPE_IRC_ZENET_SERVER;
+				$port        = SCRAPE_IRC_ZENET_PORT;
+				$nickname    = SCRAPE_IRC_ZENET_NICKNAME;
+				$username    = SCRAPE_IRC_ZENET_USERNAME;
+				$realname    = SCRAPE_IRC_ZENET_REALNAME;
+				$password    = SCRAPE_IRC_ZENET_PASSWORD;
+				$channelList = array('#Pre' => null);
+				$regex       = '/^\(PRE\)\s+\(/'; // #Pre
+				break;
+
 			default:
 				return;
 		}
+
+		// Use real sockets instead of fsock.
+		$this->IRC->setUseSockets($socket);
 
 		// This will scan channel messages for the regex above.
 		$this->IRC->registerActionhandler(SMARTIRC_TYPE_CHANNEL, $regex, $this, 'check_type');
@@ -132,20 +154,27 @@ class IRCScraper
 		// If there's a problem during connection, try to reconnect.
 		$this->IRC->setAutoRetry(true);
 
-		// If problem connecting, wait 10 seconds before reconnecting.
-		$this->IRC->setReconnectdelay(10000);
+		// If problem connecting, wait 5 seconds before reconnecting.
+		$this->IRC->setReconnectdelay(5);
 
-		// Try 3 times before giving up.
-		$this->IRC->setAutoRetryMax(3);
+		// Try 4 times before giving up.
+		$this->IRC->setAutoRetryMax(4);
+
+		// If a network error happens, automatically reconnect.
+		$this->IRC->setAutoReconnect(true);
 
 		// Connect to IRC.
 		$connection = $this->IRC->connect($server, $port);
 		if ($connection === false) {
-			exit ('Error connecting to (' . $server . ':' . $port . '). Please verify your server information and try again.' . PHP_EOL);
+			exit (
+				'Error connecting to (' .
+				$server .
+				':' .
+				$port .
+				'). Please verify your server information and try again.' .
+				PHP_EOL
+			);
 		}
-
-		// If a network error happens, automatically reconnect.
-		$this->IRC->setAutoReconnect(true);
 
 		// Login to IRC.
 		$this->IRC->login(
@@ -158,14 +187,20 @@ class IRCScraper
 			// User name.
 			$username,
 			// Password.
-			($password === false ? null : $password)
+			(empty($password) ? null : $password)
 		);
 
 		// Join channels.
 		$this->IRC->join($channelList);
 
 		if (!$this->silent) {
-			echo '[' . date('r') . '] [Scraping of IRC channels for ' . $this->serverType .' started.]' . PHP_EOL;
+			echo
+				'[' .
+				date('r') .
+				'] [Scraping of IRC channels for ' .
+				$this->serverType .
+				' started.]' .
+				PHP_EOL;
 		}
 
 		// Wait for action handlers.
@@ -222,6 +257,12 @@ class IRCScraper
 			case 'abgod':
 				if ($channel === '#alt.binaries.teevee') {
 					$this->ab_teevee($data->message);
+				}
+				break;
+
+			case 'theannouncer':
+				if ($channel === '#pre') {
+					$this->zenet_pre($data->message);
 				}
 				break;
 
@@ -293,9 +334,10 @@ class IRCScraper
 	{
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326377] [0-Day] [FULL 23x15MB Gyno-X.14.03.08.Annie.XXX.MP4-FUNKY] Filenames:[GX080314X8HRRZ2A8] Comments:[0] Watchers:[0] Total Size:[322MB] Points Earned:[23]
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326264] [HD-Clip] [FULL 16x50MB TeenSexMovs.14.03.30.Daniela.XXX.720p.WMV-iaK] Filenames:[iak-teensexmovs-140330] Comments:[0] Watchers:[0] Total Size:[753MB] Points Earned:[54] [Pred 3m 20s ago]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+\d+x\d+[KMGTP]?B\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\].+?(\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $message, $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[.+?\]\s+\[FULL\s+\d+x\d+[KMGTP]?B\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\](.+?\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.erotica';
 			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.erotica');
+			$this->CurPre['category'] = 'XXX';
 			$this->siftMatches($matches);
 		}
 	}
@@ -309,8 +351,8 @@ class IRCScraper
 	{
 		//Thank You [*Anonymous*] You are now Filling ReqId:[42548] [FULL VA-Diablo_III_Reaper_of_Souls_Collectors_Edition_Soundtrack-CD-FLAC-2014-BUDDHA] [Pred 55s ago]
 		if (preg_match('/You\s+are\s+now\s+Filling\s+ReqID:.*?\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
-			$this->CurPre['source']   = '#a.b.flac';
-			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.flac');
+			$this->CurPre['source']  = '#a.b.flac';
+			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.sounds.flac');
 			$this->siftMatches($matches);
 		}
 	}
@@ -344,8 +386,23 @@ class IRCScraper
 			$this->siftMatches($matches);
 		}
 	}
+
 	/**
-	 * Gets new PRE from #a.b.inner-sanctum.
+	 * Gets new PRE from #Pre on zenet
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function zenet_pre(&$message)
+	{
+		//(PRE) (XXX) (The.Golden.Age.Of.Porn.Candy.Samples.XXX.WEBRIP.WMV-GUSH)
+		if (preg_match('/^\(PRE\)\s+\((?P<category>.+?)\)\s+\((?P<title>.+?)\)$/', $message, $matches)) {
+			$this->CurPre['source'] = '#Pre@zenet';
+			$this->siftMatches($matches);
+		}
+	}
+
+	/**
+	 * Gets new PRE from #pre on Corrupt-net
 	 *
 	 * @param string $message The IRC message to parse.
 	 */
@@ -440,17 +497,7 @@ class IRCScraper
 			)
 		);
 
-		if (!$this->silent) {
-			echo
-				'[' . date('r') .
-				'] [ Added Pre ] [' .
-				$this->CurPre['source'] .
-				'] [' .
-				$this->CurPre['title'] .
-				']' .
-				(!empty($this->CurPre['category']) ? ' [' . $this->CurPre['category'] . ']' : '') .
-				PHP_EOL;
-		}
+		$this->doEcho(true);
 
 		$this->resetPreVariables();
 	}
@@ -482,10 +529,18 @@ class IRCScraper
 
 		$this->db->queryExec($query);
 
+		$this->doEcho(false);
+
+		$this->resetPreVariables();
+	}
+
+	protected function doEcho($new = true)
+	{
 		if (!$this->silent) {
 			echo
-				'[' . date('r') .
-				'] [Updated Pre] [' .
+				'[' .
+				date('r') .
+				($new ? '] [ Added Pre ] [' : '] [Updated Pre] [') .
 				$this->CurPre['source'] .
 				'] [' .
 				$this->CurPre['title'] .
@@ -493,8 +548,6 @@ class IRCScraper
 				(!empty($this->CurPre['category']) ? ' [' . $this->CurPre['category'] . ']' : '') .
 				PHP_EOL;
 		}
-
-		$this->resetPreVariables();
 	}
 
 	/**
