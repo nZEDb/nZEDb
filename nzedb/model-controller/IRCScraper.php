@@ -440,7 +440,15 @@ class IRCScraper
 		);
 
 		if (!$this->silent) {
-			echo '[' . date('r') . '] [Added   PRE:] [' . $this->CurPre['source'] . '] [' . $this->CurPre['title'] . ']' . PHP_EOL;
+			echo
+				'[' . date('r') .
+				'] [ Added Pre ] [' .
+				$this->CurPre['source'] .
+				'] [' .
+				$this->CurPre['title'] .
+				']' .
+				(!empty($this->CurPre['category']) ? ' [' . $this->CurPre['category'] . ']' : '') .
+				PHP_EOL;
 		}
 
 		$this->resetPreVariables();
@@ -474,7 +482,15 @@ class IRCScraper
 		$this->db->queryExec($query);
 
 		if (!$this->silent) {
-			echo '[' . date('r') . '] [Updated PRE:] [' . $this->CurPre['source'] . '] [' . $this->CurPre['title'] . ']' . PHP_EOL;
+			echo
+				'[' . date('r') .
+				'] [Updated Pre] [' .
+				$this->CurPre['source'] .
+				'] [' .
+				$this->CurPre['title'] .
+				']' .
+				(!empty($this->CurPre['category']) ? ' [' . $this->CurPre['category'] . ']' : '') .
+				PHP_EOL;
 		}
 
 		$this->resetPreVariables();
