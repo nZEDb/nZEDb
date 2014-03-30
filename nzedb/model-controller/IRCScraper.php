@@ -331,7 +331,7 @@ class IRCScraper
 		//Thank You [*Anonymous*] You are now Filling ReqId:[42548] [FULL VA-Diablo_III_Reaper_of_Souls_Collectors_Edition_Soundtrack-CD-FLAC-2014-BUDDHA] [Pred 55s ago]
 		if (preg_match('/You\s+are\s+now\s+Filling\s+ReqID:.*?\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
 			$this->CurPre['source']  = '#a.b.flac';
-			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.flac');
+			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.sounds.flac');
 			$this->siftMatches($matches);
 		}
 	}
