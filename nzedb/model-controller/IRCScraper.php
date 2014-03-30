@@ -281,7 +281,7 @@ class IRCScraper
 		if (isset($matches['predago'])) {
 			$this->getTimeFromAgo($matches['predago']);
 		}
-		if (isset($matches['categoru'])) {
+		if (isset($matches['category'])) {
 			$this->CurCategory = $matches['category'];
 		}
 		$this->checkForDupe();
@@ -295,7 +295,7 @@ class IRCScraper
 	protected function ab_erotica(&$message)
 	{
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326264] [HD-Clip] [FULL 16x50MB TeenSexMovs.14.03.30.Daniela.XXX.720p.WMV-iaK] Filenames:[iak-teensexmovs-140330] Comments:[0] Watchers:[0] Total Size:[753MB] Points Earned:[54] [Pred 3m 20s ago]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+\d+x\d+[KMGTP]?B\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\].+?\[Pred\s+(?P<pred>.+?)\s+ago\]/i', $message, $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+\d+x\d+[KMGTP]?B\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\].+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
 			$this->CurSource = '#a.b.erotica';
 			$this->CurGroupID  = ($this->getGroupID('alt.binaries.erotica') === false ? '' : $this->getGroupID('alt.binaries.erotica'));
 			$this->siftMatches($matches);
@@ -310,7 +310,7 @@ class IRCScraper
 	protected function ab_flac(&$message)
 	{
 		//Thank You [*Anonymous*] You are now Filling ReqId:[42548] [FULL VA-Diablo_III_Reaper_of_Souls_Collectors_Edition_Soundtrack-CD-FLAC-2014-BUDDHA] [Pred 55s ago]
-		if (preg_match('/ReqID:.*?\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<pred>.+?)\s+ago\]/i', $message, $matches)) {
+		if (preg_match('/ReqID:.*?\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
 			$this->CurSource = '#a.b.flac';
 			$this->CurGroupID  = ($this->getGroupID('alt.binaries.flac') === false ? '' : $this->getGroupID('alt.binaries.flac'));
 			$this->siftMatches($matches);
@@ -325,7 +325,7 @@ class IRCScraper
 	protected function ab_moovee(&$message)
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[140445] [FULL 94x50MB Burning.Daylight.2010.720p.BluRay.x264-SADPANDA] Requested by:[*Anonymous* 3h 29m ago] Comments:[0] Watchers:[0] Points Earned:[314] [Pred 4h 29m ago]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+\d+x\d+[MGPTK]?B\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<pred>.+?)\s+ago\]/i', $message, $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+\d+x\d+[MGPTK]?B\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
 			$this->CurSource = '#a.b.moovee';
 			$this->CurGroupID  = ($this->getGroupID('alt.binaries.moovee') === false ? '' : $this->getGroupID('alt.binaries.moovee'));
 			$this->siftMatches($matches);
@@ -340,7 +340,7 @@ class IRCScraper
 	protected function ab_teevee(&$message)
 	{
 		//Thank You [*Anonymous*] You are now Filling ReqId:[183443] [FULL Ant.and.Decs.Saturday.Night.Takeaway.S11E06.HDTV.x264-W4F] [Pred 1m 43s ago]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<pred>.+?)\s+ago\]/', $message, $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/', $message, $matches)) {
 			$this->CurSource = '#a.b.teevee';
 			$this->CurGroupID  = ($this->getGroupID('alt.binaries.teevee') === false ? '' : $this->getGroupID('alt.binaries.teevee'));
 			$this->siftMatches($matches);
@@ -354,7 +354,7 @@ class IRCScraper
 	protected function corrupt_pre(&$message)
 	{
 		//PRE: [TV-X264] Tinga.Tinga.Fabeln.S02E11.Warum.Bienen.stechen.GERMAN.WS.720p.HDTV.x264-RFG
-		if (preg_match('/^PRE: +\[(?P<category>.+?)\]\ +(?P<title>.+)$/i', $message, $matches)) {
+		if (preg_match('/^PRE:\s+\[(?P<category>.+?)\]\s+(?P<title>.+)$/i', $message, $matches)) {
 			$this->CurSource   = '#pre@corrupt';
 			$this->siftMatches($matches);
 		}
@@ -368,7 +368,7 @@ class IRCScraper
 	protected function inner_sanctum(&$message)
 	{	//[FILLED] [ 341953 | Emilie_Simon-Mue-CD-FR-2014-JUST | 16x79 | MP3 | *Anonymous* ] [ Pred 10m 54s ago ]
 		//06[FILLED] [ 342184 06| DJ_Tuttle--Optoswitches_(FF_011)-VINYL-1997-CMC_INT 06| 7x47 06| MP3 06| *Anonymous* 06] 06[ Pred 5h 46m 10s ago 06]"
-		if (preg_match('/FILLED.*?\]\s+\[\s+(?P<reqid>\d+)\s+.*?\|\s+(?P<title>.+?)\s+.*?\|\s+.+?\s+.*?\|\s+(?P<category>.+?)\s+.*?\|\s+.+?\s+.*?\]\s+.*?\[\s+Pred\s+(?P<pred>.+?)\s+ago\s+.*?\]/i', $message, $matches)) {
+		if (preg_match('/FILLED.*?\]\s+\[\s+(?P<reqid>\d+)\s+.*?\|\s+(?P<title>.+?)\s+.*?\|\s+.+?\s+.*?\|\s+(?P<category>.+?)\s+.*?\|\s+.+?\s+.*?\]\s+.*?\[\s+Pred\s+(?P<predago>.+?)\s+ago\s+.*?\]/i', $message, $matches)) {
 			$this->CurSource   = '#a.b.inner-sanctum';
 			$this->CurGroupID  = ($this->getGroupID('alt.binaries.inner-sanctum') === false ? '' : $this->getGroupID('alt.binaries.inner-sanctum'));
 			$this->siftMatches($matches);
