@@ -190,8 +190,8 @@ class IRCScraper
 				break;
 
 			case 'abking':
-				if ($channel === '#alt.binaries.moove') {
-					$this->ab_moove($data->message);
+				if ($channel === '#alt.binaries.moovee') {
+					$this->ab_moovee($data->message);
 				}
 				break;
 
@@ -252,7 +252,7 @@ class IRCScraper
 	 *
 	 * @param string $message The IRC message to parse.
 	 */
-	protected function ab_moove(&$message)
+	protected function ab_moovee(&$message)
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[140431] [FULL 118x150MB Pandorum.2009.Hybrid.1080p.BluRay.x264-DON] Requested by:[*Anonymous* 8h 33m ago] Comments:[0]
 		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+\d+x\d+[MGPTK]?[B]\s+(?P<title>.+?)\]\s+.+?by:\[.+?\s+(?P<pred>.+?)\s+ago\]/i', $message, $matches)) {
