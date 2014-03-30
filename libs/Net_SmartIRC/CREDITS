@@ -1,0 +1,65 @@
+/**
+ * $Id$
+ * $Revision$
+ * $Author$
+ * $Date$
+ */
+
+This is the creditslist for SmartIRC
+
+The fields are:
+(N) name
+(E) email
+(W) web-address
+(P) PGP key ID and fingerprint
+(D) description
+(S) snail-mail address
+---------------------------
+
+N: Mirco 'meebey' Bauer
+E: mail@meebey.net
+E: meebey@php.net
+W: www.meebey.net
+P: 5051C9B9 / EF69 07A4 51AD 689E CF0C  767F CD9C 4C1A 5051 C9B9
+D: Project Maintainer
+S: Kroonhorst 42
+S: 22549 Hamburg
+S: Germany
+
+N: Garrett Whitehorn
+W: http://garrettw.net/
+D: Project Maintainer as of 2014/02/04
+
+N: Peter Petermann
+E: webmaster@cyberfly.net
+W: www.cyberfly.net
+D: ban/unban diffs
+
+N: Andreas Streichardt
+E: mop@spaceregents.de
+W: www.spaceregents.de
+D: several hints for bugfixes
+D: some patchfiles
+
+N: Joern Heissler
+E: joern@heissler.de
+W: http://wulf.eu.org/
+P: 57C76B66 / 6333 346F D7F4 928D 02B0  FDBF B398 EBC6 57C7 6B66
+D: Quality Asurance (QA)
+D: high improved concept for socket_select() handling
+S: Willinghusener Weg 100
+S: 21509 Glinde
+S: Germany
+
+N: Jani Taskinen
+E: sniper@php.net
+D: fixed several bugs
+
+N: Ronald Hummelink
+E: ronaldhummelink@users.sourceforge.net
+D: reconnect delay patch (sf.net patch #883820)
+D: autoretry patch (sf.net patch #883821)
+
+N: Anatoly Techtonik
+E: techtonik@users.sourceforge.net
+D: load socket extension patch (sf.net patch #911993)

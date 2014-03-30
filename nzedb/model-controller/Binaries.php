@@ -790,7 +790,10 @@ class Binaries
 					if (!isset($this->message[$subject])) {
 						$this->message[$subject] = $msg;
 						$this->message[$subject]['MaxParts'] = (int) $matches[3];
-						$this->message[$subject]['Date'] = strtotime($msg['Date']);
+						// Check if it's unix time or a date string.
+						$date = (is_numeric($msg['Date']) ? $msg['Date'] : strtotime($msg['Date']));
+						// Check if it's newer than now, if so, set it now.
+						$this->message[$subject]['Date'] = ($date > time() ? time() : $date);
 						// (hash) Groups articles together when forming the release/nzb.
 						$this->message[$subject]['CollectionHash'] = sha1($cleansubject . $msg['From'] . $groupArr['id'] . $filecnt[6]);
 						$this->message[$subject]['MaxFiles'] = (int) $filecnt[6];

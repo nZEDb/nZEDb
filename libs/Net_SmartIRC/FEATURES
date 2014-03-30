@@ -1,0 +1,61 @@
+/**
+ * $Id$
+ * $Revision$
+ * $Author$
+ * $Date$
+ */
+
+Full featurelist of Net_SmartIRC
+-------------------------------------
+- full object-oriented programmed
+- every received IRC message is parsed into an object
+  (containing the following info: from, nick, ident, host, channel, message, type, rawmessage)
+- actionhandler for the API (on different types of messages [channel/notice/query/kick/join..], callbacks can be registered)
+- messagehandler for the API (class-based messagehandling using IRC reply codes)
+- time events (callbacks to methods in intervals)
+- send/receive flood protection
+- detects and changes nickname on nickname collisions
+- auto-reconnect if connection is lost
+- auto-retry for initially connecting to IRC servers
+- debugging/logging system with log levels (destination can be file, stdout, syslog or browserout)
+- supports fsocks and PHP socket extension
+- supports PHP as old as 4.4.4 (but not for much longer)
+- send buffer with a queue that has 3 priority levels (high, medium, low) plus a bypass level (critical)
+- channel syncing (tracking of users/modes/topic etc in objects)
+- user syncing (tracking the user in channels, nick/ident/host/realname/server/hopcount in objects)
+- when channel syncing is activated, the following functions are available:
+  isJoined
+  isFounder
+  isAdmin
+  isOpped
+  isHopped
+  isVoiced
+  isBanned
+- on reconnect all joined channels will be rejoined, even when keys are used
+- own CTCP version reply can be set
+- IRC commands:
+  pass
+  op
+  deop
+  voice
+  devoice
+  ban
+  unban
+  join
+  part
+  action
+  message
+  notice
+  query
+  ctcp
+  mode
+  topic
+  nick
+  invite
+  list
+  names
+  kick
+  who
+  whois
+  whowas
+  quit

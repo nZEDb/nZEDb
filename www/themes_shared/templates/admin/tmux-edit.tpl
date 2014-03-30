@@ -57,7 +57,7 @@
                     <input id="monitor_path" name="monitor_path" class="long" type="text" value="{$ftmux->monitor_path}" /><br />
                     <input id="monitor_path_a" name="monitor_path_a" class="long" type="text" value="{$ftmux->monitor_path_a}" /><br />
                     <input id="monitor_path_b" name="monitor_path_b" class="long" type="text" value="{$ftmux->monitor_path_b}" />
-                    <div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.<br />To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br />tmpfs /var/www/nZEDb/nzbfiles/tmpunrar tmpfs user,uid=1000,gid=33,nodev,nodiratime,nosuid,size=1G,mode=777 0 0<br />
+                    <div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.<br />To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br />tmpfs /var/www/nZEDb/resources/tmp/unrar tmpfs user,uid=1000,gid=33,nodev,nodiratime,nosuid,size=1G,mode=777 0 0<br />
                         gid == group id == /etc/groups, uid == user id == /etc/passwd</div>
                 </td>
             </tr>
