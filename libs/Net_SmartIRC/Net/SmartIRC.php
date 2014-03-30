@@ -424,7 +424,7 @@ class Net_SmartIRC_base
      *
      * @access public
      */
-    function __construct($IRCClienVersion = '')
+    function __construct()
     {
         // precheck
         $this->_checkPHPVersion();
