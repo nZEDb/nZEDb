@@ -788,6 +788,7 @@ class Binaries
 
 					// Set up the info for inserting into parts/binaries/collections tables.
 					if (!isset($this->message[$subject])) {
+						$this->message[$subject] = $msg;
 						$this->message[$subject]['MaxParts'] = (int) $matches[3];
 						// Check if it's unix time or a date string.
 						$date = (is_numeric($msg['Date']) ? $msg['Date'] : strtotime($msg['Date']));
