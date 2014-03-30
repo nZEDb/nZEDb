@@ -19,7 +19,7 @@ define('SCRAPE_IRC_CORRUPT_USERNAME', "$username");
 define('SCRAPE_IRC_CORRUPT_PASSWORD', false);
 
 // Zenet server details.
-define('SCRAPE_IRC_ZENET_SERVER', 'irc.corrupt-net.org');
+define('SCRAPE_IRC_ZENET_SERVER', 'irc.zenet.org');
 define('SCRAPE_IRC_ZENET_PORT', '6667');
 define('SCRAPE_IRC_ZENET_NICKNAME', "$username");
 define('SCRAPE_IRC_ZENET_REALNAME', "$username");
