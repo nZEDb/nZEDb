@@ -293,7 +293,7 @@ class IRCScraper
 	{
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326377] [0-Day] [FULL 23x15MB Gyno-X.14.03.08.Annie.XXX.MP4-FUNKY] Filenames:[GX080314X8HRRZ2A8] Comments:[0] Watchers:[0] Total Size:[322MB] Points Earned:[23]
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326264] [HD-Clip] [FULL 16x50MB TeenSexMovs.14.03.30.Daniela.XXX.720p.WMV-iaK] Filenames:[iak-teensexmovs-140330] Comments:[0] Watchers:[0] Total Size:[753MB] Points Earned:[54] [Pred 3m 20s ago]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+\d+x\d+[KMGTP]?B\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\].+?(\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $message, $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+\d+x\d+[KMGTP]?B\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\](.+?\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.erotica';
 			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.erotica');
 			$this->siftMatches($matches);
