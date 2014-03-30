@@ -52,6 +52,11 @@ class IRCScraper
 	protected $groupList;
 
 	/**
+	 * @var Net_SmartIRC
+	 */
+	protected $IRC = null;
+
+	/**
 	 * Construct
 	 */
 	public function __construct()
@@ -64,6 +69,17 @@ class IRCScraper
 	}
 
 	/**
+	 * Destruct
+	 */
+	public function __destruct()
+	{
+		// Disconnect from IRC cleanly.
+		if (!is_null($this->IRC) && is_resource($this->IRC)) {
+			$this->IRC->disconnect();
+		}
+	}
+
+	/**
 	 * Main method for scraping.
 	 *
 	 * @param Net_SmartIRC $irc Instance of class Net_SmartIRC
@@ -71,11 +87,13 @@ class IRCScraper
 	 */
 	public function startScraping(&$irc, $servertype)
 	{
+		$this->IRC = $irc;
+
 		// Show debug in CLI.
-		//$irc->setDebug(SMARTIRC_DEBUG_ALL);
+		//$this->IRC->setDebug(SMARTIRC_DEBUG_ALL);
 
 		// Use real sockets instead of fsock.
-		$irc->setUseSockets(true);
+		$this->IRC->setUseSockets(true);
 
 		switch($servertype) {
 			case 'efnet':
@@ -94,20 +112,23 @@ class IRCScraper
 					'#alt.binaries.warez'                  => null,
 					//'#alt.binaries.teevee'                 => 'teevee',
 					'#alt.binaries.moovee'                 => 'moovee',
-					//'#alt.binaries.erotica'                => 'erotica',
+					'#alt.binaries.erotica'                => 'erotica',
 					'#alt.binaries.flac'                   => 'flac',
 					//'#alt.binaries.foreign'                => 'foreign'
 				);
 				$regex =
 					// Simple regex, more advanced regex below when doing the real checks.
-					'/FILLED.*Pred.*ago' .                         // a.b.inner-sanctum
-					'|' .
-					'Thank.*you.*Req.*Id.*Request' .               // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
-					'|' .
-					'Thank.*?you.*?You.*are.*Filling.*Pred.*ago' .  // a.b.flac
-					'|' .
-					'Thank.*?You.*?Request.*?Filled!.*?ReqId' .     // a.b.moovee
-					'/';
+					'/' .
+						'FILLED.*Pred.*ago' .                         // a.b.inner-sanctum
+						'|' .
+						'Thank.*you.*Req.*Id.*Request' .               // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
+						'|' .
+						'Thank.*?you.*?You.*are.*Filling.*Pred.*ago' . // a.b.flac
+						'|' .
+						'Thank.*?You.*?Request.*?Filled!.*?ReqId' .    // a.b.moovee
+						'|' .
+						'That.*?was.*?awesome.*?Shall.*?ReqId' .       // a.b.erotica
+					'/i';
 				break;
 			case 'corrupt':
 				$server = SCRAPE_IRC_CORRUPT_SERVER;
@@ -126,13 +147,13 @@ class IRCScraper
 		}
 
 		// This will scan channel messages for the regexes above.
-		$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, $regex, $this, 'check_type');
+		$this->IRC->registerActionhandler(SMARTIRC_TYPE_CHANNEL, $regex, $this, 'check_type');
 
 		// Connect to IRC.
-		$irc->connect($server, $port);
+		$this->IRC->connect($server, $port);
 
 		// Login to IRC.
-		$irc->login(
+		$this->IRC->login(
 			// Nick name.
 			$nickname,
 			// Real name.
@@ -146,15 +167,15 @@ class IRCScraper
 		);
 
 		// Join channels.
-		$irc->join($channelList);
+		$this->IRC->join($channelList);
 
 		echo '[' . date('r') . '] [Scraping of IRC channels for ' . $servertype .' started.]' . PHP_EOL;
 
 		// Wait for action handlers.
-		$irc->listen();
+		$this->IRC->listen();
 
 		// If we return from action handlers, disconnect from IRC.
-		$irc->disconnect();
+		$this->IRC->disconnect();
 	}
 
 	/**
@@ -195,6 +216,12 @@ class IRCScraper
 				}
 				break;
 
+			case 'ginger':
+				if ($channel === '#alt.binaries.erotica') {
+					$this->ab_erotica($data->message);
+				}
+				break;
+
 			default:
 				break;
 		}
@@ -230,6 +257,26 @@ class IRCScraper
 	}
 
 	/**
+	 * Gets new PRE from #a.b.erotica
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function ab_erotica(&$message)
+	{
+		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326264] [HD-Clip] [FULL 16x50MB TeenSexMovs.14.03.30.Daniela.XXX.720p.WMV-iaK] Filenames:[iak-teensexmovs-140330] Comments:[0] Watchers:[0] Total Size:[753MB] Points Earned:[54] [Pred 3m 20s ago]
+		if (preg_match('/ReqId:\[(?P<reqid>\d+\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+\d+x\d+[KMGTP]?B\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?\].+?\[Pred\s+(?P<pred>.+?)\s+ago\]/i', $message, $matches)) {
+			$this->CurMD5 = $this->db->escapeString(md5($matches['title']));
+			$this->CurTitle = $matches['title'];
+			$this->CurReqID = $matches['reqid'];
+			$this->CurSource = '#a.b.erotica';
+			$this->getTimeFromAgo($matches['pred']);
+			$this->CurGroupID  = ($this->getGroupID('alt.binaries.erotica') === false ? '' : $this->getGroupID('alt.binaries.erotica'));
+			$this->CurSize = $matches['size'];
+			$this->checkForDupe();
+		}
+	}
+
+	/**
 	 * Gets new PRE from #a.b.flac
 	 *
 	 * @param string $message The IRC message to parse.
@@ -254,8 +301,8 @@ class IRCScraper
 	 */
 	protected function ab_moovee(&$message)
 	{
-		//Thank You [*Anonymous*] Request Filled! ReqId:[140431] [FULL 118x150MB Pandorum.2009.Hybrid.1080p.BluRay.x264-DON] Requested by:[*Anonymous* 8h 33m ago] Comments:[0]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+\d+x\d+[MGPTK]?[B]\s+(?P<title>.+?)\]\s+.+?by:\[.+?\s+(?P<pred>.+?)\s+ago\]/i', $message, $matches)) {
+		//Thank You [*Anonymous*] Request Filled! ReqId:[140445] [FULL 94x50MB Burning.Daylight.2010.720p.BluRay.x264-SADPANDA] Requested by:[*Anonymous* 3h 29m ago] Comments:[0] Watchers:[0] Points Earned:[314] [Pred 4h 29m ago]
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+\d+x\d+[MGPTK]?B\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<pred>.+?)\s+ago\]/i', $message, $matches)) {
 			$this->CurMD5 = $this->db->escapeString(md5($matches['title']));
 			$this->CurTitle = $matches['title'];
 			$this->CurReqID = $matches['reqid'];
@@ -356,12 +403,12 @@ class IRCScraper
 
 		$query .= 'predate, md5, title, adddate) VALUES (';
 
-		$query .= (!empty($this->CurSize)     ? $this->CurSize . ', '   : '');
+		$query .= (!empty($this->CurSize)     ? $this->db->escapeString($this->CurSize)     . ', '   : '');
 		$query .= (!empty($this->CurCategory) ? $this->db->escapeString($this->CurCategory) . ', '   : '');
-		$query .= (!empty($this->CurSource)   ? $this->db->escapeString($this->CurSource) . ', '    : '');
-		$query .= (!empty($this->CurReqID)    ? $this->CurReqID . ', '   : '');
-		$query .= (!empty($this->CurGroupID)  ? $this->CurGroupID . ', '   : '');
-		$query .= (!empty($this->CurPreDate)  ? $this->CurPreDate . ', '   : 'NOW(), ');
+		$query .= (!empty($this->CurSource)   ? $this->db->escapeString($this->CurSource)   . ', '   : '');
+		$query .= (!empty($this->CurReqID)    ? $this->CurReqID                             . ', '   : '');
+		$query .= (!empty($this->CurGroupID)  ? $this->CurGroupID                           . ', '   : '');
+		$query .= (!empty($this->CurPreDate)  ? $this->CurPreDate                           . ', '   : 'NOW(), ');
 
 		$query .= '%s, %s, NOW())';
 
@@ -389,7 +436,7 @@ class IRCScraper
 
 		$query = 'UPDATE predb SET ';
 
-		$query .= (!empty($this->CurSize)     ? 'size = '      . $this->CurSize                              . ', ' : '');
+		$query .= (!empty($this->CurSize)     ? 'size = '      . $this->db->escapeString($this->CurSize)     . ', ' : '');
 		$query .= (!empty($this->CurCategory) ? 'category = '  . $this->db->escapeString($this->CurCategory) . ', ' : '');
 		$query .= (!empty($this->CurSource)   ? 'source = '    . $this->db->escapeString($this->CurSource)   . ', ' : '');
 		$query .= (!empty($this->CurReqID)    ? 'requestid = ' . $this->CurReqID                             . ', ' : '');

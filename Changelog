@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-03-29 kevin
+	* Add: alt.binaries.erotica scraping.
 	* Add: alt.binaries.moove, also not testing since not had a post yet.
 	* Add: alt.binaries.flac to scraper, not tested since no one posted any yet.
 	* Chg: Force user to put username on IRCScraper, so no www-data / root in IRC channels.
