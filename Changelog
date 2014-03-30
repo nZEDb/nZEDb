@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2013-03-30 kevin
+	* Fix: Regex in IRCScraper a.b.teevee picking up wrong title.
 	* Chg: Simplify IRCScraper class more (no need to restart your bot)
 	* Chg: If usenet date is newer than now, set it to now.
 2014-03-29 kevin

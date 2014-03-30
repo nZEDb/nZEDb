@@ -302,7 +302,7 @@ class IRCScraper
 	protected function ab_teevee(&$message)
 	{
 		//Thank You [*Anonymous*] You are now Filling ReqId:[183443] [FULL Ant.and.Decs.Saturday.Night.Takeaway.S11E06.HDTV.x264-W4F] [Pred 1m 43s ago]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/', $message, $matches)) {
+		if (preg_match('/You\s+are\s+now\s+Filling\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.teevee';
 			$this->CurPre['grpoupid'] = $this->getGroupID('alt.binaries.teevee');
 			$this->siftMatches($matches);
