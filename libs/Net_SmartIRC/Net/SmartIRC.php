@@ -2532,6 +2532,25 @@ class Net_SmartIRC_base
     }
 
     /**
+     * Strips control characters from a IRC message.
+     *
+     * @param string $text
+     *
+     * @return string
+     */
+    function stripControlCharacters($text) {
+        $controlCodes = array(
+            '/(\x03(?:\d{1,2}(?:,\d{1,2})?)?)/',    // Color code
+            '/\x02/',                               // Bold
+            '/\x0F/',                               // Escaped
+            '/\x16/',                               // Italic
+            '/\x1F/',                               // Underline
+            '/\x12/'
+        );
+        return preg_replace($controlCodes,'',$text);
+    }
+
+    /**
      * tries to find a actionhandler for the received message ($ircdata) and calls it
      *
      * @param object $ircdata
@@ -2551,7 +2570,7 @@ class Net_SmartIRC_base
                 $regex = '/'.$handlerobject->message.'/';
             }
 
-            $ircdata->message = preg_replace("/[^\w~`!@#$%^&*()+={}\[\]|\\\\;:'\"<>,.\/? -]/", "", $ircdata->message);
+            $ircdata->message = $this->stripControlCharacters($ircdata->message);
             if (($handlerobject->type & $ircdata->type) &&
                 (preg_match($regex, $ircdata->message) == 1)) {
 

@@ -77,7 +77,6 @@ class IRCScraper
 		// Use real sockets instead of fsock.
 		$irc->setUseSockets(true);
 
-		$server = $nickname = $username = $realname = $password =  $port = $channelList = $regex = '';
 		switch($servertype) {
 			case 'efnet':
 				$server = SCRAPE_IRC_EFNET_SERVER;
@@ -96,14 +95,14 @@ class IRCScraper
 					//'#alt.binaries.teevee'                 => 'teevee',
 					//'#alt.binaries.moovee'                 => 'moovee',
 					//'#alt.binaries.erotica'                => 'erotica',
-					//'#alt.binaries.flac'                   => 'flac',
+					'#alt.binaries.flac'                   => 'flac',
 					//'#alt.binaries.foreign'                => 'foreign'
 				);
 				$regex =
 					// Simple regex, more advanced regex below when doing the real checks.
-					'/FILLED.*Pred.*ago|' .           // a.b.inner-sanctum
-					'Thank.*you.*Req.*Id.*Request' . // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
-					//'Thanks.*?you.*?You.*are.*Filling.*Pred.*ago' .
+					'/FILLED.*Pred.*ago|' .                         // a.b.inner-sanctum
+					'Thank.*you.*Req.*Id.*Request|' .               // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
+					'Thanks.*?you.*?You.*are.*Filling.*Pred.*ago' . // a.b.flac
 					'/';
 				break;
 			case 'corrupt':
@@ -180,8 +179,61 @@ class IRCScraper
 				$this->corrupt_pre($data->message);
 				break;
 
+			case 'abflac':
+				if ($channel === '#alt.binaries.flac') {
+					$this->ab_flac($data->message);
+				}
+				break;
+
 			default:
 				break;
+		}
+	}
+
+	/**
+	 * Get pre date from wD xH yM zS ago string.
+	 *
+	 * @param $agoString
+	 */
+	protected function getTimeFromAgo($agoString)
+	{
+		$predate = 0;
+		// Get pre date from this format : 10m 54s
+		if (preg_match('/((?P<day>\d+)d)?\s*((?P<hour>\d+)h)?\s*((?P<min>\d+)m)?\s*((?P<sec>\d+)s)?/i', $agoString, $matches)) {
+			if (!empty($matches['day'])) {
+				$predate += ((int)($matches['day']) * 86400);
+			}
+			if (!empty($matches['hour'])) {
+				$predate += ((int)($matches['hour']) * 3600);
+			}
+			if (!empty($matches['min'])) {
+				$predate += ((int)($matches['min']) * 60);
+			}
+			if (!empty($matches['sec'])) {
+				$predate += (int)$matches['sec'];
+			}
+			if ($predate !== 0) {
+				$predate = (time() - $predate);
+			}
+		}
+		$this->CurPreDate = ($predate === 0 ? '' : $this->db->from_unixtime($predate));
+	}
+
+	/**
+	 * Gets new PRE from #a.b.flac
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function ab_flac(&$message)
+	{
+		//Thank You [*Anonymous*] You are now Filling ReqId:[42548] [FULL VA-Diablo_III_Reaper_of_Souls_Collectors_Edition_Soundtrack-CD-FLAC-2014-BUDDHA] [Pred 55s ago]
+		if (preg_match('/ReqID:.*?\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<pred>.+?)\s+ago\]/i', $message, $matches)) {
+			$this->CurMD5 = $this->db->escapeString(md5($matches['title']));
+			$this->CurTitle = $matches['title'];
+			$this->CurSource = '#a.b.flac';
+			$this->getTimeFromAgo($matches['pred']);
+			$this->CurGroupID  = ($this->getGroupID('alt.binaries.flac') === false ? '' : $this->getGroupID('alt.binaries.flac'));
+			$this->checkForDupe();
 		}
 	}
 
@@ -193,12 +245,11 @@ class IRCScraper
 	protected function corrupt_pre(&$message)
 	{
 		//PRE: [TV-X264] Tinga.Tinga.Fabeln.S02E11.Warum.Bienen.stechen.GERMAN.WS.720p.HDTV.x264-RFG
-		if (preg_match('/PRE:.+?\[.*?\d{2}(?P<category>.+?)\]\s+(?P<title>.+)/i', $message, $matches)) {
+		if (preg_match('/^PRE: +\[(?P<category>.+?)\]\ +(?P<title>.+)$/i', $message, $matches)) {
 			$this->CurMD5 = $this->db->escapeString(md5($matches['title']));
 			$this->CurTitle = $matches['title'];
 			$this->CurCategory = $matches['category'];
 			$this->CurSource   = '#pre@corrupt';
-
 			$this->checkForDupe();
 		}
 	}
@@ -212,34 +263,13 @@ class IRCScraper
 	{	//[FILLED] [ 341953 | Emilie_Simon-Mue-CD-FR-2014-JUST | 16x79 | MP3 | *Anonymous* ] [ Pred 10m 54s ago ]
 		//06[FILLED] [ 342184 06| DJ_Tuttle--Optoswitches_(FF_011)-VINYL-1997-CMC_INT 06| 7x47 06| MP3 06| *Anonymous* 06] 06[ Pred 5h 46m 10s ago 06]"
 		if (preg_match('/FILLED.*?\]\s+\[\s+(?P<reqid>\d+)\s+.*?\|\s+(?P<title>.+?)\s+.*?\|\s+.+?\s+.*?\|\s+(?P<category>.+?)\s+.*?\|\s+.+?\s+.*?\]\s+.*?\[\s+Pred\s+(?P<pred>.+?)\s+ago\s+.*?\]/i', $message, $matches)) {
-
-			$predate = 0;
-			// Get pre date from this format : 10m 54s
-			if (preg_match('/((?P<day>\d+)d)?\s*((?P<hour>\d+)h)?\s*((?P<min>\d+)m)?\s*(?P<sec>\d+)s/i', $matches['pred'], $dateMatch)) {
-				if (!empty($dateMatch['day'])) {
-					$predate += ((int)($dateMatch['day']) * 86400);
-				}
-				if (!empty($dateMatch['hour'])) {
-					$predate += ((int)($dateMatch['hour']) * 3600);
-				}
-				if (!empty($dateMatch['min'])) {
-					$predate += ((int)($dateMatch['min']) * 60);
-				}
-				if (!empty($dateMatch['sec'])) {
-					$predate += (int)$dateMatch['sec'];
-				}
-				if ($predate !== 0) {
-					$this->CurPreDate = $this->db->from_unixtime((time() - $predate));
-				}
-			}
-
+			$this->getTimeFromAgo($matches['pred']);
 			$this->CurMD5      = $this->db->escapeString(md5($matches['title']));
 			$this->CurTitle    = $matches['title'];
 			$this->CurSource   = '#a.b.inner-sanctum';
 			$this->CurCategory = $matches['category'];
-			$this->CurGroupID  = $this->getGroupID('alt.binaries.inner-sanctum');
+			$this->CurGroupID  = ($this->getGroupID('alt.binaries.inner-sanctum') === false ? '' : $this->getGroupID('alt.binaries.inner-sanctum'));
 			$this->CurReqID    = $matches['reqid'];
-
 			$this->checkForDupe();
 		}
 	}
@@ -258,9 +288,8 @@ class IRCScraper
 			$this->CurMD5 = $this->db->escapeString(md5($matches['title']));
 			$this->CurTitle = $matches['title'];
 			$this->CurReqID = $matches['reqid'];
-			$this->CurGroupID  = $this->getGroupID(str_replace('#', '', $channel));
+			$this->CurGroupID  = ($this->getGroupID(str_replace('#', '', $channel)) === false ? '' : $this->getGroupID(str_replace('#', '', $channel)));
 			$this->CurSource = str_replace('#alt.binaries', '#a.b', $channel);
-
 			$this->checkForDupe();
 		}
 	}
