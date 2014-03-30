@@ -41,8 +41,9 @@ class IRCScraper
 	 * @param string       $serverType   efnet | corrupt
 	 * @param bool         $silent       Run this in silent mode (no text output).
 	 * @param bool         $debug        Turn on Net_SmartIRC debug?
+	 * @param bool         $socket       Use real sockets or fsock?
 	 */
-	public function __construct(&$irc, $serverType, &$silent, &$debug)
+	public function __construct(&$irc, $serverType, &$silent = false, &$debug = false, &$socket = true)
 	{
 		$this->db = new DB();
 		$this->groups = new Groups();
@@ -54,7 +55,7 @@ class IRCScraper
 		$this->serverType = $serverType;
 		$this->silent = $silent;
 		$this->resetPreVariables();
-		$this->startScraping();
+		$this->startScraping($socket);
 	}
 
 	/**
@@ -63,7 +64,7 @@ class IRCScraper
 	public function __destruct()
 	{
 		// Disconnect from IRC cleanly.
-		if (!is_null($this->IRC) && is_resource($this->IRC)) {
+		if (!is_null($this->IRC)) {
 			if (!$this->silent) {
 				echo
 					'Disconnecting from ' .
@@ -78,8 +79,9 @@ class IRCScraper
 	/**
 	 * Main method for scraping.
 	 *
+	 * @param bool $socket  Use real sockets or fsock?
 	 */
-	public function startScraping()
+	protected function startScraping(&$socket)
 	{
 		switch($this->serverType) {
 			case 'efnet':
@@ -131,7 +133,7 @@ class IRCScraper
 		}
 
 		// Use real sockets instead of fsock.
-		$this->IRC->setUseSockets(true);
+		$this->IRC->setUseSockets($socket);
 
 		// This will scan channel messages for the regex above.
 		$this->IRC->registerActionhandler(SMARTIRC_TYPE_CHANNEL, $regex, $this, 'check_type');

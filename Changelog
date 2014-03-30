@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2013-03-30 kevin
+	* Add: Option to use fsock on IRCScraper.
 	* Chg: Improve IRCScraper shell scripts.
 	* Fix: IRCScraper, a.b.erotica doesn't always have predate.
 	* Add: Show Category on text output of IRCScraper.
