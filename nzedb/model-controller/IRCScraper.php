@@ -22,14 +22,39 @@ class IRCScraper
 	protected $IRC = null;
 
 	/**
-	 * Construct
+	 * Current server.
+	 * efnet | corrupt
+	 * @var string
 	 */
-	public function __construct()
+	protected $serverType;
+
+	/**
+	 * Run this in silent mode (no text output).
+	 * @var bool
+	 */
+	protected $silent;
+
+	/**
+	 * Construct
+	 *
+	 * @param Net_SmartIRC $irc          Instance of class Net_SmartIRC
+	 * @param string       $serverType   efnet | corrupt
+	 * @param bool         $silent       Run this in silent mode (no text output).
+	 * @param bool         $debug        Turn on Net_SmartIRC debug?
+	 */
+	public function __construct(&$irc, $serverType, &$silent, &$debug)
 	{
 		$this->db = new DB();
 		$this->groups = new Groups();
 		$this->groupList = array();
+		$this->IRC = $irc;
+		if ($debug) {
+			$this->IRC->setDebug(SMARTIRC_DEBUG_ALL);
+		}
+		$this->serverType = $serverType;
+		$this->silent = $silent;
 		$this->resetPreVariables();
+		$this->startScraping();
 	}
 
 	/**
@@ -46,20 +71,13 @@ class IRCScraper
 	/**
 	 * Main method for scraping.
 	 *
-	 * @param Net_SmartIRC $irc Instance of class Net_SmartIRC
-	 * @param string $servertype efnet | corrupt
 	 */
-	public function startScraping(&$irc, $servertype)
+	public function startScraping()
 	{
-		$this->IRC = $irc;
-
-		// Show debug in CLI.
-		//$this->IRC->setDebug(SMARTIRC_DEBUG_ALL);
-
 		// Use real sockets instead of fsock.
 		$this->IRC->setUseSockets(true);
 
-		switch($servertype) {
+		switch($this->serverType) {
 			case 'efnet':
 				$server = SCRAPE_IRC_EFNET_SERVER;
 				$port = SCRAPE_IRC_EFNET_PORT;
@@ -111,8 +129,23 @@ class IRCScraper
 		// This will scan channel messages for the regex above.
 		$this->IRC->registerActionhandler(SMARTIRC_TYPE_CHANNEL, $regex, $this, 'check_type');
 
+		// If there's a problem during connection, try to reconnect.
+		$this->IRC->setAutoRetry(true);
+
+		// If problem connecting, wait 10 seconds before reconnecting.
+		$this->IRC->setReconnectdelay(10000);
+
+		// Try 3 times before giving up.
+		$this->IRC->setAutoRetryMax(3);
+
 		// Connect to IRC.
-		$this->IRC->connect($server, $port);
+		$connection = $this->IRC->connect($server, $port);
+		if ($connection === false) {
+			exit ('Error connecting to (' . $server . ':' . $port . '). Please verify your server information and try again.' . PHP_EOL);
+		}
+
+		// If a network error happens, automatically reconnect.
+		$this->IRC->setAutoReconnect(true);
 
 		// Login to IRC.
 		$this->IRC->login(
@@ -131,7 +164,9 @@ class IRCScraper
 		// Join channels.
 		$this->IRC->join($channelList);
 
-		echo '[' . date('r') . '] [Scraping of IRC channels for ' . $servertype .' started.]' . PHP_EOL;
+		if (!$this->silent) {
+			echo '[' . date('r') . '] [Scraping of IRC channels for ' . $this->serverType .' started.]' . PHP_EOL;
+		}
 
 		// Wait for action handlers.
 		$this->IRC->listen();
@@ -404,7 +439,9 @@ class IRCScraper
 			)
 		);
 
-		echo '[' . date('r') . '] [Added   PRE:] [' . $this->CurPre['source'] . '] [' . $this->CurPre['title'] . ']' . PHP_EOL;
+		if (!$this->silent) {
+			echo '[' . date('r') . '] [Added   PRE:] [' . $this->CurPre['source'] . '] [' . $this->CurPre['title'] . ']' . PHP_EOL;
+		}
 
 		$this->resetPreVariables();
 	}
@@ -436,7 +473,9 @@ class IRCScraper
 
 		$this->db->queryExec($query);
 
-		echo '[' . date('r') . '] [Updated PRE:] [' . $this->CurPre['source'] . '] [' . $this->CurPre['title'] . ']' . PHP_EOL;
+		if (!$this->silent) {
+			echo '[' . date('r') . '] [Updated PRE:] [' . $this->CurPre['source'] . '] [' . $this->CurPre['title'] . ']' . PHP_EOL;
+		}
 
 		$this->resetPreVariables();
 	}
