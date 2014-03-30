@@ -1,5 +1,6 @@
 <?php
-// If you are lazy, just change this, or else go and change everything else you need to.
+// If you are lazy, just change this, or else change everything else you need to.
+// Make sure this is unique (JohnDoe8d883j for example), or you will have trouble connecting (socket errors).
 $username = '';
 
 // EFNET server details.
