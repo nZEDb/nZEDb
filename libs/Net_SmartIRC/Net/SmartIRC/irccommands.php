@@ -101,28 +101,17 @@ class Net_SmartIRC_irccommands extends Net_SmartIRC_base
     /**
      * Joins one or more IRC channels with an optional key.
      *
-     * @param mixed $channelarray
-     * @param string $key
+     * @NOTE MODIFIED BY NZEDB TO ACCEPT PASSWORD PER CHANNEL.
+     *
+     * @param array $channelarray ; array('#channelname1' => 'password', '#channelname2' => null);
      * @param integer $priority message priority, default is SMARTIRC_MEDIUM
      * @return void
      * @access public
      */
-    function join($channelarray, $key = null, $priority = SMARTIRC_MEDIUM)
+    function join($channelarray, $priority = SMARTIRC_MEDIUM)
     {
-        if (!is_array($channelarray)) {
-            $channelarray = array($channelarray);
-        }
-
-        $channellist = implode(',', $channelarray);
-
-        if ($key !== null) {
-            foreach ($channelarray as $idx => $value) {
-                $this->_send('JOIN '.$value.' '.$key, $priority);
-            }
-        } else {
-            foreach ($channelarray as $idx => $value) {
-                $this->_send('JOIN '.$value, $priority);
-            }
+        foreach ($channelarray as $channel => $password) {
+            $this->_send('JOIN ' . $channel . ($password === null ? '' : ' ' . $password), $priority);
         }
     }
 
