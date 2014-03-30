@@ -423,7 +423,6 @@ class Net_SmartIRC_base
      * global into properties. Also some PHP runtime settings are configured.
      *
      * @access public
-     * @return void
      */
     function __construct()
     {
@@ -865,6 +864,7 @@ class Net_SmartIRC_base
         if ($boolean === true) {
             $this->_runasdaemon = true;
             ignore_user_abort(true);
+            set_time_limit(0);
         } else {
             $this->_runasdaemon = false;
         }
@@ -1082,15 +1082,16 @@ class Net_SmartIRC_base
                         .$this->_bindport, __FILE__, __LINE__);
                 } else {
                     $errno = socket_last_error($this->_socket);
-                    $error_msg = 'unable to bind '.$this->_bindaddress.':'
+                    $error_msg = 'ERROR: Unable to bind '.$this->_bindaddress.':'
                         .$this->_bindport.' reason: '.socket_strerror($errno)
                         .' ('.$errno.')';
                     $this->log(SMARTIRC_DEBUG_NOTICE,
                         'DEBUG_NOTICE: '.$error_msg, __FILE__, __LINE__);
-                    $this->throwError($error_msg);
+                    echo $error_msg . PHP_EOL;
+                    return false;
                 }
             }
-            $result = socket_connect($this->_socket, $this->_address, $this->_port);
+            $result = @socket_connect($this->_socket, $this->_address, $this->_port);
         } else {
             $this->log(SMARTIRC_DEBUG_SOCKET, 'DEBUG_SOCKET: using fsockets', __FILE__, __LINE__);
             $result = fsockopen($this->_address, $this->_port, $errno, $errstr);
@@ -1106,14 +1107,38 @@ class Net_SmartIRC_base
             $error_msg = 'couldn\'t connect to "'.$address.'" reason: "'.$error.'"';
             $this->log(SMARTIRC_DEBUG_NOTICE, 'DEBUG_NOTICE: '.$error_msg, __FILE__, __LINE__);
             // TODO! needs to be return value
-            $this->throwError($error_msg);
+            //$this->throwError($error_msg); // This returns, preventing reconnect.
 
             if (($this->_autoretry == true) &&
                 ($this->_autoretrycount < $this->_autoretrymax)) {
+                 echo 'ERROR connecting to (' .
+                     $address .
+                     ':' .
+                     $port .
+                     ') error: (' .
+                     $error .
+                     ') retry (' .
+                     $this->_autoretrycount .
+                     '/' .
+                     $this->_autoretrymax .
+                     '). Sleeping for (' .
+                     $this->_reconnectdelay .
+                     ') ms.' .
+                     PHP_EOL;
                  $this->_delayReconnect();
                  $this->_autoretrycount++;
                  $this->reconnect();
             } else {
+                echo 'ERROR connecting to (' .
+                    $address .
+                    ':' .
+                    $port .
+                    ') after (' .
+                    $this->_autoretrymax .
+                    ') retries, error: (' .
+                    $error .
+                    ').' .
+                    PHP_EOL;
                 return false;
             }
         } else {

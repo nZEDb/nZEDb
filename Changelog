@@ -6,6 +6,15 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2013-03-30 kevin
+	* Fix: IRCScraper, a.b.erotica doesn't always have predate.
+	* Add: Show Category on text output of IRCScraper.
+	* Chg: Various changes to scraper.
+	* Fix: #1242 wrong tmpunrar paths.
+	* Fix: Path to users.php in stage 5 of install causing install to not work.
+	* Fix: Regex in IRCScraper a.b.teevee picking up wrong title.
+	* Chg: Simplify IRCScraper class more (no need to restart your bot)
+	* Chg: If usenet date is newer than now, set it to now.
 2014-03-29 kevin
 	* Chg: SImplify methods even more in IRCScraper class.
 	* Add: alt.binaries.teevee scarping.
