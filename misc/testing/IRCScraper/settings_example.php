@@ -10,6 +10,8 @@ define('SCRAPE_IRC_EFNET_REALNAME', "$username");    // This is a name that peop
 define('SCRAPE_IRC_EFNET_USERNAME', "$username");    // This is part of your hostname, you can set this the same as nickname. This is also used to log in to ZNC.
 define('SCRAPE_IRC_EFNET_PASSWORD', false);          // This is used for bouncers like ZNC, set this false or '' if you don't have a bouncer.
 
+define('SCRAPE_IRC_C_Z_BOOL', true); // True uses Corrupt, False uses Zenet. (they both PRE the same stuff). If you have trouble with one, use the other.
+
 // Corrupt-Net server details.
 define('SCRAPE_IRC_CORRUPT_SERVER', 'irc.corrupt-net.org'); // This should not be changed, since this is the only address to corrupt.
 define('SCRAPE_IRC_CORRUPT_PORT', '6667');

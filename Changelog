@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2013-03-30 kevin
+	* Add: Toggle between Zenet and corrupt, make sure to edit Settings.php (add the new line from settings_example.php).
 	* Add: Zenet to IRCScraper (this has the same PRE as Corrupt-Net, use it if you can't connect to Corrupt, no point running both at the same time).
 	* Add: Option to use fsock on IRCScraper.
 	* Chg: Improve IRCScraper shell scripts.
