@@ -6,44 +6,9 @@
 class IRCScraper
 {
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $CurTitle;
-
-	/**
-	 * @var string
-	 */
-	protected $CurSize;
-
-	/**
-	 * @var string
-	 */
-	protected $CurCategory;
-
-	/**
-	 * @var string
-	 */
-	protected $CurPreDate;
-
-	/**
-	 * @var string
-	 */
-	protected $CurSource;
-
-	/**
-	 * @var string
-	 */
-	protected $CurMD5;
-
-	/**
-	 * @var string
-	 */
-	protected $CurReqID;
-
-	/**
-	 * @var string
-	 */
-	protected $CurGroupID;
+	protected $CurPre;
 
 	/**
 	 * List of groups and their ID's
@@ -63,9 +28,8 @@ class IRCScraper
 	{
 		$this->db = new DB();
 		$this->groups = new Groups();
-
-		$this->resetPreVariables();
 		$this->groupList = array();
+		$this->resetPreVariables();
 	}
 
 	/**
@@ -137,16 +101,14 @@ class IRCScraper
 				$username = SCRAPE_IRC_CORRUPT_USERNAME;
 				$realname = SCRAPE_IRC_CORRUPT_REALNAME;
 				$password = SCRAPE_IRC_CORRUPT_PASSWORD;
-				$channelList = array(
-					'#pre' => null
-				);
+				$channelList = array('#pre' => null);
 				$regex = '/PRE:.+?\[.+?\]/i'; // #pre
 				break;
 			default:
 				return;
 		}
 
-		// This will scan channel messages for the regexes above.
+		// This will scan channel messages for the regex above.
 		$this->IRC->registerActionhandler(SMARTIRC_TYPE_CHANNEL, $regex, $this, 'check_type');
 
 		// Connect to IRC.
@@ -259,7 +221,7 @@ class IRCScraper
 				$predate = (time() - $predate);
 			}
 		}
-		$this->CurPreDate = ($predate === 0 ? '' : $this->db->from_unixtime($predate));
+		$this->CurPre['predate'] = ($predate === 0 ? '' : $this->db->from_unixtime($predate));
 	}
 
 	/**
@@ -269,20 +231,20 @@ class IRCScraper
 	 */
 	protected function siftMatches(&$matches)
 	{
-		$this->CurMD5 = $this->db->escapeString(md5($matches['title']));
-		$this->CurTitle = $matches['title'];
+		$this->CurPre['md5'] = $this->db->escapeString(md5($matches['title']));
+		$this->CurPre['title'] = $matches['title'];
 
 		if (isset($matches['reqid'])) {
-			$this->CurReqID = $matches['reqid'];
+			$this->CurPre['reqid'] = $matches['reqid'];
 		}
 		if (isset($matches['size'])) {
-			$this->CurSize = $matches['size'];
+			$this->CurPre['size'] = $matches['size'];
 		}
 		if (isset($matches['predago'])) {
 			$this->getTimeFromAgo($matches['predago']);
 		}
 		if (isset($matches['category'])) {
-			$this->CurCategory = $matches['category'];
+			$this->CurPre['category'] = $matches['category'];
 		}
 		$this->checkForDupe();
 	}
@@ -296,8 +258,8 @@ class IRCScraper
 	{
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326264] [HD-Clip] [FULL 16x50MB TeenSexMovs.14.03.30.Daniela.XXX.720p.WMV-iaK] Filenames:[iak-teensexmovs-140330] Comments:[0] Watchers:[0] Total Size:[753MB] Points Earned:[54] [Pred 3m 20s ago]
 		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+\d+x\d+[KMGTP]?B\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\].+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
-			$this->CurSource = '#a.b.erotica';
-			$this->CurGroupID  = ($this->getGroupID('alt.binaries.erotica') === false ? '' : $this->getGroupID('alt.binaries.erotica'));
+			$this->CurPre['source']   = '#a.b.erotica';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.erotica');
 			$this->siftMatches($matches);
 		}
 	}
@@ -311,8 +273,8 @@ class IRCScraper
 	{
 		//Thank You [*Anonymous*] You are now Filling ReqId:[42548] [FULL VA-Diablo_III_Reaper_of_Souls_Collectors_Edition_Soundtrack-CD-FLAC-2014-BUDDHA] [Pred 55s ago]
 		if (preg_match('/ReqID:.*?\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
-			$this->CurSource = '#a.b.flac';
-			$this->CurGroupID  = ($this->getGroupID('alt.binaries.flac') === false ? '' : $this->getGroupID('alt.binaries.flac'));
+			$this->CurPre['source']   = '#a.b.flac';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.flac');
 			$this->siftMatches($matches);
 		}
 	}
@@ -326,8 +288,8 @@ class IRCScraper
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[140445] [FULL 94x50MB Burning.Daylight.2010.720p.BluRay.x264-SADPANDA] Requested by:[*Anonymous* 3h 29m ago] Comments:[0] Watchers:[0] Points Earned:[314] [Pred 4h 29m ago]
 		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+\d+x\d+[MGPTK]?B\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
-			$this->CurSource = '#a.b.moovee';
-			$this->CurGroupID  = ($this->getGroupID('alt.binaries.moovee') === false ? '' : $this->getGroupID('alt.binaries.moovee'));
+			$this->CurPre['source']  = '#a.b.moovee';
+			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.moovee');
 			$this->siftMatches($matches);
 		}
 	}
@@ -341,8 +303,8 @@ class IRCScraper
 	{
 		//Thank You [*Anonymous*] You are now Filling ReqId:[183443] [FULL Ant.and.Decs.Saturday.Night.Takeaway.S11E06.HDTV.x264-W4F] [Pred 1m 43s ago]
 		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/', $message, $matches)) {
-			$this->CurSource = '#a.b.teevee';
-			$this->CurGroupID  = ($this->getGroupID('alt.binaries.teevee') === false ? '' : $this->getGroupID('alt.binaries.teevee'));
+			$this->CurPre['source']   = '#a.b.teevee';
+			$this->CurPre['grpoupid'] = $this->getGroupID('alt.binaries.teevee');
 			$this->siftMatches($matches);
 		}
 	}
@@ -355,7 +317,7 @@ class IRCScraper
 	{
 		//PRE: [TV-X264] Tinga.Tinga.Fabeln.S02E11.Warum.Bienen.stechen.GERMAN.WS.720p.HDTV.x264-RFG
 		if (preg_match('/^PRE:\s+\[(?P<category>.+?)\]\s+(?P<title>.+)$/i', $message, $matches)) {
-			$this->CurSource   = '#pre@corrupt';
+			$this->CurPre['source'] = '#pre@corrupt';
 			$this->siftMatches($matches);
 		}
 	}
@@ -369,8 +331,8 @@ class IRCScraper
 	{	//[FILLED] [ 341953 | Emilie_Simon-Mue-CD-FR-2014-JUST | 16x79 | MP3 | *Anonymous* ] [ Pred 10m 54s ago ]
 		//06[FILLED] [ 342184 06| DJ_Tuttle--Optoswitches_(FF_011)-VINYL-1997-CMC_INT 06| 7x47 06| MP3 06| *Anonymous* 06] 06[ Pred 5h 46m 10s ago 06]"
 		if (preg_match('/FILLED.*?\]\s+\[\s+(?P<reqid>\d+)\s+.*?\|\s+(?P<title>.+?)\s+.*?\|\s+.+?\s+.*?\|\s+(?P<category>.+?)\s+.*?\|\s+.+?\s+.*?\]\s+.*?\[\s+Pred\s+(?P<predago>.+?)\s+ago\s+.*?\]/i', $message, $matches)) {
-			$this->CurSource   = '#a.b.inner-sanctum';
-			$this->CurGroupID  = ($this->getGroupID('alt.binaries.inner-sanctum') === false ? '' : $this->getGroupID('alt.binaries.inner-sanctum'));
+			$this->CurPre['source']  = '#a.b.inner-sanctum';
+			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.inner-sanctum');
 			$this->siftMatches($matches);
 		}
 	}
@@ -386,8 +348,8 @@ class IRCScraper
 		//Thank you<Bijour> Req Id<137732> Request<The_Blueprint-Phenomenology-(Retail)-2004-KzT *Pars Included*> Files<19> Dates<Req:2014-03-24 Filling:2014-03-29> Points<Filled:1393 Score:25604>
 		//Thank you<gizka> Req Id<42948> Request<Bloodsport.IV.1999.FS.DVDRip.XviD.iNT-EwDp *Pars Included*> Files<55> Dates<Req:2014-03-22 Filling:2014-03-29> Points<Filled:93 Score:5607>
 		if (preg_match('/Req.+?Id.*?<.*?(?P<reqid>\d+).*?>.*?Request.*?<\d{0,2}(?P<title>.+?)(\s+\*Pars\s+Included\*\d{0,2}>|\d{0,2}>)\s+/i', $message, $matches)) {
-			$this->CurGroupID  = ($this->getGroupID(str_replace('#', '', $channel)) === false ? '' : $this->getGroupID(str_replace('#', '', $channel)));
-			$this->CurSource = str_replace('#alt.binaries', '#a.b', $channel);
+			$this->CurPre['source']  = str_replace('#alt.binaries', '#a.b', $channel);
+			$this->CurPre['groupid'] = $this->getGroupID(str_replace('#', '', $channel));
 			$this->siftMatches($matches);
 		}
 	}
@@ -399,7 +361,7 @@ class IRCScraper
 	 */
 	protected function checkForDupe()
 	{
-		if ($this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $this->CurMD5)) === false) {
+		if ($this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $this->CurPre['md5'])) === false) {
 			$this->insertNewPre();
 		} else {
 			$this->updatePre();
@@ -411,38 +373,38 @@ class IRCScraper
 	 */
 	protected function insertNewPre()
 	{
-		if (empty($this->CurTitle)) {
+		if (empty($this->CurPre['title'])) {
 			return;
 		}
 
 		$query = 'INSERT INTO predb (';
 
-		$query .= (!empty($this->CurSize)     ? 'size, '      : '');
-		$query .= (!empty($this->CurCategory) ? 'category, '  : '');
-		$query .= (!empty($this->CurSource)   ? 'source, '    : '');
-		$query .= (!empty($this->CurReqID)    ? 'requestid, ' : '');
-		$query .= (!empty($this->CurGroupID)  ? 'groupid, '   : '');
+		$query .= (!empty($this->CurPre['size'])     ? 'size, '      : '');
+		$query .= (!empty($this->CurPre['category']) ? 'category, '  : '');
+		$query .= (!empty($this->CurPre['source'])   ? 'source, '    : '');
+		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid, ' : '');
+		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid, '   : '');
 
 		$query .= 'predate, md5, title, adddate) VALUES (';
 
-		$query .= (!empty($this->CurSize)     ? $this->db->escapeString($this->CurSize)     . ', '   : '');
-		$query .= (!empty($this->CurCategory) ? $this->db->escapeString($this->CurCategory) . ', '   : '');
-		$query .= (!empty($this->CurSource)   ? $this->db->escapeString($this->CurSource)   . ', '   : '');
-		$query .= (!empty($this->CurReqID)    ? $this->CurReqID                             . ', '   : '');
-		$query .= (!empty($this->CurGroupID)  ? $this->CurGroupID                           . ', '   : '');
-		$query .= (!empty($this->CurPreDate)  ? $this->CurPreDate                           . ', '   : 'NOW(), ');
+		$query .= (!empty($this->CurPre['size'])     ? $this->db->escapeString($this->CurPre['size'])     . ', '   : '');
+		$query .= (!empty($this->CurPre['category']) ? $this->db->escapeString($this->CurPre['category']) . ', '   : '');
+		$query .= (!empty($this->CurPre['source'])   ? $this->db->escapeString($this->CurPre['source'])   . ', '   : '');
+		$query .= (!empty($this->CurPre['reqid'])    ? $this->CurPre['reqid']                             . ', '   : '');
+		$query .= (!empty($this->CurPre['groupid'])  ? $this->CurPre['groupid']                           . ', '   : '');
+		$query .= (!empty($this->CurPre['predate'])  ? $this->CurPre['predate']                           . ', '   : 'NOW(), ');
 
 		$query .= '%s, %s, NOW())';
 
 		$this->db->queryExec(
 			sprintf(
 				$query,
-				$this->CurMD5,
-				$this->db->escapeString($this->CurTitle)
+				$this->CurPre['md5'],
+				$this->db->escapeString($this->CurPre['title'])
 			)
 		);
 
-		echo '[' . date('r') . '] [Add new PRE:] [' . $this->CurSource . '] [' . $this->CurTitle . ']' . PHP_EOL;
+		echo '[' . date('r') . '] [Added   PRE:] [' . $this->CurPre['source'] . '] [' . $this->CurPre['title'] . ']' . PHP_EOL;
 
 		$this->resetPreVariables();
 	}
@@ -452,29 +414,29 @@ class IRCScraper
 	 */
 	protected function updatePre()
 	{
-		if (empty($this->CurTitle)) {
+		if (empty($this->CurPre['title'])) {
 			return;
 		}
 
 		$query = 'UPDATE predb SET ';
 
-		$query .= (!empty($this->CurSize)     ? 'size = '      . $this->db->escapeString($this->CurSize)     . ', ' : '');
-		$query .= (!empty($this->CurCategory) ? 'category = '  . $this->db->escapeString($this->CurCategory) . ', ' : '');
-		$query .= (!empty($this->CurSource)   ? 'source = '    . $this->db->escapeString($this->CurSource)   . ', ' : '');
-		$query .= (!empty($this->CurReqID)    ? 'requestid = ' . $this->CurReqID                             . ', ' : '');
-		$query .= (!empty($this->CurGroupID)  ? 'groupid = '   . $this->CurGroupID                           . ', ' : '');
-		$query .= (!empty($this->CurPreDate)  ? 'predate = '   . $this->CurPreDate                           . ', ' : '');
+		$query .= (!empty($this->CurPre['size'])     ? 'size = '      . $this->db->escapeString($this->CurPre['size'])     . ', ' : '');
+		$query .= (!empty($this->CurPre['category']) ? 'category = '  . $this->db->escapeString($this->CurPre['category']) . ', ' : '');
+		$query .= (!empty($this->CurPre['source'])   ? 'source = '    . $this->db->escapeString($this->CurPre['source'])   . ', ' : '');
+		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid = ' . $this->CurPre['reqid']                             . ', ' : '');
+		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid = '   . $this->CurPre['groupid']                           . ', ' : '');
+		$query .= (!empty($this->CurPre['predate'])  ? 'predate = '   . $this->CurPre['predate']                           . ', ' : '');
 
 		if ($query === 'UPDATE predb SET '){
 			return;
 		}
 
-		$query .= 'title = ' . $this->db->escapeString($this->CurTitle);
-		$query .= ' WHERE md5 = ' . $this->CurMD5;
+		$query .= 'title = ' . $this->db->escapeString($this->CurPre['title']);
+		$query .= ' WHERE md5 = ' . $this->CurPre['md5'];
 
 		$this->db->queryExec($query);
 
-		echo '[' . date('r') . '] [Updated PRE:] [' . $this->CurSource . '] [' . $this->CurTitle . ']' . PHP_EOL;
+		echo '[' . date('r') . '] [Updated PRE:] [' . $this->CurPre['source'] . '] [' . $this->CurPre['title'] . ']' . PHP_EOL;
 
 		$this->resetPreVariables();
 	}
@@ -499,13 +461,17 @@ class IRCScraper
 	 */
 	protected function resetPreVariables()
 	{
-		$this->CurTitle    = '';
-		$this->CurSize     = '';
-		$this->CurCategory = '';
-		$this->CurPreDate  = '';
-		$this->CurSource   = '';
-		$this->CurMD5      = '';
-		$this->CurReqID    = '';
-		$this->CurGroupID  = '';
+		$this->CurPre =
+			array(
+				'title'    => '',
+				'md5'      => '',
+				'size'     => '',
+				'predate'  => '',
+				'category' => '',
+				'source'   => '',
+				'groupid'  => '',
+				'reqid'    => ''
+
+			);
 	}
 }
