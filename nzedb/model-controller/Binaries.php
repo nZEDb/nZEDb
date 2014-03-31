@@ -805,7 +805,6 @@ class Binaries
 					if (!isset($this->message[$subject])) {
 						$this->message[$subject] = $msg;
 
-
 						/* Date from header should be a string this format:
 						 * 31 Mar 2014 15:36:04 GMT or 6 Oct 1998 04:38:40 -0500
 						 * Still make sure it's not unix time, convert it to unix time if it is.
