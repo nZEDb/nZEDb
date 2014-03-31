@@ -109,9 +109,8 @@ class IRCScraper
 					'#alt.binaries.moovee'                 => 'moovee',
 					'#alt.binaries.erotica'                => 'erotica',
 					'#alt.binaries.flac'                   => 'flac',
-					'#alt.binaries.foreign'                => 'foreign'
-					//'#alt.binaries.console.ps3'            => null,
-					//<BinaryBot> [Anonymous person filling request for: FULL 56 Ragnarok.Odyssey.ACE.PS3-iMARS NTSC BLURAY imars-ragodyace-ps3 56x100MB by Khaine13 on 2014-03-29 13:14:12][ReqID: 4888][You get a bonus of 6 for a total points earning of: 62 for filling with 10% par2s!][Your score will be adjusted once you have -filled 4888]
+					'#alt.binaries.foreign'                => 'foreign',
+					'#alt.binaries.console.ps3'            => null
 				);
 				// Check if the user is ignoring channels.
 				if (defined('SCRAPE_IRC_EFNET_IGNORED_CHANNELS') && SCRAPE_IRC_EFNET_IGNORED_CHANNELS != '') {
@@ -131,17 +130,18 @@ class IRCScraper
 				$regex =
 					// Simple regex, more advanced regex below when doing the real checks.
 					'/' .
-						'FILLED.*Pred.*ago' .                          // a.b.inner-sanctum
+						'FILLED.*Pred.*ago' .                                  // a.b.inner-sanctum
 						'|' .
-						'Thank.*you.*Req.*Id.*Request' .               // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
+						'Thank.*you.*Req.*Id.*Request' .                       // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
 						'|' .
 						'Thank.*?you.*?You.*?are.*?now.*?Filling.*?ReqId.*?' . // a.b.flac a.b.teevee
 						'|' .
-						'Thank.*?You.*?Request.*?Filled!.*?ReqId' .    // a.b.moovee a.b.foreign
+						'Thank.*?You.*?Request.*?Filled!.*?ReqId' .            // a.b.moovee a.b.foreign
 						'|' .
-						'That.*?was.*?awesome.*?Shall.*?ReqId' .       // a.b.erotica
+						'That.*?was.*?awesome.*?Shall.*?ReqId' .               // a.b.erotica
+						'|' .
+						'person.*?filling.*?request.*?for:.*?ReqID:' .         // a.b.console.ps3
 					'/i';
-
 				// a.b.teevee:
 				// Nuke    : [NUKE] ReqId:[183497] [From.Dusk.Till.Dawn.S01E01.720p.HDTV.x264-BATV] Reason:[bad.ivtc.causing.jerky.playback.due.to.dupe.and.missing.frames.in.segment.from.16m.to.30m]
 				// Un nuke : [UNNUKE] ReqId:[183449] [The.Biggest.Loser.AU.S09E29.PDTV.x264-RTA] Reason:[get.samplefix]
@@ -308,6 +308,12 @@ class IRCScraper
 				}
 				break;
 
+			case 'binarybot':
+				if ($channel === '#alt.binaries.console.ps3') {
+					$this->ab_console_ps3($data->message);
+				}
+				break;
+
 			default:
 				break;
 		}
@@ -441,6 +447,22 @@ class IRCScraper
 		if (preg_match('/You\s+are\s+now\s+Filling\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.teevee';
 			$this->CurPre['grpoupid'] = $this->getGroupID('alt.binaries.teevee');
+			$this->siftMatches($matches);
+		}
+	}
+
+	/**
+	 * Gets new PRE from #a.b.console.ps3
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function ab_console_ps3(&$message)
+	{
+		//<BinaryBot> [Anonymous person filling request for: FULL 56 Ragnarok.Odyssey.ACE.PS3-iMARS NTSC BLURAY imars-ragodyace-ps3 56x100MB by Khaine13 on 2014-03-29 13:14:12][ReqID: 4888][You get a bonus of 6 for a total points earning of: 62 for filling with 10% par2s!][Your score will be adjusted once you have -filled 4888]
+		if (preg_match('/\s+FULL\d+\s+(?P<title>.+?)\s+.+?\]\[ReqID:\s+(?P<reqid>\d+)\]\[/', $message, $matches)) {
+			$this->CurPre['source']   = '#a.b.console.ps3';
+			$this->CurPre['grpoupid'] = $this->getGroupID('alt.binaries.console.ps3');
+			$this->CurPre['category'] = 'PS3';
 			$this->siftMatches($matches);
 		}
 	}
