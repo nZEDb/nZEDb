@@ -28,15 +28,8 @@ if ($connected !== true) {
 $group = $nntp->selectGroup('alt.binaries.cores');
 if (!$nntp->isError($group)) {
 
-	$nntp->getMessages($group['group'],
-		array(
-			'KxNLXZarL1w9UofcwpDr_4o111@JBinUp.local',
-			$group['last']-1,
-			$group['last']
-		)
-	);
-
-	//$nntp->getOverview($group['last']-1 . '-' . $group['last']);
+	$x = $nntp->getOverview($group['last']-1 . '-' . $group['last']);
+	var_dump($x);
 
 } else {
 	echo 'Error: ' . $group->getMessage() . PHP_EOL;

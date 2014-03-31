@@ -231,6 +231,21 @@ class Binaries
 
 		$this->blackList = $this->message = array();
 		$this->blackListLoaded = false;
+
+		if ($this->db->dbSystem() === 'mysql') {
+			$SQLTime = $this->db->queryOneRow('SELECT UNIX_TIMESTAMP(NOW()) AS time');
+			if ($SQLTime !== false) {
+				$SQLTime = $SQLTime['time'];
+				if ($SQLTime !== time()) {
+					$difference = abs($SQLTime - time());
+					if ($difference > 60) {
+						exit('FATAL ERROR: PHP and MySQL time do not match!' . PHP_EOL);
+					}
+				}
+			} else {
+				exit('FATAL ERROR: Unable to get current time from MySQL!' . PHP_EOL);
+			}
+		}
 	}
 
 	/**
@@ -789,16 +804,18 @@ class Binaries
 					// Set up the info for inserting into parts/binaries/collections tables.
 					if (!isset($this->message[$subject])) {
 						$this->message[$subject] = $msg;
-						// Check if it's unix time or a date string.
+
+
+						/* Date from header should be a string this format:
+						 * 31 Mar 2014 15:36:04 GMT or 6 Oct 1998 04:38:40 -0500
+						 * Still make sure it's not unix time, convert it to unix time if it is.
+						 */
 						$date = (is_numeric($msg['Date']) ? $msg['Date'] : strtotime($msg['Date']));
-						// Fixes for those with bad time settings.
-						if ($this->db->dbSystem() === 'mysql') {
-							$now = $this->db->queryOneRow('SELECT UNIX_TIMESTAMP(NOW()) AS time');
-							$now = ($now !== false ? (int)$now['time'] : time());
-						} else {
-							$now = time();
-						}
-						// Check if it's newer than now, if so, set it now.
+
+						// Get the current unixtime from PHP.
+						$now = time();
+
+						// Check if the header's time is newer than now, if so, set it now.
 						$this->message[$subject]['Date'] = ($date > $now ? $now : $date);
 
 						$this->message[$subject]['MaxParts'] = (int) $matches[3];

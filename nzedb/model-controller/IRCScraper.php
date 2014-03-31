@@ -103,6 +103,9 @@ class IRCScraper
 					'#alt.binaries.erotica'                => 'erotica',
 					'#alt.binaries.flac'                   => 'flac',
 					//'#alt.binaries.foreign'                => 'foreign'
+					//<@ABQueen> Thank You [*Anonymous*] Request Filled! ReqId:[61525] [Movie] [FULL 95x50MB Wadjda.2012.PAL.MULTI.DVDR-VIAZAC] Requested by:[*Anonymous* 5m 13s ago] Comments:[0] Watchers:[0] Points Earned:[317] [Pred 8m 27s ago]
+					//'#alt.binaries.console.ps3'            => null,
+					//<BinaryBot> [Anonymous person filling request for: FULL 56 Ragnarok.Odyssey.ACE.PS3-iMARS NTSC BLURAY imars-ragodyace-ps3 56x100MB by Khaine13 on 2014-03-29 13:14:12][ReqID: 4888][You get a bonus of 6 for a total points earning of: 62 for filling with 10% par2s!][Your score will be adjusted once you have -filled 4888]
 				);
 				$regex =
 					// Simple regex, more advanced regex below when doing the real checks.

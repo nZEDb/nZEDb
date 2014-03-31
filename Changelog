@@ -10,6 +10,7 @@ Each update goes to the top of the file
 	* Fix: insert errors in Binaries.php
 	* Fix: typo in PreDb
 2014-03-31 kevin
+	* Add: Check for non matching PHP/MySQL time in binary.php
 	* Chg: Use MySQL's current time if a time setting is wrong before inserting collections postdate.
 	* Chg: Sprintf string to integer for groupid in predb.
 	* Chg: Use contant for path to settings.php on IRCScraper.
