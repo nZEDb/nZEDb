@@ -26,7 +26,7 @@ if (!in_array($argv[1], array('efnet', 'cz'))) {
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIBS . 'Net_SmartIRC/Net/SmartIRC.php';
-require_once 'settings.php';
+require_once nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php';
 
 if (!defined('SCRAPE_IRC_EFNET_NICKNAME') ||
 	!defined('SCRAPE_IRC_CORRUPT_NICKNAME') ||
