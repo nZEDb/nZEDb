@@ -9,7 +9,7 @@ class AniDBstandAlone
 {
 	const CLIENTVER = 1;
 
-	function __construct($debug=false, $echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$s = new Sites();
 		$this->site = $s->get();
@@ -435,7 +435,7 @@ Holding on to this in case we want it again as it has some uses, but currently w
 if (isset($argv[1]) && is_numeric($argv[1]))
 {
 	// create a new AniDB object
-	$anidb = new AniDBstandAlone($echooutput=true);
+	$anidb = new AniDBstandAlone(true);
 
 	// next get the title list and populate the DB
 	$anidb->animetitlesUpdate();
