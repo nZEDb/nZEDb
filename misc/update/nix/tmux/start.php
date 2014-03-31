@@ -224,6 +224,34 @@ function window_stripped_utilities($tmux_session)
 	exec("tmux selectp -t 0; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
 }
 
+function window_ircscraper($tmux_session, $window)
+{
+	$t = new Tmux();
+	$tmux = $t->get();
+	$scrape_cz = $tmux->scrape_cz;
+	$scrape_efnet = $tmux->scrape_efnet;
+
+	if ($scrape_cz == 1 && $scrape_efnet == 1) {
+		$DIR = nZEDb_MISC;
+		$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
+
+		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\" && php $ircscraper cz'");
+		exec("tmux selectp -t 0; tmux splitw -t $tmux_session:$window -v -p 50 'printf \"\033]2;scrape_Efnet\033\" && php $ircscraper efnet'");
+	}
+	else if ($scrape_cz == 1) {
+		$DIR = nZEDb_MISC;
+		$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
+
+		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\" && php $ircscraper cz'");
+	}
+	elseif ($scrape_efnet == 1) {
+		$DIR = nZEDb_MISC;
+		$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
+
+		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_Efnet\033\" && php $ircscraper efnet'");
+	}
+}
+
 function window_post($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n post 'printf \"\033]2;postprocessing_additional\033\"'");
@@ -272,6 +300,7 @@ if ($seq == 1) {
 	window_utilities($tmux_session);
 	window_post($tmux_session);
 	window_proxy($tmux_session, 3);
+	window_ircscraper($tmux_session, 4);
 	if ($colors == 1) {
 		window_colors($tmux_session);
 	}
@@ -288,6 +317,7 @@ if ($seq == 1) {
 
 	window_stripped_utilities($tmux_session);
 	window_proxy($tmux_session, 2);
+	window_ircscraper($tmux_session, 3);
 	if ($colors == 1) {
 		window_colors($tmux_session);
 	}
@@ -307,6 +337,7 @@ if ($seq == 1) {
 	window_utilities($tmux_session);
 	window_post($tmux_session);
 	window_proxy($tmux_session, 3);
+	window_ircscraper($tmux_session, 4);
 
 	if ($colors == 1) {
 		window_colors($tmux_session);
