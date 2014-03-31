@@ -4,6 +4,18 @@ You must first copy settings_example.php to settings.php and change the settings
 
 Next you can run scrape.php, it will tell you all the options.
 
-scrape.sh runs the bots with text output, if you cancel the script, one of the bots will still run, you must kill it manually.
+It is recomended to run scrape.php by itself, without the shell script,
+the servers are sometimes full and the shell scripts can't pick up those
+errors well.
 
-scrape_daemon.sh runs the bots with no text output and lets go of the terminal lock (if you want to restart the script later, you MUST kill the bots first).
+Corrupt and Zenet pre the same stuff, so there's no point in running both,
+corrupt however is harder to connect to(because the server is almost always full),
+so use zenet if you can't connect to corrupt.
+
+If you have trouble connecting to efnet, try a different server address:
+(irc.blackened.com | irc.Qeast.net | irc.efnet.pl | efnet.demon.co.uk | irc.lightning.net)
+
+scrape.sh runs the bots with text output, closing the terminal will exit the bots.
+
+scrape_daemon.sh runs the bots with no text output and lets go of the
+terminal lock (if you want to restart the script later, the script will close the old scripts first).

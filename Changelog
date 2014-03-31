@@ -6,7 +6,20 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-03-31 bart39
+	* Fix: typo in PreDb
+2014-03-31 kevin
+	* Chg: Use MySQL's current time if a time setting is wrong before inserting collections postdate.
+	* Chg: Sprintf string to integer for groupid in predb.
+	* Chg: Use contant for path to settings.php on IRCScraper.
+2014-03-31 bart39
+	* Fix: PreDb 10 minute sleep timer from last adddate never reached if using IRCScraper
 2013-03-30 kevin
+	* Add: Random username generator to IRCScraper.
+	* Add: Toggle between Zenet and corrupt, make sure to edit Settings.php (add the new line from settings_example.php).
+	* Add: Zenet to IRCScraper (this has the same PRE as Corrupt-Net, use it if you can't connect to Corrupt, no point running both at the same time).
+	* Add: Option to use fsock on IRCScraper.
+	* Chg: Improve IRCScraper shell scripts.
 	* Fix: IRCScraper, a.b.erotica doesn't always have predate.
 	* Add: Show Category on text output of IRCScraper.
 	* Chg: Various changes to scraper.
