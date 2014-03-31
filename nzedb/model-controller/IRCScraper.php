@@ -197,9 +197,12 @@ class IRCScraper
 			echo
 				'[' .
 				date('r') .
-				'] [Scraping of IRC channels for ' .
-				$this->serverType .
-				' started.]' .
+				'] [Scraping of IRC channels for (' .
+				$server .
+				$port .
+				') (' .
+				$nickname .
+				') started.]' .
 				PHP_EOL;
 		}
 
