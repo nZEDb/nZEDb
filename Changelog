@@ -14,6 +14,8 @@ Each update goes to the top of the file
 	* Fix: insert errors in Binaries.php
 	* Fix: typo in PreDb
 2014-03-31 kevin
+	* Fix: credits to DariusIII ; Typos in IRCScrapper
+	* Add: Parsing nukes for a.b.erotica in IRCScrapper
 	* Add: Parsing of files/nukes to IRCScraper.
 	* Chg: Put zenet to default due to connection issues with corrupt.
 	* Add: Patch for adding nuked/files to predb (will start working on putting those in db) WARNING THIS CAN BE A SLOW PATCH, BE PATIENT!
