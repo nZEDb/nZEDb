@@ -460,8 +460,9 @@ class IRCScraper
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[42614] [FULL 10x15MB You_Blew_It-Keep_Doing_What_Youre_Doing-CD-FLAC-2014-WRE] Requested by:[*Anonymous* 21s ago] Comments:[0] Watchers:[0] Points Earned:[10] [Pred 3m 16s ago]
 		if (preg_match('/Request\s+Filled!\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGTP]?B)\s+(?P<title>.+?)\].+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
-			$this->CurPre['source']  = '#a.b.flac';
-			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.sounds.flac');
+			$this->CurPre['source']   = '#a.b.flac';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.sounds.flac');
+			$this->CurPre['category'] = 'FLAC';
 			$this->siftMatches($matches);
 		}
 	}
@@ -508,6 +509,7 @@ class IRCScraper
 		if (preg_match('/Request\s+Filled!\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGPT]?B)\s+(?P<title>.+?)\].+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.teevee';
 			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.teevee');
+			$this->CurPre['category'] = 'TV';
 			$this->siftMatches($matches);
 
 		//[NUKE] ReqId:[183497] [From.Dusk.Till.Dawn.S01E01.720p.HDTV.x264-BATV] Reason:[bad.ivtc.causing.jerky.playback.due.to.dupe.and.missing.frames.in.segment.from.16m.to.30m]
@@ -515,6 +517,7 @@ class IRCScraper
 		} else if (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)\]/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.teevee';
 			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.teevee');
+			$this->CurPre['category'] = 'TV';
 			$this->siftMatches($matches);
 		}
 	}
@@ -731,6 +734,7 @@ class IRCScraper
 					default:
 						break;
 				}
+				$nukeString .= ' [' . $this->CurPre['reason'] . '] ';
 			}
 
 			echo
