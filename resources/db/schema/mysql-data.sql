@@ -734,7 +734,7 @@ INSERT INTO site (setting, value)
   ('showdroppedyencparts', '0'),
   ('book_reqids', '8010'),
   ('showbacks', '0'),
-  ('sqlpatch', '190');
+  ('sqlpatch', '192');
 
 INSERT INTO genres (title, type)
   VALUES
@@ -956,7 +956,9 @@ INSERT INTO tmux (setting, value) VALUES ('defrag_cache', '900'),
 ('showquery', '0'),
 ('fix_crap_opt', 'Disabled'),
 ('showprocesslist', '0'),
-('processupdate', '2');
+('processupdate', '2'),
+('scrape_cz', '0'),
+('scrape_efnet', '0');
 
 INSERT INTO countries (code, name) VALUES ('AF', 'Afghanistan'),
 ('AX', 'Aland Islands'),
