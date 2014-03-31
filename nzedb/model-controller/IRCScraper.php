@@ -117,6 +117,10 @@ class IRCScraper
 						'|' .
 						'That.*?was.*?awesome.*?Shall.*?ReqId' .       // a.b.erotica
 					'/i';
+
+				// a.b.teevee:
+				// Nuke    : [NUKE] ReqId:[183497] [From.Dusk.Till.Dawn.S01E01.720p.HDTV.x264-BATV] Reason:[bad.ivtc.causing.jerky.playback.due.to.dupe.and.missing.frames.in.segment.from.16m.to.30m]
+				// Un nuke : [UNNUKE] ReqId:[183449] [The.Biggest.Loser.AU.S09E29.PDTV.x264-RTA] Reason:[get.samplefix]
 				break;
 
 			case 'corrupt':
@@ -128,6 +132,9 @@ class IRCScraper
 				$password    = SCRAPE_IRC_CORRUPT_PASSWORD;
 				$channelList = array('#pre' => null);
 				$regex       = '/PRE:.+?\[.+?\]/i'; // #pre
+				// Nuke    : NUKE: Miclini-Sunday_Morning_P1-DIRFIX-DAB-03-30-2014-G4E [dirfix.must.state.name.of.release.being.fixed] [EthNet]
+				// Un nuke : UNNUKE: Youssoupha-Sur_Les_Chemins_De_Retour-FR-CD-FLAC-2009-0MNi [flac.rule.4.12.states.ENGLISH.artist.and.title.must.be.correct.and.this.is.not.ENGLISH] [LocalNet]
+				// Mod nuke: MODNUKE: Miclini-Sunday_Morning_P1-DIRFIX-DAB-03-30-2014-G4E [nfo.must.state.name.of.release.being.fixed] [EthNet]
 				break;
 
 			case 'zenet':
@@ -139,6 +146,8 @@ class IRCScraper
 				$password    = SCRAPE_IRC_ZENET_PASSWORD;
 				$channelList = array('#Pre' => null);
 				$regex       = '/^\(PRE\)\s+\(/'; // #Pre
+				// Nuke   : (NUKE) (German_TOP100_Single_Charts_31_03_2014-MCG) (selfmade.compilations.not.allowed)
+				// Un nuke: (UNNUKE) (The.Biggest.Loser.AU.S09E29.PDTV.x264-RTA) (get.samplefix)
 				break;
 
 			default:

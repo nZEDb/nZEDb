@@ -650,10 +650,11 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %s
+											SET requestid = %s, groupid = %d
 											WHERE md5 = %s',
 											$matches2["requestid"],
-											$groupid, $md5
+											$groupid,
+											$md5
 										)
 									);
 								}
@@ -717,8 +718,11 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %s
-											WHERE md5 = %s', $matches2["requestid"], $groupid, $md5
+											SET requestid = %s, groupid = %d
+											WHERE md5 = %d',
+											$matches2["requestid"],
+											$groupid,
+											$md5
 										)
 									);
 								}
@@ -783,7 +787,7 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %s
+											SET requestid = %s, groupid = %d
 											WHERE md5 = %s',
 											$matches2["requestid"],
 											$groupid,
@@ -852,7 +856,7 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %s
+											SET requestid = %s, groupid = %d
 											WHERE md5 = %s',
 											$matches2["requestid"],
 											$groupid,
