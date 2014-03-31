@@ -34,7 +34,7 @@ if (!$predata) {
 					break;
 			}
 			if ($nuked !== '') {
-				print "<tr><th>" . $nuked . ":</th><td>" . htmlentities($predata['nukereason'], ENT_QUOTES) . "</td></tr>\n";
+				print "<tr><th>" . $nuked . ":</th><td>" . htmlentities((isset($predata['nukereason']) ? $predata['nukereason'] : ''), ENT_QUOTES) . "</td></tr>\n";
 			}
 		}
 		print "<tr><th>Title:</th><td>" . htmlentities($predata["title"], ENT_QUOTES) . "</td></tr>\n";
