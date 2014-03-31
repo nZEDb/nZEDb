@@ -1,7 +1,7 @@
 <?php
 
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+require_once nZEDb_LIB . 'Util.php';
 
 class Console
 {
@@ -36,7 +36,7 @@ class Console
 	{
 		$db = $this->db;
 		$like = 'ILIKE';
-		if ($db->dbSystem() === 'mysql') {
+		if ($db->dbSystem() == 'mysql') {
 			$like = 'LIKE';
 		}
 		return $db->queryOneRow(sprintf("SELECT * FROM consoleinfo WHERE title LIKE %s AND platform %s %s", $db->escapeString("%" . $title . "%"), $like, $db->escapeString("%" . $platform . "%")));
@@ -93,9 +93,9 @@ class Console
 		}
 
 		if ($maxage > 0) {
-			if ($db->dbSystem() === 'mysql') {
+			if ($db->dbSystem() == 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() === 'pgsql') {
+			} else if ($db->dbSystem() == 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		} else {
@@ -149,9 +149,9 @@ class Console
 
 		$maxage = '';
 		if ($maxage > 0) {
-			if ($db->dbSystem() === 'mysql') {
+			if ($db->dbSystem() == 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() === 'pgsql') {
+			} else if ($db->dbSystem() == 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
@@ -236,7 +236,7 @@ class Console
 		$browseby = ' ';
 		$browsebyArr = $this->getBrowseByOptions();
 		$like = 'ILIKE';
-		if ($db->dbSystem() === 'mysql') {
+		if ($db->dbSystem() == 'mysql') {
 			$like = 'LIKE';
 		}
 		foreach ($browsebyArr as $bbk => $bbv) {
@@ -514,11 +514,11 @@ class Console
 	public function processConsoleReleases()
 	{
 		$db = $this->db;
-<<<<<<< HEAD
+<<<<<<< .merge_file_a00784
 		$res = $db->queryDirect(sprintf('SELECT r.searchname, r.id FROM releases r INNER JOIN category c ON r.categoryid = c.id WHERE nzbstatus = 1 AND isrenamed = %s AND r.consoleinfoid IS NULL AND c.parentid = %d ORDER BY r.postdate DESC LIMIT %d', $this->renamed, Category::CAT_PARENT_GAME, $this->gameqty));
 =======
 		$res = $db->queryDirect(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 %s AND consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ORDER BY postdate DESC LIMIT %d', $this->renamed, $this->gameqty));
->>>>>>> 904824e79ffa9671dfc2e1c6f646bf5832fb9130
+>>>>>>> .merge_file_a10232
 
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
