@@ -765,7 +765,7 @@ class IRCScraper
 					default:
 						break;
 				}
-				$nukeString .= ' [' . $this->CurPre['reason'] . '] ';
+				$nukeString .= '[' . $this->CurPre['reason'] . '] ';
 			}
 
 			echo
@@ -774,11 +774,12 @@ class IRCScraper
 				($new ? '] [ Added Pre ] [' : '] [Updated Pre] [') .
 				$this->CurPre['source'] .
 				'] ' .
-				($nukeString === '' ? '' : $nukeString) .
+				 $nukeString .
 				'[' .
 				$this->CurPre['title'] .
 				']' .
 				(!empty($this->CurPre['category']) ? ' [' . $this->CurPre['category'] . ']' : '') .
+				(!empty($this->CurPre['size']) ? ' [' . $this->CurPre['size'] . ']' : '') .
 				PHP_EOL;
 		}
 	}
