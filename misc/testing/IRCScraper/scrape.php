@@ -1,6 +1,6 @@
 <?php
 
-if (!is_file('settings.php')) {
+if (!is_file(nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php')) {
 	exit('Copy settings_example.php to settings.php and change the settings.' . PHP_EOL);
 }
 

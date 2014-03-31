@@ -6,9 +6,16 @@
 class IRCScraper
 {
 	/**
+	 * Array of current pre info.
 	 * @var array
 	 */
 	protected $CurPre;
+
+	/**
+	 * Array of old pre info.
+	 * @var array
+	 */
+	protected $OldPre;
 
 	/**
 	 * List of groups and their ID's
@@ -102,11 +109,25 @@ class IRCScraper
 					'#alt.binaries.moovee'                 => 'moovee',
 					'#alt.binaries.erotica'                => 'erotica',
 					'#alt.binaries.flac'                   => 'flac',
-					//'#alt.binaries.foreign'                => 'foreign'
-					//<@ABQueen> Thank You [*Anonymous*] Request Filled! ReqId:[61525] [Movie] [FULL 95x50MB Wadjda.2012.PAL.MULTI.DVDR-VIAZAC] Requested by:[*Anonymous* 5m 13s ago] Comments:[0] Watchers:[0] Points Earned:[317] [Pred 8m 27s ago]
+					'#alt.binaries.foreign'                => 'foreign'
 					//'#alt.binaries.console.ps3'            => null,
 					//<BinaryBot> [Anonymous person filling request for: FULL 56 Ragnarok.Odyssey.ACE.PS3-iMARS NTSC BLURAY imars-ragodyace-ps3 56x100MB by Khaine13 on 2014-03-29 13:14:12][ReqID: 4888][You get a bonus of 6 for a total points earning of: 62 for filling with 10% par2s!][Your score will be adjusted once you have -filled 4888]
 				);
+				// Check if the user is ignoring channels.
+				if (defined('SCRAPE_IRC_EFNET_IGNORED_CHANNELS') && SCRAPE_IRC_EFNET_IGNORED_CHANNELS != '') {
+					$ignored = explode(',', SCRAPE_IRC_EFNET_IGNORED_CHANNELS);
+					$newList = array();
+					foreach($channelList as $channel => $password) {
+						if (!in_array($channel, $ignored)) {
+							$newList[$channel] = $password;
+						}
+					}
+					if (empty($newList)) {
+						exit('ERROR: You have ignored every group there is to scrape!' . PHP_EOL);
+					}
+					$channelList = $newList;
+					unset($newList);
+				}
 				$regex =
 					// Simple regex, more advanced regex below when doing the real checks.
 					'/' .
@@ -116,7 +137,7 @@ class IRCScraper
 						'|' .
 						'Thank.*?you.*?You.*?are.*?now.*?Filling.*?ReqId.*?' . // a.b.flac a.b.teevee
 						'|' .
-						'Thank.*?You.*?Request.*?Filled!.*?ReqId' .    // a.b.moovee
+						'Thank.*?You.*?Request.*?Filled!.*?ReqId' .    // a.b.moovee a.b.foreign
 						'|' .
 						'That.*?was.*?awesome.*?Shall.*?ReqId' .       // a.b.erotica
 					'/i';
@@ -281,6 +302,12 @@ class IRCScraper
 				}
 				break;
 
+			case 'abqueen':
+				if ($channel === '#alt.binaries.foreign') {
+					$this->ab_foreign($data->message);
+				}
+				break;
+
 			default:
 				break;
 		}
@@ -381,8 +408,24 @@ class IRCScraper
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[140445] [FULL 94x50MB Burning.Daylight.2010.720p.BluRay.x264-SADPANDA] Requested by:[*Anonymous* 3h 29m ago] Comments:[0] Watchers:[0] Points Earned:[314] [Pred 4h 29m ago]
 		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+\d+x\d+[MGPTK]?B\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
-			$this->CurPre['source']  = '#a.b.moovee';
-			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.moovee');
+			$this->CurPre['source']   = '#a.b.moovee';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.moovee');
+			$this->CurPre['category'] = 'Movies';
+			$this->siftMatches($matches);
+		}
+	}
+
+	/**
+	 * Gets new PRE from #a.b.foreign
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function ab_foreign(&$message)
+	{
+		//Thank You [*Anonymous*] Request Filled! ReqId:[61525] [Movie] [FULL 95x50MB Wadjda.2012.PAL.MULTI.DVDR-VIAZAC] Requested by:[*Anonymous* 5m 13s ago] Comments:[0] Watchers:[0] Points Earned:[317] [Pred 8m 27s ago]
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+\d+x\d+[MGPTK]?B\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
+			$this->CurPre['source']  = '#a.b.foreign';
+			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.mom');
 			$this->siftMatches($matches);
 		}
 	}
@@ -469,7 +512,8 @@ class IRCScraper
 	 */
 	protected function checkForDupe()
 	{
-		if ($this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $this->CurPre['md5'])) === false) {
+		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $this->CurPre['md5']));
+		if ($this->OldPre === false) {
 			$this->insertNewPre();
 		} else {
 			$this->updatePre();
@@ -529,7 +573,7 @@ class IRCScraper
 		$query = 'UPDATE predb SET ';
 
 		$query .= (!empty($this->CurPre['size'])     ? 'size = '      . $this->db->escapeString($this->CurPre['size'])     . ', ' : '');
-		$query .= (!empty($this->CurPre['category']) ? 'category = '  . $this->db->escapeString($this->CurPre['category']) . ', ' : '');
+		$query .= (empty($this->OldPre['category']) && !empty($this->CurPre['category']) ? 'category = '  . $this->db->escapeString($this->CurPre['category']) . ', ' : '');
 		$query .= (!empty($this->CurPre['source'])   ? 'source = '    . $this->db->escapeString($this->CurPre['source'])   . ', ' : '');
 		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid = ' . $this->CurPre['reqid']                             . ', ' : '');
 		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid = '   . $this->CurPre['groupid']                           . ', ' : '');
@@ -549,6 +593,11 @@ class IRCScraper
 		$this->resetPreVariables();
 	}
 
+	/**
+	 * Echo new or update pre to CLI.
+	 *
+	 * @param bool $new
+	 */
 	protected function doEcho($new = true)
 	{
 		if (!$this->silent) {
@@ -585,6 +634,7 @@ class IRCScraper
 	 */
 	protected function resetPreVariables()
 	{
+		$this->OldPre = array();
 		$this->CurPre =
 			array(
 				'title'    => '',
