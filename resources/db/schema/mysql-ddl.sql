@@ -763,10 +763,9 @@ CREATE INDEX ix_shortgroups_name ON shortgroups(name);
 
 DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
-	id INT(11) NOT NULL AUTO_INCREMENT,
-	name VARCHAR(255) NOT NULL DEFAULT "",
-	code CHAR(2) NOT NULL DEFAULT "",
-	PRIMARY KEY (id)
+  code CHAR(2) NOT NULL DEFAULT "",
+  name VARCHAR(255) NOT NULL DEFAULT "",
+  PRIMARY KEY (name)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
 CREATE INDEX ix_country_name ON country (name);

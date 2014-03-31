@@ -1,3 +1,4 @@
+id, releasetitle, country
 1	Fernwood 2Night	US
 2	America 2Night	US
 3	Mary Hartman, Mary Hartman	US
@@ -177,7 +178,7 @@
 177	She TV	US
 178	Lidsville	US
 179	Gilligan's Planet	US
-180	Wonderbug	''
+180	Wonderbug	""
 9466	Jennings	UK
 182	Space Rangers	US
 183	Widget, the World Watcher	US
@@ -473,7 +474,7 @@
 475	Arabian Knights	US
 476	Mother Love	UK
 477	Café Americain	US
-478	Sketch Pad	''
+478	Sketch Pad	""
 479	Tuesday Night Titans	US
 480	The New Phil Silvers Show	US
 481	Take the High Road	UK
@@ -518,7 +519,7 @@
 521	Extreme Dinosaurs	US
 522	It's Only TV But I Like It	UK
 523	The Magician (1999)	US
-524	The Micro Ventures	''
+524	The Micro Ventures	""
 525	The Monroes (1995)	US
 526	Wichita Town	US
 527	The Wrangler	US
@@ -615,13 +616,13 @@
 618	Animal Crackers	CA
 619	The Hunted	US
 620	Celeb	UK
-621	'orrible	UK
+621	"orrible	UK
 622	What Would You Do?	US
 623	Terrahawks	UK
 624	Mike, Lu & Og	US
 625	The Andy Williams Show (1962)	US
 626	The Andy Williams Show (1969)	US
-627	Skwids	''
+627	Skwids	""
 628	Rockface	UK
 629	Movie House	US
 630	The Croc Files	AU
@@ -744,7 +745,7 @@
 750	Coronado 9	US
 751	Riding High	NZ
 752	Bowler	UK
-753	Secret Bodyguard	''
+753	Secret Bodyguard	""
 12664	Morangos com Açúcar	PT
 755	Date with the Angels	US
 756	The Bluffers	NL
@@ -754,7 +755,7 @@
 761	Do Not Adjust Your Set	UK
 762	Saturday Supercade	US
 763	Legends Of The Hidden Temple	US
-764	"A" for Andromeda (1961)	UK
+764	\"A\" for Andromeda (1961)	UK
 765	Fat Cow Motel	AU
 766	Tracey McBean	AU
 767	Phoenix Nights	UK
@@ -776,7 +777,7 @@
 783	Forensic Files	US
 784	Futurecast	UK
 785	Judge John Deed	UK
-786	Milkman	''
+786	Milkman	""
 787	Center Stage	US
 788	Maggie... At Home With	AU
 789	Elvira's Movie Macabre	US
@@ -983,7 +984,7 @@
 993	William and Mary	UK
 21898	Spaanse Droom, De	NL
 995	An American in Canada	CA
-997	Wavelength	''
+997	Wavelength	""
 998	Phoenix (AU)	AU
 999	The Peter Principle	UK
 1000	Our World	US
@@ -1024,7 +1025,7 @@
 1036	Golden Boy (JP)	JP
 1037	Miracle Girls	JP
 1038	Shadow Skill	JP
-1039	Moo Wop	''
+1039	Moo Wop	""
 1040	Stingray (1964)	UK
 1041	The Murder Game	UK
 1042	Angelic Layer	JP
@@ -1046,7 +1047,7 @@
 25091	Star Académie (CA)	CA
 1060	Kiddy Grade	JP
 14567	Gokusen (2002)	JP
-1062	Oni	''
+1062	Oni	""
 1063	SM Girls Saber Marionette R	JP
 1064	Vandread (JP)	JP
 1065	Noozles	JP
@@ -1066,7 +1067,7 @@
 1079	The Chuck McCann Show	US
 1080	The Cops	UK
 1081	The Little Rascals	US
-1082	The Cartoon Zoo	''
+1082	The Cartoon Zoo	""
 14683	Fairies	UK
 1084	The Dick Tracy Cartoon Show	US
 14656	Trial by Choir	US
@@ -1123,7 +1124,7 @@
 1136	Gasaraki	JP
 1137	HeartBeat (US)	US
 1138	Please Teacher!	JP
-1139	Photon	''
+1139	Photon	""
 1140	Kikader the Animation	US
 1141	GirlStuff/BoyStuff	CA
 1142	Gravitation	JP
@@ -1138,7 +1139,7 @@
 1152	Wally Gator	US
 21578	True Crime Authors	US
 1154	Hillbilly Bears	US
-1155	Paw Paws	''
+1155	Paw Paws	""
 1156	Peter Potamus and His Magic Flying Balloon	US
 1157	Lippy the Lion	US
 1158	Boys and Girls	UK
@@ -1187,7 +1188,7 @@
 1202	The Tweenies	UK
 1203	Gadget and the Gadgetinis	US
 1204	Stratos 4	JP
-1205	K.O. Beast	''
+1205	K.O. Beast	""
 1206	Four on the Floor	CA
 1207	Patlabor	JP
 1209	I Hate This House	UK
@@ -1203,7 +1204,7 @@
 1221	Najica Blitz Tactics	JP
 1222	Neo Ranga	JP
 1223	Posh Nosh	UK
-1224	Hoze Hounds	''
+1224	Hoze Hounds	""
 1225	Pretear	JP
 1226	Super Doll Licca-chan	JP
 1227	Orphen	JP
@@ -1220,7 +1221,7 @@
 1238	Kimagure Orange Road	JP
 14568	Hana Yori Dango	JP
 14782	Vet Safari	UK
-1241	Tri-Zenon	''
+1241	Tri-Zenon	""
 1242	Killer Net	UK
 1243	Blue Murder (UK)	UK
 1244	The Beany and Cecil Show	US
@@ -1383,7 +1384,7 @@
 1406	Di Gi Charat	JP
 1407	Dragon Half	JP
 1408	Major League Wrestling: Underground TV	US
-1409	Love Scar	''
+1409	Love Scar	""
 1410	Delta State	CA
 1411	Gravion	JP
 1412	Puppet Master Sakon	JP
@@ -1653,7 +1654,7 @@
 1682	Anatole	CA
 1683	Rich Man, Poor Man	US
 1684	Cold Feet (UK)	UK
-1685	Bookmice	''
+1685	Bookmice	""
 1686	Mercury	AU
 1687	E Street	AU
 1688	Grass Roots	AU
@@ -1836,7 +1837,7 @@
 1867	SilverHawks	US
 1868	Little Shop	US
 1869	The Sketch Show	UK
-1870	Great Big Saturday Morning	''
+1870	Great Big Saturday Morning	""
 1871	The Bobby Vinton Show	CA
 1872	Occasional Wife	US
 1873	Hey Dad...!	AU
@@ -1989,7 +1990,7 @@
 2020	Ghost Squad	UK
 2021	Creepschool	CA
 2022	The Delphi Bureau	US
-2023	Cyderdelic	''
+2023	Cyderdelic	""
 2024	Roobarb	UK
 2025	Noah and Nelly in...Skylark	UK
 2026	I am Not an Animal	UK
@@ -2060,7 +2061,7 @@
 2093	TV Land Top 10	US
 2094	Comedy Inc. (CA)	CA
 2095	Gutter Ball Alley	CA
-2096	Technically Funny	''
+2096	Technically Funny	""
 2097	Silversun	AU
 2098	The Sooty Show	UK
 2099	Kaze No Yojimbo	JP
@@ -2132,7 +2133,7 @@
 2167	Bomberman Jetters	AJ
 2168	Whistle!	JP
 2169	Stephen Hawking's Universe	UK
-2170	Ayane's High Kick	''
+2170	Ayane's High Kick	""
 2171	Ghost Sweeper Mikami	JP
 2173	Magic Users Club!	JP
 2174	Legendz: Yomigaeru Ryuuou Densetsu	JP
@@ -5267,7 +5268,7 @@
 5328	Starman	US
 5329	Star Search	US
 5330	Starsky & Hutch	US
-5331	Stars with Hearts	''
+5331	Stars with Hearts	""
 5332	Starting Over	US
 5333	Star Trek	US
 5334	Star Trek: Deep Space Nine	US
@@ -6328,7 +6329,7 @@
 6398	Trace Evidence: The Case Files of Dr. Henry Lee	US
 6399	Tracey Takes On...	US
 6400	Tracker	US
-6401	Trackside at...	''
+6401	Trackside at...	""
 6402	Traders	CA
 6403	Trading Spaces	US
 6404	Trading Spaces: Boys vs. Girls	US
@@ -7853,7 +7854,7 @@
 7961	Animal Park (UK)	UK
 7962	Gay Muslims	UK
 7963	Watchdog	UK
-7964	'Til Death Do Us Part	US
+7964	"Til Death Do Us Part	US
 7965	Samurai Gun	JP
 7966	Briar & Graves	US
 7967	The Ten Commandments	US
@@ -8058,7 +8059,7 @@
 8192	Yu-Gi-Oh Duel Monsters GX!	JP
 8193	Yu-Gi-Oh! Capsule Monsters	US
 8195	Friends and Crocodiles	UK
-8196	"A" for Andromeda (2006)	UK
+8196	\"A\" for Andromeda (2006)	UK
 8197	NFL On FOX	US
 8198	The NFL Today	US
 8199	The Chatterley Affair	UK
@@ -8325,7 +8326,7 @@
 8471	Inseparable	US
 8472	The Way	US
 8473	Welcome to the Jungle Gym	US
-8474	'Til Death	US
+8474	"Til Death	US
 8475	Union Jackass	US
 8476	Elmo's World	US
 8477	W~Wish	JP
@@ -8423,7 +8424,7 @@
 8572	Pulse	US
 8573	The Family Man (UK)	UK
 8574	George of the Jungle	US
-14787	Gadzooks! It's All Happening'	UK
+14787	Gadzooks! It's All Happening	UK
 8576	Beat the Clock	US
 8577	MTV's The 70s House	US
 8578	Street Smarts	US
@@ -11194,7 +11195,7 @@
 11391	Single Girls	AU
 11392	Sit Yourself Down, Take A Look Around	AU
 11393	Six O'Clock Rock	AU
-11394	'66 And All That	AU
+11394	"66 And All That	AU
 11395	Slow Boat From Surabaya	AU
 11396	The Smallest Room In The House	AU
 11397	Snake Gully With Dad 'N' Dave	AU
@@ -14227,7 +14228,7 @@
 14489	Triumph In The Skies	HK
 14490	Not Just A Pretty Face	HK
 14620	Finders Keepers (UK)	UK
-14492	'Twas the Night Before Christmas	US
+14492	"Twas the Night Before Christmas	US
 14493	The Enchanted World of Danny Kaye: The Emperor's New Clothes	US
 14494	Here Comes Peter Cottontail	US
 14618	50/50	UK
@@ -17021,7 +17022,7 @@
 17514	Celebrity Exposé	US
 17515	Control Room Presents	US
 17516	The Nature Of Britain	UK
-17517	'da Kink In My Hair	CA
+17517	"da Kink In My Hair	CA
 17518	Really Reckless Drivers	US
 17519	Summer Fun	US
 17520	Last One Standing	US
@@ -17569,7 +17570,7 @@
 18073	Labyrint	SE
 18074	Kobra	SE
 18075	Ricky Sprocket	UK
-18076	Auschwitz: The Nazis and the "Final Solution"	UK
+18076	Auschwitz: The Nazis and the \"Final Solution\"	UK
 18077	Mokke	JP
 18078	Echo Beach	UK
 18079	Yes! Precure 5	JP
@@ -18606,7 +18607,7 @@
 19152	The Berenstain Bears	US
 19153	The Melba Moore-Clifton Davis Show	US
 19154	The Jerry Reed When You're Hot, You're Hot Hour	US
-19155	The Ken Berry "Wow" Show	US
+19155	The Ken Berry \"Wow\" Show	US
 19156	The Bobby Darin Show	US
 19157	Holland's Got Talent	NL
 19158	The Burns and Schreiber Comedy Hour	US
@@ -18975,7 +18976,7 @@
 19528	Pauw & Witteman	NL
 19529	Pittige tijden	NL
 19530	The One: The search for Australia's Most Gifted Psychic	AU
-19531	't Schaep Met De 5 Pooten	NL
+19531	"t Schaep Met De 5 Pooten	NL
 19532	Peking Express	NL
 19533	Home Made Simple	US
 19534	Dunya en Desie	NL
@@ -19647,7 +19648,7 @@
 20207	Tot de dood ons scheidt	NL
 20208	Richard And Judy's New Position	UK
 20209	Blik op de weg	NL
-20210	't Zal je maar gebeuren	NL
+20210	"t Zal je maar gebeuren	NL
 20211	Wheels on 7	NL
 20212	Put Your Money Where Your Mouth Is	UK
 20213	The Story Of The Guitar	UK
@@ -19828,7 +19829,7 @@
 20389	Cat on the Prowl	US
 20390	Redemption Song	US
 20391	Hotel De Witte Raaf	NL
-20392	't Vrije Schaep	NL
+20392	"t Vrije Schaep	NL
 20393	Hollands Glorie	NL
 20394	Ghost Hunters Academy	US
 20395	Otto live! Das Original	DE
@@ -21120,7 +21121,7 @@
 22077	Girl Meets Hawaii	US
 22078	Fans!	NL
 22083	TV Kantine, De	NL
-22084	't Is Hier Wéér Fantasties!	NL
+22084	"t Is Hier Wéér Fantasties!	NL
 22085	Festival Updates	US
 22086	Spring Watch USA	US
 22087	Diplomatic Immunity	NZ
@@ -24843,18 +24844,18 @@
 25907	The Drunk and On Drugs Happy Funtime Hour	CA
 25908	Mississippi River Quest	US
 25909	Drugs, Inc.	US
-25910	"Dónde está Elisa?"	US
+25910	\"Dónde está Elisa?\"	US
 25911	Steindinn okkar	IS
 25912	World Cup Rock 'n' Goal Years	UK
-25913	"Sin Senos No Hay Paraíso"	CO
-25914	"Pecados Ajenos"	US
+25913	\"Sin Senos No Hay Paraíso\"	CO
+25914	\"Pecados Ajenos\"	US
 25915	Rev	UK
 25916	Gareth Malone Goes to Glyndebourne	UK
 25917	God in de lage landen	NL
-25918	"Te Voy a Ensenar a querer"	CO
-25919	"La Venganza"	CO
+25918	\"Te Voy a Ensenar a querer\"	CO
+25919	\"La Venganza\"	CO
 25920	Más Sabe El Diablo	US
-25921	"Amantes del Desierto"	CO
+25921	\"Amantes del Desierto\"	CO
 25922	Voyage to the Planets	AU
 25923	Double Wedding	US
 25924	Trouble in Paradise	AU
@@ -25836,7 +25837,7 @@
 26922	Frankie Boyle's Tramadol Nights	UK
 26923	Birth of a Sports Car	CA
 26924	Mary Stayed Out All Night	KR
-26925	"Inside"	US
+26925	\"Inside\"	US
 26926	Joe McElderry: Cheek To Cheek	UK
 26927	The Nature of Things	CA
 26928	Working Class	US
@@ -25979,7 +25980,7 @@
 27066	Mysteries at the Museum	US
 27067	David Suchet on the Orient Express	UK
 27068	Christmas with Gordon	UK
-27069	't Spaanse Schaep	NL
+27069	"t Spaanse Schaep	NL
 27070	Gesprek op 2	NL
 27071	RTL 5 Wintersport	NL
 27072	The T.Ocho Show	US
@@ -31116,7 +31117,7 @@
 32309	For the Win	UK
 32310	İşler Güçler	TR
 32311	Dr. Drew's Lifechangers	US
-32312	"Сборная-2012" с Дмитрием Губерниевым	RU
+32312	\"Сборная-2012\" с Дмитрием Губерниевым	RU
 32313	Daybreak (Webisode)	US
 32314	The Midwives	UK
 32315	The Dark: Nature's Nighttime World	UK
@@ -31429,7 +31430,7 @@
 32633	The Scapegoat	UK
 32634	999: What's Your Emergency?	UK
 32635	Leaving (UK)	UK
-32636	TV Guide Magazine's" Top 25 Best "Oprah Show" Moments	US
+32636	TV Guide Magazine's\" Top 25 Best \"Oprah Show\" Moments	US
 32637	Man, Fire, Food	US
 32638	Bling It On	US
 32639	Secret Princes	US
@@ -32905,7 +32906,7 @@
 34152	Super Human Challenge	UK
 34153	Посредник	RU
 34154	Fejezetek a magyar vasutak történetéből	HU
-34155	't Schaep in Mokum	NL
+34155	"t Schaep in Mokum	NL
 34156	Дневники Темного \ Щоденники Темного	UA
 34157	De Wereld Leert Door	NL
 34158	Friday Night Fights	US
@@ -34079,7 +34080,7 @@
 35346	Aiura	JP
 35347	Yuyushiki	JP
 35348	Valvrave the Liberator	JP
-35349	The "Hentai" Prince and the Stony Cat.	JP
+35349	The \"Hentai\" Prince and the Stony Cat.	JP
 35350	Kitten Bowl	US
 35351	Gargantia on the Verdurous Planet	JP
 35352	Sparrow's Hotel	JP
@@ -35738,7 +35739,7 @@
 37056	21st Century Railway	IE
 37057	A Summer In Wales	UK
 37058	Kaitangata Twitch	NZ
-37059	Агентство "Сирано" / Dating Agency: Cyrano	KR
+37059	Агентство \"Сирано\" / Dating Agency: Cyrano	KR
 37060	Snake Salvation	US
 37061	Marry Me	US
 37062	The Longest Day	US
@@ -38098,7 +38099,7 @@
 39461	American Dream (2014)	US
 39462	Benefits Street	UK
 39463	Jamie and Jimmy's Friday Night Feast	UK
-39464	Live Golf: Nelson Mandela Champs'	UK
+39464	Live Golf: Nelson Mandela Champs	UK
 39465	The Bastard Executioner	US
 39466	Nene Leakes	US
 39467	American Basketball Association	US
@@ -39203,7 +39204,7 @@
 40596	19-2 (2014)	CA
 40597	Winter Wipeout (NO)	NO
 40598	Den Korsikanske biskopen	SE
-40599	A Special Evening with Meryl Streep on "August: Osage County"	US
+40599	A Special Evening with Meryl Streep on \"August: Osage County\"	US
 40600	The Science of Space Dive - Learning Zone	UK
 40601	Wellington Bomber	UK
 40602	Heart vs Mind: What Makes Us Human?	UK
@@ -40213,7 +40214,7 @@
 41641	Jerry’s World	US
 41642	Men's College Gymnastics on FOX	US
 41643	Lost Songs: The Basement Tapes Continued	US
-41644	I Wanna Marry "Harry"	US
+41644	I Wanna Marry \"Harry\"	US
 41645	The Battle for Britain's Breakfast	UK
 41646	Banged Up & Left to Fail?	UK
 41647	Hollywood Babble-On	US
