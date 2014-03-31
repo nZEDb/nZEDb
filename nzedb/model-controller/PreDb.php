@@ -48,7 +48,7 @@ Class PreDb
 	public function updatePre()
 	{
 		$newNames = 0;
-		$newestRel = $this->db->queryOneRow('SELECT adddate, id FROM predb ORDER BY adddate DESC LIMIT 1');
+		$newestRel = $this->db->queryOneRow('SELECT adddate, id FROM predb WHERE source NOT like "#%" ORDER BY adddate DESC LIMIT 1 ');
 
 		// Wait 10 minutes in between pulls.
 		if (strtotime($newestRel['adddate']) < (time() - 600) || is_null($newestRel['adddate'])) {
@@ -650,10 +650,11 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %s
+											SET requestid = %s, groupid = %d
 											WHERE md5 = %s',
 											$matches2["requestid"],
-											$groupid, $md5
+											$groupid,
+											$md5
 										)
 									);
 								}
@@ -717,8 +718,11 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %s
-											WHERE md5 = %s', $matches2["requestid"], $groupid, $md5
+											SET requestid = %s, groupid = %d
+											WHERE md5 = %s',
+											$matches2["requestid"],
+											$groupid,
+											$md5
 										)
 									);
 								}
@@ -783,7 +787,7 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %s
+											SET requestid = %s, groupid = %d
 											WHERE md5 = %s',
 											$matches2["requestid"],
 											$groupid,
@@ -852,7 +856,7 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %s
+											SET requestid = %s, groupid = %d
 											WHERE md5 = %s',
 											$matches2["requestid"],
 											$groupid,
