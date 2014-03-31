@@ -22,12 +22,15 @@
 		<th>source</th>
 		<th>category</th>
 		<th>size</th>
+		<th>files</th>
 		<th></th>
 		<th></th>
 	</tr>
 	{foreach from=$results item=result}
 		<tr class="{cycle values=",alt"}">
 			<td class="predb-left" >
+				{if $result.nuked > 1}<a title="NUKED:{$result.nukereason}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/nuked.png" /></a>{/if}
+				{if $result.nuked == 1}<a title="UNNUKED:{$result.nukereason}"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/unnuked.png" /></a>{/if}
 				{if isset($result.guid)}
 					<a class="title" title="View details" href="{$smarty.const.WWW_TOP}/details/{$result.guid}/{$result.title|escape:"htmlall"}">
 						{$result.title|escape:"htmlall"}
@@ -202,6 +205,17 @@
 						{math equation=($result.size|regex_replace:"/(\.\d|,|MB)+/":'' / 1024)|round}GB
 					{else}
 						{$result.size|regex_replace:"/(\.\d|,)+/":''}
+					{/if}
+				{else}
+					N/A
+				{/if}
+			</td>
+			<td class="predb">
+				{if isset($result.files)}
+					{if strpos($result.files, 'B')}
+						{$result.files}
+					{else}
+						{$result.files}MB
 					{/if}
 				{else}
 					N/A
