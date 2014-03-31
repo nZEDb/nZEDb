@@ -442,7 +442,7 @@ CREATE TABLE "predb" (
   "md5" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "requestid" integer DEFAULT 0 NOT NULL,
   "groupid" integer DEFAULT 0 NOT NULL,
-  /* Is this pre nuked? 0 no 1 yes 2 un nuked 3 mod nuked */
+  /* Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked */
   "nuked" smallint DEFAULT 0 NOT NULL,
   /* If this pre is nuked, what is the reason? */
   "nukereason" character varying(255),

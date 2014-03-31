@@ -231,7 +231,7 @@ CREATE TABLE predb (
 	md5 VARCHAR(255) NOT NULL DEFAULT '0',
 	requestid INT(10) UNSIGNED NOT NULL DEFAULT '0',
 	groupid INT(10) UNSIGNED NOT NULL DEFAULT '0',
-	/* Is this pre nuked? 0 no 1 yes 2 un nuked 3 mod nuked */
+	/* Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked */
 	nuked TINYINT(1) NOT NULL DEFAULT '0',
 	/* If this pre is nuked, what is the reason? */
 	nukereason VARCHAR(255) NULL,
