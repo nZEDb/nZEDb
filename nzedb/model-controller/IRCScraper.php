@@ -671,8 +671,11 @@ class IRCScraper
 		$query .= (!empty($this->CurPre['size'])     ? $this->db->escapeString($this->CurPre['size'])     . ', '   : '');
 		$query .= (!empty($this->CurPre['category']) ? $this->db->escapeString($this->CurPre['category']) . ', '   : '');
 		$query .= (!empty($this->CurPre['source'])   ? $this->db->escapeString($this->CurPre['source'])   . ', '   : '');
+		$query .= (!empty($this->CurPre['reason'])   ? $this->db->escapeString($this->CurPre['reason'])   . ', '   : '');
+		$query .= (!empty($this->CurPre['files'])    ? $this->db->escapeString($this->CurPre['files'])    . ', '   : '');
 		$query .= (!empty($this->CurPre['reqid'])    ? $this->CurPre['reqid']                             . ', '   : '');
 		$query .= (!empty($this->CurPre['groupid'])  ? $this->CurPre['groupid']                           . ', '   : '');
+		$query .= (!empty($this->CurPre['nuked'])    ? $this->CurPre['nuked']                             . ', '   : '');
 		$query .= (!empty($this->CurPre['predate'])  ? $this->CurPre['predate']                           . ', '   : 'NOW(), ');
 
 		$query .= '%s, %s, NOW())';
