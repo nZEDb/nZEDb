@@ -551,7 +551,7 @@ class IRCScraper
 	protected function ab_games_nintendods(&$message)
 	{
 		//NEW [NDS] PRE: Honda_ATV_Fever_USA_NDS-EXiMiUS
-		if (preg_match('/NEW\s+\[NDS\]\s+PRE:\s+(?P<title>.+?)/i', $message, $matches)) {
+		if (preg_match('/NEW\s+\[NDS\]\s+PRE:\s+(?P<title>.+)/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.games.nintendods';
 			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.games.nintendods');
 			$this->CurPre['category'] = 'NDS';
