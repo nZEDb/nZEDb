@@ -12,7 +12,7 @@ define('SCRAPE_IRC_EFNET_PASSWORD', false);          // This is used for bouncer
 // List of ignored channels, separated by commas. ie '#alt.binaries.teevee,#alt.binaries.moovee' for a single channel : '#alt.binaries.teevee'
 define('SCRAPE_IRC_EFNET_IGNORED_CHANNELS', '');
 
-define('SCRAPE_IRC_C_Z_BOOL', true); // True uses Corrupt, False uses Zenet. (they both PRE the same stuff). If you have trouble with one, use the other.
+define('SCRAPE_IRC_C_Z_BOOL', false); // True uses Corrupt, False uses Zenet. (they both PRE the same stuff). If you have trouble with one, use the other.
 
 // Corrupt-Net server details.
 define('SCRAPE_IRC_CORRUPT_SERVER', 'irc.corrupt-net.org'); // This should not be changed, since this is the only address to corrupt.

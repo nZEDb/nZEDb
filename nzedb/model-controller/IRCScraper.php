@@ -6,6 +6,42 @@
 class IRCScraper
 {
 	/**
+	 * Pre is not nuked.
+	 * @const
+	 */
+	const NO_NUKE  = 0;
+
+	/**
+	 * Pre was un nuked.
+	 * @const
+	 */
+	const UN_NUKE  = 1;
+
+	/**
+	 * Pre is nuked.
+	 * @const
+	 */
+	const NUKE     = 2;
+
+	/**
+	 * Nuke reason was modified.
+	 * @const
+	 */
+	const MOD_NUKE = 3;
+
+	/**
+	 * Pre was re nuked.
+	 * @const
+	 */
+	const RE_NUKE = 4;
+
+	/**
+	 * Pre is nuked for being old.
+	 * @const
+	 */
+	const OLD_NUKE = 5;
+
+	/**
 	 * Array of current pre info.
 	 * @var array
 	 */
@@ -40,6 +76,12 @@ class IRCScraper
 	 * @var bool
 	 */
 	protected $silent;
+
+	/**
+	 * Is this pre nuked or un nuked?
+	 * @var bool
+	 */
+	protected $nuked;
 
 	/**
 	 * Construct
@@ -134,17 +176,14 @@ class IRCScraper
 						'|' .
 						'Thank.*you.*Req.*Id.*Request' .                       // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
 						'|' .
-						'Thank.*?you.*?You.*?are.*?now.*?Filling.*?ReqId.*?' . // a.b.flac a.b.teevee
-						'|' .
-						'Thank.*?You.*?Request.*?Filled!.*?ReqId' .            // a.b.moovee a.b.foreign
+						'Thank.*?You.*?Request.*?Filled!.*?ReqId' .            // a.b.moovee a.b.foreign a.b.flac a.b.teevee
 						'|' .
 						'That.*?was.*?awesome.*?Shall.*?ReqId' .               // a.b.erotica
 						'|' .
 						'person.*?filling.*?request.*?for:.*?ReqID:' .         // a.b.console.ps3
+						'|' .
+						'^\[(MOD|OLD|RE|UN)?NUKE\]' .                          // Nukes.
 					'/i';
-				// a.b.teevee:
-				// Nuke    : [NUKE] ReqId:[183497] [From.Dusk.Till.Dawn.S01E01.720p.HDTV.x264-BATV] Reason:[bad.ivtc.causing.jerky.playback.due.to.dupe.and.missing.frames.in.segment.from.16m.to.30m]
-				// Un nuke : [UNNUKE] ReqId:[183449] [The.Biggest.Loser.AU.S09E29.PDTV.x264-RTA] Reason:[get.samplefix]
 				break;
 
 			case 'corrupt':
@@ -155,10 +194,7 @@ class IRCScraper
 				$realname    = SCRAPE_IRC_CORRUPT_REALNAME;
 				$password    = SCRAPE_IRC_CORRUPT_PASSWORD;
 				$channelList = array('#pre' => null);
-				$regex       = '/PRE:.+?\[.+?\]/i'; // #pre
-				// Nuke    : NUKE: Miclini-Sunday_Morning_P1-DIRFIX-DAB-03-30-2014-G4E [dirfix.must.state.name.of.release.being.fixed] [EthNet]
-				// Un nuke : UNNUKE: Youssoupha-Sur_Les_Chemins_De_Retour-FR-CD-FLAC-2009-0MNi [flac.rule.4.12.states.ENGLISH.artist.and.title.must.be.correct.and.this.is.not.ENGLISH] [LocalNet]
-				// Mod nuke: MODNUKE: Miclini-Sunday_Morning_P1-DIRFIX-DAB-03-30-2014-G4E [nfo.must.state.name.of.release.being.fixed] [EthNet]
+				$regex       = '/PRE:.+?\[.+?\]|^(MOD|OLD|RE|UN)?NUKE:\s+/i'; // #pre
 				break;
 
 			case 'zenet':
@@ -169,9 +205,7 @@ class IRCScraper
 				$realname    = SCRAPE_IRC_ZENET_REALNAME;
 				$password    = SCRAPE_IRC_ZENET_PASSWORD;
 				$channelList = array('#Pre' => null);
-				$regex       = '/^\(PRE\)\s+\(/'; // #Pre
-				// Nuke   : (NUKE) (German_TOP100_Single_Charts_31_03_2014-MCG) (selfmade.compilations.not.allowed)
-				// Un nuke: (UNNUKE) (The.Biggest.Loser.AU.S09E29.PDTV.x264-RTA) (get.samplefix)
+				$regex       = '/^\(PRE\)\s+\(|^\((MOD|OLD|RE|UN)?NUKE\)\s+/i'; // #Pre
 				break;
 
 			default:
@@ -188,7 +222,7 @@ class IRCScraper
 		$this->IRC->setAutoRetry(true);
 
 		// If problem connecting, wait 5 seconds before reconnecting.
-		$this->IRC->setReconnectdelay(5);
+		$this->IRC->setReconnectdelay(50000);
 
 		// Try 4 times before giving up.
 		$this->IRC->setAutoRetryMax(4);
@@ -232,6 +266,7 @@ class IRCScraper
 				date('r') .
 				'] [Scraping of IRC channels for (' .
 				$server .
+				':' .
 				$port .
 				') (' .
 				$nickname .
@@ -370,6 +405,32 @@ class IRCScraper
 		if (isset($matches['category'])) {
 			$this->CurPre['category'] = $matches['category'];
 		}
+		if (isset($matches['nuke'])) {
+			$this->nuked = true;
+			switch ($matches['nuke']) {
+				case 'NUKE':
+					$this->CurPre['nuked'] = self::NUKE;
+					break;
+				case 'UNNUKE':
+					$this->CurPre['nuked'] = self::UN_NUKE;
+					break;
+				case 'MODNUKE':
+					$this->CurPre['nuked'] = self::MOD_NUKE;
+					break;
+				case 'RENUKE':
+					$this->CurPre['nuked'] = self::RE_NUKE;
+					break;
+				case 'OLDNUKE':
+					$this->CurPre['nuked'] = self::OLD_NUKE;
+					break;
+			}
+		}
+		if (isset($matches['reason'])) {
+			$this->CurPre['reason'] = substr($matches['reason'], 0, 255);
+		}
+		if (isset($matches['files'])) {
+			$this->CurPre['files'] = substr($matches['files'], 0, 50);
+		}
 		$this->checkForDupe();
 	}
 
@@ -382,7 +443,7 @@ class IRCScraper
 	{
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326377] [0-Day] [FULL 23x15MB Gyno-X.14.03.08.Annie.XXX.MP4-FUNKY] Filenames:[GX080314X8HRRZ2A8] Comments:[0] Watchers:[0] Total Size:[322MB] Points Earned:[23]
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326264] [HD-Clip] [FULL 16x50MB TeenSexMovs.14.03.30.Daniela.XXX.720p.WMV-iaK] Filenames:[iak-teensexmovs-140330] Comments:[0] Watchers:[0] Total Size:[753MB] Points Earned:[54] [Pred 3m 20s ago]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[.+?\]\s+\[FULL\s+\d+x\d+[KMGTP]?B\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\](.+?\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $message, $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[.+?\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGTP]?B)\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\](.+?\[Pred\s+(?P<predago>.+?)\s+ago\])?/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.erotica';
 			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.erotica');
 			$this->CurPre['category'] = 'XXX';
@@ -397,8 +458,8 @@ class IRCScraper
 	 */
 	protected function ab_flac(&$message)
 	{
-		//Thank You [*Anonymous*] You are now Filling ReqId:[42548] [FULL VA-Diablo_III_Reaper_of_Souls_Collectors_Edition_Soundtrack-CD-FLAC-2014-BUDDHA] [Pred 55s ago]
-		if (preg_match('/You\s+are\s+now\s+Filling\s+ReqID:.*?\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
+		//Thank You [*Anonymous*] Request Filled! ReqId:[42614] [FULL 10x15MB You_Blew_It-Keep_Doing_What_Youre_Doing-CD-FLAC-2014-WRE] Requested by:[*Anonymous* 21s ago] Comments:[0] Watchers:[0] Points Earned:[10] [Pred 3m 16s ago]
+		if (preg_match('/Request\s+Filled!\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGTP]?B)\s+(?P<title>.+?)\].+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
 			$this->CurPre['source']  = '#a.b.flac';
 			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.sounds.flac');
 			$this->siftMatches($matches);
@@ -413,7 +474,7 @@ class IRCScraper
 	protected function ab_moovee(&$message)
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[140445] [FULL 94x50MB Burning.Daylight.2010.720p.BluRay.x264-SADPANDA] Requested by:[*Anonymous* 3h 29m ago] Comments:[0] Watchers:[0] Points Earned:[314] [Pred 4h 29m ago]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+\d+x\d+[MGPTK]?B\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[MGPTK]?B)\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.moovee';
 			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.moovee');
 			$this->CurPre['category'] = 'Movies';
@@ -429,7 +490,7 @@ class IRCScraper
 	protected function ab_foreign(&$message)
 	{
 		//Thank You [*Anonymous*] Request Filled! ReqId:[61525] [Movie] [FULL 95x50MB Wadjda.2012.PAL.MULTI.DVDR-VIAZAC] Requested by:[*Anonymous* 5m 13s ago] Comments:[0] Watchers:[0] Points Earned:[317] [Pred 8m 27s ago]
-		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+\d+x\d+[MGPTK]?B\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<category>.+?)\]\s+\[FULL\s+(?P<files>\d+x\d+[MGPTK]?B)\s+(?P<title>.+?)\]\s+.+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
 			$this->CurPre['source']  = '#a.b.foreign';
 			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.mom');
 			$this->siftMatches($matches);
@@ -443,8 +504,15 @@ class IRCScraper
 	 */
 	protected function ab_teevee(&$message)
 	{
-		//Thank You [*Anonymous*] You are now Filling ReqId:[183443] [FULL Ant.and.Decs.Saturday.Night.Takeaway.S11E06.HDTV.x264-W4F] [Pred 1m 43s ago]
-		if (preg_match('/You\s+are\s+now\s+Filling\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<title>.+?)\]\s+\[Pred\s+(?P<predago>.+?)\s+ago\]/', $message, $matches)) {
+		//Thank You [*Anonymous*] Request Filled! ReqId:[183520] [FULL 19x50MB Louis.Therouxs.LA.Stories.S01E02.720p.HDTV.x264-FTP] Requested by:[*Anonymous* 53s ago] Comments:[0] Watchers:[0] Points Earned:[64] [Pred 3m 45s ago]
+		if (preg_match('/Request\s+Filled!\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGPT]?B)\s+(?P<title>.+?)\].+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
+			$this->CurPre['source']   = '#a.b.teevee';
+			$this->CurPre['grpoupid'] = $this->getGroupID('alt.binaries.teevee');
+			$this->siftMatches($matches);
+
+		//[NUKE] ReqId:[183497] [From.Dusk.Till.Dawn.S01E01.720p.HDTV.x264-BATV] Reason:[bad.ivtc.causing.jerky.playback.due.to.dupe.and.missing.frames.in.segment.from.16m.to.30m]
+		//[UNNUKE] ReqId:[183449] [The.Biggest.Loser.AU.S09E29.PDTV.x264-RTA] Reason:[get.samplefix]
+		} else if (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)\]/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.teevee';
 			$this->CurPre['grpoupid'] = $this->getGroupID('alt.binaries.teevee');
 			$this->siftMatches($matches);
@@ -458,8 +526,8 @@ class IRCScraper
 	 */
 	protected function ab_console_ps3(&$message)
 	{
-		//<BinaryBot> [Anonymous person filling request for: FULL 56 Ragnarok.Odyssey.ACE.PS3-iMARS NTSC BLURAY imars-ragodyace-ps3 56x100MB by Khaine13 on 2014-03-29 13:14:12][ReqID: 4888][You get a bonus of 6 for a total points earning of: 62 for filling with 10% par2s!][Your score will be adjusted once you have -filled 4888]
-		if (preg_match('/\s+FULL\d+\s+(?P<title>.+?)\s+.+?\]\[ReqID:\s+(?P<reqid>\d+)\]\[/', $message, $matches)) {
+		//[Anonymous person filling request for: FULL 56 Ragnarok.Odyssey.ACE.PS3-iMARS NTSC BLURAY imars-ragodyace-ps3 56x100MB by Khaine13 on 2014-03-29 13:14:12][ReqID: 4888][You get a bonus of 6 for a total points earning of: 62 for filling with 10% par2s!][Your score will be adjusted once you have -filled 4888]
+		if (preg_match('/\s+FULL\s+\d+\s+(?P<title>.+?)\s+(?P<files>\d+x\d+[KMGTP]?B)\s+.+?\]\[ReqID:\s+(?P<reqid>\d+)\]\[/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.console.ps3';
 			$this->CurPre['grpoupid'] = $this->getGroupID('alt.binaries.console.ps3');
 			$this->CurPre['category'] = 'PS3';
@@ -475,7 +543,13 @@ class IRCScraper
 	protected function zenet_pre(&$message)
 	{
 		//(PRE) (XXX) (The.Golden.Age.Of.Porn.Candy.Samples.XXX.WEBRIP.WMV-GUSH)
-		if (preg_match('/^\(PRE\)\s+\((?P<category>.+?)\)\s+\((?P<title>.+?)\)$/', $message, $matches)) {
+		if (preg_match('/^\(PRE\)\s+\((?P<category>.+?)\)\s+\((?P<title>.+?)\)$/i', $message, $matches)) {
+			$this->CurPre['source'] = '#Pre@zenet';
+			$this->siftMatches($matches);
+
+		//(NUKE) (German_TOP100_Single_Charts_31_03_2014-MCG) (selfmade.compilations.not.allowed)
+		//(UNNUKE) (The.Biggest.Loser.AU.S09E29.PDTV.x264-RTA) (get.samplefix)
+		} else if (preg_match('/\((?P<nuke>(MOD|OLD|RE|UN)?NUKE)\)\s+\((?P<title>.+?)\)\s+\((?P<reason>.+?)\)/i', $message, $matches)) {
 			$this->CurPre['source'] = '#Pre@zenet';
 			$this->siftMatches($matches);
 		}
@@ -492,6 +566,13 @@ class IRCScraper
 		if (preg_match('/^PRE:\s+\[(?P<category>.+?)\]\s+(?P<title>.+)$/i', $message, $matches)) {
 			$this->CurPre['source'] = '#pre@corrupt';
 			$this->siftMatches($matches);
+
+		//NUKE: Miclini-Sunday_Morning_P1-DIRFIX-DAB-03-30-2014-G4E [dirfix.must.state.name.of.release.being.fixed] [EthNet]
+		//UNNUKE: Youssoupha-Sur_Les_Chemins_De_Retour-FR-CD-FLAC-2009-0MNi [flac.rule.4.12.states.ENGLISH.artist.and.title.must.be.correct.and.this.is.not.ENGLISH] [LocalNet]
+		//MODNUKE: Miclini-Sunday_Morning_P1-DIRFIX-DAB-03-30-2014-G4E [nfo.must.state.name.of.release.being.fixed] [EthNet]
+		} else if (preg_match('/(?P<nuke>(MOD|OLD|RE|UN)?NUKE):\s+(?P<title>.+?)\s+\[(?P<reason>.+?)\]/i', $message, $matches)) {
+			$this->CurPre['source'] = '#pre@corrupt';
+			$this->siftMatches($matches);
 		}
 	}
 
@@ -501,9 +582,9 @@ class IRCScraper
 	 * @param string $message The IRC message to parse.
 	 */
 	protected function inner_sanctum(&$message)
-	{	//[FILLED] [ 341953 | Emilie_Simon-Mue-CD-FR-2014-JUST | 16x79 | MP3 | *Anonymous* ] [ Pred 10m 54s ago ]
-		//06[FILLED] [ 342184 06| DJ_Tuttle--Optoswitches_(FF_011)-VINYL-1997-CMC_INT 06| 7x47 06| MP3 06| *Anonymous* 06] 06[ Pred 5h 46m 10s ago 06]"
-		if (preg_match('/FILLED.*?\]\s+\[\s+(?P<reqid>\d+)\s+.*?\|\s+(?P<title>.+?)\s+.*?\|\s+.+?\s+.*?\|\s+(?P<category>.+?)\s+.*?\|\s+.+?\s+.*?\]\s+.*?\[\s+Pred\s+(?P<predago>.+?)\s+ago\s+.*?\]/i', $message, $matches)) {
+	{
+		//[FILLED] [ 341953 | Emilie_Simon-Mue-CD-FR-2014-JUST | 16x79 | MP3 | *Anonymous* ] [ Pred 10m 54s ago ]
+		if (preg_match('/FILLED\]\s+\[\s+(?P<reqid>\d+)\s+\|\s+(?P<title>.+?)\s+\|\s+(?P<files>\d+x\d+)\s+\|\s+(?P<category>.+?)\s+\|\s+.+?\s+\]\s+\[\s+Pred\s+(?P<predago>.+?)\s+ago\s+\]/i', $message, $matches)) {
 			$this->CurPre['source']  = '#a.b.inner-sanctum';
 			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.inner-sanctum');
 			$this->siftMatches($matches);
@@ -519,8 +600,7 @@ class IRCScraper
 	protected function alt_bin(&$message, &$channel)
 	{
 		//Thank you<Bijour> Req Id<137732> Request<The_Blueprint-Phenomenology-(Retail)-2004-KzT *Pars Included*> Files<19> Dates<Req:2014-03-24 Filling:2014-03-29> Points<Filled:1393 Score:25604>
-		//Thank you<gizka> Req Id<42948> Request<Bloodsport.IV.1999.FS.DVDRip.XviD.iNT-EwDp *Pars Included*> Files<55> Dates<Req:2014-03-22 Filling:2014-03-29> Points<Filled:93 Score:5607>
-		if (preg_match('/Req.+?Id.*?<.*?(?P<reqid>\d+).*?>.*?Request.*?<\d{0,2}(?P<title>.+?)(\s+\*Pars\s+Included\*\d{0,2}>|\d{0,2}>)\s+/i', $message, $matches)) {
+		if (preg_match('/Req.+?Id.*?<.*?(?P<reqid>\d+).*?>.*?Request.*?<\d{0,2}(?P<title>.+?)(\s+\*Pars\s+Included\*\d{0,2}>|\d{0,2}>)\s+Files<(?P<files>\d+)>/i', $message, $matches)) {
 			$this->CurPre['source']  = str_replace('#alt.binaries', '#a.b', $channel);
 			$this->CurPre['groupid'] = $this->getGroupID(str_replace('#', '', $channel));
 			$this->siftMatches($matches);
@@ -556,8 +636,11 @@ class IRCScraper
 		$query .= (!empty($this->CurPre['size'])     ? 'size, '      : '');
 		$query .= (!empty($this->CurPre['category']) ? 'category, '  : '');
 		$query .= (!empty($this->CurPre['source'])   ? 'source, '    : '');
+		$query .= (!empty($this->CurPre['reason'])   ? 'reason, '    : '');
+		$query .= (!empty($this->CurPre['files'])    ? 'files, '     : '');
 		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid, ' : '');
 		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid, '   : '');
+		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked, '     : '');
 
 		$query .= 'predate, md5, title, adddate) VALUES (';
 
@@ -594,12 +677,15 @@ class IRCScraper
 
 		$query = 'UPDATE predb SET ';
 
-		$query .= (!empty($this->CurPre['size'])     ? 'size = '      . $this->db->escapeString($this->CurPre['size'])     . ', ' : '');
+		$query .= (!empty($this->CurPre['size'])     ? 'size = '       . $this->db->escapeString($this->CurPre['size'])   . ', ' : '');
+		$query .= (!empty($this->CurPre['source'])   ? 'source = '     . $this->db->escapeString($this->CurPre['source']) . ', ' : '');
+		$query .= (!empty($this->CurPre['files'])    ? 'files = '      . $this->db->escapeString($this->CurPre['files'])  . ', ' : '');
+		$query .= (!empty($this->CurPre['reason'])   ? 'nukereason = ' . $this->db->escapeString($this->CurPre['reason']) . ', ' : '');
+		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid = '  . $this->CurPre['reqid']                           . ', ' : '');
+		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid = '    . $this->CurPre['groupid']                         . ', ' : '');
+		$query .= (!empty($this->CurPre['predate'])  ? 'predate = '    . $this->CurPre['predate']                         . ', ' : '');
+		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked = '      . $this->CurPre['nuked']                           . ', ' : '');
 		$query .= (empty($this->OldPre['category']) && !empty($this->CurPre['category']) ? 'category = '  . $this->db->escapeString($this->CurPre['category']) . ', ' : '');
-		$query .= (!empty($this->CurPre['source'])   ? 'source = '    . $this->db->escapeString($this->CurPre['source'])   . ', ' : '');
-		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid = ' . $this->CurPre['reqid']                             . ', ' : '');
-		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid = '   . $this->CurPre['groupid']                           . ', ' : '');
-		$query .= (!empty($this->CurPre['predate'])  ? 'predate = '   . $this->CurPre['predate']                           . ', ' : '');
 
 		if ($query === 'UPDATE predb SET '){
 			return;
@@ -623,12 +709,38 @@ class IRCScraper
 	protected function doEcho($new = true)
 	{
 		if (!$this->silent) {
+
+			$nukeString = '';
+			if ($this->nuked !== false) {
+				switch((int)$this->CurPre['nuked']) {
+					case self::NUKE:
+						$nukeString = '[ NUKED ] ';
+						break;
+					case self::UN_NUKE:
+						$nukeString = '[UNNUKED] ';
+						break;
+					case self::MOD_NUKE:
+						$nukeString = '[MODNUKE] ';
+						break;
+					case self::OLD_NUKE:
+						$nukeString = '[OLDNUKE] ';
+						break;
+					case self::RE_NUKE:
+						$nukeString = '[RENUKED] ';
+						break;
+					default:
+						break;
+				}
+			}
+
 			echo
 				'[' .
 				date('r') .
 				($new ? '] [ Added Pre ] [' : '] [Updated Pre] [') .
 				$this->CurPre['source'] .
-				'] [' .
+				'] ' .
+				($nukeString === '' ? '' : $nukeString) .
+				'[' .
 				$this->CurPre['title'] .
 				']' .
 				(!empty($this->CurPre['category']) ? ' [' . $this->CurPre['category'] . ']' : '') .
@@ -656,6 +768,7 @@ class IRCScraper
 	 */
 	protected function resetPreVariables()
 	{
+		$this->nuked = false;
 		$this->OldPre = array();
 		$this->CurPre =
 			array(
@@ -666,8 +779,10 @@ class IRCScraper
 				'category' => '',
 				'source'   => '',
 				'groupid'  => '',
-				'reqid'    => ''
-
+				'reqid'    => '',
+				'nuked'    => '',
+				'reason'   => '',
+				'files'    => ''
 			);
 	}
 }
