@@ -719,7 +719,7 @@ Class PreDb
 										sprintf('
 											UPDATE predb
 											SET requestid = %s, groupid = %d
-											WHERE md5 = %d',
+											WHERE md5 = %s',
 											$matches2["requestid"],
 											$groupid,
 											$md5
