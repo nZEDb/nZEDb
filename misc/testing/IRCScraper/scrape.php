@@ -1,6 +1,6 @@
 <?php
-
-if (!is_file('settings.php')) {
+require_once dirname(__FILE__) . '/../../../www/config.php';
+if (!is_file(nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php')) {
 	exit('Copy settings_example.php to settings.php and change the settings.' . PHP_EOL);
 }
 
@@ -24,7 +24,6 @@ if (!in_array($argv[1], array('efnet', 'cz'))) {
 	exit('Error, must be efnet or cz, you typed: ' . $argv[1] . PHP_EOL);
 }
 
-require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIBS . 'Net_SmartIRC/Net/SmartIRC.php';
 require_once nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php';
 

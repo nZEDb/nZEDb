@@ -231,6 +231,21 @@ class Binaries
 
 		$this->blackList = $this->message = array();
 		$this->blackListLoaded = false;
+
+		if ($this->db->dbSystem() === 'mysql') {
+			$SQLTime = $this->db->queryOneRow('SELECT UNIX_TIMESTAMP(NOW()) AS time');
+			if ($SQLTime !== false) {
+				$SQLTime = $SQLTime['time'];
+				if ($SQLTime !== time()) {
+					$difference = abs($SQLTime - time());
+					if ($difference > 60) {
+						exit('FATAL ERROR: PHP and MySQL time do not match!' . PHP_EOL);
+					}
+				}
+			} else {
+				exit('FATAL ERROR: Unable to get current time from MySQL!' . PHP_EOL);
+			}
+		}
 	}
 
 	/**
@@ -788,19 +803,20 @@ class Binaries
 
 					// Set up the info for inserting into parts/binaries/collections tables.
 					if (!isset($this->message[$subject])) {
-						// Check if it's unix time or a date string.
+						$this->message[$subject] = $msg;
+
+						/* Date from header should be a string this format:
+						 * 31 Mar 2014 15:36:04 GMT or 6 Oct 1998 04:38:40 -0500
+						 * Still make sure it's not unix time, convert it to unix time if it is.
+						 */
 						$date = (is_numeric($msg['Date']) ? $msg['Date'] : strtotime($msg['Date']));
-						// Fixes for those with bad time settings.
-						if ($this->db->dbSystem() === 'mysql') {
-							$now = $this->db->queryOneRow('SELECT UNIX_TIMESTAMP(NOW()) AS time');
-							$now = ($now !== false ? (int)$now['time'] : time());
-						} else {
-							$now = time();
-						}
-						// Check if it's newer than now, if so, set it now.
+
+						// Get the current unixtime from PHP.
+						$now = time();
+
+						// Check if the header's time is newer than now, if so, set it now.
 						$this->message[$subject]['Date'] = ($date > $now ? $now : $date);
 
-						$this->message[$subject] = $msg;
 						$this->message[$subject]['MaxParts'] = (int) $matches[3];
 
 						// (hash) Groups articles together when forming the release/nzb.
@@ -824,7 +840,7 @@ class Binaries
 								(int) $bytes,
 								$nowPart,
 								$this->message[$subject]['MaxParts'],
-								$this->db->from_unixtime($this->message[$subject]['Date'])
+								$this->db->from_unixtime($this->message[$subject]['Date'], true)
 							)
 						);
 					}
@@ -941,7 +957,14 @@ class Binaries
 							} else {
 								if (!$cres) {
 									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
-									$csql = sprintf("INSERT INTO ${group['cname']} (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded) VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())", $this->db->escapeString(substr($subject, 0, 255)), $this->db->escapeString(utf8_encode($data['From'])), $this->db->from_unixtime($data['Date']), $this->db->escapeString(substr($data['Xref'], 0, 255)), $groupArr['id'], $data['MaxFiles'], $this->db->escapeString($collectionHash));
+									$csql = sprintf("INSERT INTO ${group['cname']} (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded)
+									VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())",
+										$this->db->escapeString(substr($subject, 0, 255)),
+										$this->db->escapeString(utf8_encode($data['From'])),
+										$this->db->from_unixtime($data['Date'], true),
+										$this->db->escapeString(substr($data['Xref'], 0, 255)),
+										$groupArr['id'], $data['MaxFiles'],
+										$this->db->escapeString($collectionHash));
 									$collectionID = $this->db->queryInsert($csql);
 								} else {
 									$collectionID = $cres['id'];
