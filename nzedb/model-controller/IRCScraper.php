@@ -660,7 +660,7 @@ class IRCScraper
 		$query .= (!empty($this->CurPre['size'])     ? 'size, '      : '');
 		$query .= (!empty($this->CurPre['category']) ? 'category, '  : '');
 		$query .= (!empty($this->CurPre['source'])   ? 'source, '    : '');
-		$query .= (!empty($this->CurPre['reason'])   ? 'reason, '    : '');
+		$query .= (!empty($this->CurPre['reason'])   ? 'nukereason, '    : '');
 		$query .= (!empty($this->CurPre['files'])    ? 'files, '     : '');
 		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid, ' : '');
 		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid, '   : '');
