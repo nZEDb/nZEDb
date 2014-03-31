@@ -152,7 +152,8 @@ class IRCScraper
 					'#alt.binaries.erotica'                => 'erotica',
 					'#alt.binaries.flac'                   => 'flac',
 					'#alt.binaries.foreign'                => 'foreign',
-					'#alt.binaries.console.ps3'            => null
+					'#alt.binaries.console.ps3'            => null,
+					'#alt.binaries.games.nintendods'       => null
 				);
 				// Check if the user is ignoring channels.
 				if (defined('SCRAPE_IRC_EFNET_IGNORED_CHANNELS') && SCRAPE_IRC_EFNET_IGNORED_CHANNELS != '') {
@@ -183,6 +184,8 @@ class IRCScraper
 						'person.*?filling.*?request.*?for:.*?ReqID:' .         // a.b.console.ps3
 						'|' .
 						'^\[(MOD|OLD|RE|UN)?NUKE\]' .                          // Nukes.
+						'|' .
+						'NEW.*?\[NDS\].*?PRE:' .                               // a.b.games.nintendods
 					'/i';
 				break;
 
@@ -346,6 +349,8 @@ class IRCScraper
 			case 'binarybot':
 				if ($channel === '#alt.binaries.console.ps3') {
 					$this->ab_console_ps3($data->message);
+				} else if ($channel === '#alt.binaries.games.nintendods') {
+					$this->ab_games_nintendods($data->message);
 				}
 				break;
 
@@ -534,6 +539,22 @@ class IRCScraper
 			$this->CurPre['source']   = '#a.b.console.ps3';
 			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.console.ps3');
 			$this->CurPre['category'] = 'PS3';
+			$this->siftMatches($matches);
+		}
+	}
+
+	/**
+	 * Gets new PRE from #a.b.games_nintendods
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function ab_games_nintendods(&$message)
+	{
+		//NEW [NDS] PRE: Honda_ATV_Fever_USA_NDS-EXiMiUS
+		if (preg_match('/NEW\s+\[NDS\]\s+PRE:\s+(?P<title>.+?)/i', $message, $matches)) {
+			$this->CurPre['source']   = '#a.b.games.nintendods';
+			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.games.nintendods');
+			$this->CurPre['category'] = 'NDS';
 			$this->siftMatches($matches);
 		}
 	}
