@@ -1871,15 +1871,40 @@ class Releases
 					if ($propername == true) {
 						$relid = $this->db->queryInsert(
 							sprintf(
-								'INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, isrenamed, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1)', $this->db->escapeString($cleanRelName), $this->db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $this->db->escapeString($relguid), $this->db->escapeString($rowcol['date']), $this->db->escapeString($fromname), $this->db->escapeString($rowcol['filesize']), ($this->site->checkpasswordedrar ==
-								'1' ? -1 : 0), $category
+								'INSERT INTO releases
+									(name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname,
+									size, passwordstatus, haspreview, categoryid, nfostatus, isrenamed, iscategorized)
+								VALUES
+									(%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1)',
+								$this->db->escapeString($cleanRelName),
+								$this->db->escapeString($cleanName),
+								$rowcol['totalfiles'],
+								$rowcol['groupid'],
+								$this->db->escapeString($relguid),
+								$this->db->escapeString($rowcol['date']),
+								$this->db->escapeString($fromname),
+								$this->db->escapeString($rowcol['filesize']),
+								($this->site->checkpasswordedrar == '1' ? -1 : 0),
+								$category
 							)
 						);
 					} else {
 						$relid = $this->db->queryInsert(
 							sprintf(
-								'INSERT INTO releases (name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1)', $this->db->escapeString($cleanRelName), $this->db->escapeString($cleanName), $rowcol['totalfiles'], $rowcol['groupid'], $this->db->escapeString($relguid), $this->db->escapeString($rowcol['date']), $this->db->escapeString($fromname), $this->db->escapeString($rowcol['filesize']), ($this->site->checkpasswordedrar ==
-								'1' ? -1 : 0), $category
+								'INSERT INTO releases
+									(name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname,
+									size, passwordstatus, haspreview, categoryid, nfostatus, iscategorized)
+								VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1)',
+								$this->db->escapeString($cleanRelName),
+								$this->db->escapeString($cleanName),
+								$rowcol['totalfiles'],
+								$rowcol['groupid'],
+								$this->db->escapeString($relguid),
+								$this->db->escapeString($rowcol['date']),
+								$this->db->escapeString($fromname),
+								$this->db->escapeString($rowcol['filesize']),
+								($this->site->checkpasswordedrar == '1' ? -1 : 0),
+								$category
 							)
 						);
 					}

@@ -441,7 +441,13 @@ CREATE TABLE "predb" (
   "source" character varying(50) DEFAULT ''::character varying NOT NULL,
   "md5" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "requestid" integer DEFAULT 0 NOT NULL,
-  "groupid" integer DEFAULT 0 NOT NULL
+  "groupid" integer DEFAULT 0 NOT NULL,
+  /* Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked */
+  "nuked" smallint DEFAULT 0 NOT NULL,
+  /* If this pre is nuked, what is the reason? */
+  "nukereason" character varying(255),
+  /* How many files does this pre have ? */
+  "files" character varying(50)
 
 )
 WITHOUT OIDS;

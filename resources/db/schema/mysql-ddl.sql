@@ -230,7 +230,10 @@ CREATE TABLE predb (
 	source VARCHAR(50) NOT NULL DEFAULT '',
 	md5 VARCHAR(255) NOT NULL DEFAULT '0',
 	requestid INT(10) UNSIGNED NOT NULL DEFAULT '0',
-	groupid INT(10) UNSIGNED NOT NULL DEFAULT '0',
+	groupid INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
+	nuked TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'If this pre is nuked, what is the reason?',
+	nukereason VARCHAR(255) NULL COMMENT 'How many files does this pre have ?',
+	files VARCHAR(50) NULL,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 

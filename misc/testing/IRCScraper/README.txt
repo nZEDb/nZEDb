@@ -19,3 +19,20 @@ scrape.sh runs the bots with text output, closing the terminal will exit the bot
 
 scrape_daemon.sh runs the bots with no text output and lets go of the
 terminal lock (if you want to restart the script later, the script will close the old scripts first).
+
+########################################################################################################################
+List of Efnet channels, you can add these to the ignore setting:
+
+#alt.binaries.cd.image
+#alt.binaries.console.ps3
+#alt.binaries.dvd
+#alt.binaries.erotica
+#alt.binaries.flac
+#alt.binaries.foreign
+#alt.binaries.games.nintendods
+#alt.binaries.inner-sanctum
+#alt.binaries.moovee
+#alt.binaries.movies.divx
+#alt.binaries.sounds.mp3.complete_cd
+#alt.binaries.teevee
+#alt.binaries.warez
