@@ -14,6 +14,7 @@ Each update goes to the top of the file
 	* Fix: insert errors in Binaries.php
 	* Fix: typo in PreDb
 2014-03-31 kevin
+	* Add: Patch for adding nuked/files to predb (will start working on putting those in db) WARNING THIS CAN BE A SLOW PATCH, BE PATIENT!
 	* Add: Scraping a.b.console.ps3 in IRCScraper.
 	* Add: Scraping a.b.foreign in IRCScraper.
 	* Add: Ignoring Efnet channels in IRCScraper.
