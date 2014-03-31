@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-03-31 bart39
+	* Fix: PreDb 10 minute sleep timer from last adddate never reached if using IRCScraper
 2013-03-30 kevin
 	* Add: Random username generator to IRCScraper.
 	* Add: Toggle between Zenet and corrupt, make sure to edit Settings.php (add the new line from settings_example.php).

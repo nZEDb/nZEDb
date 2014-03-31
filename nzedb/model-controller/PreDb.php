@@ -48,7 +48,8 @@ Class PreDb
 	public function updatePre()
 	{
 		$newNames = 0;
-		$newestRel = $this->db->queryOneRow('SELECT adddate, id FROM predb ORDER BY adddate DESC LIMIT 1');
+		$newestRel = $this->db->queryOneRow('SELECT adddate, id FROM predb WHERE source NOT REGEXP "#" ORDER BY
+		adddate DESC LIMIT 1');
 
 		// Wait 10 minutes in between pulls.
 		if (strtotime($newestRel['adddate']) < (time() - 600) || is_null($newestRel['adddate'])) {
