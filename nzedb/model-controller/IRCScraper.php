@@ -448,7 +448,14 @@ class IRCScraper
 	{
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326264] [HD-Clip] [FULL 16x50MB TeenSexMovs.14.03.30.Daniela.XXX.720p.WMV-iaK] Filenames:[iak-teensexmovs-140330] Comments:[0] Watchers:[0] Total Size:[753MB] Points Earned:[54] [Pred 3m 20s ago]
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326663] [x264] [FULL 53x100MB Young.Ripe.Mellons.10.XXX.720P.WEBRIP.X264-GUSH] Filenames:[gush.yrmellons10] Comments:[1] Watchers:[0] Total Size:[4974MB] Points Earned:[354] [Pred 7m 5s ago] [NUKED]
-			if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[.+?\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGTP]?B)\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\](.+?\[Pred\s+(?P<predago>.+?)\s+ago\])?(.+?\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)D\])?/i', $message, $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[.+?\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGTP]?B)\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\](.+?\[Pred\s+(?P<predago>.+?)\s+ago\])?(.+?\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)D\])?/i', $message, $matches)) {
+			$this->CurPre['source']   = '#a.b.erotica';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.erotica');
+			$this->CurPre['category'] = 'XXX';
+			$this->siftMatches($matches);
+
+		//[NUKE] ReqId:[326663] [Young.Ripe.Mellons.10.XXX.720P.WEBRIP.X264-GUSH] Reason:[selfdupe.2014-03-09]
+		} elseif (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)]/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.erotica';
 			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.erotica');
 			$this->CurPre['category'] = 'XXX';
