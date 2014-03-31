@@ -596,7 +596,7 @@ INSERT INTO site
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
 	('showbacks', '0'),
-	('sqlpatch','185');
+	('sqlpatch','192');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
@@ -667,7 +667,9 @@ INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
 	('showquery', '0'),
 	('fix_crap_opt', 'Disabled'),
 	('showprocesslist', '0'),
-	('processupdate', '2');
+	('processupdate', '2'),
+	('scrape_cz', '2'),
+	('scrap_efnet', '2');
 
 
 INSERT INTO userroles (id, name, apirequests, downloadrequests, defaultinvites, isdefault, canpreview) VALUES
