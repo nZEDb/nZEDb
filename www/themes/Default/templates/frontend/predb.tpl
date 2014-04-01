@@ -67,6 +67,10 @@
 					<a title="Visit allfilled {$result.source}" href="{$site->dereferrer_link}http://{$result.source}.allfilled.com/search.php?q={$result.title}&Search=Search">
 						{$result.source}
 					</a>
+				{elseif $result.source|strpos:'#a.b.' !== false}
+					<a title="Visit {$result.source} on IRC" href="irc://irc.Prison.NET:6667/{str_replace('#a.b.', 'alt.binaries.', {$result.source})}">
+						{$result.source}
+					</a>
 				{elseif {$result.source} == omgwtfnzbs}
 					<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php">
 						omgwtfnzbs
@@ -82,6 +86,14 @@
 				{elseif {$result.source} == prelist}
 					<a title="Visit Prelist" href="{$site->dereferrer_link}http://www.prelist.ws/?search={$result.title}" target="_blank">
 						Prelist
+					</a>
+				{elseif {$result.source} == "#Pre@zenet"}
+					<a title="Visit zenet on IRC" href="irc://irc.zenet.org:6667/Pre" target="_blank">
+						Zenet IRC
+					</a>
+				{elseif {$result.source} == "#pre@corrupt"}
+					<a title="Visit corrupt on IRC" href="irc://irc.corrupt-net.org:6667/pre" target="_blank">
+						Corrupt-Net
 					</a>
 				{elseif {$result.source} == srrdb}
 					<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}" target="_blank">

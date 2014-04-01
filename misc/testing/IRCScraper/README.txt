@@ -33,6 +33,11 @@ List of Efnet channels, you can add these to the ignore setting:
 #alt.binaries.inner-sanctum
 #alt.binaries.moovee
 #alt.binaries.movies.divx
+#alt.binaries.sony.psp
 #alt.binaries.sounds.mp3.complete_cd
 #alt.binaries.teevee
+#alt.binaries.games.wii
 #alt.binaries.warez
+#alt.binaries.games.xbox360
+#scnzb
+#tvnzb
