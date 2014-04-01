@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Eval Class
  *
@@ -38,7 +37,6 @@ class Smarty_Internal_Compile_Eval extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $shorttag_order = array('var','assign');
-
     /**
      * Compiles code for the {eval} tag
      *
@@ -56,7 +54,6 @@ class Smarty_Internal_Compile_Eval extends Smarty_Internal_CompileBase
               // output will be stored in a smarty variable instead of beind displayed
             $_assign = $_attr['assign'];
         }
-
         // create template object
         $_output = "\$_template = new {$compiler->smarty->template_class}('eval:'.".$_attr['var'].", \$_smarty_tpl->smarty, \$_smarty_tpl);";
         //was there an assign attribute?
@@ -65,8 +62,6 @@ class Smarty_Internal_Compile_Eval extends Smarty_Internal_CompileBase
         } else {
             $_output .= "echo \$_template->fetch();";
         }
-
         return "<?php $_output ?>";
     }
-
 }

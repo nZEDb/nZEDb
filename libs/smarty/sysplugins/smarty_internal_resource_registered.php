@@ -7,7 +7,6 @@
  * @author Uwe Tews
  * @author Rodney Rehm
  */
-
 /**
  * Smarty Internal Plugin Resource Registered
  *
@@ -35,7 +34,6 @@ class Smarty_Internal_Resource_Registered extends Smarty_Resource
             $source->exists = !!$source->timestamp;
         }
     }
-
     /**
      * populate Source Object with timestamp and exists from Resource
      *
@@ -47,7 +45,6 @@ class Smarty_Internal_Resource_Registered extends Smarty_Resource
         $source->timestamp = $this->getTemplateTimestamp($source);
         $source->exists = !!$source->timestamp;
     }
-
     /**
      * Get timestamp (epoch) the template source was modified
      *
@@ -59,10 +56,8 @@ class Smarty_Internal_Resource_Registered extends Smarty_Resource
         // return timestamp
         $time_stamp = false;
         call_user_func_array($source->smarty->registered_resources[$source->type][0][1], array($source->name, &$time_stamp, $source->smarty));
-
         return is_numeric($time_stamp) ? (int) $time_stamp : $time_stamp;
     }
-
     /**
      * Load template's source by invoking the registered callback into current template object
      *
@@ -77,10 +72,8 @@ class Smarty_Internal_Resource_Registered extends Smarty_Resource
         if (is_bool($t) && !$t) {
             throw new SmartyException("Unable to read template {$source->type} '{$source->name}'");
         }
-
         return $source->content;
     }
-
     /**
      * Determine basename for compiled filename
      *
@@ -91,5 +84,4 @@ class Smarty_Internal_Resource_Registered extends Smarty_Resource
     {
         return basename($source->name);
     }
-
 }

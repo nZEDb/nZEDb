@@ -8,7 +8,6 @@
  * @subpackage Template
  * @author Uwe Tews
  */
-
 /**
  * Base class with template and variable methodes
  *
@@ -41,7 +40,6 @@ class Smarty_Internal_Data
      * @var array
      */
     public $config_vars = array();
-
     /**
      * assigns a Smarty variable
      *
@@ -64,10 +62,8 @@ class Smarty_Internal_Data
                 $this->tpl_vars[$tpl_var] = new Smarty_variable($value, $nocache);
             }
         }
-
         return $this;
     }
-
     /**
      * assigns a global Smarty variable
      *
@@ -86,7 +82,6 @@ class Smarty_Internal_Data
                 $ptr = $ptr->parent;
             }
         }
-
         return $this;
     }
     /**
@@ -103,10 +98,8 @@ class Smarty_Internal_Data
             $this->tpl_vars[$tpl_var] = new Smarty_variable(null, $nocache);
             $this->tpl_vars[$tpl_var]->value = &$value;
         }
-
         return $this;
     }
-
     /**
      * appends values to template variables
      *
@@ -164,10 +157,8 @@ class Smarty_Internal_Data
                 }
             }
         }
-
         return $this;
     }
-
     /**
      * appends values to template variables by reference
      *
@@ -193,10 +184,8 @@ class Smarty_Internal_Data
                 $this->tpl_vars[$tpl_var]->value[] = &$value;
             }
         }
-
         return $this;
     }
-
     /**
      * Returns a single or all template variables
      *
@@ -238,11 +227,9 @@ class Smarty_Internal_Data
                     }
                 }
             }
-
             return $_result;
         }
     }
-
     /**
      * clear the given assigned template variable.
      *
@@ -258,10 +245,8 @@ class Smarty_Internal_Data
         } else {
             unset($this->tpl_vars[$tpl_var]);
         }
-
         return $this;
     }
-
     /**
      * clear all the assigned template variables.
      * @return Smarty_Internal_Data current Smarty_Internal_Data (or Smarty or Smarty_Internal_Template) instance for chaining
@@ -269,10 +254,8 @@ class Smarty_Internal_Data
     public function clearAllAssign()
     {
         $this->tpl_vars = array();
-
         return $this;
     }
-
     /**
      * load a config file, optionally load just selected sections
      *
@@ -285,10 +268,8 @@ class Smarty_Internal_Data
         // load Config class
         $config = new Smarty_Internal_Config($config_file, $this->smarty, $this);
         $config->loadConfigVars($sections);
-
         return $this;
     }
-
     /**
      * gets the object of a Smarty variable
      *
@@ -321,10 +302,8 @@ class Smarty_Internal_Data
             // force a notice
             $x = $$variable;
         }
-
         return new Undefined_Smarty_Variable;
     }
-
     /**
      * gets  a config variable
      *
@@ -346,10 +325,8 @@ class Smarty_Internal_Data
             // force a notice
             $x = $$variable;
         }
-
         return null;
     }
-
     /**
      * gets  a stream variable
      *
@@ -365,17 +342,14 @@ class Smarty_Internal_Data
                 $_result .= $current_line;
             }
             fclose($fp);
-
             return $_result;
         }
-
         if ($this->smarty->error_unassigned) {
             throw new SmartyException('Undefined stream variable "' . $variable . '"');
         } else {
             return null;
         }
     }
-
     /**
      * Returns a single or all config variables
      *
@@ -407,7 +381,6 @@ class Smarty_Internal_Data
             return $var_array;
         }
     }
-
     /**
      * Deassigns a single or all config variables
      *
@@ -421,12 +394,9 @@ class Smarty_Internal_Data
         } else {
             $this->config_vars = array();
         }
-
         return $this;
     }
-
 }
-
 /**
  * class for the Smarty data object
  *
@@ -443,7 +413,6 @@ class Smarty_Data extends Smarty_Internal_Data
      * @var Smarty
      */
     public $smarty = null;
-
     /**
      * create Smarty data object
      *
@@ -465,9 +434,7 @@ class Smarty_Data extends Smarty_Internal_Data
             throw new SmartyException("Wrong type for template variables");
         }
     }
-
 }
-
 /**
  * class for the Smarty variable object
  *
@@ -496,7 +463,6 @@ class Smarty_Variable
      * @var int
      */
     public $scope = Smarty::SCOPE_LOCAL;
-
     /**
      * create Smarty variable object
      *
@@ -510,7 +476,6 @@ class Smarty_Variable
         $this->nocache = $nocache;
         $this->scope = $scope;
     }
-
     /**
      * <<magic>> String conversion
      *
@@ -520,9 +485,7 @@ class Smarty_Variable
     {
         return (string) $this->value;
     }
-
 }
-
 /**
  * class for undefined variable object
  *
@@ -547,7 +510,6 @@ class Undefined_Smarty_Variable
             return null;
         }
     }
-
     /**
      * Always returns an empty string.
      *
@@ -557,5 +519,4 @@ class Undefined_Smarty_Variable
     {
         return "";
     }
-
 }

@@ -8,7 +8,6 @@
  * @subpackage Template
  * @author Uwe Tews
  */
-
 /**
  * Main class with template data structures and methods
  *
@@ -98,7 +97,6 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      * @var array
      */
     public $_capture_stack = array(0 => array());
-
     /**
      * Create template data object
      *
@@ -131,7 +129,6 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
             $this->block_data = $this->parent->block_data;
         }
     }
-
     /**
      * Returns if the current template must be compiled by the Smarty compiler
      *
@@ -153,10 +150,8 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
             $this->mustCompile = (!$this->source->uncompiled && ($this->smarty->force_compile || $this->source->recompiled || $this->compiled->timestamp === false ||
                     ($this->smarty->compile_check && $this->compiled->timestamp < $this->source->timestamp)));
         }
-
         return $this->mustCompile;
     }
-
     /**
      * Compiles the template
      *
@@ -204,7 +199,6 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         // release compiler object to free memory
         unset($this->compiler);
     }
-
     /**
      * Writes the cached template output
      *
@@ -217,16 +211,14 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
             return false;
         }
         $this->properties['cache_lifetime'] = $this->cache_lifetime;
-        $this->properties['unifunc'] = 'content_' . str_replace('.', '_', uniqid('', true));
+        $this->properties['unifunc'] = 'content_' . str_replace(array('.',','), '_', uniqid('', true));
         $content = $this->createTemplateCodeFrame($content, true);
         $_smarty_tpl = $this;
         eval("?>" . $content);
         $this->cached->valid = true;
         $this->cached->processed = true;
-
         return $this->cached->write($this, $content);
     }
-
     /**
      * Template code runtime function to get subtemplate content
      *
@@ -247,7 +239,6 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         } else {
             $_templateId = $this->smarty->joined_template_dir . '#' . $template . $cache_id . $compile_id;
         }
-
         if (isset($_templateId[150])) {
             $_templateId = sha1($_templateId);
         }
@@ -280,10 +271,8 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
                 $tpl->tpl_vars[$_key] = new Smarty_variable($_val);
             }
         }
-
         return $tpl->fetch(null, null, null, null, false, false, true);
     }
-
     /**
      * Template code runtime function to set up an inline subtemplate
      *
@@ -321,11 +310,8 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
                 $tpl->tpl_vars[$_key] = new Smarty_variable($_val);
             }
         }
-
         return $tpl;
     }
-
-
     /**
      * Create code frame for compiled and cached templates
      *
@@ -399,7 +385,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         }
         $this->properties['version'] = Smarty::SMARTY_VERSION;
         if (!isset($this->properties['unifunc'])) {
-            $this->properties['unifunc'] = 'content_' . str_replace('.', '_', uniqid('', true));
+            $this->properties['unifunc'] = 'content_' . str_replace(array('.',','), '_', uniqid('', true));
         }
         if (!$this->source->recompiled) {
             $output .= "\$_valid = \$_smarty_tpl->decodeProperties(" . var_export($this->properties, true) . ',' . ($cache ? 'true' : 'false') . "); /*/%%SmartyHeaderCode%%*/?>\n";
@@ -410,10 +396,8 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         if (!$this->source->recompiled) {
             $output .= "<?php }} ?>\n";
         }
-
         return $output;
     }
-
     /**
      * This function is executed automatically when a compiled or cached template file is included
      *
@@ -480,10 +464,8 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         if (!$cache) {
             $this->compiled->_properties = $properties;
         }
-
         return $is_valid;
     }
-
     /**
      * Template code runtime function to create a local Smarty variable for array assignments
      *
@@ -505,7 +487,6 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
             }
         }
     }
-
     /**
      * Template code runtime function to get pointer to template variable array of requested scope
      *
@@ -521,16 +502,13 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
             while (!empty($ptr->parent)) {
                 $ptr = $ptr->parent;
             }
-
             return $ptr->tpl_vars;
         } elseif ($scope == Smarty::SCOPE_GLOBAL) {
             return Smarty::$global_tpl_vars;
         }
         $null = null;
-
         return $null;
     }
-
     /**
      * Get parent or root of template parent chain
      *
@@ -546,13 +524,10 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
             while (!empty($ptr->parent)) {
                 $ptr = $ptr->parent;
             }
-
             return $ptr;
         }
-
         return null;
     }
-
     /**
      * [util function] counts an array, arrayaccess/traversable or PDOStatement object
      *
@@ -580,10 +555,8 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
         } elseif (is_object($value)) {
             return count($value);
         }
-
         return 0;
     }
-
     /**
      * runtime error not matching capture tags
      *
@@ -592,7 +565,6 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     {
         throw new SmartyException("Not matching {capture} open/close in \"{$this->template_resource}\"");
     }
-
     /**
     * Empty cache for this template
     *
@@ -602,10 +574,8 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     public function clearCache($exp_time=null)
     {
         Smarty_CacheResource::invalidLoadedCache($this->smarty);
-
         return $this->cached->handler->clear($this->smarty, $this->template_name, $this->cache_id, $this->compile_id, $exp_time);
     }
-
      /**
      * set Smarty property in template context
      *
@@ -620,21 +590,16 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
             case 'cached':
             case 'compiler':
                 $this->$property_name = $value;
-
                 return;
-
             // FIXME: routing of template -> smarty attributes
             default:
                 if (property_exists($this->smarty, $property_name)) {
                     $this->smarty->$property_name = $value;
-
                     return;
                 }
         }
-
         throw new SmartyException("invalid template property '$property_name'.");
     }
-
     /**
      * get Smarty property in template context
      *
@@ -656,44 +621,33 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
                     } else {
                         $_templateId = $this->smarty->joined_template_dir . '#' . $this->template_resource . $this->cache_id . $this->compile_id;
                     }
-
                     if (isset($_templateId[150])) {
                         $_templateId = sha1($_templateId);
                     }
                     $this->smarty->template_objects[$_templateId] = $this;
                 }
-
                 return $this->source;
-
             case 'compiled':
                 $this->compiled = $this->source->getCompiled($this);
-
                 return $this->compiled;
-
             case 'cached':
                 if (!class_exists('Smarty_Template_Cached')) {
                     include SMARTY_SYSPLUGINS_DIR . 'smarty_cacheresource.php';
                 }
                 $this->cached = new Smarty_Template_Cached($this);
-
                 return $this->cached;
-
             case 'compiler':
                 $this->smarty->loadPlugin($this->source->compiler_class);
                 $this->compiler = new $this->source->compiler_class($this->source->template_lexer_class, $this->source->template_parser_class, $this->smarty);
-
                 return $this->compiler;
-
             // FIXME: routing of template -> smarty attributes
             default:
                 if (property_exists($this->smarty, $property_name)) {
                     return $this->smarty->$property_name;
                 }
         }
-
         throw new SmartyException("template property '$property_name' does not exist.");
     }
-
     /**
      * Template data object destrutor
      *
@@ -704,5 +658,4 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
             $this->cached->handler->releaseLock($this->smarty, $this->cached);
         }
     }
-
 }

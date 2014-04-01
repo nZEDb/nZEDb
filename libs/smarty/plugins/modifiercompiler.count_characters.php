@@ -5,7 +5,6 @@
  * @package Smarty
  * @subpackage PluginsModifierCompiler
  */
-
 /**
  * Smarty count_characters modifier plugin
  *

@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Function_Call Class
  *
@@ -38,7 +37,6 @@ class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $optional_attributes = array('_any');
-
     /**
      * Compiles the calls of user defined tags defined by {function}
      *
@@ -105,7 +103,6 @@ class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase
             $call_cache = "'{$_name}'";
             $call_function = 'smarty_template_function_' . $_name;
         }
-
         $_params = 'array(' . implode(",", $_paramsArray) . ')';
         $_hash = str_replace('-', '_', $compiler->template->properties['nocache_hash']);
         // was there an assign attribute
@@ -122,8 +119,6 @@ class Smarty_Internal_Compile_Call extends Smarty_Internal_CompileBase
                 $_output = "<?php {$call_function}(\$_smarty_tpl,{$_params});?>\n";
             }
         }
-
         return $_output;
     }
-
 }

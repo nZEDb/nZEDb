@@ -9,7 +9,6 @@
 * @author Uwe Tews
 * @author Rodney Rehm
 */
-
 /**
 * Smarty Internal Plugin Resource Stream
 *
@@ -40,7 +39,6 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
         $source->timestamp = false;
         $source->exists = !!$source->content;
     }
-
     /**
     * Load template's source from stream into current template object
     *
@@ -58,13 +56,11 @@ class Smarty_Internal_Resource_Stream extends Smarty_Resource_Recompiled
                 $t .= $current_line;
             }
             fclose($fp);
-
             return $t;
         } else {
             return false;
         }
     }
-
     /**
     * modify resource_name according to resource handlers specifications
     *

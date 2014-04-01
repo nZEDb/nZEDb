@@ -8,12 +8,10 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * @ignore
  */
 include 'smarty_internal_parsetree.php';
-
 /**
  * Class SmartyTemplateCompiler
  *
@@ -28,42 +26,36 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
      * @var string
      */
     public $lexer_class;
-
     /**
      * Parser class name
      *
      * @var string
      */
     public $parser_class;
-
     /**
      * Lexer object
      *
      * @var object
      */
     public $lex;
-
     /**
      * Parser object
      *
      * @var object
      */
     public $parser;
-
     /**
      * Smarty object
      *
      * @var object
      */
     public $smarty;
-
     /**
      * array of vars which can be compiled in local scope
      *
      * @var array
      */
     public $local_var = array();
-
     /**
      * Initialize compiler
      *
@@ -79,7 +71,6 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
         $this->lexer_class = $lexer_class;
         $this->parser_class = $parser_class;
     }
-
     /**
      * Methode to compile a Smarty template
      *
@@ -110,7 +101,6 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
             }
             $this->parser->doParse($this->lex->token, $this->lex->value);
         }
-
         if ($this->abort_and_recompile) {
             // exit here on abort
             return false;
@@ -127,5 +117,4 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
         // return str_replace(array("? >\n<?php","? ><?php"), array('',''), $this->parser->retvalue);
         return $this->parser->retvalue;
     }
-
 }

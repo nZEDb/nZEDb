@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile For Class
  *
@@ -47,7 +46,6 @@ class Smarty_Internal_Compile_For extends Smarty_Internal_CompileBase
         }
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-
         $output = "<?php ";
         if ($parameter == 1) {
             foreach ($_attr['start'] as $_statement) {
@@ -74,16 +72,13 @@ class Smarty_Internal_Compile_For extends Smarty_Internal_CompileBase
             $output .= "\$_smarty_tpl->tpl_vars[$_statement[var]]->last = \$_smarty_tpl->tpl_vars[$_statement[var]]->iteration == \$_smarty_tpl->tpl_vars[$_statement[var]]->total;";
         }
         $output .= "?>";
-
         $this->openTag($compiler, 'for', array('for', $compiler->nocache));
         // maybe nocache because of nocache variables
         $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
         // return compiled code
         return $output;
     }
-
 }
-
 /**
  * Smarty Internal Plugin Compile Forelse Class
  *
@@ -104,15 +99,11 @@ class Smarty_Internal_Compile_Forelse extends Smarty_Internal_CompileBase
     {
         // check and get attributes
         $_attr  = $this->getAttributes($compiler, $args);
-
         list($openTag, $nocache) = $this->closeTag($compiler, array('for'));
         $this->openTag($compiler, 'forelse', array('forelse', $nocache));
-
         return "<?php }} else { ?>";
     }
-
 }
-
 /**
  * Smarty Internal Plugin Compile Forclose Class
  *
@@ -137,14 +128,11 @@ class Smarty_Internal_Compile_Forclose extends Smarty_Internal_CompileBase
         if ($compiler->nocache) {
             $compiler->tag_nocache = true;
         }
-
         list($openTag, $compiler->nocache) = $this->closeTag($compiler, array('for', 'forelse'));
-
         if ($openTag == 'forelse') {
             return "<?php }  ?>";
         } else {
             return "<?php }} ?>";
         }
     }
-
 }

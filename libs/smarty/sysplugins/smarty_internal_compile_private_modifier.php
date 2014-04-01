@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Smarty Internal Plugin Compile Modifier
  *
@@ -9,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Modifier Class
  *
@@ -133,8 +131,6 @@ class Smarty_Internal_Compile_Private_Modifier extends Smarty_Internal_CompileBa
                 $compiler->trigger_template_error("unknown modifier \"" . $modifier . "\"", $compiler->lex->taglineno);
             }
         }
-
         return $output;
     }
-
 }
