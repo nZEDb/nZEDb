@@ -799,7 +799,7 @@ class IRCScraper
 	 */
 	protected function checkForDupe()
 	{
-		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT id, category FROM predb WHERE md5 = %s', $this->CurPre['md5']));
+		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT category FROM predb WHERE md5 = %s', $this->CurPre['md5']));
 		if ($this->OldPre === false) {
 			$this->insertNewPre();
 		} else {
@@ -873,7 +873,11 @@ class IRCScraper
 		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid = '    . $this->CurPre['groupid']                         . ', ' : '');
 		$query .= (!empty($this->CurPre['predate'])  ? 'predate = '    . $this->CurPre['predate']                         . ', ' : '');
 		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked = '      . $this->CurPre['nuked']                           . ', ' : '');
-		$query .= (empty($this->OldPre['category']) && !empty($this->CurPre['category']) ? 'category = '  . $this->db->escapeString($this->CurPre['category']) . ', ' : '');
+		$query .= (
+			(empty($this->OldPre['category']) && !empty($this->CurPre['category']))
+				? 'category = ' . $this->db->escapeString($this->CurPre['category']) . ', '
+				: ''
+		);
 
 		if ($query === 'UPDATE predb SET '){
 			return;
