@@ -49,8 +49,19 @@ if ($bFound === true) {
 			. "preid = %d, reqidstatus = 1, isrenamed = 1, searchname = %s, categoryid = %d where id = %d", $preid, $db->escapeString($title), $determinedcat, $pieces[0]));
 	if ($groupid !== 0) {
 		$md5 = md5($title);
-		$db->queryDirect(sprintf("INSERT IGNORE INTO predb (title, adddate, source, md5, requestid, groupid) VALUES "
-				. "(%s, now(), %s, %s, %s, %d) ON DUPLICATE KEY UPDATE requestid = %d", $db->escapeString($title), $db->escapeString('requestWEB'), $db->escapeString($md5), $requestID, $groupid, $requestID));
+		$dupe = $db->queryOneRow(sprintf('SELECT requestid FROM predb WHERE md5 = %s', $db->escapeString($md5)));
+		if ($dupe === false || ($dupe !== false && $dupe['requestid'] !== $requestID)) {
+			$db->queryDirect(
+				sprintf("
+				INSERT INTO predb (title, source, md5, requestid, groupid)
+				VALUES (%s, %s, %s, %s, %d)",
+					$db->escapeString($title),
+					$db->escapeString('requestWEB'),
+					$db->escapeString($md5),
+					$requestID, $groupid
+				)
+			);
+		}
 	} else if ($groupid === 0) {
 		echo $requestID . "\n";
 	}

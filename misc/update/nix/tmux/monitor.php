@@ -136,7 +136,7 @@ if ($dbtype == 'mysql') {
 		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval datediff(curdate(), "
 		. "(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date, "
 		. "(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
-		. "(SELECT UNIX_TIMESTAMP(adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre, "
+		. "(SELECT UNIX_TIMESTAMP(predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre, "
 		. "(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
 		. "(SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
 } else if ($dbtype == 'pgsql') {
@@ -146,7 +146,7 @@ if ($dbtype == 'mysql') {
 		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - backfill_target * interval '1 days') < first_record_postdate) AS backfill_groups_days, "
 		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM site WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date, "
 		. "(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
-		. "(SELECT extract(epoch FROM adddate) FROM predb ORDER BY adddate DESC LIMIT 1) AS newestpre, "
+		. "(SELECT extract(epoch FROM predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre, "
 		. "(SELECT extract(epoch FROM adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
 		. "(SELECT extract(epoch FROM dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
 }
