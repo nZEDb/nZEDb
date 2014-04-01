@@ -958,7 +958,8 @@ class IRCScraper
 	protected function getGroupID($groupName)
 	{
 		if (!isset($this->groupList[$groupName])) {
-			$this->groupList[$groupName] = $this->db->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $this->db->escapeString($groupName)));
+			$group = $this->db->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $this->db->escapeString($groupName)));
+			$this->groupList[$groupName] = $group['id'];
 		}
 		return $this->groupList[$groupName];
 	}
