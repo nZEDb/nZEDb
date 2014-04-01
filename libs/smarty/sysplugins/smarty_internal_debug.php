@@ -8,7 +8,6 @@
  * @subpackage Debug
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Debug Class
  *
@@ -23,14 +22,12 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
      * @var array
      */
     public static $template_data = array();
-
     /**
      * List of uid's which shall be ignored
      *
      * @var array
      */
     public static $ignore_uid = array();
-
     /**
      * Ignore template
      *
@@ -44,7 +41,6 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         }
         self::$ignore_uid[$template->source->uid] = true;
     }
-
     /**
      * Start logging of compile time
      *
@@ -73,7 +69,6 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         }
         self::$template_data[$key]['start_time'] = microtime(true);
     }
-
     /**
      * End logging of compile time
      *
@@ -87,12 +82,10 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
             if (isset(self::$ignore_uid[$template->source->uid])) {
                 return;
             }
-
             $key = self::get_key($template);
         }
         self::$template_data[$key]['compile_time'] += microtime(true) - self::$template_data[$key]['start_time'];
     }
-
     /**
      * Start logging of render time
      *
@@ -103,7 +96,6 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         $key = self::get_key($template);
         self::$template_data[$key]['start_time'] = microtime(true);
     }
-
     /**
      * End logging of compile time
      *
@@ -114,7 +106,6 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         $key = self::get_key($template);
         self::$template_data[$key]['render_time'] += microtime(true) - self::$template_data[$key]['start_time'];
     }
-
     /**
      * Start logging of cache time
      *
@@ -125,7 +116,6 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         $key = self::get_key($template);
         self::$template_data[$key]['start_time'] = microtime(true);
     }
-
     /**
      * End logging of cache time
      *
@@ -136,7 +126,6 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         $key = self::get_key($template);
         self::$template_data[$key]['cache_time'] += microtime(true) - self::$template_data[$key]['start_time'];
     }
-
     /**
      * Opens a window for the Smarty Debugging Consol and display the data
      *
@@ -182,7 +171,6 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
         $_template->assign('execution_time', microtime(true) - $smarty->start_time);
         echo $_template->fetch();
     }
-
     /**
      * Recursively gets variables from all template/data scopes
      *
@@ -203,7 +191,6 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
                 $tpl_vars[$key]->scope = 'Smarty root';
             }
         }
-
         if (isset($obj->parent)) {
             $parent = self::get_debug_vars($obj->parent);
             $tpl_vars = array_merge($parent->tpl_vars, $tpl_vars);
@@ -217,10 +204,8 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
                 }
             }
         }
-
         return (object)array('tpl_vars' => $tpl_vars, 'config_vars' => $config_vars);
     }
-
     /**
      * Return key into $template_data for template
      *
@@ -246,9 +231,7 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data
             self::$template_data[$key]['compile_time'] = 0;
             self::$template_data[$key]['render_time'] = 0;
             self::$template_data[$key]['cache_time'] = 0;
-
             return $key;
         }
     }
-
 }

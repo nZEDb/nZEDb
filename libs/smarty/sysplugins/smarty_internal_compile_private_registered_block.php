@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Registered Block Class
  *
@@ -24,7 +23,6 @@ class Smarty_Internal_Compile_Private_Registered_Block extends Smarty_Internal_C
      * @see Smarty_Internal_CompileBase
      */
     public $optional_attributes = array('_any');
-
     /**
      * Compiles code for the execution of a block function
      *
@@ -62,7 +60,6 @@ class Smarty_Internal_Compile_Private_Registered_Block extends Smarty_Internal_C
                 }
             }
             $_params = 'array(' . implode(",", $_paramsArray) . ')';
-
             $this->openTag($compiler, $tag, array($_params, $compiler->nocache));
             // maybe nocache because of nocache variables or nocache plugin
             $compiler->nocache = !$tag_info[1] | $compiler->nocache | $compiler->tag_nocache;
@@ -105,8 +102,6 @@ class Smarty_Internal_Compile_Private_Registered_Block extends Smarty_Internal_C
                 $output = "<?php \$_block_content = ob_get_clean(); \$_block_repeat=false;".$mod_pre." echo {$function[0]}::{$function[1]}({$_params}, \$_block_content, \$_smarty_tpl, \$_block_repeat); ".$mod_post."} array_pop(\$_smarty_tpl->smarty->_tag_stack);?>";
             }
         }
-
         return $output . "\n";
     }
-
 }

@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Setfilter Class
  *
@@ -31,12 +30,9 @@ class Smarty_Internal_Compile_Setfilter extends Smarty_Internal_CompileBase
         $compiler->template->variable_filters = $parameter['modifier_list'];
         // this tag does not return compiled code
         $compiler->has_code = false;
-
         return true;
     }
-
 }
-
 /**
  * Smarty Internal Plugin Compile Setfilterclose Class
  *
@@ -65,8 +61,6 @@ class Smarty_Internal_Compile_Setfilterclose extends Smarty_Internal_CompileBase
         }
         // this tag does not return compiled code
         $compiler->has_code = false;
-
         return true;
     }
-
 }

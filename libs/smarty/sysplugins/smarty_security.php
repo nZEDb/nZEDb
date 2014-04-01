@@ -6,7 +6,6 @@
  * @subpackage Security
  * @author Uwe Tews
  */
-
 /*
  * FIXME: Smarty_Security API
  *      - getter and setter instead of public properties would allow cultivating an internal cache properly
@@ -15,7 +14,6 @@
  *        $template_dir or $config_dir should NOT share the same Smarty_Security instance,
  *        as this would lead to (severe) performance penalty! how should this be handled?
  */
-
 /**
  * This class does contain the security settings
  */
@@ -133,7 +131,6 @@ class Smarty_Security
      * @var boolean
      */
     public $allow_super_globals = true;
-
     /**
      * Cache for $resource_dir lookups
      * @var array
@@ -164,7 +161,6 @@ class Smarty_Security
      * @var array
      */
     protected $_trusted_dir = null;
-
     /**
      * @param Smarty $smarty
      */
@@ -172,7 +168,6 @@ class Smarty_Security
     {
         $this->smarty = $smarty;
     }
-
     /**
      * Check if PHP function is trusted.
      *
@@ -186,12 +181,9 @@ class Smarty_Security
         if (isset($this->php_functions) && (empty($this->php_functions) || in_array($function_name, $this->php_functions))) {
             return true;
         }
-
         $compiler->trigger_template_error("PHP function '{$function_name}' not allowed by security setting");
-
         return false; // should not, but who knows what happens to the compiler in the future?
     }
-
     /**
      * Check if static class is trusted.
      *
@@ -205,12 +197,9 @@ class Smarty_Security
         if (isset($this->static_classes) && (empty($this->static_classes) || in_array($class_name, $this->static_classes))) {
             return true;
         }
-
         $compiler->trigger_template_error("access to static class '{$class_name}' not allowed by security setting");
-
         return false; // should not, but who knows what happens to the compiler in the future?
     }
-
     /**
      * Check if PHP modifier is trusted.
      *
@@ -224,12 +213,9 @@ class Smarty_Security
         if (isset($this->php_modifiers) && (empty($this->php_modifiers) || in_array($modifier_name, $this->php_modifiers))) {
             return true;
         }
-
         $compiler->trigger_template_error("modifier '{$modifier_name}' not allowed by security setting");
-
         return false; // should not, but who knows what happens to the compiler in the future?
     }
-
     /**
      * Check if tag is trusted.
      *
@@ -257,10 +243,8 @@ class Smarty_Security
         } else {
             $compiler->trigger_template_error("tag '{$tag_name}' not allowed by security setting", $compiler->lex->taglineno);
         }
-
         return false; // should not, but who knows what happens to the compiler in the future?
     }
-
     /**
      * Check if modifier plugin is trusted.
      *
@@ -287,10 +271,8 @@ class Smarty_Security
         } else {
             $compiler->trigger_template_error("modifier '{$modifier_name}' not allowed by security setting", $compiler->lex->taglineno);
         }
-
         return false; // should not, but who knows what happens to the compiler in the future?
     }
-
     /**
      * Check if stream is trusted.
      *
@@ -303,10 +285,8 @@ class Smarty_Security
         if (isset($this->streams) && (empty($this->streams) || in_array($stream_name, $this->streams))) {
             return true;
         }
-
         throw new SmartyException("stream '{$stream_name}' not allowed by security setting");
     }
-
     /**
      * Check if directory of file resource is trusted.
      *
@@ -319,10 +299,8 @@ class Smarty_Security
         $_template = false;
         $_config = false;
         $_secure = false;
-
         $_template_dir = $this->smarty->getTemplateDir();
         $_config_dir = $this->smarty->getConfigDir();
-
         // check if index is outdated
         if ((!$this->_template_dir || $this->_template_dir !== $_template_dir)
                 || (!$this->_config_dir || $this->_config_dir !== $_config_dir)
@@ -333,7 +311,6 @@ class Smarty_Security
             $_config = true;
             $_secure = !empty($this->secure_dir);
         }
-
         // rebuild template dir index
         if ($_template) {
             $this->_template_dir = $_template_dir;
@@ -342,7 +319,6 @@ class Smarty_Security
                 $this->_resource_dir[$directory] = true;
             }
         }
-
         // rebuild config dir index
         if ($_config) {
             $this->_config_dir = $_config_dir;
@@ -351,7 +327,6 @@ class Smarty_Security
                 $this->_resource_dir[$directory] = true;
             }
         }
-
         // rebuild secure dir index
         if ($_secure) {
             $this->_secure_dir = $this->secure_dir;
@@ -360,7 +335,6 @@ class Smarty_Security
                 $this->_resource_dir[$directory] = true;
             }
         }
-
         $_filepath = realpath($filepath);
         $directory = dirname($_filepath);
         $_directory = array();
@@ -371,7 +345,6 @@ class Smarty_Security
             if (isset($this->_resource_dir[$directory])) {
                 // merge sub directories of current $directory into _resource_dir to speed up subsequent lookups
                 $this->_resource_dir = array_merge($this->_resource_dir, $_directory);
-
                 return true;
             }
             // abort if we've reached root
@@ -381,11 +354,9 @@ class Smarty_Security
             // bubble up one level
             $directory = substr($directory, 0, $pos);
         }
-
         // give up
         throw new SmartyException("directory '{$_filepath}' not allowed by security setting");
     }
-
     /**
      * Check if URI (e.g. {fetch} or {html_image}) is trusted
      *
@@ -408,10 +379,8 @@ class Smarty_Security
                 }
             }
         }
-
         throw new SmartyException("URI '{$uri}' not allowed by security setting");
     }
-
     /**
      * Check if directory of file resource is trusted.
      *
@@ -424,18 +393,15 @@ class Smarty_Security
         if (empty($this->trusted_dir)) {
             throw new SmartyException("directory '{$filepath}' not allowed by security setting (no trusted_dir specified)");
         }
-
         // check if index is outdated
         if (!$this->_trusted_dir || $this->_trusted_dir !== $this->trusted_dir) {
             $this->_php_resource_dir = array();
-
             $this->_trusted_dir = $this->trusted_dir;
             foreach ((array) $this->trusted_dir as $directory) {
                 $directory = realpath($directory);
                 $this->_php_resource_dir[$directory] = true;
             }
         }
-
         $_filepath = realpath($filepath);
         $directory = dirname($_filepath);
         $_directory = array();
@@ -446,7 +412,6 @@ class Smarty_Security
             if (isset($this->_php_resource_dir[$directory])) {
                 // merge sub directories of current $directory into _resource_dir to speed up subsequent lookups
                 $this->_php_resource_dir = array_merge($this->_php_resource_dir, $_directory);
-
                 return true;
             }
             // abort if we've reached root
@@ -456,8 +421,6 @@ class Smarty_Security
             // bubble up one level
             $directory = substr($directory, 0, $pos);
         }
-
         throw new SmartyException("directory '{$_filepath}' not allowed by security setting");
     }
-
 }

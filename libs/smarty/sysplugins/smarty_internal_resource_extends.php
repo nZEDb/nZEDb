@@ -7,7 +7,6 @@
  * @author Uwe Tews
  * @author Rodney Rehm
  */
-
 /**
  * Smarty Internal Plugin Resource Extends
  *
@@ -24,7 +23,6 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
      * @var int
      */
     public $mbstring_overload = 0;
-
     /**
      * populate Source Object with meta data from Resource
      *
@@ -58,7 +56,6 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
         // need the template at getContent()
         $source->template = $_template;
     }
-
     /**
      * populate Source Object with timestamp and exists from Resource
      *
@@ -72,7 +69,6 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
         }
         $source->timestamp = $s->timestamp;
     }
-
     /**
      * Load template's source from files into current template object
      *
@@ -85,9 +81,7 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
         if (!$source->exists) {
             throw new SmartyException("Unable to read template {$source->type} '{$source->name}'");
         }
-
         $_components = array_reverse($source->components);
-
         $_content = '';
         foreach ($_components as $_component) {
             // read content
@@ -95,7 +89,6 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
         }
         return $_content;
     }
-
     /**
      * Determine basename for compiled filename
      *
@@ -106,5 +99,4 @@ class Smarty_Internal_Resource_Extends extends Smarty_Resource
     {
         return str_replace(':', '.', basename($source->filepath));
     }
-
 }

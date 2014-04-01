@@ -6,7 +6,6 @@
  * @subpackage Config
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Config
  *
@@ -67,7 +66,6 @@ class Smarty_Internal_Config
      * @var Smarty_Internal_Config_File_Compiler object
      */
     public $compiler_object = null;
-
     /**
      * Constructor of config file object
      *
@@ -81,7 +79,6 @@ class Smarty_Internal_Config
         $this->smarty = $smarty;
         $this->config_resource = $config_resource;
     }
-
     /**
      * Returns the compiled  filepath
      *
@@ -93,7 +90,6 @@ class Smarty_Internal_Config
                 ($this->compiled_filepath = $this->buildCompiledFilepath()) :
                 $this->compiled_filepath;
     }
-
     /**
      * Get file path.
      *
@@ -117,10 +113,8 @@ class Smarty_Internal_Config
             $_filepath = $_compile_id . $_compile_dir_sep . $_filepath;
         }
         $_compile_dir = $this->smarty->getCompileDir();
-
         return $_compile_dir . $_filepath . '.' . basename($this->source->name) . '.config' . '.php';
     }
-
     /**
      * Returns the timpestamp of the compiled file
      *
@@ -132,7 +126,6 @@ class Smarty_Internal_Config
             ? ($this->compiled_timestamp = (file_exists($this->getCompiledFilepath())) ? filemtime($this->getCompiledFilepath()) : false)
             : $this->compiled_timestamp;
     }
-
     /**
      * Returns if the current config file must be compiled
      *
@@ -146,7 +139,6 @@ class Smarty_Internal_Config
             $this->mustCompile = ($this->smarty->force_compile || $this->getCompiledTimestamp () === false || $this->smarty->compile_check && $this->getCompiledTimestamp () < $this->source->timestamp):
             $this->mustCompile;
     }
-
     /**
      * Returns the compiled config file
      *
@@ -164,10 +156,8 @@ class Smarty_Internal_Config
                 $this->compiled_config = file_get_contents($this->getCompiledFilepath());
             }
         }
-
         return $this->compiled_config;
     }
-
     /**
      * Compiles the config files
      *
@@ -200,7 +190,6 @@ class Smarty_Internal_Config
         // write compiled template
         Smarty_Internal_Write_File::writeFile($this->getCompiledFilepath(), $this->getCompiledConfig(), $this->smarty);
     }
-
     /**
      * load config variables
      *
@@ -255,7 +244,6 @@ class Smarty_Internal_Config
             }
         }
     }
-
     /**
      * set Smarty property in template context
      *
@@ -269,13 +257,10 @@ class Smarty_Internal_Config
             case 'source':
             case 'compiled':
                 $this->$property_name = $value;
-
                 return;
         }
-
         throw new SmartyException("invalid config property '$property_name'.");
     }
-
     /**
      * get Smarty property in template context
      *
@@ -290,16 +275,11 @@ class Smarty_Internal_Config
                     throw new SmartyException("Unable to parse resource name \"{$this->config_resource}\"");
                 }
                 $this->source = Smarty_Resource::config($this);
-
                 return $this->source;
-
             case 'compiled':
                 $this->compiled = $this->source->getCompiled($this);
-
                 return $this->compiled;
         }
-
         throw new SmartyException("config attribute '$property_name' does not exist.");
     }
-
 }

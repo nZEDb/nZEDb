@@ -8,7 +8,6 @@
  * @subpackage Template
  * @author Uwe Tews
  */
-
 /**
  * Class with shared template methodes
  *
@@ -313,13 +312,11 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
                         case 'fpm-fcgi':    // php-fpm >= 5.3.3
                         header('Status: 304 Not Modified');
                         break;
-
                         case 'cli':
                         if (/* ^phpunit */!empty($_SERVER['SMARTY_PHPUNIT_DISABLE_HEADERS'])/* phpunit$ */) {
                             $_SERVER['SMARTY_PHPUNIT_HEADERS'][] = '304 Not Modified';
                         }
                         break;
-
                         default:
                         header($_SERVER['SERVER_PROTOCOL'].' 304 Not Modified');
                         break;
@@ -331,7 +328,6 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
                             $_SERVER['SMARTY_PHPUNIT_HEADERS'][] = 'Last-Modified: ' . gmdate('D, d M Y H:i:s', $_template->cached->timestamp) . ' GMT';
                         }
                         break;
-
                         default:
                         header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $_template->cached->timestamp) . ' GMT');
                         break;
@@ -343,14 +339,13 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
             }
             // debug output
             if ($this->smarty->debugging) {
-                Smarty_Internal_Debug::display_debug($this);
+                Smarty_Internal_Debug::display_debug($_template);
             }
             if ($merge_tpl_vars) {
                 // restore local variables
                 $_template->tpl_vars = $save_tpl_vars;
                 $_template->config_vars =  $save_config_vars;
             }
-
             return;
         } else {
             if ($merge_tpl_vars) {
@@ -362,7 +357,6 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
             return $_output;
         }
     }
-
     /**
      * displays a Smarty template
      *
@@ -376,7 +370,6 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         // display template
         $this->fetch($template, $cache_id, $compile_id, $parent, true);
     }
-
     /**
      * test if cache is valid
      *
@@ -400,7 +393,6 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         // return cache status of template
         return $template->cached->valid;
     }
-
     /**
      * creates a data object
      *
@@ -411,7 +403,6 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
     {
         return new Smarty_Data($parent, $this);
     }
-
     /**
      * Registers plugin to be used in templates
      *
@@ -432,10 +423,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         } else {
             $this->smarty->registered_plugins[$type][$tag] = array($callback, (bool) $cacheable, (array) $cache_attr);
         }
-
         return $this;
     }
-
     /**
      * Unregister Plugin
      *
@@ -448,10 +437,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         if (isset($this->smarty->registered_plugins[$type][$tag])) {
             unset($this->smarty->registered_plugins[$type][$tag]);
         }
-
         return $this;
     }
-
     /**
      * Registers a resource to fetch a template
      *
@@ -462,10 +449,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
     public function registerResource($type, $callback)
     {
         $this->smarty->registered_resources[$type] = $callback instanceof Smarty_Resource ? $callback : array($callback, false);
-
         return $this;
     }
-
     /**
      * Unregisters a resource
      *
@@ -477,10 +462,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         if (isset($this->smarty->registered_resources[$type])) {
             unset($this->smarty->registered_resources[$type]);
         }
-
         return $this;
     }
-
     /**
      * Registers a cache resource to cache a template's output
      *
@@ -491,10 +474,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
     public function registerCacheResource($type, Smarty_CacheResource $callback)
     {
         $this->smarty->registered_cache_resources[$type] = $callback;
-
         return $this;
     }
-
     /**
      * Unregisters a cache resource
      *
@@ -506,10 +487,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         if (isset($this->smarty->registered_cache_resources[$type])) {
             unset($this->smarty->registered_cache_resources[$type]);
         }
-
         return $this;
     }
-
     /**
      * Registers object to be used in templates
      *
@@ -543,10 +522,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         // register the object
         $this->smarty->registered_objects[$object_name] =
         array($object_impl, (array) $allowed, (boolean) $smarty_args, (array) $block_methods);
-
         return $this;
     }
-
     /**
      * return a reference to a registered object
      *
@@ -562,10 +539,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         if (!is_object($this->smarty->registered_objects[$name][0])) {
             throw new SmartyException("registered '$name' is not an object");
         }
-
         return $this->smarty->registered_objects[$name][0];
     }
-
     /**
      * unregister an object
      *
@@ -577,10 +552,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         if (isset($this->smarty->registered_objects[$name])) {
             unset($this->smarty->registered_objects[$name]);
         }
-
         return $this;
     }
-
     /**
      * Registers static classes to be used in templates
      *
@@ -597,10 +570,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         }
         // register the class
         $this->smarty->registered_classes[$class_name] = $class_impl;
-
         return $this;
     }
-
     /**
      * Registers a default plugin handler
      *
@@ -615,10 +586,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         } else {
             throw new SmartyException("Default plugin handler '$callback' not callable");
         }
-
         return $this;
     }
-
     /**
      * Registers a default template handler
      *
@@ -633,10 +602,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         } else {
             throw new SmartyException("Default template handler '$callback' not callable");
         }
-
         return $this;
     }
-
     /**
      * Registers a default template handler
      *
@@ -651,10 +618,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         } else {
             throw new SmartyException("Default config handler '$callback' not callable");
         }
-
         return $this;
     }
-
     /**
      * Registers a filter function
      *
@@ -665,10 +630,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
     public function registerFilter($type, $callback)
     {
         $this->smarty->registered_filters[$type][$this->_get_filter_name($callback)] = $callback;
-
         return $this;
     }
-
     /**
      * Unregisters a filter function
      *
@@ -682,10 +645,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         if (isset($this->smarty->registered_filters[$type][$name])) {
             unset($this->smarty->registered_filters[$type][$name]);
         }
-
         return $this;
     }
-
     /**
      * Return internal filter name
      *
@@ -697,13 +658,11 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         if (is_array($function_name)) {
             $_class_name = (is_object($function_name[0]) ?
             get_class($function_name[0]) : $function_name[0]);
-
             return $_class_name . '_' . $function_name[1];
         } else {
             return $function_name;
         }
     }
-
     /**
      * load a filter of specified type and name
      *
@@ -721,13 +680,11 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
             }
             if (is_callable($_plugin)) {
                 $this->smarty->registered_filters[$type][$_filter_name] = $_plugin;
-
                 return true;
             }
         }
         throw new SmartyException("{$type}filter \"{$name}\" not callable");
     }
-
     /**
      * unload a filter of specified type and name
      *
@@ -741,10 +698,8 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         if (isset($this->smarty->registered_filters[$type][$_filter_name])) {
             unset ($this->smarty->registered_filters[$type][$_filter_name]);
         }
-
         return $this;
     }
-
     /**
      * preg_replace callback to convert camelcase getter/setter to underscore property names
      *
@@ -755,7 +710,6 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
     {
         return "_" . strtolower($match[1]);
     }
-
     /**
      * Handle unknown class methods
      *
@@ -767,7 +721,6 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         static $_prefixes = array('set' => true, 'get' => true);
         static $_resolved_property_name = array();
         static $_resolved_property_source = array();
-
         // method of Smarty object?
         if (method_exists($this->smarty, $name)) {
             return call_user_func_array(array($this->smarty, $name), $args);
@@ -808,7 +761,6 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
                 return $this->smarty->$property_name = $args[0];
             } else {
                 throw new SmartyException("property '$property_name' does not exist.");
-
                 return false;
             }
         }
@@ -818,5 +770,4 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         // must be unknown
         throw new SmartyException("Call of unknown method '$name'.");
     }
-
 }

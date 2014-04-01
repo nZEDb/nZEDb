@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Ldelim Class
  *
@@ -33,8 +32,6 @@ class Smarty_Internal_Compile_Ldelim extends Smarty_Internal_CompileBase
         }
         // this tag does not return compiled code
         $compiler->has_code = true;
-
         return $compiler->smarty->left_delimiter;
     }
-
 }
