@@ -65,6 +65,11 @@ class IRCScraper
 	protected $IRC = null;
 
 	/**
+	 * @var DB
+	 */
+	protected $db;
+
+	/**
 	 * Current server.
 	 * efnet | corrupt | zenet
 	 * @var string
@@ -95,7 +100,6 @@ class IRCScraper
 	public function __construct(&$irc, $serverType, &$silent = false, &$debug = false, &$socket = true)
 	{
 		$this->db = new DB();
-		$this->groups = new Groups();
 		$this->groupList = array();
 		$this->IRC = $irc;
 		if ($debug) {
@@ -950,7 +954,7 @@ class IRCScraper
 	protected function getGroupID($groupName)
 	{
 		if (!isset($this->groupList[$groupName])) {
-			$this->groupList[$groupName] = $this->groups->getIDByName($groupName);
+			$this->groupList[$groupName] = $this->db->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $groupName));
 		}
 		return $this->groupList[$groupName];
 	}
