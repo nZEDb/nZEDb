@@ -795,7 +795,7 @@ class IRCScraper
 	 */
 	protected function checkForDupe()
 	{
-		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $this->CurPre['md5']));
+		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT id, category FROM predb WHERE md5 = %s', $this->CurPre['md5']));
 		if ($this->OldPre === false) {
 			$this->insertNewPre();
 		} else {
