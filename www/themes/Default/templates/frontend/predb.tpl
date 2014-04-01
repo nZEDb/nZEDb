@@ -88,15 +88,23 @@
 						Prelist
 					</a>
 				{elseif {$result.source} == "#Pre@zenet"}
-					<a title="Visit zenet on IRC" href="irc://irc.zenet.org:6667/Pre" target="_blank">
+					<a title="Visit zenet on IRC" href="irc://irc.zenet.org:6667/Pre">
 						Zenet IRC
 					</a>
 				{elseif {$result.source} == "#pre@corrupt"}
-					<a title="Visit corrupt on IRC" href="irc://irc.corrupt-net.org:6667/pre" target="_blank">
+					<a title="Visit corrupt on IRC" href="irc://irc.corrupt-net.org:6667/pre">
 						Corrupt-Net
 					</a>
 				{elseif {$result.source} == srrdb}
 					<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}" target="_blank">
+						srrDB
+					</a>
+				{elseif {$result.source} == "#scnzb"}
+					<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/scnzb">
+						srrDB
+					</a>
+				{elseif {$result.source} == "#tvnzb"}
+					<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/tvnzb">
 						srrDB
 					</a>
 				{elseif {$result.source} == "usenet-crawler"}
@@ -222,11 +230,7 @@
 			</td>
 			<td class="predb">
 				{if isset($result.files)}
-					{if strpos($result.files, 'B')}
-						{$result.files}
-					{else}
-						{$result.files}MB
-					{/if}
+					{$result.files}
 				{else}
 					N/A
 				{/if}
