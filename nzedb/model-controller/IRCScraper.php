@@ -428,7 +428,7 @@ class IRCScraper
 				$predate = (time() - $predate);
 			}
 		}
-		$this->CurPre['predate'] = ($predate === 0 ? '' : $this->db->from_unixtime($predate, true));
+		$this->CurPre['predate'] = ($predate === 0 ? '' : $this->db->from_unixtime($predate));
 	}
 
 	/**

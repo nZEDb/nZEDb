@@ -840,7 +840,7 @@ class Binaries
 								(int) $bytes,
 								$nowPart,
 								$this->message[$subject]['MaxParts'],
-								$this->db->from_unixtime($this->message[$subject]['Date'], true)
+								$this->db->from_unixtime($this->message[$subject]['Date'])
 							)
 						);
 					}
