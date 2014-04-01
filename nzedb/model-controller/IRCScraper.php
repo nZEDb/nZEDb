@@ -931,7 +931,7 @@ class IRCScraper
 				(!empty($this->CurPre['category'])
 					? ' [' . $this->CurPre['category'] . ']'
 					: (!empty($this->OldPre['category'])
-						? $this->OldPre['category']
+						? ' [' . $this->OldPre['category'] . ']'
 						: ''
 					)
 				) .
