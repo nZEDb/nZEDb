@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-01 kev
+	* Chg: Show old category if new category is not set on Console output. IRCScraper.
 	* Fix: Always empty category on old select IRCScraper.
 	* Fix: Regex for tvnzb in IRCScraper.
 2014-03-31 bart39
