@@ -646,7 +646,7 @@ Class PreDb
 										)
 									);
 									$newNames++;
-								} else {
+								} else if (empty($dupeCheck['requestid'])) {
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
@@ -699,7 +699,7 @@ Class PreDb
 									continue;
 								}
 								$md5 = $this->db->escapeString(md5($matches2["title"]));
-								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id, requestid FROM predb WHERE md5 = %s', $md5));
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
@@ -714,7 +714,7 @@ Class PreDb
 										)
 									);
 									$newNames++;
-								} else {
+								} else if (empty($dupeCheck['requestid'])) {
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
@@ -768,7 +768,7 @@ Class PreDb
 								}
 								$md5 = $this->db->escapeString(md5($matches2["title"]));
 
-								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id, requestid FROM predb WHERE md5 = %s', $md5));
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
@@ -783,7 +783,7 @@ Class PreDb
 										)
 									);
 									$newNames++;
-								} else {
+								} else if (empty($dupeCheck['requestid'])) {
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
@@ -837,7 +837,7 @@ Class PreDb
 							}
 							$md5 = $this->db->escapeString(md5($matches2["title"]));
 
-								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id, requestid FROM predb WHERE md5 = %s', $md5));
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
@@ -852,7 +852,7 @@ Class PreDb
 										)
 									);
 									$newNames++;
-								} else {
+								} else if (empty($dupeCheck['requestid'])) {
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
@@ -908,7 +908,7 @@ Class PreDb
 						$predate = $title[2];
 
 						$oldname = $this->db->queryOneRow(sprintf('SELECT md5, requestid, groupid FROM predb WHERE md5 = %s', $this->db->escapeString($md5)));
-						if ($oldname !== false) {
+						if ($oldname !== false && empty($oldname['requestid'])) {
 							$this->db->queryExec(
 								sprintf('
 									UPDATE predb
