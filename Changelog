@@ -12,6 +12,7 @@ Each update goes to the top of the file
 	* Fix: trailing whitespace
 	* Chg: update merged changelog
 2014-04-01 kev
+	* Chg: Revamp PreDB pages.
 	* Add: Constants to disable pre sources #1244.
 	* Fix: Don't reset the requestid even if we already have it. PreDb.php
 	* Upd: Update smarty from 3.1 beta to 3.1.17 stable.
