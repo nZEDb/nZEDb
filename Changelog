@@ -6,6 +6,10 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-01 ruhllatio
+	* Re-work populate_tvrage and updateTvRage for tmux usage
+	* Add duplicate checks for populate_tvrage so it can be run at interval without error
+	* Fix trailing whitespace
 2014-04-01 kev
 	* Fix: Get the groupid before storing in array IRCScraper.
 	* Fix: Escaping groupname in IRCScraper.

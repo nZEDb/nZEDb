@@ -1316,7 +1316,8 @@ while ($i > 0) {
 			if (($update_tv == 1) && ((TIME() - $time3 >= $tv_timer) || ($i == 1))) {
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.2 ' \
-						$_phpn ${DIR}update/update_theaters.php $log; $_phpn ${DIR}update/update_tvschedule.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
+						$_phpn ${DIR}update/update_theaters.php $log; $_phpn ${DIR}testing/PostProc/populate_tvrage.php true $log; \
+						$_phpn ${DIR}update/update_tvschedule.php $log; $_phpn ${DIR}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
 				$time3 = TIME();
 			} else if ($update_tv == 1) {
 				$run_time = relativeTime($tv_timer + $time3);
@@ -1462,7 +1463,8 @@ while ($i > 0) {
 			if (($update_tv == 1) && ((TIME() - $time3 >= $tv_timer) || ($i == 1))) {
 				$log = writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_phpn ${DIR}update/update_theaters.php $log; $_phpn ${DIR}update/update_tvschedule.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
+						$_phpn ${DIR}update/update_theaters.php $log; $_phpn ${DIR}testing/PostProc/populate_tvrage.php true $log; \
+                                                $_phpn ${DIR}update/update_tvschedule.php $log; $_phpn ${DIR}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
 				$time3 = TIME();
 			} else if ($update_tv == 1) {
 				$run_time = relativeTime($tv_timer + $time3);
