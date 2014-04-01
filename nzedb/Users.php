@@ -74,7 +74,7 @@ class Users
 		}
 
 		$like = 'ILIKE';
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 
@@ -634,7 +634,7 @@ class Users
 	{
 		$db = $this->db;
 		// Tidy any old invites sent greater than DEFAULT_INVITE_EXPIRY_DAYS days ago.
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$db->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL %d DAY", Users::DEFAULT_INVITE_EXPIRY_DAYS));
 		} else {
 			$db->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL '%d DAYS'", Users::DEFAULT_INVITE_EXPIRY_DAYS));
@@ -748,7 +748,7 @@ class Users
 	 */
 	protected function clearApiRequests($userid)
 	{
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			if ($userid === false) {
 				$this->db->queryExec('DELETE FROM userrequests WHERE timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)');
 			} else {
@@ -773,7 +773,7 @@ class Users
 	{
 		$db = $this->db;
 		// Clear old requests.
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$db->queryExec(sprintf('DELETE FROM userdownloads WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
 			return $db->queryOneRow(sprintf('select COUNT(id) AS num FROM userdownloads WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
 		} else {

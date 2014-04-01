@@ -19,6 +19,7 @@ function SplitSQL($file, $delimiter = ';')
 
 			while (feof($file) === false) {
 				$query[] = fgets($file);
+
 				if (preg_match('~' . preg_quote($delimiter, '~') . '\s*$~iS', end($query)) === 1) {
 					$query = trim(implode('', $query));
 
@@ -34,14 +35,14 @@ function SplitSQL($file, $delimiter = ';')
 						// Log the problem.
 						file_put_contents(
 							nZEDb_LOGS . 'patcherrors.log',
-							'[' . date('r') . '] [' . $e->getMessage() . ']',
+							'[' . date('r') . '] [ERROR] [' . trim(preg_replace('/\s+/', ' ', $e->getMessage())) . ']' . PHP_EOL,
 							FILE_APPEND
 						);
 
 						// And the query..
 						file_put_contents(
 							nZEDb_LOGS . 'patcherrors.log',
-							'[' . date('r') . '] [' . $query . ']',
+							'[' . date('r') . '] [QUERY] [' . trim(preg_replace('/\s+/', ' ', $query)) . ']' . PHP_EOL,
 							FILE_APPEND
 						);
 
@@ -99,9 +100,9 @@ function BackupDatabase()
 	}
 
 	//Backup based on database system
-	if ($db->dbSystem() == "mysql") {
+	if ($db->dbSystem() === "mysql") {
 		system("$PHP ${DIR}testing/DB/mysqldump_tables.php db dump ../../../");
-	} else if ($db->dbSystem() == "pgsql") {
+	} else if ($db->dbSystem() === "pgsql") {
 		exit($c->error("Currently not supported on this platform."));
 	}
 }
@@ -124,9 +125,9 @@ if (isset($os) && $os == "unix") {
 	$backedup = false;
 	$c = new ColorCLI();
 
-	if ($db->dbSystem() == "mysql") {
+	if ($db->dbSystem() === "mysql") {
 		$path = nZEDb_RES . 'db/patches/mysql/';
-	} else if ($db->dbSystem() == "pgsql") {
+	} else if ($db->dbSystem() === "pgsql") {
 		$path = nZEDb_RES . 'db/patches/pgsql/';
 	}
 
@@ -140,10 +141,10 @@ if (isset($os) && $os == "unix") {
 		exit($c->error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
 	}
 
-	/* 	if ($db->dbSystem() == "mysql")
+	/* 	if ($db->dbSystem() === "mysql")
 	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/patches/mysql/',
 	nZEDb_ROOT);
-	  else if ($db->dbSystem() == "pgsql")
+	  else if ($db->dbSystem() === "pgsql")
 	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/patches/pgsql/', nZEDb_ROOT);
 	 */ sort($patches);
 

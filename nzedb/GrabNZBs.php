@@ -9,7 +9,7 @@ class GrabNZBs
 		$this->db = new DB();
 		$s = new Sites();
 		$this->site = $s->get();
-		$this->tablepergroup = (isset($this->site->tablepergroup)) ? $this->site->tablepergroup : 0;
+		$this->tablepergroup = (isset($this->site->tablepergroup)) ? (int)$this->site->tablepergroup : 0;
 		$this->replacenzbs = (isset($this->site->replacenzbs)) ? $this->site->replacenzbs : 0;
 		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
 		$this->ReleaseCleaning = new ReleaseCleaning();
@@ -201,7 +201,7 @@ class GrabNZBs
 				}
 
 				// Set table names
-				if ($this->tablepergroup == 1) {
+				if ($this->tablepergroup === 1) {
 					$group = array();
 					$group['cname'] = 'collections_' . $realgroupid;
 					$group['bname'] = 'binaries_' . $realgroupid;
@@ -214,9 +214,9 @@ class GrabNZBs
 				}
 
 				if ($relid == false) {
-					if ($this->db->dbSystem() == 'mysql') {
+					if ($this->db->dbSystem() === 'mysql') {
 						$this->db->queryExec(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ' LEFT JOIN ' . $group['bname'] . ' ON ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid LEFT JOIN ' . $group['pname'] . ' ON ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid WHERE ' . $group['cname'] . '.collectionhash = %s', $this->db->escapeString($hash)));
-					} else if ($this->db->dbSystem() == 'pgsql') {
+					} else if ($this->db->dbSystem() === 'pgsql') {
 						$idr = $this->db->queryDirect(sprintf('SELECT id FROM ' . $group['cname'] . ' WHERE collectionhash = %s', $this->db->escapeString($hash)));
 						if ($idr->rowCount() > 0) {
 							foreach ($idr as $id) {
@@ -243,9 +243,9 @@ class GrabNZBs
 						if (file_exists($path)) {
 							chmod($path, 0777);
 							$this->db->queryExec(sprintf('UPDATE releases SET nzbstatus = 1 WHERE id = %d', $relid));
-							if ($this->db->dbSystem() == 'mysql') {
+							if ($this->db->dbSystem() === 'mysql') {
 								$this->db->queryExec(sprintf('DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['cname'] . ' LEFT JOIN ' . $group['bname'] . ' ON ' . $group['cname'] . '.id = ' . $group['bname'] . '.collectionid LEFT JOIN ' . $group['pname'] . ' ON ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid WHERE ' . $group['cname'] . '.collectionhash = %s', $this->db->escapeString($hash)));
-							} else if ($this->db->dbSystem() == 'pgsql') {
+							} else if ($this->db->dbSystem() === 'pgsql') {
 								$idr = $this->db->queryDirect(sprintf('SELECT id FROM ' . $group['cname'] . ' WHERE collectionhash = %s', $this->db->escapeString($hash)));
 								if ($idr->rowCount() > 0) {
 									foreach ($idr as $id) {

@@ -48,12 +48,24 @@ class ReleaseImage
 	 */
 	public function __construct()
 	{
-		$s = new Sites(); // Creates the nZEDb_COVERS constant
-		$this->audSavePath    = nZEDb_COVERS . 'audiosample' . DS;
-		$this->imgSavePath    = nZEDb_COVERS . 'preview'     . DS;
-		$this->jpgSavePath    = nZEDb_COVERS . 'sample'      . DS;
-		$this->movimgSavePath = nZEDb_COVERS . 'movies'      . DS;
-		$this->vidSavePath    = nZEDb_COVERS . 'video'       . DS;
+		// Creates the nZEDb_COVERS constant
+		$s = new Sites();
+		//                                                            Table    |  Column
+		$this->audSavePath    = nZEDb_COVERS . 'audiosample' . DS; // releases    guid
+		$this->imgSavePath    = nZEDb_COVERS . 'preview'     . DS; // releases    guid
+		$this->jpgSavePath    = nZEDb_COVERS . 'sample'      . DS; // releases    guid
+		$this->movimgSavePath = nZEDb_COVERS . 'movies'      . DS; // releases    imdbid
+		$this->vidSavePath    = nZEDb_COVERS . 'video'       . DS; // releases    guid
+
+		/* For reference. *
+		$this->anidbImgPath   = nZEDb_COVERS . 'anime'       . DS; // anidb       anidbid | used in populate_anidb.php, not anidb.php
+		$this->bookImgPath    = nZEDb_COVERS . 'book'        . DS; // bookinfo    id
+		$this->consoleImgPath = nZEDb_COVERS . 'console'     . DS; // consoleinfo id
+		$this->musicImgPath   = nZEDb_COVERS . 'music'       . DS; // musicinfo   id
+		$this->tvRageImgPath  = nZEDb_COVERS . 'tvrage'      . DS; // tvrage      id (not rageid)
+
+		$this->audioImgPath   = nZEDb_COVERS . 'audio'       . DS; // unused folder, music folder already exists.
+		**/
 	}
 
 	/**
@@ -144,21 +156,15 @@ class ReleaseImage
 	 * Delete images for the release.
 	 *
 	 * @param string      $guid   The GUID of the release.
-	 * @param null|string $imdbid The IMDBid of the release. (OPTIONAL)
 	 *
 	 * @return void
 	 */
-	public function delete($guid, $imdbid=null)
+	public function delete($guid)
 	{
 		$thumb = $guid . '_thumb.jpg';
 
 		// Audiosample folder.
 		@unlink($this->audSavePath . $guid . '.ogg');
-
-		// Movies folder.
-		if (!is_null($imdbid)) {
-			@unlink($this->movimgSavePath.$imdbid.'-cover.jpg');
-		}
 
 		// Preview folder.
 		@unlink($this->imgSavePath . $thumb);

@@ -5,7 +5,6 @@
  * @subpackage plugins
  */
 
-
 /**
  * Smarty date modifier plugin
  * Purpose:  converts unix timestamps or datetime strings to words
@@ -45,15 +44,15 @@ function smarty_modifier_timeAgo( $date)
 
 	  if ($days > 365)
 	  {
-	  	return round(($days/365), 1).' Yrs';
+		return round(($days/365), 1).' Yrs';
 	  }
 	  else if ($days > 90)
 	  {
-	  	return round($days/7).' Wks';
+		return round($days/7).' Wks';
 	  }
 	  else
 	  {
-	  	return round($days, 1).'d';
+		return round($days, 1).'d';
 	  }
 }
 

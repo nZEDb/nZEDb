@@ -4,7 +4,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 
 $db = new DB();
-if ($db->dbSystem() == "pgsql")
+if ($db->dbSystem() === "pgsql")
 	exit("Currently this only works for mysql.\nMaybe someone can make it work with postgresql?\n");
 
 function runQuery($db, $sql, $runQueries)

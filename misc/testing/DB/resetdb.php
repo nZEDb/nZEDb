@@ -39,7 +39,7 @@ unset($value);
 
 $db->optimise(false, 'full');
 
-if ($db->dbSystem == 'mysql') {
+if ($db->dbSystem() === 'mysql') {
 	$sql = "SHOW table status";
 } else {
 	$sql = "SELECT relname FROM pg_class WHERE relname !~ '^(pg_|sql_)' AND relkind = 'r'";
@@ -47,7 +47,7 @@ if ($db->dbSystem == 'mysql') {
 $tables = $db->query($sql);
 foreach($tables as $row)
 {
-	if ($db->dbSystem == 'mysql')
+	if ($db->dbSystem() === 'mysql')
 		$tbl = $row['name'];
 	else
 		$tbl = $row['relname'];

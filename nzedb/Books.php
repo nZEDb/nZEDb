@@ -36,7 +36,7 @@ class Books
 	{
 		$db = $this->db;
 		$like = 'ILIKE';
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 		return $db->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title %s %s', $db->escapeString('%' . $author . '%'), $like, $db->escapeString('%' . $title . '%')));
@@ -93,9 +93,9 @@ class Books
 		}
 
 		if ($maxage > 0) {
-			if ($db->dbSystem() == 'mysql') {
+			if ($db->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() == 'pgsql') {
+			} else if ($db->dbSystem() === 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		} else {
@@ -156,9 +156,9 @@ class Books
 
 		$maxage = '';
 		if ($maxage > 0) {
-			if ($db->dbSystem() == 'mysql') {
+			if ($db->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() == 'pgsql') {
+			} else if ($db->dbSystem() === 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
@@ -169,7 +169,7 @@ class Books
 		}
 
 		$order = $this->getBookOrder($orderby);
-		if ($this->db->dbSystem() == 'mysql') {
+		if ($this->db->dbSystem() === 'mysql') {
 			$sql = sprintf(
 				"SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
 				. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
@@ -261,7 +261,7 @@ class Books
 		$db = $this->db;
 
 		$like = 'ILIKE';
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 

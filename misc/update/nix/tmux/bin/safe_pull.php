@@ -20,7 +20,7 @@ if (!isset($argv[1])) {
 
 	$pieces = explode(' ', $argv[1]);
 	if (isset($pieces[1]) && $pieces[1] == 'partrepair') {
-		$binaries = new Binaries();
+		$binaries = new Binaries($nntp);
 		$groupName = $pieces[0];
 		$grp = new Groups();
 		$groupArr = $grp->getByName($groupName);
@@ -32,25 +32,25 @@ if (!isset($argv[1])) {
 				return;
 			}
 		}
-		$binaries->partRepair($nntp, $groupArr);
+		$binaries->partRepair($groupArr);
 	} else if (isset($pieces[1]) && $pieces[0] == 'binupdate') {
-		$binaries = new Binaries();
+		$binaries = new Binaries($nntp);
 		$groupName = $pieces[1];
 		$grp = new Groups();
 		$groupArr = $grp->getByName($groupName);
-		$binaries->updateGroup($groupArr, $nntp);
+		$binaries->updateGroup($groupArr);
 	} else if (isset($pieces[2]) && ($pieces[2] == 'Binary' || $pieces[2] == 'Backfill')) {
-		$backfill = new Backfill();
-		$backfill->getFinal($pieces[0], $pieces[1], $pieces[2], $nntp);
+		$backfill = new Backfill($nntp);
+		$backfill->getFinal($pieces[0], $pieces[1], $pieces[2]);
 	} else if (isset($pieces[2]) && $pieces[2] == 'BackfillAll') {
-		$backfill = new Backfill();
-		$backfill->backfillPostAllGroups($nntp, $pieces[0], $pieces[1], $type = '');
+		$backfill = new Backfill($nntp);
+		$backfill->backfillAllGroups($pieces[0], $pieces[1]);
 	} else if (isset($pieces[3])) {
-		$backfill = new Backfill();
-		$backfill->getRange($pieces[0], $pieces[1], $pieces[2], $pieces[3], $nntp);
+		$backfill = new Backfill($nntp);
+		$backfill->getRange($pieces[0], $pieces[1], $pieces[2], $pieces[3]);
 	} else if (isset($pieces[1])) {
-		$backfill = new Backfill();
-		$backfill->backfillPostAllGroups($nntp, $pieces[0], $pieces[1], $type = '');
+		$backfill = new Backfill($nntp);
+		$backfill->backfillAllGroups($pieces[0], $pieces[1]);
 	}
 	if ($site->nntpproxy != "1") {
 		$nntp->doQuit();

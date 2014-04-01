@@ -69,9 +69,8 @@ function daysOld($timestamp)
 function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 {
 	$c = New ColorCLI();
-	$backfill = New Backfill();
-	// DEBUG every postdate call?!?!
-	$pddebug = $st = false;
+
+	$st = false;
 	if ($debug && $bfcheck) {
 		echo $c->primary('Finding start and end articles for ' . $group . '.');
 	}
@@ -84,6 +83,8 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 
 		$st = true;
 	}
+
+	$backfill = New Backfill($nntp);
 
 	$data = $nntp->selectGroup($group);
 	if ($nntp->isError($data)) {
@@ -107,8 +108,8 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 		exit($c->error("Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug."));
 	}
 
-	$firstDate = $backfill->postdate($nntp, $data['first'], $pddebug, $group, false, 'oldest');
-	$lastDate = $backfill->postdate($nntp, $data['last'], $pddebug, $group, false, 'oldest');
+	$firstDate = $backfill->postdate($data['first'], $data);
+	$lastDate = $backfill->postdate($data['last'], $data);
 
 	if ($goaldate < $firstDate && $bfcheck) {
 		if ($st === true) {
@@ -133,16 +134,16 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 	$dateofnextone = $lastDate;
 	// Match on days not timestamp to speed things up.
 	while (daysOld($dateofnextone) < $days) {
-		while (($tmpDate = $backfill->postdate($nntp, ($upperbound - $interval), $pddebug, $group, false, 'oldest')) > $goaldate) {
+		while (($tmpDate = $backfill->postdate(($upperbound - $interval), $data)) > $goaldate) {
 			$upperbound = $upperbound - $interval;
 		}
 
 		if (!$templowered) {
 			$interval = ceil(($interval / 2));
 		}
-		$dateofnextone = $backfill->postdate($nntp, ($upperbound - 1), $pddebug, false, $group, 'oldest');
+		$dateofnextone = $backfill->postdate(($upperbound - 1), $data);
 		while (!$dateofnextone) {
-			$dateofnextone = $backfill->postdate($nntp, ($upperbound - 1), $pddebug, false, $group, 'oldest');
+			$dateofnextone = $backfill->postdate(($upperbound - 1), $data);
 		}
 	}
 	if ($st === true) {

@@ -52,7 +52,7 @@ if (isset($argv[1])) {
 	}
 
 	$tablecnt = 0;
-	if ($db->dbSystem() == 'mysql') {
+	if ($db->dbSystem() === 'mysql') {
 		$alltables = $db->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
 		$tablecnt = count($alltables);
 		foreach ($alltables as $table) {
@@ -65,7 +65,7 @@ if (isset($argv[1])) {
 			}
 		}
 		$db->queryDirect('FLUSH TABLES');
-	} else if ($db->dbSystem() == 'pgsql') {
+	} else if ($db->dbSystem() === 'pgsql') {
 		$alltables = $db->query('SELECT table_name AS name FROM information_schema.tables WHERE table_schema = \'public\'');
 		$tablecnt = count($alltables);
 		foreach ($alltables as $table) {

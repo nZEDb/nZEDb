@@ -58,7 +58,7 @@ class ReleaseExtra
 	public function getSubs($id)
 	{
 		$db = $this->db;
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			return $db->queryOneRow(sprintf("SELECT GROUP_CONCAT(subslanguage SEPARATOR ', ') AS subs FROM releasesubs WHERE releaseid = %d ORDER BY subsid ASC", $id));
 		} else {
 			return $db->queryOneRow(sprintf("SELECT STRING_AGG(subslanguage, ', ') AS subs FROM releasesubs WHERE releaseid = %d GROUP BY subsid ORDER BY subsid ASC", $id));
@@ -68,7 +68,7 @@ class ReleaseExtra
 	public function getBriefByGuid($guid)
 	{
 		$db = $this->db;
-		if ($db->dbSystem() == 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			return $db->queryOneRow(sprintf("SELECT containerformat, videocodec, videoduration, videoaspect, CONCAT(releasevideo.videowidth,'x',releasevideo.videoheight,' @',format(videoframerate,0),'fps') AS size, GROUP_CONCAT(DISTINCT releaseaudio.audiolanguage SEPARATOR ', ') AS audio, GROUP_CONCAT(DISTINCT releaseaudio.audioformat,' (',SUBSTRING(releaseaudio.audiochannels,1,1),' ch)' SEPARATOR ', ') AS audioformat, GROUP_CONCAT(DISTINCT releaseaudio.audioformat,' (',SUBSTRING(releaseaudio.audiochannels,1,1),' ch)' SEPARATOR ', ') AS audioformat, GROUP_CONCAT(DISTINCT releasesubs.subslanguage SEPARATOR ', ') AS subs FROM releasevideo LEFT OUTER JOIN releasesubs ON releasevideo.releaseid = releasesubs.releaseid LEFT OUTER JOIN releaseaudio ON releasevideo.releaseid = releaseaudio.releaseid INNER JOIN releases r ON r.id = releasevideo.releaseid WHERE r.guid = %s GROUP BY r.id", $db->escapeString($guid)));
 		} else {
 			return $db->queryOneRow(sprintf("SELECT containerformat, videocodec, videoduration, videoaspect, CONCAT(releasevideo.videowidth,'x',releasevideo.videoheight,' @',videoframerate::int,'fps') AS size, STRING_AGG(DISTINCT releaseaudio.audiolanguage, ', ') AS audio, ARRAY_TO_STRING(ARRAY_AGG(DISTINCT releaseaudio.audioformat::text), STRING_AGG(SUBSTRING(releaseaudio.audiochannels::text FROM 1 FOR 1), 'ch,'::text)::text) AS audioformat, STRING_AGG(DISTINCT releasesubs.subslanguage, ', ') AS subs FROM releasevideo LEFT OUTER JOIN releasesubs ON releasevideo.releaseid = releasesubs.releaseid LEFT OUTER JOIN releaseaudio ON releasevideo.releaseid = releaseaudio.releaseid INNER JOIN releases r ON r.id = releasevideo.releaseid WHERE r.guid = %s GROUP BY r.id, releasevideo.containerformat, releasevideo.videocodec, releasevideo.videoduration, releasevideo.videoaspect, releasevideo.videowidth, releasevideo.videoheight, releasevideo.videoframerate", $db->escapeString($guid)));

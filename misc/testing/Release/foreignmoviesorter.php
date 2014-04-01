@@ -20,7 +20,7 @@ if (isset($argv[1]) && $argv[1] === "true") {
 function getForeignMovies() {
 	$db = new DB();
 	$like = 'ILIKE';
-	if ($db->dbSystem() == 'mysql') {
+	if ($db->dbSystem() === 'mysql') {
 		$like = 'LIKE';
 	}
 	return $db->query('SELECT r.id, r.searchname FROM releases r JOIN releaseaudio ra ON ra.releaseID = r.id WHERE ra.audiolanguage ' . $like . " '%English%' AND r.categoryid = 2010");

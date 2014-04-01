@@ -46,7 +46,7 @@ function smarty_function_html_options_multiple($params, $template)
 	$class = null;
 
 	$extra = '';
-	
+
 	foreach ($params as $_key => $_val) {
 		switch ($_key) {
 			case 'name':
