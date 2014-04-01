@@ -1,6 +1,6 @@
 <?php
 
-//This script will update all records in the tvrage table
+//This script downloads covert art for Tv Shows -- it is intended to be run at interval, generally after the TvRage database is populated
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
@@ -8,11 +8,15 @@ $tvrage = new TvRage(true);
 $db = new Db();
 $c = new ColorCLI();
 
-$shows = $db->queryDirect("SELECT rageid FROM tvrage WHERE imgdata IS NULL ORDER BY rageid DESC");
+$shows = $db->queryDirect("SELECT rageid FROM tvrage WHERE imgdata IS NULL ORDER BY rageid DESC LIMIT 2000");
 if ($shows->rowCount() > 0) {
-	echo $c->header("Updating " . number_format($shows->rowCount()) . " tv shows.");
+	echo "\n";
+	echo $c->header("Updating " . number_format($shows->rowCount()) . " tv shows.\n");
+} else {
+	echo "\n";
+	echo $c->info("All shows in TvRage database have been updated.\n");
+	usleep(5000000);
 }
-
 $loop = 0;
 foreach ($shows as $show) {
 	$starttime = microtime(true);
@@ -56,4 +60,3 @@ foreach ($shows as $show) {
 		usleep(1000000 - $diff);
 	}
 }
-$tvrage->updateSchedule();

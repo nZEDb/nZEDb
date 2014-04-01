@@ -65,6 +65,11 @@ class IRCScraper
 	protected $IRC = null;
 
 	/**
+	 * @var DB
+	 */
+	protected $db;
+
+	/**
 	 * Current server.
 	 * efnet | corrupt | zenet
 	 * @var string
@@ -95,7 +100,6 @@ class IRCScraper
 	public function __construct(&$irc, $serverType, &$silent = false, &$debug = false, &$socket = true)
 	{
 		$this->db = new DB();
-		$this->groups = new Groups();
 		$this->groupList = array();
 		$this->IRC = $irc;
 		if ($debug) {
@@ -428,7 +432,7 @@ class IRCScraper
 				$predate = (time() - $predate);
 			}
 		}
-		$this->CurPre['predate'] = ($predate === 0 ? '' : $this->db->from_unixtime($predate, true));
+		$this->CurPre['predate'] = ($predate === 0 ? '' : $this->db->from_unixtime($predate));
 	}
 
 	/**
@@ -478,6 +482,14 @@ class IRCScraper
 		}
 		if (isset($matches['files'])) {
 			$this->CurPre['files'] = substr($matches['files'], 0, 50);
+
+			// If the pre has no size, try to get one from files.
+			if (empty($this->OldPre['size']) && empty($this->CurPre['size'])) {
+				if (preg_match('/(?P<files>\d+)x(?P<size>\d+)\s*(?P<ext>[KMGTP]?B)\s*$/i', $matches['files'], $match)) {
+					$this->CurPre['size'] = ((int)$match['files'] * (int)$match['size']) . $match['ext'];
+					unset($match);
+				}
+			}
 		}
 		$this->checkForDupe();
 	}
@@ -795,7 +807,7 @@ class IRCScraper
 	 */
 	protected function checkForDupe()
 	{
-		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT id, category FROM predb WHERE md5 = %s', $this->CurPre['md5']));
+		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT category, size FROM predb WHERE md5 = %s', $this->CurPre['md5']));
 		if ($this->OldPre === false) {
 			$this->insertNewPre();
 		} else {
@@ -869,7 +881,11 @@ class IRCScraper
 		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid = '    . $this->CurPre['groupid']                         . ', ' : '');
 		$query .= (!empty($this->CurPre['predate'])  ? 'predate = '    . $this->CurPre['predate']                         . ', ' : '');
 		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked = '      . $this->CurPre['nuked']                           . ', ' : '');
-		$query .= (empty($this->OldPre['category']) && !empty($this->CurPre['category']) ? 'category = '  . $this->db->escapeString($this->CurPre['category']) . ', ' : '');
+		$query .= (
+			(empty($this->OldPre['category']) && !empty($this->CurPre['category']))
+				? 'category = ' . $this->db->escapeString($this->CurPre['category']) . ', '
+				: ''
+		);
 
 		if ($query === 'UPDATE predb SET '){
 			return;
@@ -950,7 +966,8 @@ class IRCScraper
 	protected function getGroupID($groupName)
 	{
 		if (!isset($this->groupList[$groupName])) {
-			$this->groupList[$groupName] = $this->groups->getIDByName($groupName);
+			$group = $this->db->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $this->db->escapeString($groupName)));
+			$this->groupList[$groupName] = $group['id'];
 		}
 		return $this->groupList[$groupName];
 	}

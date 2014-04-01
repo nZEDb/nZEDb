@@ -201,7 +201,7 @@ Class PreDb
 									sprintf('
 										UPDATE predb SET
 											nfo = %s, size = %s, category = %s, predate = %s,
-											adddate = now(), source = %s
+											adddate = NOW(), source = %s
 										WHERE id = %d',
 										$nfo, $size, $category, $time, $source, $oldName['id']
 									)
@@ -210,7 +210,7 @@ Class PreDb
 							} elseif ($this->db->queryExec(
 								sprintf('
 									INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, %s, %s, now(), %s, %s)',
+									VALUES (%s, %s, %s, %s, %s, NOW(), %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									$nfo, $size, $category, $time, $source, $md5))) {
 								$newNames++;
@@ -326,7 +326,7 @@ Class PreDb
 							} elseif ($this->db->queryExec(
 								sprintf('
 									INSERT INTO predb (title, size, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, %s, now(), %s, %s)',
+									VALUES (%s, %s, %s, %s, NOW(), %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									((!isset($matches2['size1']) && empty($matches2['size1']))
 										? 'NULL'
@@ -336,7 +336,7 @@ Class PreDb
 										? $this->db->escapeString($matches2['category'])
 										: 'NULL'
 									),
-									$this->db->escapeString($matches2['predate']),
+									$this->db->from_unixtime(strtotime($matches2['predate'])),
 									$this->db->escapeString('zenet'),
 									$md5))) {
 								$newNames++;
@@ -383,7 +383,7 @@ Class PreDb
 							} elseif ($this->db->queryExec(
 								sprintf('
 									INSERT INTO predb (title, size, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, %s, now(), %s, %s)',
+									VALUES (%s, %s, %s, %s, NOW(), %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									((!isset($matches2['size']) && empty($matches2['size']))
 										? 'NULL'
@@ -409,7 +409,7 @@ Class PreDb
 							} elseif ($this->db->queryExec(
 								sprintf('
 									INSERT INTO predb (title, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, now(), %s, %s)',
+									VALUES (%s, %s, %s, NOW(), %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									$this->db->escapeString($matches2['category'] . ', ' . $matches2['category1']),
 									$this->db->from_unixtime(strtotime($matches2['date'])),
@@ -455,7 +455,7 @@ Class PreDb
 								} elseif ($this->db->queryExec(
 									sprintf('
 										INSERT INTO predb (title, size, category, predate, adddate, source, md5)
-										VALUES (%s, %s, %s, %s, now(), %s, %s)',
+										VALUES (%s, %s, %s, %s, NOW(), %s, %s)',
 										$this->db->escapeString($matches2['title']),
 										((!isset($matches2['size']) && empty($matches2['size']))
 											? 'NULL'
@@ -505,7 +505,7 @@ Class PreDb
 					} elseif ($this->db->queryExec(
 						sprintf('
 							INSERT INTO predb (title, predate, adddate, source, md5)
-							VALUES (%s, %s, now(), %s, %s)',
+							VALUES (%s, %s, NOW(), %s, %s)',
 							$this->db->escapeString($release->title),
 							$this->db->from_unixtime(strtotime($release->pubDate)),
 							$this->db->escapeString('srrdb'),
@@ -575,7 +575,7 @@ Class PreDb
 						} elseif ($this->db->queryExec(
 							sprintf('
 								INSERT INTO predb (title, predate, adddate, source, md5)
-								VALUES (%s, now(), now(), %s, %s)',
+								VALUES (%s, NOW(), NOW(), %s, %s)',
 								$this->db->escapeString($release->title),
 								$this->db->escapeString('predbme'),
 								$md5))) {
@@ -636,9 +636,9 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf("
 											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, now(), %s, %s, %s, %d, 'Movies')",
+											VALUES (%s, %s, NOW(), %s, %s, %s, %d, 'Movies')",
 											$this->db->escapeString($matches2["title"]),
-											$this->db->escapeString($matches2["predate"]),
+											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abMooVee'),
 											$md5,
 											$matches2["requestid"],
@@ -704,9 +704,9 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf("
 											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, now(), %s, %s, %s, %d, 'TV')",
+											VALUES (%s, %s, NOW(), %s, %s, %s, %d, 'TV')",
 											$this->db->escapeString($matches2["title"]),
-											$this->db->escapeString($matches2["predate"]),
+											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abTeeVee'),
 											$md5,
 											$matches2["requestid"],
@@ -773,9 +773,9 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf("
 											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, now(), %s, %s, %s, %d, 'XXX')",
+											VALUES (%s, %s, NOW(), %s, %s, %s, %d, 'XXX')",
 											$this->db->escapeString($matches2["title"]),
-											$this->db->escapeString($matches2["predate"]),
+											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abErotica'),
 											$md5,
 											$matches2["requestid"],
@@ -842,9 +842,9 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf("
 											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid)
-											VALUES (%s, %s, now(), %s, %s, %s, %d)",
+											VALUES (%s, %s, NOW(), %s, %s, %s, %d)",
 											$this->db->escapeString($matches2["title"]),
-											$this->db->escapeString($matches2["predate"]),
+											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abForeign'),
 											$md5,
 											$matches2["requestid"],
@@ -923,7 +923,7 @@ Class PreDb
 							if ($this->db->queryExec(
 								sprintf('
 									INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid)
-									VALUES (%s, %s, now(), %s, %s, %d, %d)',
+									VALUES (%s, %s, NOW(), %s, %s, %d, %d)',
 									$this->db->escapeString($title[1]),
 									$this->db->from_unixtime(strtotime($predate)),
 									$this->db->escapeString('abgx'),
@@ -1004,7 +1004,7 @@ Class PreDb
 			preg_match('/([\d\.]+MB)/', $data[3]->innertext, $match);
 			$size = isset($match[1]) ? $match[1] : 'NULL';
 			if (strlen($title) > 15 && $category != 'NUKED') {
-				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, category, size) VALUES (%s, %s, now(), %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($category), $db->escapeString($size)))) {
+				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, category, size) VALUES (%s, %s, NOW(), %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($category), $db->escapeString($size)))) {
 					$newnames++;
 				}
 			}
