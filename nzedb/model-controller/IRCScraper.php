@@ -708,7 +708,7 @@ class IRCScraper
 	{
 		//[SBINDEX] Rev.S03E02.HDTV.x264-TLA :: TV > HD :: 210.13 MB :: Aired: 31/Mar/2014 :: http://lolo.sickbeard.com/getnzb/aa10bcef235c604612dd61b0627ae25f.nzb
 		if (preg_match('/\[SBINDEX\]\s+(?P<title>.+?)\s+::\s+(?P<sbcat>.+?)\s+::\s+(?P<size>.+?)\s+::\s+Aired/i', $message, $matches)) {
-			if (preg_match('/^(?P<first>.+?\s+>\s+(?P<last>.+?)$/', $matches['sbcat'], $match)) {
+			if (preg_match('/^(?P<first>.+?)\s+>\s+(?P<last>.+?)$/', $matches['sbcat'], $match)) {
 				$matches['category'] = $match['first'] . '-' . $match['last'];
 			}
 			$this->CurPre['source']   = '#tvnzb';
