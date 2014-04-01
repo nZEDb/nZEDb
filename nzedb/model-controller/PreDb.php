@@ -8,6 +8,21 @@ require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
  */
 Class PreDb
 {
+	// If you wish to not get PRE from one of these sources, set it to false.
+	const PRE_WOMBLE   = true;
+	const PRE_OMGWTF   = true;
+	const PRE_ZENET    = true;
+	const PRE_PRELIST  = true;
+	const PRE_ORLYDB   = true;
+	const PRE_SRRDB    = true;
+	const PRE_PREDBME  = true;
+	const PRE_ABGXNET  = true;
+	const PRE_UCRAWLER = true;
+	const PRE_MOOVEE   = true;
+	const PRE_TEEVEE   = true;
+	const PRE_EROTICA  = true;
+	const PRE_FOREIGN  = true;
+
 	/**
 	 * @var bool|stdClass
 	 */
@@ -57,69 +72,98 @@ Class PreDb
 				echo $this->c->header("Retrieving titles from preDB sources.");
 			}
 
-			$newNames += $newWomble = $this->retrieveWomble();
-			if ($this->echooutput) {
-				echo $this->c->primary($newWomble . " \tRetrieved from Womble.");
+			if (self::PRE_WOMBLE) {
+				$newNames += $newWomble = $this->retrieveWomble();
+				if ($this->echooutput) {
+					echo $this->c->primary($newWomble . " \tRetrieved from Womble.");
+				}
 			}
 
-			$newNames += $newOmgWtf = $this->retrieveOmgwtfnzbs();
-			if ($this->echooutput) {
-				echo $this->c->primary($newOmgWtf . " \tRetrieved from Omgwtfnzbs.");
+			if (self::PRE_OMGWTF) {
+				$newNames += $newOmgWtf = $this->retrieveOmgwtfnzbs();
+				if ($this->echooutput) {
+					echo $this->c->primary($newOmgWtf . " \tRetrieved from Omgwtfnzbs.");
+				}
 			}
 
-			$newNames += $newZenet = $this->retrieveZenet();
-			if ($this->echooutput) {
-				echo $this->c->primary($newZenet . " \tRetrieved from Zenet.");
+			if (self::PRE_ZENET) {
+				$newNames += $newZenet = $this->retrieveZenet();
+				if ($this->echooutput) {
+					echo $this->c->primary($newZenet . " \tRetrieved from Zenet.");
+				}
 			}
 
-			$newNames += $newPreList = $this->retrievePrelist();
-			if ($this->echooutput) {
-				echo $this->c->primary($newPreList . " \tRetrieved from Prelist.");
+			if (self::PRE_PRELIST) {
+				$newNames += $newPreList = $this->retrievePrelist();
+				if ($this->echooutput) {
+					echo $this->c->primary($newPreList . " \tRetrieved from Prelist.");
+				}
 			}
 
-			$newNames += $newOrly = $this->retrieveOrlydb();
-			if ($this->echooutput) {
-				echo $this->c->primary($newOrly . " \tRetrieved from Orlydb.");
+			if (self::PRE_ORLYDB) {
+				$newNames += $newOrly = $this->retrieveOrlydb();
+				if ($this->echooutput) {
+					echo $this->c->primary($newOrly . " \tRetrieved from Orlydb.");
+				}
 			}
 
-			$newNames += $newSrr = $this->retrieveSrr();
-			if ($this->echooutput) {
-				echo $this->c->primary($newSrr . " \tRetrieved from Srrdb.");
+			if (self::PRE_SRRDB) {
+				$newNames += $newSrr = $this->retrieveSrr();
+				if ($this->echooutput) {
+					echo $this->c->primary($newSrr . " \tRetrieved from Srrdb.");
+				}
 			}
 
-			$newNames += $newPdme = $this->retrievePredbme();
-			if ($this->echooutput) {
-				echo $this->c->primary($newPdme . " \tRetrieved from Predbme.");
+			if (self::PRE_PREDBME) {
+				$newNames += $newPdme = $this->retrievePredbme();
+				if ($this->echooutput) {
+					echo $this->c->primary($newPdme . " \tRetrieved from Predbme.");
+				}
 			}
 
-			$newNames += $abgx = $this->retrieveAbgx();
-			if ($this->echooutput) {
-				echo $this->c->primary($abgx . " \tRetrieved from abgx.");
+			if (self::PRE_ABGXNET) {
+				$newNames += $abgx = $this->retrieveAbgx();
+				if ($this->echooutput) {
+					echo $this->c->primary($abgx . " \tRetrieved from abgx.");
+				}
 			}
 
-			$newNames += $newUsenetCrawler = $this->retrieveUsenetCrawler();
-			if ($this->echooutput) {
-				echo $this->c->primary($newUsenetCrawler . " \tRetrieved from Usenet-Crawler.");
+			if (self::PRE_UCRAWLER) {
+				$newNames += $newUsenetCrawler = $this->retrieveUsenetCrawler();
+				if ($this->echooutput) {
+					echo $this->c->primary($newUsenetCrawler . " \tRetrieved from Usenet-Crawler.");
+				}
 			}
 
-			$newNames += $newMoovee = $this->retrieveAllfilledMoovee();
-			if ($this->echooutput) {
-				echo $this->c->primary($newMoovee . " \tRetrieved from Allfilled Moovee.");
+			if (self::PRE_MOOVEE) {
+				$newNames += $newMoovee = $this->retrieveAllfilledMoovee();
+				if ($this->echooutput) {
+					echo $this->c->primary($newMoovee . " \tRetrieved from Allfilled Moovee.");
+				}
 			}
 
-			$newNames += $newTeevee = $this->retrieveAllfilledTeevee();
-			if ($this->echooutput) {
-				echo $this->c->primary($newTeevee . " \tRetrieved from Allfilled Teevee.");
+			if (self::PRE_TEEVEE) {
+				$newNames += $newTeevee = $this->retrieveAllfilledTeevee();
+				if ($this->echooutput) {
+					echo $this->c->primary($newTeevee . " \tRetrieved from Allfilled Teevee.");
+				}
 			}
 
-			$newNames += $newErotica = $this->retrieveAllfilledErotica();
-			if ($this->echooutput) {
-				echo $this->c->primary($newErotica . " \tRetrieved from Allfilled Erotica.");
+			if (self::PRE_EROTICA) {
+				$newNames += $newErotica = $this->retrieveAllfilledErotica();
+				if ($this->echooutput) {
+					echo $this->c->primary($newErotica . " \tRetrieved from Allfilled Erotica.");
+				}
 			}
 
-			$newNames += $newForeign = $this->retrieveAllfilledForeign();
+			if (self::PRE_FOREIGN) {
+				$newNames += $newForeign = $this->retrieveAllfilledForeign();
+				if ($this->echooutput) {
+					echo $this->c->primary($newForeign . " \tRetrieved from Allfilled Foreign.\n");
+				}
+			}
+
 			if ($this->echooutput) {
-				echo $this->c->primary($newForeign . " \tRetrieved from Allfilled Foreign.\n");
 				echo $this->c->primary($newNames . " \tRetrieved from all the above sources..");
 			}
 		}
