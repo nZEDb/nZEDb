@@ -42,7 +42,7 @@
 					<a
 						class="requestid"
 						title="{$result.requestid}"
-						href="{$smarty.const.WWW_TOP}/search?searchadvr=&searchadvsubject=[{$result.requestid}]
+						href="{$smarty.const.WWW_TOP}/search?searchadvr=&searchadvsubject={$result.requestid}
 						&searchadvposter=&searchadvdaysnew=&searchadvdaysold=&searchadvgroups=-1&searchadvcat=-1
 						&searchadvsizefrom=-1&searchadvsizeto=-1&searchadvhasnfo=0&searchadvhascomments=0&search_type=adv"
 					>
