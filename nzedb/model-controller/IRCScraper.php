@@ -186,6 +186,18 @@ class IRCScraper
 						'^\[(MOD|OLD|RE|UN)?NUKE\]' .                          // Nukes.
 						'|' .
 						'NEW.*?\[NDS\].*?PRE:' .                               // a.b.games.nintendods
+						//#alt.binaries.games.wii
+						//<@BinaryBot> [kiczek added reason info for: Samurai_Shodown_IV_-_Amakusas_Revenge_USA_VC_NEOGEO_Wii-OneUp][VCID: 5027][Value: bad.dirname_bad.filenames_get.repack]
+						//<@BinaryBot> <@GoogleBot> A new NZB has been added: Go_Diego_Go_Great_Dinosaur_Rescue_PAL_WII-ZER0 PAL DVD5 zer0-gdggdr 93x50MB - To download this file: -sendnzb 12811
+						//#alt.binaries.games.xbox360
+						//<@GoogleBot> A new NZB has been added: South.Park.The.Stick.of.Truth.PAL.XBOX360-COMPLEX PAL DVD9 complex-south.park.sot 74x100MB - To download this file: -sendnzb 19909
+						//<@BinaryBot> [egres added nuke info for: Injustice.Gods.Among.Us.XBOX360-SWAG][GameID: 7088][Value: Y]
+						//#alt.binaries.sony.psp
+						//<@GoogleBot> A NZB is available: Satomi_Hakkenden_Hachitama_no_Ki_JPN_PSP-MOEMOE JAP UMD moe-satomi 69x20MB - To download this file: -sendnzb 21924
+						//#scnzb
+						//<@NZBS> [Complete][512754] Formula1.2014.Malaysian.Grand.Prix.Team.Principals.Press.Conference.720p.HDTV.x264-W4F  NZB: http://scnzb.eu/1pgOmwj
+						//#tvnzb
+						//<@Tweetie> [SBINDEX] Rev.S03E02.HDTV.x264-TLA :: TV > HD :: 210.13 MB :: Aired: 31/Mar/2014 :: http://lolo.sickbeard.com/getnzb/aa10bcef235c604612dd61b0627ae25f.nzb
 					'/i';
 				break;
 
@@ -492,6 +504,10 @@ class IRCScraper
 			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.moovee');
 			$this->CurPre['category'] = 'Movies';
 			$this->siftMatches($matches);
+
+		//[NUKE] ReqId:[130274] [NOVA.The.Bibles.Buried.Secrets.2008.DVDRip.XviD-FiCO] Reason:[field.shifted_oi47.tinypic.com.24evziv.jpg]
+		} else if (preg_match('', $message, $matches)) {
+
 		}
 	}
 
