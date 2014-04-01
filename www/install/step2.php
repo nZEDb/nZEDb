@@ -209,72 +209,53 @@ if ($page->isPostBack()) {
 	if (!$cfg->error) {
 		$cfg->setSession();
 
-		// Load schema files.
-		$dbData = $dbDDL = null;
-		if (is_file($cfg->DB_DIR . '/mysql-ddl.sql') && is_file($cfg->DB_DIR . '/pgsql-ddl.sql')) {
-			if ($cfg->DB_SYSTEM === "mysql") {
-				$dbDDL = file_get_contents($cfg->DB_DIR . '/mysql-ddl.sql');
-				$dbDDL = str_replace(array('DELIMITER $$', 'DELIMITER ;', ' $$'), '', $dbDDL);
-				$dbData = file_get_contents($cfg->DB_DIR . '/mysql-data.sql');
-				$dbData = str_replace(array('DELIMITER $$', 'DELIMITER ;', ' $$'), '', $dbData);
-			}
-			if ($cfg->DB_SYSTEM === "pgsql") {
-				$pdo->query("DROP FUNCTION IF EXISTS hash_check() CASCADE");
-				$pdo->query("DROP FUNCTION IF EXISTS request_check() CASCADE");
-				$dbDDL = file_get_contents($cfg->DB_DIR . '/pgsql-ddl.sql');
-				$dbData = file_get_contents($cfg->DB_DIR . '/pgsql-data.sql');
-			}
+		$DbSetup = new \nzedb\db\DbUpdate(
+			array(
+				'backup' => false
+			)
+		);
 
-			// Fix to remove BOM in UTF8 files.
-			$bom = pack("CCC", 0xef, 0xbb, 0xbf);
-			if (0 == strncmp($dbData, $bom, 3)) {
-				$dbData = substr($dbData, 3);
-			}
+		try {
+			$DbSetup->processSQLFile();	// Setup default schema
+			$DbSetup->loadTables();		// Load default data files
+			$DbSetup->processSQLFile(	// Process any custom stuff.
+					array(
+						 'filepath' =>	nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
+					)
+			);
+		} catch (PDOException $err) {
+			$cfg->error = true;
+			$cfg->emessage = "Error inserting: (" . $err->getMessage() . ")";
+		}
 
-			// Select DB.
-			if ($cfg->DB_SYSTEM === "mysql") {
-				$pdo->query("USE " . $cfg->DB_NAME);
-			}
-
-			// Try to insert the schema / data contents into the DB.
-			try {
-				$pdo->exec($dbDDL);
-				$pdo->exec($dbData);
-            } catch (PDOException $err) {
+		if (!$cfg->error) {
+			// Check one of the standard tables was created and has data.
+			$dbInstallWorked = false;
+			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM countries");
+			if ($reschk === false) {
+				$cfg->dbCreateCheck = false;
 				$cfg->error = true;
-				$cfg->emessage = "Error inserting: (" . $err->getMessage() . ")";
+				$cfg->emessage = 'Could not select data from your database.';
+			} else {
+				foreach ($reschk as $row) {
+					if ($row['num'] > 0) {
+						$dbInstallWorked = true;
+						break;
+					}
+				}
 			}
 
-			if (!$cfg->error) {
-
-				// Check one of the standard tables was created and has data.
-				$dbInstallWorked = false;
-				$reschk = $pdo->query("SELECT COUNT(*) AS num FROM countries");
-				if ($reschk === false) {
-					$cfg->dbCreateCheck = false;
-					$cfg->error = true;
-					$cfg->emessage = 'Could not select data from your database.';
-				} else {
-					foreach ($reschk as $row) {
-						if ($row['num'] > 0) {
-							$dbInstallWorked = true;
-							break;
-						}
-					}
+			// If it all worked, move to the next page.
+			if ($dbInstallWorked) {
+				header("Location: ?success");
+				if (file_exists($cfg->DB_DIR . '/post_install.php')) {
+					exec("php " . $cfg->DB_DIR . "/post_install.php ${pdo}");
 				}
-
-				// If it all worked, move to the next page.
-				if ($dbInstallWorked) {
-					header("Location: ?success");
-					if (file_exists($cfg->DB_DIR . '/post_install.php')) {
-						exec("php " . $cfg->DB_DIR . "/post_install.php ${pdo}");
-					}
-					exit();
-				} else {
-					$cfg->dbCreateCheck = false;
-					$cfg->error = true;
-					$cfg->emessage = 'Could not select data from your database.';
-				}
+				exit();
+			} else {
+				$cfg->dbCreateCheck = false;
+				$cfg->error = true;
+				$cfg->emessage = 'Could not select data from your database.';
 			}
 		}
 	}
