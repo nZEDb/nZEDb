@@ -928,7 +928,13 @@ class IRCScraper
 				'[' .
 				$this->CurPre['title'] .
 				']' .
-				(!empty($this->CurPre['category']) ? ' [' . $this->CurPre['category'] . ']' : '') .
+				(!empty($this->CurPre['category'])
+					? ' [' . $this->CurPre['category'] . ']'
+					: (!empty($this->OldPre['category'])
+						? ' [' . $this->OldPre['category'] . ']'
+						: ''
+					)
+				) .
 				(!empty($this->CurPre['size']) ? ' [' . $this->CurPre['size'] . ']' : '') .
 				PHP_EOL;
 		}
