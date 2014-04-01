@@ -77,7 +77,7 @@
 							{$result.source}
 						</a>
 					{elseif $result.source|strpos:'#a.b.' !== false}
-						<a title="Visit {$result.source} on IRC" href="irc://irc.Prison.NET:6667/{str_replace('#a.b.', 'alt.binaries.', {$result.source})}" target="_blank">
+						<a title="Visit {$result.source} on IRC" href="irc://irc.Prison.NET:6667/{str_replace('#a.b.', 'alt.binaries.', {$result.source})}">
 							{$result.source}
 						</a>
 					{elseif {$result.source} == omgwtfnzbs}
@@ -97,15 +97,23 @@
 							Prelist
 						</a>
 					{elseif {$result.source} == "#Pre@zenet"}
-						<a title="Visit zenet on IRC" href="irc://irc.zenet.org:6667/Pre" target="_blank">
+						<a title="Visit zenet on IRC" href="irc://irc.zenet.org:6667/Pre">
 							Zenet IRC
 						</a>
 					{elseif {$result.source} == "#pre@corrupt"}
-						<a title="Visit corrupt on IRC" href="irc://irc.corrupt-net.org:6667/pre" target="_blank">
+						<a title="Visit corrupt on IRC" href="irc://irc.corrupt-net.org:6667/pre">
 							Corrupt-Net
 						</a>
 					{elseif {$result.source} == srrdb}
 						<a title="Visit srrDB" href="{$site->dereferrer_link}http://www.srrdb.com/browse/{$result.title}" target="_blank">
+							srrDB
+						</a>
+					{elseif {$result.source} == "#scnzb"}
+						<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/scnzb">
+							srrDB
+						</a>
+					{elseif {$result.source} == "#tvnzb"}
+						<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/tvnzb">
 							srrDB
 						</a>
 					{elseif {$result.source} == "usenet-crawler"}
@@ -231,11 +239,7 @@
 				</td>
 				<td class="predb" style="width:60px;text-align:right;overflow:hidden;">
 					{if isset($result.files)}
-						{if strpos($result.files, 'B')}
-							{$result.files}
-						{else}
-							{$result.files}MB
-						{/if}
+						{$result.files}
 					{else}
 						N/A
 					{/if}

@@ -482,6 +482,14 @@ class IRCScraper
 		}
 		if (isset($matches['files'])) {
 			$this->CurPre['files'] = substr($matches['files'], 0, 50);
+
+			// If the pre has no size, try to get one from files.
+			if (empty($this->OldPre['size']) && empty($this->CurPre['size'])) {
+				if (preg_match('/(?P<files>\d+)x(?P<size>\d+)\s*(?P<ext>[KMGTP]?B)\s*$/i', $matches['files'], $match)) {
+					$this->CurPre['size'] = ((int)$match['files'] * (int)$match['size']) . $match['ext'];
+					unset($match);
+				}
+			}
 		}
 		$this->checkForDupe();
 	}
@@ -799,7 +807,7 @@ class IRCScraper
 	 */
 	protected function checkForDupe()
 	{
-		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT category FROM predb WHERE md5 = %s', $this->CurPre['md5']));
+		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT category, size FROM predb WHERE md5 = %s', $this->CurPre['md5']));
 		if ($this->OldPre === false) {
 			$this->insertNewPre();
 		} else {
