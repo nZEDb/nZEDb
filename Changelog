@@ -12,6 +12,7 @@ Each update goes to the top of the file
 	* Fix: trailing whitespace
 	* Chg: update merged changelog
 2014-04-01 kev
+	* Add: Full dates on hover alpha theme PreDB page.
 	* Add: Parse size from files IRCScraper, clickable IRC links for tvnzb and scnzb PreDB templates.
 	* Fix: Get the groupid before storing in array IRCScraper.
 	* Fix: Escaping groupname in IRCScraper.

@@ -61,10 +61,10 @@
 						N/A
 					{/if}
 				</td>
-				<td style="width:120px;text-align:center;" class="predb">
+				<td style="width:120px;text-align:center;" class="predb" title="{$result.adddate}">
 					{$result.adddate|date_format:"%D"}
 				</td>
-				<td style="width:120px;text-align:center;" class="predb">
+				<td style="width:120px;text-align:center;" class="predb" title="{$result.predate}">
 					{$result.predate|date_format:"%D"}
 				</td>
 				<td style="width:120px;text-align:center;" class="predb">
