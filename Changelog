@@ -17,6 +17,7 @@ Each update goes to the top of the file
 	* Fix: insert errors in Binaries.php
 	* Fix: typo in PreDb
 2014-03-31 kevin
+	* Add: NUKE/UNNUKE/MODNUKE/etc parsing on a.b.moove
 	* Add: Clickable IRC links on the predb page.
 	* Chg: Remove nuked/unnuked icons, change for colored text, fixes width issues.
 	* Add: Parse more nukes in a.b.erotica. IRCScrapper.
