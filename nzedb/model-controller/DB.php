@@ -521,7 +521,7 @@ class DB extends PDO
 		$rows = $this->query($query);
 
 		if (!$rows || count($rows) == 0) {
-			return false;
+			$rows = false;
 		}
 
 		return is_array($rows) ? $rows[0] : $rows;
