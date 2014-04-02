@@ -110,11 +110,6 @@ class Net_SmartIRC_irccommands extends Net_SmartIRC_base
      */
     function join($channelarray, $priority = SMARTIRC_MEDIUM)
     {
-        if ($this->_connectionerror === true || $this->_state() === SMARTIRC_STATE_DISCONNECTED)  {
-            $this->log(SMARTIRC_DEBUG_NOTICE, 'Warning: you must connect to IRC before joining channels!', __FILE__, __LINE__);
-            return false;
-        }
-
         foreach ($channelarray as $channel => $password) {
             $this->_send('JOIN ' . $channel . ($password === null ? '' : ' ' . $password), $priority);
         }

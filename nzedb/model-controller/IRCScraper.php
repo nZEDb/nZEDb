@@ -286,7 +286,7 @@ class IRCScraper
 		}
 
 		// Join channels.
-		if (!$this->IRC->join($channelList)) {
+		if (!$this->IRC->joinChannels($channelList)) {
 			exit('Error joining channels on (' . $server . ':' . $port . ') might be an issue with the server.' . PHP_EOL);
 		}
 
