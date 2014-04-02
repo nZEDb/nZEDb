@@ -1163,6 +1163,9 @@ Class PreDb
 				$buffer = $this->getUrl($URL);
 
 				if ($buffer !== false) {
+					if (strlen($buffer) < 5) {
+						continue;
+					}
 					if ($nfo->addAlternateNfo($db, $buffer, $row, $nntp)) {
 						if ($this->echooutput) {
 							echo '+';
