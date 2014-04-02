@@ -22,11 +22,6 @@ class DB extends PDO
 	public $ct;
 
 	/**
-	 * @var string Lower-cased name of DBMS in use.
-	 */
-	protected $dbSystem;
-
-	/**
 	 * @var bool	Whether memcache is enabled.
 	 */
 	public $memcached;
@@ -45,6 +40,11 @@ class DB extends PDO
 	 * @var object Instance of PDO class.
 	 */
 	private static $pdo = null;
+
+	/**
+	 * @var string Lower-cased name of DBMS in use.
+	 */
+	private $dbSystem;
 
 	/**
 	 * @var string Version of the Db server.
@@ -69,6 +69,7 @@ class DB extends PDO
 	{
 		$defaults = array(
 			'checkVersion'	=> false,
+			'createDb'		=> false, // create dbname if it does not exist?
 			'ct'			=> new ConsoleTools(),
 			'dbhost'		=> defined('DB_HOST') ? DB_HOST : '',
 			'dbname' 		=> defined('DB_NAME') ? DB_NAME : '',
@@ -78,7 +79,6 @@ class DB extends PDO
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
 			'dbuser' 		=> defined('DB_USER') ? DB_USER : '',
 			'logger'		=> new ColorCLI()
-
 		);
 		$this->opts = $options + $defaults;
 
@@ -104,11 +104,37 @@ class DB extends PDO
 		}
 		$this->ct = new ConsoleTools();
 
-		if ($this->opts) {
+		if ($this->opts['checkVersion']) {
 			$this->fetchDbVersion();
 		}
 
 		return self::$pdo;
+	}
+
+	public function checkDbExists ($name = null)
+	{
+		if (empty($name)) {
+			$name = $this->opts['dbname'];
+		}
+
+		$found  = false;
+		$tables = self::getTableList();
+		foreach ($tables as $table) {
+			if ($table['Database'] == $name) {
+				//var_dump($tables);
+				$found = true;
+				break;
+			}
+		}
+		return $found;
+	}
+
+	public function getTableList ()
+	{
+		$query  = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' :
+			'SELECT datname AS Database FROM pg_database');
+		$result = self::$pdo->query($query);
+		return $result->fetchAll(\PDO::FETCH_ASSOC);
 	}
 
 	/**
@@ -125,40 +151,64 @@ class DB extends PDO
 					$dsn .= ';port=' . $this->opts['dbport'];
 				}
 			}
-			// Allow Db name to be empty so that installing can get a Db connection to create it.
-			if (!empty($this->opts['dbname'])) {
-				$dsn .= ';dbname=' . $this->opts['dbname'];
-			}
-			$dsn .= ';charset=utf8';
 		} else {
-			$dsn = $this->dbSystem . ':host=' . $this->opts['dbhost'];
-			if (!empty($this->opts['dbname'])) {
-				$dsn .= ';dbname=' . $this->opts['dbname'];
-			}
-			$dsn .= ';charset=utf8';
+			$dsn = $this->dbSystem . ':host=' . $this->opts['dbhost'] . ';dbname=' . $this->opts['dbname'];
+		}
+		$dsn .= ';charset=utf8';
+
+		$options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
+		if ($this->dbSystem === 'mysql') {
+			$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
+			$options[PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
 		}
 
-		try {
-			$options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
-			if ($this->dbSystem === 'mysql') {
-				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
-				$options[PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
+		// removed try/catch to let the instantiating code handle the problem (Install for
+		// instance can output a message that connecting failed.
+		self::$pdo = new PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
+
+		$found = self::checkDbExists();
+		if ($this->opts['dbtype'] === 'pgsql' && !$found) {
+			throw new \RuntimeException('Could not find your database: ' . $this->opts['dbname'] .
+										', please see Install.txt for instructions on how to create a database.', 1);
+		}
+
+		if ($this->opts['createDb']) {
+			if ($found) {
+				try {
+					self::$pdo->query("DROP DATABASE " . $this->opts['dbname']);
+				} catch (Exception $e) {
+					throw new \RuntimeException("Error trying to drop your old database: '{$this->opts['dbname']}'", 2);
+				}
+				$found = self::checkDbExists();
 			}
 
-			self::$pdo = new PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
+			if ($found) {
+				var_dump(self::getTableList());
+				throw new \RuntimeException("Could not drop your old database: '{$this->opts['dbname']}'", 2);
+			} else {
+				self::$pdo->query("CREATE DATABASE `{$this->opts['dbname']}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
 
-			// For backwards compatibility, no need for a patch.
-			self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+				if (!self::checkDbExists()) {
+					throw new \RuntimeException("Could not create new database: '{$this->opts['dbname']}'", 3);
+				}
+			}
+		}
+		self::$pdo->query("USE {$this->opts['dbname']}");
+		//		var_dump('made it here');
 
-		} catch (PDOException $e) {
+		// In case PDO is not set to produce exceptions (PHP's default behaviour).
+		if (self::$pdo === false) {
 			$this->echoError(
-				"Connection to the SQL server failed, error was: (" . $e->getMessage() . ")",
-				'initialiseDatabase',
-				1,
-				true
+				 "Unable to create connection to the Database!",
+				 'initialiseDatabase',
+				 1,
+				 true
 			);
 		}
+
+		// For backwards compatibility, no need for a patch.
+		self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+		self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 	}
 
 	/**
@@ -175,14 +225,7 @@ class DB extends PDO
 			$this->debugging->start($method, $error, $severity);
 		}
 
-		echo (
-			($this->_cli
-				?
-					$this->logger->error($error) . PHP_EOL
-				:
-					'<div class="error">' . $error . '</div>'
-			)
-		);
+		echo (($this->_cli ? $this->logger->error($error) . PHP_EOL : '<div class="error">' . $error . '</div>'));
 
 		if ($exit) {
 			exit();
@@ -795,10 +838,9 @@ class DB extends PDO
 	}
 
 	/**
-	 * Checks whether the connection to the server is working. Optionally start
-	 * a new connection.
-	 * NOTE: Restart does not happen if PDO is not using exceptions (PHP's
-	 * default configuration). In this case check the return value === false.
+	 * Checks whether the connection to the server is working. Optionally restart a new connection.
+	 * NOTE: Restart does not happen if PDO is not using exceptions (PHP's default configuration).
+	 * In this case check the return value === false.
 	 *
 	 * @param boolean $restart Whether an attempt should be made to reinitialise the Db object on failure.
 	 *
