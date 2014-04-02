@@ -1,44 +1,11 @@
 <?php
 namespace nzedb\utility;
-
 /*
  * General util functions.
  * Class Util
  */
 class Utility
 {
-	static public function getFileList (array $options = null)
-	{
-		$defaults = array(
-			'dir'   => false,
-			'ext'   => '',
-			'files' => array(),
-			'path'  => '',
-			'regex' => '',
-		);
-		$options += $defaults;
-
-		$di    = new DirectoryIterator($options['path']);
-		$files = array();
-		foreach ($di as $file) {
-			$base = empty($options['ext']) ? $file->getBasename() : $file->getBasename
-				($options['ext']);
-			switch (true) {
-				case $file->isDot:
-					break;
-				case !$options['dir'] && $file->isDir:
-					break;
-				case $base != $file->getBasename():
-					break;
-				case !preg_match($options['regex'], $base):
-					break;
-				default:
-					$files[$file->getFilename()] = $file;
-			}
-		}
-		return $files;
-	}
-
 	static public function hasCommand($cmd)
 	{
 		if (!isWindows()) {
@@ -641,4 +608,18 @@ function release_flag($x, $t)
 		}
 	}
 	return '';
+}
+
+/**
+ * Get human readable size string from bytes.
+ *
+ * @param int $bytes     Bytes number to convert.
+ * @param int $precision How many floating point units to add.
+ *
+ * @return string
+ */
+function bytesToSizeString($bytes, $precision = 0)
+{
+	$unit = array('B','KB','MB','GB','TB','PB','EB');
+	return round($bytes / pow(1024, ($i = floor(log($bytes, 1024)))), $precision) . $unit[(int)$i];
 }

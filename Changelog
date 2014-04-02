@@ -6,6 +6,18 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-02 bart39
+	* Fix: duplicate insert attempts for predb abgx web update
+2014-04-02 kevin
+	* FIx: Possible fix for empty pre date on Tmux monitor.
+	* Fix: Possible fix for future newest pre date on Tmux monitor.
+	* Chg: Check if buffer is empty before inserting PreDB NFO.
+	* Fix: Prelist parsing in PreDB.php
+	* Add: Parsing of files to PreDB.php sources.
+	* Add: Getting NFO's from SRRDB on PreDB.php
+	* Fix: More fixes to NET_SmartIRC connect/disconnect/reconnect.
+	* Fix: Fixes to NET_SmartIRC reconnect.
+	* Fix: Various fixes to NET_SmartIRC.
 2014-04-01 bart39
 	* Fix: remove addate from predb update
 	* Fix: typo in schema

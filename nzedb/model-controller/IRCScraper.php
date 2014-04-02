@@ -116,7 +116,7 @@ class IRCScraper
 	 */
 	public function __destruct()
 	{
-		// Disconnect from IRC cleanly.
+		// Close the socket.
 		if (!is_null($this->IRC)) {
 			if (!$this->silent) {
 				echo
@@ -125,7 +125,7 @@ class IRCScraper
 					'.' .
 					PHP_EOL;
 			}
-			$this->IRC->disconnect();
+			$this->IRC->disconnect(true);
 		}
 	}
 
@@ -266,7 +266,7 @@ class IRCScraper
 		}
 
 		// Login to IRC.
-		$this->IRC->login(
+		if (!$this->IRC->login(
 			// Nick name.
 			$nickname,
 			// Real name.
@@ -277,10 +277,18 @@ class IRCScraper
 			$username,
 			// Password.
 			(empty($password) ? null : $password)
-		);
+		)) {
+			exit('Error logging in to: (' .
+				$server . ':' . $port . ') nickname: (' . $nickname .
+				'). Verify your connection information, you might also be banned from this server or there might have been a connection issue.' .
+				PHP_EOL
+			);
+		}
 
 		// Join channels.
-		$this->IRC->join($channelList);
+		if (!$this->IRC->joinChannels($channelList)) {
+			exit('Error joining channels on (' . $server . ':' . $port . ') might be an issue with the server.' . PHP_EOL);
+		}
 
 		if (!$this->silent) {
 			echo

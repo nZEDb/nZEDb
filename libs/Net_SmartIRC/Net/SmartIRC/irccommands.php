@@ -105,7 +105,7 @@ class Net_SmartIRC_irccommands extends Net_SmartIRC_base
      *
      * @param array $channelarray ; array('#channelname1' => 'password', '#channelname2' => null);
      * @param integer $priority message priority, default is SMARTIRC_MEDIUM
-     * @return void
+     * @return bool
      * @access public
      */
     function join($channelarray, $priority = SMARTIRC_MEDIUM)
@@ -113,6 +113,7 @@ class Net_SmartIRC_irccommands extends Net_SmartIRC_base
         foreach ($channelarray as $channel => $password) {
             $this->_send('JOIN ' . $channel . ($password === null ? '' : ' ' . $password), $priority);
         }
+        return true;
     }
 
     /**
@@ -523,4 +524,3 @@ class Net_SmartIRC_irccommands extends Net_SmartIRC_base
         $this->disconnect(true);
     }
 }
-?>
