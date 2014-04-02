@@ -7,7 +7,6 @@
  * @author Uwe Tews
  * @author Rodney Rehm
  */
-
 /**
  * Smarty Internal Plugin Resource File
  *
@@ -27,12 +26,10 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
     public function populate(Smarty_Template_Source $source, Smarty_Internal_Template $_template=null)
     {
         $source->filepath = $this->buildFilepath($source, $_template);
-
         if ($source->filepath !== false) {
             if (is_object($source->smarty->security_policy)) {
                 $source->smarty->security_policy->isTrustedResourceDir($source->filepath);
             }
-
             $source->uid = sha1($source->filepath);
             if ($source->smarty->compile_check && !isset($source->timestamp)) {
                 $source->timestamp = @filemtime($source->filepath);
@@ -40,7 +37,6 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
             }
         }
     }
-
     /**
      * populate Source Object with timestamp and exists from Resource
      *
@@ -51,7 +47,6 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
         $source->timestamp = @filemtime($source->filepath);
         $source->exists = !!$source->timestamp;
     }
-
     /**
      * Load template's source from file into current template object
      *
@@ -69,7 +64,6 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
         }
         throw new SmartyException("Unable to read template {$source->type} '{$source->name}'");
     }
-
     /**
      * Determine basename for compiled filename
      *
@@ -82,8 +76,6 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
         if (($_pos = strpos($_file, ']')) !== false) {
             $_file = substr($_file, $_pos + 1);
         }
-
         return basename($_file);
     }
-
 }

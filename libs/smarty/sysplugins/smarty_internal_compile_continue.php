@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Continue Class
  *
@@ -31,7 +30,6 @@ class Smarty_Internal_Compile_Continue extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $shorttag_order = array('levels');
-
     /**
      * Compiles code for the {continue} tag
      *
@@ -45,11 +43,9 @@ class Smarty_Internal_Compile_Continue extends Smarty_Internal_CompileBase
         static $_is_loopy = array('for' => true, 'foreach' => true, 'while' => true, 'section' => true);
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-
         if ($_attr['nocache'] === true) {
             $compiler->trigger_template_error('nocache option not allowed', $compiler->lex->taglineno);
         }
-
         if (isset($_attr['levels'])) {
             if (!is_numeric($_attr['levels'])) {
                 $compiler->trigger_template_error('level attribute must be a numeric constant', $compiler->lex->taglineno);
@@ -69,8 +65,6 @@ class Smarty_Internal_Compile_Continue extends Smarty_Internal_CompileBase
         if ($level_count != 0) {
             $compiler->trigger_template_error("cannot continue {$_levels} level(s)", $compiler->lex->taglineno);
         }
-
         return "<?php continue {$_levels}?>";
     }
-
 }

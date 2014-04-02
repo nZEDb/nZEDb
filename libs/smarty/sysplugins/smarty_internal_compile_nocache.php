@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Nocache Classv
  *
@@ -32,19 +31,13 @@ class Smarty_Internal_Compile_Nocache extends Smarty_Internal_CompileBase
         if ($_attr['nocache'] === true) {
             $compiler->trigger_template_error('nocache option not allowed', $compiler->lex->taglineno);
         }
-        if ($compiler->template->caching) {
         // enter nocache mode
-        $this->openTag($compiler, 'nocache', $compiler->nocache);
         $compiler->nocache = true;
-        }
         // this tag does not return compiled code
         $compiler->has_code = false;
-
         return true;
     }
-
 }
-
 /**
  * Smarty Internal Plugin Compile Nocacheclose Class
  *
@@ -65,14 +58,10 @@ class Smarty_Internal_Compile_Nocacheclose extends Smarty_Internal_CompileBase
     public function compile($args, $compiler)
     {
         $_attr = $this->getAttributes($compiler, $args);
-        if ($compiler->template->caching) {
-        // restore old nocache mode
-        $compiler->nocache = $this->closeTag($compiler, 'nocache');
-        }
+        // leave nocache mode
+        $compiler->nocache = false;
         // this tag does not return compiled code
         $compiler->has_code = false;
-
         return true;
     }
-
 }

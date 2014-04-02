@@ -840,7 +840,7 @@ class Binaries
 								(int) $bytes,
 								$nowPart,
 								$this->message[$subject]['MaxParts'],
-								$this->db->from_unixtime($this->message[$subject]['Date'], true)
+								$this->db->from_unixtime($this->message[$subject]['Date'])
 							)
 						);
 					}
@@ -961,7 +961,7 @@ class Binaries
 									VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())",
 										$this->db->escapeString(substr($subject, 0, 255)),
 										$this->db->escapeString(utf8_encode($data['From'])),
-										$this->db->from_unixtime($data['Date'], true),
+										$this->db->from_unixtime($data['Date']),
 										$this->db->escapeString(substr($data['Xref'], 0, 255)),
 										$groupArr['id'], $data['MaxFiles'],
 										$this->db->escapeString($collectionHash));

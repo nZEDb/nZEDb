@@ -5,7 +5,6 @@
  * @package Smarty
  * @subpackage PluginsFunction
  */
-
 /**
  * Smarty {html_options_multiple} function plugin
  *
@@ -36,7 +35,6 @@
 function smarty_function_html_options_multiple($params, $template)
 {
 	require_once(SMARTY_PLUGINS_DIR . 'shared.escape_special_chars.php');
-
 	$name = null;
 	$values = null;
 	$options = null;
@@ -44,9 +42,7 @@ function smarty_function_html_options_multiple($params, $template)
 	$output = null;
 	$id = null;
 	$class = null;
-
 	$extra = '';
-
 	foreach ($params as $_key => $_val) {
 		switch ($_key) {
 			case 'name':
@@ -54,16 +50,13 @@ function smarty_function_html_options_multiple($params, $template)
 			case 'id':
 				$$_key = (string) $_val;
 				break;
-
 			case 'options':
 				$options = (array) $_val;
 				break;
-
 			case 'values':
 			case 'output':
 				$$_key = array_values((array) $_val);
 				break;
-
 			case 'selected':
 				if (is_array($_val)) {
 					$selected = array();
@@ -90,24 +83,19 @@ function smarty_function_html_options_multiple($params, $template)
 					$selected = smarty_function_escape_special_chars((string) $_val);
 				}
 				break;
-
 			case 'strict': break;
-
 			case 'disabled':
 			case 'readonly':
 				if (!empty($params['strict'])) {
 					if (!is_scalar($_val)) {
 						trigger_error("html_options_multiple: $_key attribute must be a scalar, only boolean true or string '$_key' will actually add the attribute", E_USER_NOTICE);
 					}
-
 					if ($_val === true || $_val === $_key) {
 						$extra .= ' ' . $_key . '="' . smarty_function_escape_special_chars($_key) . '"';
 					}
-
 					break;
 				}
 				// omit break; to fall through!
-
 			default:
 				if (!is_array($_val)) {
 					$extra .= ' ' . $_key . '="' . smarty_function_escape_special_chars($_val) . '"';
@@ -117,15 +105,12 @@ function smarty_function_html_options_multiple($params, $template)
 				break;
 		}
 	}
-
 	if (!isset($options) && !isset($values)) {
 		/* raise error here? */
 		return '';
 	}
-
 	$_html_result = '';
 	$_idx = 0;
-
 	if (isset($options)) {
 		foreach ($options as $_key => $_val) {
 			$_html_result .= smarty_function_html_options_multiple_optoutput($_key, $_val, $selected, $id, $class, $_idx);
@@ -136,17 +121,14 @@ function smarty_function_html_options_multiple($params, $template)
 			$_html_result .= smarty_function_html_options_multiple_optoutput($_key, $_val, $selected, $id, $class, $_idx);
 		}
 	}
-
 	if (!empty($name)) {
 		$_html_class = !empty($class) ? ' class="'.$class.'"' : '';
 		$_html_id = !empty($id) ? ' id="'.$id.'"' : '';
 		// the name needs to have [] added (this is html text [] not PHP, so that the return for the multiselect is an array
 		$_html_result = '<select multiple="multiple" name="' . $name . '[]"' . $_html_class . $_html_id . $extra . '>' . "\n" . $_html_result . '</select>' . "\n";
 	}
-
 	return $_html_result;
 }
-
 function smarty_function_html_options_multiple_optoutput($key, $value, $selected, $id, $class, &$idx)
 {
 	if (!is_array($value)) {
@@ -180,7 +162,6 @@ function smarty_function_html_options_multiple_optoutput($key, $value, $selected
 	}
 	return $_html_result;
 }
-
 function smarty_function_html_options_multiple_optgroup($key, $values, $selected, $id, $class, &$idx)
 {
 	$optgroup_html = '<optgroup label="' . smarty_function_escape_special_chars($key) . '">' . "\n";
@@ -190,5 +171,4 @@ function smarty_function_html_options_multiple_optgroup($key, $values, $selected
 	$optgroup_html .= "</optgroup>\n";
 	return $optgroup_html;
 }
-
 ?>

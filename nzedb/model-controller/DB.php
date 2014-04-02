@@ -739,23 +739,17 @@ class DB extends PDO
 
 	/**
 	 * PHP interpretation of MySQL's from_unixtime method.
-	 * @param int  $utime
-	 * @param bool $escape
+	 * @param int  $utime UnixTime
 	 *
 	 * @return bool|string
 	 */
-	public function from_unixtime($utime, $escape = true)
+	public function from_unixtime($utime)
 	{
-		if ($escape === true) {
-			if ($this->dbSystem === 'mysql') {
-				return 'FROM_UNIXTIME(' . $utime . ')';
-			} else if ($this->dbSystem === 'pgsql') {
-				return 'TO_TIMESTAMP(' . $utime . ')::TIMESTAMP';
-			}
+		if ($this->dbSystem === 'mysql') {
+			return 'FROM_UNIXTIME(' . $utime . ')';
 		} else {
-			return date('Y-m-d h:i:s', $utime);
+			return 'TO_TIMESTAMP(' . $utime . ')::TIMESTAMP';
 		}
-		return '';
 	}
 
 	/**

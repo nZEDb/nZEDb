@@ -5,7 +5,6 @@
  * @package Smarty
  * @subpackage TemplateResources
  */
-
 /**
  * Smarty Resource Data Object
  *
@@ -34,19 +33,16 @@ class Smarty_Config_Source extends Smarty_Template_Source
     public function __construct(Smarty_Resource $handler, Smarty $smarty, $resource, $type, $name, $unique_resource)
     {
         $this->handler = $handler; // Note: prone to circular references
-
         // Note: these may be ->config_compiler_class etc in the future
         //$this->config_compiler_class = $handler->config_compiler_class;
         //$this->config_lexer_class = $handler->config_lexer_class;
         //$this->config_parser_class = $handler->config_parser_class;
-
         $this->smarty = $smarty;
         $this->resource = $resource;
         $this->type = $type;
         $this->name = $name;
         $this->unique_resource = $unique_resource;
     }
-
     /**
      * <<magic>> Generic setter.
      *
@@ -62,12 +58,10 @@ class Smarty_Config_Source extends Smarty_Template_Source
             case 'exists':
                 $this->$property_name = $value;
                 break;
-
             default:
                 throw new SmartyException("invalid config property '$property_name'.");
         }
     }
-
     /**
      * <<magic>> Generic getter.
      *
@@ -80,15 +74,11 @@ class Smarty_Config_Source extends Smarty_Template_Source
             case 'timestamp':
             case 'exists':
                 $this->handler->populateTimestamp($this);
-
                 return $this->$property_name;
-
             case 'content':
                 return $this->content = $this->handler->getContent($this);
-
             default:
                 throw new SmartyException("config property '$property_name' does not exist.");
         }
     }
-
 }

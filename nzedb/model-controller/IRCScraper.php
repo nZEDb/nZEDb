@@ -33,7 +33,7 @@ class IRCScraper
 	 * Pre was re nuked.
 	 * @const
 	 */
-	const RE_NUKE = 4;
+	const RE_NUKE  = 4;
 
 	/**
 	 * Pre is nuked for being old.
@@ -63,6 +63,11 @@ class IRCScraper
 	 * @var Net_SmartIRC
 	 */
 	protected $IRC = null;
+
+	/**
+	 * @var DB
+	 */
+	protected $db;
 
 	/**
 	 * Current server.
@@ -95,7 +100,6 @@ class IRCScraper
 	public function __construct(&$irc, $serverType, &$silent = false, &$debug = false, &$socket = true)
 	{
 		$this->db = new DB();
-		$this->groups = new Groups();
 		$this->groupList = array();
 		$this->IRC = $irc;
 		if ($debug) {
@@ -153,7 +157,12 @@ class IRCScraper
 					'#alt.binaries.flac'                   => 'flac',
 					'#alt.binaries.foreign'                => 'foreign',
 					'#alt.binaries.console.ps3'            => null,
-					'#alt.binaries.games.nintendods'       => null
+					'#alt.binaries.games.nintendods'       => null,
+					'#alt.binaries.games.wii'              => null,
+					'#alt.binaries.games.xbox360'          => null,
+					'#alt.binaries.sony.psp'               => null,
+					'#scnzb'                               => null,
+					'#tvnzb'                               => null
 				);
 				// Check if the user is ignoring channels.
 				if (defined('SCRAPE_IRC_EFNET_IGNORED_CHANNELS') && SCRAPE_IRC_EFNET_IGNORED_CHANNELS != '') {
@@ -173,19 +182,29 @@ class IRCScraper
 				$regex =
 					// Simple regex, more advanced regex below when doing the real checks.
 					'/' .
-						'FILLED.*Pred.*ago' .                                  // a.b.inner-sanctum
+						'FILLED.*Pred.*ago' .                          // a.b.inner-sanctum
 						'|' .
-						'Thank.*you.*Req.*Id.*Request' .                       // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
+						'Thank.*you.*Req.*Id.*Request' .               // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
 						'|' .
-						'Thank.*?You.*?Request.*?Filled!.*?ReqId' .            // a.b.moovee a.b.foreign a.b.flac a.b.teevee
+						'Thank.*?You.*?Request.*?Filled!.*?ReqId' .    // a.b.moovee a.b.foreign a.b.flac a.b.teevee
 						'|' .
-						'That.*?was.*?awesome.*?Shall.*?ReqId' .               // a.b.erotica
+						'That.*?was.*?awesome.*?Shall.*?ReqId' .       // a.b.erotica
 						'|' .
-						'person.*?filling.*?request.*?for:.*?ReqID:' .         // a.b.console.ps3
+						'person.*?filling.*?request.*?for:.*?ReqID:' . // a.b.console.ps3
 						'|' .
-						'^\[(MOD|OLD|RE|UN)?NUKE\]' .                          // Nukes.
+						'NEW.*?\[NDS\].*?PRE:' .                       // a.b.games.nintendods
 						'|' .
-						'NEW.*?\[NDS\].*?PRE:' .                               // a.b.games.nintendods
+						'A\s+new\s+NZB\s+has\s+been\s+added:' .        // a.b.games.wii a.b.games.xbox360
+						'|' .
+						'A\s+NZB\s+is\s+available.*?To\s+Download' .   // a.b.sony.psp
+						'|' .
+						'\s+NZB:\s+http:\/\/scnzb\.eu\/' .             // scnzb
+						'|' .
+						'^\[SBINDEX\]' .                               // tvnzb
+						'|' .
+						'^\[(MOD|OLD|RE|UN)?NUKE\]' .                  // Nukes. various channels
+						'|' .
+						'added\s+(nuke|reason)\s+info\s+for:' .        // Nukes. a.b.games.xbox360 a.b.games.wii
 					'/i';
 				break;
 
@@ -307,7 +326,9 @@ class IRCScraper
 				break;
 
 			case 'pr3':
-				$this->corrupt_pre($data->message);
+				if ($channel === '#pre') {
+					$this->corrupt_pre($data->message);
+				}
 				break;
 
 			case 'abflac':
@@ -351,6 +372,32 @@ class IRCScraper
 					$this->ab_console_ps3($data->message);
 				} else if ($channel === '#alt.binaries.games.nintendods') {
 					$this->ab_games_nintendods($data->message);
+				} else if ($channel === '#alt.binaries.games.wii') {
+					$this->ab_games_wii($data->message, $poster);
+				} else if ($channel === '#alt.binaries.games.xbox360') {
+					$this->ab_games_xbox360($data->message, $poster);
+				}
+				break;
+
+			case 'googlebot':
+				if ($channel === '#alt.binaries.games.wii') {
+					$this->ab_games_wii($data->message, $poster);
+				} else if ($channel === '#alt.binaries.games.xbox360') {
+					$this->ab_games_xbox360($data->message, $poster);
+				} else if ($channel === '#alt.binaries.sony.psp') {
+					$this->ab_sony_psp($data->message, $poster);
+				}
+				break;
+
+			case 'nzbs':
+				if ($channel === '#scnzbs') {
+					$this->scnzb($data->message);
+				}
+				break;
+
+			case 'tweetie':
+				if ($channel === '#tvnzb') {
+					$this->tvnzb($data->message);
 				}
 				break;
 
@@ -435,6 +482,14 @@ class IRCScraper
 		}
 		if (isset($matches['files'])) {
 			$this->CurPre['files'] = substr($matches['files'], 0, 50);
+
+			// If the pre has no size, try to get one from files.
+			if (empty($this->OldPre['size']) && empty($this->CurPre['size'])) {
+				if (preg_match('/(?P<files>\d+)x(?P<size>\d+)\s*(?P<ext>[KMGTP]?B)\s*$/i', $matches['files'], $match)) {
+					$this->CurPre['size'] = ((int)$match['files'] * (int)$match['size']) . $match['ext'];
+					unset($match);
+				}
+			}
 		}
 		$this->checkForDupe();
 	}
@@ -448,7 +503,14 @@ class IRCScraper
 	{
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326264] [HD-Clip] [FULL 16x50MB TeenSexMovs.14.03.30.Daniela.XXX.720p.WMV-iaK] Filenames:[iak-teensexmovs-140330] Comments:[0] Watchers:[0] Total Size:[753MB] Points Earned:[54] [Pred 3m 20s ago]
 		//That was awesome [*Anonymous*] Shall we do it again? ReqId:[326663] [x264] [FULL 53x100MB Young.Ripe.Mellons.10.XXX.720P.WEBRIP.X264-GUSH] Filenames:[gush.yrmellons10] Comments:[1] Watchers:[0] Total Size:[4974MB] Points Earned:[354] [Pred 7m 5s ago] [NUKED]
-			if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[.+?\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGTP]?B)\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\](.+?\[Pred\s+(?P<predago>.+?)\s+ago\])?(.+?\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)D\])?/i', $message, $matches)) {
+		if (preg_match('/ReqId:\[(?P<reqid>\d+)\]\s+\[.+?\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGTP]?B)\s+(?P<title>.+?)\].+?Size:\[(?P<size>.+?)\](.+?\[Pred\s+(?P<predago>.+?)\s+ago\])?(.+?\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)D\])?/i', $message, $matches)) {
+			$this->CurPre['source']   = '#a.b.erotica';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.erotica');
+			$this->CurPre['category'] = 'XXX';
+			$this->siftMatches($matches);
+
+		//[NUKE] ReqId:[326663] [Young.Ripe.Mellons.10.XXX.720P.WEBRIP.X264-GUSH] Reason:[selfdupe.2014-03-09]
+		} elseif (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)]/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.erotica';
 			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.erotica');
 			$this->CurPre['category'] = 'XXX';
@@ -485,6 +547,13 @@ class IRCScraper
 			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.moovee');
 			$this->CurPre['category'] = 'Movies';
 			$this->siftMatches($matches);
+
+		//[NUKE] ReqId:[130274] [NOVA.The.Bibles.Buried.Secrets.2008.DVDRip.XviD-FiCO] Reason:[field.shifted_oi47.tinypic.com.24evziv.jpg]
+		} else if (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)\]/', $message, $matches)) {
+			$this->CurPre['source']   = '#a.b.moovee';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.moovee');
+			$this->CurPre['category'] = 'Movies';
+			$this->siftMatches($matches);
 		}
 	}
 
@@ -513,7 +582,7 @@ class IRCScraper
 		//Thank You [*Anonymous*] Request Filled! ReqId:[183520] [FULL 19x50MB Louis.Therouxs.LA.Stories.S01E02.720p.HDTV.x264-FTP] Requested by:[*Anonymous* 53s ago] Comments:[0] Watchers:[0] Points Earned:[64] [Pred 3m 45s ago]
 		if (preg_match('/Request\s+Filled!\s+ReqId:\[(?P<reqid>\d+)\]\s+\[FULL\s+(?P<files>\d+x\d+[KMGPT]?B)\s+(?P<title>.+?)\].+?\[Pred\s+(?P<predago>.+?)\s+ago\]/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.teevee';
-			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.teevee');
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.teevee');
 			$this->CurPre['category'] = 'TV';
 			$this->siftMatches($matches);
 
@@ -521,7 +590,7 @@ class IRCScraper
 		//[UNNUKE] ReqId:[183449] [The.Biggest.Loser.AU.S09E29.PDTV.x264-RTA] Reason:[get.samplefix]
 		} else if (preg_match('/\[(?P<nuke>(MOD|OLD|RE|UN)?NUKE)\]\s+ReqId:\[(?P<reqid>\d+)\]\s+\[(?P<title>.+?)\]\s+Reason:\[(?P<reason>.+?)\]/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.teevee';
-			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.teevee');
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.teevee');
 			$this->CurPre['category'] = 'TV';
 			$this->siftMatches($matches);
 		}
@@ -537,8 +606,76 @@ class IRCScraper
 		//[Anonymous person filling request for: FULL 56 Ragnarok.Odyssey.ACE.PS3-iMARS NTSC BLURAY imars-ragodyace-ps3 56x100MB by Khaine13 on 2014-03-29 13:14:12][ReqID: 4888][You get a bonus of 6 for a total points earning of: 62 for filling with 10% par2s!][Your score will be adjusted once you have -filled 4888]
 		if (preg_match('/\s+FULL\s+\d+\s+(?P<title>.+?)\s+(?P<files>\d+x\d+[KMGTP]?B)\s+.+?\]\[ReqID:\s+(?P<reqid>\d+)\]\[/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.console.ps3';
-			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.console.ps3');
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.console.ps3');
 			$this->CurPre['category'] = 'PS3';
+			$this->siftMatches($matches);
+		}
+	}
+
+	/**
+	 * Gets new PRE from #a.b.games.wii
+	 *
+	 * @param string $message The IRC message to parse.
+	 * @param string $poster  The name of the poster.
+	 */
+	protected function ab_games_wii(&$message, &$poster)
+	{
+		//A new NZB has been added: Go_Diego_Go_Great_Dinosaur_Rescue_PAL_WII-ZER0 PAL DVD5 zer0-gdggdr 93x50MB - To download this file: -sendnzb 12811
+		if ($poster === 'googlebot' && preg_match('/A\s+new\s+NZB\s+has\s+been\s+added:\s+(?P<title>.+?)\s+.+?(?P<files>\d+x\d+[KMGTP]?B)\s+-\s+To.+?file:\s+-sendnzb\s+(?P<reqid>\d+)\s*/i', $message, $matches)) {
+			$matches['nuke']          = 'NUKE';
+			$this->CurPre['source']   = '#a.b.games.wii';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.games.wii');
+			$this->CurPre['category'] = 'WII';
+			$this->siftMatches($matches);
+
+		//[kiczek added reason info for: Samurai_Shodown_IV_-_Amakusas_Revenge_USA_VC_NEOGEO_Wii-OneUp][VCID: 5027][Value: bad.dirname_bad.filenames_get.repack]
+		} else if ($poster === 'binarybot' && preg_match('/added\s+(nuke|reason)\s+info\s+for:\s+(?P<title>.+?)\]\[VCID:\s+(?P<reqid>\d+)\]\[Value:\s+(?P<reason>.+?)\]/i', $message, $matches)) {
+			$matches['nuke']          = 'NUKE';
+			$this->CurPre['source']   = '#a.b.games.wii';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.games.wii');
+			$this->CurPre['category'] = 'WII';
+			$this->siftMatches($matches);
+		}
+	}
+
+	/**
+	 * Gets new PRE from #a.b.games.xbox360
+	 *
+	 * @param string $message The IRC message to parse.
+	 * @param string $poster  The name of the poster.
+	 */
+	protected function ab_games_xbox360(&$message, &$poster)
+	{
+		//A new NZB has been added: South.Park.The.Stick.of.Truth.PAL.XBOX360-COMPLEX PAL DVD9 complex-south.park.sot 74x100MB - To download this file: -sendnzb 19909
+		if ($poster === 'googlebot' && preg_match('/A\s+new\s+NZB\s+has\s+been\s+added:\s+(?P<title>.+?)\s+.+?(?P<files>\d+x\d+[KMGTP]?B)\s+-\s+To.+?file:\s+-sendnzb\s+(?P<reqid>\d+)\s*/i', $message, $matches)) {
+			$matches['nuke']          = 'NUKE';
+			$this->CurPre['source']   = '#a.b.games.xbox360';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.games.xbox360');
+			$this->CurPre['category'] = 'XBOX360';
+			$this->siftMatches($matches);
+
+		//[egres added nuke info for: Injustice.Gods.Among.Us.XBOX360-SWAG][GameID: 7088][Value: Y]
+		} else if ($poster === 'binarybot' && preg_match('/added\s+(nuke|reason)\s+info\s+for:\s+(?P<title>.+?)\]\[VCID:\s+(?P<reqid>\d+)\]\[Value:\s+(?P<reason>.+?)\]/i', $message, $matches)) {
+			$matches['nuke']          = 'NUKE';
+			$this->CurPre['source']   = '#a.b.games.xbox360';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.games.xbox360');
+			$this->CurPre['category'] = 'XBOX360';
+			$this->siftMatches($matches);
+		}
+	}
+
+	/**
+	 * Gets new PRE from #a.b.sony.psp
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function ab_sony_psp(&$message)
+	{
+		//A NZB is available: Satomi_Hakkenden_Hachitama_no_Ki_JPN_PSP-MOEMOE JAP UMD moe-satomi 69x20MB - To download this file: -sendnzb 21924
+		if (preg_match('/A NZB is available:\s(?P<title>.+?)\s+.+?(?P<files>\d+x\d+[KMGPT]?B)\s+-.+?file:\s+-sendnzb\s+(?P<reqid>\d+)\s*/i', $message, $matches)) {
+			$this->CurPre['source']   = '#a.b.sony.psp';
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.sony.psp');
+			$this->CurPre['category'] = 'PSP';
 			$this->siftMatches($matches);
 		}
 	}
@@ -551,10 +688,42 @@ class IRCScraper
 	protected function ab_games_nintendods(&$message)
 	{
 		//NEW [NDS] PRE: Honda_ATV_Fever_USA_NDS-EXiMiUS
-		if (preg_match('/NEW\s+\[NDS\]\s+PRE:\s+(?P<title>.+?)/i', $message, $matches)) {
+		if (preg_match('/NEW\s+\[NDS\]\s+PRE:\s+(?P<title>.+)/i', $message, $matches)) {
 			$this->CurPre['source']   = '#a.b.games.nintendods';
-			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.games.nintendods');
+			$this->CurPre['groupid']  = $this->getGroupID('alt.binaries.games.nintendods');
 			$this->CurPre['category'] = 'NDS';
+			$this->siftMatches($matches);
+		}
+	}
+
+	/**
+	 * Gets new PRE from #scnzb (boneless)
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function scnzb(&$message)
+	{
+		//[Complete][512754] Formula1.2014.Malaysian.Grand.Prix.Team.Principals.Press.Conference.720p.HDTV.x264-W4F  NZB: http://scnzb.eu/1pgOmwj
+		if (preg_match('/\[Complete\]\[(?P<reqid>\d+)\]\s+(?P<title>.+?)\s+NZB:/i', $message, $matches)) {
+			$this->CurPre['source']  = '#scnzb';
+			$this->CurPre['groupid'] = $this->getGroupID('alt.binaries.boneless');
+			$this->siftMatches($matches);
+		}
+	}
+
+	/**
+	 * Gets new PRE from #tvnzb (sickbeard)
+	 *
+	 * @param string $message The IRC message to parse.
+	 */
+	protected function tvnzb(&$message)
+	{
+		//[SBINDEX] Rev.S03E02.HDTV.x264-TLA :: TV > HD :: 210.13 MB :: Aired: 31/Mar/2014 :: http://lolo.sickbeard.com/getnzb/aa10bcef235c604612dd61b0627ae25f.nzb
+		if (preg_match('/\[SBINDEX\]\s+(?P<title>.+?)\s+::\s+(?P<sbcat>.+?)\s+::\s+(?P<size>.+?)\s+::\s+Aired/i', $message, $matches)) {
+			if (preg_match('/^(?P<first>.+?)\s+>\s+(?P<last>.+?)$/', $matches['sbcat'], $match)) {
+				$matches['category'] = $match['first'] . '-' . $match['last'];
+			}
+			$this->CurPre['source'] = '#tvnzb';
 			$this->siftMatches($matches);
 		}
 	}
@@ -638,7 +807,7 @@ class IRCScraper
 	 */
 	protected function checkForDupe()
 	{
-		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $this->CurPre['md5']));
+		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT category, size FROM predb WHERE md5 = %s', $this->CurPre['md5']));
 		if ($this->OldPre === false) {
 			$this->insertNewPre();
 		} else {
@@ -657,25 +826,28 @@ class IRCScraper
 
 		$query = 'INSERT INTO predb (';
 
-		$query .= (!empty($this->CurPre['size'])     ? 'size, '      : '');
-		$query .= (!empty($this->CurPre['category']) ? 'category, '  : '');
-		$query .= (!empty($this->CurPre['source'])   ? 'source, '    : '');
-		$query .= (!empty($this->CurPre['reason'])   ? 'reason, '    : '');
-		$query .= (!empty($this->CurPre['files'])    ? 'files, '     : '');
-		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid, ' : '');
-		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid, '   : '');
-		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked, '     : '');
+		$query .= (!empty($this->CurPre['size'])     ? 'size, '       : '');
+		$query .= (!empty($this->CurPre['category']) ? 'category, '   : '');
+		$query .= (!empty($this->CurPre['source'])   ? 'source, '     : '');
+		$query .= (!empty($this->CurPre['reason'])   ? 'nukereason, ' : '');
+		$query .= (!empty($this->CurPre['files'])    ? 'files, '      : '');
+		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid, '  : '');
+		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid, '    : '');
+		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked, '      : '');
 
-		$query .= 'predate, md5, title, adddate) VALUES (';
+		$query .= 'predate, md5, title) VALUES (';
 
 		$query .= (!empty($this->CurPre['size'])     ? $this->db->escapeString($this->CurPre['size'])     . ', '   : '');
 		$query .= (!empty($this->CurPre['category']) ? $this->db->escapeString($this->CurPre['category']) . ', '   : '');
 		$query .= (!empty($this->CurPre['source'])   ? $this->db->escapeString($this->CurPre['source'])   . ', '   : '');
+		$query .= (!empty($this->CurPre['reason'])   ? $this->db->escapeString($this->CurPre['reason'])   . ', '   : '');
+		$query .= (!empty($this->CurPre['files'])    ? $this->db->escapeString($this->CurPre['files'])    . ', '   : '');
 		$query .= (!empty($this->CurPre['reqid'])    ? $this->CurPre['reqid']                             . ', '   : '');
 		$query .= (!empty($this->CurPre['groupid'])  ? $this->CurPre['groupid']                           . ', '   : '');
+		$query .= (!empty($this->CurPre['nuked'])    ? $this->CurPre['nuked']                             . ', '   : '');
 		$query .= (!empty($this->CurPre['predate'])  ? $this->CurPre['predate']                           . ', '   : 'NOW(), ');
 
-		$query .= '%s, %s, NOW())';
+		$query .= '%s, %s)';
 
 		$this->db->queryExec(
 			sprintf(
@@ -709,13 +881,17 @@ class IRCScraper
 		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid = '    . $this->CurPre['groupid']                         . ', ' : '');
 		$query .= (!empty($this->CurPre['predate'])  ? 'predate = '    . $this->CurPre['predate']                         . ', ' : '');
 		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked = '      . $this->CurPre['nuked']                           . ', ' : '');
-		$query .= (empty($this->OldPre['category']) && !empty($this->CurPre['category']) ? 'category = '  . $this->db->escapeString($this->CurPre['category']) . ', ' : '');
+		$query .= (
+			(empty($this->OldPre['category']) && !empty($this->CurPre['category']))
+				? 'category = ' . $this->db->escapeString($this->CurPre['category']) . ', '
+				: ''
+		);
 
 		if ($query === 'UPDATE predb SET '){
 			return;
 		}
 
-		$query .= 'title = ' . $this->db->escapeString($this->CurPre['title']);
+		$query .= 'title = '      . $this->db->escapeString($this->CurPre['title']);
 		$query .= ' WHERE md5 = ' . $this->CurPre['md5'];
 
 		$this->db->queryExec($query);
@@ -755,7 +931,7 @@ class IRCScraper
 					default:
 						break;
 				}
-				$nukeString .= ' [' . $this->CurPre['reason'] . '] ';
+				$nukeString .= '[' . $this->CurPre['reason'] . '] ';
 			}
 
 			echo
@@ -764,11 +940,18 @@ class IRCScraper
 				($new ? '] [ Added Pre ] [' : '] [Updated Pre] [') .
 				$this->CurPre['source'] .
 				'] ' .
-				($nukeString === '' ? '' : $nukeString) .
+				 $nukeString .
 				'[' .
 				$this->CurPre['title'] .
 				']' .
-				(!empty($this->CurPre['category']) ? ' [' . $this->CurPre['category'] . ']' : '') .
+				(!empty($this->CurPre['category'])
+					? ' [' . $this->CurPre['category'] . ']'
+					: (!empty($this->OldPre['category'])
+						? ' [' . $this->OldPre['category'] . ']'
+						: ''
+					)
+				) .
+				(!empty($this->CurPre['size']) ? ' [' . $this->CurPre['size'] . ']' : '') .
 				PHP_EOL;
 		}
 	}
@@ -783,7 +966,8 @@ class IRCScraper
 	protected function getGroupID($groupName)
 	{
 		if (!isset($this->groupList[$groupName])) {
-			$this->groupList[$groupName] = $this->groups->getIDByName($groupName);
+			$group = $this->db->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $this->db->escapeString($groupName)));
+			$this->groupList[$groupName] = $group['id'];
 		}
 		return $this->groupList[$groupName];
 	}

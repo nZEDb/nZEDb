@@ -437,7 +437,6 @@ CREATE TABLE "predb" (
   "size" character varying(50),
   "category" character varying(255),
   "predate" timestamp without time zone,
-  "adddate" timestamp without time zone,
   "source" character varying(50) DEFAULT ''::character varying NOT NULL,
   "md5" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "requestid" integer DEFAULT 0 NOT NULL,
@@ -1006,8 +1005,6 @@ DROP INDEX IF EXISTS "predb_nfo" CASCADE;
 CREATE INDEX "predb_nfo" ON "predb" ("nfo");
 DROP INDEX IF EXISTS "predb_predate" CASCADE;
 CREATE INDEX "predb_predate" ON "predb" ("predate");
-DROP INDEX IF EXISTS "predb_adddate" CASCADE;
-CREATE INDEX "predb_adddate" ON "predb" ("adddate");
 DROP INDEX IF EXISTS "predb_source" CASCADE;
 CREATE INDEX "predb_source" ON "predb" ("source");
 DROP INDEX IF EXISTS "predb_requestid" CASCADE;

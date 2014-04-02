@@ -32,9 +32,7 @@
 function smarty_modifier_fsize_format($size,$format = '',$precision = 2, $dec_point = ".", $thousands_sep = ",")
 {
 	$format = strtoupper($format);
-
 	static $sizes = array();
-
 	if(!count($sizes)) {
 		$b = 1024;
 		$sizes["B"]        =    1;
@@ -46,10 +44,8 @@ function smarty_modifier_fsize_format($size,$format = '',$precision = 2, $dec_po
 		$sizes["EB"]    =    $sizes["PB"] * $b;
 		$sizes["ZB"]    =    $sizes["EB"] * $b;
 		$sizes["YB"]    =    $sizes["ZB"] * $b;
-
 		$sizes = array_reverse($sizes,true);
 	}
-
 	//~ get "human" filesize
 	foreach($sizes    AS    $unit => $bytes) {
 		if($size > $bytes || $unit == $format) {

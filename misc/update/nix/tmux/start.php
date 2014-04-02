@@ -186,12 +186,14 @@ function window_proxy($tmux_session, $window)
 	$s = new Sites();
 	$site = $s->get();
 	$nntpproxy = $site->nntpproxy;
+	$enabled = false;
 	if ($nntpproxy === '1') {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy.conf")) {
 			$nntpproxyconf = $DIR . "update/python/lib/nntpproxy.conf";
 			exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
+			$enabled = true;
 		}
 	}
 
@@ -202,6 +204,11 @@ function window_proxy($tmux_session, $window)
 			$nntpproxyconf = $DIR . "update/python/lib/nntpproxy_a.conf";
 			exec("tmux selectp -t 0; tmux splitw -t $tmux_session:$window -h -p 50 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
+	}
+	if ($enabled) {
+		return $window;
+	} else {
+		return $window -1;
 	}
 }
 
@@ -299,8 +306,8 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	window_proxy($tmux_session, 3);
-	window_ircscraper($tmux_session, 4);
+	$proxy = window_proxy($tmux_session, 3);
+	window_ircscraper($tmux_session, $proxy + 1);
 	if ($colors == 1) {
 		window_colors($tmux_session);
 	}
@@ -316,8 +323,8 @@ if ($seq == 1) {
 	}
 
 	window_stripped_utilities($tmux_session);
-	window_proxy($tmux_session, 2);
-	window_ircscraper($tmux_session, 3);
+	$proxy = window_proxy($tmux_session, 2);
+	window_ircscraper($tmux_session, $proxy +1);
 	if ($colors == 1) {
 		window_colors($tmux_session);
 	}
@@ -336,8 +343,8 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	window_proxy($tmux_session, 3);
-	window_ircscraper($tmux_session, 4);
+	$proxy = window_proxy($tmux_session, 3);
+	window_ircscraper($tmux_session, $proxy +1);
 
 	if ($colors == 1) {
 		window_colors($tmux_session);

@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Config Load Class
  *
@@ -38,7 +37,6 @@ class Smarty_Internal_Compile_Config_Load extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $optional_attributes = array('section', 'scope');
-
     /**
      * Compiles code for the {config_load} tag
      *
@@ -51,11 +49,9 @@ class Smarty_Internal_Compile_Config_Load extends Smarty_Internal_CompileBase
         static $_is_legal_scope = array('local' => true,'parent' => true,'root' => true,'global' => true);
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-
         if ($_attr['nocache'] === true) {
             $compiler->trigger_template_error('nocache option not allowed', $compiler->lex->taglineno);
         }
-
         // save posible attributes
         $conf_file = $_attr['file'];
         if (isset($_attr['section'])) {
@@ -76,8 +72,6 @@ class Smarty_Internal_Compile_Config_Load extends Smarty_Internal_CompileBase
         // create config object
         $_output = "<?php  \$_config = new Smarty_Internal_Config($conf_file, \$_smarty_tpl->smarty, \$_smarty_tpl);";
         $_output .= "\$_config->loadConfigVars($section, '$scope'); ?>";
-
         return $_output;
     }
-
 }

@@ -6,7 +6,32 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-01 bart39
+	* Fix: remove addate from predb update
+	* Fix: typo in schema
+2014-04-01 ruhllatio
+	* Chg: populate_tvrage and updateTvRage for tmux usage
+	* Add: duplicate checks for populate_tvrage so it can be run at interval without error
+	* Fix: trailing whitespace
+	* Chg: update merged changelog
+2014-04-01 kev
+	* Chg: Remove adddate from predate (WARNING POTENTIALLY LONG PATCH, PLEASE BE PATIENT).
+	* Chg: Revamp PreDB pages.
+	* Add: Constants to disable pre sources #1244.
+	* Fix: Don't reset the requestid even if we already have it. PreDb.php
+	* Upd: Update smarty from 3.1 beta to 3.1.17 stable.
+	* Add: Smarty filter to speed up page loading.
+	* Add: Full dates on hover alpha theme PreDB page.
+	* Add: Parse size from files IRCScraper, clickable IRC links for tvnzb and scnzb PreDB templates.
+	* Fix: Get the groupid before storing in array IRCScraper.
+	* Fix: Escaping groupname in IRCScraper.
+	* Chg: Use DB directly instead of going through groups (saves some resources) IRCScraper.
+	* Fix: Future dates on predate in PreDb.php
+	* Chg: Show old category if new category is not set on Console output. IRCScraper.
+	* Fix: Always empty category on old select IRCScraper.
+	* Fix: Regex for tvnzb in IRCScraper.
 2014-03-31 bart39
+	* Fix: Fix tmux pane for IRCscraper if nntpproxy not used
 	* New: Add IRCScraper window to tmux - enable corrupt/zenet and/or efnet.
 2014-03-31 ruhllatio
 	* Add Full-text stopword table for InnoDB 5.6+ users -- this will make InnoDB FT search perform nearly identicallly
@@ -16,6 +41,15 @@ Each update goes to the top of the file
 	* Fix: insert errors in Binaries.php
 	* Fix: typo in PreDb
 2014-03-31 kevin
+	* Add: PRE of parsing of #alt.binaries.games.wii, #alt.binaries.games.xbox360, #scnzb, #tvnzb
+	* Add: Nuke parsing of #alt.binaries.games.wii, #alt.binaries.games.xbox360
+	* Add: NUKE/UNNUKE/MODNUKE/etc parsing on a.b.moove
+	* Add: Clickable IRC links on the predb page.
+	* Chg: Remove nuked/unnuked icons, change for colored text, fixes width issues.
+	* Add: Parse more nukes in a.b.erotica. IRCScrapper.
+	* Add: Files/nuked to ajax(the icon with PRE info on releases).
+	* Add: Files/nuked to predb page.
+	* Fix: Insert query in IRCScrapper.
 	* Add: Parsing #alt.binaries.games.nintendods to IRCScraper.
 	* Add: Nuke reason to console output in IRCScrapper.
 	* Fix: credits to DariusIII ; Typos in IRCScrapper

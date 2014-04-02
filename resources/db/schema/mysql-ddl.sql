@@ -226,7 +226,6 @@ CREATE TABLE predb (
 	size VARCHAR(50) NULL,
 	category VARCHAR(255) NULL,
 	predate DATETIME DEFAULT NULL,
-	adddate DATETIME DEFAULT NULL,
 	source VARCHAR(50) NOT NULL DEFAULT '',
 	md5 VARCHAR(255) NOT NULL DEFAULT '0',
 	requestid INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -243,7 +242,6 @@ CREATE TABLE predb (
 CREATE INDEX ix_predb_title ON predb (title);
 CREATE INDEX ix_predb_nfo ON predb (nfo);
 CREATE INDEX ix_predb_predate ON predb (predate);
-CREATE INDEX ix_predb_adddate ON predb (adddate);
 CREATE INDEX ix_predb_source ON predb (source);
 CREATE INDEX ix_predb_requestid on predb (requestid, groupid);
 CREATE UNIQUE INDEX ix_predb_md5 ON predb (md5);
@@ -775,7 +773,7 @@ CREATE TABLE countries (
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE INDEX ix_country_name ON country (name);
+CREATE INDEX ix_countries_name ON countries (name);
 
 
 DELIMITER $$

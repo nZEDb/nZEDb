@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Insert Class
  *
@@ -45,8 +44,6 @@ class Smarty_Internal_Nocache_Insert
         while ($_tpl->parent instanceof Smarty_Internal_Template) {
             $_tpl = $_tpl->parent;
         }
-
         return "/*%%SmartyNocache:{$_tpl->properties['nocache_hash']}%%*/" . $_output . "/*/%%SmartyNocache:{$_tpl->properties['nocache_hash']}%%*/";
     }
-
 }

@@ -223,6 +223,7 @@ class BasePage
 
 	public function render()
 	{
+		$this->smarty->loadFilter('output', 'trimwhitespace');
 		$this->smarty->display($this->page_template);
 	}
 }

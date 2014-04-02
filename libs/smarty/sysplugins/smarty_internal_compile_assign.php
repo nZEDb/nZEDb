@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Assign Class
  *
@@ -80,8 +79,6 @@ class Smarty_Internal_Compile_Assign extends Smarty_Internal_CompileBase
             $output .= "\nSmarty::\$global_tpl_vars[$_attr[var]] = clone \$_smarty_tpl->tpl_vars[$_attr[var]];";
         }
         $output .= '?>';
-
         return $output;
     }
-
 }

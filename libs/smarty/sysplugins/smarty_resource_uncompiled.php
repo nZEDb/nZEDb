@@ -6,7 +6,6 @@
  * @subpackage TemplateResources
  * @author Rodney Rehm
  */
-
 /**
  * Smarty Resource Plugin
  *
@@ -25,7 +24,6 @@ abstract class Smarty_Resource_Uncompiled extends Smarty_Resource
      * @throws SmartyException          on failure
      */
     abstract public function renderUncompiled(Smarty_Template_Source $source, Smarty_Internal_Template $_template);
-
     /**
      * populate compiled object with compiled filepath
      *
@@ -38,5 +36,4 @@ abstract class Smarty_Resource_Uncompiled extends Smarty_Resource
         $compiled->timestamp = false;
         $compiled->exists = false;
     }
-
 }
