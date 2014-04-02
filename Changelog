@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-01 bart39
+	* Fix: remove addate from predb update
 	* Fix: typo in schema
 2014-04-01 ruhllatio
 	* Chg: populate_tvrage and updateTvRage for tmux usage
@@ -14,7 +15,6 @@ Each update goes to the top of the file
 	* Fix: trailing whitespace
 	* Chg: update merged changelog
 2014-04-01 kev
-	* Chg: Make all outside links open in new tab on predb page.
 	* Chg: Remove adddate from predate (WARNING POTENTIALLY LONG PATCH, PLEASE BE PATIENT).
 	* Chg: Revamp PreDB pages.
 	* Add: Constants to disable pre sources #1244.

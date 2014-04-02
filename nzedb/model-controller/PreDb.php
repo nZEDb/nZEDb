@@ -243,7 +243,7 @@ Class PreDb
 									sprintf('
 										UPDATE predb SET
 											nfo = %s, size = %s, category = %s, predate = %s,
-											adddate = NOW(), source = %s
+											source = %s
 										WHERE id = %d',
 										$nfo, $size, $category, $time, $source, $oldName['id']
 									)
