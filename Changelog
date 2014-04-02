@@ -14,6 +14,7 @@ Each update goes to the top of the file
 	* Fix: trailing whitespace
 	* Chg: update merged changelog
 2014-04-01 kev
+	* Chg: Make all outside links open in new tab on predb page.
 	* Chg: Remove adddate from predate (WARNING POTENTIALLY LONG PATCH, PLEASE BE PATIENT).
 	* Chg: Revamp PreDB pages.
 	* Add: Constants to disable pre sources #1244.
