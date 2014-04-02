@@ -20,7 +20,6 @@
  */
 namespace nzedb\db;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
 class DbUpdate
 {
