@@ -99,15 +99,18 @@ if ($page->isPostBack()) {
 
 		// Connect to the SQL server.
 		try {
-			$pdo = new DB(array(
-							  'dbhost' => $cfg->DB_HOST,
-							  'dbname' => ($cfg->DB_SYSTEM === 'pgsql') ? $cfg->DB_NAME : '',
-							  'dbpass' => $cfg->DB_PASSWORD,
-							  'dbport' => $cfg->DB_PORT,
-							  'dbsock' => $cfg->DB_SOCKET,
-							  'dbtype' => $cfg->DB_SYSTEM,
-							  'dbuser' => $cfg->DB_USER,
-						  )
+			$pdo = new DB(
+				array(
+					'checkVersion' => true,
+					'createDb'     => true,
+					'dbhost'       => $cfg->DB_HOST,
+					'dbname'       => $cfg->DB_NAME,
+					'dbpass'       => $cfg->DB_PASSWORD,
+					'dbport'       => $cfg->DB_PORT,
+					'dbsock'       => $cfg->DB_SOCKET,
+					'dbtype'       => $cfg->DB_SYSTEM,
+					'dbuser'       => $cfg->DB_USER,
+				)
 			);
 			//$pdo = new PDO($pdoString, $cfg->DB_USER, $cfg->DB_PASSWORD);
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -116,38 +119,31 @@ if ($page->isPostBack()) {
 			$cfg->emessage = 'Unable to connect to the SQL server.';
 			$cfg->error = true;
 			$cfg->dbConnCheck = false;
+		} catch (\RuntimeException $e) {
+			switch ($e->getCode()) {
+				case 1:
+				case 2:
+				case 3:
+					$cfg->error    = true;
+					$cfg->emessage = $e->getMessage();
+					break;
+				default:
+					var_dump($e);
+					throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+			}
 		}
 
 		// Check if the MySQL or PgSQL versions are correct.
-		$vQuery = ($cfg->DB_SYSTEM === 'mysql' ? "SHOW VARIABLES WHERE Variable_name = 'version'" : 'SELECT version()');
 		$goodVersion = false;
-		try {
-			$version = $pdo->query($vQuery);
-			if ($version === false) {
-				$cfg->error = true;
+		if (!$cfg->error) {
+			$minVersion = ($cfg->DB_SYSTEM === 'mysql') ? $minMySQLVersion : $minPgSQLVersion;
+			try {
+				$goodVersion = $pdo->isDbVersionAtLeast($minVersion);
+			} catch (PDOException $e) {
+				$goodVersion   = false;
+				$cfg->error    = true;
 				$cfg->emessage = 'Could not get version from SQL server.';
-			} else {
-				foreach ($version as $row) {
-					if ($cfg->DB_SYSTEM === 'mysql' && isset($row['value'])) {
-						if (preg_match('/^(5\.\d)/', $row['value'], $match)) {
-							if ((float)$match[1] >= $minMySQLVersion) {
-								$goodVersion = true;
-								break;
-							}
-						}
-					} elseif ($cfg->DB_SYSTEM === 'pgsql' && isset($row['version'])) {
-						if (preg_match('/PostgreSQL (\d\.\d)/i', $row['version'], $match)) {
-							if ((float)$match[1] >= $minPgSQLVersion) {
-								$goodVersion = true;
-								break;
-							}
-						}
-					}
-				}
 			}
-		} catch (PDOException $e) {
-			$cfg->error = true;
-			$cfg->emessage = 'Could not get version from SQL server.';
 		}
 
 		if ($goodVersion === false) {
@@ -160,67 +156,14 @@ if ($page->isPostBack()) {
 		}
 	}
 
-	$cfg->dbNameCheck = true;
-	// Check if the database exists for PgSQL.
-	if (!$cfg->error && $cfg->DB_SYSTEM === "pgsql") {
-		if (databaseCheck($cfg->DB_NAME, $cfg->DB_SYSTEM, $pdo) === false) {
-			$cfg->dbNameCheck = false;
-			$cfg->error = true;
-			$cfg->emessage =
-				'Could not find your database called : ' .
-				$cfg->DB_NAME .
-				', please see Install.txt for instructions to create a database.'
-			;
-		}
-	}
-
-	// Check if database exists for MySQL, drop it if so.
-	if (!$cfg->error && $cfg->DB_SYSTEM === "mysql") {
-		// Check if it exists.
-		if (databaseCheck($cfg->DB_NAME, $cfg->DB_SYSTEM, $pdo) === false) {
-			$cfg->dbNameCheck = false;
-		}
-
-		// It exists so drop it.
-		if ($cfg->dbNameCheck === true) {
-			try {
-				$pdo->query("DROP DATABASE " . $cfg->DB_NAME);
-				if (databaseCheck($cfg->DB_NAME, $cfg->DB_SYSTEM, $pdo) === true) {
-					$cfg->error = true;
-					$cfg->emessage = 'Could not drop your old database.';
-				} else {
-					$cfg->dbNameCheck = false;
-				}
-			} catch (PDOException $e) {
-				$cfg->error = true;
-				$cfg->emessage = 'Could not drop your old database.';
-			}
-		}
-
-		// Try to create the database.
-		if (!$cfg->error && $cfg->dbNameCheck === false) {
-			try {
-				$pdo->query("CREATE DATABASE " . $cfg->DB_NAME . " DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
-				if (databaseCheck($cfg->DB_NAME, $cfg->DB_SYSTEM, $pdo) === false) {
-					$cfg->error = true;
-					$cfg->emessage = 'Could not create the new database.';
-				} else {
-					$cfg->dbNameCheck = true;
-				}
-			} catch (PDOException $e) {
-				$cfg->error = true;
-				$cfg->emessage = 'Could not create the new database.';
-			}
-		}
-	}
-
 	// Start inserting data into the DB.
 	if (!$cfg->error) {
 		$cfg->setSession();
 
 		$DbSetup = new \nzedb\db\DbUpdate(
 			array(
-				'backup' => false
+				'backup' => false,
+				'db'     => $pdo,
 			)
 		);
 
