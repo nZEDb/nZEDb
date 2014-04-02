@@ -164,9 +164,10 @@ Class PreDb
 			if ($this->echooutput) {
 				echo $this->c->primary($newNames . " \tRetrieved from all the above sources..");
 			}
+
+			// If we found nothing, update the last added to now to reset the timer.
+			$this->db->queryExec(sprintf("UPDATE site SET value = %s WHERE setting = 'lastpretime'", $this->db->escapeString(time())));
 		}
-		// If we found nothing, update the last added to now to reset the timer.
-		$this->db->queryExec(sprintf("UPDATE site SET value = %s WHERE setting = 'lastpretime'", $this->db->escapeString(time())));
 
 		return $newNames;
 	}
