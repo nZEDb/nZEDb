@@ -19,7 +19,7 @@ class DB extends PDO
 	/**
 	 * @var object Instance of ConsoleTools class.
 	 */
-	public $consoletools;
+	public $ct;
 
 	/**
 	 * @var string Lower-cased name of DBMS in use.
@@ -32,9 +32,24 @@ class DB extends PDO
 	public $memcached;
 
 	/**
+	 * @var bool Is this a Command Line Interface instance.
+	 */
+	protected $_cli;
+
+	/**
+	 * @var bool
+	 */
+	protected $_debug;
+
+	/**
 	 * @var object Instance of PDO class.
 	 */
 	private static $pdo = null;
+
+	/**
+	 * @var string Version of the Db server.
+	 */
+	private $dbVersion;
 
 	/**
 	 * @var object Class instance debugging.
@@ -42,43 +57,40 @@ class DB extends PDO
 	private $debugging;
 
 	/**
-	 * @var string Vversion of the Db server.
+	 * @var array    Options passed into the constructor or defaulted.
 	 */
-	private $dbVersion;
-
-	/**
-	 * @var bool
-	 */
-	protected $CLI;
-
-	/**
-	 * @var bool
-	 */
-	protected $debug;
+	private $opts;
 
 	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
 	 */
-	public function __construct($checkVersion = false)
+	public function __construct(array $options = array())
 	{
-		$this->c = new ColorCLI();
-		$this->debug = (nZEDb_DEBUG || nZEDb_LOGGING);
-		if ($this->debug) {
+		$defaults = array(
+			'checkVersion'	=> false,
+			'ct'			=> new ConsoleTools(),
+			'dbhost'		=> DB_HOST,
+			'dbname' 		=> DB_NAME,
+			'dbpass' 		=> DB_PASSWORD,
+			'dbport'		=> DB_PORT,
+			'dbsock'		=> DB_SOCKET,
+			'dbtype'		=> DB_SYSTEM,
+			'dbuser' 		=> DB_USER,
+			'logger'		=> new ColorCLI()
+
+		);
+		$this->opts = $options + $defaults;
+
+		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
+		if ($this->_debug) {
 			$this->debugging = new Debugging("DB");
 		}
 
-		$this->CLI = (strtolower(PHP_SAPI) === 'cli' ? true : false);
+		$this->_cli = \nzedb\utility\Utility::isCLI();
 
-		if (defined('DB_SYSTEM') && strlen(DB_SYSTEM) > 0) {
-			$this->dbSystem = strtolower(DB_SYSTEM);
-		} else {
-			$this->echoError(
-				"config.php is missing the DB_SYSTEM setting. Add the following in that file: define('DB_SYSTEM', 'mysql');",
-				'__construct',
-				1,
-				true
-			);
+		if (!empty($this->opts['dbtype'])) {
+			$this->dbSystem = strtolower($this->opts['dbtype']);
 		}
 
 		if (!(self::$pdo instanceof PDO)) {
@@ -90,9 +102,9 @@ class DB extends PDO
 		} else {
 			$this->memcached = false;
 		}
-		$this->consoletools = new ConsoleTools();
+		$this->ct = new ConsoleTools();
 
-		if ($checkVersion) {
+		if ($options['checkVersion']) {
 			$this->fetchDbVersion();
 		}
 
@@ -105,17 +117,25 @@ class DB extends PDO
 	private function initialiseDatabase()
 	{
 		if ($this->dbSystem === 'mysql') {
-			if (defined('DB_SOCKET') && DB_SOCKET != '') {
-				$dsn = $this->dbSystem . ':unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME;
+			if (!empty($this->opts['dbsock'])) {
+				$dsn = $this->dbSystem . ':unix_socket=' . $this->opts['dbsock'];
 			} else {
-				$dsn = $this->dbSystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
-				if (defined('DB_PORT')) {
-					$dsn .= ';port=' . DB_PORT;
+				$dsn = $this->dbSystem . ':host=' . $this->opts['dbhost'];
+				if (!empty($this->opts['dbport'])) {
+					$dsn .= ';port=' . $this->opts['dbport'];
 				}
+			}
+			// Allow Db name to be empty so that installing can get a Db connection to create it.
+			if (!empty($this->opts['dbname'])) {
+				$dsn .= ';dbname=' . $this->opts['dbname'];
 			}
 			$dsn .= ';charset=utf8';
 		} else {
-			$dsn = $this->dbSystem . ':host=' . DB_HOST . ';dbname=' . DB_NAME;
+			$dsn = $this->dbSystem . ':host=' . $this->opts['dbhost'];
+			if (!empty($this->opts['dbname'])) {
+				$dsn .= ';dbname=' . $this->opts['dbname'];
+			}
+			$dsn .= ';charset=utf8';
 		}
 
 		try {
@@ -125,7 +145,7 @@ class DB extends PDO
 				$options[PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
 			}
 
-			self::$pdo = new PDO($dsn, DB_USER, DB_PASSWORD, $options);
+			self::$pdo = new PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
 
 			// In case PDO is not set to produce exceptions (PHP's default behaviour).
 			if (self::$pdo === false) {
@@ -161,14 +181,14 @@ class DB extends PDO
 	 */
 	protected function echoError($error, $method, $severity, $exit = false)
 	{
-		if ($this->debug) {
+		if ($this->_debug) {
 			$this->debugging->start($method, $error, $severity);
 		}
 
 		echo (
-			($this->CLI
+			($this->_cli
 				?
-					$this->c->error($error) . PHP_EOL
+					$this->logger->error($error) . PHP_EOL
 				:
 					'<div class="error">' . $error . '</div>'
 			)
@@ -234,7 +254,7 @@ class DB extends PDO
 				$error = $result['message'];
 				if ($result['deadlock'] === true) {
 					$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping.(" . ($i-1) . ")", 'queryInsert', 4);
-					$this->consoletools->showsleep($i * ($i/2));
+					$this->ct->showsleep($i * ($i/2));
 					$i++;
 				} else {
 					break;
@@ -246,7 +266,7 @@ class DB extends PDO
 				return $result;
 			}
 		}
-		if ($this->debug) {
+		if ($this->_debug) {
 			$this->echoError($error, 'queryInsert', 4);
 			$this->debugging->start("queryInsert", $query, 6);
 		}
@@ -274,7 +294,7 @@ class DB extends PDO
 				$error = $result['message'];
 				if ($result['deadlock'] === true) {
 					$this->echoError("A Deadlock or lock wait timeout has occurred, sleeping.(" . ($i-1) . ")", 'queryExec', 4);
-					$this->consoletools->showsleep($i * ($i/2));
+					$this->ct->showsleep($i * ($i/2));
 					$i++;
 				} else {
 					break;
@@ -286,7 +306,7 @@ class DB extends PDO
 				return $result;
 			}
 		}
-		if ($this->debug) {
+		if ($this->_debug) {
 			$this->echoError($error, 'queryExec', 4);
 			$this->debugging->start("queryExec", $query, 6);
 		}
@@ -355,7 +375,7 @@ class DB extends PDO
 		} catch (PDOException $e) {
 			$this->echoError($e->getMessage(), 'Exec', 4);
 
-			if ($this->debug) {
+			if ($this->_debug) {
 				$this->debugging->start("Exec", $query, 6);
 			}
 			return false;
@@ -390,7 +410,7 @@ class DB extends PDO
 			} catch (Exception $er) {
 				$this->echoError($er->getMessage(), 'query', 4);
 
-				if ($this->debug) {
+				if ($this->_debug) {
 					$this->debugging->start("query", $query, 6);
 				}
 			}
@@ -525,8 +545,8 @@ class DB extends PDO
 				$tbls = rtrim(trim($tbls),',');
 				if ($admin === false) {
 					$message = 'Optimizing tables: ' . $tbls;
-					echo $this->c->primary($message);
-					if ($this->debug) {
+					echo $this->logger->primary($message);
+					if ($this->_debug) {
 						$this->debugging->start("optimise", $message, 5);
 					}
 				}
@@ -536,8 +556,8 @@ class DB extends PDO
 					if ($type === 'analyze') {
 						if ($admin === false) {
 							$message = 'Analyzing table: ' . $table['name'];
-							echo $this->c->primary($message);
-							if ($this->debug) {
+							echo $this->logger->primary($message);
+							if ($this->_debug) {
 								$this->debugging->start("optimise", $message, 5);
 							}
 						}
@@ -545,8 +565,8 @@ class DB extends PDO
 					} else {
 						if ($admin === false) {
 							$message = 'Optimizing table: ' . $table['name'];
-							echo $this->c->primary($message);
-							if ($this->debug) {
+							echo $this->logger->primary($message);
+							if ($this->_debug) {
 								$this->debugging->start("optimise", $message, 5);
 							}
 						}
@@ -567,7 +587,7 @@ class DB extends PDO
 				if ($admin === false) {
 					$message = 'Vacuuming table: ' . $table['name'] . ".\n";
 					echo $message;
-					if ($this->debug) {
+					if ($this->_debug) {
 						$this->debugging->start("optimise", $message, 5);
 					}
 				}
@@ -824,10 +844,10 @@ class DB extends PDO
 		try {
 			$PDOstatement = self::$pdo->prepare($query, $options);
 		} catch (PDOException $e) {
-			if ($this->debug) {
+			if ($this->_debug) {
 				$this->debugging->start("Prepare", $e->getMessage(), 5);
 			}
-			echo $this->c->error("\n" . $e->getMessage());
+			echo $this->logger->error("\n" . $e->getMessage());
 			$PDOstatement = false;
 		}
 		return $PDOstatement;
@@ -846,10 +866,10 @@ class DB extends PDO
 			try {
 				$result = self::$pdo->getAttribute($attribute);
 			} catch (PDOException $e) {
-				if ($this->debug) {
+				if ($this->_debug) {
 					$this->debugging->start("getAttribute", $e->getMessage(), 5);
 				}
-				echo $this->c->error("\n" . $e->getMessage());
+				echo $this->logger->error("\n" . $e->getMessage());
 				$result = false;
 			}
 			return $result;
@@ -904,10 +924,10 @@ class Mcached
 		if (extension_loaded('memcache')) {
 			$this->m = new Memcache();
 			if ($this->m->connect(MEMCACHE_HOST, MEMCACHE_PORT) == false) {
-				throw new Exception($this->c->error("\nUnable to connect to the memcached server."));
+				throw new Exception($this->logger->error("\nUnable to connect to the memcached server."));
 			}
 		} else {
-			throw new Exception($this->c->error("nExtension 'memcache' not loaded."));
+			throw new Exception($this->logger->error("nExtension 'memcache' not loaded."));
 		}
 
 		$this->expiry = MEMCACHE_EXPIRY;
