@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\utility;
+
 class ReleaseExtra
 {
 	function __construct()
@@ -92,7 +94,7 @@ class ReleaseExtra
 	public function addFromXml($releaseID, $xml)
 	{
 		$xmlObj = @simplexml_load_string($xml);
-		$arrXml = objectsIntoArray($xmlObj);
+		$arrXml = nzedb\utility\objectsIntoArray($xmlObj);
 		$containerformat = '';
 		$overallbitrate = '';
 

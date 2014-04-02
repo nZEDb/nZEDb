@@ -1,5 +1,6 @@
 <?php
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+
+use nzedb\utility;
 
 class SABnzbd
 {
@@ -61,51 +62,51 @@ class SABnzbd
 		$addToSabUrl = $this->url . 'api?mode=addurl&priority=' . $this->priority . '&apikey=' . $this->apikey;
 		$nzbUrl = $this->serverurl . 'getnzb/' . $guid . '&i=' . $this->uid . '&r=' . $this->rsstoken;
 		$addToSabUrl = $addToSabUrl . '&name=' . urlencode($nzbUrl);
-		return getUrl($addToSabUrl);
+		return nzedb\utility\getUrl($addToSabUrl);
 	}
 
 	public function getQueue()
 	{
 		$queueUrl = $this->url . "api?mode=qstatus&output=json&apikey=" . $this->apikey;
 		//$queueUrl = $this->url."api?mode=queue&start=START&limit=LIMIT&output=json&apikey=".$this->apikey;
-		return getUrl($queueUrl);
+		return nzedb\utility\getUrl($queueUrl);
 	}
 
 	public function getAdvQueue()
 	{
 		$queueUrl = $this->url . "api?mode=queue&start=START&limit=LIMIT&output=json&apikey=" . $this->apikey;
 		//$queueUrl = $this->url."api?mode=queue&start=START&limit=LIMIT&output=json&apikey=".$this->apikey;
-		return getUrl($queueUrl);
+		return nzedb\utility\getUrl($queueUrl);
 	}
 
 	public function delFromQueue($id)
 	{
 		$delUrl = $this->url . "api?mode=queue&name=delete&value=" . $id . "&apikey=" . $this->apikey;
-		return getUrl($delUrl);
+		return nzedb\utility\getUrl($delUrl);
 	}
 
 	public function pauseFromQueue($id)
 	{
 		$pauseUrl = $this->url . "api?mode=queue&name=pause&value=" . $id . "&apikey=" . $this->apikey;
-		return getUrl($pauseUrl);
+		return nzedb\utility\getUrl($pauseUrl);
 	}
 
 	public function resumeFromQueue($id)
 	{
 		$resumeUrl = $this->url . "api?mode=queue&name=resume&value=" . $id . "&apikey=" . $this->apikey;
-		return getUrl($resumeUrl);
+		return nzedb\utility\getUrl($resumeUrl);
 	}
 
 	public function pauseAll()
 	{
 		$pauseallUrl = $this->url . "api?mode=pause" . "&apikey=" . $this->apikey;
-		return getUrl($pauseallUrl);
+		return nzedb\utility\getUrl($pauseallUrl);
 	}
 
 	public function resumeAll()
 	{
 		$resumeallUrl = $this->url . "api?mode=resume" . "&apikey=" . $this->apikey;
-		return getUrl($resumeallUrl);
+		return nzedb\utility\getUrl($resumeallUrl);
 	}
 
 	public function checkCookie()

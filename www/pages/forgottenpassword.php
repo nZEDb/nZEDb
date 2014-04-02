@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\utility;
+
 if ($users->isLoggedIn()) {
 	$page->show404();
 }
@@ -30,7 +33,7 @@ switch($action)
 			$to = $ret["email"];
 			$subject = $page->site->title." Password Reset";
 			$contents = "Your password has been reset to ".$newpass;
-			sendEmail($to, $subject, $contents, $page->site->email);
+			nzedb\utility\sendEmail($to, $subject, $contents, $page->site->email);
 
 			$page->smarty->assign('confirmed', "true");
 
@@ -60,7 +63,7 @@ switch($action)
 				$subject = $page->site->title . " Forgotten Password Request";
 				$contents = "Someone has requested a password reset for this email address.<br>To reset the password use <a href=\"" . $page->serverurl . "forgottenpassword?action=reset&guid=$guid\">this link</a>\n";
 				$page->smarty->assign('sent', "true");
-				sendEmail($to, $subject, $contents, $page->site->email);
+				nzedb\utility\sendEmail($to, $subject, $contents, $page->site->email);
 				break;
 			}
 		}

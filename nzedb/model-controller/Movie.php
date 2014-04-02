@@ -1,7 +1,7 @@
 <?php
-
 require_once nZEDb_LIBS . 'TMDb.php';
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+
+use nzedb\utility;
 
 /**
  * Class Movie
@@ -641,7 +641,7 @@ class Movie
 
 		if ($this->imdburl === false) {
 			// i don't know how to use the language, but this is broken
-			//$url = getUrl("http://www.imdb.com/title/tt$imdbId/", $this->imdblanguage);
+			//$url = nzedb\utility\getUrl("http://www.imdb.com/title/tt$imdbId/", $this->imdblanguage);
 			$url = "http://www.imdb.com/title/tt$imdbId/";
 		} else {
 			$url = "http://akas.imdb.com/title/tt$imdbId/";
@@ -835,7 +835,7 @@ class Movie
 					} else {
 						$url = 'http://www.omdbapi.com/?t=' . str_replace(' ', '%20', $movienameonly) . '&r=json';
 					}
-					$omdbData = getUrl($url);
+					$omdbData = nzedb\utility\getUrl($url);
 					if ($omdbData !== false) {
 						$omdbid = json_decode($omdbData);
 
@@ -861,7 +861,7 @@ class Movie
 					// Check on search engines.
 					else if ($googleban == false && $googlelimit <= 40) {
 						$moviename1 = str_replace(' ', '+', $moviename);
-						$buffer = getUrl("https://www.google.com/search?hl=en&as_q=" . urlencode($moviename1) . "&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
+						$buffer = nzedb\utility\getUrl("https://www.google.com/search?hl=en&as_q=" . urlencode($moviename1) . "&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
 
 						// Make sure we got some data.
 						if ($buffer !== false && strlen($buffer)) {
@@ -870,7 +870,7 @@ class Movie
 								$imdbId = $this->domovieupdate($buffer, 'Google1', $arr['id']);
 								if ($imdbId === false) {
 									if (preg_match('/(?P<name>[\w+].+)(\+\(\d{4}\))/i', $moviename1, $result)) {
-										$buffer = getUrl("https://www.google.com/search?hl=en&as_q=" . urlencode($result["name"]) . "&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
+										$buffer = nzedb\utility\getUrl("https://www.google.com/search?hl=en&as_q=" . urlencode($result["name"]) . "&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
 
 										if ($buffer !== false && strlen($buffer)) {
 											$googlelimit++;
@@ -950,12 +950,12 @@ class Movie
 			$moviename = str_replace(' ', '+', $moviename);
 			if (preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))?/i', $moviename, $result)) {
 				if (isset($result["year"]) && !empty($result["year"])) {
-					$buffer = getUrl("http://www.bing.com/search?q=" . $result["name"] . urlencode($result["year"]) . "+" . urlencode("site:imdb.com") . "&qs=n&form=QBRE&pq=" . $result["name"] . urlencode($result["year"]) . "+" . urlencode("site:imdb.com") . "&sc=4-38&sp=-1&sk=");
+					$buffer = nzedb\utility\getUrl("http://www.bing.com/search?q=" . $result["name"] . urlencode($result["year"]) . "+" . urlencode("site:imdb.com") . "&qs=n&form=QBRE&pq=" . $result["name"] . urlencode($result["year"]) . "+" . urlencode("site:imdb.com") . "&sc=4-38&sp=-1&sk=");
 					if ($buffer !== false && strlen($buffer)) {
 						$this->binglimit++;
 						$imdbId = $this->domovieupdate($buffer, 'Bing1', $relID);
 						if ($imdbId === false) {
-							$buffer = getUrl("http://www.bing.com/search?q=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&qs=n&form=QBRE&pq=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&sc=4-38&sp=-1&sk=");
+							$buffer = nzedb\utility\getUrl("http://www.bing.com/search?q=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&qs=n&form=QBRE&pq=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&sc=4-38&sp=-1&sk=");
 							if ($buffer !== false && strlen($buffer)) {
 								$this->binglimit++;
 								$imdbId = $this->domovieupdate($buffer, 'Bing2', $relID);
@@ -975,7 +975,7 @@ class Movie
 						return false;
 					}
 				} else {
-					$buffer = getUrl("http://www.bing.com/search?q=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&qs=n&form=QBRE&pq=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&sc=4-38&sp=-1&sk=");
+					$buffer = nzedb\utility\getUrl("http://www.bing.com/search?q=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&qs=n&form=QBRE&pq=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&sc=4-38&sp=-1&sk=");
 					if ($buffer !== false && strlen($buffer)) {
 						$this->binglimit++;
 						$imdbId = $this->domovieupdate($buffer, 'Bing2', $relID);
@@ -1005,12 +1005,12 @@ class Movie
 			$moviename = str_replace(' ', '+', $moviename);
 			if (preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))?/i', $moviename, $result)) {
 				if (isset($result["year"]) && !empty($result["year"])) {
-					$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=" . $result["name"] . "+" . urlencode($result["year"]) . "&vs=imdb.com");
+					$buffer = nzedb\utility\getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=" . $result["name"] . "+" . urlencode($result["year"]) . "&vs=imdb.com");
 					if ($buffer !== false && strlen($buffer)) {
 						$this->yahoolimit++;
 						$imdbId = $this->domovieupdate($buffer, 'Yahoo1', $relID);
 						if ($imdbId === false) {
-							$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=" . $result["name"] . "&vs=imdb.com");
+							$buffer = nzedb\utility\getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=" . $result["name"] . "&vs=imdb.com");
 							if ($buffer !== false && strlen($buffer)) {
 								$this->yahoolimit++;
 								$imdbId = $this->domovieupdate($buffer, 'Yahoo2', $relID);
@@ -1029,7 +1029,7 @@ class Movie
 					}
 					return false;
 				} else {
-					$buffer = getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=" . $result["name"] . "&vs=imdb.com");
+					$buffer = nzedb\utility\getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=" . $result["name"] . "&vs=imdb.com");
 					if ($buffer !== false && strlen($buffer)) {
 						$this->yahoolimit++;
 						$imdbId = $this->domovieupdate($buffer, 'Yahoo2', $relID);
