@@ -773,7 +773,7 @@ CREATE TABLE countries (
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE INDEX ix_country_name ON country (name);
+CREATE INDEX ix_countries_name ON countries (name);
 
 
 DELIMITER $$
