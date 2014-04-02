@@ -835,7 +835,7 @@ class IRCScraper
 		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid, '    : '');
 		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked, '      : '');
 
-		$query .= 'predate, md5, title, adddate) VALUES (';
+		$query .= 'predate, md5, title) VALUES (';
 
 		$query .= (!empty($this->CurPre['size'])     ? $this->db->escapeString($this->CurPre['size'])     . ', '   : '');
 		$query .= (!empty($this->CurPre['category']) ? $this->db->escapeString($this->CurPre['category']) . ', '   : '');
@@ -847,7 +847,7 @@ class IRCScraper
 		$query .= (!empty($this->CurPre['nuked'])    ? $this->CurPre['nuked']                             . ', '   : '');
 		$query .= (!empty($this->CurPre['predate'])  ? $this->CurPre['predate']                           . ', '   : 'NOW(), ');
 
-		$query .= '%s, %s, NOW())';
+		$query .= '%s, %s)';
 
 		$this->db->queryExec(
 			sprintf(

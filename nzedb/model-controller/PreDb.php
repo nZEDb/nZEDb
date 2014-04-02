@@ -48,8 +48,6 @@ Class PreDb
 	 */
 	public function __construct($echo = false)
 	{
-		$s = new Sites();
-		$this->site = $s->get();
 		$this->echooutput = ($echo && nZEDb_ECHOCLI);
 		$this->db = new DB();
 		$this->c = new ColorCLI();
@@ -63,10 +61,10 @@ Class PreDb
 	public function updatePre()
 	{
 		$newNames = 0;
-		$newestRel = $this->db->queryOneRow('SELECT adddate, id FROM predb WHERE source NOT like "#%" ORDER BY adddate DESC LIMIT 1 ');
+		$newestRel = $this->db->queryOneRow("SELECT value AS adddate FROM site WHERE setting = 'lastpretime'");
 
 		// Wait 10 minutes in between pulls.
-		if (strtotime($newestRel['adddate']) < (time() - 600) || is_null($newestRel['adddate'])) {
+		if ((int)$newestRel['adddate'] < (time() - 600)) {
 
 			if ($this->echooutput) {
 				echo $this->c->header("Retrieving titles from preDB sources.");
@@ -168,9 +166,8 @@ Class PreDb
 			}
 		}
 		// If we found nothing, update the last added to now to reset the timer.
-		if ($newNames === 0) {
-			$this->db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestRel['id']));
-		}
+		$this->db->queryExec(sprintf("UPDATE site SET value = %s WHERE setting = 'lastpretime'", $this->db->escapeString(time())));
+
 		return $newNames;
 	}
 
@@ -253,8 +250,8 @@ Class PreDb
 								$updated++;
 							} elseif ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, %s, %s, NOW(), %s, %s)',
+									INSERT INTO predb (title, nfo, size, category, predate, source, md5)
+									VALUES (%s, %s, %s, %s, %s, %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									$nfo, $size, $category, $time, $source, $md5))) {
 								$newNames++;
@@ -312,7 +309,7 @@ Class PreDb
 								$this->db->queryExec(
 									sprintf('
 										UPDATE predb
-										SET size = %s, category = %s, predate = %s, adddate = NOW(), source = %s
+										SET size = %s, category = %s, predate = %s, source = %s
 										WHERE id = %d',
 										$size, $category, $time, $source, $oldName['id']
 									)
@@ -320,8 +317,8 @@ Class PreDb
 								$updated++;
 							} elseif ($this->db->queryExec(
 									sprintf('
-										INSERT INTO predb (title, size, category, predate, adddate, source, md5)
-										VALUES (%s, %s, %s, %s, now(), %s, %s)',
+										INSERT INTO predb (title, size, category, predate, source, md5)
+										VALUES (%s, %s, %s, %s, %s, %s)',
 										$this->db->escapeString($title), $size, $category, $time, $source, $md5))) {
 								$newNames++;
 							}
@@ -369,8 +366,8 @@ Class PreDb
 								continue;
 							} elseif ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, size, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, %s, NOW(), %s, %s)',
+									INSERT INTO predb (title, size, category, predate, source, md5)
+									VALUES (%s, %s, %s, %s, %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									((!isset($matches2['size1']) && empty($matches2['size1']))
 										? 'NULL'
@@ -426,8 +423,8 @@ Class PreDb
 								continue;
 							} elseif ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, size, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, %s, NOW(), %s, %s)',
+									INSERT INTO predb (title, size, category, predate, source, md5)
+									VALUES (%s, %s, %s, %s, %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									((!isset($matches2['size']) && empty($matches2['size']))
 										? 'NULL'
@@ -452,8 +449,8 @@ Class PreDb
 								continue;
 							} elseif ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, NOW(), %s, %s)',
+									INSERT INTO predb (title, category, predate, source, md5)
+									VALUES (%s, %s, %s, %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									$this->db->escapeString($matches2['category'] . ', ' . $matches2['category1']),
 									$this->db->from_unixtime(strtotime($matches2['date'])),
@@ -498,8 +495,8 @@ Class PreDb
 									continue;
 								} elseif ($this->db->queryExec(
 									sprintf('
-										INSERT INTO predb (title, size, category, predate, adddate, source, md5)
-										VALUES (%s, %s, %s, %s, NOW(), %s, %s)',
+										INSERT INTO predb (title, size, category, predate, source, md5)
+										VALUES (%s, %s, %s, %s, %s, %s)',
 										$this->db->escapeString($matches2['title']),
 										((!isset($matches2['size']) && empty($matches2['size']))
 											? 'NULL'
@@ -548,8 +545,8 @@ Class PreDb
 						continue;
 					} elseif ($this->db->queryExec(
 						sprintf('
-							INSERT INTO predb (title, predate, adddate, source, md5)
-							VALUES (%s, %s, NOW(), %s, %s)',
+							INSERT INTO predb (title, predate, source, md5)
+							VALUES (%s, %s, %s, %s)',
 							$this->db->escapeString($release->title),
 							$this->db->from_unixtime(strtotime($release->pubDate)),
 							$this->db->escapeString('srrdb'),
@@ -618,8 +615,8 @@ Class PreDb
 							continue;
 						} elseif ($this->db->queryExec(
 							sprintf('
-								INSERT INTO predb (title, predate, adddate, source, md5)
-								VALUES (%s, NOW(), NOW(), %s, %s)',
+								INSERT INTO predb (title, predate, source, md5)
+								VALUES (%s, NOW(), %s, %s)',
 								$this->db->escapeString($release->title),
 								$this->db->escapeString('predbme'),
 								$md5))) {
@@ -679,8 +676,8 @@ Class PreDb
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, NOW(), %s, %s, %s, %d, 'Movies')",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid, category)
+											VALUES (%s, %s, %s, %s, %s, %d, 'Movies')",
 											$this->db->escapeString($matches2["title"]),
 											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abMooVee'),
@@ -747,8 +744,8 @@ Class PreDb
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, NOW(), %s, %s, %s, %d, 'TV')",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid, category)
+											VALUES (%s, %s, %s, %s, %s, %d, 'TV')",
 											$this->db->escapeString($matches2["title"]),
 											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abTeeVee'),
@@ -816,8 +813,8 @@ Class PreDb
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, NOW(), %s, %s, %s, %d, 'XXX')",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid, category)
+											VALUES (%s, %s, %s, %s, %s, %d, 'XXX')",
 											$this->db->escapeString($matches2["title"]),
 											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abErotica'),
@@ -885,8 +882,8 @@ Class PreDb
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid)
-											VALUES (%s, %s, NOW(), %s, %s, %s, %d)",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid)
+											VALUES (%s, %s, %s, %s, %s, %d)",
 											$this->db->escapeString($matches2["title"]),
 											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abForeign'),
@@ -966,8 +963,8 @@ Class PreDb
 						} else {
 							if ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid)
-									VALUES (%s, %s, NOW(), %s, %s, %d, %d)',
+									INSERT INTO predb (title, predate, source, md5, requestid, groupid)
+									VALUES (%s, %s, %s, %s, %d, %d)',
 									$this->db->escapeString($title[1]),
 									$this->db->from_unixtime(strtotime($predate)),
 									$this->db->escapeString('abgx'),
@@ -1048,7 +1045,7 @@ Class PreDb
 			preg_match('/([\d\.]+MB)/', $data[3]->innertext, $match);
 			$size = isset($match[1]) ? $match[1] : 'NULL';
 			if (strlen($title) > 15 && $category != 'NUKED') {
-				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, category, size) VALUES (%s, %s, NOW(), %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($category), $db->escapeString($size)))) {
+				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, source, md5, category, size) VALUES (%s, %s, %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($category), $db->escapeString($size)))) {
 					$newnames++;
 				}
 			}
@@ -1236,7 +1233,7 @@ Class PreDb
 			$count = $this->getCount();
 		}
 
-		$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid %s ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $search, $offset2, $offset));
+		$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid %s ORDER BY p.predate DESC LIMIT %d OFFSET %d', $search, $offset2, $offset));
 		return array('arr' => $parr, 'count' => $count);
 	}
 
