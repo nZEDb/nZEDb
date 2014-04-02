@@ -9,6 +9,9 @@ Each update goes to the top of the file
 2014-04-02 bart39
 	* Fix: duplicate insert attempts for predb abgx web update
 2014-04-02 kevin
+	* Fix: Prelist parsing in PreDB.php
+	* Add: Parsing of files to PreDB.php sources.
+	* Add: Getting NFO's from SRRDB on PreDB.php
 	* Fix: More fixes to NET_SmartIRC connect/disconnect/reconnect.
 	* Fix: Fixes to NET_SmartIRC reconnect.
 	* Fix: Various fixes to NET_SmartIRC.

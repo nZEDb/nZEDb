@@ -284,14 +284,14 @@ Class PreDb
 			if (preg_match_all('/<item>.+?<\/item>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
-						if (preg_match('/<title>(?P<title>.+?)<\/title.+?pubDate>(?P<date>.+?)<\/pubDate.+?gory:<\/b> (?P<category>.+?)<br \/.+?<\/b> (?P<size1>.+?) (?P<size2>[a-zA-Z]+)<b/s', $m, $matches2)) {
+						if (preg_match('/<title>(?P<title>.+?)\s+-\s+omgwtfnzbs\.org.*?<\/title.+?pubDate>(?P<date>.+?)<\/pubDate.+?gory:<\/b> (?P<category>.+?)<br \/.+?<\/b> (?P<size1>.+?) (?P<size2>[a-zA-Z]+)<b/s', $m, $matches2)) {
 
 							// If the title is too short, don't bother.
 							if (strlen($matches2['title']) < 15) {
 								continue;
 							}
 
-							$title = preg_replace('/\s+- omgwtfnzbs\.org/', '', $matches2['title']);
+							$title = $matches2['title'];
 							$md5 = $this->db->escapeString(md5($title));
 							$oldName = $this->db->queryOneRow(sprintf('SELECT md5, source, id FROM predb WHERE md5 = %s', $md5));
 
@@ -351,7 +351,7 @@ Class PreDb
 			if (preg_match_all('/<div class="mini-layout fluid">((\s+\S+)?\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?<\/div>\s+<\/div>)/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
-						if (preg_match('/<span class="bold">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/span>.+<a href="\?post=\d+"><b><font color="#\d+">(?P<title>.+)<\/font><\/b><\/a>.+<p><a href="\?cats=.+"><font color="#FF9900">(?P<category>.+)<\/font><\/a> \| (?P<size1>[\d\.,]+)?(?P<size2>[MGK]B)? \/.+<\/div>/s', $m, $matches2)) {
+						if (preg_match('/<span class="bold">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/span>.+<a href="\?post=\d+"><b><font color="#\d+">(?P<title>.+)<\/font><\/b><\/a>.+<p><a href="\?cats=.+"><font color="#FF9900">(?P<category>.+)<\/font><\/a> \| (?P<size1>[\d\.,]+)?(?P<size2>[MGK]B)? \/\s+(?P<files>\d+).+<\/div>/s', $m, $matches2)) {
 
 							// If it's too short, don't bother.
 							if (strlen($matches2['title']) < 15) {
@@ -367,8 +367,8 @@ Class PreDb
 								continue;
 							} elseif ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, size, category, predate, source, md5)
-									VALUES (%s, %s, %s, %s, %s, %s)',
+									INSERT INTO predb (title, size, category, predate, source, md5, files)
+									VALUES (%s, %s, %s, %s, %s, %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									((!isset($matches2['size1']) && empty($matches2['size1']))
 										? 'NULL'
@@ -380,7 +380,8 @@ Class PreDb
 									),
 									$this->db->from_unixtime(strtotime($matches2['predate'])),
 									$this->db->escapeString('zenet'),
-									$md5))) {
+									$md5,
+									$this->db->escapeString($matches2['files'])))) {
 								$newNames++;
 							}
 						}
@@ -403,60 +404,48 @@ Class PreDb
 	protected function retrievePrelist()
 	{
 		$newNames = 0;
-
 		$buffer = $this->getUrl('http://www.prelist.ws/');
 		if ($buffer !== false) {
-			$matches = $matches2 = $match = array();
-			if (preg_match_all('/<small><span.+?<\/span><\/small>/s', $buffer, $matches)) {
-				foreach ($matches as $match) {
-					foreach ($match as $m) {
-						if (!strpos($m, 'NUKED') && preg_match('/">\[ (?P<date>.+?) U.+?">(?P<category>.+?)<\/a>.+?">(?P<title>.+?)<\/a>.+?(b>\[ (?P<size>.+?) \]<\/b)?/si', $m, $matches2)) {
+			$matches = $matches2 = $matches3 = array();
+			if (preg_match_all('/<div class="PreData ">.+?<\/div>\s*<\/div>\s*<\/div>/s', $buffer, $matches)) {
+				foreach($matches as $matches2) {
+					foreach ($matches2 as $matches3) {
+						if (preg_match('/">(?P<title>.+?)<\/a><\/div><div class="break".+?FiLTER">(?P<category>.+?)<\/a>.+?"Time">(?P<date>.+?)<\/div.+?"FilesSize">(?P<files>\d+F).*?(?P<size>\d+[KMGPT]?B).+?"Reason">(?P<reason>.*?)<\/div>/is', $matches3, $matches4)) {
 
 							// Skip if too short.
-							if (strlen($matches2['title']) < 15) {
+							if (strlen($matches4['title']) < 15) {
 								continue;
 							}
-							$md5 =  $this->db->escapeString(md5($matches2['title']));
+							$md5 =  $this->db->escapeString(md5($matches4['title']));
 							$oldName = $this->db->queryOneRow(sprintf('SELECT md5 FROM predb WHERE md5 = %s', $md5));
 
 							// If we have it already, skip.
 							if ($oldName !== false) {
 								continue;
-							} elseif ($this->db->queryExec(
-								sprintf('
-									INSERT INTO predb (title, size, category, predate, source, md5)
-									VALUES (%s, %s, %s, %s, %s, %s)',
-									$this->db->escapeString($matches2['title']),
-									((!isset($matches2['size']) && empty($matches2['size']))
-										? 'NULL'
-										: $this->db->escapeString(round($matches2['size']))
-									),
-									$this->db->escapeString($matches2['category']),
-									$this->db->from_unixtime(strtotime($matches2['date'])),
-									$this->db->escapeString('prelist'),
-									$md5))) {
-								$newNames++;
 							}
-						} else if (preg_match('/">\[ (?P<date>.+?) U.+?">(?P<category>.+?)<\/a>.+?">(?P<category1>.+?)<\/a.+">(?P<title>.+?)<\/a>/si', $m, $matches2)) {
-							// Skip if too short.
-							if (strlen($matches2['title']) < 15) {
-								continue;
-							}
-							$md5 = $this->db->escapeString(md5($matches2['title']));
-							$dupeCheck = $this->db->queryOneRow(sprintf('SELECT md5 FROM predb WHERE md5 = %s', $md5));
 
-							// Check if we already have it.
-							if ($dupeCheck !== false) {
-								continue;
-							} elseif ($this->db->queryExec(
+							$nuked = $nukereason = '';
+							if (!empty($matches4['reason'])) {
+								$nuked = IRCScraper::NUKE;
+								$nukereason = $matches4['reason'];
+							}
+
+							if ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, category, predate, source, md5)
-									VALUES (%s, %s, %s, %s, %s)',
-									$this->db->escapeString($matches2['title']),
-									$this->db->escapeString($matches2['category'] . ', ' . $matches2['category1']),
-									$this->db->from_unixtime(strtotime($matches2['date'])),
+										INSERT INTO predb (title, size, category, predate, source, md5, files, nuked, nukreason)
+										VALUES (%s, %s, %s, %s, %s, %s, %s)',
+									$this->db->escapeString($matches4['title']),
+									((!isset($matches4['size']) && empty($matches4['size']))
+										? 'NULL'
+										: $this->db->escapeString(round($matches4['size']))
+									),
+									$this->db->escapeString($matches4['category']),
+									$this->db->from_unixtime(strtotime($matches4['date'])),
 									$this->db->escapeString('prelist'),
-									$md5))) {
+									$md5,
+									$this->db->escapeString($matches4['files']),
+									($nuked === '' ? IRCScraper::NO_NUKE : $nuked),
+									($nukereason === '' ? 'NULL' : $this->db->escapeString($nukereason))))) {
 								$newNames++;
 							}
 						}
@@ -476,7 +465,6 @@ Class PreDb
 	protected  function retrieveOrlydb()
 	{
 		$newNames = 0;
-
 		$buffer = $this->getUrl('http://www.orlydb.com/');
 		if ($buffer !== false) {
 			$matches = $matches2 = $match = array();
@@ -484,7 +472,7 @@ Class PreDb
 				if (preg_match_all('/<div>.+?<\/div>/s', $match["1"], $matches)) {
 					foreach ($matches as $m1) {
 						foreach ($m1 as $m) {
-							if (preg_match('/timestamp">(?P<date>.+?)<\/span>.+?section">.+?">(?P<category>.+?)<\/a>.+?release">(?P<title>.+?)<\/span>(.+info">(?P<size>.+?) )?/s', $m, $matches2)) {
+							if (preg_match('/timestamp">(?P<date>.+?)<\/span>.+?section">.+?">(?P<category>.+?)<\/a>.+?release">(?P<title>.+?)<\/span>(.+info">(?P<size>.+?) \| (?P<files>\d+F))?/s', $m, $matches2)) {
 
 								// Skip if too short.
 								if (strlen($matches2['title']) < 15) {
@@ -496,7 +484,7 @@ Class PreDb
 									continue;
 								} elseif ($this->db->queryExec(
 									sprintf('
-										INSERT INTO predb (title, size, category, predate, source, md5)
+										INSERT INTO predb (title, size, category, predate, source, md5, files)
 										VALUES (%s, %s, %s, %s, %s, %s)',
 										$this->db->escapeString($matches2['title']),
 										((!isset($matches2['size']) && empty($matches2['size']))
@@ -506,7 +494,12 @@ Class PreDb
 										$this->db->escapeString($matches2['category']),
 										$this->db->from_unixtime(strtotime($matches2['date'])),
 										$this->db->escapeString('orlydb'),
-										$md5))) {
+										$md5,
+										((!isset($matches2['files']) && empty($matches2['files']))
+											? 'NULL'
+											: $this->db->escapeString($matches2['files']))
+										))
+									) {
 									$newNames++;
 								}
 							}
@@ -526,32 +519,59 @@ Class PreDb
 	 * Get pre from this source.
 	 * @return int
 	 */
-	protected  function retrieveSrr()
+	protected function retrieveSrr()
 	{
 		$newNames = 0;
 
 		$data = $this->getUrl("http://www.srrdb.com/feed/srrs");
+
 		if ($data !== false) {
-			$releases = simplexml_load_string($data);
+			$releases = @simplexml_load_string($data);
 			if ($releases !== false) {
 				foreach ($releases->channel->item as $release) {
-;
+
 					// If it's too short, skip.
 					if (strlen($release->title) < 15) {
 						continue;
 					}
 					$md5 = $this->db->escapeString(md5($release->title));
-					$oldName = $this->db->queryOneRow(sprintf('SELECT md5 FROM predb WHERE md5 = %s', $md5));
+					$oldName = $this->db->queryOneRow(sprintf('SELECT id, nfo FROM predb WHERE md5 = %s', $md5));
+
+					$nfo = $size = '';
+					if (preg_match('/<dt>NFO availability<\/dt>\s*<dd>(?P<nfo>(yes|no))<\/dd>/is', $release->description, $description)) {
+						$nfo = ($description['nfo'] === 'yes' ? $this->db->escapeString('srrdb') : 'NULL');
+					}
+
+					if (preg_match('/Filesize.*<td>(?P<size>\d*)<\/td>\s*<td>.*?<\/td>\s*<td>.*?<\/td>\s*<\/tr>\s*<\/table>\s*/is', $release->description, $description)) {
+						$size = ((isset($description['size']) && !empty($description['size'])) ? $this->db->escapeString(bytesToSizeString($description['size'])) : 'NULL');
+					}
+
 					if ($oldName !== false) {
+						if ($nfo !== '' && empty($oldName['nfo'])) {
+							$this->db->queryExec(
+								sprintf('
+									UPDATE predb
+									SET size = %s, predate = %s, source = %s, nfo = %s
+									WHERE id = %d',
+									$size,
+									$this->db->from_unixtime(strtotime($release->pubDate)),
+									$this->db->escapeString('srrdb'),
+									$nfo,
+									$oldName['id']
+								)
+							);
+						}
 						continue;
-					} elseif ($this->db->queryExec(
+					} else if ($this->db->queryExec(
 						sprintf('
-							INSERT INTO predb (title, predate, source, md5)
-							VALUES (%s, %s, %s, %s)',
+							INSERT INTO predb (title, predate, source, md5, nfo, size)
+							VALUES (%s, %s, %s, %s, %s, %s)',
 							$this->db->escapeString($release->title),
 							$this->db->from_unixtime(strtotime($release->pubDate)),
 							$this->db->escapeString('srrdb'),
-							$md5))) {
+							$md5,
+							$nfo,
+							$size))) {
 						$newNames++;
 					}
 				}
@@ -664,7 +684,7 @@ Class PreDb
 			if (preg_match_all('/<tr class="(even|odd)".+?<\/tr>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
-						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
 							if (isset($matches2["requestid"]) && isset($matches2["title"])) {
 
 								// If too short, skip.
@@ -677,14 +697,15 @@ Class PreDb
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, %s, %s, %s, %d, 'Movies')",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid, files, category)
+											VALUES (%s, %s, %s, %s, %s, %d, %s, 'Movies')",
 											$this->db->escapeString($matches2["title"]),
 											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abMooVee'),
 											$md5,
 											$matches2["requestid"],
-											$groupid
+											$groupid,
+											$this->db->escapeString($matches2['files'])
 										)
 									);
 									$newNames++;
@@ -692,10 +713,11 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %d
+											SET requestid = %s, groupid = %d, files = %s
 											WHERE md5 = %s',
 											$matches2["requestid"],
 											$groupid,
+											$this->db->escapeString($matches2['files']),
 											$md5
 										)
 									);
@@ -733,7 +755,7 @@ Class PreDb
 			if (preg_match_all('/<tr class="(even|odd)".+?<\/tr>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
-						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
 							if (isset($matches2["requestid"]) && isset($matches2["title"])) {
 
 								// Skip if too short.
@@ -745,14 +767,15 @@ Class PreDb
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, %s, %s, %s, %d, 'TV')",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid, files, category)
+											VALUES (%s, %s, %s, %s, %s, %d, %s, 'TV')",
 											$this->db->escapeString($matches2["title"]),
 											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abTeeVee'),
 											$md5,
 											$matches2["requestid"],
-											$groupid
+											$groupid,
+											$this->db->escapeString($matches2['files'])
 										)
 									);
 									$newNames++;
@@ -760,10 +783,11 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %d
+											SET requestid = %s, groupid = %d, files = %s
 											WHERE md5 = %s',
 											$matches2["requestid"],
 											$groupid,
+											$this->db->escapeString($matches2['files']),
 											$md5
 										)
 									);
@@ -801,7 +825,7 @@ Class PreDb
 			if (preg_match_all('/<tr class="(even|odd)".+?<\/tr>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
-						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+?<td class="cell_type">(?P<category>.+?)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
 							if (isset($matches2["requestid"]) && isset($matches2["title"])) {
 
 								// If too short, skip.
@@ -814,14 +838,16 @@ Class PreDb
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, %s, %s, %s, %d, 'XXX')",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid, files, category)
+											VALUES (%s, %s, %s, %s, %s, %d, %s, %s)",
 											$this->db->escapeString($matches2["title"]),
 											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abErotica'),
 											$md5,
 											$matches2["requestid"],
-											$groupid
+											$groupid,
+											$this->db->escapeString($matches2['files']),
+											$this->db->escapeString('XXX-' . $matches2['category'])
 										)
 									);
 									$newNames++;
@@ -829,10 +855,11 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %d
+											SET requestid = %s, groupid = %d, files = %s
 											WHERE md5 = %s',
 											$matches2["requestid"],
 											$groupid,
+											$this->db->escapeString($matches2['files']),
 											$md5
 										)
 									);
@@ -870,7 +897,7 @@ Class PreDb
 				$matches = $matches2 = $match = array();
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
-						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?)<\/td>/s', $m, $matches2)) {
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+<td class="cell_type">(?P<category>.+?)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?)<\/td>/s', $m, $matches2)) {
 							if (isset($matches2["requestid"]) && isset($matches2["title"])) {
 
 							// If too short, skip.
@@ -883,14 +910,16 @@ Class PreDb
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, source, md5, requestid, groupid)
-											VALUES (%s, %s, %s, %s, %s, %d)",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid, files, category)
+											VALUES (%s, %s, %s, %s, %s, %d, %s, %s)",
 											$this->db->escapeString($matches2["title"]),
 											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abForeign'),
 											$md5,
 											$matches2["requestid"],
-											$groupid
+											$groupid,
+											$this->db->escapeString($matches2["files"]),
+											$this->db->escapeString($matches2["category"])
 										)
 									);
 									$newNames++;
@@ -898,10 +927,12 @@ Class PreDb
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
-											SET requestid = %s, groupid = %d
+											SET requestid = %s, groupid = %d, files = %s, category = %s
 											WHERE md5 = %s',
 											$matches2["requestid"],
 											$groupid,
+											$this->db->escapeString($matches2["files"]),
+											$this->db->escapeString($matches2["category"]),
 											$md5
 										)
 									);
@@ -1116,12 +1147,21 @@ Class PreDb
 			echo $this->c->primary('Matching up predb NFOs with releases missing an NFO.');
 		}
 
-		$res = $db->queryDirect('SELECT r.id, p.nfo, r.completion, r.guid, r.groupid FROM releases r INNER JOIN predb p ON r.preid = p.id WHERE r.nfostatus != 1 AND p.nfo IS NOT NULL LIMIT 100');
+		$res = $db->queryDirect('SELECT r.id, p.nfo, p.title, r.completion, r.guid, r.groupid FROM releases r INNER JOIN predb p ON r.preid = p.id WHERE r.nfostatus != 1 AND p.nfo IS NOT NULL LIMIT 100');
 		$total = $res->rowCount();
 		if ($total > 0) {
 			$nfo = new Nfo($this->echooutput);
 			foreach ($res as $row) {
-				$buffer = $this->getUrl($row['nfo']);
+				$URL = $row['nfo'];
+
+				// To save space in the DB we do this instead of storing the full URL.
+				if ($URL === 'srrdb') {
+					$srrdb = urlencode($row['title']);
+					$URL = 'http://www.srrdb.com/download/file/' . $srrdb . '/' . $srrdb . '.nfo';
+				}
+
+				$buffer = $this->getUrl($URL);
+
 				if ($buffer !== false) {
 					if ($nfo->addAlternateNfo($db, $buffer, $row, $nntp)) {
 						if ($this->echooutput) {
@@ -1135,8 +1175,8 @@ Class PreDb
 					}
 				}
 			}
-			return $nfos;
 		}
+		return $nfos;
 	}
 
 	// Matches the MD5 within the predb table to release files and subjects (names) which are hashed.
