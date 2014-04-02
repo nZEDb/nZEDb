@@ -1675,7 +1675,7 @@ while ($i > 0) {
 					);
 				}
 			} else if ($scrape_cz == 1) {
-				if (shell_exec("tmux list-panes -t${tmux_session}:2 | grep ^0 | grep -c dead") == 1) {
+				if (shell_exec("tmux list-panes -t${tmux_session}:3 | grep ^0 | grep -c dead") == 1) {
 					$DIR = nZEDb_MISC;
 					$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
 					shell_exec(
