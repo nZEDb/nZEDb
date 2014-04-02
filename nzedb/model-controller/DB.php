@@ -104,7 +104,7 @@ class DB extends PDO
 		}
 		$this->ct = new ConsoleTools();
 
-		if ($options['checkVersion']) {
+		if ($this->opts) {
 			$this->fetchDbVersion();
 		}
 
@@ -146,16 +146,6 @@ class DB extends PDO
 			}
 
 			self::$pdo = new PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
-
-			// In case PDO is not set to produce exceptions (PHP's default behaviour).
-			if (self::$pdo === false) {
-				$this->echoError(
-					"Unable to create connection to the Database!",
-					'initialiseDatabase',
-					1,
-					true
-				);
-			}
 
 			// For backwards compatibility, no need for a patch.
 			self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
@@ -905,7 +895,7 @@ class DB extends PDO
 	 */
 	private function fetchDbVersion ()
 	{
-		$result          = $this->queryOneRow("SELECT VERSION() AS version");
+		$result = $this->queryOneRow("SELECT VERSION() AS version");
 		if (!empty($result)) {
 			$dummy = explode('-', $result['version'], 2);
 			$this->dbVersion = $dummy[0];
