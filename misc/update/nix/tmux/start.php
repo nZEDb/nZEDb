@@ -186,14 +186,12 @@ function window_proxy($tmux_session, $window)
 	$s = new Sites();
 	$site = $s->get();
 	$nntpproxy = $site->nntpproxy;
-	$enabled = false;
 	if ($nntpproxy === '1') {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy.conf")) {
 			$nntpproxyconf = $DIR . "update/python/lib/nntpproxy.conf";
 			exec("tmux new-window -t $tmux_session -n nntpproxy 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
-			$enabled = true;
 		}
 	}
 
@@ -204,11 +202,6 @@ function window_proxy($tmux_session, $window)
 			$nntpproxyconf = $DIR . "update/python/lib/nntpproxy_a.conf";
 			exec("tmux selectp -t 0; tmux splitw -t $tmux_session:$window -h -p 50 'printf \"\033]2;NNTPProxy\033\" && python $nntpproxypy $nntpproxyconf'");
 		}
-	}
-	if ($enabled) {
-		return $window;
-	} else {
-		return $window -1;
 	}
 }
 
@@ -239,23 +232,16 @@ function window_ircscraper($tmux_session, $window)
 	$scrape_efnet = $tmux->scrape_efnet;
 
 	if ($scrape_cz == 1 && $scrape_efnet == 1) {
-		$DIR = nZEDb_MISC;
-		$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
-
-		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\" && php $ircscraper cz'");
-		exec("tmux selectp -t 0; tmux splitw -t $tmux_session:$window -v -p 50 'printf \"\033]2;scrape_Efnet\033\" && php $ircscraper efnet'");
+		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
+		exec("tmux selectp -t 0; tmux splitw -t $tmux_session:$window -v -p 50 'printf \"\033]2;scrape_Efnet\033\"'");
 	}
 	else if ($scrape_cz == 1) {
-		$DIR = nZEDb_MISC;
-		$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
-
-		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\" && php $ircscraper cz'");
+		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
 	}
 	elseif ($scrape_efnet == 1) {
-		$DIR = nZEDb_MISC;
-		$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
-
-		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_Efnet\033\" && php $ircscraper efnet'");
+		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_Efnet\033\"'");
+	} else {
+		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
 	}
 }
 
@@ -306,8 +292,8 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	$proxy = window_proxy($tmux_session, 3);
-	window_ircscraper($tmux_session, $proxy + 1);
+	window_ircscraper($tmux_session, 3);
+	window_proxy($tmux_session, 4);
 	if ($colors == 1) {
 		window_colors($tmux_session);
 	}
@@ -323,8 +309,8 @@ if ($seq == 1) {
 	}
 
 	window_stripped_utilities($tmux_session);
-	$proxy = window_proxy($tmux_session, 2);
-	window_ircscraper($tmux_session, $proxy +1);
+	window_ircscraper($tmux_session, 2);
+	window_proxy($tmux_session, 3);
 	if ($colors == 1) {
 		window_colors($tmux_session);
 	}
@@ -343,8 +329,8 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	$proxy = window_proxy($tmux_session, 3);
-	window_ircscraper($tmux_session, $proxy +1);
+	window_ircscraper($tmux_session, 3);
+	window_proxy($tmux_session, 4);
 
 	if ($colors == 1) {
 		window_colors($tmux_session);
