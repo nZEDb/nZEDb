@@ -9,6 +9,7 @@ Each update goes to the top of the file
 2014-04-02 bart39
 	* Fix: duplicate insert attempts for predb abgx web update
 2014-04-02 kevin
+	* FIx: Possible fix for empty pre date on Tmux monitor.
 	* Fix: Possible fix for future newest pre date on Tmux monitor.
 	* Chg: Check if buffer is empty before inserting PreDB NFO.
 	* Fix: Prelist parsing in PreDB.php

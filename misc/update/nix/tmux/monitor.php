@@ -265,7 +265,7 @@ function relativeTime($_time)
 
 	$return = "";
 	$now = TIME();
-	$diff = ($now - $_time);
+	$diff = ($now - ($_time >= $now ? $_time - 1 : $_time));
 	$secondsLeft = $diff;
 
 	for ($i = 4; $i > -1; $i--) {
