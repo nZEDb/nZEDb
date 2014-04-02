@@ -1135,7 +1135,7 @@ class Net_SmartIRC_base
 			}
 		}
 
-		$this->_lastrx = time();
+		$this->_lastrx = $this->_lasttx = time();
 		$this->_updatestate();
 
 		return $result;
