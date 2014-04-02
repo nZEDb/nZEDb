@@ -465,15 +465,13 @@ class Net_SmartIRC_base
 	 */
 	public function setUseSockets($boolean)
 	{
+		$this->_usesockets = false;
 		if ($boolean === true) {
 			if (@extension_loaded('sockets')) {
 				$this->_usesockets = true;
 			} else {
 				$this->log(SMARTIRC_DEBUG_NOTICE, 'WARNING: your PHP build doesn\'t support real sockets, will use fsocks instead', __FILE__, __LINE__);
-				$this->_usesockets = false;
 			}
-		} else {
-			$this->_usesockets = false;
 		}
 	}
 
@@ -1041,12 +1039,14 @@ class Net_SmartIRC_base
 	 */
 	public function connect($address, $port)
 	{
+		$this->_address = $address;
+		$this->_port = $port;
+		$this->_autoretrycount = 0;
 		$connected = false;
 		if ($this->_autoretry === true && ($this->_autoretrycount < $this->_autoretrymax)) {
 			while ($this->_autoretrycount < $this->_autoretrymax) {
 				$connected = $this->connectHelper($address, $port);
 				if ($connected === true) {
-					$this->_autoretrycount = $this->_autoretrymax;
 					break;
 				} else {
 					$this->_delayReconnect();
@@ -1065,16 +1065,12 @@ class Net_SmartIRC_base
 	/**
 	 * Helper method for connecting.
 	 *
-	 * @param string $address
-	 * @param integer $port
 	 * @return boolean
 	 * @access protected
 	 */
-	protected function connectHelper($address, $port)
+	protected function connectHelper()
 	{
 		$this->log(SMARTIRC_DEBUG_CONNECTION, 'DEBUG_CONNECTION: connecting', __FILE__, __LINE__);
-		$this->_address = $address;
-		$this->_port = $port;
 		$errno = $errstr = 0;
 
 		if ($this->_usesockets == true) {
@@ -1111,18 +1107,18 @@ class Net_SmartIRC_base
 				$error = $errstr.' ('.$errno.')';
 			}
 
-			$error_msg = 'couldn\'t connect to "'.$address.'" reason: "'.$error.'"';
+			$error_msg = 'couldn\'t connect to "'.$this->_address.'" reason: "'.$error.'"';
 			$this->log(SMARTIRC_DEBUG_NOTICE, 'Warning: '.$error_msg, __FILE__, __LINE__);
 
 			if (($this->_autoretry == true) &&
 				($this->_autoretrycount < $this->_autoretrymax)) {
-				 echo 'ERROR connecting to (' . $address .  ':' . $port .
+				 echo 'ERROR connecting to (' . $this->_address .  ':' . $this->_port .
 					 ') error: (' . $error . ') retry (' . $this->_autoretrycount .
 					 '/' . $this->_autoretrymax .
 					 '). Sleeping for (' . $this->_reconnectdelay . ') ms.' . PHP_EOL;
 				return false;
 			} else {
-				echo 'ERROR connecting to (' . $address . ':' . $port .
+				echo 'ERROR connecting to (' . $this->_address . ':' .  $this->_port .
 					') after (' . $this->_autoretrymax . ') retries, error: (' .
 					$error . ').' . PHP_EOL;
 				return false;
@@ -1140,7 +1136,6 @@ class Net_SmartIRC_base
 		}
 
 		$this->_lastrx = time();
-		$this->_lasttx = $this->_lastrx;
 		$this->_updatestate();
 
 		return $result;
