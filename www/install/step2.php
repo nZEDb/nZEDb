@@ -80,27 +80,36 @@ if ($page->isPostBack()) {
 	$cfg->DB_NAME = trim($_POST['db']);
 	$cfg->DB_SYSTEM = strtolower(trim($_POST['db_system']));
 	$cfg->error = false;
-	$pdo = null;
 
 	// Check if user selected right DB type.
 	if (!in_array($cfg->DB_SYSTEM, array('mysql', 'pgsql'))) {
 		$cfg->emessage = 'Invalid database system. Must be: mysql or pgsql ; Not: ' . $cfg->DB_SYSTEM;
 		$cfg->error = true;
 	} else {
-
+/*
 		// Check if user connects using socket or host/port.
 		if (isset($cfg->DB_SOCKET) && !empty($cfg->DB_SOCKET)) {
 			$pdoString = $cfg->DB_SYSTEM . ':unix_socket=' . $cfg->DB_SOCKET;
 		} else {
 			$pdoString = $cfg->DB_SYSTEM . ':host=' . $cfg->DB_HOST . (isset($cfg->DB_PORT) ?';port=' . $cfg->DB_PORT : '');
 		}
-
 		// If MySQL add charset, if PgSQL add database name.
 		$pdoString .= ($cfg->DB_SYSTEM === 'mysql' ? ';charset=utf8' : ';dbname=' . $cfg->DB_NAME);
+*/
 
 		// Connect to the SQL server.
 		try {
-			$pdo = new PDO($pdoString, $cfg->DB_USER, $cfg->DB_PASSWORD);
+			$pdo = new DB(array(
+							  'dbhost' => $cfg->DB_HOST,
+							  'dbname' => ($cfg->DB_SYSTEM === 'pgsql') ? $cfg->DB_NAME : '',
+							  'dbpass' => $cfg->DB_PASSWORD,
+							  'dbport' => $cfg->DB_PORT,
+							  'dbsock' => $cfg->DB_SOCKET,
+							  'dbtype' => $cfg->DB_SYSTEM,
+							  'dbuser' => $cfg->DB_USER,
+						  )
+			);
+			//$pdo = new PDO($pdoString, $cfg->DB_USER, $cfg->DB_PASSWORD);
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$cfg->dbConnCheck = true;
 		} catch (PDOException $e) {
@@ -109,7 +118,7 @@ if ($page->isPostBack()) {
 			$cfg->dbConnCheck = false;
 		}
 
-		// Check if the MySQL or PgSQL versions are right.
+		// Check if the MySQL or PgSQL versions are correct.
 		$vQuery = ($cfg->DB_SYSTEM === 'mysql' ? "SHOW VARIABLES WHERE Variable_name = 'version'" : 'SELECT version()');
 		$goodVersion = false;
 		try {
@@ -119,8 +128,8 @@ if ($page->isPostBack()) {
 				$cfg->emessage = 'Could not get version from SQL server.';
 			} else {
 				foreach ($version as $row) {
-					if ($cfg->DB_SYSTEM === 'mysql' && isset($row['Value'])) {
-						if (preg_match('/^(5\.\d)/', $row['Value'], $match)) {
+					if ($cfg->DB_SYSTEM === 'mysql' && isset($row['value'])) {
+						if (preg_match('/^(5\.\d)/', $row['value'], $match)) {
 							if ((float)$match[1] >= $minMySQLVersion) {
 								$goodVersion = true;
 								break;
