@@ -629,6 +629,10 @@ while ($i > 0) {
 
 	if ($split_result[0]['predb'] != NULL) {
 		$predb = $split_result[0]['predb'];
+		$nowTime = time();
+		if ($predb > $nowTime) {
+			$predb = $nowTime;
+		}
 	}
 
 	if ($proc_work_result3[0]['predb_matched'] != NULL) {

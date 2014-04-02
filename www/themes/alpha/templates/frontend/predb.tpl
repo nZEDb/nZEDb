@@ -144,19 +144,19 @@
 				</td>
 				<td style="width:120px;text-align:center;" class="predb">
 					{if {$result.source} == abgx}
-						<a title="Visit abgx" href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss">
+						<a title="Visit abgx" href="{$site->dereferrer_link}http://www.abgx.net/rss/x360/posted.rss" target="_blank">
 							abgx.net
 						</a>
 					{elseif in_array({$result.source}, array('abErotica', 'abMooVee', 'abTeeVee', 'abForeign'))}
-						<a title="Visit allfilled {$result.source}" href="{$site->dereferrer_link}http://{$result.source}.allfilled.com/search.php?q={$result.title}&Search=Search">
+						<a title="Visit allfilled {$result.source}" href="{$site->dereferrer_link}http://{$result.source}.allfilled.com/search.php?q={$result.title}&Search=Search" target="_blank">
 							{$result.source}
 						</a>
 					{elseif $result.source|strpos:'#a.b.' !== false}
-						<a title="Visit {$result.source} on IRC" href="irc://irc.Prison.NET:6667/{str_replace('#a.b.', 'alt.binaries.', {$result.source})}">
+						<a title="Visit {$result.source} on IRC" href="irc://irc.Prison.NET:6667/{str_replace('#a.b.', 'alt.binaries.', {$result.source})}" target="_blank">
 							{$result.source|truncate:15}
 						</a>
 					{elseif {$result.source} == omgwtfnzbs}
-						<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php">
+						<a title="Visit omgwtfnzbs" href="{$site->dereferrer_link}http://rss.omgwtfnzbs.org/rss-info.php" target="_blank">
 							omgwtfnzbs
 						</a>
 					{elseif {$result.source} == orlydb}
@@ -172,11 +172,11 @@
 							Prelist
 						</a>
 					{elseif {$result.source} == "#Pre@zenet"}
-						<a title="Visit zenet on IRC" href="irc://irc.zenet.org:6667/Pre">
+						<a title="Visit zenet on IRC" href="irc://irc.zenet.org:6667/Pre" target="_blank">
 							ZenetIRC
 						</a>
 					{elseif {$result.source} == "#pre@corrupt"}
-						<a title="Visit corrupt on IRC" href="irc://irc.corrupt-net.org:6667/pre">
+						<a title="Visit corrupt on IRC" href="irc://irc.corrupt-net.org:6667/pre" target="_blank">
 							Corrupt
 						</a>
 					{elseif {$result.source} == srrdb}
@@ -184,11 +184,11 @@
 							srrDB
 						</a>
 					{elseif {$result.source} == "#scnzb"}
-						<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/scnzb">
+						<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/scnzb" target="_blank">
 							srrDB
 						</a>
 					{elseif {$result.source} == "#tvnzb"}
-						<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/tvnzb">
+						<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/tvnzb" target="_blank">
 							srrDB
 						</a>
 					{elseif {$result.source} == "usenet-crawler"}
