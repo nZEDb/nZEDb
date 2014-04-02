@@ -3,7 +3,7 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 $c = new ColorCLI();
 
-$db = new DB(true);
+$db = new DB(['checkVersion' => true]);
 $ftinnodb = $db->isDbVersionAtLeast('5.6');
 if ($db->dbSystem() === "pgsql") {
 	exit($c->error("\nCurrently only for mysql."));
