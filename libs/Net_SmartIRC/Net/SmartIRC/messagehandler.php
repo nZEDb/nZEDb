@@ -524,4 +524,3 @@ class Net_SmartIRC_messagehandler extends Net_SmartIRC_irccommands
         $this->_nicknameinuse();
     }
 }
-?>

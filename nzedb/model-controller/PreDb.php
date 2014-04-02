@@ -961,7 +961,8 @@ Class PreDb
 									$this->db->escapeString($md5)
 								)
 							);
-						} else {
+						}
+						else if ($oldname === false) {
 							if ($this->db->queryExec(
 								sprintf('
 									INSERT INTO predb (title, predate, source, md5, requestid, groupid)

@@ -374,6 +374,10 @@ class Net_SmartIRC_base
 	 */
 	protected $_runasdaemon = false;
 
+	/**
+	 * @var array
+	 */
+	protected $channelList = array();
 
 	/**
 	 * All IRC replycodes, the index is the replycode name.
@@ -461,15 +465,13 @@ class Net_SmartIRC_base
 	 */
 	public function setUseSockets($boolean)
 	{
+		$this->_usesockets = false;
 		if ($boolean === true) {
 			if (@extension_loaded('sockets')) {
 				$this->_usesockets = true;
 			} else {
 				$this->log(SMARTIRC_DEBUG_NOTICE, 'WARNING: your PHP build doesn\'t support real sockets, will use fsocks instead', __FILE__, __LINE__);
-				$this->_usesockets = false;
 			}
-		} else {
-			$this->_usesockets = false;
 		}
 	}
 
@@ -1037,12 +1039,14 @@ class Net_SmartIRC_base
 	 */
 	public function connect($address, $port)
 	{
+		$this->_address = $address;
+		$this->_port = $port;
+		$this->_autoretrycount = 0;
 		$connected = false;
 		if ($this->_autoretry === true && ($this->_autoretrycount < $this->_autoretrymax)) {
 			while ($this->_autoretrycount < $this->_autoretrymax) {
 				$connected = $this->connectHelper($address, $port);
 				if ($connected === true) {
-					$this->_autoretrycount = $this->_autoretrymax;
 					break;
 				} else {
 					$this->_delayReconnect();
@@ -1061,16 +1065,12 @@ class Net_SmartIRC_base
 	/**
 	 * Helper method for connecting.
 	 *
-	 * @param string $address
-	 * @param integer $port
 	 * @return boolean
 	 * @access protected
 	 */
-	protected function connectHelper($address, $port)
+	protected function connectHelper()
 	{
 		$this->log(SMARTIRC_DEBUG_CONNECTION, 'DEBUG_CONNECTION: connecting', __FILE__, __LINE__);
-		$this->_address = $address;
-		$this->_port = $port;
 		$errno = $errstr = 0;
 
 		if ($this->_usesockets == true) {
@@ -1107,18 +1107,18 @@ class Net_SmartIRC_base
 				$error = $errstr.' ('.$errno.')';
 			}
 
-			$error_msg = 'couldn\'t connect to "'.$address.'" reason: "'.$error.'"';
+			$error_msg = 'couldn\'t connect to "'.$this->_address.'" reason: "'.$error.'"';
 			$this->log(SMARTIRC_DEBUG_NOTICE, 'Warning: '.$error_msg, __FILE__, __LINE__);
 
 			if (($this->_autoretry == true) &&
 				($this->_autoretrycount < $this->_autoretrymax)) {
-				 echo 'ERROR connecting to (' . $address .  ':' . $port .
+				 echo 'ERROR connecting to (' . $this->_address .  ':' . $this->_port .
 					 ') error: (' . $error . ') retry (' . $this->_autoretrycount .
 					 '/' . $this->_autoretrymax .
 					 '). Sleeping for (' . $this->_reconnectdelay . ') ms.' . PHP_EOL;
 				return false;
 			} else {
-				echo 'ERROR connecting to (' . $address . ':' . $port .
+				echo 'ERROR connecting to (' . $this->_address . ':' .  $this->_port .
 					') after (' . $this->_autoretrymax . ') retries, error: (' .
 					$error . ').' . PHP_EOL;
 				return false;
@@ -1135,8 +1135,7 @@ class Net_SmartIRC_base
 			}
 		}
 
-		$this->_lastrx = time();
-		$this->_lasttx = $this->_lastrx;
+		$this->_lastrx = $this->_lasttx = time();
 		$this->_updatestate();
 
 		return $result;
@@ -1171,8 +1170,6 @@ class Net_SmartIRC_base
 
 			$this->_updatestate();
 			$this->log(SMARTIRC_DEBUG_CONNECTION, 'DEBUG_CONNECTION: disconnected', __FILE__, __LINE__);
-		} else {
-			return false;
 		}
 
 		if ($this->_channelsyncing == true) {
@@ -1207,29 +1204,29 @@ class Net_SmartIRC_base
 	public function reconnect()
 	{
 		$this->log(SMARTIRC_DEBUG_CONNECTION, 'DEBUG_CONNECTION: reconnecting...', __FILE__, __LINE__);
-
-		// remember in which channels we are joined
-		$channels = array();
-		foreach ($this->_channels as $value) {
-			if (empty($value->key)) {
-				$channels[] = array('name' => $value->name);
-			} else {
-				$channels[] = array('name' => $value->name, 'key' => $value->key);
-			}
-		}
-
 		$this->disconnect(true);
 		$this->connect($this->_address, $this->_port);
 		$this->login($this->_nick, $this->_realname, $this->_usermode, $this->_username, $this->_password);
+		$this->joinChannels($this->channelList);
+	}
 
-		// rejoin the channels
-		foreach ($channels as $value) {
-			if (isset($value['key'])) {
-				$this->join($value['name'], $value['key']);
-			} else {
-				$this->join($value['name']);
-			}
+	/**
+	 * Join one or more channel.
+	 *
+	 * @param array $channelarray array('#channelname1' => 'password', '#channelname2' => null);
+	 * @param int   $priority
+	 *
+	 * @return bool
+	 */
+	public function joinChannels($channelarray, $priority = SMARTIRC_MEDIUM)
+	{
+		if ($this->_connectionerror === true || $this->_state() === SMARTIRC_STATE_DISCONNECTED)  {
+			$this->log(SMARTIRC_DEBUG_NOTICE, 'Warning: you must connect to IRC before joining channels!', __FILE__, __LINE__);
+			return false;
 		}
+
+		$this->channelList = $channelarray;
+		return $this->join($channelarray, $priority);
 	}
 
 	/**
@@ -1534,8 +1531,10 @@ class Net_SmartIRC_base
 	 */
 	public function listen()
 	{
-		while ($this->_connectionerror === false && $this->_state() == SMARTIRC_STATE_CONNECTED) {
-			$this->listenOnce();
+		while (true) {
+			if ($this->listenOnce() === false) {
+				break;
+			}
 		}
 
 		return false;
@@ -1552,21 +1551,34 @@ class Net_SmartIRC_base
 	 */
 	public function listenOnce()
 	{
-		if ($this->_state() == SMARTIRC_STATE_CONNECTED) {
+		if ($this->checkConnection()) {
 			$this->_rawreceive();
-			if ($this->_connectionerror) {
-				if ($this->_autoreconnect) {
-					$this->log(SMARTIRC_DEBUG_CONNECTION, 'DEBUG_CONNECTION: connection error detected, will reconnect!', __FILE__, __LINE__);
-					$this->reconnect();
-				} else {
-					$this->log(SMARTIRC_DEBUG_CONNECTION, 'DEBUG_CONNECTION: connection error detected, will disconnect!', __FILE__, __LINE__);
-					$this->disconnect();
-				}
+			if ($this->checkConnection()) {
+				return true;
 			}
-			return true;
-		} else {
-			return false;
 		}
+		return false;
+	}
+
+	/**
+	 * Check if the connection is still up.
+	 *
+	 * @return bool
+	 */
+	protected function checkConnection()
+	{
+		if ($this->_connectionerror || $this->_state() === SMARTIRC_STATE_DISCONNECTED) {
+			if ($this->_autoreconnect) {
+				$this->log(SMARTIRC_DEBUG_CONNECTION, 'DEBUG_CONNECTION: connection error detected, will reconnect!', __FILE__, __LINE__);
+				$this->reconnect();
+				return ($this->_connectionerror && $this->_state() === SMARTIRC_STATE_DISCONNECTED);
+			} else {
+				$this->log(SMARTIRC_DEBUG_CONNECTION, 'DEBUG_CONNECTION: connection error detected, will disconnect!', __FILE__, __LINE__);
+				$this->disconnect();
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -2090,7 +2102,7 @@ class Net_SmartIRC_base
 	/**
 	 * goes into main receive mode _once_ per call and waits for messages from the IRC server
 	 *
-	 * @return void
+	 * @return bool
 	 * @access private
 	 */
 	protected function _rawreceive()
@@ -2134,6 +2146,7 @@ class Net_SmartIRC_base
 		if ($rawdata === false) {
 			// reading from the socket failed, the connection is broken
 			$this->_connectionerror = true;
+			return false;
 		}
 
 		$this->_checktimer();
@@ -2234,6 +2247,7 @@ class Net_SmartIRC_base
 				unset($ircdata);
 			}
 		}
+		return true;
 	}
 
 	/**
