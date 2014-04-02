@@ -626,7 +626,6 @@ while ($i > 0) {
 		}
 	}
 
-
 	if ($split_result[0]['predb'] != NULL) {
 		$predb = $split_result[0]['predb'];
 		$nowTime = time();
@@ -766,6 +765,10 @@ while ($i > 0) {
 	}
 	if ($split_result[0]['newestpre'] != NULL) {
 		$newestpre = $split_result[0]['newestpre'];
+		$nowTime = time();
+		if ($newestpre > $nowTime) {
+			$newestpre = $nowTime;
+		}
 	}
 	if ($tablepergroup == 0) {
 		if ($split_result[0]['oldestcollection'] != NULL) {
