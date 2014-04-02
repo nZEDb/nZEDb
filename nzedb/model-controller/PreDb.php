@@ -8,6 +8,21 @@ require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
  */
 Class PreDb
 {
+	// If you wish to not get PRE from one of these sources, set it to false.
+	const PRE_WOMBLE   = true;
+	const PRE_OMGWTF   = true;
+	const PRE_ZENET    = true;
+	const PRE_PRELIST  = true;
+	const PRE_ORLYDB   = true;
+	const PRE_SRRDB    = true;
+	const PRE_PREDBME  = true;
+	const PRE_ABGXNET  = true;
+	const PRE_UCRAWLER = true;
+	const PRE_MOOVEE   = true;
+	const PRE_TEEVEE   = true;
+	const PRE_EROTICA  = true;
+	const PRE_FOREIGN  = true;
+
 	/**
 	 * @var bool|stdClass
 	 */
@@ -33,8 +48,6 @@ Class PreDb
 	 */
 	public function __construct($echo = false)
 	{
-		$s = new Sites();
-		$this->site = $s->get();
 		$this->echooutput = ($echo && nZEDb_ECHOCLI);
 		$this->db = new DB();
 		$this->c = new ColorCLI();
@@ -48,85 +61,114 @@ Class PreDb
 	public function updatePre()
 	{
 		$newNames = 0;
-		$newestRel = $this->db->queryOneRow('SELECT adddate, id FROM predb WHERE source NOT like "#%" ORDER BY adddate DESC LIMIT 1 ');
+		$newestRel = $this->db->queryOneRow("SELECT value AS adddate FROM site WHERE setting = 'lastpretime'");
 
 		// Wait 10 minutes in between pulls.
-		if (strtotime($newestRel['adddate']) < (time() - 600) || is_null($newestRel['adddate'])) {
+		if ((int)$newestRel['adddate'] < (time() - 600)) {
 
 			if ($this->echooutput) {
 				echo $this->c->header("Retrieving titles from preDB sources.");
 			}
 
-			$newNames += $newWomble = $this->retrieveWomble();
-			if ($this->echooutput) {
-				echo $this->c->primary($newWomble . " \tRetrieved from Womble.");
+			if (self::PRE_WOMBLE) {
+				$newNames += $newWomble = $this->retrieveWomble();
+				if ($this->echooutput) {
+					echo $this->c->primary($newWomble . " \tRetrieved from Womble.");
+				}
 			}
 
-			$newNames += $newOmgWtf = $this->retrieveOmgwtfnzbs();
-			if ($this->echooutput) {
-				echo $this->c->primary($newOmgWtf . " \tRetrieved from Omgwtfnzbs.");
+			if (self::PRE_OMGWTF) {
+				$newNames += $newOmgWtf = $this->retrieveOmgwtfnzbs();
+				if ($this->echooutput) {
+					echo $this->c->primary($newOmgWtf . " \tRetrieved from Omgwtfnzbs.");
+				}
 			}
 
-			$newNames += $newZenet = $this->retrieveZenet();
-			if ($this->echooutput) {
-				echo $this->c->primary($newZenet . " \tRetrieved from Zenet.");
+			if (self::PRE_ZENET) {
+				$newNames += $newZenet = $this->retrieveZenet();
+				if ($this->echooutput) {
+					echo $this->c->primary($newZenet . " \tRetrieved from Zenet.");
+				}
 			}
 
-			$newNames += $newPreList = $this->retrievePrelist();
-			if ($this->echooutput) {
-				echo $this->c->primary($newPreList . " \tRetrieved from Prelist.");
+			if (self::PRE_PRELIST) {
+				$newNames += $newPreList = $this->retrievePrelist();
+				if ($this->echooutput) {
+					echo $this->c->primary($newPreList . " \tRetrieved from Prelist.");
+				}
 			}
 
-			$newNames += $newOrly = $this->retrieveOrlydb();
-			if ($this->echooutput) {
-				echo $this->c->primary($newOrly . " \tRetrieved from Orlydb.");
+			if (self::PRE_ORLYDB) {
+				$newNames += $newOrly = $this->retrieveOrlydb();
+				if ($this->echooutput) {
+					echo $this->c->primary($newOrly . " \tRetrieved from Orlydb.");
+				}
 			}
 
-			$newNames += $newSrr = $this->retrieveSrr();
-			if ($this->echooutput) {
-				echo $this->c->primary($newSrr . " \tRetrieved from Srrdb.");
+			if (self::PRE_SRRDB) {
+				$newNames += $newSrr = $this->retrieveSrr();
+				if ($this->echooutput) {
+					echo $this->c->primary($newSrr . " \tRetrieved from Srrdb.");
+				}
 			}
 
-			$newNames += $newPdme = $this->retrievePredbme();
-			if ($this->echooutput) {
-				echo $this->c->primary($newPdme . " \tRetrieved from Predbme.");
+			if (self::PRE_PREDBME) {
+				$newNames += $newPdme = $this->retrievePredbme();
+				if ($this->echooutput) {
+					echo $this->c->primary($newPdme . " \tRetrieved from Predbme.");
+				}
 			}
 
-			$newNames += $abgx = $this->retrieveAbgx();
-			if ($this->echooutput) {
-				echo $this->c->primary($abgx . " \tRetrieved from abgx.");
+			if (self::PRE_ABGXNET) {
+				$newNames += $abgx = $this->retrieveAbgx();
+				if ($this->echooutput) {
+					echo $this->c->primary($abgx . " \tRetrieved from abgx.");
+				}
 			}
 
-			$newNames += $newUsenetCrawler = $this->retrieveUsenetCrawler();
-			if ($this->echooutput) {
-				echo $this->c->primary($newUsenetCrawler . " \tRetrieved from Usenet-Crawler.");
+			if (self::PRE_UCRAWLER) {
+				$newNames += $newUsenetCrawler = $this->retrieveUsenetCrawler();
+				if ($this->echooutput) {
+					echo $this->c->primary($newUsenetCrawler . " \tRetrieved from Usenet-Crawler.");
+				}
 			}
 
-			$newNames += $newMoovee = $this->retrieveAllfilledMoovee();
-			if ($this->echooutput) {
-				echo $this->c->primary($newMoovee . " \tRetrieved from Allfilled Moovee.");
+			if (self::PRE_MOOVEE) {
+				$newNames += $newMoovee = $this->retrieveAllfilledMoovee();
+				if ($this->echooutput) {
+					echo $this->c->primary($newMoovee . " \tRetrieved from Allfilled Moovee.");
+				}
 			}
 
-			$newNames += $newTeevee = $this->retrieveAllfilledTeevee();
-			if ($this->echooutput) {
-				echo $this->c->primary($newTeevee . " \tRetrieved from Allfilled Teevee.");
+			if (self::PRE_TEEVEE) {
+				$newNames += $newTeevee = $this->retrieveAllfilledTeevee();
+				if ($this->echooutput) {
+					echo $this->c->primary($newTeevee . " \tRetrieved from Allfilled Teevee.");
+				}
 			}
 
-			$newNames += $newErotica = $this->retrieveAllfilledErotica();
-			if ($this->echooutput) {
-				echo $this->c->primary($newErotica . " \tRetrieved from Allfilled Erotica.");
+			if (self::PRE_EROTICA) {
+				$newNames += $newErotica = $this->retrieveAllfilledErotica();
+				if ($this->echooutput) {
+					echo $this->c->primary($newErotica . " \tRetrieved from Allfilled Erotica.");
+				}
 			}
 
-			$newNames += $newForeign = $this->retrieveAllfilledForeign();
+			if (self::PRE_FOREIGN) {
+				$newNames += $newForeign = $this->retrieveAllfilledForeign();
+				if ($this->echooutput) {
+					echo $this->c->primary($newForeign . " \tRetrieved from Allfilled Foreign.\n");
+				}
+			}
+
 			if ($this->echooutput) {
-				echo $this->c->primary($newForeign . " \tRetrieved from Allfilled Foreign.\n");
 				echo $this->c->primary($newNames . " \tRetrieved from all the above sources..");
 			}
+
+			// If we found nothing, update the last added to now to reset the timer.
+			$this->db->queryExec(sprintf("UPDATE site SET value = %s WHERE setting = 'lastpretime'", $this->db->escapeString(time())));
 		}
-		// If we found nothing, update the last added to now to reset the timer.
-		if ($newNames === 0) {
-			$this->db->queryExec(sprintf('UPDATE predb SET adddate = NOW() WHERE id = %d', $newestRel['id']));
-		}
+
 		return $newNames;
 	}
 
@@ -201,7 +243,7 @@ Class PreDb
 									sprintf('
 										UPDATE predb SET
 											nfo = %s, size = %s, category = %s, predate = %s,
-											adddate = now(), source = %s
+											source = %s
 										WHERE id = %d',
 										$nfo, $size, $category, $time, $source, $oldName['id']
 									)
@@ -209,8 +251,8 @@ Class PreDb
 								$updated++;
 							} elseif ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, nfo, size, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, %s, %s, now(), %s, %s)',
+									INSERT INTO predb (title, nfo, size, category, predate, source, md5)
+									VALUES (%s, %s, %s, %s, %s, %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									$nfo, $size, $category, $time, $source, $md5))) {
 								$newNames++;
@@ -268,7 +310,7 @@ Class PreDb
 								$this->db->queryExec(
 									sprintf('
 										UPDATE predb
-										SET size = %s, category = %s, predate = %s, adddate = NOW(), source = %s
+										SET size = %s, category = %s, predate = %s, source = %s
 										WHERE id = %d',
 										$size, $category, $time, $source, $oldName['id']
 									)
@@ -276,8 +318,8 @@ Class PreDb
 								$updated++;
 							} elseif ($this->db->queryExec(
 									sprintf('
-										INSERT INTO predb (title, size, category, predate, adddate, source, md5)
-										VALUES (%s, %s, %s, %s, now(), %s, %s)',
+										INSERT INTO predb (title, size, category, predate, source, md5)
+										VALUES (%s, %s, %s, %s, %s, %s)',
 										$this->db->escapeString($title), $size, $category, $time, $source, $md5))) {
 								$newNames++;
 							}
@@ -325,8 +367,8 @@ Class PreDb
 								continue;
 							} elseif ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, size, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, %s, now(), %s, %s)',
+									INSERT INTO predb (title, size, category, predate, source, md5)
+									VALUES (%s, %s, %s, %s, %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									((!isset($matches2['size1']) && empty($matches2['size1']))
 										? 'NULL'
@@ -336,7 +378,7 @@ Class PreDb
 										? $this->db->escapeString($matches2['category'])
 										: 'NULL'
 									),
-									$this->db->escapeString($matches2['predate']),
+									$this->db->from_unixtime(strtotime($matches2['predate'])),
 									$this->db->escapeString('zenet'),
 									$md5))) {
 								$newNames++;
@@ -382,8 +424,8 @@ Class PreDb
 								continue;
 							} elseif ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, size, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, %s, now(), %s, %s)',
+									INSERT INTO predb (title, size, category, predate, source, md5)
+									VALUES (%s, %s, %s, %s, %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									((!isset($matches2['size']) && empty($matches2['size']))
 										? 'NULL'
@@ -408,8 +450,8 @@ Class PreDb
 								continue;
 							} elseif ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, category, predate, adddate, source, md5)
-									VALUES (%s, %s, %s, now(), %s, %s)',
+									INSERT INTO predb (title, category, predate, source, md5)
+									VALUES (%s, %s, %s, %s, %s)',
 									$this->db->escapeString($matches2['title']),
 									$this->db->escapeString($matches2['category'] . ', ' . $matches2['category1']),
 									$this->db->from_unixtime(strtotime($matches2['date'])),
@@ -454,8 +496,8 @@ Class PreDb
 									continue;
 								} elseif ($this->db->queryExec(
 									sprintf('
-										INSERT INTO predb (title, size, category, predate, adddate, source, md5)
-										VALUES (%s, %s, %s, %s, now(), %s, %s)',
+										INSERT INTO predb (title, size, category, predate, source, md5)
+										VALUES (%s, %s, %s, %s, %s, %s)',
 										$this->db->escapeString($matches2['title']),
 										((!isset($matches2['size']) && empty($matches2['size']))
 											? 'NULL'
@@ -504,8 +546,8 @@ Class PreDb
 						continue;
 					} elseif ($this->db->queryExec(
 						sprintf('
-							INSERT INTO predb (title, predate, adddate, source, md5)
-							VALUES (%s, %s, now(), %s, %s)',
+							INSERT INTO predb (title, predate, source, md5)
+							VALUES (%s, %s, %s, %s)',
 							$this->db->escapeString($release->title),
 							$this->db->from_unixtime(strtotime($release->pubDate)),
 							$this->db->escapeString('srrdb'),
@@ -574,8 +616,8 @@ Class PreDb
 							continue;
 						} elseif ($this->db->queryExec(
 							sprintf('
-								INSERT INTO predb (title, predate, adddate, source, md5)
-								VALUES (%s, now(), now(), %s, %s)',
+								INSERT INTO predb (title, predate, source, md5)
+								VALUES (%s, NOW(), %s, %s)',
 								$this->db->escapeString($release->title),
 								$this->db->escapeString('predbme'),
 								$md5))) {
@@ -635,10 +677,10 @@ Class PreDb
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, now(), %s, %s, %s, %d, 'Movies')",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid, category)
+											VALUES (%s, %s, %s, %s, %s, %d, 'Movies')",
 											$this->db->escapeString($matches2["title"]),
-											$this->db->escapeString($matches2["predate"]),
+											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abMooVee'),
 											$md5,
 											$matches2["requestid"],
@@ -646,7 +688,7 @@ Class PreDb
 										)
 									);
 									$newNames++;
-								} else {
+								} else if (empty($dupeCheck['requestid'])) {
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
@@ -699,14 +741,14 @@ Class PreDb
 									continue;
 								}
 								$md5 = $this->db->escapeString(md5($matches2["title"]));
-								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id, requestid FROM predb WHERE md5 = %s', $md5));
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, now(), %s, %s, %s, %d, 'TV')",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid, category)
+											VALUES (%s, %s, %s, %s, %s, %d, 'TV')",
 											$this->db->escapeString($matches2["title"]),
-											$this->db->escapeString($matches2["predate"]),
+											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abTeeVee'),
 											$md5,
 											$matches2["requestid"],
@@ -714,7 +756,7 @@ Class PreDb
 										)
 									);
 									$newNames++;
-								} else {
+								} else if (empty($dupeCheck['requestid'])) {
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
@@ -768,14 +810,14 @@ Class PreDb
 								}
 								$md5 = $this->db->escapeString(md5($matches2["title"]));
 
-								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id, requestid FROM predb WHERE md5 = %s', $md5));
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid, category)
-											VALUES (%s, %s, now(), %s, %s, %s, %d, 'XXX')",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid, category)
+											VALUES (%s, %s, %s, %s, %s, %d, 'XXX')",
 											$this->db->escapeString($matches2["title"]),
-											$this->db->escapeString($matches2["predate"]),
+											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abErotica'),
 											$md5,
 											$matches2["requestid"],
@@ -783,7 +825,7 @@ Class PreDb
 										)
 									);
 									$newNames++;
-								} else {
+								} else if (empty($dupeCheck['requestid'])) {
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
@@ -837,14 +879,14 @@ Class PreDb
 							}
 							$md5 = $this->db->escapeString(md5($matches2["title"]));
 
-								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $md5));
+								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id, requestid FROM predb WHERE md5 = %s', $md5));
 								if ($dupeCheck === false) {
 									$this->db->queryExec(
 										sprintf("
-											INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid)
-											VALUES (%s, %s, now(), %s, %s, %s, %d)",
+											INSERT INTO predb (title, predate, source, md5, requestid, groupid)
+											VALUES (%s, %s, %s, %s, %s, %d)",
 											$this->db->escapeString($matches2["title"]),
-											$this->db->escapeString($matches2["predate"]),
+											$this->db->from_unixtime(strtotime($matches2["predate"])),
 											$this->db->escapeString('abForeign'),
 											$md5,
 											$matches2["requestid"],
@@ -852,7 +894,7 @@ Class PreDb
 										)
 									);
 									$newNames++;
-								} else {
+								} else if (empty($dupeCheck['requestid'])) {
 									$this->db->queryExec(
 										sprintf('
 											UPDATE predb
@@ -908,7 +950,7 @@ Class PreDb
 						$predate = $title[2];
 
 						$oldname = $this->db->queryOneRow(sprintf('SELECT md5, requestid, groupid FROM predb WHERE md5 = %s', $this->db->escapeString($md5)));
-						if ($oldname !== false) {
+						if ($oldname !== false && empty($oldname['requestid'])) {
 							$this->db->queryExec(
 								sprintf('
 									UPDATE predb
@@ -922,8 +964,8 @@ Class PreDb
 						} else {
 							if ($this->db->queryExec(
 								sprintf('
-									INSERT INTO predb (title, predate, adddate, source, md5, requestid, groupid)
-									VALUES (%s, %s, now(), %s, %s, %d, %d)',
+									INSERT INTO predb (title, predate, source, md5, requestid, groupid)
+									VALUES (%s, %s, %s, %s, %d, %d)',
 									$this->db->escapeString($title[1]),
 									$this->db->from_unixtime(strtotime($predate)),
 									$this->db->escapeString('abgx'),
@@ -1004,7 +1046,7 @@ Class PreDb
 			preg_match('/([\d\.]+MB)/', $data[3]->innertext, $match);
 			$size = isset($match[1]) ? $match[1] : 'NULL';
 			if (strlen($title) > 15 && $category != 'NUKED') {
-				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, adddate, source, md5, category, size) VALUES (%s, %s, now(), %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($category), $db->escapeString($size)))) {
+				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, source, md5, category, size) VALUES (%s, %s, %s, %s, %s, %s)', $db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($category), $db->escapeString($size)))) {
 					$newnames++;
 				}
 			}
@@ -1192,7 +1234,7 @@ Class PreDb
 			$count = $this->getCount();
 		}
 
-		$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid %s ORDER BY p.adddate DESC LIMIT %d OFFSET %d', $search, $offset2, $offset));
+		$parr = $db->query(sprintf('SELECT p.*, r.guid FROM predb p LEFT OUTER JOIN releases r ON p.id = r.preid %s ORDER BY p.predate DESC LIMIT %d OFFSET %d', $search, $offset2, $offset));
 		return array('arr' => $parr, 'count' => $count);
 	}
 

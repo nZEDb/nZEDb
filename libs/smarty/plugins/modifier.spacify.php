@@ -4,7 +4,6 @@
  * @package Smarty
  * @subpackage PluginsModifier
  */
-
 /**
  * Smarty spacify modifier plugin
  *

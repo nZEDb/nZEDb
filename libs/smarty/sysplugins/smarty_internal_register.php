@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Smarty Internal Plugin Register
  *
@@ -8,7 +7,6 @@
  * @package Smarty
  * @author Uwe Tews
  */
-
 /**
  * Class for register/unregister methods
  */
@@ -36,7 +34,6 @@ class Smarty_Internal_Register {
 			$this->smarty->registered_plugins[$type][$tag] = array($callback, (bool) $cacheable, (array) $cache_attr);
 		}
 	}
-
 	/**
 	 * Unregister Plugin
 	 *
@@ -49,7 +46,6 @@ class Smarty_Internal_Register {
 			unset($this->smarty->registered_plugins[$type][$tag]);
 		}
 	}
-
 	/**
 	 * Registers a resource to fetch a template
 	 *
@@ -60,7 +56,6 @@ class Smarty_Internal_Register {
 	{
 		$this->smarty->registered_resources[$type] = array($callback, false);
 	}
-
 	/**
 	 * Unregisters a resource
 	 *
@@ -72,7 +67,6 @@ class Smarty_Internal_Register {
 			unset($this->smarty->registered_resources[$type]);
 		}
 	}
-
 	/**
 	 * Registers object to be used in templates
 	 *
@@ -104,7 +98,6 @@ class Smarty_Internal_Register {
 		$this->smarty->registered_objects[$object_name] =
 		array($object_impl, (array)$allowed, (boolean)$smarty_args, (array)$block_methods);
 	}
-
 	/**
 	 * Registers static classes to be used in templates
 	 *
@@ -120,7 +113,6 @@ class Smarty_Internal_Register {
 		// register the class
 		$this->smarty->registered_classes[$class_name] = $class_impl;
 	}
-
 	/**
 	 * Registers a default plugin handler
 	 *
@@ -134,7 +126,6 @@ class Smarty_Internal_Register {
 			throw new SmartyException("Default plugin handler '$callback' not callable");
 		}
 	}
-
 	/**
 	 * Registers a default template handler
 	 *

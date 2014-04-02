@@ -6,7 +6,6 @@
  * @subpackage PluginsInternal
  * @author Uwe Tews
  */
-
 /**
  * This class does call function defined with the {function} tag
  *
@@ -49,5 +48,4 @@ class Smarty_Internal_Function_Call_Handler
         }
         $_function($_template, $_params);
     }
-
 }

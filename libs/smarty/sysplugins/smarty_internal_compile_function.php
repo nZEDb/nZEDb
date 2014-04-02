@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Function Class
  *
@@ -38,7 +37,6 @@ class Smarty_Internal_Compile_Function extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $optional_attributes = array('_any');
-
     /**
      * Compiles code for the {function} tag
      *
@@ -51,7 +49,6 @@ class Smarty_Internal_Compile_Function extends Smarty_Internal_CompileBase
     {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-
         if ($_attr['nocache'] === true) {
             $compiler->trigger_template_error('nocache option not allowed', $compiler->lex->taglineno);
         }
@@ -88,9 +85,7 @@ class Smarty_Internal_Compile_Function extends Smarty_Internal_CompileBase
         $compiler->template->properties['function'][$_name]['compiled'] = '';
         return true;
     }
-
 }
-
 /**
  * Smarty Internal Plugin Compile Functionclose Class
  *
@@ -158,8 +153,6 @@ foreach (Smarty::\$global_tpl_vars as \$key => \$value) if(!isset(\$_smarty_tpl-
         $compiler->parser->current_buffer = $saved_data[1];
         $compiler->template->has_nocache_code = $compiler->template->has_nocache_code | $saved_data[2];
         $compiler->template->required_plugins = $saved_data[3];
-
         return $output;
     }
-
 }

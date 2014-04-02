@@ -2,7 +2,7 @@
 require dirname(__FILE__) . '/../../../www/config.php';
 
 
-
+/*
 // Downloads predb titles from github and stores them in the predb table.
 if (isset($argv[1]) && is_numeric($argv[1]))
 {
@@ -61,15 +61,11 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 						if (file_exists($file))
 						{
 							chmod($file, 0777);
-							$ins = $db->queryExec(sprintf("LOAD DATA INFILE %s IGNORE INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (@adddate, title, category, size, predate) set adddate = FROM_UNIXTIME(@adddate), title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
+							$ins = $db->queryExec(sprintf("LOAD DATA INFILE %s IGNORE INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (title, category, size, predate) set title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
 							unlink($file);
 							if ($ins === false)
 								exit();
 							$db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
-							if ($db->dbSystem() === 'mysql')
-								$db->queryExec('UPDATE predb SET adddate = (NOW() - INTERVAL 1 day) WHERE (adddate > (NOW() - INTERVAL 2 HOUR) OR adddate < (NOW() - INTERVAL 6 YEAR))');
-							else if ($db->dbSystem() === 'pgsql')
-								$db->queryExec("UPDATE predb SET adddate = (NOW() - INTERVAL '1 DAYS') WHERE (adddate > (NOW() - INTERVAL '2 HOURS') OR adddate < (NOW() - INTERVAL '6 YEARS'))");
 							$predb->parseTitles(2, 1, 2, 1, 1);
 							$predb->matchPredb();
 							$done++;

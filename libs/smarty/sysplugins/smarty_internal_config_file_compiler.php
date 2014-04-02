@@ -9,7 +9,6 @@
  * @subpackage Config
  * @author Uwe Tews
  */
-
 /**
  * Main config file compiler class
  *
@@ -24,35 +23,30 @@ class Smarty_Internal_Config_File_Compiler
      * @var object
      */
     public $lex;
-
     /**
      * Parser object
      *
      * @var object
      */
     public $parser;
-
     /**
      * Smarty object
      *
      * @var Smarty object
      */
     public $smarty;
-
     /**
      * Smarty object
      *
      * @var Smarty_Internal_Config object
      */
     public $config;
-
     /**
      * Compiled config data sections and variables
      *
      * @var array
      */
     public $config_data = array();
-
     /**
      * Initialize compiler
      *
@@ -64,7 +58,6 @@ class Smarty_Internal_Config_File_Compiler
         $this->config_data['sections'] = array();
         $this->config_data['vars'] = array();
     }
-
     /**
      * Method to compile a Smarty template.
      *
@@ -96,7 +89,6 @@ class Smarty_Internal_Config_File_Compiler
         $parser->doParse(0, 0);
         $config->compiled_config = '<?php $_config_vars = ' . var_export($this->config_data, true) . '; ?>';
     }
-
     /**
      * display compiler error messages without dying
      *
@@ -138,5 +130,4 @@ class Smarty_Internal_Config_File_Compiler
         }
         throw new SmartyCompilerException($error_text);
     }
-
 }

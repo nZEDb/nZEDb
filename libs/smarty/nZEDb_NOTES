@@ -1,0 +1,7 @@
+Some of the plugins/sysplugins are custom and must be added back when updating.
+
+outputfilter.trimwhitespaces.php has been modified to remove multiple spaces/tabs/newlines/etc,
+fixing certain issues where text would be miss-aligned.
+Add this before the return when updating :
+// (mod by nZEDb) Strip multiple new lines / spaces.
+$source = preg_replace("/\s+/ms", " ", $source);

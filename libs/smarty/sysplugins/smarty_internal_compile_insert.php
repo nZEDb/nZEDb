@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Smarty Internal Plugin Compile Insert
  *
@@ -9,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Insert Class
  *
@@ -39,7 +37,6 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $optional_attributes = array('_any');
-
     /**
      * Compiles code for the {insert} tag
      *
@@ -57,7 +54,6 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
         $_smarty_tpl = $compiler->template;
         $_name = null;
         $_script = null;
-
         $_output = '<?php ';
         // save posible attributes
         eval('$_name = ' . $_attr['name'] . ';');
@@ -134,8 +130,6 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
                 $_output .= "echo {$_function}({$_params},\$_smarty_tpl);?>";
             }
         }
-
         return $_output;
     }
-
 }
