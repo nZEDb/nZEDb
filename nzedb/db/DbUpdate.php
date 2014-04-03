@@ -20,6 +20,15 @@
  */
 namespace nzedb\db;
 
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+
+use nzedb\utility\Utility;
+
+if (Utility::isCLI() && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
+	$updater = new DbUpdate(['backup'	=> false]);
+	echo $updater->log->primary("Db updater starting ...");
+	$updater->processPatches(['safe' => false]);
+}
 
 class DbUpdate
 {
@@ -116,28 +125,30 @@ class DbUpdate
 		$patched = 0;
 		$defaults = array(
 			'ext'   => 'sql',
-			'files' => array(),
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_dbSystem,
-			'regex' => '#^\d+-(\w)$#',
+			'regex' => '#^\d{4}_\d{2}_\d{2}_\d+(\w+)\.sql$#',
 			'safe'	=> true,
 		);
 		$options += $defaults;
 		$this->_useSettings();
 		$currentVersion = $this->settings->getSetting('sqlpatch');
 
-		$files = empty($options['files']) ? \nzedb\utility\Utility::getFileList($options) : $options['files'];
+		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
+
 		if (count($files)) {
 			sort($files);
-			foreach($files as $file => $info) {
-				$fp = fopen($info->getFilePath(), 'r');
-				$patch = fread($fp, filesize($info->getFilePath()));
+			echo $this->log->primary('Looking for unprocessed patches...');
+			foreach($files as $file) {
+				$fp = fopen($file, 'r');
+				$patch = fread($fp, filesize($file));
 				$pat = "/UPDATE `?site`? SET `?value`? = '?(?'patch'\d+)'? WHERE `?setting`? = 'sqlpatch'/i";
 				if (preg_match($pat, $patch, $matches)) {
 					if ($matches['patch'] > $currentVersion) {
-						if ($options['safe'] && !$this->backedup) {
+						echo $this->log->header('Processing patch file: ' . $file);
+						if ($options['safe'] && !$this->backedUp) {
 							$this->backupDb();
 						}
-						$this->splitSQL($info->getFilePath());
+						$this->splitSQL($file);
 						$patched++;
 					}
 				}

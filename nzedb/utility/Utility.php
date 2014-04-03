@@ -11,7 +11,7 @@ class Utility
 	{
 		$defaults = array(
 			'dir'	=> false,
-			'ext'	=> '', // no full stop (period).
+			'ext'	=> '', // no full stop (period) separator should be used.
 			'path'	=> '',
 			'regex'	=> '',
 		);
