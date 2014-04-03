@@ -1,7 +1,7 @@
 <?php
 require_once SMARTY_DIR . 'Smarty.class.php';
+require_once nZEDb_LIB . 'utility' . DS .'SmartyUtils.php';
 
-use nzedb\utility;
 
 class BasePage
 {

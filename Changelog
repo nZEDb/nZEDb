@@ -6,6 +6,11 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-03 bart39
+	* Fix: Fix various tmux window issues when enabling/disabling tmux colors and IRCScraper
+	* Chg: Move Ircscraper function into monitor loop (credits DariusIII)
+	* Chg: Added note to threaded.sh about modifying $tmux_session for nntpproxy if using tmux colors.
+	NB would suggest editing and re-saving user_threaded.sh for the new changes
 2014-04-03 ruhllatio
 	* Chg: Modify newposterwall queries to leverage partitioning -- considerable speed improvement (5.5+ safe)
 2014-04-03 niel
@@ -15,6 +20,7 @@ Each update goes to the top of the file
 	* Chg: Deprecated .../misc/testing/DB/patchDb.php in favour of .../nzedb/db/DbUpdate.php
 	* Fix: reverting schema patch pending investigating the problems.
 	* Fix: Duplicate entries for Korea in countries table. Changed to Korea, North and Korea, South.
+	* Fix: Apparently smarty doesn't like namespaces This separates some functions into their own file for Smarty.
 2014-04-03 kevin
 	* Add: Starting adding NZBget to profile edit (locked out for now), patch to set Sab as default for now.
 	* Add: Patch for NZBGet columns.

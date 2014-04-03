@@ -292,10 +292,13 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	window_ircscraper($tmux_session, 3);
-	window_proxy($tmux_session, 4);
 	if ($colors == 1) {
 		window_colors($tmux_session);
+		window_ircscraper($tmux_session, 4);
+		window_proxy($tmux_session, 5);
+	} else {
+		window_ircscraper($tmux_session, 3);
+		window_proxy($tmux_session, 4);
 	}
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
@@ -309,11 +312,15 @@ if ($seq == 1) {
 	}
 
 	window_stripped_utilities($tmux_session);
-	window_ircscraper($tmux_session, 2);
-	window_proxy($tmux_session, 3);
 	if ($colors == 1) {
 		window_colors($tmux_session);
+		window_ircscraper($tmux_session, 3);
+		window_proxy($tmux_session, 4);
+	} else {
+	window_ircscraper($tmux_session, 2);
+	window_proxy($tmux_session, 3);
 	}
+
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 } else {
@@ -329,11 +336,13 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	window_ircscraper($tmux_session, 3);
-	window_proxy($tmux_session, 4);
-
 	if ($colors == 1) {
 		window_colors($tmux_session);
+		window_ircscraper($tmux_session, 3);
+		window_proxy($tmux_session, 4);
+	} else {
+		window_ircscraper($tmux_session, 2);
+		window_proxy($tmux_session, 3);
 	}
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
