@@ -12,6 +12,7 @@ Each update goes to the top of the file
 	* Chg: Moved all Utility functions to use the nzedb\utility namespace.
 	* Chg: Deprecated .../misc/testing/DB/patchDb.php in favour of .../nzedb/db/DbUpdate.php
 	* Fix: reverting schema patch pending investigating the problems.
+	* Fix: Duplicate entries for Korea in countries table. Changed to Korea, North and Korea, South.
 2014-04-03 kevin
 	* Add: Starting adding NZBget to profile edit (locked out for now), patch to set Sab as default for now.
 	* Add: Patch for NZBGet columns.
