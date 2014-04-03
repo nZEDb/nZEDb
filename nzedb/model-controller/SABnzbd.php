@@ -103,6 +103,7 @@ class SABnzbd
 				}
 				$this->integrated = self::INTEGRATION_TYPE_USER;
 				break;
+
 			case self::INTEGRATION_TYPE_SITEWIDE:
 				if (!empty($page->site->sabapikey) && !empty($page->site->saburl)) {
 					$this->url = $page->site->saburl;
@@ -112,6 +113,24 @@ class SABnzbd
 				}
 				$this->integrated = self::INTEGRATION_TYPE_SITEWIDE;
 				break;
+
+			case self::INTEGRATION_TYPE_NONE:
+				$this->integrated = self::INTEGRATION_TYPE_NONE;
+				break;
+		}
+		// Verify the URL is good, fix it if not.
+		if (preg_match('/(?P<first>\/)?(?P<sab>[a-z]+)?(?P<last>\/)?$/i', $this->url, $matches)) {
+			if (!isset($matches['first'])) {
+				$this->url .= '/';
+			}
+			if (!isset($matches['sab'])) {
+				$this->url .= 'sabnzbd';
+			} elseif ($matches['sab'] !== 'sabnzbd') {
+				$this->url .= 'sabnzbd';
+			}
+			if (!isset($matches['last'])) {
+				$this->url .= '/';
+			}
 		}
 	}
 

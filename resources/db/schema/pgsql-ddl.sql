@@ -862,6 +862,11 @@ CREATE TABLE "users" (
   "sabapikey" character varying(255),
   "sabapikeytype" smallint DEFAULT 0 NOT NULL,
   "sabpriority" smallint DEFAULT 0 NOT NULL,
+  /* Type of queue, Sab or NZBGet. */
+  "queuetype" smallint DEFAULT 1 NOT NULL,
+  "nzbgeturl" character varying(255),
+  "nzbgetusername" character varying(255),
+  "nzbgetpassword" character varying(255),
   "userseed" character varying(50) NOT NULL,
   "cp_url" character varying(255),
   "cp_api" CHARACTER VARYING(255),

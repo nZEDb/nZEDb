@@ -21,6 +21,12 @@ class Users
 	const SALTLEN = 4;
 	const SHA1LEN = 40;
 
+	/**
+	 * Users select queue type.
+	 */
+	const QUEUE_SABNZBD = 0;
+	const QUEUE_NZBGET  = 1;
+
 	function __construct()
 	{
 		$this->db = new DB();
@@ -31,7 +37,6 @@ class Users
 		$db = $this->db;
 		return $db->query("SELECT * FROM users");
 	}
-
 
 	/**
 	 * Get the users selected theme.
@@ -184,7 +189,8 @@ class Users
 
 	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites, $movieview, $musicview,
 		$consoleview, $bookview, $saburl = false, $sabapikey = false, $sabpriority = false, $sabapikeytype = false,
-		$cp_url = false, $cp_api = false, $style = 'None')
+		$cp_url = false, $cp_api = false, $style = 'None', $queueType = self::QUEUE_SABNZBD,
+		$nzbgetURL = '', $nzbgetAPIKey = '', $nzbgetUsername = '', $nzbgetPassword = '')
 	{
 		$db = $this->db;
 
@@ -233,6 +239,23 @@ class Users
 		$sql[] = sprintf('consoleview = %d', $consoleview);
 		$sql[] = sprintf('bookview = %d', $bookview);
 		$sql[] = sprintf('style = %s', $db->escapeString($style));
+		$sql[] = sprintf('queuetype = %d', $queueType);
+
+		if ($nzbgetURL !== '') {
+			$sql[] = sprintf('nzbgeturl = %s', $db->escapeString($nzbgetURL));
+		}
+
+		if ($nzbgetAPIKey !== '') {
+			$sql[] = sprintf('nzbgetapikey = %s', $db->escapeString($nzbgetAPIKey));
+		}
+
+		if ($nzbgetUsername !== '') {
+			$sql[] = sprintf('nzbgetusername = %s', $db->escapeString($nzbgetUsername));
+		}
+
+		if ($nzbgetPassword !== '') {
+			$sql[] = sprintf('nzbgetpassword = %s', $db->escapeString($nzbgetPassword));
+		}
 
 		if ($saburl !== false) {
 			$sql[] = sprintf('saburl = %s', $db->escapeString($saburl));
@@ -742,8 +765,9 @@ class Users
 	/**
 	 * Delete api requests older than a day.
 	 *
-	 * @param int  $userid The users ID.
-	 * @param bool $userid If false do all user ID's..
+	 * @param int|bool  $userid
+	 *                   int The users ID.
+	 *                   bool false do all user ID's..
 	 *
 	 * @return void
 	 */

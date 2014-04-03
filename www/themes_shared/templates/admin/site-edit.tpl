@@ -369,7 +369,10 @@
 				<td style="width:180px;"><label for="sabintegrationtype">Integration Type:</label></td>
 				<td>
 					{html_radios id="sabintegrationtype" name='sabintegrationtype' values=$sabintegrationtype_ids output=$sabintegrationtype_names selected=$fsite->sabintegrationtype separator='<br />'}
-					<div class="hint">Whether to allow integration with a SAB install and if so what type of integration<br/></div>
+					<div class="hint">
+						Whether to allow integration with a SAB install and if so what type of integration.<br/>
+						<strong>Setting this to integrated also disables NZBGet from being selectable to the user.</strong><br />
+					</div>
 				</td>
 			</tr>
 

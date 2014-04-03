@@ -6,11 +6,18 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-04-02 niel
+2014-04-03 niel
 	* Chg: Refactoring DB class to allow passing of options (db arguments, ColorCLI instance, etc.) on instantiation.
 	Also to better comply with conventions (ordering of public, protected, private properties and using $_ for protected ones).
 	* Chg: Moved all Utility functions to use the nzedb\utility namespace.
 	* Chg: Deprecated .../misc/testing/DB/patchDb.php in favour of .../nzedb/db/DbUpdate.php
+2014-04-03 kevin
+	* Add: Starting adding NZBget to profile edit (locked out for now), patch to set Sab as default for now.
+	* Add: Patch for NZBGet columns.
+	* Add: Sabnzbd URL checking.
+	* Fix: Fixes to srrdb NFO fetching.
+	* Fix: Fixes to sab queue when set to settings other than user (site wide/disabled).
+	* Fix: Fix titles on prelist PreDb.php.
 2014-04-02 bart39
 	* Fix: predb invalid column count
 	* Fix: correct tmux session for nntpproxy in threaded.sh
