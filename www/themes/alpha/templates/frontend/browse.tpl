@@ -198,7 +198,7 @@
 									title="Browse {$result.group_name}"
 								><i class="icon-share-alt"></i></a>
 							{/if}
-							{nzedb\utility\release_flag($result.searchname, browse)}
+							{release_flag($result.searchname, browse)}
 						</div>
 					</td>
 					<td style="width:auto;text-align:center;white-space:nowrap;">

@@ -114,7 +114,7 @@
 							{$result.rating}/10
 						{/if}
 						{foreach from=$result.languages item=movielanguage}
-							{nzedb\utility\release_flag($movielanguage, browse)}
+							{release_flag($movielanguage, browse)}
 						{/foreach}
 					</h2>
 					{if $result.tagline != ''}
