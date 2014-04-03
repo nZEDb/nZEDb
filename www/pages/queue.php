@@ -16,7 +16,11 @@ if ($page->site->sabintegrationtype > 0) {
 	}
 
 	if (empty($sab->apikey)) {
-		$error = 'ERROR: The Sabnzbd API key is missing!';
+		if ($error === '') {
+			$error = 'ERROR: The Sabnzbd API key is missing!';
+		} else {
+			$error .= ' The Sabnzbd API key is missing!';
+		}
 	}
 
 	if ($error === '') {
