@@ -478,9 +478,8 @@ CREATE TABLE users (
 	sabapikeytype TINYINT(1) NULL DEFAULT NULL,
 	sabpriority TINYINT(1) NULL DEFAULT NULL,
 	/* Type of queue, Sab or NZBGet. */
-	queuetype TINYINT(1) NOT NULL DEFAULT 0,
+	queuetype TINYINT(1) NOT NULL DEFAULT 1,
 	nzbgeturl VARCHAR(255) NULL DEFAULT NULL,
-	nzbgetapikey VARCHAR(255) NULL DEFAULT NULL,
 	nzbgetusername VARCHAR(255) NULL DEFAULT NULL,
 	nzbgetpassword VARCHAR(255) NULL DEFAULT NULL,
 	userseed VARCHAR(50) NOT NULL,

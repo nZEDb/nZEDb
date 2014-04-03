@@ -736,7 +736,7 @@ INSERT INTO site (setting, value)
   ('showbacks', '0'),
   /* Last time we got a pre. */
   ('lastpretime', '0'),
-  ('sqlpatch', '194');
+  ('sqlpatch', '195');
 
 INSERT INTO genres (title, type)
   VALUES
