@@ -7,6 +7,36 @@ namespace nzedb\utility;
  */
 class Utility
 {
+	static public function getDirFiles (array $options = null)
+	{
+		$defaults = array(
+			'dir'	=> false,
+			'ext'	=> '', // no full stop (period).
+			'path'	=> '',
+			'regex'	=> '',
+		);
+		$options += $defaults;
+
+		$files = array();
+		$dir = new \DirectoryIterator($options['path']);
+		foreach ($dir as $fileinfo) {
+			$file = $fileinfo->getFilename();
+			switch (true) {
+				case $fileinfo->isDot():
+					break;
+				case !$options['dir'] && $fileinfo->isDir():
+					break;
+				case !empty($options['ext']) && $fileinfo->getExtension() != $options['ext'];
+					break;
+				case !preg_match($options['regex'], $file):
+					break;
+				default:
+					$files[] = $fileinfo->getPathname();
+				}
+		}
+		return $files;
+	}
+
 	static public function hasCommand($cmd)
 	{
 		if (!isWindows()) {
@@ -21,6 +51,14 @@ class Utility
 	{
 		if (!defined('nZEDb_COVERS')) {
 			define('nZEDb_COVERS', $path == '' ? nZEDb_WWW . 'covers' . DS : $path);
+		}
+	}
+
+    static public function stripBOM (&$text)
+	{
+		$bom = pack("CCC", 0xef, 0xbb, 0xbf);
+		if (0 == strncmp($text, $bom, 3)) {
+			$text = substr($text, 3);
 		}
 	}
 
