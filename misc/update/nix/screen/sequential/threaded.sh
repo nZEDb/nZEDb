@@ -67,9 +67,9 @@ do
 #		$PHP ${NZEDB_PATH}/nntpproxy.php
 #		sleep 1
 #	else
-#		tmux respawnp -k -t $tmux_session:2.0 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy.conf"
+#		tmux respawnp -k -t $tmux_session:3.0 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy.conf"
 		##Uncomment the next line only if you are using alternate nntp settings also
-#		tmux respawnp -k -t$tmux_session:2.1 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy_a.conf"
+#		tmux respawnp -k -t$tmux_session:3.1 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy_a.conf"
 #	fi
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full size
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full scr
