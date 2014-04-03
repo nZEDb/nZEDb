@@ -67,9 +67,10 @@ switch ($action) {
 									(isset($_POST['musicview']) ? "1" : "0"),
 									(isset($_POST['consoleview']) ? "1" : "0"),
 									(isset($_POST['bookview']) ? "1" : "0"),
-									$_POST['saburl'], $_POST['sabapikey'],
-									$_POST['sabpriority'],
-									$_POST['sabapikeytype'],
+									(isset($_POST['saburl']) ? $_POST['saburl'] : ''),
+									(isset($_POST['sabapikey']) ? $_POST['sabapikey'] : ''),
+									(isset($_POST['sabpriority']) ? $_POST['sabpriority'] : ''),
+									(isset($_POST['sabapikeytype']) ? $_POST['sabapikeytype'] : ''),
 									$_POST['cp_url'],
 									$_POST['cp_api'],
 									$_POST['style']

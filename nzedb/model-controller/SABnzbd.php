@@ -102,6 +102,7 @@ class SABnzbd
 				}
 				$this->integrated = self::INTEGRATION_TYPE_USER;
 				break;
+
 			case self::INTEGRATION_TYPE_SITEWIDE:
 				if (!empty($page->site->sabapikey) && !empty($page->site->saburl)) {
 					$this->url = $page->site->saburl;
@@ -110,6 +111,10 @@ class SABnzbd
 					$this->apikeytype = $page->site->sabapikeytype;
 				}
 				$this->integrated = self::INTEGRATION_TYPE_SITEWIDE;
+				break;
+
+			case self::INTEGRATION_TYPE_NONE:
+				$this->integrated = self::INTEGRATION_TYPE_NONE;
 				break;
 		}
 	}
