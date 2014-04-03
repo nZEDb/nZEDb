@@ -401,7 +401,7 @@ Class PreDb
 	 *
 	 * @return int
 	 */
-	public function retrievePrelist()
+	protected function retrievePrelist()
 	{
 		$newNames = 0;
 		$buffer = $this->getUrl('http://www.prelist.ws/');
