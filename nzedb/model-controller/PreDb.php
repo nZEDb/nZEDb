@@ -1156,8 +1156,7 @@ Class PreDb
 
 				// To save space in the DB we do this instead of storing the full URL.
 				if ($URL === 'srrdb') {
-					$srrdb = urlencode($row['title']);
-					$URL = 'http://www.srrdb.com/download/file/' . $srrdb . '/' . $srrdb . '.nfo';
+					$URL = 'http://www.srrdb.com/download/file/' . $row['title'] . '/' . strtolower(urlencode($row['title'])) . '.nfo';
 				}
 
 				$buffer = $this->getUrl($URL);
@@ -1166,6 +1165,11 @@ Class PreDb
 					if (strlen($buffer) < 5) {
 						continue;
 					}
+
+					if ($row['nfo'] === 'srrdb' && preg_match('/You\'ve reached the daily limit/i', $buffer)) {
+						continue;
+					}
+
 					if ($nfo->addAlternateNfo($db, $buffer, $row, $nntp)) {
 						if ($this->echooutput) {
 							echo '+';
