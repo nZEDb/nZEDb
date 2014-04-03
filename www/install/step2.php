@@ -4,7 +4,7 @@
 $minMySQLVersion = 5.5;
 $minPgSQLVersion = 9.3;
 
-require_once realpath(__DIR__ . '/../automated.config.php');
+require_once __DIR__ . '/../automated.config.php';
 
 $page = new InstallPage();
 $page->title = "Database Setup";
