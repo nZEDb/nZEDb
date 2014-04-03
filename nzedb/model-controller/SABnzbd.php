@@ -1,5 +1,6 @@
 <?php
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+
+use nzedb\utility;
 
 /**
  * Class SABnzbd
@@ -142,7 +143,7 @@ class SABnzbd
 	 */
 	public function sendToSab($guid)
 	{
-		return getUrl(
+		return nzedb\utility\getUrl(
 			$this->url .
 			'api?mode=addurl&priority=' .
 			$this->priority .
@@ -168,7 +169,7 @@ class SABnzbd
 	 */
 	public function getQueue()
 	{
-		return getUrl(
+		return nzedb\utility\getUrl(
 			$this->url .
 			"api?mode=qstatus&output=json&apikey=" .
 			$this->apikey
@@ -182,7 +183,7 @@ class SABnzbd
 	 */
 	public function getAdvQueue()
 	{
-		return getUrl(
+		return nzedb\utility\getUrl(
 			$this->url .
 			"api?mode=queue&start=START&limit=LIMIT&output=json&apikey=" .
 			$this->apikey
@@ -198,7 +199,7 @@ class SABnzbd
 	 */
 	public function delFromQueue($id)
 	{
-		return getUrl(
+		return nzedb\utility\getUrl(
 			$this->url .
 			"api?mode=queue&name=delete&value=" .
 			$id .
@@ -216,7 +217,7 @@ class SABnzbd
 	 */
 	public function pauseFromQueue($id)
 	{
-		return getUrl(
+		return nzedb\utility\getUrl(
 			$this->url .
 			"api?mode=queue&name=pause&value=" .
 			$id .
@@ -234,7 +235,7 @@ class SABnzbd
 	 */
 	public function resumeFromQueue($id)
 	{
-		return getUrl(
+		return nzedb\utility\getUrl(
 			$this->url .
 			"api?mode=queue&name=resume&value=" .
 			$id .
@@ -250,7 +251,7 @@ class SABnzbd
 	 */
 	public function pauseAll()
 	{
-		return getUrl(
+		return nzedb\utility\getUrl(
 			$this->url .
 			"api?mode=pause" .
 			"&apikey=" .
@@ -265,7 +266,7 @@ class SABnzbd
 	 */
 	public function resumeAll()
 	{
-		return getUrl(
+		return nzedb\utility\getUrl(
 			$this->url .
 			"api?mode=resume" .
 			"&apikey=" .

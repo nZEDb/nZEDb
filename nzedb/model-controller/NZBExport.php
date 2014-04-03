@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\utility;
+
 /**
  * Export NZB's to a folder.
  * Class NZBExport

@@ -1,7 +1,7 @@
 <?php
-
 require_once nZEDb_LIBS . "simple_html_dom.php";
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+
+use nzedb\utility;
 
 /*
  * Class for inserting names/categories/md5 etc from PreDB sources into the DB, also for matching names on files / subjects.
@@ -543,7 +543,7 @@ Class PreDb
 					}
 
 					if (preg_match('/Filesize.*<td>(?P<size>\d*)<\/td>\s*<td>.*?<\/td>\s*<td>.*?<\/td>\s*<\/tr>\s*<\/table>\s*/is', $release->description, $description)) {
-						$size = ((isset($description['size']) && !empty($description['size'])) ? $this->db->escapeString(bytesToSizeString($description['size'])) : 'NULL');
+						$size = ((isset($description['size']) && !empty($description['size'])) ? $this->db->escapeString(nzedb\utility\bytesToSizeString($description['size'])) : 'NULL');
 					}
 
 					if ($oldName !== false) {
@@ -1315,7 +1315,7 @@ Class PreDb
 	 */
 	protected function getUrl($url)
 	{
-		return getUrl(
+		return nzedb\utility\getUrl(
 			$url,
 			'get',
 			'',

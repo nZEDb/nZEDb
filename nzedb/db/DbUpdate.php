@@ -1,0 +1,275 @@
+<?php
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (see LICENSE.txt in the base directory.  If
+ * not, see:
+ *
+ * @link <http://www.gnu.org/licenses/>.
+ * @author niel
+ * @copyright 2014 nZEDb
+ */
+namespace nzedb\db;
+
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+
+use nzedb\utility\Utility;
+
+if (Utility::isCLI() && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
+	$updater = new DbUpdate(['backup'	=> false]);
+	echo $updater->log->primary("Db updater starting ...");
+	$updater->processPatches(['safe' => false]);
+}
+
+class DbUpdate
+{
+	/**
+	 * @var object	Instance variable for DB object.
+	 */
+	public $db;
+
+	/**
+	 * @var object    Instance variable for logging object. Currently only ColorCLI supported,
+	 * but expanding for full logging with agnostic API planned.
+	 */
+	public $log;
+
+	/**
+	 * @var object	Instance object for sites/settings class.
+	 */
+	public $settings;
+
+	protected $_dbSystem;
+
+	/**
+	 * @var bool    Has the Db been backed up?
+	 */
+	private $backedUp = false;
+
+	/**
+	 * @var bool    Should we perform a backup?
+	 */
+	private $backup = false;
+
+	public function __construct(array $options = [])
+	{
+		$defaults = array(
+			'backup'	=> true,
+			'db'		=> new \DB(),
+			'logging'	=> new \ColorCLI(),
+		);
+		$options += $defaults;
+		unset($defaults);
+
+		$this->backup	= $options['backup'];
+		$this->db		= $options['db'];
+		$this->log		= $options['logging'];
+
+		$this->_dbSystem = strtolower($this->db->dbSystem());
+	}
+
+	public function loadTables(array $options = [])
+	{
+		$defaults = array(
+			'ext'	=> 'tsv',
+			'files' => array(),
+			'path'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data',
+			'regex'	=> '#^(?:.*/|)\d+-(\w+)\.tsv$#',
+		);
+		$options += $defaults;
+
+		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
+		sort($files, SORT_NATURAL);
+		$sql = 'LOAD DATA LOCAL INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
+		foreach ($files as $file) {
+//			echo "File: $file\n";
+
+			if (is_readable($file)) {
+				if (preg_match($options['regex'], $file, $matches)) {
+					$table = $matches[1];
+					// Get the first line of the file which holds the columns used.
+					$handle = @fopen($file, "r");
+					if (is_resource($handle)) {
+						$line = fgets($handle);
+						fclose($handle);
+						if ($line === false) {
+							echo "FAILED reading first line of '$file'\n";
+							continue;
+						}
+						$fields = trim($line);
+
+						echo "Inserting data into table: '$table'\n";
+						$this->db->exec(sprintf($sql, $file, $table, $fields));
+					} else {
+						exit("Failed to open file: '$file'\n");
+					}
+				} else {
+					echo "Incorrectly formatted filename '$file' (should match " .
+						 str_replace('#', '', $options['regex']) .  "\n";
+				}
+			}
+		}
+	}
+
+	public function processPatches(array $options = [])
+	{
+		$patched = 0;
+		$defaults = array(
+			'ext'   => 'sql',
+			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_dbSystem,
+			'regex' => '#^\d{4}_\d{2}_\d{2}_\d+(\w+)\.sql$#',
+			'safe'	=> true,
+		);
+		$options += $defaults;
+		$this->_useSettings();
+		$currentVersion = $this->settings->getSetting('sqlpatch');
+
+		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
+
+		if (count($files)) {
+			sort($files);
+			echo $this->log->primary('Looking for unprocessed patches...');
+			foreach($files as $file) {
+				$fp = fopen($file, 'r');
+				$patch = fread($fp, filesize($file));
+				$pat = "/UPDATE `?site`? SET `?value`? = '?(?'patch'\d+)'? WHERE `?setting`? = 'sqlpatch'/i";
+				if (preg_match($pat, $patch, $matches)) {
+					if ($matches['patch'] > $currentVersion) {
+						echo $this->log->header('Processing patch file: ' . $file);
+						if ($options['safe'] && !$this->backedUp) {
+							$this->backupDb();
+						}
+						$this->splitSQL($file);
+						$patched++;
+					}
+				}
+			}
+		} else {
+			exit($this->log->error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
+		}
+		if ($patched === 0) {
+
+		}
+	}
+
+	public function processSQLFile(array $options = [])
+	{
+		$defaults = array(
+			'filepath'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . $this->_dbSystem . '-ddl.sql',
+		);
+		$options += $defaults;
+
+		$sql = file_get_contents($options['filepath']);
+		$sql = str_replace(array('DELIMITER $$', 'DELIMITER ;', ' $$'), '', $sql);
+		$this->db->exec($sql);
+	}
+
+	public function splitSQL($file, array $options = [])
+	{
+		$defaults = array(
+			'delimiter' => ';'
+		);
+		$options += $defaults;
+
+		set_time_limit(0);
+
+		if (is_file($file)) {
+			$file = fopen($file, 'r');
+
+			if (is_resource($file)) {
+				$query = array();
+
+				while (!feof($file)) {
+					$query[] = fgets($file);
+
+					if (preg_match('~' . preg_quote($options['delimiter'], '~') . '\s*$~iS',
+								   end($query)) == 1) {
+						$query = trim(implode('', $query));
+
+						try {
+							$qry = $this->db->prepare($query);
+							$qry->execute();
+							echo $this->log->alternateOver('SUCCESS: ') . $this->log->primary($query);
+						} catch (PDOException $e) {
+							// Log the problem and the query.
+							file_put_contents(
+								nZEDb_LOGS . 'patcherrors.log', '[' . date('r') .
+								'] [ERROR] [' . trim(preg_replace('/\s+/', ' ', $e->getMessage())) .
+								']' . PHP_EOL, '[' . date('r') . '] [QUERY] [' .
+								trim(preg_replace('/\s+/', ' ', $query)) . ']' . PHP_EOL,
+								FILE_APPEND
+							);
+
+							if (
+								 in_array($e->errorInfo[1], array(1091, 1060, 1054, 1061, 1062,
+																  1071, 1072, 1146)) ||
+								 in_array($e->errorInfo[0], array(23505, 42701, 42703, '42P07', '42P16'))
+								) {
+								if ($e->errorInfo[1] == 1060) {
+									echo $this->log->warning(
+										"$query The column already exists - No need to worry {" . $e->errorInfo[1] . "}.\n");
+								} else {
+									echo $this->log->warning(
+										"$query Skipped - No need to worry {" . $e->errorInfo[1] . "}.\n");
+								}
+							} else {
+								if (preg_match('/ALTER IGNORE/i', $query)) {
+									$this->db->queryExec("SET SESSION old_alter_table = 1");
+									try {
+										$this->db->exec($query);
+										echo $this->log->alternateOver('SUCCESS: ') . $this->log->primary($query);
+									} catch (PDOException $e) {
+										exit($this->log->error(
+											"$query Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+									}
+								} else {
+									exit($this->log->error(
+										"$query Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
+								}
+							}
+						}
+
+						while (ob_get_level() > 0) {
+							ob_end_flush();
+						}
+						flush();
+					}
+
+					if (is_string($query) === true) {
+						$query = array();
+					}
+				}
+			}
+		}
+	}
+
+	protected function _backupDb()
+	{
+		if (\nzedb\utility\Utility::hasCommand("php5")) {
+			$PHP = "php5";
+		} else {
+			$PHP = "php";
+		}
+
+		system("$PHP " . nZEDb_MISC . 'testing' . DS .'DB' . DS . $this->_dbSystem . 'dump_tables.php db dump');
+		$this->backedup = true;
+	}
+
+	protected function _useSettings(Sites $object = null)
+	{
+		if ($this->settings === null) {
+			$this->settings = (empty($object)) ? new \Sites() : $object;
+		}
+	}
+}
+
+?>

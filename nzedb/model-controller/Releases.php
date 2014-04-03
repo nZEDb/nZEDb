@@ -1,7 +1,8 @@
 <?php
 
 require_once nZEDb_LIBS . 'ZipFile.php';
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+
+use nzedb\utility;
 
 /**
  * Class Releases
@@ -2202,7 +2203,7 @@ class Releases
 				$bFound = false;
 				$web = true;
 
-				if (!getUrl('http://predb_irc.nzedb.com/')) {
+				if (!nzedb\utility\getUrl('http://predb_irc.nzedb.com/')) {
 					$web = false;
 				}
 

@@ -1,0 +1,192 @@
+name, description, minfilestoformrelease, minsizetoformrelease
+"alt.binaries.0day.stuffz"	"This group contains mostly 0day software."	2	NULL
+"alt.binaries.anime"	"This group contains mostly Anime Television."	NULL	NULL
+"alt.binaries.astronomy"	"This group contains mostly movies."	NULL	NULL
+"alt.binaries.ath"	"This group contains a variety of Music. Some Foreign."	8	NULL
+"alt.binaries.barbarella"	"This group contains a variety of German content."	NULL	NULL
+"alt.binaries.audio.warez"	"Theres some old stuff in here, but this group is pretty much dead."	NULL	NULL
+"alt.binaries.b4e"	"This group contains 0day and has some foreign."	NULL	NULL
+"alt.binaries.big"	"This group contains XVid Movies. Mostly Foreign."	NULL	NULL
+"alt.binaries.bloaf"	"This group contains a variety. Mostly Foreign."	NULL	NULL
+"alt.binaries.blu-ray"	"This group contains blu-ray movies."	NULL	NULL
+"alt.binaries.boneless"	"This group contains XVid and X264 Movies. Some Foreign."	NULL	NULL
+"alt.binaries.british.drama"	"This group contains British TV shows."	NULL	NULL
+"alt.binaries.cartoons.french"	"This group contains French cartoons."	NULL	NULL
+"alt.binaries.cats"	"This group contains mostly TV."	NULL	NULL
+"alt.binaries.cd.image.linux"	"This group contains Linux distributions."	NULL	NULL
+"alt.binaries.cd.image"	"This group contains PC-ISO."	4	NULL
+"alt.binaries.cd.lossless"	"This group contains a variety of lossless Music."	NULL	NULL
+"alt.binaries.chello"	"This group contains mostly TV."	NULL	NULL
+"alt.binaries.classic.tv.shows"	"This group contains Classic TV and Movies."	NULL	NULL
+"alt.binaries.comics.dcp"	"This group contains Comic Books"	NULL	NULL
+"alt.binaries.comp"	"This group contains Warez. Mostly Foreign."	NULL	NULL
+"alt.binaries.console.ps3"	"This group contains PS3 Games."	NULL	NULL
+"alt.binaries.cores"	"This group contains a variety including Nintendo DS. Lots of Foreign."	NULL	NULL
+"alt.binaries.country.mp3"	"This group contains Country Music."	5	NULL
+"alt.binaries.dc"	"This group contains XVid and X264 Movies and TV. Mostly Foreign."	NULL	NULL
+"alt.binaries.dgma"	"This group contains XVid Movies. Mostly Foreign."	NULL	NULL
+"alt.binaries.divx.french"	"This group contains French XVid Movies."	NULL	NULL
+"alt.binaries.documentaries"	"This group contains Documentaries TV and Movies."	5	NULL
+"alt.binaries.documentaries.french"	"This group contains French Documentaries TV and Movies."	5	NULL
+"alt.binaries.downunder"	"This group contains mostly TV."	NULL	NULL
+"alt.binaries.dvd"	"This group contains DVD Movies."	NULL	NULL
+"alt.binaries.dvd.movies"	"This group contains DVDR Movies."	NULL	NULL
+"alt.binaries.dvdr"	"This group contains DVD Movies."	NULL	NULL
+"alt.binaries.dvd-r"	"This group contains DVD Movies."	NULL	NULL
+"alt.binaries.e-book.flood"	"This group contains E-Books."	NULL	NULL
+"alt.binaries.e-book.technical"	"This group contains E-Books."	NULL	NULL
+"alt.binaries.e-book"	"This group contains E-Books."	NULL	NULL
+"alt.binaries.ebook"	"This group contains Ebook\'s."	NULL	NULL
+"alt.binaries.erotica.divx"	"This group contains XXX."	NULL	NULL
+"alt.binaries.erotica"	"This group contains XXX."	NULL	NULL
+"alt.binaries.etc"	"This group contains a variety of items."	NULL	NULL
+"alt.binaries.font"	"This group contains mostly TV."	NULL	NULL
+"alt.binaries.french-tv"	"This group contains French TV."	NULL	NULL
+"alt.binaries.frogs"	"This group contains a variety."	NULL	NULL
+"alt.binaries.ftn"	"This group contains a variety of Music and TV."	NULL	NULL
+"alt.binaries.games.nintendods"	"This group contains Nintendo DS Games "	5	NULL
+"alt.binaries.games"	"This group contains PC and Console Games."	5	NULL
+"alt.binaries.games.wii"	"This group contains Nintendo WII Games, WII-Ware, and VC."	5	NULL
+"alt.binaries.games.xbox360"	"This group contains XBOX 360 Games and DLC."	4	NULL
+"alt.binaries.games.xbox"	"This group contains original XBOX Games."	5	NULL
+"alt.binaries.ghosts"	"This group contains XVid TV and Movies. Mostly Foreign."	NULL	NULL
+"alt.binaries.hdtv"	"This group contains mostly HDTV 1080i rips."	2	NULL
+"alt.binaries.hdtv.german"	"This group contains German HDTV."	NULL	NULL
+"alt.binaries.hdtv.x264"	"This group contains X264 Movies and HDTV."	NULL	NULL
+"alt.binaries.highspeed"	"This group contains XVid Movies. Mostly Foreign."	NULL	NULL
+"alt.binaries.hou"	"This group contains a variety of content. Mostly Foreign."	NULL	NULL
+"alt.binaries.ijsklontje"	"This group contains XXX."	NULL	NULL
+"alt.binaries.inner-sanctum"	"This group contains PC and Music."	NULL	NULL
+"alt.binaries.illuminaten"	"This group contains mostly German."	NULL	NULL
+"alt.binaries.ipod.videos"	"This group contains Mobile TV and Movies."	NULL	NULL
+"alt.binaries.linux.iso"	"This group contains Linux distributions."	NULL	NULL
+"alt.binaries.lou"	"This group contains mostly german TV."	NULL	NULL
+"alt.binaries.mac"	"This group contains MAC/OSX Software."	NULL	NULL
+"alt.binaries.mac.applications"	"This group contains MAC/OSX Software."	NULL	NULL
+"alt.binaries.milo"	"This group contains mostly TV, some german."	NULL	NULL
+"alt.binaries.misc"	"This group contains a variety of items."	NULL	NULL
+"alt.binaries.mojo"	"This group contains mostly TV."	NULL	NULL
+"alt.binaries.mma"	"This group contains MMA/TNA Sport TV."	NULL	NULL
+"alt.binaries.mom"	"This group contains a variety. Mostly Foreign."	NULL	NULL
+"alt.binaries.moovee"	"This group contains XVid and X264 Movies."	NULL	NULL
+"alt.binaries.movies.divx"	"This group contains XVid Movies"	5	NULL
+"alt.binaries.movies.erotica"	"This group contains XXX"	NULL	NULL
+"alt.binaries.movies.french"	"This group contains French Movies."	NULL	NULL
+"alt.binaries.movies"	"This group contains an assortment of Movies."	NULL	NULL
+"alt.binaries.movies.xvid"	"This group contains XVid Movies."	NULL	NULL
+"alt.binaries.mp3.audiobooks"	"This group contains Audio Books."	NULL	NULL
+"alt.binaries.mp3.bootlegs"	"This group contains Bootleg Music."	NULL	NULL
+"alt.binaries.mp3.full_albums"	"This group contains a variety of Music."	NULL	NULL
+"alt.binaries.mp3"	"This group contains a variety of Music."	11	NULL
+"alt.binaries.mpeg.video.music"	"This group contains a variety of Music Videos."	NULL	NULL
+"alt.binaries.multimedia.anime.highspeed"	"This group contains Anime Television."	NULL	NULL
+"alt.binaries.multimedia.anime.repost"	"This group contains Anime Television."	NULL	NULL
+"alt.binaries.multimedia.anime"	"This group contains Anime TV and Movies."	NULL	NULL
+"alt.binaries.multimedia.cartoons"	"This group contains Cartoon TV and Movies."	NULL	NULL
+"alt.binaries.multimedia.classic-films"	"This group contains Classic TV and Movies."	NULL	NULL
+"alt.binaries.multimedia.comedy.british"	"This group contains British Comedy TV and Movies."	NULL	NULL
+"alt.binaries.multimedia.disney"	"This group contains Disney TV and Movies."	NULL	NULL
+"alt.binaries.multimedia.documentaries"	"This group contains Documentary Movies and TV."	NULL	NULL
+"alt.binaries.multimedia.erotica"	"This group contains XXX."	NULL	NULL
+"alt.binaries.multimedia.erotica.amateur"	"This group contains XXX."	NULL	NULL
+"alt.binaries.multimedia.scifi"	"This group contains science-fiction TV and movies."	NULL	NULL
+"alt.binaries.multimedia.scifi-and-fantasy"	"This group contains science-fiction and fantasy TV and movies."	NULL	NULL
+"alt.binaries.multimedia.sitcoms"	"This group contains Sitcom TV."	NULL	NULL
+"alt.binaries.multimedia.sports"	"This group contains Sports TV and Movies."	NULL	NULL
+"alt.binaries.multimedia"	"This group contains TV, Movies, and Music."	NULL	NULL
+"alt.binaries.multimedia.tv"	"This group contains XVid and X264 TV."	NULL	NULL
+"alt.binaries.multimedia.vintage-film"	"This group contains Vintage Movies pre 1960."	NULL	NULL
+"alt.binaries.multimedia.vintage-film.post-1960"	"This group contains Vintage Movies post 1960."	NULL	NULL
+"alt.binaries.music.flac"	"This group contains a variety of lossless Music."	NULL	NULL
+"alt.binaries.music.opera"	"This group contains Opera Music."	NULL	NULL
+"alt.binaries.nintendo.ds"	"This group contains Nintendo DS Games."	NULL	NULL
+"alt.binaries.nospam.cheerleaders"	"This group contains various."	NULL	NULL
+"alt.binaries.pictures.comics.complete"	"This group contains comics."	NULL	NULL
+"alt.binaries.pictures.comics.dcp"	"This group contains Comic Books."	NULL	NULL
+"alt.binaries.pictures.comics.reposts"	"This group contains Comic Books."	NULL	NULL
+"alt.binaries.pictures.comics.repost"	"This group contains Comic Books."	NULL	NULL
+"alt.binaries.pro-wrestling"	"This group contains WWE Sport TV."	NULL	NULL
+"alt.binaries.scary.exe.files"	"This group contains XVid and X264 Movies."	NULL	NULL
+"alt.binaries.series.tv.divx.french"	"This group contains French DIVX TV shows."	NULL	NULL
+"alt.binaries.sony.psp"	"This group contains PSP Games."	NULL	NULL
+"alt.binaries.sound.audiobooks"	"This group contains Audiobooks."	NULL	NULL
+"alt.binaries.sound.mp3"	"This group contains a variety of Music."	NULL	NULL
+"alt.binaries.sounds.1960s.mp3"	"This group contains Music from the 1960\'s."	NULL	NULL
+"alt.binaries.sounds.1970s.mp3"	"This group contains Music from the 1970\'s."	NULL	NULL
+"alt.binaries.sounds.audiobooks.repost"	"This group contains Audiobooks."	NULL	NULL
+"alt.binaries.sounds.country.mp3"	""	5	NULL
+"alt.binaries.sounds.flac.jazz"	"This group contains lossless Jazz Music."	5	NULL
+"alt.binaries.sounds.jpop"	"This group contains mostly Jpop music."	NULL	NULL
+"alt.binaries.sounds.lossless.1960s"	"This group contains lossless 1960\'s Music."	5	NULL
+"alt.binaries.sounds.lossless.classical"	"This group contains lossless Classical Music."	5	NULL
+"alt.binaries.sounds.lossless.country"	"This group contains lossless Country Music."	5	NULL
+"alt.binaries.sounds.lossless"	"This group contains a variety of Lossless Music."	5	NULL
+"alt.binaries.sounds.mp3.1950s"	"This group contains Music from the 1950\'s."	5	NULL
+"alt.binaries.sounds.mp3.1970s"	"This group contains Music from the 1970\'s."	5	NULL
+"alt.binaries.sounds.mp3.1980s"	"This group contains Music from the 1980\'s."	5	NULL
+"alt.binaries.sounds.mp3.1990s"	"This group contains Music from the 1990\'s."	5	NULL
+"alt.binaries.sounds.mp3.2000s"	"This group contains Music from the 2000\'s."	5	NULL
+"alt.binaries.sounds.mp3.acoustic"	"This group contains Accoustic Music."	5	NULL
+"alt.binaries.sounds.mp3.audiobooks"	"This group contains Audiobooks."	NULL	NULL
+"alt.binaries.sounds.mp3.bluegrass"	"This group contains Bluegrass Music."	5	NULL
+"alt.binaries.sounds.mp3.christian"	"This group contains Christian Music."	5	NULL
+"alt.binaries.sounds.mp3.classical"	"This group contains Classical Music."	5	NULL
+"alt.binaries.sounds.mp3.comedy"	"This group contains Comedy Audio."	5	NULL
+"alt.binaries.sounds.mp3.complete_cd"	"This group contains a variety of Music."	5	NULL
+"alt.binaries.sounds.mp3.country"	"This group contains mostly country music."	NULL	NULL
+"alt.binaries.sounds.mp3.dance"	"This group contains Dance Music."	5	NULL
+"alt.binaries.sounds.mp3.disco"	"This group contains Disco Music."	5	NULL
+"alt.binaries.sounds.mp3.emo"	"This group contains Emo Music."	5	NULL
+"alt.binaries.sounds.mp3.full_albums"	"This group contains a variety of Music."	5	NULL
+"alt.binaries.sounds.mp3.heavy-metal"	"This group contains Heavy Metal Music."	5	NULL
+"alt.binaries.sounds.mp3.jazz"	"This group contains Jazz Music."	5	NULL
+"alt.binaries.sounds.mp3.jazz.vocals"	"This group contains Jazz Vocal Music."	5	NULL
+"alt.binaries.sounds.mp3.musicals"	"This group contains Musicals Music."	5	NULL
+"alt.binaries.sounds.mp3.nospam"	"This group contains a variety of Music."	5	NULL
+"alt.binaries.sounds.mp3.opera"	"This group contains Opera Music."	5	NULL
+"alt.binaries.sounds.mp3.progressive-country"	"This group contains Country Music."	5	NULL
+"alt.binaries.sounds.mp3.rap-hiphop.full-albums"	"This group contains Rap and Hip-Hop Music."	5	NULL
+"alt.binaries.sounds.mp3.rap-hiphop"	"This group contains Rap and Hip-Hop Music."	5	NULL
+"alt.binaries.sounds.mp3.rock"	"This group contains Rock Music."	5	NULL
+"alt.binaries.sounds.mp3"	"This group contains a variety of Music."	5	NULL
+"alt.binaries.sounds.radio.bbc"	"This group contains BBC Radio Music"	NULL	NULL
+"alt.binaries.sounds.radio.british"	"This group contains British Radio Music."	NULL	NULL
+"alt.binaries.sounds.whitburn.pop"	"This group contains Pop Music."	NULL	NULL
+"alt.binaries.tatu"	"This group contains mostly French TV."	NULL	NULL
+"alt.binaries.teevee"	"This group contains X264 and XVid TV."	NULL	NULL
+"alt.binaries.test"	"This group contains a variety of content."	NULL	NULL
+"alt.binaries.town"	"This group contains XVid TV and Movies. Mostly Foreign."	NULL	NULL
+"alt.binaries.triballs"	"This group contains various."	2	NULL
+"alt.binaries.tun"	"This group contains various."	NULL	NULL
+"alt.binaries.tvseries"	"This group contains X264 and XVid TV."	NULL	NULL
+"alt.binaries.tv"	"This group contains XVid TV."	NULL	NULL
+"alt.binaries.u-4all"	"This group contains XVid TV and Movies. Mostly Foreign."	NULL	NULL
+"alt.binaries.u4e"	"This group contains a variery, mostly German movies."	NULL	NULL
+"alt.binaries.ucc"	"This group contains mostly TV."	NULL	NULL
+"alt.binaries.ufg"	"This group contains mostly TV."	NULL	NULL
+"alt.binaries.uzenet"	"This group contains XXX. Some Foreign."	NULL	NULL
+"alt.binaries.warez.ibm-pc.0-day"	"This group contains PC-0Day."	NULL	NULL
+"alt.binaries.warez.quebec-hackers"	"This group contains PC-0day. Some Foreign."	NULL	NULL
+"alt.binaries.warez.smartphone"	"This group contains Mobile Phone Apps."	NULL	NULL
+"alt.binaries.warez"	"This group contains PC 0DAY, PC ISO, and PC PHONE."	5	1000000
+"alt.binaries.warez.uk.mp3"	"This group contains a variety of Music."	NULL	NULL
+"alt.binaries.wii"	"This group contains Nintendo WII Games, WII-Ware, and VC."	NULL	NULL
+"alt.binaries.wmvhd"	"This group contains WMVHD Movies."	NULL	"40000000"
+"alt.binaries.worms"	"I have no idea what this group contains besides a lot of U4ALL which isn\'t really usable."	2	NULL
+"alt.binaries.x264"	"This group contains X264 Movies and TV."	NULL	NULL
+"alt.binaries.x"	"This group contains a variety of content. Some Foreign."	NULL	NULL
+"alt.binaries.multimedia.erotica.anime"	"erotica anime"	NULL	NULL
+"alt.binaries.multimedia.erotica.asian"	"erotica Asian"	NULL	NULL
+"alt.binaries.mp3.audiobooks.scifi-fantasy"	"Audiobooks"	NULL	NULL
+"alt.binaries.sounds.audiobooks.scifi-fantasy"	"Audiobooks"	NULL	NULL
+"alt.binaries.mp3.abooks"	"Audiobooks"	NULL	NULL
+"alt.binaries.town.xxx"	"XXX videos"	NULL	NULL
+"alt.binaries.software"	"Software"	NULL	NULL
+"alt.binaries.nzbpirates"	"Misc, mostly Erotica, and foreign movies "	NULL	NULL
+"alt.binaries.town.cine"	"Movies"	NULL	NULL
+"alt.binaries.usenet-space-cowboys"	"Misc, mostly German"	NULL	NULL
+"alt.binaries.warez.ibm-pc.games"	"misc, mostly games and applications"	NULL	NULL
+"alt.binaries.warez.games"	"misc, mostly games and applications"	NULL	NULL
+"alt.binaries.e-book.magazines"	"magazines, mostly english"	NULL	NULL
+"alt.binaries.sounds.anime"	"music from Anime"	NULL	NULL
+"alt.binaries.pictures.erotica.anime"	"Anime Manga, Adult"	NULL	NULL

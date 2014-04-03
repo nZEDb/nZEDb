@@ -21,6 +21,8 @@
 require_once realpath(dirname(__FILE__) . '/../www/config.php');
 require_once nZEDb_LIB . 'utility' . DS .'MoveFileTree.php';
 
+use nzedb\utility;
+
 $s = new Sites();
 
 $dirs = array(

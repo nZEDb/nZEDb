@@ -1,5 +1,6 @@
 <?php
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+
+use nzedb\utility;
 
 /**
  * Resize/save/delete images to disk.
@@ -80,7 +81,7 @@ class ReleaseImage
 		$img = false;
 
 		if (strpos(strtolower($imgLoc), 'http:') === 0) {
-			$img = getUrl($imgLoc);
+			$img = nzedb\utility\getUrl($imgLoc);
 		} else if (is_file($imgLoc)) {
 			$img = @file_get_contents($imgLoc);
 		}
