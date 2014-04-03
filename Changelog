@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-03 bart39
+	* Fix: undefined variables in monitor.php
 	* Fix: blank browse pages
 	* Fix: pass $tmux_session into function
 	* Fix: Fix various tmux window issues when enabling/disabling tmux colors and IRCScraper
