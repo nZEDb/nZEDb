@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-03 ruhllatio
+	* Chg: Modify newposterwall queries to leverage partitioning -- considerable speed improvement (5.5+ safe)
 2014-04-03 niel
 	* Chg: Refactoring DB class to allow passing of options (db arguments, ColorCLI instance, etc.) on instantiation.
 	Also to better comply with conventions (ordering of public, protected, private properties and using $_ for protected ones).
