@@ -12,9 +12,14 @@ Each update goes to the top of the file
 	* Chg: Moved all Utility functions to use the nzedb\utility namespace.
 	* Chg: Deprecated .../misc/testing/DB/patchDb.php in favour of .../nzedb/db/DbUpdate.php
 2014-04-02 bart39
+	* Fix: predb invalid column count
+	* Fix: correct tmux session for nntpproxy in threaded.sh
+	* Chg: make IRCScraper a function in monitor.php
 	* Chg: move IRCScraper into monitor.php so it will resapwn if pane dies (credits to Darius III)
 	* Fix: duplicate insert attempts for predb abgx web update
 2014-04-02 kevin
+	* Chg: Add phpdoc to Sabnzbd class.
+	* Chg: Cleanup view queue pages.
 	* FIx: Possible fix for empty pre date on Tmux monitor.
 	* Fix: Possible fix for future newest pre date on Tmux monitor.
 	* Chg: Check if buffer is empty before inserting PreDB NFO.
