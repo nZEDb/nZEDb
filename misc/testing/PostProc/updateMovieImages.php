@@ -11,7 +11,7 @@ if ($argc == 1 || $argv[1] != 'true') {
 
 $row = $db->queryOneRow("SELECT value FROM site WHERE setting = 'coverspath'");
 if ($row !== false) {
-	Util::setCoversConstant($row['value']);
+	\nzedb\utility\Utility::setCoversConstant($row['value']);
 } else {
 	die("Unable to set Covers' constant!\n");
 }

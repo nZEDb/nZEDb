@@ -6,6 +6,15 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-03 ruhllatio
+	* Chg: Modify newposterwall queries to leverage partitioning -- considerable speed improvement (5.5+ safe)
+2014-04-03 niel
+	* Chg: Refactoring DB class to allow passing of options (db arguments, ColorCLI instance, etc.) on instantiation.
+	Also to better comply with conventions (ordering of public, protected, private properties and using $_ for protected ones).
+	* Chg: Moved all Utility functions to use the nzedb\utility namespace.
+	* Chg: Deprecated .../misc/testing/DB/patchDb.php in favour of .../nzedb/db/DbUpdate.php
+	* Fix: reverting schema patch pending investigating the problems.
+	* Fix: Duplicate entries for Korea in countries table. Changed to Korea, North and Korea, South.
 2014-04-03 kevin
 	* Add: Starting adding NZBget to profile edit (locked out for now), patch to set Sab as default for now.
 	* Add: Patch for NZBGet columns.

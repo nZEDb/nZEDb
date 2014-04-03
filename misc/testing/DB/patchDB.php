@@ -1,7 +1,10 @@
 <?php
 //This inserts the patches into MySQL and PostgreSQL.
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+$log = new ColorCLI();
+
+exit($log->error("This file is deprecated and will be removed in a future version.\nUse 'php nzedb/db/DbUpdate.php 1' instead"));
 
 // Function inspired by : http://stackoverflow.com/questions/1883079/best-practice-import-mysql-file-in-php-split-queries/2011454#2011454
 function SplitSQL($file, $delimiter = ';')
@@ -93,7 +96,7 @@ function BackupDatabase()
 	$c = new ColorCLI();
 	$DIR = nZEDb_MISC;
 
-	if (Util::hasCommand("php5")) {
+	if (\nzedb\utility\Utility::hasCommand("php5")) {
 		$PHP = "php5";
 	} else {
 		$PHP = "php";

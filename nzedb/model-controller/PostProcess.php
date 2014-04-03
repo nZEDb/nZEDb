@@ -1,9 +1,9 @@
 <?php
-
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 require_once nZEDb_LIBS . 'rarinfo/zipinfo.php';
+
+use nzedb\utility;
 
 class PostProcess
 {
@@ -1475,11 +1475,11 @@ class PostProcess
 	protected function addMediaFile($file, $data)
 	{
 		if (@file_put_contents($file, $data) !== false) {
-			$xmlArray = runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $file . '"');
+			$xmlArray = nzedb\utility\runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $file . '"');
 			if (is_array($xmlArray)) {
 				$xmlArray = implode("\n", $xmlArray);
 				$xmlObj = @simplexml_load_string($xmlArray);
-				$arrXml = objectsIntoArray($xmlObj);
+				$arrXml = nzedb\utility\objectsIntoArray($xmlObj);
 				if (!isset($arrXml['File']['track'][0])) {
 					@unlink($file);
 				}
@@ -1738,6 +1738,7 @@ class PostProcess
 	protected function processReleaseFiles($fetchedBinary, $release, $name, $nntp)
 	{
 		if (!isset($nntp)) {
+			// TODO: This should be an exception.
 			exit($this->c->error("Not connected to usenet(postprocess->processReleaseFiles).\n"));
 		}
 
@@ -1854,7 +1855,7 @@ class PostProcess
 				$rarFile = $this->tmpPath . 'rarfile' . mt_rand(0, 99999) . '.rar';
 				if (@file_put_contents($rarFile, $fetchedBinary)) {
 					$execString = '"' . $this->site->unrarpath . '" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' . $rarFile . '" "' . $this->tmpPath . '"';
-					runCmd($execString);
+					nzedb\utility\runCmd($execString);
 					if (isset($files[0]['name'])) {
 						if ($this->echooutput) {
 							echo 'r';
@@ -1986,7 +1987,7 @@ class PostProcess
 				if (preg_match('/\.avi$/i', $mediaFile) && is_file($mediaFile)) {
 
 					// Run media info on it.
-					$xmlArray = runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $mediaFile . '"');
+					$xmlArray = nzedb\utility\runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $mediaFile . '"');
 
 					// Check if we got it.
 					if (is_array($xmlArray)) {
@@ -2075,11 +2076,11 @@ class PostProcess
 					if ($retVal === false) {
 
 						//  Get the media info for the file.
-						$xmlArray = runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $audioFile . '"');
+						$xmlArray = nzedb\utility\runCmd('"' . $this->site->mediainfopath . '" --Output=XML "' . $audioFile . '"');
 						if (is_array($xmlArray)) {
 
 							// Convert to array.
-							$arrXml = objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
+							$arrXml = nzedb\utility\objectsIntoArray(@simplexml_load_string(implode("\n", $xmlArray)));
 
 
 							if (isset($arrXml['File']['track'])) {
@@ -2143,7 +2144,7 @@ class PostProcess
 						$audioFileName = $releaseGUID . '.ogg';
 
 						// Create an audio sample.
-						runCmd(
+						nzedb\utility\runCmd(
 							'"' .
 							$this->site->ffmpegpath .
 							'" -t 30 -i "' .
@@ -2259,7 +2260,7 @@ class PostProcess
 					}
 
 					// Create the image.
-					runCmd(
+					nzedb\utility\runCmd(
 						'"' .
 						$this->site->ffmpegpath .
 						'" -i "' .

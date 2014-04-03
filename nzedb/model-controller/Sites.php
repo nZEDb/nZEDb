@@ -1,5 +1,5 @@
 <?php
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+use nzedb\utility;
 
 class Sites
 {
@@ -176,7 +176,7 @@ GNU General Public License for more details.
 	public function setCovers()
 	{
 		$row = $this->_db->query("SELECT value FROM site WHERE setting = 'coverspath'");
-		Util::setCoversConstant($row[0]['value']);
+		\nzedb\utility\Utility::setCoversConstant($row[0]['value']);
 	}
 }
 

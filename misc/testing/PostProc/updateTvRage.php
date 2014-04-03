@@ -1,8 +1,8 @@
 <?php
-
 //This script downloads covert art for Tv Shows -- it is intended to be run at interval, generally after the TvRage database is populated
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\utility;
 
 $tvrage = new TvRage(true);
 $db = new Db();
@@ -43,7 +43,7 @@ foreach ($shows as $show) {
 
 	$imgbytes = '';
 	if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-		$img = getUrl($rInfo['imgurl']);
+		$img = nzedb\utility\getUrl($rInfo['imgurl']);
 		if ($img !== false) {
 			$im = @imagecreatefromstring($img);
 			if ($im !== false) {

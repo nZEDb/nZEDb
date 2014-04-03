@@ -1,6 +1,6 @@
 <?php
 
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+use nzedb\utility;
 
 class TvRage
 {
@@ -354,7 +354,7 @@ class TvRage
 				echo $this->c->headerOver('Updating schedule for: ') . $this->c->primary($country['country']);
 			}
 
-			$sched = getURL($this->xmlFullScheduleUrl . $country['country']);
+			$sched = nzedb\utility\getURL($this->xmlFullScheduleUrl . $country['country']);
 			if ($sched !== false && ($xml = @simplexml_load_string($sched))) {
 				$tzOffset = 60 * 60 * 6;
 				$yesterday = strtotime("-1 day") - $tzOffset;
@@ -460,14 +460,14 @@ class TvRage
 
 		$series = str_ireplace("s", "", $series);
 		$episode = str_ireplace("e", "", $episode);
-		$xml = getUrl($this->xmlEpisodeInfoUrl . "&sid=" . $rageid . "&ep=" . $series . "x" . $episode);
+		$xml = nzedb\utility\getUrl($this->xmlEpisodeInfoUrl . "&sid=" . $rageid . "&ep=" . $series . "x" . $episode);
 		if ($xml !== false) {
 			if (preg_match('/no show found/i', $xml)) {
 				return false;
 			}
 
 			$xmlObj = @simplexml_load_string($xml);
-			$arrXml = objectsIntoArray($xmlObj);
+			$arrXml = nzedb\utility\objectsIntoArray($xmlObj);
 			if (is_array($arrXml)) {
 				if (isset($arrXml['episode']['airdate']) && $arrXml['episode']['airdate'] != '0000-00-00') {
 					$result['airdate'] = $arrXml['episode']['airdate'];
@@ -486,7 +486,7 @@ class TvRage
 	public function getRageInfoFromPage($rageid)
 	{
 		$result = array('desc' => '', 'imgurl' => '');
-		$page = getUrl($this->showInfoUrl . $rageid);
+		$page = nzedb\utility\getUrl($this->showInfoUrl . $rageid);
 		$matches = '';
 		if ($page !== false) {
 			// Description.
@@ -517,9 +517,9 @@ class TvRage
 	{
 		$result = array('genres' => '', 'country' => '', 'showid' => $rageid);
 		// Full search gives us the akas.
-		$xml = getUrl($this->xmlShowInfoUrl . $rageid);
+		$xml = nzedb\utility\getUrl($this->xmlShowInfoUrl . $rageid);
 		if ($xml !== false) {
-			$arrXml = objectsIntoArray(simplexml_load_string($xml));
+			$arrXml = nzedb\utility\objectsIntoArray(simplexml_load_string($xml));
 			if (is_array($arrXml)) {
 				$result['genres'] = (isset($arrXml['genres'])) ? $arrXml['genres'] : '';
 				$result['country'] = (isset($arrXml['origin_country'])) ? $arrXml['origin_country'] : '';
@@ -590,7 +590,7 @@ class TvRage
 
 		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = getUrl($rInfo['imgurl']);
+			$img = nzedb\utility\getUrl($rInfo['imgurl']);
 			if ($img !== false) {
 				$im = @imagecreatefromstring($img);
 				if ($im !== false) {
@@ -631,7 +631,7 @@ class TvRage
 
 		$imgbytes = '';
 		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-			$img = getUrl($rInfo['imgurl']);
+			$img = nzedb\utility\getUrl($rInfo['imgurl']);
 			if ($img !== false) {
 				$im = @imagecreatefromstring($img);
 				if ($im !== false) {
@@ -750,9 +750,9 @@ class TvRage
 	{
 		$title = $showInfo['cleanname'];
 		// Full search gives us the akas.
-		$xml = getUrl($this->xmlFullSearchUrl . urlencode(strtolower($title)));
+		$xml = nzedb\utility\getUrl($this->xmlFullSearchUrl . urlencode(strtolower($title)));
 		if ($xml !== false) {
-			$arrXml = @objectsIntoArray(simplexml_load_string($xml));
+			$arrXml = @nzedb\utility\objectsIntoArray(simplexml_load_string($xml));
 			if (isset($arrXml['show']) && is_array($arrXml)) {
 				// We got a valid xml response
 				$titleMatches = $urlMatches = $akaMatches = array();

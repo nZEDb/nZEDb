@@ -1,6 +1,8 @@
 <?php
 require_once SMARTY_DIR . 'Smarty.class.php';
 
+use nzedb\utility;
+
 class BasePage
 {
 	public $title = '';

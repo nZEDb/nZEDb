@@ -38,16 +38,16 @@ if (!$cfg->error) {
 	<h2>Index Usenet. Now.</h2>
 
 	<p>Welcome to nZEDb.</p>
-	<p>Before getting started, you need to make sure that the server meet's the minimum requirements. You will also need...</p>
+	<p>Before getting started, you need to make sure that the server meets the minimum requirements. You will also need...</p>
 	<ol>
 		<li>Your database credentials.</li>
 		<li>Your news server credentials.</li>
-		<li>SSH & root ability on your server (incase you need to install missing packages).</li>
+		<li>SSH & root ability on your server (in case you need to install missing packages).</li>
 	</ol>
 	<br/><br/>
 	<p>
 		<strong>
-			<div style="color: red">WARNING: </div>
+			<div style="color: #ff0000">WARNING: </div>
 			This software is not practical for use on shared hosting. You should only use this on a server where YOU have the required privileges and knowledge to solve any challenges that might appear.
 		</strong>
 	</p>
@@ -63,8 +63,7 @@ if (!$cfg->error) {
 			if (!$cfg->cacheCheck) {
 				?>
 				<div class="error">
-					The template compile dir must be writable.<br />A quick solution is to run:
-					<br />
+					The template compile dir must be writable.<br />A quick solution is to run:	<br />
 					<?php
 					echo 'chmod 777 ' . SMARTY_DIR . 'templates_c';
 					if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {

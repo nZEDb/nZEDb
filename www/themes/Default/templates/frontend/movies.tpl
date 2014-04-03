@@ -128,7 +128,7 @@
 							(<a class="title" title="{$result.year}"
 								href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
 							{foreach from=$result.languages item=movielanguage}
-								{release_flag($movielanguage, browse)}
+								{nzedb\utility\release_flag($movielanguage, browse)}
 							{/foreach}</h2>
 						{if $result.tagline != ''}<b>{$result.tagline|stripslashes}</b><br/>{/if}
 						{if $result.plot != ''}{$result.plot|stripslashes}<br/><br/>{/if}

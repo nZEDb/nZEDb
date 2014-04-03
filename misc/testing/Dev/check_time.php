@@ -1,10 +1,12 @@
 <?php
 // Shitty script to check time/date in php mysql and system...
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+
+use nzedb\utility;
+
 $n = PHP_EOL;
 
-if (!isWindows()) {
+if (!nzedb\utility\isWindows()) {
 	echo 'These are the settings in your php.ini files:' . $n;
 	echo 'CLI PHP timezone : ' . exec('cat /etc/php5/cli/php.ini | grep \'date.timezone =\' | cut -d \  -f 3') . $n;
 	echo 'apache2 timezone : ' . exec('cat /etc/php5/apache2/php.ini| grep \'date.timezone =\' | cut -d \  -f 3') . $n;
@@ -14,7 +16,7 @@ $system = ' not supported on windows.';
 
 $db = new DB();
 $MySQL = $db->queryOneRow('SELECT NOW() AS time, @@system_time_zone AS tz');
-if (!isWindows()) {
+if (! nzedb\utility\isWindows()) {
 	$system = exec('date');
 }
 $php = date('D M d H:i:s T o');

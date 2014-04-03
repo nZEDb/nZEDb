@@ -1,7 +1,8 @@
 <?php
 
 require_once nZEDb_LIBS . 'ZipFile.php';
-require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+
+use nzedb\utility;
 
 /**
  * Class Releases
@@ -2202,7 +2203,7 @@ class Releases
 				$bFound = false;
 				$web = true;
 
-				if (!getUrl('http://predb_irc.nzedb.com/')) {
+				if (!nzedb\utility\getUrl('http://predb_irc.nzedb.com/')) {
 					$web = false;
 				}
 
@@ -2915,7 +2916,7 @@ class Releases
 	}
 
 	/**
-	 * Get all newest movies with covers for poster wall.
+	 * Get all newest movies with coves for poster wall.
 	 * @return array
 	 */
 	public function getNewestMovies()
@@ -2925,7 +2926,8 @@ class Releases
 				guid, name, b.title, searchname, size, completion,
 				postdate, categoryid, comments, grabs, c.cover
 			FROM releases a, category b, movieinfo c
-			WHERE b.title = 'Movies'
+			WHERE a.categoryid BETWEEN 2000 AND 2999
+			AND b.title = 'Movies'
 			AND a.imdbid = c.imdbid
 			AND a.imdbid !='NULL'
 			AND a.imdbid != 0
@@ -2948,6 +2950,7 @@ class Releases
 				postdate, categoryid, comments, grabs, c.cover
 			FROM releases a, category b, consoleinfo c
 			WHERE c.cover > 0
+			AND a.categoryid BETWEEN 1000 AND 1999
 			AND b.title = 'Console'
 			AND a.consoleinfoid = c.id
 			AND a.consoleinfoid != -2
@@ -2970,6 +2973,8 @@ class Releases
 				 postdate, categoryid, comments, grabs, c.cover
 			FROM releases a, category b, musicinfo c
 			WHERE c.cover > 0
+			AND a.categoryid BETWEEN 3000 AND 3999
+			AND a.categoryid != 3030
 			AND b.title = 'Audio'
 			AND a.musicinfoid = c.id
 			AND a.musicinfoid != -2
@@ -2991,6 +2996,7 @@ class Releases
 				postdate, categoryid, comments, grabs, c.cover
 			FROM releases a, category b, bookinfo c
 			WHERE c.cover > 0
+			AND (a.categoryid BETWEEN 8000 AND 8999 OR a.categoryid = 3030)
 			AND b.title = 'Books'
 			AND a.bookinfoid = c.id
 			AND a.bookinfoid != -2

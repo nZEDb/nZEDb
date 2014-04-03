@@ -4,7 +4,7 @@
 $minMySQLVersion = 5.5;
 $minPgSQLVersion = 9.3;
 
-require_once realpath(__DIR__ . '/../automated.config.php');
+require_once __DIR__ . '/../automated.config.php';
 
 $page = new InstallPage();
 $page->title = "Database Setup";
@@ -80,65 +80,70 @@ if ($page->isPostBack()) {
 	$cfg->DB_NAME = trim($_POST['db']);
 	$cfg->DB_SYSTEM = strtolower(trim($_POST['db_system']));
 	$cfg->error = false;
-	$pdo = null;
 
 	// Check if user selected right DB type.
 	if (!in_array($cfg->DB_SYSTEM, array('mysql', 'pgsql'))) {
 		$cfg->emessage = 'Invalid database system. Must be: mysql or pgsql ; Not: ' . $cfg->DB_SYSTEM;
 		$cfg->error = true;
 	} else {
-
+/*
 		// Check if user connects using socket or host/port.
 		if (isset($cfg->DB_SOCKET) && !empty($cfg->DB_SOCKET)) {
 			$pdoString = $cfg->DB_SYSTEM . ':unix_socket=' . $cfg->DB_SOCKET;
 		} else {
 			$pdoString = $cfg->DB_SYSTEM . ':host=' . $cfg->DB_HOST . (isset($cfg->DB_PORT) ?';port=' . $cfg->DB_PORT : '');
 		}
-
 		// If MySQL add charset, if PgSQL add database name.
 		$pdoString .= ($cfg->DB_SYSTEM === 'mysql' ? ';charset=utf8' : ';dbname=' . $cfg->DB_NAME);
+*/
 
 		// Connect to the SQL server.
 		try {
-			$pdo = new PDO($pdoString, $cfg->DB_USER, $cfg->DB_PASSWORD);
+			$pdo = new DB(
+				array(
+					'checkVersion' => true,
+					'createDb'     => true,
+					'dbhost'       => $cfg->DB_HOST,
+					'dbname'       => $cfg->DB_NAME,
+					'dbpass'       => $cfg->DB_PASSWORD,
+					'dbport'       => $cfg->DB_PORT,
+					'dbsock'       => $cfg->DB_SOCKET,
+					'dbtype'       => $cfg->DB_SYSTEM,
+					'dbuser'       => $cfg->DB_USER,
+				)
+			);
+			//$pdo = new PDO($pdoString, $cfg->DB_USER, $cfg->DB_PASSWORD);
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$cfg->dbConnCheck = true;
 		} catch (PDOException $e) {
 			$cfg->emessage = 'Unable to connect to the SQL server.';
 			$cfg->error = true;
 			$cfg->dbConnCheck = false;
+		} catch (\RuntimeException $e) {
+			switch ($e->getCode()) {
+				case 1:
+				case 2:
+				case 3:
+					$cfg->error    = true;
+					$cfg->emessage = $e->getMessage();
+					break;
+				default:
+					var_dump($e);
+					throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+			}
 		}
 
-		// Check if the MySQL or PgSQL versions are right.
-		$vQuery = ($cfg->DB_SYSTEM === 'mysql' ? "SHOW VARIABLES WHERE Variable_name = 'version'" : 'SELECT version()');
+		// Check if the MySQL or PgSQL versions are correct.
 		$goodVersion = false;
-		try {
-			$version = $pdo->query($vQuery);
-			if ($version === false) {
-				$cfg->error = true;
+		if (!$cfg->error) {
+			$minVersion = ($cfg->DB_SYSTEM === 'mysql') ? $minMySQLVersion : $minPgSQLVersion;
+			try {
+				$goodVersion = $pdo->isDbVersionAtLeast($minVersion);
+			} catch (PDOException $e) {
+				$goodVersion   = false;
+				$cfg->error    = true;
 				$cfg->emessage = 'Could not get version from SQL server.';
-			} else {
-				foreach ($version as $row) {
-					if ($cfg->DB_SYSTEM === 'mysql' && isset($row['Value'])) {
-						if (preg_match('/^(5\.\d)/', $row['Value'], $match)) {
-							if ((float)$match[1] >= $minMySQLVersion) {
-								$goodVersion = true;
-								break;
-							}
-						}
-					} elseif ($cfg->DB_SYSTEM === 'pgsql' && isset($row['version'])) {
-						if (preg_match('/PostgreSQL (\d\.\d)/i', $row['version'], $match)) {
-							if ((float)$match[1] >= $minPgSQLVersion) {
-								$goodVersion = true;
-								break;
-							}
-						}
-					}
-				}
 			}
-		} catch (PDOException $e) {
-			$cfg->error = true;
-			$cfg->emessage = 'Could not get version from SQL server.';
 		}
 
 		if ($goodVersion === false) {
@@ -151,130 +156,58 @@ if ($page->isPostBack()) {
 		}
 	}
 
-	$cfg->dbNameCheck = true;
-	// Check if the database exists for PgSQL.
-	if (!$cfg->error && $cfg->DB_SYSTEM === "pgsql") {
-		if (databaseCheck($cfg->DB_NAME, $cfg->DB_SYSTEM, $pdo) === false) {
-			$cfg->dbNameCheck = false;
-			$cfg->error = true;
-			$cfg->emessage =
-				'Could not find your database called : ' .
-				$cfg->DB_NAME .
-				', please see Install.txt for instructions to create a database.'
-			;
-		}
-	}
-
-	// Check if database exists for MySQL, drop it if so.
-	if (!$cfg->error && $cfg->DB_SYSTEM === "mysql") {
-		// Check if it exists.
-		if (databaseCheck($cfg->DB_NAME, $cfg->DB_SYSTEM, $pdo) === false) {
-			$cfg->dbNameCheck = false;
-		}
-
-		// It exists so drop it.
-		if ($cfg->dbNameCheck === true) {
-			try {
-				$pdo->query("DROP DATABASE " . $cfg->DB_NAME);
-				if (databaseCheck($cfg->DB_NAME, $cfg->DB_SYSTEM, $pdo) === true) {
-					$cfg->error = true;
-					$cfg->emessage = 'Could not drop your old database.';
-				} else {
-					$cfg->dbNameCheck = false;
-				}
-			} catch (PDOException $e) {
-				$cfg->error = true;
-				$cfg->emessage = 'Could not drop your old database.';
-			}
-		}
-
-		// Try to create the database.
-		if (!$cfg->error && $cfg->dbNameCheck === false) {
-			try {
-				$pdo->query("CREATE DATABASE " . $cfg->DB_NAME . " DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
-				if (databaseCheck($cfg->DB_NAME, $cfg->DB_SYSTEM, $pdo) === false) {
-					$cfg->error = true;
-					$cfg->emessage = 'Could not create the new database.';
-				} else {
-					$cfg->dbNameCheck = true;
-				}
-			} catch (PDOException $e) {
-				$cfg->error = true;
-				$cfg->emessage = 'Could not create the new database.';
-			}
-		}
-	}
-
 	// Start inserting data into the DB.
 	if (!$cfg->error) {
 		$cfg->setSession();
 
-		// Load schema files.
-		$dbData = $dbDDL = null;
-		if (is_file($cfg->DB_DIR . '/mysql-ddl.sql') && is_file($cfg->DB_DIR . '/pgsql-ddl.sql')) {
-			if ($cfg->DB_SYSTEM === "mysql") {
-				$dbDDL = file_get_contents($cfg->DB_DIR . '/mysql-ddl.sql');
-				$dbDDL = str_replace(array('DELIMITER $$', 'DELIMITER ;', ' $$'), '', $dbDDL);
-				$dbData = file_get_contents($cfg->DB_DIR . '/mysql-data.sql');
-				$dbData = str_replace(array('DELIMITER $$', 'DELIMITER ;', ' $$'), '', $dbData);
-			}
-			if ($cfg->DB_SYSTEM === "pgsql") {
-				$pdo->query("DROP FUNCTION IF EXISTS hash_check() CASCADE");
-				$pdo->query("DROP FUNCTION IF EXISTS request_check() CASCADE");
-				$dbDDL = file_get_contents($cfg->DB_DIR . '/pgsql-ddl.sql');
-				$dbData = file_get_contents($cfg->DB_DIR . '/pgsql-data.sql');
-			}
+		$DbSetup = new \nzedb\db\DbUpdate(
+			array(
+				'backup' => false,
+				'db'     => $pdo,
+			)
+		);
 
-			// Fix to remove BOM in UTF8 files.
-			$bom = pack("CCC", 0xef, 0xbb, 0xbf);
-			if (0 == strncmp($dbData, $bom, 3)) {
-				$dbData = substr($dbData, 3);
-			}
+		try {
+			$DbSetup->processSQLFile();	// Setup default schema
+			$DbSetup->loadTables();		// Load default data files
+			$DbSetup->processSQLFile(	// Process any custom stuff.
+					array(
+						 'filepath' =>	nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
+					)
+			);
+		} catch (PDOException $err) {
+			$cfg->error = true;
+			$cfg->emessage = "Error inserting: (" . $err->getMessage() . ")";
+		}
 
-			// Select DB.
-			if ($cfg->DB_SYSTEM === "mysql") {
-				$pdo->query("USE " . $cfg->DB_NAME);
-			}
-
-			// Try to insert the schema / data contents into the DB.
-			try {
-				$pdo->exec($dbDDL);
-				$pdo->exec($dbData);
-            } catch (PDOException $err) {
+		if (!$cfg->error) {
+			// Check one of the standard tables was created and has data.
+			$dbInstallWorked = false;
+			$reschk = $pdo->query("SELECT COUNT(*) AS num FROM countries");
+			if ($reschk === false) {
+				$cfg->dbCreateCheck = false;
 				$cfg->error = true;
-				$cfg->emessage = "Error inserting: (" . $err->getMessage() . ")";
+				$cfg->emessage = 'Could not select data from your database.';
+			} else {
+				foreach ($reschk as $row) {
+					if ($row['num'] > 0) {
+						$dbInstallWorked = true;
+						break;
+					}
+				}
 			}
 
-			if (!$cfg->error) {
-
-				// Check one of the standard tables was created and has data.
-				$dbInstallWorked = false;
-				$reschk = $pdo->query("SELECT COUNT(*) AS num FROM countries");
-				if ($reschk === false) {
-					$cfg->dbCreateCheck = false;
-					$cfg->error = true;
-					$cfg->emessage = 'Could not select data from your database.';
-				} else {
-					foreach ($reschk as $row) {
-						if ($row['num'] > 0) {
-							$dbInstallWorked = true;
-							break;
-						}
-					}
+			// If it all worked, move to the next page.
+			if ($dbInstallWorked) {
+				header("Location: ?success");
+				if (file_exists($cfg->DB_DIR . '/post_install.php')) {
+					exec("php " . $cfg->DB_DIR . "/post_install.php ${pdo}");
 				}
-
-				// If it all worked, move to the next page.
-				if ($dbInstallWorked) {
-					header("Location: ?success");
-					if (file_exists($cfg->DB_DIR . '/post_install.php')) {
-						exec("php " . $cfg->DB_DIR . "/post_install.php ${pdo}");
-					}
-					exit();
-				} else {
-					$cfg->dbCreateCheck = false;
-					$cfg->error = true;
-					$cfg->emessage = 'Could not select data from your database.';
-				}
+				exit();
+			} else {
+				$cfg->dbCreateCheck = false;
+				$cfg->error = true;
+				$cfg->emessage = 'Could not select data from your database.';
 			}
 		}
 	}

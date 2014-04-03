@@ -23,7 +23,7 @@ class MiscSorter
 		$this->qty = 100;
 		$this->DEBUGGING = nZEDb_DEBUG;
 
-		$this->db = new DB($this->echooutput);
+		$this->db = new DB();
 		$this->category = new Category($this->echooutput);
 		$this->movie = new Movie($this->echooutput);
 		$this->nfolib = new Nfo($this->echooutput);

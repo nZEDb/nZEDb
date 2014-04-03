@@ -23,7 +23,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 
 	system("cd $DIR && git pull");
 
-	if (Util::hasCommand("php5")) {
+	if (\nzedb\utility\Utility::hasCommand("php5")) {
 		$PHP = "php5";
 	} else {
 		$PHP = "php";

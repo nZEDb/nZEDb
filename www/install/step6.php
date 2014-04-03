@@ -62,7 +62,7 @@ if ($page->isPostBack()) {
 		if ($cfg->COVERS_PATH == '') {
 			$cfg->error = true;
 		} else {
-			Util::trailingSlash($cfg->COVERS_PATH);
+			\nzedb\utility\Utility::trailingSlash($cfg->COVERS_PATH);
 
 			$cfg->coverPathCheck = is_writable($cfg->COVERS_PATH);
 			if ($cfg->coverPathCheck === false) {
