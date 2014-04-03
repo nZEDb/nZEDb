@@ -307,7 +307,7 @@
 									title="Browse {$result.group_name}"
 								><i class="icon-share-alt"></i></a>
 							{/if}
-							{release_flag($result.searchname, browse)}
+							{nzedb\utility\release_flag($result.searchname, browse)}
 						</div>
 					</td>
 					<td class="category" style="width:auto;text-align:center;white-space:nowrap;">

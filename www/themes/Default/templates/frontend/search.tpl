@@ -206,7 +206,7 @@
 								{$result.name|escape:"htmlall"|truncate:150:"...":true}
 							</a>
 							<div class="btns" style="float:right">
-								{release_flag($result.searchname, browse)}
+								{nzedb\utility\release_flag($result.searchname, browse)}
 								{if $result.passwordstatus == 1}
 									<img title="RAR/ZIP Possibly Passworded." src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/lock2.png" alt="RAR/ZIP Possibly Passworded.">
 								{elseif $result.passwordstatus == 2}
