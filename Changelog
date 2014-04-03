@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-02 bart39
+	* Fix: predb invalid column count
 	* Fix: correct tmux session for nntpproxy in threaded.sh
 	* Chg: make IRCScraper a function in monitor.php
 	* Chg: move IRCScraper into monitor.php so it will resapwn if pane dies (credits to Darius III)

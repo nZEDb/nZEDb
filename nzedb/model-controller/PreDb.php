@@ -432,8 +432,8 @@ Class PreDb
 
 							if ($this->db->queryExec(
 								sprintf('
-										INSERT INTO predb (title, size, category, predate, source, md5, files, nuked, nukreason)
-										VALUES (%s, %s, %s, %s, %s, %s, %s)',
+										INSERT INTO predb (title, size, category, predate, source, md5, files, nuked, nukereason)
+										VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
 									$this->db->escapeString($matches4['title']),
 									((!isset($matches4['size']) && empty($matches4['size']))
 										? 'NULL'
@@ -485,7 +485,7 @@ Class PreDb
 								} elseif ($this->db->queryExec(
 									sprintf('
 										INSERT INTO predb (title, size, category, predate, source, md5, files)
-										VALUES (%s, %s, %s, %s, %s, %s)',
+										VALUES (%s, %s, %s, %s, %s, %s, %s)',
 										$this->db->escapeString($matches2['title']),
 										((!isset($matches2['size']) && empty($matches2['size']))
 											? 'NULL'
