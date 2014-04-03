@@ -67,12 +67,18 @@ switch ($action) {
 									(isset($_POST['musicview']) ? "1" : "0"),
 									(isset($_POST['consoleview']) ? "1" : "0"),
 									(isset($_POST['bookview']) ? "1" : "0"),
-									$_POST['saburl'], $_POST['sabapikey'],
-									$_POST['sabpriority'],
-									$_POST['sabapikeytype'],
+									(isset($_POST['saburl']) ? $_POST['saburl'] : ''),
+									(isset($_POST['sabapikey']) ? $_POST['sabapikey'] : ''),
+									(isset($_POST['sabpriority']) ? $_POST['sabpriority'] : ''),
+									(isset($_POST['sabapikeytype']) ? $_POST['sabapikeytype'] : ''),
 									$_POST['cp_url'],
 									$_POST['cp_api'],
-									$_POST['style']
+									$_POST['style'],
+									$_POST['queuetypeids'],
+									(isset($_POST['nzbgeturl']) ? $_POST['nzbgeturl'] : ''),
+									(isset($_POST['nzbgetapikey']) ? $_POST['nzbgetapikey'] : ''),
+									(isset($_POST['nzbgetusername']) ? $_POST['nzbgetusername'] : ''),
+									(isset($_POST['nzbgetpassword']) ? $_POST['nzbgetpassword'] : '')
 								);
 
 								$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? array() : $_POST['exccat'];
@@ -82,7 +88,7 @@ switch ($action) {
 									$users->updatePassword($userid, $_POST['password']);
 								}
 
-								header("Location:" . WWW_TOP . "/profile");
+								header("Location:" . WWW_TOP . "/profileedit");
 								die();
 							}
 						}
@@ -127,6 +133,26 @@ $page->smarty->assign('sabpriority_selected', ($sab->priority == '') ? SABnzbd::
 $page->smarty->assign('sabsetting_ids', array(1, 2));
 $page->smarty->assign('sabsetting_names', array('Site', 'Cookie'));
 $page->smarty->assign('sabsetting_selected', ($sab->checkCookie() === true ? 2 : 1));
+/*
+switch ($sab->integrated) {
+	case SABnzbd::INTEGRATION_TYPE_USER:
+		$queueTypes = array('None', 'Sabnzbd', 'NZBGet');
+		$queueTypeIDs = array(0, 1, 2);
+		break;
+	case SABnzbd::INTEGRATION_TYPE_SITEWIDE:
+	case SABnzbd::INTEGRATION_TYPE_NONE:
+		$queueTypes = array('None', 'NZBGet');
+		$queueTypeIDs = array(0, 2);
+		break;
+}
+*/
+$queueTypes = array('Sabnzbd');
+$queueTypeIDs = array(1);
+$page->smarty->assign(array(
+		'queuetypes' => $queueTypes,
+		'queuetypeids' => $queueTypeIDs
+	)
+);
 
 $page->meta_title = "Edit User Profile";
 $page->meta_keywords = "edit,profile,user,details";

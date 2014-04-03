@@ -598,7 +598,7 @@ INSERT INTO site
 	('showbacks', '0'),
 	/* Last time we got a pre */
 	('lastpretime', '0'),
-	('sqlpatch','193');
+	('sqlpatch','195');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

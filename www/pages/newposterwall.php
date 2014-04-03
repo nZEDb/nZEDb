@@ -83,6 +83,10 @@ if (!$error) {
 			$error = "ERROR: Invalid ?t parameter (" . $_REQUEST['t'] . ").";
 	}
 }
+$page->title = 'New ' . $_REQUEST['t'] . ' Releases';
+$page->meta_title = $_REQUEST['t'] . ' Poster Wall';
+$page->meta_keywords = "view,new,releases,posters,wall";
+$page->meta_description = "The newest " . $_REQUEST['t'] . ' releases';
 $page->smarty->assign('error', $error);
 $page->content = $page->smarty->fetch('newposterwall.tpl');
 $page->render();
