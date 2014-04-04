@@ -2993,7 +2993,7 @@ class Releases
 		return $this->db->query(
 			"SELECT DISTINCT (a.bookinfoid),
 				guid, name, b.title, searchname, size, completion,
-				postdate, categoryid, comments, grabs, c.cover
+				postdate, categoryid, comments, grabs, url, c.cover, c.title as booktitle, c.author
 			FROM releases a, category b, bookinfo c
 			WHERE c.cover > 0
 			AND (a.categoryid BETWEEN 8000 AND 8999 OR a.categoryid = 3030)
