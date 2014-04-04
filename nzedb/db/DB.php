@@ -105,7 +105,7 @@ class DB extends \PDO
 		} else {
 			$this->memcached = false;
 		}
-		$this->ct = $options['ct'];
+		$this->ct = $this->opts['ct'];
 
 		if ($this->opts['checkVersion']) {
 			$this->fetchDbVersion();
