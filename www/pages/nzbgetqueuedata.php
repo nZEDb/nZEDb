@@ -19,7 +19,7 @@ if ($data !== false) {
 				<div style='width:16.666666667%;float:left;'><b>Speed:</b><br /> " . nzedb\utility\bytesToSizeString($status['DownloadRate'], 2) . "/s </div>
 				<div style='width:16.666666667%;float:left;'><b>Limit:</b><br /> " . nzedb\utility\bytesToSizeString($status['DownloadLimit'], 2) . "/s </div>
 				<div style='width:16.666666667%;float:left;'><b>Queue Left:</b><br /> " . nzedb\utility\bytesToSizeString($status['RemainingSizeLo'], 2) . " </div>
-				<div style='width:16.666666667%;float:left;'><b>Free Space:</b><br /> " . nzedb\utility\bytesToSizeString($status['FreeDiskSpaceLo'] * 100, 2) . " </div>
+				<div style='width:16.666666667%;float:left;'><b>Free Space:</b><br /> " . nzedb\utility\bytesToSizeString($status['FreeDiskSpaceMB'] * 1024000, 2) . " </div>
 				<div style='width:16.666666667%;float:left;'><b>Status:</b><br /> " . ($status['Download2Paused'] == 1 ? 'Paused' : 'Downloading') . " </div>
 			</div>";
 		}
