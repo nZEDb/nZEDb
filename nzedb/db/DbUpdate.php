@@ -21,15 +21,26 @@
 
 namespace nzedb\db;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
 use nzedb\utility\Utility;
 
 if (Utility::isCLI() && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
+	require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+
 	$backup = (isset($argv[2]) && $argv[2] == 'safe') ? true : false;
 	$updater = new DbUpdate(['backup'	=> $backup]);
 	echo $updater->log->primary("Db updater starting ...");
 	$updater->processPatches(['safe' => $backup]);
+
+//	echo $c->header($patched . " patch(es) applied.");
+//	$smarty  = new Smarty;
+//	$cleared = $smarty->clearCompiledTemplate();
+//	if ($cleared) {
+//		echo $c->header("The smarty template cache has been cleaned for you");
+//	} else {
+//		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR .
+//						"templates_c");
+//	}
 }
 
 class DbUpdate
@@ -148,8 +159,8 @@ class DbUpdate
 			foreach($files as $file) {
 				$fp = fopen($file, 'r');
 				$patch = fread($fp, filesize($file));
-				$pat = "/UPDATE `?site`? SET `?value`? = '?(?'patch'\d+)'? WHERE `?setting`? = 'sqlpatch'/i";
-				if (preg_match($pat, $patch, $matches)) {
+				$pattern = "/UPDATE `?site`? SET `?value`? = '?(?'patch'\d+)'? WHERE `?setting`? = 'sqlpatch'/i";
+				if (preg_match($pattern, $patch, $matches)) {
 					if ($matches['patch'] > $currentVersion) {
 						echo $this->log->header('Processing patch file: ' . $file);
 						if ($options['safe'] && !$this->backedUp) {
@@ -163,8 +174,9 @@ class DbUpdate
 		} else {
 			exit($this->log->error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
 		}
-		if ($patched === 0) {
 
+		if ($patched === 0) {
+			echo $this->log->info("Nothing to patch, you are already on version $currentVersion");
 		}
 	}
 
