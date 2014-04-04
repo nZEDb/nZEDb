@@ -9,6 +9,7 @@ Each update goes to the top of the file
 2014-04-04 niel
 	* Chg: Fixed Bart's date below ;-) Pushing my changes from yesterday.
 	* Chg: Reallowing the use of patchDb. It is still deprecated but now handles the calling of DBUpdate for you.
+	* Fix: Missing 'ct' index in DB.
 2014-04-04 bart39
 	* Fix: space in goodreads/shelfari links
 	* Chg: add icons for books on New Releases posterwall
