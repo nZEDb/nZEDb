@@ -12,13 +12,14 @@ if ($data !== false) {
 	if (count($data > 0)) {
 
 		$status = $nzbget->status();
+
 		if ($status !== false) {
 			$output .=
 			"<div class='container text-center' style='display:block;'>
 				<div style='width:16.666666667%;float:left;'><b>Avg Speed:</b><br /> " . nzedb\utility\bytesToSizeString($status['AverageDownloadRate'], 2) . "/s </div>
 				<div style='width:16.666666667%;float:left;'><b>Speed:</b><br /> " . nzedb\utility\bytesToSizeString($status['DownloadRate'], 2) . "/s </div>
 				<div style='width:16.666666667%;float:left;'><b>Limit:</b><br /> " . nzedb\utility\bytesToSizeString($status['DownloadLimit'], 2) . "/s </div>
-				<div style='width:16.666666667%;float:left;'><b>Queue Left:</b><br /> " . nzedb\utility\bytesToSizeString($status['RemainingSizeLo'], 2) . " </div>
+				<div style='width:16.666666667%;float:left;'><b>Queue Left(no pars):</b><br /> " . nzedb\utility\bytesToSizeString($status['RemainingSizeLo'], 2) . " </div>
 				<div style='width:16.666666667%;float:left;'><b>Free Space:</b><br /> " . nzedb\utility\bytesToSizeString($status['FreeDiskSpaceMB'] * 1024000, 2) . " </div>
 				<div style='width:16.666666667%;float:left;'><b>Status:</b><br /> " . ($status['Download2Paused'] == 1 ? 'Paused' : 'Downloading') . " </div>
 			</div>";
@@ -32,7 +33,7 @@ if ($data !== false) {
 						<th style='width=10px;text-align:center;'>#</th>
 						<th style='text-align:left;'>Name</th>
 						<th style='width:80px;text-align:center;'>Size</th>
-						<th style='width:80px;text-align:center;'>Left</th>
+						<th style='width:80px;text-align:center;'>Left(+pars)</th>
 						<th style='width:50px;text-align:center;'>Done</th>
 						<th style='width:80px;text-align:center;'>Status</th>
 						<th style='width:50px;text-align:center;'>Delete</th>
