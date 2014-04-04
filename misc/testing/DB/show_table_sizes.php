@@ -1,6 +1,8 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
+
 $c = new ColorCLI();
 if ($argc === 1 || !is_numeric($argv[1])) {
 	exit($c->error("\nThis script will show table data, index and free space used. The argument needed is numeric.\n\n"

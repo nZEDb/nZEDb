@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\db\DB;
+
 $message =
 	'Shows old searchname vs new searchname for releases in a group using the releaseCleaning class. (Good for testing new regex)' .
 	PHP_EOL .

@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\db\DB;
+
 /**
  * Class Nfo
  * Class for handling fetching/storing of NFO files.

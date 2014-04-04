@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\DB;
+
 class Tmux
 {
 	function __construct()

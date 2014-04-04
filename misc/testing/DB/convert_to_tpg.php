@@ -1,6 +1,7 @@
 <?php
-
 require_once(dirname(__FILE__) . '/../../../www/config.php');
+
+use nzedb\db\DB;
 
 /* This script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.
   Please STOP all update scripts before running this script.

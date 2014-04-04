@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\DB;
+
 /**
  * Class Binaries
  */

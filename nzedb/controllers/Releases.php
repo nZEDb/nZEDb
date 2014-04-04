@@ -1,7 +1,7 @@
 <?php
-
 require_once nZEDb_LIBS . 'ZipFile.php';
 
+use nzedb\db\DB;
 use nzedb\utility;
 
 /**

@@ -3,6 +3,7 @@ require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 require_once nZEDb_LIBS . 'rarinfo/zipinfo.php';
 
+use nzedb\db\DB;
 use nzedb\utility;
 
 class PostProcess

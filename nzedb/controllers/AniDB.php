@@ -1,6 +1,7 @@
 <?php
-
 require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
+
+use nzedb\db\DB;
 
 class AniDB
 {

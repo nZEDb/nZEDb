@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\DB;
+
 /**
  * Handles removing of various unwanted releases.
  *

@@ -1,6 +1,8 @@
 <?php
 require_once nZEDb_LIBS . 'Yenc.php';
 
+use nzedb\db\DB;
+
 //define('CUR_PATH', realpath(dirname(__FILE__)));
 
  /**

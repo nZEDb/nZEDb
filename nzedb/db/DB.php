@@ -1,4 +1,7 @@
 <?php
+namespace nzedb\db;
+
+use nzedb\controllers\ColorCLI;
 
 /**
  * Class for handling connection to database (MySQL or PostgreSQL) using PDO.
@@ -9,7 +12,7 @@
  * Exceptions are caught and displayed to the user.
  * Properties are explicitly created, so IDEs can offer autocompletion for them.
  */
-class DB extends PDO
+class DB extends \PDO
 {
 	/**
 	 * @var object Instance of ColorCLI class.
@@ -70,7 +73,7 @@ class DB extends PDO
 		$defaults = array(
 			'checkVersion'	=> false,
 			'createDb'		=> false, // create dbname if it does not exist?
-			'ct'			=> new ConsoleTools(),
+			'ct'			=> new \ConsoleTools(),
 			'dbhost'		=> defined('DB_HOST') ? DB_HOST : '',
 			'dbname' 		=> defined('DB_NAME') ? DB_NAME : '',
 			'dbpass' 		=> defined('DB_PASSWORD') ? DB_PASSWORD : '',
@@ -78,7 +81,7 @@ class DB extends PDO
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
 			'dbuser' 		=> defined('DB_USER') ? DB_USER : '',
-			'logger'		=> new ColorCLI()
+			'logger'		=> new \ColorCLI()
 		);
 		$this->opts = $options + $defaults;
 
@@ -102,7 +105,7 @@ class DB extends PDO
 		} else {
 			$this->memcached = false;
 		}
-		$this->ct = new ConsoleTools();
+		$this->ct = $options['ct'];
 
 		if ($this->opts['checkVersion']) {
 			$this->fetchDbVersion();
@@ -156,15 +159,15 @@ class DB extends PDO
 		}
 		$dsn .= ';charset=utf8';
 
-		$options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 180);
+		$options = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 180);
 		if ($this->dbSystem === 'mysql') {
-			$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
-			$options[PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
+			$options[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
+			$options[\PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
 		}
 
 		// removed try/catch to let the instantiating code handle the problem (Install for
 		// instance can output a message that connecting failed.
-		self::$pdo = new PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
+		self::$pdo = new \PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
 
 		$found = self::checkDbExists();
 		if ($this->opts['dbtype'] === 'pgsql' && !$found) {
@@ -207,8 +210,8 @@ class DB extends PDO
 		}
 
 		// For backwards compatibility, no need for a patch.
-		self::$pdo->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-		self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		self::$pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
+		self::$pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 	}
 
 	/**

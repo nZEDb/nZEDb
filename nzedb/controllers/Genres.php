@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\DB;
+
 class Genres
 {
 	const CONSOLE_TYPE = Category::CAT_PARENT_GAME;
