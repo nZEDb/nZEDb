@@ -860,7 +860,7 @@ class Releases
 		if (count($words) > 0) {
 			if ($type === 'name' || $type === 'searchname') {
 				//at least 1 term needs to be mandatory
-				if (!preg_match('/[+|!|\^]/', $search)) {
+				if (!preg_match('/[+|!|^]/', $search)) {
 					$search = '+' . $search;
 					$words = explode(' ', $search);
 				}
@@ -2997,12 +2997,12 @@ class Releases
 			FROM releases a, category b, bookinfo c
 			WHERE c.cover > 0
 			AND (a.categoryid BETWEEN 8000 AND 8999 OR a.categoryid = 3030)
-			AND b.title = 'Books'
+			AND (b.title = 'Books' OR b.title = 'Audiobook')
 			AND a.bookinfoid = c.id
 			AND a.bookinfoid != -2
 			GROUP BY a.bookinfoid
 			ORDER BY a.postdate
-			DESC LIMIT 12"
+			DESC LIMIT 24"
 		);
 	}
 

@@ -27,6 +27,8 @@
 								class="library-show"
 							{elseif $type == 'Audio'}
 								class="library-music"
+                            {elseif $type == 'Books'}
+                                class="library-show"
 							{/if}
 						>
 							<div class="poster">
@@ -34,9 +36,11 @@
 									{if $type == 'Console'}
 										<img width="130px" alt="" src="{$smarty.const.WWW_TOP}/covers/console/{$result.consoleinfoid}.jpg" />
 									{elseif $type == 'Movies'}
-										<img width="140x" height="205px" alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg" />
+										<img width="140px" height="205px" alt="" src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg" />
 									{elseif $type == 'Audio'}
 										<img height="250px" width="250px" alt="" src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfoid}.jpg" />
+                                    {elseif $type == 'Books'}
+                                        <img height="140px" width="205px" alt="" src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfoid}.jpg" />
 									{/if}
 								</a>
 							</div>
