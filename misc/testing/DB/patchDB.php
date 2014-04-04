@@ -4,8 +4,12 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $log = new ColorCLI();
 
-exit($log->error("This file is deprecated and will be removed in a future version.\nUse 'php nzedb/db/DbUpdate.php 1' instead"));
+echo $log->warning("This file is deprecated and will be removed in a future version.\nUse 'php nzedb/db/DbUpdate.php 1' instead");
 
+$safe = ($argv[1] === "safe") ? true : false;
+system("$PHP " . nZEDb_LIB . 'db' . DS . "DbUpdate.php 1 $safe");
+
+exit();
 // Function inspired by : http://stackoverflow.com/questions/1883079/best-practice-import-mysql-file-in-php-split-queries/2011454#2011454
 function SplitSQL($file, $delimiter = ';')
 {
