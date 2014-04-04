@@ -2355,7 +2355,7 @@ class PostProcess
 						// If we don't get the time create the sample the old way (gets the start of the video).
 						$numbers = array();
 						if (!preg_match('/^\d{2}:\d{2}:(\d{2}).(\d{2})$/', $time, $numbers)) {
-							runCmd
+							nzedb\utility\runCmd
 							(
 								'"' .
 								$this->site->ffmpegpath .
@@ -2398,7 +2398,7 @@ class PostProcess
 							}
 
 							// Try to get the sample (from the end instead of the start).
-							runCmd
+							nzedb\utility\runCmd
 							(
 								'"' .
 								$this->site->ffmpegpath .
@@ -2415,7 +2415,7 @@ class PostProcess
 						}
 					} else {
 						// If longer than 60, then run the old way.
-						runCmd
+						nzedb\utility\runCmd
 						(
 							'"' .
 							$this->site->ffmpegpath .
