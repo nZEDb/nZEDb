@@ -97,7 +97,7 @@ class DB extends \PDO
 			$this->dbSystem = strtolower($this->opts['dbtype']);
 		}
 
-		if (!(self::$pdo instanceof PDO)) {
+		if (!(self::$pdo instanceof \PDO)) {
 			$this->initialiseDatabase();
 		}
 
@@ -267,7 +267,7 @@ class DB extends \PDO
 	 */
 	public function isInitialised()
 	{
-		return (self::$pdo instanceof PDO);
+		return (self::$pdo instanceof \PDO);
 	}
 
 	/**
@@ -373,12 +373,12 @@ class DB extends \PDO
 				} else {
 					$p = self::$pdo->prepare($query . ' RETURNING id');
 					$p->execute();
-					$r = $p->fetch(PDO::FETCH_ASSOC);
+					$r = $p->fetch(\PDO::FETCH_ASSOC);
 					return $r['id'];
 				}
 			}
 
-		} catch (PDOException $e) {
+		} catch (\PDOException $e) {
 			// Deadlock or lock wait timeout, try 10 times.
 			if (
 				$e->errorInfo[1] == 1213 ||
@@ -409,7 +409,7 @@ class DB extends \PDO
 		try {
 			return self::$pdo->exec($query);
 
-		} catch (PDOException $e) {
+		} catch (\PDOException $e) {
 			$this->echoError($e->getMessage(), 'Exec', 4);
 
 			if ($this->_debug) {
@@ -503,7 +503,7 @@ class DB extends \PDO
 
 		try {
 			$result = self::$pdo->query($query);
-		} catch (PDOException $e) {
+		} catch (\PDOException $e) {
 			$this->echoError($e->getMessage(), 'queryDirect', 4);
 			if ($this->debug) {
 				$this->debugging->start("queryDirect", $query, 6);
@@ -543,15 +543,15 @@ class DB extends \PDO
 		if ($query == '') {
 			return false;
 		}
-		$mode = self::$pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
-		if ($mode != PDO::FETCH_ASSOC) {
-			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		$mode = self::$pdo->getAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE);
+		if ($mode != \PDO::FETCH_ASSOC) {
+			self::$pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 		}
 
 		$result = $this->queryArray($query);
 
-		if ($mode != PDO::FETCH_ASSOC) {
-			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		if ($mode != \PDO::FETCH_ASSOC) {
+			self::$pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 		}
 		return $result;
 	}
@@ -657,7 +657,7 @@ class DB extends \PDO
 			try {
 				self::$pdo->query('SELECT * FROM ' . $grpid . '_collections LIMIT 1');
 				$old_tables = true;
-			} catch (PDOException $e) {
+			} catch (\PDOException $e) {
 				$old_tables = false;
 			}
 
@@ -680,7 +680,7 @@ class DB extends \PDO
 						if ($tblnew != '') {
 							try {
 								self::$pdo->query('ALTER TABLE ' . $tbl . ' RENAME TO ' . $tblnew);
-							} catch (PDOException $e) {
+							} catch (\PDOException $e) {
 								// table already exists
 							}
 						}
@@ -691,13 +691,13 @@ class DB extends \PDO
 			try {
 				self::$pdo->query('SELECT * FROM collections_' . $grpid . ' LIMIT 1');
 				$collections = true;
-			} catch (PDOException $e) {
+			} catch (\PDOException $e) {
 				try {
 					if ($this->queryExec('CREATE TABLE collections_' . $grpid . $like) !== false) {
 						$collections = true;
 						$this->newtables($grpid);
 					}
-				} catch (PDOException $e) {
+				} catch (\PDOException $e) {
 					return false;
 				}
 			}
@@ -711,7 +711,7 @@ class DB extends \PDO
 				try {
 					self::$pdo->query('SELECT * FROM binaries_' . $grpid . ' LIMIT 1');
 					$binaries = true;
-				} catch (PDOException $e) {
+				} catch (\PDOException $e) {
 					if ($this->queryExec('CREATE TABLE binaries_' . $grpid . $like) !== false) {
 						$binaries = true;
 						$this->newtables($grpid);
@@ -728,7 +728,7 @@ class DB extends \PDO
 				try {
 					self::$pdo->query('SELECT * FROM parts_' . $grpid . ' LIMIT 1');
 					$parts = true;
-				} catch (PDOException $e) {
+				} catch (\PDOException $e) {
 					if ($this->queryExec('CREATE TABLE parts_' . $grpid . $like) !== false) {
 						$parts = true;
 						$this->newtables($grpid);
@@ -745,7 +745,7 @@ class DB extends \PDO
 				try {
 					DB::$pdo->query('SELECT * FROM partrepair_' . $grpid . ' LIMIT 1');
 					$partrepair = true;
-				} catch (PDOException $e) {
+				} catch (\PDOException $e) {
 					if ($this->queryExec('CREATE TABLE partrepair_' . $grpid . $like) !== false) {
 						$partrepair = true;
 						$this->newtables($grpid);
@@ -854,7 +854,7 @@ class DB extends \PDO
 	{
 		try {
 			return (bool) self::$pdo->query('SELECT 1+1');
-		} catch (PDOException $e) {
+		} catch (\PDOException $e) {
 			if ($restart == true) {
 				$this->initialiseDatabase();
 			}
@@ -879,7 +879,7 @@ class DB extends \PDO
 	{
 		try {
 			$PDOstatement = self::$pdo->prepare($query, $options);
-		} catch (PDOException $e) {
+		} catch (\PDOException $e) {
 			if ($this->_debug) {
 				$this->debugging->start("Prepare", $e->getMessage(), 5);
 			}
@@ -901,7 +901,7 @@ class DB extends \PDO
 		if ($attribute != '') {
 			try {
 				$result = self::$pdo->getAttribute($attribute);
-			} catch (PDOException $e) {
+			} catch (\PDOException $e) {
 				if ($this->_debug) {
 					$this->debugging->start("getAttribute", $e->getMessage(), 5);
 				}
