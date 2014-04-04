@@ -1,7 +1,7 @@
 <?php
 namespace nzedb\db;
 
-use nzedb\controllers\ColorCLI;
+//use nzedb\controllers\ColorCLI;
 
 /**
  * Class for handling connection to database (MySQL or PostgreSQL) using PDO.
