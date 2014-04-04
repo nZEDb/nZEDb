@@ -6,7 +6,7 @@ $log = new ColorCLI();
 
 echo $log->warning("This file is deprecated and will be removed in a future version.\nUse 'php nzedb/db/DbUpdate.php 1' instead");
 
-$safe = ($argv[1] === "safe") ? true : false;
+$safe = (isset($argv[1]) && $argv[1] === "safe") ? true : false;
 system("$PHP " . nZEDb_LIB . 'db' . DS . "DbUpdate.php 1 $safe");
 
 exit();
