@@ -956,10 +956,10 @@ class Mcached
 		if (extension_loaded('memcache')) {
 			$this->m = new Memcache();
 			if ($this->m->connect(MEMCACHE_HOST, MEMCACHE_PORT) == false) {
-				throw new Exception($this->opts['logger']->error("\nUnable to connect to the memcached server."));
+				throw new Exception($this->c->error("\nUnable to connect to the memcached server."));
 			}
 		} else {
-			throw new Exception($this->opts['logger']->error("nExtension 'memcache' not loaded."));
+			throw new Exception($this->c->error("nExtension 'memcache' not loaded."));
 		}
 
 		$this->expiry = MEMCACHE_EXPIRY;
@@ -987,7 +987,7 @@ class Mcached
 	// Flush all the data on the server.
 	public function Flush()
 	{
-		return $this->m->flush();
+		$this->m->flush();
 	}
 
 	// Add a query to memcached server.
