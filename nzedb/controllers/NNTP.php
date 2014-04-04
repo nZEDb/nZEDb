@@ -336,17 +336,18 @@ class NNTP extends Net_NNTP_Client
 	/**
 	 * @param string $group    Name of the group to select.
 	 * @param bool   $articles (optional) experimental! When true the article numbers is returned in 'articles'.
+	 * @param bool   $force    Force a refresh.
 	 *
 	 * @return array|object
 	 */
-	public function selectGroup($group, $articles = false)
+	public function selectGroup($group, $articles = false, $force = false)
 	{
 		$connected = $this->checkConnection(false);
 		if ($connected !== true) {
 			return $connected;
 		}
 
-		if ($this->currentGroup !== $group || is_null($this->_selectedGroupSummary)) {
+		if ($force || $this->currentGroup !== $group || is_null($this->_selectedGroupSummary)) {
 			$this->currentGroup = $group;
 			return parent::selectGroup($group, $articles);
 		} else {
@@ -1143,7 +1144,7 @@ class NNTP extends Net_NNTP_Client
 	/**
 	 * Extend to not get weak warnings.
 	 *
-	 * @param object $data Data to check for error.
+	 * @param mixed $data Data to check for error.
 	 * @param int $code Error code.
 	 *
 	 * @return mixed

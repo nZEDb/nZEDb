@@ -890,6 +890,43 @@ CREATE TABLE "userseries" (
 )
 WITHOUT OIDS;
 
+DROP SEQUENCE IF EXISTS "sharing_sites_id_seq" CASCADE;
+CREATE SEQUENCE "sharing_sites_id_seq" INCREMENT BY 1
+NO MAXVALUE NO MINVALUE CACHE 1;
+SELECT pg_catalog.setval('sharing_sites_id_seq', 1, true);
+
+
+-- Table: sharing_sites
+DROP TABLE IF EXISTS "sharing_sites" CASCADE;
+CREATE TABLE "sharing_sites" (
+  "id" integer DEFAULT nextval('sharing_sites_id_seq'::regclass) NOT NULL,
+  "site_name" character varying(255),
+  "site_guid" character varying(40),
+  "last_time"   timestamp without time zone,
+  "first_time"  timestamp without time zone,
+  "enabled"     smallint DEFAULT 0 NOT NULL,
+  "comments" integer DEFAULT 0 NOT NULL
+)
+WITHOUT OIDS;
+
+-- Table: sharing
+DROP TABLE IF EXISTS "sharing";
+CREATE TABLE "sharing" (
+  "site_guid" character varying(40),
+  "site_name" character varying(255),
+  "enabled"     smallint DEFAULT 0 NOT NULL,
+  "posting"     smallint DEFAULT 0 NOT NULL,
+  "fetching"     smallint DEFAULT 0 NOT NULL,
+  "auto_enable"     smallint DEFAULT 0 NOT NULL,
+  "hide_users"     smallint DEFAULT 1 NOT NULL,
+  "last_article"     bigint DEFAULT 1 NOT NULL,
+  "last_time"   timestamp without time zone,
+  "first_time"  timestamp without time zone,
+  "max_push" integer DEFAULT 40 NOT NULL,
+  "max_pull" integer DEFAULT 1000 NOT NULL
+)
+WITHOUT OIDS;
+
 ALTER TABLE "binaries" ADD CONSTRAINT "binaries_id_pkey" PRIMARY KEY("id");
 ALTER TABLE "binaryblacklist" ADD CONSTRAINT "binaryblacklist_id_pkey" PRIMARY KEY("id");
 ALTER TABLE "bookinfo" ADD CONSTRAINT "bookinfo_id_pkey" PRIMARY KEY("id");
