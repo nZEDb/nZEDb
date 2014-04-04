@@ -45,7 +45,7 @@
 			<small>With Selected:</small>
 			<input type="button" class="nzb_multi_operations_download" value="Download NZBs"/>
 			<input type="button" class="nzb_multi_operations_cart" value="Add to Cart"/>
-			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB"/>{/if}
+			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue"/>{/if}
 		</div>
 		<br/>
 
@@ -194,7 +194,7 @@
 													&nbsp;</a></div>
 											<div class="icon icon_cart" title="Add to Cart"></div>
 											{if $sabintegrated}
-												<div class="icon icon_sab" title="Send to my Sabnzbd"></div>
+												<div class="icon icon_sab" title="Send to my Queue"></div>
 											{/if}
 										</td>
 									</tr>
@@ -219,7 +219,7 @@
 			<small>With Selected:</small>
 			<input type="button" class="nzb_multi_operations_download" value="Download NZBs"/>
 			<input type="button" class="nzb_multi_operations_cart" value="Add to Cart"/>
-			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB"/>{/if}
+			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue"/>{/if}
 		</div>
 
 	</form>

@@ -190,7 +190,7 @@ class Users
 	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites, $movieview, $musicview,
 		$consoleview, $bookview, $saburl = false, $sabapikey = false, $sabpriority = false, $sabapikeytype = false,
 		$cp_url = false, $cp_api = false, $style = 'None', $queueType = self::QUEUE_SABNZBD,
-		$nzbgetURL = '', $nzbgetAPIKey = '', $nzbgetUsername = '', $nzbgetPassword = '')
+		$nzbgetURL = '', $nzbgetUsername = '', $nzbgetPassword = '')
 	{
 		$db = $this->db;
 
@@ -243,10 +243,6 @@ class Users
 
 		if ($nzbgetURL !== '') {
 			$sql[] = sprintf('nzbgeturl = %s', $db->escapeString($nzbgetURL));
-		}
-
-		if ($nzbgetAPIKey !== '') {
-			$sql[] = sprintf('nzbgetapikey = %s', $db->escapeString($nzbgetAPIKey));
 		}
 
 		if ($nzbgetUsername !== '') {

@@ -45,7 +45,7 @@
 									<div class="icon icon_nzb"><a class="divlink" title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"url"}"></a></div>
 									<div class="icon icon_cart" title="Add to Cart"></div>
 									{if $sabintegrated}
-										<div class="icon icon_sab" title="Send to my Sabnzbd"></div>
+										<div class="icon icon_sab" title="Send to my Queue"></div>
 									{/if}
 								</div>
 								<br>

@@ -32,9 +32,9 @@ class SABnzbd
 	public $apikeytype = '';
 
 	/**
-	 * @var bool|int
+	 * @var int
 	 */
-	public $integrated = false;
+	public $integrated = self::INTEGRATION_TYPE_NONE;
 
 	/**
 	 * ID of the current user, to send to SAB when downloading a NZB.

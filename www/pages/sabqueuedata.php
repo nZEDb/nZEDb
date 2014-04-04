@@ -5,14 +5,6 @@ if (!$users->isLoggedIn()) {
 
 $sab = new SABnzbd($page);
 
-if (empty($sab->url)) {
-	$page->show404();
-}
-
-if (empty($sab->apikey)) {
-	$page->show404();
-}
-
 $output = "";
 
 $json = $sab->getQueue();
@@ -28,7 +20,7 @@ if ($json !== false) {
 			<div style='width:16.666666667%;float:left;'><b>Queued:</b><br /> " . round($obj->{'mbleft'}, 2) . "MB / " . round($obj->{'mb'}, 2) . "MB" . " </div>
 			<div style='width:16.666666667%;float:left;'><b>Status:</b><br /> " . ucwords(strtolower($obj->{'state'})) . " </div>
 			<div style='width:16.666666667%;float:left;'><b>Free (temp):</b><br /> " . round($obj->{'diskspace1'}) . "GB </div>
-			<div style='width:16.666666667%;float:left;'><b>Free Space:</b><br /> " . round($obj->{'diskspace2'}) . "GB</p></div>
+			<div style='width:16.666666667%;float:left;'><b>Free Space:</b><br /> " . round($obj->{'diskspace2'}) . "GB</div>
 			<div style='width:16.666666667%;float:left;'><b>Stats:</b><br /> " . preg_replace('/\s+\|\s+| /', ',', $obj->{'loadavg'}) . " </div>
 		</div>";
 

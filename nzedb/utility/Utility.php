@@ -552,6 +552,9 @@ function cp437toUTF($str)
  */
 function bytesToSizeString($bytes, $precision = 0)
 {
+	if ($bytes == 0) {
+		return '0B';
+	}
 	$unit = array('B','KB','MB','GB','TB','PB','EB');
 	return round($bytes / pow(1024, ($i = floor(log($bytes, 1024)))), $precision) . $unit[(int)$i];
 }

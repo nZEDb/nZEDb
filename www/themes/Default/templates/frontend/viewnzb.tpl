@@ -360,7 +360,7 @@
 	<tr id="guid{$release.guid}"><th>Download:</th><td>
 		<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}/{$release.searchname|escape:"htmlall"}">&nbsp;</a></div>
 		<div class="icon icon_cart" title="Add to Cart"></div>
-		{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
+		{if $sabintegrated}<div class="icon icon_sab" title="Send to my Queue"></div>{/if}
 	</td></tr>
 
 	{if $similars|@count > 1}

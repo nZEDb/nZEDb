@@ -15,7 +15,7 @@ $users = new Users;
 
 switch ($page->page) {
     case 'content':
-    case 'sendtosab':
+    case 'sendtoqueue':
     case 'browse':
     case 'browsegroup':
     case 'predb':
@@ -44,7 +44,8 @@ switch ($page->page) {
     case 'mymovies':
     case 'mymoviesedit':
     case 'queue':
-    case 'queuedata':
+    case 'sabqueuedata':
+	case 'nzbgetqueuedata':
     case 'profile':
     case 'profileedit':
     case 'logout':

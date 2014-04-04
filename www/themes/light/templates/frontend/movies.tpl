@@ -61,7 +61,7 @@
 			View: <b>Covers</b> | <a href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br />
 			<input type="button" style="margin-bottom:10px;" class="nzb_multi_operations_download" value="Download NZBs" />
 			<input type="button" style="margin-bottom:10px;" class="nzb_multi_operations_cart" value="Add to Cart" />
-			{if $sabintegrated}<input type="button" style="margin-bottom:10px;" class="nzb_multi_operations_sab" value="Send to SAB" />{/if}
+			{if $sabintegrated}<input type="button" style="margin-bottom:10px;" class="nzb_multi_operations_sab" value="Send to my Queue" />{/if}
 		</div>
 		<br/>
 
@@ -137,7 +137,7 @@
 												<td class="icons">
 													<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">&nbsp;</a></div>
 													<div class="icon icon_cart" title="Add to Cart"></div>
-													{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
+													{if $sabintegrated}<div class="icon icon_sab" title="Send to my Queue"></div>{/if}
 												</td>
 											</tr>
 											{if $m@index == 1 && $m@total > 2}
@@ -162,7 +162,7 @@
 		<div class="nzb_multi_operations" style="margin-top: 5px;">
 			<input type="button" class="nzb_multi_operations_download" value="Download NZBs" />
 			<input type="button" class="nzb_multi_operations_cart" value="Add to Cart" />
-			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB" />{/if}
+			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue" />{/if}
 		</div>
 
 	</form>

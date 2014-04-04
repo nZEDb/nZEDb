@@ -28,6 +28,7 @@ Each update goes to the top of the file
 	* Fix: Missed three runCmd() needing namespacing
 	* Chg: Fixing code style. in PostProcessing
 2014-04-03 kevin
+	* Add: NZBGet queue support. Might have issues.
 	* Add: Starting adding NZBget to profile edit (locked out for now), patch to set Sab as default for now.
 	* Add: Patch for NZBGet columns.
 	* Add: Sabnzbd URL checking.
