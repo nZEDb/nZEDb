@@ -7,6 +7,18 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-03 bart39
+	* Fix: space in goodreads/shelfari links
+	* Chg: add icons for books on New Releases posterwall
+	* New: Add books to New Releases posterwall
+2014-04-04 kevin
+	* Fix: Fix add to queue.
+	* Fix: Inverted password/username help text in profileedit.
+	* Fix: Fix for sab details going away when switching to NZBGet.
+	* Fix: Alpha theme always showing queue even when disabled.
+	* Fix: Non existant properties "logger|debug" in class DB.
+	* Chg: Help text for queue type.
+	* Add: New queue icons.
+2014-04-03 bart39
 	* Fix: undefined variables in monitor.php
 	* Fix: blank browse pages
 	* Fix: pass $tmux_session into function
@@ -16,6 +28,7 @@ Each update goes to the top of the file
 	NB would suggest editing and re-saving user_threaded.sh for the new changes
 2014-04-03 ruhllatio
 	* Chg: Modify newposterwall queries to leverage partitioning -- considerable speed improvement (5.5+ safe)
+	* Fix: Bad query in Genre section of admin site for showing only genres with releases
 2014-04-03 niel
 	* Chg: Refactoring DB class to allow passing of options (db arguments, ColorCLI instance, etc.) on instantiation.
 	Also to better comply with conventions (ordering of public, protected, private properties and using $_ for protected ones).
@@ -28,6 +41,8 @@ Each update goes to the top of the file
 	* Fix: Missed three runCmd() needing namespacing
 	* Chg: Fixing code style. in PostProcessing
 2014-04-03 kevin
+	* Chg: Mention the difference between queue size and total size.
+	* Add: NZBGet queue support. Might have issues.
 	* Add: Starting adding NZBget to profile edit (locked out for now), patch to set Sab as default for now.
 	* Add: Patch for NZBGet columns.
 	* Add: Sabnzbd URL checking.

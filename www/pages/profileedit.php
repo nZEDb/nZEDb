@@ -5,6 +5,7 @@ if (!$users->isLoggedIn()) {
 
 $category = new Category();
 $sab = new SABnzbd($page);
+$nzbGet = new NZBGet($page);
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
 $userid = $users->currentUserId();
@@ -16,89 +17,87 @@ if (!$data) {
 $errorStr = '';
 
 switch ($action) {
+
 	case 'newapikey':
 		$users->updateRssKey($userid);
 		header("Location: profileedit");
 		break;
+
 	case 'clearcookies':
 		$sab->unsetCookie();
 		header("Location: profileedit");
 		break;
-	case 'submit':
 
+	case 'submit':
 		$data["email"] = $_POST['email'];
 		$data["firstname"] = $_POST['firstname'];
 		$data["lastname"] = $_POST['lastname'];
 
 		if (!$users->isValidUsername($data["username"])) {
 			$errorStr = "Your username must be at least 3 characters. Contact an administrator to get it changed.";
+		} else if ($_POST['password'] != "" && $_POST['password'] != $_POST['confirmpassword']) {
+			$errorStr = "Password Mismatch";
+		} else if ($_POST['password'] != "" && !$users->isValidPassword($_POST['password'])) {
+			$errorStr = "Your password must be at least 6 characters.";
+		} else if (isset($_POST['nzbgeturl']) && $nzbGet->verifyURL($_POST['nzbgeturl']) === false) {
+			$errorStr = "The NZBGet URL you entered is invalid!";
+		} else if (isset($_POST['nzbgetpassword']) && empty($_POST['nzbgetpassword'])) {
+			$errorStr = 'You must enter a NZBGet password!';
+		} else if (isset($_POST['nzbgetusername']) && empty($_POST['nzbgetusername'])) {
+			$errorStr = 'You must enter a NZBGet username!';
+		} else if (!$users->isValidEmail($_POST['email'])) {
+			$errorStr = "Your email is not a valid format.";
 		} else {
-			if ($_POST['password'] != "" && $_POST['password'] != $_POST['confirmpassword']) {
-				$errorStr = "Password Mismatch";
+			$res = $users->getByEmail($_POST['email']);
+			if ($res && $res["id"] != $userid) {
+				$errorStr = "Sorry, the email is already in use.";
+			} elseif ((empty($_POST['saburl']) && !empty($_POST['sabapikey'])) || (!empty($_POST['saburl']) && empty($_POST['sabapikey']))) {
+				$errorStr = "Insert a SABnzdb URL and API key.";
 			} else {
-				if ($_POST['password'] != "" && !$users->isValidPassword($_POST['password'])) {
-					$errorStr = "Your password must be at least 6 characters.";
-				} else {
-					if (!$users->isValidEmail($_POST['email'])) {
-						$errorStr = "Your email is not a valid format.";
-					} else {
-						$res = $users->getByEmail($_POST['email']);
-						if ($res && $res["id"] != $userid) {
-							$errorStr = "Sorry, the email is already in use.";
-						} else {
-							if ((empty($_POST['saburl']) && !empty($_POST['sabapikey'])) || (!empty($_POST['saburl']) && empty($_POST['sabapikey']))) {
-								$errorStr = "Insert a SABnzdb URL and API key.";
-							} else {
-								if (isset($_POST['sabsetting']) && $_POST['sabsetting'] == 2) {
-									$sab->setCookie($_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype']);
-									$_POST['saburl'] = $_POST['sabapikey'] = $_POST['sabpriority'] = $_POST['sabapikeytype'] = false;
-								}
-
-								$users->update(
-									$userid,
-									$data["username"],
-									$_POST['firstname'],
-									$_POST['lastname'],
-									$_POST['email'],
-									$data["grabs"],
-									$data["role"],
-									$data["invites"],
-									(isset($_POST['movieview']) ? "1" : "0"),
-									(isset($_POST['musicview']) ? "1" : "0"),
-									(isset($_POST['consoleview']) ? "1" : "0"),
-									(isset($_POST['bookview']) ? "1" : "0"),
-									(isset($_POST['saburl']) ? $_POST['saburl'] : ''),
-									(isset($_POST['sabapikey']) ? $_POST['sabapikey'] : ''),
-									(isset($_POST['sabpriority']) ? $_POST['sabpriority'] : ''),
-									(isset($_POST['sabapikeytype']) ? $_POST['sabapikeytype'] : ''),
-									$_POST['cp_url'],
-									$_POST['cp_api'],
-									$_POST['style'],
-									$_POST['queuetypeids'],
-									(isset($_POST['nzbgeturl']) ? $_POST['nzbgeturl'] : ''),
-									(isset($_POST['nzbgetapikey']) ? $_POST['nzbgetapikey'] : ''),
-									(isset($_POST['nzbgetusername']) ? $_POST['nzbgetusername'] : ''),
-									(isset($_POST['nzbgetpassword']) ? $_POST['nzbgetpassword'] : '')
-								);
-
-								$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? array() : $_POST['exccat'];
-								$users->addCategoryExclusions($userid, $_POST['exccat']);
-
-								if ($_POST['password'] != "") {
-									$users->updatePassword($userid, $_POST['password']);
-								}
-
-								header("Location:" . WWW_TOP . "/profileedit");
-								die();
-							}
-						}
-					}
+				if (isset($_POST['sabsetting']) && $_POST['sabsetting'] == 2) {
+					$sab->setCookie($_POST['saburl'], $_POST['sabapikey'], $_POST['sabpriority'], $_POST['sabapikeytype']);
+					$_POST['saburl'] = $_POST['sabapikey'] = $_POST['sabpriority'] = $_POST['sabapikeytype'] = false;
 				}
+
+				$users->update(
+					$userid,
+					$data["username"],
+					$_POST['firstname'],
+					$_POST['lastname'],
+					$_POST['email'],
+					$data["grabs"],
+					$data["role"],
+					$data["invites"],
+					(isset($_POST['movieview']) ? "1" : "0"),
+					(isset($_POST['musicview']) ? "1" : "0"),
+					(isset($_POST['consoleview']) ? "1" : "0"),
+					(isset($_POST['bookview']) ? "1" : "0"),
+					$_POST['cp_url'],
+					$_POST['cp_api'],
+					$_POST['style'],
+					$_POST['queuetypeids'],
+					(isset($_POST['nzbgeturl']) ? $_POST['nzbgeturl'] : ''),
+					(isset($_POST['nzbgetusername']) ? $_POST['nzbgetusername'] : ''),
+					(isset($_POST['nzbgetpassword']) ? $_POST['nzbgetpassword'] : ''),
+					(isset($_POST['saburl']) ? $_POST['saburl'] : ''),
+					(isset($_POST['sabapikey']) ? $_POST['sabapikey'] : ''),
+					(isset($_POST['sabpriority']) ? $_POST['sabpriority'] : ''),
+					(isset($_POST['sabapikeytype']) ? $_POST['sabapikeytype'] : '')
+				);
+
+				$_POST['exccat'] = (!isset($_POST['exccat']) || !is_array($_POST['exccat'])) ? array() : $_POST['exccat'];
+				$users->addCategoryExclusions($userid, $_POST['exccat']);
+
+				if ($_POST['password'] != "") {
+					$users->updatePassword($userid, $_POST['password']);
+				}
+
+				header("Location:" . WWW_TOP . "/profileedit");
+				die();
 			}
 		}
 		break;
 
-		break;
 	case 'view':
 	default:
 		break;
@@ -133,7 +132,7 @@ $page->smarty->assign('sabpriority_selected', ($sab->priority == '') ? SABnzbd::
 $page->smarty->assign('sabsetting_ids', array(1, 2));
 $page->smarty->assign('sabsetting_names', array('Site', 'Cookie'));
 $page->smarty->assign('sabsetting_selected', ($sab->checkCookie() === true ? 2 : 1));
-/*
+
 switch ($sab->integrated) {
 	case SABnzbd::INTEGRATION_TYPE_USER:
 		$queueTypes = array('None', 'Sabnzbd', 'NZBGet');
@@ -145,9 +144,7 @@ switch ($sab->integrated) {
 		$queueTypeIDs = array(0, 2);
 		break;
 }
-*/
-$queueTypes = array('Sabnzbd');
-$queueTypeIDs = array(1);
+
 $page->smarty->assign(array(
 		'queuetypes' => $queueTypes,
 		'queuetypeids' => $queueTypeIDs

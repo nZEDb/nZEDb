@@ -66,6 +66,8 @@ div.icons {
 .icon_tvrage         { background-image:url('../images/icons/tvrage.png'); }
 .icon_check          { background-image:url('../images/icons/check.png'); }
 .icon_cp             { background-image:url('../images/icons/couch.png'); }
+.icon_goodreads      { background-image:url('../images/icons/goodreads.png'); }
+.icon_shelfari       { background-image:url('../images/icons/shelfari.png'); }
 
 a.divlink {
     display:block;
