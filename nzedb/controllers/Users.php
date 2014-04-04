@@ -187,10 +187,11 @@ class Users
 		return $db->queryInsert(sprintf("INSERT INTO users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed, firstname, lastname) VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)", $db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby, $db->escapeString($db->uuid()), $db->escapeString($fname), $db->escapeString($lname)));
 	}
 
-	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites, $movieview, $musicview,
-		$consoleview, $bookview, $saburl = false, $sabapikey = false, $sabpriority = false, $sabapikeytype = false,
+	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites,
+		$movieview, $musicview, $consoleview, $bookview,
 		$cp_url = false, $cp_api = false, $style = 'None', $queueType = self::QUEUE_SABNZBD,
-		$nzbgetURL = '', $nzbgetUsername = '', $nzbgetPassword = '')
+		$nzbgetURL = '', $nzbgetUsername = '', $nzbgetPassword = '',
+		$saburl = '', $sabapikey = '', $sabpriority = '', $sabapikeytype = '')
 	{
 		$db = $this->db;
 
@@ -253,16 +254,16 @@ class Users
 			$sql[] = sprintf('nzbgetpassword = %s', $db->escapeString($nzbgetPassword));
 		}
 
-		if ($saburl !== false) {
+		if ($saburl !== '') {
 			$sql[] = sprintf('saburl = %s', $db->escapeString($saburl));
 		}
-		if ($sabapikey !== false) {
+		if ($sabapikey !== '') {
 			$sql[] = sprintf('sabapikey = %s', $db->escapeString($sabapikey));
 		}
-		if ($sabpriority !== false) {
+		if ($sabpriority !== '') {
 			$sql[] = sprintf('sabpriority = %d', $sabpriority);
 		}
-		if ($sabapikeytype !== false) {
+		if ($sabapikeytype !== '') {
 			$sql[] = sprintf('sabapikeytype = %d', $sabapikeytype);
 		}
 
