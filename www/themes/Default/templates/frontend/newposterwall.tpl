@@ -119,14 +119,12 @@
                                         </div>
                                         <div class="icon icon_goodreads">
                                             <a class="divlink" title="Find on Goodreads"
-                                               href="{$site->dereferrer_link}http://www.goodreads
-                                               .com/search?query={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.booktitle|escape:"url"}"
+                                               href="{$site->dereferrer_link}http://www.goodreads.com/search?query={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.booktitle|escape:"url"}"
                                                target="_blank"></a>
                                         </div>
                                         <div class="icon icon_shelfari">
                                             <a class="divlink" title="Find on Shelfari"
-                                               href="{$site->dereferrer_link}http://www.shelfari
-                                               .com/search/books?Keywords={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.booktitle|escape:"url"}"
+                                               href="{$site->dereferrer_link}http://www.shelfari.com/search/books?Keywords={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.booktitle|escape:"url"}"
                                                target="_blank"></a>
                                         </div>
                                     {/if}
