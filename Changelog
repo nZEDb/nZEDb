@@ -12,6 +12,7 @@ Each update goes to the top of the file
 	* Fix: Fix for sab details going away when switching to NZBGet.
 	* Fix: Alpha theme always showing queue even when disabled.
 	* Fix: Non existant properties "logger|debug" in class DB.
+	* Fix: rowCount's in tmux start.php
 	* Chg: Help text for queue type.
 	* Add: New queue icons.
 2014-04-03 bart39
