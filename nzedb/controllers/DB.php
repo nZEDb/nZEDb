@@ -225,7 +225,7 @@ class DB extends PDO
 			$this->debugging->start($method, $error, $severity);
 		}
 
-		echo (($this->_cli ? $this->logger->error($error) . PHP_EOL : '<div class="error">' . $error . '</div>'));
+		echo (($this->_cli ? $this->opts['logger']->error($error) . PHP_EOL : '<div class="error">' . $error . '</div>'));
 
 		if ($exit) {
 			exit();
@@ -501,7 +501,7 @@ class DB extends PDO
 			$result = self::$pdo->query($query);
 		} catch (PDOException $e) {
 			$this->echoError($e->getMessage(), 'queryDirect', 4);
-			if ($this->debug) {
+			if ($this->_debug) {
 				$this->debugging->start("queryDirect", $query, 6);
 			}
 			$result = false;
@@ -578,7 +578,7 @@ class DB extends PDO
 				$tbls = rtrim(trim($tbls),',');
 				if ($admin === false) {
 					$message = 'Optimizing tables: ' . $tbls;
-					echo $this->logger->primary($message);
+					echo $this->opts['logger']->primary($message);
 					if ($this->_debug) {
 						$this->debugging->start("optimise", $message, 5);
 					}
@@ -589,7 +589,7 @@ class DB extends PDO
 					if ($type === 'analyze') {
 						if ($admin === false) {
 							$message = 'Analyzing table: ' . $table['name'];
-							echo $this->logger->primary($message);
+							echo $this->opts['logger']->primary($message);
 							if ($this->_debug) {
 								$this->debugging->start("optimise", $message, 5);
 							}
@@ -598,7 +598,7 @@ class DB extends PDO
 					} else {
 						if ($admin === false) {
 							$message = 'Optimizing table: ' . $table['name'];
-							echo $this->logger->primary($message);
+							echo $this->opts['logger']->primary($message);
 							if ($this->_debug) {
 								$this->debugging->start("optimise", $message, 5);
 							}
@@ -879,7 +879,7 @@ class DB extends PDO
 			if ($this->_debug) {
 				$this->debugging->start("Prepare", $e->getMessage(), 5);
 			}
-			echo $this->logger->error("\n" . $e->getMessage());
+			echo $this->opts['logger']->error("\n" . $e->getMessage());
 			$PDOstatement = false;
 		}
 		return $PDOstatement;
@@ -901,7 +901,7 @@ class DB extends PDO
 				if ($this->_debug) {
 					$this->debugging->start("getAttribute", $e->getMessage(), 5);
 				}
-				echo $this->logger->error("\n" . $e->getMessage());
+				echo $this->opts['logger']->error("\n" . $e->getMessage());
 				$result = false;
 			}
 			return $result;
@@ -956,10 +956,10 @@ class Mcached
 		if (extension_loaded('memcache')) {
 			$this->m = new Memcache();
 			if ($this->m->connect(MEMCACHE_HOST, MEMCACHE_PORT) == false) {
-				throw new Exception($this->logger->error("\nUnable to connect to the memcached server."));
+				throw new Exception($this->c->error("\nUnable to connect to the memcached server."));
 			}
 		} else {
-			throw new Exception($this->logger->error("nExtension 'memcache' not loaded."));
+			throw new Exception($this->c->error("nExtension 'memcache' not loaded."));
 		}
 
 		$this->expiry = MEMCACHE_EXPIRY;
@@ -987,7 +987,7 @@ class Mcached
 	// Flush all the data on the server.
 	public function Flush()
 	{
-		return $this->m->flush();
+		$this->m->flush();
 	}
 
 	// Add a query to memcached server.

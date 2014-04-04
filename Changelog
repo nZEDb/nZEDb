@@ -7,6 +7,16 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-03 bart39
+	* New: Add books to New Releases posterwall
+2014-04-04 kevin
+	* Fix: Fix add to queue.
+	* Fix: Inverted password/username help text in profileedit.
+	* Fix: Fix for sab details going away when switching to NZBGet.
+	* Fix: Alpha theme always showing queue even when disabled.
+	* Fix: Non existant properties "logger|debug" in class DB.
+	* Chg: Help text for queue type.
+	* Add: New queue icons.
+2014-04-03 bart39
 	* Fix: undefined variables in monitor.php
 	* Fix: blank browse pages
 	* Fix: pass $tmux_session into function
