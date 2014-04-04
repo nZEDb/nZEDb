@@ -25,9 +25,10 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY
 use nzedb\utility\Utility;
 
 if (Utility::isCLI() && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
-	$updater = new DbUpdate(['backup'	=> false]);
+	$backup = (isset($argv[2]) && $argv[2] == 'safe') ? true : false;
+	$updater = new DbUpdate(['backup'	=> $backup]);
 	echo $updater->log->primary("Db updater starting ...");
-	$updater->processPatches(['safe' => false]);
+	$updater->processPatches(['safe' => $backup]);
 }
 
 class DbUpdate
@@ -130,6 +131,11 @@ class DbUpdate
 			'safe'	=> true,
 		);
 		$options += $defaults;
+
+		if ($options['safe']) {
+			$this->_backupDb();
+		}
+
 		$this->_useSettings();
 		$currentVersion = $this->settings->getSetting('sqlpatch');
 

@@ -114,7 +114,7 @@
 							{$result.rating}/10
 						{/if}
 						{foreach from=$result.languages item=movielanguage}
-							{nzedb\utility\release_flag($movielanguage, browse)}
+							{release_flag($movielanguage, browse)}
 						{/foreach}
 					</h2>
 					{if $result.tagline != ''}
@@ -240,7 +240,7 @@
 											></a>
 										</div>
 										{if $sabintegrated}
-											<div class="icon icon_sab float-right" title="Send to my Sabnzbd"></div>
+											<div class="icon icon_sab float-right" title="Send to my Queue"></div>
 										{/if}
 										<div class="icon icon_cart float-right" title="Add to Cart"></div>
 										<br>

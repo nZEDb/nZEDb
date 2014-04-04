@@ -459,7 +459,7 @@ INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('rss','RSS','RSS
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('forum','Forum','Browse Forum.', 1, 85);
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('login','Login','Login.', 0, 100);
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('register','Register','Register.', 0, 110);
-INSERT INTO menu (href, title, tooltip, role, ordinal, menueval ) VALUES ('queue','Sab Queue','View Your Sabnzbd Queue.', 1, 81, '{if $sabapikeytype!=2}-1{/if}');
+INSERT INTO menu (href, title, tooltip, role, ordinal, menueval ) VALUES ('queue','My Queue','View Your Queue.', 1, 81, '{if !$sabintegrated}-1{/if}');
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('newposterwall', 'New Releases', 'Newest Releases Poster Wall', 1, 11);
 
 
@@ -598,7 +598,7 @@ INSERT INTO site
 	('showbacks', '0'),
 	/* Last time we got a pre */
 	('lastpretime', '0'),
-	('sqlpatch','195');
+	('sqlpatch','197');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),

@@ -89,9 +89,33 @@ class BasePage
 			$this->smarty->assign('loggedin', 'true');
 
 			$sab = new SABnzbd($this);
-			if ($sab->integrated !== false && $sab->url != '' && $sab->apikey != '')
+			$integrated = false;
+			switch ($sab->integrated) {
+				case SABnzbd::INTEGRATION_TYPE_NONE:
+					if ($this->userdata['queuetype'] == 2) {
+						$integrated = true;
+					}
+					break;
+				case SABnzbd::INTEGRATION_TYPE_SITEWIDE:
+					$integrated = true;
+					break;
+				case SABnzbd::INTEGRATION_TYPE_USER:
+					switch((int)$this->userdata['queuetype']) {
+						case 1:
+						case 2:
+							$integrated = true;
+							break;
+						default:
+							$integrated = false;
+							break;
+					}
+					break;
+				default:
+					$integrated = false;
+			}
+			$this->smarty->assign('sabintegrated', $integrated);
+			if ($integrated !== false && $sab->url != '' && $sab->apikey != '')
 			{
-				$this->smarty->assign('sabintegrated', $sab->integrated);
 				$this->smarty->assign('sabapikeytype', $sab->apikeytype);
 			}
 			if ($this->userdata['role'] == Users::ROLE_ADMIN)

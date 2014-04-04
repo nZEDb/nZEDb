@@ -1663,7 +1663,6 @@ function run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet)
 			);
 		}
 	} else {
-		$color = get_color($colors_start, $colors_end, $colors_exc);
-		shell_exec("tmux respawnp -t${tmux_session}:${pane}.0 'echo \"\033[38;5;\"$color\"m\nIRCScraper has been disabled/terminated by IRCScraping\"'");
+		shell_exec("tmux respawnp -t${tmux_session}:${pane}.0 'echo \"\nIRCScraper has been disabled/terminated by IRCSCraper\"'");
 	}
 }

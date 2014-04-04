@@ -61,7 +61,7 @@
 			View: <b>Covers</b> | <a href="{$smarty.const.WWW_TOP}/browse?t={$category}">List</a><br />
 			<input type="button" style="margin-bottom:10px;" class="nzb_multi_operations_download" value="Download NZBs" />
 			<input type="button" style="margin-bottom:10px;" class="nzb_multi_operations_cart" value="Add to Cart" />
-			{if $sabintegrated}<input type="button" style="margin-bottom:10px;" class="nzb_multi_operations_sab" value="Send to SAB" />{/if}
+			{if $sabintegrated}<input type="button" style="margin-bottom:10px;" class="nzb_multi_operations_sab" value="Send to my Queue" />{/if}
 		</div>
 		<br/>
 
@@ -96,7 +96,7 @@
 								</div>
 								<h2><a title="{$result.title|stripslashes|escape:"htmlall"}" href="{$smarty.const.WWW_TOP}/movies/?imdb={$result.imdbid}">{$result.title|stripslashes|escape:"htmlall"}</a> (<a class="title" title="{$result.year}" href="{$smarty.const.WWW_TOP}/movies?year={$result.year}">{$result.year}</a>) {if $result.rating != ''}{$result.rating}/10{/if}
 									{foreach from=$result.languages item=movielanguage}
-										{nzedb\utility\release_flag($movielanguage, browse)}
+										{release_flag($movielanguage, browse)}
 									{/foreach}</h2>
 								{if $result.tagline != ''}<b>{$result.tagline|stripslashes}</b><br />{/if}
 								{if $result.plot != ''}{$result.plot|stripslashes}<br /><br />{/if}
@@ -137,7 +137,7 @@
 												<td class="icons">
 													<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$mguid[$m@index]}/{$mname[$m@index]|escape:"htmlall"}">&nbsp;</a></div>
 													<div class="icon icon_cart" title="Add to Cart"></div>
-													{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
+													{if $sabintegrated}<div class="icon icon_sab" title="Send to my Queue"></div>{/if}
 												</td>
 											</tr>
 											{if $m@index == 1 && $m@total > 2}
@@ -162,7 +162,7 @@
 		<div class="nzb_multi_operations" style="margin-top: 5px;">
 			<input type="button" class="nzb_multi_operations_download" value="Download NZBs" />
 			<input type="button" class="nzb_multi_operations_cart" value="Add to Cart" />
-			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to SAB" />{/if}
+			{if $sabintegrated}<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue" />{/if}
 		</div>
 
 	</form>

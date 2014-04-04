@@ -7,6 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-03 bart39
+	* Fix: undefined variables in monitor.php
+	* Fix: blank browse pages
 	* Fix: pass $tmux_session into function
 	* Fix: Fix various tmux window issues when enabling/disabling tmux colors and IRCScraper
 	* Chg: Move Ircscraper function into monitor loop (credits DariusIII)
@@ -14,6 +16,7 @@ Each update goes to the top of the file
 	NB would suggest editing and re-saving user_threaded.sh for the new changes
 2014-04-03 ruhllatio
 	* Chg: Modify newposterwall queries to leverage partitioning -- considerable speed improvement (5.5+ safe)
+	* Fix: Bad query in Genre section of admin site for showing only genres with releases
 2014-04-03 niel
 	* Chg: Refactoring DB class to allow passing of options (db arguments, ColorCLI instance, etc.) on instantiation.
 	Also to better comply with conventions (ordering of public, protected, private properties and using $_ for protected ones).
@@ -22,7 +25,12 @@ Each update goes to the top of the file
 	* Fix: reverting schema patch pending investigating the problems.
 	* Fix: Duplicate entries for Korea in countries table. Changed to Korea, North and Korea, South.
 	* Fix: Apparently smarty doesn't like namespaces This separates some functions into their own file for Smarty.
+	* Chg: Making autopatcher work with new DbUpdate class.
+	* Fix: Missed three runCmd() needing namespacing
+	* Chg: Fixing code style. in PostProcessing
 2014-04-03 kevin
+	* Chg: Mention the difference between queue size and total size.
+	* Add: NZBGet queue support. Might have issues.
 	* Add: Starting adding NZBget to profile edit (locked out for now), patch to set Sab as default for now.
 	* Add: Patch for NZBGet columns.
 	* Add: Sabnzbd URL checking.
