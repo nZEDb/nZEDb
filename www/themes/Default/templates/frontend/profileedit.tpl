@@ -101,7 +101,7 @@
 					<th><label for="nzbgetusername">NZBGet Username:</label></th>
 					<td>
 						<input id="nzbgetusername" class="form-control" name="nzbgetusername" type="text" value="{$user.nzbgetusername}" />
-						<span class="help-block">The password for the NZBGet installation.</span>
+						<span class="help-block">The user name for the NZBGet installation.</span>
 					</td>
 				</tr>
 
@@ -109,7 +109,7 @@
 					<th><label for="nzbgetpassword">NZBGet Password:</label></th>
 					<td>
 						<input id="nzbgetpassword" class="form-control" name="nzbgetpassword" type="text" value="{$user.nzbgetpassword}" />
-						<span class="help-block">The user name for the NZBGet installation.</span>
+						<span class="help-block">The password for the NZBGet installation.</span>
 					</td>
 				</tr>
 

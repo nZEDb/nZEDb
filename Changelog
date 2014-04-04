@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 2014-04-04 kevin
 	* Fix: Fix add to queue.
+	* Fix: Inverted password/username help text in profileedit.
 	* Add: New queue icons.
 2014-04-03 bart39
 	* Fix: undefined variables in monitor.php
