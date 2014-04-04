@@ -16,7 +16,8 @@
 					or $menu.title == "Admin"
 					or $menu.title == "My Shows"
 					or $menu.title == "My Movies"
-					or $menu.title == "My Cart"}
+					or $menu.title == "My Cart"
+					or $menu.title == "My Queue"}
 					{continue}
 				{/if}
 				{if $menuevalresult|replace:",":"1" == "1"}
