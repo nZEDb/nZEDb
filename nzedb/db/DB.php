@@ -88,7 +88,7 @@ class DB extends \PDO
 
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 		if ($this->_debug) {
-			$this->debugging = new Debugging("DB");
+			$this->debugging = new \Debugging("DB");
 		}
 
 		$this->_cli = \nzedb\utility\Utility::isCLI();
@@ -643,7 +643,7 @@ class DB extends \PDO
 	 */
 	public function newtables($grpid)
 	{
-		$s = new Sites();
+		$s = new \Sites();
 		$site = $s->get();
 		$DoPartRepair = ($site->partrepair == '0') ? false : true;
 
@@ -956,14 +956,14 @@ class Mcached
 	// Make a connection to memcached server.
 	public function Mcached()
 	{
-		$this->c = new ColorCLI();
+		$this->c = new \ColorCLI();
 		if (extension_loaded('memcache')) {
-			$this->m = new Memcache();
+			$this->m = new \Memcache();
 			if ($this->m->connect(MEMCACHE_HOST, MEMCACHE_PORT) == false) {
-				throw new Exception($this->log->error("\nUnable to connect to the memcached server."));
+				throw new \Exception($this->log->error("\nUnable to connect to the memcached server."));
 			}
 		} else {
-			throw new Exception($this->log->error("nExtension 'memcache' not loaded."));
+			throw new \Exception($this->log->error("nExtension 'memcache' not loaded."));
 		}
 
 		$this->expiry = MEMCACHE_EXPIRY;
