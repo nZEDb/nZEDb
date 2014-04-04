@@ -15,14 +15,15 @@ use nzedb\controllers\ColorCLI;
 class DB extends \PDO
 {
 	/**
-	 * @var object Instance of ColorCLI class.
-	 */
-	public $c;
-
-	/**
 	 * @var object Instance of ConsoleTools class.
 	 */
 	public $ct;
+
+	/**
+	 * @var object    Instance variable for logging object. Currently only ColorCLI supported,
+	 * but expanding for full logging with agnostic API planned.
+	 */
+	public $log;
 
 	/**
 	 * @var bool	Whether memcache is enabled.
@@ -81,7 +82,7 @@ class DB extends \PDO
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
 			'dbuser' 		=> defined('DB_USER') ? DB_USER : '',
-			'logger'		=> new \ColorCLI()
+			'log'			=> new \ColorCLI()
 		);
 		$this->opts = $options + $defaults;
 
@@ -228,7 +229,7 @@ class DB extends \PDO
 			$this->debugging->start($method, $error, $severity);
 		}
 
-		echo (($this->_cli ? $this->c->error($error) . PHP_EOL : '<div class="error">' . $error . '</div>'));
+		echo (($this->_cli ? $this->log->error($error) . PHP_EOL : '<div class="error">' . $error . '</div>'));
 
 		if ($exit) {
 			exit();
@@ -581,7 +582,7 @@ class DB extends \PDO
 				$tbls = rtrim(trim($tbls),',');
 				if ($admin === false) {
 					$message = 'Optimizing tables: ' . $tbls;
-					echo $this->c->primary($message);
+					echo $this->log->primary($message);
 					if ($this->_debug) {
 						$this->debugging->start("optimise", $message, 5);
 					}
@@ -592,7 +593,7 @@ class DB extends \PDO
 					if ($type === 'analyze') {
 						if ($admin === false) {
 							$message = 'Analyzing table: ' . $table['name'];
-							echo $this->c->primary($message);
+							echo $this->log->primary($message);
 							if ($this->_debug) {
 								$this->debugging->start("optimise", $message, 5);
 							}
@@ -601,7 +602,7 @@ class DB extends \PDO
 					} else {
 						if ($admin === false) {
 							$message = 'Optimizing table: ' . $table['name'];
-							echo $this->c->primary($message);
+							echo $this->log->primary($message);
 							if ($this->_debug) {
 								$this->debugging->start("optimise", $message, 5);
 							}
@@ -882,7 +883,7 @@ class DB extends \PDO
 			if ($this->_debug) {
 				$this->debugging->start("Prepare", $e->getMessage(), 5);
 			}
-			echo $this->c->error("\n" . $e->getMessage());
+			echo $this->log->error("\n" . $e->getMessage());
 			$PDOstatement = false;
 		}
 		return $PDOstatement;
@@ -904,7 +905,7 @@ class DB extends \PDO
 				if ($this->_debug) {
 					$this->debugging->start("getAttribute", $e->getMessage(), 5);
 				}
-				echo $this->c->error("\n" . $e->getMessage());
+				echo $this->log->error("\n" . $e->getMessage());
 				$result = false;
 			}
 			return $result;
@@ -959,10 +960,10 @@ class Mcached
 		if (extension_loaded('memcache')) {
 			$this->m = new Memcache();
 			if ($this->m->connect(MEMCACHE_HOST, MEMCACHE_PORT) == false) {
-				throw new Exception($this->c->error("\nUnable to connect to the memcached server."));
+				throw new Exception($this->log->error("\nUnable to connect to the memcached server."));
 			}
 		} else {
-			throw new Exception($this->c->error("nExtension 'memcache' not loaded."));
+			throw new Exception($this->log->error("nExtension 'memcache' not loaded."));
 		}
 
 		$this->expiry = MEMCACHE_EXPIRY;

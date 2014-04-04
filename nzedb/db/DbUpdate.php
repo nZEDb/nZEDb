@@ -18,6 +18,7 @@
  * @author niel
  * @copyright 2014 nZEDb
  */
+
 namespace nzedb\db;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
@@ -65,15 +66,15 @@ class DbUpdate
 	{
 		$defaults = array(
 			'backup'	=> true,
-			'db'		=> new \DB(),
-			'logging'	=> new \ColorCLI(),
+			'db'		=> new \nzedb\db\DB(),
+			'logger'	=> new \ColorCLI(),
 		);
 		$options += $defaults;
 		unset($defaults);
 
 		$this->backup	= $options['backup'];
 		$this->db		= $options['db'];
-		$this->log		= $options['logging'];
+		$this->log		= $options['logger'];
 
 		$this->_dbSystem = strtolower($this->db->dbSystem());
 	}
