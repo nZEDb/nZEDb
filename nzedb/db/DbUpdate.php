@@ -18,29 +18,33 @@
  * @author niel
  * @copyright 2014 nZEDb
  */
-
 namespace nzedb\db;
 
+use nzedb\utility;
 
-use nzedb\utility\Utility;
-
-if (Utility::isCLI() && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
+if (!defined('nZEDb_INSTALLER')) {
 	require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
-	$backup = (isset($argv[2]) && $argv[2] == 'safe') ? true : false;
-	$updater = new DbUpdate(['backup'	=> $backup]);
-	echo $updater->log->primary("Db updater starting ...");
-	$updater->processPatches(['safe' => $backup]);
 
-//	echo $c->header($patched . " patch(es) applied.");
-//	$smarty  = new Smarty;
-//	$cleared = $smarty->clearCompiledTemplate();
-//	if ($cleared) {
-//		echo $c->header("The smarty template cache has been cleaned for you");
-//	} else {
-//		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR .
-//						"templates_c");
-//	}
+	if (\nzedb\utility\Utility::isCLI() && isset($argc) && $argc > 1 && isset($argv[1]) &&
+		$argv[1] == true
+	) {
+
+		$backup  = (isset($argv[2]) && $argv[2] == 'safe') ? true : false;
+		$updater = new DbUpdate(['backup' => $backup]);
+		echo $updater->log->primary("Db updater starting ...");
+		$updater->processPatches(['safe' => $backup]);
+
+		//	echo $c->header($patched . " patch(es) applied.");
+		//	$smarty  = new Smarty;
+		//	$cleared = $smarty->clearCompiledTemplate();
+		//	if ($cleared) {
+		//		echo $c->header("The smarty template cache has been cleaned for you");
+		//	} else {
+		//		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR .
+		//						"templates_c");
+		//	}
+	}
 }
 
 class DbUpdate
