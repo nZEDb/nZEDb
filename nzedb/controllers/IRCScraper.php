@@ -239,15 +239,18 @@ class IRCScraper
 		}
 
 		$versions = array(
-			'HexChat 2.9.6',
-			'mIRC 7.32',
+			'HexChat 2.9.6 [x64] / Windows ' . rand(7,8) . ' [' . rand(2,3) . '.' . rand(0,99) .'GHz]',
+			'irssi v0.8.' . rand(10, 16) . ' - running on Linux i686',
+			'KVIrc 4.2.0',
+			'mIRC 7.32 Khaled Mardam-Bey',
+			'mIRC v6.31 Khaled Mardam-Bey',
 			'HydraIRC v0.3.165',
-			'X-Chat 2.8.9',
-			'KVIrc 4.2.0'
+			'xchat 2.8. ' . rand(6,9) . ' Ubuntu',
+			'ZNC 1.' . rand(0,2) . ' - http://znc.in',
 		);
 
 		// Change the CTCP string.
-		$this->IRC->setCtcpVersion($versions[mt_rand(0, 4)]);
+		$this->IRC->setCtcpVersion($versions[mt_rand(0, 6)]);
 		unset($versions);
 
 		// Use real sockets instead of fsock.
