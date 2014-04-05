@@ -83,7 +83,7 @@ class ReleaseComments
 				FROM releasecomment
 				LEFT OUTER JOIN users ON users.id = releasecomment.userid
 				LEFT JOIN releases on releases.id = releasecomment.releaseid
-				ORDER BY releasecomment.createddate DESC",
+				ORDER BY releasecomment.createddate DESC %s",
 				($start === false ? '' : " LIMIT " . $num . " OFFSET " . $start)));
 	}
 
