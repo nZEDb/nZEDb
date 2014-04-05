@@ -1,4 +1,6 @@
 <?php
+
+use nzedb\db\DB;
 use nzedb\utility;
 
 class Sites

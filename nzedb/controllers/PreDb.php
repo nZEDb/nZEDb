@@ -1,6 +1,7 @@
 <?php
 require_once nZEDb_LIBS . "simple_html_dom.php";
 
+use nzedb\db\DB;
 use nzedb\utility;
 
 /*

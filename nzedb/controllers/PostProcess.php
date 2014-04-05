@@ -3,6 +3,7 @@ require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 require_once nZEDb_LIBS . 'rarinfo/zipinfo.php';
 
+use nzedb\db\DB;
 use nzedb\utility;
 
 class PostProcess
@@ -141,6 +142,7 @@ class PostProcess
 		$this->processPredb($nntp);
 		$this->processAdditional($nntp);
 		$this->processNfos('', $nntp);
+		$this->processSharing($nntp);
 		$this->processMovies();
 		$this->processMusic();
 		$this->processGames();
@@ -255,6 +257,17 @@ class PostProcess
 		if ($titles > 0) {
 			$this->doEcho($this->c->header('Fetched ' . number_format($titles) . ' new title(s) from PreDB sources.'));
 		}
+	}
+
+	/**
+	 * Process comments.
+	 *
+	 * @param NNTP $nntp
+	 */
+	public function processSharing(&$nntp)
+	{
+		$sharing = new Sharing($this->db, $nntp);
+		$sharing->start();
 	}
 
 	/**

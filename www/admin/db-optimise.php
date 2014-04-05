@@ -1,6 +1,7 @@
 <?php
 require_once './config.php';
 
+use nzedb\db\DB;
 
 $page = new AdminPage();
 $db = new DB();

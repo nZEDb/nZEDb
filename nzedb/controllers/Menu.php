@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\DB;
+
 class Menu
 {
 	public function get($role, $serverurl)

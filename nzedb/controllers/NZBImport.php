@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\DB;
+
 /**
  * Import NZB files into the database.
  * Class NZBImport

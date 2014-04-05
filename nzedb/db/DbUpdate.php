@@ -20,15 +20,37 @@
  */
 namespace nzedb\db;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+use nzedb\utility;
 
-use nzedb\utility\Utility;
+/*
+ * Putting procedural stuff inside class scripts like this is BAD. Do not use this as an excuse to do more.
+ * This is a temporary measure until a proper frontend for cli stuff can be implemented with li3.
+ */
+if (!defined('nZEDb_INSTALLER')) {
+	require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
-if (Utility::isCLI() && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
-	$backup = (isset($argv[2]) && $argv[2] == 'safe') ? true : false;
-	$updater = new DbUpdate(['backup'	=> $backup]);
-	echo $updater->log->primary("Db updater starting ...");
-	$updater->processPatches(['safe' => $backup]);
+
+	if (\nzedb\utility\Utility::isCLI() && isset($argc) && $argc > 1 && isset($argv[1]) &&
+		$argv[1] == true
+	) {
+
+		$backup  = (isset($argv[2]) && $argv[2] == 'safe') ? true : false;
+		$updater = new DbUpdate(['backup' => $backup]);
+		echo $updater->log->primary("Db updater starting ...");
+		$patched = $updater->processPatches(['safe' => $backup]);
+
+		if ($patched > 0) {
+			echo $updater->log->info("$patched patch(es) applied.");
+			$smarty  = new \Smarty;
+			$cleared = $smarty->clearCompiledTemplate();
+			if ($cleared) {
+				$msg = "The smarty template cache has been cleaned for you\n";
+			} else {
+				$msg = "You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c\n";
+			}
+			$updater->log->info($msg);
+		}
+	}
 }
 
 class DbUpdate
@@ -49,7 +71,7 @@ class DbUpdate
 	 */
 	public $settings;
 
-	protected $_dbSystem;
+	protected $_DbSystem;
 
 	/**
 	 * @var bool    Has the Db been backed up?
@@ -65,17 +87,17 @@ class DbUpdate
 	{
 		$defaults = array(
 			'backup'	=> true,
-			'db'		=> new \DB(),
-			'logging'	=> new \ColorCLI(),
+			'db'		=> new \nzedb\db\DB(),
+			'logger'	=> new \ColorCLI(),
 		);
 		$options += $defaults;
 		unset($defaults);
 
 		$this->backup	= $options['backup'];
 		$this->db		= $options['db'];
-		$this->log		= $options['logging'];
+		$this->log		= $options['logger'];
 
-		$this->_dbSystem = strtolower($this->db->dbSystem());
+		$this->_DbSystem = strtolower($this->db->dbSystem());
 	}
 
 	public function loadTables(array $options = [])
@@ -126,7 +148,7 @@ class DbUpdate
 		$patched = 0;
 		$defaults = array(
 			'ext'   => 'sql',
-			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_dbSystem,
+			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
 			'regex' => '#^\d{4}_\d{2}_\d{2}_\d+(\w+)\.sql$#',
 			'safe'	=> true,
 		);
@@ -147,8 +169,8 @@ class DbUpdate
 			foreach($files as $file) {
 				$fp = fopen($file, 'r');
 				$patch = fread($fp, filesize($file));
-				$pat = "/UPDATE `?site`? SET `?value`? = '?(?'patch'\d+)'? WHERE `?setting`? = 'sqlpatch'/i";
-				if (preg_match($pat, $patch, $matches)) {
+				$pattern = "/UPDATE `?site`? SET `?value`? = '?(?'patch'\d+)'? WHERE `?setting`? = 'sqlpatch'/i";
+				if (preg_match($pattern, $patch, $matches)) {
 					if ($matches['patch'] > $currentVersion) {
 						echo $this->log->header('Processing patch file: ' . $file);
 						if ($options['safe'] && !$this->backedUp) {
@@ -162,15 +184,17 @@ class DbUpdate
 		} else {
 			exit($this->log->error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
 		}
-		if ($patched === 0) {
 
+		if ($patched === 0) {
+			echo $this->log->info("Nothing to patch, you are already on version $currentVersion");
 		}
+		return $patched;
 	}
 
 	public function processSQLFile(array $options = [])
 	{
 		$defaults = array(
-			'filepath'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . $this->_dbSystem . '-ddl.sql',
+			'filepath'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . $this->_DbSystem . '-ddl.sql',
 		);
 		$options += $defaults;
 
@@ -266,7 +290,7 @@ class DbUpdate
 			$PHP = "php";
 		}
 
-		system("$PHP " . nZEDb_MISC . 'testing' . DS .'DB' . DS . $this->_dbSystem . 'dump_tables.php db dump');
+		system("$PHP " . nZEDb_MISC . 'testing' . DS .'DB' . DS . $this->_DbSystem . 'dump_tables.php db dump');
 		$this->backedup = true;
 	}
 

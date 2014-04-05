@@ -1,6 +1,8 @@
 <?php
 require_once realpath(__DIR__ . '/../automated.config.php');
 
+use nzedb\db\DB;
+
 $page = new InstallPage();
 
 if (!isset($_REQUEST["success"])) {

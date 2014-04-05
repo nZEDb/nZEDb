@@ -1,6 +1,7 @@
 <?php
-
 require dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
 
 $db = new DB();
 $count = $groups = 0;

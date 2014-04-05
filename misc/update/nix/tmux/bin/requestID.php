@@ -1,6 +1,8 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../config.php';
+
+use nzedb\db\DB;
+
 $c = new ColorCLI();
 if (!isset($argv[1])) {
 	exit($c->error("This script is not intended to be run manually, it is called from requestid_threaded.py."));

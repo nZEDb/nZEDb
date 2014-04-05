@@ -111,6 +111,22 @@
                                                href="{$site->dereferrer_link}http://www.last.fm/search?q={$result.searchname|regex_replace:"/ ?(\(?\d\d\d\d\)?)? ?(MP3|FLAC)/i":""|escape:"url"}&from=ac/"
                                                target="_blank"></a>
                                         </div>
+                                    {elseif $type == 'Books'}
+                                        <div class="icon icon_amazon">
+                                            <a class="divlink" title="View Amazon Page"
+                                               href="{$site->dereferrer_link}{$result.url}"
+                                               target="_blank"></a>
+                                        </div>
+                                        <div class="icon icon_goodreads">
+                                            <a class="divlink" title="Find on Goodreads"
+                                               href="{$site->dereferrer_link}http://www.goodreads.com/search?query={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.booktitle|escape:"url"}"
+                                               target="_blank"></a>
+                                        </div>
+                                        <div class="icon icon_shelfari">
+                                            <a class="divlink" title="Find on Shelfari"
+                                               href="{$site->dereferrer_link}http://www.shelfari.com/search/books?Keywords={if $result.author != ""}{$result.author|escape:"url"}{"+-+"}{/if}{$result.booktitle|escape:"url"}"
+                                               target="_blank"></a>
+                                        </div>
                                     {/if}
                                 </div>
                             </div>

@@ -2,6 +2,8 @@
 /* This is for making predb patches. The size is not accurate if it was not in MB, some sites post also in GB. */
 /*
 require_once '../../../www/config.php';
+
+use nzedb\db\DB;
 $db = new DB();
 
 // Last patch date +1 day.

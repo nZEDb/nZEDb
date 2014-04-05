@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\DB;
+
 class UserMovies
 {
 	function __construct()

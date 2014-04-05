@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\DB;
+
 class ReleaseComments
 {
 	// Returns the row associated to the id of a comment.

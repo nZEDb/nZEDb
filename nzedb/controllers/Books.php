@@ -1,6 +1,8 @@
 <?php
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
+use nzedb\db\DB;
+
 /*
  * Class for processing book info.
  */

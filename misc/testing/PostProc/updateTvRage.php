@@ -2,6 +2,7 @@
 //This script downloads covert art for Tv Shows -- it is intended to be run at interval, generally after the TvRage database is populated
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\db\DB;
 use nzedb\utility;
 
 $tvrage = new TvRage(true);

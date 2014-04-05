@@ -1,6 +1,8 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
+
 /*
  *
  * This was added because I starting writing this before

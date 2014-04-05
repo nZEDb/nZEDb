@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\db\DB;
+
 /**
  * Logs/Reports stuff
  */

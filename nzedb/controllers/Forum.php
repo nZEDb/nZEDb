@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\DB;
+
 class Forum
 {
 		public function add($parentid, $userid, $subject, $message, $locked = 0, $sticky = 0, $replies = 0)

@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\DB;
+
 class Category
 {
 	const CAT_GAME_NDS = 1010;
