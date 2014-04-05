@@ -166,7 +166,7 @@ class IRCScraper
 					'#alt.binaries.games.xbox360'          => null,
 					'#alt.binaries.sony.psp'               => null,
 					'#scnzb'                               => null,
-					'#tvnzb'                               => null
+					//'#tvnzb'                               => null
 				);
 				// Check if the user is ignoring channels.
 				if (defined('SCRAPE_IRC_EFNET_IGNORED_CHANNELS') && SCRAPE_IRC_EFNET_IGNORED_CHANNELS != '') {
@@ -204,7 +204,7 @@ class IRCScraper
 						'|' .
 						'\s+NZB:\s+http:\/\/scnzb\.eu\/' .             // scnzb
 						'|' .
-						'^\[SBINDEX\]' .                               // tvnzb
+						//'^\[SBINDEX\]' .                               // tvnzb
 						'|' .
 						'^\[(MOD|OLD|RE|UN)?NUKE\]' .                  // Nukes. various channels
 						'|' .
@@ -438,11 +438,11 @@ class IRCScraper
 				}
 				break;
 
-			case '#tvnzb':
+			/*case '#tvnzb':
 				if ($this->checkSimilarity($poster, 'tweetie')) {
 					$this->tvnzb($data->message);
 				}
-				break;
+				break;*/
 
 			default:
 				if ($this->checkSimilarity($poster, 'alt-bin')) {
@@ -761,7 +761,7 @@ class IRCScraper
 	 *
 	 * @param string $message The IRC message to parse.
 	 */
-	protected function tvnzb(&$message)
+/*	protected function tvnzb(&$message)
 	{
 		//[SBINDEX] Rev.S03E02.HDTV.x264-TLA :: TV > HD :: 210.13 MB :: Aired: 31/Mar/2014 :: http://lolo.sickbeard.com/getnzb/aa10bcef235c604612dd61b0627ae25f.nzb
 		if (preg_match('/\[SBINDEX\]\s+(?P<title>.+?)\s+::\s+(?P<sbcat>.+?)\s+::\s+(?P<size>.+?)\s+::\s+Aired/i', $message, $matches)) {
@@ -771,7 +771,7 @@ class IRCScraper
 			$this->CurPre['source'] = '#tvnzb';
 			$this->siftMatches($matches);
 		}
-	}
+	}*/
 
 	/**
 	 * Gets new PRE from #Pre on zenet
