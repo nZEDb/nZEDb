@@ -8,6 +8,8 @@ Each update goes to the top of the file
 
 2014-04-05 niel
 	* Chg: Improved DbUpdate's reporting.
+2014-05-04 kevin
+	* Chg: Deal with remote changing nicknames.
 2014-04-04 niel
 	* Chg: Fixed Bart's date below ;-) Pushing my changes from yesterday.
 	* Chg: Reallowing the use of patchDb. It is still deprecated but now handles the calling of DBUpdate for you.

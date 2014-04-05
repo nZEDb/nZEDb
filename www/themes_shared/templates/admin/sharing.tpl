@@ -1,11 +1,17 @@
 <h1>{$page->title}</h1>
-<strong>Sharing of comments does not wortk with NntpProxy, NntpProxy does not have all the requied NNTP commands.</strong>
+<strong>Sharing of comments does not work with NntpProxy, NntpProxy does not have all the required NNTP commands.</strong>
 <br />
 <div id="message" style="width:677px;">msg</div>
 {if $local}
 	<fieldset style="width:677px;">
 		<legend>Local sharing settings.</legend>
 		<table class="input">
+			{*<tr>
+				<td style="width: 100px;"><label for="sharing_name">Site Name:</label></td>
+				<td>
+					<input id="sharing_name" class="long" name="sharing_name" type="text" value="{$sharing_name}" />
+				</td>
+			</tr>*}
 			<tr>
 				<td style="width:100px;"><label for="sharing_enabled">Enabled:</label></td>
 				<td>
