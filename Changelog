@@ -22,6 +22,7 @@ Each update goes to the top of the file
 	* Chg: add icons for books on New Releases posterwall
 	* New: Add books to New Releases posterwall
 2014-04-04 kevin
+	* Add: Working comment sharing (WIP, might have issues).
 	* Chg: Remake class sharing. (not functional yet)
 	* Fix: Fix add to queue.
 	* Fix: Inverted password/username help text in profileedit.
