@@ -12,7 +12,7 @@
 						<td style="width: 100px;"><label for="sharing_name">Site Name:</label></td>
 						<td>
 							<input id="sharing_name" class="long" name="sharing_name" type="text" value="{$local.site_name}" />
-							<div>This is your site name, changing this will update other sites running sharing also.</div>
+							<div>This is your site name, changing this will update other sites running sharing also, it must not contain spaces (user underscores _).</div>
 						</td>
 					</tr>
 					<tr>

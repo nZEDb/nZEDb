@@ -16,17 +16,17 @@ if (count($allSites) === 0) {
 $ourSite = $db->queryOneRow('SELECT * FROM sharing');
 
 if (!empty($_POST)) {
-	if (!empty($_POST['sharing_name'])) {
+	if (!empty($_POST['sharing_name']) && !preg_match('/\s+/', $_POST['sharing_name']) && strlen($_POST['sharing_name']) < 255) {
 		$site_name = trim($_POST['sharing_name']);
 	} else {
 		$site_name = $ourSite['site_name'];
 	}
-	if (!empty($_POST['sharing_maxpush'])) {
+	if (!empty($_POST['sharing_maxpush']) && is_numeric($_POST['sharing_maxpush'])) {
 		$max_push = trim($_POST['sharing_maxpush']);
 	} else {
 		$max_push = $ourSite['max_push'];
 	}
-	if (!empty($_POST['sharing_maxpull'])) {
+	if (!empty($_POST['sharing_maxpull']) && is_numeric($_POST['sharing_maxpush'])) {
 		$max_pull = trim($_POST['sharing_maxpull']);
 	} else {
 		$max_pull = $ourSite['max_pull'];
