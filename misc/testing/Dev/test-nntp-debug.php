@@ -26,7 +26,8 @@ if ($connected !== true) {
 
 /** Example: **/
 
-
+$x = $nntp->selectGroup('alt.binaries.zines');
+var_dump($nntp->get_Header($x['group'], $x['last']));
 
 
 /**/

@@ -186,12 +186,12 @@ Class Sharing
 		$sid = sha1($row['createddate'] . $row['text'] . $row['nzb_guid']);
 
 		// Example of a subject.
-		//nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
+		//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
 
 		// Attempt to upload the comment to usenet.
 		$success = $this->nntp->postArticle(
 			self::group,
-			($this->siteSettings['site_name'] . '_' . $this->siteSettings['site_guid'] . ' - [1/1] "' . $sid . '" yEnc (1/1)'),
+			('(_nZEDb_)' . $this->siteSettings['site_name'] . '_' . $this->siteSettings['site_guid'] . ' - [1/1] "' . $sid . '" yEnc (1/1)'),
 			json_encode(
 				array(
 					'USER'  => ($this->siteSettings['hide_users'] ? 'ANON' : $row['username']),
@@ -311,7 +311,7 @@ Class Sharing
 		foreach ($headers as $header) {
 			//nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
 			if ($header['From'] === '<anon@anon.com>' &&
-				preg_match('/^(?P<site>nZEDb_[a-f0-9]+\.\d+)_(?P<guid>[a-f0-9]{40}) - \[1\/1\] "(?P<sid>[a-f0-9]{40})" yEnc \(1\/1\)$/i', $header['Subject'], $matches)) {
+				preg_match('/^\(_nZEDb_\)(?P<site>.+?)_(?P<guid>[a-f0-9]{40}) - \[1\/1\] "(?P<sid>[a-f0-9]{40})" yEnc \(1\/1\)$/i', $header['Subject'], $matches)) {
 
 				// Check if this is from our own site.
 				if ($matches['guid'] === $this->siteSettings['site_guid']) {
