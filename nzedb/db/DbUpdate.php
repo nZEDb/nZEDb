@@ -33,17 +33,19 @@ if (!defined('nZEDb_INSTALLER')) {
 		$backup  = (isset($argv[2]) && $argv[2] == 'safe') ? true : false;
 		$updater = new DbUpdate(['backup' => $backup]);
 		echo $updater->log->primary("Db updater starting ...");
-		$updater->processPatches(['safe' => $backup]);
+		$patched = $updater->processPatches(['safe' => $backup]);
 
-		//	echo $c->header($patched . " patch(es) applied.");
-		//	$smarty  = new Smarty;
-		//	$cleared = $smarty->clearCompiledTemplate();
-		//	if ($cleared) {
-		//		echo $c->header("The smarty template cache has been cleaned for you");
-		//	} else {
-		//		echo $c->header("You should clear your smarty template cache at: " . SMARTY_DIR .
-		//						"templates_c");
-		//	}
+		if ($patched > 0) {
+			echo $updater->log->info("$patched patch(es) applied.");
+			$smarty  = new \Smarty;
+			$cleared = $smarty->clearCompiledTemplate();
+			if ($cleared) {
+				$msg = "The smarty template cache has been cleaned for you\n";
+			} else {
+				$msg = "You should clear your smarty template cache at: " . SMARTY_DIR . "templates_c\n";
+			}
+			$updater->log->info($msg);
+		}
 	}
 }
 
@@ -182,6 +184,7 @@ class DbUpdate
 		if ($patched === 0) {
 			echo $this->log->info("Nothing to patch, you are already on version $currentVersion");
 		}
+		return $patched;
 	}
 
 	public function processSQLFile(array $options = [])
