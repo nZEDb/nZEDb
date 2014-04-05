@@ -22,6 +22,10 @@ namespace nzedb\db;
 
 use nzedb\utility;
 
+/*
+ * Putting procedural stuff inside class scripts like this is BAD. Do not use this as an excuse to do more.
+ * This is a temporary measure until a proper frontend for cli stuff can be implemented with li3.
+ */
 if (!defined('nZEDb_INSTALLER')) {
 	require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
@@ -67,7 +71,7 @@ class DbUpdate
 	 */
 	public $settings;
 
-	protected $_dbSystem;
+	protected $_DbSystem;
 
 	/**
 	 * @var bool    Has the Db been backed up?
@@ -93,7 +97,7 @@ class DbUpdate
 		$this->db		= $options['db'];
 		$this->log		= $options['logger'];
 
-		$this->_dbSystem = strtolower($this->db->dbSystem());
+		$this->_DbSystem = strtolower($this->db->dbSystem());
 	}
 
 	public function loadTables(array $options = [])
@@ -144,7 +148,7 @@ class DbUpdate
 		$patched = 0;
 		$defaults = array(
 			'ext'   => 'sql',
-			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_dbSystem,
+			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
 			'regex' => '#^\d{4}_\d{2}_\d{2}_\d+(\w+)\.sql$#',
 			'safe'	=> true,
 		);
@@ -190,7 +194,7 @@ class DbUpdate
 	public function processSQLFile(array $options = [])
 	{
 		$defaults = array(
-			'filepath'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . $this->_dbSystem . '-ddl.sql',
+			'filepath'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . $this->_DbSystem . '-ddl.sql',
 		);
 		$options += $defaults;
 
@@ -286,7 +290,7 @@ class DbUpdate
 			$PHP = "php";
 		}
 
-		system("$PHP " . nZEDb_MISC . 'testing' . DS .'DB' . DS . $this->_dbSystem . 'dump_tables.php db dump');
+		system("$PHP " . nZEDb_MISC . 'testing' . DS .'DB' . DS . $this->_DbSystem . 'dump_tables.php db dump');
 		$this->backedup = true;
 	}
 
