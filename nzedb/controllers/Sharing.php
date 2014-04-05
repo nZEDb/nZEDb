@@ -109,8 +109,6 @@ Class Sharing
 			$this->nntp->doConnect();
 		}
 
-		$this->yEnc = new Yenc();
-
 		// Cache sharing settings.
 		$this->siteSettings = $check;
 
@@ -131,6 +129,8 @@ Class Sharing
 		if ($this->siteSettings['enabled'] === false) {
 			return;
 		}
+
+		$this->yEnc = new Yenc();
 
 		if ($this->siteSettings['posting']) {
 			$this->postAll();
