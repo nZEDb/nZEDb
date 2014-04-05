@@ -291,7 +291,7 @@ Class Sharing
 		}
 
 		// We have nothing to do, so return.
-		if ($ourOldest >= $newest) {
+		if ($ourOldest > $newest) {
 			return;
 		}
 
