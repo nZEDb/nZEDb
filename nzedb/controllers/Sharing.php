@@ -437,7 +437,7 @@ Class Sharing
 		// Check if we have the user.
 		$user = $this->db->queryOneRow(
 			sprintf('SELECT id FROM users WHERE username = %s',
-				$this->db->escapeString('SHARING_' . $body['USER'])
+				$this->db->escapeString('SH_' . $body['USER'])
 			)
 		);
 
@@ -447,7 +447,7 @@ Class Sharing
 				sprintf(
 					"INSERT INTO users (username, email, password, rsstoken, createddate, userseed, role)
 					VALUES (%s, 'sharing@nZEDb.com', %s, %s, NOW(), %s, 0)",
-					$this->db->escapeString(('SHARING_' . $body['USER'])),
+					$this->db->escapeString(('SH_' . $body['USER'])),
 					$this->db->escapeString(md5(uniqid('fgf56', true))),
 					$this->db->escapeString(md5(uniqid('sfsde', true))),
 					$this->db->escapeString(md5(uniqid('f344w', true)))

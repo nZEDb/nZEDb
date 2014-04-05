@@ -12,6 +12,14 @@ if (count($allSites) === 0) {
 
 $ourSite = $db->queryOneRow('SELECT * FROM sharing');
 
+if (!empty($_POST)) {
+	if (!empty($_POST['sharing_name'])) {
+		$site_name = trim($_POST['sharing_name']);
+	} else {
+		$site_name = $ourSite['site_name'];
+	}
+}
+
 $page->smarty->assign(array('local' => $ourSite, 'sites' => $allSites));
 
 $page->content = $page->smarty->fetch('sharing.tpl');
