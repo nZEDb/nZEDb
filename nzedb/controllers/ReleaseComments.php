@@ -77,12 +77,14 @@ class ReleaseComments
 	{
 		$db = new DB();
 
-		if ($start === false)
-			$limit = "";
-		else
-			$limit = " LIMIT ".$num." OFFSET ".$start;
-
-		return $db->query(" SELECT releasecomment.*, users.username, releases.guid FROM releasecomment LEFT OUTER JOIN users ON users.id = releasecomment.userid INNER JOIN releases on releases.id = releasecomment.releaseid ORDER BY releasecomment.createddate DESC".$limit);
+		return $db->query(
+			sprintf("
+				SELECT releasecomment.*, users.username, releases.guid
+				FROM releasecomment
+				LEFT OUTER JOIN users ON users.id = releasecomment.userid
+				LEFT JOIN releases on releases.id = releasecomment.releaseid
+				ORDER BY releasecomment.createddate DESC",
+				($start === false ? '' : " LIMIT " . $num . " OFFSET " . $start)));
 	}
 
 	// Updates the amount of comments for the rlease.
