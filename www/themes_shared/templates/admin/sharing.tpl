@@ -118,8 +118,8 @@
 		<div style="margin-bottom:5px;">These are the remote websites we have seen so far:</div>
 		{$pager}
 		<div style="float:right;">
-			<a href="javascript:ajax_sharing_toggle_all(1)" class="sharing_toggle_all">[Enable All]</a>
-			<a href="javascript:ajax_sharing_toggle_all(0)" class="sharing_toggle_all">[Disable All]</a>
+			<a href="javascript:ajax_sharing_toggle_all(1);" onclick="setTimeout('history.go(0);',700);" class="sharing_toggle_all">[Enable All]</a>
+			<a href="javascript:ajax_sharing_toggle_all(0);" onclick="setTimeout('history.go(0);',700);" class="sharing_toggle_all">[Disable All]</a>
 		</div>
 		<table style="margin-top:5px;margin-bottom:5px;width:700px" class="data Sortable highlight">
 			<tr>

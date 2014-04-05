@@ -64,9 +64,4 @@ if (isset($_GET['hide_status'])) {
 
 if (isset($_GET['toggle_all'])) {
 	$db->queryExec(sprintf('UPDATE sharing_sites SET enabled = %d', $_GET['toggle_all']));
-	if ($_GET['toggle_all'] == 1) {
-		print 'Enabled all sites, reload the page!';
-	} else {
-		print 'Disabled all sites, reload the page!';
-	}
 }

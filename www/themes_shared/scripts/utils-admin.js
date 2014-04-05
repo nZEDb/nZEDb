@@ -300,15 +300,6 @@ function ajax_sharing_toggle_all(status)
             url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
             data      : { toggle_all: status },
             dataType  : "html",
-            success   : function(data)
-            {
-                $('div#message').html(data);
-                $('div#message').show('fast', function() {});
-
-                // fade.. mm
-                $('#message').fadeOut(5000);
-            },
-            error: function(xhr,err,e) { alert( "Error in ajax_sharing_toggle_all: " + err ); }
         });
     }
     else
