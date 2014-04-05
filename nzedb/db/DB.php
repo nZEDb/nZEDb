@@ -954,22 +954,36 @@ class DB extends \PDO
 // Class for caching queries into RAM using memcache.
 class Mcached
 {
+	public $log;
+
+	private $compression;
+
+	private $expiry;
+
+	private $memcache;
+
 	// Make a connection to memcached server.
-	public function Mcached()
+	public function __construct(array $options = array())
 	{
-		$this->c = new \ColorCLI();
+		$defaults = array(
+			'log'	=> new \ColorCLI(),
+		);
+		$options += $defaults;
+
+		$this->log = $options['log'];
+
 		if (extension_loaded('memcache')) {
-			$this->m = new \Memcache();
-			if ($this->m->connect(MEMCACHE_HOST, MEMCACHE_PORT) == false) {
-				throw new \Exception($this->log->error("\nUnable to connect to the memcached server."));
+			$this->memcache = new \Memcache();
+			if ($this->memcache->connect(MEMCACHE_HOST, MEMCACHE_PORT) === false) {
+				throw new \Exception($this->log->error("\nUnable to connect to the memcache server."));
 			}
 		} else {
 			throw new \Exception($this->log->error("nExtension 'memcache' not loaded."));
 		}
 
 		$this->expiry = MEMCACHE_EXPIRY;
-
 		$this->compression = MEMCACHE_COMPRESSED;
+
 		if (defined('MEMCACHE_COMPRESSION')) {
 			if (MEMCACHE_COMPRESSION === false) {
 				$this->compression = false;
@@ -986,30 +1000,30 @@ class Mcached
 	// Return some stats on the server.
 	public function Server_Stats()
 	{
-		return $this->m->getExtendedStats();
+		return $this->memcache->getExtendedStats();
 	}
 
 	// Flush all the data on the server.
 	public function Flush()
 	{
-		return $this->m->flush();
+		return $this->memcache->flush();
 	}
 
 	// Add a query to memcached server.
 	public function add($query, $result)
 	{
-		return $this->m->add($this->key($query), $result, $this->compression, $this->expiry);
+		return $this->memcache->add($this->key($query), $result, $this->compression, $this->expiry);
 	}
 
 	// Delete a query on the memcached server.
 	public function delete($query)
 	{
-		return $this->m->delete($this->key($query));
+		return $this->memcache->delete($this->key($query));
 	}
 
 	// Retrieve a query from the memcached server. Stores the query if not found.
 	public function get($query)
 	{
-		return $this->m->get($this->key($query));
+		return $this->memcache->get($this->key($query));
 	}
 }
