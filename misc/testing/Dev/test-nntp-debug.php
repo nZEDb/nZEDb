@@ -49,7 +49,8 @@ class NNTPdebug
 	public function __construct()
 	{
 		if (defined('nZEDb_DEBUG')) {
-			define('PEAR_LOG_DEBUG', nZEDb_DEBUG);
+			//define('PEAR_LOG_DEBUG', nZEDb_DEBUG);
+			define('PEAR_LOG_DEBUG', true);
 			$this->color = new ColorCLI();
 		} else {
 			//define('PEAR_LOG_DEBUG', false);
