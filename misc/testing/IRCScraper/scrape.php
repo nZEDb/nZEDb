@@ -50,4 +50,10 @@ $debug  = ((isset($argv[3]) && $argv[3] === 'true')  ? true : false);
 $socket = ((isset($argv[4]) && $argv[4] === 'false') ? false : true);
 
 // Net_SmartIRC started here, or else globals are not properly set.
-$scraper = new IRCScraper(new Net_SmartIRC(), $argv[1], $silent, $debug, $socket);
+new IRCScraper(
+	new Net_SmartIRC(),
+	$argv[1],
+	$silent,
+	$debug,
+	$socket
+);

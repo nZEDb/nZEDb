@@ -9,6 +9,7 @@ Each update goes to the top of the file
 2014-04-05 niel
 	* Chg: Improved DbUpdate's reporting.
 2014-04-05 kevin
+	* Chg: Changes that might help with IRC connections.
 	* Chg: Change the way time is gotten on sharing.
 	* Chg: Changes to echos in sharing.
 	* Chg: Show all comments in view comments admin page (comments with no releases).
