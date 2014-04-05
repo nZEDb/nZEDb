@@ -26,7 +26,7 @@ class Net_SmartIRC_module_PingFix
         if (time() - $this->irc->_lastrx > $this->irc->_rxtimeout) {
             $this->irc->reconnect();
             $this->irc->_lastrx = time();
-        } elseif (time() - $this->irc->_lastrx > $this->irc->_rxtimeout/2) {
+        } elseif (time() - $this->irc->_lastrx > $this->irc->_rxtimeout/3) {
             $this->irc->_send('PING '.$this->irc->_address, SMARTIRC_CRITICAL);
         }
     }

@@ -822,6 +822,26 @@ class DB extends \PDO
 	}
 
 	/**
+	 * Get a string for MySQL or PgSql with a column name in between
+	 * MySQL: UNIX_TIMESTAMP(column_name) AS outputName
+	 * PgSQL: EXTRACT('EPOCH' FROM column_name)::INT AS outputName;
+	 *
+	 * @param string $column     The datetime column.
+	 * @param string $outputName The name to store the SQL data into. (the word after AS)
+	 *
+	 * @return string
+	 */
+	public function unix_timestamp_column($column, $outputName = 'unix_time')
+	{
+		return ($this->DbSystem === 'mysql'
+			?
+				'UNIX_TIMESTAMP(' . $column . ') AS ' . $outputName
+			:
+				"EXTRACT('EPOCH' FROM " . $column . ')::INT AS ' . $outputName
+		);
+	}
+
+	/**
 	 * Interpretation of mysql's UUID method.
 	 * Return uuid v4 string. http://www.php.net/manual/en/function.uniqid.php#94959
 	 *

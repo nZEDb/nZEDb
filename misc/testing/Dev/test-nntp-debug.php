@@ -26,7 +26,9 @@ if ($connected !== true) {
 
 /** Example: **/
 
-
+$x = $nntp->selectGroup('alt.binaries.zines');
+$x = $nntp->get_Header($x['group'], $x['last']);
+var_dump($x['From'], $x['Subject'], $x['Date']);
 
 
 /**/
@@ -46,10 +48,12 @@ class NNTPdebug
 	public function __construct()
 	{
 		if (defined('nZEDb_DEBUG')) {
-			define('PEAR_LOG_DEBUG', nZEDb_DEBUG);
+			//define('PEAR_LOG_DEBUG', nZEDb_DEBUG);
+			define('PEAR_LOG_DEBUG', true);
 			$this->color = new ColorCLI();
 		} else {
-			define('PEAR_LOG_DEBUG', false);
+			//define('PEAR_LOG_DEBUG', false);
+			define('PEAR_LOG_DEBUG', true);
 		}
 	}
 

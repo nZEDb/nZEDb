@@ -145,15 +145,15 @@ if ($page->isPostBack()) {
 				$cfg->error    = true;
 				$cfg->emessage = 'Could not get version from SQL server.';
 			}
-		}
 
-		if ($goodVersion === false) {
-			$cfg->error = true;
-			$cfg->emessage =
-				'You are using an unsupported version of ' .
-				$cfg->DB_SYSTEM .
-				' the minimum allowed version is ' .
-				($cfg->DB_SYSTEM === 'mysql' ? $minMySQLVersion : $minPgSQLVersion);
+			if ($goodVersion === false) {
+				$cfg->error = true;
+				$cfg->emessage =
+					'You are using an unsupported version of ' .
+					$cfg->DB_SYSTEM .
+					' the minimum allowed version is ' .
+					($cfg->DB_SYSTEM === 'mysql' ? $minMySQLVersion : $minPgSQLVersion);
+			}
 		}
 	}
 

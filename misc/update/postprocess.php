@@ -18,7 +18,7 @@ if ($site->nntpproxy === "1") {
 $tmpunrar = $site->tmpunrarpath;
 rmtree($tmpunrar);
 
-if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
 	if ($argv[2] == 'true') {
 		$postprocess = new PostProcess(true);
 	} else if ($argv[2] == 'false') {
@@ -26,7 +26,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 	}
 
 	$postprocess->processAll($nntp);
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] == 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] == 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
 	if ($argv[2] == 'true') {
 		$postprocess = new PostProcess(true);
 	} else if ($argv[2] == 'false') {
@@ -38,7 +38,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 		$postprocess->processAll($nntp);
 		sleep(15);
 	}
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] == 'pre' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] == 'pre' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
 	if ($argv[2] == 'true') {
 		$postprocess = new PostProcess(true);
 	} else if ($argv[2] == 'false') {
@@ -46,7 +46,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 	}
 
 	$postprocess->processPredb($nntp);
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] == 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] == 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
 	if ($argv[2] == 'true') {
 		$postprocess = new PostProcess(true);
 	} else if ($argv[2] == 'false') {
@@ -54,7 +54,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 	}
 
 	$postprocess->processNfos($releaseToWork = '', $nntp);
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] == 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] == 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
 	if ($argv[2] == 'true') {
 		$postprocess = new PostProcess(true);
 	} else if ($argv[2] == 'false') {
@@ -62,7 +62,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 	}
 
 	$postprocess->processMovies();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] == 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] == 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
 	if ($argv[2] == 'true') {
 		$postprocess = new PostProcess(true);
 	} else if ($argv[2] == 'false') {
@@ -70,7 +70,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 	}
 
 	$postprocess->processMusic();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] == 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] == 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
 	if ($argv[2] == 'true') {
 		$postprocess = new PostProcess(true);
 	} else if ($argv[2] == 'false') {
@@ -78,7 +78,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 	}
 
 	$postprocess->processGames();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] == 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] == 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
 	if ($argv[2] == 'true') {
 		$postprocess = new PostProcess(true);
 	} else if ($argv[2] == 'false') {
@@ -86,7 +86,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 	}
 
 	$postprocess->processAnime();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] == 'tv' && $argv[1] !== 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] == 'tv' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
 	if ($argv[2] == 'true') {
 		$postprocess = new PostProcess(true);
 	} else if ($argv[2] == 'false') {
@@ -94,7 +94,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 	}
 
 	$postprocess->processTV();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] == 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] == 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
 	if ($argv[2] == 'true') {
 		$postprocess = new PostProcess(true);
 	} else if ($argv[2] == 'false') {
@@ -102,7 +102,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 	}
 
 	$postprocess->processBooks();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] == 'additional' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] == 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
 	if ($argv[2] == 'true') {
 		$postprocess = new PostProcess(true);
 	} else if ($argv[2] == 'false') {
@@ -110,6 +110,15 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 	}
 
 	$postprocess->processAdditional($nntp);
+
+} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'additional' && $argv[1] === 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')) {
+	if ($argv[2] == 'true') {
+		$postprocess = new PostProcess(true);
+	} else if ($argv[2] == 'false') {
+		$postprocess = new PostProcess();
+	}
+
+	$postprocess->processSharing($nntp);
 } else {
 	exit($c->error("\nIncorrect arguments.\n"
 			. "The second argument (true/false) determines wether to echo or not.\n\n"
@@ -123,6 +132,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 			. "php postprocess.php anime true       ...: Processes anime.\n"
 			. "php postprocess.php tv true          ...: Processes tv.\n"
 			. "php postprocess.php additional true  ...: Processes previews/mediainfo/etc...\n"
+			. "php postprocess.php sharing true     ...: Processes uploading/downloading comments.\n"
 			. "php postprocess.php allinf true      ...: Does all the types of post processing on a loop, sleeping 15 seconds between.\n"));
 }
 if ($site->nntpproxy != "1") {

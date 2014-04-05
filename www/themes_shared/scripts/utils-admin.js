@@ -286,6 +286,29 @@ function ajax_sharing_hide(id, status)
 }
 
 /**
+ * ajax_sharing_toggle_all()
+ *
+ *  @param status
+ */
+function ajax_sharing_toggle_all(status)
+{
+    // no caching of results
+    var rand_no = Math.random();
+    if (status != undefined)
+    {
+        $.ajax({
+            url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+            data      : { toggle_all: status },
+            dataType  : "html",
+        });
+    }
+    else
+    {
+        alert('Weird.. what toggle status are you looking for?');
+    }
+}
+
+/**
  * ajax_backfill_status()
  *
  * @param id        group id

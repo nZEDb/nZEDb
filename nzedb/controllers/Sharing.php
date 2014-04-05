@@ -40,7 +40,6 @@ Class Sharing
 	 *      -------------------------------------------
 	 *      shared        Has this comment been shared or have we received it from another site. (0 not shared, 1 shared, 2 received)
 	 *      shareid       Unique identifier to know if we already have the comment or not.
-	 *      siteid        Guid of the site who sent us the comment.
 	 *      nzb_guid      Guid of the NZB's first message-id.
 	 */
 
@@ -64,7 +63,6 @@ Class Sharing
 	 * @var array
 	 */
 	protected $siteSettings = array();
-
 
 	/**
 	 * Group to work in.
@@ -149,11 +147,12 @@ Class Sharing
 		// Get all comments that we have no posted yet.
 		$newComments = $this->db->query(
 			sprintf(
-				'SELECT rc.*, u.username, r.nzb_guid
+				'SELECT rc.text, rc.id, %s, u.username, r.nzb_guid
 				FROM releasecomment rc
 				INNER JOIN users u ON rc.userid = u.id
 				INNER JOIN releases r on rc.releaseid = r.id
 				WHERE rc.shared = 0 LIMIT %d',
+				$this->db->unix_timestamp_column('rc.createddate'),
 				$this->siteSettings['max_push']
 			)
 		);
@@ -185,20 +184,19 @@ Class Sharing
 	protected function postComment(&$row)
 	{
 		// Create a unique identifier for this comment.
-		$sid = sha1($row['createddate'] . $row['username'] . $row['nzb_guid']);
+		$sid = sha1($row['unix_time'] . $row['text'] . $row['nzb_guid']);
 
 		// Example of a subject.
-		////nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10- [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
+		//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
 
 		// Attempt to upload the comment to usenet.
 		$success = $this->nntp->postArticle(
 			self::group,
-			($this->siteSettings['site_name'] . '_' . $this->siteSettings['site_guid'] . ' - [1/1] "' . $sid . '" yEnc (1/1)'),
+			('(_nZEDb_)' . $this->siteSettings['site_name'] . '_' . $this->siteSettings['site_guid'] . ' - [1/1] "' . $sid . '" yEnc (1/1)'),
 			json_encode(
 				array(
-					'GUID'  => $this->siteSettings['site_guid'],
 					'USER'  => ($this->siteSettings['hide_users'] ? 'ANON' : $row['username']),
-					'TIME'  => strtotime($row['createddate']),
+					'TIME'  => $row['unix_time'],
 					'SID'   => $sid,
 					'RID'   => $row['nzb_guid'],
 					'BODY'  => $row['text']
@@ -250,10 +248,9 @@ Class Sharing
 				);
 				$this->db->queryExec(sprintf('UPDATE releases SET comments = comments + 1 WHERE id = %d', $row['id']));
 			}
-		}
-
-		if (nZEDb_ECHOCLI) {
-			echo '(Sharing) Matched ' . $found . ' comments.' . PHP_EOL;
+			if (nZEDb_ECHOCLI) {
+				echo '(Sharing) Matched ' . $found . ' comments.' . PHP_EOL;
+			}
 		}
 	}
 
@@ -294,7 +291,7 @@ Class Sharing
 		}
 
 		// We have nothing to do, so return.
-		if ($ourOldest >= $newest) {
+		if ($ourOldest > $newest) {
 			return;
 		}
 
@@ -310,11 +307,12 @@ Class Sharing
 			return;
 		}
 
+		$found = 0;
 		// Loop over NNTP headers until we find comments.
 		foreach ($headers as $header) {
-			//nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
+			//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
 			if ($header['From'] === '<anon@anon.com>' &&
-				preg_match('/^(?P<site>nZEDb_[a-f0-9]+\.\d+)_(?P<guid>[a-f0-9]{40}) - \[1\/1\] "(?P<sid>[a-f0-9]{40})" yEnc \(1\/1\)$/i', $header['Subject'], $matches)) {
+				preg_match('/^\(_nZEDb_\)(?P<site>.+?)_(?P<guid>[a-f0-9]{40}) - \[1\/1\] "(?P<sid>[a-f0-9]{40})" yEnc \(1\/1\)$/i', $header['Subject'], $matches)) {
 
 				// Check if this is from our own site.
 				if ($matches['guid'] === $this->siteSettings['site_guid']) {
@@ -323,9 +321,8 @@ Class Sharing
 
 				// Check if we already have the comment.
 				$check = $this->db->queryOneRow(
-					sprintf('SELECT id FROM releasecomment WHERE shareid = %s AND siteid = %s',
-						$this->db->escapeString($matches['sid']),
-						$this->db->escapeString($matches['guid'])
+					sprintf('SELECT id FROM releasecomment WHERE shareid = %s',
+						$this->db->escapeString($matches['sid'])
 					)
 				);
 
@@ -376,10 +373,12 @@ Class Sharing
 					if ($this->insertNewComment($header['Message-ID'])) {
 						$this->db->queryExec(
 							sprintf('
-								UPDATE sharing_sites SET comments = comments + 1, last_time = NOW() WHERE site_guid = %s',
+								UPDATE sharing_sites SET comments = comments + 1, last_time = NOW(), site_name = %s WHERE site_guid = %s',
+								$this->db->escapeString($matches['site']),
 								$this->db->escapeString($matches['guid'])
 							)
 						);
+						$found++;
 						if (nZEDb_ECHOCLI) {
 							echo '.';
 						}
@@ -396,7 +395,11 @@ Class Sharing
 			)
 		);
 		if (nZEDb_ECHOCLI) {
-			echo PHP_EOL . '(Sharing) Finished fetching new comments.' . PHP_EOL;
+			if ($found > 0) {
+				echo PHP_EOL . '(Sharing) Fetched ' . $found . ' new comments.' . PHP_EOL;
+			} else {
+				echo '(Sharing) Finish looking for new comments, but did not find any.' . PHP_EOL;
+			}
 		}
 	}
 
@@ -430,14 +433,14 @@ Class Sharing
 		}
 
 		// Just in case.
-		if (!isset($body['GUID'])) {
+		if (!isset($body['USER'])) {
 			return false;
 		}
 
 		// Check if we have the user.
 		$user = $this->db->queryOneRow(
 			sprintf('SELECT id FROM users WHERE username = %s',
-				$this->db->escapeString('SHARING_' . $body['USER'])
+				$this->db->escapeString('SH_' . $body['USER'])
 			)
 		);
 
@@ -447,7 +450,7 @@ Class Sharing
 				sprintf(
 					"INSERT INTO users (username, email, password, rsstoken, createddate, userseed, role)
 					VALUES (%s, 'sharing@nZEDb.com', %s, %s, NOW(), %s, 0)",
-					$this->db->escapeString(('SHARING_' . $body['USER'])),
+					$this->db->escapeString(('SH_' . $body['USER'])),
 					$this->db->escapeString(md5(uniqid('fgf56', true))),
 					$this->db->escapeString(md5(uniqid('sfsde', true))),
 					$this->db->escapeString(md5(uniqid('f344w', true)))
@@ -460,13 +463,12 @@ Class Sharing
 		// Insert the comment.
 		if ($this->db->queryExec(
 			sprintf('
-				INSERT INTO releasecomment (text, userid, createddate, shareid, siteid, shared, nzb_guid, releaseid, host)
-				VALUES (%s, %d, %s, %s, %s, 2, %s, 0, "")',
+				INSERT INTO releasecomment (text, userid, createddate, shareid, shared, nzb_guid, releaseid, host)
+				VALUES (%s, %d, %s, %s, 2, %s, 0, "")',
 				$this->db->escapeString($body['BODY']),
 				$userid,
-				$this->db->from_unixtime($body['TIME']),
+				$this->db->from_unixtime(($body['TIME'] > time() ? time() : $body['TIME'])),
 				$this->db->escapeString($body['SID']),
-				$this->db->escapeString($body['GUID']),
 				$this->db->escapeString($body['RID'])
 			)
 		)) {

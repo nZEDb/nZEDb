@@ -61,3 +61,7 @@ if (isset($_GET['hide_status'])) {
 		print 'Disabled hiding of user names!';
 	}
 }
+
+if (isset($_GET['toggle_all'])) {
+	$db->queryExec(sprintf('UPDATE sharing_sites SET enabled = %d', $_GET['toggle_all']));
+}

@@ -66,9 +66,9 @@ class Net_SmartIRC_base
 
 	/**
 	 * @var string
-	 * @access private
+	 * @access public
 	 */
-	protected $_address;
+	public $_address;
 
 	/**
 	 * @var integer
@@ -310,9 +310,9 @@ class Net_SmartIRC_base
 
 	/**
 	 * @var integer
-	 * @access private
+	 * @access public
 	 */
-	protected $_rxtimeout = 300;
+	public $_rxtimeout = 300;
 
 	/**
 	 * @var integer
@@ -322,9 +322,9 @@ class Net_SmartIRC_base
 
 	/**
 	 * @var integer
-	 * @access private
+	 * @access public
 	 */
-	protected $_lastrx;
+	public $_lastrx;
 
 	/**
 	 * @var integer
@@ -1949,9 +1949,9 @@ class Net_SmartIRC_base
 	 * @param string $data
 	 * @param integer $priority must be one of the priority constants
 	 * @return boolean
-	 * @access private
+	 * @access public
 	 */
-	protected function _send($data, $priority = SMARTIRC_MEDIUM)
+	public function _send($data, $priority = SMARTIRC_MEDIUM)
 	{
 		switch ($priority) {
 			case SMARTIRC_CRITICAL:
