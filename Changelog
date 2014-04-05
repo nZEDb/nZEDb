@@ -8,7 +8,8 @@ Each update goes to the top of the file
 
 2014-04-05 niel
 	* Chg: Improved DbUpdate's reporting.
-2014-05-04 kevin
+2014-04-05 kevin
+	* Add: Sharing to misc/update/postprocess.php
 	* Add: Final changes for now to Sharing page in admin.
 	* Fix: Issue on step 2 install where error is being overwritten.
 	* Chg: Deal with remote changing nicknames.
