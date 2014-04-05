@@ -1,6 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\db\DB;
+
 $db = new DB();
 $DIR = nZEDb_MISC;
 $smarty = new Smarty;
@@ -31,11 +33,8 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 
 	echo $c->header("Patching database - ${dbname}.");
 
-	if ($argv[1] == "safe") {
-		system("$PHP ${DIR}testing/DB/patchDB.php safe");
-	} else {
-		system("$PHP ${DIR}testing/DB/patchDB.php");
-	}
+	$safe = ($argv[1] === "safe") ? true : false;
+	system("$PHP " . nZEDb_LIB . 'db' . DS . "DbUpdate.php 1 $safe");
 
 	// Remove folders from smarty.
 	$cleared = $smarty->clearCompiledTemplate();

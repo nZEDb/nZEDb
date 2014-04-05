@@ -1,4 +1,7 @@
 <?php
+
+use nzedb\db\DB;
+
 // API functions.
 $function = 's';
 if (isset($_GET['t'])) {

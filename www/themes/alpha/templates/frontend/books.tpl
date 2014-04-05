@@ -218,7 +218,7 @@
 													></a>
 												</div>
 												{if $sabintegrated}
-													<div class="icon icon_sab float-right" title="Send to my Sabnzbd"></div>
+													<div class="icon icon_sab float-right" title="Send to my Queue"></div>
 												{/if}
 												<div class="icon icon_cart float-right" title="Add to Cart"></div>
 												<br>

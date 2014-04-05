@@ -1,6 +1,7 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../../www/config.php';
+
+use nzedb\db\DB;
 
 $c = new ColorCLI();
 $versions = @simplexml_load_file(nZEDb_VERSIONS);
@@ -1455,7 +1456,7 @@ while ($i > 0) {
 
 			//run IRCScraper
 			$pane = ($colors == 1) ? 4 : 3;
-			run_ircscraper($_php, $pane, $scrape_cz, $scrape_efnet);
+			run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet);
 		} else if ($seq == 2) {
 			// Show all available colors
 			if ($colors == 1) {
@@ -1511,7 +1512,7 @@ while ($i > 0) {
 
 			//run IRCScraper
 			$pane = ($colors == 1) ? 3 : 2;
-			run_ircscraper($_php, $pane, $scrape_cz, $scrape_efnet);
+			run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet);
 		} else {
 			//run update_binaries
 			$color = get_color($colors_start, $colors_end, $colors_exc);
@@ -1581,7 +1582,7 @@ while ($i > 0) {
 
 			//run IRCScraper
 			$pane = ($colors == 1) ? 4 : 3;
-			run_ircscraper($_php, $pane, $scrape_cz, $scrape_efnet);
+			run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet);
 		}
 	} else if ($seq == 0) {
 		for ($g = 1; $g <= 4; $g++) {
@@ -1624,7 +1625,7 @@ while ($i > 0) {
 	sleep(10);
 }
 
-function run_ircscraper($_php, $pane, $scrape_cz, $scrape_efnet)
+function run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet)
 {
 	if ($scrape_cz == 1 && $scrape_efnet == 1) {
 		//Check to see if the pane is dead, if so respawn it.
@@ -1663,7 +1664,6 @@ function run_ircscraper($_php, $pane, $scrape_cz, $scrape_efnet)
 			);
 		}
 	} else {
-		$color = get_color($colors_start, $colors_end, $colors_exc);
-		shell_exec("tmux respawnp -t${tmux_session}:${pane}.0 'echo \"\033[38;5;\"$color\"m\nIRCScraper has been disabled/terminated by IRCScraping\"'");
+		shell_exec("tmux respawnp -t${tmux_session}:${pane}.0 'echo \"\nIRCScraper has been disabled/terminated by IRCSCraper\"'");
 	}
 }

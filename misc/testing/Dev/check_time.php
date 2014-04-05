@@ -2,6 +2,7 @@
 // Shitty script to check time/date in php mysql and system...
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\db\DB;
 use nzedb\utility;
 
 $n = PHP_EOL;

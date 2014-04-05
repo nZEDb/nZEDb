@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\DB;
+
 if (!$users->isLoggedIn())
 	$page->show403();
 

@@ -1,7 +1,8 @@
 <?php
-
 require dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIB . 'utilty' . DS . 'CopyFileTree.php';
+
+use nzedb\db\DB;
 
 $reorg = nZEDb_MISC . 'testing' . DS . 'DB' . DS . 'nzb-reorg.php';
 $s = new Sites();

@@ -1,6 +1,7 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../../www/config.php';
+
+use nzedb\db\DB;
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -118,17 +119,27 @@ if ($tablepergroup == 1) {
 		$tbl = $row['name'];
 		if (preg_match('/collections_\d+/', $tbl)) {
 			$run = $db->queryDirect('UPDATE ' . $tbl . ' SET dateadded = now()');
-			$ran += $run->rowCount();
+			if ($run !== false) {
+				$ran += $run->rowCount();
+			}
 		}
 	}
 	echo $c->primary(number_format($ran) . " collections reset.");
 } else {
+	$ran = 0;
 	$run = $db->queryDirect("update collections set dateadded = now()");
-	echo $c->primary(number_format($run->rowCount()) . " collections reset.");
+	if ($run !== false) {
+		$ran += $run->rowCount();
+	}
+	echo $c->primary(number_format($ran) . " collections reset.");
 }
 
 $run = $db->queryDirect("update nzbs set dateadded = now()");
-echo $c->primary(number_format($run->rowCount()) . " nzbs reset.");
+$updatedNZBs = 0;
+if ($run !== false) {
+	$updatedNZBs = $run->rowCount();
+}
+echo $c->primary(number_format($updatedNZBs) . " nzbs reset.");
 sleep(2);
 
 function start_apps($tmux_session)

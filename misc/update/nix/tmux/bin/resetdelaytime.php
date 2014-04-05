@@ -1,6 +1,7 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../config.php';
+
+use nzedb\db\DB;
 
 $db = new DB();
 $s = new Sites();

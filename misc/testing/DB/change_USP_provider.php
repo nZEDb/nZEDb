@@ -1,14 +1,15 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
 
 /* This script will update the groups table to get the new article numbers for each group you have activated.
   It will also truncate the parts, binaries, collections, and partsrepair tables.
  */
 // TODO: Make this threaded so it goes faster.
 
-$c = New ColorCLI();
-$db = New DB();
+$c = new ColorCLI();
+$db = new DB();
 
 if (!isset($argv[1]) || $argv[1] != 'true') {
 	printf($c->setColor('Yellow') . "This script is used when you have switched UseNet Providers(USP) so you can pickup where you left off, rather than resetting all the groups.\nOnly use this script after you have updated your config.php file with your new USP info!!\nMake sure you " . $c->setColor('Red', 'Bold') . "DO NOT" . $c->setcolor('Yellow') . " have any update or postprocess scripts running when running this script!\n\n" . $c->setColor('Cyan') . "Usage: php change_USP_provider true\n");

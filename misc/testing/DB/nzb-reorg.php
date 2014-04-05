@@ -1,8 +1,10 @@
 <?php
+require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
+
 if (!isset($argv[1]) || !isset($argv[2]))
 	exit("ERROR: You must supply the level you want to reorganize it to, and the source directory  (You would use: 3 .../nZEDb/resources/nzb/ to move it to 3 levels deep)\n");
-
-require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $db = new DB();
 $nzb = new NZB();

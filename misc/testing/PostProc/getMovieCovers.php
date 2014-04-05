@@ -1,8 +1,8 @@
 <?php
-
 //This script will update all records in the movieinfo table where there is no cover
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
 
 $movie = new Movie(true);
 $db = new Db();

@@ -698,8 +698,8 @@ div.icon_nzb_clicked	{ background-image:url('../../../themes_shared/images/icons
 div.icon_nzb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
 div.icon_imdb			{ background-image:url('../../../themes_shared/images/icons/imdb.png'); }
 div.icon_imdb a			{ text-decoration:none; padding-bottom:2px; padding-right:12px; }
-div.icon_sab			{ background-image:url('../../../themes_shared/images/icons/sabup.png'); }
-div.icon_sab_clicked	{ background-image:url('../../../themes_shared/images/icons/sabdown.png'); }
+div.icon_sab			{ background-image:url('../../../themes_shared/images/icons/queueup.png'); }
+div.icon_sab_clicked	{ background-image:url('../../../themes_shared/images/icons/queuedown.png'); }
 div.icon_tvrage			{ background-image:url('../../../themes_shared/images/icons/tvrage.png'); }
 div.icon_check			{ background-image:url('../../../themes_shared/images/icons/check.png'); }
 div.icon_cp				{ background-image:url('../../../themes_shared/images/icons/couch.png'); }

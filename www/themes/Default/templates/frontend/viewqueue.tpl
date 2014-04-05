@@ -1,10 +1,13 @@
 <h1>{$page->title}</h1>
 {if $error == ''}
-	{if $page->site->sabintegrationtype > 0}
+	{if $page->site->sabintegrationtype > 0 || $user.queuetype == 2}
 		<p style="text-align:center;">
-			The following items are currently being download at <a href="{$sabserver|escape:"htmlall"}">{$sabserver|escape:"htmlall"}</a>.
+			The following queue is pulled from
+			<a href="{if $user.queuetype == 2}{$user.nzbgeturl}{else}{$sabserver|escape:"htmlall"}{/if}">
+				{if $user.queuetype == 2}{$user.nzbgeturl}{else}{$sabserver|escape:"htmlall"}{/if}
+			</a>.
 			<br />
-			{if $page->site->sabintegrationtype == 2}Edit queue settings in <a href="{$smarty.const.WWW_TOP}/profileedit">your profile</a>.{/if}
+			{if $page->site->sabintegrationtype == 2 || $user.queuetype == 2}Edit your queue settings in <a href="{$smarty.const.WWW_TOP}/profileedit">your profile</a>.{/if}
 		</p>
 		<div class="sab_queue"></div>
 		{literal}
@@ -13,7 +16,7 @@
 				{
 					var rand_no = Math.random();
 					$.ajax({
-						url: "queuedata?id=" + rand_no,
+						url: "sabqueuedata?id=" + rand_no,
 						cache: false,
 						success: function(html)
 						{

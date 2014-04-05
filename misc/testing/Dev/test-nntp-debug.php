@@ -6,6 +6,7 @@
 
 // Get the config.php
 require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIBS . 'Yenc.php';
 // Create instance of class at bottom of this script.
 $d = new NNTPdebug();
 // Create instance of NNTP.
@@ -25,15 +26,7 @@ if ($connected !== true) {
 
 /** Example: **/
 
-$group = $nntp->selectGroup('alt.binaries.cores');
-if (!$nntp->isError($group)) {
 
-	$x = $nntp->getOverview($group['last']-1 . '-' . $group['last']);
-	var_dump($x);
-
-} else {
-	echo 'Error: ' . $group->getMessage() . PHP_EOL;
-}
 
 
 /**/

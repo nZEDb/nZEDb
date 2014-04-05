@@ -4,6 +4,7 @@
  */
 require dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\db\DB;
 use nzedb\utility;
 
 class AniDBstandAlone

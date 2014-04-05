@@ -1,9 +1,9 @@
 <?php
-
 /* This script runs the subject names through namecleaner to create a clean search name, it also recategorizes and runs the releases through namefixer.
  * Type php resetSearchname.php to see detailed info. */
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
 
 $c = new ColorCLI();
 

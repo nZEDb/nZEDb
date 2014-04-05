@@ -307,7 +307,7 @@
 									title="Browse {$result.group_name}"
 								><i class="icon-share-alt"></i></a>
 							{/if}
-							{nzedb\utility\release_flag($result.searchname, browse)}
+							{release_flag($result.searchname, browse)}
 						</div>
 					</td>
 					<td class="category" style="width:auto;text-align:center;white-space:nowrap;">
@@ -344,7 +344,7 @@
 						<div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$result.guid}/{$result.searchname|escape:"htmlall"}">&nbsp;</a></div>
 						<div class="icon icon_cart" title="Add to Cart"></div>
 						{if $sabintegrated}
-							<div class="icon icon_sab" title="Send to my Sabnzbd"></div>
+							<div class="icon icon_sab" title="Send to my Queue"></div>
 						{/if}
 					</td>
 				</tr>
