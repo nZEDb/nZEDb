@@ -449,24 +449,26 @@ class Backfill
 	{
 		// Set table names
 		$groupID = $this->groups->getIDByName($groupData['group']);
-		if ($this->tablepergroup === 1) {
-			if ($this->db->newtables($groupID) === false) {
-				$dMessage = "There is a problem creating new parts/files tables for this group.";
-				if ($this->debug) {
-					$this->debugging->start("postdate", $dMessage, 2);
-				}
+		if ($groupID !== '') {
+			if ($this->tablepergroup === 1) {
+				if ($this->db->newtables($groupID) === false) {
+					$dMessage = "There is a problem creating new parts/files tables for this group.";
+					if ($this->debug) {
+						$this->debugging->start("postdate", $dMessage, 2);
+					}
 
-				if ($this->echo) {
-					$this->c->doEcho($this->c->error($dMessage), true);
+					if ($this->echo) {
+						$this->c->doEcho($this->c->error($dMessage), true);
+					}
 				}
+				$groupA['cname'] = 'collections_' . $groupID;
+				$groupA['bname'] = 'binaries_' . $groupID;
+				$groupA['pname'] = 'parts_' . $groupID;
+			} else {
+				$groupA['cname'] = 'collections';
+				$groupA['bname'] = 'binaries';
+				$groupA['pname'] = 'parts';
 			}
-			$groupA['cname'] = 'collections_' . $groupID;
-			$groupA['bname'] = 'binaries_' . $groupID;
-			$groupA['pname'] = 'parts_' . $groupID;
-		} else {
-			$groupA['cname'] = 'collections';
-			$groupA['bname'] = 'binaries';
-			$groupA['pname'] = 'parts';
 		}
 
 		$currentPost = $post;
@@ -487,20 +489,23 @@ class Backfill
 					break;
 				}
 			} else {
-			// Try to get locally.
-				$local = $this->db->queryOneRow(
-					'SELECT c.date AS date FROM ' .
-					$groupA['cname'] .
-					' c, ' .
-					$groupA['bname'] .
-					' b, ' .
-					$groupA['pname'] .
-					' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = ' .
-					$groupID .
-					' AND p.number = ' .
-					$currentPost .
-					' LIMIT 1'
-				);
+				$local = false;
+				if ($groupID !== '') {
+					// Try to get locally.
+					$local = $this->db->queryOneRow(
+						'SELECT c.date AS date FROM ' .
+						$groupA['cname'] .
+						' c, ' .
+						$groupA['bname'] .
+						' b, ' .
+						$groupA['pname'] .
+						' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = ' .
+						$groupID .
+						' AND p.number = ' .
+						$currentPost .
+						' LIMIT 1'
+					);
+				}
 
 				// If the row exists return.
 				if ($local !== false) {
