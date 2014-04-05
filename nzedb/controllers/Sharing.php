@@ -147,11 +147,12 @@ Class Sharing
 		// Get all comments that we have no posted yet.
 		$newComments = $this->db->query(
 			sprintf(
-				'SELECT rc.*, u.username, r.nzb_guid
+				'SELECT rc.text, rc.id, %s, u.username, r.nzb_guid
 				FROM releasecomment rc
 				INNER JOIN users u ON rc.userid = u.id
 				INNER JOIN releases r on rc.releaseid = r.id
 				WHERE rc.shared = 0 LIMIT %d',
+				$this->db->unix_timestamp_column('rc.createddate'),
 				$this->siteSettings['max_push']
 			)
 		);
@@ -183,7 +184,7 @@ Class Sharing
 	protected function postComment(&$row)
 	{
 		// Create a unique identifier for this comment.
-		$sid = sha1($row['createddate'] . $row['text'] . $row['nzb_guid']);
+		$sid = sha1($row['unix_time'] . $row['text'] . $row['nzb_guid']);
 
 		// Example of a subject.
 		//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
@@ -195,7 +196,7 @@ Class Sharing
 			json_encode(
 				array(
 					'USER'  => ($this->siteSettings['hide_users'] ? 'ANON' : $row['username']),
-					'TIME'  => strtotime($row['createddate']),
+					'TIME'  => $row['unix_time'],
 					'SID'   => $sid,
 					'RID'   => $row['nzb_guid'],
 					'BODY'  => $row['text']
@@ -466,7 +467,7 @@ Class Sharing
 				VALUES (%s, %d, %s, %s, 2, %s, 0, "")',
 				$this->db->escapeString($body['BODY']),
 				$userid,
-				$this->db->from_unixtime($body['TIME']),
+				$this->db->from_unixtime(($body['TIME'] > time() ? time() : $body['TIME'])),
 				$this->db->escapeString($body['SID']),
 				$this->db->escapeString($body['RID'])
 			)
