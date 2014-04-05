@@ -490,7 +490,6 @@ CREATE TABLE "releasecomment" (
   "host" character varying(15),
   "shared" smallint DEFAULT 0 NOT NULL,
   "shareid" character varying(40) DEFAULT ''::character varying NOT NULL,
-  "siteid" character varying(40) DEFAULT ''::character varying NOT NULL,
   "nzb_guid" character varying(32) DEFAULT ''::character varying NOT NULL
 )
 WITHOUT OIDS;

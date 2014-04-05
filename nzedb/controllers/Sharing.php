@@ -40,7 +40,6 @@ Class Sharing
 	 *      -------------------------------------------
 	 *      shared        Has this comment been shared or have we received it from another site. (0 not shared, 1 shared, 2 received)
 	 *      shareid       Unique identifier to know if we already have the comment or not.
-	 *      siteid        Guid of the site who sent us the comment.
 	 *      nzb_guid      Guid of the NZB's first message-id.
 	 */
 
@@ -64,7 +63,6 @@ Class Sharing
 	 * @var array
 	 */
 	protected $siteSettings = array();
-
 
 	/**
 	 * Group to work in.
@@ -185,10 +183,10 @@ Class Sharing
 	protected function postComment(&$row)
 	{
 		// Create a unique identifier for this comment.
-		$sid = sha1($row['createddate'] . $row['username'] . $row['nzb_guid']);
+		$sid = sha1($row['createddate'] . $row['text'] . $row['nzb_guid']);
 
 		// Example of a subject.
-		////nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10- [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
+		//nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
 
 		// Attempt to upload the comment to usenet.
 		$success = $this->nntp->postArticle(
@@ -196,7 +194,6 @@ Class Sharing
 			($this->siteSettings['site_name'] . '_' . $this->siteSettings['site_guid'] . ' - [1/1] "' . $sid . '" yEnc (1/1)'),
 			json_encode(
 				array(
-					'GUID'  => $this->siteSettings['site_guid'],
 					'USER'  => ($this->siteSettings['hide_users'] ? 'ANON' : $row['username']),
 					'TIME'  => strtotime($row['createddate']),
 					'SID'   => $sid,
@@ -323,9 +320,8 @@ Class Sharing
 
 				// Check if we already have the comment.
 				$check = $this->db->queryOneRow(
-					sprintf('SELECT id FROM releasecomment WHERE shareid = %s AND siteid = %s',
-						$this->db->escapeString($matches['sid']),
-						$this->db->escapeString($matches['guid'])
+					sprintf('SELECT id FROM releasecomment WHERE shareid = %s',
+						$this->db->escapeString($matches['sid'])
 					)
 				);
 
@@ -431,7 +427,7 @@ Class Sharing
 		}
 
 		// Just in case.
-		if (!isset($body['GUID'])) {
+		if (!isset($body['USER'])) {
 			return false;
 		}
 
@@ -461,13 +457,12 @@ Class Sharing
 		// Insert the comment.
 		if ($this->db->queryExec(
 			sprintf('
-				INSERT INTO releasecomment (text, userid, createddate, shareid, siteid, shared, nzb_guid, releaseid, host)
-				VALUES (%s, %d, %s, %s, %s, 2, %s, 0, "")',
+				INSERT INTO releasecomment (text, userid, createddate, shareid, shared, nzb_guid, releaseid, host)
+				VALUES (%s, %d, %s, %s, 2, %s, 0, "")',
 				$this->db->escapeString($body['BODY']),
 				$userid,
 				$this->db->from_unixtime($body['TIME']),
 				$this->db->escapeString($body['SID']),
-				$this->db->escapeString($body['GUID']),
 				$this->db->escapeString($body['RID'])
 			)
 		)) {
