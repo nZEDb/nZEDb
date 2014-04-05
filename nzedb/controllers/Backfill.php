@@ -747,21 +747,19 @@ class Backfill
 			}
 		}
 
-		$dMessage =
-			'Determined to be article: ' .
-			number_format($upperbound) .
-			' which is ' .
-			$this->daysOld($dateofnextone) .
-			' days old (' .
-			date('r', $dateofnextone) .
-			')';
+
 		if ($this->debug) {
+			$dMessage =
+				'Determined to be article: ' .
+				number_format($upperbound) .
+				' which is ' .
+				$this->daysOld($dateofnextone) .
+				' days old (' .
+				date('r', $dateofnextone) .
+				')';
 			$this->debugging->start("daytopost", $dMessage, 5);
 		}
 
-		if ($this->echo) {
-			$this->c->doEcho($dMessage, true);
-		}
 		return $upperbound;
 	}
 

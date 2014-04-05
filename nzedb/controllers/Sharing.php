@@ -247,10 +247,9 @@ Class Sharing
 				);
 				$this->db->queryExec(sprintf('UPDATE releases SET comments = comments + 1 WHERE id = %d', $row['id']));
 			}
-		}
-
-		if (nZEDb_ECHOCLI) {
-			echo '(Sharing) Matched ' . $found . ' comments.' . PHP_EOL;
+			if (nZEDb_ECHOCLI) {
+				echo '(Sharing) Matched ' . $found . ' comments.' . PHP_EOL;
+			}
 		}
 	}
 
@@ -307,6 +306,7 @@ Class Sharing
 			return;
 		}
 
+		$found = 0;
 		// Loop over NNTP headers until we find comments.
 		foreach ($headers as $header) {
 			//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
@@ -377,6 +377,7 @@ Class Sharing
 								$this->db->escapeString($matches['guid'])
 							)
 						);
+						$found++;
 						if (nZEDb_ECHOCLI) {
 							echo '.';
 						}
@@ -393,7 +394,11 @@ Class Sharing
 			)
 		);
 		if (nZEDb_ECHOCLI) {
-			echo PHP_EOL . '(Sharing) Finished fetching new comments.' . PHP_EOL;
+			if ($found > 0) {
+				echo PHP_EOL . '(Sharing) Fetched ' . $found . ' new comments.' . PHP_EOL;
+			} else {
+				echo '(Sharing) Finish looking for new comments, but did not find any.' . PHP_EOL;
+			}
 		}
 	}
 

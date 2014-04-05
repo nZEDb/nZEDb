@@ -8,7 +8,7 @@ $db = new DB();
 
 $offset = (isset($_GET['offset']) ? $_GET['offset'] : 0);
 
-$allSites = $db->query(sprintf('SELECT * FROM sharing_sites LIMIT %d OFFSET %d', 25, $offset));
+$allSites = $db->query(sprintf('SELECT * FROM sharing_sites ORDER BY id LIMIT %d OFFSET %d', 25, $offset));
 if (count($allSites) === 0) {
 	$allSites = false;
 }
