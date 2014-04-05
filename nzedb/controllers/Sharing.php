@@ -376,7 +376,8 @@ Class Sharing
 					if ($this->insertNewComment($header['Message-ID'])) {
 						$this->db->queryExec(
 							sprintf('
-								UPDATE sharing_sites SET comments = comments + 1, last_time = NOW() WHERE site_guid = %s',
+								UPDATE sharing_sites SET comments = comments + 1, last_time = NOW(), site_name = %s WHERE site_guid = %s',
+								$this->db->escapeString($matches['site']),
 								$this->db->escapeString($matches['guid'])
 							)
 						);
