@@ -1949,9 +1949,9 @@ class Net_SmartIRC_base
 	 * @param string $data
 	 * @param integer $priority must be one of the priority constants
 	 * @return boolean
-	 * @access private
+	 * @access public
 	 */
-	protected function _send($data, $priority = SMARTIRC_MEDIUM)
+	public function _send($data, $priority = SMARTIRC_MEDIUM)
 	{
 		switch ($priority) {
 			case SMARTIRC_CRITICAL:
