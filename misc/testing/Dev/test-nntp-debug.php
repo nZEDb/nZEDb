@@ -26,7 +26,7 @@ if ($connected !== true) {
 
 /** Example: **/
 
-$nntp->postArticle('alt.binaries.test', 'I am doing a test 123 (twstprdgy)', 'this is a test', '<twst@prdgy.com>');
+$nntp->postArticle('alt.test', 'I am doing a test 123 (twstprdgy)', 'this is a test', '<twst@prdgy.com>');
 $x = $nntp->selectGroup('alt.test');
 $x = $nntp->get_Header($x['group'], $x['last']);
 var_dump($x['From'], $x['Subject'], $x['Date']);
