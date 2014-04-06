@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 2014-04-06 kevin
 	* Add: Siteid to comments, will be used to purge sites.
+	* Add: Backfill option, purging option, reset option to sharing.
 2014-04-05 niel
 	* Chg: Improved DbUpdate's reporting.
 	* Fix: Rename $this->debug to $this->_debug.

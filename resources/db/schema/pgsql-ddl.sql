@@ -920,6 +920,7 @@ CREATE TABLE "sharing" (
   "site_name" character varying(255),
   "enabled"     smallint DEFAULT 0 NOT NULL,
   "posting"     smallint DEFAULT 0 NOT NULL,
+  "start_position"     smallint DEFAULT 0 NOT NULL,
   "fetching"     smallint DEFAULT 0 NOT NULL,
   "auto_enable"     smallint DEFAULT 0 NOT NULL,
   "hide_users"     smallint DEFAULT 1 NOT NULL,

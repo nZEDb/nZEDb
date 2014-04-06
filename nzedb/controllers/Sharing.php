@@ -89,26 +89,19 @@ Class Sharing
 
 		// Initiate sharing settings if this is the first time..
 		if (empty($check)) {
-			$siteHash = uniqid('nZEDb_', true);
-			$this->db->queryExec(
-				sprintf('
-					INSERT INTO sharing (site_name, site_guid, max_push, max_pull, hide_users) VALUES (%s, %s, 40 , 2500, 1)',
-					$this->db->escapeString($siteHash),
-					$this->db->escapeString(sha1($siteHash))
-				)
-			);
-			$check = $this->db->queryOneRow('SELECT * FROM sharing');
+			$check = $this->initSettings();
 		}
 
-		if (!is_null($nntp)) {
-			$this->nntp = $nntp;
-		} else {
-			$this->nntp = new NNTP();
-			$this->nntp->doConnect();
+		// Second check to make sure nothing went wrong.
+		if (empty($check)) {
+			return;
 		}
+
+		$this->nntp = $nntp;
 
 		// Cache sharing settings.
 		$this->siteSettings = $check;
+		unset($check);
 
 		// Convert to bool to speed up checking.
 		$this->siteSettings['hide_users'] = ($this->siteSettings['hide_users'] == 1 ? true : false);
@@ -116,6 +109,7 @@ Class Sharing
 		$this->siteSettings['posting'] = ($this->siteSettings['posting'] == 1 ? true : false);
 		$this->siteSettings['fetching'] = ($this->siteSettings['fetching'] == 1 ? true : false);
 		$this->siteSettings['enabled'] = ($this->siteSettings['enabled'] == 1 ? true : false);
+		$this->siteSettings['start_position'] = ($this->siteSettings['start_position'] == 1 ? true : false);
 	}
 
 	/**
@@ -129,6 +123,10 @@ Class Sharing
 		}
 
 		$this->yEnc = new Yenc();
+		if (is_null($this->nntp)) {
+			$this->nntp = new NNTP();
+			$this->nntp->doConnect();
+		}
 
 		if ($this->siteSettings['posting']) {
 			$this->postAll();
@@ -137,6 +135,27 @@ Class Sharing
 			$this->fetchAll();
 		}
 		$this->matchComments();
+	}
+
+	/**
+	 * Initialise of reset sharing settings.
+	 *
+	 * @param string $siteGuid Optional hash (must be sha1) we can set the site guid to.
+	 *
+	 * @return array|bool
+	 */
+	public function initSettings(&$siteGuid = '')
+	{
+		$this->db->queryExec('TRUNCATE TABLE sharing');
+		$siteName = uniqid('nZEDb_', true);
+		$this->db->queryExec(
+			sprintf('
+				INSERT INTO sharing (site_name, site_guid, max_push, max_pull, hide_users, start_position) VALUES (%s, %s, 40 , 2500, 1, 1)',
+				$this->db->escapeString($siteName),
+				$this->db->escapeString(($siteGuid === '' ? sha1($siteName) : $siteGuid))
+			)
+		);
+		return $this->db->queryOneRow('SELECT * FROM sharing');
 	}
 
 	/**
@@ -269,21 +288,28 @@ Class Sharing
 
 		// Check if this is the first time, set our oldest article.
 		if ($this->siteSettings['last_article'] == 0) {
-			if (nZEDb_ECHOCLI) {
-				echo '(Sharing) This is the first time running sharing so we will get the first article which will take a few seconds.' . PHP_EOL;
+			// If the user picked to start from the oldest, get the oldest.
+			if ($this->siteSettings['start_position'] === true) {
+				if (nZEDb_ECHOCLI) {
+					echo '(Sharing) This is the first time running sharing so we will get the first article which will take a few seconds.' . PHP_EOL;
+				}
+				// Get first article based on time.
+				$day = ((time() - 1396137600) / 86400);
+				$backfill = new Backfill($this->nntp);
+				$article = $backfill->daytopost($day, $group);
+				unset($backfill);
+				$this->siteSettings['last_article'] = $ourOldest = (string)$article;
+
+			// Else get the newest.
+			} else {
+				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - 1000);
 			}
-			// Get first article based on time.
-			$day = ((time() - 1396137600) / 86400);
-			$backfill = new Backfill($this->nntp);
-			$article = $backfill->daytopost($day, $group);
-			unset($backfill);
-			$this->siteSettings['last_article'] = $ourOldest = (int)$article;
 		} else {
 			$ourOldest = $this->siteSettings['last_article'] + 1;
 		}
 
 		// Set our newest to our oldest wanted + max pull setting.
-		$newest = ($ourOldest + $this->siteSettings['max_pull']);
+		$newest = (string)($ourOldest + $this->siteSettings['max_pull']);
 
 		// Check if our newest wanted is newer than the group's newest, set to group's newest.
 		if ($newest >= $group['last']) {
@@ -370,7 +396,7 @@ Class Sharing
 					}
 
 					// Insert the comment, if we got it, update the site to increment comment count.
-					if ($this->insertNewComment($header['Message-ID'])) {
+					if ($this->insertNewComment($header['Message-ID'], $matches['guid'])) {
 						$this->db->queryExec(
 							sprintf('
 								UPDATE sharing_sites SET comments = comments + 1, last_time = NOW(), site_name = %s WHERE site_guid = %s',
@@ -407,10 +433,11 @@ Class Sharing
 	 * Fetch a comment and insert it.
 	 *
 	 * @param string $messageID Message-ID for the article.
+	 * @param string $siteID    ID of the site.
 	 *
 	 * @return bool
 	 */
-	protected function insertNewComment($messageID)
+	protected function insertNewComment(&$messageID, &$siteID)
 	{
 		// Get the article body.
 		$body = $this->nntp->getMessage(self::group, $messageID);
@@ -463,13 +490,14 @@ Class Sharing
 		// Insert the comment.
 		if ($this->db->queryExec(
 			sprintf('
-				INSERT INTO releasecomment (text, userid, createddate, shareid, shared, nzb_guid, releaseid, host)
-				VALUES (%s, %d, %s, %s, 2, %s, 0, "")',
+				INSERT INTO releasecomment (text, userid, createddate, shareid, shared, nzb_guid, releaseid, host, siteid)
+				VALUES (%s, %d, %s, %s, 2, %s, 0, "", %s)',
 				$this->db->escapeString($body['BODY']),
 				$userid,
 				$this->db->from_unixtime(($body['TIME'] > time() ? time() : $body['TIME'])),
 				$this->db->escapeString($body['SID']),
-				$this->db->escapeString($body['RID'])
+				$this->db->escapeString($body['RID']),
+				$this->db->escapeString($siteID)
 			)
 		)) {
 			return true;

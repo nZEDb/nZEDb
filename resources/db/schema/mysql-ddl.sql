@@ -800,6 +800,7 @@ CREATE TABLE sharing (
   posting        TINYINT(1)         NOT NULL DEFAULT '0',
   fetching       TINYINT(1)         NOT NULL DEFAULT '0',
   auto_enable    TINYINT(1)         NOT NULL DEFAULT '0',
+  start_position TINYINT(1)         NOT NULL DEFAULT '0',
   hide_users     TINYINT(1)         NOT NULL DEFAULT '1',
   last_article   BIGINT UNSIGNED    NOT NULL DEFAULT '0',
   max_push       MEDIUMINT UNSIGNED NOT NULL DEFAULT '40',
