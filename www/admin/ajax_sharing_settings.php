@@ -93,7 +93,7 @@ else if (isset($_GET['purge_site'])) {
 		if ($total > 0) {
 			$rc = new ReleaseComments();
 			foreach ($ids as $id) {
-				$rc->deleteComment($id);
+				$rc->deleteComment($id['id']);
 			}
 		}
 		$db->queryExec(sprintf('UPDATE sharing_sites SET comments = 0 WHERE id = %d', $_GET['purge_site']));

@@ -4,6 +4,7 @@
  * Attempt to include PEAR's nntp class if it has not already been included.
  */
 require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
+require_once nZEDb_LIBS . 'Yenc.php';
 
 /**
  * Class for connecting to the usenet, retrieving articles and article headers,
