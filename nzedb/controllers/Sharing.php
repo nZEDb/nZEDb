@@ -290,16 +290,7 @@ Class Sharing
 		if ($this->siteSettings['last_article'] == 0) {
 			// If the user picked to start from the oldest, get the oldest.
 			if ($this->siteSettings['start_position'] === true) {
-				if (nZEDb_ECHOCLI) {
-					echo '(Sharing) This is the first time running sharing so we will get the first article which will take a few seconds.' . PHP_EOL;
-				}
-				// Get first article based on time.
-				$day = ((time() - 1396137600) / 86400);
-				$backfill = new Backfill($this->nntp);
-				$article = $backfill->daytopost($day, $group);
-				unset($backfill);
-				$this->siteSettings['last_article'] = $ourOldest = (string)$article;
-
+				$this->siteSettings['last_article'] = $ourOldest = (string)($group['first'];
 			// Else get the newest.
 			} else {
 				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - 1000);
