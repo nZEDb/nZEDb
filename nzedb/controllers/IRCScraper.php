@@ -435,7 +435,7 @@ class IRCScraper
 				}
 				break;
 
-			case '#scnzbs':
+			case '#scnzb':
 				if ($this->checkSimilarity($poster, 'nzbs')) {
 					$this->scnzb($data->message);
 				}
