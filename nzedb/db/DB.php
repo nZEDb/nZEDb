@@ -506,7 +506,7 @@ class DB extends \PDO
 			$result = self::$pdo->query($query);
 		} catch (\PDOException $e) {
 			$this->echoError($e->getMessage(), 'queryDirect', 4);
-			if ($this->debug) {
+			if ($this->_debug) {
 				$this->debugging->start("queryDirect", $query, 6);
 			}
 			$result = false;
