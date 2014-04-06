@@ -122,6 +122,95 @@ function ajax_sharing_enabled(id, status)
 }
 
 /**
+ * ajax_sharing_startposition()
+ *
+ * @param id
+ * @param status    0 = deactive, 1 = activate
+ */
+function ajax_sharing_startposition(id, status)
+{
+    // no caching of results
+    var rand_no = Math.random();
+    if (status != undefined)
+    {
+        $.ajax({
+            url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+            data      : { start_position: status },
+            dataType  : "html",
+            success   : function(data)
+            {
+                $('div#message').html(data);
+                $('div#message').show('fast', function() {});
+
+                // switch some links around
+                if (status == 0) {
+                    $('strong#startposition-' + id).html('<a href="javascript:ajax_sharing_startposition('+ id +', 1)" class="sharing_enabled_deactive">[ENABLE]</a>');
+                }
+                else {
+                    $('strong#startposition-' + id).html('<a href="javascript:ajax_sharing_startposition('+ id +', 0)" class="sharing_enabled_active">[DISABLE]</a>');
+                }
+
+                // fade.. mm
+                $('#message').fadeOut(5000);
+            },
+            error: function(xhr,err,e) { alert( "Error in ajax_sharing_startposition: " + err ); }
+        });
+    }
+    else
+    {
+        alert('Weird.. what enabled id are looking for?');
+    }
+}
+
+/**
+ * ajax_sharing_reset()
+ *
+ * @param id
+ */
+function ajax_sharing_reset(id)
+{
+    var rand_no = Math.random();
+    $.ajax({
+        url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+        data      : { reset_settings: id },
+        dataType  : "html",
+        success   : function(data)
+        {
+            $('div#message').html(data);
+            $('div#message').show('fast', function() {});
+
+            // fade.. mm
+            $('#message').fadeOut(5000);
+        },
+        error: function(xhr,err,e) { alert( "Error in ajax_sharing_reset: " + err ); }
+    });
+}
+
+/**
+ * ajax_sharing_site_purge()
+ *
+ * @param id
+ */
+function ajax_sharing_site_purge(id)
+{
+    var rand_no = Math.random();
+    $.ajax({
+        url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+        data      : { purge_site: id },
+        dataType  : "html",
+        success   : function(data)
+        {
+            $('div#message').html(data);
+            $('div#message').show('fast', function() {});
+
+            // fade.. mm
+            $('#message').fadeOut(5000);
+        },
+        error: function(xhr,err,e) { alert( "Error in ajax_sharing_site_purge: " + err ); }
+    });
+}
+
+/**
  * ajax_sharing_posting()
  *
  * @param id

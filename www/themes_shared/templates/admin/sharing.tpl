@@ -1,11 +1,14 @@
 <h1>{$page->title}</h1>
 <div style="width:700px">
-	<strong>Sharing of comments does not work with NntpProxy, NntpProxy does not have all the required NNTP commands.</strong>
+	<strong>
+		Sharing of comments does not work with NntpProxy, NntpProxy does not have all the required NNTP commands.<br />
+		If you turn on or off the Alternate NNTP provider you will need to click the reset button to reset sharing settings.
+	</strong>
 	<br />
-	<div id="message" style="width:677px;">msg</div>
+	<div id="message" style="width:717px;">msg</div>
 	{if $local}
 		<form action="{$SCRIPT_NAME}?action=submit" method="post">
-			<fieldset style="width:677px;">
+			<fieldset style="width:717px;">
 				<legend>Local sharing settings.</legend>
 				<table class="input">
 					<tr>
@@ -105,6 +108,32 @@
 							</div>
 						</td>
 					</tr>
+					<tr>
+						<td style="width:100px;"><label for="sharing_startposition">Backfill:</label></td>
+						<td>
+							<div>
+								<strong id="startposition-1">
+									{if $local.start_position == "1"}
+										<a href="javascript:ajax_sharing_startposition(1, 0)" class="sharing_startposition_active">[DISABLE]</a>
+									{else}
+										<a href="javascript:ajax_sharing_startposition(1, 1)" class="sharing_startposition_deactive">[ENABLE]</a>
+									{/if}
+								</strong>
+								When pulling the first time, or after resetting, start from the beginning of the group (takes more time).
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="width:100px;"><label for="sharing_reset">Reset settings:</label></td>
+						<td>
+							<div>
+								<strong id="reset-1">
+									<a href="javascript:ajax_sharing_reset(1)" class="sharing_reset" onclick="return confirm('Are you sure? You will lose all your settings!');">[RESET]</a>
+								</strong>
+								<strong>This will reset your sharing settings (if you need to change Usenet Provider for example).</strong>
+							</div>
+						</td>
+					</tr>
 				</table>
 			</fieldset>
 			<input type="submit" value="Save Settings" />
@@ -121,14 +150,15 @@
 			<a href="javascript:ajax_sharing_toggle_all(1);" onclick="setTimeout('history.go(0);',700);" class="sharing_toggle_all">[Enable All]</a>
 			<a href="javascript:ajax_sharing_toggle_all(0);" onclick="setTimeout('history.go(0);',700);" class="sharing_toggle_all">[Disable All]</a>
 		</div>
-		<table style="margin-top:5px;margin-bottom:5px;width:700px" class="data Sortable highlight">
+		<table style="margin-top:5px;margin-bottom:5px;width:733px" class="data Sortable highlight">
 			<tr>
 				<th style="width:22px;text-align:center;">ID</th>
 				<th style="width:300px;text-align:center;">Name</th>
 				<th style="width:100px;text-align:center;">First seen</th>
 				<th style="width:100px;text-align:center;">Last seen</th>
-				<th style="width:50px;text-align:center;">Enabled</th>
+				<th style="width:50px;text-align:center;">Status</th>
 				<th style="width:70px;text-align:center;">Comments</th>
+				<th style="width:40px;text-align:center;"></th>
 			</tr>
 			{foreach from=$sites item=site}
 				<tr id="row-{$site.id}" class="{cycle values=",alt"}">
@@ -144,6 +174,9 @@
 						{/if}
 					</td>
 					<td style="text-align:center;">{$site.comments}</td>
+					<td style="text-align:center;">
+						<a href="javascript:ajax_sharing_site_purge({$site.id})" class="sharing_site_purge" onclick="return confirm('Are you sure? This will delete all comments from this site!');">Purge</a>
+					</td>
 				</tr>
 			{/foreach}
 		</table>
