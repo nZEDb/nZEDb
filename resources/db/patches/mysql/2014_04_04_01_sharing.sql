@@ -27,7 +27,6 @@ CREATE TABLE sharing (
 
 ALTER TABLE releasecomment ADD COLUMN shared   TINYINT(1)  NOT NULL DEFAULT '0';
 ALTER TABLE releasecomment ADD COLUMN shareid  VARCHAR(40) NOT NULL DEFAULT '';
-ALTER TABLE releasecomment ADD COLUMN siteid   VARCHAR(40) NOT NULL DEFAULT '';
 ALTER TABLE releasecomment ADD COLUMN nzb_guid VARCHAR(32) NOT NULL DEFAULT '';
 
 UPDATE site SET value = '198' WHERE setting = 'sqlpatch';
