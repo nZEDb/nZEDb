@@ -150,7 +150,7 @@ Class Sharing
 		$siteName = uniqid('nZEDb_', true);
 		$this->db->queryExec(
 			sprintf('
-				INSERT INTO sharing (site_name, site_guid, max_push, max_pull, hide_users, start_position) VALUES (%s, %s, 40 , 2500, 1, 1)',
+				INSERT INTO sharing (site_name, site_guid, max_push, max_pull, hide_users, start_position) VALUES (%s, %s, 40 , 1000, 1, 1)',
 				$this->db->escapeString($siteName),
 				$this->db->escapeString(($siteGuid === '' ? sha1($siteName) : $siteGuid))
 			)
