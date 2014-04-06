@@ -42,9 +42,9 @@ spl_autoload_register(function ($class) {
     $file = $base_dir . str_replace('\\', DIRECTORY_SEPARATOR, $relative_class) . '.php';
 
     // if the file exists, require it
-    if (file_exists($file)) {
-        require_once $file;
-    } else {
+	if (file_exists($file)) {
+		require_once $file;
+	} else {
 		if (nZEDb_DEBUG) {
 			var_dump($file);
 		}
