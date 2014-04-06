@@ -8,6 +8,7 @@ Each update goes to the top of the file
 
 2014-04-05 niel
 	* Chg: Improved DbUpdate's reporting.
+	* Fix: Rename $this->debug to $this->_debug.
 2014-04-05 kevin
 	* Fix: Bug in releasecomment showing only 1 page.
 	* Chg: IRCScraper More random version strings.
