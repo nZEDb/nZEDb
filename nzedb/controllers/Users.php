@@ -116,6 +116,7 @@ class Users
 				INNER JOIN userroles ON userroles.id = users.role
 				LEFT JOIN userrequests ON userrequests.userid = users.id
 				WHERE users.id != 0 %s %s %s %s
+				AND email != 'sharing@nZEDb.com'
 				GROUP BY users.id
 				ORDER BY %s %s" .
 				$limit,
@@ -168,7 +169,7 @@ class Users
 	public function getCount()
 	{
 		$db = $this->db;
-		$res = $db->queryOneRow("SELECT COUNT(id) AS num FROM users");
+		$res = $db->queryOneRow("SELECT COUNT(id) AS num FROM users WHERE email != 'sharing@nZEDb.com'");
 		return $res["num"];
 	}
 
