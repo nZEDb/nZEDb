@@ -179,12 +179,8 @@ class Backfill
 
 			$this->binaries = new Binaries($this->nntp, $this->echo, $this);
 
-			if ($articles !== '') {
-				if (!is_numeric($articles)) {
-					$articles = 20000;
-				} else {
-					$articles = (int) $articles;
-				}
+			if ($articles !== '' && !is_numeric($articles)) {
+				$articles = 20000;
 			}
 
 			// Loop through groups.
@@ -271,7 +267,7 @@ class Backfill
 		$postCheck = ($articles === '' ? false : true);
 
 		// Get target post based on date or user specified number.
-		$targetpost = ($postCheck
+		$targetpost = (string)($postCheck
 			?
 				round($groupArr['first_record'] - $articles)
 			:
@@ -318,9 +314,9 @@ class Backfill
 		}
 
 		// Set first and last, moving the window by max messages.
-		$last = $groupArr['first_record'] - 1;
+		$last = (string)($groupArr['first_record'] - 1);
 		// Set the initial "chunk".
-		$first = $last - $this->binaries->messagebuffer + 1;
+		$first = (string)($last - $this->binaries->messagebuffer + 1);
 
 		// Just in case this is the last chunk we needed.
 		if ($targetpost > $first) {
@@ -372,8 +368,8 @@ class Backfill
 				$done = true;
 			} else {
 				// Keep going: set new last, new first, check for last chunk.
-				$last = $first - 1;
-				$first = $last - $this->binaries->messagebuffer + 1;
+				$last = (string)($first - 1);
+				$first = (string)($last - $this->binaries->messagebuffer + 1);
 				if ($targetpost > $first) {
 					$first = $targetpost;
 				}

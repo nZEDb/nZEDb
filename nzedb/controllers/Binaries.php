@@ -382,36 +382,36 @@ class Binaries
 
 		// Get first article we want aka the oldest.
 		if ($groupArr['last_record'] == 0) {
-		// For new newsgroups - determine here how far you want to go back using date.
+			// For new newsgroups - determine here how far you want to go back using date.
 			if ($this->NewGroupScanByDays) {
 				$first = $this->backfill->daytopost($this->NewGroupDaysToScan, $data);
-			// If not using date, use post count.
+				// If not using date, use post count.
 			} else {
 				// If what we want is lower than the groups first article, set the wanted first to the first.
 				if ($data['first'] > ($data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer))) {
 					$first = $data['first'];
-				// Or else, use the newest article minus how much we should get for new groups.
+					// Or else, use the newest article minus how much we should get for new groups.
 				} else {
-					$first = $data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer);
+					$first = (string)($data['last'] - ($this->NewGroupMsgsToScan + $this->messagebuffer));
 				}
 			}
 
 			// We will use this to subtract so we leave articles for the next time (in case the server doesn't have them yet)
 			$leaveOver = $this->messagebuffer;
 
-		// If this is not a new group, go from our newest to the servers newest.
+			// If this is not a new group, go from our newest to the servers newest.
 		} else {
 			// Set our oldest wanted to our newest local article.
 			$first = $groupArr['last_record'];
 
 			// This is how many articles we will grab. (the servers newest minus our newest).
-			$totalCount = $data['last'] - $first;
+			$totalCount = (string)($data['last'] - $first);
 
 			// Check if the server has more articles than our loop limit x 2.
 			if ($totalCount > ($this->messagebuffer * 2)) {
-					// Get the remainder of $totalCount / $this->message buffer
-					$leaveOver = round(($totalCount % $this->messagebuffer), 0, PHP_ROUND_HALF_DOWN) + $this->messagebuffer;
-			// Else get half of the available.
+				// Get the remainder of $totalCount / $this->message buffer
+				$leaveOver = round(($totalCount % $this->messagebuffer), 0, PHP_ROUND_HALF_DOWN) + $this->messagebuffer;
+				// Else get half of the available.
 			} else {
 				// Use this to subtract group's newest so we don't grab articles not yet on the server.
 				$leaveOver = round(($totalCount / 2), 0, PHP_ROUND_HALF_DOWN);
@@ -419,7 +419,7 @@ class Binaries
 		}
 
 		// The last article we want, aka the newest.
-		$last = $groupLast = ($data['last'] - $leaveOver);
+		$last = $groupLast = (string)($data['last'] - $leaveOver);
 
 		// If the newest we want is older than the oldest we want somehow.. set them equal.
 		if ($last < $first) {
@@ -427,9 +427,9 @@ class Binaries
 		}
 
 		// This is how many articles we are going to get.
-		$total = $groupLast - $first;
+		$total = (string)($groupLast - $first);
 		// This is how many articles are available (without $leaveOver).
-		$realTotal = $data['last'] - $first;
+		$realTotal = (string)($data['last'] - $first);
 
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if ($total > 0) {
@@ -438,20 +438,20 @@ class Binaries
 					$this->c->primary(
 						($groupArr['last_record'] == 0
 							?
-								'New group ' .
-								$data['group'] .
-								' starting with ' .
-								(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan
-									. ' days' : number_format($this->NewGroupMsgsToScan) .
-									' messages'
-								) .
-								" worth."
+							'New group ' .
+							$data['group'] .
+							' starting with ' .
+							(($this->NewGroupScanByDays) ? $this->NewGroupDaysToScan
+								. ' days' : number_format($this->NewGroupMsgsToScan) .
+								' messages'
+							) .
+							" worth."
 							:
-								'Group ' .
-								$data['group'] .
-								' has ' .
-								number_format($realTotal) .
-								" new articles."
+							'Group ' .
+							$data['group'] .
+							' has ' .
+							number_format($realTotal) .
+							" new articles."
 						) .
 						" Leaving "  .
 						number_format($leaveOver) .
@@ -469,10 +469,10 @@ class Binaries
 			while ($done === false) {
 
 				if ($total > $this->messagebuffer) {
-					if ($first + $this->messagebuffer > $groupLast) {
+					if ((string)($first + $this->messagebuffer) > $groupLast) {
 						$last = $groupLast;
 					} else {
-						$last = $first + $this->messagebuffer;
+						$last = (string)($first + $this->messagebuffer);
 					}
 				}
 				// Increment first so we don't get an article we already had.
@@ -657,7 +657,7 @@ class Binaries
 						$this->c->doEcho($this->c->error($dMessage), true);
 					}
 
-				// If partrepair, increment attempts.
+					// If partrepair, increment attempts.
 				} else {
 
 					$query = sprintf(
@@ -757,7 +757,7 @@ class Binaries
 				$partnumber = '';
 				// Add yEnc to headers that do not have them, but are nzbs and that have the part number at the end of the header
 				if (!stristr($msg['Subject'], 'yEnc') && preg_match('/(.+)(\(\d+\/\d+\))$/', $msg['Subject'], $partnumber)) {
-						$msg['Subject'] = $partnumber[1] . ' yEnc ' . $partnumber[2];
+					$msg['Subject'] = $partnumber[1] . ' yEnc ' . $partnumber[2];
 				}
 
 				$matches = '';

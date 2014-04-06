@@ -166,7 +166,7 @@ class IRCScraper
 					'#alt.binaries.games.xbox360'          => null,
 					'#alt.binaries.sony.psp'               => null,
 					'#scnzb'                               => null,
-					'#tvnzb'                               => null
+					//'#tvnzb'                               => null
 				);
 				// Check if the user is ignoring channels.
 				if (defined('SCRAPE_IRC_EFNET_IGNORED_CHANNELS') && SCRAPE_IRC_EFNET_IGNORED_CHANNELS != '') {
@@ -204,7 +204,7 @@ class IRCScraper
 						'|' .
 						'\s+NZB:\s+http:\/\/scnzb\.eu\/' .             // scnzb
 						'|' .
-						'^\[SBINDEX\]' .                               // tvnzb
+						//'^\[SBINDEX\]' .                               // tvnzb
 						'|' .
 						'^\[(MOD|OLD|RE|UN)?NUKE\]' .                  // Nukes. various channels
 						'|' .
@@ -239,15 +239,18 @@ class IRCScraper
 		}
 
 		$versions = array(
-			'HexChat 2.9.6',
-			'mIRC 7.32',
+			'HexChat 2.9.6 [x64] / Windows ' . rand(7,8) . ' [' . rand(2,3) . '.' . rand(0,99) .'GHz]',
+			'irssi v0.8.' . rand(10, 16) . ' - running on Linux i686',
+			'KVIrc 4.2.0',
+			'mIRC 7.32 Khaled Mardam-Bey',
+			'mIRC v6.31 Khaled Mardam-Bey',
 			'HydraIRC v0.3.165',
-			'X-Chat 2.8.9',
-			'KVIrc 4.2.0'
+			'xchat 2.8. ' . rand(6,9) . ' Ubuntu',
+			'ZNC 1.' . rand(0,2) . ' - http://znc.in',
 		);
 
 		// Change the CTCP string.
-		$this->IRC->setCtcpVersion($versions[mt_rand(0, 4)]);
+		$this->IRC->setCtcpVersion($versions[mt_rand(0, 6)]);
 		unset($versions);
 
 		// Use real sockets instead of fsock.
@@ -438,11 +441,11 @@ class IRCScraper
 				}
 				break;
 
-			case '#tvnzb':
+			/*case '#tvnzb':
 				if ($this->checkSimilarity($poster, 'tweetie')) {
 					$this->tvnzb($data->message);
 				}
-				break;
+				break;*/
 
 			default:
 				if ($this->checkSimilarity($poster, 'alt-bin')) {
@@ -761,7 +764,7 @@ class IRCScraper
 	 *
 	 * @param string $message The IRC message to parse.
 	 */
-	protected function tvnzb(&$message)
+/*	protected function tvnzb(&$message)
 	{
 		//[SBINDEX] Rev.S03E02.HDTV.x264-TLA :: TV > HD :: 210.13 MB :: Aired: 31/Mar/2014 :: http://lolo.sickbeard.com/getnzb/aa10bcef235c604612dd61b0627ae25f.nzb
 		if (preg_match('/\[SBINDEX\]\s+(?P<title>.+?)\s+::\s+(?P<sbcat>.+?)\s+::\s+(?P<size>.+?)\s+::\s+Aired/i', $message, $matches)) {
@@ -771,7 +774,7 @@ class IRCScraper
 			$this->CurPre['source'] = '#tvnzb';
 			$this->siftMatches($matches);
 		}
-	}
+	}*/
 
 	/**
 	 * Gets new PRE from #Pre on zenet

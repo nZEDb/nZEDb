@@ -7,13 +7,23 @@ spl_autoload_register(
 			$className = 'Smarty.class';
 		}
 
-		$paths = array(nZEDb_WWW . 'pages', SMARTY_DIR, SMARTY_DIR . 'plugins', SMARTY_DIR . 'sysplugins');
+		$paths = array(
+			SMARTY_DIR,
+			nZEDb_WWW . 'pages' . DIRECTORY_SEPARATOR,
+			SMARTY_DIR . 'plugins' . DIRECTORY_SEPARATOR,
+			SMARTY_DIR . 'sysplugins' . DIRECTORY_SEPARATOR
+		);
+
 		foreach ($paths as $path)
 		{
-			$spec = $path . DIRECTORY_SEPARATOR  . $className . '.php';
+			$spec = str_replace('\\', DIRECTORY_SEPARATOR, $path . $className . '.php');
 			if (file_exists($spec)) {
 				require_once $spec;
-				return;
+				break;
+			} else {
+				if (nZEDb_DEBUG) {
+					var_dump($spec);
+				}
 			}
 		}
 	}
