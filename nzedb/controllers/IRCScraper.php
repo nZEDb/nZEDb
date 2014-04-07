@@ -203,7 +203,7 @@ class IRCScraper
 						'A\s+NZB\s+is\s+available.*?To\s+Download' .   // a.b.sony.psp
 						'|' .
 						'\s+NZB:\s+http:\/\/scnzb\.eu\/' .             // scnzb
-						'|' .
+						//'|' .
 						//'^\[SBINDEX\]' .                               // tvnzb
 						'|' .
 						'^\[(MOD|OLD|RE|UN)?NUKE\]' .                  // Nukes. various channels
