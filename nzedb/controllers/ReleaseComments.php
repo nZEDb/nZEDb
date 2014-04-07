@@ -68,12 +68,12 @@ class ReleaseComments
 			$host = "";
 
 		$username = $db->queryOneRow(sprintf('SELECT username FROM users WHERE id = %d', $userid));
-		$username = ($username === false ? 'ANON' : $username['name']);
+		$username = ($username === false ? 'ANON' : $username['username']);
 
 		$comid = $db->queryInsert(
 			sprintf("
 				INSERT INTO releasecomment (releaseid, text, userid, createddate, host, username)
-				VALUES (%d, %s, %d, NOW(), %s)",
+				VALUES (%d, %s, %d, NOW(), %s, %s)",
 				$id,
 				$db->escapeString($text),
 				$userid,
