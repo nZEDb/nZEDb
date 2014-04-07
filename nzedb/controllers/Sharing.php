@@ -128,13 +128,13 @@ Class Sharing
 			$this->nntp->doConnect();
 		}
 
-		if ($this->siteSettings['posting']) {
-			$this->postAll();
-		}
 		if ($this->siteSettings['fetching']) {
 			$this->fetchAll();
 		}
 		$this->matchComments();
+		if ($this->siteSettings['posting']) {
+			$this->postAll();
+		}
 	}
 
 	/**

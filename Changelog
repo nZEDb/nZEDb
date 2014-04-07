@@ -9,6 +9,7 @@ Each update goes to the top of the file
 2014-04-07 bart39
 	* Fix: overriding efnet password
 2014-04-07 kevin
+	* Chg: Sharing, fetch before posting which should help prevent posting dupes.
 	* Add: Local check to see if we already have a shared comment before uploading (helps prevent dupes).
 	* Fix: Missing SH_ on sharing users.
 	* Fix: Undefined variable in tvrage.
