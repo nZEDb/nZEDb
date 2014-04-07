@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-06 kevin
+	* Chg: IRCScraper, possibly no space between reqid and title for scnzb because stripcontrolcharacter method might remove it (there's a control char to end the color there).
 	* Chg: Change default fetch per run to same as schema.
 	* Fix: Fix for purging comments.
 	* Chg: Hide sharing users from users page.
