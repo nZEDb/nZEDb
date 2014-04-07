@@ -12,6 +12,7 @@ Each update goes to the top of the file
 	* Chg: Hide sharing users from users page.
 	* Add: Siteid to comments, will be used to purge sites.
 	* Add: Backfill option, purging option, reset option to sharing.
+	* Chg: Sharing change for less users.
 2014-04-05 niel
 	* Chg: Improved DbUpdate's reporting.
 	* Fix: Rename $this->debug to $this->_debug.

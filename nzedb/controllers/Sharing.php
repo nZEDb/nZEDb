@@ -455,6 +455,11 @@ Class Sharing
 			return false;
 		}
 
+		// Set sn names to anon.
+		if (substr($body['USER'], 0, 3) === 'sn-') {
+			$body['USER'] = 'ANON';
+		}
+
 		// Check if we have the user.
 		$user = $this->db->queryOneRow(
 			sprintf('SELECT id FROM users WHERE username = %s',
