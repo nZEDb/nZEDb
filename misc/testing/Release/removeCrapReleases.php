@@ -29,7 +29,6 @@ if ($argCnt === 2) {
 			'                  full   = Run without a time limit.' . $n .
 			'                  number = Run on releases up to this old.' . $n . $n .
 			'arg3 (Optional) = blacklist | blfiles | executable | gibberish | hashed | installbin | passworded | passwordurl | sample | scr | short | size | wmv' . $n .
-			'                  blacklist   = Remove releases using the enabled blacklists in admin section of site.' . $n .
 			'                  blfiles     = Remove releases using the enabled blacklists in admin section of site against filenames.' . $n .
 			'                  executable  = Remove releases containing an exe file.' . $n .
 			'                  gibberish   = Remove releases where the name is letters/numbers only and 15 characters or longer.' . $n .
@@ -40,11 +39,8 @@ if ($argCnt === 2) {
 			'                  sample      = Remove releases that are smaller than 40MB more than 1 file and have sample in the title' . $n .
 			'                  scr         = Remove releases where .scr extension is found in the files or subject.' . $n .
 			'                  short       = Remove releases where the name is only numbers or letters and is 5 characters or less.' . $n .
-			'                  codec       = Remove releases where the release contains WMV file, x264 name, and Codec\Setup.exe file (Spammer).' . $n .
-			'                  size        = Remove releases smaller than 2MB and have only 1 file and not in books or mp3 section.' . $n .
-			'                  huge        = Remove releases bigger than 200MB with just a single file.' . $n . $n .
-			'arg4 (Optional) = blacklist regular expression id number.  Only works when blacklist is selected as third argument.' . $n .
-			'                  100001      = Remove releases where the Binary Blacklist ID is 100001.' . $n . $n .
+              '                wmv         = Remove releases where the release contains WMV file and is in x264 category (the spamer).' . $n .
+			'                  size        = Remove releases smaller than 1MB and have only 1 file and not in books or mp3 section.' . $n . $n .
 			'examples:' . $n .
 			"php $argv[0] true 12 blacklist     = Remove releases up to 12 hours old using site blacklists." . $n .
 			"php $argv[0] false full            = Show what releases could have been removed." . $n .
