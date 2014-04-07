@@ -928,7 +928,8 @@ CREATE TABLE "sharing" (
   "last_time"   timestamp without time zone,
   "first_time"  timestamp without time zone,
   "max_push" integer DEFAULT 40 NOT NULL,
-  "max_pull" integer DEFAULT 200 NOT NULL
+  "max_download" integer DEFAULT 150 NOT NULL,
+  "max_pull" integer DEFAULT 20000 NOT NULL
 )
 WITHOUT OIDS;
 

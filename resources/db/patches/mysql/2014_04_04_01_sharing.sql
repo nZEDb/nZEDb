@@ -21,7 +21,7 @@ CREATE TABLE sharing (
 	hide_users     TINYINT(1)         NOT NULL DEFAULT '1',
 	last_article   BIGINT UNSIGNED    NOT NULL DEFAULT '0',
 	max_push       MEDIUMINT UNSIGNED NOT NULL DEFAULT '40',
-	max_pull       INT UNSIGNED       NOT NULL DEFAULT '200',
+	max_pull       INT UNSIGNED       NOT NULL DEFAULT '150',
 	PRIMARY KEY    (site_guid)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
 

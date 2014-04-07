@@ -26,10 +26,17 @@
 						</td>
 					</tr>
 					<tr>
-						<td style="width: 100px;"><label for="sharing_maxpull">Max Downloads:</label></td>
+						<td style="width: 100px;"><label for="sharing_maxdownload">Max Downloads:</label></td>
+						<td>
+							<input id="sharing_maxdownload" class="short" name="sharing_maxdownload" type="text" value="{$local.max_download}" />
+							<div>This is how many comments to download per run.</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="width: 100px;"><label for="sharing_maxpull">Max Headers:</label></td>
 						<td>
 							<input id="sharing_maxpull" class="short" name="sharing_maxpull" type="text" value="{$local.max_pull}" />
-							<div>This is how many <strong>headers</strong> to download per run(we do not know how many comments we will download).</div>
+							<div>This is how many headers to download and look through for comments per run.</div>
 						</td>
 					</tr>
 					<tr>
@@ -120,7 +127,7 @@
 									{/if}
 								</strong>
 								When pulling the first time, or after resetting, start from the beginning of the group (takes more time).<br />
-								<strong>With the backfill setting, the group has many junk articles before you will start finding comments, you will want to raise Max Downloads setting(20000 or so) and run sharing manually a few times until you start finding comments, then cancel and drop it back to 200.</strong>
+								<strong>With the backfill setting it will take a few runs before you find anything the first time because the group has articles other than comments in it.</strong>
 							</div>
 						</td>
 					</tr>
