@@ -411,10 +411,13 @@ Class Sharing
 								$this->db->escapeString($matches['guid'])
 							)
 						);
+						$found++;
 						if (nZEDb_ECHOCLI) {
 							echo '.';
+							if ($found % 40 == 0) {
+								echo PHP_EOL;
+							}
 						}
-						$found++;
 					}
 				}
 			}

@@ -786,7 +786,7 @@ class TvRage
 					}
 
 					// Check if there are any akas for this result and get a match percentage for them too.
-					if (isset($arr['akas'])) {
+					if (isset($arr['akas']['aka'])) {
 						if (is_array($arr['akas']['aka'])) {
 							// Multuple akas.
 							foreach ($arr['akas']['aka'] as $aka) {
