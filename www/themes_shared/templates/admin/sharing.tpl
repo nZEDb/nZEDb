@@ -7,7 +7,7 @@
 	<br />
 	<div id="message" style="width:717px;">msg</div>
 	{if $local}
-		<form action="{$SCRIPT_NAME}?action=submit" method="post">
+		<form action="{$SCRIPT_NAME}" method="post">
 			<fieldset style="width:717px;">
 				<legend>Local sharing settings.</legend>
 				<table class="input">
@@ -119,7 +119,8 @@
 										<a href="javascript:ajax_sharing_startposition(1, 1)" class="sharing_startposition_deactive">[ENABLE]</a>
 									{/if}
 								</strong>
-								When pulling the first time, or after resetting, start from the beginning of the group (takes more time).
+								When pulling the first time, or after resetting, start from the beginning of the group (takes more time).<br />
+								<strong>With the backfill setting, the group has many junk articles before you will start finding comments, you will want to raise Max Downloads setting(20000 or so) and run sharing manually a few times until you start finding comments, then cancel and drop it back to 200.</strong>
 							</div>
 						</td>
 					</tr>

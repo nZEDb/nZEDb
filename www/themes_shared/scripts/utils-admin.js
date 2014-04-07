@@ -181,6 +181,7 @@ function ajax_sharing_reset(id)
 
             // fade.. mm
             $('#message').fadeOut(5000);
+            setTimeout('history.go(0);',1500);
         },
         error: function(xhr,err,e) { alert( "Error in ajax_sharing_reset: " + err ); }
     });
@@ -205,6 +206,7 @@ function ajax_sharing_site_purge(id)
 
             // fade.. mm
             $('#message').fadeOut(5000);
+            setTimeout('history.go(0);',1500);
         },
         error: function(xhr,err,e) { alert( "Error in ajax_sharing_site_purge: " + err ); }
     });

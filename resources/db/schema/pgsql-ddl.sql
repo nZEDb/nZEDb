@@ -921,14 +921,14 @@ CREATE TABLE "sharing" (
   "enabled"     smallint DEFAULT 0 NOT NULL,
   "posting"     smallint DEFAULT 0 NOT NULL,
   "start_position"     smallint DEFAULT 0 NOT NULL,
-  "fetching"     smallint DEFAULT 0 NOT NULL,
-  "auto_enable"     smallint DEFAULT 0 NOT NULL,
+  "fetching"     smallint DEFAULT 1 NOT NULL,
+  "auto_enable"     smallint DEFAULT 1 NOT NULL,
   "hide_users"     smallint DEFAULT 1 NOT NULL,
   "last_article"     bigint DEFAULT 1 NOT NULL,
   "last_time"   timestamp without time zone,
   "first_time"  timestamp without time zone,
   "max_push" integer DEFAULT 40 NOT NULL,
-  "max_pull" integer DEFAULT 1000 NOT NULL
+  "max_pull" integer DEFAULT 200 NOT NULL
 )
 WITHOUT OIDS;
 
