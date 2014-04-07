@@ -423,7 +423,7 @@ Class Sharing
 						if (nZEDb_ECHOCLI) {
 							echo '.';
 							if ($found % 40 == 0) {
-								echo PHP_EOL;
+								echo '[' . $found . ']' . PHP_EOL;
 							}
 						}
 					}
