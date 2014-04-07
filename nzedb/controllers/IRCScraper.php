@@ -897,6 +897,8 @@ class IRCScraper
 
 		$query .= '%s, %s)';
 
+		$this->db->ping(true);
+
 		$this->db->queryExec(
 			sprintf(
 				$query,
@@ -941,6 +943,8 @@ class IRCScraper
 
 		$query .= 'title = '      . $this->db->escapeString($this->CurPre['title']);
 		$query .= ' WHERE md5 = ' . $this->CurPre['md5'];
+
+		$this->db->ping(true);
 
 		$this->db->queryExec($query);
 
