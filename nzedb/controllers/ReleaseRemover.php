@@ -290,6 +290,9 @@ class ReleaseRemover
 			case 'codec':
 				$this->removeCodecPoster();
 				break;
+            case 'wmv':
+                $this->removeWMV();
+                break;
 			case '':
 				$this->removeBlacklist();
 				$this->removeBlacklistFiles();
@@ -304,6 +307,7 @@ class ReleaseRemover
 				$this->removeSize();
 				$this->removeHuge();
 				$this->removeCodecPoster();
+                $this->removeWMV();
 				break;
 			default:
 				$this->error = 'Wrong type: ' . $type;
@@ -926,6 +930,28 @@ class ReleaseRemover
 		}
 
 		return true;
+	}
+
+    /**
+	 * Remove releases that contain .wmv file, aka that spam poster.
+	 * Thanks to dizant from nZEDb forums for the sql query
+	 * @return bool
+	 */
+	protected function removeWMV()
+	{
+		$this->method = 'WMV';
+        $regex = sprintf("rf.name %s 'x264.*\.wmv$'", $this->regexp);
+		$this->query = sprintf(
+            "SELECT DISTINCT r.ID, r.searchname FROM releasefiles
+            rf INNER JOIN releases r ON (rf.releaseID = r.ID)
+            WHERE %s",
+            $regex
+		);
+
+		if ($this->checkSelectQuery() === false) {
+			return $this->returnError();
+		}
+		return $this->deleteReleases();
 	}
 
 	/**
