@@ -464,7 +464,7 @@ Class Sharing
 			return false;
 		}
 
-		// Decode the body.
+		// JSON Decode the body.
 		$body = json_decode($body, true);
 		if ($body === false) {
 			return false;
@@ -475,45 +475,18 @@ Class Sharing
 			return false;
 		}
 
-		// Set sn names to anon.
-		if (substr($body['USER'], 0, 3) === 'sn-') {
-			$body['USER'] = 'ANON';
-		}
-
-		// Check if we have the user.
-		$user = $this->db->queryOneRow(
-			sprintf('SELECT id FROM users WHERE username = %s',
-				$this->db->escapeString('SH_' . $body['USER'])
-			)
-		);
-
-		// If we don't have the user, insert the user.
-		if ($user === false) {
-			$userid = $this->db->queryInsert(
-				sprintf(
-					"INSERT INTO users (username, email, password, rsstoken, createddate, userseed, role)
-					VALUES (%s, 'sharing@nZEDb.com', %s, %s, NOW(), %s, 0)",
-					$this->db->escapeString(('SH_' . $body['USER'])),
-					$this->db->escapeString(md5(uniqid('fgf56', true))),
-					$this->db->escapeString(md5(uniqid('sfsde', true))),
-					$this->db->escapeString(md5(uniqid('f344w', true)))
-				)
-			);
-		} else {
-			$userid = $user['id'];
-		}
-
 		// Insert the comment.
 		if ($this->db->queryExec(
 			sprintf('
-				INSERT INTO releasecomment (text, userid, createddate, shareid, shared, nzb_guid, releaseid, host, siteid)
-				VALUES (%s, %d, %s, %s, 2, %s, 0, "", %s)',
+				INSERT INTO releasecomment
+				(text, createddate, shareid, nzb_guid, siteid, username, userid, releaseid, shared, host)
+				VALUES (%s, %s, %s, %s, %s, %s, 0, 0, 2, "")',
 				$this->db->escapeString($body['BODY']),
-				$userid,
 				$this->db->from_unixtime(($body['TIME'] > time() ? time() : $body['TIME'])),
 				$this->db->escapeString($body['SID']),
 				$this->db->escapeString($body['RID']),
-				$this->db->escapeString($siteID)
+				$this->db->escapeString($siteID),
+				$this->db->escapeString((substr($body['USER'], 0, 3) === 'sn-' ? 'ANON' : $body['USER']))
 			)
 		)) {
 			return true;

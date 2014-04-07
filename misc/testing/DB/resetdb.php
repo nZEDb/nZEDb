@@ -31,7 +31,7 @@ $consoletools = new ConsoleTools();
 $db->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
 echo $c->primary("Reseting all groups completed.");
 
-$arr = array("tvrage", "releasenfo", "releasecomment", "usercart", "usermovies", "userseries", "movieinfo", "musicinfo", "releasefiles", "releaseaudio", "releasesubs", "releasevideo", "releaseextrafull", "parts", "partrepair", "binaries", "collections", "nzbs", "releases");
+$arr = array("tvrage", "releasenfo", "releasecomment", 'sharing', 'sharing_sites', "usercart", "usermovies", "userseries", "movieinfo", "musicinfo", "releasefiles", "releaseaudio", "releasesubs", "releasevideo", "releaseextrafull", "parts", "partrepair", "binaries", "collections", "nzbs", "releases");
 foreach ($arr as &$value)
 {
 	$rel = $db->queryExec("TRUNCATE TABLE $value");
