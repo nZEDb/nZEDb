@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-07 kevin
+	* Add: Better backfill on sharing.
 2014-04-06 kevin
 	* Chg: Various changes to Sharing.
 	* Chg: Reload page on purge or reset of sharing.

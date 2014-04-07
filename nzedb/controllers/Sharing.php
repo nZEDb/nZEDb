@@ -150,8 +150,9 @@ Class Sharing
 		$siteName = uniqid('nZEDb_', true);
 		$this->db->queryExec(
 			sprintf('
-				INSERT INTO sharing (site_name, site_guid, max_push, max_pull, hide_users, start_position, auto_enable, fetching)
-				VALUES (%s, %s, 40 , 200, 1, 1, 1, 1)',
+				INSERT INTO sharing
+				(site_name, site_guid, max_push, max_pull, hide_users, start_position, auto_enable, fetching, max_download)
+				VALUES (%s, %s, 40 , 20000, 1, 1, 1, 1, 150)',
 				$this->db->escapeString($siteName),
 				$this->db->escapeString(($siteGuid === '' ? sha1($siteName) : $siteGuid))
 			)
@@ -325,9 +326,23 @@ Class Sharing
 			return;
 		}
 
-		$found = 0;
+		$found = $total = $currentArticle = 0;
 		// Loop over NNTP headers until we find comments.
 		foreach ($headers as $header) {
+
+			// Check if the article is missing.
+			if (!isset($header['Number'])) {
+				continue;
+			}
+
+			// Get the current article number.
+			$currentArticle = $header['Number'];
+
+			// Break out of the loop if we have downloaded more comments than the user wants.
+			if ($found > $this->siteSettings['max_download']) {
+				break;
+			}
+
 			//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
 			if ($header['From'] === '<anon@anon.com>' &&
 				preg_match('/^\(_nZEDb_\)(?P<site>.+?)_(?P<guid>[a-f0-9]{40}) - \[1\/1\] "(?P<sid>[a-f0-9]{40})" yEnc \(1\/1\)$/i', $header['Subject'], $matches)) {
@@ -367,7 +382,7 @@ Class Sharing
 									$this->db->escapeString($matches['guid'])
 								)
 							);
-							return;
+							continue;
 						} else {
 							// Insert the site as enabled since the user has auto enabled on.
 							$this->db->queryExec(
@@ -381,9 +396,9 @@ Class Sharing
 							);
 						}
 					} else {
-						// The user has disabled this site, so return.
+						// The user has disabled this site, so continue.
 						if ($check['enabled'] == 0) {
-							return;
+							continue;
 						}
 					}
 
@@ -396,21 +411,26 @@ Class Sharing
 								$this->db->escapeString($matches['guid'])
 							)
 						);
-						// Update once in a while in case the user cancels the script.
-						if ($found++ % 10 == 0) {
-							$this->siteSettings['lastarticle'] = $header['Number'];
-							$this->db->queryExec(sprintf('UPDATE sharing SET last_article = %d',$header['Number']));
-						}
 						if (nZEDb_ECHOCLI) {
 							echo '.';
 						}
+						$found++;
 					}
 				}
 			}
+			// Update once in a while in case the user cancels the script.
+			if ($total++ % 10 == 0) {
+				$this->siteSettings['lastarticle'] = $currentArticle;
+				$this->db->queryExec(sprintf('UPDATE sharing SET last_article = %d', $currentArticle));
+			}
 		}
-		// Update sharing's last article number.
-		$this->siteSettings['lastarticle'] = $newest;
-		$this->db->queryExec(sprintf('UPDATE sharing SET last_article = %d',$newest));
+
+		if ($currentArticle > 0) {
+			// Update sharing's last article number.
+			$this->siteSettings['lastarticle'] = $currentArticle;
+			$this->db->queryExec(sprintf('UPDATE sharing SET last_article = %d', $currentArticle));
+		}
+
 		if (nZEDb_ECHOCLI) {
 			if ($found > 0) {
 				echo PHP_EOL . '(Sharing) Fetched ' . $found . ' new comments.' . PHP_EOL;
