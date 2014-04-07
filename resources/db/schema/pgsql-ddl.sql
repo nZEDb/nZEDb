@@ -918,6 +918,7 @@ DROP TABLE IF EXISTS "sharing";
 CREATE TABLE "sharing" (
   "site_guid" character varying(40),
   "site_name" character varying(255),
+  "username" character varying(255),
   "enabled"     smallint DEFAULT 0 NOT NULL,
   "posting"     smallint DEFAULT 0 NOT NULL,
   "start_position"     smallint DEFAULT 0 NOT NULL,

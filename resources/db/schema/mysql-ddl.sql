@@ -796,6 +796,7 @@ DROP TABLE IF EXISTS sharing;
 CREATE TABLE sharing (
   site_guid      VARCHAR(40)        NOT NULL DEFAULT '',
   site_name      VARCHAR(255)       NOT NULL DEFAULT '',
+  username       VARCHAR(255)       NOT NULL DEFAULT '',
   enabled        TINYINT(1)         NOT NULL DEFAULT '0',
   posting        TINYINT(1)         NOT NULL DEFAULT '0',
   fetching       TINYINT(1)         NOT NULL DEFAULT '1',
