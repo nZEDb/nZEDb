@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Object Function Class
  *
@@ -24,7 +23,6 @@ class Smarty_Internal_Compile_Private_Object_Function extends Smarty_Internal_Co
      * @see Smarty_Internal_CompileBase
      */
     public $optional_attributes = array('_any');
-
     /**
      * Compiles code for the execution of function plugin
      *
@@ -70,7 +68,6 @@ class Smarty_Internal_Compile_Private_Object_Function extends Smarty_Internal_Co
             // object property
             $return = "\$_smarty_tpl->smarty->registered_objects['{$tag}'][0]->{$method}";
         }
-
         if (empty($_assign)) {
             // This tag does create output
             $compiler->has_output = true;
@@ -78,8 +75,6 @@ class Smarty_Internal_Compile_Private_Object_Function extends Smarty_Internal_Co
         } else {
             $output = "<?php \$_smarty_tpl->assign({$_assign},{$return});?>\n";
         }
-
         return $output;
     }
-
 }

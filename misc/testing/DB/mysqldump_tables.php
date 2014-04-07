@@ -1,6 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\db\DB;
 
 //	This script can dump all tables or just collections/binaries/parts/partrepair/groups.
 

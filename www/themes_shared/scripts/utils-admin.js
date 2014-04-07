@@ -40,6 +40,275 @@ function ajax_group_status(id, what)
 }
 
 /**
+ * ajax_sharing_site_status()
+ *
+ * @param id        site id
+ * @param status    0 = deactive, 1 = activate
+ */
+function ajax_sharing_site_status(id, status)
+{
+    // no caching of results
+    var rand_no = Math.random();
+    if (status != undefined)
+    {
+        $.ajax({
+            url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+            data      : { site_id: id, site_status: status },
+            dataType  : "html",
+            success   : function(data)
+            {
+                $('div#message').html(data);
+                $('div#message').show('fast', function() {});
+
+                // switch some links around
+                if (status == 0) {
+                    $('td#site-' + id).html('<a href="javascript:ajax_sharing_site_status('+ id +', 1)" class="sharing_site_deactive">Enable</a>');
+                }
+                else {
+                    $('td#site-' + id).html('<a href="javascript:ajax_sharing_site_status('+ id +', 0)" class="sharing_site_active">Disable</a>');
+                }
+
+                // fade.. mm
+                $('#message').fadeOut(5000);
+            },
+            error: function(xhr,err,e) { alert( "Error in ajax_sharing_site_status: " + err ); }
+        });
+    }
+    else
+    {
+        alert('Weird.. what site id are looking for?');
+    }
+}
+
+/**
+ * ajax_sharing_enabled()
+ *
+ * @param id
+ * @param status    0 = deactive, 1 = activate
+ */
+function ajax_sharing_enabled(id, status)
+{
+    // no caching of results
+    var rand_no = Math.random();
+    if (status != undefined)
+    {
+        $.ajax({
+            url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+            data      : { enabled_status: status },
+            dataType  : "html",
+            success   : function(data)
+            {
+                $('div#message').html(data);
+                $('div#message').show('fast', function() {});
+
+                // switch some links around
+                if (status == 0) {
+                    $('strong#enabled-' + id).html('<a href="javascript:ajax_sharing_enabled('+ id +', 1)" class="sharing_enabled_deactive">[ENABLE]</a>');
+                }
+                else {
+                    $('strong#enabled-' + id).html('<a href="javascript:ajax_sharing_enabled('+ id +', 0)" class="sharing_enabled_active">[DISABLE]</a>');
+                }
+
+                // fade.. mm
+                $('#message').fadeOut(5000);
+            },
+            error: function(xhr,err,e) { alert( "Error in ajax_sharing_enabled: " + err ); }
+        });
+    }
+    else
+    {
+        alert('Weird.. what enabled id are looking for?');
+    }
+}
+
+/**
+ * ajax_sharing_posting()
+ *
+ * @param id
+ * @param status    0 = deactive, 1 = activate
+ */
+function ajax_sharing_posting(id, status)
+{
+    // no caching of results
+    var rand_no = Math.random();
+    if (status != undefined)
+    {
+        $.ajax({
+            url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+            data      : { posting_status: status },
+            dataType  : "html",
+            success   : function(data)
+            {
+                $('div#message').html(data);
+                $('div#message').show('fast', function() {});
+
+                // switch some links around
+                if (status == 0) {
+                    $('strong#posting-' + id).html('<a href="javascript:ajax_sharing_posting('+ id +', 1)" class="sharing_posting_deactive">[ENABLE]</a>');
+                }
+                else {
+                    $('strong#posting-' + id).html('<a href="javascript:ajax_sharing_posting('+ id +', 0)" class="sharing_posting_active">[DISABLE]</a>');
+                }
+
+                // fade.. mm
+                $('#message').fadeOut(5000);
+            },
+            error: function(xhr,err,e) { alert( "Error in ajax_sharing_posting: " + err ); }
+        });
+    }
+    else
+    {
+        alert('Weird.. what posting id are looking for?');
+    }
+}
+
+/**
+ * ajax_sharing_fetching()
+ *
+ * @param id
+ * @param status    0 = deactive, 1 = activate
+ */
+function ajax_sharing_fetching(id, status)
+{
+    // no caching of results
+    var rand_no = Math.random();
+    if (status != undefined)
+    {
+        $.ajax({
+            url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+            data      : { fetching_status: status },
+            dataType  : "html",
+            success   : function(data)
+            {
+                $('div#message').html(data);
+                $('div#message').show('fast', function() {});
+
+                // switch some links around
+                if (status == 0) {
+                    $('strong#fetching-' + id).html('<a href="javascript:ajax_fetching_posting('+ id +', 1)" class="sharing_fetching_deactive">[ENABLE]</a>');
+                }
+                else {
+                    $('strong#fetching-' + id).html('<a href="javascript:ajax_fetching_posting('+ id +', 0)" class="sharing_fetching_active">[DISABLE]</a>');
+                }
+
+                // fade.. mm
+                $('#message').fadeOut(5000);
+            },
+            error: function(xhr,err,e) { alert( "Error in ajax_sharing_fetching: " + err ); }
+        });
+    }
+    else
+    {
+        alert('Weird.. what fetching id are looking for?');
+    }
+}
+
+/**
+ * ajax_sharing_auto()
+ *
+ * @param id
+ * @param status    0 = deactive, 1 = activate
+ */
+function ajax_sharing_auto(id, status)
+{
+    // no caching of results
+    var rand_no = Math.random();
+    if (status != undefined)
+    {
+        $.ajax({
+            url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+            data      : { auto_status: status },
+            dataType  : "html",
+            success   : function(data)
+            {
+                $('div#message').html(data);
+                $('div#message').show('fast', function() {});
+
+                // switch some links around
+                if (status == 0) {
+                    $('strong#auto-' + id).html('<a href="javascript:ajax_auto_posting('+ id +', 1)" class="sharing_auto_deactive">[ENABLE]</a>');
+                }
+                else {
+                    $('strong#auto-' + id).html('<a href="javascript:ajax_auto_posting('+ id +', 0)" class="sharing_auto_active">[DISABLE]</a>');
+                }
+
+                // fade.. mm
+                $('#message').fadeOut(5000);
+            },
+            error: function(xhr,err,e) { alert( "Error in ajax_sharing_auto: " + err ); }
+        });
+    }
+    else
+    {
+        alert('Weird.. what auto id are looking for?');
+    }
+}
+
+/**
+ * ajax_sharing_hide()
+ *
+ * @param id
+ * @param status    0 = deactive, 1 = activate
+ */
+function ajax_sharing_hide(id, status)
+{
+    // no caching of results
+    var rand_no = Math.random();
+    if (status != undefined)
+    {
+        $.ajax({
+            url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+            data      : { hide_status: status },
+            dataType  : "html",
+            success   : function(data)
+            {
+                $('div#message').html(data);
+                $('div#message').show('fast', function() {});
+
+                // switch some links around
+                if (status == 0) {
+                    $('strong#hide-' + id).html('<a href="javascript:ajax_hide_posting('+ id +', 1)" class="sharing_hide_deactive">[ENABLE]</a>');
+                }
+                else {
+                    $('strong#hide-' + id).html('<a href="javascript:ajax_hide_posting('+ id +', 0)" class="sharing_hide_active">[DISABLE]</a>');
+                }
+
+                // fade.. mm
+                $('#message').fadeOut(5000);
+            },
+            error: function(xhr,err,e) { alert( "Error in ajax_sharing_hide: " + err ); }
+        });
+    }
+    else
+    {
+        alert('Weird.. what hide id are looking for?');
+    }
+}
+
+/**
+ * ajax_sharing_toggle_all()
+ *
+ *  @param status
+ */
+function ajax_sharing_toggle_all(status)
+{
+    // no caching of results
+    var rand_no = Math.random();
+    if (status != undefined)
+    {
+        $.ajax({
+            url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+            data      : { toggle_all: status },
+            dataType  : "html",
+        });
+    }
+    else
+    {
+        alert('Weird.. what toggle status are you looking for?');
+    }
+}
+
+/**
  * ajax_backfill_status()
  *
  * @param id        group id

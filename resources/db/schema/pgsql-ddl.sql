@@ -437,11 +437,16 @@ CREATE TABLE "predb" (
   "size" character varying(50),
   "category" character varying(255),
   "predate" timestamp without time zone,
-  "adddate" timestamp without time zone,
   "source" character varying(50) DEFAULT ''::character varying NOT NULL,
   "md5" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "requestid" integer DEFAULT 0 NOT NULL,
-  "groupid" integer DEFAULT 0 NOT NULL
+  "groupid" integer DEFAULT 0 NOT NULL,
+  /* Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked */
+  "nuked" smallint DEFAULT 0 NOT NULL,
+  /* If this pre is nuked, what is the reason? */
+  "nukereason" character varying(255),
+  /* How many files does this pre have ? */
+  "files" character varying(50)
 
 )
 WITHOUT OIDS;
@@ -482,7 +487,10 @@ CREATE TABLE "releasecomment" (
   "text" character varying(2000) DEFAULT ''::character varying NOT NULL,
   "userid" bigint NOT NULL,
   "createddate" timestamp without time zone,
-  "host" character varying(15)
+  "host" character varying(15),
+  "shared" smallint DEFAULT 0 NOT NULL,
+  "shareid" character varying(40) DEFAULT ''::character varying NOT NULL,
+  "nzb_guid" character varying(32) DEFAULT ''::character varying NOT NULL
 )
 WITHOUT OIDS;
 
@@ -857,6 +865,11 @@ CREATE TABLE "users" (
   "sabapikey" character varying(255),
   "sabapikeytype" smallint DEFAULT 0 NOT NULL,
   "sabpriority" smallint DEFAULT 0 NOT NULL,
+  /* Type of queue, Sab or NZBGet. */
+  "queuetype" smallint DEFAULT 1 NOT NULL,
+  "nzbgeturl" character varying(255),
+  "nzbgetusername" character varying(255),
+  "nzbgetpassword" character varying(255),
   "userseed" character varying(50) NOT NULL,
   "cp_url" character varying(255),
   "cp_api" CHARACTER VARYING(255),
@@ -877,6 +890,43 @@ CREATE TABLE "userseries" (
   "rageid" integer NOT NULL,
   "categoryid" character varying(64),
   "createddate" timestamp without time zone NOT NULL
+)
+WITHOUT OIDS;
+
+DROP SEQUENCE IF EXISTS "sharing_sites_id_seq" CASCADE;
+CREATE SEQUENCE "sharing_sites_id_seq" INCREMENT BY 1
+NO MAXVALUE NO MINVALUE CACHE 1;
+SELECT pg_catalog.setval('sharing_sites_id_seq', 1, true);
+
+
+-- Table: sharing_sites
+DROP TABLE IF EXISTS "sharing_sites" CASCADE;
+CREATE TABLE "sharing_sites" (
+  "id" integer DEFAULT nextval('sharing_sites_id_seq'::regclass) NOT NULL,
+  "site_name" character varying(255),
+  "site_guid" character varying(40),
+  "last_time"   timestamp without time zone,
+  "first_time"  timestamp without time zone,
+  "enabled"     smallint DEFAULT 0 NOT NULL,
+  "comments" integer DEFAULT 0 NOT NULL
+)
+WITHOUT OIDS;
+
+-- Table: sharing
+DROP TABLE IF EXISTS "sharing";
+CREATE TABLE "sharing" (
+  "site_guid" character varying(40),
+  "site_name" character varying(255),
+  "enabled"     smallint DEFAULT 0 NOT NULL,
+  "posting"     smallint DEFAULT 0 NOT NULL,
+  "fetching"     smallint DEFAULT 0 NOT NULL,
+  "auto_enable"     smallint DEFAULT 0 NOT NULL,
+  "hide_users"     smallint DEFAULT 1 NOT NULL,
+  "last_article"     bigint DEFAULT 1 NOT NULL,
+  "last_time"   timestamp without time zone,
+  "first_time"  timestamp without time zone,
+  "max_push" integer DEFAULT 40 NOT NULL,
+  "max_pull" integer DEFAULT 1000 NOT NULL
 )
 WITHOUT OIDS;
 
@@ -1000,8 +1050,6 @@ DROP INDEX IF EXISTS "predb_nfo" CASCADE;
 CREATE INDEX "predb_nfo" ON "predb" ("nfo");
 DROP INDEX IF EXISTS "predb_predate" CASCADE;
 CREATE INDEX "predb_predate" ON "predb" ("predate");
-DROP INDEX IF EXISTS "predb_adddate" CASCADE;
-CREATE INDEX "predb_adddate" ON "predb" ("adddate");
 DROP INDEX IF EXISTS "predb_source" CASCADE;
 CREATE INDEX "predb_source" ON "predb" ("source");
 DROP INDEX IF EXISTS "predb_requestid" CASCADE;

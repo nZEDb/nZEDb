@@ -7,7 +7,6 @@
     * @author Uwe Tews
     * @author Rodney Rehm
     */
-
     /**
     * This class does contain all necessary methods for the HTML cache on file system
     *
@@ -64,7 +63,6 @@
             $cached->timestamp = @filemtime($cached->filepath);
             $cached->exists = !!$cached->timestamp;
         }
-
         /**
         * populate Cached Object with timestamp and exists from Resource
         *
@@ -76,7 +74,6 @@
             $cached->timestamp = @filemtime($cached->filepath);
             $cached->exists = !!$cached->timestamp;
         }
-
         /**
         * Read the cached template and process its header
         *
@@ -87,10 +84,8 @@
         public function process(Smarty_Internal_Template $_template, Smarty_Template_Cached $cached=null)
         {
             $_smarty_tpl = $_template;
-
             return @include $_template->cached->filepath;
         }
-
         /**
         * Write the rendered template output to cache
         *
@@ -107,10 +102,8 @@
                     return true;
                 }
             }
-
             return false;
         }
-
         /**
         * Empty cache
         *
@@ -122,7 +115,6 @@
         {
             return $this->clear($smarty, null, null, null, $exp_time);
         }
-
         /**
         * Empty cache for a specific template
         *
@@ -139,7 +131,7 @@
             $_compile_id = isset($compile_id) ? preg_replace('![^\w\|]+!', '_', $compile_id) : null;
             $_dir_sep = $smarty->use_sub_dirs ? '/' : '^';
             $_compile_id_offset = $smarty->use_sub_dirs ? 3 : 0;
-            $_dir = $smarty->getCacheDir();
+            $_dir = realpath($smarty->getCacheDir());
             $_dir_length = strlen($_dir);
             if (isset($_cache_id)) {
                 $_cache_id_parts = explode('|', $_cache_id);
@@ -155,7 +147,6 @@
                 $smarty->caching = true;
                 $tpl = new $smarty->template_class($resource_name, $smarty);
                 $smarty->caching = $_save_stat;
-
                 // remove from template cache
                 $tpl->source; // have the template registered before unset()
                 if ($smarty->allow_ambiguous_resources) {
@@ -167,7 +158,6 @@
                     $_templateId = sha1($_templateId);
                 }
                 unset($smarty->template_objects[$_templateId]);
-
                 if ($tpl->source->exists) {
                     $_resourcename_parts = basename(str_replace('^', '/', $tpl->cached->filepath));
                 } else {
@@ -228,10 +218,8 @@
                     }
                 }
             }
-
             return $_count;
         }
-
         /**
         * Check is cache is locked for this template
         *
@@ -247,10 +235,8 @@
                 clearstatcache();
             }
             $t = @filemtime($cached->lock_id);
-
             return $t && (time() - $t < $smarty->locking_timeout);
         }
-
         /**
         * Lock cache for this template
         *
@@ -262,7 +248,6 @@
             $cached->is_locked = true;
             touch($cached->lock_id);
         }
-
         /**
         * Unlock cache for this template
         *

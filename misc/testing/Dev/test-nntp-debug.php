@@ -6,6 +6,7 @@
 
 // Get the config.php
 require_once dirname(__FILE__) . '/../../../www/config.php';
+require_once nZEDb_LIBS . 'Yenc.php';
 // Create instance of class at bottom of this script.
 $d = new NNTPdebug();
 // Create instance of NNTP.
@@ -25,12 +26,10 @@ if ($connected !== true) {
 
 /** Example: **/
 
-$group = $nntp->selectGroup('alt.binaries.teevee');
-if (!$nntp->isError($group)) {
-	$headers = $nntp->getOverview(((int)$group['last'] - 2) . '-' . (int)$group['last']);
-} else {
-	echo 'Error: ' . $group->getMessage() . PHP_EOL;
-}
+$x = $nntp->selectGroup('alt.binaries.zines');
+$x = $nntp->get_Header($x['group'], $x['last']);
+var_dump($x['From'], $x['Subject'], $x['Date']);
+
 
 /**/
 
@@ -49,10 +48,12 @@ class NNTPdebug
 	public function __construct()
 	{
 		if (defined('nZEDb_DEBUG')) {
-			define('PEAR_LOG_DEBUG', nZEDb_DEBUG);
+			//define('PEAR_LOG_DEBUG', nZEDb_DEBUG);
+			define('PEAR_LOG_DEBUG', true);
 			$this->color = new ColorCLI();
 		} else {
-			define('PEAR_LOG_DEBUG', false);
+			//define('PEAR_LOG_DEBUG', false);
+			define('PEAR_LOG_DEBUG', true);
 		}
 	}
 

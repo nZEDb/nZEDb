@@ -8,7 +8,6 @@
 * @subpackage Compiler
 * @author Uwe Tews
 */
-
 /**
 * Smarty Internal Plugin Compile Print Expression Class
 *
@@ -31,7 +30,6 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
     * @see Smarty_Internal_CompileBase
     */
     public $option_flags = array('nocache', 'nofilter');
-
     /**
     * Compiles code for gererting output from any expression
     *
@@ -119,14 +117,11 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
                     }
                 }
             }
-
             $compiler->has_output = true;
             $output = "<?php echo {$output};?>";
         }
-
         return $output;
     }
-
     /**
     * @param object $compiler compiler object
     * @param string $name     name of variable filter
@@ -149,8 +144,6 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
             // not found
             return false;
         }
-
         return "{$plugin_name}({$output},\$_smarty_tpl)";
     }
-
 }

@@ -8,6 +8,7 @@ php-errors.log
 # Editor temp files
 *#
 *~
+*.orig
 
 /.idea/
 /nbproject/

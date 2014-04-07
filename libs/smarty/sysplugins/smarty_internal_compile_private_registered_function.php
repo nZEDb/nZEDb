@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Registered Function Class
  *
@@ -24,7 +23,6 @@ class Smarty_Internal_Compile_Private_Registered_Function extends Smarty_Interna
      * @see Smarty_Internal_CompileBase
      */
     public $optional_attributes = array('_any');
-
     /**
      * Compiles code for the execution of a registered function
      *
@@ -73,8 +71,6 @@ class Smarty_Internal_Compile_Private_Registered_Function extends Smarty_Interna
         } else {
             $output = "<?php echo {$function[0]}::{$function[1]}({$_params},\$_smarty_tpl);?>\n";
         }
-
         return $output;
     }
-
 }

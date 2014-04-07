@@ -1,6 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+use nzedb\db\DB;
+
 $db = new DB();
 $covers = $updated = $deleted = 0;
 $c = new ColorCLI();
@@ -11,7 +13,7 @@ if ($argc == 1 || $argv[1] != 'true') {
 
 $row = $db->queryOneRow("SELECT value FROM site WHERE setting = 'coverspath'");
 if ($row !== false) {
-	Util::setCoversConstant($row['value']);
+	\nzedb\utility\Utility::setCoversConstant($row['value']);
 } else {
 	die("Unable to set Covers' constant!\n");
 }

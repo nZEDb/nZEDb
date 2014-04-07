@@ -1,7 +1,9 @@
 <?php
+require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
 
 passthru('clear');
-require_once dirname(__FILE__) . '/../../../www/config.php';
 $c = new ColorCLI();
 
 if (!isset($argv[1]) || (isset($argv[1]) && $argv[1] !== 'true')) {

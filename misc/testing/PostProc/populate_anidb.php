@@ -3,13 +3,15 @@
  * IF you are using this script then then you also want to edit anidb.php in www/lib and locate "604800" and replace it with 1204400, this will make sure it never tries to connect to anidb as this will fail
  */
 require dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'Util.php';
+
+use nzedb\db\DB;
+use nzedb\utility;
 
 class AniDBstandAlone
 {
 	const CLIENTVER = 1;
 
-	function __construct($debug=false, $echooutput=false)
+	function __construct($echooutput=false)
 	{
 		$s = new Sites();
 		$this->site = $s->get();
@@ -435,7 +437,7 @@ Holding on to this in case we want it again as it has some uses, but currently w
 if (isset($argv[1]) && is_numeric($argv[1]))
 {
 	// create a new AniDB object
-	$anidb = new AniDBstandAlone($echooutput=true);
+	$anidb = new AniDBstandAlone(true);
 
 	// next get the title list and populate the DB
 	$anidb->animetitlesUpdate();

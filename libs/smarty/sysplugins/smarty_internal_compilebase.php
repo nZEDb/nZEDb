@@ -6,7 +6,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * This class does extend all internal compile plugins
  *
@@ -40,7 +39,6 @@ abstract class Smarty_Internal_CompileBase
      * @var array
      */
     public $option_flags = array('nocache');
-
     /**
      * This function checks if the attributes passed are valid
      *
@@ -120,10 +118,8 @@ abstract class Smarty_Internal_CompileBase
                 $_indexed_attr[$flag] = false;
             }
         }
-
         return $_indexed_attr;
     }
-
     /**
      * Push opening tag name on stack
      *
@@ -137,7 +133,6 @@ abstract class Smarty_Internal_CompileBase
     {
         array_push($compiler->_tag_stack, array($openTag, $data));
     }
-
     /**
      * Pop closing tag
      *
@@ -164,13 +159,10 @@ abstract class Smarty_Internal_CompileBase
             }
             // wrong nesting of tags
             $compiler->trigger_template_error("unclosed {$compiler->smarty->left_delimiter}" . $_openTag . "{$compiler->smarty->right_delimiter} tag");
-
             return;
         }
         // wrong nesting of tags
         $compiler->trigger_template_error("unexpected closing tag", $compiler->lex->taglineno);
-
         return;
     }
-
 }

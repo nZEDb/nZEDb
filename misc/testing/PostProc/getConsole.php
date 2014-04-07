@@ -1,8 +1,8 @@
 <?php
-
 //This script will update all records in the consoleinfo table
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
 
 $console = new Console(true);
 $db = new Db();

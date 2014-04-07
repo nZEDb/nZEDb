@@ -9,6 +9,7 @@ INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, descr
 INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, description) VALUES (8, 'alt.binaries.*','hdnectar|nzbcave', 1, 1, 0, 'Bad releases.');
 INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, description) VALUES (9, 'alt.binaries.*','Passworded', 1, 1, 0, 'Removes passworded releases.');
 INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, description) VALUES (10, 'alt\\.binaries\\.(boneless|movies\\.divx)', '((Frkz|info)@XviD2?|x?VIDZ?@pwrpst|movies@movies?)\\.net|(hsv\\.stoned@hotmail|unequal87@gmail|ilove@movies)\\.com', 2, 1, 0, 'Virus codec posters.');
+INSERT INTO binaryblacklist (id, groupname, regex, msgcol, optype, status, description) VALUES (11, 'alt\\.binaries\\.tun','\\[PRiVATE\\]\\s+[a-z0-9]+ ', 1, 1, 0, 'Passworded/Encrypted junk.');
 
 
 INSERT INTO category (id, title) VALUES (1000, 'Console');
@@ -458,7 +459,7 @@ INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('rss','RSS','RSS
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('forum','Forum','Browse Forum.', 1, 85);
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('login','Login','Login.', 0, 100);
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('register','Register','Register.', 0, 110);
-INSERT INTO menu (href, title, tooltip, role, ordinal, menueval ) VALUES ('queue','Sab Queue','View Your Sabnzbd Queue.', 1, 81, '{if $sabapikeytype!=2}-1{/if}');
+INSERT INTO menu (href, title, tooltip, role, ordinal, menueval ) VALUES ('queue','My Queue','View Your Queue.', 1, 81, '{if !$sabintegrated}-1{/if}');
 INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('newposterwall', 'New Releases', 'Newest Releases Poster Wall', 1, 11);
 
 
@@ -595,7 +596,9 @@ INSERT INTO site
 	('showdroppedyencparts', '0'),
 	('book_reqids', '8010'),
 	('showbacks', '0'),
-	('sqlpatch','185');
+	/* Last time we got a pre */
+	('lastpretime', '0'),
+	('sqlpatch','199');
 
 
 INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
@@ -666,7 +669,9 @@ INSERT INTO tmux (setting, value) values ('defrag_cache','900'),
 	('showquery', '0'),
 	('fix_crap_opt', 'Disabled'),
 	('showprocesslist', '0'),
-	('processupdate', '2');
+	('processupdate', '2'),
+	('scrape_cz', '2'),
+	('scrap_efnet', '2');
 
 
 INSERT INTO userroles (id, name, apirequests, downloadrequests, defaultinvites, isdefault, canpreview) VALUES

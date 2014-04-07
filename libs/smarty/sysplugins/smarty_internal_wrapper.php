@@ -30,7 +30,6 @@
  * @subpackage PluginsInternal
  * @version 3-SVN$Rev: 3286 $
  */
-
 /*
  * Smarty Backward Compatability Wrapper
  */

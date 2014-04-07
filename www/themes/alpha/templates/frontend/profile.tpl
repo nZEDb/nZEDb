@@ -86,7 +86,8 @@
 			Priority: {if $sabpriority == ''}N/A{else}{$sabpriority}{/if}<br/>
 			Storage: {if $sabsetting == ''}N/A{else}{$sabsetting}{/if}
 		</td>
-		</tr>{/if}
+		</tr>
+	{/if}
 	<tr><th>CouchPotato Integration:</th>
 		<td>
 			Url: {if $user.cp_url == ''}N/A{else}{$user.cp_url}{/if}<br/>

@@ -72,13 +72,13 @@ jQuery(function ($) {
             return false;
         }
         var guid = $(this).parent().parent().attr('id').substring(4);
-        var nzburl = SERVERROOT + "sendtosab/" + guid;
+        var nzburl = SERVERROOT + "sendtoqueue/" + guid;
 
         $.post(nzburl, function (resp) {
             $(e.target).addClass('icon_sab_clicked').attr('title', 'Added to Queue');
 
             $.pnotify({
-                title: 'ADDED TO SAB!',
+                title: 'ADDED TO QUEUE!',
                 text: 'Its now in the queue!! ^_^',
                 type: 'info',
                 animate_speed: 'fast',
@@ -125,13 +125,13 @@ jQuery(function ($) {
             return false;
         }
         var guid = $(this).parent().attr('id');
-        var nzburl = SERVERROOT + "sendtosab/" + guid;
+        var nzburl = SERVERROOT + "sendtoqueue/" + guid;
 
         $.post(nzburl, function (resp) {
             $(e.target).addClass('icon_sab_clicked').attr('title', 'Added to Queue');
 
             $.pnotify({
-                title: 'ADDED TO SAB!',
+                title: 'ADDED TO QUEUE!',
                 text: 'Its now in the queue!! ^_^',
                 type: 'info',
                 animate_speed: 'fast',
@@ -216,11 +216,11 @@ jQuery(function ($) {
             var $sabIcon = $(row).parent().parent().children('td.icons').children('.icon_sab');
             var guid = $(row).val();
             if (guid && !$sabIcon.hasClass('icon_sab_clicked')) {
-                var nzburl = SERVERROOT + "sendtosab/" + guid;
+                var nzburl = SERVERROOT + "sendtoqueue/" + guid;
                 $.post( nzburl, function(resp){
                     $sabIcon.addClass('icon_sab_clicked').attr('title','Added to Queue');
                     $.pnotify({
-                            title: 'ADDED TO SAB!',
+                            title: 'ADDED TO QUEUE!',
                             text: 'Its now in the queue!! ^_^',
                             type: 'info',
                             animate_speed: 'fast',

@@ -24,7 +24,7 @@
 
 			<tr id="guid{$release.guid}"><th>Download:</th>
 				<td><div class="icon icon_nzb"><a title="Download Nzb" href="{$smarty.const.WWW_TOP}/getnzb/{$release.guid}/{$release.searchname|escape:"htmlall"}">&nbsp;</a></div>
-					{if $sabintegrated}<div class="icon icon_sab" title="Send to my Sabnzbd"></div>{/if}
+					{if $sabintegrated}<div class="icon icon_sab" title="Send to my Queue"></div>{/if}
 					<div class="icon icon_cart" title="Add to Cart"></div>
 				</td>
 			</tr>
@@ -521,8 +521,15 @@
 				<tbody>
 				{foreach from=$comments item=comment}
 					<tr>
-						<td class="less" title="{$comment.createddate}"><a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a><br/>{$comment.createddate|date_format}</td>
-						<td>{$comment.text|escape:"htmlall"|nl2br}</td>
+						<td class="less" title="{$comment.createddate}">
+							<a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
+							<br/>{$comment.createddate|date_format}
+						</td>
+						{if $comment.shared == 2}
+							<td style="color:#6B2447">{$comment.text|escape:"htmlall"|nl2br}</td>
+						{else}
+							<td>{$comment.text|escape:"htmlall"|nl2br}</td>
+						{/if}
 					</tr>
 				{/foreach}
 				</tbody>

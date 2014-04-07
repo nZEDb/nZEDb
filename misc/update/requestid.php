@@ -1,6 +1,7 @@
 <?php
-
 require_once dirname(__FILE__) . '/config.php';
+
+use nzedb\db\DB;
 
 $c = new ColorCLI();
 if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {

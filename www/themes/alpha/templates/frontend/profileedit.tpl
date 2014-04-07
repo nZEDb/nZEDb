@@ -1,14 +1,11 @@
 <h3>Edit your profile</h3>
-
 {if $error != ''}
-	<div class="error">{$error}</div>
+	<div class="error"><strong style="color:#B22222">ERROR: {$error}</strong></div>
 {/if}
-
 <form class="form-group" action="profileedit?action=submit" method="post">
-
 	<fieldset>
 		<legend>User Details</legend>
-		<table class="table table-condensed input"
+		<table class="table table-condensed input">
 		<colgroup>
 			<col style="width: 150px;">
 		</colgroup>
@@ -42,7 +39,7 @@
 	</fieldset>
 	<fieldset>
 		<legend>Site Preferences</legend>
-		<table class="table table-condensed input"
+		<table class="table table-condensed input">
 		<colgroup>
 			<col style="width: 150px;">
 		</colgroup>
@@ -90,11 +87,61 @@
 		</tr>
 		</table>
 	</fieldset>
+	{if $page->site->sabintegrationtype != 1}
+		<fieldset>
+			<legend>Queue Type</legend>
+			<table class="table table-condensed input">
+				<colgroup>
+					<col style="width: 150px;">
+				</colgroup>
+				<tr>
+					<th>Queue type:</th>
+					<td>
+						{html_options id="queuetypeids" name='queuetypeids' values=$queuetypeids output=$queuetypes selected=$user.queuetype}
+						<span class="help-block">Pick the type of queue you wish to use, once you save your profile, the page will reload, the box will appear and you can fill out the details.</span>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	{/if}
+	{if $user.queuetype == 2 && ($page->site->sabintegrationtype == 0 || $page->site->sabintegrationtype == 2)}
+		<fieldset>
+			<legend>NZBGet Integration</legend>
+			<table class="table table-condensed input">
+				<colgroup>
+					<col style="width: 150px;">
+				</colgroup>
+				<tr>
+					<th><label for="nzbgeturl">NZBGet Url:</label></th>
+					<td>
+						<input id="nzbgeturl" class="form-control" name="nzbgeturl" type="text" value="{$user.nzbgeturl}" />
+						<span class="help-block">The url of the NZBGet installation, for example: http://127.0.0.1:6789/</span>
+					</td>
+				</tr>
 
-	{if $page->site->sabintegrationtype == 2}
+				<tr>
+					<th><label for="nzbgetusername">NZBGet Username:</label></th>
+					<td>
+						<input id="nzbgetusername" class="form-control" name="nzbgetusername" type="text" value="{$user.nzbgetusername}" />
+						<span class="help-block">The user name for the NZBGet installation.</span>
+					</td>
+				</tr>
+
+				<tr>
+					<th><label for="nzbgetpassword">NZBGet Password:</label></th>
+					<td>
+						<input id="nzbgetpassword" class="form-control" name="nzbgetpassword" type="text" value="{$user.nzbgetpassword}" />
+						<span class="help-block">The password for the NZBGet installation.</span>
+					</td>
+				</tr>
+
+			</table>
+		</fieldset>
+	{/if}
+	{if $user.queuetype == 1 && $page->site->sabintegrationtype == 2}
 		<fieldset>
 			<legend>SABnzbd Integration</legend>
-			<table class="table table-condensed input"
+			<table class="table table-condensed input">
 			<colgroup>
 				<col style="width: 150px;">
 			</colgroup>
@@ -141,7 +188,7 @@
 	{/if}
 	<fieldset>
 		<legend>CouchPotato Integration</legend>
-		<table class="table table-condensed input"
+		<table class="table table-condensed input">
 		<tr>
 			<th><label for="cp_url">CouchPotato Url:</label></th>
 			<td>
