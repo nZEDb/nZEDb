@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-07 kevin
+	* Add: Sharing to resetdb.php
 	* Chg: Better storing of usernames on sharing.
 	* Add: Better backfill on sharing.
 2014-04-06 kevin
