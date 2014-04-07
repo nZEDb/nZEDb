@@ -142,7 +142,7 @@ class ReleaseComments
 				SELECT releasecomment.*
 				FROM releasecomment
 				WHERE userid = %d
-				ORDER BY releasecomment.createddate DESC %d",
+				ORDER BY releasecomment.createddate DESC %s",
 				$uid,
 				$limit
 			)
