@@ -6,7 +6,6 @@
  * @subpackage PluginsBlock
  * @author Uwe Tews
  */
-
 /**
  * Smarty {php}{/php} block plugin
  *
@@ -23,5 +22,4 @@ function smarty_block_php($params, $content, $template, &$repeat)
 	eval($content);
 	return '';
 }
-
 ?>

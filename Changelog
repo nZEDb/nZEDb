@@ -6,12 +6,221 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-05 niel
+	* Chg: Improved DbUpdate's reporting.
+	* Fix: Rename $this->debug to $this->_debug.
+2014-04-05 kevin
+	* Fix: Bug in releasecomment showing only 1 page.
+	* Chg: IRCScraper More random version strings.
+	* Fix: Issues with article numbers on 32bit versions of PHP.
+	* Chg: Changes that might help with IRC connections.
+	* Chg: Change the way time is gotten on sharing.
+	* Chg: Changes to echos in sharing.
+	* Chg: Show all comments in view comments admin page (comments with no releases).
+	* Chg: Put color on comments downloaded from sharing.
+	* Chg: Changes to reduce future dupes on sharing if Admin resets his guid somehow.
+	* Add: Sharing to misc/update/postprocess.php
+	* Add: Final changes for now to Sharing page in admin.
+	* Fix: Issue on step 2 install where error is being overwritten.
+	* Chg: Deal with remote changing nicknames.
+2014-04-04 niel
+	* Chg: Fixed Bart's date below ;-) Pushing my changes from yesterday.
+	* Chg: Reallowing the use of patchDb. It is still deprecated but now handles the calling of DBUpdate for you.
+	* Fix: Missing 'ct' index in DB.
+	* Fix: patchDb undefined offset problem.
+	* Fix: DbUpdate namespace issues
+	* Chg: Fixing potential namespaces issues.
+	* Fix: Moving require_once in DbUpdate so it doesn't affect install step2.
+	* Chg: Cleaning up Memcache class a little
+2014-04-04 bart39
+	* Fix: space in goodreads/shelfari links
+	* Chg: add icons for books on New Releases posterwall
+	* New: Add books to New Releases posterwall
+2014-04-04 kevin
+	* Add: Working comment sharing (WIP, might have issues).
+	* Chg: Remake class sharing. (not functional yet)
+	* Fix: Fix add to queue.
+	* Fix: Inverted password/username help text in profileedit.
+	* Fix: Fix for sab details going away when switching to NZBGet.
+	* Fix: Alpha theme always showing queue even when disabled.
+	* Fix: Non existant properties "logger|debug" in class DB.
+	* Chg: Help text for queue type.
+	* Add: New queue icons.
+2014-04-03 bart39
+	* Fix: undefined variables in monitor.php
+	* Fix: blank browse pages
+	* Fix: pass $tmux_session into function
+	* Fix: Fix various tmux window issues when enabling/disabling tmux colors and IRCScraper
+	* Chg: Move Ircscraper function into monitor loop (credits DariusIII)
+	* Chg: Added note to threaded.sh about modifying $tmux_session for nntpproxy if using tmux colors.
+	NB would suggest editing and re-saving user_threaded.sh for the new changes
+2014-04-03 ruhllatio
+	* Chg: Modify newposterwall queries to leverage partitioning -- considerable speed improvement (5.5+ safe)
+	* Fix: Bad query in Genre section of admin site for showing only genres with releases
+2014-04-03 niel
+	* Chg: Refactoring DB class to allow passing of options (db arguments, ColorCLI instance, etc.) on instantiation.
+	Also to better comply with conventions (ordering of public, protected, private properties and using $_ for protected ones).
+	* Chg: Moved all Utility functions to use the nzedb\utility namespace.
+	* Chg: Deprecated .../misc/testing/DB/patchDb.php in favour of .../nzedb/db/DbUpdate.php
+	* Fix: reverting schema patch pending investigating the problems.
+	* Fix: Duplicate entries for Korea in countries table. Changed to Korea, North and Korea, South.
+	* Fix: Apparently smarty doesn't like namespaces This separates some functions into their own file for Smarty.
+	* Chg: Making autopatcher work with new DbUpdate class.
+	* Fix: Missed three runCmd() needing namespacing
+	* Chg: Fixing code style. in PostProcessing
+	* Fix: Changed autopatcher.php to use new DBUpdate class instead of patchDb script.
+2014-04-03 kevin
+	* Chg: Mention the difference between queue size and total size.
+	* Add: NZBGet queue support. Might have issues.
+	* Add: Starting adding NZBget to profile edit (locked out for now), patch to set Sab as default for now.
+	* Add: Patch for NZBGet columns.
+	* Add: Sabnzbd URL checking.
+	* Fix: Fixes to srrdb NFO fetching.
+	* Fix: Fixes to sab queue when set to settings other than user (site wide/disabled).
+	* Fix: Fix titles on prelist PreDb.php.
+2014-04-02 bart39
+	* Fix: predb invalid column count
+	* Fix: correct tmux session for nntpproxy in threaded.sh
+	* Chg: make IRCScraper a function in monitor.php
+	* Chg: move IRCScraper into monitor.php so it will resapwn if pane dies (credits to Darius III)
+	* Fix: duplicate insert attempts for predb abgx web update
+2014-04-02 kevin
+	* Chg: Add phpdoc to Sabnzbd class.
+	* Chg: Cleanup view queue pages.
+	* FIx: Possible fix for empty pre date on Tmux monitor.
+	* Fix: Possible fix for future newest pre date on Tmux monitor.
+	* Chg: Check if buffer is empty before inserting PreDB NFO.
+	* Fix: Prelist parsing in PreDB.php
+	* Add: Parsing of files to PreDB.php sources.
+	* Add: Getting NFO's from SRRDB on PreDB.php
+	* Fix: More fixes to NET_SmartIRC connect/disconnect/reconnect.
+	* Fix: Fixes to NET_SmartIRC reconnect.
+	* Fix: Various fixes to NET_SmartIRC.
+2014-04-01 bart39
+	* Fix: remove addate from predb update
+	* Fix: typo in schema
+2014-04-01 ruhllatio
+	* Chg: populate_tvrage and updateTvRage for tmux usage
+	* Add: duplicate checks for populate_tvrage so it can be run at interval without error
+	* Fix: trailing whitespace
+	* Chg: update merged changelog
+2014-04-01 kev
+	* Chg: Remove adddate from predate (WARNING POTENTIALLY LONG PATCH, PLEASE BE PATIENT).
+	* Chg: Revamp PreDB pages.
+	* Add: Constants to disable pre sources #1244.
+	* Fix: Don't reset the requestid even if we already have it. PreDb.php
+	* Upd: Update smarty from 3.1 beta to 3.1.17 stable.
+	* Add: Smarty filter to speed up page loading.
+	* Add: Full dates on hover alpha theme PreDB page.
+	* Add: Parse size from files IRCScraper, clickable IRC links for tvnzb and scnzb PreDB templates.
+	* Fix: Get the groupid before storing in array IRCScraper.
+	* Fix: Escaping groupname in IRCScraper.
+	* Chg: Use DB directly instead of going through groups (saves some resources) IRCScraper.
+	* Fix: Future dates on predate in PreDb.php
+	* Chg: Show old category if new category is not set on Console output. IRCScraper.
+	* Fix: Always empty category on old select IRCScraper.
+	* Fix: Regex for tvnzb in IRCScraper.
+2014-03-31 bart39
+	* Fix: Fix tmux pane for IRCscraper if nntpproxy not used
+	* New: Add IRCScraper window to tmux - enable corrupt/zenet and/or efnet.
+2014-03-31 ruhllatio
+	* Add Full-text stopword table for InnoDB 5.6+ users -- this will make InnoDB FT search perform nearly identicallly
+	to MyISAM in BOOLEAN MODE.  As this table is only for InnoDB 5.6+, it is not going in schema or as a patch.  See
+	resources/db/README.txt and the referenced .sql file for more information.
+2014-03-31 bart39
+	* Fix: insert errors in Binaries.php
+	* Fix: typo in PreDb
+2014-03-31 kevin
+	* Add: PRE of parsing of #alt.binaries.games.wii, #alt.binaries.games.xbox360, #scnzb, #tvnzb
+	* Add: Nuke parsing of #alt.binaries.games.wii, #alt.binaries.games.xbox360
+	* Add: NUKE/UNNUKE/MODNUKE/etc parsing on a.b.moove
+	* Add: Clickable IRC links on the predb page.
+	* Chg: Remove nuked/unnuked icons, change for colored text, fixes width issues.
+	* Add: Parse more nukes in a.b.erotica. IRCScrapper.
+	* Add: Files/nuked to ajax(the icon with PRE info on releases).
+	* Add: Files/nuked to predb page.
+	* Fix: Insert query in IRCScrapper.
+	* Add: Parsing #alt.binaries.games.nintendods to IRCScraper.
+	* Add: Nuke reason to console output in IRCScrapper.
+	* Fix: credits to DariusIII ; Typos in IRCScrapper
+	* Add: Parsing nukes for a.b.erotica in IRCScrapper
+	* Add: Parsing of files/nukes to IRCScraper.
+	* Chg: Put zenet to default due to connection issues with corrupt.
+	* Add: Patch for adding nuked/files to predb (will start working on putting those in db) WARNING THIS CAN BE A SLOW PATCH, BE PATIENT!
+	* Add: Scraping a.b.console.ps3 in IRCScraper.
+	* Add: Scraping a.b.foreign in IRCScraper.
+	* Add: Ignoring Efnet channels in IRCScraper.
+	* Add: Check for non matching PHP/MySQL time in binary.php
+	* Chg: Use MySQL's current time if a time setting is wrong before inserting collections postdate.
+	* Chg: Sprintf string to integer for groupid in predb.
+	* Chg: Use contant for path to settings.php on IRCScraper.
+2014-03-31 bart39
+	* Fix: PreDb 10 minute sleep timer from last adddate never reached if using IRCScraper
+2013-03-30 kevin
+	* Add: Random username generator to IRCScraper.
+	* Add: Toggle between Zenet and corrupt, make sure to edit Settings.php (add the new line from settings_example.php).
+	* Add: Zenet to IRCScraper (this has the same PRE as Corrupt-Net, use it if you can't connect to Corrupt, no point running both at the same time).
+	* Add: Option to use fsock on IRCScraper.
+	* Chg: Improve IRCScraper shell scripts.
+	* Fix: IRCScraper, a.b.erotica doesn't always have predate.
+	* Add: Show Category on text output of IRCScraper.
+	* Chg: Various changes to scraper.
+	* Fix: #1242 wrong tmpunrar paths.
+	* Fix: Path to users.php in stage 5 of install causing install to not work.
+	* Fix: Regex in IRCScraper a.b.teevee picking up wrong title.
+	* Chg: Simplify IRCScraper class more (no need to restart your bot)
+	* Chg: If usenet date is newer than now, set it to now.
+2014-03-29 kevin
+	* Chg: SImplify methods even more in IRCScraper class.
+	* Add: alt.binaries.teevee scarping.
+	* Add: alt.binaries.erotica scraping.
+	* Add: alt.binaries.moove, also not testing since not had a post yet.
+	* Add: alt.binaries.flac to scraper, not tested since no one posted any yet.
+	* Chg: Force user to put username on IRCScraper, so no www-data / root in IRC channels.
+	* Chg: Smartirc to accept password per channel.
+	* Add: Script for scraping pre/reqid data from IRC (look in /misc/testing/IRCScraper/ change settings to your liking in settings.php, run with php scrape.php)
+	* Chg: Rename above script to scrapEfnet.php (so we can add scraping of other servers).
+	* Chg: Rename it again, but have argument : efnet or corrupt , add individual username/password per server.
+2014-03-28 ruhllatio
+	* Fix small bug in monitor.php that prevents Theater/TV update from running in basic sequential tmux mode
+	* Fix filesize constraint violation bug in Releases.php Stage 2
+2014-03-28 bart39
+	* Fix: LIMIT in wrong place in release searches
+2013-03-28 kevin
+	* Chg: Improve music name parsing for amazon lookups.
+	* Chg: Better categorization/naming of inner-sanctum music.
+	* Fix: Query in releaseremover
+	* Chg: Some changes to categorization.
+	* Add: New blacklist to schemas.
+	* Fix: Infinite locking on deadlock checking of queryExec and queryInsert.
+	* Possibles fixes for msgs not array problem.
+	* Fix issue where group would not be reselected on reconnect.
+2014-03-27 bart39
+	* Chg: add guid to releasesearch for future use as per suggestion #1236
+	* Chg: improved fulltext search as there are differences in myisam versus innodb
 2014-03-27 niel
 	* Fix: Preventing failure to instatiate Versions from blocking web page generation.
+	* Chg: Moving main files from .../nzedb to .../nzedb/model-controller.
 2013-03-27 kevin
+	* Add: Page for viewing debug log file in admin section of site.
+	* Add: Show running process ID on debug/logging output.
+	* Chg: Clean up load string on debugging.
+	* New: Log NNTP getMessage when succesful.
+	* Chg: Use debug constants instead of numbers in NNTP.
 	* New: NNTP, return group summary cache if same group is selected. Reselect group if connection dies.
+	* Fix: Fix for PHP bug with range on 1 or 2 number differences.
+	* Chg: Nicer log/debug output.
+	* New: Option for showing resource usage (user/system CPU time, memory swaps, page faults) in debug logging, disabled by default.
+	* Fix: Bug in NNTPROXY disconnects us from it when an article is missing, the bug is still there, but put local changes to deal with the bug.
+	* Fix: Bug in NNTPROXY, BODY errors not being returned causing php's feof to return false (since it expects the socket to return data). (todo)All the other commands should be edited to return errors.
+	* Add: Change other commands to return errors in nntpproxy.
+	* Chg: Show release size on postproc additional.
+	* Fix: Regex for alt.binaries.comics.dcp
+	* Add: Regex to alt.binaries.comics.dcp (run script bellow)
+	* Add: Script to test ReleaseCleaner.php or rename releases with it (to rename comics.dcp, run php test-ReleaseCleaner.php alt.binaries.comics.dcp 100000 true)
+	* Fix: Not checking for failed queries before running rowCount in Releases.php causing program to exit fatally.
 2014-03-27 bart39
-	* Chg: Improve nzb details / searches by using releasesearch table and fulltext search against name/searchnam
+	* Chg: Improve nzb details / searches by using releasesearch table and fulltext search against name/searchname
 2014-03-26 niel
 	* New: Adding method to Sites class to fetch single setting.
 	* Chg: Switching Versions to use Sites->getSetting() for checking 'sqlpatch'.

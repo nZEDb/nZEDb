@@ -2,8 +2,10 @@
 // --------------------------------------------------------------
 //                  Manage sabnzbd via API
 // --------------------------------------------------------------
-
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
+
 $c = new ColorCLI();
 
 if (!isset($argv[1])) {

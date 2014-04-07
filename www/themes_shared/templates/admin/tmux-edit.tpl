@@ -57,7 +57,7 @@
                     <input id="monitor_path" name="monitor_path" class="long" type="text" value="{$ftmux->monitor_path}" /><br />
                     <input id="monitor_path_a" name="monitor_path_a" class="long" type="text" value="{$ftmux->monitor_path_a}" /><br />
                     <input id="monitor_path_b" name="monitor_path_b" class="long" type="text" value="{$ftmux->monitor_path_b}" />
-                    <div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.<br />To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br />tmpfs /var/www/nZEDb/nzbfiles/tmpunrar tmpfs user,uid=1000,gid=33,nodev,nodiratime,nosuid,size=1G,mode=777 0 0<br />
+                    <div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid path.<br />To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br />tmpfs /var/www/nZEDb/resources/tmp/unrar tmpfs user,uid=1000,gid=33,nodev,nodiratime,nosuid,size=1G,mode=777 0 0<br />
                         gid == group id == /etc/groups, uid == user id == /etc/passwd</div>
                 </td>
             </tr>
@@ -401,6 +401,34 @@
                 <td>
                     <input id="tv_timer" name="tv_timer" class="short" type="text" value="{$ftmux->tv_timer}" />
                     <div class="hint">This is a start timer. The default is 12 hours. This means that if enabled, is will start/run every 12 hours, no matter how long it runs for.</div>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>PreDb IRC Scraper</legend>
+        <table class="input">
+            <tr>
+                <td style="width:180px;"><label for="scrape_cz">Scrape Corrupt/Zenet Irc Channels:</label></td>
+                <td>
+                    {html_radios id="scrape_cz" name='scrape_cz' values=$yesno_ids output=$yesno_names
+                    selected=$ftmux->scrape_cz separator='<br />'} <div class="hint">Choose to run IRCScraper on corrupt/zenet irc channels. Setting SCRAPE_IRC_C_Z_BOOL parameter to true or false in settings.php will toggle between the servers. The pane for this can not be created after tmux starts.</div>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="width:180px;"><label for="scrape_efnet">Scrape Efnet Irc Channels:</label></td>
+                <td>
+                    {html_radios id="scrape_efnet" name='scrape_efnet' values=$yesno_ids output=$yesno_names selected=$ftmux->scrape_efnet separator='<br />'} <div class="hint">Choose to run IRCScraper on Efnet irc channels. The pane for this can not be created after tmux starts.</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:180px;"><label for="explain">Information:</label></td>
+                <td>
+                    <div class="explanation">IRC Scraper will scrape several predb channels from the enabled servers.<br />
+                        Copy settings_example.php to settings.php in /misc/testing/IRCScraper and change the settings.<br />
+                        As a minimum you should set the username and make sure it is unique.</div>
                 </td>
             </tr>
         </table>

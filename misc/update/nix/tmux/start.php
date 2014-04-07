@@ -1,6 +1,7 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../../www/config.php';
+
+use nzedb\db\DB;
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -25,7 +26,7 @@ if ($hashcheck != 1) {
 
 // Check database patch version
 if ($patch < $versions->versions->db) {
-	exit($c->error("\nYour database is not up to date. Please update.\nphp ${DIR}testing/DB/patchDB.php\n"));
+	exit($c->error("\nYour database is not up to date. Please update.\nphp " . nZEDb_LIB . "db/DbUpdate.php 1\n"));
 }
 
 // Search for NNTPProxy session that might be running froma userthreaded.php run. Setup a clean environment to run in.
@@ -118,17 +119,27 @@ if ($tablepergroup == 1) {
 		$tbl = $row['name'];
 		if (preg_match('/collections_\d+/', $tbl)) {
 			$run = $db->queryDirect('UPDATE ' . $tbl . ' SET dateadded = now()');
-			$ran += $run->rowCount();
+			if ($run !== false) {
+				$ran += $run->rowCount();
+			}
 		}
 	}
 	echo $c->primary(number_format($ran) . " collections reset.");
 } else {
+	$ran = 0;
 	$run = $db->queryDirect("update collections set dateadded = now()");
-	echo $c->primary(number_format($run->rowCount()) . " collections reset.");
+	if ($run !== false) {
+		$ran += $run->rowCount();
+	}
+	echo $c->primary(number_format($ran) . " collections reset.");
 }
 
 $run = $db->queryDirect("update nzbs set dateadded = now()");
-echo $c->primary(number_format($run->rowCount()) . " nzbs reset.");
+$updatedNZBs = 0;
+if ($run !== false) {
+	$updatedNZBs = $run->rowCount();
+}
+echo $c->primary(number_format($updatedNZBs) . " nzbs reset.");
 sleep(2);
 
 function start_apps($tmux_session)
@@ -224,6 +235,27 @@ function window_stripped_utilities($tmux_session)
 	exec("tmux selectp -t 0; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
 }
 
+function window_ircscraper($tmux_session, $window)
+{
+	$t = new Tmux();
+	$tmux = $t->get();
+	$scrape_cz = $tmux->scrape_cz;
+	$scrape_efnet = $tmux->scrape_efnet;
+
+	if ($scrape_cz == 1 && $scrape_efnet == 1) {
+		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
+		exec("tmux selectp -t 0; tmux splitw -t $tmux_session:$window -v -p 50 'printf \"\033]2;scrape_Efnet\033\"'");
+	}
+	else if ($scrape_cz == 1) {
+		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
+	}
+	elseif ($scrape_efnet == 1) {
+		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_Efnet\033\"'");
+	} else {
+		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
+	}
+}
+
 function window_post($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n post 'printf \"\033]2;postprocessing_additional\033\"'");
@@ -271,9 +303,13 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	window_proxy($tmux_session, 3);
 	if ($colors == 1) {
 		window_colors($tmux_session);
+		window_ircscraper($tmux_session, 4);
+		window_proxy($tmux_session, 5);
+	} else {
+		window_ircscraper($tmux_session, 3);
+		window_proxy($tmux_session, 4);
 	}
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
@@ -287,10 +323,15 @@ if ($seq == 1) {
 	}
 
 	window_stripped_utilities($tmux_session);
-	window_proxy($tmux_session, 2);
 	if ($colors == 1) {
 		window_colors($tmux_session);
+		window_ircscraper($tmux_session, 3);
+		window_proxy($tmux_session, 4);
+	} else {
+	window_ircscraper($tmux_session, 2);
+	window_proxy($tmux_session, 3);
 	}
+
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
 } else {
@@ -306,10 +347,13 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	window_proxy($tmux_session, 3);
-
 	if ($colors == 1) {
 		window_colors($tmux_session);
+		window_ircscraper($tmux_session, 3);
+		window_proxy($tmux_session, 4);
+	} else {
+		window_ircscraper($tmux_session, 2);
+		window_proxy($tmux_session, 3);
 	}
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);

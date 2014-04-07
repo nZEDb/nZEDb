@@ -6,7 +6,6 @@
  * @subpackage TemplateResources
  * @author Rodney Rehm
  */
-
 /**
  * Smarty Resource Plugin
  *
@@ -30,5 +29,4 @@ abstract class Smarty_Resource_Recompiled extends Smarty_Resource
         $compiled->timestamp = false;
         $compiled->exists = false;
     }
-
 }

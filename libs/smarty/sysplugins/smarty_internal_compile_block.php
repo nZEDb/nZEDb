@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Smarty Internal Plugin Compile Block
  *
@@ -9,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile Block Class
  *
@@ -18,7 +16,6 @@
  */
 class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
 {
-
     const parent = '____SMARTY_BLOCK_PARENT____';
     /**
      * Attribute definition: Overwrites base class.
@@ -27,7 +24,6 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $required_attributes = array('name');
-
     /**
      * Attribute definition: Overwrites base class.
      *
@@ -35,7 +31,6 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $shorttag_order = array('name');
-
     /**
      * Attribute definition: Overwrites base class.
      *
@@ -43,7 +38,6 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $option_flags = array('hide', 'append', 'prepend', 'nocache');
-
     /**
      * Attribute definition: Overwrites base class.
      *
@@ -57,14 +51,12 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
      * @var array
      */
     public static $nested_block_names = array();
-
     /**
      * child block source buffer
      *
      * @var array
      */
     public static $block_data = array();
-
     /**
      * Compiles code for the {block} tag
      *
@@ -77,7 +69,6 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         $_name = trim($_attr['name'], "\"'");
-
         // check if we process an inheritance child template
         if ($compiler->inheritance_child) {
             array_unshift(self::$nested_block_names, $_name);
@@ -90,7 +81,6 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
                 self::$block_data[$_name]['source'] .= ' nocache';
             }
             self::$block_data[$_name]['source'] .= $compiler->smarty->right_delimiter;
-
             $save = array($_attr, $compiler->inheritance);
             $this->openTag($compiler, 'block', $save);
             // set flag for {block} tag
@@ -107,14 +97,10 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
         $this->openTag($compiler, 'block', $save);
         $compiler->inheritance = true;
         $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
-
         $compiler->parser->current_buffer = new _smarty_template_buffer($compiler->parser);
         $compiler->has_code = false;
-
         return true;
     }
-
-
     /**
      * Compile saved child block source
      *
@@ -202,7 +188,6 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
         $compiler->has_code = true;
         return $_output;
     }
-
     /**
      * Compile $smarty.block.parent
      *
@@ -233,7 +218,6 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
         $compiler->has_code = false;
         return;
     }
-
     /**
      * Process block source
      *
@@ -244,10 +228,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
     {
         Smarty_Internal_Compile_Block::$block_data[Smarty_Internal_Compile_Block::$nested_block_names[0]]['source'] .= $source;
     }
-
 }
-
-
 /**
  * Smarty Internal Plugin Compile BlockClose Class
  *
@@ -341,11 +322,9 @@ class Smarty_Internal_Compile_Blockclose extends Smarty_Internal_CompileBase
         $compiler->nocache = $saved_data[3];
         // $_output content has already nocache code processed
         $compiler->suppressNocacheProcessing = true;
-
         return $_output;
     }
 }
-
 /**
  * Smarty Internal Plugin Compile Child Block Class
  *
@@ -354,7 +333,6 @@ class Smarty_Internal_Compile_Blockclose extends Smarty_Internal_CompileBase
  */
 class Smarty_Internal_Compile_Private_Child_Block extends Smarty_Internal_CompileBase
 {
-
     /**
      * Attribute definition: Overwrites base class.
      *
@@ -362,8 +340,6 @@ class Smarty_Internal_Compile_Private_Child_Block extends Smarty_Internal_Compil
      * @see Smarty_Internal_CompileBase
      */
     public $required_attributes = array('name', 'file', 'uid', 'line');
-
-
     /**
      * Compiles code for the {private_child_block} tag
      *
@@ -375,25 +351,24 @@ class Smarty_Internal_Compile_Private_Child_Block extends Smarty_Internal_Compil
     {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-
+        // update template with original template resource of {block}
+        $compiler->template->template_resource = realpath(trim($_attr['file'], "'"));
+        // source object
+        unset ($compiler->template->source);
+        $exists = $compiler->template->source->exists;
         // must merge includes
         if ($_attr['nocache'] == true) {
             $compiler->tag_nocache = true;
         }
         $save = array($_attr, $compiler->nocache);
-
         // set trace back to child block
         $compiler->pushTrace(trim($_attr['file'], "\"'"), trim($_attr['uid'], "\"'"), $_attr['line'] - $compiler->lex->line);
-
         $this->openTag($compiler, 'private_child_block', $save);
-
         $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
         $compiler->has_code = false;
-
         return true;
     }
 }
-
 /**
  * Smarty Internal Plugin Compile Child Block Close Class
  *
@@ -402,8 +377,6 @@ class Smarty_Internal_Compile_Private_Child_Block extends Smarty_Internal_Compil
  */
 class Smarty_Internal_Compile_Private_Child_Blockclose extends Smarty_Internal_CompileBase
 {
-
-
     /**
      * Compiles code for the {/private_child_block} tag
      *
@@ -415,15 +388,11 @@ class Smarty_Internal_Compile_Private_Child_Blockclose extends Smarty_Internal_C
     {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-
         $saved_data = $this->closeTag($compiler, array('private_child_block'));
-
         // end of child block
         $compiler->popTrace();
-
         $compiler->nocache = $saved_data[1];
         $compiler->has_code = false;
-
         return true;
     }
 }

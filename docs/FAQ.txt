@@ -60,7 +60,8 @@ Q: I'm having issues with the PREDB backfill script.
 A: https://github.com/nZEDb/pre-info
 
 Q: Can I have some information on collections/binaries/parts?
-A: http://s12.postimg.org/ity5z1xnf/Untitled.jpg
+A: Old answer: http://s12.postimg.org/ity5z1xnf/Untitled.jpg
+   New answer: http://i.imgur.com/zKQdfay.png
 
 Q: I'm having issues with the PREDB backfill script.
 A: https://github.com/nZEDb/pre-info

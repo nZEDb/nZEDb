@@ -8,7 +8,6 @@
  * @subpackage PluginsInternal
  * @author Uwe Tews
  */
-
 /**
  * Class for filter processing
  *
@@ -64,5 +63,4 @@ class Smarty_Internal_Filter_Handler
         // return filtered output
         return $output;
     }
-
 }

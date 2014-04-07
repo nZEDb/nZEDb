@@ -19,8 +19,10 @@
 	<li><a href="{$smarty.const.WWW_TOP}/nzb-import.php">Import</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/nzb-export.php">Export</a> Nzb's</li>
 	<li><a href="{$smarty.const.WWW_TOP}/db-optimise.php" class="confirm_action">Optimise</a> Tables</li>
 	<li><a href="{$smarty.const.WWW_TOP}/comments-list.php">View Comments</a></li>
+	<li><a href="{$smarty.const.WWW_TOP}/sharing.php">Sharing Settings</a></li>
 	<li><a href="{$smarty.const.WWW_TOP}/user-list.php">View</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/user-edit.php?action=add">Add</a> Users</li>
 	<li><a href="{$smarty.const.WWW_TOP}/role-list.php">View</a> <a style="padding:0;" href="{$smarty.const.WWW_TOP}/role-edit.php?action=add">Add</a> Roles</li>
 	<li><a href="{$smarty.const.WWW_TOP}/site-stats.php">Site Stats</a></li>
+	<li><a href="{$smarty.const.WWW_TOP}/view-logs.php">View Logs</a></li>
 	<li><a href="{$smarty.const.WWW_TOP}/tmux-edit.php">Tmux Settings</a>
 </ul>

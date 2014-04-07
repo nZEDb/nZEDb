@@ -1,0 +1,334 @@
+/**
+ * $Id$
+ * $Revision$
+ * $Author$
+ * $Date$
+ */
+
+v1.1.0:
+------
+fixes:
+
+changes:
+
+new:
+ - applied reconnect delay patch (sf.net patch #883820) from Ronald Hummelink <ronaldhummelink@users.sourceforge.net>
+   added setReconnectdelay() method, allows delay between reconnects. This reduces CPU load and prevents DoS.
+ - applied autoretry patch (sf.net patch #883821) from Ronald Hummelink <ronaldhummelink@users.sourceforge.net>
+   added setAutoRetryMax() method, makes connect retries cleaner.
+ - added send() method, can be used to send raw message to the IRC server.
+
+v0.5.6:
+------
+fixes:
+ - renamed Net_SmartIRC_base::Net_SmartIRC to
+   Net_SmartIRC_base::Net_SmartIRC_base
+   a PHP4 bug made it work, in PHP5 its fixed and doesn't
+   (closes PEAR bug #1466, sf.net patch #967067)
+ - fixed a bug in _rawreceive()
+   the parser checked if he found a colon (messagepart) but +1 was added, the
+   check never worked right (I found this bug while porting SmartIRC to C#)
+ - fixed bug in _gettype()
+   the regexs was too sloppy, sometimes it got confused, this can break easily
+   the ChannelSync code.
+ - fixed bug in _event_rpl_whoreply()
+   on some IRC networks, the channel info in who replies can't be used, they
+   return sometimes random channels, this can break ChannelSync code.
+ - fixed include paths in example scripts (closes PEAR bug #2042)
+
+changes:
+ - applied load socket extension patch (sf.net patch #911993) from
+   Anatoly Techtonik <techtonik@users.sourceforge.net>
+   if the socket extension is not loaded, it will now try to load it for *nix
+   and windows.
+
+new:
+ - added objListenFor() method
+   it works like listenFor() but returns an array of the received ircdata
+   objects (not just ircdata->message like listenFor() does)
+
+v0.5.5:
+-------
+fixes:
+ - fixed a bug in _rawreceive()
+   messages were parsed wrong which caused problems with kick reasons.
+   (thx to sniper for reporting this).
+ - fixed bug in message()
+   CTCP ACTION messages had missing \001 at the end.
+ - fixed a bug in quit(), which caused quit messages not to be sent to the server.
+ - fixed reconnect() bug, it sent the channel join requests right after connect(),
+   and tried to join a channel without a name.
+ - fixes in ChannelSync code
+   When a user joins a channel after SmartIRC, no WHO info is updated in the user object.
+   Fixed wrong update of channel mode when rpl_channelmodeis received.
+   Fixed bug in _mode() method, which caused wrong handling of mode changes.
+   Topic updates are now tracked (thanks to sniper).
+   Fixed bug which caused fatal errors with ChannelSync enabled
+   (closes sf.net bug  #705269).
+   Fixed bug in _event_mode(), unhandled modes were stored wrong.
+   Fixed bug in _event_rpl_namreply(), which caused that the first char of the first nick
+   of a namreply got cut (closes sf.net bug #747832).
+ - fixed bug in _checktimer()
+   Which caused problems when a timehandler is unregistered.
+ - fixed _gettye()
+   It wasn't recognizing SMARTIRC_TYPE_ACTION.
+ - removed if(!$obj) check for newly created objects (closes PHP bug #24622),
+   required for PHP 4.1.2 compatibility.
+
+changes:
+ - removed all irc commands from SmartIRC.php
+   they have now their own file (SmartIRC/irccommands.php).
+ - Net_SmartIRC_messagehandler class now extends Net_SmartIRC_irccommands.
+ - removed the 1. parameter (&$irc) of all message handlers, not needed anymore.
+ - renamed class Net_SmartIRC_user to Net_SmartIRC_channeluser,
+   added class Net_SmartIRC_ircuser.
+ - added prefix _event to all message handlers (needed because of class restructuring).
+ - tweaked filling of the ircdata objects.
+ - log() now checks the passed debug level bitwise.
+ - $data->message will be null instead of random garbage,
+   if the IRC message has no colon (the message part),
+ - All methods that depend on ChannelSync mode, checks if it's enabled.
+ - Optimized the usage of time() for $this->_lastrx.
+ - updated the URL of a SmartIRC based bot (atbs).
+ - _loggedin is now set to false when the socket is dead,
+   required for proper working  reconnect().
+ - on a reconnect(), the logfile won't be overwritten anymore.
+ - updated phpdoc tags.
+ - all access to the channel array now uses strtolower() for the key.
+ - fixed typo in function name setChannelSynching(),
+   now it's called setChannelSyncing() with a BC wrapper.
+ - removed all SMARTIRC_ prefixes for debug output.
+ - changed isJoined($channel) to isJoined($channel, $nickname)
+   for checking if the specified user is joined.
+ - removed "destructors", because they don't free the memory.
+
+new:
+ - added isOpped() isVoiced() isBanned().
+ - added debug output and debug level for the messageparser.
+ - reconnect() uses now the channel key if one exists.
+ - added channel key syncing in _mode().
+ - when an actionhandler message regex has a leading '/' then the regex is used as it is,
+   this allows complex perl regex's.
+ - added message type SMARTIRC_TYPE_CTCP_REQUEST and SMARTIRC_CTCP_REPLY for more advanced CTCP.
+ - added new log destinations SMARTIRC_NONE and SMARTIRC_BROWSEROUT
+   (for firendly browserouput). When the script is called from a browser,
+   the BROWSEROUT will automatic be used (closed sf.net bug #708155).
+ - added error handling for socket_select() in _rawreceive().
+ - added getMessage() to Net_SmartIRC_Error class.
+ - added debug level for ChannelSync code (SMARTIRC_DEBUG_CHANNELSYNCING).
+ - added filename and linenumber to debug output.
+ - added key property to channel class.
+ - added to all IRC commands optional $priority parameter with default value SMARTIRC_MEDIUM.
+ - added isError() for more advanced errorhandling, needed for encapsulation.
+ - added _isValidType() method, which checks for valid SMARTIRC_TYPE_* types.
+
+v0.5.1
+------
+fixes:
+ - major bugs in ChannelSynching fixed.
+ - fsocks support fixed.
+ - setUseSocket() method fixed.
+   If false was passed as parameter, it tried to load the socket extension.
+   Also warnings are now suppressed with @ in front of dl().
+ - fixed a typo in reconnect().
+ - missing SMARTIRC_DEBUG_CHANNELSYNCHING constant added.
+
+changes:
+ - new design for HTML documentation used (PEAR template).
+ - moved all examples to their own directory (examples/).
+ - moved the documentation to docs/HTML/.
+ - added new file descriptions to README.
+ - removed not needed parts of DOCUMENTATION (most is now in the HTML version).
+ - updated the HTML documentation.
+
+new:
+ - example5/6/7.php added.
+ - setAutoRetry() method added.
+   Autoretrying of connecting to the IRC server, is now supported.
+
+v0.5.0
+------
+fixes:
+ - fixed critical bug in the main _rawreceive() for() loop, messages were lost.
+
+changes:
+ - License changed from GPL to LGPL.
+ - updated in all files the copyright year.
+ - changed documentation tags in front of all methods to the phpDocumentator compatible format.
+ - improved connect() errorhandling.
+ - changed login() parameters to $nick, $realname, $usermode = 0, $username = null, $password = null.
+ - changed join() parameters to $channelarray, $key = null.
+ - changed kick() parameters to $channel, $nicknamearray, $reason = null.
+ - changed listenFor() parameters to $messagetype
+   return value is now the result, instead the of a reference to the result parameter.
+ - sendbuffer has now 3 queues: high, medium and low
+   high sends 2 messages, then 1 of medium
+   low is only send if high _and_ medium is empty.
+ - select() call for sockets is strongly optimized
+
+new:
+ - phpDocumentator package tags.
+ - include() for messagehandler.php (needed for the new API).
+ - setChannelSynching() method, for enabling the channel synching.
+ - setCtcpVersion() method, for changing the ctcp version reply string.
+ - setReceiveTimeout() method, for changing the receive timeout.
+ - setTransmitTimeout() method, for changing the transmit timeout.
+ - setAutoReconnect() method, for enabling the autoreconnect feature.
+ - channel variable, a reference to _channels because $object->channel("#chan")->topic is not possible in PHP4 (ZE1).
+ - reconnect() method, it will reconnect and also join all channels.
+ - channel() method, getting a reference to the channel, only if channelsynching is on.
+ - added ident, host, messageex and rawmessageex variables to the Net_SmartIRC_data class.
+ - class Net_SmartIRC_user, stores info about one user, only used if channelsynching is on.
+ - class Net_SmartIRC_channel, stores info about one channel, only used if channelsynching is on.
+
+v0.4.0
+------
+* phpSmartIRCclass.inc.php:
+ - fixed serious socket bug
+   The buffer of the socket got full because only 512 bytes were read at once,
+   which caused losing some IRC messages that are comming fast like the MOTD.
+   Now it will read 10240 bytes at once, and doesn't loose any IRC message.
+ - fixed sendbuffer
+   The sendbuffer will only be sent, when the class is fully connected and
+   registered on the IRC network. Before if a nickname collision happened,
+   all sent IRC commands from the buffer were ignored by the IRC server.
+ - fixed socket status
+   Socket handling is now compatible with PHP 4.3 dev.
+ - fixed $_nick
+   When the nickname got changed because of nickname is already in use,
+   $_nick  will be updated. (thanks for the hint to Andreas Streichardt).
+ - fixed actionhandler ids (unregister caused that the other ids were  changed).
+ - fixed TYPE_TOPIC to the right bitoperator value.
+ - added a reference to the IRC class in actionhandler callbacks
+   WARNING: all user writtin methods have to be changed!!
+   method( &$data ) _has to be changed_ to method( &$irc, &$data )
+   If you don't change those, your IRC scripts will _not_ work anymore!
+ - changed internal methodnames to _methodname
+ - changed sendbuffer
+   Now it uses configurable senddelay, instead of static 2 messages
+   per second (send flood protection).
+ - changed TYPEs
+   All TYPE_* are now bitwise constants, register_actionhandler() can now
+   react to more than one message type.
+ - added TYPE_ACTION for those common /me messages.
+ - added timeevents   Added method register_timehandler()
+   unregister_timeid() and   reordertimehandler(). Those timehandler
+   can be used to call methods in specified intervalls, e.g. for
+   timeevents. Added needed class CphpSmartIRCclass_timehandler.
+ - moved all IRC related defines to defines.inc.php.
+ - changed if() elseif() structures where possible to switch() for
+   clearer/faster code.
+ - added more debug messages for actionhandler.
+ - added unregister_actionhandler() and unregister_actionid() method.
+   Also added needed reorderactionhandler(), which is called after an
+   unregister methods was called.
+ - added $data->channel to actionhandler callback.
+
+* defines.inc.php:
+ - initial import.
+ - now all IRC related defines are now in this file instead of
+   phpSmartIRCclass.inc.php.
+
+* DOCUMENTATION:
+ - updated/added methods description
+
+* example.php:
+ - changed user function parameter to new style ( &$irc and &$data ).
+ - added TYPE_NOTICE to query_test example.
+
+v0.3.2
+------
+* phpSmartIRCclass.inc.php:
+ - Replaced all quotes by single quote where possible for speedup.
+ - Added _disconnecttime for doing a clean IRC quit.
+ - Added Zend IDE style documentation for parameter variables types
+   and method descriptions.
+ - Spaces in nickname and username will be automaticly removed.
+ - Nicknamecollisions are automaticly detected and nickname will be
+   changed to nickname with 3 random numbers.
+ - New method nicknameuse().
+ - Fixed a serious fsock bug.
+ - Added new type TYPE_ERROR.
+ - Fixed wrong usage of & when calling methods with params that are
+   called by reference.
+ - Fixed a debug message "DEBUG: disconnected", now it will only
+   occur when debug mode is enabled.
+ - listen_for() will now do a quickdisconnect, for a big speedup.
+ - Changed logging system, now with debug levels, default is
+   DEBUG_NOTICE.
+ - Added benchmark system, now its possible to time things for doing
+   optimizations.
+ - New methods: benchmark(), benchmarktstart(), benchmarkend()
+   and show_benchmark() for the benchmark system
+ - Added microint(), for getting the microtime as float, needed for
+   the benchmarks.
+ - Added a couple of log() calls, for different debug levels.
+ - fsockets now runs in non blocking mode, because of broken?
+   getstatus for fsockets.
+ - Added mode() method, for chaning modes of a user or channel.
+ - Added op() and deop() method.  Added ban() and unban() method
+   (thx for diff file to Peter Petermann).
+
+* DOCUMENTATION:
+ - added documentation for new logging system
+ - added the whole DEBUG_* list
+
+* HOWTO:
+ - changed parameter description for debug()
+
+* example.php:
+ - replaced all quotes by singlequotes where possible.
+ - fixed wrong usage of message()
+
+* example2.php:
+ - replaced all quotes by singlquotes where possible.
+ - added benchmark test to the example
+
+v0.3.0
+-----
+* phpSmartIRCclass.inc.php:
+ - added "Ping? Pong!" log message for debugging
+ - added real linux/windows syslog logging
+   to setlogdestination().
+ - new method listen_for() makes it possible
+   to show irc related information on a homepage, like how many users
+   on a channel are.
+
+* HOWTO:
+ - added how to run/call the selfwritten bot
+
+* DOCUMENTATION:
+ - added (missing) explaination for new methods
+
+* example2.php:
+ - new examplefile with the new listen_for() method
+
+v0.2.6
+------
+* phpSmartIRCclass.inc.php:
+ - phpSmartIRCclass.inc renamed to
+   phpSmartIRCclass.inc.php because of security reasons
+ - changed function_exists() to get_loaded_extensions() for
+   checking if the PHP build has real socket support
+ - log() changed to create Linux style formated logs
+ - new methods for logging (daemon style)
+   log() for add log entries setlogdestination() can be STDOUT or FILE
+   setlogfile() sets the file
+ - changed received data processing in rawreceive()
+
+* HOWTO:
+ - added a mini howto for using the class
+
+* DOCUMENTATION:
+ - added class documentation of the project
+
+* CREDITS:
+ - added credits file
+
+v0.2.5
+------
+- improved socket handling
+- bufferedsend fix
+- new version number system
+- cpu usage reduced
+- added changelog file

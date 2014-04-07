@@ -7,7 +7,6 @@
  * @author Uwe Tews
  * @author Rodney Rehm
  */
-
 /**
  * Smarty Internal Plugin Resource String
  *
@@ -33,7 +32,6 @@ class Smarty_Internal_Resource_String extends Smarty_Resource
         $source->timestamp = 0;
         $source->exists = true;
     }
-
     /**
      * Load template's source from $resource_name into current template object
      *
@@ -45,7 +43,6 @@ class Smarty_Internal_Resource_String extends Smarty_Resource
     {
         return $this->decode($source->name);
     }
-
     /**
      * decode base64 and urlencode
      *
@@ -62,10 +59,8 @@ class Smarty_Internal_Resource_String extends Smarty_Resource
                 return urldecode(substr($string, 10));
             }
         }
-
         return $string;
     }
-
     /**
      * modify resource_name according to resource handlers specifications
      *
@@ -78,7 +73,6 @@ class Smarty_Internal_Resource_String extends Smarty_Resource
     {
         return get_class($this) . '#' .$this->decode($resource_name);
     }
-
     /**
      * Determine basename for compiled filename
      *
@@ -91,5 +85,4 @@ class Smarty_Internal_Resource_String extends Smarty_Resource
     {
         return '';
     }
-
 }

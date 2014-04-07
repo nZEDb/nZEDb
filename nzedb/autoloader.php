@@ -1,6 +1,6 @@
 <?php
-if (file_exists(realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php'))) {
-	require_once realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php');
+if (file_exists(realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php')) {
+	require_once realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 }
 
 /**
@@ -24,7 +24,7 @@ spl_autoload_register(function ($class) {
     $base_dir = __DIR__ . DIRECTORY_SEPARATOR;
 
 	// If no namespace, add default;
-	$class = preg_match('#\\\#', $class) ? $class : $prefix . $class;
+	$class = preg_match('#\\\#', $class) ? $class : $prefix . 'controllers\\' . $class;
 
     // does the class use the namespace prefix?
     $len = strlen($prefix);
@@ -42,9 +42,13 @@ spl_autoload_register(function ($class) {
     $file = $base_dir . str_replace('\\', DIRECTORY_SEPARATOR, $relative_class) . '.php';
 
     // if the file exists, require it
-    if (file_exists($file)) {
-        require_once $file;
-    }
+	if (file_exists($file)) {
+		require_once $file;
+	} else {
+		if (nZEDb_DEBUG) {
+			var_dump($file);
+		}
+	}
 });
 
 ?>

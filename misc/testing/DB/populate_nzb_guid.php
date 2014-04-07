@@ -1,8 +1,9 @@
 <?php
-
 // This script updates all releases with the guid from the nzb file.
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
 
 $c = new ColorCLI();
 if (isset($argv[1])) {

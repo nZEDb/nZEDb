@@ -9,7 +9,7 @@ $category = new Category();
 $error = false;
 
 // Array with all the possible poster wall types.
-$startTypes = array(/*'Books', */'Console', 'Movies', 'Audio'/*, 'Recent'*/);
+$startTypes = array('Books', 'Console', 'Movies', 'Audio'/*, 'Recent'*/);
 // Array that will contain the poster wall types (the above array minus whatever they have disabled in admin).
 $types = array();
 // Get the names of all enabled parent categories.
@@ -83,6 +83,10 @@ if (!$error) {
 			$error = "ERROR: Invalid ?t parameter (" . $_REQUEST['t'] . ").";
 	}
 }
+$page->title = 'New ' . $_REQUEST['t'] . ' Releases';
+$page->meta_title = $_REQUEST['t'] . ' Poster Wall';
+$page->meta_keywords = "view,new,releases,posters,wall";
+$page->meta_description = "The newest " . $_REQUEST['t'] . ' releases';
 $page->smarty->assign('error', $error);
 $page->content = $page->smarty->fetch('newposterwall.tpl');
 $page->render();

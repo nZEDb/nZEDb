@@ -8,7 +8,6 @@
  * @subpackage Compiler
  * @author Uwe Tews
  */
-
 /**
  * Smarty Internal Plugin Compile special Smarty Variable Class
  *
@@ -45,7 +44,6 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
                 }
                 $compiled_ref = '$_COOKIE';
                 break;
-
             case 'get':
             case 'post':
             case 'env':
@@ -58,29 +56,21 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
                 }
                 $compiled_ref = '$_'.strtoupper($variable);
                 break;
-
             case 'template':
                 return 'basename($_smarty_tpl->source->filepath)';
-
             case 'template_object':
                 return '$_smarty_tpl';
-
             case 'current_dir':
                 return 'dirname($_smarty_tpl->source->filepath)';
-
             case 'version':
                 $_version = Smarty::SMARTY_VERSION;
-
                 return "'$_version'";
-
             case 'const':
                 if (isset($compiler->smarty->security_policy) && !$compiler->smarty->security_policy->allow_constants) {
                     $compiler->trigger_template_error("(secure mode) constants not permitted");
                     break;
                 }
-
                 return "@constant({$_index[1]})";
-
             case 'config':
                 if (isset($_index[2])) {
                     return "(is_array(\$tmp = \$_smarty_tpl->getConfigVariable($_index[1])) ? \$tmp[$_index[2]] : null)";
@@ -89,14 +79,10 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
                 }
             case 'ldelim':
                 $_ldelim = $compiler->smarty->left_delimiter;
-
                 return "'$_ldelim'";
-
             case 'rdelim':
                 $_rdelim = $compiler->smarty->right_delimiter;
-
                 return "'$_rdelim'";
-
             default:
                 $compiler->trigger_template_error('$smarty.' . trim($_index[0], "'") . ' is invalid');
                 break;
@@ -107,8 +93,6 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
                 $compiled_ref = $compiled_ref . "[$_ind]";
             }
         }
-
         return $compiled_ref;
     }
-
 }

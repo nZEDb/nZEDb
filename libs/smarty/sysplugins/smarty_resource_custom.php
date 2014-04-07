@@ -6,7 +6,6 @@
  * @subpackage TemplateResources
  * @author Rodney Rehm
  */
-
 /**
  * Smarty Resource Plugin
  *
@@ -25,7 +24,6 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
      * @param integer &$mtime  template modification timestamp (epoch)
      */
     abstract protected function fetch($name, &$source, &$mtime);
-
     /**
      * Fetch template's modification timestamp from data source
      *
@@ -39,7 +37,6 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
     {
         return null;
     }
-
     /**
      * populate Source Object with meta data from Resource
      *
@@ -50,7 +47,6 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
     {
         $source->filepath = strtolower($source->type . ':' . $source->name);
         $source->uid = sha1($source->type . ':' . $source->name);
-
         $mtime = $this->fetchTimestamp($source->name);
         if ($mtime !== null) {
             $source->timestamp = $mtime;
@@ -62,7 +58,6 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
         }
         $source->exists = !!$source->timestamp;
     }
-
     /**
      * Load template's source into current template object
      *
@@ -76,10 +71,8 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
         if (isset($content)) {
             return $content;
         }
-
         throw new SmartyException("Unable to read template {$source->type} '{$source->name}'");
     }
-
     /**
      * Determine basename for compiled filename
      *
@@ -90,5 +83,4 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
     {
         return basename($source->name);
     }
-
 }

@@ -110,10 +110,14 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 					self.wfile.write(".\r\n")
 				elif data.startswith("BODY"):
 					msgid = data.split(None, 1)[1]
-					body = nntp_client.body(msgid)
-					self.wfile.write("222 %s\r\n" % (msgid))
-					self.wfile.write(body.replace("\r\n.", "\r\n.."))
-					self.wfile.write(".\r\n")
+					try:
+						body = nntp_client.body(msgid)
+						self.wfile.write("222 %s\r\n" % (msgid))
+						self.wfile.write(body.replace("\r\n.", "\r\n.."))
+						self.wfile.write(".\r\n")
+					except Exception as e:
+						print(bcolors.ERROR + str(e) + bcolors.ENDC)
+						self.wfile.write("430 No Such Article\r\n")
 				elif data.startswith("LIST OVERVIEW.FMT"):
 					fmt = nntp_client.list_overview_fmt()
 					self.wfile.write("215 Order of fields in overview database.\r\n")
@@ -133,6 +137,7 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 					for entry in active_gen:
 						self.wfile.write("%s %d %d %s\r\n" % entry)
 					self.wfile.write(".\r\n")
+					self.wfile.write(str(e) + "\r\n")
 				elif data.startswith("QUIT"):
 					self.wfile.write("205 Connection closing\r\n")
 					break

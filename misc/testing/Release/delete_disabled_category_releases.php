@@ -1,7 +1,8 @@
 <?php
-
 /* Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php */
 require dirname(__FILE__) . '/../../../www/config.php';
+
+use nzedb\db\DB;
 
 $c = new ColorCLI();
 

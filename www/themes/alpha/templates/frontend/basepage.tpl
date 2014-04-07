@@ -101,7 +101,9 @@
 									<li><a href="{$smarty.const.WWW_TOP}/myshows"><i class="icon-desktop"></i> My Shows</a></li>
 									<li class="divider"></li>
 									<li><a href="{$smarty.const.WWW_TOP}/cart"><i class="icon-shopping-cart"></i> My Cart</a></li>
-									<li><a href="{$smarty.const.WWW_TOP}/queue"><i class="icon-tasks"></i> My Queue</a></li>
+									{if $sabintegrated}
+										<li><a href="{$smarty.const.WWW_TOP}/queue"><i class="icon-tasks"></i> My Queue</a></li>
+									{/if}
 								</ul>
 							</li>
 						{else}
