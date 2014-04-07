@@ -207,41 +207,49 @@ Class Sharing
 		// Create a unique identifier for this comment.
 		$sid = sha1($row['unix_time'] . $row['text'] . $row['nzb_guid']);
 
-		// Example of a subject.
-		//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
+		// Check if the comment is already shared.
+		$check = $this->db->queryOneRow(sprintf('SELECT id FROM releasecomment WHERE shareid = %s', $this->db->escapeString($sid)));
+		if ($check === false) {
 
-		// Attempt to upload the comment to usenet.
-		$success = $this->nntp->postArticle(
-			self::group,
-			('(_nZEDb_)' . $this->siteSettings['site_name'] . '_' . $this->siteSettings['site_guid'] . ' - [1/1] "' . $sid . '" yEnc (1/1)'),
-			json_encode(
-				array(
-					'USER'  => ($this->siteSettings['hide_users'] ? 'ANON' : $row['username']),
-					'TIME'  => $row['unix_time'],
-					'SID'   => $sid,
-					'RID'   => $row['nzb_guid'],
-					'BODY'  => $row['text']
-				)
-			),
-			'<anon@anon.com>'
-		);
+			// Example of a subject.
+			//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
 
-		// Check if we succesfully uploaded it.
-		if ($this->nntp->isError($success) === false && $success === true) {
-
-			// Update DB to say we posted the article.
-			$this->db->queryExec(
-				sprintf('
-					UPDATE releasecomment
-					SET shared = 1, shareid = %s
-					WHERE id = %d',
-					$this->db->escapeString($sid),
-					$row['id']
-				)
+			// Attempt to upload the comment to usenet.
+			$success = $this->nntp->postArticle(
+				self::group,
+				('(_nZEDb_)' . $this->siteSettings['site_name'] . '_' . $this->siteSettings['site_guid'] . ' - [1/1] "' . $sid . '" yEnc (1/1)'),
+				json_encode(
+					array(
+						'USER'  => ($this->siteSettings['hide_users'] ? 'ANON' : $row['username']),
+						'TIME'  => $row['unix_time'],
+						'SID'   => $sid,
+						'RID'   => $row['nzb_guid'],
+						'BODY'  => $row['text']
+					)
+				),
+				'<anon@anon.com>'
 			);
-			if (nZEDb_ECHOCLI) {
-				echo '.';
+
+			// Check if we succesfully uploaded it.
+			if ($this->nntp->isError($success) === false && $success === true) {
+
+				// Update DB to say we posted the article.
+				$this->db->queryExec(
+					sprintf('
+						UPDATE releasecomment
+						SET shared = 1, shareid = %s
+						WHERE id = %d',
+						$this->db->escapeString($sid),
+						$row['id']
+					)
+				);
+				if (nZEDb_ECHOCLI) {
+					echo '.';
+				}
 			}
+		} else {
+			// Update the DB to say it's shared.
+			$this->db->queryExec(sprintf('UPDATE releasecomment SET shared = 1 WHERE id = %d', $row['id']));
 		}
 	}
 
