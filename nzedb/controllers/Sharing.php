@@ -489,7 +489,7 @@ Class Sharing
 				$this->db->escapeString($body['SID']),
 				$this->db->escapeString($body['RID']),
 				$this->db->escapeString($siteID),
-				$this->db->escapeString((substr($body['USER'], 0, 3) === 'sn-' ? 'ANON' : $body['USER']))
+				$this->db->escapeString((substr($body['USER'], 0, 3) === 'sn-' ? 'SH_ANON' : 'SH_' . $body['USER']))
 			)
 		)) {
 			return true;
