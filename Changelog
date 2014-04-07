@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-07 niel
+	* Fix: Waking up the Db connection before updating or inserting with the IRC scraper.
 2014-04-07 bart39
 	* Fix: overriding efnet password
 2014-04-07 kevin
