@@ -203,7 +203,7 @@ class Category
 	 */
 	public function getDisabledIDs()
 	{
-		return $this->db->query("SELECT id FROM category WHERE status = 2");
+		return $this->db->query("SELECT ID FROM category WHERE status = 2 OR parentID in (select ID FROM category WHERE status = 2 AND parentID IS null);");
 	}
 
 	/**
