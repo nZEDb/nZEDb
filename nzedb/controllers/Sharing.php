@@ -303,7 +303,7 @@ Class Sharing
 				$this->siteSettings['last_article'] = $ourOldest = (string)($group['first']);
 			// Else get the newest.
 			} else {
-				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - 50);
+				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - 1000);
 			}
 		} else {
 			$ourOldest = (string)($this->siteSettings['last_article'] + 1);
