@@ -303,7 +303,7 @@ Class Sharing
 				$this->siteSettings['last_article'] = $ourOldest = (string)($group['first']);
 			// Else get the newest.
 			} else {
-				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - 1000);
+				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - 50);
 			}
 		} else {
 			$ourOldest = (string)($this->siteSettings['last_article'] + 1);
@@ -482,7 +482,7 @@ Class Sharing
 		}
 
 		// Just in case.
-		if (!isset($body['USER'])) {
+		if (!isset($body['USER']) || !isset($body['SID']) || !isset($body['RID']) || !isset($body['TIME']) | !isset($body['BODY'])) {
 			return false;
 		}
 
