@@ -9,6 +9,7 @@ Each update goes to the top of the file
 2014-04-07 niel
 	* Fix: Waking up the Db connection before updating or inserting with the IRC scraper.
 2014-04-07 bart39
+	* Fix: fix predb links
 	* Fix: overriding efnet password
 2014-04-07 kevin
 	* Add: Hover text on sharing page to show what the buttons do.

@@ -175,12 +175,12 @@
 						srrDB
 					</a>
 				{elseif {$result.source} == "#scnzb"}
-					<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/scnzb" target="_blank">
-						srrDB
+					<a title="Visit scnzb on IRC" href="irc://irc.Prison.NET:6667/scnzb" target="_blank">
+						scnzbIRC
 					</a>
 				{elseif {$result.source} == "#tvnzb"}
-					<a title="Visit srrDB" href="irc://irc.Prison.NET:6667/tvnzb" target="_blank">
-						srrDB
+					<a title="Visit tvnzb on IRC" href="irc://irc.Prison.NET:6667/tvnzb" target="_blank">
+						tvnzbIRC
 					</a>
 				{elseif {$result.source} == "usenet-crawler"}
 					<a title="Visit Usenet-Crawler" href="{$site->dereferrer_link}http://www.usenet-crawler.com/predb?q={$result.title}" target="_blank">
