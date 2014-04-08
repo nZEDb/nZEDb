@@ -1660,7 +1660,7 @@ function run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet)
 			$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
 			shell_exec(
 				"tmux respawnp -t${tmux_session}:${pane}.0 ' \
-						$_php $ircscraper efne false false true'"
+						$_php $ircscraper efnet false false true'"
 			);
 		}
 	} else {
