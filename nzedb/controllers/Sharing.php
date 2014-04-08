@@ -482,7 +482,7 @@ Class Sharing
 		}
 
 		// Just in case.
-		if (!isset($body['USER'])) {
+		if (!isset($body['USER']) || !isset($body['SID']) || !isset($body['RID']) || !isset($body['TIME']) | !isset($body['BODY'])) {
 			return false;
 		}
 

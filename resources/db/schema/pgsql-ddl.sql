@@ -485,6 +485,7 @@ CREATE TABLE "releasecomment" (
   "id" bigint DEFAULT nextval('releasecomment_id_seq'::regclass) NOT NULL,
   "releaseid" bigint NOT NULL,
   "text" character varying(2000) DEFAULT ''::character varying NOT NULL,
+  "username" character varying(255) DEFAULT ''::character varying NOT NULL,
   "userid" bigint NOT NULL,
   "createddate" timestamp without time zone,
   "host" character varying(15),
@@ -918,7 +919,6 @@ DROP TABLE IF EXISTS "sharing";
 CREATE TABLE "sharing" (
   "site_guid" character varying(40),
   "site_name" character varying(255),
-  "username" character varying(255),
   "enabled"     smallint DEFAULT 0 NOT NULL,
   "posting"     smallint DEFAULT 0 NOT NULL,
   "start_position"     smallint DEFAULT 0 NOT NULL,
