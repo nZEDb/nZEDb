@@ -1471,8 +1471,6 @@ while ($i > 0) {
 				case ($nntpproxy == 1):
 					$spane = 5;
 					break;
-				default:
-					echo "WTF happened!!\n";
 			}
 
 			//run IRCScraper
@@ -1546,8 +1544,6 @@ while ($i > 0) {
 				case ($nntpproxy == 1):
 					$spane = 4;
 					break;
-				default:
-					echo "WTF happened!!\n";
 			}
 
 			//run IRCScraper
@@ -1635,8 +1631,6 @@ while ($i > 0) {
 				case ($nntpproxy == 1):
 					$spane = 5;
 					break;
-				default:
-					echo "WTF happened!!\n";
 			}
 
 			//run IRCScraper
