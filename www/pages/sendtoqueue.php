@@ -8,7 +8,7 @@ if (empty($_GET["id"])) {
 }
 
 $user = $users->getById($users->currentUserId());
-if ($user['queuetype'] == 1) {
+if ($user['queuetype'] != 2) {
 
 	$sab = new SABnzbd($page);
 	if (empty($sab->url)) {
