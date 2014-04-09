@@ -205,6 +205,7 @@ $proc_tmux = "SELECT "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'colors_exc') AS colors_exc, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'showquery') AS show_query, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'running') AS is_running, "
+	. "(SELECT VALUE FROM tmux WHERE SETTING = 'sharing_timer') AS sharing_timer, "
 	. "(SELECT COUNT(DISTINCT(collectionhash)) FROM nzbs WHERE collectionhash IS NOT NULL) AS distinctnzbs, "
 	. "(SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL) AS totalnzbs, "
 	. "(SELECT COUNT(*) FROM (SELECT id FROM nzbs GROUP BY collectionhash, totalparts, id HAVING COUNT(*) >= totalparts) AS count) AS pendingnzbs, "
@@ -761,6 +762,9 @@ while ($i > 0) {
 	}
 	if ($proc_tmux_result[0]['is_running'] != NULL) {
 		$running = (int) $proc_tmux_result[0]['is_running'];
+	}
+	if ($proc_tmux_result[0]['sharing_timer'] != NULL) {
+		$sharing_timer = $proc_tmux_result[0]['sharing_timer'];
 	}
 
 	if ($split_result[0]['oldestnzb'] != NULL) {
@@ -1462,6 +1466,14 @@ while ($i > 0) {
 			if ($colors == 1) {
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 '$_php ${DIR}testing/Dev/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
 			}
+			//run Sharing
+			$pane = ($colors == 1) ? 5 : 4;
+			run_sharing($tmux_session, $_php, $pane);
+		} else if ($seq == 2) {
+			// Show all available colors
+			if ($colors == 1) {
+				shell_exec("tmux respawnp -t${tmux_session}:2.0 '$_php ${DIR}testing/Dev/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
+			}
 
 			//run nzb-import
 			if (($import != 0) && ($kill_pp == false)) {
@@ -1513,6 +1525,10 @@ while ($i > 0) {
 			//run IRCScraper
 			$pane = ($colors == 1) ? 3 : 2;
 			run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet);
+
+			//run Sharing
+			$pane = ($colors == 1) ? 4 : 3;
+			run_sharing($tmux_session, $_php, $pane);
 		} else {
 			//run update_binaries
 			$color = get_color($colors_start, $colors_end, $colors_exc);
@@ -1583,6 +1599,10 @@ while ($i > 0) {
 			//run IRCScraper
 			$pane = ($colors == 1) ? 4 : 3;
 			run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet);
+
+			//run Sharing
+			$pane = ($colors == 1) ? 5 : 4;
+			run_sharing($tmux_session, $_php, $pane);
 		}
 	} else if ($seq == 0) {
 		for ($g = 1; $g <= 4; $g++) {
@@ -1666,4 +1686,14 @@ function run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet)
 	} else {
 		shell_exec("tmux respawnp -t${tmux_session}:${pane}.0 'echo \"\nIRCScraper has been disabled/terminated by IRCSCraper\"'");
 	}
+}
+
+function run_sharing($tmux_session, $_php, $pane)
+{
+	$DIR = nZEDb_MISC;
+	$sharing = $DIR . "/update/postprocess.php sharing true";
+	shell_exec(
+		"tmux respawnp -t${tmux_session}:${pane}.0 ' \
+			$_php $sharing $log; $_sleep $sharing_timer' 2>&1 1> /dev/null"
+		);
 }
