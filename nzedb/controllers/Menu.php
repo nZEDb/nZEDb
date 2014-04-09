@@ -18,7 +18,7 @@ class Menu
 		}
 
 		$data = $db->query(sprintf("SELECT * FROM menu WHERE role <= %d %s ORDER BY ordinal", $role, $guest));
-var_dump($guest);
+
 		$ret = array();
 		foreach ($data as $d) {
 			if (!preg_match("/http/i", $d["href"])) {
