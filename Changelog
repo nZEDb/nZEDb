@@ -16,6 +16,7 @@ Each update goes to the top of the file
 	* Chg: Edited the db patch, as it is redundant to do the alter when you are already dropping the table before that.
 	* Add: Added sharing window to tmux for comment sharing feature.
 2014-04-09 kevin
+	* Add: Trakt.tv trailer links using your Trakt.tv API key on NZB details page for movies. If that fails, try http://www.traileraddict.com
 	* Add: New content page to other themes.
 	* Add: Link to more content from index.
 	* Fix: Fix for non alpha themes send to sab.
