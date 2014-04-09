@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-08 niel
+	* Chg: Altered format of SQL patches to properly reflect the first 8 characters being the date.
 2014-04-08 kevin
 	* Chg: Add more null checks before inserting comments.
 	* Fix: Missing columns on schema.
