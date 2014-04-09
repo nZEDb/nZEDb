@@ -269,6 +269,12 @@ function window_optimize($tmux_session)
 	exec("tmux splitw -t $tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\"'");
 }
 
+function window_sharing($tmux_session, $window)
+{
+	exec("tmux new-window -t $tmux_session -n Sharing 'printf \"\033]2;comment_sharing\033\"'");
+}
+
+
 function attach($DIR, $tmux_session)
 {
 	if (command_exist("php5")) {
