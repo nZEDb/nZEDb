@@ -38,6 +38,26 @@ class Contents
 		return $arr;
 	}
 
+	/**
+	 * Convert get all but from to object.
+	 *
+	 * @return array|bool
+	 */
+	public function getAllButFront()
+	{
+		$arr = array();
+		$rows = $this->data_getAllButFront();
+		if ($rows === false) {
+			return false;
+		}
+
+		foreach ($rows as $row) {
+			$arr[] = $this->row2Object($row);
+		}
+
+		return $arr;
+	}
+
 	public function getFrontPage()
 	{
 		$arr = array();
@@ -172,6 +192,17 @@ class Contents
 	{
 		$db = new DB();
 		return $db->query(sprintf("SELECT * FROM content ORDER BY contenttype, COALESCE(ordinal, 1000000)"));
+	}
+
+	/**
+	 * Get all but front page.
+	 *
+	 * @return array
+	 */
+	public function data_getAllButFront()
+	{
+		$db = new DB();
+		return $db->query(sprintf("SELECT * FROM content WHERE id != 1 ORDER BY contenttype, COALESCE(ordinal, 1000000)"));
 	}
 
 	public function data_getByID($id, $role)
