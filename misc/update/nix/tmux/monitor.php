@@ -1733,8 +1733,11 @@ function run_sharing($tmux_session, $_php, $pane, $_sleep, $sharing_timer)
 {
 	$db = new DB();
 	$sharing = $db->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
+	$t = new Tmux();
+	$tmux = $t->get();
+	$tmux_share = (isset($tmux->run_sharing)) ? $tmux->run_sharing : 0;
 
-	if($sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
+	if($tmux_share && $sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
 		if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
 			$DIR = nZEDb_MISC;
 			$sharing2 = $DIR . "/update/postprocess.php sharing true";
