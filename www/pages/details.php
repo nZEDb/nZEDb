@@ -71,6 +71,7 @@ if (isset($_GET['id'])) {
 		$trakt = new TraktTv();
 		$traktSummary = $trakt->traktMoviesummary('tt' . $data['imdbid'], true);
 		if ($traktSummary !== false &&
+			isset($traktSummary['trailer']) &&
 			$traktSummary['trailer'] !== '' &&
 			preg_match('/[\/?]v[\/\=](\w+)$/i', $traktSummary['trailer'], $youtubeM)) {
 			$mov['trailer'] =
