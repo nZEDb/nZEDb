@@ -6,6 +6,41 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-09 niel
+	* Fix: duplicate key constraint error introduced by recent change to 2014-04-03_3_countries.sql patch.
+2014-04-08 niel
+	* Chg: Altered format of SQL patches to properly reflect the first 8 characters being the date.
+2014-04-08 bart39
+	* Chg: check if it's tv when categorizing a.b.moovee
+	* Fix: make PCGame categorization regex case sensitive to prevent incorrect matches
+2014-04-08 kevin
+	* Chg: Add more null checks before inserting comments.
+	* Fix: Missing columns on schema.
+2014-04-07 niel
+	* Fix: Waking up the Db connection before updating or inserting with the IRC scraper.
+2014-04-07 bart39
+	* Fix: fix predb links
+	* Fix: overriding efnet password
+2014-04-07 kevin
+	* Add: Hover text on sharing page to show what the buttons do.
+	* Chg: Sharing, fetch before posting which should help prevent posting dupes.
+	* Add: Local check to see if we already have a shared comment before uploading (helps prevent dupes).
+	* Fix: Missing SH_ on sharing users.
+	* Fix: Undefined variable in tvrage.
+	* Chg: Nicer 'dot' output on sharing.
+	* Add: Sharing to resetdb.php
+	* Chg: Better storing of usernames on sharing.
+	* Add: Better backfill on sharing.
+2014-04-06 kevin
+	* Chg: Various changes to Sharing.
+	* Chg: Reload page on purge or reset of sharing.
+	* Chg: IRCScraper, possibly no space between reqid and title for scnzb because stripcontrolcharacter method might remove it (there's a control char to end the color there).
+	* Chg: Change default fetch per run to same as schema.
+	* Fix: Fix for purging comments.
+	* Chg: Hide sharing users from users page.
+	* Add: Siteid to comments, will be used to purge sites.
+	* Add: Backfill option, purging option, reset option to sharing.
+	* Chg: Sharing change for less users.
 2014-04-05 niel
 	* Chg: Improved DbUpdate's reporting.
 	* Fix: Rename $this->debug to $this->_debug.
