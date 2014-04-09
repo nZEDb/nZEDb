@@ -70,7 +70,7 @@ class AniDBstandAlone
 		$db = $this->db;
 		$ri = new ReleaseImage();
 		
-		$this->c->doEcho($this->c->header("Start MygetAniDBInfo at" . date('D M d, Y G:i a')));
+		$this->c->doEcho($this->c->header("Start MygetAniDBInfo at: " . date('D M d, Y G:i a')));
 
 		$animetitles = $db->query('SELECT DISTINCT anidbid FROM animetitles');
 		echo 'Total of '.count($animetitles)." distinct titles present in animetitles\n";
@@ -736,6 +736,10 @@ Holding on to this in case we want it again as it has some uses, but currently w
 
 if (isset($argv[1]) && is_numeric($argv[1]))
 {
+// debug
+echo "[".date('d-m-Y G:i')."]Start populate_anidb.php.";
+// end debug
+
 	// create a new AniDB object
 	$anidb = new AniDBstandAlone(true);
 
@@ -756,6 +760,8 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 // use my own version :P
 		$anidb->MygetAniDBInfo((int)$argv[1] + rand(1, 12));
 	
+echo "[".date('d-m-Y G:i')."]Exit populate_anidb.php.";
+
 		}
 }
 else
