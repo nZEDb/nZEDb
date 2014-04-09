@@ -7,6 +7,8 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-09 kevin
+	* Add: New content page to other themes.
+	* Add: Link to more content from index.
 	* Fix: Fix for non alpha themes send to sab.
 	* Fix: Contents page.
 	* Fix: Mix of single/double quotations in 10-menu.tsv making queue/newposterwall not visible on new installs.

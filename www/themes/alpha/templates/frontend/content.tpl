@@ -6,5 +6,8 @@
 			</h3>
 		{/if}
 		{$c->body}
+		{if $front == true}
+			<a style="color:#0082E1" href="{$smarty.const.WWW_TOP}content">See more...</a>
+		{/if}
 	{/foreach}
 {/if}
