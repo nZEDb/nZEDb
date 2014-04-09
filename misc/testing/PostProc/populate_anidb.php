@@ -21,17 +21,13 @@ class AniDBstandAlone
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
 		$this->APIKEY = $this->site->anidbkey;
 		$this->db = new DB();
+		$this->c = new ColorCLI();
 	}
 
 	// get the titles list this is done only once a week
 	public function animetitlesUpdate()
 	{
 		$db = $this->db;
-		if ($this->APIKEY == '')
-		{
-			echo "You need an API key from anidb.net to use this\n";
-			return;
-		}
 
 		$lastUpdate = $db->queryOneRow('SELECT unixtime as utime FROM animetitles LIMIT 1');
 		if (isset($lastUpdate['utime']) && (time() - $lastUpdate['utime']) < 604800)
@@ -67,12 +63,15 @@ class AniDBstandAlone
 		if ($this->echooutput)
 			echo "Completed animetitles update.\n\n";
 	}
-// ===================================================================================
+
+// ===== new getAniDBInfo ==============================================================================
 	public function MygetAniDBInfo($exitcount)
 	{
 		$db = $this->db;
 		$ri = new ReleaseImage();
 		
+		$this->c->doEcho($this->c->header("Start MygetAniDBInfo at" . date('D M d, Y G:i a')));
+
 		$animetitles = $db->query('SELECT DISTINCT anidbid FROM animetitles');
 		echo 'Total of '.count($animetitles)." distinct titles present in animetitles\n";
 	
@@ -102,10 +101,16 @@ class AniDBstandAlone
 		echo 'Total of '.count($anidbrunningtitles)." running anime titles in anidb table not updated for 7 day's \n";
 
 // used in stage 3:
-		$anidboldtitles = $db->query('SELECT anidbid FROM anidb WHERE (unixtime < UNIX_TIMESTAMP(NOW()- INTERVAL 60 DAY)) ORDER BY unixtime');
-		echo 'Total of '.count($anidboldtitles)." anime titles in anidb table not updated for 60 day's \n";
+		$anidboldtitles = $db->query('SELECT anidbid FROM anidb WHERE (unixtime < UNIX_TIMESTAMP(NOW()- INTERVAL 90 DAY)) ORDER BY unixtime');
+		echo 'Total of '.count($anidboldtitles)." anime titles in anidb table not updated for 90 day's \n";
 
 				
+		if ($this->APIKEY == '')
+		{
+			echo "You need an API key from anidb.net to use this\n";
+			return;
+		}
+
 // debug. Show the data for 20 sec before starting
 		echo "Starting in 20 sec...\n";
 		sleep(20);
@@ -127,6 +132,8 @@ class AniDBstandAlone
 		$i = 0;
 		
 // Stage 0: remove anidbid no longer in animetitles
+		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."]Stage 0 ->Remove deleted anidbid."));
+
 		foreach($anidremoved as $value)
 		{
 			$anidbid = (int)$value['anidbid'];
@@ -149,6 +156,7 @@ class AniDBstandAlone
 // Stage 1: insert missing:
 		// now add and update shows as needed
 		// TODO: THIS SHOULD BE A FUNCTION ALSO USED IN STEP 2 AND 3!?!
+		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."]Stage 1 ->Insert missing anidbid."));
 		foreach($anidbmissingdistincttitles as $value)
 		{
 			$anidbid = (int)$value['anidbid'];
@@ -188,7 +196,9 @@ class AniDBstandAlone
 				$sleeptime=180 + rand(30, 90);
 
 					if ($this->echooutput)
-						echo "Start waitloop for ".$sleeptime." sec to prevent banning.\n";
+//						echo "Start waitloop for ".$sleeptime." sec to prevent banning.\n";
+						$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."]Start waitloop for ".$sleeptime." sec to prevent banning"));
+
 
 				sleep($sleeptime);
 				}
@@ -197,11 +207,12 @@ class AniDBstandAlone
 			if ($i >= $exitcount)
 				return;
 
-		} // end 		foreach($anidbmissingdistincttitles as $value)
-// end stage 1
+		} // end stage 1		foreach($anidbmissingdistincttitles as $value)
 
 // Stage 2: update running series in anidb
 //  as we used query before new series were added, we only update series already existing in db
+		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."]Stage 2 ->Update running series."));
+
 		foreach($anidbrunningtitles as $value)
 		{
 			$anidbid = (int)$value['anidbid'];
@@ -256,7 +267,8 @@ class AniDBstandAlone
 				$sleeptime=180 + rand(30, 90);
 
 					if ($this->echooutput)
-						echo "Start waitloop for ".$sleeptime." sec to prevent banning.\n";
+//						echo "Start waitloop for ".$sleeptime." sec to prevent banning.\n";
+						$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."]Start waitloop for ".$sleeptime." sec to prevent banning"));
 
 				sleep($sleeptime);
 				}
@@ -270,6 +282,8 @@ class AniDBstandAlone
 
 // now for stage 3: update rest of records not updated for a loooooong time
 // same as step2: but other for loop (so we need to make a proper function out of this?!)
+		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."]Stage 3 ->Update 90+ day old series."));
+
 		foreach($anidboldtitles as $value)
 		{
 			$anidbid = (int)$value['anidbid'];
@@ -324,7 +338,8 @@ class AniDBstandAlone
 				$sleeptime=180 + rand(30, 90);
 
 					if ($this->echooutput)
-						echo "Start waitloop for ".$sleeptime." sec to prevent banning.\n";
+//						echo "Start waitloop for ".$sleeptime." sec to prevent banning.\n";
+						$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."]Start waitloop for ".$sleeptime." sec to prevent banning"));
 
 				sleep($sleeptime);
 				}
@@ -335,12 +350,9 @@ class AniDBstandAlone
 
 		} // end stage 3		foreach($anidboldtitles as $value)
 
-// debug test for exitcount
-echo "Still in function MygetAniDBInfo($exitcount) \n";
-// debug
 
 	} // end public function MygetAniDBInfo($exitcount)
-// ===================================================================================
+// ===== end new getAniDBInfo ==============================================================================
 
 	
 	// update the actual anidb info list as needed
@@ -536,7 +548,8 @@ Holding on to this in case we want it again as it has some uses, but currently w
 				$sleeptime=180 + rand(30, 90);
 
 					if ($this->echooutput)
-						echo "Start waitloop for ".$sleeptime." sec to prevent banning.\n";
+//						echo "Start waitloop for ".$sleeptime." sec to prevent banning.\n";
+						$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."]Start waitloop for ".$sleeptime." sec to prevent banning"));
 
 				sleep($sleeptime);
 				}
@@ -711,7 +724,8 @@ Holding on to this in case we want it again as it has some uses, but currently w
 				$sleeptime=10 + rand(2, 10);
 
 					if ($this->echooutput)
-						echo "Start waitloop for ".$sleeptime." sec to comply with flooding rule (2, + 8 to be extra safe, then a random delay).\n";
+//						echo "Start waitloop for ".$sleeptime." sec to comply with flooding rule (2, + 8 to be extra safe, then a random delay).\n";
+						$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."]Start waitloop for ".$sleeptime." sec to comply with flooding rule."));
 
 				sleep($sleeptime);
 // end new		
@@ -738,14 +752,9 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 	{
 		// we do not always want the same number so add between 1 and 12 to it
 // org		$anidb->getAniDBInfo((int)$argv[1] + rand(1, 12));
-// i want exact match, no rnd():
-//		$anidb->getAniDBInfo((int)$argv[1]);
 
 // use my own version :P
-echo "Start MygetAniDBInfo \n";
-		$anidb->MygetAniDBInfo((int)$argv[1]);
-echo "End MygetAniDBInfo \n";
-
+		$anidb->MygetAniDBInfo((int)$argv[1] + rand(1, 12));
 	
 		}
 }
