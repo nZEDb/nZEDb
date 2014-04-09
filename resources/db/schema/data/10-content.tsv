@@ -1,4 +1,4 @@
 id, title, url, body, metadescription, metakeywords, contenttype, showinmenu, status, ordinal, role
-1	"Welcome to nZEDb."	null	"<p>Since nZEDb is a fork of newznab, the API is compatible with nzbdrone,	sickbeard, couchpotato, etc...</p>"	""	""	0	3	1	0	0
-2	"example content"	"/great/seo/content/page/"	"<p>this is an example content page</p>"	""	""	1	2	1	1	0
-3	"another example"	"/another/great/seo/content/page/"	"<p>this is another example content page</p>"	""	""	1	2	1	0	0
+1	Welcome to nZEDb.	null	<p>Since nZEDb is a fork of newznab, the API is compatible with nzbdrone,	sickbeard, couchpotato, etc...</p>	""	""	3	0	1	0	0
+2	example content	/great/seo/content/page/	<p>this is an example content page</p>	""	""	1	2	1	1	0
+3	another example	/another/great/seo/content/page/	<p>this is another example content page</p>	""	""	1	2	1	0	0

@@ -203,7 +203,7 @@ class Category
 	 */
 	public function getDisabledIDs()
 	{
-		return $this->db->query("SELECT id FROM category WHERE status = 2");
+		return $this->db->query("SELECT id FROM category WHERE status = 2 OR parentid IN (SELECT id FROM category WHERE status = 2 AND parentid IS NULL)");
 	}
 
 	/**
@@ -616,6 +616,10 @@ class Category
 			}
 
 			if ($group === 'alt.binaries.moovee') {
+				//check if it's TV first as some tv posted in moovee
+				if ($this->isTV()) {
+					return $this->tmpCat;
+				}
 				// Check the movie isn't an HD release before blindly assigning SD
 				if ($this->isMovieHD()) {
 					return true;
@@ -1113,7 +1117,7 @@ class Category
 
 	public function isPCGame()
 	{
-		if (preg_match('/[^a-z0-9](0x0007|ALiAS|BACKLASH|BAT|CPY|FAS(DOX|iSO)|FLT([-._ ]|COGENT)|FLTDOX|Games|GENESIS|HI2U|INLAWS|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PC Game|PROPHET|RAiN|Razor1911|RELOADED|RiTUELYPOGEiOS|Rip-UNLEASHED|SKIDROW|TiNYiSO)[^a-z0-9]/i', $this->releaseName)) {
+		if (preg_match('/[^a-z0-9](0x0007|ALiAS|BACKLASH|BAT|CPY|FAS(DOX|iSO)|FLT([-._ ]|COGENT)|FLTDOX|Games|GENESIS|HI2U|INLAWS|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PC Game|PROPHET|RAiN|Razor1911|RELOADED|RiTUELYPOGEiOS|Rip-UNLEASHED|SKIDROW|TiNYiSO)[^a-z0-9]/', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
 		}

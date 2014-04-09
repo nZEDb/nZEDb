@@ -128,13 +128,13 @@ Class Sharing
 			$this->nntp->doConnect();
 		}
 
-		if ($this->siteSettings['posting']) {
-			$this->postAll();
-		}
 		if ($this->siteSettings['fetching']) {
 			$this->fetchAll();
 		}
 		$this->matchComments();
+		if ($this->siteSettings['posting']) {
+			$this->postAll();
+		}
 	}
 
 	/**
@@ -150,7 +150,9 @@ Class Sharing
 		$siteName = uniqid('nZEDb_', true);
 		$this->db->queryExec(
 			sprintf('
-				INSERT INTO sharing (site_name, site_guid, max_push, max_pull, hide_users, start_position) VALUES (%s, %s, 40 , 1000, 1, 1)',
+				INSERT INTO sharing
+				(site_name, site_guid, max_push, max_pull, hide_users, start_position, auto_enable, fetching, max_download)
+				VALUES (%s, %s, 40 , 20000, 1, 1, 1, 1, 150)',
 				$this->db->escapeString($siteName),
 				$this->db->escapeString(($siteGuid === '' ? sha1($siteName) : $siteGuid))
 			)
@@ -205,41 +207,49 @@ Class Sharing
 		// Create a unique identifier for this comment.
 		$sid = sha1($row['unix_time'] . $row['text'] . $row['nzb_guid']);
 
-		// Example of a subject.
-		//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
+		// Check if the comment is already shared.
+		$check = $this->db->queryOneRow(sprintf('SELECT id FROM releasecomment WHERE shareid = %s', $this->db->escapeString($sid)));
+		if ($check === false) {
 
-		// Attempt to upload the comment to usenet.
-		$success = $this->nntp->postArticle(
-			self::group,
-			('(_nZEDb_)' . $this->siteSettings['site_name'] . '_' . $this->siteSettings['site_guid'] . ' - [1/1] "' . $sid . '" yEnc (1/1)'),
-			json_encode(
-				array(
-					'USER'  => ($this->siteSettings['hide_users'] ? 'ANON' : $row['username']),
-					'TIME'  => $row['unix_time'],
-					'SID'   => $sid,
-					'RID'   => $row['nzb_guid'],
-					'BODY'  => $row['text']
-				)
-			),
-			'<anon@anon.com>'
-		);
+			// Example of a subject.
+			//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
 
-		// Check if we succesfully uploaded it.
-		if ($this->nntp->isError($success) === false && $success === true) {
-
-			// Update DB to say we posted the article.
-			$this->db->queryExec(
-				sprintf('
-					UPDATE releasecomment
-					SET shared = 1, shareid = %s
-					WHERE id = %d',
-					$this->db->escapeString($sid),
-					$row['id']
-				)
+			// Attempt to upload the comment to usenet.
+			$success = $this->nntp->postArticle(
+				self::group,
+				('(_nZEDb_)' . $this->siteSettings['site_name'] . '_' . $this->siteSettings['site_guid'] . ' - [1/1] "' . $sid . '" yEnc (1/1)'),
+				json_encode(
+					array(
+						'USER'  => ($this->siteSettings['hide_users'] ? 'ANON' : $row['username']),
+						'TIME'  => $row['unix_time'],
+						'SID'   => $sid,
+						'RID'   => $row['nzb_guid'],
+						'BODY'  => $row['text']
+					)
+				),
+				'<anon@anon.com>'
 			);
-			if (nZEDb_ECHOCLI) {
-				echo '.';
+
+			// Check if we succesfully uploaded it.
+			if ($this->nntp->isError($success) === false && $success === true) {
+
+				// Update DB to say we posted the article.
+				$this->db->queryExec(
+					sprintf('
+						UPDATE releasecomment
+						SET shared = 1, shareid = %s
+						WHERE id = %d',
+						$this->db->escapeString($sid),
+						$row['id']
+					)
+				);
+				if (nZEDb_ECHOCLI) {
+					echo '.';
+				}
 			}
+		} else {
+			// Update the DB to say it's shared.
+			$this->db->queryExec(sprintf('UPDATE releasecomment SET shared = 1 WHERE id = %d', $row['id']));
 		}
 	}
 
@@ -296,7 +306,7 @@ Class Sharing
 				$this->siteSettings['last_article'] = $ourOldest = (string)($group['last'] - 1000);
 			}
 		} else {
-			$ourOldest = $this->siteSettings['last_article'] + 1;
+			$ourOldest = (string)($this->siteSettings['last_article'] + 1);
 		}
 
 		// Set our newest to our oldest wanted + max pull setting.
@@ -324,9 +334,23 @@ Class Sharing
 			return;
 		}
 
-		$found = 0;
+		$found = $total = $currentArticle = 0;
 		// Loop over NNTP headers until we find comments.
 		foreach ($headers as $header) {
+
+			// Check if the article is missing.
+			if (!isset($header['Number'])) {
+				continue;
+			}
+
+			// Get the current article number.
+			$currentArticle = $header['Number'];
+
+			// Break out of the loop if we have downloaded more comments than the user wants.
+			if ($found > $this->siteSettings['max_download']) {
+				break;
+			}
+
 			//(_nZEDb_)nZEDb_533f16e46a5091.73152965_3d12d7c1169d468aaf50d5541ef02cc88f3ede10 - [1/1] "92ba694cebc4fbbd0d9ccabc8604c71b23af1131" (1/1) yEnc
 			if ($header['From'] === '<anon@anon.com>' &&
 				preg_match('/^\(_nZEDb_\)(?P<site>.+?)_(?P<guid>[a-f0-9]{40}) - \[1\/1\] "(?P<sid>[a-f0-9]{40})" yEnc \(1\/1\)$/i', $header['Subject'], $matches)) {
@@ -366,7 +390,7 @@ Class Sharing
 									$this->db->escapeString($matches['guid'])
 								)
 							);
-							return;
+							continue;
 						} else {
 							// Insert the site as enabled since the user has auto enabled on.
 							$this->db->queryExec(
@@ -380,9 +404,9 @@ Class Sharing
 							);
 						}
 					} else {
-						// The user has disabled this site, so return.
+						// The user has disabled this site, so continue.
 						if ($check['enabled'] == 0) {
-							return;
+							continue;
 						}
 					}
 
@@ -398,19 +422,26 @@ Class Sharing
 						$found++;
 						if (nZEDb_ECHOCLI) {
 							echo '.';
+							if ($found % 40 == 0) {
+								echo '[' . $found . ']' . PHP_EOL;
+							}
 						}
 					}
 				}
 			}
+			// Update once in a while in case the user cancels the script.
+			if ($total++ % 10 == 0) {
+				$this->siteSettings['lastarticle'] = $currentArticle;
+				$this->db->queryExec(sprintf('UPDATE sharing SET last_article = %d', $currentArticle));
+			}
 		}
-		// Update sharing's last article number.
-		$this->siteSettings['lastarticle'] = $newest;
-		$this->db->queryExec(
-			sprintf('
-				UPDATE sharing SET last_article = %d',
-				$newest
-			)
-		);
+
+		if ($currentArticle > 0) {
+			// Update sharing's last article number.
+			$this->siteSettings['lastarticle'] = $currentArticle;
+			$this->db->queryExec(sprintf('UPDATE sharing SET last_article = %d', $currentArticle));
+		}
+
 		if (nZEDb_ECHOCLI) {
 			if ($found > 0) {
 				echo PHP_EOL . '(Sharing) Fetched ' . $found . ' new comments.' . PHP_EOL;
@@ -444,51 +475,29 @@ Class Sharing
 			return false;
 		}
 
-		// Decode the body.
+		// JSON Decode the body.
 		$body = json_decode($body, true);
 		if ($body === false) {
 			return false;
 		}
 
 		// Just in case.
-		if (!isset($body['USER'])) {
+		if (!isset($body['USER']) || !isset($body['SID']) || !isset($body['RID']) || !isset($body['TIME']) | !isset($body['BODY'])) {
 			return false;
-		}
-
-		// Check if we have the user.
-		$user = $this->db->queryOneRow(
-			sprintf('SELECT id FROM users WHERE username = %s',
-				$this->db->escapeString('SH_' . $body['USER'])
-			)
-		);
-
-		// If we don't have the user, insert the user.
-		if ($user === false) {
-			$userid = $this->db->queryInsert(
-				sprintf(
-					"INSERT INTO users (username, email, password, rsstoken, createddate, userseed, role)
-					VALUES (%s, 'sharing@nZEDb.com', %s, %s, NOW(), %s, 0)",
-					$this->db->escapeString(('SH_' . $body['USER'])),
-					$this->db->escapeString(md5(uniqid('fgf56', true))),
-					$this->db->escapeString(md5(uniqid('sfsde', true))),
-					$this->db->escapeString(md5(uniqid('f344w', true)))
-				)
-			);
-		} else {
-			$userid = $user['id'];
 		}
 
 		// Insert the comment.
 		if ($this->db->queryExec(
 			sprintf('
-				INSERT INTO releasecomment (text, userid, createddate, shareid, shared, nzb_guid, releaseid, host, siteid)
-				VALUES (%s, %d, %s, %s, 2, %s, 0, "", %s)',
+				INSERT INTO releasecomment
+				(text, createddate, shareid, nzb_guid, siteid, username, userid, releaseid, shared, host)
+				VALUES (%s, %s, %s, %s, %s, %s, 0, 0, 2, "")',
 				$this->db->escapeString($body['BODY']),
-				$userid,
 				$this->db->from_unixtime(($body['TIME'] > time() ? time() : $body['TIME'])),
 				$this->db->escapeString($body['SID']),
 				$this->db->escapeString($body['RID']),
-				$this->db->escapeString($siteID)
+				$this->db->escapeString($siteID),
+				$this->db->escapeString((substr($body['USER'], 0, 3) === 'sn-' ? 'SH_ANON' : 'SH_' . $body['USER']))
 			)
 		)) {
 			return true;

@@ -50,7 +50,7 @@ CREATE TABLE releases (
 	size BIGINT UNSIGNED NOT NULL DEFAULT '0',
 	postdate DATETIME DEFAULT NULL,
 	adddate DATETIME DEFAULT NULL,
-	updatetime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	updatetime TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	guid VARCHAR(50) NOT NULL,
 	fromname VARCHAR(255) NULL,
 	completion FLOAT NOT NULL DEFAULT '0',
@@ -73,25 +73,25 @@ CREATE TABLE releases (
 	rarinnerfilecount INT NOT NULL DEFAULT 0,
 	haspreview TINYINT NOT NULL DEFAULT 0,
 	nfostatus TINYINT NOT NULL DEFAULT 0,
-	jpgstatus TINYINT(1) NOT NULL DEFAULT 0,
-	videostatus TINYINT(1) NOT NULL DEFAULT 0,
-	audiostatus TINYINT(1) NOT NULL DEFAULT 0,
+	jpgstatus BIT NOT NULL DEFAULT 0,
+	videostatus BIT NOT NULL DEFAULT 0,
+	audiostatus BIT NOT NULL DEFAULT 0,
 	dehashstatus TINYINT(1) NOT NULL DEFAULT 0,
-	reqidstatus TINYINT(1) NOT NULL DEFAULT 0,
+	reqidstatus TINYINT(1) NOT NULL DEFAULT '0',
 	nzb_guid VARCHAR(50) NULL,
-	nzbstatus TINYINT(1) NOT NULL DEFAULT 0,
-	iscategorized TINYINT(1) NOT NULL DEFAULT 0,
-	isrenamed TINYINT(1) NOT NULL DEFAULT 0,
-	ishashed TINYINT(1) NOT NULL DEFAULT 0,
-	isrequestid TINYINT(1) NOT NULL DEFAULT 0,
-	proc_pp TINYINT(1) NOT NULL DEFAULT 0,
-	proc_sorter TINYINT(1) NOT NULL DEFAULT 0,
-	proc_par2 TINYINT(1) NOT NULL DEFAULT 0,
-	proc_nfo TINYINT(1) NOT NULL DEFAULT 0,
-	proc_files TINYINT(1) NOT NULL DEFAULT 0,
+	nzbstatus BIT NOT NULL DEFAULT 0,
+	iscategorized BIT NOT NULL DEFAULT 0,
+	isrenamed BIT NOT NULL DEFAULT 0,
+	ishashed BIT NOT NULL DEFAULT 0,
+	isrequestid BIT NOT NULL DEFAULT 0,
+	proc_pp BIT NOT NULL DEFAULT 0,
+	proc_sorter BIT NOT NULL DEFAULT 0,
+	proc_par2 BIT NOT NULL DEFAULT 0,
+	proc_nfo BIT NOT NULL DEFAULT 0,
+	proc_files BIT NOT NULL DEFAULT 0,
 	PRIMARY KEY (id, categoryid)
-) ENGINE=MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1
-PARTITION BY RANGE (categoryid) (
+	) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1
+	PARTITION BY RANGE (categoryid) (
 	PARTITION unused VALUES LESS THAN (1000),
 	PARTITION console VALUES LESS THAN (2000),
 	PARTITION movies VALUES LESS THAN (3000),
@@ -101,7 +101,7 @@ PARTITION BY RANGE (categoryid) (
 	PARTITION xxx VALUES LESS THAN (7000),
 	PARTITION misc VALUES LESS THAN (8000),
 	PARTITION books VALUES LESS THAN (9000)
-);
+	) ;
 
 CREATE INDEX ix_releases_adddate ON releases (adddate);
 CREATE INDEX ix_releases_rageid ON releases (rageid);
@@ -120,20 +120,6 @@ CREATE INDEX ix_releases_status ON releases (nzbstatus, iscategorized, isrenamed
 CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
 CREATE INDEX ix_releases_nzb_guid ON releases (nzb_guid);
 CREATE INDEX ix_releases_preid_searchname ON releases (preid, searchname);
-
-DROP TABLE IF EXISTS releasesearch;
-CREATE TABLE releasesearch (
-        id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-        releaseid INT(11) UNSIGNED NOT NULL,
-        guid VARCHAR(50) NOT NULL,
-        name VARCHAR(255) NOT NULL DEFAULT '',
-        searchname VARCHAR(255) NOT NULL DEFAULT '',
-        PRIMARY KEY (id)
-) ENGINE=MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
-
-CREATE FULLTEXT INDEX ix_releasesearch_name_searchname_ft ON releasesearch (name, searchname);
-CREATE INDEX ix_releasesearch_releaseid ON releasesearch (releaseid);
-CREATE INDEX ix_releasesearch_guid ON releasesearch (guid);
 
 DROP TABLE IF EXISTS releasefiles;
 CREATE TABLE releasefiles (
@@ -209,14 +195,9 @@ CREATE TABLE releasecomment (
 	id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	releaseid INT(11) UNSIGNED NOT NULL,
 	text VARCHAR(2000) NOT NULL DEFAULT '',
-  username VARCHAR(255) NOT NULL DEFAULT '',
 	userid INT(11) UNSIGNED NOT NULL,
 	createddate DATETIME DEFAULT NULL,
 	host VARCHAR(15) NULL,
-  shared   TINYINT(1)  NOT NULL DEFAULT '0',
-  shareid  VARCHAR(40) NOT NULL DEFAULT '',
-  siteid  VARCHAR(40) NOT NULL DEFAULT '',
-  nzb_guid VARCHAR(32) NOT NULL DEFAULT '',
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
@@ -231,19 +212,18 @@ CREATE TABLE predb (
 	size VARCHAR(50) NULL,
 	category VARCHAR(255) NULL,
 	predate DATETIME DEFAULT NULL,
+	adddate DATETIME DEFAULT NULL,
 	source VARCHAR(50) NOT NULL DEFAULT '',
 	md5 VARCHAR(255) NOT NULL DEFAULT '0',
 	requestid INT(10) UNSIGNED NOT NULL DEFAULT '0',
-	groupid INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
-	nuked TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'If this pre is nuked, what is the reason?',
-	nukereason VARCHAR(255) NULL COMMENT 'How many files does this pre have ?',
-	files VARCHAR(50) NULL,
+	groupid INT(10) UNSIGNED NOT NULL DEFAULT '0',
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
 CREATE INDEX ix_predb_title ON predb (title);
 CREATE INDEX ix_predb_nfo ON predb (nfo);
 CREATE INDEX ix_predb_predate ON predb (predate);
+CREATE INDEX ix_predb_adddate ON predb (adddate);
 CREATE INDEX ix_predb_source ON predb (source);
 CREATE INDEX ix_predb_requestid on predb (requestid, groupid);
 CREATE UNIQUE INDEX ix_predb_md5 ON predb (md5);
@@ -260,7 +240,6 @@ CREATE TABLE menu (
 	menueval VARCHAR(2000) NOT NULL DEFAULT '',
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
-
 
 DROP TABLE IF EXISTS releasenfo;
 CREATE TABLE releasenfo (
@@ -479,11 +458,6 @@ CREATE TABLE users (
 	sabapikey VARCHAR(255) NULL DEFAULT NULL,
 	sabapikeytype TINYINT(1) NULL DEFAULT NULL,
 	sabpriority TINYINT(1) NULL DEFAULT NULL,
-	/* Type of queue, Sab or NZBGet. */
-	queuetype TINYINT(1) NOT NULL DEFAULT 1,
-	nzbgeturl VARCHAR(255) NULL DEFAULT NULL,
-	nzbgetusername VARCHAR(255) NULL DEFAULT NULL,
-	nzbgetpassword VARCHAR(255) NULL DEFAULT NULL,
 	userseed VARCHAR(50) NOT NULL,
 	cp_url VARCHAR(255) NULL DEFAULT NULL,
 	cp_api VARCHAR(255) NULL DEFAULT NULL,
@@ -774,47 +748,16 @@ CREATE INDEX ix_shortgroups_name ON shortgroups(name);
 
 DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
-  code CHAR(2) NOT NULL DEFAULT "",
-  name VARCHAR(255) NOT NULL DEFAULT "",
-  PRIMARY KEY (name)
+	id INT(11) NOT NULL AUTO_INCREMENT,
+	name VARCHAR(255) NOT NULL DEFAULT "",
+	code CHAR(2) NOT NULL DEFAULT "",
+	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE INDEX ix_countries_name ON countries (name);
+CREATE INDEX ix_country_name ON country (name);
 
-DROP TABLE IF EXISTS sharing_sites;
-CREATE TABLE sharing_sites (
-  id             INT(11) UNSIGNED   NOT NULL AUTO_INCREMENT,
-  site_name      VARCHAR(255)       NOT NULL DEFAULT '',
-  site_guid      VARCHAR(40)        NOT NULL DEFAULT '',
-  last_time      DATETIME           DEFAULT NULL,
-  first_time     DATETIME           DEFAULT NULL,
-  enabled        TINYINT(1)         NOT NULL DEFAULT '0',
-  comments       MEDIUMINT UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY    (id)
-) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
-
-DROP TABLE IF EXISTS sharing;
-CREATE TABLE sharing (
-  site_guid      VARCHAR(40)        NOT NULL DEFAULT '',
-  site_name      VARCHAR(255)       NOT NULL DEFAULT '',
-  username       VARCHAR(255)       NOT NULL DEFAULT '',
-  enabled        TINYINT(1)         NOT NULL DEFAULT '0',
-  posting        TINYINT(1)         NOT NULL DEFAULT '0',
-  fetching       TINYINT(1)         NOT NULL DEFAULT '1',
-  auto_enable    TINYINT(1)         NOT NULL DEFAULT '1',
-  start_position TINYINT(1)         NOT NULL DEFAULT '0',
-  hide_users     TINYINT(1)         NOT NULL DEFAULT '1',
-  last_article   BIGINT UNSIGNED    NOT NULL DEFAULT '0',
-  max_push       MEDIUMINT UNSIGNED NOT NULL DEFAULT '40',
-  max_download   MEDIUMINT UNSIGNED NOT NULL DEFAULT '150',
-  max_pull       MEDIUMINT UNSIGNED NOT NULL DEFAULT '20000',
-  PRIMARY KEY    (site_guid)
-) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
 
 DELIMITER $$
 CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.ishashed = 1;ELSEIF NEW.name REGEXP '^\\[[[:digit:]]+\\]' THEN SET NEW.isrequestid = 1; END IF; END; $$
 CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}' THEN SET NEW.ishashed = 1;ELSEIF NEW.name REGEXP '^\\[[[:digit:]]+\\]' THEN SET NEW.isrequestid = 1; END IF; END; $$
-CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW BEGIN INSERT INTO releasesearch (releaseid, guid, name, searchname) VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname); END; $$
-CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW BEGIN IF NEW.guid != OLD.guid THEN UPDATE releasesearch SET guid = NEW.guid WHERE releaseid = OLD.id; END IF; IF NEW.name != OLD.name THEN UPDATE releasesearch SET name = NEW.name WHERE releaseid = OLD.id; END IF; IF NEW.searchname != OLD.searchname THEN UPDATE releasesearch SET searchname = NEW.searchname WHERE releaseid = OLD.id; END IF; END; $$
-CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW BEGIN DELETE FROM releasesearch WHERE releaseid = OLD.id; END; $$
 DELIMITER ;

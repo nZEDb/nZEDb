@@ -18,6 +18,7 @@ $s = new Sites();
 $site = $s->get();
 $patch = (isset($site->sqlpatch)) ? $site->sqlpatch : 0;
 $hashcheck = (isset($site->hashcheck)) ? $site->hashcheck : 0;
+$nntpproxy = $site->nntpproxy;
 
 // Check collections version
 if ($hashcheck != 1) {
@@ -269,6 +270,16 @@ function window_optimize($tmux_session)
 	exec("tmux splitw -t $tmux_session:3 -v -p 50 'printf \"\033]2;optimize\033\"'");
 }
 
+function window_sharing($tmux_session)
+{
+	$db = new DB();
+	$sharing = $db->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
+	if($sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
+	exec("tmux new-window -t $tmux_session -n Sharing 'printf \"\033]2;comment_sharing\033\"'");
+	}
+}
+
+
 function attach($DIR, $tmux_session)
 {
 	if (command_exist("php5")) {
@@ -303,13 +314,22 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	if ($colors == 1) {
+	if ($colors == 1 && $nntpproxy == 1) {
 		window_colors($tmux_session);
 		window_ircscraper($tmux_session, 4);
 		window_proxy($tmux_session, 5);
-	} else {
+		window_sharing($tmux_session);
+	} else if ($colors == 1) {
+		window_colors($tmux_session);
+		window_ircscraper($tmux_session, 4);
+		window_sharing($tmux_session);
+	} else if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session, 3);
 		window_proxy($tmux_session, 4);
+		window_sharing($tmux_session);
+	} else {
+		window_ircscraper($tmux_session, 3);
+		window_sharing($tmux_session);
 	}
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);
@@ -323,13 +343,22 @@ if ($seq == 1) {
 	}
 
 	window_stripped_utilities($tmux_session);
-	if ($colors == 1) {
+	if ($colors == 1 && $nntpproxy == 1) {
 		window_colors($tmux_session);
 		window_ircscraper($tmux_session, 3);
 		window_proxy($tmux_session, 4);
+		window_sharing($tmux_session);
+	} else if ($colors == 1) {
+		window_colors($tmux_session);
+		window_ircscraper($tmux_session, 3);
+		window_sharing($tmux_session);
+	} else if ($nntpproxy == 1) {
+		window_ircscraper($tmux_session, 2);
+		window_proxy($tmux_session, 3);
+		window_sharing($tmux_session);
 	} else {
 	window_ircscraper($tmux_session, 2);
-	window_proxy($tmux_session, 3);
+	window_sharing($tmux_session);
 	}
 
 	start_apps($tmux_session);
@@ -347,13 +376,22 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	if ($colors == 1) {
+	if ($colors == 1 && $nntpproxy == 1) {
 		window_colors($tmux_session);
+		window_ircscraper($tmux_session, 4);
+		window_proxy($tmux_session, 5);
+		window_sharing($tmux_session);
+	} else if ($colors == 1) {
+		window_colors($tmux_session);
+		window_ircscraper($tmux_session, 4);
+		window_sharing($tmux_session);
+	} else if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session, 3);
 		window_proxy($tmux_session, 4);
+		window_sharing($tmux_session);
 	} else {
-		window_ircscraper($tmux_session, 2);
-		window_proxy($tmux_session, 3);
+		window_ircscraper($tmux_session, 3);
+		window_sharing($tmux_session);
 	}
 	start_apps($tmux_session);
 	attach($DIR, $tmux_session);

@@ -7,7 +7,7 @@
 	<br />
 	<div id="message" style="width:717px;">msg</div>
 	{if $local}
-		<form action="{$SCRIPT_NAME}?action=submit" method="post">
+		<form action="{$SCRIPT_NAME}" method="post">
 			<fieldset style="width:717px;">
 				<legend>Local sharing settings.</legend>
 				<table class="input">
@@ -26,10 +26,17 @@
 						</td>
 					</tr>
 					<tr>
-						<td style="width: 100px;"><label for="sharing_maxpull">Max Downloads:</label></td>
+						<td style="width: 100px;"><label for="sharing_maxdownload">Max Downloads:</label></td>
+						<td>
+							<input id="sharing_maxdownload" class="short" name="sharing_maxdownload" type="text" value="{$local.max_download}" />
+							<div>This is how many comments to download per run.</div>
+						</td>
+					</tr>
+					<tr>
+						<td style="width: 100px;"><label for="sharing_maxpull">Max Headers:</label></td>
 						<td>
 							<input id="sharing_maxpull" class="short" name="sharing_maxpull" type="text" value="{$local.max_pull}" />
-							<div>This is how many <strong>headers</strong> to download per run(we do not know how many comments we will download).</div>
+							<div>This is how many headers to download and look through for comments per run.</div>
 						</td>
 					</tr>
 					<tr>
@@ -38,9 +45,9 @@
 							<div>
 								<strong id="enabled-1">
 									{if $local.enabled == "1"}
-										<a href="javascript:ajax_sharing_enabled(1, 0)" class="sharing_enabled_active">[DISABLE]</a>
+										<a title="Click this to disable sharing." href="javascript:ajax_sharing_enabled(1, 0)" class="sharing_enabled_active">[DISABLE]</a>
 									{else}
-										<a href="javascript:ajax_sharing_enabled(1, 1)" class="sharing_enabled_deactive">[ENABLE]</a>
+										<a title="Click this to enable sharing." href="javascript:ajax_sharing_enabled(1, 1)" class="sharing_enabled_deactive">[ENABLE]</a>
 									{/if}
 								</strong>
 								Is the sharing/retrieving enabled? This overrides posting/fetching.
@@ -53,9 +60,9 @@
 							<div>
 								<strong id="posting-1">
 									{if $local.posting == "1"}
-										<a href="javascript:ajax_sharing_posting(1, 0)" class="sharing_posting_active">[DISABLE]</a>
+										<a title="Click this to disable posting." href="javascript:ajax_sharing_posting(1, 0)" class="sharing_posting_active">[DISABLE]</a>
 									{else}
-										<a href="javascript:ajax_sharing_posting(1, 1)" class="sharing_posting_deactive">[ENABLE]</a>
+										<a title="Click this to enable posting." href="javascript:ajax_sharing_posting(1, 1)" class="sharing_posting_deactive">[ENABLE]</a>
 									{/if}
 								</strong>
 								If you turn this on, this will post your comments to usenet. <br />
@@ -69,9 +76,9 @@
 							<div>
 								<strong id="fetching-1">
 									{if $local.fetching == "1"}
-										<a href="javascript:ajax_sharing_fetching(1, 0)" class="sharing_fetching_active">[DISABLE]</a>
+										<a title="Click this to disable fetching." href="javascript:ajax_sharing_fetching(1, 0)" class="sharing_fetching_active">[DISABLE]</a>
 									{else}
-										<a href="javascript:ajax_sharing_fetching(1, 1)" class="sharing_fetching_deactive">[ENABLE]</a>
+										<a title="Click this to enable fetching." href="javascript:ajax_sharing_fetching(1, 1)" class="sharing_fetching_deactive">[ENABLE]</a>
 									{/if}
 								</strong>
 								If you turn this on, this will download comments from usenet.
@@ -84,9 +91,9 @@
 							<div>
 								<strong id="auto-1">
 									{if $local.auto_enable == "1"}
-										<a href="javascript:ajax_sharing_auto(1, 0)" class="sharing_auto_active">[DISABLE]</a>
+										<a title="Click this to disable auto-enable." href="javascript:ajax_sharing_auto(1, 0)" class="sharing_auto_active">[DISABLE]</a>
 									{else}
-										<a href="javascript:ajax_sharing_auto(1, 1)" class="sharing_auto_deactive">[ENABLE]</a>
+										<a title="Click this to enable auto-enable." href="javascript:ajax_sharing_auto(1, 1)" class="sharing_auto_deactive">[ENABLE]</a>
 									{/if}
 								</strong>
 								This will auto-enable new sites as we see them.
@@ -99,9 +106,9 @@
 							<div>
 								<strong id="hide-1">
 									{if $local.hide_users == "1"}
-										<a href="javascript:ajax_sharing_hide(1, 0)" class="sharing_hide_active">[DISABLE]</a>
+										<a title="Click this to disable hiding users." href="javascript:ajax_sharing_hide(1, 0)" class="sharing_hide_active">[DISABLE]</a>
 									{else}
-										<a href="javascript:ajax_sharing_hide(1, 1)" class="sharing_hide_deactive">[ENABLE]</a>
+										<a title="Click this to enable hiding users." href="javascript:ajax_sharing_hide(1, 1)" class="sharing_hide_deactive">[ENABLE]</a>
 									{/if}
 								</strong>
 								This will hide user names from being visible on remote sites.
@@ -114,12 +121,13 @@
 							<div>
 								<strong id="startposition-1">
 									{if $local.start_position == "1"}
-										<a href="javascript:ajax_sharing_startposition(1, 0)" class="sharing_startposition_active">[DISABLE]</a>
+										<a title="Click this to disable backfill." href="javascript:ajax_sharing_startposition(1, 0)" class="sharing_startposition_active">[DISABLE]</a>
 									{else}
-										<a href="javascript:ajax_sharing_startposition(1, 1)" class="sharing_startposition_deactive">[ENABLE]</a>
+										<a title="Click this to enable backfill." href="javascript:ajax_sharing_startposition(1, 1)" class="sharing_startposition_deactive">[ENABLE]</a>
 									{/if}
 								</strong>
-								When pulling the first time, or after resetting, start from the beginning of the group (takes more time).
+								When pulling the first time, or after resetting, start from the beginning of the group (takes more time).<br />
+								<strong>With the backfill setting it will take a few runs before you find anything the first time because the group has articles other than comments in it.</strong>
 							</div>
 						</td>
 					</tr>
