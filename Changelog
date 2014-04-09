@@ -6,6 +6,12 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-09 Bart39
+	* Chg: Modified Darius's sharing changes around the various tmux window options
+	* Chg: Updated options/comments in threaded.sh about choosing the right tmux pane(s) for nntpproxy
+2014-04-09 DariusIII
+	* Chg: Edited the db patch, as it is redundant to do the alter when you are already dropping the table before that.
+	* Add: Added sharing window to tmux for comment sharing feature.
 2014-04-09 kevin
 	* Add: New content page to other themes.
 	* Add: Link to more content from index.

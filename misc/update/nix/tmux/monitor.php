@@ -1458,17 +1458,28 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\n${panes0[2]} has been disabled/terminated by Exceeding Limits\"'");
 			}
 
-			//run IRCScraper
-			$pane = ($colors == 1) ? 4 : 3;
-			run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet);
-		} else if ($seq == 2) {
-			// Show all available colors
-			if ($colors == 1) {
-				shell_exec("tmux respawnp -t${tmux_session}:2.0 '$_php ${DIR}testing/Dev/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
+			//pane setup for IrcScraper / Sharing
+			$ipane = 3;
+			$spane = 4;
+			switch (true) {
+				case ($colors == 1 && $nntpproxy == 1):
+					$ipane = 4;
+					$spane = 6;
+					break;
+				case ($colors == 1):
+					$ipane = 4;
+				case ($nntpproxy == 1):
+					$spane = 5;
+					break;
+				default:
+					echo "WTF happened!!\n";
 			}
+
+			//run IRCScraper
+			run_ircscraper($tmux_session, $_php, $ipane, $scrape_cz, $scrape_efnet);
+
 			//run Sharing
-			$pane = ($colors == 1) ? 5 : 4;
-			run_sharing($tmux_session, $_php, $pane);
+			run_sharing($tmux_session, $_php, $spane, $_sleep, $sharing_timer);
 		} else if ($seq == 2) {
 			// Show all available colors
 			if ($colors == 1) {
@@ -1522,13 +1533,28 @@ while ($i > 0) {
 			shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 					${DIR}update/nix/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null");
 
+			//pane setup for IrcScraper / Sharing
+			$ipane = 2;
+			$spane = 3;
+			switch (true) {
+				case ($colors == 1 && $nntpproxy == 1):
+					$ipane = 3;
+					$spane = 5;
+					break;
+				case ($colors == 1):
+					$ipane = 3;
+				case ($nntpproxy == 1):
+					$spane = 4;
+					break;
+				default:
+					echo "WTF happened!!\n";
+			}
+
 			//run IRCScraper
-			$pane = ($colors == 1) ? 3 : 2;
-			run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet);
+			run_ircscraper($tmux_session, $_php, $ipane, $scrape_cz, $scrape_efnet);
 
 			//run Sharing
-			$pane = ($colors == 1) ? 4 : 3;
-			run_sharing($tmux_session, $_php, $pane);
+			run_sharing($tmux_session, $_php, $spane, $_sleep, $sharing_timer);
 		} else {
 			//run update_binaries
 			$color = get_color($colors_start, $colors_end, $colors_exc);
@@ -1596,13 +1622,28 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.4 'echo \"\033[38;5;${color}m\n${panes0[4]} has been disabled/terminated by Releases\"'");
 			}
 
+			//pane setup for IrcScraper / Sharing
+			$ipane = 3;
+			$spane = 4;
+			switch (true) {
+				case ($colors == 1 && $nntpproxy == 1):
+					$ipane = 4;
+					$spane = 6;
+					break;
+				case ($colors == 1):
+					$ipane = 4;
+				case ($nntpproxy == 1):
+					$spane = 5;
+					break;
+				default:
+					echo "WTF happened!!\n";
+			}
+
 			//run IRCScraper
-			$pane = ($colors == 1) ? 4 : 3;
-			run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet);
+			run_ircscraper($tmux_session, $_php, $ipane, $scrape_cz, $scrape_efnet);
 
 			//run Sharing
-			$pane = ($colors == 1) ? 5 : 4;
-			run_sharing($tmux_session, $_php, $pane);
+			run_sharing($tmux_session, $_php, $spane, $_sleep, $sharing_timer);
 		}
 	} else if ($seq == 0) {
 		for ($g = 1; $g <= 4; $g++) {
@@ -1688,12 +1729,19 @@ function run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet)
 	}
 }
 
-function run_sharing($tmux_session, $_php, $pane)
+function run_sharing($tmux_session, $_php, $pane, $_sleep, $sharing_timer)
 {
-	$DIR = nZEDb_MISC;
-	$sharing = $DIR . "/update/postprocess.php sharing true";
-	shell_exec(
-		"tmux respawnp -t${tmux_session}:${pane}.0 ' \
-			$_php $sharing $log; $_sleep $sharing_timer' 2>&1 1> /dev/null"
-		);
+	$db = new DB();
+	$sharing = $db->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
+
+	if($sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
+		if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
+			$DIR = nZEDb_MISC;
+			$sharing2 = $DIR . "/update/postprocess.php sharing true";
+			shell_exec(
+				"tmux respawnp -t${tmux_session}:${pane}.0 ' \
+					$_php $sharing2; $_sleep $sharing_timer' 2>&1 1> /dev/null"
+				);
+		}
+	}
 }
