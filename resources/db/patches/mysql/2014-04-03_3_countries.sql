@@ -10,7 +10,7 @@ CREATE TABLE countries (
 
 CREATE INDEX ix_countries_name ON countries (name);
 
-INSERT INTO countries (code, name) VALUES 
+INSERT INTO countries (code, name) VALUES
 ('AF', 'Afghanistan'),
 ('AX', 'Aland Islands'),
 ('AL', 'Albania'),
@@ -123,8 +123,8 @@ INSERT INTO countries (code, name) VALUES
 ('KZ', 'Kazakhstan'),
 ('KE', 'Kenya'),
 ('KI', 'Kiribati'),
-('KP', 'Korea'),
-('KR', 'Korea'),
+('KP', 'Korea, North'),
+('KR', 'Korea, South'),
 ('KW', 'Kuwait'),
 ('KG', 'Kyrgyz Republic'),
 ('LA', 'Lao'),
@@ -249,8 +249,5 @@ INSERT INTO countries (code, name) VALUES
 ('YE', 'Yemen'),
 ('ZM', 'Zambia'),
 ('ZW', 'Zimbabwe');
-
-UPDATE countries SET name = 'Korea, North' WHERE code = 'KP';
-UPDATE countries SET name = 'Korea, South' WHERE code = 'KR';
 
 UPDATE site SET value = '196' WHERE setting = 'sqlpatch';

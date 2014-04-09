@@ -20,4 +20,7 @@ queue	My Queue	"View Your Queue.'	1 81	{if !$sabintegrated}-1{/if}
 forum	Forum	Browse Forum.	1	85	""
 login	Login	Login.	0	100	""
 register	Register	Register.	0	110	""
-newposterwall	New Releases',	'Newest Releases Poster Wall	1	11	""
+newposterwall	New Releases	Newest Releases Poster Wall	1	11	""
+content	Contents page	Administrator messages for users.	1	14	""
+login	Login	Login.	0	100	""
+register	Register	Register.	0	110	""
