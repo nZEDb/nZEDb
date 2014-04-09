@@ -11,6 +11,7 @@ Each update goes to the top of the file
 2014-04-08 niel
 	* Chg: Altered format of SQL patches to properly reflect the first 8 characters being the date.
 2014-04-08 bart39
+	* Fix: duplicate inserts to tvrage when rageid = -2
 	* Chg: check if it's tv when categorizing a.b.moovee
 	* Fix: make PCGame categorization regex case sensitive to prevent incorrect matches
 2014-04-08 kevin
