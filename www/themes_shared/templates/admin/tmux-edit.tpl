@@ -313,7 +313,7 @@
 				<td style="width:180px;"><label for="sharing_timer">Comments Sharing Timer:</label></td>
 				<td>
 					<input class="short" id="sharing_timer" name="sharing_timer" type="text" value="{$ftmux->sharing_timer}" />
-					<div class="hint">Set the timer for updating comments shared between newznab and nZEDb servers</div>
+					<div class="hint">Set the sleep time for running sharing within tmux</div>
 				</td>
 	</tr>
 	 </table>
