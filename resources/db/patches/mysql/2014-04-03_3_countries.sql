@@ -10,7 +10,7 @@ CREATE TABLE countries (
 
 CREATE INDEX ix_countries_name ON countries (name);
 
-INSERT INTO countries (code, name) VALUES 
+INSERT INTO countries (code, name) VALUES
 ('AF', 'Afghanistan'),
 ('AX', 'Aland Islands'),
 ('AL', 'Albania'),
