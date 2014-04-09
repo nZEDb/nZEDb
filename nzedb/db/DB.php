@@ -46,6 +46,11 @@ class DB extends \PDO
 	private static $pdo = null;
 
 	/**
+	 * @var object Class instance debugging.
+	 */
+	private $debugging;
+
+	/**
 	 * @var string Lower-cased name of DBMS in use.
 	 */
 	private $DbSystem;
@@ -56,9 +61,9 @@ class DB extends \PDO
 	private $dbVersion;
 
 	/**
-	 * @var object Class instance debugging.
+	 * @var string	Stored copy of the dsn used to connect.
 	 */
-	private $debugging;
+	private $dsn;
 
 	/**
 	 * @var array    Options passed into the constructor or defaulted.
@@ -143,6 +148,27 @@ class DB extends \PDO
 	}
 
 	/**
+	 * @return bool Whether the Db is definitely on the local machine.
+	 */
+	public function isLocalDb ()
+	{
+		if (!empty($this->opts['dbsock']) || $this->opts['dbhost'] == 'localhost') {
+			return true;
+		}
+
+		preg_match_all('/inet' . '6?' . ' addr: ?([^ ]+)/', `ifconfig`, $ips);
+
+		// Check for dotted quad - if exists compare against local IP number(s)
+		if (preg_match('#^\d+\.\d+\.\d+\.\d+$#', $this->opts['dbhost'])) {
+			if (in_array($this->opts['dbhost'], $ips[1])) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Init PDO instance.
 	 */
 	private function initialiseDatabase()
@@ -167,6 +193,7 @@ class DB extends \PDO
 			$options[\PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
 		}
 
+		$this->dsn = $dsn;
 		// removed try/catch to let the instantiating code handle the problem (Install for
 		// instance can output a message that connecting failed.
 		self::$pdo = new \PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);

@@ -149,7 +149,7 @@ class DbUpdate
 		$defaults = array(
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex' => '#^\d{4}_\d{2}_\d{2}_\d+(\w+)\.sql$#',
+			'regex' => '#^\d{4}-\d{2}-\d{2}_\d+(\w+)\.sql$#',
 			'safe'	=> true,
 		);
 		$options += $defaults;
