@@ -193,7 +193,7 @@
 		<footer>
 			<div class="container text-center">
 				<p><i class="icon-certificate icon-2x" style="color:yellow;"></i>  <i class="icon-quote-left qoute"></i> {$site->footer} <i class="icon-quote-right qoute"></i></p>
-				<p>Copyright &copy; <a href="{$smarty.const.WWW_TOP}{$site->home_link}">nZEDb</a> all rights reserved {$smarty.now|date_format:"%Y"}</p>
+				<p>Copyright &copy; <a href="{$smarty.const.WWW_TOP}{$site->home_link}">{if $site->title == ''}nZEDb{else}{$site->title}{/if}</a> all rights reserved {$smarty.now|date_format:"%Y"}</p>
 
 				<ul class="footer-links"><li><a href="{$smarty.const.WWW_TOP}{$site->home_link}">Home</a></li>
 					<li class="muted"> | </li>
