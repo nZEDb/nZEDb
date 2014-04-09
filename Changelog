@@ -6,6 +6,8 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-09 niel
+	* Fix: duplicate key constraint error introduced by recent change to 2014-04-03_3_countries.sql patch.
 2014-04-08 niel
 	* Chg: Altered format of SQL patches to properly reflect the first 8 characters being the date.
 2014-04-08 bart39
