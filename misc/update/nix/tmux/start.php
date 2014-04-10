@@ -246,11 +246,9 @@ function window_ircscraper($tmux_session, $window)
 	if ($scrape_cz == 1 && $scrape_efnet == 1) {
 		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
 		exec("tmux selectp -t 0; tmux splitw -t $tmux_session:$window -v -p 50 'printf \"\033]2;scrape_Efnet\033\"'");
-	}
-	else if ($scrape_cz == 1) {
+	} else if ($scrape_cz == 1) {
 		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
-	}
-	elseif ($scrape_efnet == 1) {
+	} elseif ($scrape_efnet == 1) {
 		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_Efnet\033\"'");
 	} else {
 		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
@@ -274,11 +272,14 @@ function window_sharing($tmux_session)
 {
 	$db = new DB();
 	$sharing = $db->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
-	if($sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
-	exec("tmux new-window -t $tmux_session -n Sharing 'printf \"\033]2;comment_sharing\033\"'");
+	$t = new Tmux();
+	$tmux = $t->get();
+	$tmux_share = (isset($tmux->run_sharing)) ? $tmux->run_sharing : 0;
+
+	if ($tmux_share && $sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
+		exec("tmux new-window -t $tmux_session -n Sharing 'printf \"\033]2;comment_sharing\033\"'");
 	}
 }
-
 
 function attach($DIR, $tmux_session)
 {
@@ -357,8 +358,8 @@ if ($seq == 1) {
 		window_proxy($tmux_session, 3);
 		window_sharing($tmux_session);
 	} else {
-	window_ircscraper($tmux_session, 2);
-	window_sharing($tmux_session);
+		window_ircscraper($tmux_session, 2);
+		window_sharing($tmux_session);
 	}
 
 	start_apps($tmux_session);

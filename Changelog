@@ -10,6 +10,8 @@ Each update goes to the top of the file
 	* Chg: Split removecrap blacklist into two functions (one for release names and searchnames and one for files)
 	* Add: Release names/searchnames blacklist function now uses FT Match filters for speed
 2014-04-09 Bart39
+	* Add: Add option whether to run comment sharing or not within tmux.
+	* Chg: correct description for Sharing timer in tmux settings.
 	* Chg: Modified Darius's sharing changes around the various tmux window options
 	* Chg: Updated options/comments in threaded.sh about choosing the right tmux pane(s) for nntpproxy
 2014-04-09 DariusIII
