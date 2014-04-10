@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-10 kevin
+	* Add: More support for X-DNZB HTTP headers, Content-Length on HTTP headers (gets rid of warnings in NZBGet).
 	* Add: Option for admins to hide themes from user profile edit.
 	* Chg: Use NZBGet's appendurl instead of append which will speed up javascript execution on send to queue. (thanks to hugbug @ nzbget.net for support)
 2014-04-09 ruhllatio
