@@ -110,9 +110,9 @@ if (isset($_GET["id"])) {
 	// Set X-DNZB header data.
 	header("X-DNZB-Category: " . $reldata["category_name"]);
 	header("X-DNZB-Details: " . $page->serverurl . 'details/' . $_GET["id"]);
-	if (!empty($reldata['imdbid'])) {
+	if (!empty($reldata['imdbid']) && $reldata['imdbid'] > 0) {
 		header("X-DNZB-MoreInfo: http://www.imdb.com/title/tt" . $reldata['imdbid']);
-	} else if (!empty($reldata['rageid'])) {
+	} else if (!empty($reldata['rageid']) && $reldata['rageid'] > 0) {
 		header("X-DNZB-MoreInfo: http://www.tvrage.com/shows/id-" . $reldata['rageid']);
 	}
 	header("X-DNZB-Name: " . $reldata["searchname"]);
