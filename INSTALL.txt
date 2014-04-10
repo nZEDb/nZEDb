@@ -3,26 +3,48 @@ See docs folder for O/S specific guides.
 REQUIREMENTS
 	PHP
 		php version 5.4 or higher
-		sessions enabled
-		memory limit at 1024 or more
-		minimum execution time of 120+ seconds
-		make sure you update the php.ini for both web and cli (the date.timezone options are important)
-		OpenSSL (if connecting to ssl usenet provider)
-		php register_globals off
-		exif support (check the ini file).
-		GD Imaging Library w/PHP integration
-		PEAR
-		JSON
 
-		(optional)
-		APC
-		Memcache
+		(ini file settings)
+			date.timezone Set to your local (http://ca3.php.net/manual/en/timezones.php)
+			memory limit at 1024 or more (memory_limit = 1024M)
+			minimum execution time of 120+ seconds (max_execution_time = 120)
+			sessions enabled (This should be enabled by default ; http://support.qualityunit.com/021373-How-To-Enable-Session-Support-for-PHP)
+
+			Make sure you update the php.ini for both web and cli (the date.timezone options are important)
+
+		(extensions)
+			Curl
+			Crypt
+			Ctype
+			Date
+			DBA
+			EXIF
+			Filter
+			GD
+			Hash
+			Iconv
+			JSON
+			MBString
+			OpenSSL
+			PEAR
+			PCRE
+			PDO
+			PDO MySQL
+			Session
+			SHA1
+			SimpleXML
+			Sockets
+			ZLib
+
+		(optional extensions)
+			APC
+			Memcache (caching query results)
 
 	Database:
 		MySQL 5.5+
 			max_allowed_packet=12582912
 			group_concat_max_len=8192
-			timezone set to php's
+			default_time_zone=Africa/Abidjan (TZ list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
 			file permissions if not using root user (GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
 
 		OR
