@@ -292,8 +292,12 @@
 
 9. Run the installer.
 
-	  # Change localhost for the server's IP if you are browsing on another computer.
+      Change localhost for the server's IP if you are browsing on another computer.
             http://localhost/install
+
+      If you are running MySQL not as root user, you will need to run this in MySQL shell (with the single quotes):
+
+          GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';
 
 10. Configure the site.
 

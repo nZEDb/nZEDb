@@ -1,3 +1,4 @@
+See docs folder for O/S specific guides.
 
 REQUIREMENTS
 	PHP
@@ -5,21 +6,27 @@ REQUIREMENTS
 		sessions enabled
 		memory limit at 1024 or more
 		minimum execution time of 120+ seconds
-		make sure you update the php.ini for both web and cli
+		make sure you update the php.ini for both web and cli (the date.timezone options are important)
 		OpenSSL (if connecting to ssl usenet provider)
 		php register_globals off
 		exif support (check the ini file).
+		GD Imaging Library w/PHP integration
+		PEAR
+		JSON
 
-	GD Imaging Library w/PHP integration
-
-	PEAR
+		(optional)
+		APC
+		Memcache
 
 	Database:
-		MySQL
+		MySQL 5.5+
 			max_allowed_packet=12582912
 			group_concat_max_len=8192
 			timezone set to php's
-	OR
+			file permissions if not using root user (GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
+
+		OR
+
 		PostgreSQL(this is currently WIP, use mysql instead)
 
 			Note: PostgreSQL 9.3 or higher is required.
@@ -43,14 +50,18 @@ REQUIREMENTS
 		script timeout of at least 60 seconds
 		mod_rewrite enabled
 		.htaccess allow override on
+		In apache 2.4 Directory AllowOverride must be true.
 
 	3rd Party API Keys (recommended to get your own api keys)
 		tmdb (signup @ http://api.themoviedb.org/2.1/)
 		amazon (signup @ https://affiliate-program.amazon.com/gp/advertising/api/detail/main.html)
 		rottentomatoes (signup @ http://developer.rottentomatoes.com)
+		trakt.tv (https://trakt.tv/api-docs)
+		anidb (http://anidb.net)
 
 	Deep rar password inspection
 		unrar version 3.9 or higher
+		7zip
 
 	Thumbnailing and media info (if feep rar inspection is enabled)
 		ffmpeg
@@ -99,9 +110,6 @@ REQUIREMENTS
 			pip-3.3 list
 		#For Ubuntu 13.10, python3 uses pip3, not pip3.2
 
-	PHP
-		sudo apt-get install php5-json
-
 	APC
 		sudo apt-get install php-apc
 		sudo service apache2 restart
@@ -139,6 +147,9 @@ RUNNING OUTSIDE OF WEB ROOT
 SAMPLE APACHE VHOST CONFIG
 	add this to your existing VHOST file modifying your values for ServerName, Server Alias, and DocumentRoot.
 	You should find this under /etc/apache2/sites-enabled/ (000-default).
+
+	Chance directory/DocumentRoot to the www/ folder of nZEDb.
+
 	<VirtualHost *:80>
 			<Directory /domains/www/example.com/newz/www/>
 					Options FollowSymLinks

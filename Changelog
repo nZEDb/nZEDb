@@ -7,6 +7,7 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-10 kevin
+	* Chg: Update docs for LOAD DATA INFILE
 	* Fix: Fix for some NFO's not displaying correctly.
 	* Chg: Make sure imdbid or tvrageid is not a negative number.
 	* Add: More support for X-DNZB HTTP headers, Content-Length on HTTP headers (gets rid of warnings in NZBGet).
