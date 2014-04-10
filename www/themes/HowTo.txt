@@ -36,3 +36,10 @@ Using a css website (w3schools.com for example) you can learn what the variables
 You can change them in firefox by clicking the font-weight or bold part, and changing those or adding new ones.
 
 When you find something you like you can add it to the style.css file (at line 362 for example).
+
+
+
+
+Hiding themes from user profiles:
+
+Add _ as the first character of the theme's folder name.
