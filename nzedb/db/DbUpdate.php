@@ -196,6 +196,8 @@ class DbUpdate
 						}
 						$patched++;
 					}
+				} else {
+					throw new \RuntimeException("No patch information available, stopping!!");
 				}
 
 			}
