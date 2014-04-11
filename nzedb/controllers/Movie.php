@@ -849,7 +849,7 @@ class Movie
 					}
 
 					// Check on trakt.
-					$traktimdbid = $trakt->traktMoviesummary($moviename, 'imdbid');
+					$traktimdbid = $trakt->traktMoviesummary($moviename);
 					if ($traktimdbid !== false) {
 						$imdbId = $this->domovieupdate($traktimdbid, 'Trakt', $arr['id']);
 						if ($imdbId === false) {

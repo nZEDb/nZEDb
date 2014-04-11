@@ -6,7 +6,27 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-10 kevin
+	* Chg: Install.txt to list all used extensions.
+	* Chg: Update docs for LOAD DATA INFILE
+	* Fix: Fix for some NFO's not displaying correctly.
+	* Chg: Make sure imdbid or tvrageid is not a negative number.
+	* Add: More support for X-DNZB HTTP headers, Content-Length on HTTP headers (gets rid of warnings in NZBGet).
+	* Add: Option for admins to hide themes from user profile edit.
+	* Chg: Use NZBGet's appendurl instead of append which will speed up javascript execution on send to queue. (thanks to hugbug @ nzbget.net for support)
+2014-04-09 ruhllatio
+	* Chg: Split removecrap blacklist into two functions (one for release names and searchnames and one for files)
+	* Add: Release names/searchnames blacklist function now uses FT Match filters for speed
+2014-04-09 Bart39
+	* Add: Add option whether to run comment sharing or not within tmux.
+	* Chg: correct description for Sharing timer in tmux settings.
+	* Chg: Modified Darius's sharing changes around the various tmux window options
+	* Chg: Updated options/comments in threaded.sh about choosing the right tmux pane(s) for nntpproxy
+2014-04-09 DariusIII
+	* Chg: Edited the db patch, as it is redundant to do the alter when you are already dropping the table before that.
+	* Add: Added sharing window to tmux for comment sharing feature.
 2014-04-09 kevin
+	* Add: Trakt.tv trailer links using your Trakt.tv API key on NZB details page for movies. If that fails, try http://www.traileraddict.com
 	* Add: New content page to other themes.
 	* Add: Link to more content from index.
 	* Fix: Fix for non alpha themes send to sab.
@@ -14,6 +34,7 @@ Each update goes to the top of the file
 	* Fix: Mix of single/double quotations in 10-menu.tsv making queue/newposterwall not visible on new installs.
 2014-04-09 niel
 	* Fix: duplicate key constraint error introduced by recent change to 2014-04-03_3_countries.sql patch.
+	* Chg: Stripping out unneeded escaping/quoting from data files.
 2014-04-08 niel
 	* Chg: Altered format of SQL patches to properly reflect the first 8 characters being the date.
 2014-04-08 bart39

@@ -103,6 +103,17 @@
 
                 sudo apt-get install mysql-server mysql-client libmysqlclient-dev
 
+                If you are running MySQL not as root user, you will need to run this in MySQL shell (with the single quotes):
+                GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';
+
+                my.cnf requires these changes:
+                max_allowed_packet=12582912
+                group_concat_max_len=8192
+
+                Set your timezone :
+                Use the TZ from here : https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+                default_time_zone=Africa/Abidjan
+
        # Or PostgreSQL(currently WIP, use MySQL for now.) Version 9.3 or higher is required:
 
                 sudo add-apt-repository ppa:chris-lea/postgresql-9.3
@@ -292,7 +303,7 @@
 
 9. Run the installer.
 
-	  # Change localhost for the server's IP if you are browsing on another computer.
+      Change localhost for the server's IP if you are browsing on another computer.
             http://localhost/install
 
 10. Configure the site.

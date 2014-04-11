@@ -40,6 +40,10 @@
 		<br /><br />{if $movie.director != ""} <strong>Director:</strong> {$movie.director}<br />{/if}
 		<strong>Genre:</strong> {$movie.genre}
 		<br /><strong>Starring:</strong> {$movie.actors}
+		{if $movie.trailer != ''}
+			<br /><strong>Trailer:</strong>
+			<div>{$movie.trailer}</div>
+		{/if}
 		<div style="margin-top:10px;">
 			<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbid}/" title="View at IMDB">IMDB</a>
 			{if $movie.tmdbid != ''}<a class="rndbtn" target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbid}" title="View at TMDb">TMDb</a>{/if}

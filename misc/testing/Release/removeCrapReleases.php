@@ -27,8 +27,9 @@ if ($argCnt === 2) {
 			'arg2 (Required) = full/number' . $n .
 			'                  full   = Run without a time limit.' . $n .
 			'                  number = Run on releases up to this old.' . $n . $n .
-			'arg3 (Optional) = blacklist | executable | gibberish | hashed | installbin | passworded | passwordurl | sample | scr | short | size | wmv' . $n .
+			'arg3 (Optional) = blacklist | blfiles | executable | gibberish | hashed | installbin | passworded | passwordurl | sample | scr | short | size | wmv' . $n .
 			'                  blacklist   = Remove releases using the enabled blacklists in admin section of site.' . $n .
+			'                  blfiles     = Remove releases using the enabled blacklists in admin section of site against filenames.' . $n .
 			'                  executable  = Remove releases containing an exe file.' . $n .
 			'                  gibberish   = Remove releases where the name is letters/numbers only and 15 characters or longer.' . $n .
 			'                  hashed      = Remove releases where the name is letters/numbers only and 25 characters or longer.' . $n .

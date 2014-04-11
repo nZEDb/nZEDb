@@ -21,5 +21,5 @@ if ($user['queuetype'] != 2) {
 
 } elseif ($user['queuetype'] == 2) {
 	$nzbget = new NZBGet($page);
-	$nzbget->sendToNZBGet($_GET['id']);
+	$nzbget->sendURLToNZBGet($_GET['id']);
 }
