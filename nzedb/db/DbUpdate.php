@@ -250,14 +250,9 @@ class DbUpdate
 						$query = trim(implode('', $query));
 						if ($options['local'] !== null) {
 							$query = str_replace('{:local:}', $options['local'], $query);
-						} else {
-							var_dump($options);
-							die("WTF!\n");
 						}
 						if (!empty($options['data'])) {
 							$query = str_replace('{:data:}', $options['data'], $query);
-						} else {
-							die("WTF again!\n");
 						}
 
 						try {
