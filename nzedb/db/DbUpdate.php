@@ -147,6 +147,7 @@ class DbUpdate
 	{
 		$patched = 0;
 		$defaults = array(
+			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
 			'regex' => '#^\d{4}-\d{2}-\d{2}_\d+(\w+)\.sql$#',
@@ -165,6 +166,8 @@ class DbUpdate
 
 		if (count($files)) {
 			sort($files);
+			$local = $this->db->isLocalDb() ? '' : 'LOCAL';
+			$data = $options['data'];
 			echo $this->log->primary('Looking for unprocessed patches...');
 			foreach($files as $file) {
 				$fp = fopen($file, 'r');
