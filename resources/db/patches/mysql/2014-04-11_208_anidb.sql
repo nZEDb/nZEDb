@@ -1,0 +1,6 @@
+ALTER TABLE anidb DROP PRIMARY KEY;
+ALTER TABLE anidb ADD COLUMN title_type VARCHAR(25) NOT NULL DEFAULT '' AFTER anidbid;
+ALTER TABLE anidb ADD COLUMN lang VARCHAR(25) NOT NULL DEFAULT '' AFTER title_type;
+ALTER TABLE anidb ADD PRIMARY KEY (anidbid, title_type, lang);
+
+LOAD DATA {:local:}INFILE '{:data:}10-anidb.tsv' IGNORE INTO TABLE anidb FIELDS TERMINATED BY '\t' OPTIONALLY  ENCLOSED BY '"' ESCAPED BY '\\' LINES TERMINATED BY '\n' IGNORE 1 LINES (anidbid, title_type, lang, title);
