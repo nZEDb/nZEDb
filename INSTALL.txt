@@ -170,7 +170,7 @@ SAMPLE APACHE VHOST CONFIG
 	add this to your existing VHOST file modifying your values for ServerName, Server Alias, and DocumentRoot.
 	You should find this under /etc/apache2/sites-enabled/ (000-default).
 
-	Chance directory/DocumentRoot to the www/ folder of nZEDb.
+	Change directory/DocumentRoot to the www/ folder of nZEDb.
 
 	<VirtualHost *:80>
 			<Directory /domains/www/example.com/newz/www/>
