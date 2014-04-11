@@ -106,7 +106,7 @@ class DbUpdate
 			'ext'	=> 'tsv',
 			'files' => array(),
 			'path'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data',
-			'regex'	=> '#^(?:.*/|)\d+-(\w+)\.tsv$#',
+			'regex'	=> "#^(?:.*/|)\d+-(?'table'\w+)\.tsv$#",
 		);
 		$options += $defaults;
 
@@ -118,7 +118,7 @@ class DbUpdate
 
 			if (is_readable($file)) {
 				if (preg_match($options['regex'], $file, $matches)) {
-					$table = $matches[1];
+					$table = $matches['table'];
 					// Get the first line of the file which holds the columns used.
 					$handle = @fopen($file, "r");
 					if (is_resource($handle)) {
@@ -150,7 +150,7 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex' => '#^\d{4}-\d{2}-\d{2}_\d+(\w+)\.sql$#',
+			'regex' => "#^([/\w]+|)(?'date'\d{4}-\d{2}-\d{2})_(?'patch'\d+)_(?'table'\w+)\.sql$#",
 			'safe'	=> true,
 		);
 		$options += $defaults;
@@ -166,23 +166,38 @@ class DbUpdate
 
 		if (count($files)) {
 			sort($files);
-			$local = $this->db->isLocalDb() ? '' : 'LOCAL';
+			$local = $this->db->isLocalDb() ? '' : 'LOCAL ';
 			$data = $options['data'];
 			echo $this->log->primary('Looking for unprocessed patches...');
 			foreach($files as $file) {
+				$patch = '';
+				$setPatch = false;
 				$fp = fopen($file, 'r');
 				$patch = fread($fp, filesize($file));
 				$pattern = "/UPDATE `?site`? SET `?value`? = '?(?'patch'\d+)'? WHERE `?setting`? = 'sqlpatch'/i";
 				if (preg_match($pattern, $patch, $matches)) {
-					if ($matches['patch'] > $currentVersion) {
+					$patch = $matches['patch'];
+				} else if (preg_match($options['regex'], $file, $matches)) {
+					if ($matches['patch'] > 9) {
+						$patch = $matches['patch'];
+						$setPatch = true;
+					}
+				}
+
+				if (!empty($patch)) {
+					if ($patch > $currentVersion) {
 						echo $this->log->header('Processing patch file: ' . $file);
 						if ($options['safe'] && !$this->backedUp) {
 							$this->backupDb();
 						}
-						$this->splitSQL($file);
+						$this->splitSQL($file, ['local' => $local, 'data' => $data]);
+						if ($setPatch) {
+							$this->db->queryExec("UPDATE site SET value = '$patch' WHERE setting = 'sqlpatch';");
+						}
 						$patched++;
 					}
 				}
+
 			}
 		} else {
 			exit($this->log->error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
@@ -209,9 +224,15 @@ class DbUpdate
 	public function splitSQL($file, array $options = [])
 	{
 		$defaults = array(
-			'delimiter' => ';'
+			'data'		=> null,
+			'delimiter' => ';',
+			'local'		=> null,
 		);
 		$options += $defaults;
+
+		if (!empty($options['vars'])) {
+			extract($options['vars']);
+		}
 
 		set_time_limit(0);
 
@@ -227,6 +248,17 @@ class DbUpdate
 					if (preg_match('~' . preg_quote($options['delimiter'], '~') . '\s*$~iS',
 								   end($query)) == 1) {
 						$query = trim(implode('', $query));
+						if ($options['local'] !== null) {
+							$query = str_replace('{:local:}', $options['local'], $query);
+						} else {
+							var_dump($options);
+							die("WTF!\n");
+						}
+						if (!empty($options['data'])) {
+							$query = str_replace('{:data:}', $options['data'], $query);
+						} else {
+							die("WTF again!\n");
+						}
 
 						try {
 							$qry = $this->db->prepare($query);
