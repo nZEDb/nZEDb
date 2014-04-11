@@ -6,6 +6,12 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-11 niel
+	* New: Added a limited parsing of variables from sql patch files.
+	* New: Added a format for patch file naming: YYYY-MM-DD_<patch number>_<table name>.sql The patch number will be used by DbUpdate to set the sqlpatch value in site if no UPDATE... statement is found.
+	The old format will still work for now, but it is highly recommended to use this format else patches may not sequence correctly. Adding an UPDATE query into the file for setting the sqlpatch setting in site is not needed with this format.
+	I'll gradually change the old file names and drop the UPDATE query as time permits, once all ar changed the old functionality will be removed.
+	* New: Added AniDb data to the install process. Patch for current users using the variable parsing feature above included.
 2014-04-10 kevin
 	* Chg: Install.txt to list all used extensions.
 	* Chg: Update docs for LOAD DATA INFILE
