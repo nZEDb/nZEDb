@@ -1,9 +1,9 @@
 * Note *
 No pull requests will be accepted without this file being updated to reflect what you changed and when.
 No pull requests will be accepted to any branch except the dev branch.
-Each update goes to the top of the file
+New updates are grouped by person, at the top of the file.
 
-***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
+***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-12 bart39
