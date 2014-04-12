@@ -33,7 +33,7 @@ if (isset($_REQUEST['del'])) {
 	$m = new Movie(false);
 
 	if (is_numeric($_REQUEST['id'])) {
-		$movie = $m->fetchTmdbProperties($_REQUEST['id']);
+		$movie = $m->fetchTMDBProperties($_REQUEST['id']);
 		if ($movie !== false) {
 			$obj = array($movie);
 		}
@@ -45,7 +45,7 @@ if (isset($_REQUEST['del'])) {
 				$limit = 0;
 				foreach ($searchm['results'] as $movie) {
 					$limit++;
-					$movieinfo = $m->fetchTmdbProperties($movie['id'], true);
+					$movieinfo = $m->fetchTMDBProperties($movie['id'], true);
 					if ($movieinfo !== false) {
 						$obj[] = $movieinfo;
 					}

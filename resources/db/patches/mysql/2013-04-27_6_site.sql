@@ -1,3 +1,6 @@
-INSERT IGNORE INTO `site` (`setting`, `value`) VALUE ('grabstatus', 1);
+INSERT IGNORE INTO `site`
+    (`setting`, `value`)
+    VALUES
+    ('maxpartrepair', 15000);
 
-UPDATE `site` set `value` = '8' where `setting` = 'sqlpatch';
+UPDATE `site` set `value` = '6' where `setting` = 'sqlpatch';

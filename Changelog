@@ -6,6 +6,19 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-12 ruhllatio
+	* Fix: Issue #1264 - ReleaserRemover (removecrap blacklist) not actually deleting
+	* Chg: removecrap output to fit better within lines
+2014-04-12 kevin
+	* Chg: Refactor Movies class.
+	* Fix: Typo in content.tsv causing site to not work.
+	* Chg: Big improvement to parsing of IMDB id's.
+2014-04-12 niel
+	* Chg: Renamed all necessary SQL patches to work with new method.
+	In the process discovered a few patches were badly sequenced so that patches would be ignored. This may be the cause of some problems with (much) older installs.
+	NOTE: For some patches to work, the MySQL user must have FILE privileges, and the location of files must be accessible to ALL users. This means that all directories must be traversible, not just have read permissions on the files set for all.
+	* Chg: Switch patching preference to use new filename format, falling back to old method if needed.
+	* Fix: Bring kevin's and ruhllatio's changes above back into the right timeline.
 2014-04-11 ruhllatio
 	* Add: Additional FT Match operations for removecrap remaining subject field Blacklist entries
 	* Add: Additional blacklist removecrap outputs
