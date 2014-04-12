@@ -233,8 +233,7 @@ class ReleaseRemover
 				}
 				$this->crapTime =
 					' AND r.adddate > (NOW() - INTERVAL ' .
-					($this->mysql ? $time . ' HOUR)' : $this->db->escapeString($time . ' HOURS')) .
-					' ORDER BY r.id ASC';
+					($this->mysql ? $time . ' HOUR)' : $this->db->escapeString($time . ' HOURS'));
 				break;
 		}
 
@@ -277,8 +276,8 @@ class ReleaseRemover
 			case 'size':
 				$this->removeSize();
 				break;
-			case 'wmv':
-				$this->removeWMV();
+			case 'codec':
+				$this->removeCodecPoster();
 				break;
 			case '':
 				$this->removeBlacklist();
@@ -857,19 +856,33 @@ class ReleaseRemover
 	}
 
 	/**
-	 * Remove releases that contain .wmv file, aka that spam poster.
-	 * Thanks to dizant from nZEDb forums for the sql query
+	 * Remove releases that contain .wmv files and Codec\Setup.exe files, aka that spam poster.
+	 * Thanks to dizant from nZEDb forums for parts of the sql query
 	 * @return bool
 	 */
-	protected function removeWMV()
+	protected function removeCodecPoster()
 	{
-		$this->method = 'WMV';
+		$this->method = 'Codec Poster';
 		$regex = sprintf("rf.name %s 'x264.*\.wmv$'", $this->regexp);
+		$codec = '%\\Codec%Setup.exe%';
+		$iferror = '%If_you_get_error.txt%';
+		$categories = sprintf("r.categoryid IN (%d, %d, %d, %d, %d, %d, %d) AND",
+			Category::CAT_MOVIE_3D,
+			Category::CAT_MOVIE_BLURAY,
+			Category::CAT_MOVIE_DVD,
+			Category::CAT_MOVIE_FOREIGN,
+			Category::CAT_MOVIE_HD,
+			Category::CAT_MOVIE_OTHER,
+			Category::CAT_MOVIE_SD
+			);
+		$codeclike = sprintf("UNION SELECT r.id, r.guid, r.searchname FROM releases r
+			LEFT JOIN releasefiles rf ON r.id = rf.releaseid
+			WHERE %s rf.name %s '%s' OR rf.name %s '%s'", $categories, $this->like, $codec, $this->like, $iferror
+			);
 		$this->query = sprintf(
-			"SELECT DISTINCT r.ID, r.searchname FROM releasefiles
-			rf INNER JOIN releases r ON (rf.releaseID = r.ID)
-			WHERE %s",
-			$regex
+			"SELECT r.id, r.guid, r.searchname FROM releases
+			r INNER JOIN releasefiles rf ON (rf.releaseid = r.id)
+			WHERE %s %s %s %s %s", $categories, $regex, $this->crapTime, $codeclike, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
