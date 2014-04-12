@@ -23,6 +23,19 @@ class Movie
 	protected $currentTitle = '';
 
 	/**
+	 * Current year of parsed search name.
+	 * @var string
+	 */
+	protected $currentYear  = '';
+
+	/**
+	 * Current release id of parsed search name.
+	 *
+	 * @var string
+	 */
+	protected $currentRelID = '';
+
+	/**
 	 * @var Debugging
 	 */
 	protected $debugging;
@@ -33,24 +46,59 @@ class Movie
 	protected $debug;
 
 	/**
+	 * Use search engines to find IMDB id's.
+	 * @var bool
+	 */
+	protected $searchEngines;
+
+	/**
+	 * How many times have we hit google this session.
+	 * @var int
+	 */
+	protected $googleLimit = 0;
+
+	/**
+	 * If we are temp banned from google, set time we were banned here, try again after 10 minutes.
+	 * @var int
+	 */
+	protected $googleBan = 0;
+
+	/**
+	 * How many times have we hit bing this session.
+	 *
+	 * @var int
+	 */
+	protected $bingLimit = 0;
+
+	/**
+	 * How many times have we hit yahoo this session.
+	 *
+	 * @var int
+	 */
+	protected $yahooLimit = 0;
+
+	/**
 	 * @param bool $echooutput
 	 */
-	function __construct($echooutput = false)
+	public function __construct($echooutput = false)
 	{
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
+		$this->c = new ColorCLI();
 		$this->db = new DB();
 		$s = new Sites();
 		$site = $s->get();
+
 		$this->apikey = $site->tmdbkey;
 		$this->fanartapikey = $site->fanarttvkey;
-		$this->binglimit = $this->yahoolimit = 0;
-		$this->debug = nZEDb_DEBUG;
 		$this->imdburl = ($site->imdburl == "0") ? false : true;
 		$this->imdblanguage = (!empty($site->imdblanguage)) ? $site->imdblanguage : "en";
-		$this->imgSavePath = nZEDb_COVERS . 'movies' . DS;
 		$this->movieqty = (!empty($site->maximdbprocessed)) ? $site->maximdbprocessed : 100;
+		$this->searchEngines = true;
+
+		$this->debug = nZEDb_DEBUG;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
+		$this->imgSavePath = nZEDb_COVERS . 'movies' . DS;
 		$this->service = '';
-		$this->c = new ColorCLI();
+
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
 			$this->debugging = new Debugging('Movie');
@@ -732,332 +780,334 @@ class Movie
 		return $imdbId;
 	}
 
+	/**
+	 * Process releases with no IMDB ID's.
+	 *
+	 * @param string $releaseToWork
+	 */
 	public function processMovieReleases($releaseToWork = '')
 	{
-		$trakt = new TraktTv();
-		$googleban = false;
-		$googlelimit = 0;
-		$result = '';
+		$trakTv = new TraktTv();
 
-		if ($releaseToWork == '') {
-			$res = $this->db->query(sprintf("SELECT r.searchname AS name, r.id FROM releases r "
-					. "WHERE r.imdbid IS NULL AND r.nzbstatus = 1 AND r.categoryid BETWEEN 2000 AND 2999 LIMIT %d", $this->movieqty));
-			$moviecount = count($res);
+		// Get all releases without an IMDB id.
+		if ($releaseToWork === '') {
+			$res = $this->db->query(
+				sprintf("
+					SELECT r.searchname, r.id
+					FROM releases r
+					WHERE r.imdbid IS NULL
+					AND r.nzbstatus = 1
+					AND r.categoryid BETWEEN 2000 AND 2999
+					LIMIT %d",
+					$this->movieqty
+				)
+			);
+			$movieCount = count($res);
 		} else {
 			$pieces = explode("           =+=            ", $releaseToWork);
 			$res = array(array('name' => $pieces[0], 'id' => $pieces[1]));
-			$moviecount = 1;
+			$movieCount = 1;
 		}
 
-		if ($moviecount > 0) {
-			if ($this->echooutput && $moviecount > 1) {
-				$this->c->doEcho($this->c->header("Processing " . $moviecount . " movie release(s)."));
+		if ($movieCount > 0) {
+			if ($this->echooutput && $movieCount > 1) {
+				$this->c->doEcho($this->c->header("Processing " . $movieCount . " movie releases."));
 			}
 
-			$like = 'ILIKE';
-			$inyear = 'year::int';
-			if ($this->db->dbSystem() === 'mysql') {
-				$like = 'LIKE';
-				$inyear = 'year';
-			}
-
+			// Loop over releases.
 			foreach ($res as $arr) {
-				$parsed = $this->parseMovieSearchName($arr['name']);
-				if ($parsed !== false) {
-					$year = false;
-					$this->currentTitle = $moviename = $parsed['title'];
-					$movienameonly = $moviename;
-					if ($parsed['year'] != '') {
-						$year = true;
-						$moviename .= ' (' . $parsed['year'] . ')';
-					}
+				// Try to get a name/year.
+				if ($this->parseMovieSearchName($arr['searchname']) === false) {
+					//We didn't find a name, so set to all 0's so we don't parse again.
+					$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
+					continue;
 
-					// Check locally first.
-					if ($year === true) {
-						$start = (int) $parsed['year'] - 2;
-						$end = (int) $parsed['year'] + 2;
-						$ystr = '(';
-						while ($start < $end) {
-							$ystr .= $start . ',';
-							$start ++;
-						}
-						$ystr .= $end . ')';
-						$ckimdbid = $this->db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo '
-								. 'WHERE title %s %s AND %s IN %s', $like, "'%" . $parsed['title'] . "%'", $inyear, $ystr));
-					} else {
-						$ckimdbid = $this->db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo '
-								. 'WHERE title %s %s', $like, "'%" . $parsed['title'] . "%'"));
-					}
+				} else {
+					$this->currentRelID = $arr['id'];
 
-					// Try lookup by %name%
-					if (!isset($ckimdbid['imdbid'])) {
-						$title = str_replace('er', 're', $parsed['title']);
-						if ($title != $parsed['title']) {
-							$ckimdbid = $this->db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo WHERE title %s %s', $like, "'%" . $title . "%'"));
-						}
-						if (!isset($ckimdbid['imdbid'])) {
-							$pieces = explode(' ', $parsed['title']);
-							$title1 = '%';
-							foreach ($pieces as $piece) {
-								$title1 .= str_replace(array("'", "!", '"'), "", $piece) . '%';
-							}
-							$ckimdbid = $this->db->queryOneRow(sprintf("SELECT imdbid FROM movieinfo WHERE replace(replace(title, \"'\", ''), '!', '') %s %s", $like, $this->db->escapeString($title1)));
-						}
-						if (!isset($ckimdbid['imdbid'])) {
-							$pieces = explode(' ', $title);
-							$title2 = '%';
-							foreach ($pieces as $piece) {
-								$title2 .= str_replace(array("'", "!", '"'), "", $piece) . '%';
-							}
-							$ckimdbid = $this->db->queryOneRow(sprintf("SELECT imdbid FROM movieinfo WHERE replace(replace(replace(title, \"'\", ''), '!', ''), '\"', '') %s %s", $like, $this->db->escapeString($title2)));
-						}
-					}
-
-
-					if (isset($ckimdbid['imdbid'])) {
-						$imdbId = $this->domovieupdate('tt' . $ckimdbid['imdbid'], 'Local DB', $arr['id']);
-						if ($imdbId === false) {
-							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
-						}
-
-						if ($this->echooutput) {
-							$this->c->doEcho($this->c->alternateOver("Found Local: ") . $this->c->headerOver($moviename), true);
-						}
-						continue;
+					$movieName = $this->currentTitle;
+					if ($this->currentYear !== false) {
+						$movieName .= ' (' . $this->currentYear . ')';
 					}
 
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->primaryOver("Looking up: ") . $this->c->headerOver($moviename), true);
+						$this->c->doEcho($this->c->primaryOver("Looking up: ") . $this->c->headerOver($movieName), true);
 					}
 
-					// Check OMDbapi first
-					if ($year === true && preg_match('/\d{4}/', $year)) {
-						$url = 'http://www.omdbapi.com/?t=' . str_replace(' ', '%20', $movienameonly) . '&y=' . $year . '&r=json';
-					} else {
-						$url = 'http://www.omdbapi.com/?t=' . str_replace(' ', '%20', $movienameonly) . '&r=json';
-					}
-					$omdbData = nzedb\utility\getUrl($url);
-					if ($omdbData !== false) {
-						$omdbid = json_decode($omdbData);
+					// Check local DB.
+					$getIMDBid = $this->localIMDBsearch($this->currentTitle, $this->currentYear);
 
-						if (isset($omdbid->imdbID)) {
-							$imdbId = $this->domovieupdate($omdbid->imdbID, 'OMDbAPI', $arr['id']);
-							if ($imdbId !== false) {
+					if ($getIMDBid !== false) {
+						$imdbID = $this->domovieupdate('tt' . $getIMDBid, 'Local DB', $arr['id']);
+						if ($imdbID !== false) {
+							continue;
+						}
+					}
+
+					// Check OMDB api.
+					$buffer =
+						nzedb\utility\getUrl(
+							'http://www.omdbapi.com/?t=' .
+							urlencode($this->currentTitle) .
+							($this->currentYear !== false ? ('&y=' . $this->currentYear) : '') .
+							'&r=json'
+						);
+
+					if ($buffer !== false) {
+						$getIMDBid = json_decode($buffer);
+
+						if (isset($getIMDBid->imdbID)) {
+							$imdbID = $this->domovieupdate($getIMDBid->imdbID, 'OMDbAPI', $arr['id']);
+							if ($imdbID !== false) {
 								continue;
 							}
 						}
 					}
 
 					// Check on trakt.
-					$traktimdbid = $trakt->traktMoviesummary($moviename);
-					if ($traktimdbid !== false) {
-						$imdbId = $this->domovieupdate($traktimdbid, 'Trakt', $arr['id']);
-						if ($imdbId === false) {
-							// No imdb id found, set to all zeros so we don't process again.
-							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
-						} else {
+					$getIMDBid = $trakTv->traktMoviesummary($movieName);
+					if ($getIMDBid !== false) {
+						$imdbID = $this->domovieupdate($getIMDBid, 'Trakt', $arr['id']);
+						if ($imdbID !== false) {
 							continue;
 						}
 					}
-					// Check on search engines.
-					else if ($googleban == false && $googlelimit <= 40) {
-						$moviename1 = str_replace(' ', '+', $moviename);
-						$buffer = nzedb\utility\getUrl("https://www.google.com/search?hl=en&as_q=" . urlencode($moviename1) . "&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
 
-						// Make sure we got some data.
-						if ($buffer !== false && strlen($buffer)) {
-							$googlelimit++;
-							if (!preg_match('/To continue, please type the characters below/i', $buffer)) {
-								$imdbId = $this->domovieupdate($buffer, 'Google1', $arr['id']);
-								if ($imdbId === false) {
-									if (preg_match('/(?P<name>[\w+].+)(\+\(\d{4}\))/i', $moviename1, $result)) {
-										$buffer = nzedb\utility\getUrl("https://www.google.com/search?hl=en&as_q=" . urlencode($result["name"]) . "&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=imdb.com&as_occt=any&safe=images&tbs=&as_filetype=&as_rights=");
-
-										if ($buffer !== false && strlen($buffer)) {
-											$googlelimit++;
-											$imdbId = $this->domovieupdate($buffer, 'Google2', $arr["id"]);
-											if ($imdbId === false) {
-												//no imdb id found, set to all zeros so we don't process again
-												$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
-											} else {
-												continue;
-											}
-										} else {
-											$googleban = true;
-											if ($this->bingSearch($moviename, $arr["id"]) === true) {
-												continue;
-											} else if ($this->yahooSearch($moviename, $arr["id"]) === true) {
-												continue;
-											}
-										}
-									} else {
-										$googleban = true;
-										if ($this->bingSearch($moviename, $arr["id"]) === true) {
-											continue;
-										} else if ($this->yahooSearch($moviename, $arr["id"]) === true) {
-											continue;
-										}
-									}
-								} else {
-									continue;
-								}
-							} else {
-								$googleban = true;
-								if ($this->bingSearch($moviename, $arr["id"]) === true) {
-									continue;
-								} else if ($this->yahooSearch($moviename, $arr["id"]) === true) {
-									continue;
-								}
-							}
-						} else {
-							if ($this->bingSearch($moviename, $arr["id"]) === true) {
-								continue;
-							} else if ($this->yahooSearch($moviename, $arr["id"]) === true) {
-								continue;
-							}
-						}
-					} else if ($this->bingSearch($moviename, $arr["id"]) === true) {
-						continue;
-					} else if ($this->yahooSearch($moviename, $arr["id"]) === true) {
-						continue;
-					} else if (!isset($ckimdbid['imdbid']) && $year === true) {
-						$ckimdbid = $this->db->queryOneRow(sprintf('SELECT imdbid FROM movieinfo WHERE title %s %s', $like, "'%" . $parsed['title'] . "%'"));
-						if (isset($ckimdbid['imdbid'])) {
-							$imdbId = $this->domovieupdate('tt' . $ckimdbid['imdbid'], 'Local DB', $arr['id']);
-							if ($imdbId === false) {
-								$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
-							}
-
+					// Try on search engines.
+					if ($this->searchEngines && $this->currentYear !== false) {
+						if ($this->imdbIDFromEngines() === true) {
 							continue;
 						}
-					} else {
-						if ($this->echooutput) {
-							$this->c->doEcho($this->c->error("Exceeded request limits on google.com bing.com and yahoo.com."));
-						}
-						break;
 					}
-				} else {
+
+					// We failed to get an IMDB id from all sources.
 					$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $arr["id"]));
-					continue;
 				}
 			}
 		}
 	}
 
-	public function bingSearch($moviename, $relID)
+	/**
+	 * Try to fetch an IMDB id locally.
+	 *
+	 * @return int|bool   Int, the imdbid when true, Bool when false.
+	 */
+	protected function localIMDBsearch()
 	{
-		$result = '';
-		if ($this->binglimit <= 40) {
-			$moviename = str_replace(' ', '+', $moviename);
-			if (preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))?/i', $moviename, $result)) {
-				if (isset($result["year"]) && !empty($result["year"])) {
-					$buffer = nzedb\utility\getUrl("http://www.bing.com/search?q=" . $result["name"] . urlencode($result["year"]) . "+" . urlencode("site:imdb.com") . "&qs=n&form=QBRE&pq=" . $result["name"] . urlencode($result["year"]) . "+" . urlencode("site:imdb.com") . "&sc=4-38&sp=-1&sk=");
-					if ($buffer !== false && strlen($buffer)) {
-						$this->binglimit++;
-						$imdbId = $this->domovieupdate($buffer, 'Bing1', $relID);
-						if ($imdbId === false) {
-							$buffer = nzedb\utility\getUrl("http://www.bing.com/search?q=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&qs=n&form=QBRE&pq=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&sc=4-38&sp=-1&sk=");
-							if ($buffer !== false && strlen($buffer)) {
-								$this->binglimit++;
-								$imdbId = $this->domovieupdate($buffer, 'Bing2', $relID);
-								if ($imdbId === false) {
-									$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $relID));
-									return true;
-								} else {
-									return true;
-								}
-							} else {
-								return false;
-							}
-						} else {
-							return true;
-						}
-					} else {
-						return false;
+		$query = 'SELECT imdbid FROM movieinfo';
+		$andYearIn = '';
+
+		//If we found a year, try looking in a 4 year range.
+		if ($this->currentYear !== false) {
+			$start = (int) $this->currentYear - 2;
+			$end   = (int) $this->currentYear + 2;
+			$andYearIn = 'AND year IN (';
+			while ($start < $end) {
+				$andYearIn .= $start . ',';
+				$start++;
+			}
+			$andYearIn .= $end . ')';
+		}
+		$IMDBCheck = $this->db->queryOneRow(
+			sprintf('%s WHERE title %s %s', $query, $this->db->likeString($this->currentTitle), $andYearIn));
+
+		// Look by %word%word%word% etc..
+		if ($IMDBCheck === false) {
+			$pieces = explode(' ', $this->currentTitle);
+			$tempTitle = '%';
+			foreach ($pieces as $piece) {
+				$tempTitle .= str_replace(array("'", "!", '"'), '', $piece) . '%';
+			}
+			$IMDBCheck = $this->db->queryOneRow(
+				sprintf("%s WHERE replace(replace(title, \"'\", ''), '!', '') %s %s",
+					$query, $this->db->likeString($tempTitle), $andYearIn
+				)
+			);
+		}
+
+		// Try replacing er with re ?
+		if ($IMDBCheck === false) {
+			$tempTitle = str_replace('er', 're', $this->currentTitle);
+			if ($tempTitle !== $this->currentTitle) {
+				$IMDBCheck = $this->db->queryOneRow(
+					sprintf('%s WHERE title %s %s',
+						$query, $this->db->likeString($tempTitle), $andYearIn
+					)
+				);
+
+				// Final check if everything else failed.
+				if ($IMDBCheck === false) {
+					$pieces = explode(' ', $tempTitle);
+					$tempTitle = '%';
+					foreach ($pieces as $piece) {
+						$tempTitle .= str_replace(array("'", "!", '"'), "", $piece) . '%';
 					}
-				} else {
-					$buffer = nzedb\utility\getUrl("http://www.bing.com/search?q=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&qs=n&form=QBRE&pq=" . $result["name"] . "+" . urlencode("site:imdb.com") . "&sc=4-38&sp=-1&sk=");
-					if ($buffer !== false && strlen($buffer)) {
-						$this->binglimit++;
-						$imdbId = $this->domovieupdate($buffer, 'Bing2', $relID);
-						if ($imdbId === false) {
-							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $relID));
-							return true;
-						} else {
-							return true;
-						}
-					} else {
-						return false;
-					}
+					$IMDBCheck = $this->db->queryOneRow(
+						sprintf("%s WHERE replace(replace(replace(title, \"'\", ''), '!', ''), '\"', '') %s %s",
+							$query, $this->db->likeString($tempTitle), $andYearIn
+						)
+					);
 				}
-			} else {
-				$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $relID));
+			}
+		}
+
+		return (
+		($IMDBCheck === false
+			? false
+			: (is_numeric($IMDBCheck['imdbid'])
+				? (int)$IMDBCheck['imdbid']
+				: false
+			)
+		)
+		);
+	}
+
+	/**
+	 * Try to get an IMDB id from search engines.
+	 *
+	 * @return bool
+	 */
+	protected function imdbIDFromEngines()
+	{
+		if ($this->googleLimit < 41 && (time() - $this->googleBan) > 600) {
+			if ($this->googleSearch() === true) {
 				return true;
 			}
-		} else {
-			return false;
 		}
-	}
 
-	public function yahooSearch($moviename, $relID)
-	{
-		$result = '';
-		if ($this->yahoolimit <= 40) {
-			$moviename = str_replace(' ', '+', $moviename);
-			if (preg_match('/(?P<name>[\w+].+)(\+(?P<year>\(\d{4}\)))?/i', $moviename, $result)) {
-				if (isset($result["year"]) && !empty($result["year"])) {
-					$buffer = nzedb\utility\getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=" . $result["name"] . "+" . urlencode($result["year"]) . "&vs=imdb.com");
-					if ($buffer !== false && strlen($buffer)) {
-						$this->yahoolimit++;
-						$imdbId = $this->domovieupdate($buffer, 'Yahoo1', $relID);
-						if ($imdbId === false) {
-							$buffer = nzedb\utility\getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=" . $result["name"] . "&vs=imdb.com");
-							if ($buffer !== false && strlen($buffer)) {
-								$this->yahoolimit++;
-								$imdbId = $this->domovieupdate($buffer, 'Yahoo2', $relID);
-								if ($imdbId === false) {
-									$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $relID));
-									return true;
-								} else {
-									return true;
-								}
-							} else {
-								return false;
-							}
-						} else {
-							return true;
-						}
-					}
-					return false;
-				} else {
-					$buffer = nzedb\utility\getUrl("http://search.yahoo.com/search?n=15&ei=UTF-8&va_vt=any&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=yfp-t-900&p=" . $result["name"] . "&vs=imdb.com");
-					if ($buffer !== false && strlen($buffer)) {
-						$this->yahoolimit++;
-						$imdbId = $this->domovieupdate($buffer, 'Yahoo2', $relID);
-						if ($imdbId === false) {
-							$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $relID));
-							return true;
-						} else {
-							return true;
-						}
-					} else {
-						return false;
-					}
-				}
-			} else {
-				$this->db->queryExec(sprintf("UPDATE releases SET imdbid = 0000000 WHERE id = %d", $relID));
+		if ($this->yahooLimit < 41) {
+			if ($this->yahooSearch() === true) {
 				return true;
 			}
-		} else {
-			return false;
 		}
+
+		// Not using this right now because bing's advanced search is not good enough.
+		/*if ($this->bingLimit < 41) {
+			if ($this->bingSearch() === true) {
+				return true;
+			}
+		}*/
+
+		return false;
 	}
 
-	public function parseMovieSearchName($releasename)
+	/**
+	 * Try to find a IMDB id on google.com
+	 *
+	 * @return bool
+	 */
+	protected function googleSearch()
+	{
+		$buffer = nzedb\utility\getUrl(
+			'https://www.google.com/search?hl=en&as_q=&as_epq=' .
+			urlencode(
+				$this->currentTitle .
+				' ' .
+				$this->currentYear
+			) .
+			'&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=&cr=&as_qdr=all&as_sitesearch=' .
+			urlencode('www.imdb.com/title/') .
+			'&as_occt=title&safe=images&tbs=&as_filetype=&as_rights='
+		);
+
+		// Make sure we got some data.
+		if ($buffer !== false) {
+			$this->googleLimit++;
+
+			if (stripos('To continue, please type the characters below', $buffer) === false) {
+				if ($this->domovieupdate($buffer, 'Google.com', $this->currentRelID) !== false) {
+					return true;
+				}
+			} else {
+				$this->googleBan = time();
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Try to find a IMDB id on bing.com
+	 *
+	 * @return bool
+	 */
+	protected function bingSearch()
+	{
+		$buffer = nzedb\utility\getUrl(
+			"http://www.bing.com/search?q=" .
+			urlencode(
+				'("' .
+				$this->currentTitle .
+				'" and "' .
+				$this->currentYear .
+				'") site:www.imdb.com/title/'
+			) .
+			'&qs=n&form=QBLH&filt=all'
+		);
+
+		if ($buffer !== false) {
+			$this->bingLimit++;
+
+			if ($this->domovieupdate($buffer, 'Bing.com', $this->currentRelID) !== false) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Try to find a IMDB id on yahoo.com
+	 *
+	 * @return bool
+	 */
+	protected function yahooSearch()
+	{
+		$buffer = nzedb\utility\getUrl(
+			"http://search.yahoo.com/search?n=10&ei=UTF-8&va_vt=title&vo_vt=any&ve_vt=any&vp_vt=any&vf=all&vm=p&fl=0&fr=fp-top&p=intitle:" .
+			urlencode(
+				'intitle:' .
+				implode(' intitle:',
+					explode(
+						' ',
+						preg_replace(
+							'/\s+/',
+							' ',
+							preg_replace(
+								'/\W/',
+								' ',
+								$this->currentTitle
+							)
+						)
+					)
+				) .
+				' intitle:' .
+				$this->currentYear
+			) .
+			'&vs=' .
+			urlencode('www.imdb.com/title/')
+		);
+
+		if ($buffer !== false) {
+			$this->yahooLimit++;
+
+			if ($this->domovieupdate($buffer, 'Yahoo.com', $this->currentRelID) !== false) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Parse a movie name from a release search name.
+	 *
+	 * @param string $releaseName
+	 *
+	 * @return bool
+	 */
+	protected function parseMovieSearchName($releaseName)
 	{
 		// Check if it's foreign ?
 		$cat = new Category();
-		if (!$cat->isMovieForeign($releasename)) {
+		if (!$cat->isMovieForeign($releaseName)) {
 			$name = $year = '';
 			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';
 
@@ -1066,14 +1116,14 @@ class Movie
 			 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
 			 * Then we look up the year, (19|20)\d\d, so $matches[1] would be Coraline $matches[2] 2009
 			 */
-			if (preg_match('/(?P<name>[\w. -]+)[^\w](?P<year>(19|20)\d\d)/i', $releasename, $matches)) {
+			if (preg_match('/(?P<name>[\w. -]+)[^\w](?P<year>(19|20)\d\d)/i', $releaseName, $matches)) {
 				$name = $matches['name'];
 				$year = $matches['year'];
 
 			/* If we didn't find a year, try to get a name anyways.
 			 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
 			 */
-			} else if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releasename, $matches)) {
+			} else if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releaseName, $matches)) {
 				$name = $matches['name'];
 			}
 
@@ -1090,10 +1140,13 @@ class Movie
 				// Check if the name is long enough and not just numbers.
 				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 					if ($this->debug && $this->echooutput) {
-						$this->c->doEcho("DB name: {$releasename}", true);
+						$this->c->doEcho("DB name: {$releaseName}", true);
 					}
 
-					return array('title' => $name, 'year' => $year);
+					$this->currentTitle = $name;
+					$this->currentYear  = ($year === '' ? false : $year);
+
+					return true;
 				}
 			}
 		}

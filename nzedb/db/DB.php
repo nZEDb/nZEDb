@@ -289,6 +289,27 @@ class DB extends \PDO
 	}
 
 	/**
+	 * Formats a 'like' string. ex.(LIKE '%chocolate%')
+	 *
+	 * @param string $str    The string.
+	 * @param bool   $left   Add a % to the left.
+	 * @param bool   $right  Add a % to the right.
+	 *
+	 * @return string
+	 */
+	public function likeString($str, $left=true, $right=true)
+	{
+		return (
+			($this->DbSystem === 'mysql' ? 'LIKE ' : 'ILIKE ') .
+			$this->escapeString(
+				($left  ? '%' : '') .
+				$str .
+				($right ? '%' : '')
+			)
+		);
+	}
+
+	/**
 	 * Verify if pdo var is instance of PDO class.
 	 *
 	 * @return bool
