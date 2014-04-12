@@ -769,10 +769,11 @@ class ReleaseRemover
 				}
 
 				// Provide useful output of operations
-				echo $this->color->header(sprintf("Finding crap releases for %s using %s method against release %s. %s", $this->method, $bltype, $optypename, $ftusing));
+				echo $this->color->header(sprintf("Finding crap releases for %s: Using %s method against release %s.\n" .
+				"%s", $this->method, $bltype, $optypename, $ftusing));
 
 				$this->query = sprintf(
-					"SELECT rs.id, rs.guid, rs.searchname
+					"SELECT r.id, r.guid, r.searchname
 					FROM releasesearch rs LEFT JOIN releases r ON rs.releaseid = r.id %s %s %s", $regexsql, $groupID, $this->crapTime
 				);
 

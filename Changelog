@@ -6,6 +6,9 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-13 ruhllatio
+	* Fix: Issue #1264 - ReleaserRemover (removecrap blacklist) not actually deleting
+	* Chg: removecrap output to fit better within lines
 2014-04-13 kevin
 	* Fix: Typo in content.tsv causing site to not work.
 	* Chg: Big improvement to parsing of IMDB id's.
