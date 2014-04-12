@@ -1021,7 +1021,7 @@ class Movie
 			$movieCount = count($res);
 		} else {
 			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('name' => $pieces[0], 'id' => $pieces[1]));
+			$res = array(array('searchname' => $pieces[0], 'id' => $pieces[1]));
 			$movieCount = 1;
 		}
 
