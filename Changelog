@@ -6,6 +6,9 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-12 bart39
+	* New: added /misc/testing/Dev/recategorize.php - will attempt to recategorize releases (useful if there are
+	updates to category regex)
 2014-04-12 ruhllatio
 	* Fix: Issue #1264 - ReleaserRemover (removecrap blacklist) not actually deleting
 	* Chg: removecrap output to fit better within lines
