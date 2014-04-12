@@ -174,32 +174,27 @@ class DbUpdate
 				$setPatch = false;
 				$fp = fopen($file, 'r');
 				$patch = fread($fp, filesize($file));
-				$pattern = "/UPDATE `?site`? SET `?value`? = '?(?'patch'\d+)'? WHERE `?setting`? = 'sqlpatch'/i";
-				if (preg_match($pattern, $patch, $matches)) {
-					$patch = $matches['patch'];
-				} else if (preg_match($options['regex'], $file, $matches)) {
-					if ($matches['patch'] > 9) {
+
+				if (preg_match($options['regex'], $file, $matches) && $matches['patch'] > 9) {
 						$patch = $matches['patch'];
 						$setPatch = true;
-					}
-				}
-
-				if (!empty($patch)) {
-					if ($patch > $currentVersion) {
-						echo $this->log->header('Processing patch file: ' . $file);
-						if ($options['safe'] && !$this->backedUp) {
-							$this->backupDb();
-						}
-						$this->splitSQL($file, ['local' => $local, 'data' => $data]);
-						if ($setPatch) {
-							$this->db->queryExec("UPDATE site SET value = '$patch' WHERE setting = 'sqlpatch';");
-						}
-						$patched++;
-					}
+				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?'patch'\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
+					$patch = $matches['patch'];
 				} else {
 					throw new \RuntimeException("No patch information available, stopping!!");
 				}
 
+				if ($patch > $currentVersion) {
+					echo $this->log->header('Processing patch file: ' . $file);
+					if ($options['safe'] && !$this->backedUp) {
+						$this->backupDb();
+					}
+					$this->splitSQL($file, ['local' => $local, 'data' => $data]);
+					if ($setPatch) {
+						$this->db->queryExec("UPDATE site SET value = '$patch' WHERE setting = 'sqlpatch';");
+					}
+					$patched++;
+				}
 			}
 		} else {
 			exit($this->log->error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
