@@ -7,13 +7,12 @@ Each update goes to the top of the file
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-12 bart39
+	* Fix: typo in movie processing
 	* New: added /misc/testing/Dev/recategorize.php - will attempt to recategorize releases (useful if there are
 	updates to category regex)
 2014-04-12 ruhllatio
 	* Fix: Issue #1264 - ReleaserRemover (removecrap blacklist) not actually deleting
 	* Chg: removecrap output to fit better within lines
-	* Add: Egandt's codec poster removal method to removecrap wmv check (now called codec)
-	* Chg: removecrap time after first run now goes 4 hours back per function - 2 hours was not enough for file checks
 2014-04-12 kevin
 	* Chg: Refactor Movies class.
 	* Fix: Typo in content.tsv causing site to not work.
