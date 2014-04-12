@@ -1230,12 +1230,12 @@ class Movie
 		if ($buffer !== false) {
 			$this->googleLimit++;
 
-			if (stripos('To continue, please type the characters below', $buffer) === false) {
-				if ($this->doMovieUpdate($buffer, 'Google.com', $this->currentRelID) !== false) {
-					return true;
+			if (preg_match('/(To continue, please type the characters below)|(- did not match any documents\.)/i', $buffer, $matches)) {
+				if (!empty($matches[1])) {
+					$this->googleBan = time();
 				}
-			} else {
-				$this->googleBan = time();
+			} else if ($this->doMovieUpdate($buffer, 'Google.com', $this->currentRelID) !== false) {
+				return true;
 			}
 		}
 		return false;
