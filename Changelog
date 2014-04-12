@@ -6,6 +6,11 @@ Each update goes to the top of the file
 ***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-12 niel
+	* Chg: Renamed all necessary patches to work with new method.
+	In the process discovered a few patches were badly sequenced so that patches would be ignored. This may be the cause of some problems with (much) older installs.
+	NOTE: For some patches to work, the MySQL user must have FILE privileges, and the location of files must be accessible to ALL users. This means that all directories must be traversible, not just have read permissions on the files set for all.
+	* Chg: Switch patching preference to use new filename format, falling back to old method if needed.
 2014-04-11 ruhllatio
 	* Add: Additional FT Match operations for removecrap remaining subject field Blacklist entries
 	* Add: Additional blacklist removecrap outputs
