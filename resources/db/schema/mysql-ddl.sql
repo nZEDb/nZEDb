@@ -367,6 +367,8 @@ CREATE TABLE animetitles (
 DROP TABLE IF EXISTS anidb;
 CREATE TABLE anidb (
 	anidbid INT(7) UNSIGNED NOT NULL,
+	title_type VARCHAR(25) NOT NULL DEFAULT '',
+	lang VARCHAR(25) NOT NULL DEFAULT '',
 	imdbid INT(7) UNSIGNED NOT NULL,
 	tvdbid INT(7) UNSIGNED NOT NULL,
 	title VARCHAR(255) NOT NULL,
@@ -384,7 +386,7 @@ CREATE TABLE anidb (
 	airdates TEXT NOT NULL,
 	episodetitles TEXT NOT NULL,
 	unixtime INT(12) UNSIGNED NOT NULL,
-	PRIMARY KEY (anidbid)
+	PRIMARY KEY (anidbid, title_type, lang)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
 
