@@ -12,6 +12,8 @@ Each update goes to the top of the file
 2014-04-12 ruhllatio
 	* Fix: Issue #1264 - ReleaserRemover (removecrap blacklist) not actually deleting
 	* Chg: removecrap output to fit better within lines
+	* Add: Egandt's codec poster removal method to removecrap wmv check (now called codec)
+	* Chg: removecrap time after first run now goes 4 hours back per function - 2 hours was not enough for file checks
 2014-04-12 kevin
 	* Chg: Refactor Movies class.
 	* Fix: Typo in content.tsv causing site to not work.

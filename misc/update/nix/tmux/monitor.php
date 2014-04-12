@@ -1205,7 +1205,7 @@ while ($i > 0) {
 					if ($fcmax > 0) {
 
 						// If this is the first run, do a full run, else run on last 2 hours of releases.
-						$fctime = '2';
+						$fctime = '4';
 						if ((($i == 1) || $fcfirstrun)) {
 							$fctime = 'full';
 						}
