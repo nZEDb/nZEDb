@@ -325,7 +325,7 @@ class Nfo
 					}
 					$this->db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $arr['id']));
 					$ret++;
-					$movie->domovieupdate($fetchedBinary, 'nfo', $arr['id'], $processImdb);
+					$movie->doMovieUpdate($fetchedBinary, 'nfo', $arr['id'], $processImdb);
 
 					// If set scan for tvrage info.
 					if ($processTvrage == 1) {

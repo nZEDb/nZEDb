@@ -10,6 +10,7 @@ Each update goes to the top of the file
 	* Fix: Issue #1264 - ReleaserRemover (removecrap blacklist) not actually deleting
 	* Chg: removecrap output to fit better within lines
 2014-04-13 kevin
+	* Chg: Refactor Movies class.
 	* Fix: Typo in content.tsv causing site to not work.
 	* Chg: Big improvement to parsing of IMDB id's.
 2014-04-12 niel
