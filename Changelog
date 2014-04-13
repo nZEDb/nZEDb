@@ -19,12 +19,14 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Errant variable in populate_anidb
 	* Fix: Working AniDB full dat update
 2014-04-13 bart39
+	* Fix: fix potential permission issues with yydecode
 	* New: add trakt, imdb and couchpotato icons to Theatres
 	* Chg: Theatres pages - rotten tomatoes icon will display fresh or rotten dependant on critic score
 	* Chg: make icon order on search page consistent with browse page
 2014-04-13 niel
 	* Fix: removeWMV rename missed one in RemoveReleases.
 	* Fix: Fixing typo from previous commit.
+	* Chg: Changing regex named captures to use older version as PHP 5.5 doesn't seem to like the alternative versions.
 2014-04-12 bart39
 	* Fix: typo in movie processing
 	* New: added /misc/testing/Dev/recategorize.php - will attempt to recategorize releases (useful if there are
