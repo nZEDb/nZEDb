@@ -139,6 +139,16 @@ class NNTP extends Net_NNTP_Client
 		$this->yEncTempOutput = nZEDb_TMP . 'yEnc' . DS . 'output';
 		$this->currentServer = NNTP_SERVER;
 		$this->currentPort = NNTP_PORT;
+
+		if (!is_file($this->yEncTempInput)) {
+			file_put_contents($this->yEncTempInput, 'x');
+		}
+		if (!is_file($this->yEncTempOutput)) {
+			file_put_contents($this->yEncTempOutput, 'x');
+		}
+		if (!is_file($this->yEncTempInput) || !is_file($this->yEncTempOutput)) {
+			$this->yyDecoderPath = false;
+		}
 	}
 
 	/**
@@ -1079,19 +1089,16 @@ class NNTP extends Net_NNTP_Client
 				}
 			} else {
 				file_put_contents($this->yEncTempInput, $input[1]);
-				if (is_file($this->yEncTempInput)) {
-					nzedb\utility\runCmd(
-						"'" .
-						$this->yyDecoderPath .
-						"' '" .
-						$this->yEncTempInput .
-						"' -o '" .
-						$this->yEncTempOutput .
-						"' -f -b > /dev/null 2>&1");
-					if (is_file($this->yEncTempOutput)) {
-						$ret = file_get_contents($this->yEncTempOutput);
-					}
-				}
+				nzedb\utility\runCmd(
+					"'" .
+					$this->yyDecoderPath .
+					"' '" .
+					$this->yEncTempInput .
+					"' -o '" .
+					$this->yEncTempOutput .
+					"' -f -b > /dev/null 2>&1"
+				);
+				$ret = file_get_contents($this->yEncTempOutput);
 			}
 		}
 		return $ret;
