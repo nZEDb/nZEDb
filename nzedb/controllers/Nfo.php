@@ -242,8 +242,8 @@ class Nfo
 				$release['completion'] = 0;
 			}
 			if ($release['completion'] == 0) {
-				$nzbContents = new NZBContents($this->echo);
-				$nzbContents->NZBcompletion($release['guid'], $release['id'], $release['groupid'], $nntp, $db);
+				$nzbContents = new NZBContents(array('echo' => $this->echo, 'nntp' => $nntp, 'nfo' => $this, 'db' => $db, 'pp' => new PostProcess(true)));
+				$nzbContents->parseNZB($release['guid'], $release['id'], $release['groupid']);
 			}
 			return true;
 		} else {
@@ -303,12 +303,12 @@ class Nfo
 				$this->c->doEcho($this->c->header($outString . '.'));
 			}
 			$groups = new Groups();
-			$nzbContents = new NZBContents($this->echo);
+			$nzbContents = new NZBContents(array('echo' => $this->echo, 'nntp' => $nntp, 'nfo' => $this, 'db' => $this->db, 'pp' => new PostProcess(true)));
 			$movie = new Movie($this->echo);
 			$tvRage = new TvRage($this->echo);
 
 			foreach ($res as $arr) {
-				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $nntp, $groups->getByNameByID($arr['groupid']), $this->db, $this);
+				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $groups->getByNameByID($arr['groupid']));
 				if ($fetchedBinary !== false) {
 					// Insert nfo into database.
 					$cp = $nc = null;

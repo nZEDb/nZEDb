@@ -448,15 +448,44 @@ class MiscSorter
 		return $ok;
 	}
 
+	public function nzblist($guid = '')
+	{
+		if (empty($guid)) {
+			return false;
+		}
+
+		$nzb1 = new NZB();
+		$nzbpath = $nzb1->NZBPath($guid);
+		$nzb = array();
+
+		if ($nzbpath !== false) {
+			$xmlObj = @simplexml_load_file('compress.zlib://' . $nzbpath);
+			if ($xmlObj && strtolower($xmlObj->getName()) == 'nzb') {
+				foreach ($xmlObj->file as $file) {
+					$nzbfile = array();
+					$nzbfile['subject'] = (string) $file->attributes()->subject;
+					$nzbfile = array_merge($nzbfile, (array) $file->groups);
+					$nzbfile = array_merge($nzbfile, (array) $file->segments);
+					$nzb[] = $nzbfile;
+					$nzbfile = null;
+				}
+			} else {
+				$nzb = false;
+			}
+			unset($xmlObj);
+			return $nzb;
+		} else {
+			return false;
+		}
+	}
+
 	function domusicfiles($row)
 	{
-		$nzbcontents = new NZBContents($this->echooutput);
-
 		$m3u = $alt = $mp3name = '';
 		$mp3 = false;
 		$files = $extras = 0;
 
-		$nzbfiles = $nzbcontents->nzblist($row['guid']);
+		$nzbfiles = $this->nzblist($row['guid']);
 
 		if ($nzbfiles) {
 			$name = $row['name'];
