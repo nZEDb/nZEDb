@@ -6,6 +6,21 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-13 kevin
+	* Add: Massive speed improvement to yEnc decoding (~400 times faster) by using yydecode binary 
+	  (ubuntu/debian you can get it from the getdeb repository or you can compile it, takes a few seconds).
+	  This speeds up anything requiring yEnc decoding, like fetching rars/nfos. On post process additional
+	  going through 25 releases on a.b.teeve used to take 5 minutes, it takes about 15-20 seconds now.
+	* Chg: Change to get more NFO files.
+	* Chg: Change yydecoder to use random files to help with threaded scripts.
+2014-04-13 ruhllatio
+	* Add: Roelski's AniDB population changes -- needs a lot of work still
+	* Fix: Errant variable in populate_anidb
+	* Fix: Working AniDB full dat update
+2014-04-13 bart39
+	* New: add trakt, imdb and couchpotato icons to Theatres
+	* Chg: Theatres pages - rotten tomatoes icon will display fresh or rotten dependant on critic score
+	* Chg: make icon order on search page consistent with browse page
 2014-04-13 niel
 	* Fix: removeWMV rename missed one in RemoveReleases.
 	* Fix: Fixing typo from previous commit.

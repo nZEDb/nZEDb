@@ -99,6 +99,30 @@ class NNTP extends Net_NNTP_Client
 	protected $currentGroup = '';
 
 	/**
+	 * Path to yydecoder.
+	 * @var bool|string
+	 */
+	protected $yyDecoderPath;
+
+	/**
+	 * Path to temp yEnc input storage file.
+	 * @var string
+	 */
+	protected $yEncTempInput;
+
+	/**
+	 * Path to temp yEnc output storage file.
+	 * @var string
+	 */
+	protected $yEncTempOutput;
+
+	/**
+	 * If on unix, hide yydecode CLI output.
+	 * @var string
+	 */
+	protected $yEncSilence;
+
+	/**
 	 * Default constructor.
 	 *
 	 * @param bool $echo Echo to cli?
@@ -116,8 +140,29 @@ class NNTP extends Net_NNTP_Client
 			$this->debugging = new Debugging("NNTP");
 		}
 		$this->nntpRetries = ((!empty($this->site->nntpretries)) ? (int)$this->site->nntpretries : 0) + 1;
+		$this->yyDecoderPath = ((!empty($this->site->yydecoderpath)) ? $this->site->yydecoderpath : false);
+		$this->yEncTempInput = nZEDb_TMP . 'yEnc' . DS . 'input';
+		$this->yEncTempOutput = nZEDb_TMP . 'yEnc' . DS . 'output';
+		$this->yEncSilence = (nzedb\utility\isWindows() ? '' : ' > /dev/null 2>&1');
 		$this->currentServer = NNTP_SERVER;
 		$this->currentPort = NNTP_PORT;
+
+		// Test if the user can read/write to the yEnc path.
+		if (!is_file($this->yEncTempInput)) {
+			@file_put_contents($this->yEncTempInput, 'x');
+		}
+		if (!is_file($this->yEncTempOutput)) {
+			@file_put_contents($this->yEncTempOutput, 'x');
+		}
+		if (!is_file($this->yEncTempInput) ||
+			!is_file($this->yEncTempOutput) ||
+			!is_readable($this->yEncTempInput) ||
+			!is_readable($this->yEncTempOutput) ||
+			!is_writable($this->yEncTempInput) ||
+			!is_writable($this->yEncTempOutput)
+		) {
+			$this->yyDecoderPath = false;
+		}
 	}
 
 	/**
@@ -186,7 +231,7 @@ class NNTP extends Net_NNTP_Client
 
 			// If we are not connected, try to connect.
 			if (!$connected) {
-				 $ret = $this->connect($this->currentServer, $sslEnabled, $this->currentPort, 5);
+				$ret = $this->connect($this->currentServer, $sslEnabled, $this->currentPort, 5);
 			}
 
 			// Check if we got an error while connecting.
@@ -490,7 +535,7 @@ class NNTP extends Net_NNTP_Client
 							// If we got some data, return it.
 							if ($body !== '') {
 								return $body;
-							// Try until we possibly find data.
+								// Try until we possibly find data.
 							} elseif ($iCount > $iDents) {
 								continue;
 							}
@@ -504,7 +549,7 @@ class NNTP extends Net_NNTP_Client
 						// If we got some data, return it.
 						if ($body !== '') {
 							return $body;
-						// Try until we possibly find data.
+							// Try until we possibly find data.
 						} elseif ($iCount > $iDents) {
 							continue;
 						}
@@ -1032,26 +1077,47 @@ class NNTP extends Net_NNTP_Client
 	{
 		$ret = $string;
 		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $string, $input)) {
-			$ret = '';
-			$input =
-				trim(
-					preg_replace(
-						'/\r\n/im', '',
+			// If there user has no yyDecode path set, use PHP to decode yEnc.
+			if ($this->yyDecoderPath === false) {
+				$ret = '';
+				$input =
+					trim(
 						preg_replace(
-							'/(^=yEnd.*)/im', '',
+							'/\r\n/im', '',
 							preg_replace(
-								'/(^=yPart.*\\r\\n)/im', '',
+								'/(^=yEnd.*)/im', '',
 								preg_replace(
-									'/(^=yBegin.*\\r\\n)/im', '',
-									$input[1],
-								1),
-							1),
-						1)
-					)
-				);
+									'/(^=yPart.*\\r\\n)/im', '',
+									preg_replace(
+										'/(^=yBegin.*\\r\\n)/im', '',
+										$input[1],
+										1),
+									1),
+								1)
+						)
+					);
 
-			for ($chr = 0; $chr < strlen($input); $chr++) {
-				$ret .= ($input[$chr] != '=' ? chr(ord($input[$chr]) - 42) : chr((ord($input[++$chr]) - 64) - 42));
+				$length = strlen($input);
+				for ($chr = 0; $chr < $length; $chr++) {
+					$ret .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) : chr((ord($input[++$chr]) - 64) - 42));
+				}
+			} else {
+				$inFile = $this->yEncTempInput . mt_rand(0, 999999);
+				$ouFile = $this->yEncTempOutput . mt_rand(0, 999999);
+				file_put_contents($inFile, $input[1]);
+				nzedb\utility\runCmd(
+					"'" .
+					$this->yyDecoderPath .
+					"' '" .
+					$inFile .
+					"' -o '" .
+					$ouFile .
+					"' -f -b" .
+					$this->yEncSilence
+				);
+				$ret = file_get_contents($ouFile);
+				unlink($inFile);
+				unlink($ouFile);
 			}
 		}
 		return $ret;
