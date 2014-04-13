@@ -1090,9 +1090,9 @@ class NNTP extends Net_NNTP_Client
 									preg_replace(
 										'/(^=yBegin.*\\r\\n)/im', '',
 										$input[1],
-										1),
 									1),
-								1)
+								1),
+							1)
 						)
 					);
 
