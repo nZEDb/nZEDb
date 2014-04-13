@@ -147,13 +147,20 @@ class NNTP extends Net_NNTP_Client
 		$this->currentServer = NNTP_SERVER;
 		$this->currentPort = NNTP_PORT;
 
+		// Test if the user can read/write to the yEnc path.
 		if (!is_file($this->yEncTempInput)) {
 			file_put_contents($this->yEncTempInput, 'x');
 		}
 		if (!is_file($this->yEncTempOutput)) {
 			file_put_contents($this->yEncTempOutput, 'x');
 		}
-		if (!is_file($this->yEncTempInput) || !is_file($this->yEncTempOutput)) {
+		if (!is_file($this->yEncTempInput) ||
+			!is_file($this->yEncTempOutput) ||
+			!is_readable($this->yEncTempInput) ||
+			!is_readable($this->yEncTempOutput) ||
+			!is_writable($this->yEncTempInput) ||
+			!is_writable($this->yEncTempOutput)
+		) {
 			$this->yyDecoderPath = false;
 		}
 	}
@@ -1095,18 +1102,22 @@ class NNTP extends Net_NNTP_Client
 					$ret .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) : chr((ord($input[++$chr]) - 64) - 42));
 				}
 			} else {
-				file_put_contents($this->yEncTempInput, $input[1]);
+				$inFile = $this->yEncTempInput . mt_rand(0, 999999);
+				$ouFile = $this->yEncTempOutput . mt_rand(0, 999999);
+				file_put_contents($inFile, $input[1]);
 				nzedb\utility\runCmd(
 					"'" .
 					$this->yyDecoderPath .
 					"' '" .
-					$this->yEncTempInput .
+					$inFile .
 					"' -o '" .
-					$this->yEncTempOutput .
+					$ouFile .
 					"' -f -b" .
 					$this->yEncSilence
 				);
-				$ret = file_get_contents($this->yEncTempOutput);
+				$ret = file_get_contents($ouFile);
+				unlink($inFile);
+				unlink($ouFile);
 			}
 		}
 		return $ret;

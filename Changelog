@@ -12,6 +12,7 @@ New updates are grouped by person, at the top of the file.
 	  This speeds up anything requiring yEnc decoding, like fetching rars/nfos. On post process additional
 	  going through 25 releases on a.b.teeve used to take 5 minutes, it takes about 15-20 seconds now.
 	* Chg: Change to get more NFO files.
+	* Chg: Change yydecoder to use random files to help with threaded scripts.
 2014-04-13 ruhllatio
 	* Add: Roelski's AniDB population changes -- needs a lot of work still
 	* Fix: Errant variable in populate_anidb
