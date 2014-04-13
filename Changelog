@@ -16,6 +16,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: Egandt's codec poster removal method to removecrap wmv check (now called codec)
     * Chg: removecrap time after first run now goes 4 hours back per function - 2 hours was not enough for file checks
 2014-04-12 kevin
+	* Chg: Slight speedup on update binaries, by hitting collectionscleaning less often.
 	* Chg: Refactor Movies class.
 	* Fix: Typo in content.tsv causing site to not work.
 	* Chg: Big improvement to parsing of IMDB id's.
