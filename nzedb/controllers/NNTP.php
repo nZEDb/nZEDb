@@ -1065,7 +1065,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @note For usage outside of this class, please use the YEnc library.
 	 *
-	 * @param string $string The encoded text to decode.
+	 * @param string $data The encoded text to decode.
 	 *
 	 * @return string  The decoded yEnc string, or the input, if it's not yEnc.
 	 *
@@ -1073,13 +1073,12 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @TODO: ? Maybe this function should be merged into the YEnc class?
 	 */
-	protected function _decodeYEnc($string)
+	protected function _decodeYEnc($data)
 	{
-		$ret = $string;
-		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $string, $input)) {
+		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $data, $input)) {
 			// If there user has no yyDecode path set, use PHP to decode yEnc.
 			if ($this->yyDecoderPath === false) {
-				$ret = '';
+				$data = '';
 				$input =
 					trim(
 						preg_replace(
@@ -1099,7 +1098,7 @@ class NNTP extends Net_NNTP_Client
 
 				$length = strlen($input);
 				for ($chr = 0; $chr < $length; $chr++) {
-					$ret .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) : chr((ord($input[++$chr]) - 64) - 42));
+					$data .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) : chr((ord($input[++$chr]) - 64) - 42));
 				}
 			} else {
 				$inFile = $this->yEncTempInput . mt_rand(0, 999999);
@@ -1115,12 +1114,12 @@ class NNTP extends Net_NNTP_Client
 					"' -f -b" .
 					$this->yEncSilence
 				);
-				$ret = file_get_contents($ouFile);
+				$data = file_get_contents($ouFile);
 				unlink($inFile);
 				unlink($ouFile);
 			}
 		}
-		return $ret;
+		return $data;
 	}
 
 	/**
