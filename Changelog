@@ -1,20 +1,25 @@
 * Note *
 No pull requests will be accepted without this file being updated to reflect what you changed and when.
 No pull requests will be accepted to any branch except the dev branch.
-Each update goes to the top of the file
+New updates are grouped by person, at the top of the file.
 
-***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
+***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-13 niel
+	* Fix: removeWMV rename missed one in RemoveReleases.
+	* Fix: Fixing typo from previous commit.
 2014-04-12 bart39
+	* Fix: typo in movie processing
 	* New: added /misc/testing/Dev/recategorize.php - will attempt to recategorize releases (useful if there are
 	updates to category regex)
 2014-04-12 ruhllatio
 	* Fix: Issue #1264 - ReleaserRemover (removecrap blacklist) not actually deleting
 	* Chg: removecrap output to fit better within lines
 	* Add: Egandt's codec poster removal method to removecrap wmv check (now called codec)
-	* Chg: removecrap time after first run now goes 4 hours back per function - 2 hours was not enough for file checks
+    * Chg: removecrap time after first run now goes 4 hours back per function - 2 hours was not enough for file checks
 2014-04-12 kevin
+	* Chg: Slight speedup on update binaries, by hitting collectionscleaning less often.
 	* Chg: Refactor Movies class.
 	* Fix: Typo in content.tsv causing site to not work.
 	* Chg: Big improvement to parsing of IMDB id's.
@@ -24,6 +29,7 @@ Each update goes to the top of the file
 	NOTE: For some patches to work, the MySQL user must have FILE privileges, and the location of files must be accessible to ALL users. This means that all directories must be traversible, not just have read permissions on the files set for all.
 	* Chg: Switch patching preference to use new filename format, falling back to old method if needed.
 	* Fix: Bring kevin's and ruhllatio's changes above back into the right timeline.
+	* New: Script to allow bash scripts to get settings from the Db.
 2014-04-11 ruhllatio
 	* Add: Additional FT Match operations for removecrap remaining subject field Blacklist entries
 	* Add: Additional blacklist removecrap outputs
