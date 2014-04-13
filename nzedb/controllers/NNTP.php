@@ -1115,6 +1115,7 @@ class NNTP extends Net_NNTP_Client
 					"' -f -b" .
 					$this->yEncSilence
 				);
+				$ret = file_get_contents($ouFile);
 				unlink($inFile);
 				unlink($ouFile);
 			}
