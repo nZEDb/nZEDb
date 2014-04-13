@@ -13,11 +13,13 @@ New updates are grouped by person, at the top of the file.
 	  going through 25 releases on a.b.teeve used to take 5 minutes, it takes about 15-20 seconds now.
 	* Chg: Change to get more NFO files.
 	* Chg: Change yydecoder to use random files to help with threaded scripts.
+	* Chg: Refactor nzbcontents.php making fetching NFO files faster (only scanning the NZB once for hidden/non hidden NFO's).
 2014-04-13 ruhllatio
 	* Add: Roelski's AniDB population changes -- needs a lot of work still
 	* Fix: Errant variable in populate_anidb
 	* Fix: Working AniDB full dat update
 2014-04-13 bart39
+	* Fix: fix potential permission issues with yydecode
 	* New: add trakt, imdb and couchpotato icons to Theatres
 	* Chg: Theatres pages - rotten tomatoes icon will display fresh or rotten dependant on critic score
 	* Chg: make icon order on search page consistent with browse page
