@@ -414,7 +414,6 @@ class AniDBstandAlone {
 			$AniDBAPIArray['characters'] = isset($characters[1]) ? implode($characters[1], '|') : '';
 			// if there are no episodes defined this can throw an error we should catch and handle this, but currently we do not
 			preg_match('/<episodes>\s+<episode.+<\/episodes>/is', $apiresponse, $episodes);
-			$AniDBAPIArray
 			preg_match_all('/<epno>(.+)<\/epno>/i', $episodes[0], $epnos);
 			$AniDBAPIArray['epnos'] = isset($epnos[1]) ? implode($epnos[1], '|') : '';
 			preg_match_all('/<airdate>(.+)<\/airdate>/i', $episodes[0], $airdates);

@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-04-13 ruhllatio
 	* Add: Roelski's AniDB population changes -- needs a lot of work still
+	* Fix: Errant variable in populate_anidb
 2014-04-13 bart39
 	* New: add trakt, imdb and couchpotato icons to Theatres
 	* Chg: Theatres pages - rotten tomatoes icon will display fresh or rotten dependant on critic score
