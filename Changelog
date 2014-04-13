@@ -25,6 +25,7 @@ New updates are grouped by person, at the top of the file.
 	NOTE: For some patches to work, the MySQL user must have FILE privileges, and the location of files must be accessible to ALL users. This means that all directories must be traversible, not just have read permissions on the files set for all.
 	* Chg: Switch patching preference to use new filename format, falling back to old method if needed.
 	* Fix: Bring kevin's and ruhllatio's changes above back into the right timeline.
+	* New: Script to allow bash scripts to get settings from the Db.
 2014-04-11 ruhllatio
 	* Add: Additional FT Match operations for removecrap remaining subject field Blacklist entries
 	* Add: Additional blacklist removecrap outputs

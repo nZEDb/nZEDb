@@ -8,7 +8,7 @@ else
 fi
 
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
-export NZEDB_RES="${NZEDB_ROOT}/resources"
+export NZEDB_UNRAR=`php $NZEDB_PATH/nzedb/db/Settings.php tmpunrarpath`
 export HELP_PATH="${NZEDB_ROOT}/misc/update/nix/screen/threaded"
 export THREAD_PATH="${NZEDB_ROOT}/misc/update/python"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing"
@@ -23,10 +23,10 @@ export NZEDB_SLEEP_TIME="60"
 	   LASTOPTIMIZE2=`date +%s`
 
 #delete stale tmpunrar folders
-export count=`find $NZEDB_RES/tmp/unrar -type d -print| wc -l`
+export count=`find $NZEDB_UNRAR -type d -print| wc -l`
 if [ $count != 1 ]
 then
-	rm -r $NZEDB_RES/tmp/unrar/*
+	rm -r $NZEDB_UNRAR/*
 fi
 
 while :
