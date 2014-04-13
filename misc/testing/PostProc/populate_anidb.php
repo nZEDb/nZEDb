@@ -26,39 +26,40 @@ class AniDBstandAlone {
 	public function animetitlesUpdate() {
 
 		$db = $this->db;
-		$lastUpdate = $db->queryOneRow('SELECT min(unixtime) as utime FROM animetitles');
+		$lastUpdate = $db->queryOneRow('SELECT max(unixtime) as utime FROM animetitles');
 		if (isset($lastUpdate['utime']) && (time() - $lastUpdate['utime']) < 604800) {
 			if ($this->echooutput) {
-				echo "Last update occured less than 7 days ago, skiping update.\n";
+				echo "\n";
+				echo $this->c->info("Last update occurred less than 7 days ago, skipping full dat file update.\n\n");
 				}
 			return;
 			}
 
 		if ($this->echooutput) {
-			echo "Updating animetitles by grabbing full dat AniDB dump.\n";
+			echo $this->c->header("Updating animetitles by grabbing full dat AniDB dump.\n\n");
 			}
 		$zh = gzopen('http://anidb.net/api/anime-titles.dat.gz', 'r');
 		preg_match_all('/(\d+)\|\d\|.+\|(.+)/', gzread($zh, '10000000'), $animetitles);
 
 		if (!$animetitles) {
 			return false;
-		}
+			}
 
 		$db->queryExec('DELETE FROM animetitles WHERE anidbid IS NOT NULL');
 		if ($this->echooutput) {
-			echo "Total of ".count($animetitles[1])." titles to add\n";
+			echo $this->c->header("Total of ".count($animetitles[1])." titles to add\n\n");
 			}
 		for ($loop = 0; $loop < count($animetitles[1]); $loop++) {
-			$db->queryInsert(sprintf('INSERT INTO animetitles (anidbid, title, unixtime) VALUES (%d, %s, %d)',
+			$db->queryInsert(sprintf('INSERT IGNORE INTO animetitles (anidbid, title, unixtime) VALUES (%d, %s, %d)',
 			$animetitles[1][$loop], $db->escapeString(html_entity_decode($animetitles[2][$loop], ENT_QUOTES, 'UTF-8')), time()
 			));
-			if ($loop % 2500 == 0 && $this->echooutput) {
-				echo "Completed Processing ", $loop, " titles\n";
-				}
-			gzclose($zh);
-			if ($this->echooutput) {
-				echo "Completed animetitles update.\n\n";
-				}
+			}
+		if ($loop % 2500 == 0 && $this->echooutput) {
+			echo $this->c->header("Completed Processing " . $loop . " titles.\n\n");
+			}
+		gzclose($zh);
+		if ($this->echooutput) {
+			echo $this->c->header("Completed animetitles update.\n\n");
 			}
 		}
 
@@ -439,7 +440,7 @@ if (isset($argv[1]) && is_numeric($argv[1])) {
 	$anidb = new AniDBstandAlone(true);
 
 	// next get the title list and populate the DB, update animetitles once a week
-	// $anidb->animetitlesUpdate();
+	$anidb->animetitlesUpdate();
 
 	// sleep between 1 and 3 minutes before it starts, this way if from a cron process the start times are random
 	if (isset($argv[2]) && $argv[2] == 'cron') {
