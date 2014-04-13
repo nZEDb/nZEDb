@@ -291,7 +291,7 @@ class ReleaseRemover
 				$this->removeSCR();
 				$this->removeShort();
 				$this->removeSize();
-				$this->removeWMV();
+				$this->removeCodePoster();
 				break;
 			default:
 				$this->error = 'Wrong type: ' .$type;
