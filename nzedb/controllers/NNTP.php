@@ -149,10 +149,10 @@ class NNTP extends Net_NNTP_Client
 
 		// Test if the user can read/write to the yEnc path.
 		if (!is_file($this->yEncTempInput)) {
-			file_put_contents($this->yEncTempInput, 'x');
+			@file_put_contents($this->yEncTempInput, 'x');
 		}
 		if (!is_file($this->yEncTempOutput)) {
-			file_put_contents($this->yEncTempOutput, 'x');
+			@file_put_contents($this->yEncTempOutput, 'x');
 		}
 		if (!is_file($this->yEncTempInput) ||
 			!is_file($this->yEncTempOutput) ||
@@ -1115,7 +1115,6 @@ class NNTP extends Net_NNTP_Client
 					"' -f -b" .
 					$this->yEncSilence
 				);
-				$ret = file_get_contents($ouFile);
 				unlink($inFile);
 				unlink($ouFile);
 			}
