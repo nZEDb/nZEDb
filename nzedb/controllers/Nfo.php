@@ -145,7 +145,7 @@ class Nfo
 		if ($size < 100 * 1024 && $size > 12) {
 			// Ignore common file types.
 			if (preg_match(
-				'/(^RIFF|)<\?xml|;\s*Generated\s*by.*SF\w|\A\s*PAR|\.[a-z0-9]{2,7}\s*[a-z0-9]{8}|\A\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i'
+				'/(^RIFF|)<\?xml|;\s*Generated\s*by.*SF\w|\A\s*[RP]AR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i'
 				, $possibleNFO)) {
 				return $r;
 			}
