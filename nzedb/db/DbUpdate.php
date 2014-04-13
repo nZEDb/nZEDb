@@ -150,7 +150,7 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex' => "#^([/\w]+|)(?'date'\d{4}-\d{2}-\d{2})_(?'patch'\d+)_(?'table'\w+)\.sql$#",
+			'regex' => "#^([/\w-]+|)(?P<date>\d{4}-\d{2}-\d{2})_(?P<patch>\d+)_(?P<table>\w+)\.sql$#",
 			'safe'	=> true,
 		);
 		$options += $defaults;
@@ -178,7 +178,7 @@ class DbUpdate
 				if (preg_match($options['regex'], $file, $matches) && $matches['patch'] > 9) {
 						$patch = $matches['patch'];
 						$setPatch = true;
-				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?'patch'\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
+				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?P<patch>\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
 					$patch = $matches['patch'];
 				} else {
 					throw new \RuntimeException("No patch information available, stopping!!");
