@@ -117,6 +117,12 @@ class NNTP extends Net_NNTP_Client
 	protected $yEncTempOutput;
 
 	/**
+	 * If on unix, hide yydecode CLI output.
+	 * @var string
+	 */
+	protected $yEncSilence;
+
+	/**
 	 * Default constructor.
 	 *
 	 * @param bool $echo Echo to cli?
@@ -137,6 +143,7 @@ class NNTP extends Net_NNTP_Client
 		$this->yyDecoderPath = ((!empty($this->site->yydecoderpath)) ? $this->site->yydecoderpath : false);
 		$this->yEncTempInput = nZEDb_TMP . 'yEnc' . DS . 'input';
 		$this->yEncTempOutput = nZEDb_TMP . 'yEnc' . DS . 'output';
+		$this->yEncSilence = (nzedb\utility\isWindows() ? '' : ' > /dev/null 2>&1');
 		$this->currentServer = NNTP_SERVER;
 		$this->currentPort = NNTP_PORT;
 
@@ -1096,7 +1103,8 @@ class NNTP extends Net_NNTP_Client
 					$this->yEncTempInput .
 					"' -o '" .
 					$this->yEncTempOutput .
-					"' -f -b > /dev/null 2>&1"
+					"' -f -b" .
+					$this->yEncSilence
 				);
 				$ret = file_get_contents($this->yEncTempOutput);
 			}
