@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-14 kevin
+	* Chg: More refactoring of NNTP, add Yenc functions in NNTP, remove Yenc class.
 2014-04-14 ruhllatio
 	* Add: Option for removeCrap to specify a fourth argument for Blacklist ID (great for testing full time delete with new regex)
 2014-04-13 kevin
