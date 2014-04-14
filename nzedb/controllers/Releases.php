@@ -9,12 +9,17 @@ use nzedb\utility;
  */
 class Releases
 {
-	/* RAR/ZIP Passworded indicator. */
+	// RAR/ZIP Passworded indicator.
+	const PASSWD_NONE      =  0; // No password.
+	const PASSWD_POTENTIAL =  1; // Might have a password.
+	const BAD_FILE         =  2; // Possibly broken RAR/ZIP.
+	const PASSWD_RAR       = 10; // Definitely passworded.
 
-	const PASSWD_NONE = 0; // No password.
-	const PASSWD_POTENTIAL = 1; // Might have a password.
-	const BAD_FILE = 2; // Possibly broken RAR/ZIP.
-	const PASSWD_RAR = 10; // Definitely passworded.
+	// Request ID.
+	const REQID_NONE   = -3; // The Request ID was not found.
+	const REQID_ZERO   = -2; // The Request ID was 0.
+	const REQID_UPROC  =  0; // Unprocessed.
+	const REQID_FOUND  =  1; // Found.
 
 	/**
 	 * @param bool $echooutput
@@ -2193,9 +2198,11 @@ class Releases
 					WHERE r.groupid = %d
 					AND  nzbstatus = 1
 					AND isrenamed = 0
-					AND (isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %d HOUR))
+					AND (isrequestid = 1 AND reqidstatus in (%d, -1) OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR))
 					LIMIT 100",
 					$groupID,
+					self::REQID_UPROC,
+					self::REQID_NONE,
 					(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1)
 				)
 			);
@@ -2203,18 +2210,29 @@ class Releases
 			if ($resRel !== false && $resRel->rowCount() > 0) {
 				$newTitle = false;
 				$web = (!empty($this->site->request_url) &&
-						(!nzedb\utility\getUrl($this->site->request_url) === false ? false : true));
+						(nzedb\utility\getUrl($this->site->request_url) === false ? false : true));
 
 				foreach ($resRel as $rowRel) {
+					$newTitle = $local = false;
+
 					// Try to get request id.
 					if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID)) {
 						$requestID = (int)$requestID[1];
 					} else {
-						continue;
+						$requestID = 0;
 					}
-					$newTitle = $local = false;
 
-					if ($requestID !== 0) {
+					if ($requestID === 0) {
+						$this->db->queryExec(
+							sprintf('
+								UPDATE releases
+								SET reqidstatus = %d
+								WHERE id = %d',
+								self::REQID_ZERO,
+								$rowRel['id']
+							)
+						);
+					} else {
 
 						// Do a local lookup first.
 						$run = $this->db->queryOneRow(
@@ -2236,7 +2254,7 @@ class Releases
 							$xml = @simplexml_load_file(
 								str_ireplace(
 									'[REQUEST_ID]',
-									urlencode($requestID),
+									$requestID,
 									str_ireplace(
 										'[GROUP_NM]',
 										urlencode($rowRel['groupname']),
@@ -2251,21 +2269,23 @@ class Releases
 								$iFoundCnt++;
 							}
 						}
-					} else {
-						$this->db->queryExec(sprintf('UPDATE releases SET reqidstatus = -2 WHERE id = %d', $rowRel['id']));
 					}
-					if ($newTitle) {
+
+					if ($newTitle !== false) {
+
 						$determinedCat = $category->determineCategory($newTitle, $groupID);
 						$this->db->queryExec(
 							sprintf('
 								UPDATE releases
-								SET reqidstatus = 1, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d
+								SET reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d
 								WHERE id = %d',
+								self::REQID_FOUND,
 								$this->db->escapeString($newTitle),
 								$determinedCat,
 								$rowRel['id']
 							)
 						);
+
 						if ($this->echooutput) {
 							echo $this->c->primary(
 								"\n\nNew name:  $newTitle" .
@@ -2279,7 +2299,8 @@ class Releases
 					} else {
 						$this->db->queryExec(
 							sprintf(
-								'UPDATE releases SET reqidstatus = -3 WHERE id = %d',
+								'UPDATE releases SET reqidstatus = %d WHERE id = %d',
+								self::REQID_NONE,
 								$rowRel['id']
 							)
 						);
