@@ -1,7 +1,7 @@
 <?php
 require_once './config.php';
 $page = new AdminPage();
-$msgs = false;
+$msgs = $error = false;
 
 // Set the current action.
 $action = (isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view');
@@ -9,9 +9,12 @@ $action = (isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view');
 switch($action)
 {
 	case 'submit':
-		if (isset($_POST['groupfilter']) && !empty($_POST['groupfilter'])) {
+		if (isset($_POST['groupfilter'])) {
 			$groups = new Groups;
 			$msgs = $groups->addBulk($_POST['groupfilter'], $_POST['active'], $_POST['backfill']);
+			if (is_string($msgs)) {
+				$error = true;
+			}
 		}
 		break;
 	case 'view':
@@ -20,7 +23,8 @@ switch($action)
 		break;
 }
 
-$page->smarty->assign('groupmsglist',$msgs);
+$page->smarty->assign('error', $error);
+$page->smarty->assign('groupmsglist', $msgs);
 $page->smarty->assign('yesno_ids', array(1, 0));
 $page->smarty->assign('yesno_names', array('Yes', 'No'));
 

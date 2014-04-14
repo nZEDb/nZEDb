@@ -545,31 +545,43 @@ class Groups
 	 */
 	public function addBulk($groupList, $active = 1, $backfill = 1)
 	{
-		$ret = false;
-
-		if ($groupList == "") {
-			$ret[] = "No group list provided.";
+		if (preg_match('/^\s*$/m', $groupList)) {
+			$ret = "No group list provided.";
 		} else {
-			$nntp = new NNTP();
+			$nntp = new NNTP(false);
 			if ($nntp->doConnect() !== true) {
-				return $ret;
+				return 'Problem connecting to usenet.';
 			}
 			$groups = $nntp->getGroups();
 			$nntp->doQuit();
 
-			$regfilter = "/(" . str_replace(array('.','*'), array('\.','.*?'), $groupList) . ")$/";
+			if ($nntp->isError($groups)) {
+				return 'Problem fetching groups from usenet.';
+			}
+
+			$regFilter = '/' . $groupList . '/i';
+
+			$ret = array();
 
 			foreach($groups AS $group) {
-				if (preg_match ($regfilter, $group['group']) > 0) {
-					$res = $this->db->queryOneRow(sprintf("SELECT id FROM groups WHERE name = %s ", $this->db->escapeString($group['group'])));
-					if($res) {
-						$this->db->queryExec(sprintf("UPDATE groups SET active = %d, backfill = %d where id = %d", $active, $backfill, $res["id"]));
-						$ret[] = array ('group' => $group['group'], 'msg' => 'Updated');
-					} else {
-						$this->db->queryInsert(sprintf("INSERT INTO groups (name, active, backfill) VALUES (%s, %d, %d)", $this->db->escapeString($group['group']), $active, $backfill));
+				if (preg_match($regFilter, $group['group']) > 0) {
+					$res = $this->db->queryOneRow(
+						sprintf('SELECT id FROM groups WHERE name = %s', $this->db->escapeString($group['group']))
+					);
+					if ($res === false) {
+						$this->db->queryInsert(
+							sprintf(
+								'INSERT INTO groups (name, active, backfill) VALUES (%s, %d, %d)',
+								$this->db->escapeString($group['group']), $active, $backfill
+							)
+						);
 						$ret[] = array ('group' => $group['group'], 'msg' => 'Created');
 					}
 				}
+			}
+
+			if (count($ret) === 0) {
+				$ret = 'No groups found with your regex, try again!';
 			}
 		}
 		return $ret;
