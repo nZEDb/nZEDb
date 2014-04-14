@@ -2800,17 +2800,16 @@ class Releases
 			$delcount = 0;
 			$cIDS = array();
 			foreach ($res as $row) {
-				$nofiles = true;
-				if ($row['totalfiles'] > 0) {
-					$nofiles = false;
-				}
 
 				$groupName = $this->groups->getByNameByID($row['groupid']);
-				/* $ncarr = $this->collectionsCleaning->collectionsCleaner($row['bname'], $groupName, $nofiles);
-				  $newSHA1 = sha1($ncarr['hash']).$row['fromname'].$row['groupid'].$row['totalfiles']); */
 				$newSHA1 = sha1(
-					$this->collectionsCleaning->collectionsCleaner($row['bname'], $groupName, $nofiles) .
-					$row['fromname'] . $row['groupid'] . $row['totalfiles']
+						$this->collectionsCleaning->collectionsCleaner(
+							$row['bname'],
+							$groupName .
+							$row['fromname'] .
+							$row['groupid'] .
+							$row['totalfiles']
+						)
 				);
 				$cres = $this->db->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s', $this->db->escapeString($newSHA1)));
 				if (!$cres) {
