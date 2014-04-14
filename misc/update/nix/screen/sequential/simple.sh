@@ -7,6 +7,7 @@ else
 	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
 
+export NZEDB_UNRAR=`php $NZEDB_ROOT/nzedb/db/Settings.php tmpunrarpath`
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
 export TEST_PATH="${NZEDB_ROOT}/misc/testing"
 export NZEDB_SLEEP_TIME="60" # in seconds
@@ -16,10 +17,10 @@ command -v php5 >/dev/null 2>&1 && export PHP=`command -v php5` || { export PHP=
 
 #delete stale tmpunrar folders
 # we need to have this use the Db setting. No idea how yet, but this fails too often otherwise.
-export count=`find $NZEDB_ROOT/resources/tmp/unrar -type d -print| wc -l`
+export count=`find $NZEDB_UNRAR -type d -print| wc -l`
 if [ $count != 1 ]
 then
-	rm -r $NZEDB_ROOT/resources/tmp/unrar/*
+	rm -r $NZEDB_UNRAR/*
 fi
 
 while :

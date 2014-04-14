@@ -1205,7 +1205,7 @@ while ($i > 0) {
 					if ($fcmax > 0) {
 
 						// If this is the first run, do a full run, else run on last 2 hours of releases.
-						$fctime = '2';
+						$fctime = '4';
 						if ((($i == 1) || $fcfirstrun)) {
 							$fctime = 'full';
 						}
@@ -1471,8 +1471,6 @@ while ($i > 0) {
 				case ($nntpproxy == 1):
 					$spane = 5;
 					break;
-				default:
-					echo "WTF happened!!\n";
 			}
 
 			//run IRCScraper
@@ -1546,8 +1544,6 @@ while ($i > 0) {
 				case ($nntpproxy == 1):
 					$spane = 4;
 					break;
-				default:
-					echo "WTF happened!!\n";
 			}
 
 			//run IRCScraper
@@ -1635,8 +1631,6 @@ while ($i > 0) {
 				case ($nntpproxy == 1):
 					$spane = 5;
 					break;
-				default:
-					echo "WTF happened!!\n";
 			}
 
 			//run IRCScraper
@@ -1733,8 +1727,11 @@ function run_sharing($tmux_session, $_php, $pane, $_sleep, $sharing_timer)
 {
 	$db = new DB();
 	$sharing = $db->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
+	$t = new Tmux();
+	$tmux = $t->get();
+	$tmux_share = (isset($tmux->run_sharing)) ? $tmux->run_sharing : 0;
 
-	if($sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
+	if($tmux_share && $sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
 		if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
 			$DIR = nZEDb_MISC;
 			$sharing2 = $DIR . "/update/postprocess.php sharing true";

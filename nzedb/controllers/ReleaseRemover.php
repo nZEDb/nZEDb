@@ -210,17 +210,22 @@ class ReleaseRemover
 	 *
 	 * @return string|bool
 	 */
-	public function removeCrap($delete, $time, $type='')
+	public function removeCrap($delete, $time, $type='', $blacklistid='')
 	{
 		$this->timeStart = time();
 		$this->delete = $delete;
+		$this->blid = '';
+
+		if (isset($blacklistid) && is_numeric($blacklistid)) {
+			$this->blid = sprintf("id = %d AND", $blacklistid);
+		}
 
 		$time = trim($time);
 		$this->crapTime = '';
 		switch ($time) {
 			case 'full':
 				if ($this->echoCLI) {
-					echo $this->color->header("Removing crap releases - no time limit.");
+					echo $this->color->header("Removing crap releases - no time limit.\n");
 				}
 				break;
 			default:
@@ -229,13 +234,13 @@ class ReleaseRemover
 					return $this->returnError();
 				}
 				if ($this->echoCLI) {
-					echo $this->color->header('Removing crap releases from the past ' . $time . " hour(s).");
+					echo $this->color->header('Removing crap releases from the past ' . $time . " hour(s).\n");
 				}
 				$this->crapTime =
 					' AND r.adddate > (NOW() - INTERVAL ' .
-					($this->mysql ? $time . ' HOUR)' : $this->db->escapeString($time . ' HOURS')) .
-					' ORDER BY r.id ASC';
+					($this->mysql ? $time . ' HOUR)' : $this->db->escapeString($time . ' HOURS'));
 				break;
+
 		}
 
 		$this->deletedCount = 0;
@@ -277,8 +282,8 @@ class ReleaseRemover
 			case 'size':
 				$this->removeSize();
 				break;
-			case 'wmv':
-				$this->removeWMV();
+			case 'codec':
+				$this->removeCodecPoster();
 				break;
 			case '':
 				$this->removeBlacklist();
@@ -292,7 +297,7 @@ class ReleaseRemover
 				$this->removeSCR();
 				$this->removeShort();
 				$this->removeSize();
-				$this->removeWMV();
+				$this->removeCodecPoster();
 				break;
 			default:
 				$this->error = 'Wrong type: ' .$type;
@@ -627,15 +632,15 @@ class ReleaseRemover
 	 *
 	 * @return bool
 	 */
-
 	protected function removeBlacklist()
 	{
-		$regexes = $this->db->query(
+
+		$regexes = $this->db->query(sprintf(
 			'SELECT regex, id, groupname, msgcol
 			FROM binaryblacklist
-			WHERE status = 1
-			AND optype = 1'
-		);
+			WHERE %s status = 1
+			AND optype = 1', $this->blid
+		));
 
 		if (count($regexes) > 0) {
 
@@ -645,7 +650,7 @@ class ReleaseRemover
 				$dbregex = $this->db->escapeString($regex['regex']);
 
 				// Match Regex beginning for long running foreign search
-				if (substr($dbregex, 2, 17) == 'brazilian|chinese') {
+				if (substr($dbregex, 2, 17) == 'brazilian|chinese' && $this->crapTime == '') {
 					// Find first brazilian instance position in Regex, then find first closing parenthesis.
 					// Then substitute all pipes (|) with spaces for FT search and insert into query
 					$forbegin = strpos($dbregex, 'brazilian');
@@ -653,7 +658,7 @@ class ReleaseRemover
 					$ftmatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->db->escapeString($regmatch));
 				}
 
-				if (substr($dbregex, 7, 11) == 'bl|cz|de|es') {
+				if (substr($dbregex, 7, 11) == 'bl|cz|de|es' && $this->crapTime == '') {
 					// Find first bl|cz instance position in Regex, then find first closing parenthesis.
 					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
 					$forbegin = strpos($dbregex, 'bl|cz');
@@ -661,7 +666,7 @@ class ReleaseRemover
 					$ftmatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"') AND", $regmatch);
 				}
 
-				if (substr($dbregex, 8, 5) == '19|20') {
+				if (substr($dbregex, 8, 5) == '19|20' && $this->crapTime == '') {
 					// Find first bl|cz instance position in Regex, then find last closing parenthesis as this is reversed.
 					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
 					$forbegin = strpos($dbregex, 'bl|cz');
@@ -669,7 +674,33 @@ class ReleaseRemover
 					$ftmatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"') AND", $regmatch);
 				}
 
-				if (substr($dbregex, 7, 9) == 'imageset|') {
+				if (substr($dbregex, 7, 14) == 'chinese.subbed' && $this->crapTime == '') {
+					// Find first brazilian instance position in Regex, then find first closing parenthesis.
+					// Then substitute all pipes (|) with spaces for FT search and insert into query
+					$forbegin = strpos($dbregex, 'chinese');
+					$regmatch = str_replace('nl  subed bed s', 'nlsubs nlsubbed nlsubed', str_replace('?', '', str_replace('.', ' ', str_replace('|', ' ', str_replace('-', '',
+					str_replace('(', '', str_replace(')', '',	substr($dbregex, $forbegin, strrpos($dbregex, ')') - $forbegin))))))));
+					$ftmatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->db->escapeString($regmatch));
+				}
+
+				if (substr($dbregex, 8, 2) == '4u' && $this->crapTime == '') {
+					// Find first 4u\.nl instance position in Regex, then find first closing parenthesis.
+					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
+					$forbegin = strpos($dbregex, '4u');
+					$regmatch = str_replace('|', ' ', str_replace('nov[ a]+rip', 'nova', str_replace('4u.nl', '"4u" "nl"', substr($dbregex, $forbegin, strpos($dbregex, ')') - $forbegin))));
+					$ftmatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->db->escapeString($regmatch));
+				}
+
+				if (substr($dbregex, 8, 5) == 'bd|dl' && $this->crapTime == '') {
+					// Find first bd|dl instance position in Regex, then find last closing parenthesis as this is reversed.
+					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
+					$forbegin = strpos($dbregex, 'bd|dl');
+					$regmatch = str_replace('\\', '', str_replace(']', '', str_replace('[', '', str_replace('|', ' ',
+					str_replace('bd|dl)mux', 'bdmux dlmux', substr($dbregex, $forbegin, strrpos($dbregex, ')') - $forbegin))))));
+					$ftmatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"') AND", $regmatch);
+				}
+
+				if (substr($dbregex, 7, 9) == 'imageset|' && $this->crapTime == '') {
 					// Find first imageset| instance position in Regex, then find last closing parenthesis.
 					// Then substitute all pipes (|) with quotation marks for FT search (quotes exclude min counts) and insert into query
 					$forbegin = strpos($dbregex, 'imageset');
@@ -677,19 +708,28 @@ class ReleaseRemover
 					$ftmatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->db->escapeString($regmatch));
 				}
 
-				if (substr($dbregex, 1, 9) == 'hdnectar|') {
-					// Find first hdnectar| instance position in Regex, then find last closing parenthesis.
+				if (substr($dbregex, 1, 9) == 'hdnectar|' && $this->crapTime == '') {
+					// Find first hdnectar| instance position in Regex.
 					// Then substitute all pipes (|) with quotation marks for FT search (quotes exclude min counts) and insert into query
 					$regmatch = str_replace('|', ' ', $dbregex);
-					$ftmatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->db->escapeString($regmatch));
+					$ftmatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $regmatch);
+				}
+
+				if (substr($dbregex, 1, 10) == 'Passworded' && $this->crapTime == '') {
+					// Find first Passworded instance position in Regex, then find last closing parenthesis.
+					// Then substitute all pipes (|) with quotation marks for FT search (quotes exclude min counts) and insert into query
+					$regmatch = str_replace('|', ' ', $dbregex);
+					$ftmatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $regmatch);
 				}
 
 				switch ((int) $regex['msgcol']) {
 					case Binaries::BLACKLIST_FIELD_SUBJECT:
 						$regexsql = sprintf("WHERE %s (rs.name {$this->regexp} %s OR rs.searchname {$this->regexp} %s)", $ftmatch, $dbregex, $dbregex);
+						$optypename = "Subject";
 						break;
 					case Binaries::BLACKLIST_FIELD_FROM:
 						$regexsql = "WHERE r.fromname {$this->regexp} " . $dbregex;
+						$optypename = "Poster";
 						break;
 					case Binaries::BLACKLIST_FIELD_MESSAGEID:
 						break;
@@ -723,10 +763,23 @@ class ReleaseRemover
 
 					$groupID = ' AND r.groupid in (' . $groupIDs . ') ';
 				}
-
 				$this->method = 'Blacklist ' . $regex['id'];
+
+				// Check if using FT Match and declare for echo
+				if ($ftmatch !== '') {
+					$bltype = "FULLTEXT match with REGEXP";
+					$ftusing = "Using (" . $regmatch . ") as interesting words.\n";
+				} else {
+					$bltype = "only REGEXP";
+					$ftusing = "\n";
+				}
+
+				// Provide useful output of operations
+				echo $this->color->header(sprintf("Finding crap releases for %s: Using %s method against release %s.\n" .
+				"%s", $this->method, $bltype, $optypename, $ftusing));
+
 				$this->query = sprintf(
-					"SELECT rs.id, rs.guid, rs.searchname
+					"SELECT r.id, r.guid, r.searchname
 					FROM releasesearch rs LEFT JOIN releases r ON rs.releaseid = r.id %s %s %s", $regexsql, $groupID, $this->crapTime
 				);
 
@@ -734,7 +787,10 @@ class ReleaseRemover
 					continue;
 				}
 				$this->deleteReleases();
+
 			}
+		} else {
+			echo $this->color->error("No regular expressions were selected for blacklist removal. Make sure you have activated REGEXPs in Site Edit and you're specifying a valid ID.\n");
 		}
 		return true;
 	}
@@ -744,7 +800,6 @@ class ReleaseRemover
 	 *
 	 * @return bool
 	 */
-
 	protected function removeBlacklistFiles()
 	{
 		$fregexes = $this->db->query(sprintf(
@@ -801,26 +856,42 @@ class ReleaseRemover
 				if ($this->checkSelectQuery() === false) {
 					continue;
 				}
+
 				$this->deleteReleases();
+
 			}
 		}
 		return true;
 	}
 
 	/**
-	 * Remove releases that contain .wmv file, aka that spam poster.
-	 * Thanks to dizant from nZEDb forums for the sql query
+	 * Remove releases that contain .wmv files and Codec\Setup.exe files, aka that spam poster.
+	 * Thanks to dizant from nZEDb forums for parts of the sql query
 	 * @return bool
 	 */
-	protected function removeWMV()
+	protected function removeCodecPoster()
 	{
-		$this->method = 'WMV';
+		$this->method = 'Codec Poster';
 		$regex = sprintf("rf.name %s 'x264.*\.wmv$'", $this->regexp);
+		$codec = '%\\Codec%Setup.exe%';
+		$iferror = '%If_you_get_error.txt%';
+		$categories = sprintf("r.categoryid IN (%d, %d, %d, %d, %d, %d, %d) AND",
+			Category::CAT_MOVIE_3D,
+			Category::CAT_MOVIE_BLURAY,
+			Category::CAT_MOVIE_DVD,
+			Category::CAT_MOVIE_FOREIGN,
+			Category::CAT_MOVIE_HD,
+			Category::CAT_MOVIE_OTHER,
+			Category::CAT_MOVIE_SD
+			);
+		$codeclike = sprintf("UNION SELECT r.id, r.guid, r.searchname FROM releases r
+			LEFT JOIN releasefiles rf ON r.id = rf.releaseid
+			WHERE %s rf.name %s '%s' OR rf.name %s '%s'", $categories, $this->like, $codec, $this->like, $iferror
+			);
 		$this->query = sprintf(
-			"SELECT DISTINCT r.ID, r.searchname FROM releasefiles
-			rf INNER JOIN releases r ON (rf.releaseID = r.ID)
-			WHERE %s",
-			$regex
+			"SELECT r.id, r.guid, r.searchname FROM releases
+			r INNER JOIN releasefiles rf ON (rf.releaseid = r.id)
+			WHERE %s %s %s %s %s", $categories, $regex, $this->crapTime, $codeclike, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {

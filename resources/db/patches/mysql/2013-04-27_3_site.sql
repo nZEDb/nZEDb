@@ -1,8 +1,6 @@
 INSERT IGNORE INTO `site`
-    (`setting`, `value`)
-    VALUES
-	('backfillthreads','4'),
-	('binarythreads','4'),
-	('postthreads','4');
+	(`setting`, `value`)
+	VALUES
+	('releasecompletion', 0);
 
-UPDATE `site` set `value` = '5' where `setting` = 'sqlpatch';
+UPDATE `site` set `value` = '3' where `setting` = 'sqlpatch';
