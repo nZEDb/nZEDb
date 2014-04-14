@@ -747,7 +747,6 @@ class PostProcess
 				$this->doEcho('Added: m = video mediainfo, n = nfo, ^ = file details from inside the rar/zip');
 			}
 
-			$nzbContents = new NZBContents($this->echooutput);
 			$nzb = new NZB($this->echooutput);
 
 			// Loop through the releases.

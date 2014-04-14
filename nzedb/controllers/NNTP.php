@@ -1090,9 +1090,9 @@ class NNTP extends Net_NNTP_Client
 									preg_replace(
 										'/(^=yBegin.*\\r\\n)/im', '',
 										$input[1],
-										1),
 									1),
-								1)
+								1),
+							1)
 						)
 					);
 
@@ -1104,6 +1104,7 @@ class NNTP extends Net_NNTP_Client
 				$inFile = $this->yEncTempInput . mt_rand(0, 999999);
 				$ouFile = $this->yEncTempOutput . mt_rand(0, 999999);
 				file_put_contents($inFile, $input[1]);
+				file_put_contents($ouFile, '');
 				nzedb\utility\runCmd(
 					"'" .
 					$this->yyDecoderPath .
