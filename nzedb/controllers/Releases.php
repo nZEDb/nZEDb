@@ -2190,10 +2190,12 @@ class Releases
 					SELECT r.id, r.name, r.searchname, g.name AS groupname
 					FROM releases r
 					LEFT JOIN groups g ON r.groupid = g.id
-					WHERE %s nzbstatus = 1
+					WHERE r.groupid = %d
+					AND  nzbstatus = 1
 					AND isrenamed = 0
 					AND (isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL %d HOUR))
 					LIMIT 100",
+					$groupID,
 					(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1)
 				)
 			);
