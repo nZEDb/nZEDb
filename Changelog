@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-04-14 kevin
 	* Chg: More refactoring of NNTP, add Yenc functions in NNTP, remove Yenc class.
+	* Fix: #1267 Use https for youtube videos to not cause issues on http sites.
 2014-04-14 ruhllatio
 	* Add: Option for removeCrap to specify a fourth argument for Blacklist ID (great for testing full time delete with new regex)
 2014-04-13 kevin
