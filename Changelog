@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-14 kevin
+	* Fix: Notice in removecrap.
 	* Chg: More refactoring of NNTP, add Yenc functions in NNTP, remove Yenc class.
 	* Fix: #1267 Use https for youtube videos to not cause issues on http sites.
 2014-04-14 ruhllatio

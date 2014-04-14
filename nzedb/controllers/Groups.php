@@ -535,22 +535,21 @@ class Groups
 	}
 
 	/**
-	 * update the list of newsgroups and return an array of messages.
+	 * Update the list of newsgroups and return an array of messages.
 	 *
-	 * @param     $groupList
-	 * @param int $active
-	 * @param int $backfill
+	 * @param string $groupList
+	 * @param int    $active
+	 * @param int    $backfill
 	 *
 	 * @return array
 	 */
-	function addBulk($groupList, $active = 1, $backfill = 1)
+	public function addBulk($groupList, $active = 1, $backfill = 1)
 	{
-		$ret = array();
+		$ret = false;
 
 		if ($groupList == "") {
 			$ret[] = "No group list provided.";
 		} else {
-			$db = new DB();
 			$nntp = new NNTP();
 			if ($nntp->doConnect() !== true) {
 				return $ret;
