@@ -1,37 +1,28 @@
 <?php
-/**
- * This script will turn on debug in NNTP showing you everything you send and receive.
- * You need to set nZEDb_DEBUG to true in automated.config.php.
- */
-
-// Get the config.php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIBS . 'Yenc.php';
-// Create instance of class at bottom of this script.
-$d = new NNTPdebug();
-// Create instance of NNTP.
+echo 'This script is going to run without debug, you can turn on debug by passing true as an argument.' . PHP_EOL;
+$d = new NNTPdebug((isset($argv[1]) ? true : false));
 $nntp = new NNTP();
-// Set our above debugger class as the nntp logger.
 $nntp->setLogger($d);
-// Connect to usenet.
 $connected = $nntp->doConnect();
-// Check if connected.
-if ($connected !== true) {
-	exit();
-}
-
+if ($connected !== true) {exit();}
+$n = PHP_EOL;
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////// Put your test code under here. ////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-/** Example: **/
-
+echo 'This is the last post in the sharing group:' . $n.$n;
 $x = $nntp->selectGroup('alt.binaries.zines');
 $x = $nntp->get_Header($x['group'], $x['last']);
-var_dump($x['From'], $x['Subject'], $x['Date']);
-
-
-/**/
+echo 'Subject: '.$x['Subject'].$n.'Poster: '.$x['From'].$n.'Time: '.$x['Date'].$n
+.$n.'Now we will post an article to alt.test and see if it posted. The article will have this subject: I am testing posting articles to usenet, ignore'.$n;
+$nntp->postArticle('alt.testing', 'I am testing posting articles to usenet, ignore', 'This is a test', '<testing@test.com>');
+for($i=15;$i>=0;$i--) {echo "Sleeping $i so the article propagates.\r"; sleep(1);}
+echo $n.$n;
+$x = $nntp->selectGroup('alt.testing');
+$x = $nntp->get_Header($x['group'], $x['last']);
+echo 'Subject: '.$x['Subject'].$n.'Poster: '.$x['From'].$n.'Time: '.$x['Date'].$n;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,16 +36,17 @@ class NNTPdebug
 	/**
 	 * Construct.
 	 */
-	public function __construct()
+	public function __construct($debug = false)
 	{
-		if (defined('nZEDb_DEBUG')) {
-			//define('PEAR_LOG_DEBUG', nZEDb_DEBUG);
-			define('PEAR_LOG_DEBUG', true);
+
+		define('PEAR_LOG_DEBUG', $debug);
+		$this->color = new ColorCLI();
+		/*if (defined('nZEDb_DEBUG')) {
+			define('PEAR_LOG_DEBUG', nZEDb_DEBUG);
 			$this->color = new ColorCLI();
 		} else {
-			//define('PEAR_LOG_DEBUG', false);
-			define('PEAR_LOG_DEBUG', true);
-		}
+			define('PEAR_LOG_DEBUG', false);
+		}*/
 	}
 
 	/**

@@ -1,0 +1,1 @@
+UPDATE site SET value = '207' WHERE setting = 'sqlpatch';

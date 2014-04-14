@@ -260,11 +260,9 @@ class NameFixer
 		if ($total > 0) {
 			echo $this->c->primary(number_format($total) . " releases to process.");
 			sleep(2);
-			$db = $this->db;
-			$nzbcontents = new NZBContents($this->echooutput);
-			$pp = new PostProcess($this->echooutput);
+			$nzbcontents = new NZBContents(array('echo' => $this->echooutput, 'nntp' => $nntp, 'nfo' => new Nfo(), 'db' => $this->db, 'pp' => new PostProcess(true)));
 			foreach ($relres as $relrow) {
-				if (($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], $db, $pp, $namestatus, $nntp, $show)) === true) {
+				if (($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], $namestatus, $show)) === true) {
 					$this->fixed++;
 				}
 				$this->checked++;

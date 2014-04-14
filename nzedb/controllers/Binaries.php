@@ -800,9 +800,6 @@ class Binaries
 					// Inserted into the collections table as the subject.
 					$subject = utf8_encode(trim($partless));
 
-					// Used for the sha1 hash (see below).
-					$cleansubject = utf8_encode($this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles));
-
 					// Set up the info for inserting into parts/binaries/collections tables.
 					if (!isset($this->message[$subject])) {
 						$this->message[$subject] = $msg;
@@ -822,7 +819,13 @@ class Binaries
 						$this->message[$subject]['MaxParts'] = (int) $matches[3];
 
 						// (hash) Groups articles together when forming the release/nzb.
-						$this->message[$subject]['CollectionHash'] = sha1($cleansubject . $msg['From'] . $groupArr['id'] . $filecnt[6]);
+						$this->message[$subject]['CollectionHash'] =
+							sha1(
+								utf8_encode($this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles)) .
+								$msg['From'] .
+								$groupArr['id'] .
+								$filecnt[6]
+							);
 						$this->message[$subject]['MaxFiles'] = (int) $filecnt[6];
 						$this->message[$subject]['File'] = (int) $filecnt[2];
 					}

@@ -119,7 +119,7 @@ class SABnzbd
 				break;
 		}
 		// Verify the URL is good, fix it if not.
-		if (preg_match('/(?P<first>\/)?(?P<sab>[a-z]+)?(?P<last>\/)?$/i', $this->url, $matches)) {
+		if ($this->url !== '' && preg_match('/(?P<first>\/)?(?P<sab>[a-z]+)?(?P<last>\/)?$/i', $this->url, $matches)) {
 			if (!isset($matches['first'])) {
 				$this->url .= '/';
 			}

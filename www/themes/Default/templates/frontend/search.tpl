@@ -296,10 +296,10 @@
 		<div class="nzb_multi_operations">
 			<small>With selected:</small>
 			<input type="button" class="nzb_multi_operations_download" value="Download NZBs">
-			<input type="button" class="nzb_multi_operations_cart" value="Add to Cart">
 			{if $sabintegrated}
 				<input type="button" class="nzb_multi_operations_sab" value="Send to my Queue">
 			{/if}
+			<input type="button" class="nzb_multi_operations_cart" value="Add to Cart">
 			{if $isadmin}
 				&nbsp;&nbsp;
 				<input type="button" class="nzb_multi_operations_edit" value="Edit">
