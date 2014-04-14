@@ -66,6 +66,9 @@ Class TraktTv
 
 			if ($MovieJson !== false) {
 				$MovieJson = json_decode($MovieJson, true);
+				if (isset($MovieJson['status']) && $MovieJson['status'] === 'failure') {
+					return false;
+				}
 
 				if ($array) {
 					return $MovieJson;

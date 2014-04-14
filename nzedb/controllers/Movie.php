@@ -449,7 +449,7 @@ class Movie
 	 */
 	public function makeFieldLinks($data, $field)
 	{
-		if ($data[$field] == '') {
+		if (!isset($data[$field]) || $data[$field] == '') {
 			return '';
 		}
 
