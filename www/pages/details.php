@@ -82,13 +82,15 @@ if (isset($_GET['id'])) {
 			$mov['trailer'] = nzedb\utility\imdb_trailers($data['imdbid']);
 		}
 
-		if ($mov) {
+		if ($mov && isset($mov['title'])) {
 			$mov['title'] = str_replace(array('/', '\\'), '', $mov['title']);
 			$mov['actors'] = $movie->makeFieldLinks($mov, 'actors');
 			$mov['genre'] = $movie->makeFieldLinks($mov, 'genre');
 			$mov['director'] = $movie->makeFieldLinks($mov, 'director');
 		} else if ($traktSummary !== false) {
 			$mov['title'] = str_replace(array('/', '\\'), '', $traktSummary['title']);
+		} else {
+			$mov = false;
 		}
 	}
 
