@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-04-14 kaibosh
 	* Chg: README.md: drop nntp-proxy as "feature". Insert comment sharing
 2014-04-14 kevin
+	* Chg: Refactor Stage5b (RequestID)
 	* Fix: Fix some undefined variables.
 	* Chg: Simplify collectionscleaning.
 	* Fix: #1268 Group bulk add.
