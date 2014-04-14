@@ -5,9 +5,9 @@ This project is a fork of the open source usenet indexer newznab plus: https://g
 nZEDb improves upon the original design, implementing several new features including:
 
 - Optional multi-threaded processing (header retrieval, release creation, post-processing etc)
-- NNTP-Proxy providing connection pooling (greatly reduces NNTP session establishment & tear-down between nZEDb and the usenet service provider)
 - Advanced search features (name, subject, category, post-date etc)
 - Intelligent local caching of metadata
+- Optional sharing of comments with other nZEDb sites
 - Optional tmux (terminal session multiplexing) engine that provides thread, database and performance monitoring
 - Image and video samples
 - sabnzbd integration web, API and pause/resume
