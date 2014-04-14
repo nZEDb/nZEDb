@@ -127,7 +127,8 @@ class NNTP extends Net_NNTP_Client
 		}
 		if (!is_file($this->yEncTempInput) || !is_readable($this->yEncTempInput) || !is_writable($this->yEncTempInput)) {
 			$this->yyDecoderPath = false;
-		} else {
+		}
+		if (is_file($this->yEncTempInput)) {
 			unlink($this->yEncTempInput);
 		}
 	}

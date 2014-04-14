@@ -57,9 +57,9 @@ if ($argCnt < 3) {
 	exit ($c->error("Wrong usage! Type php $argv[0] false"));
 }
 
-if ($argv[3] === 'blacklist' && isset($argv[4])) {
-	$blacklistid = $argv[4];
-	}
+if (isset($argv[3]) && $argv[3] === 'blacklist' && isset($argv[4])) {
+	$blacklistID = $argv[4];
+}
 
 $RR = new ReleaseRemover();
-$RR->removeCrap(($argv[1] === 'true' ? true : false), $argv[2], (isset($argv[3]) ? $argv[3] : ''), (isset($blacklistid) ? $argv[4] : ''));
+$RR->removeCrap(($argv[1] === 'true' ? true : false), $argv[2], (isset($argv[3]) ? $argv[3] : ''), (isset($blacklistID) ? $argv[4] : ''));
