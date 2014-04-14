@@ -7,7 +7,7 @@ nZEDb improves upon the original design, implementing several new features inclu
 - Optional multi-threaded processing (header retrieval, release creation, post-processing etc)
 - Advanced search features (name, subject, category, post-date etc)
 - Intelligent local caching of metadata
-- Comment sharing option
+- Optional sharing of comments with other nZEDb sites
 - Optional tmux (terminal session multiplexing) engine that provides thread, database and performance monitoring
 - Image and video samples
 - sabnzbd integration web, API and pause/resume
