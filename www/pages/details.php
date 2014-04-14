@@ -76,7 +76,7 @@ if (isset($_GET['id'])) {
 			preg_match('/[\/?]v[\/\=](\w+)$/i', $traktSummary['trailer'], $youtubeM)) {
 			$mov['trailer'] =
 			'<embed width="480" height="345" src="' .
-			'http://www.youtube.com/v/' . $youtubeM[1] .
+			'https://www.youtube.com/v/' . $youtubeM[1] .
 			'" type="application/x-shockwave-flash"></embed>';
 		} else {
 			$mov['trailer'] = nzedb\utility\imdb_trailers($data['imdbid']);

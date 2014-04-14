@@ -210,17 +210,22 @@ class ReleaseRemover
 	 *
 	 * @return string|bool
 	 */
-	public function removeCrap($delete, $time, $type='')
+	public function removeCrap($delete, $time, $type='', $blacklistid='')
 	{
 		$this->timeStart = time();
 		$this->delete = $delete;
+		$this->blid = '';
+
+		if (isset($blacklistid) && is_numeric($blacklistid)) {
+			$this->blid = sprintf("id = %d AND", $blacklistid);
+		}
 
 		$time = trim($time);
 		$this->crapTime = '';
 		switch ($time) {
 			case 'full':
 				if ($this->echoCLI) {
-					echo $this->color->header("Removing crap releases - no time limit.");
+					echo $this->color->header("Removing crap releases - no time limit.\n");
 				}
 				break;
 			default:
@@ -229,12 +234,13 @@ class ReleaseRemover
 					return $this->returnError();
 				}
 				if ($this->echoCLI) {
-					echo $this->color->header('Removing crap releases from the past ' . $time . " hour(s).");
+					echo $this->color->header('Removing crap releases from the past ' . $time . " hour(s).\n");
 				}
 				$this->crapTime =
 					' AND r.adddate > (NOW() - INTERVAL ' .
 					($this->mysql ? $time . ' HOUR)' : $this->db->escapeString($time . ' HOURS'));
 				break;
+
 		}
 
 		$this->deletedCount = 0;
@@ -628,12 +634,13 @@ class ReleaseRemover
 	 */
 	protected function removeBlacklist()
 	{
-		$regexes = $this->db->query(
+
+		$regexes = $this->db->query(sprintf(
 			'SELECT regex, id, groupname, msgcol
 			FROM binaryblacklist
-			WHERE status = 1
-			AND optype = 1'
-		);
+			WHERE %s status = 1
+			AND optype = 1', $this->blid
+		));
 
 		if (count($regexes) > 0) {
 
@@ -782,6 +789,8 @@ class ReleaseRemover
 				$this->deleteReleases();
 
 			}
+		} else {
+			echo $this->color->error("No regular expressions were selected for blacklist removal. Make sure you have activated REGEXPs in Site Edit and you're specifying a valid ID.\n");
 		}
 		return true;
 	}

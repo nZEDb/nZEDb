@@ -1,7 +1,5 @@
 <?php
 use nzedb\db\DB;
-require_once nZEDb_LIBS . 'Yenc.php';
-
 /**
  * @note Does not currently work with NntpProxy because it does not implement all of NNTP's command.
  *
@@ -52,11 +50,6 @@ Class Sharing
 	 * @var NNTP
 	 */
 	protected $nntp;
-
-	/**
-	 * @var Yenc
-	 */
-	protected $yEnc;
 
 	/**
 	 * Array containing site settings.
@@ -122,7 +115,6 @@ Class Sharing
 			return;
 		}
 
-		$this->yEnc = new Yenc();
 		if (is_null($this->nntp)) {
 			$this->nntp = new NNTP();
 			$this->nntp->doConnect();
@@ -462,7 +454,7 @@ Class Sharing
 	protected function insertNewComment(&$messageID, &$siteID)
 	{
 		// Get the article body.
-		$body = $this->nntp->getMessage(self::group, $messageID);
+		$body = $this->nntp->getMessages(self::group, $messageID);
 
 		// Check if there's an error.
 		if ($this->nntp->isError($body)) {
