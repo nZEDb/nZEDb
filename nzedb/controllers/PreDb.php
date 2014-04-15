@@ -4,8 +4,11 @@ require_once nZEDb_LIBS . "simple_html_dom.php";
 use nzedb\db\DB;
 use nzedb\utility;
 
-/*
- * Class for inserting names/categories/md5 etc from PreDB sources into the DB, also for matching names on files / subjects.
+/**
+ * Class for inserting names/categories/md5 etc from PreDB sources into the DB,
+ * also for matching names on files / subjects.
+ *
+ * Class PreDb
  */
 Class PreDb
 {
@@ -23,6 +26,14 @@ Class PreDb
 	const PRE_TEEVEE   = true;
 	const PRE_EROTICA  = true;
 	const PRE_FOREIGN  = true;
+
+	// Nuke status.
+	const PRE_NONUKE  = 0; // Pre is not nuked.
+	const PRE_UNNUKED = 1; // Pre was un nuked.
+	const PRE_NUKED   = 2; // Pre is nuked.
+	const PRE_MODNUKE = 3; // Nuke reason was modified.
+	const PRE_RENUKED = 4; // Pre was re nuked.
+	const PRE_OLDNUKE = 5; // Pre is nuked for being old.
 
 	/**
 	 * @var bool|stdClass
