@@ -6,6 +6,11 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-15 bart39
+	* Chg: Simplify ReleaseCleaning
+	* Add: add a.b.movies to CollectionsCleaning
+	* Add: add more ReleaseCleaning regex for a.b.documentaries, a.b.etc, a.b.games, a.b.hdtv, a.b.mom, a.b.movies,
+	a.b.movies.x264, a.b.nl, a.b.sound.mp3, a.b.sound.mp3.complete_cd, a.b.sounds.mp3 and a.b.teevee
 2014-04-15 kevin
 	* Chg: Hide unlink warnings in NNTP.
 2014-04-14 kaibosh
