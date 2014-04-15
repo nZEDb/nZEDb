@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-14 Roelski
+	* Fix: Fix for check in foreach loop
 2014-04-14 kaibosh
 	* Chg: README.md: drop nntp-proxy as "feature". Insert comment sharing
 2014-04-14 kevin
@@ -126,6 +128,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: Sharing to resetdb.php
 	* Chg: Better storing of usernames on sharing.
 	* Add: Better backfill on sharing.
+>>>>>>> aea3d07ee528f51624b7ca18b365c64a9661e5a3
 2014-04-06 kevin
 	* Chg: Various changes to Sharing.
 	* Chg: Reload page on purge or reset of sharing.
