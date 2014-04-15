@@ -296,7 +296,7 @@ CREATE TABLE tvrage (
 	description VARCHAR(10000) NULL,
 	genre VARCHAR(64) NULL DEFAULT NULL,
 	country VARCHAR(2) NULL DEFAULT NULL,
-	imgdata longblob NULL,
+	imgdata MEDIUMBLOB NULL,
 	createddate DATETIME DEFAULT NULL,
 	prevdate DATETIME NULL,
 	previnfo VARCHAR( 255 ) NULL,
