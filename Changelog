@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-04-15 niel
 	* Fix: Change to regexes to allow Windows' paths to be matched in DbUpdate.
 2014-04-15 bart39
+	* Chg: More refactoring in ReleaseCleaning
 	* Fix: unknown modifier in ReleaseCleaning
 	* Chg: Simplify ReleaseCleaning
 	* Add: add a.b.movies to CollectionsCleaning
