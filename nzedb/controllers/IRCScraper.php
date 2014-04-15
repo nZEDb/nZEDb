@@ -473,19 +473,19 @@ class IRCScraper
 			$this->nuked = true;
 			switch ($matches['nuke']) {
 				case 'NUKE':
-					$this->CurPre['nuked'] = Predb::PRE_NUKED;
+					$this->CurPre['nuked'] = PreDb::PRE_NUKED;
 					break;
 				case 'UNNUKE':
-					$this->CurPre['nuked'] = Predb::PRE_UNNUKED;
+					$this->CurPre['nuked'] = PreDb::PRE_UNNUKED;
 					break;
 				case 'MODNUKE':
-					$this->CurPre['nuked'] = Predb::PRE_MODNUKE;
+					$this->CurPre['nuked'] = PreDb::PRE_MODNUKE;
 					break;
 				case 'RENUKE':
-					$this->CurPre['nuked'] = Predb::PRE_RENUKED;
+					$this->CurPre['nuked'] = PreDb::PRE_RENUKED;
 					break;
 				case 'OLDNUKE':
-					$this->CurPre['nuked'] = Predb::PRE_OLDNUKE;
+					$this->CurPre['nuked'] = PreDb::PRE_OLDNUKE;
 					break;
 			}
 		}
@@ -929,19 +929,19 @@ class IRCScraper
 			$nukeString = '';
 			if ($this->nuked !== false) {
 				switch((int)$this->CurPre['nuked']) {
-					case Predb::PRE_NUKED:
+					case PreDb::PRE_NUKED:
 						$nukeString = '[ NUKED ] ';
 						break;
-					case Predb::PRE_UNNUKED:
+					case PreDb::PRE_UNNUKED:
 						$nukeString = '[UNNUKED] ';
 						break;
-					case Predb::PRE_MODNUKE:
+					case PreDb::PRE_MODNUKE:
 						$nukeString = '[MODNUKE] ';
 						break;
-					case Predb::PRE_OLDNUKE:
+					case PreDb::PRE_OLDNUKE:
 						$nukeString = '[OLDNUKE] ';
 						break;
-					case Predb::PRE_RENUKED:
+					case PreDb::PRE_RENUKED:
 						$nukeString = '[RENUKED] ';
 						break;
 					default:

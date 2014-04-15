@@ -42,7 +42,7 @@ Class NZBContents
 	protected $alternateNNTP;
 
 	/**
-	 * @var int
+	 * @var bool
 	 */
 	protected $lookuppar2;
 
@@ -68,8 +68,8 @@ Class NZBContents
 		$this->echooutput = ($options['echo'] && nZEDb_ECHOCLI);
 		$s = new Sites();
 		$this->site = $s->get();
-		$this->lookuppar2 = (isset($this->site->lookuppar2)) ? $this->site->lookuppar2 : 0;
-		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
+		$this->lookuppar2 = ($this->site->lookuppar2 == 1 ? true : false);
+		$this->alternateNNTP = ($this->site->alternate_nntp == 1 ? true : false);
 		$this->db   = $options['db'];
 		$this->nntp = $options['nntp'];
 		$this->nfo  = $options['nfo'];
@@ -130,25 +130,25 @@ Class NZBContents
 	 * @param string $guid
 	 * @param int    $relID
 	 * @param int    $groupID
-	 * @param int    $namestatus
+	 * @param int    $nameStatus
 	 * @param int    $show
 	 *
 	 * @return bool
 	 */
-	public function checkPAR2($guid, $relID, $groupID, $namestatus, $show)
+	public function checkPAR2($guid, $relID, $groupID, $nameStatus, $show)
 	{
-		$nzbfile = $this->LoadNZB($guid);
-		if ($nzbfile !== false) {
-			foreach ($nzbfile->file as $nzbcontents) {
-				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $nzbcontents->attributes()->subject)) {
-					if ($this->pp->parsePAR2($nzbcontents->segments->segment, $relID, $groupID, $this->nntp, $show) === true && $namestatus === 1) {
+		$nzbFile = $this->LoadNZB($guid);
+		if ($nzbFile !== false) {
+			foreach ($nzbFile->file as $nzbContents) {
+				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $nzbContents->attributes()->subject)) {
+					if ($this->pp->parsePAR2((string)$nzbContents->segments->segment, $relID, $groupID, $this->nntp, $show) === true && $nameStatus === 1) {
 						$this->db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 						return true;
 					}
 				}
 			}
 		}
-		if ($namestatus === 1) {
+		if ($nameStatus === 1) {
 			$this->db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 		}
 		return false;
@@ -178,7 +178,7 @@ Class NZBContents
 					$actualParts++;
 				}
 
-				$subject = $nzbcontents->attributes()->subject;
+				$subject = (string)$nzbcontents->attributes()->subject;
 				if (preg_match('/(\d+)\)$/', $subject, $parts)) {
 					$artificialParts = $artificialParts + $parts[1];
 				}
@@ -202,7 +202,7 @@ Class NZBContents
 					}
 				}
 
-				if ($this->lookuppar2 == 1 && $foundPAR2 === false) {
+				if ($this->lookuppar2 && $foundPAR2 === false) {
 					if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $subject)) {
 						if ($this->pp->parsePAR2((string)$nzbcontents->segments->segment, $relID, $groupID, $this->nntp, 1) === true) {
 							$this->db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
@@ -238,39 +238,39 @@ Class NZBContents
 	 *
 	 * @return bool|SimpleXMLElement
 	 */
-	protected function LoadNZB($guid)
+	protected function LoadNZB(&$guid)
 	{
 		// Fetch the NZB location using the GUID.
-		$nzbpath = $this->nzb->NZBPath($guid);
-		if ($nzbpath === false) {
+		$nzbPath = $this->nzb->NZBPath($guid);
+		if ($nzbPath === false) {
 			if ($this->echooutput) {
-				echo PHP_EOL . $guid . " appears to be missing the nzb file, skipping." . PHP_EOL;
+				echo PHP_EOL . $guid . ' appears to be missing the nzb file, skipping.' . PHP_EOL;
 			}
 			return false;
 		}
 
-		$nzbpath = 'compress.zlib://' . $nzbpath;
-		if (!$nzbpath) {
+		$nzbPath = 'compress.zlib://' . $nzbPath;
+		if (!$nzbPath) {
 			if ($this->echooutput) {
 				echo
 					PHP_EOL .
-					"Unable to decompress: " .
-					$nzbpath .
+					'Unable to decompress: ' .
+					$nzbPath .
 					' - ' .
-					fileperms($nzbpath) .
-					" - may have bad file permissions, skipping." .
+					fileperms($nzbPath) .
+					' - may have bad file permissions, skipping.' .
 					PHP_EOL;
 			}
 			return false;
 		}
 
-		$nzbfile = @simplexml_load_file($nzbpath);
-		if (!$nzbfile) {
+		$nzbFile = @simplexml_load_file($nzbPath);
+		if (!$nzbFile) {
 			if ($this->echooutput) {
-				echo PHP_EOL ."Unable to load NZB: " . $guid . " appears to be an invalid NZB, skipping." . PHP_EOL;
+				echo PHP_EOL . "Unable to load NZB: $guid appears to be an invalid NZB, skipping." . PHP_EOL;
 			}
 			return false;
 		}
-		return $nzbfile;
+		return $nzbFile;
 	}
 }
