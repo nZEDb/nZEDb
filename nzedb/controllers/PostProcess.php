@@ -1540,7 +1540,7 @@ class PostProcess
 			if ($tmpData !== false) {
 				// Extract a NFO from the rar.
 				if ($this->noNFO === true && $v['size'] > 100 && $v['size'] < 100000 && preg_match('/(\.(nfo|inf|ofn)|info.txt)$/i', $v['name'])) {
-					if ($this->Nfo->addAlternateNfo($this->db, $tmpData, $release, $nntp)) {
+					if ($this->Nfo->addAlternateNfo($tmpData, $release, $nntp)) {
 						$this->debugging->start('addFile', 'Added NFO from RAR for releaseID ' . $release['id'], 5);
 						if ($this->echooutput)
 							echo 'n';
@@ -1628,7 +1628,7 @@ class PostProcess
 				//Extract a NFO from the zip.
 				else if ($this->noNFO === true && $file['size'] < 100000 && preg_match('/\.(nfo|inf|ofn)$/i', $file['name'])) {
 					if ($file['compressed'] !== 1) {
-						if ($this->Nfo->addAlternateNfo($this->db, $thisData, $release, $nntp)) {
+						if ($this->Nfo->addAlternateNfo($thisData, $release, $nntp)) {
 							$this->debugging->start('processReleaseZips', 'Added NFO from ZIP file for releaseID ' . $release['id'], 5);
 							if ($this->echooutput) {
 								echo 'n';
@@ -1640,7 +1640,7 @@ class PostProcess
 						$zip->setExternalClient($this->site->zippath);
 						$zipData = $zip->extractFile($file['name']);
 						if ($zipData !== false && strlen($zipData) > 5) {
-							if ($this->Nfo->addAlternateNfo($this->db, $zipData, $release, $nntp)) {
+							if ($this->Nfo->addAlternateNfo($zipData, $release, $nntp)) {
 
 								$this->debugging->start('processReleaseZips', 'Added compressed NFO from ZIP file for releaseID ' . $release['id'], 5);
 								if ($this->echooutput) {

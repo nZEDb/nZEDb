@@ -1171,7 +1171,7 @@ Class PreDb
 						continue;
 					}
 
-					if ($nfo->addAlternateNfo($db, $buffer, $row, $nntp)) {
+					if ($nfo->addAlternateNfo($buffer, $row, $nntp)) {
 						if ($this->echooutput) {
 							echo '+';
 						}
