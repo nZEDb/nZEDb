@@ -2544,7 +2544,7 @@ class ReleaseCleaning
 		if (preg_match('/^\[\d+\/\d+\][-_ ]{0,3}"(.+?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //< Michael.Jackson.Bad.25.2012.720p.BluRay.x264-PHD > - "Michael.Jackson.Bad.25.2012.720p.BluRay.x264-PHD.par2" (01/64) yEnc
-		if (preg_match('/^< [\w \d.()-]+ > - "(.+?)' . $this->e1 . ' \(\d+\/\d+\) yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^< [\w.() -]+ > - "(.+?)' . $this->e0 . ' \(\d+\/\d+\) yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
