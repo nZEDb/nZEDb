@@ -8,42 +8,6 @@ use nzedb\db\DB;
 class IRCScraper
 {
 	/**
-	 * Pre is not nuked.
-	 * @const
-	 */
-	const NO_NUKE  = 0;
-
-	/**
-	 * Pre was un nuked.
-	 * @const
-	 */
-	const UN_NUKE  = 1;
-
-	/**
-	 * Pre is nuked.
-	 * @const
-	 */
-	const NUKE     = 2;
-
-	/**
-	 * Nuke reason was modified.
-	 * @const
-	 */
-	const MOD_NUKE = 3;
-
-	/**
-	 * Pre was re nuked.
-	 * @const
-	 */
-	const RE_NUKE  = 4;
-
-	/**
-	 * Pre is nuked for being old.
-	 * @const
-	 */
-	const OLD_NUKE = 5;
-
-	/**
 	 * Array of current pre info.
 	 * @var array
 	 */
@@ -509,19 +473,19 @@ class IRCScraper
 			$this->nuked = true;
 			switch ($matches['nuke']) {
 				case 'NUKE':
-					$this->CurPre['nuked'] = self::NUKE;
+					$this->CurPre['nuked'] = PreDb::PRE_NUKED;
 					break;
 				case 'UNNUKE':
-					$this->CurPre['nuked'] = self::UN_NUKE;
+					$this->CurPre['nuked'] = PreDb::PRE_UNNUKED;
 					break;
 				case 'MODNUKE':
-					$this->CurPre['nuked'] = self::MOD_NUKE;
+					$this->CurPre['nuked'] = PreDb::PRE_MODNUKE;
 					break;
 				case 'RENUKE':
-					$this->CurPre['nuked'] = self::RE_NUKE;
+					$this->CurPre['nuked'] = PreDb::PRE_RENUKED;
 					break;
 				case 'OLDNUKE':
-					$this->CurPre['nuked'] = self::OLD_NUKE;
+					$this->CurPre['nuked'] = PreDb::PRE_OLDNUKE;
 					break;
 			}
 		}
@@ -965,19 +929,19 @@ class IRCScraper
 			$nukeString = '';
 			if ($this->nuked !== false) {
 				switch((int)$this->CurPre['nuked']) {
-					case self::NUKE:
+					case PreDb::PRE_NUKED:
 						$nukeString = '[ NUKED ] ';
 						break;
-					case self::UN_NUKE:
+					case PreDb::PRE_UNNUKED:
 						$nukeString = '[UNNUKED] ';
 						break;
-					case self::MOD_NUKE:
+					case PreDb::PRE_MODNUKE:
 						$nukeString = '[MODNUKE] ';
 						break;
-					case self::OLD_NUKE:
+					case PreDb::PRE_OLDNUKE:
 						$nukeString = '[OLDNUKE] ';
 						break;
-					case self::RE_NUKE:
+					case PreDb::PRE_RENUKED:
 						$nukeString = '[RENUKED] ';
 						break;
 					default:

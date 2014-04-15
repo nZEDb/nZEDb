@@ -8,53 +8,57 @@ use nzedb\db\DB;
 
 class ReleaseCleaning
 {
-	function __construct()
+	public $subject = '';
+	public $groupName = '';
+
+	/**
+	 *
+	 */
+	public function __construct()
 	{
 		// Extensions.
 		$this->e0 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
 		$this->e1 = $this->e0 . '[- ]{0,3}yEnc$/';
 		$this->e2 = $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/';
+		$this->db = new DB();
 	}
 
 	public function releaseCleaner($subject, $groupName, $usepre = false)
 	{
-		$match = $matches = '';
-		$db = new DB();
-		$groups = new Groups();
+		$match = $matches = array();
+		$this->groupName = $groupName;
 		$this->subject = $subject;
 		// Get pre style name from releases.name
 		if (preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $this->subject, $matches)) {
 			foreach ($matches as $match) {
 				foreach ($match as $val) {
-					$title = $db->queryOneRow("SELECT title, id from predb WHERE title = " . $db->escapeString(trim($val)));
-					if (isset($title['title'])) {
-						$cleanerName = $title['title'];
-						if (!empty($cleanerName)) {
-							return array(
-								"cleansubject" => $cleanerName,
-								"properlynamed" => true,
-								"increment" => false,
-								"predb" => $title['id']
-							);
-						}
+					$title = $this->db->queryOneRow("SELECT title, id from predb WHERE title = " . $this->db->escapeString(trim($val)));
+					if ($title !== false) {
+						return array(
+							"cleansubject" => $title['title'],
+							"properlynamed" => true,
+							"increment" => false,
+							"predb" => $title['id']
+						);
 					}
 				}
 			}
 		}
 		// Get pre style name from requestid
-		if (preg_match('/^\[(\d+)\]/', $this->subject, $match) || preg_match('/^\[ (\d+) \]/', $this->subject, $match)) {
-			$groupID = $groups->getIDByName($groupName);
-			$title = $db->queryOneRow(sprintf('SELECT title, id from predb WHERE requestid = %d and groupid = %d ', $match[1], $groupID));
-			if (isset($title['title'])) {
-				$cleanerName = $title['title'];
-				if (!empty($cleanerName)) {
-					return array(
-						"cleansubject" => $cleanerName,
-						"properlynamed" => true,
-						"increment" => false,
-						"predb" => $title['id']
-					);
-				}
+		if (preg_match('/^\[ ?(\d+) ?\]/', $this->subject, $match)) {
+			$title = $this->db->queryOneRow(
+				sprintf(
+					'SELECT p.title , p.id from predb p INNER JOIN groups g on g.id = p.groupid
+								WHERE p.requestid = %d and g.name = %d ', $match[1], $this->groupName
+				)
+			);
+			if ($title !== false) {
+				return array(
+					"cleansubject" => $title['title'],
+					"properlynamed" => true,
+					"increment" => false,
+					"predb" => $title['id']
+				);
 			}
 		}
 		if ($usepre === true) {
@@ -2528,16 +2532,16 @@ class ReleaseCleaning
 		if (preg_match('/("|#34;)(.+)("|#34;)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}("|#34;).+?(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)[-_ ]{0,3}\d+[.,]\d+ [kKmMgG][bB][-_ ]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[2];
 		} //(Amour.2012.1080p.BluRay.x264-EbP)(002/337) "Amour.2012.1080p.BluRay.x264-EbP.part001.rar" - 16.58 GB - yEnc
-		if (preg_match('/^\([\w\d-\.]+\)[\(\[]\d+\/\d+[\]\)] "(.+?)' . $this->e2, $this->subject, $match)) {
+		if (preg_match('/^\([\w\d.-]+\)[\(\[]\d+\/\d+[\]\)] "(.+?)' . $this->e2, $this->subject, $match)) {
 			return $match[1];
 		} //(La.pianiste.(aka.The.Piano.Teacher).(2001).720p.BluRay.AC3.x264-MandR) [085/101] - "La.pianiste.(aka.The.Piano.Teacher).(2001).720p.BluRay.AC3.x264-MandR.part084.rar" yEnc
-		if (preg_match('/^\([\w \d-\.\(\)]+\) [\(\[]\d+\/\d+[\]\)] - "(.+?)' . $this->e1, $this->subject, $match)) {
+		if (preg_match('/^\([\w \d.()-]+\) [\(\[]\d+\/\d+[\]\)] - "(.+?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //[00/56] - "The.Last.Days.On.Mars.720p.BluRay.x264-DR.nzb" yEnc
 		if (preg_match('/^\[\d+\/\d+\][-_ ]{0,3}"(.+?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //< Michael.Jackson.Bad.25.2012.720p.BluRay.x264-PHD > - "Michael.Jackson.Bad.25.2012.720p.BluRay.x264-PHD.par2" (01/64) yEnc
-		if (preg_match('/^\< [\w \d-\.\(\)]+ \> - "(.+?)' . $this->e1 . ' \(\d+\/\d+\) yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^< [\w.() -]+ > - "(.+?)' . $this->e0 . ' \(\d+\/\d+\) yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
