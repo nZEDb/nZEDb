@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-04-14 kaibosh
 	* Chg: README.md: drop nntp-proxy as "feature". Insert comment sharing
 2014-04-14 kevin
+	* Chg: Set max size of NFO to 65KB, the max for BLOB column type.
 	* Add: Constants for NZB and NFO.
 	* Add: Constants for reqidstatus.
 	* Chg: Refactor Stage5b (RequestID)

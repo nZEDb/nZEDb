@@ -147,7 +147,7 @@ class Nfo
 
 		// Make sure it's not too big or small, size needs to be at least 12 bytes for header checking.
 		$size = strlen($possibleNFO);
-		if ($size < 100 * 1024 && $size > 12) {
+		if ($size < 65535 && $size > 11) {
 			// Ignore common file types.
 			if (preg_match(
 				'/(^RIFF|)<\?xml|;\s*Generated\s*by.*SF\w|\A\s*[RP]AR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i'
