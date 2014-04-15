@@ -7,7 +7,7 @@
  */
 class CollectionsCleaning
 {
-	public $subject   = '';
+	public $subject = '';
 	public $groupName = '';
 
 	/**
@@ -138,6 +138,8 @@ class CollectionsCleaning
 				return $this->mom();
 			case 'alt.binaries.moovee':
 				return $this->moovee();
+			case 'alt.binaries.movies':
+				return $this->movies();
 			case 'alt.binaries.movies.divx':
 				return $this->movies_divx();
 			case 'alt.binaries.movies.x264':
@@ -242,11 +244,11 @@ class CollectionsCleaning
 	{
 		//ugMBqtZw3vFnmrmr16EQhaAz9mMri9mD - File 01 of 98: "1vJ7wswi9ZG6YrzE5OGBFPKeuRv9X86xgYdK.par2" yEnc
 		if (preg_match('/^(.+)File \d+ (of \d+): ".+?' . $this->e1, $this->subject, $match)) {
-			return $match[1].$match[2];
+			return $match[1] . $match[2];
 		}
 		//999XL[074/103] - "LLKJ678CCDE1223ss.part073.rar" yEnc
 		if (preg_match('/^(.+)\[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
-			return $match[1].$match[2];
+			return $match[1] . $match[2];
 		}
 		return $this->generic();
 	}
@@ -1172,7 +1174,8 @@ class CollectionsCleaning
 		//Rowwendees post voor u op www.nzbworld.me - [0/6] - "Animaniacs - Lights, Camera, Action!.nzb" yEnc (1/1)
 		if (preg_match('/www.nzbworld.me - \[\d+\/(\d+\] - ".+?)' . $this->e0 . ' yEnc/', $this->subject, $match)) {
 			return $match[1];
-		} if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc$/', $this->subject, $match)) {
+		}
+		if (preg_match('/^\(Nora Roberts\)"(.+?)\.(epub|mobi|html|pdf|azw)" yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
 		//<TOWN><www.town.ag > <download all our files with>>>  www.ssl-news.info <<< > [02/19] - "2013.AUG.non-fiction.NEW.releases.part.1.(PDF)-MiMESiS.part01.rar" - 1,31 GB yEnc
@@ -1967,6 +1970,43 @@ class CollectionsCleaning
 		return $this->generic();
 	}
 
+	public function movies()
+	{
+		//Underworld.Evolution.2006.480p.BDRip.XviD.AC3-AsA - [000/143] - "asa.nzb" yEnc
+		if (preg_match('/^([a-z].+) - \[\d+\/(\d+\])[ _-]{0,3}("|#34;).+("|#34;) yEnc$/i', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} ///^Have Fun - ("|#34;)(.+)\.nfo("|#34;) Ph4let0ast3r yEnc$/i
+		if (preg_match('/^Have Fun - ("|#34;)(.+)\.nfo("|#34;) Ph4let0ast3r yEnc$/i', $this->subject, $match)) {
+			return $match[2];
+		} //(01/34) "Sniper.Reloaded.2011.BluRay.810p.DTS.x264-PRoDJi.Turkish.Audio.par2" - 139,30 MB - yEnc
+		if (preg_match('/^\(\d+\/\d+\) ("|#34;)(.+)\.(par2|nfo|rar|nzb)("|#34;) - \d+[.,]\d+ [kKmMgG][bB] - yEnc$/i', $this->subject, $match)) {
+			return $match[1] . $match[3];
+		} //"Discovery.Channel.Tsunami.Facing.The.Wave.720p.HDTV.x264-PiX.rar"
+		if (preg_match('/^("|#34;)(.+)\.rar("|#34;)$/i', $this->subject, $match)) {
+			return $match[2];
+		} //Saw.VII.2010.720p.Bluray.x264.DTS-HDChina Saw.VII.2010.720p.Bluray.x264.DTS-HDChina.nzb
+		if (preg_match('/^([a-z].+) .+\.(par2|nfo|rar|nzb)$/i', $this->subject, $match)) {
+			return $match[1];
+		} //(????) [1/1] - "The Secret Life of Walter Mitty 2013 CAM AAC x264-SSDD.mp4" yEnc
+		if (preg_match('/^\(\?+\) \[\d+\/(\d+\])[-_ ]{0,3}"(.+?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //(001/114) - Description - "The.Chronicles.of.Riddick.2004.DC.BluRay.1080p.DTS.par2" - 10,50 GB - yEnc
+		if (preg_match('/^\(\d+\/(\d+\))[-_ ]{0,3}Description[-_ ]{0,3}"(.+?)' . $this->e2, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //[00/56] - "The.Last.Days.On.Mars.720p.BluRay.x264-DR.nzb" yEnc
+		if (preg_match('/^\[\d+\/(\d+\])[-_ ]{0,3}"(.+?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //[REUP] 6.Degress.of.Hell.2012.1080p.BluRay.DTS-HD.x264-BARC0DE - [03/50] - "BARC0DE.vol00+1.PAR2" yEnc
+		//[REUP]Home.Of.The.Brave.2006.1080p.BluRay.DTS-HD.x264-BARC0DE - [03/38] - "BARC0DE.vol00+1.PAR2" yEnc
+		if (preg_match('/^\[REUP\]( )?(.+?) - \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
+			return $match[2] . $match[3];
+		} //22.Jump.Street.2014.720p.BluRay.x264-tpU.vol000+01.PAR2 [73/84] - "22.Jump.Street.2014.720p.BluRay.x264-tpU.vol000+01.PAR2" yEnc
+		if (preg_match('/^.+\[\d+\/(\d+\]) - "(.+?)' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		}
+		return $this->generic();
+	}
+
 	// a.b.movies.divx
 	protected function movies_divx()
 	{
@@ -2691,14 +2731,13 @@ class CollectionsCleaning
 			$cleanSubject = preg_replace('/AutoRarPar\d{1,5}|\(\d+\)( |  )yEnc|\d+(Amateur|Classic)| \d{4,}[a-z]{4,} |part\d+/i', ' ', $cleanSubject);
 			// Multi spaces.
 			return utf8_encode(trim(preg_replace('/\s\s+/', ' ', $cleanSubject)));
-		}
-		// Music groups.
+		} // Music groups.
 		else {
 			// Try some music group regexes.
 			$musicSubject = $this->musicSubject();
 			if ($musicSubject !== false) {
 				return $musicSubject;
-			// Parts/files
+				// Parts/files
 			} else {
 				$cleanSubject = preg_replace('/((( \(\d\d\) -|(\d\d)? - \d\d\.|\d{4} \d\d -) | - \d\d-| \d\d\. [a-z]).+| \d\d of \d\d| \dof\d)\.mp3"?|(\(|\[|\s)\d{1,4}(\/|(\s|_)of(\s|_)|-)\d{1,4}(\)|\]|\s|$|:)|\(\d{1,3}\|\d{1,3}\)|-\d{1,3}-\d{1,3}\.|\s\d{1,3}\sof\s\d{1,3}\.|\s\d{1,3}\/\d{1,3}|\d{1,3}of\d{1,3}\.|^\d{1,3}\/\d{1,3}\s|\d{1,3} - of \d{1,3}/i', ' ', $this->subject);
 			}

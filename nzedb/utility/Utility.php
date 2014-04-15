@@ -28,7 +28,7 @@ class Utility
 					break;
 				case !empty($options['ext']) && $fileinfo->getExtension() != $options['ext'];
 					break;
-				case !preg_match($options['regex'], $file):
+				case !preg_match($options['regex'], str_replace('\\', '/', $file)):
 					break;
 				default:
 					$files[] = $fileinfo->getPathname();

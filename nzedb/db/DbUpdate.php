@@ -175,7 +175,7 @@ class DbUpdate
 				$fp = fopen($file, 'r');
 				$patch = fread($fp, filesize($file));
 
-				if (preg_match($options['regex'], $file, $matches) && $matches['patch'] > 9) {
+				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches) && $matches['patch'] > 9) {
 						$patch = $matches['patch'];
 						$setPatch = true;
 				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?P<patch>\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
