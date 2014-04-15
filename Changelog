@@ -17,6 +17,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: add more ReleaseCleaning regex for a.b.documentaries, a.b.etc, a.b.games, a.b.hdtv, a.b.mom, a.b.movies,
 	a.b.movies.x264, a.b.nl, a.b.sound.mp3, a.b.sound.mp3.complete_cd, a.b.sounds.mp3 and a.b.teevee
 2014-04-15 kevin
+	* Fix: PreDb constant usage.
 	* Chg: isNfo method. Add GNU File for windows.
 	* Fix: Typos in IRCScraper.
 	* Chg: Move Nuke constants in PreDb.
