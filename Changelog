@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-15 niel
+	* Fix: Change to regexes to allow Windows' paths to be matched in DbUpdate.
 2014-04-15 bart39
 	* Chg: Simplify ReleaseCleaning
 	* Add: add a.b.movies to CollectionsCleaning
