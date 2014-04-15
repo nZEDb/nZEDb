@@ -9,12 +9,18 @@ use nzedb\utility;
  */
 class Releases
 {
-	/* RAR/ZIP Passworded indicator. */
+	// RAR/ZIP Passworded indicator.
+	const PASSWD_NONE      =  0; // No password.
+	const PASSWD_POTENTIAL =  1; // Might have a password.
+	const BAD_FILE         =  2; // Possibly broken RAR/ZIP.
+	const PASSWD_RAR       = 10; // Definitely passworded.
 
-	const PASSWD_NONE = 0; // No password.
-	const PASSWD_POTENTIAL = 1; // Might have a password.
-	const BAD_FILE = 2; // Possibly broken RAR/ZIP.
-	const PASSWD_RAR = 10; // Definitely passworded.
+	// Request ID.
+	const REQID_NONE   = -3; // The Request ID was not found.
+	const REQID_ZERO   = -2; // The Request ID was 0.
+	const REQID_BAD    = -1; // Request ID is in bad format?
+	const REQID_UPROC  =  0; // Release has not been processed.
+	const REQID_FOUND  =  1; // Request ID found and release was updated.
 
 	/**
 	 * @param bool $echooutput
@@ -2140,7 +2146,7 @@ class Releases
 				if ($nzb_create !== false) {
 					$this->db->queryExec(
 						sprintf(
-							'UPDATE ' . $group['cname'] . ' SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']
+							'UPDATE %s SET filecheck = 5 WHERE releaseid = %s', $group['cname'], $rowrel['id']
 						)
 					);
 					$nzbcount++;
@@ -2168,99 +2174,141 @@ class Releases
 		return $nzbcount;
 	}
 
+	/**
+	 * Process RequestID's.
+	 *
+	 * @param int $groupID
+	 */
 	public function processReleasesStage5b($groupID)
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
 			$category = new Category();
-			$iFoundcnt = 0;
-			$where = (!empty($groupID)) ? ' groupid = ' . $groupID . ' AND ' : ' ';
+			$iFoundCnt = 0;
 			$stage8 = TIME();
-
-			$hours = (isset($this->site->request_hours)) ? $this->site->request_hours : 1;
 
 			if ($this->echooutput) {
 				$this->c->doEcho($this->c->header("Stage 5b -> Request ID lookup. "));
 			}
 
 			// Look for records that potentially have requestID titles and have not been renamed by any other means
-			if ($this->db->dbSystem() === 'mysql') {
-				$resrel = $this->db->queryDirect(
-					"SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" .
-					$where .
-					"nzbstatus = 1 AND isrenamed = 0 AND (isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " .
-					$hours . " HOUR)) LIMIT 100"
-				);
-			} else {
-				$resrel = $this->db->queryDirect(
-					"SELECT r.id, r.name, r.searchname, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE" .
-					$where .
-					"nzbstatus = 1 AND isrenamed = 0 AND (isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL '" .
-					$hours . " HOUR')) LIMIT 100"
-				);
-			}
+			$resRel = $this->db->queryDirect(
+				sprintf("
+					SELECT r.id, r.name, r.searchname, g.name AS groupname
+					FROM releases r
+					LEFT JOIN groups g ON r.groupid = g.id
+					WHERE r.groupid = %d
+					AND  nzbstatus = 1
+					AND isrenamed = 0
+					AND (isrequestid = 1 AND reqidstatus in (%d, %d) OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR))
+					LIMIT 100",
+					$groupID,
+					self::REQID_UPROC,
+					self::REQID_BAD,
+					self::REQID_NONE,
+					(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1)
+				)
+			);
 
-			if ($resrel !== false && $resrel->rowCount() > 0) {
-				$bFound = false;
-				$web = true;
+			if ($resRel !== false && $resRel->rowCount() > 0) {
+				$newTitle = false;
+				$web = (!empty($this->site->request_url) &&
+						(nzedb\utility\getUrl($this->site->request_url) === false ? false : true));
 
-				if (!nzedb\utility\getUrl('http://predb_irc.nzedb.com/')) {
-					$web = false;
-				}
+				foreach ($resRel as $rowRel) {
+					$newTitle = $local = false;
 
-				foreach ($resrel as $rowrel) {
-					// Try to get reqid.
-					$requestIDtmp = explode(']', substr($rowrel['name'], 1));
-					$bFound = false;
-					$newTitle = '';
-					$updated = 0;
+					// Try to get request id.
+					if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID)) {
+						$requestID = (int)$requestID[1];
+					} else {
+						$requestID = 0;
+					}
 
-					if (count($requestIDtmp) >= 1) {
-						$requestID = (int)$requestIDtmp[0];
-						if ($requestID != 0) {
-							// Do a local lookup first
-							$newTitle = $this->localLookup($requestID, $rowrel['groupname']);
-							if ($newTitle != false && $newTitle != '') {
-								$bFound = true;
-								$local = true;
-								$iFoundcnt++;
-							} else if ($web) {
-								$newTitle = $this->getReleaseNameFromRequestID($this->site, $requestID, $rowrel['groupname']);
-								if ($newTitle != false && $newTitle != '') {
-									if (strtolower($newTitle) != strtolower($rowrel['searchname'])) {
-										$bFound = true;
-										$local = false;
-										$iFoundcnt++;
-									}
-								}
+					if ($requestID === 0) {
+						$this->db->queryExec(
+							sprintf('
+								UPDATE releases
+								SET reqidstatus = %d
+								WHERE id = %d',
+								self::REQID_ZERO,
+								$rowRel['id']
+							)
+						);
+					} else {
+
+						// Do a local lookup first.
+						$run = $this->db->queryOneRow(
+							sprintf("
+								SELECT title
+								FROM predb
+								WHERE requestid = %d
+								AND groupid = %d",
+								$requestID, $groupID
+							)
+						);
+						if ($run !== false) {
+							$newTitle = $run['title'];
+							$local = true;
+							$iFoundCnt++;
+
+						// Do a web lookup.
+						} else if ($web !== false) {
+							$xml = @simplexml_load_file(
+								str_ireplace(
+									'[REQUEST_ID]',
+									$requestID,
+									str_ireplace(
+										'[GROUP_NM]',
+										urlencode($rowRel['groupname']),
+										$this->site->request_url
+									)
+								)
+							);
+							if ($xml !== false &&
+								isset($xml->request[0]['name']) &&
+								strtolower($xml->request[0]['name']) !== strtolower($rowRel['searchname'])) {
+								$newTitle = $xml->request[0]['name'];
+								$iFoundCnt++;
 							}
-						} else {
-							$this->db->queryExec(sprintf('UPDATE releases SET reqidstatus = -2 WHERE id = %d', $rowrel['id']));
 						}
 					}
-					if ($bFound) {
-						if (empty($groupID)) {
-							$groupID = $this->groups->getIDByName($rowrel['groupname']);
-						}
-						$determinedcat = $category->determineCategory($newTitle, $groupID);
-						$this->db->queryExec(sprintf('UPDATE releases SET reqidstatus = 1, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d WHERE id = %d', $this->db->escapeString($newTitle), $determinedcat, $rowrel['id']));
-						$newcatname = $category->getNameByID($determinedcat);
-						$method = ($local === true) ? 'requestID local' : 'requestID web';
+
+					if ($newTitle !== false) {
+
+						$determinedCat = $category->determineCategory($newTitle, $groupID);
+						$this->db->queryExec(
+							sprintf('
+								UPDATE releases
+								SET reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d
+								WHERE id = %d',
+								self::REQID_FOUND,
+								$this->db->escapeString($newTitle),
+								$determinedCat,
+								$rowRel['id']
+							)
+						);
+
 						if ($this->echooutput) {
 							echo $this->c->primary(
-								"\n\n" . 'New name:  ' . $newTitle .
-								"\nOld name:  " . $rowrel['searchname'] .
-								"\nNew cat:   " . $newcatname .
-								"\nGroup:     " . $rowrel['groupname'] .
-								"\nMethod:    " . $method . "\n" .
-								'ReleaseID: ' . $rowrel['id']
+								"\n\nNew name:  $newTitle" .
+								"\nOld name:  " . $rowRel['searchname'] .
+								"\nNew cat:   " . $category->getNameByID($determinedCat) .
+								"\nGroup:     " . $rowRel['groupname'] .
+								"\nMethod:    " . ($local === true ? 'requestID local' : 'requestID web') .
+								"\nReleaseID: " . $rowRel['id']
 							);
 						}
-						$updated++;
 					} else {
-						$this->db->queryExec('UPDATE releases SET reqidstatus = -3 WHERE id = ' . $rowrel['id']);
+						$this->db->queryExec(
+							sprintf(
+								'UPDATE releases SET reqidstatus = %d WHERE id = %d',
+								self::REQID_NONE,
+								$rowRel['id']
+							)
+						);
 					}
 				}
-				if ($this->echooutput && $bFound) {
+				if ($this->echooutput && $newTitle !== false) {
 					echo "\n";
 				}
 			}
@@ -2268,7 +2316,7 @@ class Releases
 			if ($this->echooutput) {
 				$this->c->doEcho(
 					$this->c->primary(
-						number_format($iFoundcnt) .
+						number_format($iFoundCnt) .
 						' Releases updated in ' .
 						$this->consoleTools->convertTime(TIME() - $stage8)
 					), true
@@ -2696,17 +2744,14 @@ class Releases
 	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $nntp)
 	{
 		$DIR = nZEDb_MISC;
-		if ($this->command_exist('python3')) {
-			$PYTHON = 'python3 -OOu';
-		} else {
-			$PYTHON = 'python -OOu';
-		}
+		$PYTHON = shell_exec('which python3 2>/dev/null');
+		$PYTHON = (empty($PYTHON) ? 'python -OOu' : 'python3 -OOu');
 
 		$tot_retcount = $tot_nzbcount = $loops = 0;
 		do {
 			$retcount = $this->processReleasesStage4($groupID);
 			$tot_retcount = $tot_retcount + $retcount;
-			//$this->processReleasesStage4dot5($groupID, $echooutput=false);
+
 			$nzbcount = $this->processReleasesStage5($groupID);
 			if ($this->requestids == '1') {
 				$this->processReleasesStage5b($groupID);
@@ -2800,17 +2845,16 @@ class Releases
 			$delcount = 0;
 			$cIDS = array();
 			foreach ($res as $row) {
-				$nofiles = true;
-				if ($row['totalfiles'] > 0) {
-					$nofiles = false;
-				}
 
 				$groupName = $this->groups->getByNameByID($row['groupid']);
-				/* $ncarr = $this->collectionsCleaning->collectionsCleaner($row['bname'], $groupName, $nofiles);
-				  $newSHA1 = sha1($ncarr['hash']).$row['fromname'].$row['groupid'].$row['totalfiles']); */
 				$newSHA1 = sha1(
-					$this->collectionsCleaning->collectionsCleaner($row['bname'], $groupName, $nofiles) .
-					$row['fromname'] . $row['groupid'] . $row['totalfiles']
+						$this->collectionsCleaning->collectionsCleaner(
+							$row['bname'],
+							$groupName .
+							$row['fromname'] .
+							$row['groupid'] .
+							$row['totalfiles']
+						)
 				);
 				$cres = $this->db->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s', $this->db->escapeString($newSHA1)));
 				if (!$cres) {
@@ -2877,42 +2921,6 @@ class Releases
 		} else {
 			return $this->db->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases ON releases.categoryid = category.id WHERE releases.adddate > NOW() - INTERVAL '1 WEEK' GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
 		}
-	}
-
-	public function getReleaseNameFromRequestID($site, $requestID, $groupName)
-	{
-		if ($site->request_url == '') {
-			return '';
-		}
-
-		// Build Request URL
-		$req_url = str_ireplace('[GROUP_NM]', urlencode($groupName), $site->request_url);
-		$req_url = str_ireplace('[REQUEST_ID]', urlencode($requestID), $req_url);
-
-		$xml = @simplexml_load_file($req_url);
-
-		if (($xml == false) || (count($xml) == 0)) {
-			return '';
-		}
-
-		$request = $xml->request[0];
-
-		return (!isset($request) || !isset($request['name'])) ? '' : $request['name'];
-	}
-
-	function localLookup($requestID, $groupName)
-	{
-		$groupid = $this->groups->getIDByName($groupName);
-		$run = $this->db->queryOneRow(sprintf("SELECT title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
-		if (isset($run['title'])) {
-			return $run['title'];
-		}
-	}
-
-	public function command_exist($cmd)
-	{
-		$returnVal = shell_exec("which {$cmd} 2>/dev/null");
-		return (empty($returnVal) ? false : true);
 	}
 
 	/**

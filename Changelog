@@ -6,6 +6,23 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-14 kaibosh
+	* Chg: README.md: drop nntp-proxy as "feature". Insert comment sharing
+2014-04-14 kevin
+	* Add: isNfo checking to alternate nfo.
+	* Chg: Change TVRage imgdata to mediumblob in schema, the images never go past 4MB.
+	* Chg: Set max size of NFO to 65KB, the max for BLOB column type.
+	* Add: Constants for NZB and NFO.
+	* Add: Constants for reqidstatus.
+	* Chg: Refactor Stage5b (RequestID)
+	* Fix: Fix some undefined variables.
+	* Chg: Simplify collectionscleaning.
+	* Fix: #1268 Group bulk add.
+	* Fix: Notice in removecrap.
+	* Chg: More refactoring of NNTP, add Yenc functions in NNTP, remove Yenc class.
+	* Fix: #1267 Use https for youtube videos to not cause issues on http sites.
+2014-04-14 ruhllatio
+	* Add: Option for removeCrap to specify a fourth argument for Blacklist ID (great for testing full time delete with new regex)
 2014-04-13 kevin
 	* Add: Massive speed improvement to yEnc decoding (~400 times faster) by using yydecode binary
 	  (ubuntu/debian you can get it from the getdeb repository or you can compile it, takes a few seconds).
