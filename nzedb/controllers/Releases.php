@@ -18,8 +18,9 @@ class Releases
 	// Request ID.
 	const REQID_NONE   = -3; // The Request ID was not found.
 	const REQID_ZERO   = -2; // The Request ID was 0.
-	const REQID_UPROC  =  0; // Unprocessed.
-	const REQID_FOUND  =  1; // Found.
+	const REQID_BAD    = -1; // Request ID is in bad format?
+	const REQID_UPROC  =  0; // Release has not been processed.
+	const REQID_FOUND  =  1; // Request ID found and release was updated.
 
 	/**
 	 * @param bool $echooutput
@@ -2198,10 +2199,11 @@ class Releases
 					WHERE r.groupid = %d
 					AND  nzbstatus = 1
 					AND isrenamed = 0
-					AND (isrequestid = 1 AND reqidstatus in (%d, -1) OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR))
+					AND (isrequestid = 1 AND reqidstatus in (%d, %d) OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR))
 					LIMIT 100",
 					$groupID,
 					self::REQID_UPROC,
+					self::REQID_BAD,
 					self::REQID_NONE,
 					(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1)
 				)
@@ -2742,7 +2744,8 @@ class Releases
 	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $nntp)
 	{
 		$DIR = nZEDb_MISC;
-		$PYTHON = (empty(shell_exec("which python3 2>/dev/null")) ? 'python -OOu' : 'python3 -OOu');
+		$PYTHON = shell_exec('which python3 2>/dev/null');
+		$PYTHON = (empty($PYTHON) ? 'python -OOu' : 'python3 -OOu');
 
 		$tot_retcount = $tot_nzbcount = $loops = 0;
 		do {

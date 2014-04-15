@@ -38,7 +38,7 @@ class NZB
 
 	/**
 	 * Instance of class db.
-	 * @var DB
+	 * @var nzedb\db\DB
 	 */
 	protected $db;
 
@@ -47,6 +47,9 @@ class NZB
 	 * @var string
 	 */
 	protected $writeDate;
+
+	const NZB_NONE  = 0; // Release has no NZB file yet.
+	const NZB_ADDED = 1; // Release had an NZB file created.
 
 	/**
 	 * Default constructor.
@@ -63,7 +66,7 @@ class NZB
 	/**
 	 * Initiate class vars when writing NZB's.
 	 *
-	 * @param DB $db
+	 * @param nzedb\db\DB $db
 	 * @param string $date
 	 * @param int $groupID
 	 */
@@ -190,15 +193,18 @@ class NZB
 				if ($nzb_guid === '') {
 					$this->db->queryExec(
 						sprintf(
-							'UPDATE releases SET nzbstatus = 1 WHERE id = %d'
-							, $relID
+							'UPDATE releases SET nzbstatus = %d WHERE id = %d',
+							NZB::NZB_ADDED,
+							$relID
 						)
 					);
 				} else {
 					$this->db->queryExec(
 						sprintf(
-							'UPDATE releases SET nzbstatus = 1, nzb_guid = %s WHERE id = %d',
-							$this->db->escapestring(md5($nzb_guid)), $relID
+							'UPDATE releases SET nzbstatus = %d, nzb_guid = %s WHERE id = %d',
+							NZB::NZB_ADDED,
+							$this->db->escapestring(md5($nzb_guid)),
+							$relID
 						)
 					);
 				}
@@ -259,32 +265,32 @@ class NZB
 	 *
 	 * @param string $releaseGuid         The guid of the release.
 	 * @param int    $levelsToSplit       How many sub-paths the folder will be in.
-	 * @param bool   $createIfDoesntExist Create the folder if it doesn't exist.
+	 * @param bool   $createIfNotExist Create the folder if it doesn't exist.
 	 *
 	 * @return string $nzbpath The path to store the NZB file.
 	 *
 	 * @access public
 	 */
-	private function buildNZBPath($releaseGuid, $levelsToSplit, $createIfDoesntExist)
+	private function buildNZBPath($releaseGuid, $levelsToSplit, $createIfNotExist)
 	{
-		$sitenzbpath = $this->site->nzbpath;
-		if (substr($sitenzbpath, strlen($sitenzbpath) - 1) !== DS) {
-			$sitenzbpath = $sitenzbpath . DS;
+		$siteNzbPath = $this->site->nzbpath;
+		if (substr($siteNzbPath, -1) !== DS) {
+			$siteNzbPath .= DS;
 		}
 
-		$subpath = '';
+		$nzbPath = '';
 
 		for ($i = 0; $i < $levelsToSplit; $i++) {
-			$subpath = $subpath . substr($releaseGuid, $i, 1) . DS;
+			$nzbPath .= substr($releaseGuid, $i, 1) . DS;
 		}
 
-		$nzbpath = $sitenzbpath . $subpath;
+		$nzbPath = $siteNzbPath . $nzbPath;
 
-		if ($createIfDoesntExist && !is_dir($nzbpath)) {
-			mkdir($nzbpath, 0777, true);
+		if ($createIfNotExist && !is_dir($nzbPath)) {
+			mkdir($nzbPath, 0777, true);
 		}
 
-		return $nzbpath;
+		return $nzbPath;
 	}
 
 	/**
@@ -292,20 +298,19 @@ class NZB
 	 *
 	 * @param string $releaseGuid         The guid of the release.
 	 * @param int    $levelsToSplit       How many sub-paths the folder will be in. (optional)
-	 * @param bool   $createIfDoesntExist Create the folder if it doesn't exist. (optional)
+	 * @param bool   $createIfNotExist Create the folder if it doesn't exist. (optional)
 	 *
 	 * @return string Path+filename.
 	 *
 	 * @access public
 	 */
-	public function getNZBPath($releaseGuid, $levelsToSplit=0, $createIfDoesntExist = false)
+	public function getNZBPath($releaseGuid, $levelsToSplit=0, $createIfNotExist = false)
 	{
 		if ($levelsToSplit === 0) {
 			$levelsToSplit = $this->site->nzbsplitlevel;
 		}
 
-		$nzbpath = $this->buildNZBPath($releaseGuid, $levelsToSplit, $createIfDoesntExist);
-		return $nzbpath . $releaseGuid . '.nzb.gz';
+		return ($this->buildNZBPath($releaseGuid, $levelsToSplit, $createIfNotExist) . $releaseGuid . '.nzb.gz');
 	}
 
 	/**
@@ -355,7 +360,7 @@ class NZB
 			$title = $file->attributes()->subject;
 
 			// Amount of pars.
-			if (preg_match('/\.par2/i', $title)) {
+			if (stripos($title, '.par2')) {
 				$num_pars++;
 			}
 
