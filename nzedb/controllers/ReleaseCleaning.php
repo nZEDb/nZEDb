@@ -8,7 +8,13 @@ use nzedb\db\DB;
 
 class ReleaseCleaning
 {
-	function __construct()
+	public $subject = '';
+	public $groupName = '';
+
+	/**
+	 *
+	 */
+	public function __construct()
 	{
 		// Extensions.
 		$this->e0 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
@@ -21,6 +27,7 @@ class ReleaseCleaning
 		$match = $matches = '';
 		$db = new DB();
 		$groups = new Groups();
+		$this->groupName = $groupName;
 		$this->subject = $subject;
 		// Get pre style name from releases.name
 		if (preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $this->subject, $matches)) {
@@ -2528,16 +2535,16 @@ class ReleaseCleaning
 		if (preg_match('/("|#34;)(.+)("|#34;)[-_ ]{0,3}[\(\[]\d+\/(\d+[\)\]])[-_ ]{0,3}("|#34;).+?(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4})("|#34;)[-_ ]{0,3}\d+[.,]\d+ [kKmMgG][bB][-_ ]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[2];
 		} //(Amour.2012.1080p.BluRay.x264-EbP)(002/337) "Amour.2012.1080p.BluRay.x264-EbP.part001.rar" - 16.58 GB - yEnc
-		if (preg_match('/^\([\w\d-\.]+\)[\(\[]\d+\/\d+[\]\)] "(.+?)' . $this->e2, $this->subject, $match)) {
+		if (preg_match('/^\([\w\d.-]+\)[\(\[]\d+\/\d+[\]\)] "(.+?)' . $this->e2, $this->subject, $match)) {
 			return $match[1];
 		} //(La.pianiste.(aka.The.Piano.Teacher).(2001).720p.BluRay.AC3.x264-MandR) [085/101] - "La.pianiste.(aka.The.Piano.Teacher).(2001).720p.BluRay.AC3.x264-MandR.part084.rar" yEnc
-		if (preg_match('/^\([\w \d-\.\(\)]+\) [\(\[]\d+\/\d+[\]\)] - "(.+?)' . $this->e1, $this->subject, $match)) {
+		if (preg_match('/^\([\w \d.()-]+\) [\(\[]\d+\/\d+[\]\)] - "(.+?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //[00/56] - "The.Last.Days.On.Mars.720p.BluRay.x264-DR.nzb" yEnc
 		if (preg_match('/^\[\d+\/\d+\][-_ ]{0,3}"(.+?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //< Michael.Jackson.Bad.25.2012.720p.BluRay.x264-PHD > - "Michael.Jackson.Bad.25.2012.720p.BluRay.x264-PHD.par2" (01/64) yEnc
-		if (preg_match('/^\< [\w \d-\.\(\)]+ \> - "(.+?)' . $this->e1 . ' \(\d+\/\d+\) yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^< [\w \d.()-]+ > - "(.+?)' . $this->e1 . ' \(\d+\/\d+\) yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		}
 		return array("cleansubject" => $this->releaseCleanerHelper($this->subject), "properlynamed" => false);
