@@ -108,10 +108,12 @@ Class NZBContents
 				if ($this->echooutput) {
 					echo ($messageID['hidden'] === false ? '+' : '*');
 				}
+				$fetchedBinary = true;
 			} else {
 				if ($this->echooutput) {
 					echo '-';
 				}
+				$fetchedBinary = false;
 				$this->db->queryExec(sprintf('UPDATE releases SET nfostatus = 0 WHERE id = %d', $relID));
 			}
 		} else {

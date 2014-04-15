@@ -438,7 +438,7 @@ Class PreDb
 
 							$nuked = $nukereason = '';
 							if (!empty($matches4['reason'])) {
-								$nuked = IRCScraper::NUKE;
+								$nuked = self::PRE_NUKED;
 								$nukereason = $matches4['reason'];
 							}
 
@@ -456,7 +456,7 @@ Class PreDb
 									$this->db->escapeString('prelist'),
 									$md5,
 									$this->db->escapeString($matches4['files']),
-									($nuked === '' ? IRCScraper::NO_NUKE : $nuked),
+									($nuked === '' ? self::PRE_NONUKE : $nuked),
 									($nukereason === '' ? 'NULL' : $this->db->escapeString($nukereason))))) {
 								$newNames++;
 							}
