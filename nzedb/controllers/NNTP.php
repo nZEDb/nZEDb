@@ -129,7 +129,7 @@ class NNTP extends Net_NNTP_Client
 			$this->yyDecoderPath = false;
 		}
 		if (is_file($this->yEncTempInput)) {
-			unlink($this->yEncTempInput);
+			@unlink($this->yEncTempInput);
 		}
 	}
 
