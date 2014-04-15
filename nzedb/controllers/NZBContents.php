@@ -107,8 +107,8 @@ Class NZBContents
 			if ($this->nfo->isNFO($fetchedBinary, $guid) === true) {
 				if ($this->echooutput) {
 					echo ($messageID['hidden'] === false ? '+' : '*');
-					$fetchedBinary = true;
 				}
+				$fetchedBinary = true;
 			} else {
 				if ($this->echooutput) {
 					echo '-';
