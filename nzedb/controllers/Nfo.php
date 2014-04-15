@@ -216,7 +216,6 @@ class Nfo
 	/**
 	 * Add an NFO from alternate sources. ex.: PreDB, rar, zip, etc...
 	 *
-	 * @param object $db      Instance of class DB.
 	 * @param string $nfo     The nfo.
 	 * @param array  $release The SQL row for this release.
 	 * @param object $nntp    Instance of class NNTP.
@@ -225,35 +224,42 @@ class Nfo
 	 *
 	 * @access public
 	 */
-	public function addAlternateNfo($db, $nfo, $release, $nntp) {
-		if (!isset($nntp)) {
-			exit($this->c->error("NFO->addAlternateNfo() Not connected to usenet.\n"));
-		}
+	public function addAlternateNfo($nfo, $release, $nntp)
+	{
+		if ($release['id'] > 0 && $this->isNFO($nfo, $release['guid'])) {
 
-		if ($release['id'] > 0) {
-			if ($db->dbSystem() === 'mysql') {
-				$compress = 'compress(%s)';
-				$nc = $db->escapeString($nfo);
-			} else {
-				$compress = '%s';
-				$nc = $db->escapeString(utf8_encode($nfo));
+			$check = $this->db->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $release['id']));
+
+			if ($check === false) {
+				$this->db->queryInsert(
+					sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES (compress(%s), %d)',
+						$this->db->escapeString($nfo),
+						$release['id']
+					)
+				);
 			}
-			$ckreleaseid = $db->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $release['id']));
-			if (!isset($ckreleaseid['id'])) {
-				$db->queryInsert(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES (' . $compress . ', %d)', $nc, $release['id']));
-			}
-			$db->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', self::NFO_FOUND, $release['id']));
+
+			$this->db->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', self::NFO_FOUND, $release['id']));
+
 			if (!isset($release['completion'])) {
 				$release['completion'] = 0;
 			}
+
 			if ($release['completion'] == 0) {
-				$nzbContents = new NZBContents(array('echo' => $this->echo, 'nntp' => $nntp, 'nfo' => $this, 'db' => $db, 'pp' => new PostProcess(true)));
+				$nzbContents = new NZBContents(
+					array(
+						'echo' => $this->echo,
+						'nntp' => $nntp,
+						'nfo'  => $this,
+						'db'   => $this->db,
+						'pp'   => new PostProcess(true)
+					)
+				);
 				$nzbContents->parseNZB($release['guid'], $release['id'], $release['groupid']);
 			}
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	/**

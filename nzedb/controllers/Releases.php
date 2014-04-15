@@ -2146,7 +2146,7 @@ class Releases
 				if ($nzb_create !== false) {
 					$this->db->queryExec(
 						sprintf(
-							'UPDATE ' . $group['cname'] . ' SET filecheck = 5 WHERE releaseid = %s', $rowrel['id']
+							'UPDATE %s SET filecheck = 5 WHERE releaseid = %s', $group['cname'], $rowrel['id']
 						)
 					);
 					$nzbcount++;
