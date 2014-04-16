@@ -9,6 +9,8 @@ New updates are grouped by person, at the top of the file.
 2014-04-15 niel
 	* Fix: Change to regexes to allow Windows' paths to be matched in DbUpdate.
 	* Fix: ... and the Drive letter. Doh!
+	* Rvt: a68c81723f0bf4a3c8ca29b8381e114c642b7935 in favour of putting GnuWin in system.
+	* New: Windows users should read .../docs/GNUWIN.txt on how to add some of *nix's features on Windows installs
 2014-04-15 bart39
 	* Chg: More refactoring in ReleaseCleaning
 	* Fix: unknown modifier in ReleaseCleaning

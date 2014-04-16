@@ -1,68 +1,74 @@
 <?php
 
 use nzedb\db\DB;
-require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
-require_once nZEDb_LIBS . 'rarinfo/par2info.php';
-require_once nZEDb_LIBS . 'rarinfo/sfvinfo.php';
 
 /**
  * Class Nfo
- *
  * Class for handling fetching/storing of NFO files.
+ * @public
  */
 class Nfo
 {
 	/**
 	 * Site settings.
 	 * @var bool|stdClass
+	 * @access private
 	 */
 	private $site;
 
 	/**
 	 * How many nfo's to process per run.
 	 * @var int
+	 * @access private
 	 */
 	private $nzbs;
 
 	/**
 	 * Max NFO size to process.
 	 * @var int
+	 * @access private
 	 */
 	private $maxsize;
 
 	/**
 	 * Path to temporarily store files.
 	 * @var string
+	 * @access private
 	 */
 	private $tmpPath;
 
 	/**
 	 * Instance of class ColorCLI
 	 * @var ColorCLI
+	 * @access private
 	 */
 	private $c;
 
 	/**
 	 * Instance of class DB
 	 * @var DB
+	 * @access private
 	 */
 	private $db;
 
 	/**
 	 * Primary color for console text output.
 	 * @var string
+	 * @access private
 	 */
 	private $primary = 'Green';
 
 	/**
 	 * Color for warnings on console text output.
 	 * @var string
+	 * @access private
 	 */
 	private $warning = 'Red';
 
 	/**
 	 * Color for headers(?) on console text output.
 	 * @var string
+	 * @access private
 	 */
 	private $header = 'Yellow';
 
@@ -72,20 +78,14 @@ class Nfo
 	 */
 	protected $echo;
 
-	/**
-	 * Path to file binary.
-	 * @var string
-	 */
-	protected $fileBinary;
-
 	const NFO_UNPROC = -1; // Release has not been processed yet.
 	const NFO_NONFO  =  0; // Release has no NFO.
 	const NFO_FOUND  =  1; // Release has an NFO.
 
 	/**
 	 * Default constructor.
-	 *
 	 * @param bool $echo Echo to cli.
+	 * @access public
 	 */
 	public function __construct($echo = false)
 	{
@@ -100,17 +100,16 @@ class Nfo
 		if (substr($this->tmpPath, -1) !== DIRECTORY_SEPARATOR) {
 			$this->tmpPath .= DIRECTORY_SEPARATOR;
 		}
-		$this->fileBinary =
-			(nzedb\utility\isWindows() ? '"' . nZEDb_LIBS . 'binaries' . DS . 'gnu4win' . DS . 'file.exe"' : 'file');
 	}
 
 	/**
 	 * Look for a TvRage ID in a string.
 	 *
 	 * @param string  $str   The string with a TvRage ID.
+	 * @return string The TVRage ID on success.
+	 * @return bool   False on failure.
 	 *
-	 * @return string On success: The TVRage ID.
-	 *         bool   On failure: False.
+	 * @access public
 	 */
 	public function parseRageId($str) {
 		if (preg_match('/tvrage\.com\/shows\/id-(\d{1,6})/i', $str, $matches)) {
@@ -124,68 +123,81 @@ class Nfo
 	 *
 	 * @param string $possibleNFO The nfo.
 	 * @param string $guid        The guid of the release.
-	 *
 	 * @return bool               True on success, False on failure.
+	 * @access public
 	 */
 	public function isNFO(&$possibleNFO, $guid) {
-		$retVal = false;
+		$r = false;
+		if ($possibleNFO === false) {
+			return $r;
+		}
 
-		$size = strlen($possibleNFO);
-		// Make sure it's not too big or small, size needs to be at least 12 bytes for header checking. Ignore common file types.
-		if ($possibleNFO !== false &&
-			$size < 65535 &&
-			$size > 11 &&
-			!preg_match('/\A(\s*<\?xml|=newz\[NZB\]=|RIFF|\s*[RP]AR|.{0,10}(JFIF|matroska|ftyp|ID3))|;\s*Generated\s*by.*SF\w/i'
+		// Make sure it's not too big or small, size needs to be at least 12 bytes for header checking.
+		$size = mb_strlen($possibleNFO, '8bit');
+		if ($size < 65535 && $size > 11) {
+			// Ignore common file types.
+			if (preg_match(
+				'/(^RIFF|)<\?xml|;\s*Generated\s*by.*SF\w|\A\s*[RP]AR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i'
 				, $possibleNFO)) {
-
-			// Put the file on the hard drive.
-			$tmpPath = $this->tmpPath . $guid . '.nfo';
-			file_put_contents($tmpPath, $possibleNFO);
-
-			// Run File on it to get the type.
-			exec($this->fileBinary . ' -b ' . $tmpPath, $result);
-			if (is_array($result)) {
-				if (count($result) > 1) {
-					$result = implode(',', $result[0]);
-				} else {
-					$result = $result[0];
-				}
-
-				// Check if it's text.
-				if (preg_match('/(ASCII|ISO-8859|UTF-(8|16|32).*?)\s*text/', $result)) {
-					$retVal = true;
-				} else if (preg_match('/^(JPE?G|Parity|PNG|RAR|XML|(7-)?[Zz]ip)/', $result)) {
-					@unlink($tmpPath);
-					return $retVal;
-				}
+				return $r;
 			}
 
-			// Check if it's not data.
-			if ($retVal === false && !preg_match('/[\x00-\x08\x12-\x1F\x0B\x0E\x0F]/', $possibleNFO)) {
-			// If on Windows, or above checks couldn't make a categorical identification:
+			// file/getid3 work with files, so save to disk
+			$tmpPath = $this->tmpPath.$guid.'.nfo';
+			file_put_contents($tmpPath, $possibleNFO);
 
-				// Use getid3 to check if it's an image/video/rar/zip etc..
-				$getid3 = new getid3();
-				$check = $getid3->analyze($tmpPath);
-				if (isset($check['error'])) {
+			// Linux boxes have 'file' (so should Macs), Windows *can* have it too: see GNUWIN.txt in docs.
+			if (nzedb\utility\Utility::hasCommand('file')) {
+				exec("file -b $tmpPath", $result);
+				if (is_array($result)) {
+					if (count($result) > 1) {
+						$result = implode(',', $result[0]);
+					} else {
+						$result = $result[0];
+					}
+				}
+				$test = preg_match('#^.*(ISO-8859|UTF-(?:8|16|32) Unicode(?: \(with BOM\)|)|ASCII)(?: English| C++ Program|) text.*$#i', $result);
+				// if the result is false, something went wrong, continue with getID3 tests.
+				if ($test !== false) {
+					if ($test == 1) {
+						@unlink($tmpPath);
+						return true;
+					}
 
-					// Check if it's a par2.
-					$par2info = new Par2Info();
-					$par2info->setData($possibleNFO);
-					if ($par2info->error) {
-
-						// Check if it's an SFV.
-						$sfv = new SfvInfo();
-						$sfv->setData($possibleNFO);
-						if ($sfv->error) {
-							$retVal =  true;
-						}
+					// non-printable characters should never appear in text, so rule them out.
+					$test = preg_match('#\x00|\x01|\x02|\x03|\x04|\x05|\x06|\x07|\x08|\x0B|\x0E|\x0F|\x12|\x13|\x14|\x15|\x16|\x17|\x18|\x19|\x1A|\x1B|\x1C|\x1D|\x1E|\x1F#', $possibleNFO);
+					if ($test) {
+						@unlink($tmpPath);
+						return false;
 					}
 				}
 			}
+
+			// If on Windows, or above checks couldn't  make a categorical identification,
+			// Use getid3 to check if it's an image/video/rar/zip etc..
+			require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
+			$getid3 = new getid3();
+			$check = $getid3->analyze($tmpPath);
+			unset($getid3);
 			@unlink($tmpPath);
+			unset($tmpPath);
+			if (isset($check['error'])) {
+				// Check if it's a par2.
+				require_once nZEDb_LIBS . 'rarinfo/par2info.php';
+				$par2info = new Par2Info();
+				$par2info->setData($possibleNFO);
+				if ($par2info->error) {
+					// Check if it's an SFV.
+					require_once nZEDb_LIBS . 'rarinfo/sfvinfo.php';
+					$sfv = new SfvInfo();
+					$sfv->setData($possibleNFO);
+					if ($sfv->error) {
+						return true;
+					}
+				}
+			}
 		}
-		return $retVal;
+		return $r;
 	}
 
 	/**
@@ -196,6 +208,8 @@ class Nfo
 	 * @param object $nntp    Instance of class NNTP.
 	 *
 	 * @return bool           True on success, False on failure.
+	 *
+	 * @access public
 	 */
 	public function addAlternateNfo(&$nfo, $release, $nntp)
 	{
@@ -245,6 +259,8 @@ class Nfo
 	 * @param object $nntp           Instance of class NNTP.
 	 *
 	 * @return int                   How many NFO's were processed?
+	 *
+	 * @access public
 	 */
 	public function processNfoFiles($releaseToWork = '', $processImdb = 1, $processTvrage = 1, $groupID = '', $nntp)
 	{
