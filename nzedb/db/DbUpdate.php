@@ -256,13 +256,11 @@ class DbUpdate
 							$qry = $this->db->prepare($query);
 							$qry->execute();
 							echo $this->log->alternateOver('SUCCESS: ') . $this->log->primary($query);
-						} catch (PDOException $e) {
+						} catch (\PDOException $e) {
 							// Log the problem and the query.
 							file_put_contents(
-								nZEDb_LOGS . 'patcherrors.log', '[' . date('r') .
-								'] [ERROR] [' . trim(preg_replace('/\s+/', ' ', $e->getMessage())) .
-								']' . PHP_EOL, '[' . date('r') . '] [QUERY] [' .
-								trim(preg_replace('/\s+/', ' ', $query)) . ']' . PHP_EOL,
+								nZEDb_LOGS . 'patcherrors.log',
+								'[' . date('r') . '] [ERROR] [' . trim(preg_replace('/\s+/', ' ', $e->getMessage())) . ']' . PHP_EOL . '[' . date('r') . '] [QUERY] [' . trim(preg_replace('/\s+/', ' ', $query)) . ']' . PHP_EOL,
 								FILE_APPEND
 							);
 
