@@ -3,6 +3,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\DB;
 
+// TODO make this platform agnostic
 passthru("clear");
 $c= new ColorCLI();
 
