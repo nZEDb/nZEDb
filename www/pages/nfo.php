@@ -10,8 +10,6 @@ $releases = new Releases();
 
 if (isset($_GET["id"]))
 {
-	$page->smarty->unloadFilter('output', 'trimwhitespace');
-
 	$rel = $releases->getByGuid($_GET["id"]);
 
 	if (!$rel) {
@@ -41,6 +39,7 @@ if (isset($_GET["id"]))
 	if ($modal) {
 		echo $page->content;
 	} else {
+		$page->trimWhiteSpace = false;
 		$page->render();
 	}
 }
