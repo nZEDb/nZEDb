@@ -37,6 +37,11 @@ class Utility
 		return $files;
 	}
 
+	/**
+	 * Detect if the command is accessible on the system.
+	 * @param $cmd
+	 * @return bool|null Returns true if found, false if not found, and null if which is not detected.
+	 */
 	static public function hasCommand($cmd)
 	{
 		if (HAS_WHICH) {
