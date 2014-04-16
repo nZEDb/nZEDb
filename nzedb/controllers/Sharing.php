@@ -462,7 +462,7 @@ Class Sharing
 		}
 
 		// Decompress the body.
-		$body = gzinflate($body);
+		$body = @gzinflate($body);
 		if ($body === false) {
 			return false;
 		}
