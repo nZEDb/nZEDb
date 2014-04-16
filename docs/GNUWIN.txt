@@ -4,6 +4,7 @@ As an absolute minimum, the 'which' command must be added before any of the othe
 Additionally these are recommended:
 
 file
+grep
 
 More will be added as needed ;-)
 
