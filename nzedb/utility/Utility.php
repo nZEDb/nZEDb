@@ -58,7 +58,7 @@ class Utility
 
 	static public function isWin()
 	{
-		return (strtolower(PHP_OS, 0, 3) === 'win');
+		return (strtolower(substr(PHP_OS, 0, 3)) === 'win');
 	}
 
 	static public function setCoversConstant($path)
