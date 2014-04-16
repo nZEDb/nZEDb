@@ -11,6 +11,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: ... and the Drive letter. Doh!
 	* Rvt: a68c81723f0bf4a3c8ca29b8381e114c642b7935 in favour of putting GnuWin in system.
 	* New: Windows users should read .../docs/GNUWIN.txt on how to add some of *nix's features on Windows installs
+	* Fix: Properly catching the PDOExceptions that were ignore during patching the Db. (namespace issue).
 2014-04-15 bart39
 	* Chg: More refactoring in ReleaseCleaning
 	* Fix: unknown modifier in ReleaseCleaning

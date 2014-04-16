@@ -7,6 +7,7 @@ use nzedb\utility;
 
 $n = PHP_EOL;
 
+// TODO change this to be able to use GnuWin
 if (!nzedb\utility\isWindows()) {
 	echo 'These are the settings in your php.ini files:' . $n;
 	echo 'CLI PHP timezone : ' . exec('cat /etc/php5/cli/php.ini | grep \'date.timezone =\' | cut -d \  -f 3') . $n;
