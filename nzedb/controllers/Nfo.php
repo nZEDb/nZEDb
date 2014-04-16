@@ -11,7 +11,6 @@ class Nfo
 {
 	/**
 	 * Site settings.
-	 *
 	 * @var bool|stdClass
 	 * @access private
 	 */
@@ -19,7 +18,6 @@ class Nfo
 
 	/**
 	 * How many nfo's to process per run.
-	 *
 	 * @var int
 	 * @access private
 	 */
@@ -27,7 +25,6 @@ class Nfo
 
 	/**
 	 * Max NFO size to process.
-	 *
 	 * @var int
 	 * @access private
 	 */
@@ -35,7 +32,6 @@ class Nfo
 
 	/**
 	 * Path to temporarily store files.
-	 *
 	 * @var string
 	 * @access private
 	 */
@@ -43,7 +39,6 @@ class Nfo
 
 	/**
 	 * Instance of class ColorCLI
-	 *
 	 * @var ColorCLI
 	 * @access private
 	 */
@@ -51,7 +46,6 @@ class Nfo
 
 	/**
 	 * Instance of class DB
-	 *
 	 * @var DB
 	 * @access private
 	 */
@@ -59,7 +53,6 @@ class Nfo
 
 	/**
 	 * Primary color for console text output.
-	 *
 	 * @var string
 	 * @access private
 	 */
@@ -67,7 +60,6 @@ class Nfo
 
 	/**
 	 * Color for warnings on console text output.
-	 *
 	 * @var string
 	 * @access private
 	 */
@@ -75,7 +67,6 @@ class Nfo
 
 	/**
 	 * Color for headers(?) on console text output.
-	 *
 	 * @var string
 	 * @access private
 	 */
@@ -83,7 +74,6 @@ class Nfo
 
 	/**
 	 * Echo to cli?
-	 *
 	 * @var bool
 	 */
 	protected $echo;
@@ -94,9 +84,7 @@ class Nfo
 
 	/**
 	 * Default constructor.
-	 *
 	 * @param bool $echo Echo to cli.
-	 *
 	 * @access public
 	 */
 	public function __construct($echo = false)
@@ -136,7 +124,6 @@ class Nfo
 	 * @param string $possibleNFO The nfo.
 	 * @param string $guid        The guid of the release.
 	 * @return bool               True on success, False on failure.
-	 *
 	 * @access public
 	 */
 	public function isNFO(&$possibleNFO, $guid) {
@@ -159,8 +146,8 @@ class Nfo
 			$tmpPath = $this->tmpPath.$guid.'.nfo';
 			file_put_contents($tmpPath, $possibleNFO);
 
-			// Linux boxes have 'file' (so should Macs)
-			if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
+			// Linux boxes have 'file' (so should Macs), Windows *can* have it too: see GNUWIN.txt in docs.
+			if (nzedb\utility\Utility::hasCommand('file')) {
 				exec("file -b $tmpPath", $result);
 				if (is_array($result)) {
 					if (count($result) > 1) {
