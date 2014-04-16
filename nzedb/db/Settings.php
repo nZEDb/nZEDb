@@ -24,11 +24,57 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY
 
 use nzedb\utility\Utility;
 
-class Settings extends \Sites
+class Settings extends DB
 {
 	public function __construct(array $options = array())
 	{
-		parent::__construct();
+		parent::__construct($options);
+	}
+
+	/**
+	 * Retrieve one or all settings from the Db as a string or an array;
+	 *
+	 * @param array|string $options Name of setting to retrieve (null for all settings)
+	 *                              or array of 'feature', 'section', 'name' of setting{s} to retrieve
+	 * @return string|array|bool
+	 */
+	public function getSetting ($options = array())
+	{
+		$results = array();
+		if (!is_array($options)) {
+			$options['name'] = $options;
+		}
+		$defaults = array(
+						'feature'	=> '',
+						'section'	=> '',
+						'name'		=> null,
+		);
+		$options += $defaults;
+
+		$sql = 'SELECT feature, section, name, value FROM settings ';
+		$where = $options['feature'] . $options['section'] . $options['name'];	// Can't use expression in empty() < PHP 5.5
+		if (!empty($where)) {
+			$sql .= "WHERE feature = '{$options['feature']}' AND section = '{$options['section']}'";
+			$sql .= empty($options['name']) ? '' : " AND name = '{$options['name']}'";
+		} else {
+			$sql .= "WHERE feature = '' AND section = ''";
+		}
+		$sql .= ' ORDER BY feature, section, name';
+
+		$result = $this->queryArray($sql);
+		if ($result !== false) {
+			if (empty($where)) {
+				foreach ($result as $row) {
+					$results[$row['name']] = $row['value'];
+				}
+			} else {
+				foreach ($result as $row) {
+					$results[$row['feature']][$row['section']][$row['name']] = $row['value'];
+				}
+			}
+		}
+
+		return (count($results) === 1 ? $results[0]['value'] : $results);
 	}
 }
 
