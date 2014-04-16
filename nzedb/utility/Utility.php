@@ -39,7 +39,7 @@ class Utility
 
 	static public function hasCommand($cmd)
 	{
-		if (!isWindows()) {
+		if (HAS_WHICH) {
 			$returnVal = shell_exec("which $cmd");
 			return (empty($returnVal) ? false : true);
 		} else {
