@@ -1632,7 +1632,7 @@ class Releases
 						}
 					} else {
 						$s = $this->db->queryOneRow(
-							"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settins s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
+							"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
 							$groupID['id']
 						);
 						if ($s['size'] > 0) {
@@ -1653,7 +1653,7 @@ class Releases
 					}
 					$minsizecounts = $minsizecount + $minsizecounts;
 
-					$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settins WHERE setting = 'maxsizetoformrelease'");
+					$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 					if ($maxfilesizeres['value'] != 0) {
 						$mascq = $this->db->queryExec(
 							sprintf(
