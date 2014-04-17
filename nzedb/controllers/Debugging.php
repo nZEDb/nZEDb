@@ -19,6 +19,7 @@ class Debugging
 	 * @default 50
 	 *
 	 * @const int
+	 * @access public
 	 */
 	const maxLogs = 50;
 
@@ -28,6 +29,7 @@ class Debugging
 	 * @default 4
 	 *
 	 * @const int
+	 * @access public
 	 */
 	const logFileSize = 4;
 
@@ -37,6 +39,7 @@ class Debugging
 	 * @default .log
 	 *
 	 * @const string
+	 * @access public
 	 */
 	const logFileExtension = '.log';
 
@@ -46,6 +49,7 @@ class Debugging
 	 * @default debug
 	 *
 	 * @const string
+	 * @access public
 	 */
 	const debugLogName = 'debug';
 
@@ -55,6 +59,7 @@ class Debugging
 	 * @default true
 	 *
 	 * @const bool
+	 * @access public
 	 */
 	const showMemoryUsage = true;
 
@@ -66,6 +71,7 @@ class Debugging
 	 * @default true
 	 *
 	 * @const bool
+	 * @access public
 	 */
 	const showAverageLoad = true;
 
@@ -75,6 +81,7 @@ class Debugging
 	 * @default true
 	 *
 	 * @const bool
+	 * @access public
 	 */
 	const showTimeRunning = true;
 
@@ -84,67 +91,77 @@ class Debugging
 	 * @default false
 	 *
 	 * @const bool
+	 * @access public
 	 */
 	const showGetResUsage = false;
 
 	/**
 	 * Name of class that created an instance of debugging.
 	 * @var string
+	 * @access private
 	 */
 	private $class;
 
 	/**
 	 * The debug message.
 	 * @var string
+	 * @access private
 	 */
 	private $debugMessage = '';
 
 	/**
 	 * Severity level.
 	 * @var string
+	 * @access private
 	 */
 	private $severity = '';
 
 	/**
 	 * "\n" for unix, "\r\n" for windows.
 	 * @var string
+	 * @access private
 	 */
 	private $newLine;
 
 	/**
 	 * Class instance of colorCLI
 	 * @var object
+	 * @access private
 	 */
 	private $colorCLI;
 
 	/**
 	 * Should we echo to CLI or web?
 	 * @var bool
+	 * @access private
 	 */
 	private $outputCLI = true;
 
 	/**
 	 * Cache of the date.
 	 * @var string
+	 * @access private
 	 */
 	private $dateCache = '';
 
 	/**
 	 * Cache of unix time.
 	 * @var int
+	 * @access private
 	 */
 	private $timeCache;
 
 	/**
 	 * Is this the windows O/S?
 	 * @var bool
+	 * @access private
 	 */
 	private $isWindows;
 
 	/**
 	 * Unix time instance was created.
-	 *
 	 * @var int
+	 * @access private
 	 */
 	private $timeStart;
 
@@ -160,6 +177,8 @@ class Debugging
 	 * Constructor.
 	 *
 	 * @param string $class The name of the class. ex,: $d = new Debugging("Binaries");
+	 *
+	 * @access public
 	 */
 	public function __construct($class="")
 	{
@@ -186,6 +205,8 @@ class Debugging
 	 *               Anything else causes the script to return void.
 	 *
 	 * @return void
+	 *
+	 * @access public
 	 */
 	public function start($method, $message, $severity)
 	{
@@ -217,6 +238,8 @@ class Debugging
 	 * @param bool $peak      Get peak memory usage.
 	 *
 	 * @return string
+	 *
+	 * @access public
 	 */
 	public function showMemUsage($oldUsage = 0, $realUsage = false, $peak = false)
 	{
@@ -258,6 +281,8 @@ class Debugging
 	 * Get resource usage string.
 	 *
 	 * @return bool|string
+	 *
+	 * @access public
 	 */
 	public function getResUsage()
 	{
@@ -277,6 +302,8 @@ class Debugging
 	 * Get system load.
 	 *
 	 * @return string|bool
+	 *
+	 * @access public
 	 */
 	public function getSystemLoad()
 	{
@@ -306,6 +333,8 @@ class Debugging
 	 * @param string $message The message to log.
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function logMain($path, $name, $message)
 	{
@@ -336,6 +365,8 @@ class Debugging
 	 * Log debug message to file.
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function logDebug()
 	{
@@ -354,6 +385,8 @@ class Debugging
 	 * Get the date and cache it.
 	 *
 	 * @return string
+	 *
+	 * @access protected
 	 */
 	protected function getDate()
 	{
@@ -372,6 +405,8 @@ class Debugging
 	 * @param string $path Path where all the log files are. ex.: .../nZEDb/resources/logs/
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function createFolder($path)
 	{
@@ -393,6 +428,8 @@ class Debugging
 	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function initiateLog($path, $name)
 	{
@@ -414,6 +451,8 @@ class Debugging
 	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function rotateLog($path, $name)
 	{
@@ -449,6 +488,8 @@ class Debugging
 	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function compressLog($path, $name)
 	{
@@ -488,6 +529,8 @@ class Debugging
 	 * @param string $name The name of the log type.         ex.: debug
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function pruneLogs($path, $name)
 	{
@@ -515,6 +558,8 @@ class Debugging
 	 * Echo debug message to CLI or web.
 	 *
 	 * @return void
+	 *
+	 * @access protected
 	 */
 	protected  function echoDebug()
 	{
@@ -537,6 +582,8 @@ class Debugging
 	 * @param string $message The actual debug message.
 	 *
 	 * @return void
+	 *
+	 * @access protected
 	 */
 	protected function formMessage($method, $message)
 	{
@@ -589,6 +636,8 @@ class Debugging
 	 * @param int $seconds
 	 *
 	 * @return string
+	 *
+	 * @access protected
 	 */
 	protected function formatTimeString($seconds)
 	{
@@ -613,6 +662,8 @@ class Debugging
 	 * @param int $severity How severe is this debug message?
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function checkSeverity($severity)
 	{

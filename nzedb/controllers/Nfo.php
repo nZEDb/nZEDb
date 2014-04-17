@@ -22,54 +22,63 @@ class Nfo
 	/**
 	 * How many nfo's to process per run.
 	 * @var int
+	 * @access private
 	 */
 	private $nzbs;
 
 	/**
 	 * Max NFO size to process.
 	 * @var int
+	 * @access private
 	 */
 	private $maxsize;
 
 	/**
 	 * Path to temporarily store files.
 	 * @var string
+	 * @access private
 	 */
 	private $tmpPath;
 
 	/**
 	 * Instance of class ColorCLI
 	 * @var ColorCLI
+	 * @access private
 	 */
 	private $c;
 
 	/**
 	 * Instance of class DB
 	 * @var DB
+	 * @access private
 	 */
 	private $db;
 
 	/**
 	 * Primary color for console text output.
 	 * @var string
+	 * @access private
 	 */
 	private $primary = 'Green';
 
 	/**
 	 * Color for warnings on console text output.
 	 * @var string
+	 * @access private
 	 */
 	private $warning = 'Red';
 
 	/**
 	 * Color for headers(?) on console text output.
 	 * @var string
+	 * @access private
 	 */
 	private $header = 'Yellow';
 
 	/**
 	 * Echo to cli?
 	 * @var bool
+	 * @access protected
 	 */
 	protected $echo;
 
@@ -81,6 +90,8 @@ class Nfo
 	 * Default constructor.
 	 *
 	 * @param bool $echo Echo to cli.
+	 *
+	 * @access public
 	 */
 	public function __construct($echo = false)
 	{
@@ -104,6 +115,8 @@ class Nfo
 	 * @return string The TVRage ID on success.
 	 *
 	 * @return bool   False on failure.
+	 *
+	 * @access public
 	 */
 	public function parseRageId($str) {
 		if (preg_match('/tvrage\.com\/shows\/id-(\d{1,6})/i', $str, $matches)) {
@@ -119,6 +132,8 @@ class Nfo
 	 * @param string $guid        The guid of the release.
 	 *
 	 * @return bool               True on success, False on failure.
+	 *
+	 * @access public
 	 */
 	public function isNFO(&$possibleNFO, $guid) {
 		if ($possibleNFO === false) {
@@ -193,6 +208,8 @@ class Nfo
 	 * @param object $nntp    Instance of class NNTP.
 	 *
 	 * @return bool           True on success, False on failure.
+	 *
+	 * @access public
 	 */
 	public function addAlternateNfo(&$nfo, $release, $nntp)
 	{
@@ -242,6 +259,8 @@ class Nfo
 	 * @param object $nntp           Instance of class NNTP.
 	 *
 	 * @return int                   How many NFO's were processed?
+	 *
+	 * @access public
 	 */
 	public function processNfoFiles($releaseToWork = '', $processImdb = 1, $processTvrage = 1, $groupID = '', $nntp)
 	{

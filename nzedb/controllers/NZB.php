@@ -8,7 +8,6 @@ class NZB
 {
 	/**
 	 * Instance of class site.
-	 *
 	 * @var object
 	 * @access private
 	 */
@@ -16,7 +15,6 @@ class NZB
 
 	/**
 	 * Site settings.
-	 *
 	 * @var object
 	 * @access private
 	 */
@@ -24,7 +22,6 @@ class NZB
 
 	/**
 	 * Determines if the site setting table per group is enabled.
-	 *
 	 * @var int
 	 * @access private
 	 */
@@ -33,18 +30,21 @@ class NZB
 	/**
 	 * Group ID when writing NZBs.
 	 * @var int
+	 * @access protected
 	 */
 	protected $groupID;
 
 	/**
 	 * Instance of class db.
 	 * @var nzedb\db\DB
+	 * @access protected
 	 */
 	protected $db;
 
 	/**
 	 * Date when writing NZBs.
 	 * @var string
+	 * @access protected
 	 */
 	protected $writeDate;
 
@@ -76,6 +76,8 @@ class NZB
 	 * @param nzedb\db\DB $db
 	 * @param string $date
 	 * @param int $groupID
+	 *
+	 * @access public
 	 */
 	public function initiateForWrite($db, $date, $groupID)
 	{
@@ -99,6 +101,8 @@ class NZB
 
 	/**
 	 * Clean up class vars when done writing NZB's.
+	 *
+	 * @access public
 	 */
 	public function cleanForWrite()
 	{
