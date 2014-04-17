@@ -43,23 +43,27 @@ Class Sharing
 
 	/**
 	 * @var DB
+	 * @access protected
 	 */
 	protected $db;
 
 	/**
 	 * @var NNTP
+	 * @access protected
 	 */
 	protected $nntp;
 
 	/**
 	 * Array containing site settings.
 	 * @var array
+	 * @access protected
 	 */
 	protected $siteSettings = array();
 
 	/**
 	 * Group to work in.
 	 * @const
+	 * @access public
 	 */
 	const group = 'alt.binaries.zines';
 
@@ -68,6 +72,8 @@ Class Sharing
 	 *
 	 * @param DB $db
 	 * @param NNTP $nntp
+	 *
+	 * @access public
 	 */
 	public function __construct(&$db = null, &$nntp = null)
 	{
@@ -107,6 +113,8 @@ Class Sharing
 
 	/**
 	 * Main method.
+	 *
+	 * @access public
 	 */
 	public function start()
 	{
@@ -135,6 +143,8 @@ Class Sharing
 	 * @param string $siteGuid Optional hash (must be sha1) we can set the site guid to.
 	 *
 	 * @return array|bool
+	 *
+	 * @access public
 	 */
 	public function initSettings(&$siteGuid = '')
 	{
@@ -154,6 +164,8 @@ Class Sharing
 
 	/**
 	 * Post all new comments to usenet.
+	 *
+	 * @access protected
 	 */
 	protected function postAll()
 	{
@@ -193,6 +205,8 @@ Class Sharing
 	 * Post a comment to usenet.
 	 *
 	 * @param array $row
+	 *
+	 * @access protected
 	 */
 	protected function postComment(&$row)
 	{
@@ -247,6 +261,8 @@ Class Sharing
 
 	/**
 	 * Match added comments to releases.
+	 *
+	 * @access protected
 	 */
 	protected function matchComments()
 	{
@@ -277,6 +293,8 @@ Class Sharing
 
 	/**
 	 * Get all new comments from usenet.
+	 *
+	 * @access protected
 	 */
 	protected function fetchAll()
 	{
@@ -450,6 +468,8 @@ Class Sharing
 	 * @param string $siteID    ID of the site.
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function insertNewComment(&$messageID, &$siteID)
 	{

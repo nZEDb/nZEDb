@@ -9,21 +9,26 @@ class Logging
 {
 	/**
 	 * @var string If windows "\r\n" if unix "\n".
+	 * @access private
 	 */
 	private $newLine;
 
 	/**
 	 * @var object DB Class instance.
+	 * @access private
 	 */
 	private $db;
 
 	/**
 	 * @var object Class instance.
+	 * @access private
 	 */
 	private $colorCLI;
 
 	/**
 	 * Constructor.
+	 *
+	 * @access public
 	 */
 	public function __construct()
 	{
@@ -37,6 +42,8 @@ class Logging
 	 * Get all rows from logging table.
 	 *
 	 * @return array
+	 *
+	 * @access public
 	 */
 	public function get()
 	{
@@ -50,6 +57,8 @@ class Logging
 	 * @param string $host
 	 *
 	 * @return void
+	 *
+	 * @access public
 	 */
 	public function LogBadPasswd($username='', $host='')
 	{
@@ -80,6 +89,8 @@ class Logging
 
 	/**
 	 * @return array
+	 *
+	 * @access public
 	 */
 	public function getTopCombined()
 	{
@@ -88,6 +99,8 @@ class Logging
 
 	/**
 	 * @return array
+	 *
+	 * @access public
 	 */
 	public function getTopIPs()
 	{
