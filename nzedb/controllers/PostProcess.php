@@ -651,23 +651,6 @@ class PostProcess
 	}
 
 	/**
-	 * Run processAdditional threaded.
-	 *
-	 * @param string $releaseToWork
-	 * @param $nntp
-	 *
-	 * @return void
-	 */
-	public function processAdditionalThreaded($releaseToWork = '', $nntp)
-	{
-		if (!isset($nntp)) {
-			exit($this->c->error("Not connected to usenet(PostProcess->processAdditionalThreaded).\n"));
-		}
-
-		$this->processAdditional($nntp, $releaseToWork);
-	}
-
-	/**
 	 * Check for passworded releases, RAR contents and Sample/Media info.
 	 *
 	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
