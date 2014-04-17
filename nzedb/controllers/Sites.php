@@ -98,7 +98,7 @@ class Sites
 	public function get()
 	{
 		$db = $this->_db;
-		$rows = $db->query("SELECT * FROM settings");
+		$rows = $db->query("SELECT setting, value FROM settings WHERE setting != ''");
 
 		if ($rows === false) {
 			return false;
