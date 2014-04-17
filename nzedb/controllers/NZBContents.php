@@ -157,7 +157,7 @@ Class NZBContents
 		$nzbFile = $this->LoadNZB($guid);
 		if ($nzbFile !== false) {
 			foreach ($nzbFile->file as $nzbContents) {
-				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $nzbContents->attributes()->subject)) {
+				if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', (string)$nzbContents->attributes()->subject)) {
 					if ($this->pp->parsePAR2((string)$nzbContents->segments->segment, $relID, $groupID, $this->nntp, $show) === true && $nameStatus === 1) {
 						$this->db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));
 						return true;
@@ -189,7 +189,7 @@ Class NZBContents
 		if ($nzbFile !== false) {
 			$messageID = $hiddenID = '';
 			$actualParts = $artificialParts = 0;
-			$foundPAR2 = false;
+			$foundPAR2 = ($this->lookuppar2 === false ? true : false);
 			$foundNFO = $hiddenNFO = ($nfoCheck === false ? true : false);
 
 			foreach ($nzbFile->file as $nzbcontents) {
@@ -199,7 +199,7 @@ Class NZBContents
 
 				$subject = (string)$nzbcontents->attributes()->subject;
 				if (preg_match('/(\d+)\)$/', $subject, $parts)) {
-					$artificialParts = $artificialParts + $parts[1];
+					$artificialParts += $parts[1];
 				}
 
 				if ($foundNFO === false) {
@@ -221,7 +221,7 @@ Class NZBContents
 					}
 				}
 
-				if ($this->lookuppar2 && $foundPAR2 === false) {
+				if ($foundPAR2 === false) {
 					if (preg_match('/\.(par[2" ]|\d{2,3}").+\(1\/1\)$/i', $subject)) {
 						if ($this->pp->parsePAR2((string)$nzbcontents->segments->segment, $relID, $groupID, $this->nntp, 1) === true) {
 							$this->db->queryExec(sprintf('UPDATE releases SET proc_par2 = 1 WHERE id = %d', $relID));

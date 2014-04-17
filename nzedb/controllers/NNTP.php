@@ -425,7 +425,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access public
 	 */
-	public function getMessages($groupName, $identifiers, $alternate = false)
+	public function &getMessages($groupName, $identifiers, $alternate = false)
 	{
 		$connected = $this->checkConnection();
 		if ($connected !== true) {
@@ -452,7 +452,8 @@ class NNTP extends Net_NNTP_Client
 
 				// Append the body to $body.
 				if (!$this->isError($message)) {
-					$body = $body . $message;
+					$body .= $message;
+					unset($message);
 
 				// If there is an error return the PEAR error object.
 				} else {
