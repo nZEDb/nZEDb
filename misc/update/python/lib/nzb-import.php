@@ -218,7 +218,7 @@ if (!isset($groups) || count($groups) == 0) {
 				@unlink($nzbFile);
 				flush();
 			}
-			if (copyNZBforImport($relguid, $nzba, $nzb, $site)) {
+			if (copyNZBforImport($relguid, $nzba, $nzb, $s)) {
 				if ($relid !== false) {
 					$nzbCount++;
 				}

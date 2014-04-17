@@ -513,10 +513,10 @@
 			</tr>
 
 			<tr>
-				<td style="width:180px;"><label for="segmentstodownload">Number of Segments to download for video samples:</label></td>
+				<td style="width:180px;"><label for="segmentstodownload">Number of Segments to download for video/jpg samples:</label></td>
 				<td>
 					<input class="short" id="segmentstodownload" name="segmentstodownload" type="text" value="{$fsite->segmentstodownload}" />
-					<div class="hint">The maximum number of segments to download to generate the sample video file. (Default 2)</div>
+					<div class="hint">The maximum number of segments to download to generate the sample video file or jpg sample image. (Default 2)</div>
 				</td>
 			</tr>
 
