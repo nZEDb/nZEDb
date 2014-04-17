@@ -8,46 +8,55 @@ Class NZBContents
 {
 	/**
 	 * @var nzedb\db\DB
+	 * @access protected
 	 */
 	protected $db;
 
 	/**
 	 * @var NNTP
+	 * @access protected
 	 */
 	protected $nntp;
 
 	/**
 	 * @var Nfo
+	 * @access protected
 	 */
 	protected $nfo;
 
 	/**
 	 * @var PostProcess
+	 * @access protected
 	 */
 	protected $pp;
 
 	/**
 	 * @var NZB
+	 * @access protected
 	 */
 	protected $nzb;
 
 	/**
 	 * @var bool|stdClass
+	 * @access protected
 	 */
 	protected $site;
 
 	/**
 	 * @var bool
+	 * @access protected
 	 */
 	protected $alternateNNTP;
 
 	/**
 	 * @var bool
+	 * @access protected
 	 */
 	protected $lookuppar2;
 
 	/**
 	 * @var bool
+	 * @access protected
 	 */
 	protected $echooutput;
 
@@ -62,6 +71,8 @@ Class NZBContents
 	 *         'db'    => DB          ; Class nzedb\db\DB.
 	 *         'pp'    => PostProcess ; Class PostProcess.
 	 *     )
+	 *
+	 * @access public
 	 */
 	public function __construct($options)
 	{
@@ -88,6 +99,8 @@ Class NZBContents
 	 * @param string $groupName
 	 *
 	 * @return bool
+	 *
+	 * @access public
 	 */
 	public function getNfoFromNZB($guid, $relID, $groupID, $groupName)
 	{
@@ -136,6 +149,8 @@ Class NZBContents
 	 * @param int    $show
 	 *
 	 * @return bool
+	 *
+	 * @access public
 	 */
 	public function checkPAR2($guid, $relID, $groupID, $nameStatus, $show)
 	{
@@ -165,6 +180,8 @@ Class NZBContents
 	 * @param bool   $nfoCheck
 	 *
 	 * @return array|bool
+	 *
+	 * @access public
 	 */
 	public function parseNZB($guid, $relID, $groupID, $nfoCheck = false)
 	{
@@ -239,6 +256,8 @@ Class NZBContents
 	 * @param string $guid Release guid.
 	 *
 	 * @return bool|SimpleXMLElement
+	 *
+	 * @access protected
 	 */
 	protected function LoadNZB(&$guid)
 	{
