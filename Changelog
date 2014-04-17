@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-04-17 kevin
 	* Add: @access to some properties/methods.
 	* Chg: Save a bit of memory in getMessages.
+	* Fix: Various bugs in PP additional.
 2014-04-16 testarea1
 	* Fix: Missing equals on span class on view NZB page for Alpha Theme #1273
 2014-04-15 niel
