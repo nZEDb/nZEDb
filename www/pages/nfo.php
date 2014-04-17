@@ -39,6 +39,7 @@ if (isset($_GET["id"]))
 	if ($modal) {
 		echo $page->content;
 	} else {
+		$page->trimWhiteSpace = false;
 		$page->render();
 	}
 }

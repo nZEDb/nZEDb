@@ -23,6 +23,7 @@ foreach ($contentlist as $content) {
 
 // Static pages.
 $arPages[] = buildURL("Useful Links", "Contact Us", "/contact-us", 'yearly', '0.30');
+$arPages[] = buildURL("Useful Links", "Contents", "/content", 'weekly', '0.50');
 $arPages[] = buildURL("Useful Links", "Site Map", "/sitemap", 'weekly', '0.50');
 
 if ($page->userdata != null) {

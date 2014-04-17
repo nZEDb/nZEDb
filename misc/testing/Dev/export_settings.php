@@ -3,6 +3,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\DB;
 
+// TODO make this platform agnostic
 passthru("clear");
 $c= new ColorCLI();
 
@@ -10,7 +11,7 @@ if (!isset($argv[1]) || (isset($argv[1]) && $argv[1] != "site" && $argv[1] != "t
 	exit($c->error("\nThis script will output the setting of your site-edit or tmux-edit page to share with others. This will ouptut directly to web using pastebinit. This does not post any private information.\nTo run:\nphp export_settings.php [site, tmux] [tabbed, html, csv]\n"));
 }
 
-if (!command_exist('pastebinit')) {
+if (!nzedb\utility\Utility::hasCommand('pastebinit')) {
 	exit($c->error("This script requires pastebinit, but it's not installed. Aborting.\n"));
 }
 
@@ -68,14 +69,4 @@ if ($sql != '') {
 		passthru("pastebinit xdfrexgvtedvgb.uhdntef");
 	}
 	@unlink("xdfrexgvtedvgb.uhdntef");
-}
-
-function command_exist($cmd)
-{
-	if (strtolower(PHP_OS) == 'windows') {
-		echo "This script currently does not work on Windows ;-(";
-		return false;
-	}
-	$returnVal = exec("which $cmd 2>/dev/null");
-	return (empty($returnVal) ? false : true);
 }

@@ -63,9 +63,8 @@ if (!isset($argv[1])) {
 		$relID = $pieces[1];
 		$guid = $pieces[2];
 		$groupID = $pieces[3];
-		$nzbcontents = new NZBContents(true);
-		$pp = new PostProcess($echooutput = true);
-		$res = $nzbcontents->checkPAR2($guid, $relID, $groupID, $db, $pp, 1, $nntp, 1);
+		$nzbcontents = new NZBContents(array('echo' => true, 'nntp' => $nntp, 'nfo' => new Nfo(), 'db' => $db, 'pp' => new PostProcess(true)));
+		$res = $nzbcontents->checkPAR2($guid, $relID, $groupID, 1, 1);
 		if ($res === false) {
 			echo '.';
 		}

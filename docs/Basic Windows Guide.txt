@@ -24,3 +24,5 @@ pause
 From there the work is just getting started but this will give you a working nZEDb site running under XAMPP on Windows.  How you fine tune your site is up to you.
 
 Guide by 88keyz
+
+See also the GNUWIN.txt file.

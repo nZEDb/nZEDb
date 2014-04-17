@@ -1,14 +1,141 @@
 * Note *
 No pull requests will be accepted without this file being updated to reflect what you changed and when.
 No pull requests will be accepted to any branch except the dev branch.
-Each update goes to the top of the file
+New updates are grouped by person, at the top of the file.
 
-***Please run _runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
+***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-15 niel
+	* Fix: Change to regexes to allow Windows' paths to be matched in DbUpdate.
+	* Fix: ... and the Drive letter. Doh!
+	* Rvt: a68c81723f0bf4a3c8ca29b8381e114c642b7935 in favour of putting GnuWin in system.
+	* New: Windows users should read .../docs/GNUWIN.txt on how to add some of *nix's features on Windows installs
+	* Fix: Properly catching the PDOExceptions that were ignore during patching the Db. (namespace issue).
+2014-04-15 bart39
+	* Chg: More refactoring in ReleaseCleaning
+	* Fix: unknown modifier in ReleaseCleaning
+	* Chg: Simplify ReleaseCleaning
+	* Add: add a.b.movies to CollectionsCleaning
+	* Add: add more ReleaseCleaning regex for a.b.documentaries, a.b.etc, a.b.games, a.b.hdtv, a.b.mom, a.b.movies,
+	a.b.movies.x264, a.b.nl, a.b.sound.mp3, a.b.sound.mp3.complete_cd, a.b.sounds.mp3 and a.b.teevee
+2014-04-15 kevin
+	* Fix: Formatting issue on NFO pages.
+	* Fix: PreDb constant usage.
+	* Chg: isNfo method. Add GNU File for windows.
+	* Fix: Typos in IRCScraper.
+	* Chg: Move Nuke constants in PreDb.
+	* Chg: Hide unlink warnings in NNTP.
+2014-04-14 kaibosh
+	* Chg: README.md: drop nntp-proxy as "feature". Insert comment sharing
+2014-04-14 kevin
+	* Add: isNfo checking to alternate nfo.
+	* Chg: Change TVRage imgdata to mediumblob in schema, the images never go past 4MB.
+	* Chg: Set max size of NFO to 65KB, the max for BLOB column type.
+	* Add: Constants for NZB and NFO.
+	* Add: Constants for reqidstatus.
+	* Chg: Refactor Stage5b (RequestID)
+	* Fix: Fix some undefined variables.
+	* Chg: Simplify collectionscleaning.
+	* Fix: #1268 Group bulk add.
+	* Fix: Notice in removecrap.
+	* Chg: More refactoring of NNTP, add Yenc functions in NNTP, remove Yenc class.
+	* Fix: #1267 Use https for youtube videos to not cause issues on http sites.
+2014-04-14 ruhllatio
+	* Add: Option for removeCrap to specify a fourth argument for Blacklist ID (great for testing full time delete with new regex)
+2014-04-13 kevin
+	* Add: Massive speed improvement to yEnc decoding (~400 times faster) by using yydecode binary
+	  (ubuntu/debian you can get it from the getdeb repository or you can compile it, takes a few seconds).
+	  This speeds up anything requiring yEnc decoding, like fetching rars/nfos. On post process additional
+	  going through 25 releases on a.b.teeve used to take 5 minutes, it takes about 15-20 seconds now.
+	* Chg: Change to get more NFO files.
+	* Chg: Change yydecoder to use random files to help with threaded scripts.
+	* Chg: Refactor nzbcontents.php making fetching NFO files faster (only scanning the NZB once for hidden/non hidden NFO's).
+2014-04-13 ruhllatio
+	* Add: Roelski's AniDB population changes -- needs a lot of work still
+	* Fix: Errant variable in populate_anidb
+	* Fix: Working AniDB full dat update
+2014-04-13 bart39
+	* Fix: fix potential permission issues with yydecode
+	* New: add trakt, imdb and couchpotato icons to Theatres
+	* Chg: Theatres pages - rotten tomatoes icon will display fresh or rotten dependant on critic score
+	* Chg: make icon order on search page consistent with browse page
+2014-04-13 niel
+	* Fix: removeWMV rename missed one in RemoveReleases.
+	* Fix: Fixing typo from previous commit.
+	* Chg: Changing regex named captures to use older version as PHP 5.5 doesn't seem to like the alternative versions.
+2014-04-12 bart39
+	* Fix: typo in movie processing
+	* New: added /misc/testing/Dev/recategorize.php - will attempt to recategorize releases (useful if there are
+	updates to category regex)
+2014-04-12 ruhllatio
+	* Fix: Issue #1264 - ReleaserRemover (removecrap blacklist) not actually deleting
+	* Chg: removecrap output to fit better within lines
+	* Add: Egandt's codec poster removal method to removecrap wmv check (now called codec)
+    * Chg: removecrap time after first run now goes 4 hours back per function - 2 hours was not enough for file checks
+2014-04-12 kevin
+	* Chg: Slight speedup on update binaries, by hitting collectionscleaning less often.
+	* Chg: Refactor Movies class.
+	* Fix: Typo in content.tsv causing site to not work.
+	* Chg: Big improvement to parsing of IMDB id's.
+2014-04-12 niel
+	* Chg: Renamed all necessary SQL patches to work with new method.
+	In the process discovered a few patches were badly sequenced so that patches would be ignored. This may be the cause of some problems with (much) older installs.
+	NOTE: For some patches to work, the MySQL user must have FILE privileges, and the location of files must be accessible to ALL users. This means that all directories must be traversible, not just have read permissions on the files set for all.
+	* Chg: Switch patching preference to use new filename format, falling back to old method if needed.
+	* Fix: Bring kevin's and ruhllatio's changes above back into the right timeline.
+	* New: Script to allow bash scripts to get settings from the Db.
+2014-04-11 ruhllatio
+	* Add: Additional FT Match operations for removecrap remaining subject field Blacklist entries
+	* Add: Additional blacklist removecrap outputs
+2014-04-11 niel
+	* New: Added a limited parsing of variables from sql patch files.
+	* New: Added a format for patch file naming: YYYY-MM-DD_<patch number>_<table name>.sql The patch number will be used by DbUpdate to set the sqlpatch value in site if no UPDATE... statement is found.
+	The old format will still work for now, but it is highly recommended to use this format else patches may not sequence correctly. Adding an UPDATE query into the file for setting the sqlpatch setting in site is not needed with this format.
+	I'll gradually change the old file names and drop the UPDATE query as time permits, once all ar changed the old functionality will be removed.
+	* New: Added AniDb data to the install process. Patch for current users using the variable parsing feature above included.
+2014-04-10 kevin
+	* Chg: Install.txt to list all used extensions.
+	* Chg: Update docs for LOAD DATA INFILE
+	* Fix: Fix for some NFO's not displaying correctly.
+	* Chg: Make sure imdbid or tvrageid is not a negative number.
+	* Add: More support for X-DNZB HTTP headers, Content-Length on HTTP headers (gets rid of warnings in NZBGet).
+	* Add: Option for admins to hide themes from user profile edit.
+	* Chg: Use NZBGet's appendurl instead of append which will speed up javascript execution on send to queue. (thanks to hugbug @ nzbget.net for support)
+2014-04-09 ruhllatio
+	* Chg: Split removecrap blacklist into two functions (one for release names and searchnames and one for files)
+	* Add: Release names/searchnames blacklist function now uses FT Match filters for speed
+2014-04-09 Bart39
+	* Add: Add option whether to run comment sharing or not within tmux.
+	* Chg: correct description for Sharing timer in tmux settings.
+	* Chg: Modified Darius's sharing changes around the various tmux window options
+	* Chg: Updated options/comments in threaded.sh about choosing the right tmux pane(s) for nntpproxy
+2014-04-09 DariusIII
+	* Chg: Edited the db patch, as it is redundant to do the alter when you are already dropping the table before that.
+	* Add: Added sharing window to tmux for comment sharing feature.
+2014-04-09 kevin
+	* Add: Trakt.tv trailer links using your Trakt.tv API key on NZB details page for movies. If that fails, try http://www.traileraddict.com
+	* Add: New content page to other themes.
+	* Add: Link to more content from index.
+	* Fix: Fix for non alpha themes send to sab.
+	* Fix: Contents page.
+	* Fix: Mix of single/double quotations in 10-menu.tsv making queue/newposterwall not visible on new installs.
+2014-04-09 niel
+	* Fix: duplicate key constraint error introduced by recent change to 2014-04-03_3_countries.sql patch.
+	* Chg: Stripping out unneeded escaping/quoting from data files.
+2014-04-08 niel
+	* Chg: Altered format of SQL patches to properly reflect the first 8 characters being the date.
+2014-04-08 bart39
+	* Fix: duplicate inserts to tvrage when rageid = -2
+	* Chg: check if it's tv when categorizing a.b.moovee
+	* Fix: make PCGame categorization regex case sensitive to prevent incorrect matches
+2014-04-08 kevin
+	* Chg: Add more null checks before inserting comments.
+	* Fix: Missing columns on schema.
 2014-04-07 niel
 	* Fix: Waking up the Db connection before updating or inserting with the IRC scraper.
 2014-04-07 bart39
+	* Fix: fix predb links
 	* Fix: overriding efnet password
 2014-04-07 kevin
 	* Add: Hover text on sharing page to show what the buttons do.

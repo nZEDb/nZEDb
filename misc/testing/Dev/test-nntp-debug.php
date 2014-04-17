@@ -1,6 +1,5 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIBS . 'Yenc.php';
 echo 'This script is going to run without debug, you can turn on debug by passing true as an argument.' . PHP_EOL;
 $d = new NNTPdebug((isset($argv[1]) ? true : false));
 $nntp = new NNTP();

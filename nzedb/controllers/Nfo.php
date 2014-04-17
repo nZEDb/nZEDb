@@ -2,16 +2,18 @@
 
 use nzedb\db\DB;
 
+require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
+require_once nZEDb_LIBS . 'rarinfo/par2info.php';
+require_once nZEDb_LIBS . 'rarinfo/sfvinfo.php';
+
 /**
  * Class Nfo
  * Class for handling fetching/storing of NFO files.
- * @public
  */
 class Nfo
 {
 	/**
 	 * Site settings.
-	 *
 	 * @var bool|stdClass
 	 * @access private
 	 */
@@ -19,93 +21,79 @@ class Nfo
 
 	/**
 	 * How many nfo's to process per run.
-	 *
 	 * @var int
-	 * @access private
 	 */
 	private $nzbs;
 
 	/**
 	 * Max NFO size to process.
-	 *
 	 * @var int
-	 * @access private
 	 */
 	private $maxsize;
 
 	/**
 	 * Path to temporarily store files.
-	 *
 	 * @var string
-	 * @access private
 	 */
 	private $tmpPath;
 
 	/**
 	 * Instance of class ColorCLI
-	 *
 	 * @var ColorCLI
-	 * @access private
 	 */
 	private $c;
 
 	/**
 	 * Instance of class DB
-	 *
 	 * @var DB
-	 * @access private
 	 */
 	private $db;
 
 	/**
 	 * Primary color for console text output.
-	 *
 	 * @var string
-	 * @access private
 	 */
 	private $primary = 'Green';
 
 	/**
 	 * Color for warnings on console text output.
-	 *
 	 * @var string
-	 * @access private
 	 */
 	private $warning = 'Red';
 
 	/**
 	 * Color for headers(?) on console text output.
-	 *
 	 * @var string
-	 * @access private
 	 */
 	private $header = 'Yellow';
 
 	/**
 	 * Echo to cli?
-	 *
 	 * @var bool
 	 */
 	protected $echo;
+
+	const NFO_UNPROC = -1; // Release has not been processed yet.
+	const NFO_NONFO  =  0; // Release has no NFO.
+	const NFO_FOUND  =  1; // Release has an NFO.
 
 	/**
 	 * Default constructor.
 	 *
 	 * @param bool $echo Echo to cli.
-	 *
-	 * @access public
 	 */
-	public function __construct($echo = false) {
+	public function __construct($echo = false)
+	{
 		$this->echo = ($echo && nZEDb_ECHOCLI);
 		$s = new Sites();
 		$this->c = new ColorCLI();
 		$this->db = new DB();
 		$this->site = $s->get();
-		$this->nzbs = (!empty($this->site->maxnfoprocessed)) ? $this->site->maxnfoprocessed : 100;
-		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? $this->site->maxsizetopostprocess : 100;
+		$this->nzbs = (!empty($this->site->maxnfoprocessed)) ? (int)$this->site->maxnfoprocessed : 100;
+		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? (int)$this->site->maxsizetopostprocess : 100;
 		$this->tmpPath = $this->site->tmpunrarpath;
 		if (substr($this->tmpPath, -1) !== DIRECTORY_SEPARATOR) {
-			$this->tmpPath = $this->tmpPath . DIRECTORY_SEPARATOR;
+			$this->tmpPath .= DIRECTORY_SEPARATOR;
 		}
 	}
 
@@ -114,9 +102,8 @@ class Nfo
 	 *
 	 * @param string  $str   The string with a TvRage ID.
 	 * @return string The TVRage ID on success.
-	 * @return bool   False on failure.
 	 *
-	 * @access public
+	 * @return bool   False on failure.
 	 */
 	public function parseRageId($str) {
 		if (preg_match('/tvrage\.com\/shows\/id-(\d{1,6})/i', $str, $matches)) {
@@ -130,32 +117,28 @@ class Nfo
 	 *
 	 * @param string $possibleNFO The nfo.
 	 * @param string $guid        The guid of the release.
-	 * @return bool               True on success, False on failure.
 	 *
-	 * @access public
+	 * @return bool               True on success, False on failure.
 	 */
-	public function isNFO($possibleNFO, $guid) {
-		$r = false;
+	public function isNFO(&$possibleNFO, $guid) {
 		if ($possibleNFO === false) {
-			return $r;
+			return false;
 		}
 
-		// Make sure it's not too big or small, size needs to be at least 12 bytes for header checking.
+		// Make sure it's not too big or small, size needs to be at least 12 bytes for header checking. Ignore common file types.
 		$size = strlen($possibleNFO);
-		if ($size < 100 * 1024 && $size > 12) {
-			// Ignore common file types.
-			if (preg_match(
-				'/(^RIFF|)<\?xml|;\s*Generated\s*by.*SF\w|\A\s*PAR|\.[a-z0-9]{2,7}\s*[a-z0-9]{8}|\A\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i'
-				, $possibleNFO)) {
-				return $r;
-			}
-
-			// file/getid3 work with files, so save to disk
-			$tmpPath = $this->tmpPath.$guid.'.nfo';
+		if ($size < 65535 &&
+			$size > 11 &&
+			!preg_match(
+				'/\A(\s*<\?xml|=newz\[NZB\]=|RIFF|\s*[RP]AR|.{0,10}(JFIF|matroska|ftyp|ID3))|;\s*Generated\s*by.*SF\w/i'
+				, $possibleNFO))
+		{
+			// File/GetId3 work with files, so save to disk.
+			$tmpPath = $this->tmpPath . $guid . '.nfo';
 			file_put_contents($tmpPath, $possibleNFO);
 
-			// Linux boxes have 'file' (so should Macs)
-			if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
+			// Linux boxes have 'file' (so should Macs), Windows *can* have it too: see GNUWIN.txt in docs.
+			if (nzedb\utility\Utility::hasCommand('file')) {
 				exec("file -b $tmpPath", $result);
 				if (is_array($result)) {
 					if (count($result) > 1) {
@@ -164,39 +147,33 @@ class Nfo
 						$result = $result[0];
 					}
 				}
-				$test = preg_match('#^.*(ISO-8859|UTF-(?:8|16|32) Unicode(?: \(with BOM\)|)|ASCII)(?: English| C++ Program|) text.*$#i', $result);
-				// if the result is false, something went wrong, continue with getID3 tests.
-				if ($test !== false) {
-					if ($test == 1) {
-						@unlink($tmpPath);
-						return true;
-					}
 
-					// non-printable characters should never appear in text, so rule them out.
-					$test = preg_match('#\x00|\x01|\x02|\x03|\x04|\x05|\x06|\x07|\x08|\x0B|\x0E|\x0F|\x12|\x13|\x14|\x15|\x16|\x17|\x18|\x19|\x1A|\x1B|\x1C|\x1D|\x1E|\x1F#', $possibleNFO);
-					if ($test) {
-						@unlink($tmpPath);
-						return false;
-					}
+				// Check if it's text.
+				if (preg_match('/(ASCII|ISO-8859|UTF-(8|16|32).*?)\s*text/', $result)) {
+					@unlink($tmpPath);
+					return true;
+
+				// Or binary.
+				} else if (preg_match('/^(JPE?G|Parity|PNG|RAR|XML|(7-)?[Zz]ip)/', $result) ||
+					preg_match('/[\x00-\x08\x12-\x1F\x0B\x0E\x0F]/', $possibleNFO))
+				{
+					@unlink($tmpPath);
+					return false;
 				}
 			}
 
-			// If on Windows, or above checks couldn't  make a categorical identification,
-			// Use getid3 to check if it's an image/video/rar/zip etc..
-			require_once nZEDb_LIBS . 'getid3/getid3/getid3.php';
+			// If above checks couldn't  make a categorical identification, Use GetId3 to check if it's an image/video/rar/zip etc..
 			$getid3 = new getid3();
 			$check = $getid3->analyze($tmpPath);
-			unset($getid3);
 			@unlink($tmpPath);
-			unset($tmpPath);
 			if (isset($check['error'])) {
+
 				// Check if it's a par2.
-				require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 				$par2info = new Par2Info();
 				$par2info->setData($possibleNFO);
 				if ($par2info->error) {
+
 					// Check if it's an SFV.
-					require_once nZEDb_LIBS . 'rarinfo/sfvinfo.php';
 					$sfv = new SfvInfo();
 					$sfv->setData($possibleNFO);
 					if ($sfv->error) {
@@ -205,50 +182,54 @@ class Nfo
 				}
 			}
 		}
-		return $r;
+		return false;
 	}
 
 	/**
 	 * Add an NFO from alternate sources. ex.: PreDB, rar, zip, etc...
 	 *
-	 * @param object $db      Instance of class DB.
 	 * @param string $nfo     The nfo.
 	 * @param array  $release The SQL row for this release.
 	 * @param object $nntp    Instance of class NNTP.
 	 *
 	 * @return bool           True on success, False on failure.
-	 *
-	 * @access public
 	 */
-	public function addAlternateNfo($db, $nfo, $release, $nntp) {
-		if (!isset($nntp)) {
-			exit($this->c->error("NFO->addAlternateNfo() Not connected to usenet.\n"));
-		}
+	public function addAlternateNfo(&$nfo, $release, $nntp)
+	{
+		if ($release['id'] > 0 && $this->isNFO($nfo, $release['guid'])) {
 
-		if ($release['id'] > 0) {
-			if ($db->dbSystem() === 'mysql') {
-				$compress = 'compress(%s)';
-				$nc = $db->escapeString($nfo);
-			} else {
-				$compress = '%s';
-				$nc = $db->escapeString(utf8_encode($nfo));
+			$check = $this->db->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $release['id']));
+
+			if ($check === false) {
+				$this->db->queryInsert(
+					sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES (compress(%s), %d)',
+						$this->db->escapeString($nfo),
+						$release['id']
+					)
+				);
 			}
-			$ckreleaseid = $db->queryOneRow(sprintf('SELECT id FROM releasenfo WHERE releaseid = %d', $release['id']));
-			if (!isset($ckreleaseid['id'])) {
-				$db->queryInsert(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES (' . $compress . ', %d)', $nc, $release['id']));
-			}
-			$db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $release['id']));
+
+			$this->db->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', self::NFO_FOUND, $release['id']));
+
 			if (!isset($release['completion'])) {
 				$release['completion'] = 0;
 			}
+
 			if ($release['completion'] == 0) {
-				$nzbContents = new NZBContents($this->echo);
-				$nzbContents->NZBcompletion($release['guid'], $release['id'], $release['groupid'], $nntp, $db);
+				$nzbContents = new NZBContents(
+					array(
+						'echo' => $this->echo,
+						'nntp' => $nntp,
+						'nfo'  => $this,
+						'db'   => $this->db,
+						'pp'   => new PostProcess(true)
+					)
+				);
+				$nzbContents->parseNZB($release['guid'], $release['id'], $release['groupid']);
 			}
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -261,23 +242,34 @@ class Nfo
 	 * @param object $nntp           Instance of class NNTP.
 	 *
 	 * @return int                   How many NFO's were processed?
-	 *
-	 * @access public
 	 */
-	public function processNfoFiles($releaseToWork = '', $processImdb = 1, $processTvrage = 1, $groupID = '', $nntp) {
-		if (!isset($nntp)) {
-			exit($this->c->error("Unable to connect to usenet.\n"));
-		}
-
+	public function processNfoFiles($releaseToWork = '', $processImdb = 1, $processTvrage = 1, $groupID = '', $nntp)
+	{
 		$nfoCount = $ret = 0;
-		$groupID = $groupID === '' ? '' : 'AND groupid = ' . $groupID;
+		$groupID = ($groupID === '' ? '' : 'AND groupid = ' . $groupID);
 		$res = array();
 
 		if ($releaseToWork === '') {
 			$i = -1;
 			while (($nfoCount != $this->nzbs) && ($i >= -6)) {
-				$res = $this->db->query(sprintf('SELECT id, guid, groupid, name FROM releases WHERE nzbstatus = 1 AND nfostatus between %d AND -1 AND size < %s ' . $groupID . ' LIMIT %d', $i, $this->maxsize * 1073741824, $this->nzbs));
-				$nfoCount = count($res);
+				$res += $this->db->query(
+					sprintf('
+						SELECT id, guid, groupid, name
+						FROM releases
+						WHERE nzbstatus = %d
+						AND nfostatus BETWEEN %d AND %d
+						AND size < %s
+						%s
+						LIMIT %d',
+						NZB::NZB_ADDED,
+						$i,
+						self::NFO_UNPROC,
+						$this->maxsize * 1073741824,
+						$groupID,
+						$this->nzbs
+					)
+				);
+				$nfoCount += count($res);
 				$i--;
 			}
 		} else {
@@ -288,11 +280,13 @@ class Nfo
 
 		if ($nfoCount > 0) {
 			if ($releaseToWork === '') {
-				$this->c->doEcho($this->c->primary(
-					'Processing ' . $nfoCount .
-					' NFO(s), starting at ' . $this->nzbs .
-					' * = hidden NFO, + = NFO, - = no NFO, f = download failed.'
-				));
+				$this->c->doEcho(
+					$this->c->primary(
+						'Processing ' . $nfoCount .
+						' NFO(s), starting at ' . $this->nzbs .
+						' * = hidden NFO, + = NFO, - = no NFO, f = download failed.'
+					)
+				);
 
 				// Get count of releases per nfo status
 				$outString = 'Available to process';
@@ -303,12 +297,12 @@ class Nfo
 				$this->c->doEcho($this->c->header($outString . '.'));
 			}
 			$groups = new Groups();
-			$nzbContents = new NZBContents($this->echo);
+			$nzbContents = new NZBContents(array('echo' => $this->echo, 'nntp' => $nntp, 'nfo' => $this, 'db' => $this->db, 'pp' => new PostProcess(true)));
 			$movie = new Movie($this->echo);
 			$tvRage = new TvRage($this->echo);
 
 			foreach ($res as $arr) {
-				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $nntp, $groups->getByNameByID($arr['groupid']), $this->db, $this);
+				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $groups->getByNameByID($arr['groupid']));
 				if ($fetchedBinary !== false) {
 					// Insert nfo into database.
 					$cp = $nc = null;
@@ -323,9 +317,9 @@ class Nfo
 					if (!isset($ckreleaseid['id'])) {
 						$this->db->queryInsert(sprintf('INSERT INTO releasenfo (nfo, releaseid) VALUES (' . $cp . ', %d)', $nc, $arr['id']));
 					}
-					$this->db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $arr['id']));
+					$this->db->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', self::NFO_FOUND, $arr['id']));
 					$ret++;
-					$movie->domovieupdate($fetchedBinary, 'nfo', $arr['id'], $processImdb);
+					$movie->doMovieUpdate($fetchedBinary, 'nfo', $arr['id'], $processImdb);
 
 					// If set scan for tvrage info.
 					if ($processTvrage == 1) {
@@ -350,9 +344,9 @@ class Nfo
 
 		// Remove nfo that we cant fetch after 5 attempts.
 		if ($releaseToWork === '') {
-			$relres = $this->db->query('SELECT id FROM releases WHERE nzbstatus = 1 AND nfostatus < -6');
+			$relres = $this->db->query(sprintf('SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus < -6', NZB::NZB_ADDED));
 			foreach ($relres as $relrow) {
-				$this->db->queryExec(sprintf('DELETE FROM releasenfo WHERE nfo IS NULL and releaseid = %d', $relrow['id']));
+				$this->db->queryExec(sprintf('DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %d', $relrow['id']));
 			}
 
 			if ($this->echo) {

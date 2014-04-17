@@ -13,10 +13,30 @@ if (isset($_GET["id"])) {
 	$contentid = $_GET["id"];
 }
 
-if ($contentid == 0) {
-	$content = $contents->getFrontPage();
+$request = false;
+if (isset($_REQUEST['page'])) {
+	$request = $_REQUEST['page'];
+}
+
+if ($contentid == 0 && $request == 'content') {
+	$content = $contents->getAllButFront();
+	$page->smarty->assign('front', false);
+	$page->meta_title = 'Contents page';
+	$page->meta_keywords = 'contents';
+	$page->meta_description = 'This is the contents page.';
+} else if ($contentid != 0 && $request !== false) {
+	$content = array($contents->getByID($contentid, $role));
+	$page->smarty->assign('front', false);
+	$page->meta_title = 'Contents page';
+	$page->meta_keywords = 'contents';
+	$page->meta_description = 'This is the contents page.';
 } else {
-	$content = $contents->getByID($contentid, $role);
+	$content = $contents->getFrontPage();
+	$index = $contents->getIndex();
+	$page->smarty->assign('front', true);
+	$page->meta_title = $index->title;
+	$page->meta_keywords = $index->metakeywords;
+	$page->meta_description = $index->metadescription;
 }
 
 if ($content == null) {
@@ -24,16 +44,7 @@ if ($content == null) {
 }
 
 $page->smarty->assign('content', $content);
-if ($contentid == 0) {
-	$index = $contents->getIndex();
-	$page->meta_title = $index->title;
-	$page->meta_keywords = $index->metakeywords;
-	$page->meta_description = $index->metadescription;
-} else {
-	$page->meta_title = $content->title;
-	$page->meta_keywords = $content->metakeywords;
-	$page->meta_description = $content->metadescription;
-}
+
 
 $page->content = $page->smarty->fetch('content.tpl');
 $page->render();

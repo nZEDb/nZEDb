@@ -86,13 +86,13 @@ class NZBGet
 	}
 
 	/**
-	 * Send a release to NZBGet.
+	 * Send a NZB to NZBGet.
 	 *
 	 * @param string $guid Release identifier.
 	 *
 	 * @return bool|mixed
 	 */
-	public function sendToNZBGet($guid)
+	public function sendNZBToNZBGet($guid)
 	{
 		$reldata = $this->Releases->getByGuid($guid);
 		$nzbpath = $this->NZB->getNZBPath($guid);
@@ -115,7 +115,7 @@ class NZBGet
 						<value><string>' . $reldata['searchname'] . '</string></value>
 					</param>
 					<param>
-						<value><string>' . $reldata["category_name"] . '</string></value>
+						<value><string>' . $reldata['category_name'] . '</string></value>
 					</param>
 					<param>
 						<value><i4>0</i4></value>
@@ -133,6 +133,53 @@ class NZBGet
 				</params>
 			</methodCall>';
 		nzedb\utility\getUrl($this->fullURL . 'append', 'post', $header);
+	}
+
+	/**
+	 * Send a NZB URL to NZBGet.
+	 *
+	 * @param string $guid Release identifier.
+	 *
+	 * @return bool|mixed
+	 */
+	public function sendURLToNZBGet($guid)
+	{
+		$reldata = $this->Releases->getByGuid($guid);
+
+		$header =
+			'<?xml version="1.0"?>
+			<methodCall>
+				<methodName>appendurl</methodName>
+				<params>
+					<param>
+						<value><string>' . $reldata['searchname'] . '.nzb' . '</string></value>
+					</param>
+					<param>
+						<value><string>' . $reldata['category_name'] . '</string></value>
+					</param>
+					<param>
+						<value><i4>0</i4></value>
+					</param>
+					<param>
+						<boolean>>False</boolean></value>
+					</param>
+					<param>
+						<value>
+							<string>' .
+								$this->serverurl .
+								'getnzb/' .
+								$guid .
+								'%26i%3D' .
+								$this->uid .
+								'%26r%3D' .
+								$this->rsstoken
+								.
+							'</string>
+						</value>
+					</param>
+				</params>
+			</methodCall>';
+		nzedb\utility\getUrl($this->fullURL . 'appendurl', 'post', $header);
 	}
 
 	/**

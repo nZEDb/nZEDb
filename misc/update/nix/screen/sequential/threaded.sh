@@ -16,6 +16,7 @@ else
 	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
 
+export NZEDB_UNRAR=`php $NZEDB_ROOT/nzedb/db/Settings.php tmpunrarpath`
 export niceness=10
 export START_PATH="${NZEDB_ROOT}"
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
@@ -32,10 +33,10 @@ export PYTHON="nice -n$niceness $PYTHON"
 
 #delete stale tmpunrar folders
 # we need to have this use the Db setting. No idea how yet, but this fails too often otherwise.
-export count=`find $NZEDB_PATH/../../resources/tmp/unrar -type d -print| wc -l`
+export count=`find $NZEDB_UNRAR -type d -print| wc -l`
 if [ $count != 1 ]
 then
-	rm -r $NZEDB_PATH/../../resources/tmp/unrar/*
+	rm -r $NZEDB_UNRAR/*
 fi
 if [[ $1 != "true" ]]
 then
@@ -61,16 +62,20 @@ do
 		loop=0
 	fi
 #	Uncomment this if statement only if using nntpproxy
-#   if you have tmux colors pane enabled in tmux settings change $tmux_session:3.0 to $tmux_session:4.0
 #	if [[ $loop -eq 1 ]]
 #	then
 #		tmux kill-session -t NNTPProxy
 #		$PHP ${NZEDB_PATH}/nntpproxy.php
 #		sleep 1
 #	else
+		##uncomment the next line if you have tmux colors pane enabled in tmux settings
+#		tmux respawnp -k -t $tmux_session:4.0 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy.conf"
+		##uncomment the next line if you don't have tmux colors pane enabled in tmux settings
 #		tmux respawnp -k -t $tmux_session:3.0 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy.conf"
-		##Uncomment the next line only if you are using alternate nntp settings also
-		##if you have tmux colors pane enabled in tmux settings change $tmux_session:3.1 to $tmux_session:4.1
+		##if you are using alternate nntp settings then:
+		###uncomment the next line if you have tmux colors pane enabled in tmux settings
+#		tmux respawnp -k -t$tmux_session:4.1 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy_a.conf"
+		###uncomment the next line if you don't have tmux colors pane enabled in tmux settings
 #		tmux respawnp -k -t$tmux_session:3.1 "python ${THREADED_PATH}/nntpproxy.py ${THREADED_PATH}/lib/nntpproxy_a.conf"
 #	fi
 #	$PHP ${TEST_PATH}/removeCrapReleases.php true full size
