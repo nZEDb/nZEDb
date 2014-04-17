@@ -90,7 +90,7 @@ class Sites
 			$sqlKeys[] = $db->escapeString($settingK);
 		}
 
-		$db->queryExec(sprintf("UPDATE site SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
+		$db->queryExec(sprintf("UPDATE settings SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
 
 		return $site;
 	}
@@ -98,7 +98,7 @@ class Sites
 	public function get()
 	{
 		$db = $this->_db;
-		$rows = $db->query("SELECT * FROM site");
+		$rows = $db->query("SELECT * FROM settings");
 
 		if ($rows === false) {
 			return false;
@@ -116,7 +116,7 @@ class Sites
 	 */
 	function getSetting($setting = null)
 	{
-		$sql = 'SELECT setting, value FROM site ';
+		$sql = 'SELECT setting, value FROM settings ';
 		if ($setting !== null) {
 			$sql .= "WHERE setting = '$setting' ";
 		}
@@ -177,7 +177,7 @@ GNU General Public License for more details.
 
 	public function setCovers()
 	{
-		$row = $this->_db->query("SELECT value FROM site WHERE setting = 'coverspath'");
+		$row = $this->_db->query("SELECT value FROM settings WHERE setting = 'coverspath'");
 		\nzedb\utility\Utility::setCoversConstant($row[0]['value']);
 	}
 }

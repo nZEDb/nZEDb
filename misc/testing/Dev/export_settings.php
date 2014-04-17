@@ -18,7 +18,7 @@ if (!nzedb\utility\Utility::hasCommand('pastebinit')) {
 switch (strtolower($argv[1]))
 {
 	case 'site':
-		$sql = "SELECT * FROM site WHERE setting NOT LIKE '%key%' AND setting NOT LIKE '%google%' AND setting NOT LIKE '%seed%' AND setting NOT LIKE '%amazon%' AND setting != 'saburl' AND setting != 'adheader' AND setting != 'adbrowse' AND setting != 'addetail' AND setting != 'request_url'";
+		$sql = "SELECT * FROM settings WHERE setting NOT LIKE '%key%' AND setting NOT LIKE '%google%' AND setting NOT LIKE '%seed%' AND setting NOT LIKE '%amazon%' AND setting != 'saburl' AND setting != 'adheader' AND setting != 'adbrowse' AND setting != 'addetail' AND setting != 'request_url'";
 		break;
 	case 'tmux':
 		$sql = 'SELECT * FROM tmux';

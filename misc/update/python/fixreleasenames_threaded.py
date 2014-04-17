@@ -48,9 +48,9 @@ else:
 
 print(bcolors.HEADER + "\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
-cur[0].execute("SELECT value FROM site WHERE setting = 'fixnamethreads'")
+cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamethreads'")
 run_threads = cur[0].fetchone()
-cur[0].execute("SELECT value FROM site WHERE setting = 'fixnamesperrun'")
+cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamesperrun'")
 perrun = cur[0].fetchone()
 
 datas = []

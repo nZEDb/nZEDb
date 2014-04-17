@@ -191,7 +191,7 @@ class DbUpdate
 					}
 					$this->splitSQL($file, ['local' => $local, 'data' => $data]);
 					if ($setPatch) {
-						$this->db->queryExec("UPDATE site SET value = '$patch' WHERE setting = 'sqlpatch';");
+						$this->db->queryExec("UPDATE settings SET value = '$patch' WHERE setting = 'sqlpatch';");
 					}
 					$patched++;
 				}

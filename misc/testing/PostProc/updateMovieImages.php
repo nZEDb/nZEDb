@@ -11,7 +11,7 @@ if ($argc == 1 || $argv[1] != 'true') {
 	exit($c->error("\nThis script will check all images in covers/movies and compare to db->movieinfo.\nTo run:\nphp $argv[0] true\n"));
 }
 
-$row = $db->queryOneRow("SELECT value FROM site WHERE setting = 'coverspath'");
+$row = $db->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
 if ($row !== false) {
 	\nzedb\utility\Utility::setCoversConstant($row['value']);
 } else {
