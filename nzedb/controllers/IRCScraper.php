@@ -10,28 +10,33 @@ class IRCScraper
 	/**
 	 * Array of current pre info.
 	 * @var array
+	 * @access protected
 	 */
 	protected $CurPre;
 
 	/**
 	 * Array of old pre info.
 	 * @var array
+	 * @access protected
 	 */
 	protected $OldPre;
 
 	/**
 	 * List of groups and their ID's
 	 * @var array
+	 * @access protected
 	 */
 	protected $groupList;
 
 	/**
 	 * @var Net_SmartIRC
+	 * @access protected
 	 */
 	protected $IRC = null;
 
 	/**
 	 * @var DB
+	 * @access protected
 	 */
 	protected $db;
 
@@ -39,18 +44,21 @@ class IRCScraper
 	 * Current server.
 	 * efnet | corrupt | zenet
 	 * @var string
+	 * @access protected
 	 */
 	protected $serverType;
 
 	/**
 	 * Run this in silent mode (no text output).
 	 * @var bool
+	 * @access protected
 	 */
 	protected $silent;
 
 	/**
 	 * Is this pre nuked or un nuked?
 	 * @var bool
+	 * @access protected
 	 */
 	protected $nuked;
 
@@ -62,6 +70,8 @@ class IRCScraper
 	 * @param bool         $silent       Run this in silent mode (no text output).
 	 * @param bool         $debug        Turn on Net_SmartIRC debug?
 	 * @param bool         $socket       Use real sockets or fsock?
+	 *
+	 * @access public
 	 */
 	public function __construct(&$irc, $serverType, &$silent = false, &$debug = false, &$socket = true)
 	{
@@ -81,6 +91,8 @@ class IRCScraper
 
 	/**
 	 * Destruct
+	 *
+	 * @access public
 	 */
 	public function __destruct()
 	{
@@ -101,6 +113,8 @@ class IRCScraper
 	 * Main method for scraping.
 	 *
 	 * @param bool $socket  Use real sockets or fsock?
+	 *
+	 * @access protected
 	 */
 	protected function startScraping(&$socket)
 	{
@@ -302,6 +316,8 @@ class IRCScraper
 	 * @param int    $similarity
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function checkSimilarity(&$word1, $word2, $similarity = 49)
 	{
@@ -317,6 +333,8 @@ class IRCScraper
 	 *
 	 * @param object $irc
 	 * @param object $data
+	 *
+	 * @access public
 	 */
 	public function check_type($irc, $data)
 	{
@@ -422,6 +440,8 @@ class IRCScraper
 	 * Get pre date from wD xH yM zS ago string.
 	 *
 	 * @param $agoString
+	 *
+	 * @access protected
 	 */
 	protected function getTimeFromAgo($agoString)
 	{
@@ -451,6 +471,8 @@ class IRCScraper
 	 * Go through regex matches, find PRE info.
 	 *
 	 * @param array $matches
+	 *
+	 * @access protected
 	 */
 	protected function siftMatches(&$matches)
 	{
@@ -510,6 +532,8 @@ class IRCScraper
 	 * Gets new PRE from #a.b.erotica
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function ab_erotica(&$message)
 	{
@@ -534,6 +558,8 @@ class IRCScraper
 	 * Gets new PRE from #a.b.flac
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function ab_flac(&$message)
 	{
@@ -550,6 +576,8 @@ class IRCScraper
 	 * Gets new PRE from #a.b.moovee
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function ab_moovee(&$message)
 	{
@@ -573,6 +601,8 @@ class IRCScraper
 	 * Gets new PRE from #a.b.foreign
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function ab_foreign(&$message)
 	{
@@ -588,6 +618,8 @@ class IRCScraper
 	 * Gets new PRE from #a.b.teevee
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function ab_teevee(&$message)
 	{
@@ -612,6 +644,8 @@ class IRCScraper
 	 * Gets new PRE from #a.b.console.ps3
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function ab_console_ps3(&$message)
 	{
@@ -629,6 +663,8 @@ class IRCScraper
 	 *
 	 * @param string $message The IRC message to parse.
 	 * @param string $poster  The name of the poster.
+	 *
+	 * @access protected
 	 */
 	protected function ab_games_wii(&$message, &$poster)
 	{
@@ -655,6 +691,8 @@ class IRCScraper
 	 *
 	 * @param string $message The IRC message to parse.
 	 * @param string $poster  The name of the poster.
+	 *
+	 * @access protected
 	 */
 	protected function ab_games_xbox360(&$message, &$poster)
 	{
@@ -680,6 +718,8 @@ class IRCScraper
 	 * Gets new PRE from #a.b.sony.psp
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function ab_sony_psp(&$message)
 	{
@@ -696,6 +736,8 @@ class IRCScraper
 	 * Gets new PRE from #a.b.games_nintendods
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function ab_games_nintendods(&$message)
 	{
@@ -712,6 +754,8 @@ class IRCScraper
 	 * Gets new PRE from #scnzb (boneless)
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function scnzb(&$message)
 	{
@@ -727,6 +771,8 @@ class IRCScraper
 	 * Gets new PRE from #tvnzb (sickbeard)
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 /*	protected function tvnzb(&$message)
 	{
@@ -744,6 +790,8 @@ class IRCScraper
 	 * Gets new PRE from #Pre on zenet
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function zenet_pre(&$message)
 	{
@@ -764,6 +812,8 @@ class IRCScraper
 	 * Gets new PRE from #pre on Corrupt-net
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function corrupt_pre(&$message)
 	{
@@ -785,6 +835,8 @@ class IRCScraper
 	 * Gets new PRE from #a.b.inner-sanctum.
 	 *
 	 * @param string $message The IRC message to parse.
+	 *
+	 * @access protected
 	 */
 	protected function inner_sanctum(&$message)
 	{
@@ -801,6 +853,8 @@ class IRCScraper
 	 *
 	 * @param string $message The IRC message from the bot.
 	 * @param string $channel The IRC channel name.
+	 *
+	 * @access protected
 	 */
 	protected function alt_bin(&$message, &$channel)
 	{
@@ -816,6 +870,8 @@ class IRCScraper
 	 * Check if we already have the PRE.
 	 *
 	 * @return bool True if we already have, false if we don't.
+	 *
+	 * @access protected
 	 */
 	protected function checkForDupe()
 	{
@@ -829,6 +885,8 @@ class IRCScraper
 
 	/**
 	 * Insert new PRE into the DB.
+	 *
+	 * @access protected
 	 */
 	protected function insertNewPre()
 	{
@@ -878,6 +936,8 @@ class IRCScraper
 
 	/**
 	 * Updates PRE data in the DB.
+	 *
+	 * @access protected
 	 */
 	protected function updatePre()
 	{
@@ -921,6 +981,8 @@ class IRCScraper
 	 * Echo new or update pre to CLI.
 	 *
 	 * @param bool $new
+	 *
+	 * @access protected
 	 */
 	protected function doEcho($new = true)
 	{
@@ -978,6 +1040,8 @@ class IRCScraper
 	 * @param string $groupName
 	 *
 	 * @return mixed
+	 *
+	 * @access protected
 	 */
 	protected function getGroupID($groupName)
 	{
@@ -990,6 +1054,8 @@ class IRCScraper
 
 	/**
 	 * After updating or inserting new PRE, reset these.
+	 *
+	 * @access protected
 	 */
 	protected function resetPreVariables()
 	{
