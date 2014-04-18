@@ -83,9 +83,9 @@ class Settings extends DB
 
 		$result = $this->queryArray($sql);
 		if ($result !== false) {
-			if (empty($where)) {
+			if (!empty($where)) {
 				foreach ($result as $row) {
-					$results[$row['name']] = $row['value'];
+					$results[]['value'] = $row['value'];
 				}
 			} else {
 				foreach ($result as $row) {
