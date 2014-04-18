@@ -613,13 +613,16 @@ DROP TABLE IF EXISTS content;
 
 DROP TABLE IF EXISTS settings;
 CREATE TABLE settings (
-  `feature` VARCHAR(25)  NOT NULL DEFAULT '',
-  `section` VARCHAR(25)  NOT NULL DEFAULT '',
-  `name`    VARCHAR(25)  NOT NULL DEFAULT '',
-  `value`   VARCHAR(255) NOT NULL DEFAULT '',
-  `text`    VARCHAR(255) NOT NULL DEFAULT '',
+  feature VARCHAR(25)  NOT NULL DEFAULT '',
+  section VARCHAR(25)  NOT NULL DEFAULT '',
+  name    VARCHAR(25)  NOT NULL DEFAULT '',
+  value   VARCHAR(255) NOT NULL DEFAULT '',
+  hint    VARCHAR(19000) NOT NULL DEFAULT '',
+  setting VARCHAR(64) NOT NULL DEFAULT '',
   PRIMARY KEY (feature, section, `name`)
 ) ENGINE=MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE UNIQUE INDEX ui_settings_setting ON settings (setting);
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (
