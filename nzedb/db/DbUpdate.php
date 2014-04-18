@@ -161,6 +161,9 @@ class DbUpdate
 
 		$this->_useSettings();
 		$currentVersion = $this->settings->getSetting('sqlpatch');
+		if (!is_numeric($currentVersion)) {
+			exit();
+		}
 
 		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
 
@@ -265,8 +268,7 @@ class DbUpdate
 							);
 
 							if (
-								 in_array($e->errorInfo[1], array(1091, 1060, 1054, 1061, 1062,
-																  1071, 1072, 1146)) ||
+								 in_array($e->errorInfo[1], array(1091, 1060, 1061, 1062, 1071, 1146)) ||
 								 in_array($e->errorInfo[0], array(23505, 42701, 42703, '42P07', '42P16'))
 								) {
 								if ($e->errorInfo[1] == 1060) {
@@ -322,7 +324,7 @@ class DbUpdate
 	protected function _useSettings(Sites $object = null)
 	{
 		if ($this->settings === null) {
-			$this->settings = (empty($object)) ? new \Sites() : $object;
+			$this->settings = (empty($object)) ? new Settings() : $object;
 		}
 	}
 }
