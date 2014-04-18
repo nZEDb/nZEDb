@@ -62,6 +62,8 @@
 						<div style="margin-top:10px;">
 							<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$release.imdbid}/" title="View at IMDB">IMDB</a></span>
 							{if $movie.tmdbid != ''}<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.themoviedb.org/movie/{$movie.tmdbid}" title="View at TMDb">TMDb</a></span>{/if}
+							<br><strong>Subtitle Search:</strong>
+								<br><a target="_blank" href="http://www.opensubtitles.org/search/sublanguageid-all/moviename-{$movie.title}"title="Opensubtitles">OpenSubtitles</a> <a target="_blank" href="http://www.subtitleseeker.com/search/MOVIE_TITLES/{$movie.title}"title="SubtitleSeeker">SubtitleSeeker</a>
 							<span class="label label-default">
 							{if $cpurl != "" && $cpapi != ""}
 								<a
