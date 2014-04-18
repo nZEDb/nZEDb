@@ -121,7 +121,6 @@ Class NZBContents
 				if ($this->echooutput) {
 					echo ($messageID['hidden'] === false ? '+' : '*');
 				}
-				$fetchedBinary = true;
 			} else {
 				if ($this->echooutput) {
 					echo '-';

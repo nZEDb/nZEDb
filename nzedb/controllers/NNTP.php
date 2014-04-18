@@ -441,60 +441,54 @@ class NNTP extends Net_NNTP_Client
 		// Check if the msgIds are in an array.
 		if (is_array($identifiers)) {
 
-			$iCount = count($identifiers);
-			$iDents = 0;
-
 			// Loop over the message-ID's or article numbers.
 			foreach ($identifiers as $wanted) {
-				$iDents++;
 				// Download the body.
 				$message = $this->getMessage($groupName, $wanted, $alternate);
 
 				// Append the body to $body.
 				if (!$this->isError($message)) {
 					$body .= $message;
-					unset($message);
 
-				// If there is an error return the PEAR error object.
+				// If there is an error try the alternate provider or return the PEAR error.
 				} else {
+					// Check if admin has enabled alternate in site->edit.
 					if ($alternate === true) {
 						if ($aConnected === false) {
 							// Check if the current connected server is the alternate or not.
 							if ($this->currentServer === NNTP_SERVER) {
 								// It's the main so connect to the alternate.
-								$nntp->doConnect(true, true);
+								$aConnected = $nntp->doConnect(true, true);
 							} else {
 								// It's the alternate so connect to the main.
-								$nntp->doConnect();
+								$aConnected = $nntp->doConnect();
 							}
-							$aConnected = true;
 						}
-						$newBody = $nntp->getMessage($groupName, $wanted);
-						if ($nntp->isError($newBody)) {
-							if ($aConnected) {
-								$aConnected = false;
-								$nntp->doQuit();
+						// If we connected successfully to usenet try to download the article body.
+						if ($aConnected === true) {
+							$newBody = $nntp->getMessage($groupName, $wanted);
+							// Check if we got an error.
+							if ($nntp->isError($newBody)) {
+								if ($aConnected) {
+									$nntp->doQuit();
+								}
+								// If we got some data, return it.
+								if ($body !== '') {
+									return $body;
+								}
+								if ($this->debug) {
+									$this->debugging->start("getMessages", $newBody->getMessage(), Debugging::DEBUG_NOTICE);
+								}
+								// Return the error.
+								return $newBody;
 							}
-							// If we got some data, return it.
-							if ($body !== '') {
-								return $body;
-								// Try until we possibly find data.
-							} elseif ($iCount > $iDents) {
-								continue;
-							}
-							if ($this->debug) {
-								$this->debugging->start("getMessages", $newBody->getMessage(), Debugging::DEBUG_NOTICE);
-							}
-							return $newBody;
+							// Append the alternate body to the main body.
+							$body .= $newBody;
 						}
-						$body .= $newBody;
 					} else {
 						// If we got some data, return it.
 						if ($body !== '') {
 							return $body;
-							// Try until we possibly find data.
-						} elseif ($iCount > $iDents) {
-							continue;
 						}
 						return $message;
 					}
@@ -1001,6 +995,9 @@ class NNTP extends Net_NNTP_Client
 					$this->yEncSilence
 				);
 				$data = file_get_contents($ouFile);
+				if ($data === false) {
+					return $this->throwError('Error getting data from yydecode.');
+				}
 				unlink($inFile);
 				unlink($ouFile);
 			}
