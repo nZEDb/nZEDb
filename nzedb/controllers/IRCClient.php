@@ -159,7 +159,7 @@ class IRCClient
 	 * Turns on or off debugging.
 	 * @var bool
 	 */
-	protected $_debug = false;
+	protected $_debug = true;
 
 	/**
 	 * Disconnect from IRC.
@@ -335,7 +335,11 @@ class IRCClient
 
 				// We got 464, which means we need to send a password.
 				} else if ($matches[2] == 464) {
-					if ($password !== null && !$this->_writeSocket('PASS ' . $userName . ':' . $password)) {
+					$tempPass = $userName . ':' . $password;
+					if (preg_match('/^.+?\/.+?:.+?$/', $password)) {
+						$tempPass = $password;
+					}
+					if ($password !== null && !$this->_writeSocket('PASS ' . $tempPass)) {
 						return false;
 					} else if (isset($matches[3]) && strpos(strtolower($matches[3]), 'invalid password')) {
 						echo 'Invalid password or username for (' . $this->_remote_host . ').';
