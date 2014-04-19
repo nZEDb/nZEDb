@@ -1,6 +1,6 @@
 When making patches:
 
-1. Do NOT use the tilde character : `
+1. Do NOT use the back-tick character : `
 
 2. Edit the schema files, but do not copy paste your patch files into them,
    if you had an ALTER in your patch for example, change the INSERT in the data file

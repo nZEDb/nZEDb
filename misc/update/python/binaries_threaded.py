@@ -54,7 +54,7 @@ if len(datas) == 0:
 	info.disconnect(cur[0], cur[1])
 	sys.exit
 
-cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'binarythreads') AS a, (SELECT value FROM site WHERE setting = 'hashcheck') AS b")
+cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'binarythreads') AS a, (SELECT value FROM settings WHERE setting = 'hashcheck') AS b")
 dbgrab = cur[0].fetchall()
 run_threads = int(dbgrab[0][0])
 hashcheck = int(dbgrab[0][1])

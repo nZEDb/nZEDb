@@ -23,7 +23,7 @@ pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 print(bcolors.HEADER + "\n\nGrabNZBs Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 #get array of collectionhash
-cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'grabnzbs') AS a, (SELECT value FROM site WHERE setting = 'delaytime') AS b, (SELECT value FROM site WHERE setting = 'maxgrabnzbs') AS c, (SELECT value FROM site WHERE setting = 'grabnzbthreads') AS d")
+cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'grabnzbs') AS a, (SELECT value FROM settings WHERE setting = 'delaytime') AS b, (SELECT value FROM settings WHERE setting = 'maxgrabnzbs') AS c, (SELECT value FROM settings WHERE setting = 'grabnzbthreads') AS d")
 dbgrab = cur[0].fetchall()
 grab = int(dbgrab[0][0])
 delay = int(dbgrab[0][1])

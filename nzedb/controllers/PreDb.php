@@ -73,7 +73,7 @@ Class PreDb
 	public function updatePre()
 	{
 		$newNames = 0;
-		$newestRel = $this->db->queryOneRow("SELECT value AS adddate FROM site WHERE setting = 'lastpretime'");
+		$newestRel = $this->db->queryOneRow("SELECT value AS adddate FROM settings WHERE setting = 'lastpretime'");
 
 		// Wait 10 minutes in between pulls.
 		if ((int)$newestRel['adddate'] < (time() - 600)) {
@@ -178,7 +178,7 @@ Class PreDb
 			}
 
 			// If we found nothing, update the last added to now to reset the timer.
-			$this->db->queryExec(sprintf("UPDATE site SET value = %s WHERE setting = 'lastpretime'", $this->db->escapeString(time())));
+			$this->db->queryExec(sprintf("UPDATE settings SET value = %s WHERE setting = 'lastpretime'", $this->db->escapeString(time())));
 		}
 
 		return $newNames;

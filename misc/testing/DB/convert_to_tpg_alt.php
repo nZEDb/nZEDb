@@ -73,6 +73,6 @@ if (isset($argv[2]) && $argv[2] == 'truncate') {
 }
 
 //set tpg active
-$db->queryExec("UPDATE site SET value = 1 WHERE setting = 'tablepergroup'");
+$db->queryExec("UPDATE settings SET value = 1 WHERE setting = 'tablepergroup'");
 
 echo $c->header("Processed: ${i} groups and " . number_format($parts_count['cnt']) . " parts in " . $consoleTools->convertTimer(TIME() - $start));

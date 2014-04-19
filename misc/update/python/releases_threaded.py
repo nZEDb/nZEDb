@@ -21,7 +21,7 @@ pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 print(bcolors.HEADER + "\nUpdate Releases Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
-cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'tablepergroup') AS a, (SELECT value FROM site WHERE setting = 'releasesthreads') AS b")
+cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'tablepergroup') AS a, (SELECT value FROM settings WHERE setting = 'releasesthreads') AS b")
 dbgrab = cur[0].fetchall()
 allowed = int(dbgrab[0][0])
 threads = int(dbgrab[0][1])

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nzedb>
 	<versions>
-		<db>209</db>
+		<db>212</db>
 		<git>
 			<tag>0.3</tag>
-			<commit>7051</commit>
+			<commit>7095</commit>
 			<hooks>
 				<precommit>1</precommit>
                 <!-- this is the version of the pre-commit file in githooks NOT the files it calls -->
