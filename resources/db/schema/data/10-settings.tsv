@@ -99,7 +99,7 @@ apps		7zippath		The path to the 7za (7zip command line in windows) binary, used 
 apps		ffmpegpath	/usr/bin/ffmpeg	The path to the ffmpeg binary. Used for thumbnailing. Use empty path to disable thumbnailing. Use forward slashes in windows c:/path/to/ffmpeg.exe	ffmpegpath
 apps		mediainfopath	/usr/bin/mediainfo	The path to the mediainfo binary. Used for deep file media analysis. Use empty path to disable mediainfo checks Use forward slashes in windows c:/path/to/mediainfo.exe	mediainfopath
 apps		unrarpath	/usr/bin/unrar	The path to an unrar binary, used in deep password detection and media info grabbing. Use forward slashes in windows c:/path/to/unrar.exe	unrarpath
-apps		yydecoderpath		Path to yydecode, this will decode yEnc articles. On ubuntu/debian you can get yydecode in the getdeb repository. Compiling yydecode from source is easy/fast also. Use forward slashes in windows c:/path/to/yydecode.exe		yydecoderpath
+apps		yydecoderpath		Path to yydecode, this will decode yEnc articles. On ubuntu/debian you can get yydecode in the getdeb repository. Compiling yydecode from source is easy/fast also. Use forward slashes in windows c:/path/to/yydecode.exe	yydecoderpath
 apps	paths	section-label	3<sup>rd.</sup> Party Application Paths	""	""
 apps	sabnzbplus	apikey		The Api key of the SAB installation. Can be the full api key or the nzb api key (as of SAB 0.6)	sabapikey
 apps	sabnzbplus	apikeytype	2	Select the type of api key you entered in the above setting	sabapikeytype
