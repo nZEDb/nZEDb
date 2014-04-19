@@ -56,13 +56,6 @@ class IRCScraper extends IRCClient
 	protected $nuked;
 
 	/**
-	 * Quick regex to test on channel messages.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_quickRegex = '';
-
-	/**
 	 * Construct
 	 *
 	 * @param string       $serverType   efnet | corrupt | zenet
@@ -133,33 +126,6 @@ class IRCScraper extends IRCClient
 					$channelList = $newList;
 					unset($newList);
 				}
-				$this->_quickRegex =
-					// Simple regex, more advanced regex below when doing the real checks.
-					'/' .
-						'FILLED.*Pred.*ago' .                          // a.b.inner-sanctum
-						'|' .
-						'Thank.*you.*Req.*Id.*Request' .               // a.b.cd.image, a.b.movies.divx, a.b.sounds.mp3.complete_cd, a.b.warez
-						'|' .
-						'Thank.*?You.*?Request.*?Filled!.*?ReqId' .    // a.b.moovee a.b.foreign a.b.flac a.b.teevee
-						'|' .
-						'That.*?was.*?awesome.*?Shall.*?ReqId' .       // a.b.erotica
-						'|' .
-						'person.*?filling.*?request.*?for:.*?ReqID:' . // a.b.console.ps3
-						'|' .
-						'NEW.*?\[NDS\].*?PRE:' .                       // a.b.games.nintendods
-						'|' .
-						'A\s+new\s+NZB\s+has\s+been\s+added:' .        // a.b.games.wii a.b.games.xbox360
-						'|' .
-						'A\s+NZB\s+is\s+available.*?To\s+Download' .   // a.b.sony.psp
-						'|' .
-						'\s+NZB:\s+http:\/\/scnzb\.eu\/' .             // scnzb
-						//'|' .
-						//'^\[SBINDEX\]' .                               // tvnzb
-						'|' .
-						'^\[(MOD|OLD|RE|UN)?NUKE\]' .                  // Nukes. various channels
-						'|' .
-						'added\s+(nuke|reason)\s+info\s+for:' .        // Nukes. a.b.games.xbox360 a.b.games.wii
-					'/i';
 				break;
 
 			case 'corrupt':
@@ -171,7 +137,6 @@ class IRCScraper extends IRCClient
 				$password    = SCRAPE_IRC_CORRUPT_PASSWORD;
 				$tls         = SCRAPE_IRC_CORRUPT_ENCRYPTION;
 				$channelList = array('#pre' => null);
-				$this->_quickRegex       = '/PRE:.+?\[.+?\]|^(MOD|OLD|RE|UN)?NUKE:\s+/i'; // #pre
 				break;
 
 			case 'zenet':
@@ -183,7 +148,6 @@ class IRCScraper extends IRCClient
 				$password    = SCRAPE_IRC_ZENET_PASSWORD;
 				$tls         = SCRAPE_IRC_ZENET_ENCRYPTION;
 				$channelList = array('#Pre' => null);
-				$this->_quickRegex       = '/^\(PRE\)\s+\(|^\((MOD|OLD|RE|UN)?NUKE\)\s+/i'; // #Pre
 				break;
 
 			default:
