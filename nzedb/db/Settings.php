@@ -37,6 +37,7 @@ class Settings extends DB
 		if ($result === false || empty($result)) {
 			$this->table = 'site';
 		}
+		return $this->pdo;
 	}
 
 	/**
