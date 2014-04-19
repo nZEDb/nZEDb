@@ -9,6 +9,8 @@ New updates are grouped by person, at the top of the file.
 2014-04-18 niel
 	* Chg: Major change to Db schema. site table is now settings, and expanded for more granularity.
 	Current code/templates should continue to work without change, but will have to change to take advantage of the increased granularity.
+	* Fix: Data file for settings table had extra tab for yydecoderpath, preventing it loading.
+	* Fix: DB::$pdo visibility now protected so child classes can access it.
 2014-04-18 kevin
 	* Fix: Nfos showing as 1.
 2014-04-17 kevin
