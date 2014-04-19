@@ -26,7 +26,7 @@ if (isset($pieces[6])) {
 		usleep(500000);
 	}
 
-	$postprocess->processAdditionalThreaded($argv[1], $nntp);
+	$postprocess->processAdditional($nntp, $argv[1]);
 	if ($site->nntpproxy != "1") {
 		$nntp->doQuit();
 	}
