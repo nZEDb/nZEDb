@@ -18,6 +18,7 @@ class Sites
 	const ERR_BADNZBPATH_UNREADABLE = -7;
 	const ERR_BADNZBPATH_UNSET = -8;
 	const ERR_BAD_COVERS_PATH = -9;
+	const ERR_BAD_YYDECODER_PATH = -10;
 
 	protected $_db;
 	protected $_versions = false;
@@ -89,6 +90,10 @@ class Sites
 
 		if ($site->tmpunrarpath != "" && !file_exists($site->tmpunrarpath)) {
 			return Sites::ERR_BADTMPUNRARPATH;
+		}
+
+		if ($site->yydecoderpath != "" && !file_exists($site->yydecoderpath)) {
+			return Sites::ERR_BAD_YYDECODER_PATH;
 		}
 
 		$sql = $sqlKeys = array();
