@@ -112,7 +112,7 @@ $site = $s->get();
 $db = new DB();
 if ($dirs['nzb']['source'] == $site->nzbpath) {
 	// Update the nzbpath setting if it is the one in use.
-	$db->queryDirect(sprintf('UPDATE site SET value = %s WHERE setting = %s LIMIT 1', $dirs['nzb']['target'], 'nzbpath' ));
+	$db->queryDirect(sprintf('UPDATE settings SET value = %s WHERE setting = %s LIMIT 1', $dirs['nzb']['target'], 'nzbpath' ));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -22,7 +22,7 @@ threads = 15
 
 print(bcolors.HEADER + "\nUpdate Per Group Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
-cur[0].execute("SELECT value FROM site WHERE setting = 'tablepergroup'")
+cur[0].execute("SELECT value FROM settings WHERE setting = 'tablepergroup'")
 allowed = cur[0].fetchone()
 if int(allowed[0]) == 0:
 	print(bcolors.ERROR + "Table per group not enabled" + bcolors.ENDC)

@@ -611,15 +611,17 @@ DROP TABLE IF EXISTS content;
 	role INT NOT NULL DEFAULT 0
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-DROP TABLE IF EXISTS site;
-CREATE TABLE site (
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	setting VARCHAR(64) NOT NULL,
-	value VARCHAR(19000) NULL,
-	updateddate TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
-
-CREATE UNIQUE INDEX ix_site_setting ON site (setting);
+DROP TABLE IF EXISTS settings;
+CREATE TABLE settings (
+  section     VARCHAR(25)  NOT NULL DEFAULT '',
+  subsection  VARCHAR(25) NOT NULL DEFAULT '',
+  name        VARCHAR(25)  NOT NULL DEFAULT '',
+  value       VARCHAR(255) NOT NULL DEFAULT '',
+  hint        VARCHAR(19000) NOT NULL DEFAULT '',
+  setting     VARCHAR(64) NOT NULL DEFAULT '',
+  PRIMARY KEY (section, subsection, name),
+  UNIQUE KEY ui_settings_setting (setting)
+) ENGINE=MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DROP TABLE IF EXISTS logging;
 CREATE TABLE logging (
@@ -711,12 +713,12 @@ CREATE UNIQUE INDEX ix_upcoming_source ON upcoming (source, typeid);
 
 DROP TABLE IF EXISTS genres;
 CREATE TABLE genres (
-	id int NOT NULL AUTO_INCREMENT,
-	title varchar(255) NOT NULL,
-	type INT( 4 ) NULL DEFAULT NULL,
-	disabled tinyint(1) NOT NULL default '0',
-	PRIMARY KEY (id)
-) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
+  id       INT(11)                 NOT NULL AUTO_INCREMENT,
+  title    VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+  type     INT(4) DEFAULT NULL,
+  disabled TINYINT(1)              NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=150 DEFAULT CHARSET=utf8 COLLATE =utf8_unicode_ci;
 
 DROP TABLE IF EXISTS tmux;
 CREATE TABLE tmux (
@@ -724,10 +726,10 @@ CREATE TABLE tmux (
 	setting varchar(64) COLLATE utf8_unicode_ci NOT NULL,
 	value varchar(19000) COLLATE utf8_unicode_ci DEFAULT NULL,
 	updateddate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    UNIQUE INDEX ix_tmux_setting (setting)
 ) ENGINE=MyIsam DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE UNIQUE INDEX ix_tmux_setting ON tmux (setting);
 
 DROP TABLE IF EXISTS nzbs;
 CREATE TABLE nzbs (
@@ -780,8 +782,6 @@ CREATE TABLE countries (
   name VARCHAR(255) NOT NULL DEFAULT "",
   PRIMARY KEY (name)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
-
-CREATE INDEX ix_countries_name ON countries (name);
 
 DROP TABLE IF EXISTS sharing_sites;
 CREATE TABLE sharing_sites (

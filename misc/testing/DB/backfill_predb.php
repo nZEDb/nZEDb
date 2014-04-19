@@ -9,7 +9,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 	$db = new DB();
 	$predb = new PreDb();
 	$consoletools = new ConsoleTools();
-	$predbv = $db->queryOneRow("SELECT value AS v FROM site WHERE setting = 'predbversion'");
+	$predbv = $db->queryOneRow("SELECT value AS v FROM settings WHERE setting = 'predbversion'");
 	if ($predbv["v"] == 142)
 		exit("You are at the maximum backfill.\n");
 	else if ($argv[1] == 0 || $argv[1] > 142)
@@ -65,7 +65,7 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 							unlink($file);
 							if ($ins === false)
 								exit();
-							$db->queryExec(sprintf("UPDATE site SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
+							$db->queryExec(sprintf("UPDATE settings SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
 							$predb->parseTitles(2, 1, 2, 1, 1);
 							$predb->matchPredb();
 							$done++;
