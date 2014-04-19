@@ -187,8 +187,8 @@
 		{if $music && $music.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/music/{$music.id}.jpg" alt="{$music.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WW>{/if}W_TOP}/covers/music/{$music.id}.jpg" width="160" alt="{$music.title|escape:"htmlall"}*}
 
-		{if $book && $book.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg" alt="{$book.title|escape:"htmlall"}">{/if}
-		{*{$smarty.const.WWW_TOP}/covers/book/{$book.id}.jpg" width="160" alt="{$book.title|escape:"htmlall"}*}
+		{if $boo && $boo.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg" alt="{$boo.title|escape:"htmlall"}">{/if}
+		{*{$smarty.const.WWW_TOP}/covers/book/{$boo.id}.jpg" width="160" alt="{$boo.title|escape:"htmlall"}*}
 
 	</div>
 
