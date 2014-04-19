@@ -42,7 +42,7 @@
 							<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}http://www.tvrage.com/shows/id-{$release.rageid}" title="View at TV Rage">TV Rage</a></span>
 							<span class="label label-default"><a href="{$smarty.const.WWW_TOP}/rss?rage={$release.rageid}&amp;dl=1&amp;i={$userdata.id}&amp;r={$userdata.rsstoken}" title="Rss feed for this series">Series Rss Feed</a></span>
 						<br><strong>Subtitle Search:</strong>
-								<br><a target="_blank" href="http://www.addic7ed.com/search.php?search={$release.tvtitle}" title="Addic7ed">Addic7ed</a> <a target="_blank" href="http://www.opensubtitles.org/en/search2/sublanguageid-all/searchonlytvseries-on/moviename-{$release.tvtitle|replace:" ":"+"}" title="Opensubtitles">OpenSubtitles</a> <a target="_blank" href="http://www.subtitleseeker.com/search/MOVIE_TITLES/{$release.tvtitle|replace:"S":"Season "|replace:"E":" Episode "}"title="SubtitleSeeker">SubtitleSeeker</a>
+								<br><a target="_blank" href="http://www.addic7ed.com/search.php?search={$release.tvtitle}" title="Addic7ed">Addic7ed</a> <a target="_blank" href="http://www.opensubtitles.org/en/search2/sublanguageid-all/searchonlytvseries-on/moviename-{$release.tvtitle}" title="Opensubtitles">OpenSubtitles</a> <a target="_blank" href="http://www.subtitleseeker.com/search/MOVIE_TITLES/{$release.tvtitle|replace:"S":"Season "|replace:"E":" Episode "}"title="SubtitleSeeker">SubtitleSeeker</a>
 						</div>
 					</td>
 				</tr>
@@ -146,6 +146,8 @@
 						{if $music.releasedate != ""}<strong>Released:</strong> {$music.releasedate|date_format}<br>{/if}
 						<div style="margin-top:10px;">
 							<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}{$music.url}/" title="View record at Amazon">Amazon</a></span>
+							<br><strong>Songtext search:</strong>
+								<br><a target="_blank" href="http://www.metrolyrics.com/search.html?search={$music.title|replace:" ":"+"}"title="metrolyrics">Metrolyrics</a> <a target="_blank" href="http://search.azlyrics.com/search.php?q={$music.title|replace:" ":"+"}"title="azlyrics">Azlyrics</a>
 						</div>
 					</td>
 				</tr>
