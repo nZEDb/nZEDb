@@ -40,7 +40,7 @@ section, subsection, name, value, hint, setting
 		maxmusicprocessed	150	The maximum amount of music to process with amazon per run. This does not use an NNTP connection.	maxmusicprocessed
 		maxnfoprocessed	100	The maximum amount of NFO files to process per run. This uses an NNTP connection, 1 per thread. This does not query Amazon.	maxnfoprocessed
 		maxnzbsprocessed	1000	The maximum amount of NZB files to create on stage 5 in update_releases.	maxnzbsprocessed
-		maxpartrepair	15000	The maximum amount of articles to attempt to repair at a time. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads to safe scripts, stop us	maxpartrepair
+		maxpartrepair	15000	"The maximum amount of articles to attempt to repair at a time. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until improves. Ar least until the cause can be determined."	maxpartrepair
 		maxpartsprocessed	3	If a part fails to download while post processing, this will retry up to the amount you set, then give up.	maxpartsprocessed
 		maxrageprocessed	75	The maximum amount of TV shows to process with TVRage per run. This does not use an NNTP connection or query Amazon.	maxrageprocessed
 		maxsizetoformrelease	0	The maximum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.	maxsizetoformrelease
@@ -138,4 +138,4 @@ site	main	strapline	A great usenet indexer	Displayed in the header on every publ
 site	main	style	Default	The theme folder which will be loaded for css and images. (Use / for default)	style
 site	main	tandc	"<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do find obscene, incorrect or objectionable results, let us know by using the contact form.</p>"	"Text displayed in the terms and conditions page."	tandc
 site	main	title	nZEDb	Displayed around the site and contact form as the name for the site.	title
-		sqlpatch	210		sqlpatch
+		sqlpatch	212		sqlpatch
