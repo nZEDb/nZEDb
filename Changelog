@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-19 kevin
+	* Add: Custom IRC Client to replace PEAR SmartIRC, encrypted IRC connections are now supported.
 2014-04-19 ruhllatio
 	* Add: Framework for SHA1 release PreDB matching
 2014-04-18 niel
