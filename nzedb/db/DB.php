@@ -43,7 +43,7 @@ class DB extends \PDO
 	/**
 	 * @var object Instance of PDO class.
 	 */
-	private static $pdo = null;
+	protected static $pdo = null;
 
 	/**
 	 * @var object Class instance debugging.
