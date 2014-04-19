@@ -784,8 +784,6 @@ CREATE TABLE countries (
   PRIMARY KEY (name)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE INDEX ix_countries_name ON countries (name);
-
 DROP TABLE IF EXISTS sharing_sites;
 CREATE TABLE sharing_sites (
   id             INT(11) UNSIGNED   NOT NULL AUTO_INCREMENT,
