@@ -1,27 +1,27 @@
 DROP TABLE IF EXISTS collections;
 CREATE TABLE collections (
-	id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-	subject VARCHAR(255) NOT NULL DEFAULT '',
-	fromname VARCHAR(255) NOT NULL DEFAULT '',
-	date DATETIME DEFAULT NULL,
-	xref VARCHAR(255) NOT NULL DEFAULT '',
-	totalfiles INT(11) UNSIGNED NOT NULL DEFAULT '0',
-	groupid INT(11) UNSIGNED NOT NULL DEFAULT '0',
-	collectionhash VARCHAR(255) NOT NULL DEFAULT '0',
-	dateadded DATETIME DEFAULT NULL,
-	filecheck TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
-	filesize BIGINT UNSIGNED NOT NULL DEFAULT '0',
-	releaseid INT NULL,
-	PRIMARY KEY (id),
-	KEY fromname (fromname),
-	KEY date (date),
-	KEY groupid (groupid)
+  id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  subject VARCHAR(255) NOT NULL DEFAULT '',
+  fromname VARCHAR(255) NOT NULL DEFAULT '',
+  date DATETIME DEFAULT NULL,
+  xref VARCHAR(255) NOT NULL DEFAULT '',
+  totalfiles INT(11) UNSIGNED NOT NULL DEFAULT '0',
+  groupid INT(11) UNSIGNED NOT NULL DEFAULT '0',
+  collectionhash VARCHAR(255) NOT NULL DEFAULT '0',
+  dateadded DATETIME DEFAULT NULL,
+  filecheck TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
+  filesize BIGINT UNSIGNED NOT NULL DEFAULT '0',
+  releaseid INT NULL,
+  PRIMARY KEY (id),
+  INDEX fromname (fromname),
+  INDEX date (date),
+  INDEX groupid (groupid),
+  UNIQUE INDEX ix_collection_collectionhash (collectionhash),
+  INDEX ix_collection_filecheck (filecheck),
+  INDEX ix_collection_dateadded (dateadded),
+  INDEX ix_collection_releaseid (releaseid)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE INDEX ix_collection_filecheck ON collections (filecheck);
-CREATE INDEX ix_collection_dateadded ON collections (dateadded);
-CREATE UNIQUE INDEX ix_collection_collectionhash ON collections (collectionhash);
-CREATE INDEX ix_collection_releaseid ON collections (releaseid);
 
 DROP TABLE IF EXISTS binaries;
 CREATE TABLE binaries (
@@ -33,12 +33,12 @@ CREATE TABLE binaries (
 	binaryhash VARCHAR(255) NOT NULL DEFAULT '0',
 	partcheck BIT NOT NULL DEFAULT 0,
 	partsize BIGINT UNSIGNED NOT NULL DEFAULT '0',
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    INDEX ix_binary_binaryhash (binaryhash),
+    INDEX ix_binary_partcheck (partcheck),
+    INDEX ix_binary_collection  (collectionid)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE INDEX ix_binary_binaryhash ON binaries (binaryhash);
-CREATE INDEX ix_binary_partcheck ON binaries (partcheck);
-CREATE INDEX ix_binary_collection ON binaries (collectionid);
 
 DROP TABLE IF EXISTS releases;
 CREATE TABLE releases (
@@ -616,8 +616,8 @@ CREATE TABLE settings (
   section     VARCHAR(25)  NOT NULL DEFAULT '',
   subsection  VARCHAR(25) NOT NULL DEFAULT '',
   name        VARCHAR(25)  NOT NULL DEFAULT '',
-  value       VARCHAR(255) NOT NULL DEFAULT '',
-  hint        VARCHAR(19000) NOT NULL DEFAULT '',
+  value       VARCHAR(1000) NOT NULL DEFAULT '',
+  hint        TEXT NOT NULL,
   setting     VARCHAR(64) NOT NULL DEFAULT '',
   PRIMARY KEY (section, subsection, name),
   UNIQUE KEY ui_settings_setting (setting)
