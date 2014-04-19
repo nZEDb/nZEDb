@@ -106,7 +106,7 @@ class DbUpdate
 			'ext'	=> 'tsv',
 			'files' => array(),
 			'path'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data',
-			'regex'	=> "#^(?:.*/|)\d+-(?'table'\w+)\.tsv$#",
+			'regex'	=> "#^(?P<drive>[A-Za-z]:|)(?<path>[/\w-]+|)(?P<order>\d+)-(?<table>\w+)\.tsv$#",
 		);
 		$options += $defaults;
 
