@@ -114,7 +114,7 @@ class DbUpdate
 		sort($files, SORT_NATURAL);
 		$sql = 'LOAD DATA INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
-//			echo "File: $file\n";
+			echo "File: $file\n";
 
 			if (is_readable($file)) {
 				if (preg_match($options['regex'], $file, $matches)) {
@@ -139,6 +139,8 @@ class DbUpdate
 					echo "Incorrectly formatted filename '$file' (should match " .
 						 str_replace('#', '', $options['regex']) .  "\n";
 				}
+			} else {
+				echo $this->log->error("  Unable to read file: '$file'");
 			}
 		}
 	}
