@@ -477,6 +477,7 @@ class IRCScraper
 	protected function siftMatches(&$matches)
 	{
 		$this->CurPre['md5'] = $this->db->escapeString(md5($matches['title']));
+		$this->CurPre['sha1'] = $this->db->escapeString(sha1($matches['title']));
 		$this->CurPre['title'] = $matches['title'];
 
 		if (isset($matches['reqid'])) {
@@ -905,7 +906,7 @@ class IRCScraper
 		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid, '    : '');
 		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked, '      : '');
 
-		$query .= 'predate, md5, title) VALUES (';
+		$query .= 'predate, md5, sha1, title) VALUES (';
 
 		$query .= (!empty($this->CurPre['size'])     ? $this->db->escapeString($this->CurPre['size'])     . ', '   : '');
 		$query .= (!empty($this->CurPre['category']) ? $this->db->escapeString($this->CurPre['category']) . ', '   : '');
@@ -917,7 +918,7 @@ class IRCScraper
 		$query .= (!empty($this->CurPre['nuked'])    ? $this->CurPre['nuked']                             . ', '   : '');
 		$query .= (!empty($this->CurPre['predate'])  ? $this->CurPre['predate']                           . ', '   : 'NOW(), ');
 
-		$query .= '%s, %s)';
+		$query .= '%s, %s, %s)';
 
 		$this->db->ping(true);
 
@@ -925,6 +926,7 @@ class IRCScraper
 			sprintf(
 				$query,
 				$this->CurPre['md5'],
+				$this->CurPre['sha1'],
 				$this->db->escapeString($this->CurPre['title'])
 			)
 		);
@@ -1065,6 +1067,7 @@ class IRCScraper
 			array(
 				'title'    => '',
 				'md5'      => '',
+				'sha1'     => '',
 				'size'     => '',
 				'predate'  => '',
 				'category' => '',
