@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-04-20 niel
 	* Fix: Updated create table for patch 210, to avoid truncation of data.
+	* Chg: Removing a number of query failures from errors to ignore during patching.
 2014-04-20 kevin
 	* Chg: Increase local ping chances by moving it out of the if/else block. IRCClient.
 	* Chg: Move local ping sends at the bottom of the chain to prioritize incoming messages IRCClient.
