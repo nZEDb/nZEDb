@@ -62,7 +62,7 @@ class IRCClient
 	 * @var int
 	 * @access protected
 	 */
-	protected $_socket_timeout = 240;
+	protected $_socket_timeout = 180;
 
 	/**
 	 * How many times to retry when connecting to IRC.
@@ -140,7 +140,6 @@ class IRCClient
 	 */
 	protected $_channels;
 
-
 	/**
 	 * Last time we received a ping or sent a ping to the server.
 	 * @var int
@@ -160,6 +159,12 @@ class IRCClient
 	 * @var bool
 	 */
 	protected $_debug = true;
+
+	/**
+	 * Are we already logged in to IRC?
+	 * @var bool
+	 */
+	protected $_alreadyLoggedIn = false;
 
 	/**
 	 * Disconnect from IRC.
@@ -250,6 +255,7 @@ class IRCClient
 	 */
 	public function connect($hostname, $port = 6667, $tls = false)
 	{
+		$this->_alreadyLoggedIn = false;
 		$transport = ($tls === true ? 'tls' : 'tcp');
 
 		$socket_string = $transport . '://' . $hostname . ':' . $port;
@@ -276,6 +282,8 @@ class IRCClient
 				// Sleep between retries.
 				sleep($this->_reconnectDelay);
 			}
+		} else {
+			$this->_alreadyLoggedIn = true;
 		}
 
 		// Set last ping time to now.
@@ -377,6 +385,7 @@ class IRCClient
 	public function readIncoming()
 	{
 		while (true) {
+
 			$this->_readSocket();
 
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
@@ -483,7 +492,7 @@ class IRCClient
 		$pong = $this->_writeSocket('PING ' . $host);
 
 		// Check if there's a connection error.
-		if (!$pong || ((time() - $this->_lastPing) > ($this->_socket_timeout / 2)) && !preg_match('/^PONG/', $this->_buffer)) {
+		if ($pong === false || ((time() - $this->_lastPing) > ($this->_socket_timeout / 2) && !preg_match('/^PONG/', $this->_buffer))) {
 			$this->_reconnect();
 		}
 
@@ -504,11 +513,13 @@ class IRCClient
 			exit('FATAL: Could not reconnect to (' . $this->_remote_host . ') after (' . $this->_reconnectRetries . ') tries.' . PHP_EOL);
 		}
 
-		if (!$this->login($this->_nickName, $this->_userName, $this->_realName, $this->_password)) {
-			exit('FATAL: Could not log in to (' . $this->_remote_host . ')!' . PHP_EOL);
-		}
+		if ($this->_alreadyLoggedIn === false) {
+			if (!$this->login($this->_nickName, $this->_userName, $this->_realName, $this->_password)) {
+				exit('FATAL: Could not log in to (' . $this->_remote_host . ')!' . PHP_EOL);
+			}
 
-		$this->joinChannels($this->_channels);
+			$this->joinChannels($this->_channels);
+		}
 	}
 
 	/**
@@ -520,7 +531,7 @@ class IRCClient
 	{
 		$buffer = '';
 		do {
-			stream_set_timeout($this->_socket , $this->_socket_timeout);
+			stream_set_timeout($this->_socket, $this->_socket_timeout);
 			$buffer .= fgets($this->_socket, 1024);
 		} while (!empty($buffer) && !preg_match('/\v+$/', $buffer));
 		$this->_buffer = trim($buffer);
