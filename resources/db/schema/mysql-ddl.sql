@@ -232,7 +232,8 @@ CREATE TABLE predb (
 	category VARCHAR(255) NULL,
 	predate DATETIME DEFAULT NULL,
 	source VARCHAR(50) NOT NULL DEFAULT '',
-	md5 VARCHAR(255) NOT NULL DEFAULT '0',
+	md5 VARCHAR(32) NOT NULL DEFAULT '0',
+	sha1 VARCHAR(40) NOT NULL DEFAULT '0',
 	requestid INT(10) UNSIGNED NOT NULL DEFAULT '0',
 	groupid INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
 	nuked TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'If this pre is nuked, what is the reason?',
@@ -247,6 +248,7 @@ CREATE INDEX ix_predb_predate ON predb (predate);
 CREATE INDEX ix_predb_source ON predb (source);
 CREATE INDEX ix_predb_requestid on predb (requestid, groupid);
 CREATE UNIQUE INDEX ix_predb_md5 ON predb (md5);
+CREATE UNIQUE INDEX ix_predb_sha1 ON predb (sha1);
 
 DROP TABLE IF EXISTS menu;
 CREATE TABLE menu (
