@@ -420,9 +420,10 @@ class IRCClient
 					);
 
 				$this->processChannelMessages();
+			}
 
 			// Ping the server if it has not sent us a ping in a while.
-			} else if ((time() - $this->_lastPing) > ($this->_socket_timeout / 2)) {
+			if ((time() - $this->_lastPing) > ($this->_socket_timeout / 2)) {
 				$this->_ping($this->_remote_host_received);
 			}
 		}
