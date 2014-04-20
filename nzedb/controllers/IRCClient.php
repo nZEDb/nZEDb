@@ -407,10 +407,6 @@ class IRCClient
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
 				$this->_pong($matches[1]);
 
-			// Ping the server if it has not sent us a ping in a while.
-			} else if ((time() - $this->_lastPing) > ($this->_socket_timeout / 2)) {
-				$this->_ping($this->_remote_host_received);
-
 			// Check for a channel message.
 			} else if (preg_match('/^:(?P<nickname>.+?)\!.+?\s+PRIVMSG\s+(?P<channel>#.+?)\s+:\s*(?P<message>.+?)\s*$/',
 				$this->_stripControlCharacters($this->_buffer),
@@ -424,6 +420,10 @@ class IRCClient
 					);
 
 				$this->processChannelMessages();
+
+			// Ping the server if it has not sent us a ping in a while.
+			} else if ((time() - $this->_lastPing) > ($this->_socket_timeout / 2)) {
+				$this->_ping($this->_remote_host_received);
 			}
 		}
 	}

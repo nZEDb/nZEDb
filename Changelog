@@ -9,7 +9,8 @@ New updates are grouped by person, at the top of the file.
 2014-04-20 niel
 	* Fix: Updated create table for patch 210, to avoid truncation of data.
 2014-04-20 kevin
-	*Chg: Small changes to IRCClient.
+	* Chg: Move local ping sends at the bottom of the chain to prioritize incoming messages IRCClient.
+	* Chg: Small changes to IRCClient.
 2014-04-19 kevin
 	* Chg: Ping changes in IRC client.
 	* Add: Custom IRC Client to replace PEAR SmartIRC, encrypted IRC connections are now supported.
