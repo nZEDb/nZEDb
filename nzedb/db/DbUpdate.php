@@ -270,7 +270,7 @@ class DbUpdate
 							);
 
 							if (
-								 in_array($e->errorInfo[1], array(1091, 1060, 1061, 1062, 1071, 1146)) ||
+								 in_array($e->errorInfo[1], array(1091, 1060, 1061, 1071, 1146)) ||
 								 in_array($e->errorInfo[0], array(23505, 42701, 42703, '42P07', '42P16'))
 								) {
 								if ($e->errorInfo[1] == 1060) {

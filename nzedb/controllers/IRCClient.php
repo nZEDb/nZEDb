@@ -277,10 +277,14 @@ class IRCClient
 			$this->_remote_socket_string = $socket_string;
 
 			// Try to connect until we run out of retries.
-			while(!$this->_connected() && ($this->_reconnectRetries >= $this->_currentRetries++)) {
+			while($this->_reconnectRetries >= $this->_currentRetries++) {
 				$this->_initiateStream();
-				// Sleep between retries.
-				sleep($this->_reconnectDelay);
+				if ($this->_connected()) {
+					break;
+				} else {
+					// Sleep between retries.
+					sleep($this->_reconnectDelay);
+				}
 			}
 		} else {
 			$this->_alreadyLoggedIn = true;
@@ -312,6 +316,11 @@ class IRCClient
 			return false;
 		}
 
+		if (empty($nickName) || empty($userName) || empty($realName)) {
+			echo 'ERROR: nick/user/real name must not be empty!' . PHP_EOL;
+			return false;
+		}
+
 		$this->_nickName = $nickName;
 		$this->_userName = $userName;
 		$this->_realName = $realName;
@@ -332,10 +341,12 @@ class IRCClient
 		// Loop over socket buffer until we find "001".
 		while(true) {
 			$this->_readSocket();
+
+			// We got pinged, reply with a pong.
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
 				$this->_pong($matches[1]);
-			} else if (preg_match('/^:(.*?)\s*(\d+).*?(:.+?)?$/', $this->_buffer, $matches)) {
 
+			} else if (preg_match('/^:(.*?)\s*(\d+).*?(:.+?)?$/', $this->_buffer, $matches)) {
 				// We found 001, which means we are logged in.
 				if ($matches[2] == 001) {
 					$this->_remote_host_received = $matches[1];
@@ -343,10 +354,14 @@ class IRCClient
 
 				// We got 464, which means we need to send a password.
 				} else if ($matches[2] == 464) {
+					// Before the lower check, set the password : username:password
 					$tempPass = $userName . ':' . $password;
+
+					// Check if the user has his password in this format: username/server:password
 					if (preg_match('/^.+?\/.+?:.+?$/', $password)) {
 						$tempPass = $password;
 					}
+
 					if ($password !== null && !$this->_writeSocket('PASS ' . $tempPass)) {
 						return false;
 					} else if (isset($matches[3]) && strpos(strtolower($matches[3]), 'invalid password')) {
@@ -388,13 +403,9 @@ class IRCClient
 
 			$this->_readSocket();
 
+			// If the server pings us, return it a pong.
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
-				// If the server pings us, return it a pong.
 				$this->_pong($matches[1]);
-
-			} else if ((time() - $this->_lastPing) > ($this->_socket_timeout / 2)) {
-				// Ping the server if it has not sent us a ping in a while.
-				$this->_ping($this->_remote_host_received);
 
 			// Check for a channel message.
 			} else if (preg_match('/^:(?P<nickname>.+?)\!.+?\s+PRIVMSG\s+(?P<channel>#.+?)\s+:\s*(?P<message>.+?)\s*$/',
@@ -411,6 +422,10 @@ class IRCClient
 				$this->processChannelMessages();
 			}
 
+			// Ping the server if it has not sent us a ping in a while.
+			if ((time() - $this->_lastPing) > ($this->_socket_timeout / 2)) {
+				$this->_ping($this->_remote_host_received);
+			}
 		}
 	}
 
