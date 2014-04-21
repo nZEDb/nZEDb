@@ -26,6 +26,13 @@ $error = false;
 echo "Running pre-commit hooks\n";
 
 
+// TODO Add code here to check permissions on staged files.
+//$files = file(nZEDb_ROOT . 'nzedb/build/git-hooks'), FILE_IGNORE_NEW_LINES);
+//foreach ($files as $file) {
+//	echo "Filename: $file\n";
+//}
+
+
 /**
  * Add all hooks BEFORE the versions are updated so they can be skipped on any errors
  */
