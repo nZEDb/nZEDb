@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-21 kevin
+	* Fix: Typo in requestid.
 2014-04-21 ruhllatio
 	* Modify requestid local match script to ignore matches already PreDB matched and change script commenting
 2014-04-21 niel
