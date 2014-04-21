@@ -10,6 +10,8 @@ $releases = new Releases();
 
 if (isset($_GET["id"]))
 {
+	$page->smarty->unloadFilter('output', 'trimwhitespace');
+
 	$rel = $releases->getByGuid($_GET["id"]);
 
 	if (!$rel) {

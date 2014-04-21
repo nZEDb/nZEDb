@@ -341,6 +341,15 @@
 			</tr>
 
 			<tr>
+				<td style="width:180px;"><label for="yydecoderpath">yyDecode Path:</label></td>
+				<td>
+					<input id="yydecoderpath" class="long" name="yydecoderpath" type="text" value="{$fsite->yydecoderpath}" />
+					<div class="hint">Path to yydecode, this will decode yEnc articles. On ubuntu/debian you can get yydecode in the getdeb repository. Compiling yydecode from source is easy/fast also.
+						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/yydecode.exe</span></div>
+				</td>
+			</tr>
+
+			<tr>
 				<td style="width:180px;"><label for="mediainfopath">Mediainfo Path:</label></td>
 				<td>
 					<input id="mediainfopath" class="long" name="mediainfopath" type="text" value="{$fsite->mediainfopath}" />

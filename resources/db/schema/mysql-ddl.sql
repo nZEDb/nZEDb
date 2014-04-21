@@ -209,11 +209,13 @@ CREATE TABLE releasecomment (
 	id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	releaseid INT(11) UNSIGNED NOT NULL,
 	text VARCHAR(2000) NOT NULL DEFAULT '',
+  username VARCHAR(255) NOT NULL DEFAULT '',
 	userid INT(11) UNSIGNED NOT NULL,
 	createddate DATETIME DEFAULT NULL,
 	host VARCHAR(15) NULL,
   shared   TINYINT(1)  NOT NULL DEFAULT '0',
   shareid  VARCHAR(40) NOT NULL DEFAULT '',
+  siteid  VARCHAR(40) NOT NULL DEFAULT '',
   nzb_guid VARCHAR(32) NOT NULL DEFAULT '',
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
@@ -365,6 +367,8 @@ CREATE TABLE animetitles (
 DROP TABLE IF EXISTS anidb;
 CREATE TABLE anidb (
 	anidbid INT(7) UNSIGNED NOT NULL,
+	title_type VARCHAR(25) NOT NULL DEFAULT '',
+	lang VARCHAR(25) NOT NULL DEFAULT '',
 	imdbid INT(7) UNSIGNED NOT NULL,
 	tvdbid INT(7) UNSIGNED NOT NULL,
 	title VARCHAR(255) NOT NULL,
@@ -382,7 +386,7 @@ CREATE TABLE anidb (
 	airdates TEXT NOT NULL,
 	episodetitles TEXT NOT NULL,
 	unixtime INT(12) UNSIGNED NOT NULL,
-	PRIMARY KEY (anidbid)
+	PRIMARY KEY (anidbid, title_type, lang)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
 
@@ -795,14 +799,17 @@ DROP TABLE IF EXISTS sharing;
 CREATE TABLE sharing (
   site_guid      VARCHAR(40)        NOT NULL DEFAULT '',
   site_name      VARCHAR(255)       NOT NULL DEFAULT '',
+  username       VARCHAR(255)       NOT NULL DEFAULT '',
   enabled        TINYINT(1)         NOT NULL DEFAULT '0',
   posting        TINYINT(1)         NOT NULL DEFAULT '0',
-  fetching       TINYINT(1)         NOT NULL DEFAULT '0',
-  auto_enable    TINYINT(1)         NOT NULL DEFAULT '0',
+  fetching       TINYINT(1)         NOT NULL DEFAULT '1',
+  auto_enable    TINYINT(1)         NOT NULL DEFAULT '1',
+  start_position TINYINT(1)         NOT NULL DEFAULT '0',
   hide_users     TINYINT(1)         NOT NULL DEFAULT '1',
   last_article   BIGINT UNSIGNED    NOT NULL DEFAULT '0',
   max_push       MEDIUMINT UNSIGNED NOT NULL DEFAULT '40',
-  max_pull       INT UNSIGNED       NOT NULL DEFAULT '1000',
+  max_download   MEDIUMINT UNSIGNED NOT NULL DEFAULT '150',
+  max_pull       MEDIUMINT UNSIGNED NOT NULL DEFAULT '20000',
   PRIMARY KEY    (site_guid)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
 

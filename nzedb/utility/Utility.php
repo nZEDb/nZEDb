@@ -558,3 +558,21 @@ function bytesToSizeString($bytes, $precision = 0)
 	$unit = array('B','KB','MB','GB','TB','PB','EB');
 	return round($bytes / pow(1024, ($i = floor(log($bytes, 1024)))), $precision) . $unit[(int)$i];
 }
+
+/**
+ * Fetches an embeddable video to a IMDB trailer from http://www.traileraddict.com
+ *
+ * @param $id
+ *
+ * @return string
+ */
+function imdb_trailers($id)
+{
+	$xml = getUrl('http://api.traileraddict.com/?imdb=' . $id);
+	if ($xml !== false) {
+		if (preg_match('/(<iframe.+?<\/iframe>)/i', $xml, $html)) {
+			return $html[1];
+		}
+	}
+	return '';
+}

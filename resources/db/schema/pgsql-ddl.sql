@@ -485,11 +485,13 @@ CREATE TABLE "releasecomment" (
   "id" bigint DEFAULT nextval('releasecomment_id_seq'::regclass) NOT NULL,
   "releaseid" bigint NOT NULL,
   "text" character varying(2000) DEFAULT ''::character varying NOT NULL,
+  "username" character varying(255) DEFAULT ''::character varying NOT NULL,
   "userid" bigint NOT NULL,
   "createddate" timestamp without time zone,
   "host" character varying(15),
   "shared" smallint DEFAULT 0 NOT NULL,
   "shareid" character varying(40) DEFAULT ''::character varying NOT NULL,
+  "siteid" character varying(40) DEFAULT ''::character varying NOT NULL,
   "nzb_guid" character varying(32) DEFAULT ''::character varying NOT NULL
 )
 WITHOUT OIDS;
@@ -919,14 +921,16 @@ CREATE TABLE "sharing" (
   "site_name" character varying(255),
   "enabled"     smallint DEFAULT 0 NOT NULL,
   "posting"     smallint DEFAULT 0 NOT NULL,
-  "fetching"     smallint DEFAULT 0 NOT NULL,
-  "auto_enable"     smallint DEFAULT 0 NOT NULL,
+  "start_position"     smallint DEFAULT 0 NOT NULL,
+  "fetching"     smallint DEFAULT 1 NOT NULL,
+  "auto_enable"     smallint DEFAULT 1 NOT NULL,
   "hide_users"     smallint DEFAULT 1 NOT NULL,
   "last_article"     bigint DEFAULT 1 NOT NULL,
   "last_time"   timestamp without time zone,
   "first_time"  timestamp without time zone,
   "max_push" integer DEFAULT 40 NOT NULL,
-  "max_pull" integer DEFAULT 1000 NOT NULL
+  "max_download" integer DEFAULT 150 NOT NULL,
+  "max_pull" integer DEFAULT 20000 NOT NULL
 )
 WITHOUT OIDS;
 
