@@ -10,7 +10,7 @@ define('SCRAPE_IRC_EFNET_NICKNAME', "$username");    // Nick name (this is the n
 define('SCRAPE_IRC_EFNET_REALNAME', "$username");    // This is a name that people see in /whois, you can set this to your nickname.
 define('SCRAPE_IRC_EFNET_USERNAME', "$username");    // This is part of your hostname, you can set this the same as nickname. This is also used to log in to ZNC.
 define('SCRAPE_IRC_EFNET_PASSWORD', false);          // This is used for bouncers like ZNC, set this false or '' if you don't have a bouncer.
-define('SCRAPE_IRC_EFNET_ENCRYPTION', false);        // Set to true to use TLS encryption (make sure you change the port to a SSL one).
+define('SCRAPE_IRC_EFNET_ENCRYPTION', false);        // Set to true to use TLS encryption (make sure you change the port to a TLS one).
 // List of ignored channels, separated by commas. ie '#alt.binaries.teevee,#alt.binaries.moovee' for a single channel : '#alt.binaries.teevee'
 define('SCRAPE_IRC_EFNET_IGNORED_CHANNELS', '');
 
