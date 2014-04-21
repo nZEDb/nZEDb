@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-04-21 niel
 	* Chg: Adding removal of bad rows in predb to patch 213.
+	* New: Added method to Versions class to fetch the pre-commit version.
 2014-04-20 niel
 	* Fix: Updated create table for patch 210, to avoid truncation of data.
 	* Chg: Removing a number of query failures from errors to ignore during patching.

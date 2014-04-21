@@ -198,6 +198,11 @@ class Versions
 	}
  */
 
+	public function getGitHookPrecommit()
+	{
+		return $this->_vers->git->hooks->precommit;
+	}
+
 	public function getSQLVersion()
 	{
 		return $this->_vers->db;
