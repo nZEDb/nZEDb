@@ -9,8 +9,12 @@ if (!defined('GIT_PRE_COMMIT')) {
 // instantiate the class and use as below.
 if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
 	$vers = new Versions();
-	$vers->checkAll();
-	$vers->save();
+	echo $vers->out->header("Checking versions...");
+	if ($vers->checkAll()) {
+		$vers->save();
+	} else {
+		echo "No changes detected.\n";
+	}
 }
 
 class Versions
