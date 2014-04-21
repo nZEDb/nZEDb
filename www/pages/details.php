@@ -68,11 +68,27 @@ if (isset($_GET['id'])) {
 		$movie = new Movie();
 		$mov = $movie->getMovieInfo($data['imdbid']);
 
+		$trakt = new TraktTv();
+		$traktSummary = $trakt->traktMoviesummary('tt' . $data['imdbid'], true);
+		if ($traktSummary !== false &&
+			isset($traktSummary['trailer']) &&
+			$traktSummary['trailer'] !== '' &&
+			preg_match('/[\/?]v[\/\=](\w+)$/i', $traktSummary['trailer'], $youtubeM)) {
+			$mov['trailer'] =
+			'<embed width="480" height="345" src="' .
+			'http://www.youtube.com/v/' . $youtubeM[1] .
+			'" type="application/x-shockwave-flash"></embed>';
+		} else {
+			$mov['trailer'] = nzedb\utility\imdb_trailers($data['imdbid']);
+		}
+
 		if ($mov) {
 			$mov['title'] = str_replace(array('/', '\\'), '', $mov['title']);
 			$mov['actors'] = $movie->makeFieldLinks($mov, 'actors');
 			$mov['genre'] = $movie->makeFieldLinks($mov, 'genre');
 			$mov['director'] = $movie->makeFieldLinks($mov, 'director');
+		} else if ($traktSummary !== false) {
+			$mov['title'] = str_replace(array('/', '\\'), '', $traktSummary['title']);
 		}
 	}
 

@@ -16,18 +16,17 @@ CREATE TABLE sharing (
 	site_name      VARCHAR(255)       NOT NULL DEFAULT '',
 	enabled        TINYINT(1)         NOT NULL DEFAULT '0',
 	posting        TINYINT(1)         NOT NULL DEFAULT '0',
-	fetching       TINYINT(1)         NOT NULL DEFAULT '0',
-	auto_enable    TINYINT(1)         NOT NULL DEFAULT '0',
+	fetching       TINYINT(1)         NOT NULL DEFAULT '1',
+	auto_enable    TINYINT(1)         NOT NULL DEFAULT '1',
 	hide_users     TINYINT(1)         NOT NULL DEFAULT '1',
 	last_article   BIGINT UNSIGNED    NOT NULL DEFAULT '0',
 	max_push       MEDIUMINT UNSIGNED NOT NULL DEFAULT '40',
-	max_pull       INT UNSIGNED       NOT NULL DEFAULT '1000',
+	max_pull       INT UNSIGNED       NOT NULL DEFAULT '150',
 	PRIMARY KEY    (site_guid)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
 
 ALTER TABLE releasecomment ADD COLUMN shared   TINYINT(1)  NOT NULL DEFAULT '0';
 ALTER TABLE releasecomment ADD COLUMN shareid  VARCHAR(40) NOT NULL DEFAULT '';
-ALTER TABLE releasecomment ADD COLUMN siteid   VARCHAR(40) NOT NULL DEFAULT '';
 ALTER TABLE releasecomment ADD COLUMN nzb_guid VARCHAR(32) NOT NULL DEFAULT '';
 
 UPDATE site SET value = '198' WHERE setting = 'sqlpatch';

@@ -145,7 +145,7 @@ class Nfo
 		if ($size < 100 * 1024 && $size > 12) {
 			// Ignore common file types.
 			if (preg_match(
-				'/(^RIFF|)<\?xml|;\s*Generated\s*by.*SF\w|\A\s*PAR|\.[a-z0-9]{2,7}\s*[a-z0-9]{8}|\A\s*RAR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i'
+				'/(^RIFF|)<\?xml|;\s*Generated\s*by.*SF\w|\A\s*[RP]AR|\A.{0,10}(JFIF|matroska|ftyp|ID3)|\A=newz\[NZB\]=/i'
 				, $possibleNFO)) {
 				return $r;
 			}
@@ -242,8 +242,8 @@ class Nfo
 				$release['completion'] = 0;
 			}
 			if ($release['completion'] == 0) {
-				$nzbContents = new NZBContents($this->echo);
-				$nzbContents->NZBcompletion($release['guid'], $release['id'], $release['groupid'], $nntp, $db);
+				$nzbContents = new NZBContents(array('echo' => $this->echo, 'nntp' => $nntp, 'nfo' => $this, 'db' => $db, 'pp' => new PostProcess(true)));
+				$nzbContents->parseNZB($release['guid'], $release['id'], $release['groupid']);
 			}
 			return true;
 		} else {
@@ -303,12 +303,12 @@ class Nfo
 				$this->c->doEcho($this->c->header($outString . '.'));
 			}
 			$groups = new Groups();
-			$nzbContents = new NZBContents($this->echo);
+			$nzbContents = new NZBContents(array('echo' => $this->echo, 'nntp' => $nntp, 'nfo' => $this, 'db' => $this->db, 'pp' => new PostProcess(true)));
 			$movie = new Movie($this->echo);
 			$tvRage = new TvRage($this->echo);
 
 			foreach ($res as $arr) {
-				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $nntp, $groups->getByNameByID($arr['groupid']), $this->db, $this);
+				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $groups->getByNameByID($arr['groupid']));
 				if ($fetchedBinary !== false) {
 					// Insert nfo into database.
 					$cp = $nc = null;
@@ -325,7 +325,7 @@ class Nfo
 					}
 					$this->db->queryExec(sprintf('UPDATE releases SET nfostatus = 1 WHERE id = %d', $arr['id']));
 					$ret++;
-					$movie->domovieupdate($fetchedBinary, 'nfo', $arr['id'], $processImdb);
+					$movie->doMovieUpdate($fetchedBinary, 'nfo', $arr['id'], $processImdb);
 
 					// If set scan for tvrage info.
 					if ($processTvrage == 1) {

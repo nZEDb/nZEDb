@@ -103,10 +103,10 @@ function ajax_sharing_enabled(id, status)
 
                 // switch some links around
                 if (status == 0) {
-                    $('strong#enabled-' + id).html('<a href="javascript:ajax_sharing_enabled('+ id +', 1)" class="sharing_enabled_deactive">[ENABLE]</a>');
+                    $('strong#enabled-' + id).html('<a title="Click this to enable sharing." href="javascript:ajax_sharing_enabled('+ id +', 1)" class="sharing_enabled_deactive">[ENABLE]</a>');
                 }
                 else {
-                    $('strong#enabled-' + id).html('<a href="javascript:ajax_sharing_enabled('+ id +', 0)" class="sharing_enabled_active">[DISABLE]</a>');
+                    $('strong#enabled-' + id).html('<a title="Click this to disable sharing." href="javascript:ajax_sharing_enabled('+ id +', 0)" class="sharing_enabled_active">[DISABLE]</a>');
                 }
 
                 // fade.. mm
@@ -119,6 +119,97 @@ function ajax_sharing_enabled(id, status)
     {
         alert('Weird.. what enabled id are looking for?');
     }
+}
+
+/**
+ * ajax_sharing_startposition()
+ *
+ * @param id
+ * @param status    0 = deactive, 1 = activate
+ */
+function ajax_sharing_startposition(id, status)
+{
+    // no caching of results
+    var rand_no = Math.random();
+    if (status != undefined)
+    {
+        $.ajax({
+            url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+            data      : { start_position: status },
+            dataType  : "html",
+            success   : function(data)
+            {
+                $('div#message').html(data);
+                $('div#message').show('fast', function() {});
+
+                // switch some links around
+                if (status == 0) {
+                    $('strong#startposition-' + id).html('<a title="Click this to enable backfill." href="javascript:ajax_sharing_startposition('+ id +', 1)" class="sharing_enabled_deactive">[ENABLE]</a>');
+                }
+                else {
+                    $('strong#startposition-' + id).html('<a title="Click this to disable backfill." href="javascript:ajax_sharing_startposition('+ id +', 0)" class="sharing_enabled_active">[DISABLE]</a>');
+                }
+
+                // fade.. mm
+                $('#message').fadeOut(5000);
+            },
+            error: function(xhr,err,e) { alert( "Error in ajax_sharing_startposition: " + err ); }
+        });
+    }
+    else
+    {
+        alert('Weird.. what enabled id are looking for?');
+    }
+}
+
+/**
+ * ajax_sharing_reset()
+ *
+ * @param id
+ */
+function ajax_sharing_reset(id)
+{
+    var rand_no = Math.random();
+    $.ajax({
+        url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+        data      : { reset_settings: id },
+        dataType  : "html",
+        success   : function(data)
+        {
+            $('div#message').html(data);
+            $('div#message').show('fast', function() {});
+
+            // fade.. mm
+            $('#message').fadeOut(5000);
+            setTimeout('history.go(0);',1500);
+        },
+        error: function(xhr,err,e) { alert( "Error in ajax_sharing_reset: " + err ); }
+    });
+}
+
+/**
+ * ajax_sharing_site_purge()
+ *
+ * @param id
+ */
+function ajax_sharing_site_purge(id)
+{
+    var rand_no = Math.random();
+    $.ajax({
+        url       : WWW_TOP + '/admin/ajax_sharing_settings.php?rand=' + rand_no,
+        data      : { purge_site: id },
+        dataType  : "html",
+        success   : function(data)
+        {
+            $('div#message').html(data);
+            $('div#message').show('fast', function() {});
+
+            // fade.. mm
+            $('#message').fadeOut(5000);
+            setTimeout('history.go(0);',1500);
+        },
+        error: function(xhr,err,e) { alert( "Error in ajax_sharing_site_purge: " + err ); }
+    });
 }
 
 /**
@@ -144,10 +235,10 @@ function ajax_sharing_posting(id, status)
 
                 // switch some links around
                 if (status == 0) {
-                    $('strong#posting-' + id).html('<a href="javascript:ajax_sharing_posting('+ id +', 1)" class="sharing_posting_deactive">[ENABLE]</a>');
+                    $('strong#posting-' + id).html('<a title="Click this to enable posting." href="javascript:ajax_sharing_posting('+ id +', 1)" class="sharing_posting_deactive">[ENABLE]</a>');
                 }
                 else {
-                    $('strong#posting-' + id).html('<a href="javascript:ajax_sharing_posting('+ id +', 0)" class="sharing_posting_active">[DISABLE]</a>');
+                    $('strong#posting-' + id).html('<a title="Click this to disable posting." href="javascript:ajax_sharing_posting('+ id +', 0)" class="sharing_posting_active">[DISABLE]</a>');
                 }
 
                 // fade.. mm
@@ -185,10 +276,10 @@ function ajax_sharing_fetching(id, status)
 
                 // switch some links around
                 if (status == 0) {
-                    $('strong#fetching-' + id).html('<a href="javascript:ajax_fetching_posting('+ id +', 1)" class="sharing_fetching_deactive">[ENABLE]</a>');
+                    $('strong#fetching-' + id).html('<a title="Click this to enable posting." href="javascript:ajax_fetching_posting('+ id +', 1)" class="sharing_fetching_deactive">[ENABLE]</a>');
                 }
                 else {
-                    $('strong#fetching-' + id).html('<a href="javascript:ajax_fetching_posting('+ id +', 0)" class="sharing_fetching_active">[DISABLE]</a>');
+                    $('strong#fetching-' + id).html('<a title="Click this to disable sharing." href="javascript:ajax_fetching_posting('+ id +', 0)" class="sharing_fetching_active">[DISABLE]</a>');
                 }
 
                 // fade.. mm
@@ -226,10 +317,10 @@ function ajax_sharing_auto(id, status)
 
                 // switch some links around
                 if (status == 0) {
-                    $('strong#auto-' + id).html('<a href="javascript:ajax_auto_posting('+ id +', 1)" class="sharing_auto_deactive">[ENABLE]</a>');
+                    $('strong#auto-' + id).html('<a title="Click this to enable auto-enable." href="javascript:ajax_auto_posting('+ id +', 1)" class="sharing_auto_deactive">[ENABLE]</a>');
                 }
                 else {
-                    $('strong#auto-' + id).html('<a href="javascript:ajax_auto_posting('+ id +', 0)" class="sharing_auto_active">[DISABLE]</a>');
+                    $('strong#auto-' + id).html('<a title="Click this to disable auto-enable." href="javascript:ajax_auto_posting('+ id +', 0)" class="sharing_auto_active">[DISABLE]</a>');
                 }
 
                 // fade.. mm
@@ -267,10 +358,10 @@ function ajax_sharing_hide(id, status)
 
                 // switch some links around
                 if (status == 0) {
-                    $('strong#hide-' + id).html('<a href="javascript:ajax_hide_posting('+ id +', 1)" class="sharing_hide_deactive">[ENABLE]</a>');
+                    $('strong#hide-' + id).html('<a title="Click this to enable hiding users." href="javascript:ajax_hide_posting('+ id +', 1)" class="sharing_hide_deactive">[ENABLE]</a>');
                 }
                 else {
-                    $('strong#hide-' + id).html('<a href="javascript:ajax_hide_posting('+ id +', 0)" class="sharing_hide_active">[DISABLE]</a>');
+                    $('strong#hide-' + id).html('<a title="Click this to disable hiding users." href="javascript:ajax_hide_posting('+ id +', 0)" class="sharing_hide_active">[DISABLE]</a>');
                 }
 
                 // fade.. mm
