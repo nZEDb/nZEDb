@@ -24,7 +24,7 @@ count = 0
 print(bcolors.HEADER + "\nBinaries Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 #get values from db
-cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'binarythreads') AS a, (SELECT value FROM site WHERE setting = 'maxmssgs') AS b, (SELECT value FROM site WHERE setting = 'hashcheck') AS c")
+cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'binarythreads') AS a, (SELECT value FROM settings WHERE setting = 'maxmssgs') AS b, (SELECT value FROM settings WHERE setting = 'hashcheck') AS c")
 dbgrab = cur[0].fetchall()
 
 run_threads = int(dbgrab[0][0])

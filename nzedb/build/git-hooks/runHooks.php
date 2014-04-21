@@ -19,7 +19,8 @@
  * @copyright 2014 nZEDb
  */
 define('GIT_PRE_COMMIT', true);
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'autoloader.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'www' .
+					  DIRECTORY_SEPARATOR . 'automated.config.php');
 
 $error = false;
 echo "Running pre-commit hooks\n";

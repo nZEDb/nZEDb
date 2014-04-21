@@ -24,7 +24,7 @@ print(bcolors.HEADER + "\nNZB Import Threaded Started at {}".format(datetime.dat
 #get values from db
 cur[0].execute("SELECT value FROM tmux WHERE setting = 'import'")
 use_true = cur[0].fetchone()
-cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'nzbthreads') AS a, (SELECT value FROM tmux WHERE setting = 'nzbs') AS b")
+cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'nzbthreads') AS a, (SELECT value FROM tmux WHERE setting = 'nzbs') AS b")
 dbgrab = cur[0].fetchall()
 run_threads = int(dbgrab[0][0])
 nzbs = dbgrab[0][1]

@@ -40,8 +40,6 @@ foreach ($arr as &$value)
 }
 unset($value);
 
-$db->optimise(false, 'full');
-
 if ($db->dbSystem() === 'mysql') {
 	$sql = "SHOW table status";
 } else {
@@ -61,6 +59,8 @@ foreach($tables as $row)
 			echo $c->primary("Dropping ${tbl} completed.");
 	}
 }
+
+$db->optimise(false, 'full');
 
 echo $c->header("Deleting nzbfiles subfolders.");
 try {

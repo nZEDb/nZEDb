@@ -10,6 +10,8 @@ Class TraktTv
 
 	/**
 	 * Construct. Set up API key.
+	 *
+	 * @access public
 	 */
 	public function __construct()
 	{
@@ -26,6 +28,8 @@ Class TraktTv
 	 * @param string $ep
 	 *
 	 * @return bool|mixed
+	 *
+	 * @access public
 	 */
 	public function traktTVSEsummary($title = '', $season = '', $ep = '')
 	{
@@ -53,6 +57,8 @@ Class TraktTv
 	 * @param bool $array   Return the full array or just the IMDB id.
 	 *
 	 * @return bool|mixed
+	 *
+	 * @access public
 	 */
 	public function traktMoviesummary($movie = '', $array=false)
 	{
@@ -66,6 +72,9 @@ Class TraktTv
 
 			if ($MovieJson !== false) {
 				$MovieJson = json_decode($MovieJson, true);
+				if (isset($MovieJson['status']) && $MovieJson['status'] === 'failure') {
+					return false;
+				}
 
 				if ($array) {
 					return $MovieJson;

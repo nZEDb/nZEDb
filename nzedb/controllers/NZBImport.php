@@ -10,55 +10,65 @@ class NZBImport
 {
 	/**
 	 * @var DB
+	 * @access protected
 	 */
 	protected $db;
 
 	/**
 	 * @var Binaries
+	 * @access protected
 	 */
 	protected $binaries;
 
 	/**
 	 * @var ReleaseCleaning
+	 * @access protected
 	 */
 	protected $releaseCleaner;
 
 	/**
 	 * @var bool|stdClass
+	 * @access protected
 	 */
 	protected $site;
 
 	/**
 	 * @var int
+	 * @access protected
 	 */
 	protected $crossPost;
 
 	/**
 	 * @var Category
+	 * @access protected
 	 */
 	protected $category;
 
 	/**
 	 * List of all the group names/ids in the DB.
 	 * @var array
+	 * @access protected
 	 */
 	protected $allGroups;
 
 	/**
 	 * Was this run from the browser?
 	 * @var bool
+	 * @access protected
 	 */
 	protected $browser;
 
 	/**
 	 * Return value for browser.
 	 * @var string
+	 * @access protected
 	 */
 	protected $retVal;
 
 	/**
 	 * Guid of the current releases.
 	 * @var string
+	 * @access protected
 	 */
 	protected $relGuid;
 
@@ -67,6 +77,8 @@ class NZBImport
 	 *
 	 * @param bool $browser Was this started from the browser?
 	 * @param bool $echo    Echo to CLI?
+	 *
+	 * @access public
 	 */
 	public function __construct($browser = false, $echo = true)
 	{
@@ -92,6 +104,8 @@ class NZBImport
 	 * @param bool $deleteFailed Delete the NZB if failed importing?
 	 *
 	 * @return string|bool
+	 *
+	 * @access public
 	 */
 	public function beginImport($filesToProcess, $useNzbName = false, $delete = true, $deleteFailed = true)
 	{
@@ -216,6 +230,8 @@ class NZBImport
 	 * @param string $path Path to the zipped NZB.
 	 *
 	 * @return string|bool
+	 *
+	 * @access protected
 	 */
 	protected function deZipNzb($path)
 	{
@@ -240,6 +256,8 @@ class NZBImport
 	 * @param object $nzbXML Reference of simpleXmlObject with NZB contents.
 	 * @param bool|string $useNzbName Use the NZB file name as release name?
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function scanNZBFile(&$nzbXML, $useNzbName = false)
 	{
@@ -332,6 +350,8 @@ class NZBImport
 	 * @param $nzbDetails
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function insertNZB($nzbDetails)
 	{
@@ -403,6 +423,8 @@ class NZBImport
 	/**
 	 * Get all groups in the DB.
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function getAllGroups()
 	{
@@ -422,6 +444,8 @@ class NZBImport
 	/**
 	 * Echo message to browser or CLI.
 	 * @param $message
+	 *
+	 * @access protected
 	 */
 	protected function echoOut($message)
 	{

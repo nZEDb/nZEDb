@@ -43,7 +43,7 @@ class DB extends \PDO
 	/**
 	 * @var object Instance of PDO class.
 	 */
-	private static $pdo = null;
+	protected static $pdo = null;
 
 	/**
 	 * @var object Class instance debugging.
@@ -251,7 +251,7 @@ class DB extends \PDO
 	 * @param int    $severity The severity of the error.
 	 * @param bool   $exit     Exit or not?
 	 */
-	protected function echoError($error, $method, $severity, $exit = false)
+	protected function echoError ($error, $method, $severity, $exit = false, $e = null)
 	{
 		if ($this->_debug) {
 			$this->debugging->start($method, $error, $severity);
@@ -459,7 +459,7 @@ class DB extends \PDO
 			return self::$pdo->exec($query);
 
 		} catch (\PDOException $e) {
-			$this->echoError($e->getMessage(), 'Exec', 4);
+			$this->echoError($e->getMessage(), 'Exec', 4, false, $e);
 
 			if ($this->_debug) {
 				$this->debugging->start("Exec", $query, 6);
@@ -493,8 +493,8 @@ class DB extends \PDO
 						return $crows;
 					}
 				}
-			} catch (Exception $er) {
-				$this->echoError($er->getMessage(), 'query', 4);
+			} catch (Exception $e) {
+				$this->echoError($e->getMessage(), 'query', 4, false, $e);
 
 				if ($this->_debug) {
 					$this->debugging->start("query", $query, 6);
@@ -553,7 +553,7 @@ class DB extends \PDO
 		try {
 			$result = self::$pdo->query($query);
 		} catch (\PDOException $e) {
-			$this->echoError($e->getMessage(), 'queryDirect', 4);
+			$this->echoError($e->getMessage(), 'queryDirect', 4, false, $e);
 			if ($this->_debug) {
 				$this->debugging->start("queryDirect", $query, 6);
 			}

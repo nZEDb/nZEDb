@@ -137,7 +137,7 @@ if ($dbtype == 'mysql') {
 		. "(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$db_name') AS parts_table, "
 		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval backfill_target day) < first_record_postdate) AS backfill_groups_days, "
 		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval datediff(curdate(), "
-		. "(SELECT VALUE FROM site WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date, "
+		. "(SELECT VALUE FROM settings WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date, "
 		. "(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
 		. "(SELECT UNIX_TIMESTAMP(predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre, "
 		. "(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
@@ -147,7 +147,7 @@ if ($dbtype == 'mysql') {
 		. "(SELECT COUNT(*) FROM predb WHERE id IS NOT NULL) AS predb, "
 		. "(SELECT COUNT(*) FROM parts WHERE id IS NOT NULL) AS parts_table, "
 		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - backfill_target * interval '1 days') < first_record_postdate) AS backfill_groups_days, "
-		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM site WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date, "
+		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM settings WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date, "
 		. "(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
 		. "(SELECT extract(epoch FROM predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre, "
 		. "(SELECT extract(epoch FROM adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
@@ -190,10 +190,10 @@ $proc_tmux = "SELECT "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'dehash') as dehash, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'dehash_timer') as dehash_timer, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'backfill_days') as backfilldays, "
-	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupbooks') as processbooks, "
-	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupmusic') as processmusic, "
-	. "(SELECT VALUE FROM site WHERE SETTING = 'lookupgames') as processgames, "
-	. "(SELECT VALUE FROM site WHERE SETTING = 'tmpunrarpath') as tmpunrar, "
+	. "(SELECT VALUE FROM settings WHERE SETTING = 'lookupbooks') as processbooks, "
+	. "(SELECT VALUE FROM settings WHERE SETTING = 'lookupmusic') as processmusic, "
+	. "(SELECT VALUE FROM settings WHERE SETTING = 'lookupgames') as processgames, "
+	. "(SELECT VALUE FROM settings WHERE SETTING = 'tmpunrarpath') as tmpunrar, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post_amazon') as post_amazon, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post_timer_amazon') as post_timer_amazon, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post_non') as post_non, "
@@ -209,8 +209,8 @@ $proc_tmux = "SELECT "
 	. "(SELECT COUNT(DISTINCT(collectionhash)) FROM nzbs WHERE collectionhash IS NOT NULL) AS distinctnzbs, "
 	. "(SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL) AS totalnzbs, "
 	. "(SELECT COUNT(*) FROM (SELECT id FROM nzbs GROUP BY collectionhash, totalparts, id HAVING COUNT(*) >= totalparts) AS count) AS pendingnzbs, "
-	. "(SELECT value FROM site WHERE setting = 'grabnzbs') AS grabnzbs, "
-	. "(SELECT value FROM site WHERE setting = 'compressedheaders') AS compressed";
+	. "(SELECT value FROM settings WHERE setting = 'grabnzbs') AS grabnzbs, "
+	. "(SELECT value FROM settings WHERE setting = 'compressedheaders') AS compressed";
 
 //get microtime
 function microtime_float()
@@ -1158,9 +1158,9 @@ while ($i > 0) {
 				$log = writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
 						$_python ${DIR}update/python/fixreleasenames_threaded.py md5 $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py filename $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py nfo $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py par2 $log; \
+						$_python ${DIR}update/python/fixreleasenames_threaded.py filename preid $log; \
+						$_python ${DIR}update/python/fixreleasenames_threaded.py nfo preid $log; \
+						$_python ${DIR}update/python/fixreleasenames_threaded.py par2 preid $log; \
 						$_python ${DIR}update/python/fixreleasenames_threaded.py miscsorter $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
 			} else {
 				$color = get_color($colors_start, $colors_end, $colors_exc);

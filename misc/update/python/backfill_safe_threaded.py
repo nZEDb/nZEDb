@@ -47,7 +47,7 @@ previous = "'alt.binaries.crap'"
 while count < 10000:
 	#get values from db
 	cur = info.connect()
-	cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'backfillthreads') AS a, (SELECT value FROM tmux WHERE setting = 'backfill_qty') AS b, (SELECT value FROM tmux WHERE setting = 'backfill') AS c, (SELECT value FROM tmux WHERE setting = 'backfill_order') AS e, (SELECT value FROM tmux WHERE setting = 'backfill_days') AS f, (SELECT value FROM site WHERE setting = 'maxmssgs') AS g")
+	cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'backfillthreads') AS a, (SELECT value FROM tmux WHERE setting = 'backfill_qty') AS b, (SELECT value FROM tmux WHERE setting = 'backfill') AS c, (SELECT value FROM tmux WHERE setting = 'backfill_order') AS e, (SELECT value FROM tmux WHERE setting = 'backfill_days') AS f, (SELECT value FROM settings WHERE setting = 'maxmssgs') AS g")
 	dbgrab = cur[0].fetchall()
 	run_threads = int(dbgrab[0][0])
 	backfill_qty = int(dbgrab[0][1])
@@ -74,7 +74,7 @@ while count < 10000:
 	if intbackfilltype == 1:
 		backfilldays = "backfill_target"
 	elif intbackfilltype == 2:
-		backfilldays = "datediff(curdate(),(SELECT value FROM site WHERE setting = 'safebackfilldate'))"
+		backfilldays = "datediff(curdate(),(SELECT value FROM settings WHERE setting = 'safebackfilldate'))"
 
 	#query to grab backfill groups
 	if len(sys.argv) == 1:

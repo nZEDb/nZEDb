@@ -23,7 +23,7 @@ pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 print(bcolors.HEADER + "\nBackfill Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 #get values from db
-cur[0].execute("SELECT (SELECT value FROM site WHERE setting = 'backfillthreads') as a, (SELECT value FROM tmux WHERE setting = 'backfill') as c, (SELECT value FROM tmux WHERE setting = 'backfill_groups') as d, (SELECT value FROM tmux WHERE setting = 'backfill_order') as e, (SELECT value FROM tmux WHERE setting = 'backfill_days') as f")
+cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'backfillthreads') as a, (SELECT value FROM tmux WHERE setting = 'backfill') as c, (SELECT value FROM tmux WHERE setting = 'backfill_groups') as d, (SELECT value FROM tmux WHERE setting = 'backfill_order') as e, (SELECT value FROM tmux WHERE setting = 'backfill_days') as f")
 dbgrab = cur[0].fetchall()
 run_threads = int(dbgrab[0][0])
 type = int(dbgrab[0][1])
@@ -49,7 +49,7 @@ else:
 if intbackfilltype == 1:
 	backfilldays = "backfill_target"
 elif intbackfilltype == 2:
-	backfilldays = "datediff(curdate(),(SELECT value FROM site WHERE setting = 'safebackfilldate'))"
+	backfilldays = "datediff(curdate(),(SELECT value FROM settings WHERE setting = 'safebackfilldate'))"
 
 #exit is set to safe backfill
 if len(sys.argv) == 1 and type == 4:

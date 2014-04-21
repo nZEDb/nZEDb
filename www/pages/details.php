@@ -76,19 +76,21 @@ if (isset($_GET['id'])) {
 			preg_match('/[\/?]v[\/\=](\w+)$/i', $traktSummary['trailer'], $youtubeM)) {
 			$mov['trailer'] =
 			'<embed width="480" height="345" src="' .
-			'http://www.youtube.com/v/' . $youtubeM[1] .
+			'https://www.youtube.com/v/' . $youtubeM[1] .
 			'" type="application/x-shockwave-flash"></embed>';
 		} else {
 			$mov['trailer'] = nzedb\utility\imdb_trailers($data['imdbid']);
 		}
 
-		if ($mov) {
+		if ($mov && isset($mov['title'])) {
 			$mov['title'] = str_replace(array('/', '\\'), '', $mov['title']);
 			$mov['actors'] = $movie->makeFieldLinks($mov, 'actors');
 			$mov['genre'] = $movie->makeFieldLinks($mov, 'genre');
 			$mov['director'] = $movie->makeFieldLinks($mov, 'director');
 		} else if ($traktSummary !== false) {
 			$mov['title'] = str_replace(array('/', '\\'), '', $traktSummary['title']);
+		} else {
+			$mov = false;
 		}
 	}
 
