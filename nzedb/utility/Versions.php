@@ -8,6 +8,8 @@ if (!defined('GIT_PRE_COMMIT')) {
 // Only set an argument if calling from bash or MS-DOS batch scripts. Otherwise
 // instantiate the class and use as below.
 if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
+	require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'automated.config.php');
+
 	$vers = new Versions();
 	echo $vers->out->header("Checking versions...");
 	if ($vers->checkAll()) {
@@ -66,7 +68,7 @@ class Versions
 		}
 
 		if (!file_exists($filepath)) {
-			throw \RuntimeException("Versions file '$filepath' does not exist!'");
+			throw new \RuntimeException("Versions file '$filepath' does not exist!'");
 		}
 		$this->_filespec = $filepath;
 
