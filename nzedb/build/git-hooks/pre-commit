@@ -1,5 +1,5 @@
 #!/bin/sh
-#version=6
+#version=9
 #
 # An example hook script to verify what is about to be committed.
 # Called by "git commit" with no arguments.  The hook should
@@ -34,14 +34,13 @@ do
     echo ${PROJECT}/${FILE} >> ${FILE_LIST}
 done
 
-exit ${EXIT_STATUS}
-
 #nZEDb hook - run hooks
 # placeholder for script to add command with correct path ;-)
 
-EXIT_STATUS = $?
+EXIT_STATUS=$?
 
 if [ -e ${FILE_LIST} ]
+then
 	rm ${FILE_LIST}
 fi
 
@@ -51,4 +50,4 @@ then
 fi
 
 # If there are whitespace errors, print the offending file names and fail.
-exec git diff-index --check --cached $against --
+exec git diff-index --check --cached ${AGAINST} --
