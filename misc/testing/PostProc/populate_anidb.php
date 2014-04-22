@@ -179,12 +179,12 @@ class AniDBstandAlone {
 					}
 				sleep($sleeptime);
 				}
-			}
 
 		// using exitcount if this number of API calls is reached exit
 		if ($apicount >= $exitcount) {
 			return;
 			}
+		}
 
 		// Begin Stage 2: Update running series in anidb table -- we only update series already existing in db
 		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."] Stage 2 -> Update running series."));
