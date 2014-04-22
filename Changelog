@@ -10,6 +10,7 @@ New updates are grouped by person, at the top of the file.
 2014-04-22 niel
 	* Fix: Updating pre-commit hook files to fix problems updating versions.
 2014-04-21 bart39
+	* Fix: fix API errors
 	* Fix: renametopre.php incorrectly matching a.b.etc requestid releases against a.b.erotica releases
 	NB: this will reset the searchname and preid against the affected releases - run /misc/testing/Dev/renametopre
 	.php full preid to re-match them.
