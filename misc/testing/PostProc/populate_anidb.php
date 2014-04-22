@@ -521,7 +521,8 @@ if (isset($argv[1]) && is_numeric($argv[1])) {
 		sleep(rand(60, 180));
 		}
 	// then get the titles, this is where we will make the real changes
-	$anidb->getAniDBInfo((int)$argv[1] + rand(1, 12));
+//	$anidb->getAniDBInfo((int)$argv[1] + rand(1, 12));
+	$anidb->getAniDBInfo((int)$argv[1]);
 } else {
 	echo $c->error("This script is designed to gather all show data from anidb and add it to the anidb table for nZEDb, as part of this process we need the number of API queries that can be executed max.\nTo execute this script run:\nphp populate_anidb.php 30\n");
 }
