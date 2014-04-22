@@ -1849,7 +1849,7 @@ class Releases
 				$propername = true;
 				$relid = false;
 				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $rowcol['subject']);
-				$cleanerName = $this->releaseCleaning->releaseCleaner($rowcol['subject'], $rowcol['gname']);
+				$cleanerName = $this->releaseCleaning->releaseCleaner($rowcol['subject'], $rowcol['fromname'], $rowcol['filesize'], $rowcol['gname']);
 				/* $ncarr = $this->collectionsCleaning->collectionsCleaner($subject, $rowcol['gname']);
 				  $cleanerName = $ncarr['subject'];
 				  $category = $ncarr['cat'];
@@ -2377,9 +2377,6 @@ class Releases
 			$where = (!empty($groupID)) ? ' ' . $group['cname'] . '.groupid = ' . $groupID . ' AND ' : ' ';
 			$where1 = (!empty($groupID)) ? ' AND ' . $group['cname'] . '.groupid = ' . $groupID : '';
 		}
-
-		//$where = (!empty($groupID)) ? ' ' . $group['cname'] . '.groupid = ' . $groupID . ' AND ' : ' ';
-		//$where1 = (!empty($groupID)) ? ' AND ' . $group['cname'] . '.groupid = ' . $groupID : '';
 
 		// Delete old releases and finished collections.
 		if ($this->echooutput) {
