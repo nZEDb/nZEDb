@@ -4,7 +4,7 @@
 		<db>215</db>
 		<git>
 			<tag>0.3</tag>
-			<commit>7164</commit>
+			<commit>7160</commit>
 			<hooks>
 				<precommit>6</precommit>
                 <!-- this is the version of the pre-commit file in githooks NOT the files it calls -->
