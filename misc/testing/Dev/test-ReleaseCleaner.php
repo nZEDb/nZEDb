@@ -41,7 +41,7 @@ if ($group === false) {
 	exit('No group with name ' . $argv[1] . ' found in the database.');
 }
 
-$releases = $db->query(sprintf('SELECT name, searchname, id FROM releases WHERE groupid = %d %s ORDER BY postdate LIMIT %d', $group['id'], $category, $argv[2]));
+$releases = $db->query(sprintf('SELECT name, searchname, fromname, size, id FROM releases WHERE groupid = %d %s ORDER BY postdate LIMIT %d', $group['id'], $category, $argv[2]));
 
 if (count($releases) === 0) {
 	exit('No releases found in your database for group ' . $argv[1] . PHP_EOL);
@@ -50,7 +50,7 @@ if (count($releases) === 0) {
 $RC = new ReleaseCleaning();
 
 foreach($releases as $release) {
-	$newName = $RC->releaseCleaner($release['name'], $argv[1]);
+	$newName = $RC->releaseCleaner($release['name'], $release['fromname'], $release['size'], $argv[1]);
 	if (is_array($newName)) {
 		$newName = $newName['cleansubject'];
 	}

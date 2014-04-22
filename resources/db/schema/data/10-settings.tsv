@@ -138,4 +138,4 @@ site	main	strapline	A great usenet indexer	Displayed in the header on every publ
 site	main	style	Default	The theme folder which will be loaded for css and images. (Use / for default)	style
 site	main	tandc	"<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do find obscene, incorrect or objectionable results, let us know by using the contact form.</p>"	"Text displayed in the terms and conditions page."	tandc
 site	main	title	nZEDb	Displayed around the site and contact form as the name for the site.	title
-		sqlpatch	213		sqlpatch
+		sqlpatch	214		sqlpatch

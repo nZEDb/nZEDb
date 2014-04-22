@@ -82,14 +82,15 @@ function preName($argv, $argc)
 		$why = ' WHERE 1=1';
 	}
 	resetSearchnames();
-	echo $c->header("SELECT id, name, searchname, groupid, categoryid FROM releases" . $why . $what . $where . ";\n");
-	$res = $db->queryDirect("SELECT id, name, searchname, groupid, categoryid FROM releases" . $why . $what . $where);
+	echo $c->header("SELECT id, name, searchname, fromname, size, groupid, categoryid FROM releases" . $why . $what .
+		$where .	";\n");
+	$res = $db->queryDirect("SELECT id, name, searchname, fromname, size, groupid, categoryid FROM releases" . $why . $what . $where);
 	$total = $res->rowCount();
 	if ($total > 0) {
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row) {
 			$groupname = $groups->getByNameByID($row['groupid']);
-			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $groupname, $usepre);
+			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $row['fromname'], $row['size'] , $groupname, $usepre);
 			$preid = 0;
 			$predb = $increment = false;
 			if (!is_array($cleanerName)) {
@@ -114,25 +115,22 @@ function preName($argv, $argc)
 				}
 			}
 			if ($cleanName != '') {
-				$cleanedBook = false;
 				$match = '';
-				if ($groupname == 'alt.binaries.e-book' || $groupname == 'alt.binaries.e-book.flood') {
+				if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupname)) {
 					if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanName, $match)) {
 						$rf = new ReleaseFiles();
 						$files = $rf->get($row['id']);
-						if (count($files) == 1) {
 							foreach ($files as $f) {
-								if (preg_match('/^(?P<title>.+)\.(pdf|html|epub|mobi|azw)/', $f["name"], $match)) {
-									$cleanedBook = true;
+								if (preg_match('/^(?P<title>.+?)(\\[\w\[\]\(\). -]+)?\.(pdf|htm(l)?|epub|mobi|azw|tif|doc(x)?|lit|txt|rtf|opf|fb2|prc|djvu|cb[rz])/', $f["name"],
+									$match)) {
 									$cleanName = $match['title'];
+									break;
 								}
 							}
-						}
 					}
 				}
 				if ($cleanName != $row['name']) {
 					if (strlen(utf8_decode($cleanName)) <= 3) {
-						//echo $row["name"] . "\n";
 					} else {
 						$determinedcat = $category->determineCategory($row["name"], $row["groupid"]);
 						if ($propername == true) {
@@ -277,13 +275,13 @@ function categorizeRelease($type, $where, $echooutput = false)
 	return $relcount;
 }
 
-function releaseCleaner($subject, $groupid, $groupname, $usepre)
+function releaseCleaner($subject, $groupid, $fromName, $size, $groupname, $usepre)
 {
 	$groups = new Groups();
 	$match = '';
 	$groupName = $groups->getByNameByID($groupid);
 	$releaseCleaning = new ReleaseCleaning();
-	$cleanerName = $releaseCleaning->releaseCleaner($subject, $groupname, $usepre);
+	$cleanerName = $releaseCleaning->releaseCleaner($subject, $fromName, $size, $groupname, $usepre);
 	if (!is_array($cleanerName) && $cleanerName != false) {
 		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);
 	} else {
