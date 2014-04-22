@@ -80,6 +80,7 @@ class AniDBstandAlone {
 		// Used for information purposes in main echo
 		$animetitles = $db->query('SELECT DISTINCT anidbid FROM animetitles');
 		$anidbtitles = $db->query('SELECT DISTINCT anidbid FROM anidb');
+		$anidbtitleslang = $db->query('SELECT DISTINCT anidbid FROM anidb_titles');
 		$anidbjointitles = $db->query(sprintf("SELECT * FROM animetitles
 					INNER JOIN anidb ON animetitles.anidbid = anidb.anidbid"
 					));
@@ -93,13 +94,14 @@ class AniDBstandAlone {
 		$anirunnstage2 = $db->query('SELECT anidbid FROM anidb WHERE (startdate < CURDATE() AND (enddate > CURDATE() OR enddate IS NULL)) AND (unixtime < UNIX_TIMESTAMP(NOW()- INTERVAL 7 DAY)) ORDER BY unixtime');
 		$anioldstage3 = $db->query('SELECT anidbid FROM anidb WHERE (unixtime < UNIX_TIMESTAMP(NOW()- INTERVAL 90 DAY)) ORDER BY unixtime');
 		echo  $this->c->header("Total of " . count($animetitles) . " distinct titles present in animetitles.\n" .
-					  "Total of " . count($anidbtitles) . " distinct titles present in anidb.\n" .
-					  "Total of " . count($anidbjointitles) . " titles in both anidb and animetitles.\n" .
-					  "Total of " . count($anidbmissingtitles) . " missing titles in anidb table.\n" .
-					  "Total of " . count($animissstage1) . " missing distinct titles in anidb table.\n" .
-					  "Total of " . count($aniremovedstage0) . " orphaned anime titles no longer in animetitles to be removed from anidb table.\n" .
-					  "Total of " . count($anirunnstage2) . " running anime titles in anidb table not updated for 7 days.\n" .
-					  "Total of " . count($anioldstage3) . " anime titles in anidb table not updated for 90 days.\n");
+					"Total of " . count($anidbtitles) . " distinct titles present in anidb.\n" .
+					"Total of " . count($anidbtitleslang) . " distinct titles present in anidb_titles.\n" .
+					"Total of " . count($anidbjointitles) . " titles in both anidb and animetitles.\n" .
+					"Total of " . count($anidbmissingtitles) . " missing titles in anidb table.\n" .
+					"Total of " . count($animissstage1) . " missing distinct titles in anidb table.\n" .
+					"Total of " . count($aniremovedstage0) . " orphaned anime titles no longer in animetitles to be removed from anidb table.\n" .
+					"Total of " . count($anirunnstage2) . " running anime titles in anidb table not updated for 7 days.\n" .
+					"Total of " . count($anioldstage3) . " anime titles in anidb table not updated for 90 days.\n");
 
 		if ($this->APIKEY == '') {
 			echo $this->c->error("Error: You need an API key from AniDB.net to use this.  Try adding \"nzedb\" in Site Edit.\n");
