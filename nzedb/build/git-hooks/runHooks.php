@@ -22,9 +22,9 @@ define('GIT_PRE_COMMIT', true);
 require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'www' .
 					  DIRECTORY_SEPARATOR . 'automated.config.php');
 
-$error = false;
 echo "Running pre-commit hooks\n";
 
+$error = false;
 
 // TODO Add code here to check permissions on staged files.
 //$files = file(nZEDb_ROOT . 'nzedb/build/git-hooks'), FILE_IGNORE_NEW_LINES);
@@ -51,6 +51,8 @@ if ($error === false) {
 	} else {
 		echo "not 'dev', 'next-master', or 'master' branch, skipping version updates\n";
 	}
+} else {
+	echo "Error in pre-commit hooks!!\n";
 }
 
 exit($error);
