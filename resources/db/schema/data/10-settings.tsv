@@ -82,7 +82,7 @@ section, subsection, name, value, hint, setting
 		showpasswordedrelease	1	Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.	showpasswordedrelease
 		storeuserips	0	Whether to store the users ip address when they signup or login.	storeuserips
 		tablepergroup	0	This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.<br />Run: show variables like '%open%f	tablepergroup
-		tmpunrarpath	/var/www/nzedb/resources/tmp/unrar	The path to where unrar puts files. WARNING: This directory will have its contents deleted.<br/>Use forward slashes in windows c:/temp/path/stuff/will/be/unpacked/to	tmpunrarpath
+		tmpunrarpath	/var/www/nZEDb/resources/tmp/unrar	The path to where unrar puts files. WARNING: This directory will have its contents deleted.<br/>Use forward slashes in windows c:/temp/path/stuff/will/be/unpacked/to	tmpunrarpath
 	release	minfilestoformrelease	1	The minimum number of files to make a release. i.e. if set to two, then releases which only contain one file will not be created.	minfilestoformrelease
 	release	minsizetoformrelease	0	The minimum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.	minsizetoformrelease
 APIs		amazonassociatetag	n01369-20	The amazon associate tag. Used for music/book lookups.	amazonassociatetag
