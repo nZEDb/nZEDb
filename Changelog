@@ -6,6 +6,16 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+
+2014-04-22 niel
+	* Fix: Updating pre-commit hook files to fix problems updating versions.
+2014-04-22 bart39
+	* Fix: fix API errors
+	* Fix: renametopre.php incorrectly matching a.b.etc requestid releases against a.b.erotica releases
+	NB: this will reset the searchname and preid against the affected releases - run /misc/testing/Dev/renametopre
+	.php full preid to re-match them.
+	* Chg: Add fromname and size to ReleaseCleaner for potential use matching releases aginst predb titles for other
+	groups.
 2014-04-21 kevin
 	* Fix: Typo in requestid.
 	* Fix: IRCClient. The example code on php.net for fwrite is wrong and can create an infinite loop if the remote server closes the connection which causes fwrite to return 0 and not false - php.net only states false as a return value on error.
@@ -13,6 +23,8 @@ New updates are grouped by person, at the top of the file.
 	* Modify requestid local match script to ignore matches already PreDB matched and change script commenting
 2014-04-21 niel
 	* Chg: Adding removal of bad rows in predb to patch 213.
+	* New: Added method to Versions class to fetch the pre-commit version.
+	* Upd: Updated pre-commit hook. Dev's should run .../nzedb/build/addGitHook.php to install.
 2014-04-20 niel
 	* Fix: Updated create table for patch 210, to avoid truncation of data.
 	* Chg: Removing a number of query failures from errors to ignore during patching.

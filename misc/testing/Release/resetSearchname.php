@@ -9,7 +9,7 @@ $c = new ColorCLI();
 
 if (isset($argv[1]) && $argv[1] == "full") {
 	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id");
+	$res = $db->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id");
 
 	$show = 2;
 	if (isset($argv[2]) && $argv[2] === 'show') {
@@ -22,7 +22,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row) {
 			$rc = new ReleaseCleaning();
-			$newname = $rc->releaseCleaner($row['name'], $row['gname']);
+			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
@@ -49,7 +49,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	}
 } else if (isset($argv[1]) && $argv[1] == "limited") {
 	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE isrenamed = 0");
+	$res = $db->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE isrenamed = 0");
 
 	if (count($res) > 0) {
 		echo $c->header("Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.");
@@ -58,7 +58,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row) {
 			$rc = new ReleaseCleaning();
-			$newname = $rc->releaseCleaner($row['name'], $row['gname']);
+			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
@@ -85,7 +85,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	}
 } else if (isset($argv[1]) && $argv[1] == "reset") {
 	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id");
+	$res = $db->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id");
 
 	if (count($res) > 0) {
 		echo $c->header("Going to reset search names, this can take a while.");
@@ -94,7 +94,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row) {
 			$rc = new ReleaseCleaning();
-			$newname = $rc->releaseCleaner($row['name'], $row['gname']);
+			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}

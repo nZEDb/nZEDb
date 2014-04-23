@@ -15,7 +15,7 @@ if (isset($argv[1]) && file_exists($argv[1])) {
 	while (!feof($fp)) {
 		$line = fgets($fp, 1024);
 		if (preg_match('/^(.+yEnc).+\(\d+\/\d+\)/', $line, $matches)) {
-			$clean = $cleaner->releaseCleaner($matches[1], $group);
+			$clean = $cleaner->releaseCleaner($matches[1], '', 0, $group);
 			if (is_array($clean)) {
 				file_put_contents(
 					nZEDb_RES . 'logs' . DS . 'not_yenc' . DS . $group .

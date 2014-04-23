@@ -48,12 +48,13 @@ function print_str($type, $str, $argv)
 
 function test_regex($name, $group, $argv)
 {
-	$file = nZEDb_LIB . 'ReleaseCleaning.php';
+	$file = nZEDb_LIB . '/controllers/ReleaseCleaning.php';
 	/* TODO: add CollectionCleaning */
 	$handle = fopen($file, "r");
 	$test_str = $name;
 	$e0 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
-	$e1 = $e0 . ' yEnc$/';
+	$e1 = $e0 . '[- ]{0,3}yEnc$/';
+	$e2 = $e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/';
 	$groupName = '';
 	if ($handle) {
 		print_str('header', $name, $argv);
@@ -61,8 +62,9 @@ function test_regex($name, $group, $argv)
 			print_str('primary', $group . "\n", $argv);
 		}
 		while (($line1 = fgets($handle)) !== false) {
-			$line2 = preg_replace('/\' \. \$this->e0 \. \'/', $e0, $line1);
-			$line = preg_replace('/\' \. \$this->e1/', $e1 . '\'', $line2);
+			$line3 = preg_replace('/\' \. \$this->e0 \. \'/', $e0, $line1);
+			$line2 = preg_replace('/\' \. \$this->e1/', $e1 . '\'', $line3);
+			$line = preg_replace('/\' \. \$this->e2/', $e2 . '\'', $line2);
 			$matchName = $match = $match1 = '';
 			if (preg_match('/public function (.+)\(\)/', $line, $matchName)) {
 				$groupName = $matchName[1];
@@ -99,11 +101,13 @@ function test_regex($name, $group, $argv)
 	$test_str1 = $name;
 	$e01 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
 	$e11 = $e01 . ' yEnc$/';
+	$e12 = $e01 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/';
 	$groupName1 = 'renametopre';
 	if ($handle1) {
 		while (($line1 = fgets($handle1)) !== false) {
-			$line2 = preg_replace('/\' \. \$this->e0 \. \'/', $e01, $line1);
-			$line = preg_replace('/\' \. \$this->e1/', $e11 . '\'', $line2);
+			$line3 = preg_replace('/\' \. \$this->e0 \. \'/', $e01, $line1);
+			$line2 = preg_replace('/\' \. \$this->e1/', $e11 . '\'', $line3);
+			$line = preg_replace('/\' \. \$this->e2/', $e12 . '\'', $line2);
 			if (preg_match('/if \(preg_match\(\'(.+)\', \$this->subject\, \$match\)\)/', $line, $match) || preg_match('/if \(preg_match\(\'(.+)\', \$subject\, \$match\)\)/', $line, $match)) {
 				$regex = $match[1];
 				if (preg_match($regex, $test_str1, $match1)) {

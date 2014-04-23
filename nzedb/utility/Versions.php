@@ -8,9 +8,15 @@ if (!defined('GIT_PRE_COMMIT')) {
 // Only set an argument if calling from bash or MS-DOS batch scripts. Otherwise
 // instantiate the class and use as below.
 if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
+	require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'automated.config.php');
+
 	$vers = new Versions();
-	$vers->checkAll();
-	$vers->save();
+	echo $vers->out->header("Checking versions...");
+	if ($vers->checkAll()) {
+		$vers->save();
+	} else {
+		echo "No changes detected.\n";
+	}
 }
 
 class Versions
@@ -62,7 +68,7 @@ class Versions
 		}
 
 		if (!file_exists($filepath)) {
-			throw \RuntimeException("Versions file '$filepath' does not exist!'");
+			throw new \RuntimeException("Versions file '$filepath' does not exist!'");
 		}
 		$this->_filespec = $filepath;
 
@@ -197,6 +203,11 @@ class Versions
 		return false;
 	}
  */
+
+	public function getGitHookPrecommit()
+	{
+		return $this->_vers->git->hooks->precommit;
+	}
 
 	public function getSQLVersion()
 	{
