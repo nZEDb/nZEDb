@@ -7,6 +7,8 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-04-23 niel
+	* Fix: Typo in default tmpunrar path.
 2014-04-22 niel
 	* Fix: Updating pre-commit hook files to fix problems updating versions.
 2014-04-22 bart39
