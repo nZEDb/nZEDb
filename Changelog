@@ -7,6 +7,11 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-04-24 Roelski
+	* Added anidb_titles
+	* Add patch with anidb_titles and filled anidb
+	* Changed populate_anidb to use simplexml
+	* Added updates for all languages into anidb_titles.
 2014-04-23 niel
 	* Fix: Typo in default tmpunrar path.
 2014-04-22 niel
