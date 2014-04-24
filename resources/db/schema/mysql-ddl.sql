@@ -369,8 +369,6 @@ CREATE TABLE animetitles (
 DROP TABLE IF EXISTS anidb;
 CREATE TABLE anidb (
 	anidbid INT(7) UNSIGNED NOT NULL,
-	title_type VARCHAR(25) NOT NULL DEFAULT '',
-	lang VARCHAR(25) NOT NULL DEFAULT '',
 	imdbid INT(7) UNSIGNED NOT NULL,
 	tvdbid INT(7) UNSIGNED NOT NULL,
 	title VARCHAR(255) NOT NULL,
@@ -822,3 +820,12 @@ CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW BEGIN INSERT 
 CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW BEGIN IF NEW.guid != OLD.guid THEN UPDATE releasesearch SET guid = NEW.guid WHERE releaseid = OLD.id; END IF; IF NEW.name != OLD.name THEN UPDATE releasesearch SET name = NEW.name WHERE releaseid = OLD.id; END IF; IF NEW.searchname != OLD.searchname THEN UPDATE releasesearch SET searchname = NEW.searchname WHERE releaseid = OLD.id; END IF; END; $$
 CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW BEGIN DELETE FROM releasesearch WHERE releaseid = OLD.id; END; $$
 DELIMITER ;
+
+DROP TABLE IF EXISTS `anidb_titles`;
+CREATE TABLE `anidb_titles` (
+  `anidbid` int(7) unsigned NOT NULL,
+  `title_type` varchar(25) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `lang` varchar(25) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`anidbid`,`title_type`,`lang`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;

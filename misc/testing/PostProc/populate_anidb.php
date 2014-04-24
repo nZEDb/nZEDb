@@ -127,7 +127,7 @@ class AniDBstandAlone {
 
 		// Begin Stage 0: Remove Orphaned AniDB entries from anidb table if no longer in animetitles table
 
-		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."] Stage 0 -> Remove deleted anidbid."));
+		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."] Stage 0 -> Remove Orphaned AniDB."));
 
 		foreach ($aniremovedstage0 as $value) {
 			$anidbid = (int)$value['anidbid'];
@@ -346,6 +346,7 @@ class AniDBstandAlone {
 					$db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString(limitArrlen($characters,1024)), $db->escapeString($epnos),
 					$db->escapeString($airdates), $db->escapeString($episodetitles), time(), $anidbID
 					));
+// TODO: Update anidb_lang fields (or do this in separate function?!?!)
 		}
 
 	public function deleteTitle($anidbID) {
@@ -523,8 +524,8 @@ if (isset($argv[1]) && is_numeric($argv[1])) {
 		sleep(rand(60, 180));
 		}
 	// then get the titles, this is where we will make the real changes
-//	$anidb->getAniDBInfo((int)$argv[1] + rand(1, 12));
-	$anidb->getAniDBInfo((int)$argv[1]);
+	$anidb->getAniDBInfo((int)$argv[1] + rand(1, 12));
+//	$anidb->getAniDBInfo((int)$argv[1]);
 } else {
 	echo $c->error("This script is designed to gather all show data from anidb and add it to the anidb table for nZEDb, as part of this process we need the number of API queries that can be executed max.\nTo execute this script run:\nphp populate_anidb.php 30\n");
 }
