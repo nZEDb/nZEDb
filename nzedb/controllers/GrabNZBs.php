@@ -178,7 +178,7 @@ class GrabNZBs
 				$propername = true;
 				$relguid = sha1(uniqid('', true) . mt_rand());
 				$nzb = new NZB();
-				$cleanerName = $this->ReleaseCleaning->releaseCleaner($subject, $groupName);
+				$cleanerName = $this->ReleaseCleaning->releaseCleaner($subject, $fromname, $totalsize, $groupName);
 				/* $ncarr = $this->CollectionsCleaning->collectionsCleaner($subject, $groupName);
 				  $cleanerName = $ncarr['subject'];
 				  $category = $ncarr['cat'];

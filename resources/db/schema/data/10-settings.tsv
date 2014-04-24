@@ -82,7 +82,7 @@ section, subsection, name, value, hint, setting
 		showpasswordedrelease	1	Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.	showpasswordedrelease
 		storeuserips	0	Whether to store the users ip address when they signup or login.	storeuserips
 		tablepergroup	0	This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.<br />Run: show variables like '%open%f	tablepergroup
-		tmpunrarpath	/var/www/nzedb/resources/tmp/unrar	The path to where unrar puts files. WARNING: This directory will have its contents deleted.<br/>Use forward slashes in windows c:/temp/path/stuff/will/be/unpacked/to	tmpunrarpath
+		tmpunrarpath	/var/www/nZEDb/resources/tmp/unrar	The path to where unrar puts files. WARNING: This directory will have its contents deleted.<br/>Use forward slashes in windows c:/temp/path/stuff/will/be/unpacked/to	tmpunrarpath
 	release	minfilestoformrelease	1	The minimum number of files to make a release. i.e. if set to two, then releases which only contain one file will not be created.	minfilestoformrelease
 	release	minsizetoformrelease	0	The minimum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.	minsizetoformrelease
 APIs		amazonassociatetag	n01369-20	The amazon associate tag. Used for music/book lookups.	amazonassociatetag
@@ -138,4 +138,4 @@ site	main	strapline	A great usenet indexer	Displayed in the header on every publ
 site	main	style	Default	The theme folder which will be loaded for css and images. (Use / for default)	style
 site	main	tandc	"<p>All information within this database is indexed by an automated process, without any human intervention. It is obtained from global Usenet newsgroups over which this site has no control. We cannot prevent that you might find obscene or objectionable material by using this service. If you do find obscene, incorrect or objectionable results, let us know by using the contact form.</p>"	"Text displayed in the terms and conditions page."	tandc
 site	main	title	nZEDb	Displayed around the site and contact form as the name for the site.	title
-		sqlpatch	213		sqlpatch
+		sqlpatch	215		sqlpatch
