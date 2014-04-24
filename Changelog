@@ -13,6 +13,8 @@ New updates are grouped by person, at the top of the file.
 	* Changed populate_anidb to use simplexml
 	* Added updates for all languages into anidb_titles.
 	* Added function for truncating anidb results (or we should make some columns wider, as results are too big for some anime)
+	* Updated templates  and frontend for multiple languages view and search
+	* Changed anidb_title_lang so difference can be seen between anidb.lang
 2014-04-23 niel
 	* Fix: Typo in default tmpunrar path.
 2014-04-22 niel

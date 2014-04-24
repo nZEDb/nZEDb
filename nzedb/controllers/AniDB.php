@@ -83,14 +83,15 @@ class AniDB
 			if ($letter == '0-9')
 				$letter = '[0-9]';
 
-			$rsql .= sprintf('AND anidb.title %s %s', $regex, $db->escapeString('^' . $letter));
+			$rsql .= sprintf('AND anidb_titles.title_lang %s %s', $regex, $db->escapeString('^' . $letter));
 		}
 
 		$tsql = '';
 		if ($animetitle != '')
-			$tsql .= sprintf('AND anidb.title %s %s', $like, $db->escapeString('%' . $animetitle . '%'));
+			$tsql .= sprintf('AND anidb_titles.title_lang %s %s', $like, $db->escapeString('%' . $animetitle . '%'));
 
-		return $db->query(sprintf('SELECT anidb.anidbid, anidb.title, anidb.type, anidb.categories, anidb.rating, anidb.startdate, anidb.enddate FROM anidb WHERE anidb.anidbid > 0 %s %s GROUP BY anidb.anidbid ORDER BY anidb.title ASC', $rsql, $tsql));
+//		return $db->query(sprintf('SELECT anidb.anidbid, anidb.title, anidb.type, anidb.categories, anidb.rating, anidb.startdate, anidb.enddate FROM anidb WHERE anidb.anidbid > 0 %s %s GROUP BY anidb.anidbid ORDER BY anidb.title ASC', $rsql, $tsql));
+		return $db->query(sprintf('SELECT anidb.anidbid, anidb_titles.title_lang, anidb.type, anidb.categories, anidb.rating, anidb.startdate, anidb.enddate FROM anidb INNER JOIN anidb_titles ON anidb_titles.anidbid = anidb.anidbid WHERE anidb.anidbid > 0 %s %s ORDER BY anidb_titles.title_lang ASC', $rsql, $tsql));
 	}
 
 	public function getAnimeRange($start, $num, $animetitle = '')
@@ -105,12 +106,12 @@ class AniDB
 		$rsql = '';
 		if ($animetitle != '') {
 			if ($db->dbSystem() === 'mysql')
-				$rsql = sprintf('AND anidb.title LIKE %s', $db->escapeString('%' . $animetitle . '%'));
+				$rsql = sprintf('AND anidb_titles.title_lang LIKE %s', $db->escapeString('%' . $animetitle . '%'));
 			else
-				$rsql = sprintf('AND anidb.title ILIKE %s', $db->escapeString('%' . $animetitle . '%'));
+				$rsql = sprintf('AND anidb_titles.title_lang ILIKE %s', $db->escapeString('%' . $animetitle . '%'));
 		}
 
-		return $db->query(sprintf('SELECT anidbid, title, description FROM anidb WHERE 1=1 %s ORDER BY anidbid ASC' . $limit, $rsql));
+		return $db->query(sprintf('SELECT anidb.anidbid, anidb_titles.title_lang, anidb.description FROM anidb INNER JOIN anidb_titles ON anidb_titles.anidbid = anidb.anidbid WHERE 1=1 %s ORDER BY anidbid ASC' . $limit, $rsql));
 	}
 
 	public function getAnimeCount($animetitle = '')
@@ -133,8 +134,8 @@ class AniDB
 	public function getAnimeInfo($anidbID)
 	{
 		$db = $this->db;
-		$animeInfo = $db->query(sprintf('SELECT * FROM anidb WHERE anidbid = %d', $anidbID));
-
+//		$animeInfo = $db->query(sprintf('SELECT * FROM anidb WHERE anidbid = %d', $anidbID));
+		$animeInfo = $db->query(sprintf('SELECT anidb_titles.title_type,anidb_titles.lang,anidb_titles.title_lang,anidb.* FROM anidb INNER JOIN anidb_titles ON anidb_titles.anidbid = anidb.anidbid WHERE anidb.anidbid = %d', $anidbID));
 		return isset($animeInfo[0]) ? $animeInfo[0] : false;
 	}
 

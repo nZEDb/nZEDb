@@ -826,6 +826,6 @@ CREATE TABLE `anidb_titles` (
   `anidbid` int(7) unsigned NOT NULL,
   `title_type` varchar(25) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `lang` varchar(25) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `title_lang` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`anidbid`,`title_type`,`lang`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
