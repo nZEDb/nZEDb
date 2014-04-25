@@ -70,7 +70,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND isrenamed = 0 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (ishashed = 1 OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate ASC LIMIT %s"
+		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND isrenamed = 0 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (ishashed = 1 OR rf.name REGEXP'[a-fA-F0-9]{32,40}') ORDER BY postdate ASC LIMIT %s"
 		cur[0].execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur[0].fetchall()
 		maxtries = maxtries - 1

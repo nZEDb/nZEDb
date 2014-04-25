@@ -375,13 +375,22 @@ class NameFixer
 	}
 
 	// Match a MD5 from the predb to a release.
-	public function matchPredbMD5($md5, $release, $echo, $namestatus, $echooutput, $show)
+	public function matchPredbHash($hash, $release, $echo, $namestatus, $echooutput, $show)
 	{
 		$db = $this->db;
 		$matching = 0;
+		$hashtype = "";
 		$this->category = new Category();
 		$this->matched = false;
-		$res = $db->queryDirect(sprintf("SELECT title, source FROM predb WHERE md5 = %s", $db->escapeString($md5)));
+
+		// Determine MD5 or SHA1
+		if (strlen($hash) === 40) {
+			$hashtype = "SHA1, ";
+		} else {
+			$hashtype = "MD5, ";
+		}
+
+		$res = $db->queryDirect(sprintf("SELECT title, source FROM predb WHERE md5 = %s OR sha1 = %s", $db->escapeString($hash), $db-escapeString($hash)));
 		$total = $res->rowCount();
 		if ($total > 0) {
 			foreach ($res as $row) {
@@ -400,7 +409,7 @@ class NameFixer
 					}
 
 					if ($echooutput && $show === 1) {
-						$this->updateRelease($release, $row["title"], $method = "predb md5 release name: " . $row["source"], $echo, "MD5, ", $namestatus, $show);
+						$this->updateRelease($release, $row["title"], $method = "predb hash release name: " . $row["source"], $echo, $hashtype, $namestatus, $show);
 					}
 					$matching++;
 				}

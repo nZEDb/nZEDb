@@ -5,7 +5,7 @@ use nzedb\db\DB;
 
 $c = new ColorCLI();
 if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
-	exit($c->error("\nThis script tries to match an MD5 of the releases.name or releases.searchname to predb.md5.\n"
+	exit($c->error("\nThis script tries to match an MD5 or SHA1 of the releases.name or releases.searchname to predb.md5 or sha1 columns.\n"
 			. "To display the changes, use 'show' as the second argument.\n\n"
 			. "php decrypt_hashes.php 1000		...: to limit to 1000 sorted by newest postdate.\n"
 			. "php decrypt_hashes.php full 		...: to run on full database.\n"
@@ -43,8 +43,8 @@ function preName($argv)
 		$loops = 1;
 		foreach ($res as $row) {
 			$success = false;
-			if (preg_match('/([0-9a-fA-F]{32})/', $row['searchname'], $match) || preg_match('/([0-9a-fA-F]{32})/', $row['name'], $match)) {
-				$pre = $db->queryOneRow(sprintf('SELECT id, title, source FROM predb WHERE md5 = %s', $db->escapeString($match[1])));
+			if (preg_match('/([0-9a-fA-F]{32,40})/', $row['searchname'], $match) || preg_match('/([0-9a-fA-F]{32,40})/', $row['name'], $match)) {
+				$pre = $db->queryOneRow(sprintf('SELECT id, title, source FROM predb WHERE md5 = %s OR sha1 = %s', $db->escapeString($match[1]), $db->escapeString($match[1])));
 				if ($pre !== false) {
 					$determinedcat = $category->determineCategory($pre['title'], $row['groupid']);
 					$result = $db->queryDirect(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
