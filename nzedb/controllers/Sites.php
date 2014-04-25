@@ -92,7 +92,7 @@ class Sites
 			return Sites::ERR_BADTMPUNRARPATH;
 		}
 
-		if ($site->yydecoderpath != "" && !file_exists($site->yydecoderpath)) {
+		if ($site->yydecoderpath != "" && $site->yydecoderpath !== 'simple_php_yenc_decode' && !file_exists($site->yydecoderpath)) {
 			return Sites::ERR_BAD_YYDECODER_PATH;
 		}
 
@@ -158,7 +158,7 @@ class Sites
 	{
 		$obj = new stdClass;
 		foreach ($rows as $row) {
-			$obj->{$row['setting']} = $row['value'];
+			$obj->{$row['setting']} = trim($row['value']);
 		}
 
 		$obj->{'version'} = $this->version();
@@ -170,7 +170,7 @@ class Sites
 		$obj = new stdClass;
 		$rowKeys = array_keys($row);
 		foreach ($rowKeys as $key) {
-			$obj->{$key} = $row[$key];
+			$obj->{$key} = trim($row[$key]);
 		}
 
 		return $obj;

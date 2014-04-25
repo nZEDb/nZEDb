@@ -6,6 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-25 kevin
+	* Add: Even faster yEnc decoding by using a PHP extension, see : https://github.com/kevinlekiller/simple_php_yenc_decode for instructions.
+	* Chg: If the user does not have the extension loaded, use the built in PHP method for yEnc.
 2014-04-25 ruhllatio
 	* Add: Phase 2 of SHA matching implemented for fixReleaseNames and decrypt_hashes
 2014-04-25 niel
