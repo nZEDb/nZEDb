@@ -140,8 +140,12 @@ class NNTP extends Net_NNTP_Client
 
 		// Check if the user wants to use yydecode or the simple_php_yenc_decode extension.
 		$this->yyDecoderPath  = ((!empty($this->site->yydecoderpath)) ? $this->site->yydecoderpath : false);
-		if ($this->yyDecoderPath === 'simple_php_yenc_decode' && extension_loaded('simple_php_yenc_decode')) {
-			$this->yEncExtension = true;
+		if ($this->yyDecoderPath === 'simple_php_yenc_decode') {
+			if (extension_loaded('simple_php_yenc_decode')) {
+				$this->yEncExtension = true;
+			} else {
+				$this->yyDecoderPath = false;
+			}
 		} else if ($this->yyDecoderPath !== false) {
 
 			$this->yEncSilence    = (nzedb\utility\isWindows() ? '' : ' > /dev/null 2>&1');
