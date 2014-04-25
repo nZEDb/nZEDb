@@ -8,6 +8,8 @@ New updates are grouped by person, at the top of the file.
 
 2014-04-25 ruhllatio
 	* Add: Phase 2 of SHA matching implemented for fixReleaseNames and decrypt_hashes
+2014-04-25 niel
+	* Fix: Reverting accidentally changed default settings.
 2014-04-23 niel
 	* Fix: Typo in default tmpunrar path.
 2014-04-22 niel
