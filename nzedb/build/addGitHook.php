@@ -23,6 +23,8 @@ require_once realpath(dirname(__DIR__) . '/../www/config.php');
 define('nZEDb_GIT', nZEDb_ROOT . '.git' . DS);
 define('nZEDb_HOOKS', nZEDb_GIT . 'hooks' . DS);
 define('PRE_COMMIT_HOOK', 'pre-commit');
+define('GIT_HOOK_VERSION', 2);
+$current = 1;
 
 if ($argc > 1 && $argv[1]) {
 	 define('VERBOSE', true);
@@ -37,15 +39,26 @@ $target = nZEDb_HOOKS . DS . PRE_COMMIT_HOOK;
 if (!file_exists(nZEDb_HOOKS . PRE_COMMIT_HOOK)) {
 	copy($source, $target);
 }
-chmod($target, 0774);
+
+$file = file($target, FILE_IGNORE_NEW_LINES);
+if (preg_match('/^(?P<key>#version=)(?P<value>.*)$/', $file[1], $match)) {
+	$current = $match['value'];
+}
 
 $out = new ColorCLI();
 
-$file = file($target);
+$versions = new nzedb\utility\Versions();
+$version = $versions->getGitHookPrecommit();
+if ($version > $current) {
+	copy($source, $target);
+	echo $out->info("Updated pre-commit hook to version $version");
+	$file = file($target, FILE_IGNORE_NEW_LINES);
+}
+chmod($target, 0774);
+
 $count = count($file);
 $index = 0;
 while ($index < $count) {
-	$file[$index] = trim($file[$index]);
 	if (preg_match('/^#nZEDb hook\s*-\s*(.+)$/', $file[$index], $match)) {
 		if (VERBOSE) {
 			echo $out->primary("Matched: " . $file[$index]);
@@ -71,6 +84,11 @@ while ($index < $count) {
 				$index--;
 				echo $out->error('Invalid hook placeholder!!');
 				break;
+		}
+	} else if (preg_match('#^PROJECT=(?P<path>.*)$#', $file[$index], $match)) {
+		if ($match['path'] != nZEDb_ROOT) {
+			$file[$index] = 'PROJECT=' . nZEDb_ROOT;
+			$changed = true;
 		}
 	} else {
 		if (VERBOSE) {

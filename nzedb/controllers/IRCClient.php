@@ -326,7 +326,7 @@ class IRCClient
 		$this->_realName = $realName;
 		$this->_password = $password;
 
-		if ($password !== null && !$this->_writeSocket('PASSWORD ' . $password)) {
+		if (($password !== null && !empty($password)) && !$this->_writeSocket('PASSWORD ' . $password)) {
 			return false;
 		}
 
@@ -407,10 +407,6 @@ class IRCClient
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
 				$this->_pong($matches[1]);
 
-			// Ping the server if it has not sent us a ping in a while.
-			} else if ((time() - $this->_lastPing) > ($this->_socket_timeout / 2)) {
-				$this->_ping($this->_remote_host_received);
-
 			// Check for a channel message.
 			} else if (preg_match('/^:(?P<nickname>.+?)\!.+?\s+PRIVMSG\s+(?P<channel>#.+?)\s+:\s*(?P<message>.+?)\s*$/',
 				$this->_stripControlCharacters($this->_buffer),
@@ -424,6 +420,11 @@ class IRCClient
 					);
 
 				$this->processChannelMessages();
+			}
+
+			// Ping the server if it has not sent us a ping in a while.
+			if ((time() - $this->_lastPing) > ($this->_socket_timeout / 2)) {
+				$this->_ping($this->_remote_host_received);
 			}
 		}
 	}
@@ -486,7 +487,9 @@ class IRCClient
 	 */
 	protected function _pong($host)
 	{
-		$this->_writeSocket('PONG ' . $host);
+		if ($this->_writeSocket('PONG ' . $host) === false) {
+			$this->_reconnect();
+		}
 
 		// If we got a ping from the IRC server, set the last ping time to now.
 		if ($host === $this->_remote_host_received) {
@@ -569,10 +572,17 @@ class IRCClient
 		$command .= "\r\n";
 		for ($written = 0; $written < strlen($command); $written += $fWrite) {
 			stream_set_timeout($this->_socket , $this->_socket_timeout);
-			$fWrite = fwrite($this->_socket, substr($command, $written));
-			if ($fWrite === false) {
-				echo 'ERROR: Could no write to socket!' . PHP_EOL;
-				return false;
+			$fWrite = $this->_writeSocketChar(substr($command, $written));
+
+			// http://www.php.net/manual/en/function.fwrite.php#96951 | fwrite can return 0 causing an infinite loop.
+			if ($fWrite === false || $fWrite <= 0) {
+
+				// If it failed, try a second time.
+				$fWrite = $this->_writeSocketChar(substr($command, $written));
+				if ($fWrite === false || $fWrite <= 0) {
+					echo 'ERROR: Could no write to socket! (the IRC server might have closed the connection)' . PHP_EOL;
+					return false;
+				}
 			}
 		}
 
@@ -580,6 +590,18 @@ class IRCClient
 			echo 'SEND :' . $command;
 		}
 		return true;
+	}
+
+	/**
+	 * Write a single character to the socket.
+	 *
+	 * @param string (char) $character A single character.
+	 *
+	 * @return int|bool Number of bytes written or false.
+	 */
+	protected function _writeSocketChar($character)
+	{
+		return @fwrite($this->_socket, $character);
 	}
 
 	/**

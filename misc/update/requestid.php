@@ -5,11 +5,11 @@ use nzedb\db\DB;
 
 $c = new ColorCLI();
 if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
-	exit($c->error("\nThis script tries to match an MD5 of the releases.name or releases.searchname to predb.md5 doing local lookup only.\n"
+	exit($c->error("\nThis script tries to match a release request ID by group to a PreDB request ID by group doing local lookup only.\n"
 			. "In addition an optional final argument is time, in minutes, to check releases that have previously been checked.\n\n"
 			. "php requestid.php 1000 show		...: to limit to 1000 sorted by newest postdate and show renaming.\n"
 			. "php requestid.php full show		...: to run on full database and show renaming.\n"
-			. "php requestid.php all show		...: to run on all hashed releases(including previously renamed) and show renaming.\n"));
+			. "php requestid.php all show		...: to run on all hashed releases (including previously renamed) and show renaming.\n"));
 }
 
 $db = new DB();
@@ -29,15 +29,15 @@ if (isset($argv[2]) && is_numeric($argv[2])) {
 	$time = ')';
 }
 
-//runs on every release
+//runs on every release not already PreDB Matched
 if (isset($argv[1]) && $argv[1] === "all") {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND isrequestid = 1");
-//runs on all releases not already renamed
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND isrequestid = 1");
+//runs on all releases not already renamed not already PreDB matched
 } else if (isset($argv[1]) && $argv[1] === "full") {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3)");
-//runs on all releases not already renamed limited by user
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3)");
+//runs on all releases not already renamed limited by user not already PreDB matched
 } else if (isset($argv[1]) && is_numeric($argv[1])) {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3) ORDER BY postdate DESC LIMIT " . $argv[1]);
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3) ORDER BY postdate DESC LIMIT " . $argv[1]);
 }
 
 $total = $qry->rowCount();
