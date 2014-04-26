@@ -211,11 +211,15 @@ class AniDBstandAlone {
 			// increment apicount on API access
 			$apicount++;
 			// update the stored information with updated data
-			$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'], $AniDBAPIArrayNew['type'],
-			$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'],
-			$AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'],
-			$AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'],
-			$AniDBAPIArrayNew['airdates'], $AniDBAPIArrayNew['episodetitles']);
+			// lazy way: delete then insert
+			$this->deleteTitle($anidbid);
+			$this->addTitle($AniDBAPIArrayNew);
+
+//			$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'], $AniDBAPIArrayNew['type'],
+//			$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'],
+//			$AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'],
+//			$AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'],
+//			$AniDBAPIArrayNew['airdates'], $AniDBAPIArrayNew['episodetitles']);
 
 			$image_file = $this->imgSavePath . $anidbid;
 
@@ -334,6 +338,7 @@ class AniDBstandAlone {
 					$db->escapeString($titles[2])
 				));
 		}
+echo "\nEnd addTitle\n";
 	}
 
 	public function updateTitle($anidbID, $title, $type, $startdate, $enddate, $related, $creators, $description, $rating, $categories, $characters, $epnos, $airdates, $episodetitles) {
@@ -464,26 +469,36 @@ class AniDBstandAlone {
 			$enddate = '';
 		}
 
+		if (isset($AniDBAPIXML->ratings->permanent)) {
+			$rating = $AniDBAPIXML->ratings->permanent;
+		}
+		elseif (isset($AniDBAPIXML->ratings->temporary)) {
+				$rating = $AniDBAPIXML->ratings->temporary;
+		}
+		else {
+			$rating = '';
+		}
+
 		$AniDBAPIArray = array(
 			'anidbid' => $anidbID,
 			'title' => $safeTitle[1],
 			'titles' => isset($titlesArray) ? implode($titlesArray, '|') : '',
-			'type' => (string) $AniDBAPIXML->type[0],
+			'type' => isset($AniDBAPIXML->type[0]) ? (string) $AniDBAPIXML->type[0] : '',
 			'startdate' => (string) $startdate,
 			'enddate' => (string) $enddate,
 			'related' => isset($relatedArray) ? implode($relatedArray, '|') : '',
 			'creators' => isset($creatorsArray) ? implode($creatorsArray, '|') : '',
-			'description' => (string) $AniDBAPIXML->description,
-			'rating' =>  (string) $AniDBAPIXML->ratings->permanent ? (string) $AniDBAPIXML->ratings->permanent : (string) $AniDBAPIXML->ratings->temporary,
-			'picture' => (string) $AniDBAPIXML->picture[0],
+			'description' => isset($AniDBAPIXML->description) ? (string) $AniDBAPIXML->description : '',
+			'rating' =>  (string) $rating,
+			'picture' => isset($AniDBAPIXML->picture[0]) ? (string) $AniDBAPIXML->picture[0] : '',
 			'categories' => isset($categoriesArray) ? implode($categoriesArray, '|') : '',
 			'characters' => isset($charactersArray) ? implode($charactersArray, '|') : '',
-			'epnos' => implode($epnosArray, '|'),
-			'airdates' => $airdatesArray ? implode($airdatesArray, '|') : '',
-			'episodetitles' => implode($episodetitlesArray, '|'),
+			'epnos' => isset($epnosArray) ? implode($epnosArray, '|') : '',
+			'airdates' => isset($airdatesArray) ? implode($airdatesArray, '|') : '',
+			'episodetitles' => isset($episodetitlesArray) ? implode($episodetitlesArray, '|') : '',
 		);
 
-			$sleeptime = 10 + rand(2, 10);
+		$sleeptime = 10 + rand(2, 10);
 
 		if ($this->echooutput) {
 			$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."] Start waitloop for " . $sleeptime . " seconds to comply with flooding rule."));
@@ -524,8 +539,8 @@ if (isset($argv[1]) && is_numeric($argv[1])) {
 		sleep(rand(60, 180));
 		}
 	// then get the titles, this is where we will make the real changes
-	$anidb->getAniDBInfo((int)$argv[1] + rand(1, 12));
-//	$anidb->getAniDBInfo((int)$argv[1]);
+//	$anidb->getAniDBInfo((int)$argv[1] + rand(1, 12));
+	$anidb->getAniDBInfo((int)$argv[1]);
 } else {
 	echo $c->error("This script is designed to gather all show data from anidb and add it to the anidb table for nZEDb, as part of this process we need the number of API queries that can be executed max.\nTo execute this script run:\nphp populate_anidb.php 30\n");
 }
