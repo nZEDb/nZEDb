@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-04-26 ruhllatio
 	* Fix: Remap PreDB.php functions to PredbHash instead of MD5
+	* Fix: SxxExx namefixer regex no longer matches resolutions that harmfully renamed Anime releases
 2014-04-26 bart39
 	* Fix: missing > in NameFixer #1289
 	* Fix: duplicate insert of isrenamed
