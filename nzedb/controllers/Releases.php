@@ -2265,7 +2265,7 @@ class Releases
 								)
 							);
 							if ($xml !== false &&
-								isset($xml->request[0]['name']) &&
+								isset($xml->request[0]['name']) && !empty($xml->request[0]['name']) &&
 								strtolower($xml->request[0]['name']) !== strtolower($rowRel['searchname'])) {
 								$newTitle = $xml->request[0]['name'];
 								$iFoundCnt++;
