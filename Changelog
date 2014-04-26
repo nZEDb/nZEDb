@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-04-26 niel
 	* Fix: Changing badly quoted entry in menu.tsv
+	* Fix: Typo in quoting for query in dump_predb.php.
 2014-04-26 ruhllatio
 	* Fix: Remap PreDB.php functions to PredbHash instead of MD5
 	* Fix: SxxExx namefixer regex no longer matches resolutions that harmfully renamed Anime releases

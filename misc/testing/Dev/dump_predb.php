@@ -50,7 +50,7 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	$db->queryExec('CREATE TABLE tmp_pre LIKE predb');
 
 	// Drop indexes on tmp_pre
-	$db->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_md5`, DROP INDEX 'ix_predb_sha1', DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
+	$db->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_md5`, DROP INDEX `ix_predb_sha1', DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
 	$db->queryExec('ALTER TABLE tmp_pre ADD COLUMN groupname VARCHAR (255)');
 
 	// Import file into tmp_pre
