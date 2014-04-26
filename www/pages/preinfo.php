@@ -1,7 +1,5 @@
 <?php
 /**
- * You can enable this page by un-commenting case 'preinfo': in www\index.php
- *
  * This page prints an XML on the browser with predb data based on criteria.
  *
  * NOTE: By default only 1 result is returned, see the Extras for returning more than 1 result.
