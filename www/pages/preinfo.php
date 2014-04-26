@@ -1,6 +1,6 @@
 <?php
 /**
- * This page prints an XML on the browser with predb data based on criteria.
+ * This page prints an XML (or JSON, see extras) on the browser with predb data based on criteria.
  *
  * NOTE: By default only 1 result is returned, see the Extras for returning more than 1 result.
  *
@@ -175,7 +175,7 @@ if (isset($_GET['type'])) {
 						$newer,
 						$older,
 						$nuked,
-						$db->likeString($_GET['title']),
+						$db->likeString(urldecode($_GET['title'])),
 						$limit
 					)
 				);
