@@ -7,6 +7,8 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-26 bart39
+	* Fix: missing > in NameFixer #1289
+	* Fix: duplicate insert of isrenamed
 	* Fix: Blank searchnames from requestid web lookup
 2014-04-26 kevin
 	* Chg: Remove DB pings from last push, causes issues.
