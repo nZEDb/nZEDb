@@ -108,6 +108,9 @@ if (true) {
 
 $preData = array();
 $json = false;
+if (isset($_GET['json']) && $_GET['json'] == 1) {
+	$json = true;
+}
 if (isset($_GET['type'])) {
 
 	$limit = 1;
@@ -116,10 +119,6 @@ if (isset($_GET['type'])) {
 		if ($limit > 100) {
 			$limit = 100;
 		}
-	}
-
-	if (isset($_GET['json']) && $_GET['json'] == 1) {
-		$json = true;
 	}
 
 	$newer = '';
