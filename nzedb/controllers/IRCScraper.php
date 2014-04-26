@@ -1,6 +1,4 @@
 <?php
-use nzedb\db\DB;
-
 /**
  * Class IRCScraper
  */
@@ -26,12 +24,6 @@ class IRCScraper extends IRCClient
 	 * @access protected
 	 */
 	protected $groupList;
-
-	/**
-	 * @var DB
-	 * @access protected
-	 */
-	protected $db;
 
 	/**
 	 * Current server.
@@ -66,7 +58,6 @@ class IRCScraper extends IRCClient
 	 */
 	public function __construct($serverType, &$silent = false, &$debug = false)
 	{
-		$this->db = new DB();
 		$this->groupList = array();
 		$this->serverType = $serverType;
 		$this->silent = $silent;

@@ -167,6 +167,17 @@ class IRCClient
 	protected $_alreadyLoggedIn = false;
 
 	/**
+	 * @var nzedb\db\DB
+	 * @access protected
+	 */
+	protected $db;
+
+	public function __construct()
+	{
+		$this->db = new nzedb\db\DB();
+	}
+
+	/**
 	 * Disconnect from IRC.
 	 *
 	 * @access public
@@ -406,6 +417,8 @@ class IRCClient
 			// If the server pings us, return it a pong.
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
 				$this->_pong($matches[1]);
+				// Send the DB a ping to keep it alive too.
+				$this->db->ping(true);
 
 			// Check for a channel message.
 			} else if (preg_match('/^:(?P<nickname>.+?)\!.+?\s+PRIVMSG\s+(?P<channel>#.+?)\s+:\s*(?P<message>.+?)\s*$/',
@@ -425,6 +438,8 @@ class IRCClient
 			// Ping the server if it has not sent us a ping in a while.
 			if ((time() - $this->_lastPing) > ($this->_socket_timeout / 2)) {
 				$this->_ping($this->_remote_host_received);
+				// Send the DB a ping to keep it alive too.
+				$this->db->ping(true);
 			}
 		}
 	}
