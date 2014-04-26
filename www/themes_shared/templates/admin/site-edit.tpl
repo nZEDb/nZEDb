@@ -341,11 +341,14 @@
 			</tr>
 
 			<tr>
-				<td style="width:180px;"><label for="yydecoderpath">yyDecode Path:</label></td>
+				<td style="width:180px;"><label for="yydecoderpath">yEnc Type:</label></td>
 				<td>
 					<input id="yydecoderpath" class="long" name="yydecoderpath" type="text" value="{$fsite->yydecoderpath}" />
-					<div class="hint">Path to yydecode, this will decode yEnc articles. On ubuntu/debian you can get yydecode in the getdeb repository. Compiling yydecode from source is easy/fast also.
-						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/yydecode.exe</span></div>
+					<div class="hint">
+						Leaving this empty will use PHP to decode yEnc, which is slow.
+						<br/>Putting the path to yydecode will use yydecode, which is faster than PHP. <a style="color:#0082E1" href="http://sourceforge.net/projects/yydecode/files/yydecode/0.2.10/">Download yydecode on sourceforce.</a>
+						<br/>Putting in <strong style="color:#ac2925">simple_php_yenc_decode</strong> will use that extension which is even faster <strong>(you must have the extension)</strong>. <a style="color:#0082E1" href="https://github.com/kevinlekiller/simple_php_yenc_decode">View simple_php_yenc_decode on github.</a>
+					</div>
 				</td>
 			</tr>
 
@@ -359,10 +362,10 @@
 			</tr>
 
 			<tr>
-				<td style="width:180px;"><label for="ffmpegpath">Ffmpeg Path:</label></td>
+				<td style="width:180px;"><label for="ffmpegpath">FFmpeg or Avconv Path:</label></td>
 				<td>
 					<input id="ffmpegpath" class="long" name="ffmpegpath" type="text" value="{$fsite->ffmpegpath}" />
-					<div class="hint">The path to the <a href="http://www.ffmpeg.org/">ffmpeg</a> binary. Used for thumbnailing. Use empty path to disable thumbnailing.
+					<div class="hint">The path to the <a href="http://www.ffmpeg.org/">ffmpeg</a> or <a href="https://libav.org/">avconv</a> binary. Used for making thumbnails and video/audio previews. Use empty path to disable thumbnailing.
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/ffmpeg.exe</span></div>
 				</td>
 			</tr>
