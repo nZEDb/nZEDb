@@ -1272,10 +1272,10 @@ Class PreDb
 		echo $this->c->primary(number_format($total) . " releases to process.");
 		if ($total > 0) {
 			foreach ($res as $row) {
-				if (preg_match('/[a-f0-9]{32}/i', $row['name'], $matches)) {
-					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
-				} else if (preg_match('/[a-f0-9]{32}/i', $row['filename'], $matches)) {
-					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
+				if (preg_match('/[a-f0-9]{32,40}/i', $row['name'], $matches)) {
+					$updated = $updated + $namefixer->matchPredbHash($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
+				} else if (preg_match('/[a-f0-9]{32,40}/i', $row['filename'], $matches)) {
+					$updated = $updated + $namefixer->matchPredbHash($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
 				}
 				if ($show === 2) {
 					$consoletools->overWritePrimary("Renamed Releases: [" . number_format($updated) . "] " . $consoletools->percentString(++$checked, $total));
