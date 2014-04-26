@@ -48,6 +48,12 @@ class IRCScraper extends IRCClient
 	protected $nuked;
 
 	/**
+	 * @var nzedb\db\DB
+	 * @access protected
+	 */
+	protected $db;
+
+	/**
 	 * Construct
 	 *
 	 * @param string       $serverType   efnet | corrupt | zenet
@@ -58,6 +64,7 @@ class IRCScraper extends IRCClient
 	 */
 	public function __construct($serverType, &$silent = false, &$debug = false)
 	{
+		$this->db = new nzedb\db\DB();
 		$this->groupList = array();
 		$this->serverType = $serverType;
 		$this->silent = $silent;
