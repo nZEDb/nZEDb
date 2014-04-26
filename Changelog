@@ -6,7 +6,19 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-26 niel
+	* Fix: Changing badly quoted entry in menu.tsv
+	* Fix: Typo in quoting for query in dump_predb.php.
+2014-04-26 ruhllatio
+	* Fix: Remap PreDB.php functions to PredbHash instead of MD5
+	* Fix: SxxExx namefixer regex no longer matches resolutions that harmfully renamed Anime releases
+2014-04-26 bart39
+	* Fix: missing > in NameFixer #1289
+	* Fix: duplicate insert of isrenamed
+	* Fix: Blank searchnames from requestid web lookup
 2014-04-26 kevin
+	* Chg: IRCScraper, remove some channel passwords, let user fill them in.
+	* Chg: Update ubuntu install guide, mention Avconv as an alternative to FFMpeg.
 	* Chg: Remove DB pings from last push, causes issues.
 	* Chg: Fix indents on pull request.
 2014-04-25 kevin

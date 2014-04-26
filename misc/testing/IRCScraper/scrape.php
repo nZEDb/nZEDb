@@ -31,6 +31,10 @@ if (!defined('SCRAPE_IRC_EFNET_ENCRYPTION') ||
 	exit ('ERROR! You must update your settings.php using settings_example.php (the encryption setting was added)' . PHP_EOL);
 }
 
+if (!defined('SCRAPE_IRC_EFNET_CHANNELS')) {
+	exit ('ERROR! You must update your settings.php using settings_example.php (the SCRAPE_IRC_EFNET_CHANNELS was added and SCRAPE_IRC_EFNET_IGNORE_CHANNELS was removed)' . PHP_EOL);
+}
+
 if (SCRAPE_IRC_EFNET_NICKNAME == '' || SCRAPE_IRC_CORRUPT_NICKNAME == '' || SCRAPE_IRC_ZENET_NICKNAME == '') {
 	exit("ERROR! You must put a username in settings.php" . PHP_EOL);
 }

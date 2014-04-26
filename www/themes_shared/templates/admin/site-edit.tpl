@@ -362,10 +362,10 @@
 			</tr>
 
 			<tr>
-				<td style="width:180px;"><label for="ffmpegpath">Ffmpeg Path:</label></td>
+				<td style="width:180px;"><label for="ffmpegpath">FFmpeg or Avconv Path:</label></td>
 				<td>
 					<input id="ffmpegpath" class="long" name="ffmpegpath" type="text" value="{$fsite->ffmpegpath}" />
-					<div class="hint">The path to the <a href="http://www.ffmpeg.org/">ffmpeg</a> binary. Used for thumbnailing. Use empty path to disable thumbnailing.
+					<div class="hint">The path to the <a href="http://www.ffmpeg.org/">ffmpeg</a> or <a href="https://libav.org/">avconv</a> binary. Used for making thumbnails and video/audio previews. Use empty path to disable thumbnailing.
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/ffmpeg.exe</span></div>
 				</td>
 			</tr>
