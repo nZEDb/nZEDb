@@ -97,7 +97,7 @@ APIs		tmdbkey	9a4e16adddcd1e86da19bcaf5ff3c2a3	The API key used for access to TM
 APIs		trakttvkey		The trakt.tv api key. Used for movie and tv lookups.	trakttvkey
 APIs	APIKeys	section-label	3<sup>rd.</sup> Party API Keys		""
 apps		7zippath		The path to the 7za (7zip command line in windows) binary, used for grabbing nfos from compressed zip files. Use forward slashes in windows c:/path/to/7z.exe	zippath
-apps		ffmpegpath		The path to the ffmpeg binary. Used for thumbnailing. Use empty path to disable thumbnailing. Use forward slashes in windows c:/path/to/ffmpeg.exe	ffmpegpath
+apps		ffmpegpath		The path to the ffmpeg or avconv binary. Used for making thumbnails and video/audio previews. Use empty path to disable thumbnailing. Use forward slashes in windows c:/path/to/ffmpeg.exe	ffmpegpath
 apps		mediainfopath		The path to the mediainfo binary. Used for deep file media analysis. Use empty path to disable mediainfo checks Use forward slashes in windows c:/path/to/mediainfo.exe	mediainfopath
 apps		unrarpath		The path to an unrar binary, used in deep password detection and media info grabbing. Use forward slashes in windows c:/path/to/unrar.exe	unrarpath
 apps		yydecoderpath		Path to yydecode, this will decode yEnc articles. On ubuntu/debian you can get yydecode in the getdeb repository. Compiling yydecode from source is easy/fast also. Use forward slashes in windows c:/path/to/yydecode.exe	yydecoderpath
