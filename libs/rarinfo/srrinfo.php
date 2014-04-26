@@ -166,7 +166,7 @@ class SrrInfo extends RarInfo
 			if ($block['head_type'] == self::SRR_STORED_FILE) {
 				$b = array(
 					'name' => $block['file_name'],
-					'size' => $block['add_size'],
+					'size' => (isset($block['add_size']) ? $block['add_size'] : 0),
 				);
 				if ($extract) {
 					$b['data'] = $block['file_data'];
@@ -274,7 +274,7 @@ class SrrInfo extends RarInfo
 			} elseif ($block['head_type'] == self::SRR_STORED_FILE) {
 				$block += self::unpack('vname_size', $this->read(2), false);
 				$block['file_name'] = $this->read($block['name_size']);
-				$block['file_data'] = $this->read($block['add_size']);
+				$block['file_data'] = $this->read((isset($block['add_size']) ? $block['add_size'] : 0));
 
 			// Block type: OSO HASH
 			} elseif ($block['head_type'] == self::SRR_OSO_HASH) {

@@ -17,6 +17,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: duplicate insert of isrenamed
 	* Fix: Blank searchnames from requestid web lookup
 2014-04-26 kevin
+	* Fix: Undefined offsets in srrinfo.
 	* Add: API for PreDB. (can be used for matching sha1/hash/titles/requid).
 	* Chg: IRCScraper, remove some channel passwords, let user fill them in.
 	* Chg: Update ubuntu install guide, mention Avconv as an alternative to FFMpeg.
