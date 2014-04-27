@@ -237,7 +237,6 @@ if ($json === false) {
 			echo
 				'<request',
 				' reqid="'      . (!empty($data['requestid'])  ? $data['requestid']  : '') . '"',
-				' date="'       . (!empty($data['predate'])    ? $data['predate']    : '') . '"',
 				' md5="'        . (!empty($data['md5'])        ? $data['md5']        : '') . '"',
 				' sha1="'       . (!empty($data['sha1'])       ? $data['sha1']       : '') . '"',
 				' nuked="'      . (!empty($data['nuked'])      ? $data['nuked']      : '') . '"',
@@ -246,6 +245,7 @@ if ($json === false) {
 				' nukereason="' . (!empty($data['nukereason']) ? $data['nukereason'] : '') . '"',
 				' files="'      . (!empty($data['files'])      ? $data['files']      : '') . '"',
 				' name="'       . (!empty($data['title'])      ? sanitize($data['title']) : '') . '"',
+				' date="'       . (!empty($data['predate'])    ? strtotime($data['predate']) : '') . '"',
 				' size="'       . (!empty($data['size']) && $data['size'] != 'NULL' ? $data['size'] : '') . '"',
 				'/>';
 		}
