@@ -326,10 +326,10 @@ class AniDBstandAlone {
 			$AniDBAPIArray['anidbid'], $db->escapeString($AniDBAPIArray['title']), $db->escapeString($AniDBAPIArray['type']),
 			(empty($AniDBAPIArray['startdate']) ? 'null' : $db->escapeString($AniDBAPIArray['startdate'])),
 			(empty($AniDBAPIArray['enddate']) ? 'null' : $db->escapeString($AniDBAPIArray['enddate'])),
-			$db->escapeString($AniDBAPIArray['related']), $db->escapeString($this->limitArrlen($AniDBAPIArray['creators'],1024)),
+			$db->escapeString($AniDBAPIArray['related']), $db->escapeString($AniDBAPIArray['creators']),
 			$db->escapeString($AniDBAPIArray['description']), $db->escapeString($AniDBAPIArray['rating']),
 			$db->escapeString($AniDBAPIArray['picture']), $db->escapeString($AniDBAPIArray['categories']),
-			$db->escapeString($this->limitArrlen($AniDBAPIArray['characters'],1024)), $db->escapeString($AniDBAPIArray['epnos']),
+			$db->escapeString($AniDBAPIArray['characters']), $db->escapeString($AniDBAPIArray['epnos']),
 			$db->escapeString($AniDBAPIArray['airdates']), $db->escapeString($AniDBAPIArray['episodetitles']), time()
 			));
 
@@ -352,8 +352,8 @@ echo "\nEnd addTitle\n";
 					rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d
 					WHERE anidbid = %d',
 					$db->escapeString($title), $db->escapeString($type), (empty($AniDBAPIArray['startdate']) ? 'null' : $db->escapeString($AniDBAPIArray['startdate'])),
-					(empty($AniDBAPIArray['enddate']) ? 'null' : $db->escapeString($AniDBAPIArray['enddate'])), $db->escapeString($related), $db->escapeString(limitArrlen($creators,1024)),
-					$db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString(limitArrlen($characters,1024)), $db->escapeString($epnos),
+					(empty($AniDBAPIArray['enddate']) ? 'null' : $db->escapeString($AniDBAPIArray['enddate'])), $db->escapeString($related), $db->escapeString($creators),
+					$db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters), $db->escapeString($epnos),
 					$db->escapeString($airdates), $db->escapeString($episodetitles), time(), $anidbID
 					));
 // TODO: Update anidb_lang fields (or do this in separate function?!?!)
@@ -512,22 +512,6 @@ echo "\nEnd addTitle\n";
 		return $AniDBAPIArray;
 	} // end public function AniDBAPI($anidbID)
 
-
-// function to limit imploded array
-	public function limitArrlen($textin , $arrlen) {
-
-		if (strlen($textin) >= $arrlen) {
-			$textin = substr($textin, 0, ($arrlen+1));
-			echo "\nLimited text(1): ".$textin;
-			// AAA|BBB|CCC => len=3..6 -> AAA, len=7..11 -> AAA|BBB . pos | = 4&8 ==> next | from
-			$chop=strrpos($textin, '|', 0);
-			if ($chop === false) { echo "Chopping went wrong!!"; }
-			else
-				echo "\nChop position should be: ".$chop." ";
-			$textin=substr($textin, 0, $chop);
-		}
-		return $textin;
-	}
 } // end class AniDBstandAlone
 
 $c = new ColorCLI();
