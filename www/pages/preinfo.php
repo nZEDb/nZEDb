@@ -3,107 +3,106 @@
  * This page prints an XML (or JSON, see extras) on the browser with predb data based on criteria.
  *
  * NOTE: By default only 1 result is returned, see the Extras for returning more than 1 result.
+ * NOTE: This page is only accessible by logged in users or users providing their API key.
+ *       If you wish to make this open to anybody, you can change the if (true) to if (false) lower in this file.
  *
- * Types:
- * -----
+ * Search Types:
+ * ------------
  * These are the search types you can use: requestid, title, md5, sha1, all
  * They all have shorter versions, in order: r, t, m, s, a
  *
- * requestid:
- *     This is an re-implementation of the http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]
+ *     requestid:
+ *         This is an re-implementation of the http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]
  *
- *     Parameters:
- *     ----------
- *     reqid : The request ID
- *     group : The group name.
+ *         Parameters:
+ *         ----------
+ *         reqid : The request ID
+ *         group : The group name.
  *
- *     Example URL:
- *     -----------
- *     http://example.com/preinfo?t=requestid&reqid=123&group=alt.binaries.example
+ *         Example URL:
+ *         -----------
+ *         http://example.com/preinfo?t=requestid&reqid=123&group=alt.binaries.example
  *
- * title:
- *     This loosely searches for a title (using like '%TITLE%').
- *     NOTE: The title MUST be encoded.
+ *     title:
+ *         This loosely searches for a title (using like '%TITLE%').
+ *         NOTE: The title MUST be encoded.
  *
- *     Parameters:
- *     ----------
- *     title: The pre title you are searching for.
+ *         Parameters:
+ *         ----------
+ *         title: The pre title you are searching for.
  *
- *     Example URL:
- *     http://example.com/preinfo?t=title&title=debian
+ *         Example URL:
+ *         http://example.com/preinfo?t=title&title=debian
  *
- * md5:
- *     Searches for a PRE using the provided MD5.
+ *     md5:
+ *         Searches for a PRE using the provided MD5.
  *
- *     Parameters:
- *     ----------
- *     md5 : An MD5 hash.
+ *         Parameters:
+ *         ----------
+ *         md5 : An MD5 hash.
  *
- *     Example URL:
- *     -----------
- *     http://example.com/preinfo?t=md5&md5=6e9552c9bd8e61c8f277c21220160234
+ *         Example URL:
+ *         -----------
+ *         http://example.com/preinfo?t=md5&md5=6e9552c9bd8e61c8f277c21220160234
  *
- * sha1:
- *     Searches for a PRE using the provided SHA1.
+ *     sha1:
+ *         Searches for a PRE using the provided SHA1.
  *
- *     Parameters:
- *     ----------
- *     sha1: An SHA1 hash.
+ *         Parameters:
+ *         ----------
+ *         sha1: An SHA1 hash.
  *
- *     Example URL:
- *     -----------
- *     http://example.com/preinfo?t=sha1&sha1=a6eb4d9d7f99ca47abe56f3220597663cf37ca4a
+ *         Example URL:
+ *         -----------
+ *         http://example.com/preinfo?t=sha1&sha1=a6eb4d9d7f99ca47abe56f3220597663cf37ca4a
  *
- * all:
- *    Returns the newest pre(s). (see the Extras - limit option)
+ *     all:
+ *        Returns the newest pre(s). (see the Extras - limit option)
  *
- *    Example URL:
- *    -----------
- *    http://example.com/preinfo?t=all
+ *        Example URL:
+ *        -----------
+ *        http://example.com/preinfo?t=all
  *
- * Extras:
- * ------
+ * Extra Parameters:
+ * ----------------
  *
- *     limit : By default only 1 result is returned, you can pass limit to increase this (the max is 100).
- *     json  : By default a XML is returned, you can pass json=1 to return in json. (anything else after json will return in XML)
- *     newer : Search for pre's newer than this date (must be in unix time).
- *     older : Search pre pre's older than this date (must be in unix time).
- *     nuked : nuked=0 Means search pre's that have never been nuked. nuked=1 Means search pre's that are nuked, or have previously been nuked.
+ *     limit  : By default only 1 result is returned, you can pass limit to increase this (the max is 100).
+ *     json   : By default a XML is returned, you can pass json=1 to return in json. (anything else after json will return in XML)
+ *     newer  : Search for pre's newer than this date (must be in unix time).
+ *     older  : Search pre pre's older than this date (must be in unix time).
+ *     nuked  : nuked=0 Means search pre's that have never been nuked. nuked=1 Means search pre's that are nuked, or have previously been nuked.
+ *     apikey : The user's API key (from the profile page).
+ *
+ * Example URLs (using various parameters):
+ * --------------------------------------
+ *
+ *     Returns the 10 newest pre's.
+ *     http://example.com/preinfo?type=all&limit=10&apikey=227a0e58049d2e30efded245d0f447c8
+ *
+ *     Returns 25 pre's between april 1st and april 30th 2014.
+ *     http://example.com/preinfo?type=all&limit=25&apikey=227a0e58049d2e30efded245d0f447c8&older=&older=1398902399&newer=1396310400
+ *
+ *     Returns 1 pre with this MD5: 694dfdf3220bdb6219553262b8be37df
+ *     http://example.com/preinfo?type=md5&md5=94dfdf3220bdb6219553262b8be37df&apikey=227a0e58049d2e30efded245d0f447c8
+ *
+ *     Returns 1 pre with this SHA1: e7782508663d40248ccaf1c9bd2a961348b2301b
+ *     http://example.com/preinfo?type=sha1&sha1=e7782508663d40248ccaf1c9bd2a961348b2301b&apikey=227a0e58049d2e30efded245d0f447c8
+ *
+ *     Returns 1 pre with this requestid and group : 188247 alt.binaries.teevee
+ *     http://example.com/preinfo?type=requestid&reqid=188247&group=alt.binaries.teevee&apikey=227a0e58049d2e30efded245d0f447c8
  */
 
-// You can make this page accessible by all (even people without a API key) by setting this to false :
+// You can make this page accessible by all (even people without an API key) by setting this to false :
 if (true) {
-	$user = $uid = $apiKey = '';
-	$maxRequests = 0;
-	// Page is accessible only by the apikey, or logged in users.
-	if ($users->isLoggedIn()) {
-		$uid = $page->userdata['id'];
-		$apiKey = $page->userdata['rsstoken'];
-	} else {
-		if ($function != 'c' && $function != 'r') {
-			if ($page->site->registerstatus == Sites::REGISTER_STATUS_API_ONLY) {
-				$res = $users->getById(0);
-				$apiKey = '';
-			} else {
-				if (!isset($_GET['apikey'])) {
-					apiError('Incorrect user credentials', 100);
-				}
-				$res = $users->getByRssToken($_GET['apikey']);
-				$apiKey = $_GET['apikey'];
-			}
+	if (!$users->isLoggedIn()) {
+		if (!isset($_GET['apikey'])) {
+			apiError('Missing parameter (apikey)', 200);
+		}
 
-			if (!$res) {
-				if (!isset($_GET['apikey'])) {
-					apiError('Incorrect user credentials', 100);
-				}
-			}
-
-			$uid = $res['id'];
+		if (!$users->getByRssToken($_GET['apikey'])) {
+			apiError('Incorrect user credentials (api key is wrong)', 100);
 		}
 	}
-
-	$page->smarty->assign('uid', $uid);
-	$page->smarty->assign('rsstoken', $apiKey);
 }
 
 $preData = array();
@@ -121,17 +120,15 @@ if (isset($_GET['type'])) {
 		}
 	}
 
-	$newer = '';
+	$newer = $older = $nuked = '';
 	if (isset($_GET['newer']) && is_numeric($_GET['newer'])) {
 		$newer = ' AND p.predate > FROM_UNIXTIME(' . $_GET['newer'] . ') ';
 	}
 
-	$older = '';
 	if (isset($_GET['lower']) && is_numeric($_GET['lower'])) {
 		$older = ' AND p.predate < FROM_UNIXTIME(' . $_GET['older'] . ') ';
 	}
 
-	$nuked = '';
 	if (isset($_GET['nuked'])) {
 		if ($_GET['nuked'] == 0) {
 			$nuked = ' AND p.nuked = 0';
@@ -218,7 +215,7 @@ if (isset($_GET['type'])) {
 		case 'all':
 			$db = new nzedb\db\DB;
 			$preData = $db->query(
-				sprintf('SELECT * FROM predb p WHERE 1=1 %s %s %s LIMIT %d',
+				sprintf('SELECT * FROM predb p WHERE 1=1 %s %s %s ORDER BY p.predate DESC LIMIT %d',
 					$newer,
 					$older,
 					$nuked,
