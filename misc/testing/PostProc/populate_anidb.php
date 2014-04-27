@@ -256,7 +256,7 @@ class AniDBstandAlone {
 		// same as step2: but other for loop (so we need to make a proper function out of this?!)
 		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."] Stage 3 -> Update 90+ day old series."));
 
-		foreach($anidboldtitles as $value) {
+		foreach($anioldstage3 as $value) {
 			$anidbid = (int)$value['anidbid'];
 			if ($this->echooutput) {
 				echo 'Updating AniDB ID '.$anidbid."\n";
@@ -274,11 +274,16 @@ class AniDBstandAlone {
 			$apicount++;
 
 			// update the stored information with updated data
-			$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'], $AniDBAPIArrayNew['type'],
-			$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'],
-			$AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'],
-			$AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'],
-			$AniDBAPIArrayNew['airdates'], $AniDBAPIArrayNew['episodetitles']);
+			// lazy way: delete then insert
+			$this->deleteTitle($anidbid);
+			$this->addTitle($AniDBAPIArrayNew);
+
+			// update the stored information with updated data
+//			$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'], $AniDBAPIArrayNew['type'],
+//			$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'],
+//			$AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'],
+//			$AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'],
+//			$AniDBAPIArrayNew['airdates'], $AniDBAPIArrayNew['episodetitles']);
 
 			$image_file = $this->imgSavePath . $anidbid;
 
