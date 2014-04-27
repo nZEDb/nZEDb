@@ -16,9 +16,12 @@ New updates are grouped by person, at the top of the file.
 	* Changed anidb_title_lang so difference can be seen between anidb.lang
 	* Fixed Alpha theme with anidb.title_lang to use multiple languages in list
 	* Changed some columns to text in anidb table
+2014-04-27 niel
+	* Fix: Reinstate Db/commit checking for tmux.
 2014-04-27 kevin
 	* Chg: Update preinfo API documentation.
 	* Chg: Output Unix Time on preinfo API to avoid timezone issues.
+	* Fix: User edit overwriting queue type.
 2014-04-26 niel
 	* Fix: Changing badly quoted entry in menu.tsv
 	* Fix: Typo in quoting for query in dump_predb.php.
