@@ -244,7 +244,7 @@ if ($json === false) {
 				' source="'     . (!empty($data['source'])     ? $data['source']     : '') . '"',
 				' nukereason="' . (!empty($data['nukereason']) ? $data['nukereason'] : '') . '"',
 				' files="'      . (!empty($data['files'])      ? $data['files']      : '') . '"',
-				' name="'       . (!empty($data['title'])      ? sanitize($data['title']) : '') . '"',
+				' name="'       . (!empty($data['title'])      ? htmlspecialchars($data['title'], ENT_QUOTES, 'utf-8') : '') . '"',
 				' date="'       . (!empty($data['predate'])    ? strtotime($data['predate']) : '') . '"',
 				' size="'       . (!empty($data['size']) && $data['size'] != 'NULL' ? $data['size'] : '') . '"',
 				'/>';

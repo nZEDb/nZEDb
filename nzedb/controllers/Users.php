@@ -26,8 +26,9 @@ class Users
 	/**
 	 * Users select queue type.
 	 */
-	const QUEUE_SABNZBD = 0;
-	const QUEUE_NZBGET  = 1;
+	const QUEUE_NONE    = 0;
+	const QUEUE_SABNZBD = 1;
+	const QUEUE_NZBGET  = 2;
 
 	function __construct()
 	{
@@ -192,7 +193,7 @@ class Users
 
 	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites,
 		$movieview, $musicview, $consoleview, $bookview,
-		$cp_url = false, $cp_api = false, $style = 'None', $queueType = self::QUEUE_SABNZBD,
+		$cp_url = false, $cp_api = false, $style = 'None', $queueType = '',
 		$nzbgetURL = '', $nzbgetUsername = '', $nzbgetPassword = '',
 		$saburl = '', $sabapikey = '', $sabpriority = '', $sabapikeytype = '')
 	{
@@ -243,7 +244,9 @@ class Users
 		$sql[] = sprintf('consoleview = %d', $consoleview);
 		$sql[] = sprintf('bookview = %d', $bookview);
 		$sql[] = sprintf('style = %s', $db->escapeString($style));
-		$sql[] = sprintf('queuetype = %d', $queueType);
+		if ($queueType !== '') {
+			$sql[] = sprintf('queuetype = %d', $queueType);
+		}
 
 		if ($nzbgetURL !== '') {
 			$sql[] = sprintf('nzbgeturl = %s', $db->escapeString($nzbgetURL));
