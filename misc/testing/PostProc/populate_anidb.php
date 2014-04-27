@@ -133,7 +133,7 @@ class AniDBstandAlone {
 			$anidbid = (int)$value['anidbid'];
 			if ($this->echooutput) {
 				// Remove AniDB ID from anidb
-				echo 'Removing AniDB ID '.$anidbid."\n";
+				echo 'Stage 0: Removing orphaned AniDB ID: '.$anidbid."\n";
 				}
 			$this->deleteTitle($anidbid);
 			$image_file = $this->imgSavePath . $anidbid;
@@ -150,7 +150,7 @@ class AniDBstandAlone {
 		foreach ($animissstage1 as $value) {
 			$anidbid = (int)$value['anidbid'];
 			if ($this->echooutput) {
-				echo 'Adding AniDB ID ' . $anidbid . "\n";
+				echo 'Stage 1: Adding AniDB ID: ' . $anidbid . "\n";
 			}
 
 			// Pull information from AniDB for this ID and increment API counter -- if false (banned) exit
@@ -195,7 +195,7 @@ class AniDBstandAlone {
 			$anidbid = (int)$value['anidbid'];
 
 			if ($this->echooutput) {
-				echo 'Updating AniDB ID '.$anidbid."\n";
+				echo 'Stage 2: Updating AniDB ID: '.$anidbid."\n";
 				}
 			// actually get the information on this anime from anidb
 			$AniDBAPIArrayNew = $this->AniDBAPI($anidbid);
@@ -259,7 +259,7 @@ class AniDBstandAlone {
 		foreach($anioldstage3 as $value) {
 			$anidbid = (int)$value['anidbid'];
 			if ($this->echooutput) {
-				echo 'Updating AniDB ID '.$anidbid."\n";
+				echo 'Stage 3: Updating AniDB ID: '.$anidbid."\n";
 				}
 			// actually get the information on this anime from anidb
 			$AniDBAPIArrayNew = $this->AniDBAPI($anidbid);
