@@ -20,7 +20,7 @@ CREATE TABLE "anidb" (
   "picture" character varying(16) NOT NULL,
   "categories" character varying(1024) NOT NULL,
   "characters" text NOT NULL,
-  "epnos" character varying(2048) NOT NULL,
+  "epnos" text NOT NULL,
   "airdates" text NOT NULL,
   "episodetitles" text NOT NULL,
   "unixtime" bigint NOT NULL

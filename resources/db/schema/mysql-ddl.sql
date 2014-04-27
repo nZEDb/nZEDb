@@ -382,7 +382,7 @@ CREATE TABLE anidb (
 	picture VARCHAR(16) NOT NULL,
 	categories VARCHAR(1024) NOT NULL,
 	characters TEXT NOT NULL,
-	epnos VARCHAR(2048) NOT NULL,
+	epnos TEXT NOT NULL,
 	airdates TEXT NOT NULL,
 	episodetitles TEXT NOT NULL,
 	unixtime INT(12) UNSIGNED NOT NULL,
