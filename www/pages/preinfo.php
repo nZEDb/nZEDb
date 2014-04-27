@@ -80,7 +80,7 @@
  *     http://example.com/preinfo?type=all&limit=10&apikey=227a0e58049d2e30efded245d0f447c8
  *
  *     Returns 25 pre's between april 1st and april 30th 2014.
- *     http://example.com/preinfo?type=all&limit=25&apikey=227a0e58049d2e30efded245d0f447c8&older=&older=1398902399&newer=1396310400
+ *     http://example.com/preinfo?type=all&limit=25&apikey=227a0e58049d2e30efded245d0f447c8&older=1398902399&newer=1396310400
  *
  *     Returns 1 pre with this MD5: 694dfdf3220bdb6219553262b8be37df
  *     http://example.com/preinfo?type=md5&md5=94dfdf3220bdb6219553262b8be37df&apikey=227a0e58049d2e30efded245d0f447c8
@@ -237,16 +237,16 @@ if ($json === false) {
 			echo
 				'<request',
 				' reqid="'      . (!empty($data['requestid'])  ? $data['requestid']  : '') . '"',
-				' name="'       . (!empty($data['title'])      ? $data['title']      : '') . '"',
-				' date="'       . (!empty($data['predate'])    ? $data['predate']    : '') . '"',
-				' category="'   . (!empty($data['category'])   ? $data['category']   : '') . '"',
-				' size="'       . (!empty($data['size'])       ? $data['size']       : '') . '"',
-				' source="'     . (!empty($data['source'])     ? $data['source']     : '') . '"',
 				' md5="'        . (!empty($data['md5'])        ? $data['md5']        : '') . '"',
 				' sha1="'       . (!empty($data['sha1'])       ? $data['sha1']       : '') . '"',
 				' nuked="'      . (!empty($data['nuked'])      ? $data['nuked']      : '') . '"',
+				' category="'   . (!empty($data['category'])   ? $data['category']   : '') . '"',
+				' source="'     . (!empty($data['source'])     ? $data['source']     : '') . '"',
 				' nukereason="' . (!empty($data['nukereason']) ? $data['nukereason'] : '') . '"',
 				' files="'      . (!empty($data['files'])      ? $data['files']      : '') . '"',
+				' name="'       . (!empty($data['title'])      ? sanitize($data['title']) : '') . '"',
+				' date="'       . (!empty($data['predate'])    ? strtotime($data['predate']) : '') . '"',
+				' size="'       . (!empty($data['size']) && $data['size'] != 'NULL' ? $data['size'] : '') . '"',
 				'/>';
 		}
 	}
@@ -257,8 +257,7 @@ if ($json === false) {
 	echo json_encode($preData);
 }
 
-function apiError($error, $code)
-{
+function apiError($error, $code) {
 	header('Content-type: text/xml');
 	exit(
 		'<?xml version="1.0" encoding="UTF-8"?>' .
@@ -270,4 +269,10 @@ function apiError($error, $code)
 		'"/>' .
 		PHP_EOL
 	);
+}
+
+// There's some weird encoding issues in some of the pre titles.
+function sanitize($string) {
+	//return $string;
+	return preg_replace ('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', '.', $string);
 }
