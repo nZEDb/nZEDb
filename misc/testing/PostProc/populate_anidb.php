@@ -182,9 +182,10 @@ class AniDBstandAlone {
 				sleep($sleeptime);
 				}
 
-		// using exitcount if this number of API calls is reached exit
-		if ($apicount >= $exitcount) {
-			return;
+			// using exitcount if this number of API calls is reached exit
+			if ($apicount >= $exitcount) {
+				$this->c->doEcho($this->c->header("Exit getAniDBInfo at " . date('D M d, Y G:i a')));
+				return;
 			}
 		}
 
@@ -311,11 +312,10 @@ class AniDBstandAlone {
 
 			// using exitcount if this number of API calls is reached exit
 			if ($apicount >= $exitcount) {
-				return;
 				$this->c->doEcho($this->c->header("Exit getAniDBInfo at " . date('D M d, Y G:i a')));
-				}
-
+				return;
 			}
+		}
 		$this->c->doEcho($this->c->header("Exit getAniDBInfo at " . date('D M d, Y G:i a')));
 
 	} // end public function getAniDBInfo($exitcount)
@@ -408,6 +408,9 @@ echo "\nEnd addTitle\n";
 		preg_match('/<title xml:lang="en" type="official">([^<]+)<\/title>/', $apiresponse, $safeTitle);
 		if(!$safeTitle)
 			preg_match('/<title xml:lang="x-jat" type="main">([^<]+)<\/title>/', $apiresponse, $safeTitle);
+// needed for anidb id 5303:
+		if(!$safeTitle)
+			preg_match('/<title xml:lang="x-kot" type="main">([^<]+)<\/title>/', $apiresponse, $safeTitle);
 
 // replace xml:lang with lang: (workaround to get lang recognised by attributes(). There should be better way, so go and optimize this code!
 		$apiresponse = preg_replace('/<title xml:lang="/', '/<title lang="', $apiresponse);
