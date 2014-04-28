@@ -67,6 +67,8 @@
  * ----------------
  *
  *     limit  : By default only 1 result is returned, you can pass limit to increase this (the max is 100).
+ *     offset : Gets the next set of results when using limit.
+ *              ie If you limit to 100, then you add offset 0, you get the 100 newest, offset 100, you would get the next 100 after the 100 newest and so on.
  *     json   : By default a XML is returned, you can pass json=1 to return in json. (anything else after json will return in XML)
  *     newer  : Search for pre's newer than this date (must be in unix time).
  *     older  : Search pre pre's older than this date (must be in unix time).
@@ -120,6 +122,11 @@ if (isset($_GET['type'])) {
 		}
 	}
 
+	$offset = 0;
+	if (isset($_GET['offset']) && is_numeric($_GET['offset'])) {
+		$offset = $_GET['offset'];
+	}
+
 	$newer = $older = $nuked = '';
 	if (isset($_GET['newer']) && is_numeric($_GET['newer'])) {
 		$newer = ' AND p.predate > FROM_UNIXTIME(' . $_GET['newer'] . ') ';
@@ -150,13 +157,15 @@ if (isset($_GET['type'])) {
 					WHERE requestid = %d
 					AND g.name = %s
 					%s %s %s
-					LIMIT %d',
+					LIMIT %d
+					OFFSET %d',
 						$_GET['reqid'],
 						$db->escapeString($_GET['group']),
 						$newer,
 						$older,
 						$nuked,
-						$limit
+						$limit,
+						$offset
 					)
 				);
 			}
@@ -167,12 +176,13 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['title'])) {
 				$db = new nzedb\db\DB;
 				$preData = $db->query(
-					sprintf('SELECT * FROM predb p WHERE p.title %s %s %s LIKE %s LIMIT %d',
+					sprintf('SELECT * FROM predb p WHERE p.title %s %s %s LIKE %s LIMIT %d OFFSET %d',
 						$newer,
 						$older,
 						$nuked,
 						$db->likeString(urldecode($_GET['title'])),
-						$limit
+						$limit,
+						$offset
 					)
 				);
 			}
@@ -184,12 +194,13 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['md5']) && strlen($_GET['title']) === 32) {
 				$db = new nzedb\db\DB;
 				$preData = $db->query(
-					sprintf('SELECT * FROM predb p WHERE p.md5 = %s %s %s %s LIMIT %d',
+					sprintf('SELECT * FROM predb p WHERE p.md5 = %s %s %s %s LIMIT %d OFFSET %d',
 						$newer,
 						$older,
 						$nuked,
 						$db->escapeString($_GET['md5']),
-						$limit
+						$limit,
+						$offset
 					)
 				);
 			}
@@ -200,12 +211,13 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['sha1']) && strlen($_GET['sha1']) === 40) {
 				$db = new nzedb\db\DB;
 				$preData = $db->query(
-					sprintf('SELECT * FROM predb p WHERE p.sha1 = %s %s %s %s LIMIT %d',
+					sprintf('SELECT * FROM predb p WHERE p.sha1 = %s %s %s %s LIMIT %d OFFSET %d',
 						$newer,
 						$older,
 						$nuked,
 						$db->escapeString($_GET['sha1']),
-						$limit
+						$limit,
+						$offset
 					)
 				);
 			}
@@ -215,11 +227,12 @@ if (isset($_GET['type'])) {
 		case 'all':
 			$db = new nzedb\db\DB;
 			$preData = $db->query(
-				sprintf('SELECT * FROM predb p WHERE 1=1 %s %s %s ORDER BY p.predate DESC LIMIT %d',
+				sprintf('SELECT * FROM predb p WHERE 1=1 %s %s %s ORDER BY p.predate DESC LIMIT %d OFFSET %d',
 					$newer,
 					$older,
 					$nuked,
-					$limit
+					$limit,
+					$offset
 				)
 			);
 			break;
