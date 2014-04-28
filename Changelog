@@ -6,9 +6,16 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-28 bart39
+	* Fix: temp workaround for srrdb update issues due to rss changes on their site.
+2014-04-27 niel
+	* Fix: Reinstate Db/commit checking for tmux.
 2014-04-27 kevin
 	* Chg: Update preinfo API documentation.
 	* Chg: Output Unix Time on preinfo API to avoid timezone issues.
+	* Fix: User edit overwriting queue type.
+	* Chg: Cleanup API backend.
+	* Add: offset to predb API.
 2014-04-26 niel
 	* Fix: Changing badly quoted entry in menu.tsv
 	* Fix: Typo in quoting for query in dump_predb.php.
