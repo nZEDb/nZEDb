@@ -549,7 +549,6 @@ Class PreDb
 			$releases = @simplexml_load_string($data);
 			if ($releases !== false) {
 				foreach ($releases->channel->item as $release) {
-					var_dump($release);
 					// If it's too short, skip.
 					if (strlen($release->title) < 15) {
 						continue;
