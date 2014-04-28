@@ -20,7 +20,7 @@ scrape_daemon.sh runs the bots (2bots) with no text output and lets go of the
 terminal lock (if you want to restart the script later, the script will close the old scripts first).
 
 ########################################################################################################################
-List of Efnet channels, you can add these to the ignore setting:
+List of Efnet channels supported:
 
 #alt.binaries.cd.image
 #alt.binaries.console.ps3

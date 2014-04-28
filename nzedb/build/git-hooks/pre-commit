@@ -1,4 +1,5 @@
 #!/bin/sh
+#version=9
 #
 # An example hook script to verify what is about to be committed.
 # Called by "git commit" with no arguments.  The hook should
@@ -9,49 +10,44 @@
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
-	against=HEAD
+	AGAINST=HEAD
 else
 	# Initial commit: diff against an empty tree object
-	against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+	AGAINST=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 fi
 
-# If you want to allow non-ascii filenames set this variable to true.
-allownonascii=$(git config hooks.allownonascii)
+#####################################################################################################
 
-# Redirect output to stderr.
-exec 1>&2
+EXIT_STATUS=0
+PROJECT=`pwd`
+HOOKS=${PROJECT}nzedb/build/git-hooks
+FILE_LIST=${HOOKS}/git_hook_list.txt
 
-# Cross platform projects tend to avoid non-ascii filenames; prevent
-# them from being added to the repository. We exploit the fact that the
-# printable range starts at the space character and ends with tilde.
-if [ "$allownonascii" != "true" ] &&
-	# Note that the use of brackets around a tr range is ok here, (it's
-	# even required, for portability to Solaris 10's /usr/bin/tr), since
-	# the square bracket bytes happen to fall in the designated range.
-	test $(git diff --cached --name-only --diff-filter=A -z $against |
-	  LC_ALL=C tr -d '[ -~]\0' | wc -c) != 0
+if [ -e ${FILE_LIST} ]
 then
-	echo "Error: Attempt to add a non-ascii file name."
-	echo
-	echo "This can cause problems if you want to work"
-	echo "with people on other platforms."
-	echo
-	echo "To be portable it is advisable to rename the file ..."
-	echo
-	echo "If you know what you are doing you can disable this"
-	echo "check using:"
-	echo
-	echo "  git config hooks.allownonascii true"
-	echo
-	exit 1
+	rm ${FILE_LIST}
 fi
+touch ${FILE_LIST}
+
+for FILE in `git diff-index --cached --name-only --diff-filter=AM ${AGAINST}`
+do
+    echo ${PROJECT}/${FILE} >> ${FILE_LIST}
+done
 
 #nZEDb hook - run hooks
 # placeholder for script to add command with correct path ;-)
-if [ $? -gt 0 ]
+
+EXIT_STATUS=$?
+
+if [ -e ${FILE_LIST} ]
 then
-	exit 1
+	rm ${FILE_LIST}
+fi
+
+if [ ${EXIT_STATUS} -gt 0 ]
+then
+	exit ${EXIT_STATUS}
 fi
 
 # If there are whitespace errors, print the offending file names and fail.
-exec git diff-index --check --cached $against --
+exec git diff-index --check --cached ${AGAINST} --

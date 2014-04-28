@@ -1,7 +1,6 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
 $menu = new Menu();
 

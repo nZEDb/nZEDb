@@ -179,7 +179,7 @@ if (!isset($groups) || count($groups) == 0) {
 			if ($usenzbname === true) {
 				$cleanerName = $usename;
 			} else {
-				$cleanerName = $releasecleaning->releaseCleaner($subject, $groupName);
+				$cleanerName = $releasecleaning->releaseCleaner($subject, $fromname, $totalsize, $groupName);
 			}
 			if (!is_array($cleanerName)) {
 				$cleanName = $cleanerName;
