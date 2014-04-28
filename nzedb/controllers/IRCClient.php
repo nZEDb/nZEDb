@@ -409,7 +409,9 @@ class IRCClient
 
 			// If the server pings us, return it a pong.
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
-				$this->_pong($matches[1]);
+				if ($matches[1] === $this->_remote_host_received) {
+					$this->_pong($matches[1]);
+				}
 
 			// Check for a channel message.
 			} else if (preg_match('/^:(?P<nickname>.+?)\!.+?\s+PRIVMSG\s+(?P<channel>#.+?)\s+:\s*(?P<message>.+?)\s*$/',
