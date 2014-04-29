@@ -106,7 +106,7 @@ class DbUpdate
 			'ext'	=> 'tsv',
 			'files' => array(),
 			'path'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data',
-			'regex'	=> "#^(?P<drive>[A-Za-z]:|)(?<path>[/\w-]+|)(?P<order>\d+)-(?<table>\w+)\.tsv$#",
+			'regex'	=> '#^' . utility\Utility::PATH_REGEX . "(?P<order>\d+)-(?<table>\w+)\.tsv$#",
 		);
 		$options += $defaults;
 
@@ -152,7 +152,7 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex' => "#^(?P<drive>[A-Za-z]:|)(?<path>[/\w-]+|)(?P<date>\d{4}-\d{2}-\d{2})_(?P<patch>\d+)_(?P<table>\w+)\.sql$#",
+			'regex' => '#^' . utility\Utility::PATH_REGEX . "(?P<date>\d{4}-\d{2}-\d{2})_(?P<patch>\d+)_(?P<table>\w+)\.sql$#",
 			'safe'	=> true,
 		);
 		$options += $defaults;
