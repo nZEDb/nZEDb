@@ -163,26 +163,31 @@ class Console
 		}
 
 		$order = $this->getConsoleOrder($orderby);
-		return $db->query(sprintf("SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
-					. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
-					. "GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
-					. "GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
-					. "GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid, "
-					. "GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid, "
-					. "GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname, "
-					. "GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name, "
-					. "GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate, "
-					. "GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size, "
-					. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
-					. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
-					. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
-					. "con.*, r.consoleinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
-					. "LEFT OUTER JOIN groups ON groups.id = r.groupid "
-					. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
-					. "INNER JOIN consoleinfo con ON con.id = r.consoleinfoid "
-					. "WHERE r.nzbstatus = 1 AND con.cover = 1 AND con.title != '' AND "
-					. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s "
-					. "GROUP BY con.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]));
+		return $db->query(
+			sprintf(
+				"SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
+				. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
+				. "GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
+				. "GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
+				. "GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid, "
+				. "GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid, "
+				. "GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname, "
+				. "GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name, "
+				. "GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate, "
+				. "GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size, "
+				. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
+				. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
+				. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
+				. "con.*, r.consoleinfoid, groups.name AS group_name, rn.id as nfoid FROM releases r "
+				. "LEFT OUTER JOIN groups ON groups.id = r.groupid "
+				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
+				. "INNER JOIN consoleinfo con ON con.id = r.consoleinfoid "
+				. "WHERE r.nzbstatus = 1 AND con.cover = 1 AND con.title != '' AND "
+				. "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s
+				%s "
+				. "GROUP BY con.id ORDER BY %s %s" . $limit, $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]
+			)
+		);
 	}
 
 	public function getConsoleOrder($orderby)
@@ -292,19 +297,19 @@ class Console
 		}
 
 		// Get game properties.
-		$con['coverurl'] = (string) $amaz->Items->Item->LargeImage->URL;
+		$con['coverurl'] = (string)$amaz->Items->Item->LargeImage->URL;
 		if ($con['coverurl'] != "") {
 			$con['cover'] = 1;
 		} else {
 			$con['cover'] = 0;
 		}
 
-		$con['title'] = (string) $amaz->Items->Item->ItemAttributes->Title;
+		$con['title'] = (string)$amaz->Items->Item->ItemAttributes->Title;
 		if (empty($con['title'])) {
 			$con['title'] = $gameInfo['title'];
 		}
 
-		$con['platform'] = (string) $amaz->Items->Item->ItemAttributes->Platform;
+		$con['platform'] = (string)$amaz->Items->Item->ItemAttributes->Platform;
 		if (empty($con['platform'])) {
 			$con['platform'] = $gameInfo['platform'];
 		}
@@ -393,28 +398,28 @@ class Console
 			return false;
 		}
 
-		$con['asin'] = (string) $amaz->Items->Item->ASIN;
+		$con['asin'] = (string)$amaz->Items->Item->ASIN;
 
-		$con['url'] = (string) $amaz->Items->Item->DetailPageURL;
+		$con['url'] = (string)$amaz->Items->Item->DetailPageURL;
 		$con['url'] = str_replace("%26tag%3Dws", "%26tag%3Dopensourceins%2D21", $con['url']);
 
-		$con['salesrank'] = (string) $amaz->Items->Item->SalesRank;
+		$con['salesrank'] = (string)$amaz->Items->Item->SalesRank;
 		if ($con['salesrank'] == "") {
 			$con['salesrank'] = 'null';
 		}
 
-		$con['publisher'] = (string) $amaz->Items->Item->ItemAttributes->Publisher;
+		$con['publisher'] = (string)$amaz->Items->Item->ItemAttributes->Publisher;
 
-		$con['esrb'] = (string) $amaz->Items->Item->ItemAttributes->ESRBAgeRating;
+		$con['esrb'] = (string)$amaz->Items->Item->ItemAttributes->ESRBAgeRating;
 
-		$con['releasedate'] = $db->escapeString((string) $amaz->Items->Item->ItemAttributes->ReleaseDate);
+		$con['releasedate'] = $db->escapeString((string)$amaz->Items->Item->ItemAttributes->ReleaseDate);
 		if ($con['releasedate'] == "''") {
 			$con['releasedate'] = 'null';
 		}
 
 		$con['review'] = "";
 		if (isset($amaz->Items->Item->EditorialReviews)) {
-			$con['review'] = trim(strip_tags((string) $amaz->Items->Item->EditorialReviews->EditorialReview->Content));
+			$con['review'] = trim(strip_tags((string)$amaz->Items->Item->EditorialReviews->EditorialReview->Content));
 		}
 
 		$genreKey = -1;
@@ -439,7 +444,7 @@ class Console
 			}
 
 			if (empty($genreName) && isset($amaz->Items->Item->ItemAttributes->Genre)) {
-				$a = (string) $amaz->Items->Item->ItemAttributes->Genre;
+				$a = (string)$amaz->Items->Item->ItemAttributes->Genre;
 				$b = str_replace('-', ' ', $a);
 				$tmpGenre = explode(' ', $b);
 				foreach ($tmpGenre as $tg) {
@@ -467,10 +472,42 @@ class Console
 
 		$check = $db->queryOneRow(sprintf('SELECT id FROM consoleinfo WHERE title = %s AND asin = %s', $db->escapeString($con['title']), $db->escapeString($con['asin'])));
 		if ($check === false) {
-			$consoleId = $db->queryInsert(sprintf("INSERT INTO consoleinfo (title, asin, url, salesrank, platform, publisher, genreid, esrb, releasedate, review, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, NOW(), NOW())", $db->escapeString($con['title']), $db->escapeString($con['asin']), $db->escapeString($con['url']), $con['salesrank'], $db->escapeString($con['platform']), $db->escapeString($con['publisher']), ($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']), $db->escapeString($con['esrb']), $con['releasedate'], $db->escapeString($con['review']), $con['cover']));
+			$consoleId = $db->queryInsert(
+				sprintf(
+					"INSERT INTO consoleinfo (title, asin, url, salesrank, platform, publisher, genreid, esrb, releasedate, review, cover, createddate, updateddate)
+					VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, NOW(), NOW())",
+					$db->escapeString($con['title']),
+					$db->escapeString($con['asin']),
+					$db->escapeString($con['url']),
+					$con['salesrank'],
+					$db->escapeString($con['platform']),
+					$db->escapeString($con['publisher']),
+					($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']),
+					$db->escapeString($con['esrb']),
+					$con['releasedate'],
+					$db->escapeString(substr($con['review'], 0, 3000)),
+					$con['cover']
+				)
+			);
 		} else {
 			$consoleId = $check['id'];
-			$db->queryExec(sprintf('UPDATE consoleinfo SET title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s, genreid = %s, esrb = %s, releasedate = %s, review = %s, cover = %s, updateddate = NOW() WHERE id = %d', $db->escapeString($con['title']), $db->escapeString($con['asin']), $db->escapeString($con['url']), $con['salesrank'], $db->escapeString($con['platform']), $db->escapeString($con['publisher']), ($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']), $db->escapeString($con['esrb']), $con['releasedate'], $db->escapeString($con['review']), $con['cover'], $consoleId));
+			$db->queryExec(
+				sprintf(
+					'UPDATE consoleinfo SET title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s, genreid = %s, esrb = %s, releasedate = %s,
+					review = %s, cover = %s, updateddate = NOW() WHERE id = %d',
+					$db->escapeString($con['title']),
+					$db->escapeString($con['asin']),
+					$db->escapeString($con['url']),
+					$con['salesrank'],
+					$db->escapeString($con['platform']),
+					$db->escapeString($con['publisher']),
+					($con['consolegenreID'] == -1 ? "null" : $con['consolegenreID']),
+					$db->escapeString($con['esrb']), $con['releasedate'],
+					$db->escapeString(substr($con['review'], 0, 3000)),
+					$con['cover'],
+					$consoleId
+				)
+			);
 		}
 
 		if ($consoleId) {
@@ -531,7 +568,8 @@ class Console
 					if ($this->echooutput) {
 						$this->c->doEcho(
 							$this->c->headerOver('Looking up: ') .
-							$this->c->primary($gameInfo['title'] .
+							$this->c->primary(
+								$gameInfo['title'] .
 								' (' .
 								$gameInfo['platform'] . ')'
 							)
@@ -568,8 +606,7 @@ class Console
 					usleep($this->sleeptime * 1000 - $diff);
 				}
 			}
-		} else
-		if ($this->echooutput) {
+		} else if ($this->echooutput) {
 			$this->c->doEcho($this->c->header('No console releases to process.'));
 		}
 	}
