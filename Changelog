@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-04-29 bart39
+	* Chg: ignore releases that already have a preid for decrypt_hashes
 	* Fix: improve browsing performance by only checking 2 words on searching similar releases
 	* Chg: Category changes: check if tv for a.b.warez, disabled unknown check in isTV that ignored vaild tv releases
 	* Fix: values from settings table
