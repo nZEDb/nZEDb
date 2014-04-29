@@ -6,6 +6,10 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-28 niel
+	* Fix: Changed patch 208 to be simpler.
+	* Chg: Adding regex for DbUpdate's path matching, as Utility::PATH_REGEX.
+	* Fix: Added full stop ('.') character to path regex constant.
 2014-04-28 ruhllatio
 	* Fix: sprintf error Line 625 predb, too many arguments and not enough inputs
 2014-04-28 kevin
