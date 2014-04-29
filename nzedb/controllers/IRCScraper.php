@@ -145,7 +145,7 @@ class IRCScraper extends IRCClient
 			}
 
 			if (isset($matches['nuked'])) {
-				switch ($matches['nuke']) {
+				switch ($matches['nuked']) {
 					case 'NUKE':
 						$this->CurPre['nuked'] = PreDb::PRE_NUKED;
 						break;
