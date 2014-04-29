@@ -616,7 +616,7 @@ Class PreDb
 					} else if ($this->db->queryExec(
 						sprintf('
 							INSERT INTO predb (title, predate, source, md5, sha1, nfo)
-							VALUES (%s, %s, %s, %s, %s, %s, %s)',
+							VALUES (%s, %s, %s, %s, %s, %s)',
 							$this->db->escapeString($release->title),
 							$this->db->from_unixtime(strtotime($release->pubDate)),
 							$this->db->escapeString('srrdb'),
