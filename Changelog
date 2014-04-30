@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-30 bart39
+	* Fix: fix issue with miscsorter not updating releases it didnt rename.
 2014-04-29 bart39
 	* Fix: bad query in last sql patch - make sure you re-enable IRCScraper in tmux settings if you use it.
 	* Chg: Update tmux settings for IRCScraper changes
