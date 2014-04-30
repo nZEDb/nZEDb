@@ -559,30 +559,18 @@
 	<legend>PreDb IRC Scraper</legend>
 	<table class="input">
 		<tr>
-			<td style="width:180px;"><label for="scrape_cz">Scrape Corrupt/Zenet Irc Channels:</label></td>
+			<td style="width:180px;"><label for="run_ircscraper">Enable IRCScraper:</label></td>
 			<td>
-				{html_radios id="scrape_cz" name='scrape_cz' values=$yesno_ids output=$yesno_names
-				selected=$ftmux->scrape_cz separator='<br />'}
-				<div class="hint">Choose to run IRCScraper on corrupt/zenet irc channels. Setting SCRAPE_IRC_C_Z_BOOL
-					parameter to true or false in settings.php will toggle between the servers. The pane for this can
-					not be created after tmux starts.
-				</div>
-			</td>
-		</tr>
-
-		<tr>
-			<td style="width:180px;"><label for="scrape_efnet">Scrape Efnet Irc Channels:</label></td>
-			<td>
-				{html_radios id="scrape_efnet" name='scrape_efnet' values=$yesno_ids output=$yesno_names selected=$ftmux->scrape_efnet separator='<br />'}
-				<div class="hint">Choose to run IRCScraper on Efnet irc channels. The pane for this can not be created
-					after tmux starts.
+				{html_radios id="run_ircscraper" name='run_ircscraper' values=$yesno_ids output=$yesno_names
+				selected=$ftmux->run_ircscraper separator='<br />'}
+				<div class="hint">Enable IRCScraper. The pane for this can not be created after tmux starts.
 				</div>
 			</td>
 		</tr>
 		<tr>
 			<td style="width:180px;"><label for="explain">Information:</label></td>
 			<td>
-				<div class="explanation">IRC Scraper will scrape several predb channels from the enabled servers.<br/>
+				<div class="explanation">IRC Scraper will scrape nZEDb's own pre channel on synIRC for pre info.<br/>
 					Copy settings_example.php to settings.php in /misc/testing/IRCScraper and change the settings.<br/>
 					As a minimum you should set the username and make sure it is unique.
 				</div>

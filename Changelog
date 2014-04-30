@@ -6,6 +6,19 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-29 bart39
+	* Fix: bad query in last sql patch - make sure you re-enable IRCScraper in tmux settings if you use it.
+	* Chg: Update tmux settings for IRCScraper changes
+	* Fix: undefined index in IRCScraper
+2014-04-29 kevin
+	* Chg: Major changes to IRCScraper, now using our own PRE channel. Please redo settings.php. Might be issues.
+2014-04-29 bart39
+	* Chg: ignore releases that already have a preid for decrypt_hashes
+	* Fix: improve browsing performance by only checking 2 words on searching similar releases
+	* Chg: Category changes: check if tv for a.b.warez, disabled unknown check in isTV that ignored vaild tv releases
+	* Fix: values from settings table
+	* Chg: refactor queries in update binaries
+	* Fix: truncate console reviews to 3000 chars
 2014-04-28 niel
 	* Fix: Changed patch 208 to be simpler.
 	* Chg: Adding regex for DbUpdate's path matching, as Utility::PATH_REGEX.
