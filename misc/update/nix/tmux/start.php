@@ -236,23 +236,9 @@ function window_stripped_utilities($tmux_session)
 	exec("tmux selectp -t 0; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;postprocessing_amazon\033\"'");
 }
 
-function window_ircscraper($tmux_session, $window)
+function window_ircscraper($tmux_session)
 {
-	$t = new Tmux();
-	$tmux = $t->get();
-	$scrape_cz = $tmux->scrape_cz;
-	$scrape_efnet = $tmux->scrape_efnet;
-
-	if ($scrape_cz == 1 && $scrape_efnet == 1) {
-		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
-		exec("tmux selectp -t 0; tmux splitw -t $tmux_session:$window -v -p 50 'printf \"\033]2;scrape_Efnet\033\"'");
-	} else if ($scrape_cz == 1) {
-		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
-	} elseif ($scrape_efnet == 1) {
-		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_Efnet\033\"'");
-	} else {
-		exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
-	}
+	exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
 }
 
 function window_post($tmux_session)
@@ -317,19 +303,19 @@ if ($seq == 1) {
 	window_post($tmux_session);
 	if ($colors == 1 && $nntpproxy == 1) {
 		window_colors($tmux_session);
-		window_ircscraper($tmux_session, 4);
+		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 5);
 		window_sharing($tmux_session);
 	} else if ($colors == 1) {
 		window_colors($tmux_session);
-		window_ircscraper($tmux_session, 4);
+		window_ircscraper($tmux_session);
 		window_sharing($tmux_session);
 	} else if ($nntpproxy == 1) {
-		window_ircscraper($tmux_session, 3);
+		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 4);
 		window_sharing($tmux_session);
 	} else {
-		window_ircscraper($tmux_session, 3);
+		window_ircscraper($tmux_session);
 		window_sharing($tmux_session);
 	}
 	start_apps($tmux_session);
@@ -346,19 +332,19 @@ if ($seq == 1) {
 	window_stripped_utilities($tmux_session);
 	if ($colors == 1 && $nntpproxy == 1) {
 		window_colors($tmux_session);
-		window_ircscraper($tmux_session, 3);
+		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 4);
 		window_sharing($tmux_session);
 	} else if ($colors == 1) {
 		window_colors($tmux_session);
-		window_ircscraper($tmux_session, 3);
+		window_ircscraper($tmux_session);
 		window_sharing($tmux_session);
 	} else if ($nntpproxy == 1) {
-		window_ircscraper($tmux_session, 2);
+		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 3);
 		window_sharing($tmux_session);
 	} else {
-		window_ircscraper($tmux_session, 2);
+		window_ircscraper($tmux_session);
 		window_sharing($tmux_session);
 	}
 
@@ -379,19 +365,19 @@ if ($seq == 1) {
 	window_post($tmux_session);
 	if ($colors == 1 && $nntpproxy == 1) {
 		window_colors($tmux_session);
-		window_ircscraper($tmux_session, 4);
+		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 5);
 		window_sharing($tmux_session);
 	} else if ($colors == 1) {
 		window_colors($tmux_session);
-		window_ircscraper($tmux_session, 4);
+		window_ircscraper($tmux_session);
 		window_sharing($tmux_session);
 	} else if ($nntpproxy == 1) {
-		window_ircscraper($tmux_session, 3);
+		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 4);
 		window_sharing($tmux_session);
 	} else {
-		window_ircscraper($tmux_session, 3);
+		window_ircscraper($tmux_session);
 		window_sharing($tmux_session);
 	}
 	start_apps($tmux_session);
