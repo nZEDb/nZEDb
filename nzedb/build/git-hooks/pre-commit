@@ -1,5 +1,5 @@
 #!/bin/sh
-#version=6
+#version=9
 #
 # An example hook script to verify what is about to be committed.
 # Called by "git commit" with no arguments.  The hook should
@@ -19,8 +19,8 @@ fi
 #####################################################################################################
 
 EXIT_STATUS=0
-PROJECT=/path/to/nZEDb/
-HOOKS=${PROJECT}/nzedb/build/git-hooks
+PROJECT=`pwd`
+HOOKS=${PROJECT}nzedb/build/git-hooks
 FILE_LIST=${HOOKS}/git_hook_list.txt
 
 if [ -e ${FILE_LIST} ]
@@ -34,14 +34,13 @@ do
     echo ${PROJECT}/${FILE} >> ${FILE_LIST}
 done
 
-exit ${EXIT_STATUS}
-
 #nZEDb hook - run hooks
 # placeholder for script to add command with correct path ;-)
 
-EXIT_STATUS = $?
+EXIT_STATUS=$?
 
 if [ -e ${FILE_LIST} ]
+then
 	rm ${FILE_LIST}
 fi
 

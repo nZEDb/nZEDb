@@ -10,9 +10,31 @@ define('SCRAPE_IRC_EFNET_NICKNAME', "$username");    // Nick name (this is the n
 define('SCRAPE_IRC_EFNET_REALNAME', "$username");    // This is a name that people see in /whois, you can set this to your nickname.
 define('SCRAPE_IRC_EFNET_USERNAME', "$username");    // This is part of your hostname, you can set this the same as nickname. This is also used to log in to ZNC.
 define('SCRAPE_IRC_EFNET_PASSWORD', false);          // This is used for bouncers like ZNC, set this false or '' if you don't have a bouncer.
-define('SCRAPE_IRC_EFNET_ENCRYPTION', false);        // Set to true to use TLS encryption (make sure you change the port to a SSL one).
-// List of ignored channels, separated by commas. ie '#alt.binaries.teevee,#alt.binaries.moovee' for a single channel : '#alt.binaries.teevee'
-define('SCRAPE_IRC_EFNET_IGNORED_CHANNELS', '');
+define('SCRAPE_IRC_EFNET_ENCRYPTION', false);        // Set to true to use TLS encryption (make sure you change the port to a TLS one).
+// These are all the channels you can scrape, put // in front to exclude a channel.
+define('SCRAPE_IRC_EFNET_CHANNELS', serialize(
+		array(
+			// Channel                             Password.
+			'#alt.binaries.inner-sanctum'          => null,
+			'#alt.binaries.cd.image'               => null,
+			'#alt.binaries.movies.divx'            => null,
+			'#alt.binaries.sounds.mp3.complete_cd' => null,
+			'#alt.binaries.warez'                  => null,
+			'#alt.binaries.console.ps3'            => null,
+			'#alt.binaries.games.nintendods'       => null,
+			'#alt.binaries.games.wii'              => null,
+			'#alt.binaries.games.xbox360'          => null,
+			'#alt.binaries.sony.psp'               => null,
+			'#scnzb'                               => null,
+		// The following all require passwords, if you know the passwords, put them inside the '' and remove the //
+		//	'#alt.binaries.teevee'                 => '',
+		//	'#alt.binaries.moovee'                 => '',
+		//	'#alt.binaries.erotica'                => '',
+		//	'#alt.binaries.flac'                   => '',
+		//	'#alt.binaries.foreign'                => '',
+		)
+	)
+);
 
 define('SCRAPE_IRC_C_Z_BOOL', false); // True uses Corrupt, False uses Zenet. (they both PRE the same stuff). If you have trouble with one, use the other.
 

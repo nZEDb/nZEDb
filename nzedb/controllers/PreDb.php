@@ -549,7 +549,6 @@ Class PreDb
 			$releases = @simplexml_load_string($data);
 			if ($releases !== false) {
 				foreach ($releases->channel->item as $release) {
-
 					// If it's too short, skip.
 					if (strlen($release->title) < 15) {
 						continue;
@@ -558,23 +557,40 @@ Class PreDb
 					$sha1 = $this->db->escapeString(sha1($release->title));
 					$oldName = $this->db->queryOneRow(sprintf('SELECT id, nfo FROM predb WHERE md5 = %s', $md5));
 
-					$nfo = $size = '';
+					$nfo = '';
+					//$size = '';
 					if (preg_match('/<dt>NFO availability<\/dt>\s*<dd>(?P<nfo>(yes|no))<\/dd>/is', $release->description, $description)) {
 						$nfo = ($description['nfo'] === 'yes' ? $this->db->escapeString('srrdb') : 'NULL');
 					}
 
-					if (preg_match('/Filesize.*<td>(?P<size>\d*)<\/td>\s*<td>.*?<\/td>\s*<td>.*?<\/td>\s*<\/tr>\s*<\/table>\s*/is', $release->description, $description)) {
-						$size = ((isset($description['size']) && !empty($description['size'])) ? $this->db->escapeString(nzedb\utility\bytesToSizeString($description['size'])) : 'NULL');
-					}
+//					if (preg_match('/Filesize.*<td>(?P<size>\d*)<\/td>\s*<td>.*?<\/td>\s*<td>.*?<\/td>\s*<\/tr>\s*<\/table>\s*/is', $release->description, $description)) {
+//						$size = ((isset($description['size']) && !empty($description['size'])) ? $this->db->escapeString(nzedb\utility\bytesToSizeString($description['size'])) : 'NULL');
+//					}
 
+//					if ($oldName !== false) {
+//						if ($nfo !== '' && empty($oldName['nfo'])) {
+//							$this->db->queryExec(
+//								sprintf(
+//									'
+//									UPDATE predb
+//									SET size = %s, predate = %s, source = %s, nfo = %s
+//									WHERE id = %d',
+//									$size,
+//									$this->db->from_unixtime(strtotime($release->pubDate)),
+//									$this->db->escapeString('srrdb'),
+//									$nfo,
+//									$oldName['id']
+//								)
+//							);
+//						}
+//						continue;
 					if ($oldName !== false) {
 						if ($nfo !== '' && empty($oldName['nfo'])) {
 							$this->db->queryExec(
 								sprintf('
 									UPDATE predb
-									SET size = %s, predate = %s, source = %s, nfo = %s
+									SET predate = %s, source = %s, nfo = %s
 									WHERE id = %d',
-									$size,
 									$this->db->from_unixtime(strtotime($release->pubDate)),
 									$this->db->escapeString('srrdb'),
 									$nfo,
@@ -583,17 +599,30 @@ Class PreDb
 							);
 						}
 						continue;
+//					} else if ($this->db->queryExec(
+//						sprintf('
+//							INSERT INTO predb (title, predate, source, md5, sha1, nfo, size
+//							)
+//							VALUES (%s, %s, %s, %s, %s, %s, %s)',
+//							$this->db->escapeString($release->title),
+//							$this->db->from_unixtime(strtotime($release->pubDate)),
+//							$this->db->escapeString('srrdb'),
+//							$md5,
+//							$sha1,
+//							$nfo,
+//							$size))) {
+//						$newNames++;
+//					}
 					} else if ($this->db->queryExec(
 						sprintf('
-							INSERT INTO predb (title, predate, source, md5, sha1, nfo, size)
-							VALUES (%s, %s, %s, %s, %s, %s, %s)',
+							INSERT INTO predb (title, predate, source, md5, sha1, nfo)
+							VALUES (%s, %s, %s, %s, %s, %s)',
 							$this->db->escapeString($release->title),
 							$this->db->from_unixtime(strtotime($release->pubDate)),
 							$this->db->escapeString('srrdb'),
 							$md5,
 							$sha1,
-							$nfo,
-							$size))) {
+							$nfo))) {
 						$newNames++;
 					}
 				}
@@ -1272,10 +1301,10 @@ Class PreDb
 		echo $this->c->primary(number_format($total) . " releases to process.");
 		if ($total > 0) {
 			foreach ($res as $row) {
-				if (preg_match('/[a-f0-9]{32}/i', $row['name'], $matches)) {
-					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
-				} else if (preg_match('/[a-f0-9]{32}/i', $row['filename'], $matches)) {
-					$updated = $updated + $namefixer->matchPredbMD5($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
+				if (preg_match('/[a-f0-9]{32,40}/i', $row['name'], $matches)) {
+					$updated = $updated + $namefixer->matchPredbHash($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
+				} else if (preg_match('/[a-f0-9]{32,40}/i', $row['filename'], $matches)) {
+					$updated = $updated + $namefixer->matchPredbHash($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
 				}
 				if ($show === 2) {
 					$consoletools->overWritePrimary("Renamed Releases: [" . number_format($updated) . "] " . $consoletools->percentString(++$checked, $total));

@@ -1,6 +1,4 @@
 <?php
-use nzedb\db\DB;
-
 /**
  * Class IRCScraper
  */
@@ -28,12 +26,6 @@ class IRCScraper extends IRCClient
 	protected $groupList;
 
 	/**
-	 * @var DB
-	 * @access protected
-	 */
-	protected $db;
-
-	/**
 	 * Current server.
 	 * efnet | corrupt | zenet
 	 * @var string
@@ -56,6 +48,12 @@ class IRCScraper extends IRCClient
 	protected $nuked;
 
 	/**
+	 * @var nzedb\db\DB
+	 * @access protected
+	 */
+	protected $db;
+
+	/**
 	 * Construct
 	 *
 	 * @param string       $serverType   efnet | corrupt | zenet
@@ -66,7 +64,7 @@ class IRCScraper extends IRCClient
 	 */
 	public function __construct($serverType, &$silent = false, &$debug = false)
 	{
-		$this->db = new DB();
+		$this->db = new nzedb\db\DB();
 		$this->groupList = array();
 		$this->serverType = $serverType;
 		$this->silent = $silent;
@@ -88,44 +86,10 @@ class IRCScraper extends IRCClient
 				$port     = SCRAPE_IRC_EFNET_PORT;
 				$nickname = SCRAPE_IRC_EFNET_NICKNAME;
 				$username = SCRAPE_IRC_EFNET_USERNAME;
-				$realname = SCRAPE_IRC_EFNET_REALNAME;
+				$realName = SCRAPE_IRC_EFNET_REALNAME;
 				$password = SCRAPE_IRC_EFNET_PASSWORD;
 				$tls      = SCRAPE_IRC_EFNET_ENCRYPTION;
-				$channelList = array(
-					// Channel                             Password.
-					'#alt.binaries.inner-sanctum'          => null,
-					'#alt.binaries.cd.image'               => null,
-					'#alt.binaries.movies.divx'            => null,
-					'#alt.binaries.sounds.mp3.complete_cd' => null,
-					'#alt.binaries.warez'                  => null,
-					'#alt.binaries.teevee'                 => 'teevee',
-					'#alt.binaries.moovee'                 => 'moovee',
-					'#alt.binaries.erotica'                => 'erotica',
-					'#alt.binaries.flac'                   => 'flac',
-					'#alt.binaries.foreign'                => 'foreign',
-					'#alt.binaries.console.ps3'            => null,
-					'#alt.binaries.games.nintendods'       => null,
-					'#alt.binaries.games.wii'              => null,
-					'#alt.binaries.games.xbox360'          => null,
-					'#alt.binaries.sony.psp'               => null,
-					'#scnzb'                               => null,
-					//'#tvnzb'                               => null
-				);
-				// Check if the user is ignoring channels.
-				if (defined('SCRAPE_IRC_EFNET_IGNORED_CHANNELS') && SCRAPE_IRC_EFNET_IGNORED_CHANNELS != '') {
-					$ignored = explode(',', SCRAPE_IRC_EFNET_IGNORED_CHANNELS);
-					$newList = array();
-					foreach($channelList as $channel => $chanpass) {
-						if (!in_array($channel, $ignored)) {
-							$newList[$channel] = $chanpass;
-						}
-					}
-					if (empty($newList)) {
-						exit('ERROR: You have ignored every group there is to scrape!' . PHP_EOL);
-					}
-					$channelList = $newList;
-					unset($newList);
-				}
+				$channelList = unserialize(SCRAPE_IRC_EFNET_CHANNELS);
 				break;
 
 			case 'corrupt':
@@ -133,7 +97,7 @@ class IRCScraper extends IRCClient
 				$port        = SCRAPE_IRC_CORRUPT_PORT;
 				$nickname    = SCRAPE_IRC_CORRUPT_NICKNAME;
 				$username    = SCRAPE_IRC_CORRUPT_USERNAME;
-				$realname    = SCRAPE_IRC_CORRUPT_REALNAME;
+				$realName    = SCRAPE_IRC_CORRUPT_REALNAME;
 				$password    = SCRAPE_IRC_CORRUPT_PASSWORD;
 				$tls         = SCRAPE_IRC_CORRUPT_ENCRYPTION;
 				$channelList = array('#pre' => null);
@@ -144,7 +108,7 @@ class IRCScraper extends IRCClient
 				$port        = SCRAPE_IRC_ZENET_PORT;
 				$nickname    = SCRAPE_IRC_ZENET_NICKNAME;
 				$username    = SCRAPE_IRC_ZENET_USERNAME;
-				$realname    = SCRAPE_IRC_ZENET_REALNAME;
+				$realName    = SCRAPE_IRC_ZENET_REALNAME;
 				$password    = SCRAPE_IRC_ZENET_PASSWORD;
 				$tls         = SCRAPE_IRC_ZENET_ENCRYPTION;
 				$channelList = array('#Pre' => null);
@@ -167,7 +131,7 @@ class IRCScraper extends IRCClient
 		}
 
 		// Login to IRC.
-		if ($this->login($nickname, $username, $realname, $password) === false) {
+		if ($this->login($nickname, $username, $realName, $password) === false) {
 			exit('Error logging in to: (' .
 				$server . ':' . $port . ') nickname: (' . $nickname .
 				'). Verify your connection information, you might also be banned from this server or there might have been a connection issue.' .

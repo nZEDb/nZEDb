@@ -6,9 +6,69 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-04-28 niel
+	* Fix: Changed patch 208 to be simpler.
+	* Chg: Adding regex for DbUpdate's path matching, as Utility::PATH_REGEX.
+	* Fix: Added full stop ('.') character to path regex constant.
+2014-04-28 ruhllatio
+	* Fix: sprintf error Line 625 predb, too many arguments and not enough inputs
+2014-04-28 kevin
+	* Chg: IRCClient, only reply to pings from the server to prevent abusers from making us flood.
+2014-04-28 bart39
+	* Fix: temp workaround for srrdb update issues due to rss changes on their site.
+2014-04-27 niel
+	* Fix: Reinstate Db/commit checking for tmux.
+2014-04-27 kevin
+	* Chg: Update preinfo API documentation.
+	* Chg: Output Unix Time on preinfo API to avoid timezone issues.
+	* Fix: User edit overwriting queue type.
+	* Chg: Cleanup API backend.
+	* Add: offset to predb API.
+2014-04-26 niel
+	* Fix: Changing badly quoted entry in menu.tsv
+	* Fix: Typo in quoting for query in dump_predb.php.
+2014-04-26 ruhllatio
+	* Fix: Remap PreDB.php functions to PredbHash instead of MD5
+	* Fix: SxxExx namefixer regex no longer matches resolutions that harmfully renamed Anime releases
+2014-04-26 bart39
+	* Fix: missing > in NameFixer #1289
+	* Fix: duplicate insert of isrenamed
+	* Fix: Blank searchnames from requestid web lookup
+2014-04-26 kevin
+	* Fix: Undefined offsets in srrinfo.
+	* Add: API for PreDB. (can be used for matching sha1/hash/titles/requid).
+	* Chg: IRCScraper, remove some channel passwords, let user fill them in.
+	* Chg: Update ubuntu install guide, mention Avconv as an alternative to FFMpeg.
+	* Chg: Remove DB pings from last push, causes issues.
+	* Chg: Fix indents on pull request.
+2014-04-25 kevin
+	* Add: Even faster yEnc decoding by using a PHP extension, see : https://github.com/kevinlekiller/simple_php_yenc_decode for instructions.
+	* Chg: If the user does not have the extension loaded, use the built in PHP method for yEnc.
+	* Add: DB pings to IRCClient when pinging or ponging IRC to prevent DB timeouts.
+2014-04-25 ruhllatio
+	* Add: Phase 2 of SHA matching implemented for fixReleaseNames and decrypt_hashes
+2014-04-25 niel
+	* Fix: Reverting accidentally changed default settings.
+2014-04-23 niel
+	* Fix: Typo in default tmpunrar path.
+2014-04-22 niel
+	* Fix: Updating pre-commit hook files to fix problems updating versions.
+2014-04-22 bart39
+	* Fix: fix API errors
+	* Fix: renametopre.php incorrectly matching a.b.etc requestid releases against a.b.erotica releases
+	NB: this will reset the searchname and preid against the affected releases - run /misc/testing/Dev/renametopre
+	.php full preid to re-match them.
+	* Chg: Add fromname and size to ReleaseCleaner for potential use matching releases aginst predb titles for other
+	groups.
+2014-04-21 kevin
+	* Fix: Typo in requestid.
+	* Fix: IRCClient. The example code on php.net for fwrite is wrong and can create an infinite loop if the remote server closes the connection which causes fwrite to return 0 and not false - php.net only states false as a return value on error.
+2014-04-21 ruhllatio
+	* Modify requestid local match script to ignore matches already PreDB matched and change script commenting
 2014-04-21 niel
 	* Chg: Adding removal of bad rows in predb to patch 213.
 	* New: Added method to Versions class to fetch the pre-commit version.
+	* Upd: Updated pre-commit hook. Dev's should run .../nzedb/build/addGitHook.php to install.
 2014-04-20 niel
 	* Fix: Updated create table for patch 210, to avoid truncation of data.
 	* Chg: Removing a number of query failures from errors to ignore during patching.

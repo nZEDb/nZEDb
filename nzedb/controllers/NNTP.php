@@ -112,6 +112,12 @@ class NNTP extends Net_NNTP_Client
 	protected $yEncTempOutput;
 
 	/**
+	 * Use the simple_php_yenc_decode extension for decoding yEnc articles?
+	 * @var bool
+	 */
+	protected $yEncExtension = false;
+
+	/**
 	 * Default constructor.
 	 *
 	 * @param bool $echo Echo to cli?
@@ -132,21 +138,31 @@ class NNTP extends Net_NNTP_Client
 
 		$this->nntpRetries = ((!empty($this->site->nntpretries)) ? (int)$this->site->nntpretries : 0) + 1;
 
-		$this->yEncSilence    = (nzedb\utility\isWindows() ? '' : ' > /dev/null 2>&1');
-		$this->yEncTempInput  = nZEDb_TMP . 'yEnc' . DS;
-		$this->yEncTempOutput = $this->yEncTempInput . 'output';
-		$this->yEncTempInput .= 'input';
+		// Check if the user wants to use yydecode or the simple_php_yenc_decode extension.
 		$this->yyDecoderPath  = ((!empty($this->site->yydecoderpath)) ? $this->site->yydecoderpath : false);
+		if ($this->yyDecoderPath === 'simple_php_yenc_decode') {
+			if (extension_loaded('simple_php_yenc_decode')) {
+				$this->yEncExtension = true;
+			} else {
+				$this->yyDecoderPath = false;
+			}
+		} else if ($this->yyDecoderPath !== false) {
 
-		// Test if the user can read/write to the yEnc path.
-		if (!is_file($this->yEncTempInput)) {
-			@file_put_contents($this->yEncTempInput, 'x');
-		}
-		if (!is_file($this->yEncTempInput) || !is_readable($this->yEncTempInput) || !is_writable($this->yEncTempInput)) {
-			$this->yyDecoderPath = false;
-		}
-		if (is_file($this->yEncTempInput)) {
-			@unlink($this->yEncTempInput);
+			$this->yEncSilence    = (nzedb\utility\isWindows() ? '' : ' > /dev/null 2>&1');
+			$this->yEncTempInput  = nZEDb_TMP . 'yEnc' . DS;
+			$this->yEncTempOutput = $this->yEncTempInput . 'output';
+			$this->yEncTempInput .= 'input';
+
+			// Test if the user can read/write to the yEnc path.
+			if (!is_file($this->yEncTempInput)) {
+				@file_put_contents($this->yEncTempInput, 'x');
+			}
+			if (!is_file($this->yEncTempInput) || !is_readable($this->yEncTempInput) || !is_writable($this->yEncTempInput)) {
+				$this->yyDecoderPath = false;
+			}
+			if (is_file($this->yEncTempInput)) {
+				@unlink($this->yEncTempInput);
+			}
 		}
 	}
 
@@ -979,6 +995,8 @@ class NNTP extends Net_NNTP_Client
 				for ($chr = 0; $chr < $length; $chr++) {
 					$data .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) : chr((ord($input[++$chr]) - 64) - 42));
 				}
+			} elseif ($this->yEncExtension) {
+				$data = simple_yenc_decode($input[1]);
 			} else {
 				$inFile = $this->yEncTempInput . mt_rand(0, 999999);
 				$ouFile = $this->yEncTempOutput . mt_rand(0, 999999);

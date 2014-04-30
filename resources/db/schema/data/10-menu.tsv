@@ -16,7 +16,7 @@ myshows	My Shows	Your TV shows.	1	77	""
 mymovies	My Movies	Your Movie Wishlist.	1	78	""
 apihelp	API	Information on the API.	1	79	""
 rss	RSS	RSS Feeds.	1	80	""
-queue	My Queue	"View Your Queue.'	1 81	{if !$sabintegrated}-1{/if}
+queue	My Queue	View Your Queue.	1 81	{if !$sabintegrated}-1{/if}
 forum	Forum	Browse Forum.	1	85	""
 login	Login	Login.	0	100	""
 register	Register	Register.	0	110	""

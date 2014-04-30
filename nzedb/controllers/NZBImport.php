@@ -370,7 +370,7 @@ class NZBImport
 			$renamed = 1;
 		} else {
 			// Pass the subject through release cleaner to get a nicer name.
-			$cleanName = $this->releaseCleaner->releaseCleaner($subject, $nzbDetails['groupName']);
+			$cleanName = $this->releaseCleaner->releaseCleaner($subject, $nzbDetails['from'], $nzbDetails['totalSize'], $nzbDetails['groupName']);
 			if (isset($cleanName['properlynamed'])) {
 				$cleanName = $cleanName['cleansubject'];
 				$renamed = (isset($cleanName['properlynamed']) && $cleanName['properlynamed'] === true ? 1 : 0);

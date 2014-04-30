@@ -363,7 +363,7 @@ class NameFixer
 							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
 						}
 						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
-								. "anidbid = NULL, preid = %s, searchname = %s, isrenamed = 1, %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
+								. "anidbid = NULL, preid = %s, searchname = %s, %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
 					} else {
 						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
 								. "anidbid = NULL, preid = %s, searchname = %s, iscategorized = 1, categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
@@ -375,13 +375,23 @@ class NameFixer
 	}
 
 	// Match a MD5 from the predb to a release.
-	public function matchPredbMD5($md5, $release, $echo, $namestatus, $echooutput, $show)
+	public function matchPredbHash($hash, $release, $echo, $namestatus, $echooutput, $show)
 	{
 		$db = $this->db;
 		$matching = 0;
+		$hashtype = "";
 		$this->category = new Category();
 		$this->matched = false;
-		$res = $db->queryDirect(sprintf("SELECT title, source FROM predb WHERE md5 = %s", $db->escapeString($md5)));
+
+		// Determine MD5 or SHA1
+		if (strlen($hash) === 40) {
+			$hashtype = "SHA1, ";
+		} else {
+			$hashtype = "MD5, ";
+		}
+
+		$res = $db->queryDirect(sprintf("SELECT title, source FROM predb WHERE md5 = %s OR sha1 = %s",
+				$db->escapeString($hash), $db->escapeString($hash)));
 		$total = $res->rowCount();
 		if ($total > 0) {
 			foreach ($res as $row) {
@@ -400,7 +410,7 @@ class NameFixer
 					}
 
 					if ($echooutput && $show === 1) {
-						$this->updateRelease($release, $row["title"], $method = "predb md5 release name: " . $row["source"], $echo, "MD5, ", $namestatus, $show);
+						$this->updateRelease($release, $row["title"], $method = "predb hash release name: " . $row["source"], $echo, $hashtype, $namestatus, $show);
 					}
 					$matching++;
 				}
@@ -478,7 +488,7 @@ class NameFixer
 	public function tvCheck($release, $echo, $type, $namestatus, $show)
 	{
 		$result = '';
-		if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w[-\w.\',;& ]+((s\d{1,2}[._ -]?[bde]\d{1,2})|\d{1,2}x\d{2}|ep[._ -]?\d{2})[-\w.\',;.()]+(BD(-?(25|50|RIP))?|Blu-?Ray ?(3D)?|BRRIP|CAM(RIP)?|DBrip|DTV|DVD\-?(5|9|(R(IP)?|scr(eener)?))?|[HPS]D?(RIP|TV(RIP)?)?|NTSC|PAL|R5|Ripped |S?VCD|scr(eener)?|SAT(RIP)?|TS|VHS(RIP)?|VOD|WEB-DL)[._ -][-\w.\',;& ]+\w/i', $release["textstring"], $result)) {
+		if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w[-\w.\',;& ]+((s\d{1,2}[._ -]?[bde]\d{1,2})|(?<!\d)[S|]\d{1,2}[E|x]\d{1,}(?!\d)|ep[._ -]?\d{2})[-\w.\',;.()]+(BD(-?(25|50|RIP))?|Blu-?Ray ?(3D)?|BRRIP|CAM(RIP)?|DBrip|DTV|DVD\-?(5|9|(R(IP)?|scr(eener)?))?|[HPS]D?(RIP|TV(RIP)?)?|NTSC|PAL|R5|Ripped |S?VCD|scr(eener)?|SAT(RIP)?|TS|VHS(RIP)?|VOD|WEB-DL)[._ -][-\w.\',;& ]+\w/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "tvCheck: Title.SxxExx.Text.source.group", $echo, $type, $namestatus, $show);
 		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w[-\w.\',;& ]+((s\d{1,2}[._ -]?[bde]\d{1,2})|\d{1,2}x\d{2}|ep[._ -]?\d{2})[-\w.\',;& ]+((19|20)\d\d)[-\w.\',;& ]+\w/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "tvCheck: Title.SxxExx.Text.year.group", $echo, $type, $namestatus, $show);
@@ -834,7 +844,7 @@ class NameFixer
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: Title - SxxExx - Eptitle", $echo, $type, $namestatus, $show);
 		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\)\.nds/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus, $show);
-		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\.(pdf|html|epub|mobi|azw|tif|docx|lit|rtf|opf)/i', $release["textstring"], $result)) {
+		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\.(pdf|htm(l)?|epub|mobi|azw|opf|fb2|prc|djvu|cb[rz])/i', $release["textstring"], $result)) {
 			$result = str_replace("." . $result["1"], " (" . $result["1"] . ")", $result['0']);
 			$this->updateRelease($release, $result, $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
 		}

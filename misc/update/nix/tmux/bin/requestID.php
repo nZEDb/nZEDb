@@ -96,7 +96,7 @@ function getReleaseNameFromRequestID($site, $requestID, $groupName)
 		return false;
 	}
 	$request = $xml->request[0];
-	if (isset($request)) {
+	if (isset($request) && !empty($request['name'])) {
 		return array('title' => $request['name'], 'id' => 'NULL');
 	}
 }
