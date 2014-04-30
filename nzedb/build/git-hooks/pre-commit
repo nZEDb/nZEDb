@@ -19,7 +19,7 @@ fi
 #####################################################################################################
 
 EXIT_STATUS=0
-PROJECT=`pwd`
+PROJECT=/path/to/nZEDb/
 HOOKS=${PROJECT}nzedb/build/git-hooks
 FILE_LIST=${HOOKS}/git_hook_list.txt
 
