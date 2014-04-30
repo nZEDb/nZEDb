@@ -61,7 +61,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "nfo":
 	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
-	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND proc_sorter = 0 AND isrenamed = 0 ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND nfostatus = 1 AND proc_sorter = 0 AND isrenamed = 0 ORDER BY postdate DESC LIMIT %s"
 	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
