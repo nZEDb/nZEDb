@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-01 bart39
+	* Fix: typo in predb dump file name
 	* Fix: add missing fields to tmux schema for new install #1299
 	* Fix: typo in dump_predb.php
 2014-04-30 bart39
