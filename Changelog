@@ -7,7 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-01 bart39
-	* Fix: add missing fields to tmux schema for new install
+	* Fix: add missing fields to tmux schema for new install #1299
 	* Fix: typo in dump_predb.php
 2014-04-30 bart39
 	* Fix: fix issue with miscsorter not updating releases it didnt rename.
