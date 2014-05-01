@@ -6,6 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-01 ruhllatio
+	* Chg: Force decrypt_hashes to do lower case letters only in the DB call to match hashes
+	* Add: decrypt_hashes when run in show mode will now specify the hash match type: MD5 or SHA1 instead of just MD5
 2014-05-01 bart39
 	* Fix: typo in predb dump file name
 	* Fix: add missing fields to tmux schema for new install #1299
