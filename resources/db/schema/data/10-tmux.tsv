@@ -68,5 +68,6 @@ showquery	0
 fix_crap_opt	Disabled
 showprocesslist	0
 processupdate	2
-scrape_cz	0
-scrape_efnet	0
+run_ircscraper	0
+run_sharing	0
+sharing_timer	60
