@@ -405,12 +405,11 @@ echo "\nEnd addTitle\n";
 		}
 		}
 
+// why do we need a title in specific language anyway? With the anidb_lang we have all available languages we can search on. Remove this when we remove the lang column in anidb!!
 		preg_match('/<title xml:lang="en" type="official">([^<]+)<\/title>/', $apiresponse, $safeTitle);
+// get any language as long as it is main
 		if(!$safeTitle)
-			preg_match('/<title xml:lang="x-jat" type="main">([^<]+)<\/title>/', $apiresponse, $safeTitle);
-// needed for anidb id 5303:
-		if(!$safeTitle)
-			preg_match('/<title xml:lang="x-kot" type="main">([^<]+)<\/title>/', $apiresponse, $safeTitle);
+			preg_match('/<title xml:lang=".*?" type="main">([^<]+)<\/title>/', $apiresponse, $safeTitle);
 
 // replace xml:lang with lang: (workaround to get lang recognised by attributes(). There should be better way, so go and optimize this code!
 		$apiresponse = preg_replace('/<title xml:lang="/', '/<title lang="', $apiresponse);
