@@ -91,11 +91,6 @@ REQUIREMENTS
 			sudo pip-3.3 install cymysql
 			pip-3.3 list
 
-	ZEND Opcache
-		cd /var/www/nZEDb/www/admin/
-        wget https://raw.github.com/rlerdorf/opcache-status/master/opcache.php
-		Now you can go to http://localhost/admin/opcache.php in your browser to view statistics.
-
 	Memcache
 		sudo apt-get install memcached php5-memcache
 		sudo nano /etc/php5/apache2/php.ini    -> add    extension=memcache.so    in the dynamic extensions section

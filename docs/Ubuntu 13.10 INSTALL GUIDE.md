@@ -223,15 +223,6 @@
 
 7. Install memcache.
 
-     # ZEND Opcache:
-
-         Note: In PHP 5.5 ZEND Opcache is installed by default. You can add a page to view statistics on the caching:
-
-             cd /var/www/nZEDb/www/admin/
-             wget https://raw.github.com/rlerdorf/opcache-status/master/opcache.php
-
-         Note: Later on you can browse to http://yoursite/admin/opcache.php to view those statistics which might help you tweak the settings.
-
      # Memcache:
 
               sudo apt-get install memcached php5-memcache
