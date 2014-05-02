@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-02 kevin
+	* Add: Ignoring of efnet channels to IRCScraper. #1300
 2014-05-01 niel
 	* Upd: Changed the forum address in the READDME for the new location.
 	* Upd: Merged traid's updated convert_from_newznab script. Many thanks.
