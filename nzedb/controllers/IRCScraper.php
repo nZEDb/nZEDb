@@ -46,6 +46,12 @@ class IRCScraper extends IRCClient
 	protected $db;
 
 	/**
+	 * Array of ignored efnet channels.
+	 * @var array
+	 */
+	protected $ignoredEfnet;
+
+	/**
 	 * Construct
 	 *
 	 * @param bool $silent Run this in silent mode (no text output).
@@ -55,6 +61,31 @@ class IRCScraper extends IRCClient
 	 */
 	public function __construct(&$silent = false, &$debug = false)
 	{
+		if (defined('SCRAPE_IRC_EFNET_CHANNELS_IGNORE')) {
+			$this->ignoredEfnet = unserialize(SCRAPE_IRC_EFNET_CHANNELS_IGNORE);
+		} else {
+			$this->ignoredEfnet = array(
+				'#a.b.cd.image'               => false,
+				'#a.b.console.ps3'            => false,
+				'#a.b.dvd'                    => false,
+				'#a.b.erotica'                => false,
+				'#a.b.flac'                   => false,
+				'#a.b.foreign'                => false,
+				'#a.b.games.nintendods'       => false,
+				'#a.b.inner-sanctum'          => false,
+				'#a.b.moovee'                 => false,
+				'#a.b.movies.divx'            => false,
+				'#a.b.sony.psp'               => false,
+				'#a.b.sounds.mp3.complete_cd' => false,
+				'#a.b.teevee'                 => false,
+				'#a.b.games.wii'              => false,
+				'#a.b.warez'                  => false,
+				'#a.b.games.xbox360'          => false,
+				'#scnzb'                      => false,
+				'#tvnzb'                      => false
+			);
+		}
+
 		$this->db = new nzedb\db\DB();
 		$this->groupList = array();
 		$this->silent = $silent;
@@ -125,6 +156,10 @@ class IRCScraper extends IRCClient
 			'\[RQ: (?P<req>.+?)\]\[SZ: (?P<size>.+?)\]\[FL: (?P<files>.+?)\](\[(?P<nuked>(UN|MOD|RE|OLD)?NUKED?): (?P<reason>.+?)\])?$/i',
 			$this->_channelData['message'], $matches)) {
 
+			if (isset($this->ignoredEfnet[$matches['source']]) && $this->ignoredEfnet[$matches['source']] === true) {
+				return;
+			}
+
 			$this->CurPre['md5'] = $this->db->escapeString(md5($matches['title']));
 			$this->CurPre['sha1'] = $this->db->escapeString(sha1($matches['title']));
 			$this->CurPre['predate'] = $this->db->from_unixtime(strtotime($matches['time'] . ' UTC'));
@@ -146,16 +181,16 @@ class IRCScraper extends IRCClient
 
 			if (isset($matches['nuked'])) {
 				switch ($matches['nuked']) {
-					case 'NUKE':
+					case 'NUKED':
 						$this->CurPre['nuked'] = PreDb::PRE_NUKED;
 						break;
-					case 'UNNUKE':
+					case 'UNNUKED':
 						$this->CurPre['nuked'] = PreDb::PRE_UNNUKED;
 						break;
-					case 'MODNUKE':
+					case 'MODNUKED':
 						$this->CurPre['nuked'] = PreDb::PRE_MODNUKE;
 						break;
-					case 'RENUKE':
+					case 'RENUKED':
 						$this->CurPre['nuked'] = PreDb::PRE_RENUKED;
 						break;
 					case 'OLDNUKE':

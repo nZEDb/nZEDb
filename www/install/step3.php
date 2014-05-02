@@ -28,18 +28,20 @@ if ($page->isPostBack()) {
 
 	$enc = false;
 	if ($cfg->NNTP_SSLENABLED) {
-		$enc = "ssl";
+		$enc = "tls";
 	}
 
 	// test connection
 	$cfg->nntpCheck = $test->connect($cfg->NNTP_SERVER, $enc, $cfg->NNTP_PORT);
 	if ($pear_obj->isError($cfg->nntpCheck)) {
+		$cfg->nntpCheck->message = 'Connection error, check your server name, port and SSL: (' . $cfg->nntpCheck->getMessage() . ')';
 		$cfg->error = true;
     }
 	//test authentication if username and password are provided
 	else if ($cfg->NNTP_USERNAME != '' && $cfg->NNTP_PASSWORD != '') {
 		$cfg->nntpCheck = $test->authenticate($cfg->NNTP_USERNAME, $cfg->NNTP_PASSWORD);
 		if ($pear_obj->isError($cfg->nntpCheck)) {
+			$cfg->nntpCheck->message = 'Authentication error, check your username and password: (' . $cfg->nntpCheck->getMessage() .')';
 			$cfg->error = true;
 		}
 	}
