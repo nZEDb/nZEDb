@@ -1,1 +1,1 @@
-INSERT INTO site (setting, value) VALUES ('yydecoderpath', '');
+INSERT IGNORE INTO site (setting, value) VALUES ('yydecoderpath', '');
