@@ -181,16 +181,16 @@ class IRCScraper extends IRCClient
 
 			if (isset($matches['nuked'])) {
 				switch ($matches['nuked']) {
-					case 'NUKE':
+					case 'NUKED':
 						$this->CurPre['nuked'] = PreDb::PRE_NUKED;
 						break;
-					case 'UNNUKE':
+					case 'UNNUKED':
 						$this->CurPre['nuked'] = PreDb::PRE_UNNUKED;
 						break;
-					case 'MODNUKE':
+					case 'MODNUKED':
 						$this->CurPre['nuked'] = PreDb::PRE_MODNUKE;
 						break;
-					case 'RENUKE':
+					case 'RENUKED':
 						$this->CurPre['nuked'] = PreDb::PRE_RENUKED;
 						break;
 					case 'OLDNUKE':
