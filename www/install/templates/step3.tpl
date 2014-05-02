@@ -75,7 +75,7 @@
 			{if $cfg->error}
 				<div>
 					The following error was encountered:<br />
-					<span class="error">&bull; {$cfg->nntpCheck}</span><br /><br /><br />
+					<span class="error">&bull; {$cfg->nntpCheck->message}</span><br /><br /><br />
 				</div>
 			{/if}
 			<input type="submit" value="Test Primary Connection" />
