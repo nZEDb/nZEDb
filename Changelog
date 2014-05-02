@@ -9,6 +9,16 @@ New updates are grouped by person, at the top of the file.
 2014-05-01 niel
 	* Upd: Changed the forum address in the READDME for the new location.
 	* Upd: Merged traid's updated convert_from_newznab script. Many thanks.
+2014-05-01 ruhllatio
+	* Chg: Force decrypt_hashes to do lower case letters only in the DB call to match hashes
+	* Add: decrypt_hashes when run in show mode will now specify the hash match type: MD5 or SHA1 instead of just MD5
+2014-05-01 bart39
+	* Fix: fix importing nuked and nukereason from predb dump
+	* Fix: typo in predb dump file name
+	* Fix: add missing fields to tmux schema for new install #1299
+	* Fix: typo in dump_predb.php
+2014-04-30 bart39
+	* Fix: fix issue with miscsorter not updating releases it didnt rename.
 2014-04-29 bart39
 	* Fix: bad query in last sql patch - make sure you re-enable IRCScraper in tmux settings if you use it.
 	* Chg: Update tmux settings for IRCScraper changes

@@ -788,8 +788,10 @@ class MiscSorter
 
 						$pos = $this->nfopos($nfo, $m);
 
-						if ($pos !== false && $pos > 0.55 && $case != 'imdb')
-							return $pos;
+						if ($pos !== false && $pos > 0.55 && $case != 'imdb') {
+							$this->db->queryExec(sprintf('UPDATE releases SET proc_sorter = 1 WHERE id = %d', $res[0]['id']));
+							return false;
+						}
 
 						if ($ret = $this->matchnfo($case, $nfo, $row))
 							return $ret;
