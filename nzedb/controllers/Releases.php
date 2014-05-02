@@ -1248,7 +1248,7 @@ class Releases
 	public function getSimilarName($name)
 	{
 		$words = str_word_count(str_replace(array('.', '_'), ' ', $name), 2);
-		$firstwords = array_slice($words, 0, 3);
+		$firstwords = array_slice($words, 0, 2);
 		return implode(' ', $firstwords);
 	}
 

@@ -710,6 +710,13 @@ class Category
 			}
 
 			if ($group === 'alt.binaries.warez') {
+				if ($this->isTV()) {
+					return $this->tmpCat;
+				}
+
+				if ($this->isPC()) {
+					return $this->tmpCat;
+				}
 				$this->tmpCat = Category::CAT_PC_0DAY;
 				return true;
 			}
@@ -737,9 +744,9 @@ class Category
 	//	TV.
 	public function isTV()
 	{
-		if (/*!preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}|season|episode/i', $this->releaseName) &&*/ preg_match('/part[-._ ]?\d/i', $this->releaseName)) {
-			return false;
-		}
+//		if (/*!preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}|season|episode/i', $this->releaseName) &&*/ preg_match('/part[-._ ]?\d/i', $this->releaseName)) {
+//			return false;
+//		}
 
 		if (preg_match('/Daily[-_\.]Show|Nightly News|(\d\d-){2}[12]\d{3}|[12]\d{3}(\.\d\d){2}|\d+x\d+|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TV[-._ ](19|20)\d\d|TrollHD/i', $this->releaseName)
 			&& !preg_match('/[-._ ](flac|imageset|mp3|xxx)[-._ ]|[ .]exe$/i', $this->releaseName)) {

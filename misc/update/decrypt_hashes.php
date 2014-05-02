@@ -24,11 +24,11 @@ function preName($argv)
 	$namefixer = new NameFixer();
 
 	if (isset($argv[1]) && $argv[1] === "all") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND preid = 0');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND dehashstatus BETWEEN -6 AND 0');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND preid = 0 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND preid = 0 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
 	$c = new ColorCLI();
 
@@ -41,17 +41,23 @@ function preName($argv)
 		$category = new Category();
 		$reset = 0;
 		$loops = 1;
+		$hashtype = '';
 		foreach ($res as $row) {
 			$success = false;
 			if (preg_match('/([0-9a-fA-F]{32,40})/', $row['searchname'], $match) || preg_match('/([0-9a-fA-F]{32,40})/', $row['name'], $match)) {
-				$pre = $db->queryOneRow(sprintf('SELECT id, title, source FROM predb WHERE md5 = %s OR sha1 = %s', $db->escapeString($match[1]), $db->escapeString($match[1])));
+				$pre = $db->queryOneRow(sprintf('SELECT id, title, source FROM predb WHERE md5 = %s OR sha1 = %s', $db->escapeString(strtolower($match[1])), $db->escapeString(strtolower($match[1]))));
 				if ($pre !== false) {
+					if (strlen($match[1]) === 40) {
+						$hashtype = "SHA1, ";
+					} else {
+						$hashtype = "MD5, ";
+					}
 					$determinedcat = $category->determineCategory($pre['title'], $row['groupid']);
 					$result = $db->queryDirect(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
 							. "preid = %d, dehashstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s, categoryid = %d WHERE id = %d", $pre['id'], $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
 					if ($result->rowCount() > 0) {
 						if (isset($argv[2]) && $argv[2] === 'show') {
-							$namefixer->updateRelease($row, $pre["title"], $method = "predb md5 release name: " . $pre["source"], 1, "MD5, ", 1, 1);
+							$namefixer->updateRelease($row, $pre["title"], $method = "predb hash release name, source: " . $pre["source"], 1, $hashtype, 1, 1);
 						}
 						$counted++;
 						$success = true;
