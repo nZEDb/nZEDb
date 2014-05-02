@@ -73,7 +73,7 @@ section,subsection,name,value,hint,setting
 		releasethreads	1		releasethreads
 		replacenzbs	0	NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.(This is not necessary, was added before I understood how crossposted nzbs work).	replacenzbs
 		request_hours	1	The maximum hours after a release is added to recheck for a Request ID match.	request_hours
-		request_url	http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]	Optional URL to lookup Request IDs. [REQUEST_ID] gets replaced with the request ID from the post. [GROUP_NM] Gets replaced with the group name.	request_url
+		request_url	http://reqid.nzedb.com/index.php?reqid=[REQUEST_ID]&group=[GROUP_NM]	Optional URL to lookup Request IDs. [REQUEST_ID] gets replaced with the request ID from the post. [GROUP_NM] Gets replaced with the group name.	request_url
 		safebackfilldate	2012-06-24	The target date for safe backfill. Format: YYYY-MM-DD	safebackfilldate
 		safepartrepair	0	Whether to put unreceived parts into partrepair table when running binaries(safe) or backfill scripts.	safepartrepair
 		segmentstodownload	2	The maximum number of segments to download to generate the sample video file. (Default 2)	segmentstodownload

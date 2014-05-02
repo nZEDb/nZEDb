@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-02 kevin
+	* Chg: Change request ID URL, new site has ~600k reqid's and counting.
 	* Add: Ignoring of efnet channels to IRCScraper. #1300
 	* Chg: Use TLS on step3 of install, better showing of NNTP errors.
 	* Add: Append the socket error / number to the PEAR error message when creating a NNTP stream resource fails.
