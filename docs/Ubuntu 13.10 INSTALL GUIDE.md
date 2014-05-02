@@ -221,15 +221,16 @@
               Note: Type which abconv to get the path (should be /usr/bin/avconv)
 
 
-7. Install memcache / apc.
+7. Install memcache.
 
-      # APC:
+     # ZEND Opcache:
 
-              sudo apt-get install php-apc
-              sudo service apache2 restart
-              sudo cp /usr/share/doc/php5-apcu/apc.php /var/www/nZEDb/www/admin
+         Note: In PHP 5.5 ZEND Opcache is installed by default. You can add a page to view statistics on the caching:
 
-          Note: In the future you can go to localhost/admin/apc.php in your browser to view apc stats.
+             cd /var/www/nZEDb/www/admin/
+             wget https://raw.github.com/rlerdorf/opcache-status/master/opcache.php
+
+         Note: Later on you can browse to http://yoursite/admin/opcache.php to view those statistics which might help you tweak the settings.
 
      # Memcache:
 
