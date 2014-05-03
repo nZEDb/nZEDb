@@ -145,6 +145,21 @@ class DbUpdate
 		}
 	}
 
+	/**
+	 * Takes new files in the correct format from the patches directory and turns them into proper patches.
+	 *
+	 * The files should be name as '+x~<table>.sql' where x is a number starting at 1 for your first
+	 * patch. <table> should be the name of the primary table affected. If you have to modify more
+	 * than one table, consider splitting into multiple patches using different patch modifier
+	 * numbers to order them. i.e. +1~settings.sql, +2~predb.sql, etc.
+	 */
+	public function newPatches ()
+	{
+		$defaults = array(
+			'regex'	=> '#^' . utility\Utility::PATH_REGEX . "(?P<patch>\d+)~(?P<table>\w+)\.sql$#",
+		);
+	}
+
 	public function processPatches(array $options = [])
 	{
 		$patched = 0;
@@ -152,7 +167,7 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex' => '#^' . utility\Utility::PATH_REGEX . "(?P<date>\d{4}-\d{2}-\d{2})_(?P<patch>\d+)_(?P<table>\w+)\.sql$#",
+			'regex' => '#^' . utility\Utility::PATH_REGEX . "(?P<patch>\d+)~(?P<table>\w+)\.sql$#",
 			'safe'	=> true,
 		);
 		$options += $defaults;
