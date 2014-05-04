@@ -10,6 +10,9 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Redid patch filename format to be <patch number>~<table>.sql That's a tilde separating them.
 	* Chg: Renamed first 99 patches so they list better in GitHub (Grumble: why doesn't Github use a natrual sort).
 	* Fix: Filename matching after changing filename format.
+	* Chg: Renamed remaining patch files to new format.
+	* Upd: Alter regexes to use the full format now.
+	* Add: Basic method for processing new patches into Db and correct filename format. Needs more work to be useful.
 2014-05-03 ruhllatio
 	* Chg: Modify query for decrypt hashes to check MD5 or SHA depending upon hashlength
 2014-05-02 bart39
