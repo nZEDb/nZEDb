@@ -193,7 +193,7 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex' => '#^' . utility\Utility::PATH_REGEX . "(?P<patch>\d+)~(?P<table>\w+)\.sql$#",
+			'regex' => '#^' . utility\Utility::PATH_REGEX . '(?P<patch>\d{3,4})~(?P<table>\w+)\.sql$#',
 			'safe'	=> true,
 		);
 		$options += $defaults;
@@ -217,7 +217,7 @@ class DbUpdate
 				$fp = fopen($file, 'r');
 				$patch = fread($fp, filesize($file));
 
-				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches) && $matches['patch'] > 9) {
+				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
 						$patch = $matches['patch'];
 						$setPatch = true;
 				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?P<patch>\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
