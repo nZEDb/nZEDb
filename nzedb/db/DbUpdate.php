@@ -153,11 +153,37 @@ class DbUpdate
 	 * than one table, consider splitting into multiple patches using different patch modifier
 	 * numbers to order them. i.e. +1~settings.sql, +2~predb.sql, etc.
 	 */
-	public function newPatches ()
+	public function newPatches (array $options = array())
 	{
 		$defaults = array(
-			'regex'	=> '#^' . utility\Utility::PATH_REGEX . "(?P<patch>\d+)~(?P<table>\w+)\.sql$#",
+			'data' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
+			'ext'	=> 'sql',
+			'path' => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
+			'regex'	=> '#^' . utility\Utility::PATH_REGEX . "+(?P<order>\d+)~(?P<table>\w+)\.sql$#",
+			'safe' => true,
 		);
+		$options += $defaults;
+
+		$this->processPatches();	// Make sure we are completely up to date!
+
+		echo $this->log->primary('Looking for new patches...');
+		$files = utility\Utility::getDirFiles($options);
+
+		if (count($files)) {
+			natsort($files);
+			$local = $this->db->isLocalDb() ? '' : 'LOCAL ';
+			foreach($files as $file) {
+				if (!preg_match($options['regex'], $file, $matches)) {
+					$this->log->error("$file does not match the pattern {$options['regex']}\nPlease fix this before continuing");
+				} else {
+					echo $this->log->header('Processing patch file: ' . $file);
+					$this->splitSQL($file, ['local' => $local, 'data' => $options['data']]);
+					$current = $this->settings->getSetting('sqlpatch');
+					$current++;
+					$this->db->queryExec("UPDATE settings SET value = '$current' WHERE setting = 'sqlpatch';");
+				}
+			}
+		}
 	}
 
 	public function processPatches(array $options = [])
@@ -171,10 +197,6 @@ class DbUpdate
 			'safe'	=> true,
 		);
 		$options += $defaults;
-
-		if ($options['safe']) {
-			$this->_backupDb();
-		}
 
 		$this->_useSettings();
 		$currentVersion = $this->settings->getSetting('sqlpatch');
