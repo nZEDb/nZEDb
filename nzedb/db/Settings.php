@@ -68,6 +68,28 @@ class Settings extends DB
 		return (count($results) === 1 ? $results[0]['value'] : $results);
 	}
 
+	/**
+	 * Set a setting in the database.
+	 *
+	 * @param array $options	Array containing the mandatory keys of 'section', 'subsection', and 'value'
+	 */
+	public function setSetting(array $options)
+	{
+		$defaults = [
+			'section'		=> '',
+			'subsection'	=> '',
+			'value'			=> '',
+			'setting'		=> '',
+		];
+		$options += $defaults;
+		if (empty($options['section'] . $options['subsection'] . $options['value']) &&
+			emptyt($options['section'] . $options['subsection'] . $options['setting'])) {
+			return false;
+		}
+
+		extract($options);
+	}
+
 	protected function _getFromSettings ($options)
 	{
 		$results = array();
