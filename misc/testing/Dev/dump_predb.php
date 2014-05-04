@@ -63,8 +63,8 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	}
 
     // Remove any titles where length <=15
-    echo $c->info("Deleting any records where title <=15 from Temporary Table");
-    $db->queryDirect("DELETE FROM tmp_pre WHERE LENGTH(title) <= 15");
+    echo $c->info("Deleting any records where title <=8 from Temporary Table");
+    $db->queryDirect("DELETE FROM tmp_pre WHERE LENGTH(title) <= 8");
 
 	// Insert and update table
 	echo $c->primary('INSERT INTO ' . $table . " (title, nfo, size, files, nuked, nukereason, category, predate, source, md5, sha1, requestid, groupid)
