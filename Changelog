@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-04 bart39
+	* Chg: dump_predb.php - don't override existing groupid if groupname is null in the import
 	* Chg: fixed regex for requestid matching in ReleaseCleaning
 	* Chg: Improved regex for isrequestid triggers
 	* Chg: check for predb title matches against other groups where it matches fromname for known cross-posts.
