@@ -6,6 +6,15 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-04 bart39
+	* Chg: check for predb title matches against other groups where it matches fromname for known cross-posts.
+	* Chg: Regex additions / fixes for release / collection cleaning.
+	* Chg: Add count of releases recategorized in recategorize.php
+	* Add: Display predb nuked / reason in nzb details
+2014-05-04 ruhllatio
+	* Chg:  dump_predb now only removes titles that have <= 8 chars as opposed to 15 (older valid pres were being deleted).
+2014-05-04 kevin
+	* Add: Ability to ignore corrupt-net and categories to IRCScraper. Update your settings.php    #1300
 2014-05-04 niel
 	* Chg: Redid patch filename format to be <patch number>~<table>.sql That's a tilde separating them.
 	* Chg: Renamed first 99 patches so they list better in GitHub (Grumble: why doesn't Github use a natrual sort).

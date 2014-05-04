@@ -101,7 +101,7 @@ function categorizeRelease($update = true, $where, $echooutput = false)
 			}
 			$relcount++;
 			if ($echooutput) {
-				$consoletools->overWritePrimary("Categorizing: " . $consoletools->percentString($relcount, $total));
+				$consoletools->overWritePrimary("Re-Categorized: [" . number_format($chgcount) . "] " . $consoletools->percentString($relcount, $total));
 			}
 		}
 	}
