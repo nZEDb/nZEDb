@@ -434,7 +434,7 @@ Class PreDb
 							if ($dupe === false) {
 								$this->db->queryExec(
 									sprintf("
-									INSERT INTO prelistpredb (title, predate, source, md5, files, category, sha1, size)
+									INSERT INTO predb (title, predate, source, md5, files, category, sha1, size)
 									VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
 										$this->db->escapeString($result["title"]),
 										$this->db->from_unixtime(strtotime($result["time"])),
