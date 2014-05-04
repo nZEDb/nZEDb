@@ -83,7 +83,7 @@ class Settings extends DB
 		];
 		$options += $defaults;
 		if (empty($options['section'] . $options['subsection'] . $options['value']) &&
-			emptyt($options['section'] . $options['subsection'] . $options['setting'])) {
+			empty($options['section'] . $options['subsection'] . $options['setting'])) {
 			return false;
 		}
 
