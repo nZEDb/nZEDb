@@ -159,7 +159,7 @@ class DbUpdate
 			'data' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'	=> 'sql',
 			'path' => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex'	=> '#^' . utility\Utility::PATH_REGEX . "+(?P<order>\d+)~(?P<table>\w+)\.sql$#",
+			'regex'	=> '#^' . utility\Utility::PATH_REGEX . '+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
 			'safe' => true,
 		);
 		$options += $defaults;
@@ -178,9 +178,12 @@ class DbUpdate
 				} else {
 					echo $this->log->header('Processing patch file: ' . $file);
 					$this->splitSQL($file, ['local' => $local, 'data' => $options['data']]);
-					$current = $this->settings->getSetting('sqlpatch');
+					$current = (integer)$this->settings->getSetting('sqlpatch');
 					$current++;
 					$this->db->queryExec("UPDATE settings SET value = '$current' WHERE setting = 'sqlpatch';");
+					$newName = $matches['drive'] . $matches['path'] .
+							   str_pad($current, 4, '0', STR_PAD_LEFT) . '~' . $matches['table'] . '.sql';
+					rename($matches[0], $newName);
 				}
 			}
 		}
@@ -193,7 +196,7 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex' => '#^' . utility\Utility::PATH_REGEX . '(?P<patch>\d{3,4})~(?P<table>\w+)\.sql$#',
+			'regex' => '#^' . utility\Utility::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
 			'safe'	=> true,
 		);
 		$options += $defaults;
@@ -201,7 +204,7 @@ class DbUpdate
 		$this->_useSettings();
 		$currentVersion = $this->settings->getSetting('sqlpatch');
 		if (!is_numeric($currentVersion)) {
-			exit();
+			exit("Bad sqlpatch value!!\n");
 		}
 
 		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
@@ -218,10 +221,10 @@ class DbUpdate
 				$patch = fread($fp, filesize($file));
 
 				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
-						$patch = $matches['patch'];
+						$patch = (integer)$matches['patch'];
 						$setPatch = true;
 				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?P<patch>\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
-					$patch = $matches['patch'];
+					$patch = (integer)$matches['patch'];
 				} else {
 					throw new \RuntimeException("No patch information available, stopping!!");
 				}
