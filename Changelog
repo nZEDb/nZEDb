@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-02 bart39
+	* Add: Display predb nuked / reason in nzb details
 2014-05-04 ruhllatio
 	* Chg:  dump_predb now only removes titles that have <= 8 chars as opposed to 15 (older valid pres were being deleted).
 2014-05-04 kevin

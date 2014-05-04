@@ -462,6 +462,14 @@
 						<td class="mid">{$pd.source}</td>
 						{if isset($pd.size)}{if $pd.size > 0}<td class="right">{$pd.size}</td>{/if}{/if}
 					</tr>
+					{if isset($pd.nuked)}{if $pd.nuked > 1}
+						<tr>
+							<td style="color:#990000">Nuked: {$pd.nukereason|escape:"htmlall"}</td>
+							<td class="mid" style="color:#990000"> </td>
+							<td class="mid" style="color:#990000"> </td>
+							<td class="right" style="color:#990000"> </td>
+						</tr>
+					{/if}{/if}
 				{/foreach}
 			</table>
 		</td>
