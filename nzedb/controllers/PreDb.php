@@ -629,64 +629,60 @@ Class PreDb
 		$newNames = 0;
 
 		$URLs = array(
-			'http://predb.me/?cats=movies-sd&rss=1',
-			'http://predb.me/?cats=movies-hd&rss=1',
-			'http://predb.me/?cats=movies-discs&rss=1',
-			'http://predb.me/?cats=tv-sd&rss=1',
-			'http://predb.me/?cats=tv-hd&rss=1',
-			'http://predb.me/?cats=tv-discs&rss=1',
-			'http://predb.me/?cats=music-audio&rss=1',
-			'http://predb.me/?cats=music-video&rss=1',
-			'http://predb.me/?cats=music-discs&rss=1',
-			'http://predb.me/?cats=games-pc&rss=1',
-			'http://predb.me/?cats=games-xbox&rss=1',
-			'http://predb.me/?cats=games-playstation&rss=1',
-			'http://predb.me/?cats=games-nintendo&rss=1',
-			'http://predb.me/?cats=apps-windows&rss=1',
-			'http://predb.me/?cats=apps-linux&rss=1',
-			'http://predb.me/?cats=apps-mac&rss=1',
-			'http://predb.me/?cats=apps-mobile&rss=1',
-			'http://predb.me/?cats=books-ebooks&rss=1',
-			'http://predb.me/?cats=books-audio-books&rss=1',
-			'http://predb.me/?cats=xxx-videos&rss=1',
-			'http://predb.me/?cats=xxx-images&rss=1',
-			'http://predb.me/?cats=dox&rss=1',
-			'http://predb.me/?cats=unknown&rss=1'
+			'http://predb.me/?cats=movies-sd',
+			'http://predb.me/?cats=movies-hd',
+			'http://predb.me/?cats=movies-discs',
+			'http://predb.me/?cats=tv-sd',
+			'http://predb.me/?cats=tv-hd',
+			'http://predb.me/?cats=tv-discs',
+			'http://predb.me/?cats=music-audio',
+			'http://predb.me/?cats=music-video',
+			'http://predb.me/?cats=music-discs',
+			'http://predb.me/?cats=games-pc',
+			'http://predb.me/?cats=games-xbox',
+			'http://predb.me/?cats=games-playstation',
+			'http://predb.me/?cats=games-nintendo',
+			'http://predb.me/?cats=apps-windows',
+			'http://predb.me/?cats=apps-linux',
+			'http://predb.me/?cats=apps-mac',
+			'http://predb.me/?cats=apps-mobile',
+			'http://predb.me/?cats=books-ebooks',
+			'http://predb.me/?cats=books-audio-books',
+			'http://predb.me/?cats=xxx-videos',
+			'http://predb.me/?cats=xxx-images',
+			'http://predb.me/?cats=dox',
+			'http://predb.me/?cats=unknown'
 		);
 
 		foreach ($URLs as &$url) {
 			$data = $this->getUrl($url);
 			if ($data !== false) {
-				$releases = @simplexml_load_string($data);
-				if ($releases !== false) {
-					foreach ($releases->channel->item as $release) {
-
-						// Skip if too short.
-						if (strlen($release->title) < 15) {
-							continue;
-						}
-						$md5 = $this->db->escapeString(md5($release->title));
-						$sha1 = $this->db->escapeString(sha1($release->title));
-						$oldname = $this->db->queryOneRow(sprintf('SELECT md5 FROM predb WHERE md5 = %s', $md5));
-						if ($oldname !== false) {
-							continue;
-						} elseif ($this->db->queryExec(
-							sprintf('
-								INSERT INTO predb (title, predate, source, md5, sha1)
-								VALUES (%s, NOW(), %s, %s, %s)',
-								$this->db->escapeString($release->title),
-								$this->db->escapeString('predbme'),
-								$md5,
-								$sha1))) {
-							$newNames++;
+				$matches = $match = array();
+				if (preg_match_all('/<div class="post" id="\d+">\s*<div class="p-head">.+?<\/a>\s*<\/div>\s*<\/div>\s*<\/div>/s', $data, $matches)) {
+					foreach ($matches as $match) {
+						foreach ($match as $m) {
+							if (preg_match('/time"\s*data="(?P<time>\d+)".+?adult">(?P<cat1>.+?)<\/a>.+?child">(?P<cat2>.+?)<\/a>.+?title"\s*href=".+?">(?P<title>.+?)<\/a>(.+?Nuked:\s*(?P<nuked>.+?)">)?/i', $m, $result)) {
+								$dupe = $this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE title = %s', $this->db->escapeString($result["title"])));
+								if ($dupe === false) {
+									$this->db->queryExec(
+										sprintf("
+											INSERT INTO predb (title, predate, source, md5, category, sha1, nuked, nukereason)
+											VALUES (%s, %s, %s, %s, %s, %s, %d, %s)",
+											$this->db->escapeString($result["title"]),
+											$this->db->from_unixtime($result["time"]),
+											$this->db->escapeString('predbme'),
+											$this->db->escapeString(md5($result["title"])),
+											$this->db->escapeString($result['cat1'] . '-' . $result['cat2']),
+											$this->db->escapeString(sha1($result["title"])),
+											(isset($result['nuked']) && !empty($result['nuked']) ? PreDb::PRE_NUKED : PreDb::PRE_NONUKE),
+											(isset($result['nuked']) && !empty($result['nuked']) ? $this->db->escapeString($result['nuked']) : 'NULL')
+										)
+									);
+									$newNames++;
+								}
+							}
 						}
 					}
-				} else {
-					if ($this->echooutput) {
-						echo $this->c->error("Update from Predbme failed.");
-					}
-					// If the site is down, don't try the other URLs.
-					break;
 				}
 			} else {
 				if ($this->echooutput) {
