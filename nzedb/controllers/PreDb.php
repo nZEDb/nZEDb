@@ -461,7 +461,7 @@ Class PreDb
 							'/">\[\s*(?P<time>\d+\.\d+\.(19|20)\d{2}.+?UTC).+?<a title="\s*(?P<reason>.+?)\s*">\s*(?P<nuked>(UN)?NUKED)\s*<\/a>.+?section=\s*(?P<category>.+?)\s*".+?<a href="\?search=.+?">\s*(?P<title>.+?)\s*<\/a>/',
 							$m, $result))
 						{
-							$dupe = $this->db->queryOneRow(sprintf('SELECT id FROM prelistpredb WHERE title = %s', $this->db->escapeString($result["title"])));
+							$dupe = $this->db->queryOneRow(sprintf('SELECT id FROM predb WHERE title = %s', $this->db->escapeString($result["title"])));
 							if ($dupe === false) {
 								$this->db->queryExec(
 									sprintf("
