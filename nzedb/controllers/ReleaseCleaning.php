@@ -49,7 +49,7 @@ class ReleaseCleaning
 			}
 		}
 		// Get pre style name from requestid
-		if (preg_match('/^(\[ ?(?P<req>\d+) ?\]|REQ\s*(?P<req>\d+)|\d{4,6}-\d)/i', $this->subject, $match)) {
+		if (preg_match('/^(\[ ?(\d+) ?\]|REQ\s*(\d+)|(\d{4,6})-\d)/i', $this->subject, $match)) {
 			$title = $this->db->queryOneRow(
 				sprintf(
 					'SELECT p.title , p.id from predb p INNER JOIN groups g on g.id = p.groupid
