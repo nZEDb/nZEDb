@@ -6,9 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-05-01 niel
-	* Upd: Changed the forum address in the READDME for the new location.
-	* Upd: Merged traid's updated convert_from_newznab script. Many thanks.
+2014-05-05 niel
+	* Chg: Defaulting covers path to .../resources/covers on new installs. Instructions for setting up your www conf are on the wiki.
 2014-05-05 bart39
 	* Chg: update requestid.php for new requestid regex.
 	* Fix: Fix regex for isrequestid triggers and add to schema.
