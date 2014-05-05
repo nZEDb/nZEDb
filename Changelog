@@ -6,6 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-05 bart39
+	* Fix: Fix regex for isrequestid triggers and add to schema.
+	NB: run 'php /misc/update/requestid.php full' to find potential matches.
 2014-05-04 bart39
 	* Fix: compilation failed missing ) in ReleaseCleaning
 	* Chg: dump_predb.php - don't override existing groupid if groupname is null in the import
