@@ -66,7 +66,7 @@ if ($json !== false) {
 		$output .= "<br /><br /><p style='text-align:center;'>The queue is currently empty.</p>";
 	}
 } else {
-	$output .= "<p style='text-align:center;'>Error retreiving queue.</p>";
+	$output .= "<p style='text-align:center;'>Error retrieving queue.</p>";
 }
 
 print $output;

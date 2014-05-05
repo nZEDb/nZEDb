@@ -22,8 +22,7 @@ $tmux = $t->get();
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
 $colors = (isset($tmux->colors)) ? $tmux->colors : 0;
-$scrape_cz = $tmux->scrape_cz;
-$scrape_efnet = $tmux->scrape_efnet;
+$run_ircscraper = $tmux->run_ircscraper;
 
 $s = new Sites();
 $site = $s->get();
@@ -1474,7 +1473,7 @@ while ($i > 0) {
 			}
 
 			//run IRCScraper
-			run_ircscraper($tmux_session, $_php, $ipane, $scrape_cz, $scrape_efnet);
+			run_ircscraper($tmux_session, $_php, $ipane, $run_ircscraper);
 
 			//run Sharing
 			run_sharing($tmux_session, $_php, $spane, $_sleep, $sharing_timer);
@@ -1547,7 +1546,7 @@ while ($i > 0) {
 			}
 
 			//run IRCScraper
-			run_ircscraper($tmux_session, $_php, $ipane, $scrape_cz, $scrape_efnet);
+			run_ircscraper($tmux_session, $_php, $ipane, $run_ircscraper);
 
 			//run Sharing
 			run_sharing($tmux_session, $_php, $spane, $_sleep, $sharing_timer);
@@ -1634,7 +1633,7 @@ while ($i > 0) {
 			}
 
 			//run IRCScraper
-			run_ircscraper($tmux_session, $_php, $ipane, $scrape_cz, $scrape_efnet);
+			run_ircscraper($tmux_session, $_php, $ipane, $run_ircscraper);
 
 			//run Sharing
 			run_sharing($tmux_session, $_php, $spane, $_sleep, $sharing_timer);
@@ -1680,42 +1679,16 @@ while ($i > 0) {
 	sleep(10);
 }
 
-function run_ircscraper($tmux_session, $_php, $pane, $scrape_cz, $scrape_efnet)
+function run_ircscraper($tmux_session, $_php, $pane, $run_ircscraper)
 {
-	if ($scrape_cz == 1 && $scrape_efnet == 1) {
+	if ($run_ircscraper == 1) {
 		//Check to see if the pane is dead, if so respawn it.
 		if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
 			$DIR = nZEDb_MISC;
 			$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
 			shell_exec(
 				"tmux respawnp -t${tmux_session}:${pane}.0 ' \
-						$_php $ircscraper cz false false true'"
-			);
-		}
-		if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^1 | grep -c dead") == 1) {
-			$DIR = nZEDb_MISC;
-			$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
-			shell_exec(
-				"tmux respawnp -t${tmux_session}:${pane}.1 ' \
-						$_php $ircscraper efnet false false true'"
-			);
-		}
-	} else if ($scrape_cz == 1) {
-		if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
-			$DIR = nZEDb_MISC;
-			$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
-			shell_exec(
-				"tmux respawnp -t${tmux_session}:${pane}.0 ' \
-						$_php $ircscraper cz false false true'"
-			);
-		}
-	} else if ($scrape_efnet == 1) {
-		if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
-			$DIR = nZEDb_MISC;
-			$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
-			shell_exec(
-				"tmux respawnp -t${tmux_session}:${pane}.0 ' \
-						$_php $ircscraper efnet false false true'"
+						$_php $ircscraper true'"
 			);
 		}
 	} else {
