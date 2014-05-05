@@ -124,9 +124,9 @@ class Settings extends DB
 	protected function _getFromSites ($options)
 	{
 		$results = array();
-		$sql     = 'SELECT setting, value FROM settings';
+		$sql     = 'SELECT setting, value FROM site ';
 		if (!empty($options['name'])) {
-			$sql .= " WHERE setting = '{$options['name']}'";
+			$sql .= "WHERE setting = '{$options['name']}'";
 		}
 		$sql .= ' ORDER BY setting';
 

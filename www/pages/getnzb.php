@@ -8,7 +8,6 @@ if ($users->isLoggedIn()) {
 	$uid = $users->currentUserId();
 	$maxdls = $page->userdata["downloadrequests"];
 } else {
-
 	if ($page->site->registerstatus == Sites::REGISTER_STATUS_API_ONLY) {
 		$res = $users->getById(0);
 	} else {
