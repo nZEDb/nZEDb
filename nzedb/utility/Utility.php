@@ -74,7 +74,7 @@ class Utility
 	static public function setCoversConstant($path)
 	{
 		if (!defined('nZEDb_COVERS')) {
-			define('nZEDb_COVERS', $path == '' ? nZEDb_WWW . 'covers' . DS : $path);
+			define('nZEDb_COVERS', $path == '' ? nZEDb_WWW . 'covers' . DS : self::trailingSlash($path));
 		}
 	}
 

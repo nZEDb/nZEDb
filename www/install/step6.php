@@ -22,7 +22,7 @@ if ($page->isPostBack()) {
 	$cfg->doCheck = true;
 
 	$cfg->NZB_PATH = trim($_POST['nzbpath']);
-	//$cfg->COVERS_PATH = trim($_POST['coverspath']);
+	$cfg->COVERS_PATH = trim($_POST['coverspath']);
 	$cfg->UNRAR_PATH = trim($_POST['tmpunrarpath']);
 
 	if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
