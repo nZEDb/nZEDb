@@ -49,7 +49,7 @@ class ReleaseCleaning
 			}
 		}
 		// Get pre style name from requestid
-		if (preg_match('/^(\[ ?(\d+) ?\]|REQ\s*(\d+)|(\d{4,6})-\d)/i', $this->subject, $match)) {
+		if (preg_match('/^\[ ?(\d{4,6}) ?\]/', $this->subject, $match) || preg_match('/^REQ\s*(\d{4,6})/i', $this->subject, $match) || preg_match('/^(\d{4,6})-\d\[/', $this->subject, $match)) {
 			$title = $this->db->queryOneRow(
 				sprintf(
 					'SELECT p.title , p.id from predb p INNER JOIN groups g on g.id = p.groupid
@@ -2479,7 +2479,7 @@ class ReleaseCleaning
 		if (preg_match('/^"(.+?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //LOL.3E05.720p.WEB.DL.nHD.x264-NhaNc3 [64/71] - "LOL.3E05.720p.WEB.DL.nHD.x264-NhaNc3.sfv" yEnc
-		if (preg_match('/^([\w.-]+)[- ]{0,3}\[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1, $this->subject, $match)) {
+		if (preg_match('/^([\w.-]{8,})[- ]{0,3}\[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //Uploader.Presents-LaLa.2014.Englisch.R6.HDCAM.x264.AC3-SmY(06/56]"SmY-I,F.2014.part05.rar" yEnc
 		if (preg_match('/^Uploader\.Presents-(.+)[\[\(]\d+\/\d+[\]\)]".+" yEnc$/', $this->subject, $match)) {

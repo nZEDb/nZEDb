@@ -90,7 +90,7 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	 predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
 	 predb.category = IF(predb.category is null, t.category, predb.category),
 	 predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid),
-	 predb.groupid = IF(g.id IS NOT NULL, g.id, 0)');
+	 predb.groupid = IF(g.id IS NOT NULL, g.id, predb.groupid)');
 
 	// Drop tmp_pre table
 	$db->queryExec('DROP TABLE IF EXISTS tmp_pre');
