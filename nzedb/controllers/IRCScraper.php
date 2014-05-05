@@ -46,10 +46,16 @@ class IRCScraper extends IRCClient
 	protected $db;
 
 	/**
-	 * Array of ignored efnet channels.
+	 * Array of ignored channels.
 	 * @var array
 	 */
-	protected $ignoredEfnet;
+	protected $ignoredChannels;
+
+	/**
+	 * Regex to ignore categories.
+	 * @var string
+	 */
+	protected $categoryIgnoreRegex;
 
 	/**
 	 * Construct
@@ -61,10 +67,10 @@ class IRCScraper extends IRCClient
 	 */
 	public function __construct(&$silent = false, &$debug = false)
 	{
-		if (defined('SCRAPE_IRC_EFNET_CHANNELS_IGNORE')) {
-			$this->ignoredEfnet = unserialize(SCRAPE_IRC_EFNET_CHANNELS_IGNORE);
+		if (defined('SCRAPE_IRC_SOURCE_IGNORE')) {
+			$this->ignoredChannels = unserialize(SCRAPE_IRC_SOURCE_IGNORE);
 		} else {
-			$this->ignoredEfnet = array(
+			$this->ignoredChannels = array(
 				'#a.b.cd.image'               => false,
 				'#a.b.console.ps3'            => false,
 				'#a.b.dvd'                    => false,
@@ -81,9 +87,15 @@ class IRCScraper extends IRCClient
 				'#a.b.games.wii'              => false,
 				'#a.b.warez'                  => false,
 				'#a.b.games.xbox360'          => false,
+				'#pre@corrupt'                => false,
 				'#scnzb'                      => false,
 				'#tvnzb'                      => false
 			);
+		}
+
+		$this->categoryIgnoreRegex = false;
+		if (defined('SCRAPE_IRC_CATEGORY_IGNORE') && SCRAPE_IRC_CATEGORY_IGNORE !== '') {
+			$this->categoryIgnoreRegex = SCRAPE_IRC_CATEGORY_IGNORE;
 		}
 
 		$this->db = new nzedb\db\DB();
@@ -152,11 +164,15 @@ class IRCScraper extends IRCClient
 	protected function processChannelMessages()
 	{
 		if (preg_match(
-			'/^(NEW|UPD|NUK): \[DT: (?P<time>.+?)\]\[TT: (?P<title>.+?)\]\[SC: (?P<source>.+?)\]\[CT: (?P<category>.+?)\]' .
-			'\[RQ: (?P<req>.+?)\]\[SZ: (?P<size>.+?)\]\[FL: (?P<files>.+?)\](\[(?P<nuked>(UN|MOD|RE|OLD)?NUKED?): (?P<reason>.+?)\])?$/i',
+			'/^(NEW|UPD|NUK): \[DT: (?P<time>.+?)\]\[TT: (?P<title>.+?)\]\[SC: (?P<source>.+?)\]\[CT: (?P<category>.+?)\]\[RQ: (?P<req>.+?)\]' .
+			'\[SZ: (?P<size>.+?)\]\[FL: (?P<files>.+?)\](\[FN: (?P<filename>.+?)\])?(\[(?P<nuked>(UN|MOD|RE|OLD)?NUKED?): (?P<reason>.+?)\])?$/i',
 			$this->_channelData['message'], $matches)) {
 
-			if (isset($this->ignoredEfnet[$matches['source']]) && $this->ignoredEfnet[$matches['source']] === true) {
+			if (isset($this->ignoredChannels[$matches['source']]) && $this->ignoredChannels[$matches['source']] === true) {
+				return;
+			}
+
+			if ($this->categoryIgnoreRegex !== false && preg_match($this->categoryIgnoreRegex, $matches['category'])) {
 				return;
 			}
 

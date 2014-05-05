@@ -62,9 +62,9 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 		$db->queryDirect("LOAD DATA INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, nuked, nukereason, category, predate, source, md5, sha1, requestid, groupname)");
 	}
 
-    // Remove any titles where length <=15
-    echo $c->info("Deleting any records where title <=15 from Temporary Table");
-    $db->queryDirect("DELETE FROM tmp_pre WHERE LENGTH(title) <= 15");
+    // Remove any titles where length <=8
+    echo $c->info("Deleting any records where title <=8 from Temporary Table");
+    $db->queryDirect("DELETE FROM tmp_pre WHERE LENGTH(title) <= 8");
 
 	// Insert and update table
 	echo $c->primary('INSERT INTO ' . $table . " (title, nfo, size, files, nuked, nukereason, category, predate, source, md5, sha1, requestid, groupid)
@@ -90,7 +90,7 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	 predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
 	 predb.category = IF(predb.category is null, t.category, predb.category),
 	 predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid),
-	 predb.groupid = IF(g.id IS NOT NULL, g.id, 0)');
+	 predb.groupid = IF(g.id IS NOT NULL, g.id, predb.groupid)');
 
 	// Drop tmp_pre table
 	$db->queryExec('DROP TABLE IF EXISTS tmp_pre');
