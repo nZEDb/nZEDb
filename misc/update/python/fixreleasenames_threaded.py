@@ -48,9 +48,9 @@ else:
 
 print(bcolors.HEADER + "\nfixReleasesNames {} Threaded Started at {}".format(sys.argv[1],datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
-cur[0].execute("SELECT value FROM site WHERE setting = 'fixnamethreads'")
+cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamethreads'")
 run_threads = cur[0].fetchone()
-cur[0].execute("SELECT value FROM site WHERE setting = 'fixnamesperrun'")
+cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamesperrun'")
 perrun = cur[0].fetchone()
 
 datas = []
@@ -70,7 +70,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND isrenamed = 0 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (ishashed = 1 OR rf.name REGEXP'[a-fA-F0-9]{32}') ORDER BY postdate ASC LIMIT %s"
+		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND isrenamed = 0 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (ishashed = 1 OR rf.name REGEXP'[a-fA-F0-9]{32,40}') ORDER BY postdate ASC LIMIT %s"
 		cur[0].execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur[0].fetchall()
 		maxtries = maxtries - 1

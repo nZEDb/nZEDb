@@ -17,19 +17,19 @@ if (!$predata) {
 		if (isset($predata['nuked'])) {
 			$nuked = '';
 			switch($predata['nuked']) {
-				case IRCScraper::NUKE:
+				case PreDb::PRE_NUKED:
 					$nuked = 'NUKED';
 					break;
-				case IRCScraper::MOD_NUKE:
+				case PreDb::PRE_MODNUKE:
 					$nuked = 'MODNUKED';
 					break;
-				case IRCScraper::OLD_NUKE:
+				case PreDb::PRE_OLDNUKE:
 					$nuked = 'OLDNUKE';
 					break;
-				case IRCScraper::RE_NUKE:
+				case PreDb::PRE_RENUKED:
 					$nuked = 'RENUKE';
 					break;
-				case IRCScraper::UN_NUKE:
+				case PreDb::PRE_UNNUKED:
 					$nuked = 'UNNUKED';
 					break;
 			}

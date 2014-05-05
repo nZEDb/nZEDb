@@ -19,10 +19,18 @@
  * @copyright 2014 nZEDb
  */
 define('GIT_PRE_COMMIT', true);
-require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'autoloader.php');
+require_once realpath(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'www' .
+					  DIRECTORY_SEPARATOR . 'automated.config.php');
+
+echo "Running pre-commit hooks\n";
 
 $error = false;
-echo "Running pre-commit hooks\n";
+
+// TODO Add code here to check permissions on staged files.
+//$files = file(nZEDb_ROOT . 'nzedb/build/git-hooks'), FILE_IGNORE_NEW_LINES);
+//foreach ($files as $file) {
+//	echo "Filename: $file\n";
+//}
 
 
 /**
@@ -31,13 +39,20 @@ echo "Running pre-commit hooks\n";
 if ($error === false) {
 	exec("git branch -a | grep \*", $output);
 	if (in_array(substr($output[0], 2), ['dev', 'next-master', 'master'])) { // Only update versions on specific branches to lessen conflicts
-		$vers = new \nzedb\utility\Versions();
-		$vers->checkAll();
-		$vers->save();
-		passthru('git add ' . nZEDb_VERSIONS);
+		try {
+			$vers = new \nzedb\utility\Versions();
+			$vers->checkAll();
+			$vers->save();
+			passthru('git add ' . nZEDb_VERSIONS);
+		} catch (\Exception $e) {
+			$error = 1;
+			echo "Error while checking versions!!\n";
+		}
 	} else {
 		echo "not 'dev', 'next-master', or 'master' branch, skipping version updates\n";
 	}
+} else {
+	echo "Error in pre-commit hooks!!\n";
 }
 
 exit($error);

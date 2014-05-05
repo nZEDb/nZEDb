@@ -13,52 +13,61 @@ class NZBGet
 	/**
 	 * NZBGet username.
 	 * @var string
+	 * @access public
 	 */
 	public $userName = '';
 
 	/**
 	 * NZBGet password.
 	 * @var string
+	 * @access public
 	 */
 	public $password = '';
 
 	/**
 	 * NZBGet URL.
 	 * @var string
+	 * @access public
 	 */
 	public $url = '';
 
 	/**
 	 * Full URL (containing password/username/etc).
 	 * @var string
+	 * @access protected
 	 */
 	protected $fullURL = '';
 
 	/**
 	 * User ID.
 	 * @var int
+	 * @access protected
 	 */
 	protected $uid = 0;
 
 	/**
 	 * The users RSS token.
 	 * @var string
+	 * @access protected
 	 */
 	protected $rsstoken = '';
 
 	/**
 	 * URL to your nZEDb site.
 	 * @var string
+	 * @access protected
 	 */
 	protected $serverurl = '';
 
 	/**
 	 * @var Releases
+	 * @access protected
 	 */
 	protected $Releases;
 
 	/**
 	 * @var NZB
+	 * @access protected
 	 */
 	protected $NZB;
 
@@ -67,6 +76,8 @@ class NZBGet
 	 * Set up full URL.
 	 *
 	 * @var BasePage $page
+	 *
+	 * @access public
 	 */
 	public function __construct(&$page)
 	{
@@ -91,6 +102,8 @@ class NZBGet
 	 * @param string $guid Release identifier.
 	 *
 	 * @return bool|mixed
+	 *
+	 * @access public
 	 */
 	public function sendNZBToNZBGet($guid)
 	{
@@ -141,6 +154,8 @@ class NZBGet
 	 * @param string $guid Release identifier.
 	 *
 	 * @return bool|mixed
+	 *
+	 * @access public
 	 */
 	public function sendURLToNZBGet($guid)
 	{
@@ -186,6 +201,8 @@ class NZBGet
 	 * Pause download queue on server. This method is equivalent for command "nzbget -P".
 	 *
 	 * @return void
+	 *
+	 * @access public
 	 */
 	public function pauseAll()
 	{
@@ -206,6 +223,8 @@ class NZBGet
 	 * Resume (previously paused) download queue on server. This method is equivalent for command "nzbget -U".
 	 *
 	 * @return void
+	 *
+	 * @access public
 	 */
 	public function resumeAll()
 	{
@@ -226,6 +245,8 @@ class NZBGet
 	 * Pause a single NZB from the queue.
 	 *
 	 * @param string $id
+	 *
+	 * @access public
 	 */
 	public function pauseFromQueue($id)
 	{
@@ -259,6 +280,8 @@ class NZBGet
 	 * Resume a single NZB from the queue.
 	 *
 	 * @param string $id
+	 *
+	 * @access public
 	 */
 	public function resumeFromQueue($id)
 	{
@@ -292,6 +315,8 @@ class NZBGet
 	 * Delete a single NZB from the queue.
 	 *
 	 * @param string $id
+	 *
+	 * @access public
 	 */
 	public function delFromQueue($id)
 	{
@@ -327,6 +352,8 @@ class NZBGet
 	 * @param int $limit The speed to limit it to.
 	 *
 	 * @return bool
+	 *
+	 * @access public
 	 */
 	public function rate($limit)
 	{
@@ -347,6 +374,8 @@ class NZBGet
 	 * Get all items in download queue.
 	 *
 	 * @return array|bool
+	 *
+	 * @access public
 	 */
 	public function getQueue()
 	{
@@ -376,6 +405,8 @@ class NZBGet
 	 * Request for current status (summary) information. Parts of informations returned by this method can be printed by command "nzbget -L".
 	 *
 	 * @return array The status.
+	 *
+	 * @access public
 	 */
 	public function status()
 	{
@@ -403,6 +434,8 @@ class NZBGet
 	 * @param string $url NZBGet URL to verify.
 	 *
 	 * @return bool|string
+	 *
+	 * @access public
 	 */
 	public function verifyURL ($url)
 	{

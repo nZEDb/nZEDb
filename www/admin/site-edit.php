@@ -44,6 +44,8 @@ switch($action)
 				$error = "The nzb path is required, please set it.";
 			} else if ($ret == Sites::ERR_BAD_COVERS_PATH) {
 				$error = 'The covers&apos; path is required and must exist. Please set it.';
+			} else if ($ret == Sites::ERR_BAD_YYDECODER_PATH) {
+				$error = 'The yydecoder&apos;s path must exist. Please set it or leave it empty.';
 			}
 		}
 

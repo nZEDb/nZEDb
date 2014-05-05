@@ -45,7 +45,7 @@ switch ($page->page) {
     case 'mymoviesedit':
     case 'queue':
     case 'sabqueuedata':
-	case 'nzbgetqueuedata':
+    case 'nzbgetqueuedata':
     case 'profile':
     case 'profileedit':
     case 'logout':
@@ -75,6 +75,7 @@ switch ($page->page) {
     case 'api':
     case 'getnzb':
     case 'login':
+    case 'preinfo':
         include(nZEDb_WWW . 'pages/' . $page->page . '.php');
         break;
     default:

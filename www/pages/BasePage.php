@@ -19,6 +19,12 @@ class BasePage
 	public $serverurl = '';
 	public $site = '';
 
+	/**
+	 * Whether to trim white space before rendering the page or not.
+	 * @var bool
+	 */
+	public $trimWhiteSpace = true;
+
 	const FLOOD_THREE_REQUESTS_WITHIN_X_SECONDS = 1.000;
 	const FLOOD_PUNISHMENT_SECONDS = 3.0;
 
@@ -247,9 +253,14 @@ class BasePage
 		die();
 	}
 
+	/**
+	 * Renders a page.
+	 */
 	public function render()
 	{
-		$this->smarty->loadFilter('output', 'trimwhitespace');
+		if ($this->trimWhiteSpace) {
+			$this->smarty->loadFilter('output', 'trimwhitespace');
+		}
 		$this->smarty->display($this->page_template);
 	}
 }

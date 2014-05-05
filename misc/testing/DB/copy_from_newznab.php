@@ -1,6 +1,6 @@
 <?php
 require dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'utilty' . DS . 'CopyFileTree.php';
+require_once nZEDb_LIB . 'utility' . DS . 'CopyFileTree.php';
 
 use nzedb\db\DB;
 

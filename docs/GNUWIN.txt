@@ -1,0 +1,14 @@
+Windows users can add the GNUWin32 utilities to get many of the features available to the *nix users.
+As an absolute minimum, the 'which' command must be added before any of the others can be detected.
+
+Additionally these are recommended:
+
+file
+grep
+
+More will be added as needed ;-)
+
+Installing this utility is fairly easy (if you can't manage it, you probably shouldn't be running an indexer :D ).
+There are two GnuWin projects, although the GnuWin64 project is only in planning stages as of this writing.
+The 32 bit version is available at: http://gnuwin32.sourceforge.net/
+I would recommend the package maintainer at http://getgnuwin32.sourceforge.net/ for beginners getting started.

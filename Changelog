@@ -6,6 +6,136 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-01 niel
+	* Upd: Changed the forum address in the READDME for the new location.
+	* Upd: Merged traid's updated convert_from_newznab script. Many thanks.
+2014-04-29 bart39
+	* Fix: truncate console reviews to 3000 chars
+2014-04-28 ruhllatio
+	* Fix: sprintf error Line 625 predb, too many arguments and not enough inputs
+2014-04-28 kevin
+	* Chg: IRCClient, only reply to pings from the server to prevent abusers from making us flood.
+2014-04-28 bart39
+	* Fix: temp workaround for srrdb update issues due to rss changes on their site.
+2014-04-27 niel
+	* Fix: Reinstate Db/commit checking for tmux.
+2014-04-27 kevin
+	* Chg: Update preinfo API documentation.
+	* Chg: Output Unix Time on preinfo API to avoid timezone issues.
+	* Fix: User edit overwriting queue type.
+	* Chg: Cleanup API backend.
+	* Add: offset to predb API.
+2014-04-26 niel
+	* Fix: Changing badly quoted entry in menu.tsv
+	* Fix: Typo in quoting for query in dump_predb.php.
+2014-04-26 ruhllatio
+	* Fix: Remap PreDB.php functions to PredbHash instead of MD5
+	* Fix: SxxExx namefixer regex no longer matches resolutions that harmfully renamed Anime releases
+2014-04-26 bart39
+	* Fix: missing > in NameFixer #1289
+	* Fix: duplicate insert of isrenamed
+	* Fix: Blank searchnames from requestid web lookup
+2014-04-26 kevin
+	* Fix: Undefined offsets in srrinfo.
+	* Add: API for PreDB. (can be used for matching sha1/hash/titles/requid).
+	* Chg: IRCScraper, remove some channel passwords, let user fill them in.
+	* Chg: Update ubuntu install guide, mention Avconv as an alternative to FFMpeg.
+	* Chg: Remove DB pings from last push, causes issues.
+	* Chg: Fix indents on pull request.
+2014-04-25 kevin
+	* Add: Even faster yEnc decoding by using a PHP extension, see : https://github.com/kevinlekiller/simple_php_yenc_decode for instructions.
+	* Chg: If the user does not have the extension loaded, use the built in PHP method for yEnc.
+	* Add: DB pings to IRCClient when pinging or ponging IRC to prevent DB timeouts.
+2014-04-25 ruhllatio
+	* Add: Phase 2 of SHA matching implemented for fixReleaseNames and decrypt_hashes
+2014-04-25 niel
+	* Fix: Reverting accidentally changed default settings.
+2014-04-23 niel
+	* Fix: Typo in default tmpunrar path.
+2014-04-22 niel
+	* Fix: Updating pre-commit hook files to fix problems updating versions.
+2014-04-22 bart39
+	* Fix: fix API errors
+	* Fix: renametopre.php incorrectly matching a.b.etc requestid releases against a.b.erotica releases
+	NB: this will reset the searchname and preid against the affected releases - run /misc/testing/Dev/renametopre
+	.php full preid to re-match them.
+	* Chg: Add fromname and size to ReleaseCleaner for potential use matching releases aginst predb titles for other
+	groups.
+2014-04-21 kevin
+	* Fix: Typo in requestid.
+	* Fix: IRCClient. The example code on php.net for fwrite is wrong and can create an infinite loop if the remote server closes the connection which causes fwrite to return 0 and not false - php.net only states false as a return value on error.
+2014-04-21 ruhllatio
+	* Modify requestid local match script to ignore matches already PreDB matched and change script commenting
+2014-04-21 niel
+	* Chg: Adding removal of bad rows in predb to patch 213.
+	* New: Added method to Versions class to fetch the pre-commit version.
+	* Upd: Updated pre-commit hook. Dev's should run .../nzedb/build/addGitHook.php to install.
+2014-04-20 niel
+	* Fix: Updated create table for patch 210, to avoid truncation of data.
+	* Chg: Removing a number of query failures from errors to ignore during patching.
+2014-04-20 kevin
+	* Chg: Increase local ping chances by moving it out of the if/else block. IRCClient.
+	* Chg: Move local ping sends at the bottom of the chain to prioritize incoming messages IRCClient.
+	* Chg: Small changes to IRCClient.
+2014-04-19 kevin
+	* Chg: Ping changes in IRC client.
+	* Add: Custom IRC Client to replace PEAR SmartIRC, encrypted IRC connections are now supported.
+2014-04-19 ruhllatio
+	* Add: Framework for SHA1 release PreDB matching
+2014-04-18 niel
+	* Chg: Major change to Db schema. site table is now settings, and expanded for more granularity.
+	Current code/templates should continue to work without change, but will have to change to take advantage of the increased granularity.
+	* Fix: Data file for settings table had extra tab for yydecoderpath, preventing it loading.
+	* Fix: DB::$pdo visibility now protected so child classes can access it.
+2014-04-18 kevin
+	* Fix: Nfos showing as 1.
+2014-04-17 kevin
+	* Chg: More changes to getMessages NNTp.
+	* Add: @access to some properties/methods.
+	* Chg: Save a bit of memory in getMessages.
+	* Fix: Various bugs in PP additional.
+	* Fix: Unexistant variable in tmux import.
+	* Chg: If file_get_contents is false on yydecode, return PEAR Error.
+	* Chg: Various changes to post proc additional.
+2014-04-16 testarea1
+	* Fix: Missing equals on span class on view NZB page for Alpha Theme #1273
+2014-04-15 niel
+	* Fix: Change to regexes to allow Windows' paths to be matched in DbUpdate.
+	* Fix: ... and the Drive letter. Doh!
+	* Rvt: a68c81723f0bf4a3c8ca29b8381e114c642b7935 in favour of putting GnuWin in system.
+	* New: Windows users should read .../docs/GNUWIN.txt on how to add some of *nix's features on Windows installs
+	* Fix: Properly catching the PDOExceptions that were ignore during patching the Db. (namespace issue).
+2014-04-15 bart39
+	* Chg: More refactoring in ReleaseCleaning
+	* Fix: unknown modifier in ReleaseCleaning
+	* Chg: Simplify ReleaseCleaning
+	* Add: add a.b.movies to CollectionsCleaning
+	* Add: add more ReleaseCleaning regex for a.b.documentaries, a.b.etc, a.b.games, a.b.hdtv, a.b.mom, a.b.movies,
+	a.b.movies.x264, a.b.nl, a.b.sound.mp3, a.b.sound.mp3.complete_cd, a.b.sounds.mp3 and a.b.teevee
+2014-04-15 kevin
+	* Fix: Formatting issue on NFO pages.
+	* Fix: PreDb constant usage.
+	* Chg: isNfo method. Add GNU File for windows.
+	* Fix: Typos in IRCScraper.
+	* Chg: Move Nuke constants in PreDb.
+	* Chg: Hide unlink warnings in NNTP.
+2014-04-14 kaibosh
+	* Chg: README.md: drop nntp-proxy as "feature". Insert comment sharing
+2014-04-14 kevin
+	* Add: isNfo checking to alternate nfo.
+	* Chg: Change TVRage imgdata to mediumblob in schema, the images never go past 4MB.
+	* Chg: Set max size of NFO to 65KB, the max for BLOB column type.
+	* Add: Constants for NZB and NFO.
+	* Add: Constants for reqidstatus.
+	* Chg: Refactor Stage5b (RequestID)
+	* Fix: Fix some undefined variables.
+	* Chg: Simplify collectionscleaning.
+	* Fix: #1268 Group bulk add.
+	* Fix: Notice in removecrap.
+	* Chg: More refactoring of NNTP, add Yenc functions in NNTP, remove Yenc class.
+	* Fix: #1267 Use https for youtube videos to not cause issues on http sites.
+2014-04-14 ruhllatio
+	* Add: Option for removeCrap to specify a fourth argument for Blacklist ID (great for testing full time delete with new regex)
 2014-04-13 kevin
 	* Add: Massive speed improvement to yEnc decoding (~400 times faster) by using yydecode binary
 	  (ubuntu/debian you can get it from the getdeb repository or you can compile it, takes a few seconds).

@@ -155,7 +155,7 @@ if (isset($argv[2]) && $argv[2] == 'delete') {
 	echo "Complete.\n";
 }
 // Update TPG setting in site-edit.
-$db->queryExec('UPDATE site SET value = 1 where setting = \'tablepergroup\';');
+$db->queryExec('UPDATE settings SET value = 1 where setting = \'tablepergroup\';');
 $db->queryExec('UPDATE tmux SET value = 2 where setting = \'releases\';');
 echo "New tables have been created.\nTable Per Group has been set to  to \"TRUE\" in site-edit.\nUpdate Releases has been set to Threaded in tmux-edit.\n";
 

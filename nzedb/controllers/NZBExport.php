@@ -12,37 +12,45 @@ class NZBExport
 	/**
 	 * Started from browser?
 	 * @var bool
+	 * @access protected
 	 */
 	protected $browser;
 
 	/**
 	 * @var string Return value on browser.
+	 * @access protected
 	 */
 	protected $retVal;
 
 	/**
 	 * @var DB
+	 * @access protected
 	 */
 	protected $db;
 
 	/**
 	 * @var NZB
+	 * @access protected
 	 */
 	protected $nzb;
 
 	/**
 	 * @var Releases
+	 * @access protected
 	 */
 	protected $releases;
 
 	/**
 	 * @var bool
+	 * @access protected
 	 */
 	protected $echoCLI;
 
 	/**
 	 * @param bool $browser Started from browser?
 	 * @param bool $echo    Echo to CLI?
+	 *
+	 * @access public
 	 */
 	public function __construct($browser=false, $echo = true)
 	{
@@ -59,6 +67,8 @@ class NZBExport
 	 * @param array $params
 	 *
 	 * @return bool
+	 *
+	 * @access public
 	 */
 	public function beginExport($params)
 	{
@@ -200,6 +210,8 @@ class NZBExport
 	/**
 	 * Return bool on CLI, string on browser.
 	 * @return bool|string
+	 *
+	 * @access protected
 	 */
 	protected function returnValue()
 	{
@@ -212,6 +224,8 @@ class NZBExport
 	 * @param string $date
 	 *
 	 * @return bool
+	 *
+	 * @access protected
 	 */
 	protected function checkDate($date)
 	{
@@ -226,6 +240,8 @@ class NZBExport
 	 * Echo message to browser or CLI.
 	 *
 	 * @param string $message
+	 *
+	 * @access protected
 	 */
 	protected function echoOut($message)
 	{
@@ -242,6 +258,8 @@ class NZBExport
 	 * @param string $filename
 	 *
 	 * @return string
+	 *
+	 * @access protected
 	 */
 	protected function safeFilename($filename)
 	{

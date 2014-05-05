@@ -114,9 +114,9 @@ if ($page->isPostBack()) {
 				)
 			);
 			//$pdo = new PDO($pdoString, $cfg->DB_USER, $cfg->DB_PASSWORD);
-			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 			$cfg->dbConnCheck = true;
-		} catch (PDOException $e) {
+		} catch (\PDOException $e) {
 			$cfg->emessage = 'Unable to connect to the SQL server.';
 			$cfg->error = true;
 			$cfg->dbConnCheck = false;
@@ -140,7 +140,7 @@ if ($page->isPostBack()) {
 			$minVersion = ($cfg->DB_SYSTEM === 'mysql') ? $minMySQLVersion : $minPgSQLVersion;
 			try {
 				$goodVersion = $pdo->isDbVersionAtLeast($minVersion);
-			} catch (PDOException $e) {
+			} catch (\PDOException $e) {
 				$goodVersion   = false;
 				$cfg->error    = true;
 				$cfg->emessage = 'Could not get version from SQL server.';
@@ -176,7 +176,7 @@ if ($page->isPostBack()) {
 						 'filepath' =>	nZEDb_RES . 'db' . DS . 'schema' . DS . 'mysql-data.sql'
 					)
 			);
-		} catch (PDOException $err) {
+		} catch (\PDOException $err) {
 			$cfg->error = true;
 			$cfg->emessage = "Error inserting: (" . $err->getMessage() . ")";
 		}

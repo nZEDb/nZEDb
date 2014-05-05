@@ -11,8 +11,12 @@
                 sudo /etc/init.d/apparmor teardown
                 sudo update-rc.d -f apparmor remove
 
+                Note: You must reboot after doing this to take effect.
+
 
        # For the threaded scripts you will require the Python cymysql module for mysql:
+
+       # Note: For Ubuntu 13.10, python3 uses pip3, not pip3.2
 
        # Python 2.*
 
@@ -32,26 +36,6 @@
                  sudo pip-3.3 install cymysql
                  pip-3.3 list
 
-       #For Ubuntu 13.10, python3 uses pip3, not pip3.2
-
-       # Or the Python psycopg module for PostgreSQL(this is not currently supported)
-
-                sudo apt-get install postgresql postgresql-server-dev-all php5-pgsql python-dev python3-dev make
-
-       # Python 2.*
-
-                sudo apt-get install python-setuptools python-pip
-                sudo easy_install psycopg2
-                pip list
-
-       # Python 3.* - If Python 3 is installed, the module also must be installed
-
-                sudo apt-get install python3-setuptools python3-pip
-                sudo easy_install3 psycopg2
-                pip-3.2 list
-                -or-
-                pip-3.3 list
-
        # If after using easy_install, it still shows error, this link was current at the time this was posted: http://initd.org/psycopg/install/
 
                 wget http://initd.org/psycopg/tarballs/PSYCOPG-2-5/psycopg2-2.5.1.tar.gz
@@ -62,8 +46,6 @@
                 pip-3.2 list
                 -or-
                 pip-3.3 list
-
-       #For Ubuntu 13.10, python3 uses pip3, not pip3.2
 
 
 2. Update and upgrade the operating system.
@@ -94,58 +76,26 @@
 
        # Install PHP and the required extensions:
 
-
                 sudo apt-get install php5 php5-dev php5-json php-pear php5-gd php5-mysqlnd php5-curl
 
-4. Install MySQL OR PostgreSQL.
+4. Install MySQL.
 
        # MySQL:
+
+           Note: You can also install mariadb instead of mysql : sudo apt-get install mariadb-server mariadb-client libmysqlclient-dev
 
                 sudo apt-get install mysql-server mysql-client libmysqlclient-dev
 
                 If you are running MySQL not as root user, you will need to run this in MySQL shell (with the single quotes):
                 GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';
 
-                my.cnf requires these changes:
+           Note: my.cnf requires these changes:
+
                 max_allowed_packet=12582912
                 group_concat_max_len=8192
 
-                Set your timezone :
-                Use the TZ from here : https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+                Get your timezone from here : https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
                 default_time_zone=Africa/Abidjan
-
-       # Or PostgreSQL(currently WIP, use MySQL for now.) Version 9.3 or higher is required:
-
-                sudo add-apt-repository ppa:chris-lea/postgresql-9.3
-                sudo apt-get update
-                sudo apt-get install postgresql-9.3 php5-pgsql
-
-       # ONLY PROCEED WITH SECTION IF YOU INSTALLED POSTGRESQL!
-
-       # Login to PostgreSQL root user:
-
-                sudo -i -u postgres
-
-       # Enter the PostgreSQL CLI interface:
-
-                psql
-
-       # Create a user account (change the username):
-
-                CREATE USER EnterYourUserNameHere;
-
-       # Create a database for the user account (change the database name or leave it):
-
-                CREATE DATABASE nzedb OWNER EnterYourUserNameHere;
-
-       # Create a password for the user (the single quotes around the password are required):
-
-                ALTER USER EnterYourUserNameHere WITH ENCRYPTED PASSWORD 'EnterYourPasswordHere';
-
-       # Detach from pgsql and login to your linux user account:
-
-                control+d
-                su EnterYourLinuxUsernameHere
 
 5. Install and configure Apache.
 
@@ -157,18 +107,19 @@
 
                 sudo nano /etc/php5/cli/php.ini
 
-       ## To search in nano, use control+w
        # Change the following settings:
+
+           Note: To search in nano, use control+w
 
                 max_execution_time = 120
 
-       # You can set 1024M to -1 if you have RAM to spare.
+           Note: You can set 1024M to -1 if you have RAM to spare.
 
                 memory_limit = 1024M
 
-       # Change Europe/London to your local timezone, see here for a list: http://php.net/manual/en/timezones.php
+           Note: Change Europe/London to your local timezone, see here for a list: http://php.net/manual/en/timezones.php
 
-       # remove the ; if there is one preceding date.timezone
+           Note: remove the ; if there is one preceding date.timezone
 
                 date.timezone = YourLocalTimezone
 
@@ -178,7 +129,7 @@
 
                 sudo nano /etc/php5/apache2/php.ini
 
-       # Use the following settings if using Apache 2.2 as your webserver:
+       # Use the following settings if using Apache 2.2 as your webserver (SEE LOWER FOR APACHE 2.4):
 
        # Create the site config:
 
@@ -234,12 +185,16 @@
                  sudo a2enmod rewrite
                  sudo service apache2 restart
 
-6.  Install Unrar/FFmpeg/Mediainfo/Lame
+6.  Install Unrar/FFmpeg|Avconv/Mediainfo/Lame
 
                  sudo apt-get install software-properties-common
                  sudo apt-get install unrar python-software-properties
 
       # Mediainfo
+
+          Note: Ubuntu 14.04 comes with a recent version of mediainfo : sudo apt-get install mediainfo
+
+          Note: On older versions of ubuntu, you can manually install it (look at the URL on your browser for the latest version):
 
                  wget http://mediaarea.net/download/binary/libzen0/0.4.29/libzen0_0.4.29-1_amd64.xUbuntu_13.10.deb
                  wget http://mediaarea.net/download/binary/libmediainfo0/0.7.67/libmediainfo0_0.7.67-1_amd64.xUbuntu_13.10.deb
@@ -248,63 +203,81 @@
                  dpkg -i libmediainfo0_0.7.67-1_amd64.xUbuntu_13.10.deb
                  dpkg -i mediainfo_0.7.67-1_amd64.Debian_7.0.deb
 
-      # FFmpeg/Lame  Run the script located here.  https://github.com/jonnyboy/installers/blob/master/compile_ffmpeg.sh
+
+      $ Lame
+
+          sudo apt-get install lame
+
+      # FFmpeg or Avconv:
+
+          Note: You can compile the latest ffmpeg using this script:
+
+              https://github.com/jonnyboy/installers/blob/master/compile_ffmpeg.sh
+
+          Note: You can alternatively install avconv:
+
+              sudo apt-get install libav-tools
+
+              Note: Type which abconv to get the path (should be /usr/bin/avconv)
 
 
 7. Install memcache / apc.
 
       # APC:
 
-                 sudo apt-get install php-apc
-                 sudo service apache2 restart
-                 sudo cp /usr/share/doc/php-apc/apc.php /var/www/nZEDb/www/admin
+              sudo apt-get install php-apc
+              sudo service apache2 restart
+              sudo cp /usr/share/doc/php5-apcu/apc.php /var/www/nZEDb/www/admin
 
-      # In the future you can go to localhost/admin/apc.php in your browser to view apc stats.
+          Note: In the future you can go to localhost/admin/apc.php in your browser to view apc stats.
 
      # Memcache:
 
-                 sudo apt-get install memcached php5-memcache
+              sudo apt-get install memcached php5-memcache
 
-      # Edit php.ini, add   extension=memcache.so   in the dynamic extensions section (if you get warnings on apache start you can remove this).
+          Note: AFTER git cloning and seting up the indexer (step 8 & 9), edit config.php and change MEMCACHE_ENABLED to true.
 
-                 sudo nano /etc/php5/apache2/php.ini
-                 sudo service apache2 restart
-
-      # AFTER git cloning and seting up the indexer (step 8 & 9), edit config.php and change MEMCACHE_ENABLED to true.
-
-                 sudo nano /var/www/nZEDb/www/config.php
+              sudo nano /var/www/nZEDb/www/config.php
 
 8. Git clone the nZEDb source.
 
       # If /var/www/ does not exist, create it.
 
-                 mkdir /var/www/
-                 cd /var/www/
-                 sudo chmod 777 .
+              mkdir -p /var/www/
+              cd /var/www/
+              sudo chmod 777 .
 
       # Install git.
 
-                 sudo apt-get install git
+              sudo apt-get install git
 
       # Clone the git.
 
-                 git clone https://github.com/nZEDb/nZEDb.git
+              git clone https://github.com/nZEDb/nZEDb.git
 
       # Set the permissions.
 
-                 sudo chmod 777 nZEDb
-                 cd nZEDb
-                 sudo chmod -R 755 .
-                 sudo chmod 777 /var/www/nZEDb/smarty/templates_c
-                 sudo chmod -R 777 /var/www/nZEDb/www/covers
-                 sudo chmod 777 /var/www/nZEDb/www
-                 sudo chmod 777 /var/www/nZEDb/www/install
-                 sudo chmod -R 777 /var/www/nZEDb/nzbfiles
+          Note: During the install (step 9 of this guide) you can set perms to 777 to make things easier:
 
-9. Run the installer.
+              sudo chmod -R 777 /var/www/nZEDb
+              cd nZEDb
 
-      Change localhost for the server's IP if you are browsing on another computer.
-            http://localhost/install
+          Note: After install (step 9 of this guide) you can properly set your permissions:
+          Note: YourUnixUserName is the user you use in CLI. You can find this by typing : echo $USER
+
+              sudo chown -R YourUnixUserName:www-data /var/www/nZEDb
+              sudo usermod -a -G www-data YourUnixUserName
+              sudo chmod -R 774 /var/www/nZEDb
+
+9. Run the installer from an internet browser.
+
+         Note: Change localhost for the server's IP if you are browsing on another computer.
+         Note: You can find your server's IP by typing ifconfig and looking for inet addr:192.168.x.x under the wlan0 or eth0 sections.
+
+               http://localhost/install
+
+         Note: If you have issues with stage 2, make sure you have set the right permissions on the tsv files,
+               mysql has FILE access for the user and apparmor is disabled and you have rebooted after disabling it.
 
 10. Configure the site.
 

@@ -122,3 +122,9 @@ define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
 require_once nZEDb_CORE . 'autoloader.php';
 require_once nZEDb_LIBS . 'autoloader.php';
 require_once SMARTY_DIR . 'autoloader.php';
+
+define('HAS_WHICH', nzedb\utility\Utility::hasWhich() ? true : false);
+
+if (file_exists(__DIR__ . DS . 'config.php')) {
+	require_once __DIR__ . DS . 'config.php';
+}

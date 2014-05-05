@@ -782,12 +782,10 @@ class Binaries
 				}
 
 				// Attempt to find the file count. If it is not found, set it to 0.
-				$nofiles = false;
 				$partless = $matches[1];
 				$filecnt = '';
 				if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $partless, $filecnt)) {
 					$filecnt[2] = $filecnt[6] = 0;
-					$nofiles = true;
 
 					if ($this->showdroppedyencparts === '1') {
 						file_put_contents(nZEDb_RES . "logs" . DS . 'no_parts' . $groupArr['name'] . ".log", $msg['Subject'] . PHP_EOL, FILE_APPEND);
@@ -821,7 +819,7 @@ class Binaries
 						// (hash) Groups articles together when forming the release/nzb.
 						$this->message[$subject]['CollectionHash'] =
 							sha1(
-								utf8_encode($this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'], $nofiles)) .
+								utf8_encode($this->collectionsCleaning->collectionsCleaner($subject, $groupArr['name'])) .
 								$msg['From'] .
 								$groupArr['id'] .
 								$filecnt[6]

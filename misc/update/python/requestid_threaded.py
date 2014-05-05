@@ -45,7 +45,7 @@ except:
 
 print(bcolors.HEADER + "\n\nRequestID Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
-cur[0].execute("SELECT value FROM site WHERE setting = 'request_hours'")
+cur[0].execute("SELECT value FROM settings WHERE setting = 'request_hours'")
 dbgrab = cur[0].fetchone()
 request_hours = str(dbgrab[0])
 cur[0].execute("SELECT r.id, r.name, g.name AS groupname FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND isrenamed = 0 AND isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " + request_hours + " HOUR) LIMIT 100000")
