@@ -7,6 +7,8 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-04 bart39
+	* Fix: Fix regex for isrequestid triggers and add to schema
+2014-05-04 bart39
 	* Fix: compilation failed missing ) in ReleaseCleaning
 	* Chg: dump_predb.php - don't override existing groupid if groupname is null in the import
 	* Chg: fixed regex for requestid matching in ReleaseCleaning
