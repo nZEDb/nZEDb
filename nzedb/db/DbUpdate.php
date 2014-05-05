@@ -223,11 +223,10 @@ class DbUpdate
 				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
 						$patch = (integer)$matches['patch'];
 						$setPatch = true;
-// Removing the old check from active code to flush out any left over edge case bugs.
-//				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?P<patch>\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
-//					$patch = (integer)$matches['patch'];
+				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?P<patch>\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
+					$patch = (integer)$matches['patch'];
 				} else {
-					throw new \RuntimeException("File ($file) has no recognised patch number, stopping!!\nYou need help with this, go ask in IRC #nZEDb");
+					throw new \RuntimeException("No patch information available, stopping!!");
 				}
 
 				if ($patch > $currentVersion) {
