@@ -16,7 +16,7 @@ $site = $s->get();
 $n = "\n";
 $category = new Category();
 $groups = new Groups();
-if (!preg_match('/^\[\d+\]/', $pieces[1])) {
+if (!preg_match('/^\[ ?(\d{4,6}) ?\]/', $pieces[1]) && !preg_match('/^REQ\s*(\d{4,6})/i', $pieces[1]) && !preg_match('/^(\d{4,6})-\d{1}\[/', $pieces[1])) {
 	$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $pieces[0]);
 	exit('.');
 }
