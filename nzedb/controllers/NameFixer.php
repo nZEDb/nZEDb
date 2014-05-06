@@ -418,7 +418,7 @@ class NameFixer
 			}
 		} else {
 			$db->queryExec(sprintf("UPDATE releases SET dehashstatus = %d - 1 WHERE id = %d", $release['dehashstatus'], $release['releaseid']));
-			echo ".";
+			//echo ".";
 		}
 		return $matching;
 	}
