@@ -1067,6 +1067,16 @@ class ReleaseRemover
 						default:
 							break;
 					}
+				case 'completion':
+					if (!is_numeric($args[2])) {
+						break;
+					}
+					switch ($args[1]) {
+						case 'smaller':
+							return ' AND completion < ' . $args[2];
+						default:
+							break;
+					}
 			}
 		}
 		return false;
