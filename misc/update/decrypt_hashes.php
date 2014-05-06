@@ -26,17 +26,17 @@ function preName($argv)
 	$namefixer = new NameFixer();
 
 	if (isset($argv[1]) && $argv[1] === "all") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND preid = 0');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE ishashed = 1 AND preid = 0');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND preid = 0 AND dehashstatus BETWEEN -6 AND 0');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE ishashed = 1 AND preid = 0 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE ishashed = 1 AND preid = 0 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE ishashed = 1 AND preid = 0 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
 	$c = new ColorCLI();
 
 	$total = $res->rowCount();
 	$counter = $counted = 0;
-	$show = (isset($argv[2]) || $argv[2] !== 'show') ? 1 : 0;
+	$show = (isset($argv[2]) && $argv[2] === 'show') ? 1 : 0;
 	if ($total > 0) {
 		echo $c->header("\n" . number_format($total) . ' releases to process.');
 		sleep(2);
@@ -55,7 +55,7 @@ function preName($argv)
 			} else {
 				$counted++;
 			}
-			if (!isset($argv[2]) || $argv[2] !== 'show') {
+			if ($show === 1) {
 				$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString(++$counter, $total));
 			}
 		}

@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-06 bart39
+	* Fix: undefined index / offset in decrypt_hashes
 	* Chg: use NameFixer->matchPreDbHash for decrypt_hashes
 2014-05-06 ruhllatio
 	* Fix: fixreleasenames MD5 never exceeding dehashstatus 0
