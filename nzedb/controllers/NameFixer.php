@@ -392,7 +392,7 @@ class NameFixer
 			$hashcheck = "md5";
 		}
 
-		$res = $db->queryDirect(sprintf("SELECT title, source FROM predb WHERE %s = %s", $hashcheck, $db->escapeString($hash)));
+		$res = $db->queryDirect(sprintf("SELECT title, source FROM predb WHERE %s = %s", $hashcheck, $db->escapeString(strtolower($hash))));
 		$total = $res->rowCount();
 		if ($total > 0) {
 			foreach ($res as $row) {

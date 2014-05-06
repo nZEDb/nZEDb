@@ -8,6 +8,8 @@ New updates are grouped by person, at the top of the file.
 
 2014-05-06 ruhllatio
 	* Fix: fixreleasenames MD5 never exceeding dehashstatus 0
+	* Chg: fixreleasenames.php in tmux now honors hashes with uppercase letters
+	* Chg: matchPredbHash will lowercase the hash before checking against predb table hashes
 2014-05-06 DariusIII
 	* Chg: Changed the regex in misc/update/nix/tmux/bin/requestid.php to match the regex change for reqids
 	* Chg: Updated threaded requestid to use the new reqid server url
