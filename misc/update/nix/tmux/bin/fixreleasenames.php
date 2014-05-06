@@ -46,6 +46,7 @@ if (!isset($argv[1])) {
 			} else if (preg_match('/[a-f0-9]{32,40}/i', $res['filename'], $matches)) {
 				$namefixer->matchPredbHash($matches[0], $res, 1, 1, true, 1);
 			} else {
+				$db->queryExec(sprintf("UPDATE releases SET dehashstatus = %d - 1 WHERE id = %d", $res['dehashstatus'], $res['releaseid']));
 				echo '.';
 			}
 		}
