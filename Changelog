@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-06 DariusIII
+	* Chg: Changed the regex in misc/update/nix/tmux/bin/requestid.php to match the regex change for reqids
 2014-05-05 niel
 	* Chg: Defaulting covers path to .../resources/covers on new installs. Instructions for setting up your www conf are on the wiki.
 	* Chg: Removing old patch number checking and changing the error message for problems.
