@@ -271,7 +271,7 @@ class IRCScraper extends IRCClient
 		$query .= (!empty($this->CurPre['reqid'])    ? $this->CurPre['reqid']                             . ', '   : '');
 		$query .= (!empty($this->CurPre['groupid'])  ? $this->CurPre['groupid']                           . ', '   : '');
 		$query .= (!empty($this->CurPre['nuked'])    ? $this->CurPre['nuked']                             . ', '   : '');
-		$query .= (!empty($this->CurPre['filename']) ? $this->CurPre['filename']                          . ', '   : '');
+		$query .= (!empty($this->CurPre['filename']) ? $this->db->escapeString($this->CurPre['filename']) . ', '   : '');
 		$query .= (!empty($this->CurPre['predate'])  ? $this->CurPre['predate']                           . ', '   : 'NOW(), ');
 
 		$query .= '%s, %s, %s)';
@@ -305,15 +305,15 @@ class IRCScraper extends IRCClient
 
 		$query = 'UPDATE predb SET ';
 
-		$query .= (!empty($this->CurPre['size'])     ? 'size = '       . $this->db->escapeString($this->CurPre['size'])   . ', ' : '');
-		$query .= (!empty($this->CurPre['source'])   ? 'source = '     . $this->db->escapeString($this->CurPre['source']) . ', ' : '');
-		$query .= (!empty($this->CurPre['files'])    ? 'files = '      . $this->db->escapeString($this->CurPre['files'])  . ', ' : '');
-		$query .= (!empty($this->CurPre['reason'])   ? 'nukereason = ' . $this->db->escapeString($this->CurPre['reason']) . ', ' : '');
-		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid = '  . $this->CurPre['reqid']                           . ', ' : '');
-		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid = '    . $this->CurPre['groupid']                         . ', ' : '');
-		$query .= (!empty($this->CurPre['predate'])  ? 'predate = '    . $this->CurPre['predate']                         . ', ' : '');
-		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked = '      . $this->CurPre['nuked']                           . ', ' : '');
-		$query .= (!empty($this->CurPre['filename']) ? 'filename = '   . $this->CurPre['filename']                        . ', ' : '');
+		$query .= (!empty($this->CurPre['size'])     ? 'size = '       . $this->db->escapeString($this->CurPre['size'])     . ', ' : '');
+		$query .= (!empty($this->CurPre['source'])   ? 'source = '     . $this->db->escapeString($this->CurPre['source'])   . ', ' : '');
+		$query .= (!empty($this->CurPre['files'])    ? 'files = '      . $this->db->escapeString($this->CurPre['files'])    . ', ' : '');
+		$query .= (!empty($this->CurPre['reason'])   ? 'nukereason = ' . $this->db->escapeString($this->CurPre['reason'])   . ', ' : '');
+		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid = '  . $this->CurPre['reqid']                             . ', ' : '');
+		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid = '    . $this->CurPre['groupid']                           . ', ' : '');
+		$query .= (!empty($this->CurPre['predate'])  ? 'predate = '    . $this->CurPre['predate']                           . ', ' : '');
+		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked = '      . $this->CurPre['nuked']                             . ', ' : '');
+		$query .= (!empty($this->CurPre['filename']) ? 'filename = '   . $this->db->escapeString($this->CurPre['filename']) . ', ' : '');
 		$query .= (
 			(empty($this->OldPre['category']) && !empty($this->CurPre['category']))
 				? 'category = ' . $this->db->escapeString($this->CurPre['category']) . ', '
