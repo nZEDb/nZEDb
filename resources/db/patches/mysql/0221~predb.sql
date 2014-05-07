@@ -1,5 +1,8 @@
 ALTER TABLE predb ADD COLUMN filename varchar(255) NOT NULL DEFAULT '';
+ALTER TABLE predb ADD UNIQUE INDEX ix_predb_filename (filename);
+
 ALTER TABLE releasefiles ADD COLUMN ishashed tinyint(1) NOT NULL DEFAULT 0 AFTER size;
+ALTER TABLE releasefiles ADD INDEX ix_releasefiles_ishashed (ishashed);
 
 DROP TRIGGER IF EXISTS check_rfinsert;
 DROP TRIGGER IF EXISTS check_rfupdate;
