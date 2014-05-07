@@ -87,7 +87,7 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	 ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo is null, t.nfo, predb.nfo),
 	 predb.size = IF(predb.size is null, t.size, predb.size),
 	 predb.files = IF(predb.files is null, t.files, predb.files),
-	 predb.filename = IF(predb.filename = '', t.filename, predb.filename),
+	 predb.filename = IF(predb.filename = "", t.filename, predb.filename),
 	 predb.nuked = IF(t.nuked > 0, t.nuked, predb.nuked),
 	 predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
 	 predb.category = IF(predb.category is null, t.category, predb.category),
