@@ -86,11 +86,12 @@ class Utility
 		}
 	}
 
-	static public function trailingSlash(&$path)
+	static public function trailingSlash($path)
 	{
 		if (substr($path, strlen($path) - 1) != '/') {
 			$path .= '/';
 		}
+		return $path;
 	}
 
 	/**

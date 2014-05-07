@@ -6,6 +6,18 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-07 bubblun
+	* Chg: Changed 1MB crap size delete limit to 2MB to catch more spams #1310
+2014-05-07 kevin
+	* Upd: Update ubuntu install guide.
+	* Add: The completion criteria to the delete releases GUI.
+	* Chg: Set the minimum completion to 0 so unprocessed releases don't get deleted.
+	* Add: Filename parsing to IRCScraper.
+2014-05-07 niel
+	* Fix: Covers constant wasn't being set after recent update.
+2014-05-07 ruhllatio
+	* Fix: Syntax error in dump_predb (For real this time)
+	* Fix: dump_predb number of columns error
 2014-05-06 bart39
 	* Fix: echoing '.' causing screen errors.
 	* Fix: undefined index / offset in decrypt_hashes

@@ -68,7 +68,7 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 
 	// Insert and update table
 	echo $c->primary('INSERT INTO ' . $table . " (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, md5, sha1, requestid, groupid)
-	SELECT t.title, t.nfo, t.size, t.files, t.nuked, t.nukereason, t.category,
+	SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category,
 	 t.predate, t.source, t.md5, sha1, t.requestid, IF(g.id IS NOT NULL, g.id, 0) FROM tmp_pre t
 	 LEFT OUTER JOIN groups g ON t.groupname = g.name
 	 ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo is null, t.nfo, predb.nfo),
@@ -81,13 +81,13 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	 predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid),
 	 predb.groupid = IF(g.id IS NOT NULL, g.id, 0);\n");
 	$db->queryDirect('INSERT INTO ' . $table . ' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, md5, sha1, requestid, groupid)
-	SELECT t.title, t.nfo, t.size, t.files, t.nuked, t.nukereason, t.category,
+	SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category,
 	 t.predate, t.source, t.md5, sha1, t.requestid, IF(g.id IS NOT NULL, g.id, 0) FROM tmp_pre t
 	 LEFT OUTER JOIN groups g ON t.groupname = g.name
 	 ON DUPLICATE KEY UPDATE predb.nfo = IF(predb.nfo is null, t.nfo, predb.nfo),
 	 predb.size = IF(predb.size is null, t.size, predb.size),
 	 predb.files = IF(predb.files is null, t.files, predb.files),
-	 predb.filename = IF(predb.filename = '', t.filename, predb.filename),
+	 predb.filename = IF(predb.filename = "", t.filename, predb.filename),
 	 predb.nuked = IF(t.nuked > 0, t.nuked, predb.nuked),
 	 predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
 	 predb.category = IF(predb.category is null, t.category, predb.category),
