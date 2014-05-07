@@ -17,7 +17,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: Option to delete_releases to FastDelete by completion
 	* Add: filename column in PreDB to start matching unique release filenames
 	* Add: ishashed column to releasefiles to reduce slow REGEXP querying
-	* Add: Indexes for new columns
+	* Add: Indexes for new columns (remove unique from predb filename)
 2014-05-06 DariusIII
 	* Chg: Changed the regex in misc/update/nix/tmux/bin/requestid.php to match the regex change for reqids
 	* Chg: Updated threaded requestid to use the new reqid server url

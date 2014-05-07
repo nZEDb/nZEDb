@@ -250,9 +250,9 @@ CREATE INDEX ix_predb_nfo ON predb (nfo);
 CREATE INDEX ix_predb_predate ON predb (predate);
 CREATE INDEX ix_predb_source ON predb (source);
 CREATE INDEX ix_predb_requestid on predb (requestid, groupid);
+CREATE INDEX ix_predb_filename ON predb (filename);
 CREATE UNIQUE INDEX ix_predb_md5 ON predb (md5);
 CREATE UNIQUE INDEX ix_predb_sha1 ON predb (sha1);
-CREATE UNIQUE INDEX ix_predb_filename ON predb (filename);
 
 DROP TABLE IF EXISTS menu;
 CREATE TABLE menu (
