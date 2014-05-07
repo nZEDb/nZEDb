@@ -543,7 +543,7 @@ class ReleaseRemover
 			"SELECT r.id, r.guid, r.searchname
 			FROM releases r
 			WHERE r.totalpart = 1
-			AND r.size < 1000000
+			AND r.size < 2097152
 			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d) %s",
 			Category::CAT_MUSIC_MP3,
 			Category::CAT_BOOKS_COMICS,
