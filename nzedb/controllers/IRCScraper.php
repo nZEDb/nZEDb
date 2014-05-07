@@ -195,7 +195,7 @@ class IRCScraper extends IRCClient
 				$this->CurPre['files'] = substr($matches['files'], 0, 50);
 			}
 
-			if (isset($matches['filename'])) {
+			if (isset($matches['filename']) && $matches['filename'] !== 'N/A') {
 				$this->CurPre['filename'] = $matches['filename'];
 			}
 
