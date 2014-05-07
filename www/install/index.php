@@ -66,7 +66,7 @@ if (!$cfg->error) {
 					The template compile dir must be writable.<br />A quick solution is to run:	<br />
 					<?php
 					echo 'chmod 777 ' . SMARTY_DIR . 'templates_c';
-					if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
+					if (extension_loaded('posix') && strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
 						$group = posix_getgrgid(posix_getgid());
 						echo
 						'<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name']  . ' ' . nZEDb_ROOT .
