@@ -12,6 +12,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Covers constant wasn't being set after recent update.
 2014-05-07 ruhllatio
 	* Fix: Syntax error in dump_predb (For real this time)
+	* Fix: dump_predb number of columns error
 2014-05-06 bart39
 	* Fix: echoing '.' causing screen errors.
 	* Fix: undefined index / offset in decrypt_hashes
