@@ -7,7 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-07 ruhllatio
-	* Fix: Syntax error in dump_predb
+	* Fix: Syntax error in dump_predb (For real this time)
 2014-05-06 bart39
 	* Fix: echoing '.' causing screen errors.
 	* Fix: undefined index / offset in decrypt_hashes
