@@ -12,6 +12,7 @@ New updates are grouped by person, at the top of the file.
 	* Upd: Update ubuntu install guide.
 	* Add: The completion criteria to the delete releases GUI.
 	* Chg: Set the minimum completion to 0 so unprocessed releases don't get deleted.
+	* Add: Filename parsing to IRCScraper.
 2014-05-07 niel
 	* Fix: Covers constant wasn't being set after recent update.
 2014-05-07 ruhllatio
