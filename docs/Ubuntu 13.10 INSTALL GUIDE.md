@@ -85,8 +85,6 @@
                 MySQL:
                 sudo apt-get install mysql-server mysql-client libmysqlclient-dev
 
-           Note: You MUST run this in the MySQL command line: GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';
-
        # Change my.cnf using the nano text editor.
 
            Note: To search in nano, use control+w
