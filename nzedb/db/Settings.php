@@ -71,6 +71,8 @@ class Settings extends DB
 	/**
 	 * Set a setting in the database.
 	 *
+	 * @TODO not completed yet, do not use
+	 *
 	 * @param array $options	Array containing the mandatory keys of 'section', 'subsection', and 'value'
 	 */
 	public function setSetting(array $options)
