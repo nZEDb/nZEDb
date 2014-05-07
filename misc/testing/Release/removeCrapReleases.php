@@ -40,7 +40,7 @@ if ($argCnt === 2) {
 			'                  scr         = Remove releases where .scr extension is found in the files or subject.' . $n .
 			'                  short       = Remove releases where the name is only numbers or letters and is 5 characters or less.' . $n .
 			'                  codec       = Remove releases where the release contains WMV file, x264 name, and Codec\Setup.exe file (Spammer).' . $n .
-			'                  size        = Remove releases smaller than 1MB and have only 1 file and not in books or mp3 section.' . $n . $n .
+			'                  size        = Remove releases smaller than 2MB and have only 1 file and not in books or mp3 section.' . $n . $n .
 			'arg4 (Optional) = blacklist regular expression id number.  Only works when blacklist is selected as third argument.' . $n .
 			'                  100001      = Remove releases where the Binary Blacklist ID is 100001.' . $n . $n .
 			'examples:' . $n .
