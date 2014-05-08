@@ -1,6 +1,8 @@
 <?php
 namespace nzedb\utility;
 
+use nzedb\db\Settings;
+
 if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
 }
@@ -16,6 +18,8 @@ if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1
 		$vers->save();
 	} else {
 		echo "No changes detected.\n";
+		echo "Commit: " . $vers->getCommit() . "\n";
+		echo " Patch: " . $vers->getSQLVersion() . "\n";
 	}
 }
 
@@ -125,9 +129,9 @@ class Versions
 	 */
 	public function checkDb($update = true)
 	{
-		$site = new \Sites();
-		$setting = $site->getSetting('sqlpatch');
-exit("Setting = {print_r($setting)}" );
+		$settings = new Settings();
+		$setting = $settings->getSetting('sqlpatch');
+
 		if ($this->_vers->db < $setting) {
 			if ($update) {
 				echo $this->out->primary("Updating Db revision to " . $setting);
@@ -203,6 +207,10 @@ exit("Setting = {print_r($setting)}" );
 		return false;
 	}
  */
+	public function getCommit()
+	{
+		return $this->_vers->git->commit;
+	}
 
 	public function getGitHookPrecommit()
 	{
