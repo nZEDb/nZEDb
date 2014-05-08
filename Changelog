@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-05-07 bubblun
 	* Chg: Changed 1MB crap size delete limit to 2MB to catch more spams #1310
 2014-05-07 kevin
+	* Chg: Simplify predb class more.
 	* Chg: Check if the php posix extension loaded during install.
 	* Upd: Update ubuntu install guide.
 	* Add: The completion criteria to the delete releases GUI.
