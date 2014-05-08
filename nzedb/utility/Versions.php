@@ -80,7 +80,7 @@ class Versions
 
 		if ($this->_xml === false) {
 			if (PHP_SAPI == 'cli') {
-				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
+				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
 			}
 			throw new \Exception("Failed to open versions XML file '$filepath'");
 		}
@@ -89,14 +89,14 @@ class Versions
 			$vers = $this->_xml->xpath('/nzedb/versions');
 
 			if ($vers[0]->count() == 0) {
-				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) does not contain versioning info, try updating from git.");
+				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) does not contain version info, try updating from git.");
 				throw new \Exception("Failed to find versions node in XML file '$filepath'");
 			} else {
-				$this->out->primary("Your versioning XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
+				$this->out->primary("Your versions XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
 				$this->_vers = &$this->_xml->versions;
 			}
 		} else {
-			exit("No elements in file!\n");
+			throw new \RuntimeException("No elements in file!\n");
 		}
 	}
 
@@ -127,7 +127,7 @@ class Versions
 	{
 		$site = new \Sites();
 		$setting = $site->getSetting('sqlpatch');
-
+exit("Setting = {print_r($setting)}" );
 		if ($this->_vers->db < $setting) {
 			if ($update) {
 				echo $this->out->primary("Updating Db revision to " . $setting);
