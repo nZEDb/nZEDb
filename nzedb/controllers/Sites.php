@@ -95,7 +95,7 @@ class Sites
 			$sqlKeys[] = $db->escapeString($settingK);
 		}
 
-		$table = $db->table;
+		$table = $db->table();
 		$db->queryExec(
 		   sprintf("UPDATE $table SET value = CASE setting %s END WHERE setting IN (%s)",
 								implode(' ', $sql),
@@ -109,7 +109,7 @@ class Sites
 	public function get()
 	{
 		$db = $this->_db;
-		$table = $db->table;
+		$table = $db->table();
 		$rows = $db->query("SELECT setting, value FROM $table WHERE setting != ''");
 
 		if ($rows === false) {
@@ -129,7 +129,7 @@ class Sites
 	function getSetting($setting = null)
 	{
 		$results = array();
-		$table = $this->db->table;
+		$table = $this->_db->table();
 		$sql = "SELECT setting, value FROM $table ";
 		if ($setting !== null) {
 			$sql .= "WHERE setting = '$setting' ";

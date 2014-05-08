@@ -40,6 +40,11 @@ class Settings extends DB
 		return self::$pdo;
 	}
 
+	public function table ()
+	{
+		return $this->table;
+	}
+
 	/**
 	 * Retrieve one or all settings from the Db as a string or an array;
 	 *
