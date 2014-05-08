@@ -30,7 +30,7 @@ class Sites
 		$this->_db = new DB();
 		$result = $this->_db->queryExec("describe {$this->table}");
 		if ($result === false || empty($result)) {
-			$table = 'site';
+			$this->table = 'site';
 		}
 
 		if (defined('nZEDb_VERSIONS')) {
