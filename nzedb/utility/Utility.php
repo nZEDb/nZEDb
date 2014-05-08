@@ -66,6 +66,16 @@ class Utility
 		return !$error;
 	}
 
+	/**
+	 * Check if user is running from CLI.
+	 *
+	 * @return bool
+	 */
+	static public function isCLI ()
+	{
+		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
+	}
+
 	static public function isWin()
 	{
 		return (strtolower(substr(PHP_OS, 0, 3)) === 'win');
@@ -92,16 +102,6 @@ class Utility
 			$path .= '/';
 		}
 		return $path;
-	}
-
-	/**
-	 * Check if user is running from CLI.
-	 *
-	 * @return bool
-	 */
-	static public function isCLI()
-	{
-		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
 	}
 }
 
