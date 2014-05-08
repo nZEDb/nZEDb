@@ -27,7 +27,7 @@ use nzedb\utility\Utility;
 
 class Settings extends DB
 {
-	private $table = 'settings';
+	private $table = 'site';
 
 	public function __construct (array $options = array())
 	{
@@ -35,7 +35,7 @@ class Settings extends DB
 		$table  = $this->table;
 		$result = self::queryExec("describe $table");
 		if ($result === false || empty($result)) {
-			$this->table = 'site';
+			$this->table = 'settings';
 		}
 		return self::$pdo;
 	}
