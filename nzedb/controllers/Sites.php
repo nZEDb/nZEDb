@@ -23,15 +23,9 @@ class Sites
 	protected $_db;
 	protected $_versions = false;
 
-	private $table = 'site';
-
 	public function __construct()
 	{
-		$this->_db = new DB();
-		$result = $this->_db->queryExec("describe {$this->table}");
-		if ($result === false || empty($result)) {
-			$this->table = 'settings';
-		}
+		$this->_db = new \nzedb\db\Settings();
 
 		if (defined('nZEDb_VERSIONS')) {
 			try {
@@ -40,7 +34,6 @@ class Sites
 				$this->_versions = false;
 			}
 		}
-		$this->setCovers();
 	}
 
 	public function version()
@@ -194,13 +187,6 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 " . $n;
-	}
-
-	public function setCovers()
-	{
-		$table = $this->table;
-		$row = $this->_db->query("SELECT value FROM $table WHERE setting = 'coverspath'");
-		\nzedb\utility\Utility::setCoversConstant($row[0]['value']);
 	}
 }
 
