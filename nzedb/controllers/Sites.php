@@ -23,14 +23,14 @@ class Sites
 	protected $_db;
 	protected $_versions = false;
 
-	private $table = 'site';
+	private $table = 'settings';
 
 	public function __construct()
 	{
 		$this->_db = new DB();
 		$result = $this->_db->queryExec("describe {$this->table}");
 		if ($result === false || empty($result)) {
-			$this->table = 'settings';
+			$this->table = 'site';
 		}
 
 		if (defined('nZEDb_VERSIONS')) {
