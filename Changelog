@@ -10,6 +10,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Definition of Covers constant now Settings is main class instead of Sites.
 	* Fix: Table default for site/settings.
 	* Fix: Typo for Sites class in PostProcess.php
+	* Add: Enabling patch checking for pre-commit hook.
 2014-05-08 bart39
 	* Fix: Incorrect parameter validation in decrypt_hashes
 	* Chg: Use releasesfiles ishashed for parsing titles.
