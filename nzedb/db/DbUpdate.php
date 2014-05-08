@@ -159,7 +159,7 @@ class DbUpdate
 			'data' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'	=> 'sql',
 			'path' => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex'	=> '#^' . utility\Utility::PATH_REGEX . '+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
+			'regex'	=> '#^' . utility\Utility::PATH_REGEX . '\+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
 			'safe' => true,
 		);
 		$options += $defaults;
@@ -190,8 +190,6 @@ class DbUpdate
 					rename($matches[0], $newName);
 				}
 			}
-		} else {
-			echo $this->log->header('Moving on.');
 		}
 	}
 
