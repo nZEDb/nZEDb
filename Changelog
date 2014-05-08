@@ -6,6 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-08 bart39
+	* Fix: Incorrect parameter validation in decrypt_hashes
+	* Chg: Use releasesfiles ishashed for parsing titles.
 2014-05-07 bubblun
 	* Chg: Changed 1MB crap size delete limit to 2MB to catch more spams #1310
 2014-05-07 kevin
