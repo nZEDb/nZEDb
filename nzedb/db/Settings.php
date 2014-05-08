@@ -40,11 +40,6 @@ class Settings extends DB
 		return self::$pdo;
 	}
 
-	public function setCovers ()
-	{
-		Utility::setCoversConstant($this->getSetting('coverspath'));
-	}
-
 	/**
 	 * Retrieve one or all settings from the Db as a string or an array;
 	 *
@@ -71,6 +66,11 @@ class Settings extends DB
 			$results = $this->_getFromSites($options);
 		}
 		return (count($results) === 1 ? $results[0]['value'] : $results);
+	}
+
+	public function setCovers ()
+	{
+		Utility::setCoversConstant($this->getSetting('coverspath'));
 	}
 
 	/**
