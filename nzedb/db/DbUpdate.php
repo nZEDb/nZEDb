@@ -166,12 +166,16 @@ class DbUpdate
 
 		$this->processPatches();	// Make sure we are completely up to date!
 
-		echo $this->log->primary('Looking for new patches...');
+		echo $this->log->primaryOver('Looking for new patches...');
 		$files = utility\Utility::getDirFiles($options);
 
-		if (count($files)) {
+		$count = count($files);
+		echo $this->log->header(" $count found");
+		if ($count > 0) {
+			echo $this->log->header('Processing...');
 			natsort($files);
 			$local = $this->db->isLocalDb() ? '' : 'LOCAL ';
+
 			foreach($files as $file) {
 				if (!preg_match($options['regex'], $file, $matches)) {
 					$this->log->error("$file does not match the pattern {$options['regex']}\nPlease fix this before continuing");
@@ -186,6 +190,8 @@ class DbUpdate
 					rename($matches[0], $newName);
 				}
 			}
+		} else {
+			echo $this->log->header('Moving on.');
 		}
 	}
 
