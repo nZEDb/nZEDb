@@ -47,7 +47,6 @@ $tmux = $t->get();
 $tmux_session = (isset($tmux->tmux_session)) ? $tmux->tmux_session : 0;
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
-$colors = (isset($tmux->colors)) ? $tmux->colors : 0;
 $import = (isset($tmux->import)) ? $tmux->import : 0;
 $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 
@@ -298,16 +297,7 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	if ($colors == 1 && $nntpproxy == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 5);
-		window_sharing($tmux_session);
-	} else if ($colors == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	} else if ($nntpproxy == 1) {
+	if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 4);
 		window_sharing($tmux_session);
@@ -327,16 +317,7 @@ if ($seq == 1) {
 	}
 
 	window_stripped_utilities($tmux_session);
-	if ($colors == 1 && $nntpproxy == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 4);
-		window_sharing($tmux_session);
-	} else if ($colors == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	} else if ($nntpproxy == 1) {
+	if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 3);
 		window_sharing($tmux_session);
@@ -360,16 +341,7 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	if ($colors == 1 && $nntpproxy == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 5);
-		window_sharing($tmux_session);
-	} else if ($colors == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	} else if ($nntpproxy == 1) {
+	if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 4);
 		window_sharing($tmux_session);
