@@ -375,6 +375,43 @@ class NameFixer
 	}
 
 	// Match a MD5 from the predb to a release.
+	public function matchPredbFiles($release, $echo, $namestatus, $echooutput, $show)
+	{
+		$db = $this->db;
+		$matching = 0;
+		$this->category = new Category();
+		$this->matched = false;
+
+		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE filename = %s ORDER BY predate DESC LIMIT 1", $db->escapeString($release['filename'])));
+		$total = $res->rowCount();
+		if ($total > 0) {
+			foreach ($res as $pre) {
+				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
+				if ($pre['title'] !== $release['searchname']) {
+					$determinedcat = $this->category->determineCategory($pre['title'], $release['groupid']);
+
+					if ($echo == 1) {
+						$this->matched = true;
+						if ($namestatus == 1) {
+							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']));
+						} else {
+							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+									. "searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']));
+						}
+					}
+
+					if ($echooutput && $show === 1) {
+						$this->updateRelease($release, $pre['title'], $method = "filename match source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show);
+					}
+					$matching++;
+				}
+			}
+		}
+		return $matching;
+	}
+
+	// Match a MD5 from the predb to a release.
 	public function matchPredbHash($hash, $release, $echo, $namestatus, $echooutput, $show)
 	{
 		$db = $this->db;
@@ -392,10 +429,11 @@ class NameFixer
 			$hashcheck = "md5";
 		}
 
-		$res = $db->queryDirect(sprintf("SELECT title, source FROM predb WHERE %s = %s", $hashcheck, $db->escapeString(strtolower($hash))));
+		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE %s = %s", $hashcheck, $db->escapeString(strtolower($hash))));
 		$total = $res->rowCount();
 		if ($total > 0) {
 			foreach ($res as $row) {
+				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $row['preid'], $release['releaseid']));
 				if ($row["title"] !== $release["searchname"]) {
 					$determinedcat = $this->category->determineCategory($row["title"], $release["groupid"]);
 

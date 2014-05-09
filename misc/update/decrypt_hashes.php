@@ -36,7 +36,7 @@ function preName($argv)
 
 	$total = $res->rowCount();
 	$counter = $counted = 0;
-	$show = (!isset($argv[2]) || $argv[2] !== 'show') ? 1 : 0;
+	$show = (!isset($argv[2]) || $argv[2] !== 'show') ? 0 : 1;
 	if ($total > 0) {
 		echo $c->header("\n" . number_format($total) . ' releases to process.');
 		sleep(2);
@@ -55,7 +55,7 @@ function preName($argv)
 			} else {
 				$counted++;
 			}
-			if ($show === 1) {
+			if ($show === 0) {
 				$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString(++$counter, $total));
 			}
 		}
