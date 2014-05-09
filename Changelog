@@ -6,6 +6,7 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+
 2014-05-08 niel
 	* Fix: Definition of Covers constant now Settings is main class instead of Sites.
 	* Fix: Table default for site/settings.
