@@ -41,8 +41,8 @@ if ($error === false) {
 	if (in_array(substr($output[0], 2), ['dev', 'next-master', 'master'])) { // Only update versions on specific branches to lessen conflicts
 		try {
 			// Run DbUpdates to make sure we're up to date.
-//			$DbUpdater = new \nzedb\db\DbUpdate();
-//			$DbUpdater->
+			$DbUpdater = new \nzedb\db\DbUpdate();
+			$DbUpdater->newPatches();
 
 			$vers = new \nzedb\utility\Versions();
 			$vers->checkAll();
