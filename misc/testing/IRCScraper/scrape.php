@@ -1,9 +1,6 @@
 <?php
-require_once(dirname(__FILE__) . "/../../bin/config.php");
-require_once(dirname(__FILE__) . '/../Net_SmartIRC/Net/SmartIRC.php');
-require_once(dirname(__FILE__) . "/../IRCScraper.php");
-require_once 'settings.php';
-if (!is_file('/var/www/newznab/misc/update_scripts/nix_scripts/tmux/lib/IRCScraper/settings.php')) {
+require_once dirname(__FILE__) . '/../../../www/config.php';
+if (!is_file(nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php')) {
 	exit('Copy settings_example.php to settings.php and change the settings.' . PHP_EOL);
 }
 
@@ -20,7 +17,7 @@ if (!isset($argv[1]) || $argv[1] !== 'true') {
 	);
 }
 
-require_once '/var/www/newznab/misc/update_scripts/nix_scripts/tmux/lib/IRCScraper/settings.php';
+require_once nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php';
 
 if (!defined('SCRAPE_IRC_NICKNAME')) {
 	exit('ERROR! You must update settings.php using settings_example.php.');

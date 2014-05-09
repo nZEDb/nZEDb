@@ -235,7 +235,7 @@ function window_stripped_utilities($tmux_session)
 
 function window_ircscraper($tmux_session)
 {
-	exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
+	exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;ScrapeIRC\033\"'");
 }
 
 function window_post($tmux_session)
