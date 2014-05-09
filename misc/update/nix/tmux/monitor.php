@@ -21,7 +21,6 @@ $t = new Tmux();
 $tmux = $t->get();
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
-$colors = (isset($tmux->colors)) ? $tmux->colors : 0;
 $run_ircscraper = $tmux->run_ircscraper;
 
 $s = new Sites();
@@ -215,7 +214,8 @@ $proc_tmux = "SELECT "
 function microtime_float()
 {
 	list($usec, $sec) = explode(" ", microtime());
-	return ((float) $usec + (float) $sec);
+
+	return ((float)$usec + (float)$sec);
 }
 
 function decodeSize($bytes)
@@ -223,7 +223,8 @@ function decodeSize($bytes)
 	$types = array('B', 'KB', 'MB', 'GB', 'TB');
 	for ($i = 0; $bytes >= 1024 && $i < (count($types) - 1); $bytes /= 1024, $i++)
 		;
-	return(round($bytes, 2) . " " . $types[$i]);
+
+	return (round($bytes, 2) . " " . $types[$i]);
 }
 
 function writelog($pane)
@@ -253,6 +254,7 @@ function get_color($colors_start, $colors_end, $colors_exc)
 			break;
 		}
 	}
+
 	return $number;
 }
 
@@ -276,9 +278,10 @@ function relativeTime($_time)
 		$secondsLeft -= ($w[$i] * $d[$i][0]);
 		if ($w[$i] != 0) {
 			//$return.= abs($w[$i]). " " . $d[$i][1] . (($w[$i]>1)?'s':'') ." ";
-			$return.= $w[$i] . " " . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . " ";
+			$return .= $w[$i] . " " . $d[$i][1] . (($w[$i] > 1) ? 's' : '') . " ";
 		}
 	}
+
 	//$return .= ($diff>0)?"ago":"left";
 	return $return;
 }
@@ -286,6 +289,7 @@ function relativeTime($_time)
 function command_exist($cmd)
 {
 	$returnVal = shell_exec("which $cmd 2>/dev/null");
+
 	return (empty($returnVal) ? false : true);
 }
 
@@ -760,7 +764,7 @@ while ($i > 0) {
 		$show_query = $proc_tmux_result[0]['show_query'];
 	}
 	if ($proc_tmux_result[0]['is_running'] != NULL) {
-		$running = (int) $proc_tmux_result[0]['is_running'];
+		$running = (int)$proc_tmux_result[0]['is_running'];
 	}
 	if ($proc_tmux_result[0]['sharing_timer'] != NULL) {
 		$sharing_timer = $proc_tmux_result[0]['sharing_timer'];
@@ -1147,11 +1151,6 @@ while ($i > 0) {
 	if ($running == 1) {
 		//run these if complete sequential not set
 		if ($seq != 2) {
-			// Show all available colors
-			if ($colors == 1) {
-				shell_exec("tmux respawnp -t${tmux_session}:3.0 '$_php ${DIR}testing/Dev/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
-			}
-
 			//fix names
 			if ($fix_names == 1) {
 				$log = writelog($panes1[0]);
@@ -1160,7 +1159,8 @@ while ($i > 0) {
 						$_python ${DIR}update/python/fixreleasenames_threaded.py filename preid $log; \
 						$_python ${DIR}update/python/fixreleasenames_threaded.py nfo preid $log; \
 						$_python ${DIR}update/python/fixreleasenames_threaded.py par2 preid $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py miscsorter $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/fixreleasenames_threaded.py miscsorter $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null"
+				);
 			} else {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Fix Release Names\"'");
@@ -1170,16 +1170,19 @@ while ($i > 0) {
 			if ($dehash == 1) {
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
-						$_php ${DIR}update/decrypt_hashes.php 1000 $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}update/decrypt_hashes.php 1000 $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null"
+				);
 			} else if ($dehash == 2) {
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
-						$_php ${DIR}update/nix/tmux/bin/postprocess_pre.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}update/nix/tmux/bin/postprocess_pre.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null"
+				);
 			} else if ($dehash == 3) {
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
 						$_php ${DIR}update/nix/tmux/bin/postprocess_pre.php $log; \
-						$_php ${DIR}update/decrypt_hashes.php 1000 $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null");
+						$_php ${DIR}update/decrypt_hashes.php 1000 $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null"
+				);
 			} else {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.3 'echo \"\033[38;5;${color}m\n${panes1[3]} has been disabled/terminated by Decrypt Hashes\"'");
@@ -1191,7 +1194,8 @@ while ($i > 0) {
 				case 'All':
 					$log = writelog($panes1[1]);
 					shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-							$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+							$_php ${DIR}testing/Release/removeCrapReleases.php true 2 $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null"
+					);
 					break;
 				// The user has specified custom types.
 				case 'Custom':
@@ -1215,7 +1219,8 @@ while ($i > 0) {
 							// Run remove crap releases.
 							shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
 								echo \"Running removeCrapReleases for $fix_crap[$fcnum]\"; \
-								php ${DIR}testing/Release/removeCrapReleases.php true $fctime $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null");
+								php ${DIR}testing/Release/removeCrapReleases.php true $fctime $fix_crap[$fcnum] $log; date +\"%D %T\"; $_sleep $crap_timer' 2>&1 1> /dev/null"
+							);
 
 							// Increment so we know which type to run next.
 							$fcnum++;
@@ -1258,12 +1263,14 @@ while ($i > 0) {
 				$log = writelog($panes2[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
 						rm -rf $tmpunrar/*; \
-						$_python ${DIR}update/python/postprocess_threaded.py additional $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/postprocess_threaded.py additional $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null"
+				);
 			} else if ($post == 2 && $nfo_remaining_now > 0) {
 				$log = writelog($panes2[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 ' \
 						rm -rf $tmpunrar/*; \
-						$_python ${DIR}update/python/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null"
+				);
 			} else if (($post == 3) && (($nfo_remaining_now > 0) || ($work_remaining_now + $pc_releases_proc + $pron_remaining_now > 0))) {
 				//run postprocess_releases additional
 				$history = str_replace(" ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'`);
@@ -1286,7 +1293,8 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 ' \
 						rm -rf $tmpunrar/*; \
 						$_python ${DIR}update/python/postprocess_threaded.py additional $log; \
-						$_python ${DIR}update/python/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null"
+				);
 			} else if (($post != 0) && ($nfo_remaining_now == 0) && ($work_remaining_now + $pc_releases_proc + $pron_remaining_now == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by No Misc/Nfo to process\"'");
@@ -1300,7 +1308,8 @@ while ($i > 0) {
 				$log = writelog($panes2[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.1 ' \
 						$_python ${DIR}update/python/postprocess_threaded.py tv $clean $log; \
-						$_python ${DIR}update/python/postprocess_threaded.py movie $clean $log; date +\"%D %T\"; $_sleep $post_timer_non' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/postprocess_threaded.py movie $clean $log; date +\"%D %T\"; $_sleep $post_timer_non' 2>&1 1> /dev/null"
+				);
 			} else if (($post_non != 0) && ($movie_releases_proc == 0) && ($tvrage_releases_proc == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by No Movies/TV to process\"'");
@@ -1313,7 +1322,8 @@ while ($i > 0) {
 				//run postprocess_releases amazon
 				$log = writelog($panes2[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.2 ' \
-						$_python ${DIR}update/python/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
+				);
 			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
@@ -1330,7 +1340,8 @@ while ($i > 0) {
 				$log = writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.2 ' \
 						$_phpn ${DIR}update/update_theaters.php $log; $_phpn ${DIR}testing/PostProc/populate_tvrage.php true $log; \
-						$_phpn ${DIR}update/update_tvschedule.php $log; $_phpn ${DIR}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
+						$_phpn ${DIR}update/update_tvschedule.php $log; $_phpn ${DIR}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null"
+				);
 				$time3 = TIME();
 			} else if ($update_tv == 1) {
 				$run_time = relativeTime($tv_timer + $time3);
@@ -1347,7 +1358,8 @@ while ($i > 0) {
 			if (($import != 0) && ($kill_pp == false)) {
 				$log = writelog($panes0[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.1 ' \
-						$_python ${DIR}update/python/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null"
+				);
 			} else {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\n${panes0[1]} has been disabled/terminated by Import\"'");
@@ -1363,87 +1375,90 @@ while ($i > 0) {
 							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update/python/backfill_safe_threaded.py $log; \
 							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
-							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs all less than 4800
+							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
+				} //runs all less than 4800
 				else if (($binaries != 0) && ($backfill != 0) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
 							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update/python/backfill_threaded.py $log; \
 							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
-							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs bin/back/safe less than 4800
+							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
+				} //runs bin/back/safe less than 4800
 				else if (($binaries != 0) && ($backfill == 4) && ($releases_run == 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
 							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update/python/backfill_safe_threaded.py $log; \
 							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; \
-							echo \"\nreleases has been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs bin/back less than 4800
+							echo \"\nreleases has been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
+				} //runs bin/back less than 4800
 				else if (($binaries != 0) && ($backfill != 0) && ($releases_run == 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
 							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update/python/backfill_threaded.py $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nreleases have been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs back/safe/rel less than 4800
+							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nreleases have been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
+				} //runs back/safe/rel less than 4800
 				else if (($binaries == 0) && ($backfill == 4) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update/python/backfill_safe_threaded.py $log; \
 							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
-							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs back/rel less than 4800
+							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
+				} //runs back/rel less than 4800
 				else if (($binaries == 0) && ($backfill != 0) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update/python/backfill_threaded.py $log; \
 							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
-							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs bin/rel less than 4800
+							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
+				} //runs bin/rel less than 4800
 				else if (($binaries != 0) && ($backfill == 0) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
 							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
-							$run_releases $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs bin less than 4800
+							$run_releases $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
+				} //runs bin less than 4800
 				else if (($binaries != 0) && ($backfill == 0) && ($releases_run == 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs back/safe less than 4800
+							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
+				} //runs back/safe less than 4800
 				else if (($binaries == 0) && ($backfill == 4) && ($releases_run == 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update/python/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs back less than 4800
+							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
+				} //runs back less than 4800
 				else if (($binaries == 0) && ($backfill == 4) && ($releases_run == 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update/python/backfill_threaded.py $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
-				}
-				//runs rel less than 4800
+							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
+				} //runs rel less than 4800
 				else if (($binaries == 0) && ($backfill == 0) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Binaries and Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
+							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Binaries and Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
 				} else if (($binaries == 0) && ($backfill == 0) && ($releases_run == 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							echo \"\nbinaries, backfill and releases have been disabled/terminated by Binaries, Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
+							echo \"\nbinaries, backfill and releases have been disabled/terminated by Binaries, Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
 				}
 			} else if (($kill_coll == false) && ($kill_pp == false) && (TIME() - $time6 >= 4800)) {
 				//run backfill all once and resets the timer
 				if ($backfill != 0) {
 					shell_exec("tmux respawnp -k -t${tmux_session}:0.2 ' \
 						$_python ${DIR}update/python/backfill_threaded.py all $log; \
-						$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+					);
 					$time6 = TIME();
 				}
 				$time6 = TIME();
@@ -1451,7 +1466,8 @@ while ($i > 0) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\"; \
 					echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; \
-					$run_releases $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; $_sleep $seq_timer' 2>&1 1> /dev/null");
+					$run_releases $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+				);
 			} else if (($kill_coll == true) || ($kill_pp == true)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\n${panes0[2]} has been disabled/terminated by Exceeding Limits\"'");
@@ -1461,12 +1477,6 @@ while ($i > 0) {
 			$ipane = 3;
 			$spane = 4;
 			switch (true) {
-				case ($colors == 1 && $nntpproxy == 1):
-					$ipane = 4;
-					$spane = 6;
-					break;
-				case ($colors == 1):
-					$ipane = 4;
 				case ($nntpproxy == 1):
 					$spane = 5;
 					break;
@@ -1478,16 +1488,12 @@ while ($i > 0) {
 			//run Sharing
 			run_sharing($tmux_session, $_php, $spane, $_sleep, $sharing_timer);
 		} else if ($seq == 2) {
-			// Show all available colors
-			if ($colors == 1) {
-				shell_exec("tmux respawnp -t${tmux_session}:2.0 '$_php ${DIR}testing/Dev/tmux_colors.php; sleep 30' 2>&1 1> /dev/null");
-			}
-
 			//run nzb-import
 			if (($import != 0) && ($kill_pp == false)) {
 				$log = writelog($panes0[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.1 ' \
-						$_python ${DIR}update/python/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null"
+				);
 			} else {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\n${panes0[1]} has been disabled/terminated by Import\"'");
@@ -1498,7 +1504,8 @@ while ($i > 0) {
 				$log = writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
 						$_phpn ${DIR}update/update_theaters.php $log; $_phpn ${DIR}testing/PostProc/populate_tvrage.php true $log; \
-                                                $_phpn ${DIR}update/update_tvschedule.php $log; $_phpn ${DIR}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null");
+                                                $_phpn ${DIR}update/update_tvschedule.php $log; $_phpn ${DIR}testing/PostProc/updateTvRage.php $log; date +\"%D %T\"' 2>&1 1> /dev/null"
+				);
 				$time3 = TIME();
 			} else if ($update_tv == 1) {
 				$run_time = relativeTime($tv_timer + $time3);
@@ -1513,7 +1520,8 @@ while ($i > 0) {
 				//run postprocess_releases amazon
 				$log = writelog($panes1[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_python ${DIR}update/python/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
+				);
 			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
@@ -1528,18 +1536,13 @@ while ($i > 0) {
 			//run user_threaded.sh
 			$log = writelog($panes0[2]);
 			shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-					${DIR}update/nix/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null");
+					${DIR}update/nix/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null"
+			);
 
 			//pane setup for IrcScraper / Sharing
 			$ipane = 2;
 			$spane = 3;
 			switch (true) {
-				case ($colors == 1 && $nntpproxy == 1):
-					$ipane = 3;
-					$spane = 5;
-					break;
-				case ($colors == 1):
-					$ipane = 3;
 				case ($nntpproxy == 1):
 					$spane = 4;
 					break;
@@ -1557,7 +1560,8 @@ while ($i > 0) {
 				$log = writelog($panes0[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 						$which_bins $log; \
-						$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $bins_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $bins_timer' 2>&1 1> /dev/null"
+				);
 			} else if (($kill_coll == true) || ($kill_pp == true)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.2 'echo \"\033[38;5;${color}m\n${panes0[2]} has been disabled/terminated by Exceeding Limits\"'");
@@ -1576,15 +1580,18 @@ while ($i > 0) {
 			if (($backfill == 4) && ($kill_coll == false) && ($kill_pp == false) && (TIME() - $time6 <= 4800)) {
 				$log = writelog($panes0[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.3 ' \
-						$_python ${DIR}update/python/backfill_safe_threaded.py $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/backfill_safe_threaded.py $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null"
+				);
 			} else if (($backfill != 0) && ($kill_coll == false) && ($kill_pp == false) && (TIME() - $time6 <= 4800)) {
 				$log = writelog($panes0[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.3 ' \
-						$_python ${DIR}update/python/backfill_threaded.py group $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/backfill_threaded.py group $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null"
+				);
 			} else if (($backfill != 0) && ($kill_coll == false) && ($kill_pp == false) && (TIME() - $time6 >= 4800)) {
 				$log = writelog($panes0[3]);
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.3 ' \
-						$_python ${DIR}update/python/backfill_threaded.py all $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/backfill_threaded.py all $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null"
+				);
 				$time6 = TIME();
 			} else if (($kill_coll == false) || ($kill_pp == false)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
@@ -1598,7 +1605,8 @@ while ($i > 0) {
 			if (($import != 0) && ($kill_pp == false)) {
 				$log = writelog($panes0[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.1 ' \
-						$_python ${DIR}update/python/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null");
+						$_python ${DIR}update/python/import_threaded.py $log; date +\"%D %T\"; $_sleep $import_timer' 2>&1 1> /dev/null"
+				);
 			} else if ($kill_pp == true) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.1 'echo \"\033[38;5;${color}m\n${panes0[1]} has been disabled/terminated by Exceeding Limits\"'");
@@ -1611,7 +1619,8 @@ while ($i > 0) {
 			if ($releases_run != 0) {
 				$log = writelog($panes0[4]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.4 ' \
-						$run_releases $log; date +\"%D %T\"; $_sleep $rel_timer' 2>&1 1> /dev/null");
+						$run_releases $log; date +\"%D %T\"; $_sleep $rel_timer' 2>&1 1> /dev/null"
+				);
 			} else {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.4 'echo \"\033[38;5;${color}m\n${panes0[4]} has been disabled/terminated by Releases\"'");
@@ -1621,12 +1630,6 @@ while ($i > 0) {
 			$ipane = 3;
 			$spane = 4;
 			switch (true) {
-				case ($colors == 1 && $nntpproxy == 1):
-					$ipane = 4;
-					$spane = 6;
-					break;
-				case ($colors == 1):
-					$ipane = 4;
 				case ($nntpproxy == 1):
 					$spane = 5;
 					break;
@@ -1704,14 +1707,14 @@ function run_sharing($tmux_session, $_php, $pane, $_sleep, $sharing_timer)
 	$tmux = $t->get();
 	$tmux_share = (isset($tmux->run_sharing)) ? $tmux->run_sharing : 0;
 
-	if($tmux_share && $sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
+	if ($tmux_share && $sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
 		if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
 			$DIR = nZEDb_MISC;
 			$sharing2 = $DIR . "/update/postprocess.php sharing true";
 			shell_exec(
 				"tmux respawnp -t${tmux_session}:${pane}.0 ' \
 					$_php $sharing2; $_sleep $sharing_timer' 2>&1 1> /dev/null"
-				);
+			);
 		}
 	}
 }
