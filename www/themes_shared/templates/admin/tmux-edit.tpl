@@ -757,11 +757,8 @@
 	<legend>Tmux Colors</legend>
 	<table class="input">
 		<tr>
-			<td style="width:180px;"><label for="colors">256 Colors:</label></td>
+			<td style="width:180px;"><label for="colors">Colors:</label></td>
 			<td>
-				{html_radios id="colors" name='colors' values=$yesno_ids output=$yesno_names selected=$ftmux->colors separator='<br />'}
-				<div class="hint">Show a color display of all available colors based on the settings below. true/fasle
-				</div>
 				<input id="colors_start" name="colors_start" class="short" type="text" value="{$ftmux->colors_start}"/>
 				<input id="colors_end" name="colors_end" class="short" type="text" value="{$ftmux->colors_end}"/><br/>
 				<input id="colors_exc" name="colors_exc" class="longer" type="text" value="{$ftmux->colors_exc}"/>

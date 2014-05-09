@@ -1,6 +1,9 @@
 <?php
-require_once dirname(__FILE__) . '/../../../www/config.php';
-if (!is_file(nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php')) {
+require_once(dirname(__FILE__) . "/../../bin/config.php");
+require_once(dirname(__FILE__) . '/../Net_SmartIRC/Net/SmartIRC.php');
+require_once(dirname(__FILE__) . "/../IRCScraper.php");
+require_once 'settings.php';
+if (!is_file('/var/www/newznab/misc/update_scripts/nix_scripts/tmux/lib/IRCScraper/settings.php')) {
 	exit('Copy settings_example.php to settings.php and change the settings.' . PHP_EOL);
 }
 
@@ -17,7 +20,7 @@ if (!isset($argv[1]) || $argv[1] !== 'true') {
 	);
 }
 
-require_once nZEDb_ROOT . 'misc/testing/IRCScraper/settings.php';
+require_once '/var/www/newznab/misc/update_scripts/nix_scripts/tmux/lib/IRCScraper/settings.php';
 
 if (!defined('SCRAPE_IRC_NICKNAME')) {
 	exit('ERROR! You must update settings.php using settings_example.php.');
@@ -27,8 +30,8 @@ if (SCRAPE_IRC_NICKNAME == '') {
 	exit("ERROR! You must put a username in settings.php" . PHP_EOL);
 }
 
-$silent = ((isset($argv[2]) && $argv[2] === 'true')  ? true : false);
-$debug  = ((isset($argv[3]) && $argv[3] === 'true')  ? true : false);
+$silent = ((isset($argv[2]) && $argv[2] === 'true') ? true : false);
+$debug = ((isset($argv[3]) && $argv[3] === 'true') ? true : false);
 
 // Start scraping.
 new IRCScraper($silent, $debug);

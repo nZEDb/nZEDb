@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../../../../www/config.php';
 
 use nzedb\db\DB;
 
-$db  = new nzedb\db\DB();
+$db = new nzedb\db\DB();
 $DIR = nZEDb_MISC;
 $c = new ColorCLI();
 
@@ -82,6 +82,7 @@ if ((count(glob("$tmpunrar/*", GLOB_ONLYDIR))) > 0) {
 function command_exist($cmd)
 {
 	$returnVal = exec("which $cmd 2>/dev/null");
+
 	return (empty($returnVal) ? false : true);
 }
 
@@ -97,6 +98,7 @@ function python_module_exist($module)
 {
 	$output = $returnCode = '';
 	exec("python -c \"import $module\"", $output, $returnCode);
+
 	return ($returnCode == 0 ? true : false);
 }
 
@@ -223,11 +225,6 @@ function window_utilities($tmux_session)
 	exec("tmux splitw -t $tmux_session:1 -v -p 50 'printf \"\033]2;updateTVandTheaters\033\"'");
 	exec("tmux selectp -t 0; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;removeCrapReleases\033\"'");
 	exec("tmux selectp -t 2; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;decryptHashes\033\"'");
-}
-
-function window_colors($tmux_session)
-{
-	exec("tmux new-window -t $tmux_session -n colors 'printf \"\033]2;tmux_colors\033\"'");
 }
 
 function window_stripped_utilities($tmux_session)
