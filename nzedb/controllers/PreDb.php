@@ -398,7 +398,7 @@ Class PreDb
 	{
 		$buffer = $this->getUrl('http://pre.zenet.org/live.php');
 		if ($buffer !== false) {
-			if (preg_match_all('/<div class="mini-layout fluid">((\s+\S+)?\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?<\/div>\s+<\/div>)/s', $buffer, $matches)) {
+			if (preg_match_all('/<div class="mini-layout fluid">.+?<\/div>\s*<\/div>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
 						if (preg_match('/<span class="bold">(?P<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/span>.+<a href="\?post=\d+"><b><font color="#\d+">(?P<title>.+)<\/font><\/b><\/a>.+<p><a href="\?cats=.+"><font color="#FF9900">(?P<category>.+)<\/font><\/a> \| (?P<size1>[\d\.,]+)?(?P<size2>[MGK]B)? \/\s+(?P<files>\d+).+<\/div>/s', $m, $matches2)) {

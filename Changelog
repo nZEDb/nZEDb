@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-05-10 kevin/niel
 	* Fix: Fix for UC changing predb output on html.
+	* Chg: Change a regex in predb.
 2014-05-09 ruhllatio
 	* Add: PreDB filename matching function and test script (use at own risk for now)
 	* Fix: decrypt_hashes show logic was backwards (showing the results of rename when show wasn't specified) Ahem - Bart39
