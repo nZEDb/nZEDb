@@ -32,7 +32,7 @@ class Settings extends DB
 	public function __construct (array $options = array())
 	{
 		parent::__construct($options);
-		$result = parent::queryExec("describe site}");
+		$result = parent::exec("describe site", true);
 		$this->table = ($result === false || empty($result)) ? 'settings' : 'site';
 
 		$this->setCovers();
