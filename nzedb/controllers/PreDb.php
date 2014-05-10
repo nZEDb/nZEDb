@@ -763,7 +763,10 @@ Class PreDb
 						$matches2['source'] = 'usenet-crawler';
 						$matches2['size'] = ((isset($matches2['size']) && !empty($matches2['size'])) ? $matches2['size'] : '');
 						$matches2['files'] = ((isset($matches2['files']) && !empty($matches2['files'])) ? $matches2['files'] : '');
-						$matches2['title'] .= isset($matches2['nuke']) ? $matches2['nuke'] : '';
+						if (isset($matches2['nuke']) && preg_match('/(\S+)\)/', $matches2['nuke'], $nuked)) {
+							$matches2['nuked'] = PreDb::PRE_NUKED;
+							$matches2['nukereason'] = $nuked[1];
+						}
 						$this->verifyPreData($matches2);
 					}
 				}
