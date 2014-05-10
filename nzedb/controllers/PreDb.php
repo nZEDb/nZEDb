@@ -758,11 +758,12 @@ Class PreDb
 		if (preg_match_all('/<tr class="(alt)?">\s*<td class="left">.*?<\/td>\s*<\/tr>/s', $data, $matches)) {
 			foreach ($matches as $m) {
 				foreach ($m as $match) {
-					if (preg_match('/left">\s*(?P<date>.+?)\s*<\/td.+?left">\s*(.*?<u>)?(?P<title>.+?)(<\/u><\/a>.+?)?\s*<\/td.+?href.+?">\s*(?P<category>.+?)\s*<\/a.+?mid">\s*((?P<size>\d+(\.\d+)?[KMGT]?B)(\/(?P<files>\d+F))?|--)\s*<\/td/s', $match, $matches2)) {
+					if (preg_match('/left">\s*(?P<date>.+?)\s*<\/td.+?left">\s*(.*?<u>)?(?P<title>.+?)(<\/.+>?<.+?>(?P<nuke>.+)?<\/.+>)?(<\/u><\/a>.+?)?\s*<\/td.+?href.+?">\s*(?P<category>.+?)\s*<\/a.+?mid">\s*((?P<size>\d+(\.\d+)?[KMGT]?B)(\/(?P<files>\d+F))?|--)\s*<\/td/s', $match, $matches2)) {
 						$matches2['date'] = strtotime($matches2['date']);
 						$matches2['source'] = 'usenet-crawler';
 						$matches2['size'] = ((isset($matches2['size']) && !empty($matches2['size'])) ? $matches2['size'] : '');
 						$matches2['files'] = ((isset($matches2['files']) && !empty($matches2['files'])) ? $matches2['files'] : '');
+						$matches2['title'] .= isset($matches2['nuke']) ? $matches2['nuke'] : '';
 						$this->verifyPreData($matches2);
 					}
 				}
