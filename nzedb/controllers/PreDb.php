@@ -398,7 +398,7 @@ Class PreDb
 	{
 		$buffer = $this->getUrl('http://pre.zenet.org/live.php');
 		if ($buffer !== false) {
-			if (preg_match_all('/<div class="mini-layout fluid">((\s+\S+)?\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?<\/div>\s+<\/div>)/s', $buffer, $matches)) {
+			if (preg_match_all('/<div class="mini-layout fluid">.+?<\/div>\s*<\/div>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
 						if (preg_match('/<span class="bold">(?P<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/span>.+<a href="\?post=\d+"><b><font color="#\d+">(?P<title>.+)<\/font><\/b><\/a>.+<p><a href="\?cats=.+"><font color="#FF9900">(?P<category>.+)<\/font><\/a> \| (?P<size1>[\d\.,]+)?(?P<size2>[MGK]B)? \/\s+(?P<files>\d+).+<\/div>/s', $m, $matches2)) {
@@ -758,11 +758,15 @@ Class PreDb
 		if (preg_match_all('/<tr class="(alt)?">\s*<td class="left">.*?<\/td>\s*<\/tr>/s', $data, $matches)) {
 			foreach ($matches as $m) {
 				foreach ($m as $match) {
-					if (preg_match('/left">\s*(?P<date>.+?)\s*<\/td.+?left">\s*(.*?<u>)?(?P<title>.+?)(<\/u><\/a>.+?)?\s*<\/td.+?href.+?">\s*(?P<category>.+?)\s*<\/a.+?mid">\s*((?P<size>\d+(\.\d+)?[KMGT]?B)(\/(?P<files>\d+F))?|--)\s*<\/td/s', $match, $matches2)) {
+					if (preg_match('/left">\s*(?P<date>.+?)\s*<\/td.+?left">\s*(.*?<u>)?(?P<title>.+?)(<\/.+>?<.+?>(?P<nuke>.+)?<\/.+>)?(<\/u><\/a>.+?)?\s*<\/td.+?href.+?">\s*(?P<category>.+?)\s*<\/a.+?mid">\s*((?P<size>\d+(\.\d+)?[KMGT]?B)(\/(?P<files>\d+F))?|--)\s*<\/td/s', $match, $matches2)) {
 						$matches2['date'] = strtotime($matches2['date']);
 						$matches2['source'] = 'usenet-crawler';
 						$matches2['size'] = ((isset($matches2['size']) && !empty($matches2['size'])) ? $matches2['size'] : '');
 						$matches2['files'] = ((isset($matches2['files']) && !empty($matches2['files'])) ? $matches2['files'] : '');
+						if (isset($matches2['nuke']) && preg_match('/(\S+)\)/', $matches2['nuke'], $nuked)) {
+							$matches2['nuked'] = PreDb::PRE_NUKED;
+							$matches2['nukereason'] = $nuked[1];
+						}
 						$this->verifyPreData($matches2);
 					}
 				}
