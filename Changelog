@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-05-11 kevin
 	* Add: Add change by predator314 to allow sickbeard/nzbdrone to pick up releases from Web-DL category on API.
+	* Add: Strip new lines / carriage returns from web predb titles before inserting.
 2014-05-11 bubblun
 	* Add: New setting to delete releases with a size of over 200MB and just a single file/part. Those are very likely spam releases.
 2014-05-11 ruhllatio
