@@ -154,6 +154,18 @@
 		</table>
 	</fieldset>
 	<fieldset style="width:630px;">
+		<legend>Completion</legend>
+		<table class="input">
+			<tr>
+				<td style="width:180px;">Completion %:</td>
+				<td>
+					<input id="completion" class="long" name="completion" type="text" value="{$release.completion}" />
+					<div class="hint">Releases smaller than this completion % will be deleted. Can be a number between 1 and 99, everything else is ignored.</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+	<fieldset style="width:630px;">
 		<legend>Guid</legend>
 		<table class="input">
 			<tr>

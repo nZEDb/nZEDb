@@ -246,18 +246,20 @@ class DB extends \PDO
 	/**
 	 * Echo error, optionally exit.
 	 *
-	 * @param string $error    The error message.
-	 * @param string $method   The method where the error occured.
-	 * @param int    $severity The severity of the error.
-	 * @param bool   $exit     Exit or not?
+	 * @param string	$error		The error message.
+	 * @param string	$method		The method where the error occured.
+	 * @param int		$severity	The severity of the error.
+	 * @param bool		$exit		Exit or not?
+	 * @param exception	$e			Previous exception object.
 	 */
 	protected function echoError ($error, $method, $severity, $exit = false, $e = null)
 	{
 		if ($this->_debug) {
 			$this->debugging->start($method, $error, $severity);
-		}
 
-		echo (($this->_cli ? $this->log->error($error) . PHP_EOL : '<div class="error">' . $error . '</div>'));
+			echo(($this->_cli ? $this->log->error($error) . PHP_EOL :
+				'<div class="error">' . $error . '</div>'));
+		}
 
 		if ($exit) {
 			exit();
@@ -446,10 +448,11 @@ class DB extends \PDO
 	 * Direct query. Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
 	 *
 	 * @param string $query
+	 * @param	bool $silent	Whether to skip echoing errors to the console.
 	 *
 	 * @return bool|int
 	 */
-	public function Exec($query)
+	public function exec($query, $silent = false)
 	{
 		if (empty($query)) {
 			return false;
@@ -459,11 +462,14 @@ class DB extends \PDO
 			return self::$pdo->exec($query);
 
 		} catch (\PDOException $e) {
-			$this->echoError($e->getMessage(), 'Exec', 4, false, $e);
+			if (! $silent) {
+				$this->echoError($e->getMessage(), 'Exec', 4, false, $e);
 
-			if ($this->_debug) {
-				$this->debugging->start("Exec", $query, 6);
+				if ($this->_debug) {
+					$this->debugging->start("Exec", $query, 6);
+				}
 			}
+
 			return false;
 		}
 	}

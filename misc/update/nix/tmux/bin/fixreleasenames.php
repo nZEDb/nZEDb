@@ -41,11 +41,12 @@ if (!isset($argv[1])) {
 	} else if (isset($pieces[1]) && $pieces[0] == 'md5') {
 		$release = $pieces[1];
 		if ($res = $db->queryOneRow(sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, dehashstatus, rf.name AS filename FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.id = %d', $release))) {
-			if (preg_match('/[a-f0-9]{32,40}/i', $res['name'], $matches)) {
+			if (preg_match('/[a-fA-F0-9]{32,40}/i', $res['name'], $matches)) {
 				$namefixer->matchPredbHash($matches[0], $res, 1, 1, true, 1);
-			} else if (preg_match('/[a-f0-9]{32,40}/i', $res['filename'], $matches)) {
+			} else if (preg_match('/[a-fA-F0-9]{32,40}/i', $res['filename'], $matches)) {
 				$namefixer->matchPredbHash($matches[0], $res, 1, 1, true, 1);
 			} else {
+				$db->queryExec(sprintf("UPDATE releases SET dehashstatus = %d - 1 WHERE id = %d", $res['dehashstatus'], $res['releaseid']));
 				echo '.';
 			}
 		}

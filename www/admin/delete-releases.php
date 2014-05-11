@@ -42,6 +42,7 @@ switch($action) {
 			'adddate'      => '',
 			'postdate'     => '',
 			'relguid'      => '',
+			'completion'   => '',
 			'nametypesel'  => '1',
 			'snametypesel' => '1',
 			'fnametypesel' => '1',
@@ -167,6 +168,13 @@ function parseResponse($response) {
 					case '1':
 						$options['postdate']['type'] = 'smaller';
 						break;
+				}
+				break;
+			case 'completion':
+				$options['completion']['value'] = '';
+				if (is_numeric($value) && $value > 0 && $value < 100) {
+					$options['completion']['type'] = 'smaller';
+					$options['completion']['value'] = $value;
 				}
 				break;
 		}

@@ -25,7 +25,7 @@ if ($page->isPostBack()) {
 	$cfg->COVERS_PATH = trim($_POST['coverspath']);
 	$cfg->UNRAR_PATH = trim($_POST['tmpunrarpath']);
 
-	if (strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
+	if (extension_loaded('posix') && strtolower(substr(PHP_OS, 0, 3)) !== 'win') {
 		$group = posix_getgrgid(posix_getgid());
 		$fixString = '<br /><br />Another solution is to run:<br />chown -R YourUnixUserName:' . $group['name']  . ' ' . nZEDb_ROOT .
 		'<br />Then give your user access to the group:<br />usermod -a -G ' . $group['name'] . ' YourUnixUserName' .

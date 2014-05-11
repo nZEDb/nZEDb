@@ -1,4 +1,4 @@
-See docs folder for O/S specific guides.
+See docs folder or the git wiki for O/S specific guides.
 
 REQUIREMENTS
 	PHP
@@ -41,13 +41,12 @@ REQUIREMENTS
 
 	Database:
 		MySQL 5.5+
-			max_allowed_packet=12582912
-			group_concat_max_len=8192
-			default_time_zone=Africa/Abidjan (TZ list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+			max_allowed_packet = 16M
+			group_concat_max_len = 8192
 			file permissions if not using root user (GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';)
 
 		Note for some linux O/S's:
-			Apparmor must be disabled.
+			Apparmor must be disabled or configured to ignore MySQL.
 
 
 	Apache
@@ -68,7 +67,7 @@ REQUIREMENTS
 		7zip
 
 	Thumbnailing and media info (if feep rar inspection is enabled)
-		ffmpeg
+		ffmpeg or avconv
 		mediainfo
 
 	# For the threaded scripts you will require the Python cymysql module for mysql:
