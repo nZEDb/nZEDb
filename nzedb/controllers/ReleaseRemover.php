@@ -532,7 +532,7 @@ class ReleaseRemover
 	}
 
 	/**
-	 * Remove releases smaller than 1MB with 1 part not in MP3/books/misc section.
+	 * Remove releases smaller than 2MB with 1 part not in MP3/books/misc section.
 	 *
 	 * @return bool
 	 */
