@@ -374,6 +374,55 @@ class NameFixer
 		$this->done = true;
 	}
 
+	// Match a PreDB title to a release name or searchname using an exact full-text match
+	public function matchPredbFT($pre, $echo, $namestatus, $echooutput, $show)
+	{
+		$db = $this->db;
+		$matching = 0;
+		$this->category = new Category();
+		$this->matched = false;
+
+		$res = $db->queryDirect(sprintf("SELECT r.id AS releaseid, r.searchname, r.groupid, r.categoryid
+						     FROM releasesearch rs INNER JOIN releases r ON r.id = rs.releaseid
+						     WHERE nzbstatus = 1 AND r.preid = 0 AND ishashed = 0
+						     AND categoryid NOT BETWEEN 4000 AND 4999
+						     AND MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"' IN BOOLEAN MODE)",
+						     $pre['title']));
+
+		if ($res !== false) {
+			$total = $res->rowCount();
+		} else {
+			return $matching;
+		}
+
+		if ($total > 0) {
+			foreach ($res as $row) {
+				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $row['releaseid']));
+				if ($pre['title'] !== $row['searchname']) {
+					$determinedcat = $this->category->determineCategory($pre['title'], $row['groupid']);
+
+					if ($echo == 1) {
+						$this->matched = true;
+						if ($namestatus == 1) {
+							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
+						} else {
+							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+									. "searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
+						}
+					}
+
+					if ($echooutput && $show === 1) {
+						$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show);
+					}
+					$matching++;
+				}
+			}
+		}
+		return $matching;
+	}
+
+
 	// Match a MD5 from the predb to a release.
 	public function matchPredbFiles($release, $echo, $namestatus, $echooutput, $show)
 	{
