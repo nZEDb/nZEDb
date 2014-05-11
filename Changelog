@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-11 bubblun
+	* Add: New setting to delete releases with a size of over 200MB and just a single file/part. Those are very likely spam releases.
 2014-05-11 ruhllatio
 	* Add: PreDB FT Match Function to NameFixer
 2014-05-10 kevin/niel
