@@ -288,9 +288,9 @@ class ReleaseRemover
 			case 'size':
 				$this->removeSize();
 				break;
-                        case 'huge':
-                               $this->removeHuge();
-                               break;
+			case 'huge':
+				$this->removeHuge();
+				break;
 			case 'codec':
 				$this->removeCodecPoster();
 				break;
@@ -306,7 +306,7 @@ class ReleaseRemover
 				$this->removeSCR();
 				$this->removeShort();
 				$this->removeSize();
-                                $this->removeHuge();
+				$this->removeHuge();
 				$this->removeCodecPoster();
 				break;
 			default:
@@ -572,27 +572,27 @@ class ReleaseRemover
 		return $this->deleteReleases();
 	}
 
-        /**
-         * Remove releases bigger than 200MB with just a single file.
-         *
-         * @return bool
-         */
-        protected function removeHuge()
-        {
-                $this->method = 'Huge';
-                $this->query = sprintf(
-                        "SELECT r.id, r.guid, r.searchname
-                        FROM releases r
-                        WHERE r.totalpart = 1
-                        AND r.size > 209715200",
-                        $this->crapTime
-                );
+	/**
+	 * Remove releases bigger than 200MB with just a single file.
+	 *
+	 * @return bool
+	 */
+	protected function removeHuge()
+	{
+		$this->method = 'Huge';
+		$this->query = sprintf(
+			"SELECT r.id, r.guid, r.searchname
+			FROM releases r
+			WHERE r.totalpart = 1
+			AND r.size > 209715200",
+			$this->crapTime
+		);
 
-                if ($this->checkSelectQuery() === false) {
-                        return $this->returnError();
-                }
-                return $this->deleteReleases();
-        }
+		if ($this->checkSelectQuery() === false) {
+			return $this->returnError();
+		}
+		return $this->deleteReleases();
+	}
 
 	/**
 	 * Remove releases with more than 1 part, less than 40MB, sample in name. TV/Movie sections.
