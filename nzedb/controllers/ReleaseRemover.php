@@ -584,7 +584,7 @@ class ReleaseRemover
 			"SELECT r.id, r.guid, r.searchname
 			FROM releases r
 			WHERE r.totalpart = 1
-			AND r.size > 209715200",
+			AND r.size > 209715200 %s",
 			$this->crapTime
 		);
 
