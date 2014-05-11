@@ -280,6 +280,7 @@ Class PreDb
 			return;
 		}
 
+		$matches['title'] = str_replace(array("\r", "\n"), '', $matches['title']);
 		$md5 = $this->db->escapeString(md5($matches['title']));
 
 		$duplicateCheck = $this->db->queryOneRow(sprintf('SELECT id, nfo, size, category FROM predb WHERE md5 = %s', $md5));
