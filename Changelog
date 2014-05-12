@@ -6,6 +6,19 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-11 kevin
+	* Add: Add change by predator314 to allow sickbeard/nzbdrone to pick up releases from Web-DL category on API.
+	* Add: Strip new lines / carriage returns from web predb titles before inserting.
+2014-05-11 bubblun
+	* Add: New setting to delete releases with a size of over 200MB and just a single file/part. Those are very likely spam releases.
+2014-05-11 ruhllatio
+	* Add: PreDB FT Match Function to NameFixer
+2014-05-10 kevin/niel
+	* Fix: Fix for UC changing predb output on html.
+	* Chg: Change a regex in predb.
+2014-05-09 ruhllatio
+	* Add: PreDB filename matching function and test script (use at own risk for now)
+	* Fix: decrypt_hashes show logic was backwards (showing the results of rename when show wasn't specified) Ahem - Bart39
 2014-05-08 niel
 	* Fix: Definition of Covers constant now Settings is main class instead of Sites.
 	* Fix: Table default for site/settings.
