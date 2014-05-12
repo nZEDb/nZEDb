@@ -95,7 +95,7 @@ class NameFixer
 			echo $this->c->primary(number_format($total) . " releases to process.");
 			sleep(2);
 			foreach ($relres as $rel) {
-				$relrow = $db->queryOneRow("SELECT nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.searchname, {$uc} AS textstring, "
+				$relrow = $db->queryOneRow("SELECT nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.name, rel.searchname, {$uc} AS textstring, "
 					. "rel.id AS releaseid FROM releases rel "
 					. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
 					. "WHERE rel.id = " . $rel['releaseid']);
@@ -148,14 +148,14 @@ class NameFixer
 		$type = "Filenames, ";
 		$preid = false;
 		if ($cats === 3) {
-			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
+			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
 				. "WHERE nzbstatus = 1 AND preid = 0";
 			$cats = 2;
 			$preid = true;
 		} else {
-			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
+			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
 				. "WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_files = 0";

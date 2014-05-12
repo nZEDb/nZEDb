@@ -280,7 +280,8 @@ Class PreDb
 			return;
 		}
 
-		$matches['title'] = str_replace(array("\r", "\n"), '', $matches['title']);
+		$matches['title'] = utf8_encode(str_replace(array("\r", "\n"), '', $matches['title']));
+		//$matches['title'] = str_replace(array("\r", "\n"), '', $matches['title']);
 		$md5 = $this->db->escapeString(md5($matches['title']));
 
 		$duplicateCheck = $this->db->queryOneRow(sprintf('SELECT id, nfo, size, category FROM predb WHERE md5 = %s', $md5));
@@ -314,15 +315,16 @@ Class PreDb
 
 			$query = 'UPDATE predb SET ';
 
-			$query .= (!empty($matches['size'])     ? 'size = '       . $this->db->escapeString($matches['size'])     . ', ' : '');
-			$query .= (!empty($matches['source'])   ? 'source = '     . $this->db->escapeString($matches['source'])   . ', ' : '');
-			$query .= (!empty($matches['files'])    ? 'files = '      . $this->db->escapeString($matches['files'])    . ', ' : '');
-			$query .= (!empty($matches['reason'])   ? 'nukereason = ' . $this->db->escapeString($matches['reason'])   . ', ' : '');
-			$query .= (!empty($matches['reqid'])    ? 'requestid = '  . $matches['reqid']                             . ', ' : '');
-			$query .= (!empty($matches['groupid'])  ? 'groupid = '    . $matches['groupid']                           . ', ' : '');
-			$query .= (!empty($matches['predate'])  ? 'predate = '    . $matches['predate']                           . ', ' : '');
-			$query .= (!empty($matches['nuked'])    ? 'nuked = '      . $matches['nuked']                             . ', ' : '');
-			$query .= (!empty($matches['filename']) ? 'filename = '   . $this->db->escapeString($matches['filename']) . ', ' : '');
+			$query .= (!empty($matches['nfo'])       ? 'nfo = '        . $this->db->escapeString($matches['nfo'])      . ', ' : '');
+			$query .= (!empty($matches['size'])      ? 'size = '       . $this->db->escapeString($matches['size'])     . ', ' : '');
+			$query .= (!empty($matches['source'])    ? 'source = '     . $this->db->escapeString($matches['source'])   . ', ' : '');
+			$query .= (!empty($matches['files'])     ? 'files = '      . $this->db->escapeString($matches['files'])    . ', ' : '');
+			$query .= (!empty($matches['reason'])    ? 'nukereason = ' . $this->db->escapeString($matches['reason'])   . ', ' : '');
+			$query .= (!empty($matches['requestid']) ? 'requestid = '  . $matches['requestid']                         . ', ' : '');
+			$query .= (!empty($matches['groupid'])   ? 'groupid = '    . $matches['groupid']                           . ', ' : '');
+			$query .= (!empty($matches['predate'])   ? 'predate = '    . $matches['predate']                           . ', ' : '');
+			$query .= (!empty($matches['nuked'])     ? 'nuked = '      . $matches['nuked']                             . ', ' : '');
+			$query .= (!empty($matches['filename'])  ? 'filename = '   . $this->db->escapeString($matches['filename']) . ', ' : '');
 			$query .= (
 				(empty($duplicateCheck['category']) && !empty($matches['category']))
 					? 'category = ' . $this->db->escapeString($matches['category']) . ', '
