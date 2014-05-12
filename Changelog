@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-13 kevin
+	*Fix: Fix multiple delete of releases on web browser.
 2014-05-12 DariusIII
 	* Chg: Add huge file removal option to remove crap part of tmux admin page.
 2014-05-11 kevin
