@@ -104,6 +104,7 @@ class PostProcess
 		//\\
 
 		//\\ Class instances.
+		$s = new Sites();
 		$this->c = new ColorCLI();
 		$this->db = new DB();
 		$this->groups = new Groups();
@@ -111,7 +112,6 @@ class PostProcess
 		$this->nameFixer = new NameFixer($this->echooutput);
 		$this->Nfo = new Nfo($this->echooutput);
 		$this->releaseFiles = new ReleaseFiles();
-		$s = new sites();
 		//\\
 
 		//\\ Site object.

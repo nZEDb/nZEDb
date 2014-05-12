@@ -37,7 +37,6 @@ REQUIREMENTS
 			ZLib
 
 		(optional extensions)
-			APC
 			Memcache (caching query results)
 
 	Database:
@@ -91,12 +90,6 @@ REQUIREMENTS
 		# -or-
 			sudo pip-3.3 install cymysql
 			pip-3.3 list
-
-	APC
-		sudo apt-get install php-apc
-		sudo service apache2 restart
-		sudo cp /usr/share/doc/php-apc/apc.php /var/www/nZEDb/www/admin
-		Now you can go to localhost/admin/apc.php in your browser to view apc stats.
 
 	Memcache
 		sudo apt-get install memcached php5-memcache

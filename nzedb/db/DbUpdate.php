@@ -111,7 +111,7 @@ class DbUpdate
 		$options += $defaults;
 
 		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
-		sort($files, SORT_NATURAL);
+		natsort($files, SORT_NATURAL);
 		$sql = 'LOAD DATA INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
 			echo "File: $file\n";
@@ -145,6 +145,50 @@ class DbUpdate
 		}
 	}
 
+	/**
+	 * Takes new files in the correct format from the patches directory and turns them into proper patches.
+	 *
+	 * The files should be name as '+x~<table>.sql' where x is a number starting at 1 for your first
+	 * patch. <table> should be the name of the primary table affected. If you have to modify more
+	 * than one table, consider splitting into multiple patches using different patch modifier
+	 * numbers to order them. i.e. +1~settings.sql, +2~predb.sql, etc.
+	 */
+	public function newPatches (array $options = array())
+	{
+		$defaults = array(
+			'data' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
+			'ext'	=> 'sql',
+			'path' => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
+			'regex'	=> '#^' . utility\Utility::PATH_REGEX . '+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
+			'safe' => true,
+		);
+		$options += $defaults;
+
+		$this->processPatches();	// Make sure we are completely up to date!
+
+		echo $this->log->primary('Looking for new patches...');
+		$files = utility\Utility::getDirFiles($options);
+
+		if (count($files)) {
+			natsort($files);
+			$local = $this->db->isLocalDb() ? '' : 'LOCAL ';
+			foreach($files as $file) {
+				if (!preg_match($options['regex'], $file, $matches)) {
+					$this->log->error("$file does not match the pattern {$options['regex']}\nPlease fix this before continuing");
+				} else {
+					echo $this->log->header('Processing patch file: ' . $file);
+					$this->splitSQL($file, ['local' => $local, 'data' => $options['data']]);
+					$current = (integer)$this->settings->getSetting('sqlpatch');
+					$current++;
+					$this->db->queryExec("UPDATE settings SET value = '$current' WHERE setting = 'sqlpatch';");
+					$newName = $matches['drive'] . $matches['path'] .
+							   str_pad($current, 4, '0', STR_PAD_LEFT) . '~' . $matches['table'] . '.sql';
+					rename($matches[0], $newName);
+				}
+			}
+		}
+	}
+
 	public function processPatches(array $options = [])
 	{
 		$patched = 0;
@@ -152,25 +196,21 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex' => '#^' . utility\Utility::PATH_REGEX . "(?P<date>\d{4}-\d{2}-\d{2})_(?P<patch>\d+)_(?P<table>\w+)\.sql$#",
+			'regex' => '#^' . utility\Utility::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
 			'safe'	=> true,
 		);
 		$options += $defaults;
 
-		if ($options['safe']) {
-			$this->_backupDb();
-		}
-
 		$this->_useSettings();
 		$currentVersion = $this->settings->getSetting('sqlpatch');
 		if (!is_numeric($currentVersion)) {
-			exit();
+			exit("Bad sqlpatch value!!\n");
 		}
 
 		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
 
 		if (count($files)) {
-			sort($files);
+			natsort($files);
 			$local = $this->db->isLocalDb() ? '' : 'LOCAL ';
 			$data = $options['data'];
 			echo $this->log->primary('Looking for unprocessed patches...');
@@ -180,11 +220,11 @@ class DbUpdate
 				$fp = fopen($file, 'r');
 				$patch = fread($fp, filesize($file));
 
-				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches) && $matches['patch'] > 9) {
-						$patch = $matches['patch'];
+				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
+						$patch = (integer)$matches['patch'];
 						$setPatch = true;
 				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?P<patch>\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
-					$patch = $matches['patch'];
+					$patch = (integer)$matches['patch'];
 				} else {
 					throw new \RuntimeException("No patch information available, stopping!!");
 				}

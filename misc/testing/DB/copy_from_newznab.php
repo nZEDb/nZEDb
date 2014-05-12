@@ -21,7 +21,7 @@ if (!isset($argv[1])) {
 	echo "Copying nzbs from " . $argv[1] . "\n";
 	$files->copy('*');
 
-	$source = realpath($argv[1] . DS . 'www' . DS . 'covers');
+	$source = realpath($argv[1] . DS . 'www' . DS . 'covers'); // NN+ path, do not change.
 	$files = new \nzedb\utility\CopyFileTree($source, nZEDb_COVERS);
 	echo "Copying covers from $source\n";
 	$files->copy('*');

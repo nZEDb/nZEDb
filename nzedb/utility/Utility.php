@@ -10,7 +10,7 @@ class Utility
 	/**
 	 *  Regex for detecting multi-platform path. Use it where needed so it can be updated in one location as required characters get added.
 	 */
-	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?<path>[/\w.-]+|)';
+	const PATH_REGEX = '(?P<drive>[A-Za-z]:|)(?P<path>[/\w.-]+|)';
 
 	static public function getDirFiles (array $options = null)
 	{
@@ -74,7 +74,7 @@ class Utility
 	static public function setCoversConstant($path)
 	{
 		if (!defined('nZEDb_COVERS')) {
-			define('nZEDb_COVERS', $path == '' ? nZEDb_WWW . 'covers' . DS : $path);
+			define('nZEDb_COVERS', $path == '' ? nZEDb_WWW . 'covers' . DS : self::trailingSlash($path));
 		}
 	}
 
