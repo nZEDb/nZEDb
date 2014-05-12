@@ -6,11 +6,74 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-05 niel
+	* Chg: Defaulting covers path to .../resources/covers on new installs. Instructions for setting up your www conf are on the wiki.
+2014-05-05 bart39
+	* Chg: update requestid.php for new requestid regex.
+	* Fix: Fix regex for isrequestid triggers and add to schema.
+	NB: run 'php /misc/update/requestid.php full' to find potential matches.
+2014-05-04 bart39
+	* Fix: compilation failed missing ) in ReleaseCleaning
+	* Chg: dump_predb.php - don't override existing groupid if groupname is null in the import
+	* Chg: fixed regex for requestid matching in ReleaseCleaning
+	* Chg: Improved regex for isrequestid triggers
+	* Chg: check for predb title matches against other groups where it matches fromname for known cross-posts.
+	* Chg: Regex additions / fixes for release / collection cleaning.
+	* Chg: Add count of releases recategorized in recategorize.php
+	* Add: Display predb nuked / reason in nzb details
+2014-05-04 ruhllatio
+	* Chg:  dump_predb now only removes titles that have <= 8 chars as opposed to 15 (older valid pres were being deleted).
+2014-05-04 kevin
+	* Add: Ability to ignore corrupt-net and categories to IRCScraper. Update your settings.php    #1300
+	* Upd: Update a predb source.
+2014-05-04 niel
+	* Chg: Redid patch filename format to be <patch number>~<table>.sql That's a tilde separating them.
+	* Chg: Renamed first 99 patches so they list better in GitHub (Grumble: why doesn't Github use a natrual sort).
+	* Fix: Filename matching after changing filename format.
+	* Chg: Renamed remaining patch files to new format.
+	* Upd: Alter regexes to use the full format now.
+	* Add: Basic method for processing new patches into Db and correct filename format. Needs more work to be useful.
+2014-05-03 ruhllatio
+	* Chg: Modify query for decrypt hashes to check MD5 or SHA depending upon hashlength
+2014-05-02 bart39
+	* Fix: insert error on patch 209
+2014-05-02 kevin
+	* Chg: Change request ID URL, new site has ~600k reqid's and counting.
+	* Add: Ignoring of efnet channels to IRCScraper. #1300
+	* Chg: Use TLS on step3 of install, better showing of NNTP errors.
+	* Add: Append the socket error / number to the PEAR error message when creating a NNTP stream resource fails.
+	* Upd: Update docs for ZEND Opcache.
+	* Add: Opcache stats page to admin (near the middle of the page).
 2014-05-01 niel
 	* Upd: Changed the forum address in the READDME for the new location.
 	* Upd: Merged traid's updated convert_from_newznab script. Many thanks.
+2014-05-01 ruhllatio
+	* Chg: Force decrypt_hashes to do lower case letters only in the DB call to match hashes
+	* Add: decrypt_hashes when run in show mode will now specify the hash match type: MD5 or SHA1 instead of just MD5
+2014-05-01 bart39
+	* Fix: fix importing nuked and nukereason from predb dump
+	* Fix: typo in predb dump file name
+	* Fix: add missing fields to tmux schema for new install #1299
+	* Fix: typo in dump_predb.php
+2014-04-30 bart39
+	* Fix: fix issue with miscsorter not updating releases it didnt rename.
 2014-04-29 bart39
+	* Fix: bad query in last sql patch - make sure you re-enable IRCScraper in tmux settings if you use it.
+	* Chg: Update tmux settings for IRCScraper changes
+	* Fix: undefined index in IRCScraper
+2014-04-29 kevin
+	* Chg: Major changes to IRCScraper, now using our own PRE channel. Please redo settings.php. Might be issues.
+2014-04-29 bart39
+	* Chg: ignore releases that already have a preid for decrypt_hashes
+	* Fix: improve browsing performance by only checking 2 words on searching similar releases
+	* Chg: Category changes: check if tv for a.b.warez, disabled unknown check in isTV that ignored vaild tv releases
+	* Fix: values from settings table
+	* Chg: refactor queries in update binaries
 	* Fix: truncate console reviews to 3000 chars
+2014-04-28 niel
+	* Fix: Changed patch 208 to be simpler.
+	* Chg: Adding regex for DbUpdate's path matching, as Utility::PATH_REGEX.
+	* Fix: Added full stop ('.') character to path regex constant.
 2014-04-28 ruhllatio
 	* Fix: sprintf error Line 625 predb, too many arguments and not enough inputs
 2014-04-28 kevin

@@ -47,7 +47,7 @@ if ($total > 0) {
 	sleep(2);
 
 	foreach ($qry as $row) {
-		if (!preg_match('/^\[\d+\]/', $row['name']) && !preg_match('/^\[ \d+ \]/', $row['name'])) {
+		if (!preg_match('/^\[ ?(\d{4,6}) ?\]/', $row['name']) && !preg_match('/^REQ\s*(\d{4,6})/i', $row['name']) && !preg_match('/^(\d{4,6})-\d{1}\[/', $row['name'])) {
 			$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $row['id']);
 			$counter++;
 			continue;

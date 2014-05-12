@@ -1158,7 +1158,7 @@ BEGIN
         ELSE SET NEW.ishashed = 0;
 	END IF;
 
-        IF NEW.searchname ~'^\\[[[:digit:]]+\\]' OR NEW.name ~'^\\[[[:digit:]]+\\]'
+        IF NEW.searchname ~'^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\[' OR NEW.name ~'^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
         THEN SET NEW.isrequestid = 1;
         ELSE SET NEW.isrequestid = 0;
         END IF;

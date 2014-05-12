@@ -924,7 +924,8 @@ class Binaries
 				$maxnum = $first;
 				$pBinaryID = $pNumber = $pMessageID = $pPartNumber = $pSize = 1;
 				// Insert collections, binaries and parts into database. When collection exists, only insert new binaries, when binary already exists, only insert new parts.
-				$insPartsStmt = $this->db->Prepare("INSERT INTO ${group['pname']} (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)");
+				$insPartsStmt = $this->db->Prepare(sprintf("INSERT INTO %s (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)",
+						$group['pname']));
 				$insPartsStmt->bindParam(1, $pBinaryID, PDO::PARAM_INT);
 				$insPartsStmt->bindParam(2, $pNumber, PDO::PARAM_INT);
 				$insPartsStmt->bindParam(3, $pMessageID, PDO::PARAM_STR);
@@ -950,18 +951,19 @@ class Binaries
 							$lastCollectionHash = $collectionHash;
 							$lastBinaryHash = '';
 							$lastBinaryID = -1;
-
-							$cres = $this->db->queryOneRow(sprintf("SELECT id, subject FROM ${group['cname']} WHERE collectionhash = %s", $this->db->escapeString($collectionHash)));
+							$cres = $this->db->queryOneRow(sprintf("SELECT id, subject FROM %s WHERE collectionhash = %s", $group['cname'], $this->db->escapeString($collectionHash)));
 							if ($cres && array_key_exists($collectionHash, $collectionHashes)) {
 								$collectionID = $collectionHashes[$collectionHash];
 								if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
-									$this->db->queryExec(sprintf("UPDATE ${group['cname']} SET subject = %s WHERE id = %s", $this->db->escapeString(substr($subject, 0, 255)), $collectionID));
+									$this->db->queryExec(sprintf("UPDATE %s SET subject = %s WHERE id = %s", $group['cname'], $this->db->escapeString(substr($subject, 0, 255)),
+									$collectionID));
 								}
 							} else {
 								if (!$cres) {
 									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
-									$csql = sprintf("INSERT INTO ${group['cname']} (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded)
-									VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())",
+									$csql = sprintf("INSERT INTO %s (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded)
+									VALUES (%s, %s, %s, %s, %d, %d, %s, NOW()) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",
+										$group['cname'],
 										$this->db->escapeString(substr($subject, 0, 255)),
 										$this->db->escapeString(utf8_encode($data['From'])),
 										$this->db->from_unixtime($data['Date']),
@@ -973,9 +975,12 @@ class Binaries
 									$collectionID = $cres['id'];
 									//Update the collection table with the last seen date for the collection. This way we know when the last time a person posted for this hash.
 									if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
-										$this->db->queryExec(sprintf("UPDATE ${group['cname']} SET subject = %s WHERE id = %s", $this->db->escapeString(substr($subject, 0, 255)), $collectionID));
+										$this->db->queryExec(sprintf("UPDATE %s SET subject = %s WHERE id = %s",
+												$group['cname'],
+												$this->db->escapeString(substr($subject, 0, 255)),
+												$collectionID));
 									} else {
-										$this->db->queryExec(sprintf("UPDATE ${group['cname']} SET dateadded = NOW() WHERE id = %s", $collectionID));
+										$this->db->queryExec(sprintf("UPDATE %s SET dateadded = NOW() WHERE id = %s", $group['cname'], $collectionID));
 									}
 								}
 								$collectionHashes[$collectionHash] = $collectionID;
@@ -993,14 +998,16 @@ class Binaries
 								$lastBinaryHash = $binaryHash;
 
 								$bres = $this->db->queryOneRow(
-									sprintf("SELECT id FROM ${group['bname']} WHERE binaryhash = %s",
+									sprintf("SELECT id FROM %s WHERE binaryhash = %s",
+										$group['bname'],
 										$this->db->escapeString($binaryHash)
 									)
 								);
 								if (!$bres) {
 									$bsql = sprintf(
-										"INSERT INTO ${group['bname']} (binaryhash, name, collectionid, totalparts, filenumber)
+										"INSERT INTO %s (binaryhash, name, collectionid, totalparts, filenumber)
 										VALUES (%s, %s, %d, %s, %s)",
+										$group['bname'],
 										$this->db->escapeString($binaryHash),
 										$this->db->escapeString($subject),
 										$collectionID,

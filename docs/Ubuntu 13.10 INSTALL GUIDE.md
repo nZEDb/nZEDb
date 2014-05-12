@@ -221,15 +221,7 @@
               Note: Type which abconv to get the path (should be /usr/bin/avconv)
 
 
-7. Install memcache / apc.
-
-      # APC:
-
-              sudo apt-get install php-apc
-              sudo service apache2 restart
-              sudo cp /usr/share/doc/php5-apcu/apc.php /var/www/nZEDb/www/admin
-
-          Note: In the future you can go to localhost/admin/apc.php in your browser to view apc stats.
+7. Install memcache.
 
      # Memcache:
 
