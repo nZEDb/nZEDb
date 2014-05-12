@@ -2,16 +2,22 @@
 
 1. Misc.
 
-       # For those using an older version of ubuntu, php 5.4 is required. (Ubuntu 12.04 requires backports for php 5.4 a user reported.)
+       # For those using an older version of ubuntu, php 5.4 is the minimum required version.
 
+       # Apparmor interferes with some of our files, THIS IS MANDATORY.
 
-       # Apparmor interferes with some of our files, here is how to disable it:
+                You can disable it and remove it:
 
                 sudo /etc/init.d/apparmor stop
                 sudo /etc/init.d/apparmor teardown
                 sudo update-rc.d -f apparmor remove
 
-                Note: You must reboot after doing this to take effect.
+                Or, you can make it ignore mysql:
+
+                sudo apt-get install apparmor-utils
+                sudo aa-complain /usr/sbin/mysqld
+
+            Note: You must reboot after doing this to take effect.
 
 
        # For the threaded scripts you will require the Python cymysql module for mysql:
@@ -35,17 +41,6 @@
 
                  sudo pip-3.3 install cymysql
                  pip-3.3 list
-
-       # If after using easy_install, it still shows error, this link was current at the time this was posted: http://initd.org/psycopg/install/
-
-                wget http://initd.org/psycopg/tarballs/PSYCOPG-2-5/psycopg2-2.5.1.tar.gz
-                tar xfvz psycopg2-2.5.1.tar.gz
-                cd psycopg2-2.5.1/
-                sudo python setup.py install
-                sudo python3 setup.py install
-                pip-3.2 list
-                -or-
-                pip-3.3 list
 
 
 2. Update and upgrade the operating system.
@@ -78,24 +73,41 @@
 
                 sudo apt-get install php5 php5-dev php5-json php-pear php5-gd php5-mysqlnd php5-curl
 
-4. Install MySQL.
+4. Install a MySQL client/server.
 
-       # MySQL:
+       # You can install MariaDB or MySQL:
 
-           Note: You can also install mariadb instead of mysql : sudo apt-get install mariadb-server mariadb-client libmysqlclient-dev
+           Note: MariaDB is a fork of MySQL. Read more : https://mariadb.com/kb/en/mariadb-versus-mysql-compatibility/
 
+                MariaDB:
+                sudo apt-get install mariadb-server mariadb-client libmysqlclient-dev
+
+                MySQL:
                 sudo apt-get install mysql-server mysql-client libmysqlclient-dev
 
-                If you are running MySQL not as root user, you will need to run this in MySQL shell (with the single quotes):
+       # Change my.cnf using the nano text editor.
+
+           Note: To search in nano, use control+w
+
+                sudo nano /etc/mysql/my.cnf
+
+           Note: Change or add the following values to the [mysqld] section:
+
+                max_allowed_packet = 16M
+                group_concat_max_len = 8192
+
+           Note: To save in nano, press control+x then type y and press enter.
+
+       # File permissions:
+
+           Note: You must log in to MySQL to give your user file permissions (even if it is the root user).
+                 YourMySQLUsername is the MySQL user you will use for nZEDb (you can use root, or if you created a user, use that one).
+                 YourMySQLServerIPAddress is the address to the MySQL server (if you are local, localhost or 127.0.0.1 will work).
+
+                sudo mysql -p
                 GRANT FILE ON *.* TO 'YourMySQLUsername'@'YourMySQLServerIPAddress';
 
-           Note: my.cnf requires these changes:
-
-                max_allowed_packet=12582912
-                group_concat_max_len=8192
-
-                Get your timezone from here : https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-                default_time_zone=Africa/Abidjan
+           Note: Type \q and press enter to exit the MySQL command line.
 
 5. Install and configure Apache.
 
@@ -103,13 +115,11 @@
 
                 sudo apt-get install apache2
 
-       # Configure PHP CLI ini file using the nano text editor:
+       # Configure PHP CLI ini file:
 
                 sudo nano /etc/php5/cli/php.ini
 
        # Change the following settings:
-
-           Note: To search in nano, use control+w
 
                 max_execution_time = 120
 
@@ -123,17 +133,16 @@
 
                 date.timezone = YourLocalTimezone
 
-       # Press control+x when you are done to save and exit.
-
        # Configure the PHP apache2 ini file (use the above settings):
 
                 sudo nano /etc/php5/apache2/php.ini
 
-       # Use the following settings if using Apache 2.2 as your webserver (SEE LOWER FOR APACHE 2.4):
+       # APACHE 2.4:
+       # Note: IF YOU ARE USING APACHE 2.2 SCROLL DOWN.
 
        # Create the site config:
 
-                sudo nano /etc/apache2/sites-available/nZEDb
+                sudo nano /etc/apache2/sites-available/nZEDb.conf
 
        # Paste the following (This is your VirtualHost):
 
@@ -157,31 +166,31 @@
 
        # Save and exit nano.
 
-       # Disable the default site, enable nZEDb, enable rewrite, restart apache:
-
-                 sudo a2dissite default
-                 sudo a2ensite nZEDb
-                 sudo a2enmod rewrite
-                 sudo service apache2 restart
-
-       # Use the following settings if using Apache 2.4 as your webserver:
-
-       # You must do the following change to /etc/apache2/apache2.conf:
+       # Edit the apache2 config file to allow all overrides on the /var/www directory:
 
                  sudo nano /etc/apache2/apache2.conf
 
                  Under <Directory /var/www/>, change AllowOverride None to AllowOverride All
 
-       # Create the site config:
-
-                 sudo nano /etc/apache2/sites-available/nZEDb.conf
-
-       # Paste the same VirtualHost as above.
-
        # Disable the default site, enable nZEDb, enable rewrite, restart apache:
 
                  sudo a2dissite 00-default
                  sudo a2ensite nZEDb.conf
+                 sudo a2enmod rewrite
+                 sudo service apache2 restart
+
+       # APACHE 2.2:
+
+       # Create the site config:
+
+                 sudo nano /etc/apache2/sites-available/nZEDb
+
+       # Paste the VirtualHost from apache 2.4 above.
+
+       # Disable the default site, enable nZEDb, enable rewrite, restart apache:
+
+                 sudo a2dissite default
+                 sudo a2ensite nZEDb
                  sudo a2enmod rewrite
                  sudo service apache2 restart
 
@@ -192,9 +201,9 @@
 
       # Mediainfo
 
-          Note: Ubuntu 14.04 comes with a recent version of mediainfo : sudo apt-get install mediainfo
+          Note: Ubuntu 14.04 comes with a recent version of MediaInfo : sudo apt-get install mediainfo
 
-          Note: On older versions of ubuntu, you can manually install it (look at the URL on your browser for the latest version):
+          Note: On older versions of Ubuntu, you can manually install it (look at the URLs on your browser for the latest versions):
 
                  wget http://mediaarea.net/download/binary/libzen0/0.4.29/libzen0_0.4.29-1_amd64.xUbuntu_13.10.deb
                  wget http://mediaarea.net/download/binary/libmediainfo0/0.7.67/libmediainfo0_0.7.67-1_amd64.xUbuntu_13.10.deb
@@ -218,10 +227,10 @@
 
               sudo apt-get install libav-tools
 
-              Note: Type which abconv to get the path (should be /usr/bin/avconv)
+              Note: Type which avconv to get the path (should be /usr/bin/avconv), you can use this in site edit later on.
 
 
-7. Install memcache.
+7. Install memcache (optional).
 
      # Memcache:
 
@@ -233,19 +242,15 @@
 
 8. Git clone the nZEDb source.
 
-      # If /var/www/ does not exist, create it.
-
-              mkdir -p /var/www/
-              cd /var/www/
-              sudo chmod 777 .
-
       # Install git.
 
               sudo apt-get install git
 
       # Clone the git.
 
-              git clone https://github.com/nZEDb/nZEDb.git
+              mkdir -p /var/www/
+              cd /var/www/
+              sudo git clone https://github.com/nZEDb/nZEDb.git
 
       # Set the permissions.
 

@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../../../../www/config.php';
 
 use nzedb\db\DB;
 
-$db  = new nzedb\db\DB();
+$db = new nzedb\db\DB();
 $DIR = nZEDb_MISC;
 $c = new ColorCLI();
 
@@ -47,7 +47,6 @@ $tmux = $t->get();
 $tmux_session = (isset($tmux->tmux_session)) ? $tmux->tmux_session : 0;
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
-$colors = (isset($tmux->colors)) ? $tmux->colors : 0;
 $import = (isset($tmux->import)) ? $tmux->import : 0;
 $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 
@@ -82,6 +81,7 @@ if ((count(glob("$tmpunrar/*", GLOB_ONLYDIR))) > 0) {
 function command_exist($cmd)
 {
 	$returnVal = exec("which $cmd 2>/dev/null");
+
 	return (empty($returnVal) ? false : true);
 }
 
@@ -97,6 +97,7 @@ function python_module_exist($module)
 {
 	$output = $returnCode = '';
 	exec("python -c \"import $module\"", $output, $returnCode);
+
 	return ($returnCode == 0 ? true : false);
 }
 
@@ -225,11 +226,6 @@ function window_utilities($tmux_session)
 	exec("tmux selectp -t 2; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;decryptHashes\033\"'");
 }
 
-function window_colors($tmux_session)
-{
-	exec("tmux new-window -t $tmux_session -n colors 'printf \"\033]2;tmux_colors\033\"'");
-}
-
 function window_stripped_utilities($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;updateTVandTheaters\033\"'");
@@ -238,7 +234,7 @@ function window_stripped_utilities($tmux_session)
 
 function window_ircscraper($tmux_session)
 {
-	exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
+	exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrapeIRC\033\"'");
 }
 
 function window_post($tmux_session)
@@ -301,16 +297,7 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	if ($colors == 1 && $nntpproxy == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 5);
-		window_sharing($tmux_session);
-	} else if ($colors == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	} else if ($nntpproxy == 1) {
+	if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 4);
 		window_sharing($tmux_session);
@@ -330,16 +317,7 @@ if ($seq == 1) {
 	}
 
 	window_stripped_utilities($tmux_session);
-	if ($colors == 1 && $nntpproxy == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 4);
-		window_sharing($tmux_session);
-	} else if ($colors == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	} else if ($nntpproxy == 1) {
+	if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 3);
 		window_sharing($tmux_session);
@@ -363,16 +341,7 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	if ($colors == 1 && $nntpproxy == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 5);
-		window_sharing($tmux_session);
-	} else if ($colors == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	} else if ($nntpproxy == 1) {
+	if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 4);
 		window_sharing($tmux_session);

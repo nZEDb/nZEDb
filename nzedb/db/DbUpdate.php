@@ -159,19 +159,23 @@ class DbUpdate
 			'data' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'	=> 'sql',
 			'path' => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex'	=> '#^' . utility\Utility::PATH_REGEX . '+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
+			'regex'	=> '#^' . utility\Utility::PATH_REGEX . '\+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
 			'safe' => true,
 		);
 		$options += $defaults;
 
 		$this->processPatches();	// Make sure we are completely up to date!
 
-		echo $this->log->primary('Looking for new patches...');
+		echo $this->log->primaryOver('Looking for new patches...');
 		$files = utility\Utility::getDirFiles($options);
 
-		if (count($files)) {
+		$count = count($files);
+		echo $this->log->header(" $count found");
+		if ($count > 0) {
+			echo $this->log->header('Processing...');
 			natsort($files);
 			$local = $this->db->isLocalDb() ? '' : 'LOCAL ';
+
 			foreach($files as $file) {
 				if (!preg_match($options['regex'], $file, $matches)) {
 					$this->log->error("$file does not match the pattern {$options['regex']}\nPlease fix this before continuing");
@@ -184,6 +188,7 @@ class DbUpdate
 					$newName = $matches['drive'] . $matches['path'] .
 							   str_pad($current, 4, '0', STR_PAD_LEFT) . '~' . $matches['table'] . '.sql';
 					rename($matches[0], $newName);
+					passthru("git add $newName");
 				}
 			}
 		}
@@ -232,7 +237,7 @@ class DbUpdate
 				if ($patch > $currentVersion) {
 					echo $this->log->header('Processing patch file: ' . $file);
 					if ($options['safe'] && !$this->backedUp) {
-						$this->backupDb();
+						$this->_backupDb();
 					}
 					$this->splitSQL($file, ['local' => $local, 'data' => $data]);
 					if ($setPatch) {

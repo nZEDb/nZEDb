@@ -50,7 +50,7 @@
 			<td style="width:180px;"><label for="monitor_delay">Monitor Loop Timer:</label></td>
 			<td>
 				<input id="monitor_delay" name="monitor_delay" class="short" type="text"
-				       value="{$ftmux->monitor_delay}"/>
+					   value="{$ftmux->monitor_delay}"/>
 
 				<div class="hint">The time between query refreshes of monitor information, in seconds. This has no
 					effect on any other pane, except in regards to the kill switches. The other panes are checked every
@@ -78,11 +78,11 @@
 			<td style="width:180px;"><label for="monitor_path">Monitor a Ramdisk:</label></td>
 			<td>
 				<input id="monitor_path" name="monitor_path" class="long" type="text"
-				       value="{$ftmux->monitor_path}"/><br/>
+					   value="{$ftmux->monitor_path}"/><br/>
 				<input id="monitor_path_a" name="monitor_path_a" class="long" type="text"
-				       value="{$ftmux->monitor_path_a}"/><br/>
+					   value="{$ftmux->monitor_path_a}"/><br/>
 				<input id="monitor_path_b" name="monitor_path_b" class="long" type="text"
-				       value="{$ftmux->monitor_path_b}"/>
+					   value="{$ftmux->monitor_path_b}"/>
 
 				<div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid
 					path.<br/>To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br/>tmpfs
@@ -243,7 +243,7 @@
 			<td style="width:180px;"><label for="backfill_groups">Backfill Groups:</label></td>
 			<td>
 				<input id="backfill_groups" name="backfill_groups" class="short" type="text"
-				       value="{$ftmux->backfill_groups}"/>
+					   value="{$ftmux->backfill_groups}"/>
 
 				<div class="hint">When running backfill the groups are sorted by the backfill method chosen above.
 					Select the number of groups to backfill per loop.
@@ -371,7 +371,7 @@
 			<td style="width:180px;"><label for="post_kill_timer">Postprocess Kill Timer:</label></td>
 			<td>
 				<input id="post_kill_timer" name="post_kill_timer" class="short" type="text"
-				       value="{$ftmux->post_kill_timer}"/>
+					   value="{$ftmux->post_kill_timer}"/>
 
 				<div class="hint">The time postprocess is allowed to run with no updates to the screen. Activity is
 					detected when the history for the pane changes. The clock is restarted every time activity is
@@ -392,7 +392,7 @@
 			<td style="width:180px;"><label for="post_timer_amazon">Postprocess Amazon Sleep Timer:</label></td>
 			<td>
 				<input id="post_timer_amazon" name="post_timer_amazon" class="short" type="text"
-				       value="{$ftmux->post_timer_amazon}"/>
+					   value="{$ftmux->post_timer_amazon}"/>
 
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
@@ -410,7 +410,7 @@
 			<td style="width:180px;"><label for="post_timer">Postprocess Non-Amazon Sleep Timer:</label></td>
 			<td>
 				<input id="post_timer_non" name="post_timer_non" class="short" type="text"
-				       value="{$ftmux->post_timer_non}"/>
+					   value="{$ftmux->post_timer_non}"/>
 
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
@@ -427,14 +427,16 @@
 				{html_radios id="run_sharing" name='run_sharing' values=$yesno_ids output=$yesno_names
 				selected=$ftmux->run_sharing separator='<br />'}
 
-				<div class="hint">Run Comment Sharing from within tmux if you have it enabled in Admin->Sharing Settings.</div>
+				<div class="hint">Run Comment Sharing from within tmux if you have it enabled in Admin->Sharing
+					Settings.
+				</div>
 			</td>
 		</tr>
 		<tr>
 			<td style="width:180px;"><label for="sharing_timer">Comments Sharing Timer:</label></td>
 			<td>
 				<input class="short" id="sharing_timer" name="sharing_timer" type="text"
-				       value="{$ftmux->sharing_timer}"/>
+					   value="{$ftmux->sharing_timer}"/>
 
 				<div class="hint">Set the sleep time between updates</div>
 			</td>
@@ -597,7 +599,7 @@
 			<td style="width:180px;"><label for="collections_kill">Maximum Collections:</label></td>
 			<td>
 				<input id="collections_kill" name="collections_kill" class="short" type="text"
-				       value="{$ftmux->collections_kill}"/>
+					   value="{$ftmux->collections_kill}"/>
 
 				<div class="hint">Set this to any number above 0 and when it is exceeded, backfill and update binaries
 					will be terminated. 0 disables.
@@ -609,7 +611,7 @@
 			<td style="width:180px;"><label for="postprocess_kill">Maximum Postprocess:</label></td>
 			<td>
 				<input id="postprocess_kill" name="postprocess_kill" class="short" type="text"
-				       value="{$ftmux->postprocess_kill}"/>
+					   value="{$ftmux->postprocess_kill}"/>
 
 				<div class="hint">Set this to any number above 0 and when it is exceeded, import, backfill and update
 					binaries will be terminated. 0 disables.
@@ -691,7 +693,7 @@
 			<td>
 				{html_radios id="tcptrack" name='tcptrack' values=$yesno_ids output=$yesno_names selected=$ftmux->tcptrack separator='<br />'}
 				<input id="tcptrack_args" name="tcptrack_args" class="text" type="text"
-				       value="{$ftmux->tcptrack_args}"/>
+					   value="{$ftmux->tcptrack_args}"/>
 
 				<div class="hint">tcptrack displays the status of TCP connections that it sees on a given network
 					interface. tcptrack monitors their state and displays information such as state, source/destination
@@ -729,7 +731,7 @@
 			<td>
 				{html_radios id="showprocesslist" name='showprocesslist' values=$yesno_ids output=$yesno_names selected=$ftmux->showprocesslist separator='<br />'}
 				<input id="processupdate" name="processupdate" class="short" type="text"
-				       value="{$ftmux->processupdate}"/>
+					   value="{$ftmux->processupdate}"/>
 
 				<div class="hint">This runs the watch command in its own pane. This could be used for a live 'slow query
 					monitor'. Just set the time above and only the queries that exceed it will be displayed.<br/>mysql
@@ -747,34 +749,6 @@
 			<td>
 				{html_radios id="console" name='console' values=$yesno_ids output=$yesno_names selected=$ftmux->console separator='<br />'}
 				<div class="hint">Open an empty bash shell. The pane for this can not be created after tmux starts.
-				</div>
-			</td>
-		</tr>
-	</table>
-</fieldset>
-
-<fieldset>
-	<legend>Tmux Colors</legend>
-	<table class="input">
-		<tr>
-			<td style="width:180px;"><label for="colors">256 Colors:</label></td>
-			<td>
-				{html_radios id="colors" name='colors' values=$yesno_ids output=$yesno_names selected=$ftmux->colors separator='<br />'}
-				<div class="hint">Show a color display of all available colors based on the settings below. true/fasle
-				</div>
-				<input id="colors_start" name="colors_start" class="short" type="text" value="{$ftmux->colors_start}"/>
-				<input id="colors_end" name="colors_end" class="short" type="text" value="{$ftmux->colors_end}"/><br/>
-				<input id="colors_exc" name="colors_exc" class="longer" type="text" value="{$ftmux->colors_exc}"/>
-
-				<div class="hint">The color displayed is tmux scripts is randomized from this list.<br/>
-					The first box is the start number, the second box is the end number and the last box are the
-					exceptions. An array is created from these numbers.<br \>The exceptions do not need to be in
-					numerical order.<br/>The start number must be smaller than the end number.<br/>
-					If you connect using putty, then under Window/Translation set Remote character set to UTF-8 and
-					check "Copy and paste line drawing characters". To use 256 colors, you must set Connection/Data
-					Terminal-type string to "xterm-256color" and in Window/Colours check the top three boxes, otherwise
-					only 16 colors are displayed. If you are using FreeBSD, you will need to add export
-					TERM=xterm-256color to your .bashrc file to show 256 colors.
 				</div>
 			</td>
 		</tr>

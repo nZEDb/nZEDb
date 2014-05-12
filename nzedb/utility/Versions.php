@@ -1,6 +1,8 @@
 <?php
 namespace nzedb\utility;
 
+use nzedb\db\Settings;
+
 if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
 }
@@ -16,6 +18,8 @@ if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1
 		$vers->save();
 	} else {
 		echo "No changes detected.\n";
+		echo "Commit: " . $vers->getCommit() . "\n";
+		echo " Patch: " . $vers->getSQLVersion() . "\n";
 	}
 }
 
@@ -80,7 +84,7 @@ class Versions
 
 		if ($this->_xml === false) {
 			if (PHP_SAPI == 'cli') {
-				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
+				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
 			}
 			throw new \Exception("Failed to open versions XML file '$filepath'");
 		}
@@ -89,14 +93,14 @@ class Versions
 			$vers = $this->_xml->xpath('/nzedb/versions');
 
 			if ($vers[0]->count() == 0) {
-				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) does not contain versioning info, try updating from git.");
+				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) does not contain version info, try updating from git.");
 				throw new \Exception("Failed to find versions node in XML file '$filepath'");
 			} else {
-				$this->out->primary("Your versioning XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
+				$this->out->primary("Your versions XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
 				$this->_vers = &$this->_xml->versions;
 			}
 		} else {
-			exit("No elements in file!\n");
+			throw new \RuntimeException("No elements in file!\n");
 		}
 	}
 
@@ -125,8 +129,8 @@ class Versions
 	 */
 	public function checkDb($update = true)
 	{
-		$site = new \Sites();
-		$setting = $site->getSetting('sqlpatch');
+		$settings = new Settings();
+		$setting = $settings->getSetting('sqlpatch');
 
 		if ($this->_vers->db < $setting) {
 			if ($update) {
@@ -203,6 +207,10 @@ class Versions
 		return false;
 	}
  */
+	public function getCommit()
+	{
+		return $this->_vers->git->commit;
+	}
 
 	public function getGitHookPrecommit()
 	{

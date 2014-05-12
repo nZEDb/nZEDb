@@ -34,7 +34,7 @@ except ImportError:
 	import urllib.request as httplib
 
 try:
-    r1 = urllib.urlopen("http://predb_irc.nzedb.com").getcode()
+    r1 = urllib.urlopen("http://reqid.nzedb.com").getcode()
     if r1 == 200:
         web = True
     else:
