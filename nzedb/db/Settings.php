@@ -125,7 +125,7 @@ class Settings extends DB
 	{
 		$sql = 'SELECT value FROM site ';
 		if (!empty($options['name'])) {
-			$sql .= "WHERE setting = '{$options['name']}'";
+			$sql .= "WHERE setting = '{$options['setting']}'";
 		}
 
 		$result = $this->queryOneRow($sql);
