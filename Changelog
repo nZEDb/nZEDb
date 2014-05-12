@@ -6,11 +6,12 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-05-13
+2014-05-13 ruhllatio
 	* Fix: $res variables in NameFixer predb match functions now check for false before rowCount()
 	* Chg: PreDB FT Match function query to rule out impossible matches / hanging matches
 2014-05-13 kevin
-	*Fix: Fix multiple delete of releases on web browser.
+	* Fix: Fix multiple delete of releases on web browser.
+	* Fix: Add reloading of page when bulk editing releases on web page.
 2014-05-12 DariusIII
 	* Chg: Add huge file removal option to remove crap part of tmux admin page.
 2014-05-11 kevin
