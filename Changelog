@@ -6,6 +6,7 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+
 2014-05-13 bart39
 	* Chg: Only reset collections / nzbs that are older then delay time check in site settings
 2014-05-13 ruhllatio
@@ -13,6 +14,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: PreDB FT Match function query to rule out impossible matches / hanging matches
 	* Chg: Optimize FT Match query for speed
 	* Fix: PreDB Scrape from Web sources should no longer overwrite valid pre info if not set
+	* Add: Usenet name to updateReleases NameFixer function
 2014-05-13 kevin
 	* Fix: Fix multiple delete of releases on web browser.
 	* Fix: Add reloading of page when bulk editing releases on web page.

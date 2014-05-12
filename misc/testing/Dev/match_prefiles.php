@@ -40,7 +40,7 @@ function preName($argv)
 		$orderby = "ORDER BY postdate DESC";
 	}
 
-	$query = $db->queryDirect(sprintf("SELECT DISTINCT r.id AS releaseid, r.searchname, r.groupid, r.categoryid, SUBSTRING_INDEX(rf.name, '.', 1) AS filename
+	$query = $db->queryDirect(sprintf("SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.groupid, r.categoryid, SUBSTRING_INDEX(rf.name, '.', 1) AS filename
 					FROM releases r INNER JOIN releasefiles rf ON r.id = rf.releaseid
 					WHERE r.preid = 0 %s AND rf.name REGEXP BINARY '[a-z0-9]{1,20}-[a-z0-9]{1,20}\..{3}'
 					%s %s GROUP BY r.id %s", $catrange, $renamed, $orderby, $limit));

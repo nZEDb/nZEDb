@@ -331,19 +331,21 @@ class NameFixer
 					}
 
 					echo
-						$this->c->headerOver("\nNew name:  ") .
+						$this->c->headerOver("\nNew name: ") .
 						$this->c->primary($newname) .
-						$this->c->headerOver("Old name:  ") .
+						$this->c->headerOver("Old name: ") .
 						$this->c->primary($release["searchname"]) .
-						$this->c->headerOver("New cat:   ") .
+						$this->c->headerOver("Use name: ") .
+						$this->c->primary($release["name"]) .
+						$this->c->headerOver("New cat:  ") .
 						$this->c->primary($newcatname) .
-						$this->c->headerOver("Old cat:   ") .
+						$this->c->headerOver("Old cat:  ") .
 						$this->c->primary($oldcatname) .
-						$this->c->headerOver("Group:     ") .
+						$this->c->headerOver("Group:    ") .
 						$this->c->primary($groupname) .
-						$this->c->headerOver("Method:    ") .
+						$this->c->headerOver("Method:   ") .
 						$this->c->primary($type . $method) .
-						$this->c->headerOver("ReleaseID: ") .
+						$this->c->headerOver("Release ID:  ") .
 						$this->c->primary($release["releaseid"]);
 
 					if ($type !== "PAR2, ") {
@@ -398,7 +400,7 @@ class NameFixer
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
 		if ($total > 0 && $total <= 10) {
 			foreach ($res as $row) {
-				$release = $db->queryOneRow(sprintf("SELECT id AS releaseid, searchname, groupid, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND ishashed = 0 AND id = %d", $row['releaseid']));
+				$release = $db->queryOneRow(sprintf("SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND ishashed = 0 AND id = %d", $row['releaseid']));
 				if ($release !== false) {
 					$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
 					if ($pre['title'] !== $release['searchname']) {
