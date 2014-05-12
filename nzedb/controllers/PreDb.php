@@ -281,23 +281,22 @@ Class PreDb
 		}
 
 		$matches['title'] = str_replace(array("\r", "\n"), '', $matches['title']);
-		$md5 = $this->db->escapeString(md5($matches['title']));
 
-		$duplicateCheck = $this->db->queryOneRow(sprintf('SELECT id, nfo, size, category FROM predb WHERE md5 = %s', $md5));
+		$duplicateCheck = $this->db->queryOneRow(sprintf('SELECT id, nfo, size, category FROM predb WHERE title = %s', $this->db->escapeString($matches['title'])));
 
 		if ($duplicateCheck === false) {
 			$this->db->queryExec(
 				sprintf('
 					INSERT INTO predb (title, nfo, size, category, predate, source, md5, sha1, requestid, groupid, files, filename, nuked, nukereason)
-					VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %s, %d, %s)',
+					VALUES (%s, %s, %s, %s, %s, %s, md5(%s), sha1(%s), %d, %d, %s, %s, %d, %s)',
 					$this->db->escapeString($matches['title']),
 					((isset($matches['nfo']) && !empty($matches['nfo'])) ? $this->db->escapeString($matches['nfo']) : 'NULL'),
 					((isset($matches['size']) && !empty($matches['size'])) ? $this->db->escapeString($matches['size']) : 'NULL'),
 					((isset($matches['category']) && !empty($matches['category'])) ? $this->db->escapeString($matches['category']) : 'NULL'),
 					$this->db->from_unixtime($matches['date']),
 					$this->db->escapeString($matches['source']),
-					$md5,
-					$this->db->escapeString(sha1($matches['title'])),
+					$this->db->escapeString($matches['title']),
+					$this->db->escapeString($matches['title']),
 					((isset($matches['requestid']) && is_numeric($matches['requestid']) ? $matches['requestid'] : 0)),
 					((isset($matches['groupid']) && is_numeric($matches['groupid'])) ? $matches['groupid'] : 0),
 					((isset($matches['files']) && !empty($matches['files'])) ? $this->db->escapeString($matches['files']) : 'NULL'),
@@ -308,23 +307,37 @@ Class PreDb
 			);
 			$this->insertedPre++;
 		} else {
-			$this->db->queryExec(
-				sprintf('
-					UPDATE predb SET
-					nfo = %s, size = %s, category = %s, requestid = %d, groupid = %d, files = %s, filename = %s, nuked = %d, nukereason = %s
-					WHERE id = %d',
-					((isset($matches['nfo']) && !empty($matches['nfo'])) ? $this->db->escapeString($matches['nfo']) : 'NULL'),
-					((isset($matches['size']) && !empty($matches['size'])) ? $this->db->escapeString($matches['size']) : 'NULL'),
-					((isset($matches['category']) && !empty($matches['category'])) ? $this->db->escapeString($matches['category']) : 'NULL'),
-					((isset($matches['requestid']) && is_numeric($matches['requestid']) ? $matches['requestid'] : 0)),
-					((isset($matches['groupid']) && is_numeric($matches['groupid'])) ? $matches['groupid'] : 0),
-					((isset($matches['files']) && !empty($matches['files'])) ? $this->db->escapeString($matches['files']) : 'NULL'),
-					(isset($matches['filename']) ? $this->db->escapeString($matches['filename']) : $this->db->escapeString('')),
-					((isset($matches['nuked']) && is_numeric($matches['nuked'])) ? $matches['nuked'] : 0),
-					((isset($matches['reason']) && !empty($matches['nukereason'])) ? $this->db->escapeString($matches['nukereason']) : 'NULL'),
-					$duplicateCheck['id']
-				)
+			if (empty($matches['title'])) {
+				return;
+			}
+
+			$query = 'UPDATE predb SET ';
+
+			$query .= (!empty($matches['nfo'])       ? 'nfo = '        . $this->db->escapeString($matches['nfo'])      . ', ' : '');
+			$query .= (!empty($matches['size'])      ? 'size = '       . $this->db->escapeString($matches['size'])     . ', ' : '');
+			$query .= (!empty($matches['source'])    ? 'source = '     . $this->db->escapeString($matches['source'])   . ', ' : '');
+			$query .= (!empty($matches['files'])     ? 'files = '      . $this->db->escapeString($matches['files'])    . ', ' : '');
+			$query .= (!empty($matches['reason'])    ? 'nukereason = ' . $this->db->escapeString($matches['reason'])   . ', ' : '');
+			$query .= (!empty($matches['requestid']) ? 'requestid = '  . $matches['requestid']                         . ', ' : '');
+			$query .= (!empty($matches['groupid'])   ? 'groupid = '    . $matches['groupid']                           . ', ' : '');
+			$query .= (!empty($matches['predate'])   ? 'predate = '    . $matches['predate']                           . ', ' : '');
+			$query .= (!empty($matches['nuked'])     ? 'nuked = '      . $matches['nuked']                             . ', ' : '');
+			$query .= (!empty($matches['filename'])  ? 'filename = '   . $this->db->escapeString($matches['filename']) . ', ' : '');
+			$query .= (
+				(empty($duplicateCheck['category']) && !empty($matches['category']))
+					? 'category = ' . $this->db->escapeString($matches['category']) . ', '
+					: ''
 			);
+
+			if ($query === 'UPDATE predb SET '){
+				return;
+			}
+
+			$query .= 'title = '      . $this->db->escapeString($matches['title']);
+			$query .= ' WHERE title = ' . $this->db->escapeString($matches['title']);
+
+			$this->db->queryExec($query);
+
 			$this->updatedPre++;
 		}
 	}

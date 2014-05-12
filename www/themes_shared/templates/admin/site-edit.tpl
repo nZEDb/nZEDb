@@ -1,11 +1,8 @@
 <h1>{$page->title}</h1>
-
 <form action="{$SCRIPT_NAME}?action=submit" method="post">
-
 	{if $error != ''}
 		<div class="error">{$error}</div>
 	{/if}
-
 	<fieldset>
 		<legend>Main Site Settings, Html Layout, Tags</legend>
 		<table class="input">
@@ -16,7 +13,6 @@
 					<div class="hint">Displayed around the site and contact form as the name for the site.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="strapline">Strapline:</label></td>
 				<td>
@@ -24,7 +20,6 @@
 					<div class="hint">Displayed in the header on every public page.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="metatitle">Meta Title:</label></td>
 				<td>
@@ -32,7 +27,6 @@
 					<div class="hint">Stem meta-tag appended to all page title tags.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="metadescription">Meta Description:</label></td>
 				<td>
@@ -40,7 +34,6 @@
 					<div class="hint">Stem meta-description appended to all page meta description tags.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="metakeywords">Meta Keywords:</label></td>
 				<td>
@@ -48,7 +41,6 @@
 					<div class="hint">Stem meta-keywords appended to all page meta keyword tags.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="footer">Footer:</label></td>
 				<td>
@@ -56,7 +48,6 @@
 					<div class="hint">Displayed in the footer section of every public page.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="style">Default Home Page:</label></td>
 				<td>
@@ -64,7 +55,6 @@
 					<div class="hint">The relative path to a the landing page shown when a user logs in, or clicks the home link.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width: 180px;"><label for="coverspath">Cover&apos;s path:</label></td>
 				<td>
@@ -72,7 +62,6 @@
 					<div class="hint">The absolute path to the place covers will be stored.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="codename">Code Name:</label></td>
 				<td>
@@ -81,7 +70,6 @@
 					<div class="hint">A just for fun value shown in debug and not on public pages.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="style">Theme:</label></td>
 				<td>
@@ -89,7 +77,6 @@
 					<div class="hint">The theme folder which will be loaded for css and images. (Use / for default)</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="style">User Menu Position:</label></td>
 				<td>
@@ -97,7 +84,6 @@
 					<div class="hint">Where the menu should appear. Moving the menu to the top will require using a theme which widens the content panel. (not currently functional)</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="style">Dereferrer Link:</label></td>
 				<td>
@@ -105,7 +91,6 @@
 					<div class="hint">Optional URL to prepend to external links</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="email">Email:</label></td>
 				<td>
@@ -113,7 +98,6 @@
 					<div class="hint">Shown in the contact us page, and where the contact html form is sent to.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="tandc">Terms and Conditions:</label></td>
 				<td>
@@ -121,7 +105,6 @@
 					<div class="hint">Text displayed in the terms and conditions page.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="loggingopt">Logging Option:</label></td>
 				<td>
@@ -138,7 +121,6 @@
 			</tr>
 		</table>
 	</fieldset>
-
 	<fieldset>
 		<legend>Language/Categorization options</legend>
 		<table class="input">
@@ -149,7 +131,6 @@
 					<div class="hint">Which category.php file to use. (This is WIP, looking for people to help with this. So right now I suggest sticking to english.)</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="categorizeforeign">Categorize Foreign:</label></td>
 				<td>
@@ -157,7 +138,6 @@
 					<div class="hint">This only works if the above is set to english. Whether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="catwebdl">Categorize WEB-DL:</label></td>
 				<td>
@@ -165,7 +145,6 @@
 					<div class="hint">Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.<br />This will also make them inaccessible to Sickbeard and possibly Couchpotato.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="imdburl">IMDB.com:</label></td>
 				<td>
@@ -173,7 +152,6 @@
 					<div class="hint">Akas.imdb.com returns titles in their original title, imdb.com returns titles based on your IP address (if you are in france, you will get french titles).</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="imdblanguage">IMDB/Tmdb Language:</label></td>
 				<td>
@@ -183,7 +161,6 @@
 			</tr>
 		</table>
 	</fieldset>
-
 	<fieldset>
 		<legend>Google Adsense, Analytics and 3rd Party Banners</legend>
 		<table class="input">
@@ -194,7 +171,6 @@
 					<div class="hint">e.g. UA-xxxxxx-x</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="google_adsense_acc">Google Adsense:</label></td>
 				<td>
@@ -202,7 +178,6 @@
 					<div class="hint">e.g. pub-123123123123123</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="google_adsense_search">Google Adsense Search:</label></td>
 				<td>
@@ -210,7 +185,6 @@
 					<div class="hint">The ID of the google search ad panel displayed at the bottom of the left menu.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="adheader">Advert Space in Banner:</label></td>
 				<td>
@@ -218,7 +192,6 @@
 					<div class="hint">The banner slot in the header.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="adbrowse">Advert Space in Browse List:</label></td>
 				<td>
@@ -226,7 +199,6 @@
 					<div class="hint">The banner slot in the header.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="addetail">Advert Space in Detail View:</label></td>
 				<td>
@@ -234,11 +206,8 @@
 					<div class="hint">The banner slot in the release details view.</div>
 				</td>
 			</tr>
-
 		</table>
 	</fieldset>
-
-
 	<fieldset>
 		<legend>3<sup>rd</sup> Party API Keys</legend>
 		<table class="input">
@@ -249,7 +218,6 @@
 					<div class="hint">The api key used for access to tmdb.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="rottentomatokey">Rotten Tomatoes Key:</label></td>
 				<td>
@@ -258,7 +226,6 @@
 					<div class="hint">The api key used for access to rotten tomatoes. Select the quality of the images to display in Upcoming.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="amazonpubkey">Amazon Public Key:</label></td>
 				<td>
@@ -266,7 +233,6 @@
 					<div class="hint">The amazon public api key. Used for music/book lookups.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="amazonprivkey">Amazon Private Key:</label></td>
 				<td>
@@ -274,7 +240,6 @@
 					<div class="hint">The amazon private api key. Used for music/book lookups.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="amazonassociatetag">Amazon Associate Tag:</label></td>
 				<td>
@@ -282,7 +247,6 @@
 					<div class="hint">The amazon associate tag. Used for music/book lookups.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="trakttvkey">Trakt.tv API key:</label></td>
 				<td>
@@ -290,7 +254,6 @@
 					<div class="hint">The trakt.tv api key. Used for movie and tv lookups.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="anidbkey">Anidb API key:</label></td>
 				<td>
@@ -298,7 +261,6 @@
 					<div class="hint">The Anidb api key. Used for Anime lookups.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="fanarttvkey">Fanart.tv API key:</label></td>
 				<td>
@@ -306,10 +268,8 @@
 					<div class="hint">The Fanart.tv api key. Used for Fanart.tv lookups. Fanart.tv would appreciate it if you use this service to help them out by adding high quality images not already available on TMDB.</div>
 				</td>
 			</tr>
-
 		</table>
 	</fieldset>
-
 	<fieldset>
 		<legend>3<sup>rd</sup> Party Application Paths</legend>
 		<table class="input">
@@ -321,7 +281,6 @@
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/unrar.exe</span></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="tmpunrarpath">Temp Unrar File Path:</label></td>
 				<td>
@@ -330,7 +289,6 @@
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/temp/path/stuff/will/be/unpacked/to</span></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="zippath">7za Path:</label></td>
 				<td>
@@ -339,7 +297,6 @@
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/7z.exe</span></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="yydecoderpath">yEnc Type:</label></td>
 				<td>
@@ -351,7 +308,6 @@
 					</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="mediainfopath">Mediainfo Path:</label></td>
 				<td>
@@ -360,7 +316,6 @@
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/mediainfo.exe</span></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="ffmpegpath">FFmpeg or Avconv Path:</label></td>
 				<td>
@@ -369,11 +324,8 @@
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/ffmpeg.exe</span></div>
 				</td>
 			</tr>
-
 		</table>
 	</fieldset>
-
-
 	<fieldset>
 		<legend>SABnzbd Integration Settings</legend>
 		<table class="input">
@@ -387,7 +339,6 @@
 					</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="saburl">SABnzbd Url:</label></td>
 				<td>
@@ -395,7 +346,6 @@
 					<div class="hint">The url of the SAB installation, for example: http://localhost:8080/sabnzbd/</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="sabapikey">SABnzbd Api Key:</label></td>
 				<td>
@@ -403,7 +353,6 @@
 					<div class="hint">The Api key of the SAB installation. Can be the full api key or the nzb api key (as of SAB 0.6)</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="sabapikeytype">Api Key Type:</label></td>
 				<td>
@@ -411,7 +360,6 @@
 					<div class="hint">Select the type of api key you entered in the above setting</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="sabpriority">Priority Level:</label></td>
 				<td>
@@ -419,15 +367,11 @@
 					<div class="hint">Set the priority level for NZBs that are added to your queue</div>
 				</td>
 			</tr>
-
 		</table>
 	</fieldset>
-
-
 	<fieldset>
 		<legend>Usenet Settings</legend>
 		<table class="input">
-
 			<tr>
 				<td style="width:180px;"><label for="nzbpath">Nzb File Path:</label></td>
 				<td>
@@ -435,7 +379,6 @@
 					<div class="hint">The directory where nzb files will be stored.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="minfilestoformrelease">Minimum Files to Make a Release:</label></td>
 				<td>
@@ -443,7 +386,6 @@
 					<div class="hint">The minimum number of files to make a release. i.e. if set to two, then releases which only contain one file will not be created.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="minsizetoformrelease">Minimum File Size to Make a Release:</label></td>
 				<td>
@@ -451,7 +393,6 @@
 					<div class="hint">The minimum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxsizetoformrelease">Maximum File Size to Make a Release:</label></td>
 				<td>
@@ -466,7 +407,6 @@
 					<div class="hint">The maximum size in gigabytes to postprocess a release. If set to 0, then ignored.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="checkpasswordedrar">Check For Passworded Releases:</label></td>
 				<td>
@@ -474,7 +414,6 @@
 					<div class="hint">Whether to attempt to peek into every release, to see if rar files are password protected.<br/></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="deletepasswordedrelease">Delete Passworded Releases:</label></td>
 				<td>
@@ -482,7 +421,6 @@
 					<div class="hint">Whether to delete releases which are passworded.<br/></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="deletepossiblerelease">Delete Possibly Passworded Releases:</label></td>
 				<td>
@@ -490,7 +428,6 @@
 					<div class="hint">Whether to delete releases which are potentially passworded.<br/></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="showpasswordedrelease">Show Passworded Releases:</label></td>
 				<td>
@@ -498,7 +435,6 @@
 					<div class="hint">Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="processjpg">Process JPG:</label></td>
 				<td>
@@ -506,7 +442,6 @@
 					<div class="hint">Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.<br/></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="processvideos">Process Video Samples:</label></td>
 				<td>
@@ -514,7 +449,6 @@
 					<div class="hint">Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average, in ogv format. You must have ffmpeg for this.<br/></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="segmentstodownload">Number of Segments to download for video/jpg samples:</label></td>
 				<td>
@@ -522,7 +456,6 @@
 					<div class="hint">The maximum number of segments to download to generate the sample video file or jpg sample image. (Default 2)</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="ffmpeg_duration">Video sample file duration for ffmpeg:</label></td>
 				<td>
@@ -530,7 +463,6 @@
 					<div class="hint">The maximum duration (In Seconds) for ffmpeg to generate the sample for. (Default 5)</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="processaudiosample">Process Audio Samples:</label></td>
 				<td>
@@ -538,7 +470,6 @@
 					<div class="hint">Whether to attempt to process a audio sample, they will be up to 30 seconds, in ogg format. You must have ffmpeg for this.<br/></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="lookuppar2">Lookup PAR2:</label></td>
 				<td>
@@ -546,7 +477,6 @@
 					<div class="hint">Whether to attempt to find a better name for releases in misc->other using the PAR2 file.<br/><strong>NOTE: this can be slow depending on the group!</strong></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="addpar2">Add PAR2 contents to file contents:</label></td>
 				<td>
@@ -554,7 +484,6 @@
 					<div class="hint">When going through PAR2 files, add them to the RAR file content list of the NZB.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="lookupnfo">Lookup NFO:</label></td>
 				<td>
@@ -562,7 +491,6 @@
 					<div class="hint">Whether to attempt to retrieve an nfo file from usenet when processing binaries.<br/><strong>NOTE: disabling nfo lookups will disable movie lookups.</strong></div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="lookuptvrage">Lookup TV Rage:</label></td>
 				<td>
@@ -570,7 +498,6 @@
 					<div class="hint">Whether to attempt to lookup tv rage ids on the web when processing binaries.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="lookupimdb">Lookup Movies:</label></td>
 				<td>
@@ -578,7 +505,6 @@
 					<div class="hint">Whether to attempt to lookup film information from IMDB or TheMovieDB when processing binaries.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="lookupanidb">Lookup AniDB:</label></td>
 				<td>
@@ -586,7 +512,6 @@
 					<div class="hint">Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="lookupmusic">Lookup Music:</label></td>
 				<td>
@@ -594,7 +519,6 @@
 					<div class="hint">Whether to attempt to lookup music information from Amazon when processing binaries.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="lookupgames">Lookup Games:</label></td>
 				<td>
@@ -602,7 +526,6 @@
 					<div class="hint">Whether to attempt to lookup game information from Amazon when processing binaries.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="lookupbooks">Lookup Books:</label></td>
 				<td>
@@ -610,8 +533,6 @@
 					<div class="hint">Whether to attempt to lookup book information from Amazon when processing binaries.</div>
 				</td>
 			</tr>
-
-
 			<tr>
 				<td style="width:180px;"><label for="book_reqids">Type of books to look up:</label></td>
 				<td>
@@ -620,7 +541,6 @@
 					</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="lookup_reqids">Lookup Request IDs:</label></td>
 				<td>
@@ -628,7 +548,6 @@
 					<div class="hint">Whether to attempt to lookup Request IDs using the Request ID link below.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="style">Request ID Link:</label></td>
 				<td>
@@ -654,7 +573,6 @@
 					<div class="hint">Scan back X (posts/days) for each new group?  Can backfill to scan further.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="safebackfilldate">Safe Backfill Date:</label></td>
 				<td>
@@ -664,11 +582,9 @@
 			</tr>
 		</table>
 	</fieldset>
-
 	<fieldset>
 		<legend>Advanced Settings - For advanced users</legend>
 		<table class="input">
-
 			<tr>
 				<td style="width:180px;"><label for="nzbsplitlevel">Nzb File Path Level Deep:</label></td>
 				<td>
@@ -676,7 +592,6 @@
 					<div class="hint">Levels deep to store the nzb Files.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="releaseretentiondays">Release Retention:</label></td>
 				<td>
@@ -684,7 +599,6 @@
 					<div class="hint">!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="partretentionhours">Part Retention Hours:</label></td>
 				<td>
@@ -692,7 +606,6 @@
 					<div class="hint">The number of hours incomplete parts and binaries will be retained.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="miscotherretentionhours">Misc->Other Retention Hours:</label></td>
 				<td>
@@ -700,7 +613,6 @@
 					<div class="hint">The number of hours releases categorized as Misc->Other will be retained.  Set to 0 to disable.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="releasecompletion">Release Completion:</label></td>
 				<td>
@@ -708,7 +620,6 @@
 					<div class="hint">The minimum completion % to keep a release. Set to 0 to disable.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="delaytime">Delay Time Check:</label></td>
 				<td>
@@ -716,7 +627,6 @@
 					<div class="hint">The time in hours to wait, since last activity, before releases without parts counts in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="crossposttime">Crossposted Time Check:</label></td>
 				<td>
@@ -724,7 +634,6 @@
 					<div class="hint">The time in hours to check for crossposted releases.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxmssgs">Max Messages:</label></td>
 				<td>
@@ -732,7 +641,6 @@
 					<div class="hint">The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxnzbsprocessed">Maximum NZBs stage5:</label></td>
 				<td>
@@ -740,7 +648,6 @@
 					<div class="hint">The maximum amount of NZB files to create on stage 5 in update_releases.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxpartrepair">Maximum repair per run:</label></td>
 				<td>
@@ -748,7 +655,6 @@
 					<div class="hint">The maximum amount of articles to attempt to repair at a time. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until improves. Ar least until the cause can be determined.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="partrepair">Part Repair:</label></td>
 				<td>
@@ -756,7 +662,6 @@
 					<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="safepartrepair">Part Repair for Backfill Scripts:</label></td>
 				<td>
@@ -764,7 +669,6 @@
 					<div class="hint">Whether to put unreceived parts into partrepair table when running binaries(safe) or backfill scripts.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="grabstatus">Update grabs:</label></td>
 				<td>
@@ -772,7 +676,6 @@
 					<div class="hint">Whether to update download counts when someone downloads a release.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="showdroppedyencparts">Log Dropped Headers:</label></td>
 				<td>
@@ -780,7 +683,6 @@
 					<div class="hint">For developers. Whether to log all headers that have 'yEnc' and are dropped. Logged to not_yenc/groupname.dropped.txt.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="tablepergroup">Table Per Group:</label></td>
 				<td>
@@ -791,10 +693,8 @@
 					</div>
 				</td>
 			</tr>
-
 		</table>
 	</fieldset>
-
 	<fieldset>
 		<legend>Advanced - Postprocessing Settings</legend>
 		<table class="input">
@@ -805,7 +705,6 @@
 					<div class="hint">The maximum amount of releases to process for passwords/previews/mediainfo per run. Every release gets processed here. This uses NNTP an connection, 1 per thread. This does not query Amazon.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxpartsprocessed">Maximum add PP parts downloaded:</label></td>
 				<td>
@@ -813,7 +712,6 @@
 					<div class="hint">If a part fails to download while post processing, this will retry up to the amount you set, then give up.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="passchkattempts">Maximum add PP parts checked:</label></td>
 				<td>
@@ -821,7 +719,6 @@
 					<div class="hint">This overrides the above setting if set above 1. How many parts to check for a password before giving up. This slows down post processing massively, better to leave it 1.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxnfoprocessed">Maximum NFO files per run:</label></td>
 				<td>
@@ -829,7 +726,6 @@
 					<div class="hint">The maximum amount of NFO files to process per run. This uses NNTP an connection, 1 per thread. This does not query Amazon.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxrageprocessed">Maximum TVRage per run:</label></td>
 				<td>
@@ -837,7 +733,6 @@
 					<div class="hint">The maximum amount of TV shows to process with TVRage per run. This does not use an NNTP connection or query Amazon.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maximdbprocessed">Maximum movies per run:</label></td>
 				<td>
@@ -845,7 +740,6 @@
 					<div class="hint">The maximum amount of movies to process with IMDB per run. This does not use an NNTP connection or query Amazon.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxanidbprocessed">Maximum anidb per run:</label></td>
 				<td>
@@ -853,7 +747,6 @@
 					<div class="hint">The maximum amount of anime to process with anidb per run. This does not use an NNTP connection or query Amazon.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxmusicprocessed">Maximum music per run:</label></td>
 				<td>
@@ -861,7 +754,6 @@
 					<div class="hint">The maximum amount of music to process with amazon per run. This does not use an NNTP connection.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxgamesprocessed">Maximum games per run:</label></td>
 				<td>
@@ -869,7 +761,6 @@
 					<div class="hint">The maximum amount of games to process with amazon per run. This does not use an NNTP connection.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxbooksprocessed">Maximum books per run:</label></td>
 				<td>
@@ -877,7 +768,6 @@
 					<div class="hint">The maximum amount of books to process with amazon per run. This does not use an NNTP connection</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="fixnamesperrun">fixReleaseNames per Run:</label></td>
 				<td>
@@ -885,7 +775,6 @@
 					<div class="hint">The maximum number of releases to check per run(threaded script only).</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="amazonsleep">Amazon sleep time:</label></td>
 				<td>
@@ -893,14 +782,11 @@
 					<div class="hint">Sleep time in milliseconds to wait in between amazon requests. If you thread post-proc, multiply by the number of threads. ie Postprocessing Threads = 12, Amazon sleep time = 12000<br /><a href="https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html">https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</a></div>
 				</td>
 			</tr>
-
 		</table>
 	</fieldset>
-
 	<fieldset>
 		<legend>Connection Settings</legend>
 		<table class="input">
-
 			<tr>
 				<td style="width:180px;"><label for="compressedheaders">Use Compressed Headers:</label></td>
 				<td>
@@ -909,7 +795,6 @@
 						If you notice that update binaries or backfill seems to hang, look in htop and see if a group is being processed. If so, first try disabling compressed headers and let run until it processes the group at least once, then you can re-enable compressed headers.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="nntpretries">NNTP Retry Attempts:</label></td>
 				<td>
@@ -917,7 +802,6 @@
 					<div class="hint">The maximum number of retry attmpts to connect to nntp provider. On error, each retry takes approximately 5 seconds nntp returns reply. (Default 10)</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="nntpproxy">Use NNTP Proxy:</label></td>
 				<td>
@@ -925,7 +809,6 @@
 					<div class="hint">Using the NNTP Proxy for nZEDb can improve performance of nZEDb dramatically. It uses connection pooling which not only give more control over the number of connections to use but also reduces time for connection setup/teardown. The proxy also takes care of compressed headers for you. To use this featrure you will need to install pynntp (sudo pip install pynntp or sudo easy_install pynntp) and socketpool (sudo pip install socketpool or sudo easy_install socketpool) (ensure python2 is default) and edit the configuration file (nntpproxy.conf and nntpproxy_a.conf) in the update_scripts/python_scripts/lib (copy sample) directory and finally edit your www/config.php file to use the proxy (username and password are ignored by the proxy - make then anything you like - the proxy doesn't use ssl either). Make sure you turn off the use compressed headers option here in site preferences (the proxy uses compressed headers by default and passes on decompressed data).</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="alternate_nntp">Alternate NNTP Provider:</label></td>
 				<td>
@@ -933,7 +816,6 @@
 					<div class="hint">This sets Postproccessing Additional/Nfo to use the alternate NNTP provider as set in config.php.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="grabnzbs">Grab NZBs:</label></td>
 				<td>
@@ -941,7 +823,6 @@
 					<div class="hint">NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases. I have discovered that the nzbs imported using GrabNZBs do not have the same release file size as those created by nZEDb. So duplicates will be inserted into the db. This can be verified by opening both nzbs and comparing the message-id's. You will see the same message-id's in both nzbs, but the file size will differ.\nThe difference appears to be from USP providers, the posted nzb and size is from the originating USP and may vary in size from your USP.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="replacenzbs">Replace Duplicate NZBs:</label></td>
 				<td>
@@ -949,7 +830,6 @@
 					<div class="hint">NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.(This is not necessary, was added before I understood how crossposted nzbs work)</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="maxgrabnzbs">Maximum Parts to Grab NZBs:</label></td>
 				<td>
@@ -957,11 +837,8 @@
 					<div class="hint">The maximum number of parts to download when running GrabNZBS, all potential nzbs exceeding this number will be deleted from the nzbs table.</div>
 				</td>
 			</tr>
-
 		</table>
 	</fieldset>
-
-
 	<fieldset>
 		<legend>Advanced - Threaded Settings</legend>
 		<table class="input">
@@ -972,7 +849,6 @@
 					<div class="hint">The number of threads for update_binaries. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until improves. Ar least until the cause can be determined.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="backfillthreads">Backfill Threads:</label></td>
 				<td>
@@ -980,7 +856,6 @@
 					<div class="hint">The number of threads for backfill.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="nzbthreads">Grab NZB Threads:</label></td>
 				<td>
@@ -988,7 +863,6 @@
 					<div class="hint">The number of threads for Grab NZBs.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="releasesthreads">Update Releases Threads:</label></td>
 				<td>
@@ -996,7 +870,6 @@
 					<div class="hint">The number of threads for update_releases. This is only for tablepergroup.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="nzbthreads">Import-nzb Threads:</label></td>
 				<td>
@@ -1004,7 +877,6 @@
 					<div class="hint">The number of threads for import-nzb(bulk). This will thread each subfolder.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="postthreads">Postprocessing Additional Threads:</label></td>
 				<td>
@@ -1012,7 +884,6 @@
 					<div class="hint">The number of threads for additional postprocessing. This includes deep rar inspection, preview and sample creation and nfo processing.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="postthreadsnon">Postprocessing Non-Amazon Threads:</label></td>
 				<td>
@@ -1020,7 +891,6 @@
 					<div class="hint">The number of threads for non-amazon postprocessing. This includes movies, anime and tv lookups.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="fixnamethreads">fixReleaseNames Threads:</label></td>
 				<td>
@@ -1028,14 +898,11 @@
 					<div class="hint">The number of threads for fixReleasesNames. This includes md5, nfos and filenames.</div>
 				</td>
 			</tr>
-
 		</table>
 	</fieldset>
-
 	<fieldset>
 		<legend>User Settings</legend>
 		<table class="input">
-
 			<tr>
 				<td style="width:180px;"><label for="registerstatus">Registration Status:</label></td>
 				<td>
@@ -1043,7 +910,6 @@
 					<div class="hint">The status of registrations to the site.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td style="width:180px;"><label for="storeuserips">Store User Ip:</label></td>
 				<td>
@@ -1051,10 +917,7 @@
 					<div class="hint">Whether to store the users ip address when they signup or login.</div>
 				</td>
 			</tr>
-
 		</table>
 	</fieldset>
-
 	<input type="submit" value="Save Site Settings" />
-
 </form>

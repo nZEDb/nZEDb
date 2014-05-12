@@ -62,6 +62,8 @@ class Releases
 	}
 
 	/**
+	 * Used for admin page release-list.
+	 *
 	 * @param $start
 	 * @param $num
 	 *
@@ -70,14 +72,13 @@ class Releases
 	public function getRange($start, $num)
 	{
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name
-								FROM releases
-								INNER JOIN category c ON c.id = releases.categoryid
-								INNER JOIN category cp ON cp.id = c.parentid
-								WHERE nzbstatus = 1
-								ORDER BY postdate DESC %s",
+			sprintf("
+				SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name
+				FROM releases
+				INNER JOIN category c ON c.id = releases.categoryid
+				INNER JOIN category cp ON cp.id = c.parentid
+				WHERE nzbstatus = 1
+				ORDER BY postdate DESC %s",
 				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
 			)
 		);

@@ -1,7 +1,6 @@
 <?php
 require_once './config.php';
 
-
 // Login Check
 $admin = new AdminPage;
 $bin = new Binaries();
@@ -11,4 +10,3 @@ if (isset($_GET['action']) && $_GET['action'] == "2") {
 	$bin->deleteBlacklist($id);
 	print "Blacklist $id deleted.";
 }
-?>

@@ -309,7 +309,7 @@ class PostProcess
 		}
 
 		$query = $this->db->queryOneRow(
-			'SELECT id, groupid, categoryid, searchname, ' .
+			'SELECT id, groupid, categoryid, name, searchname, ' .
 			($this->db->dbSystem() === 'mysql' ? 'UNIX_TIMESTAMP(postdate)' : 'extract(epoch FROM postdate)') .
 			' as postdate, id as releaseid  FROM releases WHERE isrenamed = 0 AND id = ' .
 			$relID

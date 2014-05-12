@@ -1,27 +1,35 @@
 <?php
 require_once './config.php';
 
-
-
-
 $page = new AdminPage;
 $users = new Users;
 
-if (!$users->isLoggedIn())
+if (!$users->isLoggedIn()) {
 	$page->show403();
+}
 
-if (isset($_GET["id"]))
-{
-	$releases = new Releases;
-	$rel = $releases->getByGuid($_GET["id"]);
-	if (!$rel)
+if (isset($_GET['id'])) {
+	$releases = new Releases();
+	$release = $releases->getByGuid($_GET['id']);
+	if ($release === false) {
 		$page->show404();
+	}
 
-	$binaries = new Binaries;
-	$data = $binaries->getForReleaseId($rel["id"]);
+	$nzb = new NZB();
+	$nzbPath = $nzb->getNZBPath($_GET['id']);
+	if (!file_exists($nzbPath)) {
+		$page->show404();
+	}
 
-	$page->smarty->assign('rel', $rel);
-	$page->smarty->assign('binaries', $data);
+	ob_start();
+	@readgzfile($nzbPath);
+	$nzbFile = ob_get_contents();
+	ob_end_clean();
+
+	$files = $nzb->nzbFileList($nzbFile);
+
+	$page->smarty->assign('release', $release);
+	$page->smarty->assign('files', $files);
 
 	$page->title = "File List";
 	$page->meta_title = "View Nzb file list";
@@ -31,5 +39,3 @@ if (isset($_GET["id"]))
 	$page->content = $page->smarty->fetch('release-files.tpl');
 	$page->render();
 }
-
-?>
