@@ -11,6 +11,8 @@ New updates are grouped by person, at the top of the file.
 2014-05-13 ruhllatio
 	* Fix: $res variables in NameFixer predb match functions now check for false before rowCount()
 	* Chg: PreDB FT Match function query to rule out impossible matches / hanging matches
+	* Chg: Optimize FT Match query for speed
+	* Fix: PreDB Scrape from Web sources should no longer overwrite valid pre info if not set
 2014-05-13 kevin
 	* Fix: Fix multiple delete of releases on web browser.
 	* Fix: Add reloading of page when bulk editing releases on web page.

@@ -383,13 +383,10 @@ class NameFixer
 		$this->matched = false;
 		$titlelike = "%" . $pre['title'] . "%";
 
-		$res = $db->queryDirect(sprintf("SELECT r.id AS releaseid, r.searchname, r.groupid, r.categoryid
-						     FROM releasesearch rs INNER JOIN releases r ON r.id = rs.releaseid
-						     WHERE nzbstatus = 1 AND r.preid = 0 AND ishashed = 0
-						     AND categoryid NOT BETWEEN 4000 AND 4999
-						     AND MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"' IN BOOLEAN MODE)
+		$res = $db->queryDirect(sprintf("SELECT rs.releaseid AS releaseid FROM releasesearch rs
+						     WHERE MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"' IN BOOLEAN MODE)
 						     AND (rs.name LIKE %s OR rs.searchname LIKE %s)
-						     ORDER BY postdate DESC LIMIT 15",
+						     LIMIT 15",
 						     $pre['title'], $db->escapeString($titlelike), $db->escapeString($titlelike)));
 
 		if ($res !== false) {
@@ -401,25 +398,28 @@ class NameFixer
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
 		if ($total > 0 && $total <= 10) {
 			foreach ($res as $row) {
-				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $row['releaseid']));
-				if ($pre['title'] !== $row['searchname']) {
-					$determinedcat = $this->category->determineCategory($pre['title'], $row['groupid']);
+				$release = $db->queryOneRow(sprintf("SELECT id AS releaseid, searchname, groupid, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND ishashed = 0 AND id = %d", $row['releaseid']));
+				if ($release !== false) {
+					$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
+					if ($pre['title'] !== $release['searchname']) {
+						$determinedcat = $this->category->determineCategory($pre['title'], $release['groupid']);
 
-					if ($echo == 1) {
-						$this->matched = true;
-						if ($namestatus == 1) {
-							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
-						} else {
-							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
+						if ($echo == 1) {
+							$this->matched = true;
+							if ($namestatus == 1) {
+								$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+										. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']));
+							} else {
+								$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+										. "searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']));
+							}
 						}
-					}
 
-					if ($echooutput && $show === 1) {
-						$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show);
+						if ($echooutput && $show === 1) {
+							$this->updateRelease($release, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show);
+						}
+						$matching++;
 					}
-					$matching++;
 				}
 			}
 		} elseif ($total >= 10) {
