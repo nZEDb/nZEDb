@@ -280,25 +280,23 @@ Class PreDb
 			return;
 		}
 
-		$matches['title'] = utf8_encode(str_replace(array("\r", "\n"), '', $matches['title']));
-		//$matches['title'] = str_replace(array("\r", "\n"), '', $matches['title']);
-		$md5 = $this->db->escapeString(md5($matches['title']));
+		$matches['title'] = str_replace(array("\r", "\n"), '', $matches['title']);
 
-		$duplicateCheck = $this->db->queryOneRow(sprintf('SELECT id, nfo, size, category FROM predb WHERE md5 = %s', $md5));
+		$duplicateCheck = $this->db->queryOneRow(sprintf('SELECT id, nfo, size, category FROM predb WHERE title = %s', $this->db->escapeString($matches['title'])));
 
 		if ($duplicateCheck === false) {
 			$this->db->queryExec(
 				sprintf('
 					INSERT INTO predb (title, nfo, size, category, predate, source, md5, sha1, requestid, groupid, files, filename, nuked, nukereason)
-					VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %s, %d, %s)',
+					VALUES (%s, %s, %s, %s, %s, %s, md5(%s), sha1(%s), %d, %d, %s, %s, %d, %s)',
 					$this->db->escapeString($matches['title']),
 					((isset($matches['nfo']) && !empty($matches['nfo'])) ? $this->db->escapeString($matches['nfo']) : 'NULL'),
 					((isset($matches['size']) && !empty($matches['size'])) ? $this->db->escapeString($matches['size']) : 'NULL'),
 					((isset($matches['category']) && !empty($matches['category'])) ? $this->db->escapeString($matches['category']) : 'NULL'),
 					$this->db->from_unixtime($matches['date']),
 					$this->db->escapeString($matches['source']),
-					$md5,
-					$this->db->escapeString(sha1($matches['title'])),
+					$this->db->escapeString($matches['title']),
+					$this->db->escapeString($matches['title']),
 					((isset($matches['requestid']) && is_numeric($matches['requestid']) ? $matches['requestid'] : 0)),
 					((isset($matches['groupid']) && is_numeric($matches['groupid'])) ? $matches['groupid'] : 0),
 					((isset($matches['files']) && !empty($matches['files'])) ? $this->db->escapeString($matches['files']) : 'NULL'),
@@ -336,7 +334,7 @@ Class PreDb
 			}
 
 			$query .= 'title = '      . $this->db->escapeString($matches['title']);
-			$query .= ' WHERE md5 = ' . $md5;
+			$query .= ' WHERE title = ' . $this->db->escapeString($matches['title']);
 
 			$this->db->queryExec($query);
 
