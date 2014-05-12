@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nzedb>
 	<versions>
-		<db>221</db>
+		<db>222</db>
 		<git>
 			<tag>0.3</tag>
 			<commit>7347</commit>
