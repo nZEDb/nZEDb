@@ -30,6 +30,7 @@ REQUIREMENTS
 			PCRE
 			PDO
 			PDO MySQL
+			POSIX (On unix operating systems)
 			Session
 			SHA1
 			SimpleXML

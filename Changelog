@@ -18,6 +18,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: PreDB web scrape double escape string in MD5 on update
 	* Fix: Remaining PreDB dupe errors from uc and predbme / fix updateReleases for checkNames + NFO
 2014-05-13 kevin
+	* Add: POSIX Extension as requirement for unix operating systems to INSTALL.txt
 	* Chg: Predb web, use MySQL to md5/sha1 to avoid encoding issues.
 	* Fix: Fix multiple delete of releases on web browser.
 	* Fix: Add reloading of page when bulk editing releases on web page.
