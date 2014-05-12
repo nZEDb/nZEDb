@@ -6,7 +6,7 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2044-05-12 DariusIII
+2014-05-12 DariusIII
 	* Chg: Add huge file removal option to remove crap part of tmux admin page.
 2014-05-11 kevin
 	* Add: Add change by predator314 to allow sickbeard/nzbdrone to pick up releases from Web-DL category on API.
