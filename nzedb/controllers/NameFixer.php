@@ -331,21 +331,21 @@ class NameFixer
 					}
 
 					echo
-						$this->c->headerOver("\nNew name: ") .
+						$this->c->headerOver("\nNew name:  ") .
 						$this->c->primary($newname) .
-						$this->c->headerOver("Old name: ") .
+						$this->c->headerOver("Old name:  ") .
 						$this->c->primary($release["searchname"]) .
-						$this->c->headerOver("Use name: ") .
+						$this->c->headerOver("Use name:  ") .
 						$this->c->primary($release["name"]) .
-						$this->c->headerOver("New cat:  ") .
+						$this->c->headerOver("New cat:   ") .
 						$this->c->primary($newcatname) .
-						$this->c->headerOver("Old cat:  ") .
+						$this->c->headerOver("Old cat:   ") .
 						$this->c->primary($oldcatname) .
-						$this->c->headerOver("Group:    ") .
+						$this->c->headerOver("Group:     ") .
 						$this->c->primary($groupname) .
-						$this->c->headerOver("Method:   ") .
+						$this->c->headerOver("Method:    ") .
 						$this->c->primary($type . $method) .
-						$this->c->headerOver("Release ID:  ") .
+						$this->c->headerOver("ReleaseID: ") .
 						$this->c->primary($release["releaseid"]);
 
 					if ($type !== "PAR2, ") {

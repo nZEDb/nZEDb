@@ -334,7 +334,7 @@ Class PreDb
 			}
 
 			$query .= 'title = '      . $this->db->escapeString($matches['title']);
-			$query .= ' WHERE md5 = ' . $this->db->escapeString($md5);
+			$query .= ' WHERE md5 = ' . $md5;
 
 			$this->db->queryExec($query);
 
