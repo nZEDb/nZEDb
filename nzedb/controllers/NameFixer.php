@@ -381,13 +381,16 @@ class NameFixer
 		$matching = 0;
 		$this->category = new Category();
 		$this->matched = false;
+		$titlelike = "%" . $pre['title'] . "%";
 
 		$res = $db->queryDirect(sprintf("SELECT r.id AS releaseid, r.searchname, r.groupid, r.categoryid
 						     FROM releasesearch rs INNER JOIN releases r ON r.id = rs.releaseid
 						     WHERE nzbstatus = 1 AND r.preid = 0 AND ishashed = 0
 						     AND categoryid NOT BETWEEN 4000 AND 4999
-						     AND MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"' IN BOOLEAN MODE)",
-						     $pre['title']));
+						     AND MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"' IN BOOLEAN MODE)
+						     AND (rs.name LIKE %s OR rs.searchname LIKE %s)
+						     ORDER BY postdate DESC LIMIT 15",
+						     $pre['title'], $db->escapeString($titlelike), $db->escapeString($titlelike)));
 
 		if ($res !== false) {
 			$total = $res->rowCount();
@@ -395,7 +398,8 @@ class NameFixer
 			return $matching;
 		}
 
-		if ($total > 0) {
+		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
+		if ($total > 0 && $total <= 10) {
 			foreach ($res as $row) {
 				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $row['releaseid']));
 				if ($pre['title'] !== $row['searchname']) {
@@ -418,6 +422,8 @@ class NameFixer
 					$matching++;
 				}
 			}
+		} elseif ($total >= 10) {
+			$matching = -1;
 		}
 		return $matching;
 	}
@@ -432,7 +438,13 @@ class NameFixer
 		$this->matched = false;
 
 		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE filename = %s ORDER BY predate DESC LIMIT 1", $db->escapeString($release['filename'])));
-		$total = $res->rowCount();
+
+		if ($res !== false) {
+			$total = $res->rowCount();
+		} else {
+			return $matching;
+		}
+
 		if ($total > 0) {
 			foreach ($res as $pre) {
 				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
@@ -479,7 +491,13 @@ class NameFixer
 		}
 
 		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE %s = %s", $hashcheck, $db->escapeString(strtolower($hash))));
-		$total = $res->rowCount();
+
+		if ($res !== false) {
+			$total = $res->rowCount();
+		} else {
+			return $matching;
+		}
+
 		if ($total > 0) {
 			foreach ($res as $row) {
 				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $row['preid'], $release['releaseid']));
