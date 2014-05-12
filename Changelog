@@ -14,6 +14,7 @@ New updates are grouped by person, at the top of the file.
 2014-05-13 kevin
 	* Fix: Fix multiple delete of releases on web browser.
 	* Fix: Add reloading of page when bulk editing releases on web page.
+	* Fix: Indent/various issues in admin theme.
 2014-05-12 DariusIII
 	* Chg: Add huge file removal option to remove crap part of tmux admin page.
 2014-05-11 kevin
