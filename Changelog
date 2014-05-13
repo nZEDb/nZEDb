@@ -19,6 +19,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: Usenet name to updateReleases NameFixer function
 	* Fix: PreDB web scrape double escape string in MD5 on update
 	* Fix: Remaining PreDB dupe errors from uc and predbme / fix updateReleases for checkNames + NFO
+	* Add: PreDB FT Match Script (testing phase)
 2014-05-13 kevin
 	* Add: POSIX Extension as requirement for unix operating systems to INSTALL.txt
 	* Chg: Predb web, use MySQL to md5/sha1 to avoid encoding issues.
