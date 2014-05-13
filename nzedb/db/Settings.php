@@ -56,7 +56,7 @@ class Settings extends DB
 	public function getSetting ($options = array())
 	{
 		if (!is_array($options)) {
-			$options = ['setting' => $options];
+			$options = ['name' => $options];
 		}
 		$defaults = array(
 			'section'    => '',
@@ -123,18 +123,14 @@ class Settings extends DB
 
 	protected function _getFromSites ($options)
 	{
-		$results = array();
 		$sql     = 'SELECT value FROM site ';
 		if (!empty($options['name'])) {
 			$sql .= "WHERE setting = '{$options['name']}'";
 		}
 
 		$result = $this->queryOneRow($sql);
-		if ($result !== false) {
-			$results['value'] = $row['value'];
-		}
 
-		return $results['value'];
+		return $result['value'];
 	}
 }
 
