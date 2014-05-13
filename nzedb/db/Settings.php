@@ -32,7 +32,7 @@ class Settings extends DB
 	public function __construct (array $options = array())
 	{
 		parent::__construct($options);
-		$result = parent::queryExec("describe site");
+		$result = parent::exec("describe site", true);
 		$this->table = ($result === false || empty($result)) ? 'settings' : 'site';
 
 		$this->setCovers();
@@ -56,7 +56,7 @@ class Settings extends DB
 	public function getSetting ($options = array())
 	{
 		if (!is_array($options)) {
-			$options = ['setting' => $options];
+			$options = ['name' => $options];
 		}
 		$defaults = array(
 			'section'    => '',
@@ -125,12 +125,12 @@ class Settings extends DB
 	{
 		$sql = 'SELECT value FROM site ';
 		if (!empty($options['name'])) {
-			$sql .= "WHERE setting = '{$options['setting']}'";
+			$sql .= "WHERE setting = '{$options['name']}'";
 		}
 
 		$result = $this->queryOneRow($sql);
 
-		return $result === false ?: $result['value'];
+		return $result['value'];
 	}
 }
 
