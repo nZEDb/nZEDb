@@ -242,6 +242,7 @@ CREATE TABLE predb (
 	nukereason VARCHAR(255) NULL COMMENT 'How many files does this pre have ?',
 	files VARCHAR(50) NULL,
 	filename VARCHAR(255) NOT NULL DEFAULT '',
+	searched TINYINT(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
@@ -251,6 +252,7 @@ CREATE INDEX ix_predb_predate ON predb (predate);
 CREATE INDEX ix_predb_source ON predb (source);
 CREATE INDEX ix_predb_requestid on predb (requestid, groupid);
 CREATE INDEX ix_predb_filename ON predb (filename);
+CREATE INDEX ix_predb_searched ON predb (searched);
 CREATE UNIQUE INDEX ix_predb_md5 ON predb (md5);
 CREATE UNIQUE INDEX ix_predb_sha1 ON predb (sha1);
 
