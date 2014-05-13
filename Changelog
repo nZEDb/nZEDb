@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 
 2014-05-13 bart39
+	* Fix: Verify tmpunrarpath is not null before removing dead folders
 	* Chg: Only reset collections / nzbs that are older then delay time check in site settings
 2014-05-13 ruhllatio
 	* Fix: $res variables in NameFixer predb match functions now check for false before rowCount()
