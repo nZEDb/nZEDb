@@ -6,6 +6,24 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+
+2014-05-13 bart39
+	* Fix: Verify tmpunrarpath is not null before removing dead folders
+	* Chg: Only reset collections / nzbs that are older then delay time check in site settings
+2014-05-13 ruhllatio
+	* Fix: $res variables in NameFixer predb match functions now check for false before rowCount()
+	* Chg: PreDB FT Match function query to rule out impossible matches / hanging matches
+	* Chg: Optimize FT Match query for speed
+	* Fix: PreDB Scrape from Web sources should no longer overwrite valid pre info if not set
+	* Add: Usenet name to updateReleases NameFixer function
+	* Fix: PreDB web scrape double escape string in MD5 on update
+	* Fix: Remaining PreDB dupe errors from uc and predbme / fix updateReleases for checkNames + NFO
+2014-05-13 kevin
+	* Add: POSIX Extension as requirement for unix operating systems to INSTALL.txt
+	* Chg: Predb web, use MySQL to md5/sha1 to avoid encoding issues.
+	* Fix: Fix multiple delete of releases on web browser.
+	* Fix: Add reloading of page when bulk editing releases on web page.
+	* Fix: Indent/various issues in admin theme.
 2014-05-12 DariusIII
 	* Chg: Add huge file removal option to remove crap part of tmux admin page.
 2014-05-11 kevin

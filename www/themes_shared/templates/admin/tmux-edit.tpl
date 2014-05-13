@@ -1,11 +1,8 @@
 <h1>{$page->title}</h1>
-
 <form action="{$SCRIPT_NAME}?action=submit" method="post">
-
 {if $error != ''}
 	<div class="error">{$error}</div>
 {/if}
-
 <fieldset>
 	<legend>Tmux - How It Works</legend>
 	<table class="input">
@@ -20,8 +17,8 @@
 					the script in a new shell environment. <br/>
 					This allows for scripts that crash to be restarted without user intervention.<br/><br/>
 					You can run multiple tmux sessions, but they all must have an associated tmux.conf file and all
-					sessions must use the same tmux.conf file.<br/><br/>
-
+					sessions must use the same tmux.conf file.
+					<br/><br/>
 					<h3><b>NOTICE:</b></h3> If "Save Tmux Settings" is the last thing you did on this page or if it is
 					the active element and if you have this page set to autorefresh or you refresh instead of following
 					a link to this page, you will set the db with the settings currently on this page, not reload from
@@ -31,7 +28,6 @@
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Monitor</legend>
 	<table class="input">
@@ -45,13 +41,11 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="monitor_delay">Monitor Loop Timer:</label></td>
 			<td>
 				<input id="monitor_delay" name="monitor_delay" class="short" type="text"
-					   value="{$ftmux->monitor_delay}"/>
-
+					value="{$ftmux->monitor_delay}"/>
 				<div class="hint">The time between query refreshes of monitor information, in seconds. This has no
 					effect on any other pane, except in regards to the kill switches. The other panes are checked every
 					10 seconds. The lower the number, the more often it queries the database for numbers.<br/>
@@ -61,29 +55,25 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="tmux_session">Tmux Session:</label></td>
 			<td>
 				<input id="tmux_session" name="tmux_session" class="long" type="text" value="{$ftmux->tmux_session}"/>
-
 				<div class="hint">Enter the session name to be used by tmux, no spaces allowed in the name, this can't
 					be changed after scripts start. If you are running multiple servers, you could put your hostname
 					here
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="monitor_path">Monitor a Ramdisk:</label></td>
 			<td>
 				<input id="monitor_path" name="monitor_path" class="long" type="text"
-					   value="{$ftmux->monitor_path}"/><br/>
+					value="{$ftmux->monitor_path}"/><br/>
 				<input id="monitor_path_a" name="monitor_path_a" class="long" type="text"
-					   value="{$ftmux->monitor_path_a}"/><br/>
+					value="{$ftmux->monitor_path_a}"/><br/>
 				<input id="monitor_path_b" name="monitor_path_b" class="long" type="text"
-					   value="{$ftmux->monitor_path_b}"/>
-
+					value="{$ftmux->monitor_path_b}"/>
 				<div class="hint">Enter a path here to have Monitor monitor its usage and free space. Must be a valid
 					path.<br/>To use this example, add to fstab and edit path, gid and uid, then mount as user not root:<br/>tmpfs
 					/var/www/nZEDb/resources/tmp/unrar tmpfs
@@ -92,7 +82,6 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="explain">Information:</label></td>
 			<td>
@@ -134,7 +123,6 @@
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Sequential</legend>
 	<table class="input">
@@ -149,12 +137,10 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="seq_timer">Sequential Sleep Timer:</label></td>
 			<td>
 				<input id="seq_timer" name="seq_timer" class="short" type="text" value="{$ftmux->seq_timer}"/>
-
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
 		</tr>
@@ -164,10 +150,8 @@
 				<div class="explanation">I recommend using Sequential, if you are also grabbing nzbs.</div>
 			</td>
 		</tr>
-
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Update Binaries</legend>
 	<table class="input">
@@ -181,7 +165,6 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="bins_timer">Update Binaries Sleep Timer:</label></td>
 			<td>
@@ -192,7 +175,6 @@
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Backfill</legend>
 	<table class="input">
@@ -232,34 +214,28 @@
 			<td style="width:180px;"><label for="backfill_qty">Backfill Quantity:</label></td>
 			<td>
 				<input id="backfill_qty" name="backfill_qty" class="short" type="text" value="{$ftmux->backfill_qty}"/>
-
 				<div class="hint">When not running backfill intervals, you select the number of headers per group per
 					thread to download.
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="backfill_groups">Backfill Groups:</label></td>
 			<td>
 				<input id="backfill_groups" name="backfill_groups" class="short" type="text"
-					   value="{$ftmux->backfill_groups}"/>
-
+					value="{$ftmux->backfill_groups}"/>
 				<div class="hint">When running backfill the groups are sorted by the backfill method chosen above.
 					Select the number of groups to backfill per loop.
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="back_timer">Backfill Sleep Timer:</label></td>
 			<td>
 				<input id="back_timer" name="back_timer" class="short" type="text" value="{$ftmux->back_timer}"/>
-
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="progressive">Variable Sleep Timer:</label></td>
 			<td>
@@ -272,7 +248,6 @@
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Import nzbs</legend>
 	<table class="input">
@@ -286,7 +261,6 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="nzbs">Nzbs:</label></td>
 			<td>
@@ -298,12 +272,10 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="import_timer">Import nzbs Sleep Timer:</label></td>
 			<td>
 				<input id="import_timer" name="import_timer" class="short" type="text" value="{$ftmux->import_timer}"/>
-
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
 		</tr>
@@ -318,7 +290,6 @@
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Update Releases</legend>
 	<table class="input">
@@ -333,18 +304,15 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="rel_timer">Update Releases Sleep Timer:</label></td>
 			<td>
 				<input id="rel_timer" name="rel_timer" class="short" type="text" value="{$ftmux->rel_timer}"/>
-
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Postprocessing</legend>
 	<table class="input">
@@ -357,29 +325,24 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="post_timer">Postprocess Additional Sleep Timer:</label></td>
 			<td>
 				<input id="post_timer" name="post_timer" class="short" type="text" value="{$ftmux->post_timer}"/>
-
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="post_kill_timer">Postprocess Kill Timer:</label></td>
 			<td>
 				<input id="post_kill_timer" name="post_kill_timer" class="short" type="text"
-					   value="{$ftmux->post_kill_timer}"/>
-
+					value="{$ftmux->post_kill_timer}"/>
 				<div class="hint">The time postprocess is allowed to run with no updates to the screen. Activity is
 					detected when the history for the pane changes. The clock is restarted every time activity is
 					detected.
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="post_amazon">Postprocess Amazon:</label></td>
 			<td>
@@ -387,17 +350,14 @@
 				<div class="hint">Choose to do books, music and games lookups true/false</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="post_timer_amazon">Postprocess Amazon Sleep Timer:</label></td>
 			<td>
 				<input id="post_timer_amazon" name="post_timer_amazon" class="short" type="text"
-					   value="{$ftmux->post_timer_amazon}"/>
-
+					value="{$ftmux->post_timer_amazon}"/>
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="post_non">Postprocess Non-Amazon:</label></td>
 			<td>
@@ -405,19 +365,16 @@
 				<div class="hint">Choose to do movies, anime and tv lookups. true/false</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="post_timer">Postprocess Non-Amazon Sleep Timer:</label></td>
 			<td>
 				<input id="post_timer_non" name="post_timer_non" class="short" type="text"
-					   value="{$ftmux->post_timer_non}"/>
-
+					value="{$ftmux->post_timer_non}"/>
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Comment Sharing</legend>
 	<table class="input">
@@ -426,7 +383,6 @@
 			<td>
 				{html_radios id="run_sharing" name='run_sharing' values=$yesno_ids output=$yesno_names
 				selected=$ftmux->run_sharing separator='<br />'}
-
 				<div class="hint">Run Comment Sharing from within tmux if you have it enabled in Admin->Sharing
 					Settings.
 				</div>
@@ -436,14 +392,12 @@
 			<td style="width:180px;"><label for="sharing_timer">Comments Sharing Timer:</label></td>
 			<td>
 				<input class="short" id="sharing_timer" name="sharing_timer" type="text"
-					   value="{$ftmux->sharing_timer}"/>
-
+					value="{$ftmux->sharing_timer}"/>
 				<div class="hint">Set the sleep time between updates</div>
 			</td>
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Fix Release Names</legend>
 	<table class="input">
@@ -456,18 +410,15 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="fix_timer">Fix Release Names Sleep Timer:</label></td>
 			<td>
 				<input id="fix_timer" name="fix_timer" class="short" type="text" value="{$ftmux->fix_timer}"/>
-
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Remove Crap Releases</legend>
 	<table class="input">
@@ -476,7 +427,6 @@
 			<td>
 				{html_radios id="fix_crap_opt" name='fix_crap_opt' onchange="enableFixCrapCustom()" values=$fix_crap_radio_ids output=$fix_crap_radio_names selected=$ftmux->fix_crap_opt separator='<br />'}
 				<br>
-
 				<div class="checkbox-grid">
 					{if $ftmux->fix_crap_opt == "Custom"}
 						{html_checkboxes id="fix_crap" name='fix_crap' values=$fix_crap_check_ids output=$fix_crap_check_names selected=explode(', ', $ftmux->fix_crap)}
@@ -487,18 +437,15 @@
 				<div class="hint">Choose to run Remove Crap Releases. You can all or some.</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="crap_timer">Remove Crap Releases Sleep Timer:</label></td>
 			<td>
 				<input id="crap_timer" name="crap_timer" class="short" type="text" value="{$ftmux->crap_timer}"/>
-
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Decrypt Hashes</legend>
 	<table class="input">
@@ -509,12 +456,10 @@
 				<div class="hint">Choose to run Decrypt Hashes true/false</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="dehash_timer">Decrypt Hashes Sleep Timer:</label></td>
 			<td>
 				<input id="dehash_timer" name="dehash_timer" class="short" type="text" value="{$ftmux->dehash_timer}"/>
-
 				<div class="hint">The time to sleep from the time the loop ends until it is restarted, in seconds.</div>
 			</td>
 		</tr>
@@ -532,7 +477,6 @@
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Update TV/Theater</legend>
 	<table class="input">
@@ -543,12 +487,10 @@
 				<div class="hint">Choose to run Update TV and Theater Schedules true/false</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="tv_timer">Update TV and Theater Start Timer:</label></td>
 			<td>
 				<input id="tv_timer" name="tv_timer" class="short" type="text" value="{$ftmux->tv_timer}"/>
-
 				<div class="hint">This is a start timer. The default is 12 hours. This means that if enabled, is will
 					start/run every 12 hours, no matter how long it runs for.
 				</div>
@@ -556,7 +498,6 @@
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>PreDb IRC Scraper</legend>
 	<table class="input">
@@ -580,7 +521,6 @@
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Miscellaneous</legend>
 	<table class="input">
@@ -594,31 +534,26 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="collections_kill">Maximum Collections:</label></td>
 			<td>
 				<input id="collections_kill" name="collections_kill" class="short" type="text"
-					   value="{$ftmux->collections_kill}"/>
-
+					value="{$ftmux->collections_kill}"/>
 				<div class="hint">Set this to any number above 0 and when it is exceeded, backfill and update binaries
 					will be terminated. 0 disables.
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="postprocess_kill">Maximum Postprocess:</label></td>
 			<td>
 				<input id="postprocess_kill" name="postprocess_kill" class="short" type="text"
-					   value="{$ftmux->postprocess_kill}"/>
-
+					value="{$ftmux->postprocess_kill}"/>
 				<div class="hint">Set this to any number above 0 and when it is exceeded, import, backfill and update
 					binaries will be terminated. 0 disables.
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="write_logs">Logging:</label></td>
 			<td>
@@ -628,7 +563,6 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="powerline">Powerline Status Bar:</label></td>
 			<td>
@@ -643,7 +577,6 @@
 		</tr>
 	</table>
 </fieldset>
-
 <fieldset>
 	<legend>Server Monitors</legend>
 	<table class="input">
@@ -654,7 +587,6 @@
 				<div class="hint">Choose to display the query times for each set of queries. true/false.</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="htop">htop:</label></td>
 			<td>
@@ -664,7 +596,6 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="nmon">nmon:</label></td>
 			<td>
@@ -674,27 +605,23 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="vnstat">vnstat:</label></td>
 			<td>
 				{html_radios id="vnstat" name='vnstat' values=$yesno_ids output=$yesno_names selected=$ftmux->vnstat separator='<br />'}
 				<input id="vnstat_ARGS" name="vnstat_ARGS" class="text" type="text" value="{$ftmux->vnstat_ARGS}"/>
-
 				<div class="hint">vnStat is a console-based network traffic monitor for Linux and BSD that keeps a log
 					of network traffic for the selected interface(s). Any additional arguments should be placed in the
 					text box. The pane for this can not be created after tmux starts.
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="tcptrack">tcptrack:</label></td>
 			<td>
 				{html_radios id="tcptrack" name='tcptrack' values=$yesno_ids output=$yesno_names selected=$ftmux->tcptrack separator='<br />'}
 				<input id="tcptrack_args" name="tcptrack_args" class="text" type="text"
-					   value="{$ftmux->tcptrack_args}"/>
-
+					value="{$ftmux->tcptrack_args}"/>
 				<div class="hint">tcptrack displays the status of TCP connections that it sees on a given network
 					interface. tcptrack monitors their state and displays information such as state, source/destination
 					addresses and bandwidth usage in a sorted, updated list very much like the top(1) command. <br/>Any
@@ -704,7 +631,6 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="bwmng">bwm-ng:</label></td>
 			<td>
@@ -714,7 +640,6 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="mytop">mytop:</label></td>
 			<td>
@@ -725,14 +650,12 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="showprocesslist">Show Process List:</label></td>
 			<td>
 				{html_radios id="showprocesslist" name='showprocesslist' values=$yesno_ids output=$yesno_names selected=$ftmux->showprocesslist separator='<br />'}
 				<input id="processupdate" name="processupdate" class="short" type="text"
-					   value="{$ftmux->processupdate}"/>
-
+					value="{$ftmux->processupdate}"/>
 				<div class="hint">This runs the watch command in its own pane. This could be used for a live 'slow query
 					monitor'. Just set the time above and only the queries that exceed it will be displayed.<br/>mysql
 					-e "SELECT time, state, rows_examined, info FROM information_schema.processlist WHERE command !=
@@ -743,7 +666,6 @@
 				</div>
 			</td>
 		</tr>
-
 		<tr>
 			<td style="width:180px;"><label for="console">Console:</label></td>
 			<td>
@@ -754,7 +676,5 @@
 		</tr>
 	</table>
 </fieldset>
-
 <input type="submit" value="Save Tmux Settings"/>
-
 </form>
