@@ -73,10 +73,12 @@ function writelog($pane)
 }
 
 //remove folders from tmpunrar
-$tmpunrar = $site->tmpunrarpath;
-if ((count(glob("$tmpunrar/*", GLOB_ONLYDIR))) > 0) {
-	echo $c->info("Removing dead folders from " . $tmpunrar);
-	exec("rm -r " . $tmpunrar . "/*");
+if (isset($site->tmpunrarpath)) {
+	$tmpunrar = $site->tmpunrarpath;
+	if ((count(glob("$tmpunrar/*", GLOB_ONLYDIR))) > 0) {
+		echo $c->info("Removing dead folders from " . $tmpunrar);
+		exec("rm -r " . $tmpunrar . "/*");
+	}
 }
 
 function command_exist($cmd)
