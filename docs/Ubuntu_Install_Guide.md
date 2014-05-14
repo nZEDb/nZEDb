@@ -218,14 +218,19 @@
                  sudo a2enmod rewrite
                  sudo service apache2 restart
 
-6.  Install Unrar/FFmpeg|Avconv/Mediainfo/Lame
+6.  Install Extras
+
+          Note: These 2 applications might be needed to add repositories.
 
                  sudo apt-get install software-properties-common
-                 sudo apt-get install unrar python-software-properties
+                 sudo apt-get install python-software-properties
 
-      # Unrar (newest)
+      # Unrar
+
+          sudo apt-get install unrar
 
           Note: The unrar installed above is old (version 4), you can install the newest manually.
+                You can check your current version of unrar by typing unrar and looking at the first line of the output.
                 Head to http://www.rarlab.com/download.htm
                 Look for the latest unrar for linux (currently RAR 5.10 beta 4 for Linux x64), right click on
                 it and click copy link. You can replace the link with the one I have below.
@@ -270,18 +275,50 @@
 
               (automated compilation, possibly unmaintained) https://github.com/jonnyboy/installers/blob/master/compile_ffmpeg.sh
 
-
-7. Install memcache (optional).
-
-     # Memcache:
+      # Memcache:
 
               sudo apt-get install memcached php5-memcache
 
-          Note: AFTER git cloning and seting up the indexer (step 8 & 9), edit config.php and change MEMCACHE_ENABLED to true.
+          Note: AFTER git cloning and seting up the indexer (step 7 & 8), edit config.php and change MEMCACHE_ENABLED to true.
 
               sudo nano /var/www/nZEDb/www/config.php
 
-8. Git clone the nZEDb source.
+      # yEnc:
+
+          Note: You have 3 choices,
+                you can install simple_php_yenc_decode which offers the best performance,
+                installing yydecode, which offers good performance,
+                or using PHP (no install required) which is very slow.
+                You can change these at any time if you have issues with any of the 3.
+
+          simple_php_yenc_decode:
+
+               sudo apt-get install git
+               cd ~/
+               git clone https://github.com/kevinlekiller/simple_php_yenc_decode
+               cd simple_php_yenc_decode/
+               sh ubuntu.sh
+               cd ~/
+               rm -rf simple_php_yenc_decode/
+
+          yydecode
+
+               cd ~/
+               mkdir -p yydecode
+               cd yydecode/
+               wget http://colocrossing.dl.sourceforge.net/project/yydecode/yydecode/0.2.10/yydecode-0.2.10.tar.gz
+               tar -xzf yydecode-0.2.10.tar.gz
+               cd yydecode-0.2.10/
+               ./configure
+               make
+               sudo make install
+               make clean
+               cd ~/
+               rm -rf yydecode/
+
+          Note: After installing you can change the yEnc setting in site edit accordingly.
+
+7. Git clone the nZEDb source.
 
       # Install git.
 
@@ -295,19 +332,19 @@
 
       # Set the permissions.
 
-          Note: During the install (step 9 of this guide) you can set perms to 777 to make things easier:
+          Note: During the install (step 8 of this guide) you can set perms to 777 to make things easier:
 
               sudo chmod -R 777 /var/www/nZEDb
               cd nZEDb
 
-          Note: After install (step 9 of this guide) you can properly set your permissions:
+          Note: After install (step 8 of this guide) you can properly set your permissions:
           Note: YourUnixUserName is the user you use in CLI. You can find this by typing : echo $USER
 
               sudo chown -R YourUnixUserName:www-data /var/www/nZEDb
               sudo usermod -a -G www-data YourUnixUserName
               sudo chmod -R 774 /var/www/nZEDb
 
-9. Run the installer from an internet browser.
+8. Run the installer from an internet browser.
 
          Note: Change localhost for the server's IP if you are browsing on another computer.
          Note: You can find your server's IP by typing ifconfig and looking for inet addr:192.168.x.x under the wlan0 or eth0 sections.
@@ -317,13 +354,13 @@
          Note: If you have issues with stage 2, make sure you have set the right permissions on the tsv files,
                mysql has FILE access for the user and apparmor is disabled and you have rebooted after disabling it.
 
-10. Configure the site.
+9. Configure the site.
 
       Enable some groups in view groups.
 
       Change settings in edit site (set api keys, set paths to unrar etc..)
 
-11. Start indexing groups.
+10. Start indexing groups.
 
       Use scripts in misc/update (update_binaries to get article headers, update_releases to create releases).
 
