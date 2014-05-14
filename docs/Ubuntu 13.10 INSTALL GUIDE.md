@@ -229,7 +229,7 @@
                 Look for the latest unrar for linux (currently RAR 5.10 beta 4 for Linux x64), right click on
                 it and click copy link. You can replace the link with the one I have below.
 
-          Note: Now that you have downloaded the newest unrar, you can replace the old one with the new one:
+          Note: Replace the old unrar with the new one:
 
                  sudo mv /usr/bin/unrar /usr/bin/unrar4
                  mkdir -p ~/new_unrar
@@ -243,7 +243,7 @@
 
       # Mediainfo
 
-          Note: Ubuntu 14.04 comes with a recent version of MediaInfo : sudo apt-get install mediainfo
+          Note: Ubuntu 14.04 comes with a recent version of MediaInfo (0.7.67 as of this writing) : sudo apt-get install mediainfo
 
           Note: On older versions of Ubuntu, you can manually install it, download the deb files from here :
 
