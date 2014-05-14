@@ -27,20 +27,14 @@
        # Python 2.*
 
                  sudo apt-get install python-setuptools python-pip
-                 sudo python -m easy_install
+                 sudo python -m easy_install pip
                  sudo easy_install cymysql
-                 pip list
 
        # Python 3.* - If Python 3 is installed, the module also must be installed
 
-                 sudo apt-get install python3-setuptools python3-pip
+                 sudo apt-get install python3-setuptools
                  sudo python3 -m easy_install pip
-                 sudo pip-3.2 install cymysql
-                 pip-3.2 list
-       # -or-
-
-                 sudo pip-3.3 install cymysql
-                 pip-3.3 list
+                 sudo pip3 install cymysql
 
 
 2. Update and upgrade the operating system.
@@ -63,8 +57,9 @@
 
 3. Install PHP and extensions.
 
-       # (OPTIONAL) Add a repository to get apache 2.4 and php 5.5
+       # (OPTIONAL) Add a repository to get (most recent versions of) apache 2.4 and php 5.5
 
+                sudo apt-get install software-properties-common
                 sudo add-apt-repository ppa:ondrej/php5
                 sudo apt-get update
 
@@ -73,17 +68,34 @@
 
                 sudo apt-get install php5 php5-dev php5-json php-pear php5-gd php5-mysqlnd php5-curl
 
-4. Install a MySQL client/server.
+4. Install a MySQL client/server, pick from one of these 3.
 
-       # You can install MariaDB or MySQL:
+           Note: MySQL is a relational database system, developed by Oracle.
 
-           Note: MariaDB is a fork of MySQL. Read more : https://mariadb.com/kb/en/mariadb-versus-mysql-compatibility/
+                sudo apt-get install mysql-server mysql-client libmysqlclient-dev
 
-                MariaDB:
+           Note: MariaDB is a fork of MySQL, it is regarded as having more performance than MySQL.
+                 Read more : https://mariadb.com/kb/en/mariadb-versus-mysql-compatibility/
+
                 sudo apt-get install mariadb-server mariadb-client libmysqlclient-dev
 
-                MySQL:
-                sudo apt-get install mysql-server mysql-client libmysqlclient-dev
+           Note: Percona is also a fork of MySQL, regarded also as having more performance than MySQL.
+                 Read more : http://www.percona.com/software/percona-server/feature-comparison
+
+                sudo apt-key adv --keyserver keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
+                sudo nano /etc/apt/sources.list.d/percona.list
+
+                Note: Paste the deb and deb-src lines, replacing VERSION with the name of your ubuntu: (12.04: precise,
+                      12.10: quantal, 13.04: raring, 13.10: saucy, 14.04: trusty, 14.10: utopic).
+
+                deb http://repo.percona.com/apt VERSION main
+                deb-src http://repo.percona.com/apt VERSION main
+
+                Note: Exit and save nano (press control+x, then type y and press Enter).
+
+                sudo apt-get update
+                sudo apt-get install percona-server-server-5.5 percona-server-client-5.5 libmysqlclient-dev
+
 
        # Change my.cnf using the nano text editor.
 
@@ -91,7 +103,7 @@
 
                 sudo nano /etc/mysql/my.cnf
 
-           Note: Change or add the following values to the [mysqld] section:
+           Note: Change or add (if they are missing) the following values to the [mysqld] section:
 
                 max_allowed_packet = 16M
                 group_concat_max_len = 8192
@@ -144,24 +156,20 @@
 
                 sudo nano /etc/apache2/sites-available/nZEDb.conf
 
-       # Paste the following (This is your VirtualHost):
+       # Paste the following (change to suit your needs):
 
                 <VirtualHost *:80>
-                        ServerAdmin webmaster@localhost
-                        ServerName localhost
-
-                        DocumentRoot "/var/www/nZEDb/www"
-                        LogLevel warn
-                        ServerSignature Off
-                        ErrorLog /var/log/apache2/error.log
-
-                   <Directory "/var/www/nZEDb/www">
-                          Options FollowSymLinks
-                          AllowOverride All
-                          Order allow,deny
-                          allow from all
-                 </Directory>
-
+                    ServerAdmin webmaster@localhost
+                    ServerName localhost
+                    DocumentRoot "/var/www/nZEDb/www"
+                    LogLevel warn
+                    ServerSignature Off
+                    ErrorLog /var/log/apache2/error.log
+                    <Directory "/var/www/nZEDb/www">
+                        Options FollowSymLinks
+                        AllowOverride All
+                        Require all granted
+                    </Directory>
                 </VirtualHost>
 
        # Save and exit nano.
@@ -185,7 +193,22 @@
 
                  sudo nano /etc/apache2/sites-available/nZEDb
 
-       # Paste the VirtualHost from apache 2.4 above.
+       # Paste the following (change to suit your needs):
+
+                 <VirtualHost *:80>
+                     ServerAdmin webmaster@localhost
+                     ServerName localhost
+                     DocumentRoot "/var/www/nZEDb/www"
+                     LogLevel warn
+                     ServerSignature Off
+                     ErrorLog /var/log/apache2/error.log
+                     <Directory "/var/www/nZEDb/www">
+                         Options FollowSymLinks
+                         AllowOverride All
+                         Order allow,deny
+                         allow from all
+                     </Directory>
+                 </VirtualHost>
 
        # Disable the default site, enable nZEDb, enable rewrite, restart apache:
 
@@ -199,19 +222,34 @@
                  sudo apt-get install software-properties-common
                  sudo apt-get install unrar python-software-properties
 
+      # Unrar (newest)
+
+          Note: The unrar installed above is old (version 4), you can install the newest manually.
+                Head to http://www.rarlab.com/download.htm
+                Look for the latest unrar for linux (currently RAR 5.10 beta 4 for Linux x64), right click on
+                it and click copy link. You can replace the link with the one I have below.
+
+          Note: Now that you have downloaded the newest unrar, you can replace the old one with the new one:
+
+                 sudo mv /usr/bin/unrar /usr/bin/unrar4
+                 mkdir -p ~/new_unrar
+                 cd ~/new_unrar
+                 wget http://www.rarlab.com/rar/rarlinux-x64-5.1.b4.tar.gz
+                 tar -xzf rarlinux*.tar.gz
+                 sudo mv rar/unrar /usr/bin/unrar
+                 sudo chmod 755 /usr/bin/unrar
+                 cd ~/
+                 rm -rf ~/new_unrar
+
       # Mediainfo
 
           Note: Ubuntu 14.04 comes with a recent version of MediaInfo : sudo apt-get install mediainfo
 
-          Note: On older versions of Ubuntu, you can manually install it (look at the URLs on your browser for the latest versions):
+          Note: On older versions of Ubuntu, you can manually install it, download the deb files from here :
 
-                 wget http://mediaarea.net/download/binary/libzen0/0.4.29/libzen0_0.4.29-1_amd64.xUbuntu_13.10.deb
-                 wget http://mediaarea.net/download/binary/libmediainfo0/0.7.67/libmediainfo0_0.7.67-1_amd64.xUbuntu_13.10.deb
-                 wget http://mediaarea.net/download/binary/mediainfo/0.7.67/mediainfo_0.7.67-1_amd64.Debian_7.0.deb
-                 dpkg -i libzen0_0.4.29-1_amd64.xUbuntu_13.10.deb
-                 dpkg -i libmediainfo0_0.7.67-1_amd64.xUbuntu_13.10.deb
-                 dpkg -i mediainfo_0.7.67-1_amd64.Debian_7.0.deb
-
+                http://mediaarea.net/en/MediaInfo/Download/Ubuntu
+                You need libmediainfo, libzen0 and mediainfo (CLI).
+                Once you have downloaded them (wget http://link_to_file), use sudo dpkg -i name_of_the_file.deb to install it.
 
       $ Lame
 
@@ -219,15 +257,17 @@
 
       # FFmpeg or Avconv:
 
-          Note: You can compile the latest ffmpeg using this script:
-
-              https://github.com/jonnyboy/installers/blob/master/compile_ffmpeg.sh
-
-          Note: You can alternatively install avconv:
+          Note: On newer versions of ubuntu you can install avconv:
 
               sudo apt-get install libav-tools
 
               Note: Type which avconv to get the path (should be /usr/bin/avconv), you can use this in site edit later on.
+
+          Note: On older versions of ubuntu you can manually compile ffmpeg:
+
+              (manual compilation) https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu
+
+              (automated compilation, possibly unmaintained) https://github.com/jonnyboy/installers/blob/master/compile_ffmpeg.sh
 
 
 7. Install memcache (optional).
