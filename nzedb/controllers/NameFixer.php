@@ -364,6 +364,10 @@ class NameFixer
 							$status = "isrenamed = 1, iscategorized = 1, proc_par2 = 1,";
 						} else if ($type == "Filenames, ") {
 							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
+						} else if ($type == "Prehash file match, ") {
+							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
+						} else if ($type == "Prehash FT Exact, ") {
+							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
 						}
 						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
 								. "anidbid = NULL, preid = %s, searchname = %s, %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
