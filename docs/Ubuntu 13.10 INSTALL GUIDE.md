@@ -1,8 +1,5 @@
 ## Most of this guide is done from the command line (terminal).
 
-An alternative guid for Ubuntu 12.04 to Ubuntu 14.04 is available here :
-https://github.com/nZEDb/nZEDb/blob/dev/docs/Ubuntu%2013.10%20INSTALL%20GUIDE.md
-
 1. Misc.
 
        # For those using an older version of ubuntu, php 5.4 is the minimum required version.
