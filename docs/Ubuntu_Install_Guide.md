@@ -257,7 +257,7 @@
                 You need libmediainfo, libzen0 and mediainfo (CLI).
                 Once you have downloaded them (wget http://link_to_file), use sudo dpkg -i name_of_the_file.deb to install it.
 
-      $ Lame
+      # Lame
 
           sudo apt-get install lame
 
