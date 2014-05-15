@@ -21,7 +21,7 @@ section,subsection,name,value,hint,setting
 		grabnzbthreads	1	The number of threads for Grab NZBs.	grabnzbthreads
 		grabstatus	1	Whether to update download counts when someone downloads a release.	grabstatus
 		hashcheck	1		hashcheck
-		lastpretime	0		Last time we downloaded a pre using WEB sources
+		lastpretime	0	Last time we downloaded a pre using WEB sources	lastpretime
 		lookup_reqids	1	Whether to attempt to lookup Request IDs using the Request ID link below.	lookup_reqids
 		lookupanidb	0	Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.	lookupanidb
 		lookupbooks	1	Whether to attempt to lookup book information from Amazon when processing binaries.	lookupbooks
