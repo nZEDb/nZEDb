@@ -207,7 +207,7 @@ class DbUpdate
 		$options += $defaults;
 
 		$this->_useSettings();
-		$currentVersion = $this->settings->getSetting('sqlpatch');
+		$currentVersion = $this->settings->getSetting(['setting' => 'sqlpatch']);
 		if (!is_numeric($currentVersion)) {
 			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
