@@ -7,6 +7,11 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-05-14 kevin
+	* Upd: Update ubuntu guide.
+	* Mov: Rename ubuntu guide.
+2014-05-14 DariusIII
+	* Fix: Add missing $status for new types of matches in NameFixer
 2014-05-13 bart39
 	* Fix: set filesize to 0 if sum of parts returns NULL
 	* Fix: Verify tmpunrarpath is not null before removing dead folders
@@ -19,6 +24,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: Usenet name to updateReleases NameFixer function
 	* Fix: PreDB web scrape double escape string in MD5 on update
 	* Fix: Remaining PreDB dupe errors from uc and predbme / fix updateReleases for checkNames + NFO
+	* Add: PreDB FT Match Script (testing phase)
 2014-05-13 kevin
 	* Add: POSIX Extension as requirement for unix operating systems to INSTALL.txt
 	* Chg: Predb web, use MySQL to md5/sha1 to avoid encoding issues.
