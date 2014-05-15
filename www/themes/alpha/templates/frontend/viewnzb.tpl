@@ -532,7 +532,7 @@
 				</colgroup>
 				<thead>
 				<tr>
-					<th>User</th>
+					<th style="width:20%">User</th>
 					<th>Comment</th>
 				</tr>
 				</thead>
@@ -541,7 +541,7 @@
 					<tr>
 						<td class="less" title="{$comment.createddate}">
 							<a title="View {$comment.username}'s profile" href="{$smarty.const.WWW_TOP}/profile?name={$comment.username}">{$comment.username}</a>
-							<br/>{$comment.createddate|date_format}
+							<br/>{$comment.createddate|date_format} ({$comment.createddate|timeago} ago)
 						</td>
 						{if $comment.shared == 2}
 							<td style="color:#6B2447">{$comment.text|escape:"htmlall"|nl2br}</td>
