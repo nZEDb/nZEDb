@@ -33,8 +33,7 @@ class Settings extends DB
 	{
 		parent::__construct($options);
 		$result = parent::exec("describe site", true);
-		$this->table = ($result === false || empty($result)) ? 'settings' : 'site';
-
+		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
 		return self::$pdo;
@@ -64,6 +63,7 @@ class Settings extends DB
 			'name'       => null,
 		);
 		$options += $defaults;
+
 		if ($this->table == 'settings') {
 			$result = $this->_getFromSettings($options);
 		} else {
@@ -125,7 +125,7 @@ class Settings extends DB
 	{
 		$setting = empty($options['setting']) ? $options['name'] : $options['setting'];
 		$sql = 'SELECT value FROM site ';
-		if (!empty($options['name'])) {
+		if (!empty($setting)) {
 			$sql .= "WHERE setting = '$setting'";
 		}
 
