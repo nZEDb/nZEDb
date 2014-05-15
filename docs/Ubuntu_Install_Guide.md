@@ -170,6 +170,7 @@
                         AllowOverride All
                         Require all granted
                     </Directory>
+                    Alias /covers /var/www/nZEDb/resources/covers
                 </VirtualHost>
 
        # Save and exit nano.
@@ -209,6 +210,7 @@
                          Order allow,deny
                          allow from all
                      </Directory>
+                     Alias /covers /var/www/nZEDb/resources/covers
                  </VirtualHost>
 
        # Disable the default site, enable nZEDb, enable rewrite, restart apache:
