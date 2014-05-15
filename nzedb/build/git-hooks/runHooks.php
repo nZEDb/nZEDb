@@ -42,7 +42,7 @@ if ($error === false) {
 		try {
 			// Run DbUpdates to make sure we're up to date.
 			$DbUpdater = new \nzedb\db\DbUpdate();
-			$DbUpdater->newPatches();
+			$DbUpdater->newPatches(['safe' => false]);
 
 			$vers = new \nzedb\utility\Versions();
 			$vers->checkAll();
