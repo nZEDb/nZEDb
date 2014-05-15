@@ -209,7 +209,7 @@ class DbUpdate
 		$this->_useSettings();
 		$currentVersion = $this->settings->getSetting('sqlpatch');
 		if (!is_numeric($currentVersion)) {
-			exit("Bad sqlpatch value!!\n");
+			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
 
 		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
