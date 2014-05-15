@@ -7,6 +7,8 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-05-15 kevin
+	* Fix: Fixes / tweaks to encode yEnc.
 2014-05-14 kevin
 	* Upd: Update ubuntu guide.
 	* Mov: Rename ubuntu guide.
