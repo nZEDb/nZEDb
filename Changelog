@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 
 2014-05-15 kevin
+	* Fix: Add missing setting for predb to settings table.
 	* Add: Time ago to comments (alpha theme).
 	* Fix: Fixes / tweaks to encode yEnc.
 2014-05-14 kevin

@@ -1,0 +1,1 @@
+INSERT IGNORE INTO settings (value, setting) VALUES ('0', 'lastpretime');
