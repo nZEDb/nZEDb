@@ -1475,11 +1475,10 @@ while ($i > 0) {
 
 			//pane setup for IrcScraper / Sharing
 			$ipane = 3;
-			$spane = 4;
-			switch (true) {
-				case ($nntpproxy == 1):
-					$spane = 5;
-					break;
+			if ($nntpproxy == 1) {
+				$spane = 5;
+			} else {
+				$spane = 4;
 			}
 
 			//run IRCScraper
@@ -1541,11 +1540,10 @@ while ($i > 0) {
 
 			//pane setup for IrcScraper / Sharing
 			$ipane = 2;
-			$spane = 3;
-			switch (true) {
-				case ($nntpproxy == 1):
-					$spane = 4;
-					break;
+			if ($nntpproxy == 1) {
+				$spane = 4;
+			} else {
+				$spane = 3;
 			}
 
 			//run IRCScraper
@@ -1628,11 +1626,10 @@ while ($i > 0) {
 
 			//pane setup for IrcScraper / Sharing
 			$ipane = 3;
-			$spane = 4;
-			switch (true) {
-				case ($nntpproxy == 1):
-					$spane = 5;
-					break;
+			if ($nntpproxy == 1) {
+				$spane = 5;
+			} else {
+				$spane = 4;
 			}
 
 			//run IRCScraper

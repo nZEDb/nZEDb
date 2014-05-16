@@ -129,7 +129,7 @@ function preName($argv, $argc)
 							}
 					}
 				}
-				if ($cleanName != $row['name']) {
+				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
 					if (strlen(utf8_decode($cleanName)) <= 3) {
 					} else {
 						$determinedcat = $category->determineCategory($row["name"], $row["groupid"]);
