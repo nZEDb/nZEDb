@@ -7,6 +7,9 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 
+2014-05-16 niel
+	* Chg: Improvements to Settings/Site detection for upgrading from older installs.
+	* Chg: Using separate settings value in DbUpdate only if needed (Improves memory use).
 2014-05-15 ruhllatio
 	* Add: New category matching and refined filtering to match_predbfiles (no longer console only)
 	* Add: Full database (no category restriction with a separate method) filename matching for match_predbfiles
