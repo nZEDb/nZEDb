@@ -1402,23 +1402,6 @@ class Binaries
 	/**
 	 * @param $id
 	 *
-	 * @return array
-	 */
-	public function getForReleaseId($id)
-	{
-		return $this->db->query(
-			sprintf(
-				'SELECT binaries.*
-				FROM binaries
-				WHERE releaseid = %d
-				ORDER BY relpart', $id
-			)
-		);
-	}
-
-	/**
-	 * @param $id
-	 *
 	 * @return array|bool
 	 */
 	public function getById($id)

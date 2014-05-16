@@ -6,6 +6,88 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+
+2014-05-15 kevin
+	* Fix: Add missing setting for predb to settings table.
+	* Add: Time ago to comments (alpha theme).
+	* Fix: Fixes / tweaks to encode yEnc.
+2014-05-14 kevin
+	* Upd: Update ubuntu guide.
+	* Mov: Rename ubuntu guide.
+2014-05-14 DariusIII
+	* Fix: Add missing $status for new types of matches in NameFixer
+2014-05-13 bart39
+	* Fix: set filesize to 0 if sum of parts returns NULL
+	* Fix: Verify tmpunrarpath is not null before removing dead folders
+	* Chg: Only reset collections / nzbs that are older then delay time check in site settings
+2014-05-13 ruhllatio
+	* Fix: $res variables in NameFixer predb match functions now check for false before rowCount()
+	* Chg: PreDB FT Match function query to rule out impossible matches / hanging matches
+	* Chg: Optimize FT Match query for speed
+	* Fix: PreDB Scrape from Web sources should no longer overwrite valid pre info if not set
+	* Add: Usenet name to updateReleases NameFixer function
+	* Fix: PreDB web scrape double escape string in MD5 on update
+	* Fix: Remaining PreDB dupe errors from uc and predbme / fix updateReleases for checkNames + NFO
+	* Add: PreDB FT Match Script (testing phase)
+2014-05-13 kevin
+	* Add: POSIX Extension as requirement for unix operating systems to INSTALL.txt
+	* Chg: Predb web, use MySQL to md5/sha1 to avoid encoding issues.
+	* Fix: Fix multiple delete of releases on web browser.
+	* Fix: Add reloading of page when bulk editing releases on web page.
+	* Fix: Indent/various issues in admin theme.
+2014-05-12 DariusIII
+	* Chg: Add huge file removal option to remove crap part of tmux admin page.
+2014-05-11 kevin
+	* Add: Add change by predator314 to allow sickbeard/nzbdrone to pick up releases from Web-DL category on API.
+	* Add: Strip new lines / carriage returns from web predb titles before inserting.
+2014-05-11 bubblun
+	* Add: New setting to delete releases with a size of over 200MB and just a single file/part. Those are very likely spam releases.
+2014-05-11 ruhllatio
+	* Add: PreDB FT Match Function to NameFixer
+2014-05-10 kevin/niel
+	* Fix: Fix for UC changing predb output on html.
+	* Chg: Change a regex in predb.
+2014-05-09 ruhllatio
+	* Add: PreDB filename matching function and test script (use at own risk for now)
+	* Fix: decrypt_hashes show logic was backwards (showing the results of rename when show wasn't specified) Ahem - Bart39
+2014-05-08 niel
+	* Fix: Definition of Covers constant now Settings is main class instead of Sites.
+	* Fix: Table default for site/settings.
+	* Fix: Typo for Sites class in PostProcess.php
+	* Add: Enabling patch checking for pre-commit hook.
+2014-05-08 bart39
+	* Fix: Incorrect parameter validation in decrypt_hashes
+	* Chg: Use releasesfiles ishashed for parsing titles.
+2014-05-07 bubblun
+	* Chg: Changed 1MB crap size delete limit to 2MB to catch more spams #1310
+2014-05-07 kevin
+	* Chg: Simplify predb class more.
+	* Chg: Check if the php posix extension loaded during install.
+	* Upd: Update ubuntu install guide.
+	* Add: The completion criteria to the delete releases GUI.
+	* Chg: Set the minimum completion to 0 so unprocessed releases don't get deleted.
+	* Add: Filename parsing to IRCScraper.
+2014-05-07 niel
+	* Fix: Covers constant wasn't being set after recent update.
+2014-05-07 ruhllatio
+	* Fix: Syntax error in dump_predb (For real this time)
+	* Fix: dump_predb number of columns error
+2014-05-06 bart39
+	* Fix: echoing '.' causing screen errors.
+	* Fix: undefined index / offset in decrypt_hashes
+	* Chg: use NameFixer->matchPreDbHash for decrypt_hashes
+2014-05-06 ruhllatio
+	* Fix: fixreleasenames MD5 never exceeding dehashstatus 0
+	* Chg: fixreleasenames.php in tmux now honors hashes with uppercase letters
+	* Chg: matchPredbHash will lowercase the hash before checking against predb table hashes
+	* Add: Option to delete_releases to FastDelete by completion
+	* Add: filename column in PreDB to start matching unique release filenames
+	* Add: ishashed column to releasefiles to reduce slow REGEXP querying
+	* Add: Indexes for new columns (remove unique from predb filename)
+	* Chg: Optimize fixreleasenames_threaded query for hash matching to use new rf.ishashed
+2014-05-06 DariusIII
+	* Chg: Changed the regex in misc/update/nix/tmux/bin/requestid.php to match the regex change for reqids
+	* Chg: Updated threaded requestid to use the new reqid server url
 2014-05-05 niel
 	* Chg: Defaulting covers path to .../resources/covers on new installs. Instructions for setting up your www conf are on the wiki.
 2014-05-05 bart39

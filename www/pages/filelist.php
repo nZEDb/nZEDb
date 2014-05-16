@@ -3,17 +3,15 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$releases = new Releases();
-$nzb = new NZB();
-
 if (isset($_GET["id"])) {
+	$releases = new Releases();
 	$rel = $releases->getByGuid($_GET["id"]);
 	if (!$rel) {
 		$page->show404();
 	}
 
+	$nzb = new NZB();
 	$nzbpath = $nzb->getNZBPath($_GET["id"]);
-
 	if (!file_exists($nzbpath)) {
 		$page->show404();
 	}

@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../../../../www/config.php';
 
 use nzedb\db\DB;
 
-$db  = new nzedb\db\DB();
+$db = new nzedb\db\DB();
 $DIR = nZEDb_MISC;
 $c = new ColorCLI();
 
@@ -18,6 +18,7 @@ $s = new Sites();
 $site = $s->get();
 $patch = (isset($site->sqlpatch)) ? $site->sqlpatch : 0;
 $hashcheck = (isset($site->hashcheck)) ? $site->hashcheck : 0;
+$delaytimet = (isset($site->delaytime)) ? (int)$site->delaytime : 2;
 $nntpproxy = $site->nntpproxy;
 
 // Check collections version
@@ -47,7 +48,6 @@ $tmux = $t->get();
 $tmux_session = (isset($tmux->tmux_session)) ? $tmux->tmux_session : 0;
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
-$colors = (isset($tmux->colors)) ? $tmux->colors : 0;
 $import = (isset($tmux->import)) ? $tmux->import : 0;
 $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 
@@ -84,6 +84,7 @@ if (isset($site->tmpunrarpath)) {
 function command_exist($cmd)
 {
 	$returnVal = exec("which $cmd 2>/dev/null");
+
 	return (empty($returnVal) ? false : true);
 }
 
@@ -99,6 +100,7 @@ function python_module_exist($module)
 {
 	$output = $returnCode = '';
 	exec("python -c \"import $module\"", $output, $returnCode);
+
 	return ($returnCode == 0 ? true : false);
 }
 
@@ -112,7 +114,7 @@ if ($nntpproxy == '1') {
 	}
 }
 
-//reset collections dateadded to now
+//reset collections dateadded to now if dateadded > delay time check
 echo $c->header("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.");
 if ($tablepergroup == 1) {
 	$sql = "SHOW table status";
@@ -121,7 +123,7 @@ if ($tablepergroup == 1) {
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
 		if (preg_match('/collections_\d+/', $tbl)) {
-			$run = $db->queryDirect('UPDATE ' . $tbl . ' SET dateadded = now()');
+			$run = $db->queryExec('UPDATE ' . $tbl . ' SET dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
 			if ($run !== false) {
 				$ran += $run->rowCount();
 			}
@@ -130,14 +132,14 @@ if ($tablepergroup == 1) {
 	echo $c->primary(number_format($ran) . " collections reset.");
 } else {
 	$ran = 0;
-	$run = $db->queryDirect("update collections set dateadded = now()");
+	$run = $db->queryExec('update collections set dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
 	if ($run !== false) {
 		$ran += $run->rowCount();
 	}
 	echo $c->primary(number_format($ran) . " collections reset.");
 }
 
-$run = $db->queryDirect("update nzbs set dateadded = now()");
+$run = $db->queryExec('update nzbs set dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
 $updatedNZBs = 0;
 if ($run !== false) {
 	$updatedNZBs = $run->rowCount();
@@ -227,11 +229,6 @@ function window_utilities($tmux_session)
 	exec("tmux selectp -t 2; tmux splitw -t $tmux_session:1 -h -p 50 'printf \"\033]2;decryptHashes\033\"'");
 }
 
-function window_colors($tmux_session)
-{
-	exec("tmux new-window -t $tmux_session -n colors 'printf \"\033]2;tmux_colors\033\"'");
-}
-
 function window_stripped_utilities($tmux_session)
 {
 	exec("tmux new-window -t $tmux_session -n utils 'printf \"\033]2;updateTVandTheaters\033\"'");
@@ -240,7 +237,7 @@ function window_stripped_utilities($tmux_session)
 
 function window_ircscraper($tmux_session)
 {
-	exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrape_cz\033\"'");
+	exec("tmux new-window -t $tmux_session -n IRCScraper 'printf \"\033]2;scrapeIRC\033\"'");
 }
 
 function window_post($tmux_session)
@@ -303,16 +300,7 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	if ($colors == 1 && $nntpproxy == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 5);
-		window_sharing($tmux_session);
-	} else if ($colors == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	} else if ($nntpproxy == 1) {
+	if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 4);
 		window_sharing($tmux_session);
@@ -332,16 +320,7 @@ if ($seq == 1) {
 	}
 
 	window_stripped_utilities($tmux_session);
-	if ($colors == 1 && $nntpproxy == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 4);
-		window_sharing($tmux_session);
-	} else if ($colors == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	} else if ($nntpproxy == 1) {
+	if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 3);
 		window_sharing($tmux_session);
@@ -365,16 +344,7 @@ if ($seq == 1) {
 
 	window_utilities($tmux_session);
 	window_post($tmux_session);
-	if ($colors == 1 && $nntpproxy == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_proxy($tmux_session, 5);
-		window_sharing($tmux_session);
-	} else if ($colors == 1) {
-		window_colors($tmux_session);
-		window_ircscraper($tmux_session);
-		window_sharing($tmux_session);
-	} else if ($nntpproxy == 1) {
+	if ($nntpproxy == 1) {
 		window_ircscraper($tmux_session);
 		window_proxy($tmux_session, 4);
 		window_sharing($tmux_session);

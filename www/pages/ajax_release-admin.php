@@ -30,7 +30,17 @@ switch ($action) {
 
 		break;
 	case 'dodelete':
-		$releases->delete($_REQUEST["id"]);
+		$is_guid = true;
+		if (is_array($_GET['id'])) {
+			if (is_numeric($_GET['id'][0])) {
+				$is_guid = false;
+			}
+		} else {
+			if (is_numeric($_GET['id'])) {
+				$is_guid = false;
+			}
+		}
+		$releases->delete($_REQUEST["id"], $is_guid);
 		break;
 	default:
 		$page->show404();

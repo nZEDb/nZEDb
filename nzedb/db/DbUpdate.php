@@ -87,7 +87,7 @@ class DbUpdate
 	{
 		$defaults = array(
 			'backup'	=> true,
-			'db'		=> new \nzedb\db\DB(),
+			'db'		=> new \nzedb\db\Settings(),
 			'logger'	=> new \ColorCLI(),
 		);
 		$options += $defaults;
@@ -96,6 +96,12 @@ class DbUpdate
 		$this->backup	= $options['backup'];
 		$this->db		= $options['db'];
 		$this->log		= $options['logger'];
+
+		if (is_a($this->db, 'Settings')) {
+			$this->settings =& $this->db;
+		} else {
+			$this->settings = new Settings();
+		}
 
 		$this->_DbSystem = strtolower($this->db->dbSystem());
 	}
@@ -159,19 +165,23 @@ class DbUpdate
 			'data' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'	=> 'sql',
 			'path' => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex'	=> '#^' . utility\Utility::PATH_REGEX . '+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
+			'regex'	=> '#^' . utility\Utility::PATH_REGEX . '\+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
 			'safe' => true,
 		);
 		$options += $defaults;
 
 		$this->processPatches();	// Make sure we are completely up to date!
 
-		echo $this->log->primary('Looking for new patches...');
+		echo $this->log->primaryOver('Looking for new patches...');
 		$files = utility\Utility::getDirFiles($options);
 
-		if (count($files)) {
+		$count = count($files);
+		echo $this->log->header(" $count found");
+		if ($count > 0) {
+			echo $this->log->header('Processing...');
 			natsort($files);
 			$local = $this->db->isLocalDb() ? '' : 'LOCAL ';
+
 			foreach($files as $file) {
 				if (!preg_match($options['regex'], $file, $matches)) {
 					$this->log->error("$file does not match the pattern {$options['regex']}\nPlease fix this before continuing");
@@ -184,6 +194,7 @@ class DbUpdate
 					$newName = $matches['drive'] . $matches['path'] .
 							   str_pad($current, 4, '0', STR_PAD_LEFT) . '~' . $matches['table'] . '.sql';
 					rename($matches[0], $newName);
+					passthru("git add $newName");
 				}
 			}
 		}
@@ -201,10 +212,9 @@ class DbUpdate
 		);
 		$options += $defaults;
 
-		$this->_useSettings();
-		$currentVersion = $this->settings->getSetting('sqlpatch');
+		$currentVersion = $this->settings->getSetting(['setting' => 'sqlpatch']);
 		if (!is_numeric($currentVersion)) {
-			exit("Bad sqlpatch value!!\n");
+			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
 
 		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
@@ -232,7 +242,7 @@ class DbUpdate
 				if ($patch > $currentVersion) {
 					echo $this->log->header('Processing patch file: ' . $file);
 					if ($options['safe'] && !$this->backedUp) {
-						$this->backupDb();
+						$this->_backupDb();
 					}
 					$this->splitSQL($file, ['local' => $local, 'data' => $data]);
 					if ($setPatch) {
@@ -361,13 +371,6 @@ class DbUpdate
 
 		system("$PHP " . nZEDb_MISC . 'testing' . DS .'DB' . DS . $this->_DbSystem . 'dump_tables.php db dump');
 		$this->backedup = true;
-	}
-
-	protected function _useSettings(Sites $object = null)
-	{
-		if ($this->settings === null) {
-			$this->settings = (empty($object)) ? new Settings() : $object;
-		}
 	}
 }
 
