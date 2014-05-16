@@ -1159,7 +1159,8 @@ while ($i > 0) {
 						$_python ${DIR}update/python/fixreleasenames_threaded.py filename preid $log; \
 						$_python ${DIR}update/python/fixreleasenames_threaded.py nfo preid $log; \
 						$_python ${DIR}update/python/fixreleasenames_threaded.py par2 preid $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py miscsorter $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null"
+						$_python ${DIR}update/python/fixreleasenames_threaded.py miscsorter $log; \
+						$_python ${DIR}update/python/fixreleasenames_threaded.py predbft $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null"
 				);
 			} else {
 				$color = get_color($colors_start, $colors_end, $colors_exc);

@@ -455,7 +455,6 @@ class NameFixer
 		return $matching;
 	}
 
-
 	// Match a release filename to a PreDB filename or title.
 	public function matchPredbFiles($release, $echo, $namestatus, $echooutput, $show, $type)
 	{
@@ -470,7 +469,7 @@ class NameFixer
 			$column = sprintf("filename = %s", $db->escapeString($release['filename']));
 		}
 
-		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE %s ORDER BY predate DESC LIMIT 1", $column));
+		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE %s", $column));
 
 		if ($res !== false) {
 			$total = $res->rowCount();
@@ -480,7 +479,9 @@ class NameFixer
 
 		if ($total > 0) {
 			foreach ($res as $pre) {
-				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
+				if ($echo == 1) {
+					$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
+				}
 				if ($pre['title'] !== $release['searchname']) {
 					$determinedcat = $this->category->determineCategory($pre['title'], $release['groupid']);
 

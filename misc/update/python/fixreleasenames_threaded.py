@@ -26,11 +26,12 @@ if len(sys.argv) == 1:
 		+ "python " + sys.argv[0] + " [nfo, filename, par2] preid                ...: To process all releases not matched to preid, using [nfo, filename, par2].\n"
 		+ "python " + sys.argv[0] + " nfo clean                                  ...: To process all releases processed by filename, using nfo.\n"
 		+ "python " + sys.argv[0] + " par2 clean                                 ...: To process all releases processed by filename and nfo, using par2.\n"
+		+ "python " + sys.argv[0] + " predbft clean                                  ...: To process all releases using reverse match by PreDB title.\n"
 		+ bcolors.ENDC)
 	sys.exit()
 
-if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" and sys.argv[1] != "par2" and sys.argv[1] != "miscsorter":
-	print(bcolors.ERROR + "\n\An invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter]\n" + bcolors.ENDC)
+if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" and sys.argv[1] != "par2" and sys.argv[1] != "miscsorter" and sys.argv[1] != "predbft":
+	print(bcolors.ERROR + "\n\An invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter, predbft]\n" + bcolors.ENDC)
 	sys.exit()
 
 if len(sys.argv) == 3 and sys.argv[1] == "nfo" and sys.argv[2] == "clean":
@@ -78,6 +79,11 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
 	run = "SELECT id AS releaseid, guid, groupid FROM releases WHERE nzbstatus = 1 AND proc_par2 = 0 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
 	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
+	datas = cur[0].fetchall()
+elif len(sys.argv) > 1 and (sys.argv[1] == "predbft"):
+	#This one does from oldest posts to newest posts since there are many other more efficient PreDB matching schemes
+	run = "SELECT id AS preid FROM predb WHERE LENGTH(title) >= 15 AND searched = 0 AND title NOT REGEXP '[\"\<\> ]' ORDER BY predate ASC LIMIT %s"
+	cur[0].execute(run, (int(perrun[0])/10 * int(run_threads[0])))
 	datas = cur[0].fetchall()
 
 #close connection to mysql
@@ -154,6 +160,10 @@ def main():
 		for release in datas:
 			time.sleep(.03)
 			my_queue.put("%s %s" % ("miscsorter", release[0]))
+	elif sys.argv[1] == "predbft":
+		for release in datas:
+			time.sleep(.03)
+			my_queue.put("%s %s" % ("predbft", release[0]))
 
 	my_queue.join()
 
