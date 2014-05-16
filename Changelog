@@ -6,7 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-05-16 bart39
+	* Chg: Refactor tmux variables for ircscraper/sharing windows
+	* Fix: Files in pre info popup showing with MB
 2014-05-16 niel
 	* Chg: Improvements to Settings/Site detection for upgrading from older installs.
 	* Chg: Using separate settings value in DbUpdate only if needed (Improves memory use).
