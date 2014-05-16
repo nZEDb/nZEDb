@@ -21,6 +21,7 @@ section,subsection,name,value,hint,setting
 		grabnzbthreads	1	The number of threads for Grab NZBs.	grabnzbthreads
 		grabstatus	1	Whether to update download counts when someone downloads a release.	grabstatus
 		hashcheck	1		hashcheck
+		lastpretime	0	Last time we downloaded a pre using WEB sources	lastpretime
 		lookup_reqids	1	Whether to attempt to lookup Request IDs using the Request ID link below.	lookup_reqids
 		lookupanidb	0	Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.	lookupanidb
 		lookupbooks	1	Whether to attempt to lookup book information from Amazon when processing binaries.	lookupbooks
@@ -80,7 +81,7 @@ section,subsection,name,value,hint,setting
 		showbacks	0		showbacks
 		showdroppedyencparts	0	For developers. Whether to log all headers that have 'yEnc' and are dropped. Logged to not_yenc/groupname.dropped.txt.	showdroppedyencparts
 		showpasswordedrelease	0	Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.	showpasswordedrelease
-		sqlpatch	221		sqlpatch
+		sqlpatch	223		sqlpatch
 		storeuserips	0	Whether to store the users ip address when they signup or login.	storeuserips
 		tablepergroup	0	This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.<br />Run: show variables like '%open%f	tablepergroup
 		tmpunrarpath		The path to where unrar puts files. WARNING: This directory will have its contents deleted.<br/>Use forward slashes in windows c:/temp/path/stuff/will/be/unpacked/to	tmpunrarpath
@@ -118,7 +119,7 @@ site	google	google_adsense_acc		AdSense account: e.g. pub-123123123123123	google
 site	google	google_adsense_search		The ID of the google search ad panel displayed at the bottom of the left menu.	google_adsense_search
 site	google	google_analytics_acc		Analytic's account: e.g. UA-xxxxxx-x	google_analytics_acc
 site	main	code	nZEDb	A just for fun value, shown in debug and not on public pages.	code
-site	main	coverspath	/your/path/to/covers/	The absolute path to the place covers will be stored. (DO NOT CHANGE NOT COMPLETE)	coverspath
+site	main	coverspath	/your/path/to/covers/	The absolute path to the place covers will be stored.	coverspath
 site	main	dereferrer_link		Optional URL to prepend to external links	dereferrer_link
 site	main	email		Shown in the contact us page, and where the contact html form is sent to.	email
 site	main	footer	Usenet binary indexer.	Displayed in the footer section of every public page.	footer

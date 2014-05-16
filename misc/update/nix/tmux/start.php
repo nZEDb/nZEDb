@@ -18,6 +18,7 @@ $s = new Sites();
 $site = $s->get();
 $patch = (isset($site->sqlpatch)) ? $site->sqlpatch : 0;
 $hashcheck = (isset($site->hashcheck)) ? $site->hashcheck : 0;
+$delaytimet = (isset($site->delaytime)) ? (int)$site->delaytime : 2;
 $nntpproxy = $site->nntpproxy;
 
 // Check collections version
@@ -113,7 +114,7 @@ if ($nntpproxy == '1') {
 	}
 }
 
-//reset collections dateadded to now
+//reset collections dateadded to now if dateadded > delay time check
 echo $c->header("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.");
 if ($tablepergroup == 1) {
 	$sql = "SHOW table status";
@@ -122,7 +123,7 @@ if ($tablepergroup == 1) {
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
 		if (preg_match('/collections_\d+/', $tbl)) {
-			$run = $db->queryDirect('UPDATE ' . $tbl . ' SET dateadded = now()');
+			$run = $db->queryExec('UPDATE ' . $tbl . ' SET dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
 			if ($run !== false) {
 				$ran += $run->rowCount();
 			}
@@ -131,14 +132,14 @@ if ($tablepergroup == 1) {
 	echo $c->primary(number_format($ran) . " collections reset.");
 } else {
 	$ran = 0;
-	$run = $db->queryDirect("update collections set dateadded = now()");
+	$run = $db->queryExec('update collections set dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
 	if ($run !== false) {
 		$ran += $run->rowCount();
 	}
 	echo $c->primary(number_format($ran) . " collections reset.");
 }
 
-$run = $db->queryDirect("update nzbs set dateadded = now()");
+$run = $db->queryExec('update nzbs set dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
 $updatedNZBs = 0;
 if ($run !== false) {
 	$updatedNZBs = $run->rowCount();

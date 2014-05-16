@@ -1,6 +1,7 @@
 <?php
 
 use nzedb\db\DB;
+use nzedb\utility\Utility;
 
 /**
  * Class NameFixer
@@ -74,13 +75,11 @@ class NameFixer
 		if ($time == 1 && $cats == 1) {
 			echo $this->c->header($query . $this->timeother . ";\n");
 			$relres = $db->queryDirect($query . $this->timeother);
-		}
-		//24 hours, all cats
+		} //24 hours, all cats
 		else if ($time == 1 && $cats == 2) {
 			echo $this->c->header($query . $this->timeall . ";\n");
 			$relres = $db->queryDirect($query . $this->timeall);
-		}
-		//other cats
+		} //other cats
 		else if ($time == 2 && $cats == 1) {
 			echo $this->c->header($query . $this->fullother . ";\n");
 			$relres = $db->queryDirect($query . $this->fullother);
@@ -95,10 +94,11 @@ class NameFixer
 			echo $this->c->primary(number_format($total) . " releases to process.");
 			sleep(2);
 			foreach ($relres as $rel) {
-				$relrow = $db->queryOneRow("SELECT nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.searchname, {$uc} AS textstring, "
+				$relrow = $db->queryOneRow("SELECT nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.name, rel.searchname, {$uc} AS textstring, "
 					. "rel.id AS releaseid FROM releases rel "
 					. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-					. "WHERE rel.id = " . $rel['releaseid']);
+					. "WHERE rel.id = " . $rel['releaseid']
+				);
 
 				//ignore encrypted nfos
 				if (preg_match('/^=newz\[NZB\]=\w+/', $relrow['textstring'])) {
@@ -148,14 +148,14 @@ class NameFixer
 		$type = "Filenames, ";
 		$preid = false;
 		if ($cats === 3) {
-			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
+			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
 				. "WHERE nzbstatus = 1 AND preid = 0";
 			$cats = 2;
 			$preid = true;
 		} else {
-			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
+			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
 				. "WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_files = 0";
@@ -335,6 +335,8 @@ class NameFixer
 						$this->c->primary($newname) .
 						$this->c->headerOver("Old name:  ") .
 						$this->c->primary($release["searchname"]) .
+						$this->c->headerOver("Use name:  ") .
+						$this->c->primary($release["name"]) .
 						$this->c->headerOver("New cat:   ") .
 						$this->c->primary($newcatname) .
 						$this->c->headerOver("Old cat:   ") .
@@ -361,12 +363,20 @@ class NameFixer
 							$status = "isrenamed = 1, iscategorized = 1, proc_par2 = 1,";
 						} else if ($type == "Filenames, ") {
 							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
+						} else if ($type == "Prehash file match, ") {
+							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
+						} else if ($type == "Prehash FT Exact, ") {
+							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
 						}
 						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
-								. "anidbid = NULL, preid = %s, searchname = %s, %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]));
+								. "anidbid = NULL, preid = %s, searchname = %s, %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]
+							)
+						);
 					} else {
 						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
-								. "anidbid = NULL, preid = %s, searchname = %s, iscategorized = 1, categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]));
+								. "anidbid = NULL, preid = %s, searchname = %s, iscategorized = 1, categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]
+							)
+						);
 					}
 				}
 			}
@@ -380,45 +390,63 @@ class NameFixer
 		$db = $this->db;
 		$matching = 0;
 		$this->category = new Category();
+		$this->utility = new Utility();
 		$this->matched = false;
 
-		$res = $db->queryDirect(sprintf("SELECT r.id AS releaseid, r.searchname, r.groupid, r.categoryid
-						     FROM releasesearch rs INNER JOIN releases r ON r.id = rs.releaseid
-						     WHERE nzbstatus = 1 AND r.preid = 0 AND ishashed = 0
-						     AND categoryid NOT BETWEEN 4000 AND 4999
-						     AND MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"' IN BOOLEAN MODE)",
-						     $pre['title']));
+		//Remove all non-printable chars, preg match all interesting words
+		$titlelike = "%" . $this->utility->stripNonPrintingChars($pre['title']) . "%";
+		preg_match_all('#\w+#', $pre['title'], $matches, PREG_PATTERN_ORDER);
+		$titlematch = '+"' . implode('" +"', $matches[0]) . '"';
+
+		//Find release matches with fulltext and then identify exact matches with cleaned LIKE string
+		$res = $db->queryDirect(sprintf("SELECT rs.releaseid AS releaseid FROM releasesearch rs
+						     WHERE MATCH (rs.name, rs.searchname) AGAINST ('%s' IN BOOLEAN MODE)
+						     AND (rs.name LIKE %s OR rs.searchname LIKE %s)
+						     LIMIT 16", $titlematch, $db->escapeString($titlelike), $db->escapeString($titlelike)
+			)
+		);
 
 		if ($res !== false) {
-			$total = $res->rowCount();
+			$total = count($res);
 		} else {
 			return $matching;
 		}
 
-		if ($total > 0) {
+		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
+		if ($total > 0 && $total <= 15) {
 			foreach ($res as $row) {
-				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $row['releaseid']));
-				if ($pre['title'] !== $row['searchname']) {
-					$determinedcat = $this->category->determineCategory($pre['title'], $row['groupid']);
+				$release = $db->queryOneRow(sprintf("SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND id = %d", $row['releaseid']));
+				if ($release !== false) {
+					$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
+					if ($pre['title'] !== $release['searchname']) {
+						$determinedcat = $this->category->determineCategory($pre['title'], $release['groupid']);
 
-					if ($echo == 1) {
-						$this->matched = true;
-						if ($namestatus == 1) {
-							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
-						} else {
-							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $row['releaseid']));
+						if ($echo == 1) {
+							$this->matched = true;
+							if ($namestatus == 1) {
+								$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+										. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']
+									)
+								);
+							} else {
+								$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+										. "searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']
+									)
+								);
+							}
 						}
-					}
 
-					if ($echooutput && $show === 1) {
-						$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show);
+						if ($echooutput && $show === 1) {
+							$this->updateRelease($release, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show);
+						}
+						$matching++;
 					}
-					$matching++;
 				}
 			}
+		} elseif ($total >= 10) {
+			$matching = -1;
 		}
+
 		return $matching;
 	}
 
@@ -432,7 +460,13 @@ class NameFixer
 		$this->matched = false;
 
 		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE filename = %s ORDER BY predate DESC LIMIT 1", $db->escapeString($release['filename'])));
-		$total = $res->rowCount();
+
+		if ($res !== false) {
+			$total = $res->rowCount();
+		} else {
+			return $matching;
+		}
+
 		if ($total > 0) {
 			foreach ($res as $pre) {
 				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
@@ -443,10 +477,14 @@ class NameFixer
 						$this->matched = true;
 						if ($namestatus == 1) {
 							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']));
+									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']
+								)
+							);
 						} else {
 							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']));
+									. "searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']
+								)
+							);
 						}
 					}
 
@@ -457,6 +495,7 @@ class NameFixer
 				}
 			}
 		}
+
 		return $matching;
 	}
 
@@ -479,7 +518,13 @@ class NameFixer
 		}
 
 		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE %s = %s", $hashcheck, $db->escapeString(strtolower($hash))));
-		$total = $res->rowCount();
+
+		if ($res !== false) {
+			$total = $res->rowCount();
+		} else {
+			return $matching;
+		}
+
 		if ($total > 0) {
 			foreach ($res as $row) {
 				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $row['preid'], $release['releaseid']));
@@ -490,10 +535,14 @@ class NameFixer
 						$this->matched = true;
 						if ($namestatus == 1) {
 							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
+									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]
+								)
+							);
 						} else {
 							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]));
+									. "searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]
+								)
+							);
 						}
 					}
 
@@ -507,6 +556,7 @@ class NameFixer
 			$db->queryExec(sprintf("UPDATE releases SET dehashstatus = %d - 1 WHERE id = %d", $release['dehashstatus'], $release['releaseid']));
 			//echo ".";
 		}
+
 		return $matching;
 	}
 
@@ -559,17 +609,16 @@ class NameFixer
 		if ($namestatus == 1 && $this->matched === false && $type == "NFO, ") {
 			$db = $this->db;
 			$db->queryExec(sprintf("UPDATE releases SET proc_nfo = 1 WHERE id = %d", $release["releaseid"]));
-		}
-		// The release didn't match so set proc_files = 1 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
+		} // The release didn't match so set proc_files = 1 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		else if ($namestatus == 1 && $this->matched === false && $type == "Filenames, ") {
 			$db = $this->db;
 			$db->queryExec(sprintf("UPDATE releases SET proc_files = 1 WHERE id = %d", $release["releaseid"]));
-		}
-		// The release didn't match so set proc_par2 = 1 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
+		} // The release didn't match so set proc_par2 = 1 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		else if ($namestatus == 1 && $this->matched === false && $type == "PAR2, ") {
 			$db = $this->db;
 			$db->queryExec(sprintf("UPDATE releases SET proc_par2 = 1 WHERE id = %d", $release["releaseid"]));
 		}
+
 		return $this->matched;
 	}
 
