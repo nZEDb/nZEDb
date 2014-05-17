@@ -170,7 +170,7 @@ class DbUpdate
 		);
 		$options += $defaults;
 
-		$this->processPatches();	// Make sure we are completely up to date!
+		$this->processPatches($options);	// Make sure we are completely up to date!
 
 		echo $this->log->primaryOver('Looking for new patches...');
 		$files = utility\Utility::getDirFiles($options);
