@@ -9,6 +9,8 @@ New updates are grouped by person, at the top of the file.
 2014-05-16 ruhllatio
 	* Add: PreDB FT Match to fixReleaseNames and tmux
 2014-05-16 bart39
+	* Chg: Refactor predb stage 1 NB: new table will be created as MYISAM due to fulltext search,
+	if you wish to alter to InnoDB you must be on mysql 5.6+
 	* Chg: Regex improvements
 	* Chg: cross-posted requestid checks
 	* Chg: Refactor tmux variables for ircscraper/sharing windows
