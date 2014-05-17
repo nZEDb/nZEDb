@@ -35,7 +35,7 @@ foreach ($res as $row) {
 	$sha1 = $db->escapeString(sha1($name));
 	$title = $db->escapeString($name);
 
-	$db->queryDirect(sprintf("UPDATE predb SET title = %s, md5 = %s, sha1 = %s, WHERE id = %d", $title, $md5, $sha1, $row['id']));
+	$db->queryDirect(sprintf("UPDATE predb SET title = %s, md5 = %s, sha1 = %s WHERE id = %d", $title, $md5, $sha1, $row['id']));
 	$consoletools->overWriteHeader("Reset MD5s: " . $consoletools->percentString(++$count, $total));
 }
 
