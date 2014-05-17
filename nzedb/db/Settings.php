@@ -27,21 +27,16 @@ use nzedb\utility\Utility;
 
 class Settings extends DB
 {
-	private $table;
+	private $settings;
 
-	public function __construct (array $options = array())
+	public function __construct(array $options = array())
 	{
 		parent::__construct($options);
-		$result = parent::exec("describe site", true);
-		$this->table = ($result === false) ? 'settings' : 'site';
+		$result         = parent::exec("describe site", true);
+		$this->settings = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
 		return self::$pdo;
-	}
-
-	public function table ()
-	{
-		return $this->table;
 	}
 
 	/**
@@ -52,7 +47,7 @@ class Settings extends DB
 	 *
 	 * @return string|array|bool
 	 */
-	public function getSetting ($options = array())
+	public function getSetting($options = array())
 	{
 		if (!is_array($options)) {
 			$options = ['name' => $options];
@@ -64,7 +59,7 @@ class Settings extends DB
 		);
 		$options += $defaults;
 
-		if ($this->table == 'settings') {
+		if ($this->settings == 'settings') {
 			$result = $this->_getFromSettings($options);
 		} else {
 			$result = $this->_getFromSites($options);
@@ -72,9 +67,14 @@ class Settings extends DB
 		return $result;
 	}
 
-	public function setCovers ()
+	public function setCovers()
 	{
-		$path = $this->getSetting('coverspath');
+		$path = $this->getSetting([
+				'section' 		=> 'site',
+				'subsection'	=> 'main',
+				'name' 			=> 'coverspath',
+				'setting' 		=> 'coverspath',
+			]);
 		Utility::setCoversConstant($path);
 	}
 
@@ -83,15 +83,15 @@ class Settings extends DB
 	 *
 	 * @TODO not completed yet, do not use
 	 *
-	 * @param array $options	Array containing the mandatory keys of 'section', 'subsection', and 'value'
+	 * @param array $options Array containing the mandatory keys of 'section', 'subsection', and 'value'
 	 */
 	public function setSetting(array $options)
 	{
 		$defaults = [
-			'section'		=> '',
-			'subsection'	=> '',
-			'value'			=> '',
-			'setting'		=> '',
+			'section'    => '',
+			'subsection' => '',
+			'value'      => '',
+			'setting'    => '',
 		];
 		$options += $defaults;
 		$temp1 = $options['section'] . $options['subsection'] . $options['value'];
@@ -103,9 +103,14 @@ class Settings extends DB
 		extract($options);
 	}
 
-	protected function _getFromSettings ($options)
+	public function settings()
 	{
-		$results = array();
+		return $this->settings;
+	}
+
+	protected function _getFromSettings($options)
+	{
+		$result = array();
 		$sql     = 'SELECT value FROM settings ';
 		$where   = $options['section'] . $options['subsection'] . $options['name']; // Can't use expression in empty() < PHP 5.5
 		if (!empty($where)) {
@@ -115,16 +120,15 @@ class Settings extends DB
 			$sql .= "WHERE setting = '{$options['setting']}'";
 		}
 		$sql .= ' ORDER BY section, subsection, name';
-
 		$result = $this->queryOneRow($sql);
 
-		return $result['value'];
+		return isset($result['value']) ? $result['value'] : null;
 	}
 
-	protected function _getFromSites ($options)
+	protected function _getFromSites($options)
 	{
 		$setting = empty($options['setting']) ? $options['name'] : $options['setting'];
-		$sql = 'SELECT value FROM site ';
+		$sql     = 'SELECT value FROM site ';
 		if (!empty($setting)) {
 			$sql .= "WHERE setting = '$setting'";
 		}
