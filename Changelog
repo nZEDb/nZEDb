@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-17 bart39
+	* Fix: regex error
 2014-05-17 niel
 	* Fix: Pre-commit exits early if new patch checking runs into a problem.
 2014-05-16 ruhllatio

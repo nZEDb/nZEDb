@@ -1525,7 +1525,7 @@ class ReleaseCleaning
 		if (preg_match('/^--- ([\w., &\'()-]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //'Steel's Edge - Ilona Andrews.epub'  yEnc
-		if (preg_match('/^\'/^([\w. &\'()\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})\'[- ]{0,3}yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\'([\w. &\'()\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})\'[- ]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //[1 of 1] - Howard Gordon - Gideon's War & Hard Target.epub  yEnc
 		if (preg_match('/^\[\d+ of \d+\][- ]{0,3}/^([\w. &\'()\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/', $this->subject, $match)) {
