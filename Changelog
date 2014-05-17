@@ -14,6 +14,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Making covers' constant truly default to .../resources/covers.
 	  Users with older installs should consider moving their covers from .../www/covers .
 	* Fix: Pass backup settings from newPatches to processPatches.
+	* Upd: Renaming patches with 'schema' for table name.
 2014-05-16 ruhllatio
 	* Add: PreDB FT Match to fixReleaseNames and tmux
 2014-05-16 bart39
