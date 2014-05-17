@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-17 bart39
+	* Chg: rename patch 225
 	* Fix: regex error
 2014-05-17 niel
 	* Fix: Pre-commit exits early if new patch checking runs into a problem.
