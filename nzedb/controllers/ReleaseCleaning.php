@@ -1519,16 +1519,16 @@ class ReleaseCleaning
 		if (preg_match('/.*"([\w., &\'()-]{8,}?\b)(\.part\d*|\.rar)?(\.vol.+?"|\.[A-Za-z0-9]{2,4}").+?yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //Patterson flood - Mobi -  15/45  "James Patterson - AC 13 - Double Cross.mobi"
-		if (preg_match('/(.+?)[-_ ]{0,4}\d+\/\d+[-_ ]{0,3}/^([\w. &\'()\[\]-]{8,}?\b.?)\.(txt|pdf|mobi|epub|azw)"( \(\d+\/\d+\))?( )?$/', $this->subject, $match)) {
+		if (preg_match('/(.+?)[-_ ]{0,4}\d+\/\d+[-_ ]{0,3}([\w. &\'()\[\]-]{8,}?\b.?)\.(txt|pdf|mobi|epub|azw)"( \(\d+\/\d+\))?( )?$/', $this->subject, $match)) {
 			return $match[2];
 		} //--- Michael Dobbs - House of Cards.mobi  yEnc
 		if (preg_match('/^--- ([\w., &\'()-]{8,}?\b)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //'Steel's Edge - Ilona Andrews.epub'  yEnc
-		if (preg_match('/^\'/^([\w. &\'()\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})\'[- ]{0,3}yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\'([\w. &\'()\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})\'[- ]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //[1 of 1] - Howard Gordon - Gideon's War & Hard Target.epub  yEnc
-		if (preg_match('/^\[\d+ of \d+\][- ]{0,3}/^([\w. &\'()\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/', $this->subject, $match)) {
+		if (preg_match('/^\[\d+ of \d+\][- ]{0,3}([\w. &\'()\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		} //1 Playboy-Ausgabe vom Jnner 1953 [RARITT].rar  yEnc
 		if (preg_match('/^([\w. &\'\[\]-]{8,}?\b.?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[- ]{0,3}yEnc$/', $this->subject, $match)) {
