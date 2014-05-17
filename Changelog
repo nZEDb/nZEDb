@@ -8,6 +8,8 @@ New updates are grouped by person, at the top of the file.
 
 2014-05-17 niel
 	* Fix: Pre-commit exits early if new patch checking runs into a problem.
+	* Chg: Making covers' constant truly default to .../resources/covers.
+	  Users with older installs should consider moving their covers from .../www/covers .
 2014-05-16 ruhllatio
 	* Add: PreDB FT Match to fixReleaseNames and tmux
 2014-05-16 bart39

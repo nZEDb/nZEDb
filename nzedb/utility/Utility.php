@@ -84,7 +84,20 @@ class Utility
 	static public function setCoversConstant($path)
 	{
 		if (!defined('nZEDb_COVERS')) {
-			define('nZEDb_COVERS', $path == '' ? nZEDb_WWW . 'covers' . DS : self::trailingSlash($path));
+			switch (true) {
+				case (substr($path, 0, 1) == '/' ||
+					  substr($path, 1, 1) == ':' ||
+					  substr($path, 0, 1) == '\\'):
+					define('nZEDb_COVERS', self::trailingSlash($path));
+					break;
+				case (substr($path, 0, 1) != '/' && substr($path, 1, 1) != ':' &&
+					  substr($path, 0, 1) != '\\'):
+					define('nZEDb_COVERS', realpatch(nZEDb_ROOT . self::trailingSlash($path)));
+					break;
+				case empty($path): // Default to resources location.
+				default:
+					define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
+			}
 		}
 	}
 
