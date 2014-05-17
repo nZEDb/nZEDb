@@ -82,7 +82,8 @@ class ReleaseFiles
 			sprintf('
 				SELECT id
 				FROM releasefiles
-				WHERE name = %s',
+				WHERE releaseid = %d AND name = %s',
+				$id,
 				$this->db->escapeString(utf8_encode($name))
 			)
 		);
