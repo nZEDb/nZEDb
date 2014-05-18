@@ -111,7 +111,7 @@ class Books
 
 		$res = $db->queryOneRow(
 			sprintf(
-				"SELECT COUNT(r.id) AS num FROM releases r "
+				"SELECT COUNT(DISTINCT r.bookinfoid) AS num FROM releases r "
 				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' "
 				. "WHERE r.nzbstatus = 1 AND  r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') "
 				. "AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist
