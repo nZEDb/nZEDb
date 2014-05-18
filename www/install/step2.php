@@ -87,17 +87,6 @@ if ($page->isPostBack()) {
 		$cfg->emessage = 'Invalid database system. Must be: mysql or pgsql ; Not: ' . $cfg->DB_SYSTEM;
 		$cfg->error = true;
 	} else {
-/*
-		// Check if user connects using socket or host/port.
-		if (isset($cfg->DB_SOCKET) && !empty($cfg->DB_SOCKET)) {
-			$pdoString = $cfg->DB_SYSTEM . ':unix_socket=' . $cfg->DB_SOCKET;
-		} else {
-			$pdoString = $cfg->DB_SYSTEM . ':host=' . $cfg->DB_HOST . (isset($cfg->DB_PORT) ?';port=' . $cfg->DB_PORT : '');
-		}
-		// If MySQL add charset, if PgSQL add database name.
-		$pdoString .= ($cfg->DB_SYSTEM === 'mysql' ? ';charset=utf8' : ';dbname=' . $cfg->DB_NAME);
-*/
-
 		// Connect to the SQL server.
 		try {
 			$pdo = new DB(
@@ -113,7 +102,6 @@ if ($page->isPostBack()) {
 					'dbuser'       => $cfg->DB_USER,
 				)
 			);
-			//$pdo = new PDO($pdoString, $cfg->DB_USER, $cfg->DB_PASSWORD);
 			$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 			$cfg->dbConnCheck = true;
 		} catch (\PDOException $e) {

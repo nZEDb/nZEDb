@@ -104,6 +104,7 @@ class PostProcess
 		//\\
 
 		//\\ Class instances.
+		$s = new Sites();
 		$this->c = new ColorCLI();
 		$this->db = new DB();
 		$this->groups = new Groups();
@@ -111,7 +112,6 @@ class PostProcess
 		$this->nameFixer = new NameFixer($this->echooutput);
 		$this->Nfo = new Nfo($this->echooutput);
 		$this->releaseFiles = new ReleaseFiles();
-		$s = new sites();
 		//\\
 
 		//\\ Site object.
@@ -309,7 +309,7 @@ class PostProcess
 		}
 
 		$query = $this->db->queryOneRow(
-			'SELECT id, groupid, categoryid, searchname, ' .
+			'SELECT id, groupid, categoryid, name, searchname, ' .
 			($this->db->dbSystem() === 'mysql' ? 'UNIX_TIMESTAMP(postdate)' : 'extract(epoch FROM postdate)') .
 			' as postdate, id as releaseid  FROM releases WHERE isrenamed = 0 AND id = ' .
 			$relID

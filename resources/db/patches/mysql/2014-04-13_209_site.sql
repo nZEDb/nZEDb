@@ -1,1 +1,0 @@
-INSERT INTO site (setting, value) VALUES ('yydecoderpath', '');

@@ -62,6 +62,8 @@ class Releases
 	}
 
 	/**
+	 * Used for admin page release-list.
+	 *
 	 * @param $start
 	 * @param $num
 	 *
@@ -70,14 +72,13 @@ class Releases
 	public function getRange($start, $num)
 	{
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name
-								FROM releases
-								INNER JOIN category c ON c.id = releases.categoryid
-								INNER JOIN category cp ON cp.id = c.parentid
-								WHERE nzbstatus = 1
-								ORDER BY postdate DESC %s",
+			sprintf("
+				SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name
+				FROM releases
+				INNER JOIN category c ON c.id = releases.categoryid
+				INNER JOIN category cp ON cp.id = c.parentid
+				WHERE nzbstatus = 1
+				ORDER BY postdate DESC %s",
 				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
 			)
 		);
@@ -1204,7 +1205,10 @@ class Releases
 			$maxage = '';
 		}
 
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid INNER JOIN releasesearch rs on rs.releaseid = releases.id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $searchsql, $imdbId, $catsrch, $maxage, $limit, $offset);
+		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid "
+				. "FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid INNER JOIN releasesearch rs on rs.releaseid = releases.id "
+				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE nzbstatus = 1 AND releases.passwordstatus <= %d "
+				. "%s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $searchsql, $imdbId, $catsrch, $maxage, $limit, $offset);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
 		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
@@ -1248,7 +1252,7 @@ class Releases
 	public function getSimilarName($name)
 	{
 		$words = str_word_count(str_replace(array('.', '_'), ' ', $name), 2);
-		$firstwords = array_slice($words, 0, 3);
+		$firstwords = array_slice($words, 0, 2);
 		return implode(' ', $firstwords);
 	}
 
@@ -1576,7 +1580,7 @@ class Releases
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$checked = $this->db->queryExec(
 			'UPDATE ' . $group['cname'] . ' c SET filesize =
-									(SELECT SUM(p.size) FROM ' . $group['pname'] . ' p INNER JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id HAVING count(p.id) > 0),
+									(SELECT COALESCE(SUM(p.size), 0) FROM ' . $group['pname'] . ' p INNER JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id),
 									filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0' . $where
 		);
 		if ($checked !== false && $this->echooutput) {

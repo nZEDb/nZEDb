@@ -610,8 +610,9 @@ class Net_NNTP_Protocol_Client extends PEAR
 		if ($R === false) {
 			$message = "Connection to $transport://$host:$port failed.";
 			if (preg_match('/tls|ssl/', $transport)) {
-				$message .= ' Try disabling SSL/TLS, and/or a different port.';
+				$message .= ' Try disabling SSL/TLS, and/or try a different port.';
 			}
+			$message .= ' [ERROR ' . $errno . ': ' . $errstr . ']';
 			if ($this->_logger) {
 				$this->_logger->notice($message);
 			}
