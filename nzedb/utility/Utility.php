@@ -92,7 +92,7 @@ class Utility
 					break;
 				case (substr($path, 0, 1) != '/' && substr($path, 1, 1) != ':' &&
 					  substr($path, 0, 1) != '\\'):
-					define('nZEDb_COVERS', realpatch(nZEDb_ROOT . self::trailingSlash($path)));
+					define('nZEDb_COVERS', realpath(nZEDb_ROOT . self::trailingSlash($path)));
 					break;
 				case empty($path): // Default to resources location.
 				default:
