@@ -39,7 +39,8 @@ define('SCRAPE_IRC_SOURCE_IGNORE',
 			'#a.b.games.xbox360'          => false,
 			'#pre@corrupt'                => false,
 			'#scnzb'                      => false,
-			'#tvnzb'                      => false
+			'#tvnzb'                      => false,
+			'u4all.eu'                    => false
 		)
 	)
 );

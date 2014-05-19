@@ -686,6 +686,9 @@ class CollectionsCleaning
 		} //Doobz Europa_Universalis_IV_Conquest_of_Paradise-FLT [10/54] - "flt-eucp.001" yEnc
 		if (preg_match('/^Doobz ([a-zA-z-_]+) \[\d+\/(\d+\]) - ".+' . $this->e1, $this->subject, $match)) {
 			return $match[1] . $match[2];
+		} //Outlast.Whistleblower-RELOADED - [014/119] - "rld-outwhistle.part001.rar" yEnc
+		if (preg_match('/^([\w. -]{8,}) - \[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
 		}
 		return $this->generic();
 	}
@@ -1693,6 +1696,10 @@ class CollectionsCleaning
 		//[ 17827]-[FULL]-[ #abgx360@EFNet ]-[ Capcom_Arcade_Cabinet_XBLA_XBOX360-XBLAplus ]-[01/34] - "xp-capac.nfo" yEnc
 		if (preg_match('/^\[[-_ ]{0,3}(\d+)[-_ ]{0,3}\][-_ ]{0,3}\[FULL\][-_ ]{0,3}\[ (abgx360EFNet|#abgx360@EFNet) \][-_ ]{0,3}\[[-_ ]{0,3}(.+)[-_ ]{0,3}\][-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+\(\d+\\d+\)"|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}yEnc$/i', $this->subject, $match)) {
 			return $match[1] . $match[3];
+		}
+		//[19672]-[FULL]-[abgx360EFNet]-[01/29] "mgl-cont.par2" yEnc
+		if (preg_match('/^\[(\d+)\][-_ ]{0,3}\[FULL\][-_ ]{0,3}\[(abgx360EFNet|#abgx360@EFNet)\][-_ ]{0,3}\[\d+\/\d+\][-_ ]{0,3}"(.+?)([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")[- ]{0,3}yEnc$/i', $this->subject, $match)) {
+			return $match[1] . $match[3];
 		} //[ GAMERZZ ] - [ Grand.Theft.Auto.V.XBOX360-COMPLEX ] [159/170] - "complex-gta5.vol000+18.par2" yEnc
 		if (preg_match('/^\[[-_ ]{0,3}GAMERZZ[-_ ]{0,3}\][-_ ]{0,3}\[[-_ ]{0,3}(.+)[-_ ]{0,3}\][-_ ]{0,3}\[\d+\/(\d+\])[-_ ]{0,3}"(.+?)(\.part\d*|\.rar)?(\.vol.+\(\d+\\d+\)"|\.[A-Za-z0-9]{2,4}")[-_ ]{0,3}yEnc$/i', $this->subject, $match)) {
 			return $match[1] . $match[2];
@@ -1931,7 +1938,10 @@ class CollectionsCleaning
 		if (preg_match('/^\[\d+\/(\d+\][ _-]{0,3}".+?)' . $this->e1, $this->subject, $match)) {
 			return $match[1];
 		} //(4n4o8xq59kxq40bk8ukf3o4d163.163) [162/282] - "4n4o8xq59kxq40bk8ukf3o4d163.163" yEnc
-		if (preg_match('/^\((\w+)\.\d+\) \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
+		if (preg_match('/^\((\w+?)\d{3}\.[A-Za-z0-9]{3,4}\)[- ]{0,3}\[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //<-{Retrouvez-nous sur NextDownload}-> > >"Next1023"[15/24] - "Next1023.9.vol001+001.par2" yEnc
+		if (preg_match('/^<-{Retrouvez-nous sur NextDownload}-> > >"(\w+)"\[\d+\/(\d+\])[ _-]{0,3}".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
 		return $this->generic();
@@ -2321,6 +2331,9 @@ class CollectionsCleaning
 			return $match[1] . $match[2];
 		} //( Overlord II RELOADED ) - [013/112] - "rld-olii.part001.rar" yEnc
 		if (preg_match('/^\( ([\w. -]{8,}) \)[-_ ]{0,3}\[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //Batman.Arkham-Origins.Initiation-RELOADED - [006/296] - "r.vol010+08.PAR2" yEnc
+		if (preg_match('/^([\w. &()-]{8,}?\b)[- ]{0,3}\[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
 		return $this->generic();

@@ -1,6 +1,6 @@
 {assign var="pages" value=($pagertotalitems/$pageritemsperpage)|round}
 {assign var="currentpage" value=($pageroffset+$pageritemsperpage)/$pageritemsperpage}
-{assign var="upperhalfwaypoint" value=((($pages-$currentpage)/2)|round)+$currentpage}
+{assign var="upperhalfwaypoint" value=((($pages-$currentpage)/2))|round+$currentpage}
 
 {if $pages > 1}
 	<!-- <div class="pagination" style="max-width='500px'; margin: 0px 0px -8px 0px;"> -->

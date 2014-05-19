@@ -20,6 +20,7 @@ if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1
 		echo "No changes detected.\n";
 		echo "Commit: " . $vers->getCommit() . "\n";
 		echo " Patch: " . $vers->getSQLVersion() . "\n";
+		echo "   Tag: " . $vers->getTagVersion() . "\n";
 	}
 }
 
@@ -175,7 +176,7 @@ class Versions
 	 */
 	public function checkGitTag($update = true)
 	{
-		exec('git log --tags', $output);
+		exec('git describe --tags --abbrev=0 HEAD', $output);
 		$index = 0;
 		$count = count($output);
 		while (!preg_match('#v(\d+\.\d+\.\d+)#i', $output[$index], $match) && $count < $index ) {
@@ -183,10 +184,10 @@ class Versions
 		}
 
 		// Check if version file's entry is less than the last tag
-		if (!empty($match) && version_compare($this->_vers->git->tag, $match, '<')) {
+		if (!empty($match) && version_compare($this->_vers->git->tag, $match[1], '<')) {
 			if ($update) {
-				echo $this->out->primary("Updating tag version to $match");
-				$this->_vers->git->tag = $match;
+				echo $this->out->primary("Updating tag version to {$match[1]}");
+				$this->_vers->git->tag = $match[1];
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
 			return $this->_vers->git->tag;
