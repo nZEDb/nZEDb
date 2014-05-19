@@ -56,6 +56,7 @@ if ($pieces[0] != 'Stage7b') {
 	$retcount = $releases->processReleasesStage4($groupid);
 	$releases->processReleasesStage5($groupid);
 	$releases->processReleasesStage5b($groupid);
+	$releases->processReleasesStage5c($groupid);
 	$releases->processReleasesStage7a($groupid);
 //	$mask = "%-30.30s added %s releases.\n";
 //	$first = number_format($retcount);

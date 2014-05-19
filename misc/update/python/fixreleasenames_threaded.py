@@ -58,7 +58,7 @@ datas = []
 maxtries = 0
 
 if len(sys.argv) > 1 and sys.argv[1] == "nfo":
-	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND proc_nfo = 0 AND nfostatus = 1 AND" + clean + "ORDER BY postdate DESC LIMIT %s"
+	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND nfostatus = 1 AND proc_nfo = 0 AND" + clean + "ORDER BY postdate DESC LIMIT %s"
 	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and sys.argv[1] == "miscsorter":
@@ -71,7 +71,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
 	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN %s AND 0 AND rel.passwordstatus >= -1 AND (rel.ishashed = 1 OR rf.ishashed = 1) AND preid = 0 ORDER BY postdate ASC LIMIT %s"
+		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN %s AND 0 AND (rel.ishashed = 1 OR rf.ishashed = 1) AND preid = 0 ORDER BY postdate ASC LIMIT %s"
 		cur[0].execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
 		datas = cur[0].fetchall()
 		maxtries = maxtries - 1
@@ -82,8 +82,8 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "predbft"):
 	#This one does from oldest posts to newest posts since there are many other more efficient PreDB matching schemes
-	run = "SELECT id AS preid FROM predb WHERE LENGTH(title) >= 15 AND searched = 0 AND title NOT REGEXP '[\"\<\> ]' ORDER BY predate ASC LIMIT %s"
-	cur[0].execute(run, (int(perrun[0])/10 * int(run_threads[0])))
+	run = "SELECT id AS preid FROM predb WHERE LENGTH(title) >= 15 AND title NOT REGEXP '[\"\<\> ]' AND searched = 0 ORDER BY predate ASC LIMIT %s"
+	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur[0].fetchall()
 
 #close connection to mysql

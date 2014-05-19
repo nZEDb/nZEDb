@@ -6,6 +6,17 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-19
+	* Chg: RequestID lookups split into two stages for local and web lookup (and actually seems to work now)
+	* Chg: PreDB FT count in fixreleaseNames no longer divides by 10 as it is faster than par2
+2014-05-19 niel
+	* Fix: Remove attempt to set db connection attributes that are already set from install step2.php
+	* Chg: Prevent Settings from requiring config.php during install.
+2014-05-18 kevin
+	* Add: Script to test hashes/encodings (~270k possibilities).
+2014-05-18 ruhllatio
+	* Re-work counting query in tmux monitor to reduce loop times
+	* Change fixReleaseNames query for proper standards
 2014-05-17 ruhllatio
 	* Various query optimizations in preparation for index overhaul
 2014-05-17 bart39
