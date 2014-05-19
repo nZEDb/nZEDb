@@ -8,9 +8,10 @@ $versions = @simplexml_load_file(nZEDb_VERSIONS);
 if ($versions === false) {
 	exit($c->error("\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"));
 }
-exec('git log | grep "^commit" | wc -l', $commit);
+//exec('git log | grep "^commit" | wc -l', $commit);
+$git = new \nzedb\utility\Git();
 
-$version = $versions->versions->git->tag . 'r' . $commit[0];
+$version = $versions->versions->git->tag . 'r' . $git->commits();
 
 $db = new DB();
 $DIR = nZEDb_MISC;
