@@ -6,7 +6,34 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-19 Bart39
+	* Fix: Revert monitor.php change for requestid counts
+2014-05-19 niel
+	* Fix: Remove attempt to set db connection attributes that are already set from install step2.php
+	* Chg: Prevent Settings from requiring config.php during install.
+2014-05-18 kevin
+	* Add: Script to test hashes/encodings (~270k possibilities).
+2014-05-18 ruhllatio
+	* Re-work counting query in tmux monitor to reduce loop times
+	* Change fixReleaseNames query for proper standards
+2014-05-17 ruhllatio
+	* Various query optimizations in preparation for index overhaul
+2014-05-17 bart39
+	* Fix: page counts for books, console and music
+	* Chg: rename patch 225
+	* Fix: regex error
+2014-05-17 niel
+	* Fix: Pre-commit exits early if new patch checking runs into a problem.
+	* Chg: Making covers' constant truly default to .../resources/covers.
+	  Users with older installs should consider moving their covers from .../www/covers .
+	* Fix: Pass backup settings from newPatches to processPatches.
+	* Upd: Renaming patches with 'schema' for table name.
+	* Fix: Uncapitalised settings table name in patch 226.
+2014-05-16 ruhllatio
+	* Add: PreDB FT Match to fixReleaseNames and tmux
 2014-05-16 bart39
+	* Chg: Refactor predb stage 1 NB: new table will be created as MYISAM due to fulltext search,
+	if you wish to alter to InnoDB you must be on mysql 5.6+
 	* Chg: Regex improvements
 	* Chg: cross-posted requestid checks
 	* Chg: Refactor tmux variables for ircscraper/sharing windows

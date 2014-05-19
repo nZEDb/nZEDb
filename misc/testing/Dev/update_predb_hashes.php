@@ -10,7 +10,7 @@ $c = new ColorCLI();
 
 if (!isset($argv[1]) || $argv[1] != 'true') {
 	exit($c->error("\nThis script will recalculate and update the MD5 and SHA1 columns for each pre.\n\n"
-					. "php $argv[0] true      ...: To reset every predb MD5/SHA1.\n"));
+				   . "php $argv[0] true      ...: To reset every predb MD5/SHA1.\n"));
 }
 
 // Drop the unique indexes
@@ -25,17 +25,21 @@ if ($has_index2->rowCount() > 0) {
 	$db->queryDirect("DROP index ix_predb_sha1 ON predb");
 }
 
-$res = $db->queryDirect("SELECT id, title FROM predb");
-$total = $res->rowCount();
+$res     = $db->queryDirect("SELECT id, title FROM predb");
+$total   = $res->rowCount();
 $deleted = $count = 0;
-echo $c->header("Updating MD5\SHA1 hashes on ". number_format($total) . " preDB's.");
+echo $c->header("Updating MD5/SHA1 hashes on " . number_format($total) . " preDB's.");
 foreach ($res as $row) {
-	$name = trim($row['title']);
-	$md5 = $db->escapeString(md5($name));
-	$sha1 = $db->escapeString(sha1($name));
+	$name  = trim($row['title']);
+	$md5   = $db->escapeString(md5($name));
+	$sha1  = $db->escapeString(sha1($name));
 	$title = $db->escapeString($name);
 
-	$db->queryDirect(sprintf("UPDATE predb SET title = %s, md5 = %s, sha1 = %s, WHERE id = %d", $title, $md5, $sha1, $row['id']));
+	$db->queryDirect(sprintf("UPDATE predb SET title = %s, md5 = %s, sha1 = %s WHERE id = %d",
+							 $title,
+							 $md5,
+							 $sha1,
+							 $row['id']));
 	$consoletools->overWriteHeader("Reset MD5s: " . $consoletools->percentString(++$count, $total));
 }
 
@@ -47,7 +51,7 @@ echo $c->info("Updating Predb matches in releases.");
 
 $releases = $db->queryDirect("SELECT id, searchname FROM releases WHERE preid > 0");
 $newtotal = $releases->rowCount();
-$matched = $counter = 0;
+$matched  = $counter = 0;
 foreach ($releases as $release) {
 	$run = $predb->matchPre($release['searchname'], $release['id']);
 	if ($run === false) {
@@ -55,6 +59,7 @@ foreach ($releases as $release) {
 	} else {
 		$matched++;
 	}
-	$consoletools->overWritePrimary("Matching Releases:  [" . number_format($matched) . "] " . $consoletools->percentString( ++$counter, $newtotal));
+	$consoletools->overWritePrimary("Matching Releases:  [" . number_format($matched) . "] " .
+									$consoletools->percentString(++$counter, $newtotal));
 }
 echo $c->header("\nDone.");

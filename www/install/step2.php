@@ -102,7 +102,6 @@ if ($page->isPostBack()) {
 					'dbuser'       => $cfg->DB_USER,
 				)
 			);
-			$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 			$cfg->dbConnCheck = true;
 		} catch (\PDOException $e) {
 			$cfg->emessage = 'Unable to connect to the SQL server.';
