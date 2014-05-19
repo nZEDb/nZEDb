@@ -2398,12 +2398,8 @@ class Releases
 						$preid = false;
 						$determinedCat = $category->determineCategory($newTitle, $groupID);
 						$md5 = md5($newTitle);
-						$dupe = $this->db->queryOneRow(sprintf(
-								'SELECT requestid FROM predb INNER JOIN predbhash ON
-								predbhash.pre_id = predb.id WHERE MATCH (predbhash.hashes) AGAINST (%s)',
-								$this->db->escapeString($md5)
-							)
-						);
+						$dupe = $this->db->queryOneRow(sprintf('SELECT requestid FROM predb WHERE md5 = %s',
+								$this->db->escapeString($md5)));
 						if ($dupe === false || ($dupe !== false && $dupe['requestid'] != $requestID)) {
 							$preid = $this->db->queryInsert(
 								sprintf("
