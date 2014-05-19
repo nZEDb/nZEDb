@@ -84,7 +84,20 @@ class Utility
 	static public function setCoversConstant($path)
 	{
 		if (!defined('nZEDb_COVERS')) {
-			define('nZEDb_COVERS', $path == '' ? nZEDb_WWW . 'covers' . DS : self::trailingSlash($path));
+			switch (true) {
+				case (substr($path, 0, 1) == '/' ||
+					  substr($path, 1, 1) == ':' ||
+					  substr($path, 0, 1) == '\\'):
+					define('nZEDb_COVERS', self::trailingSlash($path));
+					break;
+				case (substr($path, 0, 1) != '/' && substr($path, 1, 1) != ':' &&
+					  substr($path, 0, 1) != '\\'):
+					define('nZEDb_COVERS', realpath(nZEDb_ROOT . self::trailingSlash($path)));
+					break;
+				case empty($path): // Default to resources location.
+				default:
+					define('nZEDb_COVERS', nZEDb_RES . 'covers' . DS);
+			}
 		}
 	}
 
@@ -125,6 +138,41 @@ class Utility
 		}
 		return $path;
 	}
+
+	/**
+	 * Removes the preceeding or proceeding portion of a string
+	 * relative to the last occurrence of the specified character.
+	 * The character selected may be retained or discarded.
+	 *
+	 * @param string $character the character to search for.
+	 * @param string $string the string to search through.
+	 * @param string $side determines whether text to the left or the right of the character is returned.
+	 * Options are: left, or right.
+	 * @param bool $keep_character determines whether or not to keep the character.
+	 * Options are: true, or false.
+	 * @return string
+	 */
+	static public function cutStringUsingLast($character, $string, $side, $keep_character=true)
+	{
+		$offset = ($keep_character ? 1 : 0);
+		$whole_length = strlen($string);
+		$right_length = (strlen(strrchr($string, $character)) - 1);
+		$left_length = ($whole_length - $right_length - 1);
+		switch($side) {
+			case 'left':
+				$piece = substr($string, 0, ($left_length + $offset));
+				break;
+			case 'right':
+				$start = (0 - ($right_length + $offset));
+				$piece = substr($string, $start);
+				break;
+			default:
+				$piece = false;
+				break;
+		}
+		return($piece);
+	}
+
 }
 
 /**
