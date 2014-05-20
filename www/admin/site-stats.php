@@ -1,10 +1,6 @@
 <?php
 require_once './config.php';
 
-
-
-
-
 $page = new AdminPage();
 $users = new Users();
 $releases = new Releases();

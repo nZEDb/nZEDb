@@ -1,8 +1,5 @@
-
 <h1>{$page->title}</h1>
-
 <div style="float:right;">
-
 	<form name="usersearch" action="">
 		<label for="username">username</label>
 		<input id="username" type="text" name="username" value="{$username}" size="10" />
@@ -22,13 +19,9 @@
 		<input type="submit" value="Go" />
 	</form>
 </div>
-
 {$pager}
-
 <br/><br/>
-
 <table style="width:100%;margin-top:10px;" class="data highlight">
-
 	<tr>
 		<th>name<br/><a title="Sort Descending" href="{$orderbyusername_desc}"><img src="{$smarty.const.WWW_TOP}/../themes_shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyusername_asc}"><img src="{$smarty.const.WWW_TOP}/../themes_shared/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>email<br/><a title="Sort Descending" href="{$orderbyemail_desc}"><img src="{$smarty.const.WWW_TOP}/../themes_shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyemail_asc}"><img src="{$smarty.const.WWW_TOP}/../themes_shared/images/sorting/arrow_up.gif" alt="" /></a></th>
@@ -42,23 +35,19 @@
 		<th>role<br/><a title="Sort Descending" href="{$orderbyrole_desc}"><img src="{$smarty.const.WWW_TOP}/../themes_shared/images/sorting/arrow_down.gif" alt="" /></a><a title="Sort Ascending" href="{$orderbyrole_asc}"><img src="{$smarty.const.WWW_TOP}/../themes_shared/images/sorting/arrow_up.gif" alt="" /></a></th>
 		<th>options</th>
 	</tr>
-
-
 	{foreach from=$userlist item=user}
-	<tr class="{cycle values=",alt"}">
-		<td><a href="{$smarty.const.WWW_TOP}/user-edit.php?id={$user.id}">{$user.username}</a></td>
-		<td>{$user.email}</td>
-		<td>{$user.host}</td>
-		<td title="{$user.createddate}">{$user.createddate|date_format}</td>
-		<td title="{$user.lastlogin}">{$user.lastlogin|date_format}</td>
-		<td title="{$user.apiaccess}">{$user.apiaccess|date_format}</td>
-		<td>{$user.apirequests}</td>
-		<td>{$user.grabs}</td>
-		<td>{$user.invites}</td>
-		<td>{$user.rolename}</td>
-		<td>{if $user.role!="2"}<a class="confirm_action" href="{$smarty.const.WWW_TOP}/user-delete.php?id={$user.id}">delete</a>{/if}</td>
-	</tr>
+		<tr class="{cycle values=",alt"}">
+			<td><a href="{$smarty.const.WWW_TOP}/user-edit.php?id={$user.id}">{$user.username}</a></td>
+			<td>{$user.email}</td>
+			<td>{$user.host}</td>
+			<td title="{$user.createddate}">{$user.createddate|date_format}</td>
+			<td title="{$user.lastlogin}">{$user.lastlogin|date_format}</td>
+			<td title="{$user.apiaccess}">{$user.apiaccess|date_format}</td>
+			<td>{$user.apirequests}</td>
+			<td>{$user.grabs}</td>
+			<td>{$user.invites}</td>
+			<td>{$user.rolename}</td>
+			<td>{if $user.role!="2"}<a class="confirm_action" href="{$smarty.const.WWW_TOP}/user-delete.php?id={$user.id}">delete</a>{/if}</td>
+		</tr>
 	{/foreach}
-
-
 </table>

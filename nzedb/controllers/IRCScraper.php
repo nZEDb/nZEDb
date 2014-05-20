@@ -89,7 +89,8 @@ class IRCScraper extends IRCClient
 				'#a.b.games.xbox360'          => false,
 				'#pre@corrupt'                => false,
 				'#scnzb'                      => false,
-				'#tvnzb'                      => false
+				'#tvnzb'                      => false,
+				'u4all.eu'                    => false
 			);
 		}
 
@@ -230,7 +231,7 @@ class IRCScraper extends IRCClient
 	 */
 	protected function checkForDupe()
 	{
-		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT category, size FROM predb WHERE md5 = %s', $this->CurPre['md5']));
+		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT category, size FROM predb INNER JOIN predbhash ON predbhash.pre_id = predb.id WHERE MATCH (hashes) AGAINST (%s)', $this->CurPre['md5']));
 		if ($this->OldPre === false) {
 			$this->insertNewPre();
 		} else {
@@ -303,7 +304,7 @@ class IRCScraper extends IRCClient
 			return;
 		}
 
-		$query = 'UPDATE predb SET ';
+		$query = 'UPDATE predb INNER JOIN predbhash ON predbhash.pre_id = predb.id SET ';
 
 		$query .= (!empty($this->CurPre['size'])     ? 'size = '       . $this->db->escapeString($this->CurPre['size'])     . ', ' : '');
 		$query .= (!empty($this->CurPre['source'])   ? 'source = '     . $this->db->escapeString($this->CurPre['source'])   . ', ' : '');
@@ -320,12 +321,12 @@ class IRCScraper extends IRCClient
 				: ''
 		);
 
-		if ($query === 'UPDATE predb SET '){
+		if ($query === 'UPDATE predb INNER JOIN predbhash ON predbhash.pre_id = predb.id SET '){
 			return;
 		}
 
 		$query .= 'title = '      . $this->db->escapeString($this->CurPre['title']);
-		$query .= ' WHERE md5 = ' . $this->CurPre['md5'];
+		$query .= ' WHERE MATCH (hashes) AGAINST (' . $this->CurPre['md5'] . ')';
 
 		$this->db->ping(true);
 

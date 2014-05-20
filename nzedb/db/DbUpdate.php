@@ -61,6 +61,11 @@ class DbUpdate
 	public $db;
 
 	/**
+	 * @var nzedb\utility\Git instance
+	 */
+	public $git;
+
+	/**
 	 * @var object    Instance variable for logging object. Currently only ColorCLI supported,
 	 * but expanding for full logging with agnostic API planned.
 	 */
@@ -87,7 +92,8 @@ class DbUpdate
 	{
 		$defaults = array(
 			'backup'	=> true,
-			'db'		=> new \nzedb\db\DB(),
+			'db'		=> new \nzedb\db\Settings(),
+			'git'		=> new \nzedb\utility\Git(),
 			'logger'	=> new \ColorCLI(),
 		);
 		$options += $defaults;
@@ -95,7 +101,14 @@ class DbUpdate
 
 		$this->backup	= $options['backup'];
 		$this->db		= $options['db'];
+		$this->git		= $options['git'];
 		$this->log		= $options['logger'];
+
+		if (is_a($this->db, 'Settings')) {
+			$this->settings =& $this->db;
+		} else {
+			$this->settings = new Settings();
+		}
 
 		$this->_DbSystem = strtolower($this->db->dbSystem());
 	}
@@ -111,7 +124,7 @@ class DbUpdate
 		$options += $defaults;
 
 		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
-		natsort($files, SORT_NATURAL);
+		natsort($files);
 		$sql = 'LOAD DATA INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
 			echo "File: $file\n";
@@ -164,7 +177,7 @@ class DbUpdate
 		);
 		$options += $defaults;
 
-		$this->processPatches();	// Make sure we are completely up to date!
+		$this->processPatches([ 'safe' => $options['safe'] ]);	// Make sure we are completely up to date!
 
 		echo $this->log->primaryOver('Looking for new patches...');
 		$files = utility\Utility::getDirFiles($options);
@@ -188,7 +201,7 @@ class DbUpdate
 					$newName = $matches['drive'] . $matches['path'] .
 							   str_pad($current, 4, '0', STR_PAD_LEFT) . '~' . $matches['table'] . '.sql';
 					rename($matches[0], $newName);
-					passthru("git add $newName");
+					$this->git->add($newName);
 				}
 			}
 		}
@@ -206,10 +219,9 @@ class DbUpdate
 		);
 		$options += $defaults;
 
-		$this->_useSettings();
-		$currentVersion = $this->settings->getSetting('sqlpatch');
+		$currentVersion = $this->settings->getSetting(['setting' => 'sqlpatch']);
 		if (!is_numeric($currentVersion)) {
-			exit("Bad sqlpatch value!!\n");
+			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
 
 		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
@@ -228,17 +240,16 @@ class DbUpdate
 				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
 						$patch = (integer)$matches['patch'];
 						$setPatch = true;
-// Removing the old check from active code to flush out any left over edge case bugs.
-//				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?P<patch>\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
-//					$patch = (integer)$matches['patch'];
+				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?P<patch>\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
+					$patch = (integer)$matches['patch'];
 				} else {
-					throw new \RuntimeException("File ($file) has no recognised patch number, stopping!!\nYou need help with this, go ask in IRC #nZEDb");
+					throw new \RuntimeException("No patch information available, stopping!!");
 				}
 
 				if ($patch > $currentVersion) {
 					echo $this->log->header('Processing patch file: ' . $file);
 					if ($options['safe'] && !$this->backedUp) {
-						$this->backupDb();
+						$this->_backupDb();
 					}
 					$this->splitSQL($file, ['local' => $local, 'data' => $data]);
 					if ($setPatch) {
@@ -367,13 +378,6 @@ class DbUpdate
 
 		system("$PHP " . nZEDb_MISC . 'testing' . DS .'DB' . DS . $this->_DbSystem . 'dump_tables.php db dump');
 		$this->backedup = true;
-	}
-
-	protected function _useSettings(Sites $object = null)
-	{
-		if ($this->settings === null) {
-			$this->settings = (empty($object)) ? new Settings() : $object;
-		}
 	}
 }
 

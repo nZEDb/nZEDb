@@ -280,23 +280,23 @@ Class PreDb
 			return;
 		}
 
-		$md5 = $this->db->escapeString(md5($matches['title']));
+		$matches['title'] = str_replace(array("\r", "\n"), '', $matches['title']);
 
-		$duplicateCheck = $this->db->queryOneRow(sprintf('SELECT id, nfo, size, category FROM predb WHERE md5 = %s', $md5));
+		$duplicateCheck = $this->db->queryOneRow(sprintf('SELECT id, nfo, size, category FROM predb WHERE title = %s', $this->db->escapeString($matches['title'])));
 
 		if ($duplicateCheck === false) {
 			$this->db->queryExec(
 				sprintf('
 					INSERT INTO predb (title, nfo, size, category, predate, source, md5, sha1, requestid, groupid, files, filename, nuked, nukereason)
-					VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %s, %s, %d, %s)',
+					VALUES (%s, %s, %s, %s, %s, %s, md5(%s), sha1(%s), %d, %d, %s, %s, %d, %s)',
 					$this->db->escapeString($matches['title']),
 					((isset($matches['nfo']) && !empty($matches['nfo'])) ? $this->db->escapeString($matches['nfo']) : 'NULL'),
 					((isset($matches['size']) && !empty($matches['size'])) ? $this->db->escapeString($matches['size']) : 'NULL'),
 					((isset($matches['category']) && !empty($matches['category'])) ? $this->db->escapeString($matches['category']) : 'NULL'),
 					$this->db->from_unixtime($matches['date']),
 					$this->db->escapeString($matches['source']),
-					$md5,
-					$this->db->escapeString(sha1($matches['title'])),
+					$this->db->escapeString($matches['title']),
+					$this->db->escapeString($matches['title']),
 					((isset($matches['requestid']) && is_numeric($matches['requestid']) ? $matches['requestid'] : 0)),
 					((isset($matches['groupid']) && is_numeric($matches['groupid'])) ? $matches['groupid'] : 0),
 					((isset($matches['files']) && !empty($matches['files'])) ? $this->db->escapeString($matches['files']) : 'NULL'),
@@ -307,23 +307,37 @@ Class PreDb
 			);
 			$this->insertedPre++;
 		} else {
-			$this->db->queryExec(
-				sprintf('
-					UPDATE predb SET
-					nfo = %s, size = %s, category = %s, requestid = %d, groupid = %d, files = %s, filename = %s, nuked = %d, nukereason = %s
-					WHERE id = %d',
-					((isset($matches['nfo']) && !empty($matches['nfo'])) ? $this->db->escapeString($matches['nfo']) : 'NULL'),
-					((isset($matches['size']) && !empty($matches['size'])) ? $this->db->escapeString($matches['size']) : 'NULL'),
-					((isset($matches['category']) && !empty($matches['category'])) ? $this->db->escapeString($matches['category']) : 'NULL'),
-					((isset($matches['requestid']) && is_numeric($matches['requestid']) ? $matches['requestid'] : 0)),
-					((isset($matches['groupid']) && is_numeric($matches['groupid'])) ? $matches['groupid'] : 0),
-					((isset($matches['files']) && !empty($matches['files'])) ? $this->db->escapeString($matches['files']) : 'NULL'),
-					(isset($matches['filename']) ? $this->db->escapeString($matches['filename']) : $this->db->escapeString('')),
-					((isset($matches['nuked']) && is_numeric($matches['nuked'])) ? $matches['nuked'] : 0),
-					((isset($matches['reason']) && !empty($matches['nukereason'])) ? $this->db->escapeString($matches['nukereason']) : 'NULL'),
-					$duplicateCheck['id']
-				)
+			if (empty($matches['title'])) {
+				return;
+			}
+
+			$query = 'UPDATE predb SET ';
+
+			$query .= (!empty($matches['nfo'])       ? 'nfo = '        . $this->db->escapeString($matches['nfo'])      . ', ' : '');
+			$query .= (!empty($matches['size'])      ? 'size = '       . $this->db->escapeString($matches['size'])     . ', ' : '');
+			$query .= (!empty($matches['source'])    ? 'source = '     . $this->db->escapeString($matches['source'])   . ', ' : '');
+			$query .= (!empty($matches['files'])     ? 'files = '      . $this->db->escapeString($matches['files'])    . ', ' : '');
+			$query .= (!empty($matches['reason'])    ? 'nukereason = ' . $this->db->escapeString($matches['reason'])   . ', ' : '');
+			$query .= (!empty($matches['requestid']) ? 'requestid = '  . $matches['requestid']                         . ', ' : '');
+			$query .= (!empty($matches['groupid'])   ? 'groupid = '    . $matches['groupid']                           . ', ' : '');
+			$query .= (!empty($matches['predate'])   ? 'predate = '    . $matches['predate']                           . ', ' : '');
+			$query .= (!empty($matches['nuked'])     ? 'nuked = '      . $matches['nuked']                             . ', ' : '');
+			$query .= (!empty($matches['filename'])  ? 'filename = '   . $this->db->escapeString($matches['filename']) . ', ' : '');
+			$query .= (
+				(empty($duplicateCheck['category']) && !empty($matches['category']))
+					? 'category = ' . $this->db->escapeString($matches['category']) . ', '
+					: ''
 			);
+
+			if ($query === 'UPDATE predb SET '){
+				return;
+			}
+
+			$query .= 'title = '      . $this->db->escapeString($matches['title']);
+			$query .= ' WHERE title = ' . $this->db->escapeString($matches['title']);
+
+			$this->db->queryExec($query);
+
 			$this->updatedPre++;
 		}
 	}
@@ -398,7 +412,7 @@ Class PreDb
 	{
 		$buffer = $this->getUrl('http://pre.zenet.org/live.php');
 		if ($buffer !== false) {
-			if (preg_match_all('/<div class="mini-layout fluid">((\s+\S+)?\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?<\/div>\s+<\/div>)/s', $buffer, $matches)) {
+			if (preg_match_all('/<div class="mini-layout fluid">.+?<\/div>\s*<\/div>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
 						if (preg_match('/<span class="bold">(?P<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/span>.+<a href="\?post=\d+"><b><font color="#\d+">(?P<title>.+)<\/font><\/b><\/a>.+<p><a href="\?cats=.+"><font color="#FF9900">(?P<category>.+)<\/font><\/a> \| (?P<size1>[\d\.,]+)?(?P<size2>[MGK]B)? \/\s+(?P<files>\d+).+<\/div>/s', $m, $matches2)) {
@@ -758,11 +772,15 @@ Class PreDb
 		if (preg_match_all('/<tr class="(alt)?">\s*<td class="left">.*?<\/td>\s*<\/tr>/s', $data, $matches)) {
 			foreach ($matches as $m) {
 				foreach ($m as $match) {
-					if (preg_match('/left">\s*(?P<date>.+?)\s*<\/td.+?left">\s*(.*?<u>)?(?P<title>.+?)(<\/u><\/a>.+?)?\s*<\/td.+?href.+?">\s*(?P<category>.+?)\s*<\/a.+?mid">\s*((?P<size>\d+(\.\d+)?[KMGT]?B)(\/(?P<files>\d+F))?|--)\s*<\/td/s', $match, $matches2)) {
+					if (preg_match('/left">\s*(?P<date>.+?)\s*<\/td.+?left">\s*(.*?<u>)?(?P<title>.+?)(<\/.+>?<.+?>(?P<nuke>.+)?<\/.+>)?(<\/u><\/a>.+?)?\s*<\/td.+?href.+?">\s*(?P<category>.+?)\s*<\/a.+?mid">\s*((?P<size>\d+(\.\d+)?[KMGT]?B)(\/(?P<files>\d+F))?|--)\s*<\/td/s', $match, $matches2)) {
 						$matches2['date'] = strtotime($matches2['date']);
 						$matches2['source'] = 'usenet-crawler';
 						$matches2['size'] = ((isset($matches2['size']) && !empty($matches2['size'])) ? $matches2['size'] : '');
 						$matches2['files'] = ((isset($matches2['files']) && !empty($matches2['files'])) ? $matches2['files'] : '');
+						if (isset($matches2['nuke']) && preg_match('/(\S+)\)/', $matches2['nuke'], $nuked)) {
+							$matches2['nuked'] = PreDb::PRE_NUKED;
+							$matches2['nukereason'] = $nuked[1];
+						}
 						$this->verifyPreData($matches2);
 					}
 				}
@@ -870,7 +888,7 @@ Class PreDb
 		return $nfos;
 	}
 
-	// Matches the MD5 within the predb table to release files and subjects (names) which are hashed.
+	// Matches the hashes within the predb table to release files and subjects (names) which are hashed.
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
 		$db = new DB();
@@ -897,7 +915,7 @@ Class PreDb
 			if ($time == 1) {
 				$te = ' in the past 3 hours';
 			}
-			echo $this->c->header('Fixing search names' . $te . " using the predb md5.");
+			echo $this->c->header('Fixing search names' . $te . " using the predb hash.");
 		}
 		if ($db->dbSystem() === 'mysql') {
 			$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";

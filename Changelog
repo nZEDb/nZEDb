@@ -6,6 +6,96 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-19
+	* Chg: Use predbhash fulltext search for hash lookups
+	* Chg: Make RequestID lookups consistant between releases stage 5b/c and requestid_threaded
+2014-05-19
+	* Chg: RequestID lookups split into two stages for local and web lookup (and actually seems to work now)
+	* Chg: PreDB FT count in fixreleaseNames no longer divides by 10 as it is faster than par2
+2014-05-19 niel
+	* Fix: Remove attempt to set db connection attributes that are already set from install step2.php
+	* Chg: Prevent Settings from requiring config.php during install.
+	* New: Added new Git class to nzedb\utility
+	* Chg: Refactored scripts using git to use new Git class.
+2014-05-18 kevin
+	* Add: Script to test hashes/encodings (~270k possibilities).
+2014-05-18 ruhllatio
+	* Re-work counting query in tmux monitor to reduce loop times
+	* Change fixReleaseNames query for proper standards
+2014-05-17 ruhllatio
+	* Various query optimizations in preparation for index overhaul
+2014-05-17 bart39
+	* Fix: page counts for books, console and music
+	* Chg: rename patch 225
+	* Fix: regex error
+2014-05-17 niel
+	* Fix: Pre-commit exits early if new patch checking runs into a problem.
+	* Chg: Making covers' constant truly default to .../resources/covers.
+	  Users with older installs should consider moving their covers from .../www/covers .
+	* Fix: Pass backup settings from newPatches to processPatches.
+	* Upd: Renaming patches with 'schema' for table name.
+	* Fix: Uncapitalised settings table name in patch 226.
+2014-05-16 ruhllatio
+	* Add: PreDB FT Match to fixReleaseNames and tmux
+2014-05-16 bart39
+	* Chg: Refactor predb stage 1 NB: new table will be created as MYISAM due to fulltext search,
+	if you wish to alter to InnoDB you must be on mysql 5.6+
+	* Chg: Regex improvements
+	* Chg: cross-posted requestid checks
+	* Chg: Refactor tmux variables for ircscraper/sharing windows
+	* Fix: Files in pre info popup showing with MB
+2014-05-16 niel
+	* Chg: Improvements to Settings/Site detection for upgrading from older installs.
+	* Chg: Using separate settings value in DbUpdate only if needed (Improves memory use).
+	* Upd: Updated doc for creating patches.
+2014-05-15 ruhllatio
+	* Add: New category matching and refined filtering to match_predbfiles (no longer console only)
+	* Add: Full database (no category restriction with a separate method) filename matching for match_predbfiles
+	* Fix: Blank line in Utility EOF
+2014-05-15 kevin
+	* Add: New ignorable source IRCScraper (copy from settings_example.php).
+	* Fix: Add missing setting for predb to settings table.
+	* Add: Time ago to comments (alpha theme).
+	* Fix: Fixes / tweaks to encode yEnc.
+2014-05-14 kevin
+	* Upd: Update ubuntu guide.
+	* Mov: Rename ubuntu guide.
+2014-05-14 DariusIII
+	* Fix: Add missing $status for new types of matches in NameFixer
+2014-05-13 bart39
+	* Fix: set filesize to 0 if sum of parts returns NULL
+	* Fix: Verify tmpunrarpath is not null before removing dead folders
+	* Chg: Only reset collections / nzbs that are older then delay time check in site settings
+2014-05-13 ruhllatio
+	* Fix: $res variables in NameFixer predb match functions now check for false before rowCount()
+	* Chg: PreDB FT Match function query to rule out impossible matches / hanging matches
+	* Chg: Optimize FT Match query for speed
+	* Fix: PreDB Scrape from Web sources should no longer overwrite valid pre info if not set
+	* Add: Usenet name to updateReleases NameFixer function
+	* Fix: PreDB web scrape double escape string in MD5 on update
+	* Fix: Remaining PreDB dupe errors from uc and predbme / fix updateReleases for checkNames + NFO
+	* Add: PreDB FT Match Script (testing phase)
+2014-05-13 kevin
+	* Add: POSIX Extension as requirement for unix operating systems to INSTALL.txt
+	* Chg: Predb web, use MySQL to md5/sha1 to avoid encoding issues.
+	* Fix: Fix multiple delete of releases on web browser.
+	* Fix: Add reloading of page when bulk editing releases on web page.
+	* Fix: Indent/various issues in admin theme.
+2014-05-12 DariusIII
+	* Chg: Add huge file removal option to remove crap part of tmux admin page.
+2014-05-11 kevin
+	* Add: Add change by predator314 to allow sickbeard/nzbdrone to pick up releases from Web-DL category on API.
+	* Add: Strip new lines / carriage returns from web predb titles before inserting.
+2014-05-11 bubblun
+	* Add: New setting to delete releases with a size of over 200MB and just a single file/part. Those are very likely spam releases.
+2014-05-11 ruhllatio
+	* Add: PreDB FT Match Function to NameFixer
+2014-05-10 kevin/niel
+	* Fix: Fix for UC changing predb output on html.
+	* Chg: Change a regex in predb.
+2014-05-09 ruhllatio
+	* Add: PreDB filename matching function and test script (use at own risk for now)
+	* Fix: decrypt_hashes show logic was backwards (showing the results of rename when show wasn't specified) Ahem - Bart39
 2014-05-08 niel
 	* Fix: Definition of Covers constant now Settings is main class instead of Sites.
 	* Fix: Table default for site/settings.
@@ -46,7 +136,6 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Updated threaded requestid to use the new reqid server url
 2014-05-05 niel
 	* Chg: Defaulting covers path to .../resources/covers on new installs. Instructions for setting up your www conf are on the wiki.
-	* Chg: Removing old patch number checking and changing the error message for problems.
 2014-05-05 bart39
 	* Chg: update requestid.php for new requestid regex.
 	* Fix: Fix regex for isrequestid triggers and add to schema.

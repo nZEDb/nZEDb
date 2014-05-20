@@ -108,7 +108,7 @@ class Console
 			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
 		}
 
-		$res = $db->queryOneRow(sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN consoleinfo con ON con.id = r.consoleinfoid AND con.title != '' WHERE r.nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
+		$res = $db->queryOneRow(sprintf("SELECT COUNT(DISTINCT r.consoleinfoid) AS num FROM releases r INNER JOIN consoleinfo con ON con.id = r.consoleinfoid AND con.title != '' AND con.cover = 1 WHERE r.nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist));
 		return $res["num"];
 	}
 
