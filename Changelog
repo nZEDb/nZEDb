@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-20
+	* Fix: Fixed the TMDB covers lookup path in Movie.php
 2014-05-19
 	* Chg: Use predbhash fulltext search for hash lookups
 	* Chg: Make RequestID lookups consistant between releases stage 5b/c and requestid_threaded
