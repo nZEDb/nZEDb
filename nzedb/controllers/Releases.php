@@ -2215,7 +2215,7 @@ class Releases
 				$newTitle = false;
 
 				foreach ($resRel as $rowRel) {
-					$newTitle = false;
+					$newTitle = $preId = false;
 
 					// Try to get request id.
 					if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID)) {
@@ -2239,7 +2239,7 @@ class Releases
 						// Do a local lookup.
 						$run = $this->db->queryOneRow(
 							sprintf("
-								SELECT title
+								SELECT id, title
 								FROM predb
 								WHERE requestid = %d
 								AND groupid = %d",
@@ -2249,6 +2249,7 @@ class Releases
 
 						if ($run !== false) {
 							$newTitle = $run['title'];
+							$preId = $run['id'];
 							$iFoundCnt++;
 						}
 					}
@@ -2259,11 +2260,15 @@ class Releases
 						$this->db->queryExec(
 							sprintf('
 								UPDATE releases
-								SET reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d
+								SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL,
+								tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,
+								reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s,
+								categoryid = %d, preid = %d
 								WHERE id = %d',
 								self::REQID_FOUND,
 								$this->db->escapeString($newTitle),
 								$determinedCat,
+								$preId,
 								$rowRel['id']
 							)
 						);
@@ -2346,7 +2351,7 @@ class Releases
 						(nzedb\utility\getUrl($this->site->request_url) === false ? false : true));
 
 				foreach ($resRel as $rowRel) {
-					$newTitle = $local = false;
+					$newTitle = false;
 
 					// Try to get request id.
 					if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID)) {
@@ -2390,16 +2395,36 @@ class Releases
 					}
 
 					if ($newTitle !== false) {
-
+						$preid = false;
 						$determinedCat = $category->determineCategory($newTitle, $groupID);
+						$md5 = md5($newTitle);
+						$dupe = $this->db->queryOneRow(sprintf('SELECT requestid FROM predb WHERE md5 = %s',
+								$this->db->escapeString($md5)));
+						if ($dupe === false || ($dupe !== false && $dupe['requestid'] != $requestID)) {
+							$preid = $this->db->queryInsert(
+								sprintf("
+								INSERT INTO predb (title, source, md5, requestid, groupid)
+								VALUES (%s, %s, %s, %s, %d)",
+									$this->db->escapeString($newTitle),
+									$this->db->escapeString('requestWEB'),
+									$this->db->escapeString($md5),
+									$requestID, $groupID
+								)
+							);
+						}
+
 						$this->db->queryExec(
 							sprintf('
 								UPDATE releases
-								SET reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d
+								SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL,
+								tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,
+								reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d,
+								preid = %d
 								WHERE id = %d',
 								self::REQID_FOUND,
 								$this->db->escapeString($newTitle),
 								$determinedCat,
+								$preid,
 								$rowRel['id']
 							)
 						);
