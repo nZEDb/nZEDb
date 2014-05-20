@@ -853,10 +853,10 @@ class Movie
 			$ret['genre'] = $genres;
 		}
 		if (isset($tmdbLookup['poster_path']) && sizeof($tmdbLookup['poster_path']) > 0) {
-			$ret['cover'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w185" . $tmdbLookup['poster_path'];
+			$ret['cover'] = "http://image.tmdb.org/t/p/w185" . $tmdbLookup['poster_path'];
 		}
 		if (isset($tmdbLookup['backdrop_path']) && sizeof($tmdbLookup['backdrop_path']) > 0) {
-			$ret['backdrop'] = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original" . $tmdbLookup['backdrop_path'];
+			$ret['backdrop'] = "http://image.tmdb.org/t/p/original" . $tmdbLookup['backdrop_path'];
 		}
 		if ($this->echooutput) {
 			$this->c->doEcho($this->c->primaryOver("TMDb Found ") . $this->c->headerOver($ret['title']), true);
