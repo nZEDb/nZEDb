@@ -11,7 +11,7 @@ New updates are grouped by person, at the top of the file.
 2014-05-19 Bart39
 	* Chg: Use predbhash fulltext search for hash lookups
 	* Chg: Make RequestID lookups consistant between releases stage 5b/c and requestid_threaded
-2014-05-19
+2014-05-19 ruhllatio
 	* Chg: RequestID lookups split into two stages for local and web lookup (and actually seems to work now)
 	* Chg: PreDB FT count in fixreleaseNames no longer divides by 10 as it is faster than par2
 2014-05-19 niel
