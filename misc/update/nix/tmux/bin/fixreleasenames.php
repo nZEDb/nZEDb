@@ -101,9 +101,18 @@ if (!isset($argv[1])) {
 		if ($res = $db->queryOneRow(sprintf('SELECT id AS preid, title, source, searched FROM predb '
 							. 'WHERE id = %d', $pre))) {
 			$namefixer->done = $namefixer->matched = false;
-			if ($namefixer->matchPredbFT($res, 1, 1, true, 1) !== true) {
-				echo '.';
+			$ftmatched = $searched = 0;
+			$ftmatched = $namefixer->matchPredbFT($res, 1, 1, true, 1);
+			if ($ftmatched > 0) {
+				$searched = 1;
+			} elseif ($ftmatched < 0) {
+				$searched = -6;
+				echo "*";
+			} else {
+				$searched = $res['searched'] - 1;
+				echo ".";
 			}
+			$db->queryExec(sprintf("UPDATE predb SET searched = %d WHERE id = %d", $searched, $res['preid']));
 			$namefixer->checked++;
 		}
 
