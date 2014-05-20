@@ -2,6 +2,7 @@
 namespace nzedb\utility;
 
 use nzedb\db\Settings;
+use nzedb\utility\Git;
 
 if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
@@ -83,7 +84,7 @@ class Versions
 		$this->_filespec = $filepath;
 
 		$this->out = new \ColorCLI();
-		$this->git = new nzedb\utility\Git();
+		$this->git = new Git();
 
 		$temp = libxml_use_internal_errors(true);
 		$this->_xml = simplexml_load_file($filepath);
@@ -182,7 +183,7 @@ class Versions
 	 */
 	public function checkGitTag($update = true)
 	{
-		$latest = $this->git-tagLatest();
+		$latest = $this->git->tagLatest();
 
 		// Check if version file's entry is less than the last tag
 		if (version_compare($this->_vers->git->tag, $latest, '<')) {
