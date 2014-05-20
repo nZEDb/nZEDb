@@ -36,13 +36,11 @@ $error = false;
  * Add all hooks BEFORE the versions are updated so they can be skipped on any errors
  */
 if ($error === false) {
-	exec("git branch -a | grep \*", $output);
-	if (in_array(substr($output[0], 2),
-				 ['dev', 'next-master', 'master'])
-	) { // Only update versions, patches, etc. on specific branches to lessen conflicts
+	$git = new nzedb\utility\Git();
+	if (in_array($git->active_branch(), $git->mainBranches())) { // Only update versions, patches, etc. on specific branches to lessen conflicts
 		try {
 			// Run DbUpdates to make sure we're up to date.
-			$DbUpdater = new \nzedb\db\DbUpdate();
+			$DbUpdater = new \nzedb\db\DbUpdate(['git' => $git]);
 			$DbUpdater->newPatches(['safe' => false]);
 		} catch (\Exception $e) {
 			$error = 1;
@@ -54,7 +52,7 @@ if ($error === false) {
 				$vers = new \nzedb\utility\Versions();
 				$vers->checkAll();
 				$vers->save();
-				passthru('git add ' . nZEDb_VERSIONS);
+				$git->add(nZEDb_VERSIONS);
 			} catch (\Exception $e) {
 				$error = 1;
 				echo "Error while checking versions!\n";

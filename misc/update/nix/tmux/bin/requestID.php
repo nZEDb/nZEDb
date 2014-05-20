@@ -49,7 +49,7 @@ if ($bFound === true) {
 	$determinedcat = $category->determineCategory($title, $groupid);
 	if ($groupid !== 0) {
 		$md5 = md5($title);
-		$dupe = $db->queryOneRow(sprintf('SELECT requestid FROM predb WHERE md5 = %s', $db->escapeString($md5)));
+		$dupe = $db->queryOneRow(sprintf('SELECT requestid FROM predb INNER JOIN predbhash ON predbhash.pre_id = predb.id WHERE MATCH (hashes) AGAINST (%s)', $db->escapeString($md5)));
 		if ($dupe === false || ($dupe !== false && $dupe['requestid'] != $requestID)) {
 			$preid = $db->queryInsert(
 				sprintf("

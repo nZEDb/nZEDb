@@ -511,7 +511,7 @@ class NameFixer
 		return $matching;
 	}
 
-	// Match a MD5 from the predb to a release.
+	// Match a Hash from the predb to a release.
 	public function matchPredbHash($hash, $release, $echo, $namestatus, $echooutput, $show)
 	{
 		$db = $this->db;
@@ -523,13 +523,11 @@ class NameFixer
 		// Determine MD5 or SHA1
 		if (strlen($hash) === 40) {
 			$hashtype = "SHA1, ";
-			$hashcheck = "sha1";
 		} else {
 			$hashtype = "MD5, ";
-			$hashcheck = "md5";
 		}
 
-		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE %s = %s", $hashcheck, $db->escapeString(strtolower($hash))));
+		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb inner join predbhash on predbhash.pre_id = predb.id WHERE MATCH (predbhash.hashes) AGAINST (%s)", $db->escapeString(strtolower($hash))));
 
 		if ($res !== false) {
 			$total = $res->rowCount();
