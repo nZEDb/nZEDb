@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-19
+	* Chg: Use predbhash fulltext search for hash lookups
 	* Chg: Make RequestID lookups consistant between releases stage 5b/c and requestid_threaded
 2014-05-19
 	* Chg: RequestID lookups split into two stages for local and web lookup (and actually seems to work now)

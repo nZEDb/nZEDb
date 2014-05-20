@@ -888,7 +888,7 @@ Class PreDb
 		return $nfos;
 	}
 
-	// Matches the MD5 within the predb table to release files and subjects (names) which are hashed.
+	// Matches the hashes within the predb table to release files and subjects (names) which are hashed.
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
 		$db = new DB();
@@ -915,7 +915,7 @@ Class PreDb
 			if ($time == 1) {
 				$te = ' in the past 3 hours';
 			}
-			echo $this->c->header('Fixing search names' . $te . " using the predb md5.");
+			echo $this->c->header('Fixing search names' . $te . " using the predb hash.");
 		}
 		if ($db->dbSystem() === 'mysql') {
 			$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
