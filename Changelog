@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-20 ruhllatio
+	* Fix:  PreDB FT Match in fixReleaseNames should actually update searched now
 2014-05-20 Bart39
 	* Fix: Fixed the TMDB covers lookup path in Movie.php #1329
 2014-05-19 Bart39
