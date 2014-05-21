@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__).'/archivereader.php';
+require_once dirname(__FILE__) . '/archivereader.php';
 
 /**
  * Par2Info class.
