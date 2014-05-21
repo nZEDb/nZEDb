@@ -2218,7 +2218,10 @@ class Releases
 					$newTitle = $preId = false;
 
 					// Try to get request id.
-					if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID)) {
+					if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID) ||
+						preg_match('/^REQ\s*(\d{4,6})/i', $rowRel['name'], $requestID) ||
+						preg_match('/^(\d{4,6})-\d{1}\[/', $rowRel['name'], $requestID) ||
+						preg_match('/(\d{4,6}) -/', $rowRel['name'], $requestID))  {
 						$requestID = (int)$requestID[1];
 					} else {
 						$requestID = 0;
@@ -2283,7 +2286,7 @@ class Releases
 								"\nReleaseID: " . $rowRel['id']
 							);
 						}
-					} else if ($rowRel['reqidstatus'] === 0) {
+					} else if ($rowRel['reqidstatus'] == 0) {
 						$this->db->queryExec(
 							sprintf(
 								'UPDATE releases SET reqidstatus = %d WHERE id = %d',
@@ -2337,7 +2340,7 @@ class Releases
 					AND nzbstatus = 1
 					AND preid = 0
 					AND (isrequestid = 1 AND reqidstatus = %d OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR))
-					LIMIT 100",
+					LIMIT 1000",
 					$groupID,
 					self::REQID_NOLL,
 					self::REQID_NONE,
@@ -2354,7 +2357,10 @@ class Releases
 					$newTitle = false;
 
 					// Try to get request id.
-					if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID)) {
+					if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID) ||
+						preg_match('/^REQ\s*(\d{4,6})/i', $rowRel['name'], $requestID) ||
+						preg_match('/^(\d{4,6})-\d{1}\[/', $rowRel['name'], $requestID) ||
+						preg_match('/(\d{4,6}) -/', $rowRel['name'], $requestID))  {
 						$requestID = (int)$requestID[1];
 					} else {
 						$requestID = 0;
