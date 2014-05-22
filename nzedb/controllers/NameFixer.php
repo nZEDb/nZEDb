@@ -400,7 +400,7 @@ class NameFixer
 
 		//Remove all non-printable chars, preg match all interesting words
 		$titlelike = "%" . $this->utility->stripNonPrintingChars($pre['title']) . "%";
-		preg_match_all('#\w+#', $pre['title'], $matches, PREG_PATTERN_ORDER);
+		preg_match_all('#[a-zA-Z]{2,}#', $pre['title'], $matches, PREG_PATTERN_ORDER);
 		$titlematch = '+"' . implode('" +"', $matches[0]) . '"';
 
 		//Find release matches with fulltext and then identify exact matches with cleaned LIKE string

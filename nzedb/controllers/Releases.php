@@ -2177,131 +2177,16 @@ class Releases
 	public function processReleasesStage5b($groupID)
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
-			$category = new Category();
+			$requestid = new RequestID();
 			$iFoundCnt = 0;
-			$stage8 = TIME();
+			$stage5b = TIME();
 
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- no limit. "));
+				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Local lookup -- no limit."));
 			}
-
-			// Look for records that potentially have requestID titles and have not been matched to a PreDB title
-			$resRel = $this->db->queryDirect(
-				sprintf("
-					SELECT r.id, r.name, r.searchname, g.name AS groupname, reqidstatus
-					FROM releases r
-					LEFT JOIN groups g ON r.groupid = g.id
-					WHERE r.groupid = %d
-					AND nzbstatus = 1
-					AND preid = 0
-					AND (isrequestid = 1 AND reqidstatus = 0 OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR))",
-					$groupID,
-					self::REQID_UPROC,
-					self::REQID_NONE,
-					(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1)
-				)
-			);
-
-			if ($resRel !== false && $resRel->rowCount() > 0) {
-				if ($this->echooutput) {
-					$this->c->doEcho($this->c->primary("Looking up " . number_format($resRel->rowCount()) . " Request IDs"));
-				}
-				$newTitle = false;
-
-				foreach ($resRel as $rowRel) {
-					$newTitle = $preId = false;
-
-					// Try to get request id.
-					if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID) ||
-						preg_match('/^REQ\s*(\d{4,6})/i', $rowRel['name'], $requestID) ||
-						preg_match('/^(\d{4,6})-\d{1}\[/', $rowRel['name'], $requestID) ||
-						preg_match('/(\d{4,6}) -/', $rowRel['name'], $requestID))  {
-						$requestID = (int)$requestID[1];
-					} else {
-						$requestID = 0;
-					}
-
-					if ($requestID == 0) {
-						$this->db->queryExec(
-							sprintf('
-								UPDATE releases
-								SET reqidstatus = %d
-								WHERE id = %d',
-								self::REQID_ZERO,
-								$rowRel['id']
-							)
-						);
-					} else {
-
-						// Do a local lookup.
-						$run = $this->db->queryOneRow(
-							sprintf("
-								SELECT id, title
-								FROM predb
-								WHERE requestid = %d
-								AND groupid = %d",
-								$requestID, $groupID
-							)
-						);
-
-						if ($run !== false) {
-							$newTitle = $run['title'];
-							$preId = (int)$run['id'];
-							$iFoundCnt++;
-						}
-					}
-
-					if ($newTitle !== false) {
-						$determinedCat = $category->determineCategory($newTitle, $groupID);
-						$this->db->queryExec(
-							sprintf('
-								UPDATE releases
-								SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL,
-								tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,
-								reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s,
-								categoryid = %d, preid = %d
-								WHERE id = %d',
-								self::REQID_FOUND,
-								$this->db->escapeString($newTitle),
-								$determinedCat,
-								$preId,
-								$rowRel['id']
-							)
-						);
-
-						if ($this->echooutput) {
-							echo $this->c->primary(
-								"\n\nNew name:  $newTitle" .
-								"\nOld name:  " . $rowRel['searchname'] .
-								"\nNew cat:   " . $category->getNameByID($determinedCat) .
-								"\nGroup:     " . $rowRel['groupname'] .
-								"\nMethod:    requestID local" .
-								"\nReleaseID: " . $rowRel['id']
-							);
-						}
-					} else if ($rowRel['reqidstatus'] == 0) {
-						$this->db->queryExec(
-							sprintf(
-								'UPDATE releases SET reqidstatus = %d WHERE id = %d',
-								self::REQID_NOLL,
-								$rowRel['id']
-							)
-						);
-					}
-				}
-				if ($this->echooutput && $newTitle !== false) {
-					echo "\n";
-				}
-			}
-
+			$iFoundCnt = $requestid->lookupReqIDlocal($groupID);
 			if ($this->echooutput) {
-				$this->c->doEcho(
-					$this->c->primary(
-						number_format($iFoundCnt) .
-						' Releases updated in ' .
-						$this->consoleTools->convertTime(TIME() - $stage8)
-					), true
-				);
+				$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5b)), true);
 			}
 		}
 	}
@@ -2311,163 +2196,24 @@ class Releases
 	 * Process RequestID's via Web lookup.
 	 *
 	 * @param int $groupID
+	 * @param int $limit
 	 */
-	public function processReleasesStage5c($groupID)
+	public function processReleasesStage5c($groupID, $limit = 100)
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
-			$category = new Category();
+			$requestid = new RequestID();
 			$iFoundCnt = 0;
-			$stage8 = TIME();
+			$stage5c = TIME();
 
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Web lookup -- limit 100. "));
+				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Web lookup -- limit " . $limit . "."));
 			}
-
-			// Look for records that potentially have requestID titles and have not been matched to a PreDB title
-			$resRel = $this->db->queryDirect(
-				sprintf("
-					SELECT r.id, r.name, r.searchname, g.name AS groupname
-					FROM releases r
-					LEFT JOIN groups g ON r.groupid = g.id
-					WHERE r.groupid = %d
-					AND nzbstatus = 1
-					AND preid = 0
-					AND (isrequestid = 1 AND reqidstatus = %d OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR))
-					LIMIT 100",
-					$groupID,
-					self::REQID_NOLL,
-					self::REQID_NONE,
-					(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1)
-				)
-			);
-
-			if ($resRel !== false && $resRel->rowCount() > 0) {
-				if ($this->echooutput) {
-					$this->c->doEcho($this->c->primary("Looking up " . number_format($resRel->rowCount()) . " Request IDs"));
-				}
-				$newTitle = false;
-				$web = (!empty($this->site->request_url) &&
-						(nzedb\utility\getUrl($this->site->request_url) === false ? false : true));
-
-				foreach ($resRel as $rowRel) {
-					$newTitle = false;
-
-					// Try to get request id.
-					if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID) ||
-						preg_match('/^REQ\s*(\d{4,6})/i', $rowRel['name'], $requestID) ||
-						preg_match('/^(\d{4,6})-\d{1}\[/', $rowRel['name'], $requestID) ||
-						preg_match('/(\d{4,6}) -/', $rowRel['name'], $requestID))  {
-						$requestID = (int)$requestID[1];
-					} else {
-						$requestID = 0;
-					}
-
-					if ($requestID == 0) {
-						$this->db->queryExec(
-							sprintf('
-								UPDATE releases
-								SET reqidstatus = %d
-								WHERE id = %d',
-								self::REQID_ZERO,
-								$rowRel['id']
-							)
-						);
-					} else {
-
-						// Do a web lookup.
-						if ($web !== false) {
-							$xml = @simplexml_load_file(
-								str_ireplace(
-									'[REQUEST_ID]',
-									$requestID,
-									str_ireplace(
-										'[GROUP_NM]',
-										urlencode($rowRel['groupname']),
-										$this->site->request_url
-									)
-								)
-							);
-							if ($xml !== false &&
-								isset($xml->request[0]['name']) && !empty($xml->request[0]['name']) &&
-								strtolower($xml->request[0]['name']) !== strtolower($rowRel['searchname'])) {
-								$newTitle = $xml->request[0]['name'];
-								$iFoundCnt++;
-							}
-						}
-					}
-
-					if ($newTitle !== false) {
-						$preid = NULL;
-						$determinedCat = $category->determineCategory($newTitle, $groupID);
-						$md5 = md5($newTitle);
-						$dupe = $this->db->queryOneRow(sprintf('SELECT requestid FROM predb WHERE md5 = %s',
-								$this->db->escapeString($md5)));
-						if ($dupe === false || ($dupe !== false && $dupe['requestid'] != $requestID)) {
-							$preid = $this->db->queryInsert(
-								sprintf("
-								INSERT INTO predb (title, source, md5, requestid, groupid)
-								VALUES (%s, %s, %s, %s, %d)",
-									$this->db->escapeString($newTitle),
-									$this->db->escapeString('requestWEB'),
-									$this->db->escapeString($md5),
-									$requestID, $groupID
-								)
-							);
-						}
-
-						$this->db->queryExec(
-							sprintf('
-								UPDATE releases
-								SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL,
-								tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,
-								reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d,
-								preid = %d
-								WHERE id = %d',
-								self::REQID_FOUND,
-								$this->db->escapeString($newTitle),
-								$determinedCat,
-								$preid,
-								$rowRel['id']
-							)
-						);
-
-						if ($this->echooutput) {
-							echo $this->c->primary(
-								"\n\nNew name:  $newTitle" .
-								"\nOld name:  " . $rowRel['searchname'] .
-								"\nNew cat:   " . $category->getNameByID($determinedCat) .
-								"\nGroup:     " . $rowRel['groupname'] .
-								"\nMethod:    requestID web" .
-								"\nReleaseID: " . $rowRel['id']
-							);
-						}
-					} else {
-						$this->db->queryExec(
-							sprintf(
-								'UPDATE releases SET reqidstatus = %d WHERE id = %d',
-								self::REQID_NONE,
-								$rowRel['id']
-							)
-						);
-					}
-				}
-				if ($this->echooutput && $newTitle !== false) {
-					echo "\n";
-				}
-			}
-
+			$iFoundCnt = $requestid->lookupReqIDweb($groupID, $limit);
 			if ($this->echooutput) {
-				$this->c->doEcho(
-					$this->c->primary(
-						number_format($iFoundCnt) .
-						' Releases updated in ' .
-						$this->consoleTools->convertTime(TIME() - $stage8)
-					), true
-				);
+				$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5c)), true);
 			}
 		}
 	}
-
 	public function processReleasesStage6($categorize, $postproc, $groupID, $nntp)
 	{
 		$where = (!empty($groupID)) ? 'WHERE iscategorized = 0 AND groupid = ' . $groupID : 'WHERE iscategorized = 0';
