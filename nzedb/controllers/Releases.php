@@ -2252,7 +2252,6 @@ class Releases
 					}
 
 					if ($newTitle !== false) {
-						echo "preid = " . $preId . PHP_EOL;
 						$determinedCat = $category->determineCategory($newTitle, $groupID);
 						$this->db->queryExec(
 							sprintf('
