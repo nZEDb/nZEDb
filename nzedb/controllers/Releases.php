@@ -1851,19 +1851,22 @@ class Releases
 			$predb = new PreDb($this->echooutput);
 			foreach ($rescol as $rowcol) {
 				$propername = true;
-				$relid = false;
+				$relid = $isReqID = false;
+				$preID = NULL;
 				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $rowcol['subject']);
 				$cleanerName = $this->releaseCleaning->releaseCleaner($rowcol['subject'], $rowcol['fromname'], $rowcol['filesize'], $rowcol['gname']);
-				/* $ncarr = $this->collectionsCleaning->collectionsCleaner($subject, $rowcol['gname']);
-				  $cleanerName = $ncarr['subject'];
-				  $category = $ncarr['cat'];
-				  $relstat = $ncar['rstatus']; */
 				$fromname = trim($rowcol['fromname'], "'");
 				if (!is_array($cleanerName)) {
 					$cleanName = $cleanerName;
 				} else {
 					$cleanName = $cleanerName['cleansubject'];
 					$propername = $cleanerName['properlynamed'];
+					if (isset($cleanerName['predb'])) {
+						$preID = $cleanerName['predb'];
+					}
+					if (isset($cleanerName['requestid'])) {
+						$isReqID = $cleanerName['requestid'];
+					}
 				}
 				$relguid = sha1(uniqid('', true) . mt_rand());
 
@@ -1879,46 +1882,34 @@ class Releases
 
 				$dupecheck = $this->db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $this->db->escapeString($cleanRelName), $this->db->escapeString($fromname), $this->db->escapeString($minsize), $this->db->escapeString($maxsize)));
 				if (!$dupecheck) {
-					if ($propername == true) {
-						$relid = $this->db->queryInsert(
-							sprintf(
-								'INSERT INTO releases
-									(name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname,
-									size, passwordstatus, haspreview, categoryid, nfostatus, isrenamed, iscategorized)
-								VALUES
-									(%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1)',
-								$this->db->escapeString($cleanRelName),
-								$this->db->escapeString($cleanName),
-								$rowcol['totalfiles'],
-								$rowcol['groupid'],
-								$this->db->escapeString($relguid),
-								$this->db->escapeString($rowcol['date']),
-								$this->db->escapeString($fromname),
-								$this->db->escapeString($rowcol['filesize']),
-								($this->site->checkpasswordedrar == '1' ? -1 : 0),
-								$category
-							)
-						);
-					} else {
-						$relid = $this->db->queryInsert(
-							sprintf(
-								'INSERT INTO releases
-									(name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname,
-									size, passwordstatus, haspreview, categoryid, nfostatus, iscategorized)
-								VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1)',
-								$this->db->escapeString($cleanRelName),
-								$this->db->escapeString($cleanName),
-								$rowcol['totalfiles'],
-								$rowcol['groupid'],
-								$this->db->escapeString($relguid),
-								$this->db->escapeString($rowcol['date']),
-								$this->db->escapeString($fromname),
-								$this->db->escapeString($rowcol['filesize']),
-								($this->site->checkpasswordedrar == '1' ? -1 : 0),
-								$category
-							)
-						);
-					}
+					$query = 'INSERT INTO releases (';
+					$query .= ($propername === true ? 'isrenamed, '   : '');
+					$query .= ($preID !== NULL      ? 'preid, '       : '');
+					$query .= ($isReqID === true   ? 'reqidstatus, ' : '');
+					$query .= 'name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, ';
+					$query .= 'size, passwordstatus, haspreview, categoryid, nfostatus, iscategorized) VALUES (';
+					$query .= ($propername === true ? '1, '         : '');
+					$query .= ($preID !== NULL      ? $preID . ', ' : '');
+					$query .= ($isReqID == true   ? '1, '         : '');
+					$query .= '%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1)';
+
+					$this->db->ping(true);
+
+					$relid = $this->db->queryInsert(
+						sprintf(
+							$query,
+							$this->db->escapeString($cleanRelName),
+							$this->db->escapeString($cleanName),
+							$rowcol['totalfiles'],
+							$rowcol['groupid'],
+							$this->db->escapeString($relguid),
+							$this->db->escapeString($rowcol['date']),
+							$this->db->escapeString($fromname),
+							$this->db->escapeString($rowcol['filesize']),
+							($this->site->checkpasswordedrar == '1' ? -1 : 0),
+							$category
+						)
+					);
 				}
 
 				if ($relid) {
@@ -2212,6 +2203,9 @@ class Releases
 			);
 
 			if ($resRel !== false && $resRel->rowCount() > 0) {
+				if ($this->echooutput) {
+					$this->c->doEcho($this->c->primary("Looking up " . number_format($resRel->rowCount()) . " Request IDs"));
+				}
 				$newTitle = false;
 
 				foreach ($resRel as $rowRel) {
@@ -2227,7 +2221,7 @@ class Releases
 						$requestID = 0;
 					}
 
-					if ($requestID === 0) {
+					if ($requestID == 0) {
 						$this->db->queryExec(
 							sprintf('
 								UPDATE releases
@@ -2252,13 +2246,13 @@ class Releases
 
 						if ($run !== false) {
 							$newTitle = $run['title'];
-							$preId = $run['id'];
+							$preId = (int)$run['id'];
 							$iFoundCnt++;
 						}
 					}
 
 					if ($newTitle !== false) {
-
+						echo "preid = " . $preId . PHP_EOL;
 						$determinedCat = $category->determineCategory($newTitle, $groupID);
 						$this->db->queryExec(
 							sprintf('
@@ -2340,7 +2334,7 @@ class Releases
 					AND nzbstatus = 1
 					AND preid = 0
 					AND (isrequestid = 1 AND reqidstatus = %d OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR))
-					LIMIT 1000",
+					LIMIT 100",
 					$groupID,
 					self::REQID_NOLL,
 					self::REQID_NONE,
@@ -2349,6 +2343,9 @@ class Releases
 			);
 
 			if ($resRel !== false && $resRel->rowCount() > 0) {
+				if ($this->echooutput) {
+					$this->c->doEcho($this->c->primary("Looking up " . number_format($resRel->rowCount()) . " Request IDs"));
+				}
 				$newTitle = false;
 				$web = (!empty($this->site->request_url) &&
 						(nzedb\utility\getUrl($this->site->request_url) === false ? false : true));
@@ -2366,7 +2363,7 @@ class Releases
 						$requestID = 0;
 					}
 
-					if ($requestID === 0) {
+					if ($requestID == 0) {
 						$this->db->queryExec(
 							sprintf('
 								UPDATE releases
@@ -2401,7 +2398,7 @@ class Releases
 					}
 
 					if ($newTitle !== false) {
-						$preid = false;
+						$preid = NULL;
 						$determinedCat = $category->determineCategory($newTitle, $groupID);
 						$md5 = md5($newTitle);
 						$dupe = $this->db->queryOneRow(sprintf('SELECT requestid FROM predb WHERE md5 = %s',

@@ -47,26 +47,31 @@ if ($total > 0) {
 	sleep(2);
 
 	foreach ($qry as $row) {
-		if (!preg_match('/^\[ ?(\d{4,6}) ?\]/', $row['name']) && !preg_match('/^REQ\s*(\d{4,6})/i', $row['name']) && !preg_match('/^(\d{4,6})-\d{1}\[/', $row['name'])) {
+		$requestID = 0;
+		if (preg_match('/^\[ ?(\d{4,6}) ?\]/', $row['name'], $match) ||
+			preg_match('/^REQ\s*(\d{4,6})/i', $row['name'], $match) ||
+			preg_match('/^(\d{4,6})-\d{1}\[/', $row['name'], $match) ||
+			preg_match('/(\d{4,6}) -/', $row['name'], $match)
+		) {
+			$requestID = (int)$match[1];
+		} else {
+			echo "requestid = " . $requestID . " name =" . $row['name'] . PHP_EOL;
 			$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $row['id']);
 			$counter++;
 			continue;
 		}
 
-		$requestIDtmp = explode(']', substr($row['name'], 1));
 		$bFound = false;
 		$newTitle = '';
 
-		if (count($requestIDtmp) >= 1) {
-			$requestID = (int) trim($requestIDtmp[0]);
-			if ($requestID != 0 and $requestID != '') {
-				// Do a local lookup first
-				$newTitle = localLookup($requestID, $row['groupname'], $row['name']);
-				if (is_array($newTitle) && $newTitle['title'] != '') {
-					$bFound = true;
-				}
+		if ($requestID != 0 and $requestID != '') {
+			// Do a local lookup first
+			$newTitle = localLookup($requestID, $row['groupname'], $row['name']);
+			if (is_array($newTitle) && $newTitle['title'] != '') {
+				$bFound = true;
 			}
 		}
+
 
 		if ($bFound === true) {
 			$title = $newTitle['title'];
