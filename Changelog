@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-21 bart39
+	* Fix: fix releases stage 4 / request id threaded / non threaded handling of requestid matching
 2014-05-21 kevin
 	* Upd: Update rarinfo to newest (*Improves handling of corrupt RAR 5.0 archives*).
 2014-05-20 Bart39

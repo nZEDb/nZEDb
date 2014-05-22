@@ -16,28 +16,32 @@ $site = $s->get();
 $n = "\n";
 $category = new Category();
 $groups = new Groups();
-if (!preg_match('/^\[ ?(\d{4,6}) ?\]/', $pieces[1]) && !preg_match('/^REQ\s*(\d{4,6})/i', $pieces[1]) && !preg_match('/^(\d{4,6})-\d{1}\[/', $pieces[1])) {
+$requestID = 0;
+if (preg_match('/^\[ ?(\d{4,6}) ?\]/', $pieces[1], $match) ||
+	preg_match('/^REQ\s*(\d{4,6})/i', $pieces[1], $match) ||
+	preg_match('/^(\d{4,6})-\d{1}\[/', $pieces[1], $match) ||
+	preg_match('/(\d{4,6}) -/', $pieces[1], $match)
+) {
+	$requestID = (int)$match[1];
+} else {
 	$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $pieces[0]);
 	exit('.');
 }
-$requestIDtmp = explode(']', substr($pieces[1], 1));
 $bFound = false;
 $newTitle = '';
 $updated = 0;
-if (count($requestIDtmp) >= 1) {
-	$requestID = (int) $requestIDtmp[0];
-	if ($requestID != 0 and $requestID != '') {
-		// Do a local lookup first
-		$newTitle = localLookup($requestID, $pieces[2], $pieces[1]);
+
+if ($requestID != 0 and $requestID != '') {
+	// Do a local lookup first
+	$newTitle = localLookup($requestID, $pieces[2], $pieces[1]);
+	if (is_array($newTitle) && $newTitle['title'] != '') {
+		$bFound = true;
+		$local = true;
+	} else if ($web == "True") {
+		$newTitle = getReleaseNameFromRequestID($site, $requestID, $pieces[2]);
 		if (is_array($newTitle) && $newTitle['title'] != '') {
 			$bFound = true;
-			$local = true;
-		} else if ($web == "True") {
-			$newTitle = getReleaseNameFromRequestID($site, $requestID, $pieces[2]);
-			if (is_array($newTitle) && $newTitle['title'] != '') {
-				$bFound = true;
-				$local = false;
-			}
+			$local = false;
 		}
 	}
 }
