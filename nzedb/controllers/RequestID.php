@@ -94,7 +94,7 @@ class RequestID
 	protected $site;
 
 	const query =
-		'SELECT r.id, r.name, r.searchname, g.name AS groupname
+		'SELECT r.id, r.name, r.searchname, g.name AS groupname, r.groupid
 		FROM releases r
 		LEFT JOIN groups g ON r.groupid = g.id
 		WHERE nzbstatus = 1
@@ -301,7 +301,7 @@ class RequestID
 	 */
 	protected function updateRelease()
 	{
-		$determinedCategory = $this->category->determineCategory($this->newTitle, $this->groupID);
+		$determinedCategory = $this->category->determineCategory($this->newTitle, $this->result['groupid']);
 		$this->db->queryExec(
 			sprintf('
 				UPDATE releases
