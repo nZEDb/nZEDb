@@ -139,12 +139,14 @@ class RequestID
 	 * Process RequestID's via Local lookup.
 	 *
 	 * @param int $groupID The ID of the group.
+	 * @param int $limit   How many requests to do.
 	 *
 	 * @return int
 	 */
-	public function lookupReqIDlocal($groupID)
+	public function lookupReqIDlocal($groupID, $limit)
 	{
 		$this->groupID = $groupID;
+		$this->limit = $limit;
 		$this->local = true;
 		$this->lookupReqIDs();
 		return $this->reqIDsFound;
@@ -171,12 +173,12 @@ class RequestID
 		// Look for records that potentially have requestID titles and have not been matched to a PreDB title
 		$this->results = $this->db->queryDirect(
 			sprintf(
-				($this->local ? (self::query . ' %s %s') : (self::query . ' %s ORDER BY postdate DESC LIMIT %d')),
+				($this->local ? (self::query . ' %s LIMIT %d') : (self::query . ' %s ORDER BY postdate DESC LIMIT %d')),
 				($this->local ? self::REQID_UPROC : self::REQID_NOLL),
 				self::REQID_NONE,
 				(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1),
 				(empty($this->groupID) ? '' : ('AND groupid = ' . $this->groupID)),
-				($this->local ? '' : $this->limit)
+				$this->limit
 			)
 		);
 	}

@@ -2173,17 +2173,18 @@ class Releases
 	 * Process RequestID's via Local lookup.
 	 *
 	 * @param int $groupID
+	 * @param int $limit
 	 */
-	public function processReleasesStage5b($groupID)
+	public function processReleasesStage5b($groupID, $limit = 1000)
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
 			$requestid = new RequestID();
 			$stage5b = TIME();
 
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Local lookup -- no limit."));
+				$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- no limit."));
 			}
-			$iFoundCnt = $requestid->lookupReqIDlocal($groupID);
+			$iFoundCnt = $requestid->lookupReqIDlocal($groupID, $limit);
 			if ($this->echooutput) {
 				$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5b)), true);
 			}
