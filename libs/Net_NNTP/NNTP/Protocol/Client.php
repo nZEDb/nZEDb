@@ -781,7 +781,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 			case 205: // RFC977: 'closing connection - goodbye!'
 				// If socket is still open, close it.
 				$disconnected = true;
-				if (is_resource($this->_socket)) {
+				if ($this->_isConnected($this->_socket, false)) {
 					$disconnected = stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
 				}
 
