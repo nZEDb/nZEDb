@@ -2178,7 +2178,6 @@ class Releases
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
 			$requestid = new RequestID();
-			$iFoundCnt = 0;
 			$stage5b = TIME();
 
 			if ($this->echooutput) {
@@ -2202,7 +2201,6 @@ class Releases
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
 			$requestid = new RequestID();
-			$iFoundCnt = 0;
 			$stage5c = TIME();
 
 			if ($this->echooutput) {

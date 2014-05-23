@@ -1,12 +1,13 @@
 <?php
 
-use nzedb\db\DB;
 use nzedb\utility;
 
 /**
+ * Attempts to find a PRE name for a release using a request ID from our local pre database,
+ * or internet request id database.
+ *
  * Class RequestID
  */
-
 class RequestID
 {
 	// Request ID.
@@ -17,311 +18,357 @@ class RequestID
 	const REQID_FOUND  =  1; // Request ID found and release was updated.
 
 	/**
-	 * @param bool $echooutput
+	 * @var bool Echo to CLI?
 	 */
-	public function __construct($echooutput = false)
-	{
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
-		$this->category = new Category();
-		$this->db = new DB();
-		$this->consoleTools = new ConsoleTools();
-		$this->c = new ColorCLI();
-		$this->s = new Sites();
-		$this->site = $this->s->get();
-	}
+	protected $echoOutput;
 
 	/**
-	 * Process RequestID's via Local lookup.
-	 *
-	 * @param int $groupID
+	 * @var Category
 	 */
-	public function lookupReqIDlocal($groupID)
+	protected $category;
+
+	/**
+	 * @var nzedb\db\DB
+	 */
+	protected $db;
+
+	/**
+	 * @var ConsoleTools
+	 */
+	protected $consoleTools;
+
+	/**
+	 * @var ColorCLI
+	 */
+	protected $colorCLI;
+
+	/**
+	 * @var int How many request id's did we find?
+	 */
+	protected $reqIDsFound = 0;
+
+	/**
+	 * @var bool Is this a local or web lookup ?
+	 */
+	protected $local = true;
+
+	/**
+	 * @var int What group are we working on ?
+	 */
+	protected $groupID = 0;
+
+	/**
+	 * @var array MySQL results for releases with RequestID's.
+	 */
+	protected $results = array();
+
+	/**
+	 * @var array Single MySQL result.
+	 */
+	protected $result = array();
+
+	/**
+	 * @var int How many releases max to do a web lookup.
+	 */
+	protected $limit = 100;
+
+	/**
+	 * @var bool The title found from a request ID lookup.
+	 */
+	protected $newTitle = false;
+
+	/**
+	 * @var int The found request ID for the release.
+	 */
+	protected $requestID = self::REQID_ZERO;
+
+	/**
+	 * The ID of the PRE entry the found request ID belongs to.
+	 * @var bool|int
+	 */
+	protected $preDbID = false;
+
+	/**
+	 * @var bool|stdClass
+	 */
+	protected $site;
+
+	const query =
+		'SELECT r.id, r.name, r.searchname, g.name AS groupname
+		FROM releases r
+		LEFT JOIN groups g ON r.groupid = g.id
+		WHERE nzbstatus = 1
+		AND preid = 0
+		AND (isrequestid = 1 AND reqidstatus = %d
+			OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR)
+		)';
+
+	/**
+	 * Construct.
+	 *
+	 * @param bool $echoOutput
+	 */
+	public function __construct($echoOutput = false)
 	{
-		$iFoundCnt = 0;
-		$reqtimer = TIME();
-
-		// Look for records that potentially have requestID titles and have not been matched to a PreDB title
-		$resRel = $this->db->queryDirect(
-			sprintf("
-				SELECT r.id, r.name, r.searchname, g.name AS groupname, reqidstatus
-				FROM releases r
-				LEFT JOIN groups g ON r.groupid = g.id
-				WHERE r.groupid = %d
-				AND nzbstatus = 1
-				AND preid = 0
-				AND (isrequestid = 1 AND reqidstatus = 0 OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR))",
-				$groupID,
-				self::REQID_UPROC,
-				self::REQID_NONE,
-				(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1)
-			)
-		);
-
-		if ($resRel !== false && $resRel->rowCount() > 0) {
-			$newTitle = false;
-
-			foreach ($resRel as $rowRel) {
-				$newTitle = $preId = false;
-
-				// Try to get request id.
-				if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID) ||
-					preg_match('/^REQ\s*(\d{4,6})/i', $rowRel['name'], $requestID) ||
-					preg_match('/^(\d{4,6})-\d{1}\[/', $rowRel['name'], $requestID) ||
-					preg_match('/(\d{4,6}) -/', $rowRel['name'], $requestID))  {
-					$requestID = trim((int)$requestID[1]);
-				} else {
-					$requestID = 0;
-				}
-
-				if ($requestID == 0) {
-					$this->db->queryExec(
-						sprintf('
-							UPDATE releases
-							SET reqidstatus = %d
-							WHERE id = %d',
-							self::REQID_ZERO,
-							$rowRel['id']
-						)
-					);
-				} else {
-
-					// Do a local lookup.
-					$run = $this->db->queryOneRow(
-						sprintf("
-							SELECT id, title
-							FROM predb
-							WHERE requestid = %d
-							AND groupid = %d",
-							$requestID, $groupID
-						)
-					);
-
-					if ($run !== false) {
-						$newTitle = $run['title'];
-						$preId = $run['id'];
-						$iFoundCnt++;
-					}
-				}
-
-				if ($newTitle !== false) {
-
-					$determinedCat = $this->category->determineCategory($newTitle, $groupID);
-					$this->db->queryExec(
-						sprintf('
-							UPDATE releases
-							SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL,
-							tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,
-							reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s,
-							categoryid = %d, preid = %d
-							WHERE id = %d',
-							self::REQID_FOUND,
-							$this->db->escapeString($newTitle),
-							$determinedCat,
-							$preId,
-							$rowRel['id']
-						)
-					);
-
-					if ($this->echooutput) {
-						echo $this->c->primary(
-							"\n\nNew name:  $newTitle" .
-							"\nOld name:  " . $rowRel['searchname'] .
-							"\nNew cat:   " . $this->category->getNameByID($determinedCat) .
-							"\nGroup:     " . $rowRel['groupname'] .
-							"\nMethod:    requestID local" .
-							"\nReleaseID: " . $rowRel['id']
-						);
-					}
-				} else if ($rowRel['reqidstatus'] == 0) {
-					$this->db->queryExec(
-						sprintf(
-							'UPDATE releases SET reqidstatus = %d WHERE id = %d',
-							self::REQID_NOLL,
-							$rowRel['id']
-						)
-					);
-				}
-			}
-			if ($this->echooutput && $newTitle !== false) {
-				echo "\n";
-			}
-		}
-
-		if ($this->echooutput) {
-			$this->c->doEcho(
-				$this->c->primary(
-					number_format($iFoundCnt) .
-					' Releases updated in ' .
-					$this->consoleTools->convertTime(TIME() - $reqtimer)
-				), true
-			);
-		}
-	return $iFoundCnt;
+		$this->echoOutput = ($echoOutput && nZEDb_ECHOCLI);
+		$this->category = new Category();
+		$this->db = new nzedb\db\DB();
+		$this->consoleTools = new ConsoleTools();
+		$this->colorCLI = new ColorCLI();
+		$this->site = (new Sites)->get();
 	}
 
 	/**
 	 * Process RequestID's via Web lookup.
 	 *
-	 * @param int $groupID
-	 * @param int $limit
+	 * @param int $groupID The ID of the group.
+	 * @param int $limit   How many requests to do.
+	 *
+	 * @return int
 	 */
 	public function lookupReqIDweb($groupID, $limit)
 	{
-		$category = new Category();
-		$iFoundCnt = 0;
-		$reqtimer = TIME();
+		$this->groupID = $groupID;
+		$this->limit = $limit;
+		$this->local = false;
+		$this->lookupReqIDs();
+		return $this->reqIDsFound;
+	}
 
+	/**
+	 * Process RequestID's via Local lookup.
+	 *
+	 * @param int $groupID The ID of the group.
+	 *
+	 * @return int
+	 */
+	public function lookupReqIDlocal($groupID)
+	{
+		$this->groupID = $groupID;
+		$this->local = true;
+		$this->lookupReqIDs();
+		return $this->reqIDsFound;
+	}
+
+	/**
+	 * Main method.
+	 */
+	protected function lookupReqIDs()
+	{
+		$this->reqIDsFound = 0;
+		$this->getResults();
+
+		if ($this->results !== false && $this->results->rowCount() > 0) {
+			$this->findReqIdMatches();
+		}
+	}
+
+	/**
+	 * Get all results from the releases table that have request ID's to be processed.
+	 */
+	protected function getResults()
+	{
 		// Look for records that potentially have requestID titles and have not been matched to a PreDB title
-		$resRel = $this->db->queryDirect(
-			sprintf("
-				SELECT r.id, r.name, r.searchname, g.name AS groupname
-				FROM releases r
-				LEFT JOIN groups g ON r.groupid = g.id
-				WHERE r.groupid = %d
-				AND nzbstatus = 1
-				AND preid = 0
-				AND (isrequestid = 1 AND reqidstatus = %d OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR))
-				ORDER BY postdate DESC
-				LIMIT %d",
-				$groupID,
-				self::REQID_NOLL,
+		$this->results = $this->db->queryDirect(
+			sprintf(
+				($this->local ? (self::query . ' %s %s') : (self::query . ' %s ORDER BY postdate DESC LIMIT %d')),
+				($this->local ? self::REQID_UPROC : self::REQID_NOLL),
 				self::REQID_NONE,
 				(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1),
-				$limit
+				(empty($this->groupID) ? '' : ('AND groupid = ' . $this->groupID)),
+				($this->local ? '' : $this->limit)
 			)
 		);
+	}
 
-		if ($resRel !== false && $resRel->rowCount() > 0) {
-			$newTitle = false;
-			$web = (!empty($this->site->request_url) &&
-					(nzedb\utility\getUrl($this->site->request_url) === false ? false : true));
+	/**
+	 * See if the release has a valid request ID, try to a PRE name locally or from the internet.
+	 */
+	protected function findReqIdMatches()
+	{
+		$this->newTitle = false;
 
-			foreach ($resRel as $rowRel) {
-				$newTitle = false;
+		foreach ($this->results as $this->result) {
 
-				// Try to get request id.
-				if (preg_match('/\[\s*(\d+)\s*\]/', $rowRel['name'], $requestID) ||
-					preg_match('/^REQ\s*(\d{4,6})/i', $rowRel['name'], $requestID) ||
-					preg_match('/^(\d{4,6})-\d{1}\[/', $rowRel['name'], $requestID) ||
-					preg_match('/(\d{4,6}) -/', $rowRel['name'], $requestID))  {
-					$requestID = trim((int)$requestID[1]);
+			$this->newTitle = false;
+
+			// Try to get request id.
+			if (preg_match('/\[\s*(\d+)\s*\]/', $this->result['name'], $requestID) ||
+				preg_match('/^REQ\s*(\d{4,6})/i', $this->result['name'], $requestID) ||
+				preg_match('/^(\d{4,6})-\d{1}\[/', $this->result['name'], $requestID) ||
+				preg_match('/(\d{4,6}) -/', $this->result['name'], $requestID))  {
+				$this->requestID = (int)trim($requestID[1]);
+			} else {
+				$this->requestID = self::REQID_ZERO;
+			}
+
+			if ($this->requestID === self::REQID_ZERO) {
+				$this->db->queryExec(
+					sprintf('
+						UPDATE releases
+						SET reqidstatus = %d
+						WHERE id = %d',
+						self::REQID_ZERO,
+						$this->result['id']
+					)
+				);
+			} else {
+
+				if ($this->local) {
+					$this->localCheck();
 				} else {
-					$requestID = 0;
-				}
-					if ($requestID == 0) {
-					$this->db->queryExec(
-						sprintf('
-							UPDATE releases
-							SET reqidstatus = %d
-							WHERE id = %d',
-							self::REQID_ZERO,
-							$rowRel['id']
-						)
-					);
-				} else {
-
-					// Do a web lookup.
-					if ($web !== false) {
-						$xml = nzedb\utility\getUrl(
-							str_ireplace(
-								'[REQUEST_ID]',
-								$requestID,
-								str_ireplace(
-									'[GROUP_NM]',
-									urlencode($rowRel['groupname']),
-									$this->site->request_url
-								)
-							)
-						);
-						if ($xml !== false &&
-							isset($xml->request[0]['name']) && !empty($xml->request[0]['name']) &&
-							strtolower($xml->request[0]['name']) !== strtolower($rowRel['searchname'])) {
-							var_dump(simplexml_load_string($xml));
-							$newTitle = $xml->request[0]['name'];
-							$iFoundCnt++;
-						}
-					}
+					$this->remoteCheck();
 				}
 
-				if ($newTitle !== false) {
-					$preid = false;
-					$determinedCat = $category->determineCategory($newTitle, $groupID);
-					$dupe = $this->db->queryOneRow(sprintf('SELECT id AS preid, requestid, groupid FROM predb WHERE title = %s',
-							$this->db->escapeString($newTitle)));
-					if ($dupe === false) {
-						$md5 = md5($newTitle);
-						$sha1 = sha1($newTitle);
-						$preid = $this->db->queryInsert(
-							sprintf("
-							INSERT INTO predb (title, source, md5, sha1, requestid, groupid, predate)
-							VALUES (%s, %s, %s, %s, %s, %d, NOW())",
-								$this->db->escapeString($newTitle),
-								$this->db->escapeString('requestWEB'),
-								$this->db->escapeString($md5),
-								$this->db->escapeString($sha1),
-								$requestID,
-								$groupID
-							)
-						);
-					} else if ($dupe === true) {
-						$preid = $dupe['preid'];
-						$this->db->queryExec(sprintf('UPDATE predb SET requestid = %d, groupid = %d WHERE id = %d',
-							$requestID,
-							$groupID,
-							$preid
-							)
-						);
+				if ($this->newTitle !== false) {
+					if ($this->preDbID === false) {
+						$this->insertIntoPreDB();
 					}
-					$this->db->queryExec(
-						sprintf('
-							UPDATE releases
-							SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL,
-							tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,
-							reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d,
-							preid = %d
-							WHERE id = %d',
-							self::REQID_FOUND,
-							$this->db->escapeString($newTitle),
-							$determinedCat,
-							$preid,
-							$rowRel['id']
-						)
-					);
 
-					if ($this->echooutput) {
-						echo $this->c->primary(
-							"\n\nNew name:  $newTitle" .
-							"\nOld name:  " . $rowRel['searchname'] .
-							"\nNew cat:   " . $this->category->getNameByID($determinedCat) .
-							"\nGroup:     " . $rowRel['groupname'] .
-							"\nMethod:    requestID web" .
-							"\nReleaseID: " . $rowRel['id']
-						);
-					}
+					$this->updateRelease();
 				} else {
 					$this->db->queryExec(
 						sprintf(
 							'UPDATE releases SET reqidstatus = %d WHERE id = %d',
 							self::REQID_NONE,
-							$rowRel['id']
+							$this->result['id']
 						)
 					);
 				}
 			}
-			if ($this->echooutput && $newTitle !== false) {
-				echo "\n";
+
+			if ($this->echoOutput && $this->newTitle !== false) {
+				echo PHP_EOL;
 			}
 		}
+	}
 
-		if ($this->echooutput) {
-			$this->c->doEcho(
-				$this->c->primary(
-					number_format($iFoundCnt) .
-					' Releases updated in ' .
-					$this->consoleTools->convertTime(TIME() - $reqtimer)
-				), true
+	/**
+	 * Try to find a PRE name using the request ID in our local PRE database.
+	 */
+	protected function localCheck()
+	{
+		$localCheck = $this->db->queryOneRow(
+			sprintf("
+				SELECT id, title
+				FROM predb
+				WHERE requestid = %d
+				AND groupid = %d",
+				$this->requestID,
+				$this->groupID
+			)
+		);
+
+		if ($localCheck !== false) {
+			$this->newTitle = $localCheck['title'];
+			$this->preDbID = $localCheck['id'];
+			$this->reqIDsFound++;
+		}
+	}
+
+	/**
+	 * Try to find a PRE name on the internet using the found request ID.
+	 */
+	protected function remoteCheck()
+	{
+		// Do a web lookup.
+		$xml = nzedb\utility\getUrl(
+			str_ireplace(
+				'[REQUEST_ID]',
+				$this->requestID,
+				str_ireplace(
+					'[GROUP_NM]',
+					urlencode($this->result['groupname']),
+					$this->site->request_url
+				)
+			)
+		);
+
+		if ($xml !== false) {
+			$xml = simplexml_load_string($xml);
+			if ($xml !== false &&
+				isset($xml->request[0]['name']) && !empty($xml->request[0]['name']) &&
+				strtolower($xml->request[0]['name']) !== strtolower($this->result['searchname'])) {
+
+				$this->newTitle = $xml->request[0]['name'];
+				$this->reqIDsFound++;
+			}
+		}
+	}
+
+	/**
+	 * If we found a PRE name, update the releases name and reset post processing.
+	 */
+	protected function updateRelease()
+	{
+		$determinedCategory = $this->category->determineCategory($this->newTitle, $this->groupID);
+		$this->db->queryExec(
+			sprintf('
+				UPDATE releases
+				SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL,
+				tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,
+				reqidstatus = %d, isrenamed = 1, proc_files = 1, searchname = %s, categoryid = %d,
+				preid = %d
+				WHERE id = %d',
+				self::REQID_FOUND,
+				$this->db->escapeString($this->newTitle),
+				$determinedCategory,
+				$this->preDbID,
+				$this->result['id']
+			)
+		);
+
+		if ($this->echoOutput) {
+			echo $this->colorCLI->primary(
+				"\nNew name:  " . $this->newTitle .
+				"\nOld name:  " . $this->result['searchname'] .
+				"\nNew cat:   " . $this->category->getNameByID($determinedCategory) .
+				"\nGroup:     " . $this->result['groupname'] .
+				"\nMethod:    requestID " . ($this->local ? 'local' : 'web') .
+				"\nReleaseID: " . $this->result['id']
 			);
 		}
-	return $iFoundCnt;
+	}
+
+	/**
+	 * If we found a request ID on the internet, check if our PRE database has it, insert it if not.
+	 */
+	protected function insertIntoPreDB()
+	{
+		$dupeCheck = $this->db->queryOneRow(
+			sprintf('
+				SELECT id AS preid, requestid, groupid
+				FROM predb
+				WHERE title = %s',
+				$this->db->escapeString($this->newTitle)
+			)
+		);
+
+		if ($dupeCheck === false) {
+			$this->preDbID = $this->db->queryInsert(
+				sprintf("
+					INSERT INTO predb (title, source, md5, sha1, requestid, groupid, predate)
+					VALUES (%s, %s, %s, %s, %s, %d, NOW())",
+					$this->db->escapeString($this->newTitle),
+					$this->db->escapeString('requestWEB'),
+					$this->db->escapeString(md5($this->newTitle)),
+					$this->db->escapeString(sha1($this->newTitle)),
+					$this->requestID,
+					$this->groupID
+				)
+			);
+		} else {
+			$this->preDbID = $dupeCheck['preid'];
+			$this->db->queryExec(
+				sprintf('
+					UPDATE predb
+					SET requestid = %d, groupid = %d
+					WHERE id = %d',
+					$this->requestID,
+					$this->groupID,
+					$this->preDbID
+				)
+			);
+		}
 	}
 }
