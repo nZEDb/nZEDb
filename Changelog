@@ -9,6 +9,8 @@ New updates are grouped by person, at the top of the file.
 2014-05-23 DariusIII
 	* Chg: Change the way/text the grabnzb disabled message is displayed
 2014-05-23 kevin
+	* Fix: Typo in releases.php (5c is 5b).
+	* Add: Limit on local requestid (make things quicker).
 	* Fix: Empty groupid in requestid.
 	* Fix: Fix/Refactor RequestID class.
 	* Fix: Update schema sqlpatch to 226.
