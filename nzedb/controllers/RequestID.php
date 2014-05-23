@@ -257,7 +257,7 @@ class RequestID
 				WHERE requestid = %d
 				AND groupid = %d",
 				$this->requestID,
-				$this->groupID
+				$this->result['groupid']
 			)
 		);
 
@@ -356,7 +356,7 @@ class RequestID
 					$this->db->escapeString(md5($this->newTitle)),
 					$this->db->escapeString(sha1($this->newTitle)),
 					$this->requestID,
-					$this->groupID
+					$this->result['groupid']
 				)
 			);
 		} else {
@@ -367,7 +367,7 @@ class RequestID
 					SET requestid = %d, groupid = %d
 					WHERE id = %d',
 					$this->requestID,
-					$this->groupID,
+					$this->result['groupid'],
 					$this->preDbID
 				)
 			);
