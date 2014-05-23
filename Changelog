@@ -10,9 +10,11 @@ New updates are grouped by person, at the top of the file.
 	* Add: Loop in NNTP decompression to wait for the server to return data on possible terminator (should help with "msgs is not array").
 	* Chg: Use stream_socket_shutdown instead of fclose when closing the stream socket client on NNTP (faster).
 	* Chg: Don't use feof on _isConnected in NNTP for certain uses (feof can return false even if the socket is still open).
+>>>>>>> 4494ba5fa4f9cafe83b27a983895d6203b6a13ac
 2014-05-21 ruhllatio
 	* Chg: Class RequestID part one
 	* Fix: FTS result sizes in PreDB FT exceeding limits
+>>>>>>> 9f4a3986f2175716a54985750ada4f9dd95f852a
 2014-05-21 bart39
 	* Upd: test gitbot again
 	* Fix: fix releases stage 4 / request id threaded / non threaded handling of requestid matching
