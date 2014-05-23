@@ -6,10 +6,11 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-<<<<<<< HEAD
-2014-05-22 DariusIII
-	* Chg: Change the way/text the grabnzb disabled message is displayed
-=======
+2014-05-23 kevin
+	* Add: Loop in NNTP decompression to wait for the server to return data on possible terminator (should help with "msgs is not array").
+	* Chg: Use stream_socket_shutdown instead of fclose when closing the stream socket client on NNTP (faster).
+	* Chg: Don't use feof on _isConnected in NNTP for certain uses (feof can return false even if the socket is still open).
+>>>>>>> 4494ba5fa4f9cafe83b27a983895d6203b6a13ac
 2014-05-21 ruhllatio
 	* Chg: Class RequestID part one
 	* Fix: FTS result sizes in PreDB FT exceeding limits
