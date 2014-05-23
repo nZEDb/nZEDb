@@ -139,7 +139,7 @@ class RequestID
 	 * Process RequestID's via Local lookup.
 	 *
 	 * @param int $groupID The ID of the group.
-	 *                     @param int $limit   How many requests to do.
+	 * @param int $limit   How many requests to do.
 	 *
 	 * @return int
 	 */
