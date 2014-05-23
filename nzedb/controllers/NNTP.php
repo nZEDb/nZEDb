@@ -192,7 +192,7 @@ class NNTP extends Net_NNTP_Client
 	{
 		if (// Don't reconnect to usenet if:
 			// We are already connected to usenet. AND
-			$this->_isConnected(false) &&
+			parent::_isConnected(false) &&
 			// (If compression is wanted and on,                    OR    Compression is not wanted and off.) AND
 			(($compression && $this->compression)                   || (!$compression && !$this->compression)) &&
 			// (Alternate is wanted, AND current server is alt,     OR    Alternate is not wanted AND current is main.)
