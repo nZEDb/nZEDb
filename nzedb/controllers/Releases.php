@@ -2178,7 +2178,7 @@ class Releases
 	public function processReleasesStage5b($groupID, $limit = 1000)
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
-			$requestid = new RequestID();
+			$requestid = new RequestID($this->echooutput);
 			$stage5b = TIME();
 
 			if ($this->echooutput) {
@@ -2201,7 +2201,7 @@ class Releases
 	public function processReleasesStage5c($groupID, $limit = 100)
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
-			$requestid = new RequestID();
+			$requestid = new RequestID($this->echooutput);
 			$stage5c = TIME();
 
 			if ($this->echooutput) {
