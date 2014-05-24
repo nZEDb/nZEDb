@@ -2184,7 +2184,7 @@ class Releases
 			if ($this->echooutput) {
 				$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- limit 5000."));
 			}
-			$iFoundCnt = $requestid->lookupReqIDlocal($groupID, $limit);
+			$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, true);
 			if ($this->echooutput) {
 				$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5b)), true);
 			}
@@ -2207,7 +2207,7 @@ class Releases
 			if ($this->echooutput) {
 				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Web lookup -- limit " . $limit . "."));
 			}
-			$iFoundCnt = $requestid->lookupReqIDweb($groupID, $limit);
+			$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, false);
 			if ($this->echooutput) {
 				$this->c->doEcho(PHP_EOL . $this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5c)), true);
 			}
