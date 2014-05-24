@@ -2175,14 +2175,14 @@ class Releases
 	 * @param int $groupID
 	 * @param int $limit
 	 */
-	public function processReleasesStage5b($groupID, $limit = 1000)
+	public function processReleasesStage5b($groupID, $limit = 5000)
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
 			$requestid = new RequestID($this->echooutput);
 			$stage5b = TIME();
 
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- no limit."));
+				$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- limit 5000."));
 			}
 			$iFoundCnt = $requestid->lookupReqIDlocal($groupID, $limit);
 			if ($this->echooutput) {
@@ -2209,7 +2209,7 @@ class Releases
 			}
 			$iFoundCnt = $requestid->lookupReqIDweb($groupID, $limit);
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5c)), true);
+				$this->c->doEcho(PHP_EOL . $this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5c)), true);
 			}
 		}
 	}

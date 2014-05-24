@@ -214,6 +214,9 @@ class RequestID
 						$this->result['id']
 					)
 				);
+				if ($this->local === false && $this->echoOutput) {
+					echo '-';
+				}
 			} else {
 
 				if ($this->local === true) {
@@ -236,11 +239,10 @@ class RequestID
 							$this->result['id']
 						)
 					);
+					if ($this->local === false && $this->echoOutput) {
+						echo '-';
+					}
 				}
-			}
-
-			if ($this->echoOutput && $this->newTitle !== false) {
-				echo PHP_EOL;
 			}
 		}
 	}

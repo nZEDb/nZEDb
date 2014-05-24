@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-24 kevin
+	* Add: Better echo's on requestID.
 	* Various refactoring/changes/fixes. Mainly in Binaries/Backfill classes.
 2014-05-23 bart39
 	* Chg: Don't display movie with an imdbid of 0000000
