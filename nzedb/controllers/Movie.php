@@ -225,6 +225,7 @@ class Movie
 				FROM releases r
 				INNER JOIN movieinfo m ON m.imdbid = r.imdbid
 				WHERE r.nzbstatus = 1
+				AND r.imdbid != '0000000'
 				AND m.cover = 1
 				AND m.title != ''
 				AND r.passwordstatus <= %d
@@ -283,8 +284,10 @@ class Movie
 				LEFT OUTER JOIN groups ON groups.id = r.groupid
 				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
 				INNER JOIN movieinfo m ON m.imdbid = r.imdbid
-				WHERE r.nzbstatus = 1 AND m.cover = 1 AND m.title != '' AND
-				r.passwordstatus <= %d AND %s %s %s %s
+				WHERE r.nzbstatus = 1 AND r.imdbid != '0000000'
+				AND m.cover = 1
+				AND m.title != ''
+				AND r.passwordstatus <= %d AND %s %s %s %s
 				GROUP BY m.imdbid ORDER BY %s %s %s",
 				$this->showPasswords,
 				$this->getBrowseBy(),
@@ -320,6 +323,7 @@ class Movie
 				INNER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
 				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 				WHERE r.nzbstatus = 1
+				AND r.imdbid != '0000000'
 				AND r.passwordstatus <= %s
 				AND %s %s %s %s
 				GROUP BY m.imdbid, m.id, groups.name, rn.id

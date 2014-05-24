@@ -93,16 +93,6 @@ class RequestID
 	 */
 	protected $site;
 
-	const query =
-		'SELECT r.id, r.name, r.searchname, g.name AS groupname, r.groupid
-		FROM releases r
-		LEFT JOIN groups g ON r.groupid = g.id
-		WHERE nzbstatus = 1
-		AND preid = 0
-		AND (isrequestid = 1 AND reqidstatus = %d
-			OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR)
-		)';
-
 	/**
 	 * Construct.
 	 *
@@ -173,11 +163,20 @@ class RequestID
 		// Look for records that potentially have requestID titles and have not been matched to a PreDB title
 		$this->results = $this->db->queryDirect(
 			sprintf(
-				($this->local ? (self::query . ' %s LIMIT %d') : (self::query . ' %s ORDER BY postdate DESC LIMIT %d')),
-				($this->local ? self::REQID_UPROC : self::REQID_NOLL),
+				'SELECT r.id, r.name, r.searchname, g.name AS groupname, r.groupid
+				FROM releases r
+				LEFT JOIN groups g ON r.groupid = g.id
+				WHERE nzbstatus = 1
+				AND preid = 0
+				AND (isrequestid = 1 AND reqidstatus = %d
+					OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR)
+				)
+				%s %s LIMIT %d',
+				($this->local === true ? self::REQID_UPROC : self::REQID_NOLL),
 				self::REQID_NONE,
 				(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1),
 				(empty($this->groupID) ? '' : ('AND groupid = ' . $this->groupID)),
+				($this->local === true ? '' :  'ORDER BY postdate DESC'),
 				$this->limit
 			)
 		);
@@ -190,7 +189,8 @@ class RequestID
 	{
 		$this->newTitle = false;
 
-		foreach ($this->results as $this->result) {
+		foreach ($this->results as $result) {
+			$this->result = $result;
 
 			$this->newTitle = false;
 
@@ -199,7 +199,7 @@ class RequestID
 				preg_match('/^REQ\s*(\d{4,6})/i', $this->result['name'], $requestID) ||
 				preg_match('/^(\d{4,6})-\d{1}\[/', $this->result['name'], $requestID) ||
 				preg_match('/(\d{4,6}) -/', $this->result['name'], $requestID))  {
-				$this->requestID = (int)trim($requestID[1]);
+				$this->requestID = (int)$requestID[1];
 			} else {
 				$this->requestID = self::REQID_ZERO;
 			}
@@ -216,7 +216,7 @@ class RequestID
 				);
 			} else {
 
-				if ($this->local) {
+				if ($this->local === true) {
 					$this->localCheck();
 				} else {
 					$this->remoteCheck();
@@ -257,7 +257,7 @@ class RequestID
 				WHERE requestid = %d
 				AND groupid = %d",
 				$this->requestID,
-				$this->groupID
+				$this->result['groupid']
 			)
 		);
 
@@ -356,7 +356,7 @@ class RequestID
 					$this->db->escapeString(md5($this->newTitle)),
 					$this->db->escapeString(sha1($this->newTitle)),
 					$this->requestID,
-					$this->groupID
+					$this->result['groupid']
 				)
 			);
 		} else {
@@ -367,7 +367,7 @@ class RequestID
 					SET requestid = %d, groupid = %d
 					WHERE id = %d',
 					$this->requestID,
-					$this->groupID,
+					$this->result['groupid'],
 					$this->preDbID
 				)
 			);
