@@ -2182,7 +2182,7 @@ class Releases
 			$stage5b = TIME();
 
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- limit 5000."));
+				$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- limit $limit."));
 			}
 			$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, true);
 			if ($this->echooutput) {
@@ -2205,7 +2205,7 @@ class Releases
 			$stage5c = TIME();
 
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Web lookup -- limit " . $limit . "."));
+				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Web lookup -- limit $limit."));
 			}
 			$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, false);
 			if ($this->echooutput) {
