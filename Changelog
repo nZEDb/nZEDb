@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-24 kevin
+	* Fix: Missing opening tags in NZBGet XML-RPC.
 	* Chg: Expand the RottenTomato class.
 	* Chg: Merge methods on \RequestID.
 	* Add: Better echo's on requestID.
