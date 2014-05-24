@@ -1269,7 +1269,7 @@ class NNTP extends Net_NNTP_Client
 	{
 		// Check if the first char is <, if not add it.
 		if ($messageID[0] !== '<') {
-			$messageID = '<' . $messageID;
+			$messageID = ('<' . $messageID);
 		}
 
 		// Check if the last char is >, if not add it.
