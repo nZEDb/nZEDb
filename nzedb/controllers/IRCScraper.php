@@ -107,6 +107,11 @@ class IRCScraper extends IRCClient
 		$this->startScraping();
 	}
 
+	public function __destruct()
+	{
+		parent::__destruct();
+	}
+
 	/**
 	 * Main method for scraping.
 	 *
