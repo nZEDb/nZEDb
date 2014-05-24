@@ -109,50 +109,26 @@ class RequestID
 	}
 
 	/**
-	 * Process RequestID's via Web lookup.
+	 * Process RequestID's via Web or Local lookup.
 	 *
-	 * @param int $groupID The ID of the group.
-	 * @param int $limit   How many requests to do.
+	 * @param int  $groupID The ID of the group.
+	 * @param int  $limit   How many requests to do.
+	 * @param bool $local   Do a local or web lookup?
 	 *
-	 * @return int
+	 * @return int How many request ID's were found.
 	 */
-	public function lookupReqIDweb($groupID, $limit)
+	public function lookupReqIDs($groupID, $limit, $local)
 	{
 		$this->groupID = $groupID;
 		$this->limit = $limit;
-		$this->local = false;
-		$this->lookupReqIDs();
-		return $this->reqIDsFound;
-	}
-
-	/**
-	 * Process RequestID's via Local lookup.
-	 *
-	 * @param int $groupID The ID of the group.
-	 * @param int $limit   How many requests to do.
-	 *
-	 * @return int
-	 */
-	public function lookupReqIDlocal($groupID, $limit)
-	{
-		$this->groupID = $groupID;
-		$this->limit = $limit;
-		$this->local = true;
-		$this->lookupReqIDs();
-		return $this->reqIDsFound;
-	}
-
-	/**
-	 * Main method.
-	 */
-	protected function lookupReqIDs()
-	{
+		$this->local = $local;
 		$this->reqIDsFound = 0;
 		$this->getResults();
 
 		if ($this->results !== false && $this->results->rowCount() > 0) {
 			$this->findReqIdMatches();
 		}
+		return $this->reqIDsFound;
 	}
 
 	/**
@@ -214,6 +190,9 @@ class RequestID
 						$this->result['id']
 					)
 				);
+				if ($this->local === false && $this->echoOutput) {
+					echo '-';
+				}
 			} else {
 
 				if ($this->local === true) {
@@ -236,11 +215,10 @@ class RequestID
 							$this->result['id']
 						)
 					);
+					if ($this->local === false && $this->echoOutput) {
+						echo '-';
+					}
 				}
-			}
-
-			if ($this->echoOutput && $this->newTitle !== false) {
-				echo PHP_EOL;
 			}
 		}
 	}

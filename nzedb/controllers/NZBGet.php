@@ -134,7 +134,7 @@ class NZBGet
 						<value><i4>0</i4></value>
 					</param>
 					<param>
-						<boolean>>False</boolean></value>
+						<value><boolean>>False</boolean></value>
 					</param>
 					<param>
 						<value>
@@ -176,7 +176,7 @@ class NZBGet
 						<value><i4>0</i4></value>
 					</param>
 					<param>
-						<boolean>>False</boolean></value>
+						<value><boolean>>False</boolean></value>
 					</param>
 					<param>
 						<value>

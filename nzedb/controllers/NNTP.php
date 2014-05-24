@@ -192,7 +192,7 @@ class NNTP extends Net_NNTP_Client
 	{
 		if (// Don't reconnect to usenet if:
 			// We are already connected to usenet. AND
-			parent::_isConnected(false) &&
+			parent::_isConnected() &&
 			// (If compression is wanted and on,                    OR    Compression is not wanted and off.) AND
 			(($compression && $this->compression)                   || (!$compression && !$this->compression)) &&
 			// (Alternate is wanted, AND current server is alt,     OR    Alternate is not wanted AND current is main.)
@@ -1227,7 +1227,7 @@ class NNTP extends Net_NNTP_Client
 	{
 		$currentGroup = $this->currentGroup;
 		// Check if we are connected.
-		if (parent::_isConnected(false)) {
+		if (parent::_isConnected()) {
 			$retVal = true;
 		} else {
 			switch($this->currentServer) {
@@ -1269,7 +1269,7 @@ class NNTP extends Net_NNTP_Client
 	{
 		// Check if the first char is <, if not add it.
 		if ($messageID[0] !== '<') {
-			$messageID = '<' . $messageID;
+			$messageID = ('<' . $messageID);
 		}
 
 		// Check if the last char is >, if not add it.
