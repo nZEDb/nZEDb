@@ -17,7 +17,7 @@ $s = new Sites();
 $site = $s->get();
 $crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
 $releasecleaning = new ReleaseCleaning();
-$categorize = new Category();
+$categorize = new Categorize();
 $nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
 $consoleTools = new ConsoleTools();
 

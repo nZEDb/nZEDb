@@ -1326,7 +1326,7 @@ class Movie
 	protected function parseMovieSearchName($releaseName)
 	{
 		// Check if it's foreign ?
-		$cat = new Category();
+		$cat = new Categorize();
 		if (!$cat->isMovieForeign($releaseName)) {
 			$name = $year = '';
 			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';
@@ -1356,16 +1356,13 @@ class Movie
 				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
 				// Finally remove multiple spaces and trim leading spaces.
 				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
-
-				// Check if the name is long enough and not just numbers.
+					// Check if the name is long enough and not just numbers.
 				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 					if ($this->debug && $this->echooutput) {
 						$this->c->doEcho("DB name: {$releaseName}", true);
 					}
-
 					$this->currentTitle = $name;
 					$this->currentYear  = ($year === '' ? false : $year);
-
 					return true;
 				}
 			}

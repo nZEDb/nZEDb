@@ -402,9 +402,9 @@ class Releases
 				$cartsrch = sprintf(' INNER JOIN usercart ON usercart.userid = %d AND usercart.releaseid = releases.id ', $uid);
 			} else if ($cat[0] != -1) {
 				$catsrch = ' AND (';
+				$categ = new Category();
 				foreach ($cat as $category) {
 					if ($category != -1) {
-						$categ = new Category();
 						if ($categ->isParent($category)) {
 							$children = $categ->getChildren($category);
 							$chlist = '-99';
@@ -1372,7 +1372,7 @@ class Releases
 	// Returns the quantity of categorized releases.
 	public function categorizeRelease($type, $where = '', $echooutput = false)
 	{
-		$cat = new Category();
+		$cat = new Categorize();
 		$relcount = 0;
 		$resrel = $this->db->queryDirect('SELECT id, ' . $type . ', groupid FROM releases ' . $where);
 		$total = 0;
@@ -1816,7 +1816,7 @@ class Releases
 
 	public function processReleasesStage4($groupID)
 	{
-		$categorize = new Category();
+		$categorize = new Categorize();
 		$retcount = $duplicate = 0;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID . ' AND ' : ' ';
 
@@ -1868,6 +1868,17 @@ class Releases
 						$isReqID = $cleanerName['requestid'];
 					}
 				}
+				if ($preID === NULL) {
+					// try to match the cleaned searchname to predb title or filename here
+					$preMatch = $predb->matchPre($cleanName);
+					if(is_array($preMatch)) {
+						if (isset($preMatch['title'])) {
+							$cleanName = $preMatch['title'];
+						}
+						$preID = $preMatch['preid'];
+						$propername = true;
+					}
+				}
 				$relguid = sha1(uniqid('', true) . mt_rand());
 
 				$category = $categorize->determineCategory($cleanName, $rowcol['groupid']);
@@ -1913,9 +1924,6 @@ class Releases
 				}
 
 				if ($relid) {
-					// try to match to predb here
-					$predb->matchPre($cleanRelName, $relid);
-
 					// Update collections table to say we inserted the release.
 					$this->db->queryExec(
 						sprintf(

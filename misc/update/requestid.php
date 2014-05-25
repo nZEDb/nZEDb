@@ -13,7 +13,7 @@ if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric
 }
 
 $db = new DB();
-$category = new Category();
+$category = new Categorize();
 $groups = new Groups();
 $consoletools = new ConsoleTools();
 $namefixer = new NameFixer();

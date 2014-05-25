@@ -32,7 +32,7 @@ function preName($argv, $argc)
 {
 	$db = new DB();
 	$groups = new Groups();
-	$category = new Category();
+	$category = new Categorize();
 	$internal = $external = $pre = $none = 0;
 	$show = 2;
 	if ($argv[$argc - 1] === 'show') {
@@ -252,7 +252,7 @@ function resetSearchnames()
 function categorizeRelease($type, $where, $echooutput = false)
 {
 	$db = new DB();
-	$cat = new Category();
+	$cat = new Categorize();
 	$consoletools = new consoleTools();
 	$relcount = 0;
 	$c = new ColorCLI();
