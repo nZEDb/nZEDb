@@ -84,7 +84,7 @@ class NZBImport
 	{
 		$this->db = new DB();
 		$this->binaries = new Binaries();
-		$this->category = new Category();
+		$this->category = new Categorize();
 		$this->nzb = new NZB();
 		$this->releaseCleaner = new ReleaseCleaning();
 

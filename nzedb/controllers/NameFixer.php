@@ -304,7 +304,7 @@ class NameFixer
 				$this->matched = true;
 				$this->relid = $release["releaseid"];
 
-				$this->category = new Category();
+				$this->category = new Categorize();
 				$determinedcat = $this->category->determineCategory($newname, $release["groupid"]);
 
 				if ($type === "PAR2, ") {

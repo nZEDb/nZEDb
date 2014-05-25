@@ -1372,7 +1372,7 @@ class Releases
 	// Returns the quantity of categorized releases.
 	public function categorizeRelease($type, $where = '', $echooutput = false)
 	{
-		$cat = new Category();
+		$cat = new Categorize();
 		$relcount = 0;
 		$resrel = $this->db->queryDirect('SELECT id, ' . $type . ', groupid FROM releases ' . $where);
 		$total = 0;
@@ -1816,7 +1816,7 @@ class Releases
 
 	public function processReleasesStage4($groupID)
 	{
-		$categorize = new Category();
+		$categorize = new Categorize();
 		$retcount = $duplicate = 0;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID . ' AND ' : ' ';
 

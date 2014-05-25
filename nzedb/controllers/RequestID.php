@@ -101,7 +101,7 @@ class RequestID
 	public function __construct($echoOutput = false)
 	{
 		$this->echoOutput = ($echoOutput && nZEDb_ECHOCLI);
-		$this->category = new Category();
+		$this->category = new Categorize();
 		$this->db = new nzedb\db\DB();
 		$this->consoleTools = new ConsoleTools();
 		$this->colorCLI = new ColorCLI();

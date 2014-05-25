@@ -16,7 +16,7 @@ class GrabNZBs
 		$this->alternateNNTP = ($this->site->alternate_nntp === '1' ? true : false);
 		$this->ReleaseCleaning = new ReleaseCleaning();
 		//$this->CollectionsCleaning = new CollectionsCleaning();
-		$this->categorize = new Category();
+		$this->categorize = new Categorize();
 		$this->c = new ColorCLI();
 	}
 

@@ -14,7 +14,7 @@ $db = new DB();
 $s = new Sites();
 $site = $s->get();
 $n = "\n";
-$category = new Category();
+$category = new Categorize();
 $groups = new Groups();
 $requestID = 0;
 if (preg_match('/^\[ ?(\d{4,6}) ?\]/', $pieces[1], $match) ||

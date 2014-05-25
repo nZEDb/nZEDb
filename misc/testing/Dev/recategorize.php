@@ -66,7 +66,7 @@ function reCategorize($argv)
 function categorizeRelease($update = true, $where, $echooutput = false)
 {
 	$db = new DB();
-	$cat = new Category();
+	$cat = new Categorize();
 	$consoletools = new consoleTools();
 	$relcount = $chgcount = 0;
 	$c = new ColorCLI();
