@@ -1326,46 +1326,48 @@ class Movie
 	protected function parseMovieSearchName($releaseName)
 	{
 		// Check if it's foreign ?
-		$cat = new Category();
-		$name = $year = '';
-		$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';
+		$cat = new Categorize();
+		if (!$cat->isMovieForeign($releaseName)) {
+			$name = $year = '';
+			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';
 
-		/* Initial scan of getting a year/name.
-		 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
-		 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
-		 * Then we look up the year, (19|20)\d\d, so $matches[1] would be Coraline $matches[2] 2009
-		 */
-		if (preg_match('/(?P<name>[\w. -]+)[^\w](?P<year>(19|20)\d\d)/i', $releaseName, $matches)) {
-			$name = $matches['name'];
-			$year = $matches['year'];
+			/* Initial scan of getting a year/name.
+			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
+			 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
+			 * Then we look up the year, (19|20)\d\d, so $matches[1] would be Coraline $matches[2] 2009
+			 */
+			if (preg_match('/(?P<name>[\w. -]+)[^\w](?P<year>(19|20)\d\d)/i', $releaseName, $matches)) {
+				$name = $matches['name'];
+				$year = $matches['year'];
 
-		/* If we didn't find a year, try to get a name anyways.
-		 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
-		 */
-		} else if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releaseName, $matches)) {
-			$name = $matches['name'];
-		}
+			/* If we didn't find a year, try to get a name anyways.
+			 * Try to look for a title before the $followingList and after anything but a-z0-9 two times or more (-[ for example)
+			 */
+			} else if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releaseName, $matches)) {
+				$name = $matches['name'];
+			}
 
-		// Check if we got something.
-		if ($name !== '') {
+			// Check if we got something.
+			if ($name !== '') {
 
-			// If we still have any of the words in $followingList, remove them.
-			$name = preg_replace('/' . $followingList . '/i', ' ', $name);
-			// Remove periods, underscored, anything between parenthesis.
-			$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
-			// Finally remove multiple spaces and trim leading spaces.
-			$name = trim(preg_replace('/\s{2,}/', ' ', $name));
-				// Check if the name is long enough and not just numbers.
-			if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
-				if ($this->debug && $this->echooutput) {
-					$this->c->doEcho("DB name: {$releaseName}", true);
+				// If we still have any of the words in $followingList, remove them.
+				$name = preg_replace('/' . $followingList . '/i', ' ', $name);
+				// Remove periods, underscored, anything between parenthesis.
+				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
+				// Finally remove multiple spaces and trim leading spaces.
+				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
+					// Check if the name is long enough and not just numbers.
+				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
+					if ($this->debug && $this->echooutput) {
+						$this->c->doEcho("DB name: {$releaseName}", true);
+					}
+					$this->currentTitle = $name;
+					$this->currentYear  = ($year === '' ? false : $year);
+					return true;
 				}
-				$this->currentTitle = $name;
-				$this->currentYear  = ($year === '' ? false : $year);
-				return true;
 			}
 		}
-	return false;
+		return false;
 	}
 
 	/**
