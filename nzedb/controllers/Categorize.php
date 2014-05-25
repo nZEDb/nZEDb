@@ -7,12 +7,43 @@
  */
 class Categorize extends Category
 {
-	protected $tmpCat;
+	/**
+	 * @var bool
+	 */
+	protected $categorizeForeign;
+
+	/**
+	 * @var bool
+	 */
+	protected $catWebDL;
+
+	/**
+	 * Temporary category while we sort through the name.
+	 * @var int
+	 */
+	protected $tmpCat = 0;
+
+	/**
+	 * Release name to sort through.
+	 * @var string
+	 */
 	protected $releaseName;
+
+	/**
+	 * Group ID of the releasename we are sorting through.
+	 * @var int
+	 */
 	protected $groupID;
 
+	/**
+	 * Construct.
+	 */
 	public function __construct()
 	{
+		$s = new Sites();
+		$site = $s->get();
+		$this->categorizeForeign = ($site->categorizeforeign == "0") ? false : true;
+		$this->catWebDL = ($site->catwebdl == "0") ? false : true;
 		parent::__construct();
 	}
 
@@ -32,13 +63,15 @@ class Categorize extends Category
 		$this->groupID = $groupID;
 		$this->tmpCat = Category::CAT_MISC;
 
-		// Note that in byGroup() some overrides occur...
 		if ($this->isMisc()) {
 			return $this->tmpCat;
 		}
+
+		// Note that in byGroup() some overrides occur...
 		if ($this->byGroup()) {
 			return $this->tmpCat;
 		}
+
 		//Try against all functions, if still nothing, return Cat Misc.
 		if ($this->isPC()) {
 			return $this->tmpCat;
@@ -91,7 +124,7 @@ class Categorize extends Category
 				return true;
 			}
 
-			if ($this->categorizeforeign && $group === 'alt.binaries.cartoons.french') {
+			if ($this->categorizeForeign && $group === 'alt.binaries.cartoons.french') {
 				$this->tmpCat = Category::CAT_TV_FOREIGN;
 				return true;
 			}
@@ -102,7 +135,7 @@ class Categorize extends Category
 			}
 
 			if ($group === 'alt.binaries.cd.lossles') {
-				if ($this->categorizeforeign && $this->isMusicForeign()) {
+				if ($this->categorizeForeign && $this->isMusicForeign()) {
 					return true;
 				}
 				$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
@@ -115,7 +148,7 @@ class Categorize extends Category
 			}
 
 			if (preg_match('/alt\.binaries\.(comics\.dcp|pictures\.comics\.(complete|dcp|reposts?))/', $group)) {
-				if ($this->categorizeforeign && $this->isBookForeign()) {
+				if ($this->categorizeForeign && $this->isBookForeign()) {
 					return true;
 				}
 				$this->tmpCat = Category::CAT_BOOKS_COMICS;
@@ -150,7 +183,7 @@ class Categorize extends Category
 				return true;
 			}
 
-			if ($this->categorizeforeign && preg_match('/alt\.binaries\.(dvdnordic\.org|nordic\.(dvdr?|xvid))|dk\.(binaer|binaries)\.film(\.divx)?/', $group)) {
+			if ($this->categorizeForeign && preg_match('/alt\.binaries\.(dvdnordic\.org|nordic\.(dvdr?|xvid))|dk\.(binaer|binaries)\.film(\.divx)?/', $group)) {
 				$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 				return true;
 			}
@@ -161,7 +194,7 @@ class Categorize extends Category
 			}
 
 			if (preg_match('/alt\.binaries\.e\-?books?((\.|\-)(technical|textbooks))/', $group)) {
-				if ($this->categorizeforeign && $this->isBookForeign()) {
+				if ($this->categorizeForeign && $this->isBookForeign()) {
 					return true;
 				}
 				$this->tmpCat = Category::CAT_BOOKS_TECHNICAL;
@@ -177,7 +210,7 @@ class Categorize extends Category
 					return true;
 				}
 
-				if ($this->categorizeforeign && $this->isBookForeign()) {
+				if ($this->categorizeForeign && $this->isBookForeign()) {
 					return true;
 				}
 				$this->tmpCat = Category::CAT_MISC;
@@ -275,7 +308,7 @@ class Categorize extends Category
 			}
 
 			if ($group === 'alt.binaries.mpeg.video.music') {
-				if ($this->categorizeforeign && $this->isMusicForeign()) {
+				if ($this->categorizeForeign && $this->isMusicForeign()) {
 					return true;
 				}
 				$this->tmpCat = Category::CAT_MUSIC_VIDEO;
@@ -293,7 +326,7 @@ class Categorize extends Category
 			}
 
 			if ($group === 'alt.binaries.music.opera') {
-				if ($this->categorizeforeign && $this->isMusicForeign()) {
+				if ($this->categorizeForeign && $this->isMusicForeign()) {
 					return true;
 				}
 
@@ -306,7 +339,7 @@ class Categorize extends Category
 			}
 
 			if (preg_match('/alt\.binaries\.music/', $group)) {
-				if ($this->categorizeforeign && $this->isMusicForeign()) {
+				if ($this->categorizeForeign && $this->isMusicForeign()) {
 					return true;
 				}
 				if ($this->isMusic()) {
@@ -317,7 +350,7 @@ class Categorize extends Category
 			}
 
 			if (preg_match('/audiobook/', $group)) {
-				if ($this->categorizeforeign && $this->isMusicForeign()) {
+				if ($this->categorizeForeign && $this->isMusicForeign()) {
 					return true;
 				}
 
@@ -331,7 +364,7 @@ class Categorize extends Category
 			}
 
 			if (preg_match('/alt\.binaries\.sounds\.(flac(\.jazz)|jpop|lossless(\.[a-z0-9]+)?)|alt\.binaries\.(cd\.lossless|music\.flac)/i', $group)) {
-				if ($this->categorizeforeign && $this->isMusicForeign()) {
+				if ($this->categorizeForeign && $this->isMusicForeign()) {
 					return true;
 				}
 				$this->tmpCat = Category::CAT_MUSIC_LOSSLESS;
@@ -339,7 +372,7 @@ class Categorize extends Category
 			}
 
 			if ($group === 'alt.binaries.sounds.whitburn.pop') {
-				if ($this->categorizeforeign && $this->isMusicForeign()) {
+				if ($this->categorizeForeign && $this->isMusicForeign()) {
 					return true;
 				}
 
@@ -375,7 +408,7 @@ class Categorize extends Category
 				return true;
 			}
 
-			if ($this->categorizeforeign && $group === 'db.binaer.tv') {
+			if ($this->categorizeForeign && $group === 'db.binaer.tv') {
 				$this->tmpCat = Category::CAT_TV_FOREIGN;
 				return true;
 			}
@@ -401,7 +434,7 @@ class Categorize extends Category
 				return true;
 			}
 
-			if ($this->categorizeforeign && $this->isForeignTV()) {
+			if ($this->categorizeForeign && $this->isForeignTV()) {
 				return true;
 			}
 
@@ -414,7 +447,7 @@ class Categorize extends Category
 			}
 
 
-			if ($this->catwebdl && $this->isWEBDL()) {
+			if ($this->catWebDL && $this->isWEBDL()) {
 				return true;
 			}
 
@@ -538,7 +571,7 @@ class Categorize extends Category
 			$this->tmpCat = Category::CAT_TV_HD;
 			return true;
 		}
-		if ($this->catwebdl == false) {
+		if ($this->catWebDL == false) {
 			if (preg_match('/web[-._ ]dl/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_TV_HD;
 				return true;
@@ -590,7 +623,7 @@ class Categorize extends Category
 	public function isMovie()
 	{
 		if (preg_match('/[-._ ]AVC|[-._ ]|[BH][DR]RIP|Bluray|BD[-._ ]?(25|50)?|\bBR\b|Camrip|[-._ ]\d{4}[-._ ].+(720p|1080p|Cam)|DIVX|[-._ ]DVD[-._ ]|DVD-?(5|9|R|Rip)|Untouched|VHSRip|XVID|[-._ ](DTS|TVrip)[-._ ]/i', $this->releaseName) && !preg_match('/auto(cad|desk)|divx[-._ ]plus|[-._ ]exe$|[-._ ](jav|XXX)[-._ ]|SWE6RUS|\wXXX(1080p|720p|DVD)|Xilisoft/i', $this->releaseName)) {
-			if ($this->categorizeforeign && $this->isMovieForeign()) {
+			if ($this->categorizeForeign && $this->isMovieForeign()) {
 				return true;
 			}
 			if ($this->isMovieDVD()) {
@@ -1035,7 +1068,7 @@ class Categorize extends Category
 
 	public function isMusicForeign()
 	{
-		if ($this->categorizeforeign) {
+		if ($this->categorizeForeign) {
 			if (preg_match('/[ \-\._](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish|bl|cz|de|es|fr|ger|heb|hu|hun|it(a| 19|20\d\d)|jap|ko|kor|nl|pl|se)[ \-\._]/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_MUSIC_FOREIGN;
 				return true;
@@ -1046,7 +1079,7 @@ class Categorize extends Category
 
 	public function isAudiobook()
 	{
-		if ($this->categorizeforeign) {
+		if ($this->categorizeForeign) {
 			if (preg_match('/Audiobook/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_MUSIC_FOREIGN;
 				return true;
@@ -1151,7 +1184,7 @@ class Categorize extends Category
 
 	public function isBookForeign()
 	{
-		if ($this->categorizeforeign) {
+		if ($this->categorizeForeign) {
 			if (preg_match('/[ \-\._](brazilian|chinese|croatian|danish|deutsch|dutch|estonian|flemish|finnish|french|german|greek|hebrew|icelandic|italian|ita|latin|mandarin|nordic|norwegian|polish|portuguese|japenese|japanese|russian|serbian|slovenian|spanish|spanisch|swedish|thai|turkish)[-._ ]/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_BOOKS_FOREIGN;
 				return true;

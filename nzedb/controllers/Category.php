@@ -67,35 +67,6 @@ class Category
 	const STATUS_ACTIVE = 1;
 	const STATUS_DISABLED = 2;
 
-
-	/**
-	 * Temporary category while we sort through the name.
-	 * @var int
-	 */
-	protected $tmpCat = 0;
-
-	/**
-	 * Release name to sort through.
-	 * @var string
-	 */
-	protected $releaseName;
-
-	/**
-	 * Group ID of the releasename we are sorting through.
-	 * @var int
-	 */
-	protected $groupID;
-
-	/**
-	 * @var bool
-	 */
-	protected $categorizeforeign;
-
-	/**
-	 * @var bool
-	 */
-	protected $catwebdl;
-
 	/**
 	 * @var DB
 	 */
@@ -106,10 +77,6 @@ class Category
 	 */
 	public function __construct()
 	{
-		$s = new Sites();
-		$site = $s->get();
-		$this->categorizeforeign = ($site->categorizeforeign == "0") ? false : true;
-		$this->catwebdl = ($site->catwebdl == "0") ? false : true;
 		$this->db = new DB();
 	}
 

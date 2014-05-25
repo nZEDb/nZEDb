@@ -21,9 +21,6 @@ reCategorize($argv);
 
 function reCategorize($argv)
 {
-	$db = new DB();
-	$groups = new Groups();
-	$category = new Category();
 	$c = new ColorCLI();
 	$where = '';
 	$update = true;

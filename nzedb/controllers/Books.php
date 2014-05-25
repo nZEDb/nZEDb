@@ -73,9 +73,9 @@ class Books
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = ' (';
+			$categ = new Category();
 			foreach ($cat as $category) {
 				if ($category != -1) {
-					$categ = new Category();
 					if ($categ->isParent($category)) {
 						$children = $categ->getChildren($category);
 						$chlist = '-99';
@@ -135,9 +135,9 @@ class Books
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = ' (';
+			$categ = new Category();
 			foreach ($cat as $category) {
 				if ($category != -1) {
-					$categ = new Category();
 					if ($categ->isParent($category)) {
 						$children = $categ->getChildren($category);
 						$chlist = '-99';

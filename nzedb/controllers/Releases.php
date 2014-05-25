@@ -402,9 +402,9 @@ class Releases
 				$cartsrch = sprintf(' INNER JOIN usercart ON usercart.userid = %d AND usercart.releaseid = releases.id ', $uid);
 			} else if ($cat[0] != -1) {
 				$catsrch = ' AND (';
+				$categ = new Category();
 				foreach ($cat as $category) {
 					if ($category != -1) {
-						$categ = new Category();
 						if ($categ->isParent($category)) {
 							$children = $categ->getChildren($category);
 							$chlist = '-99';
