@@ -402,9 +402,9 @@ class Releases
 				$cartsrch = sprintf(' INNER JOIN usercart ON usercart.userid = %d AND usercart.releaseid = releases.id ', $uid);
 			} else if ($cat[0] != -1) {
 				$catsrch = ' AND (';
+				$categ = new Category();
 				foreach ($cat as $category) {
 					if ($category != -1) {
-						$categ = new Category();
 						if ($categ->isParent($category)) {
 							$children = $categ->getChildren($category);
 							$chlist = '-99';
@@ -1372,7 +1372,7 @@ class Releases
 	// Returns the quantity of categorized releases.
 	public function categorizeRelease($type, $where = '', $echooutput = false)
 	{
-		$cat = new Category();
+		$cat = new Categorize();
 		$relcount = 0;
 		$resrel = $this->db->queryDirect('SELECT id, ' . $type . ', groupid FROM releases ' . $where);
 		$total = 0;
@@ -1816,7 +1816,7 @@ class Releases
 
 	public function processReleasesStage4($groupID)
 	{
-		$categorize = new Category();
+		$categorize = new Categorize();
 		$retcount = $duplicate = 0;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID . ' AND ' : ' ';
 
@@ -1868,6 +1868,17 @@ class Releases
 						$isReqID = $cleanerName['requestid'];
 					}
 				}
+				if ($preID === NULL) {
+					// try to match the cleaned searchname to predb title or filename here
+					$preMatch = $predb->matchPre($cleanName);
+					if(is_array($preMatch)) {
+						if (isset($preMatch['title'])) {
+							$cleanName = $preMatch['title'];
+						}
+						$preID = $preMatch['preid'];
+						$propername = true;
+					}
+				}
 				$relguid = sha1(uniqid('', true) . mt_rand());
 
 				$category = $categorize->determineCategory($cleanName, $rowcol['groupid']);
@@ -1913,9 +1924,6 @@ class Releases
 				}
 
 				if ($relid) {
-					// try to match to predb here
-					$predb->matchPre($cleanRelName, $relid);
-
 					// Update collections table to say we inserted the release.
 					$this->db->queryExec(
 						sprintf(
@@ -2173,18 +2181,18 @@ class Releases
 	 * Process RequestID's via Local lookup.
 	 *
 	 * @param int $groupID
+	 * @param int $limit
 	 */
-	public function processReleasesStage5b($groupID)
+	public function processReleasesStage5b($groupID, $limit = 5000)
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
-			$requestid = new RequestID();
-			$iFoundCnt = 0;
+			$requestid = new RequestID($this->echooutput);
 			$stage5b = TIME();
 
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Local lookup -- no limit."));
+				$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- limit $limit."));
 			}
-			$iFoundCnt = $requestid->lookupReqIDlocal($groupID);
+			$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, true);
 			if ($this->echooutput) {
 				$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5b)), true);
 			}
@@ -2201,16 +2209,15 @@ class Releases
 	public function processReleasesStage5c($groupID, $limit = 100)
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
-			$requestid = new RequestID();
-			$iFoundCnt = 0;
+			$requestid = new RequestID($this->echooutput);
 			$stage5c = TIME();
 
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Web lookup -- limit " . $limit . "."));
+				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Web lookup -- limit $limit."));
 			}
-			$iFoundCnt = $requestid->lookupReqIDweb($groupID, $limit);
+			$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, false);
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5c)), true);
+				$this->c->doEcho(PHP_EOL . $this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5c)), true);
 			}
 		}
 	}

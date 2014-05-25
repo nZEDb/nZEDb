@@ -240,9 +240,10 @@ Class NZBContents
 			}
 
 			$this->db->queryExec(sprintf('UPDATE releases SET completion = %d WHERE id = %d', $completion, $relID));
-			if ($foundNFO === true) {
+
+			if ($foundNFO === true && strlen($messageID) > 1) {
 				return array('hidden' => false, 'ID' => $messageID);
-			} elseif ($hiddenNFO === true) {
+			} elseif ($hiddenNFO === true && strlen($hiddenID) > 1) {
 				return array('hidden' => true, 'ID' => $hiddenID);
 			}
 		}

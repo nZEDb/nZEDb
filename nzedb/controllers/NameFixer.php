@@ -304,7 +304,7 @@ class NameFixer
 				$this->matched = true;
 				$this->relid = $release["releaseid"];
 
-				$this->category = new Category();
+				$this->category = new Categorize();
 				$determinedcat = $this->category->determineCategory($newname, $release["groupid"]);
 
 				if ($type === "PAR2, ") {
@@ -394,7 +394,7 @@ class NameFixer
 	{
 		$db = $this->db;
 		$matching = 0;
-		$this->category = new Category();
+		$this->category = new Categorize();
 		$this->utility = new Utility();
 		$this->matched = false;
 
@@ -460,7 +460,7 @@ class NameFixer
 	{
 		$db = $this->db;
 		$matching = 0;
-		$this->category = new Category();
+		$this->category = new Categorize();
 		$this->matched = false;
 
 		if ($type = 'full') {
@@ -517,7 +517,7 @@ class NameFixer
 		$db = $this->db;
 		$matching = 0;
 		$hashtype = "";
-		$this->category = new Category();
+		$this->category = new Categorize();
 		$this->matched = false;
 
 		// Determine MD5 or SHA1

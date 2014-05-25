@@ -225,6 +225,7 @@ class Movie
 				FROM releases r
 				INNER JOIN movieinfo m ON m.imdbid = r.imdbid
 				WHERE r.nzbstatus = 1
+				AND r.imdbid != '0000000'
 				AND m.cover = 1
 				AND m.title != ''
 				AND r.passwordstatus <= %d
@@ -283,8 +284,10 @@ class Movie
 				LEFT OUTER JOIN groups ON groups.id = r.groupid
 				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
 				INNER JOIN movieinfo m ON m.imdbid = r.imdbid
-				WHERE r.nzbstatus = 1 AND m.cover = 1 AND m.title != '' AND
-				r.passwordstatus <= %d AND %s %s %s %s
+				WHERE r.nzbstatus = 1 AND r.imdbid != '0000000'
+				AND m.cover = 1
+				AND m.title != ''
+				AND r.passwordstatus <= %d AND %s %s %s %s
 				GROUP BY m.imdbid ORDER BY %s %s %s",
 				$this->showPasswords,
 				$this->getBrowseBy(),
@@ -320,6 +323,7 @@ class Movie
 				INNER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
 				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 				WHERE r.nzbstatus = 1
+				AND r.imdbid != '0000000'
 				AND r.passwordstatus <= %s
 				AND %s %s %s %s
 				GROUP BY m.imdbid, m.id, groups.name, rn.id
@@ -1322,7 +1326,7 @@ class Movie
 	protected function parseMovieSearchName($releaseName)
 	{
 		// Check if it's foreign ?
-		$cat = new Category();
+		$cat = new Categorize();
 		if (!$cat->isMovieForeign($releaseName)) {
 			$name = $year = '';
 			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';
@@ -1352,16 +1356,13 @@ class Movie
 				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
 				// Finally remove multiple spaces and trim leading spaces.
 				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
-
-				// Check if the name is long enough and not just numbers.
+					// Check if the name is long enough and not just numbers.
 				if (strlen($name) > 4 && !preg_match('/^\d+$/', $name)) {
 					if ($this->debug && $this->echooutput) {
 						$this->c->doEcho("DB name: {$releaseName}", true);
 					}
-
 					$this->currentTitle = $name;
 					$this->currentYear  = ($year === '' ? false : $year);
-
 					return true;
 				}
 			}

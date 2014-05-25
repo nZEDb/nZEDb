@@ -32,7 +32,7 @@ function updateRelease($id, $cat) {
 
 function determineMovieCategory($name) {
 	// Determine sub category
-	$cat = new Category();
+	$cat = new Categorize();
 
 	if ($cat->isMovieSD($name)) {
 		return "2030";
