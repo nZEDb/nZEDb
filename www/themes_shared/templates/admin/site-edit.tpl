@@ -125,13 +125,6 @@
 		<legend>Language/Categorization options</legend>
 		<table class="input">
 			<tr>
-				<td style="width:180px;"><label for="catlanguage">Categorize Language:</label></td>
-				<td>
-					{html_options style="width:180px;" class="catlanguage" id="catlanguage" name='catlanguage' values=$langlist_ids output=$langlist_names selected=$fsite->catlanguage}
-					<div class="hint">Which category.php file to use. (This is WIP, looking for people to help with this. So right now I suggest sticking to english.)</div>
-				</td>
-			</tr>
-			<tr>
 				<td style="width:180px;"><label for="categorizeforeign">Categorize Foreign:</label></td>
 				<td>
 					{html_radios id="categorizeforeign" name='categorizeforeign' values=$yesno_ids output=$yesno_names selected=$fsite->categorizeforeign separator='<br />'}

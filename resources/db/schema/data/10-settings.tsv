@@ -108,7 +108,6 @@ apps	sabnzbplus	integrationtype	2	Whether to allow integration with a SAB instal
 apps	sabnzbplus	priority	0	Set the priority level for NZBs that are added to your queue	sabpriority
 apps	sabnzbplus	url		The url of the SAB installation, for example: http://localhost:8080/sabnzbd/	saburl
 indexer	categorise	categorizeforeign	1	This only works if the above is set to english. Whether to send foreign movies/tv to foreign sections or not. If set to true they will go in foreign categories.	categorizeforeign
-indexer	categorise	catlanguage	0	Which category.php file to use. (This is WIP, looking for people to help with this. So right now I suggest sticking to english.)	catlanguage
 indexer	categorise	catwebdl	0	Whether to send WEB-DL to the WEB-DL section or not. If set to true they will go in WEB-DL category, false will send them in HD TV.<br/>This will also make them inaccessible to Sickbeard and possibly Couchpotato.	catwebdl
 indexer	categorise	imdblanguage	en	Which language to lookup when sending requests to IMDB/Tmdb. (If akas.imdb.com is set, imdb still returns the original titles.)	imdblanguage
 indexer	categorise	imdburl	0	akas.imdb.com returns titles in their original title, imdb.com returns titles based on your IP address (if you are in france, you will get french titles).	imdburl

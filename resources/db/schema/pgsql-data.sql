@@ -548,7 +548,6 @@ INSERT INTO site
 	('menuposition', 2),
 	('crossposttime', 2),
 	('maxpartsprocessed', 3),
-	('catlanguage', 0),
 	('amazonsleep', 1000),
 	('passchkattempts', 1),
 	('catwebdl', 0),
