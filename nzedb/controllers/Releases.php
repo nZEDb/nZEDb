@@ -1868,6 +1868,17 @@ class Releases
 						$isReqID = $cleanerName['requestid'];
 					}
 				}
+				if ($preID === NULL) {
+					// try to match the cleaned searchname to predb title or filename here
+					$preMatch = $predb->matchPre($cleanName);
+					if(is_array($preMatch)) {
+						if (isset($preMatch['cleansubject'])) {
+							$cleanName = $preMatch['cleansubject'];
+						}
+						$preID = $preMatch['preid'];
+						$propername = true;
+					}
+				}
 				$relguid = sha1(uniqid('', true) . mt_rand());
 
 				$category = $categorize->determineCategory($cleanName, $rowcol['groupid']);
@@ -1913,9 +1924,6 @@ class Releases
 				}
 
 				if ($relid) {
-					// try to match to predb here
-					$predb->matchPre($cleanRelName, $relid);
-
 					// Update collections table to say we inserted the release.
 					$this->db->queryExec(
 						sprintf(
