@@ -6,8 +6,11 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-25 ruhllatio
+	* Fix: Remove no longer existing foreign check from Movie PP
 2014-05-25 bart39
 	* Chg: Check cleaned searchname against predb title or filename as release is created
+	* Fix: Typo (cleansubject is title)
 2014-05-25 kevin
 	* Chg: Move categorization functions to their own class.
 	* Chg: Drop multiple language categorization due to lack of maintainers.
