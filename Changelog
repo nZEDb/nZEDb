@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-05-25 ruhllatio
 	* Fix: Remove no longer existing foreign check from Movie PP
 2014-05-25 bart39
+	* Chg: Regex additions / fixes
 	* Chg: Only reset release details if the category changes
 	* Chg: Move declaration of $this->category to constructor
 	* Chg: Check cleaned searchname against predb title or filename as release is created
