@@ -21,7 +21,7 @@ class Categorize extends Category
 	 * Temporary category while we sort through the name.
 	 * @var int
 	 */
-	protected $tmpCat = 0;
+	protected $tmpCat = Category::CAT_MISC;
 
 	/**
 	 * Release name to sort through.
@@ -57,50 +57,37 @@ class Categorize extends Category
 	 *
 	 * @return int The categoryID.
 	 */
-	public function determineCategory($releaseName = "", $groupID)
+	public function determineCategory($releaseName = '', $groupID)
 	{
 		$this->releaseName = $releaseName;
-		$this->groupID = $groupID;
-		$this->tmpCat = Category::CAT_MISC;
+		$this->groupID     = $groupID;
+		$this->tmpCat      = Category::CAT_MISC;
 
-		if ($this->isMisc()) {
-			return $this->tmpCat;
-		}
+		if ($this->isMisc())    { return $this->tmpCat; }
 
 		// Note that in byGroup() some overrides occur...
-		if ($this->byGroup()) {
-			return $this->tmpCat;
-		}
+		if ($this->byGroup())   { return $this->tmpCat; }
 
 		//Try against all functions, if still nothing, return Cat Misc.
-		if ($this->isPC()) {
-			return $this->tmpCat;
-		}
-		if ($this->isXXX()) {
-			return $this->tmpCat;
-		}
-		if ($this->isTV()) {
-			return $this->tmpCat;
-		}
-		if ($this->isMusic()) {
-			return $this->tmpCat;
-		}
-		if ($this->isMovie()) {
-			return $this->tmpCat;
-		}
-		if ($this->isConsole()) {
-			return $this->tmpCat;
-		}
-		if ($this->isBook()) {
-			return $this->tmpCat;
-		}
+		if ($this->isPC())      { return $this->tmpCat; }
+		if ($this->isXXX())     { return $this->tmpCat; }
+		if ($this->isTV())      { return $this->tmpCat; }
+		if ($this->isMusic())   { return $this->tmpCat; }
+		if ($this->isMovie())   { return $this->tmpCat; }
+		if ($this->isConsole()) { return $this->tmpCat; }
+		if ($this->isBook())    { return $this->tmpCat; }
+
 		return $this->tmpCat;
 	}
 
-	//	Groups.
+	/**
+	 * Determine category by group name.
+	 *
+	 * @return bool
+	 */
 	public function byGroup()
 	{
-		$group = $this->db->queryOneRow('SELECT LOWER(name) AS name FROM groups WHERE id = ' . $this->groupID);
+		$group = $this->db->queryOneRow(sprintf('SELECT LOWER(name) AS name FROM groups WHERE id = %d', $this->groupID));
 		if ($group !== false) {
 			$group = $group['name'];
 
@@ -297,7 +284,7 @@ class Categorize extends Category
 			if ($group === 'alt.binaries.moovee') {
 				//check if it's TV first as some tv posted in moovee
 				if ($this->isTV()) {
-					return $this->tmpCat;
+					return true;
 				}
 				// Check the movie isn't an HD release before blindly assigning SD
 				if ($this->isMovieHD()) {
@@ -390,11 +377,11 @@ class Categorize extends Category
 
 			if ($group === 'alt.binaries.warez') {
 				if ($this->isTV()) {
-					return $this->tmpCat;
+					return true;
 				}
 
 				if ($this->isPC()) {
-					return $this->tmpCat;
+					return true;
 				}
 				$this->tmpCat = Category::CAT_PC_0DAY;
 				return true;
@@ -445,7 +432,6 @@ class Categorize extends Category
 			if ($this->isDocumentaryTV()) {
 				return true;
 			}
-
 
 			if ($this->catWebDL && $this->isWEBDL()) {
 				return true;
