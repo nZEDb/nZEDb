@@ -52,16 +52,14 @@ if ($bFound === true) {
 	$groupid = $groups->getIDByName($pieces[2]);
 	$determinedcat = $category->determineCategory($title, $groupid);
 	if ($groupid !== 0) {
-		$md5 = md5($title);
-		$dupe = $db->queryOneRow(sprintf('SELECT requestid FROM predb INNER JOIN predbhash ON predbhash.pre_id = predb.id WHERE MATCH (hashes) AGAINST (%s)', $db->escapeString($md5)));
+		$dupe = $db->queryOneRow(sprintf('SELECT requestid FROM predb WHERE title = %s', $db->escapeString($title)));
 		if ($dupe === false || ($dupe !== false && $dupe['requestid'] != $requestID)) {
 			$preid = $db->queryInsert(
 				sprintf("
-				INSERT INTO predb (title, source, md5, requestid, groupid)
-				VALUES (%s, %s, %s, %s, %d)",
+				INSERT INTO predb (title, source, requestid, groupid)
+				VALUES (%s, %s, %d, %d)",
 					$db->escapeString($title),
 					$db->escapeString('requestWEB'),
-					$db->escapeString($md5),
 					$requestID, $groupid
 				)
 			);

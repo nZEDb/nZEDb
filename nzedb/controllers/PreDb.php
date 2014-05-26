@@ -5,7 +5,7 @@ use nzedb\db\DB;
 use nzedb\utility;
 
 /**
- * Class for inserting names/categories/md5 etc from PreDB sources into the DB,
+ * Class for inserting names/categories etc from PreDB sources into the DB,
  * also for matching names on files / subjects.
  *
  * Class PreDb
@@ -287,16 +287,14 @@ Class PreDb
 		if ($duplicateCheck === false) {
 			$this->db->queryExec(
 				sprintf('
-					INSERT INTO predb (title, nfo, size, category, predate, source, md5, sha1, requestid, groupid, files, filename, nuked, nukereason)
-					VALUES (%s, %s, %s, %s, %s, %s, md5(%s), sha1(%s), %d, %d, %s, %s, %d, %s)',
+					INSERT INTO predb (title, nfo, size, category, predate, source, requestid, groupid, files, filename, nuked, nukereason)
+					VALUES (%s, %s, %s, %s, %s, %s, %d, %d, %s, %s, %d, %s)',
 					$this->db->escapeString($matches['title']),
 					((isset($matches['nfo']) && !empty($matches['nfo'])) ? $this->db->escapeString($matches['nfo']) : 'NULL'),
 					((isset($matches['size']) && !empty($matches['size'])) ? $this->db->escapeString($matches['size']) : 'NULL'),
 					((isset($matches['category']) && !empty($matches['category'])) ? $this->db->escapeString($matches['category']) : 'NULL'),
 					$this->db->from_unixtime($matches['date']),
 					$this->db->escapeString($matches['source']),
-					$this->db->escapeString($matches['title']),
-					$this->db->escapeString($matches['title']),
 					((isset($matches['requestid']) && is_numeric($matches['requestid']) ? $matches['requestid'] : 0)),
 					((isset($matches['groupid']) && is_numeric($matches['groupid'])) ? $matches['groupid'] : 0),
 					((isset($matches['files']) && !empty($matches['files'])) ? $this->db->escapeString($matches['files']) : 'NULL'),
@@ -791,6 +789,9 @@ Class PreDb
 	// Update a single release as it's created.
 	public function matchPre($cleanerName)
 	{
+		if ($cleanerName == '') {
+			return false;
+		}
 		$db = new DB();
 		$x = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE title = %s', $db->escapeString($cleanerName)));
 		if (isset($x['id'])) {
