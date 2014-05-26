@@ -7,6 +7,8 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-05-26 bart39
+	* Chg: update schema to match last patch
+	* Chg: Disable update_predb_hashes and update_predb_md5 scripts as they are now defunct.
 	* Chg: Refactor PreDB final stage - remove md5/sha1 from predb table.
 	* Fix: fix issue with trigger causing duplicates
 2014-05-26 NZBmets
