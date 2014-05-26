@@ -13,5 +13,7 @@ php-errors.log
 /.idea/
 /nbproject/
 /nbproject/private/
+/resources/covers/*
+/resources/nzb/*
 /resources/tmp/*
-/smarty/lib/templates_c/*
+/templates_c/*

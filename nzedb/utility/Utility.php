@@ -90,7 +90,7 @@ class Utility
 					  substr($path, 0, 1) == '\\'):
 					define('nZEDb_COVERS', self::trailingSlash($path));
 					break;
-				case (substr($path, 0, 1) != '/' && substr($path, 1, 1) != ':' &&
+				case (strlen($path) > 0 && substr($path, 0, 1) != '/' && substr($path, 1, 1) != ':' &&
 					  substr($path, 0, 1) != '\\'):
 					define('nZEDb_COVERS', realpath(nZEDb_ROOT . self::trailingSlash($path)));
 					break;
