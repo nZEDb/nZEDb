@@ -780,8 +780,9 @@ class Net_NNTP_Protocol_Client extends PEAR
 		switch ($response) {
 			case 205: // RFC977: 'closing connection - goodbye!'
 				// If socket is still open, close it.
-				if ($this->_isConnected()) {
-					fclose($this->_socket);
+				$disconnected = true;
+				if ($this->_isConnected(false)) {
+					$disconnected = stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
 				}
 
 				if ($this->_logger) {
@@ -789,7 +790,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 				}
 				$this->_currentStatusResponse = null;
 				$this->_socket = null;
-				return true;
+				return $disconnected;
 				break;
 
 			default:
@@ -2462,11 +2463,13 @@ class Net_NNTP_Protocol_Client extends PEAR
 	/**
 	 * Test whether we are connected or not.
 	 *
+	 * @param bool $feof Check for the end of file pointer.
+	 *
 	 * @return bool true or false
 	 * @access protected
 	 */
-	function _isConnected() {
-		return (is_resource($this->_socket) && (!feof($this->_socket)));
+	function _isConnected($feof = true) {
+		return (is_resource($this->_socket) && ($feof ? !feof($this->_socket) : true));
 	}
 
 	// }}}

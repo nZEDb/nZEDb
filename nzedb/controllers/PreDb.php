@@ -789,13 +789,22 @@ Class PreDb
 	}
 
 	// Update a single release as it's created.
-	public function matchPre($cleanerName, $releaseID)
+	public function matchPre($cleanerName)
 	{
 		$db = new DB();
 		$x = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE title = %s', $db->escapeString($cleanerName)));
 		if (isset($x['id'])) {
-			$db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $x['id'], $releaseID));
-			return true;
+			return array(
+				"preid" => $x['id']
+			);
+		}
+		//check if clean name matches a predb filename
+		$y = $db->queryOneRow(sprintf('SELECT id, title FROM predb WHERE filename = %s', $db->escapeString($cleanerName)));
+		if (isset($y['id'])) {
+			return array(
+				"title" => $y['title'],
+				"preid" => $y['id']
+			);
 		}
 		return false;
 	}
@@ -888,7 +897,7 @@ Class PreDb
 		return $nfos;
 	}
 
-	// Matches the MD5 within the predb table to release files and subjects (names) which are hashed.
+	// Matches the hashes within the predb table to release files and subjects (names) which are hashed.
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
 		$db = new DB();
@@ -915,7 +924,7 @@ Class PreDb
 			if ($time == 1) {
 				$te = ' in the past 3 hours';
 			}
-			echo $this->c->header('Fixing search names' . $te . " using the predb md5.");
+			echo $this->c->header('Fixing search names' . $te . " using the predb hash.");
 		}
 		if ($db->dbSystem() === 'mysql') {
 			$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";

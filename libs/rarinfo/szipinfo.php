@@ -1,7 +1,7 @@
 <?php
 
-require_once dirname(__FILE__).'/archivereader.php';
-require_once dirname(__FILE__).'/pipereader.php';
+require_once dirname(__FILE__) . '/archivereader.php';
+require_once dirname(__FILE__) . '/pipereader.php';
 
 /**
  * SzipInfo class.

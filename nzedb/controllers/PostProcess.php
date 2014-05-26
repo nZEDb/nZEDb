@@ -2056,7 +2056,7 @@ class PostProcess
 			$retVal = true;
 		}
 
-		$category = new Category();
+		$category = new Categorize();
 		$musicParent = (string)Category::CAT_PARENT_MUSIC;
 		// Make sure the category is music or other->misc.
 		$rQuery = $this->db->queryOneRow(

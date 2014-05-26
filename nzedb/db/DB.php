@@ -820,6 +820,41 @@ class DB extends \PDO
 	}
 
 	/**
+	 * Try to create new tables for the groupID, if we fail, log the error and exit.
+	 * Returns table names, with group ID if tpg is on.
+	 *
+	 * @param int $tpgSetting 0, tpg is off in site setting, 1 tpg is on in site setting.
+	 * @param int $groupID    ID of the group.
+	 *
+	 * @return array The table names.
+	 */
+	public function tryTablePerGroup($tpgSetting, $groupID)
+	{
+		$group['cname']  = 'collections';
+		$group['bname']  = 'binaries';
+		$group['pname']  = 'parts';
+		$group['prname'] = 'partrepair';
+
+		if ($tpgSetting == 1) {
+			if ($this->newtables($groupID) === false) {
+				$this->echoError(
+					'There is a problem creating new parts/files tables for this group ID: ' . $groupID,
+					'tryTablePerGroup',
+					1,
+					true
+				);
+			}
+
+			$groupEnding = '_' . $groupID;
+			$group['cname']  .= $groupEnding;
+			$group['bname']  .= $groupEnding;
+			$group['pname']  .= $groupEnding;
+			$group['prname'] .= $groupEnding;
+		}
+		return $group;
+	}
+
+	/**
 	 * Turns off autocommit until commit() is ran. http://www.php.net/manual/en/pdo.begintransaction.php
 	 *
 	 * @return bool

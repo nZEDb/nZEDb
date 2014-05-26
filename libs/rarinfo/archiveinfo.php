@@ -1,12 +1,12 @@
 <?php
 
-require_once dirname(__FILE__).'/archivereader.php';
-require_once dirname(__FILE__).'/rarinfo.php';
-require_once dirname(__FILE__).'/zipinfo.php';
-require_once dirname(__FILE__).'/srrinfo.php';
-require_once dirname(__FILE__).'/par2info.php';
-require_once dirname(__FILE__).'/sfvinfo.php';
-require_once dirname(__FILE__).'/szipinfo.php';
+require_once dirname(__FILE__) . '/archivereader.php';
+require_once dirname(__FILE__) . '/rarinfo.php';
+require_once dirname(__FILE__) . '/zipinfo.php';
+require_once dirname(__FILE__) . '/srrinfo.php';
+require_once dirname(__FILE__) . '/par2info.php';
+require_once dirname(__FILE__) . '/sfvinfo.php';
+require_once dirname(__FILE__) . '/szipinfo.php';
 
 /**
  * ArchiveInfo class.
@@ -74,7 +74,6 @@ require_once dirname(__FILE__).'/szipinfo.php';
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
  * @version    2.3
- * @link       https://github.com/zeebinz/rarinfo/
  */
 class ArchiveInfo extends ArchiveReader
 {

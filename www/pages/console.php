@@ -73,7 +73,6 @@ $page->smarty->assign('pager', $pager);
 if ($category == -1) {
 	$page->smarty->assign("catname", "All");
 } else {
-	$cat = new Category();
 	$cdata = $cat->getById($category);
 	if ($cdata) {
 		$page->smarty->assign('catname', $cdata["title"]);

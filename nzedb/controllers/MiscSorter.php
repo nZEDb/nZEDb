@@ -25,7 +25,7 @@ class MiscSorter
 		$this->DEBUGGING = nZEDb_DEBUG;
 
 		$this->db = new DB();
-		$this->category = new Category($this->echooutput);
+		$this->category = new Categorize($this->echooutput);
 		$this->movie = new Movie($this->echooutput);
 		$this->nfolib = new Nfo($this->echooutput);
 		$this->nc = new ReleaseCleaning();
