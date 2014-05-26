@@ -55,7 +55,6 @@ if ($total > 0) {
 		) {
 			$requestID = (int)$match[1];
 		} else {
-			echo "requestid = " . $requestID . " name =" . $row['name'] . PHP_EOL;
 			$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $row['id']);
 			$counter++;
 			continue;
@@ -77,9 +76,21 @@ if ($total > 0) {
 			$title = $newTitle['title'];
 			$preid = $newTitle['id'];
 			$determinedcat = $category->determineCategory($title, $row['gid']);
-			$run = $db->queryDirect(sprintf('UPDATE releases set rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, '
-					. 'preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s, categoryid = %d where id = %d', $preid, $db->escapeString($title), $determinedcat, $row['id']));
-			if ($row['name'] !== $newTitle) {
+			if ($determinedcat == $row['categoryid']) {
+				$run = $db->queryDirect(
+					sprintf(
+						'UPDATE releases set preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s, where id = %d', $preid, $db->escapeString($title), $row['id']
+					)
+				);
+			} else {
+				$run = $db->queryDirect(
+					sprintf(
+						'UPDATE releases set rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, '
+						. 'preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s, categoryid = %d where id = %d', $preid, $db->escapeString($title), $determinedcat, $row['id']
+					)
+				);
+			}
+				if ($row['name'] !== $newTitle) {
 				$counted++;
 				if (isset($argv[2]) && $argv[2] === 'show') {
 					$newcatname = $category->getNameByID($determinedcat);

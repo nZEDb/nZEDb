@@ -186,6 +186,8 @@ class CollectionsCleaning
 				return $this->sounds_mp3_complete_cd();
 			case 'alt.binaries.sounds.mp3.dance':
 				return $this->sounds_mp3_dance();
+			case 'alt.binaries.sounds.mp3.electronic':
+				return $this->sounds_mp3_electronic();
 			case 'alt.binaries.mp3.audiobooks':
 				return $this->sounds_audiobooks();
 			case 'alt.binaries.sound.audiobooks':
@@ -606,6 +608,10 @@ class CollectionsCleaning
 		//(110320152518519) [22/78] - "110320152518519.part21.rar" yEnc
 		if (preg_match('/^(\((\d+)\) \[)\d+\/\d+\] - "\d+\..+?" yEnc$/', $this->subject, $match)) {
 			return $match[1];
+		}
+		//A.Fantastic.Fear.of.Everything.2012.AC3.BDRiP.XviD-IJf.nfo [01/63] - "A.Fantastic.Fear.of.Everything.2012.AC3.BDRiP.XviD-IJf.nfo" yEnc
+		if (preg_match('/^([\w. &()\[\]\'-]{8,}?\b.?)\.[A-Za-z0-9]{2,4}[- ]{0,3}\[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
 		}
 		//1VSXrAZPD - [123/177] - "1VSXrAZPD.part122.rar" yEnc
 		if (preg_match('/^(([a-zA-Z0-9]+) - \[)\d+\/\d+\] - "[a-zA-Z0-9]+\..+?" yEnc$/', $this->subject, $match)) {
@@ -1597,9 +1603,11 @@ class CollectionsCleaning
 		} //GOGDump Wing Commander - Privateer (1993) [GOG] [03/14] - "Wing Commander - Privateer (1993) [GOG].part2.rar" yEnc
 		if (preg_match('/^GOGDump (.+) \[\d+\/(\d+\]) - ".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1] . $match[2];
-		}
-		//Uploader.Presents-Need.For.Speed.Rivals.XBOX360-PROTOCOL[10/94]"nfs.r-ptc.r07" yEnc
+		} //Uploader.Presents-Need.For.Speed.Rivals.XBOX360-PROTOCOL[10/94]"nfs.r-ptc.r07" yEnc
 		if (preg_match('/^(Uploader.Presents)[- ](.+?)[\(\[]\d+\/\d+\]".+?" yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} // 	(1/8) - Description - "90b66b2e31053401d808cf413b28f2f0.par2" - 698,44 MB - yEnc
+		if (preg_match('/^\(\d+\/(\d+\))[-_ ]{0,3}Description[-_ ]{0,3}"\w+' . $this->e2, $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
 		return $this->generic();
@@ -2527,6 +2535,29 @@ class CollectionsCleaning
 	{
 		//[2707]Solarstone-Solarstone_Collected_Vol_1-ARDI3177-WEB-2012-TraX "02-solarstone_feat_kym_marsh-day_by_day_(red_jerry_smackthe_bigot_up_remix).mp3" - yEnc
 		if (preg_match('/^\[\d+\](.+?)[-_ ]{0,3}("|#34;)(.+?)(\.part\d*|\.rar)?(\.vol.+ \(\d+\/\d+\) "|\.[A-Za-z0-9]{2,4}("|#34;))[-_ ]{0,3}yEnc$/', $this->subject, $match)) {
+			return $match[1];
+		}
+		return $this->generic();
+	}
+
+	// a.b.sounds.mp3.electronic
+	public function sounds_mp3_electronic()
+	{
+		//(03/10) "Washing Machines - Planet-E CH-Basel Ultimate Hardcore - 4.9.1993.vol00+01.PAR2" - 232.39 MB - yEnc
+		if (preg_match('/^\(\d+\/(\d+\))[ -]{0,3}"([\w. &()\[\]\'-]{8,}?\b.?)' . $this->e2, $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //(2/7) "Cosmic Baby live at Energy 1995.vol00+01.PAR2" - 0 B - yEnc
+		if (preg_match('/^\(\d+\/(\d+\))[ -]{0,3}"([\w. &()\[\]\'-]{8,}?\b.?)' . $this->e0 . '[- ]{0,3}\d+ [bB][- ]{0,
+		3}yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //[0sk]-[2002-12-06]-[idm]-[vinyl]-[4/5]-[Maps_And_Diagrams_-_Ti_Sta_Bene_Marone-(cact_001)-Vinyl-2002]--cact 001.sfv  yEnc
+		if (preg_match('/^\[0sk\]-\[\d+-\d+-\d+\]-\[.+\]-\[.+\]-\[\d+\/(\d+\])-\[([\w. &()\[\]\'-]{8,})\]--.+? yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //[10_years---happy_bday_absme]-[cd]-[04/15]-[va_-_spacewars_01-(plkcd003)-cd-1996-nwd]-01-Nuw Idol - Union Of Ilk -nwd-.mp3  yEnc
+		if (preg_match('/^\[.+\]-\[.+\]-\[\d+\/(\d+\])-\[([\w. &()\[\]\'-]{8,})\]-.+? yEnc$/', $this->subject, $match)) {
+			return $match[1] . $match[2];
+		} //Alec Empire - Low On Ice  06 - Untitled.mp3  yEnc
+		if (preg_match('/^([\w. &()\[\]\'-]{8,}?)[ -]{0,3}\d+[ -]{0,3}[\w., &()\[\]\'-]{8,}?\b.?([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev|\.vol.+?|\.[A-Za-z0-9]{2,4})[ -]{0,3}yEnc$/', $this->subject, $match)) {
 			return $match[1];
 		}
 		return $this->generic();
