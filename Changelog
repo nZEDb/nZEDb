@@ -6,9 +6,17 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-26 NZBmets
+	* Upd: TMUX Powerline uspsetting segment to handle IPv6 and proper IPv4 parsing
 2014-05-25 ruhllatio
 	* Fix: Remove no longer existing foreign check from Movie PP
 2014-05-25 bart39
+	* Chg: Only reset release details if the category changes (requestid.php)
+	* Chg: Categorize against the cleaned searchname instead of usenet subject
+	* Add: Check if clean searchname matches predb filename
+	* Chg: Regex additions / fixes
+	* Chg: Only reset release details if the category changes
+	* Chg: Move declaration of $this->category to constructor
 	* Chg: Check cleaned searchname against predb title or filename as release is created
 	* Fix: Typo (cleansubject is title)
 2014-05-25 kevin
