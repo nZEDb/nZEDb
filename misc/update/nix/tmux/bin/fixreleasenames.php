@@ -40,7 +40,8 @@ if (!isset($argv[1])) {
 		}
 	} else if (isset($pieces[1]) && $pieces[0] == 'md5') {
 		$release = $pieces[1];
-		if ($res = $db->queryOneRow(sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, dehashstatus, rf.name AS filename FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.id = %d', $release))) {
+		if ($res = $db->queryOneRow(sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, dehashstatus, rf.name AS filename '
+							. 'FROM releases r LEFT JOIN releasefiles rf ON r.id = rf.releaseid WHERE r.id = %d', $release))) {
 			if (preg_match('/[a-fA-F0-9]{32,40}/i', $res['name'], $matches)) {
 				$namefixer->matchPredbHash($matches[0], $res, 1, 1, true, 1);
 			} else if (preg_match('/[a-fA-F0-9]{32,40}/i', $res['filename'], $matches)) {
@@ -72,6 +73,7 @@ if (!isset($argv[1])) {
 		if ($site->nntpproxy != "1") {
 			$nntp->doQuit();
 		}
+
 	} else if (isset($pieces[1]) && $pieces[0] == 'miscsorter') {
 		$s = new Sites();
 		$site = $s->get();
@@ -93,5 +95,17 @@ if (!isset($argv[1])) {
 		if ($site->nntpproxy != "1") {
 			$nntp->doQuit();
 		}
+
+	} else if (isset($pieces[1]) && $pieces[0] == 'predbft') {
+		$pre = $pieces[1];
+		if ($res = $db->queryOneRow(sprintf('SELECT id AS preid, title, source, searched FROM predb '
+							. 'WHERE id = %d', $pre))) {
+			$namefixer->done = $namefixer->matched = false;
+			if ($namefixer->matchPredbFT($res, 1, 1, true, 1) !== true) {
+				echo '.';
+			}
+			$namefixer->checked++;
+		}
+
 	}
 }

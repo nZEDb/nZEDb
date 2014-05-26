@@ -347,6 +347,11 @@ class NameFixer
 						$this->c->primary($type . $method) .
 						$this->c->headerOver("ReleaseID: ") .
 						$this->c->primary($release["releaseid"]);
+					if (isset($release['filename']) && $release['filename'] != ""){
+						echo
+							$this->c->headerOver("Filename:  ") .
+							$this->c->primary($release["filename"]);
+					}
 
 					if ($type !== "PAR2, ") {
 						echo "\n";
@@ -363,9 +368,9 @@ class NameFixer
 							$status = "isrenamed = 1, iscategorized = 1, proc_par2 = 1,";
 						} else if ($type == "Filenames, ") {
 							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
-						} else if ($type == "Prehash file match, ") {
+						} else if ($type == "SHA1, " || $type == "MD5, ") {
 							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
-						} else if ($type == "Prehash FT Exact, ") {
+						} else if ($type == "PreDB FT Exact, ") {
 							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
 						}
 						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
@@ -450,16 +455,21 @@ class NameFixer
 		return $matching;
 	}
 
-
-	// Match a MD5 from the predb to a release.
-	public function matchPredbFiles($release, $echo, $namestatus, $echooutput, $show)
+	// Match a release filename to a PreDB filename or title.
+	public function matchPredbFiles($release, $echo, $namestatus, $echooutput, $show, $type)
 	{
 		$db = $this->db;
 		$matching = 0;
 		$this->category = new Category();
 		$this->matched = false;
 
-		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE filename = %s ORDER BY predate DESC LIMIT 1", $db->escapeString($release['filename'])));
+		if ($type = 'full') {
+			$column = sprintf("filename = %s OR title = %s", $db->escapeString($release['filename']), $db->escapeString($release['filename']));
+		} else {
+			$column = sprintf("filename = %s", $db->escapeString($release['filename']));
+		}
+
+		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE %s", $column));
 
 		if ($res !== false) {
 			$total = $res->rowCount();
@@ -469,7 +479,9 @@ class NameFixer
 
 		if ($total > 0) {
 			foreach ($res as $pre) {
-				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
+				if ($echo == 1) {
+					$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
+				}
 				if ($pre['title'] !== $release['searchname']) {
 					$determinedcat = $this->category->determineCategory($pre['title'], $release['groupid']);
 
@@ -489,7 +501,7 @@ class NameFixer
 					}
 
 					if ($echooutput && $show === 1) {
-						$this->updateRelease($release, $pre['title'], $method = "filename match source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show);
+						$this->updateRelease($release, $pre['title'], $method = "file matched source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show);
 					}
 					$matching++;
 				}
