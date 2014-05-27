@@ -11,6 +11,7 @@ New updates are grouped by person, at the top of the file.
 2014-05-27 ruhllatio
 	* Add: Categorization for GameCube titles that aren't WiiWare (Console->Other instead of Misc->Other)
 	* Fix: Add Gamecube Amazon lookup platform fix
+	* Chg: NGC platform prep for lookup
 2014-05-26 bart39
 	* Chg: update schema to match last patch
 	* Chg: Disable update_predb_hashes and update_predb_md5 scripts as they are now defunct.
