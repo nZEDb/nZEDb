@@ -244,7 +244,7 @@ CREATE TABLE predb (
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE INDEX ix_predb_title ON predb (title);
+CREATE UNIQUE INDEX ix_predb_title ON predb (title);
 CREATE INDEX ix_predb_nfo ON predb (nfo);
 CREATE INDEX ix_predb_predate ON predb (predate);
 CREATE INDEX ix_predb_source ON predb (source);
