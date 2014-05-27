@@ -909,6 +909,9 @@ class Categorize extends Category
 		if ($this->isGameWii()) {
 			return true;
 		}
+		if ($this->isGameNGC()) {
+			return true;
+		}
 		if ($this->isGameXBOX360DLC()) {
 			return true;
 		}
@@ -930,6 +933,21 @@ class Categorize extends Category
 			}
 			if (preg_match('/(EUR|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA)/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_NDS;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function isGameNGC()
+	{
+		if (preg_match('/_N?G(AME)?C(UBE)?-/i', $this->releaseName)) {
+			if (preg_match('/_(EUR?|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA?)_/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_OTHER;
+				return true;
+			}
+			if (preg_match('/-(((STAR|DEATH|STINKY|MOON|HOLY|G)?CUBE(SOFT)?)|(DARKFORCE|DNL|GP|ICP|iNSOMNIA|JAY|LaKiTu|METHS|NOMIS|QUBiSM|PANDORA|REACT0R|SUNSHiNE|SAVEPOiNT|SYNDiCATE|WAR3X|WRG))/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_OTHER;
 				return true;
 			}
 		}
