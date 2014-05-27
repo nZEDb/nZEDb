@@ -336,6 +336,9 @@ class Console
 			$gameInfo['platform'] = str_replace('Wii', 'Nintendo Wii', $gameInfo['platform']); // baseline single quote
 			$gameInfo['platform'] = str_replace('WII', 'Nintendo Wii', $gameInfo['platform']); // baseline single quote
 		}
+		if (preg_match('/^NGC$/i', $gameInfo['platform'])) {
+			$gameInfo['platform'] = str_replace('NGC', 'GameCube', $gameInfo['platform']); // baseline single quote
+		}
 		if (preg_match('/^N64$/i', $gameInfo['platform'])) {
 			$gameInfo['platform'] = str_replace('N64', 'Nintendo 64', $gameInfo['platform']);
 		} // baseline single quote
@@ -376,9 +379,9 @@ class Console
 			}
 		}
 
-		/* Show the percentages. **
-		  echo("Matched: Title Percentage: $titlepercent%");
-		  echo("Matched: Platform Percentage: $platformpercent%");
+		/**
+		echo("Matched: Title Percentage: $titlepercent% between " . strtolower($gameInfo['title']) . " and " . strtolower($con['title']) . ".\n");
+		echo("Matched: Platform Percentage: $platformpercent% \n");
 		**/
 
 		// If the Title is less than 80% Platform must be 100% unless it is XBLA.
@@ -682,6 +685,9 @@ class Console
 				break;
 			case 'NDS':
 				$nodeId = '11075831';
+				break;
+			case 'NGC':
+				$nodeId = '541022';
 				break;
 			case 'N64':
 				$nodeId = '229763';
