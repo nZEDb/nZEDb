@@ -1,0 +1,2 @@
+ALTER TABLE predb DROP md5;
+ALTER TABLE predb DROP sha1;

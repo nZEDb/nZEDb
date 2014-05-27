@@ -1868,7 +1868,7 @@ class Releases
 						$isReqID = $cleanerName['requestid'];
 					}
 				}
-				if ($preID === NULL) {
+				if ($preID === NULL && $cleanName != '') {
 					// try to match the cleaned searchname to predb title or filename here
 					$preMatch = $predb->matchPre($cleanName);
 					if(is_array($preMatch)) {

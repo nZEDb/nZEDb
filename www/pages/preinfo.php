@@ -194,11 +194,11 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['md5']) && strlen($_GET['title']) === 32) {
 				$db = new nzedb\db\DB;
 				$preData = $db->query(
-					sprintf('SELECT * FROM predb p WHERE p.md5 = %s %s %s %s LIMIT %d OFFSET %d',
+					sprintf('SELECT * FROM predb p INNER JOIN predbhash ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
+						$db->escapeString($_GET['md5']),
 						$newer,
 						$older,
 						$nuked,
-						$db->escapeString($_GET['md5']),
 						$limit,
 						$offset
 					)
@@ -211,11 +211,11 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['sha1']) && strlen($_GET['sha1']) === 40) {
 				$db = new nzedb\db\DB;
 				$preData = $db->query(
-					sprintf('SELECT * FROM predb p WHERE p.sha1 = %s %s %s %s LIMIT %d OFFSET %d',
+					sprintf('SELECT * FROM predb p INNER JOIN predbhash ph ON ph.pre_id = p.id WHERE MATCH(hashes) AGAINST (%s) %s %s %s LIMIT %d OFFSET %d',
+						$db->escapeString($_GET['sha1']),
 						$newer,
 						$older,
 						$nuked,
-						$db->escapeString($_GET['sha1']),
 						$limit,
 						$offset
 					)
