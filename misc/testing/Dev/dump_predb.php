@@ -51,17 +51,15 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 
 	// Drop indexes on tmp_pre
 	$db->queryExec('ALTER TABLE tmp_pre DROP INDEX `ix_predb_nfo`, DROP INDEX `ix_predb_predate`, DROP INDEX `ix_predb_source`, DROP INDEX `ix_predb_title`, DROP INDEX `ix_predb_requestid`');
-	$db->queryExec('ALTER TABLE tmp_pre ADD COLUMN md5 VARCHAR (32)');
-	$db->queryExec('ALTER TABLE tmp_pre ADD COLUMN sha1 VARCHAR (40)');
 	$db->queryExec('ALTER TABLE tmp_pre ADD COLUMN groupname VARCHAR (255)');
 
 	// Import file into tmp_pre
 	if ($argv[1] == 'remote') {
-		echo  $c->header("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, md5, sha1, requestid, groupname);");
-		$db->queryDirect("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, md5, sha1, requestid, groupname)");
+		echo  $c->header("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);");
+		$db->queryDirect("LOAD DATA LOCAL INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
 	} else {
-		echo  $c->header("LOAD DATA INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, md5, sha1, requestid, groupname);");
-		$db->queryDirect("LOAD DATA INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, md5, sha1, requestid, groupname)");
+		echo  $c->header("LOAD DATA INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname);");
+		$db->queryDirect("LOAD DATA INFILE '" . $path . "' IGNORE into table tmp_pre FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupname)");
 	}
 
     // Remove any titles where length <=8

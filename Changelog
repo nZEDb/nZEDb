@@ -6,8 +6,6 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-05-27 bart39
-	* Fix: temp workaround for importing predb dump from forum until new dump is uploaded.
 2014-05-27 ruhllatio
 	* Add: Categorization for GameCube titles that aren't WiiWare (Console->Other instead of Misc->Other)
 	* Fix: Add Gamecube Amazon lookup platform fix
