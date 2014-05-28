@@ -926,7 +926,7 @@ class Categorize extends Category
 
 	public function isGameNDS()
 	{
-		if (preg_match('/NDS|[\. ]nds|nintendo.+3ds/', $this->releaseName)) {
+		if (preg_match('/NDS|[\. ]nds|nintendo.+3ds|_3DS-/', $this->releaseName)) {
 			if (preg_match('/\((DE|DSi(\sEnhanched)?|EUR?|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA?)\)/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_NDS;
 				return true;
