@@ -6,7 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-05-26 bart39
+2014-05-28 ruhllatio
+	* Fix: 3DS categorization (now in NDS cat) and Amazon post processing
+2014-05-27 bart39
 	* Chg: Add unique index for predb title to avoid dupes.
 2014-05-27 ruhllatio
 	* Add: Categorization for GameCube titles that aren't WiiWare (Console->Other instead of Misc->Other)

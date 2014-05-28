@@ -326,6 +326,9 @@ class Console
 		if (preg_match('/^NDS$/i', $gameInfo['platform'])) {
 			$gameInfo['platform'] = str_replace('NDS', 'Nintendo DS', $gameInfo['platform']);
 		} // baseline single quote
+		if (preg_match('/^3DS$/i', $gameInfo['platform'])) {
+			$gameInfo['platform'] = str_replace('3DS', 'Nintendo 3DS', $gameInfo['platform']);
+		} // baseline single quote
 		if (preg_match('/^PS3$/i', $gameInfo['platform'])) {
 			$gameInfo['platform'] = str_replace('PS3', 'PlayStation 3', $gameInfo['platform']);
 		} // baseline single quote
@@ -621,7 +624,7 @@ class Console
 		$result = array();
 
 		// Get name of the game from name of release.
-		preg_match('/^(.+((abgx360EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|\(\d+\)))?(?P<title>.*?)[\.\-_ ](v\.?\d\.\d|PAL|NTSC|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI\.?5|MULTI\.?4|MULTI\.?3|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|REGIONFREE|READ\.?NFO|NFOFIX|PS2|PS3|PSP|WII|X\-?BOX|XBLA|X360|NDS|N64|NGC)/i', $releasename, $matches);
+		preg_match('/^(.+((abgx360EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|\(\d+\)))?(?P<title>.*?)[\.\-_ ](v\.?\d\.\d|PAL|NTSC|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI\.?5|MULTI\.?4|MULTI\.?3|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|REGIONFREE|READ\.?NFO|NFOFIX|PS2|PS3|PSP|WII|X\-?BOX|XBLA|X360|3DS|NDS|N64|NGC)/i', $releasename, $matches);
 		if (isset($matches['title'])) {
 			$title = $matches['title'];
 			// Replace dots or underscores with spaces.
@@ -641,7 +644,7 @@ class Console
 		}
 
 		//get the platform of the release
-		preg_match('/[\.\-_ ](?P<platform>XBLA|WiiWARE|N64|SNES|NES|PS2|PS ?3|PSP|WII|XBOX360|X\-?BOX|X360|NDS|N?GC)/i', $releasename, $matches);
+		preg_match('/[\.\-_ ](?P<platform>XBLA|WiiWARE|N64|SNES|NES|PS2|PS ?3|PSP|WII|XBOX360|X\-?BOX|X360|3DS|NDS|N?GC)/i', $releasename, $matches);
 		if (isset($matches['platform'])) {
 			$platform = $matches['platform'];
 			if (preg_match('/^N?GC$/i', $platform)) {
@@ -688,6 +691,9 @@ class Console
 				break;
 			case 'NDS':
 				$nodeId = '11075831';
+				break;
+			case '3DS':
+				$nodeId = '2622269011';
 				break;
 			case 'NGC':
 				$nodeId = '541022';
