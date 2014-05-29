@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-29 kevin
+	* Chg: Allow empty nzbget username/password.
 2014-05-28 bart39
 	* Chg: Don't display movie info if imdbid = 0000000.
 2014-05-28 ruhllatio
