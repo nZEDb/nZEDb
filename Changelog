@@ -6,6 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-29 ruhllatio
+	* Chg: Categorization improvements for Console, PC, and Anime TV
+	* Chg: Console post processing improvements
 2014-05-29 kevin
 	* Fix: When removing the nzbget user/pass it wouldn't stick.
 	* Fix: Add missing from unixtime on predb web.
