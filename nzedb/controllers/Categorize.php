@@ -121,7 +121,7 @@ class Categorize extends Category
 				return true;
 			}
 
-			if ($group === 'alt.binaries.cd.lossles') {
+			if ($group === 'alt.binaries.cd.lossless') {
 				if ($this->categorizeForeign && $this->isMusicForeign()) {
 					return true;
 				}
@@ -188,8 +188,19 @@ class Categorize extends Category
 				return true;
 			}
 
+			if ($group === 'alt.binaries.e-book.magazines') {
+				if ($this->categorizeForeign && $this->isBookForeign()) {
+					return true;
+				}
+				$this->tmpCat = Category::CAT_BOOKS_MAGAZINES;
+				return true;
+			}
+
 			if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $group)) {
 				if ($this->is0day()) {
+					return true;
+				}
+				if ($this->isConsole()) {
 					return true;
 				}
 
@@ -213,6 +224,14 @@ class Categorize extends Category
 			}
 
 			if ($group === 'alt.binaries.games.dox') {
+				$this->tmpCat = Category::CAT_PC_GAMES;
+				return true;
+			}
+
+			if (preg_match('/alt.binaries.cd.images?.games/', $group)) {
+				if ($this->isConsole()) {
+					return true;
+				}
 				$this->tmpCat = Category::CAT_PC_GAMES;
 				return true;
 			}
@@ -921,13 +940,16 @@ class Categorize extends Category
 		if ($this->isGameXBOX()) {
 			return true;
 		}
+		if ($this->isGameOther()) {
+			return true;
+		}
 		return false;
 	}
 
 	public function isGameNDS()
 	{
-		if (preg_match('/NDS|[\. ]nds|nintendo.+3ds|_3DS-/', $this->releaseName)) {
-			if (preg_match('/\((DE|DSi(\sEnhanched)?|EUR?|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA?)\)/i', $this->releaseName)) {
+		if (preg_match('/NDS|[\. ]nds|nintendo.+3ds|[_\.]3DS-/', $this->releaseName)) {
+			if (preg_match('/\((DE|DSi(\sEnhanched)?|_NDS-|EUR?|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA?)\)/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_NDS;
 				return true;
 			}
@@ -976,7 +998,7 @@ class Categorize extends Category
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
 			}
-			if (preg_match('/[-._ ](Dynarox|HAZARD|ITALIAN|KLB|KuDoS|LIGHTFORCE|MiRiBS|POPSTATiON|(PLAY)?ASiA|PSN|SPANiSH|SUXXORS|UMD(RIP)?|USA?|YARR)/i', $this->releaseName)) {
+			if (preg_match('/[-._ ](Dynarox|HAZARD|ITALIAN|KLB|KuDoS|LIGHTFORCE|MiRiBS|POPSTATiON|(PLAY)?ASiA|PSN|PSX2PSP|SPANiSH|SUXXORS|UMD(RIP)?|USA?|YARR)/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
 			}
@@ -1045,6 +1067,17 @@ class Categorize extends Category
 		if (preg_match('/XBOX/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_GAME_XBOX;
 			return true;
+		}
+		return false;
+	}
+
+	public function isGameOther()
+	{
+		if (preg_match('/PSX|PS2/', $this->releaseName)) {
+			if (preg_match('/(EUR|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA)/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_OTHER;
+				return true;
+			}
 		}
 		return false;
 	}

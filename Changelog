@@ -10,6 +10,10 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Don't display movie info if imdbid = 0000000.
 2014-05-28 ruhllatio
 	* Fix: 3DS categorization (now in NDS cat) and Amazon post processing
+	* Chg: Better Amazon lookup support for Console releases
+	* Add: Console categorization for PSX/PS2 titles to Other
+	* Chg: Categorization for some PC Games newsgroups
+	* Add: Account for Amazon Console titles that have the platform name at the end of the title
 2014-05-27 bart39
 	* Chg: Add unique index for predb title to avoid dupes.
 2014-05-27 ruhllatio
