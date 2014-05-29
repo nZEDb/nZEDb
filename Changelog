@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-05-29 kevin
 	* Chg: Allow empty nzbget username/password.
+	* Chg: Comment out SRRDB from Web PreDB, will be added to IRC PreDB.
 2014-05-28 bart39
 	* Chg: Don't display movie info if imdbid = 0000000.
 2014-05-28 ruhllatio

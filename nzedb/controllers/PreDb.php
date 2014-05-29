@@ -151,6 +151,7 @@ Class PreDb
 				}
 			}
 
+/*
 			if (self::PRE_SRRDB) {
 				$this->updatedPre = $this->insertedPre = 0;
 				$this->retrieveSrr();
@@ -161,6 +162,7 @@ Class PreDb
 					echo $this->c->primary($this->updatedPre . " \tUpdated from Srrdb.");
 				}
 			}
+*/
 
 			if (self::PRE_PREDBME) {
 				$this->updatedPre = $this->insertedPre = 0;
@@ -868,7 +870,8 @@ Class PreDb
 
 				// To save space in the DB we do this instead of storing the full URL.
 				if ($URL === 'srrdb') {
-					$URL = 'http://www.srrdb.com/download/file/' . $row['title'] . '/' . strtolower(urlencode($row['title'])) . '.nfo';
+					continue;
+					//$URL = 'http://www.srrdb.com/download/file/' . $row['title'] . '/' . strtolower(urlencode($row['title'])) . '.nfo';
 				}
 
 				$buffer = $this->getUrl($URL);
@@ -878,9 +881,9 @@ Class PreDb
 						continue;
 					}
 
-					if ($row['nfo'] === 'srrdb' && preg_match('/You\'ve reached the daily limit/i', $buffer)) {
+					/*if ($row['nfo'] === 'srrdb' && preg_match('/You\'ve reached the daily limit/i', $buffer)) {
 						continue;
-					}
+					}*/
 
 					if ($nfo->addAlternateNfo($buffer, $row, $nntp)) {
 						if ($this->echooutput) {
