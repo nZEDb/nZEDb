@@ -107,7 +107,7 @@ Class PreDb
 				}
 			}
 
-			if (self::PRE_OMGWTF) {
+/*			if (self::PRE_OMGWTF) {
 				$this->updatedPre = $this->insertedPre = 0;
 				$this->retrieveOmgwtfnzbs();
 				$newPre += $this->insertedPre;
@@ -116,9 +116,9 @@ Class PreDb
 					echo $this->c->primary($this->insertedPre . " \tRetrieved from Omgwtfnzbs.");
 					echo $this->c->primary($this->updatedPre . " \tUpdated from Omgwtfnzbs.");
 				}
-			}
+			}*/
 
-			if (self::PRE_ZENET) {
+/*			if (self::PRE_ZENET) {
 				$this->updatedPre = $this->insertedPre = 0;
 				$this->retrieveZenet();
 				$newPre += $this->insertedPre;
@@ -127,9 +127,9 @@ Class PreDb
 					echo $this->c->primary($this->insertedPre . " \tRetrieved from Zenet.");
 					echo $this->c->primary($this->updatedPre . " \tUpdated from Zenet.");
 				}
-			}
+			}*/
 
-			if (self::PRE_PRELIST) {
+/*			if (self::PRE_PRELIST) {
 				$this->updatedPre = $this->insertedPre = 0;
 				$this->retrievePrelist();
 				$newPre += $this->insertedPre;
@@ -138,9 +138,9 @@ Class PreDb
 					echo $this->c->primary($this->insertedPre . " \tRetrieved from Prelist.");
 					echo $this->c->primary($this->updatedPre . " \tUpdated from Prelist.");
 				}
-			}
+			}*/
 
-			if (self::PRE_ORLYDB) {
+/*			if (self::PRE_ORLYDB) {
 				$this->updatedPre = $this->insertedPre = 0;
 				$this->retrieveOrlydb();
 				$newPre += $this->insertedPre;
@@ -149,7 +149,7 @@ Class PreDb
 					echo $this->c->primary($this->insertedPre . " \tRetrieved from Orlydb.");
 					echo $this->c->primary($this->updatedPre . " \tUpdated from Orlydb.");
 				}
-			}
+			}*/
 
 /*
 			if (self::PRE_SRRDB) {
@@ -322,7 +322,7 @@ Class PreDb
 			$query .= (!empty($matches['reason'])    ? 'nukereason = ' . $this->db->escapeString($matches['reason'])   . ', ' : '');
 			$query .= (!empty($matches['requestid']) ? 'requestid = '  . $matches['requestid']                         . ', ' : '');
 			$query .= (!empty($matches['groupid'])   ? 'groupid = '    . $matches['groupid']                           . ', ' : '');
-			$query .= (!empty($matches['predate'])   ? 'predate = '    . $matches['predate']                           . ', ' : '');
+			$query .= (!empty($matches['date'])      ? 'predate = '    . $matches['date']                              . ', ' : '');
 			$query .= (!empty($matches['nuked'])     ? 'nuked = '      . $matches['nuked']                             . ', ' : '');
 			$query .= (!empty($matches['filename'])  ? 'filename = '   . $this->db->escapeString($matches['filename']) . ', ' : '');
 			$query .= (
@@ -407,8 +407,6 @@ Class PreDb
 
 	/**
 	 * Get new pre data from zenet.
-	 *
-	 * @return int
 	 */
 	protected function retrieveZenet()
 	{
