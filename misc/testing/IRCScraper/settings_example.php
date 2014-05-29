@@ -40,7 +40,12 @@ define('SCRAPE_IRC_SOURCE_IGNORE',
 			'#pre@corrupt'                => false,
 			'#scnzb'                      => false,
 			'#tvnzb'                      => false,
-			'u4all.eu'                    => false
+			'omgwtfnzbs'                  => false,
+			'orlydb'                      => false,
+			'prelist'                     => false,
+			'srrdb'                       => false,
+			'u4all.eu'                    => false,
+			'zenet'                       => false
 		)
 	)
 );
