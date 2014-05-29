@@ -41,10 +41,6 @@ switch ($action) {
 			$errorStr = "Your password must be at least 6 characters.";
 		} else if (isset($_POST['nzbgeturl']) && $nzbGet->verifyURL($_POST['nzbgeturl']) === false) {
 			$errorStr = "The NZBGet URL you entered is invalid!";
-		} else if (isset($_POST['nzbgetpassword']) && empty($_POST['nzbgetpassword'])) {
-			$errorStr = 'You must enter a NZBGet password!';
-		} else if (isset($_POST['nzbgetusername']) && empty($_POST['nzbgetusername'])) {
-			$errorStr = 'You must enter a NZBGet username!';
 		} else if (!$users->isValidEmail($_POST['email'])) {
 			$errorStr = "Your email is not a valid format.";
 		} else {
