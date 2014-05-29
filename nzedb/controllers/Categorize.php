@@ -223,13 +223,24 @@ class Categorize extends Category
 				return true;
 			}
 
-			if ($group === 'alt.binaries.games.dox') {
+			if (preg_match('/alt.binaries.games.(dox|adventures)/', $group)) {
+				if ($this->is0day()) {
+					return true;
+				}
 				$this->tmpCat = Category::CAT_PC_GAMES;
 				return true;
 			}
 
 			if (preg_match('/alt.binaries.cd.images?.games/', $group)) {
 				if ($this->isConsole()) {
+					return true;
+				}
+				$this->tmpCat = Category::CAT_PC_GAMES;
+				return true;
+			}
+
+			if ($group === 'alt.binaries.pcgame') {
+				if ($this->is0day()) {
 					return true;
 				}
 				$this->tmpCat = Category::CAT_PC_GAMES;
@@ -433,7 +444,7 @@ class Categorize extends Category
 //			return false;
 //		}
 
-		if (preg_match('/Daily[-_\.]Show|Nightly News|(\d\d-){2}[12]\d{3}|[12]\d{3}(\.\d\d){2}|\d+x\d+|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TV[-._ ](19|20)\d\d|TrollHD/i', $this->releaseName)
+		if (preg_match('/Daily[-_\.]Show|Nightly News|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}.*(\[\d{3,4}(p|i)\]|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?|(\d\d-){2}[12]\d{3}|[12]\d{3}(\.\d\d){2}|\d+x\d+|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P|S)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TV[-._ ](19|20)\d\d|TrollHD/i', $this->releaseName)
 			&& !preg_match('/[-._ ](flac|imageset|mp3|xxx)[-._ ]|[ .]exe$/i', $this->releaseName)) {
 
 			if ($this->isOtherTV()) {
@@ -608,7 +619,7 @@ class Categorize extends Category
 
 	public function isAnimeTV()
 	{
-		if (preg_match('/[-._ ]Anime[-._ ]|^\(\[AST\]\s|\[HorribleSubs\]/i', $this->releaseName)) {
+		if (preg_match('/[-._ ]Anime[-._ ]|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}.*(\[\d{3,4}(p|i)\]|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_TV_ANIME;
 			return true;
 		}
@@ -771,7 +782,7 @@ class Categorize extends Category
 
 	public function isISO()
 	{
-		if (preg_match('/\biso\b/i', $this->releaseName)) {
+		if (preg_match('/[-. ]([a-zA-Z]{3,10})?iso[_.-]|[-. ]([a-zA-Z]{3,10})?iso$/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_ISO;
 			return true;
 		}
@@ -790,7 +801,7 @@ class Categorize extends Category
 			return true;
 		}
 
-		if (preg_match('/\b(Adobe|auto(cad|desk)|-BEAN|Cracked|Cucusoft|CYGNUS|Divx[-._ ]Plus|\.(deb|exe)|DIGERATI|FOSI|Key(filemaker|gen|maker)|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|-(iNViSiBLE|SPYRAL|SUNiSO|UNION|TE)|v\d{1,3}.*?Pro|[-._ ]v\d{1,3}[-._ ]|\(x(64|86)\)|Xilisoft)\b/i', $this->releaseName)) {
+		if (preg_match('/\b(Adobe|auto(cad|desk)|-BEAN|Cracked|Cucusoft|CYGNUS|Divx[-._ ]Plus|\.(deb|exe)|DIGERATI|FOSI|-FONT|Key(filemaker|gen|maker)|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|-(iNViSiBLE|SPYRAL|SUNiSO|UNION|TE)|v\d{1,3}.*?Pro|[-._ ]v\d{1,3}[-._ ]|\(x(64|86)\)|Xilisoft)\b/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
 		}
@@ -799,7 +810,7 @@ class Categorize extends Category
 
 	public function isMac()
 	{
-		if (preg_match('/\bmac(\.|\s)?osx\b/i', $this->releaseName)) {
+		if (preg_match('/(\b|[-._ ])mac(\.|\s)?osx(\b|[-_. ])/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_MAC;
 			return true;
 		}
