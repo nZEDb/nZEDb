@@ -320,7 +320,7 @@ Class PreDb
 			$query .= (!empty($matches['reason'])    ? 'nukereason = ' . $this->db->escapeString($matches['reason'])   . ', ' : '');
 			$query .= (!empty($matches['requestid']) ? 'requestid = '  . $matches['requestid']                         . ', ' : '');
 			$query .= (!empty($matches['groupid'])   ? 'groupid = '    . $matches['groupid']                           . ', ' : '');
-			$query .= (!empty($matches['date'])      ? 'predate = '    . $matches['date']                              . ', ' : '');
+			$query .= (!empty($matches['date'])      ? 'predate = '    . $this->db->from_unixtime($matches['date'])    . ', ' : '');
 			$query .= (!empty($matches['nuked'])     ? 'nuked = '      . $matches['nuked']                             . ', ' : '');
 			$query .= (!empty($matches['filename'])  ? 'filename = '   . $this->db->escapeString($matches['filename']) . ', ' : '');
 			$query .= (
