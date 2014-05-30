@@ -1,0 +1,1 @@
+INSERT INTO category (id, title, parentid, description) VALUES (7020, 'Hashed', 7000, 'Unmatched hashed releases');

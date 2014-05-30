@@ -49,6 +49,7 @@ class Category
 	const CAT_XXX_IMAGESET = 6060;
 	const CAT_XXX_PACKS = 6070;
 	const CAT_MISC = 7010;
+	const CAT_OTHER_HASHED = 7020;
 	const CAT_BOOKS_EBOOK = 8010;
 	const CAT_BOOKS_COMICS = 8020;
 	const CAT_BOOKS_MAGAZINES = 8030;
