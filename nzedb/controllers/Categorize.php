@@ -400,6 +400,15 @@ class Categorize extends Category
 				return false;
 			}
 
+			if ($group === 'alt.binaries.sounds.ogg') {
+				if ($this->categorizeForeign && $this->isMusicForeign()) {
+					return true;
+				}
+				$this->tmpCat = Category::CAT_MUSIC_OTHER;
+				return true;
+			}
+
+
 			if ($group === 'alt.binaries.sony.psp') {
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
@@ -695,7 +704,7 @@ class Categorize extends Category
 
 	public function isMovieSD()
 	{
-		if (preg_match('/(divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid)[-._ ]/i', $this->releaseName)) {
+		if (preg_match('/(divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid(vd)?)[-._ ]/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_MOVIE_SD;
 			return true;
 		}
@@ -782,7 +791,7 @@ class Categorize extends Category
 
 	public function isISO()
 	{
-		if (preg_match('/[-. ]([a-zA-Z]{3,10})?iso[_.-]|[-. ]([a-zA-Z]{3,10})?iso$/i', $this->releaseName)) {
+		if (preg_match('/[-. ]([a-zA-Z]{2,10})?iso[_.-]|[-. ]([a-zA-Z]{2,10})?iso$/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_ISO;
 			return true;
 		}
@@ -819,7 +828,7 @@ class Categorize extends Category
 
 	public function isPCGame()
 	{
-		if (preg_match('/[^a-z0-9](0x0007|ALiAS|BACKLASH|BAT|CPY|FAS(DOX|iSO)|FLT([-._ ]|COGENT)|FLTDOX|Games|GENESIS|HI2U|INLAWS|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PC Game|PROPHET|RAiN|Razor1911|RELOADED|RiTUELYPOGEiOS|Rip-UNLEASHED|SKIDROW|TiNYiSO|CODEX)[^a-z0-9]?/', $this->releaseName)) {
+		if (preg_match('/[^a-z0-9](0x0007|ALiAS|BACKLASH|BAT|CLONECD|CPY|FAS(DOX|iSO)|FLT([-._ ]|COGENT)|-FLT(DOX)?|\(?(Games|GAMES)\)?(\((C|c)\))?|GENESIS|-HATRED|HI2U|INLAWS|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PC Game|PROPHET|RAiN|Razor1911|RELOADED|RiTUELYPOGEiOS|Rip-UNLEASHED|SKIDROW|TiNYiSO|CODEX)[^a-z0-9]?/', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
 		}
@@ -914,7 +923,7 @@ class Categorize extends Category
 	public function isXxxOther()
 	{
 		// If nothing else matches, then try these words.
-		if (preg_match('/[-._ ]Brazzers|Creampie|[-._ ]JAV[-._ ]|North\.Pole|She[-._ ]?Male|Transsexual/i', $this->releaseName)) {
+		if (preg_match('/[-._ ]Brazzers|Creampie|[-._ ]JAV[-._ ]|North\.Pole|^Nubiles|She[-._ ]?Male|Transsexual/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_XXX_OTHER;
 			return true;
 		}
@@ -1292,7 +1301,7 @@ class Categorize extends Category
 
 	public function isEBook()
 	{
-		if (preg_match('/^ePub|[-._ ](Ebook|E?\-book|\) WW|Publishing)|[\.\-_\(\[ ](epub|html|mobi|pdf|rtf|tif|txt)[\.\-_\)\] ]|[\. ](doc|epub|mobi|pdf)(?![\w .])/i', $this->releaseName)) {
+		if (preg_match('/^ePub|[-._ ](Ebook|E?\-book|\) WW|Publishing)|[\.\-_\(\[ ](epub|html|mobi|pdf|rtf|tif|txt)[\.\-_\)\] ]|[\. ](doc|epub|mobi|pdf)(?![\w .])|\.ebook-\w$/i', $this->releaseName)) {
 			if ($this->isBookForeign()) {
 				return true;
 			} else {
@@ -1307,7 +1316,10 @@ class Categorize extends Category
 	public function isMisc()
 	{
 		if (!preg_match('/[^a-z0-9]((480|720|1080)[ip]|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ]))[^a-z0-9]/i', $this->releaseName)) {
-			if (preg_match('/[a-z0-9]{20,}/i', $this->releaseName)) {
+			if (preg_match('/[a-f0-9]{32,64}/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_OTHER_HASHED;
+				return true;
+			} else if (preg_match('/[a-z0-9]{20,}/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_MISC;
 				return true;
 			} else if (preg_match('/^[A-Z0-9]{1,}$/i', $this->releaseName)) {

@@ -52,6 +52,7 @@ id, title, parentid
 6060	Imageset	6000
 6070	Packs	6000
 7010	Misc	7000
+7020	Hashed	7000
 8010	Ebook	8000
 8020	Comics	8000
 8030	Magazines	8000
