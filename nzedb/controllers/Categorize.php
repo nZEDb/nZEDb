@@ -227,6 +227,9 @@ class Categorize extends Category
 				if ($this->is0day()) {
 					return true;
 				}
+				if ($this->isConsole()) {
+					return true;
+				}
 				$this->tmpCat = Category::CAT_PC_GAMES;
 				return true;
 			}
