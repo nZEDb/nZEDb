@@ -368,6 +368,47 @@ class DbUpdate
 		}
 	}
 
+	public function updateSchemaData(array $options = array())
+	{
+		$changed = false;
+		$default = array(
+			'file'  => '10-settings.tsv',
+			'path'  => 'resources' . DS . 'db' . DS . 'schema' . DS . 'data' . DS,
+			'regex' => '#^(?P<section>.*)\t(?P<subsection>.*)\t(?P<name>.*)\t(?P<value>.*)\t(?P<hint>.*)\t(?P<setting>.*)$#',
+			'value' => function (array $matches) {
+					return "{$matches['section']}\t{$matches['subsection']}\t{$matches['name']}\t{$matches['value']}\t{$matches['hint']}\t{$matches['setting']}";
+				}	// WARNING: leaving this empty will blank not remove lines.
+		);
+		$options += $default;
+
+		$filespec = utility\Utility::trailingSlash($options['path']) . $options['path'];
+		if (file_exists($filespec) && ($file = file($filespec, FILE_IGNORE_NEW_LINES))) {
+			$count = count($file);
+			$index = 0;
+			while ($index < $count) {
+				if (preg_match($options['regex'], $file[$index], $matches)) {
+					if (VERBOSE) {
+						echo $this->log->primary("Matched: " . $file[$index]);
+					}
+					$index++;
+
+					if (is_callable($options['value'])) {
+						$file[$index] = $options['value']($matches);
+					} else {
+						$file[$index] = $options['value'];
+					}
+					$changed = true;
+				}
+			}
+		}
+
+		if ($changed) {
+			if (file_put_contents($filespec, implode("\n", $file)) === false) {
+				echo $this->log->error("Error writing file to disc!!");
+			}
+		}
+	}
+
 	protected function _backupDb()
 	{
 		if (\nzedb\utility\Utility::hasCommand("php5")) {
