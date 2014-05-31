@@ -1871,10 +1871,8 @@ class Releases
 				if ($preID === NULL && $cleanName != '') {
 					// try to match the cleaned searchname to predb title or filename here
 					$preMatch = $predb->matchPre($cleanName);
-					if(is_array($preMatch)) {
-						if (isset($preMatch['title'])) {
-							$cleanName = $preMatch['title'];
-						}
+					if(count($preMatch) > 0) {
+						$cleanName = $preMatch['title'];
 						$preID = $preMatch['preid'];
 						$propername = true;
 					}

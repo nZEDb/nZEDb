@@ -247,16 +247,7 @@ class PostProcess
 	 */
 	public function processPredb($nntp)
 	{
-		if (!isset($nntp)) {
-			exit($this->c->error("Not connected to usenet(PostProcess->processPreDB).\n"));
-		}
-
-		$preDB = new PreDb($this->echooutput);
-		$titles = $preDB->updatePre();
-		$preDB->checkPre($nntp);
-		if ($titles > 0) {
-			$this->doEcho($this->c->header('Fetched ' . number_format($titles) . ' new title(s) from PreDB sources.'));
-		}
+		// 2014-05-31 : Web PreDB fetching is removed. Using IRC is now recommended.
 	}
 
 	/**
