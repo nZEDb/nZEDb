@@ -252,7 +252,7 @@ Class PreDb
 	 */
 	public function getCount()
 	{
-		$count = $$this->db->queryOneRow('SELECT COUNT(*) AS cnt FROM predb');
+		$count = $this->db->queryOneRow('SELECT COUNT(*) AS cnt FROM predb');
 		return ($count === false ? 0 : $count['cnt']);
 	}
 
