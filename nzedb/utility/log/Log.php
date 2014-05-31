@@ -23,11 +23,19 @@ namespace nzedb\utility\log;
 class Log
 {
 	/**
-	 * @var Instance variable for CLI output. It MUST support the logger levels.
+	 * @var Array of instance variable for various logger classes (LoggerCLI, LoggerFile, etc.).
+	 * 		Each MUST support the logger levels.
 	 */
-	public $logCli = null;
-	public $logDb = null;
-	public $logFile = null;
+	public $loggers = array();
+
+	private $context = [
+		'logTo' =>
+			[
+				'cli'  => false,
+				'db'   => false,
+				'file' => false
+			]
+	]; // Default to no handlers;
 
 	public function __construct(array $options = array())
 	{
@@ -45,50 +53,37 @@ class Log
 
 		if ($options['log2cli']) {
 			if ($options['logCli'] === null) {
-				$this->logCli = new LoggerCLI();
+				$this->loggers[] = new LoggerCLI();
 			} else {
-				$this->logCli = $options['logCli'];
+				$this->loggers[] = $options['logCli'];
 			}
+			$this->context['logTo']['cli'] = true;
 		}
-
+/* TODO implement a database handler
 		if ($options['log2db']) {
 			if ($options['logDb'] === null) {
-				//$this->logDb = new LoggerDb();
+				$this->loggers[] = new LoggerDb();
 			} else {
-				//$this->logDb = $options['logDb'];
+				$this->loggers[] = $options['logDb'];
 			}
+			$this->context['logTo']['db'] = true;
 		}
-
+*/
 		if ($options['log2file']) {
 			if ($options['logFile'] === null) {
-				//$this->logFile = new LoggerFile($options['filename']);
+				$this->loggers[] = new LoggerFile($options['filename']);
 			} else {
-				//$this->logFile = $options['logFile'];
+				$this->loggers[] = $options['logFile'];
 			}
+			$this->context['logTo']['file'] = true;
 		}
 	}
 
 	public function log($level, $message, array $context = array())
 	{
-		if (!in_array(strtolower($level),
-					  [
-						  'alert', 'critical', 'debug', 'emergency', 'error', 'info', 'notice',
-						  'warning'
-					  ])
-		) {
-			throw new InvalidArgumentException();
-		}
-
-		if ($this->logCli) {
-			$this->logCli->log($level, $message, $context);
-		}
-
-		if ($this->logDb) {
-			$this->logDb->log($level, $message, $context);
-		}
-
-		if ($this->logFile) {
-			$this->logFile->log($level, $message, $context);
+		$context += $this->context;
+		foreach ($this->loggers as $logger) {
+			$logger->log($level, $message, $context);
 		}
 	}
 }

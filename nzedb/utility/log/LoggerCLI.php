@@ -46,9 +46,10 @@ class LoggerCLI extends Logger
 	public function log($level, $message, array $context = array())
 	{
 		$defaults = array(
-			'exception' => null, // Exception class, MUST be tested before use
+			'logTo'		=> ['cli' => true],
 		);
 		$context += $defaults;
+		$context = $this->sanitiseContext($context);
 
 		$intLevel = $this->levelName2Number($level);
 		if ($this->shouldLog($intLevel)) {

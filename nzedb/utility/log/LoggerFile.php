@@ -46,6 +46,10 @@ class LoggerFile extends Logger
 
 	public function log($level, $message, array $context = array())
 	{
+		$defaults = array(
+			'logTo'     => ['file' => true],
+		);
+		$context += $defaults;
 		$context = $this->sanitiseContext($context);
 
 		$intLevel = $this->levelName2Number($level);

@@ -98,6 +98,7 @@ class Logger extends Psr\Log\AbstractLogger
 	{
 		$defaults = array(
 			'exception' => false, // Exception class, MUST be tested before use
+			'logTo'		=> ['cli' => false, 'db' => false, 'file' => false], // Default to no handler
 			'timestamp' => time(), // Unix timestamp.
 		);
 		$context += $defaults;
