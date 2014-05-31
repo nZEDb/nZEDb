@@ -260,7 +260,15 @@ class Categorize extends Category
 				return true;
 			}
 
-			if (preg_match('/alt\.binaries(\.games|\.emulators)?\.nintendo[\.-]?n?ds/', $group)) {
+			if ($group === 'alt.binaries.games.nintendo3ds') {
+				if ($this->isGameNDS()) {
+					return true;
+				}
+				$this->tmpCat = Category::CAT_GAME_3DS;
+				return true;
+			}
+
+			if (preg_match('/alt\.binaries\.(games|emulators)?\.?nintendo[\.-]?ds/', $group)) {
 				if ($this->isGame3DS()) {
 					return true;
 				}
@@ -1013,7 +1021,7 @@ class Categorize extends Category
 
 	public function isGameNDS()
 	{
-		if (preg_match('/^NDS|[^a-zA-Z0-9]NDS|[\._-](nds|NDS)|nintendo.+n?dsi?/', $this->releaseName)) {
+		if (preg_match('/^NDS|[^a-zA-Z0-9]NDS|[\._-](nds|NDS)|nintendo.+[^3]n?dsi?/', $this->releaseName)) {
 			if (preg_match('/\((DE|DSi(\sEnhanched)?|_NDS-|EUR?|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA?)\)/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_NDS;
 				return true;
@@ -1029,7 +1037,7 @@ class Categorize extends Category
 	public function isGame3DS()
 	{
 		if (preg_match('/\b3DS\b[^max]|[\._-]3ds|nintendo.+3ds|[_\.]3DS-/i', $this->releaseName) && !preg_match('/3ds max/i', $this->releaseName)) {
-			if (preg_match('/(EUR|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA)/i', $this->releaseName)) {
+			if (preg_match('/(EUR|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA|ASIA)/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_3DS;
 				return true;
 			}

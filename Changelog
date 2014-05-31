@@ -14,6 +14,8 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Issue #1307 -- Movies with MP3 in searchname get improperly categorized as Music->MP3
 	* Add: New categories for next gen consoles
 	* Add: Regex categorization for next gen consoles
+	* Fix: 3DS categorization
+	* Add: Post Proc support for WiiU\Ps4\PSVITA.
 2014-05-30 ruhllatio
 	* Add: Misc Category for Hashed releases (run Dev/recategorize.php misc)
 	* Add: More categorization improvement for PC Games
