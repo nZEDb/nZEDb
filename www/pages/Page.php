@@ -38,7 +38,7 @@ class Page extends BasePage
 						$consoleCatList['Microsoft'][] = $consoleCat;
 					} else if (preg_match('/^([3N]DS|N?GC)$|^WII/i', $consoleCat['title'])) {
 						$consoleCatList['Nintendo'][] = $consoleCat;
-					} else if (preg_match('/PS[\dXP]/i', $consoleCat['title'])) {
+					} else if (preg_match('/PS[\dXP ]/i', $consoleCat['title'])) {
 						$consoleCatList['Sony'][] = $consoleCat;
 					} else {
 						$consoleCatList['Other'][] = $consoleCat;
