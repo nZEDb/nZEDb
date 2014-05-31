@@ -6,6 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-31 ruhllatio
+	* Chg:  Category Improvements
+	* Fix:  Issue #1307 -- Movies with MP3 in searchname get improperly categorized as Music->MP3
 2014-05-30 ruhllatio
 	* Add: Misc Category for Hashed releases (run Dev/recategorize.php misc)
 	* Add: More categorization improvement for PC Games

@@ -750,7 +750,7 @@ class Categorize extends Category
 	//  PC.
 	public function isPC()
 	{
-		if (!preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[^a-z0-9](FLAC|Imageset|MP3|Nintendo|PDTV|PS[23P]|SWE6RUS|UMD(RIP)?|WII|x264|XBOX|XXX)[^a-z0-9]/i', $this->releaseName)) {
+		if (!preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[^a-z0-9](FLAC|Imageset|MP3|Nintendo|PDTV|PS[23P]|SWE6RUS|UMD(RIP)?|WII|x264|XBOX(360|DVD|ONE)?|XXX)[^a-z0-9]/i', $this->releaseName)) {
 			if ($this->isPhone()) {
 				return true;
 			}
@@ -828,7 +828,7 @@ class Categorize extends Category
 
 	public function isPCGame()
 	{
-		if (preg_match('/[^a-z0-9](0x0007|ALiAS|BACKLASH|BAT|CLONECD|CPY|FAS(DOX|iSO)|FLT([-._ ]|COGENT)|-FLT(DOX)?|\(?(Games|GAMES)\)?(\((C|c)\))?|GENESIS|-HATRED|HI2U|INLAWS|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PC Game|PROPHET|RAiN|Razor1911|RELOADED|RiTUELYPOGEiOS|Rip-UNLEASHED|SKIDROW|TiNYiSO|CODEX)[^a-z0-9]?/', $this->releaseName)) {
+		if (preg_match('/[^a-z0-9](0x0007|ALiAS|BACKLASH|BAT|CLONECD|CPY|FAS(DOX|iSO)|FLT([-._ ]|COGENT)|-FLT(DOX)?|\(?(Games|GAMES)\)? ?(\((C|c)\))|GENESIS|-HATRED|HI2U|INLAWS|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PC Game|PROPHET|RAiN|Razor1911|RELOADED|RiTUELYPOGEiOS|Rip-UNLEASHED|SKIDROW|TiNYiSO|CODEX)[^a-z0-9]?/', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
 		}
@@ -1065,7 +1065,7 @@ class Categorize extends Category
 
 	public function isGameXBOX360()
 	{
-		if (preg_match('/XBOX360/i', $this->releaseName)) {
+		if (preg_match('/XBOX360|XBOXONE/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_GAME_XBOX360;
 			return true;
 		}
@@ -1105,24 +1105,26 @@ class Categorize extends Category
 	//	Music.
 	public function isMusic()
 	{
-		if ($this->isMusicVideo()) {
-			return true;
+		//They Knew What They Wanted (1940).480p.DVDRIP.MP3-NoGroup -- prevents movies matches with MP3 audio codec in the title
+		if(!preg_match('/\d{3,4}(p|i)\.DVD(RIP)?\.MP3[-\.].*/i', $this->releaseName)) {
+			if ($this->isMusicVideo()) {
+				return true;
+			}
+			if ($this->isAudiobook()) {
+				return true;
+			}
+			if ($this->isMusicLossless()) {
+				return true;
+			}
+			if ($this->isMusicMP3()) {
+				return true;
+			}
+			if ($this->isMusicOther()) {
+				return true;
+			}
+			return false;
 		}
-		if ($this->isAudiobook()) {
-			return true;
-		}
-		if ($this->isMusicLossless()) {
-			return true;
-		}
-		if ($this->isMusicMP3()) {
-			return true;
-		}
-		if ($this->isMusicOther()) {
-			return true;
-		}
-		return false;
 	}
-
 	public function isMusicForeign()
 	{
 		if ($this->categorizeForeign) {
