@@ -31,7 +31,7 @@ class Git {
 	 *
 	 * @var string
 	 */
-	protected static $bin = '/usr/bin/git';
+	protected static $bin = '/raid/module/ModBase1/system/bin/git';
 
 	/**
 	 * Sets git executable path
