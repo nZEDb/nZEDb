@@ -104,9 +104,9 @@ class Music
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = " (";
+			$categ = new Category();
 			foreach ($cat as $category) {
 				if ($category != -1) {
-					$categ = new Category();
 					if ($categ->isParent($category)) {
 						$children = $categ->getChildren($category);
 						$chlist = "-99";
@@ -140,7 +140,7 @@ class Music
 			$exccatlist = " AND r.categoryid NOT IN (" . implode(",", $excludedcats) . ")";
 		}
 
-		$sql = sprintf("SELECT COUNT(r.id) AS num FROM releases r INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' WHERE nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
+		$sql = sprintf("SELECT COUNT(DISTINCT r.musicinfoid) AS num FROM releases r INNER JOIN musicinfo m ON m.id = r.musicinfoid AND m.title != '' AND m.cover = 1 WHERE nzbstatus = 1 AND r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist);
 		$res = $db->queryOneRow($sql);
 		return $res["num"];
 	}
@@ -170,9 +170,9 @@ class Music
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = " (";
+			$categ = new Category();
 			foreach ($cat as $category) {
 				if ($category != -1) {
-					$categ = new Category();
 					if ($categ->isParent($category)) {
 						$children = $categ->getChildren($category);
 						$chlist = "-99";

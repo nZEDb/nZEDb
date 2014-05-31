@@ -1,7 +1,7 @@
 <?php
 
-require_once dirname(__FILE__).'/archivereader.php';
-require_once dirname(__FILE__).'/pipereader.php';
+require_once dirname(__FILE__) . '/archivereader.php';
+require_once dirname(__FILE__) . '/pipereader.php';
 
 /**
  * RarInfo class.
@@ -48,9 +48,9 @@ require_once dirname(__FILE__).'/pipereader.php';
  * error messages and allow a forced search for valid File Header blocks.
  *
  * @author     Hecks
- * @copyright  (c) 2010-2013 Hecks
+ * @copyright  (c) 2010-2014 Hecks
  * @license    Modified BSD
- * @version    5.4
+ * @version    5.6
  */
 class RarInfo extends ArchiveReader
 {
@@ -557,6 +557,11 @@ class RarInfo extends ArchiveReader
 
 		// Set the data file source
 		$source = $this->file ? $this->file : $this->createTempDataFile();
+
+		// Ensure that internal file paths are valid for Mac/*nix
+		if (DIRECTORY_SEPARATOR !== '\\') {
+			$filename = str_replace('\\', '/', $filename);
+		}
 
 		// Set the external command
 		$pass = $password ? '-p'.escapeshellarg($password) : '-p-';
@@ -1132,6 +1137,7 @@ class RarInfo extends ArchiveReader
 	 * @param   array  $block      the block to process
 	 * @param   array  $quickOpen  is this a Quick Open cached block?
 	 * @return  void
+	 * @throws  RuntimeException
 	 */
 	protected function processBlockR50(&$block, $quickOpen=false)
 	{
@@ -1167,6 +1173,9 @@ class RarInfo extends ArchiveReader
 		elseif ($block['head_type'] == self::R50_BLOCK_FILE
 		     || $block['head_type'] == self::R50_BLOCK_SERVICE
 		) {
+			if (!isset($block['data_size']))
+				throw new RuntimeException('Required block data size is missing');
+
 			$block['flags']     = $this->getVarInt();
 			$block['pack_size'] = $block['data_size'];
 			$block['unp_size']  = $this->getVarInt();

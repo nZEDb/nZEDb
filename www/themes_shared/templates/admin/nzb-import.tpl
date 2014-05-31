@@ -1,5 +1,4 @@
 <h1>{$page->title}</h1>
-
 <p>
 	Import NZB's from a folder or via the browser into the system. Specify the full file path to a folder containing NZB's.
 	<br />
@@ -12,22 +11,17 @@
 	<li>If you re-import the same NZB it will not be added a second time.</li>
 	<li>If imported sucessfully the NZB will be deleted.</li>
 </ul>
-
 <fieldset>
 	<legend>Import From Directory</legend>
-
 	<form action="{$SCRIPT_NAME}#results" method="POST">
-
 		<table class="input">
-
 			<tr>
-				<td width="100"><label for="folder">Folder:</label></td>
+				<td style="width:100px;"><label for="folder">Folder:</label></td>
 				<td>
 					<input id="folder" class="long" name="folder" type="text" value="" />
 					<div class="hint">Windows file paths should be specified with forward slashes e.g. c:/temp/</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td><label for="usefilename">Use Filename:</label></td>
 				<td>
@@ -35,7 +29,6 @@
 					<div class="hint">Use the NZB's filename as the release name. Else the name inside the NZB will be used.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td><label for="deleteNZB">Delete NZBs:</label></td>
 				<td>
@@ -43,35 +36,26 @@
 					<div class="hint">Delete the NZB when we have successfully imported it?</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td></td>
 				<td>
 					<input type="submit" value="Import" />
 				</td>
 			</tr>
-
 		</table>
-
 	</form>
-
 </fieldset>
-
 <fieldset>
 	<legend>Import From Browser</legend>
-
 	<form action="{$SCRIPT_NAME}#results" method="POST" enctype="multipart/form-data">
-
 		<table class="input">
-
 			<tr>
-				<td width="100"><label for="uploadedfiles[]">File:</label></td>
+				<td style="width:100px;"><label for="uploadedfiles[]">File:</label></td>
 				<td>
 					<input name="uploadedfiles[]" type="file" class="multi accept-nzb"/>
 					<div class="hint">Select one or more .nzb files.</div>
 				</td>
 			</tr>
-
 			<tr>
 				<td></td>
 				<td>
@@ -79,11 +63,8 @@
 					<input type="submit" value="Import" />
 				</td>
 			</tr>
-
 		</table>
-
 </fieldset>
-
 {if $output != ""}
 	<div>
 		<a id="results"></a>

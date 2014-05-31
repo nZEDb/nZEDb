@@ -13,8 +13,12 @@ define('SCRAPE_IRC_REALNAME', "$username");
 define('SCRAPE_IRC_USERNAME', "$username");
 // Set to false if you need no password. Use a string (quoted text) if you need a password.
 define('SCRAPE_IRC_PASSWORD', false);
-// Set to true to ignore a channel.
-define('SCRAPE_IRC_EFNET_CHANNELS_IGNORE',
+// Regex to ignore categories. Leave empty ('') to not exclude any category.
+// Case sensitive example: '/^(XXX|PDA|EBOOK|MP3)$/'
+// Case insensitive (note the i): '/^(X264|TV)$/i'
+define('SCRAPE_IRC_CATEGORY_IGNORE', '');
+// Set to true to ignore a source.
+define('SCRAPE_IRC_SOURCE_IGNORE',
 	serialize(
 		array(
 			'#a.b.cd.image'               => false,
@@ -33,8 +37,15 @@ define('SCRAPE_IRC_EFNET_CHANNELS_IGNORE',
 			'#a.b.games.wii'              => false,
 			'#a.b.warez'                  => false,
 			'#a.b.games.xbox360'          => false,
+			'#pre@corrupt'                => false,
 			'#scnzb'                      => false,
-			'#tvnzb'                      => false
+			'#tvnzb'                      => false,
+			'omgwtfnzbs'                  => false,
+			'orlydb'                      => false,
+			'prelist'                     => false,
+			'srrdb'                       => false,
+			'u4all.eu'                    => false,
+			'zenet'                       => false
 		)
 	)
 );

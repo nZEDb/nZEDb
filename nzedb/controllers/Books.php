@@ -73,9 +73,9 @@ class Books
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = ' (';
+			$categ = new Category();
 			foreach ($cat as $category) {
 				if ($category != -1) {
-					$categ = new Category();
 					if ($categ->isParent($category)) {
 						$children = $categ->getChildren($category);
 						$chlist = '-99';
@@ -111,8 +111,8 @@ class Books
 
 		$res = $db->queryOneRow(
 			sprintf(
-				"SELECT COUNT(r.id) AS num FROM releases r "
-				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' "
+				"SELECT COUNT(DISTINCT r.bookinfoid) AS num FROM releases r "
+				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' and boo.cover = 1 "
 				. "WHERE r.nzbstatus = 1 AND  r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') "
 				. "AND %s %s %s %s", $browseby, $catsrch, $maxage, $exccatlist
 			)
@@ -135,9 +135,9 @@ class Books
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = ' (';
+			$categ = new Category();
 			foreach ($cat as $category) {
 				if ($category != -1) {
-					$categ = new Category();
 					if ($categ->isParent($category)) {
 						$children = $categ->getChildren($category);
 						$chlist = '-99';

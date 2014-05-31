@@ -118,17 +118,12 @@ class Backfill
 		$s = new Sites();
 		$site = $s->get();
 
-		$this->compressedHeaders = ($site->compressedheaders == '1') ? true : false;
+		$this->compressedHeaders = ($site->compressedheaders == 1) ? true : false;
 		$this->hashcheck = (!empty($site->hashcheck)) ? (int)$site->hashcheck : 0;
 		$this->nntpproxy = (isset($site->nntpproxy)) ? (int)$site->nntpproxy : 0;
 		$this->safebdate = (!empty($site->safebackfilldate)) ? $site->safebackfilldate : '2012 - 06 - 24';
 		$this->safepartrepair = (!empty($site->safepartrepair)) ? (int)$site->safepartrepair : 0;
 		$this->tablepergroup = (isset($site->tablepergroup)) ? (int)$site->tablepergroup : 0;
-
-		// Deprecated?
-		$this->primary = 'Green';
-		$this->warning = 'Red';
-		$this->header = 'Yellow';
 	}
 
 	/**
@@ -168,7 +163,12 @@ class Backfill
 		if ($groupCount > 0) {
 			$counter = 1;
 			$allTime = microtime(true);
-			$dMessage = "Backfilling: " . $groupCount . ' group(s) - Using compression? ' . (($this->compressedHeaders) ? 'Yes' : 'No');
+			$dMessage = (
+				'Backfilling: ' .
+				$groupCount .
+				' group(s) - Using compression? ' .
+				(($this->compressedHeaders) ? 'Yes' : 'No')
+			);
 			if ($this->debug) {
 				$this->debugging->start("backfillAllGroups", $dMessage, 5);
 			}
@@ -328,7 +328,7 @@ class Backfill
 
 			if ($this->echo) {
 				$this->c->doEcho(
-					$this->c->set256($this->header) .
+					$this->c->set256('Yellow') .
 					"\nGetting " .
 					(number_format($last - $first + 1)) .
 					" articles from " .
@@ -445,26 +445,9 @@ class Backfill
 	{
 		// Set table names
 		$groupID = $this->groups->getIDByName($groupData['group']);
+		$group = array();
 		if ($groupID !== '') {
-			if ($this->tablepergroup === 1) {
-				if ($this->db->newtables($groupID) === false) {
-					$dMessage = "There is a problem creating new parts/files tables for this group.";
-					if ($this->debug) {
-						$this->debugging->start("postdate", $dMessage, 2);
-					}
-
-					if ($this->echo) {
-						$this->c->doEcho($this->c->error($dMessage), true);
-					}
-				}
-				$groupA['cname'] = 'collections_' . $groupID;
-				$groupA['bname'] = 'binaries_' . $groupID;
-				$groupA['pname'] = 'parts_' . $groupID;
-			} else {
-				$groupA['cname'] = 'collections';
-				$groupA['bname'] = 'binaries';
-				$groupA['pname'] = 'parts';
-			}
+			$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupID);
 		}
 
 		$currentPost = $post;
@@ -490,11 +473,11 @@ class Backfill
 					// Try to get locally.
 					$local = $this->db->queryOneRow(
 						'SELECT c.date AS date FROM ' .
-						$groupA['cname'] .
+						$group['cname'] .
 						' c, ' .
-						$groupA['bname'] .
+						$group['bname'] .
 						' b, ' .
-						$groupA['pname'] .
+						$group['pname'] .
 						' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = ' .
 						$groupID .
 						' AND p.number = ' .
@@ -786,36 +769,23 @@ class Backfill
 		$process = $this->safepartrepair ? 'update' : 'backfill';
 
 		if ($this->echo) {
-			if ($this->nntpproxy == 0) {
-				$this->c->doEcho(
-					$this->c->set256($this->header) .
-					'Processing ' .
-					str_replace('alt.binaries', 'a.b', $groupArr['name']) .
-					(($this->compressedHeaders) ? ' Using Compression' : ' Not Using Compression') .
-					' ==> T-' .
-					$threads .
-					' ==> ' .
-					number_format($first) .
-					' to ' .
-					number_format($last) .
-					$this->c->rsetColor()
-					, true
-				);
-			} else {
-				$this->c->doEcho(
-					$this->c->set256($this->header) .
-					'Processing ' .
-					str_replace('alt.binaries', 'a.b', $groupArr['name']) .
-					' Using NNTPProxy ==> T-' .
-					$threads .
-					' ==> ' .
-					number_format($first) .
-					' to ' .
-					number_format($last) .
-					$this->c->rsetColor()
-					, true
-				);
-			}
+			$this->c->doEcho(
+				$this->c->set256('Yellow') .
+				'Processing ' .
+				str_replace('alt.binaries', 'a.b', $groupArr['name']) .
+				($this->nntpproxy === 0
+					? (($this->compressedHeaders === true) ? ' Using Compression' : ' Not Using Compression')
+					: ' Using NNTPProxy ==> T-'
+				) .
+				' ==> T-' .
+				$threads .
+				' ==> ' .
+				number_format($first) .
+				' to ' .
+				number_format($last) .
+				$this->c->rsetColor()
+				, true
+			);
 		}
 
 		// Select group, here, only once
@@ -865,7 +835,7 @@ class Backfill
 
 		if ($this->echo) {
 			$this->c->doEcho(
-				$this->c->set256($this->primary) .
+				$this->c->set256('Green') .
 				$type .
 				' Safe Threaded for ' .
 				$group .

@@ -61,6 +61,11 @@ class DbUpdate
 	public $db;
 
 	/**
+	 * @var nzedb\utility\Git instance
+	 */
+	public $git;
+
+	/**
 	 * @var object    Instance variable for logging object. Currently only ColorCLI supported,
 	 * but expanding for full logging with agnostic API planned.
 	 */
@@ -87,7 +92,8 @@ class DbUpdate
 	{
 		$defaults = array(
 			'backup'	=> true,
-			'db'		=> new \nzedb\db\DB(),
+			'db'		=> new \nzedb\db\Settings(),
+			'git'		=> new \nzedb\utility\Git(),
 			'logger'	=> new \ColorCLI(),
 		);
 		$options += $defaults;
@@ -95,7 +101,14 @@ class DbUpdate
 
 		$this->backup	= $options['backup'];
 		$this->db		= $options['db'];
+		$this->git		= $options['git'];
 		$this->log		= $options['logger'];
+
+		if (is_a($this->db, 'Settings')) {
+			$this->settings =& $this->db;
+		} else {
+			$this->settings = new Settings();
+		}
 
 		$this->_DbSystem = strtolower($this->db->dbSystem());
 	}
@@ -111,7 +124,7 @@ class DbUpdate
 		$options += $defaults;
 
 		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
-		sort($files, SORT_NATURAL);
+		natsort($files);
 		$sql = 'LOAD DATA INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
 		foreach ($files as $file) {
 			echo "File: $file\n";
@@ -145,6 +158,55 @@ class DbUpdate
 		}
 	}
 
+	/**
+	 * Takes new files in the correct format from the patches directory and turns them into proper patches.
+	 *
+	 * The files should be name as '+x~<table>.sql' where x is a number starting at 1 for your first
+	 * patch. <table> should be the name of the primary table affected. If you have to modify more
+	 * than one table, consider splitting into multiple patches using different patch modifier
+	 * numbers to order them. i.e. +1~settings.sql, +2~predb.sql, etc.
+	 */
+	public function newPatches (array $options = array())
+	{
+		$defaults = array(
+			'data' => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
+			'ext'	=> 'sql',
+			'path' => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
+			'regex'	=> '#^' . utility\Utility::PATH_REGEX . '\+(?P<order>\d+)~(?P<table>\w+)\.sql$#',
+			'safe' => true,
+		);
+		$options += $defaults;
+
+		$this->processPatches([ 'safe' => $options['safe'] ]);	// Make sure we are completely up to date!
+
+		echo $this->log->primaryOver('Looking for new patches...');
+		$files = utility\Utility::getDirFiles($options);
+
+		$count = count($files);
+		echo $this->log->header(" $count found");
+		if ($count > 0) {
+			echo $this->log->header('Processing...');
+			natsort($files);
+			$local = $this->db->isLocalDb() ? '' : 'LOCAL ';
+
+			foreach($files as $file) {
+				if (!preg_match($options['regex'], $file, $matches)) {
+					$this->log->error("$file does not match the pattern {$options['regex']}\nPlease fix this before continuing");
+				} else {
+					echo $this->log->header('Processing patch file: ' . $file);
+					$this->splitSQL($file, ['local' => $local, 'data' => $options['data']]);
+					$current = (integer)$this->settings->getSetting('sqlpatch');
+					$current++;
+					$this->db->queryExec("UPDATE settings SET value = '$current' WHERE setting = 'sqlpatch';");
+					$newName = $matches['drive'] . $matches['path'] .
+							   str_pad($current, 4, '0', STR_PAD_LEFT) . '~' . $matches['table'] . '.sql';
+					rename($matches[0], $newName);
+					$this->git->add($newName);
+				}
+			}
+		}
+	}
+
 	public function processPatches(array $options = [])
 	{
 		$patched = 0;
@@ -152,25 +214,20 @@ class DbUpdate
 			'data'	=> nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
 			'ext'   => 'sql',
 			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . $this->_DbSystem,
-			'regex' => '#^' . utility\Utility::PATH_REGEX . "(?P<date>\d{4}-\d{2}-\d{2})_(?P<patch>\d+)_(?P<table>\w+)\.sql$#",
+			'regex' => '#^' . utility\Utility::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
 			'safe'	=> true,
 		);
 		$options += $defaults;
 
-		if ($options['safe']) {
-			$this->_backupDb();
-		}
-
-		$this->_useSettings();
-		$currentVersion = $this->settings->getSetting('sqlpatch');
+		$currentVersion = $this->settings->getSetting(['setting' => 'sqlpatch']);
 		if (!is_numeric($currentVersion)) {
-			exit();
+			exit("Bad sqlpatch value: '$currentVersion'\n");
 		}
 
 		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
 
 		if (count($files)) {
-			sort($files);
+			natsort($files);
 			$local = $this->db->isLocalDb() ? '' : 'LOCAL ';
 			$data = $options['data'];
 			echo $this->log->primary('Looking for unprocessed patches...');
@@ -180,11 +237,11 @@ class DbUpdate
 				$fp = fopen($file, 'r');
 				$patch = fread($fp, filesize($file));
 
-				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches) && $matches['patch'] > 9) {
-						$patch = $matches['patch'];
+				if (preg_match($options['regex'], str_replace('\\', '/', $file), $matches)) {
+						$patch = (integer)$matches['patch'];
 						$setPatch = true;
 				} else if (preg_match("/UPDATE `?site`? SET `?value`? = '?(?P<patch>\d+)'? WHERE `?setting`? = 'sqlpatch'/i", $patch, $matches)) {
-					$patch = $matches['patch'];
+					$patch = (integer)$matches['patch'];
 				} else {
 					throw new \RuntimeException("No patch information available, stopping!!");
 				}
@@ -192,7 +249,7 @@ class DbUpdate
 				if ($patch > $currentVersion) {
 					echo $this->log->header('Processing patch file: ' . $file);
 					if ($options['safe'] && !$this->backedUp) {
-						$this->backupDb();
+						$this->_backupDb();
 					}
 					$this->splitSQL($file, ['local' => $local, 'data' => $data]);
 					if ($setPatch) {
@@ -321,13 +378,6 @@ class DbUpdate
 
 		system("$PHP " . nZEDb_MISC . 'testing' . DS .'DB' . DS . $this->_DbSystem . 'dump_tables.php db dump');
 		$this->backedup = true;
-	}
-
-	protected function _useSettings(Sites $object = null)
-	{
-		if ($this->settings === null) {
-			$this->settings = (empty($object)) ? new Settings() : $object;
-		}
 	}
 }
 

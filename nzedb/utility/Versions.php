@@ -1,6 +1,9 @@
 <?php
 namespace nzedb\utility;
 
+use nzedb\db\Settings;
+use nzedb\utility\Git;
+
 if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
 }
@@ -16,6 +19,9 @@ if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1
 		$vers->save();
 	} else {
 		echo "No changes detected.\n";
+		echo "Commit: " . $vers->getCommit() . "\n";
+		echo " Patch: " . $vers->getSQLVersion() . "\n";
+		echo "   Tag: " . $vers->getTagVersion() . "\n";
 	}
 }
 
@@ -27,6 +33,11 @@ class Versions
 	const UPDATED_DB_REVISION	= 1;
 	const UPDATED_GIT_COMMIT	= 2;
 	const UPDATED_GIT_TAG		= 4;
+
+	/**
+	 * @var nzedb\utility\Git instance variable.
+	 */
+	public $git;
 
 	/**
 	 * @var object ColorCLI
@@ -73,6 +84,7 @@ class Versions
 		$this->_filespec = $filepath;
 
 		$this->out = new \ColorCLI();
+		$this->git = new Git();
 
 		$temp = libxml_use_internal_errors(true);
 		$this->_xml = simplexml_load_file($filepath);
@@ -80,7 +92,7 @@ class Versions
 
 		if ($this->_xml === false) {
 			if (PHP_SAPI == 'cli') {
-				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
+				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
 			}
 			throw new \Exception("Failed to open versions XML file '$filepath'");
 		}
@@ -89,14 +101,14 @@ class Versions
 			$vers = $this->_xml->xpath('/nzedb/versions');
 
 			if ($vers[0]->count() == 0) {
-				$this->out->error("Your versioning XML file ({nZEDb_VERSIONS}) does not contain versioning info, try updating from git.");
+				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) does not contain version info, try updating from git.");
 				throw new \Exception("Failed to find versions node in XML file '$filepath'");
 			} else {
-				$this->out->primary("Your versioning XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
+				$this->out->primary("Your versions XML file ({nZEDb_VERSIONS}) looks okay, continuing.");
 				$this->_vers = &$this->_xml->versions;
 			}
 		} else {
-			exit("No elements in file!\n");
+			throw new \RuntimeException("No elements in file!\n");
 		}
 	}
 
@@ -125,8 +137,8 @@ class Versions
 	 */
 	public function checkDb($update = true)
 	{
-		$site = new \Sites();
-		$setting = $site->getSetting('sqlpatch');
+		$settings = new Settings();
+		$setting = $settings->getSetting('sqlpatch');
 
 		if ($this->_vers->db < $setting) {
 			if ($update) {
@@ -146,15 +158,15 @@ class Versions
 	 */
 	public function checkGitCommit($update = true)
 	{
-		exec('git log | grep "^commit" | wc -l', $output);
-		if ($this->_vers->git->commit < $output[0] || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
+		$count = $this->git->commits();
+		if ($this->_vers->git->commit < $count || GIT_PRE_COMMIT === true) {	// Allow pre-commit to override the commit number (often branch number is higher than dev's)
 			if ($update) {
 				if (GIT_PRE_COMMIT === true) { // only the pre-commit script is allowed to set the NEXT commit number
-					$output[0] += 1;
+					$count += 1;
 				}
-				if ($output[0] != $this->_vers->git->commit) {
-					echo $this->out->primary("Updating commit number to {$output[0]}");
-					$this->_vers->git->commit = $output[0];
+				if ($count != $this->_vers->git->commit) {
+					echo $this->out->primary("Updating commit number to {$count}");
+					$this->_vers->git->commit = $count;
 					$this->_changes |= self::UPDATED_GIT_COMMIT;
 				}
 			}
@@ -171,18 +183,13 @@ class Versions
 	 */
 	public function checkGitTag($update = true)
 	{
-		exec('git log --tags', $output);
-		$index = 0;
-		$count = count($output);
-		while (!preg_match('#v(\d+\.\d+\.\d+)#i', $output[$index], $match) && $count < $index ) {
-			$index++;
-		}
+		$latest = $this->git->tagLatest();
 
 		// Check if version file's entry is less than the last tag
-		if (!empty($match) && version_compare($this->_vers->git->tag, $match, '<')) {
+		if (version_compare($this->_vers->git->tag, $latest, '<')) {
 			if ($update) {
-				echo $this->out->primary("Updating tag version to $match");
-				$this->_vers->git->tag = $match;
+				echo $this->out->primary("Updating tag version to $latest");
+				$this->_vers->git->tag = $latest;
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
 			return $this->_vers->git->tag;
@@ -203,6 +210,10 @@ class Versions
 		return false;
 	}
  */
+	public function getCommit()
+	{
+		return $this->_vers->git->commit;
+	}
 
 	public function getGitHookPrecommit()
 	{

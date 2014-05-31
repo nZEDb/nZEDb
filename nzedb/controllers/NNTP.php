@@ -192,7 +192,7 @@ class NNTP extends Net_NNTP_Client
 	{
 		if (// Don't reconnect to usenet if:
 			// We are already connected to usenet. AND
-			$this->_isConnected() &&
+			parent::_isConnected() &&
 			// (If compression is wanted and on,                    OR    Compression is not wanted and off.) AND
 			(($compression && $this->compression)                   || (!$compression && !$this->compression)) &&
 			// (Alternate is wanted, AND current server is alt,     OR    Alternate is not wanted AND current is main.)
@@ -354,7 +354,7 @@ class NNTP extends Net_NNTP_Client
 		$this->resetProperties();
 
 		// Check if we are connected to usenet.
-		if ($force === true || parent::_isConnected()) {
+		if ($force === true || parent::_isConnected(false)) {
 			if ($this->debug) {
 				$this->debugging->start("doQuit", "Disconnecting from " . $this->currentServer, Debugging::DEBUG_INFO);
 			}
@@ -441,7 +441,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access public
 	 */
-	public function &getMessages($groupName, $identifiers, $alternate = false)
+	public function getMessages($groupName, $identifiers, $alternate = false)
 	{
 		$connected = $this->checkConnection();
 		if ($connected !== true) {
@@ -460,7 +460,7 @@ class NNTP extends Net_NNTP_Client
 			// Loop over the message-ID's or article numbers.
 			foreach ($identifiers as $wanted) {
 				// Download the body.
-				$message = $this->getMessage($groupName, $wanted, $alternate);
+				$message = $this->getMessage($groupName, $wanted);
 
 				// Append the body to $body.
 				if (!$this->isError($message)) {
@@ -513,7 +513,7 @@ class NNTP extends Net_NNTP_Client
 
 			// If it's a string check if it's a valid message-ID.
 		} else if (is_string($identifiers) || is_numeric($identifiers)) {
-			$body = $this->getMessage($groupName, $identifiers, $alternate);
+			$body = $this->getMessage($groupName, $identifiers);
 			if ($alternate === true && $this->isError($body)) {
 				$nntp->doConnect(true, true);
 				$body = $nntp->getMessage($groupName, $identifiers);
@@ -750,7 +750,6 @@ class NNTP extends Net_NNTP_Client
 			$body = $this->splitLines($body, $compress);
 		}
 
-
 		// From is required by NNTP servers, but parent function mail does not require it, so format it.
 		$from = 'From: ' . $from;
 		// If we had extra stuff to post, format it with from.
@@ -855,35 +854,28 @@ class NNTP extends Net_NNTP_Client
 		$encoded = '';
 		$stringLength = strlen($string);
 		// Encode each character of the string one at a time.
-		for( $i = 0; $i < $stringLength; $i++) {
-			$value = (ord($string{$i}) + 42) % 256;
+		for ($i = 0; $i < $stringLength; $i++) {
+			$value = ((ord($string{$i}) + 42) % 256);
 
 			// Escape NULL, TAB, LF, CR, space, . and = characters.
 			if ($value == 0 || $value == 9 || $value == 10 || $value == 13 || $value == 32 || $value == 46 || $value == 61) {
-				$encoded .= '=' . chr(($value + 64) % 256);
-			}
-			else {
+				$encoded .= ('=' . chr(($value + 64) % 256));
+			} else {
 				$encoded .= chr($value);
 			}
 		}
 
 		$encoded =
-			// Wrap the lines to $lineLength characters
-			trim(
-				chunk_split(
-					// Tack a yEnc header onto the encoded string.
-					'=ybegin line=' .
-					$lineLength .
-					' size=' .
-					$stringLength .
-					' name=' .
-					trim($filename) .
-					"\r\n" .
-					$encoded .
-					"\r\n=yend size=" .
-					$stringLength, $lineLength
-				)
-			);
+			'=ybegin line=' .
+			$lineLength .
+			' size=' .
+			$stringLength .
+			' name=' .
+			trim($filename) .
+			"\r\n" .
+			trim(chunk_split($encoded, $lineLength)) .
+			"\r\n=yend size=" .
+			$stringLength;
 
 		// Add a CRC32 checksum if desired.
 		if ($crc32 === true) {
@@ -1053,23 +1045,31 @@ class NNTP extends Net_NNTP_Client
 			// Did we find a possible ending ? (.\r\n)
 			if ($possibleTerm !== false) {
 
-				// If the socket is really empty, fGets will get stuck here,
-				// so set the socket to non blocking in case.
-				stream_set_blocking($this->_socket, 0);
+				// Loop, sleeping shortly, to allow the server time to upload data, if it has any.
+				$iterator = 0;
+				do {
+					// If the socket is really empty, fGets will get stuck here, so set the socket to non blocking in case.
+					stream_set_blocking($this->_socket, 0);
 
-				// Now try to download from the socket.
-				$buffer = fgets($this->_socket);
+					// Now try to download from the socket.
+					$buffer = fgets($this->_socket);
 
-				// And set back the socket to blocking.
-				stream_set_blocking($this->_socket, 15);
+					// And set back the socket to blocking.
+					stream_set_blocking($this->_socket, 15);
 
-				// If the buffer was really empty, then we know $possibleTerm
-				// was the real ending.
+					// Don't sleep on last iteration.
+					if ($iterator < 2 && empty($buffer)) {
+						usleep(20000);
+					} else {
+						break;
+					}
+				} while($iterator++ < 2);
+
+				// If the buffer was really empty, then we know $possibleTerm was the real ending.
 				if (empty($buffer)) {
 					$completed = true;
 
-					// The buffer was not empty, so we know this was not
-					// the real ending, so reset $possibleTerm.
+					// The buffer was not empty, so we know this was not the real ending, so reset $possibleTerm.
 				} else {
 					$possibleTerm = false;
 				}
@@ -1269,7 +1269,7 @@ class NNTP extends Net_NNTP_Client
 	{
 		// Check if the first char is <, if not add it.
 		if ($messageID[0] !== '<') {
-			$messageID = '<' . $messageID;
+			$messageID = ('<' . $messageID);
 		}
 
 		// Check if the last char is >, if not add it.

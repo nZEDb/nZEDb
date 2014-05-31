@@ -46,10 +46,16 @@ class IRCScraper extends IRCClient
 	protected $db;
 
 	/**
-	 * Array of ignored efnet channels.
+	 * Array of ignored channels.
 	 * @var array
 	 */
-	protected $ignoredEfnet;
+	protected $ignoredChannels;
+
+	/**
+	 * Regex to ignore categories.
+	 * @var string
+	 */
+	protected $categoryIgnoreRegex;
 
 	/**
 	 * Construct
@@ -61,10 +67,10 @@ class IRCScraper extends IRCClient
 	 */
 	public function __construct(&$silent = false, &$debug = false)
 	{
-		if (defined('SCRAPE_IRC_EFNET_CHANNELS_IGNORE')) {
-			$this->ignoredEfnet = unserialize(SCRAPE_IRC_EFNET_CHANNELS_IGNORE);
+		if (defined('SCRAPE_IRC_SOURCE_IGNORE')) {
+			$this->ignoredChannels = unserialize(SCRAPE_IRC_SOURCE_IGNORE);
 		} else {
-			$this->ignoredEfnet = array(
+			$this->ignoredChannels = array(
 				'#a.b.cd.image'               => false,
 				'#a.b.console.ps3'            => false,
 				'#a.b.dvd'                    => false,
@@ -81,9 +87,21 @@ class IRCScraper extends IRCClient
 				'#a.b.games.wii'              => false,
 				'#a.b.warez'                  => false,
 				'#a.b.games.xbox360'          => false,
+				'#pre@corrupt'                => false,
 				'#scnzb'                      => false,
-				'#tvnzb'                      => false
+				'#tvnzb'                      => false,
+				'omgwtfnzbs'                  => false,
+				'orlydb'                      => false,
+				'prelist'                     => false,
+				'srrdb'                       => false,
+				'u4all.eu'                    => false,
+				'zenet'                       => false
 			);
+		}
+
+		$this->categoryIgnoreRegex = false;
+		if (defined('SCRAPE_IRC_CATEGORY_IGNORE') && SCRAPE_IRC_CATEGORY_IGNORE !== '') {
+			$this->categoryIgnoreRegex = SCRAPE_IRC_CATEGORY_IGNORE;
 		}
 
 		$this->db = new nzedb\db\DB();
@@ -92,6 +110,11 @@ class IRCScraper extends IRCClient
 		$this->_debug = $debug;
 		$this->resetPreVariables();
 		$this->startScraping();
+	}
+
+	public function __destruct()
+	{
+		parent::__destruct();
 	}
 
 	/**
@@ -152,16 +175,18 @@ class IRCScraper extends IRCClient
 	protected function processChannelMessages()
 	{
 		if (preg_match(
-			'/^(NEW|UPD|NUK): \[DT: (?P<time>.+?)\]\[TT: (?P<title>.+?)\]\[SC: (?P<source>.+?)\]\[CT: (?P<category>.+?)\]' .
-			'\[RQ: (?P<req>.+?)\]\[SZ: (?P<size>.+?)\]\[FL: (?P<files>.+?)\](\[(?P<nuked>(UN|MOD|RE|OLD)?NUKED?): (?P<reason>.+?)\])?$/i',
+			'/^(NEW|UPD|NUK): \[DT: (?P<time>.+?)\]\[TT: (?P<title>.+?)\]\[SC: (?P<source>.+?)\]\[CT: (?P<category>.+?)\]\[RQ: (?P<req>.+?)\]' .
+			'\[SZ: (?P<size>.+?)\]\[FL: (?P<files>.+?)\](\[FN: (?P<filename>.+?)\])?(\[(?P<nuked>(UN|MOD|RE|OLD)?NUKED?): (?P<reason>.+?)\])?$/i',
 			$this->_channelData['message'], $matches)) {
 
-			if (isset($this->ignoredEfnet[$matches['source']]) && $this->ignoredEfnet[$matches['source']] === true) {
+			if (isset($this->ignoredChannels[$matches['source']]) && $this->ignoredChannels[$matches['source']] === true) {
 				return;
 			}
 
-			$this->CurPre['md5'] = $this->db->escapeString(md5($matches['title']));
-			$this->CurPre['sha1'] = $this->db->escapeString(sha1($matches['title']));
+			if ($this->categoryIgnoreRegex !== false && preg_match($this->categoryIgnoreRegex, $matches['category'])) {
+				return;
+			}
+
 			$this->CurPre['predate'] = $this->db->from_unixtime(strtotime($matches['time'] . ' UTC'));
 			$this->CurPre['title'] = $matches['title'];
 			$this->CurPre['source'] = $matches['source'];
@@ -177,6 +202,10 @@ class IRCScraper extends IRCClient
 			}
 			if ($matches['files'] !== 'N/A') {
 				$this->CurPre['files'] = substr($matches['files'], 0, 50);
+			}
+
+			if (isset($matches['filename']) && $matches['filename'] !== 'N/A') {
+				$this->CurPre['filename'] = $matches['filename'];
 			}
 
 			if (isset($matches['nuked'])) {
@@ -210,7 +239,7 @@ class IRCScraper extends IRCClient
 	 */
 	protected function checkForDupe()
 	{
-		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT category, size FROM predb WHERE md5 = %s', $this->CurPre['md5']));
+		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT category, size FROM predb WHERE title = %s', $this->db->escapeString($this->CurPre['title'])));
 		if ($this->OldPre === false) {
 			$this->insertNewPre();
 		} else {
@@ -239,8 +268,9 @@ class IRCScraper extends IRCClient
 		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid, '  : '');
 		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid, '    : '');
 		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked, '      : '');
+		$query .= (!empty($this->CurPre['filename']) ? 'filename, '   : '');
 
-		$query .= 'predate, md5, sha1, title) VALUES (';
+		$query .= 'predate, title) VALUES (';
 
 		$query .= (!empty($this->CurPre['size'])     ? $this->db->escapeString($this->CurPre['size'])     . ', '   : '');
 		$query .= (!empty($this->CurPre['category']) ? $this->db->escapeString($this->CurPre['category']) . ', '   : '');
@@ -250,17 +280,16 @@ class IRCScraper extends IRCClient
 		$query .= (!empty($this->CurPre['reqid'])    ? $this->CurPre['reqid']                             . ', '   : '');
 		$query .= (!empty($this->CurPre['groupid'])  ? $this->CurPre['groupid']                           . ', '   : '');
 		$query .= (!empty($this->CurPre['nuked'])    ? $this->CurPre['nuked']                             . ', '   : '');
+		$query .= (!empty($this->CurPre['filename']) ? $this->db->escapeString($this->CurPre['filename']) . ', '   : '');
 		$query .= (!empty($this->CurPre['predate'])  ? $this->CurPre['predate']                           . ', '   : 'NOW(), ');
 
-		$query .= '%s, %s, %s)';
+		$query .= '%s)';
 
 		$this->db->ping(true);
 
 		$this->db->queryExec(
 			sprintf(
 				$query,
-				$this->CurPre['md5'],
-				$this->CurPre['sha1'],
 				$this->db->escapeString($this->CurPre['title'])
 			)
 		);
@@ -283,14 +312,15 @@ class IRCScraper extends IRCClient
 
 		$query = 'UPDATE predb SET ';
 
-		$query .= (!empty($this->CurPre['size'])     ? 'size = '       . $this->db->escapeString($this->CurPre['size'])   . ', ' : '');
-		$query .= (!empty($this->CurPre['source'])   ? 'source = '     . $this->db->escapeString($this->CurPre['source']) . ', ' : '');
-		$query .= (!empty($this->CurPre['files'])    ? 'files = '      . $this->db->escapeString($this->CurPre['files'])  . ', ' : '');
-		$query .= (!empty($this->CurPre['reason'])   ? 'nukereason = ' . $this->db->escapeString($this->CurPre['reason']) . ', ' : '');
-		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid = '  . $this->CurPre['reqid']                           . ', ' : '');
-		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid = '    . $this->CurPre['groupid']                         . ', ' : '');
-		$query .= (!empty($this->CurPre['predate'])  ? 'predate = '    . $this->CurPre['predate']                         . ', ' : '');
-		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked = '      . $this->CurPre['nuked']                           . ', ' : '');
+		$query .= (!empty($this->CurPre['size'])     ? 'size = '       . $this->db->escapeString($this->CurPre['size'])     . ', ' : '');
+		$query .= (!empty($this->CurPre['source'])   ? 'source = '     . $this->db->escapeString($this->CurPre['source'])   . ', ' : '');
+		$query .= (!empty($this->CurPre['files'])    ? 'files = '      . $this->db->escapeString($this->CurPre['files'])    . ', ' : '');
+		$query .= (!empty($this->CurPre['reason'])   ? 'nukereason = ' . $this->db->escapeString($this->CurPre['reason'])   . ', ' : '');
+		$query .= (!empty($this->CurPre['reqid'])    ? 'requestid = '  . $this->CurPre['reqid']                             . ', ' : '');
+		$query .= (!empty($this->CurPre['groupid'])  ? 'groupid = '    . $this->CurPre['groupid']                           . ', ' : '');
+		$query .= (!empty($this->CurPre['predate'])  ? 'predate = '    . $this->CurPre['predate']                           . ', ' : '');
+		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked = '      . $this->CurPre['nuked']                             . ', ' : '');
+		$query .= (!empty($this->CurPre['filename']) ? 'filename = '   . $this->db->escapeString($this->CurPre['filename']) . ', ' : '');
 		$query .= (
 			(empty($this->OldPre['category']) && !empty($this->CurPre['category']))
 				? 'category = ' . $this->db->escapeString($this->CurPre['category']) . ', '
@@ -302,7 +332,7 @@ class IRCScraper extends IRCClient
 		}
 
 		$query .= 'title = '      . $this->db->escapeString($this->CurPre['title']);
-		$query .= ' WHERE md5 = ' . $this->CurPre['md5'];
+		$query .= ' WHERE title = ' . $this->db->escapeString($this->CurPre['title']);
 
 		$this->db->ping(true);
 
@@ -400,8 +430,6 @@ class IRCScraper extends IRCClient
 		$this->CurPre =
 			array(
 				'title'    => '',
-				'md5'      => '',
-				'sha1'     => '',
 				'size'     => '',
 				'predate'  => '',
 				'category' => '',
@@ -410,7 +438,8 @@ class IRCScraper extends IRCClient
 				'reqid'    => '',
 				'nuked'    => '',
 				'reason'   => '',
-				'files'    => ''
+				'files'    => '',
+				'filename' => ''
 			);
 	}
 }

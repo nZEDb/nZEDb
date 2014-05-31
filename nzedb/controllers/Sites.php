@@ -23,15 +23,9 @@ class Sites
 	protected $_db;
 	protected $_versions = false;
 
-	private $table = 'settings';
-
 	public function __construct()
 	{
-		$this->_db = new DB();
-		$result = $this->_db->queryExec("describe {$this->table}");
-		if ($result === false || empty($result)) {
-			$table = 'site';
-		}
+		$this->_db = new \nzedb\db\Settings();
 
 		if (defined('nZEDb_VERSIONS')) {
 			try {
@@ -40,7 +34,6 @@ class Sites
 				$this->_versions = false;
 			}
 		}
-		$this->setCovers();
 	}
 
 	public function version()
@@ -102,7 +95,7 @@ class Sites
 			$sqlKeys[] = $db->escapeString($settingK);
 		}
 
-		$table = $this->table;
+		$table = $db->settings();
 		$db->queryExec(
 		   sprintf("UPDATE $table SET value = CASE setting %s END WHERE setting IN (%s)",
 								implode(' ', $sql),
@@ -116,7 +109,7 @@ class Sites
 	public function get()
 	{
 		$db = $this->_db;
-		$table = $this->table;
+		$table = $db->settings();
 		$rows = $db->query("SELECT setting, value FROM $table WHERE setting != ''");
 
 		if ($rows === false) {
@@ -136,7 +129,7 @@ class Sites
 	function getSetting($setting = null)
 	{
 		$results = array();
-		$table = $this->table;
+		$table = $this->_db->settings();
 		$sql = "SELECT setting, value FROM $table ";
 		if ($setting !== null) {
 			$sql .= "WHERE setting = '$setting' ";
@@ -194,13 +187,6 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 " . $n;
-	}
-
-	public function setCovers()
-	{
-		$table = $this->table;
-		$row = $this->_db->query("SELECT value FROM $table WHERE setting = 'coverspath'");
-		\nzedb\utility\Utility::setCoversConstant($row[0]['value']);
 	}
 }
 

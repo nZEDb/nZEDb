@@ -6,7 +6,257 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-05-31 kevin
+	* Chg: Split up the console dropdown list by manufacturer to shorten it.
+2014-05-31 ruhllatio
+	* Chg: Category Improvements
+	* Fix: Issue #1307 -- Movies with MP3 in searchname get improperly categorized as Music->MP3
+	* Add: New categories for next gen consoles
+2014-05-30 ruhllatio
+	* Add: Misc Category for Hashed releases (run Dev/recategorize.php misc)
+	* Add: More categorization improvement for PC Games
+2014-05-29 ruhllatio
+	* Chg: Categorization improvements for Console, PC, and Anime TV
+	* Chg: Console post processing improvements
+2014-05-29 kevin
+	* Fix: When removing the nzbget user/pass it wouldn't stick.
+	* Fix: Add missing from unixtime on predb web.
+	* Chg: Move some Web PRE source to IRC.
+	* Chg: Allow empty nzbget username/password.
+	* Chg: Comment out SRRDB from Web PreDB, will be added to IRC PreDB.
+2014-05-28 bart39
+	* Chg: Don't display movie info if imdbid = 0000000.
+2014-05-28 ruhllatio
+	* Fix: 3DS categorization (now in NDS cat) and Amazon post processing
+	* Chg: Better Amazon lookup support for Console releases
+	* Add: Console categorization for PSX/PS2 titles to Other
+	* Chg: Categorization for some PC Games newsgroups
+	* Add: Account for Amazon Console titles that have the platform name at the end of the title
+2014-05-27 bart39
+	* Chg: Add unique index for predb title to avoid dupes.
+2014-05-27 ruhllatio
+	* Add: Categorization for GameCube titles that aren't WiiWare (Console->Other instead of Misc->Other)
+	* Fix: Add Gamecube Amazon lookup platform fix
+	* Chg: NGC platform prep for lookup
+2014-05-26 bart39
+	* Chg: update schema to match last patch
+	* Chg: Disable update_predb_hashes and update_predb_md5 scripts as they are now defunct.
+	* Chg: Refactor PreDB final stage - remove md5/sha1 from predb table.
+	* Fix: fix issue with trigger causing duplicates
+2014-05-26 NZBmets
+	* Upd: TMUX Powerline uspsetting segment to handle IPv6 and proper IPv4 parsing
+2014-05-25 ruhllatio
+	* Fix: Remove no longer existing foreign check from Movie PP
+2014-05-25 bart39
+	* Chg: Only reset release details if the category changes (requestid.php)
+	* Chg: Categorize against the cleaned searchname instead of usenet subject
+	* Add: Check if clean searchname matches predb filename
+	* Chg: Regex additions / fixes
+	* Chg: Only reset release details if the category changes
+	* Chg: Move declaration of $this->category to constructor
+	* Chg: Check cleaned searchname against predb title or filename as release is created
+	* Fix: Typo (cleansubject is title)
+2014-05-25 kevin
+	* Chg: Cleanup/fixes in Categorize.
+	* Chg: Move categorization functions to their own class.
+	* Chg: Drop multiple language categorization due to lack of maintainers.
+2014-05-24 kevin
+	* Fix: Potential fix for "Unitialized string offset 0" on NFO.
+	* Fix: Missing opening tags in NZBGet XML-RPC.
+	* Chg: Expand the RottenTomato class.
+	* Chg: Merge methods on \RequestID.
+	* Add: Better echo's on requestID.
+	* Various refactoring/changes/fixes. Mainly in Binaries/Backfill classes.
+2014-05-23 bart39
+	* Chg: Don't display movie with an imdbid of 0000000
+2014-05-23 DariusIII
+	* Chg: Change the way/text the grabnzb disabled message is displayed
+2014-05-23 kevin
+	* Fix: Typo in releases.php (5c is 5b).
+	* Add: Limit on local requestid (make things quicker).
+	* Fix: Empty groupid in requestid.
+	* Fix: Fix/Refactor RequestID class.
+	* Fix: Update schema sqlpatch to 226.
+	* Fix: Wrong usage of _isConnected()
+	* Chg: Use _isConnected
+	* Add: Loop in NNTP decompression to wait for the server to return data on possible terminator (should help with "msgs is not array").
+	* Chg: Use stream_socket_shutdown instead of fclose when closing the stream socket client on NNTP (faster).
+	* Chg: Don't use feof on _isConnected in NNTP for certain uses (feof can return false even if the socket is still open).
+2014-05-21 ruhllatio
+	* Chg: Class RequestID part one
+	* Fix: FTS result sizes in PreDB FT exceeding limits
+2014-05-21 bart39
+	* Upd: test gitbot again
+	* Fix: fix releases stage 4 / request id threaded / non threaded handling of requestid matching
+2014-05-21 kevin
+	* Upd: Update rarinfo to newest (*Improves handling of corrupt RAR 5.0 archives*).
+2014-05-20 Bart39
+	* Fix: Releases stage 5b/5c requestid lookups
+2014-05-20 ruhllatio
+	* Fix:  PreDB FT Match in fixReleaseNames should actually update searched now
+2014-05-20 Bart39
+	* Fix: Fixed the TMDB covers lookup path in Movie.php #1329
+2014-05-19 Bart39
+	* Chg: Use predbhash fulltext search for hash lookups
+	* Chg: Make RequestID lookups consistant between releases stage 5b/c and requestid_threaded
+2014-05-19 ruhllatio
+	* Chg: RequestID lookups split into two stages for local and web lookup (and actually seems to work now)
+	* Chg: PreDB FT count in fixreleaseNames no longer divides by 10 as it is faster than par2
+2014-05-19 niel
+	* Fix: Remove attempt to set db connection attributes that are already set from install step2.php
+	* Chg: Prevent Settings from requiring config.php during install.
+	* New: Added new Git class to nzedb\utility
+	* Chg: Refactored scripts using git to use new Git class.
+2014-05-18 kevin
+	* Add: Script to test hashes/encodings (~270k possibilities).
+2014-05-18 ruhllatio
+	* Re-work counting query in tmux monitor to reduce loop times
+	* Change fixReleaseNames query for proper standards
+2014-05-17 ruhllatio
+	* Various query optimizations in preparation for index overhaul
+2014-05-17 bart39
+	* Fix: page counts for books, console and music
+	* Chg: rename patch 225
+	* Fix: regex error
+2014-05-17 niel
+	* Fix: Pre-commit exits early if new patch checking runs into a problem.
+	* Chg: Making covers' constant truly default to .../resources/covers.
+	  Users with older installs should consider moving their covers from .../www/covers .
+	* Fix: Pass backup settings from newPatches to processPatches.
+	* Upd: Renaming patches with 'schema' for table name.
+	* Fix: Uncapitalised settings table name in patch 226.
+2014-05-16 ruhllatio
+	* Add: PreDB FT Match to fixReleaseNames and tmux
+2014-05-16 bart39
+	* Chg: Refactor predb stage 1 NB: new table will be created as MYISAM due to fulltext search,
+	if you wish to alter to InnoDB you must be on mysql 5.6+
+	* Chg: Regex improvements
+	* Chg: cross-posted requestid checks
+	* Chg: Refactor tmux variables for ircscraper/sharing windows
+	* Fix: Files in pre info popup showing with MB
+2014-05-16 niel
+	* Chg: Improvements to Settings/Site detection for upgrading from older installs.
+	* Chg: Using separate settings value in DbUpdate only if needed (Improves memory use).
+	* Upd: Updated doc for creating patches.
+2014-05-15 ruhllatio
+	* Add: New category matching and refined filtering to match_predbfiles (no longer console only)
+	* Add: Full database (no category restriction with a separate method) filename matching for match_predbfiles
+	* Fix: Blank line in Utility EOF
+2014-05-15 kevin
+	* Add: New ignorable source IRCScraper (copy from settings_example.php).
+	* Fix: Add missing setting for predb to settings table.
+	* Add: Time ago to comments (alpha theme).
+	* Fix: Fixes / tweaks to encode yEnc.
+2014-05-14 kevin
+	* Upd: Update ubuntu guide.
+	* Mov: Rename ubuntu guide.
+2014-05-14 DariusIII
+	* Fix: Add missing $status for new types of matches in NameFixer
+2014-05-13 bart39
+	* Fix: set filesize to 0 if sum of parts returns NULL
+	* Fix: Verify tmpunrarpath is not null before removing dead folders
+	* Chg: Only reset collections / nzbs that are older then delay time check in site settings
+2014-05-13 ruhllatio
+	* Fix: $res variables in NameFixer predb match functions now check for false before rowCount()
+	* Chg: PreDB FT Match function query to rule out impossible matches / hanging matches
+	* Chg: Optimize FT Match query for speed
+	* Fix: PreDB Scrape from Web sources should no longer overwrite valid pre info if not set
+	* Add: Usenet name to updateReleases NameFixer function
+	* Fix: PreDB web scrape double escape string in MD5 on update
+	* Fix: Remaining PreDB dupe errors from uc and predbme / fix updateReleases for checkNames + NFO
+	* Add: PreDB FT Match Script (testing phase)
+2014-05-13 kevin
+	* Add: POSIX Extension as requirement for unix operating systems to INSTALL.txt
+	* Chg: Predb web, use MySQL to md5/sha1 to avoid encoding issues.
+	* Fix: Fix multiple delete of releases on web browser.
+	* Fix: Add reloading of page when bulk editing releases on web page.
+	* Fix: Indent/various issues in admin theme.
+2014-05-12 DariusIII
+	* Chg: Add huge file removal option to remove crap part of tmux admin page.
+2014-05-11 kevin
+	* Add: Add change by predator314 to allow sickbeard/nzbdrone to pick up releases from Web-DL category on API.
+	* Add: Strip new lines / carriage returns from web predb titles before inserting.
+2014-05-11 bubblun
+	* Add: New setting to delete releases with a size of over 200MB and just a single file/part. Those are very likely spam releases.
+2014-05-11 ruhllatio
+	* Add: PreDB FT Match Function to NameFixer
+2014-05-10 kevin/niel
+	* Fix: Fix for UC changing predb output on html.
+	* Chg: Change a regex in predb.
+2014-05-09 ruhllatio
+	* Add: PreDB filename matching function and test script (use at own risk for now)
+	* Fix: decrypt_hashes show logic was backwards (showing the results of rename when show wasn't specified) Ahem - Bart39
+2014-05-08 niel
+	* Fix: Definition of Covers constant now Settings is main class instead of Sites.
+	* Fix: Table default for site/settings.
+	* Fix: Typo for Sites class in PostProcess.php
+	* Add: Enabling patch checking for pre-commit hook.
+2014-05-08 bart39
+	* Fix: Incorrect parameter validation in decrypt_hashes
+	* Chg: Use releasesfiles ishashed for parsing titles.
+2014-05-07 bubblun
+	* Chg: Changed 1MB crap size delete limit to 2MB to catch more spams #1310
+2014-05-07 kevin
+	* Chg: Simplify predb class more.
+	* Chg: Check if the php posix extension loaded during install.
+	* Upd: Update ubuntu install guide.
+	* Add: The completion criteria to the delete releases GUI.
+	* Chg: Set the minimum completion to 0 so unprocessed releases don't get deleted.
+	* Add: Filename parsing to IRCScraper.
+2014-05-07 niel
+	* Fix: Covers constant wasn't being set after recent update.
+2014-05-07 ruhllatio
+	* Fix: Syntax error in dump_predb (For real this time)
+	* Fix: dump_predb number of columns error
+2014-05-06 bart39
+	* Fix: echoing '.' causing screen errors.
+	* Fix: undefined index / offset in decrypt_hashes
+	* Chg: use NameFixer->matchPreDbHash for decrypt_hashes
+2014-05-06 ruhllatio
+	* Fix: fixreleasenames MD5 never exceeding dehashstatus 0
+	* Chg: fixreleasenames.php in tmux now honors hashes with uppercase letters
+	* Chg: matchPredbHash will lowercase the hash before checking against predb table hashes
+	* Add: Option to delete_releases to FastDelete by completion
+	* Add: filename column in PreDB to start matching unique release filenames
+	* Add: ishashed column to releasefiles to reduce slow REGEXP querying
+	* Add: Indexes for new columns (remove unique from predb filename)
+	* Chg: Optimize fixreleasenames_threaded query for hash matching to use new rf.ishashed
+2014-05-06 DariusIII
+	* Chg: Changed the regex in misc/update/nix/tmux/bin/requestid.php to match the regex change for reqids
+	* Chg: Updated threaded requestid to use the new reqid server url
+2014-05-05 niel
+	* Chg: Defaulting covers path to .../resources/covers on new installs. Instructions for setting up your www conf are on the wiki.
+2014-05-05 bart39
+	* Chg: update requestid.php for new requestid regex.
+	* Fix: Fix regex for isrequestid triggers and add to schema.
+	NB: run 'php /misc/update/requestid.php full' to find potential matches.
+2014-05-04 bart39
+	* Fix: compilation failed missing ) in ReleaseCleaning
+	* Chg: dump_predb.php - don't override existing groupid if groupname is null in the import
+	* Chg: fixed regex for requestid matching in ReleaseCleaning
+	* Chg: Improved regex for isrequestid triggers
+	* Chg: check for predb title matches against other groups where it matches fromname for known cross-posts.
+	* Chg: Regex additions / fixes for release / collection cleaning.
+	* Chg: Add count of releases recategorized in recategorize.php
+	* Add: Display predb nuked / reason in nzb details
+2014-05-04 ruhllatio
+	* Chg:  dump_predb now only removes titles that have <= 8 chars as opposed to 15 (older valid pres were being deleted).
+2014-05-04 kevin
+	* Add: Ability to ignore corrupt-net and categories to IRCScraper. Update your settings.php    #1300
+	* Upd: Update a predb source.
+2014-05-04 niel
+	* Chg: Redid patch filename format to be <patch number>~<table>.sql That's a tilde separating them.
+	* Chg: Renamed first 99 patches so they list better in GitHub (Grumble: why doesn't Github use a natrual sort).
+	* Fix: Filename matching after changing filename format.
+	* Chg: Renamed remaining patch files to new format.
+	* Upd: Alter regexes to use the full format now.
+	* Add: Basic method for processing new patches into Db and correct filename format. Needs more work to be useful.
+2014-05-03 ruhllatio
+	* Chg: Modify query for decrypt hashes to check MD5 or SHA depending upon hashlength
+2014-05-02 bart39
+	* Fix: insert error on patch 209
 2014-05-02 kevin
+	* Chg: Change request ID URL, new site has ~600k reqid's and counting.
 	* Add: Ignoring of efnet channels to IRCScraper. #1300
 	* Chg: Use TLS on step3 of install, better showing of NNTP errors.
 	* Add: Append the socket error / number to the PEAR error message when creating a NNTP stream resource fails.
@@ -257,6 +507,7 @@ New updates are grouped by person, at the top of the file.
 2014-04-09 niel
 	* Fix: duplicate key constraint error introduced by recent change to 2014-04-03_3_countries.sql patch.
 	* Chg: Stripping out unneeded escaping/quoting from data files.
+	* Chg: Altered format of SQL patches to properly reflect the first 8 characters being the date.
 2014-04-08 niel
 	* Chg: Altered format of SQL patches to properly reflect the first 8 characters being the date.
 2014-04-08 bart39

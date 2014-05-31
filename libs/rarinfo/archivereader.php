@@ -5,7 +5,7 @@
  * @author     Hecks
  * @copyright  (c) 2010-2013 Hecks
  * @license    Modified BSD
- * @version    3.0
+ * @version    3.1
  */
 abstract class ArchiveReader
 {
@@ -128,8 +128,15 @@ abstract class ArchiveReader
 		}
 
 		// Hack for *nix
-		$command = stristr(PHP_OS, 'DAR') ? 'stat -f %z ' : 'stat -c %s ';
-		return trim(shell_exec($command.escapeshellarg($file))) + 0;
+		$os = php_uname();
+		if (stripos($os, 'Darwin') !== false) {
+			$command = 'stat -f %z '.escapeshellarg($file);
+		} elseif (stripos($os, 'DiskStation') !== false) {
+			$command = 'ls -l '.escapeshellarg($file).' | awk \'{print $5}\'';
+		} else {
+			$command = 'stat -c %s '.escapeshellarg($file);
+		}
+		return trim(shell_exec($command)) + 0;
 	}
 
 	/**

@@ -10,26 +10,26 @@
 			<th>options</th>
 		</tr>
 		{foreach from=$commentslist item=comment}
-		<tr class="{cycle values=",alt"}">
-			<td>
-				{if $comment.userid > 0}
-					<a href="{$smarty.const.WWW_TOP}/user-edit.php?id={$comment.userid}">{$comment.username}</a>
+			<tr class="{cycle values=",alt"}">
+				<td>
+					{if $comment.userid > 0}
+						<a href="{$smarty.const.WWW_TOP}/user-edit.php?id={$comment.userid}">{$comment.username}</a>
+					{else}
+						{$comment.username}
+					{/if}
+				</td>
+				<td title="{$comment.createddate}">{$comment.createddate|timeago}</td>
+				{if $comment.shared == 2}
+					<td style="color:#6B2447">{$comment.text|escape:"htmlall"|nl2br}</td>
 				{else}
-					{$comment.username}
+					<td>{$comment.text|escape:"htmlall"|nl2br}</td>
 				{/if}
-			</td>
-			<td title="{$comment.createddate}">{$comment.createddate|timeago}</td>
-			{if $comment.shared == 2}
-				<td style="color:#6B2447">{$comment.text|escape:"htmlall"|nl2br}</td>
-			{else}
-				<td>{$comment.text|escape:"htmlall"|nl2br}</td>
-			{/if}
-			{if $comment.host}<td>{$comment.host}</td>{/if}
-			<td>
-				{if $comment.guid}<a href="{$smarty.const.WWW_TOP}/../details/{$comment.guid}#comments">view</a> |{/if}
-				<a href="{$smarty.const.WWW_TOP}/comments-delete.php?id={$comment.id}">delete</a>
-			</td>
-		</tr>
+				{if $comment.host}<td>{$comment.host}</td>{/if}
+				<td>
+					{if $comment.guid}<a href="{$smarty.const.WWW_TOP}/../details/{$comment.guid}#comments">view</a> |{/if}
+					<a href="{$smarty.const.WWW_TOP}/comments-delete.php?id={$comment.id}">delete</a>
+				</td>
+			</tr>
 		{/foreach}
 	</table>
 {else}

@@ -3,11 +3,20 @@
 		{if $parentcat.id == 1000 && $userdata.consoleview=="1"}
 			<li class="dropdown">
 				<a id="cat1" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/console">{$parentcat.title} <b class="caret"></b></a>
-				<ul class="dropdown-menu" role="menu" aria-labelledby="cat1">
+				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
 					<li><a href="{$smarty.const.WWW_TOP}/console">All {$parentcat.title}</a></li>
-					{foreach from=$parentcat.subcatlist item=subcat}
-						<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/console?t={$subcat.id}">{$subcat.title}</a></li>
+					{foreach from=$consolecatlist key=systemtype item=system}
+						<li class="dropdown-submenu" >
+						<a tabindex="-1" href="#">{$systemtype}</a>
+						<ul class="dropdown-menu" style="overflow:auto">
+							{foreach from=$system item=subcat}
+								<li>
+									<a tabindex="-1" title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/console?t={$subcat.id}">{$subcat.title}</a>
+								</li>
+							{/foreach}
+						</ul>
 					{/foreach}
+					</li>
 				</ul>
 			</li>
 		{elseif $parentcat.id == 2000 && $userdata.movieview=="1"}

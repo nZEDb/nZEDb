@@ -31,7 +31,7 @@ maxnzb = dbgrab[0][2]
 run_threads = dbgrab[0][3]
 
 if grab == 0:
-	print(bcolors.ERROR + "GrabNZBs is disabled" + bcolors.ENDC)
+	print(bcolors.HEADER + "GrabNZBs is disabled" + bcolors.ENDC)
 	info.disconnect(cur[0], cur[1])
 	sys.exit()
 

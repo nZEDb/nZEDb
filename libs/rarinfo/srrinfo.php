@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__).'/rarinfo.php';
+require_once dirname(__FILE__) . '/rarinfo.php';
 
 /**
  * SrrInfo class.

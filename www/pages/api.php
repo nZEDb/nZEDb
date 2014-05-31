@@ -349,7 +349,13 @@ function categoryID()
 {
 	$categoryID[] = -1;
 	if (isset($_GET['cat'])) {
-		$categoryID = explode(',', $_GET['cat']);
+		$categoryIDs = $_GET['cat'];
+		// Append Web-DL category ID if HD present for SickBeard / NZBDrone compatibility.
+		if (strpos($_GET['cat'], (string)Category::CAT_TV_HD) !== false &&
+			strpos($_GET['cat'], (string)Category::CAT_TV_WEBDL) === false) {
+			$categoryIDs .= (',' . Category::CAT_TV_WEBDL);
+		}
+		$categoryID = explode(',', $categoryIDs);
 	}
 	return $categoryID;
 }

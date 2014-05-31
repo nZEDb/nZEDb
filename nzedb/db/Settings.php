@@ -20,23 +20,24 @@
  */
 namespace nzedb\db;
 
-require_once
-	dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
+if (!defined('nZEDb_INSTALLER')) {
+	require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR .
+				 'config.php';
+}
 
 use nzedb\utility\Utility;
 
 class Settings extends DB
 {
-	private $table = 'settings';
+	private $settings;
 
-	public function __construct (array $options = array())
+	public function __construct(array $options = array())
 	{
 		parent::__construct($options);
-		$table  = $this->table;
-		$result = self::queryExec("describe $table");
-		if ($result === false || empty($result)) {
-			$this->table = 'site';
-		}
+		$result         = parent::exec("describe site", true);
+		$this->settings = ($result === false) ? 'settings' : 'site';
+		$this->setCovers();
+
 		return self::$pdo;
 	}
 
@@ -48,7 +49,7 @@ class Settings extends DB
 	 *
 	 * @return string|array|bool
 	 */
-	public function getSetting ($options = array())
+	public function getSetting($options = array())
 	{
 		if (!is_array($options)) {
 			$options = ['name' => $options];
@@ -60,61 +61,83 @@ class Settings extends DB
 		);
 		$options += $defaults;
 
-		if ($this->table == 'settings') {
-			$results = $this->_getFromSettings($options);
+		if ($this->settings == 'settings') {
+			$result = $this->_getFromSettings($options);
 		} else {
-			$results = $this->_getFromSites($options);
+			$result = $this->_getFromSites($options);
 		}
-		return (count($results) === 1 ? $results[0]['value'] : $results);
+		return $result;
 	}
 
-	protected function _getFromSettings ($options)
+	public function setCovers()
 	{
-		$results = array();
-		$sql     = 'SELECT section, subsection, name, value FROM settings ';
-		$where   = $options['section'] .
-				   $options['subsection'] . $options['name']; // Can't use expression in empty() < PHP 5.5
+		$path = $this->getSetting([
+				'section' 		=> 'site',
+				'subsection'	=> 'main',
+				'name' 			=> 'coverspath',
+				'setting' 		=> 'coverspath',
+			]);
+		Utility::setCoversConstant($path);
+	}
+
+	/**
+	 * Set a setting in the database.
+	 *
+	 * @TODO not completed yet, do not use
+	 *
+	 * @param array $options Array containing the mandatory keys of 'section', 'subsection', and 'value'
+	 */
+	public function setSetting(array $options)
+	{
+		$defaults = [
+			'section'    => '',
+			'subsection' => '',
+			'value'      => '',
+			'setting'    => '',
+		];
+		$options += $defaults;
+		$temp1 = $options['section'] . $options['subsection'] . $options['value'];
+		$temp2 = $options['section'] . $options['subsection'] . $options['setting'];
+		if (empty($temp1) && empty($temp2)) {
+			return false;
+		}
+
+		extract($options);
+	}
+
+	public function settings()
+	{
+		return $this->settings;
+	}
+
+	protected function _getFromSettings($options)
+	{
+		$result = array();
+		$sql     = 'SELECT value FROM settings ';
+		$where   = $options['section'] . $options['subsection'] . $options['name']; // Can't use expression in empty() < PHP 5.5
 		if (!empty($where)) {
 			$sql .= "WHERE section = '{$options['section']}' AND subsection = '{$options['subsection']}'";
 			$sql .= empty($options['name']) ? '' : " AND name = '{$options['name']}'";
 		} else {
-			$sql .= "WHERE section = '' AND subsection = ''";
+			$sql .= "WHERE setting = '{$options['setting']}'";
 		}
 		$sql .= ' ORDER BY section, subsection, name';
+		$result = $this->queryOneRow($sql);
 
-		$result = $this->queryArray($sql);
-		if ($result !== false) {
-			if (!empty($where)) {
-				foreach ($result as $row) {
-					$results[]['value'] = $row['value'];
-				}
-			} else {
-				foreach ($result as $row) {
-					$results[$row['section']][$row['subsection']][$row['name']] = $row['value'];
-				}
-			}
-		}
-
-		return $results;
+		return isset($result['value']) ? $result['value'] : null;
 	}
 
-	protected function _getFromSites ($options)
+	protected function _getFromSites($options)
 	{
-		$results = array();
-		$sql     = 'SELECT setting, value FROM settings';
-		if (!empty($options['name'])) {
-			$sql .= " WHERE setting = '{$options['name']}'";
-		}
-		$sql .= ' ORDER BY setting';
-
-		$result = $this->queryArray($sql);
-		if ($result !== false) {
-			foreach ($result as $row) {
-				$results[]['value'] = $row['value'];
-			}
+		$setting = empty($options['setting']) ? $options['name'] : $options['setting'];
+		$sql     = 'SELECT value FROM site ';
+		if (!empty($setting)) {
+			$sql .= "WHERE setting = '$setting'";
 		}
 
-		return $results;
+		$result = $this->queryOneRow($sql);
+
+		return $result['value'];
 	}
 }
 

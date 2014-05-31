@@ -5,7 +5,7 @@ use nzedb\db\DB;
 use nzedb\utility;
 
 /**
- * Class for inserting names/categories/md5 etc from PreDB sources into the DB,
+ * Class for inserting names/categories etc from PreDB sources into the DB,
  * also for matching names on files / subjects.
  *
  * Class PreDb
@@ -56,6 +56,18 @@ Class PreDb
 	protected $c;
 
 	/**
+	 * Update PRE for a current source.
+	 * @var int
+	 */
+	protected $updatedPre;
+
+	/**
+	 * Inserted PRE for a current source.
+	 * @var int
+	 */
+	protected $insertedPre;
+
+	/**
 	 * @param bool $echo
 	 */
 	public function __construct($echo = false)
@@ -63,6 +75,8 @@ Class PreDb
 		$this->echooutput = ($echo && nZEDb_ECHOCLI);
 		$this->db = new DB();
 		$this->c = new ColorCLI();
+		$this->updatedPre = 0;
+		$this->insertedPre = 0;
 	}
 
 	/**
@@ -72,7 +86,7 @@ Class PreDb
 	 */
 	public function updatePre()
 	{
-		$newNames = 0;
+		$newPre = $updatedPre = 0;
 		$newestRel = $this->db->queryOneRow("SELECT value AS adddate FROM settings WHERE setting = 'lastpretime'");
 
 		// Wait 10 minutes in between pulls.
@@ -83,105 +97,160 @@ Class PreDb
 			}
 
 			if (self::PRE_WOMBLE) {
-				$newNames += $newWomble = $this->retrieveWomble();
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrieveWomble();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newWomble . " \tRetrieved from Womble.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Womble.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Womble.");
 				}
 			}
 
-			if (self::PRE_OMGWTF) {
-				$newNames += $newOmgWtf = $this->retrieveOmgwtfnzbs();
+/*			if (self::PRE_OMGWTF) {
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrieveOmgwtfnzbs();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newOmgWtf . " \tRetrieved from Omgwtfnzbs.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Omgwtfnzbs.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Omgwtfnzbs.");
 				}
-			}
+			}*/
 
-			if (self::PRE_ZENET) {
-				$newNames += $newZenet = $this->retrieveZenet();
+/*			if (self::PRE_ZENET) {
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrieveZenet();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newZenet . " \tRetrieved from Zenet.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Zenet.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Zenet.");
 				}
-			}
+			}*/
 
-			if (self::PRE_PRELIST) {
-				$newNames += $newPreList = $this->retrievePrelist();
+/*			if (self::PRE_PRELIST) {
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrievePrelist();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newPreList . " \tRetrieved from Prelist.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Prelist.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Prelist.");
 				}
-			}
+			}*/
 
-			if (self::PRE_ORLYDB) {
-				$newNames += $newOrly = $this->retrieveOrlydb();
+/*			if (self::PRE_ORLYDB) {
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrieveOrlydb();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newOrly . " \tRetrieved from Orlydb.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Orlydb.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Orlydb.");
 				}
-			}
+			}*/
 
+/*
 			if (self::PRE_SRRDB) {
-				$newNames += $newSrr = $this->retrieveSrr();
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrieveSrr();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newSrr . " \tRetrieved from Srrdb.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Srrdb.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Srrdb.");
 				}
 			}
+*/
 
 			if (self::PRE_PREDBME) {
-				$newNames += $newPdme = $this->retrievePredbme();
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrievePredbme();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newPdme . " \tRetrieved from Predbme.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Predbme.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Predbme.");
 				}
 			}
 
 			if (self::PRE_ABGXNET) {
-				$newNames += $abgx = $this->retrieveAbgx();
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrieveAbgx();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($abgx . " \tRetrieved from abgx.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from abgx.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from abgx.");
 				}
 			}
 
 			if (self::PRE_UCRAWLER) {
-				$newNames += $newUsenetCrawler = $this->retrieveUsenetCrawler();
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrieveUsenetCrawler();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newUsenetCrawler . " \tRetrieved from Usenet-Crawler.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Usenet-Crawler.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Usenet-Crawler.");
 				}
 			}
 
 			if (self::PRE_MOOVEE) {
-				$newNames += $newMoovee = $this->retrieveAllfilledMoovee();
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrieveAllfilledMoovee();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newMoovee . " \tRetrieved from Allfilled Moovee.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Allfilled Moovee.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Allfilled Moovee.");
 				}
 			}
 
 			if (self::PRE_TEEVEE) {
-				$newNames += $newTeevee = $this->retrieveAllfilledTeevee();
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrieveAllfilledTeevee();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newTeevee . " \tRetrieved from Allfilled Teevee.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Allfilled Teevee.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Allfilled Teevee.");
 				}
 			}
 
 			if (self::PRE_EROTICA) {
-				$newNames += $newErotica = $this->retrieveAllfilledErotica();
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrieveAllfilledErotica();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newErotica . " \tRetrieved from Allfilled Erotica.");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Allfilled Erotica.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Allfilled Erotica.");
 				}
 			}
 
 			if (self::PRE_FOREIGN) {
-				$newNames += $newForeign = $this->retrieveAllfilledForeign();
+				$this->updatedPre = $this->insertedPre = 0;
+				$this->retrieveAllfilledForeign();
+				$newPre += $this->insertedPre;
+				$updatedPre += $this->updatedPre;
 				if ($this->echooutput) {
-					echo $this->c->primary($newForeign . " \tRetrieved from Allfilled Foreign.\n");
+					echo $this->c->primary($this->insertedPre . " \tRetrieved from Allfilled Foreign.");
+					echo $this->c->primary($this->updatedPre . " \tUpdated from Allfilled Foreign.");
 				}
 			}
 
 			if ($this->echooutput) {
-				echo $this->c->primary($newNames . " \tRetrieved from all the above sources..");
+				echo $this->c->primary($newPre . " \tRetrieved from all sources.");
+				echo $this->c->primary($updatedPre . " \tUpdated from all sources.");
 			}
 
 			// If we found nothing, update the last added to now to reset the timer.
 			$this->db->queryExec(sprintf("UPDATE settings SET value = %s WHERE setting = 'lastpretime'", $this->db->escapeString(time())));
 		}
 
-		return $newNames;
+		return $newPre;
 	}
 
 	/**
@@ -206,200 +275,150 @@ Class PreDb
 		}
 	}
 
+	protected function verifyPreData(&$matches)
+	{
+		// If the title is too short, don't bother.
+		if (strlen($matches['title']) < 15) {
+			return;
+		}
+
+		$matches['title'] = str_replace(array("\r", "\n"), '', $matches['title']);
+
+		$duplicateCheck = $this->db->queryOneRow(sprintf('SELECT id, nfo, size, category FROM predb WHERE title = %s', $this->db->escapeString($matches['title'])));
+
+		if ($duplicateCheck === false) {
+			$this->db->queryExec(
+				sprintf('
+					INSERT INTO predb (title, nfo, size, category, predate, source, requestid, groupid, files, filename, nuked, nukereason)
+					VALUES (%s, %s, %s, %s, %s, %s, %d, %d, %s, %s, %d, %s)',
+					$this->db->escapeString($matches['title']),
+					((isset($matches['nfo']) && !empty($matches['nfo'])) ? $this->db->escapeString($matches['nfo']) : 'NULL'),
+					((isset($matches['size']) && !empty($matches['size'])) ? $this->db->escapeString($matches['size']) : 'NULL'),
+					((isset($matches['category']) && !empty($matches['category'])) ? $this->db->escapeString($matches['category']) : 'NULL'),
+					$this->db->from_unixtime($matches['date']),
+					$this->db->escapeString($matches['source']),
+					((isset($matches['requestid']) && is_numeric($matches['requestid']) ? $matches['requestid'] : 0)),
+					((isset($matches['groupid']) && is_numeric($matches['groupid'])) ? $matches['groupid'] : 0),
+					((isset($matches['files']) && !empty($matches['files'])) ? $this->db->escapeString($matches['files']) : 'NULL'),
+					(isset($matches['filename']) ? $this->db->escapeString($matches['filename']) : $this->db->escapeString('')),
+					((isset($matches['nuked']) && is_numeric($matches['nuked'])) ? $matches['nuked'] : 0),
+					((isset($matches['reason']) && !empty($matches['nukereason'])) ? $this->db->escapeString($matches['nukereason']) : 'NULL')
+				)
+			);
+			$this->insertedPre++;
+		} else {
+			if (empty($matches['title'])) {
+				return;
+			}
+
+			$query = 'UPDATE predb SET ';
+
+			$query .= (!empty($matches['nfo'])       ? 'nfo = '        . $this->db->escapeString($matches['nfo'])      . ', ' : '');
+			$query .= (!empty($matches['size'])      ? 'size = '       . $this->db->escapeString($matches['size'])     . ', ' : '');
+			$query .= (!empty($matches['source'])    ? 'source = '     . $this->db->escapeString($matches['source'])   . ', ' : '');
+			$query .= (!empty($matches['files'])     ? 'files = '      . $this->db->escapeString($matches['files'])    . ', ' : '');
+			$query .= (!empty($matches['reason'])    ? 'nukereason = ' . $this->db->escapeString($matches['reason'])   . ', ' : '');
+			$query .= (!empty($matches['requestid']) ? 'requestid = '  . $matches['requestid']                         . ', ' : '');
+			$query .= (!empty($matches['groupid'])   ? 'groupid = '    . $matches['groupid']                           . ', ' : '');
+			$query .= (!empty($matches['date'])      ? 'predate = '    . $this->db->from_unixtime($matches['date'])    . ', ' : '');
+			$query .= (!empty($matches['nuked'])     ? 'nuked = '      . $matches['nuked']                             . ', ' : '');
+			$query .= (!empty($matches['filename'])  ? 'filename = '   . $this->db->escapeString($matches['filename']) . ', ' : '');
+			$query .= (
+				(empty($duplicateCheck['category']) && !empty($matches['category']))
+					? 'category = ' . $this->db->escapeString($matches['category']) . ', '
+					: ''
+			);
+
+			if ($query === 'UPDATE predb SET '){
+				return;
+			}
+
+			$query .= 'title = '      . $this->db->escapeString($matches['title']);
+			$query .= ' WHERE title = ' . $this->db->escapeString($matches['title']);
+
+			$this->db->queryExec($query);
+
+			$this->updatedPre++;
+		}
+	}
+
 	/**
 	 * Retrieve new pre info from womble.
-	 *
-	 * @return int
 	 */
 	protected function retrieveWomble()
 	{
-		$newNames = $updated = 0;
 		$buffer = $this->getUrl('http://www.newshost.co.za');
 		if ($buffer !== false) {
-			$matches = $match = $matches2 = array();
 			if (preg_match_all('/<tr bgcolor=#[df]{6}>.+?<\/tr>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
 						if (preg_match('/<tr bgcolor=#[df]{6}>.+?<td>(?P<date>.+?)<\/td>(.+?right>(?P<size1>.+?)&nbsp;(?P<size2>.+?)<\/td.+?)?<td>(?P<category>.+?)<\/td.+?<a href=.+?(<a href="(?P<nfo>.+?)">nfo<\/a>.+)?<td>(?P<title>.+?)<\/td.+tr>/s', $m, $matches2)) {
 
-							// If the title is too short, don't bother.
-							if (strlen($matches2['title']) < 15) {
-								continue;
-							}
-
-							$md5 = $this->db->escapeString(md5($matches2['title']));
-							$sha1 = $this->db->escapeString(sha1($matches2['title']));
-							$oldName = $this->db->queryOneRow(sprintf('SELECT md5, source, id, nfo FROM predb WHERE md5 = %s', $md5));
-							// If we have it already and have the NFO, continue.
-							if ($oldName !== false && $oldName['nfo'] != NULL) {
-								continue;
-							}
-
-							// Start forming data for the query.
-							$nfo =
-								($matches2['nfo'] == ''
-									? 'NULL'
-									: $this->db->escapeString('http://www.newshost.co.za/' . $matches2['nfo'])
-								);
-							$size =
+							$matches2['size'] =
 								((!isset($matches['size1']) && empty($matches2['size1']))
-									? 'NULL'
-									: $this->db->escapeString($matches2['size1'] . $matches2['size2'])
+									? ''
+									: $matches2['size1'] . $matches2['size2']
 								);
-							$category = $this->db->escapeString($matches2['category']);
-							$time = $this->db->from_unixtime(strtotime($matches2['date']));
-							$source = $this->db->escapeString('womble');
 
-							// If we already have it, update.
-							if ($oldName !== false) {
-								$this->db->queryExec(
-									sprintf('
-										UPDATE predb SET
-											nfo = %s, size = %s, category = %s, predate = %s,
-											source = %s
-										WHERE id = %d',
-										$nfo, $size, $category, $time, $source, $oldName['id']
-									)
+							$matches2['nfo'] =
+								($matches2['nfo'] == ''
+									? ''
+									: 'http://www.newshost.co.za/' . $matches2['nfo']
 								);
-								$updated++;
-							} elseif ($this->db->queryExec(
-								sprintf('
-									INSERT INTO predb (title, nfo, size, category, predate, source, md5, sha1)
-									VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-									$this->db->escapeString($matches2['title']),
-									$nfo, $size, $category, $time, $source, $md5, $sha1))) {
-								$newNames++;
-							}
+
+							$matches2['source'] = 'womble';
+							$matches2['date'] = strtotime($matches2['date']);
+							$this->verifyPreData($matches2);
 						}
 					}
 				}
 			}
-			if ($this->echooutput) {
-				echo $this->c->primary($updated . " \tUpdated from Womble.");
-			}
 		} elseif ($this->echooutput) {
 			echo $this->c->error("Update from Womble failed.");
 		}
-		return $newNames;
 	}
 
 	/**
 	 * Retrieve pre info from omg.
-	 *
-	 * @return int
 	 */
 	protected function retrieveOmgwtfnzbs()
 	{
-		$newNames = $updated = 0;
 		$buffer = $this->getUrl('http://rss.omgwtfnzbs.org/rss-info.php');
 		if ($buffer !== false) {
-			$matches = $matches2 = $match = array();
 			if (preg_match_all('/<item>.+?<\/item>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
 						if (preg_match('/<title>(?P<title>.+?)\s+-\s+omgwtfnzbs\.org.*?<\/title.+?pubDate>(?P<date>.+?)<\/pubDate.+?gory:<\/b> (?P<category>.+?)<br \/.+?<\/b> (?P<size1>.+?) (?P<size2>[a-zA-Z]+)<b/s', $m, $matches2)) {
 
-							// If the title is too short, don't bother.
-							if (strlen($matches2['title']) < 15) {
-								continue;
-							}
-
-							$title = $matches2['title'];
-							$md5 = $this->db->escapeString(md5($title));
-							$sha1 = $this->db->escapeString(sha1($title));
-							$oldName = $this->db->queryOneRow(sprintf('SELECT md5, source, id FROM predb WHERE md5 = %s', $md5));
-
-							// If we have it already and the source is womble or omg, continue.
-							if ($oldName !== false && ($oldName['source'] === 'womble' || $oldName['source'] === 'omgwtfnzbs')) {
-								continue;
-							}
-
-							$size = $this->db->escapeString(round($matches2['size1']) . $matches2['size2']);
-							$category = $this->db->escapeString($matches2['category']);
-							$time = $this->db->from_unixtime(strtotime($matches2['date']));
-							$source = $this->db->escapeString('omgwtfnzbs');
-
-							// If we have it already, update it.
-							if ($oldName !== false) {
-								$this->db->queryExec(
-									sprintf('
-										UPDATE predb
-										SET size = %s, category = %s, predate = %s, source = %s
-										WHERE id = %d',
-										$size, $category, $time, $source, $oldName['id']
-									)
-								);
-								$updated++;
-							} elseif ($this->db->queryExec(
-									sprintf('
-										INSERT INTO predb (title, size, category, predate, source, md5, sha1)
-										VALUES (%s, %s, %s, %s, %s, %s, %s)',
-										$this->db->escapeString($title), $size, $category, $time, $source, $md5, $sha1))) {
-								$newNames++;
-							}
+							$matches2['size'] = (round($matches2['size1']) . $matches2['size2']);
+							$matches2['source'] = 'omgwtfnzbs';
+							$matches2['date'] = strtotime($matches2['date']);
+							$this->verifyPreData($matches2);
 						}
 					}
 				}
 			}
-			if ($this ->echooutput) {
-				echo $this->c->primary($updated . " \tUpdated from Omgwtfnzbs.");
-			}
 		} elseif ($this ->echooutput) {
 			echo $this->c->error("Update from Omgwtfnzbs failed.");
 		}
-		return $newNames;
 	}
 
 	/**
 	 * Get new pre data from zenet.
-	 *
-	 * @return int
 	 */
 	protected function retrieveZenet()
 	{
-		$newNames = 0;
-
 		$buffer = $this->getUrl('http://pre.zenet.org/live.php');
 		if ($buffer !== false) {
-			$matches = $matches2 = $match = array();
-			if (preg_match_all('/<div class="mini-layout fluid">((\s+\S+)?\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?(\S+\s+)?<\/div>\s+<\/div>)/s', $buffer, $matches)) {
+			if (preg_match_all('/<div class="mini-layout fluid">.+?<\/div>\s*<\/div>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
-						if (preg_match('/<span class="bold">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/span>.+<a href="\?post=\d+"><b><font color="#\d+">(?P<title>.+)<\/font><\/b><\/a>.+<p><a href="\?cats=.+"><font color="#FF9900">(?P<category>.+)<\/font><\/a> \| (?P<size1>[\d\.,]+)?(?P<size2>[MGK]B)? \/\s+(?P<files>\d+).+<\/div>/s', $m, $matches2)) {
+						if (preg_match('/<span class="bold">(?P<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/span>.+<a href="\?post=\d+"><b><font color="#\d+">(?P<title>.+)<\/font><\/b><\/a>.+<p><a href="\?cats=.+"><font color="#FF9900">(?P<category>.+)<\/font><\/a> \| (?P<size1>[\d\.,]+)?(?P<size2>[MGK]B)? \/\s+(?P<files>\d+).+<\/div>/s', $m, $matches2)) {
 
-							// If it's too short, don't bother.
-							if (strlen($matches2['title']) < 15) {
-								continue;
-							}
-
-							$md5 = $this->db->escapeString(md5($matches2['title']));
-							$sha1 = $this->db->escapeString(sha1($matches2['title']));
-							$dupeCheck = $this->db->queryOneRow(sprintf('SELECT md5 FROM predb WHERE md5 = %s', $md5));
-
-							// If we already have it, skip.
-							if ($dupeCheck !== false) {
-
-								continue;
-							} elseif ($this->db->queryExec(
-								sprintf('
-									INSERT INTO predb (title, size, category, predate, source, md5, sha1, files)
-									VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-									$this->db->escapeString($matches2['title']),
-									((!isset($matches2['size1']) && empty($matches2['size1']))
-										? 'NULL'
-										: $this->db->escapeString(round($matches2['size1']) . $matches2['size2'])
-									),
-									((isset($matches2['category']) && !empty($matches2['category']))
-										? $this->db->escapeString($matches2['category'])
-										: 'NULL'
-									),
-									$this->db->from_unixtime(strtotime($matches2['predate'])),
-									$this->db->escapeString('zenet'),
-									$md5,
-									$sha1,
-									$this->db->escapeString($matches2['files'])))) {
-								$newNames++;
-							}
+							$matches2['size'] = (round($matches2['size1']) . $matches2['size2']);
+							$matches2['source'] = 'zenet';
+							$matches2['date'] = strtotime($matches2['date']);
+							$this->verifyPreData($matches2);
 						}
 					}
 				}
@@ -407,65 +426,33 @@ Class PreDb
 		} elseif ($this->echooutput) {
 			echo $this->c->error("Update from Zenet failed.");
 		}
-		return $newNames;
 	}
 
 	/**
 	 * Get new pre from pre list.
-	 *
-	 * @note - Probably has to be remade.
-	 *
-	 * @return int
 	 */
 	protected function retrievePrelist()
 	{
-		$newNames = 0;
 		$buffer = $this->getUrl('http://www.prelist.ws/');
 		if ($buffer !== false) {
-			$matches = $matches2 = $matches3 = array();
-			if (preg_match_all('/<div class="PreData ">.+?<\/div>\s*<\/div>\s*<\/div>/s', $buffer, $matches)) {
-				foreach($matches as $matches2) {
-					foreach ($matches2 as $matches3) {
-						if (preg_match('/<a href=".+?">(?P<title>.+?)<\/a><\/div><div class="break".+?FiLTER">(?P<category>.+?)<\/a>.+?"Time">(?P<date>.+?)<\/div.+?"FilesSize">(?P<files>\d+F).*?(?P<size>\d+[KMGPT]?B).+?"Reason">(?P<reason>.*?)<\/div>/is', $matches3, $matches4)) {
-
-							// Skip if too short.
-							if (strlen($matches4['title']) < 15) {
-								continue;
-							}
-							$md5 =  $this->db->escapeString(md5($matches4['title']));
-							$sha1 = $this->db->escapeString(sha1($matches4['title']));
-							$oldName = $this->db->queryOneRow(sprintf('SELECT md5 FROM predb WHERE md5 = %s', $md5));
-
-							// If we have it already, skip.
-							if ($oldName !== false) {
-								continue;
-							}
-
-							$nuked = $nukereason = '';
-							if (!empty($matches4['reason'])) {
-								$nuked = self::PRE_NUKED;
-								$nukereason = $matches4['reason'];
-							}
-
-							if ($this->db->queryExec(
-								sprintf('
-										INSERT INTO predb (title, size, category, predate, source, md5, sha1, files, nuked, nukereason)
-										VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-									$this->db->escapeString($matches4['title']),
-									((!isset($matches4['size']) && empty($matches4['size']))
-										? 'NULL'
-										: $this->db->escapeString(round($matches4['size']))
-									),
-									$this->db->escapeString($matches4['category']),
-									$this->db->from_unixtime(strtotime($matches4['date'])),
-									$this->db->escapeString('prelist'),
-									$md5,
-									$sha1,
-									$this->db->escapeString($matches4['files']),
-									($nuked === '' ? self::PRE_NONUKE : $nuked),
-									($nukereason === '' ? 'NULL' : $this->db->escapeString($nukereason))))) {
-								$newNames++;
-							}
+			if (preg_match_all('/<tt id="\d+"><small><span class=".+?">.+?<\/span><\/small><br\/><\/tt>/s', $buffer, $matches)) {
+				foreach ($matches as $match) {
+					foreach ($match as $m) {
+						if (preg_match(
+							'/">\[\s*(?P<date>\d+\.\d+\.(19|20)\d{2}.+?UTC).+?section=\s*(?P<category>.+?)\s*".+?<a href="\?search=.+?">\s*(?P<title>.+?)\s*<\/a>.+?<b>\[\s*(?P<size>\d+(\.\d+)?[KMGTP]?B)\s*\]<\/b>.+?<b>\[\s*(?P<files>\d+F)\s*\]<\/b>/i',
+							$m, $result))
+						{
+							$result['source'] = 'prelist';
+							$result['date'] = strtotime($result['date']);
+							$this->verifyPreData($result);
+						} else if (preg_match(
+							'/">\[\s*(?P<date>\d+\.\d+\.(19|20)\d{2}.+?UTC).+?<a title="\s*(?P<reason>.+?)\s*">\s*(?P<nuked>(UN)?NUKED)\s*<\/a>.+?section=\s*(?P<category>.+?)\s*".+?<a href="\?search=.+?">\s*(?P<title>.+?)\s*<\/a>/',
+							$m, $result))
+						{
+							$result['source'] = 'prelist';
+							$result['date'] = strtotime($result['date']);
+							$result['nuked'] = ($result['nuked'] === 'UNNUKED' ? PreDb::PRE_UNNUKED : PreDb::PRE_NUKED);
+							$this->verifyPreData($result);
 						}
 					}
 				}
@@ -473,236 +460,109 @@ Class PreDb
 		} elseif ($this->echooutput) {
 			echo $this->c->error("Update from Prelist failed.");
 		}
-		return $newNames;
 	}
 
 	/**
-	 * Get new pre from this source.
-	 * @return int
+	 * Get new pre from OrlyDB.
 	 */
 	protected  function retrieveOrlydb()
 	{
-		$newNames = 0;
 		$buffer = $this->getUrl('http://www.orlydb.com/');
 		if ($buffer !== false) {
-			$matches = $matches2 = $match = array();
 			if (preg_match('/<div id="releases">(.+)<div id="pager">/s', $buffer, $match)) {
-				if (preg_match_all('/<div>.+?<\/div>/s', $match["1"], $matches)) {
+				if (preg_match_all('/<div>.+?<\/div>/s', $match['1'], $matches)) {
 					foreach ($matches as $m1) {
 						foreach ($m1 as $m) {
 							if (preg_match('/timestamp">(?P<date>.+?)<\/span>.+?section">.+?">(?P<category>.+?)<\/a>.+?release">(?P<title>.+?)<\/span>(.+info">(?P<size>.+?) \| (?P<files>\d+F))?/s', $m, $matches2)) {
 
-								// Skip if too short.
-								if (strlen($matches2['title']) < 15) {
-									continue;
-								}
-								$md5 = $this->db->escapeString(md5($matches2['title']));
-								$sha1 = $this->db->escapeString(sha1($matches2['title']));
-								$oldName = $this->db->queryOneRow(sprintf('SELECT md5 FROM predb WHERE md5 = %s', $md5));
-								if ($oldName !== false) {
-									continue;
-								} elseif ($this->db->queryExec(
-									sprintf('
-										INSERT INTO predb (title, size, category, predate, source, md5, sha1, files)
-										VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-										$this->db->escapeString($matches2['title']),
-										((!isset($matches2['size']) && empty($matches2['size']))
-											? 'NULL'
-											: $this->db->escapeString($matches2['size'])
-										),
-										$this->db->escapeString($matches2['category']),
-										$this->db->from_unixtime(strtotime($matches2['date'])),
-										$this->db->escapeString('orlydb'),
-										$md5,
-										$sha1,
-										((!isset($matches2['files']) && empty($matches2['files']))
-											? 'NULL'
-											: $this->db->escapeString($matches2['files']))
-										))
-									) {
-									$newNames++;
-								}
+								$matches2['source'] = 'orlydb';
+								$matches2['date'] = strtotime($matches2['date']);
+								$this->verifyPreData($matches2);
 							}
 						}
 					}
 				}
 			}
-		} else {
-			if ($this->echooutput) {
-				echo $this->c->error("Update from Orly failed.");
-			}
+		} else if ($this->echooutput) {
+			echo $this->c->error("Update from Orly failed.");
 		}
-		return $newNames;
 	}
 
 	/**
-	 * Get pre from this source.
-	 * @return int
+	 * Get pre from SrrDB.
 	 */
 	protected function retrieveSrr()
 	{
-		$newNames = 0;
-
 		$data = $this->getUrl("http://www.srrdb.com/feed/srrs");
-
 		if ($data !== false) {
-			$releases = @simplexml_load_string($data);
-			if ($releases !== false) {
-				foreach ($releases->channel->item as $release) {
-					// If it's too short, skip.
-					if (strlen($release->title) < 15) {
-						continue;
-					}
-					$md5 = $this->db->escapeString(md5($release->title));
-					$sha1 = $this->db->escapeString(sha1($release->title));
-					$oldName = $this->db->queryOneRow(sprintf('SELECT id, nfo FROM predb WHERE md5 = %s', $md5));
-
-					$nfo = '';
-					//$size = '';
+			$data = @simplexml_load_string($data);
+			if ($data !== false) {
+				foreach ($data->channel->item as $release) {
+					$result = array();
+					$result['title'] = $release->title;
+					$result['date'] = strtotime($release->pubDate);
+					$result['source'] = 'srrdb';
 					if (preg_match('/<dt>NFO availability<\/dt>\s*<dd>(?P<nfo>(yes|no))<\/dd>/is', $release->description, $description)) {
-						$nfo = ($description['nfo'] === 'yes' ? $this->db->escapeString('srrdb') : 'NULL');
+						$result['nfo'] = ($description['nfo'] === 'yes' ? 'srrdb' : 'NULL');
 					}
-
-//					if (preg_match('/Filesize.*<td>(?P<size>\d*)<\/td>\s*<td>.*?<\/td>\s*<td>.*?<\/td>\s*<\/tr>\s*<\/table>\s*/is', $release->description, $description)) {
-//						$size = ((isset($description['size']) && !empty($description['size'])) ? $this->db->escapeString(nzedb\utility\bytesToSizeString($description['size'])) : 'NULL');
-//					}
-
-//					if ($oldName !== false) {
-//						if ($nfo !== '' && empty($oldName['nfo'])) {
-//							$this->db->queryExec(
-//								sprintf(
-//									'
-//									UPDATE predb
-//									SET size = %s, predate = %s, source = %s, nfo = %s
-//									WHERE id = %d',
-//									$size,
-//									$this->db->from_unixtime(strtotime($release->pubDate)),
-//									$this->db->escapeString('srrdb'),
-//									$nfo,
-//									$oldName['id']
-//								)
-//							);
-//						}
-//						continue;
-					if ($oldName !== false) {
-						if ($nfo !== '' && empty($oldName['nfo'])) {
-							$this->db->queryExec(
-								sprintf('
-									UPDATE predb
-									SET predate = %s, source = %s, nfo = %s
-									WHERE id = %d',
-									$this->db->from_unixtime(strtotime($release->pubDate)),
-									$this->db->escapeString('srrdb'),
-									$nfo,
-									$oldName['id']
-								)
-							);
-						}
-						continue;
-//					} else if ($this->db->queryExec(
-//						sprintf('
-//							INSERT INTO predb (title, predate, source, md5, sha1, nfo, size
-//							)
-//							VALUES (%s, %s, %s, %s, %s, %s, %s)',
-//							$this->db->escapeString($release->title),
-//							$this->db->from_unixtime(strtotime($release->pubDate)),
-//							$this->db->escapeString('srrdb'),
-//							$md5,
-//							$sha1,
-//							$nfo,
-//							$size))) {
-//						$newNames++;
-//					}
-					} else if ($this->db->queryExec(
-						sprintf('
-							INSERT INTO predb (title, predate, source, md5, sha1, nfo)
-							VALUES (%s, %s, %s, %s, %s, %s)',
-							$this->db->escapeString($release->title),
-							$this->db->from_unixtime(strtotime($release->pubDate)),
-							$this->db->escapeString('srrdb'),
-							$md5,
-							$sha1,
-							$nfo))) {
-						$newNames++;
-					}
+					$this->verifyPreData($result);
 				}
-			} elseif ($this->echooutput) {
-				echo $this->c->error("Update from Srr failed.");
 			}
-		} elseif ($this->echooutput) {
+		}
+
+		if ($this->echooutput && $data === false) {
 			echo $this->c->error("Update from Srr failed.");
 		}
-		return $newNames;
 	}
 
 	/**
-	 * Get pre from this source.
-	 *
-	 * @return int
+	 * Get pre from PreDBMe.
 	 */
 	protected function retrievePredbme()
 	{
-		$newNames = 0;
-
 		$URLs = array(
-			'http://predb.me/?cats=movies-sd&rss=1',
-			'http://predb.me/?cats=movies-hd&rss=1',
-			'http://predb.me/?cats=movies-discs&rss=1',
-			'http://predb.me/?cats=tv-sd&rss=1',
-			'http://predb.me/?cats=tv-hd&rss=1',
-			'http://predb.me/?cats=tv-discs&rss=1',
-			'http://predb.me/?cats=music-audio&rss=1',
-			'http://predb.me/?cats=music-video&rss=1',
-			'http://predb.me/?cats=music-discs&rss=1',
-			'http://predb.me/?cats=games-pc&rss=1',
-			'http://predb.me/?cats=games-xbox&rss=1',
-			'http://predb.me/?cats=games-playstation&rss=1',
-			'http://predb.me/?cats=games-nintendo&rss=1',
-			'http://predb.me/?cats=apps-windows&rss=1',
-			'http://predb.me/?cats=apps-linux&rss=1',
-			'http://predb.me/?cats=apps-mac&rss=1',
-			'http://predb.me/?cats=apps-mobile&rss=1',
-			'http://predb.me/?cats=books-ebooks&rss=1',
-			'http://predb.me/?cats=books-audio-books&rss=1',
-			'http://predb.me/?cats=xxx-videos&rss=1',
-			'http://predb.me/?cats=xxx-images&rss=1',
-			'http://predb.me/?cats=dox&rss=1',
-			'http://predb.me/?cats=unknown&rss=1'
+			'http://predb.me/?cats=movies-sd',
+			'http://predb.me/?cats=movies-hd',
+			'http://predb.me/?cats=movies-discs',
+			'http://predb.me/?cats=tv-sd',
+			'http://predb.me/?cats=tv-hd',
+			'http://predb.me/?cats=tv-discs',
+			'http://predb.me/?cats=music-audio',
+			'http://predb.me/?cats=music-video',
+			'http://predb.me/?cats=music-discs',
+			'http://predb.me/?cats=games-pc',
+			'http://predb.me/?cats=games-xbox',
+			'http://predb.me/?cats=games-playstation',
+			'http://predb.me/?cats=games-nintendo',
+			'http://predb.me/?cats=apps-windows',
+			'http://predb.me/?cats=apps-linux',
+			'http://predb.me/?cats=apps-mac',
+			'http://predb.me/?cats=apps-mobile',
+			'http://predb.me/?cats=books-ebooks',
+			'http://predb.me/?cats=books-audio-books',
+			'http://predb.me/?cats=xxx-videos',
+			'http://predb.me/?cats=xxx-images',
+			'http://predb.me/?cats=dox',
+			'http://predb.me/?cats=unknown'
 		);
 
 		foreach ($URLs as &$url) {
 			$data = $this->getUrl($url);
 			if ($data !== false) {
-				$releases = @simplexml_load_string($data);
-				if ($releases !== false) {
-					foreach ($releases->channel->item as $release) {
+				if (preg_match_all('/<div class="post" id="\d+">\s*<div class="p-head">.+?<\/a>\s*<\/div>\s*<\/div>\s*<\/div>/s', $data, $matches)) {
+					foreach ($matches as $match) {
+						foreach ($match as $m) {
+							if (preg_match('/time"\s*data="(?P<time>\d+)".+?adult">(?P<cat1>.+?)<\/a>.+?child">(?P<cat2>.+?)<\/a>.+?title"\s*href=".+?">(?P<title>.+?)<\/a>(.+?Nuked:\s*(?P<nuked>.+?)">)?/i', $m, $result)) {
 
-						// Skip if too short.
-						if (strlen($release->title) < 15) {
-							continue;
-						}
-						$md5 = $this->db->escapeString(md5($release->title));
-						$sha1 = $this->db->escapeString(sha1($release->title));
-						$oldname = $this->db->queryOneRow(sprintf('SELECT md5 FROM predb WHERE md5 = %s', $md5));
-						if ($oldname !== false) {
-							continue;
-						} elseif ($this->db->queryExec(
-							sprintf('
-								INSERT INTO predb (title, predate, source, md5, sha1)
-								VALUES (%s, NOW(), %s, %s, %s)',
-								$this->db->escapeString($release->title),
-								$this->db->escapeString('predbme'),
-								$md5,
-								$sha1))) {
-							$newNames++;
+								$result['source'] = 'predbme';
+								$result['category'] = ($result['cat1'] . '-' . $result['cat2']);
+								$result['date'] = $result['time'];
+								$result['nuked'] = (isset($result['nuked']) && !empty($result['nuked']) ? PreDb::PRE_NUKED : PreDb::PRE_NONUKE);
+								$result['nukereason'] = (isset($result['nuked']) && !empty($result['nuked']) ? $result['nuked'] : '');
+								$this->verifyPreData($result);
+							}
 						}
 					}
-				} else {
-					if ($this->echooutput) {
-						echo $this->c->error("Update from Predbme failed.");
-					}
-					// If the site is down, don't try the other URLs.
-					break;
 				}
 			} else {
 				if ($this->echooutput) {
@@ -712,71 +572,30 @@ Class PreDb
 				break;
 			}
 		}
-		return $newNames;
 	}
 
 	/**
-	 * Get pre from this source.
-	 *
-	 * @return int
+	 * Get pre from this abMooVee.
 	 */
 	protected function retrieveAllfilledMoovee()
 	{
-		$newNames = 0;
-		$groupid = $this->db->queryOneRow("SELECT id FROM groups WHERE name = 'alt.binaries.moovee'");
-
-		if ($groupid === false) {
-			return 0;
-		} else {
-			$groupid = $groupid['id'];
+		$groupID = $this->db->queryOneRow("SELECT id FROM groups WHERE name = 'alt.binaries.moovee'");
+		if ($groupID === false) {
+			return;
 		}
 
 		$buffer = $this->getUrl('http://abmoovee.allfilled.com/reqs.php?fetch=posted&page=1');
 		if ($buffer !== false) {
-			$matches = $matches2 = $match = array();
 			if (preg_match_all('/<tr class="(even|odd)".+?<\/tr>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
-						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
-							if (isset($matches2["requestid"]) && isset($matches2["title"])) {
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
 
-								// If too short, skip.
-								if (strlen($matches2["title"]) < 15) {
-									continue;
-								}
-								$md5 = $this->db->escapeString(md5($matches2["title"]));
-								$sha1 = $this->db->escapeString(sha1($matches2["title"]));
-								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id, requestid FROM predb WHERE md5 = %s', $md5));
-								if ($dupeCheck === false) {
-									$this->db->queryExec(
-										sprintf("
-											INSERT INTO predb (title, predate, source, md5, sha1, requestid, groupid, files, category)
-											VALUES (%s, %s, %s, %s, %s, %s, %d, %s, 'Movies')",
-											$this->db->escapeString($matches2["title"]),
-											$this->db->from_unixtime(strtotime($matches2["predate"])),
-											$this->db->escapeString('abMooVee'),
-											$md5,
-											$sha1,
-											$matches2["requestid"],
-											$groupid,
-											$this->db->escapeString($matches2['files'])
-										)
-									);
-									$newNames++;
-								} else if (empty($dupeCheck['requestid'])) {
-									$this->db->queryExec(
-										sprintf('
-											UPDATE predb
-											SET requestid = %s, groupid = %d, files = %s
-											WHERE md5 = %s',
-											$matches2["requestid"],
-											$groupid,
-											$this->db->escapeString($matches2['files']),
-											$md5
-										)
-									);
-								}
-							}
+							$matches2['source'] = 'abMooVee';
+							$matches2['date'] = strtotime($matches2['date']);
+							$matches2['groupid'] = $groupID['id'];
+							$matches2['category'] = 'Movies';
+							$this->verifyPreData($matches2);
 						}
 					}
 				}
@@ -784,71 +603,30 @@ Class PreDb
 		} elseif ($this->echooutput) {
 			echo $this->c->error("Update from Moovee failed.");
 		}
-		return $newNames;
 	}
 
 	/**
-	 * Get new pre for this source.
-	 *
-	 * @return int
+	 * Get new pre for this abTeeVee.
 	 */
 	protected function retrieveAllfilledTeevee()
 	{
-		$newNames = 0;
-		$groupid = $this->db->queryOneRow("SELECT id FROM groups WHERE name = 'alt.binaries.teevee'");
-
-		if ($groupid === false) {
-			return 0;
-		} else {
-			$groupid = $groupid['id'];
+		$groupID = $this->db->queryOneRow("SELECT id FROM groups WHERE name = 'alt.binaries.teevee'");
+		if ($groupID === false) {
+			return;
 		}
 
 		$buffer = $this->getUrl('http://abteevee.allfilled.com/reqs.php?fetch=posted&page=1');
 		if ($buffer !== false) {
-			$matches = $matches2 = $match = array();
 			if (preg_match_all('/<tr class="(even|odd)".+?<\/tr>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
-						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
-							if (isset($matches2["requestid"]) && isset($matches2["title"])) {
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
 
-								// Skip if too short.
-								if (strlen($matches2["title"]) < 15) {
-									continue;
-								}
-								$md5 = $this->db->escapeString(md5($matches2["title"]));
-								$sha1 = $this->db->escapeString(sha1($matches2["title"]));
-								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id, requestid FROM predb WHERE md5 = %s', $md5));
-								if ($dupeCheck === false) {
-									$this->db->queryExec(
-										sprintf("
-											INSERT INTO predb (title, predate, source, md5, sha1, requestid, groupid, files, category)
-											VALUES (%s, %s, %s, %s, %s, %s, %d, %s, 'TV')",
-											$this->db->escapeString($matches2["title"]),
-											$this->db->from_unixtime(strtotime($matches2["predate"])),
-											$this->db->escapeString('abTeeVee'),
-											$md5,
-											$sha1,
-											$matches2["requestid"],
-											$groupid,
-											$this->db->escapeString($matches2['files'])
-										)
-									);
-									$newNames++;
-								} else if (empty($dupeCheck['requestid'])) {
-									$this->db->queryExec(
-										sprintf('
-											UPDATE predb
-											SET requestid = %s, groupid = %d, files = %s
-											WHERE md5 = %s',
-											$matches2["requestid"],
-											$groupid,
-											$this->db->escapeString($matches2['files']),
-											$md5
-										)
-									);
-								}
-							}
+							$matches2['source'] = 'abTeeVee';
+							$matches2['date'] = strtotime($matches2['date']);
+							$matches2['groupid'] = $groupID['id'];
+							$matches2['category'] = 'TV';
+							$this->verifyPreData($matches2);
 						}
 					}
 				}
@@ -856,72 +634,30 @@ Class PreDb
 		} elseif ($this->echooutput) {
 			echo $this->c->error("Update from Teevee failed.");
 		}
-		return $newNames;
 	}
 
 	/**
-	 * Get new pre for this source.
-	 *
-	 * @return int
+	 * Get new pre for abErotica.
 	 */
 	protected function retrieveAllfilledErotica()
 	{
-		$newNames = 0;
-		$groupid = $this->db->queryOneRow("SELECT id FROM groups WHERE name = 'alt.binaries.erotica'");
-
-		if ($groupid === false) {
-			return 0;
-		} else {
-			$groupid = $groupid['id'];
+		$groupID = $this->db->queryOneRow("SELECT id FROM groups WHERE name = 'alt.binaries.erotica'");
+		if ($groupID === false) {
+			return;
 		}
 
 		$buffer = $this->getUrl('http://aberotica.allfilled.com/reqs.php?fetch=posted&page=1');
 		if ($buffer !== false) {
-			$matches = $matches2 = $match = array();
 			if (preg_match_all('/<tr class="(even|odd)".+?<\/tr>/s', $buffer, $matches)) {
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
-						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+?<td class="cell_type">(?P<category>.+?)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
-							if (isset($matches2["requestid"]) && isset($matches2["title"])) {
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+?<td class="cell_type">(?P<category>.+?)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})<\/td>/s', $m, $matches2)) {
 
-								// If too short, skip.
-								if (strlen($matches2["title"]) < 15) {
-									continue;
-								}
-								$md5 = $this->db->escapeString(md5($matches2["title"]));
-								$sha1 = $this->db->escapeString(sha1($matches2["title"]));
-								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id, requestid FROM predb WHERE md5 = %s', $md5));
-								if ($dupeCheck === false) {
-									$this->db->queryExec(
-										sprintf("
-											INSERT INTO predb (title, predate, source, md5, sha1, requestid, groupid, files, category)
-											VALUES (%s, %s, %s, %s, %s, %s, %d, %s, %s)",
-											$this->db->escapeString($matches2["title"]),
-											$this->db->from_unixtime(strtotime($matches2["predate"])),
-											$this->db->escapeString('abErotica'),
-											$md5,
-											$sha1,
-											$matches2["requestid"],
-											$groupid,
-											$this->db->escapeString($matches2['files']),
-											$this->db->escapeString('XXX-' . $matches2['category'])
-										)
-									);
-									$newNames++;
-								} else if (empty($dupeCheck['requestid'])) {
-									$this->db->queryExec(
-										sprintf('
-											UPDATE predb
-											SET requestid = %s, groupid = %d, files = %s
-											WHERE md5 = %s',
-											$matches2["requestid"],
-											$groupid,
-											$this->db->escapeString($matches2['files']),
-											$md5
-										)
-									);
-								}
-							}
+							$matches2['source'] = 'abErotica';
+							$matches2['date'] = strtotime($matches2['date']);
+							$matches2['groupid'] = $groupID['id'];
+							$matches2['category'] = ('XXX-' . $matches2['category']);
+							$this->verifyPreData($matches2);
 						}
 					}
 				}
@@ -929,73 +665,29 @@ Class PreDb
 		} elseif ($this->echooutput) {
 			echo $this->c->error("Update from Erotica failed.");
 		}
-		return $newNames;
 	}
 
 	/**
-	 * Get new pre for this source.
-	 *
-	 * @return int
+	 * Get new pre for abForeign.
 	 */
 	protected function retrieveAllfilledForeign()
 	{
-		$newNames = 0;
-		$groupid = $this->db->queryOneRow("SELECT id FROM groups WHERE name = 'alt.binaries.mom'");
-
-		if ($groupid === false) {
-			return 0;
-		} else {
-			$groupid = $groupid['id'];
+		$groupID = $this->db->queryOneRow("SELECT id FROM groups WHERE name = 'alt.binaries.mom'");
+		if ($groupID === false) {
+			return;
 		}
 
 		$buffer = $this->getUrl('http://abforeign.allfilled.com/reqs.php?fetch=posted&page=1');
 		if ($buffer !== false) {
 			if (preg_match_all('/<tr class="(even|odd)".+?<\/tr>/s', $buffer, $matches)) {
-				$matches = $matches2 = $match = array();
 				foreach ($matches as $match) {
 					foreach ($match as $m) {
-						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+<td class="cell_type">(?P<category>.+?)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<predate>\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?)<\/td>/s', $m, $matches2)) {
-							if (isset($matches2["requestid"]) && isset($matches2["title"])) {
+						if (preg_match('/<td class="cell_reqid">(?P<requestid>\d+)<\/td>.+<td class="cell_type">(?P<category>.+?)<\/td>.+?<td class="cell_filecount">(?P<files>\d+x\d+)<\/td>.+?<td class="cell_request">(?P<title>.+)<\/td>.+<td class="cell_statuschange">(?P<date>\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?)<\/td>/s', $m, $matches2)) {
 
-							// If too short, skip.
-							if (strlen($matches2["title"]) < 15) {
-								continue;
-							}
-							$md5 = $this->db->escapeString(md5($matches2["title"]));
-							$sha1 = $this->db->escapeString(sha1($matches2["title"]));
-								$dupeCheck = $this->db->queryOneRow(sprintf('SELECT id, requestid FROM predb WHERE md5 = %s', $md5));
-								if ($dupeCheck === false) {
-									$this->db->queryExec(
-										sprintf("
-											INSERT INTO predb (title, predate, source, md5, sha1, requestid, groupid, files, category)
-											VALUES (%s, %s, %s, %s, %s, %s, %d, %s, %s)",
-											$this->db->escapeString($matches2["title"]),
-											$this->db->from_unixtime(strtotime($matches2["predate"])),
-											$this->db->escapeString('abForeign'),
-											$md5,
-											$sha1,
-											$matches2["requestid"],
-											$groupid,
-											$this->db->escapeString($matches2["files"]),
-											$this->db->escapeString($matches2["category"])
-										)
-									);
-									$newNames++;
-								} else if (empty($dupeCheck['requestid'])) {
-									$this->db->queryExec(
-										sprintf('
-											UPDATE predb
-											SET requestid = %s, groupid = %d, files = %s, category = %s
-											WHERE md5 = %s',
-											$matches2["requestid"],
-											$groupid,
-											$this->db->escapeString($matches2["files"]),
-											$this->db->escapeString($matches2["category"]),
-											$md5
-										)
-									);
-								}
-							}
+							$matches2['source'] = 'abForeign';
+							$matches2['date'] = strtotime($matches2['date']);
+							$matches2['groupid'] = $groupID['id'];
+							$this->verifyPreData($matches2);
 						}
 					}
 				}
@@ -1003,160 +695,117 @@ Class PreDb
 		} elseif ($this->echooutput) {
 			echo $this->c->error("Update from Foreign failed.");
 		}
-		return $newNames;
 	}
 
 	/**
-	 * Get new pre for this source.
-	 *
-	 * @return int
+	 * Get new pre for ABGX.
 	 */
 	protected function retrieveAbgx()
 	{
-		$newnames = 0;
-		$groups = new Groups();
-		$groupname = $request = $title = '';
+		$data = true;
+		$channels = array(
+			'alt.binaries.games.xbox360'     => array('source' => 'x360', 'cat' => 'X360'),
+			'alt.binaries.console.ps3'       => array('source' => 'abcp', 'cat' => 'PS3'),
+			'alt.binaries.games.wii'         => array('source' => 'abgw', 'cat' => 'WII'),
+			'alt.binaries.games.wiiu'        => array('source' => 'abgwu', 'cat' => 'WIIU'),
+			'alt.binaries.sony.psp'          => array('source' => 'absp', 'cat' => 'PSP'),
+			'alt.binaries.games.nintendods'  => array('source' => 'abgn', 'cat' => 'NDS'),
+			'alt.binaries.sony.psvita'       => array('source' => 'spsv', 'cat' => 'PSVita'),
+			'alt.binaries.games.nintendo3ds' => array('source' => 'n3ds', 'cat' => '3DS'),
+			'alt.binaries.games.xbox'        => array('source' => 'abgx', 'cat' => 'XBOX'),
+			'alt.binaries.gamecube'          => array('source' => 'abg', 'cat' => 'NGC')
+		);
 
-
-		$arr = array('x360', 'abcp', 'abgw', 'abgwu', 'absp', 'abgn', 'spsv', 'n3ds', 'abgx', 'abg', 'x360');
-		foreach ($arr as &$value) {
-			$data = $this->getUrl('http://www.abgx.net/rss/' . $value . '/posted.rss');
+		foreach ($channels as $group => &$channel) {
+			$data = $this->getUrl('http://www.abgx.net/rss/' . $channel['source'] . '/posted.rss');
 			if ($data !== false) {
-				$releases = @simplexml_load_string($data);
-				if ($releases !== false) {
-					preg_match('/^Filled requests in #(\S+)/', $releases->channel->description, $groupname);
-					$groupid = ($groups->getIDByName($groupname[1])) ? $groups->getIDByName($groupname[1]) : 0;
-					foreach ($releases->channel->item as $release) {
+				$data = @simplexml_load_string($data);
+				if ($data !== false) {
+					$groupID = $this->db->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $this->db->escapeString($group)));
+					if ($groupID === false) {
+						$groupID = 0;
+					} else {
+						$groupID = $groupID['id'];
+					}
 
-						preg_match('/\(\d+\) (\S+) .+(\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}:\d{1,2})/', $release->description, $title);
-						// Skip if too short.
-						if (strlen($title[1]) < 15) {
-							continue;
-						}
-						preg_match('/^Req (\d+) - (\S+) .+/', $release->title, $request);
-						$requestid = $request[1];
-						$md5 = md5($title[1]);
-						$sha1 = sha1($title[1]);
-						$predate = $title[2];
+					foreach ($data->channel->item as $release) {
 
-						$oldname = $this->db->queryOneRow(sprintf('SELECT md5, requestid, groupid FROM predb WHERE md5 = %s', $this->db->escapeString($md5)));
-						if ($oldname !== false && empty($oldname['requestid'])) {
-							$this->db->queryExec(
-								sprintf('
-									UPDATE predb
-									SET requestid = %d, groupid = %d
-									WHERE md5 = %s',
-									max($oldname['requestid'], $requestid),
-									max($oldname['groupid'], $groupid),
-									$this->db->escapeString($md5)
-								)
-							);
-						}
-						else if ($oldname === false) {
-							if ($this->db->queryExec(
-								sprintf('
-									INSERT INTO predb (title, predate, source, md5, sha1, requestid, groupid)
-									VALUES (%s, %s, %s, %s, %s, %d, %d)',
-									$this->db->escapeString($title[1]),
-									$this->db->from_unixtime(strtotime($predate)),
-									$this->db->escapeString('abgx'),
-									$this->db->escapeString($md5),
-									$this->db->escapeString($sha1),
-									$requestid,
-									$groupid))) {
-								$newnames++;
+						if (preg_match('/\(\d+\)\s*(?P<title>\S*)\s*.+?\s*.+?\s*(?P<filename>\S*)\s*(?P<size1>\d+)x(?P<size2>\d+)MB.+?(?P<date>\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}:\d{1,2})/', $release->description, $matches)) {
+
+							if (preg_match('/^Req (\d+) - (\S+) .+/', $release->title, $request)) {
+								$matches['requestid'] = $request[1];
 							}
+							$matches['date'] = strtotime($matches['date']);
+							$matches['source'] = 'abgx';
+							$matches['groupid'] = $groupID;
+							$matches['category'] = $channel['cat'];
+							$matches['size'] = (round($matches['size1'] * $matches['size2']) . 'MB');
+							$matches['files'] = ($matches['size1'] . 'x' . $matches['size2'] . 'MB');
+							$this->verifyPreData($matches);
 						}
 					}
 				} else {
-					if ($this->echooutput) {
-						echo $this->c->error("Update from ABGX failed.");
-					}
-					return $newnames;
+					break;
 				}
 			} else {
-				if ($this->echooutput) {
-					echo $this->c->error("Update from ABGX failed.");
-				}
-				return $newnames;
+				break;
 			}
 		}
-		return $newnames;
+
+		if ($data === false && $this->echooutput) {
+			echo $this->c->error("Update from ABGX failed.");
+		}
 	}
 
 	/**
-	 * Get new pre for this source.
-	 *
-	 * @return int
+	 * Get new pre for Usenet Crawler.
 	 */
 	protected  function retrieveUsenetCrawler()
 	{
-		$db = new DB();
-		$newnames = 0;
-
 		$data = $this->getUrl("http://www.usenet-crawler.com/predb?q=&c=&offset=0#results");
 		if ($data === false) {
-			return 0;
+			return;
 		}
 
-		$html = str_get_html($data);
-		$releases = @$html->find('table[id="browsetable"]');
-		if (!isset($releases[0])) {
-			return $newnames;
-		}
-		$rows = $releases[0]->find('tr');
-		$count = 0;
-		foreach ($rows as $post) {
-			if ($count == 0) {
-				//Skip the table header row
-				$count++;
-				continue;
-			}
-			$data = $post->find('td');
-			$predate = strtotime($data[0]->innertext);
-
-			$e = $data[1]->find('a');
-			if (isset($e[0])) {
-				$title = trim($e[0]->innertext);
-				$title = str_ireplace(array('<u>', '</u>'), '', $title);
-			} elseif (preg_match('/(.+)<\/br><sub>/', $data[1])) {
-				// title is nuked, so skip
-				continue;
-			} else {
-				$title = trim($data[1]->innertext);
-			}
-
-			$md5 = md5($title);
-			$sha1 = sha1($title);
-			// Check DB if we already have it.
-			$check = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE md5 = %s', $db->escapeString($md5)));
-			if ($check !== false) {
-				continue;
-			}
-
-			$e = $data[2]->find('a');
-			$category = $e[0]->innertext;
-			preg_match('/([\d\.]+MB)/', $data[3]->innertext, $match);
-			$size = isset($match[1]) ? $match[1] : 'NULL';
-			if (strlen($title) > 15 && $category != 'NUKED') {
-				if ($db->queryExec(sprintf('INSERT INTO predb (title, predate, source, md5, sha1, category, size) VALUES (%s, %s, %s, %s, %s, %s, %s)',
-					$db->escapeString($title), $db->from_unixtime($predate), $db->escapeString('usenet-crawler'), $db->escapeString($md5), $db->escapeString($sha1),
-					$db->escapeString($category), $db->escapeString($size)))) {
-					$newnames++;
+		if (preg_match_all('/<tr class="(alt)?">\s*<td class="left">.*?<\/td>\s*<\/tr>/s', $data, $matches)) {
+			foreach ($matches as $m) {
+				foreach ($m as $match) {
+					if (preg_match('/left">\s*(?P<date>.+?)\s*<\/td.+?left">\s*(.*?<u>)?(?P<title>.+?)(<\/.+>?<.+?>(?P<nuke>.+)?<\/.+>)?(<\/u><\/a>.+?)?\s*<\/td.+?href.+?">\s*(?P<category>.+?)\s*<\/a.+?mid">\s*((?P<size>\d+(\.\d+)?[KMGT]?B)(\/(?P<files>\d+F))?|--)\s*<\/td/s', $match, $matches2)) {
+						$matches2['date'] = strtotime($matches2['date']);
+						$matches2['source'] = 'usenet-crawler';
+						$matches2['size'] = ((isset($matches2['size']) && !empty($matches2['size'])) ? $matches2['size'] : '');
+						$matches2['files'] = ((isset($matches2['files']) && !empty($matches2['files'])) ? $matches2['files'] : '');
+						if (isset($matches2['nuke']) && preg_match('/(\S+)\)/', $matches2['nuke'], $nuked)) {
+							$matches2['nuked'] = PreDb::PRE_NUKED;
+							$matches2['nukereason'] = $nuked[1];
+						}
+						$this->verifyPreData($matches2);
+					}
 				}
 			}
 		}
-		return $newnames;
 	}
 
 	// Update a single release as it's created.
-	public function matchPre($cleanerName, $releaseID)
+	public function matchPre($cleanerName)
 	{
+		if ($cleanerName == '') {
+			return false;
+		}
 		$db = new DB();
 		$x = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE title = %s', $db->escapeString($cleanerName)));
 		if (isset($x['id'])) {
-			$db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $x['id'], $releaseID));
-			return true;
+			return array(
+				"preid" => $x['id']
+			);
+		}
+		//check if clean name matches a predb filename
+		$y = $db->queryOneRow(sprintf('SELECT id, title FROM predb WHERE filename = %s', $db->escapeString($cleanerName)));
+		if (isset($y['id'])) {
+			return array(
+				"title" => $y['title'],
+				"preid" => $y['id']
+			);
 		}
 		return false;
 	}
@@ -1219,7 +868,8 @@ Class PreDb
 
 				// To save space in the DB we do this instead of storing the full URL.
 				if ($URL === 'srrdb') {
-					$URL = 'http://www.srrdb.com/download/file/' . $row['title'] . '/' . strtolower(urlencode($row['title'])) . '.nfo';
+					continue;
+					//$URL = 'http://www.srrdb.com/download/file/' . $row['title'] . '/' . strtolower(urlencode($row['title'])) . '.nfo';
 				}
 
 				$buffer = $this->getUrl($URL);
@@ -1229,9 +879,9 @@ Class PreDb
 						continue;
 					}
 
-					if ($row['nfo'] === 'srrdb' && preg_match('/You\'ve reached the daily limit/i', $buffer)) {
+					/*if ($row['nfo'] === 'srrdb' && preg_match('/You\'ve reached the daily limit/i', $buffer)) {
 						continue;
-					}
+					}*/
 
 					if ($nfo->addAlternateNfo($buffer, $row, $nntp)) {
 						if ($this->echooutput) {
@@ -1249,7 +899,7 @@ Class PreDb
 		return $nfos;
 	}
 
-	// Matches the MD5 within the predb table to release files and subjects (names) which are hashed.
+	// Matches the hashes within the predb table to release files and subjects (names) which are hashed.
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
 		$db = new DB();
@@ -1276,12 +926,12 @@ Class PreDb
 			if ($time == 1) {
 				$te = ' in the past 3 hours';
 			}
-			echo $this->c->header('Fixing search names' . $te . " using the predb md5.");
+			echo $this->c->header('Fixing search names' . $te . " using the predb hash.");
 		}
 		if ($db->dbSystem() === 'mysql') {
-			$regex = "AND (r.ishashed = 1 OR rf.name REGEXP'[a-fA-F0-9]{32}')";
+			$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
 		} else if ($db->dbSystem() === 'pgsql') {
-			$regex = "AND (r.ishashed = 1 OR rf.name ~ '[a-fA-F0-9]{32}')";
+			$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
 		}
 
 		if ($cats === 3) {
@@ -1301,9 +951,9 @@ Class PreDb
 		echo $this->c->primary(number_format($total) . " releases to process.");
 		if ($total > 0) {
 			foreach ($res as $row) {
-				if (preg_match('/[a-f0-9]{32,40}/i', $row['name'], $matches)) {
+				if (preg_match('/[a-fA-F0-9]{32,40}/i', $row['name'], $matches)) {
 					$updated = $updated + $namefixer->matchPredbHash($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
-				} else if (preg_match('/[a-f0-9]{32,40}/i', $row['filename'], $matches)) {
+				} else if (preg_match('/[a-fA-F0-9]{32,40}/i', $row['filename'], $matches)) {
 					$updated = $updated + $namefixer->matchPredbHash($matches[0], $row, $echo, $namestatus, $this->echooutput, $show);
 				}
 				if ($show === 2) {
