@@ -14,92 +14,120 @@
  * along with this program (see LICENSE.txt in the base directory.  If
  * not, see:
  *
- * @link <http://www.gnu.org/licenses/>.
- * @author niel
+ * @link      <http://www.gnu.org/licenses/>.
+ * @author    niel
  * @copyright 2014 nZEDb
  */
 namespace nzedb\utility\log;
 
-use nzedb\utility\Utility;
+use \Psr\Log\InvalidArgumentException;
 
-
-class Log extends \Psr\Log\AbstractLogger
+abstract class Log extends \Psr\Log\AbstractLogger
 {
-	/**
-	 * @var Array of instance variable for various logger classes (LoggerCLI, LoggerFile, etc.).
-	 * 		Each MUST support the logger levels.
-	 */
-	public $loggers = array();
+	const LEVEL_NONE		= 0;
+	const LEVEL_EMERGENCY	= 0;
+	const LEVEL_ALERT		= 1;
+	const LEVEL_CRITICAL	= 2;
+	const LEVEL_ERROR		= 3;
+	const LEVEL_WARNING		= 4;
+	const LEVEL_NOTICE		= 5;
+	const LEVEL_INFO		= 6;
+	const LEVEL_DEBUG		= 7;
+	const LEVEL_ALL			= PHP_INT_MAX;
 
-	private $context = [
-		'logTo'		=> [
-						'cli'  => false,
-						'db'   => false,
-						'file' => false
-						],	// Default to no handlers;
-		'exception'	=> null,
-	];
+	protected  $_context = [];
+
+	private $levels = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
 
 	public function __construct(array $options = array())
 	{
-		$default = array(
-			'logCLI'	=> null,
-			'logDb'		=> null,
-			'logFile'	=> null,
-			'filename'	=> null,
-			'filepath'	=> null,
-			'logLevel'	=> Logger::LEVEL_NONE,
-			'log2CLI'	=> Utility::isCLI(), // Output to CLI
-			'log2Db'	=> false,
-			'log2File'	=> !Utility::isCLI(), // Output to file
-			'logTo'		=> [],
+		$defaults = array(
+			'exception' => null,
+			'logLevel' => self::LEVEL_EMERGENCY,
+			'logTo' => [
+				'cli'  => false,
+				'db'   => false,
+				'file' => false
+				], // Default to no handlers;
 		);
-		$options += $default;
-
-		if ($options['log2CLI']) {
-			if ($options['logCLI'] === null) {
-				$this->loggers[] = new LoggerCLI(['logLevel' => $options['logLevel']]);
-			} else {
-				$this->loggers[] = $options['logCLI'];
-			}
-			$this->context['logTo']['cli'] = true;
-		}
-
-/* TODO implement a database handler
-		if ($options['log2db']) {
-			if ($options['logDb'] === null) {
-				$this->loggers[] = new LoggerDb();
-			} else {
-				$this->loggers[] = $options['logDb'];
-			}
-			$this->context['logTo']['db'] = true;
-		}
-*/
-
-		if ($options['log2File']) {
-			if ($options['logFile'] === null) {
-				$context = [];
-				if (!empty($options['filename'])) {
-					$context['filename'] = $options['filename'];
-				}
-				if (!empty($options['filepath'])) {
-					$context['filepath'] = $options['filepath'];
-				}
-				$context['logLevel'] = $options['logLevel'];
-				$this->loggers[] = new LoggerFile($context);
-			} else {
-				$this->loggers[] = $options['logFile'];
-			}
-			$this->context['logTo']['file'] = true;
-		}
+		$options += $defaults;
+		$this->_context += $options;
 	}
 
-
-	public function log($level, $message, array $context = array())
+	/**
+	 * @param $level	The name of the level to convert to its code
+	 *
+	 * @return integer	The code for the named level.
+	 * @throws \Psr\Log\InvalidArgumentException
+	 */
+	public function levelName2Number($level)
 	{
-		$context += $this->context;
-		foreach ($this->loggers as $logger) {
-			$logger->log($level, $message, $context);
+		if (empty($level)) {
+			throw new InvalidArgumentException('Level cannot be empty, must be a string name.');
 		}
+
+		$index = array_search($level, $this->levels);
+		if ($index === false) {
+			throw new InvalidArgumentException('Level must be one of: ' . implode(', ', $this->levels));
+		}
+
+		return $index;
+	}
+
+	/**
+	 * Takes a message (object or string) and returns a string representation.
+	 *
+	 * @param string|object $message If an object, it MUST implement the __toString() magic method.
+	 *
+	 * @return string
+	 * @throws \Psr\Log\InvalidArgumentException If the object does not implement the __toString
+	 *                                           magic method, an exception is thrown.
+	 */
+	public function object2Message($message)
+	{
+		if (($message instanceof stdClass) === false) {	// not an object
+			$result = (string)$message;					// Return the string
+		} else if (method_exists($message, '__toString')) {
+			$result = $message->__toString();
+		} else {
+			throw new InvalidArgumentException('Message object must implement __toString to be used.');
+		}
+		return $result;
+	}
+/*
+	public function sanitiseContext(array $context = array())
+	{
+		$defaults = array(
+			'exception' => false, // Exception class, MUST be tested before use
+			'logTo'		=> ['cli' => false, 'db' => false, 'file' => false], // Default to no handler
+			'timestamp' => time(), // Unix timestamp.
+		);
+		$context += $defaults;
+
+		$context['exception'] = $context['exception'] instanceof \Exception;
+
+		return $context;
+	}
+*/
+	/**
+	 * Should the supplied level be logged.
+	 *
+	 * @param $level	The level that we want to know if we should log for.
+	 *
+	 * @return bool		True if the supplied level is within the logging threshold.
+	 * @throws \Psr\Log\InvalidArgumentException
+	 */
+	public function shouldLog($level)
+	{
+		if (!is_numeric($level)) {
+			throw new InvalidArgumentException('Level must be a positive integer less than 8.');
+		}
+
+		return !($this->_context['logLevel'] < (integer)$level);
+	}
+
+	public function warn($message, array $context = array())
+	{
+		$this->warning($message, $context);
 	}
 }

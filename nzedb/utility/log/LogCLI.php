@@ -21,54 +21,48 @@
 namespace nzedb\utility\log;
 
 
-use nzedb\utility\Utility;
+use Psr\Log\InvalidArgumentException;
 
-class LoggerFile extends Logger
+class LogCLI extends Log
 {
-	private $file;
-	private $filespec;
+	private $logCLI;
 
 	public function __construct(array $options = array())
 	{
-		$defaults = [
-			'filename'	=> 'nzedb.log',
-			'filepath'	=> nZEDb_RES . 'logs' . DS,
-			'logTo' => ['file' => true],
-		];
-		$options += $defaults;
+		$default = ['logTo'	=> ['cli' => true]];
+		$options += $default;
+
+		$this->logCLI = new \ColorCLI();
 		parent::__construct($options);
-
-		$mode = 'a' . (Utility::isWin() ? 'b' : '');
-		$this->file = fopen($this->getFileSpec(), $mode);
-		if ($this->file === false) {
-			throw new \RuntimeException("Couldn't create/open log file '{$this->filespec}''");
-		}
-	}
-
-	public function getFileSpec()
-	{
-		return Utility::trailingSlash($this->_context['filepath']) . $this->_context['filename'];
 	}
 
 	public function log($level, $message, array $context = array())
 	{
-		if (!isset($context['timestamp']) || empty($context['timestamp'])) {
-			$context['timestamp'] = time(); // Unix timestamp.
-		}
 		$context += $this->_context; // Merge in defaults, allowing parameter to override.
-		if ($context['logTo']['file'] === false) {
+		if ($context['logTo']['cli'] === false) {
+			if (nZEDb_DEBUG) {
+				echo $this->logCLI->debug("Context prevents displaying message");
+			}
 			return;
 		}
 
 		if ($this->shouldLog($this->levelName2Number($level))) {
-			$text = sprintf(
-				'%s [%s] %s%s',
-				date('Y-m-d H:i:s', $context['timestamp']),
-				$level,
-				$this->object2Message($message),
-				PHP_EOL
-			);
-			$result = fwrite($this->file, $text);
+			switch ($level) {
+				case 'debug':
+				case 'error':
+				case 'info':
+				case 'notice':
+				case 'warning':
+					break;
+				case 'alert':
+				case 'critical':
+				case 'emergency':
+				default:
+					$level = 'error';
+			}
+			$this->logCLI->doEcho($this->logCLI->$level($this->object2Message($message), true));
+		} else if (nZEDb_DEBUG) {
+			echo $this->logCLI->debug("Log message below reporting threshold");
 		}
 	}
 }

@@ -21,48 +21,54 @@
 namespace nzedb\utility\log;
 
 
-use Psr\Log\InvalidArgumentException;
+use nzedb\utility\Utility;
 
-class LoggerCLI extends Logger
+class LogFile extends Log
 {
-	private $logCLI;
+	private $file;
+	private $filespec;
 
 	public function __construct(array $options = array())
 	{
-		$default = ['logTo'	=> ['cli' => true]];
-		$options += $default;
-
-		$this->logCLI = new \ColorCLI();
+		$defaults = [
+			'filename'	=> 'nzedb.log',
+			'filepath'	=> nZEDb_RES . 'logs' . DS,
+			'logTo' => ['file' => true],
+		];
+		$options += $defaults;
 		parent::__construct($options);
+
+		$mode = 'a' . (Utility::isWin() ? 'b' : '');
+		$this->file = fopen($this->getFileSpec(), $mode);
+		if ($this->file === false) {
+			throw new \RuntimeException("Couldn't create/open log file '{$this->filespec}''");
+		}
+	}
+
+	public function getFileSpec()
+	{
+		return Utility::trailingSlash($this->_context['filepath']) . $this->_context['filename'];
 	}
 
 	public function log($level, $message, array $context = array())
 	{
+		if (!isset($context['timestamp']) || empty($context['timestamp'])) {
+			$context['timestamp'] = time(); // Unix timestamp.
+		}
 		$context += $this->_context; // Merge in defaults, allowing parameter to override.
-		if ($context['logTo']['cli'] === false) {
-			if (nZEDb_DEBUG) {
-				echo $this->logCLI->debug("Context prevents displaying message");
-			}
+		if ($context['logTo']['file'] === false) {
 			return;
 		}
 
 		if ($this->shouldLog($this->levelName2Number($level))) {
-			switch ($level) {
-				case 'debug':
-				case 'error':
-				case 'info':
-				case 'notice':
-				case 'warning':
-					break;
-				case 'alert':
-				case 'critical':
-				case 'emergency':
-				default:
-					$level = 'error';
-			}
-			$this->logCLI->doEcho($this->logCLI->$level($this->object2Message($message), true));
-		} else if (nZEDb_DEBUG) {
-			echo $this->logCLI->debug("Log message below reporting threshold");
+			$text = sprintf(
+				'%s [%s] %s%s',
+				date('Y-m-d H:i:s', $context['timestamp']),
+				$level,
+				$this->object2Message($message),
+				PHP_EOL
+			);
+			$result = fwrite($this->file, $text);
 		}
 	}
 }
