@@ -163,31 +163,40 @@ class AniDBstandAlone {
 				}
 				return;
 			}
-			$this->addTitle($AniDBAPIArray);
-
-			// Save the image to covers directory
-			if ($AniDBAPIArray['picture']) {
-				$ri->saveImage($AniDBAPIArray['anidbid'], 'http://img7.anidb.net/pics/anime/'.$AniDBAPIArray['picture'], $this->imgSavePath);
-			}
-			// Print total count added
-			if ($apicount != 0 && $this->echooutput) {
-				echo $this->c->header("Processed " . $apicount . " anidb entries of a total possible of " . $exitcount . " for this session\n");
-			}
-			// Sleep 4 Minutes for Every 10 Records
-			if ($apicount % 10 == 0 && $apicount != 0) {
-				$sleeptime = 180 + rand(30,90);
+			elseif ($AniDBAPIArray['notfound']){
+				// anidb is present in animetitles, but not yet on site. Temporarily remove title from animetitles to prevent banning.
+				$db->queryExec(sprintf('DELETE FROM animetitles WHERE anidbid = %d', $anidbid));
 				if ($this->echooutput) {
-					$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."] Start waitloop for " . $sleeptime . " seconds to prevent banning.\n"));
-					}
-				sleep($sleeptime);
+					$this->c->doEcho($this->c->header("Anime id ".$anidbid." removed until next update animetitles."));
 				}
+			}
+			else {
+				$this->addTitle($AniDBAPIArray);
+	
+				// Save the image to covers directory
+				if ($AniDBAPIArray['picture']) {
+					$ri->saveImage($AniDBAPIArray['anidbid'], 'http://img7.anidb.net/pics/anime/'.$AniDBAPIArray['picture'], $this->imgSavePath);
+				}
+				// Print total count added
+				if ($apicount != 0 && $this->echooutput) {
+					echo $this->c->header("Processed " . $apicount . " anidb entries of a total possible of " . $exitcount . " for this session\n");
+				}
+				// Sleep 4 Minutes for Every 10 Records
+				if ($apicount % 10 == 0 && $apicount != 0) {
+					$sleeptime = 180 + rand(30,90);
+					if ($this->echooutput) {
+						$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."] Start waitloop for " . $sleeptime . " seconds to prevent banning.\n"));
+						}
+					sleep($sleeptime);
+					}
+			}
 
 			// using exitcount if this number of API calls is reached exit
 			if ($apicount >= $exitcount) {
 				$this->c->doEcho($this->c->header("Exit getAniDBInfo at " . date('D M d, Y G:i a')));
 				return;
 			}
-		}
+		} // end stage 1
 
 		// Begin Stage 2: Update running series in anidb table -- we only update series already existing in db
 		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."] Stage 2 -> Update running series."));
@@ -396,6 +405,11 @@ echo "\nEnd addTitle\n";
 		// if we are banned simply return false
 		if (preg_match("/\<error\>Banned\<\/error\>/", $apiresponse)) {
 			$AniDBAPIArray['banned'] = true;
+			return $AniDBAPIArray;
+		} elseif (preg_match("/\<error\>Anime not found\<\/error\>/", $apiresponse)) {
+			echo "AniDB   : Anime not yet on site. Remove until next update.\n";
+			$AniDBAPIArray['banned'] = false;
+			$AniDBAPIArray['notfound'] = true;
 			return $AniDBAPIArray;
 		} else {
 			if (!preg_match('/anime id="\d+"/', $apiresponse, $valid)) {
