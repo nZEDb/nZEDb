@@ -31,7 +31,7 @@ class Git {
 	 *
 	 * @var string
 	 */
-	protected static $bin = '/usr/bin/git';
+	protected static $bin = null;
 
 	/**
 	 * Sets git executable path
@@ -46,6 +46,7 @@ class Git {
 	 * Gets git executable path
 	 */
 	public static function get_bin() {
+		self::check_bin();
 		return self::$bin;
 	}
 
@@ -111,6 +112,27 @@ class Git {
 		return (get_class($var) == 'GitRepo');
 	}
 
+	public function __construct($binPath = null)
+	{
+		self::check_bin($binPath);
+	}
+
+	private static function check_bin($binPath = null)
+	{
+		if (!empty(self::$bin)) {
+			return;
+		}
+		if (empty($binPath)) {
+			$binPath = '/usr/bin/git';
+			if (\nzedb\utility\Utility::hasWhich()) {
+				exec('which git', $output, $error);
+				if (!$error) {
+					$binPath = $output[0];
+				}
+			}
+		}
+		self::set_bin($binPath);
+	}
 }
 
 // ------------------------------------------------------------------------
@@ -296,7 +318,7 @@ class GitRepo {
 		}
 
 		$status = trim(proc_close($resource));
-		if ($status) throw new Exception($stderr);
+		if ($status) throw new Exception($stderr . PHP_EOL . $command);
 
 		return $stdout;
 	}
