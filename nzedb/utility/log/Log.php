@@ -20,7 +20,10 @@
  */
 namespace nzedb\utility\log;
 
-class Log
+use nzedb\utility\Utility;
+
+
+class Log extends \Psr\Log\AbstractLogger
 {
 	/**
 	 * @var Array of instance variable for various logger classes (LoggerCLI, LoggerFile, etc.).
@@ -29,36 +32,39 @@ class Log
 	public $loggers = array();
 
 	private $context = [
-		'logTo' =>
-			[
-				'cli'  => false,
-				'db'   => false,
-				'file' => false
-			]
-	]; // Default to no handlers;
+		'logTo'		=> [
+						'cli'  => false,
+						'db'   => false,
+						'file' => false
+						],	// Default to no handlers;
+		'exception'	=> null,
+	];
 
 	public function __construct(array $options = array())
 	{
 		$default = array(
-			'logCli'   => null,
-			'logDb'    => null,
-			'logFile'  => null,
-			'filename' => nZEDb_RES . 'logs' . DS . 'nzedb.log',
-			'logLevel' => Logger::LEVEL_NONE,
-			'Log2CLI'  => Utility::isCLI(), // Output to CLI
-			'log2Db'   => false,
-			'Log2File' => !Utility::isCLI(), // Output to file
+			'logCLI'	=> null,
+			'logDb'		=> null,
+			'logFile'	=> null,
+			'filename'	=> null,
+			'filepath'	=> null,
+			'logLevel'	=> Logger::LEVEL_NONE,
+			'log2CLI'	=> Utility::isCLI(), // Output to CLI
+			'log2Db'	=> false,
+			'log2File'	=> !Utility::isCLI(), // Output to file
+			'logTo'		=> [],
 		);
 		$options += $default;
 
-		if ($options['log2cli']) {
-			if ($options['logCli'] === null) {
-				$this->loggers[] = new LoggerCLI();
+		if ($options['log2CLI']) {
+			if ($options['logCLI'] === null) {
+				$this->loggers[] = new LoggerCLI(['logLevel' => $options['logLevel']]);
 			} else {
-				$this->loggers[] = $options['logCli'];
+				$this->loggers[] = $options['logCLI'];
 			}
 			$this->context['logTo']['cli'] = true;
 		}
+
 /* TODO implement a database handler
 		if ($options['log2db']) {
 			if ($options['logDb'] === null) {
@@ -69,15 +75,25 @@ class Log
 			$this->context['logTo']['db'] = true;
 		}
 */
-		if ($options['log2file']) {
+
+		if ($options['log2File']) {
 			if ($options['logFile'] === null) {
-				$this->loggers[] = new LoggerFile($options['filename']);
+				$context = [];
+				if (!empty($options['filename'])) {
+					$context['filename'] = $options['filename'];
+				}
+				if (!empty($options['filepath'])) {
+					$context['filepath'] = $options['filepath'];
+				}
+				$context['logLevel'] = $options['logLevel'];
+				$this->loggers[] = new LoggerFile($context);
 			} else {
 				$this->loggers[] = $options['logFile'];
 			}
 			$this->context['logTo']['file'] = true;
 		}
 	}
+
 
 	public function log($level, $message, array $context = array())
 	{

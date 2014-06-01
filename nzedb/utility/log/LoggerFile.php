@@ -30,37 +30,45 @@ class LoggerFile extends Logger
 
 	public function __construct(array $options = array())
 	{
-		$default = array(
+		$defaults = [
 			'filename'	=> 'nzedb.log',
 			'filepath'	=> nZEDb_RES . 'logs' . DS,
-		);
-		$options += $default;
+			'logTo' => ['file' => true],
+		];
+		$options += $defaults;
+		parent::__construct($options);
 
 		$mode = 'a' . (Utility::isWin() ? 'b' : '');
-		$this->filespec = Utility::trailingSlash($options['filepath']) . $options['filename'];
-		$this->file = fopen($this->filespec, $mode);
+		$this->file = fopen($this->getFileSpec(), $mode);
 		if ($this->file === false) {
 			throw new \RuntimeException("Couldn't create/open log file '{$this->filespec}''");
 		}
 	}
 
+	public function getFileSpec()
+	{
+		return Utility::trailingSlash($this->_context['filepath']) . $this->_context['filename'];
+	}
+
 	public function log($level, $message, array $context = array())
 	{
-		$defaults = array(
-			'logTo'     => ['file' => true],
-		);
-		$context += $defaults;
-		$context = $this->sanitiseContext($context);
+		if (!isset($context['timestamp']) || empty($context['timestamp'])) {
+			$context['timestamp'] = time(); // Unix timestamp.
+		}
+		$context += $this->_context; // Merge in defaults, allowing parameter to override.
+		if ($context['logTo']['file'] === false) {
+			return;
+		}
 
-		$intLevel = $this->levelName2Number($level);
-		if ($this->shouldLog($intLevel)) {
-			fwrite($this->file, sprintf(
+		if ($this->shouldLog($this->levelName2Number($level))) {
+			$text = sprintf(
 				'%s [%s] %s%s',
 				date('Y-m-d H:i:s', $context['timestamp']),
 				$level,
 				$this->object2Message($message),
 				PHP_EOL
-			));
+			);
+			$result = fwrite($this->file, $text);
 		}
 	}
 }

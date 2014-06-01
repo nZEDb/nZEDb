@@ -20,9 +20,9 @@
  */
 namespace nzedb\utility\log;
 
-use Psr\Log\InvalidArgumentException;
+use \Psr\Log\InvalidArgumentException;
 
-class Logger extends Psr\Log\AbstractLogger
+abstract class Logger extends \Psr\Log\AbstractLogger
 {
 	const LEVEL_NONE		= 0;
 	const LEVEL_EMERGENCY	= 0;
@@ -33,26 +33,27 @@ class Logger extends Psr\Log\AbstractLogger
 	const LEVEL_NOTICE		= 5;
 	const LEVEL_INFO		= 6;
 	const LEVEL_DEBUG		= 7;
+	const LEVEL_ALL			= PHP_INT_MAX;
 
-	private $level;
+	protected  $_context = [];
 
 	private $levels = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
 
 	public function __construct(array $options = array())
 	{
-		$default = array(
-			'logLevel' => self::LEVEL_NONE,
+		$defaults = array(
+			'exception' => null,
+			'logLevel' => self::LEVEL_EMERGENCY,
+			'logTo' => [
+				'cli'  => false,
+				'db'   => false,
+				'file' => false
+				], // Default to no handlers;
 		);
-		$options += $default;
-
-		$this->level = $options['logLevel'];
+		$options += $defaults;
+		$this->_context += $options;
 	}
-/*
-		public function log($level, $message, array $context = array())
-	{
 
-	}
-*/
 	/**
 	 * @param $level	The name of the level to convert to its code
 	 *
@@ -93,7 +94,7 @@ class Logger extends Psr\Log\AbstractLogger
 		}
 		return $result;
 	}
-
+/*
 	public function sanitiseContext(array $context = array())
 	{
 		$defaults = array(
@@ -107,7 +108,7 @@ class Logger extends Psr\Log\AbstractLogger
 
 		return $context;
 	}
-
+*/
 	/**
 	 * Should the supplied level be logged.
 	 *
@@ -122,6 +123,11 @@ class Logger extends Psr\Log\AbstractLogger
 			throw new InvalidArgumentException('Level must be a positive integer less than 8.');
 		}
 
-		return !((integer)$level > $this->level);
+		return !($this->_context['logLevel'] < (integer)$level);
+	}
+
+	public function warn($message, array $context = array())
+	{
+		$this->warning($message, $context);
 	}
 }

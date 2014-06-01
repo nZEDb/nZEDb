@@ -25,34 +25,28 @@ use Psr\Log\InvalidArgumentException;
 
 class LoggerCLI extends Logger
 {
-	private $logCli;
+	private $logCLI;
 
 	public function __construct(array $options = array())
 	{
-		$default = array(
-			'cli'   => null,
-		);
+		$default = ['logTo'	=> ['cli' => true]];
 		$options += $default;
 
-		if ($options['cli'] === null) {
-			$this->logCli = new LoggerCLI();
-		} else if (is_a($options['cli'], 'ColorCLI')) {
-			$this->logCli = $options['cli'];
-		} else {
-			throw new InvalidArgumentException('Option "cli" must be an object of type ColorCLI.');
-		}
+		$this->logCLI = new \ColorCLI();
+		parent::__construct($options);
 	}
 
 	public function log($level, $message, array $context = array())
 	{
-		$defaults = array(
-			'logTo'		=> ['cli' => true],
-		);
-		$context += $defaults;
-		$context = $this->sanitiseContext($context);
+		$context += $this->_context; // Merge in defaults, allowing parameter to override.
+		if ($context['logTo']['cli'] === false) {
+			if (nZEDb_DEBUG) {
+				echo $this->logCLI->debug("Context prevents displaying message");
+			}
+			return;
+		}
 
-		$intLevel = $this->levelName2Number($level);
-		if ($this->shouldLog($intLevel)) {
+		if ($this->shouldLog($this->levelName2Number($level))) {
 			switch ($level) {
 				case 'debug':
 				case 'error':
@@ -66,7 +60,9 @@ class LoggerCLI extends Logger
 				default:
 					$level = 'error';
 			}
-			$this->logCli->doEcho($this->logCli->$level($this->object2Message($message), true));
+			$this->logCLI->doEcho($this->logCLI->$level($this->object2Message($message), true));
+		} else if (nZEDb_DEBUG) {
+			echo $this->logCLI->debug("Log message below reporting threshold");
 		}
 	}
 }
