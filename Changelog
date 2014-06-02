@@ -6,6 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-01 kevin
+	* Chg: Change Alpha theme error output when there are no covers in cover view.
+	* Add: Links to ZNC/IRCScraper guides.
 2014-06-01 niel
 	* Fix: Adding dynamic git path use to the Git library so that OSes with non-standard locations do not fail..
 2014-05-31 kevin

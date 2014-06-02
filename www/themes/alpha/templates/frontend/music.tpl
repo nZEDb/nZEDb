@@ -273,10 +273,12 @@
 		<div class="pull-left" style="margin-right: 15px;">
 			<h2 style="margin-top: 7px;"> ಠ_ಠ </h2>
 		</div>
-		<p>Either some amazon key is wrong, or there is nothing in this section.
-			<br>Please try looking in the<a
-					href="{$smarty.const.WWW_TOP}/browse?t={$category}"
-					style="font-weight:strong;text-decoration:underline;"> list view</a>.
+		<p>No music releases have amazon covers.
+			<br>This might mean the Administrator's Amazon API keys are wrong, or he has file permission issues, or he has disabled looking up Amazon.
+			<br>This could also mean there are no music releases.
+			<br>Please try looking in the
+			<a href="{$smarty.const.WWW_TOP}/browse?t={$category}" style="font-weight:strong;text-decoration:underline;"
+			>list view</a>, which does not require Amazon covers.
 		</p>
 	</div>
 {/if}
