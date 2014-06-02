@@ -17,8 +17,6 @@ section,subsection,name,value,hint,setting
 		ffmpeg_image_time	5		ffmpeg_image_time
 		fixnamesperrun	10	The maximum number of releases to check per run(threaded script only).	fixnamesperrun
 		fixnamethreads	1	The number of threads for fixReleasesNames. This includes md5, nfos and filenames.	fixnamethreads
-		grabnzbs	0	NZBs can be grabbed during update_binaries and backfill. To be effective, this should run before update_releases. I have discovered that the nzbs imported using GrabNZBs do not have the same release file size as those created by nZEDb. So duplicates will be inserted into the db. This can be verified by opening both nzbs and comparing the message-id's. You will see the same message-id's in both nzbs, but the file size will differ.\\nThe difference appears to be from USP providers, the posted nzb and size is from the originating USP and may vary in size from your USP.	grabnzbs
-		grabnzbthreads	1	The number of threads for Grab NZBs.	grabnzbthreads
 		grabstatus	1	Whether to update download counts when someone downloads a release.	grabstatus
 		hashcheck	1		hashcheck
 		lastpretime	0	Last time we downloaded a pre using WEB sources	lastpretime
@@ -35,7 +33,6 @@ section,subsection,name,value,hint,setting
 		maxanidbprocessed	100	The maximum amount of anime to process with anidb per run. This does not use an NNTP connection or query Amazon.	maxanidbprocessed
 		maxbooksprocessed	300	The maximum amount of books to process with amazon per run. This does not use an NNTP connection	maxbooksprocessed
 		maxgamesprocessed	150	The maximum amount of games to process with amazon per run. This does not use an NNTP connection.	maxgamesprocessed
-		maxgrabnzbs	100	The maximum number of parts to download when running GrabNZBS, all potential nzbs exceeding this number will be deleted from the nzbs table.	maxgrabnzbs
 		maximdbprocessed	100	The maximum amount of movies to process with IMDB per run. This does not use an NNTP connection or query Amazon.	maximdbprocessed
 		maxmssgs	20000	The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.	maxmssgs
 		maxmusicprocessed	150	The maximum amount of music to process with amazon per run. This does not use an NNTP connection.	maxmusicprocessed

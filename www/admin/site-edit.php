@@ -108,8 +108,8 @@ $page->smarty->assign('registerstatus_names', array('API Only', 'Open', 'Invite'
 $page->smarty->assign('passworded_ids', array(0,1,10));
 $page->smarty->assign('passworded_names', array('Don\'t show passworded or potentially passworded', 'Don\'t show passworded', 'Show everything'));
 
-$page->smarty->assign('grabnzbs_ids', array(0,1,2));
-$page->smarty->assign('grabnzbs_names', array('Disabled', 'Primary NNTP Provider', 'Alternate NNTP Provider'));
+//$page->smarty->assign('grabnzbs_ids', array(0,1,2));
+//$page->smarty->assign('grabnzbs_names', array('Disabled', 'Primary NNTP Provider', 'Alternate NNTP Provider'));
 
 $page->smarty->assign('partrepair_ids', array(0,1,2));
 $page->smarty->assign('partrepair_names', array('Disabled', 'Part Repair', 'Part Repair Threaded'));
