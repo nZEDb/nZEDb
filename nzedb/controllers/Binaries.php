@@ -7,69 +7,50 @@ use nzedb\db\DB;
  */
 class Binaries
 {
-	/**
-	 * @const int
-	 */
 	const BLACKLIST_FIELD_SUBJECT = 1;
-
-	/**
-	 * @const int
-	 */
 	const BLACKLIST_FIELD_FROM = 2;
-
-	/**
-	 * @const int
-	 */
 	const BLACKLIST_FIELD_MESSAGEID = 3;
 
 	/**
-	 * Instance of class Backfill.
-	 * @var object
+	 * @var Backfill
 	 */
 	private $backfill;
 
 	/**
-	 * Instance of class colorCLI
-	 * @var object
+	 * @var ColorCLI
 	 */
 	private $c;
 
 	/**
-	 * Instance of class CollectionsCleaning
-	 * @var object
+	 * @var CollectionsCleaning
 	 */
 	private $collectionsCleaning;
 
 	/**
-	 * Instance of class ConsoleTools
-	 * @var object
+	 * @var ConsoleTools
 	 */
 	private $consoleTools;
 
 	/**
-	 * Instance of class DB
-	 * @var object
+	 * @var nzedb\db\DB
 	 */
 	private $db;
 
 	/**
-	 * Instance of class Debugging.
-	 * @var object
+	 * @var Debugging
 	 */
 	private $debugging;
 
 	/**
-	 * Instance of class Groups.
-	 * @var object
+	 * @var Groups
 	 */
 	private $groups;
 
 	/**
-	 * Array with site settings.
+	 * Site settings.
 	 * @var bool|stdClass
 	 */
 	private $site;
-
 
 	/**
 	 * The cache of the blacklist.
@@ -615,22 +596,7 @@ class Binaries
 		$returnArray = array();
 
 		// Check that tables exist, create if they do not
-		if ($this->tablepergroup === 1) {
-			if ($this->db->newtables($groupArr['id']) === false) {
-				$dMessage = "There is a problem creating new parts/files tables for this group.";
-				if ($this->debug) {
-					$this->debugging->start("scan", $dMessage, 1);
-				}
-				exit($this->c->error($dMessage));
-			}
-			$group['cname'] = 'collections_' . $groupArr['id'];
-			$group['bname'] = 'binaries_' . $groupArr['id'];
-			$group['pname'] = 'parts_' . $groupArr['id'];
-		} else {
-			$group['cname'] = 'collections';
-			$group['bname'] = 'binaries';
-			$group['pname'] = 'parts';
-		}
+		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupArr['id']);
 
 		// Download the headers.
 		$msgs = $this->nntp->getOverview($first . "-" . $last, true, false);
@@ -1100,34 +1066,24 @@ class Binaries
 	}
 
 	/**
-	 * Attempt to get missing headers.
+	 * Attempt to get missing article headers.
 	 *
-	 * @param array        $groupArr The info for this group from mysql.
+	 * @param array $groupArr The info for this group from mysql.
 	 *
 	 * @return void
 	 */
 	public function partRepair($groupArr)
 	{
-		// Check that tables exist, create if they do not
-		if ($this->tablepergroup === 1) {
-			if ($this->db->newtables($groupArr['id']) === false) {
-				$dMessage = "There is a problem creating new parts/files tables for this group.";
-				if ($this->debug) {
-					$this->debugging->start("partRepair", $dMessage, 1);
-				}
-				exit($this->c->error($dMessage));
-			}
-			$group['prname'] = 'partrepair_' . $groupArr['id'];
-		} else {
-			$group['prname'] = 'partrepair';
-		}
+		// Check that tables exist, create if they do not.
+		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupArr['id']);;
 
 		// Get all parts in partrepair table.
 		$missingParts = $this->db->query(
-			sprintf(
-				'SELECT * FROM ' . $group['prname'] . '
+			sprintf('
+				SELECT * FROM %s
 				WHERE groupid = %d AND attempts < 5
 				ORDER BY numberid ASC LIMIT %d',
+				$group['prname'],
 				$groupArr['id'],
 				$this->partrepairlimit
 			)
@@ -1139,72 +1095,85 @@ class Binaries
 			if ($this->echo) {
 				$this->consoleTools->overWritePrimary(
 					'Attempting to repair ' .
-					number_format(count($missingParts)) .
-					" parts."
+					number_format($missingCount) .
+					' parts.'
 				);
 			}
 
 			// Loop through each part to group into continuous ranges with a maximum range of messagebuffer/4.
-			$ranges = array();
-			$partlist = array();
-			$firstpart = $lastnum = $missingParts[0]['numberid'];
+			$ranges = $partList = array();
+			$firstPart = $lastNum = $missingParts[0]['numberid'];
+
 			foreach ($missingParts as $part) {
-				if (($part['numberid'] - $firstpart) > ($this->messagebuffer / 4)) {
-					$ranges[] = array('partfrom' => $firstpart, 'partto' => $lastnum, 'partlist' => $partlist);
-					$firstpart = $part['numberid'];
-					$partlist = array();
+				if (($part['numberid'] - $firstPart) > ($this->messagebuffer / 4)) {
+
+					$ranges[] = array(
+						'partfrom' => $firstPart,
+						'partto' => $lastNum,
+						'partlist' => $partList
+					);
+
+					$firstPart = $part['numberid'];
+					$partList = array();
 				}
-				$partlist[] = $part['numberid'];
-				$lastnum = $part['numberid'];
+				$partList[] = $part['numberid'];
+				$lastNum = $part['numberid'];
 			}
-			$ranges[] = array('partfrom' => $firstpart, 'partto' => $lastnum, 'partlist' => $partlist);
+
+			$ranges[] = array(
+				'partfrom' => $firstPart,
+				'partto' => $lastNum,
+				'partlist' => $partList
+			);
 
 			$num_attempted = 0;
 
 			// Download missing parts in ranges.
 			foreach ($ranges as $range) {
 
-				$partfrom = $range['partfrom'];
-				$partto = $range['partto'];
-				$partlist = $range['partlist'];
+				$partFrom = $range['partfrom'];
+				$partTo = $range['partto'];
+				$partList = $range['partlist'];
 				$count = count($range['partlist']);
 
 				$num_attempted += $count;
 				$this->consoleTools->overWritePrimary(
-					"Attempting repair: " .
-					$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted, count($missingParts)) .
-					': ' . $partfrom . ' to ' . $partto . ' .'
+					'Attempting repair: ' .
+					$this->consoleTools->percentString2($num_attempted - $count + 1, $num_attempted, $missingCount) .
+					': ' . $partFrom . ' to ' . $partTo . ' .'
 				);
 
-				// Get article from newsgroup.
-				$this->scan($groupArr, $partfrom, $partto, 'partrepair', $partlist);
+				// Get article headers from newsgroup.
+				$this->scan($groupArr, $partFrom, $partTo, 'partrepair', $partList);
 			}
 
 			// Calculate parts repaired
 			$result = $this->db->queryOneRow(
-				sprintf(
-					'SELECT COUNT(id) AS num
-					FROM ' . $group['prname'] . '
-					WHERE groupid=%d
+				sprintf('
+					SELECT COUNT(id) AS num
+					FROM %s
+					WHERE groupid = %d
 					AND numberid <= %d',
+					$group['prname'],
 					$groupArr['id'],
-					$missingParts[count($missingParts) - 1]['numberid']
+					$missingParts[$missingCount - 1]['numberid']
 				)
 			);
 			if (isset($result['num'])) {
-				$partsRepaired = (count($missingParts)) - $result['num'];
+				$partsRepaired = $missingCount - $result['num'];
 			}
 
 			// Update attempts on remaining parts for active group
-			if (isset($missingParts[count($missingParts) - 1]['id'])) {
+			if (isset($missingParts[$missingCount - 1]['id'])) {
 				$this->db->queryExec(
-					sprintf(
-						"UPDATE ${group['prname']}
-						SET attempts=attempts+1
-						WHERE groupid=%d
-						AND numberid <= %d",
+					sprintf('
+						UPDATE %s
+						SET attempts = attempts + 1
+						WHERE groupid = %d
+						AND numberid <= %d',
+						$group['prname'],
 						$groupArr['id'],
-						$missingParts[count($missingParts) - 1]['numberid']
+						$missingParts[$missingCount - 1]['numberid']
 					)
 				);
 			}
@@ -1212,73 +1181,53 @@ class Binaries
 			if ($this->echo) {
 				$this->c->doEcho(
 					$this->c->primary(
-						"\n" .
+						PHP_EOL .
 						number_format($partsRepaired) .
-						" parts repaired."
+						' parts repaired.'
 					), true
 				);
 			}
 		}
 
 		// Remove articles that we cant fetch after 5 attempts.
-		$this->db->queryExec(sprintf('DELETE FROM ' . $group['prname'] . ' WHERE attempts >= 5 AND groupid = %d', $groupArr['id']));
+		$this->db->queryExec(sprintf('DELETE FROM %s WHERE attempts >= 5 AND groupid = %d', $group['prname'], $groupArr['id']));
 	}
 
 	/**
-	 * Add missing headers to DB.
+	 * Add article numbers from missing headers to DB.
 	 *
 	 * @param array $numbers The article numbers of the missing headers.
-	 * @param int $groupID   The ID of this groups.
+	 * @param int   $groupID The ID of this groups.
 	 *
 	 * @return bool
 	 */
 	private function addMissingParts($numbers, $groupID)
 	{
-		// Check that tables exist, create if they do not
-		if ($this->tablepergroup === 1) {
-			if ($this->db->newtables($groupID) === false) {
-				$dMessage = "There is a problem creating new parts/files tables for this group.";
-				if ($this->debug) {
-					$this->debugging->start("addMissingParts", $dMessage, 1);
-				}
-				exit($this->c->error($dMessage));
-			}
-			$group['prname'] = 'partrepair_' . $groupID;
-		} else {
-			$group['prname'] = 'partrepair';
-		}
+		// Check that tables exist, create if they do not.
+		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupID);
 
-		$insertStr = "INSERT INTO ${group['prname']} (numberid, groupid) VALUES ";
+		$insertStr = 'INSERT INTO ' . $group['prname'] . ' (numberid, groupid) VALUES ';
 		foreach ($numbers as $number) {
 			$insertStr .= sprintf('(%d, %d), ', $number, $groupID);
 		}
 
 		$insertStr = substr($insertStr, 0, -2);
-		if ($this->db->dbSystem() === 'mysql') {
-			$insertStr .= ' ON DUPLICATE KEY UPDATE attempts=attempts+1';
-			return $this->db->queryInsert($insertStr);
-		} else {
-			$id = $this->db->queryInsert($insertStr);
-			$this->db->Exec('UPDATE partrepair SET attempts = attempts+1 WHERE id = ' . $id);
-			return $id;
-		}
+		$insertStr .= ' ON DUPLICATE KEY UPDATE attempts=attempts+1';
+		return $this->db->queryInsert($insertStr);
 	}
 
 	/**
 	 * Clean up part repair table.
 	 *
 	 * @param array $numbers The article numbers.
-	 * @param int$groupID     The ID of the group.
+	 * @param int   $groupID The ID of the group.
 	 *
 	 * @return void
 	 */
 	private function removeRepairedParts($numbers, $groupID)
 	{
-		if ($this->tablepergroup === 1) {
-			$group['prname'] = 'partrepair_' . $groupID;
-		} else {
-			$group['prname'] = 'partrepair';
-		}
+		// Check that tables exist, create if they do not.
+		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupID);
 
 		$sql = 'DELETE FROM ' . $group['prname'] . ' WHERE numberid in (';
 		foreach ($numbers as $number) {
@@ -1290,32 +1239,30 @@ class Binaries
 	}
 
 	/**
-	 * Get blacklist cache.
+	 * Get blacklist and cache it. Return if already cached.
 	 *
-	 * @return array
+	 * @return void
 	 */
-	public function retrieveBlackList()
+	protected function retrieveBlackList()
 	{
 		if ($this->blackListLoaded) {
-			return $this->blackList;
+			return;
 		}
-		$blackList = $this->getBlacklist(true);
-		$this->blackList = $blackList;
+		$this->blackList = $this->getBlacklist(true);
 		$this->blackListLoaded = true;
-		return $blackList;
 	}
 
 	/**
-	 * Check if article is blacklisted.
+	 * Check if an article is blacklisted.
 	 *
-	 * @param array $msg        The article header.
-	 * @param string $groupName The group.
+	 * @param array  $msg       The article header (OVER format).
+	 * @param string $groupName The group name.
 	 *
 	 * @return bool
 	 */
 	public function isBlackListed($msg, $groupName)
 	{
-		$blackList = $this->retrieveBlackList();
+		$this->retrieveBlackList();
 		$field = array();
 		if (isset($msg['Subject'])) {
 			$field[Binaries::BLACKLIST_FIELD_SUBJECT] = $msg['Subject'];
@@ -1331,17 +1278,14 @@ class Binaries
 
 		$omitBinary = false;
 
-		foreach ($blackList as $blist) {
-			if (preg_match('/^' . $blist['groupname'] . '$/i', $groupName)) {
-				//blacklist
-				if ($blist['optype'] == 1) {
-					if (preg_match('/' . $blist['regex'] . '/i', $field[$blist['msgcol']])) {
-						$omitBinary = true;
-					}
-				} else if ($blist['optype'] == 2) {
-					if (!preg_match('/' . $blist['regex'] . '/i', $field[$blist['msgcol']])) {
-						$omitBinary = true;
-					}
+		foreach ($this->blackList as $blackList) {
+			if (preg_match('/^' . $blackList['groupname'] . '$/i', $groupName)) {
+				// Black?
+				if ($blackList['optype'] == 1 && preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
+					$omitBinary = true;
+				// White?
+				} else if ($blackList['optype'] == 2 && !preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
+					$omitBinary = true;
 				}
 			}
 		}
@@ -1350,94 +1294,31 @@ class Binaries
 	}
 
 	/**
-	 * @param $search
-	 * @param int $limit
-	 * @param array $excludedcats
+	 * Return all blacklists.
+	 *
+	 * @param bool $activeOnly Only display active blacklists ?
 	 *
 	 * @return array
 	 */
-	public function search($search, $limit = 1000, $excludedcats = array())
+	public function getBlacklist($activeOnly = true)
 	{
-		/* If the query starts with a ^ it indicates the search is looking for items which start with the term still do
-		 * the like match, but mandate that all items returned must start with the provided word.
-		 */
-		$words = explode(' ', $search);
-		$searchsql = '';
-		$intwordcount = 0;
-		if (count($words) > 0) {
-			$like = 'ILIKE';
-			if ($this->db->dbSystem() === 'mysql') {
-				$like = 'LIKE';
-			}
-			foreach ($words as $word) {
-				// See if the first word had a caret, which indicates search must start with term.
-				if ($intwordcount == 0 && (strpos($word, '^') === 0)) {
-					$searchsql.= sprintf(' AND b.name %s %s', $like, $this->db->escapeString(substr($word, 1) . '%'));
-				} else {
-					$searchsql.= sprintf(' AND b.name %s %s', $like, $this->db->escapeString('%' . $word . '%'));
-				}
-
-				$intwordcount++;
-			}
-		}
-
-		$exccatlist = '';
-		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND b.categoryid NOT IN (' . implode(',', $excludedcats) . ') ';
-		}
-
 		return $this->db->query(
-			sprintf("
-				SELECT b.*, g.name AS group_name, r.guid,
-				(SELECT COUNT(id) FROM parts p WHERE p.binaryid = b.id) as 'binnum'
-				FROM binaries b
-				INNER JOIN groups g ON g.id = b.groupid
-				LEFT OUTER JOIN releases r ON r.id = b.releaseid
-				WHERE 1=1 %s %s
-				order by DATE DESC LIMIT %d", $searchsql, $exccatlist, $limit
+			sprintf('
+				SELECT
+					binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description,
+					binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS groupid, binaryblacklist.msgcol
+				FROM binaryblacklist
+				LEFT OUTER JOIN groups ON groups.name = binaryblacklist.groupname %s
+				ORDER BY coalesce(groupname,\'zzz\')',
+				($activeOnly ? ' WHERE binaryblacklist.status = 1 ' : '')
 			)
 		);
 	}
 
 	/**
-	 * @param $id
+	 * Return the specified blacklist.
 	 *
-	 * @return array|bool
-	 */
-	public function getById($id)
-	{
-		return $this->db->queryOneRow(
-			sprintf(
-				'SELECT binaries.*, collections.groupid, groups.name AS groupname
-				FROM binaries, collections
-				LEFT OUTER JOIN groups ON collections.groupid = groups.id
-				WHERE binaries.id = %d', $id
-			)
-		);
-	}
-
-	/**
-	 * @param bool $activeonly
-	 *
-	 * @return array
-	 */
-	public function getBlacklist($activeonly = true)
-	{
-		$where = '';
-		if ($activeonly) {
-			$where = ' WHERE binaryblacklist.status = 1 ';
-		}
-
-		return $this->db->query(
-			'SELECT binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description,
-			binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS groupid, binaryblacklist.msgcol
-			FROM binaryblacklist LEFT OUTER JOIN groups ON groups.name = binaryblacklist.groupname ' . $where . "
-			ORDER BY coalesce(groupname,'zzz')"
-		);
-	}
-
-	/**
-	 * @param $id
+	 * @param int $id The blacklist ID.
 	 *
 	 * @return array|bool
 	 */
@@ -1447,7 +1328,9 @@ class Binaries
 	}
 
 	/**
-	 * @param $id
+	 * Delete a blacklist.
+	 *
+	 * @param int $id The ID of the blacklist.
 	 *
 	 * @return bool
 	 */
@@ -1457,66 +1340,62 @@ class Binaries
 	}
 
 	/**
-	 * @param $regex
+	 * Updates a blacklist from binary blacklist edit admin web page.
 	 *
-	 * @return void
+	 * @param Array $blacklistArray
+	 *
+	 * @return bool
 	 */
-	public function updateBlacklist($regex)
+	public function updateBlacklist($blacklistArray)
 	{
-		$groupname = $regex['groupname'];
-		if ($groupname == '') {
-			$groupname = 'null';
-		} else {
-			$groupname = preg_replace('/a\.b\./i', 'alt.binaries.', $groupname);
-			$groupname = sprintf('%s', $this->db->escapeString($groupname));
-		}
-
 		$this->db->queryExec(
 			sprintf('
 				UPDATE binaryblacklist
 				SET groupname = %s, regex = %s, status = %d, description = %s, optype = %d, msgcol = %d
 				WHERE id = %d ',
-				$groupname,
-				$this->db->escapeString($regex['regex']), $regex['status'],
-				$this->db->escapeString($regex['description']),
-				$regex['optype'],
-				$regex['msgcol'],
-				$regex['id']
+				($blacklistArray['groupname'] == ''
+					? 'null'
+					: $this->db->escapeString(preg_replace('/a\.b\./i', 'alt.binaries.', $blacklistArray['groupname']))
+				),
+				$this->db->escapeString($blacklistArray['regex']), $blacklistArray['status'],
+				$this->db->escapeString($blacklistArray['description']),
+				$blacklistArray['optype'],
+				$blacklistArray['msgcol'],
+				$blacklistArray['id']
 			)
 		);
 	}
 
 	/**
-	 * @param $regex
+	 * Adds a new blacklist from binary blacklist edit admin web page.
+	 *
+	 * @param Array $blacklistArray
 	 *
 	 * @return bool
 	 */
-	public function addBlacklist($regex)
+	public function addBlacklist($blacklistArray)
 	{
-		$groupname = $regex['groupname'];
-		if ($groupname == '') {
-			$groupname = 'null';
-		} else {
-			$groupname = preg_replace('/a\.b\./i', 'alt.binaries.', $groupname);
-			$groupname = sprintf('%s', $this->db->escapeString($groupname));
-		}
-
 		return $this->db->queryInsert(
 			sprintf('
 				INSERT INTO binaryblacklist (groupname, regex, status, description, optype, msgcol)
 				VALUES (%s, %s, %d, %s, %d, %d)',
-				$groupname,
-				$this->db->escapeString($regex['regex']),
-				$regex['status'],
-				$this->db->escapeString($regex['description']),
-				$regex['optype'],
-				$regex['msgcol']
+				($blacklistArray['groupname'] == ''
+					? 'null'
+					: $this->db->escapeString(preg_replace('/a\.b\./i', 'alt.binaries.', $blacklistArray['groupname']))
+				),
+				$this->db->escapeString($blacklistArray['regex']),
+				$blacklistArray['status'],
+				$this->db->escapeString($blacklistArray['description']),
+				$blacklistArray['optype'],
+				$blacklistArray['msgcol']
 			)
 		);
 	}
 
 	/**
-	 * @param $id
+	 * Delete Collections/Binaries/Parts for a Collection ID.
+	 *
+	 * @param int $id Collections table ID
 	 *
 	 * @return void
 	 */

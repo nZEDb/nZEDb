@@ -8,9 +8,10 @@ $versions = @simplexml_load_file(nZEDb_VERSIONS);
 if ($versions === false) {
 	exit($c->error("\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"));
 }
-exec('git log | grep "^commit" | wc -l', $commit);
+//exec('git log | grep "^commit" | wc -l', $commit);
+$git = new \nzedb\utility\Git();
 
-$version = $versions->versions->git->tag . 'r' . $commit[0];
+$version = $versions->versions->git->tag . 'r' . $git->commits();
 
 $db = new DB();
 $DIR = nZEDb_MISC;
@@ -123,8 +124,8 @@ $proc_work2 = "SELECT "
 	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
 $proc_work3 = "SELECT "
-	. "((SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND reqidstatus in (0, -1)) + "
-	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $request_hours . " HOUR)) AS requestid_inprogress, "
+	. "((SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus in (0, -1)) + "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $request_hours . " HOUR)) AS requestid_inprogress, "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1) AS requestid_matched, "
 	. "(SELECT COUNT(*) FROM releases WHERE preid > 0) AS predb_matched, "
 	. "(SELECT COUNT(DISTINCT(preid)) FROM releases WHERE preid > 0) AS distinct_predb_matched, "

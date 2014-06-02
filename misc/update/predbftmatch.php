@@ -15,7 +15,6 @@ if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric
 }
 
 $db = new DB();
-$category = new Category();
 $consoletools = new ConsoleTools();
 $namefixer = new NameFixer();
 $offset = '';

@@ -64,7 +64,7 @@ if (isset($_GET['id'])) {
 		$ani = $AniDB->getAnimeInfo($data['anidbid']);
 	}
 
-	if ($data['imdbid'] != '') {
+	if ($data['imdbid'] != '' && $data['imdbid'] != 0000000) {
 		$movie = new Movie();
 		$mov = $movie->getMovieInfo($data['imdbid']);
 

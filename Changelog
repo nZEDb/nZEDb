@@ -6,10 +6,72 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-
+2014-05-26 bart39
+	* Fix: fix issue with trigger causing duplicates
+2014-05-26 NZBmets
+	* Upd: TMUX Powerline uspsetting segment to handle IPv6 and proper IPv4 parsing
+2014-05-25 ruhllatio
+	* Fix: Remove no longer existing foreign check from Movie PP
+2014-05-25 bart39
+	* Chg: Only reset release details if the category changes (requestid.php)
+	* Chg: Categorize against the cleaned searchname instead of usenet subject
+	* Add: Check if clean searchname matches predb filename
+	* Chg: Regex additions / fixes
+	* Chg: Only reset release details if the category changes
+	* Chg: Move declaration of $this->category to constructor
+	* Chg: Check cleaned searchname against predb title or filename as release is created
+	* Fix: Typo (cleansubject is title)
+2014-05-25 kevin
+	* Chg: Cleanup/fixes in Categorize.
+	* Chg: Move categorization functions to their own class.
+	* Chg: Drop multiple language categorization due to lack of maintainers.
+2014-05-24 kevin
+	* Fix: Potential fix for "Unitialized string offset 0" on NFO.
+	* Fix: Missing opening tags in NZBGet XML-RPC.
+	* Chg: Expand the RottenTomato class.
+	* Chg: Merge methods on \RequestID.
+	* Add: Better echo's on requestID.
+	* Various refactoring/changes/fixes. Mainly in Binaries/Backfill classes.
+2014-05-23 bart39
+	* Chg: Don't display movie with an imdbid of 0000000
+2014-05-23 DariusIII
+	* Chg: Change the way/text the grabnzb disabled message is displayed
+2014-05-23 kevin
+	* Fix: Typo in releases.php (5c is 5b).
+	* Add: Limit on local requestid (make things quicker).
+	* Fix: Empty groupid in requestid.
+	* Fix: Fix/Refactor RequestID class.
+	* Fix: Update schema sqlpatch to 226.
+	* Fix: Wrong usage of _isConnected()
+	* Chg: Use _isConnected
+	* Add: Loop in NNTP decompression to wait for the server to return data on possible terminator (should help with "msgs is not array").
+	* Chg: Use stream_socket_shutdown instead of fclose when closing the stream socket client on NNTP (faster).
+	* Chg: Don't use feof on _isConnected in NNTP for certain uses (feof can return false even if the socket is still open).
+2014-05-21 ruhllatio
+	* Chg: Class RequestID part one
+	* Fix: FTS result sizes in PreDB FT exceeding limits
+2014-05-21 bart39
+	* Upd: test gitbot again
+	* Fix: fix releases stage 4 / request id threaded / non threaded handling of requestid matching
+2014-05-21 kevin
+	* Upd: Update rarinfo to newest (*Improves handling of corrupt RAR 5.0 archives*).
+2014-05-20 Bart39
+	* Fix: Releases stage 5b/5c requestid lookups
+2014-05-20 ruhllatio
+	* Fix:  PreDB FT Match in fixReleaseNames should actually update searched now
+2014-05-20 Bart39
+	* Fix: Fixed the TMDB covers lookup path in Movie.php #1329
+2014-05-19 Bart39
+	* Chg: Use predbhash fulltext search for hash lookups
+	* Chg: Make RequestID lookups consistant between releases stage 5b/c and requestid_threaded
+2014-05-19 ruhllatio
+	* Chg: RequestID lookups split into two stages for local and web lookup (and actually seems to work now)
+	* Chg: PreDB FT count in fixreleaseNames no longer divides by 10 as it is faster than par2
 2014-05-19 niel
 	* Fix: Remove attempt to set db connection attributes that are already set from install step2.php
 	* Chg: Prevent Settings from requiring config.php during install.
+	* New: Added new Git class to nzedb\utility
+	* Chg: Refactored scripts using git to use new Git class.
 2014-05-18 kevin
 	* Add: Script to test hashes/encodings (~270k possibilities).
 2014-05-18 ruhllatio

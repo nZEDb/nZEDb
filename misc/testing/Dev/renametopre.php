@@ -16,15 +16,17 @@ use nzedb\db\DB;
  */
 $c = new ColorCLI();
 if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || $argv[1] == "preid" || is_numeric($argv[1])))) {
-	exit($c->error("\nThis script will attempt to rename releases using regexes first from ReleaseCleaning.php and then from this file.\n"
-			. "An optional last argument, show, will display the release name changes.\n\n"
-			. "php $argv[0] full                    ...: To process all releases not previously renamed.\n"
-			. "php $argv[0] 2                       ...: To process all releases added in the previous 2 hours not previously renamed.\n"
-			. "php $argv[0] all                     ...: To process all releases.\n"
-			. "php $argv[0] full 155                ...: To process all releases in groupid 155 not previously renamed.\n"
-			. "php $argv[0] all 155                 ...: To process all releases in groupid 155.\n"
-			. "php $argv[0] all '(155, 140)'        ...: To process all releases in groupids 155 and 140.\n"
-			. "php $argv[0] preid                   ...: To process all releases where not matched to predb.\n"));
+	exit($c->error(
+		"\nThis script will attempt to rename releases using regexes first from ReleaseCleaning.php and then from this file.\n"
+		. "An optional last argument, show, will display the release name changes.\n\n"
+		. "php $argv[0] full                    ...: To process all releases not previously renamed.\n"
+		. "php $argv[0] 2                       ...: To process all releases added in the previous 2 hours not previously renamed.\n"
+		. "php $argv[0] all                     ...: To process all releases.\n"
+		. "php $argv[0] full 155                ...: To process all releases in groupid 155 not previously renamed.\n"
+		. "php $argv[0] all 155                 ...: To process all releases in groupid 155.\n"
+		. "php $argv[0] all '(155, 140)'        ...: To process all releases in groupids 155 and 140.\n"
+		. "php $argv[0] preid                   ...: To process all releases where not matched to predb.\n"
+	));
 }
 preName($argv, $argc);
 
@@ -32,7 +34,7 @@ function preName($argv, $argc)
 {
 	$db = new DB();
 	$groups = new Groups();
-	$category = new Category();
+	$category = new Categorize();
 	$internal = $external = $pre = $none = 0;
 	$show = 2;
 	if ($argv[$argc - 1] === 'show') {
@@ -70,7 +72,7 @@ function preName($argv, $argc)
 		$why = ' WHERE nzbstatus = 1';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $all === true) {
 		$where = ' AND groupid = ' . $argv[2];
-		$why = ' WHERE nzbstatus = 1';
+		$why = ' WHERE nzbstatus = 1 and preid = 0';
 	} else if (isset($argv[2]) && is_numeric($argv[2])) {
 		$where = ' AND groupid = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
@@ -82,24 +84,26 @@ function preName($argv, $argc)
 		$why = ' WHERE 1=1';
 	}
 	resetSearchnames();
-	echo $c->header("SELECT id, name, searchname, fromname, size, groupid, categoryid FROM releases" . $why . $what .
-		$where .	";\n");
+	echo $c->header(
+		"SELECT id, name, searchname, fromname, size, groupid, categoryid FROM releases" . $why . $what .
+		$where . ";\n"
+	);
 	$res = $db->queryDirect("SELECT id, name, searchname, fromname, size, groupid, categoryid FROM releases" . $why . $what . $where);
 	$total = $res->rowCount();
 	if ($total > 0) {
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row) {
 			$groupname = $groups->getByNameByID($row['groupid']);
-			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $row['fromname'], $row['size'] , $groupname, $usepre);
+			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $row['fromname'], $row['size'], $groupname, $usepre);
 			$preid = 0;
-			$predb = $increment = false;
+			$predb = $predbfile = $increment = false;
 			if (!is_array($cleanerName)) {
 				$cleanName = trim($cleanerName);
 				$propername = $increment = true;
 				if ($cleanName != '' && $cleanerName != false) {
 					$run = $db->queryOneRow("SELECT id FROM predb WHERE title = " . $db->escapeString($cleanName));
 					if (isset($run['id'])) {
-						$preid = $run["id"];
+						$preid = $run['id'];
 						$predb = true;
 					}
 				}
@@ -120,31 +124,52 @@ function preName($argv, $argc)
 					if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanName, $match)) {
 						$rf = new ReleaseFiles();
 						$files = $rf->get($row['id']);
-							foreach ($files as $f) {
-								if (preg_match('/^(?P<title>.+?)(\\[\w\[\]\(\). -]+)?\.(pdf|htm(l)?|epub|mobi|azw|tif|doc(x)?|lit|txt|rtf|opf|fb2|prc|djvu|cb[rz])/', $f["name"],
-									$match)) {
-									$cleanName = $match['title'];
-									break;
-								}
+						foreach ($files as $f) {
+							if (preg_match(
+								'/^(?P<title>.+?)(\\[\w\[\]\(\). -]+)?\.(pdf|htm(l)?|epub|mobi|azw|tif|doc(x)?|lit|txt|rtf|opf|fb2|prc|djvu|cb[rz])/', $f["name"],
+								$match
+							)
+							) {
+								$cleanName = $match['title'];
+								break;
 							}
+						}
 					}
 				}
+					//try to match clean name against predb filename
+					$prefile = $db->queryOneRow("SELECT id, title FROM predb WHERE filename = " . $db->escapeString($cleanName));
+					if (isset($prefile['id'])) {
+						$preid = $prefile['id'];
+						$cleanName = $prefile['title'];
+						$predbfile = true;
+					}
 				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
 					if (strlen(utf8_decode($cleanName)) <= 3) {
 					} else {
-						$determinedcat = $category->determineCategory($row["name"], $row["groupid"]);
+						$determinedcat = $category->determineCategory($cleanName, $row["groupid"]);
 						if ($propername == true) {
-							$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "iscategorized = 1, isrenamed = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+							$run = $db->queryExec(
+								sprintf(
+									"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+									. "iscategorized = 1, isrenamed = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']
+								)
+							);
 						} else {
-							$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,  "
-									. "iscategorized = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']));
+							$run = $db->queryExec(
+								sprintf(
+									"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,  "
+									. "iscategorized = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']
+								)
+							);
 						}
 						if ($increment === true) {
 							$status = "renametopre Match";
 							$internal++;
 						} else if ($predb === true) {
 							$status = "PreDB: Match";
+							$pre++;
+						} else if ($predbfile === true) {
+							$status = "PreDB: Filename Match";
 							$pre++;
 						} else if ($propername === true) {
 							$status = "ReleaseCleaner Match";
@@ -154,12 +179,12 @@ function preName($argv, $argc)
 							$oldcatname = $category->getNameByID($row["categoryid"]);
 							$newcatname = $category->getNameByID($determinedcat);
 							echo $c->headerOver("\n\nNew name:  ") . $c->primary($cleanName) .
-							$c->headerOver("Old name:  ") . $c->primary($row["searchname"]) .
-							$c->headerOver("New cat:   ") . $c->primary($newcatname) .
-							$c->headerOver("Old cat:   ") . $c->primary($oldcatname) .
-							$c->headerOver("Group:     ") . $c->primary($groupname) .
-							$c->headerOver("Method:    ") . $c->primary($status) .
-							$c->headerOver("ReleaseID: ") . $c->primary($row["id"]);
+								$c->headerOver("Old name:  ") . $c->primary($row["searchname"]) .
+								$c->headerOver("New cat:   ") . $c->primary($newcatname) .
+								$c->headerOver("Old cat:   ") . $c->primary($oldcatname) .
+								$c->headerOver("Group:     ") . $c->primary($groupname) .
+								$c->headerOver("Method:    ") . $c->primary($status) .
+								$c->headerOver("ReleaseID: ") . $c->primary($row["id"]);
 						}
 					}
 				} else if ($show === 3 && preg_match('/^\[?\d*\].+?yEnc/i', $row['name'])) {
@@ -170,9 +195,9 @@ function preName($argv, $argc)
 				$db->queryExec(sprintf("UPDATE releases SET isrenamed = 1, iscategorized = 1 WHERE id = %d", $row['id']));
 			}
 			if ($show === 2 && $usepre === false) {
-				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
+				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString(++$counter, $total));
 			} else if ($show === 2 && $usepre === true) {
-				$consoletools->overWritePrimary("Renamed Releases:  [" . number_format($pre) . "] " . $consoletools->percentString( ++$counter, $total));
+				$consoletools->overWritePrimary("Renamed Releases:  [" . number_format($pre) . "] " . $consoletools->percentString(++$counter, $total));
 			}
 		}
 	}
@@ -231,15 +256,19 @@ function resetSearchnames()
 	$db = new DB();
 	$c = new ColorCLI();
 	echo $c->header("Resetting blank searchnames.");
-	$bad = $db->queryDirect("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE searchname = ''");
+	$bad = $db->queryDirect(
+		"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE searchname = ''"
+	);
 	$tot = $bad->rowCount();
 	if ($tot > 0) {
 		echo $c->primary(number_format($tot) . " Releases had no searchname.");
 	}
 	echo $c->header("Resetting searchnames that are 8 characters or less.");
-	$run = $db->queryDirect("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE LENGTH(searchname) <= 8 AND LENGTH(name) > 8");
+	$run = $db->queryDirect(
+		"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE LENGTH(searchname) <= 8 AND LENGTH(name) > 8"
+	);
 	$total = $run->rowCount();
 	if ($total > 0) {
 		echo $c->primary(number_format($total) . " Releases had searchnames that were 8 characters or less.");
@@ -252,7 +281,7 @@ function resetSearchnames()
 function categorizeRelease($type, $where, $echooutput = false)
 {
 	$db = new DB();
-	$cat = new Category();
+	$cat = new Categorize();
 	$consoletools = new consoleTools();
 	$relcount = 0;
 	$c = new ColorCLI();

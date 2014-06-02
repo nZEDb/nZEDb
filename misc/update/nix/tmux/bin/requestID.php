@@ -14,30 +14,34 @@ $db = new DB();
 $s = new Sites();
 $site = $s->get();
 $n = "\n";
-$category = new Category();
+$category = new Categorize();
 $groups = new Groups();
-if (!preg_match('/^\[ ?(\d{4,6}) ?\]/', $pieces[1]) && !preg_match('/^REQ\s*(\d{4,6})/i', $pieces[1]) && !preg_match('/^(\d{4,6})-\d{1}\[/', $pieces[1])) {
+$requestID = 0;
+if (preg_match('/^\[ ?(\d{4,6}) ?\]/', $pieces[1], $match) ||
+	preg_match('/^REQ\s*(\d{4,6})/i', $pieces[1], $match) ||
+	preg_match('/^(\d{4,6})-\d{1}\[/', $pieces[1], $match) ||
+	preg_match('/(\d{4,6}) -/', $pieces[1], $match)
+) {
+	$requestID = (int)$match[1];
+} else {
 	$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $pieces[0]);
 	exit('.');
 }
-$requestIDtmp = explode(']', substr($pieces[1], 1));
 $bFound = false;
 $newTitle = '';
 $updated = 0;
-if (count($requestIDtmp) >= 1) {
-	$requestID = (int) $requestIDtmp[0];
-	if ($requestID != 0 and $requestID != '') {
-		// Do a local lookup first
-		$newTitle = localLookup($requestID, $pieces[2], $pieces[1]);
+
+if ($requestID != 0 and $requestID != '') {
+	// Do a local lookup first
+	$newTitle = localLookup($requestID, $pieces[2], $pieces[1]);
+	if (is_array($newTitle) && $newTitle['title'] != '') {
+		$bFound = true;
+		$local = true;
+	} else if ($web == "True") {
+		$newTitle = getReleaseNameFromRequestID($site, $requestID, $pieces[2]);
 		if (is_array($newTitle) && $newTitle['title'] != '') {
 			$bFound = true;
-			$local = true;
-		} else if ($web == "True") {
-			$newTitle = getReleaseNameFromRequestID($site, $requestID, $pieces[2]);
-			if (is_array($newTitle) && $newTitle['title'] != '') {
-				$bFound = true;
-				$local = false;
-			}
+			$local = false;
 		}
 	}
 }
@@ -47,13 +51,11 @@ if ($bFound === true) {
 	$groupname = $groups->getByNameByID($pieces[2]);
 	$groupid = $groups->getIDByName($pieces[2]);
 	$determinedcat = $category->determineCategory($title, $groupid);
-	$run = $db->queryDirect(sprintf("UPDATE releases set rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-			. "preid = %d, reqidstatus = 1, isrenamed = 1, searchname = %s, categoryid = %d where id = %d", $preid, $db->escapeString($title), $determinedcat, $pieces[0]));
 	if ($groupid !== 0) {
 		$md5 = md5($title);
-		$dupe = $db->queryOneRow(sprintf('SELECT requestid FROM predb WHERE md5 = %s', $db->escapeString($md5)));
-		if ($dupe === false || ($dupe !== false && $dupe['requestid'] !== $requestID)) {
-			$db->queryDirect(
+		$dupe = $db->queryOneRow(sprintf('SELECT requestid FROM predb INNER JOIN predbhash ON predbhash.pre_id = predb.id WHERE MATCH (hashes) AGAINST (%s)', $db->escapeString($md5)));
+		if ($dupe === false || ($dupe !== false && $dupe['requestid'] != $requestID)) {
+			$preid = $db->queryInsert(
 				sprintf("
 				INSERT INTO predb (title, source, md5, requestid, groupid)
 				VALUES (%s, %s, %s, %s, %d)",
@@ -67,6 +69,9 @@ if ($bFound === true) {
 	} else if ($groupid === 0) {
 		echo $requestID . "\n";
 	}
+	$run = $db->queryDirect(sprintf("UPDATE releases set rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+			. "preid = %d, reqidstatus = 1, isrenamed = 1, searchname = %s, categoryid = %d where id = %d", $preid, $db->escapeString($title), $determinedcat, $pieces[0]));
+
 	$newcatname = $category->getNameByID($determinedcat);
 	$method = ($local === true) ? 'requestID local' : 'requestID web';
 	echo $c->headerOver($n . $n . 'New name:  ') . $c->primary($title) .

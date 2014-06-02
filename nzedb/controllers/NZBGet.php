@@ -85,10 +85,10 @@ class NZBGet
 		$this->uid = $page->userdata['id'];
 		$this->rsstoken = $page->userdata['rsstoken'];
 
-		if (!empty($page->userdata['nzbgeturl']) && !empty($page->userdata['nzbgetusername']) && !empty($page->userdata['nzbgetpassword'])) {
+		if (!empty($page->userdata['nzbgeturl'])) {
 			$this->url  = $page->userdata['nzbgeturl'];
-			$this->userName = $page->userdata['nzbgetusername'];
-			$this->password = $page->userdata['nzbgetpassword'];
+			$this->userName = (empty($page->userdata['nzbgetusername']) ? '' : $page->userdata['nzbgetusername']);
+			$this->password = (empty($page->userdata['nzbgetpassword']) ? '' : $page->userdata['nzbgetpassword']);
 		}
 
 		$this->fullURL = $this->verifyURL($this->url);
@@ -134,7 +134,7 @@ class NZBGet
 						<value><i4>0</i4></value>
 					</param>
 					<param>
-						<boolean>>False</boolean></value>
+						<value><boolean>>False</boolean></value>
 					</param>
 					<param>
 						<value>
@@ -176,7 +176,7 @@ class NZBGet
 						<value><i4>0</i4></value>
 					</param>
 					<param>
-						<boolean>>False</boolean></value>
+						<value><boolean>>False</boolean></value>
 					</param>
 					<param>
 						<value>

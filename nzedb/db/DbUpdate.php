@@ -61,6 +61,11 @@ class DbUpdate
 	public $db;
 
 	/**
+	 * @var nzedb\utility\Git instance
+	 */
+	public $git;
+
+	/**
 	 * @var object    Instance variable for logging object. Currently only ColorCLI supported,
 	 * but expanding for full logging with agnostic API planned.
 	 */
@@ -88,6 +93,7 @@ class DbUpdate
 		$defaults = array(
 			'backup'	=> true,
 			'db'		=> new \nzedb\db\Settings(),
+			'git'		=> new \nzedb\utility\Git(),
 			'logger'	=> new \ColorCLI(),
 		);
 		$options += $defaults;
@@ -95,6 +101,7 @@ class DbUpdate
 
 		$this->backup	= $options['backup'];
 		$this->db		= $options['db'];
+		$this->git		= $options['git'];
 		$this->log		= $options['logger'];
 
 		if (is_a($this->db, 'Settings')) {
@@ -194,7 +201,7 @@ class DbUpdate
 					$newName = $matches['drive'] . $matches['path'] .
 							   str_pad($current, 4, '0', STR_PAD_LEFT) . '~' . $matches['table'] . '.sql';
 					rename($matches[0], $newName);
-					passthru("git add $newName");
+					$this->git->add($newName);
 				}
 			}
 		}

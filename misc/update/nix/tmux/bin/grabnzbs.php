@@ -13,7 +13,7 @@ $site = $s->get();
 $alternate = false;
 switch ($site->grabnzbs) {
 	case '0':
-		exit($c->error("Grabnzbs is disabled in site."));
+		exit($c->info("Grabnzbs is disabled in site."));
 	case '1':
 		break;
 	case '2':

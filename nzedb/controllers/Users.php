@@ -252,13 +252,8 @@ class Users
 			$sql[] = sprintf('nzbgeturl = %s', $db->escapeString($nzbgetURL));
 		}
 
-		if ($nzbgetUsername !== '') {
-			$sql[] = sprintf('nzbgetusername = %s', $db->escapeString($nzbgetUsername));
-		}
-
-		if ($nzbgetPassword !== '') {
-			$sql[] = sprintf('nzbgetpassword = %s', $db->escapeString($nzbgetPassword));
-		}
+		$sql[] = sprintf('nzbgetusername = %s', $db->escapeString($nzbgetUsername));
+		$sql[] = sprintf('nzbgetpassword = %s', $db->escapeString($nzbgetPassword));
 
 		if ($saburl !== '') {
 			$sql[] = sprintf('saburl = %s', $db->escapeString($saburl));

@@ -8,7 +8,8 @@ $c = new ColorCLI();
 if (isset($site->rottentomatokey)) {
 	$rt = new RottenTomato($site->rottentomatokey);
 	print_r(json_decode($rt->searchMovie("inception")));
-	exit($c->header("\nIf nothing was displayed above then there might be an error. If so, go to the following url: ".$rt->getURLtest()."\n"));
+	$url = (RottenTomato::API_URL . "movies.json?apikey=" . $rt->getApiKey() . "&q=inception&page_limit=50");
+	exit($c->header("\nIf nothing was displayed above then there might be an error. If so, go to the following url: ".$url."\n"));
 } else {
 	exit($c->error("\nNo rotten tomato key.\n"));
 }

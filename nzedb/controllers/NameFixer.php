@@ -31,6 +31,7 @@ class NameFixer
 		$this->done = $this->matched = false;
 		$this->c = new ColorCLI();
 		$this->consoletools = new ConsoleTools();
+		$this->category = new Categorize();
 	}
 
 	/**
@@ -304,7 +305,6 @@ class NameFixer
 				$this->matched = true;
 				$this->relid = $release["releaseid"];
 
-				$this->category = new Category();
 				$determinedcat = $this->category->determineCategory($newname, $release["groupid"]);
 
 				if ($type === "PAR2, ") {
@@ -394,13 +394,12 @@ class NameFixer
 	{
 		$db = $this->db;
 		$matching = 0;
-		$this->category = new Category();
 		$this->utility = new Utility();
 		$this->matched = false;
 
 		//Remove all non-printable chars, preg match all interesting words
 		$titlelike = "%" . $this->utility->stripNonPrintingChars($pre['title']) . "%";
-		preg_match_all('#\w+#', $pre['title'], $matches, PREG_PATTERN_ORDER);
+		preg_match_all('#[a-zA-Z]{2,}#', $pre['title'], $matches, PREG_PATTERN_ORDER);
 		$titlematch = '+"' . implode('" +"', $matches[0]) . '"';
 
 		//Find release matches with fulltext and then identify exact matches with cleaned LIKE string
@@ -460,7 +459,6 @@ class NameFixer
 	{
 		$db = $this->db;
 		$matching = 0;
-		$this->category = new Category();
 		$this->matched = false;
 
 		if ($type = 'full') {
@@ -511,25 +509,22 @@ class NameFixer
 		return $matching;
 	}
 
-	// Match a MD5 from the predb to a release.
+	// Match a Hash from the predb to a release.
 	public function matchPredbHash($hash, $release, $echo, $namestatus, $echooutput, $show)
 	{
 		$db = $this->db;
 		$matching = 0;
 		$hashtype = "";
-		$this->category = new Category();
 		$this->matched = false;
 
 		// Determine MD5 or SHA1
 		if (strlen($hash) === 40) {
 			$hashtype = "SHA1, ";
-			$hashcheck = "sha1";
 		} else {
 			$hashtype = "MD5, ";
-			$hashcheck = "md5";
 		}
 
-		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE %s = %s", $hashcheck, $db->escapeString(strtolower($hash))));
+		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb inner join predbhash on predbhash.pre_id = predb.id WHERE MATCH (predbhash.hashes) AGAINST (%s)", $db->escapeString(strtolower($hash))));
 
 		if ($res !== false) {
 			$total = $res->rowCount();

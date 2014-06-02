@@ -21,9 +21,6 @@ reCategorize($argv);
 
 function reCategorize($argv)
 {
-	$db = new DB();
-	$groups = new Groups();
-	$category = new Category();
 	$c = new ColorCLI();
 	$where = '';
 	$update = true;
@@ -39,7 +36,7 @@ function reCategorize($argv)
 	}
 
 	if (isset($argv[1]) && (is_numeric($argv[1]) || preg_match('/\([\d, ]+\)/', $argv[1]))) {
-		echo $c->header("Categorizing all releases in ${argv[2]} using searchname. This can take a while, be patient.");
+		echo $c->header("Categorizing all releases in ${argv[1]} using searchname. This can take a while, be patient.");
 	} else if (isset($argv[1]) && $argv[1] == "misc") {
 		echo $c->header("Categorizing all releases in misc categories using searchname. This can take a while, be patient.");
 	} else {
@@ -54,9 +51,9 @@ function reCategorize($argv)
 	$consoletools = new ConsoleTools();
 	$time = $consoletools->convertTime(TIME() - $timestart);
 	if ($update === true) {
-		echo $c->header("Finished re-categorizing " . number_format($chgcount) . " releases in " . $time . " , using the usenet subject.\n");
+		echo $c->header("Finished re-categorizing " . number_format($chgcount) . " releases in " . $time . " , 	using the searchname.\n");
 	} else {
-		echo $c->header("Finished re-categorizing in " . $time . " , using the usenet subject.\n"
+		echo $c->header("Finished re-categorizing in " . $time . " , using the searchname.\n"
 		. "This would have changed " . number_format($chgcount) . " releases but no updates were done.\n");
 	}
 }
@@ -66,7 +63,7 @@ function reCategorize($argv)
 function categorizeRelease($update = true, $where, $echooutput = false)
 {
 	$db = new DB();
-	$cat = new Category();
+	$cat = new Categorize();
 	$consoletools = new consoleTools();
 	$relcount = $chgcount = 0;
 	$c = new ColorCLI();

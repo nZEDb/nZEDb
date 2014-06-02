@@ -107,7 +107,7 @@ Class PreDb
 				}
 			}
 
-			if (self::PRE_OMGWTF) {
+/*			if (self::PRE_OMGWTF) {
 				$this->updatedPre = $this->insertedPre = 0;
 				$this->retrieveOmgwtfnzbs();
 				$newPre += $this->insertedPre;
@@ -116,9 +116,9 @@ Class PreDb
 					echo $this->c->primary($this->insertedPre . " \tRetrieved from Omgwtfnzbs.");
 					echo $this->c->primary($this->updatedPre . " \tUpdated from Omgwtfnzbs.");
 				}
-			}
+			}*/
 
-			if (self::PRE_ZENET) {
+/*			if (self::PRE_ZENET) {
 				$this->updatedPre = $this->insertedPre = 0;
 				$this->retrieveZenet();
 				$newPre += $this->insertedPre;
@@ -127,9 +127,9 @@ Class PreDb
 					echo $this->c->primary($this->insertedPre . " \tRetrieved from Zenet.");
 					echo $this->c->primary($this->updatedPre . " \tUpdated from Zenet.");
 				}
-			}
+			}*/
 
-			if (self::PRE_PRELIST) {
+/*			if (self::PRE_PRELIST) {
 				$this->updatedPre = $this->insertedPre = 0;
 				$this->retrievePrelist();
 				$newPre += $this->insertedPre;
@@ -138,9 +138,9 @@ Class PreDb
 					echo $this->c->primary($this->insertedPre . " \tRetrieved from Prelist.");
 					echo $this->c->primary($this->updatedPre . " \tUpdated from Prelist.");
 				}
-			}
+			}*/
 
-			if (self::PRE_ORLYDB) {
+/*			if (self::PRE_ORLYDB) {
 				$this->updatedPre = $this->insertedPre = 0;
 				$this->retrieveOrlydb();
 				$newPre += $this->insertedPre;
@@ -149,8 +149,9 @@ Class PreDb
 					echo $this->c->primary($this->insertedPre . " \tRetrieved from Orlydb.");
 					echo $this->c->primary($this->updatedPre . " \tUpdated from Orlydb.");
 				}
-			}
+			}*/
 
+/*
 			if (self::PRE_SRRDB) {
 				$this->updatedPre = $this->insertedPre = 0;
 				$this->retrieveSrr();
@@ -161,6 +162,7 @@ Class PreDb
 					echo $this->c->primary($this->updatedPre . " \tUpdated from Srrdb.");
 				}
 			}
+*/
 
 			if (self::PRE_PREDBME) {
 				$this->updatedPre = $this->insertedPre = 0;
@@ -320,7 +322,7 @@ Class PreDb
 			$query .= (!empty($matches['reason'])    ? 'nukereason = ' . $this->db->escapeString($matches['reason'])   . ', ' : '');
 			$query .= (!empty($matches['requestid']) ? 'requestid = '  . $matches['requestid']                         . ', ' : '');
 			$query .= (!empty($matches['groupid'])   ? 'groupid = '    . $matches['groupid']                           . ', ' : '');
-			$query .= (!empty($matches['predate'])   ? 'predate = '    . $matches['predate']                           . ', ' : '');
+			$query .= (!empty($matches['date'])      ? 'predate = '    . $this->db->from_unixtime($matches['date'])    . ', ' : '');
 			$query .= (!empty($matches['nuked'])     ? 'nuked = '      . $matches['nuked']                             . ', ' : '');
 			$query .= (!empty($matches['filename'])  ? 'filename = '   . $this->db->escapeString($matches['filename']) . ', ' : '');
 			$query .= (
@@ -405,8 +407,6 @@ Class PreDb
 
 	/**
 	 * Get new pre data from zenet.
-	 *
-	 * @return int
 	 */
 	protected function retrieveZenet()
 	{
@@ -789,13 +789,22 @@ Class PreDb
 	}
 
 	// Update a single release as it's created.
-	public function matchPre($cleanerName, $releaseID)
+	public function matchPre($cleanerName)
 	{
 		$db = new DB();
 		$x = $db->queryOneRow(sprintf('SELECT id FROM predb WHERE title = %s', $db->escapeString($cleanerName)));
 		if (isset($x['id'])) {
-			$db->queryExec(sprintf('UPDATE releases SET preid = %d WHERE id = %d', $x['id'], $releaseID));
-			return true;
+			return array(
+				"preid" => $x['id']
+			);
+		}
+		//check if clean name matches a predb filename
+		$y = $db->queryOneRow(sprintf('SELECT id, title FROM predb WHERE filename = %s', $db->escapeString($cleanerName)));
+		if (isset($y['id'])) {
+			return array(
+				"title" => $y['title'],
+				"preid" => $y['id']
+			);
 		}
 		return false;
 	}
@@ -858,7 +867,8 @@ Class PreDb
 
 				// To save space in the DB we do this instead of storing the full URL.
 				if ($URL === 'srrdb') {
-					$URL = 'http://www.srrdb.com/download/file/' . $row['title'] . '/' . strtolower(urlencode($row['title'])) . '.nfo';
+					continue;
+					//$URL = 'http://www.srrdb.com/download/file/' . $row['title'] . '/' . strtolower(urlencode($row['title'])) . '.nfo';
 				}
 
 				$buffer = $this->getUrl($URL);
@@ -868,9 +878,9 @@ Class PreDb
 						continue;
 					}
 
-					if ($row['nfo'] === 'srrdb' && preg_match('/You\'ve reached the daily limit/i', $buffer)) {
+					/*if ($row['nfo'] === 'srrdb' && preg_match('/You\'ve reached the daily limit/i', $buffer)) {
 						continue;
-					}
+					}*/
 
 					if ($nfo->addAlternateNfo($buffer, $row, $nntp)) {
 						if ($this->echooutput) {
@@ -888,7 +898,7 @@ Class PreDb
 		return $nfos;
 	}
 
-	// Matches the MD5 within the predb table to release files and subjects (names) which are hashed.
+	// Matches the hashes within the predb table to release files and subjects (names) which are hashed.
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
 		$db = new DB();
@@ -915,7 +925,7 @@ Class PreDb
 			if ($time == 1) {
 				$te = ' in the past 3 hours';
 			}
-			echo $this->c->header('Fixing search names' . $te . " using the predb md5.");
+			echo $this->c->header('Fixing search names' . $te . " using the predb hash.");
 		}
 		if ($db->dbSystem() === 'mysql') {
 			$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
