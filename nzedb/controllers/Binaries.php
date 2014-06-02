@@ -76,11 +76,11 @@ class Binaries
 	 */
 	private $DoPartRepair;
 
-	/**
-	 * Should we use grabnzbs?
-	 * @var bool
-	 */
-	private $grabnzbs;
+	///**
+	//* Should we use grabnzbs?
+	//* @var bool
+	//*/
+	//private $grabnzbs;
 
 	/**
 	 * Do we need to reset collection hash?
@@ -202,7 +202,7 @@ class Binaries
 
 		$this->compressedHeaders = ($this->site->compressedheaders == '1') ? true : false;
 		$this->DoPartRepair = ($this->site->partrepair == '0') ? false : true;
-		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
+		//$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
 		$this->hashcheck = (!empty($this->site->hashcheck)) ? (int)$this->site->hashcheck : 0;
 		$this->messagebuffer = (!empty($this->site->maxmssgs)) ? $this->site->maxmssgs : 20000;
 		$this->NewGroupScanByDays = ($this->site->newgroupscanmethod == '1') ? true : false;
@@ -795,7 +795,7 @@ class Binaries
 					}
 
 					$nowPart = (int) $matches[2];
-					if ($this->grabnzbs && stristr($subject, '.nzb"')) {
+					/*if ($this->grabnzbs && stristr($subject, '.nzb"')) {
 						$this->db->queryInsert(
 							sprintf(
 								'INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded)
@@ -812,7 +812,7 @@ class Binaries
 								$this->db->from_unixtime($this->message[$subject]['Date'])
 							)
 						);
-					}
+					}*/
 
 					if ($nowPart > 0) {
 						$this->message[$subject]['Parts'][$nowPart] =

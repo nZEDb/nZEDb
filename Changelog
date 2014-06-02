@@ -7,7 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-06-02 DariusIII
-	* Chg: Remove grabnzbs from tmux, settings and site admin.
+	* Chg: Remove grabnzbs from tmux, settings, Binaries.php, threaded.sh and site admin.
 2014-06-01 kevin
 	* Chg: Change Alpha theme error output when there are no covers in cover view.
 	* Add: Links to ZNC/IRCScraper guides.
