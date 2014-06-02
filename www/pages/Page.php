@@ -29,7 +29,28 @@ class Page extends BasePage
 			$parentcatlist = $category->getForMenu();
 		}
 
+		// Add in system types to console categories to make the boot strap drop down list less long.
+		$consoleCatList = array();
+		foreach ($parentcatlist as $parent) {
+			if ($parent['title'] === 'Console') {
+				foreach ($parent['subcatlist'] as $consoleCat) {
+					if (preg_match('/^XBOX/i', $consoleCat['title'])) {
+						$consoleCatList['Microsoft'][] = $consoleCat;
+					} else if (preg_match('/^([3N]DS|N?GC)$|^WII/i', $consoleCat['title'])) {
+						$consoleCatList['Nintendo'][] = $consoleCat;
+					} else if (preg_match('/PS[\dXP ]/i', $consoleCat['title'])) {
+						$consoleCatList['Sony'][] = $consoleCat;
+					} else {
+						$consoleCatList['Other'][] = $consoleCat;
+					}
+				}
+				break;
+			}
+		}
+
+		$this->smarty->assign('consolecatlist', $consoleCatList);
 		$this->smarty->assign('parentcatlist', $parentcatlist);
+
 		$searchStr = '';
 		if ($this->page == 'search' && isset($_REQUEST["id"])) {
 			$searchStr = (string) $_REQUEST["id"];

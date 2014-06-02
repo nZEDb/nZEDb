@@ -6,7 +6,48 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-01 niel
+	* Fix: Adding dynamic git path use to the Git library so that OSes with non-standard locations do not fail..
+2014-05-31 kevin
+	* Chg: Remove all web sources from Predb, please run IrcScraper from now on to get PRE's.
+	* Chg: Split up the console dropdown list by manufacturer to shorten it.
+2014-05-31 ruhllatio
+	* Chg: Category Improvements
+	* Fix: Issue #1307 -- Movies with MP3 in searchname get improperly categorized as Music->MP3
+	* Add: New categories for next gen consoles
+	* Add: Regex categorization for next gen consoles
+	* Fix: 3DS categorization
+	* Add: Post Proc support for WiiU\Ps4\PSVITA.
+2014-05-30 ruhllatio
+	* Add: Misc Category for Hashed releases (run Dev/recategorize.php misc)
+	* Add: More categorization improvement for PC Games
+2014-05-29 ruhllatio
+	* Chg: Categorization improvements for Console, PC, and Anime TV
+	* Chg: Console post processing improvements
+2014-05-29 kevin
+	* Fix: When removing the nzbget user/pass it wouldn't stick.
+	* Fix: Add missing from unixtime on predb web.
+	* Chg: Move some Web PRE source to IRC.
+	* Chg: Allow empty nzbget username/password.
+	* Chg: Comment out SRRDB from Web PreDB, will be added to IRC PreDB.
+2014-05-28 bart39
+	* Chg: Don't display movie info if imdbid = 0000000.
+2014-05-28 ruhllatio
+	* Fix: 3DS categorization (now in NDS cat) and Amazon post processing
+	* Chg: Better Amazon lookup support for Console releases
+	* Add: Console categorization for PSX/PS2 titles to Other
+	* Chg: Categorization for some PC Games newsgroups
+	* Add: Account for Amazon Console titles that have the platform name at the end of the title
+2014-05-27 bart39
+	* Chg: Add unique index for predb title to avoid dupes.
+2014-05-27 ruhllatio
+	* Add: Categorization for GameCube titles that aren't WiiWare (Console->Other instead of Misc->Other)
+	* Fix: Add Gamecube Amazon lookup platform fix
+	* Chg: NGC platform prep for lookup
 2014-05-26 bart39
+	* Chg: update schema to match last patch
+	* Chg: Disable update_predb_hashes and update_predb_md5 scripts as they are now defunct.
+	* Chg: Refactor PreDB final stage - remove md5/sha1 from predb table.
 	* Fix: fix issue with trigger causing duplicates
 2014-05-26 NZBmets
 	* Upd: TMUX Powerline uspsetting segment to handle IPv6 and proper IPv4 parsing
