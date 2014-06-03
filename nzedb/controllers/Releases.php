@@ -2640,8 +2640,8 @@ class Releases
 			$tot_retcount = $tot_retcount + $retcount;
 
 			$nzbcount = $this->processReleasesStage5($groupID);
+			$this->processReleasesStage5b($groupID);
 			if ($this->requestids == '1') {
-				$this->processReleasesStage5b($groupID);
 				$this->processReleasesStage5c($groupID);
 			} else if ($this->requestids == '2') {
 				$stage8 = TIME();
