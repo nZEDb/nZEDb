@@ -577,6 +577,11 @@ class DB extends \PDO
 	 */
 	public function queryOneRow($query)
 	{
+		// Force the query to only return 1 row, so queryArray doesn't potentially run out of memory on a large data set.
+		if (stripos($query, 'LIMIT') === false) {
+			$query .= ' LIMIT 1';
+		}
+
 		$rows = $this->query($query);
 
 		if (!$rows || count($rows) == 0) {
