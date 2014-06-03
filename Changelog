@@ -10,7 +10,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: PreDB Filename match check now runs after filename insert
 	* Chg: More categorization improvements for Console/Anime
 	* Chg: Local RequestID Lookup now runs regardless of setting in update_releases
-	* Fix: Stage4567 RequestID local lookup now runs indefinitely for Non-TPG folks
+	* Fix: Stage4567 RequestID local lookup now runs indefinitely for Non-TPG folks (for real this time)
 2014-06-02 bart39
 	* Chg: Crossposted requestid web lookup
 	* Fix: Typo in misc/update/requestid.php
