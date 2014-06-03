@@ -79,7 +79,7 @@ if ($total > 0) {
 			if ($determinedcat == $row['categoryid']) {
 				$run = $db->queryDirect(
 					sprintf(
-						'UPDATE releases set preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s, where id = %d', $preid, $db->escapeString($title), $row['id']
+						'UPDATE releases set preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s where id = %d', $preid, $db->escapeString($title), $row['id']
 					)
 				);
 			} else {
@@ -106,7 +106,7 @@ if ($total > 0) {
 				}
 			}
 		} else {
-			$db->queryExec('UPDATE releases SET reqidstatus = -3 WHERE id = ' . $row['id']);
+			$db->queryExec('UPDATE releases SET reqidstatus = -1 WHERE id = ' . $row['id']);
 		}
 		if (!isset($argv[2]) || $argv[2] !== 'show') {
 			$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString(++$counter, $total));
