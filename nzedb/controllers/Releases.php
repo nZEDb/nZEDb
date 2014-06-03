@@ -2183,20 +2183,16 @@ class Releases
 	 */
 	public function processReleasesStage5b($groupID, $limit = 5000)
 	{
-		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
-			$requestid = new RequestID($this->echooutput);
-			$stage5b = TIME();
-
-			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- limit $limit."));
-			}
-			$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, true);
-			if ($this->echooutput) {
-				$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5b)), true);
-			}
+		$requestid = new RequestID($this->echooutput);
+		$stage5b = TIME();
+		if ($this->echooutput) {
+			$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- limit $limit."));
+		}
+		$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, true);
+		if ($this->echooutput) {
+			$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5b)), true);
 		}
 	}
-
 
 	/**
 	 * Process RequestID's via Web lookup.
