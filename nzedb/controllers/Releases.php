@@ -1845,7 +1845,7 @@ class Releases
 				SELECT %s.*, groups.name AS gname
 				FROM %s
 				INNER JOIN groups ON %s.groupid = groups.id
-				WHERE %sfilecheck = 3
+				WHERE %s.filecheck = 3
 				AND filesize > 0 LIMIT %d',
 				$group['cname'],
 				$group['cname'],
@@ -1861,6 +1861,8 @@ class Releases
 
 		if ($collections !== false && $collections->rowCount() > 0) {
 			$preDB = new PreDb($this->echooutput);
+
+			$checkPasswords = ($this->site->checkpasswordedrar == '1' ? -1 : 0);
 
 			foreach ($collections as $collection) {
 
@@ -1950,7 +1952,7 @@ class Releases
 							$this->db->escapeString($collection['date']),
 							$this->db->escapeString($fromName),
 							$this->db->escapeString($collection['filesize']),
-							($this->site->checkpasswordedrar == '1' ? -1 : 0),
+							$checkPasswords,
 							$category
 						)
 					);
