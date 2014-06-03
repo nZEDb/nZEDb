@@ -264,6 +264,24 @@ class RequestID
 			)
 		);
 
+		if ($xml === false && preg_match('/alt\.binaries\.(etc|mom|\.hdtv.x264)/', $this->result['groupname'])) {
+			$reqGname = 'alt.binaries.moovee';
+			if ($this->result['groupname'] === 'alt.binaries.etc') {
+				$reqGname = 'alt.binaries.teevee';
+			}
+			$xml = nzedb\utility\getUrl(
+				str_ireplace(
+					'[REQUEST_ID]',
+					$this->requestID,
+					str_ireplace(
+						'[GROUP_NM]',
+						urlencode($reqGname),
+						$this->site->request_url
+					)
+				)
+			);
+		}
+
 		if ($xml !== false) {
 			$xml = simplexml_load_string($xml);
 			if ($xml !== false &&
