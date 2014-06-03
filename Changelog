@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-03 bart39
+	* Fix: Set reqidstatus correctly after local lookup
 2014-06-03 kevin
 	* Chg: Stage 4, buffer checkpasswordedrar for speedup.
 	* Chg: Change queryOneRow to check if LIMIT is in the query, tack on LIMIT 1 if not to prevent queryArray from running out of RAM on large data sets.
