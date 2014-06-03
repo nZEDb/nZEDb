@@ -1845,12 +1845,13 @@ class Releases
 				SELECT %s.*, groups.name AS gname
 				FROM %s
 				INNER JOIN groups ON %s.groupid = groups.id
-				WHERE %s.filecheck = 3
+				WHERE %s %s.filecheck = 3
 				AND filesize > 0 LIMIT %d',
 				$group['cname'],
 				$group['cname'],
 				$group['cname'],
 				$where,
+				$group['cname'],
 				$this->stage5limit
 			)
 		);
