@@ -1862,6 +1862,8 @@ class Releases
 		if ($collections !== false && $collections->rowCount() > 0) {
 			$preDB = new PreDb($this->echooutput);
 
+			$checkPasswords = ($this->site->checkpasswordedrar == '1' ? -1 : 0);
+
 			foreach ($collections as $collection) {
 
 				$properName = true;
@@ -1950,7 +1952,7 @@ class Releases
 							$this->db->escapeString($collection['date']),
 							$this->db->escapeString($fromName),
 							$this->db->escapeString($collection['filesize']),
-							($this->site->checkpasswordedrar == '1' ? -1 : 0),
+							$checkPasswords,
 							$category
 						)
 					);
