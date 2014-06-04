@@ -748,10 +748,6 @@ while ($i > 0) {
 	if ($proc_tmux_result[0]['sharing_timer'] != null) {
 		$sharing_timer = $proc_tmux_result[0]['sharing_timer'];
 	}
-
-	if ($split_result[0]['oldestnzb'] != null) {
-		$oldestnzb = $split_result[0]['oldestnzb'];
-	}
 	if ($split_result[0]['newestpre'] != null) {
 		$newestpre = $split_result[0]['newestpre'];
 		$nowTime = time();
