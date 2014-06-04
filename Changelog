@@ -6,6 +6,21 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-03 bart39
+	* Fix: Set reqidstatus correctly after local lookup
+2014-06-03 kevin
+	* Chg: Stage 4, buffer checkpasswordedrar for speedup.
+	* Chg: Change queryOneRow to check if LIMIT is in the query, tack on LIMIT 1 if not to prevent queryArray from running out of RAM on large data sets.
+	* Chg: Make stage 4 easier to read.
+	* Chg: Minor changes to stage 4.
+2014-06-03 ruhllatio
+	* Add: PreDB Filename match check now runs after filename insert
+	* Chg: More categorization improvements for Console/Anime
+	* Chg: Local RequestID Lookup now runs regardless of setting in update_releases
+	* Fix: Stage4567 RequestID local lookup now runs indefinitely for Non-TPG folks (for real this time)
+2014-06-02 bart39
+	* Chg: Crossposted requestid web lookup
+	* Fix: Typo in misc/update/requestid.php
 2014-06-02 DariusIII
 	* Chg: Remove grabnzbs from tmux, settings, Binaries.php, threaded.sh and site admin.
 2014-06-01 kevin
