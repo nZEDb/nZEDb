@@ -87,7 +87,7 @@ class NZB
 		// Set table names
 		if ($this->tablePerGroup === 1) {
 			if ($this->groupID == '') {
-				exit("$this->groupID is missing, are you running grabnzbs_threaded.py\n");
+				exit("$this->groupID is missing\n");
 			}
 			$this->cname = 'collections_' .$this->groupID;
 			$this->bname = 'binaries_' . $this->groupID;
