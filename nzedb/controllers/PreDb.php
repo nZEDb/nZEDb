@@ -100,16 +100,16 @@ Class PreDb
 	 *
 	 * @param string $cleanerName
 	 *
-	 * @return array Empty if not found, title/ID from PreDB if found.
+	 * @return array|bool Array with title/ID from PreDB if found, bool False if not found.
 	 */
 	public function matchPre($cleanerName)
 	{
 		if ($cleanerName == '') {
-			return array();
+			return false;
 		}
 
 		$titleCheck = $this->db->queryOneRow(
-			sprintf('SELECT id FROM predb WHERE title = %s', $this->db->escapeString($cleanerName))
+			sprintf('SELECT id FROM predb WHERE title = %s LIMIT 1', $this->db->escapeString($cleanerName))
 		);
 
 		if ($titleCheck !== false) {
@@ -121,7 +121,7 @@ Class PreDb
 
 		// Check if clean name matches a PreDB filename.
 		$fileCheck = $this->db->queryOneRow(
-			sprintf('SELECT id, title FROM predb WHERE filename = %s', $this->db->escapeString($cleanerName))
+			sprintf('SELECT id, title FROM predb WHERE filename = %s LIMIT 1', $this->db->escapeString($cleanerName))
 		);
 
 		if ($fileCheck !== false) {
@@ -131,7 +131,7 @@ Class PreDb
 			);
 		}
 
-		return array();
+		return false;
 	}
 
 	/**
