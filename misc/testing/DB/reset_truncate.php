@@ -11,7 +11,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 	$db->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
 	echo $c->primary("Reseting all groups completed.");
 
-	$arr = array("parts", "partrepair", "binaries", "collections", "nzbs");
+	$arr = array("parts", "partrepair", "binaries", "collections");
 	foreach ($arr as &$value) {
 		$rel = $db->queryExec("TRUNCATE TABLE $value");
 		if ($rel !== false) {
@@ -58,6 +58,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "drop")) {
 	echo $c->primary($delcount->rowCount() . " releases had no nzb, deleted.");
 } else {
 	exit($c->error("\nThis script removes releases with no NZBs, resets all groups, truncates or drops(tpg) \n"
-			. "article tables. All other releases are left alone.\n"
-			. "php $argv[0] [true, drop]   ...: To reset all groups and truncate/drop the tables.\n"));
+		. "article tables. All other releases are left alone.\n"
+		. "php $argv[0] [true, drop]   ...: To reset all groups and truncate/drop the tables.\n"
+	));
 }
