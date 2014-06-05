@@ -933,15 +933,16 @@ class ReleaseRemover
 		$regex = sprintf("rf.name %s 'x264.*\.(wmv|avi)$'", $this->regexp);
 		$codec = '%\\Codec%Setup.exe%';
 		$iferror = '%If_you_get_error.txt%';
-		$categories = sprintf("r.categoryid IN (%d, %d, %d, %d, %d, %d, %d) AND",
+		$categories = sprintf("r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d) AND",
 			Category::CAT_MOVIE_3D,
 			Category::CAT_MOVIE_BLURAY,
 			Category::CAT_MOVIE_DVD,
 			Category::CAT_MOVIE_FOREIGN,
 			Category::CAT_MOVIE_HD,
 			Category::CAT_MOVIE_OTHER,
-			Category::CAT_MOVIE_SD
-			);
+			Category::CAT_MOVIE_SD,
+			Category::CAT_PARENT_XXX
+		);
 		$codeclike = sprintf("UNION SELECT r.id, r.guid, r.searchname FROM releases r
 			LEFT JOIN releasefiles rf ON r.id = rf.releaseid
 			WHERE %s rf.name %s '%s' OR rf.name %s '%s'", $categories, $this->like, $codec, $this->like, $iferror
