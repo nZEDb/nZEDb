@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-05 kevin
+	* Chg: Modify nzb-import to be recursive and use less RAM.
 2014-06-05 bart39
 	* Fix: use queryDirect rather than queryOneRow for queries starting with SHOW INDEX
 2014-06-05 DariusIII
