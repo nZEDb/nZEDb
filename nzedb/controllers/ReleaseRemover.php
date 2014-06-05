@@ -930,7 +930,7 @@ class ReleaseRemover
 	protected function removeCodecPoster()
 	{
 		$this->method = 'Codec Poster';
-		$regex = sprintf("rf.name %s 'x264.*\.wmv$'", $this->regexp);
+		$regex = sprintf("rf.name %s 'x264.*\.(wmv|avi)$'", $this->regexp);
 		$codec = '%\\Codec%Setup.exe%';
 		$iferror = '%If_you_get_error.txt%';
 		$categories = sprintf("r.categoryid IN (%d, %d, %d, %d, %d, %d, %d) AND",
@@ -949,7 +949,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.id, r.guid, r.searchname FROM releases
 			r INNER JOIN releasefiles rf ON (rf.releaseid = r.id)
-			WHERE %s %s %s %s %s", $categories, $regex, $this->crapTime, $codeclike, $this->crapTime
+			WHERE %s %s %s %s %s", $categories, $regex, regex2, $this->crapTime, $codeclike, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
