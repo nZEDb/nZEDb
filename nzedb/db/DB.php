@@ -575,10 +575,10 @@ class DB extends \PDO
 	 *
 	 * @return array|bool
 	 */
-	public function queryOneRow($query)
+	public function queryOneRow($query, $forceLimit = true)
 	{
 		// Force the query to only return 1 row, so queryArray doesn't potentially run out of memory on a large data set.
-		if (stripos($query, 'LIMIT') === false) {
+		if (stripos($query, 'LIMIT') === false && $forceLimit === true) {
 			$query .= ' LIMIT 1';
 		}
 
