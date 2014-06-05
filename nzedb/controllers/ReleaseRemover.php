@@ -949,7 +949,7 @@ class ReleaseRemover
 		$this->query = sprintf(
 			"SELECT r.id, r.guid, r.searchname FROM releases
 			r INNER JOIN releasefiles rf ON (rf.releaseid = r.id)
-			WHERE %s %s %s %s %s", $categories, $regex, regex2, $this->crapTime, $codeclike, $this->crapTime
+			WHERE %s %s %s %s %s", $categories, $regex, $this->crapTime, $codeclike, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
