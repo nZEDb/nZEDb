@@ -202,9 +202,9 @@ $page->smarty->assign('sizelist', $sizelist);
 $page->smarty->assign('results', $results);
 $page->smarty->assign('sadvanced', ($searchtype != "basic"));
 
-$ft1 = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_searchname_ft'", false);
-$ft2 = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_name_ft'", false);
-$ft3 = $db->queryOneRow("SHOW INDEX FROM releases WHERE key_name = 'ix_releases_searchname_ft'", false);
+$ft1 = $db->checkIndex('releases', 'ix_releases_name_searchname_ft');
+$ft2 = $db->checkIndex('releases', 'ix_releases_name_ft');
+$ft3 = $db->checkIndex('releases', 'ix_releases_searchname_ft');
 if (isset($ft1['key_name']) || (isset($ft2['key_name']) && isset($ft3['key_name']))) {
 	$page->smarty->assign('fulltext', true);
 }
