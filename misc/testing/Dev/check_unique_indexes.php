@@ -50,14 +50,14 @@ if ($handle) {
 		if (preg_match('/(?P<statement>CREATE UNIQUE INDEX)\s+(?P<index>[\w-]+)\s+ON\s+(?P<table>[\w-]+)\s*\((?P<column>[\w-]+(?:\s*\((?P<size>\d+)\))?)\);/i', $line, $match)) {
 			$columns = explode(',', $match['column']);
 			foreach ($columns as $column) {
-				$check = $db->queryOneRow("SHOW INDEXES IN " . trim($match['table']) . " WHERE non_unique = 0 AND column_name = '" . trim($column) . "'", false);
+				$check = $db->checkColumnIndex($match['table'], $column);
 				if (!isset($check['key_name'])) {
 					if (trim($match['table']) === 'collections') {
 						$tables = $db->query("SHOW TABLES");
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/collections_\d+/', $tbl)) {
-								$check_collections = $db->queryOneRow("SHOW INDEXES IN " . trim($tbl) . " WHERE non_unique = 0 AND column_name = '" . trim($column) . "'", false);
+								$check = $db->checkColumnIndex($tbl, $column);
 								if (!isset($check_collections['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT {$match['index']} UNIQUE (${match['column']})";
 									run_query($qry, $argv[1]);
@@ -71,7 +71,7 @@ if ($handle) {
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/binaries_\d+/', $tbl)) {
-								$checkBinaries = $db->queryOneRow("SHOW INDEXES IN " . trim($tbl) . " WHERE non_unique = 0 AND column_name = '" . trim($column) . "'", false);
+								$checkBinaries = $db->checkColumnIndex($tbl, $column);
 								if (!isset($checkBinaries['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT {$match['index']} UNIQUE (${match['column']})";
 									run_query($qry, $argv[1]);
@@ -85,7 +85,7 @@ if ($handle) {
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/parts_\d+/', $tbl)) {
-								$checkParts = $db->queryOneRow("SHOW INDEXES IN " . trim($tbl) . " WHERE non_unique = 0 AND column_name = '" . trim($column) . "'", false);
+								$checkParts = $db->checkColumnIndex($tbl, $column);
 								if (!isset($checkParts['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT {$match['index']} UNIQUE (${match['column']})";
 									run_query($qry, $argv[1]);
@@ -99,7 +99,7 @@ if ($handle) {
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/partrepair_\d+/', $tbl)) {
-								$checkPartRepair = $db->queryOneRow("SHOW INDEXES IN " . trim($tbl) . " WHERE non_unique = 0 AND column_name = '" . trim($column) . "'", false);
+								$checkPartRepair = $db->checkColumnIndex($tbl, $column);
 								if (!isset($checkPartRepair['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT {$match['index']} UNIQUE (${match['column']})";
 									run_query($qry, $argv[1]);
