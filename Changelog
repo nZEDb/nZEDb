@@ -6,6 +6,10 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-06 niel
+	* Chg: Improvement to DB::queryOneRow for LIMIT clause checking.
+	* Add: New DB methods for checking/showing indexes.
+	* Chg: Made .../misc/testing/Dev/check_unique_indexes.php to use new methods.
 2014-06-05 ruhllatio
 	* Fix: misc/testing/dev/test-memcache.php not loading Mcached class properly
 2014-06-05 kevin
