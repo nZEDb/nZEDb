@@ -159,16 +159,16 @@ class DB extends \PDO
 		return $result->fetch(\PDO::FETCH_ASSOC);
 	}
 
-	public function columnCheckIndex($table, $column)
+	public function checkColumnIndex($table, $column)
 	{
-		$result = parent::query(sprintf("SHOW INDEXES IN %s WHERE non_unique = 0 AND column_name = %s",
+		$result = self::$pdo->query(sprintf("SHOW INDEXES IN %s WHERE non_unique = 0 AND column_name = '%s'",
 										trim($table),
 										trim($column)
 								));
 		if ($result === false) {
 			return false;
 		}
-
+//var_dump($result);
 		return $result->fetchAll(\PDO::FETCH_ASSOC);
 	}
 
