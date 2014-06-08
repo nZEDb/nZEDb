@@ -149,7 +149,7 @@ class DB extends \PDO
 	 */
 	public function checkIndex($table, $index)
 	{
-		$result = parent::query(sprintf("SHOW INDEX FROM %s WHERE key_name = %s",
+		$result = self::$pdo->query(sprintf("SHOW INDEX FROM %s WHERE key_name = '%s'",
 										trim($table),
 										trim($index)));
 		if ($result === false) {

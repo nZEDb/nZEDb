@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-07 niel
+	* Fix: Problem with mixing instance/static, that caused search to fail.
 2014-06-06 kevin
 	* Chg: Change simple_php_yenc_decode check to a sub-string search to allow improper settings (ie: /path/to/simple_php_yenc_decode.so)
 2014-06-06 niel
