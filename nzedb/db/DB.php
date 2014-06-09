@@ -87,7 +87,8 @@ class DB extends \PDO
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
 			'dbuser' 		=> defined('DB_USER') ? DB_USER : '',
-			'log'			=> new \ColorCLI()
+			'log'			=> new \ColorCLI(),
+			'persist'		=> false,
 		);
 		$this->opts = $options + $defaults;
 
@@ -220,7 +221,8 @@ class DB extends \PDO
 		}
 		$dsn .= ';charset=utf8';
 
-		$options = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 180);
+		$options = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 180,
+						 \PDO::ATTR_PERSISTENT => $this->opts['persist']);
 		if ($this->DbSystem === 'mysql') {
 			$options[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			$options[\PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
