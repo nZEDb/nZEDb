@@ -31,13 +31,13 @@ if (isset($argv[2]) && is_numeric($argv[2])) {
 
 //runs on every release not already PreDB Matched
 if (isset($argv[1]) && $argv[1] === "all") {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND isrequestid = 1");
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, r.reqidstatus, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND isrequestid = 1");
 //runs on all releases not already renamed not already PreDB matched
 } else if (isset($argv[1]) && $argv[1] === "full") {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3)");
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, r.reqidstatus, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3)");
 //runs on all releases not already renamed limited by user not already PreDB matched
 } else if (isset($argv[1]) && is_numeric($argv[1])) {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3) ORDER BY postdate DESC LIMIT " . $argv[1]);
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, r.reqidstatus, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3) ORDER BY postdate DESC LIMIT " . $argv[1]);
 }
 
 $total = $qry->rowCount();
@@ -79,7 +79,7 @@ if ($total > 0) {
 			if ($determinedcat == $row['categoryid']) {
 				$run = $db->queryDirect(
 					sprintf(
-						'UPDATE releases set preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s, where id = %d', $preid, $db->escapeString($title), $row['id']
+						'UPDATE releases set preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s where id = %d', $preid, $db->escapeString($title), $row['id']
 					)
 				);
 			} else {
@@ -106,7 +106,13 @@ if ($total > 0) {
 				}
 			}
 		} else {
-			$db->queryExec('UPDATE releases SET reqidstatus = -3 WHERE id = ' . $row['id']);
+			$db->queryExec(
+				sprintf(
+					'UPDATE releases SET reqidstatus = %d WHERE id = %d',
+					($row['reqidstatus'] == 0 ? -1 : -3),
+					$row['id']
+				)
+			);
 		}
 		if (!isset($argv[2]) || $argv[2] !== 'show') {
 			$consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $consoletools->percentString(++$counter, $total));

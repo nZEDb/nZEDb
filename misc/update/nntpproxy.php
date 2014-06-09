@@ -54,7 +54,7 @@ function window_proxy($tmux_session, $powerline)
 		}
 	}
 
-	if ($nntpproxy === '1' && ($site->alternate_nntp === '1' || $site->grabnzbs === '2')) {
+	if ($nntpproxy === '1' && ($site->alternate_nntp === '1')) {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy_a.conf")) {

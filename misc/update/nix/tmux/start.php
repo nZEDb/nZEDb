@@ -115,7 +115,7 @@ if ($nntpproxy == '1') {
 }
 
 //reset collections dateadded to now if dateadded > delay time check
-echo $c->header("Resetting expired collections and nzbs dateadded to now. This could take a minute or two. Really.");
+echo $c->header("Resetting expired collections dateadded to now. This could take a minute or two. Really.");
 if ($tablepergroup == 1) {
 	$sql = "SHOW table status";
 	$tables = $db->queryDirect($sql);
@@ -138,13 +138,6 @@ if ($tablepergroup == 1) {
 	}
 	echo $c->primary(number_format($ran) . " collections reset.");
 }
-
-$run = $db->queryExec('update nzbs set dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
-$updatedNZBs = 0;
-if ($run !== false) {
-	$updatedNZBs = $run->rowCount();
-}
-echo $c->primary(number_format($updatedNZBs) . " nzbs reset.");
 sleep(2);
 
 function start_apps($tmux_session)
@@ -211,7 +204,7 @@ function window_proxy($tmux_session, $window)
 		}
 	}
 
-	if ($nntpproxy === '1' && ($site->alternate_nntp === '1' || $site->grabnzbs === '2')) {
+	if ($nntpproxy === '1' && ($site->alternate_nntp === '1')) {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy_a.conf")) {

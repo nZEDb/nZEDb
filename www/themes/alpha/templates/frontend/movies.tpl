@@ -278,10 +278,12 @@
 		<div class="pull-left" style="margin-right: 15px;">
 			<h2 style="margin-top: 7px;"> ಠ_ಠ </h2>
 		</div>
-		<p>Either some amazon key is wrong, or there is nothing in this section.
-			<br>Please try looking in the<a
-					href="{$smarty.const.WWW_TOP}/browse?t={$category}"
-					style="font-weight:strong;text-decoration:underline;"> list view</a>.
+		<p>No movie releases have IMDB covers.
+			<br>This might mean the Administrator's TMDB or TraktTV API keys are wrong, or he has file permission issues, or he has disabled looking up IMDB covers.
+			<br>This could also mean there are no movie releases.
+			<br>Please try looking in the
+			<a href="{$smarty.const.WWW_TOP}/browse?t={$category}" style="font-weight:strong;text-decoration:underline;"
+			>list view</a>, which does not require IMDB covers.
 		</p>
 	</div>
 {/if}

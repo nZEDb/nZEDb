@@ -10,17 +10,17 @@ use nzedb\utility;
 class Releases
 {
 	// RAR/ZIP Passworded indicator.
-	const PASSWD_NONE      =  0; // No password.
-	const PASSWD_POTENTIAL =  1; // Might have a password.
-	const BAD_FILE         =  2; // Possibly broken RAR/ZIP.
-	const PASSWD_RAR       = 10; // Definitely passworded.
+	const PASSWD_NONE = 0; // No password.
+	const PASSWD_POTENTIAL = 1; // Might have a password.
+	const BAD_FILE = 2; // Possibly broken RAR/ZIP.
+	const PASSWD_RAR = 10; // Definitely passworded.
 
 	// Request ID.
-	const REQID_NONE   = -3; // The Request ID was not found locally or via web lookup.
-	const REQID_ZERO   = -2; // The Request ID was 0.
-	const REQID_NOLL   = -1; // Request ID was not found via local lookup.
-	const REQID_UPROC  =  0; // Release has not been processed.
-	const REQID_FOUND  =  1; // Request ID found and release was updated.
+	const REQID_NONE = -3; // The Request ID was not found locally or via web lookup.
+	const REQID_ZERO = -2; // The Request ID was 0.
+	const REQID_NOLL = -1; // Request ID was not found via local lookup.
+	const REQID_UPROC = 0; // Release has not been processed.
+	const REQID_FOUND = 1; // Request ID found and release was updated.
 
 	/**
 	 * @param bool $echooutput
@@ -86,6 +86,7 @@ class Releases
 
 	/**
 	 * Used for paginator.
+	 *
 	 * @param        $cat
 	 * @param        $maxage
 	 * @param array  $excludedcats
@@ -125,6 +126,7 @@ class Releases
 				$grpjoin, $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql
 			)
 		);
+
 		return ($res === false ? 0 : $res['num']);
 	}
 
@@ -164,6 +166,7 @@ class Releases
 		}
 
 		$order = $this->getBrowseOrder($orderby);
+
 		return $this->db->query(
 			sprintf(
 				"
@@ -196,6 +199,7 @@ class Releases
 	public function showPasswords()
 	{
 		$res = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'showpasswordedrelease'");
+
 		return ($res === false ? 0 : $res['value']);
 	}
 
@@ -232,6 +236,7 @@ class Releases
 				break;
 		}
 		$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc';
+
 		return array($orderfield, $ordersort);
 	}
 
@@ -330,6 +335,7 @@ class Releases
 				)
 			)
 		);
+
 		return ($row === false ? '01/01/2014' : $row['postdate']);
 	}
 
@@ -350,6 +356,7 @@ class Releases
 				)
 			)
 		);
+
 		return ($row === false ? '01/01/2014' : $row['postdate']);
 	}
 
@@ -465,6 +472,7 @@ class Releases
 
 	/**
 	 * Get TV shows for RSS.
+	 *
 	 * @param       $num
 	 * @param int   $uid
 	 * @param array $excludedcats
@@ -584,6 +592,7 @@ class Releases
 		}
 
 		$order = $this->getBrowseOrder($orderby);
+
 		return $this->db->query(
 			sprintf(
 				"
@@ -640,6 +649,7 @@ class Releases
 				$usql, $exccatlist, $this->showPasswords(), $maxagesql
 			), true
 		);
+
 		return ($res === false ? 0 : $res['num']);
 	}
 
@@ -651,6 +661,7 @@ class Releases
 	public function getCount()
 	{
 		$res = $this->db->queryOneRow('SELECT COUNT(id) AS num FROM releases');
+
 		return ($res === false ? 0 : $res['num']);
 	}
 
@@ -751,7 +762,8 @@ class Releases
 	public function update(
 		$id, $name, $searchname, $fromname, $category, $parts, $grabs, $size,
 		$posteddate, $addeddate, $rageid, $seriesfull, $season, $episode, $imdbid, $anidbid
-	) {
+	)
+	{
 		$this->db->queryExec(
 			sprintf(
 				'UPDATE releases
@@ -787,10 +799,10 @@ class Releases
 
 		$update = array(
 			'categoryid' => (($category == '-1') ? '' : $category),
-			'grabs' => $grabs,
-			'rageid' => $rageid,
-			'season' => $season,
-			'imdbid' => $imdbid
+			'grabs'      => $grabs,
+			'rageid'     => $rageid,
+			'season'     => $season,
+			'imdbid'     => $imdbid
 		);
 
 		$updateSql = array();
@@ -843,6 +855,7 @@ class Releases
 			$usql .= ') ';
 		}
 		$usql .= ') ';
+
 		return $usql;
 	}
 
@@ -884,7 +897,8 @@ class Releases
 				$searchwords = trim($searchwords);
 
 				$searchsql .= sprintf(" AND MATCH(rs.name, rs.searchname) AGAINST('%s' IN BOOLEAN MODE)",
-					$searchwords);
+					$searchwords
+				);
 			}
 			if ($searchwords === '') {
 				$words = explode(' ', $search);
@@ -919,6 +933,7 @@ class Releases
 					}
 				}
 			}
+
 			return $searchsql;
 		}
 	}
@@ -949,6 +964,7 @@ class Releases
 			}
 			$catsrch .= '1=2 )';
 		}
+
 		return $catsrch;
 	}
 
@@ -1206,9 +1222,10 @@ class Releases
 		}
 
 		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid "
-				. "FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid INNER JOIN releasesearch rs on rs.releaseid = releases.id "
-				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE nzbstatus = 1 AND releases.passwordstatus <= %d "
-				. "%s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $searchsql, $imdbId, $catsrch, $maxage, $limit, $offset);
+			. "FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid INNER JOIN releasesearch rs on rs.releaseid = releases.id "
+			. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE nzbstatus = 1 AND releases.passwordstatus <= %d "
+			. "%s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $searchsql, $imdbId, $catsrch, $maxage, $limit, $offset
+		);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
 		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
@@ -1253,6 +1270,7 @@ class Releases
 	{
 		$words = str_word_count(str_replace(array('.', '_'), ' ', $name), 2);
 		$firstwords = array_slice($words, 0, 2);
+
 		return implode(' ', $firstwords);
 	}
 
@@ -1268,6 +1286,7 @@ class Releases
 			$gsql = sprintf('guid = %s', $this->db->escapeString($guid));
 		}
 		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE %s ", $gsql);
+
 		return (is_array($guid)) ? $this->db->query($sql) : $this->db->queryOneRow($sql);
 	}
 
@@ -1317,6 +1336,7 @@ class Releases
 
 			$episode = sprintf(' AND UPPER(releases.episode) = UPPER(%s)', $this->db->escapeString($episode));
 		}
+
 		return $this->db->queryOneRow(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d AND rageid = %d %s %s", $this->showPasswords(), $rageid, $series, $episode));
 	}
 
@@ -1324,6 +1344,7 @@ class Releases
 	{
 		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM releases WHERE rageid = %d', $rageid));
 		$this->db->queryExec(sprintf('UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL WHERE rageid = %d', $rageid));
+
 		return $res['num'];
 	}
 
@@ -1331,6 +1352,7 @@ class Releases
 	{
 		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM releases WHERE anidbid = %d', $anidbID));
 		$this->db->queryExec(sprintf('UPDATE releases SET anidbid = -1, episode = NULL, tvtitle = NULL, tvairdate = NULL WHERE anidbid = %d', $anidbID));
+
 		return $res['num'];
 	}
 
@@ -1347,6 +1369,7 @@ class Releases
 			$uc = 'nfo';
 		}
 		$selnfo = ($incnfo) ? ", {$uc} AS nfo" : '';
+
 		return $this->db->queryOneRow(
 			sprintf(
 				'SELECT id, releaseid' . $selnfo . ' FROM releasenfo WHERE releaseid = %d AND nfo IS NOT NULL', $id
@@ -1394,6 +1417,7 @@ class Releases
 		if ($this->echooutput !== false && $relcount > 0) {
 			echo "\n";
 		}
+
 		return $relcount;
 	}
 
@@ -1817,7 +1841,7 @@ class Releases
 	public function processReleasesStage4($groupID)
 	{
 		$categorize = new Categorize();
-		$retcount = $duplicate = 0;
+		$returnCount = $duplicate = 0;
 		$where = (!empty($groupID)) ? ' groupid = ' . $groupID . ' AND ' : ' ';
 
 		// Set table names
@@ -1837,107 +1861,155 @@ class Releases
 		if ($this->echooutput) {
 			$this->c->doEcho($this->c->header("Stage 4 -> Create releases."));
 		}
+
 		$stage4 = TIME();
-		$rescol = $this->db->queryDirect(
-			'SELECT ' . $group['cname'] . '.*, groups.name AS gname FROM ' . $group['cname'] .
-			' INNER JOIN groups ON ' . $group['cname'] . '.groupid = groups.id WHERE' . $where .
-			'filecheck = 3 AND filesize > 0 LIMIT ' . $this->stage5limit
+
+		$collections = $this->db->queryDirect(
+			sprintf('
+				SELECT %s.*, groups.name AS gname
+				FROM %s
+				INNER JOIN groups ON %s.groupid = groups.id
+				WHERE %s %s.filecheck = 3
+				AND filesize > 0 LIMIT %d',
+				$group['cname'],
+				$group['cname'],
+				$group['cname'],
+				$where,
+				$group['cname'],
+				$this->stage5limit
+			)
 		);
-		if ($rescol !== false && $this->echooutput) {
-			echo $this->c->primary($rescol->rowCount() . " Collections ready to be converted to releases.");
+
+		if ($collections !== false && $this->echooutput) {
+			echo $this->c->primary($collections->rowCount() . " Collections ready to be converted to releases.");
 		}
 
-		if ($rescol !== false && $rescol->rowCount() > 0) {
-			$predb = new PreDb($this->echooutput);
-			foreach ($rescol as $rowcol) {
-				$propername = true;
-				$relid = $isReqID = false;
-				$preID = NULL;
-				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $rowcol['subject']);
-				$cleanerName = $this->releaseCleaning->releaseCleaner($rowcol['subject'], $rowcol['fromname'], $rowcol['filesize'], $rowcol['gname']);
-				$fromname = trim($rowcol['fromname'], "'");
+		if ($collections !== false && $collections->rowCount() > 0) {
+			$preDB = new PreDb($this->echooutput);
+
+			$checkPasswords = ($this->site->checkpasswordedrar == '1' ? -1 : 0);
+
+			foreach ($collections as $collection) {
+
+				$properName = true;
+				$releaseID = $isReqID = false;
+				$preID = null;
+
+				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $collection['subject']);
+
+				$cleanerName = $this->releaseCleaning->releaseCleaner(
+					$collection['subject'], $collection['fromname'], $collection['filesize'], $collection['gname']
+				);
+
+				$fromName = trim($collection['fromname'], "'");
+
 				if (!is_array($cleanerName)) {
 					$cleanName = $cleanerName;
 				} else {
+
 					$cleanName = $cleanerName['cleansubject'];
-					$propername = $cleanerName['properlynamed'];
+					$properName = $cleanerName['properlynamed'];
+
 					if (isset($cleanerName['predb'])) {
 						$preID = $cleanerName['predb'];
 					}
+
 					if (isset($cleanerName['requestid'])) {
 						$isReqID = $cleanerName['requestid'];
 					}
 				}
-				if ($preID === NULL && $cleanName != '') {
+
+				if ($preID === null && $cleanName != '') {
 					// try to match the cleaned searchname to predb title or filename here
-					$preMatch = $predb->matchPre($cleanName);
-					if(count($preMatch) > 0) {
+					$preMatch = $preDB->matchPre($cleanName);
+					if ($preMatch !== false) {
 						$cleanName = $preMatch['title'];
 						$preID = $preMatch['preid'];
-						$propername = true;
+						$properName = true;
 					}
 				}
-				$relguid = sha1(uniqid('', true) . mt_rand());
 
-				$category = $categorize->determineCategory($cleanName, $rowcol['groupid']);
+				$category = $categorize->determineCategory($cleanName, $collection['groupid']);
+
 				$cleanRelName = utf8_encode($cleanRelName);
 				$cleanName = utf8_encode($cleanName);
-				$fromname = utf8_encode($fromname);
+				$fromName = utf8_encode($fromName);
 
 				// Look for duplicates, duplicates match on releases.name, releases.fromname and releases.size
 				// A 1% variance in size is considered the same size when the subject and poster are the same
-				$minsize = $rowcol['filesize'] * .99;
-				$maxsize = $rowcol['filesize'] * 1.01;
+				$dupeCheck = $this->db->queryOneRow(
+					sprintf('
+						SELECT id, guid
+						FROM releases
+						WHERE name = %s
+						AND fromname = %s
+						AND size BETWEEN %s
+						AND %s',
+						$this->db->escapeString($cleanRelName),
+						$this->db->escapeString($fromName),
+						$this->db->escapeString($collection['filesize'] * .99),
+						$this->db->escapeString($collection['filesize'] * 1.01)
+					)
+				);
 
-				$dupecheck = $this->db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $this->db->escapeString($cleanRelName), $this->db->escapeString($fromname), $this->db->escapeString($minsize), $this->db->escapeString($maxsize)));
-				if (!$dupecheck) {
+				if (!$dupeCheck) {
 					$query = 'INSERT INTO releases (';
-					$query .= ($propername === true ? 'isrenamed, '   : '');
-					$query .= ($preID !== NULL      ? 'preid, '       : '');
-					$query .= ($isReqID === true   ? 'reqidstatus, ' : '');
+					$query .= ($properName === true ? 'isrenamed, ' : '');
+					$query .= ($preID !== null ? 'preid, ' : '');
+					$query .= ($isReqID === true ? 'reqidstatus, ' : '');
 					$query .= 'name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, ';
 					$query .= 'size, passwordstatus, haspreview, categoryid, nfostatus, iscategorized) VALUES (';
-					$query .= ($propername === true ? '1, '         : '');
-					$query .= ($preID !== NULL      ? $preID . ', ' : '');
-					$query .= ($isReqID == true   ? '1, '         : '');
+					$query .= ($properName === true ? '1, ' : '');
+					$query .= ($preID !== null ? $preID . ', ' : '');
+					$query .= ($isReqID == true ? '1, ' : '');
 					$query .= '%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1)';
 
 					$this->db->ping(true);
 
-					$relid = $this->db->queryInsert(
+					$releaseID = $this->db->queryInsert(
 						sprintf(
 							$query,
 							$this->db->escapeString($cleanRelName),
 							$this->db->escapeString($cleanName),
-							$rowcol['totalfiles'],
-							$rowcol['groupid'],
-							$this->db->escapeString($relguid),
-							$this->db->escapeString($rowcol['date']),
-							$this->db->escapeString($fromname),
-							$this->db->escapeString($rowcol['filesize']),
-							($this->site->checkpasswordedrar == '1' ? -1 : 0),
+							$collection['totalfiles'],
+							$collection['groupid'],
+							$this->db->escapeString(sha1(uniqid('', true) . mt_rand())),
+							$this->db->escapeString($collection['date']),
+							$this->db->escapeString($fromName),
+							$this->db->escapeString($collection['filesize']),
+							$checkPasswords,
 							$category
 						)
 					);
 				}
 
-				if ($relid) {
+				if ($releaseID) {
 					// Update collections table to say we inserted the release.
 					$this->db->queryExec(
-						sprintf(
-							'UPDATE ' . $group['cname'] .
-							' SET filecheck = 4, releaseid = %d WHERE id = %d', $relid, $rowcol['id']
+						sprintf('
+							UPDATE %s
+							SET filecheck = 4, releaseid = %d
+							WHERE id = %d',
+							$group['cname'],
+							$releaseID,
+							$collection['id']
 						)
 					);
-					$retcount++;
+
+					$returnCount++;
+
 					if ($this->echooutput) {
 						echo $this->c->primary('Added release ' . $cleanName);
 					}
-				} else if (isset($relid) && $relid == false) {
+
+				} else if (isset($releaseID) && $releaseID == false) {
 					$this->db->queryExec(
-						sprintf(
-							'UPDATE ' . $group['cname'] .
-							' SET filecheck = 5 WHERE collectionhash = %s', $this->db->escapeString($rowcol['collectionhash'])
+						sprintf('
+							UPDATE %s
+							SET filecheck = 5
+							WHERE collectionhash = %s',
+							$group['cname'],
+							$this->db->escapeString($collection['collectionhash'])
 						)
 					);
 					$duplicate++;
@@ -1948,7 +2020,7 @@ class Releases
 		if ($this->echooutput) {
 			$this->c->doEcho(
 				$this->c->primary(
-					number_format($retcount) .
+					number_format($returnCount) .
 					' Releases added and ' .
 					number_format($duplicate) .
 					' marked for deletion in ' .
@@ -1956,13 +2028,13 @@ class Releases
 				), true
 			);
 		}
-		return $retcount;
+
+		return $returnCount;
 	}
 
 	/*
 	 * 	Adding this in to delete releases before NZB's are created.
 	 */
-
 	public function processReleasesStage4dot5($groupID)
 	{
 		$minsizecount = $maxsizecount = $minfilecount = $catminsizecount = 0;
@@ -2172,6 +2244,7 @@ class Releases
 				)
 			);
 		}
+
 		return $nzbcount;
 	}
 
@@ -2183,20 +2256,16 @@ class Releases
 	 */
 	public function processReleasesStage5b($groupID, $limit = 5000)
 	{
-		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
-			$requestid = new RequestID($this->echooutput);
-			$stage5b = TIME();
-
-			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- limit $limit."));
-			}
-			$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, true);
-			if ($this->echooutput) {
-				$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5b)), true);
-			}
+		$requestid = new RequestID($this->echooutput);
+		$stage5b = TIME();
+		if ($this->echooutput) {
+			$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- limit $limit."));
+		}
+		$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, true);
+		if ($this->echooutput) {
+			$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5b)), true);
 		}
 	}
-
 
 	/**
 	 * Process RequestID's via Web lookup.
@@ -2219,6 +2288,7 @@ class Releases
 			}
 		}
 	}
+
 	public function processReleasesStage6($categorize, $postproc, $groupID, $nntp)
 	{
 		$where = (!empty($groupID)) ? 'WHERE iscategorized = 0 AND groupid = ' . $groupID : 'WHERE iscategorized = 0';
@@ -2572,12 +2642,6 @@ class Releases
 			}
 		}
 
-		if ($this->db->dbSystem() === 'mysql') {
-			$this->db->queryExec(sprintf('DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL %d HOUR)', $this->site->partretentionhours));
-		} else {
-			$this->db->queryExec(sprintf("DELETE FROM nzbs WHERE dateadded < (NOW() - INTERVAL '%d HOURS')", $this->site->partretentionhours));
-		}
-
 		if ($this->echooutput && $this->completion > 0) {
 			$this->c->doEcho(
 				$this->c->primary(
@@ -2644,7 +2708,9 @@ class Releases
 			$tot_retcount = $tot_retcount + $retcount;
 
 			$nzbcount = $this->processReleasesStage5($groupID);
-			if ($this->requestids == '1') {
+			if ($this->requestids == '0') {
+				$this->processReleasesStage5b($groupID);
+			} else if ($this->requestids == '1') {
 				$this->processReleasesStage5b($groupID);
 				$this->processReleasesStage5c($groupID);
 			} else if ($this->requestids == '2') {
@@ -2669,6 +2735,7 @@ class Releases
 			$loops++;
 			// This loops as long as there were releases created or 3 loops, otherwise, you could loop indefinately
 		} while (($nzbcount > 0 || $retcount > 0) && $loops < 3);
+
 		return $tot_retcount;
 	}
 
@@ -2694,6 +2761,7 @@ class Releases
 			if ($this->echooutput) {
 				$this->c->doEcho($this->c->error('Bad or missing nzb directory - ' . $this->site->nzbpath), true);
 			}
+
 			return;
 		}
 
@@ -2720,6 +2788,7 @@ class Releases
 				), true
 			);
 		}
+
 		return $releasesAdded;
 	}
 
@@ -2740,13 +2809,13 @@ class Releases
 
 				$groupName = $this->groups->getByNameByID($row['groupid']);
 				$newSHA1 = sha1(
-						$this->collectionsCleaning->collectionsCleaner(
-							$row['bname'],
-							$groupName .
-							$row['fromname'] .
-							$row['groupid'] .
-							$row['totalfiles']
-						)
+					$this->collectionsCleaning->collectionsCleaner(
+						$row['bname'],
+						$groupName .
+						$row['fromname'] .
+						$row['groupid'] .
+						$row['totalfiles']
+					)
 				);
 				$cres = $this->db->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s', $this->db->escapeString($newSHA1)));
 				if (!$cres) {
@@ -2817,6 +2886,7 @@ class Releases
 
 	/**
 	 * Get all newest movies with coves for poster wall.
+	 *
 	 * @return array
 	 */
 	public function getNewestMovies()
@@ -2840,6 +2910,7 @@ class Releases
 
 	/**
 	 * Get all newest games with covers for poster wall.
+	 *
 	 * @return array
 	 */
 	public function getNewestConsole()
@@ -2863,6 +2934,7 @@ class Releases
 
 	/**
 	 * Get all newest music with covers for poster wall.
+	 *
 	 * @return array
 	 */
 	public function getNewestMP3s()
@@ -2886,6 +2958,7 @@ class Releases
 
 	/**
 	 * Get all newest books with covers for poster wall.
+	 *
 	 * @return array
 	 */
 	public function getNewestBooks()
