@@ -87,7 +87,8 @@ class DB extends \PDO
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
 			'dbuser' 		=> defined('DB_USER') ? DB_USER : '',
-			'log'			=> new \ColorCLI()
+			'log'			=> new \ColorCLI(),
+			'persist'		=> false,
 		);
 		$this->opts = $options + $defaults;
 
@@ -220,7 +221,8 @@ class DB extends \PDO
 		}
 		$dsn .= ';charset=utf8';
 
-		$options = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 180);
+		$options = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 180,
+						 \PDO::ATTR_PERSISTENT => $this->opts['persist']);
 		if ($this->DbSystem === 'mysql') {
 			$options[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			$options[\PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
@@ -592,11 +594,28 @@ class DB extends \PDO
 		try {
 			$result = self::$pdo->query($query);
 		} catch (\PDOException $e) {
-			$this->echoError($e->getMessage(), 'queryDirect', 4, false, $e);
-			if ($this->_debug) {
-				$this->debugging->start("queryDirect", $query, 6);
+
+			// Check if we lost connection to MySQL.
+			if (stripos($e->getMessage(), '2006 MySQL server has gone away') !== false) {
+
+				// Reconnect to MySQL.
+				$this->initialiseDatabase();
+
+				// Check if we are really connected to MySQL.
+				if ($this->ping() === false) {
+					// If we are not reconnected, return false.
+					$result = false;
+				} else {
+					// If we reconnected, retry the query.
+					$result = $this->queryDirect($query);
+				}
+			} else {
+				$this->echoError($e->getMessage(), 'queryDirect', 4, false, $e);
+				if ($this->_debug) {
+					$this->debugging->start("queryDirect", $query, 6);
+				}
+				$result = false;
 			}
-			$result = false;
 		}
 		return $result;
 	}
