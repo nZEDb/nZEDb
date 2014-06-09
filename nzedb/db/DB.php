@@ -594,11 +594,28 @@ class DB extends \PDO
 		try {
 			$result = self::$pdo->query($query);
 		} catch (\PDOException $e) {
-			$this->echoError($e->getMessage(), 'queryDirect', 4, false, $e);
-			if ($this->_debug) {
-				$this->debugging->start("queryDirect", $query, 6);
+
+			// Check if we lost connection to MySQL.
+			if (stripos($e->getMessage(), '2006 MySQL server has gone away') !== false) {
+
+				// Reconnect to MySQL.
+				$this->initialiseDatabase();
+
+				// Check if we are really connected to MySQL.
+				if ($this->ping() === false) {
+					// If we are not reconnected, return false.
+					$result = false;
+				} else {
+					// If we reconnected, retry the query.
+					$result = $this->queryDirect($query);
+				}
+			} else {
+				$this->echoError($e->getMessage(), 'queryDirect', 4, false, $e);
+				if ($this->_debug) {
+					$this->debugging->start("queryDirect", $query, 6);
+				}
+				$result = false;
 			}
-			$result = false;
 		}
 		return $result;
 	}
