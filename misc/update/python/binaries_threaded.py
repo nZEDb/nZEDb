@@ -20,7 +20,7 @@ cur = info.connect()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-if len(sys.argv) != 1:
+if len(sys.argv) == 1:
 	print(bcolors.HEADER + "\nThis script will run update_binaries per group."
 		"\nThis script can run on 1 group, an array of groups or all groups.\n"
 		"\nEach group is processed in a single thread, for all groups. For example, 10 groups, 10 threads, upto max threads.\n"
