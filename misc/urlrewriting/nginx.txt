@@ -24,7 +24,7 @@ server {
 			root /home/www/example.com//resources
 		}
 
-		location ~* \.(?:css|jpeg|gif|ogg|ogv|png|js|ico|ttf|eot|woff|svg) { 
+		location ~* \.(?:css|jpe?g|gif|ogg|ogv|png|js|ico|ttf|eot|woff|svg) { 
 			expires max;
 			add_header Pragma public;
 			add_header Cache-Control "public, must-revalidate, proxy-revalidate";
