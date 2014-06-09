@@ -16,6 +16,11 @@ id, title, parentid
 1070	XBOX 360 DLC	1000
 1080	PS3	1000
 1090	Other	1000
+1110	3DS	1000
+1120	PS Vita	1000
+1130	WiiU	1000
+1140	Xbox One	1000
+1180	PS4	1000
 2010	Foreign	2000
 2020	Other	2000
 2030	SD	2000
@@ -52,6 +57,7 @@ id, title, parentid
 6060	Imageset	6000
 6070	Packs	6000
 7010	Misc	7000
+7020	Hashed	7000
 8010	Ebook	8000
 8020	Comics	8000
 8030	Magazines	8000

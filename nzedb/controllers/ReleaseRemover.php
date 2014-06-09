@@ -373,8 +373,8 @@ class ReleaseRemover
 			AND r.nfostatus = 0
 			AND r.iscategorized = 1
 			AND r.rarinnerfilecount = 0
-			AND r.categoryid NOT IN (%d) %s",
-			$regex, Category::CAT_MISC, $this->crapTime
+			AND r.categoryid NOT IN (%d, %d) %s",
+			$regex, Category::CAT_MISC, Category::CAT_OTHER_HASHED, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
@@ -423,7 +423,7 @@ class ReleaseRemover
 			INNER JOIN releasefiles rf ON rf.releaseid = r.id
 			WHERE r.searchname NOT %s %s
 			AND rf.name %s %s
-			AND r.categoryid NOT IN (%d, %d, %d, %d) %s",
+			AND r.categoryid NOT IN (%d, %d, %d, %d, %d) %s",
 			$this->like,
 			"'%.exes%'",
 			$this->like,
@@ -432,6 +432,7 @@ class ReleaseRemover
 			Category::CAT_PC_GAMES,
 			Category::CAT_PC_ISO,
 			Category::CAT_MISC,
+			Category::CAT_OTHER_HASHED,
 			$this->crapTime
 		);
 
@@ -508,7 +509,7 @@ class ReleaseRemover
 			AND r.searchname NOT %s %s
 			AND r.searchname NOT %s %s
 			AND r.nzbstatus = 1
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d) %s",
+			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
 			$this->like,
 			// Matches passwort / passworded / etc also.
 			"'%passwor%'",
@@ -532,6 +533,7 @@ class ReleaseRemover
 			Category::CAT_PC_PHONE_IOS,
 			Category::CAT_PC_PHONE_OTHER,
 			Category::CAT_MISC,
+			Category::CAT_OTHER_HASHED,
 			$this->crapTime
 		);
 
@@ -554,7 +556,7 @@ class ReleaseRemover
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size < 2097152
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d) %s",
+			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
 			Category::CAT_MUSIC_MP3,
 			Category::CAT_BOOKS_COMICS,
 			Category::CAT_BOOKS_EBOOK,
@@ -563,6 +565,7 @@ class ReleaseRemover
 			Category::CAT_BOOKS_TECHNICAL,
 			Category::CAT_BOOKS_OTHER,
 			Category::CAT_MISC,
+			Category::CAT_OTHER_HASHED,
 			$this->crapTime
 		);
 

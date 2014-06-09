@@ -6,7 +6,7 @@ use nzedb\db\DB;
 $c = new ColorCLI();
 if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
 	exit($c->error(
-		"\nThis script tries to match an MD5 or SHA1 of the releases.name or releases.searchname to predb.md5 or sha1 columns.\n"
+		"\nThis script tries to match hashes of the releases.name or releases.searchname to predb hashes.\n"
 		. "To display the changes, use 'show' as the second argument.\n\n"
 		. "php decrypt_hashes.php 1000		...: to limit to 1000 sorted by newest postdate.\n"
 		. "php decrypt_hashes.php full 		...: to run on full database.\n"
@@ -15,7 +15,7 @@ if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric(
 }
 
 echo $c->header("\nDecrypt Hashes (${argv[1]}) Started at " . date('g:i:s'));
-echo $c->primary("Matching predb MD5/SHA1 to md5/sha1(releases.name or releases.searchname)");
+echo $c->primary("Matching predb hashes to hash(releases.name or releases.searchname)");
 
 preName($argv);
 
@@ -26,11 +26,11 @@ function preName($argv)
 	$namefixer = new NameFixer();
 
 	if (isset($argv[1]) && $argv[1] === "all") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE ishashed = 1 AND preid = 0');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE categoryid = 7020');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE ishashed = 1 AND preid = 0 AND dehashstatus BETWEEN -6 AND 0');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE ishashed = 1 AND preid = 0 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
 	$c = new ColorCLI();
 

@@ -234,8 +234,6 @@ CREATE TABLE predb (
 	category VARCHAR(255) NULL,
 	predate DATETIME DEFAULT NULL,
 	source VARCHAR(50) NOT NULL DEFAULT '',
-	md5 VARCHAR(32) NOT NULL DEFAULT '0',
-	sha1 VARCHAR(40) NOT NULL DEFAULT '0',
 	requestid INT(10) UNSIGNED NOT NULL DEFAULT '0',
 	groupid INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
 	nuked TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'If this pre is nuked, what is the reason?',
@@ -246,15 +244,13 @@ CREATE TABLE predb (
 	PRIMARY KEY (id)
 ) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE INDEX ix_predb_title ON predb (title);
+CREATE UNIQUE INDEX ix_predb_title ON predb (title);
 CREATE INDEX ix_predb_nfo ON predb (nfo);
 CREATE INDEX ix_predb_predate ON predb (predate);
 CREATE INDEX ix_predb_source ON predb (source);
 CREATE INDEX ix_predb_requestid on predb (requestid, groupid);
 CREATE INDEX ix_predb_filename ON predb (filename);
 CREATE INDEX ix_predb_searched ON predb (searched);
-CREATE UNIQUE INDEX ix_predb_md5 ON predb (md5);
-CREATE UNIQUE INDEX ix_predb_sha1 ON predb (sha1);
 
 DROP TABLE IF EXISTS menu;
 CREATE TABLE menu (
@@ -840,6 +836,6 @@ CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW BEGIN INSERT 
 CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW BEGIN IF NEW.guid != OLD.guid THEN UPDATE releasesearch SET guid = NEW.guid WHERE releaseid = OLD.id; END IF; IF NEW.name != OLD.name THEN UPDATE releasesearch SET name = NEW.name WHERE releaseid = OLD.id; END IF; IF NEW.searchname != OLD.searchname THEN UPDATE releasesearch SET searchname = NEW.searchname WHERE releaseid = OLD.id; END IF; END; $$
 CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW BEGIN DELETE FROM releasesearch WHERE releaseid = OLD.id; END; $$
 CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW BEGIN INSERT INTO predbhash (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)); END; $$
-CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW BEGIN IF NEW.title != OLD.title THEN UPDATE predbhash  SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title); END IF; END; $$
+CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW BEGIN IF NEW.title != OLD.title THEN UPDATE predbhash SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id; END IF; END; $$
 CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW BEGIN DELETE FROM predbhash WHERE pre_id = OLD.id; END; $$
 DELIMITER ;

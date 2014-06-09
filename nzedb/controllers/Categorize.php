@@ -94,7 +94,11 @@ class Categorize extends Category
 			if ($group === 'alt.binaries.0day.stuffz') {
 				if ($this->isBook()) {
 					return true;
-				} else if ($this->isPC()) {
+				}
+				if ($this->isConsole()) {
+					return true;
+				}
+				if ($this->isPC()) {
 					return true;
 				}
 				$this->tmpCat = Category::CAT_PC_0DAY;
@@ -121,7 +125,7 @@ class Categorize extends Category
 				return true;
 			}
 
-			if ($group === 'alt.binaries.cd.lossles') {
+			if ($group === 'alt.binaries.cd.lossless') {
 				if ($this->categorizeForeign && $this->isMusicForeign()) {
 					return true;
 				}
@@ -188,15 +192,24 @@ class Categorize extends Category
 				return true;
 			}
 
+			if ($group === 'alt.binaries.e-book.magazines') {
+				if ($this->categorizeForeign && $this->isBookForeign()) {
+					return true;
+				}
+				$this->tmpCat = Category::CAT_BOOKS_MAGAZINES;
+				return true;
+			}
+
 			if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $group)) {
 				if ($this->is0day()) {
 					return true;
 				}
-
+				if ($this->isConsole()) {
+					return true;
+				}
 				if ($this->isBook()) {
 					return true;
 				}
-
 				if ($this->categorizeForeign && $this->isBookForeign()) {
 					return true;
 				}
@@ -212,18 +225,62 @@ class Categorize extends Category
 				return true;
 			}
 
-			if ($group === 'alt.binaries.games.dox') {
+			if ($group === 'alt.binaries.gamecube') {
+				$this->tmpCat = Category::CAT_GAME_OTHER;
+				return true;
+			}
+
+			if (preg_match('/alt.binaries.games.(dox|adventures)/', $group)) {
+				if ($this->is0day()) {
+					return true;
+				}
+				if ($this->isConsole()) {
+					return true;
+				}
 				$this->tmpCat = Category::CAT_PC_GAMES;
 				return true;
 			}
 
-			if (preg_match('/alt\.binaries(\.games)?\.nintendo(\.)?ds/', $group)) {
+			if (preg_match('/alt.binaries.cd.images?.games/', $group)) {
+				if ($this->isConsole()) {
+					return true;
+				}
+				$this->tmpCat = Category::CAT_PC_GAMES;
+				return true;
+			}
+
+			if ($group === 'alt.binaries.pcgame') {
+				if ($this->is0day()) {
+					return true;
+				}
+				if ($this->isConsole()) {
+					return true;
+				}
+				$this->tmpCat = Category::CAT_PC_GAMES;
+				return true;
+			}
+
+			if ($group === 'alt.binaries.games.nintendo3ds') {
+				if ($this->isGameNDS()) {
+					return true;
+				}
+				$this->tmpCat = Category::CAT_GAME_3DS;
+				return true;
+			}
+
+			if (preg_match('/alt\.binaries\.(games|emulators)?\.?nintendo[\.-]?ds/', $group)) {
+				if ($this->isGame3DS()) {
+					return true;
+				}
 				$this->tmpCat = Category::CAT_GAME_NDS;
 				return true;
 			}
 
 			if ($group === 'alt.binaries.games.wii') {
 				if ($this->isGameWiiWare()) {
+					return true;
+				}
+				if ($this->isGameWiiU()) {
 					return true;
 				}
 				$this->tmpCat = Category::CAT_GAME_WII;
@@ -237,12 +294,18 @@ class Categorize extends Category
 				if ($this->isGameXBOX360()) {
 					return true;
 				}
+				if ($this->isGameXBOXONE()) {
+					return true;
+				}
 				$this->tmpCat = Category::CAT_GAME_XBOX;
 				return true;
 			}
 
 			if ($group === 'alt.binaries.games.xbox360') {
 				if ($this->isGameXBOX360DLC()) {
+					return true;
+				}
+				if ($this->isGameXBOXONE()) {
 					return true;
 				}
 				$this->tmpCat = Category::CAT_GAME_XBOX360;
@@ -370,6 +433,15 @@ class Categorize extends Category
 				return false;
 			}
 
+			if ($group === 'alt.binaries.sounds.ogg') {
+				if ($this->categorizeForeign && $this->isMusicForeign()) {
+					return true;
+				}
+				$this->tmpCat = Category::CAT_MUSIC_OTHER;
+				return true;
+			}
+
+
 			if ($group === 'alt.binaries.sony.psp') {
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
@@ -379,8 +451,10 @@ class Categorize extends Category
 				if ($this->isTV()) {
 					return true;
 				}
-
 				if ($this->isPC()) {
+					return true;
+				}
+				if ($this->isConsole()) {
 					return true;
 				}
 				$this->tmpCat = Category::CAT_PC_0DAY;
@@ -414,7 +488,7 @@ class Categorize extends Category
 //			return false;
 //		}
 
-		if (preg_match('/Daily[-_\.]Show|Nightly News|(\d\d-){2}[12]\d{3}|[12]\d{3}(\.\d\d){2}|\d+x\d+|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TV[-._ ](19|20)\d\d|TrollHD/i', $this->releaseName)
+		if (preg_match('/Daily[-_\.]Show|Nightly News|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}.*(\[\d{3,4}(p|i)\]|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?|(\d\d-){2}[12]\d{3}|[12]\d{3}(\.\d\d){2}|\d+x\d+|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[-._ ](\dx\d\d|C4TV|Complete[-._ ]Season|DSR|(D|H|P|S)DTV|EP[-._ ]?\d{1,3}|S\d{1,3}.+Extras|SUBPACK|Season[-._ ]\d{1,2}|WEB\-DL|WEBRip)([-._ ]|$)|TV[-._ ](19|20)\d\d|TrollHD/i', $this->releaseName)
 			&& !preg_match('/[-._ ](flac|imageset|mp3|xxx)[-._ ]|[ .]exe$/i', $this->releaseName)) {
 
 			if ($this->isOtherTV()) {
@@ -589,7 +663,7 @@ class Categorize extends Category
 
 	public function isAnimeTV()
 	{
-		if (preg_match('/[-._ ]Anime[-._ ]|^\(\[AST\]\s|\[HorribleSubs\]/i', $this->releaseName)) {
+		if (preg_match('/[-._ ]Anime[-._ ]|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}[-_ \.](\[\d{3,4}(p|i)\]|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_TV_ANIME;
 			return true;
 		}
@@ -637,6 +711,9 @@ class Categorize extends Category
 
 	public function isMovieForeign()
 	{
+		if ($this->isConsole()) {
+			return true;
+		}
 		if (preg_match('/(danish|flemish|Deutsch|dutch|french|german|nl[-._ ]?sub(bed|s)?|\.NL|norwegian|swedish|swesub|spanish|Staffel)[-._ ]|\(german\)|Multisub/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_MOVIE_FOREIGN;
 			return true;
@@ -665,7 +742,7 @@ class Categorize extends Category
 
 	public function isMovieSD()
 	{
-		if (preg_match('/(divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid)[-._ ]/i', $this->releaseName)) {
+		if (preg_match('/(divx|dvdscr|extrascene|dvdrip|\.CAM|vhsrip|xvid(vd)?)[-._ ]/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_MOVIE_SD;
 			return true;
 		}
@@ -711,7 +788,7 @@ class Categorize extends Category
 	//  PC.
 	public function isPC()
 	{
-		if (!preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[^a-z0-9](FLAC|Imageset|MP3|Nintendo|PDTV|PS[23P]|SWE6RUS|UMD(RIP)?|WII|x264|XBOX|XXX)[^a-z0-9]/i', $this->releaseName)) {
+		if (!preg_match('/s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ])|[^a-z0-9](FLAC|Imageset|MP3|Nintendo|PDTV|PS[23P]|SWE6RUS|UMD(RIP)?|WII|x264|XBOX(360|DVD|ONE)?|XXX)[^a-z0-9]/i', $this->releaseName)) {
 			if ($this->isPhone()) {
 				return true;
 			}
@@ -752,7 +829,7 @@ class Categorize extends Category
 
 	public function isISO()
 	{
-		if (preg_match('/\biso\b/i', $this->releaseName)) {
+		if (preg_match('/[-._ ]([a-zA-Z]{2,10})?iso[ _.-]|[-. ]([a-zA-Z]{2,10})?iso$/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_ISO;
 			return true;
 		}
@@ -771,7 +848,7 @@ class Categorize extends Category
 			return true;
 		}
 
-		if (preg_match('/\b(Adobe|auto(cad|desk)|-BEAN|Cracked|Cucusoft|CYGNUS|Divx[-._ ]Plus|\.(deb|exe)|DIGERATI|FOSI|Key(filemaker|gen|maker)|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|-(iNViSiBLE|SPYRAL|SUNiSO|UNION|TE)|v\d{1,3}.*?Pro|[-._ ]v\d{1,3}[-._ ]|\(x(64|86)\)|Xilisoft)\b/i', $this->releaseName)) {
+		if (preg_match('/\b(Adobe|auto(cad|desk)|-BEAN|Cracked|Cucusoft|CYGNUS|Divx[-._ ]Plus|\.(deb|exe)|DIGERATI|FOSI|-FONT|Key(filemaker|gen|maker)|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|-(iNViSiBLE|SPYRAL|SUNiSO|UNION|TE)|v\d{1,3}.*?Pro|[-._ ]v\d{1,3}[-._ ]|\(x(64|86)\)|Xilisoft)\b/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_0DAY;
 			return true;
 		}
@@ -780,7 +857,7 @@ class Categorize extends Category
 
 	public function isMac()
 	{
-		if (preg_match('/\bmac(\.|\s)?osx\b/i', $this->releaseName)) {
+		if (preg_match('/(\b|[-._ ])mac(\.|\s)?osx(\b|[-_. ])/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_MAC;
 			return true;
 		}
@@ -789,7 +866,7 @@ class Categorize extends Category
 
 	public function isPCGame()
 	{
-		if (preg_match('/[^a-z0-9](0x0007|ALiAS|BACKLASH|BAT|CPY|FAS(DOX|iSO)|FLT([-._ ]|COGENT)|FLTDOX|Games|GENESIS|HI2U|INLAWS|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PC Game|PROPHET|RAiN|Razor1911|RELOADED|RiTUELYPOGEiOS|Rip-UNLEASHED|SKIDROW|TiNYiSO|CODEX)[^a-z0-9]?/', $this->releaseName)) {
+		if (preg_match('/[^a-z0-9](0x0007|ALiAS|BACKLASH|BAT|CLONECD|CPY|FAS(DOX|iSO)|FLT([-._ ]|COGENT)|-FLT(DOX)?|PC GAMES?|\(?(Games|GAMES)\)? ?(\((C|c)\))|GENESIS|-HATRED|HI2U|INLAWS|JAGUAR|MAZE|MONEY|OUTLAWS|PPTCLASSiCS|PC Game|PROPHET|RAiN|Razor1911|RELOADED|RiTUELYPOGEiOS|Rip-UNLEASHED|SKIDROW|TiNYiSO|CODEX)[^a-z0-9]?/', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_PC_GAMES;
 			return true;
 		}
@@ -884,7 +961,7 @@ class Categorize extends Category
 	public function isXxxOther()
 	{
 		// If nothing else matches, then try these words.
-		if (preg_match('/[-._ ]Brazzers|Creampie|[-._ ]JAV[-._ ]|North\.Pole|She[-._ ]?Male|Transsexual/i', $this->releaseName)) {
+		if (preg_match('/[-._ ]Brazzers|Creampie|[-._ ]JAV[-._ ]|North\.Pole|^Nubiles|She[-._ ]?Male|Transsexual/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_XXX_OTHER;
 			return true;
 		}
@@ -897,16 +974,31 @@ class Categorize extends Category
 		if ($this->isGameNDS()) {
 			return true;
 		}
+		if ($this->isGame3DS()) {
+			return true;
+		}
 		if ($this->isGamePS3()) {
+			return true;
+		}
+		if ($this->isGamePS4()) {
 			return true;
 		}
 		if ($this->isGamePSP()) {
 			return true;
 		}
+		if ($this->isGamePSVita()) {
+			return true;
+		}
 		if ($this->isGameWiiWare()) {
 			return true;
 		}
+		if ($this->isGameWiiU()) {
+			return true;
+		}
 		if ($this->isGameWii()) {
+			return true;
+		}
+		if ($this->isGameNGC()) {
 			return true;
 		}
 		if ($this->isGameXBOX360DLC()) {
@@ -915,7 +1007,13 @@ class Categorize extends Category
 		if ($this->isGameXBOX360()) {
 			return true;
 		}
+		if ($this->isGameXBOXONE()) {
+			return true;
+		}
 		if ($this->isGameXBOX()) {
+			return true;
+		}
+		if ($this->isGameOther()) {
 			return true;
 		}
 		return false;
@@ -923,8 +1021,8 @@ class Categorize extends Category
 
 	public function isGameNDS()
 	{
-		if (preg_match('/NDS|[\. ]nds|nintendo.+3ds/', $this->releaseName)) {
-			if (preg_match('/\((DE|DSi(\sEnhanched)?|EUR?|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA?)\)/i', $this->releaseName)) {
+		if (preg_match('/^NDS|[^a-zA-Z0-9]NDS|[\._-](nds|NDS)|nintendo.+[^3]n?dsi?/', $this->releaseName)) {
+			if (preg_match('/\((DE|DSi(\sEnhanched)?|_NDS-|EUR?|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA?)\)/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_NDS;
 				return true;
 			}
@@ -936,15 +1034,56 @@ class Categorize extends Category
 		return false;
 	}
 
+	public function isGame3DS()
+	{
+		if (preg_match('/\b3DS\b[^max]|[\._-]3ds|nintendo.+3ds|[_\.]3DS-/i', $this->releaseName) && !preg_match('/3ds max/i', $this->releaseName)) {
+			if (preg_match('/(EUR|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA|ASIA)/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_3DS;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function isGameNGC()
+	{
+		if (preg_match('/[\._-]N?G(AME)?C(UBE)?-/i', $this->releaseName)) {
+			if (preg_match('/_(EUR?|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA?)_/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_OTHER;
+				return true;
+			}
+			if (preg_match('/-(((STAR|DEATH|STINKY|MOON|HOLY|G)?CUBE(SOFT)?)|(DARKFORCE|DNL|GP|ICP|iNSOMNIA|JAY|LaKiTu|METHS|NOMIS|QUBiSM|PANDORA|REACT0R|SUNSHiNE|SAVEPOiNT|SYNDiCATE|WAR3X|WRG))/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_OTHER;
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public function isGamePS3()
 	{
-		if (preg_match('/PS3/i', $this->releaseName)) {
+		if (preg_match('/[^e]PS3/i', $this->releaseName)) {
 			if (preg_match('/ANTiDOTE|DLC|DUPLEX|EUR?|Googlecus|GOTY|\-HR|iNSOMNi|JAP|JPN|KONDIOS|\[PS3\]|PSN/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_PS3;
 				return true;
 			}
 			if (preg_match('/AGENCY|APATHY|Caravan|MULTi|NRP|NTSC|PAL|SPLiT|STRiKE|USA?|ZRY/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_PS3;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function isGamePS4()
+	{
+		if (preg_match('/[^e]PS4/i', $this->releaseName)) {
+			if (preg_match('/ANTiDOTE|DLC|DUPLEX|EUR?|Googlecus|GOTY|\-HR|iNSOMNi|JAP|JPN|KONDIOS|\[PS4\]|PSN/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_PS4;
+				return true;
+			}
+			if (preg_match('/AGENCY|APATHY|Caravan|MULTi|NRP|NTSC|PAL|SPLiT|STRiKE|USA?|ZRY/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_PS4;
 				return true;
 			}
 		}
@@ -958,10 +1097,19 @@ class Categorize extends Category
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
 			}
-			if (preg_match('/[-._ ](Dynarox|HAZARD|ITALIAN|KLB|KuDoS|LIGHTFORCE|MiRiBS|POPSTATiON|(PLAY)?ASiA|PSN|SPANiSH|SUXXORS|UMD(RIP)?|USA?|YARR)/i', $this->releaseName)) {
+			if (preg_match('/[-._ ](Dynarox|HAZARD|ITALIAN|KLB|KuDoS|LIGHTFORCE|MiRiBS|POPSTATiON|(PLAY)?ASiA|PSN|PSX2PSP|SPANiSH|SUXXORS|UMD(RIP)?|USA?|YARR)/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
 			}
+		}
+		return false;
+	}
+
+	public function isGamePSVita()
+	{
+		if (preg_match('/PSVita/i', $this->releaseName)) {
+			$this->tmpCat = Category::CAT_GAME_PSVITA;
+			return true;
 		}
 		return false;
 	}
@@ -971,6 +1119,25 @@ class Categorize extends Category
 		if (preg_match('/(Console|DLC|VC).+[-._ ]WII|(Console|DLC|VC)[-._ ]WII|WII[-._ ].+(Console|DLC|VC)|WII[-._ ](Console|DLC|VC)|WIIWARE/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_GAME_WIIWARE;
 			return true;
+		}
+		return false;
+	}
+
+	public function isGameWiiU()
+	{
+		if (preg_match('/WIIU/i', $this->releaseName)) {
+			if (preg_match('/[-._ ](Allstars|BiOSHOCK|dumpTruck|DNi|iCON|JAP|NTSC|PAL|ProCiSiON|PROPER|RANT|REV0|SUNSHiNE|SUSHi|TMD|USA?)/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_WIIU;
+				return true;
+			}
+			if (preg_match('/[-._ ](APATHY|BAHAMUT|DMZ|ERD|GAME|JPN|LoCAL|MULTi|NAGGERS|OneUp|PLAYME|PONS|Scrubbed|VORTEX|ZARD|ZER0)/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_WIIU;
+				return true;
+			}
+			if (preg_match('/[-._ ](ALMoST|AMBITION|Caravan|CLiiCHE|DRYB|HaZMaT|KOR|LOADER|MARVEL|PROMiNENT|LaKiTu|LOCAL|QwiiF|RANT)/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_WIIU;
+				return true;
+			}
 		}
 		return false;
 	}
@@ -1003,6 +1170,7 @@ class Categorize extends Category
 		return false;
 	}
 
+
 	public function isGameXBOX360()
 	{
 		if (preg_match('/XBOX360/i', $this->releaseName)) {
@@ -1022,6 +1190,14 @@ class Categorize extends Category
 		return false;
 	}
 
+	public function isGameXBOXONE()
+	{
+		if (preg_match('/XBOXONE/i', $this->releaseName)) {
+			$this->tmpCat = Category::CAT_GAME_XBOXONE;
+			return true;
+		}
+	}
+
 	public function isGameXBOX()
 	{
 		if (preg_match('/XBOX/i', $this->releaseName)) {
@@ -1031,27 +1207,40 @@ class Categorize extends Category
 		return false;
 	}
 
-	//	Music.
-	public function isMusic()
+	public function isGameOther()
 	{
-		if ($this->isMusicVideo()) {
-			return true;
-		}
-		if ($this->isAudiobook()) {
-			return true;
-		}
-		if ($this->isMusicLossless()) {
-			return true;
-		}
-		if ($this->isMusicMP3()) {
-			return true;
-		}
-		if ($this->isMusicOther()) {
-			return true;
+		if (preg_match('/PSX|PS2/', $this->releaseName)) {
+			if (preg_match('/(EUR|FR|GAME|HOL|JP|JPN|NL|NTSC|PAL|KS|USA)/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_GAME_OTHER;
+				return true;
+			}
 		}
 		return false;
 	}
 
+	//	Music.
+	public function isMusic()
+	{
+		//They Knew What They Wanted (1940).480p.DVDRIP.MP3-NoGroup -- prevents movies matches with MP3 audio codec in the title
+		if(!preg_match('/\d{3,4}(p|i)\.DVD(RIP)?\.MP3[-\.].*/i', $this->releaseName)) {
+			if ($this->isMusicVideo()) {
+				return true;
+			}
+			if ($this->isAudiobook()) {
+				return true;
+			}
+			if ($this->isMusicLossless()) {
+				return true;
+			}
+			if ($this->isMusicMP3()) {
+				return true;
+			}
+			if ($this->isMusicOther()) {
+				return true;
+			}
+			return false;
+		}
+	}
 	public function isMusicForeign()
 	{
 		if ($this->categorizeForeign) {
@@ -1230,7 +1419,7 @@ class Categorize extends Category
 
 	public function isEBook()
 	{
-		if (preg_match('/^ePub|[-._ ](Ebook|E?\-book|\) WW|Publishing)|[\.\-_\(\[ ](epub|html|mobi|pdf|rtf|tif|txt)[\.\-_\)\] ]|[\. ](doc|epub|mobi|pdf)(?![\w .])/i', $this->releaseName)) {
+		if (preg_match('/^ePub|[-._ ](Ebook|E?\-book|\) WW|Publishing)|[\.\-_\(\[ ](epub|html|mobi|pdf|rtf|tif|txt)[\.\-_\)\] ]|[\. ](doc|epub|mobi|pdf)(?![\w .])|\.ebook-\w$/i', $this->releaseName)) {
 			if ($this->isBookForeign()) {
 				return true;
 			} else {
@@ -1245,7 +1434,10 @@ class Categorize extends Category
 	public function isMisc()
 	{
 		if (!preg_match('/[^a-z0-9]((480|720|1080)[ip]|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ]))[^a-z0-9]/i', $this->releaseName)) {
-			if (preg_match('/[a-z0-9]{20,}/i', $this->releaseName)) {
+			if (preg_match('/[a-f0-9]{32,64}/i', $this->releaseName)) {
+				$this->tmpCat = Category::CAT_OTHER_HASHED;
+				return true;
+			} else if (preg_match('/[a-z0-9]{20,}/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_MISC;
 				return true;
 			} else if (preg_match('/^[A-Z0-9]{1,}$/i', $this->releaseName)) {

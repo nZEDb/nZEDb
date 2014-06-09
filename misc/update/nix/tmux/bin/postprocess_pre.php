@@ -16,7 +16,7 @@ if ($site->nntpproxy === "1") {
 }
 
 $predb = new PreDb(true);
-$titles = $predb->updatePre();
+$titles = 0;
 $predb->checkPre($nntp);
 if ($titles > 0) {
 	echo $c->header('Fetched ' . $titles . ' new title(s) from predb sources.');

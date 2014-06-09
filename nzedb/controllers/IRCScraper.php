@@ -187,8 +187,6 @@ class IRCScraper extends IRCClient
 				return;
 			}
 
-			$this->CurPre['md5'] = $this->db->escapeString(md5($matches['title']));
-			$this->CurPre['sha1'] = $this->db->escapeString(sha1($matches['title']));
 			$this->CurPre['predate'] = $this->db->from_unixtime(strtotime($matches['time'] . ' UTC'));
 			$this->CurPre['title'] = $matches['title'];
 			$this->CurPre['source'] = $matches['source'];
@@ -241,7 +239,7 @@ class IRCScraper extends IRCClient
 	 */
 	protected function checkForDupe()
 	{
-		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT category, size FROM predb INNER JOIN predbhash ON predbhash.pre_id = predb.id WHERE MATCH (hashes) AGAINST (%s)', $this->CurPre['md5']));
+		$this->OldPre = $this->db->queryOneRow(sprintf('SELECT category, size FROM predb WHERE title = %s', $this->db->escapeString($this->CurPre['title'])));
 		if ($this->OldPre === false) {
 			$this->insertNewPre();
 		} else {
@@ -272,7 +270,7 @@ class IRCScraper extends IRCClient
 		$query .= (!empty($this->CurPre['nuked'])    ? 'nuked, '      : '');
 		$query .= (!empty($this->CurPre['filename']) ? 'filename, '   : '');
 
-		$query .= 'predate, md5, sha1, title) VALUES (';
+		$query .= 'predate, title) VALUES (';
 
 		$query .= (!empty($this->CurPre['size'])     ? $this->db->escapeString($this->CurPre['size'])     . ', '   : '');
 		$query .= (!empty($this->CurPre['category']) ? $this->db->escapeString($this->CurPre['category']) . ', '   : '');
@@ -285,15 +283,13 @@ class IRCScraper extends IRCClient
 		$query .= (!empty($this->CurPre['filename']) ? $this->db->escapeString($this->CurPre['filename']) . ', '   : '');
 		$query .= (!empty($this->CurPre['predate'])  ? $this->CurPre['predate']                           . ', '   : 'NOW(), ');
 
-		$query .= '%s, %s, %s)';
+		$query .= '%s)';
 
 		$this->db->ping(true);
 
 		$this->db->queryExec(
 			sprintf(
 				$query,
-				$this->CurPre['md5'],
-				$this->CurPre['sha1'],
 				$this->db->escapeString($this->CurPre['title'])
 			)
 		);
@@ -314,7 +310,7 @@ class IRCScraper extends IRCClient
 			return;
 		}
 
-		$query = 'UPDATE predb INNER JOIN predbhash ON predbhash.pre_id = predb.id SET ';
+		$query = 'UPDATE predb SET ';
 
 		$query .= (!empty($this->CurPre['size'])     ? 'size = '       . $this->db->escapeString($this->CurPre['size'])     . ', ' : '');
 		$query .= (!empty($this->CurPre['source'])   ? 'source = '     . $this->db->escapeString($this->CurPre['source'])   . ', ' : '');
@@ -331,12 +327,12 @@ class IRCScraper extends IRCClient
 				: ''
 		);
 
-		if ($query === 'UPDATE predb INNER JOIN predbhash ON predbhash.pre_id = predb.id SET '){
+		if ($query === 'UPDATE predb SET '){
 			return;
 		}
 
 		$query .= 'title = '      . $this->db->escapeString($this->CurPre['title']);
-		$query .= ' WHERE MATCH (hashes) AGAINST (' . $this->CurPre['md5'] . ')';
+		$query .= ' WHERE title = ' . $this->db->escapeString($this->CurPre['title']);
 
 		$this->db->ping(true);
 
@@ -434,8 +430,6 @@ class IRCScraper extends IRCClient
 		$this->CurPre =
 			array(
 				'title'    => '',
-				'md5'      => '',
-				'sha1'     => '',
 				'size'     => '',
 				'predate'  => '',
 				'category' => '',

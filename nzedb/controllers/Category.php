@@ -13,6 +13,11 @@ class Category
 	const CAT_GAME_XBOX360DLC = 1070;
 	const CAT_GAME_PS3 = 1080;
 	const CAT_GAME_OTHER = 1090;
+	const CAT_GAME_3DS = 1110;
+	const CAT_GAME_PSVITA = 1120;
+	const CAT_GAME_WIIU = 1130;
+	const CAT_GAME_XBOXONE = 1140;
+	const CAT_GAME_PS4 = 1180;
 	const CAT_MOVIE_FOREIGN = 2010;
 	const CAT_MOVIE_OTHER = 2020;
 	const CAT_MOVIE_SD = 2030;
@@ -49,6 +54,7 @@ class Category
 	const CAT_XXX_IMAGESET = 6060;
 	const CAT_XXX_PACKS = 6070;
 	const CAT_MISC = 7010;
+	const CAT_OTHER_HASHED = 7020;
 	const CAT_BOOKS_EBOOK = 8010;
 	const CAT_BOOKS_COMICS = 8020;
 	const CAT_BOOKS_MAGAZINES = 8030;

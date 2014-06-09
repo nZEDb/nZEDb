@@ -31,12 +31,16 @@ class Git extends \GitRepo
 	private $branch;
 	private $mainBranches = ['dev', 'next-master', 'master'];
 
-	public function __construct($path = null, $create = false, $init = false)
+	public function __construct(array $options = array())
 	{
-		if (empty($path)) {
-			$path = nZEDb_ROOT;
-		}
-		parent::__construct($path, $create, $init);
+		$defaults = array(
+			'create'		=> false,
+			'initialise'	=> false,
+			'filepath'		=> nZEDb_ROOT,
+		);
+		$options += $defaults;
+
+		parent::__construct($options['filepath'], $options['create'], $options['initialise']);
 		$this->branch = parent::active_branch();
 	}
 
