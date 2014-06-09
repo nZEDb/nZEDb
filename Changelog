@@ -1,3 +1,4 @@
+
 * Note *
 No pull requests will be accepted without this file being updated to reflect what you changed and when.
 No pull requests will be accepted to any branch except the dev branch.
@@ -6,6 +7,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-09 niel
+	* Rvt: Reverting change to nginx config example. It doesn't work for me as it no longer includes jpg suffixes, only jpeg.
 2014-06-01 niel
 	* Fix: Adding dynamic git path use to the Git library so that OSes with non-standard locations do not fail..
 2014-05-31 kevin
