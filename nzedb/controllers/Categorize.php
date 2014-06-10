@@ -511,15 +511,15 @@ class Categorize extends Category
 				return true;
 			}
 
+			if ($this->isAnimeTV()) {
+				return true;
+			}
+
 			if ($this->isHDTV()) {
 				return true;
 			}
 
 			if ($this->isSDTV()) {
-				return true;
-			}
-
-			if ($this->isAnimeTV()) {
 				return true;
 			}
 
@@ -625,6 +625,15 @@ class Categorize extends Category
 		return false;
 	}
 
+	public function isAnimeTV()
+	{
+		if (preg_match('/[-._ ]Anime[-._ ]|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}[-_. ]((\[|\()(h264-)?\d{3,4}(p|i)(\]|\))\s?(\[AAC\])?|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?/i', $this->releaseName)) {
+			$this->tmpCat = Category::CAT_TV_ANIME;
+			return true;
+		}
+		return false;
+	}
+
 	public function isHDTV()
 	{
 		if (preg_match('/1080(i|p)|720p/i', $this->releaseName)) {
@@ -657,15 +666,6 @@ class Categorize extends Category
 				$this->tmpCat = Category::CAT_TV_SD;
 				return true;
 			}
-		}
-		return false;
-	}
-
-	public function isAnimeTV()
-	{
-		if (preg_match('/[-._ ]Anime[-._ ]|^\[[a-zA-Z\.\-]+\].*[-_].*\d{1,3}[-_. ]((\[|\()(h264-)?\d{3,4}(p|i)(\]|\))\s?(\[AAC\])?|\[[a-fA-F0-9]{8}\]|(8|10)BIT|hi10p)(\[[a-fA-F0-9]{8}\])?/i', $this->releaseName)) {
-			$this->tmpCat = Category::CAT_TV_ANIME;
-			return true;
 		}
 		return false;
 	}
@@ -1433,18 +1433,22 @@ class Categorize extends Category
 	//	Misc, all hash/misc go in other misc.
 	public function isMisc()
 	{
-		if (!preg_match('/[^a-z0-9]((480|720|1080)[ip]|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ]))[^a-z0-9]/i', $this->releaseName)) {
-			if (preg_match('/[a-f0-9]{32,64}/i', $this->releaseName)) {
+		switch (true) {
+			case preg_match('/[^a-z0-9]((480|720|1080)[ip]|s\d{1,3}[-._ ]?[ed]\d{1,3}([ex]\d{1,3}|[-.\w ]))[^a-z0-9]/i', $this->releaseName):
+				return false;
+				break;
+			case preg_match('/[a-f0-9]{32,64}/i', $this->releaseName):
 				$this->tmpCat = Category::CAT_OTHER_HASHED;
 				return true;
-			} else if (preg_match('/[a-z0-9]{20,}/i', $this->releaseName)) {
+				break;
+			case preg_match('/[a-z0-9]{20,}/i', $this->releaseName):
+			case preg_match('/^[A-Z0-9]{1,}$/i', $this->releaseName):
 				$this->tmpCat = Category::CAT_MISC;
 				return true;
-			} else if (preg_match('/^[A-Z0-9]{1,}$/i', $this->releaseName)) {
-				$this->tmpCat = Category::CAT_MISC;
-				return true;
-			}
+				break;
+			default:
+				return false;
+				break;
 		}
-		return false;
 	}
 }
