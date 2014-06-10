@@ -8,6 +8,8 @@ New updates are grouped by person, at the top of the file.
 
 2014-06-09 ruhllatio
 	* Fix: Potential fix for hanging tmux monitor.php query (restart tmux session after pull)
+	* Chg: More categorization improvements
+	* Upd: Remove additional blank line in monitor.php
 2014-06-09 kevin
 	* Add: Catch and reconnect lost MySQL connections.
 2014-06-09 niel

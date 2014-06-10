@@ -641,7 +641,6 @@ while ($i > 0) {
 	}
 	if ($proc_work_result3[0]['requestid_local'] != null || $proc_work_result3[0]['requestid_web'] != null) {
 		$requestid_inprogress = $proc_work_result3[0]['requestid_local'] + $proc_work_result3[0]['requestid_web'];
-
 	}
 	if ($proc_work_result3[0]['requestid_matched'] != null) {
 		$requestid_matched = $proc_work_result3[0]['requestid_matched'];
