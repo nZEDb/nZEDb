@@ -348,7 +348,7 @@ class ReleaseRemover
 			AND r.iscategorized = 1
 			AND r.rarinnerfilecount = 0
 			AND r.categoryid NOT IN (%d) %s",
-			$regex, Category::CAT_MISC, $this->crapTime
+			$regex, Category::CAT_OTHER_HASHED, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {

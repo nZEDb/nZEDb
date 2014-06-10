@@ -6,6 +6,10 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-10 ruhllatio
+	* Fix: RemoveCrap gibberish deleting hashed releases due to category switch
+	* Chg: AnimeTV check now runs before HDTV Check as it is much more specific
+	* Chg: Moving mutliple ifs to cleaner switches in Categorize (first test)
 2014-06-09 ruhllatio
 	* Fix: Potential fix for hanging tmux monitor.php query (restart tmux session after pull)
 	* Chg: More categorization improvements
