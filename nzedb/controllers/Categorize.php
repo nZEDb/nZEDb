@@ -876,7 +876,7 @@ class Categorize extends Category
 	//	XXX.
 	public function isXxx()
 	{
-		if (preg_match('/\bXXX\b|(a\.b\.erotica|ClubSeventeen|Cum(ming|shot)|Err?oticax?|Porn(o|lation)?|Imageset|lesb(ians?|os?)|mastur(bation|e?bate)|My_Stepfather_Made_Me|nympho?|pictures\.erotica\.anime|sexontv|slut|Squirt|SWE6RUS|Transsexual|whore)/i', $this->releaseName)) {
+		if (preg_match('/\bXXX\b|(a\.b\.erotica|ClubSeventeen|Cum(ming|shot)|Err?oticax?|Porn(o|lation)?|Imageset|lesb(ians?|os?)|mastur(bation|e?bate)|My_Stepfather_Made_Me|nympho?|OLDER ANGELS|pictures\.erotica\.anime|sexontv|slut|Squirt|SWE6RUS|Transsexual|whore)/i', $this->releaseName)) {
 			if ($this->isXxxPack()) {
 				return true;
 			}
@@ -961,7 +961,7 @@ class Categorize extends Category
 	public function isXxxOther()
 	{
 		// If nothing else matches, then try these words.
-		if (preg_match('/[-._ ]Brazzers|Creampie|[-._ ]JAV[-._ ]|North\.Pole|^Nubiles|She[-._ ]?Male|Transsexual/i', $this->releaseName)) {
+		if (preg_match('/[-._ ]Brazzers|Creampie|[-._ ]JAV[-._ ]|North\.Pole|^Nubiles|She[-._ ]?Male|Transsexual|OLDER ANGELS/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_XXX_OTHER;
 			return true;
 		}
