@@ -556,7 +556,7 @@ class ReleaseRemover
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size < 2097152
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
+			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
 			Category::CAT_MUSIC_MP3,
 			Category::CAT_BOOKS_COMICS,
 			Category::CAT_BOOKS_EBOOK,
@@ -564,6 +564,8 @@ class ReleaseRemover
 			Category::CAT_BOOKS_MAGAZINES,
 			Category::CAT_BOOKS_TECHNICAL,
 			Category::CAT_BOOKS_OTHER,
+			Category::CAT_PC_0DAY,
+			Category::CAT_PC_GAMES,
 			Category::CAT_MISC,
 			Category::CAT_OTHER_HASHED,
 			$this->crapTime

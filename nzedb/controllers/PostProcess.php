@@ -1543,10 +1543,11 @@ class PostProcess
 						echo '^';
 					}
 					//Run a PreDB filename check on insert to try and match the release
-
-					$release['filename'] = nzedb\utility\Utility::cutStringUsingLast('.', $v['name'], "left", false);
-					$release['releaseid'] = $release['id'];
-					$this->nameFixer->matchPredbFiles($release, 1, 1, true, 1, "full");
+					if (preg_match('/\./', $v['name'])) {
+						$release['filename'] = nzedb\utility\Utility::cutStringUsingLast('.', $v['name'], "left", false);
+						$release['releaseid'] = $release['id'];
+						$this->nameFixer->matchPredbFiles($release, 1, 1, true, 1, "full");
+					}
 				}
 			}
 
