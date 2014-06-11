@@ -475,6 +475,18 @@ class DB extends \PDO
 				return array('deadlock' => true, 'message' => $e->getMessage());
 			}
 
+			// Check if we lost connection to MySQL.
+			else if ($this->_checkGoneAway($e->getMessage()) !== false) {
+
+				// Reconnect to MySQL.
+				if ($this->_reconnect() === true) {
+
+					// If we reconnected, retry the query.
+					return $this->queryExecHelper($query, $insert);
+
+				}
+			}
+
 			return array ('deadlock' => false, 'message' => $e->getMessage());
 		}
 	}
@@ -483,7 +495,7 @@ class DB extends \PDO
 	 * Direct query. Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
 	 *
 	 * @param string $query
-	 * @param	bool $silent	Whether to skip echoing errors to the console.
+	 * @param bool   $silent Whether to skip echoing errors to the console.
 	 *
 	 * @return bool|int
 	 */
@@ -497,7 +509,22 @@ class DB extends \PDO
 			return self::$pdo->exec($query);
 
 		} catch (\PDOException $e) {
-			if (! $silent) {
+
+			// Check if we lost connection to MySQL.
+			if ($this->_checkGoneAway($e->getMessage()) !== false) {
+
+				// Reconnect to MySQL.
+				if ($this->_reconnect() === true) {
+
+					// If we reconnected, retry the query.
+					return $this->exec($query, $silent);
+
+				} else {
+					// If we are not reconnected, return false.
+					return false;
+				}
+
+			} else if (!$silent) {
 				$this->echoError($e->getMessage(), 'Exec', 4, false, $e);
 
 				if ($this->_debug) {
@@ -596,19 +623,19 @@ class DB extends \PDO
 		} catch (\PDOException $e) {
 
 			// Check if we lost connection to MySQL.
-			if (stripos($e->getMessage(), '2006 MySQL server has gone away') !== false) {
+			if ($this->_checkGoneAway($e->getMessage()) !== false) {
 
 				// Reconnect to MySQL.
-				$this->initialiseDatabase();
+				if ($this->_reconnect() === true) {
 
-				// Check if we are really connected to MySQL.
-				if ($this->ping() === false) {
-					// If we are not reconnected, return false.
-					$result = false;
-				} else {
 					// If we reconnected, retry the query.
 					$result = $this->queryDirect($query);
+
+				} else {
+					// If we are not reconnected, return false.
+					$result = false;
 				}
+
 			} else {
 				$this->echoError($e->getMessage(), 'queryDirect', 4, false, $e);
 				if ($this->_debug) {
@@ -618,6 +645,40 @@ class DB extends \PDO
 			}
 		}
 		return $result;
+	}
+
+	/**
+	 * Reconnect to MySQL when the connection has been lost.
+	 *
+	 * @see ping(), _checkGoneAway() for checking the connection.
+	 *
+	 * @return bool
+	 */
+	protected function _reconnect()
+	{
+		$this->initialiseDatabase();
+
+		// Check if we are really connected to MySQL.
+		if ($this->ping() === false) {
+			// If we are not reconnected, return false.
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Verify that we've lost a connection to MySQL.
+	 *
+	 * @param string $errorMessage
+	 *
+	 * @return bool
+	 */
+	protected function _checkGoneAway($errorMessage)
+	{
+		if (stripos($errorMessage, 'MySQL server has gone away') !== false) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
