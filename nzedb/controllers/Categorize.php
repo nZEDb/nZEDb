@@ -53,7 +53,7 @@ class Categorize extends Category
 	 * Returns Category::CAT_MISC if no category is appropriate.
 	 *
 	 * @param string     $releaseName The name to parse.
-	 * @param string|int $groupID     The groupID.
+	 * @param string|int $groupID     The group_id.
 	 *
 	 * @return int The categoryID.
 	 */

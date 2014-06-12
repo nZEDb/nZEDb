@@ -22,9 +22,9 @@ if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || $argv[1] ==
 		. "php $argv[0] full                    ...: To process all releases not previously renamed.\n"
 		. "php $argv[0] 2                       ...: To process all releases added in the previous 2 hours not previously renamed.\n"
 		. "php $argv[0] all                     ...: To process all releases.\n"
-		. "php $argv[0] full 155                ...: To process all releases in groupid 155 not previously renamed.\n"
-		. "php $argv[0] all 155                 ...: To process all releases in groupid 155.\n"
-		. "php $argv[0] all '(155, 140)'        ...: To process all releases in groupids 155 and 140.\n"
+		. "php $argv[0] full 155                ...: To process all releases in group_id 155 not previously renamed.\n"
+		. "php $argv[0] all 155                 ...: To process all releases in group_id 155.\n"
+		. "php $argv[0] all '(155, 140)'        ...: To process all releases in group_ids 155 and 140.\n"
 		. "php $argv[0] preid                   ...: To process all releases where not matched to predb.\n"
 	));
 }
@@ -62,19 +62,19 @@ function preName($argv, $argc)
 		$where = '';
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $full === true) {
-		$where = ' AND groupid = ' . $argv[2];
+		$where = ' AND group_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $full === true) {
-		$where = ' AND groupid IN ' . $argv[2];
+		$where = ' AND group_id IN ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
 	} else if (isset($argv[2]) && preg_match('/\([\d, ]+\)/', $argv[2]) && $all === true) {
-		$where = ' AND groupid IN ' . $argv[2];
+		$where = ' AND group_id IN ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1';
 	} else if (isset($argv[2]) && is_numeric($argv[2]) && $all === true) {
-		$where = ' AND groupid = ' . $argv[2];
+		$where = ' AND group_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 and preid = 0';
 	} else if (isset($argv[2]) && is_numeric($argv[2])) {
-		$where = ' AND groupid = ' . $argv[2];
+		$where = ' AND group_id = ' . $argv[2];
 		$why = ' WHERE nzbstatus = 1 AND isrenamed = 0';
 	} else if ($full === true) {
 		$why = ' WHERE nzbstatus = 1 AND (isrenamed = 0 OR categoryid between 7000 AND 7999)';
@@ -85,16 +85,16 @@ function preName($argv, $argc)
 	}
 	resetSearchnames();
 	echo $c->header(
-		"SELECT id, name, searchname, fromname, size, groupid, categoryid FROM releases" . $why . $what .
+		"SELECT id, name, searchname, fromname, size, group_id, categoryid FROM releases" . $why . $what .
 		$where . ";\n"
 	);
-	$res = $db->queryDirect("SELECT id, name, searchname, fromname, size, groupid, categoryid FROM releases" . $why . $what . $where);
+	$res = $db->queryDirect("SELECT id, name, searchname, fromname, size, group_id, categoryid FROM releases" . $why . $what . $where);
 	$total = $res->rowCount();
 	if ($total > 0) {
 		$consoletools = new ConsoleTools();
 		foreach ($res as $row) {
-			$groupname = $groups->getByNameByID($row['groupid']);
-			$cleanerName = releaseCleaner($row['name'], $row['groupid'], $row['fromname'], $row['size'], $groupname, $usepre);
+			$groupname = $groups->getByNameByID($row['group_id']);
+			$cleanerName = releaseCleaner($row['name'], $row['group_id'], $row['fromname'], $row['size'], $groupname, $usepre);
 			$preid = 0;
 			$predb = $predbfile = $increment = false;
 			if (!is_array($cleanerName)) {
@@ -146,7 +146,7 @@ function preName($argv, $argc)
 				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
 					if (strlen(utf8_decode($cleanName)) <= 3) {
 					} else {
-						$determinedcat = $category->determineCategory($cleanName, $row["groupid"]);
+						$determinedcat = $category->determineCategory($cleanName, $row["group_id"]);
 						if ($propername == true) {
 							$run = $db->queryExec(
 								sprintf(
@@ -285,12 +285,12 @@ function categorizeRelease($type, $where, $echooutput = false)
 	$consoletools = new consoleTools();
 	$relcount = 0;
 	$c = new ColorCLI();
-	echo $c->primary("SELECT id, " . $type . ", groupid FROM releases " . $where);
-	$resrel = $db->queryDirect("SELECT id, " . $type . ", groupid FROM releases " . $where);
+	echo $c->primary("SELECT id, " . $type . ", group_id FROM releases " . $where);
+	$resrel = $db->queryDirect("SELECT id, " . $type . ", group_id FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
 		foreach ($resrel as $rowrel) {
-			$catId = $cat->determineCategory($rowrel[$type], $rowrel['groupid']);
+			$catId = $cat->determineCategory($rowrel[$type], $rowrel['group_id']);
 			$db->queryExec(sprintf("UPDATE releases SET iscategorized = 1, categoryid = %d WHERE id = %d", $catId, $rowrel['id']));
 			$relcount++;
 			if ($echooutput) {
@@ -304,11 +304,11 @@ function categorizeRelease($type, $where, $echooutput = false)
 	return $relcount;
 }
 
-function releaseCleaner($subject, $groupid, $fromName, $size, $groupname, $usepre)
+function releaseCleaner($subject, $group_id, $fromName, $size, $groupname, $usepre)
 {
 	$groups = new Groups();
 	$match = '';
-	$groupName = $groups->getByNameByID($groupid);
+	$groupName = $groups->getByNameByID($group_id);
 	$releaseCleaning = new ReleaseCleaning();
 	$cleanerName = $releaseCleaning->releaseCleaner($subject, $fromName, $size, $groupname, $usepre);
 	if (!is_array($cleanerName) && $cleanerName != false) {

@@ -815,7 +815,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Check if the tables exists for the groupid, make new tables and set status to 1 in groups table for the id.
+	 * Check if the tables exists for the group_id, make new tables and set status to 1 in groups table for the id.
 	 *
 	 * @param int $grpid
 	 *
@@ -945,7 +945,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Try to create new tables for the groupID, if we fail, log the error and exit.
+	 * Try to create new tables for the group_id, if we fail, log the error and exit.
 	 * Returns table names, with group ID if tpg is on.
 	 *
 	 * @param int $tpgSetting 0, tpg is off in site setting, 1 tpg is on in site setting.

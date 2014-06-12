@@ -242,7 +242,7 @@ class Nfo
 						'pp'   => new PostProcess(true)
 					)
 				);
-				$nzbContents->parseNZB($release['guid'], $release['id'], $release['groupid']);
+				$nzbContents->parseNZB($release['guid'], $release['id'], $release['group_id']);
 			}
 			return true;
 		}
@@ -265,7 +265,7 @@ class Nfo
 	public function processNfoFiles($releaseToWork = '', $processImdb = 1, $processTvrage = 1, $groupID = '', $nntp)
 	{
 		$nfoCount = $ret = 0;
-		$groupID = ($groupID === '' ? '' : 'AND groupid = ' . $groupID);
+		$groupID = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);
 		$res = array();
 
 		if ($releaseToWork === '') {
@@ -273,7 +273,7 @@ class Nfo
 			while (($nfoCount != $this->nzbs) && ($i >= -6)) {
 				$res += $this->db->query(
 					sprintf('
-						SELECT id, guid, groupid, name
+						SELECT id, guid, group_id, name
 						FROM releases
 						WHERE nzbstatus = %d
 						AND nfostatus BETWEEN %d AND %d
@@ -293,7 +293,7 @@ class Nfo
 			}
 		} else {
 			$pieces = explode('           =+=            ', $releaseToWork);
-			$res = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'groupid' => $pieces[2], 'name' => $pieces[3]));
+			$res = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'group_id' => $pieces[2], 'name' => $pieces[3]));
 			$nfoCount = 1;
 		}
 
@@ -321,7 +321,7 @@ class Nfo
 			$tvRage = new TvRage($this->echo);
 
 			foreach ($res as $arr) {
-				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['groupid'], $groups->getByNameByID($arr['groupid']));
+				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));
 				if ($fetchedBinary !== false) {
 					// Insert nfo into database.
 					$cp = $nc = null;

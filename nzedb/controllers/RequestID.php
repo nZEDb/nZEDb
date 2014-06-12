@@ -139,9 +139,9 @@ class RequestID
 		// Look for records that potentially have requestID titles and have not been matched to a PreDB title
 		$this->results = $this->db->queryDirect(
 			sprintf(
-				'SELECT r.id, r.name, r.searchname, g.name AS groupname, r.groupid
+				'SELECT r.id, r.name, r.searchname, g.name AS groupname, r.group_id
 				FROM releases r
-				LEFT JOIN groups g ON r.groupid = g.id
+				LEFT JOIN groups g ON r.group_id = g.id
 				WHERE nzbstatus = 1
 				AND preid = 0
 				AND (isrequestid = 1 AND reqidstatus = %d
@@ -151,7 +151,7 @@ class RequestID
 				($this->local === true ? self::REQID_UPROC : self::REQID_NOLL),
 				self::REQID_NONE,
 				(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1),
-				(empty($this->groupID) ? '' : ('AND groupid = ' . $this->groupID)),
+				(empty($this->groupID) ? '' : ('AND group_id = ' . $this->groupID)),
 				($this->local === true ? '' :  'ORDER BY postdate DESC'),
 				$this->limit
 			)
@@ -233,9 +233,9 @@ class RequestID
 				SELECT id, title
 				FROM predb
 				WHERE requestid = %d
-				AND groupid = %d",
+				AND group_id = %d",
 				$this->requestID,
-				$this->result['groupid']
+				$this->result['group_id']
 			)
 		);
 
@@ -299,7 +299,7 @@ class RequestID
 	 */
 	protected function updateRelease()
 	{
-		$determinedCategory = $this->category->determineCategory($this->newTitle, $this->result['groupid']);
+		$determinedCategory = $this->category->determineCategory($this->newTitle, $this->result['group_id']);
 		$this->db->queryExec(
 			sprintf('
 				UPDATE releases
@@ -335,7 +335,7 @@ class RequestID
 	{
 		$dupeCheck = $this->db->queryOneRow(
 			sprintf('
-				SELECT id AS preid, requestid, groupid
+				SELECT id AS preid, requestid, group_id
 				FROM predb
 				WHERE title = %s',
 				$this->db->escapeString($this->newTitle)
@@ -345,12 +345,12 @@ class RequestID
 		if ($dupeCheck === false) {
 			$this->preDbID = $this->db->queryInsert(
 				sprintf("
-					INSERT INTO predb (title, source, requestid, groupid, predate)
+					INSERT INTO predb (title, source, requestid, group_id, predate)
 					VALUES (%s, %s, %d, %d, NOW())",
 					$this->db->escapeString($this->newTitle),
 					$this->db->escapeString('requestWEB'),
 					$this->requestID,
-					$this->result['groupid']
+					$this->result['group_id']
 				)
 			);
 		} else {
@@ -358,10 +358,10 @@ class RequestID
 			$this->db->queryExec(
 				sprintf('
 					UPDATE predb
-					SET requestid = %d, groupid = %d
+					SET requestid = %d, group_id = %d
 					WHERE id = %d',
 					$this->requestID,
-					$this->result['groupid'],
+					$this->result['group_id'],
 					$this->preDbID
 				)
 			);

@@ -31,13 +31,13 @@ if (isset($argv[2]) && is_numeric($argv[2])) {
 
 //runs on every release not already PreDB Matched
 if (isset($argv[1]) && $argv[1] === "all") {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, r.reqidstatus, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND isrequestid = 1");
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, r.reqidstatus, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.group_id = g.id WHERE nzbstatus = 1 AND preid = 0 AND isrequestid = 1");
 //runs on all releases not already renamed not already PreDB matched
 } else if (isset($argv[1]) && $argv[1] === "full") {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, r.reqidstatus, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3)");
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, r.reqidstatus, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.group_id = g.id WHERE nzbstatus = 1 AND preid = 0 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3)");
 //runs on all releases not already renamed limited by user not already PreDB matched
 } else if (isset($argv[1]) && is_numeric($argv[1])) {
-	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, r.reqidstatus, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3) ORDER BY postdate DESC LIMIT " . $argv[1]);
+	$qry = $db->queryDirect("SELECT r.id, r.name, r.categoryid, r.reqidstatus, g.name AS groupname, g.id as gid FROM releases r LEFT JOIN groups g ON r.group_id = g.id WHERE nzbstatus = 1 AND preid = 0 AND (isrenamed = 0 AND isrequestid = 1 " . $time . " AND reqidstatus in (0, -1, -3) ORDER BY postdate DESC LIMIT " . $argv[1]);
 }
 
 $total = $qry->rowCount();
@@ -132,7 +132,7 @@ function localLookup($requestID, $groupName, $oldname)
 	$db = new DB();
 	$groups = new Groups();
 	$groupid = $groups->getIDByName($groupName);
-	$run = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
+	$run = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND group_id = %d", $requestID, $groupid));
 	if (isset($run['title']) && preg_match('/s\d+/i', $run['title']) && !preg_match('/s\d+e\d+/i', $run['title'])) {
 		return false;
 	}
@@ -152,7 +152,7 @@ function localLookup($requestID, $groupName, $oldname)
 		$groupid = $groups->getIDByName('alt.binaries.teevee');
 	}
 
-	$run = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
+	$run = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND group_id = %d", $requestID, $groupid));
 	if (isset($run['title'])) {
 		return array('title' => $run['title'], 'id' => $run['id']);
 	}

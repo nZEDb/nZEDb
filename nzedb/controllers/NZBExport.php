@@ -113,7 +113,7 @@ class NZBExport
 			$toDate = $params[2];
 		}
 
-		// Check if the groupID exists.
+		// Check if the group_id exists.
 		if (isset($params[3]) && $params[3] !== 0) {
 			if (!is_numeric($params[3])) {
 				$this->echoOut('The group ID is not a number: ' . $params[3]);

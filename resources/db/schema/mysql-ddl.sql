@@ -6,7 +6,7 @@ CREATE TABLE collections (
   date           DATETIME DEFAULT NULL,
   xref           VARCHAR(255)        NOT NULL DEFAULT '',
   totalfiles     INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  groupid        INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  group_id        INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   collectionhash VARCHAR(255)        NOT NULL DEFAULT '0',
   dateadded      DATETIME DEFAULT NULL,
   filecheck      TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
@@ -15,7 +15,7 @@ CREATE TABLE collections (
   PRIMARY KEY (id),
   INDEX fromname (fromname),
   INDEX date (date),
-  INDEX groupid (groupid),
+  INDEX group_id (group_id),
   UNIQUE INDEX ix_collection_collectionhash (collectionhash),
   INDEX ix_collection_filecheck (filecheck),
   INDEX ix_collection_dateadded (dateadded),
@@ -54,7 +54,8 @@ CREATE TABLE releases (
   name              VARCHAR(255)                   NOT NULL DEFAULT '',
   searchname        VARCHAR(255)                   NOT NULL DEFAULT '',
   totalpart         INT DEFAULT 0,
-  groupid           INT UNSIGNED                   NOT NULL DEFAULT '0',
+  group_id          INT UNSIGNED                   NOT NULL DEFAULT '0'
+    COMMENT 'FK to groups',
   size              BIGINT UNSIGNED                NOT NULL DEFAULT '0',
   postdate          DATETIME DEFAULT NULL,
   adddate           DATETIME DEFAULT NULL,
@@ -120,7 +121,7 @@ CREATE INDEX ix_releases_rageid ON releases (rageid);
 CREATE INDEX ix_releases_imdbid ON releases (imdbid);
 CREATE INDEX ix_releases_guid ON releases (guid);
 CREATE INDEX ix_releases_name ON releases (name);
-CREATE INDEX ix_releases_groupid ON releases (groupid);
+CREATE INDEX ix_releases_groupid ON releases (group_id);
 CREATE INDEX ix_releases_dehashstatus ON releases (dehashstatus);
 CREATE INDEX ix_releases_reqidstatus ON releases (reqidstatus);
 CREATE INDEX ix_releases_nfostatus ON releases (nfostatus);
@@ -289,13 +290,13 @@ CREATE TABLE predb (
   predate    DATETIME DEFAULT NULL,
   source     VARCHAR(50)      NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED NOT NULL DEFAULT '0',
-  groupid    INT(10) UNSIGNED NOT NULL DEFAULT '0'
-  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
+  group_id    INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups',
   nuked      TINYINT(1)       NOT NULL DEFAULT '0'
-  COMMENT 'If this pre is nuked, what is the reason?',
+  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
   nukereason VARCHAR(255)     NULL
+  COMMENT 'If this pre is nuked, what is the reason?',
+  files      VARCHAR(50)      NULL
   COMMENT 'How many files does this pre have ?',
-  files      VARCHAR(50)      NULL,
   filename   VARCHAR(255)     NOT NULL DEFAULT '',
   searched   TINYINT(1)       NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
@@ -309,7 +310,7 @@ CREATE UNIQUE INDEX ix_predb_title ON predb (title);
 CREATE INDEX ix_predb_nfo ON predb (nfo);
 CREATE INDEX ix_predb_predate ON predb (predate);
 CREATE INDEX ix_predb_source ON predb (source);
-CREATE INDEX ix_predb_requestid ON predb (requestid, groupid);
+CREATE INDEX ix_predb_requestid ON predb (requestid, group_id);
 CREATE INDEX ix_predb_filename ON predb (filename);
 CREATE INDEX ix_predb_searched ON predb (searched);
 
@@ -535,7 +536,8 @@ DROP TABLE IF EXISTS partrepair;
 CREATE TABLE partrepair (
   id       INT(16) UNSIGNED NOT NULL AUTO_INCREMENT,
   numberid BIGINT UNSIGNED  NOT NULL,
-  groupid  INT(11) UNSIGNED NOT NULL,
+  group_id  INT(11) UNSIGNED NOT NULL DEFAULT '0'
+    COMMENT 'FK to groups',
   attempts TINYINT(1)       NOT NULL DEFAULT '0',
   PRIMARY KEY (id)
 )
@@ -544,10 +546,10 @@ CREATE TABLE partrepair (
   COLLATE utf8_unicode_ci
   AUTO_INCREMENT =1;
 
-CREATE UNIQUE INDEX ix_partrepair_numberid_groupid ON partrepair (numberid, groupid);
+CREATE UNIQUE INDEX ix_partrepair_numberid_groupid ON partrepair (numberid, group_id);
 CREATE INDEX ix_partrepair_attempts ON partrepair (attempts);
-CREATE INDEX ix_partrepair_groupid_attempts ON partrepair (groupid, attempts);
-CREATE INDEX ix_partrepair_numberid_groupid_attempts ON partrepair (numberid, groupid, attempts);
+CREATE INDEX ix_partrepair_groupid_attempts ON partrepair (group_id, attempts);
+CREATE INDEX ix_partrepair_numberid_groupid_attempts ON partrepair (numberid, group_id, attempts);
 
 DROP TABLE IF EXISTS category;
 CREATE TABLE category (

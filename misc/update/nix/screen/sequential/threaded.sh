@@ -98,7 +98,7 @@ do
 #   $PYTHON -OOu ${THREADED_PATH}/requestid_threaded.py						#This is much slower for local lookup, but is faster for remote lookup
 #	$PHP ${DB_PATH}/populate_nzb_guid.php limited
 #	$PHP ${DB_PATH}/populate_nzb_guid.php true
-#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py additional		#you can run per groupid, categoryid or parentid
+#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py additional		#you can run per group_id, categoryid or parentid
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py nfo
 #	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py md5			#fixReleaseNames.php should be used instead
 #	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py nfo

@@ -478,7 +478,7 @@ class Backfill
 						$group['bname'] .
 						' b, ' .
 						$group['pname'] .
-						' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.groupid = ' .
+						' p WHERE c.id = b.collectionid AND b.id = p.binaryid AND c.group_id = ' .
 						$groupID .
 						' AND p.number = ' .
 						$currentPost .

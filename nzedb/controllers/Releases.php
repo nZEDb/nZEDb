@@ -56,7 +56,7 @@ class Releases
 						SELECT releases.*, g.name AS group_name, c.title AS category_name
 						FROM releases
 						INNER JOIN category c ON c.id = releases.categoryid
-						INNER JOIN groups g ON g.id = releases.groupid
+						INNER JOIN groups g ON g.id = releases.group_id
 						WHERE nzbstatus = 1'
 		);
 	}
@@ -108,7 +108,7 @@ class Releases
 		);
 
 		if ($grp != '') {
-			$grpjoin = 'INNER JOIN groups ON groups.id = releases.groupid';
+			$grpjoin = 'INNER JOIN groups ON groups.id = releases.group_id';
 			$grpsql = sprintf(' AND groups.name = %s ', $this->db->escapeString($grp));
 		}
 
@@ -177,7 +177,7 @@ class Releases
 									rn.id AS nfoid,
 									re.releaseid AS reid
 								FROM releases
-								INNER JOIN groups ON groups.id = releases.groupid
+								INNER JOIN groups ON groups.id = releases.group_id
 								LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
 								LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id
 									AND rn.nfo IS NOT NULL
@@ -299,7 +299,7 @@ class Releases
 		}
 
 		if ($group != '' && $group != '-1') {
-			$group = sprintf(' AND groupid = %d ', $group);
+			$group = sprintf(' AND group_id = %d ', $group);
 		} else {
 			$group = '';
 		}
@@ -310,7 +310,7 @@ class Releases
 								SELECT searchname, guid, groups.name AS gname, CONCAT(cp.title,'_',category.title) AS catName
 								FROM releases
 								INNER JOIN category ON releases.categoryid = category.id
-								INNER JOIN groups ON releases.groupid = groups.id
+								INNER JOIN groups ON releases.group_id = groups.id
 								INNER JOIN category cp ON cp.id = category.parentid
 								WHERE nzbstatus = 1 %s %s %s",
 				$postfrom, $postto, $group
@@ -369,7 +369,7 @@ class Releases
 	 */
 	public function getReleasedGroupsForSelect($blnIncludeAll = true)
 	{
-		$groups = $this->db->query('SELECT DISTINCT groups.id, groups.name FROM releases INNER JOIN groups on groups.id = releases.groupid');
+		$groups = $this->db->query('SELECT DISTINCT groups.id, groups.name FROM releases INNER JOIN groups on groups.id = releases.group_id');
 		$temp_array = array();
 
 		if ($blnIncludeAll) {
@@ -458,7 +458,7 @@ class Releases
 								FROM releases
 								INNER JOIN category c ON c.id = releases.categoryid
 								INNER JOIN category cp ON cp.id = c.parentid
-								INNER JOIN groups g ON g.id = releases.groupid
+								INNER JOIN groups g ON g.id = releases.group_id
 								LEFT OUTER JOIN movieinfo m ON m.imdbid = releases.imdbid AND m.title != ''
 								LEFT OUTER JOIN musicinfo mu ON mu.id = releases.musicinfoid
 								LEFT OUTER JOIN genres mug ON mug.id = mu.genreid
@@ -507,7 +507,7 @@ class Releases
 								FROM releases
 								INNER JOIN category c ON c.id = releases.categoryid
 								INNER JOIN category cp ON cp.id = c.parentid
-								INNER JOIN groups g ON g.id = releases.groupid
+								INNER JOIN groups g ON g.id = releases.group_id
 								LEFT OUTER JOIN tvrage tvr ON tvr.rageid = releases.rageid
 								WHERE %s %s %s
 								AND releases.passwordstatus <= %d
@@ -546,7 +546,7 @@ class Releases
 								FROM releases
 								INNER JOIN category c ON c.id = releases.categoryid
 								INNER JOIN category cp ON cp.id = c.parentid
-								INNER JOIN groups g ON g.id = releases.groupid
+								INNER JOIN groups g ON g.id = releases.group_id
 								LEFT OUTER JOIN movieinfo mi ON mi.imdbid = releases.imdbid
 								WHERE %s %s
 								AND releases.passwordstatus <= %d
@@ -601,7 +601,7 @@ class Releases
 									rn.id AS nfoid, re.releaseid AS reid
 								FROM releases
 								LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
-								INNER JOIN groups ON groups.id = releases.groupid
+								INNER JOIN groups ON groups.id = releases.group_id
 								LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL
 								INNER JOIN category c ON c.id = releases.categoryid
 								INNER JOIN category cp ON cp.id = c.parentid
@@ -1016,7 +1016,7 @@ class Releases
 
 		if ($groupname != '-1') {
 			$groupID = $this->groups->getIDByName($groupname);
-			$groupIDsql = sprintf(' AND releases.groupid = %d ', $groupID);
+			$groupIDsql = sprintf(' AND releases.group_id = %d ', $groupID);
 		}
 
 		$sizefromsql = '';
@@ -1073,7 +1073,7 @@ class Releases
 			INNER JOIN releasesearch rs on rs.releaseid = releases.id
 			LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
 			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id
-			INNER JOIN groups ON groups.id = releases.groupid
+			INNER JOIN groups ON groups.id = releases.group_id
 			INNER JOIN category c ON c.id = releases.categoryid
 			INNER JOIN category cp ON cp.id = c.parentid
 			WHERE releases.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s) r
@@ -1137,7 +1137,7 @@ class Releases
 				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid FROM releases INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.groupid INNER JOIN releasesearch rs on rs.releaseid = releases.id LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $rageIdsql, $series, $episode, $searchsql, $catsrch, $maxagesql, $limit, $offset);
+		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid FROM releases INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.group_id INNER JOIN releasesearch rs on rs.releaseid = releases.id LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $rageIdsql, $series, $episode, $searchsql, $catsrch, $maxagesql, $limit, $offset);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
 		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id  ' . substr($sql, $wherepos, $orderpos - $wherepos);
@@ -1181,7 +1181,7 @@ class Releases
 			}
 		}
 
-		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases INNER JOIN releasesearch rs on rs.releaseid = releases.id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.groupid LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id and rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $anidbID, $epno, $searchsql, $catsrch, $maxage, $limit, $offset);
+		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases INNER JOIN releasesearch rs on rs.releaseid = releases.id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.group_id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id and rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $anidbID, $epno, $searchsql, $catsrch, $maxage, $limit, $offset);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
 		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
@@ -1222,7 +1222,7 @@ class Releases
 		}
 
 		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid "
-			. "FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid INNER JOIN releasesearch rs on rs.releaseid = releases.id "
+			. "FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN releasesearch rs on rs.releaseid = releases.id "
 			. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE nzbstatus = 1 AND releases.passwordstatus <= %d "
 			. "%s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $searchsql, $imdbId, $catsrch, $maxage, $limit, $offset
 		);
@@ -1285,7 +1285,7 @@ class Releases
 		} else {
 			$gsql = sprintf('guid = %s', $this->db->escapeString($guid));
 		}
-		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE %s ", $gsql);
+		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE %s ", $gsql);
 
 		return (is_array($guid)) ? $this->db->query($sql) : $this->db->queryOneRow($sql);
 	}
@@ -1337,7 +1337,7 @@ class Releases
 			$episode = sprintf(' AND UPPER(releases.episode) = UPPER(%s)', $this->db->escapeString($episode));
 		}
 
-		return $this->db->queryOneRow(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.groupid INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d AND rageid = %d %s %s", $this->showPasswords(), $rageid, $series, $episode));
+		return $this->db->queryOneRow(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d AND rageid = %d %s %s", $this->showPasswords(), $rageid, $series, $episode));
 	}
 
 	public function removeRageIdFromReleases($rageid)
@@ -1358,7 +1358,7 @@ class Releases
 
 	public function getById($id)
 	{
-		return $this->db->queryOneRow(sprintf('SELECT releases.*, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.groupid WHERE releases.id = %d ', $id));
+		return $this->db->queryOneRow(sprintf('SELECT releases.*, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id WHERE releases.id = %d ', $id));
 	}
 
 	public function getReleaseNfo($id, $incnfo = true)
@@ -1397,14 +1397,14 @@ class Releases
 	{
 		$cat = new Categorize();
 		$relcount = 0;
-		$resrel = $this->db->queryDirect('SELECT id, ' . $type . ', groupid FROM releases ' . $where);
+		$resrel = $this->db->queryDirect('SELECT id, ' . $type . ', group_id FROM releases ' . $where);
 		$total = 0;
 		if ($resrel !== false) {
 			$total = $resrel->rowCount();
 		}
 		if ($total > 0) {
 			foreach ($resrel as $rowrel) {
-				$catId = $cat->determineCategory($rowrel[$type], $rowrel['groupid']);
+				$catId = $cat->determineCategory($rowrel[$type], $rowrel['group_id']);
 				$this->db->queryExec(sprintf('UPDATE releases SET categoryid = %d, iscategorized = 1 WHERE id = %d', $catId, $rowrel['id']));
 				$relcount++;
 				if ($this->echooutput) {
@@ -1445,7 +1445,7 @@ class Releases
 		}
 
 		$stage1 = TIME();
-		$where = (!empty($groupID)) ? ' AND c.groupid = ' . $groupID . ' ' : ' ';
+		$where = (!empty($groupID)) ? ' AND c.group_id = ' . $groupID . ' ' : ' ';
 
 		if ($this->db->dbSystem() === 'mysql') {
 			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
@@ -1580,7 +1580,7 @@ class Releases
 
 	public function processReleasesStage2($groupID)
 	{
-		$where = (!empty($groupID)) ? ' AND c.groupid = ' . $groupID : ' ';
+		$where = (!empty($groupID)) ? ' AND c.group_id = ' . $groupID : ' ';
 
 		// Set table names
 		if ($this->tablepergroup === 1) {
@@ -1644,7 +1644,7 @@ class Releases
 			$groupIDs = $this->groups->getActiveIDs();
 			foreach ($groupIDs as $groupID) {
 				$res = $this->db->query(
-					'SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 3 AND filesize > 0 AND groupid = ' .
+					'SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 3 AND filesize > 0 AND group_id = ' .
 					$groupID['id']
 				);
 				if (count($res) > 0) {
@@ -1652,7 +1652,7 @@ class Releases
 					if ($this->db->dbSystem() === 'mysql') {
 						$mscq = $this->db->queryExec(
 							"UPDATE " . $group['cname'] .
-							" c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND groupid = " .
+							" c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND group_id = " .
 							$groupID['id']
 						);
 						if ($mscq !== false) {
@@ -1667,7 +1667,7 @@ class Releases
 							$mscq = $this->db->queryExec(
 								sprintf(
 									'UPDATE ' . $group['cname'] .
-									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ' .
+									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
 									$groupID['id'], $s['size']
 								)
 							);
@@ -1686,7 +1686,7 @@ class Releases
 						$mascq = $this->db->queryExec(
 							sprintf(
 								'UPDATE ' . $group['cname'] .
-								' SET filecheck = 5 WHERE filecheck = 3 AND groupid = %d AND filesize > %d ', $groupID['id'], $maxfilesizeres['value']
+								' SET filecheck = 5 WHERE filecheck = 3 AND group_id = %d AND filesize > %d ', $groupID['id'], $maxfilesizeres['value']
 							)
 						);
 						$maxsizecount = 0;
@@ -1703,7 +1703,7 @@ class Releases
 					if ($this->db->dbSystem() === 'mysql') {
 						$mifcq = $this->db->queryExec(
 							"UPDATE " . $group['cname'] .
-							" c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND groupid = " .
+							" c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND group_id = " .
 							$groupID['id']
 						);
 						if ($mifcq !== false) {
@@ -1718,7 +1718,7 @@ class Releases
 							$mifcq = $this->db->queryExec(
 								sprintf(
 									'UPDATE ' . $group['cname'] .
-									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ' .
+									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
 									$groupID['id'], $s['size']
 								)
 							);
@@ -1735,14 +1735,14 @@ class Releases
 			}
 		} else {
 			$res = $this->db->queryDirect(
-				'SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 3 AND filesize > 0 AND groupid = ' . $groupID
+				'SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 3 AND filesize > 0 AND group_id = ' . $groupID
 			);
 			if ($res !== false && $res->rowCount() > 0) {
 				$minsizecount = 0;
 				if ($this->db->dbSystem() === 'mysql') {
 					$mscq = $this->db->queryExec(
 						"UPDATE " . $group['cname'] .
-						" c LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND groupid = " .
+						" c LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND group_id = " .
 						$groupID
 					);
 					if ($mscq !== false) {
@@ -1757,7 +1757,7 @@ class Releases
 						$mscq = $this->db->queryExec(
 							sprintf(
 								'UPDATE ' . $group['cname'] .
-								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ' .
+								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
 								$groupID, $s['size']
 							)
 						);
@@ -1792,7 +1792,7 @@ class Releases
 				if ($this->db->dbSystem() === 'mysql') {
 					$mifcq = $this->db->queryExec(
 						"UPDATE " . $group['cname'] .
-						" c LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.groupid SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND groupid = " .
+						" c LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND group_id = " .
 						$groupID
 					);
 					if ($mifcq !== false) {
@@ -1807,7 +1807,7 @@ class Releases
 						$mifcq = $this->db->queryExec(
 							sprintf(
 								'UPDATE ' . $group['cname'] .
-								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND groupid = ' .
+								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
 								$groupID, $s['size']
 							)
 						);
@@ -1842,7 +1842,7 @@ class Releases
 	{
 		$categorize = new Categorize();
 		$returnCount = $duplicate = 0;
-		$where = (!empty($groupID)) ? ' groupid = ' . $groupID . ' AND ' : ' ';
+		$where = (!empty($groupID)) ? ' group_id = ' . $groupID . ' AND ' : ' ';
 
 		// Set table names
 		if ($this->tablepergroup === 1) {
@@ -1868,7 +1868,7 @@ class Releases
 			sprintf('
 				SELECT %s.*, groups.name AS gname
 				FROM %s
-				INNER JOIN groups ON %s.groupid = groups.id
+				INNER JOIN groups ON %s.group_id = groups.id
 				WHERE %s %s.filecheck = 3
 				AND filesize > 0 LIMIT %d',
 				$group['cname'],
@@ -1929,7 +1929,7 @@ class Releases
 					}
 				}
 
-				$category = $categorize->determineCategory($cleanName, $collection['groupid']);
+				$category = $categorize->determineCategory($cleanName, $collection['group_id']);
 
 				$cleanRelName = utf8_encode($cleanRelName);
 				$cleanName = utf8_encode($cleanName);
@@ -1957,7 +1957,7 @@ class Releases
 					$query .= ($properName === true ? 'isrenamed, ' : '');
 					$query .= ($preID !== null ? 'preid, ' : '');
 					$query .= ($isReqID === true ? 'reqidstatus, ' : '');
-					$query .= 'name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname, ';
+					$query .= 'name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname, ';
 					$query .= 'size, passwordstatus, haspreview, categoryid, nfostatus, iscategorized) VALUES (';
 					$query .= ($properName === true ? '1, ' : '');
 					$query .= ($preID !== null ? $preID . ', ' : '');
@@ -1972,7 +1972,7 @@ class Releases
 							$this->db->escapeString($cleanRelName),
 							$this->db->escapeString($cleanName),
 							$collection['totalfiles'],
-							$collection['groupid'],
+							$collection['group_id'],
 							$this->db->escapeString(sha1(uniqid('', true) . mt_rand())),
 							$this->db->escapeString($collection['date']),
 							$this->db->escapeString($fromName),
@@ -2063,7 +2063,7 @@ class Releases
 
 			foreach ($groupIDs as $groupID) {
 				if ($this->db->dbSystem() === 'mysql') {
-					$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %s ) g ON g.id = r.groupid WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupid = %s", $groupID['id'], $groupID['id']));
+					$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %s ) g ON g.id = r.group_id WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.group_id = %s", $groupID['id'], $groupID['id']));
 				} else {
 					$resrel = array();
 					$s = $this->db->queryOneRow(
@@ -2071,7 +2071,7 @@ class Releases
 						$groupID['id']
 					);
 					if ($s['size'] > 0) {
-						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND groupid = %d', $s['size'], $groupID['id']));
+						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND group_id = %d', $s['size'], $groupID['id']));
 					}
 				}
 				if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2083,7 +2083,7 @@ class Releases
 
 				$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0) {
-					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE groupid = %d AND size > %d', $groupID['id'], $maxfilesizeres['value']));
+					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE group_id = %d AND size > %d', $groupID['id'], $maxfilesizeres['value']));
 					if ($resrel !== false && $resrel->rowCount() > 0) {
 						foreach ($resrel as $rowrel) {
 							$this->fastDelete($rowrel['id'], $rowrel['guid']);
@@ -2093,7 +2093,7 @@ class Releases
 				}
 
 				if ($this->db->dbSystem() === 'mysql') {
-					$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.groupid WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupid = %d", $groupID['id'], $groupID['id']));
+					$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.group_id = %d", $groupID['id'], $groupID['id']));
 				} else {
 					$resrel = array();
 					$f = $this->db->queryOneRow(
@@ -2101,7 +2101,7 @@ class Releases
 						$groupID['id']
 					);
 					if ($f['files'] > 0) {
-						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND groupid = %d', $f['files'], $groupID['id']));
+						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND group_id = %d', $f['files'], $groupID['id']));
 					}
 				}
 				if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2113,7 +2113,7 @@ class Releases
 			}
 		} else {
 			if ($this->db->dbSystem() === 'mysql') {
-				$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.groupid WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.groupid = %d", $groupID, $groupID));
+				$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.group_id = %d", $groupID, $groupID));
 			} else {
 				$resrel = array();
 				$s = $this->db->queryOneRow(
@@ -2121,7 +2121,7 @@ class Releases
 					$groupID
 				);
 				if ($s['size'] > 0) {
-					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND groupid = %d', $s['size'], $groupID));
+					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND group_id = %d', $s['size'], $groupID));
 				}
 			}
 			if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2133,7 +2133,7 @@ class Releases
 
 			$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 			if ($maxfilesizeres['value'] != 0) {
-				$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE groupid = %d AND size > %s', $groupID, $this->db->escapeString($maxfilesizeres['value'])));
+				$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE group_id = %d AND size > %s', $groupID, $this->db->escapeString($maxfilesizeres['value'])));
 				if ($resrel !== false && $resrel->rowCount() > 0) {
 					foreach ($resrel as $rowrel) {
 						$this->fastDelete($rowrel['id'], $rowrel['guid']);
@@ -2143,7 +2143,7 @@ class Releases
 			}
 
 			if ($this->db->dbSystem() === 'mysql') {
-				$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.groupid WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.groupid = %d", $groupID, $groupID));
+				$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.group_id = %d", $groupID, $groupID));
 			} else {
 				$resrel = array();
 				$f = $this->db->queryOneRow(
@@ -2151,7 +2151,7 @@ class Releases
 					$groupID
 				);
 				if ($f['files'] > 0) {
-					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND groupid = %d', $f['files'], $groupID));
+					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND group_id = %d', $f['files'], $groupID));
 				}
 			}
 			if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2180,7 +2180,7 @@ class Releases
 	public function processReleasesStage5($groupID)
 	{
 		$nzbcount = $reccount = 0;
-		$where = (!empty($groupID)) ? ' r.groupid = ' . $groupID . ' AND ' : ' ';
+		$where = (!empty($groupID)) ? ' r.group_id = ' . $groupID . ' AND ' : ' ';
 
 		// Set table names
 		if ($this->tablepergroup === 1) {
@@ -2291,7 +2291,7 @@ class Releases
 
 	public function processReleasesStage6($categorize, $postproc, $groupID, $nntp)
 	{
-		$where = (!empty($groupID)) ? 'WHERE iscategorized = 0 AND groupid = ' . $groupID : 'WHERE iscategorized = 0';
+		$where = (!empty($groupID)) ? 'WHERE iscategorized = 0 AND group_id = ' . $groupID : 'WHERE iscategorized = 0';
 
 		// Categorize releases.
 		if ($this->echooutput) {
@@ -2338,8 +2338,8 @@ class Releases
 			$group['cname'] = 'collections';
 			$group['bname'] = 'binaries';
 			$group['pname'] = 'parts';
-			$where = (!empty($groupID)) ? ' ' . $group['cname'] . '.groupid = ' . $groupID . ' AND ' : ' ';
-			$where1 = (!empty($groupID)) ? ' AND ' . $group['cname'] . '.groupid = ' . $groupID : '';
+			$where = (!empty($groupID)) ? ' ' . $group['cname'] . '.group_id = ' . $groupID . ' AND ' : ' ';
+			$where1 = (!empty($groupID)) ? ' AND ' . $group['cname'] . '.group_id = ' . $groupID : '';
 		}
 
 		// Delete old releases and finished collections.
@@ -2771,7 +2771,7 @@ class Releases
 		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $nntp);
 		$this->processReleasesStage4dot5($groupID);
 		$this->processReleasesStage7b();
-		$where = (!empty($groupID)) ? ' WHERE groupid = ' . $groupID : '';
+		$where = (!empty($groupID)) ? ' WHERE group_id = ' . $groupID : '';
 
 		//Print amount of added releases and time it took.
 		if ($this->echooutput && $this->tablepergroup == 0) {
@@ -2807,20 +2807,20 @@ class Releases
 			$cIDS = array();
 			foreach ($res as $row) {
 
-				$groupName = $this->groups->getByNameByID($row['groupid']);
+				$groupName = $this->groups->getByNameByID($row['group_id']);
 				$newSHA1 = sha1(
 					$this->collectionsCleaning->collectionsCleaner(
 						$row['bname'],
 						$groupName .
 						$row['fromname'] .
-						$row['groupid'] .
+						$row['group_id'] .
 						$row['totalfiles']
 					)
 				);
 				$cres = $this->db->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s', $this->db->escapeString($newSHA1)));
 				if (!$cres) {
 					$cIDS[] = $row['id'];
-					$csql = sprintf('INSERT INTO collections (subject, fromname, date, xref, groupid, totalfiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, 0, NOW())', $this->db->escapeString($row['bname']), $this->db->escapeString($row['fromname']), $this->db->escapeString($row['date']), $this->db->escapeString($row['xref']), $row['groupid'], $this->db->escapeString($row['totalfiles']), $this->db->escapeString($newSHA1));
+					$csql = sprintf('INSERT INTO collections (subject, fromname, date, xref, group_id, totalfiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, 0, NOW())', $this->db->escapeString($row['bname']), $this->db->escapeString($row['fromname']), $this->db->escapeString($row['date']), $this->db->escapeString($row['xref']), $row['group_id'], $this->db->escapeString($row['totalfiles']), $this->db->escapeString($newSHA1));
 					$collectionID = $this->db->queryInsert($csql);
 					if ($this->echooutput) {
 						$this->consoleTools->overWrite(
