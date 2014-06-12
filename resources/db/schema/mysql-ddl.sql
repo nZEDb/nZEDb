@@ -289,13 +289,13 @@ CREATE TABLE predb (
   predate    DATETIME DEFAULT NULL,
   source     VARCHAR(50)      NOT NULL DEFAULT '',
   requestid  INT(10) UNSIGNED NOT NULL DEFAULT '0',
-  groupid    INT(10) UNSIGNED NOT NULL DEFAULT '0'
-  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
+  groupid    INT(10) UNSIGNED NOT NULL DEFAULT '0',
   nuked      TINYINT(1)       NOT NULL DEFAULT '0'
-  COMMENT 'If this pre is nuked, what is the reason?',
+  COMMENT 'Is this pre nuked? 0 no 2 yes 1 un nuked 3 mod nuked',
   nukereason VARCHAR(255)     NULL
+  COMMENT 'If this pre is nuked, what is the reason?',
+  files      VARCHAR(50)      NULL
   COMMENT 'How many files does this pre have ?',
-  files      VARCHAR(50)      NULL,
   filename   VARCHAR(255)     NOT NULL DEFAULT '',
   searched   TINYINT(1)       NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
