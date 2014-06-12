@@ -82,7 +82,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "predbft"):
 	#This one does from oldest posts to newest posts since there are many other more efficient PreDB matching schemes
-	run = "SELECT id AS preid FROM predb WHERE LENGTH(title) >= 15 AND title NOT REGEXP '[\"\<\> ]' AND searched = 0 ORDER BY predate ASC LIMIT %s"
+	run = "SELECT id AS preid FROM predb WHERE LENGTH(title) >= 15 AND title NOT REGEXP '[\"\<\> ]' AND searched = 0 AND DATEDIFF(NOW(), predate) > 1 ORDER BY predate ASC LIMIT %s"
 	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur[0].fetchall()
 
