@@ -300,7 +300,7 @@ class PostProcess
 		}
 
 		$query = $this->db->queryOneRow(
-			'SELECT id, groupid, categoryid, name, searchname, ' .
+			'SELECT id, group_id, categoryid, name, searchname, ' .
 			($this->db->dbSystem() === 'mysql' ? 'UNIX_TIMESTAMP(postdate)' : 'extract(epoch FROM postdate)') .
 			' as postdate, id as releaseid  FROM releases WHERE isrenamed = 0 AND id = ' .
 			$relID
@@ -654,7 +654,7 @@ class PostProcess
 	 */
 	public function processAdditional($nntp, $releaseToWork = '', $groupID = '')
 	{
-		$groupID = ($groupID === '' ? '' : 'AND groupid = ' . $groupID);
+		$groupID = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);
 
 		// Get out all releases which have not been checked more than max attempts for password.
 		$totResults = 0;
@@ -668,7 +668,7 @@ class PostProcess
 
 				$qResult = $this->db->query(
 					sprintf('
-						SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.groupid,
+						SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id,
 							r.nfostatus, r.completion, r.categoryid, r.searchname
 						FROM releases r
 						LEFT JOIN category c ON c.id = r.categoryid
@@ -712,7 +712,7 @@ class PostProcess
 					'name' => $pieces[2],
 					'disablepreview' => $pieces[3],
 					'size' => $pieces[4],
-					'groupid' => $pieces[5],
+					'group_id' => $pieces[5],
 					'nfostatus' => $pieces[6],
 					'categoryid' => $pieces[7],
 					'searchname' => $pieces[8]
@@ -817,7 +817,7 @@ class PostProcess
 				$sampleMsgID = $jpgMsgID = $audioType = $mID = array();
 				$mediaMsgID  = $audioMsgID = '';
 				$bookFlood   = $this->password = $this->noNFO = false;
-				$groupName   = $this->groups->getByNameByID($rel['groupid']);
+				$groupName   = $this->groups->getByNameByID($rel['group_id']);
 
 				// Make sure we don't already have an nfo.
 				if ($rel['nfostatus'] !== '1') {
@@ -2058,7 +2058,7 @@ class PostProcess
 		// Make sure the category is music or other->misc.
 		$rQuery = $this->db->queryOneRow(
 			sprintf(
-				'SELECT searchname, categoryid as id, groupid FROM releases WHERE proc_pp = 0 AND id = %d', $releaseID
+				'SELECT searchname, categoryid as id, group_id FROM releases WHERE proc_pp = 0 AND id = %d', $releaseID
 			)
 		);
 		if (!preg_match(
@@ -2121,7 +2121,7 @@ class PostProcess
 										} else if ($ext === 'FLAC') {
 											$newCat = Category::CAT_MUSIC_LOSSLESS;
 										} else {
-											$newCat = $category->determineCategory($newName, $rQuery['groupid']);
+											$newCat = $category->determineCategory($newName, $rQuery['group_id']);
 										}
 
 										// Update the search name.
@@ -2133,7 +2133,7 @@ class PostProcess
 											") Old name:(" . $rQuery["searchname"] .
 											") New cat:(" . $newCat .
 											") Old cat:(" . $rQuery['id'] .
-											") Group:(" . $rQuery['groupid'] .
+											") Group:(" . $rQuery['group_id'] .
 											") Method:(" . 'PostProccess getAudioInfo' .
 											") ReleaseID:(" . $releaseID . ')'
 											, 5);

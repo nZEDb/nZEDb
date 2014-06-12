@@ -32,8 +32,8 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	} else {
 		$table = 'predb';
 	}
-	echo  $c->header("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.groupid = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n';n");
-	$db->queryDirect("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.groupid = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n'");
+	echo  $c->header("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.group_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\\t\\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\\r\\n';n");
+	$db->queryDirect("SELECT title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, g.name FROM " . $table . " p LEFT OUTER JOIN groups g ON p.group_id = g.id INTO OUTFILE '" . $path . "' FIELDS TERMINATED BY '\t\t' ENCLOSED BY \"'\" LINES TERMINATED BY '\r\n'");
 } else if (isset($argv[1]) && ($argv[1] == 'local' || $argv[1] == 'remote') && isset($argv[2]) && is_file($argv[2])) {
 	if (!preg_match('/^\//', $path)) {
 		$path = require_once getcwd() . '/' . $argv[2];
@@ -67,7 +67,7 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
     $db->queryDirect("DELETE FROM tmp_pre WHERE LENGTH(title) <= 8");
 
 	// Insert and update table
-	echo $c->primary('INSERT INTO ' . $table . " (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupid)
+	echo $c->primary('INSERT INTO ' . $table . " (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, group_id)
 	SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category,
 	 t.predate, t.source, t.requestid, IF(g.id IS NOT NULL, g.id, 0) FROM tmp_pre t
 	 LEFT OUTER JOIN groups g ON t.groupname = g.name
@@ -79,8 +79,8 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	 predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
 	 predb.category = IF(predb.category is null, t.category, predb.category),
 	 predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid),
-	 predb.groupid = IF(g.id IS NOT NULL, g.id, 0);\n");
-	$db->queryDirect('INSERT INTO ' . $table . ' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, groupid)
+	 predb.group_id = IF(g.id IS NOT NULL, g.id, 0);\n");
+	$db->queryDirect('INSERT INTO ' . $table . ' (title, nfo, size, files, filename, nuked, nukereason, category, predate, source, requestid, group_id)
 	SELECT t.title, t.nfo, t.size, t.files, t.filename, t.nuked, t.nukereason, t.category,
 	 t.predate, t.source, t.requestid, IF(g.id IS NOT NULL, g.id, 0) FROM tmp_pre t
 	 LEFT OUTER JOIN groups g ON t.groupname = g.name
@@ -92,7 +92,7 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	 predb.nukereason = IF(t.nuked > 0, t.nukereason, predb.nukereason),
 	 predb.category = IF(predb.category is null, t.category, predb.category),
 	 predb.requestid = IF(predb.requestid = 0, t.requestid, predb.requestid),
-	 predb.groupid = IF(g.id IS NOT NULL, g.id, predb.groupid)');
+	 predb.group_id = IF(g.id IS NOT NULL, g.id, predb.group_id)');
 
 	// Drop tmp_pre table
 	$db->queryExec('DROP TABLE IF EXISTS tmp_pre');

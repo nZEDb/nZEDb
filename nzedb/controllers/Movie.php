@@ -281,7 +281,7 @@ class Movie
 				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
 				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
 				m.*, groups.name AS group_name, rn.id as nfoid FROM releases r
-				LEFT OUTER JOIN groups ON groups.id = r.groupid
+				LEFT OUTER JOIN groups ON groups.id = r.group_id
 				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
 				INNER JOIN movieinfo m ON m.imdbid = r.imdbid
 				WHERE r.nzbstatus = 1 AND r.imdbid != '0000000'
@@ -319,7 +319,7 @@ class Movie
 				m.*, groups.name AS group_name,
 				rn.id as nfoid
 				FROM releases r
-				LEFT OUTER JOIN groups ON groups.id = r.groupid
+				LEFT OUTER JOIN groups ON groups.id = r.group_id
 				INNER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
 				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 				WHERE r.nzbstatus = 1

@@ -133,7 +133,7 @@ CREATE TABLE "collections" (
   "date" timestamp without time zone,
   "xref" character varying(255) DEFAULT ''::character varying NOT NULL,
   "totalfiles" bigint DEFAULT 0 NOT NULL,
-  "groupid" bigint DEFAULT 0 NOT NULL,
+  "group_id" bigint DEFAULT 0 NOT NULL,
   "collectionhash" character varying(255) DEFAULT '0'::character varying NOT NULL,
   "dateadded" timestamp without time zone,
   "filecheck" smallint DEFAULT 0 NOT NULL,

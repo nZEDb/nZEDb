@@ -56,7 +56,7 @@ if ($bFound === true) {
 		if ($dupe === false || ($dupe !== false && $dupe['requestid'] != $requestID)) {
 			$preid = $db->queryInsert(
 				sprintf("
-				INSERT INTO predb (title, source, requestid, groupid)
+				INSERT INTO predb (title, source, requestid, group_id)
 				VALUES (%s, %s, %d, %d)",
 					$db->escapeString($title),
 					$db->escapeString('requestWEB'),
@@ -109,7 +109,7 @@ function localLookup($requestID, $groupName, $oldname)
 	$db = new DB();
 	$groups = new Groups();
 	$groupid = $groups->getIDByName($groupName);
-	$run = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
+	$run = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND group_id = %d", $requestID, $groupid));
 	if (isset($run['title']) && preg_match('/s\d+/i', $run['title']) && !preg_match('/s\d+e\d+/i', $run['title'])) {
 		return false;
 	}
@@ -127,7 +127,7 @@ function localLookup($requestID, $groupName, $oldname)
 	} else if ($groupName == 'alt.binaries.etc') {
 		$groupid = $groups->getIDByName('alt.binaries.teevee');
 	}
-	$run1 = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND groupid = %d", $requestID, $groupid));
+	$run1 = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND group_id = %d", $requestID, $groupid));
 	if (isset($run1['title'])) {
 		return array('title' => $run['title'], 'id' => $run['id']);
 	}

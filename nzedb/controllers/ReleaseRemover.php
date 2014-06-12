@@ -819,7 +819,7 @@ class ReleaseRemover
 						$groupIDs = (substr($string, 0, -1));
 					}
 
-					$groupID = ' AND r.groupid in (' . $groupIDs . ') ';
+					$groupID = ' AND r.group_id in (' . $groupIDs . ') ';
 				}
 				$this->method = 'Blacklist ' . $regex['id'];
 
@@ -904,7 +904,7 @@ class ReleaseRemover
 						$groupIDs = (substr($string, 0, -1));
 					}
 
-					$groupID = ' AND r.groupid in (' . $groupIDs . ') ';
+					$groupID = ' AND r.group_id in (' . $groupIDs . ') ';
 				}
 
 				$this->method = 'Blacklist ' . $regex['id'];
@@ -1046,14 +1046,14 @@ class ReleaseRemover
 								$this->error = 'This group was not found in your database: ' . $args[2] . PHP_EOL;
 								break;
 							}
-							return ' AND groupid = ' . $group['id'];
+							return ' AND group_id = ' . $group['id'];
 						case 'like':
 							$groups = $this->db->query('SELECT id FROM groups WHERE name ' . $this->formatLike($args[2], 'name'));
 							if (count($groups) === 0) {
 								$this->error = 'No groups were found with this pattern in your database: ' . $args[2] . PHP_EOL;
 								break;
 							}
-							$gQuery = ' AND groupid IN (';
+							$gQuery = ' AND group_id IN (';
 							foreach ($groups as $group) {
 								$gQuery .= $group['id'] . ',';
 							}

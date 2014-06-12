@@ -12,8 +12,8 @@ if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "misc" || preg_match(
 		. "but will not update the database.\n\n"
 		. "php $argv[0] all                     ...: To process all releases.\n"
 		. "php $argv[0] misc                    ...: To process all releases in misc categories.\n"
-		. "php $argv[0] 155                     ...: To process all releases in groupid 155.\n"
-		. "php $argv[0] '(155, 140)'            ...: To process all releases in groupids 155 and 140.\n"
+		. "php $argv[0] 155                     ...: To process all releases in group_id 155.\n"
+		. "php $argv[0] '(155, 140)'            ...: To process all releases in group_ids 155 and 140.\n"
 	));
 }
 
@@ -25,9 +25,9 @@ function reCategorize($argv)
 	$where = '';
 	$update = true;
 	if (isset($argv[1]) && is_numeric($argv[1])) {
-		$where = ' AND groupid = ' . $argv[1];
+		$where = ' AND group_id = ' . $argv[1];
 	} else if (isset($argv[1]) && preg_match('/\([\d, ]+\)/', $argv[1])) {
-		$where = ' AND groupid IN ' . $argv[1];
+		$where = ' AND group_id IN ' . $argv[1];
 	} else if (isset($argv[1]) && $argv[1] === 'misc') {
 		$where = ' AND categoryid IN (1090, 2020, 3050, 4040, 5050, 6050, 7010, 8050)';
 	}
@@ -67,12 +67,12 @@ function categorizeRelease($update = true, $where, $echooutput = false)
 	$consoletools = new consoleTools();
 	$relcount = $chgcount = 0;
 	$c = new ColorCLI();
-	echo $c->primary("SELECT id, searchname, groupid, categoryid FROM releases " . $where);
-	$resrel = $db->queryDirect("SELECT id, searchname, groupid, categoryid FROM releases " . $where);
+	echo $c->primary("SELECT id, searchname, group_id, categoryid FROM releases " . $where);
+	$resrel = $db->queryDirect("SELECT id, searchname, group_id, categoryid FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
 		foreach ($resrel as $rowrel) {
-			$catId = $cat->determineCategory($rowrel['searchname'], $rowrel['groupid']);
+			$catId = $cat->determineCategory($rowrel['searchname'], $rowrel['group_id']);
 			if ($rowrel['categoryid'] != $catId) {
 				if ($update === true) {
 					$db->queryExec(

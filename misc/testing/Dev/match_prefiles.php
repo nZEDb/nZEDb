@@ -61,11 +61,11 @@ function preFileName($argv)
 	}
 
 
-	echo $c->headerOver(sprintf("SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.groupid, r.categoryid, %s AS filename " .
+	echo $c->headerOver(sprintf("SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid, %s AS filename " .
 					"FROM releases r INNER JOIN releasefiles rf ON r.id = rf.releaseid " .
 					"WHERE r.preid = 0 %s %s %s %s " .
 					"GROUP BY r.id %s %s", $rfname, $qrycat, $noslash, $regfilter, $renamed, $orderby, $limit)) . "\n";
-	$query = $db->queryDirect(sprintf("SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.groupid, r.categoryid, %s AS filename
+	$query = $db->queryDirect(sprintf("SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid, %s AS filename
 						FROM releases r INNER JOIN releasefiles rf ON r.id = rf.releaseid
 						WHERE r.preid = 0 %s %s %s %s
 						GROUP BY r.id %s %s", $rfname, $qrycat, $noslash, $regfilter, $renamed, $orderby, $limit));

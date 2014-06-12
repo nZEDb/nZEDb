@@ -95,7 +95,7 @@ class NameFixer
 			echo $this->c->primary(number_format($total) . " releases to process.");
 			sleep(2);
 			foreach ($relres as $rel) {
-				$relrow = $db->queryOneRow("SELECT nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.name, rel.searchname, {$uc} AS textstring, "
+				$relrow = $db->queryOneRow("SELECT nfo.releaseid AS nfoid, rel.group_id, rel.categoryid, rel.name, rel.searchname, {$uc} AS textstring, "
 					. "rel.id AS releaseid FROM releases rel "
 					. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
 					. "WHERE rel.id = " . $rel['releaseid']
@@ -149,14 +149,14 @@ class NameFixer
 		$type = "Filenames, ";
 		$preid = false;
 		if ($cats === 3) {
-			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
+			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.group_id, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
 				. "WHERE nzbstatus = 1 AND preid = 0";
 			$cats = 2;
 			$preid = true;
 		} else {
-			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
+			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.group_id, relfiles.releaseid AS fileid, "
 				. "rel.id AS releaseid FROM releases rel "
 				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
 				. "WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_files = 0";
@@ -231,10 +231,10 @@ class NameFixer
 
 		$db = $this->db;
 		if ($cats === 3) {
-			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE nzbstatus = 1 AND preid = 0";
+			$query = "SELECT rel.id AS releaseid, rel.guid, rel.group_id FROM releases rel WHERE nzbstatus = 1 AND preid = 0";
 			$cats = 2;
 		} else {
-			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_par2 = 0";
+			$query = "SELECT rel.id AS releaseid, rel.guid, rel.group_id FROM releases rel WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_par2 = 0";
 		}
 
 		//24 hours, other cats
@@ -263,7 +263,7 @@ class NameFixer
 			sleep(2);
 			$nzbcontents = new NZBContents(array('echo' => $this->echooutput, 'nntp' => $nntp, 'nfo' => new Nfo(), 'db' => $this->db, 'pp' => new PostProcess(true)));
 			foreach ($relres as $relrow) {
-				if (($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], $namestatus, $show)) === true) {
+				if (($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['group_id'], $namestatus, $show)) === true) {
 					$this->fixed++;
 				}
 				$this->checked++;
@@ -305,7 +305,7 @@ class NameFixer
 				$this->matched = true;
 				$this->relid = $release["releaseid"];
 
-				$determinedcat = $this->category->determineCategory($newname, $release["groupid"]);
+				$determinedcat = $this->category->determineCategory($newname, $release["group_id"]);
 
 				if ($type === "PAR2, ") {
 					$newname = ucwords($newname);
@@ -322,7 +322,7 @@ class NameFixer
 
 				if ($this->echooutput === true && $show === 1) {
 					$groups = new Groups();
-					$groupname = $groups->getByNameByID($release["groupid"]);
+					$groupname = $groups->getByNameByID($release["group_id"]);
 					$oldcatname = $this->category->getNameByID($release["categoryid"]);
 					$newcatname = $this->category->getNameByID($determinedcat);
 
@@ -419,11 +419,11 @@ class NameFixer
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
 		if ($total > 0 && $total <= 15) {
 			foreach ($res as $row) {
-				$release = $db->queryOneRow(sprintf("SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND id = %d", $row['releaseid']));
+				$release = $db->queryOneRow(sprintf("SELECT id AS releaseid, name, searchname, group_id, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND id = %d", $row['releaseid']));
 				if ($release !== false) {
 					$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
 					if ($pre['title'] !== $release['searchname']) {
-						$determinedcat = $this->category->determineCategory($pre['title'], $release['groupid']);
+						$determinedcat = $this->category->determineCategory($pre['title'], $release['group_id']);
 
 						if ($echo == 1) {
 							$this->matched = true;
@@ -481,7 +481,7 @@ class NameFixer
 					$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
 				}
 				if ($pre['title'] !== $release['searchname']) {
-					$determinedcat = $this->category->determineCategory($pre['title'], $release['groupid']);
+					$determinedcat = $this->category->determineCategory($pre['title'], $release['group_id']);
 
 					if ($echo == 1) {
 						$this->matched = true;
@@ -536,7 +536,7 @@ class NameFixer
 			foreach ($res as $row) {
 				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $row['preid'], $release['releaseid']));
 				if ($row["title"] !== $release["searchname"]) {
-					$determinedcat = $this->category->determineCategory($row["title"], $release["groupid"]);
+					$determinedcat = $this->category->determineCategory($row["title"], $release["group_id"]);
 
 					if ($echo == 1) {
 						$this->matched = true;

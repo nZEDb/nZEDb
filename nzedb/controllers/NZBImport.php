@@ -284,12 +284,12 @@ class NZBImport
 			// Make a fake message array to use to check the blacklist.
 			$msg = array("Subject" => (string) $file->attributes()->subject, "From" => (string) $file->attributes()->poster, "Message-ID" => "");
 
-			// Get the group names, groupID, check if it's blacklisted.
+			// Get the group names, group_id, check if it's blacklisted.
 			$groupArr = array();
 			foreach ($file->groups->group as $group) {
 				$group = (string) $group;
 
-				// If groupID is -1 try to get a groupID.
+				// If group_id is -1 try to get a group_id.
 				if ($groupID === -1) {
 					if (array_key_exists($group, $this->allGroups)) {
 						$groupID = $this->allGroups[$group];
@@ -336,7 +336,7 @@ class NZBImport
 				'useFName'   => $useNzbName,
 				'postDate'   => (empty($postDate) ? date("Y-m-d H:i:s") : $postDate),
 				'from'       => (empty($posterName) ? '' : $posterName),
-				'groupID'    => $groupID,
+				'group_id'    => $groupID,
 				'groupName'  => $groupName,
 				'totalFiles' => $totalFiles,
 				'totalSize'  => $totalSize
@@ -393,19 +393,19 @@ class NZBImport
 			$relID = $this->db->queryInsert(
 				sprintf(
 					"INSERT INTO releases
-						(name, searchname, totalpart, groupid, adddate, guid, rageid, postdate, fromname,
+						(name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname,
 						size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, isrenamed, iscategorized)
 					 VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, %d, 1)",
 					$this->db->escapeString($subject),
 					$this->db->escapeString($cleanName),
 					$nzbDetails['totalFiles'],
-					$nzbDetails['groupID'],
+					$nzbDetails['group_id'],
 					$this->db->escapeString($this->relGuid),
 					$this->db->escapeString($nzbDetails['postDate']),
 					$this->db->escapeString($nzbDetails['from']),
 					$this->db->escapeString($nzbDetails['totalSize']),
 					($this->site->checkpasswordedrar == "1" ? -1 : 0),
-					$this->category->determineCategory($cleanName, $nzbDetails['groupID']),
+					$this->category->determineCategory($cleanName, $nzbDetails['group_id']),
 					$renamed
 				)
 			);
