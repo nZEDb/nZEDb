@@ -1,5 +1,6 @@
 <?php
 require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
+require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 Class ProcessAdditional
 {
 	/**
@@ -71,8 +72,17 @@ Class ProcessAdditional
 		$this->_categorize = new Categorize();
 		$this->_releaseExtra = new ReleaseExtra();
 		$this->_releaseImage = new ReleaseImage();
+		$this->_par2Info = new Par2Info();
 
-		$this->_unrarPath = (empty($this->_siteSettings->unrarpath) ? false : $this->_siteSettings->unrarpath);
+		// Pass the binary extractors to ArchiveInfo.
+		$clients = array();
+		if (!empty($this->_siteSettings->unrarpath)) {
+			$clients += array(ArchiveInfo::TYPE_RAR => $this->_siteSettings->unrarpath);
+		}
+		if (!empty($this->_siteSettings->zippath)) {
+			$clients += array(ArchiveInfo::TYPE_ZIP => $this->_siteSettings->zippath);
+		}
+		$this->_archiveInfo->setExternalClients($clients);
 
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
@@ -99,6 +109,8 @@ Class ProcessAdditional
 		$this->_alternateNNTP = ($this->_siteSettings->alternate_nntp == 1 ? true : false);
 
 		$this->_ffMPEGDuration = (!empty($this->_siteSettings->ffmpeg_duration)) ? (int)$this->_siteSettings->ffmpeg_duration : 5;
+
+		$this->_addPAR2Files = ($this->_siteSettings->addpar2 === '0') ? false : true;
 
 		$this->_processSample      = empty($this->_siteSettings->ffmpegpath)         ? false : true;
 		$this->_processVideo       = ($this->_siteSettings->processvideos == 0)      ? false : true;
@@ -323,6 +335,9 @@ Class ProcessAdditional
 				@unlink($v);
 			}
 			@rmdir($this->tmpPath);
+		}
+		if ($this->_echoCLI) {
+			echo PHP_EOL;
 		}
 	}
 
@@ -590,9 +605,9 @@ Class ProcessAdditional
 	}
 
 	/**
-	 * Check if the data is a ZIP / 7ZIP / RAR file, pass it to the appropriate function to extract files.
+	 * Check if the data is a ZIP / RAR file, pass it to the appropriate function to extract files.
 	 *
-	 * @param $compressedData
+	 * @param string $compressedData
 	 *
 	 * @return bool
 	 */
@@ -619,41 +634,35 @@ Class ProcessAdditional
 			return false;
 		}
 
-		// Check if it's a ZIP or RAR.
-		if ($dataSummary['main_type'] === ArchiveInfo::TYPE_RAR) {
-			return $this->_processRarFileList($compressedData);
-		} else if ($dataSummary['main_type'] === ArchiveInfo::TYPE_SZIP || $dataSummary['main_type'] === ArchiveInfo::TYPE_ZIP) {
-// TODO
-			return false;
-		}
-
-		return false;
+		return $this->_processCompressedFileList($dataSummary['main_type']);
 	}
 
 	/**
-	 * Get a list of all files in the RAR, extract them and add the file info to the DB.
+	 * Get a list of all files in the compressed file, extract them and add the file info to the DB.
 	 *
-	 * @param string $rarData
+	 * @param int    $archiveType ArchiveInfo archive type constant.
 	 *
 	 * @return bool
 	 */
-	protected function _processRarFileList(&$rarData)
+	protected function _processCompressedFileList($archiveType)
 	{
-		// Get a list of files inside the RAR.
+		// Get a list of files inside the Compressed file.
 		$files = $this->_archiveInfo->getArchiveFileList();
 		if (!is_array($files) || count($files) === 0) {
 			return false;
 		}
 
 		if ($this->_echoCLI) {
-			echo '(r)';
-		}
-
-		$extracted = false;
-		// If the files inside the RAR are compressed, use UnRar to decompress them.
-		if ($this->_releaseHasPassword === false && isset($files[0]['compressed']) && $files[0]['compressed'] !== 0) {
-			$this->_UnRarData($rarData);
-			$extracted = true;
+			switch ($archiveType) {
+				case ArchiveInfo::TYPE_RAR:
+					echo '(r)';
+					break;
+				case ArchiveInfo::TYPE_ZIP:
+					echo '(z)';
+					break;
+				default:
+					return false;
+			}
 		}
 
 		// Loop through the files.
@@ -672,11 +681,15 @@ Class ProcessAdditional
 				}
 
 				// Extract files from the rar.
-				if ($extracted === false) {
+				if (isset($file['compressed']) && $file['compressed'] == 0) {
 					@file_put_contents(
-						($this->tmpPath . mt_rand(0, 99999) . $file['name']),
+						($this->tmpPath . mt_rand(0, 99999) . '_' . $file['name']),
 						$this->_archiveInfo->getFileData($file['name'], $file['source'])
 					);
+				}
+				// If the files are compressed, use a binary extractor.
+				else {
+					$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(1,999999) . '_' . $file['name']);
 				}
 			}
 
@@ -732,60 +745,30 @@ Class ProcessAdditional
 	}
 
 	/**
-	 * Create a RAR file from data and extract it using UnRar.
-	 *
-	 * @param string $rarData
-	 */
-	protected function _UnRarData(&$rarData)
-	{
-		// If the user has not set the unrar path, return.
-		if ($this->_unrarPath === false) {
-			return;
-		}
-
-		// Location to store the temp rar file.
-		$rarFile = ($this->tmpPath . 'rarfile' . mt_rand(0, 99999) . '.rar');
-
-		// Store the temp data to the location.
-		if (@file_put_contents($rarFile, $rarData)) {
-			// Attempt to extract the file.
-			nzedb\utility\runCmd(
-				'"' .
-				$this->_unrarPath .
-				'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
-				$rarFile .
-				'" "' .
-				$this->tmpPath .
-				'"'
-			);
-		}
-		@unlink($rarFile);
-	}
-
-	/**
 	 * Go through all the extracted files in the temp folder and process them.
 	 */
 	protected function _processExtractedFiles()
 	{
 		$nestedLevels = 0;
-		$foundCompressedFile = false;
 
 		// Go through all the files in the temp folder, look for compressed files, extract them and the nested ones.
 		while ($nestedLevels < $this->_maxNestedLevels) {
 
+			$foundCompressedFile = false;
+
 			// Get all the compressed files in the temp folder.
-			$files = $this->_getTempDirectoryContents('/\.([rz]\d{2,}|rar|zip|7z)/i');
+			$files = $this->_getTempDirectoryContents('/.*\.([rz]\d{2,}|rar|zip)/i');
 
 			foreach ($files as $file) {
 
 				// Check if the file exists.
-				if (is_file($this->tmpPath . $file)) {
-					$rarData = @file_get_contents($this->tmpPath . $file);
+				if (is_file($file[0])) {
+					$rarData = @file_get_contents($file[0]);
 					if ($rarData !== false) {
 						$this->_processCompressedData($rarData);
 						$foundCompressedFile = true;
 					}
-					@unlink($this->tmpPath . $file);
+					@unlink($file[0]);
 				}
 			}
 
@@ -799,7 +782,6 @@ Class ProcessAdditional
 
 		// Get all the remaining files in the temp dir.
 		$files = @scandir($this->tmpPath);
-
 		if ($files !== false) {
 			foreach ($files as $file) {
 
@@ -807,7 +789,7 @@ Class ProcessAdditional
 
 					// Process PAR2 files.
 					if (preg_match('/\.par2/', $file)) {
-// TODO.
+						$this->_siftPAR2Info($file);
 					}
 
 					// Process audio files.
@@ -1629,6 +1611,100 @@ Class ProcessAdditional
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Get file info from inside PAR2, store it in DB, attempt to get a release name.
+	 *
+	 * @param string $fileLocation
+	 */
+	protected function _siftPAR2Info($fileLocation)
+	{
+		$this->_par2Info->open($fileLocation);
+
+		if ($this->_par2Info->error) {
+			return;
+		}
+
+		$releaseInfo = $this->_db->queryOneRow(
+			sprintf('
+				SELECT UNIX_TIMESTAMP(postdate) AS postdate
+				FROM releases
+				WHERE id = %d',
+				$this->_release['id']
+			)
+		);
+
+		if ($releaseInfo === false) {
+			return;
+		}
+
+		// Only get a new name if the category is OTHER.
+		$foundName = true;
+		if (in_array(((int)$this->_release['categoryid']),
+			array(
+				Category::CAT_BOOKS_OTHER,
+				Category::CAT_GAME_OTHER,
+				Category::CAT_MOVIE_OTHER,
+				Category::CAT_MUSIC_OTHER,
+				Category::CAT_PC_PHONE_OTHER,
+				Category::CAT_TV_OTHER,
+				Category::CAT_OTHER_HASHED,
+				Category::CAT_XXX_OTHER,
+				Category::CAT_MISC
+			))
+		) {
+			$foundName = false;
+		}
+
+		$filesAdded = 0;
+
+		$files = $this->_par2Info->getFileList();
+		foreach ($files as $file) {
+
+			if (!isset($file['name'])) {
+				continue;
+			}
+
+			// If we found a name and added 10 files, stop.
+			if ($foundName === true && $filesAdded > 10) {
+				break;
+			}
+
+			// Add to release files.
+			if ($this->_addPAR2Files) {
+				if ($filesAdded < 11 &&
+					$this->_db->queryOneRow(
+						sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
+						$this->_release['id'], $this->_db->escapeString($file['name']))) === false
+				) {
+
+					// Try to add the files to the DB.
+					if ($this->_releaseFiles->add($this->_release['id'], $file['name'], $file['size'], $releaseInfo['postdate'], 0)) {
+						$filesAdded++;
+					}
+				}
+			} else {
+				$filesAdded++;
+			}
+
+			// Try to get a new name.
+			if ($foundName === false) {
+				$this->_release['textstring'] = $file['name'];
+				$this->_release['releaseid'] = $this->_release['id'];
+				if ($this->_nameFixer->checkName($this->_release, ($this->_echoCLI ? 1 : 0), 'PAR2, ', 1, 1) === true) {
+					$foundName = true;
+				}
+			}
+		}
+		// Update the file count with the new file count + old file count.
+		$this->_db->queryExec(
+			sprintf(
+				'UPDATE releases SET rarinnerfilecount = rarinnerfilecount + %d WHERE id = %d',
+				$filesAdded,
+				$this->_release['id']
+			)
+		);
 	}
 
 	/**
