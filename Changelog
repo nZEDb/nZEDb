@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-06-13 kevin
+	* Upd: Update the u4e script, untested.
 	* Remake ProcessAdditional. Clean up NameFixer class a bit.
 2014-06-13 ruhllatio
 	* Add: Non-operational rough rename script
