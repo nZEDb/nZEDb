@@ -100,6 +100,8 @@ if ($releases !== false) {
 			$tmpPath . '"'
 		);
 
+		@unlink($tmpPath . 'u4e_l2r.rar');
+
 		$files = scandir($tmpPath);
 		if ($files === false) {
 			echo 'ERROR: Could not get list of files in temp folder!' . PHP_EOL;
@@ -120,22 +122,31 @@ if ($releases !== false) {
 		}
 
 		$renameFile = @file_get_contents($tmpPath . $fileName);
+		@unlink($tmpPath . $fileName);
 		if ($renameFile === false) {
 			echo 'ERROR: Unable to get contents of Linux_2rename.sh' . PHP_EOL;
 			continue;
 		}
 
-		$lines = explode("\n", $renameFile);
-		if (!isset($lines[1])) {
-			echo 'ERROR: Linux_2rename.sh is empty!' . PHP_EOL;
+		$newName = '';
+		$handle = @fopen($tmpPath . $fileName, 'r');
+		if ($handle) {
+			while (($buffer = fgets($handle, 16384)) !== false) {
+				if (stripos('mkdir', $buffer) !== false) {
+					$newName = trim(str_replace('mkdir', '', $buffer));
+					break;
+				}
+			}
+			fclose($handle);
 		}
 
-		// Delete the files.
-		@unlink($tmpPath . 'u4e_l2r.rar');
-		@unlink($tmpPath . 'Linux_2rename.sh');
+		if ($newName === '') {
+			echo 'ERROR: New name is empty!' . PHP_EOL;
+			continue;
+		}
 
 		$newName = str_replace('mkdir ', '', $arr[1]);
-		$determinedCat = $categorize->determineCategory($groupName, $newName);
+		$determinedCat = $categorize->determineCategory($release['groupname'], $newName);
 
 		if (isset($newName)) {
 			echo
@@ -145,7 +156,7 @@ if ($releases !== false) {
 				$c->headerOver("Use name:  ") . $c->primary($release['name']) .
 				$c->headerOver("New cat:   ") . $c->primary($categorize->getNameByid($determinedCat)) .
 				$c->headerOver("Old cat:   ") . $c->primary($categorize->getNameByid($release['categoryid'])) .
-				$c->headerOver("Group:     ") . $c->primary($groupName) .
+				$c->headerOver("Group:     ") . $c->primary($release['groupname']) .
 				$c->headerOver("Method:    ") . $c->primary('Files, u4e') .
 				$c->headerOver("ReleaseID: ") . $c->primary($release['id']);
 
