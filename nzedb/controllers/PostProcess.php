@@ -273,26 +273,32 @@ class PostProcess
 
 		$query = $this->db->queryOneRow(
 			sprintf('
-				SELECT id, group_id, categoryid, name, searchname, UNIX_TIMESTAMP(postdate) AS postdate, id as releaseid
-				FROM releases WHERE isrenamed = 0 AND id = ',
+				SELECT id, group_id, categoryid, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releaseid
+				FROM releases WHERE isrenamed = 0 AND id = %d',
 				$relID
 			)
 		);
 
+		if ($query === false) {
+			return false;
+		}
+
 		// Only get a new name if the category is OTHER.
 		$foundName = true;
-		if ($query === false || !in_array(((int)$this->$query['categoryid']),
-			array(
-				Category::CAT_BOOKS_OTHER,
-				Category::CAT_GAME_OTHER,
-				Category::CAT_MOVIE_OTHER,
-				Category::CAT_MUSIC_OTHER,
-				Category::CAT_PC_PHONE_OTHER,
-				Category::CAT_TV_OTHER,
-				Category::CAT_OTHER_HASHED,
-				Category::CAT_XXX_OTHER,
-				Category::CAT_MISC
-			))
+		if (!in_array(
+				(int)$query['categoryid'],
+				array(
+					Category::CAT_BOOKS_OTHER,
+					Category::CAT_GAME_OTHER,
+					Category::CAT_MOVIE_OTHER,
+					Category::CAT_MUSIC_OTHER,
+					Category::CAT_PC_PHONE_OTHER,
+					Category::CAT_TV_OTHER,
+					Category::CAT_OTHER_HASHED,
+					Category::CAT_XXX_OTHER,
+					Category::CAT_MISC
+				)
+			)
 		) {
 			$foundName = false;
 		}
@@ -336,7 +342,7 @@ class PostProcess
 					) {
 
 						// Try to add the files to the DB.
-						if ($this->releaseFiles->add($relID, $file['name'], $file['size'], $query['postdate'], 0)) {
+						if ($this->releaseFiles->add($relID, $file['name'], $file['size'], $query['post_date'], 0)) {
 							$filesAdded++;
 						}
 					}
