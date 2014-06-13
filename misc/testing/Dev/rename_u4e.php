@@ -131,7 +131,7 @@ if ($releases !== false) {
 			continue;
 		}
 
-		$determinedCat = $categorize->determineCategory($release['groupname'], $newName);
+		$determinedCat = $categorize->determineCategory($newName, $release['group_id']);
 
 		if (isset($newName)) {
 			echo
