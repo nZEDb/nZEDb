@@ -106,8 +106,14 @@ if ($releases !== false) {
 			}
 		}
 
-		if ($fileName === '' || !is_file($tmpPath . $fileName)) {
-			echo 'ERROR: Could not get Linux_2rename.sh!' . PHP_EOL;
+		if ($fileName === '') {
+			echo 'ERROR: Could not find Linux_2rename.sh in the temp folder!' . PHP_EOL;
+			continue;
+		}
+
+		if (!is_file($tmpPath . $fileName)) {
+			echo 'ERROR: The Linux_2rename.sh does not exist!' . PHP_EOL;
+			@unlink($tmpPath . $fileName);
 			continue;
 		}
 
