@@ -279,10 +279,13 @@ class PostProcess
 			)
 		);
 
+		if ($query === false) {
+			return false;
+		}
+
 		// Only get a new name if the category is OTHER.
 		$foundName = true;
-		if ($query === false ||
-			!in_array(
+		if (!in_array(
 				(int)$query['categoryid'],
 				array(
 					Category::CAT_BOOKS_OTHER,
