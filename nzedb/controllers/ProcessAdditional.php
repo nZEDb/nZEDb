@@ -795,7 +795,7 @@ Class ProcessAdditional
 
 					// Process NFO files.
 					if ($this->_releaseHasNoNFO === true && preg_match('/(\.(nfo|inf|ofn)|info\.txt)($|[^a-z0-9])/i', $file)) {
-						$this->_processNfoFile($this->tmpPath .$file);
+						$this->_processNfoFile($this->tmpPath . $file);
 					}
 
 					// Process audio files.

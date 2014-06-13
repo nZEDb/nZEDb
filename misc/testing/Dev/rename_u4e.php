@@ -83,7 +83,7 @@ if ($releases !== false) {
 		}
 
 		// Extract the RAR file.
-		$unRarOutput = nzedb\utility\runCmd(
+		nzedb\utility\runCmd(
 			'"' .
 			$site->unrarpath .
 			'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
