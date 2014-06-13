@@ -55,11 +55,22 @@ if ($releases !== false) {
 			continue;
 		}
 
+		// Try to get the first RAR message-id.
 		$messageID = '';
 		foreach($nzbXML->file as $file) {
-			if (preg_match('/part\d*1\.rar/i', (string)$file->attributes()->subject)) {
+			if (preg_match('/part0*1\.rar/i', (string)$file->attributes()->subject)) {
 				$messageID = (string)$file->segments->segment;
 				break;
+			}
+		}
+
+		// If we didn't find a messageID, try again with a less strict regex.
+		if ($messageID === '') {
+			foreach($nzbXML->file as $file) {
+				if (preg_match('/\.r(ar|0[01])/i', (string)$file->attributes()->subject)) {
+					$messageID = (string)$file->segments->segment;
+					break;
+				}
 			}
 		}
 
