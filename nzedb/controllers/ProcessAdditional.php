@@ -759,6 +759,7 @@ Class ProcessAdditional
 				'"'
 			);
 		}
+		@unlink($rarFile);
 	}
 
 	/**
