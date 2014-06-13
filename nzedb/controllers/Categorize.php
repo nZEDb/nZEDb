@@ -53,7 +53,7 @@ class Categorize extends Category
 	 * Returns Category::CAT_MISC if no category is appropriate.
 	 *
 	 * @param string     $releaseName The name to parse.
-	 * @param string|int $groupID     The group_id.
+	 * @param string|int $groupID     The groupID.
 	 *
 	 * @return int The categoryID.
 	 */
@@ -184,6 +184,11 @@ class Categorize extends Category
 				return true;
 			}
 
+			if ($group === 'alt.binaries.dreamcast') {
+				$this->tmpCat = Category::CAT_GAME_OTHER;
+				return true;
+			}
+
 			if (preg_match('/alt\.binaries\.e\-?books?((\.|\-)(technical|textbooks))/', $group)) {
 				if ($this->categorizeForeign && $this->isBookForeign()) {
 					return true;
@@ -200,8 +205,28 @@ class Categorize extends Category
 				return true;
 			}
 
+			if ($group === 'alt.binaries.e-book.rpg') {
+				if ($this->is0day()) {
+					return true;
+				}
+				if ($this->isPCGame()) {
+					return true;
+				}
+				if ($this->isConsole()) {
+					return true;
+				}
+				if ($this->isBook()) {
+					return true;
+				}
+				$this->tmpCat = Category::CAT_BOOKS_OTHER;
+				return true;
+			}
+
 			if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $group)) {
 				if ($this->is0day()) {
+					return true;
+				}
+				if ($this->isPCGame()) {
 					return true;
 				}
 				if ($this->isConsole()) {
@@ -211,6 +236,10 @@ class Categorize extends Category
 					return true;
 				}
 				if ($this->categorizeForeign && $this->isBookForeign()) {
+					return true;
+				}
+				if (preg_match('/[a-z0-9 \',]+ - \[? ?[a-z0-9 \']+ ?\]? - [a-z0-9 \']+/i', $this->releaseName)) {
+					$this->tmpCat = Category::CAT_BOOKS_EBOOK;
 					return true;
 				}
 				$this->tmpCat = Category::CAT_MISC;
@@ -441,9 +470,13 @@ class Categorize extends Category
 				return true;
 			}
 
-
 			if ($group === 'alt.binaries.sony.psp') {
 				$this->tmpCat = Category::CAT_GAME_PSP;
+				return true;
+			}
+
+			if ($group === 'alt.binaries.sony.psvita') {
+				$this->tmpCat = Category::CAT_GAME_PSVITA;
 				return true;
 			}
 
