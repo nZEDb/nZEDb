@@ -73,6 +73,7 @@ Class ProcessAdditional
 		$this->_releaseExtra = new ReleaseExtra();
 		$this->_releaseImage = new ReleaseImage();
 		$this->_par2Info = new Par2Info();
+		$this->_nfo = new Nfo($this->_echoCLI);
 
 		// Pass the binary extractors to ArchiveInfo.
 		$clients = array();
@@ -790,6 +791,11 @@ Class ProcessAdditional
 					// Process PAR2 files.
 					if (preg_match('/\.par2/', $file)) {
 						$this->_siftPAR2Info($file);
+					}
+
+					// Process NFO files.
+					if ($this->_releaseHasNoNFO === true && preg_match('/(\.(nfo|inf|ofn)|info\.txt)($|[^a-z0-9])/i', $file)) {
+						$this->_processNfoFile($this->tmpPath .$file);
 					}
 
 					// Process audio files.
@@ -1705,6 +1711,21 @@ Class ProcessAdditional
 				$this->_release['id']
 			)
 		);
+	}
+
+	/**
+	 * Verify a file is a NFO and add it to the database.
+	 */
+	protected function _processNfoFile($fileLocation)
+	{
+		$data = @file_get_contents($fileLocation);
+		if ($data !== false) {
+			if ($this->_nfo->isNFO($this->_release['guid'], $data) === true) {
+				if ($this->_nfo->addAlternateNfo($data, $this->_release, $this->_nntp) === true) {
+					$this->_releaseHasNoNFO = false;
+				}
+			}
+		}
 	}
 
 	/**
