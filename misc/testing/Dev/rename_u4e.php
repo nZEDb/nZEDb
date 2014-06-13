@@ -3,27 +3,29 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $c = new ColorCLI();
 
-if (!isset($argv[1]) && $argv[1] !== 'makeitso') {
-	exit(
-		$c->error("\nThis script is not currently operational and should not be run. If you must play around with it, then use makeitso as the argument.\n"
-		. "If you do not understand programming or have the IQ of a quanset hut, I urge you to reconsider trying to do so.\n"
-		. "Run this script with the syntax below at your own risk.\n\n"
-		. "php $argv[0] makeitso                                     ...: To run rename on u4e.\n"
-		)
-	);
-}
-
 $site = (new Sites())->get();
 if (empty($site->tmpunrarpath)) {
-	exit ('The tmpunrarpath site setting must not be empty!');
+	exit ('The tmpunrarpath site setting must not be empty!' . PHP_EOL);
 }
 $tmpPath = $site->tmpunrarpath;
 if (substr($site->tmpunrarpath, -1) !== DS) {
 	$tmpPath .= DS;
 }
 
+$tmpPath .= 'u4e' . DS;
+
+if (!is_dir($tmpPath)) {
+	$old = umask(0777);
+	@mkdir($tmpPath, 0777, true);
+	@chmod($tmpPath, 0777);
+	@umask($old);
+	if (!is_dir($tmpPath)) {
+		exit('Unable to create temp directory:' . $tmpPath . PHP_EOL);
+	}
+}
+
 if (empty($site->unrarpath)) {
-	exit ('The site setting for the unrar path must not be empty!');
+	exit ('The site setting for the unrar path must not be empty!' . PHP_EOL);
 }
 
 $db = new nzedb\db\DB();
@@ -41,15 +43,15 @@ $categorize = new Categorize();
 
 $releases = $db->queryDirect(
 	sprintf('
-		SELECT rf.name AS filename, r.categoryid, r.name, r.guid, r.id, r.group_id, r.postdate, r.searchname AS oldname  g.name AS groupname
+		SELECT rf.name AS filename, r.categoryid, r.name, r.guid, r.id, r.group_id, r.postdate, r.searchname AS oldname, g.name AS groupname
 		FROM releasefiles rf
-		INNER JOIN releases r ON rf.releaseid = rf.id
+		INNER JOIN releases r ON rf.releaseid = r.id
 		INNER JOIN groups g ON r.group_id = g.id
 		WHERE (r.isrenamed = 0 OR r.categoryid = 7020)
 		AND r.passwordstatus = 0
-		AND rf.name LIKE %s
+		AND rf.name %s
 		ORDER BY r.postdate DESC',
-		$db->escapeString('%Linux_2rename.sh%')
+		$db->likeString('Linux_2rename.sh')
 	)
 );
 
@@ -59,17 +61,35 @@ if ($releases !== false) {
 
 	foreach($releases as $release) {
 
+		// Clear old files.
+		foreach (glob($tmpPath . '*') as $file) {
+			if (is_file($file)) {
+				@unlink($file);
+			}
+		}
+
 		// Load up the NZB as a XML file.
 		$nzbXML = $nzbContents->LoadNZB($release['guid']);
 		if ($nzbXML === false) {
 			continue;
 		}
 
+		// Try to get the first RAR message-id.
 		$messageID = '';
 		foreach($nzbXML->file as $file) {
-			if (preg_match('/\.r(ar|00)/i', (string)$file->attributes()->subject)) {
+			if (preg_match('/part0*1\.rar/i', (string)$file->attributes()->subject)) {
 				$messageID = (string)$file->segments->segment;
 				break;
+			}
+		}
+
+		// If we didn't find a messageID, try again with a less strict regex.
+		if ($messageID === '') {
+			foreach($nzbXML->file as $file) {
+				if (preg_match('/\.r(ar|0[01])/i', (string)$file->attributes()->subject)) {
+					$messageID = (string)$file->segments->segment;
+					break;
+				}
 			}
 		}
 
@@ -92,7 +112,7 @@ if ($releases !== false) {
 		}
 
 		// Extract the RAR file.
-		$unRarOutput = nzedb\utility\runCmd(
+		nzedb\utility\runCmd(
 			'"' .
 			$site->unrarpath .
 			'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
@@ -116,15 +136,14 @@ if ($releases !== false) {
 			}
 		}
 
-		if (!is_file($tmpPath . $fileName)) {
-			echo 'ERROR: Could not get Linux_2rename.sh!' . PHP_EOL;
+		if ($fileName === '') {
+			echo 'ERROR: Could not find Linux_2rename.sh in the temp folder!' . PHP_EOL;
 			continue;
 		}
 
-		$renameFile = @file_get_contents($tmpPath . $fileName);
-		@unlink($tmpPath . $fileName);
-		if ($renameFile === false) {
-			echo 'ERROR: Unable to get contents of Linux_2rename.sh' . PHP_EOL;
+		if (!is_file($tmpPath . $fileName)) {
+			echo 'ERROR: The Linux_2rename.sh does not exist!' . PHP_EOL;
+			@unlink($tmpPath . $fileName);
 			continue;
 		}
 
@@ -132,47 +151,43 @@ if ($releases !== false) {
 		$handle = @fopen($tmpPath . $fileName, 'r');
 		if ($handle) {
 			while (($buffer = fgets($handle, 16384)) !== false) {
-				if (stripos('mkdir', $buffer) !== false) {
+				if (stripos($buffer, 'mkdir') !== false) {
 					$newName = trim(str_replace('mkdir', '', $buffer));
 					break;
 				}
 			}
 			fclose($handle);
 		}
+		@unlink($tmpPath . $fileName);
 
 		if ($newName === '') {
 			echo 'ERROR: New name is empty!' . PHP_EOL;
 			continue;
 		}
 
-		$newName = str_replace('mkdir ', '', $arr[1]);
-		$determinedCat = $categorize->determineCategory($release['groupname'], $newName);
+		$determinedCat = $categorize->determineCategory($newName, $release['group_id']);
 
-		if (isset($newName)) {
-			echo
-				PHP_EOL .
-				$c->headerOver("New name:  ") . $c->primary($newName) .
-				$c->headerOver("Old name:  ") . $c->primary($release['oldname']) .
-				$c->headerOver("Use name:  ") . $c->primary($release['name']) .
-				$c->headerOver("New cat:   ") . $c->primary($categorize->getNameByid($determinedCat)) .
-				$c->headerOver("Old cat:   ") . $c->primary($categorize->getNameByid($release['categoryid'])) .
-				$c->headerOver("Group:     ") . $c->primary($release['groupname']) .
-				$c->headerOver("Method:    ") . $c->primary('Files, u4e') .
-				$c->headerOver("ReleaseID: ") . $c->primary($release['id']);
+		echo
+			PHP_EOL .
+			$c->headerOver("New name:  ") . $c->primary($newName) .
+			$c->headerOver("Old name:  ") . $c->primary($release['oldname']) .
+			$c->headerOver("Use name:  ") . $c->primary($release['name']) .
+			$c->headerOver("New cat:   ") . $c->primary($categorize->getNameByid($determinedCat)) .
+			$c->headerOver("Old cat:   ") . $c->primary($categorize->getNameByid($release['categoryid'])) .
+			$c->headerOver("Group:     ") . $c->primary($release['groupname']) .
+			$c->headerOver("Method:    ") . $c->primary('Files, u4e') .
+			$c->headerOver("ReleaseID: ") . $c->primary($release['id']);
 
-			$db->queryExec(
-				sprintf('
-					UPDATE releases
-					SET isrenamed = 1, searchname = %s, categoryid = %d
-					WHERE id = %d',
-					$db->escapeString(substr($newName, 0, 255)),
-					$determinedCat,
-					$release['id']
-				)
-			);
-		} else {
-			echo $c->error('Cannot Determine name for ' . $row['id']);
-		}
+		$db->queryExec(
+			sprintf('
+				UPDATE releases
+				SET isrenamed = 1, searchname = %s, categoryid = %d
+				WHERE id = %d',
+				$db->escapeString(substr($newName, 0, 255)),
+				$determinedCat,
+				$release['id']
+			)
+		);
 	}
 	$nntp->doQuit();
 }
