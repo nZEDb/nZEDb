@@ -794,7 +794,7 @@ Class ProcessAdditional
 					}
 
 					// Process NFO files.
-					if ($this->_releaseHasNoNFO === true && preg_match('/(\.(nfo|inf|ofn)|info\.txt)($|[^a-z0-9])/i', $file)) {
+					else if ($this->_releaseHasNoNFO === true && preg_match('/(\.(nfo|inf|ofn)|info\.txt)($|[^a-z0-9])/i', $file)) {
 						$this->_processNfoFile($this->tmpPath . $file);
 					}
 
@@ -869,15 +869,13 @@ Class ProcessAdditional
 						}
 					}
 
-					// If we got it all, break out.
-					if ($this->_foundJPGSample   === true &&
-						$this->_foundAudioSample === true &&
-						$this->_foundAudioInfo   === true &&
-						$this->_foundMediaInfo   === true &&
-						$this->_foundVideo       === true &&
-						$this->_foundSample      === true
+					// Check if it's alt.binaries.u4e file.
+					else if ($this->_releaseGroupName === 'alt.binaries.u4e' &&
+						preg_match('/linux_2rename\.sh/i', $file &&
+						$this->_release['categoryid'] == Category::CAT_OTHER_HASHED
+						)
 					) {
-						break;
+						$this->_processU4ETitle($this->tmpPath . $file);
 					}
 				}
 			}
@@ -1715,6 +1713,8 @@ Class ProcessAdditional
 
 	/**
 	 * Verify a file is a NFO and add it to the database.
+	 *
+	 * @param string $fileLocation
 	 */
 	protected function _processNfoFile($fileLocation)
 	{
@@ -1725,6 +1725,39 @@ Class ProcessAdditional
 					$this->_releaseHasNoNFO = false;
 				}
 			}
+		}
+	}
+
+	/**
+	 * Try to get a title from a Linux_2rename.sh file for alt.binaries.u4e group.
+	 * @param $fileLocation
+	 */
+	protected function _processU4ETitle($fileLocation)
+	{
+		$newName = '';
+		$handle = @fopen($fileLocation, 'r');
+		if ($handle) {
+			while (($buffer = fgets($handle, 16384)) !== false) {
+				if (stripos($buffer, 'mkdir') !== false) {
+					$newName = trim(str_replace('mkdir', '', $buffer));
+					break;
+				}
+			}
+			fclose($handle);
+		}
+		@unlink($fileLocation);
+
+		if ($newName !== '') {
+			$this->_db->queryExec(
+				sprintf('
+				UPDATE releases
+				SET isrenamed = 1, searchname = %s, categoryid = %d
+				WHERE id = %d',
+					$this->_db->escapeString(substr($newName, 0, 255)),
+					$this->_categorize->determineCategory($newName, $this->_release['group_id']),
+					$this->_release['id']
+				)
+			);
 		}
 	}
 
