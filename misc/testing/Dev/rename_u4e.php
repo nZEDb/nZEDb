@@ -3,16 +3,6 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $c = new ColorCLI();
 
-if (!isset($argv[1]) && $argv[1] !== 'makeitso') {
-	exit(
-		$c->error("\nThis script is not currently operational and should not be run. If you must play around with it, then use makeitso as the argument.\n"
-		. "If you do not understand programming or have the IQ of a quanset hut, I urge you to reconsider trying to do so.\n"
-		. "Run this script with the syntax below at your own risk.\n\n"
-		. "php $argv[0] makeitso                                     ...: To run rename on u4e.\n"
-		)
-	);
-}
-
 $site = (new Sites())->get();
 if (empty($site->tmpunrarpath)) {
 	exit ('The tmpunrarpath site setting must not be empty!');
@@ -41,17 +31,18 @@ $categorize = new Categorize();
 
 $releases = $db->queryDirect(
 	sprintf('
-		SELECT rf.name AS filename, r.categoryid, r.name, r.guid, r.id, r.group_id, r.postdate, r.searchname AS oldname  g.name AS groupname
+		SELECT rf.name AS filename, r.categoryid, r.name, r.guid, r.id, r.group_id, r.postdate, r.searchname AS oldname, g.name AS groupname
 		FROM releasefiles rf
-		INNER JOIN releases r ON rf.releaseid = rf.id
+		INNER JOIN releases r ON rf.releaseid = r.id
 		INNER JOIN groups g ON r.group_id = g.id
 		WHERE (r.isrenamed = 0 OR r.categoryid = 7020)
 		AND r.passwordstatus = 0
-		AND rf.name LIKE %s
+		AND rf.name %s
 		ORDER BY r.postdate DESC',
-		$db->escapeString('%Linux_2rename.sh%')
+		$db->likeString('Linux_2rename.sh')
 	)
 );
+
 
 if ($releases !== false) {
 
@@ -121,31 +112,25 @@ if ($releases !== false) {
 			continue;
 		}
 
-		$renameFile = @file_get_contents($tmpPath . $fileName);
-		@unlink($tmpPath . $fileName);
-		if ($renameFile === false) {
-			echo 'ERROR: Unable to get contents of Linux_2rename.sh' . PHP_EOL;
-			continue;
-		}
-
 		$newName = '';
 		$handle = @fopen($tmpPath . $fileName, 'r');
+
 		if ($handle) {
 			while (($buffer = fgets($handle, 16384)) !== false) {
-				if (stripos('mkdir', $buffer) !== false) {
+				if (stripos($buffer, 'mkdir') !== false) {
 					$newName = trim(str_replace('mkdir', '', $buffer));
 					break;
 				}
 			}
 			fclose($handle);
 		}
+		@unlink($tmpPath . $fileName);
 
 		if ($newName === '') {
 			echo 'ERROR: New name is empty!' . PHP_EOL;
 			continue;
 		}
 
-		$newName = str_replace('mkdir ', '', $arr[1]);
 		$determinedCat = $categorize->determineCategory($release['groupname'], $newName);
 
 		if (isset($newName)) {
