@@ -127,7 +127,7 @@ Class ProcessAdditional
 		$this->_mainTmpPath = $this->_siteSettings->tmpunrarpath;
 		// Check if it ends with a dir separator.
 		if (!preg_match('/[\/\\\\]$/', $this->_mainTmpPath)) {
-			$this->_mainTmpPath = $this->_mainTmpPath . DS;
+			$this->_mainTmpPath .= DS;
 		}
 		$this->tmpPath = $this->_mainTmpPath;
 
