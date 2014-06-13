@@ -33,14 +33,10 @@ $groups = $pdo->queryDirect('SELECT id FROM groups WHERE active = 1 OR backfill 
 if ($groups === false) {
 	echo "No active groups. Fix not needed.";
 } else {
-	$sql  = "ALTER TABLE :table CHANGE COLUMN groupid group_id INT (10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups'";
-	$stmt = $pdo->prepare($sql);
+	$sql  = "ALTER TABLE %s CHANGE COLUMN groupid group_id INT (10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups'";
 	foreach ($groups as $group) {
-		$collection = 'collections_' . $group['id'];
-		$partrepair = 'partrepair_' . $group['id'];
-
-		$stmt->execute([':table' => $collection]);
-		$stmt->execute([':table' => $partrepair]);
+		$pdo->directQuery(sprintf($sql, 'collections_' . $group['id']));
+		$pdo->directQuery(sprintf($sql, 'partrepair_' . $group['id']));
 	}
 }
 
