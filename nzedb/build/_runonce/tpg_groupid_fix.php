@@ -36,8 +36,8 @@ if ($groups === false) {
 	$sql  = "ALTER TABLE :table CHANGE COLUMN groupid group_id INT (10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups'";
 	$stmt = $pdo->prepare($sql);
 	foreach ($groups as $group) {
-		$collection = 'collections_' . $group;
-		$partrepair = 'partrepair_' . $group;
+		$collection = 'collections_' . $group['id'];
+		$partrepair = 'partrepair_' . $group['id'];
 
 		$stmt->execute([':table' => $collection]);
 		$stmt->execute([':table' => $partrepair]);
