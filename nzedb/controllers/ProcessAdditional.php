@@ -85,6 +85,8 @@ Class ProcessAdditional
 		}
 		$this->_archiveInfo->setExternalClients($clients);
 
+		$this->_hasGNUFile = (nzedb\utility\Utility::hasCommand('file') === true ? true : false);
+
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
 			(!empty($this->_siteSettings->maxaddprocessed)) ? (int)$this->_siteSettings->maxaddprocessed : 25;
@@ -758,7 +760,7 @@ Class ProcessAdditional
 			$foundCompressedFile = false;
 
 			// Get all the compressed files in the temp folder.
-			$files = $this->_getTempDirectoryContents('/.*\.([rz]\d{2,}|rar|zip)/i');
+			$files = $this->_getTempDirectoryContents('/.*\.([rz]\d{2,}|rar|zipx?|0{0,2}1)($|[^a-z0-9])/i');
 
 			foreach ($files as $file) {
 
@@ -781,6 +783,8 @@ Class ProcessAdditional
 			$nestedLevels++;
 		}
 
+		$fileType = array();
+
 		// Get all the remaining files in the temp dir.
 		$files = @scandir($this->tmpPath);
 		if ($files !== false) {
@@ -789,12 +793,12 @@ Class ProcessAdditional
 				if (is_file($this->tmpPath . $file)) {
 
 					// Process PAR2 files.
-					if (preg_match('/\.par2/', $file)) {
+					if (preg_match('/\.par2$/', $file)) {
 						$this->_siftPAR2Info($file);
 					}
 
 					// Process NFO files.
-					else if ($this->_releaseHasNoNFO === true && preg_match('/(\.(nfo|inf|ofn)|info\.txt)($|[^a-z0-9])/i', $file)) {
+					else if ($this->_releaseHasNoNFO === true && preg_match('/(\.(nfo|inf|ofn)|info\.txt)$/i', $file)) {
 						$this->_processNfoFile($this->tmpPath . $file);
 					}
 
@@ -812,70 +816,63 @@ Class ProcessAdditional
 
 					// Process JPG files.
 					else if ($this->_foundJPGSample === false && preg_match('/\.jpe?g$/i', $file)) {
-
-						// Try to resize/move the image.
-						$this->_foundJPGSample =
-							$this->_releaseImage->saveImage(
-								$this->_release['guid'] . '_thumb',
-								$this->tmpPath . $file, $this->_releaseImage->jpgSavePath, 650, 650
-							);
-
-						// If it's successful, tell the DB.
-						if ($this->_foundJPGSample !== false) {
-							$this->_db->queryExec(
-								sprintf('
-									UPDATE releases
-									SET jpgstatus = %d
-									WHERE id = %d',
-									1,
-									$this->_release['id']
-								)
-							);
-						}
-
-						// Delete the old file.
+						$this->_getJPGSample($this->tmpPath . $file);
 						@unlink($this->tmpPath . $file);
 					}
 
 					// Video sample // video clip // video media info.
-					else if ($this->_foundSample === false || $this->_foundVideo === false || $this->_foundMediaInfo === false) {
-
-						// Check if it's a video.
-						if (preg_match('/(.*)' . $this->_videoFileRegex . '$/i', $file, $name)) {
-
-							// Rename the file.
-							@rename($this->tmpPath . $name[0], $this->tmpPath . 'sample.avi');
-
-							// Try to get a sample with it.
-							if ($this->_foundSample === false) {
-								$this->_foundSample = $this->_getSample($this->tmpPath . 'sample.avi');
-							}
-
-							/* Try to get a video with it.
-							 * Don't get it here if _sampleMessageIDs is empty
-							 * or has 1 message-id (Saves downloading another part).
-							 */
-							if ($this->_foundVideo === false && count($this->_sampleMessageIDs) < 2) {
-								$this->_foundVideo = $this->_getVideo($this->tmpPath . 'sample.avi');
-							}
-
-							// Try to get media info with it.
-							if ($this->_foundMediaInfo === false) {
-								$this->_foundMediaInfo = $this->_getMediaInfo($this->tmpPath . 'sample.avi');
-							}
-
-							// Delete the video file.
-							@unlink($this->tmpPath . 'sample.avi');
-						}
+					else if (($this->_foundSample === false || $this->_foundVideo === false || $this->_foundMediaInfo === false) &&
+						preg_match('/(.*)' . $this->_videoFileRegex . '$/i', $file, $fileType)
+					) {
+						$this->_processVideoFile($this->tmpPath . $fileType[0]);
 					}
 
 					// Check if it's alt.binaries.u4e file.
 					else if (in_array($this->_releaseGroupName, array('alt.binaries.u4e', 'alt.binaries.mom')) &&
-						preg_match('/linux_2rename\.sh/i', $file &&
+						preg_match('/linux_2rename\.sh/i', $file) &&
 						$this->_release['categoryid'] == Category::CAT_OTHER_HASHED
-						)
 					) {
 						$this->_processU4ETitle($this->tmpPath . $file);
+					}
+
+					// If we have GNU file, check the type of file and process it.
+					else if ($this->_hasGNUFile) {
+						exec('file -b ' . $this->tmpPath . $file, $output);
+
+						switch (!empty($output)) {
+
+							case ($this->_foundJPGSample === false && preg_match('/^JPE?G/i', $output[0])):
+								$this->_getJPGSample($this->tmpPath . $file);
+								@unlink($this->tmpPath . $file);
+								break;
+
+							case (
+								($this->_foundMediaInfo === false || $this->_foundSample === false || $this->_foundVideo === false)
+								&& preg_match('/Matroska data|MPEG v4|\WAVI\W/i', $output[0])
+							):
+								$this->_processVideoFile($this->tmpPath . $file);
+								break;
+
+							case (
+								($this->_foundAudioSample === false || $this->_foundAudioInfo === false) &&
+								preg_match('/^FLAC|layer III|Vorbis audio/i', $file, $fileType)
+							):
+								switch ($fileType[0]) {
+									case 'FLAC':
+										$fileType = 'FLAC';
+										break;
+									case 'layer III':
+										$fileType = 'MP3';
+										break;
+									case 'Vorbis audio':
+										$fileType = 'OGG';
+										break;
+								}
+								@rename($this->tmpPath . $file, $this->tmpPath . 'audiofile.' . $fileType);
+								$this->_getAudioInfo($this->tmpPath . 'audiofile.' . $fileType, $fileType);
+								@unlink($this->tmpPath . 'audiofile.' . $fileType);
+								break;
+						}
 					}
 				}
 			}
@@ -1341,6 +1338,34 @@ Class ProcessAdditional
 	}
 
 	/**
+	 * Try to get JPG picture, resize it and store it on disk.
+	 *
+	 * @param string $fileLocation
+	 */
+	protected function _getJPGSample($fileLocation)
+	{
+		// Try to resize/move the image.
+		$this->_foundJPGSample =
+			$this->_releaseImage->saveImage(
+				$this->_release['guid'] . '_thumb',
+				$fileLocation, $this->_releaseImage->jpgSavePath, 650, 650
+			);
+
+		// If it's successful, tell the DB.
+		if ($this->_foundJPGSample !== false) {
+			$this->_db->queryExec(
+				sprintf('
+					UPDATE releases
+					SET jpgstatus = %d
+					WHERE id = %d',
+					1,
+					$this->_release['id']
+				)
+			);
+		}
+	}
+
+	/**
 	 * Try to get a preview image from a video file.
 	 *
 	 * @param string $fileLocation
@@ -1726,6 +1751,38 @@ Class ProcessAdditional
 				}
 			}
 		}
+	}
+
+	/**
+	 * Process a video file for a preview image/video and mediainfo.
+	 *
+	 * @param string $fileLocation
+	 */
+	protected function _processVideoFile($fileLocation)
+	{
+		// Rename the file.
+		@rename($fileLocation, $this->tmpPath . 'sample.avi');
+
+		// Try to get a sample with it.
+		if ($this->_foundSample === false) {
+			$this->_foundSample = $this->_getSample($this->tmpPath . 'sample.avi');
+		}
+
+		/* Try to get a video with it.
+		 * Don't get it here if _sampleMessageIDs is empty
+		 * or has 1 message-id (Saves downloading another part).
+		 */
+		if ($this->_foundVideo === false && count($this->_sampleMessageIDs) < 2) {
+			$this->_foundVideo = $this->_getVideo($this->tmpPath . 'sample.avi');
+		}
+
+		// Try to get media info with it.
+		if ($this->_foundMediaInfo === false) {
+			$this->_foundMediaInfo = $this->_getMediaInfo($this->tmpPath . 'sample.avi');
+		}
+
+		// Delete the video file.
+		@unlink($this->tmpPath . 'sample.avi');
 	}
 
 	/**
