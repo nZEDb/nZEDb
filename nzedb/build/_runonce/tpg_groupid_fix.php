@@ -28,7 +28,7 @@ if (!$pdo->getSetting('tablepergroup')) {
 	exit("Tables per groups is not enabled, quitting!");
 }
 
-$groups = $pdo->queryDirect('SELECT id FROM groups WHERE active = 1');
+$groups = $pdo->queryDirect('SELECT id FROM groups WHERE active = 1 OR backfill = 1');
 
 if ($groups === false) {
 	echo "No active groups. Fix not needed.";
