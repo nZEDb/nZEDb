@@ -273,8 +273,8 @@ class PostProcess
 
 		$query = $this->db->queryOneRow(
 			sprintf('
-				SELECT id, group_id, categoryid, name, searchname, UNIX_TIMESTAMP(postdate) AS postdate, id as releaseid
-				FROM releases WHERE isrenamed = 0 AND id = ',
+				SELECT id, group_id, categoryid, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releaseid
+				FROM releases WHERE isrenamed = 0 AND id = %d',
 				$relID
 			)
 		);
@@ -336,7 +336,7 @@ class PostProcess
 					) {
 
 						// Try to add the files to the DB.
-						if ($this->releaseFiles->add($relID, $file['name'], $file['size'], $query['postdate'], 0)) {
+						if ($this->releaseFiles->add($relID, $file['name'], $file['size'], $query['post_date'], 0)) {
 							$filesAdded++;
 						}
 					}
