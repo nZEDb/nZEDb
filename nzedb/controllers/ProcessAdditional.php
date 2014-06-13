@@ -1720,7 +1720,7 @@ Class ProcessAdditional
 	{
 		$data = @file_get_contents($fileLocation);
 		if ($data !== false) {
-			if ($this->_nfo->isNFO($this->_release['guid'], $data) === true) {
+			if ($this->_nfo->isNFO($data, $this->_release['guid']) === true) {
 				if ($this->_nfo->addAlternateNfo($data, $this->_release, $this->_nntp) === true) {
 					$this->_releaseHasNoNFO = false;
 				}
