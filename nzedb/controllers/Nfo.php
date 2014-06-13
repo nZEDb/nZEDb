@@ -103,8 +103,8 @@ class Nfo
 		$this->nzbs = (!empty($this->site->maxnfoprocessed)) ? (int)$this->site->maxnfoprocessed : 100;
 		$this->maxsize = (!empty($this->site->maxsizetopostprocess)) ? (int)$this->site->maxsizetopostprocess : 100;
 		$this->tmpPath = $this->site->tmpunrarpath;
-		if (substr($this->tmpPath, -1) !== DIRECTORY_SEPARATOR) {
-			$this->tmpPath .= DIRECTORY_SEPARATOR;
+		if (!preg_match('/[\/\\\\]$/', $this->tmpPath)) {
+			$this->tmpPath .= DS;
 		}
 	}
 
