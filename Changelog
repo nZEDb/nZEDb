@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-06-13 kevin
+	* Add: Deleting temp files to rename_u4e.php
 	* Add: Getting NFO's from ZIP/RAR (and nested ZIP/RAR) files.
 	* Upd: Update u4e script, works now.
 	* Upd: Update the u4e script, untested.

@@ -5,15 +5,27 @@ $c = new ColorCLI();
 
 $site = (new Sites())->get();
 if (empty($site->tmpunrarpath)) {
-	exit ('The tmpunrarpath site setting must not be empty!');
+	exit ('The tmpunrarpath site setting must not be empty!' . PHP_EOL);
 }
 $tmpPath = $site->tmpunrarpath;
 if (substr($site->tmpunrarpath, -1) !== DS) {
 	$tmpPath .= DS;
 }
 
+$tmpPath .= 'u4e' . DS;
+
+if (!is_dir($tmpPath)) {
+	$old = umask(0777);
+	@mkdir($tmpPath, 0777, true);
+	@chmod($tmpPath, 0777);
+	@umask($old);
+	if (!is_dir($tmpPath)) {
+		exit('Unable to create temp directory:' . $tmpPath . PHP_EOL);
+	}
+}
+
 if (empty($site->unrarpath)) {
-	exit ('The site setting for the unrar path must not be empty!');
+	exit ('The site setting for the unrar path must not be empty!' . PHP_EOL);
 }
 
 $db = new nzedb\db\DB();
@@ -48,6 +60,13 @@ if ($releases !== false) {
 	$nntp->doConnect();
 
 	foreach($releases as $release) {
+
+		// Clear old files.
+		foreach (glob($tmpPath . '*') as $file) {
+			if (is_file($file)) {
+				@unlink($file);
+			}
+		}
 
 		// Load up the NZB as a XML file.
 		$nzbXML = $nzbContents->LoadNZB($release['guid']);
