@@ -43,7 +43,6 @@ $releases = $db->queryDirect(
 	)
 );
 
-
 if ($releases !== false) {
 
 	$nntp->doConnect();
@@ -58,7 +57,7 @@ if ($releases !== false) {
 
 		$messageID = '';
 		foreach($nzbXML->file as $file) {
-			if (preg_match('/\.r(ar|00)/i', (string)$file->attributes()->subject)) {
+			if (preg_match('/part\d*1\.rar/i', (string)$file->attributes()->subject)) {
 				$messageID = (string)$file->segments->segment;
 				break;
 			}
@@ -107,14 +106,13 @@ if ($releases !== false) {
 			}
 		}
 
-		if (!is_file($tmpPath . $fileName)) {
+		if ($fileName === '' || !is_file($tmpPath . $fileName)) {
 			echo 'ERROR: Could not get Linux_2rename.sh!' . PHP_EOL;
 			continue;
 		}
 
 		$newName = '';
 		$handle = @fopen($tmpPath . $fileName, 'r');
-
 		if ($handle) {
 			while (($buffer = fgets($handle, 16384)) !== false) {
 				if (stripos($buffer, 'mkdir') !== false) {
@@ -133,31 +131,27 @@ if ($releases !== false) {
 
 		$determinedCat = $categorize->determineCategory($newName, $release['group_id']);
 
-		if (isset($newName)) {
-			echo
-				PHP_EOL .
-				$c->headerOver("New name:  ") . $c->primary($newName) .
-				$c->headerOver("Old name:  ") . $c->primary($release['oldname']) .
-				$c->headerOver("Use name:  ") . $c->primary($release['name']) .
-				$c->headerOver("New cat:   ") . $c->primary($categorize->getNameByid($determinedCat)) .
-				$c->headerOver("Old cat:   ") . $c->primary($categorize->getNameByid($release['categoryid'])) .
-				$c->headerOver("Group:     ") . $c->primary($release['groupname']) .
-				$c->headerOver("Method:    ") . $c->primary('Files, u4e') .
-				$c->headerOver("ReleaseID: ") . $c->primary($release['id']);
+		echo
+			PHP_EOL .
+			$c->headerOver("New name:  ") . $c->primary($newName) .
+			$c->headerOver("Old name:  ") . $c->primary($release['oldname']) .
+			$c->headerOver("Use name:  ") . $c->primary($release['name']) .
+			$c->headerOver("New cat:   ") . $c->primary($categorize->getNameByid($determinedCat)) .
+			$c->headerOver("Old cat:   ") . $c->primary($categorize->getNameByid($release['categoryid'])) .
+			$c->headerOver("Group:     ") . $c->primary($release['groupname']) .
+			$c->headerOver("Method:    ") . $c->primary('Files, u4e') .
+			$c->headerOver("ReleaseID: ") . $c->primary($release['id']);
 
-			$db->queryExec(
-				sprintf('
-					UPDATE releases
-					SET isrenamed = 1, searchname = %s, categoryid = %d
-					WHERE id = %d',
-					$db->escapeString(substr($newName, 0, 255)),
-					$determinedCat,
-					$release['id']
-				)
-			);
-		} else {
-			echo $c->error('Cannot Determine name for ' . $row['id']);
-		}
+		$db->queryExec(
+			sprintf('
+				UPDATE releases
+				SET isrenamed = 1, searchname = %s, categoryid = %d
+				WHERE id = %d',
+				$db->escapeString(substr($newName, 0, 255)),
+				$determinedCat,
+				$release['id']
+			)
+		);
 	}
 	$nntp->doQuit();
 }
