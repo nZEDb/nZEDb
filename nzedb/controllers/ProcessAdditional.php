@@ -793,8 +793,8 @@ Class ProcessAdditional
 				if (is_file($this->tmpPath . $file)) {
 
 					// Process PAR2 files.
-					if (preg_match('/\.par2$/', $file)) {
-						$this->_siftPAR2Info($file);
+					if ($this->_foundPAR2Info === false && preg_match('/\.par2$/', $file)) {
+						$this->_siftPAR2Info($this->tmpPath . $file);
 					}
 
 					// Process NFO files.
@@ -871,6 +871,10 @@ Class ProcessAdditional
 								@rename($this->tmpPath . $file, $this->tmpPath . 'audiofile.' . $fileType);
 								$this->_getAudioInfo($this->tmpPath . 'audiofile.' . $fileType, $fileType);
 								@unlink($this->tmpPath . 'audiofile.' . $fileType);
+								break;
+
+							case ($this->_foundPAR2Info === false && preg_match('/^Parity/i', $file)):
+								$this->_siftPAR2Info($this->tmpPath . $file);
 								break;
 						}
 					}
@@ -1734,6 +1738,7 @@ Class ProcessAdditional
 				$this->_release['id']
 			)
 		);
+		$this->_foundPAR2Info = true;
 	}
 
 	/**
@@ -1943,6 +1948,12 @@ Class ProcessAdditional
 	protected $_foundSample;
 
 	/**
+	 * Have we found PAR2 info on this release?
+	 * @var bool
+	 */
+	protected $_foundPAR2Info;
+
+	/**
 	 * Message ID's for found content to download.
 	 * @var array
 	 */
@@ -1995,6 +2006,7 @@ Class ProcessAdditional
 		$this->_foundJPGSample   = ($this->_processJPGSample       ? false : true);
 		$this->_foundSample      = ($this->_processSample          ? false : true);
 		$this->_foundSample      = (($this->_release['disablepreview'] == 1) ? true  : false);
+		$this->_foundPAR2Info    = false;
 
 		$this->_passwordStatus = array(Releases::PASSWD_NONE);
 		$this->_releaseHasPassword = false;
