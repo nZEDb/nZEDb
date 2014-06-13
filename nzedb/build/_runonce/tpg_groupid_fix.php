@@ -35,8 +35,8 @@ if ($groups === false) {
 } else {
 	$sql  = "ALTER TABLE %s CHANGE COLUMN groupid group_id INT (10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups'";
 	foreach ($groups as $group) {
-		$pdo->directQuery(sprintf($sql, 'collections_' . $group['id']));
-		$pdo->directQuery(sprintf($sql, 'partrepair_' . $group['id']));
+		$pdo->queryDirect(sprintf($sql, 'collections_' . $group['id']));
+		$pdo->queryDirect(sprintf($sql, 'partrepair_' . $group['id']));
 	}
 }
 
