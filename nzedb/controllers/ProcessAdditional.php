@@ -870,7 +870,7 @@ Class ProcessAdditional
 					}
 
 					// Check if it's alt.binaries.u4e file.
-					else if ($this->_releaseGroupName === 'alt.binaries.u4e' &&
+					else if (in_array($this->_releaseGroupName, array('alt.binaries.u4e', 'alt.binaries.mom')) &&
 						preg_match('/linux_2rename\.sh/i', $file &&
 						$this->_release['categoryid'] == Category::CAT_OTHER_HASHED
 						)
@@ -1730,6 +1730,7 @@ Class ProcessAdditional
 
 	/**
 	 * Try to get a title from a Linux_2rename.sh file for alt.binaries.u4e group.
+	 *
 	 * @param $fileLocation
 	 */
 	protected function _processU4ETitle($fileLocation)
@@ -1750,9 +1751,12 @@ Class ProcessAdditional
 		if ($newName !== '') {
 			$this->_db->queryExec(
 				sprintf('
-				UPDATE releases
-				SET isrenamed = 1, searchname = %s, categoryid = %d
-				WHERE id = %d',
+					UPDATE releases
+					SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
+						tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
+						consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
+						searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
+					WHERE id = %d',
 					$this->_db->escapeString(substr($newName, 0, 255)),
 					$this->_categorize->determineCategory($newName, $this->_release['group_id']),
 					$this->_release['id']

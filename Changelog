@@ -10,6 +10,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: .../nzedb/build/_runonce/tpg_groupid_fix.php. Thanks to ruhllatio for testing.
 	  NOTE TPG users need to run this once to fix the groupid field in the extra tables. Alternative re-creating your TPG setup will do it too.
 2014-06-13 kevin
+	* Add: alt.binaries.mom / reset processing to u4e renaming function.
 	* Add: U4E stuff into ProcessAdditional
 	* Add: Deleting temp files to rename_u4e.php
 	* Add: Getting NFO's from ZIP/RAR (and nested ZIP/RAR) files.
