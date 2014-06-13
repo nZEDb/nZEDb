@@ -4,10 +4,9 @@ require_once nZEDb_LIBS . 'rarinfo/par2info.php';
 Class ProcessAdditional
 {
 	/**
-	 * Here for testing.
 	 * @var bool
 	 */
-	protected $_echoDebug = true;
+	protected $_echoDebug;
 
 	/**
 	 * How many levels deep to go inside of RAR/ZIP files.
@@ -59,6 +58,7 @@ Class ProcessAdditional
 	public function __construct($echo = false, &$nntp, &$db, &$siteSettings)
 	{
 		$this->_echoCLI = ($echo && nZEDb_ECHOCLI && (strtolower(PHP_SAPI) === 'cli'));
+		$this->_echoDebug = nZEDb_DEBUG;
 
 		$this->_nntp = $nntp;
 		$this->_db = $db;
