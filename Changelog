@@ -10,6 +10,8 @@ New updates are grouped by person, at the top of the file.
 	* Add: .../nzedb/build/_runonce/tpg_groupid_fix.php. Thanks to ruhllatio for testing.
 	  NOTE TPG users need to run this once to fix the groupid field in the extra tables. Alternative re-creating your TPG setup will do it too.
 2014-06-13 kevin
+	* Fix: Make up file name for zip / rar files, prevents errors when files are named like this : "/47291_Disk Space Pro.app/Contents/_CodeSignature/CodeResources"
+	* Fix: GNU File non escaped file path causing issues.
 	* Add: PAR2 file checking to GNU File check (ProcessAdditional).
 	* Add: Use GNU File to increase chances of getting samples/mediainfo/etc on files that do not have the right extensions.
 	* Add: alt.binaries.mom / reset processing to u4e renaming function.
