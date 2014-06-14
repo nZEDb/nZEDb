@@ -837,7 +837,7 @@ Class ProcessAdditional
 
 					// If we have GNU file, check the type of file and process it.
 					else if ($this->_hasGNUFile) {
-						exec('file -b ' . $this->tmpPath . $file, $output);
+						exec('file -b "' . $this->tmpPath . $file . '"', $output);
 
 						switch (!empty($output)) {
 
