@@ -287,7 +287,6 @@ Class ProcessAdditional
 			// Reset the current release variables.
 			$this->_resetReleaseStatus();
 
-
 			// Go through the files in the NZB, get the amount of book files.
 			$totalBooks = $this->_processNZBContents();
 
@@ -618,6 +617,7 @@ Class ProcessAdditional
 	{
 		// Give the data to archive info so it can check if it's a rar.
 		if ($this->_archiveInfo->setData($compressedData, true) === false) {
+			$this->_debug('Data is probably not RAR or ZIP.' . PHP_EOL);
 			return false;
 		}
 
@@ -655,19 +655,16 @@ Class ProcessAdditional
 			return false;
 		}
 
-		$fileExtension = '';
 		switch ($archiveType) {
 			case ArchiveInfo::TYPE_RAR:
 				if ($this->_echoCLI) {
-					echo '(r)';
+					echo 'r';
 				}
-				$fileExtension = '.rar';
 				break;
 			case ArchiveInfo::TYPE_ZIP:
 				if ($this->_echoCLI) {
-					echo '(z)';
+					echo 'z';
 				}
-				$fileExtension = '.zip';
 				break;
 			default:
 				return false;
@@ -677,6 +674,12 @@ Class ProcessAdditional
 		foreach ($files as $file) {
 
 			if (isset($file['name'])) {
+
+				if (preg_match('/\.[a-zA-Z0-9]*$/', $file['name'], $fileExtension)) {
+					$fileExtension = $fileExtension[0];
+				} else {
+					$fileExtension = '';
+				}
 
 				if (isset($file['error'])) {
 					$this->_debug("Error: {$file['error']} (in: {$file['source']})");
@@ -691,13 +694,13 @@ Class ProcessAdditional
 				// Extract files from the rar.
 				if (isset($file['compressed']) && $file['compressed'] == 0) {
 					@file_put_contents(
-						($this->tmpPath . mt_rand(10, 999999) . '_compressed' . $fileExtension),
+						($this->tmpPath . mt_rand(10, 999999) . '_extracted' . $fileExtension),
 						$this->_archiveInfo->getFileData($file['name'], $file['source'])
 					);
 				}
 				// If the files are compressed, use a binary extractor.
 				else {
-					$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(10, 999999) . '_compressed' . $fileExtension);
+					$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(10, 999999) . '_extracted' . $fileExtension);
 				}
 			}
 
@@ -741,8 +744,16 @@ Class ProcessAdditional
 						echo '^';
 					}
 
+					// Check for "codec spam"
+					if (preg_match('/alt\.binaries\.movies($|\.divx$)/', $this->_releaseGroupName) &&
+						preg_match('/[\/\\\\]Codec[\/\\\\]Setup\.exe/i', $file['name'])
+					) {
+						$this->_debug('Codec spam found, setting release to potentially passworded.' . PHP_EOL);
+						$this->_passwordStatus = array(Releases::PASSWD_POTENTIAL);
+					}
+
 					//Run a PreDB filename check on insert to try and match the release
-					if (preg_match('/\./', $file['name'])) {
+					else if (strpos($file['name'], '.') !== false) {
 						$this->_release['filename'] = nzedb\utility\Utility::cutStringUsingLast('.', $file['name'], 'left', false);
 						$this->_release['releaseid'] = $this->_release['id'];
 						$this->_nameFixer->matchPredbFiles($this->_release, 1, 1, true, 1, 'full');
@@ -791,45 +802,52 @@ Class ProcessAdditional
 		$fileType = array();
 
 		// Get all the remaining files in the temp dir.
-		$files = @scandir($this->tmpPath);
+		$files = $this->_getTempDirectoryContents();
 		if ($files !== false) {
-			foreach ($files as $file) {
 
-				if (is_file($this->tmpPath . $file)) {
+			foreach ($files as $file) {
+				$file = (string)$file;
+
+				// Skip /. and /..
+				if (preg_match('/[\/\\\\]\.{1,2}$/', $file)) {
+					continue;
+				}
+
+				if (is_file($file)) {
 
 					// Process PAR2 files.
 					if ($this->_foundPAR2Info === false && preg_match('/\.par2$/', $file)) {
-						$this->_siftPAR2Info($this->tmpPath . $file);
+						$this->_siftPAR2Info($file);
 					}
 
 					// Process NFO files.
 					else if ($this->_releaseHasNoNFO === true && preg_match('/(\.(nfo|inf|ofn)|info\.txt)$/i', $file)) {
-						$this->_processNfoFile($this->tmpPath . $file);
+						$this->_processNfoFile($file);
 					}
 
 					// Process audio files.
 					else if (
 						($this->_foundAudioInfo === false ||
 						$this->_foundAudioSample === false) &&
-						preg_match('/(.*)' . $this->_audioFileRegex . '$/i', $file, $name)
+						preg_match('/(.*)' . $this->_audioFileRegex . '$/i', $file, $fileType)
 					) {
 						// Try to get audio sample/audio media info.
-						@rename($this->tmpPath . $name[0], $this->tmpPath . 'audiofile.' . $name[2]);
-						$this->_getAudioInfo($this->tmpPath . 'audiofile.' . $name[2], $name[2]);
-						@unlink($this->tmpPath . 'audiofile.' . $name[2]);
+						@rename($file, $this->tmpPath . 'audiofile.' . $fileType[2]);
+						$this->_getAudioInfo($this->tmpPath . 'audiofile.' . $fileType[2], $fileType[2]);
+						@unlink($this->tmpPath . 'audiofile.' . $fileType[2]);
 					}
 
 					// Process JPG files.
 					else if ($this->_foundJPGSample === false && preg_match('/\.jpe?g$/i', $file)) {
-						$this->_getJPGSample($this->tmpPath . $file);
-						@unlink($this->tmpPath . $file);
+						$this->_getJPGSample($file);
+						@unlink($file);
 					}
 
 					// Video sample // video clip // video media info.
 					else if (($this->_foundSample === false || $this->_foundVideo === false || $this->_foundMediaInfo === false) &&
-						preg_match('/(.*)' . $this->_videoFileRegex . '$/i', $file, $fileType)
+						preg_match('/(.*)' . $this->_videoFileRegex . '$/i', $file)
 					) {
-						$this->_processVideoFile($this->tmpPath . $fileType[0]);
+						$this->_processVideoFile($file);
 					}
 
 					// Check if it's alt.binaries.u4e file.
@@ -837,25 +855,25 @@ Class ProcessAdditional
 						preg_match('/linux_2rename\.sh/i', $file) &&
 						$this->_release['categoryid'] == Category::CAT_OTHER_HASHED
 					) {
-						$this->_processU4ETitle($this->tmpPath . $file);
+						$this->_processU4ETitle($file);
 					}
 
 					// If we have GNU file, check the type of file and process it.
 					else if ($this->_hasGNUFile) {
-						exec('file -b "' . $this->tmpPath . $file . '"', $output);
+						exec('file -b "' . $file . '"', $output);
 
 						switch (!empty($output)) {
 
 							case ($this->_foundJPGSample === false && preg_match('/^JPE?G/i', $output[0])):
-								$this->_getJPGSample($this->tmpPath . $file);
-								@unlink($this->tmpPath . $file);
+								$this->_getJPGSample($file);
+								@unlink($file);
 								break;
 
 							case (
 								($this->_foundMediaInfo === false || $this->_foundSample === false || $this->_foundVideo === false)
 								&& preg_match('/Matroska data|MPEG v4|\WAVI\W/i', $output[0])
 							):
-								$this->_processVideoFile($this->tmpPath . $file);
+								$this->_processVideoFile($file);
 								break;
 
 							case (
@@ -873,13 +891,13 @@ Class ProcessAdditional
 										$fileType = 'OGG';
 										break;
 								}
-								@rename($this->tmpPath . $file, $this->tmpPath . 'audiofile.' . $fileType);
+								@rename($file, $this->tmpPath . 'audiofile.' . $fileType);
 								$this->_getAudioInfo($this->tmpPath . 'audiofile.' . $fileType, $fileType);
 								@unlink($this->tmpPath . 'audiofile.' . $fileType);
 								break;
 
 							case ($this->_foundPAR2Info === false && preg_match('/^Parity/i', $file)):
-								$this->_siftPAR2Info($this->tmpPath . $file);
+								$this->_siftPAR2Info($file);
 								break;
 						}
 					}
@@ -1133,21 +1151,33 @@ Class ProcessAdditional
 	}
 
 	/**
-	 * Return array of files in the Temp Directory using a Regex pattern match.
+	 * Return array of files in the Temp Directory.
+	 * Optional, pass a regex to filter the files.
 	 *
-	 * @param string $pattern Regex
+	 * @param string $pattern Regex, optional
 	 *
-	 * @return RegexIterator
+	 * @return Iterator Object|bool
 	 */
-	protected function _getTempDirectoryContents($pattern)
+	protected function _getTempDirectoryContents($pattern = '')
 	{
-		return new RegexIterator(
-			new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator($this->tmpPath)
-			),
-			$pattern,
-			RecursiveRegexIterator::GET_MATCH
-		);
+		try {
+			if ($pattern !== '') {
+				return new RegexIterator(
+					new RecursiveIteratorIterator(
+						new RecursiveDirectoryIterator($this->tmpPath)
+					),
+					$pattern,
+					RecursiveRegexIterator::GET_MATCH
+				);
+			} else {
+				return new RecursiveIteratorIterator(
+					new RecursiveDirectoryIterator($this->tmpPath)
+				);
+			}
+		} catch (exception $e) {
+			$this->_debug('ERROR: Could not open temp dir: ' . $e->getMessage() . PHP_EOL);
+			return false;
+		}
 	}
 
 	/**
