@@ -655,17 +655,22 @@ Class ProcessAdditional
 			return false;
 		}
 
-		if ($this->_echoCLI) {
-			switch ($archiveType) {
-				case ArchiveInfo::TYPE_RAR:
+		$fileExtension = '';
+		switch ($archiveType) {
+			case ArchiveInfo::TYPE_RAR:
+				if ($this->_echoCLI) {
 					echo '(r)';
-					break;
-				case ArchiveInfo::TYPE_ZIP:
+				}
+				$fileExtension = '.rar';
+				break;
+			case ArchiveInfo::TYPE_ZIP:
+				if ($this->_echoCLI) {
 					echo '(z)';
-					break;
-				default:
-					return false;
-			}
+				}
+				$fileExtension = '.zip';
+				break;
+			default:
+				return false;
 		}
 
 		// Loop through the files.
@@ -686,13 +691,13 @@ Class ProcessAdditional
 				// Extract files from the rar.
 				if (isset($file['compressed']) && $file['compressed'] == 0) {
 					@file_put_contents(
-						($this->tmpPath . mt_rand(0, 99999) . '_' . $file['name']),
+						($this->tmpPath . mt_rand(10, 999999) . '_compressed' . $fileExtension),
 						$this->_archiveInfo->getFileData($file['name'], $file['source'])
 					);
 				}
 				// If the files are compressed, use a binary extractor.
 				else {
-					$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(1,999999) . '_' . $file['name']);
+					$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(10, 999999) . '_compressed' . $fileExtension);
 				}
 			}
 
