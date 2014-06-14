@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-14 bart39
+	* Fix: #1352 predb filename 'readme' causing incorrect matches
 2014-06-13 niel
 	* Add: .../nzedb/build/_runonce/tpg_groupid_fix.php. Thanks to ruhllatio for testing.
 	  NOTE TPG users need to run this once to fix the groupid field in the extra tables. Alternative re-creating your TPG setup will do it too.
