@@ -186,9 +186,9 @@ if ($releases !== false) {
 						consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
 						searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
 					WHERE id = %d',
-				$this->_db->escapeString(substr($newName, 0, 255)),
-				$this->_categorize->determineCategory($newName, $this->_release['group_id']),
-				$this->_release['id']
+				$db->escapeString(substr($newName, 0, 255)),
+				$determinedCat,
+				$release['id']
 			)
 		);
 	}
