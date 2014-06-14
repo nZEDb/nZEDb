@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-14 kevin
+	* Chg: ProcessAdditional, Use recursive iterator on extracted files, match "codec spam" directly when checking RAR's and set them as "Potentially Passworded", various other small changes.
 2014-06-14 bart39
 	* Fix: #1352 predb filename 'readme' causing incorrect matches
 2014-06-13 niel
