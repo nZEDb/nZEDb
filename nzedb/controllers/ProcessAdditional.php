@@ -706,7 +706,7 @@ Class ProcessAdditional
 
 			$this->_addFileInfo($file);
 		}
-		return ($this->_addedFileInfo > 0 ? true : false);
+		return ($this->_totalFileInfo > 0 ? true : false);
 	}
 
 	/**
@@ -722,6 +722,11 @@ Class ProcessAdditional
 		if (!isset($file['error']) && isset($file['source']) &&
 			!preg_match($this->_supportFileRegex . '|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i', $file['name'])
 		) {
+
+			// Cache the amount of files we find in the RAR or ZIP, return this to say we did find RAR or ZIP content.
+			// This is so we don't download more RAR or ZIP files for no reason.
+			$this->_totalFileInfo++;
+
 			/* Check if we already have the file or not.
 			 * Also make sure we don't add too many files, some releases have 100's of files, like PS3 releases.
 			 */
@@ -2034,6 +2039,13 @@ Class ProcessAdditional
 	protected $_addedFileInfo;
 
 	/**
+	 * Number of file information we found from RAR/ZIP.
+	 * (if some of it was already in DB, this count goes up, while the count above does not)
+	 * @var int
+	 */
+	protected $_totalFileInfo;
+
+	/**
 	 * Reset some variables for the current release.
 	 */
 	protected function _resetReleaseStatus()
@@ -2066,6 +2078,7 @@ Class ProcessAdditional
 		$this->_AudioInfoExtension = '';
 
 		$this->_addedFileInfo = 0;
+		$this->_totalFileInfo = 0;
 	}
 
 	/**
