@@ -675,10 +675,10 @@ Class ProcessAdditional
 
 			if (isset($file['name'])) {
 
-				if (preg_match('/\.[a-zA-Z0-9]*$/', $file['name'], $fileExtension)) {
-					$fileExtension = $fileExtension[0];
+				if (preg_match('/[^\/\\\\]*\.[a-zA-Z0-9]*$/', $file['name'], $fileName)) {
+					$fileName = $fileName[0];
 				} else {
-					$fileExtension = '';
+					$fileName = '';
 				}
 
 				if (isset($file['error'])) {
@@ -694,13 +694,13 @@ Class ProcessAdditional
 				// Extract files from the rar.
 				if (isset($file['compressed']) && $file['compressed'] == 0) {
 					@file_put_contents(
-						($this->tmpPath . mt_rand(10, 999999) . '_extracted' . $fileExtension),
+						($this->tmpPath . mt_rand(10, 999999) . '_' . $fileName),
 						$this->_archiveInfo->getFileData($file['name'], $file['source'])
 					);
 				}
 				// If the files are compressed, use a binary extractor.
 				else {
-					$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(10, 999999) . '_extracted' . $fileExtension);
+					$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(10, 999999) . '_' . $fileName);
 				}
 			}
 
@@ -852,7 +852,7 @@ Class ProcessAdditional
 
 					// Check if it's alt.binaries.u4e file.
 					else if (in_array($this->_releaseGroupName, array('alt.binaries.u4e', 'alt.binaries.mom')) &&
-						preg_match('/_extracted\.sh/i', $file) &&
+						preg_match('/Linux_2rename\.sh/i', $file) &&
 						$this->_release['categoryid'] == Category::CAT_OTHER_HASHED
 					) {
 						$this->_processU4ETitle($file);
@@ -862,43 +862,52 @@ Class ProcessAdditional
 					else if ($this->_hasGNUFile) {
 						exec('file -b "' . $file . '"', $output);
 
-						switch (!empty($output)) {
+						if (!empty($output)) {
 
-							case ($this->_foundJPGSample === false && preg_match('/^JPE?G/i', $output[0])):
-								$this->_getJPGSample($file);
-								@unlink($file);
-								break;
+							if (count($output) > 1) {
+								$output = implode(',', $output);
+							} else {
+								$output = $output[0];
+							}
 
-							case (
-								($this->_foundMediaInfo === false || $this->_foundSample === false || $this->_foundVideo === false)
-								&& preg_match('/Matroska data|MPEG v4|\WAVI\W/i', $output[0])
-							):
-								$this->_processVideoFile($file);
-								break;
+							switch (true) {
 
-							case (
-								($this->_foundAudioSample === false || $this->_foundAudioInfo === false) &&
-								preg_match('/^FLAC|layer III|Vorbis audio/i', $file, $fileType)
-							):
-								switch ($fileType[0]) {
-									case 'FLAC':
-										$fileType = 'FLAC';
-										break;
-									case 'layer III':
-										$fileType = 'MP3';
-										break;
-									case 'Vorbis audio':
-										$fileType = 'OGG';
-										break;
-								}
-								@rename($file, $this->tmpPath . 'audiofile.' . $fileType);
-								$this->_getAudioInfo($this->tmpPath . 'audiofile.' . $fileType, $fileType);
-								@unlink($this->tmpPath . 'audiofile.' . $fileType);
-								break;
+								case ($this->_foundJPGSample === false && preg_match('/^JPE?G/i', $output[0])):
+									$this->_getJPGSample($file);
+									@unlink($file);
+									break;
 
-							case ($this->_foundPAR2Info === false && preg_match('/^Parity/i', $file)):
-								$this->_siftPAR2Info($file);
-								break;
+								case (
+									($this->_foundMediaInfo === false || $this->_foundSample === false || $this->_foundVideo === false)
+									&& preg_match('/Matroska data|MPEG v4|MPEG sequence, v2|\WAVI\W/i', $output[0])
+								):
+									$this->_processVideoFile($file);
+									break;
+
+								case (
+									($this->_foundAudioSample === false || $this->_foundAudioInfo === false) &&
+									preg_match('/^FLAC|layer III|Vorbis audio/i', $file, $fileType)
+								):
+									switch ($fileType[0]) {
+										case 'FLAC':
+											$fileType = 'FLAC';
+											break;
+										case 'layer III':
+											$fileType = 'MP3';
+											break;
+										case 'Vorbis audio':
+											$fileType = 'OGG';
+											break;
+									}
+									@rename($file, $this->tmpPath . 'audiofile.' . $fileType);
+									$this->_getAudioInfo($this->tmpPath . 'audiofile.' . $fileType, $fileType);
+									@unlink($this->tmpPath . 'audiofile.' . $fileType);
+									break;
+
+								case ($this->_foundPAR2Info === false && preg_match('/^Parity/i', $file)):
+									$this->_siftPAR2Info($file);
+									break;
+							}
 						}
 					}
 				}
