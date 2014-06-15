@@ -181,8 +181,11 @@ if ($releases !== false) {
 		$db->queryExec(
 			sprintf('
 				UPDATE releases
-				SET isrenamed = 1, searchname = %s, categoryid = %d
-				WHERE id = %d',
+					SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
+						tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
+						consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
+						searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
+					WHERE id = %d',
 				$db->escapeString(substr($newName, 0, 255)),
 				$determinedCat,
 				$release['id']
