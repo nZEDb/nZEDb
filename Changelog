@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-15 DariusIII
+	*Chg: Remove tmpunrar folder cleaning from monitor, interferes with other scripts.
 2014-06-15 kevin
 	* Chg: Use custom function for fetching article body which is faster and uses less CPU.
 	* Chg: Cache total amount of files found in RAR or ZIP to speed up processing by preventing additional downloads of RAR or ZIP.
