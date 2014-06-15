@@ -675,10 +675,10 @@ Class ProcessAdditional
 
 			if (isset($file['name'])) {
 
-				if (preg_match('/\.[a-zA-Z0-9]*$/', $file['name'], $fileExtension)) {
-					$fileExtension = $fileExtension[0];
+				if (preg_match('/[^\/\\\\]*\.[a-zA-Z0-9]*$/', $file['name'], $fileName)) {
+					$fileName = $fileName[0];
 				} else {
-					$fileExtension = '';
+					$fileName = '';
 				}
 
 				if (isset($file['error'])) {
@@ -694,19 +694,19 @@ Class ProcessAdditional
 				// Extract files from the rar.
 				if (isset($file['compressed']) && $file['compressed'] == 0) {
 					@file_put_contents(
-						($this->tmpPath . mt_rand(10, 999999) . '_extracted' . $fileExtension),
+						($this->tmpPath . mt_rand(10, 999999) . '_' . $fileName),
 						$this->_archiveInfo->getFileData($file['name'], $file['source'])
 					);
 				}
 				// If the files are compressed, use a binary extractor.
 				else {
-					$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(10, 999999) . '_extracted' . $fileExtension);
+					$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(10, 999999) . '_' . $fileName);
 				}
 			}
 
 			$this->_addFileInfo($file);
 		}
-		return ($this->_addedFileInfo > 0 ? true : false);
+		return ($this->_totalFileInfo > 0 ? true : false);
 	}
 
 	/**
@@ -722,6 +722,11 @@ Class ProcessAdditional
 		if (!isset($file['error']) && isset($file['source']) &&
 			!preg_match($this->_supportFileRegex . '|part\d+|r\d{1,3}|zipr\d{2,3}|\d{2,3}|zipx|zip|rar)(\.rar)?$/i', $file['name'])
 		) {
+
+			// Cache the amount of files we find in the RAR or ZIP, return this to say we did find RAR or ZIP content.
+			// This is so we don't download more RAR or ZIP files for no reason.
+			$this->_totalFileInfo++;
+
 			/* Check if we already have the file or not.
 			 * Also make sure we don't add too many files, some releases have 100's of files, like PS3 releases.
 			 */
@@ -852,7 +857,7 @@ Class ProcessAdditional
 
 					// Check if it's alt.binaries.u4e file.
 					else if (in_array($this->_releaseGroupName, array('alt.binaries.u4e', 'alt.binaries.mom')) &&
-						preg_match('/linux_2rename\.sh/i', $file) &&
+						preg_match('/Linux_2rename\.sh/i', $file) &&
 						$this->_release['categoryid'] == Category::CAT_OTHER_HASHED
 					) {
 						$this->_processU4ETitle($file);
@@ -862,43 +867,52 @@ Class ProcessAdditional
 					else if ($this->_hasGNUFile) {
 						exec('file -b "' . $file . '"', $output);
 
-						switch (!empty($output)) {
+						if (!empty($output)) {
 
-							case ($this->_foundJPGSample === false && preg_match('/^JPE?G/i', $output[0])):
-								$this->_getJPGSample($file);
-								@unlink($file);
-								break;
+							if (count($output) > 1) {
+								$output = implode(',', $output);
+							} else {
+								$output = $output[0];
+							}
 
-							case (
-								($this->_foundMediaInfo === false || $this->_foundSample === false || $this->_foundVideo === false)
-								&& preg_match('/Matroska data|MPEG v4|\WAVI\W/i', $output[0])
-							):
-								$this->_processVideoFile($file);
-								break;
+							switch (true) {
 
-							case (
-								($this->_foundAudioSample === false || $this->_foundAudioInfo === false) &&
-								preg_match('/^FLAC|layer III|Vorbis audio/i', $file, $fileType)
-							):
-								switch ($fileType[0]) {
-									case 'FLAC':
-										$fileType = 'FLAC';
-										break;
-									case 'layer III':
-										$fileType = 'MP3';
-										break;
-									case 'Vorbis audio':
-										$fileType = 'OGG';
-										break;
-								}
-								@rename($file, $this->tmpPath . 'audiofile.' . $fileType);
-								$this->_getAudioInfo($this->tmpPath . 'audiofile.' . $fileType, $fileType);
-								@unlink($this->tmpPath . 'audiofile.' . $fileType);
-								break;
+								case ($this->_foundJPGSample === false && preg_match('/^JPE?G/i', $output[0])):
+									$this->_getJPGSample($file);
+									@unlink($file);
+									break;
 
-							case ($this->_foundPAR2Info === false && preg_match('/^Parity/i', $file)):
-								$this->_siftPAR2Info($file);
-								break;
+								case (
+									($this->_foundMediaInfo === false || $this->_foundSample === false || $this->_foundVideo === false)
+									&& preg_match('/Matroska data|MPEG v4|MPEG sequence, v2|\WAVI\W/i', $output[0])
+								):
+									$this->_processVideoFile($file);
+									break;
+
+								case (
+									($this->_foundAudioSample === false || $this->_foundAudioInfo === false) &&
+									preg_match('/^FLAC|layer III|Vorbis audio/i', $file, $fileType)
+								):
+									switch ($fileType[0]) {
+										case 'FLAC':
+											$fileType = 'FLAC';
+											break;
+										case 'layer III':
+											$fileType = 'MP3';
+											break;
+										case 'Vorbis audio':
+											$fileType = 'OGG';
+											break;
+									}
+									@rename($file, $this->tmpPath . 'audiofile.' . $fileType);
+									$this->_getAudioInfo($this->tmpPath . 'audiofile.' . $fileType, $fileType);
+									@unlink($this->tmpPath . 'audiofile.' . $fileType);
+									break;
+
+								case ($this->_foundPAR2Info === false && preg_match('/^Parity/i', $file)):
+									$this->_siftPAR2Info($file);
+									break;
+							}
 						}
 					}
 				}
@@ -1832,34 +1846,30 @@ Class ProcessAdditional
 	 */
 	protected function _processU4ETitle($fileLocation)
 	{
-		$newName = '';
 		$handle = @fopen($fileLocation, 'r');
 		if ($handle) {
 			while (($buffer = fgets($handle, 16384)) !== false) {
 				if (stripos($buffer, 'mkdir') !== false) {
 					$newName = trim(str_replace('mkdir', '', $buffer));
+					$this->_db->queryExec(
+						sprintf('
+							UPDATE releases
+							SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
+								tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
+								consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
+								searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
+							WHERE id = %d',
+							$this->_db->escapeString(substr($newName, 0, 255)),
+							$this->_categorize->determineCategory($newName, $this->_release['group_id']),
+							$this->_release['id']
+						)
+					);
 					break;
 				}
 			}
 			fclose($handle);
 		}
 		@unlink($fileLocation);
-
-		if ($newName !== '') {
-			$this->_db->queryExec(
-				sprintf('
-					UPDATE releases
-					SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
-						tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
-						consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
-						searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
-					WHERE id = %d',
-					$this->_db->escapeString(substr($newName, 0, 255)),
-					$this->_categorize->determineCategory($newName, $this->_release['group_id']),
-					$this->_release['id']
-				)
-			);
-		}
 	}
 
 	/**
@@ -2029,6 +2039,13 @@ Class ProcessAdditional
 	protected $_addedFileInfo;
 
 	/**
+	 * Number of file information we found from RAR/ZIP.
+	 * (if some of it was already in DB, this count goes up, while the count above does not)
+	 * @var int
+	 */
+	protected $_totalFileInfo;
+
+	/**
 	 * Reset some variables for the current release.
 	 */
 	protected function _resetReleaseStatus()
@@ -2061,6 +2078,7 @@ Class ProcessAdditional
 		$this->_AudioInfoExtension = '';
 
 		$this->_addedFileInfo = 0;
+		$this->_totalFileInfo = 0;
 	}
 
 	/**
