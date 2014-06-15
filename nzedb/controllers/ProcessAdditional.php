@@ -852,7 +852,7 @@ Class ProcessAdditional
 
 					// Check if it's alt.binaries.u4e file.
 					else if (in_array($this->_releaseGroupName, array('alt.binaries.u4e', 'alt.binaries.mom')) &&
-						preg_match('/linux_2rename\.sh/i', $file) &&
+						preg_match('/_extracted\.sh/i', $file) &&
 						$this->_release['categoryid'] == Category::CAT_OTHER_HASHED
 					) {
 						$this->_processU4ETitle($file);
@@ -1832,34 +1832,30 @@ Class ProcessAdditional
 	 */
 	protected function _processU4ETitle($fileLocation)
 	{
-		$newName = '';
 		$handle = @fopen($fileLocation, 'r');
 		if ($handle) {
 			while (($buffer = fgets($handle, 16384)) !== false) {
 				if (stripos($buffer, 'mkdir') !== false) {
 					$newName = trim(str_replace('mkdir', '', $buffer));
+					$this->_db->queryExec(
+						sprintf('
+							UPDATE releases
+							SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
+								tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
+								consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
+								searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
+							WHERE id = %d',
+							$this->_db->escapeString(substr($newName, 0, 255)),
+							$this->_categorize->determineCategory($newName, $this->_release['group_id']),
+							$this->_release['id']
+						)
+					);
 					break;
 				}
 			}
 			fclose($handle);
 		}
 		@unlink($fileLocation);
-
-		if ($newName !== '') {
-			$this->_db->queryExec(
-				sprintf('
-					UPDATE releases
-					SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
-						tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
-						consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
-						searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
-					WHERE id = %d',
-					$this->_db->escapeString(substr($newName, 0, 255)),
-					$this->_categorize->determineCategory($newName, $this->_release['group_id']),
-					$this->_release['id']
-				)
-			);
-		}
 	}
 
 	/**

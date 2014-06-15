@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-15 kevin
+	* Fix: Fix for u4e not renaming in ProcessAdditional.
 2014-06-14 DariusIII
 	*Chg: Update the rename_u4e script to update the releases so they can be reprocessed again.
 2014-06-14 kevin
