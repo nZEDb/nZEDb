@@ -1,7 +1,10 @@
 <?php
 // Test the memcache connection.
 require_once dirname(__FILE__) . '/../../../www/config.php';
-require_once nZEDb_LIB . 'DB.php';
+use nzedb\db\DB;
+use nzedb\db\Mcached;
+
+$db = new DB();
 $c = new ColorCLI();
 
 if (!extension_loaded('memcache'))
@@ -11,6 +14,7 @@ if (!extension_loaded('memcache'))
 }
 
 $memcache = new Mcached();
+
 if ($memcache !== false) {
 	exit(print_r($memcache->Server_Stats())
 	. $c->header("\nIf you have a long list of items above this then your memcached server is probably working fine."));

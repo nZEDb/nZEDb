@@ -48,90 +48,98 @@ class Binaries
 
 	/**
 	 * Site settings.
+	 *
 	 * @var bool|stdClass
 	 */
 	private $site;
 
 	/**
 	 * The cache of the blacklist.
+	 *
 	 * @var array
 	 */
 	public $blackList = array();
 
 	/**
 	 * Is the blacklist already cached?
+	 *
 	 * @var bool
 	 */
 	private $blackListLoaded = false;
 
 	/**
 	 * Should we use header compression?
+	 *
 	 * @var bool
 	 */
 	private $compressedHeaders;
 
 	/**
 	 * Should we use part repair?
+	 *
 	 * @var bool
 	 */
 	private $DoPartRepair;
 
 	/**
-	 * Should we use grabnzbs?
-	 * @var bool
-	 */
-	private $grabnzbs;
-
-	/**
 	 * Do we need to reset collection hash?
+	 *
 	 * @var int
 	 */
 	private $hashcheck;
 
 	/**
 	 * The cache for headers.
+	 *
 	 * @var array
 	 */
 	public $message = array();
 
 	/**
 	 * How many headers do we download per loop?
+	 *
 	 * @var int
 	 */
 	public $messagebuffer;
 
 	/**
 	 * How many days to go back on a new group?
+	 *
 	 * @var bool
 	 */
 	private $NewGroupScanByDays;
 
 	/**
 	 * How many headers to download on new groups?
+	 *
 	 * @var int
 	 */
 	private $NewGroupMsgsToScan;
 
 	/**
 	 * How many headers to download per run of part repair?
+	 *
 	 * @var int
 	 */
 	private $partrepairlimit;
 
 	/**
 	 * Should we show dropped yEnc to CLI?
+	 *
 	 * @var int
 	 */
 	private $showdroppedyencparts;
 
 	/**
 	 * Should we use table per group?
+	 *
 	 * @var int
 	 */
 	private $tablepergroup;
 
 	/**
 	 * Echo to cli?
+	 *
 	 * @var bool
 	 */
 	protected $echo;
@@ -202,7 +210,6 @@ class Binaries
 
 		$this->compressedHeaders = ($this->site->compressedheaders == '1') ? true : false;
 		$this->DoPartRepair = ($this->site->partrepair == '0') ? false : true;
-		$this->grabnzbs = ($this->site->grabnzbs == '0') ? false : true;
 		$this->hashcheck = (!empty($this->site->hashcheck)) ? (int)$this->site->hashcheck : 0;
 		$this->messagebuffer = (!empty($this->site->maxmssgs)) ? $this->site->maxmssgs : 20000;
 		$this->NewGroupScanByDays = ($this->site->newgroupscanmethod == '1') ? true : false;
@@ -434,7 +441,7 @@ class Binaries
 							number_format($realTotal) .
 							" new articles."
 						) .
-						" Leaving "  .
+						" Leaving " .
 						number_format($leaveOver) .
 						" for next pass.\nServer oldest: " .
 						number_format($data['first']) . ' Server newest: ' .
@@ -576,11 +583,11 @@ class Binaries
 	/**
 	 * Loop over range of wanted headers, insert headers into DB.
 	 *
-	 * @param array $groupArr     The group info from mysql.
-	 * @param int $first          The oldest wanted header.
-	 * @param int $last           The newest wanted header.
-	 * @param string $type        Is this partrepair or update?
-	 * @param null $missingParts
+	 * @param array  $groupArr The group info from mysql.
+	 * @param int    $first    The oldest wanted header.
+	 * @param int    $last     The newest wanted header.
+	 * @param string $type     Is this partrepair or update?
+	 * @param null   $missingParts
 	 *
 	 * @return array|bool
 	 */
@@ -641,6 +648,7 @@ class Binaries
 					$this->db->queryExec($query);
 
 				}
+
 				return false;
 			}
 		}
@@ -668,7 +676,7 @@ class Binaries
 
 			// Get highest and lowest article numbers/dates.
 			$iterator1 = 0;
-			$iterator2 = $msgCount-1;
+			$iterator2 = $msgCount - 1;
 			while (true) {
 				if (!isset($returnArray['firstArticleNumber']) && isset($msgs[$iterator1]['Number'])) {
 					$returnArray['firstArticleNumber'] = $msgs[$iterator1]['Number'];
@@ -686,7 +694,7 @@ class Binaries
 				}
 
 				// Break out if we couldn't find anything.
-				if ($iterator1++ >= $msgCount-1 || $iterator2-- <= 0) {
+				if ($iterator1++ >= $msgCount - 1 || $iterator2-- <= 0) {
 					break;
 				}
 			}
@@ -780,7 +788,7 @@ class Binaries
 						// Check if the header's time is newer than now, if so, set it now.
 						$this->message[$subject]['Date'] = ($date > $now ? $now : $date);
 
-						$this->message[$subject]['MaxParts'] = (int) $matches[3];
+						$this->message[$subject]['MaxParts'] = (int)$matches[3];
 
 						// (hash) Groups articles together when forming the release/nzb.
 						$this->message[$subject]['CollectionHash'] =
@@ -790,37 +798,19 @@ class Binaries
 								$groupArr['id'] .
 								$filecnt[6]
 							);
-						$this->message[$subject]['MaxFiles'] = (int) $filecnt[6];
-						$this->message[$subject]['File'] = (int) $filecnt[2];
+						$this->message[$subject]['MaxFiles'] = (int)$filecnt[6];
+						$this->message[$subject]['File'] = (int)$filecnt[2];
 					}
 
-					$nowPart = (int) $matches[2];
-					if ($this->grabnzbs && stristr($subject, '.nzb"')) {
-						$this->db->queryInsert(
-							sprintf(
-								'INSERT INTO nzbs (message_id, groupname, subject, collectionhash, filesize, partnumber, totalparts, postdate, dateadded)
-								VALUES (%s, %s, %s, %s, %d, %d, %d, %s, NOW()) ON DUPLICATE KEY UPDATE dateadded = NOW()',
-								// Remove < and > from Message-ID.
-								$this->db->escapeString(substr($msg['Message-ID'], 1, -1)),
-								$this->db->escapeString($groupArr['name']),
-								// Cut the subject if it's too long.
-								$this->db->escapeString(substr($subject, 0, 255)),
-								$this->db->escapeString($this->message[$subject]['CollectionHash']),
-								(int) $bytes,
-								$nowPart,
-								$this->message[$subject]['MaxParts'],
-								$this->db->from_unixtime($this->message[$subject]['Date'])
-							)
-						);
-					}
+					$nowPart = (int)$matches[2];
 
 					if ($nowPart > 0) {
 						$this->message[$subject]['Parts'][$nowPart] =
 							array(
 								'Message-ID' => substr($msg['Message-ID'], 1, -1),
 								'number' => $msg['Number'],
-								'part' => $nowPart,
-								'size' => $bytes
+								'part'   => $nowPart,
+								'size'   => $bytes
 							);
 					}
 				}
@@ -891,7 +881,9 @@ class Binaries
 				$pBinaryID = $pNumber = $pMessageID = $pPartNumber = $pSize = 1;
 				// Insert collections, binaries and parts into database. When collection exists, only insert new binaries, when binary already exists, only insert new parts.
 				$insPartsStmt = $this->db->Prepare(sprintf("INSERT INTO %s (binaryid, number, messageid, partnumber, size) VALUES (?, ?, ?, ?, ?)",
-						$group['pname']));
+						$group['pname']
+					)
+				);
 				$insPartsStmt->bindParam(1, $pBinaryID, PDO::PARAM_INT);
 				$insPartsStmt->bindParam(2, $pNumber, PDO::PARAM_INT);
 				$insPartsStmt->bindParam(3, $pMessageID, PDO::PARAM_STR);
@@ -922,7 +914,9 @@ class Binaries
 								$collectionID = $collectionHashes[$collectionHash];
 								if (preg_match('/\.vol\d+/i', $subject) && !preg_match('/\.vol\d+/i', $cres['subject'])) {
 									$this->db->queryExec(sprintf("UPDATE %s SET subject = %s WHERE id = %s", $group['cname'], $this->db->escapeString(substr($subject, 0, 255)),
-									$collectionID));
+											$collectionID
+										)
+									);
 								}
 							} else {
 								if (!$cres) {
@@ -935,7 +929,8 @@ class Binaries
 										$this->db->from_unixtime($data['Date']),
 										$this->db->escapeString(substr($data['Xref'], 0, 255)),
 										$groupArr['id'], $data['MaxFiles'],
-										$this->db->escapeString($collectionHash));
+										$this->db->escapeString($collectionHash)
+									);
 									$collectionID = $this->db->queryInsert($csql);
 								} else {
 									$collectionID = $cres['id'];
@@ -944,7 +939,9 @@ class Binaries
 										$this->db->queryExec(sprintf("UPDATE %s SET subject = %s WHERE id = %s",
 												$group['cname'],
 												$this->db->escapeString(substr($subject, 0, 255)),
-												$collectionID));
+												$collectionID
+											)
+										);
 									} else {
 										$this->db->queryExec(sprintf("UPDATE %s SET dateadded = NOW() WHERE id = %s", $group['cname'], $collectionID));
 									}
@@ -1049,6 +1046,7 @@ class Binaries
 			}
 
 			unset($this->message, $data);
+
 			return $returnArray;
 		} else {
 			if ($type != 'partrepair') {
@@ -1062,6 +1060,7 @@ class Binaries
 				}
 			}
 		}
+
 		return $returnArray;
 	}
 
@@ -1213,6 +1212,7 @@ class Binaries
 
 		$insertStr = substr($insertStr, 0, -2);
 		$insertStr .= ' ON DUPLICATE KEY UPDATE attempts=attempts+1';
+
 		return $this->db->queryInsert($insertStr);
 	}
 
@@ -1283,7 +1283,7 @@ class Binaries
 				// Black?
 				if ($blackList['optype'] == 1 && preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
 					$omitBinary = true;
-				// White?
+					// White?
 				} else if ($blackList['optype'] == 2 && !preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
 					$omitBinary = true;
 				}

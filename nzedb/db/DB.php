@@ -139,6 +139,39 @@ class DB extends \PDO
 		return $found;
 	}
 
+	/**
+	 * Looks up info for index on table.
+	 *
+	 * @param $table	Table to look at.
+	 * @param $index	Index to check.
+	 *
+	 * @return bool|array	False on failure, associative array of SHOW data.
+	 */
+	public function checkIndex($table, $index)
+	{
+		$result = self::$pdo->query(sprintf("SHOW INDEX FROM %s WHERE key_name = '%s'",
+										trim($table),
+										trim($index)));
+		if ($result === false) {
+			return false;
+		}
+
+		return $result->fetch(\PDO::FETCH_ASSOC);
+	}
+
+	public function checkColumnIndex($table, $column)
+	{
+		$result = self::$pdo->query(sprintf("SHOW INDEXES IN %s WHERE non_unique = 0 AND column_name = '%s'",
+										trim($table),
+										trim($column)
+								));
+		if ($result === false) {
+			return false;
+		}
+//var_dump($result);
+		return $result->fetchAll(\PDO::FETCH_ASSOC);
+	}
+
 	public function getTableList ()
 	{
 		$query  = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' :
@@ -575,10 +608,22 @@ class DB extends \PDO
 	 *
 	 * @return array|bool
 	 */
-	public function queryOneRow($query)
+	public function queryOneRow($query, $appendLimit = true)
 	{
-		$rows = $this->query($query);
+		// Force the query to only return 1 row, so queryArray doesn't potentially run out of memory on a large data set.
+		// First check if query already contains a LIMIT clause.
+		if (preg_match('# LIMIT (?P<lower>\d+)(,\s+(?P<upper>\d+))?(;)?$#i', $query, $matches)) {
+			If (!isset($matches['upper']) && isset($matches['lower']) && $matches['lower'] == 1) {
+				// good it's already correctly set.
+			} else { // We have a limit, but it's not for a single row
+				return false;
+			}
 
+		} else if ($appendLimit) {
+			$query .= ' LIMIT 1';
+		}
+
+		$rows = $this->query($query);
 		if (!$rows || count($rows) == 0) {
 			$rows = false;
 		}

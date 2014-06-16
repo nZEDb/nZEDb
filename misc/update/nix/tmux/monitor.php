@@ -31,7 +31,7 @@ $alternate_nntp = ($site->alternate_nntp === '1') ? true : false;
 $tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
 $delay = (isset($site->delaytime)) ? $site->delaytime : 2;
 $nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
-$bookreqids = ($site->book_reqids == NULL || $site->book_reqids == "") ? 8010 : $site->book_reqids;
+$bookreqids = ($site->book_reqids == null || $site->book_reqids == "") ? 8010 : $site->book_reqids;
 $request_hours = (isset($site->request_hours)) ? $site->request_hours : 1;
 
 if (command_exist("python3")) {
@@ -140,8 +140,7 @@ if ($dbtype == 'mysql') {
 		. "(SELECT VALUE FROM settings WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date, "
 		. "(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
 		. "(SELECT UNIX_TIMESTAMP(predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre, "
-		. "(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
-		. "(SELECT UNIX_TIMESTAMP(dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
+		. "(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd";
 } else if ($dbtype == 'pgsql') {
 	$split_query = "SELECT "
 		. "(SELECT COUNT(*) FROM predb WHERE id IS NOT NULL) AS predb, "
@@ -150,8 +149,7 @@ if ($dbtype == 'mysql') {
 		. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM settings WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date, "
 		. "(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
 		. "(SELECT extract(epoch FROM predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre, "
-		. "(SELECT extract(epoch FROM adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd, "
-		. "(SELECT extract(epoch FROM dateadded) FROM nzbs ORDER BY dateadded ASC LIMIT 1) AS oldestnzb";
+		. "(SELECT extract(epoch FROM adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd";
 }
 
 // tmux and site settings, refreshes every loop
@@ -206,10 +204,6 @@ $proc_tmux = "SELECT "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'showquery') AS show_query, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'running') AS is_running, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'sharing_timer') AS sharing_timer, "
-	. "(SELECT COUNT(DISTINCT(collectionhash)) FROM nzbs WHERE collectionhash IS NOT NULL) AS distinctnzbs, "
-	. "(SELECT COUNT(*) FROM nzbs WHERE collectionhash IS NOT NULL) AS totalnzbs, "
-	. "(SELECT COUNT(*) FROM (SELECT id FROM nzbs GROUP BY collectionhash, totalparts, id HAVING COUNT(*) >= totalparts) AS count) AS pendingnzbs, "
-	. "(SELECT value FROM settings WHERE setting = 'grabnzbs') AS grabnzbs, "
 	. "(SELECT value FROM settings WHERE setting = 'compressedheaders') AS compressed";
 
 //get microtime
@@ -329,7 +323,7 @@ $total_work_now = $work_diff = $work_remaining_now = $pc_releases_proc_start = 0
 $tvrage_diff = $tvrage_percent = $tvrage_releases_now = $tvrage_releases_proc = 0;
 $usp1activeconnections = $usp1totalconnections = $usp2activeconnections = $usp2totalconnections = 0;
 $collections_table = $parts_table = $binaries_table = $partrepair_table = 0;
-$grabnzbs = $totalnzbs = $distinctnzbs = $pendingnzbs = $music_releases_proc_start = 0;
+$music_releases_proc_start = 0;
 $tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time = 0;
 $init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tpg_count_1_time = 0;
 $console_releases_proc_start = $movie_releases_proc_start = $show_query = $run_releases = 0;
@@ -361,9 +355,6 @@ printf($mask1, "Newest Release:", "$newestname");
 printf($mask1, "Release Added:", relativeTime("$newestadd") . "ago");
 printf($mask1, "Predb Updated:", relativeTime("$newestpre") . "ago");
 printf($mask1, "Collection Age[${delay}]:", relativeTime("$oldestcollection") . "ago");
-if ($grabnzbs != 0) {
-	printf($mask1, "NZBs Age:", relativeTime("$oldestnzb") . "ago");
-}
 printf($mask1, "Parts in Repair:", number_format($partrepair_table));
 echo "\n";
 printf($mask3, "Collections", "Binaries", "Parts");
@@ -372,7 +363,6 @@ printf($mask5, number_format($collections_table), number_format($binaries_table)
 echo "\n";
 printf($mask3, "Category", "In Process", "In Database");
 printf($mask3, "======================================", "=========================", "======================================");
-printf($mask4, "NZBs", number_format($totalnzbs) . "(" . number_format($distinctnzbs) . ")", number_format($pendingnzbs));
 printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
 printf($mask4, "requestID", $requestid_inprogress . "(" . $requestid_diff . ")", number_format($requestid_matched) . "(" . $request_percent . "%)");
 printf($mask4, "NFO's", number_format($nfo_remaining_now) . "(" . $nfo_diff . ")", number_format($nfo_now) . "(" . $nfo_percent . "%)");
@@ -512,46 +502,46 @@ while ($i > 0) {
 
 	//get start values from $qry
 	if ($i == 1) {
-		if ($proc_work_result[0]['nforemains'] != NULL) {
+		if ($proc_work_result[0]['nforemains'] != null) {
 			$nfo_remaining_start = $proc_work_result[0]['nforemains'];
 		}
-		if ($proc_work_result3[0]['predb_matched'] != NULL) {
+		if ($proc_work_result3[0]['predb_matched'] != null) {
 			$predb_start = $proc_work_result3[0]['predb_matched'];
 		}
-		if ($proc_work_result[0]['console'] != NULL) {
+		if ($proc_work_result[0]['console'] != null) {
 			$console_releases_proc_start = $proc_work_result[0]['console'];
 		}
-		if ($proc_work_result[0]['movies'] != NULL) {
+		if ($proc_work_result[0]['movies'] != null) {
 			$movie_releases_proc_start = $proc_work_result[0]['movies'];
 		}
-		if ($proc_work_result[0]['audio'] != NULL) {
+		if ($proc_work_result[0]['audio'] != null) {
 			$music_releases_proc_start = $proc_work_result[0]['audio'];
 		}
-		if ($proc_work_result2[0]['pc'] != NULL) {
+		if ($proc_work_result2[0]['pc'] != null) {
 			$pc_releases_proc_start = $proc_work_result2[0]['pc'];
 		}
-		if ($proc_work_result[0]['tv'] != NULL) {
+		if ($proc_work_result[0]['tv'] != null) {
 			$tvrage_releases_proc_start = $proc_work_result[0]['tv'];
 		}
-		if ($proc_work_result[0]['book'] != NULL) {
+		if ($proc_work_result[0]['book'] != null) {
 			$book_releases_proc_start = $proc_work_result[0]['book'];
 		}
-		if ($proc_work_result2[0]['work'] != NULL) {
+		if ($proc_work_result2[0]['work'] != null) {
 			$work_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron'];
 		}
-		if ($proc_work_result2[0]['pron'] != NULL) {
+		if ($proc_work_result2[0]['pron'] != null) {
 			$pron_remaining_start = $proc_work_result2[0]['pron'];
 		}
-		if ($proc_work_result2[0]['pron'] != NULL) {
+		if ($proc_work_result2[0]['pron'] != null) {
 			$pron_start = $proc_work_result2[0]['pron'];
 		}
-		if ($proc_work_result[0]['releases'] != NULL) {
+		if ($proc_work_result[0]['releases'] != null) {
 			$releases_start = $proc_work_result[0]['releases'];
 		}
-		if ($proc_work_result3[0]['requestid_inprogress'] != NULL) {
+		if ($proc_work_result3[0]['requestid_inprogress'] != null) {
 			$requestid_inprogress_start = $proc_work_result3[0]['requestid_inprogress'];
 		}
-		if ($proc_work_result2[0]['work'] != NULL) {
+		if ($proc_work_result2[0]['work'] != null) {
 			$work_remaining_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron'];
 		}
 	}
@@ -586,56 +576,56 @@ while ($i > 0) {
 
 
 	//get values from $proc
-	if ($proc_work_result[0]['console'] != NULL) {
+	if ($proc_work_result[0]['console'] != null) {
 		$console_releases_proc = $proc_work_result[0]['console'];
 	}
-	if ($proc_work_result[0]['movies'] != NULL) {
+	if ($proc_work_result[0]['movies'] != null) {
 		$movie_releases_proc = $proc_work_result[0]['movies'];
 	}
-	if ($proc_work_result[0]['audio'] != NULL) {
+	if ($proc_work_result[0]['audio'] != null) {
 		$music_releases_proc = $proc_work_result[0]['audio'];
 	}
-	if ($proc_work_result2[0]['pc'] != NULL) {
+	if ($proc_work_result2[0]['pc'] != null) {
 		$pc_releases_proc = $proc_work_result2[0]['pc'];
 	}
-	if ($proc_work_result[0]['tv'] != NULL) {
+	if ($proc_work_result[0]['tv'] != null) {
 		$tvrage_releases_proc = $proc_work_result[0]['tv'];
 	}
-	if ($proc_work_result[0]['book'] != NULL) {
+	if ($proc_work_result[0]['book'] != null) {
 		$book_releases_proc = $proc_work_result[0]['book'];
 	}
-	if ($proc_work_result2[0]['work'] != NULL) {
+	if ($proc_work_result2[0]['work'] != null) {
 		$work_remaining_now = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron'];
 	}
-	if ($proc_work_result2[0]['pron'] != NULL) {
+	if ($proc_work_result2[0]['pron'] != null) {
 		$pron_remaining_now = $proc_work_result2[0]['pron'];
 	}
-	if ($proc_work_result[0]['releases'] != NULL) {
+	if ($proc_work_result[0]['releases'] != null) {
 		$releases_loop = $proc_work_result[0]['releases'];
 	}
-	if ($proc_work_result[0]['nforemains'] != NULL) {
+	if ($proc_work_result[0]['nforemains'] != null) {
 		$nfo_remaining_now = $proc_work_result[0]['nforemains'];
 	}
-	if ($proc_work_result[0]['nfo'] != NULL) {
+	if ($proc_work_result[0]['nfo'] != null) {
 		$nfo_now = $proc_work_result[0]['nfo'];
 	}
 
 	if ($tablepergroup == 0) {
-		if ($proc_work_result3[0]['binaries_table'] != NULL) {
+		if ($proc_work_result3[0]['binaries_table'] != null) {
 			$binaries_table = $proc_work_result3[0]['binaries_table'];
 		}
-		if ($split_result[0]['parts_table'] != NULL) {
+		if ($split_result[0]['parts_table'] != null) {
 			$parts_table = $split_result[0]['parts_table'];
 		}
-		if ($proc_work_result2[0]['collections_table'] != NULL) {
+		if ($proc_work_result2[0]['collections_table'] != null) {
 			$collections_table = $proc_work_result2[0]['collections_table'];
 		}
-		if ($proc_work_result2[0]['partrepair_table'] != NULL) {
+		if ($proc_work_result2[0]['partrepair_table'] != null) {
 			$partrepair_table = $proc_work_result2[0]['partrepair_table'];
 		}
 	}
 
-	if ($split_result[0]['predb'] != NULL) {
+	if ($split_result[0]['predb'] != null) {
 		$predb = $split_result[0]['predb'];
 		$nowTime = time();
 		if ($predb > $nowTime) {
@@ -643,139 +633,122 @@ while ($i > 0) {
 		}
 	}
 
-	if ($proc_work_result3[0]['predb_matched'] != NULL) {
+	if ($proc_work_result3[0]['predb_matched'] != null) {
 		$predb_matched = $proc_work_result3[0]['predb_matched'];
 	}
-	if ($proc_work_result3[0]['distinct_predb_matched'] != NULL) {
+	if ($proc_work_result3[0]['distinct_predb_matched'] != null) {
 		$distinct_predb_matched = $proc_work_result3[0]['distinct_predb_matched'];
 	}
-	if ($proc_work_result3[0]['requestid_inprogress'] != NULL) {
+	if ($proc_work_result3[0]['requestid_inprogress'] != null) {
 		$requestid_inprogress = $proc_work_result3[0]['requestid_inprogress'];
 	}
-	if ($proc_work_result3[0]['requestid_matched'] != NULL) {
+	if ($proc_work_result3[0]['requestid_matched'] != null) {
 		$requestid_matched = $proc_work_result3[0]['requestid_matched'];
 	}
 
-	if ($proc_tmux_result[0]['collections_kill'] != NULL) {
+	if ($proc_tmux_result[0]['collections_kill'] != null) {
 		$collections_kill = $proc_tmux_result[0]['collections_kill'];
 	}
-	if ($proc_tmux_result[0]['postprocess_kill'] != NULL) {
+	if ($proc_tmux_result[0]['postprocess_kill'] != null) {
 		$postprocess_kill = $proc_tmux_result[0]['postprocess_kill'];
 	}
-	if ($proc_tmux_result[0]['backfilldays'] != NULL) {
+	if ($proc_tmux_result[0]['backfilldays'] != null) {
 		$backfilldays = $proc_tmux_result[0]['backfilldays'];
 	}
-	if ($proc_tmux_result[0]['tmpunrar'] != NULL) {
+	if ($proc_tmux_result[0]['tmpunrar'] != null) {
 		$tmpunrar = $proc_tmux_result[0]['tmpunrar'];
 	}
-	if ($proc_tmux_result[0]['distinctnzbs'] != NULL) {
-		$distinctnzbs = $proc_tmux_result[0]['distinctnzbs'];
-	}
-	if ($proc_tmux_result[0]['totalnzbs'] != NULL) {
-		$totalnzbs = $proc_tmux_result[0]['totalnzbs'];
-	}
-	if ($proc_tmux_result[0]['pendingnzbs'] != NULL) {
-		$pendingnzbs = $proc_tmux_result[0]['pendingnzbs'];
-	}
-
-	if ($proc_tmux_result[0]['active_groups'] != NULL) {
+	if ($proc_tmux_result[0]['active_groups'] != null) {
 		$active_groups = $proc_tmux_result[0]['active_groups'];
 	}
-	if ($proc_tmux_result[0]['all_groups'] != NULL) {
+	if ($proc_tmux_result[0]['all_groups'] != null) {
 		$all_groups = $proc_tmux_result[0]['all_groups'];
 	}
-	if ($proc_tmux_result[0]['grabnzbs'] != NULL) {
-		$grabnzbs = $proc_tmux_result[0]['grabnzbs'];
-	}
-	if ($proc_tmux_result[0]['compressed'] != NULL) {
+	if ($proc_tmux_result[0]['compressed'] != null) {
 		$compressed = $proc_tmux_result[0]['compressed'];
 	}
 
-	if ($proc_tmux_result[0]['colors_start'] != NULL) {
+	if ($proc_tmux_result[0]['colors_start'] != null) {
 		$colors_start = $proc_tmux_result[0]['colors_start'];
 	}
-	if ($proc_tmux_result[0]['colors_end'] != NULL) {
+	if ($proc_tmux_result[0]['colors_end'] != null) {
 		$colors_end = $proc_tmux_result[0]['colors_end'];
 	}
-	if ($proc_tmux_result[0]['colors_exc'] != NULL) {
+	if ($proc_tmux_result[0]['colors_exc'] != null) {
 		$colors_exc = $proc_tmux_result[0]['colors_exc'];
 	}
 
-	if ($proc_tmux_result[0]['processbooks'] != NULL) {
+	if ($proc_tmux_result[0]['processbooks'] != null) {
 		$processbooks = $proc_tmux_result[0]['processbooks'];
 	}
-	if ($proc_tmux_result[0]['processmusic'] != NULL) {
+	if ($proc_tmux_result[0]['processmusic'] != null) {
 		$processmusic = $proc_tmux_result[0]['processmusic'];
 	}
-	if ($proc_tmux_result[0]['processgames'] != NULL) {
+	if ($proc_tmux_result[0]['processgames'] != null) {
 		$processgames = $proc_tmux_result[0]['processgames'];
 	}
-	if ($proc_tmux_result[0]['tmux_session'] != NULL) {
+	if ($proc_tmux_result[0]['tmux_session'] != null) {
 		$tmux_session = $proc_tmux_result[0]['tmux_session'];
 	}
-	if ($proc_tmux_result[0]['monitor'] != NULL) {
+	if ($proc_tmux_result[0]['monitor'] != null) {
 		$monitor = $proc_tmux_result[0]['monitor'];
 	}
-	if ($proc_tmux_result[0]['backfill'] != NULL) {
+	if ($proc_tmux_result[0]['backfill'] != null) {
 		$backfill = $proc_tmux_result[0]['backfill'];
 	}
-	if ($proc_tmux_result[0]['niceness'] != NULL) {
+	if ($proc_tmux_result[0]['niceness'] != null) {
 		$niceness = $proc_tmux_result[0]['niceness'];
 	}
-	if ($proc_tmux_result[0]['progressive'] != NULL) {
+	if ($proc_tmux_result[0]['progressive'] != null) {
 		$progressive = $proc_tmux_result[0]['progressive'];
 	}
 
-	if ($proc_tmux_result[0]['binaries_run'] != NULL) {
+	if ($proc_tmux_result[0]['binaries_run'] != null) {
 		$binaries = $proc_tmux_result[0]['binaries_run'];
 	}
-	if ($proc_tmux_result[0]['import'] != NULL) {
+	if ($proc_tmux_result[0]['import'] != null) {
 		$import = $proc_tmux_result[0]['import'];
 	}
-	if ($proc_tmux_result[0]['nzbs'] != NULL) {
+	if ($proc_tmux_result[0]['nzbs'] != null) {
 		$nzbs = $proc_tmux_result[0]['nzbs'];
 	}
-	if ($proc_tmux_result[0]['fix_names'] != NULL) {
+	if ($proc_tmux_result[0]['fix_names'] != null) {
 		$fix_names = $proc_tmux_result[0]['fix_names'];
 	}
-	if ($proc_tmux_result[0]['fix_crap'] != NULL) {
+	if ($proc_tmux_result[0]['fix_crap'] != null) {
 		$fix_crap = explode(', ', ($proc_tmux_result[0]['fix_crap']));
 	}
-	if ($proc_tmux_result[0]['fix_crap_opt'] != NULL) {
+	if ($proc_tmux_result[0]['fix_crap_opt'] != null) {
 		$fix_crap_opt = $proc_tmux_result[0]['fix_crap_opt'];
 	}
-	if ($proc_tmux_result[0]['update_tv'] != NULL) {
+	if ($proc_tmux_result[0]['update_tv'] != null) {
 		$update_tv = $proc_tmux_result[0]['update_tv'];
 	}
-	if ($proc_tmux_result[0]['post'] != NULL) {
+	if ($proc_tmux_result[0]['post'] != null) {
 		$post = $proc_tmux_result[0]['post'];
 	}
-	if ($proc_tmux_result[0]['releases_run'] != NULL) {
+	if ($proc_tmux_result[0]['releases_run'] != null) {
 		$releases_run = $proc_tmux_result[0]['releases_run'];
 	}
-	if ($proc_tmux_result[0]['releases_threaded'] != NULL) {
+	if ($proc_tmux_result[0]['releases_threaded'] != null) {
 		$releases_threaded = $proc_tmux_result[0]['releases_threaded'];
 	}
-	if ($proc_tmux_result[0]['dehash'] != NULL) {
+	if ($proc_tmux_result[0]['dehash'] != null) {
 		$dehash = $proc_tmux_result[0]['dehash'];
 	}
-	if ($proc_tmux_result[0]['newestname'] != NULL) {
+	if ($proc_tmux_result[0]['newestname'] != null) {
 		$newestname = $proc_tmux_result[0]['newestname'];
 	}
-	if ($proc_tmux_result[0]['show_query'] != NULL) {
+	if ($proc_tmux_result[0]['show_query'] != null) {
 		$show_query = $proc_tmux_result[0]['show_query'];
 	}
-	if ($proc_tmux_result[0]['is_running'] != NULL) {
+	if ($proc_tmux_result[0]['is_running'] != null) {
 		$running = (int)$proc_tmux_result[0]['is_running'];
 	}
-	if ($proc_tmux_result[0]['sharing_timer'] != NULL) {
+	if ($proc_tmux_result[0]['sharing_timer'] != null) {
 		$sharing_timer = $proc_tmux_result[0]['sharing_timer'];
 	}
-
-	if ($split_result[0]['oldestnzb'] != NULL) {
-		$oldestnzb = $split_result[0]['oldestnzb'];
-	}
-	if ($split_result[0]['newestpre'] != NULL) {
+	if ($split_result[0]['newestpre'] != null) {
 		$newestpre = $split_result[0]['newestpre'];
 		$nowTime = time();
 		if ($newestpre > $nowTime) {
@@ -783,17 +756,17 @@ while ($i > 0) {
 		}
 	}
 	if ($tablepergroup == 0) {
-		if ($split_result[0]['oldestcollection'] != NULL) {
+		if ($split_result[0]['oldestcollection'] != null) {
 			$oldestcollection = $split_result[0]['oldestcollection'];
 		}
 	}
-	if ($split_result[0]['backfill_groups_days'] != NULL) {
+	if ($split_result[0]['backfill_groups_days'] != null) {
 		$backfill_groups_days = $split_result[0]['backfill_groups_days'];
 	}
-	if ($split_result[0]['backfill_groups_date'] != NULL) {
+	if ($split_result[0]['backfill_groups_date'] != null) {
 		$backfill_groups_date = $split_result[0]['backfill_groups_date'];
 	}
-	if ($split_result[0]['newestadd'] != NULL) {
+	if ($split_result[0]['newestadd'] != null) {
 		$newestadd = $split_result[0]['newestadd'];
 	}
 
@@ -802,63 +775,63 @@ while ($i > 0) {
 	$monitor_path_a = "";
 	$monitor_path_b = "";
 
-	if ($proc_tmux_result[0]['monitor_path'] != NULL) {
+	if ($proc_tmux_result[0]['monitor_path'] != null) {
 		$monitor_path = $proc_tmux_result[0]['monitor_path'];
 	}
-	if ($proc_tmux_result[0]['monitor_path_a'] != NULL) {
+	if ($proc_tmux_result[0]['monitor_path_a'] != null) {
 		$monitor_path_a = $proc_tmux_result[0]['monitor_path_a'];
 	}
-	if ($proc_tmux_result[0]['monitor_path_b'] != NULL) {
+	if ($proc_tmux_result[0]['monitor_path_b'] != null) {
 		$monitor_path_b = $proc_tmux_result[0]['monitor_path_b'];
 	}
 
-	if ($proc_tmux_result[0]['post_amazon'] != NULL) {
+	if ($proc_tmux_result[0]['post_amazon'] != null) {
 		$post_amazon = $proc_tmux_result[0]['post_amazon'];
 	}
-	if ($proc_tmux_result[0]['post_timer_amazon'] != NULL) {
+	if ($proc_tmux_result[0]['post_timer_amazon'] != null) {
 		$post_timer_amazon = $proc_tmux_result[0]['post_timer_amazon'];
 	}
-	if ($proc_tmux_result[0]['post_non'] != NULL) {
+	if ($proc_tmux_result[0]['post_non'] != null) {
 		$post_non = $proc_tmux_result[0]['post_non'];
 	}
-	if ($proc_tmux_result[0]['post_timer_non'] != NULL) {
+	if ($proc_tmux_result[0]['post_timer_non'] != null) {
 		$post_timer_non = $proc_tmux_result[0]['post_timer_non'];
 	}
 
-	if ($proc_tmux_result[0]['seq_timer'] != NULL) {
+	if ($proc_tmux_result[0]['seq_timer'] != null) {
 		$seq_timer = $proc_tmux_result[0]['seq_timer'];
 	}
-	if ($proc_tmux_result[0]['bins_timer'] != NULL) {
+	if ($proc_tmux_result[0]['bins_timer'] != null) {
 		$bins_timer = $proc_tmux_result[0]['bins_timer'];
 	}
-	if ($proc_tmux_result[0]['back_timer'] != NULL) {
+	if ($proc_tmux_result[0]['back_timer'] != null) {
 		$back_timer = $proc_tmux_result[0]['back_timer'];
 	}
-	if ($proc_tmux_result[0]['import_timer'] != NULL) {
+	if ($proc_tmux_result[0]['import_timer'] != null) {
 		$import_timer = $proc_tmux_result[0]['import_timer'];
 	}
-	if ($proc_tmux_result[0]['rel_timer'] != NULL) {
+	if ($proc_tmux_result[0]['rel_timer'] != null) {
 		$rel_timer = $proc_tmux_result[0]['rel_timer'];
 	}
-	if ($proc_tmux_result[0]['fix_timer'] != NULL) {
+	if ($proc_tmux_result[0]['fix_timer'] != null) {
 		$fix_timer = $proc_tmux_result[0]['fix_timer'];
 	}
-	if ($proc_tmux_result[0]['crap_timer'] != NULL) {
+	if ($proc_tmux_result[0]['crap_timer'] != null) {
 		$crap_timer = $proc_tmux_result[0]['crap_timer'];
 	}
-	if ($proc_tmux_result[0]['post_timer'] != NULL) {
+	if ($proc_tmux_result[0]['post_timer'] != null) {
 		$post_timer = $proc_tmux_result[0]['post_timer'];
 	}
-	if ($proc_tmux_result[0]['post_kill_timer'] != NULL) {
+	if ($proc_tmux_result[0]['post_kill_timer'] != null) {
 		$post_kill_timer = $proc_tmux_result[0]['post_kill_timer'];
 	}
-	if ($proc_tmux_result[0]['tv_timer'] != NULL) {
+	if ($proc_tmux_result[0]['tv_timer'] != null) {
 		$tv_timer = $proc_tmux_result[0]['tv_timer'];
 	}
-	if ($proc_tmux_result[0]['dehash_timer'] != NULL) {
+	if ($proc_tmux_result[0]['dehash_timer'] != null) {
 		$dehash_timer = $proc_tmux_result[0]['dehash_timer'];
 	}
-	if ($proc_work_result[0]['releases'] != NULL) {
+	if ($proc_work_result[0]['releases'] != null) {
 		$releases_now = $proc_work_result[0]['releases'];
 	}
 
@@ -1001,9 +974,6 @@ while ($i > 0) {
 	printf($mask1, "Release Added:", relativeTime("$newestadd") . "ago");
 	printf($mask1, "Predb Updated:", relativeTime("$newestpre") . "ago");
 	printf($mask1, "Collection Age[${delay}]:", relativeTime("$oldestcollection") . "ago");
-	if ($grabnzbs != 0) {
-		printf($mask1, "NZBs Age:", relativeTime("$oldestnzb") . "ago");
-	}
 	printf($mask1, "Parts in Repair:", number_format($partrepair_table));
 	if (($post == "1" || $post == "3") && $seq != 2) {
 		printf($mask1, "Postprocess:", "stale for " . relativeTime($time2));
@@ -1051,7 +1021,6 @@ while ($i > 0) {
 	echo "\n";
 	printf($mask3, "Category", "In Process", "In Database");
 	printf($mask3, "======================================", "=========================", "======================================");
-	printf($mask4, "NZBs", number_format($totalnzbs) . "(" . number_format($distinctnzbs) . ")", number_format($pendingnzbs));
 	printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
 	printf($mask4, "requestID", number_format($requestid_inprogress) . "(" . $requestid_diff . ")", number_format($requestid_matched) . "(" . $request_percent . "%)");
 	printf($mask4, "NFO's", number_format($nfo_remaining_now) . "(" . $nfo_diff . ")", number_format($nfo_now) . "(" . $nfo_percent . "%)");
@@ -1375,75 +1344,61 @@ while ($i > 0) {
 				if (($binaries != 0) && ($backfill == 4) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update/python/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
 					);
 				} //runs all less than 4800
 				else if (($binaries != 0) && ($backfill != 0) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
 							$_python ${DIR}update/python/backfill_threaded.py $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
 					);
 				} //runs bin/back/safe less than 4800
 				else if (($binaries != 0) && ($backfill == 4) && ($releases_run == 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
-							$_python ${DIR}update/python/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; \
+							$_python ${DIR}update/python/backfill_safe_threaded.py $log; date +\"%D %T\"; \
 							echo \"\nreleases has been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
 					);
 				} //runs bin/back less than 4800
 				else if (($binaries != 0) && ($backfill != 0) && ($releases_run == 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
-							$_python ${DIR}update/python/backfill_threaded.py $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nreleases have been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+							$_python ${DIR}update/python/backfill_threaded.py $log; date +\"%D %T\"; echo \"\nreleases have been disabled/terminated by Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
 					);
 				} //runs back/safe/rel less than 4800
 				else if (($binaries == 0) && ($backfill == 4) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update/python/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
 					);
 				} //runs back/rel less than 4800
 				else if (($binaries == 0) && ($backfill != 0) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$_python ${DIR}update/python/backfill_threaded.py $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
 					);
 				} //runs bin/rel less than 4800
 				else if (($binaries != 0) && ($backfill == 0) && ($releases_run != 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
 							$which_bins $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; \
 							$run_releases $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
 					);
 				} //runs bin less than 4800
 				else if (($binaries != 0) && ($backfill == 0) && ($releases_run == 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$which_bins $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+							$which_bins $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
 					);
 				} //runs back/safe less than 4800
 				else if (($binaries == 0) && ($backfill == 4) && ($releases_run == 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update/python/backfill_safe_threaded.py $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+							$_python ${DIR}update/python/backfill_safe_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
 					);
 				} //runs back less than 4800
 				else if (($binaries == 0) && ($backfill == 4) && ($releases_run == 0)) {
 					shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-							$_python ${DIR}update/python/backfill_threaded.py $log; \
-							$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+							$_python ${DIR}update/python/backfill_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
 					);
 				} //runs rel less than 4800
 				else if (($binaries == 0) && ($backfill == 0) && ($releases_run != 0)) {
@@ -1459,8 +1414,7 @@ while ($i > 0) {
 				//run backfill all once and resets the timer
 				if ($backfill != 0) {
 					shell_exec("tmux respawnp -k -t${tmux_session}:0.2 ' \
-						$_python ${DIR}update/python/backfill_threaded.py all $log; \
-						$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
+						$_python ${DIR}update/python/backfill_threaded.py all $log; date +\"%D %T\"; $_sleep $seq_timer' 2>&1 1> /dev/null"
 					);
 					$time6 = TIME();
 				}
@@ -1560,8 +1514,7 @@ while ($i > 0) {
 			if (($binaries != 0) && ($kill_coll == false) && ($kill_pp == false)) {
 				$log = writelog($panes0[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:0.2 ' \
-						$which_bins $log; \
-						$_python ${DIR}update/python/grabnzbs_threaded.py $log; date +\"%D %T\"; $_sleep $bins_timer' 2>&1 1> /dev/null"
+						$which_bins $log; date +\"%D %T\"; $_sleep $bins_timer' 2>&1 1> /dev/null"
 				);
 			} else if (($kill_coll == true) || ($kill_pp == true)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);

@@ -27,7 +27,4 @@ if ($tablepergroup == 1) {
 	$run = $db->queryExec('update collections set dateadded = now()');
 	echo $c->primary(number_format($run->rowCount()) . " collections reset.");
 }
-
-$run = $db->queryExec('update nzbs set dateadded = now()');
-echo $c->primary(number_format($run->rowCount()) . " nzbs reset.");
 sleep(2);

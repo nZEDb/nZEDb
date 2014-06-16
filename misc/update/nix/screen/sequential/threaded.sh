@@ -84,7 +84,6 @@ do
 #	$PYTHON -OOu ${THREADED_PATH}/binaries_threaded.py
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_threaded.py all
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_safe_threaded.py
-#	$PYTHON -OOu ${THREADED_PATH}/grabnzbs_threaded.py
 #	$PYTHON -OOu ${THREADED_PATH}/releases_threaded.py
 #	$PHP ${NZEDB_PATH}/update_releases.php 1 false
 #	$PHP ${NZEDB_PATH}/decrypt_hashes.php full
