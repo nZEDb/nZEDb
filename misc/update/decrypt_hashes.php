@@ -26,11 +26,11 @@ function preName($argv)
 	$namefixer = new NameFixer();
 
 	if (isset($argv[1]) && $argv[1] === "all") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE categoryid = 7020');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0');
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
+		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
 	$c = new ColorCLI();
 

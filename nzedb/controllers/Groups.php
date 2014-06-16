@@ -33,8 +33,8 @@ class Groups
 			COALESCE(rel.num, 0) AS num_releases
 			FROM groups
 			LEFT OUTER JOIN
-				(SELECT groupid, COUNT(id) AS num FROM releases GROUP BY groupid) rel
-			ON rel.groupid = groups.id
+				(SELECT group_id, COUNT(id) AS num FROM releases GROUP BY group_id) rel
+			ON rel.group_id = groups.id
 			ORDER BY groups.name"
 		);
 	}
@@ -126,7 +126,7 @@ class Groups
 	 *
 	 * @param string $name The group name.
 	 *
-	 * @return string Empty string on failure, groupID on success.
+	 * @return string Empty string on failure, group_id on success.
 	 */
 	public function getIDByName($name)
 	{
@@ -239,10 +239,10 @@ class Groups
 				COALESCE(rel.num, 0) AS num_releases
 				FROM groups
 				LEFT OUTER JOIN
-					(SELECT groupid, COUNT(id) AS num
-						FROM releases GROUP BY groupid
+					(SELECT group_id, COUNT(id) AS num
+						FROM releases GROUP BY group_id
 					) rel
-				ON rel.groupid = groups.id
+				ON rel.group_id = groups.id
 				WHERE 1 = 1 %s
 				ORDER BY groups.name " . ($start === false ? '' : " LIMIT " . $num . " OFFSET " . $start),
 				($groupname !== ''
@@ -272,11 +272,11 @@ class Groups
 				SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
 				FROM groups
 				LEFT OUTER JOIN
-					(SELECT groupid, COUNT(id) AS num
+					(SELECT group_id, COUNT(id) AS num
 						FROM releases
-						GROUP BY groupid
+						GROUP BY group_id
 					) rel
-				ON rel.groupid = groups.id
+				ON rel.group_id = groups.id
 				WHERE 1 = 1 %s
 				AND active = 1
 				ORDER BY groups.name " . ($start === false ? '' : " LIMIT " . $num . " OFFSET " .$start),
@@ -307,11 +307,11 @@ class Groups
 				SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
 				FROM groups
 				LEFT OUTER JOIN
-					(SELECT groupid, COUNT(id) AS num
+					(SELECT group_id, COUNT(id) AS num
 						FROM releases
-						GROUP BY groupid
+						GROUP BY group_id
 					) rel
-				ON rel.groupid = groups.id
+				ON rel.group_id = groups.id
 				WHERE 1 = 1 %s
 				AND active = 0
 				ORDER BY groups.name " . ($start === false ? '' : " LIMIT ".$num." OFFSET ".$start),
@@ -451,14 +451,14 @@ class Groups
 	{
 		$binaries = new Binaries();
 		// Remove rows from part repair.
-		$this->db->queryExec(sprintf("DELETE FROM partrepair WHERE groupid = %d", $id));
+		$this->db->queryExec(sprintf("DELETE FROM partrepair WHERE group_id = %d", $id));
 
 		// Remove rows from collections / binaries / parts.
-		$cols = $this->db->query(sprintf("SELECT id FROM collections WHERE groupid = %d", $id));
+		$cols = $this->db->query(sprintf("SELECT id FROM collections WHERE group_id = %d", $id));
 		foreach ($cols as $col) {
 			$binaries->delete($col["id"]);
 		}
-		$this->db->queryExec(sprintf("DELETE FROM partrepair WHERE groupid = %d", $id));
+		$this->db->queryExec(sprintf("DELETE FROM partrepair WHERE group_id = %d", $id));
 		$this->db->queryExec('DROP TABLE IF EXISTS collections_'.$id);
 		$this->db->queryExec('DROP TABLE IF EXISTS binaries_'.$id);
 		$this->db->queryExec('DROP TABLE IF EXISTS parts_'.$id);
@@ -514,7 +514,7 @@ class Groups
 		$this->reset($id);
 
 		$releases = new Releases();
-		$rels = $this->db->query(sprintf("SELECT id FROM releases WHERE groupid = %d", $id));
+		$rels = $this->db->query(sprintf("SELECT id FROM releases WHERE group_id = %d", $id));
 		foreach ($rels as $rel) {
 			$releases->delete($rel["id"]);
 		}

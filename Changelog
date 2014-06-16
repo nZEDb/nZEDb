@@ -6,6 +6,40 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-13 niel
+	* Add: .../nzedb/build/_runonce/tpg_groupid_fix.php. Thanks to ruhllatio for testing.
+	  NOTE TPG users need to run this once to fix the groupid field in the extra tables. Alternative re-creating your TPG setup will do it too.
+2014-06-13 kevin
+	* Add: U4E stuff into ProcessAdditional
+	* Add: Deleting temp files to rename_u4e.php
+	* Add: Getting NFO's from ZIP/RAR (and nested ZIP/RAR) files.
+	* Upd: Update u4e script, works now.
+	* Upd: Update the u4e script, untested.
+	* Remake ProcessAdditional. Clean up NameFixer class a bit.
+2014-06-13 ruhllatio
+	* Add: Non-operational rough rename script
+	* Chg: Categorization improvements for other usenet groups
+	* Chg: Change 1 to renameu4e
+2014-06-12 niel
+	* Chg: Converting groupid to group_id in tables and code to follow Li3 conventions.
+2014-06-11 kevin
+	* Add: Add the reconnect on MySQL has gone away to exec/queryexec.
+2014-06-10 ruhllatio
+	* Fix: RemoveCrap gibberish deleting hashed releases due to category switch
+	* Chg: AnimeTV check now runs before HDTV Check as it is much more specific
+	* Chg: Moving mutliple ifs to cleaner switches in Categorize (first test)
+	* Chg: More changes from multi ifs to switches in Categorize
+	* Fix: removeCrap Size removing legitimate cracks, trainers, keygens, etc
+	* Fix: PreDB File match on file insertion matching strange binary strings to invalid Pres
+	* Fix: Categorize Amazon web format books to Ebooks and strip the azw tags from Amazon lookups
+2014-06-09 ruhllatio
+	* Fix: Potential fix for hanging tmux monitor.php query (restart tmux session after pull)
+	* Chg: More categorization improvements
+	* Upd: Remove additional blank line in monitor.php
+2014-06-09 kevin
+	* Add: Catch and reconnect lost MySQL connections.
+2014-06-09 niel
+	* Add: Persistent connections option for DB. Defaults to false because of https://bugs.php.net/bug.php?id=63176
 2014-06-07 niel
 	* Fix: Problem with mixing instance/static, that caused search to fail.
 2014-06-06 kevin

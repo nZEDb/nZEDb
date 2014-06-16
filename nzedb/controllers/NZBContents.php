@@ -257,9 +257,9 @@ Class NZBContents
 	 *
 	 * @return bool|SimpleXMLElement
 	 *
-	 * @access protected
+	 * @access public
 	 */
-	protected function LoadNZB(&$guid)
+	public function LoadNZB(&$guid)
 	{
 		// Fetch the NZB location using the GUID.
 		$nzbPath = $this->nzb->NZBPath($guid);

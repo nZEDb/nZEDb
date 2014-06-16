@@ -190,7 +190,7 @@ class MiscSorter
 		$n = "\n";
 		$groups = new Groups();
 
-		$release = $this->db->query("SELECT r.searchname as searchname, categoryid as cat, g.name as name FROM releases r INNER JOIN groups g ON r.groupid = g.id WHERE r.id = {$id}");
+		$release = $this->db->query("SELECT r.searchname as searchname, categoryid as cat, g.name as name FROM releases r INNER JOIN groups g ON r.group_id = g.id WHERE r.id = {$id}");
 		$oldcatname = $this->category->getNameByID($release[0]['cat']);
 		$newcatname = $this->category->getNameByID($cat);
 
@@ -643,12 +643,12 @@ class MiscSorter
 						else if (preg_match('/tv/iU', $movie['type']) || preg_match('/episode/iU', $movie['type']) || preg_match('/reality/iU', $movie['type']))
 							$cat = Category::CAT_TV_OTHER;
 						else {
-							$cat = $this->category->determineCategory($name, $row['groupid']);
+							$cat = $this->category->determineCategory($name, $row['group_id']);
 							if ($cat == Category::CAT_MISC)
 								$cat = Category::CAT_MOVIE_OTHER;
 						}
 					} else
-						$cat = $this->category->determineCategory($name, $row['groupid']);
+						$cat = $this->category->determineCategory($name, $row['group_id']);
 
 					if ($cat < Category::CAT_PARENT_GAME || $cat > Category::CAT_PARENT_BOOKS + 1000)
 						$cat = Category::CAT_MOVIE_OTHER;
@@ -751,7 +751,7 @@ class MiscSorter
 			$uc = "UNCOMPRESS(releasenfo.nfo)";
 		else if ($this->db->dbSystem() === "pgsql")
 			$uc = "releasenfo.nfo";
-		$res = $this->db->query(sprintf("SELECT {$uc} AS nfo, releases.id, releases.guid, releases.fromname, releases.name, releases.searchname, groups.name AS gname, releases.groupid FROM releasenfo INNER JOIN releases ON releasenfo.releaseid = releases.id INNER JOIN groups ON releases.groupid = groups.id WHERE releases.id IN (%s)", $this->idarr));
+		$res = $this->db->query(sprintf("SELECT {$uc} AS nfo, releases.id, releases.guid, releases.fromname, releases.name, releases.searchname, groups.name AS gname, releases.group_id FROM releasenfo INNER JOIN releases ON releasenfo.releaseid = releases.id INNER JOIN groups ON releases.group_id = groups.id WHERE releases.id IN (%s)", $this->idarr));
 		if (strlen($this->idarr) > 0 && count($res) > 0) {
 			foreach ($res as $row) {
 				$hash = $this->getHash($row['name']);
@@ -806,7 +806,7 @@ class MiscSorter
 	function musicnzb($category = Category::CAT_PARENT_MISC, $id = 0)
 	{
 		if ($id != 0)
-			$query = "SELECT releases.*, g.name AS gname FROM releases INNER JOIN groups g ON releases.groupid = g.id WHERE releases.id = ($id)"; // AND NOT (`imdbID` > 1 OR `rageID` > 1 OR `musicinfoID` is not null OR `consoleinfoID` is not null OR `bookinfoID` is not null )";
+			$query = "SELECT releases.*, g.name AS gname FROM releases INNER JOIN groups g ON releases.group_id = g.id WHERE releases.id = ($id)"; // AND NOT (`imdbID` > 1 OR `rageID` > 1 OR `musicinfoID` is not null OR `consoleinfoID` is not null OR `bookinfoID` is not null )";
 		else {
 			if ($this->category->isParent($category)) {
 				$thecategory = array();
@@ -814,7 +814,7 @@ class MiscSorter
 					$thecategory[] = $c['id'];
 				$category = implode(", ", $thecategory);
 			}
-			$query = "SELECT releases.*, g.name AS gname FROM releases INNER JOIN groups g ON releases.groupid = g.id WHERE categoryid IN (" . $category . ") AND nfostatus >= 0 AND passwordstatus >= 0 AND NOT (imdbid IS NOT NULL OR rageid > 0 OR consoleinfoid IS NOT NULL OR bookinfoid IS NOT NULL)";
+			$query = "SELECT releases.*, g.name AS gname FROM releases INNER JOIN groups g ON releases.group_id = g.id WHERE categoryid IN (" . $category . ") AND nfostatus >= 0 AND passwordstatus >= 0 AND NOT (imdbid IS NOT NULL OR rageid > 0 OR consoleinfoid IS NOT NULL OR bookinfoid IS NOT NULL)";
 		}
 
 		$res = $this->db->query($query);

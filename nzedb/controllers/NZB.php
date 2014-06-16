@@ -147,7 +147,7 @@ class NZB
 					sprintf('
 						SELECT %s.*, %s.date AS udate, groups.name AS groupname
 						FROM %s
-						INNER JOIN groups ON %s.groupid = groups.id
+						INNER JOIN groups ON %s.group_id = groups.id
 						WHERE %s.releaseid = %d',
 						$this->cname,
 						$this->cname,
