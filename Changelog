@@ -6,10 +6,28 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-15 DariusIII
+	*Chg: Remove tmpunrar folder cleaning from monitor, interferes with other scripts.
+2014-06-15 kevin
+	* Chg: Use custom function for fetching article body which is faster and uses less CPU.
+	* Chg: Cache total amount of files found in RAR or ZIP to speed up processing by preventing additional downloads of RAR or ZIP.
+	* Chg: Try to get original file names from rar. Combine array output of GNU File to increase chances of finding stuff. Check MPEG sequence, v2 from GNU file for mediainfo / samples/ etc.
+	* Fix: Fix for u4e not renaming in ProcessAdditional.
+2014-06-14 DariusIII
+	*Chg: Update the rename_u4e script to update the releases so they can be reprocessed again.
+2014-06-14 kevin
+	* Chg: ProcessAdditional, Use recursive iterator on extracted files, match "codec spam" directly when checking RAR's and set them as "Potentially Passworded", various other small changes.
+2014-06-14 bart39
+	* Fix: #1352 predb filename 'readme' causing incorrect matches
 2014-06-13 niel
 	* Add: .../nzedb/build/_runonce/tpg_groupid_fix.php. Thanks to ruhllatio for testing.
 	  NOTE TPG users need to run this once to fix the groupid field in the extra tables. Alternative re-creating your TPG setup will do it too.
 2014-06-13 kevin
+	* Fix: Make up file name for zip / rar files, prevents errors when files are named like this : "/47291_Disk Space Pro.app/Contents/_CodeSignature/CodeResources"
+	* Fix: GNU File non escaped file path causing issues.
+	* Add: PAR2 file checking to GNU File check (ProcessAdditional).
+	* Add: Use GNU File to increase chances of getting samples/mediainfo/etc on files that do not have the right extensions.
+	* Add: alt.binaries.mom / reset processing to u4e renaming function.
 	* Add: U4E stuff into ProcessAdditional
 	* Add: Deleting temp files to rename_u4e.php
 	* Add: Getting NFO's from ZIP/RAR (and nested ZIP/RAR) files.

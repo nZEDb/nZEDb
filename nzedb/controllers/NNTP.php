@@ -1200,7 +1200,7 @@ class NNTP extends Net_NNTP_Client
 		}
 
 		// Download the article body from usenet.
-		$body = parent::getBody($identifier, true);
+		$body = $this->_getBody($identifier);
 		// If there was an error, return the PEAR error object.
 		if ($this->isError($body)) {
 			return $body;
@@ -1353,6 +1353,80 @@ class NNTP extends Net_NNTP_Client
 	public function isError($data, $code = null)
 	{
 		return PEAR::isError($data, $code);
+	}
+
+	/**
+	 * Get the body of an article from the currently open connection.
+	 *
+	 * @param mixed $article
+	 *    Either a message-id or a message-number of the article to fetch the body from.
+	 *
+	 * @return mixed (array)  body on success or
+	 *               (object) pear_error on failure
+	 * @access protected
+	 */
+	protected function _getBody($article)
+	{
+		// Tell the news server we want the body of an article.
+		$response = $this->_sendCommand('BODY ' . $article);
+		if ($this->isError($response)) {
+			return $response;
+		}
+
+		switch ($response) {
+			// 222, RFC977: 'n <a> article retrieved - body follows'
+			case NET_NNTP_PROTOCOL_RESPONSECODE_BODY_FOLLOWS:
+				$data = '';
+				// Continue until connection is lost
+				while (!feof($this->_socket)) {
+
+					// Retrieve and append up to 1024 characters from the server.
+					$line = @fgets($this->_socket, 1024);
+
+					if ($line === false) {
+						return $this->throwError('Failed to read line from socket.', null);
+					}
+
+					// Continue if the line is empty.
+					if (empty($line)) {
+						continue;
+					}
+
+					// Check if the line terminates the text response.
+					if ($line === ".\r\n") {
+						// Return all previous lines.
+						return $data;
+					}
+
+					// Add the line to the rest of the lines.
+					$data .= $line;
+				}
+				return $this->throwError('End of stream! Connection lost?', null);
+				break;
+
+			// 412, RFC977: 'no newsgroup has been selected'
+			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED:
+				return $this->throwError('No newsgroup has been selected', $response, $this->_currentStatusResponse());
+				break;
+
+			// 420, RFC977: 'no current article has been selected'
+			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED:
+				return $this->throwError('No current article has been selected', $response, $this->_currentStatusResponse());
+				break;
+
+			// 423, RFC977: 'no such article number in this group'
+			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER:
+				return $this->throwError('No such article number in this group', $response, $this->_currentStatusResponse());
+				break;
+
+			// 430, RFC977: 'no such article found'
+			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_ID:
+				return $this->throwError('No such article found', $response, $this->_currentStatusResponse());
+				break;
+
+			default:
+				return $this->_handleUnexpectedResponse($response);
+		}
 	}
 
 }
