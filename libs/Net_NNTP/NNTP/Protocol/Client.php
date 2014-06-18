@@ -154,6 +154,13 @@ class Net_NNTP_Protocol_Client extends PEAR
 	private $_logger = null;
 
 	/**
+	 * Seconds to wait for the blocking socket to timeout.
+	 *
+	 * @var int
+	 */
+	protected $_socketTimeout = 120;
+
+	/**
 	 * Constructor
 	 *
 	 * @access public
@@ -454,19 +461,20 @@ class Net_NNTP_Protocol_Client extends PEAR
 	/**
 	 * Connect to a NNTP server
 	 *
-	 * @param string $host       (optional) The address of the NNTP-server to connect to, defaults to 'localhost'.
-	 * @param mixed  $encryption (optional) Use TLS/SSL on the connection?
-	 *                           (string) 'tcp'                 => Use no encryption.
-	 *                                    'ssl', 'sslv3', 'tls' => Use encryption.
-	 *                           (null)|(false) Use no encryption.
-	 * @param int    $port       (optional) The port number to connect to, defaults to 119.
-	 * @param int    $timeout    (optional) How many seconds to wait before giving up when connecting.
+	 * @param string $host          (optional) The address of the NNTP-server to connect to, defaults to 'localhost'.
+	 * @param mixed  $encryption    (optional) Use TLS/SSL on the connection?
+	 *                              (string) 'tcp'                 => Use no encryption.
+	 *                                       'ssl', 'sslv3', 'tls' => Use encryption.
+	 *                              (null)|(false) Use no encryption.
+	 * @param int    $port          (optional) The port number to connect to, defaults to 119.
+	 * @param int    $timeout       (optional) How many seconds to wait before giving up when connecting.
+	 * @param int    $socketTimeout (optional) How many seconds to wait before timing out the (blocked) socket.
 	 *
 	 * @return mixed (bool)   On success: True when posting allowed, otherwise false.
 	 *               (object) On failure: pear_error
 	 * @access protected
 	 */
-	protected function connect($host = null, $encryption = null, $port = null, $timeout = 15)
+	protected function connect($host = null, $encryption = null, $port = null, $timeout = 15, $socketTimeout = 120)
 	{
 		if ($this->_isConnected() ) {
 			return $this->throwError('Already connected, disconnect first!', null);
@@ -528,8 +536,11 @@ class Net_NNTP_Protocol_Client extends PEAR
 
 		// Store the socket resource as property.
 		$this->_socket = $socket;
-		// Make the socket blocking.
-		stream_set_timeout($this->_socket, 120);
+
+		$this->_socketTimeout = $socketTimeout;
+
+		// Set the socket timeout.
+		stream_set_timeout($this->_socket, $this->_socketTimeout);
 
 		if ($this->_logger) {
 			$this->_logger->info("Connection to $transport://$host:$port has been established.");

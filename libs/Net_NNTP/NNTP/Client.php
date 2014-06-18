@@ -125,13 +125,14 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 * <b>Usage example:</b>
 	 * {@example docs/examples/phpdoc/connect.php}
 	 *
-	 * @param string $host       (optional) The address of the NNTP-server to connect to, defaults to 'localhost'.
-	 * @param mixed  $encryption (optional) Use TLS/SSL on the connection?
-	 *                           (string) 'tcp'                 => Use no encryption.
-	 *                                    'ssl', 'sslv3', 'tls' => Use encryption.
-	 *                           (null)|(false) Use no encryption.
-	 * @param int    $port       (optional) The port number to connect to, defaults to 119.
-	 * @param int    $timeout    (optional) How many seconds to wait before giving up when connecting.
+	 * @param string $host          (optional) The address of the NNTP-server to connect to, defaults to 'localhost'.
+	 * @param mixed  $encryption    (optional) Use TLS/SSL on the connection?
+	 *                              (string) 'tcp'                 => Use no encryption.
+	 *                                       'ssl', 'sslv3', 'tls' => Use encryption.
+	 *                              (null)|(false) Use no encryption.
+	 * @param int    $port          (optional) The port number to connect to, defaults to 119.
+	 * @param int    $timeout       (optional) How many seconds to wait before giving up when connecting.
+	 * @param int    $socketTimeout (optional) How many seconds to wait before timing out the (blocked) socket.
 	 *
 	 * @return mixed <br>
 	 *  - (bool)   True when posting allowed, otherwise false
@@ -140,7 +141,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 * @see Net_NNTP_Client::disconnect()
 	 * @see Net_NNTP_Client::authenticate()
 	 */
-	public function connect($host = null, $encryption = null, $port = null, $timeout = 15)
+	public function connect($host = null, $encryption = null, $port = null, $timeout = 15, $socketTimeout = 120)
 	{
 		// v1.0.x API
 		if (is_int($encryption)) {
@@ -149,7 +150,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 			$encryption = null;
 		}
 
-		return parent::connect($host, $encryption, $port, $timeout);
+		return parent::connect($host, $encryption, $port, $timeout, $socketTimeout);
 	}
 
 	/**
