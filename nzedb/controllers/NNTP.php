@@ -207,17 +207,19 @@ class NNTP extends Net_NNTP_Client
 
 		// Set variables to connect based on if we are using the alternate provider or not.
 		if (!$alternate) {
-			$sslEnabled = NNTP_SSLENABLED ? true : false;
+			$sslEnabled = (NNTP_SSLENABLED ? true : false);
 			$this->currentServer = NNTP_SERVER;
 			$this->currentPort = NNTP_PORT;
 			$userName = NNTP_USERNAME;
 			$password = NNTP_PASSWORD;
+			$socketTimeout = (defined('NNTP_SOCKET_TIMEOUT') ? NNTP_SOCKET_TIMEOUT : $this->_socketTimeout);
 		} else {
-			$sslEnabled = NNTP_SSLENABLED_A ? true : false;
+			$sslEnabled = (NNTP_SSLENABLED_A ? true : false);
 			$this->currentServer = NNTP_SERVER_A;
 			$this->currentPort = NNTP_PORT_A;
 			$userName = NNTP_USERNAME_A;
 			$password = NNTP_PASSWORD_A;
+			$socketTimeout = (defined('NNTP_SOCKET_TIMEOUT_A') ? NNTP_SOCKET_TIMEOUT_A : $this->_socketTimeout);
 		}
 
 		$enc = ($sslEnabled ? ' (ssl)' : ' (non-ssl)');
@@ -231,7 +233,7 @@ class NNTP extends Net_NNTP_Client
 
 			// If we are not connected, try to connect.
 			if (!$connected) {
-				$ret = $this->connect($this->currentServer, $sslEnabled, $this->currentPort, 5);
+				$ret = $this->connect($this->currentServer, $sslEnabled, $this->currentPort, 5, $socketTimeout);
 			}
 
 			// Check if we got an error while connecting.
@@ -1055,7 +1057,7 @@ class NNTP extends Net_NNTP_Client
 					$buffer = fgets($this->_socket);
 
 					// And set back the socket to blocking.
-					stream_set_blocking($this->_socket, 15);
+					stream_set_blocking($this->_socket, 1);
 
 					// Don't sleep on last iteration.
 					if ($iterator < 2 && empty($buffer)) {
