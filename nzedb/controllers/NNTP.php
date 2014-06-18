@@ -248,7 +248,7 @@ class NNTP extends Net_NNTP_Client
 			} else {
 				// Only fetch the message once.
 				if (!$cError) {
-					$cError = $ret->_getMessage();
+					$cError = $ret->getMessage();
 				}
 			}
 
@@ -289,7 +289,7 @@ class NNTP extends Net_NNTP_Client
 					if (!$aErr) {
 						$authenticated = true;
 					} elseif (!$aError) {
-						$aError = $ret2->_getMessage();
+						$aError = $ret2->getMessage();
 					}
 
 					// If error, try to authenticate again.
