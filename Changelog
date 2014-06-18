@@ -15,6 +15,8 @@ New updates are grouped by person, at the top of the file.
 2014-06-18 ruhllatio
 	* Fix: PP additional hang due to filenames that start with a period and match_prefiles bug
 	* Chg: Properly categorize PS4 and PS4 in a.b.console.ps3
+	* Fix: PS4 not post-processing correctly
+	* Fix: u4e rename results not colored correctly
 2014-06-15 DariusIII
 	*Chg: Remove tmpunrar folder cleaning from monitor, interferes with other scripts.
 2014-06-15 kevin
