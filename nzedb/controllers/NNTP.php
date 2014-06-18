@@ -1055,7 +1055,7 @@ class NNTP extends Net_NNTP_Client
 					$buffer = fgets($this->_socket);
 
 					// And set back the socket to blocking.
-					stream_set_blocking($this->_socket, $this->_socketTimeout);
+					stream_set_blocking($this->_socket, 1);
 
 					// Don't sleep on last iteration.
 					if ($iterator < 2 && empty($buffer)) {
