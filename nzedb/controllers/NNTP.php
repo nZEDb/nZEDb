@@ -1377,19 +1377,17 @@ class NNTP extends Net_NNTP_Client
 			// 222, RFC977: 'n <a> article retrieved - body follows'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_BODY_FOLLOWS:
 				$data = '';
+
 				// Continue until connection is lost
 				while (!feof($this->_socket)) {
 
 					// Retrieve and append up to 1024 characters from the server.
-					$line = @fgets($this->_socket, 1024);
+					$line = fgets($this->_socket, 1024);
 
+					// If the socket is empty/ an error occurs, false is returned.
+					// Since the socket is blocking, the socket should not be empty, so it's definitely an error.
 					if ($line === false) {
 						return $this->throwError('Failed to read line from socket.', null);
-					}
-
-					// Continue if the line is empty.
-					if (empty($line)) {
-						continue;
 					}
 
 					// Check if the line terminates the text response.
@@ -1400,6 +1398,7 @@ class NNTP extends Net_NNTP_Client
 
 					// Add the line to the rest of the lines.
 					$data .= $line;
+
 				}
 				return $this->throwError('End of stream! Connection lost?', null);
 				break;
