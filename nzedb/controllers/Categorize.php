@@ -147,6 +147,9 @@ class Categorize extends Category
 			}
 
 			if ($group === 'alt.binaries.console.ps3') {
+				if ($this->isGamePS4()) {
+					return true;
+				}
 				$this->tmpCat = Category::CAT_GAME_PS3;
 				return true;
 			}
@@ -471,6 +474,9 @@ class Categorize extends Category
 			}
 
 			if ($group === 'alt.binaries.sony.psp') {
+				if ($this->isGamePSVita()) {
+					return true;
+				}
 				$this->tmpCat = Category::CAT_GAME_PSP;
 				return true;
 			}
@@ -1068,12 +1074,12 @@ class Categorize extends Category
 
 	public function isGamePS4()
 	{
-		if (preg_match('/[^e]PS4/i', $this->releaseName)) {
-			if (preg_match('/ANTiDOTE|DLC|DUPLEX|EUR?|Googlecus|GOTY|\-HR|iNSOMNi|JAP|JPN|KONDIOS|\[PS4\]|PSN/i', $this->releaseName)) {
+		if (preg_match('/[ \(_.-]PS4[ \)_.-]/i', $this->releaseName)) {
+			if (preg_match('/ANTiDOTE|DLC|DUPLEX|EUR?|Googlecus|GOTY|\-HR|iNSOMNi|JAP|JPN|KONDIOS|\[PS4\]/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_PS4;
 				return true;
 			}
-			if (preg_match('/AGENCY|APATHY|Caravan|MULTi|NRP|NTSC|PAL|SPLiT|STRiKE|USA?|ZRY/i', $this->releaseName)) {
+			if (preg_match('/AGENCY|APATHY|Caravan|MULTi|NRP|NTSC|PAL|SPLiT|STRiKE|USA?|WaYsTeD|ZRY/i', $this->releaseName)) {
 				$this->tmpCat = Category::CAT_GAME_PS4;
 				return true;
 			}
@@ -1183,7 +1189,7 @@ class Categorize extends Category
 
 	public function isGameXBOXONE()
 	{
-		if (preg_match('/XBOXONE/i', $this->releaseName)) {
+		if (preg_match('/XBOXONE|XBOX\.ONE/i', $this->releaseName)) {
 			$this->tmpCat = Category::CAT_GAME_XBOXONE;
 			return true;
 		}
