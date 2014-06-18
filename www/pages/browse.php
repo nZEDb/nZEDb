@@ -43,13 +43,14 @@ if ($category == -1 && $grp == "") {
 } elseif ($category != -1 && $grp == "") {
     $cat = new Category();
     $cdata = $cat->getById($category);
-
     if ($cdata) {
         $page->smarty->assign('catname', $cdata["title"]);
         if ($cdata['parentid'] == Category::CAT_PARENT_GAME || $cdata['id'] == Category::CAT_PARENT_GAME) {
             $covgroup = 'console';
         } elseif ($cdata['parentid'] == Category::CAT_PARENT_MOVIE || $cdata['id'] == Category::CAT_PARENT_MOVIE) {
             $covgroup = 'movies';
+        }elseif ($cdata['parentid'] == Category::CAT_PARENT_PC || $cdata['id'] == Category::CAT_PC_GAMES) {
+                $covgroup = 'games';
         } elseif ($cdata['parentid'] == Category::CAT_PARENT_MUSIC || $cdata['id'] == Category::CAT_PARENT_MUSIC) {
             $covgroup = 'music';
         } elseif ($cdata['parentid'] == Category::CAT_PARENT_BOOKS || $cdata['id'] == Category::CAT_PARENT_BOOKS) {

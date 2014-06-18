@@ -73,6 +73,7 @@ CREATE TABLE releases (
   imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
   musicinfoid       INT                            NULL,
   consoleinfoid     INT                            NULL,
+  gamesinfo_id	    INT		  		   NULL,
   bookinfoid        INT                            NULL,
   anidbid           INT                            NULL,
   preid             INT UNSIGNED                   NOT NULL DEFAULT '0',
@@ -127,9 +128,10 @@ CREATE INDEX ix_releases_reqidstatus ON releases (reqidstatus);
 CREATE INDEX ix_releases_nfostatus ON releases (nfostatus);
 CREATE INDEX ix_releases_musicinfoid ON releases (musicinfoid);
 CREATE INDEX ix_releases_consoleinfoid ON releases (consoleinfoid);
+CREATE INDEX ix_releases_gamesinfo_id ON releases (gamesinfo_id);
 CREATE INDEX ix_releases_bookinfoid ON releases (bookinfoid);
 CREATE INDEX ix_releases_haspreview_passwordstatus ON releases (haspreview, passwordstatus);
-CREATE INDEX ix_releases_status ON releases (nzbstatus, iscategorized, isrenamed, nfostatus, ishashed, isrequestid, passwordstatus, dehashstatus, reqidstatus, musicinfoid, consoleinfoid, bookinfoid, haspreview, categoryid, imdbid, rageid);
+CREATE INDEX ix_releases_status ON releases (nzbstatus, iscategorized, isrenamed, nfostatus, ishashed, isrequestid, passwordstatus, dehashstatus, reqidstatus, musicinfoid, gamesinfo_id, consoleinfoid, bookinfoid, haspreview, categoryid, imdbid, rageid);
 CREATE INDEX ix_releases_postdate_searchname ON releases (postdate, searchname);
 CREATE INDEX ix_releases_nzb_guid ON releases (nzb_guid);
 CREATE INDEX ix_releases_preid_searchname ON releases (preid, searchname);
@@ -590,6 +592,7 @@ CREATE TABLE users (
   movieview      INT              NOT NULL DEFAULT 1,
   musicview      INT              NOT NULL DEFAULT 1,
   consoleview    INT              NOT NULL DEFAULT 1,
+  gameview	 INT		  NOT NULL DEFAULT 1,
   bookview       INT              NOT NULL DEFAULT 1,
   saburl         VARCHAR(255)     NULL DEFAULT NULL,
   sabapikey      VARCHAR(255)     NULL DEFAULT NULL,
@@ -835,6 +838,36 @@ CREATE TABLE consoleinfo (
   AUTO_INCREMENT =1;
 
 CREATE UNIQUE INDEX ix_consoleinfo_asin ON consoleinfo (asin);
+
+DROP TABLE IF EXISTS gamesinfo;
+CREATE TABLE consoleinfo (
+  id          INT(10) UNSIGNED        NOT NULL AUTO_INCREMENT,
+  title       VARCHAR(255)
+              COLLATE utf8_unicode_ci NOT NULL,     
+  asin        VARCHAR(128)
+              COLLATE utf8_unicode_ci DEFAULT NULL, 
+  url         VARCHAR(1000)
+              COLLATE utf8_unicode_ci DEFAULT NULL,
+  platform    VARCHAR(255)
+              COLLATE utf8_unicode_ci DEFAULT NULL, 
+  publisher   VARCHAR(255)
+              COLLATE utf8_unicode_ci DEFAULT NULL, 
+  genreid     INT(10)                 NULL DEFAULT NULL,
+  esrb        VARCHAR(255)            NULL DEFAULT NULL,
+  releasedate DATETIME DEFAULT NULL,
+  review      VARCHAR(3000)
+              COLLATE utf8_unicode_ci DEFAULT NULL,
+  cover       TINYINT(1) UNSIGNED     NOT NULL DEFAULT '0',
+  createddate DATETIME                NOT NULL,
+  updateddate DATETIME                NOT NULL,
+  PRIMARY KEY (id)
+)
+  ENGINE =MyISAM
+  DEFAULT CHARSET =utf8
+  COLLATE =utf8_unicode_ci
+  AUTO_INCREMENT =1;
+
+CREATE UNIQUE INDEX ix_gamesinfo_asin ON gamesinfo (asin);
 
 DROP TABLE IF EXISTS bookinfo;
 CREATE TABLE bookinfo (

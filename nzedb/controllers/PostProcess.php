@@ -108,6 +108,7 @@ class PostProcess
 		$this->processSharing($nntp);
 		$this->processMovies();
 		$this->processMusic();
+        $this->processConsoles();
 		$this->processGames();
 		$this->processAnime();
 		$this->processTv();
@@ -142,11 +143,11 @@ class PostProcess
 	}
 
 	/**
-	 * Lookup games if enabled.
+	 * Lookup console games if enabled.
 	 *
 	 * @return void
 	 */
-	public function processGames()
+	public function processConsoles()
 	{
 		if ($this->site->lookupgames != 0) {
 			$console = new Console($this->echooutput);
@@ -154,6 +155,18 @@ class PostProcess
 		}
 	}
 
+    /**
+     * Lookup games if enabled.
+     *
+     * @return void
+     */
+    public function processGames()
+    {
+        if ($this->site->lookupgames != 0) {
+            $games = new Games($this->echooutput);
+            $games->processGamesReleases();
+        }
+    }
 	/**
 	 * Lookup imdb if enabled.
 	 *

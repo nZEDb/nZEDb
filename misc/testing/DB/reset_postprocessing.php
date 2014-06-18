@@ -15,6 +15,7 @@ if (isset($argv[1]) && $argv[1] === "all") {
 		if (isset($argv[3]) && $argv[3] === "truncate") {
 			echo "Truncating tables\n";
 			$db->queryExec("TRUNCATE TABLE consoleinfo");
+            $db->queryExec("TRUNCATE TABLE gamesinfo");
 			$db->queryExec("TRUNCATE TABLE movieinfo");
 			$db->queryExec("TRUNCATE TABLE releasevideo");
 			$db->queryExec("TRUNCATE TABLE musicinfo");
@@ -27,7 +28,7 @@ if (isset($argv[1]) && $argv[1] === "all") {
 		$total = $qry->rowCount();
 		$affected = 0;
 		foreach ($qry as $releases) {
-			$db->queryExec("UPDATE releases SET consoleinfoid = NULL, imdbid = NULL, musicinfoid = NULL, bookinfoid = NULL, rageid = -1, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1 WHERE id = " . $releases['id']);
+			$db->queryExec("UPDATE releases SET consoleinfoid = NULL, gamesinfo_id = NULL, imdbid = NULL, musicinfoid = NULL, bookinfoid = NULL, rageid = -1, passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1 WHERE id = " . $releases['id']);
 			$consoletools->overWritePrimary("Resetting Releases:  " . $consoletools->percentString( ++$affected, $total));
 		}
 	}
@@ -53,6 +54,28 @@ if (isset($argv[1]) && ($argv[1] === "consoles" || $argv[1] === "all")) {
 		$consoletools->overWritePrimary("Resetting Console Releases:  " . $consoletools->percentString( ++$concount, $total));
 	}
 	echo $c->header("\n" . number_format($concount) . " consoleinfoID's reset.");
+}
+if (isset($argv[1]) && ($argv[1] === "games" || $argv[1] === "all")) {
+    $ran = true;
+    if (isset($argv[3]) && $argv[3] === "truncate") {
+        $db->queryExec("TRUNCATE TABLE gamesinfo");
+    }
+    if (isset($argv[2]) && $argv[2] === "true") {
+        echo $c->header("Resetting all Games postprocessing");
+        $where = ' WHERE gamesinfo_id IS NOT NULL';
+    } else {
+        echo $c->header("Resetting all failed Games postprocessing");
+        $where = " WHERE gamesinfo_id IN (-2, 0) AND categoryid = 4050";
+    }
+
+    $qry = $db->queryDirect("SELECT id FROM releases" . $where);
+    $total = $qry->rowCount();
+    $concount = 0;
+    foreach ($qry as $releases) {
+        $db->queryExec("UPDATE releases SET gamesinfo_id = NULL WHERE id = " . $releases['id']);
+        $consoletools->overWritePrimary("Resetting Games Releases:  " . $consoletools->percentString( ++$concount, $total));
+    }
+    echo $c->header("\n" . number_format($concount) . " gameinfo_ID's reset.");
 }
 if (isset($argv[1]) && ($argv[1] === "movies" || $argv[1] === "all")) {
 	$ran = true;
@@ -192,6 +215,7 @@ if ($ran === false) {
 					. "To reset even those previoulsy postprocessed, use the second argument true.\n"
 					. "To truncate the associated table, use the third argument truncate.\n\n"
 					. "php $argv[0] consoles true    ...: To reset all consoles.\n"
+                    . "php $argv[0] games true       ...: To reset all games.\n"
 					. "php $argv[0] movies true      ...: To reset all movies.\n"
 					. "php $argv[0] music true       ...: To reset all music.\n"
 					. "php $argv[0] misc true        ...: To reset all misc.\n"

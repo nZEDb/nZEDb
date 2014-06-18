@@ -30,6 +30,8 @@
                                     class="library-music"
                                 {elseif $type == 'Books'}
                                     class="library-show"
+                                {elseif $type == 'PC'}
+                                    class="library-games"
                                 {/if}
                                 >
                             <div class="poster">
@@ -47,6 +49,9 @@
                                     {elseif $type == 'Books'}
                                         <img height="140px" width="205px" alt=""
                                              src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfoid}.jpg"/>
+                                    {elseif $type == 'PC'}
+                                        <img height="250px" width="250px" alt=""
+                                             src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
                                     {/if}
                                 </a>
                             </div>
@@ -95,6 +100,23 @@
                                                    rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.searchname|escape:"url"}"></a>
                                             </div>
                                         {/if}
+                                    {elseif $type == 'PC'}
+                                        <div class="icon icon_ign">
+                                            <a class="divlink" title="Find on IGN"
+                                               href="{$site->dereferrer_link}http://ign.com/search?q={$result.searchname|escape:"url"}&page=0&count=10&type=object&objectType=game&filter=games&"
+                                               target="_blank"></a>
+                                        </div>
+                                        <div class="icon icon_gamespot">
+                                            <a class="divlink" title="Find on Gamespot"
+                                               href="{$site->dereferrer_link}http://www.gamespot.com/search/?q={$result.searchname|escape:"url"}"
+                                               target="_blank"></a>
+                                        </div>
+                                        <div class="icon icon_predbme">
+                                            <a class="divlink" title="Find on Predb.me"
+                                               href="{$site->dereferrer_link}http://predb.me/?cats=games&search={$result.searchname|escape:"url"}"
+                                               target="_blank"></a>
+                                        </div>
+
                                     {elseif $type == 'Audio'}
                                         <div class="icon icon_discogs">
                                             <a class="divlink" title="Find on Discogs"
