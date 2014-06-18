@@ -351,7 +351,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function doQuit($force = false)
 	{
-		$this->resetProperties();
+		$this->_resetProperties();
 
 		// Check if we are connected to usenet.
 		if ($force === true || parent::_isConnected(false)) {
@@ -371,12 +371,12 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access protected
 	 */
-	protected function resetProperties()
+	protected function _resetProperties()
 	{
 		$this->compression = false;
 		$this->currentGroup = '';
 		$this->postingAllowed = false;
-		parent::resetProperties();
+		parent::_resetProperties();
 	}
 
 	/**
@@ -1365,7 +1365,7 @@ class NNTP extends Net_NNTP_Client
 	 *               (object) pear_error on failure
 	 * @access protected
 	 */
-	protected function _getBody($article)
+	protected function &_getBody($article)
 	{
 		// Tell the news server we want the body of an article.
 		$response = $this->_sendCommand('BODY ' . $article);
@@ -1377,19 +1377,18 @@ class NNTP extends Net_NNTP_Client
 			// 222, RFC977: 'n <a> article retrieved - body follows'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_BODY_FOLLOWS:
 				$data = '';
+
 				// Continue until connection is lost
 				while (!feof($this->_socket)) {
 
 					// Retrieve and append up to 1024 characters from the server.
-					$line = @fgets($this->_socket, 1024);
+					$line = fgets($this->_socket, 1024);
 
+					// If the socket is empty/ an error occurs, false is returned.
+					// Since the socket is blocking, the socket should not be empty, so it's definitely an error.
 					if ($line === false) {
-						return $this->throwError('Failed to read line from socket.', null);
-					}
-
-					// Continue if the line is empty.
-					if (empty($line)) {
-						continue;
+						$error = $this->throwError('Failed to read line from socket.', null);
+						return $error;
 					}
 
 					// Check if the line terminates the text response.
@@ -1400,32 +1399,14 @@ class NNTP extends Net_NNTP_Client
 
 					// Add the line to the rest of the lines.
 					$data .= $line;
+
 				}
-				return $this->throwError('End of stream! Connection lost?', null);
-				break;
-
-			// 412, RFC977: 'no newsgroup has been selected'
-			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED:
-				return $this->throwError('No newsgroup has been selected', $response, $this->_currentStatusResponse());
-				break;
-
-			// 420, RFC977: 'no current article has been selected'
-			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED:
-				return $this->throwError('No current article has been selected', $response, $this->_currentStatusResponse());
-				break;
-
-			// 423, RFC977: 'no such article number in this group'
-			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER:
-				return $this->throwError('No such article number in this group', $response, $this->_currentStatusResponse());
-				break;
-
-			// 430, RFC977: 'no such article found'
-			case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_ID:
-				return $this->throwError('No such article found', $response, $this->_currentStatusResponse());
-				break;
+				$error = $this->throwError('End of stream! Connection lost?', null);
+				return $error;
 
 			default:
-				return $this->_handleUnexpectedResponse($response);
+				$error = $this->_handleErrorResponse($response);
+				return $error;
 		}
 	}
 

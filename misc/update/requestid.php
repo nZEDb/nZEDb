@@ -96,13 +96,16 @@ if ($total > 0) {
 					$newcatname = $category->getNameByID($determinedcat);
 					$oldcatname = $category->getNameByID($row['categoryid']);
 
-					echo $c->headerOver("\nNew name:  ") . $c->primary($title) .
-					$c->headerOver('Old name:  ') . $c->primary($row['name']) .
-					$c->headerOver('New cat:   ') . $c->primary($newcatname) .
-					$c->headerOver('Old cat:   ') . $c->primary($oldcatname) .
-					$c->headerOver('Group:     ') . $c->primary($row['groupname']) .
-					$c->headerOver('Method:    ') . $c->primary('requestID local') .
-					$c->headerOver('ReleaseID: ') . $c->primary($row['id']);
+					NameFixer::echoChangedReleaseName(array(
+							'new_name'     => $title,
+							'old_name'     => $row['name'],
+							'new_category' => $newcatname,
+							'old_category' => $oldcatname,
+							'group'        => $row['groupname'],
+							'release_id'   => $row["id"],
+							'method'       => 'misc/update/requestid.php'
+						)
+					);
 				}
 			}
 		} else {
