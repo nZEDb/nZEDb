@@ -537,7 +537,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 		// Store the socket resource as property.
 		$this->_socket = $socket;
 
-		$this->_socketTimeout = $socketTimeout;
+		$this->_socketTimeout = (is_numeric($socketTimeout) ? $socketTimeout : $this->_socketTimeout);
 
 		// Set the socket timeout.
 		stream_set_timeout($this->_socket, $this->_socketTimeout);
