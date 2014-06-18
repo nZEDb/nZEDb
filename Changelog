@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-18 kevin
+	* Add: Static method for echo'ing renamed releases.
 2014-06-18 ruhllatio
 	* Fix: PP additional hang due to filenames that start with a period and match_prefiles bug
 	* Chg: Properly categorize PS4 and PS4 in a.b.console.ps3
