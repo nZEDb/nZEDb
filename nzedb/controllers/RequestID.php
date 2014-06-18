@@ -317,13 +317,15 @@ class RequestID
 		);
 
 		if ($this->echoOutput) {
-			echo $this->colorCLI->primary(
-				"\nNew name:  " . $this->newTitle .
-				"\nOld name:  " . $this->result['searchname'] .
-				"\nNew cat:   " . $this->category->getNameByID($determinedCategory) .
-				"\nGroup:     " . $this->result['groupname'] .
-				"\nMethod:    requestID " . ($this->local ? 'local' : 'web') .
-				"\nReleaseID: " . $this->result['id']
+			NameFixer::echoChangedReleaseName(array(
+					'new_name'     => $this->newTitle,
+					'old_name'     => $this->result['searchname'],
+					'new_category' => $this->category->getNameByID($determinedCategory),
+					'old_category' => '',
+					'group'        => $this->result['groupname'],
+					'release_id'   => $this->result['id'],
+					'method'       => 'RequestID->updateRelease<' . ($this->local ? 'local' : 'web') . '>'
+				)
 			);
 		}
 	}

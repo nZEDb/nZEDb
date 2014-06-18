@@ -466,7 +466,7 @@ class NameFixer
 	 *              'old_name'     => (string) The old release search name.
 	 *              'new_category' => (string) The new category name or ID for the release.
 	 *              'old_category' => (string) The old category name or ID for the release.
-	 *              'group_id'     => (int)    The group ID of the release.
+	 *              'group'        => (string) The group name or ID of the release.
 	 *              'release_id'   => (int)    The ID of the release.
 	 *              'method'       => (string) The method used to rename the release.
 	 *        )
@@ -481,7 +481,7 @@ class NameFixer
 			'old_name'     => '',
 			'new_category' => '',
 			'old_category' => '',
-			'group_id'     => 0,
+			'group'        => '',
 			'release_id'   => 0,
 			'method'       => ''
 		)
@@ -493,7 +493,7 @@ class NameFixer
 		'Old name:     ' . $data['old_name']     . PHP_EOL .
 		'New category: ' . $data['new_category'] . PHP_EOL .
 		'Old category: ' . $data['old_category'] . PHP_EOL .
-		'Group ID:     ' . $data['group_id']     . PHP_EOL .
+		'Group:        ' . $data['group']        . PHP_EOL .
 		'Release ID:   ' . $data['release_id']   . PHP_EOL .
 		'Method:       ' . $data['method']       . PHP_EOL;
 	}

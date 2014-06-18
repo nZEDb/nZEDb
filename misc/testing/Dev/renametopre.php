@@ -178,13 +178,17 @@ function preName($argv, $argc)
 						if ($show === 1) {
 							$oldcatname = $category->getNameByID($row["categoryid"]);
 							$newcatname = $category->getNameByID($determinedcat);
-							echo $c->headerOver("\n\nNew name:  ") . $c->primary($cleanName) .
-								$c->headerOver("Old name:  ") . $c->primary($row["searchname"]) .
-								$c->headerOver("New cat:   ") . $c->primary($newcatname) .
-								$c->headerOver("Old cat:   ") . $c->primary($oldcatname) .
-								$c->headerOver("Group:     ") . $c->primary($groupname) .
-								$c->headerOver("Method:    ") . $c->primary($status) .
-								$c->headerOver("ReleaseID: ") . $c->primary($row["id"]);
+
+							NameFixer::echoChangedReleaseName(array(
+									'new_name'     => $cleanName,
+									'old_name'     => $row["searchname"],
+									'new_category' => $newcatname,
+									'old_category' => $oldcatname,
+									'group'        => $groupname,
+									'release_id'   => $row["id"],
+									'method'       => 'misc/testing/Dev/renametopre.php'
+								)
+							);
 						}
 					}
 				} else if ($show === 3 && preg_match('/^\[?\d*\].+?yEnc/i', $row['name'])) {

@@ -1296,7 +1296,7 @@ Class ProcessAdditional
 											'old_name'     => $rQuery['searchname'],
 											'new_category' => $newCat,
 											'old_category' => $rQuery['id'],
-											'group_id'     => $rQuery['group_id'],
+											'group'        => $rQuery['group_id'],
 											'release_id'   => $this->_release['id'],
 											'method'       => 'ProcessAdditional->_getAudioInfo'
 										)
@@ -1891,7 +1891,7 @@ Class ProcessAdditional
 								'old_name'     => $this->_release['searchname'],
 								'new_category' => $newCategory,
 								'old_category' => $this->_release['categoryid'],
-								'group_id'     => $this->_release['group_id'],
+								'group'        => $this->_release['group_id'],
 								'release_id'   => $this->_release['id'],
 								'method'       => 'ProcessAdditional->_processU4ETitle'
 							)

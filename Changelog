@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-06-18 kevin
+	* Chg: Change various scripts to use new NameFixer echo method.
 	* Add: Static method for echo'ing renamed releases.
 2014-06-18 ruhllatio
 	* Fix: PP additional hang due to filenames that start with a period and match_prefiles bug
