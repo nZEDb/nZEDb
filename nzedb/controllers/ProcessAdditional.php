@@ -758,7 +758,7 @@ Class ProcessAdditional
 					}
 
 					//Run a PreDB filename check on insert to try and match the release
-					else if (strpos($file['name'], '.') !== false) {
+					else if (strpos($file['name'], '.') != 0) {
 						$this->_release['filename'] = nzedb\utility\Utility::cutStringUsingLast('.', $file['name'], 'left', false);
 						$this->_release['releaseid'] = $this->_release['id'];
 						$this->_nameFixer->matchPredbFiles($this->_release, 1, 1, true, 1, 'full');
@@ -1850,7 +1850,7 @@ Class ProcessAdditional
 		if ($handle) {
 			while (($buffer = fgets($handle, 16384)) !== false) {
 				if (stripos($buffer, 'mkdir') !== false) {
-					$newName = trim(str_replace('mkdir', '', $buffer));
+					$newName = trim(str_replace('mkdir ', '', $buffer));
 					$this->_db->queryExec(
 						sprintf('
 							UPDATE releases
