@@ -489,13 +489,13 @@ class NameFixer
 	{
 		echo
 		PHP_EOL .
-		$this->c->headerOver('New name:     ') . $this->c->primary($data['new_name'])     . PHP_EOL .
-		$this->c->headerOver('Old name:     ') . $this->c->primary($data['old_name'])     . PHP_EOL .
-		$this->c->headerOver('New category: ') . $this->c->primary($data['new_category']) . PHP_EOL .
-		$this->c->headerOver('Old category: ') . $this->c->primary($data['old_category']) . PHP_EOL .
-		$this->c->headerOver('Group:        ') . $this->c->primary($data['group'])        . PHP_EOL .
-		$this->c->headerOver('Release ID:   ') . $this->c->primary($data['release_id'])   . PHP_EOL .
-		$this->c->headerOver('Method:       ') . $this->c->primary($data['method'])       . PHP_EOL;
+		'New name:     ' . $data['new_name']     . PHP_EOL .
+		'Old name:     ' . $data['old_name']     . PHP_EOL .
+		'New category: ' . $data['new_category'] . PHP_EOL .
+		'Old category: ' . $data['old_category'] . PHP_EOL .
+		'Group:        ' . $data['group']        . PHP_EOL .
+		'Release ID:   ' . $data['release_id']   . PHP_EOL .
+		'Method:       ' . $data['method']       . PHP_EOL;
 	}
 
 	// Match a PreDB title to a release name or searchname using an exact full-text match

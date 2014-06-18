@@ -17,6 +17,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Properly categorize PS4 and PS4 in a.b.console.ps3
 	* Fix: PS4 not post-processing correctly
 	* Fix: u4e rename results not colored correctly
+	* Rev: Revert changes to colorize u4e rename as they won't work
 2014-06-15 DariusIII
 	*Chg: Remove tmpunrar folder cleaning from monitor, interferes with other scripts.
 2014-06-15 kevin
