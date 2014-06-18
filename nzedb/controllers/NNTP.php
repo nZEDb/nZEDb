@@ -212,14 +212,14 @@ class NNTP extends Net_NNTP_Client
 			$this->currentPort = NNTP_PORT;
 			$userName = NNTP_USERNAME;
 			$password = NNTP_PASSWORD;
-			$this->_socketTimeout = (defined('NNTP_SOCKET_TIMEOUT') ? NNTP_SOCKET_TIMEOUT : $this->_socketTimeout);
+			$socketTimeout = (defined('NNTP_SOCKET_TIMEOUT') ? NNTP_SOCKET_TIMEOUT : $this->_socketTimeout);
 		} else {
 			$sslEnabled = (NNTP_SSLENABLED_A ? true : false);
 			$this->currentServer = NNTP_SERVER_A;
 			$this->currentPort = NNTP_PORT_A;
 			$userName = NNTP_USERNAME_A;
 			$password = NNTP_PASSWORD_A;
-			$this->_socketTimeout = (defined('NNTP_SOCKET_TIMEOUT_A') ? NNTP_SOCKET_TIMEOUT_A : $this->_socketTimeout);
+			$socketTimeout = (defined('NNTP_SOCKET_TIMEOUT_A') ? NNTP_SOCKET_TIMEOUT_A : $this->_socketTimeout);
 		}
 
 		$enc = ($sslEnabled ? ' (ssl)' : ' (non-ssl)');
@@ -233,7 +233,7 @@ class NNTP extends Net_NNTP_Client
 
 			// If we are not connected, try to connect.
 			if (!$connected) {
-				$ret = $this->connect($this->currentServer, $sslEnabled, $this->currentPort, 5);
+				$ret = $this->connect($this->currentServer, $sslEnabled, $this->currentPort, 5, $socketTimeout);
 			}
 
 			// Check if we got an error while connecting.
