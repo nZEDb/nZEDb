@@ -27,23 +27,29 @@ class Releases
 	 */
 	public function __construct($echooutput = false)
 	{
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
-		$this->db = new DB();
-		$this->s = new Sites();
-		$this->site = $this->s->get();
-		$this->groups = new Groups($this->db);
+		$this->echooutput          = ($echooutput && nZEDb_ECHOCLI);
+		$this->db                  = new DB();
+		$this->s                   = new Sites();
+		$this->site                = $this->s->get();
+		$this->groups              = new Groups($this->db);
 		$this->collectionsCleaning = new CollectionsCleaning();
-		$this->releaseCleaning = new ReleaseCleaning();
-		$this->consoleTools = new ConsoleTools();
-		$this->stage5limit = (isset($this->site->maxnzbsprocessed)) ? (int)$this->site->maxnzbsprocessed : 1000;
-		$this->completion = (isset($this->site->releasecompletion)) ? (int)$this->site->releasecompletion : 0;
-		$this->crosspostt = (isset($this->site->crossposttime)) ? (int)$this->site->crossposttime : 2;
-		$this->updategrabs = ($this->site->grabstatus == '0') ? false : true;
-		$this->requestids = $this->site->lookup_reqids;
-		$this->hashcheck = (isset($this->site->hashcheck)) ? (int)$this->site->hashcheck : 0;
-		$this->delaytimet = (isset($this->site->delaytime)) ? (int)$this->site->delaytime : 2;
-		$this->tablepergroup = (isset($this->site->tablepergroup)) ? (int)$this->site->tablepergroup : 0;
-		$this->c = new ColorCLI();
+		$this->releaseCleaning     = new ReleaseCleaning();
+		$this->consoleTools        = new ConsoleTools();
+		$this->stage5limit         = (isset($this->site->maxnzbsprocessed)) ?
+			(int)$this->site->maxnzbsprocessed : 1000;
+		$this->completion          = (isset($this->site->releasecompletion)) ?
+			(int)$this->site->releasecompletion : 0;
+		$this->crosspostt          = (isset($this->site->crossposttime)) ?
+			(int)$this->site->crossposttime : 2;
+		$this->updategrabs         = ($this->site->grabstatus == '0') ? false : true;
+		$this->requestids          = $this->site->lookup_reqids;
+		$this->hashcheck           = (isset($this->site->hashcheck)) ? (int)$this->site->hashcheck :
+			0;
+		$this->delaytimet          = (isset($this->site->delaytime)) ? (int)$this->site->delaytime :
+			2;
+		$this->tablepergroup       = (isset($this->site->tablepergroup)) ?
+			(int)$this->site->tablepergroup : 0;
+		$this->c                   = new ColorCLI();
 	}
 
 	/**
@@ -52,12 +58,12 @@ class Releases
 	public function get()
 	{
 		return $this->db->query(
-			'
-						SELECT releases.*, g.name AS group_name, c.title AS category_name
-						FROM releases
-						INNER JOIN category c ON c.id = releases.categoryid
-						INNER JOIN groups g ON g.id = releases.group_id
-						WHERE nzbstatus = 1'
+						'
+									SELECT releases.*, g.name AS group_name, c.title AS category_name
+									FROM releases
+									INNER JOIN category c ON c.id = releases.categoryid
+									INNER JOIN groups g ON g.id = releases.group_id
+									WHERE nzbstatus = 1'
 		);
 	}
 
@@ -72,15 +78,15 @@ class Releases
 	public function getRange($start, $num)
 	{
 		return $this->db->query(
-			sprintf("
+						sprintf("
 				SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name
 				FROM releases
 				INNER JOIN category c ON c.id = releases.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
 				WHERE nzbstatus = 1
 				ORDER BY postdate DESC %s",
-				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
-			)
+							($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
+						)
 		);
 	}
 
@@ -103,13 +109,13 @@ class Releases
 		$maxagesql = (
 		$maxage > 0
 			? " AND postdate > NOW() - INTERVAL " .
-			($this->db->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
+			  ($this->db->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
 			: ''
 		);
 
 		if ($grp != '') {
 			$grpjoin = 'INNER JOIN groups ON groups.id = releases.group_id';
-			$grpsql = sprintf(' AND groups.name = %s ', $this->db->escapeString($grp));
+			$grpsql  = sprintf(' AND groups.name = %s ', $this->db->escapeString($grp));
 		}
 
 		if (count($excludedcats) > 0) {
@@ -117,14 +123,19 @@ class Releases
 		}
 
 		$res = $this->db->queryOneRow(
-			sprintf(
-				'
-								SELECT COUNT(releases.id) AS num
-								FROM releases %s
-								WHERE nzbstatus = 1
-								AND releases.passwordstatus <= %d %s %s %s %s',
-				$grpjoin, $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql
-			)
+						sprintf(
+							'
+											SELECT COUNT(releases.id) AS num
+											FROM releases %s
+											WHERE nzbstatus = 1
+											AND releases.passwordstatus <= %d %s %s %s %s',
+							$grpjoin,
+							$this->showPasswords(),
+							$catsrch,
+							$maxagesql,
+							$exccatlist,
+							$grpsql
+						)
 		);
 
 		return ($res === false ? 0 : $res['num']);
@@ -143,17 +154,18 @@ class Releases
 	 *
 	 * @return array
 	 */
-	public function getBrowseRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array(), $grp = '')
+	public function getBrowseRange($cat, $start, $num, $orderby, $maxage = -1,
+								   $excludedcats = array(), $grp = '')
 	{
 		$limit = ($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start);
 
 		$catsrch = $this->categorySQL($cat);
 
-		$grpsql = $exccatlist = '';
+		$grpsql    = $exccatlist = '';
 		$maxagesql = (
 		$maxage > 0
 			? " AND postdate > NOW() - INTERVAL " .
-			($this->db->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
+			  ($this->db->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
 			: ''
 		);
 
@@ -168,26 +180,34 @@ class Releases
 		$order = $this->getBrowseOrder($orderby);
 
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT releases.*,
-									CONCAT(cp.title, ' > ', c.title) AS category_name,
-									CONCAT(cp.id, ',', c.id) AS category_ids,
-									groups.name AS group_name,
-									rn.id AS nfoid,
-									re.releaseid AS reid
-								FROM releases
-								INNER JOIN groups ON groups.id = releases.group_id
-								LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
-								LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id
-									AND rn.nfo IS NOT NULL
-								INNER JOIN category c ON c.id = releases.categoryid
-								INNER JOIN category cp ON cp.id = c.parentid
-								WHERE nzbstatus = 1
-								AND releases.passwordstatus <= %d %s %s %s %s
-								ORDER BY %s %s %s",
-				$this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql, $order[0], $order[1], $limit
-			), true
+						sprintf(
+							"
+											SELECT releases.*,
+												CONCAT(cp.title, ' > ', c.title) AS category_name,
+												CONCAT(cp.id, ',', c.id) AS category_ids,
+												groups.name AS group_name,
+												rn.id AS nfoid,
+												re.releaseid AS reid
+											FROM releases
+											INNER JOIN groups ON groups.id = releases.group_id
+											LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
+											LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id
+												AND rn.nfo IS NOT NULL
+											INNER JOIN category c ON c.id = releases.categoryid
+											INNER JOIN category cp ON cp.id = c.parentid
+											WHERE nzbstatus = 1
+											AND releases.passwordstatus <= %d %s %s %s %s
+											ORDER BY %s %s %s",
+							$this->showPasswords(),
+							$catsrch,
+							$maxagesql,
+							$exccatlist,
+							$grpsql,
+							$order[0],
+							$order[1],
+							$limit
+						),
+						true
 		);
 	}
 
@@ -212,7 +232,7 @@ class Releases
 	 */
 	public function getBrowseOrder($orderby)
 	{
-		$order = ($orderby == '') ? 'posted_desc' : $orderby;
+		$order    = ($orderby == '') ? 'posted_desc' : $orderby;
 		$orderArr = explode('_', $order);
 		switch ($orderArr[0]) {
 			case 'cat':
@@ -235,7 +255,8 @@ class Releases
 				$orderfield = 'postdate';
 				break;
 		}
-		$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc';
+		$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ?
+			$orderArr[1] : 'desc';
 
 		return array($orderfield, $ordersort);
 	}
@@ -279,7 +300,8 @@ class Releases
 			if (count($dateparts) == 3) {
 				$postfrom = sprintf(
 					' AND postdate > %s ',
-					$this->db->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' . $dateparts[0] . ' 00:00:00')
+					$this->db->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' .
+											$dateparts[0] . ' 00:00:00')
 				);
 			} else {
 				$postfrom = '';
@@ -291,7 +313,8 @@ class Releases
 			if (count($dateparts) == 3) {
 				$postto = sprintf(
 					' AND postdate < %s ',
-					$this->db->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' . $dateparts[0] . ' 23:59:59')
+					$this->db->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' .
+											$dateparts[0] . ' 23:59:59')
 				);
 			} else {
 				$postto = '';
@@ -305,16 +328,18 @@ class Releases
 		}
 
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT searchname, guid, groups.name AS gname, CONCAT(cp.title,'_',category.title) AS catName
-								FROM releases
-								INNER JOIN category ON releases.categoryid = category.id
-								INNER JOIN groups ON releases.group_id = groups.id
-								INNER JOIN category cp ON cp.id = category.parentid
-								WHERE nzbstatus = 1 %s %s %s",
-				$postfrom, $postto, $group
-			)
+						sprintf(
+							"
+											SELECT searchname, guid, groups.name AS gname, CONCAT(cp.title,'_',category.title) AS catName
+											FROM releases
+											INNER JOIN category ON releases.categoryid = category.id
+											INNER JOIN groups ON releases.group_id = groups.id
+											INNER JOIN category cp ON cp.id = category.parentid
+											WHERE nzbstatus = 1 %s %s %s",
+							$postfrom,
+							$postto,
+							$group
+						)
 		);
 	}
 
@@ -326,14 +351,14 @@ class Releases
 	public function getEarliestUsenetPostDate()
 	{
 		$row = $this->db->queryOneRow(
-			sprintf(
-				"
-								SELECT %s AS postdate FROM releases",
-				($this->db->dbSystem() === 'mysql'
-					? "DATE_FORMAT(min(postdate), '%d/%m/%Y')"
-					: "to_char(min(postdate), 'dd/mm/yyyy')"
-				)
-			)
+						sprintf(
+							"
+											SELECT %s AS postdate FROM releases",
+							($this->db->dbSystem() === 'mysql'
+								? "DATE_FORMAT(min(postdate), '%d/%m/%Y')"
+								: "to_char(min(postdate), 'dd/mm/yyyy')"
+							)
+						)
 		);
 
 		return ($row === false ? '01/01/2014' : $row['postdate']);
@@ -347,14 +372,14 @@ class Releases
 	public function getLatestUsenetPostDate()
 	{
 		$row = $this->db->queryOneRow(
-			sprintf(
-				"
-								SELECT %s AS postdate FROM releases",
-				($this->db->dbSystem() === 'mysql'
-					? "DATE_FORMAT(max(postdate), '%d/%m/%Y')"
-					: "to_char(max(postdate), 'dd/mm/yyyy')"
-				)
-			)
+						sprintf(
+							"
+											SELECT %s AS postdate FROM releases",
+							($this->db->dbSystem() === 'mysql'
+								? "DATE_FORMAT(max(postdate), '%d/%m/%Y')"
+								: "to_char(max(postdate), 'dd/mm/yyyy')"
+							)
+						)
 		);
 
 		return ($row === false ? '01/01/2014' : $row['postdate']);
@@ -369,7 +394,7 @@ class Releases
 	 */
 	public function getReleasedGroupsForSelect($blnIncludeAll = true)
 	{
-		$groups = $this->db->query('SELECT DISTINCT groups.id, groups.name FROM releases INNER JOIN groups on groups.id = releases.group_id');
+		$groups     = $this->db->query('SELECT DISTINCT groups.id, groups.name FROM releases INNER JOIN groups on groups.id = releases.group_id');
 		$temp_array = array();
 
 		if ($blnIncludeAll) {
@@ -406,67 +431,80 @@ class Releases
 		$catsrch = $cartsrch = '';
 		if (count($cat) > 0) {
 			if ($cat[0] == -2) {
-				$cartsrch = sprintf(' INNER JOIN usercart ON usercart.userid = %d AND usercart.releaseid = releases.id ', $uid);
-			} else if ($cat[0] != -1) {
-				$catsrch = ' AND (';
-				$categ = new Category();
-				foreach ($cat as $category) {
-					if ($category != -1) {
-						if ($categ->isParent($category)) {
-							$children = $categ->getChildren($category);
-							$chlist = '-99';
-							foreach ($children as $child) {
-								$chlist .= ', ' . $child['id'];
-							}
+				$cartsrch = sprintf(' INNER JOIN usercart ON usercart.userid = %d AND usercart.releaseid = releases.id ',
+									$uid);
+			} else {
+				if ($cat[0] != -1) {
+					$catsrch = ' AND (';
+					$categ   = new Category();
+					foreach ($cat as $category) {
+						if ($category != -1) {
+							if ($categ->isParent($category)) {
+								$children = $categ->getChildren($category);
+								$chlist   = '-99';
+								foreach ($children as $child) {
+									$chlist .= ', ' . $child['id'];
+								}
 
-							if ($chlist != '-99') {
-								$catsrch .= ' releases.categoryid IN (' . $chlist . ') OR ';
+								if ($chlist != '-99') {
+									$catsrch .= ' releases.categoryid IN (' . $chlist . ') OR ';
+								}
+							} else {
+								$catsrch .= sprintf(' releases.categoryid = %d OR ', $category);
 							}
-						} else {
-							$catsrch .= sprintf(' releases.categoryid = %d OR ', $category);
 						}
 					}
+					$catsrch .= '1=2 )';
 				}
-				$catsrch .= '1=2 )';
 			}
 		}
 
-		$rage = ($rageid > -1) ? sprintf(' AND releases.rageid = %d ', $rageid) : '';
+		$rage  = ($rageid > -1) ? sprintf(' AND releases.rageid = %d ', $rageid) : '';
 		$anidb = ($anidbid > -1) ? sprintf(' AND releases.anidbid = %d ', $anidbid) : '';
 		if ($this->db->dbSystem() === 'mysql') {
 			$airdate = ($airdate >
-				-1) ? sprintf(' AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
+						-1) ?
+				sprintf(' AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ',
+						$airdate) : '';
 		} else {
 			$airdate = ($airdate >
-				-1) ? sprintf(" AND releases.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
+						-1) ?
+				sprintf(" AND releases.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) :
+				'';
 		}
 
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT releases.*, m.cover, m.imdbid, m.rating, m.plot,
-										m.year, m.genre, m.director, m.actors, g.name AS group_name,
-										CONCAT(cp.title, ' > ', c.title) AS category_name,
-										CONCAT(cp.id, ',', c.id) AS category_ids,
-										COALESCE(cp.id,0) AS parentCategoryid,
-										mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist,
-										mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate,
-										mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover,
-										mug.title AS mu_genre, co.title AS co_title, co.url AS co_url,
-										co.publisher AS co_publisher, co.releasedate AS co_releasedate,
-										co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre
-								FROM releases
-								INNER JOIN category c ON c.id = releases.categoryid
-								INNER JOIN category cp ON cp.id = c.parentid
-								INNER JOIN groups g ON g.id = releases.group_id
-								LEFT OUTER JOIN movieinfo m ON m.imdbid = releases.imdbid AND m.title != ''
-								LEFT OUTER JOIN musicinfo mu ON mu.id = releases.musicinfoid
-								LEFT OUTER JOIN genres mug ON mug.id = mu.genreid
-								LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid
-								LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s
-								WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s",
-				$cartsrch, $this->showPasswords(), $catsrch, $rage, $anidb, $airdate, $limit
-			)
+						sprintf(
+							"
+											SELECT releases.*, m.cover, m.imdbid, m.rating, m.plot,
+													m.year, m.genre, m.director, m.actors, g.name AS group_name,
+													CONCAT(cp.title, ' > ', c.title) AS category_name,
+													CONCAT(cp.id, ',', c.id) AS category_ids,
+													COALESCE(cp.id,0) AS parentCategoryid,
+													mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist,
+													mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate,
+													mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover,
+													mug.title AS mu_genre, co.title AS co_title, co.url AS co_url,
+													co.publisher AS co_publisher, co.releasedate AS co_releasedate,
+													co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre
+											FROM releases
+											INNER JOIN category c ON c.id = releases.categoryid
+											INNER JOIN category cp ON cp.id = c.parentid
+											INNER JOIN groups g ON g.id = releases.group_id
+											LEFT OUTER JOIN movieinfo m ON m.imdbid = releases.imdbid AND m.title != ''
+											LEFT OUTER JOIN musicinfo mu ON mu.id = releases.musicinfoid
+											LEFT OUTER JOIN genres mug ON mug.id = mu.genreid
+											LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid
+											LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s
+											WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s",
+							$cartsrch,
+							$this->showPasswords(),
+							$catsrch,
+							$rage,
+							$anidb,
+							$airdate,
+							$limit
+						)
 		);
 	}
 
@@ -487,33 +525,44 @@ class Releases
 			$exccatlist = ' AND releases.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$usql = $this->uSQL($this->db->query(sprintf('SELECT rageid, categoryid FROM userseries WHERE userid = %d', $uid), true), 'rageid');
+		$usql = $this->uSQL($this->db->query(sprintf('SELECT rageid, categoryid FROM userseries WHERE userid = %d',
+													 $uid),
+											 true),
+							'rageid');
 		if ($this->db->dbSystem() === 'mysql') {
 			$airdate = ($airdate >
-				-1) ? sprintf(' AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
+						-1) ?
+				sprintf(' AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ',
+						$airdate) : '';
 		} else {
 			$airdate = ($airdate >
-				-1) ? sprintf(" AND releases.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
+						-1) ?
+				sprintf(" AND releases.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) :
+				'';
 		}
 		$limit = ' LIMIT ' . ($num > 100 ? 100 : $num) . ' OFFSET 0';
 
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT releases.*, tvr.rageid, tvr.releasetitle, g.name AS group_name,
-									CONCAT(cp.title, '-', c.title) AS category_name,
-									CONCAT(cp.id, ',', c.id) AS category_ids,
-									COALESCE(cp.id,0) AS parentCategoryid
-								FROM releases
-								INNER JOIN category c ON c.id = releases.categoryid
-								INNER JOIN category cp ON cp.id = c.parentid
-								INNER JOIN groups g ON g.id = releases.group_id
-								LEFT OUTER JOIN tvrage tvr ON tvr.rageid = releases.rageid
-								WHERE %s %s %s
-								AND releases.passwordstatus <= %d
-								ORDER BY postdate DESC %s",
-				$usql, $exccatlist, $airdate, $this->showPasswords(), $limit
-			)
+						sprintf(
+							"
+											SELECT releases.*, tvr.rageid, tvr.releasetitle, g.name AS group_name,
+												CONCAT(cp.title, '-', c.title) AS category_name,
+												CONCAT(cp.id, ',', c.id) AS category_ids,
+												COALESCE(cp.id,0) AS parentCategoryid
+											FROM releases
+											INNER JOIN category c ON c.id = releases.categoryid
+											INNER JOIN category cp ON cp.id = c.parentid
+											INNER JOIN groups g ON g.id = releases.group_id
+											LEFT OUTER JOIN tvrage tvr ON tvr.rageid = releases.rageid
+											WHERE %s %s %s
+											AND releases.passwordstatus <= %d
+											ORDER BY postdate DESC %s",
+							$usql,
+							$exccatlist,
+							$airdate,
+							$this->showPasswords(),
+							$limit
+						)
 		);
 	}
 
@@ -533,26 +582,32 @@ class Releases
 			$exccatlist = ' AND releases.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$usql = $this->uSQL($this->db->query(sprintf('SELECT imdbid, categoryid FROM usermovies WHERE userid = %d', $uid), true), 'imdbid');
+		$usql  = $this->uSQL($this->db->query(sprintf('SELECT imdbid, categoryid FROM usermovies WHERE userid = %d',
+													  $uid),
+											  true),
+							 'imdbid');
 		$limit = ' LIMIT ' . ($num > 100 ? 100 : $num) . ' OFFSET 0';
 
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT releases.*, mi.title AS releasetitle, g.name AS group_name,
-									CONCAT(cp.title, '-', c.title) AS category_name,
-									CONCAT(cp.id, ',', c.id) AS category_ids,
-									COALESCE(cp.id,0) AS parentCategoryid
-								FROM releases
-								INNER JOIN category c ON c.id = releases.categoryid
-								INNER JOIN category cp ON cp.id = c.parentid
-								INNER JOIN groups g ON g.id = releases.group_id
-								LEFT OUTER JOIN movieinfo mi ON mi.imdbid = releases.imdbid
-								WHERE %s %s
-								AND releases.passwordstatus <= %d
-								ORDER BY postdate DESC %s",
-				$usql, $exccatlist, $this->showPasswords(), $limit
-			)
+						sprintf(
+							"
+											SELECT releases.*, mi.title AS releasetitle, g.name AS group_name,
+												CONCAT(cp.title, '-', c.title) AS category_name,
+												CONCAT(cp.id, ',', c.id) AS category_ids,
+												COALESCE(cp.id,0) AS parentCategoryid
+											FROM releases
+											INNER JOIN category c ON c.id = releases.categoryid
+											INNER JOIN category cp ON cp.id = c.parentid
+											INNER JOIN groups g ON g.id = releases.group_id
+											LEFT OUTER JOIN movieinfo mi ON mi.imdbid = releases.imdbid
+											WHERE %s %s
+											AND releases.passwordstatus <= %d
+											ORDER BY postdate DESC %s",
+							$usql,
+							$exccatlist,
+							$this->showPasswords(),
+							$limit
+						)
 		);
 	}
 
@@ -568,7 +623,8 @@ class Releases
 	 *
 	 * @return array
 	 */
-	public function getShowsRange($usershows, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
+	public function getShowsRange($usershows, $start, $num, $orderby, $maxage = -1,
+								  $excludedcats = array())
 	{
 		if ($start === false) {
 			$limit = '';
@@ -587,29 +643,36 @@ class Releases
 			if ($this->db->dbSystem() === 'mysql') {
 				$maxagesql = sprintf(' AND releases.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
-				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ",
+									 $maxage);
 			}
 		}
 
 		$order = $this->getBrowseOrder($orderby);
 
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT releases.*, CONCAT(cp.title, '-', c.title) AS category_name,
-									CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name,
-									rn.id AS nfoid, re.releaseid AS reid
-								FROM releases
-								LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
-								INNER JOIN groups ON groups.id = releases.group_id
-								LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL
-								INNER JOIN category c ON c.id = releases.categoryid
-								INNER JOIN category cp ON cp.id = c.parentid
-								WHERE %s %s
-								AND releases.passwordstatus <= %d %s
-								ORDER BY %s %s %s",
-				$usql, $exccatlist, $this->showPasswords(), $maxagesql, $order[0], $order[1], $limit
-			)
+						sprintf(
+							"
+											SELECT releases.*, CONCAT(cp.title, '-', c.title) AS category_name,
+												CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name,
+												rn.id AS nfoid, re.releaseid AS reid
+											FROM releases
+											LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
+											INNER JOIN groups ON groups.id = releases.group_id
+											LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL
+											INNER JOIN category c ON c.id = releases.categoryid
+											INNER JOIN category cp ON cp.id = c.parentid
+											WHERE %s %s
+											AND releases.passwordstatus <= %d %s
+											ORDER BY %s %s %s",
+							$usql,
+							$exccatlist,
+							$this->showPasswords(),
+							$maxagesql,
+							$order[0],
+							$order[1],
+							$limit
+						)
 		);
 	}
 
@@ -635,19 +698,24 @@ class Releases
 			if ($this->db->dbSystem() === 'mysql') {
 				$maxagesql = sprintf(' AND releases.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
-				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ",
+									 $maxage);
 			}
 		}
 
 		$res = $this->db->queryOneRow(
-			sprintf(
-				'
-								SELECT COUNT(releases.id) AS num
-								FROM releases
-								WHERE %s %s
-								AND releases.passwordstatus <= %d %s',
-				$usql, $exccatlist, $this->showPasswords(), $maxagesql
-			), true
+						sprintf(
+							'
+											SELECT COUNT(releases.id) AS num
+											FROM releases
+											WHERE %s %s
+											AND releases.passwordstatus <= %d %s',
+							$usql,
+							$exccatlist,
+							$this->showPasswords(),
+							$maxagesql
+						),
+						true
 		);
 
 		return ($res === false ? 0 : $res['num']);
@@ -709,22 +777,22 @@ class Releases
 		// Delete from DB.
 		if ($this->db->dbSystem() === 'mysql') {
 			$this->db->queryExec(
-				sprintf(
-					'DELETE
-						releases, releasenfo, releasecomment, usercart, releasefiles,
-						releaseaudio, releasesubs, releasevideo, releaseextrafull
-					FROM releases
-					LEFT OUTER JOIN releasenfo ON releasenfo.releaseid = releases.id
-					LEFT OUTER JOIN releasecomment ON releasecomment.releaseid = releases.id
-					LEFT OUTER JOIN usercart ON usercart.releaseid = releases.id
-					LEFT OUTER JOIN releasefiles ON releasefiles.releaseid = releases.id
-					LEFT OUTER JOIN releaseaudio ON releaseaudio.releaseid = releases.id
-					LEFT OUTER JOIN releasesubs ON releasesubs.releaseid = releases.id
-					LEFT OUTER JOIN releasevideo ON releasevideo.releaseid = releases.id
-					LEFT OUTER JOIN releaseextrafull ON releaseextrafull.releaseid = releases.id
-					WHERE releases.id = %d',
-					$id
-				)
+					 sprintf(
+						 'DELETE
+							releases, releasenfo, releasecomment, usercart, releasefiles,
+							releaseaudio, releasesubs, releasevideo, releaseextrafull
+						FROM releases
+						LEFT OUTER JOIN releasenfo ON releasenfo.releaseid = releases.id
+						LEFT OUTER JOIN releasecomment ON releasecomment.releaseid = releases.id
+						LEFT OUTER JOIN usercart ON usercart.releaseid = releases.id
+						LEFT OUTER JOIN releasefiles ON releasefiles.releaseid = releases.id
+						LEFT OUTER JOIN releaseaudio ON releaseaudio.releaseid = releases.id
+						LEFT OUTER JOIN releasesubs ON releasesubs.releaseid = releases.id
+						LEFT OUTER JOIN releasevideo ON releasevideo.releaseid = releases.id
+						LEFT OUTER JOIN releaseextrafull ON releaseextrafull.releaseid = releases.id
+						WHERE releases.id = %d',
+						 $id
+					 )
 			);
 		} else {
 			$this->db->queryExec('DELETE FROM releasenfo WHERE releaseid = ' . $id);
@@ -765,17 +833,29 @@ class Releases
 	)
 	{
 		$this->db->queryExec(
-			sprintf(
-				'UPDATE releases
-				SET name = %s, searchname = %s, fromname = %s, categoryid = %d,
-				totalpart = %d, grabs = %d, size = %s, postdate = %s, adddate = %s, rageid = %d,
-				seriesfull = %s, season = %s, episode = %s, imdbid = %d, anidbid = %d
-				WHERE id = %d',
-				$this->db->escapeString($name), $this->db->escapeString($searchname), $this->db->escapeString($fromname),
-				$category, $parts, $grabs, $this->db->escapeString($size), $this->db->escapeString($posteddate),
-				$this->db->escapeString($addeddate), $rageid, $this->db->escapeString($seriesfull),
-				$this->db->escapeString($season), $this->db->escapeString($episode), $imdbid, $anidbid, $id
-			)
+				 sprintf(
+					 'UPDATE releases
+					SET name = %s, searchname = %s, fromname = %s, categoryid = %d,
+					totalpart = %d, grabs = %d, size = %s, postdate = %s, adddate = %s, rageid = %d,
+					seriesfull = %s, season = %s, episode = %s, imdbid = %d, anidbid = %d
+					WHERE id = %d',
+					 $this->db->escapeString($name),
+					 $this->db->escapeString($searchname),
+					 $this->db->escapeString($fromname),
+					 $category,
+					 $parts,
+					 $grabs,
+					 $this->db->escapeString($size),
+					 $this->db->escapeString($posteddate),
+					 $this->db->escapeString($addeddate),
+					 $rageid,
+					 $this->db->escapeString($seriesfull),
+					 $this->db->escapeString($season),
+					 $this->db->escapeString($episode),
+					 $imdbid,
+					 $anidbid,
+					 $id
+				 )
 		);
 	}
 
@@ -822,12 +902,12 @@ class Releases
 		}
 
 		return $this->db->query(
-			sprintf(
-				'
-								UPDATE releases SET %s WHERE guid IN (%s)',
-				implode(', ', $updateSql),
-				implode(', ', $updateGuids)
-			)
+						sprintf(
+							'
+											UPDATE releases SET %s WHERE guid IN (%s)',
+							implode(', ', $updateSql),
+							implode(', ', $updateGuids)
+						)
 		);
 	}
 
@@ -874,7 +954,7 @@ class Releases
 		$words = explode(' ', $search);
 
 		//only used to get a count of words
-		$searchwords = $searchsql = '';
+		$searchwords  = $searchsql = '';
 		$intwordcount = 0;
 
 		if (count($words) > 0) {
@@ -882,7 +962,7 @@ class Releases
 				//at least 1 term needs to be mandatory
 				if (!preg_match('/[+|!|^]/', $search)) {
 					$search = '+' . $search;
-					$words = explode(' ', $search);
+					$words  = explode(' ', $search);
 				}
 				foreach ($words as $word) {
 					$word = trim(rtrim(trim($word), '-'));
@@ -897,12 +977,12 @@ class Releases
 				$searchwords = trim($searchwords);
 
 				$searchsql .= sprintf(" AND MATCH(rs.name, rs.searchname) AGAINST('%s' IN BOOLEAN MODE)",
-					$searchwords
+									  $searchwords
 				);
 			}
 			if ($searchwords === '') {
 				$words = explode(' ', $search);
-				$like = 'ILIKE';
+				$like  = 'ILIKE';
 				if ($this->db->dbSystem() === 'mysql') {
 					$like = 'LIKE';
 				}
@@ -911,22 +991,33 @@ class Releases
 						$word = trim(rtrim(trim($word), '-'));
 						if ($intwordcount == 0 && (strpos($word, '^') === 0)) {
 							$searchsql .= sprintf(
-								' AND releases.%s %s %s', $type, $like, $this->db->escapeString(
-									substr($word, 1) . '%'
-								)
-							);
-						} else if (substr($word, 0, 2) == '--') {
-							$searchsql .= sprintf(
-								' AND releases.%s NOT %s %s', $type, $like, $this->db->escapeString(
-									'%' . substr($word, 2) . '%'
+								' AND releases.%s %s %s',
+								$type,
+								$like,
+								$this->db->escapeString(
+										 substr($word, 1) . '%'
 								)
 							);
 						} else {
-							$searchsql .= sprintf(
-								' AND releases.%s %s %s', $type, $like, $this->db->escapeString(
-									'%' . $word . '%'
-								)
-							);
+							if (substr($word, 0, 2) == '--') {
+								$searchsql .= sprintf(
+									' AND releases.%s NOT %s %s',
+									$type,
+									$like,
+									$this->db->escapeString(
+											 '%' . substr($word, 2) . '%'
+									)
+								);
+							} else {
+								$searchsql .= sprintf(
+									' AND releases.%s %s %s',
+									$type,
+									$like,
+									$this->db->escapeString(
+											 '%' . $word . '%'
+									)
+								);
+							}
 						}
 
 						$intwordcount++;
@@ -943,13 +1034,13 @@ class Releases
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$categ = new Category();
+			$categ   = new Category();
 			$catsrch = ' AND (';
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {
 						$children = $categ->getChildren($category);
-						$chlist = '-99';
+						$chlist   = '-99';
 						foreach ($children as $child) {
 							$chlist .= ', ' . $child['id'];
 						}
@@ -969,7 +1060,10 @@ class Releases
 	}
 
 	// Function for searching on the site (by subject, searchname or advanced).
-	public function search($searchname, $usenetname, $postername, $groupname, $cat = array(-1), $sizefrom, $sizeto, $hasnfo, $hascomments, $daysnew, $daysold, $offset = 0, $limit = 1000, $orderby = '', $maxage = -1, $excludedcats = array(), $type = 'basic')
+	public function search($searchname, $usenetname, $postername, $groupname, $cat = array(-1),
+						   $sizefrom, $sizeto, $hasnfo, $hascomments, $daysnew, $daysold,
+						   $offset = 0, $limit = 1000, $orderby = '', $maxage = -1,
+						   $excludedcats = array(), $type = 'basic')
 	{
 		if ($type !== 'advanced') {
 			$catsrch = $this->categorySQL($cat);
@@ -982,40 +1076,46 @@ class Releases
 
 		$daysnewsql = $daysoldsql = $maxagesql = $groupIDsql = $parentcatsql = '';
 
-		$searchnamesql = ($searchname != '-1' ? $this->searchSQL($searchname, 'searchname') : '');
-		$usenetnamesql = ($usenetname != '-1' ? $this->searchSQL($usenetname, 'name') : '');
-		$posternamesql = ($postername != '-1' ? $this->searchSQL($postername, 'fromname') : '');
-		$hasnfosql = ($hasnfo != '0' ? ' AND releases.nfostatus = 1 ' : '');
+		$searchnamesql  = ($searchname != '-1' ? $this->searchSQL($searchname, 'searchname') : '');
+		$usenetnamesql  = ($usenetname != '-1' ? $this->searchSQL($usenetname, 'name') : '');
+		$posternamesql  = ($postername != '-1' ? $this->searchSQL($postername, 'fromname') : '');
+		$hasnfosql      = ($hasnfo != '0' ? ' AND releases.nfostatus = 1 ' : '');
 		$hascommentssql = ($hascomments != '0' ? ' AND releases.comments > 0 ' : '');
-		$exccatlist = (count($excludedcats) > 0 ?
+		$exccatlist     = (count($excludedcats) > 0 ?
 			' AND releases.categoryid NOT IN (' . implode(',', $excludedcats) . ')' : '');
 
 		if ($daysnew != '-1') {
 			if ($this->db->dbSystem() === 'mysql') {
-				$daysnewsql = sprintf(' AND releases.postdate < (NOW() - INTERVAL %d DAY) ', $daysnew);
+				$daysnewsql = sprintf(' AND releases.postdate < (NOW() - INTERVAL %d DAY) ',
+									  $daysnew);
 			} else {
-				$daysnewsql = sprintf(" AND releases.postdate < NOW() - INTERVAL '%d DAYS' ", $daysnew);
+				$daysnewsql = sprintf(" AND releases.postdate < NOW() - INTERVAL '%d DAYS' ",
+									  $daysnew);
 			}
 		}
 
 		if ($daysold != '-1') {
 			if ($this->db->dbSystem() === 'mysql') {
-				$daysoldsql = sprintf(' AND releases.postdate > (NOW() - INTERVAL %d DAY) ', $daysold);
+				$daysoldsql = sprintf(' AND releases.postdate > (NOW() - INTERVAL %d DAY) ',
+									  $daysold);
 			} else {
-				$daysoldsql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $daysold);
+				$daysoldsql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ",
+									  $daysold);
 			}
 		}
 
 		if ($maxage > 0) {
 			if ($this->db->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND releases.postdate > (NOW() - INTERVAL %d DAY) ', $maxage);
+				$maxagesql = sprintf(' AND releases.postdate > (NOW() - INTERVAL %d DAY) ',
+									 $maxage);
 			} else {
-				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ",
+									 $maxage);
 			}
 		}
 
 		if ($groupname != '-1') {
-			$groupID = $this->groups->getIDByName($groupname);
+			$groupID    = $this->groups->getIDByName($groupname);
 			$groupIDsql = sprintf(' AND releases.group_id = %d ', $groupID);
 		}
 
@@ -1064,7 +1164,7 @@ class Releases
 			$order = $this->getBrowseOrder($orderby);
 		}
 
-		$sql = sprintf(
+		$sql      = sprintf(
 			"SELECT * FROM (SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
 			CONCAT(cp.id, ',', c.id) AS category_ids,
 			groups.name AS group_name, rn.id AS nfoid,
@@ -1078,16 +1178,31 @@ class Releases
 			INNER JOIN category cp ON cp.id = c.parentid
 			WHERE releases.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s) r
 			ORDER BY r.%s %s LIMIT %d OFFSET %d",
-			$this->showPasswords(), $searchnamesql, $usenetnamesql, $maxagesql, $posternamesql, $groupIDsql, $sizefromsql,
-			$sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0],
-			$order[1], $limit, $offset
+			$this->showPasswords(),
+			$searchnamesql,
+			$usenetnamesql,
+			$maxagesql,
+			$posternamesql,
+			$groupIDsql,
+			$sizefromsql,
+			$sizetosql,
+			$hasnfosql,
+			$hascommentssql,
+			$catsrch,
+			$daysnewsql,
+			$daysoldsql,
+			$exccatlist,
+			$order[0],
+			$order[1],
+			$limit,
+			$offset
 		);
 		$wherepos = strpos($sql, 'WHERE');
 		$countres = $this->db->queryOneRow(
-			'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' .
-			substr($sql, $wherepos, strrpos($sql, ')') - $wherepos)
+							 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' .
+							 substr($sql, $wherepos, strrpos($sql, ')') - $wherepos)
 		);
-		$res = $this->db->query($sql);
+		$res      = $this->db->query($sql);
 		if (count($res) > 0) {
 			$res[0]['_totalrows'] = $countres['num'];
 		}
@@ -1095,7 +1210,8 @@ class Releases
 		return $res;
 	}
 
-	public function searchbyRageId($rageId, $series = '', $episode = '', $offset = 0, $limit = 100, $name = '', $cat = array(-1), $maxage = -1)
+	public function searchbyRageId($rageId, $series = '', $episode = '', $offset = 0, $limit = 100,
+								   $name = '', $cat = array(-1), $maxage = -1)
 	{
 		$rageIdsql = $maxagesql = '';
 
@@ -1109,7 +1225,8 @@ class Releases
 				$series = sprintf('S%02d', $series);
 			}
 
-			$series = sprintf(' AND UPPER(releases.season) = UPPER(%s)', $this->db->escapeString($series));
+			$series = sprintf(' AND UPPER(releases.season) = UPPER(%s)',
+							  $this->db->escapeString($series));
 		}
 
 		if ($episode != '') {
@@ -1121,7 +1238,9 @@ class Releases
 			if ($this->db->dbSystem() === 'mysql') {
 				$like = 'LIKE';
 			}
-			$episode = sprintf(' AND releases.episode %s %s', $like, $this->db->escapeString('%' . $episode . '%'));
+			$episode = sprintf(' AND releases.episode %s %s',
+							   $like,
+							   $this->db->escapeString('%' . $episode . '%'));
 		}
 
 		$searchsql = '';
@@ -1134,16 +1253,29 @@ class Releases
 			if ($this->db->dbSystem() === 'mysql') {
 				$maxagesql = sprintf(' AND releases.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
-				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ",
+									 $maxage);
 			}
 		}
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid FROM releases INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.group_id INNER JOIN releasesearch rs on rs.releaseid = releases.id LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $rageIdsql, $series, $episode, $searchsql, $catsrch, $maxagesql, $limit, $offset);
+		$sql      = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid FROM releases INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.group_id INNER JOIN releasesearch rs on rs.releaseid = releases.id LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d",
+							$this->showPasswords(),
+							$rageIdsql,
+							$series,
+							$episode,
+							$searchsql,
+							$catsrch,
+							$maxagesql,
+							$limit,
+							$offset);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
-		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id  ' . substr($sql, $wherepos, $orderpos - $wherepos);
+		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id  ' . substr($sql,
+																																		  $wherepos,
+																																		  $orderpos -
+																																		  $wherepos);
 
 		$countres = $this->db->queryOneRow($sqlcount);
-		$res = $this->db->query($sql);
+		$res      = $this->db->query($sql);
 		if (count($res) > 0) {
 			$res[0]['_totalrows'] = $countres['num'];
 		}
@@ -1151,7 +1283,8 @@ class Releases
 		return $res;
 	}
 
-	public function searchbyAnidbId($anidbID, $epno = '', $offset = 0, $limit = 100, $name = '', $cat = array(-1), $maxage = -1)
+	public function searchbyAnidbId($anidbID, $epno = '', $offset = 0, $limit = 100, $name = '',
+									$cat = array(-1), $maxage = -1)
 	{
 		$anidbID = ($anidbID > -1) ? sprintf(' AND anidbid = %d ', $anidbID) : '';
 
@@ -1161,8 +1294,10 @@ class Releases
 		}
 
 		is_numeric($epno) ? $epno = sprintf(
-			" AND releases.episode %s '%s' ", $like, $this->db->escapeString(
-				'%' . $epno . '%'
+			" AND releases.episode %s '%s' ",
+			$like,
+			$this->db->escapeString(
+					 '%' . $epno . '%'
 			)
 		) : '';
 
@@ -1177,17 +1312,29 @@ class Releases
 			if ($this->db->dbSystem() === 'mysql') {
 				$maxagesql = sprintf(' AND releases.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
-				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ",
+									 $maxage);
 			}
 		}
 
-		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases INNER JOIN releasesearch rs on rs.releaseid = releases.id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.group_id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id and rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $anidbID, $epno, $searchsql, $catsrch, $maxage, $limit, $offset);
+		$sql      = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases INNER JOIN releasesearch rs on rs.releaseid = releases.id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.group_id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id and rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d",
+							$this->showPasswords(),
+							$anidbID,
+							$epno,
+							$searchsql,
+							$catsrch,
+							$maxage,
+							$limit,
+							$offset);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
-		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
+		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' . substr($sql,
+																																		 $wherepos,
+																																		 $orderpos -
+																																		 $wherepos);
 
 		$countres = $this->db->queryOneRow($sqlcount);
-		$res = $this->db->query($sql);
+		$res      = $this->db->query($sql);
 		if (count($res) > 0) {
 			$res[0]['_totalrows'] = $countres['num'];
 		}
@@ -1195,7 +1342,8 @@ class Releases
 		return $res;
 	}
 
-	public function searchbyImdbId($imdbId, $offset = 0, $limit = 100, $name = '', $cat = array(-1), $maxage = -1)
+	public function searchbyImdbId($imdbId, $offset = 0, $limit = 100, $name = '', $cat = array(-1),
+								   $maxage = -1)
 	{
 		if ($imdbId != '-1' && is_numeric($imdbId)) {
 			// Pad ID with zeros just in case.
@@ -1221,17 +1369,29 @@ class Releases
 			$maxage = '';
 		}
 
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid "
-			. "FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN releasesearch rs on rs.releaseid = releases.id "
-			. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE nzbstatus = 1 AND releases.passwordstatus <= %d "
-			. "%s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $searchsql, $imdbId, $catsrch, $maxage, $limit, $offset
+		$sql      = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid "
+							.
+							"FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN releasesearch rs on rs.releaseid = releases.id "
+							.
+							"LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE nzbstatus = 1 AND releases.passwordstatus <= %d "
+							. "%s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d",
+							$this->showPasswords(),
+							$searchsql,
+							$imdbId,
+							$catsrch,
+							$maxage,
+							$limit,
+							$offset
 		);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
-		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
+		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' . substr($sql,
+																																		 $wherepos,
+																																		 $orderpos -
+																																		 $wherepos);
 
 		$countres = $this->db->queryOneRow($sqlcount);
-		$res = $this->db->query($sql);
+		$res      = $this->db->query($sql);
 		if (count($res) > 0) {
 			$res[0]['_totalrows'] = $countres['num'];
 		}
@@ -1242,15 +1402,29 @@ class Releases
 	public function searchSimilar($currentid, $name, $limit = 6, $excludedcats = array())
 	{
 		// Get the category for the parent of this release.
-		$currRow = $this->getById($currentid);
-		$cat = new Category();
-		$catrow = $cat->getById($currRow['categoryid']);
+		$currRow   = $this->getById($currentid);
+		$cat       = new Category();
+		$catrow    = $cat->getById($currRow['categoryid']);
 		$parentCat = $catrow['parentid'];
 
-		$name = $this->getSimilarName($name);
+		$name    = $this->getSimilarName($name);
 		$results = $this->search(
-			$name, -1, -1, -1, array($parentCat), -1, -1, 0, 0, -1, -1, 0, $limit, '', -1,
-			$excludedcats
+						$name,
+						-1,
+						-1,
+						-1,
+						array($parentCat),
+						-1,
+						-1,
+						0,
+						0,
+						-1,
+						-1,
+						0,
+						$limit,
+						'',
+						-1,
+						$excludedcats
 		);
 		if (!$results) {
 			return $results;
@@ -1268,7 +1442,7 @@ class Releases
 
 	public function getSimilarName($name)
 	{
-		$words = str_word_count(str_replace(array('.', '_'), ' ', $name), 2);
+		$words      = str_word_count(str_replace(array('.', '_'), ' ', $name), 2);
 		$firstwords = array_slice($words, 0, 2);
 
 		return implode(' ', $firstwords);
@@ -1285,7 +1459,8 @@ class Releases
 		} else {
 			$gsql = sprintf('guid = %s', $this->db->escapeString($guid));
 		}
-		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE %s ", $gsql);
+		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE %s ",
+					   $gsql);
 
 		return (is_array($guid)) ? $this->db->query($sql) : $this->db->queryOneRow($sql);
 	}
@@ -1293,7 +1468,7 @@ class Releases
 	// Writes a zip file of an array of release guids directly to the stream.
 	public function getZipped($guids)
 	{
-		$nzb = new NZB();
+		$nzb     = new NZB();
 		$zipfile = new ZipFile();
 
 		foreach ($guids as $guid) {
@@ -1306,7 +1481,7 @@ class Releases
 				ob_end_clean();
 
 				$filename = $guid;
-				$r = $this->getByGuid($guid);
+				$r        = $this->getByGuid($guid);
 				if ($r) {
 					$filename = $r['searchname'];
 				}
@@ -1326,7 +1501,8 @@ class Releases
 				$series = sprintf('S%02d', $series);
 			}
 
-			$series = sprintf(' AND UPPER(releases.season) = UPPER(%s)', $this->db->escapeString($series));
+			$series = sprintf(' AND UPPER(releases.season) = UPPER(%s)',
+							  $this->db->escapeString($series));
 		}
 
 		if ($episode != '') {
@@ -1334,31 +1510,41 @@ class Releases
 				$episode = sprintf('E%02d', $episode);
 			}
 
-			$episode = sprintf(' AND UPPER(releases.episode) = UPPER(%s)', $this->db->escapeString($episode));
+			$episode = sprintf(' AND UPPER(releases.episode) = UPPER(%s)',
+							   $this->db->escapeString($episode));
 		}
 
-		return $this->db->queryOneRow(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d AND rageid = %d %s %s", $this->showPasswords(), $rageid, $series, $episode));
+		return $this->db->queryOneRow(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d AND rageid = %d %s %s",
+											  $this->showPasswords(),
+											  $rageid,
+											  $series,
+											  $episode));
 	}
 
 	public function removeRageIdFromReleases($rageid)
 	{
-		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM releases WHERE rageid = %d', $rageid));
-		$this->db->queryExec(sprintf('UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL WHERE rageid = %d', $rageid));
+		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM releases WHERE rageid = %d',
+											  $rageid));
+		$this->db->queryExec(sprintf('UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL WHERE rageid = %d',
+									 $rageid));
 
 		return $res['num'];
 	}
 
 	public function removeAnidbIdFromReleases($anidbID)
 	{
-		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM releases WHERE anidbid = %d', $anidbID));
-		$this->db->queryExec(sprintf('UPDATE releases SET anidbid = -1, episode = NULL, tvtitle = NULL, tvairdate = NULL WHERE anidbid = %d', $anidbID));
+		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM releases WHERE anidbid = %d',
+											  $anidbID));
+		$this->db->queryExec(sprintf('UPDATE releases SET anidbid = -1, episode = NULL, tvtitle = NULL, tvairdate = NULL WHERE anidbid = %d',
+									 $anidbID));
 
 		return $res['num'];
 	}
 
 	public function getById($id)
 	{
-		return $this->db->queryOneRow(sprintf('SELECT releases.*, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id WHERE releases.id = %d ', $id));
+		return $this->db->queryOneRow(sprintf('SELECT releases.*, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id WHERE releases.id = %d ',
+											  $id));
 	}
 
 	public function getReleaseNfo($id, $incnfo = true)
@@ -1371,16 +1557,19 @@ class Releases
 		$selnfo = ($incnfo) ? ", {$uc} AS nfo" : '';
 
 		return $this->db->queryOneRow(
-			sprintf(
-				'SELECT id, releaseid' . $selnfo . ' FROM releasenfo WHERE releaseid = %d AND nfo IS NOT NULL', $id
-			)
+						sprintf(
+							'SELECT id, releaseid' . $selnfo .
+							' FROM releasenfo WHERE releaseid = %d AND nfo IS NOT NULL',
+							$id
+						)
 		);
 	}
 
 	public function updateGrab($guid)
 	{
 		if ($this->updategrabs) {
-			$this->db->queryExec(sprintf('UPDATE releases SET grabs = grabs + 1 WHERE guid = %s', $this->db->escapeString($guid)));
+			$this->db->queryExec(sprintf('UPDATE releases SET grabs = grabs + 1 WHERE guid = %s',
+										 $this->db->escapeString($guid)));
 		}
 	}
 
@@ -1395,21 +1584,25 @@ class Releases
 	// Returns the quantity of categorized releases.
 	public function categorizeRelease($type, $where = '', $echooutput = false)
 	{
-		$cat = new Categorize();
+		$cat      = new Categorize();
 		$relcount = 0;
-		$resrel = $this->db->queryDirect('SELECT id, ' . $type . ', group_id FROM releases ' . $where);
-		$total = 0;
+		$resrel   = $this->db->queryDirect('SELECT id, ' . $type . ', group_id FROM releases ' .
+										   $where);
+		$total    = 0;
 		if ($resrel !== false) {
 			$total = $resrel->rowCount();
 		}
 		if ($total > 0) {
 			foreach ($resrel as $rowrel) {
 				$catId = $cat->determineCategory($rowrel[$type], $rowrel['group_id']);
-				$this->db->queryExec(sprintf('UPDATE releases SET categoryid = %d, iscategorized = 1 WHERE id = %d', $catId, $rowrel['id']));
+				$this->db->queryExec(sprintf('UPDATE releases SET categoryid = %d, iscategorized = 1 WHERE id = %d',
+											 $catId,
+											 $rowrel['id']));
 				$relcount++;
 				if ($this->echooutput) {
 					$this->consoleTools->overWritePrimary(
-						'Categorizing: ' . $this->consoleTools->percentString($relcount, $total)
+									   'Categorizing: ' .
+									   $this->consoleTools->percentString($relcount, $total)
 					);
 				}
 			}
@@ -1445,136 +1638,168 @@ class Releases
 		}
 
 		$stage1 = TIME();
-		$where = (!empty($groupID)) ? ' AND c.group_id = ' . $groupID . ' ' : ' ';
+		$where  = (!empty($groupID)) ? ' AND c.group_id = ' . $groupID . ' ' : ' ';
 
 		if ($this->db->dbSystem() === 'mysql') {
 			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c INNER JOIN (SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' .
-				$group['bname'] . ' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0' . $where .
-				'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r ON c.id = r.id SET filecheck = 1'
+					 'UPDATE ' . $group['cname'] . ' c INNER JOIN (SELECT c.id FROM ' .
+					 $group['cname'] . ' c INNER JOIN ' .
+					 $group['bname'] .
+					 ' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0' .
+					 $where .
+					 'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r ON c.id = r.id SET filecheck = 1'
 			);
 			//$this->db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b, '.$group['cname'].' c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
 
 			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c INNER JOIN(SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' .
-				$group['bname'] .
-				' b ON b.collectionid = c.id WHERE b.filenumber = 0 AND c.totalfiles > 0 AND c.filecheck = 1' . $where .
-				'GROUP BY c.id) r ON c.id = r.id SET c.filecheck = 16'
+					 'UPDATE ' . $group['cname'] . ' c INNER JOIN(SELECT c.id FROM ' .
+					 $group['cname'] . ' c INNER JOIN ' .
+					 $group['bname'] .
+					 ' b ON b.collectionid = c.id WHERE b.filenumber = 0 AND c.totalfiles > 0 AND c.filecheck = 1' .
+					 $where .
+					 'GROUP BY c.id) r ON c.id = r.id SET c.filecheck = 16'
 			);
 
 			// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 15 WHERE filecheck = 1' . $where);
+			$this->db->queryExec('UPDATE ' . $group['cname'] .
+								 ' c SET filecheck = 15 WHERE filecheck = 1' . $where);
 
 			// If we have all the parts set partcheck to 1.
 			// If filecheck 15, check if we have all the parts for a file then set partcheck.
 			$this->db->queryExec(
-				'UPDATE ' . $group['bname'] . ' b INNER JOIN(SELECT b.id FROM ' . $group['bname'] . ' b INNER JOIN ' .
-				$group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] .
-				' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0' . $where .
-				'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) = b.totalparts) r ON b.id = r.id SET b.partcheck = 1'
+					 'UPDATE ' . $group['bname'] . ' b INNER JOIN(SELECT b.id FROM ' .
+					 $group['bname'] . ' b INNER JOIN ' .
+					 $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] .
+					 ' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0' .
+					 $where .
+					 'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) = b.totalparts) r ON b.id = r.id SET b.partcheck = 1'
 			);
 
 			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
 			$this->db->queryExec(
-				'UPDATE ' . $group['bname'] . ' b INNER JOIN(SELECT b.id FROM ' . $group['bname'] . ' b INNER JOIN ' .
-				$group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] .
-				' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0' . $where .
-				'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r ON b.id = r.id SET b.partcheck = 1'
+					 'UPDATE ' . $group['bname'] . ' b INNER JOIN(SELECT b.id FROM ' .
+					 $group['bname'] . ' b INNER JOIN ' .
+					 $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] .
+					 ' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0' .
+					 $where .
+					 'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r ON b.id = r.id SET b.partcheck = 1'
 			);
 
 			// Set filecheck to 2 if partcheck = 1.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c INNER JOIN(SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' .
-				$group['bname'] . ' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)' .
-				$where .
-				'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) r ON c.id = r.id SET filecheck = 2'
+					 'UPDATE ' . $group['cname'] . ' c INNER JOIN(SELECT c.id FROM ' .
+					 $group['cname'] . ' c INNER JOIN ' .
+					 $group['bname'] .
+					 ' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)' .
+					 $where .
+					 'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) r ON c.id = r.id SET filecheck = 2'
 			);
 
 			// Set filecheck to 1 if we don't have all the parts.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c SET filecheck = 1 WHERE filecheck in (15, 16)' . $where
+					 'UPDATE ' . $group['cname'] .
+					 ' c SET filecheck = 1 WHERE filecheck in (15, 16)' . $where
 			);
 
 			// If a collection has not been updated in X hours, set filecheck to 2.
 			$query = $this->db->queryExec(
-				sprintf(
-					"UPDATE " . $group['cname'] . " c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM " .
-					$group['bname'] .
-					" b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)" .
-					$where, $this->delaytimet
-				)
+							  sprintf(
+								  "UPDATE " . $group['cname'] .
+								  " c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM " .
+								  $group['bname'] .
+								  " b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)" .
+								  $where,
+								  $this->delaytimet
+							  )
 			);
 		} else {
 			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c SET filecheck = 1 FROM (SELECT c.id FROM ' . $group['cname'] .
-				' c INNER JOIN ' . $group['bname'] .
-				' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0' . $where .
-				'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r WHERE c.id = r.id'
+					 'UPDATE ' . $group['cname'] . ' c SET filecheck = 1 FROM (SELECT c.id FROM ' .
+					 $group['cname'] .
+					 ' c INNER JOIN ' . $group['bname'] .
+					 ' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0' .
+					 $where .
+					 'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r WHERE c.id = r.id'
 			);
 
 			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c SET filecheck = 16 FROM (SELECT c.id FROM ' . $group['cname'] .
-				' c INNER JOIN ' . $group['bname'] .
-				' b ON b.collectionid = c.id WHERE b.filenumber = 0 AND c.totalfiles > 0 AND c.filecheck = 1' . $where .
-				'GROUP BY c.id) r WHERE c.id = r.id'
+					 'UPDATE ' . $group['cname'] . ' c SET filecheck = 16 FROM (SELECT c.id FROM ' .
+					 $group['cname'] .
+					 ' c INNER JOIN ' . $group['bname'] .
+					 ' b ON b.collectionid = c.id WHERE b.filenumber = 0 AND c.totalfiles > 0 AND c.filecheck = 1' .
+					 $where .
+					 'GROUP BY c.id) r WHERE c.id = r.id'
 			);
 
 			// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 15 WHERE filecheck = 1' . $where);
+			$this->db->queryExec('UPDATE ' . $group['cname'] .
+								 ' c SET filecheck = 15 WHERE filecheck = 1' . $where);
 
 			// If we have all the parts set partcheck to 1.
 			// If filecheck 15, check if we have all the parts for a file then set partcheck.
 			$this->db->queryExec(
-				'UPDATE ' . $group['bname'] . ' b  SET partcheck = 1 FROM (SELECT b.id FROM ' . $group['bname'] .
-				' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] .
-				' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0' . $where .
-				'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) = b.totalparts) r WHERE b.id = r.id'
+					 'UPDATE ' . $group['bname'] . ' b  SET partcheck = 1 FROM (SELECT b.id FROM ' .
+					 $group['bname'] .
+					 ' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' .
+					 $group['cname'] .
+					 ' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0' .
+					 $where .
+					 'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) = b.totalparts) r WHERE b.id = r.id'
 			);
 
 			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
 			$this->db->queryExec(
-				'UPDATE ' . $group['bname'] . ' b  SET partcheck = 1 FROM (SELECT b.id FROM ' . $group['bname'] .
-				' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] .
-				' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0' . $where .
-				'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r WHERE b.id = r.id'
+					 'UPDATE ' . $group['bname'] . ' b  SET partcheck = 1 FROM (SELECT b.id FROM ' .
+					 $group['bname'] .
+					 ' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' .
+					 $group['cname'] .
+					 ' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0' .
+					 $where .
+					 'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r WHERE b.id = r.id'
 			);
 
 			// Set filecheck to 2 if partcheck = 1.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c  SET filecheck = 2 FROM (SELECT c.id FROM ' . $group['cname'] .
-				' c INNER JOIN ' . $group['bname'] .
-				' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)' . $where .
-				'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) r WHERE c.id = r.id'
+					 'UPDATE ' . $group['cname'] . ' c  SET filecheck = 2 FROM (SELECT c.id FROM ' .
+					 $group['cname'] .
+					 ' c INNER JOIN ' . $group['bname'] .
+					 ' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)' .
+					 $where .
+					 'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) r WHERE c.id = r.id'
 			);
 
 			// Set filecheck to 1 if we don't have all the parts.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c SET filecheck = 1 WHERE filecheck in (15, 16)' . $where
+					 'UPDATE ' . $group['cname'] .
+					 ' c SET filecheck = 1 WHERE filecheck in (15, 16)' . $where
 			);
 
 			// If a collection has not been updated in X hours, set filecheck to 2.
 			$query = $this->db->queryExec(
-				sprintf(
-					"UPDATE " . $group['cname'] . " c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM " .
-					$group['bname'] .
-					" b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)" .
-					$where, $this->delaytimet
-				)
+							  sprintf(
+								  "UPDATE " . $group['cname'] .
+								  " c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM " .
+								  $group['bname'] .
+								  " b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)" .
+								  $where,
+								  $this->delaytimet
+							  )
 			);
 		}
 
 		if ($query !== false && $this->echooutput) {
 			$this->c->doEcho(
-				$this->c->primary(
-					$query->rowCount() + $query->rowCount() .
-					" collections set to filecheck = 2 (complete)"
-				)
+					$this->c->primary(
+							$query->rowCount() + $query->rowCount() .
+							" collections set to filecheck = 2 (complete)"
+					)
 			);
-			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage1)), true);
+			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage1)),
+							 true);
 		}
 	}
 
@@ -1603,17 +1828,20 @@ class Releases
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$checked = $this->db->queryExec(
-			'UPDATE ' . $group['cname'] . ' c SET filesize =
-									(SELECT COALESCE(SUM(p.size), 0) FROM ' . $group['pname'] . ' p INNER JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id),
+							'UPDATE ' . $group['cname'] . ' c SET filesize =
+									(SELECT COALESCE(SUM(p.size), 0) FROM ' . $group['pname'] .
+							' p INNER JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id),
 									filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0' . $where
 		);
 		if ($checked !== false && $this->echooutput) {
 			$this->c->doEcho(
-				$this->c->primary(
-					$checked->rowCount() . " collections set to filecheck = 3(size calculated)"
-				)
+					$this->c->primary(
+							$checked->rowCount() .
+							" collections set to filecheck = 3(size calculated)"
+					)
 			);
-			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage2)), true);
+			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage2)),
+							 true);
 		}
 	}
 
@@ -1644,32 +1872,34 @@ class Releases
 			$groupIDs = $this->groups->getActiveIDs();
 			foreach ($groupIDs as $groupID) {
 				$res = $this->db->query(
-					'SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 3 AND filesize > 0 AND group_id = ' .
-					$groupID['id']
+								'SELECT id FROM ' . $group['cname'] .
+								' WHERE filecheck = 3 AND filesize > 0 AND group_id = ' .
+								$groupID['id']
 				);
 				if (count($res) > 0) {
 					$minsizecount = 0;
 					if ($this->db->dbSystem() === 'mysql') {
 						$mscq = $this->db->queryExec(
-							"UPDATE " . $group['cname'] .
-							" c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND group_id = " .
-							$groupID['id']
+										 "UPDATE " . $group['cname'] .
+										 " c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND group_id = " .
+										 $groupID['id']
 						);
 						if ($mscq !== false) {
 							$minsizecount = $mscq->rowCount();
 						}
 					} else {
 						$s = $this->db->queryOneRow(
-							"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
-							$groupID['id']
+									  "SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
+									  $groupID['id']
 						);
 						if ($s['size'] > 0) {
 							$mscq = $this->db->queryExec(
-								sprintf(
-									'UPDATE ' . $group['cname'] .
-									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
-									$groupID['id'], $s['size']
-								)
+											 sprintf(
+												 'UPDATE ' . $group['cname'] .
+												 ' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
+												 $groupID['id'],
+												 $s['size']
+											 )
 							);
 							if ($mscq !== false) {
 								$minsizecount = $mscq->rowCount();
@@ -1683,11 +1913,13 @@ class Releases
 
 					$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 					if ($maxfilesizeres['value'] != 0) {
-						$mascq = $this->db->queryExec(
-							sprintf(
-								'UPDATE ' . $group['cname'] .
-								' SET filecheck = 5 WHERE filecheck = 3 AND group_id = %d AND filesize > %d ', $groupID['id'], $maxfilesizeres['value']
-							)
+						$mascq        = $this->db->queryExec(
+												 sprintf(
+													 'UPDATE ' . $group['cname'] .
+													 ' SET filecheck = 5 WHERE filecheck = 3 AND group_id = %d AND filesize > %d ',
+													 $groupID['id'],
+													 $maxfilesizeres['value']
+												 )
 						);
 						$maxsizecount = 0;
 						if ($mascq !== false) {
@@ -1702,25 +1934,26 @@ class Releases
 					$minfilecount = 0;
 					if ($this->db->dbSystem() === 'mysql') {
 						$mifcq = $this->db->queryExec(
-							"UPDATE " . $group['cname'] .
-							" c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND group_id = " .
-							$groupID['id']
+										  "UPDATE " . $group['cname'] .
+										  " c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND group_id = " .
+										  $groupID['id']
 						);
 						if ($mifcq !== false) {
 							$minfilecount = $mifcq->rowCount();
 						}
 					} else {
 						$f = $this->db->queryOneRow(
-							"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
-							$groupID['id']
+									  "SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
+									  $groupID['id']
 						);
 						if ($f['files'] > 0) {
 							$mifcq = $this->db->queryExec(
-								sprintf(
-									'UPDATE ' . $group['cname'] .
-									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
-									$groupID['id'], $s['size']
-								)
+											  sprintf(
+												  'UPDATE ' . $group['cname'] .
+												  ' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
+												  $groupID['id'],
+												  $s['size']
+											  )
 							);
 							if ($mifcq !== false) {
 								$minfilecount = $mifcq->rowCount();
@@ -1735,31 +1968,33 @@ class Releases
 			}
 		} else {
 			$res = $this->db->queryDirect(
-				'SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 3 AND filesize > 0 AND group_id = ' . $groupID
+							'SELECT id FROM ' . $group['cname'] .
+							' WHERE filecheck = 3 AND filesize > 0 AND group_id = ' . $groupID
 			);
 			if ($res !== false && $res->rowCount() > 0) {
 				$minsizecount = 0;
 				if ($this->db->dbSystem() === 'mysql') {
 					$mscq = $this->db->queryExec(
-						"UPDATE " . $group['cname'] .
-						" c LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND group_id = " .
-						$groupID
+									 "UPDATE " . $group['cname'] .
+									 " c LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND group_id = " .
+									 $groupID
 					);
 					if ($mscq !== false) {
 						$minsizecount = $mscq->rowCount();
 					}
 				} else {
 					$s = $this->db->queryOneRow(
-						"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
-						$groupID
+								  "SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
+								  $groupID
 					);
 					if ($s['size'] > 0) {
 						$mscq = $this->db->queryExec(
-							sprintf(
-								'UPDATE ' . $group['cname'] .
-								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
-								$groupID, $s['size']
-							)
+										 sprintf(
+											 'UPDATE ' . $group['cname'] .
+											 ' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
+											 $groupID,
+											 $s['size']
+										 )
 						);
 						if ($mscq !== false) {
 							$minsizecount = $mscq->rowCount();
@@ -1774,10 +2009,11 @@ class Releases
 				$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0) {
 					$mascq = $this->db->queryExec(
-						sprintf(
-							'UPDATE ' . $group['cname'] .
-							' SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d ', $maxfilesizeres['value']
-						)
+									  sprintf(
+										  'UPDATE ' . $group['cname'] .
+										  ' SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d ',
+										  $maxfilesizeres['value']
+									  )
 					);
 					if ($mascq !== false) {
 						$maxsizecount = $mascq->rowCount();
@@ -1791,25 +2027,26 @@ class Releases
 				$minfilecount = 0;
 				if ($this->db->dbSystem() === 'mysql') {
 					$mifcq = $this->db->queryExec(
-						"UPDATE " . $group['cname'] .
-						" c LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND group_id = " .
-						$groupID
+									  "UPDATE " . $group['cname'] .
+									  " c LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND group_id = " .
+									  $groupID
 					);
 					if ($mifcq !== false) {
 						$minfilecount = $mifcq->rowCount();
 					}
 				} else {
 					$f = $this->db->queryOneRow(
-						"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
-						$groupID
+								  "SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
+								  $groupID
 					);
 					if ($f['files'] > 0) {
 						$mifcq = $this->db->queryExec(
-							sprintf(
-								'UPDATE ' . $group['cname'] .
-								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
-								$groupID, $s['size']
-							)
+										  sprintf(
+											  'UPDATE ' . $group['cname'] .
+											  ' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
+											  $groupID,
+											  $s['size']
+										  )
 						);
 						if ($mifcq !== false) {
 							$minfilecount = $mifcq->rowCount();
@@ -1826,23 +2063,24 @@ class Releases
 		$delcount = $minsizecounts + $maxsizecounts + $minfilecounts;
 		if ($this->echooutput && $delcount > 0) {
 			$this->c->doEcho(
-				$this->c->primary(
-					'Deleted ' .
-					number_format($delcount) .
-					" collections smaller/larger than group/site settings."
-				)
+					$this->c->primary(
+							'Deleted ' .
+							number_format($delcount) .
+							" collections smaller/larger than group/site settings."
+					)
 			);
 		}
 		if ($this->echooutput) {
-			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage3)), true);
+			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage3)),
+							 true);
 		}
 	}
 
 	public function processReleasesStage4($groupID)
 	{
-		$categorize = new Categorize();
+		$categorize  = new Categorize();
 		$returnCount = $duplicate = 0;
-		$where = (!empty($groupID)) ? ' group_id = ' . $groupID . ' AND ' : ' ';
+		$where       = (!empty($groupID)) ? ' group_id = ' . $groupID . ' AND ' : ' ';
 
 		// Set table names
 		if ($this->tablepergroup === 1) {
@@ -1865,23 +2103,24 @@ class Releases
 		$stage4 = TIME();
 
 		$collections = $this->db->queryDirect(
-			sprintf('
+								sprintf('
 				SELECT %s.*, groups.name AS gname
 				FROM %s
 				INNER JOIN groups ON %s.group_id = groups.id
 				WHERE %s %s.filecheck = 3
 				AND filesize > 0 LIMIT %d',
-				$group['cname'],
-				$group['cname'],
-				$group['cname'],
-				$where,
-				$group['cname'],
-				$this->stage5limit
-			)
+										$group['cname'],
+										$group['cname'],
+										$group['cname'],
+										$where,
+										$group['cname'],
+										$this->stage5limit
+								)
 		);
 
 		if ($collections !== false && $this->echooutput) {
-			echo $this->c->primary($collections->rowCount() . " Collections ready to be converted to releases.");
+			echo $this->c->primary($collections->rowCount() .
+								   " Collections ready to be converted to releases.");
 		}
 
 		if ($collections !== false && $collections->rowCount() > 0) {
@@ -1892,13 +2131,18 @@ class Releases
 			foreach ($collections as $collection) {
 
 				$properName = true;
-				$releaseID = $isReqID = false;
-				$preID = null;
+				$releaseID  = $isReqID = false;
+				$preID      = null;
 
-				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $collection['subject']);
+				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'),
+											'',
+											$collection['subject']);
 
 				$cleanerName = $this->releaseCleaning->releaseCleaner(
-					$collection['subject'], $collection['fromname'], $collection['filesize'], $collection['gname']
+													 $collection['subject'],
+													 $collection['fromname'],
+													 $collection['filesize'],
+													 $collection['gname']
 				);
 
 				$fromName = trim($collection['fromname'], "'");
@@ -1907,7 +2151,7 @@ class Releases
 					$cleanName = $cleanerName;
 				} else {
 
-					$cleanName = $cleanerName['cleansubject'];
+					$cleanName  = $cleanerName['cleansubject'];
 					$properName = $cleanerName['properlynamed'];
 
 					if (isset($cleanerName['predb'])) {
@@ -1923,8 +2167,8 @@ class Releases
 					// try to match the cleaned searchname to predb title or filename here
 					$preMatch = $preDB->matchPre($cleanName);
 					if ($preMatch !== false) {
-						$cleanName = $preMatch['title'];
-						$preID = $preMatch['preid'];
+						$cleanName  = $preMatch['title'];
+						$preID      = $preMatch['preid'];
 						$properName = true;
 					}
 				}
@@ -1932,24 +2176,26 @@ class Releases
 				$category = $categorize->determineCategory($cleanName, $collection['group_id']);
 
 				$cleanRelName = utf8_encode($cleanRelName);
-				$cleanName = utf8_encode($cleanName);
-				$fromName = utf8_encode($fromName);
+				$cleanName    = utf8_encode($cleanName);
+				$fromName     = utf8_encode($fromName);
 
 				// Look for duplicates, duplicates match on releases.name, releases.fromname and releases.size
 				// A 1% variance in size is considered the same size when the subject and poster are the same
 				$dupeCheck = $this->db->queryOneRow(
-					sprintf('
+									  sprintf('
 						SELECT id, guid
 						FROM releases
 						WHERE name = %s
 						AND fromname = %s
 						AND size BETWEEN %s
 						AND %s',
-						$this->db->escapeString($cleanRelName),
-						$this->db->escapeString($fromName),
-						$this->db->escapeString($collection['filesize'] * .99),
-						$this->db->escapeString($collection['filesize'] * 1.01)
-					)
+											  $this->db->escapeString($cleanRelName),
+											  $this->db->escapeString($fromName),
+											  $this->db->escapeString($collection['filesize'] *
+																	  .99),
+											  $this->db->escapeString($collection['filesize'] *
+																	  1.01)
+									  )
 				);
 
 				if (!$dupeCheck) {
@@ -1967,33 +2213,34 @@ class Releases
 					$this->db->ping(true);
 
 					$releaseID = $this->db->queryInsert(
-						sprintf(
-							$query,
-							$this->db->escapeString($cleanRelName),
-							$this->db->escapeString($cleanName),
-							$collection['totalfiles'],
-							$collection['group_id'],
-							$this->db->escapeString(sha1(uniqid('', true) . mt_rand())),
-							$this->db->escapeString($collection['date']),
-							$this->db->escapeString($fromName),
-							$this->db->escapeString($collection['filesize']),
-							$checkPasswords,
-							$category
-						)
+										  sprintf(
+											  $query,
+											  $this->db->escapeString($cleanRelName),
+											  $this->db->escapeString($cleanName),
+											  $collection['totalfiles'],
+											  $collection['group_id'],
+											  $this->db->escapeString(sha1(uniqid('', true) .
+																		   mt_rand())),
+											  $this->db->escapeString($collection['date']),
+											  $this->db->escapeString($fromName),
+											  $this->db->escapeString($collection['filesize']),
+											  $checkPasswords,
+											  $category
+										  )
 					);
 				}
 
 				if ($releaseID) {
 					// Update collections table to say we inserted the release.
 					$this->db->queryExec(
-						sprintf('
+							 sprintf('
 							UPDATE %s
 							SET filecheck = 4, releaseid = %d
 							WHERE id = %d',
-							$group['cname'],
-							$releaseID,
-							$collection['id']
-						)
+									 $group['cname'],
+									 $releaseID,
+									 $collection['id']
+							 )
 					);
 
 					$returnCount++;
@@ -2001,31 +2248,33 @@ class Releases
 					if ($this->echooutput) {
 						echo $this->c->primary('Added release ' . $cleanName);
 					}
-
-				} else if (isset($releaseID) && $releaseID == false) {
-					$this->db->queryExec(
-						sprintf('
+				} else {
+					if (isset($releaseID) && $releaseID == false) {
+						$this->db->queryExec(
+								 sprintf('
 							UPDATE %s
 							SET filecheck = 5
 							WHERE collectionhash = %s',
-							$group['cname'],
-							$this->db->escapeString($collection['collectionhash'])
-						)
-					);
-					$duplicate++;
+										 $group['cname'],
+										 $this->db->escapeString($collection['collectionhash'])
+								 )
+						);
+						$duplicate++;
+					}
 				}
 			}
 		}
 
 		if ($this->echooutput) {
 			$this->c->doEcho(
-				$this->c->primary(
-					number_format($returnCount) .
-					' Releases added and ' .
-					number_format($duplicate) .
-					' marked for deletion in ' .
-					$this->consoleTools->convertTime(TIME() - $stage4)
-				), true
+					$this->c->primary(
+							number_format($returnCount) .
+							' Releases added and ' .
+							number_format($duplicate) .
+							' marked for deletion in ' .
+							$this->consoleTools->convertTime(TIME() - $stage4)
+					),
+					true
 			);
 		}
 
@@ -2049,7 +2298,9 @@ class Releases
 		foreach ($catresrel as $catrowrel) {
 			if ($catrowrel['minsize'] > 0) {
 				//printf("SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d\n", $catrowrel['id'], $catrowrel['minsize']);
-				$resrel = $this->db->queryDirect(sprintf('SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d', $catrowrel['id'], $catrowrel['minsize']));
+				$resrel = $this->db->queryDirect(sprintf('SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d',
+														 $catrowrel['id'],
+														 $catrowrel['minsize']));
 				foreach ($resrel as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$catminsizecount++;
@@ -2063,15 +2314,19 @@ class Releases
 
 			foreach ($groupIDs as $groupID) {
 				if ($this->db->dbSystem() === 'mysql') {
-					$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %s ) g ON g.id = r.group_id WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.group_id = %s", $groupID['id'], $groupID['id']));
+					$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %s ) g ON g.id = r.group_id WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.group_id = %s",
+															 $groupID['id'],
+															 $groupID['id']));
 				} else {
 					$resrel = array();
-					$s = $this->db->queryOneRow(
-						"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
-						$groupID['id']
+					$s      = $this->db->queryOneRow(
+									   "SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
+									   $groupID['id']
 					);
 					if ($s['size'] > 0) {
-						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND group_id = %d', $s['size'], $groupID['id']));
+						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND group_id = %d',
+																 $s['size'],
+																 $groupID['id']));
 					}
 				}
 				if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2083,7 +2338,9 @@ class Releases
 
 				$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0) {
-					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE group_id = %d AND size > %d', $groupID['id'], $maxfilesizeres['value']));
+					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE group_id = %d AND size > %d',
+															 $groupID['id'],
+															 $maxfilesizeres['value']));
 					if ($resrel !== false && $resrel->rowCount() > 0) {
 						foreach ($resrel as $rowrel) {
 							$this->fastDelete($rowrel['id'], $rowrel['guid']);
@@ -2093,15 +2350,19 @@ class Releases
 				}
 
 				if ($this->db->dbSystem() === 'mysql') {
-					$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.group_id = %d", $groupID['id'], $groupID['id']));
+					$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.group_id = %d",
+															 $groupID['id'],
+															 $groupID['id']));
 				} else {
 					$resrel = array();
-					$f = $this->db->queryOneRow(
-						"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
-						$groupID['id']
+					$f      = $this->db->queryOneRow(
+									   "SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
+									   $groupID['id']
 					);
 					if ($f['files'] > 0) {
-						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND group_id = %d', $f['files'], $groupID['id']));
+						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND group_id = %d',
+																 $f['files'],
+																 $groupID['id']));
 					}
 				}
 				if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2113,15 +2374,19 @@ class Releases
 			}
 		} else {
 			if ($this->db->dbSystem() === 'mysql') {
-				$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.group_id = %d", $groupID, $groupID));
+				$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.group_id = %d",
+														 $groupID,
+														 $groupID));
 			} else {
 				$resrel = array();
-				$s = $this->db->queryOneRow(
-					"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
-					$groupID
+				$s      = $this->db->queryOneRow(
+								   "SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
+								   $groupID
 				);
 				if ($s['size'] > 0) {
-					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND group_id = %d', $s['size'], $groupID));
+					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND group_id = %d',
+															 $s['size'],
+															 $groupID));
 				}
 			}
 			if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2133,7 +2398,9 @@ class Releases
 
 			$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 			if ($maxfilesizeres['value'] != 0) {
-				$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE group_id = %d AND size > %s', $groupID, $this->db->escapeString($maxfilesizeres['value'])));
+				$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE group_id = %d AND size > %s',
+														 $groupID,
+														 $this->db->escapeString($maxfilesizeres['value'])));
 				if ($resrel !== false && $resrel->rowCount() > 0) {
 					foreach ($resrel as $rowrel) {
 						$this->fastDelete($rowrel['id'], $rowrel['guid']);
@@ -2143,15 +2410,19 @@ class Releases
 			}
 
 			if ($this->db->dbSystem() === 'mysql') {
-				$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.group_id = %d", $groupID, $groupID));
+				$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.group_id = %d",
+														 $groupID,
+														 $groupID));
 			} else {
 				$resrel = array();
-				$f = $this->db->queryOneRow(
-					"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
-					$groupID
+				$f      = $this->db->queryOneRow(
+								   "SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
+								   $groupID
 				);
 				if ($f['files'] > 0) {
-					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND group_id = %d', $f['files'], $groupID));
+					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND group_id = %d',
+															 $f['files'],
+															 $groupID));
 				}
 			}
 			if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2165,22 +2436,24 @@ class Releases
 		$delcount = $minsizecount + $maxsizecount + $minfilecount + $catminsizecount;
 		if ($this->echooutput && $delcount > 0) {
 			$this->c->doEcho(
-				$this->c->primary(
-					'Deleted ' .
-					number_format($delcount) .
-					" releases smaller/larger than group/site settings."
-				)
+					$this->c->primary(
+							'Deleted ' .
+							number_format($delcount) .
+							" releases smaller/larger than group/site settings."
+					)
 			);
 		}
 		if ($this->echooutput) {
-			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage4dot5)), true);
+			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() -
+																				$stage4dot5)),
+							 true);
 		}
 	}
 
 	public function processReleasesStage5($groupID)
 	{
 		$nzbcount = $reccount = 0;
-		$where = (!empty($groupID)) ? ' r.group_id = ' . $groupID . ' AND ' : ' ';
+		$where    = (!empty($groupID)) ? ' r.group_id = ' . $groupID . ' AND ' : ' ';
 
 		// Set table names
 		if ($this->tablepergroup === 1) {
@@ -2203,29 +2476,38 @@ class Releases
 
 		$stage5 = TIME();
 		$resrel = $this->db->queryDirect(
-			"SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE" .
-			$where . "nzbstatus = 0"
+						   "SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE" .
+						   $where . "nzbstatus = 0"
 		);
-		$total = 0;
+		$total  = 0;
 		if ($resrel !== false) {
 			$total = $resrel->rowCount();
 		}
 		if ($total > 0) {
 			$nzb = new NZB();
 			// Init vars for writing the NZB's.
-			$nzb->initiateForWrite($this->db, htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8'), $groupID);
+			$nzb->initiateForWrite($this->db,
+								   htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8'),
+								   $groupID);
 			foreach ($resrel as $rowrel) {
-				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $rowrel['title']);
+				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'],
+														 $rowrel['guid'],
+														 $rowrel['name'],
+														 $rowrel['title']);
 				if ($nzb_create !== false) {
 					$this->db->queryExec(
-						sprintf(
-							'UPDATE %s SET filecheck = 5 WHERE releaseid = %s', $group['cname'], $rowrel['id']
-						)
+							 sprintf(
+								 'UPDATE %s SET filecheck = 5 WHERE releaseid = %s',
+								 $group['cname'],
+								 $rowrel['id']
+							 )
 					);
 					$nzbcount++;
 					if ($this->echooutput) {
 						echo $this->consoleTools->overWritePrimary(
-							'Creating NZBs: ' . $this->consoleTools->percentString($nzbcount, $total)
+												'Creating NZBs: ' .
+												$this->consoleTools->percentString($nzbcount,
+																				   $total)
 						);
 					}
 				}
@@ -2237,11 +2519,11 @@ class Releases
 		$timing = $this->c->primary($this->consoleTools->convertTime(TIME() - $stage5));
 		if ($this->echooutput) {
 			$this->c->doEcho(
-				$this->c->primary(
-					number_format($nzbcount) .
-					' NZBs created in ' .
-					$timing
-				)
+					$this->c->primary(
+							number_format($nzbcount) .
+							' NZBs created in ' .
+							$timing
+					)
 			);
 		}
 
@@ -2257,13 +2539,15 @@ class Releases
 	public function processReleasesStage5b($groupID, $limit = 5000)
 	{
 		$requestid = new RequestID($this->echooutput);
-		$stage5b = TIME();
+		$stage5b   = TIME();
 		if ($this->echooutput) {
 			$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- limit $limit."));
 		}
 		$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, true);
 		if ($this->echooutput) {
-			$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5b)), true);
+			$this->c->doEcho($this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' .
+											   $this->consoleTools->convertTime(TIME() - $stage5b)),
+							 true);
 		}
 	}
 
@@ -2277,21 +2561,26 @@ class Releases
 	{
 		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
 			$requestid = new RequestID($this->echooutput);
-			$stage5c = TIME();
+			$stage5c   = TIME();
 
 			if ($this->echooutput) {
 				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Web lookup -- limit $limit."));
 			}
 			$iFoundCnt = $requestid->lookupReqIDs($groupID, $limit, false);
 			if ($this->echooutput) {
-				$this->c->doEcho(PHP_EOL . $this->c->primary(number_format($iFoundCnt) . ' Releases updated in ' . $this->consoleTools->convertTime(TIME() - $stage5c)), true);
+				$this->c->doEcho(PHP_EOL . $this->c->primary(number_format($iFoundCnt) .
+															 ' Releases updated in ' .
+															 $this->consoleTools->convertTime(TIME() -
+																							  $stage5c)),
+								 true);
 			}
 		}
 	}
 
 	public function processReleasesStage6($categorize, $postproc, $groupID, $nntp)
 	{
-		$where = (!empty($groupID)) ? 'WHERE iscategorized = 0 AND group_id = ' . $groupID : 'WHERE iscategorized = 0';
+		$where = (!empty($groupID)) ? 'WHERE iscategorized = 0 AND group_id = ' . $groupID :
+			'WHERE iscategorized = 0';
 
 		// Categorize releases.
 		if ($this->echooutput) {
@@ -2308,23 +2597,24 @@ class Releases
 		} else {
 			if ($this->echooutput) {
 				$this->c->doEcho(
-					$this->c->info(
-						"\nPost-processing is not running inside the releases.php file.\n" .
-						"If you are using tmux or screen they might have their own files running Post-processing."
-					)
+						$this->c->info(
+								"\nPost-processing is not running inside the releases.php file.\n" .
+								"If you are using tmux or screen they might have their own files running Post-processing."
+						)
 				);
 			}
 		}
 		if ($this->echooutput) {
-			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage6)), true);
+			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage6)),
+							 true);
 		}
 	}
 
 	public function processReleasesStage7a($groupID)
 	{
 		$reccount = $delq = 0;
-		$where = ' ';
-		$where1 = '';
+		$where    = ' ';
+		$where1   = '';
 
 		// Set table names
 		if ($this->tablepergroup === 1) {
@@ -2338,8 +2628,10 @@ class Releases
 			$group['cname'] = 'collections';
 			$group['bname'] = 'binaries';
 			$group['pname'] = 'parts';
-			$where = (!empty($groupID)) ? ' ' . $group['cname'] . '.group_id = ' . $groupID . ' AND ' : ' ';
-			$where1 = (!empty($groupID)) ? ' AND ' . $group['cname'] . '.group_id = ' . $groupID : '';
+			$where          = (!empty($groupID)) ?
+				' ' . $group['cname'] . '.group_id = ' . $groupID . ' AND ' : ' ';
+			$where1         = (!empty($groupID)) ?
+				' AND ' . $group['cname'] . '.group_id = ' . $groupID : '';
 		}
 
 		// Delete old releases and finished collections.
@@ -2351,40 +2643,51 @@ class Releases
 		// Completed releases and old collections that were missed somehow.
 		if ($this->db->dbSystem() === 'mysql') {
 			$delq = $this->db->queryExec(
-				sprintf(
-					'DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' .
-					$group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' WHERE' . $where .
-					$group['cname'] . '.filecheck = 5 AND ' . $group['cname'] . '.id = ' . $group['bname'] .
-					'.collectionid AND ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid'
-				)
+							 sprintf(
+								 'DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' .
+								 $group['pname'] . ' FROM ' .
+								 $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] .
+								 ' WHERE' . $where .
+								 $group['cname'] . '.filecheck = 5 AND ' . $group['cname'] .
+								 '.id = ' . $group['bname'] .
+								 '.collectionid AND ' . $group['bname'] . '.id = ' .
+								 $group['pname'] . '.binaryid'
+							 )
 			);
 			if ($delq !== false) {
 				$reccount += $delq->rowCount();
 			}
 		} else {
-			$idr = $this->db->queryDirect('SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
+			$idr = $this->db->queryDirect('SELECT id FROM ' . $group['cname'] .
+										  ' WHERE filecheck = 5 ' . $where);
 			if ($idr !== false && $idr->rowCount() > 0) {
 				foreach ($idr as $id) {
 					$delqa = $this->db->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
-							' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' .
-							$group['bname'] . '.collectionid = %d)', $id['id']
-						)
+									  sprintf(
+										  'DELETE FROM ' . $group['pname'] .
+										  ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
+										  ' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] .
+										  '.binaryid AND ' .
+										  $group['bname'] . '.collectionid = %d)',
+										  $id['id']
+									  )
 					);
 					if ($delqa !== false) {
 						$reccount += $delqa->rowCount();
 					}
 					$delqb = $this->db->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']
-						)
+									  sprintf(
+										  'DELETE FROM ' . $group['bname'] .
+										  ' WHERE collectionid = %d',
+										  $id['id']
+									  )
 					);
 					if ($delqb !== false) {
 						$reccount += $delqb->rowCount();
 					}
 				}
-				$delqc = $this->db->queryExec('DELETE FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
+				$delqc = $this->db->queryExec('DELETE FROM ' . $group['cname'] .
+											  ' WHERE filecheck = 5 ' . $where);
 				if ($delqc !== false) {
 					$reccount += $delqc->rowCount();
 				}
@@ -2394,41 +2697,53 @@ class Releases
 		// Old collections that were missed somehow.
 		if ($this->db->dbSystem() === 'mysql') {
 			$delq = $this->db->queryExec(
-				sprintf(
-					'DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' .
-					$group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' WHERE ' . $group['cname'] .
-					'.dateadded < (NOW() - INTERVAL %d HOUR) AND ' . $group['cname'] . '.id = ' . $group['bname'] .
-					'.collectionid AND ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid' .
-					$where1, $this->site->partretentionhours
-				)
+							 sprintf(
+								 'DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' .
+								 $group['pname'] . ' FROM ' .
+								 $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] .
+								 ' WHERE ' . $group['cname'] .
+								 '.dateadded < (NOW() - INTERVAL %d HOUR) AND ' . $group['cname'] .
+								 '.id = ' . $group['bname'] .
+								 '.collectionid AND ' . $group['bname'] . '.id = ' .
+								 $group['pname'] . '.binaryid' .
+								 $where1,
+								 $this->site->partretentionhours
+							 )
 			);
 			if ($delq !== false) {
 				$reccount += $delq->rowCount();
 			}
 		} else {
 			$idr = $this->db->queryDirect(
-				sprintf(
-					"SELECT id FROM " . $group['cname'] . " WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" .
-					$where1, $this->site->partretentionhours
-				)
+							sprintf(
+								"SELECT id FROM " . $group['cname'] .
+								" WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" .
+								$where1,
+								$this->site->partretentionhours
+							)
 			);
 
 			if ($idr !== false && $idr->rowCount() > 0) {
 				foreach ($idr as $id) {
 					$delqa = $this->db->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
-							' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' .
-							$group['bname'] . '.collectionid = %d)', $id['id']
-						)
+									  sprintf(
+										  'DELETE FROM ' . $group['pname'] .
+										  ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
+										  ' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] .
+										  '.binaryid AND ' .
+										  $group['bname'] . '.collectionid = %d)',
+										  $id['id']
+									  )
 					);
 					if ($delqa !== false) {
 						$reccount += $delqa->rowCount();
 					}
 					$delqb = $this->db->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']
-						)
+									  sprintf(
+										  'DELETE FROM ' . $group['bname'] .
+										  ' WHERE collectionid = %d',
+										  $id['id']
+									  )
 					);
 					if ($delqb !== false) {
 						$reccount += $delqb->rowCount();
@@ -2436,10 +2751,12 @@ class Releases
 				}
 			}
 			$delqc = $this->db->queryExec(
-				sprintf(
-					"DELETE FROM " . $group['cname'] . " WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" .
-					$where1, $this->site->partretentionhours
-				)
+							  sprintf(
+								  "DELETE FROM " . $group['cname'] .
+								  " WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" .
+								  $where1,
+								  $this->site->partretentionhours
+							  )
 			);
 			if ($delqc !== false) {
 				$reccount += $delqc->rowCount();
@@ -2449,22 +2766,27 @@ class Releases
 		// Binaries/parts that somehow have no collection.
 		if ($this->db->dbSystem() === 'mysql') {
 			$delqd = $this->db->queryExec(
-				'DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['bname'] . ', ' .
-				$group['pname'] . ' WHERE ' . $group['bname'] . '.collectionid = 0 AND ' . $group['bname'] . '.id = ' .
-				$group['pname'] . '.binaryid'
+							  'DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' .
+							  $group['bname'] . ', ' .
+							  $group['pname'] . ' WHERE ' . $group['bname'] .
+							  '.collectionid = 0 AND ' . $group['bname'] . '.id = ' .
+							  $group['pname'] . '.binaryid'
 			);
 			if ($delqd !== false) {
 				$reccount += $delqd->rowCount();
 			}
 		} else {
 			$delqe = $this->db->queryExec(
-				'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] . ' WHERE ' .
-				$group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' . $group['bname'] . '.collectionid = 0)'
+							  'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' .
+							  $group['bname'] . ' WHERE ' .
+							  $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' .
+							  $group['bname'] . '.collectionid = 0)'
 			);
 			if ($delqe !== false) {
 				$reccount += $delqe->rowCount();
 			}
-			$delqf = $this->db->queryExec('DELETE FROM ' . $group['bname'] . ' WHERE collectionid = 0');
+			$delqf = $this->db->queryExec('DELETE FROM ' . $group['bname'] .
+										  ' WHERE collectionid = 0');
 			if ($delqf !== false) {
 				$reccount += $delqf->rowCount();
 			}
@@ -2473,7 +2795,8 @@ class Releases
 		// Parts that somehow have no binaries.
 		if (mt_rand(1, 100) % 3 == 0) {
 			$delqg = $this->db->queryExec(
-				'DELETE FROM ' . $group['pname'] . ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)'
+							  'DELETE FROM ' . $group['pname'] .
+							  ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)'
 			);
 			if ($delqg !== false) {
 				$reccount += $delqg->rowCount();
@@ -2482,7 +2805,8 @@ class Releases
 
 		// Binaries that somehow have no collection.
 		$delqh = $this->db->queryExec(
-			'DELETE FROM ' . $group['bname'] . ' WHERE collectionid NOT IN (SELECT c.id FROM ' . $group['cname'] . ' c)'
+						  'DELETE FROM ' . $group['bname'] .
+						  ' WHERE collectionid NOT IN (SELECT c.id FROM ' . $group['cname'] . ' c)'
 		);
 		if ($delqh !== false) {
 			$reccount += $delqh->rowCount();
@@ -2490,8 +2814,9 @@ class Releases
 
 		// Collections that somehow have no binaries.
 		$delqi = $this->db->queryExec(
-			'DELETE FROM ' . $group['cname'] . ' WHERE ' . $group['cname'] . '.id NOT IN (SELECT ' . $group['bname'] .
-			'.collectionid FROM ' . $group['bname'] . ') ' . $where1
+						  'DELETE FROM ' . $group['cname'] . ' WHERE ' . $group['cname'] .
+						  '.id NOT IN (SELECT ' . $group['bname'] .
+						  '.collectionid FROM ' . $group['bname'] . ') ' . $where1
 		);
 		if ($delqi !== false) {
 			$reccount += $delqi->rowCount();
@@ -2499,12 +2824,12 @@ class Releases
 
 		if ($this->echooutput) {
 			$this->c->doEcho(
-				$this->c->primary(
-					'Removed ' .
-					number_format($reccount) .
-					' parts/binaries/collection rows in ' .
-					$this->consoleTools->convertTime(TIME() - $stage7)
-				)
+					$this->c->primary(
+							'Removed ' .
+							number_format($reccount) .
+							' parts/binaries/collection rows in ' .
+							$this->consoleTools->convertTime(TIME() - $stage7)
+					)
 			);
 		}
 	}
@@ -2513,7 +2838,7 @@ class Releases
 	public function processReleasesStage7b()
 	{
 		$category = new Category();
-		$genres = new Genres();
+		$genres   = new Genres();
 		$remcount = $reccount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = $total = 0;
 
 		// Delete old releases and finished collections.
@@ -2525,9 +2850,11 @@ class Releases
 		// Releases past retention.
 		if ($this->site->releaseretentiondays != 0) {
 			if ($this->db->dbSystem() === 'mysql') {
-				$result = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)', $this->site->releaseretentiondays));
+				$result = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)',
+														 $this->site->releaseretentiondays));
 			} else {
-				$result = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL '%d DAYS')", $this->site->releaseretentiondays));
+				$result = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL '%d DAYS')",
+														 $this->site->releaseretentiondays));
 			}
 			if ($result !== false && $result->rowCount() > 0) {
 				foreach ($result as $rowrel) {
@@ -2540,7 +2867,8 @@ class Releases
 		// Passworded releases.
 		if ($this->site->deletepasswordedrelease == 1) {
 			$result = $this->db->queryDirect(
-				'SELECT id, guid FROM releases WHERE passwordstatus = ' . Releases::PASSWD_RAR
+							   'SELECT id, guid FROM releases WHERE passwordstatus = ' .
+							   Releases::PASSWD_RAR
 			);
 			if ($result !== false && $result->rowCount() > 0) {
 				foreach ($result as $rowrel) {
@@ -2553,7 +2881,8 @@ class Releases
 		// Possibly passworded releases.
 		if ($this->site->deletepossiblerelease == 1) {
 			$result = $this->db->queryDirect(
-				'SELECT id, guid FROM releases WHERE passwordstatus = ' . Releases::PASSWD_POTENTIAL
+							   'SELECT id, guid FROM releases WHERE passwordstatus = ' .
+							   Releases::PASSWD_POTENTIAL
 			);
 			if ($result !== false && $result->rowCount() > 0) {
 				foreach ($result as $rowrel) {
@@ -2567,9 +2896,11 @@ class Releases
 		do {
 			if ($this->crosspostt != 0) {
 				if ($this->db->dbSystem() === 'mysql') {
-					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1', $this->crosspostt));
+					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1',
+															 $this->crosspostt));
 				} else {
-					$resrel = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, id HAVING COUNT(name) > 1", $this->crosspostt));
+					$resrel = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, id HAVING COUNT(name) > 1",
+															 $this->crosspostt));
 				}
 				$total = 0;
 				if ($resrel !== false) {
@@ -2590,7 +2921,8 @@ class Releases
 			echo $this->c->error("\nYou have an invalid setting for completion.");
 		}
 		if ($this->completion > 0) {
-			$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion));
+			$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE completion < %d AND completion > 0',
+													 $this->completion));
 			if ($resrel !== false && $resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid']);
@@ -2603,7 +2935,8 @@ class Releases
 		$catlist = $category->getDisabledIDs();
 		if (count($catlist) > 0) {
 			foreach ($catlist as $cat) {
-				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d', $cat['id']));
+				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d',
+													  $cat['id']));
 				if ($res !== false && $res->rowCount() > 0) {
 					foreach ($res as $rel) {
 						$disabledcount++;
@@ -2617,7 +2950,8 @@ class Releases
 		$genrelist = $genres->getDisabledIDs();
 		if (count($genrelist) > 0) {
 			foreach ($genrelist as $genre) {
-				$rels = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genreid = %d) mi ON releases.musicinfoid = mid', $genre['id']));
+				$rels = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genreid = %d) mi ON releases.musicinfoid = mid',
+													   $genre['id']));
 				if ($rels !== false && $rels->rowCount() > 0) {
 					foreach ($rels as $rel) {
 						$disabledgenrecount++;
@@ -2630,9 +2964,13 @@ class Releases
 		// Misc other.
 		if ($this->site->miscotherretentionhours > 0) {
 			if ($this->db->dbSystem() === 'mysql') {
-				$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL %d HOUR', CATEGORY::CAT_MISC, $this->site->miscotherretentionhours));
+				$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL %d HOUR',
+														 CATEGORY::CAT_MISC,
+														 $this->site->miscotherretentionhours));
 			} else {
-				$resrel = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL '%d HOURS'", CATEGORY::CAT_MISC, $this->site->miscotherretentionhours));
+				$resrel = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL '%d HOURS'",
+														 CATEGORY::CAT_MISC,
+														 $this->site->miscotherretentionhours));
 			}
 			if ($resrel !== false && $resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
@@ -2644,88 +2982,96 @@ class Releases
 
 		if ($this->echooutput && $this->completion > 0) {
 			$this->c->doEcho(
-				$this->c->primary(
-					'Removed releases: ' .
-					number_format($remcount) .
-					' past retention, ' .
-					number_format($passcount) .
-					' passworded, ' .
-					number_format($dupecount) .
-					' crossposted, ' .
-					number_format($disabledcount) .
-					' from disabled categories, ' .
-					number_format($disabledgenrecount) .
-					' from disabled music genres, ' .
-					number_format($miscothercount) .
-					' from misc->other, ' .
-					number_format($completioncount) .
-					' under ' .
-					$this->completion .
-					'% completion.'
-				)
+					$this->c->primary(
+							'Removed releases: ' .
+							number_format($remcount) .
+							' past retention, ' .
+							number_format($passcount) .
+							' passworded, ' .
+							number_format($dupecount) .
+							' crossposted, ' .
+							number_format($disabledcount) .
+							' from disabled categories, ' .
+							number_format($disabledgenrecount) .
+							' from disabled music genres, ' .
+							number_format($miscothercount) .
+							' from misc->other, ' .
+							number_format($completioncount) .
+							' under ' .
+							$this->completion .
+							'% completion.'
+					)
 			);
-		} else if ($this->echooutput && $this->completion == 0) {
-			$this->c->doEcho(
-				$this->c->primary(
-					'Removed releases: ' .
-					number_format($remcount) .
-					' past retention, ' .
-					number_format($passcount) .
-					' passworded, ' .
-					number_format($dupecount) .
-					' crossposted, ' .
-					number_format($disabledcount) .
-					' from disabled categories, ' .
-					number_format($disabledgenrecount) .
-					' from disabled music genres, ' .
-					number_format($miscothercount) .
-					' from misc->other'
-				)
-			);
+		} else {
+			if ($this->echooutput && $this->completion == 0) {
+				$this->c->doEcho(
+						$this->c->primary(
+								'Removed releases: ' .
+								number_format($remcount) .
+								' past retention, ' .
+								number_format($passcount) .
+								' passworded, ' .
+								number_format($dupecount) .
+								' crossposted, ' .
+								number_format($disabledcount) .
+								' from disabled categories, ' .
+								number_format($disabledgenrecount) .
+								' from disabled music genres, ' .
+								number_format($miscothercount) .
+								' from misc->other'
+						)
+				);
+			}
 		}
 
 		if ($this->echooutput) {
 			if ($reccount > 0) {
 				$this->c->doEcho(
-					$this->c->primary(
-						"Removed " . number_format($reccount) . ' parts/binaries/collection rows.'
-					)
+						$this->c->primary(
+								"Removed " . number_format($reccount) .
+								' parts/binaries/collection rows.'
+						)
 				);
 			}
-			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage7)), true);
+			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage7)),
+							 true);
 		}
 	}
 
 	public function processReleasesStage4567_loop($categorize, $postproc, $groupID, $nntp)
 	{
-		$DIR = nZEDb_MISC;
+		$DIR    = nZEDb_MISC;
 		$PYTHON = shell_exec('which python3 2>/dev/null');
 		$PYTHON = (empty($PYTHON) ? 'python -OOu' : 'python3 -OOu');
 
 		$tot_retcount = $tot_nzbcount = $loops = 0;
 		do {
-			$retcount = $this->processReleasesStage4($groupID);
+			$retcount     = $this->processReleasesStage4($groupID);
 			$tot_retcount = $tot_retcount + $retcount;
 
 			$nzbcount = $this->processReleasesStage5($groupID);
 			if ($this->requestids == '0') {
 				$this->processReleasesStage5b($groupID);
-			} else if ($this->requestids == '1') {
-				$this->processReleasesStage5b($groupID);
-				$this->processReleasesStage5c($groupID);
-			} else if ($this->requestids == '2') {
-				$stage8 = TIME();
-				if ($this->echooutput) {
-					$this->c->doEcho($this->c->header("Stage 5b-c -> Request ID Threaded lookup."));
-				}
-				passthru("$PYTHON ${DIR}update/python/requestid_threaded.py");
-				if ($this->echooutput) {
-					$this->c->doEcho(
-						$this->c->primary(
-							"\nReleases updated in " .
-							$this->consoleTools->convertTime(TIME() - $stage8)
-						)
-					);
+			} else {
+				if ($this->requestids == '1') {
+					$this->processReleasesStage5b($groupID);
+					$this->processReleasesStage5c($groupID);
+				} else {
+					if ($this->requestids == '2') {
+						$stage8 = TIME();
+						if ($this->echooutput) {
+							$this->c->doEcho($this->c->header("Stage 5b-c -> Request ID Threaded lookup."));
+						}
+						passthru("$PYTHON ${DIR}update/python/requestid_threaded.py");
+						if ($this->echooutput) {
+							$this->c->doEcho(
+									$this->c->primary(
+											"\nReleases updated in " .
+											$this->consoleTools->convertTime(TIME() - $stage8)
+									)
+							);
+						}
+					}
 				}
 			}
 
@@ -2749,17 +3095,21 @@ class Releases
 
 		if (!empty($groupName)) {
 			$groupInfo = $this->groups->getByName($groupName);
-			$groupID = $groupInfo['id'];
+			$groupID   = $groupInfo['id'];
 		}
 
 		$this->processReleases = microtime(true);
 		if ($this->echooutput) {
-			$this->c->doEcho($this->c->header("Starting release update process (" . date('Y-m-d H:i:s') . ")"), true);
+			$this->c->doEcho($this->c->header("Starting release update process (" .
+											  date('Y-m-d H:i:s') . ")"),
+							 true);
 		}
 
 		if (!file_exists($this->site->nzbpath)) {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->error('Bad or missing nzb directory - ' . $this->site->nzbpath), true);
+				$this->c->doEcho($this->c->error('Bad or missing nzb directory - ' .
+												 $this->site->nzbpath),
+								 true);
 			}
 
 			return;
@@ -2768,7 +3118,10 @@ class Releases
 		$this->processReleasesStage1($groupID);
 		$this->processReleasesStage2($groupID);
 		$this->processReleasesStage3($groupID);
-		$releasesAdded = $this->processReleasesStage4567_loop($categorize, $postproc, $groupID, $nntp);
+		$releasesAdded = $this->processReleasesStage4567_loop($categorize,
+															  $postproc,
+															  $groupID,
+															  $nntp);
 		$this->processReleasesStage4dot5($groupID);
 		$this->processReleasesStage7b();
 		$where = (!empty($groupID)) ? ' WHERE group_id = ' . $groupID : '';
@@ -2777,15 +3130,18 @@ class Releases
 		if ($this->echooutput && $this->tablepergroup == 0) {
 			$countID = $this->db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where);
 			$this->c->doEcho(
-				$this->c->primary(
-					'Completed adding ' .
-					number_format($releasesAdded) .
-					' releases in ' .
-					$this->consoleTools->convertTime(number_format(microtime(true) - $this->processReleases, 2)) .
-					'. ' .
-					number_format(array_shift($countID)) .
-					' collections waiting to be created (still incomplete or in queue for creation)'
-				), true
+					$this->c->primary(
+							'Completed adding ' .
+							number_format($releasesAdded) .
+							' releases in ' .
+							$this->consoleTools->convertTime(number_format(microtime(true) -
+																		   $this->processReleases,
+																		   2)) .
+							'. ' .
+							number_format(array_shift($countID)) .
+							' collections waiting to be created (still incomplete or in queue for creation)'
+					),
+					true
 			);
 		}
 
@@ -2804,35 +3160,45 @@ class Releases
 			// Reset the collectionhash.
 			$this->db->queryExec('UPDATE collections SET collectionhash = 0');
 			$delcount = 0;
-			$cIDS = array();
+			$cIDS     = array();
 			foreach ($res as $row) {
 
 				$groupName = $this->groups->getByNameByID($row['group_id']);
-				$newSHA1 = sha1(
+				$newSHA1   = sha1(
 					$this->collectionsCleaning->collectionsCleaner(
-						$row['bname'],
-						$groupName .
-						$row['fromname'] .
-						$row['group_id'] .
-						$row['totalfiles']
+											  $row['bname'],
+											  $groupName .
+											  $row['fromname'] .
+											  $row['group_id'] .
+											  $row['totalfiles']
 					)
 				);
-				$cres = $this->db->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s', $this->db->escapeString($newSHA1)));
+				$cres      = $this->db->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s',
+															$this->db->escapeString($newSHA1)));
 				if (!$cres) {
-					$cIDS[] = $row['id'];
-					$csql = sprintf('INSERT INTO collections (subject, fromname, date, xref, group_id, totalfiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, 0, NOW())', $this->db->escapeString($row['bname']), $this->db->escapeString($row['fromname']), $this->db->escapeString($row['date']), $this->db->escapeString($row['xref']), $row['group_id'], $this->db->escapeString($row['totalfiles']), $this->db->escapeString($newSHA1));
+					$cIDS[]       = $row['id'];
+					$csql         = sprintf('INSERT INTO collections (subject, fromname, date, xref, group_id, totalfiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, 0, NOW())',
+											$this->db->escapeString($row['bname']),
+											$this->db->escapeString($row['fromname']),
+											$this->db->escapeString($row['date']),
+											$this->db->escapeString($row['xref']),
+											$row['group_id'],
+											$this->db->escapeString($row['totalfiles']),
+											$this->db->escapeString($newSHA1));
 					$collectionID = $this->db->queryInsert($csql);
 					if ($this->echooutput) {
 						$this->consoleTools->overWrite(
-							'Recreated: ' . count($cIDS) . ' collections. Time:' .
-							$this->consoleTools->convertTimer(TIME() - $timestart)
+										   'Recreated: ' . count($cIDS) . ' collections. Time:' .
+										   $this->consoleTools->convertTimer(TIME() - $timestart)
 						);
 					}
 				} else {
 					$collectionID = $cres['id'];
 				}
 				//Update the binaries with the new info.
-				$this->db->queryExec(sprintf('UPDATE binaries SET collectionid = %d WHERE id = %d', $collectionID, $row['bid']));
+				$this->db->queryExec(sprintf('UPDATE binaries SET collectionid = %d WHERE id = %d',
+											 $collectionID,
+											 $row['bid']));
 			}
 			//Remove the old collections.
 			$delstart = TIME();
@@ -2845,8 +3211,10 @@ class Releases
 				$delcount++;
 				if ($this->echooutput) {
 					$this->consoleTools->overWrite(
-						'Deleting old collections:' . $this->consoleTools->percentString($delcount, $totalcIDS) .
-						' Time:' . $this->consoleTools->convertTimer(TIME() - $delstart)
+									   'Deleting old collections:' .
+									   $this->consoleTools->percentString($delcount, $totalcIDS) .
+									   ' Time:' .
+									   $this->consoleTools->convertTimer(TIME() - $delstart)
 					);
 				}
 			}
@@ -2858,7 +3226,7 @@ class Releases
 			}
 			if ($this->echooutput) {
 				echo "\nRemade " . count($cIDS) . ' collections in ' .
-					$this->consoleTools->convertTime(TIME() - $timestart) . "\n";
+					 $this->consoleTools->convertTime(TIME() - $timestart) . "\n";
 			}
 		} else {
 			$this->db->queryExec("UPDATE settings SET value = 1 WHERE setting = 'hashcheck'");
@@ -2892,19 +3260,19 @@ class Releases
 	public function getNewestMovies()
 	{
 		return $this->db->query(
-			"SELECT DISTINCT (a.imdbID),
-				guid, name, b.title, searchname, size, completion,
-				postdate, categoryid, comments, grabs, c.cover
-			FROM releases a, category b, movieinfo c
-			WHERE a.categoryid BETWEEN 2000 AND 2999
-			AND b.title = 'Movies'
-			AND a.imdbid = c.imdbid
-			AND a.imdbid !='NULL'
-			AND a.imdbid != 0
-			AND c.cover = 1
-			GROUP BY a.imdbid
-			ORDER BY a.postdate
-			DESC LIMIT 24"
+						"SELECT DISTINCT (a.imdbID),
+							guid, name, b.title, searchname, size, completion,
+							postdate, categoryid, comments, grabs, c.cover
+						FROM releases a, category b, movieinfo c
+						WHERE a.categoryid BETWEEN 2000 AND 2999
+						AND b.title = 'Movies'
+						AND a.imdbid = c.imdbid
+						AND a.imdbid !='NULL'
+						AND a.imdbid != 0
+						AND c.cover = 1
+						GROUP BY a.imdbid
+						ORDER BY a.postdate
+						DESC LIMIT 24"
 		);
 	}
 
@@ -2916,45 +3284,45 @@ class Releases
 	public function getNewestConsole()
 	{
 		return $this->db->query(
-			"SELECT DISTINCT (a.consoleinfoid),
-				guid, name, b.title, searchname, size, completion,
-				postdate, categoryid, comments, grabs, c.cover
-			FROM releases a, category b, consoleinfo c
-			WHERE c.cover > 0
-			AND a.categoryid BETWEEN 1000 AND 1999
-			AND b.title = 'Console'
-			AND a.consoleinfoid = c.id
-			AND a.consoleinfoid != -2
-			AND a.consoleinfoid != 0
-			GROUP BY a.consoleinfoid
-			ORDER BY a.postdate
-			DESC LIMIT 35"
+						"SELECT DISTINCT (a.consoleinfoid),
+							guid, name, b.title, searchname, size, completion,
+							postdate, categoryid, comments, grabs, c.cover
+						FROM releases a, category b, consoleinfo c
+						WHERE c.cover > 0
+						AND a.categoryid BETWEEN 1000 AND 1999
+						AND b.title = 'Console'
+						AND a.consoleinfoid = c.id
+						AND a.consoleinfoid != -2
+						AND a.consoleinfoid != 0
+						GROUP BY a.consoleinfoid
+						ORDER BY a.postdate
+						DESC LIMIT 35"
 		);
 	}
 
-    /**
-     * Get all newest games with covers for poster wall.
-     *
-     * @return array
-     */
-    public function getNewestGames()
-    {
-        return $this->db->query(
-            "SELECT DISTINCT (a.gamesinfo_id),
-                guid, name, b.title, searchname, size, completion,
-                postdate, categoryid, comments, grabs, c.cover
-            FROM releases a, category b, gamesinfo c
-            WHERE c.cover > 0
-            AND a.categoryid = 4050
-            AND b.title = 'Games'
-            AND a.gamesinfo_id = c.id
-            AND a.gamesinfo_id != -2
-            AND a.gamesinfo_id != 0
-            GROUP BY a.gamesinfo_id
-            ORDER BY a.postdate
-            DESC LIMIT 35"
-        );
-    }
+	/**
+	 * Get all newest games with covers for poster wall.
+	 *
+	 * @return array
+	 */
+	public function getNewestGames()
+	{
+		return $this->db->query(
+						"SELECT DISTINCT (a.gamesinfo_id),
+							guid, name, b.title, searchname, size, completion,
+							postdate, categoryid, comments, grabs, c.cover
+						FROM releases a, category b, gamesinfo c
+						WHERE c.cover > 0
+						AND a.categoryid = 4050
+						AND b.title = 'Games'
+						AND a.gamesinfo_id = c.id
+						AND a.gamesinfo_id != -2
+						AND a.gamesinfo_id != 0
+						GROUP BY a.gamesinfo_id
+						ORDER BY a.postdate
+						DESC LIMIT 35"
+		);
+	}
 
 	/**
 	 * Get all newest music with covers for poster wall.
@@ -2964,19 +3332,19 @@ class Releases
 	public function getNewestMP3s()
 	{
 		return $this->db->query(
-			"SELECT DISTINCT (a.musicinfoid),
-				guid, name, b.title, searchname, size, completion,
-				 postdate, categoryid, comments, grabs, c.cover
-			FROM releases a, category b, musicinfo c
-			WHERE c.cover > 0
-			AND a.categoryid BETWEEN 3000 AND 3999
-			AND a.categoryid != 3030
-			AND b.title = 'Audio'
-			AND a.musicinfoid = c.id
-			AND a.musicinfoid != -2
-			GROUP BY a.musicinfoid
-			ORDER BY a.postdate
-			DESC LIMIT 24"
+						"SELECT DISTINCT (a.musicinfoid),
+							guid, name, b.title, searchname, size, completion,
+							 postdate, categoryid, comments, grabs, c.cover
+						FROM releases a, category b, musicinfo c
+						WHERE c.cover > 0
+						AND a.categoryid BETWEEN 3000 AND 3999
+						AND a.categoryid != 3030
+						AND b.title = 'Audio'
+						AND a.musicinfoid = c.id
+						AND a.musicinfoid != -2
+						GROUP BY a.musicinfoid
+						ORDER BY a.postdate
+						DESC LIMIT 24"
 		);
 	}
 
@@ -2988,19 +3356,18 @@ class Releases
 	public function getNewestBooks()
 	{
 		return $this->db->query(
-			"SELECT DISTINCT (a.bookinfoid),
-				guid, name, b.title, searchname, size, completion,
-				postdate, categoryid, comments, grabs, url, c.cover, c.title as booktitle, c.author
-			FROM releases a, category b, bookinfo c
-			WHERE c.cover > 0
-			AND (a.categoryid BETWEEN 8000 AND 8999 OR a.categoryid = 3030)
-			AND (b.title = 'Books' OR b.title = 'Audiobook')
-			AND a.bookinfoid = c.id
-			AND a.bookinfoid != -2
-			GROUP BY a.bookinfoid
-			ORDER BY a.postdate
-			DESC LIMIT 24"
+						"SELECT DISTINCT (a.bookinfoid),
+							guid, name, b.title, searchname, size, completion,
+							postdate, categoryid, comments, grabs, url, c.cover, c.title as booktitle, c.author
+						FROM releases a, category b, bookinfo c
+						WHERE c.cover > 0
+						AND (a.categoryid BETWEEN 8000 AND 8999 OR a.categoryid = 3030)
+						AND (b.title = 'Books' OR b.title = 'Audiobook')
+						AND a.bookinfoid = c.id
+						AND a.bookinfoid != -2
+						GROUP BY a.bookinfoid
+						ORDER BY a.postdate
+						DESC LIMIT 24"
 		);
 	}
-
 }

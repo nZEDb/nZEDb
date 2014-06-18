@@ -4,21 +4,25 @@ require_once nZEDb_LIBS . 'GiantBombAPI.php';
 
 // Test if your amazon keys are working.
 
-$s = new Sites();
-$site = $s->get();
+$s            = new Sites();
+$site         = $s->get();
 $giantbombkey = $site->giantbombkey;
-$c = new ColorCLI();
-$obj = new GiantBomb($giantbombkey, $resp="json");
+$c            = new ColorCLI();
+$obj          = new GiantBomb($giantbombkey, $resp = "json");
 
-try{$result = $obj->search("South Park The Stick Of Truth",'',1);
-    $result = json_decode(json_encode($result), true);
-    $gameid = $result['results'][0]['id'];
-    $fields = array("deck","description","original_game_rating","api_detail_url","image","genres","name","platforms","publishers","original_release_date","reviews","site_detail_url");
-$result = $obj->game($gameid, $fields);
-    $result = json_decode(json_encode($result), true);
+try {
+	$result = $obj->search("South Park The Stick Of Truth", '', 1);
+	$result = json_decode(json_encode($result), true);
+	$gameid = $result['results'][0]['id'];
+	$fields = array(
+		"deck", "description", "original_game_rating", "api_detail_url", "image", "genres", "name",
+		"platforms", "publishers", "original_release_date", "reviews", "site_detail_url"
+	);
+	$result = $obj->game($gameid, $fields);
+	$result = json_decode(json_encode($result), true);
+} catch (Exception $e) {
+	$result = false;
 }
-
-catch(Exception $e){$result = false;}
 
 if ($result !== false) {
 	print_r($result);

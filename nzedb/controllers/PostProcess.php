@@ -73,13 +73,13 @@ class PostProcess
 		//\\
 
 		//\\ Class instances.
-		$s = new Sites();
-		$this->db = new nzedb\db\DB();
-		$this->groups = new Groups();
-		$this->_par2Info = new Par2Info();
-		$this->debugging = new Debugging('PostProcess');
-		$this->nameFixer = new NameFixer($this->echooutput);
-		$this->Nfo = new Nfo($this->echooutput);
+		$s                  = new Sites();
+		$this->db           = new nzedb\db\DB();
+		$this->groups       = new Groups();
+		$this->_par2Info    = new Par2Info();
+		$this->debugging    = new Debugging('PostProcess');
+		$this->nameFixer    = new NameFixer($this->echooutput);
+		$this->Nfo          = new Nfo($this->echooutput);
 		$this->releaseFiles = new ReleaseFiles();
 		//\\
 
@@ -88,7 +88,7 @@ class PostProcess
 		//\\
 
 		//\\ Site settings.
-		$this->addpar2 = ($this->site->addpar2 == 0) ? false : true;
+		$this->addpar2       = ($this->site->addpar2 == 0) ? false : true;
 		$this->alternateNNTP = ($this->site->alternate_nntp == 1 ? true : false);
 		//\\
 	}
@@ -108,7 +108,7 @@ class PostProcess
 		$this->processSharing($nntp);
 		$this->processMovies();
 		$this->processMusic();
-        $this->processConsoles();
+		$this->processConsoles();
 		$this->processGames();
 		$this->processAnime();
 		$this->processTv();
@@ -155,18 +155,19 @@ class PostProcess
 		}
 	}
 
-    /**
-     * Lookup games if enabled.
-     *
-     * @return void
-     */
-    public function processGames()
-    {
-        if ($this->site->lookupgames != 0) {
-            $games = new Games($this->echooutput);
-            $games->processGamesReleases();
-        }
-    }
+	/**
+	 * Lookup games if enabled.
+	 *
+	 * @return void
+	 */
+	public function processGames()
+	{
+		if ($this->site->lookupgames != 0) {
+			$games = new Games($this->echooutput);
+			$games->processGamesReleases();
+		}
+	}
+
 	/**
 	 * Lookup imdb if enabled.
 	 *
@@ -199,14 +200,18 @@ class PostProcess
 	 * Process nfo files.
 	 *
 	 * @param string $releaseToWork
-	 * @param $nntp
+	 * @param        $nntp
 	 *
 	 * @return void
 	 */
 	public function processNfos($releaseToWork = '', $nntp)
 	{
 		if ($this->site->lookupnfo == 1) {
-			$this->Nfo->processNfoFiles($releaseToWork, $this->site->lookupimdb, $this->site->lookuptvrage, $groupID = '', $nntp);
+			$this->Nfo->processNfoFiles($releaseToWork,
+										$this->site->lookupimdb,
+										$this->site->lookuptvrage,
+										$groupID = '',
+										$nntp);
 		}
 	}
 
@@ -285,11 +290,11 @@ class PostProcess
 		}
 
 		$query = $this->db->queryOneRow(
-			sprintf('
+						  sprintf('
 				SELECT id, group_id, categoryid, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releaseid
 				FROM releases WHERE isrenamed = 0 AND id = %d',
-				$relID
-			)
+								  $relID
+						  )
 		);
 
 		if ($query === false) {
@@ -299,25 +304,27 @@ class PostProcess
 		// Only get a new name if the category is OTHER.
 		$foundName = true;
 		if (!in_array(
-				(int)$query['categoryid'],
-				array(
-					Category::CAT_BOOKS_OTHER,
-					Category::CAT_GAME_OTHER,
-					Category::CAT_MOVIE_OTHER,
-					Category::CAT_MUSIC_OTHER,
-					Category::CAT_PC_PHONE_OTHER,
-					Category::CAT_TV_OTHER,
-					Category::CAT_OTHER_HASHED,
-					Category::CAT_XXX_OTHER,
-					Category::CAT_MISC
-				)
+			(int)$query['categoryid'],
+			array(
+				Category::CAT_BOOKS_OTHER,
+				Category::CAT_GAME_OTHER,
+				Category::CAT_MOVIE_OTHER,
+				Category::CAT_MUSIC_OTHER,
+				Category::CAT_PC_PHONE_OTHER,
+				Category::CAT_TV_OTHER,
+				Category::CAT_OTHER_HASHED,
+				Category::CAT_XXX_OTHER,
+				Category::CAT_MISC
 			)
+		)
 		) {
 			$foundName = false;
 		}
 
 		// Get the PAR2 file.
-		$par2 = $nntp->getMessages($this->groups->getByNameByID($groupID), $messageID, $this->alternateNNTP);
+		$par2 = $nntp->getMessages($this->groups->getByNameByID($groupID),
+								   $messageID,
+								   $this->alternateNNTP);
 		if ($nntp->isError($par2)) {
 			return false;
 		}
@@ -350,12 +357,18 @@ class PostProcess
 					// Add to release files.
 					if ($filesAdded < 11 &&
 						$this->db->queryOneRow(
-							sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
-								$relID, $this->db->escapeString($file['name']))) === false
+								 sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
+										 $relID,
+										 $this->db->escapeString($file['name']))) === false
 					) {
 
 						// Try to add the files to the DB.
-						if ($this->releaseFiles->add($relID, $file['name'], $file['size'], $query['post_date'], 0)) {
+						if ($this->releaseFiles->add($relID,
+													 $file['name'],
+													 $file['size'],
+													 $query['post_date'],
+													 0)
+						) {
 							$filesAdded++;
 						}
 					}
@@ -375,17 +388,20 @@ class PostProcess
 			// If we found some files.
 			if ($filesAdded > 0) {
 				$this->debugging->start(
-					'parsePAR2', 'Added ' . $filesAdded . ' releasefiles from PAR2 for ' . $query['searchname'], 5
+								'parsePAR2',
+								'Added ' . $filesAdded . ' releasefiles from PAR2 for ' .
+								$query['searchname'],
+								5
 				);
 
 				// Update the file count with the new file count + old file count.
 				$this->db->queryExec(
-					sprintf('
+						 sprintf('
 						UPDATE releases SET rarinnerfilecount = rarinnerfilecount + %d
 						WHERE id = %d',
-						$filesAdded,
-						$relID
-					)
+								 $filesAdded,
+								 $relID
+						 )
 				);
 			}
 			if ($foundName === true) {
