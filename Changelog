@@ -6,10 +6,18 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-06-13 niel
+2014-06-18 ruhllatio
+	* Fix: PP additional hang due to filenames that start with a period and match_prefiles bug
+	* Chg: Properly categorize PS4 and PS4 in a.b.console.ps3
+22014-06-13 niel
 	* Add: .../nzedb/build/_runonce/tpg_groupid_fix.php. Thanks to ruhllatio for testing.
 	  NOTE TPG users need to run this once to fix the groupid field in the extra tables. Alternative re-creating your TPG setup will do it too.
 2014-06-13 kevin
+	* Fix: Make up file name for zip / rar files, prevents errors when files are named like this : "/47291_Disk Space Pro.app/Contents/_CodeSignature/CodeResources"
+	* Fix: GNU File non escaped file path causing issues.
+	* Add: PAR2 file checking to GNU File check (ProcessAdditional).
+	* Add: Use GNU File to increase chances of getting samples/mediainfo/etc on files that do not have the right extensions.
+	* Add: alt.binaries.mom / reset processing to u4e renaming function.
 	* Add: U4E stuff into ProcessAdditional
 	* Add: Deleting temp files to rename_u4e.php
 	* Add: Getting NFO's from ZIP/RAR (and nested ZIP/RAR) files.
