@@ -975,7 +975,7 @@ Class ProcessAdditional
 		// Download and process mediainfo. Also try to get a sample if we didn't get one yet.
 		if ($this->_foundMediaInfo === false || $this->_foundSample === false || $this->_foundVideo === false) {
 
-			if (!empty($this->_MediaInfoMessageIDs)) {
+			if ($this->_foundMediaInfo === false && !empty($this->_MediaInfoMessageIDs)) {
 
 				// Try to download it from usenet.
 				$mediaBinary = $this->_nntp->getMessages($this->_releaseGroupName, $this->_MediaInfoMessageIDs, $this->_alternateNNTP);

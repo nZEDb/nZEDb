@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-06-18 kevin
+	* Fix: Missing check for downloading media binary in ProcessAdditional.
 	* Add: Central method for error response code checking (NNTP).
 	* Chg: Refactor of Net_NNTP.
 	* Chg: Slight speedup to body fetching by removing useless empty check.
