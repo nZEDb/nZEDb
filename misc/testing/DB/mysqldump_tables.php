@@ -17,7 +17,7 @@ $mysqlplatform = "";
 //determine mysql platform Percona or Other
 if($db->dbSystem() === "mysql") {
 	$mysqlplatform = exec('mysqladmin version | grep "Percona"', $mysqlplatform);
-	if (count($mysqlplatform) > 0) {
+	if (strlen($mysqlplatform) > 0) {
 		//Percona only has --innodb-optimize-keys
 		$exportopts = "--opt --innodb-optimize-keys --complete-insert --skip-quick";
 	} else {

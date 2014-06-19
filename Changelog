@@ -24,6 +24,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: PS4 not post-processing correctly
 	* Fix: u4e rename results not colored correctly
 	* Rev: Revert changes to colorize u4e rename as they won't work
+	* Fix: optimize-keys option being used for MySQL other than Percona in mysqldump_tables.php #1330
 2014-06-15 DariusIII
 	*Chg: Remove tmpunrar folder cleaning from monitor, interferes with other scripts.
 2014-06-15 kevin
