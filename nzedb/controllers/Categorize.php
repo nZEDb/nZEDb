@@ -108,6 +108,16 @@ class Categorize extends Category
 				case preg_match('/alt\.binaries\.(multimedia\.erotica\.|cartoons\.french\.|dvd\.|multimedia\.)?anime(\.highspeed|\.repost|s-fansub|\.german)?/', $group):
 					$this->tmpCat = Category::CAT_TV_ANIME;
 					break;
+				case $group === 'alt.binaries.british.drama':
+					switch (true) {
+						case $this->isHDTV():
+						case $this->isSDTV():
+							break;
+						default:
+							$this->tmpCat = Category::CAT_TV_OTHER;
+							break;
+					}
+					break;
 				case $this->categorizeForeign && $group === 'alt.binaries.cartoons.french':
 					$this->tmpCat = Category::CAT_TV_FOREIGN;
 					break;
@@ -402,6 +412,9 @@ class Categorize extends Category
 							$this->tmpCat = Category::CAT_PC_0DAY;
 							break;
 					}
+					break;
+				case $group === 'alt.binaries.warez.games':
+					$this->tmpCat = Category::CAT_PC_GAMES;
 					break;
 				case $group === 'alt.binaries.warez.smartphone':
 					if ($this->isPhone()) {
@@ -700,7 +713,7 @@ class Categorize extends Category
 	public function is0day()
 	{
 		switch (true) {
-			case preg_match('/[-._ ]exe$|[-._ ](utorrent|Virtualbox)[-._ ]|incl.+crack| DRM$|>DRM</i', $this->releaseName):
+			case preg_match('/[-._ ]exe$|[-._ ](utorrent|Virtualbox)[-._ ]|\b0DAY\b|incl.+crack| DRM$|>DRM</i', $this->releaseName):
 			case preg_match('/[-._ ]((32|64)bit|converter|i\d86|key(gen|maker)|freebsd|GAMEGUiDE|hpux|irix|linux|multilingual|Patch|Pro v\d{1,3}|portable|regged|software|solaris|template|unix|win2kxp2k3|win64|win(2k|32|64|all|dows|nt(2k)?(xp)?|xp)|win9x(me|nt)?|x(32|64|86))[-._ ]/i', $this->releaseName):
 			case preg_match('/\b(Adobe|auto(cad|desk)|-BEAN|Cracked|Cucusoft|CYGNUS|Divx[-._ ]Plus|\.(deb|exe)|DIGERATI|FOSI|-FONT|Key(filemaker|gen|maker)|Lynda\.com|lz0|MULTiLANGUAGE|MultiOS|-(iNViSiBLE|SPYRAL|SUNiSO|UNION|TE)|v\d{1,3}.*?Pro|[-._ ]v\d{1,3}[-._ ]|\(x(64|86)\)|Xilisoft)\b/i', $this->releaseName):
 				$this->tmpCat = Category::CAT_PC_0DAY;
