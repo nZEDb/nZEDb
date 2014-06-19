@@ -1065,10 +1065,11 @@ Class ProcessAdditional
 				@file_put_contents($this->tmpPath . 'samplepicture.jpg', $jpgBinary);
 
 				// Try to resize and move it.
-				$this->_foundJPGSample =
+				$this->_foundJPGSample = (
 					$this->_releaseImage->saveImage(
 						$this->_release['guid'] . '_thumb', $this->tmpPath . 'samplepicture.jpg', $this->_releaseImage->jpgSavePath, 650, 650
-					);
+					) === 1 ? true : false
+				);
 
 				if ($this->_foundJPGSample !== false) {
 					// Update the DB to say we got it.
@@ -1322,7 +1323,7 @@ Class ProcessAdditional
 			if ($audVal === false) {
 
 				// File name to store audio file.
-				$audioFileName = $this->_release['guid'] . '.ogg';
+				$audioFileName = ($this->tmpPath . $this->_release['guid'] . '.ogg');
 
 				// Create an audio sample.
 				nzedb\utility\runCmd(
@@ -1331,62 +1332,48 @@ Class ProcessAdditional
 					'" -t 30 -i "' .
 					$fileLocation .
 					'" -acodec libvorbis -loglevel quiet -y "' .
-					$this->tmpPath .
 					$audioFileName .
-					'"');
+					'"'
+				);
 
-				// Get all the files in the temp path.
-				$all_files = @scandir($this->tmpPath, 1);
+				// Check if the new file was created.
+				if (is_file($audioFileName)) {
 
-				// If there are no files, return.
-				if ($all_files === false) {
-					return false;
-				}
+					// Try to move the temp audio file.
+					$renamed = @rename($this->tmpPath . $audioFileName, $this->_audioSavePath . $audioFileName);
 
-				// Loop over the temp files.
-				foreach ($all_files as $file) {
+					if (!$renamed) {
+						// Try to copy it if it fails.
+						$copied = @copy($this->tmpPath . $audioFileName, $this->_audioSavePath . $audioFileName);
 
-					// Try to find the temp audio file.
-					if ($file === $audioFileName) {
+						// Delete the old file.
+						@unlink($this->tmpPath . $audioFileName);
 
-						// Try to move the temp audio file.
-						$renamed = @rename($this->tmpPath . $audioFileName, $this->_audioSavePath . $audioFileName);
-
-						if (!$renamed) {
-							// Try to copy it if it fails.
-							$copied = @copy($this->tmpPath . $audioFileName, $this->_audioSavePath . $audioFileName);
-
-							// Delete the old file.
-							@unlink($this->tmpPath . $audioFileName);
-
-							// If it didn't copy continue.
-							if (!$copied) {
-								continue;
-							}
+						// If it didn't copy continue.
+						if (!$copied) {
+							return false;
 						}
-
-						// Try to set the file perms.
-						@chmod($this->_audioSavePath . $audioFileName, 0764);
-
-						// Update DB to said we got a audio sample.
-						$this->_db->queryExec(
-							sprintf('
-								UPDATE releases
-								SET audiostatus = 1
-								WHERE id = %d',
-								$this->_release['id']
-							)
-						);
-
-						$audVal = true;
-						$this->_foundAudioSample = true;
-
-						if ($this->_echoCLI) {
-							echo 'A';
-						}
-
-						break;
 					}
+
+					// Try to set the file perms.
+					@chmod($this->_audioSavePath . $audioFileName, 0764);
+
+					// Update DB to said we got a audio sample.
+					$this->_db->queryExec(
+						sprintf('
+							UPDATE releases
+							SET audiostatus = 1
+							WHERE id = %d',
+							$this->_release['id']
+						)
+					);
+
+					$audVal = $this->_foundAudioSample = true;
+
+					if ($this->_echoCLI) {
+						echo 'A';
+					}
+
 				}
 			}
 		}
@@ -1401,11 +1388,12 @@ Class ProcessAdditional
 	protected function _getJPGSample($fileLocation)
 	{
 		// Try to resize/move the image.
-		$this->_foundJPGSample =
+		$this->_foundJPGSample = (
 			$this->_releaseImage->saveImage(
 				$this->_release['guid'] . '_thumb',
 				$fileLocation, $this->_releaseImage->jpgSavePath, 650, 650
-			);
+			) === 1 ? true : false
+		);
 
 		// If it's successful, tell the DB.
 		if ($this->_foundJPGSample !== false) {
@@ -1436,9 +1424,6 @@ Class ProcessAdditional
 
 		if (is_file($fileLocation)) {
 
-			// Create path to temp file.
-			$fileName = 'zzzz' . mt_rand(5, 12) . mt_rand(5, 12) . '.jpg';
-
 			// Get the exact time of this video.
 			$time = @exec(
 				'"' .
@@ -1454,6 +1439,9 @@ Class ProcessAdditional
 				$time = '00:00:01';
 			}
 
+			// Create path to temp file.
+			$fileName = ($this->tmpPath . 'zzzz' . mt_rand(5, 12) . mt_rand(5, 12) . '.jpg');
+
 			// Create the image.
 			nzedb\utility\runCmd(
 				'"' .
@@ -1463,38 +1451,31 @@ Class ProcessAdditional
 				'" -ss ' .
 				$time .
 				' -loglevel quiet -vframes 1 -y "' .
-				$this->tmpPath .
 				$fileName .
 				'"'
 			);
 
-			// Get all the files in the temp folder.
-			$all_files = @scandir($this->tmpPath, 1);
 
-			// Loop all the files.
-			foreach ($all_files as $file) {
+			// Check if the file exists.
+			if (is_file($fileName)) {
 
-				// Check if the file is the file we created.
-				if ($file === $fileName) {
+				// Try to resize/move the image.
+				$saved = $this->_releaseImage->saveImage(
+					$this->_release['guid'] . '_thumb',
+					$fileName,
+					$this->_releaseImage->imgSavePath, 800, 600
+				);
 
-					// Try to resize/move the image.
-					$saved = $this->_releaseImage->saveImage(
-						$this->_release['guid'] . '_thumb',
-						$this->tmpPath .$file,
-						$this->_releaseImage->imgSavePath, 800, 600
-					);
+				// Delete the temp file we created.
+				@unlink($fileName);
 
-					// Delete the temp file we created.
-					@unlink($this->tmpPath . $fileName);
+				// Check if it saved.
+				if ($saved === 1) {
 
-					// Check if it saved.
-					if ($saved === 1) {
-
-						if ($this->_echoCLI) {
-							echo 's';
-						}
-						return true;
+					if ($this->_echoCLI) {
+						echo 's';
 					}
+					return true;
 				}
 			}
 		}
@@ -1518,7 +1499,7 @@ Class ProcessAdditional
 		if (is_file($fileLocation)) {
 
 			// Create a filename to store the temp file.
-			$fileName = 'zzzz' . $this->_release['guid'] . '.ogv';
+			$fileName = ($this->tmpPath . 'zzzz' . $this->_release['guid'] . '.ogv');
 
 			// If wanted sample length is less than 60, try to get sample from the end of the video.
 			if ($this->_ffMPEGDuration < 60) {
@@ -1542,7 +1523,6 @@ Class ProcessAdditional
 						'" -vcodec libtheora -filter:v scale=320:-1 -t ' .
 						$this->_ffMPEGDuration .
 						' -acodec libvorbis -loglevel quiet -y "' .
-						$this->tmpPath .
 						$fileName .
 						'"'
 					);
@@ -1585,7 +1565,6 @@ Class ProcessAdditional
 						' -t ' . $this->_ffMPEGDuration .
 						' -vcodec libtheora -filter:v scale=320:-1 ' .
 						' -acodec libvorbis -loglevel quiet -y "' .
-						$this->tmpPath .
 						$fileName .
 						'"'
 					);
@@ -1600,61 +1579,50 @@ Class ProcessAdditional
 					'" -vcodec libtheora -filter:v scale=320:-1 -t ' .
 					$this->_ffMPEGDuration .
 					' -acodec libvorbis -loglevel quiet -y "' .
-					$this->tmpPath .
 					$fileName .
 					'"'
 				);
 			}
 
-			// Get all the files in the temp dir.
-			$all_files = @scandir($this->tmpPath, 1);
-			if ($all_files === false) {
-				return false;
-			}
+			// Until we find the video file.
+			if (is_file($fileName)) {
 
-			// Loop over them.
-			foreach ($all_files as $file) {
+				// Create a path to where the file should be moved.
+				$newFile = ($this->_releaseImage->vidSavePath . $this->_release['guid'] . '.ogv');
 
-				// Until we find the video file.
-				if ($file === $fileName) {
+				// Try to move the file to the new path.
+				$renamed = @rename($fileName, $newFile);
 
-					// Create a path to where the file should be moved.
-					$newFile = $this->_releaseImage->vidSavePath . $this->_release['guid'] . '.ogv';
+				// If we couldn't rename it, try to copy it.
+				if (!$renamed) {
 
-					// Try to move the file to the new path.
-					$renamed = @rename($this->tmpPath . $fileName, $newFile);
+					$copied = @copy($fileName, $newFile);
 
-					// If we couldn't rename it, try to copy it.
-					if (!$renamed) {
+					// Delete the old file.
+					@unlink($fileName);
 
-						$copied = @copy($this->tmpPath . $fileName, $newFile);
-
-						// Delete the old file.
-						@unlink($this->tmpPath . $fileName);
-
-						// If it didn't copy, continue.
-						if (!$copied) {
-							continue;
-						}
+					// If it didn't copy, continue.
+					if (!$copied) {
+						return false;
 					}
-
-					// Change the permissions.
-					@chmod($newFile, 0764);
-
-					// Update query to say we got the video.
-					$this->_db->queryExec(
-						sprintf('
-							UPDATE releases
-							SET videostatus = 1
-							WHERE guid = %s',
-							$this->_db->escapeString($this->_release['guid'])
-						)
-					);
-					if ($this->_echoCLI) {
-						echo 'v';
-					}
-					return true;
 				}
+
+				// Change the permissions.
+				@chmod($newFile, 0764);
+
+				// Update query to say we got the video.
+				$this->_db->queryExec(
+					sprintf('
+						UPDATE releases
+						SET videostatus = 1
+						WHERE guid = %s',
+						$this->_db->escapeString($this->_release['guid'])
+					)
+				);
+				if ($this->_echoCLI) {
+					echo 'v';
+				}
+				return true;
 			}
 		}
 		return false;

@@ -7,6 +7,8 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-06-18 kevin
+	* Chg: Remove some scandir's from ProcessAdditional to speed some things up.
+	* Chg: Rename all methods/properties with protected/private access level in Class NNTP.
 	* Add: User changeable socket timeout. You can add define('NNTP_SOCKET_TIMEOUT', 120); and define('NNTP_SOCKET_TIMEOUT_A', 120); to config.php, 120 is the seconds.
 	* Chg: Use the proper "mode" for setting the socket back to blocked.
 	* Add: Socket timeout property to NNTP.
@@ -22,6 +24,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: PS4 not post-processing correctly
 	* Fix: u4e rename results not colored correctly
 	* Rev: Revert changes to colorize u4e rename as they won't work
+	* Fix: optimize-keys option being used for MySQL other than Percona in mysqldump_tables.php #1330
 2014-06-15 DariusIII
 	*Chg: Remove tmpunrar folder cleaning from monitor, interferes with other scripts.
 2014-06-15 kevin
