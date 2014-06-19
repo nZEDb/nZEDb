@@ -192,7 +192,7 @@ class Users
 	}
 
 	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites,
-		$movieview, $musicview, $consoleview, $bookview,
+		$movieview, $musicview, $consoleview, $gameview, $bookview,
 		$cp_url = false, $cp_api = false, $style = 'None', $queueType = '',
 		$nzbgetURL = '', $nzbgetUsername = '', $nzbgetPassword = '',
 		$saburl = '', $sabapikey = '', $sabpriority = '', $sabapikeytype = '')
@@ -242,6 +242,7 @@ class Users
 		$sql[] = sprintf('movieview = %d', $movieview);
 		$sql[] = sprintf('musicview = %d', $musicview);
 		$sql[] = sprintf('consoleview = %d', $consoleview);
+		$sql[] = sprintf('gameview = %d', $gameview);
 		$sql[] = sprintf('bookview = %d', $bookview);
 		$sql[] = sprintf('style = %s', $db->escapeString($style));
 		if ($queueType !== '') {
