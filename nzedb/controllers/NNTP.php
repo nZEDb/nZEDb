@@ -495,7 +495,7 @@ class NNTP extends Net_NNTP_Client
 									return $body;
 								}
 								if ($this->_debugBool) {
-									$this->_debugging->start("getMessages", $newBody->_getMessage(), Debugging::DEBUG_NOTICE);
+									$this->_debugging->start("getMessages", $newBody->getMessage(), Debugging::DEBUG_NOTICE);
 								}
 								// Return the error.
 								return $newBody;
@@ -566,7 +566,7 @@ class NNTP extends Net_NNTP_Client
 			// If there was an error selecting the group, return PEAR error object.
 			if ($this->isError($summary)) {
 				if ($this->_debugBool) {
-					$this->_debugging->start("get_Article", $summary->_getMessage(), Debugging::DEBUG_NOTICE);
+					$this->_debugging->start("get_Article", $summary->getMessage(), Debugging::DEBUG_NOTICE);
 				}
 				return $summary;
 			}
@@ -583,7 +583,7 @@ class NNTP extends Net_NNTP_Client
 		// If there was an error downloading the article, return a PEAR error object.
 		if ($this->isError($article)) {
 			if ($this->_debugBool) {
-				$this->_debugging->start("get_Article", $article->_getMessage(), Debugging::DEBUG_NOTICE);
+				$this->_debugging->start("get_Article", $article->getMessage(), Debugging::DEBUG_NOTICE);
 			}
 			return $article;
 		}
@@ -649,7 +649,7 @@ class NNTP extends Net_NNTP_Client
 			// Return PEAR error object on failure.
 			if ($this->isError($summary)) {
 				if ($this->_debugBool) {
-					$this->_debugging->start("get_Header", $summary->_getMessage(), Debugging::DEBUG_NOTICE);
+					$this->_debugging->start("get_Header", $summary->getMessage(), Debugging::DEBUG_NOTICE);
 				}
 				return $summary;
 			}
@@ -666,7 +666,7 @@ class NNTP extends Net_NNTP_Client
 		// If we failed, return PEAR error object.
 		if ($this->isError($header)) {
 			if ($this->_debugBool) {
-				$this->_debugging->start("get_Header", $header->_getMessage(), Debugging::DEBUG_NOTICE);
+				$this->_debugging->start("get_Header", $header->getMessage(), Debugging::DEBUG_NOTICE);
 			}
 			return $header;
 		}
@@ -1194,7 +1194,7 @@ class NNTP extends Net_NNTP_Client
 			// If there was an error selecting the group, return PEAR error object.
 			if ($this->isError($summary)) {
 				if ($this->_debugBool) {
-					$this->_debugging->start("getMessage", $summary->_getMessage(), 3);
+					$this->_debugging->start("getMessage", $summary->getMessage(), 3);
 				}
 				return $summary;
 			}
@@ -1333,7 +1333,7 @@ class NNTP extends Net_NNTP_Client
 		// Check if it's good.
 		if ($this->isError($response)) {
 			if ($this->_debugBool) {
-				$this->_debugging->start("_enableCompression", $response->_getMessage(), Debugging::DEBUG_NOTICE);
+				$this->_debugging->start("_enableCompression", $response->getMessage(), Debugging::DEBUG_NOTICE);
 			}
 			return $response;
 		} else if ($response !== 290) {
