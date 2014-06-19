@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-19 ruhllatio
+	* Chg: Adopt switch/caseing for Categorize.php
 2014-06-18 kevin
 	* Chg: Remove some scandir's from ProcessAdditional to speed some things up.
 	* Chg: Rename all methods/properties with protected/private access level in Class NNTP.
