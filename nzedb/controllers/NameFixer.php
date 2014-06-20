@@ -457,6 +457,47 @@ class NameFixer
 		$this->done = true;
 	}
 
+	/**
+	 * Echo a updated release name to CLI.
+	 *
+	 * @param array $data
+	 *        array(
+	 *              'new_name'     => (string) The new release search name.
+	 *              'old_name'     => (string) The old release search name.
+	 *              'new_category' => (string) The new category name or ID for the release.
+	 *              'old_category' => (string) The old category name or ID for the release.
+	 *              'group'        => (string) The group name or ID of the release.
+	 *              'release_id'   => (int)    The ID of the release.
+	 *              'method'       => (string) The method used to rename the release.
+	 *        )
+	 *
+	 * @access public
+	 * @static
+	 * @void
+	 */
+	public static function echoChangedReleaseName(array $data =
+		array(
+			'new_name'     => '',
+			'old_name'     => '',
+			'new_category' => '',
+			'old_category' => '',
+			'group'        => '',
+			'release_id'   => 0,
+			'method'       => ''
+		)
+	)
+	{
+		echo
+		PHP_EOL .
+		'New name:     ' . $data['new_name']     . PHP_EOL .
+		'Old name:     ' . $data['old_name']     . PHP_EOL .
+		'New category: ' . $data['new_category'] . PHP_EOL .
+		'Old category: ' . $data['old_category'] . PHP_EOL .
+		'Group:        ' . $data['group']        . PHP_EOL .
+		'Release ID:   ' . $data['release_id']   . PHP_EOL .
+		'Method:       ' . $data['method']       . PHP_EOL;
+	}
+
 	// Match a PreDB title to a release name or searchname using an exact full-text match
 	public function matchPredbFT($pre, $echo, $namestatus, $echooutput, $show)
 	{

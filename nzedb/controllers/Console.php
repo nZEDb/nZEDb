@@ -345,7 +345,7 @@ class Console
 			$gameInfo['platform'] = str_replace('PS3', 'PlayStation 3', $gameInfo['platform']);
 		} // baseline single quote
 		if (preg_match('/^PS4$/i', $gameInfo['platform'])) {
-			$gameInfo['platform'] = str_replace('PS3', 'PlayStation 4', $gameInfo['platform']);
+			$gameInfo['platform'] = str_replace('PS4', 'PlayStation 4', $gameInfo['platform']);
 		} // baseline single quote
 		if (preg_match('/^PSP$/i', $gameInfo['platform'])) {
 			$gameInfo['platform'] = str_replace('PSP', 'Sony PSP', $gameInfo['platform']);

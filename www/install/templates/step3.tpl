@@ -37,6 +37,13 @@
 					<input type="checkbox" name="ssl" id="ssl" value="1" {if $cfg->NNTP_SSLENABLED=="true"}checked="checked"{/if} />
 				</td>
 			</tr>
+			<tr class="alt">
+				<td><label for="socket_timeout">Port:</label></td>
+				<td>
+					<input type="text" name="socket_timeout" id="socket_timeout" value="{$cfg->NNTP_SOCKET_TIMEOUT}" />
+					<div class="hint">Seconds to time out when we lost connection to usenet. Default is 120 seconds.</div>
+				</td>
+			</tr>
 		</table>
 		<p>(optional) If you have an alternate news server (NNTP), please provide the following information (make sure the information is correct, some servers do not check if the password is good):</p>
 		<table border="0" style="width:100%;margin-top:10px;" class="data highlight">
@@ -68,6 +75,13 @@
 				<td><label for="ssla">SSL?:</label></td>
 				<td>
 					<input type="checkbox" name="ssla" id="ssla" value="1" {if $cfg->NNTP_SSLENABLED_A=="true"}checked="checked"{/if} />
+				</td>
+			</tr>
+			<tr class="alt">
+				<td><label for="socket_timeouta">Port:</label></td>
+				<td>
+					<input type="text" name="socket_timeouta" id="socket_timeouta" value="{$cfg->NNTP_SOCKET_TIMEOUT_A}" />
+					<div class="hint">Seconds to time out when we lost connection to usenet. Default is 120 seconds.</div>
 				</td>
 			</tr>
 		</table>

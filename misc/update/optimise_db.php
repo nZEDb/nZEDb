@@ -26,9 +26,9 @@ if (isset($argv[1]) && ($argv[1] === "run" || $argv[1] === "true" || $argv[1] ==
 	}
 	$tablecnt = $db->optimise(false, $argv[1]);
 	if ($tablecnt > 0 && $argv[1] === 'analyze') {
-		exit($c->header("\n{$e} {$tablecnt} {$a} tables succesfuly."));
+		exit($c->header("\n{$e} {$tablecnt} {$a} tables successfully."));
 	} else if ($tablecnt > 0) {
-		exit($c->header("\n{$d} {$tablecnt} {$a} tables succesfuly."));
+		exit($c->header("\n{$d} {$tablecnt} {$a} tables successfully."));
 	} else {
 		exit($c->notice("\nNo {$a} tables to optimize."));
 	}
