@@ -42,10 +42,10 @@ if (isset($argv[1]) && ($argv[1] === "consoles" || $argv[1] === "all")) {
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $c->header("Resetting all Console postprocessing");
-		$where = ' WHERE consoleinfoid IS NOT NULL';
+		$where = 'WHERE consoleinfoid IS NOT NULL';
 	} else {
 		echo $c->header("Resetting all failed Console postprocessing");
-		$where = " WHERE consoleinfoid IN (-2, 0) AND categoryid BETWEEN 1000 AND 1999";
+		$where = "WHERE consoleinfoid IN (-2, 0) AND categoryid BETWEEN 1000 AND 1999";
 	}
 
 	$qry      = $db->queryDirect("SELECT id FROM releases" . $where);
@@ -224,7 +224,7 @@ if ($ran === false) {
 				   .
 				   "\nTo reset only those that have previously failed, those without covers, samples, previews, etc. use the "
 				   . "second argument false.\n"
-				   . "To reset even those previoulsy postprocessed, use the second argument true.\n"
+				   . "To reset even those previously post processed, use the second argument true.\n"
 				   . "To truncate the associated table, use the third argument truncate.\n\n"
 				   . "php $argv[0] consoles true    ...: To reset all consoles.\n"
 				   . "php $argv[0] games true       ...: To reset all games.\n"
