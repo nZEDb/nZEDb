@@ -692,7 +692,7 @@ class DB extends \PDO
 	{
 		// Force the query to only return 1 row, so queryArray doesn't potentially run out of memory on a large data set.
 		// First check if query already contains a LIMIT clause.
-		if (preg_match('# LIMIT (?P<lower>\d+)(,\s+(?P<upper>\d+))?(;)?$#i', $query, $matches)) {
+		if (preg_match('#\s+LIMIT\s+(?P<lower>\d+)(,\s+(?P<upper>\d+))?(;)?$#i', $query, $matches)) {
 			If (!isset($matches['upper']) && isset($matches['lower']) && $matches['lower'] == 1) {
 				// good it's already correctly set.
 			} else { // We have a limit, but it's not for a single row
