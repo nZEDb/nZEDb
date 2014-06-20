@@ -95,7 +95,7 @@
  */
 
 // You can make this page accessible by all (even people without an API key) by setting this to false :
-if (true) {
+if (false) {
 	if (!$users->isLoggedIn()) {
 		if (!isset($_GET['apikey'])) {
 			apiError('Missing parameter (apikey)', 200);
@@ -151,14 +151,15 @@ if (isset($_GET['type'])) {
 				$db = new nzedb\db\DB;
 				$preData = $db->query(
 					sprintf('
-					SELECT p.*
-					FROM predb p
-					INNER JOIN groups g ON g.id = p.group_id
-					WHERE requestid = %d
-					AND g.name = %s
-					%s %s %s
-					LIMIT %d
-					OFFSET %d',
+						SELECT p.*,
+						g.name AS groupname
+						FROM predb p
+						INNER JOIN groups g ON g.id = p.group_id
+						WHERE requestid = %d
+						AND g.name = %s
+						%s %s %s
+						LIMIT %d
+						OFFSET %d',
 						$_GET['reqid'],
 						$db->escapeString($_GET['group']),
 						$newer,
@@ -237,6 +238,34 @@ if (isset($_GET['type'])) {
 			);
 			break;
 	}
+} else if (isset($_POST['data'])) {
+
+	$reqData = @unserialize($_POST['data']);
+	if ($reqData !== false && is_array($reqData) && isset($reqData[0]['ident'])) {
+		$db = new nzedb\db\DB;
+		$preData = array();
+
+		foreach ($reqData as $request) {
+			$result = $db->queryOneRow(
+				sprintf('
+					SELECT p.*,
+					g.name AS groupname
+					FROM predb p
+					INNER JOIN groups g ON g.id = p.group_id
+					WHERE requestid = %d
+					AND g.name = %s
+					LIMIT 1',
+					$request['reqid'],
+					$db->escapeString($request['group'])
+				)
+			);
+
+			if ($result !== false) {
+				$result['ident'] = $request['ident'];
+				$preData[] = $result;
+			}
+		}
+	}
 }
 
 if ($json === false) {
@@ -260,6 +289,7 @@ if ($json === false) {
 				' name="'       . (!empty($data['title'])      ? sanitize($data['title']) : '') . '"',
 				' date="'       . (!empty($data['predate'])    ? strtotime($data['predate']) : '') . '"',
 				' size="'       . (!empty($data['size']) && $data['size'] != 'NULL' ? $data['size'] : '') . '"',
+				' group="'      . (isset($data['groupname']) && !empty($data['groupname']) ? $data['groupname'] : '' ) . '"',
 				'/>';
 		}
 	}
