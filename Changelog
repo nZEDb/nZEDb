@@ -6,6 +6,10 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-20 niel
+	* Fix: Adding white-space checks to queryOneRow LIMIT regex to catch queries spread over more than one line.
+2014-06-20 kevin
+	Chg: Change requestID web to send multiple requests at once giving a big speed improvement.
 2014-06-19 ruhllatio
 	* Chg: Adopt switch/caseing for Categorize.php
 	* Fix: TV Categorization issue with recent changes
