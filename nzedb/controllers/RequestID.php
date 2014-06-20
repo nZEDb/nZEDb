@@ -359,7 +359,7 @@ class RequestID
 						if ($this->echoOutput) {
 							echo '+';
 						}
-						$identifierArray[] = $result['ident'];
+						$returnedIdentifiers[] = (string)$result['ident'];
 					}
 				}
 
