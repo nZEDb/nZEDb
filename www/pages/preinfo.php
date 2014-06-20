@@ -92,10 +92,25 @@
  *
  *     Returns 1 pre with this requestid and group : 188247 alt.binaries.teevee
  *     http://example.com/preinfo?type=requestid&reqid=188247&group=alt.binaries.teevee&apikey=227a0e58049d2e30efded245d0f447c8
+ *
+ * POST:
+ * -----
+ *     You can also send a POST method with a serialized array of requests.
+ *     An array with a key of 0 must be set. The other key's can be anything (the release ID for example).
+ *     ident - Can be used to send an identifier to track the returned result. (is the release ID)
+ *     group - This is the group name, alt.binaries.teevee for example.
+ *     reqid - This is the request ID to lookup for the group.
+ *     Example: serialize(
+ *                  array(
+ *                       0 => array('ident' => 0, 'group' => 'none', 'reqid' => 0),
+ *                       1723 => array('ident' => 1723, 'group' => 'alt.binaries.moovee', 'reqid' => 194293),
+ *                       2384 => array('ident' => 2384, 'group' => 'alt.binaries.teevee', 'reqid' => 293823)
+ *                  )
+ *              )
  */
 
 // You can make this page accessible by all (even people without an API key) by setting this to false :
-if (false) {
+if (true) {
 	if (!$users->isLoggedIn()) {
 		if (!isset($_GET['apikey'])) {
 			apiError('Missing parameter (apikey)', 200);
