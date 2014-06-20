@@ -97,9 +97,9 @@
  * -----
  *     You can also send a POST method with a serialized array of requests.
  *     An array with a key of 0 must be set. The other key's can be anything (the release ID for example).
- *     ident - Can be used to send an identifier to track the returned result. (is the release ID)
+ *     ident - Can be used to send an identifier to track the returned result. (ie: the release ID)
  *     group - This is the group name, alt.binaries.teevee for example.
- *     reqid - This is the request ID to lookup for the group.
+ *     reqid - This is the request ID to lookup for the group. Must be numeric (int|string).
  *     Example: serialize(
  *                  array(
  *                       0 => array('ident' => 0, 'group' => 'none', 'reqid' => 0),
