@@ -229,6 +229,10 @@ class RequestID
 	 */
 	protected function _requestIdNotFound($releaseID, $local = true)
 	{
+		if ($releaseID == 0) {
+			return;
+		}
+
 		$this->db->queryExec(
 			sprintf('
 				UPDATE releases
@@ -371,7 +375,7 @@ class RequestID
 						}
 					}
 					foreach ($requestArray as $request) {
-						$this->_requestIdNotFound($requestArray[$request['ident']]['reqid'], false);
+						$this->_requestIdNotFound($request['ident'], false);
 						if ($this->echoOutput) {
 							echo '-';
 						}
