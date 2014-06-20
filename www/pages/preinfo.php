@@ -92,6 +92,21 @@
  *
  *     Returns 1 pre with this requestid and group : 188247 alt.binaries.teevee
  *     http://example.com/preinfo?type=requestid&reqid=188247&group=alt.binaries.teevee&apikey=227a0e58049d2e30efded245d0f447c8
+ *
+ * POST:
+ * -----
+ *     You can also send a POST method with a serialized array of requests.
+ *     An array with a key of 0 must be set. The other key's can be anything (the release ID for example).
+ *     ident - Can be used to send an identifier to track the returned result. (ie: the release ID)
+ *     group - This is the group name, alt.binaries.teevee for example.
+ *     reqid - This is the request ID to lookup for the group. Must be numeric (int|string).
+ *     Example: serialize(
+ *                  array(
+ *                       0 => array('ident' => 0, 'group' => 'none', 'reqid' => 0),
+ *                       1723 => array('ident' => 1723, 'group' => 'alt.binaries.moovee', 'reqid' => 194293),
+ *                       2384 => array('ident' => 2384, 'group' => 'alt.binaries.teevee', 'reqid' => 293823)
+ *                  )
+ *              )
  */
 
 // You can make this page accessible by all (even people without an API key) by setting this to false :
@@ -151,14 +166,15 @@ if (isset($_GET['type'])) {
 				$db = new nzedb\db\DB;
 				$preData = $db->query(
 					sprintf('
-					SELECT p.*
-					FROM predb p
-					INNER JOIN groups g ON g.id = p.group_id
-					WHERE requestid = %d
-					AND g.name = %s
-					%s %s %s
-					LIMIT %d
-					OFFSET %d',
+						SELECT p.*,
+						g.name AS groupname
+						FROM predb p
+						INNER JOIN groups g ON g.id = p.group_id
+						WHERE requestid = %d
+						AND g.name = %s
+						%s %s %s
+						LIMIT %d
+						OFFSET %d',
 						$_GET['reqid'],
 						$db->escapeString($_GET['group']),
 						$newer,
@@ -237,6 +253,34 @@ if (isset($_GET['type'])) {
 			);
 			break;
 	}
+} else if (isset($_POST['data'])) {
+
+	$reqData = @unserialize($_POST['data']);
+	if ($reqData !== false && is_array($reqData) && isset($reqData[0]['ident'])) {
+		$db = new nzedb\db\DB;
+		$preData = array();
+
+		foreach ($reqData as $request) {
+			$result = $db->queryOneRow(
+				sprintf('
+					SELECT p.*,
+					g.name AS groupname
+					FROM predb p
+					INNER JOIN groups g ON g.id = p.group_id
+					WHERE requestid = %d
+					AND g.name = %s
+					LIMIT 1',
+					$request['reqid'],
+					$db->escapeString($request['group'])
+				)
+			);
+
+			if ($result !== false) {
+				$result['ident'] = $request['ident'];
+				$preData[] = $result;
+			}
+		}
+	}
 }
 
 if ($json === false) {
@@ -260,6 +304,8 @@ if ($json === false) {
 				' name="'       . (!empty($data['title'])      ? sanitize($data['title']) : '') . '"',
 				' date="'       . (!empty($data['predate'])    ? strtotime($data['predate']) : '') . '"',
 				' size="'       . (!empty($data['size']) && $data['size'] != 'NULL' ? $data['size'] : '') . '"',
+				' group="'      . (isset($data['groupname']) && !empty($data['groupname']) ? $data['groupname'] : '' ) . '"',
+				' ident="'      . (isset($data['ident']) && !empty($data['ident']) ? $data['ident'] : '') . '"',
 				'/>';
 		}
 	}

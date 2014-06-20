@@ -6,9 +6,14 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-20 ruhllatio
+	* Chg: A few more categorization changes
+	* Fix: trailing whitespace
 2014-06-20 niel
 	* Fix: Adding white-space checks to queryOneRow LIMIT regex to catch queries spread over more than one line.
 2014-06-20 kevin
+	Add: Documentation for POST method of preinfo request ID lookup to preinfo.php
+	Add: The POST method for request ID to preinfo.php (you can send a POST method to preinfo with a serialized array of requests for request ID's).
 	Chg: Change requestID web to send multiple requests at once giving a big speed improvement.
 2014-06-19 ruhllatio
 	* Chg: Adopt switch/caseing for Categorize.php
