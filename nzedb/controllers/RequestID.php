@@ -347,9 +347,9 @@ class RequestID
 				$returnedIdentifiers = array();
 
 				foreach($returnXml->request as $result) {
-					if (isset($result['name']) && isset($result['ident']) && $result['ident'] > 0) {
-						$this->newTitle = $result['name'];
-						$this->result['id'] = $result['ident'];
+					if (isset($result['name']) && isset($result['ident']) && (int)$result['ident'] > 0) {
+						$this->newTitle = (string)$result['name'];
+						$this->result['id'] = (int)$result['ident'];
 						$this->result['group_id'] = $this->groupID;
 						$this->result['groupname'] = $requestArray[(int)$result['ident']]['group'];
 						$this->result['searchname'] = $requestArray[(int)$result['ident']]['sname'];
