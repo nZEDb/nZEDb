@@ -73,13 +73,13 @@ class PostProcess
 		//\\
 
 		//\\ Class instances.
-		$s                  = new Sites();
-		$this->db           = new nzedb\db\DB();
-		$this->groups       = new Groups();
-		$this->_par2Info    = new Par2Info();
-		$this->debugging    = new Debugging('PostProcess');
-		$this->nameFixer    = new NameFixer($this->echooutput);
-		$this->Nfo          = new Nfo($this->echooutput);
+		$s = new Sites();
+		$this->db = new nzedb\db\DB();
+		$this->groups = new Groups();
+		$this->_par2Info = new Par2Info();
+		$this->debugging = new Debugging('PostProcess');
+		$this->nameFixer = new NameFixer($this->echooutput);
+		$this->Nfo = new Nfo($this->echooutput);
 		$this->releaseFiles = new ReleaseFiles();
 		//\\
 
@@ -88,7 +88,7 @@ class PostProcess
 		//\\
 
 		//\\ Site settings.
-		$this->addpar2       = ($this->site->addpar2 == 0) ? false : true;
+		$this->addpar2 = ($this->site->addpar2 == 0) ? false : true;
 		$this->alternateNNTP = ($this->site->alternate_nntp == 1 ? true : false);
 		//\\
 	}
@@ -207,11 +207,7 @@ class PostProcess
 	public function processNfos($releaseToWork = '', $nntp)
 	{
 		if ($this->site->lookupnfo == 1) {
-			$this->Nfo->processNfoFiles($releaseToWork,
-										$this->site->lookupimdb,
-										$this->site->lookuptvrage,
-										$groupID = '',
-										$nntp);
+			$this->Nfo->processNfoFiles($releaseToWork,	$this->site->lookupimdb, $this->site->lookuptvrage,	$groupID = '', $nntp);
 		}
 	}
 
@@ -292,8 +288,7 @@ class PostProcess
 		$query = $this->db->queryOneRow(
 						  sprintf('
 				SELECT id, group_id, categoryid, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releaseid
-				FROM releases WHERE isrenamed = 0 AND id = %d',
-								  $relID
+				FROM releases WHERE isrenamed = 0 AND id = %d', $relID
 						  )
 		);
 
@@ -322,9 +317,7 @@ class PostProcess
 		}
 
 		// Get the PAR2 file.
-		$par2 = $nntp->getMessages($this->groups->getByNameByID($groupID),
-								   $messageID,
-								   $this->alternateNNTP);
+		$par2 = $nntp->getMessages($this->groups->getByNameByID($groupID), $messageID, $this->alternateNNTP);
 		if ($nntp->isError($par2)) {
 			return false;
 		}
@@ -357,17 +350,11 @@ class PostProcess
 					// Add to release files.
 					if ($filesAdded < 11 &&
 						$this->db->queryOneRow(
-								 sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
-										 $relID,
-										 $this->db->escapeString($file['name']))) === false
+								 sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s', $relID, $this->db->escapeString($file['name']))) === false
 					) {
 
 						// Try to add the files to the DB.
-						if ($this->releaseFiles->add($relID,
-													 $file['name'],
-													 $file['size'],
-													 $query['post_date'],
-													 0)
+						if ($this->releaseFiles->add($relID, $file['name'], $file['size'], $query['post_date'], 0)
 						) {
 							$filesAdded++;
 						}
@@ -387,21 +374,11 @@ class PostProcess
 
 			// If we found some files.
 			if ($filesAdded > 0) {
-				$this->debugging->start(
-								'parsePAR2',
-								'Added ' . $filesAdded . ' releasefiles from PAR2 for ' .
-								$query['searchname'],
-								5
-				);
+				$this->debugging->start('parsePAR2', 'Added ' . $filesAdded . ' releasefiles from PAR2 for ' . $query['searchname'], 5);
 
 				// Update the file count with the new file count + old file count.
 				$this->db->queryExec(
-						 sprintf('
-						UPDATE releases SET rarinnerfilecount = rarinnerfilecount + %d
-						WHERE id = %d',
-								 $filesAdded,
-								 $relID
-						 )
+						 sprintf(' UPDATE releases SET rarinnerfilecount = rarinnerfilecount + %d WHERE id = %d', $filesAdded, $relID )
 				);
 			}
 			if ($foundName === true) {

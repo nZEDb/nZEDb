@@ -4,11 +4,11 @@ require_once nZEDb_LIBS . 'GiantBombAPI.php';
 
 // Test if your amazon keys are working.
 
-$s            = new Sites();
-$site         = $s->get();
+$s  = new Sites();
+$site = $s->get();
 $giantbombkey = $site->giantbombkey;
-$c            = new ColorCLI();
-$obj          = new GiantBomb($giantbombkey, $resp = "json");
+$c = new ColorCLI();
+$obj = new GiantBomb($giantbombkey, $resp = "json");
 
 try {
 	$result = $obj->search("South Park The Stick Of Truth", '', 1);

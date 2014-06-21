@@ -1,9 +1,9 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-$s    = new Sites();
+$s = new Sites();
 $site = $s->get();
-$c    = new ColorCLI();
+$c = new ColorCLI();
 
 // Don't use alternate here, if a article fails in post proc it will use alternate on its own.
 $nntp = new NNTP();
@@ -233,27 +233,20 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 				$postprocess->processSharing($nntp);
 			} else {
 				exit($c->error("\nIncorrect arguments.\n"
-							   .
-							   "The second argument (true/false) determines wether to echo or not.\n\n"
-							   .
-							   "php postprocess.php all true         ...: Does all the types of post processing.\n"
-							   .
-							   "php postprocess.php pre true         ...: Processes all Predb sites.\n"
+							   . "The second argument (true/false) determines wether to echo or not.\n\n"
+							   . "php postprocess.php all true         ...: Does all the types of post processing.\n"
+							   . "php postprocess.php pre true         ...: Processes all Predb sites.\n"
 							   . "php postprocess.php nfo true         ...: Processes NFO files.\n"
 							   . "php postprocess.php movies true      ...: Processes movies.\n"
 							   . "php postprocess.php music true       ...: Processes music.\n"
-							   .
-							   "php postprocess.php console true     ...: Processes console games.\n"
+							   . "php postprocess.php console true     ...: Processes console games.\n"
 							   . "php postprocess.php games true       ...: Processes games.\n"
 							   . "php postprocess.php book true        ...: Processes books.\n"
 							   . "php postprocess.php anime true       ...: Processes anime.\n"
 							   . "php postprocess.php tv true          ...: Processes tv.\n"
-							   .
-							   "php postprocess.php additional true  ...: Processes previews/mediainfo/etc...\n"
-							   .
-							   "php postprocess.php sharing true     ...: Processes uploading/downloading comments.\n"
-							   .
-							   "php postprocess.php allinf true      ...: Does all the types of post processing on a loop, sleeping 15 seconds between.\n"));
+							   . "php postprocess.php additional true  ...: Processes previews/mediainfo/etc...\n"
+							   . "php postprocess.php sharing true     ...: Processes uploading/downloading comments.\n"
+							   . "php postprocess.php allinf true      ...: Does all the types of post processing on a loop, sleeping 15 seconds between.\n"));
 			}
 		}
 	}
