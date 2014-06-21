@@ -6,6 +6,11 @@
  * NOTE: This page is only accessible by logged in users or users providing their API key.
  *       If you wish to make this open to anybody, you can change the if (true) to if (false) lower in this file.
  *
+ * Main Parameter:
+ * --------------
+ *     type:
+ *         This is used to select the search type. This is a mandatory parameter.
+ *
  * Search Types:
  * ------------
  * These are the search types you can use: requestid, title, md5, sha1, category, all
@@ -21,7 +26,7 @@
  *
  *         Example URL:
  *         -----------
- *         http://example.com/preinfo?t=requestid&reqid=123&group=alt.binaries.example
+ *         http://example.com/preinfo?type=requestid&reqid=123&group=alt.binaries.example
  *
  *     title:
  *         This loosely searches for a title (using like '%TITLE%').
@@ -32,7 +37,7 @@
  *         title: The pre title you are searching for.
  *
  *         Example URL:
- *         http://example.com/preinfo?t=title&title=debian
+ *         http://example.com/preinfo?type=title&title=debian
  *
  *     md5:
  *         Searches for a PRE using the provided MD5.
@@ -43,7 +48,7 @@
  *
  *         Example URL:
  *         -----------
- *         http://example.com/preinfo?t=md5&md5=6e9552c9bd8e61c8f277c21220160234
+ *         http://example.com/preinfo?type=md5&md5=6e9552c9bd8e61c8f277c21220160234
  *
  *     sha1:
  *         Searches for a PRE using the provided SHA1.
@@ -54,7 +59,7 @@
  *
  *         Example URL:
  *         -----------
- *         http://example.com/preinfo?t=sha1&sha1=a6eb4d9d7f99ca47abe56f3220597663cf37ca4a
+ *         http://example.com/preinfo?type=sha1&sha1=a6eb4d9d7f99ca47abe56f3220597663cf37ca4a
  *
  *     category:
  *         Search for PRE by category name.
@@ -65,7 +70,7 @@
  *
  *         Example URL:
  *         -----------
- *         http://example.com/preinfo?t=category&category=xxx
+ *         http://example.com/preinfo?type=category&category=xxx
  *
  *     all:
  *        Returns the newest pre(s). (see the Extras - limit option)
