@@ -6,6 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-21 kevin
+	* Fix: Extra "LIKE" on preinfo.
+	* Add: Category search on preinfo.
 2014-06-20 ruhllatio
 	* Chg: A few more categorization changes
 	* Fix: trailing whitespace

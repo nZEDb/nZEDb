@@ -6,10 +6,15 @@
  * NOTE: This page is only accessible by logged in users or users providing their API key.
  *       If you wish to make this open to anybody, you can change the if (true) to if (false) lower in this file.
  *
+ * Main Parameter:
+ * --------------
+ *     type:
+ *         This is used to select the search type. This is a mandatory parameter.
+ *
  * Search Types:
  * ------------
- * These are the search types you can use: requestid, title, md5, sha1, all
- * They all have shorter versions, in order: r, t, m, s, a
+ * These are the search types you can use: requestid, title, md5, sha1, category, all
+ * They all have shorter versions, in order: r, t, m, s, c, a
  *
  *     requestid:
  *         This is an re-implementation of the http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]
@@ -21,7 +26,7 @@
  *
  *         Example URL:
  *         -----------
- *         http://example.com/preinfo?t=requestid&reqid=123&group=alt.binaries.example
+ *         http://example.com/preinfo?type=requestid&reqid=123&group=alt.binaries.example
  *
  *     title:
  *         This loosely searches for a title (using like '%TITLE%').
@@ -32,7 +37,7 @@
  *         title: The pre title you are searching for.
  *
  *         Example URL:
- *         http://example.com/preinfo?t=title&title=debian
+ *         http://example.com/preinfo?type=title&title=debian
  *
  *     md5:
  *         Searches for a PRE using the provided MD5.
@@ -43,7 +48,7 @@
  *
  *         Example URL:
  *         -----------
- *         http://example.com/preinfo?t=md5&md5=6e9552c9bd8e61c8f277c21220160234
+ *         http://example.com/preinfo?type=md5&md5=6e9552c9bd8e61c8f277c21220160234
  *
  *     sha1:
  *         Searches for a PRE using the provided SHA1.
@@ -54,7 +59,18 @@
  *
  *         Example URL:
  *         -----------
- *         http://example.com/preinfo?t=sha1&sha1=a6eb4d9d7f99ca47abe56f3220597663cf37ca4a
+ *         http://example.com/preinfo?type=sha1&sha1=a6eb4d9d7f99ca47abe56f3220597663cf37ca4a
+ *
+ *     category:
+ *         Search for PRE by category name.
+ *
+ *         Parameters:
+ *         ----------
+ *         category: Category name. ie: xxx
+ *
+ *         Example URL:
+ *         -----------
+ *         http://example.com/preinfo?type=category&category=xxx
  *
  *     all:
  *        Returns the newest pre(s). (see the Extras - limit option)
@@ -142,7 +158,7 @@ if (isset($_GET['type'])) {
 		$offset = $_GET['offset'];
 	}
 
-	$newer = $older = $nuked = '';
+	$newer = $older = $nuked = $category = '';
 	if (isset($_GET['newer']) && is_numeric($_GET['newer'])) {
 		$newer = ' AND p.predate > FROM_UNIXTIME(' . $_GET['newer'] . ') ';
 	}
@@ -192,7 +208,7 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['title'])) {
 				$db = new nzedb\db\DB;
 				$preData = $db->query(
-					sprintf('SELECT * FROM predb p WHERE p.title %s %s %s LIKE %s LIMIT %d OFFSET %d',
+					sprintf('SELECT * FROM predb p WHERE p.title %s %s %s %s LIMIT %d OFFSET %d',
 						$newer,
 						$older,
 						$nuked,
@@ -232,6 +248,23 @@ if (isset($_GET['type'])) {
 						$newer,
 						$older,
 						$nuked,
+						$limit,
+						$offset
+					)
+				);
+			}
+			break;
+
+		case 'c':
+		case 'category':
+			if (isset($_GET['category'])) {
+				$db = new nzedb\db\DB;
+				$preData = $db->query(
+					sprintf('SELECT * FROM predb p WHERE p.category %s %s %s %s LIMIT %d OFFSET %d',
+						$newer,
+						$older,
+						$nuked,
+						$db->likeString($_GET['category']),
 						$limit,
 						$offset
 					)
