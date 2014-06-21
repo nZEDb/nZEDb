@@ -8,8 +8,8 @@
  *
  * Search Types:
  * ------------
- * These are the search types you can use: requestid, title, md5, sha1, all
- * They all have shorter versions, in order: r, t, m, s, a
+ * These are the search types you can use: requestid, title, md5, sha1, category, all
+ * They all have shorter versions, in order: r, t, m, s, c, a
  *
  *     requestid:
  *         This is an re-implementation of the http://predb_irc.nzedb.com/predb_irc.php?reqid=[REQUEST_ID]&group=[GROUP_NM]
@@ -55,6 +55,17 @@
  *         Example URL:
  *         -----------
  *         http://example.com/preinfo?t=sha1&sha1=a6eb4d9d7f99ca47abe56f3220597663cf37ca4a
+ *
+ *     category:
+ *         Search for PRE by category name.
+ *
+ *         Parameters:
+ *         ----------
+ *         category: Category name. ie: xxx
+ *
+ *         Example URL:
+ *         -----------
+ *         http://example.com/preinfo?t=category&category=xxx
  *
  *     all:
  *        Returns the newest pre(s). (see the Extras - limit option)
@@ -142,7 +153,7 @@ if (isset($_GET['type'])) {
 		$offset = $_GET['offset'];
 	}
 
-	$newer = $older = $nuked = '';
+	$newer = $older = $nuked = $category = '';
 	if (isset($_GET['newer']) && is_numeric($_GET['newer'])) {
 		$newer = ' AND p.predate > FROM_UNIXTIME(' . $_GET['newer'] . ') ';
 	}
@@ -192,7 +203,7 @@ if (isset($_GET['type'])) {
 			if (isset($_GET['title'])) {
 				$db = new nzedb\db\DB;
 				$preData = $db->query(
-					sprintf('SELECT * FROM predb p WHERE p.title %s %s %s LIKE %s LIMIT %d OFFSET %d',
+					sprintf('SELECT * FROM predb p WHERE p.title %s %s %s %s LIMIT %d OFFSET %d',
 						$newer,
 						$older,
 						$nuked,
@@ -232,6 +243,23 @@ if (isset($_GET['type'])) {
 						$newer,
 						$older,
 						$nuked,
+						$limit,
+						$offset
+					)
+				);
+			}
+			break;
+
+		case 'c':
+		case 'category':
+			if (isset($_GET['category'])) {
+				$db = new nzedb\db\DB;
+				$preData = $db->query(
+					sprintf('SELECT * FROM predb p WHERE p.category %s %s %s %s LIMIT %d OFFSET %d',
+						$newer,
+						$older,
+						$nuked,
+						$db->likeString($_GET['category']),
 						$limit,
 						$offset
 					)
