@@ -1212,7 +1212,7 @@ class Mcached
 				throw new \Exception($this->log->error("\nUnable to connect to the memcache server."));
 			}
 		} else {
-			throw new \Exception($this->log->error("nExtension 'memcache' not loaded."));
+			throw new \Exception($this->log->error("Extension 'memcache' not loaded."));
 		}
 
 		$this->expiry = MEMCACHE_EXPIRY;
