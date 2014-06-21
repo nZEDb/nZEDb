@@ -346,7 +346,7 @@ class IRCClient
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
 				$this->_pong($matches[1]);
 
-			} else if (preg_match('/^:(.*?)\s*(\d+).*?(:.+?)?$/', $this->_buffer, $matches)) {
+			} else if (preg_match('/^:(.*?)\s+(\d+).*?(:.+?)?$/', $this->_buffer, $matches)) {
 				// We found 001, which means we are logged in.
 				if ($matches[2] == 001) {
 					$this->_remote_host_received = $matches[1];
