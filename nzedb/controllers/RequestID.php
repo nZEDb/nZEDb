@@ -13,6 +13,7 @@ class RequestID
 	const MAX_WEB_LOOKUPS = 100; // Please don't exceed this, not to be to harsh on the Request ID server.
 
 	// Request ID.
+	const REQID_OLD    = -4; // We rechecked the web a second time and didn't find a title so don't process it again.
 	const REQID_NONE   = -3; // The Request ID was not found locally or via web lookup.
 	const REQID_ZERO   = -2; // The Request ID was 0.
 	const REQID_NOLL   = -1; // Request ID was not found via local lookup.
@@ -108,6 +109,7 @@ class RequestID
 		$this->consoleTools = new ConsoleTools();
 		$this->colorCLI = new ColorCLI();
 		$this->site = (new Sites)->get();
+		$this->_request_hours = (isset($this->site->request_hours) ? (int)$this->site->request_hours : 1);
 	}
 
 	/**
@@ -146,20 +148,23 @@ class RequestID
 	protected function _getResults()
 	{
 		// Look for records that potentially have requestID titles and have not been matched to a PreDB title
+
 		$this->results = $this->db->queryDirect(
-			sprintf(
-				'SELECT r.id, r.name, r.searchname, g.name AS groupname, r.group_id
+			sprintf ('
+				SELECT r.id, r.name, r.searchname, g.name AS groupname, r.group_id
 				FROM releases r
 				LEFT JOIN groups g ON r.group_id = g.id
 				WHERE nzbstatus = 1
 				AND preid = 0
-				AND (isrequestid = 1 AND reqidstatus = %d
-					OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR)
+				AND isrequestid = 1
+				AND (
+					reqidstatus = %d
+					OR (reqidstatus = %d AND adddate < NOW() - INTERVAL %d HOUR)
 				)
 				%s %s %s LIMIT %d',
 				($this->local === true ? self::REQID_UPROC : self::REQID_NOLL),
 				self::REQID_NONE,
-				(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1),
+				$this->_request_hours,
 				(empty($this->groupID) ? '' : ('AND group_id = ' . $this->groupID)),
 				($this->local === true ? '' : $this->_getReqIdGroups()), // Limit to req id groups on web look ups.
 				($this->local === true ? '' :  'ORDER BY postdate DESC'),
@@ -225,9 +230,9 @@ class RequestID
 	 * No request ID was found, update the release.
 	 *
 	 * @param int  $releaseID
-	 * @param bool $local     If the release is local, set to REQID_ZERO, else set to REQID_NONE
+	 * @param int  $status    REQID constant status.
 	 */
-	protected function _requestIdNotFound($releaseID, $local = true)
+	protected function _requestIdNotFound($releaseID, $status)
 	{
 		if ($releaseID == 0) {
 			return;
@@ -238,7 +243,7 @@ class RequestID
 				UPDATE releases
 				SET reqidstatus = %d
 				WHERE id = %d',
-				($local ? self::REQID_ZERO : self::REQID_NONE),
+				$status,
 				$releaseID
 			)
 		);
@@ -260,7 +265,7 @@ class RequestID
 			$this->requestID = $this->_siftReqId($result['name']);
 
 			if ($this->requestID === self::REQID_ZERO) {
-				$this->_requestIdNotFound($result['id']);
+				$this->_requestIdNotFound($result['id'], self::REQID_ZERO);
 			} else {
 
 				$localCheck = $this->db->queryOneRow(
@@ -285,7 +290,7 @@ class RequestID
 					$this->db->queryExec(
 						sprintf(
 							'UPDATE releases SET reqidstatus = %d WHERE id = %d',
-							self::REQID_NONE,
+							self::REQID_NOLL,
 							$result['id']
 						)
 					);
@@ -310,7 +315,7 @@ class RequestID
 
 			// If there's none, update the release and continue.
 			if ($requestId === self::REQID_ZERO) {
-				$this->_requestIdNotFound($result['id'], false);
+				$this->_requestIdNotFound($result['id'], self::REQID_NONE);
 				if ($this->echoOutput) {
 					echo '-';
 				}
@@ -374,11 +379,32 @@ class RequestID
 							unset($requestArray[$identifier]);
 						}
 					}
-					foreach ($requestArray as $request) {
-						$this->_requestIdNotFound($request['ident'], false);
-						if ($this->echoOutput) {
-							echo '-';
+				}
+
+				unset($requestArray[0]);
+				foreach ($requestArray as $request) {
+
+					$adddate = $this->db->queryOneRow(
+						sprintf(
+							'SELECT UNIX_TIMESTAMP(adddate) AS adddate FROM releases WHERE id = %d', $request['ident']
+						)
+					);
+
+					$status = self::REQID_NONE;
+					if ($adddate !== false && !empty($adddate['adddate'])) {
+						if ((bool) (intval((time() - (int)$adddate['adddate']) / 3600) > $this->_request_hours)) {
+							$status = self::REQID_OLD;
 						}
+					} else {
+						$status = self::REQID_OLD;
+					}
+
+					$this->_requestIdNotFound(
+						$request['ident'],
+						$status
+					);
+					if ($this->echoOutput) {
+						echo '-';
 					}
 				}
 			}

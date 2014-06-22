@@ -84,40 +84,6 @@ class NNTP extends Net_NNTP_Client
 	protected $_nntpRetries;
 
 	/**
-	 * Path to yyDecoder binary.
-	 * @var bool|string
-	 * @access protected
-	 */
-	protected $_yyDecoderPath;
-
-	/**
-	 * If on unix, hide yydecode CLI output.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncSilence;
-
-	/**
-	 * Path to temp yEnc input storage file.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncTempInput;
-
-	/**
-	 * Path to temp yEnc output storage file.
-	 * @var string
-	 * @access protected
-	 */
-	protected $_yEncTempOutput;
-
-	/**
-	 * Use the simple_php_yenc_decode extension for decoding yEnc articles?
-	 * @var bool
-	 */
-	protected $_yEncExtension = false;
-
-	/**
 	 * Default constructor.
 	 *
 	 * @param bool $echo Echo to cli?
@@ -127,43 +93,18 @@ class NNTP extends Net_NNTP_Client
 	public function __construct($echo = true)
 	{
 		$this->_c    = new ColorCLI();
-		$sites      = new Sites();
+		$sites       = new Sites();
 		$this->_site = $sites->get();
 
-		$this->_echo  = ($echo && nZEDb_ECHOCLI);
+		$this->_echo      = ($echo && nZEDb_ECHOCLI);
 		$this->_debugBool = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debugBool) {
 			$this->_debugging = new Debugging("NNTP");
 		}
 
-		$this->_nntpRetries = ((!empty($this->_site->nntpretries)) ? (int)$this->_site->nntpretries : 0) + 1;
+		$this->_nntpRetries = ((!empty($this->_site->nntpretries) ? (int)$this->_site->nntpretries : 0) + 1);
 
-		// Check if the user wants to use yydecode or the simple_php_yenc_decode extension.
-		$this->_yyDecoderPath  = ((!empty($this->_site->yydecoderpath)) ? $this->_site->yydecoderpath : false);
-		if (strpos($this->_yyDecoderPath, 'simple_php_yenc_decode') !== false) {
-			if (extension_loaded('simple_php_yenc_decode')) {
-				$this->_yEncExtension = true;
-			} else {
-				$this->_yyDecoderPath = false;
-			}
-		} else if ($this->_yyDecoderPath !== false) {
-
-			$this->_yEncSilence    = (nzedb\utility\isWindows() ? '' : ' > /dev/null 2>&1');
-			$this->_yEncTempInput  = nZEDb_TMP . 'yEnc' . DS;
-			$this->_yEncTempOutput = $this->_yEncTempInput . 'output';
-			$this->_yEncTempInput .= 'input';
-
-			// Test if the user can read/write to the yEnc path.
-			if (!is_file($this->_yEncTempInput)) {
-				@file_put_contents($this->_yEncTempInput, 'x');
-			}
-			if (!is_file($this->_yEncTempInput) || !is_readable($this->_yEncTempInput) || !is_writable($this->_yEncTempInput)) {
-				$this->_yyDecoderPath = false;
-			}
-			if (is_file($this->_yEncTempInput)) {
-				@unlink($this->_yEncTempInput);
-			}
-		}
+		$this->_initiateYEncSettings();
 	}
 
 	/**
@@ -804,28 +745,6 @@ class NNTP extends Net_NNTP_Client
 	}
 
 	/**
-	 * Override PEAR NNTP's function to use our _getXFeatureTextResponse instead
-	 * of their _getTextResponse function since it is incompatible at decoding
-	 * headers when XFeature GZip compression is enabled server side.
-	 *
-	 * @return self    Our overridden function when compression is enabled.
-	 *         parent  Parent function when no compression.
-	 *
-	 * @access protected
-	 */
-	protected function _getTextResponse()
-	{
-		if ($this->_compression === true &&
-			isset($this->_currentStatusResponse[1]) &&
-			stripos($this->_currentStatusResponse[1], 'COMPRESS=GZIP') !== false) {
-
-			return $this->_getXFeatureTextResponse();
-		} else {
-			return parent::_getTextResponse();
-		}
-	}
-
-	/**
 	 * yEncodes a string and returns it.
 	 *
 	 * @param string $string     String to encode.
@@ -962,7 +881,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access protected
 	 */
-	protected function &_decodeIgnoreYEnc(&$data)
+	protected function _decodeIgnoreYEnc(&$data)
 	{
 		if (preg_match('/^(=yBegin.*=yEnd[^$]*)$/ims', $data, $input)) {
 			// If there user has no yyDecode path set, use PHP to decode yEnc.
@@ -979,9 +898,9 @@ class NNTP extends Net_NNTP_Client
 									preg_replace(
 										'/(^=yBegin.*\\r\\n)/im', '',
 										$input[1],
-										1),
 									1),
-								1)
+								1),
+							1)
 						)
 					);
 
@@ -989,6 +908,7 @@ class NNTP extends Net_NNTP_Client
 				for ($chr = 0; $chr < $length; $chr++) {
 					$data .= ($input[$chr] !== '=' ? chr(ord($input[$chr]) - 42) : chr((ord($input[++$chr]) - 64) - 42));
 				}
+
 			} else if ($this->_yEncExtension) {
 				$data = simple_yenc_decode($input[1]);
 			} else {
@@ -1015,6 +935,159 @@ class NNTP extends Net_NNTP_Client
 			}
 		}
 		return $data;
+	}
+
+	/**
+	 * Path to yyDecoder binary.
+	 * @var bool|string
+	 * @access protected
+	 */
+	protected $_yyDecoderPath;
+
+	/**
+	 * If on unix, hide yydecode CLI output.
+	 * @var string
+	 * @access protected
+	 */
+	protected $_yEncSilence;
+
+	/**
+	 * Path to temp yEnc input storage file.
+	 * @var string
+	 * @access protected
+	 */
+	protected $_yEncTempInput;
+
+	/**
+	 * Path to temp yEnc output storage file.
+	 * @var string
+	 * @access protected
+	 */
+	protected $_yEncTempOutput;
+
+	/**
+	 * Use the simple_php_yenc_decode extension for decoding yEnc articles?
+	 * @var bool
+	 */
+	protected $_yEncExtension = false;
+
+	/**
+	 * Check the Admin settings for yEnc and process them accordingly.
+	 *
+	 * @void
+	 *
+	 * @access protected
+	 */
+	protected function _initiateYEncSettings()
+	{
+		// Check if the user wants to use yyDecode or the simple_php_yenc_decode extension.
+		$this->_yyDecoderPath  = (!empty($this->_site->yydecoderpath) ? $this->_site->yydecoderpath : false);
+		if (strpos($this->_yyDecoderPath, 'simple_php_yenc_decode') !== false) {
+			if (extension_loaded('simple_php_yenc_decode')) {
+				$this->_yEncExtension = true;
+			} else {
+				$this->_yyDecoderPath = false;
+			}
+		} else if ($this->_yyDecoderPath !== false) {
+
+			$this->_yEncSilence    = (nzedb\utility\isWindows() ? '' : ' > /dev/null 2>&1');
+			$this->_yEncTempInput  = nZEDb_TMP . 'yEnc' . DS;
+			$this->_yEncTempOutput = $this->_yEncTempInput . 'output';
+			$this->_yEncTempInput .= 'input';
+
+			// Test if the user can read/write to the yEnc path.
+			if (!is_file($this->_yEncTempInput)) {
+				@file_put_contents($this->_yEncTempInput, 'x');
+			}
+			if (!is_file($this->_yEncTempInput) || !is_readable($this->_yEncTempInput) || !is_writable($this->_yEncTempInput)) {
+				$this->_yyDecoderPath = false;
+			}
+			if (is_file($this->_yEncTempInput)) {
+				@unlink($this->_yEncTempInput);
+			}
+		}
+	}
+
+	/**
+	 * Split a string into lines of 510 chars ending with \r\n.
+	 * Usenet limits lines to 512 chars, with \r\n that leaves us 510.
+	 *
+	 * @param string $string   The string to split.
+	 * @param bool   $compress Compress the string with gzip?
+	 *
+	 * @return string The split string.
+	 *
+	 * @access protected
+	 */
+	protected function _splitLines($string, $compress = false)
+	{
+		// Check if the length is longer than 510 chars.
+		if (strlen($string) > 510) {
+			// If it is, split it @ 510 and terminate with \r\n.
+			$string = chunk_split($string, 510, "\r\n");
+		}
+
+		// Compress the string if requested.
+		return ($compress ? gzdeflate($string, 4) : $string);
+	}
+
+	/**
+	 * Try to see if the NNTP server implements XFeature GZip Compression,
+	 * change the compression bool object if so.
+	 *
+	 * @return mixed On success : (bool)   True:  The server understood and compression is enabled.
+	 *                            (bool)   False: The server did not understand, compression is not enabled.
+	 *               On failure : (object) PEAR_Error.
+	 *
+	 * @access protected
+	 */
+	protected function _enableCompression()
+	{
+		// Send this command to the usenet server.
+		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
+
+		// Check if it's good.
+		if ($this->isError($response)) {
+			if ($this->_debugBool) {
+				$this->_debugging->start("_enableCompression", $response->getMessage(), Debugging::DEBUG_NOTICE);
+			}
+			return $response;
+		} else if ($response !== 290) {
+			$msg = "XFeature GZip Compression not supported. Consider disabling compression in site settings.";
+			if ($this->_debugBool) {
+				$this->_debugging->start("_enableCompression", $msg, Debugging::DEBUG_NOTICE);
+			}
+
+			if ($this->_echo) {
+				$this->_c->doEcho($this->_c->error($msg), true);
+			}
+			return false;
+		}
+
+		$this->_compression = true;
+		return true;
+	}
+
+	/**
+	 * Override PEAR NNTP's function to use our _getXFeatureTextResponse instead
+	 * of their _getTextResponse function since it is incompatible at decoding
+	 * headers when XFeature GZip compression is enabled server side.
+	 *
+	 * @return self    Our overridden function when compression is enabled.
+	 *         parent  Parent function when no compression.
+	 *
+	 * @access protected
+	 */
+	protected function _getTextResponse()
+	{
+		if ($this->_compression === true &&
+			isset($this->_currentStatusResponse[1]) &&
+			stripos($this->_currentStatusResponse[1], 'COMPRESS=GZIP') !== false) {
+
+			return $this->_getXFeatureTextResponse();
+		} else {
+			return parent::_getTextResponse();
+		}
 	}
 
 	/**
@@ -1174,6 +1247,34 @@ class NNTP extends Net_NNTP_Client
 	}
 
 	/**
+	 * Check if the Message-ID has the required opening and closing brackets.
+	 *
+	 * @param  string $messageID The Message-ID with or without brackets.
+	 *
+	 * @return string            Message-ID with brackets.
+	 *
+	 * @access protected
+	 */
+	protected function _formatMessageID($messageID)
+	{
+		$messageID = (string)$messageID;
+		if (strlen($messageID) < 1) {
+			return false;
+		}
+
+		// Check if the first char is <, if not add it.
+		if ($messageID[0] !== '<') {
+			$messageID = ('<' . $messageID);
+		}
+
+		// Check if the last char is >, if not add it.
+		if (substr($messageID, -1) !== '>') {
+			$messageID .= '>';
+		}
+		return $messageID;
+	}
+
+	/**
 	 * Download an article body (an article without the header).
 	 *
 	 * @param string $groupName The name of the group the article is in.
@@ -1185,7 +1286,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access protected
 	 */
-	protected function &_getMessage($groupName, $identifier)
+	protected function _getMessage($groupName, $identifier)
 	{
 		// Make sure the requested group is already selected, if not select it.
 		if (parent::group() !== $groupName) {
@@ -1206,19 +1307,49 @@ class NNTP extends Net_NNTP_Client
 			$identifier = $this->_formatMessageID($identifier);
 		}
 
-		// Download the article body from usenet.
-		$body = $this->_getBody($identifier);
-		// If there was an error, return the PEAR error object.
-		if ($this->isError($body)) {
-			return $body;
+		// Tell the news server we want the body of an article.
+		$response = $this->_sendCommand('BODY ' . $identifier);
+		if ($this->isError($response)) {
+			return $response;
 		}
 
-		if ($this->_debugBool) {
-			$this->_debugging->start("getMessage", 'Fetched body for article ' . $identifier, Debugging::DEBUG_INFO);
+		$body = '';
+		switch ($response) {
+			// 222, RFC977: 'n <a> article retrieved - body follows'
+			case NET_NNTP_PROTOCOL_RESPONSECODE_BODY_FOLLOWS:
+
+				// Continue until connection is lost
+				while (!feof($this->_socket)) {
+
+					// Retrieve and append up to 1024 characters from the server.
+					$line = fgets($this->_socket, 1024);
+
+					// If the socket is empty/ an error occurs, false is returned.
+					// Since the socket is blocking, the socket should not be empty, so it's definitely an error.
+					if ($line === false) {
+						return $this->throwError('Failed to read line from socket.', null);
+					}
+
+					// Check if the line terminates the text response.
+					if ($line === ".\r\n") {
+						if ($this->_debugBool) {
+							$this->_debugging->start(
+								'getMessage', 'Fetched body for article ' . $identifier, Debugging::DEBUG_INFO
+							);
+						}
+						// Attempt to yEnc decode and return the body.
+						return $this->_decodeIgnoreYEnc($body);
+					}
+
+					// Add the line to the rest of the lines.
+					$body .= $line;
+
+				}
+				return $this->throwError('End of stream! Connection lost?', null);
+
+			default:
+				return $this->_handleErrorResponse($response);
 		}
-		// Attempt to yEnc decode and return the body.
-		$body = $this->_decodeIgnoreYEnc($body);
-		return $body;
 	}
 
 	/**
@@ -1231,7 +1362,7 @@ class NNTP extends Net_NNTP_Client
 	 *
 	 * @access protected
 	 */
-	protected function &_checkConnection($reSelectGroup = true)
+	protected function _checkConnection($reSelectGroup = true)
 	{
 		$currentGroup = $this->_currentGroup;
 		// Check if we are connected.
@@ -1262,165 +1393,6 @@ class NNTP extends Net_NNTP_Client
 			}
 		}
 		return $retVal;
-	}
-
-	/**
-	 * Check if the Message-ID has the required opening and closing brackets.
-	 *
-	 * @param  string $messageID The Message-ID with or without brackets.
-	 *
-	 * @return string            Message-ID with brackets.
-	 *
-	 * @access protected
-	 */
-	protected function _formatMessageID($messageID)
-	{
-		$messageID = (string)$messageID;
-		if (strlen($messageID) < 1) {
-			return false;
-		}
-
-		// Check if the first char is <, if not add it.
-		if ($messageID[0] !== '<') {
-			$messageID = ('<' . $messageID);
-		}
-
-		// Check if the last char is >, if not add it.
-		if (substr($messageID, -1) !== '>') {
-			$messageID .= '>';
-		}
-		return $messageID;
-	}
-
-	/**
-	 * Split a string into lines of 510 chars ending with \r\n.
-	 * Usenet limits lines to 512 chars, with \r\n that leaves us 510.
-	 *
-	 * @param string $string   The string to split.
-	 * @param bool   $compress Compress the string with gzip?
-	 *
-	 * @return string The split string.
-	 *
-	 * @access protected
-	 */
-	protected function _splitLines($string, $compress = false)
-	{
-		// Check if the length is longer than 510 chars.
-		if (strlen($string) > 510) {
-			// If it is, split it @ 510 and terminate with \r\n.
-			$string = chunk_split($string, 510, "\r\n");
-		}
-
-		// Compress the string if requested.
-		return ($compress ? gzdeflate($string, 4) : $string);
-	}
-
-	/**
-	 * Try to see if the NNTP server implements XFeature GZip Compression,
-	 * change the compression bool object if so.
-	 *
-	 * @return mixed On success : (bool)   True:  The server understood and compression is enabled.
-	 *                            (bool)   False: The server did not understand, compression is not enabled.
-	 *               On failure : (object) PEAR_Error.
-	 *
-	 * @access protected
-	 */
-	protected function _enableCompression()
-	{
-		// Send this command to the usenet server.
-		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
-
-		// Check if it's good.
-		if ($this->isError($response)) {
-			if ($this->_debugBool) {
-				$this->_debugging->start("_enableCompression", $response->getMessage(), Debugging::DEBUG_NOTICE);
-			}
-			return $response;
-		} else if ($response !== 290) {
-			$msg = "XFeature GZip Compression not supported. Consider disabling compression in site settings.";
-			if ($this->_debugBool) {
-				$this->_debugging->start("_enableCompression", $msg, Debugging::DEBUG_NOTICE);
-			}
-
-			if ($this->_echo) {
-				$this->_c->doEcho($this->_c->error($msg), true);
-			}
-			return false;
-		}
-
-		$this->_compression = true;
-		return true;
-	}
-
-	/**
-	 * Extend PEAR method to not get weak warnings.
-	 *
-	 * @param mixed   $data Data to check for error.
-	 * @param int     $code Error code.
-	 *
-	 * @return mixed  On success: (bool)   False If no error.
-	 *                On Failure: (object) PEAR_Error.
-	 *
-	 * @access public
-	 */
-	public function isError($data, $code = null)
-	{
-		return PEAR::isError($data, $code);
-	}
-
-	/**
-	 * Get the body of an article from the currently open connection.
-	 *
-	 * @param mixed $article
-	 *    Either a message-id or a message-number of the article to fetch the body from.
-	 *
-	 * @return mixed (array)  body on success or
-	 *               (object) pear_error on failure
-	 * @access protected
-	 */
-	protected function &_getBody($article)
-	{
-		// Tell the news server we want the body of an article.
-		$response = $this->_sendCommand('BODY ' . $article);
-		if ($this->isError($response)) {
-			return $response;
-		}
-
-		switch ($response) {
-			// 222, RFC977: 'n <a> article retrieved - body follows'
-			case NET_NNTP_PROTOCOL_RESPONSECODE_BODY_FOLLOWS:
-				$data = '';
-
-				// Continue until connection is lost
-				while (!feof($this->_socket)) {
-
-					// Retrieve and append up to 1024 characters from the server.
-					$line = fgets($this->_socket, 1024);
-
-					// If the socket is empty/ an error occurs, false is returned.
-					// Since the socket is blocking, the socket should not be empty, so it's definitely an error.
-					if ($line === false) {
-						$error = $this->throwError('Failed to read line from socket.', null);
-						return $error;
-					}
-
-					// Check if the line terminates the text response.
-					if ($line === ".\r\n") {
-						// Return all previous lines.
-						return $data;
-					}
-
-					// Add the line to the rest of the lines.
-					$data .= $line;
-
-				}
-				$response = $this->throwError('End of stream! Connection lost?', null);
-				return $response;
-
-			default:
-				$response = $this->_handleErrorResponse($response);
-				return $response;
-		}
 	}
 
 }
