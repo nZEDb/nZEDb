@@ -220,10 +220,11 @@ class RequestID
 			preg_match('/^(\d{4,6})-\d{1}\[/', $releaseName, $requestID) ||
 			preg_match('/(\d{4,6}) -/',$releaseName, $requestID)
 		)  {
-			return (int) $requestID[1];
-		} else {
-			return self::REQID_ZERO;
+			if ((int) $requestID[1] > 0) {
+				return (int) $requestID[1];
+			}
 		}
+		return self::REQID_ZERO;
 	}
 
 	/**
