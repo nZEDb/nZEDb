@@ -358,6 +358,7 @@ class RequestID
 				foreach($returnXml->request as $result) {
 					if (isset($result['name']) && isset($result['ident']) && (int)$result['ident'] > 0) {
 						$this->newTitle = (string)$result['name'];
+						$this->requestID = (int)$result['reqid'];
 						$this->result['id'] = (int)$result['ident'];
 						$this->result['group_id'] = $this->groupID;
 						$this->result['groupname'] = $requestArray[(int)$result['ident']]['group'];
