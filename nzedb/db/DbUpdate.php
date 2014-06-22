@@ -276,7 +276,7 @@ class DbUpdate
 		$options += $defaults;
 
 		$sql = file_get_contents($options['filepath']);
-		$sql = str_replace(array('DELIMITER $$', 'DELIMITER ;', ' $$'), '', $sql);
+		$sql = str_replace(array('DELIMITER $$', 'DELIMITER ;', '$$'), '', $sql);
 		$this->db->exec($sql);
 	}
 
