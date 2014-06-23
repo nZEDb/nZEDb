@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-23 kevin
+	* Add: Patch to fix broken triggers causing search/api/other stuff not to work.
 2014-06-22 ruhllatio
 	* Fix: requestID incorrectly matching requestID of zero
 2014-06-22 bart39
