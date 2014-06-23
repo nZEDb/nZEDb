@@ -19,13 +19,14 @@ define('NNTP_PORT', '%%NNTP_PORT%%');
 // If you want to use TLS or SSL on the NNTP connection (the NNTP_PORT must be able to support encryption).
 define('NNTP_SSLENABLED', %%NNTP_SSLENABLED%%);
 // If we lose connection to the NNTP server, this is the time in seconds to wait before giving up.
-define('NNTP_SOCKET_TIMEOUT', %%NNTP_SOCKET_TIMEOUT%%);
+define('NNTP_SOCKET_TIMEOUT', '%%NNTP_SOCKET_TIMEOUT%%');
 
 define('NNTP_USERNAME_A', '%%NNTP_USERNAME_A%%');
 define('NNTP_PASSWORD_A', '%%NNTP_PASSWORD_A%%');
 define('NNTP_SERVER_A', '%%NNTP_SERVER_A%%');
 define('NNTP_PORT_A', '%%NNTP_PORT_A%%');
-define('NNTP_SOCKET_TIMEOUT_A', %%NNTP_SOCKET_TIMEOUT_A%%);
+define('NNTP_SSLENABLED_A', %%NNTP_SSLENABLED_A%%);
+define('NNTP_SOCKET_TIMEOUT_A', '%%NNTP_SOCKET_TIMEOUT_A%%');
 
 // Wether to use memcached or not.
 define('MEMCACHE_ENABLED', false);
