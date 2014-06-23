@@ -6,7 +6,13 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-22 ruhllatio
+	* Fix: requestID incorrectly matching requestID of zero
+2014-06-22 bart39
+	* Fix: requestID not set for web lookup causing insert errors
 2014-06-21 kevin
+	* Fix: Various fixes in requestID (hitting web every run needlessly).
+	* Chg: Minor changes to NNTP.
 	* Fix: IRCClient, servers with numbers in their names stay on the initial sequence.
 	* Fix: Extra "LIKE" on preinfo.
 	* Add: Category search on preinfo.
