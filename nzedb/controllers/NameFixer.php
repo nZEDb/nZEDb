@@ -8,341 +8,389 @@ use nzedb\utility\Utility;
  */
 class NameFixer
 {
-	CONST PREDB_REGEX = "/([\w\(\)]+[\._]([\w\(\)]+[\._-])+[\w\(\)]+-\w+)/";
+	CONST PREDB_REGEX = '/([\w\(\)]+[\._]([\w\(\)]+[\._-])+[\w\(\)]+-\w+)/';
+
+	/**
+	 * Has the current release found a new name?
+	 * @var bool
+	 */
+	public $matched;
+
+	/**
+	 * How many releases have got a new name?
+	 * @var int
+	 */
+	public $fixed;
+
+	/**
+	 * How many releases were checked.
+	 * @var int
+	 */
+	public $checked;
+
+	/**
+	 * Total releases we are working on.
+	 * @var int
+	 */
+	protected $_totalReleases;
 
 	/**
 	 * @param bool $echooutput
 	 */
-	function __construct($echooutput = true)
+	public function __construct($echooutput = true)
 	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->relid = $this->fixed = $this->checked = 0;
 		$this->db = new DB();
-		$db = $this->db;
-		if ($db->dbSystem() === 'mysql') {
-			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL 0 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
-			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC";
-		} else if ($db->dbSystem() === 'pgsql') {
-			$this->timeother = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC";
-			$this->timeall = " AND rel.adddate > (NOW() - INTERVAL '6 HOURS') GROUP BY rel.id ORDER BY postdate DESC";
-		}
-		$this->fullother = " AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id";
-		$this->fullall = "";
+		$this->timeother = ' AND rel.adddate > (NOW() - INTERVAL 0 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC';
+		$this->timeall = ' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC';
+		$this->fullother = ' AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id';
+		$this->fullall = '';
 		$this->done = $this->matched = false;
 		$this->c = new ColorCLI();
 		$this->consoletools = new ConsoleTools();
 		$this->category = new Categorize();
+		$this->utility = new Utility();
+		$this->_groups = new Groups($this->db);
 	}
 
 	/**
 	 * Attempts to fix release names using the NFO.
 	 *
-	 * @param $time
-	 * @param $echo
-	 * @param $cats
-	 * @param $namestatus
+	 * @param int $time    1: 24 hours, 2: no time limit
+	 * @param int $echo    1: change the name, anything else: preview of what could have been changed.
+	 * @param int $cats    1: other categories, 2: all categories
+	 * @param $nameStatus
 	 * @param $show
 	 */
-	public function fixNamesWithNfo($time, $echo, $cats, $namestatus, $show)
+	public function fixNamesWithNfo($time, $echo, $cats, $nameStatus, $show)
 	{
+		$this->_echoStartMessage($time, '.nfo files');
+		$type = 'NFO, ';
 
-		if ($time == 1) {
-			echo $this->c->header("Fixing search names in the past 6 hours using .nfo files.");
-		} else {
-			echo $this->c->header("Fixing search names since the beginning using .nfo files.");
-		}
-
-		$db = $this->db;
-		$type = "NFO, ";
 		// Only select releases we haven't checked here before
-		if ($db->dbSystem() === "mysql") {
-			$uc = "UNCOMPRESS(nfo)";
-		} else if ($db->dbSystem() === "pgsql") {
-			$uc = "nfo";
-		}
-		$preid = false;
+		$preId = false;
 		if ($cats === 3) {
-			$query = "SELECT rel.id AS releaseid FROM releases rel "
-				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-				. "WHERE nzbstatus = 1 AND preid = 0";
+			$query = '
+				SELECT rel.id AS releaseid
+				FROM releases rel
+				INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id)
+				WHERE nzbstatus = 1
+				AND preid = 0';
 			$cats = 2;
-			$preid = true;
+			$preId = true;
 		} else {
-			$query = "SELECT rel.id AS releaseid FROM releases rel "
-				. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-				. "WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_nfo = 0";
+			$query = '
+				SELECT rel.id AS releaseid
+				FROM releases rel
+				INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id)
+				WHERE (isrenamed = 0 OR rel.categoryid = 7010)
+				AND proc_nfo = 0';
 		}
-		//24 hours, other cats
-		if ($time == 1 && $cats == 1) {
-			echo $this->c->header($query . $this->timeother . ";\n");
-			$relres = $db->queryDirect($query . $this->timeother);
-		} //24 hours, all cats
-		else if ($time == 1 && $cats == 2) {
-			echo $this->c->header($query . $this->timeall . ";\n");
-			$relres = $db->queryDirect($query . $this->timeall);
-		} //other cats
-		else if ($time == 2 && $cats == 1) {
-			echo $this->c->header($query . $this->fullother . ";\n");
-			$relres = $db->queryDirect($query . $this->fullother);
-		}
-		//all cats
-		if ($time == 2 && $cats == 2) {
-			echo $this->c->header($query . $this->fullall . ";\n");
-			$relres = $db->queryDirect($query . $this->fullall);
-		}
-		$total = $relres->rowCount();
-		if ($total > 0) {
-			echo $this->c->primary(number_format($total) . " releases to process.");
-			sleep(2);
-			foreach ($relres as $rel) {
-				$relrow = $db->queryOneRow("SELECT nfo.releaseid AS nfoid, rel.groupid, rel.categoryid, rel.name, rel.searchname, {$uc} AS textstring, "
-					. "rel.id AS releaseid FROM releases rel "
-					. "INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id) "
-					. "WHERE rel.id = " . $rel['releaseid']
-				);
 
-				//ignore encrypted nfos
-				if (preg_match('/^=newz\[NZB\]=\w+/', $relrow['textstring'])) {
-					$db->queryExec(sprintf("UPDATE releases SET proc_nfo = 1 WHERE id = %d", $relrow['rel.id']));
+		$releases = $this->_getReleases($time, $cats, $query);
+		if ($releases !== false) {
+
+			$total = $releases->rowCount();
+			if ($total > 0) {
+				$this->_totalReleases = $total;
+				echo $this->c->primary(number_format($total) . ' releases to process.');
+
+				foreach ($releases as $rel) {
+					$releaseRow = $this->db->queryOneRow(
+						sprintf('
+							SELECT nfo.releaseid AS nfoid, rel.group_id, rel.categoryid, rel.name, rel.searchname,
+								UNCOMPRESS(nfo) AS textstring, rel.id AS releaseid
+							FROM releases rel
+							INNER JOIN releasenfo nfo ON (nfo.releaseid = rel.id)
+							WHERE rel.id = %d',
+							$rel['releaseid']
+						)
+					);
+
 					$this->checked++;
-				} else {
-					$this->done = $this->matched = false;
-					$this->checkName($relrow, $echo, $type, $namestatus, $show, $preid);
-					$this->checked++;
-					if ($this->checked % 500 === 0 && $show === 1) {
-						echo $this->c->alternate(number_format($this->checked) . " NFOs processed.\n");
-						sleep(1);
+
+					// Ignore encrypted NFOs.
+					if (preg_match('/^=newz\[NZB\]=\w+/', $releaseRow['textstring'])) {
+						$this->db->queryExec(
+							sprintf('UPDATE releases SET proc_nfo = 1 WHERE id = %d', $releaseRow['releaseid'])
+						);
+						continue;
 					}
+
+					$this->done = $this->matched = false;
+					$this->checkName($releaseRow, $echo, $type, $nameStatus, $show, $preId);
+					$this->_echoRenamed($show);
 				}
-				if ($show === 2) {
-					$this->consoletools->overWritePrimary("Renamed Releases: [" . number_format($this->fixed) . "] " . $this->consoletools->percentString($this->checked, $total));
-				}
-			}
-			if ($echo == 1) {
-				echo $this->c->header("\n" . number_format($this->fixed) . " releases have had their names changed out of: " . number_format($this->checked) . " NFO's.");
+				$this->_echoFoundCount($echo, ' NFO\'s');
 			} else {
-				echo $this->c->header("\n" . number_format($this->fixed) . " releases could have their names changed. " . number_format($this->checked) . " NFO's were checked.");
+				echo $this->c->info('Nothing to fix.');
 			}
-		} else {
-			echo $this->c->info("Nothing to fix.");
 		}
 	}
 
 	/**
 	 * Attempts to fix release names using the File name.
 	 *
-	 * @param $time
-	 * @param $echo
-	 * @param $cats
-	 * @param $namestatus
+	 * @param int $time   1: 24 hours, 2: no time limit
+	 * @param int $echo   1: change the name, anything else: preview of what could have been changed.
+	 * @param int $cats   1: other categories, 2: all categories
+	 * @param $nameStatus
 	 * @param $show
 	 */
-	public function fixNamesWithFiles($time, $echo, $cats, $namestatus, $show)
+	public function fixNamesWithFiles($time, $echo, $cats, $nameStatus, $show)
 	{
-		if ($time == 1) {
-			echo $this->c->header("Fixing search names in the past 6 hours using the filename.");
+		$this->_echoStartMessage($time, 'file names');
+		$type = 'Filenames, ';
+
+		$preId = false;
+		if ($cats === 3) {
+			$query = '
+				SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.group_id,
+					relfiles.releaseid AS fileid, rel.id AS releaseid
+				FROM releases rel
+				INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id)
+				WHERE nzbstatus = 1
+				AND preid = 0';
+
+			$cats = 2;
+			$preId = true;
 		} else {
-			echo $this->c->header("Fixing search names since the beginning using the filename.");
+			$query = '
+				SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.group_id,
+					relfiles.releaseid AS fileid, rel.id AS releaseid
+				FROM releases rel
+				INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id)
+				WHERE (isrenamed = 0 OR rel.categoryid = 7010)
+				AND proc_files = 0';
 		}
 
-		$db = $this->db;
-		$type = "Filenames, ";
-		$preid = false;
-		if ($cats === 3) {
-			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
-				. "rel.id AS releaseid FROM releases rel "
-				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
-				. "WHERE nzbstatus = 1 AND preid = 0";
-			$cats = 2;
-			$preid = true;
-		} else {
-			$query = "SELECT relfiles.name AS textstring, rel.categoryid, rel.name, rel.searchname, rel.groupid, relfiles.releaseid AS fileid, "
-				. "rel.id AS releaseid FROM releases rel "
-				. "INNER JOIN releasefiles relfiles ON (relfiles.releaseid = rel.id) "
-				. "WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_files = 0";
-		}
-		//24 hours, other cats
-		if ($time == 1 && $cats == 1) {
-			echo $this->c->header($query . $this->timeother . ";\n");
-			$relres = $db->queryDirect($query . $this->timeother);
-		}
-		//24 hours, all cats
-		if ($time == 1 && $cats == 2) {
-			echo $this->c->header($query . $this->timeall . ";\n");
-			$relres = $db->queryDirect($query . $this->timeall);
-		}
-		//other cats
-		if ($time == 2 && $cats == 1) {
-			echo $this->c->header($query . $this->fullother . ";\n");
-			$relres = $db->queryDirect($query . $this->fullother);
-		}
-		//all cats
-		if ($time == 2 && $cats == 2) {
-			echo $this->c->header($query . $this->fullall . ";\n");
-			$relres = $db->queryDirect($query . $this->fullall);
-		}
-		$total = $relres->rowCount();
-		if ($total > 0) {
-			echo $this->c->primary(number_format($total) . " file names to process.");
-			sleep(2);
-			foreach ($relres as $relrow) {
-				$this->done = $this->matched = false;
-				$this->checkName($relrow, $echo, $type, $namestatus, $show, $preid);
-				$this->checked++;
-				if ($this->checked % 500 == 0 && $show === 1) {
-					echo $this->c->alternate(number_format($this->checked) . " files processed.");
-					sleep(1);
+		$releases = $this->_getReleases($time, $cats, $query);
+		if ($releases !== false) {
+
+			$total = $releases->rowCount();
+			if ($total > 0) {
+				$this->_totalReleases = $total;
+				echo $this->c->primary(number_format($total) . ' file names to process.');
+
+				foreach ($releases as $release) {
+					$this->done = $this->matched = false;
+					$this->checkName($release, $echo, $type, $nameStatus, $show, $preId);
+					$this->checked++;
+					$this->_echoRenamed($show);
 				}
-				if ($show === 2) {
-					$this->consoletools->overWritePrimary("Renamed Releases: [" . number_format($this->fixed) . "] " . $this->consoletools->percentString($this->checked, $total));
-				}
-			}
-			if ($echo == 1) {
-				echo $this->c->header("\n" . number_format($this->fixed) . " releases have had their names changed out of: " . number_format($this->checked) . " files.");
+
+				$this->_echoFoundCount($echo, ' files');
 			} else {
-				echo $this->c->header("\n" . number_format($this->fixed) . " releases could have their names changed. " . number_format($this->checked) . " files were checked.");
+				echo $this->c->info('Nothing to fix.');
 			}
-		} else {
-			echo $this->c->info("Nothing to fix.");
 		}
 	}
 
 	/**
 	 * Attempts to fix release names using the Par2 File.
 	 *
-	 * @param $time
-	 * @param $echo
-	 * @param $cats
-	 * @param $namestatus
+	 * @param int $time   1: 24 hours, 2: no time limit
+	 * @param int $echo   1: change the name, anything else: preview of what could have been changed.
+	 * @param int $cats   1: other categories, 2: all categories
+	 * @param $nameStatus
 	 * @param $show
-	 * @param $nntp
+	 * @param NNTP $nntp
 	 */
-	public function fixNamesWithPar2($time, $echo, $cats, $namestatus, $show, $nntp)
+	public function fixNamesWithPar2($time, $echo, $cats, $nameStatus, $show, $nntp)
 	{
-		if (!isset($nntp)) {
-			exit($this->c->error("\nNot connected to usenet(namefixer->fixNamesWithPar2).\n"));
-		}
+		$this->_echoStartMessage($time, 'par2 files');
 
-		if ($time == 1) {
-			echo $this->c->header("Fixing search names in the past 6 hours using the par2 files.");
-		} else {
-			echo $this->c->header("Fixing search names since the beginning using the par2 files.");
-		}
-
-		$db = $this->db;
 		if ($cats === 3) {
-			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE nzbstatus = 1 AND preid = 0";
+			$query = 'SELECT rel.id AS releaseid, rel.guid, rel.group_id FROM releases rel WHERE nzbstatus = 1 AND preid = 0';
 			$cats = 2;
 		} else {
-			$query = "SELECT rel.id AS releaseid, rel.guid, rel.groupid FROM releases rel WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_par2 = 0";
+			$query = 'SELECT rel.id AS releaseid, rel.guid, rel.group_id FROM releases rel WHERE (isrenamed = 0 OR rel.categoryid = 7010) AND proc_par2 = 0';
 		}
 
-		//24 hours, other cats
+		$releases = $this->_getReleases($time, $cats, $query);
+		if ($releases !== false) {
+
+			$total = $releases->rowCount();
+			if ($total > 0) {
+				$this->_totalReleases = $total;
+
+				echo $this->c->primary(number_format($total) . ' releases to process.');
+				$nzbContents = new NZBContents(
+					array(
+						'echo' => $this->echooutput,
+						'nntp' => $nntp,
+						'nfo'  => new Nfo(),
+						'db'   => $this->db,
+						'pp'   => new PostProcess(true)
+					)
+				);
+
+				foreach ($releases as $release) {
+					if (($nzbContents->checkPAR2($release['guid'], $release['releaseid'], $release['group_id'], $nameStatus, $show)) === true) {
+						$this->fixed++;
+					}
+
+					$this->checked++;
+					$this->_echoRenamed($show);
+				}
+				$this->_echoFoundCount($echo, ' files');
+			} else {
+				echo $this->c->alternate('Nothing to fix.');
+			}
+		}
+	}
+
+	/**
+	 * @param int    $time  1: 24 hours, 2: no time limit
+	 * @param int    $cats  1: other categories, 2: all categories
+	 * @param string $query Query to execute.
+	 *
+	 * @return PDOStatement|bool False on failure, PDOStatement with query results on success.
+	 */
+	protected function _getReleases($time, $cats, $query)
+	{
+		$releases = false;
+		// 24 hours, other cats
 		if ($time == 1 && $cats == 1) {
 			echo $this->c->header($query . $this->timeother . ";\n");
-			$relres = $db->queryDirect($query . $this->timeother);
-		}
-		//24 hours, all cats
-		if ($time == 1 && $cats == 2) {
+			$releases = $this->db->queryDirect($query . $this->timeother);
+		} // 24 hours, all cats
+		else if ($time == 1 && $cats == 2) {
 			echo $this->c->header($query . $this->timeall . ";\n");
-			$relres = $db->queryDirect($query . $this->timeall);
-		}
-		//other cats
-		if ($time == 2 && $cats == 1) {
+			$releases = $this->db->queryDirect($query . $this->timeall);
+		} //other cats
+		else if ($time == 2 && $cats == 1) {
 			echo $this->c->header($query . $this->fullother . ";\n");
-			$relres = $db->queryDirect($query . $this->fullother);
+			$releases = $this->db->queryDirect($query . $this->fullother);
 		}
-		//all cats
-		if ($time == 2 && $cats == 2) {
+		// all cats
+		else if ($time == 2 && $cats == 2) {
 			echo $this->c->header($query . $this->fullall . ";\n");
-			$relres = $db->queryDirect($query . $this->fullall);
+			$releases = $this->db->queryDirect($query . $this->fullall);
 		}
-		$total = $relres->rowCount();
-		if ($total > 0) {
-			echo $this->c->primary(number_format($total) . " releases to process.");
-			sleep(2);
-			$nzbcontents = new NZBContents(array('echo' => $this->echooutput, 'nntp' => $nntp, 'nfo' => new Nfo(), 'db' => $this->db, 'pp' => new PostProcess(true)));
-			foreach ($relres as $relrow) {
-				if (($nzbcontents->checkPAR2($relrow['guid'], $relrow['releaseid'], $relrow['groupid'], $namestatus, $show)) === true) {
-					$this->fixed++;
-				}
-				$this->checked++;
-				if ($this->checked % 500 == 0 && $show === 1) {
-					echo $this->c->alternate("\n" . number_format($this->checked) . " files processed.\n");
-				}
-				if ($show === 2) {
-					$this->consoletools->overWritePrimary("Renamed Releases: [" . number_format($this->fixed) . "] " . $this->consoletools->percentString($this->checked, $total));
-				}
-			}
-			if ($echo == 1) {
-				echo $this->c->header("\n" . number_format($this->fixed) . " releases have had their names changed out of: " . number_format($this->checked) . " files.");
-			} else {
-				echo $this->c->header("\n" . number_format($this->fixed) . " releases could have their names changed. " . number_format($this->checked) . " files were checked.");
-			}
+		return $releases;
+	}
+
+	/**
+	 * Echo the amount of releases that found a new name.
+	 *
+	 * @param int    $echo 1: change the name, anything else: preview of what could have been changed.
+	 * @param string $type The function type that found the name.
+	 */
+	protected function _echoFoundCount($echo, $type)
+	{
+		if ($echo == 1) {
+			echo $this->c->header(
+				PHP_EOL .
+				number_format($this->fixed) .
+				' releases have had their names changed out of: ' .
+				number_format($this->checked) .
+				$type . '.'
+			);
 		} else {
-			echo $this->c->alternate("Nothing to fix.");
+			echo $this->c->header(
+				PHP_EOL .
+				number_format($this->fixed) .
+				' releases could have their names changed. ' .
+				number_format($this->checked) .
+				$type . ' were checked.'
+			);
+		}
+	}
+
+	/**
+	 * @param int    $time 1: 24 hours, 2: no time limit
+	 * @param string $type The function type.
+	 */
+	protected function _echoStartMessage($time, $type)
+	{
+		echo $this->c->header(
+			sprintf(
+				'Fixing search names %s using %s.',
+				($time == 1 ? 'in the past 6 hours' : 'since the beginning'),
+				$type
+			)
+		);
+
+	}
+
+	/**
+	 * @param int $show
+	 */
+	protected function _echoRenamed($show)
+	{
+		if ($this->checked % 500 == 0 && $show === 1) {
+			echo $this->c->alternate(PHP_EOL . number_format($this->checked) . ' files processed.' . PHP_EOL);
+		}
+
+		if ($show === 2) {
+			$this->consoletools->overWritePrimary(
+				'Renamed Releases: [' .
+				number_format($this->fixed) .
+				'] ' .
+				$this->consoletools->percentString($this->checked, $this->_totalReleases)
+			);
 		}
 	}
 
 	/**
 	 * Update the release with the new information.
 	 *
-	 * @param     $release
-	 * @param     $name
-	 * @param     $method
-	 * @param     $echo
-	 * @param     $type
-	 * @param     $namestatus
-	 * @param     $show
-	 * @param int $preid
+	 * @param array  $release
+	 * @param string $name
+	 * @param string $method
+	 * @param int    $echo
+	 * @param string $type
+	 * @param int    $nameStatus
+	 * @param int    $show
+	 * @param int    $preId
 	 */
-	public function updateRelease($release, $name, $method, $echo, $type, $namestatus, $show, $preid = 0)
+	public function updateRelease($release, $name, $method, $echo, $type, $nameStatus, $show, $preId = 0)
 	{
-		if ($this->relid !== $release["releaseid"]) {
-			$namecleaning = new ReleaseCleaning();
-			$newname = $namecleaning->fixerCleaner($name);
-			if (strtolower($newname) != strtolower($release["searchname"])) {
+		if ($this->relid !== $release['releaseid']) {
+			$releaseCleaning = new ReleaseCleaning();
+			$newName = $releaseCleaning->fixerCleaner($name);
+			if (strtolower($newName) != strtolower($release["searchname"])) {
 				$this->matched = true;
 				$this->relid = $release["releaseid"];
 
-				$determinedcat = $this->category->determineCategory($newname, $release["groupid"]);
+				$determinedCategory = $this->category->determineCategory($newName, $release['group_id']);
 
 				if ($type === "PAR2, ") {
-					$newname = ucwords($newname);
+					$newName = ucwords($newName);
 					if (preg_match('/(.+?)\.[a-z0-9]{2,3}(PAR2)?$/i', $name, $match)) {
-						$newname = $match[1];
+						$newName = $match[1];
 					}
 				}
 
 				$this->fixed++;
 
-				$this->checkedname = explode("\\", $newname);
-				$newname = $this->checkedname[0];
-				$newname = preg_replace(array('/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'), '', $newname);
+				$newName = explode("\\", $newName);
+				$newName = preg_replace(array('/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'), '',  $newName[0]);
 
 				if ($this->echooutput === true && $show === 1) {
-					$groups = new Groups();
-					$groupname = $groups->getByNameByID($release["groupid"]);
-					$oldcatname = $this->category->getNameByID($release["categoryid"]);
-					$newcatname = $this->category->getNameByID($determinedcat);
+					$groupName = $this->_groups->getByNameByID($release['group_id']);
+					$oldCatName = $this->category->getNameByID($release['categoryid']);
+					$newCatName = $this->category->getNameByID($determinedCategory);
 
 					if ($type === "PAR2, ") {
-						echo "\n";
+						echo PHP_EOL;
 					}
 
 					echo
 						$this->c->headerOver("\nNew name:  ") .
-						$this->c->primary($newname) .
+						$this->c->primary($newName) .
 						$this->c->headerOver("Old name:  ") .
 						$this->c->primary($release["searchname"]) .
 						$this->c->headerOver("Use name:  ") .
 						$this->c->primary($release["name"]) .
 						$this->c->headerOver("New cat:   ") .
-						$this->c->primary($newcatname) .
+						$this->c->primary($newCatName) .
 						$this->c->headerOver("Old cat:   ") .
-						$this->c->primary($oldcatname) .
+						$this->c->primary($oldCatName) .
 						$this->c->headerOver("Group:     ") .
-						$this->c->primary($groupname) .
+						$this->c->primary($groupName) .
 						$this->c->headerOver("Method:    ") .
 						$this->c->primary($type . $method) .
 						$this->c->headerOver("ReleaseID: ") .
@@ -359,8 +407,7 @@ class NameFixer
 				}
 
 				if ($echo == 1) {
-					$db = $this->db;
-					if ($namestatus == 1) {
+					if ($nameStatus == 1) {
 						$status = '';
 						if ($type == "NFO, ") {
 							$status = "isrenamed = 1, iscategorized = 1, proc_nfo = 1,";
@@ -373,13 +420,34 @@ class NameFixer
 						} else if ($type == "PreDB FT Exact, ") {
 							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
 						}
-						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
-								. "anidbid = NULL, preid = %s, searchname = %s, %s categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $status, $determinedcat, $release["releaseid"]
+						$this->db->queryExec(
+							sprintf('
+								UPDATE releases
+								SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
+									tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
+									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = %s,
+									searchname = %s, %s categoryid = %d
+								WHERE id = %d',
+								$preId,
+								$this->db->escapeString(substr($newName, 0, 255)),
+								$status,
+								$determinedCategory,
+								$release['releaseid']
 							)
 						);
 					} else {
-						$run = $db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, "
-								. "anidbid = NULL, preid = %s, searchname = %s, iscategorized = 1, categoryid = %d WHERE id = %d", $preid, $db->escapeString(substr($newname, 0, 255)), $determinedcat, $release["releaseid"]
+						$this->db->queryExec(
+							sprintf('
+								UPDATE releases
+								SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
+									tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
+									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = %s,
+									searchname = %s, iscategorized = 1, categoryid = %d
+								WHERE id = %d',
+								$preId,
+								$this->db->escapeString(substr($newName, 0, 255)),
+								$determinedCategory,
+								$release['releaseid']
 							)
 						);
 					}
@@ -394,7 +462,6 @@ class NameFixer
 	{
 		$db = $this->db;
 		$matching = 0;
-		$this->utility = new Utility();
 		$this->matched = false;
 
 		//Remove all non-printable chars, preg match all interesting words
@@ -411,7 +478,7 @@ class NameFixer
 		);
 
 		if ($res !== false) {
-			$total = count($res);
+			$total = $res->rowCount();
 		} else {
 			return $matching;
 		}
@@ -419,11 +486,11 @@ class NameFixer
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
 		if ($total > 0 && $total <= 15) {
 			foreach ($res as $row) {
-				$release = $db->queryOneRow(sprintf("SELECT id AS releaseid, name, searchname, groupid, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND id = %d", $row['releaseid']));
+				$release = $db->queryOneRow(sprintf("SELECT id AS releaseid, name, searchname, group_id, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND id = %d", $row['releaseid']));
 				if ($release !== false) {
 					$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
 					if ($pre['title'] !== $release['searchname']) {
-						$determinedcat = $this->category->determineCategory($pre['title'], $release['groupid']);
+						$determinedcat = $this->category->determineCategory($pre['title'], $release['group_id']);
 
 						if ($echo == 1) {
 							$this->matched = true;
@@ -481,7 +548,7 @@ class NameFixer
 					$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
 				}
 				if ($pre['title'] !== $release['searchname']) {
-					$determinedcat = $this->category->determineCategory($pre['title'], $release['groupid']);
+					$determinedcat = $this->category->determineCategory($pre['title'], $release['group_id']);
 
 					if ($echo == 1) {
 						$this->matched = true;
@@ -514,7 +581,6 @@ class NameFixer
 	{
 		$db = $this->db;
 		$matching = 0;
-		$hashtype = "";
 		$this->matched = false;
 
 		// Determine MD5 or SHA1
@@ -536,7 +602,7 @@ class NameFixer
 			foreach ($res as $row) {
 				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $row['preid'], $release['releaseid']));
 				if ($row["title"] !== $release["searchname"]) {
-					$determinedcat = $this->category->determineCategory($row["title"], $release["groupid"]);
+					$determinedcat = $this->category->determineCategory($row["title"], $release["group_id"]);
 
 					if ($echo == 1) {
 						$this->matched = true;
@@ -571,17 +637,12 @@ class NameFixer
 	public function checkName($release, $echo, $type, $namestatus, $show, $preid = false)
 	{
 		// Get pre style name from releases.name
-		$matches = '';
 		if (preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $release['textstring'], $matches)) {
 			foreach ($matches as $match) {
 				foreach ($match as $val) {
 					$title = $this->db->queryOneRow("SELECT title, id from predb WHERE title = " . $this->db->escapeString(trim($val)));
-					if (isset($title['title'])) {
-						$this->cleanerName = $title['title'];
-						if (!empty($this->cleanerName)) {
-							$this->updateRelease($release, $title['title'], $method = "preDB: Match", $echo, $type, $namestatus, $show, $title['id']);
-							continue;
-						}
+					if ($title !== false) {
+						$this->updateRelease($release, $title['title'], $method = "preDB: Match", $echo, $type, $namestatus, $show, $title['id']);
 					}
 				}
 			}

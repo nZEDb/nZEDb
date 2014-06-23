@@ -634,7 +634,7 @@ class Binaries
 				} else {
 
 					$query = sprintf(
-						'UPDATE partrepair SET attempts = attempts + 1 WHERE groupid = %d AND numberid ',
+						'UPDATE partrepair SET attempts = attempts + 1 WHERE group_id = %d AND numberid ',
 						$groupArr['id']
 					);
 
@@ -921,7 +921,7 @@ class Binaries
 							} else {
 								if (!$cres) {
 									// added utf8_encode on fromname, seems some foreign groups contains characters that were not escaping properly
-									$csql = sprintf("INSERT INTO %s (subject, fromname, date, xref, groupid, totalfiles, collectionhash, dateadded)
+									$csql = sprintf("INSERT INTO %s (subject, fromname, date, xref, group_id, totalfiles, collectionhash, dateadded)
 									VALUES (%s, %s, %s, %s, %d, %d, %s, NOW()) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",
 										$group['cname'],
 										$this->db->escapeString(substr($subject, 0, 255)),
@@ -1080,7 +1080,7 @@ class Binaries
 		$missingParts = $this->db->query(
 			sprintf('
 				SELECT * FROM %s
-				WHERE groupid = %d AND attempts < 5
+				WHERE group_id = %d AND attempts < 5
 				ORDER BY numberid ASC LIMIT %d',
 				$group['prname'],
 				$groupArr['id'],
@@ -1151,7 +1151,7 @@ class Binaries
 				sprintf('
 					SELECT COUNT(id) AS num
 					FROM %s
-					WHERE groupid = %d
+					WHERE group_id = %d
 					AND numberid <= %d',
 					$group['prname'],
 					$groupArr['id'],
@@ -1168,7 +1168,7 @@ class Binaries
 					sprintf('
 						UPDATE %s
 						SET attempts = attempts + 1
-						WHERE groupid = %d
+						WHERE group_id = %d
 						AND numberid <= %d',
 						$group['prname'],
 						$groupArr['id'],
@@ -1189,7 +1189,7 @@ class Binaries
 		}
 
 		// Remove articles that we cant fetch after 5 attempts.
-		$this->db->queryExec(sprintf('DELETE FROM %s WHERE attempts >= 5 AND groupid = %d', $group['prname'], $groupArr['id']));
+		$this->db->queryExec(sprintf('DELETE FROM %s WHERE attempts >= 5 AND group_id = %d', $group['prname'], $groupArr['id']));
 	}
 
 	/**
@@ -1205,7 +1205,7 @@ class Binaries
 		// Check that tables exist, create if they do not.
 		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupID);
 
-		$insertStr = 'INSERT INTO ' . $group['prname'] . ' (numberid, groupid) VALUES ';
+		$insertStr = 'INSERT INTO ' . $group['prname'] . ' (numberid, group_id) VALUES ';
 		foreach ($numbers as $number) {
 			$insertStr .= sprintf('(%d, %d), ', $number, $groupID);
 		}
@@ -1234,7 +1234,7 @@ class Binaries
 			$sql .= sprintf('%d, ', $number);
 		}
 		$sql = substr($sql, 0, -2);
-		$sql .= sprintf(') AND groupid = %d', $groupID);
+		$sql .= sprintf(') AND group_id = %d', $groupID);
 		$this->db->queryExec($sql);
 	}
 
@@ -1306,7 +1306,7 @@ class Binaries
 			sprintf('
 				SELECT
 					binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description,
-					binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS groupid, binaryblacklist.msgcol
+					binaryblacklist.groupname AS groupname, binaryblacklist.regex, groups.id AS group_id, binaryblacklist.msgcol
 				FROM binaryblacklist
 				LEFT OUTER JOIN groups ON groups.name = binaryblacklist.groupname %s
 				ORDER BY coalesce(groupname,\'zzz\')',

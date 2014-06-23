@@ -43,7 +43,7 @@ print(bcolors.HEADER + "\n\nRequestID Threaded Started at {}".format(datetime.da
 cur[0].execute("SELECT value FROM settings WHERE setting = 'request_hours'")
 dbgrab = cur[0].fetchone()
 request_hours = str(dbgrab[0])
-cur[0].execute("SELECT r.id, r.name, g.name AS groupname, reqidstatus FROM releases r LEFT JOIN groups g ON r.groupid = g.id WHERE nzbstatus = 1 AND preid = 0 AND isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " + request_hours + " HOUR) LIMIT 100000")
+cur[0].execute("SELECT r.id, r.name, g.name AS groupname, reqidstatus FROM releases r LEFT JOIN groups g ON r.group_id = g.id WHERE nzbstatus = 1 AND preid = 0 AND isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " + request_hours + " HOUR) LIMIT 100000")
 datas = cur[0].fetchall()
 
 #close connection to mysql

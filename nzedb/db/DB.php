@@ -87,7 +87,8 @@ class DB extends \PDO
 			'dbsock'		=> defined('DB_SOCKET') ? DB_SOCKET : '',
 			'dbtype'		=> defined('DB_SYSTEM') ? DB_SYSTEM : '',
 			'dbuser' 		=> defined('DB_USER') ? DB_USER : '',
-			'log'			=> new \ColorCLI()
+			'log'			=> new \ColorCLI(),
+			'persist'		=> false,
 		);
 		$this->opts = $options + $defaults;
 
@@ -220,7 +221,8 @@ class DB extends \PDO
 		}
 		$dsn .= ';charset=utf8';
 
-		$options = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 180);
+		$options = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 180,
+						 \PDO::ATTR_PERSISTENT => $this->opts['persist']);
 		if ($this->DbSystem === 'mysql') {
 			$options[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			$options[\PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
@@ -473,6 +475,18 @@ class DB extends \PDO
 				return array('deadlock' => true, 'message' => $e->getMessage());
 			}
 
+			// Check if we lost connection to MySQL.
+			else if ($this->_checkGoneAway($e->getMessage()) !== false) {
+
+				// Reconnect to MySQL.
+				if ($this->_reconnect() === true) {
+
+					// If we reconnected, retry the query.
+					return $this->queryExecHelper($query, $insert);
+
+				}
+			}
+
 			return array ('deadlock' => false, 'message' => $e->getMessage());
 		}
 	}
@@ -481,7 +495,7 @@ class DB extends \PDO
 	 * Direct query. Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
 	 *
 	 * @param string $query
-	 * @param	bool $silent	Whether to skip echoing errors to the console.
+	 * @param bool   $silent Whether to skip echoing errors to the console.
 	 *
 	 * @return bool|int
 	 */
@@ -495,7 +509,22 @@ class DB extends \PDO
 			return self::$pdo->exec($query);
 
 		} catch (\PDOException $e) {
-			if (! $silent) {
+
+			// Check if we lost connection to MySQL.
+			if ($this->_checkGoneAway($e->getMessage()) !== false) {
+
+				// Reconnect to MySQL.
+				if ($this->_reconnect() === true) {
+
+					// If we reconnected, retry the query.
+					return $this->exec($query, $silent);
+
+				} else {
+					// If we are not reconnected, return false.
+					return false;
+				}
+
+			} else if (!$silent) {
 				$this->echoError($e->getMessage(), 'Exec', 4, false, $e);
 
 				if ($this->_debug) {
@@ -592,13 +621,64 @@ class DB extends \PDO
 		try {
 			$result = self::$pdo->query($query);
 		} catch (\PDOException $e) {
-			$this->echoError($e->getMessage(), 'queryDirect', 4, false, $e);
-			if ($this->_debug) {
-				$this->debugging->start("queryDirect", $query, 6);
+
+			// Check if we lost connection to MySQL.
+			if ($this->_checkGoneAway($e->getMessage()) !== false) {
+
+				// Reconnect to MySQL.
+				if ($this->_reconnect() === true) {
+
+					// If we reconnected, retry the query.
+					$result = $this->queryDirect($query);
+
+				} else {
+					// If we are not reconnected, return false.
+					$result = false;
+				}
+
+			} else {
+				$this->echoError($e->getMessage(), 'queryDirect', 4, false, $e);
+				if ($this->_debug) {
+					$this->debugging->start("queryDirect", $query, 6);
+				}
+				$result = false;
 			}
-			$result = false;
 		}
 		return $result;
+	}
+
+	/**
+	 * Reconnect to MySQL when the connection has been lost.
+	 *
+	 * @see ping(), _checkGoneAway() for checking the connection.
+	 *
+	 * @return bool
+	 */
+	protected function _reconnect()
+	{
+		$this->initialiseDatabase();
+
+		// Check if we are really connected to MySQL.
+		if ($this->ping() === false) {
+			// If we are not reconnected, return false.
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Verify that we've lost a connection to MySQL.
+	 *
+	 * @param string $errorMessage
+	 *
+	 * @return bool
+	 */
+	protected function _checkGoneAway($errorMessage)
+	{
+		if (stripos($errorMessage, 'MySQL server has gone away') !== false) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -735,7 +815,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Check if the tables exists for the groupid, make new tables and set status to 1 in groups table for the id.
+	 * Check if the tables exists for the group_id, make new tables and set status to 1 in groups table for the id.
 	 *
 	 * @param int $grpid
 	 *
@@ -865,7 +945,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Try to create new tables for the groupID, if we fail, log the error and exit.
+	 * Try to create new tables for the group_id, if we fail, log the error and exit.
 	 * Returns table names, with group ID if tpg is on.
 	 *
 	 * @param int $tpgSetting 0, tpg is off in site setting, 1 tpg is on in site setting.

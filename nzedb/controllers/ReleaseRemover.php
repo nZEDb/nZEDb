@@ -348,7 +348,7 @@ class ReleaseRemover
 			AND r.iscategorized = 1
 			AND r.rarinnerfilecount = 0
 			AND r.categoryid NOT IN (%d) %s",
-			$regex, Category::CAT_MISC, $this->crapTime
+			$regex, Category::CAT_OTHER_HASHED, $this->crapTime
 		);
 
 		if ($this->checkSelectQuery() === false) {
@@ -556,7 +556,7 @@ class ReleaseRemover
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size < 2097152
-			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
+			AND r.categoryid NOT IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) %s",
 			Category::CAT_MUSIC_MP3,
 			Category::CAT_BOOKS_COMICS,
 			Category::CAT_BOOKS_EBOOK,
@@ -564,6 +564,8 @@ class ReleaseRemover
 			Category::CAT_BOOKS_MAGAZINES,
 			Category::CAT_BOOKS_TECHNICAL,
 			Category::CAT_BOOKS_OTHER,
+			Category::CAT_PC_0DAY,
+			Category::CAT_PC_GAMES,
 			Category::CAT_MISC,
 			Category::CAT_OTHER_HASHED,
 			$this->crapTime
@@ -817,7 +819,7 @@ class ReleaseRemover
 						$groupIDs = (substr($string, 0, -1));
 					}
 
-					$groupID = ' AND r.groupid in (' . $groupIDs . ') ';
+					$groupID = ' AND r.group_id in (' . $groupIDs . ') ';
 				}
 				$this->method = 'Blacklist ' . $regex['id'];
 
@@ -902,7 +904,7 @@ class ReleaseRemover
 						$groupIDs = (substr($string, 0, -1));
 					}
 
-					$groupID = ' AND r.groupid in (' . $groupIDs . ') ';
+					$groupID = ' AND r.group_id in (' . $groupIDs . ') ';
 				}
 
 				$this->method = 'Blacklist ' . $regex['id'];
@@ -1044,14 +1046,14 @@ class ReleaseRemover
 								$this->error = 'This group was not found in your database: ' . $args[2] . PHP_EOL;
 								break;
 							}
-							return ' AND groupid = ' . $group['id'];
+							return ' AND group_id = ' . $group['id'];
 						case 'like':
 							$groups = $this->db->query('SELECT id FROM groups WHERE name ' . $this->formatLike($args[2], 'name'));
 							if (count($groups) === 0) {
 								$this->error = 'No groups were found with this pattern in your database: ' . $args[2] . PHP_EOL;
 								break;
 							}
-							$gQuery = ' AND groupid IN (';
+							$gQuery = ' AND group_id IN (';
 							foreach ($groups as $group) {
 								$gQuery .= $group['id'] . ',';
 							}
