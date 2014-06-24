@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 $versions = @simplexml_load_file(nZEDb_VERSIONS);
@@ -13,7 +13,7 @@ $git = new \nzedb\utility\Git();
 
 $version = $versions->versions->git->tag . 'r' . $git->commits();
 
-$db = new DB();
+$db = new Settings();
 $DIR = nZEDb_MISC;
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
@@ -329,7 +329,7 @@ $init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tp
 $console_releases_proc_start = $movie_releases_proc_start = $show_query = $run_releases = 0;
 $last_history = "";
 
-// Ananlyze tables
+// Analyze tables
 printf($c->info("\nAnalyzing your tables to refresh your indexes."));
 $db->optimise(true, 'analyze');
 
@@ -361,6 +361,7 @@ printf($mask3, "Collections", "Binaries", "Parts");
 printf($mask3, "======================================", "=========================", "======================================");
 printf($mask5, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 echo "\n";
+
 printf($mask3, "Category", "In Process", "In Database");
 printf($mask3, "======================================", "=========================", "======================================");
 printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
@@ -390,7 +391,7 @@ if ($show_query == 1) {
 	printf($mask4, "Combined", "0", "0");
 }
 
-$monitor = 30;
+$monitor = $db->getSetting(['section' => 'tmux', 'subsection' => 'monitor', 'value' => 'refresh']);
 $i = 1;
 $fcfirstrun = true;
 $fcnum = 0;
@@ -403,7 +404,7 @@ while ($i > 0) {
 	//check the db connection
 	if ($db->ping(true) == false) {
 		unset($db);
-		$db = new DB();
+		$db = new Settings();
 	}
 
 	// These queries are very fast, run every loop
@@ -412,7 +413,7 @@ while ($i > 0) {
 	$tmux_time = (TIME() - $time01);
 
 	//run queries only after time exceeded, these queries can take awhile
-	if ($i == 1 || (TIME() - $time1 >= $monitor && $running == 1)) {
+	if ($monitor > 0 && ($i == 1 || (TIME() - $time1 >= $monitor && $running == 1))) {
 		echo $c->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
 		$time02 = TIME();
 		$split_result = $db->query($split_query, false);
@@ -1651,7 +1652,7 @@ function run_ircscraper($tmux_session, $_php, $pane, $run_ircscraper)
 
 function run_sharing($tmux_session, $_php, $pane, $_sleep, $sharing_timer)
 {
-	$db = new DB();
+	$db = new Settings();
 	$sharing = $db->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
 	$t = new Tmux();
 	$tmux = $t->get();
