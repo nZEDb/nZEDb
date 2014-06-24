@@ -980,48 +980,48 @@ while ($i > 0) {
 		printf($mask1, "Postprocess:", "stale for " . relativeTime($time2));
 	}
 	echo "\n";
-	printf($mask3, "Collections", "Binaries", "Parts");
-	printf($mask3, "======================================", "=========================", "======================================");
-	printf($mask5, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
-
-	if (((isset($monitor_path)) && (file_exists($monitor_path))) || ((isset($monitor_path_a)) && (file_exists($monitor_path_a))) || ((isset($monitor_path_b)) && (file_exists($monitor_path_b)))) {
-		echo "\n";
-		printf($mask3, "File System", "Used", "Free");
-		printf($mask3, "======================================", "=========================", "======================================");
-		if (isset($monitor_path) && $monitor_path != "" && file_exists($monitor_path)) {
-			$disk_use = decodeSize(disk_total_space($monitor_path) - disk_free_space($monitor_path));
-			$disk_free = decodeSize(disk_free_space($monitor_path));
-			if (basename($monitor_path) == "") {
-				$show = "/";
-			} else {
-				$show = basename($monitor_path);
-			}
-			printf($mask4, $show, $disk_use, $disk_free);
-		}
-		if (isset($monitor_path_a) && $monitor_path_a != "" && file_exists($monitor_path_a)) {
-			$disk_use = decodeSize(disk_total_space($monitor_path_a) - disk_free_space($monitor_path_a));
-			$disk_free = decodeSize(disk_free_space($monitor_path_a));
-			if (basename($monitor_path_a) == "") {
-				$show = "/";
-			} else {
-				$show = basename($monitor_path_a);
-			}
-			printf($mask4, $show, $disk_use, $disk_free);
-		}
-		if (isset($monitor_path_b) && $monitor_path_b != "" && file_exists($monitor_path_b)) {
-			$disk_use = decodeSize(disk_total_space($monitor_path_b) - disk_free_space($monitor_path_b));
-			$disk_free = decodeSize(disk_free_space($monitor_path_b));
-			if (basename($monitor_path_b) == "") {
-				$show = "/";
-			} else {
-				$show = basename($monitor_path_b);
-			}
-			printf($mask4, $show, $disk_use, $disk_free);
-		}
-	}
-	echo "\n";
 
 	if ($monitor > 0) {
+		printf($mask3, "Collections", "Binaries", "Parts");
+		printf($mask3, "======================================", "=========================", "======================================");
+		printf($mask5, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
+
+		if (((isset($monitor_path)) && (file_exists($monitor_path))) || ((isset($monitor_path_a)) && (file_exists($monitor_path_a))) || ((isset($monitor_path_b)) && (file_exists($monitor_path_b)))) {
+			echo "\n";
+			printf($mask3, "File System", "Used", "Free");
+			printf($mask3, "======================================", "=========================", "======================================");
+			if (isset($monitor_path) && $monitor_path != "" && file_exists($monitor_path)) {
+				$disk_use = decodeSize(disk_total_space($monitor_path) - disk_free_space($monitor_path));
+				$disk_free = decodeSize(disk_free_space($monitor_path));
+				if (basename($monitor_path) == "") {
+					$show = "/";
+				} else {
+					$show = basename($monitor_path);
+				}
+				printf($mask4, $show, $disk_use, $disk_free);
+			}
+			if (isset($monitor_path_a) && $monitor_path_a != "" && file_exists($monitor_path_a)) {
+				$disk_use = decodeSize(disk_total_space($monitor_path_a) - disk_free_space($monitor_path_a));
+				$disk_free = decodeSize(disk_free_space($monitor_path_a));
+				if (basename($monitor_path_a) == "") {
+					$show = "/";
+				} else {
+					$show = basename($monitor_path_a);
+				}
+				printf($mask4, $show, $disk_use, $disk_free);
+			}
+			if (isset($monitor_path_b) && $monitor_path_b != "" && file_exists($monitor_path_b)) {
+				$disk_use = decodeSize(disk_total_space($monitor_path_b) - disk_free_space($monitor_path_b));
+				$disk_free = decodeSize(disk_free_space($monitor_path_b));
+				if (basename($monitor_path_b) == "") {
+					$show = "/";
+				} else {
+					$show = basename($monitor_path_b);
+				}
+				printf($mask4, $show, $disk_use, $disk_free);
+			}
+		}
+		echo "\n";
 		printf($mask3, "Category", "In Process", "In Database");
 		printf($mask3, "======================================", "=========================", "======================================");
 		printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
