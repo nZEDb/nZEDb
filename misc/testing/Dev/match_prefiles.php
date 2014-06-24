@@ -94,7 +94,7 @@ function preFileName($argv)
 					$row['filename'] = $utility->cutStringUsingLast('.', $row['filename'], "left", false);
 				}
 			}
-			if (isset($row['filename']) && $row['filename'] !== '') {
+			if (isset($row['filename']) && $row['filename'] !== '' && strpos($row['filename'], '.') != 0 && strlen($row['filename']) > 0) {
 				$success = $namefixer->matchPredbFiles($row, 1, 1, true, $show, $argv[1]);
 			}
 			if ($success === 1) {

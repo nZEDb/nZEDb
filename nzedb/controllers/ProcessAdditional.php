@@ -758,7 +758,7 @@ Class ProcessAdditional
 					}
 
 					//Run a PreDB filename check on insert to try and match the release
-					else if (strpos($file['name'], '.') != 0) {
+					else if (strpos($file['name'], '.') != 0 && strlen($file['name']) > 0) {
 						$this->_release['filename'] = nzedb\utility\Utility::cutStringUsingLast('.', $file['name'], 'left', false);
 						$this->_release['releaseid'] = $this->_release['id'];
 						$this->_nameFixer->matchPredbFiles($this->_release, 1, 1, true, 1, 'full');
