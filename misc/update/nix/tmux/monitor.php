@@ -391,7 +391,7 @@ if ($show_query == 1) {
 	printf($mask4, "Combined", "0", "0");
 }
 
-$monitor = $db->getSetting(['section' => 'tmux', 'subsection' => 'monitor', 'value' => 'refresh']);
+$monitor = 0;
 $i = 1;
 $fcfirstrun = true;
 $fcnum = 0;
