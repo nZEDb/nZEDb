@@ -413,7 +413,7 @@ while ($i > 0) {
 	$tmux_time = (TIME() - $time01);
 
 	//run queries only after time exceeded, these queries can take awhile
-	if ($monitor > 0 && ($i == 1 || (TIME() - $time1 >= $monitor && $running == 1))) {
+	if ($i == 1 || (TIME() - $time1 >= $monitor && $running == 1)) {
 		echo $c->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
 		$time02 = TIME();
 		$split_result = $db->query($split_query, false);

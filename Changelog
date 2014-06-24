@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-24 DariusIII
+	* Fix: Fix for php notices in monitor
 2014-06-24 niel
 	* Fix: Prevent tmux statistics from being queried/displayed if monitor_delay set to 0.
 	* Chg: Default tmux monitor delay is now 300 seconds instead of 30. If you have changed this it will be unaffected.
