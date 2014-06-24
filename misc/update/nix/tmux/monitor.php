@@ -1020,27 +1020,30 @@ while ($i > 0) {
 		}
 	}
 	echo "\n";
-	printf($mask3, "Category", "In Process", "In Database");
-	printf($mask3, "======================================", "=========================", "======================================");
-	printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
-	printf($mask4, "requestID", number_format($requestid_inprogress) . "(" . $requestid_diff . ")", number_format($requestid_matched) . "(" . $request_percent . "%)");
-	printf($mask4, "NFO's", number_format($nfo_remaining_now) . "(" . $nfo_diff . ")", number_format($nfo_now) . "(" . $nfo_percent . "%)");
-	printf($mask4, "Console(1000)", number_format($console_releases_proc) . "(" . $console_diff . ")", number_format($console_releases_now) . "(" . $console_percent . "%)");
-	printf($mask4, "Movie(2000)", number_format($movie_releases_proc) . "(" . $movie_diff . ")", number_format($movie_releases_now) . "(" . $movie_percent . "%)");
-	printf($mask4, "Audio(3000)", number_format($music_releases_proc) . "(" . $music_diff . ")", number_format($music_releases_now) . "(" . $music_percent . "%)");
-	printf($mask4, "PC(4000)", number_format($pc_releases_proc) . "(" . $pc_diff . ")", number_format($pc_releases_now) . "(" . $pc_percent . "%)");
-	printf($mask4, "TVShows(5000)", number_format($tvrage_releases_proc) . "(" . $tvrage_diff . ")", number_format($tvrage_releases_now) . "(" . $tvrage_percent . "%)");
-	printf($mask4, "xXx(6000)", number_format($pron_remaining_now) . "(" . $pron_diff . ")", number_format($pron_releases_now) . "(" . $pron_percent . "%)");
-	printf($mask4, "Misc(7000)", number_format($work_remaining_now) . "(" . $misc_diff . ")", number_format($misc_releases_now) . "(" . $misc_percent . "%)");
-	printf($mask4, "Books(8000)", number_format($book_releases_proc) . "(" . $book_diff . ")", number_format($book_releases_now) . "(" . $book_percent . "%)");
-	printf($mask4, "Total", number_format($total_work_now) . "(" . $work_diff . ")", number_format($releases_now) . "(" . $releases_since_start . ")");
-	echo "\n";
-	printf($mask3, "Groups", "Active", "Backfill");
-	printf($mask3, "======================================", "=========================", "======================================");
-	if ($backfilldays == "1") {
-		printf($mask4, "Activated", $active_groups . "(" . $all_groups . ")", $backfill_groups_days . "(" . $all_groups . ")");
-	} else {
-		printf($mask4, "Activated", $active_groups . "(" . $all_groups . ")", $backfill_groups_date . "(" . $all_groups . ")");
+
+	if ($monitor > 0) {
+		printf($mask3, "Category", "In Process", "In Database");
+		printf($mask3, "======================================", "=========================", "======================================");
+		printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
+		printf($mask4, "requestID", number_format($requestid_inprogress) . "(" . $requestid_diff . ")", number_format($requestid_matched) . "(" . $request_percent . "%)");
+		printf($mask4, "NFO's", number_format($nfo_remaining_now) . "(" . $nfo_diff . ")", number_format($nfo_now) . "(" . $nfo_percent . "%)");
+		printf($mask4, "Console(1000)", number_format($console_releases_proc) . "(" . $console_diff . ")", number_format($console_releases_now) . "(" . $console_percent . "%)");
+		printf($mask4, "Movie(2000)", number_format($movie_releases_proc) . "(" . $movie_diff . ")", number_format($movie_releases_now) . "(" . $movie_percent . "%)");
+		printf($mask4, "Audio(3000)", number_format($music_releases_proc) . "(" . $music_diff . ")", number_format($music_releases_now) . "(" . $music_percent . "%)");
+		printf($mask4, "PC(4000)", number_format($pc_releases_proc) . "(" . $pc_diff . ")", number_format($pc_releases_now) . "(" . $pc_percent . "%)");
+		printf($mask4, "TVShows(5000)", number_format($tvrage_releases_proc) . "(" . $tvrage_diff . ")", number_format($tvrage_releases_now) . "(" . $tvrage_percent . "%)");
+		printf($mask4, "xXx(6000)", number_format($pron_remaining_now) . "(" . $pron_diff . ")", number_format($pron_releases_now) . "(" . $pron_percent . "%)");
+		printf($mask4, "Misc(7000)", number_format($work_remaining_now) . "(" . $misc_diff . ")", number_format($misc_releases_now) . "(" . $misc_percent . "%)");
+		printf($mask4, "Books(8000)", number_format($book_releases_proc) . "(" . $book_diff . ")", number_format($book_releases_now) . "(" . $book_percent . "%)");
+		printf($mask4, "Total", number_format($total_work_now) . "(" . $work_diff . ")", number_format($releases_now) . "(" . $releases_since_start . ")");
+		echo "\n";
+		printf($mask3, "Groups", "Active", "Backfill");
+		printf($mask3, "======================================", "=========================", "======================================");
+		if ($backfilldays == "1") {
+			printf($mask4, "Activated", $active_groups . "(" . $all_groups . ")", $backfill_groups_days . "(" . $all_groups . ")");
+		} else {
+			printf($mask4, "Activated", $active_groups . "(" . $all_groups . ")", $backfill_groups_date . "(" . $all_groups . ")");
+		}
 	}
 
 	if ($show_query == 1) {
