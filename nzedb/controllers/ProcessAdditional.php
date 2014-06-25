@@ -89,29 +89,34 @@ Class ProcessAdditional
 
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
-			(!empty($this->_siteSettings->maxaddprocessed)) ? (int)$this->_siteSettings->maxaddprocessed : 25;
+			(!empty($this->_siteSettings->maxaddprocessed) ? (int)$this->_siteSettings->maxaddprocessed : 25);
 
 		// Maximum message ID's to download per file type in the NZB (video, jpg, etc).
 		$this->_segmentsToDownload =
-			(!empty($this->_siteSettings->segmentstodownload)) ? (int)$this->_siteSettings->segmentstodownload : 2;
+			(!empty($this->_siteSettings->segmentstodownload) ? (int)$this->_siteSettings->segmentstodownload : 2);
 
 		// Maximum message ID's to download for a RAR file.
 		$this->_maximumRarSegments =
-			(!empty($this->_siteSettings->maxpartsprocessed)) ? (int)$this->_siteSettings->maxpartsprocessed : 3;
+			(!empty($this->_siteSettings->maxpartsprocessed) ? (int)$this->_siteSettings->maxpartsprocessed : 3);
 
 		// Maximum RAR files to check for a password before stopping.
 		$this->_maximumRarPasswordChecks =
-			(!empty($this->_siteSettings->passchkattempts)) ? (int)$this->_siteSettings->passchkattempts : 1;
+			(!empty($this->_siteSettings->passchkattempts) ? (int)$this->_siteSettings->passchkattempts : 1);
 
 		// Maximum size of releases in GB.
 		$this->_maxSize =
-			(!empty($this->_siteSettings->maxsizetopostprocess)) ? (int)$this->_siteSettings->maxsizetopostprocess : 100;
-		$this->_maxSize *= 1073741824;
+			(!empty($this->_siteSettings->maxsizetopostprocess) ? (int)$this->_siteSettings->maxsizetopostprocess : 100);
+		$this->_maxSize = ($this->_maxSize === 0 ? '' : 'AND r.size < ' . ($this->_maxSize * 1073741824));
+
+		// Minimum size of releases in MB.
+		$this->_minSize =
+			(!empty($this->_siteSettings->minsizetopostprocess) ? (int)$this->_siteSettings->minsizetopostprocess : 1);
+		$this->_minSize = ($this->_minSize === 0 ? '' : 'AND r.size > ' . ($this->_minSize * 1048576));
 
 		// Use the alternate NNTP provider for downloading Message-ID's ?
 		$this->_alternateNNTP = ($this->_siteSettings->alternate_nntp == 1 ? true : false);
 
-		$this->_ffMPEGDuration = (!empty($this->_siteSettings->ffmpeg_duration)) ? (int)$this->_siteSettings->ffmpeg_duration : 5;
+		$this->_ffMPEGDuration = (!empty($this->_siteSettings->ffmpeg_duration) ? (int)$this->_siteSettings->ffmpeg_duration : 5);
 
 		$this->_addPAR2Files = ($this->_siteSettings->addpar2 === '0') ? false : true;
 
@@ -206,13 +211,12 @@ Class ProcessAdditional
 						FROM releases r
 						LEFT JOIN category c ON c.id = r.categoryid
 						WHERE nzbstatus = 1
-						AND r.size < %d
-						%s
+						%s %s %s
 						AND r.passwordstatus = %d
 						AND (r.haspreview = -1 AND c.disablepreview = 0)
 						ORDER BY postdate
 						DESC LIMIT %d',
-					$this->_maxSize, $groupID, $i, $limit
+					$this->_maxSize, $this->_minSize, $groupID, $i, $limit
 				)
 			);
 
