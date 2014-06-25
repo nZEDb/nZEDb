@@ -253,10 +253,10 @@ class RequestIDStandalone
 				$regex = '/^(\[.*\]-)?\[\d+\](-\[\w+\]-|-)?\[ ?#?a\.b(inaries)?\.foreign(\@?ef{1,2}net)? ?\]-\[\s*(?P<title>.+?)\s*\]-\[\d+\/\d+\]/i';
 				break;
 			case 'alt.binaries.hdtv.x264':
-				$regex = '/^\[\d+\]-\[ ?#?a\.b(inaries)?\.hdtv\.x264(\@?ef{1,2}net)? ?\]-(\[\w+\]-)?(?P<title>.+?)[ -].*/i';
+				$regex = '/^\[\d+\]-\[ ?#?a\.b(inaries)?\.hdtv\.x264(\@?ef{1,2}net)? ?\][ -](\[\w+\][ -])?(?P<title>.+?)[ -](\[\d+\/\d+\]|\".*\")/i';
 				break;
 			case 'alt.binaries.inner-sanctum':
-				$regex = '/^\[\d+\]-\[.+?\]-\[ ?#?a\.b(inaries)?\.inner-?sanctum(\@?ef{1,2}net)? ?\]-\[\s*(?P<title>.+?)\s*\]\s\[\d+\/\d+\]/i';
+				$regex = '/^\[\d+\]-\[.+?\]-\[ ?#?a\.b(inaries)?\.inner-?sanctum(\@?ef{1,2}net)? ?\]-\[\s*(?P<title>.+?)\s*\][ -](\[[\w ]+\][ -])?\[\d+\/\d+\]/i';
 				break;
 			default:
 				return false;
@@ -313,6 +313,13 @@ class RequestIDStandalone
 	protected function _siftReqId($releaseName)
 	{
 		switch (true) {
+			case preg_match('/\[scnzbefnet\]\[(?P<reqid>\d+)\]/', $releaseName, $requestID):
+				var_dump($requestID['reqid']);
+				if ((int) $requestID['reqid'] > 0) {
+					return (int) $requestID['reqid'];
+				} else {
+					continue;
+				}
 			case preg_match('/\[\s*(\d+)\s*\]/', $releaseName, $requestID):
 			case preg_match('/^REQ\s*(\d{4,6})/i', $releaseName, $requestID):
 			case preg_match('/^(\d{4,6})-\d{1}\[/', $releaseName, $requestID):
@@ -453,8 +460,7 @@ class RequestIDStandalone
 							)
 			);
 		}
-		if ($row['name'] !== $title) {
-			if ($this->show === 1) {
+		if ($row['name'] !== $title && $this->show === 1) {
 				$newcatname = $this->category->getNameByID($determinedcat);
 				$oldcatname = $this->category->getNameByID($row['categoryid']);
 
@@ -469,7 +475,6 @@ class RequestIDStandalone
 											'method'       => 'misc/update/requestid.php'
 										)
 				);
-			}
 		}
 	}
 

@@ -15,6 +15,8 @@ New updates are grouped by person, at the top of the file.
 	* Add: Title matching in multiple return requestIDs
 	* Fix: Trailing whitespaces in requestid.php
 	* Chg: Some variable factoring and comment edits
+	* Add: Slash removal from match_prefiles function
+	* Add: scnzb reequestid checks in requestid.php (still needs new triggers)
 2014-06-24 niel
 	* Fix: Prevent tmux statistics from being queried/displayed if monitor_delay set to 0.
 	* Chg: Default tmux monitor delay is now 300 seconds instead of 30. If you have changed this it will be unaffected.
