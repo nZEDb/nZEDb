@@ -489,12 +489,17 @@
 	</td>
 </tr>
 <tr>
-	<td style="width:180px;"><label for="maxsizetopostprocess">Maximum File Size to Postprocess:</label></td>
+	<td style="width:180px;"><label for="maxsizetopostprocess">Maximum Release Size to Post Process:</label></td>
 	<td>
-		<input class="short" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text"
-			   value="{$fsite->maxsizetopostprocess}"/>
-
-		<div class="hint">The maximum size in gigabytes to postprocess a release. If set to 0, then ignored.</div>
+		<input class="short" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$fsite->maxsizetopostprocess}"/>
+		<div class="hint">The maximum size in gigabytes to post process (additional) a release. If set to 0, then ignored.</div>
+	</td>
+</tr>
+<tr>
+	<td style="width:180px;"><label for="minsizetopostprocess">Minimum Release Size to Post Process:</label></td>
+	<td>
+		<input class="short" id="minsizetopostprocess" name="minsizetopostprocess" type="text" value="{$fsite->minsizetopostprocess}"/>
+		<div class="hint">The minimum size in megabytes to post process (additional) a release. If set to 0, then ignored.</div>
 	</td>
 </tr>
 <tr>
