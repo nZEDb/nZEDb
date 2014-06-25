@@ -1133,8 +1133,13 @@ Class ProcessAdditional
 
 		$this->_passwordStatus = max($this->_passwordStatus);
 
-		// If we failed to get anything from the RAR/ZIPs, decrement the passwordstatus.
-		if ($this->_NZBHasCompressedFile && $releaseFiles['count'] == 0) {
+		// Set the release to no password if password processing is off.
+		if ($this->_processPasswords === false) {
+			$this->_releaseHasPassword = false;
+		}
+
+		// If we failed to get anything from the RAR/ZIPs, decrement the passwordstatus, if the rar/zip has no password.
+		if ($this->_releaseHasPassword === false && $this->_NZBHasCompressedFile && $releaseFiles['count'] == 0) {
 			$query = sprintf('
 				UPDATE releases
 				SET passwordstatus = passwordstatus - 1, rarinnerfilecount = %d %s %s %s

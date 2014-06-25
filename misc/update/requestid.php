@@ -10,7 +10,7 @@ if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric
 			. "In addition an optional final argument is time, in minutes, to check releases that have previously been checked." . PHP_EOL . PHP_EOL
 			. "php requestid.php 1000 show		...: to limit to 1000 sorted by newest postdate and show renaming." . PHP_EOL
 			. "php requestid.php full show		...: to run on full database and show renaming." . PHP_EOL
-			. "php requestid.php all show		...: to run on all hashed releases (including previously renamed) and show renaming." . PHP_EOL
+			. "php requestid.php all show		...: to run on all requestid releases (including previously renamed) and show renaming." . PHP_EOL
 			)
 		);
 }
@@ -146,7 +146,7 @@ class RequestIDStandalone
 					$this->_requestIdNotFound($row['id'], ($row['reqidstatus'] == self::REQID_UPROC ? self::REQID_NOLL : self::REQID_NONE));
 				}
 
-				if (!isset($argv[2]) || $argv[2] !== 'show') {
+				if ($this->show === 0) {
 					$this->consoleTools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $this->consoleTools->percentString(++$counter, $total));
 				}
 			}
@@ -226,7 +226,7 @@ class RequestIDStandalone
 
 	/**
 	 * Sub function that attempts to match RequestID Releases
-	 * by running preg_match and then matching the title
+	 * by preg_matching the title from the usenet name
 	 *
 	 * @param string $groupName
 	 * @param string $oldName
@@ -370,7 +370,7 @@ class RequestIDStandalone
 	 * Match function that sorts requestID to
 	 * its match function
 	 *
-	 * @param int $requestiD
+	 * @param int $requestID
 	 * @param string $groupName
 	 * @param string $oldName
 	 */
@@ -428,6 +428,8 @@ class RequestIDStandalone
 	 */
 	protected function _updateRelease($title, $preid, $determinedcat, $row, $show)
 	{
+		$this->show = $show;
+
 		if ($determinedcat == $row['categoryid']) {
 			$this->run = $this->db->queryExec(
 							sprintf(
@@ -463,7 +465,7 @@ class RequestIDStandalone
 											'new_category' => $newcatname,
 											'old_category' => $oldcatname,
 											'group'        => $row['groupname'],
-											'release_id'   => $row["id"],
+											'release_id'   => $row['id'],
 											'method'       => 'misc/update/requestid.php'
 										)
 				);
