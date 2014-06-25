@@ -188,18 +188,21 @@ class NZB
 						)
 					);
 
+					// Buffer segment writes, increases performance.
+					$string = '';
 					foreach ($resParts as $partsRow) {
 						if ($nzb_guid === '') {
 							$nzb_guid = $partsRow['messageid'];
 						}
 
-						gzwrite($fp, '  <segment bytes="' . $partsRow['size']
+						$string .= (
+							'  <segment bytes="' . $partsRow['size']
 							. '" number="' . $partsRow['partnumber'] . '">'
 							. htmlspecialchars($partsRow['messageid'], ENT_QUOTES, 'utf-8')
 							. "</segment>\n"
 						);
 					}
-					gzwrite($fp, " </segments>\n</file>\n");
+					gzwrite($fp, $string . " </segments>\n</file>\n");
 				}
 			}
 			gzwrite($fp, '</nzb>');
