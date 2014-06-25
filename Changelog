@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-06-25 kevin
+	* Chg: Buffer some NZB string data, increasing NZB write speed by almost 2x.
 	* Add: Setting for minimum release size to post process additional (to ignore NZB files and shit like that).
 	* Fix: Fix issue where passwordstatus might not be set.
 2014-06-25 ruhllatio
