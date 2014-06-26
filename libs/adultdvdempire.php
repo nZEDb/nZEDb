@@ -27,16 +27,24 @@ require_once 'simple_html_dom.php';
 class adultdvdempire {
 
 	/* If a release matches define it as as true = gives callback to continue */
-	
 	public $found = null;
+
+	/* Get and compare searchterm */
+	public $searchterm = null;
 
 	/* Define param if trailing url is found get it and set it for future calls */
 	/* Anything after the $ade url is trailing */
-
 	protected $urlfound = null;
 
 	/* Define ADE Url here */
 	protected $ade = "http://www.adultdvdempire.com";
+
+	/* Tabbed variables in urls */
+	protected $allquery = "/allsearch/search?q=";
+	protected $scenes = "/scenes";
+	protected $boxcover = "/boxcover";
+	protected $reviews = "/reviews";
+	protected $trailers = "/trailers";
 
 
 	public function __construct($echooutput = true){
@@ -46,18 +54,45 @@ class adultdvdempire {
 		$this->html = new simple_html_dom();
 
 }
+	public function sypnosis($tagline=true){
+	$this->getadeurl($this->urlfound);
+	$this->html->load($this->response);
+	$res = array();
+	if($tagline === true){
+		$ret = $this->html->find("p.Tagline",0);
+		$res[] = trim($ret->plaintext);
+	}
+		$ret = $this->html->find("p.Tagline",0)->next_sibling()->next_sibling();
+		$res[] = trim($ret->innertext);
+	return $res;
+	}
+
 	public function search(){
-	if($this->getadeurl($this->url) === false){
+		if(!isset($this->searchterm)){
+			return false;
+		}
+	if($this->getadeurl($this->allquery.rawurlencode($this->searchterm)) === false){
 		return false;
 	}else{
 		$this->html->load($this->response);
+		unset($this->response);
 		$ret = $this->html->find("span.sub strong",0);
 		$ret = (int)$ret->plaintext;
 		if(isset($ret)){
 		if($ret >=1){
 			$ret = $this->html->find("a.boxcover",0);
+			$title = $ret->title;
 			$ret = (string)trim($ret->href);
-			$this->found = $ret;
+			similar_text($this->searchterm, $title, $p);
+			if ($p >= 70){
+			$this->found = true;
+			$this->urlfound=$ret;
+			unset($ret);
+			$this->html->clear();
+			}else{
+				$this->found= false;
+				return false;
+			}
 		}else{
 			return false;
 		}
@@ -69,9 +104,9 @@ class adultdvdempire {
 
 
 	}
-	private function getadeurl(){
-		if(isset($this->url)){
-		$ch = curl_init($this->ade . $this->url);
+	private function getadeurl($trailing=null){
+		if(isset($trailing)){
+		$ch = curl_init($this->ade . $trailing);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_VERBOSE, 0);
