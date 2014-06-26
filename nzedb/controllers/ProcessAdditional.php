@@ -144,18 +144,6 @@ Class ProcessAdditional
 		$this->_ignoreBookRegex  = '/\b(epub|lit|mobi|pdf|sipdf|html)\b.*\.rar(?!.{20,})/i';
 		$this->_supportFileRegex = '/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb';
 		$this->_videoFileRegex   = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
-
-		// Clear out old folders/files from the temp folder.
-		$this->_recursivePathDelete(
-			$this->_mainTmpPath,
-			// These are folders we don't want to delete.
-			array(
-				// This is the actual unrar folder.
-				$this->_mainTmpPath,
-				// This folder is used by misc/testing/Dev/rename_u4e.php
-				$this->_mainTmpPath . 'u4e'
-			)
-		);
 	}
 
 	/**
@@ -170,6 +158,17 @@ Class ProcessAdditional
 	{
 		// Fetch all the releases to work on.
 		if ($release === '') {
+			// Clear out old folders/files from the temp folder.
+			$this->_recursivePathDelete(
+				$this->_mainTmpPath,
+				// These are folders we don't want to delete.
+				array(
+					// This is the actual unrar folder.
+					$this->_mainTmpPath,
+					// This folder is used by misc/testing/Dev/rename_u4e.php
+					$this->_mainTmpPath . 'u4e'
+				)
+			);
 			$this->_fetchReleases($groupID);
 		} else {
 			$release = explode('           =+=            ', $release);
@@ -376,10 +375,10 @@ Class ProcessAdditional
 				return;
 			}
 
-			rmdir($path);
+			@rmdir($path);
 
 		} else if (is_file($path)) {
-			unlink($path);
+			@unlink($path);
 		}
 	}
 
