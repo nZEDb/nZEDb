@@ -7,6 +7,8 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-06-25 kevin
+	* Add: Slightly faster method for parsing header array (class NNTP).
+2014-06-25 kevin
 	* Chg: Increase compression on NZB files, other slight speedups of NZB file creation.
 	* Chg: Buffer some NZB string data, increasing NZB write speed by almost 2x.
 	* Add: Setting for minimum release size to post process additional (to ignore NZB files and shit like that).
