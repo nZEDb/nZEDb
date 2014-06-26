@@ -4,10 +4,8 @@ require_once dirname(__FILE__) . '/../../../../www/config.php';
 use nzedb\db\Settings;
 
 $c = new ColorCLI();
-$versions = @simplexml_load_file(nZEDb_VERSIONS);
-if ($versions === false) {
-	exit($c->error("\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"));
-}
+$versions = \nzedb\utility\Utility::getValidVersionsFile();
+
 //exec('git log | grep "^commit" | wc -l', $commit);
 $git = new \nzedb\utility\Git();
 
