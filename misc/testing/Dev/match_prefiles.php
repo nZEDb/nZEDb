@@ -61,10 +61,10 @@ function preFileName($argv)
 	}
 
 	$qry =	sprintf(
-			"SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid, %s AS filename " .
+			"SELECT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid, %s AS filename " .
 			"FROM releases r INNER JOIN releasefiles rf ON r.id = rf.releaseid " .
 			"WHERE r.preid = 0 %s %s %s " .
-			"GROUP BY r.id %s %s",
+			"%s %s",
 			$rfname,
 			$qrycat,
 			//$noslash,
@@ -119,7 +119,7 @@ function preFileName($argv)
 		}
 	}
 	if ($total > 0) {
-		echo $c->header("\nRenamed " . $counted . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
+		echo $c->header("\nRenamed " . number_format($counted) . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
 	} else {
 		echo $c->info("\nNothing to do.");
 	}
