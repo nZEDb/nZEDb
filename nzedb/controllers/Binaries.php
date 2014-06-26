@@ -606,7 +606,7 @@ class Binaries
 		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupArr['id']);
 
 		// Download the headers.
-		$msgs = $this->nntp->getOverview($first . "-" . $last, true, false);
+		$msgs = $this->nntp->getXOVER($first . "-" . $last);
 
 		// If there were an error, try to reconnect.
 		if ($this->nntp->isError($msgs)) {
@@ -617,7 +617,7 @@ class Binaries
 			}
 
 			$this->nntp->selectGroup($groupArr['name']);
-			$msgs = $this->nntp->getOverview($first . '-' . $last, true, false);
+			$msgs = $this->nntp->getXOVER($first . '-' . $last);
 			if ($this->nntp->isError($msgs)) {
 				if ($type !== 'partrepair') {
 
