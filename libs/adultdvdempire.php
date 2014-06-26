@@ -25,20 +25,56 @@
 require_once 'simple_html_dom.php';
 
 class adultdvdempire {
-public $url;
-public $echooutput = false;
-public $response = array();
 
+	/* If a release matches define it as as true = gives callback to continue */
+	
+	public $found = null;
+
+	/* Define param if trailing url is found get it and set it for future calls */
+	/* Anything after the $ade url is trailing */
+
+	protected $urlfound = null;
+
+	/* Define ADE Url here */
+	protected $ade = "http://www.adultdvdempire.com";
+
+
+	public function __construct($echooutput = true){
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
+		$this->url = null;
+		$this->response = array();
+		$this->html = new simple_html_dom();
+
+}
 	public function search(){
-		$this->geturl($this->url);
+	if($this->getadeurl($this->url) === false){
+		return false;
+	}else{
+		$this->html->load($this->response);
+		$ret = $this->html->find("span.sub strong",0);
+		$ret = (int)$ret->plaintext;
+		if(isset($ret)){
+		if($ret >=1){
+			$ret = $this->html->find("a.boxcover",0);
+			$ret = (string)trim($ret->href);
+			$this->found = $ret;
+		}else{
+			return false;
+		}
+		}else{
+			return false;
+		}
 
 	}
-	private function geturl(){
+
+
+	}
+	private function getadeurl(){
 		if(isset($this->url)){
-		$ch = curl_init($this->url);
+		$ch = curl_init($this->ade . $this->url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_VERBOSE, 1);
+		curl_setopt($ch, CURLOPT_VERBOSE, 0);
 		curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 		$this->response = curl_exec($ch);
