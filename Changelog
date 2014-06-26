@@ -8,6 +8,8 @@ New updates are grouped by person, at the top of the file.
 
 2014-06-23 kevin
 	* Add: Patch to fix broken triggers causing search/api/other stuff not to work.
+	* Add: Fix by JRouleau for fixing triggers on new installs (needs a patch for existing sites). #1360
+	* Fix: Missing single quotes on config.php.tpl causing install to fail on step 5.
 2014-06-22 ruhllatio
 	* Fix: requestID incorrectly matching requestID of zero
 2014-06-22 bart39
