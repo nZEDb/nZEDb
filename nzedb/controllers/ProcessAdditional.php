@@ -144,6 +144,18 @@ Class ProcessAdditional
 		$this->_ignoreBookRegex  = '/\b(epub|lit|mobi|pdf|sipdf|html)\b.*\.rar(?!.{20,})/i';
 		$this->_supportFileRegex = '/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb';
 		$this->_videoFileRegex   = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
+
+		// Clear out old folders/files from the temp folder.
+		$this->_recursivePathDelete(
+			$this->_mainTmpPath,
+			// These are folders we don't want to delete.
+			array(
+				// This is the actual unrar folder.
+				$this->_mainTmpPath,
+				// This folder is used by misc/testing/Dev/rename_u4e.php
+				$this->_mainTmpPath . 'u4e'
+			)
+		);
 	}
 
 	/**
@@ -334,16 +346,40 @@ Class ProcessAdditional
 			$this->_finalizeRelease();
 
 			// Delete all files / folders for this release.
-			foreach (glob($this->tmpPath . '*') as $v) {
-				@unlink($v);
-			}
-			foreach (glob($this->tmpPath . '.*') as $v) {
-				@unlink($v);
-			}
-			@rmdir($this->tmpPath);
+			$this->_recursivePathDelete($this->tmpPath);
 		}
 		if ($this->_echoCLI) {
 			echo PHP_EOL;
+		}
+	}
+
+	/**
+	 * Deletes files and folders recursively.
+	 *
+	 * @param string $path   Path to a folder or file.
+	 * @param array  $ignoredFolders Array with paths to folders to ignore.
+	 *
+	 * @void
+	 * @access protected
+	 */
+	protected function _recursivePathDelete($path, $ignoredFolders = array())
+	{
+		if (is_dir($path)) {
+
+			$files = glob(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR  . '*');
+
+			foreach($files as $file){
+				$this->_recursivePathDelete($file, $ignoredFolders);
+			}
+
+			if (in_array($path, $ignoredFolders)) {
+				return;
+			}
+
+			rmdir($path);
+
+		} else if (is_file($path)) {
+			unlink($path);
 		}
 	}
 
@@ -1179,23 +1215,27 @@ Class ProcessAdditional
 	 * Optional, pass a regex to filter the files.
 	 *
 	 * @param string $pattern Regex, optional
+	 * @param string $path    Path to the folder (if empty, uses $this->tmpPath)
 	 *
 	 * @return Iterator Object|bool
 	 */
-	protected function _getTempDirectoryContents($pattern = '')
+	protected function _getTempDirectoryContents($pattern = '', $path = '')
 	{
+		if ($path === '') {
+			$path = $this->tmpPath;
+		}
 		try {
 			if ($pattern !== '') {
 				return new RegexIterator(
 					new RecursiveIteratorIterator(
-						new RecursiveDirectoryIterator($this->tmpPath)
+						new RecursiveDirectoryIterator($path)
 					),
 					$pattern,
 					RecursiveRegexIterator::GET_MATCH
 				);
 			} else {
 				return new RecursiveIteratorIterator(
-					new RecursiveDirectoryIterator($this->tmpPath)
+					new RecursiveDirectoryIterator($path)
 				);
 			}
 		} catch (exception $e) {
