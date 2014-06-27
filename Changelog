@@ -6,8 +6,22 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-06-24 DariusIII
-	* Fix: Fix for php notices in monitor
+2014-06-25 kevin
+	* Add: Function to ProcessAdditional for recursively deleting files and folders within a folder.
+	* Add: Slightly faster method for parsing header array (class NNTP).
+2014-06-25 kevin
+	* Chg: Increase compression on NZB files, other slight speedups of NZB file creation.
+	* Chg: Buffer some NZB string data, increasing NZB write speed by almost 2x.
+	* Add: Setting for minimum release size to post process additional (to ignore NZB files and shit like that).
+	* Fix: Fix issue where passwordstatus might not be set.
+2014-06-25 ruhllatio
+	* Chg: Overhaul and class requestid.php
+	* Add: Title matching in multiple return requestIDs
+	* Fix: Trailing whitespaces in requestid.php
+	* Chg: Some variable factoring and comment edits
+	* Add: Slash removal from match_prefiles function
+	* Add: scnzb reequestid checks in requestid.php (still needs new triggers)
+	* Chg: Full work query for match_prefiles is now much more full
 2014-06-24 niel
 	* Fix: Prevent tmux statistics from being queried/displayed if monitor_delay set to 0.
 	* Chg: Default tmux monitor delay is now 300 seconds instead of 30. If you have changed this it will be unaffected.
