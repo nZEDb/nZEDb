@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-06-25 kevin
+	* Add: Function to ProcessAdditional for recursively deleting files and folders within a folder.
 	* Add: Slightly faster method for parsing header array (class NNTP).
 2014-06-25 kevin
 	* Chg: Increase compression on NZB files, other slight speedups of NZB file creation.
