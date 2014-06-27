@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-27 bart39
+	* Fix: Remove var_dump / fix query in ReleaseRemover.
 2014-06-27 kevin
 	* Chg: Various changes/fixes to ProcessAdditional.
 2014-06-27 ruhllatio
