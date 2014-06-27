@@ -42,6 +42,21 @@ class Utility
 		return $files;
 	}
 
+	static public function getValidVersionsFile()
+	{
+		$versions = @simplexml_load_file(nZEDb_VERSIONS);
+
+		if ($versions === false) {
+			if (self::isCLI()) {
+				echo (new \nzedb\controllers\ColorCLI())->error(
+					"\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"
+				);
+			}
+			throw new \RuntimeException('Versioning file is broken!');
+		}
+		return $versions;
+	}
+
 	/**
 	 * Detect if the command is accessible on the system.
 	 * @param $cmd
@@ -74,6 +89,28 @@ class Utility
 	static public function isCLI ()
 	{
 		return ((strtolower(PHP_SAPI) === 'cli') ? true : false);
+	}
+
+	static public function isPatched()
+	{
+		$versions = self::getValidVersionsFile();
+
+		$pdo = new \nzedb\db\Settings();
+		$patch = $pdo->getSetting(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
+		$ver = $versions->versions->db;
+
+		// Check database patch version
+		if ($patch < $ver) {
+			if (self::isCLI()) {
+				echo (new \nzedb\controllers\ColorCLI())->error(
+					"\nYour database is not up to date. Reported patch levels\n Db: $patch\n file: $ver\nPlease update.\n php " .
+					 nZEDb_LIB .  "db/DbUpdate.php 1\n"
+				);
+				throw new \RuntimeException("Reported patch versions do not match. Need to update database?");
+			}
+		}
+
+		return true;
 	}
 
 	static public function isWin()
