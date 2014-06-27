@@ -341,7 +341,7 @@ Class ProcessAdditional
 					}
 				}
 			}
-exit();
+
 			// Update the release to say we processed it.
 			$this->_finalizeRelease();
 
