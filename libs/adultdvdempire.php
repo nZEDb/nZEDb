@@ -14,23 +14,31 @@
  * along with this program (see LICENSE.txt in the base directory.  If
  * not, see:
  *
- * @link <http://www.gnu.org/licenses/>.
- * @author mike
+ * @link      <http://www.gnu.org/licenses/>.
+ * @author    mike
  * @copyright 2014 nZEDb
  */
-
 
 //namespace adultdvdempire;
 
 require_once 'simple_html_dom.php';
 
-class adultdvdempire {
+class adultdvdempire
+{
 
 	/* If a release matches define it as as true = gives callback to continue */
 	public $found = null;
 
 	/* Get and compare searchterm */
 	public $searchterm = null;
+
+	/* If user wants Features in the detailed information this will return it, */
+	/* User must call productdetailinfo(true) first. */
+	public $getfeatures = array();
+
+	/* If user wants Awards this will return it, */
+	/* User must call cast(true) first. */
+	public $awards = array();
 
 	/* Define param if trailing url is found get it and set it for future calls */
 	/* Anything after the $ade url is trailing */
@@ -46,80 +54,136 @@ class adultdvdempire {
 	protected $reviews = "/reviews";
 	protected $trailers = "/trailers";
 
-
-	public function __construct($echooutput = true){
+	public function __construct($echooutput = true)
+	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
-		$this->url = null;
-		$this->response = array();
-		$this->html = new simple_html_dom();
-
-}
-	public function sypnosis($tagline=true){
-	$this->getadeurl($this->urlfound);
-	$this->html->load($this->response);
-	$res = array();
-	if($tagline === true){
-		$ret = $this->html->find("p.Tagline",0);
-		$res[] = trim($ret->plaintext);
+		$this->url        = null;
+		$this->response   = array();
+		$this->tmprsp     = null;
+		$this->html       = new simple_html_dom();
+		$this->edithtml   = new simple_html_dom();
 	}
-		$ret = $this->html->find("p.Tagline",0)->next_sibling()->next_sibling();
+
+	public function sypnosis($tagline = true)
+	{
+		$res = array();
+		if ($tagline === true) {
+			$ret   = $this->html->find("p.Tagline", 0);
+			$res[] = trim($ret->plaintext);
+		}
+		$ret   = $this->html->find("p.Tagline", 0)->next_sibling()->next_sibling();
 		$res[] = trim($ret->innertext);
-	return $res;
+		return $res;
 	}
 
-	public function search(){
-		if(!isset($this->searchterm)){
+	public function cast($awards = false)
+	{
+		$res          = array();
+		$this->tmprsp = str_ireplace("Section Cast", "scast", $this->response);
+		$this->edithtml->load($this->tmprsp);
+		$ret = $this->edithtml->find("div[class=scast]", 0);
+		//var_dump($ret); exit;
+		$this->tmprsp = trim($ret->outertext);
+		$ret = $this->edithtml->load($this->tmprsp);
+		foreach ($ret->find("a.PerformerName") as $a){
+			  $res['cast'][] = trim($a->plaintext);
+		}
+		if($awards == true){
+		foreach($ret->find("ul",1)->find("li, strong") as $li){
+		$res['awards'][] = trim($li->plaintext);
+		}
+		}
+		$this->edithtml->clear();
+			unset($ret);
+		    unset($this->tmprsp);
+		return $res;
+	}
+
+	public function productdetailinfo($features = false)
+	{
+		$res          = array();
+		$dofeature    = null;
+		$this->tmprsp = str_ireplace("Section ProductInfo", "spdinfo", $this->response);
+		$this->edithtml->load($this->tmprsp);
+		$ret          = $this->edithtml->find("div[class=spdinfo]", 0);
+		$this->tmprsp = trim($ret->outertext);
+		$ret          = $this->edithtml->load($this->tmprsp);
+		foreach ($ret->find("text") as $strong) {
+			if (trim($strong->innertext) == "Features") {
+				$dofeature = true;
+			}
+			if ($dofeature != true) {
+				if (trim($strong->innertext) != "&nbsp;") {
+					$res[] = trim($strong->innertext);
+				}
+			} else {
+				$this->getfeatures[] = trim($strong->innertext);
+			}
+		}
+		array_shift($res);
+		array_shift($res);
+		$res = array_chunk($res, 2, false);
+		$this->edithtml->clear();
+		unset($this->tmprsp);
+		unset($ret);
+		return $res;
+	}
+
+	public function search()
+	{
+		if (!isset($this->searchterm)) {
 			return false;
 		}
-	if($this->getadeurl($this->allquery.rawurlencode($this->searchterm)) === false){
-		return false;
-	}else{
-		$this->html->load($this->response);
-		unset($this->response);
-		$ret = $this->html->find("span.sub strong",0);
-		$ret = (int)$ret->plaintext;
-		if(isset($ret)){
-		if($ret >=1){
-			$ret = $this->html->find("a.boxcover",0);
-			$title = $ret->title;
-			$ret = (string)trim($ret->href);
-			similar_text($this->searchterm, $title, $p);
-			if ($p >= 70){
-			$this->found = true;
-			$this->urlfound=$ret;
-			unset($ret);
-			$this->html->clear();
-			}else{
-				$this->found= false;
+		if ($this->getadeurl($this->allquery . rawurlencode($this->searchterm)) === false) {
+			return false;
+		} else {
+			$this->html->load($this->response);
+			unset($this->response);
+			$ret = $this->html->find("span.sub strong", 0);
+			$ret = (int)$ret->plaintext;
+			if (isset($ret)) {
+				if ($ret >= 1) {
+					$ret   = $this->html->find("a.boxcover", 0);
+					$title = $ret->title;
+					$ret   = (string)trim($ret->href);
+					similar_text($this->searchterm, $title, $p);
+					if ($p >= 70) {
+						$this->found    = true;
+						$this->urlfound = $ret;
+						unset($ret);
+						$this->html->clear();
+						$this->getadeurl($this->urlfound);
+						$this->html->load($this->response);
+					} else {
+						$this->found = false;
+						return false;
+					}
+				} else {
+					return false;
+				}
+			} else {
 				return false;
 			}
-		}else{
-			return false;
 		}
-		}else{
-			return false;
-		}
-
 	}
 
-
-	}
-	private function getadeurl($trailing=null){
-		if(isset($trailing)){
-		$ch = curl_init($this->ade . $trailing);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_VERBOSE, 0);
-		curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
-		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-		$this->response = curl_exec($ch);
-		if (!$this->response) {
+	private function getadeurl($trailing = null)
+	{
+		if (isset($trailing)) {
+			$ch = curl_init($this->ade . $trailing);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+			curl_setopt($ch, CURLOPT_VERBOSE, 0);
+			curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
+			curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+			$this->response = curl_exec($ch);
+			if (!$this->response) {
+				curl_close($ch);
+				return false;
+			}
 			curl_close($ch);
+		} else {
 			return false;
-		}
-		curl_close($ch);
-	}else{
-		return false;
 		}
 	}
 }
