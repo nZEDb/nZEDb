@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$db = new nzedb\db\Settings();
+$db = new Settings();
 $DIR = nZEDb_MISC;
 $c = new ColorCLI();
 
@@ -241,7 +241,7 @@ function window_optimize($tmux_session)
 
 function window_sharing($tmux_session)
 {
-	$db = new DB();
+	$db = new Settings();
 	$sharing = $db->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
 	$t = new Tmux();
 	$tmux = $t->get();
