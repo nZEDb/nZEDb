@@ -6,10 +6,12 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-27 kevin
+	* Chg: Various changes/fixes to ProcessAdditional.
 2014-06-27 ruhllatio
 	* Chg: removeCrapReleases can now be run in false mode with a Blacklist ID that isn't set to active for testing
 	* Fix: Remove trailing whitespace
-2014-06-25 kevin
+2014-06-26 kevin
 	* Add: Function to ProcessAdditional for recursively deleting files and folders within a folder.
 	* Add: Slightly faster method for parsing header array (class NNTP).
 2014-06-25 kevin
