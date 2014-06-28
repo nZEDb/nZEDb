@@ -57,24 +57,29 @@ class adultdvdempire
 		$this->html = new simple_html_dom();
 		$this->edithtml = new simple_html_dom();
 	}
-	public function trailers(){
-	$res=array();
+
+	public function trailers()
+	{
+		$res = array();
 		$this->getadeurl($this->trailers . $this->urlfound);
 		$this->html->load($this->response);
-		if(preg_match("/(\"|')(?P<swf>[^\"']+.swf)(\"|')/i", $this->response, $matches)){
-		 $res['trailers'] = $this->ade . trim(trim($matches[0]),'"');
-			if(preg_match("#streamID\\:\\s\"[0-9][A-Z]+\",#", $this->response, $matches)){
-			var_dump($matches); exit;
+		if (preg_match("/(\"|')(?P<swf>[^\"']+.swf)(\"|')/i", $this->response, $matches)) {
+			$res['trailers'] = $this->ade . trim(trim($matches['swf']), '"');
+			if (preg_match("#(?:streamID:\s\")(?P<streamid>[0-9A-Z]+)(?:\")#",
+						   $this->response,
+						   $matches)
+			) {
+				$res['streamid'] = trim($matches['streamid']);
 			}
-		 //$res['trailers']['ID'] =  null;
-		}else{
-		return false;
+		} else {
+			return false;
 		}
 		unset($matches);
 		$this->html->clear();
-		return $res;
 
+		return $res;
 	}
+
 	public function covers()
 	{
 		$res = array();
@@ -96,6 +101,7 @@ class adultdvdempire
 		}
 		unset($img);
 		$this->html->clear();
+
 		return $res;
 	}
 
@@ -104,14 +110,15 @@ class adultdvdempire
 		$res = array();
 		if ($tagline === true) {
 			$ret = $this->html->find("p.Tagline", 0);
-			if(isset($ret->plaintext)){
-			$res['Tagline'] = trim($ret->plaintext);
+			if (isset($ret->plaintext)) {
+				$res['Tagline'] = trim($ret->plaintext);
 			}
 		}
-		if($this->html->find("p.Tagline",0)->next_sibling()->next_sibling()){
-		$ret = $this->html->find("p.Tagline", 0)->next_sibling()->next_sibling();
-		$res['plot'] = trim($ret->innertext);
+		if ($this->html->find("p.Tagline", 0)->next_sibling()->next_sibling()) {
+			$ret = $this->html->find("p.Tagline", 0)->next_sibling()->next_sibling();
+			$res['plot'] = trim($ret->innertext);
 		}
+
 		return $res;
 	}
 
@@ -128,11 +135,11 @@ class adultdvdempire
 			$res['cast'][] = trim($a->plaintext);
 		}
 		if ($awards == true) {
-			if($ret->find("ul", 1)){
-			foreach ($ret->find("ul", 1)->find("li, strong") as $li) {
-				$res['awards'][] = trim($li->plaintext);
-			}
+			if ($ret->find("ul", 1)) {
+				foreach ($ret->find("ul", 1)->find("li, strong") as $li) {
+					$res['awards'][] = trim($li->plaintext);
 				}
+			}
 		}
 		$this->edithtml->clear();
 		unset($ret);
@@ -201,7 +208,7 @@ class adultdvdempire
 		return $res;
 	}
 
-	public function search($dvd=false)
+	public function search($dvd = false)
 	{
 		if (!isset($this->searchterm)) {
 			return false;
@@ -270,6 +277,7 @@ class adultdvdempire
 		$results = array_merge($results, $this->categories());
 		$results = array_merge($results, $this->covers());
 		$results = array_merge($results, $this->trailers());
+
 		return $results;
 	}
 }
