@@ -43,6 +43,7 @@ class adultdvdempire
 	protected $allquery = "/allsearch/search?q=";
 	protected $scenes = "/scenes";
 	protected $boxcover = "/boxcover";
+	protected $backcover = "/backcover";
 	protected $reviews = "/reviews";
 	protected $trailers = "/trailers";
 
@@ -58,6 +59,26 @@ class adultdvdempire
 		//$this->Debugging->start("cast", "My debug message.", DEBUG_INFO);
 	}
 
+	public function covers(){
+	$res = array();
+	$this->getadeurl($this->boxcover . $this->urlfound);
+	$this->html->load($this->response);
+	foreach($this->html->find("div[id=FrontBoxCover], img[itemprop=image]") as $img){
+	if(stristr($img->src,"h.jpg")){
+	$res['boxcover'] = $img->src;
+	break;
+	}
+	}
+	$this->getadeurl($this->backcover . $this->urlfound);
+	$this->html->load($this->response);
+		foreach ($this->html->find("div[id=BackBoxCover], img[itemprop=image]") as $img) {
+			if (stristr($img->src, "bh.jpg")) {
+				$res['backcover'] = $img->src;
+				break;
+			}
+		}
+		return $res;
+	}
 	public function sypnosis($tagline = true)
 	{
 		$res = array();
@@ -113,6 +134,7 @@ class adultdvdempire
 		}
 		$categories = array_map('trim',$categories);
 		$res['Categories'] = $categories;
+		$this->edithtml->clear();
 		unset($this->tmprsp);
 		unset($ret);
 		return $res;
