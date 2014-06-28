@@ -497,9 +497,11 @@ Class ProcessAdditional
 			}
 
 			// Check if it's a rar/zip.
-			if (preg_match('
-				/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zip)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
-				$this->_currentNZBFile['title'])
+			if ($this->_NZBHasCompressedFile === false &&
+				preg_match('
+					/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zip)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
+					$this->_currentNZBFile['title']
+				)
 			) {
 				$this->_NZBHasCompressedFile = true;
 			}
@@ -1751,6 +1753,10 @@ Class ProcessAdditional
 
 				// Convert it to string.
 				$xmlArray = implode("\n", $xmlArray);
+
+				if (!preg_match('/<track type="(Audio|Video)">/i', $xmlArray)) {
+					return false;
+				}
 
 				// Insert it into the DB.
 				$this->_releaseExtra->addFull($this->_release['id'], $xmlArray);
