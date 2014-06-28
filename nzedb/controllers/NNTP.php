@@ -1307,6 +1307,11 @@ class NNTP extends Net_NNTP_Client
 				}
 			}
 
+			// Check for line that starts with double period, remove one.
+			if ($buffer[0] === '.' && $buffer[1] === '.') {
+				$buffer = substr($buffer, 1);
+			}
+
 			// Append buffer to final data object.
 			$data .= $buffer;
 
