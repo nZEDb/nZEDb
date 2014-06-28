@@ -1307,6 +1307,11 @@ class NNTP extends Net_NNTP_Client
 				}
 			}
 
+			// Check for line that starts with double period, remove one.
+			if ($buffer[0] === '.' && $buffer[1] === '.') {
+				$buffer = substr($buffer, 1);
+			}
+
 			// Append buffer to final data object.
 			$data .= $buffer;
 
@@ -1436,6 +1441,11 @@ class NNTP extends Net_NNTP_Client
 						}
 						// Attempt to yEnc decode and return the body.
 						return $this->_decodeIgnoreYEnc($body);
+					}
+
+					// Check for line that starts with double period, remove one.
+					if ($line[0] === '.' && $line[1] === '.') {
+						$line = substr($line, 1);
 					}
 
 					// Add the line to the rest of the lines.
