@@ -193,7 +193,7 @@ class RequestIDStandalone
 							"WHERE nzbstatus = 1 AND preid = 0 AND (isrenamed = 0 AND isrequestid = 1 %s AND reqidstatus in (0, -1, -3)",
 							$time
 						);
-				$break;
+				break;
 			default:	// NUMERIC - runs on all releases not already renamed limited by user not already PreDB matched
 				$where =
 						sprintf(

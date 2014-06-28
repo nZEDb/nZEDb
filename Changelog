@@ -13,6 +13,7 @@ New updates are grouped by person, at the top of the file.
 2014-06-27 ruhllatio
 	* Chg: removeCrapReleases can now be run in false mode with a Blacklist ID that isn't set to active for testing
 	* Fix: Remove trailing whitespace
+	* Fix: typo in requestid.php that prevented 'full' from running properly
 2014-06-26 kevin
 	* Add: Function to ProcessAdditional for recursively deleting files and folders within a folder.
 	* Add: Slightly faster method for parsing header array (class NNTP).
