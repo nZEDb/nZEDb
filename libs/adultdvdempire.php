@@ -37,7 +37,7 @@ class adultdvdempire
 	protected $urlfound = null;
 
 	/* Define ADE Url here */
-	protected $ade = "http://www.adultdvdempire.com";
+	const ade = "http://www.adultdvdempire.com";
 
 	/* Tabbed variables in urls */
 	protected $dvdquery = "/dvd/search?q=";
@@ -64,12 +64,18 @@ class adultdvdempire
 		$this->getadeurl($this->trailers . $this->urlfound);
 		$this->html->load($this->response);
 		if (preg_match("/(\"|')(?P<swf>[^\"']+.swf)(\"|')/i", $this->response, $matches)) {
-			$res['trailers'] = $this->ade . trim(trim($matches['swf']), '"');
+			$res['trailers']['url'] = SELF::ade . trim(trim($matches['swf']), '"');
 			if (preg_match("#(?:streamID:\s\")(?P<streamid>[0-9A-Z]+)(?:\")#",
 						   $this->response,
 						   $matches)
 			) {
-				$res['streamid'] = trim($matches['streamid']);
+				$res['trailers']['streamid'] = trim($matches['streamid']);
+			}
+			if (preg_match("#(?:BaseStreamingUrl:\s\")(?P<baseurl>[0-9]+.[0-9]+.[0-9]+.[0-9]+)(?:\")#",
+						   $this->response,
+						   $matches)
+			) {
+				$res['trailers']['baseurl'] = $matches['baseurl'];
 			}
 		} else {
 			return false;
@@ -208,7 +214,7 @@ class adultdvdempire
 		return $res;
 	}
 
-	public function search($dvd = false)
+	public function search()
 	{
 		if (!isset($this->searchterm)) {
 			return false;
@@ -250,7 +256,7 @@ class adultdvdempire
 	private function getadeurl($trailing = null)
 	{
 		if (isset($trailing)) {
-			$ch = curl_init($this->ade . $trailing);
+			$ch = curl_init(SELF::ade . $trailing);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_HEADER, 0);
 			curl_setopt($ch, CURLOPT_VERBOSE, 0);
