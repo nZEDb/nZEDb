@@ -32,14 +32,6 @@ class adultdvdempire
 	/* Get and compare searchterm */
 	public $searchterm = null;
 
-	/* If user wants Features in the detailed information this will return it, */
-	/* User must call productdetailinfo(true) first. */
-	public $getfeatures = array();
-
-	/* If user wants Awards this will return it, */
-	/* User must call cast(true) first. */
-	public $awards = array();
-
 	/* Define param if trailing url is found get it and set it for future calls */
 	/* Anything after the $ade url is trailing */
 	protected $urlfound = null;
@@ -57,75 +49,104 @@ class adultdvdempire
 	public function __construct($echooutput = true)
 	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
-		$this->url        = null;
-		$this->response   = array();
-		$this->tmprsp     = null;
-		$this->html       = new simple_html_dom();
-		$this->edithtml   = new simple_html_dom();
+		$this->url = null;
+		$this->response = array();
+		$this->tmprsp = null;
+		$this->html = new simple_html_dom();
+		$this->edithtml = new simple_html_dom();
+		//$this->Debugging = new Debugging("adultdvdempire");
+		//$this->Debugging->start("cast", "My debug message.", DEBUG_INFO);
 	}
 
 	public function sypnosis($tagline = true)
 	{
 		$res = array();
 		if ($tagline === true) {
-			$ret   = $this->html->find("p.Tagline", 0);
-			$res[] = trim($ret->plaintext);
+			$ret = $this->html->find("p.Tagline", 0);
+			$res['Tagline'] = trim($ret->plaintext);
 		}
-		$ret   = $this->html->find("p.Tagline", 0)->next_sibling()->next_sibling();
-		$res[] = trim($ret->innertext);
+		$ret = $this->html->find("p.Tagline", 0)->next_sibling()->next_sibling();
+		$res['plot'] = trim($ret->innertext);
+
 		return $res;
 	}
 
 	public function cast($awards = false)
 	{
-		$res          = array();
+		$res = array();
 		$this->tmprsp = str_ireplace("Section Cast", "scast", $this->response);
 		$this->edithtml->load($this->tmprsp);
 		$ret = $this->edithtml->find("div[class=scast]", 0);
 		//var_dump($ret); exit;
 		$this->tmprsp = trim($ret->outertext);
 		$ret = $this->edithtml->load($this->tmprsp);
-		foreach ($ret->find("a.PerformerName") as $a){
-			  $res['cast'][] = trim($a->plaintext);
+		foreach ($ret->find("a.PerformerName") as $a) {
+			$res['cast'][] = trim($a->plaintext);
 		}
-		if($awards == true){
-		foreach($ret->find("ul",1)->find("li, strong") as $li){
-		$res['awards'][] = trim($li->plaintext);
-		}
+		if ($awards == true) {
+			foreach ($ret->find("ul", 1)->find("li, strong") as $li) {
+				$res['awards'][] = trim($li->plaintext);
+			}
 		}
 		$this->edithtml->clear();
-			unset($ret);
-		    unset($this->tmprsp);
+		unset($ret);
+		unset($this->tmprsp);
+
 		return $res;
 	}
+	public function categories(){
+		$res = array();
+		$this->tmprsp = str_ireplace("Section Categories", "scat", $this->response);
+		$this->edithtml->load($this->tmprsp);
+		$ret = $this->edithtml->find("div[class=scat]",0);
+		$this->tmprsp = trim($ret->outertext);
+		$ret = $this->edithtml->load($this->tmprsp);
 
-	public function productdetailinfo($features = false)
+		foreach ($ret->find("p, a") as $categories){
+	    $categories = trim($categories->plaintext);
+			if (stristr($categories,",")) {
+		$categories = explode(",",$categories);
+				break;
+			}else{
+				return false;
+			}
+		}
+		$categories = array_map('trim',$categories);
+		$res['Categories'] = $categories;
+		unset($this->tmprsp);
+		unset($ret);
+		return $res;
+	}
+	public function productinfo($features = false)
 	{
-		$res          = array();
-		$dofeature    = null;
+		$res = array();
+		$dofeature = null;
 		$this->tmprsp = str_ireplace("Section ProductInfo", "spdinfo", $this->response);
 		$this->edithtml->load($this->tmprsp);
-		$ret          = $this->edithtml->find("div[class=spdinfo]", 0);
+		$ret = $this->edithtml->find("div[class=spdinfo]", 0);
 		$this->tmprsp = trim($ret->outertext);
-		$ret          = $this->edithtml->load($this->tmprsp);
+		$ret = $this->edithtml->load($this->tmprsp);
 		foreach ($ret->find("text") as $strong) {
 			if (trim($strong->innertext) == "Features") {
 				$dofeature = true;
 			}
 			if ($dofeature != true) {
 				if (trim($strong->innertext) != "&nbsp;") {
-					$res[] = trim($strong->innertext);
+					$res['ProductInfo'][] = trim($strong->innertext);
 				}
 			} else {
-				$this->getfeatures[] = trim($strong->innertext);
+				if($features == true){
+				$res['Extras'][] = trim($strong->innertext);
+				}
 			}
 		}
-		array_shift($res);
-		array_shift($res);
-		$res = array_chunk($res, 2, false);
+		array_shift($res['ProductInfo']);
+		array_shift($res['ProductInfo']);
+		$res['ProductInfo'] = array_chunk($res['ProductInfo'], 2, false);
 		$this->edithtml->clear();
 		unset($this->tmprsp);
 		unset($ret);
+
 		return $res;
 	}
 
@@ -143,12 +164,12 @@ class adultdvdempire
 			$ret = (int)$ret->plaintext;
 			if (isset($ret)) {
 				if ($ret >= 1) {
-					$ret   = $this->html->find("a.boxcover", 0);
+					$ret = $this->html->find("a.boxcover", 0);
 					$title = $ret->title;
-					$ret   = (string)trim($ret->href);
+					$ret = (string)trim($ret->href);
 					similar_text($this->searchterm, $title, $p);
 					if ($p >= 70) {
-						$this->found    = true;
+						$this->found = true;
 						$this->urlfound = $ret;
 						unset($ret);
 						$this->html->clear();
@@ -156,6 +177,7 @@ class adultdvdempire
 						$this->html->load($this->response);
 					} else {
 						$this->found = false;
+
 						return false;
 					}
 				} else {
@@ -179,6 +201,7 @@ class adultdvdempire
 			$this->response = curl_exec($ch);
 			if (!$this->response) {
 				curl_close($ch);
+
 				return false;
 			}
 			curl_close($ch);
