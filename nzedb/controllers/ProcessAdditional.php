@@ -1022,9 +1022,10 @@ Class ProcessAdditional
 						}
 
 						// Try to get media info. Don't get it here if $mediaMsgID is not empty.
-						if ($this->_foundMediaInfo === false && empty($mediaMsgID)) {
+						// 2014-06-28 -> Commented out, since the media info of a sample video is not indicative of the actual release.si
+						/*if ($this->_foundMediaInfo === false && empty($mediaMsgID)) {
 							$this->_foundMediaInfo = $this->_getMediaInfo($fileLocation);
-						}
+						}*/
 
 					}
 				} else if ($this->_echoCLI) {

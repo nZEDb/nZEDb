@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-06-28 kevin
+	* Rem: Remove fetching of mediainfo from the sample videos, since they are re-encoded and their data does not correspond to the actual release.
 	* Fix: Corruption on some NNTP strings because of doubled period.
 2014-06-27 bart39
 	* Fix: Remove var_dump / fix query in ReleaseRemover.
