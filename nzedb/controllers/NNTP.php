@@ -1438,6 +1438,11 @@ class NNTP extends Net_NNTP_Client
 						return $this->_decodeIgnoreYEnc($body);
 					}
 
+					// Check for line that starts with double period, remove one.
+					if ($line[0] === '.' && $line[1] === '.') {
+						$line = substr($line, 1);
+					}
+
 					// Add the line to the rest of the lines.
 					$body .= $line;
 
