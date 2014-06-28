@@ -678,16 +678,14 @@ class ReleaseRemover
 			$status = '';
 		}
 
-		var_dump($this->blacklistID, $this->delete);
-
 		$regexList = $this->db->query(
 			sprintf(
 				'SELECT regex, id, groupname, msgcol
 				FROM binaryblacklist
 				WHERE %s %s AND optype = %d',
-				Binaries::OPTYPE_BLACKLIST,
 				$this->blacklistID,
-				$status
+				$status,
+				Binaries::OPTYPE_BLACKLIST
 			)
 		);
 
