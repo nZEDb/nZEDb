@@ -231,4 +231,14 @@ class adultdvdempire
 			return false;
 		}
 	}
+	public function _getall(){
+	$results = array();
+	$results = array_merge($results,$this->sypnosis(true));
+	$results = array_merge($results,$this->productinfo(true));
+	$results = array_merge($results,$this->cast(true));
+	$results = array_merge($results,$this->categories());
+	$results = array_merge($results,$this->covers());
+	return $results;
+
+	}
 }
