@@ -23,6 +23,9 @@
 
 require_once 'simple_html_dom.php';
 
+/**
+ * Class adultdvdempire
+ */
 class adultdvdempire
 {
 
@@ -39,7 +42,7 @@ class adultdvdempire
 	/* Define ADE Url here */
 	const ade = "http://www.adultdvdempire.com";
 
-	/* Tabbed variables in urls */
+	/* Trailing urls */
 	protected $dvdquery = "/dvd/search?q=";
 	protected $allquery = "/allsearch/search?q=";
 	protected $scenes = "/scenes";
@@ -58,6 +61,10 @@ class adultdvdempire
 		$this->edithtml = new simple_html_dom();
 	}
 
+
+	/**
+	 * @return array|bool
+	 */
 	public function trailers()
 	{
 		$res = array();
@@ -86,6 +93,9 @@ class adultdvdempire
 		return $res;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function covers()
 	{
 		$res = array();
@@ -111,6 +121,11 @@ class adultdvdempire
 		return $res;
 	}
 
+	/**
+	 * @param bool $tagline
+	 *
+	 * @return array
+	 */
 	public function sypnosis($tagline = false)
 	{
 		$res = array();
@@ -128,6 +143,11 @@ class adultdvdempire
 		return $res;
 	}
 
+	/**
+	 * @param bool $awards
+	 *
+	 * @return array
+	 */
 	public function cast($awards = false)
 	{
 		$res = array();
@@ -154,6 +174,9 @@ class adultdvdempire
 		return $res;
 	}
 
+	/**
+	 * @return array|bool
+	 */
 	public function categories()
 	{
 		$res = array();
@@ -181,6 +204,11 @@ class adultdvdempire
 		return $res;
 	}
 
+	/**
+	 * @param bool $features
+	 *
+	 * @return array
+	 */
 	public function productinfo($features = false)
 	{
 		$res = array();
@@ -214,6 +242,12 @@ class adultdvdempire
 		return $res;
 	}
 
+	/* Searches the xxx release for a 70% match */
+	/* Sets $urlfound for detailed page */
+	/* Sets $this->html for parsing */
+	/**
+	 * @return bool
+	 */
 	public function search()
 	{
 		if (!isset($this->searchterm)) {
@@ -253,6 +287,12 @@ class adultdvdempire
 		}
 	}
 
+	/* Fetch Url, and any existing trail if used */
+	/**
+	 * @param null $trailing
+	 *
+	 * @return bool
+	 */
 	private function getadeurl($trailing = null)
 	{
 		if (isset($trailing)) {
@@ -274,6 +314,10 @@ class adultdvdempire
 		}
 	}
 
+	/* Gets all information .. returns an array */
+	/**
+	 * @return array
+	 */
 	public function _getall()
 	{
 		$results = array();
