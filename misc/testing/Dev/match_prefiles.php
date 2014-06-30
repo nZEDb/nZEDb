@@ -37,7 +37,7 @@ function preFileName($argv)
 	$utility = new Utility();
 
 	$qrycat = $renamed = $regfilter = $orderby = $limit = '';
-	$noslash = "AND rf.name NOT REGEXP '\\\\\\\\' ";
+	//$noslash = "AND rf.name NOT REGEXP '\\\\\\\\' ";
 	$regfilter = "AND rf.name REGEXP BINARY '^[a-z0-9]{1,20}-[a-z0-9]{1,20}\..{3}$' ";
 	$rfname = "SUBSTRING_INDEX(rf.name, '.', 1)";
 	$orderby = "ORDER BY postdate ASC";
@@ -60,15 +60,22 @@ function preFileName($argv)
 		$limit = "LIMIT " . $argv[3];
 	}
 
+	$qry =	sprintf(
+			"SELECT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid, %s AS filename " .
+			"FROM releases r INNER JOIN releasefiles rf ON r.id = rf.releaseid " .
+			"WHERE r.preid = 0 %s %s %s " .
+			"%s %s",
+			$rfname,
+			$qrycat,
+			//$noslash,
+			$regfilter,
+			$renamed,
+			$orderby,
+			$limit
+	);
 
-	echo $c->headerOver(sprintf("SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid, %s AS filename " .
-					"FROM releases r INNER JOIN releasefiles rf ON r.id = rf.releaseid " .
-					"WHERE r.preid = 0 %s %s %s %s " .
-					"GROUP BY r.id %s %s", $rfname, $qrycat, $noslash, $regfilter, $renamed, $orderby, $limit)) . "\n";
-	$query = $db->queryDirect(sprintf("SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid, %s AS filename
-						FROM releases r INNER JOIN releasefiles rf ON r.id = rf.releaseid
-						WHERE r.preid = 0 %s %s %s %s
-						GROUP BY r.id %s %s", $rfname, $qrycat, $noslash, $regfilter, $renamed, $orderby, $limit));
+	echo $c->headerOver($qry . PHP_EOL);
+	$query = $db->queryDirect($qry);
 
 	$total = $query->rowCount();
 	$counter = $counted = 0;
@@ -83,18 +90,24 @@ function preFileName($argv)
 		foreach ($query as $row) {
 			$success = 0;
 			if ($argv[1] === 'full') {
+				$fileName = $row['filename'];
 				//this function cuts the file extension off
-				$row['filename'] = $utility->cutStringUsingLast('.', $row['filename'], "left", false);
+				$fileName = $utility->cutStringUsingLast('.', $fileName, "left", false);
 				//if filename has a .part001, send it back to the function to cut the next period
-				if (preg_match('/\.part\d+$/', $row['filename'])) {
-					$row['filename'] = $utility->cutStringUsingLast('.', $row['filename'], "left", false);
+				if (preg_match('/\.part\d+$/', $fileName)) {
+					$fileName = $utility->cutStringUsingLast('.', $fileName, "left", false);
 				}
 				//if filename has a .vol001, send it back to the function to cut the next period
-				if (preg_match('/\.vol\d+$/', $row['filename'])) {
-					$row['filename'] = $utility->cutStringUsingLast('.', $row['filename'], "left", false);
+				if (preg_match('/\.vol\d+$/', $fileName)) {
+					$fileName = $utility->cutStringUsingLast('.', $fileName, "left", false);
 				}
+				//if filename contains a slash, cut the string and keep string to the right of the last slash
+				if (strpos($fileName, '\\') !== false) {
+					$fileName = $utility->cutStringUsingLast('\\', $fileName, "right", false);
+				}
+				$row['filename'] = $fileName;
 			}
-			if (isset($row['filename']) && $row['filename'] !== '') {
+			if (isset($row['filename']) && $row['filename'] !== '' && strpos($row['filename'], '.') != 0 && strlen($row['filename']) > 0) {
 				$success = $namefixer->matchPredbFiles($row, 1, 1, true, $show, $argv[1]);
 			}
 			if ($success === 1) {
@@ -106,7 +119,7 @@ function preFileName($argv)
 		}
 	}
 	if ($total > 0) {
-		echo $c->header("\nRenamed " . $counted . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
+		echo $c->header("\nRenamed " . number_format($counted) . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
 	} else {
 		echo $c->info("\nNothing to do.");
 	}

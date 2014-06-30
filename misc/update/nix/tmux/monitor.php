@@ -1,19 +1,17 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
-$versions = @simplexml_load_file(nZEDb_VERSIONS);
-if ($versions === false) {
-	exit($c->error("\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"));
-}
+$versions = \nzedb\utility\Utility::getValidVersionsFile();
+
 //exec('git log | grep "^commit" | wc -l', $commit);
 $git = new \nzedb\utility\Git();
 
 $version = $versions->versions->git->tag . 'r' . $git->commits();
 
-$db = new DB();
+$db = new Settings();
 $DIR = nZEDb_MISC;
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
@@ -329,7 +327,7 @@ $init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tp
 $console_releases_proc_start = $movie_releases_proc_start = $show_query = $run_releases = 0;
 $last_history = "";
 
-// Ananlyze tables
+// Analyze tables
 printf($c->info("\nAnalyzing your tables to refresh your indexes."));
 $db->optimise(true, 'analyze');
 
@@ -361,6 +359,7 @@ printf($mask3, "Collections", "Binaries", "Parts");
 printf($mask3, "======================================", "=========================", "======================================");
 printf($mask5, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 echo "\n";
+
 printf($mask3, "Category", "In Process", "In Database");
 printf($mask3, "======================================", "=========================", "======================================");
 printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
@@ -390,7 +389,7 @@ if ($show_query == 1) {
 	printf($mask4, "Combined", "0", "0");
 }
 
-$monitor = 30;
+$monitor = 0;
 $i = 1;
 $fcfirstrun = true;
 $fcnum = 0;
@@ -403,7 +402,7 @@ while ($i > 0) {
 	//check the db connection
 	if ($db->ping(true) == false) {
 		unset($db);
-		$db = new DB();
+		$db = new Settings();
 	}
 
 	// These queries are very fast, run every loop
@@ -979,67 +978,70 @@ while ($i > 0) {
 		printf($mask1, "Postprocess:", "stale for " . relativeTime($time2));
 	}
 	echo "\n";
-	printf($mask3, "Collections", "Binaries", "Parts");
-	printf($mask3, "======================================", "=========================", "======================================");
-	printf($mask5, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
 
-	if (((isset($monitor_path)) && (file_exists($monitor_path))) || ((isset($monitor_path_a)) && (file_exists($monitor_path_a))) || ((isset($monitor_path_b)) && (file_exists($monitor_path_b)))) {
-		echo "\n";
-		printf($mask3, "File System", "Used", "Free");
+	if ($monitor > 0) {
+		printf($mask3, "Collections", "Binaries", "Parts");
 		printf($mask3, "======================================", "=========================", "======================================");
-		if (isset($monitor_path) && $monitor_path != "" && file_exists($monitor_path)) {
-			$disk_use = decodeSize(disk_total_space($monitor_path) - disk_free_space($monitor_path));
-			$disk_free = decodeSize(disk_free_space($monitor_path));
-			if (basename($monitor_path) == "") {
-				$show = "/";
-			} else {
-				$show = basename($monitor_path);
+		printf($mask5, number_format($collections_table), number_format($binaries_table), number_format($parts_table));
+
+		if (((isset($monitor_path)) && (file_exists($monitor_path))) || ((isset($monitor_path_a)) && (file_exists($monitor_path_a))) || ((isset($monitor_path_b)) && (file_exists($monitor_path_b)))) {
+			echo "\n";
+			printf($mask3, "File System", "Used", "Free");
+			printf($mask3, "======================================", "=========================", "======================================");
+			if (isset($monitor_path) && $monitor_path != "" && file_exists($monitor_path)) {
+				$disk_use = decodeSize(disk_total_space($monitor_path) - disk_free_space($monitor_path));
+				$disk_free = decodeSize(disk_free_space($monitor_path));
+				if (basename($monitor_path) == "") {
+					$show = "/";
+				} else {
+					$show = basename($monitor_path);
+				}
+				printf($mask4, $show, $disk_use, $disk_free);
 			}
-			printf($mask4, $show, $disk_use, $disk_free);
-		}
-		if (isset($monitor_path_a) && $monitor_path_a != "" && file_exists($monitor_path_a)) {
-			$disk_use = decodeSize(disk_total_space($monitor_path_a) - disk_free_space($monitor_path_a));
-			$disk_free = decodeSize(disk_free_space($monitor_path_a));
-			if (basename($monitor_path_a) == "") {
-				$show = "/";
-			} else {
-				$show = basename($monitor_path_a);
+			if (isset($monitor_path_a) && $monitor_path_a != "" && file_exists($monitor_path_a)) {
+				$disk_use = decodeSize(disk_total_space($monitor_path_a) - disk_free_space($monitor_path_a));
+				$disk_free = decodeSize(disk_free_space($monitor_path_a));
+				if (basename($monitor_path_a) == "") {
+					$show = "/";
+				} else {
+					$show = basename($monitor_path_a);
+				}
+				printf($mask4, $show, $disk_use, $disk_free);
 			}
-			printf($mask4, $show, $disk_use, $disk_free);
-		}
-		if (isset($monitor_path_b) && $monitor_path_b != "" && file_exists($monitor_path_b)) {
-			$disk_use = decodeSize(disk_total_space($monitor_path_b) - disk_free_space($monitor_path_b));
-			$disk_free = decodeSize(disk_free_space($monitor_path_b));
-			if (basename($monitor_path_b) == "") {
-				$show = "/";
-			} else {
-				$show = basename($monitor_path_b);
+			if (isset($monitor_path_b) && $monitor_path_b != "" && file_exists($monitor_path_b)) {
+				$disk_use = decodeSize(disk_total_space($monitor_path_b) - disk_free_space($monitor_path_b));
+				$disk_free = decodeSize(disk_free_space($monitor_path_b));
+				if (basename($monitor_path_b) == "") {
+					$show = "/";
+				} else {
+					$show = basename($monitor_path_b);
+				}
+				printf($mask4, $show, $disk_use, $disk_free);
 			}
-			printf($mask4, $show, $disk_use, $disk_free);
 		}
-	}
-	echo "\n";
-	printf($mask3, "Category", "In Process", "In Database");
-	printf($mask3, "======================================", "=========================", "======================================");
-	printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
-	printf($mask4, "requestID", number_format($requestid_inprogress) . "(" . $requestid_diff . ")", number_format($requestid_matched) . "(" . $request_percent . "%)");
-	printf($mask4, "NFO's", number_format($nfo_remaining_now) . "(" . $nfo_diff . ")", number_format($nfo_now) . "(" . $nfo_percent . "%)");
-	printf($mask4, "Console(1000)", number_format($console_releases_proc) . "(" . $console_diff . ")", number_format($console_releases_now) . "(" . $console_percent . "%)");
-	printf($mask4, "Movie(2000)", number_format($movie_releases_proc) . "(" . $movie_diff . ")", number_format($movie_releases_now) . "(" . $movie_percent . "%)");
-	printf($mask4, "Audio(3000)", number_format($music_releases_proc) . "(" . $music_diff . ")", number_format($music_releases_now) . "(" . $music_percent . "%)");
-	printf($mask4, "PC(4000)", number_format($pc_releases_proc) . "(" . $pc_diff . ")", number_format($pc_releases_now) . "(" . $pc_percent . "%)");
-	printf($mask4, "TVShows(5000)", number_format($tvrage_releases_proc) . "(" . $tvrage_diff . ")", number_format($tvrage_releases_now) . "(" . $tvrage_percent . "%)");
-	printf($mask4, "xXx(6000)", number_format($pron_remaining_now) . "(" . $pron_diff . ")", number_format($pron_releases_now) . "(" . $pron_percent . "%)");
-	printf($mask4, "Misc(7000)", number_format($work_remaining_now) . "(" . $misc_diff . ")", number_format($misc_releases_now) . "(" . $misc_percent . "%)");
-	printf($mask4, "Books(8000)", number_format($book_releases_proc) . "(" . $book_diff . ")", number_format($book_releases_now) . "(" . $book_percent . "%)");
-	printf($mask4, "Total", number_format($total_work_now) . "(" . $work_diff . ")", number_format($releases_now) . "(" . $releases_since_start . ")");
-	echo "\n";
-	printf($mask3, "Groups", "Active", "Backfill");
-	printf($mask3, "======================================", "=========================", "======================================");
-	if ($backfilldays == "1") {
-		printf($mask4, "Activated", $active_groups . "(" . $all_groups . ")", $backfill_groups_days . "(" . $all_groups . ")");
-	} else {
-		printf($mask4, "Activated", $active_groups . "(" . $all_groups . ")", $backfill_groups_date . "(" . $all_groups . ")");
+		echo "\n";
+		printf($mask3, "Category", "In Process", "In Database");
+		printf($mask3, "======================================", "=========================", "======================================");
+		printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
+		printf($mask4, "requestID", number_format($requestid_inprogress) . "(" . $requestid_diff . ")", number_format($requestid_matched) . "(" . $request_percent . "%)");
+		printf($mask4, "NFO's", number_format($nfo_remaining_now) . "(" . $nfo_diff . ")", number_format($nfo_now) . "(" . $nfo_percent . "%)");
+		printf($mask4, "Console(1000)", number_format($console_releases_proc) . "(" . $console_diff . ")", number_format($console_releases_now) . "(" . $console_percent . "%)");
+		printf($mask4, "Movie(2000)", number_format($movie_releases_proc) . "(" . $movie_diff . ")", number_format($movie_releases_now) . "(" . $movie_percent . "%)");
+		printf($mask4, "Audio(3000)", number_format($music_releases_proc) . "(" . $music_diff . ")", number_format($music_releases_now) . "(" . $music_percent . "%)");
+		printf($mask4, "PC(4000)", number_format($pc_releases_proc) . "(" . $pc_diff . ")", number_format($pc_releases_now) . "(" . $pc_percent . "%)");
+		printf($mask4, "TVShows(5000)", number_format($tvrage_releases_proc) . "(" . $tvrage_diff . ")", number_format($tvrage_releases_now) . "(" . $tvrage_percent . "%)");
+		printf($mask4, "xXx(6000)", number_format($pron_remaining_now) . "(" . $pron_diff . ")", number_format($pron_releases_now) . "(" . $pron_percent . "%)");
+		printf($mask4, "Misc(7000)", number_format($work_remaining_now) . "(" . $misc_diff . ")", number_format($misc_releases_now) . "(" . $misc_percent . "%)");
+		printf($mask4, "Books(8000)", number_format($book_releases_proc) . "(" . $book_diff . ")", number_format($book_releases_now) . "(" . $book_percent . "%)");
+		printf($mask4, "Total", number_format($total_work_now) . "(" . $work_diff . ")", number_format($releases_now) . "(" . $releases_since_start . ")");
+		echo "\n";
+		printf($mask3, "Groups", "Active", "Backfill");
+		printf($mask3, "======================================", "=========================", "======================================");
+		if ($backfilldays == "1") {
+			printf($mask4, "Activated", $active_groups . "(" . $all_groups . ")", $backfill_groups_days . "(" . $all_groups . ")");
+		} else {
+			printf($mask4, "Activated", $active_groups . "(" . $all_groups . ")", $backfill_groups_date . "(" . $all_groups . ")");
+		}
 	}
 
 	if ($show_query == 1) {
@@ -1651,7 +1653,7 @@ function run_ircscraper($tmux_session, $_php, $pane, $run_ircscraper)
 
 function run_sharing($tmux_session, $_php, $pane, $_sleep, $sharing_timer)
 {
-	$db = new DB();
+	$db = new Settings();
 	$sharing = $db->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
 	$t = new Tmux();
 	$tmux = $t->get();

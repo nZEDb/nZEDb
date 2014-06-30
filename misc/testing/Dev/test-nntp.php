@@ -20,7 +20,7 @@ $groupArr = $nntp->selectGroup($group);
 print_r($groupArr);
 
 // Insert actual local part numbers here.
-$msg = $nntp->getOverview((int)$first.'-'.(int)$first,true,false);
+$msg = $nntp->getXOVER($first.'-'.$first);
 
 // Print out the array of headers.
 print_r($msg);

@@ -42,7 +42,8 @@ section,subsection,name,value,hint,setting
 		maxpartsprocessed	3	If a part fails to download while post processing, this will retry up to the amount you set, then give up.	maxpartsprocessed
 		maxrageprocessed	75	The maximum amount of TV shows to process with TVRage per run. This does not use an NNTP connection or query Amazon.	maxrageprocessed
 		maxsizetoformrelease	0	The maximum total size in bytes to make a release. If set to 0, then ignored. Only deletes during release creation.	maxsizetoformrelease
-		maxsizetopostprocess	100	The maximum size in gigabytes to postprocess a release. If set to 0, then ignored.	maxsizetopostprocess
+		maxsizetopostprocess	100	The maximum size in gigabytes to post process (additional) a release. If set to 0, then ignored.	maxsizetopostprocess
+		minsizetopostprocess	1	The minimum size in megabytes to post process (additional) a release. If set to 0, then ignored.	minsizetopostprocess
 		miscotherretentionhours	0	The number of hours releases categorized as Misc->Other will be retained. Set to 0 to disable.	miscotherretentionhours
 		newgroupdaystoscan	1	Days	newgroupdaystoscan
 		newgroupmsgstoscan	100000	Posts	newgroupmsgstoscan

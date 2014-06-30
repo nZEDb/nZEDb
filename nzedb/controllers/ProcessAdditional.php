@@ -89,29 +89,34 @@ Class ProcessAdditional
 
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
-			(!empty($this->_siteSettings->maxaddprocessed)) ? (int)$this->_siteSettings->maxaddprocessed : 25;
+			(!empty($this->_siteSettings->maxaddprocessed) ? (int)$this->_siteSettings->maxaddprocessed : 25);
 
 		// Maximum message ID's to download per file type in the NZB (video, jpg, etc).
 		$this->_segmentsToDownload =
-			(!empty($this->_siteSettings->segmentstodownload)) ? (int)$this->_siteSettings->segmentstodownload : 2;
+			(!empty($this->_siteSettings->segmentstodownload) ? (int)$this->_siteSettings->segmentstodownload : 2);
 
 		// Maximum message ID's to download for a RAR file.
 		$this->_maximumRarSegments =
-			(!empty($this->_siteSettings->maxpartsprocessed)) ? (int)$this->_siteSettings->maxpartsprocessed : 3;
+			(!empty($this->_siteSettings->maxpartsprocessed) ? (int)$this->_siteSettings->maxpartsprocessed : 3);
 
 		// Maximum RAR files to check for a password before stopping.
 		$this->_maximumRarPasswordChecks =
-			(!empty($this->_siteSettings->passchkattempts)) ? (int)$this->_siteSettings->passchkattempts : 1;
+			(!empty($this->_siteSettings->passchkattempts) ? (int)$this->_siteSettings->passchkattempts : 1);
 
 		// Maximum size of releases in GB.
 		$this->_maxSize =
-			(!empty($this->_siteSettings->maxsizetopostprocess)) ? (int)$this->_siteSettings->maxsizetopostprocess : 100;
-		$this->_maxSize *= 1073741824;
+			(!empty($this->_siteSettings->maxsizetopostprocess) ? (int)$this->_siteSettings->maxsizetopostprocess : 100);
+		$this->_maxSize = ($this->_maxSize === 0 ? '' : 'AND r.size < ' . ($this->_maxSize * 1073741824));
+
+		// Minimum size of releases in MB.
+		$this->_minSize =
+			(!empty($this->_siteSettings->minsizetopostprocess) ? (int)$this->_siteSettings->minsizetopostprocess : 1);
+		$this->_minSize = ($this->_minSize === 0 ? '' : 'AND r.size > ' . ($this->_minSize * 1048576));
 
 		// Use the alternate NNTP provider for downloading Message-ID's ?
 		$this->_alternateNNTP = ($this->_siteSettings->alternate_nntp == 1 ? true : false);
 
-		$this->_ffMPEGDuration = (!empty($this->_siteSettings->ffmpeg_duration)) ? (int)$this->_siteSettings->ffmpeg_duration : 5;
+		$this->_ffMPEGDuration = (!empty($this->_siteSettings->ffmpeg_duration) ? (int)$this->_siteSettings->ffmpeg_duration : 5);
 
 		$this->_addPAR2Files = ($this->_siteSettings->addpar2 === '0') ? false : true;
 
@@ -153,6 +158,17 @@ Class ProcessAdditional
 	{
 		// Fetch all the releases to work on.
 		if ($release === '') {
+			// Clear out old folders/files from the temp folder.
+			$this->_recursivePathDelete(
+				$this->_mainTmpPath,
+				// These are folders we don't want to delete.
+				array(
+					// This is the actual unrar folder.
+					$this->_mainTmpPath,
+					// This folder is used by misc/testing/Dev/rename_u4e.php
+					$this->_mainTmpPath . 'u4e'
+				)
+			);
 			$this->_fetchReleases($groupID);
 		} else {
 			$release = explode('           =+=            ', $release);
@@ -206,13 +222,12 @@ Class ProcessAdditional
 						FROM releases r
 						LEFT JOIN category c ON c.id = r.categoryid
 						WHERE nzbstatus = 1
-						AND r.size < %d
-						%s
+						%s %s %s
 						AND r.passwordstatus = %d
 						AND (r.haspreview = -1 AND c.disablepreview = 0)
 						ORDER BY postdate
 						DESC LIMIT %d',
-					$this->_maxSize, $groupID, $i, $limit
+					$this->_maxSize, $this->_minSize, $groupID, $i, $limit
 				)
 			);
 
@@ -330,16 +345,40 @@ Class ProcessAdditional
 			$this->_finalizeRelease();
 
 			// Delete all files / folders for this release.
-			foreach (glob($this->tmpPath . '*') as $v) {
-				@unlink($v);
-			}
-			foreach (glob($this->tmpPath . '.*') as $v) {
-				@unlink($v);
-			}
-			@rmdir($this->tmpPath);
+			$this->_recursivePathDelete($this->tmpPath);
 		}
 		if ($this->_echoCLI) {
 			echo PHP_EOL;
+		}
+	}
+
+	/**
+	 * Deletes files and folders recursively.
+	 *
+	 * @param string $path   Path to a folder or file.
+	 * @param array  $ignoredFolders Array with paths to folders to ignore.
+	 *
+	 * @void
+	 * @access protected
+	 */
+	protected function _recursivePathDelete($path, $ignoredFolders = array())
+	{
+		if (is_dir($path)) {
+
+			$files = glob(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR  . '*');
+
+			foreach($files as $file){
+				$this->_recursivePathDelete($file, $ignoredFolders);
+			}
+
+			if (in_array($path, $ignoredFolders)) {
+				return;
+			}
+
+			@rmdir($path);
+
+		} else if (is_file($path)) {
+			@unlink($path);
 		}
 	}
 
@@ -758,7 +797,7 @@ Class ProcessAdditional
 					}
 
 					//Run a PreDB filename check on insert to try and match the release
-					else if (strpos($file['name'], '.') != 0) {
+					else if (strpos($file['name'], '.') != 0 && strlen($file['name']) > 0) {
 						$this->_release['filename'] = nzedb\utility\Utility::cutStringUsingLast('.', $file['name'], 'left', false);
 						$this->_release['releaseid'] = $this->_release['id'];
 						$this->_nameFixer->matchPredbFiles($this->_release, 1, 1, true, 1, 'full');
@@ -1133,8 +1172,13 @@ Class ProcessAdditional
 
 		$this->_passwordStatus = max($this->_passwordStatus);
 
-		// If we failed to get anything from the RAR/ZIPs, decrement the passwordstatus.
-		if ($this->_NZBHasCompressedFile && $releaseFiles['count'] == 0) {
+		// Set the release to no password if password processing is off.
+		if ($this->_processPasswords === false) {
+			$this->_releaseHasPassword = false;
+		}
+
+		// If we failed to get anything from the RAR/ZIPs, decrement the passwordstatus, if the rar/zip has no password.
+		if ($this->_releaseHasPassword === false && $this->_NZBHasCompressedFile && $releaseFiles['count'] == 0) {
 			$query = sprintf('
 				UPDATE releases
 				SET passwordstatus = passwordstatus - 1, rarinnerfilecount = %d %s %s %s
@@ -1170,23 +1214,27 @@ Class ProcessAdditional
 	 * Optional, pass a regex to filter the files.
 	 *
 	 * @param string $pattern Regex, optional
+	 * @param string $path    Path to the folder (if empty, uses $this->tmpPath)
 	 *
 	 * @return Iterator Object|bool
 	 */
-	protected function _getTempDirectoryContents($pattern = '')
+	protected function _getTempDirectoryContents($pattern = '', $path = '')
 	{
+		if ($path === '') {
+			$path = $this->tmpPath;
+		}
 		try {
 			if ($pattern !== '') {
 				return new RegexIterator(
 					new RecursiveIteratorIterator(
-						new RecursiveDirectoryIterator($this->tmpPath)
+						new RecursiveDirectoryIterator($path)
 					),
 					$pattern,
 					RecursiveRegexIterator::GET_MATCH
 				);
 			} else {
 				return new RecursiveIteratorIterator(
-					new RecursiveDirectoryIterator($this->tmpPath)
+					new RecursiveDirectoryIterator($path)
 				);
 			}
 		} catch (exception $e) {
