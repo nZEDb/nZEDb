@@ -7,6 +7,13 @@ use nzedb\db\DB;
  */
 class Binaries
 {
+
+	const OPTYPE_BLACKLIST = 1;
+	const OPTYPE_WHITELIST = 2;
+
+	const BLACKLIST_DISABLED = 0;
+	const BLACKLIST_ENABLED = 1;
+
 	const BLACKLIST_FIELD_SUBJECT = 1;
 	const BLACKLIST_FIELD_FROM = 2;
 	const BLACKLIST_FIELD_MESSAGEID = 3;
@@ -1281,10 +1288,10 @@ class Binaries
 		foreach ($this->blackList as $blackList) {
 			if (preg_match('/^' . $blackList['groupname'] . '$/i', $groupName)) {
 				// Black?
-				if ($blackList['optype'] == 1 && preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
+				if ($blackList['optype'] == Binaries::OPTYPE_BLACKLIST && preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
 					$omitBinary = true;
 					// White?
-				} else if ($blackList['optype'] == 2 && !preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
+				} else if ($blackList['optype'] == Binaries::OPTYPE_WHITELIST && !preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
 					$omitBinary = true;
 				}
 			}

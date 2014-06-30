@@ -358,7 +358,7 @@ class NZB
 
 		foreach ($xml->file as $file) {
 			// Subject.
-			$title = $file->attributes()->subject;
+			$title = (string)$file->attributes()->subject;
 
 			// Amount of pars.
 			if (stripos($title, '.par2')) {
@@ -376,7 +376,10 @@ class NZB
 					. 'ods|odt|ogg|par2|parity|pdf|pgp|php|pl|png|ppt|ps|py|r\d{2,3}|'
 					. 'ram|rar|rb|rm|rpm|rtf|sfv|sig|sql|srs|swf|sxc|sxd|sxi|sxw|tar|'
 					. 'tex|tgz|txt|vcf|video|vsd|wav|wma|wmv|xls|xml|xpi|xvid|zip7|zip)'
-					. '[" ](?!(\)|\-))/i', $file->attributes()->subject, $ext)) {
+					. '[" ](?!(\)|\-))/i',
+					$title, $ext
+				)
+			) {
 
 				if (preg_match('/\.r\d{2,3}/i', $ext[0])) {
 					$ext[1] = 'rar';
