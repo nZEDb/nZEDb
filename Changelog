@@ -7,10 +7,65 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-23 kevin
+	* Add: Patch to fix broken triggers causing search/api/other stuff not to work.
+	* Add: Fix by JRouleau for fixing triggers on new installs (needs a patch for existing sites). #1360
+	* Fix: Missing single quotes on config.php.tpl causing install to fail on step 5.
+2014-06-22 ruhllatio
+	* Fix: requestID incorrectly matching requestID of zero
+2014-06-22 bart39
+	* Fix: requestID not set for web lookup causing insert errors
+2014-06-21 kevin
+	* Fix: Various fixes in requestID (hitting web every run needlessly).
+	* Chg: Minor changes to NNTP.
+	* Fix: IRCClient, servers with numbers in their names stay on the initial sequence.
+	* Fix: Extra "LIKE" on preinfo.
+	* Add: Category search on preinfo.
+2014-06-20 ruhllatio
+	* Chg: A few more categorization changes
+	* Fix: trailing whitespace
+2014-06-20 niel
+	* Fix: Adding white-space checks to queryOneRow LIMIT regex to catch queries spread over more than one line.
+2014-06-20 kevin
+	Add: Documentation for POST method of preinfo request ID lookup to preinfo.php
+	Add: The POST method for request ID to preinfo.php (you can send a POST method to preinfo with a serialized array of requests for request ID's).
+	Chg: Change requestID web to send multiple requests at once giving a big speed improvement.
+2014-06-19 ruhllatio
+	* Chg: Adopt switch/caseing for Categorize.php
+	* Fix: TV Categorization issue with recent changes
+2014-06-18 kevin
+	* Chg: Remove some scandir's from ProcessAdditional to speed some things up.
+	* Chg: Rename all methods/properties with protected/private access level in Class NNTP.
+	* Add: User changeable socket timeout. You can add define('NNTP_SOCKET_TIMEOUT', 120); and define('NNTP_SOCKET_TIMEOUT_A', 120); to config.php, 120 is the seconds.
+	* Chg: Use the proper "mode" for setting the socket back to blocked.
+	* Add: Socket timeout property to NNTP.
+	* Fix: Missing check for downloading media binary in ProcessAdditional.
+	* Add: Central method for error response code checking (NNTP).
+	* Chg: Refactor of Net_NNTP.
+	* Chg: Slight speedup to body fetching by removing useless empty check.
+	* Chg: Change various scripts to use new NameFixer echo method.
+	* Add: Static method for echo'ing renamed releases.
 2014-06-18 ruhllatio
 	* Fix: PP additional hang due to filenames that start with a period and match_prefiles bug
 	* Chg: Properly categorize PS4 and PS4 in a.b.console.ps3
-22014-06-13 niel
+	* Fix: PS4 not post-processing correctly
+	* Fix: u4e rename results not colored correctly
+	* Rev: Revert changes to colorize u4e rename as they won't work
+	* Fix: optimize-keys option being used for MySQL other than Percona in mysqldump_tables.php #1330
+2014-06-15 DariusIII
+	*Chg: Remove tmpunrar folder cleaning from monitor, interferes with other scripts.
+2014-06-15 kevin
+	* Chg: Use custom function for fetching article body which is faster and uses less CPU.
+	* Chg: Cache total amount of files found in RAR or ZIP to speed up processing by preventing additional downloads of RAR or ZIP.
+	* Chg: Try to get original file names from rar. Combine array output of GNU File to increase chances of finding stuff. Check MPEG sequence, v2 from GNU file for mediainfo / samples/ etc.
+	* Fix: Fix for u4e not renaming in ProcessAdditional.
+2014-06-14 DariusIII
+	*Chg: Update the rename_u4e script to update the releases so they can be reprocessed again.
+2014-06-14 kevin
+	* Chg: ProcessAdditional, Use recursive iterator on extracted files, match "codec spam" directly when checking RAR's and set them as "Potentially Passworded", various other small changes.
+2014-06-14 bart39
+	* Fix: #1352 predb filename 'readme' causing incorrect matches
+2014-06-13 niel
 	* Add: .../nzedb/build/_runonce/tpg_groupid_fix.php. Thanks to ruhllatio for testing.
 	  NOTE TPG users need to run this once to fix the groupid field in the extra tables. Alternative re-creating your TPG setup will do it too.
 2014-06-13 kevin

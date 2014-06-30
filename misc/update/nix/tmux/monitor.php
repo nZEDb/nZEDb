@@ -1234,13 +1234,11 @@ while ($i > 0) {
 				}
 				$log = writelog($panes2[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\"; \
-						rm -rf $tmpunrar/*; \
 						$_python ${DIR}update/python/postprocess_threaded.py additional $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null"
 				);
 			} else if ($post == 2 && $nfo_remaining_now > 0) {
 				$log = writelog($panes2[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 ' \
-						rm -rf $tmpunrar/*; \
 						$_python ${DIR}update/python/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null"
 				);
 			} else if (($post == 3) && (($nfo_remaining_now > 0) || ($work_remaining_now + $pc_releases_proc + $pron_remaining_now > 0))) {
@@ -1263,7 +1261,6 @@ while ($i > 0) {
 				}
 				$log = writelog($panes2[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 ' \
-						rm -rf $tmpunrar/*; \
 						$_python ${DIR}update/python/postprocess_threaded.py additional $log; \
 						$_python ${DIR}update/python/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null"
 				);

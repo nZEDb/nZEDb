@@ -10,7 +10,10 @@ use nzedb\utility;
  */
 class RequestID
 {
+	const MAX_WEB_LOOKUPS = 100; // Please don't exceed this, not to be to harsh on the Request ID server.
+
 	// Request ID.
+	const REQID_OLD    = -4; // We rechecked the web a second time and didn't find a title so don't process it again.
 	const REQID_NONE   = -3; // The Request ID was not found locally or via web lookup.
 	const REQID_ZERO   = -2; // The Request ID was 0.
 	const REQID_NOLL   = -1; // Request ID was not found via local lookup.
@@ -106,6 +109,7 @@ class RequestID
 		$this->consoleTools = new ConsoleTools();
 		$this->colorCLI = new ColorCLI();
 		$this->site = (new Sites)->get();
+		$this->_request_hours = (isset($this->site->request_hours) ? (int)$this->site->request_hours : 1);
 	}
 
 	/**
@@ -121,12 +125,19 @@ class RequestID
 	{
 		$this->groupID = $groupID;
 		$this->limit = $limit;
+		if ($local === false && $this->limit > self::MAX_WEB_LOOKUPS) {
+			$this->limit = self::MAX_WEB_LOOKUPS;
+		}
 		$this->local = $local;
 		$this->reqIDsFound = 0;
-		$this->getResults();
+		$this->_getResults();
 
 		if ($this->results !== false && $this->results->rowCount() > 0) {
-			$this->findReqIdMatches();
+			if ($this->local === true) {
+				$this->_localCheck();
+			} else {
+				$this->_remoteCheck();
+			}
 		}
 		return $this->reqIDsFound;
 	}
@@ -134,24 +145,28 @@ class RequestID
 	/**
 	 * Get all results from the releases table that have request ID's to be processed.
 	 */
-	protected function getResults()
+	protected function _getResults()
 	{
 		// Look for records that potentially have requestID titles and have not been matched to a PreDB title
+
 		$this->results = $this->db->queryDirect(
-			sprintf(
-				'SELECT r.id, r.name, r.searchname, g.name AS groupname, r.group_id
+			sprintf ('
+				SELECT r.id, r.name, r.searchname, g.name AS groupname, r.group_id
 				FROM releases r
 				LEFT JOIN groups g ON r.group_id = g.id
 				WHERE nzbstatus = 1
 				AND preid = 0
-				AND (isrequestid = 1 AND reqidstatus = %d
-					OR (reqidstatus = %d AND adddate > NOW() - INTERVAL %d HOUR)
+				AND isrequestid = 1
+				AND (
+					reqidstatus = %d
+					OR (reqidstatus = %d AND adddate < NOW() - INTERVAL %d HOUR)
 				)
-				%s %s LIMIT %d',
+				%s %s %s LIMIT %d',
 				($this->local === true ? self::REQID_UPROC : self::REQID_NOLL),
 				self::REQID_NONE,
-				(isset($this->site->request_hours) ? (int)$this->site->request_hours : 1),
+				$this->_request_hours,
 				(empty($this->groupID) ? '' : ('AND group_id = ' . $this->groupID)),
+				($this->local === true ? '' : $this->_getReqIdGroups()), // Limit to req id groups on web look ups.
 				($this->local === true ? '' :  'ORDER BY postdate DESC'),
 				$this->limit
 			)
@@ -159,9 +174,86 @@ class RequestID
 	}
 
 	/**
-	 * See if the release has a valid request ID, try to a PRE name locally or from the internet.
+	 * Create "AND" part of query for request ID groups.
+	 * Less load on the request ID web server, by limiting results.
+	 *
+	 * @return string
 	 */
-	protected function findReqIdMatches()
+	protected function _getReqIdGroups()
+	{
+		return (
+			"AND g.name IN (
+				'alt.binaries.boneless',
+				'alt.binaries.cd.image',
+				'alt.binaries.console.ps3',
+				'alt.binaries.erotica',
+				'alt.binaries.games.nintendods',
+				'alt.binaries.games.wii',
+				'alt.binaries.games.xbox360',
+				'alt.binaries.inner-sanctum',
+				'alt.binaries.mom',
+				'alt.binaries.moovee',
+				'alt.binaries.movies.divx',
+				'alt.binaries.sony.psp',
+				'alt.binaries.sounds.mp3.complete_cd',
+				'alt.binaries.sounds.flac',
+				'alt.binaries.teevee',
+				'alt.binaries.warez'," .
+
+				// Extra groups we will need to remap later, etc is teevee for example.
+				"'alt.binaries.etc'
+			)"
+		);
+	}
+
+	/**
+	 * Go through a release name and find a request ID.
+	 *
+	 * @param string $releaseName
+	 *
+	 * @return int
+	 */
+	protected function _siftReqId($releaseName)
+	{
+		if (preg_match('/\[\s*(\d+)\s*\]/', $releaseName, $requestID) ||
+			preg_match('/^REQ\s*(\d{4,6})/i', $releaseName, $requestID) ||
+			preg_match('/^(\d{4,6})-\d{1}\[/', $releaseName, $requestID) ||
+			preg_match('/(\d{4,6}) -/',$releaseName, $requestID)
+		)  {
+			if ((int) $requestID[1] > 0) {
+				return (int) $requestID[1];
+			}
+		}
+		return self::REQID_ZERO;
+	}
+
+	/**
+	 * No request ID was found, update the release.
+	 *
+	 * @param int  $releaseID
+	 * @param int  $status    REQID constant status.
+	 */
+	protected function _requestIdNotFound($releaseID, $status)
+	{
+		if ($releaseID == 0) {
+			return;
+		}
+
+		$this->db->queryExec(
+			sprintf('
+				UPDATE releases
+				SET reqidstatus = %d
+				WHERE id = %d',
+				$status,
+				$releaseID
+			)
+		);
+	}
+
+	/**
+	 * Try to find a PRE name using the request ID in our local PRE database.
+	 */
+	protected function _localCheck()
 	{
 		$this->newTitle = false;
 
@@ -171,133 +263,161 @@ class RequestID
 			$this->newTitle = false;
 
 			// Try to get request id.
-			if (preg_match('/\[\s*(\d+)\s*\]/', $this->result['name'], $requestID) ||
-				preg_match('/^REQ\s*(\d{4,6})/i', $this->result['name'], $requestID) ||
-				preg_match('/^(\d{4,6})-\d{1}\[/', $this->result['name'], $requestID) ||
-				preg_match('/(\d{4,6}) -/', $this->result['name'], $requestID))  {
-				$this->requestID = (int)$requestID[1];
-			} else {
-				$this->requestID = self::REQID_ZERO;
-			}
+			$this->requestID = $this->_siftReqId($result['name']);
 
 			if ($this->requestID === self::REQID_ZERO) {
-				$this->db->queryExec(
-					sprintf('
-						UPDATE releases
-						SET reqidstatus = %d
-						WHERE id = %d',
-						self::REQID_ZERO,
-						$this->result['id']
-					)
-				);
-				if ($this->local === false && $this->echoOutput) {
-					echo '-';
-				}
+				$this->_requestIdNotFound($result['id'], self::REQID_ZERO);
 			} else {
 
-				if ($this->local === true) {
-					$this->localCheck();
-				} else {
-					$this->remoteCheck();
-				}
+				$localCheck = $this->db->queryOneRow(
+					sprintf('
+						SELECT id, title
+						FROM predb
+						WHERE requestid = %d
+						AND group_id = %d
+						LIMIT 1',
+						$this->requestID,
+						$this->result['group_id']
+					)
+				);
 
-				if ($this->newTitle !== false) {
-					if ($this->preDbID === false) {
-						$this->insertIntoPreDB();
-					}
+				if ($localCheck !== false) {
+					$this->newTitle = $localCheck['title'];
+					$this->preDbID = $localCheck['id'];
+					$this->reqIDsFound++;
 
-					$this->updateRelease();
+					$this->_updateRelease();
 				} else {
 					$this->db->queryExec(
 						sprintf(
 							'UPDATE releases SET reqidstatus = %d WHERE id = %d',
-							self::REQID_NONE,
-							$this->result['id']
+							self::REQID_NOLL,
+							$result['id']
 						)
 					);
-					if ($this->local === false && $this->echoOutput) {
-						echo '-';
-					}
 				}
 			}
-		}
-	}
-
-	/**
-	 * Try to find a PRE name using the request ID in our local PRE database.
-	 */
-	protected function localCheck()
-	{
-		$localCheck = $this->db->queryOneRow(
-			sprintf("
-				SELECT id, title
-				FROM predb
-				WHERE requestid = %d
-				AND group_id = %d",
-				$this->requestID,
-				$this->result['group_id']
-			)
-		);
-
-		if ($localCheck !== false) {
-			$this->newTitle = $localCheck['title'];
-			$this->preDbID = $localCheck['id'];
-			$this->reqIDsFound++;
 		}
 	}
 
 	/**
 	 * Try to find a PRE name on the internet using the found request ID.
 	 */
-	protected function remoteCheck()
+	protected function _remoteCheck()
 	{
-		// Do a web lookup.
-		$xml = nzedb\utility\getUrl(
-			str_ireplace(
-				'[REQUEST_ID]',
-				$this->requestID,
-				str_ireplace(
-					'[GROUP_NM]',
-					urlencode($this->result['groupname']),
-					$this->site->request_url
-				)
-			)
-		);
+		// Array to store results.
+		$requestArray = array();
 
-		if ($xml === false && preg_match('/alt\.binaries\.(etc|mom|\.hdtv.x264)/', $this->result['groupname'])) {
-			$reqGname = 'alt.binaries.moovee';
-			if ($this->result['groupname'] === 'alt.binaries.etc') {
-				$reqGname = 'alt.binaries.teevee';
+		// Loop all the results.
+		foreach($this->results as $result) {
+
+			// Try to find a request ID for the release.
+			$requestId = $this->_siftReqId($result['name']);
+
+			// If there's none, update the release and continue.
+			if ($requestId === self::REQID_ZERO) {
+				$this->_requestIdNotFound($result['id'], self::REQID_NONE);
+				if ($this->echoOutput) {
+					echo '-';
+				}
+				continue;
 			}
-			$xml = nzedb\utility\getUrl(
-				str_ireplace(
-					'[REQUEST_ID]',
-					$this->requestID,
-					str_ireplace(
-						'[GROUP_NM]',
-						urlencode($reqGname),
-						$this->site->request_url
-					)
-				)
+
+			// Change etc to teevee.
+			if ($result['groupname'] === 'alt.binaries.etc') {
+				$result['groupname'] = 'alt.binaries.teevee';
+			}
+
+			// Send the release ID so we can track the return data.
+			$requestArray[$result['id']] = array(
+				'reqid' => $requestId,
+				'ident' => $result['id'],
+				'group' => $result['groupname'],
+				'sname' => $result['searchname']
 			);
 		}
 
-		if ($xml !== false) {
-			$xml = simplexml_load_string($xml);
-			if ($xml !== false &&
-				isset($xml->request[0]['name']) && !empty($xml->request[0]['name']) &&
-				strtolower($xml->request[0]['name']) !== strtolower($this->result['searchname'])) {
+		// Check if we requests to send to the web.
+		if (count($requestArray) < 1) {
+			return;
+		}
 
-				$this->newTitle = $xml->request[0]['name'];
-				$this->reqIDsFound++;
+		// Mock array for isset check on server.
+		$requestArray[0] = array('ident' => 0, 'group' => 'none', 'reqid' => 0);
+
+		// Do a web lookup.
+		$returnXml = nzedb\utility\getUrl($this->site->request_url, 'post', 'data=' . serialize($requestArray));
+
+		// Change the release titles and insert the PRE's if they don't exist.
+		if ($returnXml !== false) {
+			$returnXml = @simplexml_load_string($returnXml);
+			if ($returnXml !== false) {
+
+				// Store the returned identifiers so we can check which releases we didn't find a request id.
+				$returnedIdentifiers = array();
+
+				foreach($returnXml->request as $result) {
+					if (isset($result['name']) && isset($result['ident']) && (int)$result['ident'] > 0) {
+						$this->newTitle = (string)$result['name'];
+						$this->requestID = (int)$result['reqid'];
+						$this->result['id'] = (int)$result['ident'];
+						$this->result['group_id'] = $this->groupID;
+						$this->result['groupname'] = $requestArray[(int)$result['ident']]['group'];
+						$this->result['searchname'] = $requestArray[(int)$result['ident']]['sname'];
+						$this->_insertIntoPreDB();
+						$this->_updateRelease();
+						$this->reqIDsFound++;
+						if ($this->echoOutput) {
+							echo '+';
+						}
+						$returnedIdentifiers[] = (string)$result['ident'];
+					}
+				}
+
+				// Check if the WEB didn't send back some titles, update the release.
+				if (count($returnedIdentifiers) > 0) {
+					foreach ($returnedIdentifiers as $identifier) {
+						if (array_key_exists($identifier, $requestArray)) {
+							unset($requestArray[$identifier]);
+						}
+					}
+				}
+
+				unset($requestArray[0]);
+				foreach ($requestArray as $request) {
+
+					$adddate = $this->db->queryOneRow(
+						sprintf(
+							'SELECT UNIX_TIMESTAMP(adddate) AS adddate FROM releases WHERE id = %d', $request['ident']
+						)
+					);
+
+					$status = self::REQID_NONE;
+					if ($adddate !== false && !empty($adddate['adddate'])) {
+						if ((bool) (intval((time() - (int)$adddate['adddate']) / 3600) > $this->_request_hours)) {
+							$status = self::REQID_OLD;
+						}
+					} else {
+						$status = self::REQID_OLD;
+					}
+
+					$this->_requestIdNotFound(
+						$request['ident'],
+						$status
+					);
+					if ($this->echoOutput) {
+						echo '-';
+					}
+				}
 			}
 		}
+		echo PHP_EOL;
 	}
 
 	/**
 	 * If we found a PRE name, update the releases name and reset post processing.
 	 */
-	protected function updateRelease()
+	protected function _updateRelease()
 	{
 		$determinedCategory = $this->category->determineCategory($this->newTitle, $this->result['group_id']);
 		$this->db->queryExec(
@@ -317,13 +437,15 @@ class RequestID
 		);
 
 		if ($this->echoOutput) {
-			echo $this->colorCLI->primary(
-				"\nNew name:  " . $this->newTitle .
-				"\nOld name:  " . $this->result['searchname'] .
-				"\nNew cat:   " . $this->category->getNameByID($determinedCategory) .
-				"\nGroup:     " . $this->result['groupname'] .
-				"\nMethod:    requestID " . ($this->local ? 'local' : 'web') .
-				"\nReleaseID: " . $this->result['id']
+			NameFixer::echoChangedReleaseName(array(
+					'new_name'     => $this->newTitle,
+					'old_name'     => $this->result['searchname'],
+					'new_category' => $this->category->getNameByID($determinedCategory),
+					'old_category' => '',
+					'group'        => $this->result['groupname'],
+					'release_id'   => $this->result['id'],
+					'method'       => 'RequestID->updateRelease<' . ($this->local ? 'local' : 'web') . '>'
+				)
 			);
 		}
 	}
@@ -331,7 +453,7 @@ class RequestID
 	/**
 	 * If we found a request ID on the internet, check if our PRE database has it, insert it if not.
 	 */
-	protected function insertIntoPreDB()
+	protected function _insertIntoPreDB()
 	{
 		$dupeCheck = $this->db->queryOneRow(
 			sprintf('

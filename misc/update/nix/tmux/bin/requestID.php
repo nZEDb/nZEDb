@@ -72,12 +72,17 @@ if ($bFound === true) {
 
 	$newcatname = $category->getNameByID($determinedcat);
 	$method = ($local === true) ? 'requestID local' : 'requestID web';
-	echo $c->headerOver($n . $n . 'New name:  ') . $c->primary($title) .
-	$c->headerOver('Old name:  ') . $c->primary($pieces[1]) .
-	$c->headerOver('New cat:   ') . $c->primary($newcatname) .
-	$c->headerOver('Group:     ') . $c->primary(trim($pieces[2])) .
-	$c->headerOver('Method:    ') . $c->primary($method) .
-	$c->headerOver('ReleaseID: ') . $c->primary($pieces[0]);
+
+	NameFixer::echoChangedReleaseName(array(
+			'new_name'     => $title,
+			'old_name'     => $pieces[1],
+			'new_category' => $newcatname,
+			'old_category' => '',
+			'group'        => trim($pieces[2]),
+			'release_id'   => $pieces[0],
+			'method'       => $method
+		)
+	);
 	$updated++;
 } else {
 	$db->queryExec('UPDATE releases SET reqidstatus = -3 WHERE id = ' . $pieces[0]);

@@ -167,22 +167,25 @@ if ($releases !== false) {
 
 		$determinedCat = $categorize->determineCategory($newName, $release['group_id']);
 
-		echo
-			PHP_EOL .
-			$c->headerOver("New name:  ") . $c->primary($newName) .
-			$c->headerOver("Old name:  ") . $c->primary($release['oldname']) .
-			$c->headerOver("Use name:  ") . $c->primary($release['name']) .
-			$c->headerOver("New cat:   ") . $c->primary($categorize->getNameByid($determinedCat)) .
-			$c->headerOver("Old cat:   ") . $c->primary($categorize->getNameByid($release['categoryid'])) .
-			$c->headerOver("Group:     ") . $c->primary($release['groupname']) .
-			$c->headerOver("Method:    ") . $c->primary('Files, u4e') .
-			$c->headerOver("ReleaseID: ") . $c->primary($release['id']);
+		NameFixer::echoChangedReleaseName(array(
+				'new_name'     => $newName,
+				'old_name'     => $release['oldname'],
+				'new_category' => $categorize->getNameByid($determinedCat),
+				'old_category' => $categorize->getNameByid($release['categoryid']),
+				'group'        => $release['groupname'],
+				'release_id'   => $release['id'],
+				'method'       => 'misc/testing/Dev/rename_u4e.php'
+			)
+		);
 
 		$db->queryExec(
 			sprintf('
 				UPDATE releases
-				SET isrenamed = 1, searchname = %s, categoryid = %d
-				WHERE id = %d',
+					SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
+						tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
+						consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
+						searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
+					WHERE id = %d',
 				$db->escapeString(substr($newName, 0, 255)),
 				$determinedCat,
 				$release['id']
