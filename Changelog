@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-30 niel
+	* Chg: Improving versioning output.
 2014-06-25 kevin
 	* Add: Function to ProcessAdditional for recursively deleting files and folders within a folder.
 	* Add: Slightly faster method for parsing header array (class NNTP).

@@ -188,11 +188,15 @@ class Versions
 		// Check if version file's entry is less than the last tag
 		if (version_compare($this->_vers->git->tag, $latest, '<')) {
 			if ($update) {
+				$latest = explode('-', $latest);
+				$latest = $latest[0];
 				echo $this->out->primary("Updating tag version to $latest");
 				$this->_vers->git->tag = $latest;
 				$this->_changes |= self::UPDATED_GIT_TAG;
 			}
 			return $this->_vers->git->tag;
+		} else {
+			echo "Leaving tag version at $latest";
 		}
 		return false;
 	}
