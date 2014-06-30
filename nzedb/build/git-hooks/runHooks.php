@@ -51,11 +51,7 @@ if ($error === false) {
 		if ($error === false) {
 			try {
 				$vers = new \nzedb\utility\Versions();
-				if ($branch == 'dev') {
-					$vers->checkAll();
-				} else {
-					//
-				}
+				$vers->checkAll();
 				$vers->save();
 				$git->add(nZEDb_VERSIONS);
 			} catch (\Exception $e) {
