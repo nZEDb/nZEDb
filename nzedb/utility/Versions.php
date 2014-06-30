@@ -186,8 +186,8 @@ class Versions
 		$latest = $this->git->tagLatest();
 		$ver = preg_match('#v(\d+\.\d+\.\d+).*#', $latest, $matches) ? $matches[1] : $latest;
 
-		// Check if version file's entry is less than the last tag
-		if (version_compare($this->_vers->git->tag, $latest, '<')) {
+		// Check if version file's entry is the same as current branch's tag
+		if (version_compare($this->_vers->git->tag, $latest, '=')) {
 			if ($update) {
 				echo $this->out->primaryOver("Updating tag version to ") . $this->out->header($latest);
 				$this->_vers->git->tag = $ver;
