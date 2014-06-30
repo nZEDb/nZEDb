@@ -190,13 +190,15 @@ class Versions
 			if ($update) {
 				$latest = explode('-', $latest);
 				$latest = $latest[0];
-				echo $this->out->primary("Updating tag version to $latest");
+				echo $this->out->primary("Updating tag version to ") . $this->out->header($latest);
 				$this->_vers->git->tag = $latest;
 				$this->_changes |= self::UPDATED_GIT_TAG;
+			} else {
+				echo $this->out->primary("Leaving tag version at ") . $this->out->header($latest);
 			}
 			return $this->_vers->git->tag;
 		} else {
-			echo "Leaving tag version at $latest";
+			echo $this->out->primary("Tag version is ") . $this->out->header($latest);
 		}
 		return false;
 	}
