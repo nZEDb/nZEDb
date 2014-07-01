@@ -19,6 +19,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Deletion of old C, B, and P will now occur if parts are missing
 	* Chg: Begin to standardize queries for Releases.php
 	* Fix: fastDelete not working properly
+	* Fix: Broken queries in Releases.php
 2014-06-30 kevin
 	* Add: Option for ignoring PRE titles on IRCScraper.
 2014-06-30 niel
