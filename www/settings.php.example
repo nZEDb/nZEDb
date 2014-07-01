@@ -34,7 +34,7 @@ define('nZEDb_ECHOCLI', true);
 define('nZEDb_RENAME_PAR2', true);
 
 /**
- * Rename music releases using media info from the MP3/FLAC/etc tags (if they match on PRE titles)?
+ * Rename music releases using media info from the MP3/FLAC/etc tags (names are created using info found in the tags)?
  * @default true
  */
 define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
