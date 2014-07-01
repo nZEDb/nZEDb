@@ -181,7 +181,7 @@ class Releases
 
 		return $this->db->query(
 					sprintf(
-						'SELECT r.*,
+						"SELECT r.*,
 							CONCAT(cp.title, ' > ', c.title) AS category_name,
 							CONCAT(cp.id, ',', c.id) AS category_ids,
 							g.name AS group_name,
@@ -194,8 +194,8 @@ class Releases
 						AND rn.nfo IS NOT NULL
 						INNER JOIN category c ON c.id = r.categoryid
 						INNER JOIN category cp ON cp.id = c.parentid
-						WHERE nzbstatus = 1	AND r.passwordstatus <= %d %s %s %s %s
-						ORDER BY %s %s %s',
+						WHERE nzbstatus = 1 AND r.passwordstatus <= %d %s %s %s %s
+						ORDER BY %s %s %s",
 						$this->showPasswords(),
 						$catsrch,
 						$maxagesql,
@@ -327,9 +327,9 @@ class Releases
 		return $this->db->query(
 						sprintf(
 								"SELECT searchname, guid, groups.name AS gname, CONCAT(cp.title,'_',category.title) AS catName
-								FROM releases
-								INNER JOIN category ON releases.categoryid = category.id
-								INNER JOIN groups ON releases.group_id = groups.id
+								FROM releases r
+								INNER JOIN category ON r.categoryid = category.id
+								INNER JOIN groups ON r.group_id = groups.id
 								INNER JOIN category cp ON cp.id = category.parentid
 								WHERE nzbstatus = 1 %s %s %s",
 								$postfrom,
@@ -427,7 +427,7 @@ class Releases
 		$catsrch = $cartsrch = '';
 		if (count($cat) > 0) {
 			if ($cat[0] == -2) {
-				$cartsrch = sprintf(' INNER JOIN usercart ON usercart.userid = %d AND usercart.releaseid = releases.id ', $uid);
+				$cartsrch = sprintf(' INNER JOIN usercart ON usercart.userid = %d AND usercart.releaseid = r.id ', $uid);
 			} else if ($cat[0] != -1) {
 				$catsrch = ' AND (';
 				$categ = new Category();
@@ -452,14 +452,14 @@ class Releases
 			}
 		}
 
-		$rage = ($rageid > -1) ? sprintf(' AND releases.rageid = %d ', $rageid) : '';
-		$anidb = ($anidbid > -1) ? sprintf(' AND releases.anidbid = %d ', $anidbid) : '';
+		$rage = ($rageid > -1) ? sprintf(' AND r.rageid = %d ', $rageid) : '';
+		$anidb = ($anidbid > -1) ? sprintf(' AND r.anidbid = %d ', $anidbid) : '';
 		if ($this->db->dbSystem() === 'mysql') {
 			$airdate = ($airdate >
-				-1) ? sprintf(' AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
+				-1) ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
 		} else {
 			$airdate = ($airdate >
-				-1) ? sprintf(" AND releases.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
+				-1) ? sprintf(" AND r.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
 		}
 
 		return $this->db->query(
@@ -510,36 +510,39 @@ class Releases
 	{
 		$exccatlist = '';
 		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND releases.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
+			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
 		$usql = $this->uSQL($this->db->query(sprintf('SELECT rageid, categoryid FROM userseries WHERE userid = %d', $uid), true), 'rageid');
 		if ($this->db->dbSystem() === 'mysql') {
 			$airdate = ($airdate >
-				-1) ? sprintf(' AND releases.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
+				-1) ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
 		} else {
 			$airdate = ($airdate >
-				-1) ? sprintf(" AND releases.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
+				-1) ? sprintf(" AND r.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
 		}
 		$limit = ' LIMIT ' . ($num > 100 ? 100 : $num) . ' OFFSET 0';
 
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT releases.*, tvr.rageid, tvr.releasetitle, g.name AS group_name,
-									CONCAT(cp.title, '-', c.title) AS category_name,
-									CONCAT(cp.id, ',', c.id) AS category_ids,
-									COALESCE(cp.id,0) AS parentCategoryid
-								FROM releases
-								INNER JOIN category c ON c.id = releases.categoryid
-								INNER JOIN category cp ON cp.id = c.parentid
-								INNER JOIN groups g ON g.id = releases.group_id
-								LEFT OUTER JOIN tvrage tvr ON tvr.rageid = releases.rageid
-								WHERE %s %s %s
-								AND releases.passwordstatus <= %d
-								ORDER BY postdate DESC %s",
-				$usql, $exccatlist, $airdate, $this->showPasswords(), $limit
-			)
+					sprintf("
+						SELECT r.*, tvr.rageid, tvr.releasetitle, g.name AS group_name,
+							CONCAT(cp.title, '-', c.title) AS category_name,
+							CONCAT(cp.id, ',', c.id) AS category_ids,
+							COALESCE(cp.id,0) AS parentCategoryid
+						FROM releases r
+						INNER JOIN category c ON c.id = r.categoryid
+						INNER JOIN category cp ON cp.id = c.parentid
+						INNER JOIN groups g ON g.id = r.group_id
+						LEFT OUTER JOIN tvrage tvr ON tvr.rageid = r.rageid
+						WHERE %s %s %s
+						AND r.passwordstatus <= %d
+						ORDER BY postdate DESC %s",
+						$usql,
+						$exccatlist,
+						$airdate,
+						$this->showPasswords(),
+						$limit
+					)
 		);
 	}
 
@@ -556,28 +559,30 @@ class Releases
 	{
 		$exccatlist = '';
 		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND releases.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
+			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
 		$usql = $this->uSQL($this->db->query(sprintf('SELECT imdbid, categoryid FROM usermovies WHERE userid = %d', $uid), true), 'imdbid');
 		$limit = ' LIMIT ' . ($num > 100 ? 100 : $num) . ' OFFSET 0';
 
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT releases.*, mi.title AS releasetitle, g.name AS group_name,
-									CONCAT(cp.title, '-', c.title) AS category_name,
-									CONCAT(cp.id, ',', c.id) AS category_ids,
-									COALESCE(cp.id,0) AS parentCategoryid
-								FROM releases
-								INNER JOIN category c ON c.id = releases.categoryid
-								INNER JOIN category cp ON cp.id = c.parentid
-								INNER JOIN groups g ON g.id = releases.group_id
-								LEFT OUTER JOIN movieinfo mi ON mi.imdbid = releases.imdbid
-								WHERE %s %s
-								AND releases.passwordstatus <= %d
-								ORDER BY postdate DESC %s",
-				$usql, $exccatlist, $this->showPasswords(), $limit
+					sprintf("
+						SELECT r.*, mi.title AS releasetitle, g.name AS group_name,
+							CONCAT(cp.title, '-', c.title) AS category_name,
+							CONCAT(cp.id, ',', c.id) AS category_ids,
+							COALESCE(cp.id,0) AS parentCategoryid
+						FROM releases r
+						INNER JOIN category c ON c.id = r.categoryid
+						INNER JOIN category cp ON cp.id = c.parentid
+						INNER JOIN groups g ON g.id = r.group_id
+						LEFT OUTER JOIN movieinfo mi ON mi.imdbid = r.imdbid
+						WHERE %s %s
+						AND r.passwordstatus <= %d
+						ORDER BY postdate DESC %s",
+						$usql,
+						$exccatlist,
+						$this->showPasswords(),
+						$limit
 			)
 		);
 	}
@@ -604,16 +609,16 @@ class Releases
 
 		$exccatlist = $maxagesql = '';
 		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND releases.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
+			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
 		$usql = $this->uSQL($usershows, 'rageid');
 
 		if ($maxage > 0) {
 			if ($this->db->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND releases.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
-				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
 
@@ -622,17 +627,17 @@ class Releases
 		return $this->db->query(
 			sprintf(
 				"
-								SELECT releases.*, CONCAT(cp.title, '-', c.title) AS category_name,
+								SELECT r.*, CONCAT(cp.title, '-', c.title) AS category_name,
 									CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name,
 									rn.id AS nfoid, re.releaseid AS reid
-								FROM releases
-								LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
-								INNER JOIN groups ON groups.id = releases.group_id
-								LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL
-								INNER JOIN category c ON c.id = releases.categoryid
+								FROM releases r
+								LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
+								INNER JOIN groups ON groups.id = r.group_id
+								LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+								INNER JOIN category c ON c.id = r.categoryid
 								INNER JOIN category cp ON cp.id = c.parentid
 								WHERE %s %s
-								AND releases.passwordstatus <= %d %s
+								AND r.passwordstatus <= %d %s
 								ORDER BY %s %s %s",
 				$usql, $exccatlist, $this->showPasswords(), $maxagesql, $order[0], $order[1], $limit
 			)
@@ -652,26 +657,26 @@ class Releases
 	{
 		$exccatlist = $maxagesql = '';
 		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND releases.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
+			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
 		$usql = $this->uSQL($usershows, 'rageid');
 
 		if ($maxage > 0) {
 			if ($this->db->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND releases.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
-				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
 
 		$res = $this->db->queryOneRow(
 			sprintf(
 				'
-								SELECT COUNT(releases.id) AS num
-								FROM releases
+								SELECT COUNT(r.id) AS num
+								FROM releases r
 								WHERE %s %s
-								AND releases.passwordstatus <= %d %s',
+								AND r.passwordstatus <= %d %s',
 				$usql, $exccatlist, $this->showPasswords(), $maxagesql
 			), true
 		);
@@ -879,13 +884,13 @@ class Releases
 	{
 		$usql = '(1=2 ';
 		foreach ($userquery as $u) {
-			$usql .= sprintf('OR (releases.%s = %d', $type, $u[$type]);
+			$usql .= sprintf('OR (r.%s = %d', $type, $u[$type]);
 			if ($u['categoryid'] != '') {
 				$catsArr = explode('|', $u['categoryid']);
 				if (count($catsArr) > 1) {
-					$usql .= sprintf(' AND releases.categoryid IN (%s)', implode(',', $catsArr));
+					$usql .= sprintf(' AND r.categoryid IN (%s)', implode(',', $catsArr));
 				} else {
-					$usql .= sprintf(' AND releases.categoryid = %d', $catsArr[0]);
+					$usql .= sprintf(' AND r.categoryid = %d', $catsArr[0]);
 				}
 			}
 			$usql .= ') ';
@@ -947,19 +952,19 @@ class Releases
 						$word = trim(rtrim(trim($word), '-'));
 						if ($intwordcount == 0 && (strpos($word, '^') === 0)) {
 							$searchsql .= sprintf(
-								' AND releases.%s %s %s', $type, $like, $this->db->escapeString(
+								' AND r.%s %s %s', $type, $like, $this->db->escapeString(
 									substr($word, 1) . '%'
 								)
 							);
 						} else if (substr($word, 0, 2) == '--') {
 							$searchsql .= sprintf(
-								' AND releases.%s NOT %s %s', $type, $like, $this->db->escapeString(
+								' AND r.%s NOT %s %s', $type, $like, $this->db->escapeString(
 									'%' . substr($word, 2) . '%'
 								)
 							);
 						} else {
 							$searchsql .= sprintf(
-								' AND releases.%s %s %s', $type, $like, $this->db->escapeString(
+								' AND r.%s %s %s', $type, $like, $this->db->escapeString(
 									'%' . $word . '%'
 								)
 							);
@@ -991,10 +996,10 @@ class Releases
 						}
 
 						if ($chlist != '-99') {
-							$catsrch .= ' releases.categoryid IN (' . $chlist . ') OR ';
+							$catsrch .= ' r.categoryid IN (' . $chlist . ') OR ';
 						}
 					} else {
-						$catsrch .= sprintf(' releases.categoryid = %d OR ', $category);
+						$catsrch .= sprintf(' r.categoryid = %d OR ', $category);
 					}
 				}
 			}
@@ -1012,7 +1017,7 @@ class Releases
 		} else {
 			$catsrch = '';
 			if ($cat != '-1') {
-				$catsrch = sprintf(' AND (releases.categoryid = %d) ', $cat);
+				$catsrch = sprintf(' AND (r.categoryid = %d) ', $cat);
 			}
 		}
 
@@ -1021,38 +1026,38 @@ class Releases
 		$searchnamesql = ($searchname != '-1' ? $this->searchSQL($searchname, 'searchname') : '');
 		$usenetnamesql = ($usenetname != '-1' ? $this->searchSQL($usenetname, 'name') : '');
 		$posternamesql = ($postername != '-1' ? $this->searchSQL($postername, 'fromname') : '');
-		$hasnfosql = ($hasnfo != '0' ? ' AND releases.nfostatus = 1 ' : '');
-		$hascommentssql = ($hascomments != '0' ? ' AND releases.comments > 0 ' : '');
+		$hasnfosql = ($hasnfo != '0' ? ' AND r.nfostatus = 1 ' : '');
+		$hascommentssql = ($hascomments != '0' ? ' AND r.comments > 0 ' : '');
 		$exccatlist = (count($excludedcats) > 0 ?
-			' AND releases.categoryid NOT IN (' . implode(',', $excludedcats) . ')' : '');
+			' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')' : '');
 
 		if ($daysnew != '-1') {
 			if ($this->db->dbSystem() === 'mysql') {
-				$daysnewsql = sprintf(' AND releases.postdate < (NOW() - INTERVAL %d DAY) ', $daysnew);
+				$daysnewsql = sprintf(' AND r.postdate < (NOW() - INTERVAL %d DAY) ', $daysnew);
 			} else {
-				$daysnewsql = sprintf(" AND releases.postdate < NOW() - INTERVAL '%d DAYS' ", $daysnew);
+				$daysnewsql = sprintf(" AND r.postdate < NOW() - INTERVAL '%d DAYS' ", $daysnew);
 			}
 		}
 
 		if ($daysold != '-1') {
 			if ($this->db->dbSystem() === 'mysql') {
-				$daysoldsql = sprintf(' AND releases.postdate > (NOW() - INTERVAL %d DAY) ', $daysold);
+				$daysoldsql = sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $daysold);
 			} else {
-				$daysoldsql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $daysold);
+				$daysoldsql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $daysold);
 			}
 		}
 
 		if ($maxage > 0) {
 			if ($this->db->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND releases.postdate > (NOW() - INTERVAL %d DAY) ', $maxage);
+				$maxagesql = sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxage);
 			} else {
-				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
 
 		if ($groupname != '-1') {
 			$groupID = $this->groups->getIDByName($groupname);
-			$groupIDsql = sprintf(' AND releases.group_id = %d ', $groupID);
+			$groupIDsql = sprintf(' AND r.group_id = %d ', $groupID);
 		}
 
 		$sizefromsql = '';
@@ -1068,7 +1073,7 @@ class Releases
 			case '9':
 			case '10':
 			case '11':
-				$sizefromsql = ' AND releases.size > ' . (string)(104857600 * (int)$sizefrom) . ' ';
+				$sizefromsql = ' AND r.size > ' . (string)(104857600 * (int)$sizefrom) . ' ';
 				break;
 			default:
 				break;
@@ -1087,7 +1092,7 @@ class Releases
 			case '9':
 			case '10':
 			case '11':
-				$sizetosql = ' AND releases.size < ' . (string)(104857600 * (int)$sizeto) . ' ';
+				$sizetosql = ' AND r.size < ' . (string)(104857600 * (int)$sizeto) . ' ';
 				break;
 			default:
 				break;
@@ -1101,18 +1106,18 @@ class Releases
 		}
 
 		$sql = sprintf(
-			"SELECT * FROM (SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
+			"SELECT * FROM (SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
 			CONCAT(cp.id, ',', c.id) AS category_ids,
 			groups.name AS group_name, rn.id AS nfoid,
 			re.releaseid AS reid, cp.id AS categoryparentid
-			FROM releases
-			INNER JOIN releasesearch rs on rs.releaseid = releases.id
-			LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
-			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id
-			INNER JOIN groups ON groups.id = releases.group_id
-			INNER JOIN category c ON c.id = releases.categoryid
+			FROM releases r
+			INNER JOIN releasesearch rs on rs.releaseid = r.id
+			LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
+			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+			INNER JOIN groups ON groups.id = r.group_id
+			INNER JOIN category c ON c.id = r.categoryid
 			INNER JOIN category cp ON cp.id = c.parentid
-			WHERE releases.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s) r
+			WHERE r.passwordstatus <= %d %s %s %s %s %s %s %s %s %s %s %s %s %s) r
 			ORDER BY r.%s %s LIMIT %d OFFSET %d",
 			$this->showPasswords(), $searchnamesql, $usenetnamesql, $maxagesql, $posternamesql, $groupIDsql, $sizefromsql,
 			$sizetosql, $hasnfosql, $hascommentssql, $catsrch, $daysnewsql, $daysoldsql, $exccatlist, $order[0],
@@ -1120,7 +1125,7 @@ class Releases
 		);
 		$wherepos = strpos($sql, 'WHERE');
 		$countres = $this->db->queryOneRow(
-			'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' .
+			'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs ON rs.releaseid = r.id ' .
 			substr($sql, $wherepos, strrpos($sql, ')') - $wherepos)
 		);
 		$res = $this->db->query($sql);
@@ -1145,7 +1150,7 @@ class Releases
 				$series = sprintf('S%02d', $series);
 			}
 
-			$series = sprintf(' AND UPPER(releases.season) = UPPER(%s)', $this->db->escapeString($series));
+			$series = sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->db->escapeString($series));
 		}
 
 		if ($episode != '') {
@@ -1157,7 +1162,7 @@ class Releases
 			if ($this->db->dbSystem() === 'mysql') {
 				$like = 'LIKE';
 			}
-			$episode = sprintf(' AND releases.episode %s %s', $like, $this->db->escapeString('%' . $episode . '%'));
+			$episode = sprintf(' AND r.episode %s %s', $like, $this->db->escapeString('%' . $episode . '%'));
 		}
 
 		$searchsql = '';
@@ -1168,15 +1173,39 @@ class Releases
 
 		if ($maxage > 0) {
 			if ($this->db->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND releases.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
-				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid FROM releases INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.group_id INNER JOIN releasesearch rs on rs.releaseid = releases.id LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $rageIdsql, $series, $episode, $searchsql, $catsrch, $maxagesql, $limit, $offset);
+		$sql = sprintf("
+					SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
+						groups.name AS group_name, rn.id AS nfoid, re.releaseid AS reid
+					FROM releases r
+					INNER JOIN category c ON c.id = r.categoryid
+					INNER JOIN groups ON groups.id = r.group_id
+					INNER JOIN releasesearch rs on rs.releaseid = r.id
+					LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
+					LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+					INNER JOIN category cp ON cp.id = c.parentid
+					WHERE r.passwordstatus <= %d %s %s %s %s %s %s
+					ORDER BY postdate DESC
+					LIMIT %d
+					OFFSET %d",
+					$this->showPasswords(),
+					$rageIdsql,
+					$series,
+					$episode,
+					$searchsql,
+					$catsrch,
+					$maxagesql,
+					$limit,
+					$offset
+		);
+
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
-		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id  ' . substr($sql, $wherepos, $orderpos - $wherepos);
+		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs ON rs.releaseid = r.id  ' . substr($sql, $wherepos, $orderpos - $wherepos);
 
 		$countres = $this->db->queryOneRow($sqlcount);
 		$res = $this->db->query($sql);
@@ -1197,7 +1226,7 @@ class Releases
 		}
 
 		is_numeric($epno) ? $epno = sprintf(
-			" AND releases.episode %s '%s' ", $like, $this->db->escapeString(
+			" AND r.episode %s '%s' ", $like, $this->db->escapeString(
 				'%' . $epno . '%'
 			)
 		) : '';
@@ -1211,16 +1240,35 @@ class Releases
 		$maxagesql = '';
 		if ($maxage > 0) {
 			if ($this->db->dbSystem() === 'mysql') {
-				$maxagesql = sprintf(' AND releases.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
-				$maxagesql = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
+				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
 
-		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases INNER JOIN releasesearch rs on rs.releaseid = releases.id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.group_id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id and rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $anidbID, $epno, $searchsql, $catsrch, $maxage, $limit, $offset);
+		$sql = sprintf("
+					SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
+						groups.name AS group_name, rn.id AS nfoid
+					FROM releases r
+					INNER JOIN releasesearch rs on rs.releaseid = r.id
+					INNER JOIN category c ON c.id = r.categoryid
+					INNER JOIN groups ON groups.id = r.group_id
+					LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+					INNER JOIN category cp ON cp.id = c.parentid
+					WHERE r.passwordstatus <= %d %s %s %s %s %s
+					ORDER BY postdate DESC LIMIT %d OFFSET %d",
+					$this->showPasswords(),
+					$anidbID,
+					$epno,
+					$searchsql,
+					$catsrch,
+					$maxage,
+					$limit,
+					$offset
+		);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
-		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs on rs.releaseid = r.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
+		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs ON rs.releaseid = r.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
 
 		$countres = $this->db->queryOneRow($sqlcount);
 		$res = $this->db->query($sql);
@@ -1256,18 +1304,18 @@ class Releases
 			$maxage = '';
 		}
 
-		$sql = sprintf(
-				"SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name, " .
-					"CONCAT(cp.id, ',', c.id) AS category_ids, " .
-					"g.name AS group_name, rn.id AS nfoid " .
-				"FROM releases r " .
-				"INNER JOIN groups g ON g.id = r.group_id " .
-				"INNER JOIN category c ON c.id = r.categoryid " .
-				"INNER JOIN releasesearch rs on rs.releaseid = r.id " .
-				"LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL " .
-				"INNER JOIN category cp ON cp.id = c.parentid " .
-				"WHERE nzbstatus = 1 AND r.passwordstatus <= %d " .
-				"%s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d",
+		$sql = sprintf("
+				SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name,
+					CONCAT(cp.id, ',', c.id) AS category_ids,
+					g.name AS group_name, rn.id AS nfoid
+				FROM releases r
+				INNER JOIN groups g ON g.id = r.group_id
+				INNER JOIN category c ON c.id = r.categoryid
+				INNER JOIN releasesearch rs ON rs.releaseid = r.id
+				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+				INNER JOIN category cp ON cp.id = c.parentid
+				WHERE nzbstatus = 1 AND r.passwordstatus <= %d
+				%s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d",
 				$this->showPasswords(),
 				$searchsql,
 				$imdbId,
@@ -1279,7 +1327,7 @@ class Releases
 
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
-		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs on rs.releaseid = r.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
+		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs ON rs.releaseid = r.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
 
 		$countres = $this->db->queryOneRow($sqlcount);
 		$res = $this->db->query($sql);
@@ -1331,11 +1379,19 @@ class Releases
 			foreach ($guid as $g) {
 				$tmpguids[] = $this->db->escapeString($g);
 			}
-			$gsql = sprintf('guid IN (%s)', implode(',', $tmpguids));
+			$gsql = sprintf('r.guid IN (%s)', implode(',', $tmpguids));
 		} else {
-			$gsql = sprintf('guid = %s', $this->db->escapeString($guid));
+			$gsql = sprintf('r.guid = %s', $this->db->escapeString($guid));
 		}
-		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE %s ", $gsql);
+		$sql = sprintf("
+					SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
+						g.name AS group_name FROM releases r
+					INNER JOIN groups g ON g.id = r.group_id
+					INNER JOIN category c ON c.id = r.categoryid
+					INNER JOIN category cp ON cp.id = c.parentid
+					WHERE %s",
+					$gsql
+		);
 
 		return (is_array($guid)) ? $this->db->query($sql) : $this->db->queryOneRow($sql);
 	}
@@ -1376,7 +1432,7 @@ class Releases
 				$series = sprintf('S%02d', $series);
 			}
 
-			$series = sprintf(' AND UPPER(releases.season) = UPPER(%s)', $this->db->escapeString($series));
+			$series = sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->db->escapeString($series));
 		}
 
 		if ($episode != '') {
@@ -1384,15 +1440,29 @@ class Releases
 				$episode = sprintf('E%02d', $episode);
 			}
 
-			$episode = sprintf(' AND UPPER(releases.episode) = UPPER(%s)', $this->db->escapeString($episode));
+			$episode = sprintf(' AND UPPER(r.episode) = UPPER(%s)', $this->db->escapeString($episode));
 		}
 
-		return $this->db->queryOneRow(sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d AND rageid = %d %s %s", $this->showPasswords(), $rageid, $series, $episode));
+		return $this->db->queryOneRow(
+						sprintf("
+							SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
+							groups.name AS group_name
+							FROM releases r
+							INNER JOIN groups ON groups.id = r.group_id
+							INNER JOIN category c ON c.id = r.categoryid
+							INNER JOIN category cp ON cp.id = c.parentid
+							WHERE r.passwordstatus <= %d AND rageid = %d %s %s",
+							$this->showPasswords(),
+							$rageid,
+							$series,
+							$episode
+						)
+		);
 	}
 
 	public function removeRageIdFromReleases($rageid)
 	{
-		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM releases WHERE rageid = %d', $rageid));
+		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(r.id) AS num FROM releases r WHERE rageid = %d', $rageid));
 		$this->db->queryExec(sprintf('UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL WHERE rageid = %d', $rageid));
 
 		return $res['num'];
@@ -1400,7 +1470,7 @@ class Releases
 
 	public function removeAnidbIdFromReleases($anidbID)
 	{
-		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM releases WHERE anidbid = %d', $anidbID));
+		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(r.id) AS num FROM releases r WHERE anidbid = %d', $anidbID));
 		$this->db->queryExec(sprintf('UPDATE releases SET anidbid = -1, episode = NULL, tvtitle = NULL, tvairdate = NULL WHERE anidbid = %d', $anidbID));
 
 		return $res['num'];
@@ -1408,7 +1478,15 @@ class Releases
 
 	public function getById($id)
 	{
-		return $this->db->queryOneRow(sprintf('SELECT releases.*, groups.name AS group_name FROM releases INNER JOIN groups ON groups.id = releases.group_id WHERE releases.id = %d ', $id));
+		return $this->db->queryOneRow(
+						sprintf('
+							SELECT r.*, g.name AS group_name
+							FROM releases r
+							INNER JOIN groups g ON g.id = r.group_id
+							WHERE r.id = %d',
+							$id
+						)
+		);
 	}
 
 	public function getReleaseNfo($id, $incnfo = true)
@@ -2183,8 +2261,16 @@ class Releases
 		$catresrel = $this->db->queryDirect('SELECT c.id AS id, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize FROM category c INNER JOIN category cp ON cp.id = c.parentid WHERE c.parentid IS NOT NULL');
 		foreach ($catresrel as $catrowrel) {
 			if ($catrowrel['minsize'] > 0) {
-				//printf("SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d\n", $catrowrel['id'], $catrowrel['minsize']);
-				$resrel = $this->db->queryDirect(sprintf('SELECT r.id, r.guid FROM releases r WHERE r.categoryid = %d AND r.size < %d', $catrowrel['id'], $catrowrel['minsize']));
+				$resrel = $this->db->queryDirect(
+									sprintf('
+										SELECT r.id, r.guid
+										FROM releases r
+										WHERE r.categoryid = %d
+										AND r.size < %d',
+										$catrowrel['id'],
+										$catrowrel['minsize']
+									)
+				);
 				foreach ($resrel as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid']);
 					$catminsizecount++;
@@ -2198,7 +2284,18 @@ class Releases
 
 			foreach ($groupIDs as $groupID) {
 				if ($this->db->dbSystem() === 'mysql') {
-					$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value as minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %s ) g ON g.id = r.group_id WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.group_id = %s", $groupID['id'], $groupID['id']));
+					$resrel = $this->db->queryDirect(
+										sprintf("
+											SELECT r.id, r.guid FROM releases r LEFT JOIN
+												(SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease
+												FROM groups g INNER JOIN
+													(SELECT value as minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease') s
+												WHERE g.id = %s ) g ON g.id = r.group_id
+											WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.group_id = %s",
+											$groupID['id'],
+											$groupID['id']
+										)
+					);
 				} else {
 					$resrel = array();
 					$s = $this->db->queryOneRow(
@@ -2206,7 +2303,16 @@ class Releases
 						$groupID['id']
 					);
 					if ($s['size'] > 0) {
-						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND group_id = %d', $s['size'], $groupID['id']));
+						$resrel = $this->db->queryDirect(
+											sprintf('
+												SELECT id, guid
+												FROM releases
+												WHERE size < %d
+												AND group_id = %d',
+												$s['size'],
+												$groupID['id']
+											)
+						);
 					}
 				}
 				if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2218,7 +2324,16 @@ class Releases
 
 				$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0) {
-					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE group_id = %d AND size > %d', $groupID['id'], $maxfilesizeres['value']));
+					$resrel = $this->db->queryDirect(
+										sprintf('
+											SELECT id, guid
+											FROM releases
+											WHERE group_id = %d
+											AND size > %d',
+											$groupID['id'],
+											$maxfilesizeres['value']
+										)
+					);
 					if ($resrel !== false && $resrel->rowCount() > 0) {
 						foreach ($resrel as $rowrel) {
 							$this->fastDelete($rowrel['id'], $rowrel['guid']);
@@ -2228,7 +2343,21 @@ class Releases
 				}
 
 				if ($this->db->dbSystem() === 'mysql') {
-					$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease FROM groups g INNER JOIN ( SELECT value as minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.group_id = %d", $groupID['id'], $groupID['id']));
+					$resrel = $this->db->queryDirect(
+										sprintf("
+											SELECT r.id, r.guid
+											FROM releases r LEFT JOIN
+												(SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) as minfilestoformrelease
+												FROM groups g INNER JOIN
+													(SELECT value as minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease') s
+												WHERE g.id = %d ) g ON g.id = r.group_id
+											WHERE g.minfilestoformrelease != 0
+											AND r.totalpart < minfilestoformrelease
+											AND r.group_id = %d",
+											$groupID['id'],
+											$groupID['id']
+										)
+					);
 				} else {
 					$resrel = array();
 					$f = $this->db->queryOneRow(
@@ -2236,7 +2365,16 @@ class Releases
 						$groupID['id']
 					);
 					if ($f['files'] > 0) {
-						$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND group_id = %d', $f['files'], $groupID['id']));
+						$resrel = $this->db->queryDirect(
+											sprintf('
+												SELECT id, guid
+												FROM releases
+												WHERE totalpart < %d
+												AND group_id = %d',
+												$f['files'],
+												$groupID['id']
+											)
+						);
 					}
 				}
 				if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2248,7 +2386,20 @@ class Releases
 			}
 		} else {
 			if ($this->db->dbSystem() === 'mysql') {
-				$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minsizetoformrelease != 0 AND r.size < minsizetoformrelease AND r.group_id = %d", $groupID, $groupID));
+				$resrel = $this->db->queryDirect(
+									sprintf("
+										SELECT r.id, r.guid
+										FROM releases r LEFT JOIN
+											(SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN
+												(SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s
+											WHERE g.id = %d ) g ON g.id = r.group_id
+										WHERE g.minsizetoformrelease != 0
+										AND r.size < minsizetoformrelease
+										AND r.group_id = %d",
+										$groupID,
+										$groupID
+									)
+				);
 			} else {
 				$resrel = array();
 				$s = $this->db->queryOneRow(
@@ -2256,7 +2407,16 @@ class Releases
 					$groupID
 				);
 				if ($s['size'] > 0) {
-					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE size < %d AND group_id = %d', $s['size'], $groupID));
+					$resrel = $this->db->queryDirect(
+										sprintf('
+											SELECT id, guid
+											FROM releases
+											WHERE size < %d
+											AND group_id = %d',
+											$s['size'],
+											$groupID
+										)
+					);
 				}
 			}
 			if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2278,7 +2438,21 @@ class Releases
 			}
 
 			if ($this->db->dbSystem() === 'mysql') {
-				$resrel = $this->db->queryDirect(sprintf("SELECT r.id, r.guid FROM releases r LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s WHERE g.id = %d ) g ON g.id = r.group_id WHERE g.minfilestoformrelease != 0 AND r.totalpart < minfilestoformrelease AND r.group_id = %d", $groupID, $groupID));
+				$resrel = $this->db->queryDirect(
+									sprintf("
+										SELECT r.id, r.guid
+										FROM releases r LEFT JOIN
+											(SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease
+											FROM groups g INNER JOIN
+												(SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s
+											WHERE g.id = %d ) g ON g.id = r.group_id
+										WHERE g.minfilestoformrelease != 0
+										AND r.totalpart < minfilestoformrelease
+										AND r.group_id = %d",
+										$groupID,
+										$groupID
+									)
+				);
 			} else {
 				$resrel = array();
 				$f = $this->db->queryOneRow(
@@ -2761,7 +2935,7 @@ class Releases
 		$genrelist = $genres->getDisabledIDs();
 		if (count($genrelist) > 0) {
 			foreach ($genrelist as $genre) {
-				$rels = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genreid = %d) mi ON releases.musicinfoid = mid', $genre['id']));
+				$rels = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genreid = %d) mi ON r.musicinfoid = mid', $genre['id']));
 				if ($rels !== false && $rels->rowCount() > 0) {
 					foreach ($rels as $rel) {
 						$disabledgenrecount++;
@@ -3022,9 +3196,9 @@ class Releases
 	public function getRecentlyAdded()
 	{
 		if ($this->db->dbSystem() === 'mysql') {
-			return $this->db->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases ON releases.categoryid = category.id WHERE releases.adddate > NOW() - INTERVAL 1 WEEK GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
+			return $this->db->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases r ON r.categoryid = category.id WHERE r.adddate > NOW() - INTERVAL 1 WEEK GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
 		} else {
-			return $this->db->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases ON releases.categoryid = category.id WHERE releases.adddate > NOW() - INTERVAL '1 WEEK' GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
+			return $this->db->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases r ON r.categoryid = category.id WHERE r.adddate > NOW() - INTERVAL '1 WEEK' GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
 		}
 	}
 
