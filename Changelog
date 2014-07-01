@@ -13,6 +13,9 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Update tsv settings sqlpatch to 239.
 2014-07-01 ruhllatio
 	* Chg: Regex for IRCScraper now supports spaces in between parsing fields
+	* Fix: Deletion of old C, B, and P will now occur if parts are missing
+	* Chg: Begin to standardize queries for Releases.php
+	* Fix: fastDelete not working properly
 2014-06-30 kevin
 	* Add: Option for ignoring PRE titles on IRCScraper.
 2014-06-30 niel
