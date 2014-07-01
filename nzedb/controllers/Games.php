@@ -15,15 +15,15 @@ class Games
 
 	function __construct($echooutput = false)
 	{
-		$this->echooutput  = ($echooutput && nZEDb_ECHOCLI);
-		$s                 = new Sites();
-		$site              = $s->get();
-		$this->pubkey      = $site->giantbombkey;
-		$this->gameqty     = (!empty($site->maxgamesprocessed)) ? $site->maxgamesprocessed : 150;
-		$this->sleeptime   = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
-		$this->db          = new DB();
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
+		$s = new Sites();
+		$site = $s->get();
+		$this->pubkey = $site->giantbombkey;
+		$this->gameqty = (!empty($site->maxgamesprocessed)) ? $site->maxgamesprocessed : 150;
+		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
+		$this->db = new DB();
 		$this->imgSavePath = nZEDb_COVERS . 'games' . DS;
-		$this->renamed     = '';
+		$this->renamed = '';
 		if ($site->lookupgames == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
@@ -34,16 +34,19 @@ class Games
 	public function getgamesinfo($id)
 	{
 		$db = $this->db;
-		return $db->queryOneRow(sprintf("SELECT gamesinfo.*, genres.title AS genres FROM gamesinfo LEFT OUTER JOIN genres ON genres.id = gamesinfo.genreid WHERE gamesinfo.id = %d ", $id));
+
+		return $db->queryOneRow(sprintf("SELECT gamesinfo.*, genres.title AS genres FROM gamesinfo LEFT OUTER JOIN genres ON genres.id = gamesinfo.genreid WHERE gamesinfo.id = %d ",
+										$id));
 	}
 
 	public function getgamesinfoByName($title, $platform)
 	{
-		$db   = $this->db;
+		$db = $this->db;
 		$like = 'ILIKE';
 		if ($db->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
+
 		return $db->queryOneRow(sprintf("SELECT * FROM gamesinfo WHERE title LIKE %s AND platform %s %s",
 										$db->escapeString("%" . $title . "%"),
 										$like,
@@ -67,6 +70,7 @@ class Games
 	{
 		$db = $this->db;
 		$res = $db->queryOneRow("SELECT COUNT(id) AS num FROM gamesinfo");
+
 		return $res["num"];
 	}
 
@@ -122,10 +126,12 @@ class Games
 										$catsrch,
 										$maxage,
 										$exccatlist));
+
 		return $res["num"];
 	}
 
-	public function getgamesRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
+	public function getgamesRange($cat, $start, $num, $orderby, $maxage = -1,
+								  $excludedcats = array())
 	{
 		$db = $this->db;
 		$browseby = $this->getBrowseBy();
@@ -138,7 +144,7 @@ class Games
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = " (";
-			$categ  = new Category();
+			$categ = new Category();
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {
@@ -180,24 +186,38 @@ class Games
 		return $db->query(
 				  sprintf(
 					  "SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
-					  ."GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
-					  ."GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
-					  ."GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
-					  ."GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid, "
-					  ."GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid, "
-					  ."GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname, "
-					  ."GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name, "
-					  ."GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate, "
-					  ."GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size, "
-					  ."GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
-					  ."GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
-					  ."GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
-					  ."con.*, r.gamesinfo_id, groups.name AS group_name, rn.id as nfoid FROM releases r "
-					  ."LEFT OUTER JOIN groups ON groups.id = r.group_id "
-					  ."LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
-					  ."INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id "
-					  ."WHERE r.nzbstatus = 1 AND con.cover = 1 AND con.title != '' AND "
-					  ."r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s "
+					  .
+					  "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
+					  .
+					  "GROUP_CONCAT(r.haspreview ORDER BY r.postdate DESC SEPARATOR ',') AS grp_haspreview, "
+					  .
+					  "GROUP_CONCAT(r.passwordstatus ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_password, "
+					  .
+					  "GROUP_CONCAT(r.guid ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_guid, "
+					  .
+					  "GROUP_CONCAT(rn.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_nfoid, "
+					  .
+					  "GROUP_CONCAT(groups.name ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grpname, "
+					  .
+					  "GROUP_CONCAT(r.searchname ORDER BY r.postdate DESC SEPARATOR '#') AS grp_release_name, "
+					  .
+					  "GROUP_CONCAT(r.postdate ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_postdate, "
+					  .
+					  "GROUP_CONCAT(r.size ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_size, "
+					  .
+					  "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
+					  .
+					  "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
+					  .
+					  "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
+					  .
+					  "con.*, r.gamesinfo_id, groups.name AS group_name, rn.id as nfoid FROM releases r "
+					  . "LEFT OUTER JOIN groups ON groups.id = r.group_id "
+					  . "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
+					  . "INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id "
+					  . "WHERE r.nzbstatus = 1 AND con.cover = 1 AND con.title != '' AND "
+					  .
+					  "r.passwordstatus <= (SELECT value FROM settings WHERE setting='showpasswordedrelease') AND %s %s %s %s "
 					  . "GROUP BY con.id ORDER BY %s %s" . $limit,
 					  $browseby,
 					  $catsrch,
@@ -240,7 +260,9 @@ class Games
 				$orderfield = 'r.postdate';
 				break;
 		}
-		$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ? $orderArr[1] : 'desc';
+		$ordersort = (isset($orderArr[1]) && preg_match('/^asc|desc$/i', $orderArr[1])) ?
+			$orderArr[1] : 'desc';
+
 		return array($orderfield, $ordersort);
 	}
 
@@ -275,6 +297,7 @@ class Games
 							 $db->escapeString('%' . $bbs . '%') . ') AND ';
 			}
 		}
+
 		return $browseby;
 	}
 
@@ -288,13 +311,17 @@ class Games
 			if ($i > 5) {
 				break;
 			}
-			$newArr[] = '<a href="' . WWW_TOP . '/games?' . $field . '=' . urlencode($ta) . '" title="' . $ta . '">' . $ta . '</a>';
+			$newArr[] =
+				'<a href="' . WWW_TOP . '/games?' . $field . '=' . urlencode($ta) . '" title="' .
+				$ta . '">' . $ta . '</a>';
 			$i++;
 		}
+
 		return implode(', ', $newArr);
 	}
 
-	public function update($id, $title, $asin, $url, $salesrank, $platform, $publisher, $releasedate, $esrb, $cover, $genreID)
+	public function update($id, $title, $asin, $url, $salesrank, $platform, $publisher,
+						   $releasedate, $esrb, $cover, $genreID)
 	{
 		$db = $this->db;
 
@@ -312,6 +339,13 @@ class Games
 							   $id));
 	}
 
+	/**
+	 * Process each game, updating game information from Giantbomb
+	 *
+	 * @param $gameInfo
+	 *
+	 * @return bool
+	 */
 	public function updategamesinfo($gameInfo)
 	{
 		$db = $this->db;
@@ -376,12 +410,14 @@ class Games
 		// This actual compares the two strings and outputs a percentage value.
 		$titlepercent = $platformpercent = '';
 		similar_text(strtolower($gameInfo['title']), strtolower($con['title']), $titlepercent);
-		similar_text(strtolower($gameInfo['platform']), strtolower($con['platform']), $platformpercent);
+		similar_text(strtolower($gameInfo['platform']),
+					 strtolower($con['platform']),
+					 $platformpercent);
 
 		// If the release is DLC matching sucks, so assume anything over 50% is legit.
 		if (isset($gameInfo['dlc']) && $gameInfo['dlc'] == 1) {
 			if ($titlepercent >= 50) {
-				$titlepercent    = 100;
+				$titlepercent = 100;
 				$platformpercent = 100;
 			}
 		}
@@ -452,8 +488,8 @@ class Games
 		$genreName = '';
 
 		if (empty($genreName) && isset($gb['genres'][0]['name'])) {
-			$a        = (string)$gb['genres'][0]['name'];
-			$b        = str_replace('-', ' ', $a);
+			$a = (string)$gb['genres'][0]['name'];
+			$b = str_replace('-', ' ', $a);
 			$tmpGenre = explode(',', $b);
 			foreach ($tmpGenre as $tg) {
 				$genreMatch = $this->matchBrowseNode(ucwords($tg));
@@ -470,13 +506,17 @@ class Games
 		if (in_array(strtolower($genreName), $genreassoc)) {
 			$genreKey = array_search(strtolower($genreName), $genreassoc);
 		} else {
-			$genreKey = $db->queryInsert(sprintf("INSERT INTO genres (`title`, `type`) VALUES (%s, %d)", $db->escapeString($genreName), Genres::GAME_TYPE));
+			$genreKey = $db->queryInsert(sprintf("INSERT INTO genres (`title`, `type`) VALUES (%s, %d)",
+												 $db->escapeString($genreName),
+												 Genres::GAME_TYPE));
 		}
 
 		$con['gamesgenre'] = $genreName;
 		$con['gamesgenreID'] = $genreKey;
 
-		$check = $db->queryOneRow(sprintf('SELECT id FROM gamesinfo WHERE title = %s AND asin = %s', $db->escapeString($con['title']), $db->escapeString($con['asin'])));
+		$check = $db->queryOneRow(sprintf('SELECT id FROM gamesinfo WHERE title = %s AND asin = %s',
+										  $db->escapeString($con['title']),
+										  $db->escapeString($con['asin'])));
 		if ($check === false) {
 			$gamesId = $db->queryInsert(
 						  sprintf(
@@ -524,7 +564,11 @@ class Games
 						$this->c->primary($con['platform'])
 				);
 			}
-			$con['cover'] = $ri->saveImage($gamesId, $con['coverurl'], $this->imgSavePath, 250, 250);
+			$con['cover'] = $ri->saveImage($gamesId,
+										   $con['coverurl'],
+										   $this->imgSavePath,
+										   250,
+										   250);
 		} else {
 			if ($this->echooutput) {
 				$this->c->doEcho(
@@ -538,8 +582,17 @@ class Games
 				);
 			}
 		}
+
 		return $gamesId;
 	}
+
+	/**
+	 * Get Giantbomb search results
+	 *
+	 * @param $gameid
+	 *
+	 * @return bool|mixed Json Array if no result False
+	 */
 
 	public function fetchGiantBombArray($gameid)
 	{
@@ -554,9 +607,17 @@ class Games
 		} catch (Exception $e) {
 			$result = false;
 		}
+
 		return $result;
 	}
 
+	/**
+	 * Retrieve Giantbomb game ID for api requests
+	 *
+	 * @param $title
+	 *
+	 * @return bool|mixed - Json Array if game was found false if nothing
+	 */
 	public function fetchgiantbombgameid($title)
 	{
 		$obj = new GiantBomb($this->pubkey);
@@ -569,17 +630,21 @@ class Games
 		} catch (Exception $e) {
 			$result = false;
 		}
+
 		return $result;
 	}
 
 	public function processGamesReleases()
 	{
-		$db  = $this->db;
-		$res = $db->queryDirect(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 %s AND gamesinfo_id IS NULL AND categoryid = 4050 ORDER BY postdate DESC LIMIT %d', $this->renamed, $this->gameqty));
+		$db = $this->db;
+		$res = $db->queryDirect(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 %s AND gamesinfo_id IS NULL AND categoryid = 4050 ORDER BY postdate DESC LIMIT %d',
+										$this->renamed,
+										$this->gameqty));
 
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Processing " . $res->rowCount() . ' games release(s).'));
+				$this->c->doEcho($this->c->header("Processing " . $res->rowCount() .
+												  ' games release(s).'));
 			}
 
 			foreach ($res as $arr) {
@@ -600,7 +665,8 @@ class Games
 					}
 
 					// Check for existing games entry.
-					$gameCheck = $this->getgamesinfoByName($gameInfo['title'], $gameInfo['platform']);
+					$gameCheck = $this->getgamesinfoByName($gameInfo['title'],
+														   $gameInfo['platform']);
 
 					if ($gameCheck === false) {
 						$gameId = $this->updategamesinfo($gameInfo);
@@ -613,10 +679,14 @@ class Games
 					}
 					//$gameId = null;
 					// Update release.
-					$db->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', $gameId, $arr['id']));
+					$db->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d',
+										   $gameId,
+										   $arr['id']));
 				} else {
 					// Could not parse release title.
-					$db->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', -2, $arr['id']));
+					$db->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d',
+										   -2,
+										   $arr['id']));
 
 					if ($this->echooutput) {
 						echo '.';
@@ -636,6 +706,13 @@ class Games
 		}
 	}
 
+	/**
+	 * Parse the game release title
+	 *
+	 * @param $releasename
+	 *
+	 * @return array|bool
+	 */
 	function parseTitle($releasename)
 	{
 		$matches = '';
@@ -643,7 +720,9 @@ class Games
 		$result = array();
 
 		// Get name of the game from name of release.
-		preg_match('/^(.+((EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ \:](v\.?\d\.\d|RIP|ADDON|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|BETA|REGIONFREE|READ\.?NFO|NFOFIX|Update)/i', $releasename, $matches);
+		preg_match('/^(.+((EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ \:](v\.?\d\.\d|RIP|ADDON|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|BETA|REGIONFREE|READ\.?NFO|NFOFIX|Update)/i',
+				   $releasename,
+				   $matches);
 		if (isset($matches['title'])) {
 			$title = $matches['title'];
 			// Replace dots, underscores, or brackets with spaces.
@@ -685,10 +764,19 @@ class Games
 		$result['node'] = $browseNode;
 		$result['release'] = $releasename;
 		array_map("trim", $result);
+
 		// Make sure we got a title and platform otherwise the resulting lookup will probably be shit. Other option is to pass the $release->categoryID here if we don't find a platform but that would require an extra lookup to determine the name. In either case we should have a title at the minimum.
-		return (isset($result['title']) && !empty($result['title']) && isset($result['platform'])) ? $result : false;
+		return (isset($result['title']) && !empty($result['title']) && isset($result['platform'])) ?
+			$result : false;
 	}
 
+	/**
+	 * Set the Giantbomb Category ID #
+	 *
+	 * @param $platform
+	 *
+	 * @return string
+	 */
 	function getBrowseNode($platform)
 	{
 		switch ($platform) {
@@ -706,6 +794,13 @@ class Games
 		return $nodeId;
 	}
 
+	/**
+	 * Not in use for future additions.
+	 *
+	 * @param $nodeName
+	 *
+	 * @return bool|string
+	 */
 	public function matchBrowseNode($nodeName)
 	{
 		$str = '';
@@ -730,6 +825,7 @@ class Games
 				$str = $nodeName;
 				break;
 		}
+
 		return ($str != '') ? $str : false;
 	}
 }

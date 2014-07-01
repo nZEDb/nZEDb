@@ -2,7 +2,7 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 require_once nZEDb_LIBS . 'GiantBombAPI.php';
 
-// Test if your amazon keys are working.
+// Test if your giantbomb key is working.
 
 $s  = new Sites();
 $site = $s->get();
