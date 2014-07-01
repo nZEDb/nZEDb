@@ -22,6 +22,16 @@ class Releases
 	const REQID_UPROC = 0; // Release has not been processed.
 	const REQID_FOUND = 1; // Request ID found and release was updated.
 
+	// Collections file check status
+	const COLLFC_DEFAULT = 0; // Collection has default filecheck status
+	const COLLFC_COMPCOLL = 1; // Collection is a complete collection
+	const COLLFC_COMPPART = 2; // Colleciton is a complete collection and has all parts available
+	const COLLFC_SIZED = 3; // Collection has been calculated for total size
+	const COLLFC_INSERTED = 4; // Collection has been inserted into releases
+	const COLLFC_DELETE = 5; // Collection is ready for deletion
+	const COLLFC_TEMPCOMP = 15; // Collection is complete and being checked for complete parts
+	const COLLFC_ZEROPART = 16; // Collection has a 00/0XX designator (temporary)
+
 	/**
 	 * @param bool $echooutput
 	 */
@@ -52,12 +62,11 @@ class Releases
 	public function get()
 	{
 		return $this->db->query(
-			'
-						SELECT releases.*, g.name AS group_name, c.title AS category_name
-						FROM releases
-						INNER JOIN category c ON c.id = releases.categoryid
-						INNER JOIN groups g ON g.id = releases.group_id
-						WHERE nzbstatus = 1'
+						'SELECT r.*, g.name AS group_name, c.title AS category_name ' .
+						'FROM releases r ' .
+						'INNER JOIN category c ON c.id = r.categoryid ' .
+						'INNER JOIN groups g ON g.id = r.group_id ' .
+						'WHERE nzbstatus = 1'
 		);
 	}
 
@@ -72,13 +81,13 @@ class Releases
 	public function getRange($start, $num)
 	{
 		return $this->db->query(
-			sprintf("
-				SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name
-				FROM releases
-				INNER JOIN category c ON c.id = releases.categoryid
-				INNER JOIN category cp ON cp.id = c.parentid
-				WHERE nzbstatus = 1
-				ORDER BY postdate DESC %s",
+			sprintf(
+				'SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name ' .
+				'FROM releases r ' .
+				'INNER JOIN category c ON c.id = releases.categoryid ' .
+				'INNER JOIN category cp ON cp.id = c.parentid ' .
+				'WHERE nzbstatus = 1 ' .
+				'ORDER BY postdate DESC %s',
 				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
 			)
 		);
@@ -108,25 +117,28 @@ class Releases
 		);
 
 		if ($grp != '') {
-			$grpjoin = 'INNER JOIN groups ON groups.id = releases.group_id';
-			$grpsql = sprintf(' AND groups.name = %s ', $this->db->escapeString($grp));
+			$grpjoin = 'INNER JOIN groups g ON g.id = r.group_id';
+			$grpsql = sprintf(' AND g.name = %s ', $this->db->escapeString($grp));
 		}
 
 		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND categoryid NOT IN (' . implode(',', $excludedcats) . ')';
+			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
 		$res = $this->db->queryOneRow(
-			sprintf(
-				'
-								SELECT COUNT(releases.id) AS num
-								FROM releases %s
-								WHERE nzbstatus = 1
-								AND releases.passwordstatus <= %d %s %s %s %s',
-				$grpjoin, $this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql
-			)
+						sprintf(
+							'SELECT COUNT(r.id) AS num ' .
+							'FROM releases r %s ' .
+							'WHERE nzbstatus = 1 ' .
+							'AND r.passwordstatus <= %d %s %s %s %s',
+							$grpjoin,
+							$this->showPasswords(),
+							$catsrch,
+							$maxagesql,
+							$exccatlist,
+							$grpsql
+						)
 		);
-
 		return ($res === false ? 0 : $res['num']);
 	}
 
@@ -158,35 +170,40 @@ class Releases
 		);
 
 		if ($grp != '') {
-			$grpsql = sprintf(' AND groups.name = %s ', $this->db->escapeString($grp));
+			$grpsql = sprintf(' AND g.name = %s ', $this->db->escapeString($grp));
 		}
 
 		if (count($excludedcats) > 0) {
-			$exccatlist = ' AND releases.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
+			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
 		$order = $this->getBrowseOrder($orderby);
 
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT releases.*,
-									CONCAT(cp.title, ' > ', c.title) AS category_name,
-									CONCAT(cp.id, ',', c.id) AS category_ids,
-									groups.name AS group_name,
-									rn.id AS nfoid,
-									re.releaseid AS reid
-								FROM releases
-								INNER JOIN groups ON groups.id = releases.group_id
-								LEFT OUTER JOIN releasevideo re ON re.releaseid = releases.id
-								LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id
-									AND rn.nfo IS NOT NULL
-								INNER JOIN category c ON c.id = releases.categoryid
-								INNER JOIN category cp ON cp.id = c.parentid
-								WHERE nzbstatus = 1
-								AND releases.passwordstatus <= %d %s %s %s %s
-								ORDER BY %s %s %s",
-				$this->showPasswords(), $catsrch, $maxagesql, $exccatlist, $grpsql, $order[0], $order[1], $limit
+					sprintf(
+						'SELECT r.*, ' .
+							'CONCAT(cp.title, ' > ', c.title) AS category_name, ' .
+							'CONCAT(cp.id, ',', c.id) AS category_ids, ' .
+							'g.name AS group_name, ' .
+							'rn.id AS nfoid, ' .
+							're.releaseid AS reid ' .
+						'FROM releases r ' .
+						'INNER JOIN groups g ON g.id = r.group_id ' .
+						'LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id ' .
+						'LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id ' .
+						'AND rn.nfo IS NOT NULL ' .
+						'INNER JOIN category c ON c.id = r.categoryid ' .
+						'INNER JOIN category cp ON cp.id = c.parentid ' .
+						'WHERE nzbstatus = 1	AND r.passwordstatus <= %d %s %s %s %s ' .
+						'ORDER BY %s %s %s',
+						$this->showPasswords(),
+						$catsrch,
+						$maxagesql,
+						$exccatlist,
+						$grpsql,
+						$order[0],
+						$order[1],
+						$limit
 			), true
 		);
 	}
@@ -442,31 +459,36 @@ class Releases
 		}
 
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT releases.*, m.cover, m.imdbid, m.rating, m.plot,
-										m.year, m.genre, m.director, m.actors, g.name AS group_name,
-										CONCAT(cp.title, ' > ', c.title) AS category_name,
-										CONCAT(cp.id, ',', c.id) AS category_ids,
-										COALESCE(cp.id,0) AS parentCategoryid,
-										mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist,
-										mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate,
-										mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover,
-										mug.title AS mu_genre, co.title AS co_title, co.url AS co_url,
-										co.publisher AS co_publisher, co.releasedate AS co_releasedate,
-										co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre
-								FROM releases
-								INNER JOIN category c ON c.id = releases.categoryid
-								INNER JOIN category cp ON cp.id = c.parentid
-								INNER JOIN groups g ON g.id = releases.group_id
-								LEFT OUTER JOIN movieinfo m ON m.imdbid = releases.imdbid AND m.title != ''
-								LEFT OUTER JOIN musicinfo mu ON mu.id = releases.musicinfoid
-								LEFT OUTER JOIN genres mug ON mug.id = mu.genreid
-								LEFT OUTER JOIN consoleinfo co ON co.id = releases.consoleinfoid
-								LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s
-								WHERE releases.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s",
-				$cartsrch, $this->showPasswords(), $catsrch, $rage, $anidb, $airdate, $limit
-			)
+					sprintf(
+						"SELECT r.*, m.cover, m.imdbid, m.rating, m.plot, " .
+							"m.year, m.genre, m.director, m.actors, g.name AS group_name, " .
+							"CONCAT(cp.title, ' > ', c.title) AS category_name, " .
+							"CONCAT(cp.id, ',', c.id) AS category_ids, " .
+							"COALESCE(cp.id,0) AS parentCategoryid, " .
+							"mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist, " .
+							"mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate, " .
+							"mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover, " .
+							"mug.title AS mu_genre, co.title AS co_title, co.url AS co_url, " .
+							"co.publisher AS co_publisher, co.releasedate AS co_releasedate, " .
+							"co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre " .
+						"FROM releases r " .
+						"INNER JOIN category c ON c.id = r.categoryid " .
+						"INNER JOIN category cp ON cp.id = c.parentid " .
+						"INNER JOIN groups g ON g.id = r.group_id " .
+						"LEFT OUTER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != '' " .
+						"LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfoid " .
+						"LEFT OUTER JOIN genres mug ON mug.id = mu.genreid " .
+						"LEFT OUTER JOIN consoleinfo co ON co.id = r.consoleinfoid " .
+						"LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s " .
+						"WHERE r.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s",
+						$cartsrch,
+						$this->showPasswords(),
+						$catsrch,
+						$rage,
+						$anidb,
+						$airdate,
+						$limit
+					)
 		);
 	}
 
@@ -1450,30 +1472,92 @@ class Releases
 		if ($this->db->dbSystem() === 'mysql') {
 			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c INNER JOIN (SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' .
-				$group['bname'] . ' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0' . $where .
-				'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r ON c.id = r.id SET filecheck = 1'
+						sprintf(
+							'UPDATE %s c INNER JOIN ' .
+								'(SELECT c.id FROM %s c ' .
+								'INNER JOIN %s b ON b.collectionid = c.id ' .
+								'WHERE c.totalfiles > 0 AND c.filecheck = 0 %s ' .
+								'GROUP BY b.collectionid, c.totalfiles, c.id ' .
+								'HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1) ' .
+								') ' .
+							'r ON c.id = r.id SET filecheck = %d',
+							$group['cname'],
+							$group['cname'],
+							$group['bname'],
+							$where,
+							self::COLLFC_COMPCOLL
+						)
 			);
-			//$this->db->queryExec('UPDATE '.$group['cname'].' c SET filecheck = 1 WHERE c.id IN (SELECT b.collectionid FROM '.$group['bname'].' b, '.$group['cname'].' c WHERE b.collectionid = c.id GROUP BY b.collectionid, c.totalfiles HAVING (COUNT(b.id) >= c.totalfiles-1)) AND c.totalfiles > 0 AND c.filecheck = 0'.$where);
+			//$this->db->queryExec(
+			//			sprintf(
+			//				'UPDATE %s c SET filecheck = 1 ' .
+			//				'WHERE c.id IN ' .
+			//					'(SELECT b.collectionid FROM %s b, %s c ' .
+			//					'WHERE b.collectionid = c.id ' .
+			//					'GROUP BY b.collectionid, c.totalfiles ' .
+			//					'HAVING (COUNT(b.id) >= c.totalfiles-1) ' .
+			//					') ' .
+			//				'AND c.totalfiles > 0 AND c.filecheck = %d %s',
+			//				$group['cname'],
+			//				$group['bname'],
+			//				$group['cname'],
+			//				self::COLLFC_COMPCOLL,
+			//				$where
+			//			)
+			//);
 
 			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c INNER JOIN(SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' .
-				$group['bname'] .
-				' b ON b.collectionid = c.id WHERE b.filenumber = 0 AND c.totalfiles > 0 AND c.filecheck = 1' . $where .
-				'GROUP BY c.id) r ON c.id = r.id SET c.filecheck = 16'
+						sprintf(
+							'UPDATE %s c INNER JOIN ' .
+								'(SELECT c.id FROM %s c ' .
+								'INNER JOIN %s b ON b.collectionid = c.id ' .
+								'WHERE b.filenumber = 0 ' .
+								'AND c.totalfiles > 0 ' .
+								'AND c.filecheck = 1 %s ' .
+								'GROUP BY c.id ' .
+								') ' .
+							'r ON c.id = r.id SET c.filecheck = %d',
+							$group['cname'],
+							$group['cname'],
+							$group['bname'],
+							$where,
+							self::COLLFC_ZEROPART
+						)
 			);
 
 			// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 15 WHERE filecheck = 1' . $where);
+			$this->db->queryExec(
+						sprintf(
+							'UPDATE %s c ' .
+							'SET filecheck = %d ' .
+							'WHERE filecheck = %d %s',
+							$group['cname'],
+							self::COLLFC_TEMPCOMP,
+							self::COLLFC_COMPCOLL,
+							$where
+						)
+			);
 
 			// If we have all the parts set partcheck to 1.
 			// If filecheck 15, check if we have all the parts for a file then set partcheck.
 			$this->db->queryExec(
-				'UPDATE ' . $group['bname'] . ' b INNER JOIN(SELECT b.id FROM ' . $group['bname'] . ' b INNER JOIN ' .
-				$group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] .
-				' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0' . $where .
-				'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) = b.totalparts) r ON b.id = r.id SET b.partcheck = 1'
+						sprintf(
+							'UPDATE %s b INNER JOIN ' .
+								'(SELECT b.id FROM %s b ' .
+								'INNER JOIN %s p ON p.binaryid = b.id ' .
+								'INNER JOIN %s c ON c.id = b.collectionid ' .
+								'WHERE c.filecheck = %d AND b.partcheck = 0 %s ' .
+								'GROUP BY b.id, b.totalparts ' .
+								'HAVING COUNT(p.id) = b.totalparts) ' .
+							'r ON b.id = r.id SET b.partcheck = 1',
+							$group['bname'],
+							$group['bname'],
+							$group['pname'],
+							$group['cname'],
+							self::COLLFC_TEMPCOMP,
+							$where
+						)
 			);
 
 			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
@@ -2352,10 +2436,15 @@ class Releases
 		if ($this->db->dbSystem() === 'mysql') {
 			$delq = $this->db->queryExec(
 				sprintf(
-					'DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' .
-					$group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' WHERE' . $where .
-					$group['cname'] . '.filecheck = 5 AND ' . $group['cname'] . '.id = ' . $group['bname'] .
-					'.collectionid AND ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid'
+					'DELETE c, b, p FROM %s c ' .
+					'INNER JOIN %s b ON c.id = b.collectionid ' .
+					'INNER JOIN %s p ON b.id = p.binaryid ' .
+					'WHERE %s c.filecheck = %d',
+					$group['cname'],
+					$group['bname'],
+					$group['pname'],
+					$where,
+					self::COLLFC_DELETE
 				)
 			);
 			if ($delq !== false) {
@@ -2395,11 +2484,15 @@ class Releases
 		if ($this->db->dbSystem() === 'mysql') {
 			$delq = $this->db->queryExec(
 				sprintf(
-					'DELETE ' . $group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' .
-					$group['cname'] . ', ' . $group['bname'] . ', ' . $group['pname'] . ' WHERE ' . $group['cname'] .
-					'.dateadded < (NOW() - INTERVAL %d HOUR) AND ' . $group['cname'] . '.id = ' . $group['bname'] .
-					'.collectionid AND ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid' .
-					$where1, $this->site->partretentionhours
+					'DELETE c, b, p FROM %s c ' .
+					'INNER JOIN %s b ON c.id = b.collectionid ' .
+					'LEFT OUTER JOIN %s p ON b.id = p.binaryid ' .
+					'WHERE c.dateadded < (NOW() - INTERVAL %d HOUR) %s',
+					$group['cname'],
+					$group['bname'],
+					$group['pname'],
+					$this->site->partretentionhours,
+					$where1
 				)
 			);
 			if ($delq !== false) {
