@@ -186,8 +186,8 @@ class IRCScraper extends IRCClient
 	protected function processChannelMessages()
 	{
 		if (preg_match(
-			'/^(NEW|UPD|NUK): \[DT: (?P<time>.+?)\]\[TT: (?P<title>.+?)\]\[SC: (?P<source>.+?)\]\[CT: (?P<category>.+?)\]\[RQ: (?P<req>.+?)\]' .
-			'\[SZ: (?P<size>.+?)\]\[FL: (?P<files>.+?)\](\[FN: (?P<filename>.+?)\])?(\[(?P<nuked>(UN|MOD|RE|OLD)?NUKED?): (?P<reason>.+?)\])?$/i',
+			'/^(NEW|UPD|NUK): \[DT: (?P<time>.+?)\]\s?\[TT: (?P<title>.+?)\]\s?\[SC: (?P<source>.+?)\]\s?\[CT: (?P<category>.+?)\]\s?\[RQ: (?P<req>.+?)\]' .
+			'\s?\[SZ: (?P<size>.+?)\]\s?\[FL: (?P<files>.+?)\]\s?(\[FN: (?P<filename>.+?)\]\s?)?(\[(?P<nuked>(UN|MOD|RE|OLD)?NUKED?): (?P<reason>.+?)\])?$/i',
 			$this->_channelData['message'], $matches)) {
 
 			if (isset($this->_ignoredChannels[$matches['source']]) && $this->_ignoredChannels[$matches['source']] === true) {
