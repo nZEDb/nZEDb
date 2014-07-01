@@ -14,6 +14,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: Settings file to www, all automated.config.php settings moved to it. Copy settings.php.example to settings.php and edit.
 	* Add: Option for removing white space from queries, helps with slow-query log.
 	* Rem: Remove reverting of automated.config.php changes from commit for devs.
+	* Add: Extra options to settings.php.example for renaming releases using PAR2 or audio tags from media info. Copy them to your settings.php file.
 2014-07-01 ruhllatio
 	* Chg: Regex for IRCScraper now supports spaces in between parsing fields
 	* Fix: Deletion of old C, B, and P will now occur if parts are missing
