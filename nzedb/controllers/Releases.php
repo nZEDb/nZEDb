@@ -732,19 +732,17 @@ class Releases
 		if ($this->db->dbSystem() === 'mysql') {
 			$this->db->queryExec(
 				sprintf(
-					'DELETE
-						releases, releasenfo, releasecomment, usercart, releasefiles,
-						releaseaudio, releasesubs, releasevideo, releaseextrafull
-					FROM releases
-					LEFT OUTER JOIN releasenfo ON releasenfo.releaseid = releases.id
-					LEFT OUTER JOIN releasecomment ON releasecomment.releaseid = releases.id
-					LEFT OUTER JOIN usercart ON usercart.releaseid = releases.id
-					LEFT OUTER JOIN releasefiles ON releasefiles.releaseid = releases.id
-					LEFT OUTER JOIN releaseaudio ON releaseaudio.releaseid = releases.id
-					LEFT OUTER JOIN releasesubs ON releasesubs.releaseid = releases.id
-					LEFT OUTER JOIN releasevideo ON releasevideo.releaseid = releases.id
-					LEFT OUTER JOIN releaseextrafull ON releaseextrafull.releaseid = releases.id
-					WHERE releases.id = %d',
+					'DELETE r, rn, rc, uc, rf, ra, rs, rv, re ' .
+					'FROM releases r ' .
+					'LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id ' .
+					'LEFT OUTER JOIN releasecomment rc ON rc.releaseid = r.id ' .
+					'LEFT OUTER JOIN usercart uc ON uc.releaseid = r.id ' .
+					'LEFT OUTER JOIN releasefiles rf ON rf.releaseid = r.id ' .
+					'LEFT OUTER JOIN releaseaudio ra ON ra.releaseid = r.id ' .
+					'LEFT OUTER JOIN releasesubs rs ON rs.releaseid = r.id ' .
+					'LEFT OUTER JOIN releasevideo rv ON rv.releaseid = r.id ' .
+					'LEFT OUTER JOIN releaseextrafull re ON re.releaseid = r.id ' .
+					'WHERE r.id = %d',
 					$id
 				)
 			);
@@ -788,15 +786,27 @@ class Releases
 	{
 		$this->db->queryExec(
 			sprintf(
-				'UPDATE releases
-				SET name = %s, searchname = %s, fromname = %s, categoryid = %d,
-				totalpart = %d, grabs = %d, size = %s, postdate = %s, adddate = %s, rageid = %d,
-				seriesfull = %s, season = %s, episode = %s, imdbid = %d, anidbid = %d
-				WHERE id = %d',
-				$this->db->escapeString($name), $this->db->escapeString($searchname), $this->db->escapeString($fromname),
-				$category, $parts, $grabs, $this->db->escapeString($size), $this->db->escapeString($posteddate),
-				$this->db->escapeString($addeddate), $rageid, $this->db->escapeString($seriesfull),
-				$this->db->escapeString($season), $this->db->escapeString($episode), $imdbid, $anidbid, $id
+				'UPDATE releases ' .
+				'SET name = %s, searchname = %s, fromname = %s, categoryid = %d, ' .
+					'totalpart = %d, grabs = %d, size = %s, postdate = %s, adddate = %s, rageid = %d, ' .
+					'seriesfull = %s, season = %s, episode = %s, imdbid = %d, anidbid = %d ' .
+				'WHERE id = %d',
+				$this->db->escapeString($name),
+				$this->db->escapeString($searchname),
+				$this->db->escapeString($fromname),
+				$category,
+				$parts,
+				$grabs,
+				$this->db->escapeString($size),
+				$this->db->escapeString($posteddate),
+				$this->db->escapeString($addeddate),
+				$rageid,
+				$this->db->escapeString($seriesfull),
+				$this->db->escapeString($season),
+				$this->db->escapeString($episode),
+				$imdbid,
+				$anidbid,
+				$id
 			)
 		);
 	}
@@ -1206,14 +1216,13 @@ class Releases
 		$sql = sprintf("SELECT releases.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid FROM releases INNER JOIN releasesearch rs on rs.releaseid = releases.id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN groups ON groups.id = releases.group_id LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id and rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE releases.passwordstatus <= %d %s %s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $anidbID, $epno, $searchsql, $catsrch, $maxage, $limit, $offset);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
-		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
+		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs on rs.releaseid = r.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
 
 		$countres = $this->db->queryOneRow($sqlcount);
 		$res = $this->db->query($sql);
 		if (count($res) > 0) {
 			$res[0]['_totalrows'] = $countres['num'];
 		}
-
 		return $res;
 	}
 
@@ -1235,29 +1244,44 @@ class Releases
 
 		if ($maxage > 0) {
 			if ($this->db->dbSystem() === 'mysql') {
-				$maxage = sprintf(' AND releases.postdate > NOW() - INTERVAL %d DAY ', $maxage);
+				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
-				$maxage = sprintf(" AND releases.postdate > NOW() - INTERVAL '%d DAYS ", $maxage);
+				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS ", $maxage);
 			}
 		} else {
 			$maxage = '';
 		}
 
-		$sql = sprintf("SELECT releases.*, concat(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids, groups.name AS group_name, rn.id AS nfoid "
-			. "FROM releases INNER JOIN groups ON groups.id = releases.group_id INNER JOIN category c ON c.id = releases.categoryid INNER JOIN releasesearch rs on rs.releaseid = releases.id "
-			. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = releases.id AND rn.nfo IS NOT NULL INNER JOIN category cp ON cp.id = c.parentid WHERE nzbstatus = 1 AND releases.passwordstatus <= %d "
-			. "%s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d", $this->showPasswords(), $searchsql, $imdbId, $catsrch, $maxage, $limit, $offset
+		$sql = sprintf(
+				"SELECT r.*, concat(cp.title, ' > ', c.title) AS category_name, " .
+					"CONCAT(cp.id, ',', c.id) AS category_ids, " .
+					"g.name AS group_name, rn.id AS nfoid " .
+				"FROM releases r " .
+				"INNER JOIN groups g ON g.id = r.group_id " .
+				"INNER JOIN category c ON c.id = r.categoryid " .
+				"INNER JOIN releasesearch rs on rs.releaseid = r.id " .
+				"LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL " .
+				"INNER JOIN category cp ON cp.id = c.parentid " .
+				"WHERE nzbstatus = 1 AND r.passwordstatus <= %d " .
+				"%s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d",
+				$this->showPasswords(),
+				$searchsql,
+				$imdbId,
+				$catsrch,
+				$maxage,
+				$limit,
+				$offset
 		);
+
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
-		$sqlcount = 'SELECT COUNT(releases.id) AS num FROM releases inner join releasesearch rs on rs.releaseid = releases.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
+		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs on rs.releaseid = r.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
 
 		$countres = $this->db->queryOneRow($sqlcount);
 		$res = $this->db->query($sql);
 		if (count($res) > 0) {
 			$res[0]['_totalrows'] = $countres['num'];
 		}
-
 		return $res;
 	}
 
@@ -1488,23 +1512,24 @@ class Releases
 							self::COLLFC_COMPCOLL
 						)
 			);
-			//$this->db->queryExec(
-			//			sprintf(
-			//				'UPDATE %s c SET filecheck = 1 ' .
-			//				'WHERE c.id IN ' .
-			//					'(SELECT b.collectionid FROM %s b, %s c ' .
-			//					'WHERE b.collectionid = c.id ' .
-			//					'GROUP BY b.collectionid, c.totalfiles ' .
-			//					'HAVING (COUNT(b.id) >= c.totalfiles-1) ' .
-			//					') ' .
-			//				'AND c.totalfiles > 0 AND c.filecheck = %d %s',
-			//				$group['cname'],
-			//				$group['bname'],
-			//				$group['cname'],
-			//				self::COLLFC_COMPCOLL,
-			//				$where
-			//			)
-			//);
+			/* $this->db->queryExec(
+						sprintf(
+							'UPDATE %s c SET filecheck = 1 ' .
+							'WHERE c.id IN ' .
+								'(SELECT b.collectionid FROM %s b, %s c ' .
+								'WHERE b.collectionid = c.id ' .
+								'GROUP BY b.collectionid, c.totalfiles ' .
+								'HAVING (COUNT(b.id) >= c.totalfiles-1) ' .
+								') ' .
+							'AND c.totalfiles > 0 AND c.filecheck = %d %s',
+							$group['cname'],
+							$group['bname'],
+							$group['cname'],
+							self::COLLFC_COMPCOLL,
+							$where
+						)
+			);
+			*/
 
 			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 			$this->db->queryExec(
@@ -1562,18 +1587,40 @@ class Releases
 
 			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
 			$this->db->queryExec(
-				'UPDATE ' . $group['bname'] . ' b INNER JOIN(SELECT b.id FROM ' . $group['bname'] . ' b INNER JOIN ' .
-				$group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] .
-				' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0' . $where .
-				'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r ON b.id = r.id SET b.partcheck = 1'
+						sprintf(
+							'UPDATE %s b INNER JOIN ' .
+								'(SELECT b.id FROM %s b ' .
+								'INNER JOIN %s p ON p.binaryid = b.id ' .
+								'INNER JOIN %s c ON c.id = b.collectionid ' .
+								'WHERE c.filecheck = %d AND b.partcheck = 0 %s ' .
+								'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts + 1) ' .
+							'r ON b.id = r.id SET b.partcheck = 1',
+							$group['bname'],
+							$group['bname'],
+							$group['pname'],
+							$group['cname'],
+							self::COLLFC_ZEROPART,
+							$where
+						)
 			);
 
 			// Set filecheck to 2 if partcheck = 1.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c INNER JOIN(SELECT c.id FROM ' . $group['cname'] . ' c INNER JOIN ' .
-				$group['bname'] . ' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)' .
-				$where .
-				'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) r ON c.id = r.id SET filecheck = 2'
+						sprintf(
+							'UPDATE %s c INNER JOIN ' .
+								'(SELECT c.id FROM %s c ' .
+								'INNER JOIN %s b ON c.id = b.collectionid ' .
+								'WHERE b.partcheck = 1 AND c.filecheck IN (%d, %d) %s ' .
+								'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) ' .
+							'r ON c.id = r.id SET filecheck = %d',
+							$group['cname'],
+							$group['cname'],
+							$group['bname'],
+							self::COLLFC_TEMPCOMP,
+							self::COLLFC_ZEROPART,
+							$where,
+							self::COLLFC_COMPPART
+						)
 			);
 
 			// Set filecheck to 1 if we don't have all the parts.
