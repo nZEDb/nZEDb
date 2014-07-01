@@ -62,11 +62,11 @@ class Releases
 	public function get()
 	{
 		return $this->db->query(
-						'SELECT r.*, g.name AS group_name, c.title AS category_name ' .
-						'FROM releases r ' .
-						'INNER JOIN category c ON c.id = r.categoryid ' .
-						'INNER JOIN groups g ON g.id = r.group_id ' .
-						'WHERE nzbstatus = 1'
+						'SELECT r.*, g.name AS group_name, c.title AS category_name
+						FROM releases r
+						INNER JOIN category c ON c.id = r.categoryid
+						INNER JOIN groups g ON g.id = r.group_id
+						WHERE nzbstatus = 1'
 		);
 	}
 
@@ -82,12 +82,12 @@ class Releases
 	{
 		return $this->db->query(
 			sprintf(
-				'SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name ' .
-				'FROM releases r ' .
-				'INNER JOIN category c ON c.id = releases.categoryid ' .
-				'INNER JOIN category cp ON cp.id = c.parentid ' .
-				'WHERE nzbstatus = 1 ' .
-				'ORDER BY postdate DESC %s',
+				'SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name
+				FROM releases r
+				INNER JOIN category c ON c.id = r.categoryid
+				INNER JOIN category cp ON cp.id = c.parentid
+				WHERE nzbstatus = 1
+				ORDER BY postdate DESC %s',
 				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
 			)
 		);
@@ -127,10 +127,10 @@ class Releases
 
 		$res = $this->db->queryOneRow(
 						sprintf(
-							'SELECT COUNT(r.id) AS num ' .
-							'FROM releases r %s ' .
-							'WHERE nzbstatus = 1 ' .
-							'AND r.passwordstatus <= %d %s %s %s %s',
+							'SELECT COUNT(r.id) AS num
+							FROM releases r %s
+							WHERE nzbstatus = 1
+							AND r.passwordstatus <= %d %s %s %s %s',
 							$grpjoin,
 							$this->showPasswords(),
 							$catsrch,
@@ -181,21 +181,21 @@ class Releases
 
 		return $this->db->query(
 					sprintf(
-						'SELECT r.*, ' .
-							'CONCAT(cp.title, ' > ', c.title) AS category_name, ' .
-							'CONCAT(cp.id, ',', c.id) AS category_ids, ' .
-							'g.name AS group_name, ' .
-							'rn.id AS nfoid, ' .
-							're.releaseid AS reid ' .
-						'FROM releases r ' .
-						'INNER JOIN groups g ON g.id = r.group_id ' .
-						'LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id ' .
-						'LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id ' .
-						'AND rn.nfo IS NOT NULL ' .
-						'INNER JOIN category c ON c.id = r.categoryid ' .
-						'INNER JOIN category cp ON cp.id = c.parentid ' .
-						'WHERE nzbstatus = 1	AND r.passwordstatus <= %d %s %s %s %s ' .
-						'ORDER BY %s %s %s',
+						'SELECT r.*,
+							CONCAT(cp.title, ' > ', c.title) AS category_name,
+							CONCAT(cp.id, ',', c.id) AS category_ids,
+							g.name AS group_name,
+							rn.id AS nfoid,
+							re.releaseid AS reid
+						FROM releases r
+						INNER JOIN groups g ON g.id = r.group_id
+						LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
+						LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+						AND rn.nfo IS NOT NULL
+						INNER JOIN category c ON c.id = r.categoryid
+						INNER JOIN category cp ON cp.id = c.parentid
+						WHERE nzbstatus = 1	AND r.passwordstatus <= %d %s %s %s %s
+						ORDER BY %s %s %s',
 						$this->showPasswords(),
 						$catsrch,
 						$maxagesql,
@@ -215,7 +215,10 @@ class Releases
 	 */
 	public function showPasswords()
 	{
-		$res = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'showpasswordedrelease'");
+		$res = $this->db->queryOneRow(
+							"SELECT value
+							FROM settings
+							WHERE setting = 'showpasswordedrelease'");
 
 		return ($res === false ? 0 : $res['value']);
 	}
@@ -322,16 +325,17 @@ class Releases
 		}
 
 		return $this->db->query(
-			sprintf(
-				"
-								SELECT searchname, guid, groups.name AS gname, CONCAT(cp.title,'_',category.title) AS catName
+						sprintf(
+								"SELECT searchname, guid, groups.name AS gname, CONCAT(cp.title,'_',category.title) AS catName
 								FROM releases
 								INNER JOIN category ON releases.categoryid = category.id
 								INNER JOIN groups ON releases.group_id = groups.id
 								INNER JOIN category cp ON cp.id = category.parentid
 								WHERE nzbstatus = 1 %s %s %s",
-				$postfrom, $postto, $group
-			)
+								$postfrom,
+								$postto,
+								$group
+						)
 		);
 	}
 
@@ -343,14 +347,13 @@ class Releases
 	public function getEarliestUsenetPostDate()
 	{
 		$row = $this->db->queryOneRow(
-			sprintf(
-				"
-								SELECT %s AS postdate FROM releases",
-				($this->db->dbSystem() === 'mysql'
-					? "DATE_FORMAT(min(postdate), '%d/%m/%Y')"
-					: "to_char(min(postdate), 'dd/mm/yyyy')"
-				)
-			)
+						sprintf(
+							"SELECT %s AS postdate FROM releases",
+							($this->db->dbSystem() === 'mysql'
+								? "DATE_FORMAT(min(postdate), '%d/%m/%Y')"
+								: "to_char(min(postdate), 'dd/mm/yyyy')"
+							)
+						)
 		);
 
 		return ($row === false ? '01/01/2014' : $row['postdate']);
@@ -364,14 +367,13 @@ class Releases
 	public function getLatestUsenetPostDate()
 	{
 		$row = $this->db->queryOneRow(
-			sprintf(
-				"
-								SELECT %s AS postdate FROM releases",
-				($this->db->dbSystem() === 'mysql'
-					? "DATE_FORMAT(max(postdate), '%d/%m/%Y')"
-					: "to_char(max(postdate), 'dd/mm/yyyy')"
-				)
-			)
+						sprintf(
+							"SELECT %s AS postdate FROM releases",
+							($this->db->dbSystem() === 'mysql'
+								? "DATE_FORMAT(max(postdate), '%d/%m/%Y')"
+								: "to_char(max(postdate), 'dd/mm/yyyy')"
+							)
+						)
 		);
 
 		return ($row === false ? '01/01/2014' : $row['postdate']);
@@ -386,7 +388,9 @@ class Releases
 	 */
 	public function getReleasedGroupsForSelect($blnIncludeAll = true)
 	{
-		$groups = $this->db->query('SELECT DISTINCT groups.id, groups.name FROM releases INNER JOIN groups on groups.id = releases.group_id');
+		$groups = $this->db->query('SELECT DISTINCT g.id, g.name
+						FROM releases r
+						INNER JOIN groups g ON g.id = r.group_id');
 		$temp_array = array();
 
 		if ($blnIncludeAll) {
@@ -437,10 +441,10 @@ class Releases
 							}
 
 							if ($chlist != '-99') {
-								$catsrch .= ' releases.categoryid IN (' . $chlist . ') OR ';
+								$catsrch .= ' r.categoryid IN (' . $chlist . ') OR ';
 							}
 						} else {
-							$catsrch .= sprintf(' releases.categoryid = %d OR ', $category);
+							$catsrch .= sprintf(' r.categoryid = %d OR ', $category);
 						}
 					}
 				}
@@ -460,27 +464,27 @@ class Releases
 
 		return $this->db->query(
 					sprintf(
-						"SELECT r.*, m.cover, m.imdbid, m.rating, m.plot, " .
-							"m.year, m.genre, m.director, m.actors, g.name AS group_name, " .
-							"CONCAT(cp.title, ' > ', c.title) AS category_name, " .
-							"CONCAT(cp.id, ',', c.id) AS category_ids, " .
-							"COALESCE(cp.id,0) AS parentCategoryid, " .
-							"mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist, " .
-							"mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate, " .
-							"mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover, " .
-							"mug.title AS mu_genre, co.title AS co_title, co.url AS co_url, " .
-							"co.publisher AS co_publisher, co.releasedate AS co_releasedate, " .
-							"co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre " .
-						"FROM releases r " .
-						"INNER JOIN category c ON c.id = r.categoryid " .
-						"INNER JOIN category cp ON cp.id = c.parentid " .
-						"INNER JOIN groups g ON g.id = r.group_id " .
-						"LEFT OUTER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != '' " .
-						"LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfoid " .
-						"LEFT OUTER JOIN genres mug ON mug.id = mu.genreid " .
-						"LEFT OUTER JOIN consoleinfo co ON co.id = r.consoleinfoid " .
-						"LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s " .
-						"WHERE r.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s",
+						"SELECT r.*, m.cover, m.imdbid, m.rating, m.plot,
+							m.year, m.genre, m.director, m.actors, g.name AS group_name,
+							CONCAT(cp.title, ' > ', c.title) AS category_name,
+							CONCAT(cp.id, ',', c.id) AS category_ids,
+							COALESCE(cp.id,0) AS parentCategoryid,
+							mu.title AS mu_title, mu.url AS mu_url, mu.artist AS mu_artist,
+							mu.publisher AS mu_publisher, mu.releasedate AS mu_releasedate,
+							mu.review AS mu_review, mu.tracks AS mu_tracks, mu.cover AS mu_cover,
+							mug.title AS mu_genre, co.title AS co_title, co.url AS co_url,
+							co.publisher AS co_publisher, co.releasedate AS co_releasedate,
+							co.review AS co_review, co.cover AS co_cover, cog.title AS co_genre
+						FROM releases r
+						INNER JOIN category c ON c.id = r.categoryid
+						INNER JOIN category cp ON cp.id = c.parentid
+						INNER JOIN groups g ON g.id = r.group_id
+						LEFT OUTER JOIN movieinfo m ON m.imdbid = r.imdbid AND m.title != ''
+						LEFT OUTER JOIN musicinfo mu ON mu.id = r.musicinfoid
+						LEFT OUTER JOIN genres mug ON mug.id = mu.genreid
+						LEFT OUTER JOIN consoleinfo co ON co.id = r.consoleinfoid
+						LEFT OUTER JOIN genres cog ON cog.id = co.genreid %s
+						WHERE r.passwordstatus <= %d %s %s %s %s ORDER BY postdate DESC %s",
 						$cartsrch,
 						$this->showPasswords(),
 						$catsrch,
