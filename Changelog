@@ -6,6 +6,10 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-01 ruhllatio
+	* Chg: Regex for IRCScraper now supports spaces in between parsing fields
+2014-06-30 kevin
+	* Add: Option for ignoring PRE titles on IRCScraper.
 2014-06-30 niel
 	* Chg: Improving versioning output.
 2014-06-28 kevin
