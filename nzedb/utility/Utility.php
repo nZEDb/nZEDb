@@ -178,7 +178,7 @@ class Utility
 	 * @static
 	 * @access public
 	 */
-	static public function replaceWhiteSpace($text)
+	static public function collapseWhiteSpace($text)
 	{
 		// Strip leading/trailing white space.
 		return trim(

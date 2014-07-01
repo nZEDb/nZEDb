@@ -370,7 +370,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = \nzedb\utility\Utility::replaceWhiteSpace($query);
+			$query = \nzedb\utility\Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -414,7 +414,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = \nzedb\utility\Utility::replaceWhiteSpace($query);
+			$query = \nzedb\utility\Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -514,7 +514,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = \nzedb\utility\Utility::replaceWhiteSpace($query);
+			$query = \nzedb\utility\Utility::collapseWhiteSpace($query);
 		}
 
 		try {
@@ -565,7 +565,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = \nzedb\utility\Utility::replaceWhiteSpace($query);
+			$query = \nzedb\utility\Utility::collapseWhiteSpace($query);
 		}
 
 		if ($memcache === true && $this->memcached === true) {
@@ -635,7 +635,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = \nzedb\utility\Utility::replaceWhiteSpace($query);
+			$query = \nzedb\utility\Utility::collapseWhiteSpace($query);
 		}
 
 		try {
