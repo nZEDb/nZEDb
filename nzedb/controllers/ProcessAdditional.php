@@ -1360,49 +1360,51 @@ Class ProcessAdditional
 
 							if (isset($track['Album']) && isset($track['Performer'])) {
 
-								// Make the extension upper case.
-								$ext = strtoupper($fileExtension);
+								if (nZEDb_RENAME_MUSIC_MEDIAINFO) {
+									// Make the extension upper case.
+									$ext = strtoupper($fileExtension);
 
-								// Form a new search name.
-								if (!empty($track['Recorded_date']) && preg_match('/(?:19|20)\d\d/', $track['Recorded_date'], $Year)) {
-									$newName = $track['Performer'] . ' - ' . $track['Album'] . ' (' . $Year[0] . ') ' . $ext;
-								} else {
-									$newName = $track['Performer'] . ' - ' . $track['Album'] . ' ' . $ext;
-								}
+									// Form a new search name.
+									if (!empty($track['Recorded_date']) && preg_match('/(?:19|20)\d\d/', $track['Recorded_date'], $Year)) {
+										$newName = $track['Performer'] . ' - ' . $track['Album'] . ' (' . $Year[0] . ') ' . $ext;
+									} else {
+										$newName = $track['Performer'] . ' - ' . $track['Album'] . ' ' . $ext;
+									}
 
-								// Get the category or try to determine it.
-								if ($ext === 'MP3') {
-									$newCat = Category::CAT_MUSIC_MP3;
-								} else if ($ext === 'FLAC') {
-									$newCat = Category::CAT_MUSIC_LOSSLESS;
-								} else {
-									$newCat = $this->_categorize->determineCategory($newName, $rQuery['group_id']);
-								}
+									// Get the category or try to determine it.
+									if ($ext === 'MP3') {
+										$newCat = Category::CAT_MUSIC_MP3;
+									} else if ($ext === 'FLAC') {
+										$newCat = Category::CAT_MUSIC_LOSSLESS;
+									} else {
+										$newCat = $this->_categorize->determineCategory($newName, $rQuery['group_id']);
+									}
 
-								// Update the search name.
-								$this->_db->queryExec(
-									sprintf('
-										UPDATE releases
-										SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
-										WHERE id = %d',
-										$this->_db->escapeString(substr($newName, 0, 255)),
-										$newCat,
-										$this->_release['id']
-									)
-								);
-
-								// Echo the changed name.
-								if ($this->_echoCLI) {
-									NameFixer::echoChangedReleaseName(array(
-											'new_name'     => $newName,
-											'old_name'     => $rQuery['searchname'],
-											'new_category' => $newCat,
-											'old_category' => $rQuery['id'],
-											'group'        => $rQuery['group_id'],
-											'release_id'   => $this->_release['id'],
-											'method'       => 'ProcessAdditional->_getAudioInfo'
+									// Update the search name.
+									$this->_db->queryExec(
+										sprintf('
+											UPDATE releases
+											SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
+											WHERE id = %d',
+											$this->_db->escapeString(substr($newName, 0, 255)),
+											$newCat,
+											$this->_release['id']
 										)
 									);
+
+									// Echo the changed name.
+									if ($this->_echoCLI) {
+										NameFixer::echoChangedReleaseName(array(
+												'new_name'     => $newName,
+												'old_name'     => $rQuery['searchname'],
+												'new_category' => $newCat,
+												'old_category' => $rQuery['id'],
+												'group'        => $rQuery['group_id'],
+												'release_id'   => $this->_release['id'],
+												'method'       => 'ProcessAdditional->_getAudioInfo'
+											)
+										);
+									}
 								}
 
 								// Add the media info.
@@ -1786,7 +1788,7 @@ Class ProcessAdditional
 
 		$releaseInfo = $this->_db->queryOneRow(
 			sprintf('
-				SELECT UNIX_TIMESTAMP(postdate) AS postdate
+				SELECT UNIX_TIMESTAMP(postdate) AS postdate, proc_pp
 				FROM releases
 				WHERE id = %d',
 				$this->_release['id']
@@ -1799,18 +1801,21 @@ Class ProcessAdditional
 
 		// Only get a new name if the category is OTHER.
 		$foundName = true;
-		if (in_array(((int)$this->_release['categoryid']),
-			array(
-				Category::CAT_BOOKS_OTHER,
-				Category::CAT_GAME_OTHER,
-				Category::CAT_MOVIE_OTHER,
-				Category::CAT_MUSIC_OTHER,
-				Category::CAT_PC_PHONE_OTHER,
-				Category::CAT_TV_OTHER,
-				Category::CAT_OTHER_HASHED,
-				Category::CAT_XXX_OTHER,
-				Category::CAT_MISC
-			))
+		if (nZEDb_RENAME_PAR2 &&
+			$releaseInfo['proc_pp'] == 0 &&
+			in_array(((int)$this->_release['categoryid']),
+				array(
+					Category::CAT_BOOKS_OTHER,
+					Category::CAT_GAME_OTHER,
+					Category::CAT_MOVIE_OTHER,
+					Category::CAT_MUSIC_OTHER,
+					Category::CAT_PC_PHONE_OTHER,
+					Category::CAT_TV_OTHER,
+					Category::CAT_OTHER_HASHED,
+					Category::CAT_XXX_OTHER,
+					Category::CAT_MISC
+				)
+			)
 		) {
 			$foundName = false;
 		}
