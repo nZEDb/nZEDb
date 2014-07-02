@@ -223,7 +223,7 @@ class ReleaseRemover
 		$this->blacklistID = '';
 
 		if (isset($blacklistID) && is_numeric($blacklistID)) {
-			$this->blacklistID = sprintf("id = %d AND", $blacklistID);
+			$this->blacklistID = sprintf("id = %d", $blacklistID);
 		}
 
 		$time = trim($time);
@@ -671,14 +671,21 @@ class ReleaseRemover
 	 */
 	protected function removeBlacklist()
 	{
+		$status = sprintf('status = %d', Binaries::BLACKLIST_ENABLED);
+		$where = '';
+
+		if (isset($this->blacklistID) && $this->blacklistID !== '' && $this->delete === false) {
+			$status = '';
+		}
 
 		$regexList = $this->db->query(
 			sprintf(
 				'SELECT regex, id, groupname, msgcol
 				FROM binaryblacklist
-				WHERE %s status = 1
-				AND optype = 1',
-				$this->blacklistID
+				WHERE %s %s AND optype = %d',
+				$this->blacklistID,
+				$status,
+				Binaries::OPTYPE_BLACKLIST
 			)
 		);
 
@@ -864,9 +871,11 @@ class ReleaseRemover
 			sprintf(
 				'SELECT regex, id, groupname
 				FROM binaryblacklist
-				WHERE status = 1
-				AND optype = 1
+				WHERE status = %d
+				AND optype = %d
 				AND msgcol = %d',
+				Binaries::BLACKLIST_ENABLED,
+				Binaries::OPTYPE_BLACKLIST,
 				Binaries::BLACKLIST_FIELD_SUBJECT
 			)
 		);

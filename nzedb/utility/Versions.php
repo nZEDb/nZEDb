@@ -184,15 +184,20 @@ class Versions
 	public function checkGitTag($update = true)
 	{
 		$latest = $this->git->tagLatest();
+		$ver = preg_match('#v(\d+\.\d+\.\d+).*#', $latest, $matches) ? $matches[1] : $latest;
 
-		// Check if version file's entry is less than the last tag
-		if (version_compare($this->_vers->git->tag, $latest, '<')) {
+		// Check if version file's entry is the same as current branch's tag
+		if (version_compare($this->_vers->git->tag, $latest, '=')) {
 			if ($update) {
-				echo $this->out->primary("Updating tag version to $latest");
-				$this->_vers->git->tag = $latest;
+				echo $this->out->primaryOver("Updating tag version to ") . $this->out->header($latest);
+				$this->_vers->git->tag = $ver;
 				$this->_changes |= self::UPDATED_GIT_TAG;
+			} else {
+				echo $this->out->primaryOver("Leaving tag version at ") . $this->out->header($latest);
 			}
 			return $this->_vers->git->tag;
+		} else {
+			echo $this->out->primaryOver("Tag version is ") . $this->out->header($latest);
 		}
 		return false;
 	}

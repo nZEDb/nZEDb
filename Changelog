@@ -6,10 +6,44 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-06-25 kevin
+2014-07-01 kevin
+	* ---: Happy canada day to all.
+	* Add: Missing reqid group to tsv.
+	* Chg: Clean up schema.
+	* Fix: Update tsv settings sqlpatch to 239.
+	* Add: Settings file to www, all automated.config.php settings moved to it. Copy settings.php.example to settings.php and edit.
+	* Add: Option for removing white space from queries, helps with slow-query log.
+	* Rem: Remove reverting of automated.config.php changes from commit for devs.
+	* Add: Extra options to settings.php.example for renaming releases using PAR2 or audio tags from media info. Copy them to your settings.php file.
+2014-07-01 ruhllatio
+	* Chg: Regex for IRCScraper now supports spaces in between parsing fields
+	* Fix: Deletion of old C, B, and P will now occur if parts are missing
+	* Chg: Begin to standardize queries for Releases.php
+	* Fix: fastDelete not working properly
+	* Fix: Broken queries in Releases.php
+	* Fix: Broken site browse query in Releases.php.
+	* Chg: More query standardization for Releases.php
+	* Fix: Typo in Releases.php
+2014-06-30 kevin
+	* Add: Option for ignoring PRE titles on IRCScraper.
+2014-06-30 niel
+	* Chg: Improving versioning output.
+2014-06-28 kevin
+	* Chg: Don't add mediainfo to DB if it's empty XML.
+	* Add: Double period line start check to compressed data NNTP function.
+	* Rem: Remove fetching of mediainfo from the sample videos, since they are re-encoded and their data does not correspond to the actual release.
+	* Fix: Corruption on some NNTP strings because of doubled period.
+2014-06-27 bart39
+	* Fix: Remove var_dump / fix query in ReleaseRemover.
+2014-06-27 kevin
+	* Chg: Various changes/fixes to ProcessAdditional.
+2014-06-27 ruhllatio
+	* Chg: removeCrapReleases can now be run in false mode with a Blacklist ID that isn't set to active for testing
+	* Fix: Remove trailing whitespace
+	* Fix: typo in requestid.php that prevented 'full' from running properly
+2014-06-26 kevin
 	* Add: Function to ProcessAdditional for recursively deleting files and folders within a folder.
 	* Add: Slightly faster method for parsing header array (class NNTP).
-2014-06-25 kevin
 	* Chg: Increase compression on NZB files, other slight speedups of NZB file creation.
 	* Chg: Buffer some NZB string data, increasing NZB write speed by almost 2x.
 	* Add: Setting for minimum release size to post process additional (to ignore NZB files and shit like that).
