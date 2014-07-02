@@ -2,19 +2,18 @@
 
 class Backfill
 {
+
+	/**
+	 * @var Binaries
+	 */
+	protected $_binaries;
+
 	/**
 	 * Instance of class ColorCLI.
 	 *
 	 * @var ColorCLI
 	 */
 	protected $_colorCLI;
-
-	/**
-	 * Should we use compression for headers?
-	 *
-	 * @var bool
-	 */
-	protected $_compressedHeaders;
 
 	/**
 	 * Instance of class DB
@@ -31,6 +30,34 @@ class Backfill
 	protected $_debugging;
 
 	/**
+	 * @var Groups
+	 */
+	protected $_groups;
+
+	/**
+	 * @var NNTP
+	 */
+	protected $_nntp;
+	/**
+	 * Should we use compression for headers?
+	 *
+	 * @var bool
+	 */
+	protected $_compressedHeaders;
+
+	/**
+	 * Log and or echo debug.
+	 * @var bool
+	 */
+	protected $_debug = false;
+
+	/**
+	 * Echo to cli?
+	 * @var bool
+	 */
+	protected $_echoCLI;
+
+	/**
 	 * Do we need to reset the collection hashes?
 	 *
 	 * @var bool
@@ -45,6 +72,13 @@ class Backfill
 	protected $_nntpProxy;
 
 	/**
+	 * Should we use tpg?
+	 *
+	 * @var bool
+	 */
+	protected $_tablePerGroup;
+
+	/**
 	 * How far back should we go on safe back fill?
 	 *
 	 * @var string
@@ -55,40 +89,6 @@ class Backfill
 	 * @var string
 	 */
 	protected $_safePartRepair;
-
-	/**
-	 * Should we use tpg?
-	 *
-	 * @var bool
-	 */
-	protected $_tablePerGroup;
-
-	/**
-	 * Echo to cli?
-	 * @var bool
-	 */
-	protected $_echoCLI;
-
-	/**
-	 * Log and or echo debug.
-	 * @var bool
-	 */
-	protected $_debug = false;
-
-	/**
-	 * @var NNTP
-	 */
-	protected $_nntp;
-
-	/**
-	 * @var Binaries
-	 */
-	protected $_binaries;
-
-	/**
-	 * @var Groups
-	 */
-	protected $_groups;
 
 	/**
 	 * Constructor.
@@ -716,7 +716,6 @@ class Backfill
 				}
 			}
 		}
-
 
 		if ($this->_debug) {
 			$dMessage =
