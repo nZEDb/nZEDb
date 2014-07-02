@@ -50,7 +50,7 @@
 										<img height="140px" width="205px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/book/{$result.bookinfoid}.jpg"/>
 									{elseif $type == 'PC'}
-										<img height="250px" width="250px" alt=""
+										<img height="130px" width="130px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/games/{$result.gamesinfo_id}.jpg"/>
 									{/if}
 								</a>

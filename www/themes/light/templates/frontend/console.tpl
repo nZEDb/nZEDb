@@ -108,7 +108,7 @@
 								<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}{$result.url}"
 								   name="amazon{$result.consoleinfoid}" title="View amazon page">Amazon</a>
 								<a class="rndbtnsml" target="_blank"
-								   href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}/"
+								   href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}&page=0&count=10&type=object&objectType=game&filter=games&"
 								   name="ign{$result.consoleinfoid}" title="View ign page">IGN</a>
 								<a class="rndbtnsml" target="_blank"
 								   href="{$site->dereferrer_link}http://www.gamespot.com/search/?qs={$result.title|escape:"htmlall"}/"
