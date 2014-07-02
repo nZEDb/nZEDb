@@ -598,8 +598,9 @@ class Games
 			$result = json_decode(json_encode($obj->search($title, '', 1)), true);
 			if (!is_array($result)) {
 				$result = false;
+			} else {
+				$result = $result['results'][0]['id'];
 			}
-			$result = $result['results'][0]['id'];
 		} catch (Exception $e) {
 			$result = false;
 		}
