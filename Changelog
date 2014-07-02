@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-07-02 kevin
 	* Add: Add in pull request by tasky for fetching PC game info from GiantBomb and amazon, and adds PC games to new poster wall.
 	* Fix: Patch for missing 'setting' for giantbomb api key.
+	* Fix: Blank page on games cover view.
 2014-07-01 kevin
 	* ---: Happy canada day to all.
 	* Add: Missing reqid group to tsv.
