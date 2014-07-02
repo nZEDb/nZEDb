@@ -1722,7 +1722,7 @@ class Releases
 			// If a collection has not been updated in X hours, set filecheck to 2.
 			$query = $this->db->queryExec(
 							sprintf("
-								UPDATE %s c SET filecheck = %d2, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collectionid = c.id)
+								UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collectionid = c.id)
 								WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
 								AND c.filecheck IN (%d, %d, 10) %s",
 								$group['cname'],
