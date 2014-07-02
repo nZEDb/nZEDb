@@ -1029,8 +1029,7 @@ CREATE TABLE         predbhash (
   COLLATE         = utf8mb4_unicode_ci;
 
 
-DELIMITER
-$$
+DELIMITER $$
 CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW
   BEGIN
     IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
@@ -1038,8 +1037,7 @@ CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW
     ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
       THEN SET NEW.isrequestid = 1;
     END IF;
-  END;
-$$
+  END; $$
 CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW
   BEGIN
     IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
@@ -1047,27 +1045,23 @@ CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW
     ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
       THEN SET NEW.isrequestid = 1;
     END IF;
-  END;
-$$
+  END; $$
 CREATE TRIGGER check_rfinsert BEFORE INSERT ON releasefiles FOR EACH ROW
   BEGIN
     IF NEW.name REGEXP '[a-fA-F0-9]{32}'
       THEN SET NEW.ishashed = 1;
     END IF;
-  END;
-$$
+  END; $$
 CREATE TRIGGER check_rfupdate BEFORE UPDATE ON releasefiles FOR EACH ROW
   BEGIN
     IF NEW.name REGEXP '[a-fA-F0-9]{32}'
       THEN SET NEW.ishashed = 1;
     END IF;
-  END;
-$$
+  END; $$
 CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW
   BEGIN
     INSERT INTO releasesearch (releaseid, guid, name, searchname) VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname);
-  END;
-$$
+  END; $$
 CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW
   BEGIN
     IF NEW.guid != OLD.guid
@@ -1079,28 +1073,23 @@ CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW
     IF NEW.searchname != OLD.searchname
       THEN UPDATE releasesearch SET searchname = NEW.searchname WHERE releaseid = OLD.id;
     END IF;
-  END;
-$$
+  END; $$
 CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
   BEGIN
     DELETE FROM releasesearch WHERE releaseid = OLD.id;
-  END;
-$$
+  END; $$
 CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
   BEGIN
     INSERT INTO predbhash (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)));
-  END;
-$$
+  END; $$
 CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
   BEGIN
     IF NEW.title != OLD.title
       THEN UPDATE predbhash SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id;
     END IF;
-  END;
-$$
+  END; $$
 CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
     DELETE FROM predbhash WHERE pre_id = OLD.id;
-  END;
-$$
+  END; $$
 DELIMITER ;
