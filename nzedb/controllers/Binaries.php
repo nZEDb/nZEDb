@@ -494,51 +494,62 @@ class Binaries
 				// Get article headers from newsgroup. Let scan deal with nntp connection, else compression fails after first grab
 				$scanSummary = $this->scan($groupArr, $first, $last);
 
-				// Scan failed - skip group.
-				if ($scanSummary == false) {
-					return;
-				}
+				// Check if we fetched headers.
+				if (!empty($scanSummary)) {
 
-				// If new group, update first record & postdate
-				if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] == '0') {
-					$groupArr['first_record'] = $scanSummary['firstArticleNumber'];
+					// If new group, update first record & postdate
+					if (is_null($groupArr['first_record_postdate']) && $groupArr['first_record'] == '0') {
+						$groupArr['first_record'] = $scanSummary['firstArticleNumber'];
 
-					if (isset($scanSummary['firstArticleDate'])) {
-						$first_record_postdate = strtotime($scanSummary['firstArticleDate']);
-					} else {
-						$first_record_postdate = $this->backfill->postdate($groupArr['first_record'], $data);
+						if (isset($scanSummary['firstArticleDate'])) {
+							$first_record_postdate = strtotime($scanSummary['firstArticleDate']);
+						} else {
+							$first_record_postdate = $this->backfill->postdate($groupArr['first_record'], $data);
+						}
+
+						$groupArr['first_record_postdate'] = $first_record_postdate;
+
+						$this->db->queryExec(
+							sprintf('
+								UPDATE groups
+								SET first_record = %s, first_record_postdate = %s
+								WHERE id = %d',
+								$scanSummary['firstArticleNumber'],
+								$this->db->from_unixtime($this->db->escapeString($first_record_postdate)),
+								$groupArr['id']
+							)
+						);
 					}
 
-					$groupArr['first_record_postdate'] = $first_record_postdate;
+					if (isset($scanSummary['lastArticleDate'])) {
+						$last_record_postdate = strtotime($scanSummary['lastArticleDate']);
+					} else {
+						$last_record_postdate = $this->backfill->postdate($scanSummary['lastArticleNumber'], $data);
+					}
 
 					$this->db->queryExec(
 						sprintf('
 							UPDATE groups
-							SET first_record = %s, first_record_postdate = %s
+							SET last_record = %s, last_record_postdate = %s, last_updated = NOW()
 							WHERE id = %d',
-							$scanSummary['firstArticleNumber'],
-							$this->db->from_unixtime($this->db->escapeString($first_record_postdate)),
+							$this->db->escapeString($scanSummary['lastArticleNumber']),
+							$this->db->from_unixtime($last_record_postdate),
+							$groupArr['id']
+						)
+					);
+				} else {
+					// If we didn't fetch headers, update the record stills.
+					$this->db->queryExec(
+						sprintf('
+							UPDATE groups
+							SET last_record = %s, first_record = %s, last_updated = NOW()
+							WHERE id = %d',
+							$this->db->escapeString($last),
+							$this->db->escapeString($first),
 							$groupArr['id']
 						)
 					);
 				}
-
-				if (isset($scanSummary['lastArticleDate'])) {
-					$last_record_postdate = strtotime($scanSummary['lastArticleDate']);
-				} else {
-					$last_record_postdate = $this->backfill->postdate($scanSummary['lastArticleNumber'], $data);
-				}
-
-				$this->db->queryExec(
-					sprintf('
-						UPDATE groups
-						SET last_record = %s, last_record_postdate = %s, last_updated = NOW()
-						WHERE id = %d',
-						$this->db->escapeString($scanSummary['lastArticleNumber']),
-						$this->db->from_unixtime($last_record_postdate),
-						$groupArr['id']
-					)
-				);
 
 				if ($last == $groupLast) {
 					$done = true;
@@ -613,54 +624,55 @@ class Binaries
 		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupArr['id']);
 
 		// Download the headers.
-		$msgs = $this->nntp->getXOVER($first . "-" . $last);
+		if ($type === 'partrepair') {
+			// This is slower but possibly is better with missing headers.
+			$headers = $this->nntp->getOverview($first . "-" . $last, true, false);
+		} else {
+			$headers = $this->nntp->getXOVER($first . "-" . $last);
+		}
 
 		// If there were an error, try to reconnect.
-		if ($this->nntp->isError($msgs)) {
+		if ($this->nntp->isError($headers)) {
+
+			// Increment if part repair and return false.
+			if ($type === 'partrepair') {
+				$this->db->queryExec(
+					sprintf(
+						'UPDATE partrepair SET attempts = attempts + 1 WHERE group_id = %d AND numberid %s',
+						$groupArr['id'],
+						($first == $last ? '= ' . $first : 'IN (' . implode(',', range($first, $last)) . ')')
+					)
+				);
+				return false;
+			}
+
 			// This is usually a compression error, so try disabling compression.
 			$this->nntp->doQuit();
 			if ($this->nntp->doConnect(false) !== true) {
 				return false;
 			}
 
+			// Re-select group, download headers again without compression and re-enable compression.
 			$this->nntp->selectGroup($groupArr['name']);
-			$msgs = $this->nntp->getXOVER($first . '-' . $last);
-			if ($this->nntp->isError($msgs)) {
-				if ($type !== 'partrepair') {
+			$headers = $this->nntp->getXOVER($first . '-' . $last);
+			$this->nntp->enableCompression();
 
-					$dMessage = "Code {$msgs->code}: {$msgs->message}\nSkipping group: ${groupArr['name']}";
-					if ($this->debug) {
-						$this->debugging->start("scan", $dMessage, 3);
-					}
+			// Check if the non-compression headers have an error.
+			if ($this->nntp->isError($headers)) {
 
-					if ($this->echo) {
-						$this->c->doEcho($this->c->error($dMessage), true);
-					}
+				$dMessage = "Code {$headers->code}: {$headers->message}\nSkipping group: ${groupArr['name']}";
+				if ($this->debug) {
+					$this->debugging->start("scan", $dMessage, 3);
+				}
 
-					// If partrepair, increment attempts.
-				} else {
-
-					$query = sprintf(
-						'UPDATE partrepair SET attempts = attempts + 1 WHERE group_id = %d AND numberid ',
-						$groupArr['id']
-					);
-
-					// Check if it's more than 1 article.
-					if ($first !== $last) {
-						$query .= 'IN (' . implode(',', range($first, $last)) . ')';
-					} else {
-						$query .= '= ' . $first;
-					}
-
-					$this->db->queryExec($query);
-
+				if ($this->echo) {
+					$this->c->doEcho($this->c->error($dMessage), true);
 				}
 
 				return false;
 			}
-			// Re-enable header compression.
-			$this->nntp->enableCompression();
 		}
+
 		// Start of processing headers.
 		$this->startCleaning = microtime(true);
 
@@ -668,7 +680,7 @@ class Binaries
 		$timeHeaders = number_format($this->startCleaning - $this->startHeaders, 2);
 
 		// Array of all the requested article numbers.
-		$rangerequested = array();
+		$rangerequested = $msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
 		$total = ($last - $first);
 		if ($total > 1) {
 			$rangerequested = range($first, $last);
@@ -678,23 +690,22 @@ class Binaries
 			$rangerequested[] = $first;
 		}
 
-		$msgsreceived = $msgsblacklisted = $msgsignored = $msgsnotinserted = $msgrepaired = array();
-
-		$msgCount = count($msgs);
+		// Check if we got headers.
+		$msgCount = count($headers);
 		if ($msgCount > 0) {
 
 			// Get highest and lowest article numbers/dates.
 			$iterator1 = 0;
 			$iterator2 = $msgCount - 1;
 			while (true) {
-				if (!isset($returnArray['firstArticleNumber']) && isset($msgs[$iterator1]['Number'])) {
-					$returnArray['firstArticleNumber'] = $msgs[$iterator1]['Number'];
-					$returnArray['firstArticleDate'] = $msgs[$iterator1]['Date'];
+				if (!isset($returnArray['firstArticleNumber']) && isset($headers[$iterator1]['Number'])) {
+					$returnArray['firstArticleNumber'] = $headers[$iterator1]['Number'];
+					$returnArray['firstArticleDate'] = $headers[$iterator1]['Date'];
 				}
 
-				if (!isset($returnArray['lastArticleNumber']) && isset($msgs[$iterator2]['Number'])) {
-					$returnArray['lastArticleNumber'] = $msgs[$iterator2]['Number'];
-					$returnArray['lastArticleDate'] = $msgs[$iterator2]['Date'];
+				if (!isset($returnArray['lastArticleNumber']) && isset($headers[$iterator2]['Number'])) {
+					$returnArray['lastArticleNumber'] = $headers[$iterator2]['Number'];
+					$returnArray['lastArticleDate'] = $headers[$iterator2]['Date'];
 				}
 
 				// Break if we found non empty articles.
@@ -709,14 +720,14 @@ class Binaries
 			}
 
 			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
-			usort($msgs,
+			usort($headers,
 				function ($elem1, $elem2) {
 					return strcmp($elem1['Subject'], $elem2['Subject']);
 				}
 			);
 
 			// Loop articles, figure out files/parts.
-			foreach ($msgs AS $msg) {
+			foreach ($headers AS $msg) {
 				if (!isset($msg['Number'])) {
 					continue;
 				}
@@ -825,7 +836,7 @@ class Binaries
 				}
 			}
 
-			unset($msg, $msgs);
+			unset($msg, $headers);
 			$maxnum = $last;
 			$rangenotreceived = array_diff($rangerequested, $msgsreceived);
 
@@ -1057,17 +1068,6 @@ class Binaries
 			unset($this->message, $data);
 
 			return $returnArray;
-		} else {
-			if ($type != 'partrepair') {
-				$dMessage = "Can't get parts from server (msgs not array).\nSkipping group: ${groupArr['name']}";
-				if ($this->debug) {
-					$this->debugging->start("scan", $dMessage, 3);
-				}
-
-				if ($this->echo) {
-					$this->c->doEcho($this->c->error($dMessage), true);
-				}
-			}
 		}
 
 		return $returnArray;

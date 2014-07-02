@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-02 taskym
+	* Add: Add profile preference for Games cover view
 2014-07-02 ruhllatio
 	* Fix: undefined offset 0 error in Games.php lookup
 	* Chg: fastDelete releases query to remove concats
@@ -20,6 +22,9 @@ New updates are grouped by person, at the top of the file.
 	* Add: Re-enable header compression if header compression was disabled during fetching headers due to a decompression error.
 	* Fix: Undefined namespace issues in utility.
 	* Upd: Update some IGN.com links.
+	* Chg: Add check to see if explode is false on getXOVER (in case string is empty).
+	* Chg: Changes to binaries to help with large sections of missing headers.
+	* Chg: Changes to binaries to speed up part repair.
 2014-07-01 kevin
 	* ---: Happy canada day to all.
 	* Add: Missing reqid group to tsv.

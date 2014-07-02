@@ -461,6 +461,11 @@ class NNTP extends Net_NNTP_Client
 			// Split the individual headers by tab.
 			$header = explode("\t", $header);
 
+			// Make sure it's not empty.
+			if ($header === false) {
+				continue;
+			}
+
 			// Temp array to store the header.
 			$headerArray = $overview;
 
