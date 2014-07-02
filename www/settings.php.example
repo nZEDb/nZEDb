@@ -54,6 +54,13 @@ define('nZEDb_DEBUG', false);
  */
 define('nZEDb_LOGGING', false);
 
+/**
+ * var_dump missing autoloader files.
+ * @note Dev setting.
+ * @default false
+ */
+define('nZEDb_LOGAUTOLOADER', false);
+
 /*********************************************************************************
  * The following options require either nZEDb_DEBUG OR nZEDb_LOGGING to be true: *
  *********************************************************************************/
