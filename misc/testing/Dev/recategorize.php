@@ -76,21 +76,25 @@ function categorizeRelease($update = true, $where, $echooutput = false)
 			if ($rowrel['categoryid'] != $catId) {
 				if ($update === true) {
 					$db->queryExec(
-						sprintf(
-							"UPDATE releases SET iscategorized = 1,
-										rageid = -1,
-										seriesfull = NULL,
-										season = NULL,
-										episode = NULL,
-										tvtitle = NULL,
-										tvairdate = NULL,
-										imdbid = NULL,
-										musicinfoid = NULL,
-										consoleinfoid = NULL,
-										bookinfoid = NULL,
-										anidbid = NULL,
-										categoryid = %d
-										WHERE id = %d", $catId, $rowrel['id']
+						sprintf("
+							UPDATE releases
+							SET iscategorized = 1,
+								rageid = -1,
+								seriesfull = NULL,
+								season = NULL,
+								episode = NULL,
+								tvtitle = NULL,
+								tvairdate = NULL,
+								imdbid = NULL,
+								musicinfoid = NULL,
+								consoleinfoid = NULL,
+								gamesinfoid = NULL,
+								bookinfoid = NULL,
+								anidbid = NULL,
+								categoryid = %d
+							WHERE id = %d",
+							$catId,
+							$rowrel['id']
 						)
 					);
 				}

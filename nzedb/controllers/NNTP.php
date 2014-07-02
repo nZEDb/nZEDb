@@ -323,6 +323,20 @@ class NNTP extends Net_NNTP_Client
 	}
 
 	/**
+	 * Attempt to enable compression if the admin enabled the site setting.
+	 * @note This can be used to enable compression if the server was connected without compression.
+	 *
+	 * @access public
+	 */
+	public function enableCompression()
+	{
+		if (!$this->_site->compressedheaders == 1) {
+			return;
+		}
+		$this->_enableCompression();
+	}
+
+	/**
 	 * @param string $group    Name of the group to select.
 	 * @param bool   $articles (optional) experimental! When true the article numbers is returned in 'articles'.
 	 * @param bool   $force    Force a refresh to get updated data from the usenet server.
@@ -368,6 +382,102 @@ class NNTP extends Net_NNTP_Client
 		}
 
 		return parent::getOverview($range, $names, $forceNames);
+	}
+
+	/**
+	 * Pass a XOVER command to the NNTP provider, return array of articles using the overview format as array keys.
+	 *
+	 * @note This is a faster implementation of getOverview.
+	 *
+	 * Example successful return:
+	 *    array(9) {
+	 *        'Number'     => string(9)  "679871775"
+	 *        'Subject'    => string(18) "This is an example"
+	 *        'From'       => string(19) "Example@example.com"
+	 *        'Date'       => string(24) "26 Jun 2014 13:08:22 GMT"
+	 *        'Message-ID' => string(57) "<part1of1.uS*yYxQvtAYt$5t&wmE%UejhjkCKXBJ!@example.local>"
+	 *        'References' => string(0)  ""
+	 *        'Bytes'      => string(3)  "123"
+	 *        'Lines'      => string(1)  "9"
+	 *        'Xref'       => string(66) "e alt.test:679871775"
+	 *    }
+	 *
+	 * @param string $range Range of articles to get the overview for. Examples follow:
+	 *                      Single article number:         "679871775"
+	 *                      Range of article numbers:      "679871775-679999999"
+	 *                      All newer than article number: "679871775-"
+	 *                      All older than article number: "-679871775"
+	 *                      Message-ID:                    "<part1of1.uS*yYxQvtAYt$5t&wmE%UejhjkCKXBJ!@example.local>"
+	 *
+	 * @return array|object Multi-dimensional Array of headers on success, PEAR object on failure.
+	 */
+	public function getXOVER($range)
+	{
+		// Check if we are still connected.
+		$connected = $this->_checkConnection();
+		if ($connected !== true) {
+			return $connected;
+		}
+
+		// Send XOVER command to NNTP with wanted articles.
+		$response = $this->_sendCommand('XOVER ' . $range);
+		if ($this->isError($response)){
+			return $response;
+		}
+
+		// Verify the NNTP server got the right command, get the headers data.
+		switch ($response) {
+			// 224, RFC2980: 'Overview information follows'
+			case NET_NNTP_PROTOCOL_RESPONSECODE_OVERVIEW_FOLLOWS:
+				$data = $this->_getTextResponse();
+				if ($this->isError($data)) {
+					return $data;
+				}
+				break;
+
+			default:
+				return $this->_handleErrorResponse($response);
+		}
+
+		// Fetch the header overview format (for setting the array keys on the return array).
+		if (!is_null($this->_overviewFormatCache) && isset($this->_overviewFormatCache['Xref'])) {
+			$overview = $this->_overviewFormatCache;
+		} else {
+			$overview = $this->getOverviewFormat(false, true);
+			if ($this->isError($overview)) {
+				return $overview;
+			}
+			$this->_overviewFormatCache = $overview;
+		}
+		// Add the "Number" key.
+		$overview = array_merge(array('Number' => false), $overview);
+
+		// Iterator used for selecting the header elements to insert into the overview format array.
+		$iterator = 0;
+
+		// Loop over strings of headers.
+		foreach ($data as $key => $header) {
+
+			// Split the individual headers by tab.
+			$header = explode("\t", $header);
+
+			// Temp array to store the header.
+			$headerArray = $overview;
+
+			// Loop over the overview format and insert the individual header elements.
+			foreach ($overview as $name => $element) {
+				// Strip Xref:
+				if ($element === true) {
+					$header[$iterator] = substr($header[$iterator], 6);
+				}
+				$headerArray[$name] = $header[$iterator++];
+			}
+			// Add the individual header array back to the return array.
+			$data[$key] = $headerArray;
+			$iterator = 0;
+		}
+		// Return the array of headers.
+		return $data;
 	}
 
 	/**
@@ -1199,16 +1309,21 @@ class NNTP extends Net_NNTP_Client
 			if ($bytesReceived === 0) {
 				$buffer = fgets($this->_socket);
 				$bytesReceived = strlen($buffer);
+
+				// If the buffer is zero it's zero, return error.
+				if ($bytesReceived === 0) {
+					$message = 'The NNTP server has returned no data.';
+					if ($this->_debugBool) {
+						$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
+					}
+					$message = $this->throwError($this->_c->error($message), 1000);
+					return $message;
+				}
 			}
 
-			// If the buffer is zero it's zero, return error.
-			if ($bytesReceived === 0) {
-				$message = 'The NNTP server has returned no data.';
-				if ($this->_debugBool) {
-					$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
-				}
-				$message = $this->throwError($this->_c->error($message), 1000);
-				return $message;
+			// Check for line that starts with double period, remove one.
+			if ($buffer[0] === '.' && $buffer[1] === '.') {
+				$buffer = substr($buffer, 1);
 			}
 
 			// Append buffer to final data object.
@@ -1219,14 +1334,15 @@ class NNTP extends Net_NNTP_Client
 
 			// Check if we have the ending (.\r\n)
 			if ($bytesReceived > 2 &&
-				ord($buffer[$bytesReceived - 3]) == 0x2e &&
-				ord($buffer[$bytesReceived - 2]) == 0x0d &&
-				ord($buffer[$bytesReceived - 1]) == 0x0a) {
-
+				$buffer[$bytesReceived - 3] === '.' &&
+				$buffer[$bytesReceived - 2] === "\r" &&
+				$buffer[$bytesReceived - 1] === "\n"
+			) {
 				// We have a possible ending, next loop check if it is.
 				$possibleTerm = true;
 				continue;
 			}
+
 		}
 		// Throw an error if we get out of the loop.
 		if (!feof($this->_socket)) {
@@ -1339,6 +1455,11 @@ class NNTP extends Net_NNTP_Client
 						}
 						// Attempt to yEnc decode and return the body.
 						return $this->_decodeIgnoreYEnc($body);
+					}
+
+					// Check for line that starts with double period, remove one.
+					if ($line[0] === '.' && $line[1] === '.') {
+						$line = substr($line, 1);
 					}
 
 					// Add the line to the rest of the lines.
