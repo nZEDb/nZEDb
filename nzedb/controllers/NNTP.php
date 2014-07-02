@@ -323,6 +323,20 @@ class NNTP extends Net_NNTP_Client
 	}
 
 	/**
+	 * Attempt to enable compression if the admin enabled the site setting.
+	 * @note This can be used to enable compression if the server was connected without compression.
+	 *
+	 * @access public
+	 */
+	public function enableCompression()
+	{
+		if (!$this->_site->compressedheaders == 1) {
+			return;
+		}
+		$this->_enableCompression();
+	}
+
+	/**
 	 * @param string $group    Name of the group to select.
 	 * @param bool   $articles (optional) experimental! When true the article numbers is returned in 'articles'.
 	 * @param bool   $force    Force a refresh to get updated data from the usenet server.
