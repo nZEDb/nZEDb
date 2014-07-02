@@ -119,6 +119,13 @@ class Binaries
 	protected $_newGroupMessagesToScan;
 
 	/**
+	 * How many days to go back on new groups?
+	 *
+	 * @var int
+	 */
+	protected $_newGroupDaysToScan;
+
+	/**
 	 * How many headers to download per run of part repair?
 	 *
 	 * @var int
@@ -184,7 +191,7 @@ class Binaries
 		$this->_hashCheck = ($site->hashcheck == 1 ? true : false);
 		$this->_newGroupScanByDays = ($site->newgroupscanmethod == 1 ? true : false);
 		$this->_newGroupMessagesToScan = (!empty($site->newgroupmsgstoscan) ? $site->newgroupmsgstoscan : 50000);
-		$this->NewGroupDaysToScan = (!empty($site->newgroupdaystoscan) ? (int)$site->newgroupdaystoscan : 3);
+		$this->_newGroupDaysToScan = (!empty($site->newgroupdaystoscan) ? (int)$site->newgroupdaystoscan : 3);
 		$this->_partRepairLimit = (!empty($site->maxpartrepair) ? (int)$site->maxpartrepair : 15000);
 		$this->_showDroppedYEncParts = ($site->showdroppedyencparts == 1 ? true : false);
 		$this->_tablePerGroup = ($site->tablepergroup == 1 ? true : false);
@@ -339,7 +346,7 @@ class Binaries
 		if ($groupArr['last_record'] == 0) {
 			// For new newsgroups - determine here how far you want to go back using date.
 			if ($this->_newGroupScanByDays) {
-				$first = $this->_backFill->daytopost($this->NewGroupDaysToScan, $data);
+				$first = $this->_backFill->daytopost($this->_newGroupDaysToScan, $data);
 				// If not using date, use post count.
 			} else {
 				// If what we want is lower than the groups first article, set the wanted first to the first.
@@ -396,7 +403,7 @@ class Binaries
 							'New group ' .
 							$data['group'] .
 							' starting with ' .
-							($this->_newGroupScanByDays ? $this->NewGroupDaysToScan
+							($this->_newGroupScanByDays ? $this->_newGroupDaysToScan
 								. ' days' : number_format($this->_newGroupMessagesToScan) .
 								' messages'
 							) .
