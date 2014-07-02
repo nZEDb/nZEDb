@@ -44,10 +44,8 @@ spl_autoload_register(function ($class) {
     // if the file exists, require it
 	if (file_exists($file)) {
 		require_once $file;
-	} else {
-		if (nZEDb_DEBUG) {
-			var_dump($file);
-		}
+	} elseif (nZEDb_LOGAUTOLOADER) {
+		var_dump($file);
 	}
 });
 
