@@ -55,6 +55,10 @@ define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
 
 if (is_file(__DIR__ . DS . 'settings.php')) {
 	require_once(__DIR__ . DS . 'settings.php');
+	// Remove this in the future, this is for those who are nothing updating their settings.php file.
+	if (!defined('nZEDb_LOGAUTOLOADER')) {
+		define('nZEDb_LOGAUTOLOADER', false);
+	}
 } else {
 	define('ITEMS_PER_PAGE', '50');
 	define('ITEMS_PER_COVER_PAGE', '20');

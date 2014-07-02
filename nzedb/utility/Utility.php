@@ -48,7 +48,7 @@ class Utility
 
 		if ($versions === false) {
 			if (self::isCLI()) {
-				echo (new \nzedb\controllers\ColorCLI())->error(
+				echo (new \ColorCLI())->error(
 					"\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"
 				);
 			}
@@ -102,7 +102,7 @@ class Utility
 		// Check database patch version
 		if ($patch < $ver) {
 			if (self::isCLI()) {
-				echo (new \nzedb\controllers\ColorCLI())->error(
+				echo (new \ColorCLI())->error(
 					"\nYour database is not up to date. Reported patch levels\n Db: $patch\n file: $ver\nPlease update.\n php " .
 					 nZEDb_LIB .  "db/DbUpdate.php 1\n"
 				);
