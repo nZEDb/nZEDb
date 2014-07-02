@@ -308,7 +308,7 @@ class Backfill
 		// Set first and last, moving the window by max messages.
 		$last = (string)($groupArr['first_record'] - 1);
 		// Set the initial "chunk".
-		$first = (string)($last - $this->_binaries->messagebuffer + 1);
+		$first = (string)($last - $this->_binaries->messageBuffer + 1);
 
 		// Just in case this is the last chunk we needed.
 		if ($targetpost > $first) {
@@ -360,7 +360,7 @@ class Backfill
 			} else {
 				// Keep going: set new last, new first, check for last chunk.
 				$last = (string)($first - 1);
-				$first = (string)($last - $this->_binaries->messagebuffer + 1);
+				$first = (string)($last - $this->_binaries->messageBuffer + 1);
 				if ($targetpost > $first) {
 					$first = $targetpost;
 				}
