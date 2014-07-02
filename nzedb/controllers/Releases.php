@@ -25,7 +25,7 @@ class Releases
 	// Collections file check status
 	const COLLFC_DEFAULT = 0; // Collection has default filecheck status
 	const COLLFC_COMPCOLL = 1; // Collection is a complete collection
-	const COLLFC_COMPPART = 2; // Colleciton is a complete collection and has all parts available
+	const COLLFC_COMPPART = 2; // Collection is a complete collection and has all parts available
 	const COLLFC_SIZED = 3; // Collection has been calculated for total size
 	const COLLFC_INSERTED = 4; // Collection has been inserted into releases
 	const COLLFC_DELETE = 5; // Collection is ready for deletion
@@ -61,8 +61,8 @@ class Releases
 	 */
 	public function get()
 	{
-		return $this->db->query(
-						'SELECT r.*, g.name AS group_name, c.title AS category_name
+		return $this->db->query('
+						SELECT r.*, g.name AS group_name, c.title AS category_name
 						FROM releases r
 						INNER JOIN category c ON c.id = r.categoryid
 						INNER JOIN groups g ON g.id = r.group_id
@@ -1578,15 +1578,15 @@ class Releases
 		if ($this->db->dbSystem() === 'mysql') {
 			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
 			$this->db->queryExec(
-						sprintf(
-							'UPDATE %s c INNER JOIN ' .
-								'(SELECT c.id FROM %s c ' .
-								'INNER JOIN %s b ON b.collectionid = c.id ' .
-								'WHERE c.totalfiles > 0 AND c.filecheck = 0 %s ' .
-								'GROUP BY b.collectionid, c.totalfiles, c.id ' .
-								'HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1) ' .
-								') ' .
-							'r ON c.id = r.id SET filecheck = %d',
+						sprintf('
+							UPDATE %s c INNER JOIN
+								(SELECT c.id FROM %s c
+								INNER JOIN %s b ON b.collectionid = c.id
+								WHERE c.totalfiles > 0 AND c.filecheck = 0 %s
+								GROUP BY b.collectionid, c.totalfiles, c.id
+								HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
+								)
+							r ON c.id = r.id SET filecheck = %d',
 							$group['cname'],
 							$group['cname'],
 							$group['bname'],
@@ -1595,15 +1595,15 @@ class Releases
 						)
 			);
 			/* $this->db->queryExec(
-						sprintf(
-							'UPDATE %s c SET filecheck = 1 ' .
-							'WHERE c.id IN ' .
-								'(SELECT b.collectionid FROM %s b, %s c ' .
-								'WHERE b.collectionid = c.id ' .
-								'GROUP BY b.collectionid, c.totalfiles ' .
-								'HAVING (COUNT(b.id) >= c.totalfiles-1) ' .
-								') ' .
-							'AND c.totalfiles > 0 AND c.filecheck = %d %s',
+						sprintf('
+							UPDATE %s c SET filecheck = 1
+							WHERE c.id IN
+								(SELECT b.collectionid FROM %s b, %s c
+								WHERE b.collectionid = c.id
+								GROUP BY b.collectionid, c.totalfiles
+								HAVING (COUNT(b.id) >= c.totalfiles-1)
+								)
+							AND c.totalfiles > 0 AND c.filecheck = %d %s',
 							$group['cname'],
 							$group['bname'],
 							$group['cname'],
@@ -1615,16 +1615,16 @@ class Releases
 
 			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 			$this->db->queryExec(
-						sprintf(
-							'UPDATE %s c INNER JOIN ' .
-								'(SELECT c.id FROM %s c ' .
-								'INNER JOIN %s b ON b.collectionid = c.id ' .
-								'WHERE b.filenumber = 0 ' .
-								'AND c.totalfiles > 0 ' .
-								'AND c.filecheck = 1 %s ' .
-								'GROUP BY c.id ' .
-								') ' .
-							'r ON c.id = r.id SET c.filecheck = %d',
+						sprintf('
+							UPDATE %s c INNER JOIN
+								(SELECT c.id FROM %s c
+								INNER JOIN %s b ON b.collectionid = c.id
+								WHERE b.filenumber = 0
+								AND c.totalfiles > 0
+								AND c.filecheck = 1 %s
+								GROUP BY c.id
+								)
+							r ON c.id = r.id SET c.filecheck = %d',
 							$group['cname'],
 							$group['cname'],
 							$group['bname'],
@@ -1635,10 +1635,10 @@ class Releases
 
 			// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
 			$this->db->queryExec(
-						sprintf(
-							'UPDATE %s c ' .
-							'SET filecheck = %d ' .
-							'WHERE filecheck = %d %s',
+						sprintf('
+							UPDATE %s c
+							SET filecheck = %d
+							WHERE filecheck = %d %s',
 							$group['cname'],
 							self::COLLFC_TEMPCOMP,
 							self::COLLFC_COMPCOLL,
@@ -1649,15 +1649,15 @@ class Releases
 			// If we have all the parts set partcheck to 1.
 			// If filecheck 15, check if we have all the parts for a file then set partcheck.
 			$this->db->queryExec(
-						sprintf(
-							'UPDATE %s b INNER JOIN ' .
-								'(SELECT b.id FROM %s b ' .
-								'INNER JOIN %s p ON p.binaryid = b.id ' .
-								'INNER JOIN %s c ON c.id = b.collectionid ' .
-								'WHERE c.filecheck = %d AND b.partcheck = 0 %s ' .
-								'GROUP BY b.id, b.totalparts ' .
-								'HAVING COUNT(p.id) = b.totalparts) ' .
-							'r ON b.id = r.id SET b.partcheck = 1',
+						sprintf('
+							UPDATE %s b INNER JOIN
+								(SELECT b.id FROM %s b
+								INNER JOIN %s p ON p.binaryid = b.id
+								INNER JOIN %s c ON c.id = b.collectionid
+								WHERE c.filecheck = %d AND b.partcheck = 0 %s
+								GROUP BY b.id, b.totalparts
+								HAVING COUNT(p.id) = b.totalparts)
+							r ON b.id = r.id SET b.partcheck = 1',
 							$group['bname'],
 							$group['bname'],
 							$group['pname'],
@@ -1669,14 +1669,14 @@ class Releases
 
 			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
 			$this->db->queryExec(
-						sprintf(
-							'UPDATE %s b INNER JOIN ' .
-								'(SELECT b.id FROM %s b ' .
-								'INNER JOIN %s p ON p.binaryid = b.id ' .
-								'INNER JOIN %s c ON c.id = b.collectionid ' .
-								'WHERE c.filecheck = %d AND b.partcheck = 0 %s ' .
-								'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts + 1) ' .
-							'r ON b.id = r.id SET b.partcheck = 1',
+						sprintf('
+							UPDATE %s b INNER JOIN
+								(SELECT b.id FROM %s b
+								INNER JOIN %s p ON p.binaryid = b.id
+								INNER JOIN %s c ON c.id = b.collectionid
+								WHERE c.filecheck = %d AND b.partcheck = 0 %s
+								GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts + 1)
+							r ON b.id = r.id SET b.partcheck = 1',
 							$group['bname'],
 							$group['bname'],
 							$group['pname'],
@@ -1688,13 +1688,13 @@ class Releases
 
 			// Set filecheck to 2 if partcheck = 1.
 			$this->db->queryExec(
-						sprintf(
-							'UPDATE %s c INNER JOIN ' .
-								'(SELECT c.id FROM %s c ' .
-								'INNER JOIN %s b ON c.id = b.collectionid ' .
-								'WHERE b.partcheck = 1 AND c.filecheck IN (%d, %d) %s ' .
-								'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) ' .
-							'r ON c.id = r.id SET filecheck = %d',
+						sprintf('
+							UPDATE %s c INNER JOIN
+								(SELECT c.id FROM %s c
+								INNER JOIN %s b ON c.id = b.collectionid
+								WHERE b.partcheck = 1 AND c.filecheck IN (%d, %d) %s
+								GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles)
+							r ON c.id = r.id SET filecheck = %d',
 							$group['cname'],
 							$group['cname'],
 							$group['bname'],
@@ -1707,76 +1707,184 @@ class Releases
 
 			// Set filecheck to 1 if we don't have all the parts.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c SET filecheck = 1 WHERE filecheck in (15, 16)' . $where
+						sprintf('
+							UPDATE %s c
+							SET filecheck = %d
+							WHERE filecheck IN (%d, %d) %s',
+							$group['cname'],
+							self::COLLFC_COMPCOLL,
+							self::COLLFC_TEMPCOMP,
+							self::COLLFC_ZEROPART,
+							$where
+						)
 			);
 
 			// If a collection has not been updated in X hours, set filecheck to 2.
 			$query = $this->db->queryExec(
-				sprintf(
-					"UPDATE " . $group['cname'] . " c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM " .
-					$group['bname'] .
-					" b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)" .
-					$where, $this->delaytimet
-				)
+							sprintf("
+								UPDATE %s c SET filecheck = %d2, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collectionid = c.id)
+								WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
+								AND c.filecheck IN (%d, %d, 10) %s",
+								$group['cname'],
+								self::COLLFC_COMPPART,
+								$group['bname'],
+								$this->delaytimet,
+								self::COLLFC_DEFAULT,
+								self::COLLFC_COMPCOLL,
+								$where
+							)
 			);
 		} else {
 			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c SET filecheck = 1 FROM (SELECT c.id FROM ' . $group['cname'] .
-				' c INNER JOIN ' . $group['bname'] .
-				' b ON b.collectionid = c.id WHERE c.totalfiles > 0 AND c.filecheck = 0' . $where .
-				'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)) r WHERE c.id = r.id'
+						sprintf('
+							UPDATE %s c SET filecheck = %d
+							FROM (SELECT c.id
+								FROM %s c
+								INNER JOIN %s b ON b.collectionid = c.id
+								WHERE c.totalfiles > 0 AND c.filecheck = %d %s
+								GROUP BY b.collectionid, c.totalfiles, c.id
+								HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
+							) r WHERE c.id = r.id',
+							$group['cname'],
+							self::COLLFC_COMPCOLL,
+							$group['cname'],
+							$group['bname'],
+							self::COLLFC_DEFAULT,
+							$where
+						)
 			);
 
 			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c SET filecheck = 16 FROM (SELECT c.id FROM ' . $group['cname'] .
-				' c INNER JOIN ' . $group['bname'] .
-				' b ON b.collectionid = c.id WHERE b.filenumber = 0 AND c.totalfiles > 0 AND c.filecheck = 1' . $where .
-				'GROUP BY c.id) r WHERE c.id = r.id'
+						sprintf('
+							UPDATE %s c SET filecheck = %d
+							FROM (SELECT c.id
+								FROM %s c
+								INNER JOIN %s b ON b.collectionid = c.id
+								WHERE b.filenumber = 0
+								AND c.totalfiles > 0
+								AND c.filecheck = %d %s
+								GROUP BY c.id
+							) r WHERE c.id = r.id',
+							$group['cname'],
+							self::COLLFC_ZEROPART,
+							$group['cname'],
+							$group['bname'],
+							self::COLLFC_COMPCOLL,
+							$where
+						)
 			);
 
 			// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-			$this->db->queryExec('UPDATE ' . $group['cname'] . ' c SET filecheck = 15 WHERE filecheck = 1' . $where);
+			$this->db->queryExec(
+						sprintf('
+							UPDATE %s c
+							SET filecheck = %d
+							WHERE filecheck = %d %s',
+							$group['cname'],
+							self::COLLFC_TEMPCOMP,
+							self::COLLFC_COMPCOLL,
+							$where
+						)
+			);
 
 			// If we have all the parts set partcheck to 1.
 			// If filecheck 15, check if we have all the parts for a file then set partcheck.
 			$this->db->queryExec(
-				'UPDATE ' . $group['bname'] . ' b  SET partcheck = 1 FROM (SELECT b.id FROM ' . $group['bname'] .
-				' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] .
-				' c ON c.id = b.collectionid WHERE c.filecheck = 15 AND b.partcheck = 0' . $where .
-				'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) = b.totalparts) r WHERE b.id = r.id'
+						sprintf('
+							UPDATE %s b
+							SET partcheck = 1
+							FROM (SELECT b.id
+								FROM %s b
+								INNER JOIN %s p ON p.binaryid = b.id
+								INNER JOIN %s c ON c.id = b.collectionid
+								WHERE c.filecheck = %d AND b.partcheck = 0 %s
+								GROUP BY b.id, b.totalparts
+								HAVING COUNT(p.id) = b.totalparts
+							) r WHERE b.id = r.id',
+							$group['cname'],
+							$group['bname'],
+							$group['pname'],
+							$group['cname'],
+							self::COLLFC_TEMPCOMP,
+							$where
+						)
 			);
 
 			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
 			$this->db->queryExec(
-				'UPDATE ' . $group['bname'] . ' b  SET partcheck = 1 FROM (SELECT b.id FROM ' . $group['bname'] .
-				' b INNER JOIN ' . $group['pname'] . ' p ON p.binaryid = b.id INNER JOIN ' . $group['cname'] .
-				' c ON c.id = b.collectionid WHERE c.filecheck = 16 AND b.partcheck = 0' . $where .
-				'GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts+1) r WHERE b.id = r.id'
+						sprintf('
+							UPDATE %s b
+							SET partcheck = 1
+							FROM (SELECT b.id
+								FROM % b
+								INNER JOIN %s p ON p.binaryid = b.id
+								INNER JOIN %s c ON c.id = b.collectionid
+								WHERE c.filecheck = %d AND b.partcheck = 0 %s
+								GROUP BY b.id, b.totalparts
+								HAVING COUNT(p.id) >= b.totalparts + 1
+							) r WHERE b.id = r.id',
+							$group['bname'],
+							$group['bname'],
+							$group['pname'],
+							$group['cname'],
+							self::COLLFC_ZEROPART,
+							$where
+						)
 			);
 
 			// Set filecheck to 2 if partcheck = 1.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c  SET filecheck = 2 FROM (SELECT c.id FROM ' . $group['cname'] .
-				' c INNER JOIN ' . $group['bname'] .
-				' b ON c.id = b.collectionid WHERE b.partcheck = 1 AND c.filecheck IN (15, 16)' . $where .
-				'GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles) r WHERE c.id = r.id'
+						sprintf('
+							UPDATE %s c
+							SET filecheck = %d
+							FROM (SELECT c.id
+								FROM %s c
+								INNER JOIN %s b ON c.id = b.collectionid
+								WHERE b.partcheck = 1
+								AND c.filecheck IN (%d, %d) %s
+								GROUP BY b.collectionid, c.totalfiles, c.id
+								HAVING COUNT(b.id) >= c.totalfiles
+							) r WHERE c.id = r.id',
+							$group['cname'],
+							self::COLLFC_COMPPART,
+							$group['cname'],
+							$group['bname'],
+							self::COLLFC_TEMPCOMP,
+							self::COLLFC_ZEROPART,
+							$where
+						)
 			);
 
 			// Set filecheck to 1 if we don't have all the parts.
 			$this->db->queryExec(
-				'UPDATE ' . $group['cname'] . ' c SET filecheck = 1 WHERE filecheck in (15, 16)' . $where
+						sprintf('
+							UPDATE %s c
+							SET filecheck = %d
+							WHERE filecheck IN (%d15, %d16) %s',
+							$group['cname'],
+							self::COLLFC_COMPCOLL,
+							self::COLLFC_TEMPCOMP,
+							self::COLLFC_ZEROPART,
+							$where
+						)
 			);
 
 			// If a collection has not been updated in X hours, set filecheck to 2.
 			$query = $this->db->queryExec(
-				sprintf(
-					"UPDATE " . $group['cname'] . " c SET filecheck = 2, totalfiles = (SELECT COUNT(b.id) FROM " .
-					$group['bname'] .
-					" b WHERE b.collectionid = c.id) WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR AND c.filecheck IN (0, 1, 10)" .
-					$where, $this->delaytimet
-				)
+							sprintf("
+								UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collectionid = c.id)
+								WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
+								AND c.filecheck IN (%d, %d, 10) %s",
+								$group['cname'],
+								self::COLLFC_COMPPART,
+								$group['bname'],
+								$this->delaytimet,
+								self::COLLFC_DEFAULT,
+								self::COLLFC_COMPCOLL,
+								$where
+							)
 			);
 		}
 
@@ -1816,9 +1924,19 @@ class Releases
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$checked = $this->db->queryExec(
-			'UPDATE ' . $group['cname'] . ' c SET filesize =
-									(SELECT COALESCE(SUM(p.size), 0) FROM ' . $group['pname'] . ' p INNER JOIN ' . $group['bname'] . ' b ON p.binaryid = b.id WHERE b.collectionid = c.id),
-									filecheck = 3 WHERE c.filecheck = 2 AND c.filesize = 0' . $where
+						sprintf(
+							'UPDATE %s c
+							SET filesize = (SELECT COALESCE(SUM(p.size), 0) FROM %s p INNER JOIN %s b ON p.binaryid = b.id WHERE b.collectionid = c.id),
+							filecheck = %d
+							WHERE c.filecheck = %d
+							AND c.filesize = 0 %s',
+							$group['cname'],
+							$group['pname'],
+							$group['bname'],
+							self::COLLFC_SIZED,
+							self::COLLFC_COMPPART,
+							$where
+						)
 		);
 		if ($checked !== false && $this->echooutput) {
 			$this->c->doEcho(
@@ -2082,13 +2200,14 @@ class Releases
 				SELECT %s.*, groups.name AS gname
 				FROM %s
 				INNER JOIN groups ON %s.group_id = groups.id
-				WHERE %s %s.filecheck = 3
+				WHERE %s %s.filecheck = %d
 				AND filesize > 0 LIMIT %d',
 				$group['cname'],
 				$group['cname'],
 				$group['cname'],
 				$where,
 				$group['cname'],
+				self::COLLFC_SIZED,
 				$this->stage5limit
 			)
 		);
