@@ -108,6 +108,7 @@ class PostProcess
 		$this->processSharing($nntp);
 		$this->processMovies();
 		$this->processMusic();
+		$this->processConsoles();
 		$this->processGames();
 		$this->processAnime();
 		$this->processTv();
@@ -142,6 +143,19 @@ class PostProcess
 	}
 
 	/**
+	 * Lookup console games if enabled.
+	 *
+	 * @return void
+	 */
+	public function processConsoles()
+	{
+		if ($this->site->lookupgames != 0) {
+			$console = new Console($this->echooutput);
+			$console->processConsoleReleases();
+		}
+	}
+
+	/**
 	 * Lookup games if enabled.
 	 *
 	 * @return void
@@ -149,8 +163,8 @@ class PostProcess
 	public function processGames()
 	{
 		if ($this->site->lookupgames != 0) {
-			$console = new Console($this->echooutput);
-			$console->processConsoleReleases();
+			$games = new Games($this->echooutput);
+			$games->processGamesReleases();
 		}
 	}
 
@@ -186,14 +200,14 @@ class PostProcess
 	 * Process nfo files.
 	 *
 	 * @param string $releaseToWork
-	 * @param $nntp
+	 * @param NNTP   $nntp
 	 *
 	 * @return void
 	 */
 	public function processNfos($releaseToWork = '', $nntp)
 	{
 		if ($this->site->lookupnfo == 1) {
-			$this->Nfo->processNfoFiles($releaseToWork, $this->site->lookupimdb, $this->site->lookuptvrage, $groupID = '', $nntp);
+			$this->Nfo->processNfoFiles($releaseToWork,	$this->site->lookupimdb, $this->site->lookuptvrage,	$groupID = '', $nntp);
 		}
 	}
 
@@ -274,7 +288,9 @@ class PostProcess
 		$query = $this->db->queryOneRow(
 			sprintf('
 				SELECT id, group_id, categoryid, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releaseid
-				FROM releases WHERE isrenamed = 0 AND id = %d',
+				FROM releases
+				WHERE isrenamed = 0
+				AND id = %d',
 				$relID
 			)
 		);
@@ -286,19 +302,19 @@ class PostProcess
 		// Only get a new name if the category is OTHER.
 		$foundName = true;
 		if (!in_array(
-				(int)$query['categoryid'],
-				array(
-					Category::CAT_BOOKS_OTHER,
-					Category::CAT_GAME_OTHER,
-					Category::CAT_MOVIE_OTHER,
-					Category::CAT_MUSIC_OTHER,
-					Category::CAT_PC_PHONE_OTHER,
-					Category::CAT_TV_OTHER,
-					Category::CAT_OTHER_HASHED,
-					Category::CAT_XXX_OTHER,
-					Category::CAT_MISC
-				)
+			(int)$query['categoryid'],
+			array(
+				Category::CAT_BOOKS_OTHER,
+				Category::CAT_GAME_OTHER,
+				Category::CAT_MOVIE_OTHER,
+				Category::CAT_MUSIC_OTHER,
+				Category::CAT_PC_PHONE_OTHER,
+				Category::CAT_TV_OTHER,
+				Category::CAT_OTHER_HASHED,
+				Category::CAT_XXX_OTHER,
+				Category::CAT_MISC
 			)
+		)
 		) {
 			$foundName = false;
 		}
@@ -337,8 +353,15 @@ class PostProcess
 					// Add to release files.
 					if ($filesAdded < 11 &&
 						$this->db->queryOneRow(
-							sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
-								$relID, $this->db->escapeString($file['name']))) === false
+							sprintf('
+								SELECT id
+								FROM releasefiles
+								WHERE releaseid = %d
+								AND name = %s',
+								$relID,
+								$this->db->escapeString($file['name'])
+							)
+						) === false
 					) {
 
 						// Try to add the files to the DB.
@@ -361,14 +384,13 @@ class PostProcess
 
 			// If we found some files.
 			if ($filesAdded > 0) {
-				$this->debugging->start(
-					'parsePAR2', 'Added ' . $filesAdded . ' releasefiles from PAR2 for ' . $query['searchname'], 5
-				);
+				$this->debugging->start('parsePAR2', 'Added ' . $filesAdded . ' releasefiles from PAR2 for ' . $query['searchname'], 5);
 
 				// Update the file count with the new file count + old file count.
 				$this->db->queryExec(
 					sprintf('
-						UPDATE releases SET rarinnerfilecount = rarinnerfilecount + %d
+						UPDATE releases
+						SET rarinnerfilecount = rarinnerfilecount + %d
 						WHERE id = %d',
 						$filesAdded,
 						$relID

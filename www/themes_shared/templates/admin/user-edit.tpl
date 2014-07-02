@@ -71,6 +71,15 @@
 			</td>
 		</tr>
 		<tr>
+			<td>Game View:</td>
+			<td>
+				<input name="gameview"
+					type="checkbox"
+					value="1"
+					{if $user.gameview=="1"}checked="checked"{/if}" />
+			</td>
+		</tr>
+		<tr>
 			<td>Book View:</td>
 			<td>
 				<input name="bookview" type="checkbox" value="1" {if $user.bookview=="1"}checked="checked"{/if}" />
