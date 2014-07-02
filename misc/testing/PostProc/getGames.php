@@ -17,8 +17,8 @@ if ($total > 0) {
 		$starttime = microtime(true);
 		$gameInfo = $game->parseTitle($arr['searchname']);
 		if ($gameInfo !== false) {
-			$game = $game->updateGamesInfo($gameInfo);
-			if ($game === false) {
+			$gameData = $game->updateGamesInfo($gameInfo);
+			if ($gameData === false) {
 				echo $c->primary($gameInfo['release'] . ' not found');
 			}
 		}

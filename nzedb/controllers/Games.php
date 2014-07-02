@@ -680,69 +680,59 @@ class Games
 	/**
 	 * Parse the game release title
 	 *
-	 * @param $releasename
+	 * @param string $releasename
 	 *
 	 * @return array|bool
 	 */
-	function parseTitle($releasename)
+	public function parseTitle($releasename)
 	{
-		$matches = '';
-		$releasename = preg_replace('/\sMulti\d?\s/i', '', $releasename);
-		$result = array();
-
 		// Get name of the game from name of release.
 		if (preg_match(
 			'/^(.+((EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|' .
 			'Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ \:](v\.?\d\.\d|RIP|ADDON|' .
 			'EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|' .
-			'DEMO|DISTRIBUTION|BETA|REGIONFREE|READ\.?NFO|NFOFIX|Update)/i',
-			$releasename,
+			'DEMO|DISTRIBUTION|BETA|REGIONFREE|READ\.?NFO|NFOFIX|Update|Razor1911|Reloaded)/i',
+			preg_replace('/\sMulti\d?\s/i', '', $releasename),
 			$matches)
 		) {
-			$title = $matches['title'];
 			// Replace dots, underscores, or brackets with spaces.
-			$result['title'] = preg_replace('/(\.|_|\%20|\[|\])/', ' ', $title);
-			$result['title'] = str_replace(' RF ', ' ', $result['title']);
+			$result['title'] = str_replace(' RF ', ' ', preg_replace('/(\.|_|\%20|\[|\])/', ' ', $matches['title']));
 			// Needed to add code to handle DLC Properly.
 			if (stripos($result['title'], 'dlc') !== false) {
 				$result['dlc'] = '1';
 				if (stripos($result['title'], 'Rock Band Network') !== false) {
 					$result['title'] = 'Rock Band';
-				} else {
-					if (stripos($result['title'], '-') !== false) {
-						$dlc = explode("-", $result['title']);
-						$result['title'] = $dlc[0];
-					} else {
-						if (preg_match('/(.*? .*?) /i', $result['title'], $dlc)) {
-							$result['title'] = $dlc[0];
-						}
-					}
+				} else if (stripos($result['title'], '-') !== false) {
+					$dlc = explode("-", $result['title']);
+					$result['title'] = $dlc[0];
+				} else if (preg_match('/(.*? .*?) /i', $result['title'], $dlc)) {
+					$result['title'] = $dlc[0];
 				}
 			}
-		}
 
-		//get the platform of the release
-		if (preg_match('/[\.\-_ ](?P<platform>MAC|MACOSX)/i', $releasename, $matches)) {
-			$platform = $matches['platform'];
-			if (preg_match('/^MAC$/i', $platform)) {
-				$platform = 'MAC';
+			//get the platform of the release
+			if (preg_match('/[\.\-_ ](?P<platform>MAC|MACOSX)/i', $releasename, $matches)) {
+				$platform = $matches['platform'];
+				if (preg_match('/^MAC$/i', $platform)) {
+					$platform = 'MAC';
+				} else {
+					$platform = 'MACOSX';
+				}
 			} else {
-				$platform = 'MACOSX';
+				$platform = "PC";
 			}
-		} else {
-			$platform = "PC";
+
+			$browseNode = $this->getBrowseNode($platform);
+			$result['platform'] = $platform;
+			$result['node'] = $browseNode;
+			$result['release'] = $releasename;
+
+			// Other option is to pass the $release->categoryID here if we don't find a platform but that would require an
+			// extra lookup to determine the name. In either case we should have a title at the minimum.
+			return array_map("trim", $result);
 		}
 
-		$browseNode = $this->getBrowseNode($platform);
-		$result['platform'] = $platform;
-		$result['node'] = $browseNode;
-		$result['release'] = $releasename;
-		array_map("trim", $result);
-
-		// Make sure we got a title and platform otherwise the resulting lookup will probably be shit.
-		// Other option is to pass the $release->categoryID here if we don't find a platform but that would require an
-		// extra lookup to determine the name. In either case we should have a title at the minimum.
-		return (isset($result['title']) && !empty($result['title']) && isset($result['platform'])) ? $result : false;
+		return false;
 	}
 
 	/**
