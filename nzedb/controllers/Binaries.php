@@ -640,7 +640,7 @@ class Binaries
 					sprintf(
 						'UPDATE partrepair SET attempts = attempts + 1 WHERE group_id = %d AND numberid %s',
 						$groupArr['id'],
-						($first === $last ? '= ' . $first : 'IN (' . implode(',', range($first, $last)) . ')')
+						($first == $last ? '= ' . $first : 'IN (' . implode(',', range($first, $last)) . ')')
 					)
 				);
 				return false;
