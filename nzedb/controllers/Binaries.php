@@ -658,6 +658,8 @@ class Binaries
 
 				return false;
 			}
+			// Re-enable header compression.
+			$this->nntp->enableCompression();
 		}
 		// Start of processing headers.
 		$this->startCleaning = microtime(true);

@@ -13,6 +13,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: (UPDATE TO settings.php, update it if you have it.) Setting to settings.php.example for hiding/showing missing autoloader files.
 	* Fix: misc/testing/PostProc/getGames.php and changes to Games->ParseTitle
 	* Upd: Update games regex to pick up more games.
+	* Add: Re-enable header compression if header compression was disabled during fetching headers due to a decompression error.
 2014-07-01 kevin
 	* ---: Happy canada day to all.
 	* Add: Missing reqid group to tsv.
