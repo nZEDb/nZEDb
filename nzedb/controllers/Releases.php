@@ -3346,7 +3346,7 @@ class Releases
 	}
 
 	/**
-	 * Get all newest games with covers for poster wall.
+	 * Get all newest console games with covers for poster wall.
 	 *
 	 * @return array
 	 */
@@ -3364,6 +3364,30 @@ class Releases
 			AND a.consoleinfoid != -2
 			AND a.consoleinfoid != 0
 			GROUP BY a.consoleinfoid
+			ORDER BY a.postdate
+			DESC LIMIT 35"
+		);
+	}
+
+	/**
+	 * Get all newest PC games with covers for poster wall.
+	 *
+	 * @return array
+	 */
+	public function getNewestGames()
+	{
+		return $this->db->query(
+			"SELECT DISTINCT (a.gamesinfo_id),
+				guid, name, b.title, searchname, size, completion,
+				postdate, categoryid, comments, grabs, c.cover
+			FROM releases a, category b, gamesinfo c
+			WHERE c.cover > 0
+			AND a.categoryid = 4050
+			AND b.title = 'Games'
+			AND a.gamesinfo_id = c.id
+			AND a.gamesinfo_id != -2
+			AND a.gamesinfo_id != 0
+			GROUP BY a.gamesinfo_id
 			ORDER BY a.postdate
 			DESC LIMIT 35"
 		);
