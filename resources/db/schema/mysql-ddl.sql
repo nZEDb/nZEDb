@@ -72,6 +72,7 @@ CREATE TABLE         releases (
   imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
   musicinfoid       INT                            NULL,
   consoleinfoid     INT                            NULL,
+  gamesinfo_id      INT                            NULL,
   bookinfoid        INT                            NULL,
   anidbid           INT                            NULL,
   preid             INT UNSIGNED                   NOT NULL DEFAULT '0',
@@ -109,6 +110,7 @@ CREATE TABLE         releases (
   INDEX ix_releases_nfostatus                 (nfostatus),
   INDEX ix_releases_musicinfoid               (musicinfoid),
   INDEX ix_releases_consoleinfoid             (consoleinfoid),
+  INDEX ix_releases_gamesinfo_id              (gamesinfo_id),
   INDEX ix_releases_bookinfoid                (bookinfoid),
   INDEX ix_releases_haspreview_passwordstatus (haspreview, passwordstatus),
   INDEX ix_releases_postdate_searchname       (postdate, searchname),
@@ -151,6 +153,7 @@ CREATE TABLE         releasesearch (
   DEFAULT CHARSET = utf8
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 1;
+
 
 DROP TABLE IF EXISTS releasefiles;
 CREATE TABLE         releasefiles (
@@ -326,6 +329,7 @@ CREATE TABLE         releasenfo (
   DEFAULT CHARSET = utf8
   COLLATE         = utf8_unicode_ci
   AUTO_INCREMENT  = 1;
+
 
 DROP TABLE IF EXISTS binaryblacklist;
 CREATE TABLE         binaryblacklist (
@@ -570,6 +574,7 @@ CREATE TABLE         users (
   musicview      INT              NOT NULL DEFAULT '1',
   consoleview    INT              NOT NULL DEFAULT '1',
   bookview       INT              NOT NULL DEFAULT '1',
+  gameview       INT              NOT NULL DEFAULT 1,
   saburl         VARCHAR(255)     NULL DEFAULT NULL,
   sabapikey      VARCHAR(255)     NULL DEFAULT NULL,
   sabapikeytype  TINYINT(1)       NULL DEFAULT NULL,
@@ -807,6 +812,30 @@ CREATE TABLE         consoleinfo (
   AUTO_INCREMENT  = 1;
 
 
+DROP TABLE IF EXISTS gamesinfo;
+CREATE TABLE         gamesinfo (
+  id          INT(10) UNSIGNED    NOT NULL AUTO_INCREMENT,
+  title       VARCHAR(255)        NOT NULL,
+  asin        VARCHAR(128)        DEFAULT NULL,
+  url         VARCHAR(1000)       DEFAULT NULL,
+  platform    VARCHAR(255)        DEFAULT NULL,
+  publisher   VARCHAR(255)        DEFAULT NULL,
+  genreid     INT(10)             NULL DEFAULT NULL,
+  esrb        VARCHAR(255)        NULL DEFAULT NULL,
+  releasedate DATETIME            DEFAULT NULL,
+  review      VARCHAR(3000)       DEFAULT NULL,
+  cover       TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+  createddate DATETIME            NOT NULL,
+  updateddate DATETIME            NOT NULL,
+  PRIMARY KEY                    (id),
+  UNIQUE INDEX ix_gamesinfo_asin (asin)
+)
+  ENGINE          = MyISAM
+  DEFAULT CHARSET = utf8
+  COLLATE         = utf8_unicode_ci
+  AUTO_INCREMENT  = 1;
+
+
 DROP TABLE IF EXISTS bookinfo;
 CREATE TABLE         bookinfo (
   id          INT(10) UNSIGNED    NOT NULL AUTO_INCREMENT,
@@ -1000,63 +1029,78 @@ CREATE TABLE         predbhash (
   COLLATE         = utf8mb4_unicode_ci;
 
 
-DELIMITER $$
-CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR
-                                                                            NEW.name REGEXP '[a-fA-F0-9]{32}'
-THEN SET NEW.ishashed = 1;
-ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
-  THEN SET NEW.isrequestid = 1; END IF;
-END;
+DELIMITER
 $$
-CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW BEGIN IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR
-                                                                            NEW.name REGEXP '[a-fA-F0-9]{32}'
-THEN SET NEW.ishashed = 1;
-ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
-  THEN SET NEW.isrequestid = 1; END IF;
-END;
+CREATE TRIGGER check_insert BEFORE INSERT ON releases FOR EACH ROW
+  BEGIN
+    IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
+      THEN SET NEW.ishashed = 1;
+    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
+      THEN SET NEW.isrequestid = 1;
+    END IF;
+  END;
 $$
-CREATE TRIGGER check_rfinsert BEFORE INSERT ON releasefiles FOR EACH ROW BEGIN IF NEW.name REGEXP '[a-fA-F0-9]{32}'
-THEN SET NEW.ishashed = 1; END IF;
-END;
+CREATE TRIGGER check_update BEFORE UPDATE ON releases FOR EACH ROW
+  BEGIN
+    IF NEW.searchname REGEXP '[a-fA-F0-9]{32}' OR NEW.name REGEXP '[a-fA-F0-9]{32}'
+      THEN SET NEW.ishashed = 1;
+    ELSEIF NEW.name REGEXP '^\\[ ?([[:digit:]]{4,6}) ?\\]|^REQ\s*([[:digit:]]{4,6})|^([[:digit:]]{4,6})-[[:digit:]]{1}\\['
+      THEN SET NEW.isrequestid = 1;
+    END IF;
+  END;
 $$
-CREATE TRIGGER check_rfupdate BEFORE UPDATE ON releasefiles FOR EACH ROW BEGIN IF NEW.name REGEXP '[a-fA-F0-9]{32}'
-THEN SET NEW.ishashed = 1; END IF;
-END;
+CREATE TRIGGER check_rfinsert BEFORE INSERT ON releasefiles FOR EACH ROW
+  BEGIN
+    IF NEW.name REGEXP '[a-fA-F0-9]{32}'
+      THEN SET NEW.ishashed = 1;
+    END IF;
+  END;
 $$
-CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW BEGIN INSERT INTO releasesearch (releaseid, guid, name, searchname)
-VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname);
-END;
+CREATE TRIGGER check_rfupdate BEFORE UPDATE ON releasefiles FOR EACH ROW
+  BEGIN
+    IF NEW.name REGEXP '[a-fA-F0-9]{32}'
+      THEN SET NEW.ishashed = 1;
+    END IF;
+  END;
 $$
-CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW BEGIN IF NEW.guid != OLD.guid
-THEN UPDATE releasesearch
-SET guid = NEW.guid
-WHERE releaseid = OLD.id; END IF;
-  IF NEW.name != OLD.name
-  THEN UPDATE releasesearch
-  SET name = NEW.name
-  WHERE releaseid = OLD.id; END IF;
-  IF NEW.searchname != OLD.searchname
-  THEN UPDATE releasesearch
-  SET searchname = NEW.searchname
-  WHERE releaseid = OLD.id; END IF;
-END;
+CREATE TRIGGER insert_search AFTER INSERT ON releases FOR EACH ROW
+  BEGIN
+    INSERT INTO releasesearch (releaseid, guid, name, searchname) VALUES (NEW.id, NEW.guid, NEW.name, NEW.searchname);
+  END;
 $$
-CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW BEGIN DELETE FROM releasesearch
-WHERE releaseid = OLD.id;
-END;
+CREATE TRIGGER update_search AFTER UPDATE ON releases FOR EACH ROW
+  BEGIN
+    IF NEW.guid != OLD.guid
+      THEN UPDATE releasesearch SET guid = NEW.guid WHERE releaseid = OLD.id;
+    END IF;
+    IF NEW.name != OLD.name
+      THEN UPDATE releasesearch SET name = NEW.name WHERE releaseid = OLD.id;
+    END IF;
+    IF NEW.searchname != OLD.searchname
+      THEN UPDATE releasesearch SET searchname = NEW.searchname WHERE releaseid = OLD.id;
+    END IF;
+  END;
 $$
-CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW BEGIN INSERT INTO predbhash (pre_id, hashes)
-VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)));
-END;
+CREATE TRIGGER delete_search AFTER DELETE ON releases FOR EACH ROW
+  BEGIN
+    DELETE FROM releasesearch WHERE releaseid = OLD.id;
+  END;
 $$
-CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW BEGIN IF NEW.title != OLD.title
-THEN UPDATE predbhash
-SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title))
-WHERE pre_id = OLD.id; END IF;
-END;
+CREATE TRIGGER insert_hashes AFTER INSERT ON predb FOR EACH ROW
+  BEGIN
+    INSERT INTO predbhash (pre_id, hashes) VALUES (NEW.id, CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)));
+  END;
 $$
-CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW BEGIN DELETE FROM predbhash
-WHERE pre_id = OLD.id;
-END;
+CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
+  BEGIN
+    IF NEW.title != OLD.title
+      THEN UPDATE predbhash SET hashes = CONCAT_WS(',', MD5(NEW.title), MD5(MD5(NEW.title)), SHA1(NEW.title)) WHERE pre_id = OLD.id;
+    END IF;
+  END;
+$$
+CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
+  BEGIN
+    DELETE FROM predbhash WHERE pre_id = OLD.id;
+  END;
 $$
 DELIMITER ;
