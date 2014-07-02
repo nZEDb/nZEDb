@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-07-02 ruhllatio
 	* Fix: undefined offset 0 error in Games.php lookup
 	* Chg: fastDelete releases query to remove concats
+	* Chg: New Poster Wall games sizing is now non-mongoloid
 2014-07-02 kevin
 	* Add: Add in pull request by tasky for fetching PC game info from GiantBomb and amazon, and adds PC games to new poster wall.
 	* Fix: Patch for missing 'setting' for giantbomb api key.
