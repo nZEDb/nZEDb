@@ -21,6 +21,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Undefined namespace issues in utility.
 	* Upd: Update some IGN.com links.
 	* Chg: Add check to see if explode is false on getXOVER (in case string is empty).
+	* Chg: Changes to binaries to help with large sections of missing headers.
 2014-07-01 kevin
 	* ---: Happy canada day to all.
 	* Add: Missing reqid group to tsv.
