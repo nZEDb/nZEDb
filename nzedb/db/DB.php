@@ -968,8 +968,8 @@ class DB extends \PDO
 	 * Try to create new tables for the group_id, if we fail, log the error and exit.
 	 * Returns table names, with group ID if tpg is on.
 	 *
-	 * @param int $tpgSetting 0, tpg is off in site setting, 1 tpg is on in site setting.
-	 * @param int $groupID    ID of the group.
+	 * @param bool $tpgSetting false, tpg is off in site setting, true tpg is on in site setting.
+	 * @param int  $groupID    ID of the group.
 	 *
 	 * @return array The table names.
 	 */
@@ -980,7 +980,7 @@ class DB extends \PDO
 		$group['pname']  = 'parts';
 		$group['prname'] = 'partrepair';
 
-		if ($tpgSetting == 1) {
+		if ($tpgSetting === true) {
 			if ($this->newtables($groupID) === false) {
 				$this->echoError(
 					'There is a problem creating new parts/files tables for this group ID: ' . $groupID,

@@ -1,7 +1,5 @@
 <?php
 
-use nzedb\db\DB;
-
 /**
  * Class Binaries
  */
@@ -140,9 +138,9 @@ class Binaries
 	/**
 	 * Should we use table per group?
 	 *
-	 * @var int
+	 * @var bool
 	 */
-	private $tablepergroup;
+	private $_tablePerGroup;
 
 	/**
 	 * Echo to cli?
@@ -206,7 +204,7 @@ class Binaries
 		$this->c = new ColorCLI();
 		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->consoleTools = new ConsoleTools();
-		$this->db = new DB();
+		$this->db = new nzedb\db\DB();
 		if ($this->debug) {
 			$this->debugging = new Debugging("Binaries");
 		}
@@ -223,8 +221,8 @@ class Binaries
 		$this->NewGroupMsgsToScan = (!empty($this->site->newgroupmsgstoscan)) ? $this->site->newgroupmsgstoscan : 50000;
 		$this->NewGroupDaysToScan = (!empty($this->site->newgroupdaystoscan)) ? (int)$this->site->newgroupdaystoscan : 3;
 		$this->partrepairlimit = (!empty($this->site->maxpartrepair)) ? (int)$this->site->maxpartrepair : 15000;
-		$this->showdroppedyencparts = (!empty($this->site->showdroppedyencparts)) ? (int)$this->site->showdroppedyencparts : 0;
-		$this->tablepergroup = (!empty($this->site->tablepergroup)) ? (int)$this->site->tablepergroup : 0;
+		$this->showdroppedyencparts = ($this->site->showdroppedyencparts == 1) ? true : false;
+		$this->_tablePerGroup = ($this->site->tablepergroup == 1 ? true : false);
 
 		$this->blackList = $this->message = array();
 		$this->blackListLoaded = false;
@@ -621,7 +619,7 @@ class Binaries
 		$returnArray = array();
 
 		// Check that tables exist, create if they do not
-		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupArr['id']);
+		$group = $this->db->tryTablePerGroup($this->_tablePerGroup, $groupArr['id']);
 
 		// Download the headers.
 		if ($type === 'partrepair') {
@@ -1083,7 +1081,7 @@ class Binaries
 	public function partRepair($groupArr)
 	{
 		// Check that tables exist, create if they do not.
-		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupArr['id']);;
+		$group = $this->db->tryTablePerGroup($this->_tablePerGroup, $groupArr['id']);;
 
 		// Get all parts in partrepair table.
 		$missingParts = $this->db->query(
@@ -1212,7 +1210,7 @@ class Binaries
 	private function addMissingParts($numbers, $groupID)
 	{
 		// Check that tables exist, create if they do not.
-		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupID);
+		$group = $this->db->tryTablePerGroup($this->_tablePerGroup, $groupID);
 
 		$insertStr = 'INSERT INTO ' . $group['prname'] . ' (numberid, group_id) VALUES ';
 		foreach ($numbers as $number) {
@@ -1236,7 +1234,7 @@ class Binaries
 	private function removeRepairedParts($numbers, $groupID)
 	{
 		// Check that tables exist, create if they do not.
-		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupID);
+		$group = $this->db->tryTablePerGroup($this->_tablePerGroup, $groupID);
 
 		$sql = 'DELETE FROM ' . $group['prname'] . ' WHERE numberid in (';
 		foreach ($numbers as $number) {
