@@ -67,6 +67,7 @@ if (is_file(__DIR__ . DS . 'settings.php')) {
 	define('nZEDb_LOGERROR', false);
 	define('nZEDb_LOGFATAL', false);
 	define('nZEDb_LOGQUERIES', false);
+	define('nZEDb_LOGAUTOLOADER', false);
 	define('nZEDb_QUERY_STRIP_WHITESPACE', false);
 	define('nZEDb_RENAME_PAR2', true);
 	define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
