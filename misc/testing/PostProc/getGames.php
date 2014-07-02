@@ -6,9 +6,12 @@ $game = new Games(true);
 $db = new nzedb\db\DB();
 $c = new ColorCLI();
 
-$res = $db->queryDirect(sprintf("SELECT searchname, id FROM releases WHERE gamesinfo_id IS NULL AND categoryid = 4050 ORDER BY id DESC" ));
-if ($res !== false && $res->rowCount() > 0) {
-	echo $c->header("Updating game info for " . number_format($res->rowCount()) . " releases.");
+$res = $db->query(
+	sprintf("SELECT searchname FROM releases WHERE gamesinfo_id IS NULL AND categoryid = 4050 ORDER BY id DESC LIMIT 100")
+);
+$total = count($res);
+if ($total > 0) {
+	echo $c->header("Updating game info for " . number_format($total) . " releases.");
 
 	foreach ($res as $arr) {
 		$starttime = microtime(true);
