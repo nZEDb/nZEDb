@@ -636,19 +636,13 @@ class Binaries
 
 			// Increment if part repair and return false.
 			if ($type === 'partrepair') {
-				$query = sprintf(
-					'UPDATE partrepair SET attempts = attempts + 1 WHERE group_id = %d AND numberid ',
-					$groupArr['id']
+				$this->db->queryExec(
+					sprintf(
+						'UPDATE partrepair SET attempts = attempts + 1 WHERE group_id = %d AND numberid %s',
+						$groupArr['id'],
+						($first === $last ? '= ' . $first : 'IN (' . implode(',', range($first, $last)) . ')')
+					)
 				);
-
-				// Check if it's more than 1 article.
-				if ($first !== $last) {
-					$query .= 'IN (' . implode(',', range($first, $last)) . ')';
-				} else {
-					$query .= '= ' . $first;
-				}
-
-				$this->db->queryExec($query);
 				return false;
 			}
 
