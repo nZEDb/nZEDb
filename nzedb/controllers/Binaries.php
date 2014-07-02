@@ -624,54 +624,61 @@ class Binaries
 		$group = $this->db->tryTablePerGroup($this->tablepergroup, $groupArr['id']);
 
 		// Download the headers.
-		$headers = $this->nntp->getXOVER($first . "-" . $last);
+		if ($type === 'partrepair') {
+			// This is slower but possibly is better with missing headers.
+			$headers = $this->nntp->getOverview($first . "-" . $last, true, false);
+		} else {
+			$headers = $this->nntp->getXOVER($first . "-" . $last);
+		}
 
 		// If there were an error, try to reconnect.
 		if ($this->nntp->isError($headers)) {
+
+			// Increment if part repair and return false.
+			if ($type === 'partrepair') {
+				$query = sprintf(
+					'UPDATE partrepair SET attempts = attempts + 1 WHERE group_id = %d AND numberid ',
+					$groupArr['id']
+				);
+
+				// Check if it's more than 1 article.
+				if ($first !== $last) {
+					$query .= 'IN (' . implode(',', range($first, $last)) . ')';
+				} else {
+					$query .= '= ' . $first;
+				}
+
+				$this->db->queryExec($query);
+				return false;
+			}
+
 			// This is usually a compression error, so try disabling compression.
 			$this->nntp->doQuit();
 			if ($this->nntp->doConnect(false) !== true) {
 				return false;
 			}
 
+			// Re-select group, download headers again without compression and re-enable compression.
 			$this->nntp->selectGroup($groupArr['name']);
 			$headers = $this->nntp->getXOVER($first . '-' . $last);
+			$this->nntp->enableCompression();
+
+			// Check if the non-compression headers have an error.
 			if ($this->nntp->isError($headers)) {
-				if ($type !== 'partrepair') {
 
-					$dMessage = "Code {$headers->code}: {$headers->message}\nSkipping group: ${groupArr['name']}";
-					if ($this->debug) {
-						$this->debugging->start("scan", $dMessage, 3);
-					}
+				$dMessage = "Code {$headers->code}: {$headers->message}\nSkipping group: ${groupArr['name']}";
+				if ($this->debug) {
+					$this->debugging->start("scan", $dMessage, 3);
+				}
 
-					if ($this->echo) {
-						$this->c->doEcho($this->c->error($dMessage), true);
-					}
-
-					// If partrepair, increment attempts.
-				} else {
-
-					$query = sprintf(
-						'UPDATE partrepair SET attempts = attempts + 1 WHERE group_id = %d AND numberid ',
-						$groupArr['id']
-					);
-
-					// Check if it's more than 1 article.
-					if ($first !== $last) {
-						$query .= 'IN (' . implode(',', range($first, $last)) . ')';
-					} else {
-						$query .= '= ' . $first;
-					}
-
-					$this->db->queryExec($query);
-
+				if ($this->echo) {
+					$this->c->doEcho($this->c->error($dMessage), true);
 				}
 
 				return false;
 			}
-			// Re-enable header compression.
-			$this->nntp->enableCompression();
 		}
+
 		// Start of processing headers.
 		$this->startCleaning = microtime(true);
 
