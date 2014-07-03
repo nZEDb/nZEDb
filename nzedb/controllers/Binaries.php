@@ -890,14 +890,10 @@ class Binaries
 						$tempPartsQuery = $partsQuery;
 
 						foreach ($data['Parts'] as $partData) {
-							$tempPartsQuery .= sprintf(
-								' (%d, %d, %s, %d, %d),',
-								$binaryID,
-								$partData['number'],
-								$this->_db->escapeString($partData['Message-ID']),
-								$partData['part'],
-								$partData['size']
-							);
+							$tempPartsQuery .=
+								' (' . $binaryID . ',' . $partData['number'] . ',' .
+								$this->_db->escapeString($partData['Message-ID']) . ',' .
+								$partData['part'] . ',' . $partData['size'] . '),';
 						}
 
 						if ($this->_db->queryExec(rtrim($tempPartsQuery, ',')) === false) {
