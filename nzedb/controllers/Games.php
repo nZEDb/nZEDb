@@ -489,7 +489,10 @@ class Games
 
 		$check = $this->db->queryOneRow(
 			sprintf('
-				SELECT id FROM gamesinfo WHERE title = %s AND asin = %s',
+				SELECT id
+				FROM gamesinfo
+				WHERE title = %s
+				AND asin = %s',
 				$this->db->escapeString($con['title']),
 				$this->db->escapeString($con['asin'])
 			)
@@ -596,7 +599,7 @@ class Games
 		$obj = new GiantBomb($this->pubkey);
 		try {
 			$result = json_decode(json_encode($obj->search($title, '', 1)), true);
-			if (!is_array($result)) {
+			if (!is_array($result['results']) || (int) $result['number_of_total_results'] === 0) {
 				$result = false;
 			} else {
 				$result = $result['results'][0]['id'];
@@ -617,7 +620,8 @@ class Games
 				WHERE nzbstatus = 1 %s
 				AND gamesinfo_id IS NULL
 				AND categoryid = 4050
-				ORDER BY postdate DESC LIMIT %d',
+				ORDER BY postdate DESC
+				LIMIT %d',
 				$this->renamed,
 				$this->gameqty
 			)
@@ -691,7 +695,7 @@ class Games
 		if (preg_match(
 			'/^(.+((EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|' .
 			'Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ \:](v\.?\d\.\d|RIP|ADDON|' .
-			'EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|' .
+			'EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|\(GAMES\)\s*\(C\)|PROPER|REPACK|RETAIL|' .
 			'DEMO|DISTRIBUTION|BETA|REGIONFREE|READ\.?NFO|NFOFIX|Update|' .
 			// Group names, like Reloaded, CPY, Razor1911, etc
 			'[a-z0-9]{2,}$)/i',
