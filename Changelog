@@ -13,6 +13,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Speed up header inserts (3-4x faster from my end).
 	* Chg: Insert to insert ignore to hide duplicate errors on binaries.
 	* Chg: Remove doubled period check on compressed headers.
+	* Add: Script for setting the backfill start article based on the group's oldest release.
 2014-07-02 taskym
 	* Add: Add profile preference for Games cover view
 2014-07-02 ruhllatio
