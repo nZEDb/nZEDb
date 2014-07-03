@@ -461,6 +461,11 @@ class NNTP extends Net_NNTP_Client
 			// Split the individual headers by tab.
 			$header = explode("\t", $header);
 
+			// Make sure it's not empty.
+			if ($header === false) {
+				continue;
+			}
+
 			// Temp array to store the header.
 			$headerArray = $overview;
 
@@ -1319,11 +1324,6 @@ class NNTP extends Net_NNTP_Client
 					$message = $this->throwError($this->_c->error($message), 1000);
 					return $message;
 				}
-			}
-
-			// Check for line that starts with double period, remove one.
-			if ($buffer[0] === '.' && $buffer[1] === '.') {
-				$buffer = substr($buffer, 1);
 			}
 
 			// Append buffer to final data object.

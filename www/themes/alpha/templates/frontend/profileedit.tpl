@@ -64,6 +64,13 @@
 				<span class="help-block">Browse music covers. Only shows music with known lookup info.</span>
 			</td>
 		</tr>
+			<tr>
+				<th>View Game Page:</th>
+				<td>
+					<input id="gameview" name="gameview" value="1" type="checkbox" {if $user.gameview=="1"}checked="checked"{/if}>
+					<span class="help-block">Browse game covers. Only shows games with known lookup info.</span>
+				</td>
+			</tr>
 		<tr>
 			<th>View Console Page:</th>
 			<td>
