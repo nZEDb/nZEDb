@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-03 bart39
+	* Fix: Fix RottenTomatoes covers due to api changes.
 2014-07-03 ruhllatio
 	* Fix: undefined offset 0 error for real in Games.php.
 2014-07-03 kevin
