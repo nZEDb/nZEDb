@@ -897,7 +897,7 @@ class Binaries
 						}
 
 						if ($this->_db->queryExec(rtrim($tempPartsQuery, ',')) === false) {
-							$headersNotInserted[] = range($first, $last);
+							$headersNotInserted = range($first, $last);
 							$this->_db->Rollback();
 						} else {
 							$this->_db->Commit();
