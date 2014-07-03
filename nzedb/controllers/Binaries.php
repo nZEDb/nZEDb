@@ -901,7 +901,7 @@ class Binaries
 						$inserted = $this->_db->queryExec($partsQuery);
 
 						if ($inserted === false) {
-							$headersNotInserted[] = range(min($data['parts']), max($data['parts']));
+							$headersNotInserted[] = range($first, $last);
 							$this->_db->Rollback();
 						} else {
 							$this->_db->Commit();
