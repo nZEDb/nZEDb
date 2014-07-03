@@ -883,7 +883,7 @@ class Binaries
 							$binaryID = $binaryCheck['id'];
 						}
 
-						$partsQuery = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size) VALUES', $groupNames['pname']);
+						$partsQuery = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES', $groupNames['pname']);
 
 						foreach ($data['Parts'] AS $partData) {
 							$partsQuery .= sprintf(
