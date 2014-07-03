@@ -805,7 +805,7 @@ class Binaries
 				foreach ($this->message AS $subject => $data) {
 					if (isset($data['Parts'])) {
 
-						//$this->_db->beginTransaction();
+						$this->_db->beginTransaction();
 
 						// Check if we already inserted the collection.
 						if (isset($collectionHashes[$data['CollectionHash']])) {
@@ -897,8 +897,6 @@ class Binaries
 						}
 
 						$partsQuery = rtrim($partsQuery, ',');
-
-						$this->_db->beginTransaction();
 
 						$inserted = $this->_db->queryExec($partsQuery);
 
