@@ -61,9 +61,12 @@ class adultdvdempire
 		$this->edithtml = new simple_html_dom();
 	}
 
-
 	/**
-	 * @return array|bool
+	 * Gets Trailer Movies -- Need layout change
+	 *
+	 * Todo: Make layout work with the player/Download swf?
+	 *
+	 * @return array|bool - url, streamid, basestreamingurl
 	 */
 	public function trailers()
 	{
@@ -94,7 +97,9 @@ class adultdvdempire
 	}
 
 	/**
-	 * @return array
+	 * Gets cover images for the xxx release
+	 *
+	 * @return array - Boxcover and backcover
 	 */
 	public function covers()
 	{
@@ -122,9 +127,11 @@ class adultdvdempire
 	}
 
 	/**
-	 * @param bool $tagline
+	 * Gets the sypnosis and tagline
 	 *
-	 * @return array
+	 * @param bool $tagline - Include tagline? true/false
+	 *
+	 * @return array - plot,tagline
 	 */
 	public function sypnosis($tagline = false)
 	{
@@ -144,9 +151,11 @@ class adultdvdempire
 	}
 
 	/**
-	 * @param bool $awards
+	 * Gets the cast members and/or awards
 	 *
-	 * @return array
+	 * @param bool $awards - Include Awards? true/false
+	 *
+	 * @return array - cast,awards
 	 */
 	public function cast($awards = false)
 	{
@@ -175,7 +184,9 @@ class adultdvdempire
 	}
 
 	/**
-	 * @return array|bool
+	 * Gets categories, if exists return array else return false
+	 *
+	 * @return mixed array|bool - Categories, false
 	 */
 	public function categories()
 	{
@@ -205,9 +216,11 @@ class adultdvdempire
 	}
 
 	/**
-	 * @param bool $features
+	 * Gets Product Information and/or Features
 	 *
-	 * @return array
+	 * @param bool $features Include features? true/false
+	 *
+	 * @return array - ProductInfo/Extras = features
 	 */
 	public function productinfo($features = false)
 	{
@@ -242,11 +255,10 @@ class adultdvdempire
 		return $res;
 	}
 
-	/* Searches the xxx release for a 70% match */
-	/* Sets $urlfound for detailed page */
-	/* Sets $this->html for parsing */
 	/**
-	 * @return bool
+	 * Searches xxx name.
+	 *
+	 * @return bool - True if releases has 70% match, false
 	 */
 	public function search()
 	{
@@ -287,11 +299,12 @@ class adultdvdempire
 		}
 	}
 
-	/* Fetch Url, and any existing trail if used */
 	/**
-	 * @param null $trailing
+	 * Gets raw html content using adeurl and any trailing url.
 	 *
-	 * @return bool
+	 * @param null $trailing  - required
+	 *
+	 * @return bool - true if page has content
 	 */
 	private function getadeurl($trailing = null)
 	{
@@ -314,8 +327,9 @@ class adultdvdempire
 		}
 	}
 
-	/* Gets all information .. returns an array */
-	/**
+	/*
+	 * Gets all Information.
+	 *
 	 * @return array
 	 */
 	public function _getall()
