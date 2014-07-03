@@ -716,7 +716,7 @@ class Binaries
 							$fileCount[6]
 						);
 					$this->message[$subject]['MaxFiles'] = $fileCount[6];
-					$this->message[$subject]['File'] = $fileCount[2];
+					$this->message[$subject]['File']     = $fileCount[2];
 				}
 
 				if (!isset($header['Bytes'])) {
@@ -731,9 +731,9 @@ class Binaries
 					$this->message[$subject]['Parts'][$matches[2]] =
 						array(
 							'Message-ID' => substr($header['Message-ID'], 1, -1), // Strip the < and >
-							'number' => $header['Number'],
-							'part'   => $matches[2],
-							'size'   => $header['Bytes']
+							'number'     => $header['Number'],
+							'part'       => $matches[2],
+							'size'       => $header['Bytes']
 						);
 				}
 			}
@@ -801,6 +801,8 @@ class Binaries
 
 				$collectionHashes = $headersNotInserted = array();
 
+				$partsQuery = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES', $groupNames['pname']);
+
 				// Loop through the reformed article headers.
 				foreach ($this->message AS $subject => $data) {
 					if (isset($data['Parts'])) {
@@ -815,10 +817,10 @@ class Binaries
 
 							// Check if we already have the collection.
 							$collectionCheck = $this->_db->queryOneRow(
-								sprintf("
+								sprintf('
 									SELECT id, subject
 									FROM %s
-									WHERE collectionhash = %s",
+									WHERE collectionhash = %s',
 									$groupNames['cname'],
 									$this->_db->escapeString($data['CollectionHash'])
 								)
@@ -827,17 +829,18 @@ class Binaries
 							// If we don't have the collection, insert it.
 							if ($collectionCheck === false) {
 								$collectionID = $this->_db->queryInsert(
-									sprintf("
+									sprintf('
 										INSERT INTO %s (subject, fromname, date, xref, group_id,
 											totalfiles, collectionhash, dateadded)
 										VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())
-										ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)",
+										ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)',
 										$groupNames['cname'],
 										$this->_db->escapeString(substr($subject, 0, 255)),
 										$this->_db->escapeString(utf8_encode($data['From'])),
 										$this->_db->from_unixtime($data['Date']),
 										$this->_db->escapeString(substr($data['Xref'], 0, 255)),
-										$groupMySQL['id'], $data['MaxFiles'],
+										$groupMySQL['id'],
+										$data['MaxFiles'],
 										$this->_db->escapeString($data['CollectionHash'])
 									)
 								);
@@ -847,7 +850,7 @@ class Binaries
 								// This way we know when the last time a person posted for this hash.
 								$this->_db->queryExec(
 									sprintf(
-										"UPDATE %s SET dateadded = NOW() WHERE id = %s",
+										'UPDATE %s SET dateadded = NOW() WHERE id = %s',
 										$groupNames['cname'],
 										$collectionID
 									)
@@ -857,10 +860,11 @@ class Binaries
 							$collectionHashes[$data['CollectionHash']] = $collectionID;
 						}
 
-						$binaryHash = md5($subject . $data['From']);
+						$binaryHash = md5($subject . $data['From'] . $groupMySQL['id']);
 
 						$binaryCheck = $this->_db->queryOneRow(
-							sprintf("SELECT id FROM %s WHERE binaryhash = %s",
+							sprintf(
+								'SELECT id FROM %s WHERE binaryhash = %s',
 								$groupNames['bname'],
 								$this->_db->escapeString($binaryHash)
 							)
@@ -868,9 +872,9 @@ class Binaries
 
 						if ($binaryCheck === false) {
 							$binaryID = $this->_db->queryInsert(
-								sprintf("
+								sprintf('
 									INSERT INTO %s (binaryhash, name, collectionid, totalparts, filenumber)
-									VALUES (%s, %s, %d, %s, %s)",
+									VALUES (%s, %s, %d, %s, %s)',
 									$groupNames['bname'],
 									$this->_db->escapeString($binaryHash),
 									$this->_db->escapeString($subject),
@@ -883,24 +887,20 @@ class Binaries
 							$binaryID = $binaryCheck['id'];
 						}
 
-						$partsQuery = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES', $groupNames['pname']);
+						$tempPartsQuery = $partsQuery;
 
-						foreach ($data['Parts'] AS $partData) {
-							$partsQuery .= sprintf(
+						foreach ($data['Parts'] as $partData) {
+							$tempPartsQuery .= sprintf(
 								' (%d, %d, %s, %d, %d),',
 								$binaryID,
 								$partData['number'],
 								$this->_db->escapeString($partData['Message-ID']),
-								round($partData['part']),
-								(is_numeric($partData['size']) ? $partData['size'] : 0)
+								$partData['part'],
+								$partData['size']
 							);
 						}
 
-						$partsQuery = rtrim($partsQuery, ',');
-
-						$inserted = $this->_db->queryExec($partsQuery);
-
-						if ($inserted === false) {
+						if ($this->_db->queryExec(rtrim($tempPartsQuery, ',')) === false) {
 							$headersNotInserted[] = range($first, $last);
 							$this->_db->Rollback();
 						} else {
@@ -909,11 +909,12 @@ class Binaries
 
 					}
 				}
+
 				$notInsertedCount = count($headersNotInserted);
 				if ($notInsertedCount > 0) {
-					$dMessage = $notInsertedCount . " parts failed to insert.";
+					$dMessage = $notInsertedCount . ' parts failed to insert.';
 					if ($this->_debug) {
-						$this->_debugging->start("scan", $dMessage, 3);
+						$this->_debugging->start('scan', $dMessage, 3);
 					}
 
 					if ($this->_echoCLI) {
