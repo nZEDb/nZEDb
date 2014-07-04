@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-04 kevin
 	* Chg: Binaries, more speedups to inserting headers, fix issue with part repair.
+	* Add: Speed-up for those with no enabled blacklists by buffering the SQL check.
 2014-07-03 bart39
 	* Fix: Fix RottenTomatoes covers due to api changes.
 2014-07-03 ruhllatio
