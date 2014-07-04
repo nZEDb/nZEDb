@@ -4,22 +4,17 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program (see LICENSE.txt in the base directory.  If
  * not, see:
- *
  * @link      <http://www.gnu.org/licenses/>.
  * @author    mike
  * @copyright 2014 nZEDb
  */
-
-//namespace adultdvdempire;
 
 require_once 'simple_html_dom.php';
 
@@ -63,9 +58,7 @@ class adultdvdempire
 
 	/**
 	 * Gets Trailer Movies -- Need layout change
-	 *
 	 * Todo: Make layout work with the player/Download swf?
-	 *
 	 * @return array|bool - url, streamid, basestreamingurl
 	 */
 	public function trailers()
@@ -98,7 +91,6 @@ class adultdvdempire
 
 	/**
 	 * Gets cover images for the xxx release
-	 *
 	 * @return array - Boxcover and backcover
 	 */
 	public function covers()
@@ -144,7 +136,7 @@ class adultdvdempire
 		}
 		if ($this->html->find("p.Tagline", 0)->next_sibling()->next_sibling()) {
 			$ret = $this->html->find("p.Tagline", 0)->next_sibling()->next_sibling();
-			$res['plot'] = trim($ret->innertext);
+			$res['sypnosis'] = trim($ret->innertext);
 		}
 
 		return $res;
@@ -185,7 +177,6 @@ class adultdvdempire
 
 	/**
 	 * Gets categories, if exists return array else return false
-	 *
 	 * @return mixed array|bool - Categories, false
 	 */
 	public function categories()
@@ -257,8 +248,7 @@ class adultdvdempire
 
 	/**
 	 * Searches xxx name.
-	 *
-	 * @return bool - True if releases has 70% match, false
+	 * @return bool - True if releases has 95% match, else false
 	 */
 	public function search()
 	{
@@ -278,7 +268,8 @@ class adultdvdempire
 					$title = $ret->title;
 					$ret = (string)trim($ret->href);
 					similar_text($this->searchterm, $title, $p);
-					if ($p >= 70) {
+					//$p = levenshtein($this->searchterm, $title);
+					if ($p >= 95) {
 						$this->found = true;
 						$this->urlfound = $ret;
 						unset($ret);
@@ -302,7 +293,7 @@ class adultdvdempire
 	/**
 	 * Gets raw html content using adeurl and any trailing url.
 	 *
-	 * @param null $trailing  - required
+	 * @param null $trailing - required
 	 *
 	 * @return bool - true if page has content
 	 */
@@ -335,12 +326,24 @@ class adultdvdempire
 	public function _getall()
 	{
 		$results = array();
-		$results = array_merge($results, $this->sypnosis(true));
-		$results = array_merge($results, $this->productinfo(true));
-		$results = array_merge($results, $this->cast(true));
-		$results = array_merge($results, $this->categories());
-		$results = array_merge($results, $this->covers());
-		$results = array_merge($results, $this->trailers());
+		if (is_array($this->sypnosis(true))) {
+			$results = array_merge($results, $this->sypnosis(true));
+		}
+		if (is_array($this->productinfo(true))) {
+			$results = array_merge($results, $this->productinfo(true));
+		}
+		if (is_array($this->cast(true))) {
+			$results = array_merge($results, $this->cast(true));
+		}
+		if (is_array($this->categories())) {
+			$results = array_merge($results, $this->categories());
+		}
+		if (is_array($this->covers())) {
+			$results = array_merge($results, $this->covers());
+		}
+		if (is_array($this->trailers())) {
+			$results = array_merge($results, $this->trailers());
+		}
 
 		return $results;
 	}
