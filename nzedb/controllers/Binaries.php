@@ -159,6 +159,12 @@ class Binaries
 	protected $_debug = false;
 
 	/**
+	 * Does the user have any blacklists enabled?
+	 * @var bool
+	 */
+	protected $_blackListEmpty = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param NNTP $nntp Class instance of NNTP.
@@ -253,7 +259,6 @@ class Binaries
 
 			// Loop through groups.
 			foreach ($groups as $group) {
-				$this->message = array();
 				$dMessage = "Starting group " . $counter . ' of ' . $groupCount;
 				if ($this->_debug) {
 					$this->_debugging->start("updateAllGroups", $dMessage, 5);
@@ -529,6 +534,9 @@ class Binaries
 	 */
 	public function scan($groupMySQL, $first, $last, $type = 'update', $missingParts = null)
 	{
+		// Reset headers from earlier runs.
+		$this->message = array();
+
 		// Start time of scan method and of fetching headers.
 		$startLoop = $startHeaders = microtime(true);
 
@@ -622,17 +630,10 @@ class Binaries
 				}
 			}
 
-			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
-			usort($headers,
-				function ($elem1, $elem2) {
-					return strcmp($elem1['Subject'], $elem2['Subject']);
-				}
-			);
-
 			$headersReceived = $headersBlackListed = $headersIgnored = $headersRepaired = array();
 
 			// Loop articles, figure out files/parts.
-			foreach ($headers AS $header) {
+			foreach ($headers as $header) {
 				if (!isset($header['Number'])) {
 					continue;
 				}
@@ -671,7 +672,7 @@ class Binaries
 				}
 
 				// Filter subject based on black/white list.
-				if ($this->isBlackListed($header, $groupMySQL['name'])) {
+				if ($this->_blackListEmpty === false && $this->isBlackListed($header, $groupMySQL['name'])) {
 					$headersBlackListed[] = $header['Number'];
 					continue;
 				}
@@ -797,7 +798,7 @@ class Binaries
 			// End of processing headers.
 			$timeCleaning = number_format($startUpdate - $startCleaning, 2);
 
-			if (isset($this->message) && count($this->message) > 0) {
+			if (count($this->message) > 0) {
 
 				$collectionHashes = $headersNotInserted = array();
 
@@ -1129,6 +1130,9 @@ class Binaries
 		}
 		$this->blackList = $this->getBlacklist(true);
 		$this->_blackListLoaded = true;
+		if (count($this->blackList) === 0) {
+			$this->_blackListEmpty = true;
+		}
 	}
 
 	/**

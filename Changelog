@@ -8,6 +8,8 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-04 kevin
 	* Chg: Binaries, more speedups to inserting headers, fix issue with part repair.
+	* Add: Speed-up for those with no enabled blacklists by buffering the SQL check.
+	* Chg: 4x+ speed-up of header processing by not sorting them (the benefits of sorting them is tiny vs the gain in performance).
 2014-07-03 bart39
 	* Fix: Fix RottenTomatoes covers due to api changes.
 2014-07-03 ruhllatio
