@@ -630,17 +630,10 @@ class Binaries
 				}
 			}
 
-			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
-			usort($headers,
-				function ($elem1, $elem2) {
-					return strcmp($elem1['Subject'], $elem2['Subject']);
-				}
-			);
-
 			$headersReceived = $headersBlackListed = $headersIgnored = $headersRepaired = array();
 
 			// Loop articles, figure out files/parts.
-			foreach ($headers AS $header) {
+			foreach ($headers as $header) {
 				if (!isset($header['Number'])) {
 					continue;
 				}
