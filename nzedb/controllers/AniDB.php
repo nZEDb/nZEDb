@@ -273,7 +273,6 @@ class AniDB
 	{
 		$pdo = $this->pdo;
 		$ri = new ReleaseImage();
-		$site = new Sites();
 
 		if (count($results) > 0) {
 			if ($this->echooutput) {

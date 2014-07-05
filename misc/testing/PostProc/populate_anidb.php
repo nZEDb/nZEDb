@@ -14,8 +14,6 @@ class AniDBstandAlone {
 	function __construct($echooutput=false) {
 		$this->pdo = new Settings();
 		$maxanidbprocessed = $this->pdo->getSetting('maxanidbprocessed');
-		$s = new Sites();
-		$this->site = $s->get();
 		$this->aniqty = (!empty($maxanidbprocessed)) ? $maxanidbprocessed : 100;
 		$this->echooutput = $echooutput;
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;

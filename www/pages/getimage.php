@@ -23,7 +23,7 @@ if ($_GET["type"] == "tvrage") {
 
 		$imgdata = $r["imgdata"];
 	} else if ($pdo->dbSystem() === 'pgsql') {
-		$s = new Sites(); // Creates the nZEDb_COVERS constant
+		$pdo = new Settings(); // Creates the nZEDb_COVERS constant
 		$imgdata = @file_get_contents(nZEDb_COVERS . 'tvrage/' . $_GET['id'] . '.jpg');
 		if ($imgdata === false) {
 			$page->show404();
