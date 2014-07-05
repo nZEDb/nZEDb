@@ -3,7 +3,7 @@
 	<versions>
 		<db>244</db>
 		<git>
-			<tag>0.3.6</tag>
+			<tag>0.3.7</tag>
 			<commit>8148</commit>
 			<hooks>
 				<precommit>9</precommit>
