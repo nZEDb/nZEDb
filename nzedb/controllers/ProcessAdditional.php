@@ -10,6 +10,8 @@ Class ProcessAdditional
 	 */
 	const maxCompressedFilesToCheck = 20;
 
+	public $pdo;
+
 	/**
 	 * @var bool
 	 */
@@ -67,10 +69,10 @@ Class ProcessAdditional
 		$this->_echoDebug = nZEDb_DEBUG;
 
 		$this->_nntp = $nntp;
-		$this->_pdo = $pdo;
+		$this->pdo = $pdo;
 
 		$this->_nzb = new NZB($this->_echoCLI);
-		$this->_groups = new Groups($this->_pdo);
+		$this->_groups = new Groups($this->pdo);
 		$this->_archiveInfo = new ArchiveInfo();
 		$this->_releaseFiles = new ReleaseFiles();
 		$this->_nameFixer = new NameFixer($this->_echoCLI);
@@ -221,7 +223,7 @@ Class ProcessAdditional
 		// Get releases starting from -6 password status until we reach our max limit set in site or we reach -1 password status.
 		while (($this->_totalReleases <= $limit) && ($i <= -1)) {
 
-			$releases = $this->_pdo->query(
+			$releases = $this->pdo->query(
 				sprintf('
 						SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id,
 							r.nfostatus, r.completion, r.categoryid, r.searchname
@@ -402,7 +404,7 @@ Class ProcessAdditional
 				$this->_echo('Unable to create directory: ' . $this->tmpPath);
 
 				// Decrement password status.
-				$this->_pdo->queryExec(
+				$this->pdo->queryExec(
 					sprintf(
 						'UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = %d',
 						$this->_release['id']
@@ -427,7 +429,7 @@ Class ProcessAdditional
 			$this->_echo('NZB not found for GUID: ' . $this->_release['guid']);
 
 			// The nzb was not located. decrement the password status.
-			$this->_pdo->queryExec(
+			$this->pdo->queryExec(
 				sprintf(
 					'UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = %d',
 					$this->_release['id']
@@ -452,7 +454,7 @@ Class ProcessAdditional
 			$this->_echo('NZB is empty or broken for GUID: ' . $this->_release['guid']);
 
 			// There does not appear to be any files in the nzb, decrement password status.
-			$this->_pdo->queryExec(
+			$this->pdo->queryExec(
 				sprintf(
 					'UPDATE releases SET passwordstatus = passwordstatus - 1 WHERE id = %d',
 					$this->_release['id']
@@ -773,13 +775,13 @@ Class ProcessAdditional
 			 * Also make sure we don't add too many files, some releases have 100's of files, like PS3 releases.
 			 */
 			if ($this->_addedFileInfo < 11 &&
-				$this->_pdo->queryOneRow(
+				$this->pdo->queryOneRow(
 					sprintf('
 						SELECT id FROM releasefiles
 						WHERE releaseid = %d
 						AND name = %s
 						AND size = %d',
-						$this->_release['id'], $this->_pdo->escapeString($file['name']), $file['size']
+						$this->_release['id'], $this->pdo->escapeString($file['name']), $file['size']
 					)
 				) === false
 			) {
@@ -1164,7 +1166,7 @@ Class ProcessAdditional
 
 				if ($this->_foundJPGSample !== false) {
 					// Update the DB to say we got it.
-					$this->_pdo->queryExec(
+					$this->pdo->queryExec(
 						sprintf('
 							UPDATE releases
 							SET jpgstatus = %d
@@ -1208,7 +1210,7 @@ Class ProcessAdditional
 		}
 
 		// Get the amount of files we found inside the RAR/ZIP files.
-		$releaseFiles = $this->_pdo->queryOneRow(
+		$releaseFiles = $this->pdo->queryOneRow(
 			sprintf('
 				SELECT COUNT(releasefiles.releaseid) AS count,
 				SUM(releasefiles.size) AS size
@@ -1258,7 +1260,7 @@ Class ProcessAdditional
 			);
 		}
 
-		$this->_pdo->queryExec($query);
+		$this->pdo->queryExec($query);
 	}
 
 	/**
@@ -1319,7 +1321,7 @@ Class ProcessAdditional
 		}
 
 		// Make sure the category is music or other.
-		$rQuery = $this->_pdo->queryOneRow(
+		$rQuery = $this->pdo->queryOneRow(
 			sprintf(
 				'SELECT searchname, categoryid as id, group_id FROM releases WHERE proc_pp = 0 AND id = %d',
 				$this->_release['id']
@@ -1380,12 +1382,12 @@ Class ProcessAdditional
 									}
 
 									// Update the search name.
-									$this->_pdo->queryExec(
+									$this->pdo->queryExec(
 										sprintf('
 											UPDATE releases
 											SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
 											WHERE id = %d',
-											$this->_pdo->escapeString(substr($newName, 0, 255)),
+											$this->pdo->escapeString(substr($newName, 0, 255)),
 											$newCat,
 											$this->_release['id']
 										)
@@ -1461,7 +1463,7 @@ Class ProcessAdditional
 					@chmod($this->_audioSavePath . $audioFileName, 0764);
 
 					// Update DB to said we got a audio sample.
-					$this->_pdo->queryExec(
+					$this->pdo->queryExec(
 						sprintf('
 							UPDATE releases
 							SET audiostatus = 1
@@ -1499,7 +1501,7 @@ Class ProcessAdditional
 
 		// If it's successful, tell the DB.
 		if ($this->_foundJPGSample !== false) {
-			$this->_pdo->queryExec(
+			$this->pdo->queryExec(
 				sprintf('
 					UPDATE releases
 					SET jpgstatus = %d
@@ -1713,12 +1715,12 @@ Class ProcessAdditional
 				@chmod($newFile, 0764);
 
 				// Update query to say we got the video.
-				$this->_pdo->queryExec(
+				$this->pdo->queryExec(
 					sprintf('
 						UPDATE releases
 						SET videostatus = 1
 						WHERE guid = %s',
-						$this->_pdo->escapeString($this->_release['guid'])
+						$this->pdo->escapeString($this->_release['guid'])
 					)
 				);
 				if ($this->_echoCLI) {
@@ -1785,7 +1787,7 @@ Class ProcessAdditional
 			return;
 		}
 
-		$releaseInfo = $this->_pdo->queryOneRow(
+		$releaseInfo = $this->pdo->queryOneRow(
 			sprintf('
 				SELECT UNIX_TIMESTAMP(postdate) AS postdate, proc_pp
 				FROM releases
@@ -1836,9 +1838,9 @@ Class ProcessAdditional
 			// Add to release files.
 			if ($this->_addPAR2Files) {
 				if ($filesAdded < 11 &&
-					$this->_pdo->queryOneRow(
+					$this->pdo->queryOneRow(
 						sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
-						$this->_release['id'], $this->_pdo->escapeString($file['name']))) === false
+						$this->_release['id'], $this->pdo->escapeString($file['name']))) === false
 				) {
 
 					// Try to add the files to the DB.
@@ -1860,7 +1862,7 @@ Class ProcessAdditional
 			}
 		}
 		// Update the file count with the new file count + old file count.
-		$this->_pdo->queryExec(
+		$this->pdo->queryExec(
 			sprintf(
 				'UPDATE releases SET rarinnerfilecount = rarinnerfilecount + %d WHERE id = %d',
 				$filesAdded,
@@ -1941,7 +1943,7 @@ Class ProcessAdditional
 					$newCategory = $this->_categorize->determineCategory($newName, $this->_release['group_id']);
 
 					// Update the release with the data.
-					$this->_pdo->queryExec(
+					$this->pdo->queryExec(
 						sprintf('
 							UPDATE releases
 							SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
@@ -1949,7 +1951,7 @@ Class ProcessAdditional
 								consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
 								searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
 							WHERE id = %d',
-							$this->_pdo->escapeString(substr($newName, 0, 255)),
+							$this->pdo->escapeString(substr($newName, 0, 255)),
 							$newCategory,
 							$this->_release['id']
 						)
