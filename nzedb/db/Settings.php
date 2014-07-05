@@ -58,6 +58,18 @@ class Settings extends DB
 	}
 
 	/**
+	 * Non-existent variables are assumed to be simple Settings.
+	 *
+	 * @param $name
+	 *
+	 * @return string
+	 */
+	public function __get($name)
+	{
+		return $this->getSetting($name);
+	}
+
+	/**
 	 * Retrieve one or all settings from the Db as a string or an array;
 	 *
 	 * @param array|string $options Name of setting to retrieve (null for all settings)
