@@ -829,11 +829,14 @@ class Binaries
 
 							// If we don't have the collection, insert it.
 							if ($collectionCheck === false) {
+								// The update on duplicate key is needed for those who run multiple instances
+								// of the script not to get errors of duplicate keys.
 								$collectionID = $this->_db->queryInsert(
 									sprintf("
 										INSERT INTO %s (subject, fromname, date, xref, group_id,
 											totalfiles, collectionhash, dateadded)
-										VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())",
+										VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
+										ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",
 										$groupNames['cname'],
 										$this->_db->escapeString(substr($subject, 0, 255)),
 										$this->_db->escapeString(utf8_encode($data['From'])),
