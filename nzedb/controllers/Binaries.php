@@ -680,12 +680,9 @@ class Binaries
 					continue;
 				}
 
-				// Inserted into the collections table as the subject.
-				$subject = utf8_encode($matches[1]);
-
 				// Set up the info for inserting into parts/binaries/collections tables.
-				if (!isset($this->message[$subject])) {
-					$this->message[$subject] = $header;
+				if (!isset($this->message[$matches[1]])) {
+					$this->message[$matches[1]] = $header;
 
 					/* Date from header should be a string this format:
 					 * 31 Mar 2014 15:36:04 GMT or 6 Oct 1998 04:38:40 -0500
@@ -697,9 +694,9 @@ class Binaries
 					$now = time();
 
 					// Check if the header's time is newer than now, if so, set it now.
-					$this->message[$subject]['Date'] = ($date > $now ? $now : $date);
+					$this->message[$matches[1]]['Date'] = ($date > $now ? $now : $date);
 
-					$this->message[$subject]['MaxParts'] = $matches[3];
+					$this->message[$matches[1]]['MaxParts'] = $matches[3];
 
 					// Attempt to find the file count. If it is not found, set it to 0.
 					if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $matches[1], $fileCount)) {
@@ -714,22 +711,22 @@ class Binaries
 					}
 
 					// (hash) Used to group articles together when forming the release/nzb.
-					$this->message[$subject]['CollectionHash'] =
+					$this->message[$matches[1]]['CollectionHash'] =
 						sha1(
-							$this->_collectionsCleaning->collectionsCleaner($subject, $groupMySQL['name']) .
+							$this->_collectionsCleaning->collectionsCleaner($matches[1], $groupMySQL['name']) .
 							$header['From'] .
 							$groupMySQL['id'] .
 							$fileCount[6]
 						);
-					$this->message[$subject]['MaxFiles'] = $fileCount[6];
-					$this->message[$subject]['File']     = $fileCount[2];
+					$this->message[$matches[1]]['MaxFiles'] = $fileCount[6];
+					$this->message[$matches[1]]['File']     = $fileCount[2];
 				}
 
 				if (!isset($header['Bytes'])) {
 					$header['Bytes'] = (isset($header[':bytes']) ? $header[':bytes'] : 0);
 				}
 
-				$this->message[$subject]['Parts'][$matches[2]] =
+				$this->message[$matches[1]]['Parts'][$matches[2]] =
 					array(
 						'Message-ID' => substr($header['Message-ID'], 1, -1), // Strip the < and >, saves space in DB.
 						'number'     => $header['Number'],
@@ -837,7 +834,7 @@ class Binaries
 										VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
 										ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",
 										$groupNames['cname'],
-										$this->_db->escapeString(substr($subject, 0, 255)),
+										$this->_db->escapeString(substr(utf8_encode($subject), 0, 255)),
 										$this->_db->escapeString(utf8_encode($data['From'])),
 										$data['Date'],
 										$this->_db->escapeString(substr($data['Xref'], 0, 255)),
