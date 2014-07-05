@@ -85,7 +85,13 @@ class popporn
 		if ($this->html->find('div[id=product-info] ,h3[class=highlight]', 1)) {
 			$ret = $this->html->find('div[id=product-info] ,h3[class=highlight]', 1);
 			if ($ret->next_sibling()->plaintext) {
+				if(!stristr(trim($ret->next_sibling()->plaintext),"POPPORN EXCLUSIVE")){
 				$res['sypnosis'] = trim($ret->next_sibling()->plaintext);
+				}else{
+					if($ret->next_sibling()->next_sibling()->next_sibling()->plaintext){
+					$res['sypnosis'] = trim($ret->next_sibling()->next_sibling()->next_sibling()->plaintext);
+					}
+				}
 			} else {
 				return false;
 			}
