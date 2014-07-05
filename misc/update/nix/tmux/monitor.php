@@ -860,7 +860,7 @@ while ($i > 0) {
 	if ($pdo->getSetting('lookupbooks') == 0) {
 		$book_releases_proc = $book_releases_proc_start = 0;
 	}
-	if ($site->lookupnfo == 0) {
+	if ($pdo->getSetting('lookupnfo') == 0) {
 		$nfo_remaining_now = $nfo_remaining_start = 0;
 	}
 
