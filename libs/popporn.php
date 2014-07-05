@@ -116,7 +116,10 @@ class popporn
 	}
 
 	/**
-	 * Gets Product Info and/or Features
+	 * Process ProductInfo And/or Extras
+	 *
+	 * @param bool $extras
+	 *
 	 * @return array|bool
 	 */
 	public function productinfo($extras = true)
@@ -301,7 +304,7 @@ class popporn
 		if (isset($this->trailurl)) {
 			$ch = curl_init(SELF::popurl . $this->trailurl);
 		} else {
-			$ch = curl_init($this->if18);
+			$ch = curl_init(SELF::if18);
 		}
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_HEADER, 0);

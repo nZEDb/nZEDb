@@ -130,7 +130,7 @@ class adultdvdempire
 		$res = array();
 		if ($tagline === true) {
 			$ret = $this->html->find("p.Tagline", 0);
-			if (isset($ret->plaintext)) {
+			if (!empty($ret->plaintext)) {
 				$res['Tagline'] = trim($ret->plaintext);
 			}
 		}
