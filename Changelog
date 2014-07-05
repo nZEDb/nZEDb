@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-07-05 kevin
 	* Chg: Add back on duplicate key update to collection query, required for those running multiple instances of the script.
 	* Add: Check to see if Bytes is empty, set it to 0, binaries (possible fix).
+	* Add: Catch failed collections/binaries inserts and rollback the transaction.
 2014-07-04 kevin
 	* Chg: Binaries, more speedups to inserting headers, fix issue with part repair.
 	* Add: Speed-up for those with no enabled blacklists by buffering the SQL check.

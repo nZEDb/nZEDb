@@ -843,6 +843,11 @@ class Binaries
 										$data['CollectionHash']
 									)
 								);
+
+								if ($collectionID === false) {
+									$headersNotInserted += $this->_rollbackAddToPartRepair($data['Parts']);
+									continue;
+								}
 							} else {
 								$collectionID = $collectionCheck['id'];
 								// Update the collection table with the last seen date for the collection.
@@ -882,6 +887,11 @@ class Binaries
 									$data['File']
 								)
 							);
+
+							if ($binaryID === false) {
+								$headersNotInserted += $this->_rollbackAddToPartRepair($data['Parts']);
+								continue;
+							}
 						} else {
 							$binaryID = $binaryCheck['id'];
 						}
@@ -896,10 +906,7 @@ class Binaries
 						}
 
 						if ($this->_db->queryExec(rtrim($tempPartsQuery, ',')) === false) {
-							foreach ($data['Parts'] as $partData) {
-								$headersNotInserted[] = $partData['number'];
-							}
-							$this->_db->Rollback();
+							$headersNotInserted += $this->_rollbackAddToPartRepair($data['Parts']);
 						} else {
 							$this->_db->Commit();
 						}
@@ -941,6 +948,25 @@ class Binaries
 			unset($this->message);
 		}
 		return $returnArray;
+	}
+
+	/**
+	 * If we failed to insert Collections/Binaries/Parts, rollback the transaction and add the parts to part repair.
+	 *
+	 * @param array $parts Array of parts we tried to insert.
+	 *
+	 * @return array Array of article numbers to add to part repair.
+	 *
+	 * @access protected
+	 */
+	protected function _rollbackAddToPartRepair(&$parts)
+	{
+		$headersNotInserted = array();
+		foreach ($parts as $part) {
+			$headersNotInserted[] = $part['number'];
+		}
+		$this->_db->Rollback();
+		return $headersNotInserted;
 	}
 
 	/**
