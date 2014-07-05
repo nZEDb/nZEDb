@@ -680,16 +680,6 @@ class Binaries
 					continue;
 				}
 
-				// Attempt to find the file count. If it is not found, set it to 0.
-				$fileCount = array();
-				if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $matches[1], $fileCount)) {
-					$fileCount[2] = $fileCount[6] = 0;
-
-					if ($this->_showDroppedYEncParts === true) {
-						file_put_contents(nZEDb_LOGS . 'no_parts' . $groupMySQL['name'] . '.log', $header['Subject'] . PHP_EOL, FILE_APPEND);
-					}
-				}
-
 				// Inserted into the collections table as the subject.
 				$subject = utf8_encode($matches[1]);
 
@@ -710,6 +700,18 @@ class Binaries
 					$this->message[$subject]['Date'] = ($date > $now ? $now : $date);
 
 					$this->message[$subject]['MaxParts'] = $matches[3];
+
+					// Attempt to find the file count. If it is not found, set it to 0.
+					if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $matches[1], $fileCount)) {
+						$fileCount[2] = $fileCount[6] = 0;
+
+						if ($this->_showDroppedYEncParts === true) {
+							file_put_contents(
+								nZEDb_LOGS . 'no_files' . $groupMySQL['name'] . '.log',
+								$header['Subject'] . PHP_EOL, FILE_APPEND
+							);
+						}
+					}
 
 					// (hash) Used to group articles together when forming the release/nzb.
 					$this->message[$subject]['CollectionHash'] =
