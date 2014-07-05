@@ -3,10 +3,10 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $game = new Games(true);
-$db = new nzedb\db\DB();
+$pdo = new nzedb\db\DB();
 $c = new ColorCLI();
 
-$res = $db->query(
+$res = $pdo->query(
 	sprintf("SELECT searchname FROM releases WHERE gamesinfo_id IS NULL AND categoryid = 4050 ORDER BY id DESC LIMIT 100")
 );
 $total = count($res);

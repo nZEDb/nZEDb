@@ -1,13 +1,11 @@
 <?php
 require_once './config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 // new to get information on books groups
 
-
 $page = new AdminPage();
-$sites = new Sites();
 $id = 0;
 
 // Set the current action.
@@ -129,8 +127,8 @@ $page->smarty->assign('lookup_reqids_names', array('Disabled', 'Lookup Request I
 $page->smarty->assign('coversPath', nZEDb_COVERS);
 
 // return a list of audiobooks, ebooks, technical and foreign books
-$db = new DB();
-$result = $db->query("SELECT id, title FROM category WHERE id in (3030, 8010, 8040, 8060)");
+$pdo = new Settings();
+$result = $pdo->query("SELECT id, title FROM category WHERE id in (3030, 8010, 8040, 8060)");
 
 // setup the display lists for these categories, this could have been static, but then if names changed they would be wrong
 $book_reqids_ids = array();

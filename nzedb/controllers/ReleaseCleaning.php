@@ -4,7 +4,7 @@
  * Names of group functions should match between CollectionsCleaning and this file
  */
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 class ReleaseCleaning
 {
@@ -22,7 +22,7 @@ class ReleaseCleaning
 		$this->e0 = '([-_](proof|sample|thumbs?))*(\.part\d*(\.rar)?|\.rar|\.7z)?(\d{1,3}\.rev"|\.vol.+?"|\.[A-Za-z0-9]{2,4}"|")';
 		$this->e1 = $this->e0 . '[- ]{0,3}yEnc$/';
 		$this->e2 = $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB][- ]{0,3}yEnc$/';
-		$this->db = new DB();
+		$this->pdo = new Settings();
 	}
 
 	public function releaseCleaner($subject, $fromName, $size, $groupName, $usepre = false)
@@ -36,7 +36,7 @@ class ReleaseCleaning
 		if (preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $this->subject, $matches)) {
 			foreach ($matches as $match) {
 				foreach ($match as $val) {
-					$title = $this->db->queryOneRow("SELECT title, id from predb WHERE title = " . $this->db->escapeString(trim($val)));
+					$title = $this->pdo->queryOneRow("SELECT title, id from predb WHERE title = " . $this->pdo->escapeString(trim($val)));
 					if ($title !== false) {
 						return array(
 							"cleansubject" => $title['title'],
@@ -54,10 +54,10 @@ class ReleaseCleaning
 			preg_match('/^REQ\s*(\d{4,6})/i', $this->subject, $match) ||
 			preg_match('/^(\d{4,6})-\d{1}\[/', $this->subject, $match) ||
 			preg_match('/(\d{4,6}) -/', $this->subject, $match)) {
-			$title = $this->db->queryOneRow(
+			$title = $this->pdo->queryOneRow(
 				sprintf(
 					'SELECT p.title , p.id from predb p INNER JOIN groups g on g.id = p.group_id
-								WHERE p.requestid = %d and g.name = %s', $match[1], $this->db->escapeString($this->groupName)
+								WHERE p.requestid = %d and g.name = %s', $match[1], $this->pdo->escapeString($this->groupName)
 				)
 			);
 			//check for predb title matches against other groups where it matches relative size / fromname
@@ -81,10 +81,10 @@ class ReleaseCleaning
 					break;
 			}
 			if ($title === false && !empty($reqGname)) {
-				$title = $this->db->queryOneRow(
+				$title = $this->pdo->queryOneRow(
 					sprintf(
 						"SELECT p.title as title, p.id as id from predb p INNER JOIN groups g on g.id = p.group_id
-									WHERE p.requestid = %d and g.name = %s", $match[1], $this->db->escapeString($reqGname)
+									WHERE p.requestid = %d and g.name = %s", $match[1], $this->pdo->escapeString($reqGname)
 					)
 				);
 			}

@@ -1,6 +1,6 @@
 <?php
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 /**
  * Import NZB files into the database.
@@ -12,7 +12,7 @@ class NZBImport
 	 * @var DB
 	 * @access protected
 	 */
-	protected $db;
+	protected $pdo;
 
 	/**
 	 * @var Binaries
@@ -82,16 +82,13 @@ class NZBImport
 	 */
 	public function __construct($browser = false, $echo = true)
 	{
-		$this->db = new DB();
+		$this->pdo = new Settings();
 		$this->binaries = new Binaries();
 		$this->category = new Categorize();
 		$this->nzb = new NZB();
 		$this->releaseCleaner = new ReleaseCleaning();
 
-		$s = new Sites();
-		$this->site = $s->get();
-
-		$this->crossPostt = (!empty($this->site->crossposttime)) ? $this->site->crossposttime : 2;
+		$this->crossPostt = ($this->pdo->getSetting('crossposttime') != '') ? $this->pdo->getSetting('crossposttime') : 2;
 		$this->browser = $browser;
 		$this->retVal = '';
 		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
@@ -162,7 +159,7 @@ class NZBImport
 				if ($inserted) {
 
 					// Try to copy the NZB to the NZB folder.
-					$path = $this->nzb->getNZBPath($this->relGuid, $this->site->nzbsplitlevel, true);
+					$path = $this->nzb->getNZBPath($this->relGuid, $this->pdo->getSetting('nzbsplitlevel'), true);
 
 					// Try to compress the NZB file in the NZB folder.
 					$fp = gzopen ($path, 'w5');
@@ -173,8 +170,8 @@ class NZBImport
 						$this->echoOut('ERROR: Problem compressing NZB file to: ' . $path);
 
 						// Remove the release.
-						$this->db->queryExec(
-							sprintf("DELETE FROM releases WHERE guid = %s", $this->db->escapeString($this->relGuid))
+						$this->pdo->queryExec(
+							sprintf("DELETE FROM releases WHERE guid = %s", $this->pdo->escapeString($this->relGuid))
 						);
 
 						if ($deleteFailed) {
@@ -378,33 +375,33 @@ class NZBImport
 		}
 
 		// Look for a duplicate on name, poster and size.
-		$dupeCheck = $this->db->queryOneRow(
+		$dupeCheck = $this->pdo->queryOneRow(
 			sprintf(
 				'SELECT id FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s',
-				$this->db->escapeString($subject),
-				$this->db->escapeString($nzbDetails['from']),
-				$this->db->escapeString($nzbDetails['totalSize'] * 0.99),
-				$this->db->escapeString($nzbDetails['totalSize'] * 1.01)
+				$this->pdo->escapeString($subject),
+				$this->pdo->escapeString($nzbDetails['from']),
+				$this->pdo->escapeString($nzbDetails['totalSize'] * 0.99),
+				$this->pdo->escapeString($nzbDetails['totalSize'] * 1.01)
 			)
 		);
 
 		if ($dupeCheck === false) {
 			// Insert the release into the DB.
-			$relID = $this->db->queryInsert(
+			$relID = $this->pdo->queryInsert(
 				sprintf(
 					"INSERT INTO releases
 						(name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname,
 						size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, isrenamed, iscategorized)
 					 VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, %d, 1)",
-					$this->db->escapeString($subject),
-					$this->db->escapeString($cleanName),
+					$this->pdo->escapeString($subject),
+					$this->pdo->escapeString($cleanName),
 					$nzbDetails['totalFiles'],
 					$nzbDetails['group_id'],
-					$this->db->escapeString($this->relGuid),
-					$this->db->escapeString($nzbDetails['postDate']),
-					$this->db->escapeString($nzbDetails['from']),
-					$this->db->escapeString($nzbDetails['totalSize']),
-					($this->site->checkpasswordedrar == "1" ? -1 : 0),
+					$this->pdo->escapeString($this->relGuid),
+					$this->pdo->escapeString($nzbDetails['postDate']),
+					$this->pdo->escapeString($nzbDetails['from']),
+					$this->pdo->escapeString($nzbDetails['totalSize']),
+					($this->pdo->getSetting('checkpasswordedrar') == "1" ? -1 : 0),
 					$this->category->determineCategory($cleanName, $nzbDetails['group_id']),
 					$renamed
 				)
@@ -429,7 +426,7 @@ class NZBImport
 	protected function getAllGroups()
 	{
 		$this->allGroups = array();
-		$groups = $this->db->query("SELECT id, name FROM groups");
+		$groups = $this->pdo->query("SELECT id, name FROM groups");
 		foreach ($groups as $group) {
 			$this->allGroups[$group["name"]] = $group["id"];
 		}

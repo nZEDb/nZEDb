@@ -33,7 +33,7 @@ class RequestID
 	/**
 	 * @var nzedb\db\DB
 	 */
-	protected $db;
+	protected $pdo;
 
 	/**
 	 * @var ConsoleTools
@@ -105,7 +105,7 @@ class RequestID
 	{
 		$this->echoOutput = ($echoOutput && nZEDb_ECHOCLI);
 		$this->category = new Categorize();
-		$this->db = new nzedb\db\DB();
+		$this->pdo = new nzedb\db\DB();
 		$this->consoleTools = new ConsoleTools();
 		$this->colorCLI = new ColorCLI();
 		$this->site = (new Sites)->get();
@@ -157,7 +157,7 @@ class RequestID
 						);
 		}
 
-		$this->results = $this->db->queryDirect(
+		$this->results = $this->pdo->queryDirect(
 			sprintf ('
 				SELECT r.id, r.name, r.searchname, g.name AS groupname, r.group_id
 				FROM releases r
@@ -246,7 +246,7 @@ class RequestID
 			return;
 		}
 
-		$this->db->queryExec(
+		$this->pdo->queryExec(
 			sprintf('
 				UPDATE releases
 				SET reqidstatus = %d
@@ -276,7 +276,7 @@ class RequestID
 				$this->_requestIdNotFound($result['id'], self::REQID_ZERO);
 			} else {
 
-				$localCheck = $this->db->queryOneRow(
+				$localCheck = $this->pdo->queryOneRow(
 					sprintf('
 						SELECT id, title
 						FROM predb
@@ -295,7 +295,7 @@ class RequestID
 
 					$this->_updateRelease();
 				} else {
-					$this->db->queryExec(
+					$this->pdo->queryExec(
 						sprintf(
 							'UPDATE releases SET reqidstatus = %d WHERE id = %d',
 							self::REQID_NOLL,
@@ -393,7 +393,7 @@ class RequestID
 				unset($requestArray[0]);
 				foreach ($requestArray as $request) {
 
-					$adddate = $this->db->queryOneRow(
+					$adddate = $this->pdo->queryOneRow(
 						sprintf(
 							'SELECT UNIX_TIMESTAMP(adddate) AS adddate FROM releases WHERE id = %d', $request['ident']
 						)
@@ -427,7 +427,7 @@ class RequestID
 	protected function _updateRelease()
 	{
 		$determinedCategory = $this->category->determineCategory($this->newTitle, $this->result['group_id']);
-		$this->db->queryExec(
+		$this->pdo->queryExec(
 			sprintf('
 				UPDATE releases
 				SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL,
@@ -436,7 +436,7 @@ class RequestID
 				preid = %d
 				WHERE id = %d',
 				self::REQID_FOUND,
-				$this->db->escapeString($this->newTitle),
+				$this->pdo->escapeString($this->newTitle),
 				$determinedCategory,
 				$this->preDbID,
 				$this->result['id']
@@ -462,29 +462,29 @@ class RequestID
 	 */
 	protected function _insertIntoPreDB()
 	{
-		$dupeCheck = $this->db->queryOneRow(
+		$dupeCheck = $this->pdo->queryOneRow(
 			sprintf('
 				SELECT id AS preid, requestid, group_id
 				FROM predb
 				WHERE title = %s',
-				$this->db->escapeString($this->newTitle)
+				$this->pdo->escapeString($this->newTitle)
 			)
 		);
 
 		if ($dupeCheck === false) {
-			$this->preDbID = $this->db->queryInsert(
+			$this->preDbID = $this->pdo->queryInsert(
 				sprintf("
 					INSERT INTO predb (title, source, requestid, group_id, predate)
 					VALUES (%s, %s, %d, %d, NOW())",
-					$this->db->escapeString($this->newTitle),
-					$this->db->escapeString('requestWEB'),
+					$this->pdo->escapeString($this->newTitle),
+					$this->pdo->escapeString('requestWEB'),
 					$this->requestID,
 					$this->result['group_id']
 				)
 			);
 		} else {
 			$this->preDbID = $dupeCheck['preid'];
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 				sprintf('
 					UPDATE predb
 					SET requestid = %d, group_id = %d

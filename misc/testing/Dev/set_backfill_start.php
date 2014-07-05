@@ -11,12 +11,12 @@ if (!isset($argv[1])) {
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-$db = new nzedb\db\DB();
+$pdo = new nzedb\db\DB();
 
 if ($argv[1] === 'all') {
-	$groups = $db->query('SELECT * FROM groups WHERE backfill = 1');
+	$groups = $pdo->query('SELECT * FROM groups WHERE backfill = 1');
 } else {
-	$groups = $db->query(sprintf('SELECT * FROM groups WHERE name = %s', $db->escapeString($argv[1])));
+	$groups = $pdo->query(sprintf('SELECT * FROM groups WHERE name = %s', $pdo->escapeString($argv[1])));
 }
 
 if (count($groups) === 0) {
@@ -40,7 +40,7 @@ foreach ($groups as $group) {
 		continue;
 	}
 
-	$postDate = $db->queryOneRow(
+	$postDate = $pdo->queryOneRow(
 		sprintf('SELECT UNIX_TIMESTAMP(postdate) AS postdate FROM releases WHERE group_id = %d ORDER BY postdate ASC LIMIT 1', $group['id'])
 	);
 	if ($postDate === false) {
@@ -57,13 +57,13 @@ foreach ($groups as $group) {
 
 	$articleDate = $backFill->postdate($articleNumber, $groupNNTP);
 
-	$db->queryExec(
+	$pdo->queryExec(
 		sprintf('
 			UPDATE groups
 			SET first_record = %d, first_record_postdate = %s
 			WHERE id = %d',
 			$articleNumber,
-			$db->escapeString($postDate['postdate']),
+			$pdo->escapeString($postDate['postdate']),
 			$group['id']
 		)
 	);

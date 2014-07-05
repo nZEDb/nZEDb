@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 /* This script will update the groups table to get the new article numbers for each group you have activated.
   It will also truncate the parts, binaries, collections, and partsrepair tables.
@@ -9,7 +9,7 @@ use nzedb\db\DB;
 // TODO: Make this threaded so it goes faster.
 
 $c = new ColorCLI();
-$db = new DB();
+$pdo = new Settings();
 
 if (!isset($argv[1]) || $argv[1] != 'true') {
 	printf($c->setColor('Yellow') . "This script is used when you have switched UseNet Providers(USP) so you can pickup where you left off, rather than resetting all the groups.\nOnly use this script after you have updated your config.php file with your new USP info!!\nMake sure you " . $c->setColor('Red', 'Bold') . "DO NOT" . $c->setcolor('Yellow') . " have any update or postprocess scripts running when running this script!\n\n" . $c->setColor('Cyan') . "Usage: php change_USP_provider true\n");
@@ -17,7 +17,7 @@ if (!isset($argv[1]) || $argv[1] != 'true') {
 }
 
 
-$groups = $db->query("SELECT id, name, first_record_postdate, last_record_postdate FROM groups WHERE active = 1");
+$groups = $pdo->query("SELECT id, name, first_record_postdate, last_record_postdate FROM groups WHERE active = 1");
 $numofgroups = count($groups);
 $guesstime = $numofgroups * 2;
 $totalstart = microtime(true);
@@ -36,7 +36,7 @@ foreach ($groups as $group) {
 	echo "Our Current backfill postdate was: " . $c->setColor('Yellow') . date('r', strtotime($group['first_record_postdate'])) . $c->rsetcolor() . "\n";
 	$currartnum = daytopost($nntp, $group['name'], $currdays, true, false);
 	echo "Our Current current postdate was: " . $c->setColor('Yellow') . date('r', strtotime($group['last_record_postdate'])) . $c->rsetcolor() . "\n";
-	$db->queryExec(sprintf("UPDATE groups SET first_record = %s, last_record = %s WHERE id = %d", $db->escapeString($bfartnum), $db->escapeString($currartnum), $group['id']));
+	$pdo->queryExec(sprintf("UPDATE groups SET first_record = %s, last_record = %s WHERE id = %d", $pdo->escapeString($bfartnum), $pdo->escapeString($currartnum), $group['id']));
 	$endtime = microtime(true);
 	echo $c->setColor('Gray', 'Dim') . "This group took " . gmdate("H:i:s", $endtime - $starttime) . " to process.\n";
 	$numofgroups--;
@@ -49,7 +49,7 @@ echo $c->header('Total time to update all groups ' . gmdate("H:i:s", $totalend -
 // Truncate tables to complete the change to the new USP.
 $arr = array("parts", "partrepair", "binaries", "collections");
 foreach ($arr as &$value) {
-	$rel = $db->queryExec("TRUNCATE TABLE $value");
+	$rel = $pdo->queryExec("TRUNCATE TABLE $value");
 	if ($rel !== false) {
 		echo $c->header("Truncating $value completed.");
 	}

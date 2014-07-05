@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $nntp = new NNTP();
 if ($nntp->doConnect() !== true) {
@@ -9,21 +9,21 @@ if ($nntp->doConnect() !== true) {
 }
 $data = $nntp->getGroups();
 
-$db = new DB();
-$res = $db->query("SELECT name FROM groups ORDER BY name");
+$pdo = new Settings();
+$res = $pdo->query("SELECT name FROM groups ORDER BY name");
 
 foreach ($data as $newgroup)
 {
 	if (strstr($newgroup["group"], ".bin") != false && !MyInArray($res, $newgroup["group"], "name") && ($newgroup["last"] - $newgroup["first"]) > 100000)
-		$db->queryInsert(sprintf("INSERT INTO allgroups (name, first_record, last_record, updated) VALUES (%s, %d, %d, NOW())", $db->escapeString($newgroup["group"]), $newgroup["first"], $newgroup["last"]));
+		$pdo->queryInsert(sprintf("INSERT INTO allgroups (name, first_record, last_record, updated) VALUES (%s, %d, %d, NOW())", $pdo->escapeString($newgroup["group"]), $newgroup["first"], $newgroup["last"]));
 }
 
-$grps = $db->query("SELECT DISTINCT name FROM allgroups");
+$grps = $pdo->query("SELECT DISTINCT name FROM allgroups");
 foreach ($grps as $grp)
 {
 	if (!MyInArray($res, $grp, "name"))
 	{
-	    $data = $db->queryOneRow(sprintf("SELECT (MAX(last_record) - MIN(first_record)) AS count, (MAX(last_record) - MIN(first_record))/(MAX(updated)-MIN(updated)) as per_second from allgroups WHERE name = %s", $db->escapeString($grp["name"])));
+	    $data = $pdo->queryOneRow(sprintf("SELECT (MAX(last_record) - MIN(first_record)) AS count, (MAX(last_record) - MIN(first_record))/(MAX(updated)-MIN(updated)) as per_second from allgroups WHERE name = %s", $pdo->escapeString($grp["name"])));
     	if (floor($data["per_second"]*3600) >= 100000)
         	echo $grp["name"]." has ".number_format($data["count"])." headers available, averaging ".number_format(floor($data["per_second"]*3600))." per hour\n";
 	}

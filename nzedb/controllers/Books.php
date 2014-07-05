@@ -1,28 +1,28 @@
 <?php
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 /*
  * Class for processing book info.
  */
 class Books
 {
+	private $pdo;
+
 	function __construct($echooutput = false)
 	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
-		$s = new Sites();
-		$site = $s->get();
-		$this->pubkey = $site->amazonpubkey;
-		$this->privkey = $site->amazonprivkey;
-		$this->asstag = $site->amazonassociatetag;
-		$this->bookqty = (!empty($site->maxbooksprocessed)) ? $site->maxbooksprocessed : 300;
-		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
+		$this->pdo = new Settings();
+		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
+		$this->privkey = $this->pdo->getSetting('amazonprivkey');
+		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
+		$this->bookqty = ($this->pdo->getSetting('maxbooksprocessed') != '') ? $this->pdo->getSetting('maxbooksprocessed') : 300;
+		$this->sleeptime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'book' . DS;
-		$this->db = new DB();
-		$this->bookreqids = ($site->book_reqids == null || $site->book_reqids == "") ? 8010 : $site->book_reqids;
+		$this->bookreqids = ($this->pdo->getSetting('book_reqids') == null || $this->pdo->getSetting('book_reqids') == "") ? 8010 : $this->pdo->getSetting('book_reqids');
 		$this->renamed = '';
-		if ($site->lookupbooks == 2) {
+		if ($this->pdo->getSetting('lookupbooks') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		$this->c = new ColorCLI();
@@ -30,23 +30,23 @@ class Books
 
 	public function getBookInfo($id)
 	{
-		$db = $this->db;
-		return $db->queryOneRow(sprintf('SELECT bookinfo.* FROM bookinfo WHERE bookinfo.id = %d', $id));
+		$pdo = $this->pdo;
+		return $pdo->queryOneRow(sprintf('SELECT bookinfo.* FROM bookinfo WHERE bookinfo.id = %d', $id));
 	}
 
 	public function getBookInfoByName($author, $title)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$like = 'ILIKE';
-		if ($db->dbSystem() === 'mysql') {
+		if ($pdo->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
-		return $db->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title %s %s', $db->escapeString('%' . $author . '%'), $like, $db->escapeString('%' . $title . '%')));
+		return $pdo->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title %s %s', $pdo->escapeString('%' . $author . '%'), $like, $pdo->escapeString('%' . $title . '%')));
 	}
 
 	public function getRange($start, $num)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 
 		if ($start === false) {
 			$limit = '';
@@ -54,19 +54,19 @@ class Books
 			$limit = ' LIMIT ' . $num . ' OFFSET ' . $start;
 		}
 
-		return $db->query(' SELECT * FROM bookinfo ORDER BY createddate DESC' . $limit);
+		return $pdo->query(' SELECT * FROM bookinfo ORDER BY createddate DESC' . $limit);
 	}
 
 	public function getCount()
 	{
-		$db = $this->db;
-		$res = $db->queryOneRow('SELECT COUNT(id) AS num FROM bookinfo');
+		$pdo = $this->pdo;
+		$res = $pdo->queryOneRow('SELECT COUNT(id) AS num FROM bookinfo');
 		return $res['num'];
 	}
 
 	public function getBookCount($cat, $maxage = -1, $excludedcats = array())
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 
 		$browseby = $this->getBrowseBy();
 
@@ -95,9 +95,9 @@ class Books
 		}
 
 		if ($maxage > 0) {
-			if ($db->dbSystem() === 'mysql') {
+			if ($pdo->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() === 'pgsql') {
+			} else if ($pdo->dbSystem() === 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		} else {
@@ -109,7 +109,7 @@ class Books
 			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$res = $db->queryOneRow(
+		$res = $pdo->queryOneRow(
 			sprintf(
 				"SELECT COUNT(DISTINCT r.bookinfoid) AS num FROM releases r "
 				. "INNER JOIN bookinfo boo ON boo.id = r.bookinfoid AND boo.title != '' and boo.cover = 1 "
@@ -122,7 +122,7 @@ class Books
 
 	public function getBookRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 
 		$browseby = $this->getBrowseBy();
 
@@ -158,9 +158,9 @@ class Books
 
 		$maxage = '';
 		if ($maxage > 0) {
-			if ($db->dbSystem() === 'mysql') {
+			if ($pdo->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
-			} else if ($db->dbSystem() === 'pgsql') {
+			} else if ($pdo->dbSystem() === 'pgsql') {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
@@ -171,7 +171,7 @@ class Books
 		}
 
 		$order = $this->getBookOrder($orderby);
-		if ($this->db->dbSystem() === 'mysql') {
+		if ($this->pdo->dbSystem() === 'mysql') {
 			$sql = sprintf(
 				"SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
 				. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
@@ -198,7 +198,7 @@ class Books
 			$rel = new Releases($this->echooutput);
 			$sql = sprintf("SELECT STRING_AGG(r.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_id, STRING_AGG(r.rarinnerfilecount::text, ',' ORDER BY r.postdate DESC) as grp_rarinnerfilecount, STRING_AGG(r.haspreview::text, ',' ORDER BY r.postdate DESC) AS grp_haspreview, STRING_AGG(r.passwordstatus::text, ',' ORDER BY r.postdate) AS grp_release_password, STRING_AGG(r.guid, ',' ORDER BY r.postdate DESC) AS grp_release_guid, STRING_AGG(rn.id::text, ',' ORDER BY r.postdate DESC) AS grp_release_nfoid, STRING_AGG(groups.name, ',' ORDER BY r.postdate DESC) AS grp_release_grpname, STRING_AGG(r.searchname, '#' ORDER BY r.postdate) AS grp_release_name, STRING_AGG(r.postdate::text, ',' ORDER BY r.postdate DESC) AS grp_release_postdate, STRING_AGG(r.size::text, ',' ORDER BY r.postdate DESC) AS grp_release_size, STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts, STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments, STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs, m.*, groups.name AS group_name, rn.id as nfoid FROM releases r LEFT OUTER JOIN groups ON groups.id = r.group_id INNER JOIN movieinfo m ON m.imdbid = r.imdbid and m.title != '' LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL WHERE r.nzbstatus = 1 AND r.passwordstatus <= %s AND %s %s %s %s GROUP BY m.imdbid, m.id, groups.name, rn.id ORDER BY %s %s" . $limit, $rel->showPasswords(), $browseby, $catsrch, $maxage, $exccatlist, $order[0], $order[1]);
 		}
-		return $this->db->queryDirect($sql);
+		return $this->pdo->queryDirect($sql);
 	}
 
 	public function getBookOrder($orderby)
@@ -260,10 +260,10 @@ class Books
 
 	public function getBrowseBy()
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 
 		$like = 'ILIKE';
-		if ($db->dbSystem() === 'mysql') {
+		if ($pdo->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 
@@ -272,7 +272,7 @@ class Books
 		foreach ($browsebyArr as $bbk => $bbv) {
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= 'boo.' . $bbv . ' ' . $like . ' (' . $db->escapeString('%' . $bbs . '%') . ') AND ';
+				$browseby .= 'boo.' . $bbv . ' ' . $like . ' (' . $pdo->escapeString('%' . $bbs . '%') . ') AND ';
 			}
 		}
 		return $browseby;
@@ -305,7 +305,7 @@ class Books
 		if ($total > 0) {
 			for ($i = 0; $i < $total; $i++) {
 				$this->processBookReleasesHelper(
-					$this->db->queryDirect(
+					$this->pdo->queryDirect(
 						sprintf('
 						SELECT searchname, id, categoryid
 						FROM releases
@@ -329,7 +329,7 @@ class Books
 	 */
 	protected function processBookReleasesHelper($res, $categoryID)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
 				$this->c->doEcho($this->c->header("\nProcessing " . $res->rowCount() . ' book release(s) for category ID ' . $categoryID));
@@ -366,9 +366,9 @@ class Books
 					}
 
 					// Update release.
-					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
+					$pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', $bookId, $arr['id']));
 				} else { // Could not parse release title.
-					$db->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
+					$pdo->queryExec(sprintf('UPDATE releases SET bookinfoid = %d WHERE id = %d', -2, $arr['id']));
 					if ($this->echooutput) {
 						echo '.';
 					}
@@ -405,8 +405,8 @@ class Books
 						$this->c->headerOver('Changing category to misc books: ') . $this->c->primary($releasename)
 					);
 				}
-				$db = $this->db;
-				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8050, $releaseID));
+				$pdo = $this->pdo;
+				$pdo->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8050, $releaseID));
 				return false;
 			} else if (preg_match('/^([a-z0-9ü!]+ ){1,2}(N|Vol)?\d{1,4}(a|b|c)?$|^([a-z0-9]+ ){1,2}(Jan( |unar|$)|Feb( |ruary|$)|Mar( |ch|$)|Apr( |il|$)|May(?![a-z0-9])|Jun( |e|$)|Jul( |y|$)|Aug( |ust|$)|Sep( |tember|$)|O(c|k)t( |ober|$)|Nov( |ember|$)|De(c|z)( |ember|$))/i', $releasename) && !preg_match('/Part \d+/i', $releasename)) {
 
@@ -415,8 +415,8 @@ class Books
 						$this->c->headerOver('Changing category to magazines: ') . $this->c->primary($releasename)
 					);
 				}
-				$db = $this->db;
-				$db->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8030, $releaseID));
+				$pdo = $this->pdo;
+				$pdo->queryExec(sprintf('UPDATE releases SET categoryid = %d WHERE id = %d', 8030, $releaseID));
 				return false;
 			} else if (!empty($releasename) && !preg_match('/^[a-z0-9]+$|^([0-9]+ ){1,}$|Part \d+/i', $releasename)) {
 				return $releasename;
@@ -435,7 +435,7 @@ class Books
 
 	public function updateBookInfo($bookInfo = '', $amazdata = null)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$ri = new ReleaseImage();
 
 		$book = array();
@@ -512,12 +512,12 @@ class Books
 			$book['cover'] = 0;
 		}
 
-		$check = $db->queryOneRow(sprintf('SELECT id FROM bookinfo WHERE asin = %s', $db->escapeString($book['asin'])));
+		$check = $pdo->queryOneRow(sprintf('SELECT id FROM bookinfo WHERE asin = %s', $pdo->escapeString($book['asin'])));
 		if ($check === false) {
-			$bookId = $db->queryInsert(sprintf("INSERT INTO bookinfo (title, author, asin, isbn, ean, url, salesrank, publisher, publishdate, pages, overview, genre, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())", $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover']));
+			$bookId = $pdo->queryInsert(sprintf("INSERT INTO bookinfo (title, author, asin, isbn, ean, url, salesrank, publisher, publishdate, pages, overview, genre, cover, createddate, updateddate) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, now(), now())", $pdo->escapeString($book['title']), $pdo->escapeString($book['author']), $pdo->escapeString($book['asin']), $pdo->escapeString($book['isbn']), $pdo->escapeString($book['ean']), $pdo->escapeString($book['url']), $book['salesrank'], $pdo->escapeString($book['publisher']), $pdo->escapeString($book['publishdate']), $book['pages'], $pdo->escapeString($book['overview']), $pdo->escapeString($book['genre']), $book['cover']));
 		} else {
 			$bookId = $check['id'];
-			$db->queryExec(sprintf('UPDATE bookinfo SET title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s, publishdate = %s, pages = %s, overview = %s, genre = %s, cover = %d, updateddate = NOW() WHERE id = %d', $db->escapeString($book['title']), $db->escapeString($book['author']), $db->escapeString($book['asin']), $db->escapeString($book['isbn']), $db->escapeString($book['ean']), $db->escapeString($book['url']), $book['salesrank'], $db->escapeString($book['publisher']), $db->escapeString($book['publishdate']), $book['pages'], $db->escapeString($book['overview']), $db->escapeString($book['genre']), $book['cover'], $bookId));
+			$pdo->queryExec(sprintf('UPDATE bookinfo SET title = %s, author = %s, asin = %s, isbn = %s, ean = %s, url = %s, salesrank = %s, publisher = %s, publishdate = %s, pages = %s, overview = %s, genre = %s, cover = %d, updateddate = NOW() WHERE id = %d', $pdo->escapeString($book['title']), $pdo->escapeString($book['author']), $pdo->escapeString($book['asin']), $pdo->escapeString($book['isbn']), $pdo->escapeString($book['ean']), $pdo->escapeString($book['url']), $book['salesrank'], $pdo->escapeString($book['publisher']), $pdo->escapeString($book['publishdate']), $book['pages'], $pdo->escapeString($book['overview']), $pdo->escapeString($book['genre']), $book['cover'], $bookId));
 		}
 
 		if ($bookId) {

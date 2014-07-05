@@ -1,11 +1,11 @@
 <?php
 exit();
 require_once dirname(__FILE__) . '/../../../www/config.php';
-use nzedb\db\DB;
+use nzedb\db\Settings;
 $nntp = new NNTP();
 $nntp->doConnect();
-$db = new DB();
-$sharing = new Sharing($db, $nntp);
+$pdo = new Settings();
+$sharing = new Sharing($pdo, $nntp);
 
 while (true) {
 	$sharing->start();
