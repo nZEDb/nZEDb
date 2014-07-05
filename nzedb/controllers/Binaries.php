@@ -651,22 +651,25 @@ class Binaries
 
 				$headersReceived[] = $header['Number'];
 
-				// Add yEnc to headers that do not have them, but are nzbs and that have the part number at the end of the header
-				if (!stristr($header['Subject'], 'yEnc') && preg_match('/(.+)(\(\d+\/\d+\))$/', $header['Subject'], $partNumber)) {
-					$header['Subject'] = $partNumber[1] . ' yEnc ' . $partNumber[2];
+				// Skip these, they are crap.
+				if (preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $header['Subject'])) {
+					$headersIgnored[] = $header['Number'];
+					continue;
 				}
 
-				$matches = array();
-				// Not a binary post most likely.. continue.
-				if (!isset($header['Subject']) ||
-					!preg_match('/\s*(.+yEnc).*\((\d+)\/(\d+)\)/', $header['Subject'], $matches) ||
-					preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $header['Subject'], $UIP)
-				) {
-
-					if ($this->_showDroppedYEncParts === true && !isset($UIP[1])) {
-						file_put_contents(nZEDb_LOGS . 'not_yenc' . $groupMySQL['name'] . '.dropped.log', $header['Subject'] . PHP_EOL, FILE_APPEND);
+				// Find part / total parts. Ignore if no part count found.
+				if (preg_match('/\s*(.+)\s*\((\d+)\/(\d+)\)$/', $header['Subject'], $matches)) {
+					// Add yEnc to subjects that do not have them, but have the part number at the end of the header.
+					if (!stristr($header['Subject'], 'yEnc')) {
+						$matches[1] .= ' yEnc';
 					}
-
+				} else {
+					if ($this->_showDroppedYEncParts === true) {
+						file_put_contents(
+							nZEDb_LOGS . 'not_yenc' . $groupMySQL['name'] . '.dropped.log',
+							$header['Subject'] . PHP_EOL, FILE_APPEND
+						);
+					}
 					$headersIgnored[] = $header['Number'];
 					continue;
 				}
@@ -721,22 +724,16 @@ class Binaries
 				}
 
 				if (!isset($header['Bytes'])) {
-					if (isset($header[':bytes'])) {
-						$header['Bytes'] = $header[':bytes'];
-					} else {
-						$header['Bytes'] = 0;
-					}
+					$header['Bytes'] = (isset($header[':bytes']) ? $header[':bytes'] : 0);
 				}
 
-				if ($matches[2] > 0) {
-					$this->message[$subject]['Parts'][$matches[2]] =
-						array(
-							'Message-ID' => substr($header['Message-ID'], 1, -1), // Strip the < and >
-							'number'     => $header['Number'],
-							'part'       => $matches[2],
-							'size'       => $header['Bytes']
-						);
-				}
+				$this->message[$subject]['Parts'][$matches[2]] =
+					array(
+						'Message-ID' => substr($header['Message-ID'], 1, -1), // Strip the < and >, saves space in DB.
+						'number'     => $header['Number'],
+						'part'       => $matches[2],
+						'size'       => (is_numeric($header['Bytes']) ? $header['Bytes'] : 0)
+					);
 			}
 
 			// Array of all the requested article numbers.
@@ -802,7 +799,7 @@ class Binaries
 
 				$collectionHashes = $headersNotInserted = array();
 
-				$partsQuery = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES', $groupNames['pname']);
+				$partsQuery = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $groupNames['pname']);
 
 				// Loop through the reformed article headers.
 				foreach ($this->message AS $subject => $data) {
@@ -894,7 +891,7 @@ class Binaries
 
 						foreach ($data['Parts'] as $partData) {
 							$tempPartsQuery .=
-								' (' . $binaryID . ',' . $partData['number'] . ",'" .
+								'(' . $binaryID . ',' . $partData['number'] . ",'" .
 								$partData['Message-ID'] . "'," .
 								$partData['part'] . ',' . $partData['size'] . '),';
 						}
