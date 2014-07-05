@@ -876,7 +876,7 @@ class Binaries
 									VALUES ('%s', %s, %d, %d, %d)",
 									$groupNames['bname'],
 									$binaryHash,
-									$this->_db->escapeString($subject),
+									$this->_db->escapeString(utf8_encode($subject)),
 									$collectionID,
 									$data['MaxParts'],
 									$data['File']
