@@ -24,8 +24,9 @@ class popporn
 	 * Define Popporn url
 	 * Needed Search Queries Variables
 	*/
-	const popurl = "http://www.tlavideo.com";
+	const popurl = "http://www.popporn.com";
 	const trailingsearch = "/results/index.cfm?v=4&g=0&searchtext=";
+	const if18 = "http://www.popporn.com/popporn/4";
 
 	/**
 	 * Add this to popurl to get results
@@ -39,14 +40,20 @@ class popporn
 	 */
 	public $searchterm = null;
 
+	/**
+	 * Define a cookie file
+	 * @var string null
+	 */
+	public $cookie = null;
+
 	public function __construct($echooutput = true)
 	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
-		$this->url = null;
 		$this->response = array();
-		$this->tmprsp = null;
 		$this->html = new simple_html_dom();
-		$this->edithtml = new simple_html_dom();
+		if (isset($this->cookie)) {
+			@$this->getpopurl();
+		}
 	}
 
 	/**
@@ -68,25 +75,107 @@ class popporn
 		return $res;
 	}
 
-
-public function sypnosis(){
-	$res = array();
-	if ($this->html->find('div[id=product-info] ,h3[class=highlight]', 1)) {
-		$ret = $this->html->find('div[id=product-info] ,h3[class=highlight]', 1);
-		if($ret->next_sibling()->plaintext){
-		$res['sypnosis'] = trim($ret->next_sibling()->plaintext);
-			}else{
+	/**
+	 * Gets the sypnosis
+	 * @return array|bool
+	 */
+	public function sypnosis()
+	{
+		$res = array();
+		if ($this->html->find('div[id=product-info] ,h3[class=highlight]', 1)) {
+			$ret = $this->html->find('div[id=product-info] ,h3[class=highlight]', 1);
+			if ($ret->next_sibling()->plaintext) {
+				$res['sypnosis'] = trim($ret->next_sibling()->plaintext);
+			} else {
+				return false;
+			}
+		} else {
 			return false;
 		}
-	}else{
-		return false;
-	}
-	return $res;
 
-}
+		return $res;
+	}
+
+	/**
+	 * Gets trailer video
+	 * @return array|bool
+	 */
+	public function trailers()
+	{
+		$res = array();
+		if ($this->html->find('input#thickbox-trailer-link', 0)) {
+			$ret = $this->html->find('input#thickbox-trailer-link', 0);
+			$ret->value = trim($ret->value);
+			$ret->value = str_replace("..", SELF::popurl, $ret->value);
+			$res['trailers'] = $ret->value;
+		} else {
+			return false;
+		}
+
+		return $res;
+	}
+
+	/**
+	 * Gets the cast members and director
+	 * @return array|bool
+	 */
+	public function cast()
+	{
+		$res = array();
+		$cast = false;
+		if ($this->html->find('div#lside', 0)) {
+			$ret = $this->html->find('div#lside', 0);
+			foreach ($ret->find("text") as $e) {
+				$e = trim($e->innertext);
+				$e = str_replace(",", "", $e);
+				$e = str_replace("&nbsp;", "", $e);
+				if (stristr($e, "Cast")) {
+					$cast = true;
+				}
+				$e = str_replace("Cast:", "", $e);
+				if ($cast === true) {
+					if (!stristr($e, "Country:")) {
+						if (!empty($e)) {
+							$er[] = $e;
+						}
+					} else {
+						break;
+					}
+				} else {
+					//return false;
+				}
+			}
+			$res['cast'] = & $er;
+
+			return $res;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Gets categories
+	 * @return array|bool
+	 */
+	public function categories()
+	{
+		$res = array();
+		if ($this->html->find('div[id=thekeywords], p[class=keywords]', 1)) {
+			$ret = $this->html->find('div[id=thekeywords], p[class=keywords]', 1);
+			foreach ($ret->find('a') as $e) {
+				$categories[] = trim($e->plaintext);
+			}
+			$res['categories'] = & $categories;
+
+			return $res;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * Searches for match against searchterm
-	 * @return bool, true if search = 100%
+	 * @return bool, true if search >= 95%
 	 */
 	public function search()
 	{
@@ -120,6 +209,38 @@ public function sypnosis(){
 	}
 
 	/**
+	 * Gets all information
+	 *
+	 * @return array
+	 */
+	public function _getall()
+	{
+		$results = array();
+		if (is_array($this->sypnosis())) {
+			$results = array_merge($results, $this->sypnosis());
+		}
+		/*if (is_array($this->productinfo(true))) {
+			$results = array_merge($results, $this->productinfo(true));
+		}
+		*/
+		if (is_array($this->cast())) {
+			$results = array_merge($results, $this->cast());
+		}
+		if (is_array($this->categories())) {
+			$results = array_merge($results, $this->categories());
+		}
+		if (is_array($this->covers())) {
+			$results = array_merge($results, $this->covers());
+		}
+		if (is_array($this->trailers())) {
+			$results = array_merge($results, $this->trailers());
+		}
+
+		return $results;
+	}
+
+
+	/**
 	 * Get raw html of an url that is passed to it.
 	 * @return bool
 	 */
@@ -127,21 +248,25 @@ public function sypnosis(){
 	{
 		if (isset($this->trailurl)) {
 			$ch = curl_init(SELF::popurl . $this->trailurl);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_HEADER, 0);
-			curl_setopt($ch, CURLOPT_VERBOSE, 0);
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-			curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
-			curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-			$this->response = curl_exec($ch);
-			if (!$this->response) {
-				curl_close($ch);
-
-				return false;
-			}
-			curl_close($ch);
 		} else {
+			$ch = curl_init($this->if18);
+		}
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_VERBOSE, 0);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
+		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+		if (isset($this->cookie)) {
+			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
+			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
+		}
+		$this->response = curl_exec($ch);
+		if (!$this->response) {
+			curl_close($ch);
+
 			return false;
 		}
+		curl_close($ch);
 	}
 }
