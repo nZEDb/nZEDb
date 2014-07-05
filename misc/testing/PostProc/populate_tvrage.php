@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
@@ -10,15 +10,15 @@ if (!isset($argv[1]) || $argv[1] != 'true') {
 			. "php $argv[0] true    ...: To run.\n"));
 }
 
-$db = new DB();
+$pdo = new Settings();
 $newnames = $updated = 0;
 
 $tvshows = @simplexml_load_file('http://services.tvrage.com/feeds/show_list.php');
 if ($tvshows !== false) {
 	foreach ($tvshows->show as $rage) {
-		$dupecheck = $db->queryOneRow(sprintf('SELECT COUNT(id) FROM tvrage WHERE id = %s', $db->escapeString($rage->id)));
+		$dupecheck = $pdo->queryOneRow(sprintf('SELECT COUNT(id) FROM tvrage WHERE id = %s', $pdo->escapeString($rage->id)));
 		if (isset($rage->id) && isset($rage->name) && !empty($rage->id) && !empty($rage->name) && empty($dupecheck)) {
-			$db->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, country) VALUES (%s, %s, %s)', $db->escapeString($rage->id), $db->escapeString($rage->name), $db->escapeString($rage->country)));
+			$pdo->queryInsert(sprintf('INSERT INTO tvrage (rageid, releasetitle, country) VALUES (%s, %s, %s)', $pdo->escapeString($rage->id), $pdo->escapeString($rage->name), $pdo->escapeString($rage->country)));
 			$updated++;
 		}
 	}

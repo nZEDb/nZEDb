@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 if ($argc < 3 || !isset($argv[1]) || (isset($argv[1]) && !is_numeric($argv[1]))) {
@@ -15,7 +15,7 @@ if ($argc < 3 || !isset($argv[1]) || (isset($argv[1]) && !is_numeric($argv[1])))
 }
 
 $crosspostt = $argv[1];
-$db = new DB();
+$pdo = new Settings();
 $c = new ColorCLI();
 $releases = new Releases();
 $count = $total = $all = 0;
@@ -28,7 +28,7 @@ if ($argv[2] === 'near') {
 }
 
 if ($crosspostt != 0) {
-	if ($db->dbSystem() === 'mysql') {
+	if ($pdo->dbSystem() === 'mysql') {
 		$query = sprintf('SELECT max(id) AS id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name, fromname, group_id,' . $size . 'HAVING COUNT(*) > 1', $crosspostt);
 	} else {
 		$query = sprintf("SELECT max(id) AS id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, fromname, group_id," . $size . "HAVING COUNT(name) > 1", $crosspostt);
@@ -38,7 +38,7 @@ if ($crosspostt != 0) {
 }
 
 do {
-	$resrel = $db->queryDirect($query);
+	$resrel = $pdo->queryDirect($query);
 	$total = $resrel->rowCount();
 	echo $c->header(number_format($total) . " Releases have Duplicates");
 	if (count($resrel) > 0) {

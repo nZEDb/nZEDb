@@ -47,11 +47,10 @@ class BasePage
 		}
 
 		// Set site variable.
-		$s = new Sites();
-		$this->site = $s->get();
+		$this->pdo = new \nzedb\db\Settings();
 
 		$this->smarty = new Smarty();
-		$this->smarty->setTemplateDir(array('user_frontend' => nZEDb_WWW.'themes/'.$this->site->style.'/templates/frontend', 'frontend' => nZEDb_WWW.'themes/Default/templates/frontend'));
+		$this->smarty->setTemplateDir(array('user_frontend' => nZEDb_WWW.'themes/'.$this->pdo->getSetting('style') . '/templates/frontend', 'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend'));
 
 		$this->smarty->setCompileDir(SMARTY_DIR.'templates_c/');
 		$this->smarty->setConfigDir(SMARTY_DIR.'configs/');
@@ -140,7 +139,7 @@ class BasePage
 			//$this->floodCheck(false, '');
 		}
 
-	$this->smarty->assign('site', $this->site);
+	$this->smarty->assign('site', (new Sites())->get());
 	$this->smarty->assign('page', $this);
 	}
 

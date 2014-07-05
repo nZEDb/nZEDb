@@ -424,10 +424,10 @@ function verifyEmptyParameter($parameter)
  */
 function addLanguage($releaseData)
 {
-	$db = new nzedb\db\DB();
+	$pdo = new nzedb\db\DB();
 	$returnData = array();
 	foreach ($releaseData as $release) {
-		$audios = $db->query(sprintf('SELECT * FROM releaseaudio WHERE releaseid = %d', $release['id']));
+		$audios = $pdo->query(sprintf('SELECT * FROM releaseaudio WHERE releaseid = %d', $release['id']));
 		foreach ($audios as $audio) {
 			if ($audio['audiolanguage'] != '') {
 				$release['searchname'] = ($release['searchname'] . ' ' . $audio['audiolanguage']);

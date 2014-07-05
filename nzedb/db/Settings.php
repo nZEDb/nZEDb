@@ -26,9 +26,25 @@ if (!defined('nZEDb_INSTALLER')) {
 }
 
 use nzedb\utility\Utility;
+use nzedb\utility\Versions;
 
 class Settings extends DB
 {
+	const REGISTER_STATUS_OPEN      = 0;
+	const REGISTER_STATUS_INVITE    = 1;
+	const REGISTER_STATUS_CLOSED    = 2;
+	const REGISTER_STATUS_API_ONLY  = 3;
+	const ERR_BADUNRARPATH          = -1;
+	const ERR_BADFFMPEGPATH         = -2;
+	const ERR_BADMEDIAINFOPATH      = -3;
+	const ERR_BADNZBPATH            = -4;
+	const ERR_DEEPNOUNRAR           = -5;
+	const ERR_BADTMPUNRARPATH       = -6;
+	const ERR_BADNZBPATH_UNREADABLE = -7;
+	const ERR_BADNZBPATH_UNSET      = -8;
+	const ERR_BAD_COVERS_PATH       = -9;
+	const ERR_BAD_YYDECODER_PATH    = -10;
+
 	private $settings;
 
 	public function __construct(array $options = array())
@@ -108,6 +124,16 @@ class Settings extends DB
 	public function settings()
 	{
 		return $this->settings;
+	}
+
+	public function version()
+	{
+		try {
+			$ver = (new Versions())->getTagVersion();
+		} catch (\Exception $e) {
+			$ver = '0.0.0';
+		}
+		return $ver;
 	}
 
 	protected function _getFromSettings($options)

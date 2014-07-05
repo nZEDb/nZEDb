@@ -17,7 +17,7 @@
  */
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $output = new ColorCLI();
 
@@ -38,11 +38,11 @@ if ($argc != 2) {
 }
 
 
-$db = new DB();
+$pdo = new Settings();
 $query = "SELECT `id`, `username`, `email`, `password` FROM users";
 
-$users = $db->query($query);
-$update = $db->Prepare('UPDATE users SET password = :password WHERE id = :id');
+$users = $pdo->query($query);
+$update = $pdo->Prepare('UPDATE users SET password = :password WHERE id = :id');
 
 foreach($users as $user)
 {

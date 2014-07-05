@@ -1,7 +1,7 @@
 <?php
 require_once nZEDb_LIBS . 'ZipFile.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 use nzedb\utility;
 
 /**
@@ -32,27 +32,27 @@ class Releases
 	const COLLFC_TEMPCOMP = 15; // Collection is complete and being checked for complete parts
 	const COLLFC_ZEROPART = 16; // Collection has a 00/0XX designator (temporary)
 
+	public $pdo;
+
 	/**
 	 * @param bool $echooutput
 	 */
 	public function __construct($echooutput = false)
 	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
-		$this->db = new DB();
-		$this->s = new Sites();
-		$this->site = $this->s->get();
-		$this->groups = new Groups($this->db);
+		$this->pdo = new Settings();
+		$this->groups = new Groups($this->pdo);
 		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->releaseCleaning = new ReleaseCleaning();
 		$this->consoleTools = new ConsoleTools();
-		$this->stage5limit = (isset($this->site->maxnzbsprocessed)) ? (int)$this->site->maxnzbsprocessed : 1000;
-		$this->completion = (isset($this->site->releasecompletion)) ? (int)$this->site->releasecompletion : 0;
-		$this->crosspostt = (isset($this->site->crossposttime)) ? (int)$this->site->crossposttime : 2;
-		$this->updategrabs = ($this->site->grabstatus == '0') ? false : true;
-		$this->requestids = $this->site->lookup_reqids;
-		$this->hashcheck = (isset($this->site->hashcheck)) ? (int)$this->site->hashcheck : 0;
-		$this->delaytimet = (isset($this->site->delaytime)) ? (int)$this->site->delaytime : 2;
-		$this->tablepergroup = (isset($this->site->tablepergroup)) ? (int)$this->site->tablepergroup : 0;
+		$this->stage5limit = ($this->pdo->getSetting('maxnzbsprocessed') != '') ? (int)$this->pdo->getSetting('maxnzbsprocessed') : 1000;
+		$this->completion = ($this->pdo->getSetting('releasecompletion')!= '') ? (int)$this->pdo->getSetting('releasecompletion') : 0;
+		$this->crosspostt = ($this->pdo->getSetting('crossposttime')!= '') ? (int)$this->pdo->getSetting('crossposttime') : 2;
+		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0') ? false : true;
+		$this->requestids = $this->pdo->getSetting('lookup_reqids');
+		$this->hashcheck = ($this->pdo->getSetting('hashcheck')!= '') ? (int)$this->pdo->getSetting('hashcheck') : 0;
+		$this->delaytimet = ($this->pdo->getSetting('delaytime')!= '') ? (int)$this->pdo->getSetting('delaytime') : 2;
+		$this->tablepergroup = ($this->pdo->getSetting('tablepergroup')!= '') ? (int)$this->pdo->getSetting('tablepergroup') : 0;
 		$this->c = new ColorCLI();
 	}
 
@@ -61,7 +61,7 @@ class Releases
 	 */
 	public function get()
 	{
-		return $this->db->query('
+		return $this->pdo->query('
 						SELECT r.*, g.name AS group_name, c.title AS category_name
 						FROM releases r
 						INNER JOIN category c ON c.id = r.categoryid
@@ -80,7 +80,7 @@ class Releases
 	 */
 	public function getRange($start, $num)
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			sprintf(
 				'SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name
 				FROM releases r
@@ -112,20 +112,20 @@ class Releases
 		$maxagesql = (
 		$maxage > 0
 			? " AND postdate > NOW() - INTERVAL " .
-			($this->db->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
+			($this->pdo->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
 			: ''
 		);
 
 		if ($grp != '') {
 			$grpjoin = 'INNER JOIN groups g ON g.id = r.group_id';
-			$grpsql = sprintf(' AND g.name = %s ', $this->db->escapeString($grp));
+			$grpsql = sprintf(' AND g.name = %s ', $this->pdo->escapeString($grp));
 		}
 
 		if (count($excludedcats) > 0) {
 			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$res = $this->db->queryOneRow(
+		$res = $this->pdo->queryOneRow(
 						sprintf(
 							'SELECT COUNT(r.id) AS num
 							FROM releases r %s
@@ -165,12 +165,12 @@ class Releases
 		$maxagesql = (
 		$maxage > 0
 			? " AND postdate > NOW() - INTERVAL " .
-			($this->db->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
+			($this->pdo->dbSystem() === 'mysql' ? $maxage . ' DAY ' : "'" . $maxage . " DAYS' ")
 			: ''
 		);
 
 		if ($grp != '') {
-			$grpsql = sprintf(' AND g.name = %s ', $this->db->escapeString($grp));
+			$grpsql = sprintf(' AND g.name = %s ', $this->pdo->escapeString($grp));
 		}
 
 		if (count($excludedcats) > 0) {
@@ -179,7 +179,7 @@ class Releases
 
 		$order = $this->getBrowseOrder($orderby);
 
-		return $this->db->query(
+		return $this->pdo->query(
 					sprintf(
 						"SELECT r.*,
 							CONCAT(cp.title, ' > ', c.title) AS category_name,
@@ -215,7 +215,7 @@ class Releases
 	 */
 	public function showPasswords()
 	{
-		$res = $this->db->queryOneRow(
+		$res = $this->pdo->queryOneRow(
 							"SELECT value
 							FROM settings
 							WHERE setting = 'showpasswordedrelease'");
@@ -299,7 +299,7 @@ class Releases
 			if (count($dateparts) == 3) {
 				$postfrom = sprintf(
 					' AND postdate > %s ',
-					$this->db->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' . $dateparts[0] . ' 00:00:00')
+					$this->pdo->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' . $dateparts[0] . ' 00:00:00')
 				);
 			} else {
 				$postfrom = '';
@@ -311,7 +311,7 @@ class Releases
 			if (count($dateparts) == 3) {
 				$postto = sprintf(
 					' AND postdate < %s ',
-					$this->db->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' . $dateparts[0] . ' 23:59:59')
+					$this->pdo->escapeString($dateparts[2] . '-' . $dateparts[1] . '-' . $dateparts[0] . ' 23:59:59')
 				);
 			} else {
 				$postto = '';
@@ -324,7 +324,7 @@ class Releases
 			$group = '';
 		}
 
-		return $this->db->query(
+		return $this->pdo->query(
 						sprintf(
 								"SELECT searchname, guid, groups.name AS gname, CONCAT(cp.title,'_',category.title) AS catName
 								FROM releases r
@@ -346,10 +346,10 @@ class Releases
 	 */
 	public function getEarliestUsenetPostDate()
 	{
-		$row = $this->db->queryOneRow(
+		$row = $this->pdo->queryOneRow(
 						sprintf(
 							"SELECT %s AS postdate FROM releases",
-							($this->db->dbSystem() === 'mysql'
+							($this->pdo->dbSystem() === 'mysql'
 								? "DATE_FORMAT(min(postdate), '%d/%m/%Y')"
 								: "to_char(min(postdate), 'dd/mm/yyyy')"
 							)
@@ -366,10 +366,10 @@ class Releases
 	 */
 	public function getLatestUsenetPostDate()
 	{
-		$row = $this->db->queryOneRow(
+		$row = $this->pdo->queryOneRow(
 						sprintf(
 							"SELECT %s AS postdate FROM releases",
-							($this->db->dbSystem() === 'mysql'
+							($this->pdo->dbSystem() === 'mysql'
 								? "DATE_FORMAT(max(postdate), '%d/%m/%Y')"
 								: "to_char(max(postdate), 'dd/mm/yyyy')"
 							)
@@ -388,7 +388,7 @@ class Releases
 	 */
 	public function getReleasedGroupsForSelect($blnIncludeAll = true)
 	{
-		$groups = $this->db->query('SELECT DISTINCT g.id, g.name
+		$groups = $this->pdo->query('SELECT DISTINCT g.id, g.name
 						FROM releases r
 						INNER JOIN groups g ON g.id = r.group_id');
 		$temp_array = array();
@@ -418,7 +418,7 @@ class Releases
 	 */
 	public function getRss($cat, $num, $uid = 0, $rageid, $anidbid, $airdate = -1)
 	{
-		if ($this->db->dbSystem() === 'mysql') {
+		if ($this->pdo->dbSystem() === 'mysql') {
 			$limit = ' LIMIT 0,' . ($num > 100 ? 100 : $num);
 		} else {
 			$limit = ' LIMIT ' . ($num > 100 ? 100 : $num) . ' OFFSET 0';
@@ -454,7 +454,7 @@ class Releases
 
 		$rage = ($rageid > -1) ? sprintf(' AND r.rageid = %d ', $rageid) : '';
 		$anidb = ($anidbid > -1) ? sprintf(' AND r.anidbid = %d ', $anidbid) : '';
-		if ($this->db->dbSystem() === 'mysql') {
+		if ($this->pdo->dbSystem() === 'mysql') {
 			$airdate = ($airdate >
 				-1) ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
 		} else {
@@ -462,7 +462,7 @@ class Releases
 				-1) ? sprintf(" AND r.tvairdate >= (CURDATE() - INTERVAL '%d DAYS') ", $airdate) : '';
 		}
 
-		return $this->db->query(
+		return $this->pdo->query(
 					sprintf(
 						"SELECT r.*, m.cover, m.imdbid, m.rating, m.plot,
 							m.year, m.genre, m.director, m.actors, g.name AS group_name,
@@ -513,8 +513,8 @@ class Releases
 			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$usql = $this->uSQL($this->db->query(sprintf('SELECT rageid, categoryid FROM userseries WHERE userid = %d', $uid), true), 'rageid');
-		if ($this->db->dbSystem() === 'mysql') {
+		$usql = $this->uSQL($this->pdo->query(sprintf('SELECT rageid, categoryid FROM userseries WHERE userid = %d', $uid), true), 'rageid');
+		if ($this->pdo->dbSystem() === 'mysql') {
 			$airdate = ($airdate >
 				-1) ? sprintf(' AND r.tvairdate >= DATE_SUB(CURDATE(), INTERVAL %d DAY) ', $airdate) : '';
 		} else {
@@ -523,7 +523,7 @@ class Releases
 		}
 		$limit = ' LIMIT ' . ($num > 100 ? 100 : $num) . ' OFFSET 0';
 
-		return $this->db->query(
+		return $this->pdo->query(
 					sprintf("
 						SELECT r.*, tvr.rageid, tvr.releasetitle, g.name AS group_name,
 							CONCAT(cp.title, '-', c.title) AS category_name,
@@ -562,10 +562,10 @@ class Releases
 			$exccatlist = ' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')';
 		}
 
-		$usql = $this->uSQL($this->db->query(sprintf('SELECT imdbid, categoryid FROM usermovies WHERE userid = %d', $uid), true), 'imdbid');
+		$usql = $this->uSQL($this->pdo->query(sprintf('SELECT imdbid, categoryid FROM usermovies WHERE userid = %d', $uid), true), 'imdbid');
 		$limit = ' LIMIT ' . ($num > 100 ? 100 : $num) . ' OFFSET 0';
 
-		return $this->db->query(
+		return $this->pdo->query(
 					sprintf("
 						SELECT r.*, mi.title AS releasetitle, g.name AS group_name,
 							CONCAT(cp.title, '-', c.title) AS category_name,
@@ -615,7 +615,7 @@ class Releases
 		$usql = $this->uSQL($usershows, 'rageid');
 
 		if ($maxage > 0) {
-			if ($this->db->dbSystem() === 'mysql') {
+			if ($this->pdo->dbSystem() === 'mysql') {
 				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
 				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
@@ -624,7 +624,7 @@ class Releases
 
 		$order = $this->getBrowseOrder($orderby);
 
-		return $this->db->query(
+		return $this->pdo->query(
 			sprintf(
 				"
 								SELECT r.*, CONCAT(cp.title, '-', c.title) AS category_name,
@@ -663,14 +663,14 @@ class Releases
 		$usql = $this->uSQL($usershows, 'rageid');
 
 		if ($maxage > 0) {
-			if ($this->db->dbSystem() === 'mysql') {
+			if ($this->pdo->dbSystem() === 'mysql') {
 				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
 				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
 			}
 		}
 
-		$res = $this->db->queryOneRow(
+		$res = $this->pdo->queryOneRow(
 			sprintf(
 				'
 								SELECT COUNT(r.id) AS num
@@ -691,7 +691,7 @@ class Releases
 	 */
 	public function getCount()
 	{
-		$res = $this->db->queryOneRow('SELECT COUNT(id) AS num FROM releases');
+		$res = $this->pdo->queryOneRow('SELECT COUNT(id) AS num FROM releases');
 
 		return ($res === false ? 0 : $res['num']);
 	}
@@ -738,8 +738,8 @@ class Releases
 		$ri->delete($guid);
 
 		// Delete from DB.
-		if ($this->db->dbSystem() === 'mysql') {
-			$this->db->queryExec(
+		if ($this->pdo->dbSystem() === 'mysql') {
+			$this->pdo->queryExec(
 				sprintf('
 					DELETE r, rn, rc, uc, rf, ra, rs, rv, re
 					FROM releases r
@@ -756,15 +756,15 @@ class Releases
 				)
 			);
 		} else {
-			$this->db->queryExec('DELETE FROM releasenfo WHERE releaseid = ' . $id);
-			$this->db->queryExec('DELETE FROM releasecomment WHERE releaseid = ' . $id);
-			$this->db->queryExec('DELETE FROM usercart WHERE releaseid = ' . $id);
-			$this->db->queryExec('DELETE FROM releasefiles WHERE releaseid = ' . $id);
-			$this->db->queryExec('DELETE FROM releaseaudio WHERE releaseid = ' . $id);
-			$this->db->queryExec('DELETE FROM releasesubs WHERE releaseid = ' . $id);
-			$this->db->queryExec('DELETE FROM releasevideo WHERE releaseid = ' . $id);
-			$this->db->queryExec('DELETE FROM releaseextrafull WHERE releaseid = ' . $id);
-			$this->db->queryExec('DELETE FROM releases WHERE id = ' . $id);
+			$this->pdo->queryExec('DELETE FROM releasenfo WHERE releaseid = ' . $id);
+			$this->pdo->queryExec('DELETE FROM releasecomment WHERE releaseid = ' . $id);
+			$this->pdo->queryExec('DELETE FROM usercart WHERE releaseid = ' . $id);
+			$this->pdo->queryExec('DELETE FROM releasefiles WHERE releaseid = ' . $id);
+			$this->pdo->queryExec('DELETE FROM releaseaudio WHERE releaseid = ' . $id);
+			$this->pdo->queryExec('DELETE FROM releasesubs WHERE releaseid = ' . $id);
+			$this->pdo->queryExec('DELETE FROM releasevideo WHERE releaseid = ' . $id);
+			$this->pdo->queryExec('DELETE FROM releaseextrafull WHERE releaseid = ' . $id);
+			$this->pdo->queryExec('DELETE FROM releases WHERE id = ' . $id);
 		}
 	}
 
@@ -793,26 +793,26 @@ class Releases
 		$posteddate, $addeddate, $rageid, $seriesfull, $season, $episode, $imdbid, $anidbid
 	)
 	{
-		$this->db->queryExec(
+		$this->pdo->queryExec(
 			sprintf(
 				'UPDATE releases ' .
 				'SET name = %s, searchname = %s, fromname = %s, categoryid = %d, ' .
 					'totalpart = %d, grabs = %d, size = %s, postdate = %s, adddate = %s, rageid = %d, ' .
 					'seriesfull = %s, season = %s, episode = %s, imdbid = %d, anidbid = %d ' .
 				'WHERE id = %d',
-				$this->db->escapeString($name),
-				$this->db->escapeString($searchname),
-				$this->db->escapeString($fromname),
+				$this->pdo->escapeString($name),
+				$this->pdo->escapeString($searchname),
+				$this->pdo->escapeString($fromname),
 				$category,
 				$parts,
 				$grabs,
-				$this->db->escapeString($size),
-				$this->db->escapeString($posteddate),
-				$this->db->escapeString($addeddate),
+				$this->pdo->escapeString($size),
+				$this->pdo->escapeString($posteddate),
+				$this->pdo->escapeString($addeddate),
 				$rageid,
-				$this->db->escapeString($seriesfull),
-				$this->db->escapeString($season),
-				$this->db->escapeString($episode),
+				$this->pdo->escapeString($seriesfull),
+				$this->pdo->escapeString($season),
+				$this->pdo->escapeString($episode),
 				$imdbid,
 				$anidbid,
 				$id
@@ -849,7 +849,7 @@ class Releases
 		$updateSql = array();
 		foreach ($update as $updk => $updv) {
 			if ($updv != '') {
-				$updateSql[] = sprintf($updk . '=%s', $this->db->escapeString($updv));
+				$updateSql[] = sprintf($updk . '=%s', $this->pdo->escapeString($updv));
 			}
 		}
 
@@ -859,10 +859,10 @@ class Releases
 
 		$updateGuids = array();
 		foreach ($guids as $guid) {
-			$updateGuids[] = $this->db->escapeString($guid);
+			$updateGuids[] = $this->pdo->escapeString($guid);
 		}
 
-		return $this->db->query(
+		return $this->pdo->query(
 			sprintf(
 				'
 								UPDATE releases SET %s WHERE guid IN (%s)',
@@ -944,7 +944,7 @@ class Releases
 			if ($searchwords === '') {
 				$words = explode(' ', $search);
 				$like = 'ILIKE';
-				if ($this->db->dbSystem() === 'mysql') {
+				if ($this->pdo->dbSystem() === 'mysql') {
 					$like = 'LIKE';
 				}
 				foreach ($words as $word) {
@@ -952,19 +952,19 @@ class Releases
 						$word = trim(rtrim(trim($word), '-'));
 						if ($intwordcount == 0 && (strpos($word, '^') === 0)) {
 							$searchsql .= sprintf(
-								' AND r.%s %s %s', $type, $like, $this->db->escapeString(
+								' AND r.%s %s %s', $type, $like, $this->pdo->escapeString(
 									substr($word, 1) . '%'
 								)
 							);
 						} else if (substr($word, 0, 2) == '--') {
 							$searchsql .= sprintf(
-								' AND r.%s NOT %s %s', $type, $like, $this->db->escapeString(
+								' AND r.%s NOT %s %s', $type, $like, $this->pdo->escapeString(
 									'%' . substr($word, 2) . '%'
 								)
 							);
 						} else {
 							$searchsql .= sprintf(
-								' AND r.%s %s %s', $type, $like, $this->db->escapeString(
+								' AND r.%s %s %s', $type, $like, $this->pdo->escapeString(
 									'%' . $word . '%'
 								)
 							);
@@ -1032,7 +1032,7 @@ class Releases
 			' AND r.categoryid NOT IN (' . implode(',', $excludedcats) . ')' : '');
 
 		if ($daysnew != '-1') {
-			if ($this->db->dbSystem() === 'mysql') {
+			if ($this->pdo->dbSystem() === 'mysql') {
 				$daysnewsql = sprintf(' AND r.postdate < (NOW() - INTERVAL %d DAY) ', $daysnew);
 			} else {
 				$daysnewsql = sprintf(" AND r.postdate < NOW() - INTERVAL '%d DAYS' ", $daysnew);
@@ -1040,7 +1040,7 @@ class Releases
 		}
 
 		if ($daysold != '-1') {
-			if ($this->db->dbSystem() === 'mysql') {
+			if ($this->pdo->dbSystem() === 'mysql') {
 				$daysoldsql = sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $daysold);
 			} else {
 				$daysoldsql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $daysold);
@@ -1048,7 +1048,7 @@ class Releases
 		}
 
 		if ($maxage > 0) {
-			if ($this->db->dbSystem() === 'mysql') {
+			if ($this->pdo->dbSystem() === 'mysql') {
 				$maxagesql = sprintf(' AND r.postdate > (NOW() - INTERVAL %d DAY) ', $maxage);
 			} else {
 				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
@@ -1124,11 +1124,11 @@ class Releases
 			$order[1], $limit, $offset
 		);
 		$wherepos = strpos($sql, 'WHERE');
-		$countres = $this->db->queryOneRow(
+		$countres = $this->pdo->queryOneRow(
 			'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs ON rs.releaseid = r.id ' .
 			substr($sql, $wherepos, strrpos($sql, ')') - $wherepos)
 		);
-		$res = $this->db->query($sql);
+		$res = $this->pdo->query($sql);
 		if (count($res) > 0) {
 			$res[0]['_totalrows'] = $countres['num'];
 		}
@@ -1150,7 +1150,7 @@ class Releases
 				$series = sprintf('S%02d', $series);
 			}
 
-			$series = sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->db->escapeString($series));
+			$series = sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->pdo->escapeString($series));
 		}
 
 		if ($episode != '') {
@@ -1159,10 +1159,10 @@ class Releases
 			}
 
 			$like = 'ILIKE';
-			if ($this->db->dbSystem() === 'mysql') {
+			if ($this->pdo->dbSystem() === 'mysql') {
 				$like = 'LIKE';
 			}
-			$episode = sprintf(' AND r.episode %s %s', $like, $this->db->escapeString('%' . $episode . '%'));
+			$episode = sprintf(' AND r.episode %s %s', $like, $this->pdo->escapeString('%' . $episode . '%'));
 		}
 
 		$searchsql = '';
@@ -1172,7 +1172,7 @@ class Releases
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0) {
-			if ($this->db->dbSystem() === 'mysql') {
+			if ($this->pdo->dbSystem() === 'mysql') {
 				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
 				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
@@ -1207,8 +1207,8 @@ class Releases
 		$wherepos = strpos($sql, 'WHERE');
 		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs ON rs.releaseid = r.id  ' . substr($sql, $wherepos, $orderpos - $wherepos);
 
-		$countres = $this->db->queryOneRow($sqlcount);
-		$res = $this->db->query($sql);
+		$countres = $this->pdo->queryOneRow($sqlcount);
+		$res = $this->pdo->query($sql);
 		if (count($res) > 0) {
 			$res[0]['_totalrows'] = $countres['num'];
 		}
@@ -1221,12 +1221,12 @@ class Releases
 		$anidbID = ($anidbID > -1) ? sprintf(' AND anidbid = %d ', $anidbID) : '';
 
 		$like = 'ILIKE';
-		if ($this->db->dbSystem() === 'mysql') {
+		if ($this->pdo->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 
 		is_numeric($epno) ? $epno = sprintf(
-			" AND r.episode %s '%s' ", $like, $this->db->escapeString(
+			" AND r.episode %s '%s' ", $like, $this->pdo->escapeString(
 				'%' . $epno . '%'
 			)
 		) : '';
@@ -1239,7 +1239,7 @@ class Releases
 
 		$maxagesql = '';
 		if ($maxage > 0) {
-			if ($this->db->dbSystem() === 'mysql') {
+			if ($this->pdo->dbSystem() === 'mysql') {
 				$maxagesql = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
 				$maxagesql = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS' ", $maxage);
@@ -1270,8 +1270,8 @@ class Releases
 		$wherepos = strpos($sql, 'WHERE');
 		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs ON rs.releaseid = r.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
 
-		$countres = $this->db->queryOneRow($sqlcount);
-		$res = $this->db->query($sql);
+		$countres = $this->pdo->queryOneRow($sqlcount);
+		$res = $this->pdo->query($sql);
 		if (count($res) > 0) {
 			$res[0]['_totalrows'] = $countres['num'];
 		}
@@ -1295,7 +1295,7 @@ class Releases
 		$catsrch = $this->categorySQL($cat);
 
 		if ($maxage > 0) {
-			if ($this->db->dbSystem() === 'mysql') {
+			if ($this->pdo->dbSystem() === 'mysql') {
 				$maxage = sprintf(' AND r.postdate > NOW() - INTERVAL %d DAY ', $maxage);
 			} else {
 				$maxage = sprintf(" AND r.postdate > NOW() - INTERVAL '%d DAYS ", $maxage);
@@ -1329,8 +1329,8 @@ class Releases
 		$wherepos = strpos($sql, 'WHERE');
 		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs ON rs.releaseid = r.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
 
-		$countres = $this->db->queryOneRow($sqlcount);
-		$res = $this->db->query($sql);
+		$countres = $this->pdo->queryOneRow($sqlcount);
+		$res = $this->pdo->query($sql);
 		if (count($res) > 0) {
 			$res[0]['_totalrows'] = $countres['num'];
 		}
@@ -1377,11 +1377,11 @@ class Releases
 		if (is_array($guid)) {
 			$tmpguids = array();
 			foreach ($guid as $g) {
-				$tmpguids[] = $this->db->escapeString($g);
+				$tmpguids[] = $this->pdo->escapeString($g);
 			}
 			$gsql = sprintf('r.guid IN (%s)', implode(',', $tmpguids));
 		} else {
-			$gsql = sprintf('r.guid = %s', $this->db->escapeString($guid));
+			$gsql = sprintf('r.guid = %s', $this->pdo->escapeString($guid));
 		}
 		$sql = sprintf("
 					SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
@@ -1393,7 +1393,7 @@ class Releases
 					$gsql
 		);
 
-		return (is_array($guid)) ? $this->db->query($sql) : $this->db->queryOneRow($sql);
+		return (is_array($guid)) ? $this->pdo->query($sql) : $this->pdo->queryOneRow($sql);
 	}
 
 	// Writes a zip file of an array of release guids directly to the stream.
@@ -1432,7 +1432,7 @@ class Releases
 				$series = sprintf('S%02d', $series);
 			}
 
-			$series = sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->db->escapeString($series));
+			$series = sprintf(' AND UPPER(r.season) = UPPER(%s)', $this->pdo->escapeString($series));
 		}
 
 		if ($episode != '') {
@@ -1440,10 +1440,10 @@ class Releases
 				$episode = sprintf('E%02d', $episode);
 			}
 
-			$episode = sprintf(' AND UPPER(r.episode) = UPPER(%s)', $this->db->escapeString($episode));
+			$episode = sprintf(' AND UPPER(r.episode) = UPPER(%s)', $this->pdo->escapeString($episode));
 		}
 
-		return $this->db->queryOneRow(
+		return $this->pdo->queryOneRow(
 						sprintf("
 							SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name,
 							groups.name AS group_name
@@ -1462,23 +1462,23 @@ class Releases
 
 	public function removeRageIdFromReleases($rageid)
 	{
-		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(r.id) AS num FROM releases r WHERE rageid = %d', $rageid));
-		$this->db->queryExec(sprintf('UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL WHERE rageid = %d', $rageid));
+		$res = $this->pdo->queryOneRow(sprintf('SELECT COUNT(r.id) AS num FROM releases r WHERE rageid = %d', $rageid));
+		$this->pdo->queryExec(sprintf('UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL WHERE rageid = %d', $rageid));
 
 		return $res['num'];
 	}
 
 	public function removeAnidbIdFromReleases($anidbID)
 	{
-		$res = $this->db->queryOneRow(sprintf('SELECT COUNT(r.id) AS num FROM releases r WHERE anidbid = %d', $anidbID));
-		$this->db->queryExec(sprintf('UPDATE releases SET anidbid = -1, episode = NULL, tvtitle = NULL, tvairdate = NULL WHERE anidbid = %d', $anidbID));
+		$res = $this->pdo->queryOneRow(sprintf('SELECT COUNT(r.id) AS num FROM releases r WHERE anidbid = %d', $anidbID));
+		$this->pdo->queryExec(sprintf('UPDATE releases SET anidbid = -1, episode = NULL, tvtitle = NULL, tvairdate = NULL WHERE anidbid = %d', $anidbID));
 
 		return $res['num'];
 	}
 
 	public function getById($id)
 	{
-		return $this->db->queryOneRow(
+		return $this->pdo->queryOneRow(
 						sprintf('
 							SELECT r.*, g.name AS group_name
 							FROM releases r
@@ -1491,14 +1491,14 @@ class Releases
 
 	public function getReleaseNfo($id, $incnfo = true)
 	{
-		if ($this->db->dbSystem() === 'mysql') {
+		if ($this->pdo->dbSystem() === 'mysql') {
 			$uc = 'UNCOMPRESS(nfo)';
 		} else {
 			$uc = 'nfo';
 		}
 		$selnfo = ($incnfo) ? ", {$uc} AS nfo" : '';
 
-		return $this->db->queryOneRow(
+		return $this->pdo->queryOneRow(
 			sprintf(
 				'SELECT id, releaseid' . $selnfo . ' FROM releasenfo WHERE releaseid = %d AND nfo IS NOT NULL', $id
 			)
@@ -1508,14 +1508,14 @@ class Releases
 	public function updateGrab($guid)
 	{
 		if ($this->updategrabs) {
-			$this->db->queryExec(sprintf('UPDATE releases SET grabs = grabs + 1 WHERE guid = %s', $this->db->escapeString($guid)));
+			$this->pdo->queryExec(sprintf('UPDATE releases SET grabs = grabs + 1 WHERE guid = %s', $this->pdo->escapeString($guid)));
 		}
 	}
 
 	// Sends releases back to other->misc.
 	public function resetCategorize($where = '')
 	{
-		$this->db->queryExec('UPDATE releases SET categoryid = 7010, iscategorized = 0 ' . $where);
+		$this->pdo->queryExec('UPDATE releases SET categoryid = 7010, iscategorized = 0 ' . $where);
 	}
 
 	// Categorizes releases.
@@ -1525,7 +1525,7 @@ class Releases
 	{
 		$cat = new Categorize();
 		$relcount = 0;
-		$resrel = $this->db->queryDirect('SELECT id, ' . $type . ', group_id FROM releases ' . $where);
+		$resrel = $this->pdo->queryDirect('SELECT id, ' . $type . ', group_id FROM releases ' . $where);
 		$total = 0;
 		if ($resrel !== false) {
 			$total = $resrel->rowCount();
@@ -1533,7 +1533,7 @@ class Releases
 		if ($total > 0) {
 			foreach ($resrel as $rowrel) {
 				$catId = $cat->determineCategory($rowrel[$type], $rowrel['group_id']);
-				$this->db->queryExec(sprintf('UPDATE releases SET categoryid = %d, iscategorized = 1 WHERE id = %d', $catId, $rowrel['id']));
+				$this->pdo->queryExec(sprintf('UPDATE releases SET categoryid = %d, iscategorized = 1 WHERE id = %d', $catId, $rowrel['id']));
 				$relcount++;
 				if ($this->echooutput) {
 					$this->consoleTools->overWritePrimary(
@@ -1556,7 +1556,7 @@ class Releases
 			if ($groupID == '') {
 				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
 			}
-			if ($this->db->newtables($groupID) === false) {
+			if ($this->pdo->newtables($groupID) === false) {
 				exit("There is a problem creating new parts/files tables for this group.\n");
 			}
 			$group['cname'] = 'collections_' . $groupID;
@@ -1575,9 +1575,9 @@ class Releases
 		$stage1 = TIME();
 		$where = (!empty($groupID)) ? ' AND c.group_id = ' . $groupID . ' ' : ' ';
 
-		if ($this->db->dbSystem() === 'mysql') {
+		if ($this->pdo->dbSystem() === 'mysql') {
 			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s c INNER JOIN
 								(SELECT c.id FROM %s c
@@ -1594,7 +1594,7 @@ class Releases
 							self::COLLFC_COMPCOLL
 						)
 			);
-			/* $this->db->queryExec(
+			/* $this->pdo->queryExec(
 						sprintf('
 							UPDATE %s c SET filecheck = 1
 							WHERE c.id IN
@@ -1614,7 +1614,7 @@ class Releases
 			*/
 
 			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s c INNER JOIN
 								(SELECT c.id FROM %s c
@@ -1634,7 +1634,7 @@ class Releases
 			);
 
 			// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s c
 							SET filecheck = %d
@@ -1648,7 +1648,7 @@ class Releases
 
 			// If we have all the parts set partcheck to 1.
 			// If filecheck 15, check if we have all the parts for a file then set partcheck.
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s b INNER JOIN
 								(SELECT b.id FROM %s b
@@ -1668,7 +1668,7 @@ class Releases
 			);
 
 			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s b INNER JOIN
 								(SELECT b.id FROM %s b
@@ -1687,7 +1687,7 @@ class Releases
 			);
 
 			// Set filecheck to 2 if partcheck = 1.
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s c INNER JOIN
 								(SELECT c.id FROM %s c
@@ -1706,7 +1706,7 @@ class Releases
 			);
 
 			// Set filecheck to 1 if we don't have all the parts.
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s c
 							SET filecheck = %d
@@ -1720,7 +1720,7 @@ class Releases
 			);
 
 			// If a collection has not been updated in X hours, set filecheck to 2.
-			$query = $this->db->queryExec(
+			$query = $this->pdo->queryExec(
 							sprintf("
 								UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collectionid = c.id)
 								WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
@@ -1736,7 +1736,7 @@ class Releases
 			);
 		} else {
 			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s c SET filecheck = %d
 							FROM (SELECT c.id
@@ -1756,7 +1756,7 @@ class Releases
 			);
 
 			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s c SET filecheck = %d
 							FROM (SELECT c.id
@@ -1777,7 +1777,7 @@ class Releases
 			);
 
 			// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s c
 							SET filecheck = %d
@@ -1791,7 +1791,7 @@ class Releases
 
 			// If we have all the parts set partcheck to 1.
 			// If filecheck 15, check if we have all the parts for a file then set partcheck.
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s b
 							SET partcheck = 1
@@ -1813,7 +1813,7 @@ class Releases
 			);
 
 			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s b
 							SET partcheck = 1
@@ -1835,7 +1835,7 @@ class Releases
 			);
 
 			// Set filecheck to 2 if partcheck = 1.
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s c
 							SET filecheck = %d
@@ -1858,7 +1858,7 @@ class Releases
 			);
 
 			// Set filecheck to 1 if we don't have all the parts.
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s c
 							SET filecheck = %d
@@ -1872,7 +1872,7 @@ class Releases
 			);
 
 			// If a collection has not been updated in X hours, set filecheck to 2.
-			$query = $this->db->queryExec(
+			$query = $this->pdo->queryExec(
 							sprintf("
 								UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collectionid = c.id)
 								WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
@@ -1923,7 +1923,7 @@ class Releases
 
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
-		$checked = $this->db->queryExec(
+		$checked = $this->pdo->queryExec(
 						sprintf(
 							'UPDATE %s c
 							SET filesize = (SELECT COALESCE(SUM(p.size), 0) FROM %s p INNER JOIN %s b ON p.binaryid = b.id WHERE b.collectionid = c.id),
@@ -1974,14 +1974,14 @@ class Releases
 		if ($groupID == '') {
 			$groupIDs = $this->groups->getActiveIDs();
 			foreach ($groupIDs as $groupID) {
-				$res = $this->db->query(
+				$res = $this->pdo->query(
 					'SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 3 AND filesize > 0 AND group_id = ' .
 					$groupID['id']
 				);
 				if (count($res) > 0) {
 					$minsizecount = 0;
-					if ($this->db->dbSystem() === 'mysql') {
-						$mscq = $this->db->queryExec(
+					if ($this->pdo->dbSystem() === 'mysql') {
+						$mscq = $this->pdo->queryExec(
 							"UPDATE " . $group['cname'] .
 							" c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND group_id = " .
 							$groupID['id']
@@ -1990,12 +1990,12 @@ class Releases
 							$minsizecount = $mscq->rowCount();
 						}
 					} else {
-						$s = $this->db->queryOneRow(
+						$s = $this->pdo->queryOneRow(
 							"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
 							$groupID['id']
 						);
 						if ($s['size'] > 0) {
-							$mscq = $this->db->queryExec(
+							$mscq = $this->pdo->queryExec(
 								sprintf(
 									'UPDATE ' . $group['cname'] .
 									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
@@ -2012,9 +2012,9 @@ class Releases
 					}
 					$minsizecounts = $minsizecount + $minsizecounts;
 
-					$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
+					$maxfilesizeres = $this->pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 					if ($maxfilesizeres['value'] != 0) {
-						$mascq = $this->db->queryExec(
+						$mascq = $this->pdo->queryExec(
 							sprintf(
 								'UPDATE ' . $group['cname'] .
 								' SET filecheck = 5 WHERE filecheck = 3 AND group_id = %d AND filesize > %d ', $groupID['id'], $maxfilesizeres['value']
@@ -2031,8 +2031,8 @@ class Releases
 					}
 
 					$minfilecount = 0;
-					if ($this->db->dbSystem() === 'mysql') {
-						$mifcq = $this->db->queryExec(
+					if ($this->pdo->dbSystem() === 'mysql') {
+						$mifcq = $this->pdo->queryExec(
 							"UPDATE " . $group['cname'] .
 							" c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND group_id = " .
 							$groupID['id']
@@ -2041,12 +2041,12 @@ class Releases
 							$minfilecount = $mifcq->rowCount();
 						}
 					} else {
-						$f = $this->db->queryOneRow(
+						$f = $this->pdo->queryOneRow(
 							"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
 							$groupID['id']
 						);
 						if ($f['files'] > 0) {
-							$mifcq = $this->db->queryExec(
+							$mifcq = $this->pdo->queryExec(
 								sprintf(
 									'UPDATE ' . $group['cname'] .
 									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
@@ -2065,13 +2065,13 @@ class Releases
 				}
 			}
 		} else {
-			$res = $this->db->queryDirect(
+			$res = $this->pdo->queryDirect(
 				'SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 3 AND filesize > 0 AND group_id = ' . $groupID
 			);
 			if ($res !== false && $res->rowCount() > 0) {
 				$minsizecount = 0;
-				if ($this->db->dbSystem() === 'mysql') {
-					$mscq = $this->db->queryExec(
+				if ($this->pdo->dbSystem() === 'mysql') {
+					$mscq = $this->pdo->queryExec(
 						"UPDATE " . $group['cname'] .
 						" c LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND group_id = " .
 						$groupID
@@ -2080,12 +2080,12 @@ class Releases
 						$minsizecount = $mscq->rowCount();
 					}
 				} else {
-					$s = $this->db->queryOneRow(
+					$s = $this->pdo->queryOneRow(
 						"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
 						$groupID
 					);
 					if ($s['size'] > 0) {
-						$mscq = $this->db->queryExec(
+						$mscq = $this->pdo->queryExec(
 							sprintf(
 								'UPDATE ' . $group['cname'] .
 								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
@@ -2102,9 +2102,9 @@ class Releases
 				}
 				$minsizecounts = $minsizecount + $minsizecounts;
 
-				$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
+				$maxfilesizeres = $this->pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0) {
-					$mascq = $this->db->queryExec(
+					$mascq = $this->pdo->queryExec(
 						sprintf(
 							'UPDATE ' . $group['cname'] .
 							' SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d ', $maxfilesizeres['value']
@@ -2120,8 +2120,8 @@ class Releases
 				}
 
 				$minfilecount = 0;
-				if ($this->db->dbSystem() === 'mysql') {
-					$mifcq = $this->db->queryExec(
+				if ($this->pdo->dbSystem() === 'mysql') {
+					$mifcq = $this->pdo->queryExec(
 						"UPDATE " . $group['cname'] .
 						" c LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND group_id = " .
 						$groupID
@@ -2130,12 +2130,12 @@ class Releases
 						$minfilecount = $mifcq->rowCount();
 					}
 				} else {
-					$f = $this->db->queryOneRow(
+					$f = $this->pdo->queryOneRow(
 						"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
 						$groupID
 					);
 					if ($f['files'] > 0) {
-						$mifcq = $this->db->queryExec(
+						$mifcq = $this->pdo->queryExec(
 							sprintf(
 								'UPDATE ' . $group['cname'] .
 								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
@@ -2195,7 +2195,7 @@ class Releases
 
 		$stage4 = TIME();
 
-		$collections = $this->db->queryDirect(
+		$collections = $this->pdo->queryDirect(
 			sprintf('
 				SELECT %s.*, groups.name AS gname
 				FROM %s
@@ -2219,7 +2219,7 @@ class Releases
 		if ($collections !== false && $collections->rowCount() > 0) {
 			$preDB = new PreDb($this->echooutput);
 
-			$checkPasswords = ($this->site->checkpasswordedrar == '1' ? -1 : 0);
+			$checkPasswords = ($this->pdo->getSetting('checkpasswordedrar') == '1' ? -1 : 0);
 
 			foreach ($collections as $collection) {
 
@@ -2269,7 +2269,7 @@ class Releases
 
 				// Look for duplicates, duplicates match on releases.name, releases.fromname and releases.size
 				// A 1% variance in size is considered the same size when the subject and poster are the same
-				$dupeCheck = $this->db->queryOneRow(
+				$dupeCheck = $this->pdo->queryOneRow(
 					sprintf('
 						SELECT id, guid
 						FROM releases
@@ -2277,10 +2277,10 @@ class Releases
 						AND fromname = %s
 						AND size BETWEEN %s
 						AND %s',
-						$this->db->escapeString($cleanRelName),
-						$this->db->escapeString($fromName),
-						$this->db->escapeString($collection['filesize'] * .99),
-						$this->db->escapeString($collection['filesize'] * 1.01)
+						$this->pdo->escapeString($cleanRelName),
+						$this->pdo->escapeString($fromName),
+						$this->pdo->escapeString($collection['filesize'] * .99),
+						$this->pdo->escapeString($collection['filesize'] * 1.01)
 					)
 				);
 
@@ -2296,19 +2296,19 @@ class Releases
 					$query .= ($isReqID == true ? '1, ' : '');
 					$query .= '%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1)';
 
-					$this->db->ping(true);
+					$this->pdo->ping(true);
 
-					$releaseID = $this->db->queryInsert(
+					$releaseID = $this->pdo->queryInsert(
 						sprintf(
 							$query,
-							$this->db->escapeString($cleanRelName),
-							$this->db->escapeString($cleanName),
+							$this->pdo->escapeString($cleanRelName),
+							$this->pdo->escapeString($cleanName),
 							$collection['totalfiles'],
 							$collection['group_id'],
-							$this->db->escapeString(sha1(uniqid('', true) . mt_rand())),
-							$this->db->escapeString($collection['date']),
-							$this->db->escapeString($fromName),
-							$this->db->escapeString($collection['filesize']),
+							$this->pdo->escapeString(sha1(uniqid('', true) . mt_rand())),
+							$this->pdo->escapeString($collection['date']),
+							$this->pdo->escapeString($fromName),
+							$this->pdo->escapeString($collection['filesize']),
 							$checkPasswords,
 							$category
 						)
@@ -2317,7 +2317,7 @@ class Releases
 
 				if ($releaseID) {
 					// Update collections table to say we inserted the release.
-					$this->db->queryExec(
+					$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s
 							SET filecheck = 4, releaseid = %d
@@ -2335,13 +2335,13 @@ class Releases
 					}
 
 				} else if (isset($releaseID) && $releaseID == false) {
-					$this->db->queryExec(
+					$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s
 							SET filecheck = 5
 							WHERE collectionhash = %s',
 							$group['cname'],
-							$this->db->escapeString($collection['collectionhash'])
+							$this->pdo->escapeString($collection['collectionhash'])
 						)
 					);
 					$duplicate++;
@@ -2377,10 +2377,10 @@ class Releases
 
 		$stage4dot5 = TIME();
 		// Delete smaller than min sizes
-		$catresrel = $this->db->queryDirect('SELECT c.id AS id, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize FROM category c INNER JOIN category cp ON cp.id = c.parentid WHERE c.parentid IS NOT NULL');
+		$catresrel = $this->pdo->queryDirect('SELECT c.id AS id, CASE WHEN c.minsize = 0 THEN cp.minsize ELSE c.minsize END AS minsize FROM category c INNER JOIN category cp ON cp.id = c.parentid WHERE c.parentid IS NOT NULL');
 		foreach ($catresrel as $catrowrel) {
 			if ($catrowrel['minsize'] > 0) {
-				$resrel = $this->db->queryDirect(
+				$resrel = $this->pdo->queryDirect(
 									sprintf('
 										SELECT r.id, r.guid
 										FROM releases r
@@ -2402,8 +2402,8 @@ class Releases
 			$groupIDs = $this->groups->getActiveIDs();
 
 			foreach ($groupIDs as $groupID) {
-				if ($this->db->dbSystem() === 'mysql') {
-					$resrel = $this->db->queryDirect(
+				if ($this->pdo->dbSystem() === 'mysql') {
+					$resrel = $this->pdo->queryDirect(
 										sprintf("
 											SELECT r.id, r.guid FROM releases r LEFT JOIN
 												(SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease
@@ -2417,12 +2417,12 @@ class Releases
 					);
 				} else {
 					$resrel = array();
-					$s = $this->db->queryOneRow(
+					$s = $this->pdo->queryOneRow(
 						"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
 						$groupID['id']
 					);
 					if ($s['size'] > 0) {
-						$resrel = $this->db->queryDirect(
+						$resrel = $this->pdo->queryDirect(
 											sprintf('
 												SELECT id, guid
 												FROM releases
@@ -2441,9 +2441,9 @@ class Releases
 					}
 				}
 
-				$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
+				$maxfilesizeres = $this->pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 				if ($maxfilesizeres['value'] != 0) {
-					$resrel = $this->db->queryDirect(
+					$resrel = $this->pdo->queryDirect(
 										sprintf('
 											SELECT id, guid
 											FROM releases
@@ -2461,8 +2461,8 @@ class Releases
 					}
 				}
 
-				if ($this->db->dbSystem() === 'mysql') {
-					$resrel = $this->db->queryDirect(
+				if ($this->pdo->dbSystem() === 'mysql') {
+					$resrel = $this->pdo->queryDirect(
 										sprintf("
 											SELECT r.id, r.guid
 											FROM releases r LEFT JOIN
@@ -2479,12 +2479,12 @@ class Releases
 					);
 				} else {
 					$resrel = array();
-					$f = $this->db->queryOneRow(
+					$f = $this->pdo->queryOneRow(
 						"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
 						$groupID['id']
 					);
 					if ($f['files'] > 0) {
-						$resrel = $this->db->queryDirect(
+						$resrel = $this->pdo->queryDirect(
 											sprintf('
 												SELECT id, guid
 												FROM releases
@@ -2504,8 +2504,8 @@ class Releases
 				}
 			}
 		} else {
-			if ($this->db->dbSystem() === 'mysql') {
-				$resrel = $this->db->queryDirect(
+			if ($this->pdo->dbSystem() === 'mysql') {
+				$resrel = $this->pdo->queryDirect(
 									sprintf("
 										SELECT r.id, r.guid
 										FROM releases r LEFT JOIN
@@ -2521,12 +2521,12 @@ class Releases
 				);
 			} else {
 				$resrel = array();
-				$s = $this->db->queryOneRow(
+				$s = $this->pdo->queryOneRow(
 					"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
 					$groupID
 				);
 				if ($s['size'] > 0) {
-					$resrel = $this->db->queryDirect(
+					$resrel = $this->pdo->queryDirect(
 										sprintf('
 											SELECT id, guid
 											FROM releases
@@ -2545,9 +2545,9 @@ class Releases
 				}
 			}
 
-			$maxfilesizeres = $this->db->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
+			$maxfilesizeres = $this->pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
 			if ($maxfilesizeres['value'] != 0) {
-				$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE group_id = %d AND size > %s', $groupID, $this->db->escapeString($maxfilesizeres['value'])));
+				$resrel = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE group_id = %d AND size > %s', $groupID, $this->pdo->escapeString($maxfilesizeres['value'])));
 				if ($resrel !== false && $resrel->rowCount() > 0) {
 					foreach ($resrel as $rowrel) {
 						$this->fastDelete($rowrel['id'], $rowrel['guid']);
@@ -2556,8 +2556,8 @@ class Releases
 				}
 			}
 
-			if ($this->db->dbSystem() === 'mysql') {
-				$resrel = $this->db->queryDirect(
+			if ($this->pdo->dbSystem() === 'mysql') {
+				$resrel = $this->pdo->queryDirect(
 									sprintf("
 										SELECT r.id, r.guid
 										FROM releases r LEFT JOIN
@@ -2574,12 +2574,12 @@ class Releases
 				);
 			} else {
 				$resrel = array();
-				$f = $this->db->queryOneRow(
+				$f = $this->pdo->queryOneRow(
 					"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
 					$groupID
 				);
 				if ($f['files'] > 0) {
-					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND group_id = %d', $f['files'], $groupID));
+					$resrel = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE totalpart < %d AND group_id = %d', $f['files'], $groupID));
 				}
 			}
 			if ($resrel !== false && $resrel->rowCount() > 0) {
@@ -2630,7 +2630,7 @@ class Releases
 		}
 
 		$stage5 = TIME();
-		$resrel = $this->db->queryDirect(
+		$resrel = $this->pdo->queryDirect(
 			"SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE" .
 			$where . "nzbstatus = 0"
 		);
@@ -2641,11 +2641,11 @@ class Releases
 		if ($total > 0) {
 			$nzb = new NZB();
 			// Init vars for writing the NZB's.
-			$nzb->initiateForWrite($this->db, htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8'), $groupID);
+			$nzb->initiateForWrite($this->pdo, htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8'), $groupID);
 			foreach ($resrel as $rowrel) {
 				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $rowrel['title']);
 				if ($nzb_create !== false) {
-					$this->db->queryExec(
+					$this->pdo->queryExec(
 						sprintf(
 							'UPDATE %s SET filecheck = 5 WHERE releaseid = %s', $group['cname'], $rowrel['id']
 						)
@@ -2703,7 +2703,7 @@ class Releases
 	 */
 	public function processReleasesStage5c($groupID, $limit = 100)
 	{
-		if ($this->site->lookup_reqids == 1 || $this->site->lookup_reqids == 2) {
+		if ($this->pdo->getSetting('lookup_reqids') == 1 || $this->pdo->getSetting('lookup_reqids') == 2) {
 			$requestid = new RequestID($this->echooutput);
 			$stage5c = TIME();
 
@@ -2777,8 +2777,8 @@ class Releases
 		$stage7 = TIME();
 
 		// Completed releases and old collections that were missed somehow.
-		if ($this->db->dbSystem() === 'mysql') {
-			$delq = $this->db->queryExec(
+		if ($this->pdo->dbSystem() === 'mysql') {
+			$delq = $this->pdo->queryExec(
 				sprintf(
 					'DELETE c, b, p FROM %s c ' .
 					'INNER JOIN %s b ON c.id = b.collectionid ' .
@@ -2795,10 +2795,10 @@ class Releases
 				$reccount += $delq->rowCount();
 			}
 		} else {
-			$idr = $this->db->queryDirect('SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
+			$idr = $this->pdo->queryDirect('SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
 			if ($idr !== false && $idr->rowCount() > 0) {
 				foreach ($idr as $id) {
-					$delqa = $this->db->queryExec(
+					$delqa = $this->pdo->queryExec(
 						sprintf(
 							'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
 							' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' .
@@ -2808,7 +2808,7 @@ class Releases
 					if ($delqa !== false) {
 						$reccount += $delqa->rowCount();
 					}
-					$delqb = $this->db->queryExec(
+					$delqb = $this->pdo->queryExec(
 						sprintf(
 							'DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']
 						)
@@ -2817,7 +2817,7 @@ class Releases
 						$reccount += $delqb->rowCount();
 					}
 				}
-				$delqc = $this->db->queryExec('DELETE FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
+				$delqc = $this->pdo->queryExec('DELETE FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
 				if ($delqc !== false) {
 					$reccount += $delqc->rowCount();
 				}
@@ -2825,8 +2825,8 @@ class Releases
 		}
 
 		// Old collections that were missed somehow.
-		if ($this->db->dbSystem() === 'mysql') {
-			$delq = $this->db->queryExec(
+		if ($this->pdo->dbSystem() === 'mysql') {
+			$delq = $this->pdo->queryExec(
 				sprintf(
 					'DELETE c, b, p FROM %s c ' .
 					'INNER JOIN %s b ON c.id = b.collectionid ' .
@@ -2835,7 +2835,7 @@ class Releases
 					$group['cname'],
 					$group['bname'],
 					$group['pname'],
-					$this->site->partretentionhours,
+					$this->pdo->getSetting('partretentionhours'),
 					$where1
 				)
 			);
@@ -2843,16 +2843,16 @@ class Releases
 				$reccount += $delq->rowCount();
 			}
 		} else {
-			$idr = $this->db->queryDirect(
+			$idr = $this->pdo->queryDirect(
 				sprintf(
 					"SELECT id FROM " . $group['cname'] . " WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" .
-					$where1, $this->site->partretentionhours
+					$where1, $this->pdo->getSetting('partretentionhours')
 				)
 			);
 
 			if ($idr !== false && $idr->rowCount() > 0) {
 				foreach ($idr as $id) {
-					$delqa = $this->db->queryExec(
+					$delqa = $this->pdo->queryExec(
 						sprintf(
 							'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
 							' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' .
@@ -2862,7 +2862,7 @@ class Releases
 					if ($delqa !== false) {
 						$reccount += $delqa->rowCount();
 					}
-					$delqb = $this->db->queryExec(
+					$delqb = $this->pdo->queryExec(
 						sprintf(
 							'DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']
 						)
@@ -2872,10 +2872,10 @@ class Releases
 					}
 				}
 			}
-			$delqc = $this->db->queryExec(
+			$delqc = $this->pdo->queryExec(
 				sprintf(
 					"DELETE FROM " . $group['cname'] . " WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" .
-					$where1, $this->site->partretentionhours
+					$where1, $this->pdo->getSetting('partretentionhours')
 				)
 			);
 			if ($delqc !== false) {
@@ -2884,8 +2884,8 @@ class Releases
 		}
 
 		// Binaries/parts that somehow have no collection.
-		if ($this->db->dbSystem() === 'mysql') {
-			$delqd = $this->db->queryExec(
+		if ($this->pdo->dbSystem() === 'mysql') {
+			$delqd = $this->pdo->queryExec(
 				'DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['bname'] . ', ' .
 				$group['pname'] . ' WHERE ' . $group['bname'] . '.collectionid = 0 AND ' . $group['bname'] . '.id = ' .
 				$group['pname'] . '.binaryid'
@@ -2894,14 +2894,14 @@ class Releases
 				$reccount += $delqd->rowCount();
 			}
 		} else {
-			$delqe = $this->db->queryExec(
+			$delqe = $this->pdo->queryExec(
 				'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] . ' WHERE ' .
 				$group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' . $group['bname'] . '.collectionid = 0)'
 			);
 			if ($delqe !== false) {
 				$reccount += $delqe->rowCount();
 			}
-			$delqf = $this->db->queryExec('DELETE FROM ' . $group['bname'] . ' WHERE collectionid = 0');
+			$delqf = $this->pdo->queryExec('DELETE FROM ' . $group['bname'] . ' WHERE collectionid = 0');
 			if ($delqf !== false) {
 				$reccount += $delqf->rowCount();
 			}
@@ -2909,7 +2909,7 @@ class Releases
 
 		// Parts that somehow have no binaries.
 		if (mt_rand(1, 100) % 3 == 0) {
-			$delqg = $this->db->queryExec(
+			$delqg = $this->pdo->queryExec(
 				'DELETE FROM ' . $group['pname'] . ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)'
 			);
 			if ($delqg !== false) {
@@ -2918,7 +2918,7 @@ class Releases
 		}
 
 		// Binaries that somehow have no collection.
-		$delqh = $this->db->queryExec(
+		$delqh = $this->pdo->queryExec(
 			'DELETE FROM ' . $group['bname'] . ' WHERE collectionid NOT IN (SELECT c.id FROM ' . $group['cname'] . ' c)'
 		);
 		if ($delqh !== false) {
@@ -2926,7 +2926,7 @@ class Releases
 		}
 
 		// Collections that somehow have no binaries.
-		$delqi = $this->db->queryExec(
+		$delqi = $this->pdo->queryExec(
 			'DELETE FROM ' . $group['cname'] . ' WHERE ' . $group['cname'] . '.id NOT IN (SELECT ' . $group['bname'] .
 			'.collectionid FROM ' . $group['bname'] . ') ' . $where1
 		);
@@ -2960,11 +2960,11 @@ class Releases
 		$stage7 = TIME();
 
 		// Releases past retention.
-		if ($this->site->releaseretentiondays != 0) {
-			if ($this->db->dbSystem() === 'mysql') {
-				$result = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)', $this->site->releaseretentiondays));
+		if ($this->pdo->getSetting('releaseretentiondays') != 0) {
+			if ($this->pdo->dbSystem() === 'mysql') {
+				$result = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)', $this->pdo->getSetting('releaseretentiondays')));
 			} else {
-				$result = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL '%d DAYS')", $this->site->releaseretentiondays));
+				$result = $this->pdo->queryDirect(sprintf("SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL '%d DAYS')", $this->pdo->getSetting('releaseretentiondays')));
 			}
 			if ($result !== false && $result->rowCount() > 0) {
 				foreach ($result as $rowrel) {
@@ -2975,8 +2975,8 @@ class Releases
 		}
 
 		// Passworded releases.
-		if ($this->site->deletepasswordedrelease == 1) {
-			$result = $this->db->queryDirect(
+		if ($this->pdo->getSetting('deletepasswordedrelease') == 1) {
+			$result = $this->pdo->queryDirect(
 				'SELECT id, guid FROM releases WHERE passwordstatus = ' . Releases::PASSWD_RAR
 			);
 			if ($result !== false && $result->rowCount() > 0) {
@@ -2988,8 +2988,8 @@ class Releases
 		}
 
 		// Possibly passworded releases.
-		if ($this->site->deletepossiblerelease == 1) {
-			$result = $this->db->queryDirect(
+		if ($this->pdo->getSetting('deletepossiblerelease') == 1) {
+			$result = $this->pdo->queryDirect(
 				'SELECT id, guid FROM releases WHERE passwordstatus = ' . Releases::PASSWD_POTENTIAL
 			);
 			if ($result !== false && $result->rowCount() > 0) {
@@ -3003,10 +3003,10 @@ class Releases
 		// Crossposted releases.
 		do {
 			if ($this->crosspostt != 0) {
-				if ($this->db->dbSystem() === 'mysql') {
-					$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1', $this->crosspostt));
+				if ($this->pdo->dbSystem() === 'mysql') {
+					$resrel = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1', $this->crosspostt));
 				} else {
-					$resrel = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, id HAVING COUNT(name) > 1", $this->crosspostt));
+					$resrel = $this->pdo->queryDirect(sprintf("SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL '%d HOURS') GROUP BY name, id HAVING COUNT(name) > 1", $this->crosspostt));
 				}
 				$total = 0;
 				if ($resrel !== false) {
@@ -3027,7 +3027,7 @@ class Releases
 			echo $this->c->error("\nYou have an invalid setting for completion.");
 		}
 		if ($this->completion > 0) {
-			$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion));
+			$resrel = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion));
 			if ($resrel !== false && $resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
 					$this->fastDelete($rowrel['id'], $rowrel['guid']);
@@ -3040,7 +3040,7 @@ class Releases
 		$catlist = $category->getDisabledIDs();
 		if (count($catlist) > 0) {
 			foreach ($catlist as $cat) {
-				$res = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d', $cat['id']));
+				$res = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d', $cat['id']));
 				if ($res !== false && $res->rowCount() > 0) {
 					foreach ($res as $rel) {
 						$disabledcount++;
@@ -3054,7 +3054,7 @@ class Releases
 		$genrelist = $genres->getDisabledIDs();
 		if (count($genrelist) > 0) {
 			foreach ($genrelist as $genre) {
-				$rels = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genreid = %d) mi ON musicinfoid = mid', $genre['id']));
+				$rels = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genreid = %d) mi ON musicinfoid = mid', $genre['id']));
 				if ($rels !== false && $rels->rowCount() > 0) {
 					foreach ($rels as $rel) {
 						$disabledgenrecount++;
@@ -3065,11 +3065,11 @@ class Releases
 		}
 
 		// Misc other.
-		if ($this->site->miscotherretentionhours > 0) {
-			if ($this->db->dbSystem() === 'mysql') {
-				$resrel = $this->db->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL %d HOUR', CATEGORY::CAT_MISC, $this->site->miscotherretentionhours));
+		if ($this->pdo->getSetting('miscotherretentionhours') > 0) {
+			if ($this->pdo->dbSystem() === 'mysql') {
+				$resrel = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL %d HOUR', CATEGORY::CAT_MISC, $this->pdo->getSetting('miscotherretentionhours')));
 			} else {
-				$resrel = $this->db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL '%d HOURS'", CATEGORY::CAT_MISC, $this->site->miscotherretentionhours));
+				$resrel = $this->pdo->queryDirect(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL '%d HOURS'", CATEGORY::CAT_MISC, $this->pdo->getSetting('miscotherretentionhours')));
 			}
 			if ($resrel !== false && $resrel->rowCount() > 0) {
 				foreach ($resrel as $rowrel) {
@@ -3194,9 +3194,9 @@ class Releases
 			$this->c->doEcho($this->c->header("Starting release update process (" . date('Y-m-d H:i:s') . ")"), true);
 		}
 
-		if (!file_exists($this->site->nzbpath)) {
+		if (!file_exists($this->pdo->getSetting('nzbpath'))) {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->error('Bad or missing nzb directory - ' . $this->site->nzbpath), true);
+				$this->c->doEcho($this->c->error('Bad or missing nzb directory - ' . $this->pdo->getSetting('nzbpath')), true);
 			}
 
 			return;
@@ -3212,7 +3212,7 @@ class Releases
 
 		//Print amount of added releases and time it took.
 		if ($this->echooutput && $this->tablepergroup == 0) {
-			$countID = $this->db->queryOneRow('SELECT COUNT(id) FROM collections ' . $where);
+			$countID = $this->pdo->queryOneRow('SELECT COUNT(id) FROM collections ' . $where);
 			$this->c->doEcho(
 				$this->c->primary(
 					'Completed adding ' .
@@ -3232,14 +3232,14 @@ class Releases
 	// This resets collections, useful when the namecleaning class's collectioncleaner function changes.
 	public function resetCollections()
 	{
-		$res = $this->db->queryDirect('SELECT b.id as bid, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionid = c.id');
+		$res = $this->pdo->queryDirect('SELECT b.id as bid, b.name as bname, c.* FROM binaries b LEFT JOIN collections c ON b.collectionid = c.id');
 		if ($res !== false && $res->rowCount() > 0) {
 			$timestart = TIME();
 			if ($this->echooutput) {
 				echo "Going to remake all the collections. This can be a long process, be patient. DO NOT STOP THIS SCRIPT!\n";
 			}
 			// Reset the collectionhash.
-			$this->db->queryExec('UPDATE collections SET collectionhash = 0');
+			$this->pdo->queryExec('UPDATE collections SET collectionhash = 0');
 			$delcount = 0;
 			$cIDS = array();
 			foreach ($res as $row) {
@@ -3254,11 +3254,11 @@ class Releases
 						$row['totalfiles']
 					)
 				);
-				$cres = $this->db->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s', $this->db->escapeString($newSHA1)));
+				$cres = $this->pdo->queryOneRow(sprintf('SELECT id FROM collections WHERE collectionhash = %s', $this->pdo->escapeString($newSHA1)));
 				if (!$cres) {
 					$cIDS[] = $row['id'];
-					$csql = sprintf('INSERT INTO collections (subject, fromname, date, xref, group_id, totalfiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, 0, NOW())', $this->db->escapeString($row['bname']), $this->db->escapeString($row['fromname']), $this->db->escapeString($row['date']), $this->db->escapeString($row['xref']), $row['group_id'], $this->db->escapeString($row['totalfiles']), $this->db->escapeString($newSHA1));
-					$collectionID = $this->db->queryInsert($csql);
+					$csql = sprintf('INSERT INTO collections (subject, fromname, date, xref, group_id, totalfiles, collectionhash, filecheck, dateadded) VALUES (%s, %s, %s, %s, %d, %s, %s, 0, NOW())', $this->pdo->escapeString($row['bname']), $this->pdo->escapeString($row['fromname']), $this->pdo->escapeString($row['date']), $this->pdo->escapeString($row['xref']), $row['group_id'], $this->pdo->escapeString($row['totalfiles']), $this->pdo->escapeString($newSHA1));
+					$collectionID = $this->pdo->queryInsert($csql);
 					if ($this->echooutput) {
 						$this->consoleTools->overWrite(
 							'Recreated: ' . count($cIDS) . ' collections. Time:' .
@@ -3269,7 +3269,7 @@ class Releases
 					$collectionID = $cres['id'];
 				}
 				//Update the binaries with the new info.
-				$this->db->queryExec(sprintf('UPDATE binaries SET collectionid = %d WHERE id = %d', $collectionID, $row['bid']));
+				$this->pdo->queryExec(sprintf('UPDATE binaries SET collectionid = %d WHERE id = %d', $collectionID, $row['bid']));
 			}
 			//Remove the old collections.
 			$delstart = TIME();
@@ -3278,7 +3278,7 @@ class Releases
 			}
 			$totalcIDS = count($cIDS);
 			foreach ($cIDS as $cID) {
-				$this->db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $cID));
+				$this->pdo->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $cID));
 				$delcount++;
 				if ($this->echooutput) {
 					$this->consoleTools->overWrite(
@@ -3288,36 +3288,36 @@ class Releases
 				}
 			}
 			// Delete previous failed attempts.
-			$this->db->queryExec('DELETE FROM collections WHERE collectionhash = "0"');
+			$this->pdo->queryExec('DELETE FROM collections WHERE collectionhash = "0"');
 
 			if ($this->hashcheck == 0) {
-				$this->db->queryExec("UPDATE settings SET value = 1 WHERE setting = 'hashcheck'");
+				$this->pdo->queryExec("UPDATE settings SET value = 1 WHERE setting = 'hashcheck'");
 			}
 			if ($this->echooutput) {
 				echo "\nRemade " . count($cIDS) . ' collections in ' .
 					$this->consoleTools->convertTime(TIME() - $timestart) . "\n";
 			}
 		} else {
-			$this->db->queryExec("UPDATE settings SET value = 1 WHERE setting = 'hashcheck'");
+			$this->pdo->queryExec("UPDATE settings SET value = 1 WHERE setting = 'hashcheck'");
 		}
 	}
 
 	public function getTopDownloads()
 	{
-		return $this->db->query('SELECT id, searchname, guid, adddate, SUM(grabs) AS grabs FROM releases WHERE grabs > 0 GROUP BY id, searchname, adddate HAVING SUM(grabs) > 0 ORDER BY grabs DESC LIMIT 10');
+		return $this->pdo->query('SELECT id, searchname, guid, adddate, SUM(grabs) AS grabs FROM releases WHERE grabs > 0 GROUP BY id, searchname, adddate HAVING SUM(grabs) > 0 ORDER BY grabs DESC LIMIT 10');
 	}
 
 	public function getTopComments()
 	{
-		return $this->db->query('SELECT id, guid, searchname, adddate, SUM(comments) AS comments FROM releases WHERE comments > 0 GROUP BY id, searchname, adddate HAVING SUM(comments) > 0 ORDER BY comments DESC LIMIT 10');
+		return $this->pdo->query('SELECT id, guid, searchname, adddate, SUM(comments) AS comments FROM releases WHERE comments > 0 GROUP BY id, searchname, adddate HAVING SUM(comments) > 0 ORDER BY comments DESC LIMIT 10');
 	}
 
 	public function getRecentlyAdded()
 	{
-		if ($this->db->dbSystem() === 'mysql') {
-			return $this->db->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases r ON r.categoryid = category.id WHERE r.adddate > NOW() - INTERVAL 1 WEEK GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
+		if ($this->pdo->dbSystem() === 'mysql') {
+			return $this->pdo->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases r ON r.categoryid = category.id WHERE r.adddate > NOW() - INTERVAL 1 WEEK GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
 		} else {
-			return $this->db->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases r ON r.categoryid = category.id WHERE r.adddate > NOW() - INTERVAL '1 WEEK' GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
+			return $this->pdo->query("SELECT CONCAT(cp.title, ' > ', category.title) AS title, COUNT(*) AS count FROM category INNER JOIN category cp on cp.id = category.parentid INNER JOIN releases r ON r.categoryid = category.id WHERE r.adddate > NOW() - INTERVAL '1 WEEK' GROUP BY concat(cp.title, ' > ', category.title) ORDER BY COUNT(*) DESC");
 		}
 	}
 
@@ -3328,7 +3328,7 @@ class Releases
 	 */
 	public function getNewestMovies()
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			"SELECT DISTINCT (a.imdbID),
 				guid, name, b.title, searchname, size, completion,
 				postdate, categoryid, comments, grabs, c.cover
@@ -3352,7 +3352,7 @@ class Releases
 	 */
 	public function getNewestConsole()
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			"SELECT DISTINCT (a.consoleinfoid),
 				guid, name, b.title, searchname, size, completion,
 				postdate, categoryid, comments, grabs, c.cover
@@ -3376,7 +3376,7 @@ class Releases
 	 */
 	public function getNewestGames()
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			"SELECT DISTINCT (a.gamesinfo_id),
 				guid, name, b.title, searchname, size, completion,
 				postdate, categoryid, comments, grabs, c.cover
@@ -3400,7 +3400,7 @@ class Releases
 	 */
 	public function getNewestMP3s()
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			"SELECT DISTINCT (a.musicinfoid),
 				guid, name, b.title, searchname, size, completion,
 				 postdate, categoryid, comments, grabs, c.cover
@@ -3424,7 +3424,7 @@ class Releases
 	 */
 	public function getNewestBooks()
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			"SELECT DISTINCT (a.bookinfoid),
 				guid, name, b.title, searchname, size, completion,
 				postdate, categoryid, comments, grabs, url, c.cover, c.title as booktitle, c.author

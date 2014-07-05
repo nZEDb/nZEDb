@@ -40,11 +40,9 @@ class Categorize extends Category
 	 */
 	public function __construct()
 	{
-		$s = new Sites();
-		$site = $s->get();
-		$this->categorizeForeign = ($site->categorizeforeign == "0") ? false : true;
-		$this->catWebDL = ($site->catwebdl == "0") ? false : true;
 		parent::__construct();
+		$this->categorizeForeign = ($this->pdo->getSetting('categorizeforeign') == "0") ? false : true;
+		$this->catWebDL = ($this->pdo->getSetting('catwebdl') == "0") ? false : true;
 	}
 
 	/**
@@ -87,7 +85,7 @@ class Categorize extends Category
 	 */
 	public function byGroup()
 	{
-		$group = $this->db->queryOneRow(sprintf('SELECT LOWER(name) AS name FROM groups WHERE id = %d', $this->groupID));
+		$group = $this->pdo->queryOneRow(sprintf('SELECT LOWER(name) AS name FROM groups WHERE id = %d', $this->groupID));
 		if ($group !== false) {
 			$group = $group['name'];
 			switch (true) {

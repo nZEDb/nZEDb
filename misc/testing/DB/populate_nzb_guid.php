@@ -3,7 +3,7 @@
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 if (isset($argv[1])) {
@@ -20,16 +20,16 @@ if (isset($argv[1])) {
 
 function create_guids($live, $delete = false)
 {
-	$db = new DB();
+	$pdo = new Settings();
 	$consoletools = new ConsoleTools();
 	$timestart = TIME();
 	$relcount = $deleted = 0;
 	$c = new ColorCLI();
 
 	if ($live == "true") {
-		$relrecs = $db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC"));
+		$relrecs = $pdo->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC"));
 	} else if ($live == "limited") {
-		$relrecs = $db->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC LIMIT 10000"));
+		$relrecs = $pdo->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC LIMIT 10000"));
 	}
 	$total = $relrecs->rowCount();
 	if ($total > 0) {
@@ -71,7 +71,7 @@ function create_guids($live, $delete = false)
 						$segment = $file->segments->segment;
 						$nzb_guid = md5($segment);
 
-						$db->queryExec("UPDATE releases set nzb_guid = " . $db->escapestring($nzb_guid) . " WHERE id = " . $relrec["id"]);
+						$pdo->queryExec("UPDATE releases set nzb_guid = " . $pdo->escapestring($nzb_guid) . " WHERE id = " . $relrec["id"]);
 						$relcount++;
 						$consoletools->overWritePrimary("Created: [" . $deleted . "] " . $consoletools->percentString($reccnt, $total) . " Time:" . $consoletools->convertTimer(TIME() - $timestart));
 						break;

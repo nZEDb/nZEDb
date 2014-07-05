@@ -15,9 +15,7 @@ Class TraktTv
 	 */
 	public function __construct()
 	{
-		$s = new Sites();
-		$site = $s->get();
-		$this->APIKEY = $site->trakttvkey;
+		$this->APIKEY = (new \nzedb\db\Settings())->getSetting('trakttvkey');
 	}
 
 	/**

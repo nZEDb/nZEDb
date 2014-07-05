@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "misc" || preg_match('/\([\d, ]+\)/', $argv[1]) || is_numeric($argv[1])))) {
@@ -62,20 +62,20 @@ function reCategorize($argv)
 // Returns the quantity of categorized releases.
 function categorizeRelease($update = true, $where, $echooutput = false)
 {
-	$db = new DB();
+	$pdo = new Settings();
 	$cat = new Categorize();
 	$consoletools = new consoleTools();
 	$relcount = $chgcount = 0;
 	$c = new ColorCLI();
 	echo $c->primary("SELECT id, searchname, group_id, categoryid FROM releases " . $where);
-	$resrel = $db->queryDirect("SELECT id, searchname, group_id, categoryid FROM releases " . $where);
+	$resrel = $pdo->queryDirect("SELECT id, searchname, group_id, categoryid FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
 		foreach ($resrel as $rowrel) {
 			$catId = $cat->determineCategory($rowrel['searchname'], $rowrel['group_id']);
 			if ($rowrel['categoryid'] != $catId) {
 				if ($update === true) {
-					$db->queryExec(
+					$pdo->queryExec(
 						sprintf("
 							UPDATE releases
 							SET iscategorized = 1,

@@ -1,9 +1,9 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
-$db = new DB();
+$pdo = new Settings();
 $DIR = nZEDb_MISC;
 $smarty = new Smarty;
 $dbname = DB_NAME;
@@ -16,7 +16,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 	$delay = $tmux->get()->monitor_delay;
 
 	if ($running == "1") {
-		$db->queryExec("UPDATE tmux SET value = '0' WHERE setting = 'RUNNING'");
+		$pdo->queryExec("UPDATE tmux SET value = '0' WHERE setting = 'RUNNING'");
 		$sleep = $delay;
 		echo $c->header("Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown.");
 		sleep($sleep);
@@ -46,7 +46,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 
 	if ($restart == "true") {
 		echo $c->header("Starting tmux scripts.");
-		$db->queryExec("UPDATE tmux SET value = '1' WHERE setting = 'RUNNING'");
+		$pdo->queryExec("UPDATE tmux SET value = '1' WHERE setting = 'RUNNING'");
 	}
 } else {
 	exit($c->error("\nThis script will automatically do a git pull, patch the DB and delete the smarty folder contents.\n\n"

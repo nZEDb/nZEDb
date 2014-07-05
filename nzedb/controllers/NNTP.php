@@ -20,14 +20,6 @@ class NNTP extends Net_NNTP_Client
 	protected $_debugging;
 
 	/**
-	 * Object containing site settings.
-	 *
-	 * @var bool|stdClass
-	 * @access protected
-	 */
-	protected $_site;
-
-	/**
 	 * Log/echo debug?
 	 * @var bool
 	 * @access protected
@@ -93,8 +85,7 @@ class NNTP extends Net_NNTP_Client
 	public function __construct($echo = true)
 	{
 		$this->_c    = new ColorCLI();
-		$sites       = new Sites();
-		$this->_site = $sites->get();
+		$this->pdp = new \nzedb\db\Settings();
 
 		$this->_echo      = ($echo && nZEDb_ECHOCLI);
 		$this->_debugBool = (nZEDb_LOGGING || nZEDb_DEBUG);
@@ -102,7 +93,7 @@ class NNTP extends Net_NNTP_Client
 			$this->_debugging = new Debugging("NNTP");
 		}
 
-		$this->_nntpRetries = ((!empty($this->_site->nntpretries) ? (int)$this->_site->nntpretries : 0) + 1);
+		$this->_nntpRetries = ($this->pdo->getSetting('nntpretries') != '') ? (int)$this->pdo->getSetting('nntpretries') : 0 + 1;
 
 		$this->_initiateYEncSettings();
 	}
@@ -258,7 +249,7 @@ class NNTP extends Net_NNTP_Client
 			// If we are connected and authenticated, try enabling compression if we have it enabled.
 			if ($connected === true && $authenticated === true) {
 				// Try to enable compression.
-				if ($compression === true && $this->_site->compressedheaders == 1) {
+				if ($compression === true && $this->pdo->getSetting('compressedheaders') == 1) {
 					$this->_enableCompression();
 				}
 				if ($this->_debugBool) {
@@ -330,7 +321,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function enableCompression()
 	{
-		if (!$this->_site->compressedheaders == 1) {
+		if (!$this->pdo->getSetting('compressedheaders') == 1) {
 			return;
 		}
 		$this->_enableCompression();
@@ -1096,7 +1087,7 @@ class NNTP extends Net_NNTP_Client
 	protected function _initiateYEncSettings()
 	{
 		// Check if the user wants to use yyDecode or the simple_php_yenc_decode extension.
-		$this->_yyDecoderPath  = (!empty($this->_site->yydecoderpath) ? $this->_site->yydecoderpath : false);
+		$this->_yyDecoderPath  = ($this->pdo->getSetting('yydecoderpath') != '') ? $this->pdo->getSetting('yydecoderpath') : false;
 		if (strpos($this->_yyDecoderPath, 'simple_php_yenc_decode') !== false) {
 			if (extension_loaded('simple_php_yenc_decode')) {
 				$this->_yEncExtension = true;

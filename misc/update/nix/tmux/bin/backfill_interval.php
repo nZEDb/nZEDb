@@ -3,8 +3,7 @@
 require_once dirname(__FILE__) . '/../../../config.php';
 
 $c = new ColorCLI();
-$s = new Sites();
-$site = $s->get();
+
 if (!isset($argv[1])) {
 	exit($c->error("This script is not intended to be run manually, it is called from backfill_threaded.py."));
 } else if (isset($argv[1])) {
@@ -13,7 +12,10 @@ if (!isset($argv[1])) {
 	if ($nntp->doConnect() !== true) {
 		exit($c->error("Unable to connect to usenet."));
 	}
-	if ($site->nntpproxy === "1") {
+
+	$nntpProxy = (new Settings())->getSetting('nntpproxy');
+
+	if ($nntpProxy == "1") {
 		usleep(500000);
 	}
 
@@ -27,7 +29,7 @@ if (!isset($argv[1])) {
 		$backfill = new Backfill($nntp);
 		$backfill->backfillAllGroups($pieces[0], $count, $type = '');
 	}
-	if ($site->nntpproxy != "1") {
+	if ($nntpProxy != "1") {
 		$nntp->doQuit();
 	}
 }

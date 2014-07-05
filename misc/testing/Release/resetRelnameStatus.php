@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 exit('Needs to be rewritten');
 $c = new ColorCLI();
@@ -14,13 +14,13 @@ if (!isset($argv[1])) {
 			. "php $argv[0] 512            ...: To reset a specific bit.\n"));
 }
 
-$db = new DB();
+$pdo = new Settings();
 if ($argv[1] === 'true') {
-	$res = $db->queryExec('UPDATE releases SET bitwise = 0, iscategorized = 0, isrenamed = 0, nzbstatus = 0, ishashed = 0, isrequestid = 0');
+	$res = $pdo->queryExec('UPDATE releases SET bitwise = 0, iscategorized = 0, isrenamed = 0, nzbstatus = 0, ishashed = 0, isrequestid = 0');
 } else if ($argv[1] === 'rename') {
-	$res = $db->queryExec('UPDATE releases SET isrenamed = 0, bitwise = ((bitwise & ~248)|0)');
+	$res = $pdo->queryExec('UPDATE releases SET isrenamed = 0, bitwise = ((bitwise & ~248)|0)');
 } else if (is_numeric($argv[1])) {
-	$res = $db->queryExec('UPDATE releases SET bitwise = ((bitwise & ~' . $argv[1] . ')|0)');
+	$res = $pdo->queryExec('UPDATE releases SET bitwise = ((bitwise & ~' . $argv[1] . ')|0)');
 }
 
 if ($res->rowCount() > 0 && is_numeric($argv[1])) {
