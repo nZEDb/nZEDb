@@ -190,14 +190,14 @@ class Binaries
 		}
 		$this->_groups = new Groups($this->_pdo);
 
-		$this->messageBuffer = ($this->_pdo->getSetting('maxmssgs' != '') ? $this->_pdo->getSetting('maxmssgs') : 20000);
+		$this->messageBuffer = ($this->_pdo->getSetting('maxmssgs') != '') ? $this->_pdo->getSetting('maxmssgs') : 20000;
 		$this->_compressedHeaders = ($this->_pdo->getSetting('compressedheaders') == 1 ? true : false);
 		$this->_partRepair = ($this->_pdo->getSetting('partrepair') == 0 ? false : true);
 		$this->_hashCheck = ($this->_pdo->getSetting('hashcheck') == 1 ? true : false);
 		$this->_newGroupScanByDays = ($this->_pdo->getSetting('newgroupscanmethod') == 1 ? true : false);
-		$this->_newGroupMessagesToScan = ($this->_pdo->getSetting('newgroupmsgstoscan' != '') ? $this->_pdo->getSetting('newgroupmsgstoscan') : 50000);
-		$this->_newGroupDaysToScan = ($this->_pdo->getSetting('newgroupdaystoscan' != '') ? (int)$this->_pdo->getSetting('newgroupdaystoscan') : 3);
-		$this->_partRepairLimit = ($this->_pdo->getSetting('maxpartrepair' != '') ? (int)$this->_pdo->getSetting('maxpartrepair') : 15000);
+		$this->_newGroupMessagesToScan = ($this->_pdo->getSetting('newgroupmsgstoscan') != '') ? $this->_pdo->getSetting('newgroupmsgstoscan') : 50000;
+		$this->_newGroupDaysToScan = ($this->_pdo->getSetting('newgroupdaystoscan') != '') ? (int)$this->_pdo->getSetting('newgroupdaystoscan') : 3;
+		$this->_partRepairLimit = ($this->_pdo->getSetting('maxpartrepair') != '') ? (int)$this->_pdo->getSetting('maxpartrepair') : 15000;
 		$this->_showDroppedYEncParts = ($this->_pdo->getSetting('showdroppedyencparts') == 1 ? true : false);
 		$this->_tablePerGroup = ($this->_pdo->getSetting('tablepergroup') == 1 ? true : false);
 
