@@ -85,7 +85,7 @@ class NNTP extends Net_NNTP_Client
 	public function __construct($echo = true)
 	{
 		$this->_c    = new ColorCLI();
-		$this->pdp = new \nzedb\db\Settings();
+		$this->pdo = new \nzedb\db\Settings();
 
 		$this->_echo      = ($echo && nZEDb_ECHOCLI);
 		$this->_debugBool = (nZEDb_LOGGING || nZEDb_DEBUG);
