@@ -116,6 +116,61 @@ class popporn
 	}
 
 	/**
+	 * Gets Product Info and/or Features
+	 * @return array|bool
+	 */
+	public function productinfo($extras = true)
+	{
+		$res = array();
+		$country = false;
+		if ($this->html->find('div#lside', 0)) {
+			$ret = $this->html->find('div#lside', 0);
+			foreach ($ret->find("text") as $e) {
+				$e = trim($e->innertext);
+				$e = str_replace(",", "", $e);
+				$e = str_replace("&nbsp;", "", $e);
+				if (stristr($e, "Country:")) {
+					$country = true;
+				}
+				if ($country === true) {
+					if (!stristr($e, "addthis_config")) {
+						if (!empty($e)) {
+							$res['ProductInfo'][] = $e;
+						}
+					} else {
+						break;
+					}
+				}
+			}
+		} else {
+			return false;
+		}
+
+		$res['ProductInfo'] = array_chunk($res['ProductInfo'], 2, false);
+
+		if ($extras === true) {
+			$features = false;
+			if ($this->html->find('ul.stock-information', 0)) {
+				foreach ($this->html->find('ul.stock-information') as $ul) {
+					foreach ($ul->find('li') as $e) {
+						$e = trim($e->plaintext);
+						if ($e == "Features:") {
+							$features = true;
+							$e = null;
+						}
+						if ($features == true) {
+							if (!empty($e)) {
+								$res['Extras'][] = $e;
+							}
+						}
+					}
+				}
+			}
+		}
+		return $res;
+	}
+
+	/**
 	 * Gets the cast members and director
 	 * @return array|bool
 	 */
@@ -210,7 +265,6 @@ class popporn
 
 	/**
 	 * Gets all information
-	 *
 	 * @return array
 	 */
 	public function _getall()
@@ -219,10 +273,9 @@ class popporn
 		if (is_array($this->sypnosis())) {
 			$results = array_merge($results, $this->sypnosis());
 		}
-		/*if (is_array($this->productinfo(true))) {
+		if (is_array($this->productinfo(true))) {
 			$results = array_merge($results, $this->productinfo(true));
 		}
-		*/
 		if (is_array($this->cast())) {
 			$results = array_merge($results, $this->cast());
 		}
@@ -238,7 +291,6 @@ class popporn
 
 		return $results;
 	}
-
 
 	/**
 	 * Get raw html of an url that is passed to it.
