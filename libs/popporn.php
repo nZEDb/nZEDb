@@ -293,22 +293,22 @@ class popporn
 	{
 		$results = array();
 		if (is_array($this->_sypnosis())) {
-			$results = array_merge($results, $this->sypnosis());
+			$results = array_merge($results, $this->_sypnosis());
 		}
 		if (is_array($this->_productinfo(true))) {
-			$results = array_merge($results, $this->productinfo(true));
+			$results = array_merge($results, $this->_productinfo(true));
 		}
 		if (is_array($this->_cast())) {
-			$results = array_merge($results, $this->cast());
+			$results = array_merge($results, $this->_cast());
 		}
-		if (is_array($this->_categories())) {
-			$results = array_merge($results, $this->categories());
+		if (is_array($this->_genres())) {
+			$results = array_merge($results, $this->_genres());
 		}
 		if (is_array($this->_covers())) {
-			$results = array_merge($results, $this->covers());
+			$results = array_merge($results, $this->_covers());
 		}
 		if (is_array($this->_trailers())) {
-			$results = array_merge($results, $this->trailers());
+			$results = array_merge($results, $this->_trailers());
 		}
 
 		return $results;
