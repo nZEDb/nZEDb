@@ -88,8 +88,7 @@ class popporn
 					$res['sypnosis'] = trim($ret->next_sibling()->plaintext);
 				} else {
 					if ($ret->next_sibling()->next_sibling()->next_sibling()->plaintext) {
-						$res['sypnosis'] = trim($ret->next_sibling()->next_sibling()
-													->next_sibling()->plaintext);
+						$res['sypnosis'] = trim($ret->next_sibling()->next_sibling()->next_sibling()->plaintext);
 					} else {
 						$res['sypnosis'] = "N/A";
 					}
