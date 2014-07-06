@@ -52,7 +52,7 @@ class popporn
 		$this->response = array();
 		$this->html = new simple_html_dom();
 		if (isset($this->cookie)) {
-			@$this->getpopurl();
+			@$this->_getpopurl();
 		}
 	}
 
@@ -60,7 +60,7 @@ class popporn
 	 * Get Box Cover Images
 	 * @return array - boxcover,backcover
 	 */
-	public function covers()
+	public function _covers()
 	{
 		$res = array();
 		if ($this->html->find('div[id=box-art], img[class=front]', 1)) {
@@ -79,17 +79,20 @@ class popporn
 	 * Gets the sypnosis
 	 * @return array|bool
 	 */
-	public function sypnosis()
+	public function _sypnosis()
 	{
 		$res = array();
 		if ($this->html->find('div[id=product-info] ,h3[class=highlight]', 1)) {
 			$ret = $this->html->find('div[id=product-info] ,h3[class=highlight]', 1);
 			if ($ret->next_sibling()->plaintext) {
-				if(!stristr(trim($ret->next_sibling()->plaintext),"POPPORN EXCLUSIVE")){
-				$res['sypnosis'] = trim($ret->next_sibling()->plaintext);
-				}else{
-					if($ret->next_sibling()->next_sibling()->next_sibling()->plaintext){
-					$res['sypnosis'] = trim($ret->next_sibling()->next_sibling()->next_sibling()->plaintext);
+				if (!stristr(trim($ret->next_sibling()->plaintext), "POPPORN EXCLUSIVE")) {
+					$res['sypnosis'] = trim($ret->next_sibling()->plaintext);
+				} else {
+					if ($ret->next_sibling()->next_sibling()->next_sibling()->plaintext) {
+						$res['sypnosis'] = trim($ret->next_sibling()->next_sibling()
+													->next_sibling()->plaintext);
+					} else {
+						$res['sypnosis'] = "N/A";
 					}
 				}
 			} else {
@@ -106,7 +109,7 @@ class popporn
 	 * Gets trailer video
 	 * @return array|bool
 	 */
-	public function trailers()
+	public function _trailers()
 	{
 		$res = array();
 		if ($this->html->find('input#thickbox-trailer-link', 0)) {
@@ -128,7 +131,7 @@ class popporn
 	 *
 	 * @return array|bool
 	 */
-	public function productinfo($extras = true)
+	public function _productinfo($extras = true)
 	{
 		$res = array();
 		$country = false;
@@ -176,6 +179,7 @@ class popporn
 				}
 			}
 		}
+
 		return $res;
 	}
 
@@ -183,10 +187,11 @@ class popporn
 	 * Gets the cast members and director
 	 * @return array|bool
 	 */
-	public function cast()
+	public function _cast()
 	{
 		$res = array();
 		$cast = false;
+		$director = false;
 		if ($this->html->find('div#lside', 0)) {
 			$ret = $this->html->find('div#lside', 0);
 			foreach ($ret->find("text") as $e) {
@@ -198,6 +203,18 @@ class popporn
 				}
 				$e = str_replace("Cast:", "", $e);
 				if ($cast === true) {
+					if (stristr($e, "Director:")) {
+						$director = true;
+						$e = null;
+					}
+
+					if ($director === true) {
+						if (!empty($e)) {
+							$res['director'] = $e;
+							$director = false;
+							$e = null;
+						}
+					}
 					if (!stristr($e, "Country:")) {
 						if (!empty($e)) {
 							$er[] = $e;
@@ -205,8 +222,6 @@ class popporn
 					} else {
 						break;
 					}
-				} else {
-					//return false;
 				}
 			}
 			$res['cast'] = & $er;
@@ -221,15 +236,15 @@ class popporn
 	 * Gets categories
 	 * @return array|bool
 	 */
-	public function categories()
+	public function _genres()
 	{
 		$res = array();
 		if ($this->html->find('div[id=thekeywords], p[class=keywords]', 1)) {
 			$ret = $this->html->find('div[id=thekeywords], p[class=keywords]', 1);
 			foreach ($ret->find('a') as $e) {
-				$categories[] = trim($e->plaintext);
+				$genres[] = trim($e->plaintext);
 			}
-			$res['categories'] = & $categories;
+			$res['genres'] = & $genres;
 
 			return $res;
 		} else {
@@ -247,7 +262,7 @@ class popporn
 			return false;
 		}
 		$this->trailurl = self::trailingsearch . urlencode($this->searchterm);
-		if ($this->getpopurl() === false) {
+		if ($this->_getpopurl() === false) {
 			return false;
 		} else {
 			$this->html->load($this->response);
@@ -279,22 +294,22 @@ class popporn
 	public function _getall()
 	{
 		$results = array();
-		if (is_array($this->sypnosis())) {
+		if (is_array($this->_sypnosis())) {
 			$results = array_merge($results, $this->sypnosis());
 		}
-		if (is_array($this->productinfo(true))) {
+		if (is_array($this->_productinfo(true))) {
 			$results = array_merge($results, $this->productinfo(true));
 		}
-		if (is_array($this->cast())) {
+		if (is_array($this->_cast())) {
 			$results = array_merge($results, $this->cast());
 		}
-		if (is_array($this->categories())) {
+		if (is_array($this->_categories())) {
 			$results = array_merge($results, $this->categories());
 		}
-		if (is_array($this->covers())) {
+		if (is_array($this->_covers())) {
 			$results = array_merge($results, $this->covers());
 		}
-		if (is_array($this->trailers())) {
+		if (is_array($this->_trailers())) {
 			$results = array_merge($results, $this->trailers());
 		}
 
@@ -305,7 +320,7 @@ class popporn
 	 * Get raw html of an url that is passed to it.
 	 * @return bool
 	 */
-	private function getpopurl()
+	private function _getpopurl()
 	{
 		if (isset($this->trailurl)) {
 			$ch = curl_init(SELF::popurl . $this->trailurl);
