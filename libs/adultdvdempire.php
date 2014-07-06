@@ -61,10 +61,10 @@ class adultdvdempire
 	 * Todo: Make layout work with the player/Download swf?
 	 * @return array|bool - url, streamid, basestreamingurl
 	 */
-	public function trailers()
+	public function _trailers()
 	{
 		$res = array();
-		$this->getadeurl($this->trailers . $this->urlfound);
+		$this->_getadeurl($this->trailers . $this->urlfound);
 		$this->html->load($this->response);
 		if (preg_match("/(\"|')(?P<swf>[^\"']+.swf)(\"|')/i", $this->response, $matches)) {
 			$res['trailers']['url'] = SELF::ade . trim(trim($matches['swf']), '"');
@@ -93,10 +93,10 @@ class adultdvdempire
 	 * Gets cover images for the xxx release
 	 * @return array - Boxcover and backcover
 	 */
-	public function covers()
+	public function _covers()
 	{
 		$res = array();
-		$this->getadeurl($this->boxcover . $this->urlfound);
+		$this->_getadeurl($this->boxcover . $this->urlfound);
 		$this->html->load($this->response);
 		foreach ($this->html->find("div[id=FrontBoxCover], img[itemprop=image]") as $img) {
 			if (stristr($img->src, "h.jpg")) {
@@ -104,7 +104,7 @@ class adultdvdempire
 				break;
 			}
 		}
-		$this->getadeurl($this->backcover . $this->urlfound);
+		$this->_getadeurl($this->backcover . $this->urlfound);
 		$this->html->load($this->response);
 		foreach ($this->html->find("div[id=BackBoxCover], img[itemprop=image]") as $img) {
 			if (stristr($img->src, "bh.jpg")) {
@@ -125,7 +125,7 @@ class adultdvdempire
 	 *
 	 * @return array - plot,tagline
 	 */
-	public function sypnosis($tagline = false)
+	public function _sypnosis($tagline = false)
 	{
 		$res = array();
 		if ($tagline === true) {
@@ -149,7 +149,7 @@ class adultdvdempire
 	 *
 	 * @return array - cast,awards
 	 */
-	public function cast($awards = false)
+	public function _cast($awards = false)
 	{
 		$res = array();
 		$this->tmprsp = str_ireplace("Section Cast", "scast", $this->response);
@@ -170,6 +170,7 @@ class adultdvdempire
 				}
 			}
 		}
+		//$res['director']= array_pop($res['cast']);
 		$this->edithtml->clear();
 		unset($ret);
 		unset($this->tmprsp);
@@ -181,7 +182,7 @@ class adultdvdempire
 	 * Gets categories, if exists return array else return false
 	 * @return mixed array|bool - Categories, false
 	 */
-	public function categories()
+	public function _genres()
 	{
 		$res = array();
 		$this->tmprsp = str_ireplace("Section Categories", "scat", $this->response);
@@ -200,7 +201,7 @@ class adultdvdempire
 			}
 		}
 		$categories = array_map('trim', $categories);
-		$res['Categories'] = $categories;
+		$res['Genres'] = $categories;
 		$this->edithtml->clear();
 		unset($this->tmprsp);
 		unset($ret);
@@ -215,7 +216,7 @@ class adultdvdempire
 	 *
 	 * @return array - ProductInfo/Extras = features
 	 */
-	public function productinfo($features = false)
+	public function _productinfo($features = false)
 	{
 		$res = array();
 		$dofeature = null;
@@ -257,7 +258,7 @@ class adultdvdempire
 		if (!isset($this->searchterm)) {
 			return false;
 		}
-		if ($this->getadeurl($this->dvdquery . rawurlencode($this->searchterm)) === false) {
+		if ($this->_getadeurl($this->dvdquery . rawurlencode($this->searchterm)) === false) {
 			return false;
 		} else {
 			$this->html->load($this->response);
@@ -270,13 +271,12 @@ class adultdvdempire
 					$title = $ret->title;
 					$ret = (string)trim($ret->href);
 					similar_text($this->searchterm, $title, $p);
-					//$p = levenshtein($this->searchterm, $title);
 					if ($p >= 95) {
 						$this->found = true;
 						$this->urlfound = $ret;
 						unset($ret);
 						$this->html->clear();
-						$this->getadeurl($this->urlfound);
+						$this->_getadeurl($this->urlfound);
 						$this->html->load($this->response);
 					} else {
 						$this->found = false;
@@ -299,7 +299,7 @@ class adultdvdempire
 	 *
 	 * @return bool - true if page has content
 	 */
-	private function getadeurl($trailing = null)
+	private function _getadeurl($trailing = null)
 	{
 		if (isset($trailing)) {
 			$ch = curl_init(SELF::ade . $trailing);
@@ -328,23 +328,23 @@ class adultdvdempire
 	public function _getall()
 	{
 		$results = array();
-		if (is_array($this->sypnosis(true))) {
-			$results = array_merge($results, $this->sypnosis(true));
+		if (is_array($this->_sypnosis(true))) {
+			$results = array_merge($results, $this->_sypnosis(true));
 		}
-		if (is_array($this->productinfo(true))) {
-			$results = array_merge($results, $this->productinfo(true));
+		if (is_array($this->_productinfo(true))) {
+			$results = array_merge($results, $this->_productinfo(true));
 		}
-		if (is_array($this->cast(true))) {
-			$results = array_merge($results, $this->cast(true));
+		if (is_array($this->_cast(true))) {
+			$results = array_merge($results, $this->_cast(true));
 		}
-		if (is_array($this->categories())) {
-			$results = array_merge($results, $this->categories());
+		if (is_array($this->_genres())) {
+			$results = array_merge($results, $this->_genres());
 		}
-		if (is_array($this->covers())) {
-			$results = array_merge($results, $this->covers());
+		if (is_array($this->_covers())) {
+			$results = array_merge($results, $this->_covers());
 		}
-		if (is_array($this->trailers())) {
-			$results = array_merge($results, $this->trailers());
+		if (is_array($this->_trailers())) {
+			$results = array_merge($results, $this->_trailers());
 		}
 
 		return $results;
