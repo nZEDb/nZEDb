@@ -1303,18 +1303,39 @@ class Binaries
 	/**
 	 * Delete Collections/Binaries/Parts for a Collection ID.
 	 *
-	 * @param int $id Collections table ID
+	 * @param int $collectionID Collections table ID
 	 *
 	 * @return void
 	 */
-	public function delete($id)
+	public function delete($collectionID)
 	{
-		$bins = $this->_db->query(sprintf('SELECT id FROM binaries WHERE collectionid = %d', $id));
+		$bins = $this->_db->query(sprintf('SELECT id FROM binaries WHERE collectionid = %d', $collectionID));
 		foreach ($bins as $bin) {
 			$this->_db->queryExec(sprintf('DELETE FROM parts WHERE binaryid = %d', $bin['id']));
 		}
-		$this->_db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id));
-		$this->_db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $id));
+		$this->_db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $collectionID));
+		$this->_db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $collectionID));
+	}
+
+	/**
+	 * Delete all Collections/Binaries/Parts for a group ID.
+	 *
+	 * @param int $groupID The ID of the group.
+	 *
+	 * @return void
+	 */
+	public function purgeGroup($groupID)
+	{
+		$this->_db->queryExec(
+			sprintf('
+				DELETE c, b, p
+				FROM collections c
+				LEFT OUTER JOIN binaries b ON b.collectionid = c.id
+				LEFT OUTER JOIN parts p ON p.binaryid = b.id
+				WHERE c.group_id = %d',
+				$groupID
+			)
+		);
 	}
 
 }
