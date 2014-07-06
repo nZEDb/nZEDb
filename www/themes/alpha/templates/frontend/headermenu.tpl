@@ -43,6 +43,20 @@
 					{/foreach}
 				</ul>
 			</li>
+		{elseif ($parentcat.id == 4000 && $userdata.gameview=="1")}
+			<li class="dropdown">
+				<a id="cat3" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/games">{$parentcat.title} <b class="caret"></b></a>
+				<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
+					<li><a href="{$smarty.const.WWW_TOP}/games">All {$parentcat.title}</a></li>
+					{foreach from=$parentcat.subcatlist item=subcat}
+						{if $subcat.id == 4050}
+							<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/games?t={$subcat.id}">{$subcat.title}</a></li>
+						{else}
+							<li><a title="Browse {$subcat.title}" href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a></li>
+						{/if}
+					{/foreach}
+				</ul>
+			</li>
 		{elseif ($parentcat.id == 5000)}
 			<li class="dropdown">
 				<a id="cat5" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/browse?t={$parentcat.id}">{$parentcat.title} <b class="caret"></b></a>
