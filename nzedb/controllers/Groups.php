@@ -449,20 +449,16 @@ class Groups
 	 */
 	public function reset($id)
 	{
-		$binaries = new Binaries();
+		// Remove rows from collections / binaries / parts.
+		(new Binaries())->purgeGroup($id);
+
 		// Remove rows from part repair.
 		$this->db->queryExec(sprintf("DELETE FROM partrepair WHERE group_id = %d", $id));
 
-		// Remove rows from collections / binaries / parts.
-		$cols = $this->db->query(sprintf("SELECT id FROM collections WHERE group_id = %d", $id));
-		foreach ($cols as $col) {
-			$binaries->delete($col["id"]);
-		}
-		$this->db->queryExec(sprintf("DELETE FROM partrepair WHERE group_id = %d", $id));
-		$this->db->queryExec('DROP TABLE IF EXISTS collections_'.$id);
-		$this->db->queryExec('DROP TABLE IF EXISTS binaries_'.$id);
-		$this->db->queryExec('DROP TABLE IF EXISTS parts_'.$id);
-		$this->db->queryExec('DROP TABLE IF EXISTS partrepair_'.$id);
+		$this->db->queryExec(sprintf('DROP TABLE IF EXISTS collections_', $id));
+		$this->db->queryExec(sprintf('DROP TABLE IF EXISTS binaries_', $id));
+		$this->db->queryExec(sprintf('DROP TABLE IF EXISTS parts_', $id));
+		$this->db->queryExec(sprintf('DROP TABLE IF EXISTS partrepair_', $id));
 
 		// Reset the group stats.
 		return $this->db->queryExec(
@@ -481,14 +477,11 @@ class Groups
 	 */
 	public function resetall()
 	{
-		// Remove rows from part repair.
-		$this->db->queryExec("TRUNCATE TABLE partrepair");
-
-		// Remove rows from collections / binaries / parts.
-		$groups = $this->db->query("SELECT id FROM groups");
 		$this->db->queryExec("TRUNCATE TABLE collections");
 		$this->db->queryExec("TRUNCATE TABLE binaries");
 		$this->db->queryExec("TRUNCATE TABLE parts");
+		$this->db->queryExec("TRUNCATE TABLE partrepair");
+		$groups = $this->db->query("SELECT id FROM groups");
 		foreach ($groups as $group) {
 			$this->db->queryExec('DROP TABLE IF EXISTS collections_' . $group['id']);
 			$this->db->queryExec('DROP TABLE IF EXISTS binaries_' . $group['id']);
