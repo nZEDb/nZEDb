@@ -145,7 +145,7 @@ class popporn
 				if ($country === true) {
 					if (!stristr($e, "addthis_config")) {
 						if (!empty($e)) {
-							$res['ProductInfo'][] = $e;
+							$res['productinfo'][] = $e;
 						}
 					} else {
 						break;
@@ -156,7 +156,7 @@ class popporn
 			return false;
 		}
 
-		$res['ProductInfo'] = array_chunk($res['ProductInfo'], 2, false);
+		$res['productinfo'] = array_chunk($res['productinfo'], 2, false);
 
 		if ($extras === true) {
 			$features = false;
@@ -170,7 +170,7 @@ class popporn
 						}
 						if ($features == true) {
 							if (!empty($e)) {
-								$res['Extras'][] = $e;
+								$res['extras'][] = $e;
 							}
 						}
 					}
@@ -310,8 +310,11 @@ class popporn
 		if (is_array($this->_trailers())) {
 			$results = array_merge($results, $this->_trailers());
 		}
-
+		if(count(array_count_values($results)) == 0){
+		return false;
+		}else{
 		return $results;
+		}
 	}
 
 	/**

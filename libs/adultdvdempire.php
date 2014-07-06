@@ -129,9 +129,11 @@ class adultdvdempire
 	{
 		$res = array();
 		if ($tagline === true) {
-			$ret = $this->html->find("p.Tagline", 0);
+			if($this->html->find("p.Tagline", 0)){
+				$ret = $this->html->find("p.Tagline", 0);
 			if (!empty($ret->plaintext)) {
-				$res['Tagline'] = trim($ret->plaintext);
+				$res['tagline'] = trim($ret->plaintext);
+			}
 			}
 		}
 		if ($this->html->find("p.Tagline", 0)->next_sibling()->next_sibling()) {
@@ -201,7 +203,7 @@ class adultdvdempire
 			}
 		}
 		$categories = array_map('trim', $categories);
-		$res['Genres'] = $categories;
+		$res['genres'] = $categories;
 		$this->edithtml->clear();
 		unset($this->tmprsp);
 		unset($ret);
@@ -231,17 +233,17 @@ class adultdvdempire
 			}
 			if ($dofeature != true) {
 				if (trim($strong->innertext) != "&nbsp;") {
-					$res['ProductInfo'][] = trim($strong->innertext);
+					$res['productinfo'][] = trim($strong->innertext);
 				}
 			} else {
 				if ($features == true) {
-					$res['Extras'][] = trim($strong->innertext);
+					$res['extras'][] = trim($strong->innertext);
 				}
 			}
 		}
-		array_shift($res['ProductInfo']);
-		array_shift($res['ProductInfo']);
-		$res['ProductInfo'] = array_chunk($res['ProductInfo'], 2, false);
+		array_shift($res['productinfo']);
+		array_shift($res['productinfo']);
+		$res['productinfo'] = array_chunk($res['productinfo'], 2, false);
 		$this->edithtml->clear();
 		unset($this->tmprsp);
 		unset($ret);
