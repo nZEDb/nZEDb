@@ -253,7 +253,7 @@ class adultdvdempire
 
 	/**
 	 * Searches xxx name.
-	 * @return bool - True if releases has 95% match, else false
+	 * @return bool - True if releases has 90% match, else false
 	 */
 	public function search()
 	{
@@ -273,7 +273,7 @@ class adultdvdempire
 					$title = $ret->title;
 					$ret = (string)trim($ret->href);
 					similar_text($this->searchterm, $title, $p);
-					if ($p >= 95) {
+					if ($p >= 90) {
 						$this->found = true;
 						$this->urlfound = $ret;
 						unset($ret);

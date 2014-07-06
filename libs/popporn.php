@@ -252,7 +252,7 @@ class popporn
 
 	/**
 	 * Searches for match against searchterm
-	 * @return bool, true if search >= 95%
+	 * @return bool, true if search >= 90%
 	 */
 	public function search()
 	{
@@ -272,7 +272,7 @@ class popporn
 			}
 			if (isset($title)) {
 				similar_text($this->searchterm, $title, $p);
-				if ($p >= 95) {
+				if ($p >= 90) {
 					unset($ret);
 
 					return true;
@@ -310,7 +310,7 @@ class popporn
 		if (is_array($this->_trailers())) {
 			$results = array_merge($results, $this->_trailers());
 		}
-		if(count(array_count_values($results)) == 0){
+		if(empty($results) === true){
 		return false;
 		}else{
 		return $results;
