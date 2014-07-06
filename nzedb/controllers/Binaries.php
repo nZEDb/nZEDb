@@ -159,6 +159,12 @@ class Binaries
 	protected $_debug = false;
 
 	/**
+	 * Does the user have any blacklists enabled?
+	 * @var bool
+	 */
+	protected $_blackListEmpty = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param NNTP $nntp Class instance of NNTP.
@@ -253,7 +259,6 @@ class Binaries
 
 			// Loop through groups.
 			foreach ($groups as $group) {
-				$this->message = array();
 				$dMessage = "Starting group " . $counter . ' of ' . $groupCount;
 				if ($this->_debug) {
 					$this->_debugging->start("updateAllGroups", $dMessage, 5);
@@ -529,6 +534,9 @@ class Binaries
 	 */
 	public function scan($groupMySQL, $first, $last, $type = 'update', $missingParts = null)
 	{
+		// Reset headers from earlier runs.
+		$this->message = array();
+
 		// Start time of scan method and of fetching headers.
 		$startLoop = $startHeaders = microtime(true);
 
@@ -622,17 +630,10 @@ class Binaries
 				}
 			}
 
-			// Sort the articles before processing, alphabetically by subject. This is to try to use the shortest subject and those without .vol01 in the subject
-			usort($headers,
-				function ($elem1, $elem2) {
-					return strcmp($elem1['Subject'], $elem2['Subject']);
-				}
-			);
-
 			$headersReceived = $headersBlackListed = $headersIgnored = $headersRepaired = array();
 
 			// Loop articles, figure out files/parts.
-			foreach ($headers AS $header) {
+			foreach ($headers as $header) {
 				if (!isset($header['Number'])) {
 					continue;
 				}
@@ -650,48 +651,38 @@ class Binaries
 
 				$headersReceived[] = $header['Number'];
 
-				// Add yEnc to headers that do not have them, but are nzbs and that have the part number at the end of the header
-				if (!stristr($header['Subject'], 'yEnc') && preg_match('/(.+)(\(\d+\/\d+\))$/', $header['Subject'], $partNumber)) {
-					$header['Subject'] = $partNumber[1] . ' yEnc ' . $partNumber[2];
+				// Skip these, they are crap.
+				if (preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $header['Subject'])) {
+					$headersIgnored[] = $header['Number'];
+					continue;
 				}
 
-				$matches = array();
-				// Not a binary post most likely.. continue.
-				if (!isset($header['Subject']) ||
-					!preg_match('/\s*(.+yEnc).*\((\d+)\/(\d+)\)/', $header['Subject'], $matches) ||
-					preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $header['Subject'], $UIP)
-				) {
-
-					if ($this->_showDroppedYEncParts === true && !isset($UIP[1])) {
-						file_put_contents(nZEDb_LOGS . 'not_yenc' . $groupMySQL['name'] . '.dropped.log', $header['Subject'] . PHP_EOL, FILE_APPEND);
+				// Find part / total parts. Ignore if no part count found.
+				if (preg_match('/\s*(.+)\s*\((\d+)\/(\d+)\)$/', $header['Subject'], $matches)) {
+					// Add yEnc to subjects that do not have them, but have the part number at the end of the header.
+					if (!stristr($header['Subject'], 'yEnc')) {
+						$matches[1] .= ' yEnc';
 					}
-
+				} else {
+					if ($this->_showDroppedYEncParts === true) {
+						file_put_contents(
+							nZEDb_LOGS . 'not_yenc' . $groupMySQL['name'] . '.dropped.log',
+							$header['Subject'] . PHP_EOL, FILE_APPEND
+						);
+					}
 					$headersIgnored[] = $header['Number'];
 					continue;
 				}
 
 				// Filter subject based on black/white list.
-				if ($this->isBlackListed($header, $groupMySQL['name'])) {
+				if ($this->_blackListEmpty === false && $this->isBlackListed($header, $groupMySQL['name'])) {
 					$headersBlackListed[] = $header['Number'];
 					continue;
 				}
 
-				// Attempt to find the file count. If it is not found, set it to 0.
-				$fileCount = array();
-				if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $matches[1], $fileCount)) {
-					$fileCount[2] = $fileCount[6] = 0;
-
-					if ($this->_showDroppedYEncParts === true) {
-						file_put_contents(nZEDb_LOGS . 'no_parts' . $groupMySQL['name'] . '.log', $header['Subject'] . PHP_EOL, FILE_APPEND);
-					}
-				}
-
-				// Inserted into the collections table as the subject.
-				$subject = utf8_encode($matches[1]);
-
 				// Set up the info for inserting into parts/binaries/collections tables.
-				if (!isset($this->message[$subject])) {
-					$this->message[$subject] = $header;
+				if (!isset($this->message[$matches[1]])) {
+					$this->message[$matches[1]] = $header;
 
 					/* Date from header should be a string this format:
 					 * 31 Mar 2014 15:36:04 GMT or 6 Oct 1998 04:38:40 -0500
@@ -703,39 +694,45 @@ class Binaries
 					$now = time();
 
 					// Check if the header's time is newer than now, if so, set it now.
-					$this->message[$subject]['Date'] = ($date > $now ? $now : $date);
+					$this->message[$matches[1]]['Date'] = ($date > $now ? $now : $date);
 
-					$this->message[$subject]['MaxParts'] = $matches[3];
+					$this->message[$matches[1]]['MaxParts'] = $matches[3];
+
+					// Attempt to find the file count. If it is not found, set it to 0.
+					if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $matches[1], $fileCount)) {
+						$fileCount[2] = $fileCount[6] = 0;
+
+						if ($this->_showDroppedYEncParts === true) {
+							file_put_contents(
+								nZEDb_LOGS . 'no_files' . $groupMySQL['name'] . '.log',
+								$header['Subject'] . PHP_EOL, FILE_APPEND
+							);
+						}
+					}
 
 					// (hash) Used to group articles together when forming the release/nzb.
-					$this->message[$subject]['CollectionHash'] =
+					$this->message[$matches[1]]['CollectionHash'] =
 						sha1(
-							$this->_collectionsCleaning->collectionsCleaner($subject, $groupMySQL['name']) .
+							$this->_collectionsCleaning->collectionsCleaner($matches[1], $groupMySQL['name']) .
 							$header['From'] .
 							$groupMySQL['id'] .
 							$fileCount[6]
 						);
-					$this->message[$subject]['MaxFiles'] = $fileCount[6];
-					$this->message[$subject]['File']     = $fileCount[2];
+					$this->message[$matches[1]]['MaxFiles'] = $fileCount[6];
+					$this->message[$matches[1]]['File']     = $fileCount[2];
 				}
 
 				if (!isset($header['Bytes'])) {
-					if (isset($header[':bytes'])) {
-						$header['Bytes'] = $header[':bytes'];
-					} else {
-						$header['Bytes'] = 0;
-					}
+					$header['Bytes'] = (isset($header[':bytes']) ? $header[':bytes'] : 0);
 				}
 
-				if ($matches[2] > 0) {
-					$this->message[$subject]['Parts'][$matches[2]] =
-						array(
-							'Message-ID' => substr($header['Message-ID'], 1, -1), // Strip the < and >
-							'number'     => $header['Number'],
-							'part'       => $matches[2],
-							'size'       => $header['Bytes']
-						);
-				}
+				$this->message[$matches[1]]['Parts'][$matches[2]] =
+					array(
+						'Message-ID' => substr($header['Message-ID'], 1, -1), // Strip the < and >, saves space in DB.
+						'number'     => $header['Number'],
+						'part'       => $matches[2],
+						'size'       => (is_numeric($header['Bytes']) ? $header['Bytes'] : 0)
+					);
 			}
 
 			// Array of all the requested article numbers.
@@ -797,11 +794,11 @@ class Binaries
 			// End of processing headers.
 			$timeCleaning = number_format($startUpdate - $startCleaning, 2);
 
-			if (isset($this->message) && count($this->message) > 0) {
+			if (count($this->message) > 0) {
 
 				$collectionHashes = $headersNotInserted = array();
 
-				$partsQuery = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES', $groupNames['pname']);
+				$partsQuery = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $groupNames['pname']);
 
 				// Loop through the reformed article headers.
 				foreach ($this->message AS $subject => $data) {
@@ -817,33 +814,40 @@ class Binaries
 
 							// Check if we already have the collection.
 							$collectionCheck = $this->_db->queryOneRow(
-								sprintf('
+								sprintf("
 									SELECT id, subject
 									FROM %s
-									WHERE collectionhash = %s',
+									WHERE collectionhash = '%s'",
 									$groupNames['cname'],
-									$this->_db->escapeString($data['CollectionHash'])
+									$data['CollectionHash']
 								)
 							);
 
 							// If we don't have the collection, insert it.
 							if ($collectionCheck === false) {
+								// The update on duplicate key is needed for those who run multiple instances
+								// of the script not to get errors of duplicate keys.
 								$collectionID = $this->_db->queryInsert(
-									sprintf('
+									sprintf("
 										INSERT INTO %s (subject, fromname, date, xref, group_id,
 											totalfiles, collectionhash, dateadded)
-										VALUES (%s, %s, %s, %s, %d, %d, %s, NOW())
-										ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)',
+										VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
+										ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",
 										$groupNames['cname'],
-										$this->_db->escapeString(substr($subject, 0, 255)),
+										$this->_db->escapeString(substr(utf8_encode($subject), 0, 255)),
 										$this->_db->escapeString(utf8_encode($data['From'])),
-										$this->_db->from_unixtime($data['Date']),
+										$data['Date'],
 										$this->_db->escapeString(substr($data['Xref'], 0, 255)),
 										$groupMySQL['id'],
 										$data['MaxFiles'],
-										$this->_db->escapeString($data['CollectionHash'])
+										$data['CollectionHash']
 									)
 								);
+
+								if ($collectionID === false) {
+									$headersNotInserted += $this->_rollbackAddToPartRepair($data['Parts']);
+									continue;
+								}
 							} else {
 								$collectionID = $collectionCheck['id'];
 								// Update the collection table with the last seen date for the collection.
@@ -864,25 +868,30 @@ class Binaries
 
 						$binaryCheck = $this->_db->queryOneRow(
 							sprintf(
-								'SELECT id FROM %s WHERE binaryhash = %s',
+								"SELECT id FROM %s WHERE binaryhash = '%s'",
 								$groupNames['bname'],
-								$this->_db->escapeString($binaryHash)
+								$binaryHash
 							)
 						);
 
 						if ($binaryCheck === false) {
 							$binaryID = $this->_db->queryInsert(
-								sprintf('
+								sprintf("
 									INSERT INTO %s (binaryhash, name, collectionid, totalparts, filenumber)
-									VALUES (%s, %s, %d, %s, %s)',
+									VALUES ('%s', %s, %d, %d, %d)",
 									$groupNames['bname'],
-									$this->_db->escapeString($binaryHash),
-									$this->_db->escapeString($subject),
+									$binaryHash,
+									$this->_db->escapeString(utf8_encode($subject)),
 									$collectionID,
-									$this->_db->escapeString($data['MaxParts']),
-									$this->_db->escapeString($data['File'])
+									$data['MaxParts'],
+									$data['File']
 								)
 							);
+
+							if ($binaryID === false) {
+								$headersNotInserted += $this->_rollbackAddToPartRepair($data['Parts']);
+								continue;
+							}
 						} else {
 							$binaryID = $binaryCheck['id'];
 						}
@@ -891,14 +900,13 @@ class Binaries
 
 						foreach ($data['Parts'] as $partData) {
 							$tempPartsQuery .=
-								' (' . $binaryID . ',' . $partData['number'] . ',' .
-								$this->_db->escapeString($partData['Message-ID']) . ',' .
+								'(' . $binaryID . ',' . $partData['number'] . ",'" .
+								$partData['Message-ID'] . "'," .
 								$partData['part'] . ',' . $partData['size'] . '),';
 						}
 
 						if ($this->_db->queryExec(rtrim($tempPartsQuery, ',')) === false) {
-							$headersNotInserted += range($first, $last);
-							$this->_db->Rollback();
+							$headersNotInserted += $this->_rollbackAddToPartRepair($data['Parts']);
 						} else {
 							$this->_db->Commit();
 						}
@@ -940,6 +948,25 @@ class Binaries
 			unset($this->message);
 		}
 		return $returnArray;
+	}
+
+	/**
+	 * If we failed to insert Collections/Binaries/Parts, rollback the transaction and add the parts to part repair.
+	 *
+	 * @param array $parts Array of parts we tried to insert.
+	 *
+	 * @return array Array of article numbers to add to part repair.
+	 *
+	 * @access protected
+	 */
+	protected function _rollbackAddToPartRepair(&$parts)
+	{
+		$headersNotInserted = array();
+		foreach ($parts as $part) {
+			$headersNotInserted[] = $part['number'];
+		}
+		$this->_db->Rollback();
+		return $headersNotInserted;
 	}
 
 	/**
@@ -1128,6 +1155,9 @@ class Binaries
 		}
 		$this->blackList = $this->getBlacklist(true);
 		$this->_blackListLoaded = true;
+		if (count($this->blackList) === 0) {
+			$this->_blackListEmpty = true;
+		}
 	}
 
 	/**
@@ -1273,18 +1303,39 @@ class Binaries
 	/**
 	 * Delete Collections/Binaries/Parts for a Collection ID.
 	 *
-	 * @param int $id Collections table ID
+	 * @param int $collectionID Collections table ID
 	 *
 	 * @return void
 	 */
-	public function delete($id)
+	public function delete($collectionID)
 	{
-		$bins = $this->_db->query(sprintf('SELECT id FROM binaries WHERE collectionid = %d', $id));
+		$bins = $this->_db->query(sprintf('SELECT id FROM binaries WHERE collectionid = %d', $collectionID));
 		foreach ($bins as $bin) {
 			$this->_db->queryExec(sprintf('DELETE FROM parts WHERE binaryid = %d', $bin['id']));
 		}
-		$this->_db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $id));
-		$this->_db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $id));
+		$this->_db->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $collectionID));
+		$this->_db->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $collectionID));
+	}
+
+	/**
+	 * Delete all Collections/Binaries/Parts for a group ID.
+	 *
+	 * @param int $groupID The ID of the group.
+	 *
+	 * @return void
+	 */
+	public function purgeGroup($groupID)
+	{
+		$this->_db->queryExec(
+			sprintf('
+				DELETE c, b, p
+				FROM collections c
+				LEFT OUTER JOIN binaries b ON b.collectionid = c.id
+				LEFT OUTER JOIN parts p ON p.binaryid = b.id
+				WHERE c.group_id = %d',
+				$groupID
+			)
+		);
 	}
 
 }

@@ -7,6 +7,23 @@
 	</div>
 	<br>
 {/if}
+<div class="panel">
+	<div class="panel-heading">
+		<h4 class="panel-title">
+			<a
+					class="accordion-toggle"
+					data-toggle="collapse"
+					data-parent="#accordion"
+					href="#searchtoggle"
+					><i class="icon-search"></i> Search Filter</a>
+		</h4>
+	</div>
+	<div id="searchtoggle" class="panel-collapse collapse">
+		<div class="panel-body">
+			{include file='search-filter.tpl'}
+		</div>
+	</div>
+</div>
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
 		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
