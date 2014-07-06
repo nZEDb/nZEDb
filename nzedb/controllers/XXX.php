@@ -10,9 +10,9 @@ use nzedb\db\DB;
 use nzedb\utility;
 
 /**
- * Class XXXMovie
+ * Class XXX
  */
-class XXXMovie
+class XXX
 {
 	protected $adeclass = false; // We used AdultDVDEmpire class?
 	protected $popclass = false; // We used PopPorn class?
@@ -548,7 +548,7 @@ class XXXMovie
 	 * @param string $releaseToWork
 	 */
 
-	public function processXXXMovieReleases($releaseToWork = '')
+	public function processXXXReleases($releaseToWork = '')
 	{
 		// Get all releases without an IMDB id.
 		if ($releaseToWork === '') {
