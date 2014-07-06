@@ -48,7 +48,6 @@ class popporn
 
 	public function __construct($echooutput = true)
 	{
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->response = array();
 		$this->html = new simple_html_dom();
 		if (isset($this->cookie)) {
