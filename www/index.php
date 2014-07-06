@@ -71,6 +71,7 @@ switch ($page->page) {
 			header("Location: " . $page->site->code);
 			break;
 		}
+	case 'xxx':
 	case 'api':
 	case 'getnzb':
 	case 'login':
