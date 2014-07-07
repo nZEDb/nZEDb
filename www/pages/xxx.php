@@ -3,7 +3,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$movie = new Movie();
+$movie = new XXX();
 
 if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 	$mov = $movie->getMovieInfo($_GET['id']);
@@ -30,7 +30,7 @@ if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 		$page->smarty->assign('modal', true);
 	}
 
-	$page->content = $page->smarty->fetch('viewmovie.tpl');
+	$page->content = $page->smarty->fetch('viewxxx.tpl');
 
 	if ($modal) {
 		echo $page->content;
