@@ -5,7 +5,7 @@ $page = new AdminPage();
 $users = new Users();
 $releases = new Releases();
 $logging = new Logging();
-if ((new \nzedb\db\Settings())->getservbyname('loggingopt') == '0') {
+if ((new \nzedb\db\Settings())->getSetting('loggingopt') == '0') {
 	$loggingon = '0';
 } else {
 	$loggingon = '1';
