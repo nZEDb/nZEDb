@@ -337,7 +337,7 @@ Class Sharing
 		}
 
 		// Get the wanted aritcles
-		$headers = $this->nntp->getOverview($ourOldest . '-' . $newest, true, false);
+		$headers = $this->nntp->getXOVER($ourOldest . '-' . $newest);
 
 		// Check if we received nothing or there was an error.
 		if ($this->nntp->isError($headers) || count($headers) === 0) {

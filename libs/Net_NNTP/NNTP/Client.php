@@ -100,10 +100,10 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 * Cache of the "Over/xOver" header format.
 	 *
 	 * @var array
-	 * @access private
+	 * @access protected
 	 * @since 1.3.0
 	 */
-	private $_overviewFormatCache = null;
+	protected $_overviewFormatCache = null;
 
 	/**
 	 * Constructor

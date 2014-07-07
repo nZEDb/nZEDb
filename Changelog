@@ -7,6 +7,30 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-06-30 niel
+	* Chg: Improving versioning output.
+2014-06-25 kevin
+	* Add: Function to ProcessAdditional for recursively deleting files and folders within a folder.
+	* Add: Slightly faster method for parsing header array (class NNTP).
+	* Chg: Increase compression on NZB files, other slight speedups of NZB file creation.
+	* Chg: Buffer some NZB string data, increasing NZB write speed by almost 2x.
+	* Add: Setting for minimum release size to post process additional (to ignore NZB files and shit like that).
+	* Fix: Fix issue where passwordstatus might not be set.
+2014-06-25 ruhllatio
+	* Chg: Overhaul and class requestid.php
+	* Add: Title matching in multiple return requestIDs
+	* Fix: Trailing whitespaces in requestid.php
+	* Chg: Some variable factoring and comment edits
+	* Add: Slash removal from match_prefiles function
+	* Add: scnzb reequestid checks in requestid.php (still needs new triggers)
+	* Chg: Full work query for match_prefiles is now much more full
+2014-06-24 niel
+	* Fix: Prevent tmux statistics from being queried/displayed if monitor_delay set to 0.
+	* Chg: Default tmux monitor delay is now 300 seconds instead of 30. If you have changed this it will be unaffected.
+	* Rvt: Reverted above fix, as it causes too many missing variable notices. Looking for a better way.
+2014-06-23 ruhllatio
+	* Fix: RequestID Local setting -3 releases back to -1 reqidstatus
+	* Fix: Second try at fixing the PP hang -- add strlen check
 2014-06-23 kevin
 	* Add: Patch to fix broken triggers causing search/api/other stuff not to work.
 	* Add: Fix by JRouleau for fixing triggers on new installs (needs a patch for existing sites). #1360

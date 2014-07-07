@@ -1,16 +1,14 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
-$db = new nzedb\db\DB();
+$db = new Settings();
 $DIR = nZEDb_MISC;
 $c = new ColorCLI();
 
-$versions = @simplexml_load_file(nZEDb_VERSIONS);
-if ($versions === false) {
-	exit($c->error("\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"));
-}
+// Check that Db patch level is current. Also checks nZEDb.xml is valid.
+\nzedb\utility\Utility::isPatched();
 
 passthru('clear');
 
@@ -24,11 +22,6 @@ $nntpproxy = $site->nntpproxy;
 // Check collections version
 if ($hashcheck != 1) {
 	exit($c->error("\nWe have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp ${DIR}testing/DB/reset_Collections.php true\n"));
-}
-
-// Check database patch version
-if ($patch < $versions->versions->db) {
-	exit($c->error("\nYour database is not up to date. Please update.\nphp " . nZEDb_LIB . "db/DbUpdate.php 1\n"));
 }
 
 // Search for NNTPProxy session that might be running froma userthreaded.php run. Setup a clean environment to run in.
@@ -248,7 +241,7 @@ function window_optimize($tmux_session)
 
 function window_sharing($tmux_session)
 {
-	$db = new DB();
+	$db = new Settings();
 	$sharing = $db->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
 	$t = new Tmux();
 	$tmux = $t->get();
