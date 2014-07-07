@@ -282,12 +282,19 @@
 		<tr>
 			<td style="width:180px;"><label for="amazonassociatetag">Amazon Associate Tag:</label></td>
 			<td>
-				<input id="amazonassociatetag" class="long" name="amazonassociatetag" type="text"
-					   value="{$fsite->amazonassociatetag}"/>
+				<input id="amazonassociatetag" class="long" name="amazonassociatetag" type="text" value="{$fsite->amazonassociatetag}"/>
 
 				<div class="hint">The amazon associate tag. Used for music/book lookups.</div>
 			</td>
 		</tr>
+		<tr>
+			<td style="width:180px;"><label for="giantbombkey">Giant Bomb API Key:</label></td>
+				<td>
+					<input id="giantbombkey" class="long" name="giantbombkey" type="text" value="{$fsite->giantbombkey}"/>
+
+					<div class="hint">The giantbomb key. Used for game lookups.</div>
+				</td>
+			</tr>
 		<tr>
 			<td style="width:180px;"><label for="trakttvkey">Trakt.tv API key:</label></td>
 			<td>

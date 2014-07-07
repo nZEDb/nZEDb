@@ -1,18 +1,18 @@
 <?php
 if (!$users->isLoggedIn()) {
-    $page->show403();
+	$page->show403();
 }
 
 $releases = new Releases();
 
 $category = -1;
 if (isset($_REQUEST["t"]) && ctype_digit($_REQUEST["t"])) {
-    $category = $_REQUEST["t"];
+	$category = $_REQUEST["t"];
 }
 
 $grp = "";
 if (isset($_REQUEST["g"])) {
-    $grp = $_REQUEST["g"];
+	$grp = $_REQUEST["g"];
 }
 
 $catarray = array();
@@ -39,33 +39,34 @@ $page->smarty->assign('pager', $pager);
 
 $covgroup = '';
 if ($category == -1 && $grp == "") {
-    $page->smarty->assign("catname", "All");
+	$page->smarty->assign("catname", "All");
 } elseif ($category != -1 && $grp == "") {
-    $cat = new Category();
-    $cdata = $cat->getById($category);
-
-    if ($cdata) {
-        $page->smarty->assign('catname', $cdata["title"]);
-        if ($cdata['parentid'] == Category::CAT_PARENT_GAME || $cdata['id'] == Category::CAT_PARENT_GAME) {
-            $covgroup = 'console';
-        } elseif ($cdata['parentid'] == Category::CAT_PARENT_MOVIE || $cdata['id'] == Category::CAT_PARENT_MOVIE) {
-            $covgroup = 'movies';
-        } elseif ($cdata['parentid'] == Category::CAT_PARENT_MUSIC || $cdata['id'] == Category::CAT_PARENT_MUSIC) {
-            $covgroup = 'music';
-        } elseif ($cdata['parentid'] == Category::CAT_PARENT_BOOKS || $cdata['id'] == Category::CAT_PARENT_BOOKS) {
-            $covgroup = 'books';
-        }
-    } else {
-        $page->show404();
-    }
+	$cat = new Category();
+	$cdata = $cat->getById($category);
+	if ($cdata) {
+		$page->smarty->assign('catname', $cdata["title"]);
+		if ($cdata['parentid'] == Category::CAT_PARENT_GAME || $cdata['id'] == Category::CAT_PARENT_GAME) {
+			$covgroup = 'console';
+		} elseif ($cdata['parentid'] == Category::CAT_PARENT_MOVIE || $cdata['id'] == Category::CAT_PARENT_MOVIE) {
+			$covgroup = 'movies';
+		} elseif ($cdata['parentid'] == Category::CAT_PARENT_PC || $cdata['id'] == Category::CAT_PC_GAMES) {
+			$covgroup = 'games';
+		} elseif ($cdata['parentid'] == Category::CAT_PARENT_MUSIC || $cdata['id'] == Category::CAT_PARENT_MUSIC) {
+			$covgroup = 'music';
+		} elseif ($cdata['parentid'] == Category::CAT_PARENT_BOOKS || $cdata['id'] == Category::CAT_PARENT_BOOKS) {
+			$covgroup = 'books';
+		}
+	} else {
+		$page->show404();
+	}
 } elseif ($grp != "") {
-    $page->smarty->assign('catname', $grp);
+	$page->smarty->assign('catname', $grp);
 }
 
 $page->smarty->assign('covgroup', $covgroup);
 
 foreach ($ordering as $ordertype) {
-    $page->smarty->assign('orderby' . $ordertype, WWW_TOP . "/browse?t=" . $category . "&amp;g=" . $grp . "&amp;ob=" . $ordertype . "&amp;offset=0");
+	$page->smarty->assign('orderby' . $ordertype, WWW_TOP . "/browse?t=" . $category . "&amp;g=" . $grp . "&amp;ob=" . $ordertype . "&amp;offset=0");
 }
 
 $page->smarty->assign('lastvisit', $page->userdata['lastlogin']);

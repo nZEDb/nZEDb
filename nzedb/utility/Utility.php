@@ -48,7 +48,7 @@ class Utility
 
 		if ($versions === false) {
 			if (self::isCLI()) {
-				echo (new \nzedb\controllers\ColorCLI())->error(
+				echo (new \ColorCLI())->error(
 					"\nYour versioning XML file ({nZEDb_VERSIONS}) is broken, try updating from git.\n"
 				);
 			}
@@ -102,7 +102,7 @@ class Utility
 		// Check database patch version
 		if ($patch < $ver) {
 			if (self::isCLI()) {
-				echo (new \nzedb\controllers\ColorCLI())->error(
+				echo (new \ColorCLI())->error(
 					"\nYour database is not up to date. Reported patch levels\n Db: $patch\n file: $ver\nPlease update.\n php " .
 					 nZEDb_LIB .  "db/DbUpdate.php 1\n"
 				);
@@ -166,6 +166,28 @@ class Utility
 		];
 		$text = str_replace($lowChars, '', $text);
 		return $text;
+	}
+
+	/**
+	 * Replace all white space chars for a single space.
+	 *
+	 * @param string $text
+	 *
+	 * @return string
+	 *
+	 * @static
+	 * @access public
+	 */
+	static public function collapseWhiteSpace($text)
+	{
+		// Strip leading/trailing white space.
+		return trim(
+			// Replace 2 or more white space for a single space.
+			preg_replace('/\s{2,}/', ' ',
+				// Replace all literal and non literal new lines and carriage returns.
+				str_replace(array("\n", '\n', "\r", '\r'), ' ', $text)
+			)
+		);
 	}
 
 	static public function trailingSlash($path)

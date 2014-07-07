@@ -2,7 +2,6 @@
 
 require_once dirname(__FILE__) . '/../../../config.php';
 
-
 $c = new ColorCLI();
 if (!isset($argv[1])) {
 	exit($c->error("\nThis script is not intended to be run manually, it is called from update_threaded.py."));
@@ -12,4 +11,5 @@ if (!isset($argv[1])) {
 	$postprocess->processBooks($argv[1]);
 	$postprocess->processMusic($argv[1]);
 	$postprocess->processGames($argv[1]);
+	$postprocess->processConsoles($argv[1]);
 }

@@ -1,71 +1,5 @@
 <?php
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////// Start of user changeable settings. //////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- * How many releases to show per page in list view.
- * @default 50
- */
-define("ITEMS_PER_PAGE", "50");
-/**
- * How many releases to show per page in cover view.
- * @default 20
- */
-define("ITEMS_PER_COVER_PAGE", "20");
-
-/**
- * Display text to console(terminal) output.
- * @default true
- */
-define('nZEDb_ECHOCLI', true);
-/**
- * Display debug messages on console or web page.
- * @default false
- */
-define('nZEDb_DEBUG', false);
-
-/**
- * Log debug messages to nzedb/resources/debug.log
- * @default false
- */
-define('nZEDb_LOGGING', false);
-
-/*********************************************************************************
- * The following options require either nZEDb_DEBUG OR nZEDb_LOGGING to be true: *
- *********************************************************************************/
-/**
- * Log and/or echo debug Info messages.
- * @default false
- */
-define('nZEDb_LOGINFO', false);
-/**
- * Log and/or echo debug Notice messages.
- * @default false
- */
-define('nZEDb_LOGNOTICE', false);
-/**
- * Log and/or echo debug Warning messages.
- * @default false
- */
-define('nZEDb_LOGWARNING', false);
-/**
- * Log and/or echo debug Error messages.
- * @default false
- */
-define('nZEDb_LOGERROR', false);
-/**
- * Log and/or echo debug Fatal messages.
- * @default false
- */
-define('nZEDb_LOGFATAL', false);
-/**
- * Log and/or echo debug failed SQL queries.
- * @default false
- */
-define('nZEDb_LOGQUERIES', false);
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////// End of user changeable settings./ //////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// YOU SHOULD NOT EDIT ANYTHING IN THIS FILE, COPY settings.php.example TO settings.php AND EDIT THAT FILE!
 
 define('DS', DIRECTORY_SEPARATOR);
 
@@ -118,6 +52,30 @@ if (strlen($www_top) == 1) {
 define('WWW_TOP', $www_top);
 
 define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
+
+if (is_file(__DIR__ . DS . 'settings.php')) {
+	require_once(__DIR__ . DS . 'settings.php');
+	// Remove this in the future, this is for those who are nothing updating their settings.php file.
+	if (!defined('nZEDb_LOGAUTOLOADER')) {
+		define('nZEDb_LOGAUTOLOADER', false);
+	}
+} else {
+	define('ITEMS_PER_PAGE', '50');
+	define('ITEMS_PER_COVER_PAGE', '20');
+	define('nZEDb_ECHOCLI', true);
+	define('nZEDb_DEBUG', false);
+	define('nZEDb_LOGGING', false);
+	define('nZEDb_LOGINFO', false);
+	define('nZEDb_LOGNOTICE', false);
+	define('nZEDb_LOGWARNING', false);
+	define('nZEDb_LOGERROR', false);
+	define('nZEDb_LOGFATAL', false);
+	define('nZEDb_LOGQUERIES', false);
+	define('nZEDb_LOGAUTOLOADER', false);
+	define('nZEDb_QUERY_STRIP_WHITESPACE', false);
+	define('nZEDb_RENAME_PAR2', true);
+	define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
+}
 
 require_once nZEDb_CORE . 'autoloader.php';
 require_once nZEDb_LIBS . 'autoloader.php';

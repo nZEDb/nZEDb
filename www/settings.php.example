@@ -1,0 +1,113 @@
+<?php
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////// Copy this file to settings.php and edit the options. //////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**********************************************************************************************************************/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////// Web Settings //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * How many releases to show per page in list view.
+ * @default 50
+ */
+define('ITEMS_PER_PAGE', '50');
+
+/**
+ * How many releases to show per page in cover view.
+ * @default 20
+ */
+define('ITEMS_PER_COVER_PAGE', '20');
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////// CLI Settings //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Display text to console(terminal) output.
+ * @default true
+ */
+define('nZEDb_ECHOCLI', true);
+
+/**
+ * Rename releases using PAR2 files (if they match on PRE titles)?
+ * @default true
+ */
+define('nZEDb_RENAME_PAR2', true);
+
+/**
+ * Rename music releases using media info from the MP3/FLAC/etc tags (names are created using info found in the tags)?
+ * @default true
+ */
+define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////// Log Settings //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Display debug messages on console or web page.
+ * @default false
+ */
+define('nZEDb_DEBUG', false);
+
+/**
+ * Log debug messages to nzedb/resources/debug.log
+ * @default false
+ */
+define('nZEDb_LOGGING', false);
+
+/**
+ * var_dump missing autoloader files.
+ * @note Dev setting.
+ * @default false
+ */
+define('nZEDb_LOGAUTOLOADER', false);
+
+/*********************************************************************************
+ * The following options require either nZEDb_DEBUG OR nZEDb_LOGGING to be true: *
+ *********************************************************************************/
+
+/**
+ * Log and/or echo debug Info messages.
+ * @default false
+ */
+define('nZEDb_LOGINFO', false);
+
+/**
+ * Log and/or echo debug Notice messages.
+ * @default false
+ */
+define('nZEDb_LOGNOTICE', false);
+
+/**
+ * Log and/or echo debug Warning messages.
+ * @default false
+ */
+define('nZEDb_LOGWARNING', false);
+
+/**
+ * Log and/or echo debug Error messages.
+ * @default false
+ */
+define('nZEDb_LOGERROR', false);
+
+/**
+ * Log and/or echo debug Fatal messages.
+ * @default false
+ */
+define('nZEDb_LOGFATAL', false);
+
+/**
+ * Log and/or echo debug failed SQL queries.
+ * @default false
+ */
+define('nZEDb_LOGQUERIES', false);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////// Various Settings ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Strip white space (space, carriage return, new line, tab, etc) from queries before sending to MySQL.
+ * This is useful if you use the MySQL slow query log.
+ * @note This slows down query processing, leave it false unless you turn on the MySQL slow query log.
+ * @default false
+ */
+define('nZEDb_QUERY_STRIP_WHITESPACE', false);

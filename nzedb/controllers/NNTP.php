@@ -323,6 +323,20 @@ class NNTP extends Net_NNTP_Client
 	}
 
 	/**
+	 * Attempt to enable compression if the admin enabled the site setting.
+	 * @note This can be used to enable compression if the server was connected without compression.
+	 *
+	 * @access public
+	 */
+	public function enableCompression()
+	{
+		if (!$this->_site->compressedheaders == 1) {
+			return;
+		}
+		$this->_enableCompression();
+	}
+
+	/**
 	 * @param string $group    Name of the group to select.
 	 * @param bool   $articles (optional) experimental! When true the article numbers is returned in 'articles'.
 	 * @param bool   $force    Force a refresh to get updated data from the usenet server.
@@ -446,6 +460,11 @@ class NNTP extends Net_NNTP_Client
 
 			// Split the individual headers by tab.
 			$header = explode("\t", $header);
+
+			// Make sure it's not empty.
+			if ($header === false) {
+				continue;
+			}
 
 			// Temp array to store the header.
 			$headerArray = $overview;
@@ -1436,6 +1455,11 @@ class NNTP extends Net_NNTP_Client
 						}
 						// Attempt to yEnc decode and return the body.
 						return $this->_decodeIgnoreYEnc($body);
+					}
+
+					// Check for line that starts with double period, remove one.
+					if ($line[0] === '.' && $line[1] === '.') {
+						$line = substr($line, 1);
 					}
 
 					// Add the line to the rest of the lines.
