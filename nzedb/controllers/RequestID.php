@@ -92,11 +92,6 @@ class RequestID
 	protected $preDbID = false;
 
 	/**
-	 * @var bool|stdClass
-	 */
-	protected $site;
-
-	/**
 	 * Construct.
 	 *
 	 * @param bool $echoOutput
@@ -105,11 +100,10 @@ class RequestID
 	{
 		$this->echoOutput = ($echoOutput && nZEDb_ECHOCLI);
 		$this->category = new Categorize();
-		$this->pdo = new nzedb\db\DB();
+		$this->pdo = new nzedb\db\Settings();
 		$this->consoleTools = new ConsoleTools();
 		$this->colorCLI = new ColorCLI();
-		$this->site = (new Sites)->get();
-		$this->_request_hours = (isset($this->site->request_hours) ? (int)$this->site->request_hours : 1);
+		$this->_request_hours = ($this->pdo->getSetting('request_hours') != '') ? (int)$this->pdo->getSetting('request_hours') : 1;
 	}
 
 	/**
@@ -353,7 +347,7 @@ class RequestID
 		$requestArray[0] = array('ident' => 0, 'group' => 'none', 'reqid' => 0);
 
 		// Do a web lookup.
-		$returnXml = nzedb\utility\getUrl($this->site->request_url, 'post', 'data=' . serialize($requestArray));
+		$returnXml = nzedb\utility\getUrl($this->pdo->getSetting('request_url'), 'post', 'data=' . serialize($requestArray));
 
 		// Change the release titles and insert the PRE's if they don't exist.
 		if ($returnXml !== false) {
