@@ -82,12 +82,12 @@ class Releases
 	{
 		return $this->pdo->query(
 			sprintf(
-				'SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name
+				"SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name
 				FROM releases r
 				INNER JOIN category c ON c.id = r.categoryid
 				INNER JOIN category cp ON cp.id = c.parentid
 				WHERE nzbstatus = 1
-				ORDER BY postdate DESC %s',
+				ORDER BY postdate DESC %s",
 				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
 			)
 		);
