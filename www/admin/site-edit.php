@@ -64,7 +64,7 @@ switch($action)
 	case 'view':
 	default:
 		$page->title = "Site Edit";
-		$site = $$page->settings;
+		$site = $page->settings;
 		$page->smarty->assign('site', $site);
 		break;
 }
