@@ -61,7 +61,7 @@
 		<tr>
 			<td>XXX View:</td>
 			<td>
-				<input name="xxxview"	type="checkbox"	value="1" {if $user.xxxview=="1"}checked="checked"{/if}" />
+				<input name="xxxview" type="checkbox" value="1" {if $user.xxxview=="1"}checked="checked"{/if}" />
 			</td>
 		</tr>
 		<tr>
