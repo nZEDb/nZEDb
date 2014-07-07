@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../automated.config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 // TODO Set these somewhere else?
 $minMySQLVersion = 5.5;
@@ -89,7 +89,7 @@ if ($page->isPostBack()) {
 	} else {
 		// Connect to the SQL server.
 		try {
-			$pdo = new DB(
+			$pdo = new Settings(
 				array(
 					'checkVersion' => true,
 					'createDb'     => true,

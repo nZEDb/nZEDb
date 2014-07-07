@@ -1,16 +1,14 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 passthru("clear");
 
-$db = new DB();
+$pdo = new Settings();
 $t = new Tmux();
 $tmux = $t->get();
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
-$s = new Sites();
-$site = $s->get();
 $c = new ColorCLI();
 
 $tmux_session = 'NNTPProxy';
@@ -21,7 +19,7 @@ function python_module_exist($module)
 	return ($returnCode == 0 ? true : false);
 }
 
-$nntpproxy = $site->nntpproxy;
+$nntpproxy = $pdo->getSetting('nntpproxy');
 if ($nntpproxy === '0') {
 	exit();
 } else {
@@ -35,8 +33,8 @@ if ($nntpproxy === '0') {
 
 function window_proxy($tmux_session, $powerline)
 {
-	$s = new Sites();
-	$site = $s->get();
+	global $pdo;
+
 	$DIR = nZEDb_MISC;
 	if ($powerline === '1') {
 		$tmuxconfig = $DIR . "update/nix/tmux/powerline/tmux.conf";
@@ -44,7 +42,7 @@ function window_proxy($tmux_session, $powerline)
 		$tmuxconfig = $DIR . "update/nix/tmux/tmux.conf";
 	}
 
-	$nntpproxy = $site->nntpproxy;
+	$nntpproxy = $pdo->getSetting('nntpproxy');
 	if ($nntpproxy === '1') {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
@@ -54,7 +52,7 @@ function window_proxy($tmux_session, $powerline)
 		}
 	}
 
-	if ($nntpproxy === '1' && ($site->alternate_nntp === '1')) {
+	if ($nntpproxy == '1' && ($pdo->getSetting('alternate_nntp') == '1')) {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy_a.conf")) {

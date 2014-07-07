@@ -5,7 +5,7 @@ class Page extends BasePage
 {
 	function __construct()
 	{
-		parent::BasePage();
+		parent::__construct();
 
 		$role = Users::ROLE_GUEST;
 		if ($this->userdata != null) {

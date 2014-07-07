@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-07 niel
+	* Chg: Refactored code to remove use of DB and Site classes in favour of combined Settings class. Should improve memory use and small performance boost.
 2014-07-06 bart39
 	* Fix: Monitor.php showing negative misc count
 2014-07-06 ruhllatio

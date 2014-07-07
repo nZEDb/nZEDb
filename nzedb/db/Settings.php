@@ -26,19 +26,47 @@ if (!defined('nZEDb_INSTALLER')) {
 }
 
 use nzedb\utility\Utility;
+use nzedb\utility\Versions;
 
 class Settings extends DB
 {
+	const REGISTER_STATUS_OPEN      = 0;
+	const REGISTER_STATUS_INVITE    = 1;
+	const REGISTER_STATUS_CLOSED    = 2;
+	const REGISTER_STATUS_API_ONLY  = 3;
+	const ERR_BADUNRARPATH          = -1;
+	const ERR_BADFFMPEGPATH         = -2;
+	const ERR_BADMEDIAINFOPATH      = -3;
+	const ERR_BADNZBPATH            = -4;
+	const ERR_DEEPNOUNRAR           = -5;
+	const ERR_BADTMPUNRARPATH       = -6;
+	const ERR_BADNZBPATH_UNREADABLE = -7;
+	const ERR_BADNZBPATH_UNSET      = -8;
+	const ERR_BAD_COVERS_PATH       = -9;
+	const ERR_BAD_YYDECODER_PATH    = -10;
+
 	private $settings;
 
 	public function __construct(array $options = array())
 	{
 		parent::__construct($options);
 		$result         = parent::exec("describe site", true);
-		$this->settings = ($result === false) ? 'settings' : 'site';
+		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
 		return self::$pdo;
+	}
+
+	/**
+	 * Non-existent variables are assumed to be simple Settings.
+	 *
+	 * @param $name
+	 *
+	 * @return string
+	 */
+	public function __get($name)
+	{
+		return $this->getSetting($name);
 	}
 
 	/**
@@ -52,7 +80,7 @@ class Settings extends DB
 	public function getSetting($options = array())
 	{
 		if (!is_array($options)) {
-			$options = ['name' => $options];
+			$options = ['setting' => $options];
 		}
 		$defaults = array(
 			'section'    => '',
@@ -61,12 +89,39 @@ class Settings extends DB
 		);
 		$options += $defaults;
 
-		if ($this->settings == 'settings') {
+		if ($this->table == 'settings') {
 			$result = $this->_getFromSettings($options);
 		} else {
 			$result = $this->_getFromSites($options);
 		}
 		return $result;
+	}
+
+	public function rowToArray($row)
+	{
+
+	}
+
+	public function rows2ObjectOLD($rows)
+	{
+		$obj = new stdClass;
+		foreach ($rows as $row) {
+			$obj->{$row['setting']} = trim($row['value']);
+		}
+
+		$obj->{'version'} = $this->version();
+		return $obj;
+	}
+
+	public function row2ObjectOLD($row)
+	{
+		$obj     = new stdClass;
+		$rowKeys = array_keys($row);
+		foreach ($rowKeys as $key) {
+			$obj->{$key} = trim($row[$key]);
+		}
+
+		return $obj;
 	}
 
 	public function setCovers()
@@ -105,9 +160,24 @@ class Settings extends DB
 		extract($options);
 	}
 
-	public function settings()
+	public function table()
 	{
-		return $this->settings;
+		return $this->table;
+	}
+
+	public function update()
+	{
+
+	}
+
+	public function version()
+	{
+		try {
+			$ver = (new Versions())->getTagVersion();
+		} catch (\Exception $e) {
+			$ver = '0.0.0';
+		}
+		return $ver;
 	}
 
 	protected function _getFromSettings($options)

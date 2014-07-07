@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$db = new Settings();
+$pdo = new Settings();
 $DIR = nZEDb_MISC;
 $c = new ColorCLI();
 
@@ -12,12 +12,13 @@ $c = new ColorCLI();
 
 passthru('clear');
 
-$s = new Sites();
-$site = $s->get();
-$patch = (isset($site->sqlpatch)) ? $site->sqlpatch : 0;
-$hashcheck = (isset($site->hashcheck)) ? $site->hashcheck : 0;
-$delaytimet = (isset($site->delaytime)) ? (int)$site->delaytime : 2;
-$nntpproxy = $site->nntpproxy;
+$patch = $pdo->getSetting('sqlpatch');
+$patch = ($patch != '') ? $patch : 0;
+$hashcheck = $pdo->getSetting('hashcheck');
+$hashcheck = ($hashcheck != '') ? $hashcheck : 0;
+$delaytimet = $pdo->getSetting('delaytime');
+$delaytimet = ($delaytimet) ? (int)$delaytimet : 2;
+$nntpproxy = $pdo->getSetting('nntpproxy');
 
 // Check collections version
 if ($hashcheck != 1) {
@@ -42,7 +43,8 @@ $tmux_session = (isset($tmux->tmux_session)) ? $tmux->tmux_session : 0;
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
 $import = (isset($tmux->import)) ? $tmux->import : 0;
-$tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
+$tablepergroup = $pdo->getSetting('tablepergroup');
+$tablepergroup = ($tablepergroup != '') ? $tablepergroup : 0;
 
 //check if session exists
 $exec = exec("tmux list-session | grep $tmux_session", $session);
@@ -66,8 +68,8 @@ function writelog($pane)
 }
 
 //remove folders from tmpunrar
-if (isset($site->tmpunrarpath)) {
-	$tmpunrar = $site->tmpunrarpath;
+if ($pdo->getSetting('tmpunrarpath') != '') {
+	$tmpunrar = $pdo->getSetting('tmpunrarpath');
 	if ((count(glob("$tmpunrar/*", GLOB_ONLYDIR))) > 0) {
 		echo $c->info("Removing dead folders from " . $tmpunrar);
 		exec("rm -r " . $tmpunrar . "/*");
@@ -97,7 +99,7 @@ function python_module_exist($module)
 	return ($returnCode == 0 ? true : false);
 }
 
-$nntpproxy = $site->nntpproxy;
+$nntpproxy = $pdo->getSetting('nntpproxy');
 if ($nntpproxy == '1') {
 	$modules = array("nntp", "socketpool");
 	foreach ($modules as &$value) {
@@ -111,12 +113,12 @@ if ($nntpproxy == '1') {
 echo $c->header("Resetting expired collections dateadded to now. This could take a minute or two. Really.");
 if ($tablepergroup == 1) {
 	$sql = "SHOW table status";
-	$tables = $db->queryDirect($sql);
+	$tables = $pdo->queryDirect($sql);
 	$ran = 0;
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
 		if (preg_match('/collections_\d+/', $tbl)) {
-			$run = $db->queryExec('UPDATE ' . $tbl . ' SET dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
+			$run = $pdo->queryExec('UPDATE ' . $tbl . ' SET dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
 			if ($run !== false) {
 				$ran += $run->rowCount();
 			}
@@ -125,7 +127,7 @@ if ($tablepergroup == 1) {
 	echo $c->primary(number_format($ran) . " collections reset.");
 } else {
 	$ran = 0;
-	$run = $db->queryExec('update collections set dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
+	$run = $pdo->queryExec('update collections set dateadded = now() WHERE dateadded < now() - INTERVAL ' . $delaytimet . ' HOUR');
 	if ($run !== false) {
 		$ran += $run->rowCount();
 	}
@@ -185,9 +187,8 @@ function start_apps($tmux_session)
 
 function window_proxy($tmux_session, $window)
 {
-	$s = new Sites();
-	$site = $s->get();
-	$nntpproxy = $site->nntpproxy;
+	global $pdo;
+	$nntpproxy = $pdo->getSetting('nntpproxy');
 	if ($nntpproxy === '1') {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
@@ -197,7 +198,7 @@ function window_proxy($tmux_session, $window)
 		}
 	}
 
-	if ($nntpproxy === '1' && ($site->alternate_nntp === '1')) {
+	if ($nntpproxy === '1' && ($pdo->getSetting('alternate_nntp') == '1')) {
 		$DIR = nZEDb_MISC;
 		$nntpproxypy = $DIR . "update/python/nntpproxy.py";
 		if (file_exists($DIR . "update/python/lib/nntpproxy_a.conf")) {
@@ -241,8 +242,8 @@ function window_optimize($tmux_session)
 
 function window_sharing($tmux_session)
 {
-	$db = new Settings();
-	$sharing = $db->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
+	$pdo = new Settings();
+	$sharing = $pdo->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
 	$t = new Tmux();
 	$tmux = $t->get();
 	$tmux_share = (isset($tmux->run_sharing)) ? $tmux->run_sharing : 0;

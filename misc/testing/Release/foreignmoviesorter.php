@@ -1,7 +1,7 @@
 <?php
 require dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 if (isset($argv[1]) && $argv[1] === "true") {
@@ -17,17 +17,17 @@ if (isset($argv[1]) && $argv[1] === "true") {
 }
 
 function getForeignMovies() {
-	$db = new DB();
+	$pdo = new Settings();
 	$like = 'ILIKE';
-	if ($db->dbSystem() === 'mysql') {
+	if ($pdo->dbSystem() === 'mysql') {
 		$like = 'LIKE';
 	}
-	return $db->query('SELECT r.id, r.searchname FROM releases r JOIN releaseaudio ra ON ra.releaseID = r.id WHERE ra.audiolanguage ' . $like . " '%English%' AND r.categoryid = 2010");
+	return $pdo->query('SELECT r.id, r.searchname FROM releases r JOIN releaseaudio ra ON ra.releaseID = r.id WHERE ra.audiolanguage ' . $like . " '%English%' AND r.categoryid = 2010");
 }
 
 function updateRelease($id, $cat) {
-	$db = new DB();
-	$db->queryExec(sprintf("UPDATE releases SET categoryid = %s WHERE id = %d", $cat, $id));
+	$pdo = new Settings();
+	$pdo->queryExec(sprintf("UPDATE releases SET categoryid = %s WHERE id = %d", $cat, $id));
 }
 
 function determineMovieCategory($name) {

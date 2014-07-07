@@ -1,14 +1,12 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-$c = new ColorCLI();
-
-$site = (new Sites())->get();
-if (empty($site->tmpunrarpath)) {
+$tmpPath = (new Settings())->getSetting('tmpunrarpath');
+if (empty($tmpPath)) {
 	exit ('The tmpunrarpath site setting must not be empty!' . PHP_EOL);
 }
-$tmpPath = $site->tmpunrarpath;
-if (substr($site->tmpunrarpath, -1) !== DS) {
+
+if (substr($tmpPath, -1) !== DS) {
 	$tmpPath .= DS;
 }
 
@@ -28,11 +26,13 @@ if (empty($site->unrarpath)) {
 	exit ('The site setting for the unrar path must not be empty!' . PHP_EOL);
 }
 
-$db = new nzedb\db\DB();
+$c = new ColorCLI();
+
+$pdo = new nzedb\db\Settings();
 $nntp = new NNTP;
 $nzbContents= new NZBContents(
 	array(
-		'db' => $db,
+		'db' => $pdo,
 		'echo' => true,
 		'nfo' => new Nfo(true),
 		'pp' => new PostProcess(true),
@@ -41,7 +41,7 @@ $nzbContents= new NZBContents(
 );
 $categorize = new Categorize();
 
-$releases = $db->queryDirect(
+$releases = $pdo->queryDirect(
 	sprintf('
 		SELECT rf.name AS filename, r.categoryid, r.name, r.guid, r.id, r.group_id, r.postdate, r.searchname AS oldname, g.name AS groupname
 		FROM releasefiles rf
@@ -51,7 +51,7 @@ $releases = $db->queryDirect(
 		AND r.passwordstatus = 0
 		AND rf.name %s
 		ORDER BY r.postdate DESC',
-		$db->likeString('Linux_2rename.sh')
+		$pdo->likeString('Linux_2rename.sh')
 	)
 );
 
@@ -178,7 +178,7 @@ if ($releases !== false) {
 			)
 		);
 
-		$db->queryExec(
+		$pdo->queryExec(
 			sprintf('
 				UPDATE releases
 					SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
@@ -186,7 +186,7 @@ if ($releases !== false) {
 						consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
 						searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
 					WHERE id = %d',
-				$db->escapeString(substr($newName, 0, 255)),
+				$pdo->escapeString(substr($newName, 0, 255)),
 				$determinedCat,
 				$release['id']
 			)

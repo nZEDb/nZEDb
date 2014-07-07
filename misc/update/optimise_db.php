@@ -1,11 +1,11 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
-$db = new DB();
-$type = $db->dbSystem();
+$pdo = new Settings();
+$type = $pdo->dbSystem();
 if (isset($argv[1]) && ($argv[1] === "run" || $argv[1] === "true" || $argv[1] === "all" || $argv[1] === "full" || $argv[1] === "analyze")) {
 	if ($type == 'mysql') {
 		$a = 'MySQL';
@@ -24,7 +24,7 @@ if (isset($argv[1]) && ($argv[1] === "run" || $argv[1] === "true" || $argv[1] ==
 	} else {
 		echo $c->header($b." ".$a." tables, should be quick...");
 	}
-	$tablecnt = $db->optimise(false, $argv[1]);
+	$tablecnt = $pdo->optimise(false, $argv[1]);
 	if ($tablecnt > 0 && $argv[1] === 'analyze') {
 		exit($c->header("\n{$e} {$tablecnt} {$a} tables successfully."));
 	} else if ($tablecnt > 0) {

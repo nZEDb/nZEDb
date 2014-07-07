@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 if (!isset($argv[1])) {
@@ -15,9 +15,7 @@ $releases = new Releases(true);
 $groups = new Groups();
 $groupname = $groups->getByNameByID($groupid);
 $group = $groups->getByName($groupname);
-$db = new DB();
-$s = new Sites();
-$site = $s->get();
+$pdo = new Settings();
 
 if ($releases->hashcheck == 0) {
 	exit($c->error("You must run update_binaries.php to update your collectionhash."));
@@ -25,17 +23,17 @@ if ($releases->hashcheck == 0) {
 
 // Create the connection here and pass, this is for post processing, so check for alternate
 $nntp = new NNTP();
-if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+if (($pdo->getSetting('alternate_nntp') === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }
 $binaries = new Binaries($nntp);
-if ($site->nntpproxy === "1") {
+if ($pdo->getSetting('nntpproxy') == "1") {
 	usleep(500000);
 }
 
 if ($pieces[0] != 'Stage7b') {
 	try {
-		$test = $db->prepare('SELECT * FROM collections_' . $pieces[0]);
+		$test = $pdo->prepare('SELECT * FROM collections_' . $pieces[0]);
 		$test->execute();
 		// Don't even process the group if no collections
 		if ($test->rowCount() == 0) {

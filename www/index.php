@@ -67,8 +67,8 @@ switch ($page->page) {
 	case 'terms-and-conditions':
 	case 'upcoming':
 		// Don't show these pages if it's an API-only site.
-		if (!$users->isLoggedIn() && $page->site->registerstatus == Sites::REGISTER_STATUS_API_ONLY) {
-			header("Location: " . $page->site->code);
+		if (!$users->isLoggedIn() && $page->pdo->getSetting('registerstatus') == Sites::REGISTER_STATUS_API_ONLY) {
+			header("Location: " . $page->pdo->getSetting('code'));
 			break;
 		}
 	case 'api':

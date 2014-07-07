@@ -2,13 +2,13 @@
 //This script will update all records in the movieinfo table where there is no cover
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $movie = new Movie(true);
-$db = new Db();
+$pdo = new Settings();
 $c = new ColorCLI();
 
-$movies = $db->queryDirect("SELECT imdbid FROM movieinfo WHERE cover = 0 ORDER BY year ASC, id DESC");
+$movies = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE cover = 0 ORDER BY year ASC, id DESC");
 if ($movies->rowCount() > 0) {
 	echo $c->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
 }
