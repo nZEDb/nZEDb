@@ -80,13 +80,15 @@ class Settings extends DB
 	public function getSetting($options = array())
 	{
 		if (!is_array($options)) {
-			$options = ['name' => $options];
+			$options = ['setting' => $options];
+			$defaults = array();
+		} else {
+			$defaults = array(
+				'section'    => '',
+				'subsection' => '',
+				'name'       => null,
+			);
 		}
-		$defaults = array(
-			'section'    => '',
-			'subsection' => '',
-			'name'       => null,
-		);
 		$options += $defaults;
 
 		if ($this->settings == 'settings') {
@@ -136,6 +138,11 @@ class Settings extends DB
 	public function settings()
 	{
 		return $this->settings;
+	}
+
+	public function update()
+	{
+
 	}
 
 	public function version()

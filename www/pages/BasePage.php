@@ -28,7 +28,7 @@ class BasePage
 	const FLOOD_THREE_REQUESTS_WITHIN_X_SECONDS = 1.000;
 	const FLOOD_PUNISHMENT_SECONDS = 3.0;
 
-	function BasePage()
+	function __construct()
 	{
 		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')
 			$secure_cookie = '1';
@@ -47,10 +47,10 @@ class BasePage
 		}
 
 		// Set site variable.
-		$this->pdo = new \nzedb\db\Settings();
+		$this->settings = new \nzedb\db\Settings();
 
 		$this->smarty = new Smarty();
-		$this->smarty->setTemplateDir(array('user_frontend' => nZEDb_WWW.'themes/'.$this->pdo->getSetting('style') . '/templates/frontend', 'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend'));
+		$this->smarty->setTemplateDir(array('user_frontend' => nZEDb_WWW.'themes/' . $this->settings->getSetting('style') . '/templates/frontend', 'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend'));
 
 		$this->smarty->setCompileDir(SMARTY_DIR.'templates_c/');
 		$this->smarty->setConfigDir(SMARTY_DIR.'configs/');

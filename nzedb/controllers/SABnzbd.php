@@ -88,7 +88,7 @@ class SABnzbd
 		$this->serverurl = $page->serverurl;
 
 		// Set up properties.
-		switch ($page->pdo->getSetting('sabintegrationtype')) {
+		switch ($page->settings->getSetting('sabintegrationtype')) {
 			case self::INTEGRATION_TYPE_USER:
 				if (!empty($_COOKIE['sabnzbd_' . $this->uid . '__apikey']) && !empty($_COOKIE['sabnzbd_' . $this->uid . '__host'])) {
 					$this->url = $_COOKIE['sabnzbd_' . $this->uid . '__host'];
