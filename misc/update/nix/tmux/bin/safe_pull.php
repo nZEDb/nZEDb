@@ -1,6 +1,7 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../config.php';
+
+
 
 $c = new ColorCLI();
 $pdo = new \nzedb\db\Settings();
@@ -14,7 +15,7 @@ if (!isset($argv[1])) {
 		exit($c->error("Unable to connect to usenet."));
 	}
 
-	$nntpProxy = (new Settings())->getSetting('nntpproxy');
+	$nntpProxy = $pdo->getSetting('nntpproxy');
 
 	if ($nntpProxy == "1") {
 		usleep(500000);
