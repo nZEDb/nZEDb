@@ -1,6 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/../../../config.php';
 
+use nzedb\db\Settings;
+
 $c = new ColorCLI();
 
 if (!isset($argv[1])) {
