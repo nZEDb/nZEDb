@@ -6,6 +6,19 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-06 bart39
+	* Fix: Monitor.php showing negative misc count
+2014-07-06 ruhllatio
+	* Chg: Monitor.php now shows PC work counts for unprocessed PC Game lookups
+	* Chg: Moved a few count queries in Monitor.php to the JOIN ON format instead of in where clause
+	* Add: More categorization improvements
+2014-07-05 bart39
+	* Fix: Typo in Releases.php, games cover view fixes.
+2014-07-05 kevin
+	* Chg: Add back on duplicate key update to collection query, required for those running multiple instances of the script.
+	* Add: Check to see if Bytes is empty, set it to 0, binaries (possible fix).
+	* Add: Catch failed collections/binaries inserts and rollback the transaction.
+	* Chg: Speed up group purging by using joined query.
 2014-07-04 kevin
 	* Chg: Binaries, more speedups to inserting headers, fix issue with part repair.
 	* Add: Speed-up for those with no enabled blacklists by buffering the SQL check.
