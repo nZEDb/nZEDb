@@ -95,7 +95,7 @@ class Sites
 			$sqlKeys[] = $pdo->escapeString($settingK);
 		}
 
-		$table = $pdo->settings();
+		$table = $pdo->table();
 		$pdo->queryExec(
 		   sprintf("UPDATE $table SET value = CASE setting %s END WHERE setting IN (%s)",
 								implode(' ', $sql),
@@ -109,7 +109,7 @@ class Sites
 	public function get()
 	{
 		$pdo = $this->_db;
-		$table = $pdo->settings();
+		$table = $pdo->table();
 		$rows = $pdo->query("SELECT setting, value FROM $table WHERE setting != ''");
 
 		if ($rows === false) {
@@ -129,7 +129,7 @@ class Sites
 	function getSetting($setting = null)
 	{
 		$results = array();
-		$table = $this->_db->settings();
+		$table = $this->_db->table();
 		$sql = "SELECT setting, value FROM $table ";
 		if ($setting !== null) {
 			$sql .= "WHERE setting = '$setting' ";

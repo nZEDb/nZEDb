@@ -51,7 +51,7 @@ class Settings extends DB
 	{
 		parent::__construct($options);
 		$result         = parent::exec("describe site", true);
-		$this->settings = ($result === false) ? 'settings' : 'site';
+		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
 		return self::$pdo;
@@ -81,22 +81,47 @@ class Settings extends DB
 	{
 		if (!is_array($options)) {
 			$options = ['setting' => $options];
-			$defaults = array();
-		} else {
-			$defaults = array(
-				'section'    => '',
-				'subsection' => '',
-				'name'       => null,
-			);
 		}
+		$defaults = array(
+			'section'    => '',
+			'subsection' => '',
+			'name'       => null,
+		);
 		$options += $defaults;
 
-		if ($this->settings == 'settings') {
+		if ($this->table == 'settings') {
 			$result = $this->_getFromSettings($options);
 		} else {
 			$result = $this->_getFromSites($options);
 		}
 		return $result;
+	}
+
+	public function rowToArray($row)
+	{
+
+	}
+
+	public function rows2ObjectOLD($rows)
+	{
+		$obj = new stdClass;
+		foreach ($rows as $row) {
+			$obj->{$row['setting']} = trim($row['value']);
+		}
+
+		$obj->{'version'} = $this->version();
+		return $obj;
+	}
+
+	public function row2ObjectOLD($row)
+	{
+		$obj     = new stdClass;
+		$rowKeys = array_keys($row);
+		foreach ($rowKeys as $key) {
+			$obj->{$key} = trim($row[$key]);
+		}
+
+		return $obj;
 	}
 
 	public function setCovers()
@@ -135,9 +160,9 @@ class Settings extends DB
 		extract($options);
 	}
 
-	public function settings()
+	public function table()
 	{
-		return $this->settings;
+		return $this->table;
 	}
 
 	public function update()
