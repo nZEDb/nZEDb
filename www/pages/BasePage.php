@@ -12,12 +12,12 @@ class BasePage
 	public $meta_keywords = '';
 	public $meta_title = '';
 	public $meta_description = '';
+	public $pdo = '';
 	public $page = '';
 	public $page_template = '';
 	public $smarty = '';
 	public $userdata = array();
 	public $serverurl = '';
-	public $site = '';
 
 	/**
 	 * Whether to trim white space before rendering the page or not.
