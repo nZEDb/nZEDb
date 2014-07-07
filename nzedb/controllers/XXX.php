@@ -66,11 +66,10 @@ class XXX
 		$this->debug = nZEDb_DEBUG;
 		$this->echooutput = ($echoOutput && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
-		$this->service = '';
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Debugging('Movie');
+			$this->debugging = new Debugging('XXX');
 		}
 	}
 
@@ -81,7 +80,7 @@ class XXX
 	 *
 	 * @return array|bool
 	 */
-	public function getMovieInfo($xxxid)
+	public function getXXXInfo($xxxid)
 	{
 		return $this->db->queryOneRow(sprintf("SELECT * FROM xxxinfo WHERE id = %d", $xxxid));
 	}
@@ -113,7 +112,7 @@ class XXX
 	 */
 	public function getCount()
 	{
-		$res = $this->db->queryOneRow('SELECT COUNT(id) AS num FROM movieinfo');
+		$res = $this->db->queryOneRow('SELECT COUNT(id) AS num FROM xxxinfo');
 		return ($res === false ? 0 : $res['num']);
 	}
 
@@ -126,7 +125,7 @@ class XXX
 	 *
 	 * @return int
 	 */
-	public function getMovieCount($cat, $maxAge = -1, $excludedCats = array())
+	public function getXXXCount($cat, $maxAge = -1, $excludedCats = array())
 	{
 		$catSearch = $this->formCategorySearchSQL($cat);
 
@@ -155,12 +154,11 @@ class XXX
 				(count($excludedCats) > 0 ? ' AND r.categoryid NOT IN (' . implode(',', $excludedCats) . ')' : '')
 			)
 		);
-
 		return ($res === false ? 0 : $res['num']);
 	}
 
 	/**
-	 * Get movie releases with covers for movie browse page.
+	 * Get movie releases with covers for xxx browse page.
 	 *
 	 * @param       $cat
 	 * @param       $start
@@ -171,9 +169,9 @@ class XXX
 	 *
 	 * @return bool
 	 */
-	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
+	public function getXXXRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
 	{
-		$order = $this->getMovieOrder($orderBy);
+		$order = $this->getXXXOrder($orderBy);
 		if ($this->db->dbSystem() === 'mysql') {
 			$sql = sprintf("
 				SELECT
@@ -251,7 +249,7 @@ class XXX
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
 			);
 		}
-		return $this->db->queryDirect($sql);
+		return $this->db->query($sql);
 	}
 
 	/**
@@ -297,7 +295,7 @@ class XXX
 	 *
 	 * @return array
 	 */
-	protected function getMovieOrder($orderBy)
+	protected function getXXXOrder($orderBy)
 	{
 		$orderArr = explode('_', (($orderBy == '') ? 'MAX(r.postdate)' : $orderBy));
 		switch ($orderArr[0]) {
@@ -318,7 +316,7 @@ class XXX
 	 *
 	 * @return array
 	 */
-	public function getMovieOrdering()
+	public function getXXXOrdering()
 	{
 		return array('title_asc', 'title_desc');
 	}
@@ -360,7 +358,7 @@ class XXX
 			return '';
 		}
 
-		$tmpArr = explode(', ', $data[$field]);
+		$tmpArr = explode(',', $data[$field]);
 		$newArr = array();
 		$i = 0;
 		foreach ($tmpArr as $ta) {
@@ -418,7 +416,7 @@ class XXX
 	 *
 	 * @return bool
 	 */
-	public function updateMovieInfo($xxxmovie)
+	public function updateXXXInfo($xxxmovie)
 	{
 
 		$res = false;
@@ -528,10 +526,9 @@ class XXX
 		}
 		}else{
 		// If xxxinfo title is found, update release with xxxinfo id
-			$this->db->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d  WHERE id = %d', $check, $this->currentRelID));
-			$xxxID=$check;
+			$this->db->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d  WHERE id = %d', $check['id'], $this->currentRelID));
+			$xxxID=$check['id'];
 		}
-
 		if ($this->echooutput) {
 			$this->c->doEcho(
 				$this->c->headerOver(($xxxID !== 0 ? 'Added/updated movie: ' : 'Nothing to update for xxx movie: ')) .
@@ -579,7 +576,7 @@ class XXX
 			// Loop over releases.
 			foreach ($res as $arr) {
 				// Try to get a name/year.
-				if ($this->parseXXXMovieSearchName($arr['searchname']) === false) {
+				if ($this->parseXXXSearchName($arr['searchname']) === false) {
 					//We didn't find a name, so set to all 0's so we don't parse again.
 					$this->db->queryExec(sprintf("UPDATE releases SET xxxinfo_id = %d WHERE id = %d", -2, $arr["id"]));
 					continue;
@@ -591,12 +588,12 @@ class XXX
 
 					if ($this->echooutput) {
 						$this->c->doEcho($this->c->primaryOver("Looking up: ") . $this->c->headerOver($movieName), true);
-						$xxxid = $this->updateMovieInfo($movieName);
+						$xxxid = $this->updateXXXInfo($movieName);
 
 					}
-					if($xxxid < 0){
-						$this->db->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', $xxxid, $arr['id']));
-					}else{
+					if($xxxid === false){
+						//$this->db->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', $xxxid, $arr['id']));
+					//}else{
 						/// We failed to get any xxx info from all sources.
 						$this->db->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', -2, $arr['id']));
 
@@ -615,7 +612,7 @@ class XXX
 	 *
 	 * @return bool
 	 */
-	protected function parseXXXMovieSearchName($releaseName)
+	protected function parseXXXSearchName($releaseName)
 	{
 		// Check if it's foreign ?
 		$cat = new Categorize();

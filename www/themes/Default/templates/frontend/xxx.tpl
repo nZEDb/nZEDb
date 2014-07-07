@@ -45,6 +45,10 @@
 				<th><input type="checkbox" class="nzb_check_all"></th>
 				<th>title<a title="Sort Descending" href="{$orderbytitle_desc}"><i class="icon-chevron-down icon-black"></i></a><a
 							title="Sort Ascending" href="{$orderbytitle_asc}"><i class="icon-chevron-up icon-black"></i></a></th>
+				<th>year<a title="Sort Descending" href="{$orderbyyear_desc}"><i class="icon-chevron-down icon-black"></i></a><a
+							title="Sort Ascending" href="{$orderbyyear_asc}"><i class="icon-chevron-up icon-black"></i></a></th>
+				<th>rating<a title="Sort Descending" href="{$orderbyrating_desc}"><i class="icon-chevron-down icon-black"></i></a><a
+							title="Sort Ascending" href="{$orderbyrating_asc}"><i class="icon-chevron-up icon-black"></i></a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -54,7 +58,7 @@
 					<div class="movcover">
 						<a
 							target="_blank"
-							href="{$smarty.const.WWW_TOP}/xxx/?id={$result.id}"
+							href="{$smarty.const.WWW_TOP}/xxx/?imdb={$result.id}"
 							name="name{$result.id}"
 							title="View movie info"
 							class="modal_imdb thumbnail" rel="movie"
@@ -66,16 +70,15 @@
 						<div class="relextra" style="margin-top:5px;">
 							<a
 								target="_blank"
-								href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.title}/"
-								name="viewade{$result.title}"
-								title="View ADE page"
-								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
+								href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.id}/"
+								name="xxx{$result.id}"
+								title="View imdb page"><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/imdb.png"></a>
 							<a
 								target="_blank"
-								href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.title}/"
-								name="viewpop{$result.id}"
-								title="View Popporn page"
-							><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
+								href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.id}/"
+								name="trakt{$result.id}"
+								title="View trakt page"
+							><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/trakt.png"></a>
 						</div>
 						<hr>
 						<div>
@@ -91,9 +94,9 @@
 					<h2>
 						<a
 							title="{$result.title|stripslashes|escape:"htmlall"}"
-							href="{$smarty.const.WWW_TOP}/xxx/?id={$result.id}">{$result.title|stripslashes|escape:"htmlall"}
+							href="{$smarty.const.WWW_TOP}/xxx?imdb={$result.id}">{$result.title|stripslashes|escape:"htmlall"}
 						</a>
-					</h2>
+						</h2>
 					{if $result.tagline != ''}
 						<b>{$result.tagline|stripslashes}</b>
 						<br>
