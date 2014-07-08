@@ -481,7 +481,7 @@ class Groups
 		$this->pdo->queryExec("TRUNCATE TABLE binaries");
 		$this->pdo->queryExec("TRUNCATE TABLE parts");
 		$this->pdo->queryExec("TRUNCATE TABLE partrepair");
-		$groups = $this->db->query("SELECT id FROM groups");
+		$groups = $this->pdo->query("SELECT id FROM groups");
 		foreach ($groups as $group) {
 			$this->pdo->queryExec('DROP TABLE IF EXISTS collections_' . $group['id']);
 			$this->pdo->queryExec('DROP TABLE IF EXISTS binaries_' . $group['id']);
