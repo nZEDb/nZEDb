@@ -1,24 +1,24 @@
 <?php
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 class Tmux
 {
+	public $pdo;
+
 	function __construct()
 	{
-		$this->db = new DB();
+		$this->pdo = new Settings();
 	}
 
 	public function version()
 	{
-		$s = new Sites();
-		$site = $s->get();
-		return $site->version;
+		return $this->pdo->version();
 	}
 
 	public function update($form)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$tmux = $this->row2Object($form);
 
 		$sql = $sqlKeys = array();
@@ -26,19 +26,19 @@ class Tmux
 			if (is_array($settingV)) {
 				$settingV = implode(', ', $settingV);
 			}
-			$sql[] = sprintf("WHEN %s THEN %s", $db->escapeString($settingK), $db->escapeString($settingV));
-			$sqlKeys[] = $db->escapeString($settingK);
+			$sql[] = sprintf("WHEN %s THEN %s", $pdo->escapeString($settingK), $pdo->escapeString($settingV));
+			$sqlKeys[] = $pdo->escapeString($settingK);
 		}
 
-		$db->queryExec(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
+		$pdo->queryExec(sprintf("UPDATE tmux SET value = CASE setting %s END WHERE setting IN (%s)", implode(' ', $sql), implode(', ', $sqlKeys)));
 
 		return $tmux;
 	}
 
 	public function get()
 	{
-		$db = $this->db;
-		$rows = $db->query("SELECT * FROM tmux");
+		$pdo = $this->pdo;
+		$rows = $pdo->query("SELECT * FROM tmux");
 
 		if ($rows === false) {
 			return false;
@@ -71,8 +71,8 @@ class Tmux
 
 	public function updateItem($setting, $value)
 	{
-		$db = $this->db;
-		$sql = sprintf("UPDATE tmux SET value = %s WHERE setting = %s", $db->escapeString($value), $db->escapeString($setting));
-		return $db->queryExec($sql);
+		$pdo = $this->pdo;
+		$sql = sprintf("UPDATE tmux SET value = %s WHERE setting = %s", $pdo->escapeString($value), $pdo->escapeString($setting));
+		return $pdo->queryExec($sql);
 	}
 }

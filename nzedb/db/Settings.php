@@ -26,19 +26,47 @@ if (!defined('nZEDb_INSTALLER')) {
 }
 
 use nzedb\utility\Utility;
+use nzedb\utility\Versions;
 
 class Settings extends DB
 {
+	const REGISTER_STATUS_OPEN      = 0;
+	const REGISTER_STATUS_INVITE    = 1;
+	const REGISTER_STATUS_CLOSED    = 2;
+	const REGISTER_STATUS_API_ONLY  = 3;
+	const ERR_BADUNRARPATH          = -1;
+	const ERR_BADFFMPEGPATH         = -2;
+	const ERR_BADMEDIAINFOPATH      = -3;
+	const ERR_BADNZBPATH            = -4;
+	const ERR_DEEPNOUNRAR           = -5;
+	const ERR_BADTMPUNRARPATH       = -6;
+	const ERR_BADNZBPATH_UNREADABLE = -7;
+	const ERR_BADNZBPATH_UNSET      = -8;
+	const ERR_BAD_COVERS_PATH       = -9;
+	const ERR_BAD_YYDECODER_PATH    = -10;
+
 	private $settings;
 
 	public function __construct(array $options = array())
 	{
 		parent::__construct($options);
 		$result         = parent::exec("describe site", true);
-		$this->settings = ($result === false) ? 'settings' : 'site';
+		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
-		return self::$pdo;
+		return self::$_pdo;
+	}
+
+	/**
+	 * Non-existent variables are assumed to be simple Settings.
+	 *
+	 * @param $name
+	 *
+	 * @return string
+	 */
+	public function __get($name)
+	{
+		return $this->getSetting($name);
 	}
 
 	/**
@@ -52,7 +80,7 @@ class Settings extends DB
 	public function getSetting($options = array())
 	{
 		if (!is_array($options)) {
-			$options = ['name' => $options];
+			$options = ['setting' => $options];
 		}
 		$defaults = array(
 			'section'    => '',
@@ -61,12 +89,25 @@ class Settings extends DB
 		);
 		$options += $defaults;
 
-		if ($this->settings == 'settings') {
+		if ($this->table == 'settings') {
 			$result = $this->_getFromSettings($options);
 		} else {
 			$result = $this->_getFromSites($options);
 		}
 		return $result;
+	}
+
+	public function rowToArray(array $row)
+	{
+		$this->settings[$row['setting']] = $row['value'];
+	}
+
+	public function rowsToArray(array $rows)
+	{
+		foreach($rows as $row) {
+			$this->rowToArray($row);
+		}
+		return $this->settings;
 	}
 
 	public function setCovers()
@@ -103,11 +144,50 @@ class Settings extends DB
 		}
 
 		extract($options);
+
+
+		return '';
 	}
 
-	public function settings()
+	public function table()
 	{
-		return $this->settings;
+		return $this->table;
+	}
+
+	public function update($form)
+	{
+		$error = $this->_validate($form);
+
+		if ($error === null) {
+			$sql = $sqlKeys = array();
+			foreach ($form as $settingK => $settingV) {
+				$sql[]     = sprintf("WHEN %s THEN %s",
+									 $this->escapeString($settingK),
+									 $this->escapeString($settingV));
+				$sqlKeys[] = $this->escapeString($settingK);
+			}
+
+			$table = $this->table();
+			$this->queryExec(
+				 sprintf("UPDATE $table SET value = CASE setting %s END WHERE setting IN (%s)",
+						 implode(' ', $sql),
+						 implode(', ', $sqlKeys)
+				 )
+			);
+		} else {
+			$form = $error;
+		}
+		return $form;
+	}
+
+	public function version()
+	{
+		try {
+			$ver = (new Versions())->getTagVersion();
+		} catch (\Exception $e) {
+			$ver = '0.0.0';
+		}
+		return $ver;
 	}
 
 	protected function _getFromSettings($options)
@@ -138,6 +218,46 @@ class Settings extends DB
 		$result = $this->queryOneRow($sql);
 
 		return $result['value'];
+	}
+
+	protected function _validate(array $fields)
+	{
+		ksort($fields);
+		// Validate settings
+		$fields['nzbpath'] = Utility::trailingSlash($fields['nzbpath']);
+		$error             = null;
+		switch (true) {
+			case ($fields['mediainfopath'] != "" && !is_file($fields['mediainfopath'])):
+				$error = Settings::ERR_BADMEDIAINFOPATH;
+				break;
+			case ($fields['ffmpegpath'] != "" && !is_file($fields['ffmpegpath'])):
+				$error = Settings::ERR_BADFFMPEGPATH;
+				break;
+			case ($fields['unrarpath'] != "" && !is_file($fields['unrarpath'])):
+				$error = Settings::ERR_BADUNRARPATH;
+				break;
+			case (empty($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH_UNSET;
+				break;
+			case (!file_exists($fields['nzbpath']) || !is_dir($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH;
+				break;
+			case (!is_readable($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH_UNREADABLE;
+				break;
+			case ($fields['checkpasswordedrar'] == 1 && !is_file($fields['unrarpath'])):
+				$error = Settings::ERR_DEEPNOUNRAR;
+				break;
+			case ($fields['tmpunrarpath'] != "" && !file_exists($fields['tmpunrarpath'])):
+				$error = Settings::ERR_BADTMPUNRARPATH;
+				break;
+			case ($fields['yydecoderpath'] != "" &&
+				  $fields['yydecoderpath'] !== 'simple_php_yenc_decode' &&
+				  !file_exists($fields['yydecoderpath'])):
+				$error = Settings::ERR_BAD_YYDECODER_PATH;
+		}
+
+		return $error;
 	}
 }
 

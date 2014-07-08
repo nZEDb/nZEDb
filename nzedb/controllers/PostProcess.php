@@ -8,7 +8,7 @@ class PostProcess
 	/**
 	 * @var nzedb\db\DB
 	 */
-	private $db;
+	private $pdo;
 
 	/**
 	 * @var Groups
@@ -73,8 +73,7 @@ class PostProcess
 		//\\
 
 		//\\ Class instances.
-		$s = new Sites();
-		$this->db = new nzedb\db\DB();
+		$this->pdo = new nzedb\db\Settings();
 		$this->groups = new Groups();
 		$this->_par2Info = new Par2Info();
 		$this->debugging = new Debugging('PostProcess');
@@ -83,13 +82,9 @@ class PostProcess
 		$this->releaseFiles = new ReleaseFiles();
 		//\\
 
-		//\\ Site object.
-		$this->site = $s->get();
-		//\\
-
 		//\\ Site settings.
-		$this->addpar2 = ($this->site->addpar2 == 0) ? false : true;
-		$this->alternateNNTP = ($this->site->alternate_nntp == 1 ? true : false);
+		$this->addpar2 = ($this->pdo->getSetting('addpar2') == 0) ? false : true;
+		$this->alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
 		//\\
 	}
 
@@ -122,7 +117,7 @@ class PostProcess
 	 */
 	public function processAnime()
 	{
-		if ($this->site->lookupanidb == 1) {
+		if ($this->pdo->getSetting('lookupanidb') == 1) {
 			$anidb = new AniDB($this->echooutput);
 			$anidb->animetitlesUpdate();
 			$anidb->processAnimeReleases();
@@ -136,7 +131,7 @@ class PostProcess
 	 */
 	public function processBooks()
 	{
-		if ($this->site->lookupbooks != 0) {
+		if ($this->pdo->getSetting('lookupbooks') != 0) {
 			$books = new Books($this->echooutput);
 			$books->processBookReleases();
 		}
@@ -149,7 +144,7 @@ class PostProcess
 	 */
 	public function processConsoles()
 	{
-		if ($this->site->lookupgames != 0) {
+		if ($this->pdo->getSetting('lookupgames') != 0) {
 			$console = new Console($this->echooutput);
 			$console->processConsoleReleases();
 		}
@@ -162,7 +157,7 @@ class PostProcess
 	 */
 	public function processGames()
 	{
-		if ($this->site->lookupgames != 0) {
+		if ($this->pdo->getSetting('lookupgames') != 0) {
 			$games = new Games($this->echooutput);
 			$games->processGamesReleases();
 		}
@@ -177,7 +172,7 @@ class PostProcess
 	 */
 	public function processMovies($releaseToWork = '')
 	{
-		if ($this->site->lookupimdb == 1) {
+		if ($this->pdo->getSetting('lookupimdb') == 1) {
 			$movie = new Movie($this->echooutput);
 			$movie->processMovieReleases($releaseToWork);
 		}
@@ -190,7 +185,7 @@ class PostProcess
 	 */
 	public function processMusic()
 	{
-		if ($this->site->lookupmusic != 0) {
+		if ($this->pdo->getSetting('lookupmusic') != 0) {
 			$music = new Music($this->echooutput);
 			$music->processMusicReleases();
 		}
@@ -206,8 +201,8 @@ class PostProcess
 	 */
 	public function processNfos($releaseToWork = '', $nntp)
 	{
-		if ($this->site->lookupnfo == 1) {
-			$this->Nfo->processNfoFiles($releaseToWork,	$this->site->lookupimdb, $this->site->lookuptvrage,	$groupID = '', $nntp);
+		if ($this->pdo->getSetting('lookupnfo') == 1) {
+			$this->Nfo->processNfoFiles($releaseToWork,	$this->pdo->getSetting('lookupimdb'), $this->pdo->getSetting('lookuptvrage'),	$groupID = '', $nntp);
 		}
 	}
 
@@ -230,7 +225,7 @@ class PostProcess
 	 */
 	public function processSharing(&$nntp)
 	{
-		$sharing = new Sharing($this->db, $nntp);
+		$sharing = new Sharing($this->pdo, $nntp);
 		$sharing->start();
 	}
 
@@ -243,7 +238,7 @@ class PostProcess
 	 */
 	public function processTv($releaseToWork = '')
 	{
-		if ($this->site->lookuptvrage == 1) {
+		if ($this->pdo->getSetting('lookuptvrage') == 1) {
 			$tvRage = new TvRage($this->echooutput);
 			$tvRage->processTvReleases($releaseToWork, true);
 		}
@@ -262,7 +257,7 @@ class PostProcess
 	 */
 	public function processAdditional($nntp, $releaseToWork = '', $groupID = '')
 	{
-		$processAdditional = new ProcessAdditional($this->echooutput, $nntp, $this->db, $this->site);
+		$processAdditional = new ProcessAdditional($this->echooutput, $nntp, $this->pdo);
 		$processAdditional->start($releaseToWork, $groupID);
 	}
 
@@ -285,7 +280,7 @@ class PostProcess
 			return false;
 		}
 
-		$query = $this->db->queryOneRow(
+		$query = $this->pdo->queryOneRow(
 			sprintf('
 				SELECT id, group_id, categoryid, name, searchname, UNIX_TIMESTAMP(postdate) AS post_date, id AS releaseid
 				FROM releases
@@ -352,14 +347,14 @@ class PostProcess
 				if ($this->addpar2) {
 					// Add to release files.
 					if ($filesAdded < 11 &&
-						$this->db->queryOneRow(
+						$this->pdo->queryOneRow(
 							sprintf('
 								SELECT id
 								FROM releasefiles
 								WHERE releaseid = %d
 								AND name = %s',
 								$relID,
-								$this->db->escapeString($file['name'])
+								$this->pdo->escapeString($file['name'])
 							)
 						) === false
 					) {
@@ -387,7 +382,7 @@ class PostProcess
 				$this->debugging->start('parsePAR2', 'Added ' . $filesAdded . ' releasefiles from PAR2 for ' . $query['searchname'], 5);
 
 				// Update the file count with the new file count + old file count.
-				$this->db->queryExec(
+				$this->pdo->queryExec(
 					sprintf('
 						UPDATE releases
 						SET rarinnerfilecount = rarinnerfilecount + %d

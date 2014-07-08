@@ -5,13 +5,11 @@ $page = new AdminPage();
 $users = new Users();
 $releases = new Releases();
 $logging = new Logging();
-$site = new Sites();
-$s = $site->get();
- if ($s->loggingopt == '0')
+if ((new \nzedb\db\Settings())->getSetting('loggingopt') == '0') {
 	$loggingon = '0';
-
-else
+} else {
 	$loggingon = '1';
+}
 
 $page->smarty->assign('loggingon', $loggingon);
 

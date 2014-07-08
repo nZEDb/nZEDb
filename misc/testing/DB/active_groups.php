@@ -1,9 +1,9 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
-$db = new DB();
+$pdo = new Settings();
 $c = new ColorCLI();
 $count = $groups = 0;
 if (!isset($argv[1])) {
@@ -41,18 +41,18 @@ if (isset($argv[3]) && is_numeric($argv[3])) {
 }
 
 $mask = $c->primary("%-50.50s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s");
-if ($rels = $db->queryDirect("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups")) {
+if ($rels = $pdo->queryDirect("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups")) {
 	foreach ($rels as $rel) {
 		$count += $rel['headers downloaded'];
 		$groups++;
 	}
 }
 
-$active = $db->queryOneRow("SELECT COUNT(*) AS count FROM groups WHERE ACTIVE = 1");
+$active = $pdo->queryOneRow("SELECT COUNT(*) AS count FROM groups WHERE ACTIVE = 1");
 printf($mask, "\nGroup Name => " . $active['count'] . "[" . $groups . "] (" . number_format($count) . " downloaded)", "Backfilled Days", "Oldest Post", "Last Updated", "Headers Downloaded", "Releases", "Renamed", "PreDB Matches");
 printf($mask, "==================================================", "======================", "======================", "======================", "======================", "======================", "======================", "======================");
 
-if ($rels = $db->queryDirect(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated,
+if ($rels = $pdo->queryDirect(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated,
 		CAST(last_record as SIGNED)-CAST(first_record as SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days,
 		COALESCE(rel.num, 0) AS num_releases,
 		COALESCE(pre.num, 0) AS pre_matches,

@@ -1,6 +1,6 @@
 <?php
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 use nzedb\utility;
 
 class Sites
@@ -43,7 +43,7 @@ class Sites
 
 	public function update($form)
 	{
-		$db = $this->_db;
+		$pdo = $this->_db;
 		$site = $this->row2Object($form);
 
 		if (substr($site->nzbpath, strlen($site->nzbpath) - 1) != '/') {
@@ -91,12 +91,12 @@ class Sites
 
 		$sql = $sqlKeys = array();
 		foreach ($form as $settingK => $settingV) {
-			$sql[] = sprintf("WHEN %s THEN %s", $db->escapeString($settingK), $db->escapeString($settingV));
-			$sqlKeys[] = $db->escapeString($settingK);
+			$sql[] = sprintf("WHEN %s THEN %s", $pdo->escapeString($settingK), $pdo->escapeString($settingV));
+			$sqlKeys[] = $pdo->escapeString($settingK);
 		}
 
-		$table = $db->settings();
-		$db->queryExec(
+		$table = $pdo->table();
+		$pdo->queryExec(
 		   sprintf("UPDATE $table SET value = CASE setting %s END WHERE setting IN (%s)",
 								implode(' ', $sql),
 								implode(', ', $sqlKeys)
@@ -108,9 +108,9 @@ class Sites
 
 	public function get()
 	{
-		$db = $this->_db;
-		$table = $db->settings();
-		$rows = $db->query("SELECT setting, value FROM $table WHERE setting != ''");
+		$pdo = $this->_db;
+		$table = $pdo->table();
+		$rows = $pdo->query("SELECT setting, value FROM $table WHERE setting != ''");
 
 		if ($rows === false) {
 			return false;
@@ -129,7 +129,7 @@ class Sites
 	function getSetting($setting = null)
 	{
 		$results = array();
-		$table = $this->_db->settings();
+		$table = $this->_db->table();
 		$sql = "SELECT setting, value FROM $table ";
 		if ($setting !== null) {
 			$sql .= "WHERE setting = '$setting' ";

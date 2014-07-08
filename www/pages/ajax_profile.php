@@ -5,7 +5,7 @@ if (!$users->isLoggedIn()) {
 
 if (isset($_GET['action']) && $_GET['action'] == "1" && isset($_GET['emailto'])) {
 	$emailto = $_GET['emailto'];
-	$ret = $users->sendInvite($page->site->title, $page->site->email, $page->serverurl, $users->currentUserId(), $emailto);
+	$ret = $users->sendInvite($page->settings->getSetting('title'), $page->settings->getSetting('email'), $page->serverurl, $users->currentUserId(), $emailto);
 	if (!$ret) {
 		print "Invite not sent.";
 	} else {

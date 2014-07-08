@@ -1,12 +1,12 @@
 <?php
 require_once './config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $page = new AdminPage();
-$db = new DB();
+$pdo = new Settings();
 
-$tablelist = $db->optimise(true);
+$tablelist = $pdo->optimise(true);
 
 $page->title = "DB Table Optimise";
 $page->smarty->assign('tablelist', $tablelist);

@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 if (!isset($argv[1])) {
@@ -10,9 +10,7 @@ if (!isset($argv[1])) {
 $pieces = explode('                       ', $argv[1]);
 $web = $pieces[3];
 
-$db = new DB();
-$s = new Sites();
-$site = $s->get();
+$pdo = new Settings();
 $n = "\n";
 $category = new Categorize();
 $groups = new Groups();
@@ -24,7 +22,7 @@ if (preg_match('/^\[ ?(\d{4,6}) ?\]/', $pieces[1], $match) ||
 ) {
 	$requestID = (int)$match[1];
 } else {
-	$db->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $pieces[0]);
+	$pdo->queryExec('UPDATE releases SET reqidstatus = -2 WHERE id = ' . $pieces[0]);
 	exit('.');
 }
 $bFound = false;
@@ -52,14 +50,14 @@ if ($bFound === true) {
 	$groupid = $groups->getIDByName($pieces[2]);
 	$determinedcat = $category->determineCategory($title, $groupid);
 	if ($groupid !== 0) {
-		$dupe = $db->queryOneRow(sprintf('SELECT requestid FROM predb WHERE title = %s', $db->escapeString($title)));
+		$dupe = $pdo->queryOneRow(sprintf('SELECT requestid FROM predb WHERE title = %s', $pdo->escapeString($title)));
 		if ($dupe === false || ($dupe !== false && $dupe['requestid'] != $requestID)) {
-			$preid = $db->queryInsert(
+			$preid = $pdo->queryInsert(
 				sprintf("
 				INSERT INTO predb (title, source, requestid, group_id)
 				VALUES (%s, %s, %d, %d)",
-					$db->escapeString($title),
-					$db->escapeString('requestWEB'),
+					$pdo->escapeString($title),
+					$pdo->escapeString('requestWEB'),
 					$requestID, $groupid
 				)
 			);
@@ -67,8 +65,8 @@ if ($bFound === true) {
 	} else if ($groupid === 0) {
 		echo $requestID . "\n";
 	}
-	$run = $db->queryDirect(sprintf("UPDATE releases set rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-			. "preid = %d, reqidstatus = 1, isrenamed = 1, searchname = %s, categoryid = %d where id = %d", $preid, $db->escapeString($title), $determinedcat, $pieces[0]));
+	$run = $pdo->queryDirect(sprintf("UPDATE releases set rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+			. "preid = %d, reqidstatus = 1, isrenamed = 1, searchname = %s, categoryid = %d where id = %d", $preid, $pdo->escapeString($title), $determinedcat, $pieces[0]));
 
 	$newcatname = $category->getNameByID($determinedcat);
 	$method = ($local === true) ? 'requestID local' : 'requestID web';
@@ -85,19 +83,19 @@ if ($bFound === true) {
 	);
 	$updated++;
 } else {
-	$db->queryExec('UPDATE releases SET reqidstatus = -3 WHERE id = ' . $pieces[0]);
+	$pdo->queryExec('UPDATE releases SET reqidstatus = -3 WHERE id = ' . $pieces[0]);
 	echo '.';
 }
 
 function getReleaseNameFromRequestID($site, $requestID, $groupName)
 {
-	$s = new Sites();
-	$site = $s->get();
-	if ($site->request_url == '') {
+	global $pdo;
+	$requestURL = $pdo->getSetting('request_url');
+	if ($requestURL == '') {
 		return false;
 	}
 	// Build Request URL
-	$req_url1 = str_ireplace('[GROUP_NM]', urlencode($groupName), $site->request_url);
+	$req_url1 = str_ireplace('[GROUP_NM]', urlencode($groupName), $requestURL);
 	$req_url = str_ireplace('[REQUEST_ID]', urlencode($requestID), $req_url1);
 	$xml = @simplexml_load_file($req_url);
 	if (($xml == false) || (count($xml) == 0)) {
@@ -111,10 +109,10 @@ function getReleaseNameFromRequestID($site, $requestID, $groupName)
 
 function localLookup($requestID, $groupName, $oldname)
 {
-	$db = new DB();
+	global $pdo;
 	$groups = new Groups();
 	$groupid = $groups->getIDByName($groupName);
-	$run = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND group_id = %d", $requestID, $groupid));
+	$run = $pdo->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND group_id = %d", $requestID, $groupid));
 	if (isset($run['title']) && preg_match('/s\d+/i', $run['title']) && !preg_match('/s\d+e\d+/i', $run['title'])) {
 		return false;
 	}
@@ -132,7 +130,7 @@ function localLookup($requestID, $groupName, $oldname)
 	} else if ($groupName == 'alt.binaries.etc') {
 		$groupid = $groups->getIDByName('alt.binaries.teevee');
 	}
-	$run1 = $db->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND group_id = %d", $requestID, $groupid));
+	$run1 = $pdo->queryOneRow(sprintf("SELECT id, title FROM predb WHERE requestid = %d AND group_id = %d", $requestID, $groupid));
 	if (isset($run1['title'])) {
 		return array('title' => $run['title'], 'id' => $run['id']);
 	}

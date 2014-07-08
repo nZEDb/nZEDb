@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
@@ -15,18 +15,18 @@ if (!isset($argv[1])) {
 }
 
 // Set for Session
-$db = new DB();
+$pdo = new Settings();
 if ($argv[1] === 'alter') {
-	$db->queryExec("SET SESSION old_alter_table = 1");
+	$pdo->queryExec("SET SESSION old_alter_table = 1");
 }
 
 function run_query($query, $test)
 {
 	$c = new ColorCLI();
 	if ($test === 'alter') {
-		$db = new DB();
+		$pdo = new Settings();
 		try {
-			$qry = $db->prepare($query);
+			$qry = $pdo->prepare($query);
 			$qry->execute();
 			echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
 		} catch (PDOException $e) {
@@ -50,14 +50,14 @@ if ($handle) {
 		if (preg_match('/(?P<statement>CREATE UNIQUE INDEX)\s+(?P<index>[\w-]+)\s+ON\s+(?P<table>[\w-]+)\s*\((?P<column>[\w-]+(?:\s*\((?P<size>\d+)\))?)\);/i', $line, $match)) {
 			$columns = explode(',', $match['column']);
 			foreach ($columns as $column) {
-				$check = $db->checkColumnIndex($match['table'], $column);
+				$check = $pdo->checkColumnIndex($match['table'], $column);
 				if (!isset($check['key_name'])) {
 					if (trim($match['table']) === 'collections') {
-						$tables = $db->query("SHOW TABLES");
+						$tables = $pdo->query("SHOW TABLES");
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/collections_\d+/', $tbl)) {
-								$check = $db->checkColumnIndex($tbl, $column);
+								$check = $pdo->checkColumnIndex($tbl, $column);
 								if (!isset($check_collections['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT {$match['index']} UNIQUE (${match['column']})";
 									run_query($qry, $argv[1]);
@@ -67,11 +67,11 @@ if ($handle) {
 						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) ." UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					} else if (trim($match['table']) === 'binaries') {
-						$tables = $db->query("SHOW TABLES");
+						$tables = $pdo->query("SHOW TABLES");
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/binaries_\d+/', $tbl)) {
-								$checkBinaries = $db->checkColumnIndex($tbl, $column);
+								$checkBinaries = $pdo->checkColumnIndex($tbl, $column);
 								if (!isset($checkBinaries['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT {$match['index']} UNIQUE (${match['column']})";
 									run_query($qry, $argv[1]);
@@ -81,11 +81,11 @@ if ($handle) {
 						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) ." UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					} else if (trim($match['table']) === 'parts') {
-						$tables = $db->query("SHOW TABLES");
+						$tables = $pdo->query("SHOW TABLES");
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/parts_\d+/', $tbl)) {
-								$checkParts = $db->checkColumnIndex($tbl, $column);
+								$checkParts = $pdo->checkColumnIndex($tbl, $column);
 								if (!isset($checkParts['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT {$match['index']} UNIQUE (${match['column']})";
 									run_query($qry, $argv[1]);
@@ -95,11 +95,11 @@ if ($handle) {
 						$qry = "ALTER IGNORE TABLE " . trim($match['table']) . " ADD CONSTRAINT " . trim($match['index']) ." UNIQUE (${match['column']})";
 						run_query($qry, $argv[1]);
 					} else if (trim($match['table']) === 'partrepair') {
-						$tables = $db->query("SHOW TABLES");
+						$tables = $pdo->query("SHOW TABLES");
 						foreach ($tables as $row) {
 							$tbl = $row['tables_in_' . DB_NAME];
 							if (preg_match('/partrepair_\d+/', $tbl)) {
-								$checkPartRepair = $db->checkColumnIndex($tbl, $column);
+								$checkPartRepair = $pdo->checkColumnIndex($tbl, $column);
 								if (!isset($checkPartRepair['key_name'])) {
 									$qry = "ALTER IGNORE TABLE ${tbl} ADD CONSTRAINT {$match['index']} UNIQUE (${match['column']})";
 									run_query($qry, $argv[1]);

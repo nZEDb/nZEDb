@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 use nzedb\utility\Utility;
 
 $c = new ColorCLI();
@@ -30,7 +30,7 @@ preFileName($argv);
 
 function preFileName($argv)
 {
-	$db = new DB();
+	$pdo = new Settings();
 	$timestart = TIME();
 	$namefixer = new NameFixer();
 	$c = new ColorCLI();
@@ -75,7 +75,7 @@ function preFileName($argv)
 	);
 
 	echo $c->headerOver($qry . PHP_EOL);
-	$query = $db->queryDirect($qry);
+	$query = $pdo->queryDirect($qry);
 
 	$total = $query->rowCount();
 	$counter = $counted = 0;

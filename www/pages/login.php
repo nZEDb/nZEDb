@@ -23,7 +23,7 @@ if ($page->isPostBack()) {
 				if (isset($_POST["redirect"]) && $_POST["redirect"] != "") {
 					header("Location: " . $_POST["redirect"]);
 				} else {
-					header("Location: " . WWW_TOP . $page->site->home_link);
+					header("Location: " . WWW_TOP . $page->settings->home_link);
 				}
 				die();
 			} else {

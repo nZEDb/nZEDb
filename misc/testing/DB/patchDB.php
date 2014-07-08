@@ -26,8 +26,8 @@ exit();
 //
 //		if (is_resource($file) === true) {
 //			$query = array();
-//			$db = new DB();
-//			$dbsys = $db->dbSystem();
+//			$pdo = new Settings();
+//			$dbsys = $pdo->dbSystem();
 //			$c = new ColorCLI();
 //
 //			while (feof($file) === false) {
@@ -40,7 +40,7 @@ exit();
 //						$query = str_replace(array("`", chr(96)), '', $query);
 //					}
 //					try {
-//						$qry = $db->prepare($query);
+//						$qry = $pdo->prepare($query);
 //						$qry->execute();
 //						echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
 //					} catch (PDOException $e) {
@@ -67,9 +67,9 @@ exit();
 //							}
 //						} else {
 //							if (preg_match('/ALTER IGNORE/i', $query)) {
-//								$db->queryExec("SET SESSION old_alter_table = 1");
+//								$pdo->queryExec("SET SESSION old_alter_table = 1");
 //								try {
-//									$qry = $db->prepare($query);
+//									$qry = $pdo->prepare($query);
 //									$qry->execute();
 //									echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
 //								} catch (PDOException $e) {
@@ -102,7 +102,7 @@ exit();
 //
 //function BackupDatabase()
 //{
-//	$db = new DB();
+//	$pdo = new Settings();
 //	$c = new ColorCLI();
 //	$DIR = nZEDb_MISC;
 //
@@ -113,9 +113,9 @@ exit();
 //	}
 //
 //	//Backup based on database system
-//	if ($db->dbSystem() === "mysql") {
+//	if ($pdo->dbSystem() === "mysql") {
 //		system("$PHP ${DIR}testing/DB/mysqldump_tables.php db dump ../../../");
-//	} else if ($db->dbSystem() === "pgsql") {
+//	} else if ($pdo->dbSystem() === "pgsql") {
 //		exit($c->error("Currently not supported on this platform."));
 //	}
 //}
@@ -134,13 +134,13 @@ exit();
 //	$currentversion = $site->sqlpatch;
 //	$patched = 0;
 //	$patches = array();
-//	$db = new DB();
+//	$pdo = new Settings();
 //	$backedup = false;
 //	$c = new ColorCLI();
 //
-//	if ($db->dbSystem() === "mysql") {
+//	if ($pdo->dbSystem() === "mysql") {
 //		$path = nZEDb_RES . 'db/patches/mysql/';
-//	} else if ($db->dbSystem() === "pgsql") {
+//	} else if ($pdo->dbSystem() === "pgsql") {
 //		$path = nZEDb_RES . 'db/patches/pgsql/';
 //	}
 //
@@ -154,10 +154,10 @@ exit();
 //		exit($c->error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
 //	}
 //
-//	/* 	if ($db->dbSystem() === "mysql")
+//	/* 	if ($pdo->dbSystem() === "mysql")
 //	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/patches/mysql/',
 //	nZEDb_ROOT);
-//	  else if ($db->dbSystem() === "pgsql")
+//	  else if ($pdo->dbSystem() === "pgsql")
 //	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/patches/pgsql/', nZEDb_ROOT);
 //	 */ sort($patches);
 //

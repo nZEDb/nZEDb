@@ -2,14 +2,14 @@
 //This script downloads covert art for Tv Shows -- it is intended to be run at interval, generally after the TvRage database is populated
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 use nzedb\utility;
 
 $tvrage = new TvRage(true);
-$db = new Db();
+$pdo = new Settings();
 $c = new ColorCLI();
 
-$shows = $db->queryDirect("SELECT rageid FROM tvrage WHERE imgdata IS NULL ORDER BY rageid DESC LIMIT 2000");
+$shows = $pdo->queryDirect("SELECT rageid FROM tvrage WHERE imgdata IS NULL ORDER BY rageid DESC LIMIT 2000");
 if ($shows->rowCount() > 0) {
 	echo "\n";
 	echo $c->header("Updating " . number_format($shows->rowCount()) . " tv shows.\n");
@@ -52,8 +52,8 @@ foreach ($shows as $show) {
 			}
 		}
 	}
-	$db->queryDirect(sprintf("UPDATE tvrage SET description = %s, genre = %s, country = %s, imgdata = %s WHERE rageid = %d", $db->escapeString(substr($desc, 0, 10000)), $db->escapeString(substr($genre, 0, 64)), $db->escapeString($country), $db->escapeString($imgbytes), $rageid));
-	$name = $db->query("Select releasetitle from tvrage where rageid = " . $rageid);
+	$pdo->queryDirect(sprintf("UPDATE tvrage SET description = %s, genre = %s, country = %s, imgdata = %s WHERE rageid = %d", $pdo->escapeString(substr($desc, 0, 10000)), $pdo->escapeString(substr($genre, 0, 64)), $pdo->escapeString($country), $pdo->escapeString($imgbytes), $rageid));
+	$name = $pdo->query("Select releasetitle from tvrage where rageid = " . $rageid);
 	echo $c->primary("Updated: " . $name[0]['releasetitle']);
 	$diff = floor((microtime(true) - $starttime) * 1000000);
 	if (1000000 - $diff > 0) {

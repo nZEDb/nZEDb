@@ -7,10 +7,10 @@ class AdminPage extends BasePage
 {
 	function __construct($allowmod = false)
 	{
-		parent::BasePage();
+		parent::__construct();
 
 		$this->smarty->setTemplateDir(array(
-				'user_admin' => nZEDb_WWW.'themes/'.$this->site->style.'/templates/admin',
+				'user_admin' => nZEDb_WWW.'themes/' . $this->settings->getSetting('style') . '/templates/admin',
 				'admin' => nZEDb_WWW.'themes_shared/templates/admin',
 				'frontend' => nZEDb_WWW.'themes/Default/templates/frontend',
 			));
