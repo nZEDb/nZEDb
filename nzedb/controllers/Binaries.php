@@ -23,13 +23,6 @@ class Binaries
 	public $blackList = array();
 
 	/**
-	 * The cache for headers.
-	 *
-	 * @var array
-	 */
-	public $message = array();
-
-	/**
 	 * How many headers do we download per loop?
 	 *
 	 * @var int
@@ -201,7 +194,7 @@ class Binaries
 		$this->_showDroppedYEncParts = ($this->_pdo->getSetting('showdroppedyencparts') == 1 ? true : false);
 		$this->_tablePerGroup = ($this->_pdo->getSetting('tablepergroup') == 1 ? true : false);
 
-		$this->blackList = $this->message = array();
+		$this->blackList = array();
 		$this->_blackListLoaded = false;
 
 		$SQLTime = $this->_pdo->queryOneRow('SELECT UNIX_TIMESTAMP(NOW()) AS time');
@@ -533,9 +526,6 @@ class Binaries
 	 */
 	public function scan($groupMySQL, $first, $last, $type = 'update', $missingParts = null)
 	{
-		// Reset headers from earlier runs.
-		$this->message = array();
-
 		// Start time of scan method and of fetching headers.
 		$startLoop = $startHeaders = microtime(true);
 
@@ -629,7 +619,7 @@ class Binaries
 				}
 			}
 
-			$headersReceived = $headersBlackListed = $headersIgnored = $headersRepaired = array();
+			$headersReceived = $headersBlackListed = $headersIgnored = $headersRepaired = $articles = array();
 
 			// Loop articles, figure out files/parts.
 			foreach ($headers as $header) {
@@ -650,14 +640,8 @@ class Binaries
 
 				$headersReceived[] = $header['Number'];
 
-				// Skip these, they are crap.
-				if (preg_match('/"(Usenet Index Post) \d+(_\d+)? yEnc \(\d+\/\d+\)"/', $header['Subject'])) {
-					$headersIgnored[] = $header['Number'];
-					continue;
-				}
-
 				// Find part / total parts. Ignore if no part count found.
-				if (preg_match('/\s*(.+)\s+\((\d+)\/(\d+)\)$/', $header['Subject'], $matches)) {
+				if (preg_match('/^\s*(?!"Usenet Index Post)(.+)\s+\((\d+)\/(\d+)\)$/', $header['Subject'], $matches)) {
 					// Add yEnc to subjects that do not have them, but have the part number at the end of the header.
 					if (!stristr($header['Subject'], 'yEnc')) {
 						$matches[1] .= ' yEnc';
@@ -680,8 +664,8 @@ class Binaries
 				}
 
 				// Set up the info for inserting into parts/binaries/collections tables.
-				if (!isset($this->message[$matches[1]])) {
-					$this->message[$matches[1]] = $header;
+				if (!isset($articles[$matches[1]])) {
+					$articles[$matches[1]] = $header;
 
 					/* Date from header should be a string this format:
 					 * 31 Mar 2014 15:36:04 GMT or 6 Oct 1998 04:38:40 -0500
@@ -693,9 +677,9 @@ class Binaries
 					$now = time();
 
 					// Check if the header's time is newer than now, if so, set it now.
-					$this->message[$matches[1]]['Date'] = ($date > $now ? $now : $date);
+					$articles[$matches[1]]['Date'] = ($date > $now ? $now : $date);
 
-					$this->message[$matches[1]]['MaxParts'] = $matches[3];
+					$articles[$matches[1]]['MaxParts'] = $matches[3];
 
 					// Attempt to find the file count. If it is not found, set it to 0.
 					if (!preg_match('/(\[|\(|\s)(\d{1,5})(\/|(\s|_)of(\s|_)|\-)(\d{1,5})(\]|\)|\s|$|:)/i', $matches[1], $fileCount)) {
@@ -710,22 +694,22 @@ class Binaries
 					}
 
 					// (hash) Used to group articles together when forming the release/nzb.
-					$this->message[$matches[1]]['CollectionHash'] =
+					$articles[$matches[1]]['CollectionHash'] =
 						sha1(
 							$this->_collectionsCleaning->collectionsCleaner($matches[1], $groupMySQL['name']) .
 							$header['From'] .
 							$groupMySQL['id'] .
 							$fileCount[6]
 						);
-					$this->message[$matches[1]]['MaxFiles'] = $fileCount[6];
-					$this->message[$matches[1]]['File']     = $fileCount[2];
+					$articles[$matches[1]]['MaxFiles'] = $fileCount[6];
+					$articles[$matches[1]]['File']     = $fileCount[2];
 				}
 
 				if (!isset($header['Bytes'])) {
 					$header['Bytes'] = (isset($header[':bytes']) ? $header[':bytes'] : 0);
 				}
 
-				$this->message[$matches[1]]['Parts'][$matches[2]] =
+				$articles[$matches[1]]['Parts'][$matches[2]] =
 					array(
 						'Message-ID' => substr($header['Message-ID'], 1, -1), // Strip the < and >, saves space in DB.
 						'number'     => $header['Number'],
@@ -793,14 +777,14 @@ class Binaries
 			// End of processing headers.
 			$timeCleaning = number_format($startUpdate - $startCleaning, 2);
 
-			if (count($this->message) > 0) {
+			if (count($articles) > 0) {
 
 				$collectionHashes = $headersNotInserted = array();
 
 				$partsQuery = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $groupNames['pname']);
 
 				// Loop through the reformed article headers.
-				foreach ($this->message AS $subject => $data) {
+				foreach ($articles AS $subject => $data) {
 					if (isset($data['Parts'])) {
 
 						$this->_pdo->beginTransaction();
@@ -943,8 +927,6 @@ class Binaries
 					$this->_colorCLI->primary(' total.')
 				);
 			}
-
-			unset($this->message);
 		}
 		return $returnArray;
 	}
