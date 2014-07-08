@@ -100,7 +100,7 @@ class DB extends \PDO
 		$this->_cli = \nzedb\utility\Utility::isCLI();
 
 		if (!empty($this->opts['dbtype'])) {
-			$this->DbSystem = strtolower($this->opts['dbtype']);
+			$this->dbSystem = strtolower($this->opts['dbtype']);
 		}
 
 		if (!(self::$_pdo instanceof \PDO)) {
@@ -207,23 +207,23 @@ class DB extends \PDO
 	 */
 	private function initialiseDatabase()
 	{
-		if ($this->DbSystem === 'mysql') {
+		if ($this->dbSystem === 'mysql') {
 			if (!empty($this->opts['dbsock'])) {
-				$dsn = $this->DbSystem . ':unix_socket=' . $this->opts['dbsock'];
+				$dsn = $this->dbSystem . ':unix_socket=' . $this->opts['dbsock'];
 			} else {
-				$dsn = $this->DbSystem . ':host=' . $this->opts['dbhost'];
+				$dsn = $this->dbSystem . ':host=' . $this->opts['dbhost'];
 				if (!empty($this->opts['dbport'])) {
 					$dsn .= ';port=' . $this->opts['dbport'];
 				}
 			}
 		} else {
-			$dsn = $this->DbSystem . ':host=' . $this->opts['dbhost'] . ';dbname=' . $this->opts['dbname'];
+			$dsn = $this->dbSystem . ':host=' . $this->opts['dbhost'] . ';dbname=' . $this->opts['dbname'];
 		}
 		$dsn .= ';charset=utf8';
 
 		$options = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 180,
 						 \PDO::ATTR_PERSISTENT => $this->opts['persist']);
-		if ($this->DbSystem === 'mysql') {
+		if ($this->dbSystem === 'mysql') {
 			$options[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			$options[\PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
 		}
@@ -306,7 +306,7 @@ class DB extends \PDO
 	 */
 	public function DbSystem()
 	{
-		return $this->DbSystem;
+		return $this->dbSystem;
 	}
 
 	/**
@@ -337,7 +337,7 @@ class DB extends \PDO
 	public function likeString($str, $left=true, $right=true)
 	{
 		return (
-			($this->DbSystem === 'mysql' ? 'LIKE ' : 'ILIKE ') .
+			($this->dbSystem === 'mysql' ? 'LIKE ' : 'ILIKE ') .
 			$this->escapeString(
 				($left  ? '%' : '') .
 				$str .
@@ -460,7 +460,7 @@ class DB extends \PDO
 				$run->execute();
 				return $run;
 			} else {
-				if ($this->DbSystem === 'mysql') {
+				if ($this->dbSystem === 'mysql') {
 					$ins = self::$_pdo->prepare($query);
 					$ins->execute();
 					return self::$_pdo->lastInsertId();
@@ -767,7 +767,7 @@ class DB extends \PDO
 	public function optimise($admin = false, $type = '')
 	{
 		$tablecnt = 0;
-		if ($this->DbSystem === 'mysql') {
+		if ($this->dbSystem === 'mysql') {
 			if ($type === 'true' || $type === 'full' || $type === 'analyze') {
 				$alltables = $this->query('SHOW TABLE STATUS');
 			} else {
@@ -817,7 +817,7 @@ class DB extends \PDO
 			if ($type !== 'analyze') {
 				$this->queryExec('FLUSH TABLES');
 			}
-		} else if ($this->DbSystem === 'pgsql') {
+		} else if ($this->dbSystem === 'pgsql') {
 			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
 			$tablecnt = count($alltables);
 			foreach ($alltables as $table) {
@@ -849,7 +849,7 @@ class DB extends \PDO
 
 		if (!is_null($grpid) && is_numeric($grpid)) {
 			$binaries = $parts = $collections = $partrepair = false;
-			if ($this->DbSystem === 'pgsql') {
+			if ($this->dbSystem === 'pgsql') {
 				$like = ' (LIKE collections INCLUDING ALL)';
 			} else {
 				$like = ' LIKE collections';
@@ -903,7 +903,7 @@ class DB extends \PDO
 			}
 
 			if ($collections === true) {
-				if ($this->DbSystem === 'pgsql') {
+				if ($this->dbSystem === 'pgsql') {
 					$like = ' (LIKE binaries INCLUDING ALL)';
 				} else {
 					$like = ' LIKE binaries';
@@ -920,7 +920,7 @@ class DB extends \PDO
 			}
 
 			if ($binaries === true) {
-				if ($this->DbSystem === 'pgsql') {
+				if ($this->dbSystem === 'pgsql') {
 					$like = ' (LIKE parts INCLUDING ALL)';
 				} else {
 					$like = ' LIKE parts';
@@ -937,7 +937,7 @@ class DB extends \PDO
 			}
 
 			if ($DoPartRepair === true && $parts === true) {
-				if ($this->DbSystem === 'pgsql') {
+				if ($this->dbSystem === 'pgsql') {
 					$like = ' (LIKE partrepair INCLUDING ALL)';
 				} else {
 					$like = ' LIKE partrepair';
@@ -1037,7 +1037,7 @@ class DB extends \PDO
 	 */
 	public function from_unixtime($utime)
 	{
-		if ($this->DbSystem === 'mysql') {
+		if ($this->dbSystem === 'mysql') {
 			return 'FROM_UNIXTIME(' . $utime . ')';
 		} else {
 			return 'TO_TIMESTAMP(' . $utime . ')::TIMESTAMP';
@@ -1067,7 +1067,7 @@ class DB extends \PDO
 	 */
 	public function unix_timestamp_column($column, $outputName = 'unix_time')
 	{
-		return ($this->DbSystem === 'mysql'
+		return ($this->dbSystem === 'mysql'
 			?
 				'UNIX_TIMESTAMP(' . $column . ') AS ' . $outputName
 			:
