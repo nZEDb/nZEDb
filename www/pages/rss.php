@@ -34,7 +34,7 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 		$rsstoken = $page->userdata["rsstoken"];
 		$maxrequests = $page->userdata['apirequests'];
 	} else {
-		if ($page->pdo->getSetting('registerstatus') == Sites::REGISTER_STATUS_API_ONLY) {
+		if ($page->settings->getSetting('registerstatus') == Sites::REGISTER_STATUS_API_ONLY) {
 			$res = $users->getById(0);
 		} else {
 			if (!isset($_GET["i"]) || !isset($_GET["r"])) {
