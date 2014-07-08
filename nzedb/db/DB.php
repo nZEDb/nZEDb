@@ -103,7 +103,7 @@ class DB extends \PDO
 			$this->DbSystem = strtolower($this->opts['dbtype']);
 		}
 
-		if (!(self::$pdo instanceof \PDO)) {
+		if (!(self::$_pdo instanceof \PDO)) {
 			$this->initialiseDatabase();
 		}
 
@@ -119,7 +119,7 @@ class DB extends \PDO
 			$this->fetchDbVersion();
 		}
 
-		return self::$pdo;
+		return self::$_pdo;
 	}
 
 	public function checkDbExists ($name = null)
@@ -150,7 +150,7 @@ class DB extends \PDO
 	 */
 	public function checkIndex($table, $index)
 	{
-		$result = self::$pdo->query(sprintf("SHOW INDEX FROM %s WHERE key_name = '%s'",
+		$result = self::$_pdo->query(sprintf("SHOW INDEX FROM %s WHERE key_name = '%s'",
 										trim($table),
 										trim($index)));
 		if ($result === false) {
@@ -943,7 +943,7 @@ class DB extends \PDO
 					$like = ' LIKE partrepair';
 				}
 				try {
-					DB::$pdo->query('SELECT * FROM partrepair_' . $grpid . ' LIMIT 1');
+					self::$_pdo->query('SELECT * FROM partrepair_' . $grpid . ' LIMIT 1');
 					$partrepair = true;
 				} catch (\PDOException $e) {
 					if ($this->queryExec('CREATE TABLE partrepair_' . $grpid . $like) !== false) {
