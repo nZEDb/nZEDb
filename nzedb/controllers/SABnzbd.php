@@ -105,7 +105,7 @@ class SABnzbd
 				break;
 
 			case self::INTEGRATION_TYPE_SITEWIDE:
-				if (!empty($page->pdo->getSetting('sabapikey')) && !empty($page->pdo->getSetting('saburl'))) {
+				if (($page->settings->getSetting('sabapikey') != '') && ($page->settings->getSetting('saburl') != '')) {
 					$this->url = $page->pdo->getSetting('saburl');
 					$this->apikey = $page->pdo->getSetting('sabapikey');
 					$this->priority = $page->pdo->getSetting('sabpriority');
