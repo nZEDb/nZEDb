@@ -22,7 +22,7 @@ switch($action)
 				implode(', ', $_POST['book_reqids']) : $_POST['book_reqids'];
 		}
 		// update site table as always
-		$ret = $sites->update($_POST);
+		$ret = $page->settings->update($_POST);
 
 		if (is_int($ret))
 		{
