@@ -106,10 +106,10 @@ class SABnzbd
 
 			case self::INTEGRATION_TYPE_SITEWIDE:
 				if (($page->settings->getSetting('sabapikey') != '') && ($page->settings->getSetting('saburl') != '')) {
-					$this->url = $page->pdo->getSetting('saburl');
-					$this->apikey = $page->pdo->getSetting('sabapikey');
-					$this->priority = $page->pdo->getSetting('sabpriority');
-					$this->apikeytype = $page->pdo->getSetting('sabapikeytype');
+					$this->url = $page->settings->getSetting('saburl');
+					$this->apikey = $page->settings->getSetting('sabapikey');
+					$this->priority = $page->settings->getSetting('sabpriority');
+					$this->apikeytype = $page->settings->getSetting('sabapikeytype');
 				}
 				$this->integrated = self::INTEGRATION_TYPE_SITEWIDE;
 				break;
