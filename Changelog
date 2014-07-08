@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-7-08 ruhllatio
 	* Fix: blank screen for users not logged in.  Index.php calling $page->$pdo instead of $page->$settings to get settings from DB
+	* Fix: Login redirect function for home_path
 2014-07-07 kevin
 	* Add: Trim to collection check, collection name and binaries name (fixes issue with some space between yEnc and part count).
 2014-07-07 niel
