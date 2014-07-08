@@ -54,7 +54,7 @@ class Settings extends DB
 		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
-		return self::$pdo;
+		return self::$_pdo;
 	}
 
 	/**
@@ -97,31 +97,17 @@ class Settings extends DB
 		return $result;
 	}
 
-	public function rowToArray($row)
+	public function rowToArray(array $row)
 	{
-
+		$this->settings[$row['setting']] = $row['value'];
 	}
 
-	public function rows2ObjectOLD($rows)
+	public function rowsToArray(array $rows)
 	{
-		$obj = new stdClass;
-		foreach ($rows as $row) {
-			$obj->{$row['setting']} = trim($row['value']);
+		foreach($rows as $row) {
+			$this->rowToArray($row);
 		}
-
-		$obj->{'version'} = $this->version();
-		return $obj;
-	}
-
-	public function row2ObjectOLD($row)
-	{
-		$obj     = new stdClass;
-		$rowKeys = array_keys($row);
-		foreach ($rowKeys as $key) {
-			$obj->{$key} = trim($row[$key]);
-		}
-
-		return $obj;
+		return $this->settings;
 	}
 
 	public function setCovers()
@@ -158,6 +144,9 @@ class Settings extends DB
 		}
 
 		extract($options);
+
+
+		return '';
 	}
 
 	public function table()
@@ -165,9 +154,30 @@ class Settings extends DB
 		return $this->table;
 	}
 
-	public function update()
+	public function update($form)
 	{
+		$error = $this->_validate($form);
 
+		if ($error === null) {
+			$sql = $sqlKeys = array();
+			foreach ($form as $settingK => $settingV) {
+				$sql[]     = sprintf("WHEN %s THEN %s",
+									 $this->escapeString($settingK),
+									 $this->escapeString($settingV));
+				$sqlKeys[] = $this->escapeString($settingK);
+			}
+
+			$table = $this->table();
+			$this->queryExec(
+				 sprintf("UPDATE $table SET value = CASE setting %s END WHERE setting IN (%s)",
+						 implode(' ', $sql),
+						 implode(', ', $sqlKeys)
+				 )
+			);
+		} else {
+			$form = $error;
+		}
+		return $form;
 	}
 
 	public function version()
@@ -208,6 +218,46 @@ class Settings extends DB
 		$result = $this->queryOneRow($sql);
 
 		return $result['value'];
+	}
+
+	protected function _validate(array $fields)
+	{
+		ksort($fields);
+		// Validate settings
+		$fields['nzbpath'] = Utility::trailingSlash($fields['nzbpath']);
+		$error             = null;
+		switch (true) {
+			case ($fields['mediainfopath'] != "" && !is_file($fields['mediainfopath'])):
+				$error = Settings::ERR_BADMEDIAINFOPATH;
+				break;
+			case ($fields['ffmpegpath'] != "" && !is_file($fields['ffmpegpath'])):
+				$error = Settings::ERR_BADFFMPEGPATH;
+				break;
+			case ($fields['unrarpath'] != "" && !is_file($fields['unrarpath'])):
+				$error = Settings::ERR_BADUNRARPATH;
+				break;
+			case (empty($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH_UNSET;
+				break;
+			case (!file_exists($fields['nzbpath']) || !is_dir($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH;
+				break;
+			case (!is_readable($fields['nzbpath'])):
+				$error = Settings::ERR_BADNZBPATH_UNREADABLE;
+				break;
+			case ($fields['checkpasswordedrar'] == 1 && !is_file($fields['unrarpath'])):
+				$error = Settings::ERR_DEEPNOUNRAR;
+				break;
+			case ($fields['tmpunrarpath'] != "" && !file_exists($fields['tmpunrarpath'])):
+				$error = Settings::ERR_BADTMPUNRARPATH;
+				break;
+			case ($fields['yydecoderpath'] != "" &&
+				  $fields['yydecoderpath'] !== 'simple_php_yenc_decode' &&
+				  !file_exists($fields['yydecoderpath'])):
+				$error = Settings::ERR_BAD_YYDECODER_PATH;
+		}
+
+		return $error;
 	}
 }
 

@@ -15,10 +15,12 @@ switch($action)
 {
 	case 'submit':
 		$error = "";
-		// book_reqids is an array it needs to be a comma seperated string, make it so
-		$book_ids = implode(', ', $_POST['book_reqids']);
-		// save it back
-		$_POST['book_reqids'] = $book_ids;
+
+		if (!empty($_POST['book_reqids'])) {
+			// book_reqids is an array it needs to be a comma separated string, make it so.
+			$_POST['book_reqids'] = is_array($_POST['book_reqids']) ?
+				implode(', ', $_POST['book_reqids']) : $_POST['book_reqids'];
+		}
 		// update site table as always
 		$ret = $sites->update($_POST);
 
@@ -47,18 +49,13 @@ switch($action)
 			}
 		}
 
-		if ($error == "")
-		{
-			$site = $ret;
-			$returnid = $site->id;
-			header("Location:".WWW_TOP."/site-edit.php?id=".$returnid);
-		}
-		else
-		{
+		if ($error == "") {
+			$site     = $ret;
+			$returnid = $site['id'];
+			header("Location:" . WWW_TOP . "/site-edit.php?id=" . $returnid);
+		} else {
 			$page->smarty->assign('error', $error);
-var_dump($_POST);
-			$site = $sites->row2Object($_POST);
-			$page->smarty->assign('site', $site);
+			$page->smarty->assign('settings', $page->settings->rowsToArray($_POST));
 		}
 		break;
 
