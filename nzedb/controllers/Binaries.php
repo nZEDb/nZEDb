@@ -946,7 +946,7 @@ class Binaries
 		foreach ($parts as $part) {
 			$headersNotInserted[] = $part['number'];
 		}
-		$this->_db->Rollback();
+		$this->_pdo->Rollback();
 		return $headersNotInserted;
 	}
 
