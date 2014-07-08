@@ -56,8 +56,9 @@ switch($action)
 		else
 		{
 			$page->smarty->assign('error', $error);
+var_dump($_POST);
 			$site = $sites->row2Object($_POST);
-			$page->smarty->assign('fsite', $site);
+			$page->smarty->assign('site', $site);
 		}
 		break;
 
