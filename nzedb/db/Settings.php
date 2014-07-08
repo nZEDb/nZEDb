@@ -180,16 +180,6 @@ class Settings extends DB
 		return $ver;
 	}
 
-	public function version()
-	{
-		try {
-			$ver = (new Versions())->getTagVersion();
-		} catch (\Exception $e) {
-			$ver = '0.0.0';
-		}
-		return $ver;
-	}
-
 	protected function _getFromSettings($options)
 	{
 		$result = array();
