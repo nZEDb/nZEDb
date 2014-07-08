@@ -3,6 +3,8 @@ $nzb = new NZB();
 $rel = new Releases();
 $uid = 0;
 
+use \nzedb\db\Settings;
+
 // Page is accessible only by the rss token, or logged in users.
 if ($users->isLoggedIn()) {
 	$uid = $users->currentUserId();
