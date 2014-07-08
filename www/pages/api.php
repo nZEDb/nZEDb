@@ -217,7 +217,7 @@ switch ($function) {
 	case 'r':
 		verifyEmptyParameter('email');
 
-		if (!in_array((int)$page->settings->getSetting('registerstatus'), array(Sites::REGISTER_STATUS_OPEN, Sites::REGISTER_STATUS_API_ONLY))) {
+		if (!in_array((int)$page->settings->getSetting('registerstatus'), array(Settings::REGISTER_STATUS_OPEN, Settings::REGISTER_STATUS_API_ONLY))) {
 			showApiError(104);
 		}
 

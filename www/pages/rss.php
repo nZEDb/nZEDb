@@ -6,7 +6,7 @@ $releases = new Releases();
 if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 	// User has to either be logged in, or using rsskey.
 	if (!$users->isLoggedIn()) {
-		if ($page->settings->getSetting('registerstatus') != Sites::REGISTER_STATUS_API_ONLY) {
+		if ($page->settings->getSetting('registerstatus') != Settings::REGISTER_STATUS_API_ONLY) {
 			$page->show403();
 		} else {
 			header("Location: " . $page->settings->getSetting('code'));
@@ -34,7 +34,7 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 		$rsstoken = $page->userdata["rsstoken"];
 		$maxrequests = $page->userdata['apirequests'];
 	} else {
-		if ($page->settings->getSetting('registerstatus') == Sites::REGISTER_STATUS_API_ONLY) {
+		if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 			$res = $users->getById(0);
 		} else {
 			if (!isset($_GET["i"]) || !isset($_GET["r"])) {
