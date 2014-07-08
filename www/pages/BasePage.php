@@ -2,6 +2,7 @@
 require_once SMARTY_DIR . 'Smarty.class.php';
 require_once nZEDb_LIB . 'utility' . DS .'SmartyUtils.php';
 
+use \nzedb\db\Settings;
 
 class BasePage
 {
@@ -139,7 +140,7 @@ class BasePage
 			//$this->floodCheck(false, '');
 		}
 
-	$this->smarty->assign('site', (new Sites())->get());
+	$this->smarty->assign('site', new Settings());
 	$this->smarty->assign('page', $this);
 	}
 

@@ -6,10 +6,10 @@ $releases = new Releases();
 if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 	// User has to either be logged in, or using rsskey.
 	if (!$users->isLoggedIn()) {
-		if ($page->pdo->getSetting('registerstatus') != Sites::REGISTER_STATUS_API_ONLY) {
+		if ($page->settings->getSetting('registerstatus') != Sites::REGISTER_STATUS_API_ONLY) {
 			$page->show403();
 		} else {
-			header("Location: " . $page->pdo->getSetting('code'));
+			header("Location: " . $page->settings->getSetting('code'));
 		}
 	}
 
