@@ -41,6 +41,11 @@ class DB extends \PDO
 	protected $_debug;
 
 	/**
+	 * @var object Instance of PDO class.
+	 */
+	protected static $_pdo = null;
+
+	/**
 	 * @var object Class instance debugging.
 	 */
 	private $debugging;
@@ -64,11 +69,6 @@ class DB extends \PDO
 	 * @var array    Options passed into the constructor or defaulted.
 	 */
 	private $opts;
-
-	/**
-	 * @var object Instance of PDO class.
-	 */
-	protected static $_pdo = null;
 
 	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
