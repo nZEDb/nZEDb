@@ -712,7 +712,7 @@ class Binaries
 					// (hash) Used to group articles together when forming the release/nzb.
 					$this->message[$matches[1]]['CollectionHash'] =
 						sha1(
-							$this->_collectionsCleaning->collectionsCleaner($matches[1], $groupMySQL['name']) .
+							$this->_collectionsCleaning->collectionsCleaner(trim($matches[1]), $groupMySQL['name']) .
 							$header['From'] .
 							$groupMySQL['id'] .
 							$fileCount[6]
@@ -833,7 +833,7 @@ class Binaries
 										VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
 										ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",
 										$groupNames['cname'],
-										$this->_pdo->escapeString(substr(utf8_encode($subject), 0, 255)),
+										$this->_pdo->escapeString(substr(utf8_encode(trim($subject)), 0, 255)),
 										$this->_pdo->escapeString(utf8_encode($data['From'])),
 										$data['Date'],
 										$this->_pdo->escapeString(substr($data['Xref'], 0, 255)),
@@ -880,7 +880,7 @@ class Binaries
 									VALUES ('%s', %s, %d, %d, %d)",
 									$groupNames['bname'],
 									$binaryHash,
-									$this->_pdo->escapeString(utf8_encode($subject)),
+									$this->_pdo->escapeString(utf8_encode(trim($subject))),
 									$collectionID,
 									$data['MaxParts'],
 									$data['File']
