@@ -67,7 +67,7 @@ switch ($page->page) {
 	case 'terms-and-conditions':
 	case 'upcoming':
 		// Don't show these pages if it's an API-only site.
-		if (!$users->isLoggedIn() && $page->settings->getSetting('registerstatus') == Sites::REGISTER_STATUS_API_ONLY) {
+		if (!$users->isLoggedIn() && $page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 			header("Location: " . $page->settings->getSetting('code'));
 			break;
 		}

@@ -24,25 +24,25 @@ switch($action)
 
 		if (is_int($ret))
 		{
-			if ($ret == Sites::ERR_BADUNRARPATH)
+			if ($ret == Settings::ERR_BADUNRARPATH)
 				$error = "The unrar path does not point to a valid binary";
-			else if ($ret == Sites::ERR_BADFFMPEGPATH)
+			else if ($ret == Settings::ERR_BADFFMPEGPATH)
 				$error = "The ffmpeg path does not point to a valid binary";
-			else if ($ret == Sites::ERR_BADMEDIAINFOPATH)
+			else if ($ret == Settings::ERR_BADMEDIAINFOPATH)
 				$error = "The mediainfo path does not point to a valid binary";
-			else if ($ret == Sites::ERR_BADNZBPATH)
+			else if ($ret == Settings::ERR_BADNZBPATH)
 				$error = "The nzb path does not point to an existing directory";
-			else if ($ret == Sites::ERR_DEEPNOUNRAR)
+			else if ($ret == Settings::ERR_DEEPNOUNRAR)
 				$error = "Deep password check requires a valid path to unrar binary";
-			else if ($ret == Sites::ERR_BADTMPUNRARPATH)
+			else if ($ret == Settings::ERR_BADTMPUNRARPATH)
 				$error = "The temp unrar path is not a valid directory";
-			else if ($ret == Sites::ERR_BADNZBPATH_UNREADABLE) {
+			else if ($ret == Settings::ERR_BADNZBPATH_UNREADABLE) {
 				$error = "The nzb path cannot be read from. Check the permissions.";
-			} else if ($ret == Sites::ERR_BADNZBPATH_UNSET) {
+			} else if ($ret == Settings::ERR_BADNZBPATH_UNSET) {
 				$error = "The nzb path is required, please set it.";
-			} else if ($ret == Sites::ERR_BAD_COVERS_PATH) {
+			} else if ($ret == Settings::ERR_BAD_COVERS_PATH) {
 				$error = 'The covers&apos; path is required and must exist. Please set it.';
-			} else if ($ret == Sites::ERR_BAD_YYDECODER_PATH) {
+			} else if ($ret == Settings::ERR_BAD_YYDECODER_PATH) {
 				$error = 'The yydecoder&apos;s path must exist. Please set it or leave it empty.';
 			}
 		}
@@ -101,7 +101,7 @@ $page->smarty->assign('sabpriority_ids', array(SABnzbd::PRIORITY_FORCE, SABnzbd:
 $page->smarty->assign('sabpriority_names', array('Force', 'High', 'Normal', 'Low'));
 
 $page->smarty->assign('newgroupscan_names', array('Days','Posts'));
-$page->smarty->assign('registerstatus_ids', array(Sites::REGISTER_STATUS_API_ONLY, Sites::REGISTER_STATUS_OPEN, Sites::REGISTER_STATUS_INVITE, Sites::REGISTER_STATUS_CLOSED));
+$page->smarty->assign('registerstatus_ids', array(Settings::REGISTER_STATUS_API_ONLY, Settings::REGISTER_STATUS_OPEN, Settings::REGISTER_STATUS_INVITE, Settings::REGISTER_STATUS_CLOSED));
 $page->smarty->assign('registerstatus_names', array('API Only', 'Open', 'Invite', 'Closed'));
 $page->smarty->assign('passworded_ids', array(0,1,10));
 $page->smarty->assign('passworded_names', array('Don\'t show passworded or potentially passworded', 'Don\'t show passworded', 'Show everything'));
