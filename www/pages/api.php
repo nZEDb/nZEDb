@@ -321,6 +321,7 @@ function showApiError($errorCode = 900, $errorText = '')
 	}
 
 	header('Content-type: text/xml');
+	header('X-nZEDb: API ERROR [' . $errorCode . '] ' . $errorText);
 	exit("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<error code=\"$errorCode\" description=\"$errorText\"/>\n");
 }
 
