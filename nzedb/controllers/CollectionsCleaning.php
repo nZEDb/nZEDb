@@ -1910,6 +1910,9 @@ class CollectionsCleaning
 		} //brothers-of-usenet.info/.net <<<Partner von SSL-News.info>>> - [01/26] - "Be.Cool.German.AC3.HDRip.x264-FuN.par2" yEnc
 		if (preg_match('/(.+?\.net <<<Partner von SSL-News\.info>>> - \[)\d+(\/\d+\] - ".+?)' . $this->e1, $this->subject, $match)) {
 			return $match[1] . $match[2];
+		} //62544-8[30/78] - "62544-0.35" yEnc
+		if (preg_match('/^(\d+-\d)\[\d+\/(\d+\])[- ]{0,3}"\d+-\d.+?' . $this->e1, $this->subject, $match)) {
+			return $match[1] . $match[2];
 		} //[Art-of-Usenet] dea75eb65e65c56197d749d57919806d [01/19] - "dea75eb65e65c56197d749d57919806d.par2" yEnc
 		if (preg_match('/^\[Art-of-Usenet\] ([a-fA-F0-9]+) \[\d+\/(\d+\][-_ ]{0,3}".+?)' . $this->e1, $this->subject, $match)) {
 			return $match[2];

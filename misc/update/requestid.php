@@ -110,7 +110,7 @@ class RequestIDStandalone
 
 		$timestart = TIME();
 		$counted = $counter = 0;
-		($argv[2] === 'show' ? $this->show = 1 : $this->show = 0);
+		(isset($argv[2]) && $argv[2] === 'show' ? $this->show = 1 : $this->show = 0);
 
 		$res = $this->pdo->queryDirect($this->_buildWorkQuery($argv));
 
