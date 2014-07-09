@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-09 DariusIII
+	* Fix: Wrong column name in recategorize.php.
 2014-07-08 niel
 	* Fix: Admin => site-edit to work with Settings instead of Sites.
 2014-07-08 bart39
