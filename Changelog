@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-07-09 bart39
+	* Fix: Fix ReleaseRemover for specific blacklist
 	* Add: Regex fixes / additions
 	* Add: dump_predb.php - drop predbhash triggers before import and re-add afterwards - should improve import speed
 	* Fix: Optimize monitor queries
