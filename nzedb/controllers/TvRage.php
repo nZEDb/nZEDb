@@ -154,7 +154,7 @@ class TvRage
 				}
 				$check = file_put_contents($path, $imgbytes);
 				if ($check !== false) {
-					$this->pdo->Exec("UPDATE tvrage SET imgdata = 'x' WHERE id = " . $id);
+					$this->pdo->queryExec("UPDATE tvrage SET imgdata = 'x' WHERE id = " . $id);
 					chmod($path, 0755);
 				}
 			}
@@ -179,7 +179,7 @@ class TvRage
 				}
 				$check = file_put_contents($path, $imgbytes);
 				if ($check !== false) {
-					$this->pdo->Exec("UPDATE tvrage SET imgdata = 'x' WHERE id = " . $id);
+					$this->pdo->queryExec("UPDATE tvrage SET imgdata = 'x' WHERE id = " . $id);
 					chmod($path, 0755);
 				}
 			}

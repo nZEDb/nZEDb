@@ -23,7 +23,7 @@ foreach ($actgroups as $group) {
 	$pdo->queryExec("DROP TABLE IF EXISTS collections_" . $group['group_id']);
 	$pdo->queryExec("DROP TABLE IF EXISTS binaries_" . $group['group_id']);
 	$pdo->queryExec("DROP TABLE IF EXISTS parts_" . $group['group_id']);
-	if ($pdo->newtables($group['group_id']) === false) {
+	if ($groups->createNewTPGTables($group['group_id']) === false) {
 		exit($c->error("\nThere is a problem creating new parts/files tables for group ${group['name']}.\n"));
 	}
 }

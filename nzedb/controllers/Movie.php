@@ -1414,7 +1414,7 @@ class Movie
 			}
 			if ($test) {
 				$cnt1 = $this->updateInsUpcoming('rottentomato', Movie::SRC_BOXOFFICE, $retBo);
-				if ($this->echooutput && $cnt1 > 0) {
+				if ($this->echooutput && $cnt1 !== false) {
 					$this->c->doEcho($this->c->header("Added/updated movies to the box office list."));
 				} else {
 					if ($this->echooutput) {
@@ -1437,7 +1437,7 @@ class Movie
 			}
 			if ($test) {
 				$cnt2 = $this->updateInsUpcoming('rottentomato', Movie::SRC_INTHEATRE, $retTh);
-				if ($this->echooutput && $cnt2 > 0) {
+				if ($this->echooutput && $cnt2 !== false) {
 					echo $this->c->header("Added/updated movies to the theaters list.");
 				} else {
 					if ($this->echooutput) {
@@ -1460,7 +1460,7 @@ class Movie
 			}
 			if ($test) {
 				$cnt3 = $this->updateInsUpcoming('rottentomato', Movie::SRC_OPENING, $retOp);
-				if ($this->echooutput && $cnt3 > 0) {
+				if ($this->echooutput && $cnt3 !== false) {
 					$this->c->doEcho($this->c->header("Added/updated movies to the opening list."));
 				} else {
 					if ($this->echooutput) {
@@ -1483,7 +1483,7 @@ class Movie
 			}
 			if ($test) {
 				$cnt4 = $this->updateInsUpcoming('rottentomato', Movie::SRC_UPCOMING, $retUp);
-				if ($this->echooutput && $cnt4 > 0) {
+				if ($this->echooutput && $cnt4 !== false) {
 					$this->c->doEcho($this->c->header("Added/updated movies to the upcoming list."));
 				} else {
 					if ($this->echooutput) {
@@ -1506,7 +1506,7 @@ class Movie
 			}
 			if ($test) {
 				$cnt5 = $this->updateInsUpcoming('rottentomato', Movie::SRC_DVD, $retDr);
-				if ($this->echooutput && $cnt5 > 0) {
+				if ($this->echooutput && $cnt5 !== false) {
 					$this->c->doEcho($this->c->header("Added/updated movies to the DVD list."));
 				} else {
 					if ($this->echooutput) {
@@ -1533,7 +1533,7 @@ class Movie
 	protected function updateInsUpcoming($source, $type, $info)
 	{
 		if ($this->pdo->dbSystem() === 'mysql') {
-			return $this->pdo->Exec(
+			return $this->pdo->queryExec(
 				sprintf("
 					INSERT INTO upcoming (source, typeid, info, updateddate)
 					VALUES (%s, %d, %s, NOW())
@@ -1557,7 +1557,7 @@ class Movie
 				)
 			);
 			if ($ckId === false) {
-				return $this->pdo->Exec(
+				return $this->pdo->queryExec(
 					sprintf("
 						INSERT INTO upcoming (source, typeid, info, updateddate)
 						VALUES (%s, %d, %s, NOW())",
@@ -1567,7 +1567,7 @@ class Movie
 					)
 				);
 			} else {
-				return $this->pdo->Exec(
+				return $this->pdo->queryExec(
 					sprintf('
 						UPDATE upcoming
 						SET source = %s, typeid = %s, info = %s, updateddate = NOW()
