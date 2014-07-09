@@ -404,10 +404,11 @@ class DB extends \PDO
 	 * Used for deleting, updating (and inserting without needing the last insert id).
 	 *
 	 * @param string $query
+	 * @param bool   $silent Echo or log errors?
 	 *
 	 * @return bool
 	 */
-	public function queryExec($query)
+	public function queryExec($query, $silent = false)
 	{
 		if (empty($query)) {
 			return false;
@@ -437,7 +438,7 @@ class DB extends \PDO
 				return $result;
 			}
 		}
-		if ($this->_debug) {
+		if ($silent === false && $this->_debug) {
 			$this->echoError($error, 'queryExec', 4);
 			$this->debugging->start("queryExec", $query, 6);
 		}
@@ -501,6 +502,11 @@ class DB extends \PDO
 
 	/**
 	 * Direct query. Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
+	 *
+	 * @note If not "consumed", causes this error:
+	 *       'SQLSTATE[HY000]: General error: 2014 Cannot execute queries while other unbuffered queries are active.
+	 *        Consider using PDOStatement::fetchAll(). Alternatively, if your code is only ever going to run against mysql,
+	 *        you may enable query buffering by setting the PDO::MYSQL_ATTR_USE_BUFFERED_QUERY attribute.'
 	 *
 	 * @param string $query
 	 * @param bool   $silent Whether to skip echoing errors to the console.
