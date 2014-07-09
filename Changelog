@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-09 kevin
 	* Fix: Nzbget url missing a / when using a reverse proxy.
+	* Add: Headers to API/RSS, helps tracking problems.
 2014-07-09 DariusIII
 	* Fix: Wrong column name in recategorize.php.
 2014-07-08 niel
