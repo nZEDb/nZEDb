@@ -481,7 +481,7 @@ class Groups
 		$this->pdo->queryExec("TRUNCATE TABLE binaries");
 		$this->pdo->queryExec("TRUNCATE TABLE parts");
 		$this->pdo->queryExec("TRUNCATE TABLE partrepair");
-		$groups = $this->db->query("SELECT id FROM groups");
+		$groups = $this->pdo->query("SELECT id FROM groups");
 		foreach ($groups as $group) {
 			$this->pdo->queryExec('DROP TABLE IF EXISTS collections_' . $group['id']);
 			$this->pdo->queryExec('DROP TABLE IF EXISTS binaries_' . $group['id']);
@@ -602,5 +602,58 @@ class Groups
 	{
 		$this->pdo->queryExec(sprintf("UPDATE groups SET backfill = %d WHERE id = %d", $status, $id));
 		return "Group $id has been " . (($status == 0) ? 'deactivated' : 'activated') . '.';
+	}
+
+	/**
+	 * Get the names of the collections/binaries/parts/part repair tables.
+	 * If TPG is on, try to create new tables for the group_id, if we fail, log the error and exit.
+	 *
+	 * @param bool $tpgSetting false, tpg is off in site setting, true tpg is on in site setting.
+	 * @param int  $groupID    ID of the group.
+	 *
+	 * @return array The table names.
+	 */
+	public function getCBPTableNames($tpgSetting, $groupID)
+	{
+		$group['cname']  = 'collections';
+		$group['bname']  = 'binaries';
+		$group['pname']  = 'parts';
+		$group['prname'] = 'partrepair';
+
+		if ($tpgSetting === true) {
+			if ($groupID == '') {
+				exit('Error: You must use releases_threaded.py since you have enabled TPG!');
+			}
+
+			if ($this->createNewTPGTables($groupID) === false && nZEDb_ECHOCLI) {
+				exit('There is a problem creating new TPG tables for this group ID: ' . $groupID . PHP_EOL);
+			}
+
+			$groupEnding = '_' . $groupID;
+			$group['cname']  .= $groupEnding;
+			$group['bname']  .= $groupEnding;
+			$group['pname']  .= $groupEnding;
+			$group['prname'] .= $groupEnding;
+		}
+		return $group;
+	}
+
+	/**
+	 * Check if the tables exists for the group_id, make new tables for table per group.
+	 *
+	 * @param int $groupID
+	 *
+	 * @return bool
+	 */
+	public function createNewTPGTables($groupID)
+	{
+		foreach (['collections', 'binaries', 'parts', 'partrepair'] as $tableName) {
+			if ($statement = $this->pdo->queryExec(sprintf('SELECT * FROM %s_%s LIMIT 1', $tableName, $groupID), true) === false) {
+				if ($this->pdo->queryExec(sprintf('CREATE TABLE %s_%s LIKE %s', $tableName, $groupID, $tableName), true) === false) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }

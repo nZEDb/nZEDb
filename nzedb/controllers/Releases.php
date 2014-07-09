@@ -52,7 +52,7 @@ class Releases
 		$this->requestids = $this->pdo->getSetting('lookup_reqids');
 		$this->hashcheck = ($this->pdo->getSetting('hashcheck')!= '') ? (int)$this->pdo->getSetting('hashcheck') : 0;
 		$this->delaytimet = ($this->pdo->getSetting('delaytime')!= '') ? (int)$this->pdo->getSetting('delaytime') : 2;
-		$this->tablepergroup = ($this->pdo->getSetting('tablepergroup')!= '') ? (int)$this->pdo->getSetting('tablepergroup') : 0;
+		$this->_tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$this->c = new ColorCLI();
 	}
 
@@ -1552,21 +1552,7 @@ class Releases
 	public function processReleasesStage1($groupID)
 	{
 		// Set table names
-		if ($this->tablepergroup === 1) {
-			if ($groupID == '') {
-				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
-			}
-			if ($this->pdo->newtables($groupID) === false) {
-				exit("There is a problem creating new parts/files tables for this group.\n");
-			}
-			$group['cname'] = 'collections_' . $groupID;
-			$group['bname'] = 'binaries_' . $groupID;
-			$group['pname'] = 'parts_' . $groupID;
-		} else {
-			$group['cname'] = 'collections';
-			$group['bname'] = 'binaries';
-			$group['pname'] = 'parts';
-		}
+		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 
 		if ($this->echooutput) {
 			$this->c->doEcho($this->c->header("Stage 1 -> Try to find complete collections."));
@@ -1904,18 +1890,7 @@ class Releases
 		$where = (!empty($groupID)) ? ' AND c.group_id = ' . $groupID : ' ';
 
 		// Set table names
-		if ($this->tablepergroup === 1) {
-			if ($groupID == '') {
-				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
-			}
-			$group['cname'] = 'collections_' . $groupID;
-			$group['bname'] = 'binaries_' . $groupID;
-			$group['pname'] = 'parts_' . $groupID;
-		} else {
-			$group['cname'] = 'collections';
-			$group['bname'] = 'binaries';
-			$group['pname'] = 'parts';
-		}
+		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 
 		if ($this->echooutput) {
 			$this->c->doEcho($this->c->header("Stage 2 -> Get the size in bytes of the collection."));
@@ -1953,18 +1928,7 @@ class Releases
 		$minsizecounts = $maxsizecounts = $minfilecounts = 0;
 
 		// Set table names
-		if ($this->tablepergroup === 1) {
-			if ($groupID == '') {
-				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
-			}
-			$group['cname'] = 'collections_' . $groupID;
-			$group['bname'] = 'binaries_' . $groupID;
-			$group['pname'] = 'parts_' . $groupID;
-		} else {
-			$group['cname'] = 'collections';
-			$group['bname'] = 'binaries';
-			$group['pname'] = 'parts';
-		}
+		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 
 		if ($this->echooutput) {
 			$this->c->doEcho($this->c->header("Stage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting."));
@@ -2176,18 +2140,7 @@ class Releases
 		$where = (!empty($groupID)) ? ' group_id = ' . $groupID . ' AND ' : ' ';
 
 		// Set table names
-		if ($this->tablepergroup === 1) {
-			if ($groupID == '') {
-				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
-			}
-			$group['cname'] = 'collections_' . $groupID;
-			$group['bname'] = 'binaries_' . $groupID;
-			$group['pname'] = 'parts_' . $groupID;
-		} else {
-			$group['cname'] = 'collections';
-			$group['bname'] = 'binaries';
-			$group['pname'] = 'parts';
-		}
+		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 
 		if ($this->echooutput) {
 			$this->c->doEcho($this->c->header("Stage 4 -> Create releases."));
@@ -2611,18 +2564,7 @@ class Releases
 		$where = (!empty($groupID)) ? ' r.group_id = ' . $groupID . ' AND ' : ' ';
 
 		// Set table names
-		if ($this->tablepergroup === 1) {
-			if ($groupID == '') {
-				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
-			}
-			$group['cname'] = 'collections_' . $groupID;
-			$group['bname'] = 'binaries_' . $groupID;
-			$group['pname'] = 'parts_' . $groupID;
-		} else {
-			$group['cname'] = 'collections';
-			$group['bname'] = 'binaries';
-			$group['pname'] = 'parts';
-		}
+		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 
 		// Create NZB.
 		if ($this->echooutput) {
@@ -2755,17 +2697,8 @@ class Releases
 		$where1 = '';
 
 		// Set table names
-		if ($this->tablepergroup === 1) {
-			if ($groupID == '') {
-				exit($this->c->error("\nYou are using 'tablepergroup', you must use releases_threaded.py"));
-			}
-			$group['cname'] = 'collections_' . $groupID;
-			$group['bname'] = 'binaries_' . $groupID;
-			$group['pname'] = 'parts_' . $groupID;
-		} else {
-			$group['cname'] = 'collections';
-			$group['bname'] = 'binaries';
-			$group['pname'] = 'parts';
+		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
+		if ($this->_tablePerGroup === false) {
 			$where = (!empty($groupID)) ? ' ' . $group['cname'] . '.group_id = ' . $groupID . ' AND ' : ' ';
 			$where1 = (!empty($groupID)) ? ' AND ' . $group['cname'] . '.group_id = ' . $groupID : '';
 		}
@@ -3211,7 +3144,7 @@ class Releases
 		$where = (!empty($groupID)) ? ' WHERE group_id = ' . $groupID : '';
 
 		//Print amount of added releases and time it took.
-		if ($this->echooutput && $this->tablepergroup == 0) {
+		if ($this->echooutput && $this->_tablePerGroup === false) {
 			$countID = $this->pdo->queryOneRow('SELECT COUNT(id) FROM collections ' . $where);
 			$this->c->doEcho(
 				$this->c->primary(
