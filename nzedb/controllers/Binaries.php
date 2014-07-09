@@ -530,7 +530,7 @@ class Binaries
 		$startLoop = $startHeaders = microtime(true);
 
 		// Check if MySQL tables exist, create if they do not, get their names at the same time.
-		$groupNames = $this->_pdo->tryTablePerGroup($this->_tablePerGroup, $groupMySQL['id']);
+		$groupNames = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupMySQL['id']);
 
 		// Download the headers.
 		if ($type === 'partrepair') {
@@ -946,7 +946,7 @@ class Binaries
 		foreach ($parts as $part) {
 			$headersNotInserted[] = $part['number'];
 		}
-		$this->_db->Rollback();
+		$this->_pdo->Rollback();
 		return $headersNotInserted;
 	}
 
@@ -960,7 +960,7 @@ class Binaries
 	public function partRepair($groupArr)
 	{
 		// Check that tables exist, create if they do not.
-		$group = $this->_pdo->tryTablePerGroup($this->_tablePerGroup, $groupArr['id']);;
+		$group = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupArr['id']);;
 
 		// Get all parts in partrepair table.
 		$missingParts = $this->_pdo->query(
@@ -1089,7 +1089,7 @@ class Binaries
 	private function addMissingParts($numbers, $groupID)
 	{
 		// Check that tables exist, create if they do not.
-		$group = $this->_pdo->tryTablePerGroup($this->_tablePerGroup, $groupID);
+		$group = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 
 		$insertStr = 'INSERT INTO ' . $group['prname'] . ' (numberid, group_id) VALUES ';
 		foreach ($numbers as $number) {
@@ -1113,7 +1113,7 @@ class Binaries
 	private function removeRepairedParts($numbers, $groupID)
 	{
 		// Check that tables exist, create if they do not.
-		$group = $this->_pdo->tryTablePerGroup($this->_tablePerGroup, $groupID);
+		$group = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 
 		$sql = 'DELETE FROM ' . $group['prname'] . ' WHERE numberid in (';
 		foreach ($numbers as $number) {

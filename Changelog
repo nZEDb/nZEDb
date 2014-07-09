@@ -6,6 +6,10 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-09 kevin
+	* Fix: Nzbget url missing a / when using a reverse proxy.
+2014-07-09 DariusIII
+	* Fix: Wrong column name in recategorize.php.
 2014-07-08 niel
 	* Fix: Admin => site-edit to work with Settings instead of Sites.
 2014-07-08 bart39
@@ -14,6 +18,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: \s* to \s+ in binaries parts regex between yEnc and parts count, there should be space there, speeds up by removing the trims.
 	* Chg: Remove message array object, not used anywhere else. Binaries.
 	* Chg: Merge the usenet index post ignore regex into the subject/part count regex. Binaries.
+	* Chg: Move TPG functions out of DB into Groups.
 2014-7-08 ruhllatio
 	* Fix: blank screen for users not logged in.  Index.php calling $page->$pdo instead of $page->$settings to get settings from DB
 	* Fix: Login redirect function for home_path

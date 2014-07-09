@@ -436,7 +436,7 @@ class Backfill
 		$groupID = $this->_groups->getIDByName($groupData['group']);
 		$group = array();
 		if ($groupID !== '') {
-			$group = $this->_pdo->tryTablePerGroup($this->_tablePerGroup, $groupID);
+			$group = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 		}
 
 		$currentPost = $post;

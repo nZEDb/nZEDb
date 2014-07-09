@@ -38,7 +38,7 @@ $begintime = time();
 echo "Creating new collections, binaries, and parts tables for each active group...\n";
 
 foreach ($actgroups as $group) {
-	if ($pdo->newtables($group['id']) === false) {
+	if ($groups->createNewTPGTables($group['id']) === false) {
 		exit($c->error("There is a problem creating new parts/files tables for group ${group['name']}."));
 	}
 	$consoletools->overWrite("Tables Created: " . $consoletools->percentString($gdone * 3, $newtables));

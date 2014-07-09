@@ -1,4 +1,7 @@
 <?php
+
+use \nzedb\db\Settings;
+
 $category = new Category();
 $releases = new Releases();
 

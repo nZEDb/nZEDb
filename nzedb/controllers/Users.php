@@ -1,7 +1,6 @@
 <?php
 
 use nzedb\db\Settings;
-
 use nzedb\utility;
 
 class Users

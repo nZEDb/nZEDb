@@ -1,5 +1,7 @@
 <?php
 
+use \nzedb\db\Settings;
+
 // API functions.
 $function = 's';
 if (isset($_GET['t'])) {
