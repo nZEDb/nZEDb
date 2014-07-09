@@ -448,7 +448,7 @@ class NZBGet
 				$this->password .
 				'@' .
 				$matches['url'] .
-				(isset($matches['port']) ? ':' . $matches['port'] : '') .
+				(isset($matches['port']) ? ':' . $matches['port'] : (substr($matches['url'], -1) === '/' ? '' : '/')) .
 				'xmlrpc/';
 		} else {
 			return false;
