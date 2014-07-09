@@ -10,6 +10,7 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 	// User has to either be logged in, or using rsskey.
 	if (!$users->isLoggedIn()) {
 		if ($page->settings->getSetting('registerstatus') != Settings::REGISTER_STATUS_API_ONLY) {
+			header('X-nZEDb: ERROR: You must be logged in or provide a valid User ID and API key!');
 			$page->show403();
 		} else {
 			header("Location: " . $page->settings->getSetting('code'));
@@ -41,6 +42,7 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 			$res = $users->getById(0);
 		} else {
 			if (!isset($_GET["i"]) || !isset($_GET["r"])) {
+				header('X-nZEDb: ERROR: Both the User ID and API key are required for viewing the RSS!');
 				$page->show403();
 			}
 
@@ -48,6 +50,7 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 		}
 
 		if (!$res) {
+			header('X-nZEDb: ERROR: Invalid API key or User ID!');
 			$page->show403();
 		}
 
@@ -58,6 +61,7 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 
 	$apirequests = $users->getApiRequests($uid);
 	if ($apirequests['num'] > $maxrequests) {
+		header('X-nZEDb: ERROR: You have reached your daily limit for API requests!');
 		$page->show503();
 	} else {
 		$users->addApiRequest($uid, $_SERVER['REQUEST_URI']);

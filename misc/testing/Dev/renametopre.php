@@ -142,6 +142,7 @@ function preName($argv, $argc)
 						$preid = $prefile['id'];
 						$cleanName = $prefile['title'];
 						$predbfile = true;
+						$propername = true;
 					}
 				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
 					if (strlen(utf8_decode($cleanName)) <= 3) {

@@ -6,8 +6,17 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-09 bart39
+	* Add: Regex fixes / additions
+	* Add: dump_predb.php - drop predbhash triggers before import and re-add afterwards - should improve import speed
+	* Fix: Optimize monitor queries
+	* Fix: Add other-hashed category to recategorize.php
+	* Fix: renametopre.php - set properlynamed when matched via predb filename
+	* Fix: requestid.php - check if 2nd parameter is set
 2014-07-09 kevin
 	* Fix: Nzbget url missing a / when using a reverse proxy.
+	* Add: Headers to API/RSS, helps tracking problems.
+	* Fix: misc/update/backfill.php undefined Settings issue.
 2014-07-09 DariusIII
 	* Fix: Wrong column name in recategorize.php.
 2014-07-08 niel

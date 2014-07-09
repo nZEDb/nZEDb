@@ -2,7 +2,7 @@
 require dirname(__FILE__) . '/config.php';
 
 $c = new ColorCLI();
-$nntpproxy = (new Settings())->getSetting('nntpproxy');
+$nntpproxy = (new nzedb\db\Settings())->getSetting('nntpproxy');
 
 // Create the connection here and pass
 $nntp = new NNTP();
