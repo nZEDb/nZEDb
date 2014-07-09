@@ -80,6 +80,9 @@ class Settings extends DB
 	public function getSetting($options = array())
 	{
 		if (!is_array($options)) {
+			if (isset($this->settings[$options])) {
+				return $this->settings[$options];
+			}
 			$options = ['setting' => $options];
 		}
 		$defaults = array(
@@ -124,29 +127,44 @@ class Settings extends DB
 	/**
 	 * Set a setting in the database.
 	 *
-	 * @TODO not completed yet, do not use
-	 *
 	 * @param array $options Array containing the mandatory keys of 'section', 'subsection', and 'value'
+	 *
+	 * @return boolean	true or false indicating success/failure.
 	 */
 	public function setSetting(array $options)
 	{
+		$where = $result = false;
 		$defaults = [
 			'section'    => '',
 			'subsection' => '',
+			'name'		 => '',
 			'value'      => '',
 			'setting'    => '',
 		];
 		$options += $defaults;
-		$temp1 = $options['section'] . $options['subsection'] . $options['value'];
+
+		$temp1 = $options['section'] . $options['subsection'] . $options['name'];
 		$temp2 = $options['section'] . $options['subsection'] . $options['setting'];
-		if (empty($temp1) && empty($temp2)) {
-			return false;
+		if (!empty($temp1) || !empty($temp2)) {
+			if (empty($temp1)) {
+				if (isset($this->settings[$options['setting']])) {
+					$this->settings[$options['setting']] = $options['value'];
+				}
+				$result = $this->update($options);
+
+			} else if (!empty($options['name'])) {
+				$where = sprintf("name = %s", $options['name']);
+				$where .= empty($options['section']) ? '' :
+					sprintf(" AND section = %s", $options['section']);
+				$where .= empty($options['subsection']) ? '' :
+					sprintf(" AND subsection = %s", $options['subsection']);
+
+				$sql = sprintf("UPDATE settings SET value = %s WHERE %s", $options['value'], $where);
+				$result = $this->query($sql);
+			}
 		}
 
-		extract($options);
-
-
-		return '';
+		return ($result == false) ? false : true;
 	}
 
 	public function table()
