@@ -15,13 +15,12 @@ if (!isset($argv[1])) {
 function dogroup($name, $articles)
 {
 	$c = new ColorCLI();
-	$s = new Sites();
-	$site = $s->get();
+	$nntpProxy = (new Settings())->getSetting('nntpproxy');
 	$nntp = new NNTP();
 	if ($nntp->doConnect() !== true) {
 		exit($c->error("Unable to connect to usenet."));
 	}
-	if ($site->nntpproxy === "1") {
+	if ($nntpProxy == "1") {
 		usleep(500000);
 	}
 	$backfill = new Backfill($nntp);

@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 passthru('clear');
 
@@ -29,11 +29,11 @@ if ($argc == 1 || $argv[1] != 'true') {
 	exit($c->error("\nThis script will rename every table column to lowercase that is not already lowercase.\nTo run:\nphp $argv[0] true\n"));
 }
 
-$db = new Db();
+$pdo = new Settings();
 $database = DB_NAME;
 
 $count = 0;
-$list = $db->query("SELECT TABLE_NAME, COLUMN_NAME, UPPER(COLUMN_TYPE), EXTRA FROM information_schema.columns WHERE table_schema = '" . $database . "'");
+$list = $pdo->query("SELECT TABLE_NAME, COLUMN_NAME, UPPER(COLUMN_TYPE), EXTRA FROM information_schema.columns WHERE table_schema = '" . $database . "'");
 if (count($list) == 0) {
 	echo $c->info("No table columns to rename");
 } else {
@@ -45,15 +45,15 @@ if (count($list) == 0) {
 			} else {
 				$extra = '';
 			}
-			$db->queryDirect("ALTER TABLE " . $column['table_name'] . " CHANGE " . $column['column_name'] . " " . strtolower($column['column_name']) . " " . $column['upper(column_type)'] . " " . $extra);
+			$pdo->queryDirect("ALTER TABLE " . $column['table_name'] . " CHANGE " . $column['column_name'] . " " . strtolower($column['column_name']) . " " . $column['upper(column_type)'] . " " . $extra);
 			$count++;
 		}
 		if (strtolower($column['column_name']) === 'id' && strtolower($column['extra']) !== 'auto_increment') {
 			echo $c->header("Renaming Table " . $column['table_name'] . " Column " . $column['column_name']);
 			$extra = 'AUTO_INCREMENT';
-			$placeholder = $db->queryDirect("SELECT MAX(id) FROM " . $column['table_name']);
-			$db->queryDirect("ALTER IGNORE TABLE " . $column['table_name'] . " CHANGE " . $column['column_name'] . " " . strtolower($column['column_name']) . " " . $column['upper(column_type)'] . " " . $extra);
-			$db->queryDirect("ALTER IGNORE TABLE " . $column['table_name'] . " AUTO_INCREMENT = " . $placeholder + 1);
+			$placeholder = $pdo->queryDirect("SELECT MAX(id) FROM " . $column['table_name']);
+			$pdo->queryDirect("ALTER IGNORE TABLE " . $column['table_name'] . " CHANGE " . $column['column_name'] . " " . strtolower($column['column_name']) . " " . $column['upper(column_type)'] . " " . $extra);
+			$pdo->queryDirect("ALTER IGNORE TABLE " . $column['table_name'] . " AUTO_INCREMENT = " . $placeholder + 1);
 			$count++;
 		}
 	}

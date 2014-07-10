@@ -4,11 +4,10 @@ require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
 // Test if your amazon keys are working.
 
-$s = new Sites();
-$site = $s->get();
-$pubkey = $site->amazonpubkey;
-$privkey = $site->amazonprivkey;
-$asstag = $site->amazonassociatetag;
+$pdo = new nzedb\db\Settings();
+$pubkey = $pdo->getSetting('amazonpubkey');
+$privkey = $pdo->getSetting('amazonprivkey');
+$asstag = $pdo->getSetting('amazonassociatetag');
 $c = new ColorCLI();
 $obj = new AmazonProductAPI($pubkey, $privkey, $asstag);
 

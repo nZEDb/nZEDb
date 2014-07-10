@@ -1,10 +1,10 @@
 <?php
-
 require_once dirname(__FILE__) . '/../../../config.php';
 
+
+
 $c = new ColorCLI();
-$s = new Sites();
-$site = $s->get();
+$pdo = new \nzedb\db\Settings();
 
 if (!isset($argv[1])) {
 	exit($c->error("This script is not intended to be run manually, it is called from safe threaded scripts."));
@@ -14,7 +14,10 @@ if (!isset($argv[1])) {
 	if ($nntp->doConnect() !== true) {
 		exit($c->error("Unable to connect to usenet."));
 	}
-	if ($site->nntpproxy === "1") {
+
+	$nntpProxy = $pdo->getSetting('nntpproxy');
+
+	if ($nntpProxy == "1") {
 		usleep(500000);
 	}
 
@@ -52,7 +55,7 @@ if (!isset($argv[1])) {
 		$backfill = new Backfill($nntp);
 		$backfill->backfillAllGroups($pieces[0], $pieces[1]);
 	}
-	if ($site->nntpproxy != "1") {
+	if ($nntpProxy != "1") {
 		$nntp->doQuit();
 	}
 }

@@ -1,12 +1,12 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 if (!isset($argv[1]) || !isset($argv[2]))
 	exit("ERROR: You must supply the level you want to reorganize it to, and the source directory  (You would use: 3 .../nZEDb/resources/nzb/ to move it to 3 levels deep)\n");
 
-$db = new DB();
+$pdo = new Settings();
 $nzb = new NZB();
 $consoleTools = new ConsoleTools();
 
@@ -38,8 +38,8 @@ foreach ($objects as $filestoprocess => $nzbFile) {
 	}
 }
 
-$db->ping(true);
-$db->queryExec(sprintf("UPDATE settings SET value = %s WHERE setting = 'nzbsplitlevel'", $argv[1]));
+$pdo->ping(true);
+$pdo->queryExec(sprintf("UPDATE settings SET value = %s WHERE setting = 'nzbsplitlevel'", $argv[1]));
 $consoleTools->overWrite("Processed $iFilesProcessed nzbs in " . relativeTime($time) . "\n");
 
 function relativeTime ($_time)

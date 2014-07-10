@@ -1,13 +1,14 @@
 <?php
 require_once nZEDb_LIBS . 'AmazonProductAPI.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 /**
  * Class MiscSorter
  */
 class MiscSorter
 {
+	public $pdo;
 
 	/**
 	 * @param bool $echooutput
@@ -24,7 +25,7 @@ class MiscSorter
 		$this->qty = 100;
 		$this->DEBUGGING = nZEDb_DEBUG;
 
-		$this->db = new DB();
+		$this->pdo = new Settings();
 		$this->category = new Categorize($this->echooutput);
 		$this->movie = new Movie($this->echooutput);
 		$this->nfolib = new Nfo($this->echooutput);
@@ -32,8 +33,8 @@ class MiscSorter
 		$this->groups = new Groups();
 		$this->c = new ColorCLI();
 
-		//$res = $this->db->queryExec("SET NAMES 'utf8'");
-		//$res = $this->db->queryExec("SET CHARACTER SET 'utf8'");
+		//$res = $this->pdo->queryExec("SET NAMES 'utf8'");
+		//$res = $this->pdo->queryExec("SET CHARACTER SET 'utf8'");
 
 		mb_internal_encoding("UTF-8");
 		mb_regex_encoding("UTF-8");
@@ -84,7 +85,7 @@ class MiscSorter
 			$thecategory[] = $c['id'];
 
 		$thecategory = implode(", ", $thecategory);
-		$res = $this->db->query(sprintf("SELECT id FROM releases WHERE nfostatus = 1 AND passwordstatus >= 0 AND releases.categoryid IN (%s) LIMIT %d", $thecategory, $this->qty));
+		$res = $this->pdo->query(sprintf("SELECT id FROM releases WHERE nfostatus = 1 AND passwordstatus >= 0 AND releases.categoryid IN (%s) LIMIT %d", $thecategory, $this->qty));
 
 		if (count($res) == 0)
 			return false;
@@ -190,13 +191,13 @@ class MiscSorter
 		$n = "\n";
 		$groups = new Groups();
 
-		$release = $this->db->query("SELECT r.searchname as searchname, categoryid as cat, g.name as name FROM releases r INNER JOIN groups g ON r.group_id = g.id WHERE r.id = {$id}");
+		$release = $this->pdo->query("SELECT r.searchname as searchname, categoryid as cat, g.name as name FROM releases r INNER JOIN groups g ON r.group_id = g.id WHERE r.id = {$id}");
 		$oldcatname = $this->category->getNameByID($release[0]['cat']);
 		$newcatname = $this->category->getNameByID($cat);
 
 		$query = "UPDATE releases SET categoryid = {$cat}, proc_sorter = 1";
 		if ($name != '') {
-			$query .= ", isrenamed = 1, iscategorized = 1, searchname = " . $this->db->escapeString($name);
+			$query .= ", isrenamed = 1, iscategorized = 1, searchname = " . $this->pdo->escapeString($name);
 			$name = preg_replace(array('/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'), '', $name);
 			echo $n . $n . $this->c->headerOver("New name:  ") . $this->c->primary($name) .
 			$this->c->headerOver("Old name:  ") . $this->c->primaryOver($release[0]["searchname"]);
@@ -235,7 +236,7 @@ class MiscSorter
 		$query .= " WHERE id = {$id}";
 		//$this->doecho($query);
 		if (!$debug) {
-			if ($this->db->queryExec($query) !== false)
+			if ($this->pdo->queryExec($query) !== false)
 				return true;
 		} else
 			return true;
@@ -347,9 +348,7 @@ class MiscSorter
 
 	function doAmazon($name, $id, $nfo = "", $q, $region = 'com', $case = false, $nfo = '', $row = '')
 	{
-		$s = new Sites();
-		$site = $s->get();
-		$amazon = new AmazonProductAPI($site->amazonpubkey, $site->amazonprivkey, $site->amazonassociatetag);
+		$amazon = new AmazonProductAPI($this->pdo->getSetting('amazonpubkey'), $this->pdo->getSetting('amazonprivkey'), $this->pdo->getSetting('amazonassociatetag'));
 		$ok = false;
 
 		try {
@@ -388,7 +387,7 @@ class MiscSorter
 				$name = $this->nc->fixerCleaner($new);
 
 				$query = "SELECT id FROM bookinfo WHERE asin = '" . (string) $amaz->Items->Item->ASIN . "'";
-				$rel = $this->db->query($query);
+				$rel = $this->pdo->query($query);
 				if (count($rel) == 0) {
 					$book = new Books($this->echooutput);
 					$bookId = $book->updateBookInfo('', $amaz);
@@ -398,7 +397,7 @@ class MiscSorter
 				}
 
 				$query = "SELECT * FROM releases INNER JOIN releaseaudio ON releases.id = releaseaudio.releaseid WHERE releases.id = {$id}";
-				$rel = $this->db->query($query);
+				$rel = $this->pdo->query($query);
 				if (count($rel) > 0 || $audiobook)
 					$ok = $this->dodbupdate($id, Category::CAT_MUSIC_AUDIOBOOK, $name, $bookId, 'book');
 				else
@@ -416,7 +415,7 @@ class MiscSorter
 				$name = $this->nc->fixerCleaner($new);
 
 				$query = "SELECT * FROM musicinfo WHERE asin = '" . (string) $amaz->Items->Item->ASIN . "'";
-				$rel = $this->db->query($query);
+				$rel = $this->pdo->query($query);
 				if (count($rel) == 0) {
 					$music = new Music();
 					//$musicId = $music->updateMusicInfo('', '', $amaz)
@@ -747,11 +746,11 @@ class MiscSorter
 		if ($id != 0)
 			$this->idarr = $id;
 
-		if ($this->db->dbSystem() === "mysql")
+		if ($this->pdo->dbSystem() === "mysql")
 			$uc = "UNCOMPRESS(releasenfo.nfo)";
-		else if ($this->db->dbSystem() === "pgsql")
+		else if ($this->pdo->dbSystem() === "pgsql")
 			$uc = "releasenfo.nfo";
-		$res = $this->db->query(sprintf("SELECT {$uc} AS nfo, releases.id, releases.guid, releases.fromname, releases.name, releases.searchname, groups.name AS gname, releases.group_id FROM releasenfo INNER JOIN releases ON releasenfo.releaseid = releases.id INNER JOIN groups ON releases.group_id = groups.id WHERE releases.id IN (%s)", $this->idarr));
+		$res = $this->pdo->query(sprintf("SELECT {$uc} AS nfo, releases.id, releases.guid, releases.fromname, releases.name, releases.searchname, groups.name AS gname, releases.group_id FROM releasenfo INNER JOIN releases ON releasenfo.releaseid = releases.id INNER JOIN groups ON releases.group_id = groups.id WHERE releases.id IN (%s)", $this->idarr));
 		if (strlen($this->idarr) > 0 && count($res) > 0) {
 			foreach ($res as $row) {
 				$hash = $this->getHash($row['name']);
@@ -789,13 +788,13 @@ class MiscSorter
 						$pos = $this->nfopos($nfo, $m);
 
 						if ($pos !== false && $pos > 0.55 && $case != 'imdb') {
-							$this->db->queryExec(sprintf('UPDATE releases SET proc_sorter = 1 WHERE id = %d', $res[0]['id']));
+							$this->pdo->queryExec(sprintf('UPDATE releases SET proc_sorter = 1 WHERE id = %d', $res[0]['id']));
 							return false;
 						}
 
 						if ($ret = $this->matchnfo($case, $nfo, $row))
 							return $ret;
-						$this->db->queryExec(sprintf('UPDATE releases SET proc_sorter = 1 WHERE id = %d', $res[0]['id']));
+						$this->pdo->queryExec(sprintf('UPDATE releases SET proc_sorter = 1 WHERE id = %d', $res[0]['id']));
 						return false;
 					}
 				}
@@ -817,7 +816,7 @@ class MiscSorter
 			$query = "SELECT releases.*, g.name AS gname FROM releases INNER JOIN groups g ON releases.group_id = g.id WHERE categoryid IN (" . $category . ") AND nfostatus >= 0 AND passwordstatus >= 0 AND NOT (imdbid IS NOT NULL OR rageid > 0 OR consoleinfoid IS NOT NULL OR bookinfoid IS NOT NULL)";
 		}
 
-		$res = $this->db->query($query);
+		$res = $this->pdo->query($query);
 		if (count($res) > 0) {
 			echo "Doing NZB music files match.\n";
 			foreach ($res as $row) {
@@ -829,17 +828,17 @@ class MiscSorter
 
 				//trigger_error("doing part 2".$row['id']);
 				$query = "SELECT releasevideo.releaseid FROM releasevideo WHERE releasevideo.releaseid = " . $row['id'];
-				$rel = $this->db->queryOneRow($query);
+				$rel = $this->pdo->queryOneRow($query);
 
 				if ($rel !== false)
 					continue;
 
-				if ($this->db->dbSystem() === "mysql")
+				if ($this->pdo->dbSystem() === "mysql")
 					$uc = "UNCOMPRESS(releasenfo.nfo)";
-				else if ($this->db->dbSystem() === "pgsql")
+				else if ($this->pdo->dbSystem() === "pgsql")
 					$uc = "releasenfo.nfo";
 				$query = "SELECT releasenfo.releaseid, {$uc} AS nfo FROM releasenfo WHERE releasenfo.releaseid = " . $row['id'];
-				$rel = $this->db->queryOneRow($query);
+				$rel = $this->pdo->queryOneRow($query);
 
 				$nfo = '';
 				if ($rel !== false)

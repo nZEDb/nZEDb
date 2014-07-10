@@ -31,9 +31,9 @@ switch($action)
 			$users->updatePassword($ret["id"], $newpass);
 
 			$to = $ret["email"];
-			$subject = $page->site->title." Password Reset";
+			$subject = $page->settings->getSetting('title')." Password Reset";
 			$contents = "Your password has been reset to ".$newpass;
-			nzedb\utility\sendEmail($to, $subject, $contents, $page->site->email);
+			nzedb\utility\sendEmail($to, $subject, $contents, $page->settings->getSetting('email'));
 
 			$page->smarty->assign('confirmed', "true");
 
@@ -60,10 +60,10 @@ switch($action)
 
 				// Send the email
 				$to = $ret["email"];
-				$subject = $page->site->title . " Forgotten Password Request";
+				$subject = $page->settings->getSetting('title') . " Forgotten Password Request";
 				$contents = "Someone has requested a password reset for this email address.<br>To reset the password use <a href=\"" . $page->serverurl . "forgottenpassword?action=reset&guid=$guid\">this link</a>\n";
 				$page->smarty->assign('sent', "true");
-				nzedb\utility\sendEmail($to, $subject, $contents, $page->site->email);
+				nzedb\utility\sendEmail($to, $subject, $contents, $page->settings->getSetting('email'));
 				break;
 			}
 		}

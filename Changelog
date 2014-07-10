@@ -6,6 +6,36 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-09 bart39
+	* Fix: Fix ReleaseRemover for specific blacklist
+	* Add: Regex fixes / additions
+	* Add: dump_predb.php - drop predbhash triggers before import and re-add afterwards - should improve import speed
+	* Fix: Optimize monitor queries
+	* Fix: Add other-hashed category to recategorize.php
+	* Fix: renametopre.php - set properlynamed when matched via predb filename
+	* Fix: requestid.php - check if 2nd parameter is set
+2014-07-09 kevin
+	* Fix: Nzbget url missing a / when using a reverse proxy.
+	* Add: Headers to API/RSS, helps tracking problems.
+	* Fix: misc/update/backfill.php undefined Settings issue.
+2014-07-09 DariusIII
+	* Fix: Wrong column name in recategorize.php.
+2014-07-08 niel
+	* Fix: Admin => site-edit to work with Settings instead of Sites.
+2014-07-08 bart39
+	* Fix: Include PC Games lookup for postprocess amazon in tmux
+2014-07-08 kevin
+	* Chg: \s* to \s+ in binaries parts regex between yEnc and parts count, there should be space there, speeds up by removing the trims.
+	* Chg: Remove message array object, not used anywhere else. Binaries.
+	* Chg: Merge the usenet index post ignore regex into the subject/part count regex. Binaries.
+	* Chg: Move TPG functions out of DB into Groups.
+2014-7-08 ruhllatio
+	* Fix: blank screen for users not logged in.  Index.php calling $page->$pdo instead of $page->$settings to get settings from DB
+	* Fix: Login redirect function for home_path
+2014-07-07 kevin
+	* Add: Trim to collection check, collection name and binaries name (fixes issue with some space between yEnc and part count).
+2014-07-07 niel
+	* Chg: Refactored code to remove use of DB and Site classes in favour of combined Settings class. Should improve memory use and small performance boost.
 2014-07-06 bart39
 	* Fix: Monitor.php showing negative misc count
 2014-07-06 ruhllatio

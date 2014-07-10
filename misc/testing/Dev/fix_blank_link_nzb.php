@@ -2,7 +2,7 @@
 /* Fixes NZB files with a blank first line. */
 require dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
@@ -10,9 +10,9 @@ if (isset($argv[1]) && $argv[1] == "true")
 {
 	$timestart = TIME();
 	$nzbcount = $brokencount = 0;
-	$db = new DB();
+	$pdo = new Settings();
 
-	$guids = $db->queryDirect("SELECT guid FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC");
+	$guids = $pdo->queryDirect("SELECT guid FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC");
 	echo $c->primary("Be patient, this WILL take a very long time, make sure to kill all nZEDb scripts first. There are " . number_format($guids->rowCount()) . " NZB files to scan.");
 
 	foreach ($guids as $guid)

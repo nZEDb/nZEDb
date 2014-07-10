@@ -3,13 +3,13 @@
  * Type php resetSearchname.php to see detailed info. */
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
 if (isset($argv[1]) && $argv[1] == "full") {
-	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id");
+	$pdo = new Settings();
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id");
 
 	$show = 2;
 	if (isset($argv[2]) && $argv[2] === 'show') {
@@ -26,7 +26,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
-			$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($newname), $row['id']));
+			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $pdo->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
@@ -48,8 +48,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		exit($c->info("You have no releases in the DB."));
 	}
 } else if (isset($argv[1]) && $argv[1] == "limited") {
-	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id WHERE isrenamed = 0");
+	$pdo = new Settings();
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id WHERE isrenamed = 0");
 
 	if (count($res) > 0) {
 		echo $c->header("Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.");
@@ -62,7 +62,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
-			$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($newname), $row['id']));
+			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $pdo->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
@@ -84,8 +84,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		exit($c->info("You have no releases in the DB."));
 	}
 } else if (isset($argv[1]) && $argv[1] == "reset") {
-	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id");
+	$pdo = new Settings();
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id");
 
 	if (count($res) > 0) {
 		echo $c->header("Going to reset search names, this can take a while.");
@@ -98,7 +98,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
-			$db->queryExec(sprintf("UPDATE releases SET searchname = %s where id = %d", $db->escapeString($newname), $row['id']));
+			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s where id = %d", $pdo->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}

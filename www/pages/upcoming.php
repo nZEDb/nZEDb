@@ -4,8 +4,6 @@ if (!$users->isLoggedIn()) {
 }
 
 $m = new Movie();
-$s = new Sites();
-$site = $s->get();
 
 if (!isset($_GET["id"])) {
 	$_GET["id"] = 1;

@@ -1,5 +1,7 @@
 <?php
 
+use \nzedb\db\Settings;
+
 // API functions.
 $function = 's';
 if (isset($_GET['t'])) {
@@ -217,7 +219,7 @@ switch ($function) {
 	case 'r':
 		verifyEmptyParameter('email');
 
-		if (!in_array((int)$page->site->registerstatus, array(Sites::REGISTER_STATUS_OPEN, Sites::REGISTER_STATUS_API_ONLY))) {
+		if (!in_array((int)$page->settings->getSetting('registerstatus'), array(Settings::REGISTER_STATUS_OPEN, Settings::REGISTER_STATUS_API_ONLY))) {
 			showApiError(104);
 		}
 
@@ -319,6 +321,7 @@ function showApiError($errorCode = 900, $errorText = '')
 	}
 
 	header('Content-type: text/xml');
+	header('X-nZEDb: API ERROR [' . $errorCode . '] ' . $errorText);
 	exit("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<error code=\"$errorCode\" description=\"$errorText\"/>\n");
 }
 
@@ -424,10 +427,10 @@ function verifyEmptyParameter($parameter)
  */
 function addLanguage($releaseData)
 {
-	$db = new nzedb\db\DB();
+	$pdo = new nzedb\db\DB();
 	$returnData = array();
 	foreach ($releaseData as $release) {
-		$audios = $db->query(sprintf('SELECT * FROM releaseaudio WHERE releaseid = %d', $release['id']));
+		$audios = $pdo->query(sprintf('SELECT * FROM releaseaudio WHERE releaseid = %d', $release['id']));
 		foreach ($audios as $audio) {
 			if ($audio['audiolanguage'] != '') {
 				$release['searchname'] = ($release['searchname'] . ' ' . $audio['audiolanguage']);

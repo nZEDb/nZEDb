@@ -2,6 +2,7 @@
 require_once SMARTY_DIR . 'Smarty.class.php';
 require_once nZEDb_LIB . 'utility' . DS .'SmartyUtils.php';
 
+use \nzedb\db\Settings;
 
 class BasePage
 {
@@ -12,12 +13,12 @@ class BasePage
 	public $meta_keywords = '';
 	public $meta_title = '';
 	public $meta_description = '';
+	public $pdo = '';
 	public $page = '';
 	public $page_template = '';
 	public $smarty = '';
 	public $userdata = array();
 	public $serverurl = '';
-	public $site = '';
 
 	/**
 	 * Whether to trim white space before rendering the page or not.
@@ -28,7 +29,7 @@ class BasePage
 	const FLOOD_THREE_REQUESTS_WITHIN_X_SECONDS = 1.000;
 	const FLOOD_PUNISHMENT_SECONDS = 3.0;
 
-	function BasePage()
+	function __construct()
 	{
 		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')
 			$secure_cookie = '1';
@@ -47,11 +48,10 @@ class BasePage
 		}
 
 		// Set site variable.
-		$s = new Sites();
-		$this->site = $s->get();
+		$this->settings = new \nzedb\db\Settings();
 
 		$this->smarty = new Smarty();
-		$this->smarty->setTemplateDir(array('user_frontend' => nZEDb_WWW.'themes/'.$this->site->style.'/templates/frontend', 'frontend' => nZEDb_WWW.'themes/Default/templates/frontend'));
+		$this->smarty->setTemplateDir(array('user_frontend' => nZEDb_WWW.'themes/' . $this->settings->getSetting('style') . '/templates/frontend', 'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend'));
 
 		$this->smarty->setCompileDir(SMARTY_DIR.'templates_c/');
 		$this->smarty->setConfigDir(SMARTY_DIR.'configs/');
@@ -140,7 +140,7 @@ class BasePage
 			//$this->floodCheck(false, '');
 		}
 
-	$this->smarty->assign('site', $this->site);
+	$this->smarty->assign('site', new Settings());
 	$this->smarty->assign('page', $this);
 	}
 

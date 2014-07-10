@@ -5,18 +5,17 @@
 class IRCScraper extends IRCClient
 {
 	/**
+	 * Regex to ignore categories.
+	 * @var string
+	 */
+	protected $_categoryIgnoreRegex;
+
+	/**
 	 * Array of current pre info.
 	 * @var array
 	 * @access protected
 	 */
 	protected $_curPre;
-
-	/**
-	 * Array of old pre info.
-	 * @var array
-	 * @access protected
-	 */
-	protected $_oldPre;
 
 	/**
 	 * List of groups and their ID's
@@ -26,11 +25,10 @@ class IRCScraper extends IRCClient
 	protected $_groupList;
 
 	/**
-	 * Run this in silent mode (no text output).
-	 * @var bool
-	 * @access protected
+	 * Array of ignored channels.
+	 * @var array
 	 */
-	protected $_silent;
+	protected $_ignoredChannels;
 
 	/**
 	 * Is this pre nuked or un nuked?
@@ -40,22 +38,24 @@ class IRCScraper extends IRCClient
 	protected $_nuked;
 
 	/**
+	 * Array of old pre info.
+	 * @var array
+	 * @access protected
+	 */
+	protected $_oldPre;
+
+	/**
 	 * @var nzedb\db\DB
 	 * @access protected
 	 */
-	protected $_db;
+	protected $_pdo;
 
 	/**
-	 * Array of ignored channels.
-	 * @var array
+	 * Run this in silent mode (no text output).
+	 * @var bool
+	 * @access protected
 	 */
-	protected $_ignoredChannels;
-
-	/**
-	 * Regex to ignore categories.
-	 * @var string
-	 */
-	protected $_categoryIgnoreRegex;
+	protected $_silent;
 
 	/**
 	 * Regex to ignore PRE titles.
@@ -115,7 +115,7 @@ class IRCScraper extends IRCClient
 			$this->_titleIgnoreRegex = SCRAPE_IRC_TITLE_IGNORE;
 		}
 
-		$this->_db = new nzedb\db\DB();
+		$this->_pdo = new nzedb\db\Settings();
 		$this->_groupList = array();
 		$this->_silent = $silent;
 		$this->_debug = $debug;
@@ -202,7 +202,7 @@ class IRCScraper extends IRCClient
 				return;
 			}
 
-			$this->_curPre['predate'] = $this->_db->from_unixtime(strtotime($matches['time'] . ' UTC'));
+			$this->_curPre['predate'] = $this->_pdo->from_unixtime(strtotime($matches['time'] . ' UTC'));
 			$this->_curPre['title'] = $matches['title'];
 			$this->_curPre['source'] = $matches['source'];
 			if ($matches['category'] !== 'N/A') {
@@ -254,7 +254,7 @@ class IRCScraper extends IRCClient
 	 */
 	protected function _checkForDupe()
 	{
-		$this->_oldPre = $this->_db->queryOneRow(sprintf('SELECT category, size FROM predb WHERE title = %s', $this->_db->escapeString($this->_curPre['title'])));
+		$this->_oldPre = $this->_pdo->queryOneRow(sprintf('SELECT category, size FROM predb WHERE title = %s', $this->_pdo->escapeString($this->_curPre['title'])));
 		if ($this->_oldPre === false) {
 			$this->_insertNewPre();
 		} else {
@@ -288,25 +288,25 @@ class IRCScraper extends IRCClient
 
 		$query .= 'predate, title) VALUES (';
 
-		$query .= (!empty($this->_curPre['size'])     ? $this->_db->escapeString($this->_curPre['size'])     . ', '   : '');
-		$query .= (!empty($this->_curPre['category']) ? $this->_db->escapeString($this->_curPre['category']) . ', '   : '');
-		$query .= (!empty($this->_curPre['source'])   ? $this->_db->escapeString($this->_curPre['source'])   . ', '   : '');
-		$query .= (!empty($this->_curPre['reason'])   ? $this->_db->escapeString($this->_curPre['reason'])   . ', '   : '');
-		$query .= (!empty($this->_curPre['files'])    ? $this->_db->escapeString($this->_curPre['files'])    . ', '   : '');
+		$query .= (!empty($this->_curPre['size'])     ? $this->_pdo->escapeString($this->_curPre['size'])     . ', '   : '');
+		$query .= (!empty($this->_curPre['category']) ? $this->_pdo->escapeString($this->_curPre['category']) . ', '   : '');
+		$query .= (!empty($this->_curPre['source'])   ? $this->_pdo->escapeString($this->_curPre['source'])   . ', '   : '');
+		$query .= (!empty($this->_curPre['reason'])   ? $this->_pdo->escapeString($this->_curPre['reason'])   . ', '   : '');
+		$query .= (!empty($this->_curPre['files'])    ? $this->_pdo->escapeString($this->_curPre['files'])    . ', '   : '');
 		$query .= (!empty($this->_curPre['reqid'])    ? $this->_curPre['reqid']                             . ', '   : '');
 		$query .= (!empty($this->_curPre['group_id'])  ? $this->_curPre['group_id']                           . ', '   : '');
 		$query .= (!empty($this->_curPre['nuked'])    ? $this->_curPre['nuked']                             . ', '   : '');
-		$query .= (!empty($this->_curPre['filename']) ? $this->_db->escapeString($this->_curPre['filename']) . ', '   : '');
+		$query .= (!empty($this->_curPre['filename']) ? $this->_pdo->escapeString($this->_curPre['filename']) . ', '   : '');
 		$query .= (!empty($this->_curPre['predate'])  ? $this->_curPre['predate']                           . ', '   : 'NOW(), ');
 
 		$query .= '%s)';
 
-		$this->_db->ping(true);
+		$this->_pdo->ping(true);
 
-		$this->_db->queryExec(
+		$this->_pdo->queryExec(
 			sprintf(
 				$query,
-				$this->_db->escapeString($this->_curPre['title'])
+				$this->_pdo->escapeString($this->_curPre['title'])
 			)
 		);
 
@@ -326,18 +326,18 @@ class IRCScraper extends IRCClient
 
 		$query = 'UPDATE predb SET ';
 
-		$query .= (!empty($this->_curPre['size'])     ? 'size = '       . $this->_db->escapeString($this->_curPre['size'])     . ', ' : '');
-		$query .= (!empty($this->_curPre['source'])   ? 'source = '     . $this->_db->escapeString($this->_curPre['source'])   . ', ' : '');
-		$query .= (!empty($this->_curPre['files'])    ? 'files = '      . $this->_db->escapeString($this->_curPre['files'])    . ', ' : '');
-		$query .= (!empty($this->_curPre['reason'])   ? 'nukereason = ' . $this->_db->escapeString($this->_curPre['reason'])   . ', ' : '');
+		$query .= (!empty($this->_curPre['size'])     ? 'size = '       . $this->_pdo->escapeString($this->_curPre['size'])     . ', ' : '');
+		$query .= (!empty($this->_curPre['source'])   ? 'source = '     . $this->_pdo->escapeString($this->_curPre['source'])   . ', ' : '');
+		$query .= (!empty($this->_curPre['files'])    ? 'files = '      . $this->_pdo->escapeString($this->_curPre['files'])    . ', ' : '');
+		$query .= (!empty($this->_curPre['reason'])   ? 'nukereason = ' . $this->_pdo->escapeString($this->_curPre['reason'])   . ', ' : '');
 		$query .= (!empty($this->_curPre['reqid'])    ? 'requestid = '  . $this->_curPre['reqid']                             . ', ' : '');
 		$query .= (!empty($this->_curPre['group_id'])  ? 'group_id = '    . $this->_curPre['group_id']                           . ', ' : '');
 		$query .= (!empty($this->_curPre['predate'])  ? 'predate = '    . $this->_curPre['predate']                           . ', ' : '');
 		$query .= (!empty($this->_curPre['nuked'])    ? 'nuked = '      . $this->_curPre['nuked']                             . ', ' : '');
-		$query .= (!empty($this->_curPre['filename']) ? 'filename = '   . $this->_db->escapeString($this->_curPre['filename']) . ', ' : '');
+		$query .= (!empty($this->_curPre['filename']) ? 'filename = '   . $this->_pdo->escapeString($this->_curPre['filename']) . ', ' : '');
 		$query .= (
 			(empty($this->_oldPre['category']) && !empty($this->_curPre['category']))
-				? 'category = ' . $this->_db->escapeString($this->_curPre['category']) . ', '
+				? 'category = ' . $this->_pdo->escapeString($this->_curPre['category']) . ', '
 				: ''
 		);
 
@@ -345,12 +345,12 @@ class IRCScraper extends IRCClient
 			return;
 		}
 
-		$query .= 'title = '      . $this->_db->escapeString($this->_curPre['title']);
-		$query .= ' WHERE title = ' . $this->_db->escapeString($this->_curPre['title']);
+		$query .= 'title = '      . $this->_pdo->escapeString($this->_curPre['title']);
+		$query .= ' WHERE title = ' . $this->_pdo->escapeString($this->_curPre['title']);
 
-		$this->_db->ping(true);
+		$this->_pdo->ping(true);
 
-		$this->_db->queryExec($query);
+		$this->_pdo->queryExec($query);
 
 		$this->_doEcho(false);
 	}
@@ -424,7 +424,7 @@ class IRCScraper extends IRCClient
 	protected function _getGroupID($groupName)
 	{
 		if (!isset($this->_groupList[$groupName])) {
-			$group = $this->_db->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $this->_db->escapeString($groupName)));
+			$group = $this->_pdo->queryOneRow(sprintf('SELECT id FROM groups WHERE name = %s', $this->_pdo->escapeString($groupName)));
 			$this->_groupList[$groupName] = $group['id'];
 		}
 		return $this->_groupList[$groupName];

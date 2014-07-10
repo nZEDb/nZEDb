@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 // TODO make this platform agnostic
 passthru("clear");
@@ -45,8 +45,8 @@ if ($sql != '') {
 			$mask = "%-30s... %-125s\n";
 	}
 
-	$db = new DB();
-	$res = $db->queryDirect($sql);
+	$pdo = new Settings();
+	$res = $pdo->queryDirect($sql);
 	@unlink("xdfrexgvtedvgb.uhdntef");
 
 	foreach ($res as $setting)

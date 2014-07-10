@@ -2,21 +2,21 @@
 /* Deletes releases in categories you have disabled here : http://localhost/admin/category-list.php */
 require dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
 if (isset($argv[1]) && $argv[1] == "true") {
 
 	$timestart = TIME();
-	$db = new DB();
+	$pdo = new Settings();
 	$releases = new Releases();
 	$category = new Category();
 	$catlist = $category->getDisabledIDs();
 	$relsdeleted = 0;
 	if (count($catlist > 0)) {
 		foreach ($catlist as $cat) {
-			if ($rels = $db->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $cat['id']))) {
+			if ($rels = $pdo->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $cat['id']))) {
 				foreach ($rels as $rel) {
 					$relsdeleted++;
 					$releases->fastDelete($rel['id'], $rel['guid']);

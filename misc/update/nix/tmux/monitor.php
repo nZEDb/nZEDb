@@ -11,7 +11,7 @@ $git = new \nzedb\utility\Git();
 
 $version = $versions->versions->git->tag . 'r' . $git->commits();
 
-$db = new Settings();
+$pdo = new Settings();
 $DIR = nZEDb_MISC;
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
@@ -22,15 +22,18 @@ $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
 $run_ircscraper = $tmux->run_ircscraper;
 
-$s = new Sites();
-$site = $s->get();
-$patch = $site->sqlpatch;
-$alternate_nntp = ($site->alternate_nntp === '1') ? true : false;
-$tablepergroup = (isset($site->tablepergroup)) ? $site->tablepergroup : 0;
-$delay = (isset($site->delaytime)) ? $site->delaytime : 2;
-$nntpproxy = (isset($site->nntpproxy)) ? $site->nntpproxy : 0;
-$bookreqids = ($site->book_reqids == null || $site->book_reqids == "") ? 8010 : $site->book_reqids;
-$request_hours = (isset($site->request_hours)) ? $site->request_hours : 1;
+$patch = $pdo->getSetting('sqlpatch');
+$alternate_nntp = ($pdo->getSetting('alternate_nntp') == '1') ? true : false;
+$tpg = $pdo->getSetting('tablepergroup');
+$tablepergroup = isset($tpg) ? $tpg : 0;
+$dt = $pdo->getSetting('delaytime');
+$delay = isset($dt) ? $dt : 2;
+$proxy = $pdo->getSetting('nntpproxy');
+$nntpproxy = isset($proxy) ? $proxy : 0;
+$bkreqid = $pdo->getSetting('book_reqids');
+$bookreqids = ($bkreqid === null || $bkreqid == "") ? 8010 : $bkreqid;
+$reqHours = $pdo->getSetting('request_hours');
+$request_hours = isset($reqHours) ? $reqHours : 1;
 
 if (command_exist("python3")) {
 	$PYTHON = "python3 -OOu";
@@ -122,7 +125,8 @@ $proc_work2 = "SELECT "
 	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
 $proc_work3 = "SELECT "
-	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus in (0, -1)) AS requestid_local, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = 0) AS requestid_unproc, "
+	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -1) AS requestid_local, "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $request_hours . " HOUR) AS requestid_web, "
 	. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1) AS requestid_matched, "
 	. "(SELECT COUNT(*) FROM releases WHERE preid > 0) AS predb_matched, "
@@ -329,7 +333,7 @@ $last_history = "";
 
 // Analyze tables
 printf($c->info("\nAnalyzing your tables to refresh your indexes."));
-$db->optimise(true, 'analyze');
+$pdo->optimise(true, 'analyze');
 
 $mask1 = $c->headerOver("%-18s") . " " . $c->tmuxOrange("%-48.48s");
 $mask2 = $c->headerOver("%-20s") . " " . $c->tmuxOrange("%-33.33s");
@@ -400,57 +404,57 @@ while ($i > 0) {
 	shell_exec("killall -o 60s -9 ffmpeg 2>&1 1> /dev/null");
 
 	//check the db connection
-	if ($db->ping(true) == false) {
-		unset($db);
-		$db = new Settings();
+	if ($pdo->ping(true) == false) {
+		unset($pdo);
+		$pdo = new Settings();
 	}
 
 	// These queries are very fast, run every loop
 	$time01 = TIME();
-	$proc_tmux_result = $db->query($proc_tmux, false);
+	$proc_tmux_result = $pdo->query($proc_tmux, false);
 	$tmux_time = (TIME() - $time01);
 
 	//run queries only after time exceeded, these queries can take awhile
 	if ($i == 1 || (TIME() - $time1 >= $monitor && $running == 1)) {
 		echo $c->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
 		$time02 = TIME();
-		$split_result = $db->query($split_query, false);
+		$split_result = $pdo->query($split_query, false);
 		$split_time = (TIME() - $time02);
 		$split1_time = (TIME() - $time01);
 
 		$time03 = TIME();
-		$initquery = $db->query($qry, false);
+		$initquery = $pdo->query($qry, false);
 		$init_time = (TIME() - $time03);
 		$init1_time = (TIME() - $time01);
 
 		$time04 = TIME();
-		$proc_work_result = $db->query($proc_work, rand_bool($i));
+		$proc_work_result = $pdo->query($proc_work, rand_bool($i));
 		$proc1_time = (TIME() - $time04);
 		$proc11_time = (TIME() - $time01);
 
 		$time05 = TIME();
-		$proc_work_result2 = $db->query($proc_work2, rand_bool($i));
+		$proc_work_result2 = $pdo->query($proc_work2, rand_bool($i));
 		$proc2_time = (TIME() - $time05);
 		$proc21_time = (TIME() - $time01);
 
 		$time06 = TIME();
-		$proc_work_result3 = $db->query($proc_work3, rand_bool($i));
+		$proc_work_result3 = $pdo->query($proc_work3, rand_bool($i));
 		$proc3_time = (TIME() - $time06);
 		$proc31_time = (TIME() - $time01);
 
 		$time07 = TIME();
 		if ($tablepergroup == 1) {
-			if ($db->dbSystem() === 'mysql') {
+			if ($pdo->dbSystem() === 'mysql') {
 				$sql = 'SHOW table status';
 			} else {
 				$sql = "SELECT relname FROM pg_class WHERE relname !~ '^(pg_|sql_)' AND relkind = 'r'";
 			}
-			$tables = $db->queryDirect($sql);
+			$tables = $pdo->queryDirect($sql);
 			$collections_table = $binaries_table = $parts_table = $partrepair_table = 0;
 			$age = TIME();
 			if (count($tables) > 0) {
 				foreach ($tables as $row) {
-					if ($db->dbSystem() === 'mysql') {
+					if ($pdo->dbSystem() === 'mysql') {
 						$tbl = $row['name'];
 						$stamp = 'UNIX_TIMESTAMP(dateadded)';
 					} else {
@@ -458,24 +462,24 @@ while ($i > 0) {
 						$stamp = 'extract(epoch FROM dateadded)';
 					}
 					if (strpos($tbl, 'collections_') !== false) {
-						$run = $db->query('SELECT COUNT(*) AS count FROM ' . $tbl, rand_bool($i));
+						$run = $pdo->query('SELECT COUNT(*) AS count FROM ' . $tbl, rand_bool($i));
 						$collections_table += $run[0]['count'];
-						$run1 = $db->query('SELECT ' . $stamp . ' AS dateadded FROM ' . $tbl . ' ORDER BY dateadded ASC LIMIT 1', rand_bool($i));
+						$run1 = $pdo->query('SELECT ' . $stamp . ' AS dateadded FROM ' . $tbl . ' ORDER BY dateadded ASC LIMIT 1', rand_bool($i));
 						if (isset($run1[0]['dateadded']) && is_numeric($run1[0]['dateadded']) && $run1[0]['dateadded'] < $age) {
 							$age = $run1[0]['dateadded'];
 						}
 					} else if (strpos($tbl, 'binaries_') !== false) {
-						$run = $db->query('SELECT COUNT(*) AS count FROM ' . $tbl, rand_bool($i));
+						$run = $pdo->query('SELECT COUNT(*) AS count FROM ' . $tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count'])) {
 							$binaries_table += $run[0]['count'];
 						}
 					} else if (strpos($tbl, 'parts_') !== false) {
-						$run = $db->query('SELECT COUNT(*) AS count FROM ' . $tbl, rand_bool($i));
+						$run = $pdo->query('SELECT COUNT(*) AS count FROM ' . $tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count'])) {
 							$parts_table += $run[0]['count'];
 						}
 					} else if (strpos($tbl, 'partrepair_') !== false) {
-						$run = $db->query('SELECT COUNT(*) AS count FROM ' . $tbl, rand_bool($i));
+						$run = $pdo->query('SELECT COUNT(*) AS count FROM ' . $tbl, rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count'])) {
 							$partrepair_table += $run[0]['count'];
 						}
@@ -490,13 +494,13 @@ while ($i > 0) {
 	}
 
 	if (!isset($proc_work_result[0])) {
-		$proc_work_result = $db->query($proc_work, rand_bool($i));
+		$proc_work_result = $pdo->query($proc_work, rand_bool($i));
 	}
 	if (!isset($proc_work_result2[0])) {
-		$proc_work_result2 = $db->query($proc_work2, rand_bool($i));
+		$proc_work_result2 = $pdo->query($proc_work2, rand_bool($i));
 	}
 	if (!isset($proc_work_result3[0])) {
-		$proc_work_result3 = $db->query($proc_work3, rand_bool($i));
+		$proc_work_result3 = $pdo->query($proc_work3, rand_bool($i));
 	}
 
 	//get start values from $qry
@@ -537,8 +541,8 @@ while ($i > 0) {
 		if ($proc_work_result[0]['releases'] != null) {
 			$releases_start = $proc_work_result[0]['releases'];
 		}
-		if ($proc_work_result3[0]['requestid_local'] != null || $proc_work_result3[0]['requestid_web'] != null) {
-			$requestid_inprogress_start = $proc_work_result3[0]['requestid_local'] + $proc_work_result3[0]['requestid_web'];
+		if ($proc_work_result3[0]['requestid_unproc'] != null || $proc_work_result3[0]['requestid_local'] != null || $proc_work_result3[0]['requestid_web'] != null) {
+			$requestid_inprogress_start = $proc_work_result3[0]['requestid_unproc'] + $proc_work_result3[0]['requestid_local'] + $proc_work_result3[0]['requestid_web'];
 		}
 		if ($proc_work_result2[0]['work'] != null) {
 			$work_remaining_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron'];
@@ -638,8 +642,8 @@ while ($i > 0) {
 	if ($proc_work_result3[0]['distinct_predb_matched'] != null) {
 		$distinct_predb_matched = $proc_work_result3[0]['distinct_predb_matched'];
 	}
-	if ($proc_work_result3[0]['requestid_local'] != null || $proc_work_result3[0]['requestid_web'] != null) {
-		$requestid_inprogress = $proc_work_result3[0]['requestid_local'] + $proc_work_result3[0]['requestid_web'];
+	if ($proc_work_result3[0]['requestid_unproc'] != null || $proc_work_result3[0]['requestid_local'] != null || $proc_work_result3[0]['requestid_web'] != null) {
+		$requestid_inprogress = $proc_work_result3[0]['requestid_unproc'] + $proc_work_result3[0]['requestid_local'] + $proc_work_result3[0]['requestid_web'];
 	}
 	if ($proc_work_result3[0]['requestid_matched'] != null) {
 		$requestid_matched = $proc_work_result3[0]['requestid_matched'];
@@ -842,22 +846,22 @@ while ($i > 0) {
 
 	// Make sure thes types of post procs are on or off in the site first.
 	// Otherwise if they are set to off, article headers will stop downloading as these off post procs queue up.
-	if ($site->lookuptvrage == 0) {
+	if ($pdo->getSetting('lookuptvrage') == 0) {
 		$tvrage_releases_proc = $tvrage_releases_proc_start = 0;
 	}
-	if ($site->lookupmusic == 0) {
+	if ($pdo->getSetting('lookupmusic') == 0) {
 		$music_releases_proc = $music_releases_proc_start = 0;
 	}
-	if ($site->lookupimdb == 0) {
+	if ($pdo->getSetting('lookupimdb') == 0) {
 		$movie_releases_proc = $movie_releases_proc_start = 0;
 	}
-	if ($site->lookupgames == 0) {
+	if ($pdo->getSetting('lookupgames') == 0) {
 		$console_releases_proc = $console_releases_proc_start = 0;
 	}
-	if ($site->lookupbooks == 0) {
+	if ($pdo->getSetting('lookupbooks') == 0) {
 		$book_releases_proc = $book_releases_proc_start = 0;
 	}
-	if ($site->lookupnfo == 0) {
+	if ($pdo->getSetting('lookupnfo') == 0) {
 		$nfo_remaining_now = $nfo_remaining_start = 0;
 	}
 
@@ -1050,7 +1054,7 @@ while ($i > 0) {
 		printf($mask3, "======================================", "=========================", "======================================");
 		printf($mask4, "Combined", $tmux_time . " " . $split_time . " " . $init_time . " " . $proc1_time . " " . $proc2_time . " " . $proc3_time . " " . $tpg_count_time, $tmux_time . " " . $split1_time . " " . $init1_time . " " . $proc11_time . " " . $proc21_time . " " . $proc31_time . " " . $tpg_count_1_time);
 
-		$pieces = explode(" ", $db->getAttribute(PDO::ATTR_SERVER_INFO));
+		$pieces = explode(" ", $pdo->getAttribute(PDO::ATTR_SERVER_INFO));
 		echo $c->primaryOver("\nThreads = ") . $c->headerOver($pieces[4]) . $c->primaryOver(', Opens ') . $c->headerOver($pieces[14]) . $c->primaryOver(', Tables = ') . $c->headerOver($pieces[22]) . $c->primaryOver(', Slow = ') . $c->headerOver($pieces[11]) . $c->primaryOver(', QPS = ') . $c->header($pieces[28]);
 	}
 
@@ -1289,7 +1293,7 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by Postprocess Non-Amazon\"'");
 			}
 
-			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0)) && (($processbooks == 1) || ($processmusic == 1) || ($processgames == 1))) {
+			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0) || ($pc_releases_proc > 0)) && (($processbooks == 1) || ($processmusic == 1) || ($processgames == 1))) {
 				//run postprocess_releases amazon
 				$log = writelog($panes2[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.2 ' \
@@ -1298,9 +1302,9 @@ while ($i > 0) {
 			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
-			} else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0)) {
+			} else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0) && ($pc_releases_proc == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by No Music/Books/Console to process\"'");
+				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by No Music/Books/Console/Games to process\"'");
 			} else {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by Postprocess Amazon\"'");
@@ -1471,7 +1475,7 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Update TV/Theater\"'");
 			}
 
-			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0)) && (($processbooks != 0) || ($processmusic != 0) || ($processgames != 0))) {
+			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0) || ($pc_releases_proc > 0)) && (($processbooks != 0) || ($processmusic != 0) || ($processgames != 0))) {
 				//run postprocess_releases amazon
 				$log = writelog($panes1[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
@@ -1480,9 +1484,9 @@ while ($i > 0) {
 			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
-			} else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0)) {
+			} else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0) && ($pc_releases_proc == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by No Music/Books/Console to process\"'");
+				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by No Music/Books/Console/Games to process\"'");
 			} else {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Postprocess Amazon\"'");
@@ -1653,8 +1657,8 @@ function run_ircscraper($tmux_session, $_php, $pane, $run_ircscraper)
 
 function run_sharing($tmux_session, $_php, $pane, $_sleep, $sharing_timer)
 {
-	$db = new Settings();
-	$sharing = $db->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
+	$pdo = new Settings();
+	$sharing = $pdo->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
 	$t = new Tmux();
 	$tmux = $t->get();
 	$tmux_share = (isset($tmux->run_sharing)) ? $tmux->run_sharing : 0;

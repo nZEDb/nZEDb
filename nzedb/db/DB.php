@@ -43,7 +43,7 @@ class DB extends \PDO
 	/**
 	 * @var object Instance of PDO class.
 	 */
-	protected static $pdo = null;
+	protected static $_pdo = null;
 
 	/**
 	 * @var object Class instance debugging.
@@ -53,7 +53,7 @@ class DB extends \PDO
 	/**
 	 * @var string Lower-cased name of DBMS in use.
 	 */
-	private $DbSystem;
+	private $dbSystem;
 
 	/**
 	 * @var string Version of the Db server.
@@ -100,10 +100,10 @@ class DB extends \PDO
 		$this->_cli = \nzedb\utility\Utility::isCLI();
 
 		if (!empty($this->opts['dbtype'])) {
-			$this->DbSystem = strtolower($this->opts['dbtype']);
+			$this->dbSystem = strtolower($this->opts['dbtype']);
 		}
 
-		if (!(self::$pdo instanceof \PDO)) {
+		if (!(self::$_pdo instanceof \PDO)) {
 			$this->initialiseDatabase();
 		}
 
@@ -119,7 +119,7 @@ class DB extends \PDO
 			$this->fetchDbVersion();
 		}
 
-		return self::$pdo;
+		return self::$_pdo;
 	}
 
 	public function checkDbExists ($name = null)
@@ -150,7 +150,7 @@ class DB extends \PDO
 	 */
 	public function checkIndex($table, $index)
 	{
-		$result = self::$pdo->query(sprintf("SHOW INDEX FROM %s WHERE key_name = '%s'",
+		$result = self::$_pdo->query(sprintf("SHOW INDEX FROM %s WHERE key_name = '%s'",
 										trim($table),
 										trim($index)));
 		if ($result === false) {
@@ -162,7 +162,7 @@ class DB extends \PDO
 
 	public function checkColumnIndex($table, $column)
 	{
-		$result = self::$pdo->query(sprintf("SHOW INDEXES IN %s WHERE non_unique = 0 AND column_name = '%s'",
+		$result = self::$_pdo->query(sprintf("SHOW INDEXES IN %s WHERE non_unique = 0 AND column_name = '%s'",
 										trim($table),
 										trim($column)
 								));
@@ -177,7 +177,7 @@ class DB extends \PDO
 	{
 		$query  = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' :
 			'SELECT datname AS Database FROM pg_database');
-		$result = self::$pdo->query($query);
+		$result = self::$_pdo->query($query);
 		return $result->fetchAll(\PDO::FETCH_ASSOC);
 	}
 
@@ -207,23 +207,23 @@ class DB extends \PDO
 	 */
 	private function initialiseDatabase()
 	{
-		if ($this->DbSystem === 'mysql') {
+		if ($this->dbSystem === 'mysql') {
 			if (!empty($this->opts['dbsock'])) {
-				$dsn = $this->DbSystem . ':unix_socket=' . $this->opts['dbsock'];
+				$dsn = $this->dbSystem . ':unix_socket=' . $this->opts['dbsock'];
 			} else {
-				$dsn = $this->DbSystem . ':host=' . $this->opts['dbhost'];
+				$dsn = $this->dbSystem . ':host=' . $this->opts['dbhost'];
 				if (!empty($this->opts['dbport'])) {
 					$dsn .= ';port=' . $this->opts['dbport'];
 				}
 			}
 		} else {
-			$dsn = $this->DbSystem . ':host=' . $this->opts['dbhost'] . ';dbname=' . $this->opts['dbname'];
+			$dsn = $this->dbSystem . ':host=' . $this->opts['dbhost'] . ';dbname=' . $this->opts['dbname'];
 		}
 		$dsn .= ';charset=utf8';
 
 		$options = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_TIMEOUT => 180,
 						 \PDO::ATTR_PERSISTENT => $this->opts['persist']);
-		if ($this->DbSystem === 'mysql') {
+		if ($this->dbSystem === 'mysql') {
 			$options[\PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
 			$options[\PDO::MYSQL_ATTR_LOCAL_INFILE] = true;
 		}
@@ -231,7 +231,7 @@ class DB extends \PDO
 		$this->dsn = $dsn;
 		// removed try/catch to let the instantiating code handle the problem (Install for
 		// instance can output a message that connecting failed.
-		self::$pdo = new \PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
+		self::$_pdo = new \PDO($dsn, $this->opts['dbuser'], $this->opts['dbpass'], $options);
 
 		$found = self::checkDbExists();
 		if ($this->opts['dbtype'] === 'pgsql' && !$found) {
@@ -242,7 +242,7 @@ class DB extends \PDO
 		if ($this->opts['createDb']) {
 			if ($found) {
 				try {
-					self::$pdo->query("DROP DATABASE " . $this->opts['dbname']);
+					self::$_pdo->query("DROP DATABASE " . $this->opts['dbname']);
 				} catch (Exception $e) {
 					throw new \RuntimeException("Error trying to drop your old database: '{$this->opts['dbname']}'", 2);
 				}
@@ -253,18 +253,18 @@ class DB extends \PDO
 				var_dump(self::getTableList());
 				throw new \RuntimeException("Could not drop your old database: '{$this->opts['dbname']}'", 2);
 			} else {
-				self::$pdo->query("CREATE DATABASE `{$this->opts['dbname']}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
+				self::$_pdo->query("CREATE DATABASE `{$this->opts['dbname']}`  DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
 
 				if (!self::checkDbExists()) {
 					throw new \RuntimeException("Could not create new database: '{$this->opts['dbname']}'", 3);
 				}
 			}
 		}
-		self::$pdo->query("USE {$this->opts['dbname']}");
+		self::$_pdo->query("USE {$this->opts['dbname']}");
 		//		var_dump('made it here');
 
 		// In case PDO is not set to produce exceptions (PHP's default behaviour).
-		if (self::$pdo === false) {
+		if (self::$_pdo === false) {
 			$this->echoError(
 				 "Unable to create connection to the Database!",
 				 'initialiseDatabase',
@@ -274,8 +274,8 @@ class DB extends \PDO
 		}
 
 		// For backwards compatibility, no need for a patch.
-		self::$pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
-		self::$pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+		self::$_pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
+		self::$_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 	}
 
 	/**
@@ -306,7 +306,7 @@ class DB extends \PDO
 	 */
 	public function DbSystem()
 	{
-		return $this->DbSystem;
+		return $this->dbSystem;
 	}
 
 	/**
@@ -322,7 +322,7 @@ class DB extends \PDO
 			return 'NULL';
 		}
 
-		return self::$pdo->quote($str);
+		return self::$_pdo->quote($str);
 	}
 
 	/**
@@ -337,7 +337,7 @@ class DB extends \PDO
 	public function likeString($str, $left=true, $right=true)
 	{
 		return (
-			($this->DbSystem === 'mysql' ? 'LIKE ' : 'ILIKE ') .
+			($this->dbSystem === 'mysql' ? 'LIKE ' : 'ILIKE ') .
 			$this->escapeString(
 				($left  ? '%' : '') .
 				$str .
@@ -353,7 +353,7 @@ class DB extends \PDO
 	 */
 	public function isInitialised()
 	{
-		return (self::$pdo instanceof \PDO);
+		return (self::$_pdo instanceof \PDO);
 	}
 
 	/**
@@ -404,10 +404,11 @@ class DB extends \PDO
 	 * Used for deleting, updating (and inserting without needing the last insert id).
 	 *
 	 * @param string $query
+	 * @param bool   $silent Echo or log errors?
 	 *
 	 * @return bool
 	 */
-	public function queryExec($query)
+	public function queryExec($query, $silent = false)
 	{
 		if (empty($query)) {
 			return false;
@@ -437,7 +438,7 @@ class DB extends \PDO
 				return $result;
 			}
 		}
-		if ($this->_debug) {
+		if ($silent === false && $this->_debug) {
 			$this->echoError($error, 'queryExec', 4);
 			$this->debugging->start("queryExec", $query, 6);
 		}
@@ -456,16 +457,16 @@ class DB extends \PDO
 	{
 		try {
 			if ($insert === false ) {
-				$run = self::$pdo->prepare($query);
+				$run = self::$_pdo->prepare($query);
 				$run->execute();
 				return $run;
 			} else {
-				if ($this->DbSystem === 'mysql') {
-					$ins = self::$pdo->prepare($query);
+				if ($this->dbSystem === 'mysql') {
+					$ins = self::$_pdo->prepare($query);
 					$ins->execute();
-					return self::$pdo->lastInsertId();
+					return self::$_pdo->lastInsertId();
 				} else {
-					$p = self::$pdo->prepare($query . ' RETURNING id');
+					$p = self::$_pdo->prepare($query . ' RETURNING id');
 					$p->execute();
 					$r = $p->fetch(\PDO::FETCH_ASSOC);
 					return $r['id'];
@@ -502,6 +503,11 @@ class DB extends \PDO
 	/**
 	 * Direct query. Return the affected row count. http://www.php.net/manual/en/pdo.exec.php
 	 *
+	 * @note If not "consumed", causes this error:
+	 *       'SQLSTATE[HY000]: General error: 2014 Cannot execute queries while other unbuffered queries are active.
+	 *        Consider using PDOStatement::fetchAll(). Alternatively, if your code is only ever going to run against mysql,
+	 *        you may enable query buffering by setting the PDO::MYSQL_ATTR_USE_BUFFERED_QUERY attribute.'
+	 *
 	 * @param string $query
 	 * @param bool   $silent Whether to skip echoing errors to the console.
 	 *
@@ -518,7 +524,7 @@ class DB extends \PDO
 		}
 
 		try {
-			return self::$pdo->exec($query);
+			return self::$_pdo->exec($query);
 
 		} catch (\PDOException $e) {
 
@@ -639,7 +645,7 @@ class DB extends \PDO
 		}
 
 		try {
-			$result = self::$pdo->query($query);
+			$result = self::$_pdo->query($query);
 		} catch (\PDOException $e) {
 
 			// Check if we lost connection to MySQL.
@@ -743,15 +749,15 @@ class DB extends \PDO
 		if ($query == '') {
 			return false;
 		}
-		$mode = self::$pdo->getAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE);
+		$mode = self::$_pdo->getAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE);
 		if ($mode != \PDO::FETCH_ASSOC) {
-			self::$pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+			self::$_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 		}
 
 		$result = $this->queryArray($query);
 
 		if ($mode != \PDO::FETCH_ASSOC) {
-			self::$pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+			self::$_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 		}
 		return $result;
 	}
@@ -767,7 +773,7 @@ class DB extends \PDO
 	public function optimise($admin = false, $type = '')
 	{
 		$tablecnt = 0;
-		if ($this->DbSystem === 'mysql') {
+		if ($this->dbSystem === 'mysql') {
 			if ($type === 'true' || $type === 'full' || $type === 'analyze') {
 				$alltables = $this->query('SHOW TABLE STATUS');
 			} else {
@@ -817,7 +823,7 @@ class DB extends \PDO
 			if ($type !== 'analyze') {
 				$this->queryExec('FLUSH TABLES');
 			}
-		} else if ($this->DbSystem === 'pgsql') {
+		} else if ($this->dbSystem === 'pgsql') {
 			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
 			$tablecnt = count($alltables);
 			foreach ($alltables as $table) {
@@ -835,178 +841,13 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Check if the tables exists for the group_id, make new tables and set status to 1 in groups table for the id.
-	 *
-	 * @param int $grpid
-	 *
-	 * @return bool
-	 */
-	public function newtables($grpid)
-	{
-		$s = new \Sites();
-		$site = $s->get();
-		$DoPartRepair = ($site->partrepair == '0') ? false : true;
-
-		if (!is_null($grpid) && is_numeric($grpid)) {
-			$binaries = $parts = $collections = $partrepair = false;
-			if ($this->DbSystem === 'pgsql') {
-				$like = ' (LIKE collections INCLUDING ALL)';
-			} else {
-				$like = ' LIKE collections';
-			}
-			try {
-				self::$pdo->query('SELECT * FROM ' . $grpid . '_collections LIMIT 1');
-				$old_tables = true;
-			} catch (\PDOException $e) {
-				$old_tables = false;
-			}
-
-			if ($old_tables === true) {
-				$sql = 'SHOW TABLE STATUS';
-				$tables = self::$pdo->query($sql);
-				if (count($tables) > 0) {
-					foreach ($tables as $row) {
-						$tbl = $row['name'];
-						$tblnew = '';
-						if (strpos($tbl, '_collections') !== false) {
-							$tblnew = 'collections_' . str_replace('_collections', '', $tbl);
-						} else if (strpos($tbl, '_binaries') !== false) {
-							$tblnew = 'binaries_' . str_replace('_binaries', '', $tbl);
-						} else if (strpos($tbl, '_parts') !== false) {
-							$tblnew = 'parts_' . str_replace('_parts', '', $tbl);
-						} else if (strpos($tbl, '_partrepair') !== false) {
-							$tblnew = 'partrepair_' . str_replace('_partrepair', '', $tbl);
-						}
-						if ($tblnew != '') {
-							try {
-								self::$pdo->query('ALTER TABLE ' . $tbl . ' RENAME TO ' . $tblnew);
-							} catch (\PDOException $e) {
-								// table already exists
-							}
-						}
-					}
-				}
-			}
-
-			try {
-				self::$pdo->query('SELECT * FROM collections_' . $grpid . ' LIMIT 1');
-				$collections = true;
-			} catch (\PDOException $e) {
-				try {
-					if ($this->queryExec('CREATE TABLE collections_' . $grpid . $like) !== false) {
-						$collections = true;
-						$this->newtables($grpid);
-					}
-				} catch (\PDOException $e) {
-					return false;
-				}
-			}
-
-			if ($collections === true) {
-				if ($this->DbSystem === 'pgsql') {
-					$like = ' (LIKE binaries INCLUDING ALL)';
-				} else {
-					$like = ' LIKE binaries';
-				}
-				try {
-					self::$pdo->query('SELECT * FROM binaries_' . $grpid . ' LIMIT 1');
-					$binaries = true;
-				} catch (\PDOException $e) {
-					if ($this->queryExec('CREATE TABLE binaries_' . $grpid . $like) !== false) {
-						$binaries = true;
-						$this->newtables($grpid);
-					}
-				}
-			}
-
-			if ($binaries === true) {
-				if ($this->DbSystem === 'pgsql') {
-					$like = ' (LIKE parts INCLUDING ALL)';
-				} else {
-					$like = ' LIKE parts';
-				}
-				try {
-					self::$pdo->query('SELECT * FROM parts_' . $grpid . ' LIMIT 1');
-					$parts = true;
-				} catch (\PDOException $e) {
-					if ($this->queryExec('CREATE TABLE parts_' . $grpid . $like) !== false) {
-						$parts = true;
-						$this->newtables($grpid);
-					}
-				}
-			}
-
-			if ($DoPartRepair === true && $parts === true) {
-				if ($this->DbSystem === 'pgsql') {
-					$like = ' (LIKE partrepair INCLUDING ALL)';
-				} else {
-					$like = ' LIKE partrepair';
-				}
-				try {
-					DB::$pdo->query('SELECT * FROM partrepair_' . $grpid . ' LIMIT 1');
-					$partrepair = true;
-				} catch (\PDOException $e) {
-					if ($this->queryExec('CREATE TABLE partrepair_' . $grpid . $like) !== false) {
-						$partrepair = true;
-						$this->newtables($grpid);
-					}
-				}
-			} else {
-				$partrepair = true;
-			}
-
-			if ($parts === true && $binaries === true && $collections === true && $partrepair === true) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Try to create new tables for the group_id, if we fail, log the error and exit.
-	 * Returns table names, with group ID if tpg is on.
-	 *
-	 * @param bool $tpgSetting false, tpg is off in site setting, true tpg is on in site setting.
-	 * @param int  $groupID    ID of the group.
-	 *
-	 * @return array The table names.
-	 */
-	public function tryTablePerGroup($tpgSetting, $groupID)
-	{
-		$group['cname']  = 'collections';
-		$group['bname']  = 'binaries';
-		$group['pname']  = 'parts';
-		$group['prname'] = 'partrepair';
-
-		if ($tpgSetting === true) {
-			if ($this->newtables($groupID) === false) {
-				$this->echoError(
-					'There is a problem creating new parts/files tables for this group ID: ' . $groupID,
-					'tryTablePerGroup',
-					1,
-					true
-				);
-			}
-
-			$groupEnding = '_' . $groupID;
-			$group['cname']  .= $groupEnding;
-			$group['bname']  .= $groupEnding;
-			$group['pname']  .= $groupEnding;
-			$group['prname'] .= $groupEnding;
-		}
-		return $group;
-	}
-
-	/**
 	 * Turns off autocommit until commit() is ran. http://www.php.net/manual/en/pdo.begintransaction.php
 	 *
 	 * @return bool
 	 */
 	public function beginTransaction()
 	{
-		return self::$pdo->beginTransaction();
+		return self::$_pdo->beginTransaction();
 	}
 
 	/**
@@ -1016,7 +857,7 @@ class DB extends \PDO
 	 */
 	public function Commit()
 	{
-		return self::$pdo->commit();
+		return self::$_pdo->commit();
 	}
 
 	/**
@@ -1026,7 +867,7 @@ class DB extends \PDO
 	 */
 	public function Rollback()
 	{
-		return self::$pdo->rollBack();
+		return self::$_pdo->rollBack();
 	}
 
 	/**
@@ -1037,7 +878,7 @@ class DB extends \PDO
 	 */
 	public function from_unixtime($utime)
 	{
-		if ($this->DbSystem === 'mysql') {
+		if ($this->dbSystem === 'mysql') {
 			return 'FROM_UNIXTIME(' . $utime . ')';
 		} else {
 			return 'TO_TIMESTAMP(' . $utime . ')::TIMESTAMP';
@@ -1067,7 +908,7 @@ class DB extends \PDO
 	 */
 	public function unix_timestamp_column($column, $outputName = 'unix_time')
 	{
-		return ($this->DbSystem === 'mysql'
+		return ($this->dbSystem === 'mysql'
 			?
 				'UNIX_TIMESTAMP(' . $column . ') AS ' . $outputName
 			:
@@ -1108,7 +949,7 @@ class DB extends \PDO
 	public function ping($restart = false)
 	{
 		try {
-			return (bool) self::$pdo->query('SELECT 1+1');
+			return (bool) self::$_pdo->query('SELECT 1+1');
 		} catch (\PDOException $e) {
 			if ($restart == true) {
 				$this->initialiseDatabase();
@@ -1133,7 +974,7 @@ class DB extends \PDO
 	public function Prepare($query, $options = array())
 	{
 		try {
-			$PDOstatement = self::$pdo->prepare($query, $options);
+			$PDOstatement = self::$_pdo->prepare($query, $options);
 		} catch (\PDOException $e) {
 			if ($this->_debug) {
 				$this->debugging->start("Prepare", $e->getMessage(), 5);
@@ -1155,7 +996,7 @@ class DB extends \PDO
 	{
 		if ($attribute != '') {
 			try {
-				$result = self::$pdo->getAttribute($attribute);
+				$result = self::$_pdo->getAttribute($attribute);
 			} catch (\PDOException $e) {
 				if ($this->_debug) {
 					$this->debugging->start("getAttribute", $e->getMessage(), 5);
