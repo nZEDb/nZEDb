@@ -10,7 +10,18 @@ Class ProcessAdditional
 	 */
 	const maxCompressedFilesToCheck = 20;
 
+	/**
+	 * @var nzedb\db\Settings
+	 */
 	public $pdo;
+
+	/**
+	 * Extract rar/zip files using rar info or unrar / 7zip directly.
+	 * @note Using rarinfo is faster but produces less good results.
+	 * @TODO DB setting.
+	 * @var bool
+	 */
+	protected $_extractUsingRarInfo = false;
 
 	/**
 	 * @var bool
@@ -61,7 +72,7 @@ Class ProcessAdditional
 	/**
 	 * @param bool        $echo          Echo to CLI.
 	 * @param NNTP        $nntp
-	 * @param nzedb\db\DB $pdo
+	 * @param nzedb\db\Settings $pdo
 	 */
 	public function __construct($echo = false, &$nntp, &$pdo)
 	{
@@ -82,13 +93,18 @@ Class ProcessAdditional
 		$this->_par2Info = new Par2Info();
 		$this->_nfo = new Nfo($this->_echoCLI);
 
+		$this->_7zipPath = false;
+		$this->_unrarPath = false;
+
 		// Pass the binary extractors to ArchiveInfo.
 		$clients = array();
 		if ($this->pdo->getSetting('unrarpath') != '') {
 			$clients += array(ArchiveInfo::TYPE_RAR => $this->pdo->getSetting('unrarpath'));
+			$this->_unrarPath = $this->pdo->getSetting('unrarpath');
 		}
 		if ($this->pdo->getSetting('zippath') != '') {
 			$clients += array(ArchiveInfo::TYPE_ZIP => $this->pdo->getSetting('zippath'));
+			$this->_7zipPath = $this->pdo->getSetting('zippath');
 		}
 		$this->_archiveInfo->setExternalClients($clients);
 
@@ -127,15 +143,15 @@ Class ProcessAdditional
 
 		$this->_addPAR2Files = ($this->pdo->getSetting('addpar2') === '0') ? false : true;
 
-		$this->_processSample      = ($this->pdo->getSetting('ffmpegpath') != '')		 ? false : true;
+		$this->_processSample      = ($this->pdo->getSetting('ffmpegpath') == '')        ? false : true;
 		$this->_processVideo       = ($this->pdo->getSetting('processvideos') == 0)      ? false : true;
 		$this->_processJPGSample   = ($this->pdo->getSetting('processjpg') == 0)         ? false : true;
 		$this->_processAudioSample = ($this->pdo->getSetting('processaudiosample') == 0) ? false : true;
-		$this->_processMediaInfo   = ($this->pdo->getSetting('mediainfopath') != '')	 ? false : true;
+		$this->_processMediaInfo   = ($this->pdo->getSetting('mediainfopath') == '')     ? false : true;
 		$this->_processAudioInfo   = $this->_processMediaInfo;
 		$this->_processPasswords   = (
 			((($this->pdo->getSetting('checkpasswordedrar') == 0) ? false : true)) &&
-			(($this->pdo->getSetting('unrarpath') != '') ? false : true)
+			(($this->pdo->getSetting('unrarpath') == '') ? false : true)
 		);
 
 		// Set up the temporary files folder location.
@@ -650,7 +666,7 @@ Class ProcessAdditional
 	}
 
 	/**
-	 * Check if the data is a ZIP / RAR file, pass it to the appropriate function to extract files.
+	 * Check if the data is a ZIP / RAR file, extract files, get file info.
 	 *
 	 * @param string $compressedData
 	 *
@@ -681,37 +697,49 @@ Class ProcessAdditional
 			return false;
 		}
 
-		return $this->_processCompressedFileList($dataSummary['main_type']);
-	}
-
-	/**
-	 * Get a list of all files in the compressed file, extract them and add the file info to the DB.
-	 *
-	 * @param int    $archiveType ArchiveInfo archive type constant.
-	 *
-	 * @return bool
-	 */
-	protected function _processCompressedFileList($archiveType)
-	{
-		// Get a list of files inside the Compressed file.
-		$files = $this->_archiveInfo->getArchiveFileList();
-		if (!is_array($files) || count($files) === 0) {
-			return false;
-		}
-
-		switch ($archiveType) {
+		switch ($dataSummary['main_type']) {
 			case ArchiveInfo::TYPE_RAR:
 				if ($this->_echoCLI) {
 					echo 'r';
+				}
+
+				if ($this->_extractUsingRarInfo === false && $this->_unrarPath !== false) {
+					$fileName = $this->tmpPath . uniqid() . '.rar';
+					file_put_contents($fileName, $compressedData);
+					nzedb\utility\runCmd('"' . $this->_unrarPath . '" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' . $fileName . '" "' . $this->tmpPath . 'unrar/"');
+					unlink($fileName);
 				}
 				break;
 			case ArchiveInfo::TYPE_ZIP:
 				if ($this->_echoCLI) {
 					echo 'z';
 				}
+
+				if ($this->_extractUsingRarInfo === false && $this->_7zipPath !== false) {
+					$fileName = $this->tmpPath . uniqid() . '.zip';
+					file_put_contents($fileName, $compressedData);
+					nzedb\utility\runCmd('"' . $this->_7zipPath . '" x "' . $fileName . '" -bd -y -o"' . $this->tmpPath . 'unzip/"');
+					unlink($fileName);
+				}
 				break;
 			default:
 				return false;
+		}
+
+		return $this->_processCompressedFileList($dataSummary['main_type']);
+	}
+
+	/**
+	 * Get a list of all files in the compressed file, add the file info to the DB.
+	 *
+	 * @return bool
+	 */
+	protected function _processCompressedFileList()
+	{
+		// Get a list of files inside the Compressed file.
+		$files = $this->_archiveInfo->getArchiveFileList();
+		if (!is_array($files) || count($files) === 0) {
+			return false;
 		}
 
 		// Loop through the files.
@@ -735,16 +763,18 @@ Class ProcessAdditional
 					break;
 				}
 
-				// Extract files from the rar.
-				if (isset($file['compressed']) && $file['compressed'] == 0) {
-					@file_put_contents(
-						($this->tmpPath . mt_rand(10, 999999) . '_' . $fileName),
-						$this->_archiveInfo->getFileData($file['name'], $file['source'])
-					);
-				}
-				// If the files are compressed, use a binary extractor.
-				else {
-					$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(10, 999999) . '_' . $fileName);
+				if ($this->_extractUsingRarInfo === true) {
+					// Extract files from the rar.
+					if (isset($file['compressed']) && $file['compressed'] == 0) {
+						@file_put_contents(
+							($this->tmpPath . mt_rand(10, 999999) . '_' . $fileName),
+							$this->_archiveInfo->getFileData($file['name'], $file['source'])
+						);
+					}
+					// If the files are compressed, use a binary extractor.
+					else {
+						$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(10, 999999) . '_' . $fileName);
+					}
 				}
 			}
 
