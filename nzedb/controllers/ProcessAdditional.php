@@ -10,6 +10,9 @@ Class ProcessAdditional
 	 */
 	const maxCompressedFilesToCheck = 20;
 
+	/**
+	 * @var nzedb\db\Settings
+	 */
 	public $pdo;
 
 	/**
@@ -61,7 +64,7 @@ Class ProcessAdditional
 	/**
 	 * @param bool        $echo          Echo to CLI.
 	 * @param NNTP        $nntp
-	 * @param nzedb\db\DB $pdo
+	 * @param nzedb\db\Settings $pdo
 	 */
 	public function __construct($echo = false, &$nntp, &$pdo)
 	{
