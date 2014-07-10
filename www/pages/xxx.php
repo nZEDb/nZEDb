@@ -29,7 +29,6 @@ $orderby = isset($_REQUEST['ob']) && in_array($_REQUEST['ob'], $ordering) ? $_RE
 
 $results = $movies = array();
 $results = $movie->getXXXRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orderby, -1, $page->userdata['categoryexclusions']);
-//print_r($movie); exit;
 foreach ($results as $result) {
 	$result['genre'] = $movie->makeFieldLinks($result, 'genre');
 	$result['actors'] = $movie->makeFieldLinks($result, 'actors');
@@ -49,6 +48,7 @@ $page->smarty->assign('director', $director);
 
 $genres = $movie->getGenres();
 $genre = (isset($_REQUEST['genre']) && in_array($_REQUEST['genre'], $genres)) ? $_REQUEST['genre'] : '';
+//var_dump($genres);exit;
 $page->smarty->assign('genres', $genres);
 $page->smarty->assign('genre', $genre);
 

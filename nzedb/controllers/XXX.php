@@ -449,7 +449,9 @@ class XXX
 		$mov['backdrop'] = (isset($res['backcover'])) ? $res['backcover'] : '';
 		$mov['cover'] = (isset($res['boxcover'])) ? $res['boxcover'] : '';
 		$res['cast'] = (isset($res['cast'])) ? join(",", $res['cast']) : '';
-		$res['genres'] = (isset($res['genres'])) ? join(",", $res['genres']) : '';
+		$res['genres'] = $this->getgenreid($res['genres']);
+		exit;
+		//$res['genres'] = (isset($res['genres'])) ? join(",", $res['genres']) : '';
 		$mov['title'] = html_entity_decode($xxxmovie, ENT_QUOTES, 'UTF-8');
 		$mov['plot'] = (isset($res['sypnosis'])) ? html_entity_decode($res['sypnosis'], ENT_QUOTES, 'UTF-8') : '';
 		$mov['tagline'] = (isset($res['tagline'])) ? html_entity_decode($res['tagline'], ENT_QUOTES, 'UTF-8') : '';
@@ -656,36 +658,33 @@ class XXX
 	 *
 	 * @return array
 	 */
-	public function getGenres()
+	public function getGenres($activeOnly =false)
 	{
-		return array(
-			'Action',
-			'Adventure',
-			'Animation',
-			'Biography',
-			'Comedy',
-			'Crime',
-			'Documentary',
-			'Drama',
-			'Family',
-			'Fantasy',
-			'Film-Noir',
-			'Game-Show',
-			'History',
-			'Horror',
-			'Music',
-			'Musical',
-			'Mystery',
-			'News',
-			'Reality-TV',
-			'Romance',
-			'Sci-Fi',
-			'Sport',
-			'Talk-Show',
-			'Thriller',
-			'War',
-			'Western'
-		);
+		$db = $this->db;
+		if ($activeOnly) {
+			return $db->query("SELECT title FROM genres WHERE disabled = 0 AND type = 6000 ORDER BY title");
+		} else {
+			return $db->query("SELECT title FROM genres WHERE disabled = 1 AND type = 6000 ORDER BY title");
+		}
 	}
-
+	private function getgenreid($arr)
+	{
+			$db = $this->db;
+			$ret = null;
+			foreach($arr as $key => $value){
+			$res = $this->db->queryOneRow("SELECT id FROM genres WHERE title = ".$this->db->escapeString($value));
+			if($res !== false){
+				$ret .= "," . $res;
+			}else{
+			$ret .= "," . $this->insertGenre($value);
+	}
+			}
+			var_dump($ret); exit;
+		}
+	private function insertGenre($genre = ''){
+ 	if(isset($genre)){
+	$res = $this->db->exec("INSERT INTO genres (title, type, disabled) VALUES('".$this->db->escapeString($genre)."',6000,0) WHERE title != ".$this->db->escapeString($genre));
+	return $res;
+		}
+	}
 }
