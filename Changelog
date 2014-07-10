@@ -6,6 +6,9 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-10 kevin
+	* Fix: Conditionals in ProcessAdditional causing process sample / process mediainfo / process passwords to fail.
+	* Chg: Use 7zip/unrar directly instead of unrar for extracting, which is slower than rarinfo but produces larger files to work on.
 2014-07-09 bart39
 	* Fix: Fix ReleaseRemover for specific blacklist
 	* Add: Regex fixes / additions
