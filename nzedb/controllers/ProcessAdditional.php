@@ -93,6 +93,8 @@ Class ProcessAdditional
 		$this->_par2Info = new Par2Info();
 		$this->_nfo = new Nfo($this->_echoCLI);
 
+		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
+
 		$this->_7zipPath = false;
 		$this->_unrarPath = false;
 
@@ -350,9 +352,7 @@ Class ProcessAdditional
 					// Download the RARs/ZIPs, extract the files inside them and insert the file info into the DB.
 					$this->_processNZBCompressedFiles();
 
-					if ($this->_releaseHasPassword === true) {
-						$this->_passwordStatus[] = Releases::PASSWD_RAR;
-					} else {
+					if ($this->_releaseHasPassword === false) {
 						// Process the extracted files to get video/audio samples/etc.
 						$this->_processExtractedFiles();
 					}
@@ -646,11 +646,7 @@ Class ProcessAdditional
 				// Process the compressed file.
 				$decompressed = $this->_processCompressedData($fetchedBinary);
 
-				if ($this->_releaseHasPassword === true) {
-					$passStatus[] = Releases::PASSWD_RAR;
-				}
-
-				if ($decompressed === true) {
+				if ($decompressed === true || $this->_releaseHasPassword === true) {
 					break;
 				}
 
@@ -694,6 +690,7 @@ Class ProcessAdditional
 		if (!empty($this->_archiveInfo->isEncrypted) || (isset($dataSummary['is_encrypted']) && $dataSummary['is_encrypted'] != 0)) {
 			$this->_debug('ArchiveInfo: Compressed file has a password.');
 			$this->_releaseHasPassword = true;
+			$this->_passwordStatus[] = Releases::PASSWD_RAR;
 			return false;
 		}
 
@@ -745,13 +742,11 @@ Class ProcessAdditional
 		// Loop through the files.
 		foreach ($files as $file) {
 
-			if (isset($file['name'])) {
+			if ($this->_releaseHasPassword === true) {
+				break;
+			}
 
-				if (preg_match('/[^\/\\\\]*\.[a-zA-Z0-9]*$/', $file['name'], $fileName)) {
-					$fileName = $fileName[0];
-				} else {
-					$fileName = '';
-				}
+			if (isset($file['name'])) {
 
 				if (isset($file['error'])) {
 					$this->_debug("Error: {$file['error']} (in: {$file['source']})");
@@ -760,7 +755,20 @@ Class ProcessAdditional
 
 				if ($file['pass'] == true) {
 					$this->_releaseHasPassword = true;
+					$this->_passwordStatus = Releases::PASSWD_RAR;
 					break;
+				}
+
+				if (preg_match($this->_innerFileBlacklist, $file['name'])) {
+					$this->_releaseHasPassword = true;
+					$this->_passwordStatus = Releases::PASSWD_POTENTIAL;
+					break;
+				}
+
+				if (preg_match('/[^\/\\\\]*\.[a-zA-Z0-9]*$/', $file['name'], $fileName)) {
+					$fileName = $fileName[0];
+				} else {
+					$fileName = '';
 				}
 
 				if ($this->_extractUsingRarInfo === true) {
@@ -828,7 +836,8 @@ Class ProcessAdditional
 						preg_match('/[\/\\\\]Codec[\/\\\\]Setup\.exe/i', $file['name'])
 					) {
 						$this->_debug('Codec spam found, setting release to potentially passworded.' . PHP_EOL);
-						$this->_passwordStatus = array(Releases::PASSWD_POTENTIAL);
+						$this->_releaseHasPassword = true;
+						$this->_passwordStatus[] = Releases::PASSWD_POTENTIAL;
 					}
 
 					//Run a PreDB filename check on insert to try and match the release
