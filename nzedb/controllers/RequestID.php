@@ -261,6 +261,10 @@ class RequestID
 		foreach ($this->results as $result) {
 			$this->result = $result;
 
+			if (empty($this->groupID)) {
+				$this->groupID = $result['group_id'];
+			}
+
 			$this->newTitle = false;
 
 			// Try to get request id.
@@ -322,6 +326,10 @@ class RequestID
 					echo '-';
 				}
 				continue;
+			}
+
+			if (empty($this->groupID)) {
+				$this->groupID = $result['group_id'];
 			}
 
 			// Change etc to teevee.
