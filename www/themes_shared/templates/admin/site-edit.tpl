@@ -491,6 +491,13 @@
 					<div class="hint">Whether to update download counts when someone downloads a release.</div>
 				</td>
 			</tr>
+			<tr>
+				<td style="width:180px;"><label for="crossposttime">Crossposted Time Check:</label></td>
+				<td>
+					<input class="short" id="crossposttime" name="crossposttime" type="text" value="{$site->crossposttime}"/>
+					<div class="hint">The time in hours to check for crossposted releases - this will delete 1 of the releases if the 2 are posted by the same person in the same time period.</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 
@@ -910,19 +917,21 @@
 					</div>
 				</td>
 			</tr>
+			<tr>
+				<td style="width:180px;"><label for="delaytime">Delay Time Check:</label></td>
+				<td>
+					<input class="short" id="delaytime" name="delaytime" type="text" value="{$site->delaytime}"/>
+					<div class="hint">The time in hours to wait, since last activity, before releases without parts counts
+						in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..
+					</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 
 	<fieldset>
 		<legend>Various settings</legend>
 		<table class="input">
-			<tr>
-				<td style="width:180px;"><label for="fixnamesperrun">fixReleaseNames per Run:</label></td>
-				<td>
-					<input class="short" id="fixnamesperrun" name="fixnamesperrun" type="text" value="{$site->fixnamesperrun}"/>
-					<div class="hint">The maximum number of releases to check per run(threaded script only).</div>
-				</td>
-			</tr>
 			<tr>
 				<td style="width:180px;"><label for="tablepergroup">Table Per Group:</label></td>
 				<td>
@@ -936,22 +945,6 @@
 							my.cnf. Also, you may need to add the following to /etc/security/limits.conf<br/>mysql soft
 							nofile 24000<br/>mysql hard nofile 32000</b>
 					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="delaytime">Delay Time Check:</label></td>
-				<td>
-					<input class="short" id="delaytime" name="delaytime" type="text" value="{$site->delaytime}"/>
-					<div class="hint">The time in hours to wait, since last activity, before releases without parts counts
-						in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="crossposttime">Crossposted Time Check:</label></td>
-				<td>
-					<input class="short" id="crossposttime" name="crossposttime" type="text" value="{$site->crossposttime}"/>
-					<div class="hint">The time in hours to check for crossposted releases.</div>
 				</td>
 			</tr>
 			<tr>
@@ -1036,6 +1029,13 @@
 					<input class="short" id="fixnamethreads" name="fixnamethreads" type="text" value="{$site->fixnamethreads}"/>
 					<div class="hint">The number of threads for fixReleasesNames. This includes md5, nfos and filenames.
 					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="fixnamesperrun">fixReleaseNames per Run:</label></td>
+				<td>
+					<input class="short" id="fixnamesperrun" name="fixnamesperrun" type="text" value="{$site->fixnamesperrun}"/>
+					<div class="hint">The maximum number of releases to check per run(threaded script only).</div>
 				</td>
 			</tr>
 		</table>
