@@ -746,7 +746,7 @@ Class ProcessAdditional
 					break;
 				}
 
-				if (preg_match($this->_innerFileBlacklist, $file['name'])) {
+				if ($this->_innerFileBlacklist !== false && preg_match($this->_innerFileBlacklist, $file['name'])) {
 					$this->_releaseHasPassword = true;
 					$this->_passwordStatus = Releases::PASSWD_POTENTIAL;
 					break;
