@@ -10,6 +10,10 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Conditionals in ProcessAdditional causing process sample / process mediainfo / process passwords to fail.
 	* Chg: Use 7zip/unrar directly instead of unrar for extracting, which is slower than rarinfo but produces larger files to work on.
 	* Add: session_write_close(); to ajax group requests to allow the admin to use his site while purging/reseting/deleting groups.
+	* Chg: Move site-edit options around, easier to browse through.
+	* Add: Process additional: blacklist rar/zip inner files.
+	* Add: Process additional: ability to chose how many nested rar/zip files deep to go down.
+	* Add: Process additional: ability to chose between using rarinfo or unrar/7z directly for extracting zips/rars.
 2014-07-09 bart39
 	* Fix: Fix ReleaseRemover for specific blacklist
 	* Add: Regex fixes / additions
