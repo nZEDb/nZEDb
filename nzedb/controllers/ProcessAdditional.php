@@ -16,24 +16,9 @@ Class ProcessAdditional
 	public $pdo;
 
 	/**
-	 * Extract rar/zip files using rar info or unrar / 7zip directly.
-	 * @note Using rarinfo is faster but produces less good results.
-	 * @TODO DB setting.
-	 * @var bool
-	 */
-	protected $_extractUsingRarInfo = false;
-
-	/**
 	 * @var bool
 	 */
 	protected $_echoDebug;
-
-	/**
-	 * How many levels deep to go inside of RAR/ZIP files.
-	 * @TODO DB setting.
-	 * @var int
-	 */
-	protected $_maxNestedLevels = 3;
 
 	/**
 	 * Releases to work on.
@@ -94,6 +79,8 @@ Class ProcessAdditional
 		$this->_nfo = new Nfo($this->_echoCLI);
 
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
+		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
+		$this->_extractUsingRarInfo = ($this->pdo->getSetting('extractusingrarinfo') == 0 ? false :true);
 
 		$this->_7zipPath = false;
 		$this->_unrarPath = false;

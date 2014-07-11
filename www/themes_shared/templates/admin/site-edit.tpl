@@ -411,15 +411,8 @@
 	</fieldset>
 
 	<fieldset>
-	<legend>Usenet Settings</legend>
+	<legend>Release Settings</legend>
 		<table class="input">
-			<tr>
-				<td style="width:180px;"><label for="nzbpath">Nzb File Path:</label></td>
-				<td>
-					<input id="nzbpath" class="long" name="nzbpath" type="text" value="{$site->nzbpath}"/>
-					<div class="hint">The directory where nzb files will be stored.</div>
-				</td>
-			</tr>
 			<tr>
 				<td style="width:180px;"><label for="minfilestoformrelease">Minimum Files to Make a Release:</label></td>
 				<td>
@@ -448,27 +441,6 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="maxsizetopostprocess">Maximum Release Size to Post Process:</label></td>
-				<td>
-					<input class="short" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$site->maxsizetopostprocess}"/>
-					<div class="hint">The maximum size in gigabytes to post process (additional) a release. If set to 0, then ignored.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="minsizetopostprocess">Minimum Release Size to Post Process:</label></td>
-				<td>
-					<input class="short" id="minsizetopostprocess" name="minsizetopostprocess" type="text" value="{$site->minsizetopostprocess}"/>
-					<div class="hint">The minimum size in megabytes to post process (additional) a release. If set to 0, then ignored.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="checkpasswordedrar">Check For Passworded Releases:</label></td>
-				<td>
-					{html_radios id="checkpasswordedrar" name='checkpasswordedrar' values=$passwd_ids output=$passwd_names selected=$site->checkpasswordedrar separator='<br />'}
-					<div class="hint">Whether to attempt to peek into every release, to see if rar files are password protected.<br/></div>
-				</td>
-			</tr>
-			<tr>
 				<td style="width:180px;"><label for="deletepasswordedrelease">Delete Passworded Releases:</label></td>
 				<td>
 					{html_radios id="deletepasswordedrelease" name='deletepasswordedrelease' values=$yesno_ids output=$yesno_names selected=$site->deletepasswordedrelease separator='<br />'}
@@ -479,7 +451,7 @@
 				<td style="width:180px;"><label for="deletepossiblerelease">Delete Possibly Passworded Releases:</label></td>
 				<td>
 					{html_radios id="deletepossiblerelease" name='deletepossiblerelease' values=$yesno_ids output=$yesno_names selected=$site->deletepossiblerelease separator='<br />'}
-					<div class="hint">Whether to delete releases which are potentially passworded.<br/></div>
+					<div class="hint">Whether to delete releases which are potentially passworded. This applies to your post process additional inner file blacklist.<br/></div>
 				</td>
 			</tr>
 			<tr>
@@ -492,41 +464,92 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="processjpg">Process JPG:</label></td>
+				<td style="width:180px;"><label for="releaseretentiondays">Release Retention:</label></td>
 				<td>
-					{html_radios id="processjpg" name='processjpg' values=$yesno_ids output=$yesno_names selected=$site->processjpg separator='<br />'}
-					<div class="hint">Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.<br/></div>
+					<input class="short" id="releaseretentiondays" name="releaseretentiondays" type="text" value="{$site->releaseretentiondays}"/>
+					<div class="hint">!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.</div>
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="processvideos">Process Video Samples:</label></td>
+				<td style="width:180px;"><label for="miscotherretentionhours">Misc->Other Retention Hours:</label></td>
 				<td>
-					{html_radios id="processvideos" name='processvideos' values=$yesno_ids output=$yesno_names selected=$site->processvideos separator='<br />'}
-					<div class="hint">Whether to attempt to process a video sample, these videos are very short 1-3 seconds, 100KB on average, in ogv format. You must have ffmpeg for this.<br/></div>
+					<input class="short" id="miscotherretentionhours" name="miscotherretentionhours" type="text" value="{$site->miscotherretentionhours}"/>
+					<div class="hint">The number of hours releases categorized as Misc->Other will be retained. Set to 0 to disable.</div>
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="segmentstodownload">Number of Segments to download for video/jpg samples:</label></td>
+				<td style="width:180px;"><label for="releasecompletion">Release Completion:</label></td>
 				<td>
-					<input class="short" id="segmentstodownload" name="segmentstodownload" type="text" value="{$site->segmentstodownload}"/>
-					<div class="hint">The maximum number of segments to download to generate the sample video file or jpg sample image. (Default 2)
+					<input class="short" id="releasecompletion" name="releasecompletion" type="text"  value="{$site->releasecompletion}"/>
+					<div class="hint">The minimum completion % to keep a release. Set to 0 to disable.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="grabstatus">Update grabs:</label></td>
+				<td>
+					{html_radios id="grabstatus" name='grabstatus' values=$yesno_ids output=$yesno_names selected=$site->grabstatus separator='<br />'}
+					<div class="hint">Whether to update download counts when someone downloads a release.</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset>
+		<legend>RequestID Settings</legend>
+		<table class="input">
+			<tr>
+				<td style="width:180px;"><label for="lookup_reqids">Lookup Request IDs:</label></td>
+				<td>
+					{html_options style="width:180px;" id="lookup_reqids" name='lookup_reqids' values=$lookup_reqids_ids output=$lookup_reqids_names selected=$site->lookup_reqids}
+					<div class="hint">Whether to attempt to lookup Request IDs using the Request ID link below. This will rename your releases to proper PreDB names.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="request_url">Request ID Link:</label></td>
+				<td>
+					<input id="request_url" class="long" name="request_url" type="text" value="{$site->request_url}"/>
+					<div class="hint">Optional URL to lookup Request IDs. [REQUEST_ID] gets replaced with the request ID from the
+						post. [GROUP_NM] Gets replaced with the group name.
 					</div>
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="ffmpeg_duration">Video sample file duration for ffmpeg:</label></td>
+				<td style="width:180px;"><label for="request_hours">Max hours to recheck Request IDs:</label></td>
 				<td>
-					<input class="short" id="ffmpeg_duration" name="ffmpeg_duration" type="text" value="{$site->ffmpeg_duration}"/>
-					<div class="hint">The maximum duration (In Seconds) for ffmpeg to generate the sample for. (Default 5)</div>
+					<input id="request_hours" class="short" name="request_hours" type="text" value="{$site->request_hours}"/>
+					<div class="hint">The maximum hours after a release is added to recheck for a Request ID match.</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset>
+	<legend>NZB Settings</legend>
+		<table class="input">
+			<tr>
+				<td style="width:180px;"><label for="nzbpath">Nzb File Path:</label></td>
+				<td>
+					<input id="nzbpath" class="long" name="nzbpath" type="text" value="{$site->nzbpath}"/>
+					<div class="hint">The directory where nzb files will be stored.
+						<br /><strong>If you change this, you must move your NZB files to the new folder!</strong>
+					</div>
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="processaudiosample">Process Audio Samples:</label></td>
+				<td style="width:180px;"><label for="nzbsplitlevel">Nzb File Path Level Deep:</label></td>
 				<td>
-					{html_radios id="processaudiosample" name='processaudiosample' values=$yesno_ids output=$yesno_names selected=$site->processaudiosample separator='<br />'}
-					<div class="hint">Whether to attempt to process a audio sample, they will be up to 30 seconds, in ogg format. You must have ffmpeg for this.<br/></div>
+					<input id="nzbsplitlevel" class="short" name="nzbsplitlevel" type="text" value="{$site->nzbsplitlevel}"/>
+					<div class="hint">Levels deep to store the nzb Files.
+						<br /><strong>If you change this you must run the misc\testing\DB\nzb-reorg.php script!</strong>
+					</div>
 				</td>
 			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset>
+	<legend>Post Process Settings</legend>
+		<table class="input">
 			<tr>
 				<td style="width:180px;"><label for="lookuppar2">Lookup PAR2:</label></td>
 				<td>
@@ -602,211 +625,6 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="lookup_reqids">Lookup Request IDs:</label></td>
-				<td>
-					{html_options style="width:180px;" id="lookup_reqids" name='lookup_reqids' values=$lookup_reqids_ids output=$lookup_reqids_names selected=$site->lookup_reqids}
-					<div class="hint">Whether to attempt to lookup Request IDs using the Request ID link below.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="request_url">Request ID Link:</label></td>
-				<td>
-					<input id="request_url" class="long" name="request_url" type="text" value="{$site->request_url}"/>
-					<div class="hint">Optional URL to lookup Request IDs. [REQUEST_ID] gets replaced with the request ID from the
-						post. [GROUP_NM] Gets replaced with the group name.
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="request_hours">Max hours to recheck Request IDs:</label></td>
-				<td>
-					<input id="request_hours" class="short" name="request_hours" type="text" value="{$site->request_hours}"/>
-					<div class="hint">The maximum hours after a release is added to recheck for a Request ID match.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="newgroupscanmethod">Where to start new groups:</label></td>
-				<td>
-					{html_radios id="newgroupscanmethod" name='newgroupscanmethod' values=$yesno_ids output=$newgroupscan_names selected=$site->newgroupscanmethod separator='<br />'}
-					<input class="short" id="newgroupdaystoscan" name="newgroupdaystoscan" type="text" value="{$site->newgroupdaystoscan}"/> Days or
-					<input class="small" id="newgroupmsgstoscan" name="newgroupmsgstoscan" type="text" value="{$site->newgroupmsgstoscan}"/> Posts<br/>
-					<div class="hint">Scan back X (posts/days) for each new group? Can backfill to scan further.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="safebackfilldate">Safe Backfill Date:</label></td>
-				<td>
-					<input class="small" id="safebackfilldate" name="safebackfilldate" type="text" value="{$site->safebackfilldate}"/>
-					<div class="hint">The target date for safe backfill. Format: YYYY-MM-DD</div>
-				</td>
-			</tr>
-		</table>
-	</fieldset>
-
-	<fieldset>
-		<legend>Advanced Settings - For advanced users</legend>
-		<table class="input">
-			<tr>
-				<td style="width:180px;"><label for="nzbsplitlevel">Nzb File Path Level Deep:</label></td>
-				<td>
-					<input id="nzbsplitlevel" class="short" name="nzbsplitlevel" type="text" value="{$site->nzbsplitlevel}"/>
-					<div class="hint">Levels deep to store the nzb Files.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="releaseretentiondays">Release Retention:</label></td>
-				<td>
-					<input class="short" id="releaseretentiondays" name="releaseretentiondays" type="text" value="{$site->releaseretentiondays}"/>
-					<div class="hint">!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use
-						throughout site. Set to 0 to disable.
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="partretentionhours">Part Retention Hours:</label></td>
-				<td>
-					<input class="short" id="partretentionhours" name="partretentionhours" type="text" value="{$site->partretentionhours}"/>
-					<div class="hint">The number of hours incomplete parts and binaries will be retained.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="miscotherretentionhours">Misc->Other Retention Hours:</label></td>
-				<td>
-					<input class="short" id="miscotherretentionhours" name="miscotherretentionhours" type="text" value="{$site->miscotherretentionhours}"/>
-					<div class="hint">The number of hours releases categorized as Misc->Other will be retained. Set to 0 to
-						disable.
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="releasecompletion">Release Completion:</label></td>
-				<td>
-					<input class="short" id="releasecompletion" name="releasecompletion" type="text"  value="{$site->releasecompletion}"/>
-					<div class="hint">The minimum completion % to keep a release. Set to 0 to disable.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="delaytime">Delay Time Check:</label></td>
-				<td>
-					<input class="short" id="delaytime" name="delaytime" type="text" value="{$site->delaytime}"/>
-					<div class="hint">The time in hours to wait, since last activity, before releases without parts counts
-						in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="crossposttime">Crossposted Time Check:</label></td>
-				<td>
-					<input class="short" id="crossposttime" name="crossposttime" type="text" value="{$site->crossposttime}"/>
-					<div class="hint">The time in hours to check for crossposted releases.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="maxmssgs">Max Messages:</label></td>
-				<td>
-					<input class="short" id="maxmssgs" name="maxmssgs" type="text" value="{$site->maxmssgs}"/>
-					<div class="hint">The maximum number of messages to fetch at a time from the server. Only raise this if
-						you have php set right and lots of RAM.
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="maxnzbsprocessed">Maximum NZBs stage5:</label></td>
-				<td>
-					<input class="short" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$site->maxnzbsprocessed}"/>
-					<div class="hint">The maximum amount of NZB files to create on stage 5 in update_releases.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="maxpartrepair">Maximum repair per run:</label></td>
-				<td>
-					<input class="short" id="maxpartrepair" name="maxpartrepair" type="text" value="{$site->maxpartrepair}"/>
-					<div class="hint">The maximum amount of articles to attempt to repair at a time. If you notice that you
-						are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up
-						with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using
-						nntpproxy until improves. Ar least until the cause can be determined.
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="partrepair">Part Repair:</label></td>
-				<td>
-					{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$site->partrepair separator='<br />'}
-					<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="safepartrepair">Part Repair for Backfill Scripts:</label></td>
-				<td>
-					{html_radios id="safepartrepair" name='safepartrepair' values=$yesno_ids output=$yesno_names selected=$site->safepartrepair separator='<br />'}
-					<div class="hint">Whether to put unreceived parts into partrepair table when running binaries(safe) or backfill scripts.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="grabstatus">Update grabs:</label></td>
-				<td>
-					{html_radios id="grabstatus" name='grabstatus' values=$yesno_ids output=$yesno_names selected=$site->grabstatus separator='<br />'}
-					<div class="hint">Whether to update download counts when someone downloads a release.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="showdroppedyencparts">Log Dropped Headers:</label></td>
-				<td>
-					{html_radios id="showdroppedyencparts" name='showdroppedyencparts' values=$yesno_ids output=$yesno_names selected=$site->showdroppedyencparts separator='<br />'}
-					<div class="hint">For developers. Whether to log all headers that have 'yEnc' and are dropped. Logged to not_yenc/groupname.dropped.txt.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="tablepergroup">Table Per Group:</label></td>
-				<td>
-					{html_radios id="tablepergroup" name='tablepergroup' values=$yesno_ids output=$yesno_names selected=$site->tablepergroup separator='<br />'}
-					<div class="hint">This uses separate tables for collections, binaries and parts for each group.<br/>This
-						requires you to run convert_to_tpg.php or reset_truncate.php.<br/>This requires that you also run
-						releases_threaded.py.
-						<br/>Run: show variables like '%open%files%'; results should be higher than 10k, twice that if you
-						are using TokuDB.;
-						<br/><b>You may need to increase table_open_cache, open_files_limit and max_allowed_packet in
-							my.cnf. Also, you may need to add the following to /etc/security/limits.conf<br/>mysql soft
-							nofile 24000<br/>mysql hard nofile 32000</b>
-					</div>
-				</td>
-			</tr>
-		</table>
-	</fieldset>
-
-	<fieldset>
-		<legend>Advanced - Postprocessing Settings</legend>
-		<table class="input">
-			<tr>
-				<td style="width:180px;"><label for="maxaddprocessed">Maximum add PP per run:</label></td>
-				<td>
-					<input class="short" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$site->maxaddprocessed}"/>
-					<div class="hint">The maximum amount of releases to process for passwords/previews/mediainfo per run.
-						Every release gets processed here. This uses NNTP an connection, 1 per thread. This does not query
-						Amazon.
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="maxpartsprocessed">Maximum add PP parts downloaded:</label></td>
-				<td>
-					<input class="short" id="maxpartsprocessed" name="maxpartsprocessed" type="text" value="{$site->maxpartsprocessed}"/>
-					<div class="hint">If a part fails to download while post processing, this will retry up to the amount
-						you set, then give up.
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="passchkattempts">Maximum add PP parts checked:</label></td>
-				<td>
-					<input class="short" id="passchkattempts" name="passchkattempts" type="text" value="{$site->passchkattempts}"/>
-					<div class="hint">This overrides the above setting if set above 1. How many parts to check for a
-						password before giving up. This slows down post processing massively, better to leave it 1.
-					</div>
-				</td>
-			</tr>
-			<tr>
 				<td style="width:180px;"><label for="maxnfoprocessed">Maximum NFO files per run:</label></td>
 				<td>
 					<input class="short" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$site->maxnfoprocessed}"/>
@@ -864,13 +682,6 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="fixnamesperrun">fixReleaseNames per Run:</label></td>
-				<td>
-					<input class="short" id="fixnamesperrun" name="fixnamesperrun" type="text" value="{$site->fixnamesperrun}"/>
-					<div class="hint">The maximum number of releases to check per run(threaded script only).</div>
-				</td>
-			</tr>
-			<tr>
 				<td style="width:180px;"><label for="amazonsleep">Amazon sleep time:</label></td>
 				<td>
 					<input class="short" id="amazonsleep" name="amazonsleep" type="text" value="{$site->amazonsleep}"/>
@@ -884,25 +695,164 @@
 	</fieldset>
 
 	<fieldset>
-		<legend>Connection Settings</legend>
+	<legend>Post Process Additional Settings - Rar/ZIP file processing</legend>
 		<table class="input">
+			<tr>
+				<td style="width:180px;"><label for="maxsizetopostprocess">Maximum Release Size to Post Process:</label></td>
+				<td>
+					<input class="short" id="maxsizetopostprocess" name="maxsizetopostprocess" type="text" value="{$site->maxsizetopostprocess}"/>
+					<div class="hint">The maximum size in gigabytes to post process (additional) a release. If set to 0, then ignored.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="minsizetopostprocess">Minimum Release Size to Post Process:</label></td>
+				<td>
+					<input class="short" id="minsizetopostprocess" name="minsizetopostprocess" type="text" value="{$site->minsizetopostprocess}"/>
+					<div class="hint">The minimum size in megabytes to post process (additional) a release. If set to 0, then ignored.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="checkpasswordedrar">Check For Passworded Releases:</label></td>
+				<td>
+					{html_radios id="checkpasswordedrar" name='checkpasswordedrar' values=$passwd_ids output=$passwd_names selected=$site->checkpasswordedrar separator='<br />'}
+					<div class="hint">Whether to attempt to peek into every release, to see if rar/zip files are password protected.<br/></div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="processaudiosample">Process Audio Samples:</label></td>
+				<td>
+					{html_radios id="processaudiosample" name='processaudiosample' values=$yesno_ids output=$yesno_names selected=$site->processaudiosample separator='<br />'}
+					<div class="hint">Whether to attempt to process a audio sample, they will be up to 30 seconds, in ogg format. You must have ffmpeg for this.<br/></div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="processjpg">Process JPG Pictures:</label></td>
+				<td>
+					{html_radios id="processjpg" name='processjpg' values=$yesno_ids output=$yesno_names selected=$site->processjpg separator='<br />'}
+					<div class="hint">Whether to attempt to retrieve a JPG file while additional post processing, these are usually on XXX releases.<br/></div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="processvideos">Process Video Samples:</label></td>
+				<td>
+					{html_radios id="processvideos" name='processvideos' values=$yesno_ids output=$yesno_names selected=$site->processvideos separator='<br />'}
+					<div class="hint">Whether to attempt to process a video sample, these videos are very short 1-10 seconds, 100KB on average, in ogv format. You must have ffmpeg for this.<br/></div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="segmentstodownload">Number of Segments to download for video/jpg samples:</label></td>
+				<td>
+					<input class="short" id="segmentstodownload" name="segmentstodownload" type="text" value="{$site->segmentstodownload}"/>
+					<div class="hint">The maximum number of articles to download to generate the sample video file or jpg sample image, the higher this is set, the potential of getting longer videos is higher. (Default 2)
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="ffmpeg_duration">Video sample file duration for ffmpeg:</label></td>
+				<td>
+					<input class="short" id="ffmpeg_duration" name="ffmpeg_duration" type="text" value="{$site->ffmpeg_duration}"/>
+					<div class="hint">The maximum duration (In Seconds) for ffmpeg to generate the video sample for. (Default 5)</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxaddprocessed">Maximum add PP per run:</label></td>
+				<td>
+					<input class="short" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$site->maxaddprocessed}"/>
+					<div class="hint">The maximum amount of releases to process for passwords/previews/mediainfo per run.
+						Every release gets processed here. This uses NNTP an connection, 1 per thread. This does not query
+						Amazon.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxpartsprocessed">Maximum add PP parts downloaded:</label></td>
+				<td>
+					<input class="short" id="maxpartsprocessed" name="maxpartsprocessed" type="text" value="{$site->maxpartsprocessed}"/>
+					<div class="hint">How many articles to download for a RAR/ZIP. The more articles, the more data you get from the extracted RAR/ZIP, so longer video samples for example.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="passchkattempts">Maximum failed part downloads:</label></td>
+				<td>
+					<input class="short" id="passchkattempts" name="passchkattempts" type="text" value="{$site->passchkattempts}"/>
+					<div class="hint">How many times to download a different when failing and article fails to download for a RAR/ZIP, this is multiplied by 5, so if you set it to 1, we will retry 5 times.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="extractusingrarinfo">Extract RAR/ZIP using rarinfo:</label></td>
+				<td>
+					{html_radios id="extractusingrarinfo" name='extractusingrarinfo' values=$yesno_ids output=$yesno_names selected=$site->extractusingrarinfo separator='<br />'}
+					<div class="hint">Whether to use rarinfo or 7zip/unrar directly to decompress zip/rar files.
+						<br /><strong>Using rarinfo is faster, but the extracted files are not as large which leads to smaller video samples/ potentially black preview screenshots.</strong>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxnestedlevels">How many levels deep to go into nested rar/zip files:</label></td>
+				<td>
+					<input class="short" id="maxnestedlevels" name="maxnestedlevels" type="text" value="{$site->maxnestedlevels}"/>
+					<div class="hint">If a rar/zip has rar/zip inside of it, how many times should we go in those inner rar/zip files.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="innerfileblacklist">Inner file black list Regex:</label></td>
+				<td>
+					<textarea rows="3" placeholder="Example: /setup\.exe|password\.url/i" id="innerfileblacklist" name="innerfileblacklist">{$site->innerfileblacklist}</textarea>
+					<div class="hint">You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.
+						<br /><strong>You must ensure this regex is valid, a non valid regex will cause errors during processing!</strong>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset>
+		<legend>Usenet Settings</legend>
+		<table class="input">
+			<tr>
+				<td style="width:180px;"><label for="newgroupscanmethod">Where to start new groups:</label></td>
+				<td>
+					{html_radios id="newgroupscanmethod" name='newgroupscanmethod' values=$yesno_ids output=$newgroupscan_names selected=$site->newgroupscanmethod separator='<br />'}
+					<input class="short" id="newgroupdaystoscan" name="newgroupdaystoscan" type="text" value="{$site->newgroupdaystoscan}"/> Days or
+					<input class="small" id="newgroupmsgstoscan" name="newgroupmsgstoscan" type="text" value="{$site->newgroupmsgstoscan}"/> Posts<br/>
+					<div class="hint">Scan back X (posts/days) for each new group? Can backfill to scan further. Posts is recommended, it's faster.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="safebackfilldate">Safe Backfill Date:</label></td>
+				<td>
+					<input class="small" id="safebackfilldate" name="safebackfilldate" type="text" value="{$site->safebackfilldate}"/>
+					<div class="hint">The target date for safe backfill. Format: YYYY-MM-DD</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="partretentionhours">Part Retention Hours:</label></td>
+				<td>
+					<input class="short" id="partretentionhours" name="partretentionhours" type="text" value="{$site->partretentionhours}"/>
+					<div class="hint">The number of hours incomplete parts and binaries will be retained.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxmssgs">Max Headers:</label></td>
+				<td>
+					<input class="short" id="maxmssgs" name="maxmssgs" type="text" value="{$site->maxmssgs}"/>
+					<div class="hint">The maximum number of headers to fetch at a time from the server. Raising this higher increases RAM usage and possibly decreases performance.
+					</div>
+				</td>
+			</tr>
 			<tr>
 				<td style="width:180px;"><label for="compressedheaders">Use Compressed Headers:</label></td>
 				<td>
 					{html_radios id="compressedheaders" name='compressedheaders' values=$yesno_ids output=$yesno_names selected=$site->compressedheaders separator='<br />'}
-					<div class="hint">Some servers allow headers to be sent over in a compressed format. If enabled this
-						will use much less bandwidth, but processing times may increase.<br/>
-						If you notice that update binaries or backfill seems to hang, look in htop and see if a group is
-						being processed. If so, first try disabling compressed headers and let run until it processes the
-						group at least once, then you can re-enable compressed headers.
-					</div>
+					<div class="hint">Some servers allow headers to be sent over in a compressed format. This uses about 10x less bandwidth and can speed up the download speed.</div>
 				</td>
 			</tr>
 			<tr>
 				<td style="width:180px;"><label for="nntpretries">NNTP Retry Attempts:</label></td>
 				<td>
 					<input class="short" id="nntpretries" name="nntpretries" type="text" value="{$site->nntpretries}"/>
-					<div class="hint">The maximum number of retry attmpts to connect to nntp provider. On error, each retry
+					<div class="hint">The maximum number of retry attempts to connect to nntp provider. On error, each retry
 						takes approximately 5 seconds nntp returns reply. (Default 10)
 					</div>
 				</td>
@@ -911,7 +861,8 @@
 				<td style="width:180px;"><label for="nntpproxy">Use NNTP Proxy:</label></td>
 				<td>
 					{html_radios id="nntpproxy" name='nntpproxy' values=$yesno_ids output=$yesno_names selected=$site->nntpproxy separator='<br />'}
-					<div class="hint">Using the NNTP Proxy for nZEDb can improve performance of nZEDb dramatically. It uses
+					<div class="hint"><strong>It is no longer recommended to use this, it is left here for people still using it.</strong>
+						Using the NNTP Proxy for nZEDb can improve performance of nZEDb dramatically. It uses
 						connection pooling which not only give more control over the number of connections to use but also
 						reduces time for connection setup/teardown. The proxy also takes care of compressed headers for you.
 						To use this featrure you will need to install pynntp (sudo pip install pynntp or sudo easy_install
@@ -933,11 +884,101 @@
 					</div>
 				</td>
 			</tr>
+			<tr>
+				<td style="width:180px;"><label for="partrepair">Part Repair:</label></td>
+				<td>
+					{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$site->partrepair separator='<br />'}
+					<div class="hint">Whether to attempt to repair parts or not, increases backfill/binaries updating time.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="safepartrepair">Part Repair for Backfill Scripts:</label></td>
+				<td>
+					{html_radios id="safepartrepair" name='safepartrepair' values=$yesno_ids output=$yesno_names selected=$site->safepartrepair separator='<br />'}
+					<div class="hint">Whether to put unreceived parts into partrepair table when running binaries(safe) or backfill scripts.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxpartrepair">Maximum repair per run:</label></td>
+				<td>
+					<input class="short" id="maxpartrepair" name="maxpartrepair" type="text" value="{$site->maxpartrepair}"/>
+					<div class="hint">The maximum amount of articles to attempt to repair at a time. If you notice that you
+						are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up
+						with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using
+						nntpproxy until improves. Ar least until the cause can be determined.
+					</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 
 	<fieldset>
-		<legend>Advanced - Threaded Settings</legend>
+		<legend>Various settings</legend>
+		<table class="input">
+			<tr>
+				<td style="width:180px;"><label for="fixnamesperrun">fixReleaseNames per Run:</label></td>
+				<td>
+					<input class="short" id="fixnamesperrun" name="fixnamesperrun" type="text" value="{$site->fixnamesperrun}"/>
+					<div class="hint">The maximum number of releases to check per run(threaded script only).</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="tablepergroup">Table Per Group:</label></td>
+				<td>
+					{html_radios id="tablepergroup" name='tablepergroup' values=$yesno_ids output=$yesno_names selected=$site->tablepergroup separator='<br />'}
+					<div class="hint">This uses separate tables for collections, binaries and parts for each group.<br/>This
+						requires you to run convert_to_tpg.php or reset_truncate.php.<br/>This requires that you also run
+						releases_threaded.py.
+						<br/>Run: show variables like '%open%files%'; results should be higher than 10k, twice that if you
+						are using TokuDB.;
+						<br/><b>You may need to increase table_open_cache, open_files_limit and max_allowed_packet in
+							my.cnf. Also, you may need to add the following to /etc/security/limits.conf<br/>mysql soft
+							nofile 24000<br/>mysql hard nofile 32000</b>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="delaytime">Delay Time Check:</label></td>
+				<td>
+					<input class="short" id="delaytime" name="delaytime" type="text" value="{$site->delaytime}"/>
+					<div class="hint">The time in hours to wait, since last activity, before releases without parts counts
+						in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="crossposttime">Crossposted Time Check:</label></td>
+				<td>
+					<input class="short" id="crossposttime" name="crossposttime" type="text" value="{$site->crossposttime}"/>
+					<div class="hint">The time in hours to check for crossposted releases.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxnzbsprocessed">Maximum NZBs stage5:</label></td>
+				<td>
+					<input class="short" id="maxnzbsprocessed" name="maxnzbsprocessed" type="text" value="{$site->maxnzbsprocessed}"/>
+					<div class="hint">The maximum amount of NZB files to create on stage 5 in update_releases.</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset>
+		<legend>Developer Settings</legend>
+		<table class="input">
+			<tr>
+				<td style="width:180px;"><label for="showdroppedyencparts">Log Dropped Headers:</label></td>
+				<td>
+					{html_radios id="showdroppedyencparts" name='showdroppedyencparts' values=$yesno_ids output=$yesno_names selected=$site->showdroppedyencparts separator='<br />'}
+					<div class="hint">For developers. Whether to log all headers that have 'yEnc' and are dropped. Logged to not_yenc/groupname.dropped.txt.</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset>
+		<legend>Threaded Settings</legend>
 		<table class="input">
 			<tr>
 				<td style="width:180px;"><label for="binarythreads">Update Binaries Threads:</label></td>
