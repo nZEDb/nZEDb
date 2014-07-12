@@ -37,6 +37,12 @@ class adultdvdempire
 	/* Define ADE Url here */
 	const ade = "http://www.adultdvdempire.com";
 
+	/* Sets the directurl for template */
+	protected $directurl = null;
+
+	/* Sets the true title found */
+	protected $title = null;
+
 	/* Trailing urls */
 	protected $dvdquery = "/dvd/search?q=";
 	protected $allquery = "/allsearch/search?q=";
@@ -278,6 +284,8 @@ class adultdvdempire
 					if ($p >= 90) {
 						$this->found = true;
 						$this->urlfound = $ret;
+						$this->directurl = self::ade.$ret;
+						$this->title = $title;
 						unset($ret);
 						$this->html->clear();
 						$this->_getadeurl($this->urlfound);
@@ -332,6 +340,10 @@ class adultdvdempire
 	public function _getall()
 	{
 		$results = array();
+		if(isset($this->directurl)){
+		$results['directurl'] = $this->directurl;
+		$results['title'] = $this->title;
+		}
 		if (is_array($this->_sypnosis(true))) {
 			$results = array_merge($results, $this->_sypnosis(true));
 		}
@@ -350,7 +362,6 @@ class adultdvdempire
 		if (is_array($this->_trailers())) {
 			$results = array_merge($results, $this->_trailers());
 		}
-
 		return $results;
 	}
 }

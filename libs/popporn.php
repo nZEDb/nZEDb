@@ -34,6 +34,12 @@ class popporn
 	 */
 	protected $trailurl = null;
 
+	// Sets the found title and returns it in the array
+	protected $title = null;
+
+	// Sets the directurl for the template and returns it in the array
+	protected $directurl = null;
+
 	/*
 	 * Set this for what you are searching for.
 	 * @var string null
@@ -270,9 +276,15 @@ class popporn
 			} else {
 				return false;
 			}
+			if($this->html->find('#link-to-this',0)){
+			$ret = $this->html->find('#link-to-this', 0);
+			$ret = trim($ret->href);
+			$this->directurl = $ret;
+			}
 			if (isset($title)) {
 				similar_text($this->searchterm, $title, $p);
 				if ($p >= 90) {
+					$this->title = $title;
 					unset($ret);
 
 					return true;
@@ -292,6 +304,10 @@ class popporn
 	public function _getall()
 	{
 		$results = array();
+		if(isset($this->directurl)){
+		$results['title'] = $this->title;
+		$results['directurl'] = $this->directurl;
+		}
 		if (is_array($this->_sypnosis())) {
 			$results = array_merge($results, $this->_sypnosis());
 		}
