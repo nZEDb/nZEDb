@@ -31,14 +31,18 @@ if (!$pdo->getSetting('tablepergroup')) {
 $groups = $pdo->queryDirect('SELECT id FROM groups WHERE active = 1 OR backfill = 1');
 
 if ($groups === false) {
-	echo "No active groups. Fix not needed.";
+	echo "No active groups. Fix not needed.\n";
 } else {
 	$sql  = "ALTER TABLE %s CHANGE COLUMN groupid group_id INT (10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups'";
+	$sql2 = "ALTER TABLE binaries_%s ADD COLUMN currentparts INT UNSIGNED NOT NULL DEFAULT '0' AFTER totalparts";
+	$sql3 = "UPDATE binaries_%s b SET currentparts = (SELECT COUNT(*) FROM parts_%s p WHERE p.binaryid = b.id)";
 	foreach ($groups as $group) {
-		$pdo->queryDirect(sprintf($sql, 'collections_' . $group['id']));
-		$pdo->queryDirect(sprintf($sql, 'partrepair_' . $group['id']));
+		echo 'Fixing group ' . $group['id'] . PHP_EOL;
+		$pdo->queryExec(sprintf($sql2, $group['id']), true);
+		$pdo->queryExec(sprintf($sql3, $group['id'], $group['id']), true);
+		$pdo->queryExec(sprintf($sql, 'collections_' . $group['id']), true);
+		$pdo->queryExec(sprintf($sql, 'partrepair_' . $group['id']), true);
+		echo 'Finished fixing group ' . $group['id'] . PHP_EOL;
 	}
+	echo 'All done!' . PHP_EOL;
 }
-
-
-?>

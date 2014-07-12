@@ -6,6 +6,22 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-12 kevin
+	* Chg: !!!! IF YOU ARE RUNNING TPG, YOU MUST RUN nzedb\_runonce\tpg_fixes.php !!!!!! Huge speed-up to stage 1 on update-releases.
+	* Chg: Speed up to stage 2 on update-releases.
+	* Add: Debug info to stage1 for query times.
+	* Add: Debug info to stage7a for query times.
+	* Fix: Timer on stage7a.
+2014-07-11 kevin
+	* Fix: Issue where group_id could be set 0 on requestid.
+2014-07-10 kevin
+	* Fix: Conditionals in ProcessAdditional causing process sample / process mediainfo / process passwords to fail.
+	* Chg: Use 7zip/unrar directly instead of unrar for extracting, which is slower than rarinfo but produces larger files to work on.
+	* Add: session_write_close(); to ajax group requests to allow the admin to use his site while purging/reseting/deleting groups.
+	* Chg: Move site-edit options around, easier to browse through.
+	* Add: Process additional: blacklist rar/zip inner files.
+	* Add: Process additional: ability to chose how many nested rar/zip files deep to go down.
+	* Add: Process additional: ability to chose between using rarinfo or unrar/7z directly for extracting zips/rars.
 2014-07-09 bart39
 	* Fix: Fix ReleaseRemover for specific blacklist
 	* Add: Regex fixes / additions

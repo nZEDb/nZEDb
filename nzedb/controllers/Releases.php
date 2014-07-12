@@ -1551,6 +1551,7 @@ class Releases
 
 	public function processReleasesStage1($groupID)
 	{
+		$stage1 = TIME();
 		// Set table names
 		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 
@@ -1558,321 +1559,180 @@ class Releases
 			$this->c->doEcho($this->c->header("Stage 1 -> Try to find complete collections."));
 		}
 
-		$stage1 = TIME();
 		$where = (!empty($groupID)) ? ' AND c.group_id = ' . $groupID . ' ' : ' ';
 
-		if ($this->pdo->dbSystem() === 'mysql') {
-			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s c INNER JOIN
-								(SELECT c.id FROM %s c
-								INNER JOIN %s b ON b.collectionid = c.id
-								WHERE c.totalfiles > 0 AND c.filecheck = 0 %s
-								GROUP BY b.collectionid, c.totalfiles, c.id
-								HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
-								)
-							r ON c.id = r.id SET filecheck = %d',
-							$group['cname'],
-							$group['cname'],
-							$group['bname'],
-							$where,
-							self::COLLFC_COMPCOLL
-						)
-			);
-			/* $this->pdo->queryExec(
-						sprintf('
-							UPDATE %s c SET filecheck = 1
-							WHERE c.id IN
-								(SELECT b.collectionid FROM %s b, %s c
-								WHERE b.collectionid = c.id
-								GROUP BY b.collectionid, c.totalfiles
-								HAVING (COUNT(b.id) >= c.totalfiles-1)
-								)
-							AND c.totalfiles > 0 AND c.filecheck = %d %s',
-							$group['cname'],
-							$group['bname'],
-							$group['cname'],
-							self::COLLFC_COMPCOLL,
-							$where
-						)
-			);
-			*/
+		$start = microtime(true);
+		// FIRST QUERY
+		// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE %s c INNER JOIN
+					(SELECT c.id FROM %s c
+					INNER JOIN %s b ON b.collectionid = c.id
+					WHERE c.totalfiles > 0 AND c.filecheck = 0 %s
+					GROUP BY b.collectionid, c.totalfiles, c.id
+					HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
+					)
+				r ON c.id = r.id SET filecheck = %d',
+				$group['cname'],
+				$group['cname'],
+				$group['bname'],
+				$where,
+				self::COLLFC_COMPCOLL
+			)
+		);
+		/* $this->pdo->queryExec(
+			sprintf('
+				UPDATE %s c SET filecheck = 1
+				WHERE c.id IN
+					(SELECT b.collectionid FROM %s b, %s c
+					WHERE b.collectionid = c.id
+					GROUP BY b.collectionid, c.totalfiles
+					HAVING (COUNT(b.id) >= c.totalfiles-1)
+					)
+				AND c.totalfiles > 0 AND c.filecheck = %d %s',
+				$group['cname'],
+				$group['bname'],
+				$group['cname'],
+				self::COLLFC_COMPCOLL,
+				$where
+			)
+		);
+		*/
+		$firstQuery = microtime(true);
 
-			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s c INNER JOIN
-								(SELECT c.id FROM %s c
-								INNER JOIN %s b ON b.collectionid = c.id
-								WHERE b.filenumber = 0
-								AND c.totalfiles > 0
-								AND c.filecheck = 1 %s
-								GROUP BY c.id
-								)
-							r ON c.id = r.id SET c.filecheck = %d',
-							$group['cname'],
-							$group['cname'],
-							$group['bname'],
-							$where,
-							self::COLLFC_ZEROPART
-						)
-			);
+		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
+		// SECOND QUERY
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE %s c INNER JOIN
+					(SELECT c.id FROM %s c
+					INNER JOIN %s b ON b.collectionid = c.id
+					WHERE b.filenumber = 0
+					AND c.totalfiles > 0
+					AND c.filecheck = 1 %s
+					GROUP BY c.id
+					)
+				r ON c.id = r.id SET c.filecheck = %d',
+				$group['cname'],
+				$group['cname'],
+				$group['bname'],
+				$where,
+				self::COLLFC_ZEROPART
+			)
+		);
+		$secondQuery = microtime(true);
 
-			// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s c
-							SET filecheck = %d
-							WHERE filecheck = %d %s',
-							$group['cname'],
-							self::COLLFC_TEMPCOMP,
-							self::COLLFC_COMPCOLL,
-							$where
-						)
-			);
+		// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
+		// THIRD QUERY
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE %s c
+				SET filecheck = %d
+				WHERE filecheck = %d %s',
+				$group['cname'],
+				self::COLLFC_TEMPCOMP,
+				self::COLLFC_COMPCOLL,
+				$where
+			)
+		);
+		$thirdQuery = microtime(true);
 
-			// If we have all the parts set partcheck to 1.
-			// If filecheck 15, check if we have all the parts for a file then set partcheck.
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s b INNER JOIN
-								(SELECT b.id FROM %s b
-								INNER JOIN %s p ON p.binaryid = b.id
-								INNER JOIN %s c ON c.id = b.collectionid
-								WHERE c.filecheck = %d AND b.partcheck = 0 %s
-								GROUP BY b.id, b.totalparts
-								HAVING COUNT(p.id) = b.totalparts)
-							r ON b.id = r.id SET b.partcheck = 1',
-							$group['bname'],
-							$group['bname'],
-							$group['pname'],
-							$group['cname'],
-							self::COLLFC_TEMPCOMP,
-							$where
-						)
-			);
+		// If we have all the parts set partcheck to 1.
+		// If filecheck 15, check if we have all the parts for a file then set partcheck.
+		// FOURTH QUERY
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE %s b INNER JOIN
+					(SELECT b.id FROM %s b
+					INNER JOIN %s c ON c.id = b.collectionid
+					WHERE c.filecheck = %d AND b.partcheck = 0 %s
+					AND b.currentparts = b.totalparts
+					GROUP BY b.id, b.totalparts)
+				r ON b.id = r.id SET b.partcheck = 1',
+				$group['bname'],
+				$group['bname'],
+				$group['cname'],
+				self::COLLFC_TEMPCOMP,
+				$where
+			)
+		);
+		$fourthQuery = microtime(true);
 
-			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s b INNER JOIN
-								(SELECT b.id FROM %s b
-								INNER JOIN %s p ON p.binaryid = b.id
-								INNER JOIN %s c ON c.id = b.collectionid
-								WHERE c.filecheck = %d AND b.partcheck = 0 %s
-								GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts + 1)
-							r ON b.id = r.id SET b.partcheck = 1',
-							$group['bname'],
-							$group['bname'],
-							$group['pname'],
-							$group['cname'],
-							self::COLLFC_ZEROPART,
-							$where
-						)
-			);
+		// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
+		// FIFTH QUERY
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE %s b INNER JOIN
+					(SELECT b.id FROM %s b
+					INNER JOIN %s c ON c.id = b.collectionid
+					WHERE c.filecheck = %d AND b.partcheck = 0 %s
+					AND b.currentparts >= (b.totalparts + 1)
+					GROUP BY b.id, b.totalparts)
+				r ON b.id = r.id SET b.partcheck = 1',
+				$group['bname'],
+				$group['bname'],
+				$group['cname'],
+				self::COLLFC_ZEROPART,
+				$where
+			)
+		);
+		$fifthQuery = microtime(true);
 
-			// Set filecheck to 2 if partcheck = 1.
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s c INNER JOIN
-								(SELECT c.id FROM %s c
-								INNER JOIN %s b ON c.id = b.collectionid
-								WHERE b.partcheck = 1 AND c.filecheck IN (%d, %d) %s
-								GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles)
-							r ON c.id = r.id SET filecheck = %d',
-							$group['cname'],
-							$group['cname'],
-							$group['bname'],
-							self::COLLFC_TEMPCOMP,
-							self::COLLFC_ZEROPART,
-							$where,
-							self::COLLFC_COMPPART
-						)
-			);
+		// Set filecheck to 2 if partcheck = 1.
+		// SIXTH QUERY
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE %s c INNER JOIN
+					(SELECT c.id FROM %s c
+					INNER JOIN %s b ON c.id = b.collectionid
+					WHERE b.partcheck = 1 AND c.filecheck IN (%d, %d) %s
+					GROUP BY b.collectionid, c.totalfiles, c.id HAVING COUNT(b.id) >= c.totalfiles)
+				r ON c.id = r.id SET filecheck = %d',
+				$group['cname'],
+				$group['cname'],
+				$group['bname'],
+				self::COLLFC_TEMPCOMP,
+				self::COLLFC_ZEROPART,
+				$where,
+				self::COLLFC_COMPPART
+			)
+		);
+		$sixthQuery = microtime(true);
 
-			// Set filecheck to 1 if we don't have all the parts.
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s c
-							SET filecheck = %d
-							WHERE filecheck IN (%d, %d) %s',
-							$group['cname'],
-							self::COLLFC_COMPCOLL,
-							self::COLLFC_TEMPCOMP,
-							self::COLLFC_ZEROPART,
-							$where
-						)
-			);
+		// Set filecheck to 1 if we don't have all the parts.
+		// SEVENTH QUERY
+		$this->pdo->queryExec(
+			sprintf('
+				UPDATE %s c
+				SET filecheck = %d
+				WHERE filecheck IN (%d, %d) %s',
+				$group['cname'],
+				self::COLLFC_COMPCOLL,
+				self::COLLFC_TEMPCOMP,
+				self::COLLFC_ZEROPART,
+				$where
+			)
+		);
+		$seventhQuery = microtime(true);
 
-			// If a collection has not been updated in X hours, set filecheck to 2.
-			$query = $this->pdo->queryExec(
-							sprintf("
-								UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collectionid = c.id)
-								WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
-								AND c.filecheck IN (%d, %d, 10) %s",
-								$group['cname'],
-								self::COLLFC_COMPPART,
-								$group['bname'],
-								$this->delaytimet,
-								self::COLLFC_DEFAULT,
-								self::COLLFC_COMPCOLL,
-								$where
-							)
-			);
-		} else {
-			// Look if we have all the files in a collection (which have the file count in the subject). Set filecheck to 1.
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s c SET filecheck = %d
-							FROM (SELECT c.id
-								FROM %s c
-								INNER JOIN %s b ON b.collectionid = c.id
-								WHERE c.totalfiles > 0 AND c.filecheck = %d %s
-								GROUP BY b.collectionid, c.totalfiles, c.id
-								HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
-							) r WHERE c.id = r.id',
-							$group['cname'],
-							self::COLLFC_COMPCOLL,
-							$group['cname'],
-							$group['bname'],
-							self::COLLFC_DEFAULT,
-							$where
-						)
-			);
-
-			// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s c SET filecheck = %d
-							FROM (SELECT c.id
-								FROM %s c
-								INNER JOIN %s b ON b.collectionid = c.id
-								WHERE b.filenumber = 0
-								AND c.totalfiles > 0
-								AND c.filecheck = %d %s
-								GROUP BY c.id
-							) r WHERE c.id = r.id',
-							$group['cname'],
-							self::COLLFC_ZEROPART,
-							$group['cname'],
-							$group['bname'],
-							self::COLLFC_COMPCOLL,
-							$where
-						)
-			);
-
-			// Set filecheck to 15 on everything left over, so anything that starts with 1 (ex. [01/100]).
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s c
-							SET filecheck = %d
-							WHERE filecheck = %d %s',
-							$group['cname'],
-							self::COLLFC_TEMPCOMP,
-							self::COLLFC_COMPCOLL,
-							$where
-						)
-			);
-
-			// If we have all the parts set partcheck to 1.
-			// If filecheck 15, check if we have all the parts for a file then set partcheck.
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s b
-							SET partcheck = 1
-							FROM (SELECT b.id
-								FROM %s b
-								INNER JOIN %s p ON p.binaryid = b.id
-								INNER JOIN %s c ON c.id = b.collectionid
-								WHERE c.filecheck = %d AND b.partcheck = 0 %s
-								GROUP BY b.id, b.totalparts
-								HAVING COUNT(p.id) = b.totalparts
-							) r WHERE b.id = r.id',
-							$group['cname'],
-							$group['bname'],
-							$group['pname'],
-							$group['cname'],
-							self::COLLFC_TEMPCOMP,
-							$where
-						)
-			);
-
-			// If filecheck 16, check if we have all the parts+1(because of the 0) then set partcheck.
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s b
-							SET partcheck = 1
-							FROM (SELECT b.id
-								FROM % b
-								INNER JOIN %s p ON p.binaryid = b.id
-								INNER JOIN %s c ON c.id = b.collectionid
-								WHERE c.filecheck = %d AND b.partcheck = 0 %s
-								GROUP BY b.id, b.totalparts
-								HAVING COUNT(p.id) >= b.totalparts + 1
-							) r WHERE b.id = r.id',
-							$group['bname'],
-							$group['bname'],
-							$group['pname'],
-							$group['cname'],
-							self::COLLFC_ZEROPART,
-							$where
-						)
-			);
-
-			// Set filecheck to 2 if partcheck = 1.
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s c
-							SET filecheck = %d
-							FROM (SELECT c.id
-								FROM %s c
-								INNER JOIN %s b ON c.id = b.collectionid
-								WHERE b.partcheck = 1
-								AND c.filecheck IN (%d, %d) %s
-								GROUP BY b.collectionid, c.totalfiles, c.id
-								HAVING COUNT(b.id) >= c.totalfiles
-							) r WHERE c.id = r.id',
-							$group['cname'],
-							self::COLLFC_COMPPART,
-							$group['cname'],
-							$group['bname'],
-							self::COLLFC_TEMPCOMP,
-							self::COLLFC_ZEROPART,
-							$where
-						)
-			);
-
-			// Set filecheck to 1 if we don't have all the parts.
-			$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s c
-							SET filecheck = %d
-							WHERE filecheck IN (%d15, %d16) %s',
-							$group['cname'],
-							self::COLLFC_COMPCOLL,
-							self::COLLFC_TEMPCOMP,
-							self::COLLFC_ZEROPART,
-							$where
-						)
-			);
-
-			// If a collection has not been updated in X hours, set filecheck to 2.
-			$query = $this->pdo->queryExec(
-							sprintf("
-								UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collectionid = c.id)
-								WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
-								AND c.filecheck IN (%d, %d, 10) %s",
-								$group['cname'],
-								self::COLLFC_COMPPART,
-								$group['bname'],
-								$this->delaytimet,
-								self::COLLFC_DEFAULT,
-								self::COLLFC_COMPCOLL,
-								$where
-							)
-			);
-		}
+		// If a collection has not been updated in X hours, set filecheck to 2.
+		// EIGHTH QUERY
+		$query = $this->pdo->queryExec(
+			sprintf("
+				UPDATE %s c SET filecheck = %d, totalfiles = (SELECT COUNT(b.id) FROM %s b WHERE b.collectionid = c.id)
+				WHERE c.dateadded < NOW() - INTERVAL '%d' HOUR
+				AND c.filecheck IN (%d, %d, 10) %s",
+				$group['cname'],
+				self::COLLFC_COMPPART,
+				$group['bname'],
+				$this->delaytimet,
+				self::COLLFC_DEFAULT,
+				self::COLLFC_COMPCOLL,
+				$where
+			)
+		);
+		$eighthQuery = microtime(true);
 
 		if ($query !== false && $this->echooutput) {
 			$this->c->doEcho(
@@ -1882,6 +1742,19 @@ class Releases
 				)
 			);
 			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage1)), true);
+		}
+
+		if (nZEDb_DEBUG && nZEDb_LOGINFO) {
+			echo (
+				'1st query: ' . ($firstQuery - $start) . 's ' . PHP_EOL .
+				'2nd query: ' . ($secondQuery - $firstQuery) . 's ' . PHP_EOL .
+				'3rd query: ' . ($thirdQuery - $secondQuery) . 's ' . PHP_EOL .
+				'4th query: ' . ($fourthQuery - $thirdQuery) . 's ' . PHP_EOL .
+				'5th query: ' . ($fifthQuery - $fourthQuery) . 's ' . PHP_EOL .
+				'6th query: ' . ($sixthQuery - $fifthQuery) . 's ' . PHP_EOL .
+				'7th query: ' . ($seventhQuery - $sixthQuery) . 's ' . PHP_EOL .
+				'8th query: ' . ($eighthQuery - $seventhQuery) . 's ' . PHP_EOL
+			);
 		}
 	}
 
@@ -1899,19 +1772,18 @@ class Releases
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$checked = $this->pdo->queryExec(
-						sprintf(
-							'UPDATE %s c
-							SET filesize = (SELECT COALESCE(SUM(p.size), 0) FROM %s p INNER JOIN %s b ON p.binaryid = b.id WHERE b.collectionid = c.id),
-							filecheck = %d
-							WHERE c.filecheck = %d
-							AND c.filesize = 0 %s',
-							$group['cname'],
-							$group['pname'],
-							$group['bname'],
-							self::COLLFC_SIZED,
-							self::COLLFC_COMPPART,
-							$where
-						)
+			sprintf(
+				'UPDATE %s c
+				SET filesize = (SELECT COALESCE(SUM(b.partsize), 0) FROM %s b WHERE b.collectionid = c.id),
+				filecheck = %d
+				WHERE c.filecheck = %d
+				AND c.filesize = 0 %s',
+				$group['cname'],
+				$group['bname'],
+				self::COLLFC_SIZED,
+				self::COLLFC_COMPPART,
+				$where
+			)
 		);
 		if ($checked !== false && $this->echooutput) {
 			$this->c->doEcho(
@@ -2692,7 +2564,8 @@ class Releases
 
 	public function processReleasesStage7a($groupID)
 	{
-		$reccount = $delq = 0;
+		$stage7 = time();
+		$deletedCount = 0;
 		$where = ' ';
 		$where1 = '';
 
@@ -2707,174 +2580,112 @@ class Releases
 		if ($this->echooutput) {
 			echo $this->c->header("Stage 7a -> Delete finished collections.");
 		}
-		$stage7 = TIME();
 
+		$startTime = microtime(true);
 		// Completed releases and old collections that were missed somehow.
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$delq = $this->pdo->queryExec(
-				sprintf(
-					'DELETE c, b, p FROM %s c ' .
-					'INNER JOIN %s b ON c.id = b.collectionid ' .
-					'INNER JOIN %s p ON b.id = p.binaryid ' .
-					'WHERE %s c.filecheck = %d',
-					$group['cname'],
-					$group['bname'],
-					$group['pname'],
-					$where,
-					self::COLLFC_DELETE
-				)
-			);
-			if ($delq !== false) {
-				$reccount += $delq->rowCount();
-			}
-		} else {
-			$idr = $this->pdo->queryDirect('SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
-			if ($idr !== false && $idr->rowCount() > 0) {
-				foreach ($idr as $id) {
-					$delqa = $this->pdo->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
-							' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' .
-							$group['bname'] . '.collectionid = %d)', $id['id']
-						)
-					);
-					if ($delqa !== false) {
-						$reccount += $delqa->rowCount();
-					}
-					$delqb = $this->pdo->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']
-						)
-					);
-					if ($delqb !== false) {
-						$reccount += $delqb->rowCount();
-					}
-				}
-				$delqc = $this->pdo->queryExec('DELETE FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
-				if ($delqc !== false) {
-					$reccount += $delqc->rowCount();
-				}
-			}
+		// FIRST QUERY
+		$deleteQuery = $this->pdo->queryExec(
+			sprintf(
+				'DELETE c, b, p FROM %s c ' .
+				'INNER JOIN %s b ON c.id = b.collectionid ' .
+				'INNER JOIN %s p ON b.id = p.binaryid ' .
+				'WHERE %s c.filecheck = %d',
+				$group['cname'],
+				$group['bname'],
+				$group['pname'],
+				$where,
+				self::COLLFC_DELETE
+			)
+		);
+		if ($deleteQuery !== false) {
+			$deletedCount += $deleteQuery->rowCount();
 		}
+		$firstQuery = microtime(true);
 
 		// Old collections that were missed somehow.
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$delq = $this->pdo->queryExec(
-				sprintf(
-					'DELETE c, b, p FROM %s c ' .
-					'INNER JOIN %s b ON c.id = b.collectionid ' .
-					'LEFT OUTER JOIN %s p ON b.id = p.binaryid ' .
-					'WHERE c.dateadded < (NOW() - INTERVAL %d HOUR) %s',
-					$group['cname'],
-					$group['bname'],
-					$group['pname'],
-					$this->pdo->getSetting('partretentionhours'),
-					$where1
-				)
-			);
-			if ($delq !== false) {
-				$reccount += $delq->rowCount();
-			}
-		} else {
-			$idr = $this->pdo->queryDirect(
-				sprintf(
-					"SELECT id FROM " . $group['cname'] . " WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" .
-					$where1, $this->pdo->getSetting('partretentionhours')
-				)
-			);
-
-			if ($idr !== false && $idr->rowCount() > 0) {
-				foreach ($idr as $id) {
-					$delqa = $this->pdo->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
-							' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' .
-							$group['bname'] . '.collectionid = %d)', $id['id']
-						)
-					);
-					if ($delqa !== false) {
-						$reccount += $delqa->rowCount();
-					}
-					$delqb = $this->pdo->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']
-						)
-					);
-					if ($delqb !== false) {
-						$reccount += $delqb->rowCount();
-					}
-				}
-			}
-			$delqc = $this->pdo->queryExec(
-				sprintf(
-					"DELETE FROM " . $group['cname'] . " WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" .
-					$where1, $this->pdo->getSetting('partretentionhours')
-				)
-			);
-			if ($delqc !== false) {
-				$reccount += $delqc->rowCount();
-			}
+		// SECOND QUERY
+		$deleteQuery = $this->pdo->queryExec(
+			sprintf(
+				'DELETE c, b, p FROM %s c ' .
+				'INNER JOIN %s b ON c.id = b.collectionid ' .
+				'LEFT OUTER JOIN %s p ON b.id = p.binaryid ' .
+				'WHERE c.dateadded < (NOW() - INTERVAL %d HOUR) %s',
+				$group['cname'],
+				$group['bname'],
+				$group['pname'],
+				$this->pdo->getSetting('partretentionhours'),
+				$where1
+			)
+		);
+		if ($deleteQuery !== false) {
+			$deletedCount += $deleteQuery->rowCount();
 		}
+		$secondQuery = microtime(true);
 
 		// Binaries/parts that somehow have no collection.
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$delqd = $this->pdo->queryExec(
-				'DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['bname'] . ', ' .
-				$group['pname'] . ' WHERE ' . $group['bname'] . '.collectionid = 0 AND ' . $group['bname'] . '.id = ' .
-				$group['pname'] . '.binaryid'
-			);
-			if ($delqd !== false) {
-				$reccount += $delqd->rowCount();
-			}
-		} else {
-			$delqe = $this->pdo->queryExec(
-				'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] . ' WHERE ' .
-				$group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' . $group['bname'] . '.collectionid = 0)'
-			);
-			if ($delqe !== false) {
-				$reccount += $delqe->rowCount();
-			}
-			$delqf = $this->pdo->queryExec('DELETE FROM ' . $group['bname'] . ' WHERE collectionid = 0');
-			if ($delqf !== false) {
-				$reccount += $delqf->rowCount();
-			}
+		// THIRD QUERY
+		$deleteQuery = $this->pdo->queryExec(
+			'DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['bname'] . ', ' .
+			$group['pname'] . ' WHERE ' . $group['bname'] . '.collectionid = 0 AND ' . $group['bname'] . '.id = ' .
+			$group['pname'] . '.binaryid'
+		);
+		if ($deleteQuery !== false) {
+			$deletedCount += $deleteQuery->rowCount();
 		}
+		$thirdQuery = microtime(true);
 
 		// Parts that somehow have no binaries.
+		// FOURTH QUERY
 		if (mt_rand(1, 100) % 3 == 0) {
-			$delqg = $this->pdo->queryExec(
+			$deleteQuery = $this->pdo->queryExec(
 				'DELETE FROM ' . $group['pname'] . ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)'
 			);
-			if ($delqg !== false) {
-				$reccount += $delqg->rowCount();
+			if ($deleteQuery !== false) {
+				$deletedCount += $deleteQuery->rowCount();
 			}
 		}
+		$fourthQuery = microtime(true);
 
 		// Binaries that somehow have no collection.
-		$delqh = $this->pdo->queryExec(
+		// FIFTH QUERY
+		$deleteQuery = $this->pdo->queryExec(
 			'DELETE FROM ' . $group['bname'] . ' WHERE collectionid NOT IN (SELECT c.id FROM ' . $group['cname'] . ' c)'
 		);
-		if ($delqh !== false) {
-			$reccount += $delqh->rowCount();
+		if ($deleteQuery !== false) {
+			$deletedCount += $deleteQuery->rowCount();
 		}
+		$fifthQuery = microtime(true);
 
 		// Collections that somehow have no binaries.
-		$delqi = $this->pdo->queryExec(
+		// SIXTH QUERY
+		$deleteQuery = $this->pdo->queryExec(
 			'DELETE FROM ' . $group['cname'] . ' WHERE ' . $group['cname'] . '.id NOT IN (SELECT ' . $group['bname'] .
 			'.collectionid FROM ' . $group['bname'] . ') ' . $where1
 		);
-		if ($delqi !== false) {
-			$reccount += $delqi->rowCount();
+		if ($deleteQuery !== false) {
+			$deletedCount += $deleteQuery->rowCount();
 		}
+		$sixthQuery = microtime(true);
 
 		if ($this->echooutput) {
 			$this->c->doEcho(
 				$this->c->primary(
 					'Removed ' .
-					number_format($reccount) .
+					number_format($deletedCount) .
 					' parts/binaries/collection rows in ' .
-					$this->consoleTools->convertTime(TIME() - $stage7)
+					$this->consoleTools->convertTime((time() - $stage7))
 				)
+			);
+		}
+
+		if (nZEDb_DEBUG && nZEDb_LOGINFO) {
+			echo (
+				'1st query: ' . ($firstQuery - $startTime) . 's ' . PHP_EOL .
+				'2nd query: ' . ($secondQuery - $firstQuery) . 's ' . PHP_EOL .
+				'3rd query: ' . ($thirdQuery - $secondQuery) . 's ' . PHP_EOL .
+				'4th query: ' . ($fourthQuery - $thirdQuery) . 's ' . PHP_EOL .
+				'5th query: ' . ($fifthQuery - $fourthQuery) . 's ' . PHP_EOL .
+				'6th query: ' . ($sixthQuery - $fifthQuery) . 's ' . PHP_EOL
 			);
 		}
 	}

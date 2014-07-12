@@ -85,9 +85,9 @@ while ($cdone < $clen['total']) {
 			if ($debug) {
 				echo "\n\nBinary insert:\n";
 				print_r($binarynew);
-				echo sprintf("\nINSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $binarynew));
+				echo sprintf("\nINSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $binarynew));
 			}
-			$newbid = array('binaryid' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['group_id'], implode(', ', $binarynew))));
+			$newbid = array('binaryid' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['group_id'], implode(', ', $binarynew))));
 
 
 			//Get parts and split to correct group tables.
