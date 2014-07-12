@@ -87,7 +87,6 @@
 								title="View Popporn page"
 								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 							{else}
-
 							<a
 								target="_blank"
 								href="{$site->dereferrer_link}http://www.popporn.com/results/index.cfm?v=4&g=0&searchtext={$result.title}"
@@ -95,6 +94,12 @@
 								title="Search Popporn page"
 							><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
 							{/if}
+							<a
+								target="_blank"
+								href="{$site->dereferrer_link}http://www.iafd.com/results.asp?searchtype=title&searchstring={$result.title}"
+								name="viewiafd{$result.title}"
+								title="Search Internet Adult Film Database"
+								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/iafd.png"></a>
 						</div>
 						<hr>
 						<div>
