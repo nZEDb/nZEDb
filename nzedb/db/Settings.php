@@ -80,11 +80,12 @@ class Settings extends DB
 	public function getSetting($options = array())
 	{
 		if (!is_array($options)) {
-			if (isset($this->settings[$options])) {
-				return $this->settings[$options];
+			$options = $this->_dottedToArray($options);
+			if (isset($options['setting']) && isset($this->settings[$options['setting']])) {
+				return $this->settings[$options['setting']];
 			}
-			$options = ['setting' => $options];
 		}
+
 		$defaults = array(
 			'section'    => '',
 			'subsection' => '',
@@ -206,6 +207,37 @@ class Settings extends DB
 			$ver = '0.0.0';
 		}
 		return $ver;
+	}
+
+	protected function  _dottedToArray($setting)
+	{
+		$result = array();
+		if (is_string($setting)) {
+			$parts = explode('.', $setting);
+			switch (count($parts)) {
+				case 3:
+					list(
+						$result['section'],
+						$result['subsection'],
+						$result['name'],
+						) = $parts;
+					break;
+				case 2:
+					list(
+						$result['subsection'],
+						$result['name'],
+						) = $parts;
+					break;
+				case 1:
+					list(
+						$result['setting'],
+						) = $parts;
+					break;
+			}
+		} else {
+			$result = false;
+		}
+		return $result;
 	}
 
 	protected function _getFromSettings($options)
