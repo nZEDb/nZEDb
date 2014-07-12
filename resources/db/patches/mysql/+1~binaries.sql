@@ -1,1 +1,1 @@
-ALTER TABLE binaries ADD COLUMN currentparts INT UNSIGNED DEFAULT '0' AFTER totalparts
+ALTER TABLE binaries ADD COLUMN currentparts INT UNSIGNED NOT NULL DEFAULT '0' AFTER totalparts

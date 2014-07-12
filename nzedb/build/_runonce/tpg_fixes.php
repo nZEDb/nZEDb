@@ -34,7 +34,7 @@ if ($groups === false) {
 	echo "No active groups. Fix not needed.";
 } else {
 	$sql  = "ALTER TABLE %s CHANGE COLUMN groupid group_id INT (10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'FK to groups'";
-	$sql2 = "ALTER TABLE binaries_%s ADD COLUMN currentparts INT UNSIGNED DEFAULT '0' AFTER totalparts";
+	$sql2 = "ALTER TABLE binaries_%s ADD COLUMN currentparts INT UNSIGNED NOT NULL DEFAULT '0' AFTER totalparts";
 	foreach ($groups as $group) {
 		$pdo->queryExec(sprintf($sql2, $group['id']));
 		$pdo->queryDirect(sprintf($sql, 'collections_' . $group['id']));
