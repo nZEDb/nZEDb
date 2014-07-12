@@ -162,7 +162,9 @@ class adultdvdempire
 		$ret = $this->edithtml->load($this->tmprsp);
 		foreach ($ret->find("a.PerformerName") as $a) {
 			if ($a->plaintext != "(bio)") {
+				if($a->plaintext != "(interview)"){
 				$res['cast'][] = trim($a->plaintext);
+				}
 			}
 		}
 		if ($awards == true) {
