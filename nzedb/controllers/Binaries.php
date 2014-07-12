@@ -663,6 +663,11 @@ class Binaries
 					continue;
 				}
 
+				if (!isset($header['Bytes'])) {
+					$header['Bytes'] = (isset($header[':bytes']) ? $header[':bytes'] : 0);
+				}
+				$header['Bytes'] = (is_numeric($header['Bytes']) ? $header['Bytes'] : 0);
+
 				// Set up the info for inserting into parts/binaries/collections tables.
 				if (!isset($articles[$matches[1]])) {
 					$articles[$matches[1]] = $header;
@@ -703,10 +708,9 @@ class Binaries
 						);
 					$articles[$matches[1]]['MaxFiles'] = $fileCount[6];
 					$articles[$matches[1]]['File']     = $fileCount[2];
-				}
-
-				if (!isset($header['Bytes'])) {
-					$header['Bytes'] = (isset($header[':bytes']) ? $header[':bytes'] : 0);
+					$articles[$matches[1]]['Size']     = $header['Bytes'];
+				} else {
+					$articles[$matches[1]]['Size'] += $header['Bytes'];
 				}
 
 				$articles[$matches[1]]['Parts'][$matches[2]] =
@@ -714,7 +718,7 @@ class Binaries
 						'Message-ID' => substr($header['Message-ID'], 1, -1), // Strip the < and >, saves space in DB.
 						'number'     => $header['Number'],
 						'part'       => $matches[2],
-						'size'       => (is_numeric($header['Bytes']) ? $header['Bytes'] : 0)
+						'size'       => $header['Bytes']
 					);
 			}
 
@@ -860,14 +864,15 @@ class Binaries
 						if ($binaryCheck === false) {
 							$binaryID = $this->_pdo->queryInsert(
 								sprintf("
-									INSERT INTO %s (binaryhash, name, collectionid, totalparts, filenumber)
-									VALUES ('%s', %s, %d, %d, %d)",
+									INSERT INTO %s (binaryhash, name, collectionid, totalparts, filenumber, partsize)
+									VALUES ('%s', %s, %d, %d, %d, %d)",
 									$groupNames['bname'],
 									$binaryHash,
 									$this->_pdo->escapeString(utf8_encode($subject)),
 									$collectionID,
 									$data['MaxParts'],
-									$data['File']
+									$data['File'],
+									$data['Size']
 								)
 							);
 
@@ -877,6 +882,14 @@ class Binaries
 							}
 						} else {
 							$binaryID = $binaryCheck['id'];
+							$this->_pdo->queryExec(
+								sprintf(
+									'UPDATE %s SET partsize = partsize + %d WHERE id = %d',
+									$groupNames['bname'],
+									$data['Size'],
+									$binaryID
+								)
+							);
 						}
 
 						$tempPartsQuery = $partsQuery;

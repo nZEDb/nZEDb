@@ -1899,19 +1899,18 @@ class Releases
 		$stage2 = TIME();
 		// Get the total size in bytes of the collection for collections where filecheck = 2.
 		$checked = $this->pdo->queryExec(
-						sprintf(
-							'UPDATE %s c
-							SET filesize = (SELECT COALESCE(SUM(p.size), 0) FROM %s p INNER JOIN %s b ON p.binaryid = b.id WHERE b.collectionid = c.id),
-							filecheck = %d
-							WHERE c.filecheck = %d
-							AND c.filesize = 0 %s',
-							$group['cname'],
-							$group['pname'],
-							$group['bname'],
-							self::COLLFC_SIZED,
-							self::COLLFC_COMPPART,
-							$where
-						)
+			sprintf(
+				'UPDATE %s c
+				SET filesize = (SELECT COALESCE(SUM(b.partsize), 0) FROM %s b WHERE b.collectionid = c.id),
+				filecheck = %d
+				WHERE c.filecheck = %d
+				AND c.filesize = 0 %s',
+				$group['cname'],
+				$group['bname'],
+				self::COLLFC_SIZED,
+				self::COLLFC_COMPPART,
+				$where
+			)
 		);
 		if ($checked !== false && $this->echooutput) {
 			$this->c->doEcho(
