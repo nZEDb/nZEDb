@@ -6,7 +6,7 @@
 require_once nZEDb_LIBS . 'adultdvdempire.php';
 require_once nZEDb_LIBS . 'popporn.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 use nzedb\utility;
 
 /**
@@ -14,6 +14,8 @@ use nzedb\utility;
  */
 class XXX
 {
+	public $pdo;
+
 	protected $adeclass = false; // We used AdultDVDEmpire class?
 	protected $popclass = false; // We used PopPorn class?
 
@@ -34,16 +36,6 @@ class XXX
 	protected $debug;
 
 	/**
-	 * @var int
-	 */
-	protected $showPasswords;
-
-	/**
-	 * @var bool|stdClass
-	 */
-	protected $site;
-
-	/**
 	 * @var ReleaseImage
 	 */
 	protected $releaseImage;
@@ -56,13 +48,10 @@ class XXX
 	public function __construct($echoOutput = false)
 	{
 		$this->c = new ColorCLI();
-		$this->db = new DB();
+		$this->pdo = new Settings();
 		$this->releaseImage = new ReleaseImage();
-		$s = new Sites();
-		$this->site = $s->get();
-		$this->movieqty = (!empty($this->site->maximdbprocessed) ? $this->site->maximdbprocessed : 100);
-		$this->showPasswords = (!empty($this->site->showpasswordedrelease) ? $this->site->showpasswordedrelease : 0);
-
+		$this->movieqty = ($this->pdo->getSetting('maximpdoprocessed') != '') ? $this->pdo->getSetting('maximpdoprocessed') : 100;
+		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
 		$this->debug = nZEDb_DEBUG;
 		$this->echooutput = ($echoOutput && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
@@ -82,7 +71,7 @@ class XXX
 	 */
 	public function getXXXInfo($xxxid)
 	{
-		return $this->db->queryOneRow(sprintf("SELECT * FROM xxxinfo WHERE id = %d", $xxxid));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM xxxinfo WHERE id = %d", $xxxid));
 	}
 
 	/**
@@ -95,7 +84,7 @@ class XXX
 	 */
 	public function getRange($start, $num)
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			sprintf('
 				SELECT *
 				FROM xxxinfo
@@ -112,7 +101,7 @@ class XXX
 	 */
 	public function getCount()
 	{
-		$res = $this->db->queryOneRow('SELECT COUNT(id) AS num FROM xxxinfo');
+		$res = $this->pdo->queryOneRow('SELECT COUNT(id) AS num FROM xxxinfo');
 		return ($res === false ? 0 : $res['num']);
 	}
 
@@ -129,7 +118,7 @@ class XXX
 	{
 		$catSearch = $this->formCategorySearchSQL($cat);
 
-		$res = $this->db->queryOneRow(
+		$res = $this->pdo->queryOneRow(
 			sprintf("
 				SELECT COUNT(DISTINCT r.xxxinfo_id) AS num
 				FROM releases r
@@ -145,7 +134,7 @@ class XXX
 				($maxAge > 0
 					?
 					'AND r.postdate > NOW() - INTERVAL ' .
-					($this->db->dbSystem() === 'mysql'
+					($this->pdo->dbSystem() === 'mysql'
 						? $maxAge . 'DAY '
 						: "'" . $maxAge . "DAYS' "
 					)
@@ -172,7 +161,7 @@ class XXX
 	public function getXXXRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
 	{
 		$order = $this->getXXXOrder($orderBy);
-		if ($this->db->dbSystem() === 'mysql') {
+		if ($this->pdo->dbSystem() === 'mysql') {
 			$sql = sprintf("
 				SELECT
 				GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id,
@@ -249,7 +238,7 @@ class XXX
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
 			);
 		}
-		return $this->db->query($sql);
+		return $this->pdo->query($sql);
 	}
 
 	/**
@@ -331,21 +320,17 @@ class XXX
 		foreach ($browseByArr as $bb) {
 			if (isset($_REQUEST[$bb]) && !empty($_REQUEST[$bb])) {
 				$bbv = stripslashes($_REQUEST[$bb]);
-				if ($bb === 'rating') {
-					$bbv .= '.';
+				if($bb == "genre"){
+				$bbv = $this->getgenreid($bbv);
 				}
-				if ($bb === 'imdb') {
-					$browseBy .= 'm.' . $bb . 'id = ' . $bbv . ' AND ';
-				} else {
-					$browseBy .= 'm.' . $bb . ' LIKE (' . $this->db->escapeString('%' . $bbv . '%') . ') AND ';
-				}
+					$browseBy .= 'm.' . $bb . ' LIKE (' . $this->pdo->escapeString('%' . $bbv . '%') . ') AND ';
 			}
 		}
 		return $browseBy;
 	}
 
 	/**
-	 * Create click-able links to IMDB actors/genres/directors/etc..
+	 * Create click-able links to actors/genres/directors/etc..
 	 *
 	 * @param $data
 	 * @param $field
@@ -362,6 +347,10 @@ class XXX
 		$newArr = array();
 		$i = 0;
 		foreach ($tmpArr as $ta) {
+			if($field == "genre" ){
+			$ta = $this->getGenres(true,false,$ta);
+			$ta = $ta["title"];
+			}
 			if ($i > 5) {
 				break;
 			} //only use first 6
@@ -390,17 +379,17 @@ class XXX
 	{
 		if (!empty($id)) {
 
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 				sprintf("
 					UPDATE xxxinfo
 					SET %s, %s, %s, %s, %s, %s, %d, %d, updateddate = NOW()
 					WHERE id = %d",
-					(empty($title)    ? '' : 'title = '    . $this->db->escapeString($title)),
-					(empty($tagLine)  ? '' : 'tagline = '  . $this->db->escapeString($tagLine)),
-					(empty($plot)     ? '' : 'plot = '     . $this->db->escapeString($plot)),
-					(empty($genre)    ? '' : 'genre = '    . $this->db->escapeString($genre)),
-					(empty($director) ? '' : 'director = ' . $this->db->escapeString($director)),
-					(empty($actors)   ? '' : 'actors = '   . $this->db->escapeString($actors)),
+					(empty($title)    ? '' : 'title = '    . $this->pdo->escapeString($title)),
+					(empty($tagLine)  ? '' : 'tagline = '  . $this->pdo->escapeString($tagLine)),
+					(empty($plot)     ? '' : 'plot = '     . $this->pdo->escapeString($plot)),
+					(empty($genre)    ? '' : 'genre = '    . $this->pdo->escapeString($genre)),
+					(empty($director) ? '' : 'director = ' . $this->pdo->escapeString($director)),
+					(empty($actors)   ? '' : 'actors = '   . $this->pdo->escapeString($actors)),
 					(empty($cover)    ? '' : 'cover = '    . $cover),
 					(empty($backdrop) ? '' : 'backdrop = ' . $backdrop),
 					$id
@@ -449,8 +438,7 @@ class XXX
 		$mov['backdrop'] = (isset($res['backcover'])) ? $res['backcover'] : '';
 		$mov['cover'] = (isset($res['boxcover'])) ? $res['boxcover'] : '';
 		$res['cast'] = (isset($res['cast'])) ? join(",", $res['cast']) : '';
-		$res['genres'] = $this->getgenreid($res['genres']);
-		exit;
+		$res['genres'] = (isset($res['genres'])) ? $this->getgenreid($res['genres']) : '';
 		//$res['genres'] = (isset($res['genres'])) ? join(",", $res['genres']) : '';
 		$mov['title'] = html_entity_decode($xxxmovie, ENT_QUOTES, 'UTF-8');
 		$mov['plot'] = (isset($res['sypnosis'])) ? html_entity_decode($res['sypnosis'], ENT_QUOTES, 'UTF-8') : '';
@@ -459,17 +447,17 @@ class XXX
 		$mov['director'] = (isset($res['director'])) ? html_entity_decode($res['director'], ENT_QUOTES, 'UTF-8') : '';
 		$mov['actors'] = html_entity_decode($res['cast'], ENT_QUOTES, 'UTF-8');
 		$mov['title'] = str_replace(array('/', '\\'), '', $mov['title']);
-		$check = $this->db->queryOneRow(
+		$check = $this->pdo->queryOneRow(
 						  sprintf('
 				SELECT id
 				FROM xxxinfo
 				WHERE title = %s',
-				$this->db->escapeString($mov['title'])
+				$this->pdo->escapeString($mov['title'])
 						  )
 		);
 		if($check === false){
-		if ($this->db->dbSystem() === 'mysql') {
-			$xxxID = $this->db->queryInsert(
+		if ($this->pdo->dbSystem() === 'mysql') {
+			$xxxID = $this->pdo->queryInsert(
 				sprintf("
 					INSERT INTO xxxinfo
 						(title, tagline, plot, genre, director, actors, cover, backdrop, createddate, updateddate)
@@ -477,37 +465,37 @@ class XXX
 						(%s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
 					ON DUPLICATE KEY UPDATE
 						title = %s, tagline = %s, plot = %s, genre = %s, director = %s, actors = %s, cover = %d, backdrop = %d, updateddate = NOW()",
-					$this->db->escapeString($mov['title']),
-					$this->db->escapeString($mov['tagline']),
-					$this->db->escapeString($mov['plot']),
-					$this->db->escapeString(substr($mov['genre'], 0, 64)),
-					$this->db->escapeString($mov['director']),
-					$this->db->escapeString($mov['actors']),
+					$this->pdo->escapeString($mov['title']),
+					$this->pdo->escapeString($mov['tagline']),
+					$this->pdo->escapeString($mov['plot']),
+					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
+					$this->pdo->escapeString($mov['director']),
+					$this->pdo->escapeString($mov['actors']),
 					0,
 					0,
-					$this->db->escapeString($mov['title']),
-					$this->db->escapeString($mov['tagline']),
-					$this->db->escapeString($mov['plot']),
-					$this->db->escapeString(substr($mov['genre'], 0, 64)),
-					$this->db->escapeString($mov['director']),
-					$this->db->escapeString($mov['actors']),
+					$this->pdo->escapeString($mov['title']),
+					$this->pdo->escapeString($mov['tagline']),
+					$this->pdo->escapeString($mov['plot']),
+					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
+					$this->pdo->escapeString($mov['director']),
+					$this->pdo->escapeString($mov['actors']),
 					0,
 					0
 				)
 			);
-		} else if ($this->db->dbSystem() === 'pgsql') {
-				$xxxID = $this->db->queryInsert(
+		} else if ($this->pdo->dbSystem() === 'pgsql') {
+				$xxxID = $this->pdo->queryInsert(
 					sprintf("
 						INSERT INTO xxxinfo
 							(title, tagline, plot, genre, director, actors, cover, backdrop, createddate, updateddate)
 						VALUES
 							(%s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
-						$this->db->escapeString($mov['title']),
-						$this->db->escapeString($mov['tagline']),
-						$this->db->escapeString($mov['plot']),
-						$this->db->escapeString($mov['genre']),
-						$this->db->escapeString($mov['director']),
-						$this->db->escapeString($mov['actors']),
+						$this->pdo->escapeString($mov['title']),
+						$this->pdo->escapeString($mov['tagline']),
+						$this->pdo->escapeString($mov['plot']),
+						$this->pdo->escapeString($mov['genre']),
+						$this->pdo->escapeString($mov['director']),
+						$this->pdo->escapeString($mov['actors']),
 						0,
 						0
 					)
@@ -524,11 +512,11 @@ class XXX
 			if(isset($mov['backdrop'])){
 			$mov['backdrop'] = $this->releaseImage->saveImage($xxxID . '-backdrop', $mov['backdrop'], $this->imgSavePath, 1920, 1024);
 			}
-			$this->db->queryExec(sprintf('UPDATE xxxinfo SET cover = %d, backdrop = %d  WHERE id = %d', $mov['cover'], $mov['backdrop'], $xxxID));
+			$this->pdo->queryExec(sprintf('UPDATE xxxinfo SET cover = %d, backdrop = %d  WHERE id = %d', $mov['cover'], $mov['backdrop'], $xxxID));
 		}
 		}else{
 		// If xxxinfo title is found, update release with xxxinfo id
-			$this->db->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d  WHERE id = %d', $check['id'], $this->currentRelID));
+			$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d  WHERE id = %d', $check['id'], $this->currentRelID));
 			$xxxID=$check['id'];
 		}
 		if ($this->echooutput) {
@@ -549,9 +537,9 @@ class XXX
 
 	public function processXXXReleases($releaseToWork = '')
 	{
-		// Get all releases without an IMDB id.
+		// Get all releases without an IMpdo id.
 		if ($releaseToWork === '') {
-			$res = $this->db->query(
+			$res = $this->pdo->query(
 				sprintf("
 					SELECT r.searchname, r.id
 					FROM releases r
@@ -580,7 +568,7 @@ class XXX
 				// Try to get a name/year.
 				if ($this->parseXXXSearchName($arr['searchname']) === false) {
 					//We didn't find a name, so set to all 0's so we don't parse again.
-					$this->db->queryExec(sprintf("UPDATE releases SET xxxinfo_id = %d WHERE id = %d", -2, $arr["id"]));
+					$this->pdo->queryExec(sprintf("UPDATE releases SET xxxinfo_id = %d WHERE id = %d", -2, $arr["id"]));
 					continue;
 
 				} else {
@@ -594,10 +582,10 @@ class XXX
 
 					}
 					if($xxxid === false){
-						//$this->db->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', $xxxid, $arr['id']));
+						//$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', $xxxid, $arr['id']));
 					//}else{
 						/// We failed to get any xxx info from all sources.
-						$this->db->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', -2, $arr['id']));
+						$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', -2, $arr['id']));
 
 					}
 
@@ -654,37 +642,66 @@ class XXX
 	}
 
 	/**
-	 * Get IMDB genres.
+	 * Get all genres for search-filter.tpl
 	 *
-	 * @return array
+	 * @param bool $activeOnly
+	 *
+	 * @return array|null
 	 */
-	public function getGenres($activeOnly =false)
-	{
-		$db = $this->db;
+	public function getallgenres($activeOnly=false){
+		$i=0;
+		$res = null;
+		$ret = null;
 		if ($activeOnly) {
-			return $db->query("SELECT title FROM genres WHERE disabled = 0 AND type = 6000 ORDER BY title");
+			$res= $this->pdo->query("SELECT title FROM genres WHERE disabled = 0 AND type = 6000 ORDER BY title");
 		} else {
-			return $db->query("SELECT title FROM genres WHERE disabled = 1 AND type = 6000 ORDER BY title");
+			$res= $this->pdo->query("SELECT title FROM genres WHERE disabled = 1 AND type = 6000 ORDER BY title");
+		}
+		foreach($res as $arr => $value){
+			$ret[] = $value['title'];
+
+		}
+		return $ret;
+	}
+	public function getGenres($activeOnly=false, $allgenres=false, $gid=null)
+	{
+		if(isset($gid)){
+		$gid = " AND id = ". $this->pdo->escapeString($gid) . " ORDER BY title";
+		}else{
+		$gid = " ORDER BY title";
+		}
+		if ($activeOnly) {
+			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 0 AND type = 6000".$gid);
+		} else {
+			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 1 AND type = 6000".$gid);
 		}
 	}
 	private function getgenreid($arr)
 	{
-			$db = $this->db;
 			$ret = null;
+		if(!is_array($arr)){
+		$res = $this->pdo->queryOneRow("SELECT id FROM genres WHERE title = " . $this->pdo->escapeString($arr));
+		if($res !== false){
+		return $res["id"];
+		}
+		}
 			foreach($arr as $key => $value){
-			$res = $this->db->queryOneRow("SELECT id FROM genres WHERE title = ".$this->db->escapeString($value));
+			$res = $this->pdo->queryOneRow("SELECT id FROM genres WHERE title = ".$this->pdo->escapeString($value));
 			if($res !== false){
-				$ret .= "," . $res;
+				$ret .= "," . $res["id"];
 			}else{
 			$ret .= "," . $this->insertGenre($value);
 	}
 			}
-			var_dump($ret); exit;
+		$ret = ltrim($ret,",");
+		return ($ret);
 		}
-	private function insertGenre($genre = ''){
- 	if(isset($genre)){
-	$res = $this->db->exec("INSERT INTO genres (title, type, disabled) VALUES('".$this->db->escapeString($genre)."',6000,0) WHERE title != ".$this->db->escapeString($genre));
-	return $res;
+
+	private function insertGenre($genre)
+	{
+		if (isset($genre)) {
+			$res = $this->pdo->queryInsert(sprintf("INSERT INTO genres (title, type, disabled) VALUES (%s ,%d ,%d)",$this->pdo->escapeString($genre),	6000, 0));
+			return $res;
 		}
 	}
 }

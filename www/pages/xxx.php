@@ -46,9 +46,8 @@ $page->smarty->assign('actors', $actors);
 $director = (isset($_REQUEST['director']) && !empty($_REQUEST['director'])) ? stripslashes($_REQUEST['director']) : '';
 $page->smarty->assign('director', $director);
 
-$genres = $movie->getGenres();
+$genres = $movie->getallGenres(true);
 $genre = (isset($_REQUEST['genre']) && in_array($_REQUEST['genre'], $genres)) ? $_REQUEST['genre'] : '';
-//var_dump($genres);exit;
 $page->smarty->assign('genres', $genres);
 $page->smarty->assign('genre', $genre);
 
