@@ -706,11 +706,13 @@ class Binaries
 							$groupMySQL['id'] .
 							$fileCount[6]
 						);
-					$articles[$matches[1]]['MaxFiles'] = $fileCount[6];
-					$articles[$matches[1]]['File']     = $fileCount[2];
-					$articles[$matches[1]]['Size']     = $header['Bytes'];
+					$articles[$matches[1]]['MaxFiles']  = $fileCount[6];
+					$articles[$matches[1]]['File']      = $fileCount[2];
+					$articles[$matches[1]]['Size']      = $header['Bytes'];
+					$articles[$matches[1]]['PartCount'] = 1;
 				} else {
 					$articles[$matches[1]]['Size'] += $header['Bytes'];
+					$articles[$matches[1]]['PartCount']++;
 				}
 
 				$articles[$matches[1]]['Parts'][$matches[2]] =
@@ -864,13 +866,14 @@ class Binaries
 						if ($binaryCheck === false) {
 							$binaryID = $this->_pdo->queryInsert(
 								sprintf("
-									INSERT INTO %s (binaryhash, name, collectionid, totalparts, filenumber, partsize)
-									VALUES ('%s', %s, %d, %d, %d, %d)",
+									INSERT INTO %s (binaryhash, name, collectionid, totalparts, currentparts, filenumber, partsize)
+									VALUES ('%s', %s, %d, %d, %d, %d, %d)",
 									$groupNames['bname'],
 									$binaryHash,
 									$this->_pdo->escapeString(utf8_encode($subject)),
 									$collectionID,
 									$data['MaxParts'],
+									$data['PartCount'],
 									$data['File'],
 									$data['Size']
 								)
@@ -884,9 +887,10 @@ class Binaries
 							$binaryID = $binaryCheck['id'];
 							$this->_pdo->queryExec(
 								sprintf(
-									'UPDATE %s SET partsize = partsize + %d WHERE id = %d',
+									'UPDATE %s SET partsize = partsize + %d, currentparts = currentparts + %d WHERE id = %d',
 									$groupNames['bname'],
 									$data['Size'],
+									$data['PartCount'],
 									$binaryID
 								)
 							);

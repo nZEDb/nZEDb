@@ -1645,15 +1645,13 @@ class Releases
 			sprintf('
 				UPDATE %s b INNER JOIN
 					(SELECT b.id FROM %s b
-					INNER JOIN %s p ON p.binaryid = b.id
 					INNER JOIN %s c ON c.id = b.collectionid
 					WHERE c.filecheck = %d AND b.partcheck = 0 %s
-					GROUP BY b.id, b.totalparts
-					HAVING COUNT(p.id) = b.totalparts)
+					AND b.currentparts = b.totalparts
+					GROUP BY b.id, b.totalparts)
 				r ON b.id = r.id SET b.partcheck = 1',
 				$group['bname'],
 				$group['bname'],
-				$group['pname'],
 				$group['cname'],
 				self::COLLFC_TEMPCOMP,
 				$where
@@ -1667,14 +1665,13 @@ class Releases
 			sprintf('
 				UPDATE %s b INNER JOIN
 					(SELECT b.id FROM %s b
-					INNER JOIN %s p ON p.binaryid = b.id
 					INNER JOIN %s c ON c.id = b.collectionid
 					WHERE c.filecheck = %d AND b.partcheck = 0 %s
-					GROUP BY b.id, b.totalparts HAVING COUNT(p.id) >= b.totalparts + 1)
+					AND b.currentparts >= (b.totalparts + 1)
+					GROUP BY b.id, b.totalparts)
 				r ON b.id = r.id SET b.partcheck = 1',
 				$group['bname'],
 				$group['bname'],
-				$group['pname'],
 				$group['cname'],
 				self::COLLFC_ZEROPART,
 				$where

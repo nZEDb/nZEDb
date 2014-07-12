@@ -34,6 +34,7 @@ CREATE TABLE         binaries (
   collectionid INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   filenumber   INT UNSIGNED        NOT NULL DEFAULT '0',
   totalparts   INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  currentparts INT UNSIGNED        NOT NULL DEFAULT '0',
   binaryhash   VARCHAR(255)        NOT NULL DEFAULT '0',
   partcheck    BIT                 NOT NULL DEFAULT 0,
   partsize     BIGINT UNSIGNED     NOT NULL DEFAULT '0',
