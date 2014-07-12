@@ -2564,7 +2564,8 @@ class Releases
 
 	public function processReleasesStage7a($groupID)
 	{
-		$reccount = $delq = 0;
+		$stage7 = time();
+		$deletedCount = 0;
 		$where = ' ';
 		$where1 = '';
 
@@ -2579,174 +2580,112 @@ class Releases
 		if ($this->echooutput) {
 			echo $this->c->header("Stage 7a -> Delete finished collections.");
 		}
-		$stage7 = TIME();
 
+		$startTime = microtime(true);
 		// Completed releases and old collections that were missed somehow.
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$delq = $this->pdo->queryExec(
-				sprintf(
-					'DELETE c, b, p FROM %s c ' .
-					'INNER JOIN %s b ON c.id = b.collectionid ' .
-					'INNER JOIN %s p ON b.id = p.binaryid ' .
-					'WHERE %s c.filecheck = %d',
-					$group['cname'],
-					$group['bname'],
-					$group['pname'],
-					$where,
-					self::COLLFC_DELETE
-				)
-			);
-			if ($delq !== false) {
-				$reccount += $delq->rowCount();
-			}
-		} else {
-			$idr = $this->pdo->queryDirect('SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
-			if ($idr !== false && $idr->rowCount() > 0) {
-				foreach ($idr as $id) {
-					$delqa = $this->pdo->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
-							' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' .
-							$group['bname'] . '.collectionid = %d)', $id['id']
-						)
-					);
-					if ($delqa !== false) {
-						$reccount += $delqa->rowCount();
-					}
-					$delqb = $this->pdo->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']
-						)
-					);
-					if ($delqb !== false) {
-						$reccount += $delqb->rowCount();
-					}
-				}
-				$delqc = $this->pdo->queryExec('DELETE FROM ' . $group['cname'] . ' WHERE filecheck = 5 ' . $where);
-				if ($delqc !== false) {
-					$reccount += $delqc->rowCount();
-				}
-			}
+		// FIRST QUERY
+		$deleteQuery = $this->pdo->queryExec(
+			sprintf(
+				'DELETE c, b, p FROM %s c ' .
+				'INNER JOIN %s b ON c.id = b.collectionid ' .
+				'INNER JOIN %s p ON b.id = p.binaryid ' .
+				'WHERE %s c.filecheck = %d',
+				$group['cname'],
+				$group['bname'],
+				$group['pname'],
+				$where,
+				self::COLLFC_DELETE
+			)
+		);
+		if ($deleteQuery !== false) {
+			$deletedCount += $deleteQuery->rowCount();
 		}
+		$firstQuery = microtime(true);
 
 		// Old collections that were missed somehow.
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$delq = $this->pdo->queryExec(
-				sprintf(
-					'DELETE c, b, p FROM %s c ' .
-					'INNER JOIN %s b ON c.id = b.collectionid ' .
-					'LEFT OUTER JOIN %s p ON b.id = p.binaryid ' .
-					'WHERE c.dateadded < (NOW() - INTERVAL %d HOUR) %s',
-					$group['cname'],
-					$group['bname'],
-					$group['pname'],
-					$this->pdo->getSetting('partretentionhours'),
-					$where1
-				)
-			);
-			if ($delq !== false) {
-				$reccount += $delq->rowCount();
-			}
-		} else {
-			$idr = $this->pdo->queryDirect(
-				sprintf(
-					"SELECT id FROM " . $group['cname'] . " WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" .
-					$where1, $this->pdo->getSetting('partretentionhours')
-				)
-			);
-
-			if ($idr !== false && $idr->rowCount() > 0) {
-				foreach ($idr as $id) {
-					$delqa = $this->pdo->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] .
-							' WHERE ' . $group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' .
-							$group['bname'] . '.collectionid = %d)', $id['id']
-						)
-					);
-					if ($delqa !== false) {
-						$reccount += $delqa->rowCount();
-					}
-					$delqb = $this->pdo->queryExec(
-						sprintf(
-							'DELETE FROM ' . $group['bname'] . ' WHERE collectionid = %d', $id['id']
-						)
-					);
-					if ($delqb !== false) {
-						$reccount += $delqb->rowCount();
-					}
-				}
-			}
-			$delqc = $this->pdo->queryExec(
-				sprintf(
-					"DELETE FROM " . $group['cname'] . " WHERE dateadded < (NOW() - INTERVAL '%d HOURS')" .
-					$where1, $this->pdo->getSetting('partretentionhours')
-				)
-			);
-			if ($delqc !== false) {
-				$reccount += $delqc->rowCount();
-			}
+		// SECOND QUERY
+		$deleteQuery = $this->pdo->queryExec(
+			sprintf(
+				'DELETE c, b, p FROM %s c ' .
+				'INNER JOIN %s b ON c.id = b.collectionid ' .
+				'LEFT OUTER JOIN %s p ON b.id = p.binaryid ' .
+				'WHERE c.dateadded < (NOW() - INTERVAL %d HOUR) %s',
+				$group['cname'],
+				$group['bname'],
+				$group['pname'],
+				$this->pdo->getSetting('partretentionhours'),
+				$where1
+			)
+		);
+		if ($deleteQuery !== false) {
+			$deletedCount += $deleteQuery->rowCount();
 		}
+		$secondQuery = microtime(true);
 
 		// Binaries/parts that somehow have no collection.
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$delqd = $this->pdo->queryExec(
-				'DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['bname'] . ', ' .
-				$group['pname'] . ' WHERE ' . $group['bname'] . '.collectionid = 0 AND ' . $group['bname'] . '.id = ' .
-				$group['pname'] . '.binaryid'
-			);
-			if ($delqd !== false) {
-				$reccount += $delqd->rowCount();
-			}
-		} else {
-			$delqe = $this->pdo->queryExec(
-				'DELETE FROM ' . $group['pname'] . ' WHERE EXISTS (SELECT id FROM ' . $group['bname'] . ' WHERE ' .
-				$group['bname'] . '.id = ' . $group['pname'] . '.binaryid AND ' . $group['bname'] . '.collectionid = 0)'
-			);
-			if ($delqe !== false) {
-				$reccount += $delqe->rowCount();
-			}
-			$delqf = $this->pdo->queryExec('DELETE FROM ' . $group['bname'] . ' WHERE collectionid = 0');
-			if ($delqf !== false) {
-				$reccount += $delqf->rowCount();
-			}
+		// THIRD QUERY
+		$deleteQuery = $this->pdo->queryExec(
+			'DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['bname'] . ', ' .
+			$group['pname'] . ' WHERE ' . $group['bname'] . '.collectionid = 0 AND ' . $group['bname'] . '.id = ' .
+			$group['pname'] . '.binaryid'
+		);
+		if ($deleteQuery !== false) {
+			$deletedCount += $deleteQuery->rowCount();
 		}
+		$thirdQuery = microtime(true);
 
 		// Parts that somehow have no binaries.
+		// FOURTH QUERY
 		if (mt_rand(1, 100) % 3 == 0) {
-			$delqg = $this->pdo->queryExec(
+			$deleteQuery = $this->pdo->queryExec(
 				'DELETE FROM ' . $group['pname'] . ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)'
 			);
-			if ($delqg !== false) {
-				$reccount += $delqg->rowCount();
+			if ($deleteQuery !== false) {
+				$deletedCount += $deleteQuery->rowCount();
 			}
 		}
+		$fourthQuery = microtime(true);
 
 		// Binaries that somehow have no collection.
-		$delqh = $this->pdo->queryExec(
+		// FIFTH QUERY
+		$deleteQuery = $this->pdo->queryExec(
 			'DELETE FROM ' . $group['bname'] . ' WHERE collectionid NOT IN (SELECT c.id FROM ' . $group['cname'] . ' c)'
 		);
-		if ($delqh !== false) {
-			$reccount += $delqh->rowCount();
+		if ($deleteQuery !== false) {
+			$deletedCount += $deleteQuery->rowCount();
 		}
+		$fifthQuery = microtime(true);
 
 		// Collections that somehow have no binaries.
-		$delqi = $this->pdo->queryExec(
+		// SIXTH QUERY
+		$deleteQuery = $this->pdo->queryExec(
 			'DELETE FROM ' . $group['cname'] . ' WHERE ' . $group['cname'] . '.id NOT IN (SELECT ' . $group['bname'] .
 			'.collectionid FROM ' . $group['bname'] . ') ' . $where1
 		);
-		if ($delqi !== false) {
-			$reccount += $delqi->rowCount();
+		if ($deleteQuery !== false) {
+			$deletedCount += $deleteQuery->rowCount();
 		}
+		$sixthQuery = microtime(true);
 
 		if ($this->echooutput) {
 			$this->c->doEcho(
 				$this->c->primary(
 					'Removed ' .
-					number_format($reccount) .
+					number_format($deletedCount) .
 					' parts/binaries/collection rows in ' .
 					$this->consoleTools->convertTime(TIME() - $stage7)
 				)
+			);
+		}
+
+		if (nZEDb_DEBUG && nZEDb_LOGINFO) {
+			echo (
+				'1st query: ' . ($firstQuery - $startTime) . 's ' . PHP_EOL .
+				'2nd query: ' . ($secondQuery - $firstQuery) . 's ' . PHP_EOL .
+				'3rd query: ' . ($thirdQuery - $secondQuery) . 's ' . PHP_EOL .
+				'4th query: ' . ($fourthQuery - $thirdQuery) . 's ' . PHP_EOL .
+				'5th query: ' . ($fifthQuery - $fourthQuery) . 's ' . PHP_EOL .
+				'6th query: ' . ($sixthQuery - $fifthQuery) . 's ' . PHP_EOL
 			);
 		}
 	}
