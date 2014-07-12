@@ -7,6 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-07-12 kevin
+	* Chg: !!!! IF YOU ARE RUNNING TPG, YOU MUST RUN nzedb\_runonce\tpg_fixes.php !!!!!! Huge speed-up to stage 1 on update-releases.
 	* Chg: Speed up to stage 2 on update-releases.
 	* Add: Debug info to stage1 for query times.
 2014-07-11 kevin
