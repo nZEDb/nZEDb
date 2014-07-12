@@ -663,7 +663,16 @@ class XXX
 		}
 		return $ret;
 	}
-	public function getGenres($activeOnly=false, $allgenres=false, $gid=null)
+
+	/**
+	 * Get Genres for activeonly and/or an ID
+	 *
+	 * @param bool $activeOnly
+	 * @param null $gid
+	 *
+	 * @return array|bool
+	 */
+	public function getGenres($activeOnly=false, $gid=null)
 	{
 		if(isset($gid)){
 		$gid = " AND id = ". $this->pdo->escapeString($gid) . " ORDER BY title";
@@ -676,7 +685,15 @@ class XXX
 			return $this->pdo->queryOneRow("SELECT title FROM genres WHERE disabled = 1 AND type = 6000".$gid);
 		}
 	}
-	private function getgenreid($arr)
+
+	/**
+	 * Get Genre ID's Of the title
+	 *
+	 * @param $arr - Array or String
+	 *
+	 * @return string - If array .. 1,2,3,4 if string .. 1
+	 */
+	private function getGenreID($arr)
 	{
 			$ret = null;
 		if(!is_array($arr)){
@@ -697,6 +714,13 @@ class XXX
 		return ($ret);
 		}
 
+	/**
+	 * Inserts Genre and returns last affected row (Genre ID)
+	 *
+	 * @param $genre
+	 *
+	 * @return bool
+	 */
 	private function insertGenre($genre)
 	{
 		if (isset($genre)) {
