@@ -64,18 +64,37 @@
 								width="160" border="0" alt="{$result.title|escape:"htmlall"}"
 						></a>
 						<div class="relextra" style="margin-top:5px;">
+							{if $result.classused == "ade"}
+								<a
+									target="_blank"
+									href="{$site->dereferrer_link}{$result.directurl}"
+									name="viewade{$result.title}"
+									title="View AdultdvdEmpire page"
+									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
+								{else}
+								<a
+									target="_blank"
+									href="{$site->dereferrer_link}http://www.adultdvdempire.com/dvd/search?q={$result.title}"
+									name="viewade{$result.title}"
+									title="Search AdultdvdEmpire page"
+									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
+							{/if}
+							{if $result.classused == "pop"}
 							<a
 								target="_blank"
-								href="{$site->dereferrer_link}http://www.imdb.com/title/tt{$result.title}/"
-								name="viewade{$result.title}"
-								title="View ADE page"
-								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
-							<a
-								target="_blank"
-								href="{$site->dereferrer_link}http://trakt.tv/search/imdb?q=tt{$result.title}/"
+								href="{$site->dereferrer_link}{$result.directurl}"
 								name="viewpop{$result.id}"
 								title="View Popporn page"
+								><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
+							{else}
+
+							<a
+								target="_blank"
+								href="{$site->dereferrer_link}http://www.popporn.com/results/index.cfm?v=4&g=0&searchtext={$result.title}"
+								name="viewpop{$result.id}"
+								title="Search Popporn page"
 							><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/popporn.png"></a>
+							{/if}
 						</div>
 						<hr>
 						<div>

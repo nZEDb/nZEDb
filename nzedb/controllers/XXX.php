@@ -16,9 +16,7 @@ class XXX
 {
 	public $pdo;
 
-	protected $adeclass = false; // We used AdultDVDEmpire class?
-	protected $popclass = false; // We used PopPorn class?
-
+	protected $whichclass = ''; // We used AdultDVDEmpire or PopPorn class -- used for template
 	/**
 	 * Current title being passed through various sites/api's.
 	 * @var string
@@ -409,68 +407,64 @@ class XXX
 	{
 
 		$res = false;
+		$this->whichclass = '';
 		// Check Adultdvdempire for xxx info.
 		$mov = new adultdvdempire();
 		$mov->searchterm = $xxxmovie;
 		$res = $mov->search();
-		$this->adeclass = true;
+		$this->whichclass = "ade";
 		if ($res === false) {
-			$this->adeclass = false;
+			$this->whichclass = "pop";
 			// IF no result from Adultdvdempire check popporn
 			$mov = new popporn();
 			$mov->searchterm = $xxxmovie;
 			$res = $mov->search();
-			$this->popclass = true;
 		}
 		// If a result is true getall information.
 		if ($res !== false) {
 			$res = $mov->_getall();
+		}else{
+		return false;
 		}
-		if ($res === false) {
-			$this->popclass = false;
 
-			return false;
-		}
 		if ($this->echooutput) {
-			$this->c->doEcho($this->c->primary("Fetching XXX info for: " . $xxxmovie));
+			$this->c->doEcho($this->c->primary("Fetching XXX info for: " . $res['title']));
 		}
+
 		$mov = array();
 		$mov['backdrop'] = (isset($res['backcover'])) ? $res['backcover'] : '';
 		$mov['cover'] = (isset($res['boxcover'])) ? $res['boxcover'] : '';
 		$res['cast'] = (isset($res['cast'])) ? join(",", $res['cast']) : '';
 		$res['genres'] = (isset($res['genres'])) ? $this->getgenreid($res['genres']) : '';
-		//$res['genres'] = (isset($res['genres'])) ? join(",", $res['genres']) : '';
-		$mov['title'] = html_entity_decode($xxxmovie, ENT_QUOTES, 'UTF-8');
+		$mov['title'] = html_entity_decode($res['title'], ENT_QUOTES, 'UTF-8');
 		$mov['plot'] = (isset($res['sypnosis'])) ? html_entity_decode($res['sypnosis'], ENT_QUOTES, 'UTF-8') : '';
 		$mov['tagline'] = (isset($res['tagline'])) ? html_entity_decode($res['tagline'], ENT_QUOTES, 'UTF-8') : '';
 		$mov['genre'] = html_entity_decode($res['genres'], ENT_QUOTES, 'UTF-8');
 		$mov['director'] = (isset($res['director'])) ? html_entity_decode($res['director'], ENT_QUOTES, 'UTF-8') : '';
 		$mov['actors'] = html_entity_decode($res['cast'], ENT_QUOTES, 'UTF-8');
-		$mov['title'] = str_replace(array('/', '\\'), '', $mov['title']);
-		$check = $this->pdo->queryOneRow(
-						  sprintf('
-				SELECT id
-				FROM xxxinfo
-				WHERE title = %s',
-				$this->pdo->escapeString($mov['title'])
-						  )
-		);
+		$mov['directurl'] = html_entity_decode($res['directurl'], ENT_QUOTES, 'UTF-8');
+		$mov['classused'] = $this->whichclass;
+
+		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM xxxinfo WHERE title = %s',	$this->pdo->escapeString($mov['title'])));
+
 		if($check === false){
 		if ($this->pdo->dbSystem() === 'mysql') {
 			$xxxID = $this->pdo->queryInsert(
 				sprintf("
 					INSERT INTO xxxinfo
-						(title, tagline, plot, genre, director, actors, cover, backdrop, createddate, updateddate)
+						(title, tagline, plot, genre, director, actors, directurl, classused, cover, backdrop, createddate, updateddate)
 					VALUES
-						(%s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
+						(%s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
 					ON DUPLICATE KEY UPDATE
-						title = %s, tagline = %s, plot = %s, genre = %s, director = %s, actors = %s, cover = %d, backdrop = %d, updateddate = NOW()",
+						title = %s, tagline = %s, plot = %s, genre = %s, director = %s, actors = %s, directurl = %s, classused = %s, cover = %d, backdrop = %d, updateddate = NOW()",
 					$this->pdo->escapeString($mov['title']),
 					$this->pdo->escapeString($mov['tagline']),
 					$this->pdo->escapeString($mov['plot']),
 					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
 					$this->pdo->escapeString($mov['director']),
 					$this->pdo->escapeString($mov['actors']),
+					$this->pdo->escapeString($mov['directurl']),
+					$this->pdo->escapeString($mov['classused']),
 					0,
 					0,
 					$this->pdo->escapeString($mov['title']),
@@ -479,6 +473,8 @@ class XXX
 					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
 					$this->pdo->escapeString($mov['director']),
 					$this->pdo->escapeString($mov['actors']),
+					$this->pdo->escapeString($mov['directurl']),
+					$this->pdo->escapeString($mov['classused']),
 					0,
 					0
 				)
@@ -487,15 +483,17 @@ class XXX
 				$xxxID = $this->pdo->queryInsert(
 					sprintf("
 						INSERT INTO xxxinfo
-							(title, tagline, plot, genre, director, actors, cover, backdrop, createddate, updateddate)
+							(title, tagline, plot, genre, director, actors, directurl, classused, cover, backdrop, createddate, updateddate)
 						VALUES
-							(%s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
+							(%s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
 						$this->pdo->escapeString($mov['title']),
 						$this->pdo->escapeString($mov['tagline']),
 						$this->pdo->escapeString($mov['plot']),
 						$this->pdo->escapeString($mov['genre']),
 						$this->pdo->escapeString($mov['director']),
 						$this->pdo->escapeString($mov['actors']),
+						$this->pdo->escapeString($mov['directurl']),
+						$this->pdo->escapeString($mov['classused']),
 						0,
 						0
 					)
@@ -515,7 +513,7 @@ class XXX
 			$this->pdo->queryExec(sprintf('UPDATE xxxinfo SET cover = %d, backdrop = %d  WHERE id = %d', $mov['cover'], $mov['backdrop'], $xxxID));
 		}
 		}else{
-		// If xxxinfo title is found, update release with xxxinfo id
+		// If xxxinfo title is found, update release with xxxinfo id because it was nulled before..
 			$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d  WHERE id = %d', $check['id'], $this->currentRelID));
 			$xxxID=$check['id'];
 		}
@@ -567,7 +565,7 @@ class XXX
 			foreach ($res as $arr) {
 				// Try to get a name/year.
 				if ($this->parseXXXSearchName($arr['searchname']) === false) {
-					//We didn't find a name, so set to all 0's so we don't parse again.
+					//We didn't find a name, so set to all -2 so we don't parse again.
 					$this->pdo->queryExec(sprintf("UPDATE releases SET xxxinfo_id = %d WHERE id = %d", -2, $arr["id"]));
 					continue;
 
@@ -582,9 +580,6 @@ class XXX
 
 					}
 					if($xxxid === false){
-						//$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', $xxxid, $arr['id']));
-					//}else{
-						/// We failed to get any xxx info from all sources.
 						$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', -2, $arr['id']));
 
 					}

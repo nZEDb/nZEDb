@@ -45,7 +45,6 @@ class adultdvdempire
 
 	/* Trailing urls */
 	protected $dvdquery = "/dvd/search?q=";
-	protected $allquery = "/allsearch/search?q=";
 	protected $scenes = "/scenes";
 	protected $boxcover = "/boxcover";
 	protected $backcover = "/backcover";
