@@ -75,6 +75,7 @@ switch ($page->page) {
 			break;
 		}
 	case 'xxx':
+	case 'xxxmodal':
 	case 'api':
 	case 'getnzb':
 	case 'login':

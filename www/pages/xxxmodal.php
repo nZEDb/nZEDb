@@ -7,7 +7,6 @@ $movie = new XXX();
 
 if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 	$mov = $movie->getXXXInfo($_GET['id']);
-
 	if (!$mov) {
 		$page->show404();
 	}

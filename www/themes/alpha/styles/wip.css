@@ -36,7 +36,9 @@ movie, xxx, console and music modals with backdrop images.
 #xxxinfo h1 { font-size: 32px; padding: 10px 10px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000;}
 #xxxinfo h2, #xxxinfo h3 { padding: 10px 20px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000;}
 #xxxinfo a { color: #fff;}
-#xxxinfo img.cover { margin-right: 20px; -webkit-box-shadow: 0px 0px 4px #000; -moz-box-shadow: 0px 0px 4px #000;}
+#xxxinfo img.cover { width: 187px; height: 270px; margin-right: 20px; -webkit-box-shadow: 0px 0px 4px #000; -moz-box-shadow: 0px 0px 4px #000;}
+#xxxbackdrop { position: absolute; width: 600px; height: 717px; margin-left: -3px; top: 20px; background-color: #000; overflow: hidden;}
+#xxxbackdrop img { opacity:0.5; width: 100%; height: 100%;}
 
 #backdrop { position: absolute; width: 810px; height: 455px; margin-left: -3px; top: 20px; background-color: #000; overflow: hidden;}
 #backdrop img { opacity:0.5; width: 100%; height: 100%;}

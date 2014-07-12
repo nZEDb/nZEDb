@@ -348,7 +348,7 @@ class XXX
 		$i = 0;
 		foreach ($tmpArr as $ta) {
 			if($field == "genre" ){
-			$ta = $this->getGenres(true,false,$ta);
+			$ta = $this->getGenres(true,$ta);
 			$ta = $ta["title"];
 			}
 			if ($i > 5) {
