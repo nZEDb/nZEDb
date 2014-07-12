@@ -68,15 +68,11 @@ class popporn
 	public function _covers()
 	{
 		$res = array();
-		if ($this->html->find('div[id=box-art], img[class=front]', 1)) {
-			$ret = $this->html->find('div[id=box-art], img[class=front]', 1);
-			$res['boxcover'] = trim($ret->src);
+		if ($this->html->find('div[id=box-art], a[rel=box-art]', 1)) {
+			$ret = $this->html->find('div[id=box-art], a[rel=box-art]', 1);
+			$res['boxcover'] = trim($ret->href);
+			$res['backcover'] = str_ireplace("_aa","_bb",trim($ret->href));
 		}
-		if ($this->html->find('div[id=box-art], img[class=back]', 1)) {
-			$ret = $this->html->find('div[id=box-art], img[class=back]', 1);
-			$res['backcover'] = trim($ret->src);
-		}
-
 		return $res;
 	}
 
