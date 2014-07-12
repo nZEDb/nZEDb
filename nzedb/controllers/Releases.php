@@ -2673,7 +2673,7 @@ class Releases
 					'Removed ' .
 					number_format($deletedCount) .
 					' parts/binaries/collection rows in ' .
-					$this->consoleTools->convertTime(TIME() - $stage7)
+					$this->consoleTools->convertTime((time() - $stage7))
 				)
 			);
 		}

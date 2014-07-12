@@ -11,6 +11,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Speed up to stage 2 on update-releases.
 	* Add: Debug info to stage1 for query times.
 	* Add: Debug info to stage7a for query times.
+	* Fix: Timer on stage7a.
 2014-07-11 kevin
 	* Fix: Issue where group_id could be set 0 on requestid.
 2014-07-10 kevin
