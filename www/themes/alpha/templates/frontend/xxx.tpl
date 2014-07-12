@@ -115,7 +115,10 @@
 					<h2>
 						<a
 							title="{$result.title|stripslashes|escape:"htmlall"}"
-							href="{$smarty.const.WWW_TOP}/xxx/?id={$result.id}">{$result.title|stripslashes|escape:"htmlall"}
+							href="{$smarty.const.WWW_TOP}/xxx/?id={$result.id}"
+							name="name{$result.id}"
+							class="modal_xxx thumbnail"
+							rel="viewxxx">{$result.title|stripslashes|escape:"htmlall"}
 						</a>
 					</h2>
 					{if $result.tagline != ''}
