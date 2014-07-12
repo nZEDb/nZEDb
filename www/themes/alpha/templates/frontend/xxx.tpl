@@ -57,7 +57,7 @@
 							href="{$smarty.const.WWW_TOP}/xxx/?id={$result.id}"
 							name="name{$result.id}"
 							title="View movie info"
-							class="modal_imdb thumbnail" rel="movie"
+							class="modal_xxx thumbnail" rel="XXX"
 						><img
 								class="shadow" style="margin: 3px 0;"
 								src="{$smarty.const.WWW_TOP}/covers/xxx/{if $result.cover == 1}{$result.id}-cover.jpg{else}no-cover.jpg{/if}"
