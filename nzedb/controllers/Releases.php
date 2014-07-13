@@ -2159,11 +2159,10 @@ class Releases
 						echo $this->c->primary('Added release ' . $cleanName);
 					}
 
-				} else if (isset($releaseID) && $releaseID == false) {
+				} else if ($releaseID === false) {
 					$this->pdo->queryExec(
 						sprintf('
-							UPDATE %s
-							SET filecheck = 5
+							DELETE FROM %s
 							WHERE collectionhash = %s',
 							$group['cname'],
 							$this->pdo->escapeString($collection['collectionhash'])
