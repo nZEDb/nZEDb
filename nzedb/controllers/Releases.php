@@ -2659,13 +2659,17 @@ class Releases
 
 		// Collections that somehow have no binaries.
 		// FIFTH QUERY
-		$deleteQuery = $this->pdo->queryExec(
-			'DELETE FROM ' . $group['cname'] . ' WHERE ' . $group['cname'] . '.id NOT IN (SELECT ' . $group['bname'] .
-			'.collectionid FROM ' . $group['bname'] . ') ' .
-			(!empty($groupID) && $this->_tablePerGroup === false ? ' AND ' . $group['cname'] . '.group_id = ' . $groupID : '')
+		$collectionIDs = $this->pdo->queryDirect(
+			sprintf(
+				'SELECT id FROM %s WHERE id NOT IN (SELECT collectionid FROM %s)',
+				$group['cname'], $group['bname']
+			)
 		);
-		if ($deleteQuery !== false) {
-			$deletedCount += $deleteQuery->rowCount();
+		if ($collectionIDs !== false) {
+			foreach ($collectionIDs as $collectionID) {
+				$deletedCount++;
+				$this->pdo->queryExec(sprintf('DELETE FROM %s WHERE id = %d', $group['cname'], $collectionID['id']));
+			}
 		}
 		$fifthQuery = microtime(true);
 
