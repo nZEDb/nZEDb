@@ -2489,7 +2489,7 @@ class Releases
 			if ($this->echooutput) {
 				$this->c->doEcho(
 					$this->c->primary(
-						PHP_EOL . 'Deleting collections/binaries/parts, be patient.' . PHP_EOL
+						PHP_EOL . 'Deleting collections/binaries/parts, be patient.'
 					)
 				);
 			}
@@ -2512,8 +2512,7 @@ class Releases
 			$this->c->doEcho(
 				$this->c->primary(
 					number_format($nzbCount) . ' NZBs created in ' . ($nzbEnd - $stage5) . ' seconds.' . PHP_EOL .
-					'Deleted ' . number_format($deleted) . ' collections and it\'s binaries/parts in ' .
-					($deleteEnd - $nzbEnd) . ' seconds.' . PHP_EOL .
+					'Deleted ' . number_format($deleted) . ' collections in ' . ($deleteEnd - $nzbEnd) . ' seconds.' . PHP_EOL .
 					'Total stage 5 time: ' . $this->c->primary($this->consoleTools->convertTime(time() - $stage5))
 				)
 			);
