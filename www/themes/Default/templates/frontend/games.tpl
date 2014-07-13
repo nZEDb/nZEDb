@@ -7,14 +7,12 @@
 	<table class="rndbtn" border="0" cellpadding="2" cellspacing="0">
 		<tr>
 			<th class="left"><label for="title">Title</label></th>
-			<th class="left"><label for="platform">Platform</label></th>
 			<th class="left"><label for="genre">Genre</label></th>
-			<th class="left"><label for="category">Category</label></th>
+			<th class="left"><label for="year">Year</label></th>
 			<th></th>
 		</tr>
 		<tr>
 			<td><input id="title" type="text" name="title" value="{$title}" size="15"/></td>
-			<td><input id="platform" type="text" name="platform" value="{$platform}" size="15"/></td>
 			<td>
 				<select id="genre" name="genre">
 					<option class="grouping" value=""></option>
@@ -24,10 +22,10 @@
 				</select>
 			</td>
 			<td>
-				<select id="category" name="t">
-					<option class="grouping" value="1000"></option>
-					{foreach from=$catlist item=ct}
-						<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
+				<select id="year" name="year">
+					<option class="grouping" value=""></option>
+					{foreach from=$years item=yr}
+						<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
 					{/foreach}
 				</select>
 			</td>

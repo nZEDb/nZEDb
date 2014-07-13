@@ -9,6 +9,7 @@
 			or $menu.title == "Movies"
 			or $menu.title == "Console"
 			or $menu.title == "Books"
+			or $menu.title == "PC Games"
 			or $menu.title == "Login"
 			or $menu.title == "Register"
 			or $menu.title == "Profile"

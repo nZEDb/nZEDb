@@ -7,6 +7,23 @@
 	</div>
 	<br>
 {/if}
+<div class="panel">
+	<div class="panel-heading">
+		<h4 class="panel-title">
+			<a
+					class="accordion-toggle"
+					data-toggle="collapse"
+					data-parent="#accordion"
+					href="#searchtoggle"
+					><i class="icon-search"></i> Search Filter</a>
+		</h4>
+	</div>
+	<div id="searchtoggle" class="panel-collapse collapse">
+		<div class="panel-body">
+			{include file='search-filter.tpl'}
+		</div>
+	</div>
+</div>
 {if $results|@count > 0}
 	<form id="nzb_multi_operations_form" action="get">
 		<div class="container nzb_multi_operations" style="text-align:right;margin-bottom:5px;">
@@ -28,20 +45,10 @@
 					<th><input type="checkbox" class="nzb_check_all"></th>
 					<th>title <a title="Sort Descending" href="{$orderbytitle_desc}"><i class="icon-chevron-down"></i></a><a
 								title="Sort Ascending" href="{$orderbytitle_asc}"><i class="icon-chevron-up"></i></a></th>
-					<th>platform <a title="Sort Descending" href="{$orderbyplatform_desc}"><i class="icon-chevron-down"></i></a><a
-								title="Sort Ascending" href="{$orderbyplatform_asc}"><i class="icon-chevron-up"></i></a></th>
 					<th>genre <a title="Sort Descending" href="{$orderbygenre_desc}"><i class="icon-chevron-down"></i></a><a
 								title="Sort Ascending" href="{$orderbygenre_asc}"><i class="icon-chevron-up"></i></a></th>
 					<th>release date <a title="Sort Descending" href="{$orderbyreleasedate_desc}"><i class="icon-chevron-down"></i></a>
 						<a title="Sort Ascending" href="{$orderbyreleasedate_asc}"><i class="icon-chevron-up"></i></a></th>
-					<th>posted <a title="Sort Descending" href="{$orderbyposted_desc}"><i class="icon-chevron-down"></i></a><a
-								title="Sort Ascending" href="{$orderbyposted_asc}"><i class="icon-chevron-up"></i></a></th>
-					<th>size <a title="Sort Descending" href="{$orderbysize_desc}"><i class="icon-chevron-down"></i></a><a
-								title="Sort Ascending" href="{$orderbysize_asc}"><i class="icon-chevron-up"></i></a></th>
-					<th>files <a title="Sort Descending" href="{$orderbyfiles_desc}"><i class="icon-chevron-down"></i></a><a
-								title="Sort Ascending" href="{$orderbyfiles_asc}"><i class="icon-chevron-up"></i></a></th>
-					<th>stats <a title="Sort Descending" href="{$orderbystats_desc}"><i class="icon-chevron-down"></i></a><a
-								title="Sort Ascending" href="{$orderbystats_asc}"><i class="icon-chevron-up"></i></a></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -52,6 +59,7 @@
 							<a
 								class="title thumbnail"
 								title="View giantbomb page"
+								target="_blank"
 								href="{$site->dereferrer_link}{$result.url}"
 								width="130px"
 								height="180px"

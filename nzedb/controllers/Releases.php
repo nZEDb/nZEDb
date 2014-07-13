@@ -1886,7 +1886,7 @@ class Releases
 								sprintf(
 									'UPDATE ' . $group['cname'] .
 									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
-									$groupID['id'], $s['size']
+									$groupID['id'], $f['size']
 								)
 							);
 							if ($mifcq !== false) {
