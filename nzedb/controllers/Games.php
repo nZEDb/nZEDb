@@ -181,7 +181,8 @@ class Games
 				. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
 				. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
 				. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
-				. "con.*, r.gamesinfo_id, groups.name AS group_name, rn.id as nfoid FROM releases r "
+				. "con.*, YEAR (con.releasedate) as year, r.gamesinfo_id, groups.name AS group_name,
+				rn.id as nfoid FROM releases r "
 				. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
 				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 				. "INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id "
@@ -245,7 +246,7 @@ class Games
 
 	public function getBrowseByOptions()
 	{
-		return array('platform' => 'platform', 'title' => 'title', 'genre' => 'genreID');
+		return array('platform' => 'platform', 'title' => 'title', 'genre' => 'genreID', 'year' => 'year');
 	}
 
 	public function getBrowseBy()
@@ -257,7 +258,11 @@ class Games
 		foreach ($browsebyArr as $bbk => $bbv) {
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= 'con.' . $bbv . ' ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+				if ($bbk === 'year') {
+					$browseby .= 'YEAR (con.releasedate) ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+				} else {
+					$browseby .= 'con.' . $bbv . ' ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+				}
 			}
 		}
 
@@ -448,7 +453,7 @@ class Games
 		}
 
 		$con['review'] = "";
-		if (isset($gb['decription'])) {
+		if (isset($gb['description'])) {
 			$con['review'] = trim(strip_tags((string)$gb['description']));
 		}
 

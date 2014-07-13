@@ -54,8 +54,8 @@ foreach ($collections_rows as $row) {
 	echo $c->primary("Group ${groupName}, Binaries = ${binaries['cnt']} [${nbinaries['cnt']}]");
 
 	//parts
-	$pdo->queryExec("INSERT IGNORE INTO parts_${row['group_id']} (messageid, number, partnumber, size, binaryid) "
-		. "SELECT messageid, number, partnumber, size, n.id FROM parts p "
+	$pdo->queryExec("INSERT IGNORE INTO parts_${row['group_id']} (messageid, number, partnumber, size, binaryid, collection_id) "
+		. "SELECT messageid, number, partnumber, size, n.id, c.id FROM parts p "
 		. "INNER JOIN binaries b ON p.binaryid = b.id "
 		. "INNER JOIN binaries_${row['group_id']} n ON b.binaryhash = n.binaryhash "
 		. "INNER JOIN collections_${row['group_id']} c on c.id = n.collectionid AND c.group_id = ${row['group_id']}");

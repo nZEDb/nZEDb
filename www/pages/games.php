@@ -35,6 +35,10 @@ $results = $games->getgamesRange($catarray, $offset, ITEMS_PER_COVER_PAGE, $orde
 $maxwords = 50;
 foreach ($results as $result) {
 	if (!empty($result['review'])) {
+		// remove "Overview" from start of review if present
+		if (0 === strpos($result['review'], 'Overview')) {
+			$result['review'] = substr($result['review'], 8);
+		}
 		$words = explode(' ', $result['review']);
 		if (sizeof($words) > $maxwords) {
 			$newwords = array_slice($words, 0, $maxwords);
@@ -54,11 +58,18 @@ $tmpgnr = array();
 foreach ($genres as $gn) {
 	$tmpgnr[$gn['id']] = $gn['title'];
 }
+
+$years = range(1903, (date("Y") + 1));
+rsort($years);
+$year = (isset($_REQUEST['year']) && in_array($_REQUEST['year'], $years)) ? $_REQUEST['year'] : '';
+$page->smarty->assign('years', $years);
+$page->smarty->assign('year', $year);
+
 $genre = (isset($_REQUEST['genre']) && array_key_exists($_REQUEST['genre'], $tmpgnr)) ? $_REQUEST['genre'] : '';
 $page->smarty->assign('genres', $genres);
 $page->smarty->assign('genre', $genre);
 
-$browseby_link = '&amp;title=' . $title . '&amp;platform=' . $platform;
+$browseby_link = '&amp;title=' . $title . '&amp;year=' . $year;
 
 $page->smarty->assign('pagertotalitems', $browsecount);
 $page->smarty->assign('pageroffset', $offset);
