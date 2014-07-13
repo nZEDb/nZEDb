@@ -2662,7 +2662,7 @@ class Releases
 
 		$deleted = 0;
 		// Parts that somehow have no binaries. Don't delete parts currently inserting, by checking the max ID.
-		if (mt_rand(1, 100) % 3 == 0) {
+		if (mt_rand(0, 100) <= 5) {
 			$deleteQuery = $this->pdo->queryExec(
 				sprintf(
 					'DELETE FROM %s WHERE binaryid NOT IN (SELECT id FROM %s) %s',
