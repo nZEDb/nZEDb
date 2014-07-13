@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-0713 kevin
 	* Chg: !!! TPG USERS MUST RUN nzedb/build/_runounce/tpg_fixes.php !!!!!!!!!!!!!!!!!!!!!!!!!
 	* Chg: Move c/b/p deletion to stage 5.
+	* Chg: Update stage 7a query for trigger addition.
 2014-07-13 bart39
 	* Fix: Console Cover View / Search filter.
 	* Add: PC Games Search Filter.

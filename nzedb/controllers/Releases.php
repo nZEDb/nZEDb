@@ -2616,13 +2616,8 @@ class Releases
 		// FIRST QUERY
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf(
-				'DELETE c, b, p FROM %s c ' .
-				'INNER JOIN %s b ON c.id = b.collectionid ' .
-				'LEFT OUTER JOIN %s p ON b.id = p.binaryid ' .
-				'WHERE c.dateadded < (NOW() - INTERVAL %d HOUR) %s',
+				'DELETE FROM %s c WHERE c.dateadded < (NOW() - INTERVAL %d HOUR) %s',
 				$group['cname'],
-				$group['bname'],
-				$group['pname'],
 				$this->pdo->getSetting('partretentionhours'),
 				$where
 			)
