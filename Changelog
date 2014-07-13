@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-12 bart39
+	* Fix: typo
 2014-07-12 kevin
 	* Chg: !!!! IF YOU ARE RUNNING TPG, YOU MUST RUN nzedb\_runonce\tpg_fixes.php !!!!!! Huge speed-up to stage 1 on update-releases.
 	* Chg: Speed up to stage 2 on update-releases.
