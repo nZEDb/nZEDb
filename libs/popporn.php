@@ -55,6 +55,7 @@ class popporn
 	public function __construct($echooutput = true)
 	{
 		$this->response = array();
+		$this->res = array();
 		$this->html = new simple_html_dom();
 		if (isset($this->cookie)) {
 			@$this->_getpopurl();
@@ -67,13 +68,12 @@ class popporn
 	 */
 	public function _covers()
 	{
-		$res = array();
 		if ($this->html->find('div[id=box-art], a[rel=box-art]', 1)) {
 			$ret = $this->html->find('div[id=box-art], a[rel=box-art]', 1);
-			$res['boxcover'] = trim($ret->href);
-			$res['backcover'] = str_ireplace("_aa","_bb",trim($ret->href));
+			$this->res['boxcover'] = trim($ret->href);
+			$this->res['backcover'] = str_ireplace("_aa","_bb",trim($ret->href));
 		}
-		return $res;
+		return $this->res;
 	}
 
 	/**
@@ -82,17 +82,16 @@ class popporn
 	 */
 	public function _sypnosis()
 	{
-		$res = array();
 		if ($this->html->find('div[id=product-info] ,h3[class=highlight]', 1)) {
 			$ret = $this->html->find('div[id=product-info] ,h3[class=highlight]', 1);
 			if ($ret->next_sibling()->plaintext) {
 				if (!stristr(trim($ret->next_sibling()->plaintext), "POPPORN EXCLUSIVE")) {
-					$res['sypnosis'] = trim($ret->next_sibling()->plaintext);
+					$this->res['sypnosis'] = trim($ret->next_sibling()->plaintext);
 				} else {
 					if ($ret->next_sibling()->next_sibling()->next_sibling()->plaintext) {
-						$res['sypnosis'] = trim($ret->next_sibling()->next_sibling()->next_sibling()->plaintext);
+						$this->res['sypnosis'] = trim($ret->next_sibling()->next_sibling()->next_sibling()->plaintext);
 					} else {
-						$res['sypnosis'] = "N/A";
+						$this->res['sypnosis'] = "N/A";
 					}
 				}
 			} else {
@@ -102,7 +101,7 @@ class popporn
 			return false;
 		}
 
-		return $res;
+		return $this->res;
 	}
 
 	/**
@@ -111,17 +110,16 @@ class popporn
 	 */
 	public function _trailers()
 	{
-		$res = array();
 		if ($this->html->find('input#thickbox-trailer-link', 0)) {
 			$ret = $this->html->find('input#thickbox-trailer-link', 0);
 			$ret->value = trim($ret->value);
 			$ret->value = str_replace("..", SELF::popurl, $ret->value);
-			$res['trailers'] = $ret->value;
+			$this->res['trailers'] = $ret->value;
 		} else {
 			return false;
 		}
 
-		return $res;
+		return $this->res;
 	}
 
 	/**
@@ -133,7 +131,6 @@ class popporn
 	 */
 	public function _productinfo($extras = true)
 	{
-		$res = array();
 		$country = false;
 		if ($this->html->find('div#lside', 0)) {
 			$ret = $this->html->find('div#lside', 0);
@@ -147,7 +144,7 @@ class popporn
 				if ($country === true) {
 					if (!stristr($e, "addthis_config")) {
 						if (!empty($e)) {
-							$res['productinfo'][] = $e;
+							$this->res['productinfo'][] = $e;
 						}
 					} else {
 						break;
@@ -158,7 +155,7 @@ class popporn
 			return false;
 		}
 
-		$res['productinfo'] = array_chunk($res['productinfo'], 2, false);
+		$this->res['productinfo'] = array_chunk($this->res['productinfo'], 2, false);
 
 		if ($extras === true) {
 			$features = false;
@@ -172,7 +169,7 @@ class popporn
 						}
 						if ($features == true) {
 							if (!empty($e)) {
-								$res['extras'][] = $e;
+								$this->res['extras'][] = $e;
 							}
 						}
 					}
@@ -180,7 +177,7 @@ class popporn
 			}
 		}
 
-		return $res;
+		return $this->res;
 	}
 
 	/**
@@ -189,7 +186,6 @@ class popporn
 	 */
 	public function _cast()
 	{
-		$res = array();
 		$cast = false;
 		$director = false;
 		if ($this->html->find('div#lside', 0)) {
@@ -210,7 +206,7 @@ class popporn
 
 					if ($director === true) {
 						if (!empty($e)) {
-							$res['director'] = $e;
+							$this->res['director'] = $e;
 							$director = false;
 							$e = null;
 						}
@@ -224,9 +220,9 @@ class popporn
 					}
 				}
 			}
-			$res['cast'] = & $er;
+			$this->res['cast'] = & $er;
 
-			return $res;
+			return $this->res;
 		} else {
 			return false;
 		}
@@ -238,15 +234,14 @@ class popporn
 	 */
 	public function _genres()
 	{
-		$res = array();
 		if ($this->html->find('div[id=thekeywords], p[class=keywords]', 1)) {
 			$ret = $this->html->find('div[id=thekeywords], p[class=keywords]', 1);
 			foreach ($ret->find('a') as $e) {
 				$genres[] = trim($e->plaintext);
 			}
-			$res['genres'] = & $genres;
+			$this->res['genres'] = & $genres;
 
-			return $res;
+			return $this->res;
 		} else {
 			return false;
 		}

@@ -56,6 +56,7 @@ class adultdvdempire
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->url = null;
 		$this->response = array();
+		$this->res = array();
 		$this->tmprsp = null;
 		$this->html = new simple_html_dom();
 		$this->edithtml = new simple_html_dom();
@@ -68,22 +69,21 @@ class adultdvdempire
 	 */
 	public function _trailers()
 	{
-		$res = array();
 		$this->_getadeurl($this->trailers . $this->urlfound);
 		$this->html->load($this->response);
 		if (preg_match("/(\"|')(?P<swf>[^\"']+.swf)(\"|')/i", $this->response, $matches)) {
-			$res['trailers']['url'] = SELF::ade . trim(trim($matches['swf']), '"');
+			$this->res['trailers']['url'] = SELF::ade . trim(trim($matches['swf']), '"');
 			if (preg_match("#(?:streamID:\s\")(?P<streamid>[0-9A-Z]+)(?:\")#",
 						   $this->response,
 						   $matches)
 			) {
-				$res['trailers']['streamid'] = trim($matches['streamid']);
+				$this->res['trailers']['streamid'] = trim($matches['streamid']);
 			}
 			if (preg_match("#(?:BaseStreamingUrl:\s\")(?P<baseurl>[0-9]+.[0-9]+.[0-9]+.[0-9]+)(?:\")#",
 						   $this->response,
 						   $matches)
 			) {
-				$res['trailers']['baseurl'] = $matches['baseurl'];
+				$this->res['trailers']['baseurl'] = $matches['baseurl'];
 			}
 		} else {
 			return false;
@@ -91,7 +91,7 @@ class adultdvdempire
 		unset($matches);
 		$this->html->clear();
 
-		return $res;
+		return $this->res;
 	}
 
 	/**
@@ -100,12 +100,11 @@ class adultdvdempire
 	 */
 	public function _covers()
 	{
-		$res = array();
 		$this->_getadeurl($this->boxcover . $this->urlfound);
 		$this->html->load($this->response);
 		foreach ($this->html->find("div[id=FrontBoxCover], img[itemprop=image]") as $img) {
 			if (stristr($img->src, "h.jpg")) {
-				$res['boxcover'] = $img->src;
+				$this->res['boxcover'] = $img->src;
 				break;
 			}
 		}
@@ -113,14 +112,14 @@ class adultdvdempire
 		$this->html->load($this->response);
 		foreach ($this->html->find("div[id=BackBoxCover], img[itemprop=image]") as $img) {
 			if (stristr($img->src, "bh.jpg")) {
-				$res['backcover'] = $img->src;
+				$this->res['backcover'] = $img->src;
 				break;
 			}
 		}
 		unset($img);
 		$this->html->clear();
 
-		return $res;
+		return $this->res;
 	}
 
 	/**
@@ -132,21 +131,20 @@ class adultdvdempire
 	 */
 	public function _sypnosis($tagline = false)
 	{
-		$res = array();
 		if ($tagline === true) {
 			if($this->html->find("p.Tagline", 0)){
 				$ret = $this->html->find("p.Tagline", 0);
 			if (!empty($ret->plaintext)) {
-				$res['tagline'] = trim($ret->plaintext);
+				$this->res['tagline'] = trim($ret->plaintext);
 			}
 			}
 		}
 		if ($this->html->find("p.Tagline", 0)->next_sibling()->next_sibling()) {
 			$ret = $this->html->find("p.Tagline", 0)->next_sibling()->next_sibling();
-			$res['sypnosis'] = trim($ret->innertext);
+			$this->res['sypnosis'] = trim($ret->innertext);
 		}
 
-		return $res;
+		return $this->res;
 	}
 
 	/**
@@ -158,33 +156,31 @@ class adultdvdempire
 	 */
 	public function _cast($awards = false)
 	{
-		$res = array();
 		$this->tmprsp = str_ireplace("Section Cast", "scast", $this->response);
 		$this->edithtml->load($this->tmprsp);
 		$ret = $this->edithtml->find("div[class=scast]", 0);
-		//var_dump($ret); exit;
 		$this->tmprsp = trim($ret->outertext);
 		$ret = $this->edithtml->load($this->tmprsp);
 		foreach ($ret->find("a.PerformerName") as $a) {
 			if ($a->plaintext != "(bio)") {
 				if($a->plaintext != "(interview)"){
-				$res['cast'][] = trim($a->plaintext);
+				$this->res['cast'][] = trim($a->plaintext);
 				}
 			}
 		}
 		if ($awards == true) {
 			if ($ret->find("ul", 1)) {
 				foreach ($ret->find("ul", 1)->find("li, strong") as $li) {
-					$res['awards'][] = trim($li->plaintext);
+					$this->res['awards'][] = trim($li->plaintext);
 				}
 			}
 		}
-		//$res['director']= array_pop($res['cast']);
+		//$this->res['director']= array_pop($this->res['cast']);
 		$this->edithtml->clear();
 		unset($ret);
 		unset($this->tmprsp);
 
-		return $res;
+		return $this->res;
 	}
 
 	/**
@@ -193,7 +189,6 @@ class adultdvdempire
 	 */
 	public function _genres()
 	{
-		$res = array();
 		$this->tmprsp = str_ireplace("Section Categories", "scat", $this->response);
 		$this->edithtml->load($this->tmprsp);
 		$ret = $this->edithtml->find("div[class=scat]", 0);
@@ -210,12 +205,12 @@ class adultdvdempire
 			}
 		}
 		$categories = array_map('trim', $categories);
-		$res['genres'] = $categories;
+		$this->res['genres'] = $categories;
 		$this->edithtml->clear();
 		unset($this->tmprsp);
 		unset($ret);
 
-		return $res;
+		return $this->res;
 	}
 
 	/**
@@ -227,7 +222,6 @@ class adultdvdempire
 	 */
 	public function _productinfo($features = false)
 	{
-		$res = array();
 		$dofeature = null;
 		$this->tmprsp = str_ireplace("Section ProductInfo", "spdinfo", $this->response);
 		$this->edithtml->load($this->tmprsp);
@@ -240,22 +234,22 @@ class adultdvdempire
 			}
 			if ($dofeature != true) {
 				if (trim($strong->innertext) != "&nbsp;") {
-					$res['productinfo'][] = trim($strong->innertext);
+					$this->res['productinfo'][] = trim($strong->innertext);
 				}
 			} else {
 				if ($features == true) {
-					$res['extras'][] = trim($strong->innertext);
+					$this->res['extras'][] = trim($strong->innertext);
 				}
 			}
 		}
-		array_shift($res['productinfo']);
-		array_shift($res['productinfo']);
-		$res['productinfo'] = array_chunk($res['productinfo'], 2, false);
+		array_shift($this->res['productinfo']);
+		array_shift($this->res['productinfo']);
+		$this->res['productinfo'] = array_chunk($this->res['productinfo'], 2, false);
 		$this->edithtml->clear();
 		unset($this->tmprsp);
 		unset($ret);
 
-		return $res;
+		return $this->res;
 	}
 
 	/**
