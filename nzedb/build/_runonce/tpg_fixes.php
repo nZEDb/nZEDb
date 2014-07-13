@@ -47,8 +47,10 @@ if ($groups === false) {
 	$query4[] = "ALTER TABLE parts_%s ADD INDEX ix_parts_collection_id(collection_id)";
 	$query4[] = "DROP TRIGGER IF EXISTS delete_collections_%s";
 
+	$query5[] = "UPDATE parts_%s p INNER JOIN binaries_%s b ON b.id = p.binaryid SET p.collection_id = b.collectionid";
+
 	// Creates trigger to delete parts / binaries when collections are deleted.
-	$query5 = "CREATE TRIGGER delete_collections_%s AFTER DELETE ON collections_%s FOR EACH ROW BEGIN DELETE FROM binaries_%s WHERE collectionid = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END";
+	$query6 = "CREATE TRIGGER delete_collections_%s AFTER DELETE ON collections_%s FOR EACH ROW BEGIN DELETE FROM binaries_%s WHERE collectionid = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END";
 
 	foreach ($groups as $group) {
 		echo 'Fixing group ' . $group['id'] . PHP_EOL;
@@ -59,7 +61,8 @@ if ($groups === false) {
 		foreach ($query4 as $singleQuery) {
 			$pdo->queryExec(sprintf($singleQuery, $group['id']), true);
 		}
-		$pdo->queryExec(sprintf($query5, $group['id'], $group['id'], $group['id'], $group['id']), true);
+		$pdo->queryExec(sprintf($query5, $group['id'], $group['id']), true);
+		$pdo->queryExec(sprintf($query6, $group['id'], $group['id'], $group['id'], $group['id']), true);
 		echo 'Finished fixing group ' . $group['id'] . PHP_EOL;
 	}
 	echo 'All done!' . PHP_EOL;
