@@ -2432,7 +2432,7 @@ class Releases
 
 	public function processReleasesStage5($groupID)
 	{
-		$nzbcount = $reccount = 0;
+		$stage5 = time();
 		$where = (!empty($groupID)) ? ' r.group_id = ' . $groupID . ' AND ' : ' ';
 
 		// Set table names
@@ -2440,34 +2440,41 @@ class Releases
 
 		// Create NZB.
 		if ($this->echooutput) {
-			$this->c->doEcho($this->c->header("Stage 5 -> Create the NZB, mark collections as ready for deletion."));
+			$this->c->doEcho($this->c->header("Stage 5 -> Create the NZB, delete collections/binaries/parts."));
 		}
 
-		$stage5 = TIME();
-		$resrel = $this->pdo->queryDirect(
-			"SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title, r.name, r.id, r.guid FROM releases r INNER JOIN category c ON r.categoryid = c.id INNER JOIN category cp ON cp.id = c.parentid WHERE" .
-			$where . "nzbstatus = 0"
+		$releases = $this->pdo->queryDirect(
+			sprintf("
+				SELECT CONCAT(COALESCE(cp.title,'') , CASE WHEN cp.title IS NULL THEN '' ELSE ' > ' END , c.title) AS title,
+					r.name, r.id, r.guid
+				FROM releases r
+				INNER JOIN category c ON r.categoryid = c.id
+				INNER JOIN category cp ON cp.id = c.parentid
+				WHERE %s nzbstatus = 0",
+				$where
+			)
 		);
-		$total = 0;
-		if ($resrel !== false) {
-			$total = $resrel->rowCount();
+
+		$total = $deleted = $nzbCount = 0;
+		if ($releases !== false) {
+			$total = $releases->rowCount();
 		}
+
+		$releaseIDs = array();
+
 		if ($total > 0) {
 			$nzb = new NZB();
 			// Init vars for writing the NZB's.
 			$nzb->initiateForWrite($this->pdo, htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8'), $groupID);
-			foreach ($resrel as $rowrel) {
-				$nzb_create = $nzb->writeNZBforReleaseId($rowrel['id'], $rowrel['guid'], $rowrel['name'], $rowrel['title']);
+			foreach ($releases as $release) {
+				$nzb_create = $nzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']);
+
 				if ($nzb_create !== false) {
-					$this->pdo->queryExec(
-						sprintf(
-							'UPDATE %s SET filecheck = 5 WHERE releaseid = %s', $group['cname'], $rowrel['id']
-						)
-					);
-					$nzbcount++;
+					$releaseIDs[] = $release['id'];
+					$nzbCount++;
 					if ($this->echooutput) {
-						echo $this->consoleTools->overWritePrimary(
-							'Creating NZBs: ' . $this->consoleTools->percentString($nzbcount, $total)
+						$this->consoleTools->overWritePrimary(
+							'Creating NZBs: ' . $this->consoleTools->percentString($nzbCount, $total)
 						);
 					}
 				}
@@ -2476,18 +2483,43 @@ class Releases
 			$nzb->cleanForWrite();
 		}
 
-		$timing = $this->c->primary($this->consoleTools->convertTime(TIME() - $stage5));
+		$nzbEnd = time();
+
+		if ($nzbCount > 0) {
+			if ($this->echooutput) {
+				$this->c->doEcho(
+					$this->c->primary(
+						PHP_EOL . 'Deleting collections/binaries/parts, be patient.' . PHP_EOL
+					)
+				);
+			}
+
+			$deleteQuery = $this->pdo->queryExec(
+				sprintf(
+					'DELETE FROM %s WHERE releaseid IN (%s)',
+					$group['cname'],
+					implode(',', $releaseIDs)
+				)
+			);
+			if ($deleteQuery !== false) {
+				$deleted = $deleteQuery->rowCount();
+			}
+		}
+
+		$deleteEnd = time();
+
 		if ($this->echooutput) {
 			$this->c->doEcho(
 				$this->c->primary(
-					number_format($nzbcount) .
-					' NZBs created in ' .
-					$timing
+					number_format($nzbCount) . ' NZBs created in ' . ($nzbEnd - $stage5) . ' seconds.' . PHP_EOL .
+					'Deleted ' . number_format($deleted) . ' collections and it\'s binaries/parts in ' .
+					($deleteEnd - $nzbEnd) . ' seconds.' . PHP_EOL .
+					'Total stage 5 time: ' . $this->c->primary($this->consoleTools->convertTime(time() - $stage5))
 				)
 			);
 		}
 
-		return $nzbcount;
+		return $nzbCount;
 	}
 
 	/**
@@ -2582,24 +2614,8 @@ class Releases
 		}
 
 		$startTime = microtime(true);
-		// Completed releases and old collections that were missed somehow.
-		// FIRST QUERY
-		$deleteQuery = $this->pdo->queryExec(
-			sprintf(
-				'DELETE c, b, p FROM %s c ' .
-				'INNER JOIN %s b ON c.id = b.collectionid ' .
-				'INNER JOIN %s p ON b.id = p.binaryid ' .
-				'WHERE %s c.filecheck = %d',
-				$group['cname'],
-				$group['bname'],
-				$group['pname'],
-				$where,
-				self::COLLFC_DELETE
-			)
-		);
-		if ($deleteQuery !== false) {
-			$deletedCount += $deleteQuery->rowCount();
-		}
+
+		// First query removed.
 		$firstQuery = microtime(true);
 
 		// Old collections that were missed somehow.
