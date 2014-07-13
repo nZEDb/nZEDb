@@ -422,21 +422,34 @@ class XXX
 		}
 		// If a result is true getall information.
 		if ($res !== false) {
+			if ($this->echooutput) {
+				$this->c->doEcho($this->c->primary("Fetching XXX info for: " . $xxxmovie));
+			}
 			$res = $mov->_getall();
-		}else{
-		return false;
+		} else {
+			return false;
 		}
 
-		if ($this->echooutput) {
-			$this->c->doEcho($this->c->primary("Fetching XXX info for: " . $res['title']));
-		}
+
 
 		$mov = array();
+		if (isset($res['trailers'])) {
+			if ($this->whichclass == "ade") {
+				$mov['trailers'] = serialize($res['trailers']);
+			} else {
+				$mov['trailers'] = $res['trailers'];
+			}
+		} else {
+			$mov['trailers'] = '';
+		}
+
+		$mov['extras'] = (isset($res['extras'])) ? serialize($res['extras']) : '';
+		$mov['productinfo'] = (isset($res['productinfo'])) ? serialize($res['productinfo']) : '';
 		$mov['backdrop'] = (isset($res['backcover'])) ? $res['backcover'] : '';
 		$mov['cover'] = (isset($res['boxcover'])) ? $res['boxcover'] : '';
 		$res['cast'] = (isset($res['cast'])) ? join(",", $res['cast']) : '';
 		$res['genres'] = (isset($res['genres'])) ? $this->getgenreid($res['genres']) : '';
-		$mov['title'] = html_entity_decode($res['title'], ENT_QUOTES, 'UTF-8');
+		$mov['title'] = $xxxmovie;
 		$mov['plot'] = (isset($res['sypnosis'])) ? html_entity_decode($res['sypnosis'], ENT_QUOTES, 'UTF-8') : '';
 		$mov['tagline'] = (isset($res['tagline'])) ? html_entity_decode($res['tagline'], ENT_QUOTES, 'UTF-8') : '';
 		$mov['genre'] = html_entity_decode($res['genres'], ENT_QUOTES, 'UTF-8');
@@ -446,23 +459,26 @@ class XXX
 		$mov['classused'] = $this->whichclass;
 
 		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM xxxinfo WHERE title = %s',	$this->pdo->escapeString($mov['title'])));
-
+		$xxxID=null;
 		if($check === false){
 		if ($this->pdo->dbSystem() === 'mysql') {
 			$xxxID = $this->pdo->queryInsert(
 				sprintf("
 					INSERT INTO xxxinfo
-						(title, tagline, plot, genre, director, actors, directurl, classused, cover, backdrop, createddate, updateddate)
+						(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, cover, backdrop, createddate, updateddate)
 					VALUES
-						(%s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
+						(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
 					ON DUPLICATE KEY UPDATE
-						title = %s, tagline = %s, plot = %s, genre = %s, director = %s, actors = %s, directurl = %s, classused = %s, cover = %d, backdrop = %d, updateddate = NOW()",
+						title = %s, tagline = %s, plot = %s, genre = %s, director = %s, actors = %s, extras = %s, productinfo = %s, trailers = %s, directurl = %s, classused = %s, cover = %d, backdrop = %d, updateddate = NOW()",
 					$this->pdo->escapeString($mov['title']),
 					$this->pdo->escapeString($mov['tagline']),
 					$this->pdo->escapeString($mov['plot']),
 					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
 					$this->pdo->escapeString($mov['director']),
 					$this->pdo->escapeString($mov['actors']),
+					$this->pdo->escapeString($mov['extras']),
+					$this->pdo->escapeString($mov['productinfo']),
+					$this->pdo->escapeString($mov['trailers']),
 					$this->pdo->escapeString($mov['directurl']),
 					$this->pdo->escapeString($mov['classused']),
 					0,
@@ -473,6 +489,9 @@ class XXX
 					$this->pdo->escapeString(substr($mov['genre'], 0, 64)),
 					$this->pdo->escapeString($mov['director']),
 					$this->pdo->escapeString($mov['actors']),
+					$this->pdo->escapeString($mov['extras']),
+					$this->pdo->escapeString($mov['productinfo']),
+					$this->pdo->escapeString($mov['trailers']),
 					$this->pdo->escapeString($mov['directurl']),
 					$this->pdo->escapeString($mov['classused']),
 					0,
@@ -483,15 +502,18 @@ class XXX
 				$xxxID = $this->pdo->queryInsert(
 					sprintf("
 						INSERT INTO xxxinfo
-							(title, tagline, plot, genre, director, actors, directurl, classused, cover, backdrop, createddate, updateddate)
+							(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, cover, backdrop, createddate, updateddate)
 						VALUES
-							(%s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
+							(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
 						$this->pdo->escapeString($mov['title']),
 						$this->pdo->escapeString($mov['tagline']),
 						$this->pdo->escapeString($mov['plot']),
 						$this->pdo->escapeString($mov['genre']),
 						$this->pdo->escapeString($mov['director']),
 						$this->pdo->escapeString($mov['actors']),
+						$this->pdo->escapeString($mov['extras']),
+						$this->pdo->escapeString($mov['productinfo']),
+						$this->pdo->escapeString($mov['trailers']),
 						$this->pdo->escapeString($mov['directurl']),
 						$this->pdo->escapeString($mov['classused']),
 						0,
@@ -543,7 +565,7 @@ class XXX
 					FROM releases r
 					WHERE r.nzbstatus = 1
 					AND r.xxxinfo_id IS NULL
-					AND r.categoryid BETWEEN 6030 AND 6040
+					AND r.categoryid BETWEEN 6000 AND 6040
 					AND r.isrenamed = 1
 					LIMIT %d",
 					$this->movieqty
@@ -563,9 +585,9 @@ class XXX
 
 			// Loop over releases.
 			foreach ($res as $arr) {
-				// Try to get a name/year.
+				// Try to get a name.
 				if ($this->parseXXXSearchName($arr['searchname']) === false) {
-					//We didn't find a name, so set to all -2 so we don't parse again.
+					//We didn't find a name, so set to -2 so we don't parse again.
 					$this->pdo->queryExec(sprintf("UPDATE releases SET xxxinfo_id = %d WHERE id = %d", -2, $arr["id"]));
 					continue;
 
