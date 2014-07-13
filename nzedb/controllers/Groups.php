@@ -654,6 +654,13 @@ class Groups
 				}
 			}
 		}
+		$this->pdo->queryExec(
+			sprintf(
+				'CREATE TRIGGER delete_collections_%s AFTER DELETE ON collections_%s FOR EACH ROW BEGIN' .
+				' DELETE FROM binaries_%s WHERE collectionid = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END',
+				$groupID, $groupID, $groupID, $groupID
+			)
+		);
 		return true;
 	}
 }
