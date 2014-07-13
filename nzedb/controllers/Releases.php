@@ -974,9 +974,8 @@ class Releases
 					}
 				}
 			}
-
-			return $searchsql;
 		}
+		return $searchsql;
 	}
 
 	// Creates part of a query for searches requiring the categoryID's.
@@ -1229,7 +1228,7 @@ class Releases
 			" AND r.episode %s '%s' ", $like, $this->pdo->escapeString(
 				'%' . $epno . '%'
 			)
-		) : '';
+		) : $epno = '';
 
 		$searchsql = '';
 		if ($name !== '') {
@@ -1247,24 +1246,24 @@ class Releases
 		}
 
 		$sql = sprintf("
-					SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
-						groups.name AS group_name, rn.id AS nfoid
-					FROM releases r
-					INNER JOIN releasesearch rs on rs.releaseid = r.id
-					INNER JOIN category c ON c.id = r.categoryid
-					INNER JOIN groups ON groups.id = r.group_id
-					LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
-					INNER JOIN category cp ON cp.id = c.parentid
-					WHERE r.passwordstatus <= %d %s %s %s %s %s
-					ORDER BY postdate DESC LIMIT %d OFFSET %d",
-					$this->showPasswords(),
-					$anidbID,
-					$epno,
-					$searchsql,
-					$catsrch,
-					$maxage,
-					$limit,
-					$offset
+			SELECT r.*, CONCAT(cp.title, ' > ', c.title) AS category_name, CONCAT(cp.id, ',', c.id) AS category_ids,
+				groups.name AS group_name, rn.id AS nfoid
+			FROM releases r
+			INNER JOIN releasesearch rs on rs.releaseid = r.id
+			INNER JOIN category c ON c.id = r.categoryid
+			INNER JOIN groups ON groups.id = r.group_id
+			LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
+			INNER JOIN category cp ON cp.id = c.parentid
+			WHERE r.passwordstatus <= %d %s %s %s %s %s
+			ORDER BY postdate DESC LIMIT %d OFFSET %d",
+			$this->showPasswords(),
+			$anidbID,
+			$epno,
+			$searchsql,
+			$catsrch,
+			$maxagesql,
+			$limit,
+			$offset
 		);
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
@@ -1946,6 +1945,7 @@ class Releases
 							' SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d ', $maxfilesizeres['value']
 						)
 					);
+					$maxsizecount = 0;
 					if ($mascq !== false) {
 						$maxsizecount = $mascq->rowCount();
 					}
@@ -1975,7 +1975,7 @@ class Releases
 							sprintf(
 								'UPDATE ' . $group['cname'] .
 								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
-								$groupID, $s['size']
+								$groupID, $f['files']
 							)
 						);
 						if ($mifcq !== false) {
@@ -2593,6 +2593,13 @@ class Releases
 		}
 	}
 
+	/**
+	 * Delete old releases and finished collections.
+	 *
+	 * @param string|int $groupID (optional) ID of group.
+	 * @void
+	 * @access public
+	 */
 	public function processReleasesStage7a($groupID)
 	{
 		$stage7 = time();
@@ -2601,15 +2608,13 @@ class Releases
 		// Set table names
 		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 
-		// Delete old releases and finished collections.
 		if ($this->echooutput) {
-			echo $this->c->header("Stage 7a -> Delete finished collections.");
+			echo $this->c->header("Stage 7a -> Delete finished collections." . PHP_EOL);
+			echo $this->c->primary('Deleting old collections/binaries/parts.');
 		}
 
-		$startTime = microtime(true);
-
+		$deleted = 0;
 		// Old collections that were missed somehow.
-		// FIRST QUERY
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf(
 				'DELETE FROM %s WHERE dateadded < (NOW() - INTERVAL %d HOUR) %s',
@@ -2619,46 +2624,82 @@ class Releases
 			)
 		);
 		if ($deleteQuery !== false) {
-			$deletedCount += $deleteQuery->rowCount();
+			$deleted = $deleteQuery->rowCount();
+			$deletedCount += $deleted;
 		}
-		$firstQuery = microtime(true);
+		$firstQuery = time();
 
+		if ($this->echooutput) {
+			echo $this->c->primary(
+				'Finished deleting ' . $deleted . ' old collections/binaries/parts in ' .
+				($firstQuery - $stage7) . ' seconds.' . PHP_EOL .
+				'Deleting binaries/parts with no collections.'
+			);
+		}
+
+		$deleted = 0;
 		// Binaries/parts that somehow have no collection.
-		// SECOND QUERY
 		$deleteQuery = $this->pdo->queryExec(
 			'DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['bname'] . ', ' .
 			$group['pname'] . ' WHERE ' . $group['bname'] . '.collectionid = 0 AND ' . $group['bname'] . '.id = ' .
 			$group['pname'] . '.binaryid'
 		);
 		if ($deleteQuery !== false) {
-			$deletedCount += $deleteQuery->rowCount();
+			$deleted = $deleteQuery->rowCount();
+			$deletedCount += $deleted;
 		}
-		$secondQuery = microtime(true);
+		$secondQuery = time();
 
+		if ($this->echooutput) {
+			echo $this->c->primary(
+				'Finished deleting ' . $deleted . ' binaries/parts with no collections in ' .
+				($secondQuery - $firstQuery) . ' seconds.' . PHP_EOL .
+				'Deleting parts with no binaries.'
+			);
+		}
+
+		$deleted = 0;
 		// Parts that somehow have no binaries.
-		// THIRD QUERY
 		if (mt_rand(1, 100) % 3 == 0) {
 			$deleteQuery = $this->pdo->queryExec(
 				'DELETE FROM ' . $group['pname'] . ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)'
 			);
 			if ($deleteQuery !== false) {
-				$deletedCount += $deleteQuery->rowCount();
+				$deleted = $deleteQuery->rowCount();
+				$deletedCount += $deleted;
 			}
 		}
-		$thirdQuery = microtime(true);
+		$thirdQuery = time();
 
+		if ($this->echooutput) {
+			echo $this->c->primary(
+				'Finished deleting ' . $deleted . ' parts with no binaries in ' .
+				($thirdQuery - $secondQuery) . ' seconds.' . PHP_EOL .
+				'Deleting binaries with no collections.'
+			);
+		}
+
+		$deleted = 0;
 		// Binaries that somehow have no collection.
-		// FOURTH QUERY
 		$deleteQuery = $this->pdo->queryExec(
 			'DELETE FROM ' . $group['bname'] . ' WHERE collectionid NOT IN (SELECT c.id FROM ' . $group['cname'] . ' c)'
 		);
 		if ($deleteQuery !== false) {
-			$deletedCount += $deleteQuery->rowCount();
+			$deleted = $deleteQuery->rowCount();
+			$deletedCount += $deleted;
 		}
-		$fourthQuery = microtime(true);
+		$fourthQuery = time();
 
+		if ($this->echooutput) {
+			echo $this->c->primary(
+				'Finished deleting ' . $deleted . ' binaries with no collections in ' .
+				($fourthQuery - $thirdQuery) . ' seconds.' . PHP_EOL .
+				'Deleting collections with no binaries.'
+			);
+		}
+
+		$deleted = 0;
 		// Collections that somehow have no binaries.
-		// FIFTH QUERY
 		$collectionIDs = $this->pdo->queryDirect(
 			sprintf(
 				'SELECT id FROM %s WHERE id NOT IN (SELECT collectionid FROM %s)',
@@ -2667,30 +2708,23 @@ class Releases
 		);
 		if ($collectionIDs !== false) {
 			foreach ($collectionIDs as $collectionID) {
-				$deletedCount++;
+				$deleted++;
 				$this->pdo->queryExec(sprintf('DELETE FROM %s WHERE id = %d', $group['cname'], $collectionID['id']));
 			}
+			$deletedCount += $deleted;
 		}
-		$fifthQuery = microtime(true);
+		$fifthQuery = time();
 
 		if ($this->echooutput) {
 			$this->c->doEcho(
 				$this->c->primary(
+					'Finished deleting ' . $deleted . ' collections with no binaries in ' .
+					($fifthQuery - $fourthQuery) . ' seconds.' . PHP_EOL .
 					'Removed ' .
 					number_format($deletedCount) .
 					' parts/binaries/collection rows in ' .
-					$this->consoleTools->convertTime((time() - $stage7))
+					$this->consoleTools->convertTime(($fifthQuery - $stage7)) . PHP_EOL
 				)
-			);
-		}
-
-		if (nZEDb_DEBUG && nZEDb_LOGINFO) {
-			echo (
-				'1st query: ' . ($firstQuery - $startTime) . 's ' . PHP_EOL .
-				'2nd query: ' . ($secondQuery - $firstQuery) . 's ' . PHP_EOL .
-				'3rd query: ' . ($thirdQuery - $secondQuery) . 's ' . PHP_EOL .
-				'4th query: ' . ($fourthQuery - $thirdQuery) . 's ' . PHP_EOL .
-				'5th query: ' . ($fifthQuery - $fourthQuery) . 's ' . PHP_EOL
 			);
 		}
 	}
@@ -2938,7 +2972,7 @@ class Releases
 			$groupID = $groupInfo['id'];
 		}
 
-		$this->processReleases = microtime(true);
+		$processReleases = microtime(true);
 		if ($this->echooutput) {
 			$this->c->doEcho($this->c->header("Starting release update process (" . date('Y-m-d H:i:s') . ")"), true);
 		}
@@ -2948,7 +2982,7 @@ class Releases
 				$this->c->doEcho($this->c->error('Bad or missing nzb directory - ' . $this->pdo->getSetting('nzbpath')), true);
 			}
 
-			return;
+			return 0;
 		}
 
 		$this->processReleasesStage1($groupID);
@@ -2967,7 +3001,7 @@ class Releases
 					'Completed adding ' .
 					number_format($releasesAdded) .
 					' releases in ' .
-					$this->consoleTools->convertTime(number_format(microtime(true) - $this->processReleases, 2)) .
+					$this->consoleTools->convertTime(number_format(microtime(true) - $processReleases, 2)) .
 					'. ' .
 					number_format(array_shift($countID)) .
 					' collections waiting to be created (still incomplete or in queue for creation)'
