@@ -2597,14 +2597,12 @@ class Releases
 	{
 		$stage7 = time();
 		$deletedCount = 0;
-		$where = ' ';
-		$where1 = '';
+		$where = '';
 
 		// Set table names
 		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 		if ($this->_tablePerGroup === false) {
-			$where = (!empty($groupID)) ? ' ' . $group['cname'] . '.group_id = ' . $groupID . ' AND ' : ' ';
-			$where1 = (!empty($groupID)) ? ' AND ' . $group['cname'] . '.group_id = ' . $groupID : '';
+			$where = (!empty($groupID)) ? ' AND ' . $group['cname'] . '.group_id = ' . $groupID : '';
 		}
 
 		// Delete old releases and finished collections.
@@ -2614,11 +2612,8 @@ class Releases
 
 		$startTime = microtime(true);
 
-		// First query removed.
-		$firstQuery = microtime(true);
-
 		// Old collections that were missed somehow.
-		// SECOND QUERY
+		// FIRST QUERY
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf(
 				'DELETE c, b, p FROM %s c ' .
@@ -2629,16 +2624,16 @@ class Releases
 				$group['bname'],
 				$group['pname'],
 				$this->pdo->getSetting('partretentionhours'),
-				$where1
+				$where
 			)
 		);
 		if ($deleteQuery !== false) {
 			$deletedCount += $deleteQuery->rowCount();
 		}
-		$secondQuery = microtime(true);
+		$firstQuery = microtime(true);
 
 		// Binaries/parts that somehow have no collection.
-		// THIRD QUERY
+		// SECOND QUERY
 		$deleteQuery = $this->pdo->queryExec(
 			'DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['bname'] . ', ' .
 			$group['pname'] . ' WHERE ' . $group['bname'] . '.collectionid = 0 AND ' . $group['bname'] . '.id = ' .
@@ -2647,10 +2642,10 @@ class Releases
 		if ($deleteQuery !== false) {
 			$deletedCount += $deleteQuery->rowCount();
 		}
-		$thirdQuery = microtime(true);
+		$secondQuery = microtime(true);
 
 		// Parts that somehow have no binaries.
-		// FOURTH QUERY
+		// THIRD QUERY
 		if (mt_rand(1, 100) % 3 == 0) {
 			$deleteQuery = $this->pdo->queryExec(
 				'DELETE FROM ' . $group['pname'] . ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)'
@@ -2659,28 +2654,28 @@ class Releases
 				$deletedCount += $deleteQuery->rowCount();
 			}
 		}
-		$fourthQuery = microtime(true);
+		$thirdQuery = microtime(true);
 
 		// Binaries that somehow have no collection.
-		// FIFTH QUERY
+		// FOURTH QUERY
 		$deleteQuery = $this->pdo->queryExec(
 			'DELETE FROM ' . $group['bname'] . ' WHERE collectionid NOT IN (SELECT c.id FROM ' . $group['cname'] . ' c)'
 		);
 		if ($deleteQuery !== false) {
 			$deletedCount += $deleteQuery->rowCount();
 		}
-		$fifthQuery = microtime(true);
+		$fourthQuery = microtime(true);
 
 		// Collections that somehow have no binaries.
-		// SIXTH QUERY
+		// FIFTH QUERY
 		$deleteQuery = $this->pdo->queryExec(
 			'DELETE FROM ' . $group['cname'] . ' WHERE ' . $group['cname'] . '.id NOT IN (SELECT ' . $group['bname'] .
-			'.collectionid FROM ' . $group['bname'] . ') ' . $where1
+			'.collectionid FROM ' . $group['bname'] . ') ' . $where
 		);
 		if ($deleteQuery !== false) {
 			$deletedCount += $deleteQuery->rowCount();
 		}
-		$sixthQuery = microtime(true);
+		$fifthQuery = microtime(true);
 
 		if ($this->echooutput) {
 			$this->c->doEcho(
@@ -2699,8 +2694,7 @@ class Releases
 				'2nd query: ' . ($secondQuery - $firstQuery) . 's ' . PHP_EOL .
 				'3rd query: ' . ($thirdQuery - $secondQuery) . 's ' . PHP_EOL .
 				'4th query: ' . ($fourthQuery - $thirdQuery) . 's ' . PHP_EOL .
-				'5th query: ' . ($fifthQuery - $fourthQuery) . 's ' . PHP_EOL .
-				'6th query: ' . ($sixthQuery - $fifthQuery) . 's ' . PHP_EOL
+				'5th query: ' . ($fifthQuery - $fourthQuery) . 's ' . PHP_EOL
 			);
 		}
 	}
