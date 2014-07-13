@@ -2597,13 +2597,9 @@ class Releases
 	{
 		$stage7 = time();
 		$deletedCount = 0;
-		$where = '';
 
 		// Set table names
 		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
-		if ($this->_tablePerGroup === false) {
-			$where = (!empty($groupID)) ? ' AND ' . $group['cname'] . '.group_id = ' . $groupID : '';
-		}
 
 		// Delete old releases and finished collections.
 		if ($this->echooutput) {
@@ -2616,10 +2612,10 @@ class Releases
 		// FIRST QUERY
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf(
-				'DELETE FROM %s c WHERE c.dateadded < (NOW() - INTERVAL %d HOUR) %s',
+				'DELETE FROM %s WHERE dateadded < (NOW() - INTERVAL %d HOUR) %s',
 				$group['cname'],
 				$this->pdo->getSetting('partretentionhours'),
-				$where
+				(!empty($groupID) && $this->_tablePerGroup === false ? ' AND group_id = ' . $groupID : '')
 			)
 		);
 		if ($deleteQuery !== false) {
@@ -2665,7 +2661,8 @@ class Releases
 		// FIFTH QUERY
 		$deleteQuery = $this->pdo->queryExec(
 			'DELETE FROM ' . $group['cname'] . ' WHERE ' . $group['cname'] . '.id NOT IN (SELECT ' . $group['bname'] .
-			'.collectionid FROM ' . $group['bname'] . ') ' . $where
+			'.collectionid FROM ' . $group['bname'] . ') ' .
+			(!empty($groupID) && $this->_tablePerGroup === false ? ' AND ' . $group['cname'] . '.group_id = ' . $groupID : '')
 		);
 		if ($deleteQuery !== false) {
 			$deletedCount += $deleteQuery->rowCount();
