@@ -12,6 +12,8 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Update stage 7a query for trigger addition.
 	* Add: Echo's to stage 7a to see what's going on.
 	* Chg: Resolve weak warnings in DB for phpstorm.
+	* Add: Query to delete c/b/p missed on stage 5 in stage 7a.
+	* Fix: Issue where currently inserting c/b/p could be deleted by stage 7a.
 2014-07-13 bart39
 	* Fix: Console Cover View / Search filter.
 	* Add: PC Games Search Filter.

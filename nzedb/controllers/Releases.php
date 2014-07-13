@@ -2640,9 +2640,11 @@ class Releases
 		$deleted = 0;
 		// Binaries/parts that somehow have no collection.
 		$deleteQuery = $this->pdo->queryExec(
-			'DELETE ' . $group['bname'] . ', ' . $group['pname'] . ' FROM ' . $group['bname'] . ', ' .
-			$group['pname'] . ' WHERE ' . $group['bname'] . '.collectionid = 0 AND ' . $group['bname'] . '.id = ' .
-			$group['pname'] . '.binaryid'
+			sprintf(
+				'DELETE %s, %s FROM %s, %s WHERE %s.collectionid = 0 AND %s.id = %s.binaryid',
+				$group['bname'], $group['pname'], $group['bname'], $group['pname'],
+				$group['bname'], $group['bname'], $group['pname']
+			)
 		);
 		if ($deleteQuery !== false) {
 			$deleted = $deleteQuery->rowCount();
@@ -2659,10 +2661,13 @@ class Releases
 		}
 
 		$deleted = 0;
-		// Parts that somehow have no binaries.
+		// Parts that somehow have no binaries. Don't delete parts currently inserting, by checking the max ID.
 		if (mt_rand(1, 100) % 3 == 0) {
 			$deleteQuery = $this->pdo->queryExec(
-				'DELETE FROM ' . $group['pname'] . ' WHERE binaryid NOT IN (SELECT b.id FROM ' . $group['bname'] . ' b)'
+				sprintf(
+					'DELETE FROM %s WHERE binaryid NOT IN (SELECT id FROM %s) %s',
+					$group['pname'], $group['bname'], $this->stage7aMinMaxQueryFormulator($group['pname'], 40000)
+				)
 			);
 			if ($deleteQuery !== false) {
 				$deleted = $deleteQuery->rowCount();
@@ -2680,9 +2685,12 @@ class Releases
 		}
 
 		$deleted = 0;
-		// Binaries that somehow have no collection.
+		// Binaries that somehow have no collection. Don't delete currently inserting binaries by checking the max id.
 		$deleteQuery = $this->pdo->queryExec(
-			'DELETE FROM ' . $group['bname'] . ' WHERE collectionid NOT IN (SELECT c.id FROM ' . $group['cname'] . ' c)'
+			sprintf(
+				'DELETE FROM %s WHERE collectionid NOT IN (SELECT id FROM %s) %s',
+				$group['bname'], $group['cname'], $this->stage7aMinMaxQueryFormulator($group['bname'], 20000)
+			)
 		);
 		if ($deleteQuery !== false) {
 			$deleted = $deleteQuery->rowCount();
@@ -2702,8 +2710,8 @@ class Releases
 		// Collections that somehow have no binaries.
 		$collectionIDs = $this->pdo->queryDirect(
 			sprintf(
-				'SELECT id FROM %s WHERE id NOT IN (SELECT collectionid FROM %s)',
-				$group['cname'], $group['bname']
+				'SELECT id FROM %s WHERE id NOT IN (SELECT collectionid FROM %s) %s',
+				$group['cname'], $group['bname'], $this->stage7aMinMaxQueryFormulator($group['cname'], 10000)
 			)
 		);
 		if ($collectionIDs !== false) {
@@ -2716,10 +2724,46 @@ class Releases
 		$fifthQuery = time();
 
 		if ($this->echooutput) {
+			echo $this->c->primary(
+				'Finished deleting ' . $deleted . ' collections with no binaries in ' .
+				($fifthQuery - $fourthQuery) . ' seconds.' . PHP_EOL .
+				'Deleting collections that were missed on stage 5.'
+			);
+		}
+
+		$deleted = 0;
+		// Collections that were missing on stage 5.
+
+		$collections = $this->pdo->queryDirect(
+			sprintf('
+				SELECT c.id
+				FROM %s c
+				INNER JOIN releases r ON r.id = c.releaseid
+				WHERE r.nzbstatus = 1',
+				$group['cname']
+			)
+		);
+
+		if ($collections !== false && $collections->rowCount() > 0) {
+			foreach($collections as $collection) {
+				$deleted++;
+				$this->pdo->queryExec(
+					sprintf('
+						DELETE FROM %s WHERE id = %d',
+						$group['cname'], $collection['id']
+					)
+				);
+			}
+			$deletedCount += $deleted;
+		}
+
+		$sixthQuery = time();
+
+		if ($this->echooutput) {
 			$this->c->doEcho(
 				$this->c->primary(
-					'Finished deleting ' . $deleted . ' collections with no binaries in ' .
-					($fifthQuery - $fourthQuery) . ' seconds.' . PHP_EOL .
+					'Finished deleting ' . $deleted . ' collections missed on stage 5 in ' .
+					($sixthQuery - $fifthQuery) . ' seconds.' . PHP_EOL .
 					'Removed ' .
 					number_format($deletedCount) .
 					' parts/binaries/collection rows in ' .
@@ -2727,6 +2771,26 @@ class Releases
 				)
 			);
 		}
+	}
+
+	/**
+	 * Formulate part of a query to prevent deletion of currently inserting parts / binaries / collections.
+	 *
+	 * @param string $groupName
+	 * @param int    $difference
+	 *
+	 * @return string
+	 * @access private
+	 */
+	private function stage7aMinMaxQueryFormulator($groupName, $difference)
+	{
+		$minMaxId = $this->pdo->queryOneRow(sprintf('SELECT MIN(id) AS min, MAX(id) AS max FROM %s', $groupName));
+		if ($minMaxId === false) {
+			$minMaxId = '';
+		} else {
+			$minMaxId = ' AND id < ' . ((($minMaxId['max'] - $minMaxId['min']) >= $difference) ? ($minMaxId['max'] - $difference) : 1);
+		}
+		return $minMaxId;
 	}
 
 	// Queries that are not per group
