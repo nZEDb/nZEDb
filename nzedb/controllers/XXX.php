@@ -16,7 +16,13 @@ class XXX
 {
 	public $pdo;
 
-	protected $whichclass = ''; // We used AdultDVDEmpire or PopPorn class -- used for template
+	/**
+	 * We used AdultDVDEmpire or PopPorn class -- used for template and trailer information
+	 *
+	 * @var string
+	 */
+	protected $whichclass = '';
+
 	/**
 	 * Current title being passed through various sites/api's.
 	 * @var string
@@ -449,7 +455,7 @@ class XXX
 		$mov['cover'] = (isset($res['boxcover'])) ? $res['boxcover'] : '';
 		$res['cast'] = (isset($res['cast'])) ? join(",", $res['cast']) : '';
 		$res['genres'] = (isset($res['genres'])) ? $this->getgenreid($res['genres']) : '';
-		$mov['title'] = $xxxmovie;
+		$mov['title'] = html_entity_decode($res['title'], ENT_QUOTES, 'UTF-8');
 		$mov['plot'] = (isset($res['sypnosis'])) ? html_entity_decode($res['sypnosis'], ENT_QUOTES, 'UTF-8') : '';
 		$mov['tagline'] = (isset($res['tagline'])) ? html_entity_decode($res['tagline'], ENT_QUOTES, 'UTF-8') : '';
 		$mov['genre'] = html_entity_decode($res['genres'], ENT_QUOTES, 'UTF-8');
@@ -457,7 +463,6 @@ class XXX
 		$mov['actors'] = html_entity_decode($res['cast'], ENT_QUOTES, 'UTF-8');
 		$mov['directurl'] = html_entity_decode($res['directurl'], ENT_QUOTES, 'UTF-8');
 		$mov['classused'] = $this->whichclass;
-
 		$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM xxxinfo WHERE title = %s',	$this->pdo->escapeString($mov['title'])));
 		$xxxID=null;
 		if($check === false){
@@ -521,7 +526,7 @@ class XXX
 					)
 				);
 			}
-		if($xxxID !=0){
+		if($xxxID !== false){
 
 			// BoxCover.
 			if(isset($mov['cover'])){
@@ -535,18 +540,17 @@ class XXX
 			$this->pdo->queryExec(sprintf('UPDATE xxxinfo SET cover = %d, backdrop = %d  WHERE id = %d', $mov['cover'], $mov['backdrop'], $xxxID));
 		}
 		}else{
-		// If xxxinfo title is found, update release with xxxinfo id because it was nulled before..
+		// If xxxinfo title is found, update release with the current xxxinfo id because it was nulled before..
 			$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d  WHERE id = %d', $check['id'], $this->currentRelID));
 			$xxxID=$check['id'];
 		}
 		if ($this->echooutput) {
 			$this->c->doEcho(
-				$this->c->headerOver(($xxxID !== 0 ? 'Added/updated movie: ' : 'Nothing to update for xxx movie: ')) .
+				$this->c->headerOver(($xxxID !== false ? 'Added/updated movie: ' : 'Nothing to update for xxx movie: ')) .
 				$this->c->primary($mov['title'])
 			);
 		}
-
-		return ($xxxID === 0 ? false : true);
+		return $xxxID;
 	}
 
 	/**
@@ -589,8 +593,6 @@ class XXX
 				if ($this->parseXXXSearchName($arr['searchname']) === false) {
 					//We didn't find a name, so set to -2 so we don't parse again.
 					$this->pdo->queryExec(sprintf("UPDATE releases SET xxxinfo_id = %d WHERE id = %d", -2, $arr["id"]));
-					continue;
-
 				} else {
 					$this->currentRelID = $arr['id'];
 
@@ -598,12 +600,14 @@ class XXX
 
 					if ($this->echooutput) {
 						$this->c->doEcho($this->c->primaryOver("Looking up: ") . $this->c->headerOver($movieName), true);
-						$xxxid = $this->updateXXXInfo($movieName);
-
+						$idcheck = $this->updateXXXInfo($movieName);
 					}
-					if($xxxid === false){
+					if($idcheck == false){
+						// No Release was found, set to -2 so we don't parse again.
 						$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', -2, $arr['id']));
-
+					}else{
+						// Release Found, set xxxinfo_id
+						$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d  WHERE id = %d',$idcheck, $this->currentRelID));
 					}
 
 
@@ -625,7 +629,7 @@ class XXX
 		$cat = new Categorize();
 		if (!$cat->isMovieForeign($releaseName)) {
 			$name = '';
-			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|XXX)[^\w]';
+			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|XXX|BTS)[^\w]';
 
 			/* Initial scan of getting a year/name.
 			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
