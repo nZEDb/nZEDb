@@ -16,11 +16,11 @@ class Backfill
 	protected $_colorCLI;
 
 	/**
-	 * Instance of class DB
+	 * Instance of class Settings
 	 *
 	 * @var nzedb\db\DB
 	 */
-	protected $_db;
+	protected $_pdo;
 
 	/**
 	 * Instance of class debugging.
@@ -101,21 +101,19 @@ class Backfill
 		$this->_nntp = $nntp;
 		$this->_echoCLI = ($echo && nZEDb_ECHOCLI);
 		$this->_colorCLI = new ColorCLI();
-		$this->_db = new nzedb\db\DB();
-		$this->_groups = new Groups($this->_db);
+		$this->_pdo = new nzedb\db\Settings();
+		$this->_groups = new Groups($this->_pdo);
 		$this->_debug = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debug) {
 			$this->_debugging = new Debugging('Backfill');
 		}
 
-		$site = (new Sites())->get();
-
-		$this->_compressedHeaders = ($site->compressedheaders == 1 ? true : false);
-		$this->_hashCheck = ($site->hashcheck == 1 ? true : false);
-		$this->_nntpProxy = ($site->nntpproxy == 1 ? true : false);
-		$this->_safeBackFillDate = (!empty($site->safebackfilldate) ? $site->safebackfilldate : '2012 - 06 - 24');
-		$this->_safePartRepair = ($site->safepartrepair == 1 ? 'update' : 'backfill');
-		$this->_tablePerGroup = ($site->tablepergroup == 1 ? true : false);
+		$this->_compressedHeaders = ($this->_pdo->getSetting('compressedheaders') == 1 ? true : false);
+		$this->_hashCheck = ($this->_pdo->getSetting('hashcheck') == 1 ? true : false);
+		$this->_nntpProxy = ($this->_pdo->getSetting('nntpproxy') == 1 ? true : false);
+		$this->_safeBackFillDate = ($this->_pdo->getSetting('safebackfilldate') != '') ? $this->_pdo->getSetting('safebackfilldate') : '2008-08-14';
+		$this->_safePartRepair = ($this->_pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill');
+		$this->_tablePerGroup = ($this->_pdo->getSetting('tablepergroup') == 1 ? true : false);
 	}
 
 	/**
@@ -346,13 +344,13 @@ class Backfill
 				$newdate = $this->postdate($first, $data);
 			}
 
-			$this->_db->queryExec(
+			$this->_pdo->queryExec(
 				sprintf('
 					UPDATE groups
 					SET first_record_postdate = %s, first_record = %s, last_updated = NOW()
 					WHERE id = %d',
-					$this->_db->from_unixtime($newdate),
-					$this->_db->escapeString($first),
+					$this->_pdo->from_unixtime($newdate),
+					$this->_pdo->escapeString($first),
 					$groupArr['id'])
 			);
 			if ($first == $targetpost) {
@@ -399,13 +397,13 @@ class Backfill
 			exit($dMessage);
 		}
 
-		$groupname = $this->_db->queryOneRow(
+		$groupname = $this->_pdo->queryOneRow(
 			sprintf('
 				SELECT name FROM groups
 				WHERE first_record_postdate BETWEEN %s AND NOW()
 				AND backfill = 1
 				ORDER BY name ASC',
-				$this->_db->escapeString($this->_safeBackFillDate)
+				$this->_pdo->escapeString($this->_safeBackFillDate)
 			)
 		);
 
@@ -438,7 +436,7 @@ class Backfill
 		$groupID = $this->_groups->getIDByName($groupData['group']);
 		$group = array();
 		if ($groupID !== '') {
-			$group = $this->_db->tryTablePerGroup($this->_tablePerGroup, $groupID);
+			$group = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 		}
 
 		$currentPost = $post;
@@ -462,7 +460,7 @@ class Backfill
 				$local = false;
 				if ($groupID !== '') {
 					// Try to get locally.
-					$local = $this->_db->queryOneRow(
+					$local = $this->_pdo->queryOneRow(
 						'SELECT c.date AS date FROM ' .
 						$group['cname'] .
 						' c, ' .
@@ -814,12 +812,12 @@ class Backfill
 		} else {
 			$postsdate = $this->postdate($first, $data);
 		}
-		$postsdate = $this->_db->from_unixtime($postsdate);
+		$postsdate = $this->_pdo->from_unixtime($postsdate);
 
 		if ($type == 'Backfill') {
-			$this->_db->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $this->_db->escapeString($first), $groupArr['id']));
+			$this->_pdo->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $this->_pdo->escapeString($first), $groupArr['id']));
 		} else {
-			$this->_db->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $this->_db->escapeString($first), $groupArr['id']));
+			$this->_pdo->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $this->_pdo->escapeString($first), $groupArr['id']));
 		}
 
 		if ($this->_echoCLI) {

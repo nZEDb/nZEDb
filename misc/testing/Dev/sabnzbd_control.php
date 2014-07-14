@@ -4,7 +4,7 @@
 // --------------------------------------------------------------
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
@@ -17,8 +17,8 @@ if (!isset($argv[1])) {
 		. "php $argv[0] nZEDb-username speedlimit 200    ...: To set the speed limit to 200 KB/s\n"));
 }
 
-$db = new DB();
-$usersettings = $db->queryOneRow(sprintf("SELECT * FROM users WHERE LOWER(username) = LOWER(%s) ", $db->escapeString($argv[1])));
+$pdo = new Settings();
+$usersettings = $pdo->queryOneRow(sprintf("SELECT * FROM users WHERE LOWER(username) = LOWER(%s) ", $pdo->escapeString($argv[1])));
 $saburl = $usersettings['saburl'];
 $sabapikey = $usersettings['sabapikey'];
 $sabapikeytype = $usersettings['sabapikeytype'];

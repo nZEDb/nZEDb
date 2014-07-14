@@ -3,12 +3,14 @@ $nzb = new NZB();
 $rel = new Releases();
 $uid = 0;
 
+use \nzedb\db\Settings;
+
 // Page is accessible only by the rss token, or logged in users.
 if ($users->isLoggedIn()) {
 	$uid = $users->currentUserId();
 	$maxdls = $page->userdata["downloadrequests"];
 } else {
-	if ($page->site->registerstatus == Sites::REGISTER_STATUS_API_ONLY) {
+	if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 		$res = $users->getById(0);
 	} else {
 		if ((!isset($_GET["i"]) || !isset($_GET["r"]))) {

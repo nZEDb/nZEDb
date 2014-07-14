@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
@@ -11,11 +11,10 @@ if (!isset($argv[1])) {
 			. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname\n"));
 }
 
-$db = new DB();
+$pdo = new Settings();
 $binaries = new Binaries();
-$s = new Sites();
-$site = $s->get();
-$crosspostt = (!empty($site->crossposttime)) ? $site->crossposttime : 2;
+$crosspostt = $pdo->getSetting('crossposttime');
+$crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
 $releasecleaning = new ReleaseCleaning();
 $categorize = new Categorize();
 $nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
@@ -67,7 +66,7 @@ function relativeTime($_time)
 	return $return;
 }
 
-$groups = $db->query("SELECT id, name FROM groups");
+$groups = $pdo->query("SELECT id, name FROM groups");
 foreach ($groups as $group) {
 	$siteGroups[$group["name"]] = $group["id"];
 }
@@ -204,12 +203,12 @@ if (!isset($groups) || count($groups) == 0) {
 			$maxsize = $totalsize * 1.01;
 
 			// Look for match on name, poster and size
-			$dupecheck = $db->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $db->escapeString($subject), $db->escapeString($poster), $db->escapeString($minsize), $db->escapeString($maxsize)));
+			$dupecheck = $pdo->queryOneRow(sprintf('SELECT id, guid FROM releases WHERE name = %s AND fromname = %s AND size BETWEEN %s AND %s', $pdo->escapeString($subject), $pdo->escapeString($poster), $pdo->escapeString($minsize), $pdo->escapeString($maxsize)));
 			if ($dupecheck === false) {
 				if ($propername === true && $importfailed === false) {
-					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, isrenamed, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1, 1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($site->checkpasswordedrar == "1" ? -1 : 0), $category));
+					$relid = $pdo->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, isrenamed, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1, 1)", $pdo->escapeString($subject), $pdo->escapeString($cleanName), $totalFiles, $groupID, $pdo->escapeString($relguid), $pdo->escapeString($posteddate), $pdo->escapeString($poster), $pdo->escapeString($totalsize), ($pdo->getSetting('checkpasswordedrar') == "1" ? -1 : 0), $category));
 				} else {
-					$relid = $db->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, isrenamed, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1, 1)", $db->escapeString($subject), $db->escapeString($cleanName), $totalFiles, $groupID, $db->escapeString($relguid), $db->escapeString($posteddate), $db->escapeString($poster), $db->escapeString($totalsize), ($site->checkpasswordedrar == "1" ? -1 : 0), $category));
+					$relid = $pdo->queryInsert(sprintf("INSERT INTO releases (name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, nzbstatus, isrenamed, iscategorized) VALUES (%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1, 1, 1)", $pdo->escapeString($subject), $pdo->escapeString($cleanName), $totalFiles, $groupID, $pdo->escapeString($relguid), $pdo->escapeString($posteddate), $pdo->escapeString($poster), $pdo->escapeString($totalsize), ($pdo->getSetting('checkpasswordedrar') == "1" ? -1 : 0), $category));
 				}
 			}
 
@@ -218,7 +217,7 @@ if (!isset($groups) || count($groups) == 0) {
 				@unlink($nzbFile);
 				flush();
 			}
-			if (copyNZBforImport($relguid, $nzba, $nzb, $s)) {
+			if (copyNZBforImport($relguid, $nzba, $nzb, $pdo)) {
 				if ($relid !== false) {
 					$nzbCount++;
 				}
@@ -232,7 +231,7 @@ if (!isset($groups) || count($groups) == 0) {
 				}
 				@unlink($nzbFile);
 			} else {
-				$db->queryExec(sprintf("DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d", $db->escapeString($relguid), $db->escapeString($totalsize)));
+				$pdo->queryExec(sprintf("DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d", $pdo->escapeString($relguid), $pdo->escapeString($totalsize)));
 				echo $c->error("\nFailed copying NZB, deleting release from DB.\n");
 				@unlink($nzbFile);
 				flush();
@@ -259,7 +258,7 @@ exit($c->header("\nRunning Time: " . relativeTime($time) . "\n"
  * @return bool
  *
  */
-function copyNZBforImport($relguid, $nzb, $NZB, $site)
+function copyNZBforImport($relguid, $nzb, $NZB, $pdo)
 {
 	$path = $NZB->getNZBPath($relguid, 0, true);
 	$fp = gzopen($path, 'w5');
@@ -268,7 +267,7 @@ function copyNZBforImport($relguid, $nzb, $NZB, $site)
 		$article =
 			preg_replace(
 				'/dtd">\s*<nzb xmlns=/', "dtd\">\n<!-- NZB Generated by: nZEDb "
-				. $site->version() . ' ' . $date1 . " -->\n<nzb xmlns=", $nzb
+				. $pdo->version() . ' ' . $date1 . " -->\n<nzb xmlns=", $nzb
 			);
 
 		gzwrite($fp,

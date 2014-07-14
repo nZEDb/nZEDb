@@ -27,9 +27,8 @@ if (isset($_REQUEST['del'])) {
 		$page->show404();
 	}
 
-	$s = new Sites();
-	$site = $s->get();
-	$tmdb = new TMDb($site->tmdbkey, $site->imdblanguage);
+	$pdo = new \nzedb\db\Settings();
+	$tmdb = new TMDb($pdo->getSetting('tmdbkey'), $pdo->getSetting('imdblanguage'));
 	$m = new Movie(false);
 
 	if (is_numeric($_REQUEST['id'])) {

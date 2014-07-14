@@ -13,12 +13,14 @@ section,subsection,name,value,hint,setting
 		delaytime	2	The time in hours to wait, since last activity, before releases without parts counts in the subject are are created<br \\> Setting this below 2 hours could create incomplete releases.	delaytime
 		deletepasswordedrelease	0	Whether to delete releases which are passworded.	deletepasswordedrelease
 		deletepossiblerelease	0	Whether to delete releases which are potentially passworded.	deletepossiblerelease
+		extractusingrarinfo	0	Whether to use rarinfo or 7zip/unrar directly to decompress zip/rar files.	extractusingrarinfo
 		ffmpeg_duration	5	The maximum duration (In Seconds) for ffmpeg to generate the sample for. (Default 5)	ffmpeg_duration
 		ffmpeg_image_time	5		ffmpeg_image_time
 		fixnamesperrun	10	The maximum number of releases to check per run(threaded script only).	fixnamesperrun
 		fixnamethreads	1	The number of threads for fixReleasesNames. This includes md5, nfos and filenames.	fixnamethreads
 		grabstatus	1	Whether to update download counts when someone downloads a release.	grabstatus
 		hashcheck	1		hashcheck
+		innerfileblacklist			You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
 		lastpretime	0	Last time we downloaded a pre using WEB sources	lastpretime
 		lookup_reqids	1	Whether to attempt to lookup Request IDs using the Request ID link below.	lookup_reqids
 		lookupanidb	0	Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.	lookupanidb
@@ -36,6 +38,7 @@ section,subsection,name,value,hint,setting
 		maximdbprocessed	100	The maximum amount of movies to process with IMDB per run. This does not use an NNTP connection or query Amazon.	maximdbprocessed
 		maxmssgs	20000	The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.	maxmssgs
 		maxmusicprocessed	150	The maximum amount of music to process with amazon per run. This does not use an NNTP connection.	maxmusicprocessed
+		maxnestedlevels	3	How many levels deep to go into nested rar/zip files.	maxnestedlevels
 		maxnfoprocessed	100	The maximum amount of NFO files to process per run. This uses an NNTP connection, 1 per thread. This does not query Amazon.	maxnfoprocessed
 		maxnzbsprocessed	1000	The maximum amount of NZB files to create on stage 5 in update_releases.	maxnzbsprocessed
 		maxpartrepair	15000	The maximum amount of articles to attempt to repair at a time. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until improves. Ar least until the cause can be determined.	maxpartrepair
@@ -79,7 +82,7 @@ section,subsection,name,value,hint,setting
 		showbacks	0		showbacks
 		showdroppedyencparts	0	For developers. Whether to log all headers that have 'yEnc' and are dropped. Logged to not_yenc/groupname.dropped.txt.	showdroppedyencparts
 		showpasswordedrelease	0	Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.	showpasswordedrelease
-		sqlpatch	243		sqlpatch
+		sqlpatch	249		sqlpatch
 		storeuserips	0	Whether to store the users ip address when they signup or login.	storeuserips
 		tablepergroup	0	This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.<br />Run: show variables like '%open%f	tablepergroup
 		tmpunrarpath		The path to where unrar puts files. WARNING: This directory will have its contents deleted.<br/>Use forward slashes in windows c:/temp/path/stuff/will/be/unpacked/to	tmpunrarpath

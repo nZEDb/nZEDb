@@ -1,9 +1,9 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
-$db = new DB();
+$pdo = new Settings();
 $covers = $updated = $deleted = 0;
 $c = new ColorCLI();
 
@@ -11,7 +11,7 @@ if ($argc == 1 || $argv[1] != 'true') {
 	exit($c->error("\nThis script will check all images in covers/games and compare to db->gamesinfo.\nTo run:\nphp $argv[0] true\n"));
 }
 
-$row = $db->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
+$row = $pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
 if ($row !== false) {
 	\nzedb\utility\Utility::setCoversConstant($row['value']);
 } else {
@@ -25,12 +25,12 @@ foreach ($itr as $filePath) {
 	if (is_file($filePath) && preg_match('/\d+\.jpg/', $filePath)) {
 		preg_match('/(\d+)\.jpg/', basename($filePath), $match);
 		if (isset($match[1])) {
-			$run = $db->queryDirect("UPDATE gamesinfo SET cover = 1 WHERE cover = 0 AND id = " . $match[1]);
+			$run = $pdo->queryDirect("UPDATE gamesinfo SET cover = 1 WHERE cover = 0 AND id = " . $match[1]);
 			if ($run !== false) {
 				if ($run->rowCount() >= 1) {
 					$covers++;
 				} else {
-					$run = $db->queryDirect("SELECT id FROM gamesinfo WHERE id = " . $match[1]);
+					$run = $pdo->queryDirect("SELECT id FROM gamesinfo WHERE id = " . $match[1]);
 					if ($run !== false && $run->rowCount() == 0) {
 						echo $c->info($filePath . " not found in db.");
 					}
@@ -40,10 +40,10 @@ foreach ($itr as $filePath) {
 	}
 }
 
-$qry = $db->queryDirect("SELECT id FROM gamesinfo WHERE cover = 1");
+$qry = $pdo->queryDirect("SELECT id FROM gamesinfo WHERE cover = 1");
 foreach ($qry as $rows) {
 	if (!is_file($path2covers . $rows['id'] . '.jpg')) {
-		$db->queryDirect("UPDATE gamesinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
+		$pdo->queryDirect("UPDATE gamesinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
 		echo $c->info($path2covers . $rows['id'] . ".jpg does not exist.");
 		$deleted++;
 	}

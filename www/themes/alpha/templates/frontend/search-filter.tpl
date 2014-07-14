@@ -85,6 +85,31 @@
 	</form>
 {/if}
 
+{if $covergrp == "games"}
+	<form class="form-inline" name="browseby" action="{$smarty.const.WWW_TOP}/search" method="get">
+		<input class="form-control" style="width: 150px;" id="title" type="text" name="title" value="{$title}" placeholder="Title">
+		<select class="form-control" style="width: 150px;" id="genre" name="genre">
+			<option class="grouping" value="">Genre... </option>
+			{foreach from=$genres item=gen}
+				<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
+			{/foreach}
+		</select>
+		<select class="form-control" style="width: 150px;" id="year" name="year">
+			<option class="grouping" value="">Year... </option>
+			{foreach from=$years item=yr}
+				<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
+			{/foreach}
+		</select>
+		{*<select class="form-control" style="width: 150px;" id="category" name="t">*}
+			{*<option class="grouping" value="4000">Category... </option>*}
+			{*{foreach from=$catlist item=ct}*}
+				{*<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>*}
+			{*{/foreach}*}
+		{*</select>*}
+		<input class="btn btn-success" type="submit" value="Go">
+	</form>
+{/if}
+
 
 {if {$smarty.get.page} == "console"}
 	<form class="form-inline" name="browseby" action="console" style="margin:0;">
@@ -102,6 +127,31 @@
 				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
 		</select>
+		<input class="btn btn-success" type="submit" value="Go">
+	</form>
+{/if}
+
+{if {$smarty.get.page} == "games"}
+	<form class="form-inline" name="browseby" action="games" style="margin:0;">
+		<input class="form-control" style="width: 150px;" id="title" type="text" name="title" value="{$title}" placeholder="Title">
+		<select class="form-control" style="width: auto;" id="genre" name="genre">
+			<option class="grouping" value="">Genre... </option>
+			{foreach from=$genres item=gen}
+				<option {if $gen.id == $genre}selected="selected"{/if} value="{$gen.id}">{$gen.title}</option>
+			{/foreach}
+		</select>
+		<select class="form-control" style="width: auto;" id="year" name="year">
+			<option class="grouping" value="">Year... </option>
+			{foreach from=$years item=yr}
+				<option {if $yr==$year}selected="selected"{/if} value="{$yr}">{$yr}</option>
+			{/foreach}
+		</select>
+		{*<select class="form-control" style="width: auto;" id="category" name="t">*}
+			{*<option class="grouping" value="4000">Category... </option>*}
+			{*{foreach from=$catlist item=ct}*}
+				{*<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>*}
+			{*{/foreach}*}
+		{*</select>*}
 		<input class="btn btn-success" type="submit" value="Go">
 	</form>
 {/if}

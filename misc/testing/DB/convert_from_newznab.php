@@ -1,17 +1,17 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
-$db = new DB();
-if ($db->dbSystem() === "pgsql") {
+$pdo = new Settings();
+if ($pdo->dbSystem() === "pgsql") {
 	exit("Currently this only works for mysql.\n");
 }
 
-function runQuery($db, $sql, $runQueries)
+function runQuery($pdo, $sql, $runQueries)
 {
 	if ($runQueries) {
-		$db->queryDirect($sql);
+		$pdo->queryDirect($sql);
 		return true;
 	} else {
 		echo $sql . ";\n";
@@ -19,10 +19,10 @@ function runQuery($db, $sql, $runQueries)
 	}
 }
 
-function runQueryupdate($db, $sql, $runQueries)
+function runQueryupdate($pdo, $sql, $runQueries)
 {
 	if ($runQueries) {
-		$db->queryExec($sql);
+		$pdo->queryExec($sql);
 		return true;
 	} else {
 		echo $sql . ";\n";
@@ -30,7 +30,7 @@ function runQueryupdate($db, $sql, $runQueries)
 	}
 }
 
-function convertTable($db, $nZEDbschema, $tableName, $sql, $runQueries)
+function convertTable($pdo, $nZEDbschema, $tableName, $sql, $runQueries)
 {
 	if ($runQueries) {
 		echo "Converting: " . $tableName . " ";
@@ -41,17 +41,17 @@ function convertTable($db, $nZEDbschema, $tableName, $sql, $runQueries)
 	$createSQL = "CREATE TABLE " . $nZEDbschema . "." . $tableName . " LIKE " . $nZEDbschema .
 				 ".original_" . $tableName;
 
-	if (!runQuery($db, $renameSQL, $runQueries)) {
+	if (!runQuery($pdo, $renameSQL, $runQueries)) {
 		exit("Unable to rename table Running the following SQL: " . $renameSQL .
 			 "\nConversion Stopped....\n");
 	}
 
-	if (!runQuery($db, $createSQL, $runQueries)) {
+	if (!runQuery($pdo, $createSQL, $runQueries)) {
 		exit("Unable to create table Running the following SQL: " . $createSQL .
 			 "\nConversion Stopped....\n");
 	}
 
-	if (!runQuery($db, $sql, $runQueries)) {
+	if (!runQuery($pdo, $sql, $runQueries)) {
 		die("Unable to move the data... Running: " . $sql . "\nConversion Stopped....\n");
 	}
 
@@ -60,9 +60,9 @@ function convertTable($db, $nZEDbschema, $tableName, $sql, $runQueries)
 	}
 }
 
-function truncateTable($db, $tableName, $runQueries)
+function truncateTable($pdo, $tableName, $runQueries)
 {
-	if (!runQuery($db, "TRUNCATE TABLE " . $tableName, $runQueries)) {
+	if (!runQuery($pdo, "TRUNCATE TABLE " . $tableName, $runQueries)) {
 		exit("Unable to truncate: " . $tableName . "\nConversion Stopped....\n");
 	}
 }
@@ -92,14 +92,14 @@ $runQueries = $argv[3] == "true";
 // This converts from the schema newznab to the schema nZEDb.
 
 echo "Resetting Collections/Binaries/Parts/PartRepair\n";
-truncateTable($db, $nZEDB_schema . ".collections", $runQueries);
-truncateTable($db, $nZEDB_schema . ".binaries", $runQueries);
-truncateTable($db, $nZEDB_schema . ".parts", $runQueries);
-truncateTable($db, $nZEDB_schema . ".partrepair", $runQueries);
+truncateTable($pdo, $nZEDB_schema . ".collections", $runQueries);
+truncateTable($pdo, $nZEDB_schema . ".binaries", $runQueries);
+truncateTable($pdo, $nZEDB_schema . ".parts", $runQueries);
+truncateTable($pdo, $nZEDB_schema . ".partrepair", $runQueries);
 
 echo "Converting from newznab to nZEDb.... This will take a while....\n\n";
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "anidb",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -108,7 +108,7 @@ convertTable($db,
 			 $nn_schema . ".anidb",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "animetitles",
 			 "INSERT INTO " . $nZEDB_schema . ".animetitles (anidbid, title, unixtime) " .
@@ -118,7 +118,7 @@ convertTable($db,
 
 echo "Skipping binaries table: Different in nZEDb\n";
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "binaryblacklist",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -128,7 +128,7 @@ convertTable($db,
 			 $runQueries);
 
 // You lose genreID and dewey.
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "bookinfo",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -139,7 +139,7 @@ convertTable($db,
 
 echo "Skipping category table: using nZEDb's version\n";
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "consoleinfo",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -148,7 +148,7 @@ convertTable($db,
 			 $nn_schema . ".consoleinfo GROUP BY asin",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "content",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -159,7 +159,7 @@ convertTable($db,
 
 echo "episodeinfo = tvrageepisodes in nZEDb\n";
 // Convert episodeinfo to tvrageepisodes - You loose (tvdbID, imdbID, director, gueststars, overview, rating, writer, epabsolute)
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "tvrageepisodes",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -168,7 +168,7 @@ convertTable($db,
 			 $nn_schema . ".episodeinfo where rageID <> 0 GROUP BY rageID, fullep",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "forumpost",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -177,14 +177,14 @@ convertTable($db,
 			 $nn_schema . ".forumpost",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "genres",
 			 "INSERT INTO " . $nZEDB_schema . ".genres (title, type) " .
 			 "SELECT title, type FROM " . $nn_schema . ".genres",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "groups",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -195,7 +195,7 @@ convertTable($db,
 
 echo "Skipping menu table: menu layouts are different\n";
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "movieinfo",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -204,11 +204,11 @@ convertTable($db,
 			 $nn_schema . ".movieinfo",
 			 $runQueries);
 
-runQuery($db,
+runQuery($pdo,
 		 "ALTER TABLE " . $nZEDB_schema . ".movieinfo MODIFY column genre varchar(255) NOT NULL",
 		 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "musicinfo",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -221,7 +221,7 @@ echo "Skipping partrepair table: No conversion needed due to nZEDb changes\n";
 echo "Skipping parts table: No conversion needed due to nZEDb changes\n";
 echo "Skipping predb table: Not in NZEDb\n";
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "releaseaudio",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -231,7 +231,7 @@ convertTable($db,
 			 $runQueries);
 
 // You lose all spotnab additions (sourceID, gid, cid, isvisible, issynced, username).
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "releasecomment",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -240,14 +240,14 @@ convertTable($db,
 			 ".releasecomment",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "releaseextrafull",
 			 "INSERT INTO " . $nZEDB_schema . ".releaseextrafull (releaseid, mediainfo) " .
 			 "SELECT releaseID, mediainfo FROM " . $nn_schema . ".releaseextrafull",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "releasefiles",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -256,7 +256,7 @@ convertTable($db,
 			 ".releasefiles group by releaseID",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "releasenfo",
 			 "INSERT INTO " . $nZEDB_schema . ".releasenfo (releaseid, nfo) " .
@@ -292,7 +292,7 @@ echo "Skipping releaseregex table: Not needed with nZEDb\n";
 //      Other                           6070/6000       6050/6000
 //      Other                           8010/8000       8050/8000
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "releases",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -301,7 +301,7 @@ convertTable($db,
 			 $nn_schema . ".releases",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "releasesubs",
 			 "INSERT INTO " . $nZEDB_schema . ".releasesubs (releaseid, subsid, subslanguage) " .
@@ -309,7 +309,7 @@ convertTable($db,
 			 $runQueries);
 
 // You lose (definition).
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "releasevideo",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -328,7 +328,7 @@ echo "Skipping spotnabsource table: Not in nZEDb\n";
 
 echo "Skipping thetvdb table: Not in nZEDb\n";
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "tvrage",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -337,14 +337,14 @@ convertTable($db,
 			 $nn_schema . ".tvrage group by releasetitle",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "upcoming",
 			 "INSERT INTO " . $nZEDB_schema . ".upcoming (source, typeid, info, updateddate) " .
 			 "SELECT source, typeID, info, updateddate FROM " . $nn_schema . ".upcoming",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "usercart",
 			 "INSERT INTO " . $nZEDB_schema . ".usercart (userid, releaseid, createddate) " .
@@ -352,28 +352,28 @@ convertTable($db,
 			 $runQueries);
 
 // You lose (hosthash, releaseID).
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "userdownloads",
 			 "INSERT INTO " . $nZEDB_schema . ".userdownloads (id, timestamp, userid) " .
 			 "SELECT ID, timestamp, userID FROM " . $nn_schema . ".userdownloads",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "userexcat",
 			 "INSERT INTO " . $nZEDB_schema . ".userexcat (userid, categoryid, createddate) " .
 			 "SELECT userID, categoryID, createddate FROM " . $nn_schema . ".userexcat",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "userinvite",
 			 "INSERT INTO " . $nZEDB_schema . ".userinvite (guid, userid, createddate) " .
 			 "SELECT guid, userID, createddate FROM " . $nn_schema . ".userinvite",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "usermovies",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -382,7 +382,7 @@ convertTable($db,
 			 $runQueries);
 
 // You lose (hosthash).
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "userrequests",
 			 "INSERT INTO " . $nZEDB_schema . ".userrequests (id, request, timestamp, userid) " .
@@ -390,7 +390,7 @@ convertTable($db,
 			 $runQueries);
 
 // You lose (canpre).
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "userroles",
 			 "INSERT IGNORE INTO " . $nZEDB_schema .
@@ -400,7 +400,7 @@ convertTable($db,
 			 $runQueries);
 
 // You lose (kindleid, notes, rolechangedate, nzbvortex_api_key, nzbvortex_server_url, siteseed; and password IS reset).
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "users",
 			 "INSERT INTO " . $nZEDB_schema .
@@ -409,7 +409,7 @@ convertTable($db,
 			 $nn_schema . ".users",
 			 $runQueries);
 
-convertTable($db,
+convertTable($pdo,
 			 $nZEDB_schema,
 			 "userseries",
 			 "INSERT INTO " . $nZEDB_schema .

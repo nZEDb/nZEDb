@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 /*
  *
@@ -32,7 +32,7 @@ preName($argv, $argc);
 
 function preName($argv, $argc)
 {
-	$db = new DB();
+	$pdo = new Settings();
 	$groups = new Groups();
 	$category = new Categorize();
 	$internal = $external = $pre = $none = 0;
@@ -88,7 +88,7 @@ function preName($argv, $argc)
 		"SELECT id, name, searchname, fromname, size, group_id, categoryid FROM releases" . $why . $what .
 		$where . ";\n"
 	);
-	$res = $db->queryDirect("SELECT id, name, searchname, fromname, size, group_id, categoryid FROM releases" . $why . $what . $where);
+	$res = $pdo->queryDirect("SELECT id, name, searchname, fromname, size, group_id, categoryid FROM releases" . $why . $what . $where);
 	$total = $res->rowCount();
 	if ($total > 0) {
 		$consoletools = new ConsoleTools();
@@ -101,7 +101,7 @@ function preName($argv, $argc)
 				$cleanName = trim($cleanerName);
 				$propername = $increment = true;
 				if ($cleanName != '' && $cleanerName != false) {
-					$run = $db->queryOneRow("SELECT id FROM predb WHERE title = " . $db->escapeString($cleanName));
+					$run = $pdo->queryOneRow("SELECT id FROM predb WHERE title = " . $pdo->escapeString($cleanName));
 					if (isset($run['id'])) {
 						$preid = $run['id'];
 						$predb = true;
@@ -137,28 +137,29 @@ function preName($argv, $argc)
 					}
 				}
 					//try to match clean name against predb filename
-					$prefile = $db->queryOneRow("SELECT id, title FROM predb WHERE filename = " . $db->escapeString($cleanName));
+					$prefile = $pdo->queryOneRow("SELECT id, title FROM predb WHERE filename = " . $pdo->escapeString($cleanName));
 					if (isset($prefile['id'])) {
 						$preid = $prefile['id'];
 						$cleanName = $prefile['title'];
 						$predbfile = true;
+						$propername = true;
 					}
 				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
 					if (strlen(utf8_decode($cleanName)) <= 3) {
 					} else {
 						$determinedcat = $category->determineCategory($cleanName, $row["group_id"]);
 						if ($propername == true) {
-							$run = $db->queryExec(
+							$run = $pdo->queryExec(
 								sprintf(
 									"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "iscategorized = 1, isrenamed = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']
+									. "iscategorized = 1, isrenamed = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $pdo->escapeString($cleanName), $determinedcat, $row['id']
 								)
 							);
 						} else {
-							$run = $db->queryExec(
+							$run = $pdo->queryExec(
 								sprintf(
 									"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,  "
-									. "iscategorized = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $db->escapeString($cleanName), $determinedcat, $row['id']
+									. "iscategorized = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $pdo->escapeString($cleanName), $determinedcat, $row['id']
 								)
 							);
 						}
@@ -196,7 +197,7 @@ function preName($argv, $argc)
 				}
 			}
 			if ($cleanName == $row['name']) {
-				$db->queryExec(sprintf("UPDATE releases SET isrenamed = 1, iscategorized = 1 WHERE id = %d", $row['id']));
+				$pdo->queryExec(sprintf("UPDATE releases SET isrenamed = 1, iscategorized = 1 WHERE id = %d", $row['id']));
 			}
 			if ($show === 2 && $usepre === false) {
 				$consoletools->overWritePrimary("Renamed Releases:  [Internal=" . number_format($internal) . "][External=" . number_format($external) . "][Predb=" . number_format($pre) . "] " . $consoletools->percentString(++$counter, $total));
@@ -257,10 +258,10 @@ function preName($argv, $argc)
 
 function resetSearchnames()
 {
-	$db = new DB();
+	$pdo = new Settings();
 	$c = new ColorCLI();
 	echo $c->header("Resetting blank searchnames.");
-	$bad = $db->queryDirect(
+	$bad = $pdo->queryDirect(
 		"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
 		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE searchname = ''"
 	);
@@ -269,7 +270,7 @@ function resetSearchnames()
 		echo $c->primary(number_format($tot) . " Releases had no searchname.");
 	}
 	echo $c->header("Resetting searchnames that are 8 characters or less.");
-	$run = $db->queryDirect(
+	$run = $pdo->queryDirect(
 		"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
 		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE LENGTH(searchname) <= 8 AND LENGTH(name) > 8"
 	);
@@ -284,18 +285,18 @@ function resetSearchnames()
 // Returns the quantity of categorized releases.
 function categorizeRelease($type, $where, $echooutput = false)
 {
-	$db = new DB();
+	$pdo = new Settings();
 	$cat = new Categorize();
 	$consoletools = new consoleTools();
 	$relcount = 0;
 	$c = new ColorCLI();
 	echo $c->primary("SELECT id, " . $type . ", group_id FROM releases " . $where);
-	$resrel = $db->queryDirect("SELECT id, " . $type . ", group_id FROM releases " . $where);
+	$resrel = $pdo->queryDirect("SELECT id, " . $type . ", group_id FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {
 		foreach ($resrel as $rowrel) {
 			$catId = $cat->determineCategory($rowrel[$type], $rowrel['group_id']);
-			$db->queryExec(sprintf("UPDATE releases SET iscategorized = 1, categoryid = %d WHERE id = %d", $catId, $rowrel['id']));
+			$pdo->queryExec(sprintf("UPDATE releases SET iscategorized = 1, categoryid = %d WHERE id = %d", $catId, $rowrel['id']));
 			$relcount++;
 			if ($echooutput) {
 				$consoletools->overWritePrimary("Categorizing: " . $consoletools->percentString($relcount, $total));

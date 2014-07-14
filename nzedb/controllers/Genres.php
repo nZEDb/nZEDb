@@ -1,6 +1,6 @@
 <?php
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 class Genres
 {
@@ -13,8 +13,8 @@ class Genres
 
 	public function getGenres($type='', $activeonly=false)
 	{
-		$db = new DB();
-		return $db->query($this->getListQuery($type, $activeonly));
+		$pdo = new Settings();
+		return $pdo->query($this->getListQuery($type, $activeonly));
 	}
 
 	private function getListQuery($type='', $activeonly=false)
@@ -25,7 +25,7 @@ class Genres
 			$typesql = '';
 
 		if ($activeonly)
-			$sql = sprintf("SELECT genres.* FROM genres INNER JOIN (SELECT DISTINCT genreid FROM musicinfo) x ON x.genreid = genres.id %s UNION SELECT genres.*  FROM genres INNER JOIN (SELECT DISTINCT genreid FROM consoleinfo) x ON x.genreid = genres.id %s ORDER BY title", $typesql, $typesql);
+			$sql = sprintf("SELECT genres.* FROM genres INNER JOIN (SELECT DISTINCT genreid FROM musicinfo) x ON x.genreid = genres.id %s UNION SELECT genres.*  FROM genres INNER JOIN (SELECT DISTINCT genreid FROM consoleinfo) x ON x.genreid = genres.id %s UNION SELECT genres.*  FROM genres INNER JOIN (SELECT DISTINCT genreid FROM gamesinfo) x ON x.genreid = genres.id %s ORDER BY title", $typesql, $typesql, $typesql);
 		else
 			$sql = sprintf("SELECT genres.* FROM genres WHERE 1 %s ORDER BY title", $typesql);
 
@@ -34,15 +34,15 @@ class Genres
 
 	public function getRange($type='', $activeonly=false, $start, $num)
 	{
-		$db = new DB();
+		$pdo = new Settings();
 		$sql = $this->getListQuery($type, $activeonly);
 		$sql .= " LIMIT ".$num." OFFSET ".$start;
-		return $db->query($sql);
+		return $pdo->query($sql);
 	}
 
 	public function getCount($type='', $activeonly=false)
 	{
-		$db = new DB();
+		$pdo = new Settings();
 
 		if (!empty($type))
 			$typesql = sprintf(" AND genres.type = %d", $type);
@@ -54,25 +54,25 @@ class Genres
 		else
 			$sql = sprintf("SELECT COUNT(*) AS num FROM genres WHERE 1 %s ORDER BY title", $typesql);
 
-		$res = $db->queryOneRow($sql);
+		$res = $pdo->queryOneRow($sql);
 		return $res["num"];
 	}
 
 	public function getById($id)
 	{
-		$db = new DB();
-		return $db->queryOneRow(sprintf("SELECT * FROM genres WHERE id = %d", $id));
+		$pdo = new Settings();
+		return $pdo->queryOneRow(sprintf("SELECT * FROM genres WHERE id = %d", $id));
 	}
 
 	public function update($id, $disabled)
 	{
-		$db = new DB();
-		return $db->queryExec(sprintf("UPDATE genres SET disabled = %d WHERE id = %d", $disabled, $id));
+		$pdo = new Settings();
+		return $pdo->queryExec(sprintf("UPDATE genres SET disabled = %d WHERE id = %d", $disabled, $id));
 	}
 
 	public function getDisabledIDs()
 	{
-		$db = new DB();
-		return $db->query("SELECT id FROM genres WHERE disabled = 1");
+		$pdo = new Settings();
+		return $pdo->query("SELECT id FROM genres WHERE disabled = 1");
 	}
 }

@@ -1,7 +1,6 @@
 <?php
 
-use nzedb\db\DB;
-
+use nzedb\db\Settings;
 use nzedb\utility;
 
 class Users
@@ -30,15 +29,17 @@ class Users
 	const QUEUE_SABNZBD = 1;
 	const QUEUE_NZBGET  = 2;
 
+	public $pdo;
+
 	function __construct()
 	{
-		$this->db = new DB();
+		$this->pdo = new Settings();
 	}
 
 	public function get()
 	{
-		$db = $this->db;
-		return $db->query("SELECT * FROM users");
+		$pdo = $this->pdo;
+		return $pdo->query("SELECT * FROM users");
 	}
 
 	/**
@@ -50,12 +51,12 @@ class Users
 	 */
 	public function getStyle($userID)
 	{
-		return $this->db->queryOneRow("SELECT style FROM users WHERE id = " . $userID);
+		return $this->pdo->queryOneRow("SELECT style FROM users WHERE id = " . $userID);
 	}
 
 	public function delete($id)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$this->delCartForUser($id);
 		$this->delUserCategoryExclusions($id);
 
@@ -71,7 +72,7 @@ class Users
 		$forum = new Forum();
 		$forum->deleteUser($id);
 
-		$db->queryExec(sprintf("DELETE FROM users WHERE id = %d", $id));
+		$pdo->queryExec(sprintf("DELETE FROM users WHERE id = %d", $id));
 	}
 
 	public function getRange($start, $num, $orderby, $username = '', $email = '', $host = '', $role = '', $apiRequests = false)
@@ -83,21 +84,21 @@ class Users
 		}
 
 		$like = 'ILIKE';
-		if ($this->db->dbSystem() === 'mysql') {
+		if ($this->pdo->dbSystem() === 'mysql') {
 			$like = 'LIKE';
 		}
 
 		$usql = $esql = $hsql = $rsql = '';
 		if ($username != '') {
-			$usql = sprintf(" AND users.username %s %s ", $like, $this->db->escapeString("%" . $username . "%"));
+			$usql = sprintf(" AND users.username %s %s ", $like, $this->pdo->escapeString("%" . $username . "%"));
 		}
 
 		if ($email != '') {
-			$esql = sprintf(" AND users.email %s %s ", $like, $this->db->escapeString("%" . $email . "%"));
+			$esql = sprintf(" AND users.email %s %s ", $like, $this->pdo->escapeString("%" . $email . "%"));
 		}
 
 		if ($host != '') {
-			$hsql = sprintf(" AND users.host %s %s ", $like, $this->db->escapeString("%" . $host . "%"));
+			$hsql = sprintf(" AND users.host %s %s ", $like, $this->pdo->escapeString("%" . $host . "%"));
 		}
 
 		if ($role != '') {
@@ -109,7 +110,7 @@ class Users
 		if ($apiRequests) {
 			$this->clearApiRequests(false);
 
-			$ret = $this->db->query(sprintf("
+			$ret = $this->pdo->query(sprintf("
 				SELECT users.*,
 				userroles.name AS rolename,
 				COUNT(userrequests.id) AS apirequests
@@ -124,7 +125,7 @@ class Users
 				$usql, $esql, $hsql, $rsql,
 				$order[0], $order[1]));
 		} else {
-			$ret = $this->db->query(sprintf("SELECT users.*, userroles.name AS rolename FROM users INNER JOIN userroles ON userroles.id = users.role WHERE 1=1 %s %s %s %s ORDER BY %s %s" . $limit, $usql, $esql, $hsql, $rsql, $order[0], $order[1]));
+			$ret = $this->pdo->query(sprintf("SELECT users.*, userroles.name AS rolename FROM users INNER JOIN userroles ON userroles.id = users.role WHERE 1=1 %s %s %s %s ORDER BY %s %s" . $limit, $usql, $esql, $hsql, $rsql, $order[0], $order[1]));
 		}
 
 		return $ret;
@@ -169,18 +170,16 @@ class Users
 
 	public function getCount()
 	{
-		$db = $this->db;
-		$res = $db->queryOneRow("SELECT COUNT(id) AS num FROM users WHERE email != 'sharing@nZEDb.com'");
+		$pdo = $this->pdo;
+		$res = $pdo->queryOneRow("SELECT COUNT(id) AS num FROM users WHERE email != 'sharing@nZEDb.com'");
 		return $res["num"];
 	}
 
 	public function add($uname, $fname, $lname, $pass, $email, $role, $host, $invites = Users::DEFAULT_INVITES, $invitedby = 0)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 
-		$site = new Sites();
-		$s = $site->get();
-		if ($s->storeuserips != "1") {
+		if ($pdo->getSetting('storeuserips') != "1") {
 			$host = "";
 		}
 
@@ -188,7 +187,7 @@ class Users
 			$invitedby = "null";
 		}
 
-		return $db->queryInsert(sprintf("INSERT INTO users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed, firstname, lastname) VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)", $db->escapeString($uname), $db->escapeString($this->hashPassword($pass)), $db->escapeString($email), $role, $db->escapeString($host), $db->escapeString(uniqid()), $invites, $invitedby, $db->escapeString($db->uuid()), $db->escapeString($fname), $db->escapeString($lname)));
+		return $pdo->queryInsert(sprintf("INSERT INTO users (username, password, email, role, createddate, host, rsstoken, invites, invitedby, userseed, firstname, lastname) VALUES (%s, %s, LOWER(%s), %d, NOW(), %s, MD5(%s), %d, %s, MD5(%s), %s, %s)", $pdo->escapeString($uname), $pdo->escapeString($this->hashPassword($pass)), $pdo->escapeString($email), $role, $pdo->escapeString($host), $pdo->escapeString(uniqid()), $invites, $invitedby, $pdo->escapeString($pdo->uuid()), $pdo->escapeString($fname), $pdo->escapeString($lname)));
 	}
 
 	public function update($id, $uname, $fname, $lname, $email, $grabs, $role, $invites,
@@ -197,7 +196,7 @@ class Users
 		$nzbgetURL = '', $nzbgetUsername = '', $nzbgetPassword = '',
 		$saburl = '', $sabapikey = '', $sabpriority = '', $sabapikeytype = '')
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 
 		$uname = trim($uname);
 		$fname = trim($fname);
@@ -228,14 +227,14 @@ class Users
 
 		$sql = array();
 
-		$sql[] = sprintf('username = %s', $db->escapeString($uname));
+		$sql[] = sprintf('username = %s', $pdo->escapeString($uname));
 		if ($fname !== false) {
-			$sql[] = sprintf('firstname = %s', $db->escapeString($fname));
+			$sql[] = sprintf('firstname = %s', $pdo->escapeString($fname));
 		}
 		if ($lname !== false) {
-			$sql[] = sprintf('lastname = %s', $db->escapeString($lname));
+			$sql[] = sprintf('lastname = %s', $pdo->escapeString($lname));
 		}
-		$sql[] = sprintf('email = %s', $db->escapeString($email));
+		$sql[] = sprintf('email = %s', $pdo->escapeString($email));
 		$sql[] = sprintf('grabs = %d', $grabs);
 		$sql[] = sprintf('role = %d', $role);
 		$sql[] = sprintf('invites = %d', $invites);
@@ -244,23 +243,23 @@ class Users
 		$sql[] = sprintf('consoleview = %d', $consoleview);
 		$sql[] = sprintf('gameview = %d', $gameview);
 		$sql[] = sprintf('bookview = %d', $bookview);
-		$sql[] = sprintf('style = %s', $db->escapeString($style));
+		$sql[] = sprintf('style = %s', $pdo->escapeString($style));
 		if ($queueType !== '') {
 			$sql[] = sprintf('queuetype = %d', $queueType);
 		}
 
 		if ($nzbgetURL !== '') {
-			$sql[] = sprintf('nzbgeturl = %s', $db->escapeString($nzbgetURL));
+			$sql[] = sprintf('nzbgeturl = %s', $pdo->escapeString($nzbgetURL));
 		}
 
-		$sql[] = sprintf('nzbgetusername = %s', $db->escapeString($nzbgetUsername));
-		$sql[] = sprintf('nzbgetpassword = %s', $db->escapeString($nzbgetPassword));
+		$sql[] = sprintf('nzbgetusername = %s', $pdo->escapeString($nzbgetUsername));
+		$sql[] = sprintf('nzbgetpassword = %s', $pdo->escapeString($nzbgetPassword));
 
 		if ($saburl !== '') {
-			$sql[] = sprintf('saburl = %s', $db->escapeString($saburl));
+			$sql[] = sprintf('saburl = %s', $pdo->escapeString($saburl));
 		}
 		if ($sabapikey !== '') {
-			$sql[] = sprintf('sabapikey = %s', $db->escapeString($sabapikey));
+			$sql[] = sprintf('sabapikey = %s', $pdo->escapeString($sabapikey));
 		}
 		if ($sabpriority !== '') {
 			$sql[] = sprintf('sabpriority = %d', $sabpriority);
@@ -270,63 +269,63 @@ class Users
 		}
 
 		if ($cp_url !== false) {
-			$sql[] = sprintf('cp_url = %s', $db->escapeString($cp_url));
+			$sql[] = sprintf('cp_url = %s', $pdo->escapeString($cp_url));
 		}
 		if ($cp_api !== false) {
-			$sql[] = sprintf('cp_api = %s', $db->escapeString($cp_api));
+			$sql[] = sprintf('cp_api = %s', $pdo->escapeString($cp_api));
 		}
-		$db->queryExec(sprintf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id));
+		$pdo->queryExec(sprintf("UPDATE users SET %s WHERE id = %d", implode(', ', $sql), $id));
 
 		return Users::SUCCESS;
 	}
 
 	public function updateRssKey($uid)
 	{
-		$db = $this->db;
-		return $db->queryExec(sprintf("UPDATE users SET rsstoken = MD5(%s) WHERE id = %d", $db->escapeString(uniqid()), $uid));
+		$pdo = $this->pdo;
+		return $pdo->queryExec(sprintf("UPDATE users SET rsstoken = MD5(%s) WHERE id = %d", $pdo->escapeString(uniqid()), $uid));
 	}
 
 	public function updatePassResetGuid($id, $guid)
 	{
-		$db = $this->db;
-		$db->queryExec(sprintf("UPDATE users SET resetguid = %s WHERE id = %d", $db->escapeString($guid), $id));
+		$pdo = $this->pdo;
+		$pdo->queryExec(sprintf("UPDATE users SET resetguid = %s WHERE id = %d", $pdo->escapeString($guid), $id));
 		return Users::SUCCESS;
 	}
 
 	public function updatePassword($id, $password)
 	{
-		$db = $this->db;
-		$db->queryExec(sprintf("UPDATE users SET password = %s, userseed = MD5(%s) WHERE id = %d", $db->escapeString($this->hashPassword($password)), $db->escapeString($db->uuid()), $id));
+		$pdo = $this->pdo;
+		$pdo->queryExec(sprintf("UPDATE users SET password = %s, userseed = MD5(%s) WHERE id = %d", $pdo->escapeString($this->hashPassword($password)), $pdo->escapeString($pdo->uuid()), $id));
 		return Users::SUCCESS;
 	}
 
 	public function getByEmail($email)
 	{
-		$db = $this->db;
-		return $db->queryOneRow(sprintf("SELECT * FROM users WHERE LOWER(email) = LOWER(%s) ", $db->escapeString($email)));
+		$pdo = $this->pdo;
+		return $pdo->queryOneRow(sprintf("SELECT * FROM users WHERE LOWER(email) = LOWER(%s) ", $pdo->escapeString($email)));
 	}
 
 	public function getByPassResetGuid($guid)
 	{
-		$db = $this->db;
-		return $db->queryOneRow(sprintf("SELECT * FROM users WHERE LOWER(resetguid) = LOWER(%s) ", $db->escapeString($guid)));
+		$pdo = $this->pdo;
+		return $pdo->queryOneRow(sprintf("SELECT * FROM users WHERE LOWER(resetguid) = LOWER(%s) ", $pdo->escapeString($guid)));
 	}
 
 	public function getByUsername($uname)
 	{
-		$db = $this->db;
-		return $db->queryOneRow(sprintf("select * FROM users WHERE LOWER(username) = LOWER(%s) ", $db->escapeString($uname)));
+		$pdo = $this->pdo;
+		return $pdo->queryOneRow(sprintf("select * FROM users WHERE LOWER(username) = LOWER(%s) ", $pdo->escapeString($uname)));
 	}
 
 	public function incrementGrabs($id, $num = 1)
 	{
-		$db = $this->db;
-		$db->queryExec(sprintf("UPDATE users SET grabs = grabs + %d WHERE id = %d ", $num, $id));
+		$pdo = $this->pdo;
+		$pdo->queryExec(sprintf("UPDATE users SET grabs = grabs + %d WHERE id = %d ", $num, $id));
 	}
 
 	public function getById($id)
 	{
-		return $this->db->queryOneRow(sprintf("SELECT users.*, userroles.name AS rolename, userroles.canpreview, userroles.apirequests, userroles.downloadrequests, NOW() AS now FROM users INNER JOIN userroles ON userroles.id = users.role WHERE users.id = %d", $id));
+		return $this->pdo->queryOneRow(sprintf("SELECT users.*, userroles.name AS rolename, userroles.canpreview, userroles.apirequests, userroles.downloadrequests, NOW() AS now FROM users INNER JOIN userroles ON userroles.id = users.role WHERE users.id = %d", $id));
 	}
 
 	public function getByIdAndRssToken($id, $rsstoken)
@@ -337,8 +336,8 @@ class Users
 
 	public function getByRssToken($rsstoken)
 	{
-		$db = $this->db;
-		return $db->queryOneRow(sprintf("SELECT users.*, userroles.apirequests, userroles.downloadrequests, NOW() AS now FROM users INNER JOIN userroles ON userroles.id = users.role WHERE LOWER(users.rsstoken) = LOWER(%s) ", $db->escapeString($rsstoken)));
+		$pdo = $this->pdo;
+		return $pdo->queryOneRow(sprintf("SELECT users.*, userroles.apirequests, userroles.downloadrequests, NOW() AS now FROM users INNER JOIN userroles ON userroles.id = users.role WHERE LOWER(users.rsstoken) = LOWER(%s) ", $pdo->escapeString($rsstoken)));
 	}
 
 	public function getBrowseOrdering()
@@ -360,8 +359,8 @@ class Users
 
 	public function isDisabled($username)
 	{
-		$db = $this->db;
-		$role = $db->queryOneRow(sprintf("SELECT role AS role FROM users WHERE username = %s", $db->escapeString($username)));
+		$pdo = $this->pdo;
+		$role = $pdo->queryOneRow(sprintf("SELECT role AS role FROM users WHERE username = %s", $pdo->escapeString($username)));
 		return ($role["role"] == Users::ROLE_DISABLED);
 	}
 
@@ -388,9 +387,6 @@ class Users
 
 	public function signup($uname, $fname, $lname, $pass, $email, $host, $role = Users::ROLE_USER, $invites = Users::DEFAULT_INVITES, $invitecode = "", $forceinvitemode = false)
 	{
-		$site = new Sites();
-		$s = $site->get();
-
 		$uname = trim($uname);
 		$fname = trim($fname);
 		$lname = trim($lname);
@@ -421,7 +417,7 @@ class Users
 
 		// Make sure this is the last check, as if a further validation check failed, the invite would still have been used up.
 		$invitedby = 0;
-		if (($s->registerstatus == Sites::REGISTER_STATUS_INVITE) && !$forceinvitemode) {
+		if (($this->pdo->getSetting('registerstatus') == Settings::REGISTER_STATUS_INVITE) && !$forceinvitemode) {
 			if ($invitecode == '') {
 				return Users::ERR_SIGNUP_BADINVITECODE;
 			}
@@ -491,10 +487,7 @@ class Users
 	{
 		$_SESSION['uid'] = $uid;
 
-		$site = new Sites();
-		$s = $site->get();
-
-		if ($s->storeuserips != "1") {
+		if ($this->pdo->getSetting('storeuserips') != "1") {
 			$host = '';
 		}
 
@@ -507,19 +500,19 @@ class Users
 
 	public function updateSiteAccessed($uid, $host = "")
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$hostSql = '';
 		if ($host != '') {
-			$hostSql = sprintf(', host = %s', $db->escapeString($host));
+			$hostSql = sprintf(', host = %s', $pdo->escapeString($host));
 		}
 
-		$db->queryExec(sprintf("UPDATE users SET lastlogin = NOW() %s WHERE id = %d ", $hostSql, $uid));
+		$pdo->queryExec(sprintf("UPDATE users SET lastlogin = NOW() %s WHERE id = %d ", $hostSql, $uid));
 	}
 
 	public function updateApiAccessed($uid)
 	{
-		$db = $this->db;
-		$db->queryExec(sprintf("UPDATE users SET apiaccess = NOW() WHERE id = %d ", $uid));
+		$pdo = $this->pdo;
+		$pdo->queryExec(sprintf("UPDATE users SET apiaccess = NOW() WHERE id = %d ", $uid));
 	}
 
 	public function setCookies($uid)
@@ -537,14 +530,14 @@ class Users
 
 	public function addCart($uid, $releaseid)
 	{
-		$db = $this->db;
-		return $db->queryInsert(sprintf("INSERT INTO usercart (userid, releaseid, createddate) VALUES (%d, %d, NOW())", $uid, $releaseid));
+		$pdo = $this->pdo;
+		return $pdo->queryInsert(sprintf("INSERT INTO usercart (userid, releaseid, createddate) VALUES (%d, %d, NOW())", $uid, $releaseid));
 	}
 
 	public function getCart($uid)
 	{
-		$db = $this->db;
-		return $db->query(sprintf("SELECT usercart.*, releases.searchname, releases.guid FROM usercart INNER JOIN releases ON releases.id = usercart.releaseid WHERE userid = %d", $uid));
+		$pdo = $this->pdo;
+		return $pdo->query(sprintf("SELECT usercart.*, releases.searchname, releases.guid FROM usercart INNER JOIN releases ON releases.id = usercart.releaseid WHERE userid = %d", $uid));
 	}
 
 	public function delCart($ids, $uid)
@@ -560,48 +553,48 @@ class Users
 				$del[] = $id;
 			}
 		}
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$sql = sprintf("DELETE FROM usercart WHERE id IN (%s) AND userid = %d", implode(',', $del), $uid);
-		$db->queryExec($sql);
+		$pdo->queryExec($sql);
 	}
 
 	public function delCartByUserAndRelease($guid, $uid)
 	{
-		$db = $this->db;
-		$rel = $db->queryOneRow(sprintf("SELECT id FROM releases WHERE guid = %s", $db->escapeString($guid)));
+		$pdo = $this->pdo;
+		$rel = $pdo->queryOneRow(sprintf("SELECT id FROM releases WHERE guid = %s", $pdo->escapeString($guid)));
 		if ($rel) {
-			$db->queryExec(sprintf("DELETE FROM usercart WHERE userid = %d AND releaseid = %d", $uid, $rel["id"]));
+			$pdo->queryExec(sprintf("DELETE FROM usercart WHERE userid = %d AND releaseid = %d", $uid, $rel["id"]));
 		}
 	}
 
 	public function delCartForUser($uid)
 	{
-		$db = $this->db;
-		$db->queryExec(sprintf("DELETE FROM usercart WHERE userid = %d", $uid));
+		$pdo = $this->pdo;
+		$pdo->queryExec(sprintf("DELETE FROM usercart WHERE userid = %d", $uid));
 	}
 
 	public function delCartForRelease($rid)
 	{
-		$db = $this->db;
-		$db->queryExec(sprintf("DELETE FROM usercart WHERE releaseid = %d", $rid));
+		$pdo = $this->pdo;
+		$pdo->queryExec(sprintf("DELETE FROM usercart WHERE releaseid = %d", $rid));
 	}
 
 	public function addCategoryExclusions($uid, $catids)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$this->delUserCategoryExclusions($uid);
 		if (count($catids) > 0) {
 			foreach ($catids as $catid) {
-				$db->queryInsert(sprintf("INSERT INTO userexcat (userid, categoryid, createddate) VALUES (%d, %d, NOW())", $uid, $catid));
+				$pdo->queryInsert(sprintf("INSERT INTO userexcat (userid, categoryid, createddate) VALUES (%d, %d, NOW())", $uid, $catid));
 			}
 		}
 	}
 
 	public function getCategoryExclusion($uid)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$ret = array();
-		$data = $db->query(sprintf("SELECT categoryid FROM userexcat WHERE userid = %d", $uid));
+		$data = $pdo->query(sprintf("SELECT categoryid FROM userexcat WHERE userid = %d", $uid));
 		foreach ($data as $d) {
 			$ret[] = $d["categoryid"];
 		}
@@ -625,14 +618,14 @@ class Users
 
 	public function delCategoryExclusion($uid, $catid)
 	{
-		$db = $this->db;
-		$db->queryExec(sprintf("DELETE userexcat WHERE userid = %d AND categoryid = %d", $uid, $catid));
+		$pdo = $this->pdo;
+		$pdo->queryExec(sprintf("DELETE userexcat WHERE userid = %d AND categoryid = %d", $uid, $catid));
 	}
 
 	public function delUserCategoryExclusions($uid)
 	{
-		$db = $this->db;
-		$db->queryExec(sprintf("DELETE FROM userexcat WHERE userid = %d", $uid));
+		$pdo = $this->pdo;
+		$pdo->queryExec(sprintf("DELETE FROM userexcat WHERE userid = %d", $uid));
 	}
 
 	public function sendInvite($sitetitle, $siteemail, $serverurl, $uid, $emailto)
@@ -655,27 +648,27 @@ class Users
 
 	public function getInvite($inviteToken)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		// Tidy any old invites sent greater than DEFAULT_INVITE_EXPIRY_DAYS days ago.
-		if ($db->dbSystem() === 'mysql') {
-			$db->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL %d DAY", Users::DEFAULT_INVITE_EXPIRY_DAYS));
+		if ($pdo->dbSystem() === 'mysql') {
+			$pdo->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL %d DAY", Users::DEFAULT_INVITE_EXPIRY_DAYS));
 		} else {
-			$db->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL '%d DAYS'", Users::DEFAULT_INVITE_EXPIRY_DAYS));
+			$pdo->queryExec(sprintf("DELETE FROM userinvite WHERE createddate < NOW() - INTERVAL '%d DAYS'", Users::DEFAULT_INVITE_EXPIRY_DAYS));
 		}
 
-		return $db->queryOneRow(sprintf("SELECT * FROM userinvite WHERE guid = %s", $db->escapeString($inviteToken)));
+		return $pdo->queryOneRow(sprintf("SELECT * FROM userinvite WHERE guid = %s", $pdo->escapeString($inviteToken)));
 	}
 
 	public function addInvite($uid, $inviteToken)
 	{
-		$db = $this->db;
-		$db->queryInsert(sprintf("INSERT INTO userinvite (guid, userid, createddate) VALUES (%s, %d, NOW())", $db->escapeString($inviteToken), $uid));
+		$pdo = $this->pdo;
+		$pdo->queryInsert(sprintf("INSERT INTO userinvite (guid, userid, createddate) VALUES (%s, %d, NOW())", $pdo->escapeString($inviteToken), $uid));
 	}
 
 	public function deleteInvite($inviteToken)
 	{
-		$db = $this->db;
-		$db->queryExec(sprintf("DELETE FROM userinvite WHERE guid = %s ", $db->escapeString($inviteToken)));
+		$pdo = $this->pdo;
+		$pdo->queryExec(sprintf("DELETE FROM userinvite WHERE guid = %s ", $pdo->escapeString($inviteToken)));
 	}
 
 	public function checkAndUseInvite($invitecode)
@@ -685,56 +678,56 @@ class Users
 			return -1;
 		}
 
-		$db = $this->db;
-		$db->queryExec(sprintf("UPDATE users SET invites = invites-1 WHERE id = %d ", $invite["userid"]));
+		$pdo = $this->pdo;
+		$pdo->queryExec(sprintf("UPDATE users SET invites = invites-1 WHERE id = %d ", $invite["userid"]));
 		$this->deleteInvite($invitecode);
 		return $invite["userid"];
 	}
 
 	public function getTopGrabbers()
 	{
-		$db = $this->db;
-		return $db->query("SELECT id, username, SUM(grabs) AS grabs FROM users GROUP BY id, username HAVING SUM(grabs) > 0 ORDER BY grabs DESC LIMIT 10");
+		$pdo = $this->pdo;
+		return $pdo->query("SELECT id, username, SUM(grabs) AS grabs FROM users GROUP BY id, username HAVING SUM(grabs) > 0 ORDER BY grabs DESC LIMIT 10");
 	}
 
 	public function getRoles()
 	{
-		$db = $this->db;
-		return $db->query("SELECT * FROM userroles");
+		$pdo = $this->pdo;
+		return $pdo->query("SELECT * FROM userroles");
 	}
 
 	public function getRoleById($id)
 	{
-		$db = $this->db;
-		return $db->queryOneRow(sprintf("SELECT * FROM userroles WHERE id = %d", $id));
+		$pdo = $this->pdo;
+		return $pdo->queryOneRow(sprintf("SELECT * FROM userroles WHERE id = %d", $id));
 	}
 
 	public function getDefaultRole()
 	{
-		$db = $this->db;
-		return $db->queryOneRow("SELECT * FROM userroles WHERE isdefault = 1");
+		$pdo = $this->pdo;
+		return $pdo->queryOneRow("SELECT * FROM userroles WHERE isdefault = 1");
 	}
 
 	public function addRole($name, $apirequests, $downloadrequests, $defaultinvites, $canpreview)
 	{
-		$db = $this->db;
-		return $db->queryInsert(sprintf("INSERT INTO userroles (name, apirequests, downloadrequests, defaultinvites, canpreview) values (%s, %d, %d, %d, %d)", $db->escapeString($name), $apirequests, $downloadrequests, $defaultinvites, $canpreview));
+		$pdo = $this->pdo;
+		return $pdo->queryInsert(sprintf("INSERT INTO userroles (name, apirequests, downloadrequests, defaultinvites, canpreview) values (%s, %d, %d, %d, %d)", $pdo->escapeString($name), $apirequests, $downloadrequests, $defaultinvites, $canpreview));
 	}
 
 	public function updateRole($id, $name, $apirequests, $downloadrequests, $defaultinvites, $isdefault, $canpreview)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		if ($isdefault == 1) {
-			$db->queryExec("UPDATE userroles SET isdefault = 0");
+			$pdo->queryExec("UPDATE userroles SET isdefault = 0");
 		}
 
-		return $db->queryExec(sprintf("UPDATE userroles SET name = %s, apirequests = %d, downloadrequests = %d, defaultinvites = %d, isdefault = %d, canpreview = %d WHERE id = %d", $db->escapeString($name), $apirequests, $downloadrequests, $defaultinvites, $isdefault, $canpreview, $id));
+		return $pdo->queryExec(sprintf("UPDATE userroles SET name = %s, apirequests = %d, downloadrequests = %d, defaultinvites = %d, isdefault = %d, canpreview = %d WHERE id = %d", $pdo->escapeString($name), $apirequests, $downloadrequests, $defaultinvites, $isdefault, $canpreview, $id));
 	}
 
 	public function deleteRole($id)
 	{
-		$db = $this->db;
-		$res = $db->query(sprintf("SELECT id FROM users WHERE role = %d", $id));
+		$pdo = $this->pdo;
+		$res = $pdo->query(sprintf("SELECT id FROM users WHERE role = %d", $id));
 		if (sizeof($res) > 0) {
 			$userids = array();
 			foreach ($res as $user) {
@@ -742,9 +735,9 @@ class Users
 			}
 
 			$defaultrole = $this->getDefaultRole();
-			$db->queryExec(sprintf("UPDATE users SET role = %d WHERE id IN (%s)", $defaultrole['id'], implode(',', $userids)));
+			$pdo->queryExec(sprintf("UPDATE users SET role = %d WHERE id IN (%s)", $defaultrole['id'], implode(',', $userids)));
 		}
-		return $db->queryExec(sprintf("DELETE FROM userroles WHERE id = %d", $id));
+		return $pdo->queryExec(sprintf("DELETE FROM userroles WHERE id = %d", $id));
 	}
 
 	/**
@@ -758,7 +751,7 @@ class Users
 	{
 		// Clear old requests.
 		$this->clearApiRequests($userid);
-		return $this->db->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d', $userid));
+		return $this->pdo->queryOneRow(sprintf('SELECT COUNT(id) AS num FROM userrequests WHERE userid = %d', $userid));
 	}
 
 	/**
@@ -772,43 +765,43 @@ class Users
 	 */
 	protected function clearApiRequests($userid)
 	{
-		if ($this->db->dbSystem() === 'mysql') {
+		if ($this->pdo->dbSystem() === 'mysql') {
 			if ($userid === false) {
-				$this->db->queryExec('DELETE FROM userrequests WHERE timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)');
+				$this->pdo->queryExec('DELETE FROM userrequests WHERE timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)');
 			} else {
-				$this->db->queryExec(sprintf('DELETE FROM userrequests WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
+				$this->pdo->queryExec(sprintf('DELETE FROM userrequests WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
 			}
 		} else {
 			if ($userid === false) {
-				$this->db->queryExec("DELETE FROM userrequests WHERE timestamp < (NOW() - INTERVAL '1 DAY')");
+				$this->pdo->queryExec("DELETE FROM userrequests WHERE timestamp < (NOW() - INTERVAL '1 DAY')");
 			} else {
-				$this->db->queryExec(sprintf("DELETE FROM userrequests WHERE userid = %d AND timestamp < (NOW() - INTERVAL '1 DAY')", $userid));
+				$this->pdo->queryExec(sprintf("DELETE FROM userrequests WHERE userid = %d AND timestamp < (NOW() - INTERVAL '1 DAY')", $userid));
 			}
 		}
 	}
 
 	public function addApiRequest($userid, $request)
 	{
-		$db = $this->db;
-		return $db->queryInsert(sprintf("INSERT INTO userrequests (userid, request, timestamp) VALUES (%d, %s, NOW())", $userid, $db->escapeString($request)));
+		$pdo = $this->pdo;
+		return $pdo->queryInsert(sprintf("INSERT INTO userrequests (userid, request, timestamp) VALUES (%d, %s, NOW())", $userid, $pdo->escapeString($request)));
 	}
 
 	public function getDownloadRequests($userid)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		// Clear old requests.
-		if ($db->dbSystem() === 'mysql') {
-			$db->queryExec(sprintf('DELETE FROM userdownloads WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
-			return $db->queryOneRow(sprintf('select COUNT(id) AS num FROM userdownloads WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
+		if ($pdo->dbSystem() === 'mysql') {
+			$pdo->queryExec(sprintf('DELETE FROM userdownloads WHERE userid = %d AND timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
+			return $pdo->queryOneRow(sprintf('select COUNT(id) AS num FROM userdownloads WHERE userid = %d AND timestamp > DATE_SUB(NOW(), INTERVAL 1 DAY)', $userid));
 		} else {
-			$db->queryExec(sprintf("DELETE FROM userdownloads WHERE userid = %d AND timestamp < (NOW() - INTERVAL '1 DAY')", $userid));
-			return $db->queryOneRow(sprintf("select COUNT(id) AS num FROM userdownloads WHERE userid = %d AND timestamp > (NOW() - INTERVAL '1 DAY')", $userid));
+			$pdo->queryExec(sprintf("DELETE FROM userdownloads WHERE userid = %d AND timestamp < (NOW() - INTERVAL '1 DAY')", $userid));
+			return $pdo->queryOneRow(sprintf("select COUNT(id) AS num FROM userdownloads WHERE userid = %d AND timestamp > (NOW() - INTERVAL '1 DAY')", $userid));
 		}
 	}
 
 	public function addDownloadRequest($userid)
 	{
-		$db = $this->db;
-		return $db->queryInsert(sprintf("INSERT INTO userdownloads (userid, timestamp) VALUES (%d, NOW())", $userid));
+		$pdo = $this->pdo;
+		return $pdo->queryInsert(sprintf("INSERT INTO userdownloads (userid, timestamp) VALUES (%d, NOW())", $userid));
 	}
 }

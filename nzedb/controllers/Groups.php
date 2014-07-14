@@ -1,25 +1,25 @@
 <?php
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 class Groups
 {
 	/**
 	 * @var DB
 	 */
-	protected $db;
+	protected $pdo;
 
 	/**
 	 * Construct.
 	 *
-	 * @param null $db
+	 * @param null $pdo
 	 */
-	public function __construct($db=null)
+	public function __construct($pdo=null)
 	{
-		if (!is_null($db)) {
-			$this->db = $db;
+		if (!is_null($pdo)) {
+			$this->pdo = $pdo;
 		} else {
-			$this->db = new DB();
+			$this->pdo = new Settings();
 		}
 	}
 
@@ -28,7 +28,7 @@ class Groups
 	 */
 	public function getAll()
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			"SELECT groups.*,
 			COALESCE(rel.num, 0) AS num_releases
 			FROM groups
@@ -44,7 +44,7 @@ class Groups
 	 */
 	public function getGroupsForSelect()
 	{
-		$categories = $this->db->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");
+		$categories = $this->pdo->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");
 		$temp_array = array();
 
 		$temp_array[-1] = "--Please Select--";
@@ -63,7 +63,7 @@ class Groups
 	 */
 	public function getByID($id)
 	{
-		return $this->db->queryOneRow(sprintf("SELECT * FROM groups WHERE id = %d ", $id));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM groups WHERE id = %d ", $id));
 	}
 
 	/**
@@ -71,7 +71,7 @@ class Groups
 	 */
 	public function getActive()
 	{
-		return $this->db->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");
+		return $this->pdo->query("SELECT * FROM groups WHERE active = 1 ORDER BY name");
 	}
 
 	/**
@@ -79,7 +79,7 @@ class Groups
 	 */
 	public function getActiveBackfill()
 	{
-		return $this->db->query("SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY name");
+		return $this->pdo->query("SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY name");
 	}
 
 	/**
@@ -87,7 +87,7 @@ class Groups
 	 */
 	public function getActiveByDateBackfill()
 	{
-		return $this->db->query("SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY first_record_postdate DESC");
+		return $this->pdo->query("SELECT * FROM groups WHERE backfill = 1 AND last_record != 0 ORDER BY first_record_postdate DESC");
 	}
 
 	/**
@@ -95,7 +95,7 @@ class Groups
 	 */
 	public function getActiveIDs()
 	{
-		return $this->db->query("SELECT id FROM groups WHERE active = 1 ORDER BY name");
+		return $this->pdo->query("SELECT id FROM groups WHERE active = 1 ORDER BY name");
 	}
 
 	/**
@@ -105,7 +105,7 @@ class Groups
 	 */
 	public function getByName($grp)
 	{
-		return $this->db->queryOneRow(sprintf("SELECT * FROM groups WHERE name = %s", $this->db->escapeString($grp)));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM groups WHERE name = %s", $this->pdo->escapeString($grp)));
 	}
 
 	/**
@@ -117,7 +117,7 @@ class Groups
 	 */
 	public function getByNameByID($id)
 	{
-		$res = $this->db->queryOneRow(sprintf("SELECT name FROM groups WHERE id = %d ", $id));
+		$res = $this->pdo->queryOneRow(sprintf("SELECT name FROM groups WHERE id = %d ", $id));
 		return ($res === false ? '' : $res["name"]);
 	}
 
@@ -130,7 +130,7 @@ class Groups
 	 */
 	public function getIDByName($name)
 	{
-		$res = $this->db->queryOneRow(sprintf("SELECT id FROM groups WHERE name = %s", $this->db->escapeString($name)));
+		$res = $this->pdo->queryOneRow(sprintf("SELECT id FROM groups WHERE name = %s", $this->pdo->escapeString($name)));
 		return ($res === false ? '' : $res["id"]);
 	}
 
@@ -141,7 +141,7 @@ class Groups
 	 */
 	public function disableForPost($name)
 	{
-		$this->db->queryExec(sprintf("UPDATE groups SET backfill = 0 WHERE name = %s", $this->db->escapeString($name)));
+		$this->pdo->queryExec(sprintf("UPDATE groups SET backfill = 0 WHERE name = %s", $this->pdo->escapeString($name)));
 	}
 
 	/**
@@ -151,7 +151,7 @@ class Groups
 	 */
 	public function getCount($groupname="")
 	{
-		$res = $this->db->queryOneRow(
+		$res = $this->pdo->queryOneRow(
 			sprintf(
 				"SELECT COUNT(id) AS num
 				 FROM groups
@@ -160,8 +160,8 @@ class Groups
 					?
 					sprintf(
 						"AND groups.name %s %s ",
-						($this->db->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-						$this->db->escapeString("%".$groupname."%")
+						($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
+						$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -177,7 +177,7 @@ class Groups
 	 */
 	public function getCountActive($groupname="")
 	{
-		$res = $this->db->queryOneRow(
+		$res = $this->pdo->queryOneRow(
 			sprintf("
 				SELECT COUNT(id) AS num
 				FROM groups
@@ -187,8 +187,8 @@ class Groups
 					?
 					sprintf(
 						"AND groups.name %s %s ",
-							($this->db->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->db->escapeString("%".$groupname."%")
+							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
+							$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -204,7 +204,7 @@ class Groups
 	 */
 	public function getCountInactive($groupname="")
 	{
-		$res = $this->db->queryOneRow(
+		$res = $this->pdo->queryOneRow(
 			sprintf("
 				SELECT COUNT(id) AS num
 				FROM groups
@@ -214,8 +214,8 @@ class Groups
 					?
 					sprintf(
 						"AND groups.name %s %s ",
-							($this->db->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->db->escapeString("%".$groupname."%")
+							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
+							$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -233,7 +233,7 @@ class Groups
 	 */
 	public function getRange($start, $num, $groupname="")
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			sprintf("
 				SELECT groups.*,
 				COALESCE(rel.num, 0) AS num_releases
@@ -249,8 +249,8 @@ class Groups
 					?
 					sprintf(
 						"AND groups.name %s %s ",
-							($this->db->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->db->escapeString("%".$groupname."%")
+							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
+							$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -267,7 +267,7 @@ class Groups
 	 */
 	public function getRangeActive($start, $num, $groupname="")
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			sprintf("
 				SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
 				FROM groups
@@ -284,8 +284,8 @@ class Groups
 					?
 					sprintf(
 						"AND groups.name %s %s ",
-							($this->db->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->db->escapeString("%".$groupname."%")
+							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
+							$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -302,7 +302,7 @@ class Groups
 	 */
 	public function getRangeInactive($start, $num, $groupname="")
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			sprintf("
 				SELECT groups.*, COALESCE(rel.num, 0) AS num_releases
 				FROM groups
@@ -318,8 +318,8 @@ class Groups
 				($groupname !== ''
 					? sprintf(
 						"AND groups.name %s %s ",
-							($this->db->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
-							$this->db->escapeString("%".$groupname."%")
+							($this->pdo->dbSystem() === 'mysql' ? 'LIKE' : 'ILIKE'),
+							$this->pdo->escapeString("%".$groupname."%")
 					)
 					: ''
 				)
@@ -349,14 +349,14 @@ class Groups
 				sprintf(" minsizetoformrelease = %d", $this->formatNumberString($group["minsizetoformrelease"], false))
 			);
 
-		return $this->db->queryExec(
+		return $this->pdo->queryExec(
 			sprintf(
 				"UPDATE groups
 				SET name = %s, description = %s, backfill_target = %s, first_record = %s, last_record = %s,
 				last_updated = NOW(), active = %s, backfill = %s, %s %s
 				WHERE id = %d",
-				$this->db->escapeString(trim($group["name"])),
-				$this->db->escapeString(trim($group["description"])),
+				$this->pdo->escapeString(trim($group["name"])),
+				$this->pdo->escapeString(trim($group["description"])),
 				$this->formatNumberString($group["backfill_target"]),
 				$this->formatNumberString($group["first_record"]),
 				$this->formatNumberString($group["last_record"]),
@@ -390,14 +390,14 @@ class Groups
 				sprintf("%d", $this->formatNumberString($group["minsizetoformrelease"], false))
 			);
 
-		return $this->db->queryInsert(
+		return $this->pdo->queryInsert(
 			sprintf("
 				INSERT INTO groups
 					(name, description, backfill_target, first_record, last_record, last_updated,
 					active, backfill, minfilestoformrelease, minsizetoformrelease)
 				VALUES (%s, %s, %s, %s, %s, NOW(), %s, %s, %s, %s)",
-				$this->db->escapeString(trim($group["name"])),
-				$this->db->escapeString(trim($group["description"])),
+				$this->pdo->escapeString(trim($group["name"])),
+				$this->pdo->escapeString(trim($group["description"])),
 				$this->formatNumberString($group["backfill_target"]),
 				$this->formatNumberString($group["first_record"]),
 				$this->formatNumberString($group["last_record"]),
@@ -424,7 +424,7 @@ class Groups
 			$setting = '0';
 		}
 
-		return ($escape ? $this->db->escapeString($setting) : (int)$setting);
+		return ($escape ? $this->pdo->escapeString($setting) : (int)$setting);
 	}
 
 	/**
@@ -437,7 +437,7 @@ class Groups
 	public function delete($id)
 	{
 		$this->purge($id);
-		return $this->db->queryExec(sprintf("DELETE FROM groups WHERE id = %d", $id));
+		return $this->pdo->queryExec(sprintf("DELETE FROM groups WHERE id = %d", $id));
 	}
 
 	/**
@@ -453,15 +453,15 @@ class Groups
 		(new Binaries())->purgeGroup($id);
 
 		// Remove rows from part repair.
-		$this->db->queryExec(sprintf("DELETE FROM partrepair WHERE group_id = %d", $id));
+		$this->pdo->queryExec(sprintf("DELETE FROM partrepair WHERE group_id = %d", $id));
 
-		$this->db->queryExec(sprintf('DROP TABLE IF EXISTS collections_', $id));
-		$this->db->queryExec(sprintf('DROP TABLE IF EXISTS binaries_', $id));
-		$this->db->queryExec(sprintf('DROP TABLE IF EXISTS parts_', $id));
-		$this->db->queryExec(sprintf('DROP TABLE IF EXISTS partrepair_', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS collections_', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS binaries_', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS parts_', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS partrepair_', $id));
 
 		// Reset the group stats.
-		return $this->db->queryExec(
+		return $this->pdo->queryExec(
 			sprintf("
 				UPDATE groups
 				SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0,
@@ -477,20 +477,20 @@ class Groups
 	 */
 	public function resetall()
 	{
-		$this->db->queryExec("TRUNCATE TABLE collections");
-		$this->db->queryExec("TRUNCATE TABLE binaries");
-		$this->db->queryExec("TRUNCATE TABLE parts");
-		$this->db->queryExec("TRUNCATE TABLE partrepair");
-		$groups = $this->db->query("SELECT id FROM groups");
+		$this->pdo->queryExec("TRUNCATE TABLE collections");
+		$this->pdo->queryExec("TRUNCATE TABLE binaries");
+		$this->pdo->queryExec("TRUNCATE TABLE parts");
+		$this->pdo->queryExec("TRUNCATE TABLE partrepair");
+		$groups = $this->pdo->query("SELECT id FROM groups");
 		foreach ($groups as $group) {
-			$this->db->queryExec('DROP TABLE IF EXISTS collections_' . $group['id']);
-			$this->db->queryExec('DROP TABLE IF EXISTS binaries_' . $group['id']);
-			$this->db->queryExec('DROP TABLE IF EXISTS parts_' . $group['id']);
-			$this->db->queryExec('DROP TABLE IF EXISTS partrepair_' . $group['id']);
+			$this->pdo->queryExec('DROP TABLE IF EXISTS collections_' . $group['id']);
+			$this->pdo->queryExec('DROP TABLE IF EXISTS binaries_' . $group['id']);
+			$this->pdo->queryExec('DROP TABLE IF EXISTS parts_' . $group['id']);
+			$this->pdo->queryExec('DROP TABLE IF EXISTS partrepair_' . $group['id']);
 		}
 
 		// Reset the group stats.
-		return $this->db->queryExec("
+		return $this->pdo->queryExec("
 			UPDATE groups
 			SET backfill_target = 0, first_record = 0, first_record_postdate = NULL, last_record = 0,
 				last_record_postdate = NULL, last_updated = NULL, active = 0"
@@ -507,7 +507,7 @@ class Groups
 		$this->reset($id);
 
 		$releases = new Releases();
-		$rels = $this->db->query(sprintf("SELECT id FROM releases WHERE group_id = %d", $id));
+		$rels = $this->pdo->query(sprintf("SELECT id FROM releases WHERE group_id = %d", $id));
 		foreach ($rels as $rel) {
 			$releases->delete($rel["id"]);
 		}
@@ -521,7 +521,7 @@ class Groups
 		$this->resetall();
 
 		$releases = new Releases();
-		$rels = $this->db->query("SELECT id FROM releases");
+		$rels = $this->pdo->query("SELECT id FROM releases");
 		foreach ($rels as $rel) {
 			$releases->delete($rel["id"]);
 		}
@@ -558,14 +558,14 @@ class Groups
 
 			foreach($groups AS $group) {
 				if (preg_match($regFilter, $group['group']) > 0) {
-					$res = $this->db->queryOneRow(
-						sprintf('SELECT id FROM groups WHERE name = %s', $this->db->escapeString($group['group']))
+					$res = $this->pdo->queryOneRow(
+						sprintf('SELECT id FROM groups WHERE name = %s', $this->pdo->escapeString($group['group']))
 					);
 					if ($res === false) {
-						$this->db->queryInsert(
+						$this->pdo->queryInsert(
 							sprintf(
 								'INSERT INTO groups (name, active, backfill) VALUES (%s, %d, %d)',
-								$this->db->escapeString($group['group']), $active, $backfill
+								$this->pdo->escapeString($group['group']), $active, $backfill
 							)
 						);
 						$ret[] = array ('group' => $group['group'], 'msg' => 'Created');
@@ -588,7 +588,7 @@ class Groups
 	 */
 	public function updateGroupStatus($id, $status = 0)
 	{
-		$this->db->queryExec(sprintf("UPDATE groups SET active = %d WHERE id = %d", $status, $id));
+		$this->pdo->queryExec(sprintf("UPDATE groups SET active = %d WHERE id = %d", $status, $id));
 		return "Group $id has been " . (($status == 0) ? 'deactivated' : 'activated') . '.';
 	}
 
@@ -600,7 +600,70 @@ class Groups
 	 */
 	public function updateBackfillStatus($id, $status = 0)
 	{
-		$this->db->queryExec(sprintf("UPDATE groups SET backfill = %d WHERE id = %d", $status, $id));
+		$this->pdo->queryExec(sprintf("UPDATE groups SET backfill = %d WHERE id = %d", $status, $id));
 		return "Group $id has been " . (($status == 0) ? 'deactivated' : 'activated') . '.';
+	}
+
+	/**
+	 * Get the names of the collections/binaries/parts/part repair tables.
+	 * If TPG is on, try to create new tables for the group_id, if we fail, log the error and exit.
+	 *
+	 * @param bool $tpgSetting false, tpg is off in site setting, true tpg is on in site setting.
+	 * @param int  $groupID    ID of the group.
+	 *
+	 * @return array The table names.
+	 */
+	public function getCBPTableNames($tpgSetting, $groupID)
+	{
+		$group['cname']  = 'collections';
+		$group['bname']  = 'binaries';
+		$group['pname']  = 'parts';
+		$group['prname'] = 'partrepair';
+
+		if ($tpgSetting === true) {
+			if ($groupID == '') {
+				exit('Error: You must use releases_threaded.py since you have enabled TPG!');
+			}
+
+			if ($this->createNewTPGTables($groupID) === false && nZEDb_ECHOCLI) {
+				exit('There is a problem creating new TPG tables for this group ID: ' . $groupID . PHP_EOL);
+			}
+
+			$groupEnding = '_' . $groupID;
+			$group['cname']  .= $groupEnding;
+			$group['bname']  .= $groupEnding;
+			$group['pname']  .= $groupEnding;
+			$group['prname'] .= $groupEnding;
+		}
+		return $group;
+	}
+
+	/**
+	 * Check if the tables exists for the group_id, make new tables for table per group.
+	 *
+	 * @param int $groupID
+	 *
+	 * @return bool
+	 */
+	public function createNewTPGTables($groupID)
+	{
+		foreach (['collections', 'binaries', 'parts', 'partrepair'] as $tableName) {
+			if ($statement = $this->pdo->queryExec(sprintf('SELECT * FROM %s_%s LIMIT 1', $tableName, $groupID), true) === false) {
+				if ($this->pdo->queryExec(sprintf('CREATE TABLE %s_%s LIKE %s', $tableName, $groupID, $tableName), true) === false) {
+					return false;
+				} else {
+					if ($tableName === 'collections') {
+						$this->pdo->queryExec(
+							sprintf(
+								'CREATE TRIGGER delete_collections_%s BEFORE DELETE ON collections_%s FOR EACH ROW BEGIN' .
+								' DELETE FROM binaries_%s WHERE collectionid = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END',
+								$groupID, $groupID, $groupID, $groupID
+							)
+						);
+					}
+				}
+			}
+		}
+		return true;
 	}
 }

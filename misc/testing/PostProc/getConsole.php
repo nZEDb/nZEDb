@@ -2,13 +2,13 @@
 //This script will update all records in the consoleinfo table
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $console = new Console(true);
-$db = new Db();
+$pdo = new Settings();
 $c = new ColorCLI();
 
-$res = $db->queryDirect(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ORDER BY id DESC" ));
+$res = $pdo->queryDirect(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ORDER BY id DESC" ));
 if ($res->rowCount() > 0) {
 	echo $c->header("Updating console info for " . number_format($res->rowCount()) . " releases.");
 

@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
@@ -24,22 +24,22 @@ if (!isset($data['group'])) {
 }
 $nntp->doQuit();
 
-$db = new DB();
-$res = $db->query("SELECT name FROM groups");
+$pdo = new Settings();
+$res = $pdo->query("SELECT name FROM groups");
 $counter = 0;
 $minvalue = $argv[1];
 
 foreach ($data as $newgroup) {
 	if (isset($newgroup["group"])) {
 		if (strstr($newgroup["group"], ".bin") != false && MyInArray($res, $newgroup["group"], "name") == false && ($newgroup["last"] - $newgroup["first"]) > 1000000)
-			$db->queryInsert(sprintf("INSERT INTO allgroups (name, first_record, last_record, updated) VALUES (%s, %d, %d, NOW())", $db->escapeString($newgroup["group"]), $newgroup["first"], $newgroup["last"]));
+			$pdo->queryInsert(sprintf("INSERT INTO allgroups (name, first_record, last_record, updated) VALUES (%s, %d, %d, NOW())", $pdo->escapeString($newgroup["group"]), $newgroup["first"], $newgroup["last"]));
 	}
 }
 
-$grps = $db->query("SELECT DISTINCT name FROM allgroups WHERE name NOT IN (SELECT name FROM groups)");
+$grps = $pdo->query("SELECT DISTINCT name FROM allgroups WHERE name NOT IN (SELECT name FROM groups)");
 foreach ($grps as $grp) {
 	if (!myInArray($res, $grp, "name")) {
-		$data = $db->queryOneRow(sprintf("SELECT (MAX(last_record) - MIN(first_record)) AS count, (MAX(last_record) - MIN(last_record))/(UNIX_TIMESTAMP(MAX(updated))-UNIX_TIMESTAMP(MIN(updated))) as per_second, (MAX(last_record) - MIN(last_record)) AS tracked, MIN(updated) AS firstchecked from allgroups WHERE name = %s", $db->escapeString($grp["name"])));
+		$data = $pdo->queryOneRow(sprintf("SELECT (MAX(last_record) - MIN(first_record)) AS count, (MAX(last_record) - MIN(last_record))/(UNIX_TIMESTAMP(MAX(updated))-UNIX_TIMESTAMP(MIN(updated))) as per_second, (MAX(last_record) - MIN(last_record)) AS tracked, MIN(updated) AS firstchecked from allgroups WHERE name = %s", $pdo->escapeString($grp["name"])));
 		if (floor($data["per_second"]*3600) >= $minvalue) {
 			echo $c->header($grp["name"]);
 			echo $c->primary("Available Post Count: ".number_format($data["count"])."\n"

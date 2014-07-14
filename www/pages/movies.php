@@ -100,7 +100,7 @@ $page->smarty->assign('results', $movies);
 
 $page->meta_title = "Browse Movies";
 $page->meta_keywords = "browse,movies,nzb,description,details";
-$page->meta_description = "Browse for Moviess";
+$page->meta_description = "Browse for Movies";
 
 $page->content = $page->smarty->fetch('movies.tpl');
 $page->render();

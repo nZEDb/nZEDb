@@ -21,10 +21,8 @@
 require_once realpath(dirname(__FILE__) . '/../www/config.php');
 require_once nZEDb_LIB . 'utility' . DS .'MoveFileTree.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 use nzedb\utility;
-
-$s = new Sites();
 
 $dirs = array(
 	[	'basemv' => false,
@@ -107,12 +105,10 @@ foreach ($dirs as $path)
 	}
 }
 
-
-$site = $s->get();
-$db = new DB();
-if ($dirs['nzb']['source'] == $site->nzbpath) {
+$pdo = new Settings();
+if ($dirs['nzb']['source'] == $pdo->getSetting('nzbpath')) {
 	// Update the nzbpath setting if it is the one in use.
-	$db->queryDirect(sprintf('UPDATE settings SET value = %s WHERE setting = %s LIMIT 1', $dirs['nzb']['target'], 'nzbpath' ));
+	$pdo->queryDirect(sprintf('UPDATE settings SET value = %s WHERE setting = %s LIMIT 1', $dirs['nzb']['target'], 'nzbpath' ));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

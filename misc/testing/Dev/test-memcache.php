@@ -1,10 +1,10 @@
 <?php
 // Test the memcache connection.
 require_once dirname(__FILE__) . '/../../../www/config.php';
-use nzedb\db\DB;
+use nzedb\db\Settings;
 use nzedb\db\Mcached;
 
-$db = new DB();
+$pdo = new Settings();
 $c = new ColorCLI();
 
 if (!extension_loaded('memcache'))

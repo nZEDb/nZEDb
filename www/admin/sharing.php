@@ -3,17 +3,17 @@ require_once './config.php';
 $page = new AdminPage();
 $page->title = 'Sharing Settings';
 
-use nzedb\db\DB;
-$db = new DB();
+use nzedb\db\Settings;
+$pdo = new Settings();
 
 $offset = (isset($_GET['offset']) ? $_GET['offset'] : 0);
 
-$allSites = $db->query(sprintf('SELECT * FROM sharing_sites ORDER BY id LIMIT %d OFFSET %d', 25, $offset));
+$allSites = $pdo->query(sprintf('SELECT * FROM sharing_sites ORDER BY id LIMIT %d OFFSET %d', 25, $offset));
 if (count($allSites) === 0) {
 	$allSites = false;
 }
 
-$ourSite = $db->queryOneRow('SELECT * FROM sharing');
+$ourSite = $pdo->queryOneRow('SELECT * FROM sharing');
 
 if (!empty($_POST)) {
 	if (!empty($_POST['sharing_name']) && !preg_match('/\s+/', $_POST['sharing_name']) && strlen($_POST['sharing_name']) < 255) {
@@ -36,17 +36,17 @@ if (!empty($_POST)) {
 	} else {
 		$max_download = $ourSite['max_download'];
 	}
-	$db->queryExec(
+	$pdo->queryExec(
 		sprintf('
 			UPDATE sharing
 			SET site_name = %s, max_push = %d, max_pull = %d, max_download = %d',
-			$db->escapeString($site_name), $max_push, $max_pull, $max_download
+			$pdo->escapeString($site_name), $max_push, $max_pull, $max_download
 		)
 	);
-	$ourSite = $db->queryOneRow('SELECT * FROM sharing');
+	$ourSite = $pdo->queryOneRow('SELECT * FROM sharing');
 }
 
-$total = $db->queryOneRow('SELECT COUNT(*) AS total FROM sharing_sites');
+$total = $pdo->queryOneRow('SELECT COUNT(*) AS total FROM sharing_sites');
 
 $page->smarty->assign('pagertotalitems', ($total === false ? 0 : $total['total']));
 $page->smarty->assign('pageroffset', $offset);

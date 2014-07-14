@@ -2,38 +2,38 @@
 require_once nZEDb_LIBS . 'GiantBombAPI.php';
 require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 class Games
 {
-
 	const REQID_NONE = -3; // The Request ID was not found locally or via web lookup.
 	const REQID_ZERO = -2; // The Request ID was 0.
 	const REQID_NOLL = -1; // Request ID was not found via local lookup.
 	const CONS_UPROC = 0; // Release has not been processed.
 	const REQID_FOUND = 1; // Request ID found and release was updated.
 
+	public $pdo;
+
 	function __construct($echooutput = false)
 	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
-		$s = new Sites();
-		$site = $s->get();
-		$this->pubkey = $site->giantbombkey;
-		$this->gameqty = (!empty($site->maxgamesprocessed)) ? $site->maxgamesprocessed : 150;
-		$this->sleeptime = (!empty($site->amazonsleep)) ? $site->amazonsleep : 1000;
-		$this->db = new DB();
+
+		$this->pdo = new Settings();
+		$this->pubkey = $this->pdo->getSetting('giantbombkey');
+		$this->gameqty = ($this->pdo->getSetting('maxgamesprocessed') != '') ? $this->pdo->getSetting('maxgamesprocessed') : 150;
+		$this->sleeptime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'games' . DS;
 		$this->renamed = '';
-		if ($site->lookupgames == 2) {
+		if ($this->pdo->getSetting('lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
-		//$this->cleangames = ($site->lookupgames == 2) ? 'AND isrenamed = 1' : '';
+		//$this->cleangames = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
 		$this->c = new ColorCLI();
 	}
 
 	public function getgamesinfo($id)
 	{
-		return $this->db->queryOneRow(
+		return $this->pdo->queryOneRow(
 			sprintf("
 				SELECT gamesinfo.*, genres.title AS genres
 				FROM gamesinfo
@@ -46,21 +46,21 @@ class Games
 
 	public function getgamesinfoByName($title, $platform)
 	{
-		return $this->db->queryOneRow(
+		return $this->pdo->queryOneRow(
 			sprintf("
 				SELECT *
 				FROM gamesinfo
 				WHERE title LIKE %s
 				AND platform LIKE %s",
-				$this->db->escapeString("%" . $title . "%"),
-				$this->db->escapeString("%" . $platform . "%")
+				$this->pdo->escapeString("%" . $title . "%"),
+				$this->pdo->escapeString("%" . $platform . "%")
 			)
 		);
 	}
 
 	public function getRange($start, $num)
 	{
-		return $this->db->query(
+		return $this->pdo->query(
 			sprintf(
 				"SELECT * FROM gamesinfo ORDER BY createddate DESC %s",
 				($start === false ? '' : 'LIMIT ' . $num . ' OFFSET ' . $start)
@@ -70,7 +70,7 @@ class Games
 
 	public function getCount()
 	{
-		$res = $this->db->queryOneRow("SELECT COUNT(id) AS num FROM gamesinfo");
+		$res = $this->pdo->queryOneRow("SELECT COUNT(id) AS num FROM gamesinfo");
 		return ($res === false ? 0 : $res["num"]);
 	}
 
@@ -100,7 +100,7 @@ class Games
 			$catsrch .= "1=2 )";
 		}
 
-		$res = $this->db->queryOneRow(
+		$res = $this->pdo->queryOneRow(
 			sprintf("
 				SELECT COUNT(DISTINCT r.gamesinfo_id) AS num
 				FROM releases r
@@ -166,7 +166,7 @@ class Games
 
 		$order = $this->getgamesOrder($orderby);
 
-		return $this->db->query(
+		return $this->pdo->query(
 			sprintf(
 				"SELECT GROUP_CONCAT(r.id ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_id, "
 				. "GROUP_CONCAT(r.rarinnerfilecount ORDER BY r.postdate DESC SEPARATOR ',') as grp_rarinnerfilecount, "
@@ -181,7 +181,8 @@ class Games
 				. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
 				. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
 				. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
-				. "con.*, r.gamesinfo_id, groups.name AS group_name, rn.id as nfoid FROM releases r "
+				. "con.*, YEAR (con.releasedate) as year, r.gamesinfo_id, groups.name AS group_name,
+				rn.id as nfoid FROM releases r "
 				. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
 				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 				. "INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id "
@@ -245,7 +246,7 @@ class Games
 
 	public function getBrowseByOptions()
 	{
-		return array('platform' => 'platform', 'title' => 'title', 'genre' => 'genreID');
+		return array('platform' => 'platform', 'title' => 'title', 'genre' => 'genreID', 'year' => 'year');
 	}
 
 	public function getBrowseBy()
@@ -257,7 +258,11 @@ class Games
 		foreach ($browsebyArr as $bbk => $bbv) {
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= 'con.' . $bbv . ' ' . $like . ' (' . $this->db->escapeString('%' . $bbs . '%') . ') AND ';
+				if ($bbk === 'year') {
+					$browseby .= 'YEAR (con.releasedate) ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+				} else {
+					$browseby .= 'con.' . $bbv . ' ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+				}
 			}
 		}
 
@@ -286,21 +291,21 @@ class Games
 	public function update($id, $title, $asin, $url, $salesrank, $platform, $publisher, $releasedate, $esrb, $cover, $genreID)
 	{
 
-		$this->db->queryExec(
+		$this->pdo->queryExec(
 			sprintf("
 				UPDATE gamesinfo
 				SET
 					title = %s, asin = %s, url = %s, salesrank = %s, platform = %s, publisher = %s,
 					releasedate= %s,esrb = %s, cover = %d, genreid = %d, updateddate = NOW()
 				WHERE id = %d",
-				$this->db->escapeString($title),
-				$this->db->escapeString($asin),
-				$this->db->escapeString($url),
+				$this->pdo->escapeString($title),
+				$this->pdo->escapeString($asin),
+				$this->pdo->escapeString($url),
 				$salesrank,
-				$this->db->escapeString($platform),
-				$this->db->escapeString($publisher),
-				$this->db->escapeString($releasedate),
-				$this->db->escapeString($esrb),
+				$this->pdo->escapeString($platform),
+				$this->pdo->escapeString($publisher),
+				$this->pdo->escapeString($releasedate),
+				$this->pdo->escapeString($esrb),
 				$cover,
 				$genreID,
 				$id
@@ -442,13 +447,13 @@ class Games
 		} else {
 			$con['esrb'] = (string)$gb['original_game_rating']['name'];
 		}
-		$con['releasedate'] = $this->db->escapeString((string)$gb['original_release_date']);
+		$con['releasedate'] = $this->pdo->escapeString((string)$gb['original_release_date']);
 		if ($con['releasedate'] == "''") {
 			$con['releasedate'] = 'null';
 		}
 
 		$con['review'] = "";
-		if (isset($gb['decription'])) {
+		if (isset($gb['description'])) {
 			$con['review'] = trim(strip_tags((string)$gb['description']));
 		}
 
@@ -474,11 +479,11 @@ class Games
 		if (in_array(strtolower($genreName), $genreassoc)) {
 			$genreKey = array_search(strtolower($genreName), $genreassoc);
 		} else {
-			$genreKey = $this->db->queryInsert(
+			$genreKey = $this->pdo->queryInsert(
 				sprintf("
 					INSERT INTO genres (title, type)
 					VALUES (%s, %d)",
-					$this->db->escapeString($genreName),
+					$this->pdo->escapeString($genreName),
 					Genres::GAME_TYPE
 				)
 			);
@@ -487,52 +492,52 @@ class Games
 		$con['gamesgenre'] = $genreName;
 		$con['gamesgenreID'] = $genreKey;
 
-		$check = $this->db->queryOneRow(
+		$check = $this->pdo->queryOneRow(
 			sprintf('
 				SELECT id
 				FROM gamesinfo
 				WHERE title = %s
 				AND asin = %s',
-				$this->db->escapeString($con['title']),
-				$this->db->escapeString($con['asin'])
+				$this->pdo->escapeString($con['title']),
+				$this->pdo->escapeString($con['asin'])
 			)
 		);
 		if ($check === false) {
-			$gamesId = $this->db->queryInsert(
+			$gamesId = $this->pdo->queryInsert(
 				sprintf("
 					INSERT INTO gamesinfo
 						(title, asin, url, platform, publisher, genreid, esrb, releasedate, review, cover, createddate, updateddate)
 					VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %d, NOW(), NOW())",
-					$this->db->escapeString($con['title']),
-					$this->db->escapeString($con['asin']),
-					$this->db->escapeString($con['url']),
-					$this->db->escapeString($con['platform']),
-					$this->db->escapeString($con['publisher']),
+					$this->pdo->escapeString($con['title']),
+					$this->pdo->escapeString($con['asin']),
+					$this->pdo->escapeString($con['url']),
+					$this->pdo->escapeString($con['platform']),
+					$this->pdo->escapeString($con['publisher']),
 					($con['gamesgenreID'] == -1 ? "null" : $con['gamesgenreID']),
-					$this->db->escapeString($con['esrb']),
+					$this->pdo->escapeString($con['esrb']),
 					$con['releasedate'],
-					$this->db->escapeString(substr($con['review'], 0, 3000)),
+					$this->pdo->escapeString(substr($con['review'], 0, 3000)),
 					$con['cover']
 				)
 			);
 		} else {
 			$gamesId = $check['id'];
-			$this->db->queryExec(
+			$this->pdo->queryExec(
 				sprintf('
 					UPDATE gamesinfo
 					SET
 						title = %s, asin = %s, url = %s, platform = %s, publisher = %s, genreid = %s,
 						esrb = %s, releasedate = %s, review = %s, cover = %s, updateddate = NOW()
 					WHERE id = %d',
-					$this->db->escapeString($con['title']),
-					$this->db->escapeString($con['asin']),
-					$this->db->escapeString($con['url']),
-					$this->db->escapeString($con['platform']),
-					$this->db->escapeString($con['publisher']),
+					$this->pdo->escapeString($con['title']),
+					$this->pdo->escapeString($con['asin']),
+					$this->pdo->escapeString($con['url']),
+					$this->pdo->escapeString($con['platform']),
+					$this->pdo->escapeString($con['publisher']),
 					($con['gamesgenreID'] == -1 ? "null" : $con['gamesgenreID']),
-					$this->db->escapeString($con['esrb']),
+					$this->pdo->escapeString($con['esrb']),
 					$con['releasedate'],
-					$this->db->escapeString(substr($con['review'], 0, 3000)),
+					$this->pdo->escapeString(substr($con['review'], 0, 3000)),
 					$con['cover'],
 					$gamesId
 				)
@@ -613,7 +618,7 @@ class Games
 
 	public function processGamesReleases()
 	{
-		$res = $this->db->queryDirect(
+		$res = $this->pdo->queryDirect(
 			sprintf('
 				SELECT searchname, id
 				FROM releases
@@ -659,10 +664,10 @@ class Games
 					}
 					//$gameId = null;
 					// Update release.
-					$this->db->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', $gameId, $arr['id']));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', $gameId, $arr['id']));
 				} else {
 					// Could not parse release title.
-					$this->db->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', -2, $arr['id']));
+					$this->pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', -2, $arr['id']));
 
 					if ($this->echooutput) {
 						echo '.';
