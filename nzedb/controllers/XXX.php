@@ -54,11 +54,13 @@ class XXX
 		$this->c = new ColorCLI();
 		$this->pdo = new Settings();
 		$this->releaseImage = new ReleaseImage();
-		$this->movieqty = ($this->pdo->getSetting('maximpdoprocessed') != '') ? $this->pdo->getSetting('maximpdoprocessed') : 100;
+		$this->movieqty = 5000;
+		//$this->movieqty = ($this->pdo->getSetting('maximpdoprocessed') != '') ? $this->pdo->getSetting('maximpdoprocessed') : 100;
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
 		$this->debug = nZEDb_DEBUG;
 		$this->echooutput = ($echoOutput && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
+		$this->cookie = nZEDb_TMP . 'xxx.cookie';
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
@@ -423,6 +425,7 @@ class XXX
 			$this->whichclass = "pop";
 			// IF no result from Adultdvdempire check popporn
 			$mov = new popporn();
+			$mov->cookie = $this->cookie;
 			$mov->searchterm = $xxxmovie;
 			$res = $mov->search();
 		}
@@ -436,19 +439,9 @@ class XXX
 			return false;
 		}
 
-
-
 		$mov = array();
-		if (isset($res['trailers'])) {
-			if ($this->whichclass == "ade") {
-				$mov['trailers'] = serialize($res['trailers']);
-			} else {
-				$mov['trailers'] = $res['trailers'];
-			}
-		} else {
-			$mov['trailers'] = '';
-		}
-
+		
+		$mov['trailers'] = (isset($res['trailers'])) ? serialize($res['trailers']) : '';
 		$mov['extras'] = (isset($res['extras'])) ? serialize($res['extras']) : '';
 		$mov['productinfo'] = (isset($res['productinfo'])) ? serialize($res['productinfo']) : '';
 		$mov['backdrop'] = (isset($res['backcover'])) ? $res['backcover'] : '';
@@ -593,6 +586,7 @@ class XXX
 				if ($this->parseXXXSearchName($arr['searchname']) === false) {
 					//We didn't find a name, so set to -2 so we don't parse again.
 					$this->pdo->queryExec(sprintf("UPDATE releases SET xxxinfo_id = %d WHERE id = %d", -2, $arr["id"]));
+					continue;
 				} else {
 					$this->currentRelID = $arr['id'];
 
@@ -605,9 +599,11 @@ class XXX
 					if($idcheck == false){
 						// No Release was found, set to -2 so we don't parse again.
 						$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d WHERE id = %d', -2, $arr['id']));
+						continue;
 					}else{
 						// Release Found, set xxxinfo_id
 						$this->pdo->queryExec(sprintf('UPDATE releases SET xxxinfo_id = %d  WHERE id = %d',$idcheck, $this->currentRelID));
+						continue;
 					}
 
 
@@ -749,4 +745,32 @@ class XXX
 			return $res;
 		}
 	}
+
+	public function insertswf($whichclass, $res){
+	/* <object width = "360" height = "240" type = "application/x-shockwave-flash" id = "EmpireFlashPlayer" name = "EmpireFlashPlayer" data = "/ClientBin/r1_0_5304_18854_EmpireVideoPlayer.swf" >
+		<param name = "quality" value = "best" >
+		<param name = "bgcolor" value = "#000000" >
+		<param name = "play" value = "true" >
+		<param name = "loop" value = "true" >
+		<param name = "wmode" value = "window" >
+		<param name = "scale" value = "showall" >
+		<param name = "menu" value = "true" >
+		<param name = "devicefont" value = "false" >
+		<param name = "salign" value = "" >
+		<param name = "allowScriptAccess" value = "always" >
+		<param name = "allowFullScreen" value = "true" >
+		<param name = "flashvars" value = "streamID=52RMNS&amp;autoPlay=true&amp;BaseStreamingUrl=199.182.184.107" >
+		</object >
+	*/
+	if($whichclass === "ade"){
+	$ret = '';
+	if(!empty($res)){
+	$trailers = unserialize($res);
+	$ret .="<object width='360' height='240' type='application/x-shockwave-flash' id='EmpireFlashPlayer' name='EmpireFlashPlayer' data='".$trailers['url']."'>";
+	$ret .="<param name='flashvars' value= 'streamID=".$trailers['streamid']."&amp;autoPlay=false&amp;BaseStreamingUrl=".$trailers['baseurl']."'>";
+	$ret .="</object>";
+	return ($ret);
+	}
+	}
+}
 }

@@ -34,6 +34,9 @@ class popporn
 	 */
 	protected $trailurl = null;
 
+	// Sets Post fields for trailers
+	protected $postparams = null;
+
 	// Sets the found title and returns it in the array
 	protected $title = null;
 
@@ -113,13 +116,24 @@ class popporn
 		if ($this->html->find('input#thickbox-trailer-link', 0)) {
 			$ret = $this->html->find('input#thickbox-trailer-link', 0);
 			$ret->value = trim($ret->value);
-			$ret->value = str_replace("..", SELF::popurl, $ret->value);
-			$this->res['trailers'] = $ret->value;
-		} else {
-			return false;
-		}
-
+			$ret->value = str_replace("..", "", $ret->value);
+			$tmprsp = $this->response;
+			$this->trailurl = $ret->value;
+			$this->_getpopurl();
+			if (preg_match_all('/productID="\+(?<id>[0-9]+),/', $this->response, $matches)) {
+				$productid = $matches['id'][0];
+				$random = ((float)rand() / (float)getrandmax()) * 5400000000000000;
+				$this->trailurl = "/com/tlavideo/vod/FlvAjaxSupportService.cfc?random=" . $random;
+				$this->postparams = "method=pipeStreamLoc&productID=" . $productid;
+				$this->_getpopurl(true);
+				$ret = json_decode(json_decode($this->response, true), true);
+				$this->res['trailers']['baseurl'] = self::popurl . "/flashmediaserver/trailerPlayer.swf";
+				$this->res['trailers']['flashvars'] = "subscribe=false&image=&file=" . self::popurl . "/" . $ret['LOC'] . "&autostart=false";
+				unset($this->response);
+				$this->response = $tmprsp;
+			}
 		return $this->res;
+		}
 	}
 
 	/**
@@ -137,6 +151,7 @@ class popporn
 			foreach ($ret->find("text") as $e) {
 				$e = trim($e->innertext);
 				$e = str_replace(",", "", $e);
+				$e = str_replace("...", "", $e);
 				$e = str_replace("&nbsp;", "", $e);
 				if (stristr($e, "Country:")) {
 					$country = true;
@@ -325,15 +340,23 @@ class popporn
 	}
 
 	/**
-	 * Get raw html of an url that is passed to it.
+	 * Get Raw html of webpage
+	 *
+	 * @param bool $usepost
+	 *
 	 * @return bool
 	 */
-	private function _getpopurl()
+	private function _getpopurl($usepost = false)
 	{
 		if (isset($this->trailurl)) {
 			$ch = curl_init(SELF::popurl . $this->trailurl);
 		} else {
 			$ch = curl_init(SELF::if18);
+		}
+		if($usepost === true){
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->postparams);
 		}
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -342,8 +365,8 @@ class popporn
 		curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 		if (isset($this->cookie)) {
-			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
-			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
+		curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookie);
+		curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookie);
 		}
 		$this->response = curl_exec($ch);
 		if (!$this->response) {
