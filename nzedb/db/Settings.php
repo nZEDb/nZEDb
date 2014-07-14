@@ -137,9 +137,10 @@ class Settings extends DB
 		if (count($options) == 1) {
 			foreach ($options as $key => $value) {
 				$options = $this->_dottedToArray($key);
-				$option['value'] = $value;
+				$options['value'] = $value;
 			}
 		}
+
 		$where = $result = false;
 		$defaults = [
 			'section'    => '',
