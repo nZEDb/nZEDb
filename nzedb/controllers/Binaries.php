@@ -787,7 +787,7 @@ class Binaries
 
 				$collectionHashes = $headersNotInserted = array();
 
-				$partsQuery = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $groupNames['pname']);
+				$partsQuery = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $groupNames['pname']);
 
 				// Loop through the reformed article headers.
 				foreach ($articles AS $subject => $data) {

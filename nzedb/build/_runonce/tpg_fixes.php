@@ -50,7 +50,8 @@ if ($groups === false) {
 	$query5 = "UPDATE parts_%s p INNER JOIN binaries_%s b ON b.id = p.binaryid SET p.collection_id = b.collectionid";
 
 	// Creates trigger to delete parts / binaries when collections are deleted.
-	$query6 = "CREATE TRIGGER delete_collections_%s AFTER DELETE ON collections_%s FOR EACH ROW BEGIN DELETE FROM binaries_%s WHERE collectionid = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END";
+	$query6 = "CREATE TRIGGER delete_collections_%s BEFORE DELETE ON collections_%s FOR EACH ROW BEGIN DELETE FROM
+	binaries_%s WHERE collectionid = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END";
 
 	foreach ($groups as $group) {
 		echo 'Fixing group ' . $group['id'] . PHP_EOL;

@@ -67,7 +67,7 @@ Class ProcessAdditional
 		$this->_nntp = $nntp;
 		$this->pdo = $pdo;
 
-		$this->_nzb = new NZB($this->_echoCLI);
+		$this->_nzb = new NZB($this->pdo);
 		$this->_groups = new Groups($this->pdo);
 		$this->_archiveInfo = new ArchiveInfo();
 		$this->_releaseFiles = new ReleaseFiles();

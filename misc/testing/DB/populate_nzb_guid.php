@@ -35,7 +35,7 @@ function create_guids($live, $delete = false)
 	if ($total > 0) {
 		echo $c->header("Creating nzb_guids for " . number_format($total) . " releases.");
 		$releases = new Releases();
-		$nzb = new NZB();
+		$nzb = new NZB($pdo);
 		$reccnt = 0;
 		foreach ($relrecs as $relrec) {
 			$reccnt++;

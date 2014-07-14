@@ -6,9 +6,27 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-0713 kevin
+2014-07-14 ruhllatio
+	* Chg: RequestID.php multi lookup (last chance match) much more accurate
+	* Fix: test-rottentomato not working
+	* Chg: Some categorization improvements.
+2014-07-14 kevin
+	* Chg: Speed-up stage 5 more by buffering some variables.
+	* Fix: Wrong usage of NZB construct in 2 places, pass pdo to all NZB contructs at the same time.
+2014-07-13 bart39
+	* Fix: !!! TPG USERS MUST RUN nzedb/build/_runounce/tpg_fixes.php !!!!!!!!!!!!!!!!!!!!!!!!!
+	* Fix: Move collections deletion trigger to before delete.
+	* Fix: Only create trigger if tpg tables were added.
+	* Add: Regex addition.
+2014-07-13 kevin
 	* Chg: !!! TPG USERS MUST RUN nzedb/build/_runounce/tpg_fixes.php !!!!!!!!!!!!!!!!!!!!!!!!!
 	* Chg: Move c/b/p deletion to stage 5.
+	* Chg: Update stage 7a query for trigger addition.
+	* Add: Echo's to stage 7a to see what's going on.
+	* Chg: Resolve weak warnings in DB for phpstorm.
+	* Add: Query to delete c/b/p missed on stage 5 in stage 7a.
+	* Fix: Issue where currently inserting c/b/p could be deleted by stage 7a.
+	* Chg: Change dupe delete query in stage 4 to reflect trigger changes.
 2014-07-13 bart39
 	* Fix: Console Cover View / Search filter.
 	* Add: PC Games Search Filter.
