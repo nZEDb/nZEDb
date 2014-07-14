@@ -107,6 +107,7 @@ class PostProcess
 		$this->processGames();
 		$this->processAnime();
 		$this->processTv();
+		$this->processXXX();
 		$this->processBooks();
 	}
 
@@ -242,6 +243,19 @@ class PostProcess
 			$tvRage = new TvRage($this->echooutput);
 			$tvRage->processTvReleases($releaseToWork, true);
 		}
+	}
+
+	/**
+	 * Lookup xxx if enabled.
+	 *
+	 * @param string $releaseToWork
+	 *
+	 * @return void
+	 */
+	public function processXXX($releaseToWork = '')
+	{
+			$movie = new XXX($this->echooutput);
+			$movie->processXXXReleases($releaseToWork);
 	}
 
 	/**
