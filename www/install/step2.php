@@ -185,6 +185,10 @@ if ($page->isPostBack()) {
 				}
 			}
 
+			$ver = new \nzedb\utility\Versions();
+			$patch = $ver->getSQLPatchFromFiles();
+			$pdo->setSetting(['..sqlpatch' => $patch]);
+
 			// If it all worked, move to the next page.
 			if ($dbInstallWorked) {
 				header("Location: ?success");
