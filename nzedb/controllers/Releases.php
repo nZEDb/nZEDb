@@ -2462,9 +2462,9 @@ class Releases
 		$releaseIDs = array();
 
 		if ($total > 0) {
-			$nzb = new NZB();
+			$nzb = new NZB($this->pdo);
 			// Init vars for writing the NZB's.
-			$nzb->initiateForWrite($this->pdo, htmlspecialchars(date('F j, Y, g:i a O'), ENT_QUOTES, 'utf-8'), $groupID);
+			$nzb->initiateForWrite($groupID);
 			foreach ($releases as $release) {
 				$nzb_create = $nzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']);
 
@@ -2472,14 +2472,10 @@ class Releases
 					$releaseIDs[] = $release['id'];
 					$nzbCount++;
 					if ($this->echooutput) {
-						$this->consoleTools->overWritePrimary(
-							'Creating NZBs: ' . $this->consoleTools->percentString($nzbCount, $total)
-						);
+						echo $this->c->primaryOver("Creating NZBs:\t" . $nzbCount . '/' . $total . "\r");
 					}
 				}
 			}
-			// Reset vars for next use.
-			$nzb->cleanForWrite();
 		}
 
 		$nzbEnd = time();
