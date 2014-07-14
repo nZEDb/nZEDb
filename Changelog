@@ -8,6 +8,10 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-14 niel
 	* Chg: Modified install step 2, to set sqlpatch setting using the value of the highest patch file found.
+2014-07-14 ruhllatio
+	* Chg: RequestID.php multi lookup (last chance match) much more accurate
+	* Fix: test-rottentomato not working
+	* Chg: Some categorization improvements.
 2014-07-14 kevin
 	* Chg: Speed-up stage 5 more by buffering some variables.
 	* Fix: Wrong usage of NZB construct in 2 places, pass pdo to all NZB contructs at the same time.
