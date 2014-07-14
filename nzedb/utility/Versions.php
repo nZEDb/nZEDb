@@ -242,27 +242,27 @@ class Versions
 
 	public function getCommit()
 	{
-		return $this->_vers->git->commit;
+		return $this->_vers->git->commit->__toString();
 	}
 
 	public function getGitHookPrecommit()
 	{
-		return $this->_vers->git->hooks->precommit;
+		return $this->_vers->git->hooks->precommit->__toString();
 	}
 
 	public function getSQLPatchFromDb()
 	{
-		return $this->_vers->sql->db;
+		return $this->_vers->sql->db->__toString();
 	}
 
 	public function getSQLPatchFromFiles()
 	{
-		return $this->_vers->sql->file;
+		return $this->_vers->sql->file->__toString();
 	}
 
 	public function getTagVersion()
 	{
-		return $this->_vers->git->tag;
+		return $this->_vers->git->tag->__toString();
 	}
 
 	/**

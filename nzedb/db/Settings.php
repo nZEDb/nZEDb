@@ -141,13 +141,13 @@ class Settings extends DB
 			}
 		}
 
-		$where = $result = false;
+		$where    = $result = false;
 		$defaults = [
-			'section'    => '',
-			'subsection' => '',
-			'name'		 => '',
-			'value'      => '',
-			'setting'    => '',
+			'section'    => null,
+			'subsection' => null,
+			'name'       => '',
+			'value'      => null,
+			'setting'    => null,
 		];
 		$options += $defaults;
 
@@ -159,20 +159,19 @@ class Settings extends DB
 					$this->settings[$options['setting']] = $options['value'];
 				}
 				$result = $this->update($options);
-
 			} else if (!empty($options['name'])) {
-				$where = sprintf("name = %s", $options['name']);
-				$where .= empty($options['section']) ? '' :
-					sprintf(" AND section = %s", $options['section']);
-				$where .= empty($options['subsection']) ? '' :
-					sprintf(" AND subsection = %s", $options['subsection']);
+				$where = sprintf("name = '%s'", $options['name']);
+				$where .= ($options['section'] === null) ? '' : sprintf(" AND section = '%s'", $options['section']);
+				$where .= ($options['subsection'] === null) ? '' : sprintf(" AND subsection = '%s'", $options['subsection']);
 
-				$sql = sprintf("UPDATE settings SET value = %s WHERE %s", $options['value'], $where);
-				$result = $this->query($sql);
+				$sql    = sprintf("UPDATE settings SET value = '%s' WHERE %s",
+								  $options['value'],
+								  $where);
+				$result = self::$_pdo->query($sql);
 			}
 		}
 
-		return ($result == false) ? false : true;
+		return ($result === false) ? false : true;
 	}
 
 	public function table()

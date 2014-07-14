@@ -126,8 +126,9 @@ class DbUpdate
 		$files = empty($options['files']) ? \nzedb\utility\Utility::getDirFiles($options) : $options['files'];
 		natsort($files);
 		$sql = 'LOAD DATA INFILE "%s" IGNORE INTO TABLE `%s` FIELDS TERMINATED BY "\t" OPTIONALLY ENCLOSED BY "\"" IGNORE 1 LINES (%s)';
+		$eol = utility\Utility::isCLI() ? "\n" : '<br />';
 		foreach ($files as $file) {
-			echo "File: $file\n";
+			echo "File: $file$eol";
 
 			if (is_readable($file)) {
 				if (preg_match($options['regex'], $file, $matches)) {
@@ -138,19 +139,19 @@ class DbUpdate
 						$line = fgets($handle);
 						fclose($handle);
 						if ($line === false) {
-							echo "FAILED reading first line of '$file'\n";
+							echo "FAILED reading first line of '$file'$eol";
 							continue;
 						}
 						$fields = trim($line);
 
-						echo "Inserting data into table: '$table'\n";
+						echo "Inserting data into table: '$table'$eol";
 						$this->pdo->exec(sprintf($sql, $file, $table, $fields));
 					} else {
-						exit("Failed to open file: '$file'\n");
+						exit("Failed to open file: '$file'$eol");
 					}
 				} else {
 					echo "Incorrectly formatted filename '$file' (should match " .
-						 str_replace('#', '', $options['regex']) .  "\n";
+						 str_replace('#', '', $options['regex']) .  "$eol";
 				}
 			} else {
 				echo $this->log->error("  Unable to read file: '$file'");
