@@ -158,6 +158,9 @@ class adultdvdempire
 	{
 		$this->tmprsp = str_ireplace("Section Cast", "scast", $this->response);
 		$this->edithtml->load($this->tmprsp);
+
+
+		if ($this->edithtml->find("div[class=scast]", 0)) {
 		$ret = $this->edithtml->find("div[class=scast]", 0);
 		$this->tmprsp = trim($ret->outertext);
 		$ret = $this->edithtml->load($this->tmprsp);
@@ -175,12 +178,14 @@ class adultdvdempire
 				}
 			}
 		}
+
 		//$this->res['director']= array_pop($this->res['cast']);
 		$this->edithtml->clear();
 		unset($ret);
 		unset($this->tmprsp);
 
 		return $this->res;
+		}
 	}
 
 	/**
