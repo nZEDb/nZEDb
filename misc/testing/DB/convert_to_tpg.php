@@ -85,9 +85,9 @@ while ($cdone < $clen['total']) {
 			if ($debug) {
 				echo "\n\nBinary insert:\n";
 				print_r($binarynew);
-				echo sprintf("\nINSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $binarynew));
+				echo sprintf("\nINSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s)\n\n", $collection['group_id'], implode(', ', $binarynew));
 			}
-			$newbid = array('binaryid' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['group_id'], implode(', ', $binarynew))));
+			$newbid = array('binaryid' => $pdo->queryInsert(sprintf('INSERT INTO binaries_%d (name, collectionid, filenumber, totalparts, currentparts, binaryhash, partcheck, partsize) VALUES (%s);', $collection['group_id'], implode(', ', $binarynew))));
 
 
 			//Get parts and split to correct group tables.
@@ -103,9 +103,9 @@ while ($cdone < $clen['total']) {
 			$partsnew = substr($partsnew, 0, -2);
 			if ($debug) {
 				echo "\n\nParts insert:\n";
-				echo sprintf("\nINSERT INTO parts_%d (binaryid, messageid, number, partnumber, size) VALUES %s;\n\n", $collection['group_id'], $partsnew);
+				echo sprintf("\nINSERT INTO parts_%d (binaryid, messageid, number, partnumber, size, collection_id) VALUES %s;\n\n", $collection['group_id'], $partsnew);
 			}
-			$sql = sprintf('INSERT INTO parts_%d (binaryid, messageid, number, partnumber, size) VALUES %s;', $collection['group_id'], $partsnew);
+			$sql = sprintf('INSERT INTO parts_%d (binaryid, messageid, number, partnumber, size, collection_id) VALUES %s;', $collection['group_id'], $partsnew);
 			$pdo->queryExec($sql);
 		}
 		$ccount++;

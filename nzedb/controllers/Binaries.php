@@ -663,6 +663,11 @@ class Binaries
 					continue;
 				}
 
+				if (!isset($header['Bytes'])) {
+					$header['Bytes'] = (isset($header[':bytes']) ? $header[':bytes'] : 0);
+				}
+				$header['Bytes'] = (is_numeric($header['Bytes']) ? $header['Bytes'] : 0);
+
 				// Set up the info for inserting into parts/binaries/collections tables.
 				if (!isset($articles[$matches[1]])) {
 					$articles[$matches[1]] = $header;
@@ -701,12 +706,13 @@ class Binaries
 							$groupMySQL['id'] .
 							$fileCount[6]
 						);
-					$articles[$matches[1]]['MaxFiles'] = $fileCount[6];
-					$articles[$matches[1]]['File']     = $fileCount[2];
-				}
-
-				if (!isset($header['Bytes'])) {
-					$header['Bytes'] = (isset($header[':bytes']) ? $header[':bytes'] : 0);
+					$articles[$matches[1]]['MaxFiles']  = $fileCount[6];
+					$articles[$matches[1]]['File']      = $fileCount[2];
+					$articles[$matches[1]]['Size']      = $header['Bytes'];
+					$articles[$matches[1]]['PartCount'] = 1;
+				} else {
+					$articles[$matches[1]]['Size'] += $header['Bytes'];
+					$articles[$matches[1]]['PartCount']++;
 				}
 
 				$articles[$matches[1]]['Parts'][$matches[2]] =
@@ -714,7 +720,7 @@ class Binaries
 						'Message-ID' => substr($header['Message-ID'], 1, -1), // Strip the < and >, saves space in DB.
 						'number'     => $header['Number'],
 						'part'       => $matches[2],
-						'size'       => (is_numeric($header['Bytes']) ? $header['Bytes'] : 0)
+						'size'       => $header['Bytes']
 					);
 			}
 
@@ -781,7 +787,7 @@ class Binaries
 
 				$collectionHashes = $headersNotInserted = array();
 
-				$partsQuery = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size) VALUES ', $groupNames['pname']);
+				$partsQuery = sprintf('INSERT IGNORE INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $groupNames['pname']);
 
 				// Loop through the reformed article headers.
 				foreach ($articles AS $subject => $data) {
@@ -860,14 +866,16 @@ class Binaries
 						if ($binaryCheck === false) {
 							$binaryID = $this->_pdo->queryInsert(
 								sprintf("
-									INSERT INTO %s (binaryhash, name, collectionid, totalparts, filenumber)
-									VALUES ('%s', %s, %d, %d, %d)",
+									INSERT INTO %s (binaryhash, name, collectionid, totalparts, currentparts, filenumber, partsize)
+									VALUES ('%s', %s, %d, %d, %d, %d, %d)",
 									$groupNames['bname'],
 									$binaryHash,
 									$this->_pdo->escapeString(utf8_encode($subject)),
 									$collectionID,
 									$data['MaxParts'],
-									$data['File']
+									$data['PartCount'],
+									$data['File'],
+									$data['Size']
 								)
 							);
 
@@ -877,6 +885,15 @@ class Binaries
 							}
 						} else {
 							$binaryID = $binaryCheck['id'];
+							$this->_pdo->queryExec(
+								sprintf(
+									'UPDATE %s SET partsize = partsize + %d, currentparts = currentparts + %d WHERE id = %d',
+									$groupNames['bname'],
+									$data['Size'],
+									$data['PartCount'],
+									$binaryID
+								)
+							);
 						}
 
 						$tempPartsQuery = $partsQuery;
@@ -885,7 +902,7 @@ class Binaries
 							$tempPartsQuery .=
 								'(' . $binaryID . ',' . $partData['number'] . ",'" .
 								$partData['Message-ID'] . "'," .
-								$partData['part'] . ',' . $partData['size'] . '),';
+								$partData['part'] . ',' . $partData['size'] . ',' . $collectionID . '),';
 						}
 
 						if ($this->_pdo->queryExec(rtrim($tempPartsQuery, ',')) === false) {

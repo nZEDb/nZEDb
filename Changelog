@@ -6,6 +6,35 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-13 bart39
+	* Fix: !!! TPG USERS MUST RUN nzedb/build/_runounce/tpg_fixes.php !!!!!!!!!!!!!!!!!!!!!!!!!
+	* Fix: Move collections deletion trigger to before delete.
+	* Fix: Only create trigger if tpg tables were added.
+	* Add: Regex addition.
+2014-07-13 kevin
+	* Chg: !!! TPG USERS MUST RUN nzedb/build/_runounce/tpg_fixes.php !!!!!!!!!!!!!!!!!!!!!!!!!
+	* Chg: Move c/b/p deletion to stage 5.
+	* Chg: Update stage 7a query for trigger addition.
+	* Add: Echo's to stage 7a to see what's going on.
+	* Chg: Resolve weak warnings in DB for phpstorm.
+	* Add: Query to delete c/b/p missed on stage 5 in stage 7a.
+	* Fix: Issue where currently inserting c/b/p could be deleted by stage 7a.
+	* Chg: Change dupe delete query in stage 4 to reflect trigger changes.
+2014-07-13 bart39
+	* Fix: Console Cover View / Search filter.
+	* Add: PC Games Search Filter.
+	* Fix: Query error in show_table_sizes.php.
+	* Fix: Typo on Movies pages.
+2014-07-12 bart39
+	* Fix: typo
+2014-07-12 kevin
+	* Chg: !!!! IF YOU ARE RUNNING TPG, YOU MUST RUN nzedb\_runonce\tpg_fixes.php !!!!!! Huge speed-up to stage 1 on update-releases.
+	* Chg: Speed up to stage 2 on update-releases.
+	* Add: Debug info to stage1 for query times.
+	* Add: Debug info to stage7a for query times.
+	* Fix: Timer on stage7a.
+2014-07-11 kevin
+	* Fix: Issue where group_id could be set 0 on requestid.
 2014-07-10 kevin
 	* Fix: Conditionals in ProcessAdditional causing process sample / process mediainfo / process passwords to fail.
 	* Chg: Use 7zip/unrar directly instead of unrar for extracting, which is slower than rarinfo but produces larger files to work on.

@@ -651,6 +651,16 @@ class Groups
 			if ($statement = $this->pdo->queryExec(sprintf('SELECT * FROM %s_%s LIMIT 1', $tableName, $groupID), true) === false) {
 				if ($this->pdo->queryExec(sprintf('CREATE TABLE %s_%s LIKE %s', $tableName, $groupID, $tableName), true) === false) {
 					return false;
+				} else {
+					if ($tableName === 'collections') {
+						$this->pdo->queryExec(
+							sprintf(
+								'CREATE TRIGGER delete_collections_%s BEFORE DELETE ON collections_%s FOR EACH ROW BEGIN' .
+								' DELETE FROM binaries_%s WHERE collectionid = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END',
+								$groupID, $groupID, $groupID, $groupID
+							)
+						);
+					}
 				}
 			}
 		}

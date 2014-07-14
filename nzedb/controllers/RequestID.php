@@ -261,6 +261,8 @@ class RequestID
 		foreach ($this->results as $result) {
 			$this->result = $result;
 
+			$this->groupID = $result['group_id'];
+
 			$this->newTitle = false;
 
 			// Try to get request id.
@@ -323,6 +325,8 @@ class RequestID
 				}
 				continue;
 			}
+
+			$this->groupID = $result['group_id'];
 
 			// Change etc to teevee.
 			if ($result['groupname'] === 'alt.binaries.etc') {
