@@ -1,0 +1,1 @@
+UPDATE settings SET setting = 'giantbombkey' WHERE name = 'giantbombkey';
