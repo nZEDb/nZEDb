@@ -134,6 +134,12 @@ class Settings extends DB
 	 */
 	public function setSetting(array $options)
 	{
+		if (count($options) == 1) {
+			foreach ($options as $key => $value) {
+				$options = $this->_dottedToArray($key);
+				$option['value'] = $value;
+			}
+		}
 		$where = $result = false;
 		$defaults = [
 			'section'    => '',
@@ -209,7 +215,7 @@ class Settings extends DB
 		return $ver;
 	}
 
-	protected function  _dottedToArray($setting)
+	protected function _dottedToArray($setting)
 	{
 		$result = array();
 		if (is_string($setting)) {
