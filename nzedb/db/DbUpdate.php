@@ -104,10 +104,10 @@ class DbUpdate
 		$this->git		= $options['git'];
 		$this->log		= $options['logger'];
 
-		if (is_a($this->pdo, 'Settings')) {
+		if (is_a($this->pdo, 'Settings')) {	// If $pdo is an instance of Settings, reuse it to save resources.
 			$this->settings =& $this->pdo;
 		} else {
-			$this->settings = new Settings();
+			$this->settings = new \nzedb\db\Settings();
 		}
 
 		$this->_DbSystem = strtolower($this->pdo->dbSystem());
