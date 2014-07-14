@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-14 kevin
 	* Chg: Speed-up stage 5 more by buffering some variables.
+	* Fix: Wrong usage of NZB construct in 2 places, pass pdo to all NZB contructs at the same time.
 2014-07-13 bart39
 	* Fix: !!! TPG USERS MUST RUN nzedb/build/_runounce/tpg_fixes.php !!!!!!!!!!!!!!!!!!!!!!!!!
 	* Fix: Move collections deletion trigger to before delete.

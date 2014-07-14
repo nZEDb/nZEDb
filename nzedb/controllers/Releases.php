@@ -726,7 +726,7 @@ class Releases
 	 */
 	public function fastDelete($id, $guid)
 	{
-		$nzb = new NZB();
+		$nzb = new NZB($this->pdo);
 		// Delete NZB from disk.
 		$nzbpath = $nzb->getNZBPath($guid);
 		if (is_file($nzbpath)) {
@@ -1398,7 +1398,7 @@ class Releases
 	// Writes a zip file of an array of release guids directly to the stream.
 	public function getZipped($guids)
 	{
-		$nzb = new NZB();
+		$nzb = new NZB($this->pdo);
 		$zipfile = new ZipFile();
 
 		foreach ($guids as $guid) {

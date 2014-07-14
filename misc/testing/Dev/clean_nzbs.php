@@ -7,9 +7,8 @@ $c = new ColorCLI();
 if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	$pdo = new Settings();
 	$releases = new Releases();
-	$nzb = new NZB();
+	$nzb = new NZB($pdo);
 	$consoletools = new ConsoleTools();
-	$nzb = new NZB(true);
 	$timestart = TIME();
 	$checked = $deleted = 0;
 	$couldbe = $argv[1] === "true" ? $couldbe = "could be " : "were ";

@@ -14,10 +14,9 @@ if (isset($argv[1]) && $argv[1] == "true")
 
 	$guids = $pdo->queryDirect("SELECT guid FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC");
 	echo $c->primary("Be patient, this WILL take a very long time, make sure to kill all nZEDb scripts first. There are " . number_format($guids->rowCount()) . " NZB files to scan.");
-
+	$nzb = new NZB($pdo);
 	foreach ($guids as $guid)
 	{
-		$nzb = new NZB();
 		$nzbpath = $nzb->NZBPath($guid["guid"]);
 		if($nzbpath !== false) {
 			$nzbcount++;

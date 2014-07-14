@@ -91,6 +91,7 @@ class NZB
 		} else {
 			$this->pdo = $pdo;
 		}
+
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$nzbSplitLevel = $this->pdo->getSetting('nzbsplitlevel');
 		$this->nzbSplitLevel = (empty($nzbSplitLevel) ? 1 : $nzbSplitLevel);

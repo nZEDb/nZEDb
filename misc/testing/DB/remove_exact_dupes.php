@@ -19,7 +19,7 @@ $pdo = new Settings();
 $c = new ColorCLI();
 $releases = new Releases();
 $count = $total = $all = 0;
-$nzb = new NZB();
+$nzb = new NZB($pdo);
 $ri = new ReleaseImage();
 $consoleTools = new ConsoleTools();
 $size = ' size ';
