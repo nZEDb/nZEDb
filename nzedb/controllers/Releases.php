@@ -2663,7 +2663,7 @@ class Releases
 		if ($this->pdo->getSetting('deletepasswordedrelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
-					'SELECT id, guid FROM releases WHERE passwordstatus = ',
+					'SELECT id, guid FROM releases WHERE passwordstatus = %d',
 					Releases::PASSWD_RAR
 				)
 			);
@@ -2679,7 +2679,7 @@ class Releases
 		if ($this->pdo->getSetting('deletepossiblerelease') == 1) {
 			$releases = $this->pdo->queryDirect(
 				sprintf(
-					'SELECT id, guid FROM releases WHERE passwordstatus = ',
+					'SELECT id, guid FROM releases WHERE passwordstatus = %d',
 					Releases::PASSWD_POTENTIAL
 				)
 			);
