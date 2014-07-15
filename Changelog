@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-07-15 kevin
 	* Chg: Change stage 3 for the trigger changes on automatic binaries/parts deletion.
 	* Chg: Refactor stage 4.5 to be similar to stage 3.
+	* Chg: Refactor various processReleases stages.
 2014-07-15 bart39
 	* Fix: Delete collections at filecheck = 5 at the end of Releases Stage 3.
 	* Fix: Undefined variable $site in requestID.php
