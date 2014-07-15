@@ -10,25 +10,25 @@ use nzedb\utility;
 class Releases
 {
 	// RAR/ZIP Passworded indicator.
-	const PASSWD_NONE = 0; // No password.
-	const PASSWD_POTENTIAL = 1; // Might have a password.
-	const BAD_FILE = 2; // Possibly broken RAR/ZIP.
-	const PASSWD_RAR = 10; // Definitely passworded.
+	const PASSWD_NONE      =  0; // No password.
+	const PASSWD_POTENTIAL =  1; // Might have a password.
+	const BAD_FILE         =  2; // Possibly broken RAR/ZIP.
+	const PASSWD_RAR       = 10; // Definitely passworded.
 
 	// Request ID.
-	const REQID_NONE = -3; // The Request ID was not found locally or via web lookup.
-	const REQID_ZERO = -2; // The Request ID was 0.
-	const REQID_NOLL = -1; // Request ID was not found via local lookup.
-	const REQID_UPROC = 0; // Release has not been processed.
-	const REQID_FOUND = 1; // Request ID found and release was updated.
+	const REQID_NONE  = -3; // The Request ID was not found locally or via web lookup.
+	const REQID_ZERO  = -2; // The Request ID was 0.
+	const REQID_NOLL  = -1; // Request ID was not found via local lookup.
+	const REQID_UPROC =  0; // Release has not been processed.
+	const REQID_FOUND =  1; // Request ID found and release was updated.
 
 	// Collections file check status
-	const COLLFC_DEFAULT = 0; // Collection has default filecheck status
-	const COLLFC_COMPCOLL = 1; // Collection is a complete collection
-	const COLLFC_COMPPART = 2; // Collection is a complete collection and has all parts available
-	const COLLFC_SIZED = 3; // Collection has been calculated for total size
-	const COLLFC_INSERTED = 4; // Collection has been inserted into releases
-	const COLLFC_DELETE = 5; // Collection is ready for deletion
+	const COLLFC_DEFAULT  =  0; // Collection has default filecheck status
+	const COLLFC_COMPCOLL =  1; // Collection is a complete collection
+	const COLLFC_COMPPART =  2; // Collection is a complete collection and has all parts available
+	const COLLFC_SIZED    =  3; // Collection has been calculated for total size
+	const COLLFC_INSERTED =  4; // Collection has been inserted into releases
+	const COLLFC_DELETE   =  5; // Collection is ready for deletion
 	const COLLFC_TEMPCOMP = 15; // Collection is complete and being checked for complete parts
 	const COLLFC_ZEROPART = 16; // Collection has a 00/0XX designator (temporary)
 
@@ -1575,7 +1575,7 @@ class Releases
 				UPDATE %s c INNER JOIN
 					(SELECT c.id FROM %s c
 					INNER JOIN %s b ON b.collectionid = c.id
-					WHERE c.totalfiles > 0 AND c.filecheck = 0 %s
+					WHERE c.totalfiles > 0 AND c.filecheck = %d %s
 					GROUP BY b.collectionid, c.totalfiles, c.id
 					HAVING COUNT(b.id) IN (c.totalfiles, c.totalfiles + 1)
 					)
@@ -1583,28 +1583,11 @@ class Releases
 				$group['cname'],
 				$group['cname'],
 				$group['bname'],
+				self::COLLFC_DEFAULT,
 				$where,
 				self::COLLFC_COMPCOLL
 			)
 		);
-		/* $this->pdo->queryExec(
-			sprintf('
-				UPDATE %s c SET filecheck = 1
-				WHERE c.id IN
-					(SELECT b.collectionid FROM %s b, %s c
-					WHERE b.collectionid = c.id
-					GROUP BY b.collectionid, c.totalfiles
-					HAVING (COUNT(b.id) >= c.totalfiles-1)
-					)
-				AND c.totalfiles > 0 AND c.filecheck = %d %s',
-				$group['cname'],
-				$group['bname'],
-				$group['cname'],
-				self::COLLFC_COMPCOLL,
-				$where
-			)
-		);
-		*/
 		$firstQuery = microtime(true);
 
 		// Set filecheck to 16 if theres a file that starts with 0 (ex. [00/100]).
@@ -1616,13 +1599,14 @@ class Releases
 					INNER JOIN %s b ON b.collectionid = c.id
 					WHERE b.filenumber = 0
 					AND c.totalfiles > 0
-					AND c.filecheck = 1 %s
+					AND c.filecheck = %d %s
 					GROUP BY c.id
 					)
 				r ON c.id = r.id SET c.filecheck = %d',
 				$group['cname'],
 				$group['cname'],
 				$group['bname'],
+				self::COLLFC_COMPCOLL,
 				$where,
 				self::COLLFC_ZEROPART
 			)
@@ -1842,8 +1826,9 @@ class Releases
 		foreach ($groupIDs as $groupID) {
 			if ($this->pdo->queryOneRow(
 					sprintf(
-						'SELECT id FROM %s WHERE filecheck = 3 AND filesize > 0 AND group_id = %d LIMIT 1',
+						'SELECT id FROM %s WHERE filecheck = %d AND filesize > 0 AND group_id = %d LIMIT 1',
 						$group['cname'],
+						self::COLLFC_SIZED,
 						$groupID['id']
 					)
 				) !== false
@@ -1853,12 +1838,13 @@ class Releases
 						DELETE c FROM %s c
 						INNER JOIN groups g ON g.id = c.group_id
 						WHERE c.group_id = %d
-						AND c.filecheck = 3
+						AND c.filecheck = %d
 						AND c.filesize > 0
 						AND greatest(IFNULL(g.minsizetoformrelease, 0), %d) > 0
 						AND c.filesize < greatest(IFNULL(g.minsizetoformrelease, 0), %d)',
 						$group['cname'],
 						$groupID['id'],
+						self::COLLFC_SIZED,
 						$minSizeSetting,
 						$minSizeSetting
 					)
@@ -1872,10 +1858,11 @@ class Releases
 					$deleteQuery = $this->pdo->queryExec(
 						sprintf('
 							DELETE FROM %s
-							WHERE filecheck = 3
+							WHERE filecheck = %d
 							AND group_id = %d
 							AND filesize > %d',
 							$group['cname'],
+							self::COLLFC_SIZED,
 							$groupID['id'],
 							$maxSizeSetting
 						)
@@ -1890,11 +1877,12 @@ class Releases
 						DELETE c FROM %s c
 						INNER JOIN groups g ON g.id = c.group_id
 						WHERE c.group_id = %d
-						AND c.filecheck = 3
+						AND c.filecheck = %d
 						AND greatest(IFNULL(g.minfilestoformrelease, 0), %d) > 0
 						AND c.totalfiles < greatest(IFNULL(g.minfilestoformrelease, 0), %d)',
 						$group['cname'],
 						$groupID['id'],
+						self::COLLFC_SIZED,
 						$minFilesSetting,
 						$minFilesSetting
 					)
@@ -2065,9 +2053,10 @@ class Releases
 					$this->pdo->queryExec(
 						sprintf('
 							UPDATE %s
-							SET filecheck = 4, releaseid = %d
+							SET filecheck = %d, releaseid = %d
 							WHERE id = %d',
 							$group['cname'],
+							self::COLLFC_INSERTED,
 							$releaseID,
 							$collection['id']
 						)
