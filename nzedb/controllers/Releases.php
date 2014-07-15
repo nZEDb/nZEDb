@@ -1796,231 +1796,105 @@ class Releases
 
 	public function processReleasesStage3($groupID)
 	{
-		$minsizecounts = $maxsizecounts = $minfilecounts = 0;
+		$stage3 = time();
 
 		// Set table names
 		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 
 		if ($this->echooutput) {
-			$this->c->doEcho($this->c->header("Stage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting."));
+			$this->c->doEcho(
+				$this->c->header("Stage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.")
+			);
 		}
-		$stage3 = TIME();
 
 		if ($groupID == '') {
 			$groupIDs = $this->groups->getActiveIDs();
-			foreach ($groupIDs as $groupID) {
-				$res = $this->pdo->query(
-					'SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 3 AND filesize > 0 AND group_id = ' .
-					$groupID['id']
-				);
-				if (count($res) > 0) {
-					$minsizecount = 0;
-					if ($this->pdo->dbSystem() === 'mysql') {
-						$mscq = $this->pdo->queryExec(
-							"UPDATE " . $group['cname'] .
-							" c LEFT JOIN (SELECT g.id, COALESCE(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND group_id = " .
-							$groupID['id']
-						);
-						if ($mscq !== false) {
-							$minsizecount = $mscq->rowCount();
-						}
-					} else {
-						$s = $this->pdo->queryOneRow(
-							"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
-							$groupID['id']
-						);
-						if ($s['size'] > 0) {
-							$mscq = $this->pdo->queryExec(
-								sprintf(
-									'UPDATE ' . $group['cname'] .
-									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
-									$groupID['id'], $s['size']
-								)
-							);
-							if ($mscq !== false) {
-								$minsizecount = $mscq->rowCount();
-							}
-						}
-					}
-					if ($minsizecount < 1) {
-						$minsizecount = 0;
-					}
-					$minsizecounts = $minsizecount + $minsizecounts;
-
-					$maxfilesizeres = $this->pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
-					if ($maxfilesizeres['value'] != 0) {
-						$mascq = $this->pdo->queryExec(
-							sprintf(
-								'UPDATE ' . $group['cname'] .
-								' SET filecheck = 5 WHERE filecheck = 3 AND group_id = %d AND filesize > %d ', $groupID['id'], $maxfilesizeres['value']
-							)
-						);
-						$maxsizecount = 0;
-						if ($mascq !== false) {
-							$maxsizecount = $mascq->rowCount();
-						}
-						if ($maxsizecount < 1) {
-							$maxsizecount = 0;
-						}
-						$maxsizecounts = $maxsizecount + $maxsizecounts;
-					}
-
-					$minfilecount = 0;
-					if ($this->pdo->dbSystem() === 'mysql') {
-						$mifcq = $this->pdo->queryExec(
-							"UPDATE " . $group['cname'] .
-							" c LEFT JOIN (SELECT g.id, COALESCE(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND group_id = " .
-							$groupID['id']
-						);
-						if ($mifcq !== false) {
-							$minfilecount = $mifcq->rowCount();
-						}
-					} else {
-						$f = $this->pdo->queryOneRow(
-							"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
-							$groupID['id']
-						);
-						if ($f['files'] > 0) {
-							$mifcq = $this->pdo->queryExec(
-								sprintf(
-									'UPDATE ' . $group['cname'] .
-									' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
-									$groupID['id'], $f['size']
-								)
-							);
-							if ($mifcq !== false) {
-								$minfilecount = $mifcq->rowCount();
-							}
-						}
-					}
-					if ($minfilecount < 1) {
-						$minfilecount = 0;
-					}
-					$minfilecounts = $minfilecount + $minfilecounts;
-				}
-			}
 		} else {
-			$res = $this->pdo->queryDirect(
-				'SELECT id FROM ' . $group['cname'] . ' WHERE filecheck = 3 AND filesize > 0 AND group_id = ' . $groupID
-			);
-			if ($res !== false && $res->rowCount() > 0) {
-				$minsizecount = 0;
-				if ($this->pdo->dbSystem() === 'mysql') {
-					$mscq = $this->pdo->queryExec(
-						"UPDATE " . $group['cname'] .
-						" c LEFT JOIN (SELECT g.id, coalesce(g.minsizetoformrelease, s.minsizetoformrelease) AS minsizetoformrelease FROM groups g INNER JOIN ( SELECT value AS minsizetoformrelease FROM settings WHERE setting = 'minsizetoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minsizetoformrelease != 0 AND c.filecheck = 3 AND c.filesize < g.minsizetoformrelease AND c.filesize > 0 AND group_id = " .
-						$groupID
-					);
-					if ($mscq !== false) {
-						$minsizecount = $mscq->rowCount();
-					}
-				} else {
-					$s = $this->pdo->queryOneRow(
-						"SELECT GREATEST(s.value::integer, g.minsizetoformrelease::integer) as size FROM settings s, groups g WHERE s.setting = 'minsizetoformrelease' AND g.id = " .
-						$groupID
-					);
-					if ($s['size'] > 0) {
-						$mscq = $this->pdo->queryExec(
-							sprintf(
-								'UPDATE ' . $group['cname'] .
-								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
-								$groupID, $s['size']
-							)
-						);
-						if ($mscq !== false) {
-							$minsizecount = $mscq->rowCount();
-						}
-					}
-				}
-				if ($minsizecount < 0) {
-					$minsizecount = 0;
-				}
-				$minsizecounts = $minsizecount + $minsizecounts;
+			$groupIDs = array('id' => $groupID);
+		}
 
-				$maxfilesizeres = $this->pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'maxsizetoformrelease'");
-				if ($maxfilesizeres['value'] != 0) {
-					$mascq = $this->pdo->queryExec(
-						sprintf(
-							'UPDATE ' . $group['cname'] .
-							' SET filecheck = 5 WHERE filecheck = 3 AND filesize > %d ', $maxfilesizeres['value']
+		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
+
+		$maxSizeSetting = $this->pdo->getSetting('maxsizetoformrelease');
+		$minSizeSetting = $this->pdo->getSetting('minsizetoformrelease');
+		$minFilesSetting = $this->pdo->getSetting('minfilestoformrelease');
+
+		foreach ($groupIDs as $groupID) {
+			if ($this->pdo->queryOneRow(
+					sprintf(
+						'SELECT id FROM %s WHERE filecheck = 3 AND filesize > 0 AND group_id = %d LIMIT 1',
+						$group['cname'],
+						$groupID['id']
+					)
+				) !== false
+			) {
+				$deleteQuery = $this->pdo->queryExec(
+					sprintf('
+						DELETE c FROM %s c
+						INNER JOIN groups g ON g.id = c.group_id
+						WHERE c.group_id = %d
+						AND c.filecheck = 3
+						AND c.filesize > 0
+						AND greatest(IFNULL(g.minsizetoformrelease, 0), %d) > 0
+						AND c.filesize < greatest(IFNULL(g.minsizetoformrelease, 0), %d)',
+						$group['cname'],
+						$groupID['id'],
+						$minSizeSetting,
+						$minSizeSetting
+					)
+				);
+				if ($deleteQuery !== false) {
+					$minSizeDeleted += $deleteQuery->rowCount();
+				}
+
+
+				if ($maxSizeSetting > 0) {
+					$deleteQuery = $this->pdo->queryExec(
+						sprintf('
+							DELETE FROM %s
+							WHERE filecheck = 3
+							AND group_id = %d
+							AND filesize > %d',
+							$group['cname'],
+							$groupID['id'],
+							$maxSizeSetting
 						)
 					);
-					$maxsizecount = 0;
-					if ($mascq !== false) {
-						$maxsizecount = $mascq->rowCount();
+					if ($deleteQuery !== false) {
+						$maxSizeDeleted += $deleteQuery->rowCount();
 					}
-					if ($maxsizecount < 0) {
-						$maxsizecount = 0;
-					}
-					$maxsizecounts = $maxsizecount + $maxsizecounts;
 				}
 
-				$minfilecount = 0;
-				if ($this->pdo->dbSystem() === 'mysql') {
-					$mifcq = $this->pdo->queryExec(
-						"UPDATE " . $group['cname'] .
-						" c LEFT JOIN (SELECT g.id, coalesce(g.minfilestoformrelease, s.minfilestoformrelease) AS minfilestoformrelease FROM groups g INNER JOIN ( SELECT value AS minfilestoformrelease FROM settings WHERE setting = 'minfilestoformrelease' ) s ) g ON g.id = c.group_id SET c.filecheck = 5 WHERE g.minfilestoformrelease != 0 AND c.filecheck = 3 AND c.totalfiles < g.minfilestoformrelease AND group_id = " .
-						$groupID
-					);
-					if ($mifcq !== false) {
-						$minfilecount = $mifcq->rowCount();
-					}
-				} else {
-					$f = $this->pdo->queryOneRow(
-						"SELECT GREATEST(s.value::integer, g.minfilestoformrelease::integer) as files FROM settings s, groups g WHERE s.setting = 'minfilestoformrelease' AND g.id = " .
-						$groupID
-					);
-					if ($f['files'] > 0) {
-						$mifcq = $this->pdo->queryExec(
-							sprintf(
-								'UPDATE ' . $group['cname'] .
-								' SET filecheck = 5 WHERE filecheck = 3 AND filesize < %d AND filesize > 0 AND group_id = ' .
-								$groupID, $f['files']
-							)
-						);
-						if ($mifcq !== false) {
-							$minfilecount = $mifcq->rowCount();
-						}
-					}
+				$deleteQuery = $this->pdo->queryExec(
+					sprintf('
+						DELETE c FROM %s c
+						INNER JOIN groups g ON g.id = c.group_id
+						WHERE c.group_id = %d
+						AND c.filecheck = 3
+						AND greatest(IFNULL(g.minfilestoformrelease, 0), %d) > 0
+						AND c.totalfiles < greatest(IFNULL(g.minfilestoformrelease, 0), %d)',
+						$group['cname'],
+						$groupID['id'],
+						$minFilesSetting,
+						$minFilesSetting
+					)
+				);
+				if ($deleteQuery !== false) {
+					$minFilesDeleted += $deleteQuery->rowCount();
 				}
-				if ($minfilecount < 0) {
-					$minfilecount = 0;
-				}
-				$minfilecounts = $minfilecount + $minfilecounts;
 			}
 		}
 
-		$delcount = $minsizecounts + $maxsizecounts + $minfilecounts;
-
-		if ($this->echooutput && $delcount > 0) {
-			$this->c->doEcho(
-				$this->c->primary(
-					PHP_EOL . 'Deleting collections/binaries/parts, be patient.'
-				)
-			);
-
-			$deleted = 0;
-			$deleteQuery = $this->pdo->queryExec(
-				sprintf(
-					'DELETE FROM %s WHERE filecheck = %s',
-					$group['cname'],
-					self::COLLFC_DELETE
-				)
-			);
-			if ($deleteQuery !== false) {
-				$deleted = $deleteQuery->rowCount();
-			}
-
-			$this->c->doEcho(
-				$this->c->primary(
-					'Deleted ' .
-					number_format($deleted) .
-					" collections smaller/larger than group/site settings."
-				)
-			);
-		}
 		if ($this->echooutput) {
-			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage3)), true);
+			$this->c->doEcho(
+				$this->c->primary(
+					'Deleted ' . ($minSizeDeleted + $maxSizeDeleted + $minFilesDeleted) . ' collections: ' . PHP_EOL .
+					$minSizeDeleted . ' smaller than, ' .
+					$maxSizeDeleted . ' bigger than, ' .
+					$minFilesDeleted . ' with less files than site/group settings in : ' .
+					$this->consoleTools->convertTime(time() - $stage3)
+				), true
+			);
 		}
 	}
 
