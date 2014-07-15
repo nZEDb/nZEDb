@@ -1810,7 +1810,7 @@ class Releases
 		if ($groupID == '') {
 			$groupIDs = $this->groups->getActiveIDs();
 		} else {
-			$groupIDs = array('id' => $groupID);
+			$groupIDs = array(array('id' => $groupID));
 		}
 
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
