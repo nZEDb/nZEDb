@@ -56,12 +56,12 @@ if (!defined('nZEDb_INSTALLER')) {
 class DbUpdate
 {
 	/**
-	 * @var object	Instance variable for DB object.
+	 * @var \nzedb\db\Settings Instance variable for DB object.
 	 */
 	public $pdo;
 
 	/**
-	 * @var nzedb\utility\Git instance
+	 * @var \nzedb\utility\Git instance
 	 */
 	public $git;
 
@@ -344,7 +344,7 @@ class DbUpdate
 									try {
 										$this->pdo->exec($query);
 										echo $this->log->alternateOver('SUCCESS: ') . $this->log->primary($query);
-									} catch (PDOException $e) {
+									} catch (\PDOException $e) {
 										exit($this->log->error(
 											"$query Failed {" . $e->errorInfo[1] . "}\n\t" . $e->errorInfo[2]));
 									}

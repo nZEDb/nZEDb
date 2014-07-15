@@ -37,7 +37,7 @@ class Versions
 	const UPDATED_SQL_FILE_LAST	= 8;
 
 	/**
-	 * @var nzedb\utility\Git instance variable.
+	 * @var \nzedb\utility\Git instance variable.
 	 */
 	public $git;
 

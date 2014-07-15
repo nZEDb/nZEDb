@@ -10,7 +10,7 @@ use nzedb\db\Settings;
 class ReleaseRemover
 {
 	/**
-	 * @var DB
+	 * @var nzedb\db\Settings
 	 */
 	protected $pdo;
 

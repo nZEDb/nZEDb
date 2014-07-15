@@ -14,7 +14,7 @@ class TvRage
 	public $c;
 
 	/**
-	 * @var Database object
+	 * @var nzedb\db\Settings
 	 */
 	public $pdo;
 
