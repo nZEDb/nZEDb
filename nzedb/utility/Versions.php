@@ -31,9 +31,9 @@ class Versions
 	/**
 	 * These constants are bitwise for checking what was changed.
 	 */
-	const UPDATED_GIT_COMMIT		= 1;
-	const UPDATED_GIT_TAG			= 2;
-	const UPDATED_SQL_DB_PATCH		= 4;
+	const UPDATED_GIT_COMMIT	= 1;
+	const UPDATED_GIT_TAG		= 2;
+	const UPDATED_SQL_DB_PATCH	= 4;
 	const UPDATED_SQL_FILE_LAST	= 8;
 
 	/**
@@ -200,7 +200,7 @@ class Versions
 			if ($update) {
 				echo $this->out->primary("Updating Db revision to " . $setting);
 				$this->_vers->sql->db = $setting;
-				$this->_changes |= self::UPDATED_SQL_DB_REVISION;
+				$this->_changes |= self::UPDATED_SQL_DB_PATCH;
 			}
 			return $this->_vers->patch->db;
 		}
