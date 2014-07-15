@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-$tmpPath = (new Settings())->getSetting('tmpunrarpath');
+$tmpPath = (new \nzedb\db\Settings())->getSetting('tmpunrarpath');
 if (empty($tmpPath)) {
 	exit ('The tmpunrarpath site setting must not be empty!' . PHP_EOL);
 }
