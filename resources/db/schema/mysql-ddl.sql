@@ -34,7 +34,6 @@ CREATE TABLE         binaries (
   collectionid INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   filenumber   INT UNSIGNED        NOT NULL DEFAULT '0',
   totalparts   INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  currentparts INT UNSIGNED        NOT NULL DEFAULT '0',
   binaryhash   VARCHAR(255)        NOT NULL DEFAULT '0',
   partcheck    BIT                 NOT NULL DEFAULT 0,
   partsize     BIGINT UNSIGNED     NOT NULL DEFAULT '0',
@@ -71,6 +70,7 @@ CREATE TABLE         releases (
   tvtitle           VARCHAR(255)                   NULL,
   tvairdate         DATETIME                       NULL,
   imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
+  xxxinfo_id        INT                            NULL,
   musicinfoid       INT                            NULL,
   consoleinfoid     INT                            NULL,
   gamesinfo_id      INT                            NULL,
@@ -109,6 +109,7 @@ CREATE TABLE         releases (
   INDEX ix_releases_dehashstatus              (dehashstatus),
   INDEX ix_releases_reqidstatus               (reqidstatus),
   INDEX ix_releases_nfostatus                 (nfostatus),
+  INDEX ix_releases_xxxinfo_id                (xxxinfo_id),
   INDEX ix_releases_musicinfoid               (musicinfoid),
   INDEX ix_releases_consoleinfoid             (consoleinfoid),
   INDEX ix_releases_gamesinfo_id              (gamesinfo_id),
@@ -431,6 +432,33 @@ CREATE TABLE         movieinfo (
   AUTO_INCREMENT  = 1;
 
 
+DROP TABLE IF EXISTS xxxinfo;
+CREATE TABLE         xxxinfo (
+  id          INT(10) UNSIGNED               NOT NULL AUTO_INCREMENT,
+  title       VARCHAR(255)                   NOT NULL,
+  tagline     VARCHAR(1024)                  NOT NULL,
+  plot        VARCHAR(1024)                  NOT NULL,
+  genre       VARCHAR(64)                    NOT NULL,
+  director    VARCHAR(64)                    DEFAULT NULL,
+  actors      VARCHAR(2000)                  NOT NULL,
+  extras      TEXT                           DEFAULT NULL,
+  productinfo TEXT                           DEFAULT NULL,
+  trailers    TEXT                           DEFAULT NULL,
+  directurl   VARCHAR(2000)                  NOT NULL,
+  classused   VARCHAR(3)                     NOT NULL,
+  cover       TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
+  backdrop    TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
+  createddate DATETIME                       NOT NULL,
+  updateddate DATETIME                       NOT NULL,
+  PRIMARY KEY                      (id),
+  INDEX        ix_xxxinfo_title  (title)
+)
+  ENGINE          = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE         = utf8_unicode_ci
+  AUTO_INCREMENT  = 1;
+
+
 DROP TABLE IF EXISTS animetitles;
 CREATE TABLE         animetitles (
   anidbid  INT(7) UNSIGNED  NOT NULL,
@@ -499,16 +527,16 @@ CREATE TABLE         groups (
 
 DROP TABLE IF EXISTS parts;
 CREATE TABLE         parts (
-  id            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  binaryid      BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
-  collection_id INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  messageid     VARCHAR(255)        NOT NULL DEFAULT '',
-  number        BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  partnumber    INT UNSIGNED        NOT NULL DEFAULT '0',
-  size          BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  PRIMARY KEY                         (id),
-  KEY          binaryid               (binaryid),
-  KEY          ix_parts_collection_id (collection_id)
+  id         BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  binaryid   BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
+  messageid  VARCHAR(255)        NOT NULL DEFAULT '',
+  number     BIGINT UNSIGNED     NOT NULL DEFAULT '0',
+  partnumber INT UNSIGNED        NOT NULL DEFAULT '0',
+  size       BIGINT UNSIGNED     NOT NULL DEFAULT '0',
+  PRIMARY KEY                     (id),
+  KEY          binaryid           (binaryid),
+  INDEX        ix_parts_number    (number),
+  UNIQUE INDEX ix_parts_messageid (messageid)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8
@@ -572,6 +600,7 @@ CREATE TABLE         users (
   invites        INT              NOT NULL DEFAULT '0',
   invitedby      INT              NULL,
   movieview      INT              NOT NULL DEFAULT '1',
+  xxxview        INT              NOT NULL DEFAULT '1',
   musicview      INT              NOT NULL DEFAULT '1',
   consoleview    INT              NOT NULL DEFAULT '1',
   bookview       INT              NOT NULL DEFAULT '1',
@@ -1092,10 +1121,5 @@ CREATE TRIGGER update_hashes AFTER UPDATE ON predb FOR EACH ROW
 CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
     DELETE FROM predbhash WHERE pre_id = OLD.id;
-  END; $$
-CREATE TRIGGER delete_collections BEFORE DELETE ON collections FOR EACH ROW
-  BEGIN
-    DELETE FROM binaries WHERE collectionid = OLD.id;
-    DELETE FROM parts WHERE collection_id = OLD.id;
   END; $$
 DELIMITER ;

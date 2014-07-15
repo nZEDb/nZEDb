@@ -440,7 +440,7 @@ class XXX
 		}
 
 		$mov = array();
-		
+
 		$mov['trailers'] = (isset($res['trailers'])) ? serialize($res['trailers']) : '';
 		$mov['extras'] = (isset($res['extras'])) ? serialize($res['extras']) : '';
 		$mov['productinfo'] = (isset($res['productinfo'])) ? serialize($res['productinfo']) : '';
@@ -746,31 +746,37 @@ class XXX
 		}
 	}
 
-	public function insertswf($whichclass, $res){
-	/* <object width = "360" height = "240" type = "application/x-shockwave-flash" id = "EmpireFlashPlayer" name = "EmpireFlashPlayer" data = "/ClientBin/r1_0_5304_18854_EmpireVideoPlayer.swf" >
-		<param name = "quality" value = "best" >
-		<param name = "bgcolor" value = "#000000" >
-		<param name = "play" value = "true" >
-		<param name = "loop" value = "true" >
-		<param name = "wmode" value = "window" >
-		<param name = "scale" value = "showall" >
-		<param name = "menu" value = "true" >
-		<param name = "devicefont" value = "false" >
-		<param name = "salign" value = "" >
-		<param name = "allowScriptAccess" value = "always" >
-		<param name = "allowFullScreen" value = "true" >
-		<param name = "flashvars" value = "streamID=52RMNS&amp;autoPlay=true&amp;BaseStreamingUrl=199.182.184.107" >
-		</object >
-	*/
-	if($whichclass === "ade"){
-	$ret = '';
-	if(!empty($res)){
-	$trailers = unserialize($res);
-	$ret .="<object width='360' height='240' type='application/x-shockwave-flash' id='EmpireFlashPlayer' name='EmpireFlashPlayer' data='".$trailers['url']."'>";
-	$ret .="<param name='flashvars' value= 'streamID=".$trailers['streamid']."&amp;autoPlay=false&amp;BaseStreamingUrl=".$trailers['baseurl']."'>";
-	$ret .="</object>";
-	return ($ret);
-	}
-	}
+	/**
+	 * Inserts Trailer Code by Class and trailers array
+	 *
+	 * @param $whichclass
+	 * @param $res
+	 *
+	 * @return string
+	 */
+	public function insertswf($whichclass, $res)
+	{
+		if ($whichclass === "ade") {
+			$ret = '';
+			if (!empty($res)) {
+				$trailers = unserialize($res);
+				$ret .="<object width='360' height='240' type='application/x-shockwave-flash' id='EmpireFlashPlayer' name='EmpireFlashPlayer' data='".	$trailers['url'] . "'>";
+				$ret .= "<param name='flashvars' value= 'streamID=" . $trailers['streamid'] . "&amp;autoPlay=false&amp;BaseStreamingUrl=" . $trailers['baseurl'] . "'>";
+				$ret .= "</object>";
+
+				return ($ret);
+			}
+		}
+		if ($whichclass === "pop") {
+			$ret = '';
+			if (!empty($res)) {
+				$trailers = unserialize($res);
+				$ret .= "<embed id='trailer' width='480' height='360'";
+				$ret .= "flashvars='" .	$trailers['flashvars'] . "' allowfullscreen='true' allowscriptaccess='always' quality='high' name='trailer' style='undefined'";
+				$ret .= "src='" . $trailers['baseurl'] . "' type='application/x-shockwave-flash'>";
+
+				return ($ret);
+			}
+		}
 }
 }
