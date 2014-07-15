@@ -219,8 +219,7 @@ class RequestID
 		if (preg_match('/\[\s*(\d+)\s*\]/', $releaseName, $requestID) ||
 			preg_match('/^REQ\s*(\d{4,6})/i', $releaseName, $requestID) ||
 			preg_match('/^(\d{4,6})-\d{1}\[/', $releaseName, $requestID) ||
-			preg_match('/(\d{4,6}) -/',$releaseName, $requestID) ||
-			preg_match('/\[scnzbefnet\]\[(\d{4,6})\]/',$releaseName, $requestID)
+			preg_match('/(\d{4,6}) -/',$releaseName, $requestID)
 		)  {
 			if ((int) $requestID[1] > 0) {
 				return (int) $requestID[1];
