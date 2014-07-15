@@ -1991,12 +1991,30 @@ class Releases
 		}
 
 		$delcount = $minsizecounts + $maxsizecounts + $minfilecounts;
+
 		if ($this->echooutput && $delcount > 0) {
 			$this->c->doEcho(
 				$this->c->primary(
+					PHP_EOL . 'Deleting collections/binaries/parts, be patient.'
+				)
+			);
+
+			$deleteQuery = $this->pdo->queryExec(
+				sprintf(
+					'DELETE FROM %s WHERE filecheck = %s',
+					$group['cname'],
+					self::COLLFC_DELETE
+				)
+			);
+			if ($deleteQuery !== false) {
+				$deleted = $deleteQuery->rowCount();
+			}
+
+			$this->c->doEcho(
+				$this->c->primary(
 					'Deleted ' .
-					number_format($delcount) .
-					" collections smaller/larger than group/site settings."
+					number_format($deleted) .
+					" collections/binaries/parts smaller/larger than group/site settings."
 				)
 			);
 		}
