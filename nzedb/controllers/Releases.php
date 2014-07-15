@@ -1999,6 +1999,7 @@ class Releases
 				)
 			);
 
+			$deleted = 0;
 			$deleteQuery = $this->pdo->queryExec(
 				sprintf(
 					'DELETE FROM %s WHERE filecheck = %s',
@@ -2014,7 +2015,7 @@ class Releases
 				$this->c->primary(
 					'Deleted ' .
 					number_format($deleted) .
-					" collections/binaries/parts smaller/larger than group/site settings."
+					" collections smaller/larger than group/site settings."
 				)
 			);
 		}
