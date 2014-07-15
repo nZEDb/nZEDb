@@ -40,20 +40,24 @@ class Releases
 	public function __construct($echooutput = false)
 	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
+		$this->c = new ColorCLI();
 		$this->pdo = new Settings();
 		$this->groups = new Groups($this->pdo);
 		$this->collectionsCleaning = new CollectionsCleaning();
 		$this->releaseCleaning = new ReleaseCleaning();
 		$this->consoleTools = new ConsoleTools();
-		$this->stage5limit = ($this->pdo->getSetting('maxnzbsprocessed') != '') ? (int)$this->pdo->getSetting('maxnzbsprocessed') : 1000;
-		$this->completion = ($this->pdo->getSetting('releasecompletion')!= '') ? (int)$this->pdo->getSetting('releasecompletion') : 0;
-		$this->crosspostt = ($this->pdo->getSetting('crossposttime')!= '') ? (int)$this->pdo->getSetting('crossposttime') : 2;
-		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0') ? false : true;
+		$this->stage5limit = ($this->pdo->getSetting('maxnzbsprocessed') != '' ? (int)$this->pdo->getSetting('maxnzbsprocessed') : 1000);
+		$this->completion = ($this->pdo->getSetting('releasecompletion')!= '' ? (int)$this->pdo->getSetting('releasecompletion') : 0);
+		if ($this->completion > 100) {
+			$this->completion = 100;
+			echo $this->c->error(PHP_EOL . 'You have an invalid setting for completion. It must be lower than 100.');
+		}
+		$this->crosspostt = ($this->pdo->getSetting('crossposttime')!= '' ? (int)$this->pdo->getSetting('crossposttime') : 2);
+		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0' ? false : true);
 		$this->requestids = $this->pdo->getSetting('lookup_reqids');
-		$this->hashcheck = ($this->pdo->getSetting('hashcheck')!= '') ? (int)$this->pdo->getSetting('hashcheck') : 0;
-		$this->delaytimet = ($this->pdo->getSetting('delaytime')!= '') ? (int)$this->pdo->getSetting('delaytime') : 2;
+		$this->hashcheck = ($this->pdo->getSetting('hashcheck')!= '' ? (int)$this->pdo->getSetting('hashcheck') : 0);
+		$this->delaytimet = ($this->pdo->getSetting('delaytime')!= '' ? (int)$this->pdo->getSetting('delaytime') : 2);
 		$this->_tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
-		$this->c = new ColorCLI();
 	}
 
 	/**
@@ -1565,7 +1569,7 @@ class Releases
 			$this->c->doEcho($this->c->header("Stage 1 -> Try to find complete collections."));
 		}
 
-		$where = (!empty($groupID)) ? ' AND c.group_id = ' . $groupID . ' ' : ' ';
+		$where = (!empty($groupID) ? ' AND c.group_id = ' . $groupID . ' ' : ' ');
 
 		$start = microtime(true);
 		// FIRST QUERY
@@ -1690,7 +1694,7 @@ class Releases
 		);
 		$sixthQuery = microtime(true);
 
-		// Set filecheck to 1 if we don't have all the parts.
+		// Reset filecheck to 1 if we don't have all the parts.
 		// SEVENTH QUERY
 		$this->pdo->queryExec(
 			sprintf('
@@ -1807,7 +1811,9 @@ class Releases
 
 		if ($this->echooutput) {
 			$this->c->doEcho(
-				$this->c->header("Stage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting.")
+				$this->c->header(
+					"Stage 3 -> Delete collections smaller/larger than minimum size/file count from group/site setting."
+				)
 			);
 		}
 
@@ -1899,7 +1905,7 @@ class Releases
 					'Deleted ' . ($minSizeDeleted + $maxSizeDeleted + $minFilesDeleted) . ' collections: ' . PHP_EOL .
 					$minSizeDeleted . ' smaller than, ' .
 					$maxSizeDeleted . ' bigger than, ' .
-					$minFilesDeleted . ' with less files than site/group settings in : ' .
+					$minFilesDeleted . ' with less files than site/group settings in: ' .
 					$this->consoleTools->convertTime(time() - $stage3)
 				), true
 			);
@@ -1916,6 +1922,7 @@ class Releases
 	 */
 	public function processReleasesStage4($groupID)
 	{
+		$stage4 = time();
 		$categorize = new Categorize();
 		$returnCount = $duplicate = 0;
 
@@ -1926,7 +1933,7 @@ class Releases
 			$this->c->doEcho($this->c->header("Stage 4 -> Create releases."));
 		}
 
-		$stage4 = TIME();
+		$this->pdo->ping(true);
 
 		$collections = $this->pdo->queryDirect(
 			sprintf('
@@ -1960,13 +1967,9 @@ class Releases
 				$releaseID = $isReqID = false;
 				$preID = null;
 
-				$cleanRelName = str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $collection['subject']);
-
 				$cleanerName = $this->releaseCleaning->releaseCleaner(
 					$collection['subject'], $collection['fromname'], $collection['filesize'], $collection['gname']
 				);
-
-				$fromName = trim($collection['fromname'], "'");
 
 				if (!is_array($cleanerName)) {
 					$cleanName = $cleanerName;
@@ -1996,9 +1999,9 @@ class Releases
 
 				$category = $categorize->determineCategory($cleanName, $collection['group_id']);
 
-				$cleanRelName = utf8_encode($cleanRelName);
+				$cleanRelName = utf8_encode(str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $collection['subject']));
 				$cleanName = utf8_encode($cleanName);
-				$fromName = utf8_encode($fromName);
+				$fromName = utf8_encode(trim($collection['fromname'], "'"));
 
 				// Look for duplicates, duplicates match on releases.name, releases.fromname and releases.size
 				// A 1% variance in size is considered the same size when the subject and poster are the same
@@ -2017,7 +2020,7 @@ class Releases
 					)
 				);
 
-				if (!$dupeCheck) {
+				if ($dupeCheck === false) {
 					$query = 'INSERT INTO releases (';
 					$query .= ($properName === true ? 'isrenamed, ' : '');
 					$query .= ($preID !== null ? 'preid, ' : '');
@@ -2028,8 +2031,6 @@ class Releases
 					$query .= ($preID !== null ? $preID . ', ' : '');
 					$query .= ($isReqID == true ? '1, ' : '');
 					$query .= '%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1)';
-
-					$this->pdo->ping(true);
 
 					$releaseID = $this->pdo->queryInsert(
 						sprintf(
@@ -2220,7 +2221,7 @@ class Releases
 					$minSizeDeleted . ' smaller than, ' . $maxSizeDeleted . ' bigger than, ' . $minFilesDeleted .
 					' with less files than site/groups setting, ' . $categoryMinSizeDeleted .
 					' smaller than category size settings in: ' .
-					$this->consoleTools->convertTime(TIME() - $stage4dot5)
+					$this->consoleTools->convertTime(time() - $stage4dot5)
 				), true
 			);
 		}
@@ -2255,17 +2256,13 @@ class Releases
 			$total = $releases->rowCount();
 		}
 
-		$releaseIDs = array();
-
 		if ($total > 0) {
 			$nzb = new NZB($this->pdo);
 			// Init vars for writing the NZB's.
 			$nzb->initiateForWrite($groupID);
 			foreach ($releases as $release) {
-				$nzb_create = $nzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']);
 
-				if ($nzb_create !== false) {
-					$releaseIDs[] = $release['id'];
+				if ($nzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']) === true) {
 					$nzbCount++;
 					if ($this->echooutput) {
 						echo $this->c->primaryOver("Creating NZBs:\t" . $nzbCount . '/' . $total . "\r");
@@ -2286,10 +2283,14 @@ class Releases
 			}
 
 			$deleteQuery = $this->pdo->queryExec(
-				sprintf(
-					'DELETE FROM %s WHERE releaseid IN (%s)',
+				sprintf('
+					DELETE c FROM %s c
+					INNER JOIN releases r ON r.id = c.releaseid
+					WHERE r.nzbstatus = %d
+					AND c.filecheck = %d',
 					$group['cname'],
-					implode(',', $releaseIDs)
+					NZB::NZB_ADDED,
+					self::COLLFC_INSERTED
 				)
 			);
 			if ($deleteQuery !== false) {
@@ -2317,23 +2318,13 @@ class Releases
 	 *
 	 * @param int $groupID
 	 * @param int $limit
+	 *
+	 * @access public
+	 * @void
 	 */
 	public function processReleasesStage5b($groupID, $limit = 5000)
 	{
-		$stage5b = time();
-		if ($this->echooutput) {
-			$this->c->doEcho($this->c->header("Stage 5b -> Request ID Local lookup -- limit $limit."));
-		}
-		$iFoundCnt = (new RequestID($this->echooutput))->lookupReqIDs($groupID, $limit, true);
-		if ($this->echooutput) {
-			$this->c->doEcho(
-				$this->c->primary(
-					number_format($iFoundCnt) .
-					' Releases updated in ' .
-					$this->consoleTools->convertTime(TIME() - $stage5b)
-				), true
-			);
-		}
+		$this->processRequestIDs($groupID, $limit, true);
 	}
 
 	/**
@@ -2341,25 +2332,53 @@ class Releases
 	 *
 	 * @param int $groupID
 	 * @param int $limit
+	 *
+	 * @access public
+	 * @void
 	 */
 	public function processReleasesStage5c($groupID, $limit = 100)
 	{
-		if ($this->pdo->getSetting('lookup_reqids') > 0) {
-			$stage5c = time();
-			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Stage 5c -> Request ID Web lookup -- limit $limit."));
-			}
-			$iFoundCnt = (new RequestID($this->echooutput))->lookupReqIDs($groupID, $limit, false);
-			if ($this->echooutput) {
-				$this->c->doEcho(
-					PHP_EOL .
-					$this->c->primary(
-						number_format($iFoundCnt) .
-						' Releases updated in ' .
-						$this->consoleTools->convertTime(TIME() - $stage5c)
-					), true
-				);
-			}
+		$this->processRequestIDs($groupID, $limit, false);
+	}
+
+	/**
+	 * Process RequestID's.
+	 *
+	 * @param int  $groupID
+	 * @param int  $limit
+	 * @param bool $local
+	 *
+	 * @access private
+	 * @void
+	 */
+	private function processRequestIDs($groupID, $limit, $local)
+	{
+		if ($local === false && $this->pdo->getSetting('lookup_reqids') == 0) {
+			return;
+		}
+
+		$stage5 = time();
+		if ($this->echooutput) {
+			$this->c->doEcho(
+				$this->c->header(
+					sprintf(
+						"Stage 5%s -> Request ID %s lookup -- limit %s",
+						($local === true ? 'a' : 'b'),
+						($local === true ? 'Local' : 'Web'),
+						$limit
+					)
+				)
+			);
+		}
+		$iFoundCnt = (new RequestID($this->echooutput))->lookupReqIDs($groupID, $limit, $local);
+		if ($this->echooutput) {
+			$this->c->doEcho(
+				$this->c->primary(
+					number_format($iFoundCnt) .
+					' Releases updated in ' .
+					$this->consoleTools->convertTime(time() - $stage5)
+				), true
+			);
 		}
 	}
 
@@ -2377,12 +2396,14 @@ class Releases
 	public function processReleasesStage6($categorize, $postProcess, $groupID, $nntp)
 	{
 		$stage6 = time();
-		// Categorize releases.
 		if ($this->echooutput) {
 			echo $this->c->header("Stage 6 -> Categorize and post process releases.");
 		}
 		if ($categorize == 1) {
-			$this->categorizeRelease('name', (!empty($groupID) ? 'WHERE iscategorized = 0 AND group_id = ' . $groupID : 'WHERE iscategorized = 0'));
+			$this->categorizeRelease(
+				'name',
+				(!empty($groupID) ? 'WHERE iscategorized = 0 AND group_id = ' . $groupID : 'WHERE iscategorized = 0')
+			);
 		}
 		if ($postProcess == 1) {
 			(new PostProcess($this->echooutput))->processAll($nntp);
@@ -2417,12 +2438,14 @@ class Releases
 		$group = $this->groups->getCBPTableNames($this->_tablePerGroup, $groupID);
 
 		if ($this->echooutput) {
-			echo $this->c->header("Stage 7a -> Delete finished collections." . PHP_EOL);
-			echo $this->c->primary('Deleting old collections/binaries/parts.');
+			echo (
+				$this->c->header("Stage 7a -> Delete finished collections." . PHP_EOL) .
+				$this->c->primary('Deleting old collections/binaries/parts.')
+			);
 		}
 
 		$deleted = 0;
-		// Old collections that were missed somehow.
+		// CBP older than retention.
 		$deleteQuery = $this->pdo->queryExec(
 			sprintf(
 				'DELETE FROM %s WHERE dateadded < (NOW() - INTERVAL %d HOUR) %s',
@@ -2612,7 +2635,8 @@ class Releases
 		$stage7 = time();
 		$category = new Category();
 		$genres = new Genres();
-		$remcount = $reccount = $passcount = $dupecount = $relsizecount = $completioncount = $disabledcount = $disabledgenrecount = $miscothercount = $total = 0;
+		$passwordDeleted = $duplicateDeleted = $retentionDeleted = $completionDeleted = $disabledCategoryDeleted = 0;
+		$disabledGenreDeleted = $miscRetentionDeleted = $totalDeleted = 0;
 
 		// Delete old releases and finished collections.
 		if ($this->echooutput) {
@@ -2621,82 +2645,98 @@ class Releases
 
 		// Releases past retention.
 		if ($this->pdo->getSetting('releaseretentiondays') != 0) {
-			$result = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)', $this->pdo->getSetting('releaseretentiondays')));
-			if ($result !== false && $result->rowCount() > 0) {
-				foreach ($result as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid']);
-					$remcount++;
+			$releases = $this->pdo->queryDirect(
+				sprintf(
+					'SELECT id, guid FROM releases WHERE postdate < (NOW() - INTERVAL %d DAY)',
+					$this->pdo->getSetting('releaseretentiondays')
+				)
+			);
+			if ($releases !== false && $releases->rowCount() > 0) {
+				foreach ($releases as $release) {
+					$this->fastDelete($release['id'], $release['guid']);
+					$retentionDeleted++;
 				}
 			}
 		}
 
 		// Passworded releases.
 		if ($this->pdo->getSetting('deletepasswordedrelease') == 1) {
-			$result = $this->pdo->queryDirect(
-				'SELECT id, guid FROM releases WHERE passwordstatus = ' . Releases::PASSWD_RAR
+			$releases = $this->pdo->queryDirect(
+				sprintf(
+					'SELECT id, guid FROM releases WHERE passwordstatus = ',
+					Releases::PASSWD_RAR
+				)
 			);
-			if ($result !== false && $result->rowCount() > 0) {
-				foreach ($result as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid']);
-					$passcount++;
+			if ($releases !== false && $releases->rowCount() > 0) {
+				foreach ($releases as $release) {
+					$this->fastDelete($release['id'], $release['guid']);
+					$passwordDeleted++;
 				}
 			}
 		}
 
 		// Possibly passworded releases.
 		if ($this->pdo->getSetting('deletepossiblerelease') == 1) {
-			$result = $this->pdo->queryDirect(
-				'SELECT id, guid FROM releases WHERE passwordstatus = ' . Releases::PASSWD_POTENTIAL
+			$releases = $this->pdo->queryDirect(
+				sprintf(
+					'SELECT id, guid FROM releases WHERE passwordstatus = ',
+					Releases::PASSWD_POTENTIAL
+				)
 			);
-			if ($result !== false && $result->rowCount() > 0) {
-				foreach ($result as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid']);
-					$passcount++;
+			if ($releases !== false && $releases->rowCount() > 0) {
+				foreach ($releases as $release) {
+					$this->fastDelete($release['id'], $release['guid']);
+					$passwordDeleted++;
 				}
 			}
 		}
 
-		// Crossposted releases.
-		do {
-			if ($this->crosspostt != 0) {
-				$resrel = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1', $this->crosspostt));
+		if ($this->crosspostt != 0) {
+			$total = 0;
+			// Crossposted releases.
+			do {
+				$releases = $this->pdo->queryDirect(
+					sprintf(
+						'SELECT id, guid FROM releases WHERE adddate > (NOW() - INTERVAL %d HOUR) GROUP BY name HAVING COUNT(name) > 1',
+						$this->crosspostt
+					)
+				);
 				$total = 0;
-				if ($resrel !== false) {
-					$total = $resrel->rowCount();
+				if ($releases !== false) {
+					$total = $releases->rowCount();
 				}
 				if ($total > 0) {
-					foreach ($resrel as $rowrel) {
-						$this->fastDelete($rowrel['id'], $rowrel['guid']);
-						$dupecount++;
+					foreach ($releases as $release) {
+						$this->fastDelete($release['id'], $release['guid']);
+						$duplicateDeleted++;
 					}
 				}
-			}
-		} while ($total > 0);
-
-		// Releases below completion %.
-		if ($this->completion > 100) {
-			$this->completion = 100;
-			echo $this->c->error("\nYou have an invalid setting for completion.");
+			} while ($total > 0);
 		}
+
 		if ($this->completion > 0) {
-			$resrel = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion));
-			if ($resrel !== false && $resrel->rowCount() > 0) {
-				foreach ($resrel as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid']);
-					$completioncount++;
+			$releases = $this->pdo->queryDirect(
+				sprintf('SELECT id, guid FROM releases WHERE completion < %d AND completion > 0', $this->completion)
+			);
+			if ($releases !== false && $releases->rowCount() > 0) {
+				foreach ($releases as $release) {
+					$this->fastDelete($release['id'], $release['guid']);
+					$completionDeleted++;
 				}
 			}
 		}
 
 		// Disabled categories.
-		$catlist = $category->getDisabledIDs();
-		if (count($catlist) > 0) {
-			foreach ($catlist as $cat) {
-				$res = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d', $cat['id']));
-				if ($res !== false && $res->rowCount() > 0) {
-					foreach ($res as $rel) {
-						$disabledcount++;
-						$this->fastDelete($rel['id'], $rel['guid']);
+		$disabledCategories = $category->getDisabledIDs();
+		if (count($disabledCategories) > 0) {
+			foreach ($disabledCategories as $disabledCategory) {
+				$releases = $this->pdo->queryDirect(
+					sprintf('SELECT id, guid FROM releases WHERE categoryid = %d', $disabledCategory['id'])
+				);
+				if ($releases !== false && $releases->rowCount() > 0) {
+					foreach ($releases as $release) {
+						$disabledCategoryDeleted++;
+						$this->fastDelete($release['id'], $release['guid']);
 					}
 				}
 			}
@@ -2706,11 +2746,11 @@ class Releases
 		$genrelist = $genres->getDisabledIDs();
 		if (count($genrelist) > 0) {
 			foreach ($genrelist as $genre) {
-				$rels = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genreid = %d) mi ON musicinfoid = mid', $genre['id']));
-				if ($rels !== false && $rels->rowCount() > 0) {
-					foreach ($rels as $rel) {
-						$disabledgenrecount++;
-						$this->fastDelete($rel['id'], $rel['guid']);
+				$releases = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases INNER JOIN (SELECT id AS mid FROM musicinfo WHERE musicinfo.genreid = %d) mi ON musicinfoid = mid', $genre['id']));
+				if ($releases !== false && $releases->rowCount() > 0) {
+					foreach ($releases as $release) {
+						$disabledGenreDeleted++;
+						$this->fastDelete($release['id'], $release['guid']);
 					}
 				}
 			}
@@ -2718,66 +2758,50 @@ class Releases
 
 		// Misc other.
 		if ($this->pdo->getSetting('miscotherretentionhours') > 0) {
-			$resrel = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL %d HOUR', CATEGORY::CAT_MISC, $this->pdo->getSetting('miscotherretentionhours')));
-			if ($resrel !== false && $resrel->rowCount() > 0) {
-				foreach ($resrel as $rowrel) {
-					$this->fastDelete($rowrel['id'], $rowrel['guid']);
-					$miscothercount++;
+			$releases = $this->pdo->queryDirect(sprintf('SELECT id, guid FROM releases WHERE categoryid = %d AND adddate <= NOW() - INTERVAL %d HOUR', CATEGORY::CAT_MISC, $this->pdo->getSetting('miscotherretentionhours')));
+			if ($releases !== false && $releases->rowCount() > 0) {
+				foreach ($releases as $release) {
+					$this->fastDelete($release['id'], $release['guid']);
+					$miscRetentionDeleted++;
 				}
 			}
 		}
 
-		if ($this->echooutput && $this->completion > 0) {
-			$this->c->doEcho(
-				$this->c->primary(
-					'Removed releases: ' .
-					number_format($remcount) .
-					' past retention, ' .
-					number_format($passcount) .
-					' passworded, ' .
-					number_format($dupecount) .
-					' crossposted, ' .
-					number_format($disabledcount) .
-					' from disabled categories, ' .
-					number_format($disabledgenrecount) .
-					' from disabled music genres, ' .
-					number_format($miscothercount) .
-					' from misc->other, ' .
-					number_format($completioncount) .
-					' under ' .
-					$this->completion .
-					'% completion.'
-				)
-			);
-		} else if ($this->echooutput && $this->completion == 0) {
-			$this->c->doEcho(
-				$this->c->primary(
-					'Removed releases: ' .
-					number_format($remcount) .
-					' past retention, ' .
-					number_format($passcount) .
-					' passworded, ' .
-					number_format($dupecount) .
-					' crossposted, ' .
-					number_format($disabledcount) .
-					' from disabled categories, ' .
-					number_format($disabledgenrecount) .
-					' from disabled music genres, ' .
-					number_format($miscothercount) .
-					' from misc->other'
-				)
-			);
-		}
-
 		if ($this->echooutput) {
-			if ($reccount > 0) {
+			$this->c->doEcho(
+				$this->c->primary(
+					'Removed releases: ' .
+					number_format($retentionDeleted) .
+					' past retention, ' .
+					number_format($passwordDeleted) .
+					' passworded, ' .
+					number_format($duplicateDeleted) .
+					' crossposted, ' .
+					number_format($disabledCategoryDeleted) .
+					' from disabled categories, ' .
+					number_format($disabledGenreDeleted) .
+					' from disabled music genres, ' .
+					number_format($miscRetentionDeleted) .
+					' from misc->other' .
+					($this->completion > 0
+						? ', ' . number_format($completionDeleted) . ' under ' . $this->completion . '% completion.'
+						: '.'
+					)
+				)
+			);
+
+			$totalDeleted = (
+				$retentionDeleted + $passwordDeleted + $duplicateDeleted + $disabledCategoryDeleted +
+				$disabledGenreDeleted + $miscRetentionDeleted + $completionDeleted
+			);
+			if ($totalDeleted > 0) {
 				$this->c->doEcho(
 					$this->c->primary(
-						"Removed " . number_format($reccount) . ' parts/binaries/collection rows.'
+						"Removed " . number_format($totalDeleted) . ' parts/binaries/collection rows.'
 					)
 				);
 			}
-			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(TIME() - $stage7)), true);
+			$this->c->doEcho($this->c->primary($this->consoleTools->convertTime(time() - $stage7)), true);
 		}
 	}
 
