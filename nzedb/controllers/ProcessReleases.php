@@ -229,7 +229,7 @@ class ProcessReleases
 			);
 			$this->colorCLI->doEcho(
 				$this->colorCLI->primary(
-					($count === false ? 0 : $count['complete']) . ' collections were found to be compete. Time: ' .
+					($count === false ? 0 : $count['complete']) . ' collections were found to be complete. Time: ' .
 					$this->consoleTools->convertTime(time() - $startTime)
 				), true
 			);
