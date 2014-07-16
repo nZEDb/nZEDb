@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-07-16 niel
 	* Chg: Refactored CLI code out of DbUpdate and Versions classes and into their own scripts in .../nzedb/cli
 		NOTE: This means "php nzedb/db/DbUpdate.php true", now needs to be "php cli/update_db.php true"
+	* Fix: Processing tasky's SQL patch file.
 2014-07-16 ruhllatio
 	* Fix: TPG/Threaded for ProcessReleases move
 2014-07-16 kevin
