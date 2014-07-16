@@ -119,7 +119,7 @@ $proc_work = "SELECT "
 
 $proc_work2 = "SELECT "
 	. "(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND ((r.categoryid BETWEEN 4000 AND 4999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) OR (r.categoryid = 4050 AND r.gamesinfo_id IS NULL))) AS pc, "
-	. "(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.categoryid BETWEEN 6000 AND 6999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS pron, "
+	. "(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.categoryid BETWEEN 6000 AND 6999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS xxx, "
 	. "(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND ((r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) OR (r.categoryid = 4050 AND r.gamesinfo_id IS NULL))) AS work, "
 	. "(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table, "
 	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
@@ -318,7 +318,7 @@ $movie_diff = $movie_percent = $movie_releases_now = $movie_releases_proc = 0;
 $nfo_diff = $nfo_percent = $nfo_remaining_now = $nfo_now = $tvrage_releases_proc_start = 0;
 $pc_diff = $pc_percent = $pc_releases_now = $pc_releases_proc = $book_releases_proc_start = 0;
 $pre_diff = $pre_percent = $predb_matched = $predb_start = $predb = $distinct_predb_matched = 0;
-$pron_diff = $pron_remaining_start = $pron_remaining_now = $pron_start = $pron_percent = $pron_releases_now = 0;
+$xxx_diff = $xxx_percent = $xxx_remaining_now = $xxx_releases_proc_start = $xxx_releases_now = 0;
 $nfo_remaining_start = $work_remaining_start = $releases_start = $releases_now = $releases_since_start = 0;
 $request_percent = $requestid_inprogress_start = $requestid_inprogress = $requestid_diff = $requestid_matched = 0;
 $total_work_now = $work_diff = $work_remaining_now = $pc_releases_proc_start = 0;
@@ -374,7 +374,7 @@ printf($mask4, "Movie(2000)", number_format($movie_releases_proc) . "(" . $movie
 printf($mask4, "Audio(3000)", number_format($music_releases_proc) . "(" . $music_diff . ")", number_format($music_releases_now) . "(" . $music_percent . "%)");
 printf($mask4, "PC(4000)", number_format($pc_releases_proc) . "(" . $pc_diff . ")", number_format($pc_releases_now) . "(" . $pc_percent . "%)");
 printf($mask4, "TVShows(5000)", number_format($tvrage_releases_proc) . "(" . $tvrage_diff . ")", number_format($tvrage_releases_now) . "(" . $tvrage_percent . "%)");
-printf($mask4, "xXx(6000)", number_format($pron_remaining_now) . "(" . $pron_diff . ")", number_format($pron_releases_now) . "(" . $pron_percent . "%)");
+printf($mask4, "xXx(6000)", number_format($xxx_releases_proc) . "(" . $xxx_diff . ")", number_format($xxx_releases_now) . "(" . $xxx_percent . "%)");
 printf($mask4, "Misc(7000)", number_format($work_remaining_now) . "(" . $misc_diff . ")", number_format($misc_releases_now) . "(" . $misc_percent . "%)");
 printf($mask4, "Books(8000)", number_format($book_releases_proc) . "(" . $book_diff . ")", number_format($book_releases_now) . "(" . $book_percent . "%)");
 printf($mask4, "Total", number_format($total_work_now) . "(" . $work_diff . ")", number_format($releases_now) . "(" . $releases_since_start . ")");
@@ -517,6 +517,9 @@ while ($i > 0) {
 		if ($proc_work_result[0]['movies'] != null) {
 			$movie_releases_proc_start = $proc_work_result[0]['movies'];
 		}
+		if ($proc_work_result2[0]['xxx'] != null) {
+			$xxx_releases_proc_start = $proc_work_result2[0]['xxx'];
+		}
 		if ($proc_work_result[0]['audio'] != null) {
 			$music_releases_proc_start = $proc_work_result[0]['audio'];
 		}
@@ -530,13 +533,7 @@ while ($i > 0) {
 			$book_releases_proc_start = $proc_work_result[0]['book'];
 		}
 		if ($proc_work_result2[0]['work'] != null) {
-			$work_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron'];
-		}
-		if ($proc_work_result2[0]['pron'] != null) {
-			$pron_remaining_start = $proc_work_result2[0]['pron'];
-		}
-		if ($proc_work_result2[0]['pron'] != null) {
-			$pron_start = $proc_work_result2[0]['pron'];
+			$work_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['xxx'];
 		}
 		if ($proc_work_result[0]['releases'] != null) {
 			$releases_start = $proc_work_result[0]['releases'];
@@ -545,7 +542,7 @@ while ($i > 0) {
 			$requestid_inprogress_start = $proc_work_result3[0]['requestid_unproc'] + $proc_work_result3[0]['requestid_local'] + $proc_work_result3[0]['requestid_web'];
 		}
 		if ($proc_work_result2[0]['work'] != null) {
-			$work_remaining_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron'];
+			$work_remaining_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['xxx'];
 		}
 	}
 
@@ -567,7 +564,7 @@ while ($i > 0) {
 			$tvrage_releases_now = $cat['count'];
 		}
 		if ($cat['parentid'] == 6000) {
-			$pron_releases_now = $cat['count'];
+			$xxx_releases_now = $cat['count'];
 		}
 		if ($cat['parentid'] == 7000) {
 			$misc_releases_now = $cat['count'];
@@ -598,10 +595,10 @@ while ($i > 0) {
 		$book_releases_proc = $proc_work_result[0]['book'];
 	}
 	if ($proc_work_result2[0]['work'] != null) {
-		$work_remaining_now = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['pron'];
+		$work_remaining_now = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['xxx'];
 	}
-	if ($proc_work_result2[0]['pron'] != null) {
-		$pron_remaining_now = $proc_work_result2[0]['pron'];
+	if ($proc_work_result2[0]['xxx'] != null) {
+		$xxx_remaining_now = $proc_work_result2[0]['xxx'];
 	}
 	if ($proc_work_result[0]['releases'] != null) {
 		$releases_loop = $proc_work_result[0]['releases'];
@@ -867,7 +864,7 @@ while ($i > 0) {
 		$nfo_remaining_now = $nfo_remaining_start = 0;
 	}
 
-	$total_work_now = $work_remaining_now + $tvrage_releases_proc + $music_releases_proc + $movie_releases_proc + $console_releases_proc + $book_releases_proc + $nfo_remaining_now + $pc_releases_proc + $pron_remaining_now;
+	$total_work_now = $work_remaining_now + $tvrage_releases_proc + $music_releases_proc + $movie_releases_proc + $console_releases_proc + $book_releases_proc + $nfo_remaining_now + $pc_releases_proc + $xxx_releases_proc;
 	if ($i == 1) {
 		$total_work_start = $total_work_now;
 	}
@@ -899,7 +896,7 @@ while ($i > 0) {
 		$movie_percent = sprintf("%02s", floor(($movie_releases_now / $releases_now) * 100));
 		$music_percent = sprintf("%02s", floor(($music_releases_now / $releases_now) * 100));
 		$pc_percent = sprintf("%02s", floor(($pc_releases_now / $releases_now) * 100));
-		$xxx_percent = sprintf("%02s", floor(($pron_releases_now / $releases_now) * 100));
+		$xxx_percent = sprintf("%02s", floor(($xxx_releases_now / $releases_now) * 100));
 		$tvrage_percent = sprintf("%02s", floor(($tvrage_releases_now / $releases_now) * 100));
 		$book_percent = sprintf("%02s", floor(($book_releases_now / $releases_now) * 100));
 		$misc_percent = sprintf("%02s", floor(($misc_releases_now / $releases_now) * 100));
@@ -1224,7 +1221,7 @@ while ($i > 0) {
 					break;
 			}
 
-			if ($post == 1 && ($work_remaining_now + $pc_releases_proc + $pron_remaining_now) > 0) {
+			if ($post == 1 && ($work_remaining_now + $pc_releases_proc + $xxx_remaining_now) > 0) {
 				//run postprocess_releases additional
 				$history = str_replace(" ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'`);
 				if ($last_history != $history) {
@@ -1251,7 +1248,7 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 ' \
 						$_python ${DIR}update/python/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null"
 				);
-			} else if (($post == 3) && (($nfo_remaining_now > 0) || ($work_remaining_now + $pc_releases_proc + $pron_remaining_now > 0))) {
+			} else if (($post == 3) && (($nfo_remaining_now > 0) || ($work_remaining_now + $pc_releases_proc + $xxx_remaining_now > 0))) {
 				//run postprocess_releases additional
 				$history = str_replace(" ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'`);
 				if ($last_history != $history) {
@@ -1274,7 +1271,7 @@ while ($i > 0) {
 						$_python ${DIR}update/python/postprocess_threaded.py additional $log; \
 						$_python ${DIR}update/python/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null"
 				);
-			} else if (($post != 0) && ($nfo_remaining_now == 0) && ($work_remaining_now + $pc_releases_proc + $pron_remaining_now == 0)) {
+			} else if (($post != 0) && ($nfo_remaining_now == 0) && ($work_remaining_now + $pc_releases_proc + $xxx_releases_proc == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.0 'echo \"\033[38;5;${color}m\n${panes2[0]} has been disabled/terminated by No Misc/Nfo to process\"'");
 			} else {

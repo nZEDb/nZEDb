@@ -252,11 +252,11 @@ class PostProcess
 	 *
 	 * @return void
 	 */
-	public function processXXX($releaseToWork = '')
+	public function processXXX()
 	{
 		if ($this->pdo->getSetting('lookupxxx') == 1) {
 			$movie = new XXX($this->echooutput);
-			$movie->processXXXReleases($releaseToWork);
+			$movie->processXXXReleases();
 		}
 	}
 

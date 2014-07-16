@@ -545,19 +545,17 @@ class XXX
 	/**
 	 * Process releases with no xxxinfo ID's.
 	 *
-	 * @param string $releaseToWork
 	 */
 
-	public function processXXXReleases($releaseToWork = '')
+	public function processXXXReleases()
 	{
 		// Get all releases without an IMpdo id.
-		if ($releaseToWork === '') {
 			$res = $this->pdo->query(
 				sprintf("
 					SELECT r.searchname, r.id
 					FROM releases r
 					WHERE r.nzbstatus = 1
-					AND r.xxxinfo_id IS NULL
+					AND r.xxxinfo_id = 0
 					AND r.categoryid BETWEEN 6000 AND 6040
 					AND r.isrenamed = 1
 					LIMIT %d",
@@ -565,11 +563,6 @@ class XXX
 				)
 			);
 			$movieCount = count($res);
-			} else {
-			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('searchname' => $pieces[0], 'id' => $pieces[1]));
-			$movieCount = 1;
-		}
 
 		if ($movieCount > 0) {
 			if ($this->echooutput && $movieCount > 1) {
