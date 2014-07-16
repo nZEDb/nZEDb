@@ -1123,4 +1123,9 @@ CREATE TRIGGER delete_hashes AFTER DELETE ON predb FOR EACH ROW
   BEGIN
     DELETE FROM predbhash WHERE pre_id = OLD.id;
   END; $$
+CREATE TRIGGER delete_collections BEFORE DELETE ON collections FOR EACH ROW
+  BEGIN
+    DELETE FROM binaries WHERE collectionid = OLD.id;
+    DELETE FROM parts WHERE collection_id = OLD.id;
+  END; $$
 DELIMITER ;
