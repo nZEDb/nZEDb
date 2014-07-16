@@ -60,7 +60,7 @@ if ($pieces[0] != 'Stage7b') {
 	// Runs functions that run on releases table after all others completed
 	$groupid = '';
 	$releases->deletedReleasesByGroup($groupid);
-	$releases->processRequestIDs($groupID, 5000, true);
+	$releases->processRequestIDs($groupid, 5000, true);
 	$releases->categorizeReleases(1, $groupid);
 	$releases->deleteReleases();
 	//echo 'Deleted '.number_format($deleted)." collections/binaries/parts.\n";
