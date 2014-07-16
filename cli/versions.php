@@ -21,29 +21,35 @@
 require_once
 	dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
-use nzedb\db\DbUpdate;
 use nzedb\utility\Utility;
+use nzedb\utility\Versions;
 
-if (Utility::isCLI() && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
-	$backup  = (isset($argv[2]) && $argv[2] == 'safe') ? true : false;
-	$updater = new DbUpdate(['backup' => $backup]);
-	echo $updater->log->header("Db updater starting ...");
-	$patched = $updater->processPatches(['safe' => $backup]);
-
-	if ($patched > 0) {
-		echo $updater->log->info("$patched patch(es) applied.");
-
-		$smarty  = new \Smarty();
-		$cleared = $smarty->clearCompiledTemplate();
-		if ($cleared) {
-			$msg = "The smarty template cache has been cleaned for you\n";
-		} else {
-			$msg = "You should clear your smarty template cache at: " .
-				   SMARTY_DIR . "templates_c\n";
-		}
-		$updater->log->info($msg);
-	}
+if (!Utility::isCLI()) {
+	exit;
 }
 
+if (isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
+	$vers = new Versions();
+	echo $vers->out->header("Checking versions...");
+
+	if ($vers->checkAll()) {
+		$vers->save();
+	} else {
+		echo "No changes detected.\n";
+		output($vers);
+	}
+} else {
+	$vers->checkAll(false);
+	echo "Version info in file:\n";
+	output($vers);
+}
+
+function output($vers)
+{
+	echo "  Commit: " . $vers->out->primary($vers->getCommit());
+	echo "SQL   DB: " . $vers->out->primary($vers->getSQLPatchFromDb());
+	echo "SQL File: " . $vers->out->primary($vers->getSQLPatchFromFiles());
+	echo "     Tag: " . $vers->out->primary($vers->getTagVersion());
+}
 
 ?>
