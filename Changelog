@@ -14,6 +14,7 @@ New updates are grouped by person, at the top of the file.
 2014-07-16 kevin
 	* Chg: Move ProcessReleases out of Releases.
 	* Chg: Speed up release creation.
+	* ---: Merge PR by tasky.
 2014-07-15 ruhllatio
 	* Chg: Improve TV series listing site response
 	* Chg: Remove likes from predbft search query

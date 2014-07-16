@@ -1532,6 +1532,30 @@ class Releases
 		);
 	}
 
+		/**
+	 * Get all newest xxx with covers for poster wall.
+	 *
+	 * @return array
+	 */
+	public function getNewestXXX()
+	{
+		return $this->pdo->query(
+			"SELECT DISTINCT (a.xxxinfo_id),
+				guid, name, b.title, searchname, size, completion,
+				postdate, categoryid, comments, grabs, c.cover, c.title
+			FROM releases a, category b, xxxinfo c
+			WHERE a.categoryid BETWEEN 6000 AND 6040
+			AND b.title = 'XXX'
+			AND a.xxxinfo_id = c.id
+			AND a.xxxinfo_id !='NULL'
+			AND a.xxxinfo_id != 0
+			AND c.cover = 1
+			GROUP BY a.xxxinfo_id
+			ORDER BY a.postdate
+			DESC LIMIT 24"
+		);
+	}
+
 	/**
 	 * Get all newest console games with covers for poster wall.
 	 *

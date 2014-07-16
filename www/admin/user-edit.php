@@ -31,6 +31,7 @@ switch($action)
 		$user["role"] = $defaultrole;
 		$user["invites"] = $defaultinvites;
 		$user["movieview"] = "1";
+		$user["xxxview"] = "1";
 		$user["musicview"] = "1";
 		$user["consoleview"] = "1";
 		$user["gameview"] = "1";
