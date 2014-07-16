@@ -155,7 +155,7 @@ class Utility
 
 		$pdo = new \nzedb\db\Settings();
 		$patch = $pdo->getSetting(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
-		$ver = $versions->getSQLPatchFromFiles();
+		$ver = $versions->versions->sql->file;
 
 		// Check database patch version
 		if ($patch < $ver) {
