@@ -74,7 +74,7 @@ CREATE TABLE         releases (
   xxxinfo_id        INT SIGNED                     NOT NULL DEFAULT '0',
   musicinfoid       INT                            NULL,
   consoleinfoid     INT                            NULL,
-  gamesinfo_id      INT SIGNED                   NOT NULL DEFAULT '0',
+  gamesinfo_id      INT SIGNED                     NOT NULL DEFAULT '0',
   bookinfoid        INT                            NULL,
   anidbid           INT                            NULL,
   preid             INT UNSIGNED                   NOT NULL DEFAULT '0',
