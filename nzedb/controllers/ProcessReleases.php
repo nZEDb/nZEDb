@@ -441,117 +441,112 @@ class ProcessReleases
 		if ($collections !== false && $collections->rowCount() > 0) {
 			$preDB = new PreDb($this->echoCLI);
 
-			$checkPasswords = ($this->pdo->getSetting('checkpasswordedrar') == '1' ? -1 : 0);
+			$insertQuery = (
+				"INSERT INTO releases (%s %s %s name, searchname, totalpart, group_id, adddate, guid, rageid,
+					postdate, fromname, size, passwordstatus, haspreview, categoryid, nfostatus, iscategorized)
+				VALUES (%s %s %s %s, %s, %d, %d, NOW(), sha1('%s'), -1, %s, %s, %s, " .
+				($this->pdo->getSetting('checkpasswordedrar') == 1 ? -1 : 0) .
+				', -1, %d, -1, 1)'
+			);
 
 			foreach ($collections as $collection) {
 
-				$properName = true;
-				$releaseID = $isReqID = false;
-				$preID = null;
-
-				$cleanerName = $this->releaseCleaning->releaseCleaner(
-					$collection['subject'], $collection['fromname'], $collection['filesize'], $collection['gname']
+				$cleanRelName = $this->pdo->escapeString(
+					utf8_encode(
+						str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $collection['subject'])
+					)
 				);
-
-				if (!is_array($cleanerName)) {
-					$cleanName = $cleanerName;
-				} else {
-
-					$cleanName = $cleanerName['cleansubject'];
-					$properName = $cleanerName['properlynamed'];
-
-					if (isset($cleanerName['predb'])) {
-						$preID = $cleanerName['predb'];
-					}
-
-					if (isset($cleanerName['requestid'])) {
-						$isReqID = $cleanerName['requestid'];
-					}
-				}
-
-				if ($preID === null && $cleanName != '') {
-					// try to match the cleaned searchname to predb title or filename here
-					$preMatch = $preDB->matchPre($cleanName);
-					if ($preMatch !== false) {
-						$cleanName = $preMatch['title'];
-						$preID = $preMatch['preid'];
-						$properName = true;
-					}
-				}
-
-				$category = $categorize->determineCategory($cleanName, $collection['group_id']);
-
-				$cleanRelName = utf8_encode(str_replace(array('#', '@', '$', '%', '^', '§', '¨', '©', 'Ö'), '', $collection['subject']));
-				$cleanName = utf8_encode($cleanName);
-				$fromName = utf8_encode(trim($collection['fromname'], "'"));
+				$fromName = $this->pdo->escapeString(
+					utf8_encode(trim($collection['fromname'], "'"))
+				);
 
 				// Look for duplicates, duplicates match on releases.name, releases.fromname and releases.size
 				// A 1% variance in size is considered the same size when the subject and poster are the same
 				$dupeCheck = $this->pdo->queryOneRow(
-					sprintf('
-						SELECT id, guid
+					sprintf("
+						SELECT id
 						FROM releases
 						WHERE name = %s
 						AND fromname = %s
-						AND size BETWEEN %s
-						AND %s',
-						$this->pdo->escapeString($cleanRelName),
-						$this->pdo->escapeString($fromName),
-						$this->pdo->escapeString($collection['filesize'] * .99),
-						$this->pdo->escapeString($collection['filesize'] * 1.01)
+						AND size BETWEEN '%s'
+						AND '%s'",
+						$cleanRelName,
+						$fromName,
+						($collection['filesize'] * .99),
+						($collection['filesize'] * 1.01)
 					)
 				);
 
 				if ($dupeCheck === false) {
-					$query = 'INSERT INTO releases (';
-					$query .= ($properName === true ? 'isrenamed, ' : '');
-					$query .= ($preID !== null ? 'preid, ' : '');
-					$query .= ($isReqID === true ? 'reqidstatus, ' : '');
-					$query .= 'name, searchname, totalpart, group_id, adddate, guid, rageid, postdate, fromname, ';
-					$query .= 'size, passwordstatus, haspreview, categoryid, nfostatus, iscategorized) VALUES (';
-					$query .= ($properName === true ? '1, ' : '');
-					$query .= ($preID !== null ? $preID . ', ' : '');
-					$query .= ($isReqID == true ? '1, ' : '');
-					$query .= '%s, %s, %d, %d, NOW(), %s, -1, %s, %s, %s, %d, -1, %d, -1, 1)';
 
-					$releaseID = $this->pdo->queryInsert(
-						sprintf(
-							$query,
-							$this->pdo->escapeString($cleanRelName),
-							$this->pdo->escapeString($cleanName),
-							$collection['totalfiles'],
-							$collection['group_id'],
-							$this->pdo->escapeString(sha1(uniqid('', true) . mt_rand())),
-							$this->pdo->escapeString($collection['date']),
-							$this->pdo->escapeString($fromName),
-							$this->pdo->escapeString($collection['filesize']),
-							$checkPasswords,
-							$category
-						)
-					);
-				}
-
-				if ($releaseID) {
-					// Update collections table to say we inserted the release.
-					$this->pdo->queryExec(
-						sprintf('
-							UPDATE %s
-							SET filecheck = %d, releaseid = %d
-							WHERE id = %d',
-							$group['cname'],
-							self::COLLFC_INSERTED,
-							$releaseID,
-							$collection['id']
-						)
+					$cleanedName = $this->releaseCleaning->releaseCleaner(
+						$collection['subject'], $collection['fromname'], $collection['filesize'], $collection['gname']
 					);
 
-					$returnCount++;
-
-					if ($this->echoCLI) {
-						echo $this->colorCLI->primary('Added release ' . $cleanName);
+					if (is_array($cleanedName)) {
+						$properName = $cleanedName['properlynamed'];
+						$preID = (isset($cleanerName['predb']) ? $cleanerName['predb'] : false);
+						$isReqID = (isset($cleanerName['requestid']) ? $cleanerName['requestid'] : false);
+						$cleanedName = $cleanedName['cleansubject'];
+					} else {
+						$properName = true;
+						$isReqID = $preID = false;
 					}
 
-				} else if ($releaseID === false) {
+					if ($preID === false && $cleanedName !== '') {
+						// try to match the cleaned searchname to predb title or filename here
+						$preMatch = $preDB->matchPre($cleanedName);
+						if ($preMatch !== false) {
+							$cleanedName = $preMatch['title'];
+							$preID = $preMatch['preid'];
+							$properName = true;
+						}
+					}
+
+					// Insert the release.
+					$releaseID = $this->pdo->queryInsert(
+						sprintf(
+							$insertQuery,
+							($properName === true ? 'isrenamed, ' : ''),
+							($preID === false ? '' : 'preid, '),
+							($isReqID === true ? 'reqidstatus, ' : ''),
+							($properName === true ? '1, ' : ''),
+							($preID === false ? '' : $preID . ', '),
+							($isReqID === true ? '1, ' : ''),
+							$cleanRelName,
+							$this->pdo->escapeString(utf8_encode($cleanedName)),
+							$collection['totalfiles'],
+							$collection['group_id'],
+							(uniqid('', true) . mt_rand()),
+							$this->pdo->escapeString($collection['date']),
+							$fromName,
+							$collection['filesize'],
+							$categorize->determineCategory($cleanedName, $collection['group_id'])
+						)
+					);
+
+					if ($releaseID !== false) {
+						// Update collections table to say we inserted the release.
+						$this->pdo->queryExec(
+							sprintf('
+								UPDATE %s
+								SET filecheck = %d, releaseid = %d
+								WHERE id = %d',
+								$group['cname'],
+								self::COLLFC_INSERTED,
+								$releaseID,
+								$collection['id']
+							)
+						);
+
+						$returnCount++;
+
+						if ($this->echoCLI) {
+							echo "Added $returnCount releases.\r";
+						}
+					}
+				} else {
+					// The release was already in the DB, so delete the collection.
 					$this->pdo->queryExec(
 						sprintf('
 							DELETE FROM %s
@@ -568,10 +563,11 @@ class ProcessReleases
 		if ($this->echoCLI) {
 			$this->colorCLI->doEcho(
 				$this->colorCLI->primary(
+					PHP_EOL .
 					number_format($returnCount) .
 					' Releases added and ' .
 					number_format($duplicate) .
-					' duplicate releases deleted in ' .
+					' duplicate collections deleted in ' .
 					$this->consoleTools->convertTime(time() - $startTime)
 				), true
 			);
