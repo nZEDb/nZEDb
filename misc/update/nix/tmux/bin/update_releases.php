@@ -11,15 +11,11 @@ if (!isset($argv[1])) {
 $pieces = explode('  ', $argv[1]);
 $groupid = $pieces[0];
 
-$releases = new Releases(true);
 $groups = new Groups();
 $groupname = $groups->getByNameByID($groupid);
 $group = $groups->getByName($groupname);
 $pdo = new Settings();
-
-if ($releases->hashcheck == 0) {
-	exit($c->error("You must run update_binaries.php to update your collectionhash."));
-}
+$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => new ConsoleTools()));
 
 // Create the connection here and pass, this is for post processing, so check for alternate
 $nntp = new NNTP();
@@ -48,14 +44,14 @@ if ($pieces[0] != 'Stage7b') {
 	}
 
 	// Runs function that are per group
-	$releases->processReleasesStage1($groupid);
-	$releases->processReleasesStage2($groupid);
-	$releases->processReleasesStage3($groupid);
-	$retcount = $releases->processReleasesStage4($groupid);
-	$releases->processReleasesStage5($groupid);
-	$releases->processReleasesStage5b($groupid);
-	$releases->processReleasesStage5c($groupid);
-	$releases->processReleasesStage7a($groupid);
+	$releases->processIncompleteCollections($groupid);
+	$releases->processCollectionSizes($groupid);
+	$releases->deleteUnwantedCollections($groupid);
+	$retcount = $releases->createReleases($groupid);
+	$releases->createNZBs($groupid);
+	$releases->processRequestIDs($groupid, 5000, true);
+	$releases->processRequestIDs($groupid, 1000, false);
+	$releases->deleteCollections($groupid);
 //	$mask = "%-30.30s added %s releases.\n";
 //	$first = number_format($retcount);
 //	if($retcount > 0)
@@ -63,9 +59,9 @@ if ($pieces[0] != 'Stage7b') {
 } else if ($pieces[0] == 'Stage7b') {
 	// Runs functions that run on releases table after all others completed
 	$groupid = '';
-	$releases->processReleasesStage4dot5($groupid);
-	$releases->processReleasesStage5b($groupid);
-	$releases->processReleasesStage6(1, 0, $groupid, $nntp);
-	$releases->processReleasesStage7b();
+	$releases->deletedReleasesByGroup($groupid);
+	$releases->processRequestIDs($groupid, 5000, true);
+	$releases->categorizeReleases(1, $groupid);
+	$releases->deleteReleases();
 	//echo 'Deleted '.number_format($deleted)." collections/binaries/parts.\n";
 }

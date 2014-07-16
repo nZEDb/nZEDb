@@ -6,9 +6,23 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-16 niel
+	* Chg: Refactored CLI code out of DbUpdate and Versions classes and into their own scripts in .../nzedb/cli
+		NOTE: This means "php nzedb/db/DbUpdate.php true", now needs to be "php cli/update_db.php true"
+2014-07-16 ruhllatio
+	* Fix: TPG/Threaded for ProcessReleases move
+2014-07-16 kevin
+	* Chg: Move ProcessReleases out of Releases.
+	* Chg: Speed up release creation.
+2014-07-15 ruhllatio
+	* Chg: Improve TV series listing site response
+	* Chg: Remove likes from predbft search query
+	* Chg: match_prefiles will find a few more audio matches
+	* Chg: More improvements (speed) to site queries for TV/Movie.
 2014-07-15 kevin
 	* Chg: Change stage 3 for the trigger changes on automatic binaries/parts deletion.
 	* Chg: Refactor stage 4.5 to be similar to stage 3.
+	* Chg: Refactor various processReleases stages.
 2014-07-15 bart39
 	* Fix: Delete collections at filecheck = 5 at the end of Releases Stage 3.
 	* Fix: Undefined variable $site in requestID.php

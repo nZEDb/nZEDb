@@ -20,7 +20,14 @@ class Sites
 	const ERR_BAD_COVERS_PATH = -9;
 	const ERR_BAD_YYDECODER_PATH = -10;
 
+	/**
+	 * @var nzedb\db\Settings
+	 */
 	protected $_db;
+
+	/**
+	 * @var \nzedb\utility\Versions|bool
+	 */
 	protected $_versions = false;
 
 	public function __construct()

@@ -3,7 +3,7 @@ require dirname(__FILE__) . '/../../../www/config.php';
 
 $sorter = new MiscSorter(true);
 
-$altNNTP = (new Settings())->getSetting('alternate_nntp');
+$altNNTP = (new nzedb\db\Settings())->getSetting('alternate_nntp');
 $nntp = new NNTP();
 if (($altNNTP === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true)
 {

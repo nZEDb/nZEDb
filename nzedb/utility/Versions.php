@@ -2,28 +2,9 @@
 namespace nzedb\utility;
 
 use nzedb\db\Settings;
-use nzedb\utility\Git;
 
 if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
-}
-
-// Only set an argument if calling from bash or MS-DOS batch scripts. Otherwise
-// instantiate the class and use as below.
-if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
-	require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'automated.config.php');
-
-	$vers = new Versions();
-	echo $vers->out->header("Checking versions...");
-	if ($vers->checkAll()) {
-		$vers->save();
-	} else {
-		echo "No changes detected.\n";
-		echo "  Commit: " . $vers->out->primary($vers->getCommit());
-		echo "SQL   DB: " . $vers->out->primary($vers->getSQLPatchFromDb());
-		echo "SQL File: " . $vers->out->primary($vers->getSQLPatchFromFiles());
-		echo "     Tag: " . $vers->out->primary($vers->getTagVersion());
-	}
 }
 
 class Versions
@@ -31,13 +12,13 @@ class Versions
 	/**
 	 * These constants are bitwise for checking what was changed.
 	 */
-	const UPDATED_GIT_COMMIT		= 1;
-	const UPDATED_GIT_TAG			= 2;
-	const UPDATED_SQL_DB_PATCH		= 4;
+	const UPDATED_GIT_COMMIT	= 1;
+	const UPDATED_GIT_TAG		= 2;
+	const UPDATED_SQL_DB_PATCH	= 4;
 	const UPDATED_SQL_FILE_LAST	= 8;
 
 	/**
-	 * @var nzedb\utility\Git instance variable.
+	 * @var \nzedb\utility\Git instance variable.
 	 */
 	public $git;
 
@@ -126,9 +107,9 @@ class Versions
 	 */
 	public function checkAll($update = true)
 	{
-		$this->checkSQLDb($update);
 		$this->checkGitCommit($update);
 		$this->checkGitTag($update);
+		$this->checkSQLDb($update);
 		$this->checkSQLFileLatest($update);
 		return $this->hasChanged();
 	}
@@ -200,7 +181,7 @@ class Versions
 			if ($update) {
 				echo $this->out->primary("Updating Db revision to " . $setting);
 				$this->_vers->sql->db = $setting;
-				$this->_changes |= self::UPDATED_SQL_DB_REVISION;
+				$this->_changes |= self::UPDATED_SQL_DB_PATCH;
 			}
 			return $this->_vers->patch->db;
 		}
@@ -210,7 +191,7 @@ class Versions
 	/**
 	 * Checks the numeric value from the last SQL patch file, updating the versions file if desired.
 	 *
-	 * @param bool $update	Whether to update the versions file.  (default: true)
+	 * @param bool $update	Whether to update the versions file.
 	 *
 	 * @return bool|int	False if there is a problem, otherwise the number from the last patch file.
 	 */

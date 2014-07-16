@@ -15,7 +15,7 @@ if (!isset($argv[1])) {
 function dogroup($name, $articles)
 {
 	$c = new ColorCLI();
-	$nntpProxy = (new Settings())->getSetting('nntpproxy');
+	$nntpProxy = (new nzedb\db\Settings())->getSetting('nntpproxy');
 	$nntp = new NNTP();
 	if ($nntp->doConnect() !== true) {
 		exit($c->error("Unable to connect to usenet."));
