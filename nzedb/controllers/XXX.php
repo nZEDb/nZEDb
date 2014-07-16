@@ -545,7 +545,6 @@ class XXX
 	/**
 	 * Process releases with no xxxinfo ID's.
 	 *
-	 * @param string $releaseToWork
 	 */
 
 	public function processXXXReleases()
