@@ -1,8 +1,5 @@
 <?php
 
-/**
- * Todo: Add Trailers and/or Productinfo
- */
 require_once nZEDb_LIBS . 'adultdvdempire.php';
 require_once nZEDb_LIBS . 'popporn.php';
 
@@ -54,8 +51,7 @@ class XXX
 		$this->c = new ColorCLI();
 		$this->pdo = new Settings();
 		$this->releaseImage = new ReleaseImage();
-		$this->movieqty = 5000;
-		//$this->movieqty = ($this->pdo->getSetting('maximpdoprocessed') != '') ? $this->pdo->getSetting('maximpdoprocessed') : 100;
+		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
 		$this->debug = nZEDb_DEBUG;
 		$this->echooutput = ($echoOutput && nZEDb_ECHOCLI);
@@ -307,7 +303,7 @@ class XXX
 	}
 
 	/**
-	 * Order types for movies page.
+	 * Order types for xxx page.
 	 *
 	 * @return array
 	 */
@@ -613,7 +609,7 @@ class XXX
 	}
 
 	/**
-	 * Parse a movie name from a release search name.
+	 * Parse a xxx name from a release search name.
 	 *
 	 * @param string $releaseName
 	 *
@@ -747,7 +743,7 @@ class XXX
 	}
 
 	/**
-	 * Inserts Trailer Code by Class and trailers array
+	 * Inserts Trailer Code by Class
 	 *
 	 * @param $whichclass
 	 * @param $res

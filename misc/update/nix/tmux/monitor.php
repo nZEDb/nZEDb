@@ -842,7 +842,6 @@ while ($i > 0) {
 	$releases_misc_diff = number_format($releases_now - $releases_start);
 	$releases_since_start = number_format($releases_now - $releases_start);
 	$work_misc_diff = $work_remaining_now - $work_remaining_start;
-	$pron_misc_diff = $pron_remaining_now - $pron_remaining_start;
 
 	// Make sure thes types of post procs are on or off in the site first.
 	// Otherwise if they are set to off, article headers will stop downloading as these off post procs queue up.
@@ -854,6 +853,9 @@ while ($i > 0) {
 	}
 	if ($pdo->getSetting('lookupimdb') == 0) {
 		$movie_releases_proc = $movie_releases_proc_start = 0;
+	}
+	if ($pdo->getSetting('lookupxxx') == 0) {
+		$xxx_releases_proc = $xxx_releases_proc_start = 0;
 	}
 	if ($pdo->getSetting('lookupgames') == 0) {
 		$console_releases_proc = $console_releases_proc_start = 0;
@@ -876,6 +878,7 @@ while ($i > 0) {
 
 	$console_diff = number_format($console_releases_proc - $console_releases_proc_start);
 	$movie_diff = number_format($movie_releases_proc - $movie_releases_proc_start);
+	$xxx_diff = number_format($xxx_releases_proc - $xxx_releases_proc_start);
 	$music_diff = number_format($music_releases_proc - $music_releases_proc_start);
 	$pc_diff = number_format($pc_releases_proc - $pc_releases_proc_start);
 	$tvrage_diff = number_format($tvrage_releases_proc - $tvrage_releases_proc_start);
@@ -883,7 +886,7 @@ while ($i > 0) {
 
 	//formatted output
 	$misc_diff = number_format($work_remaining_now - $work_start);
-	$pron_diff = number_format($pron_remaining_now - $pron_start);
+
 
 	$work_since_start = ($total_work_now - $total_work_start);
 	$work_diff = number_format($work_since_start);
@@ -896,7 +899,7 @@ while ($i > 0) {
 		$movie_percent = sprintf("%02s", floor(($movie_releases_now / $releases_now) * 100));
 		$music_percent = sprintf("%02s", floor(($music_releases_now / $releases_now) * 100));
 		$pc_percent = sprintf("%02s", floor(($pc_releases_now / $releases_now) * 100));
-		$pron_percent = sprintf("%02s", floor(($pron_releases_now / $releases_now) * 100));
+		$xxx_percent = sprintf("%02s", floor(($pron_releases_now / $releases_now) * 100));
 		$tvrage_percent = sprintf("%02s", floor(($tvrage_releases_now / $releases_now) * 100));
 		$book_percent = sprintf("%02s", floor(($book_releases_now / $releases_now) * 100));
 		$misc_percent = sprintf("%02s", floor(($misc_releases_now / $releases_now) * 100));
@@ -906,6 +909,7 @@ while ($i > 0) {
 		$request_percent = 0;
 		$console_percent = 0;
 		$movie_percent = 0;
+		$xxx_percent = 0;
 		$music_percent = 0;
 		$pc_percent = 0;
 		$tvrage_percent = 0;
@@ -1034,7 +1038,7 @@ while ($i > 0) {
 		printf($mask4, "Audio(3000)", number_format($music_releases_proc) . "(" . $music_diff . ")", number_format($music_releases_now) . "(" . $music_percent . "%)");
 		printf($mask4, "PC(4000)", number_format($pc_releases_proc) . "(" . $pc_diff . ")", number_format($pc_releases_now) . "(" . $pc_percent . "%)");
 		printf($mask4, "TVShows(5000)", number_format($tvrage_releases_proc) . "(" . $tvrage_diff . ")", number_format($tvrage_releases_now) . "(" . $tvrage_percent . "%)");
-		printf($mask4, "xXx(6000)", number_format($pron_remaining_now) . "(" . $pron_diff . ")", number_format($pron_releases_now) . "(" . $pron_percent . "%)");
+		printf($mask4, "xXx(6000)", number_format($xxx_releases_proc) . "(" . $xxx_diff . ")", number_format($xxx_releases_now) . "(" . $xxx_percent . "%)");
 		printf($mask4, "Misc(7000)", number_format($work_remaining_now) . "(" . $misc_diff . ")", number_format($misc_releases_now) . "(" . $misc_percent . "%)");
 		printf($mask4, "Books(8000)", number_format($book_releases_proc) . "(" . $book_diff . ")", number_format($book_releases_now) . "(" . $book_percent . "%)");
 		printf($mask4, "Total", number_format($total_work_now) . "(" . $work_diff . ")", number_format($releases_now) . "(" . $releases_since_start . ")");

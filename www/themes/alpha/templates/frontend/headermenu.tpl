@@ -67,7 +67,7 @@
 					{/foreach}
 				</ul>
 			</li>
-		{elseif ($parentcat.id == 6000 && $userdata.xxxview=="1")}
+		{elseif ($parentcat.id == 6000 && $userdata.xxxview=="1" && $site->lookupxxx=="1")}
 			<li class="dropdown">
 				<a id="cat3"
 					class="dropdown-toggle"
