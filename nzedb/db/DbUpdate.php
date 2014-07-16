@@ -22,34 +22,6 @@ namespace nzedb\db;
 
 use nzedb\utility\Utility;
 
-/*
- * Putting procedural stuff inside class scripts like this is BAD. Do not use this as an excuse to do more.
- * This is a temporary measure until a proper frontend for cli stuff can be implemented with li3.
- */
-if (!defined('nZEDb_INSTALLER')) {
-	require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
-
-	if (Utility::isCLI() && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
-		$backup  = (isset($argv[2]) && $argv[2] == 'safe') ? true : false;
-		$updater = new DbUpdate(['backup' => $backup]);
-		echo $updater->log->header("Db updater starting ...");
-		$patched = $updater->processPatches(['safe' => $backup]);
-
-		if ($patched > 0) {
-			echo $updater->log->info("$patched patch(es) applied.");
-
-			$smarty  = new \Smarty();
-			$cleared = $smarty->clearCompiledTemplate();
-			if ($cleared) {
-				$msg = "The smarty template cache has been cleaned for you\n";
-			} else {
-				$msg = "You should clear your smarty template cache at: " .
-					   SMARTY_DIR . "templates_c\n";
-			}
-			$updater->log->info($msg);
-		}
-	}
-}
 
 class DbUpdate
 {
