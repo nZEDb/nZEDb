@@ -34,6 +34,7 @@ CREATE TABLE         binaries (
   collectionid INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   filenumber   INT UNSIGNED        NOT NULL DEFAULT '0',
   totalparts   INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  currentparts INT UNSIGNED        NOT NULL DEFAULT '0',
   binaryhash   VARCHAR(255)        NOT NULL DEFAULT '0',
   partcheck    BIT                 NOT NULL DEFAULT 0,
   partsize     BIGINT UNSIGNED     NOT NULL DEFAULT '0',
@@ -526,22 +527,22 @@ CREATE TABLE         groups (
 
 
 DROP TABLE IF EXISTS parts;
-CREATE TABLE         parts (
-  id         BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  binaryid   BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
-  messageid  VARCHAR(255)        NOT NULL DEFAULT '',
-  number     BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  partnumber INT UNSIGNED        NOT NULL DEFAULT '0',
-  size       BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  PRIMARY KEY                     (id),
-  KEY          binaryid           (binaryid),
-  INDEX        ix_parts_number    (number),
-  UNIQUE INDEX ix_parts_messageid (messageid)
+CREATE TABLE parts (
+  id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  binaryid BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
+  collection_id INT(11) UNSIGNED NOT NULL DEFAULT '0',
+  messageid VARCHAR(255) NOT NULL DEFAULT '',
+  number BIGINT UNSIGNED NOT NULL DEFAULT '0',
+  partnumber INT UNSIGNED NOT NULL DEFAULT '0',
+  size BIGINT UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY (id),
+  KEY binaryid (binaryid),
+  KEY ix_parts_collection_id (collection_id)
 )
-  ENGINE          = MYISAM
+  ENGINE = MYISAM
   DEFAULT CHARSET = utf8
-  COLLATE         = utf8_unicode_ci
-  AUTO_INCREMENT  = 1;
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
 
 
 DROP TABLE IF EXISTS partrepair;
