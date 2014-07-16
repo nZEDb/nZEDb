@@ -11,11 +11,11 @@ if (!isset($argv[1])) {
 $pieces = explode('  ', $argv[1]);
 $groupid = $pieces[0];
 
-$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => new ConsoleTools()));
 $groups = new Groups();
 $groupname = $groups->getByNameByID($groupid);
 $group = $groups->getByName($groupname);
 $pdo = new Settings();
+$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => new ConsoleTools()));
 
 // Create the connection here and pass, this is for post processing, so check for alternate
 $nntp = new NNTP();
@@ -49,8 +49,8 @@ if ($pieces[0] != 'Stage7b') {
 	$releases->deleteUnwantedCollections($groupid);
 	$retcount = $releases->createReleases($groupid);
 	$releases->createNZBs($groupid);
-	$releases->processRequestIDs($groupID, 5000, true);
-	$releases->processRequestIDs($groupID, 1000, false);
+	$releases->processRequestIDs($groupid, 5000, true);
+	$releases->processRequestIDs($groupid, 1000, false);
 	$releases->deleteCollections($groupid);
 //	$mask = "%-30.30s added %s releases.\n";
 //	$first = number_format($retcount);
