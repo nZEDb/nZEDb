@@ -9,7 +9,7 @@ $category = new Category();
 $error = false;
 
 // Array with all the possible poster wall types.
-$startTypes = array('Books', 'Console', 'Movies', 'Audio', 'PC'/*, 'Recent'*/);
+$startTypes = array('Books', 'Console', 'Movies', 'XXX', 'Audio', 'PC'/*, 'Recent'*/);
 // Array that will contain the poster wall types (the above array minus whatever they have disabled in admin).
 $types = array();
 // Get the names of all enabled parent categories.
@@ -59,6 +59,12 @@ if (!$error) {
 			$getnewestconsole = $releases->getNewestConsole();
 			$page->smarty->assign('newest', $getnewestconsole);
 			$page->smarty->assign('goto', 'console');
+			break;
+
+		case 'XXX':
+			$getnewestxxx = $releases->getNewestXXX();
+			$page->smarty->assign('newest', $getnewestxxx);
+			$page->smarty->assign('goto', 'xxx');
 			break;
 
         case 'PC':
