@@ -10,6 +10,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Improve TV series listing site response
 	* Chg: Remove likes from predbft search query
 	* Chg: match_prefiles will find a few more audio matches
+	* Chg: More improvements (speed) to site queries for TV/Movie.
 2014-07-15 kevin
 	* Chg: Change stage 3 for the trigger changes on automatic binaries/parts deletion.
 	* Chg: Refactor stage 4.5 to be similar to stage 3.
