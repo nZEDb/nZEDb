@@ -28,8 +28,8 @@ if (!Utility::isCLI()) {
 	exit;
 }
 
+$vers = new Versions();
 if (isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
-	$vers = new Versions();
 	echo $vers->out->header("Checking versions...");
 
 	if ($vers->checkAll()) {
