@@ -623,10 +623,9 @@ class XXX
 			$name = '';
 			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|XXX|BTS)[^\w]';
 
-			/* Initial scan of getting a year/name.
+			/* Initial scan of getting a name.
 			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
 			 * ie: [61420]-[FULL]-[a.b.foreignEFNet]-[ Coraline.2009.DUTCH.INTERNAL.1080p.BluRay.x264-VeDeTT ]-[21/85] - "vedett-coralien-1080p.r04" yEnc
-			 * Then we look up the year, (19|20)\d\d, so $matches[1] would be Coraline $matches[2] 2009
 			 */
 			if (preg_match('/([^\w]{2,})?(?P<name>[\w .-]+?)' . $followingList . '/i', $releaseName, $matches)) {
 				$name = $matches['name'];
