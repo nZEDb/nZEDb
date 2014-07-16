@@ -194,7 +194,7 @@ class ProcessReleases
 	}
 
 	/**
-	 * Find complete collections to be processed by stage 2.
+	 * Find complete collections to be processed by processCollectionSizes.
 	 *
 	 * @param int $groupID
 	 * @void
@@ -590,7 +590,7 @@ class ProcessReleases
 		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho($this->colorCLI->header("Stage 5 -> Create the NZB, delete collections/binaries/parts."));
+			$this->colorCLI->doEcho($this->colorCLI->header("Process Releases -> Create the NZB, delete collections/binaries/parts."));
 		}
 
 		$releases = $this->pdo->queryDirect(
@@ -659,7 +659,7 @@ class ProcessReleases
 				$this->colorCLI->primary(
 					number_format($nzbCount) . ' NZBs created in ' . ($nzbEnd - $startTime) . ' seconds.' . PHP_EOL .
 					'Deleted ' . number_format($deleted) . ' collections in ' . ($deleteEnd - $nzbEnd) . ' seconds.' . PHP_EOL .
-					'Total stage 5 time: ' . $this->colorCLI->primary($this->consoleTools->convertTime(time() - $startTime))
+					'Total time: ' . $this->colorCLI->primary($this->consoleTools->convertTime(time() - $startTime))
 				)
 			);
 		}
@@ -776,7 +776,7 @@ class ProcessReleases
 
 		if ($this->echoCLI) {
 			echo (
-				$this->colorCLI->header("Stage 7a -> Delete finished collections." . PHP_EOL) .
+				$this->colorCLI->header("Process Releases -> Delete finished collections." . PHP_EOL) .
 				$this->colorCLI->primary('Deleting old collections/binaries/parts.')
 			);
 		}
@@ -895,12 +895,12 @@ class ProcessReleases
 			echo $this->colorCLI->primary(
 				'Finished deleting ' . $deleted . ' collections with no binaries in ' .
 				($fifthQuery - $fourthQuery) . ' seconds.' . PHP_EOL .
-				'Deleting collections that were missed on stage 5.'
+				'Deleting collections that were missed after NZB creation.'
 			);
 		}
 
 		$deleted = 0;
-		// Collections that were missing on stage 5.
+		// Collections that were missing on NZB creation.
 
 		$collections = $this->pdo->queryDirect(
 			sprintf('
@@ -928,7 +928,7 @@ class ProcessReleases
 		if ($this->echoCLI) {
 			$this->colorCLI->doEcho(
 				$this->colorCLI->primary(
-					'Finished deleting ' . $deleted . ' collections missed on stage 5 in ' .
+					'Finished deleting ' . $deleted . ' collections missed after NZB creation in ' .
 					(time() - $fifthQuery) . ' seconds.' . PHP_EOL .
 					'Removed ' .
 					number_format($deletedCount) .
@@ -954,7 +954,7 @@ class ProcessReleases
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;
 
 		if ($this->echoCLI) {
-			echo $this->colorCLI->header("Stage 4.5 -> Delete releases smaller/larger than minimum size/file count from group/site setting.");
+			echo $this->colorCLI->header("Process Releases -> Delete releases smaller/larger than minimum size/file count from group/site setting.");
 		}
 
 		if ($groupID == '') {
@@ -1058,7 +1058,7 @@ class ProcessReleases
 
 		// Delete old releases and finished collections.
 		if ($this->echoCLI) {
-			$this->colorCLI->doEcho($this->colorCLI->header("Stage 7b -> Delete old releases and passworded releases."));
+			$this->colorCLI->doEcho($this->colorCLI->header("Process Releases -> Delete old releases and passworded releases."));
 		}
 
 		// Releases past retention.
