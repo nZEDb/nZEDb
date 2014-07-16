@@ -1191,7 +1191,9 @@ class Releases
 					LEFT OUTER JOIN releasevideo re ON re.releaseid = r.id
 					LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 					INNER JOIN category cp ON cp.id = c.parentid
-					WHERE r.passwordstatus <= %d %s %s %s %s %s %s
+					WHERE r.categoryid BETWEEN 5000 AND 5999
+					AND nzbstatus = 1
+					AND r.passwordstatus <= %d %s %s %s %s %s %s
 					ORDER BY postdate DESC
 					LIMIT %d
 					OFFSET %d",
@@ -1208,7 +1210,7 @@ class Releases
 
 		$orderpos = strpos($sql, 'ORDER BY');
 		$wherepos = strpos($sql, 'WHERE');
-		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs ON rs.releaseid = r.id  ' . substr($sql, $wherepos, $orderpos - $wherepos);
+		$sqlcount = 'SELECT COUNT(r.id) AS num FROM releases r INNER JOIN releasesearch rs ON rs.releaseid = r.id ' . substr($sql, $wherepos, $orderpos - $wherepos);
 
 		$countres = $this->pdo->queryOneRow($sqlcount);
 		$res = $this->pdo->query($sql);
@@ -1317,7 +1319,8 @@ class Releases
 				INNER JOIN releasesearch rs ON rs.releaseid = r.id
 				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id AND rn.nfo IS NOT NULL
 				INNER JOIN category cp ON cp.id = c.parentid
-				WHERE nzbstatus = 1 AND r.passwordstatus <= %d
+				WHERE r.categoryid BETWEEN 2000 AND 2999
+				AND nzbstatus = 1 AND r.passwordstatus <= %d
 				%s %s %s %s ORDER BY postdate DESC LIMIT %d OFFSET %d",
 				$this->showPasswords(),
 				$searchsql,
@@ -1454,7 +1457,8 @@ class Releases
 							INNER JOIN groups ON groups.id = r.group_id
 							INNER JOIN category c ON c.id = r.categoryid
 							INNER JOIN category cp ON cp.id = c.parentid
-							WHERE r.passwordstatus <= %d AND rageid = %d %s %s",
+							WHERE r.categoryid BETWEEN 5000 AND 5999
+							AND r.passwordstatus <= %d AND rageid = %d %s %s",
 							$this->showPasswords(),
 							$rageid,
 							$series,
