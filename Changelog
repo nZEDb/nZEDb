@@ -6,6 +6,28 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-15 ruhllatio
+	* Chg: Improve TV series listing site response
+	* Chg: Remove likes from predbft search query
+	* Chg: match_prefiles will find a few more audio matches
+	* Chg: More improvements (speed) to site queries for TV/Movie.
+2014-07-15 kevin
+	* Chg: Change stage 3 for the trigger changes on automatic binaries/parts deletion.
+	* Chg: Refactor stage 4.5 to be similar to stage 3.
+	* Chg: Refactor various processReleases stages.
+2014-07-15 bart39
+	* Fix: Delete collections at filecheck = 5 at the end of Releases Stage 3.
+	* Fix: Undefined variable $site in requestID.php
+	* Add: CollectionsCleaning regex additions.
+2014-07-14 niel
+	* Chg: Modified install step 2, to set sqlpatch setting using the value of the highest patch file found.
+2014-07-14 ruhllatio
+	* Chg: RequestID.php multi lookup (last chance match) much more accurate
+	* Fix: test-rottentomato not working
+	* Chg: Some categorization improvements.
+2014-07-14 kevin
+	* Chg: Speed-up stage 5 more by buffering some variables.
+	* Fix: Wrong usage of NZB construct in 2 places, pass pdo to all NZB contructs at the same time.
 2014-07-13 bart39
 	* Fix: !!! TPG USERS MUST RUN nzedb/build/_runounce/tpg_fixes.php !!!!!!!!!!!!!!!!!!!!!!!!!
 	* Fix: Move collections deletion trigger to before delete.

@@ -323,8 +323,8 @@ class Books
 	/**
 	 * Process book releases.
 	 *
-	 * @param array $res      Array containing unprocessed book SQL data set.
-	 * @param int   $categoryID The category id.
+	 * @param \PDOStatement $res      Array containing unprocessed book SQL data set.
+	 * @param int           $categoryID The category id.
 	 * @void
 	 */
 	protected function processBookReleasesHelper($res, $categoryID)

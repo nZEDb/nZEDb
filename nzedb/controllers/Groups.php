@@ -5,7 +5,7 @@ use nzedb\db\Settings;
 class Groups
 {
 	/**
-	 * @var DB
+	 * @var nzedb\db\Settings
 	 */
 	protected $pdo;
 

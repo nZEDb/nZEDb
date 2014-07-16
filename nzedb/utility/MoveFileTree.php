@@ -39,7 +39,7 @@ class MoveFileTree
 	 *			filepaths (not neccessarily in the same directory).
 	 * @param type $target A valid directory that the files and directories will
 	 *			be moved to.
-	 * @throws UnexpectedValueException
+	 * @throws \UnexpectedValueException
 	 */
 	function __construct($source, $target, $moveSourceBase = true)
 	{

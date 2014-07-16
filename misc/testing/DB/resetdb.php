@@ -23,7 +23,7 @@ $pdo = new Settings();
 $timestart = TIME();
 $relcount = 0;
 $ri = new ReleaseImage();
-$nzb = new NZB();
+$nzb = new NZB($pdo);
 $consoletools = new ConsoleTools();
 
 $pdo->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
