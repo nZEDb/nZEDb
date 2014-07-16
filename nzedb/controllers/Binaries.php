@@ -91,13 +91,6 @@ class Binaries
 	protected $_pdo;
 
 	/**
-	 * If we changed collections, this will be false and the collection hashes will need to be recalculated.
-	 *
-	 * @var bool
-	 */
-	protected $_hashCheck;
-
-	/**
 	 * How many days to go back on a new group?
 	 *
 	 * @var bool
@@ -186,7 +179,6 @@ class Binaries
 		$this->messageBuffer = ($this->_pdo->getSetting('maxmssgs') != '') ? $this->_pdo->getSetting('maxmssgs') : 20000;
 		$this->_compressedHeaders = ($this->_pdo->getSetting('compressedheaders') == 1 ? true : false);
 		$this->_partRepair = ($this->_pdo->getSetting('partrepair') == 0 ? false : true);
-		$this->_hashCheck = ($this->_pdo->getSetting('hashcheck') == 1 ? true : false);
 		$this->_newGroupScanByDays = ($this->_pdo->getSetting('newgroupscanmethod') == 1 ? true : false);
 		$this->_newGroupMessagesToScan = ($this->_pdo->getSetting('newgroupmsgstoscan') != '') ? $this->_pdo->getSetting('newgroupmsgstoscan') : 50000;
 		$this->_newGroupDaysToScan = ($this->_pdo->getSetting('newgroupdaystoscan') != '') ? (int)$this->_pdo->getSetting('newgroupdaystoscan') : 3;
@@ -217,23 +209,6 @@ class Binaries
 	 */
 	public function updateAllGroups()
 	{
-		if ($this->_hashCheck === false) {
-			$dMessage = "We have updated the way collections are created, the collection table has to be updated to
-				use the new changes, if you want to run this now, type 'yes', else type no to see how to run manually.";
-			if ($this->_debug) {
-				$this->_debugging->start("updateAllGroups", $dMessage, 5);
-			}
-			echo $this->_colorCLI->warning($dMessage);
-			if (trim(fgets(fopen('php://stdin', 'r'))) != 'yes') {
-				$dMessage = "If you want to run this manually, there is a script in misc/testing/DB/ called reset_Collections.php";
-				if ($this->_debug) {
-					$this->_debugging->start("updateAllGroups", $dMessage, 1);
-				}
-				exit($this->_colorCLI->primary($dMessage));
-			}
-			(new Releases($this->_echoCLI))->resetCollections();
-		}
-
 		$groups = $this->_groups->getActive();
 
 		$groupCount = count($groups);
