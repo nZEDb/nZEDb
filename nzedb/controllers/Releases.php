@@ -675,11 +675,16 @@ class Releases
 	 *
 	 * @param int|string $id
 	 * @param bool       $isGuid
+	 * @param NZB        $nzb
 	 */
-	public function delete($id, $isGuid = false)
+	public function delete($id, $isGuid = false, &$nzb = null)
 	{
 		if (!is_array($id)) {
 			$id = array($id);
+		}
+
+		if ($nzb === null) {
+			$nzb = new NZB;
 		}
 
 		foreach ($id as $identifier) {
@@ -688,7 +693,7 @@ class Releases
 			} else {
 				$rel = $this->getById($identifier);
 			}
-			$this->fastDelete($rel['id'], $rel['guid']);
+			$this->fastDelete($rel['id'], $rel['guid'], $nzb);
 		}
 	}
 
@@ -697,10 +702,13 @@ class Releases
 	 *
 	 * @param int    $id   release id
 	 * @param string $guid release guid
+	 * @param NZB    $nzb
 	 */
-	public function fastDelete($id, $guid)
+	public function fastDelete($id, $guid, $nzb = null)
 	{
-		$nzb = new NZB($this->pdo);
+		if ($nzb === null) {
+			$nzb = new NZB($this->pdo);
+		}
 		// Delete NZB from disk.
 		$nzbpath = $nzb->getNZBPath($guid);
 		if (is_file($nzbpath)) {
@@ -708,38 +716,26 @@ class Releases
 		}
 
 		// Delete images.
-		$ri = new ReleaseImage();
+		$ri = new ReleaseImage($this->pdo);
 		$ri->delete($guid);
 
 		// Delete from DB.
-		if ($this->pdo->dbSystem() === 'mysql') {
-			$this->pdo->queryExec(
-				sprintf('
-					DELETE r, rn, rc, uc, rf, ra, rs, rv, re
-					FROM releases r
-					LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
-					LEFT OUTER JOIN releasecomment rc ON rc.releaseid = r.id
-					LEFT OUTER JOIN usercart uc ON uc.releaseid = r.id
-					LEFT OUTER JOIN releasefiles rf ON rf.releaseid = r.id
-					LEFT OUTER JOIN releaseaudio ra ON ra.releaseid = r.id
-					LEFT OUTER JOIN releasesubs rs ON rs.releaseid = r.id
-					LEFT OUTER JOIN releasevideo rv ON rv.releaseid = r.id
-					LEFT OUTER JOIN releaseextrafull re ON re.releaseid = r.id
-					WHERE r.id = %d',
-					$id
-				)
-			);
-		} else {
-			$this->pdo->queryExec('DELETE FROM releasenfo WHERE releaseid = ' . $id);
-			$this->pdo->queryExec('DELETE FROM releasecomment WHERE releaseid = ' . $id);
-			$this->pdo->queryExec('DELETE FROM usercart WHERE releaseid = ' . $id);
-			$this->pdo->queryExec('DELETE FROM releasefiles WHERE releaseid = ' . $id);
-			$this->pdo->queryExec('DELETE FROM releaseaudio WHERE releaseid = ' . $id);
-			$this->pdo->queryExec('DELETE FROM releasesubs WHERE releaseid = ' . $id);
-			$this->pdo->queryExec('DELETE FROM releasevideo WHERE releaseid = ' . $id);
-			$this->pdo->queryExec('DELETE FROM releaseextrafull WHERE releaseid = ' . $id);
-			$this->pdo->queryExec('DELETE FROM releases WHERE id = ' . $id);
-		}
+		$this->pdo->queryExec(
+			sprintf('
+				DELETE r, rn, rc, uc, rf, ra, rs, rv, re
+				FROM releases r
+				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
+				LEFT OUTER JOIN releasecomment rc ON rc.releaseid = r.id
+				LEFT OUTER JOIN usercart uc ON uc.releaseid = r.id
+				LEFT OUTER JOIN releasefiles rf ON rf.releaseid = r.id
+				LEFT OUTER JOIN releaseaudio ra ON ra.releaseid = r.id
+				LEFT OUTER JOIN releasesubs rs ON rs.releaseid = r.id
+				LEFT OUTER JOIN releasevideo rv ON rv.releaseid = r.id
+				LEFT OUTER JOIN releaseextrafull re ON re.releaseid = r.id
+				WHERE r.id = %d',
+				$id
+			)
+		);
 	}
 
 	/**

@@ -508,8 +508,9 @@ class Groups
 
 		$releases = new Releases();
 		$rels = $this->pdo->query(sprintf("SELECT id FROM releases WHERE group_id = %d", $id));
+		$nzb = new NZB($this->pdo);
 		foreach ($rels as $rel) {
-			$releases->delete($rel["id"]);
+			$releases->delete($rel["id"], $nzb);
 		}
 	}
 
@@ -522,8 +523,9 @@ class Groups
 
 		$releases = new Releases();
 		$rels = $this->pdo->query("SELECT id FROM releases");
+		$nzb = new NZB($this->pdo);
 		foreach ($rels as $rel) {
-			$releases->delete($rel["id"]);
+			$releases->delete($rel["id"], $nzb);
 		}
 	}
 

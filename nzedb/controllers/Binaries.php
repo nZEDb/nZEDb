@@ -189,6 +189,7 @@ class Binaries
 		$this->blackList = array();
 		$this->_blackListLoaded = false;
 
+
 		$SQLTime = $this->_pdo->queryOneRow('SELECT UNIX_TIMESTAMP(NOW()) AS time');
 		if ($SQLTime !== false) {
 			if ($SQLTime['time'] != time()) {
@@ -723,7 +724,7 @@ class Binaries
 			}
 
 			if (count($headersRepaired) > 0) {
-				$this->removeRepairedParts($headersRepaired, $groupMySQL['id']);
+				$this->removeRepairedParts($headersRepaired, $groupNames['prname'], $groupMySQL['id']);
 			}
 
 			if (count($rangeNotReceived) > 0) {
@@ -737,7 +738,7 @@ class Binaries
 					case 'update':
 					default:
 						if ($this->_partRepair) {
-							$this->addMissingParts($rangeNotReceived, $groupMySQL['id']);
+							$this->addMissingParts($rangeNotReceived, $groupNames['prname'], $groupMySQL['id']);
 						}
 						break;
 				}
@@ -901,7 +902,7 @@ class Binaries
 					}
 
 					if ($this->_partRepair) {
-						$this->addMissingParts($headersNotInserted, $groupMySQL['id']);
+						$this->addMissingParts($headersNotInserted, $groupNames['prname'], $groupMySQL['id']);
 					}
 				}
 			}
@@ -965,7 +966,6 @@ class Binaries
 				$this->_partRepairLimit
 			)
 		);
-		$partsRepaired = 0;
 
 		$missingCount = count($missingParts);
 		if ($missingCount > 0) {
@@ -986,7 +986,7 @@ class Binaries
 
 					$ranges[] = array(
 						'partfrom' => $firstPart,
-						'partto' => $lastNum,
+						'partto'   => $lastNum,
 						'partlist' => $partList
 					);
 
@@ -999,25 +999,19 @@ class Binaries
 
 			$ranges[] = array(
 				'partfrom' => $firstPart,
-				'partto' => $lastNum,
+				'partto'   => $lastNum,
 				'partlist' => $partList
 			);
-
-			$num_attempted = 0;
 
 			// Download missing parts in ranges.
 			foreach ($ranges as $range) {
 
 				$partFrom = $range['partfrom'];
-				$partTo = $range['partto'];
+				$partTo   = $range['partto'];
 				$partList = $range['partlist'];
-				$count = count($range['partlist']);
 
-				$num_attempted += $count;
 				$this->_consoleTools->overWritePrimary(
-					'Attempting repair: ' .
-					$this->_consoleTools->percentString2($num_attempted - $count + 1, $num_attempted, $missingCount) .
-					': ' . $partFrom . ' to ' . $partTo . ' .'
+					'Attempting repair: ' . $partFrom . ' to ' . $partTo . ' .'
 				);
 
 				// Get article headers from newsgroup.
@@ -1036,8 +1030,10 @@ class Binaries
 					$missingParts[$missingCount - 1]['numberid']
 				)
 			);
-			if (isset($result['num'])) {
-				$partsRepaired = $missingCount - $result['num'];
+
+			$partsRepaired = 0;
+			if ($result !== false) {
+				$partsRepaired = ($missingCount - $result['num']);
 			}
 
 			// Update attempts on remaining parts for active group
@@ -1073,47 +1069,37 @@ class Binaries
 	/**
 	 * Add article numbers from missing headers to DB.
 	 *
-	 * @param array $numbers The article numbers of the missing headers.
-	 * @param int   $groupID The ID of this groups.
+	 * @param array  $numbers   The article numbers of the missing headers.
+	 * @param string $tableName Name of the partrepair table to insert into.
+	 * @param int    $groupID   The ID of this groups.
 	 *
 	 * @return bool
 	 */
-	private function addMissingParts($numbers, $groupID)
+	private function addMissingParts($numbers, $tableName, $groupID)
 	{
-		// Check that tables exist, create if they do not.
-		$group = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupID);
-
-		$insertStr = 'INSERT INTO ' . $group['prname'] . ' (numberid, group_id) VALUES ';
+		$insertStr = 'INSERT INTO ' . $tableName . ' (numberid, group_id) VALUES ';
 		foreach ($numbers as $number) {
-			$insertStr .= sprintf('(%d, %d), ', $number, $groupID);
+			$insertStr .= '(' . $number . ',' . $groupID .'),';
 		}
-
-		$insertStr = substr($insertStr, 0, -2);
-		$insertStr .= ' ON DUPLICATE KEY UPDATE attempts=attempts+1';
-
-		return $this->_pdo->queryInsert($insertStr);
+		return $this->_pdo->queryInsert((rtrim($insertStr, ',') . ' ON DUPLICATE KEY UPDATE attempts=attempts+1'));
 	}
 
 	/**
 	 * Clean up part repair table.
 	 *
-	 * @param array $numbers The article numbers.
-	 * @param int   $groupID The ID of the group.
+	 * @param array  $numbers   The article numbers.
+	 * @param string $tableName Name of the part repair table to work on.
+	 * @param int    $groupID   The ID of the group.
 	 *
 	 * @return void
 	 */
-	private function removeRepairedParts($numbers, $groupID)
+	private function removeRepairedParts($numbers, $tableName, $groupID)
 	{
-		// Check that tables exist, create if they do not.
-		$group = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupID);
-
-		$sql = 'DELETE FROM ' . $group['prname'] . ' WHERE numberid in (';
+		$sql = 'DELETE FROM ' . $tableName . ' WHERE numberid in (';
 		foreach ($numbers as $number) {
-			$sql .= sprintf('%d, ', $number);
+			$sql .= $number . ',';
 		}
-		$sql = substr($sql, 0, -2);
-		$sql .= sprintf(') AND group_id = %d', $groupID);
-		$this->_pdo->queryExec($sql);
+		$this->_pdo->queryExec((rtrim($sql, ',') . ') AND group_id = ' . $groupID));
 	}
 
 	/**
@@ -1144,34 +1130,22 @@ class Binaries
 	public function isBlackListed($msg, $groupName)
 	{
 		$this->retrieveBlackList();
-		$field = array();
-		if (isset($msg['Subject'])) {
-			$field[Binaries::BLACKLIST_FIELD_SUBJECT] = $msg['Subject'];
-		}
-
-		if (isset($msg['From'])) {
-			$field[Binaries::BLACKLIST_FIELD_FROM] = $msg['From'];
-		}
-
-		if (isset($msg['Message-ID'])) {
-			$field[Binaries::BLACKLIST_FIELD_MESSAGEID] = $msg['Message-ID'];
-		}
-
-		$omitBinary = false;
+		$field[Binaries::BLACKLIST_FIELD_SUBJECT]   = $msg['Subject'];
+		$field[Binaries::BLACKLIST_FIELD_FROM]      = $msg['From'];
+		$field[Binaries::BLACKLIST_FIELD_MESSAGEID] = $msg['Message-ID'];
 
 		foreach ($this->blackList as $blackList) {
 			if (preg_match('/^' . $blackList['groupname'] . '$/i', $groupName)) {
 				// Black?
 				if ($blackList['optype'] == Binaries::OPTYPE_BLACKLIST && preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
-					$omitBinary = true;
-					// White?
+					return true;
+				// White?
 				} else if ($blackList['optype'] == Binaries::OPTYPE_WHITELIST && !preg_match('/' . $blackList['regex'] . '/i', $field[$blackList['msgcol']])) {
-					$omitBinary = true;
+					return true;
 				}
 			}
 		}
-
-		return $omitBinary;
+		return false;
 	}
 
 	/**
@@ -1278,15 +1252,12 @@ class Binaries
 	 *
 	 * @param int $collectionID Collections table ID
 	 *
+	 * @note A trigger automatically deletes the parts/binaries.
+	 *
 	 * @return void
 	 */
 	public function delete($collectionID)
 	{
-		$bins = $this->_pdo->query(sprintf('SELECT id FROM binaries WHERE collectionid = %d', $collectionID));
-		foreach ($bins as $bin) {
-			$this->_pdo->queryExec(sprintf('DELETE FROM parts WHERE binaryid = %d', $bin['id']));
-		}
-		$this->_pdo->queryExec(sprintf('DELETE FROM binaries WHERE collectionid = %d', $collectionID));
 		$this->_pdo->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $collectionID));
 	}
 
@@ -1295,20 +1266,13 @@ class Binaries
 	 *
 	 * @param int $groupID The ID of the group.
 	 *
+	 * @note A trigger automatically deletes the parts/binaries.
+	 *
 	 * @return void
 	 */
 	public function purgeGroup($groupID)
 	{
-		$this->_pdo->queryExec(
-			sprintf('
-				DELETE c, b, p
-				FROM collections c
-				LEFT OUTER JOIN binaries b ON b.collectionid = c.id
-				LEFT OUTER JOIN parts p ON p.binaryid = b.id
-				WHERE c.group_id = %d',
-				$groupID
-			)
-		);
+		$this->_pdo->queryExec(sprintf('DELETE c FROM collections c WHERE c.group_id = %d', $groupID));
 	}
 
 }

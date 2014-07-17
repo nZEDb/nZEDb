@@ -26,6 +26,7 @@ class ProcessReleases
 		$this->colorCLI = ($options['ColorCLI'] === null ? new ColorCLI() : $options['ColorCLI']);
 		$this->consoleTools = ($options['ConsoleTools'] === null ? new ConsoleTools() : $options['ConsoleTools']);
 		$this->pdo = ($options['Settings'] === null ? new nzedb\db\Settings() : $options['Settings']);
+		$this->nzb = new NZB($this->pdo);
 		$this->releaseCleaning = new ReleaseCleaning();
 		$this->groups = new Groups($this->pdo);
 		$this->releases = new Releases(array('Settings' => $this->pdo, 'Groups' => $this->groups));
@@ -611,12 +612,11 @@ class ProcessReleases
 		}
 
 		if ($total > 0) {
-			$nzb = new NZB($this->pdo);
 			// Init vars for writing the NZB's.
-			$nzb->initiateForWrite($groupID);
+			$this->nzb->initiateForWrite($groupID);
 			foreach ($releases as $release) {
 
-				if ($nzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']) === true) {
+				if ($this->nzb->writeNZBforReleaseId($release['id'], $release['guid'], $release['name'], $release['title']) === true) {
 					$nzbCount++;
 					if ($this->echoCLI) {
 						echo $this->colorCLI->primaryOver("Creating NZBs:\t" . $nzbCount . '/' . $total . "\r");
@@ -983,7 +983,7 @@ class ProcessReleases
 			);
 			if ($releases !== false && $releases->rowCount() > 0) {
 				foreach ($releases as $release) {
-					$this->releases->fastDelete($release['id'], $release['guid']);
+					$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 					$minSizeDeleted++;
 				}
 			}
@@ -1001,7 +1001,7 @@ class ProcessReleases
 				);
 				if ($releases !== false && $releases->rowCount() > 0) {
 					foreach ($releases as $release) {
-						$this->releases->fastDelete($release['id'], $release['guid']);
+						$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 						$maxSizeDeleted++;
 					}
 				}
@@ -1022,7 +1022,7 @@ class ProcessReleases
 			);
 			if ($releases !== false && $releases->rowCount() > 0) {
 				foreach ($releases as $release) {
-					$this->releases->fastDelete($release['id'], $release['guid']);
+					$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 					$minFilesDeleted++;
 				}
 			}
@@ -1071,7 +1071,7 @@ class ProcessReleases
 			);
 			if ($releases !== false && $releases->rowCount() > 0) {
 				foreach ($releases as $release) {
-					$this->releases->fastDelete($release['id'], $release['guid']);
+					$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 					$retentionDeleted++;
 				}
 			}
@@ -1087,7 +1087,7 @@ class ProcessReleases
 			);
 			if ($releases !== false && $releases->rowCount() > 0) {
 				foreach ($releases as $release) {
-					$this->releases->fastDelete($release['id'], $release['guid']);
+					$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 					$passwordDeleted++;
 				}
 			}
@@ -1103,7 +1103,7 @@ class ProcessReleases
 			);
 			if ($releases !== false && $releases->rowCount() > 0) {
 				foreach ($releases as $release) {
-					$this->releases->fastDelete($release['id'], $release['guid']);
+					$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 					$passwordDeleted++;
 				}
 			}
@@ -1124,7 +1124,7 @@ class ProcessReleases
 				}
 				if ($total > 0) {
 					foreach ($releases as $release) {
-						$this->releases->fastDelete($release['id'], $release['guid']);
+						$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 						$duplicateDeleted++;
 					}
 				}
@@ -1137,7 +1137,7 @@ class ProcessReleases
 			);
 			if ($releases !== false && $releases->rowCount() > 0) {
 				foreach ($releases as $release) {
-					$this->releases->fastDelete($release['id'], $release['guid']);
+					$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 					$completionDeleted++;
 				}
 			}
@@ -1153,7 +1153,7 @@ class ProcessReleases
 				if ($releases !== false && $releases->rowCount() > 0) {
 					foreach ($releases as $release) {
 						$disabledCategoryDeleted++;
-						$this->releases->fastDelete($release['id'], $release['guid']);
+						$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 					}
 				}
 			}
@@ -1181,7 +1181,7 @@ class ProcessReleases
 					)
 				);
 				foreach ($releases as $release) {
-					$this->releases->fastDelete($release['id'], $release['guid']);
+					$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 					$categoryMinSizeDeleted++;
 				}
 			}
@@ -1203,7 +1203,7 @@ class ProcessReleases
 				if ($releases !== false && $releases->rowCount() > 0) {
 					foreach ($releases as $release) {
 						$disabledGenreDeleted++;
-						$this->releases->fastDelete($release['id'], $release['guid']);
+						$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 					}
 				}
 			}
@@ -1223,7 +1223,7 @@ class ProcessReleases
 			);
 			if ($releases !== false && $releases->rowCount() > 0) {
 				foreach ($releases as $release) {
-					$this->releases->fastDelete($release['id'], $release['guid']);
+					$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 					$miscRetentionDeleted++;
 				}
 			}

@@ -20,7 +20,7 @@ $c = new ColorCLI();
 $releases = new Releases();
 $count = $total = $all = 0;
 $nzb = new NZB($pdo);
-$ri = new ReleaseImage();
+$ri = new ReleaseImage($pdo);
 $consoleTools = new ConsoleTools();
 $size = ' size ';
 if ($argv[2] === 'near') {
@@ -55,7 +55,7 @@ do {
 					}
 				}
 			}
-			if ($releases->fastDelete($rowrel['id'], $rowrel['guid']) !== false) {
+			if ($releases->fastDelete($rowrel['id'], $rowrel['guid'], $nzb) !== false) {
 				$consoleTools->overWritePrimary('Deleted: ' . number_format(++$count) . " Duplicate Releases");
 			}
 		}

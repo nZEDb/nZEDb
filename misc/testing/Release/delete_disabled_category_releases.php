@@ -12,6 +12,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 	$pdo = new Settings();
 	$releases = new Releases();
 	$category = new Category();
+	$nzb = new NZB($pdo);
 	$catlist = $category->getDisabledIDs();
 	$relsdeleted = 0;
 	if (count($catlist > 0)) {
@@ -19,7 +20,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 			if ($rels = $pdo->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $cat['id']))) {
 				foreach ($rels as $rel) {
 					$relsdeleted++;
-					$releases->fastDelete($rel['id'], $rel['guid']);
+					$releases->fastDelete($rel['id'], $rel['guid'], $nzb);
 				}
 			}
 		}

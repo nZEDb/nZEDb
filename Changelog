@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-17 kevin
+	* Chg: Various speed-up to purge group/partrepair/blacklist.
 2014-07-16 bart39
 	* Fix: XXX processing / counts in monitor
 	* Fix: Set date to now if article header has no date

@@ -50,7 +50,7 @@ class XXX
 	{
 		$this->c = new ColorCLI();
 		$this->pdo = new Settings();
-		$this->releaseImage = new ReleaseImage();
+		$this->releaseImage = new ReleaseImage($this->pdo);
 		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
 		$this->debug = nZEDb_DEBUG;

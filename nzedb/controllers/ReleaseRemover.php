@@ -15,6 +15,11 @@ class ReleaseRemover
 	protected $pdo;
 
 	/**
+	 * @var NZB
+	 */
+	private $nzb;
+
+	/**
 	 * @var ColorCLI
 	 */
 	protected $color;
@@ -129,6 +134,7 @@ class ReleaseRemover
 		$this->color = new ColorCLI();
 		$this->consoleTools = new ConsoleTools();
 		$this->releases = new Releases();
+		$this->nzb = new NZB($this->pdo);
 
 		$this->mysql = ($this->pdo->dbSystem() === 'mysql' ? true : false);
 		$this->like = ($this->mysql ? 'LIKE' : 'ILIKE');
@@ -981,7 +987,7 @@ class ReleaseRemover
 		$deletedCount = 0;
 		foreach ($this->result as $release) {
 			if ($this->delete) {
-				$this->releases->fastDelete($release['id'], $release['guid']);
+				$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
 				if ($this->echoCLI) {
 					echo $this->color->primary('Deleting: ' . $this->method . ': ' . $release['searchname']);
 				}

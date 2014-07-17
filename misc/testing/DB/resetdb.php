@@ -22,7 +22,7 @@ echo $c->header("Thank you, continuing...\n\n");
 $pdo = new Settings();
 $timestart = TIME();
 $relcount = 0;
-$ri = new ReleaseImage();
+$ri = new ReleaseImage($pdo);
 $nzb = new NZB($pdo);
 $consoletools = new ConsoleTools();
 

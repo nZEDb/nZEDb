@@ -323,7 +323,7 @@ class Games
 	public function updategamesinfo($gameInfo)
 	{
 		$gen = new Genres();
-		$ri = new ReleaseImage();
+		$ri = new ReleaseImage($this->pdo);
 
 		$con = array();
 		$ggameid = $this->fetchgiantbombgameid($gameInfo['title']);

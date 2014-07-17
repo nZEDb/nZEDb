@@ -74,7 +74,7 @@ Class ProcessAdditional
 		$this->_nameFixer = new NameFixer($this->_echoCLI);
 		$this->_categorize = new Categorize();
 		$this->_releaseExtra = new ReleaseExtra();
-		$this->_releaseImage = new ReleaseImage();
+		$this->_releaseImage = new ReleaseImage($this->pdo);
 		$this->_par2Info = new Par2Info();
 		$this->_nfo = new Nfo($this->_echoCLI);
 
