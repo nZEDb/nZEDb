@@ -133,7 +133,7 @@ class ReleaseRemover
 		$this->pdo = new Settings();
 		$this->color = new ColorCLI();
 		$this->consoleTools = new ConsoleTools();
-		$this->releases = new Releases();
+		$this->releases = new Releases(array('Settings' => $this->pdo, 'Groups' => null));
 		$this->nzb = new NZB($this->pdo);
 
 		$this->mysql = ($this->pdo->dbSystem() === 'mysql' ? true : false);
@@ -347,7 +347,7 @@ class ReleaseRemover
 		$this->method = 'Gibberish';
 		$regex = sprintf("r.searchname %s '^[a-zA-Z0-9]{15,}$'", $this->regexp);
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname
+			"SELECT r.guid, r.searchname
 			FROM releases r
 			WHERE %s
 			AND r.nfostatus = 0
@@ -373,7 +373,7 @@ class ReleaseRemover
 		$this->method = 'Hashed';
 		$regex = sprintf("r.searchname %s '[a-zA-Z0-9]{25,}'", $this->regexp);
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname
+			"SELECT r.guid, r.searchname
 			FROM releases r
 			WHERE %s
 			AND r.nfostatus = 0
@@ -399,7 +399,7 @@ class ReleaseRemover
 		$this->method = 'Short';
 		$regex = sprintf("r.searchname %s '^[a-zA-Z0-9]{0,5}$'", $this->regexp);
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname
+			"SELECT r.guid, r.searchname
 			FROM releases r
 			WHERE %s
 			AND r.nfostatus = 0
@@ -424,7 +424,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Executable';
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname
+			"SELECT r.guid, r.searchname
 			FROM releases r
 			INNER JOIN releasefiles rf ON rf.releaseid = r.id
 			WHERE r.searchname NOT %s %s
@@ -457,7 +457,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Install.bin';
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname
+			"SELECT r.guid, r.searchname
 			FROM releases r
 			INNER JOIN releasefiles rf ON rf.releaseid = r.id
 			WHERE rf.name %s %s %s",
@@ -481,7 +481,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Password.url';
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname
+			"SELECT r.guid, r.searchname
 			FROM releases r
 			INNER JOIN releasefiles rf ON rf.releaseid = r.id
 			WHERE rf.name %s %s %s",
@@ -505,7 +505,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Passworded';
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname
+			"SELECT r.guid, r.searchname
 			FROM releases r
 			WHERE r.searchname %s %s
 			AND r.searchname NOT %s %s
@@ -558,7 +558,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Size';
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname
+			"SELECT r.guid, r.searchname
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size < 2097152
@@ -592,7 +592,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Huge';
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname
+			"SELECT r.guid, r.searchname
 			FROM releases r
 			WHERE r.totalpart = 1
 			AND r.size > 209715200 %s",
@@ -614,7 +614,7 @@ class ReleaseRemover
 	{
 		$this->method = 'Sample';
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname
+			"SELECT r.guid, r.searchname
 			FROM releases r
 			WHERE r.totalpart > 1
 			AND r.size < 40000000
@@ -657,7 +657,7 @@ class ReleaseRemover
 		$regex = "'[.]scr[$ \"]'";
 		$regex = sprintf("(rf.name %s %s OR r.name %s %s)", $this->regexp, $regex, $this->regexp, $regex);
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname
+			"SELECT r.guid, r.searchname
 			FROM releases r
 			LEFT JOIN releasefiles rf on rf.releaseid = r.id
 			WHERE %s %s",
@@ -850,7 +850,7 @@ class ReleaseRemover
 				"%s", $this->method, $blType, $opTypeName, $ftUsing));
 
 				$this->query = sprintf(
-					"SELECT r.id, r.guid, r.searchname
+					"SELECT r.guid, r.searchname
 					FROM releasesearch rs LEFT JOIN releases r ON rs.releaseid = r.id %s %s %s", $regexSQL, $groupID, $this->crapTime
 				);
 
@@ -924,7 +924,7 @@ class ReleaseRemover
 
 				$this->method = 'Blacklist ' . $regex['id'];
 				$this->query = sprintf(
-					"SELECT r.id, r.guid, r.searchname
+					"SELECT r.guid, r.searchname
 					FROM releases r %s %s %s", $regexSQL, $groupID, $this->crapTime
 				);
 
@@ -963,12 +963,12 @@ class ReleaseRemover
 			Category::CAT_XXX_XVID,
 			Category::CAT_XXX_OTHER
 		);
-		$codeclike = sprintf("UNION SELECT r.id, r.guid, r.searchname FROM releases r
+		$codeclike = sprintf("UNION SELECT r.guid, r.searchname FROM releases r
 			LEFT JOIN releasefiles rf ON r.id = rf.releaseid
 			WHERE %s rf.name %s '%s' OR rf.name %s '%s'", $categories, $this->like, $codec, $this->like, $iferror
 			);
 		$this->query = sprintf(
-			"SELECT r.id, r.guid, r.searchname FROM releases
+			"SELECT r.guid, r.searchname FROM releases
 			r INNER JOIN releasefiles rf ON (rf.releaseid = r.id)
 			WHERE %s %s %s %s %s", $categories, $regex, $this->crapTime, $codeclike, $this->crapTime
 		);
@@ -987,7 +987,7 @@ class ReleaseRemover
 		$deletedCount = 0;
 		foreach ($this->result as $release) {
 			if ($this->delete) {
-				$this->releases->fastDelete($release['id'], $release['guid'], $this->nzb);
+				$this->releases->deleteSingle($release['guid'], $this->nzb);
 				if ($this->echoCLI) {
 					echo $this->color->primary('Deleting: ' . $this->method . ': ' . $release['searchname']);
 				}

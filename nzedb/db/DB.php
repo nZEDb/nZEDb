@@ -782,81 +782,85 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
+	 * Optimises/repairs/analyzes tables on mysql.
 	 *
 	 * @param bool   $admin
-	 * @param string $type
+	 * @param string $type  'true'    Force optimize of all tables.
+	 *                      'full'    Force optimize of all tables.
+	 *                      'all'     Optimise tables with 5% or more free space.
+	 *                      'run'     Optimise tables with 5% or more free space.
+	 *                      'analyze' Analyze tables to rebuild statistics.
 	 *
-	 * @return int
+	 * @return int Quantity optimized/analyzed
 	 */
 	public function optimise($admin = false, $type = '')
 	{
-		$tablecnt = 0;
-		if ($this->dbSystem === 'mysql') {
-			if ($type === 'true' || $type === 'full' || $type === 'analyze') {
-				$alltables = $this->query('SHOW TABLE STATUS');
-			} else {
-				$alltables = $this->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
+		$tableArray = $myIsamTables = false;
+
+		if ($type === 'true' || $type === 'full' || $type === 'analyze') {
+			$tableArray = $this->queryDirect('SHOW TABLE STATUS ');
+			$myIsamTables = $this->queryDirect("SHOW TABLE STATUS WHERE ENGINE LIKE 'myisam'");
+		} else if ($type === 'all' || $type === 'run') {
+			$tableArray = $this->queryDirect('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
+			$myIsamTables = $this->queryDirect("SHOW TABLE STATUS WHERE ENGINE LIKE 'myisam' AND Data_free / Data_length > 0.005");
+		}
+
+		$optimised = 0;
+		if ($tableArray !== false && $tableArray->rowCount() > 0) {
+
+			$tableNames = '';
+			foreach ($tableArray as $table) {
+				$tableNames .= $table['name'] . ',';
 			}
-			$tablecnt = count($alltables);
-			if ($type === 'all' || $type === 'full') {
-				$tbls = '';
-				foreach ($alltables as $table) {
-					$tbls .= $table['name'] . ', ';
-				}
-				$tbls = rtrim(trim($tbls),',');
-				if ($admin === false) {
-					$message = 'Optimizing tables: ' . $tbls;
-					echo $this->log->primary($message);
-					if ($this->_debug) {
-						$this->debugging->start("optimise", $message, 5);
-					}
-				}
-				$this->queryExec("OPTIMIZE LOCAL TABLE ${tbls}");
+			$tableNames = rtrim($tableNames, ',');
+
+			if ($type === 'analyze') {
+
+				$this->queryExec('ANALYZE LOCAL TABLE ' . $tableNames);
+				$this->logOptimize($admin, 'ANALYZE', $tableNames);
+
 			} else {
-				foreach ($alltables as $table) {
-					if ($type === 'analyze') {
-						if ($admin === false) {
-							$message = 'Analyzing table: ' . $table['name'];
-							echo $this->log->primary($message);
-							if ($this->_debug) {
-								$this->debugging->start("optimise", $message, 5);
-							}
-						}
-						$this->queryExec('ANALYZE LOCAL TABLE `' . $table['name'] . '`');
-					} else {
-						if ($admin === false) {
-							$message = 'Optimizing table: ' . $table['name'];
-							echo $this->log->primary($message);
-							if ($this->_debug) {
-								$this->debugging->start("optimise", $message, 5);
-							}
-						}
-						if (strtolower($table['engine']) == 'myisam') {
-							$this->queryExec('REPAIR TABLE `' . $table['name'] . '`');
-						}
-						$this->queryExec('OPTIMIZE LOCAL TABLE `' . $table['name'] . '`');
+
+				$this->queryExec('OPTIMIZE LOCAL TABLE ' . $tableNames);
+				$this->logOptimize($admin, 'OPTIMIZE', $tableNames);
+
+				if ($myIsamTables !== false && $myIsamTables->rowCount() > 0) {
+					$tableNames = '';
+					foreach ($myIsamTables as $table) {
+						$tableNames .= $table['name'] . ',';
 					}
+					$this->queryExec('REPAIR LOCAL TABLE ' . rtrim($tableNames, ','));
+					$this->logOptimize($admin, 'REPAIR', $tableNames);
 				}
-			}
-			if ($type !== 'analyze') {
+
 				$this->queryExec('FLUSH TABLES');
 			}
-		} else if ($this->dbSystem === 'pgsql') {
-			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
-			$tablecnt = count($alltables);
-			foreach ($alltables as $table) {
-				if ($admin === false) {
-					$message = 'Vacuuming table: ' . $table['name'] . ".\n";
-					echo $message;
-					if ($this->_debug) {
-						$this->debugging->start("optimise", $message, 5);
-					}
-				}
-				$this->query('VACUUM (ANALYZE) ' . $table['name']);
-			}
+			$optimised = $tableArray->rowCount();
 		}
-		return $tablecnt;
+
+		return $optimised;
+	}
+
+	/**
+	 * Log/echo repaired/optimized/analyzed tables.
+	 *
+	 * @param bool   $web    If we are on web, don't echo.
+	 * @param string $type   ANALYZE|OPTIMIZE|REPAIR
+	 * @param string $tables Table names.
+	 *
+	 * @access private
+	 * @void
+	 */
+	private function logOptimize($web, $type, $tables)
+	{
+		$message = $type . ' table: ' . $tables;
+		if ($web === false) {
+			echo $this->log->primary($message);
+
+		}
+		if ($this->_debug) {
+			$this->debugging->start("optimise", $message, 5);
+		}
 	}
 
 	/**

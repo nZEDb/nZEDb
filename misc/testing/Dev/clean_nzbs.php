@@ -6,7 +6,7 @@ use nzedb\db\Settings;
 $c = new ColorCLI();
 if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	$pdo = new Settings();
-	$releases = new Releases();
+	$releases = new Releases(array('Settings' => $pdo, 'Groups' => null));
 	$nzb = new NZB($pdo);
 	$consoletools = new ConsoleTools();
 	$timestart = TIME();
@@ -24,7 +24,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 				if ($res === false) {
 					if ($argv[1] === "delete") {
 						@copy($nzbpath, nZEDb_ROOT . "pooped/" . $guid[1] . ".nzb.gz");
-						$releases->fastDelete(null, $guid[1], $nzb);
+						$releases->deleteSingle($guid[1], $nzb);
 						$deleted++;
 					}
 				} else if (isset($res)) {
@@ -55,7 +55,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 			if (!file_exists($nzbpath)) {
 				if ($argv[1] === "delete") {
 					@copy($nzbpath, nZEDb_ROOT . "pooped/" . $guid[1] . ".nzb.gz");
-					$releases->fastDelete($row['id'], $row['guid'], $nzb);
+					$releases->deleteSingle($row['guid'], $nzb);
 				}
 				$deleted++;
 			} else if (file_exists($nzbpath) && isset($row)) {

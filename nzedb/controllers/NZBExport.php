@@ -56,7 +56,7 @@ class NZBExport
 	{
 		$this->browser = $browser;
 		$this->pdo = new Settings();
-		$this->releases = new Releases();
+		$this->releases = new Releases(array('Settings' => $this->pdo, 'Groups' => null));
 		$this->nzb = new NZB($this->pdo);
 		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
 	}

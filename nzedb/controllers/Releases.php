@@ -671,48 +671,47 @@ class Releases
 	}
 
 	/**
-	 * Delete a release or multiple releases.
+	 * Delete multiple releases, or a single by ID.
 	 *
-	 * @param int|string $id
-	 * @param bool       $isGuid
-	 * @param NZB        $nzb
+	 * @param array|int|string $list   Array of GUID or ID of releases to delete.
+	 * @param bool             $isGUID Are the identifiers GUID or ID?
 	 */
-	public function delete($id, $isGuid = false, &$nzb = null)
+	public function deleteMultiple($list, $isGUID = false)
 	{
-		if (!is_array($id)) {
-			$id = array($id);
+		if (!is_array($list)) {
+			$list = array($list);
 		}
 
-		if ($nzb === null) {
-			$nzb = new NZB;
-		}
+		$nzb = new NZB($this->pdo);
 
-		foreach ($id as $identifier) {
-			if ($isGuid) {
-				$rel = $this->getByGuid($identifier);
+		foreach ($list as $identifier) {
+			if ($isGUID) {
+				$this->deleteSingle($identifier, $nzb);
 			} else {
-				$rel = $this->getById($identifier);
+				$release = $this->pdo->queryOneRow(sprintf('SELECT guid FROM releases WHERE id = %d', $identifier));
+				if ($release === false) {
+					continue;
+				}
+				$this->deleteSingle($release['guid'], $nzb);
 			}
-			$this->fastDelete($rel['id'], $rel['guid'], $nzb);
 		}
 	}
 
 	/**
-	 * Deletes a single release, and all the corresponding files.
+	 * Deletes a single release by GUID, and all the corresponding files.
 	 *
-	 * @param int    $id   release id
-	 * @param string $guid release guid
+	 * @param string $guid Release GUID.
 	 * @param NZB    $nzb
 	 */
-	public function fastDelete($id, $guid, $nzb = null)
+	public function deleteSingle($guid, $nzb = null)
 	{
 		if ($nzb === null) {
 			$nzb = new NZB($this->pdo);
 		}
 		// Delete NZB from disk.
-		$nzbpath = $nzb->getNZBPath($guid);
-		if (is_file($nzbpath)) {
-			@unlink($nzbpath);
+		$nzbPath = $nzb->getNZBPath($guid);
+		if (is_file($nzbPath)) {
+			@unlink($nzbPath);
 		}
 
 		// Delete images.
@@ -732,8 +731,8 @@ class Releases
 				LEFT OUTER JOIN releasesubs rs ON rs.releaseid = r.id
 				LEFT OUTER JOIN releasevideo rv ON rv.releaseid = r.id
 				LEFT OUTER JOIN releaseextrafull re ON re.releaseid = r.id
-				WHERE r.id = %d',
-				$id
+				WHERE r.guid = %s',
+				$this->pdo->escapeString($guid)
 			)
 		);
 	}
