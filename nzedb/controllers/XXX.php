@@ -73,7 +73,7 @@ class XXX
 	 */
 	public function getXXXInfo($xxxid)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM xxxinfo WHERE id = %d", $xxxid));
+		return $this->pdo->queryOneRow(sprintf("SELECT *, UNCOMPRESS(plot) AS plot FROM xxxinfo WHERE id = %d", $xxxid));
 	}
 
 	/**
