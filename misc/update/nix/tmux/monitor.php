@@ -270,32 +270,43 @@ while ($i > 0) {
 			$age = TIME();
 			if (count($tables) > 0) {
 				foreach ($tables as $row) {
+					$cntsql = '';
 					if ($pdo->dbSystem() === 'mysql') {
 						$tbl = $row['name'];
 						$stamp = 'UNIX_TIMESTAMP(dateadded)';
+						$cntsql = sprintf('
+								SELECT TABLE_ROWS AS count
+								FROM INFORMATION_SCHEMA.TABLES
+								WHERE TABLE_NAME = %s
+								AND TABLE_SCHEMA = %s',
+								$pdo->escapeString($tbl),
+								$pdo->escapeString($db_name)
+						);
 					} else {
 						$tbl = $row['relname'];
 						$stamp = 'extract(epoch FROM dateadded)';
+						$cntsql = 'SELECT COUNT(*) AS count FROM ' . $tbl;
 					}
+
 					if (strpos($tbl, 'collections_') !== false) {
-						$run = $pdo->query('SELECT COUNT(*) AS count FROM ' . $tbl, $t->rand_bool($i));
+						$run = $pdo->query($cntsql, $t->rand_bool($i));
 						$collections_table += $run[0]['count'];
 						$run1 = $pdo->query('SELECT ' . $stamp . ' AS dateadded FROM ' . $tbl . ' ORDER BY dateadded ASC LIMIT 1', $t->rand_bool($i));
 						if (isset($run1[0]['dateadded']) && is_numeric($run1[0]['dateadded']) && $run1[0]['dateadded'] < $age) {
 							$age = $run1[0]['dateadded'];
 						}
 					} else if (strpos($tbl, 'binaries_') !== false) {
-						$run = $pdo->query('SELECT COUNT(*) AS count FROM ' . $tbl, $t->rand_bool($i));
+						$run = $pdo->query($cntsql, $t->rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count'])) {
 							$binaries_table += $run[0]['count'];
 						}
 					} else if (strpos($tbl, 'parts_') !== false) {
-						$run = $pdo->query('SELECT COUNT(*) AS count FROM ' . $tbl, $t->rand_bool($i));
+						$run = $pdo->query($cntsql, $t->rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count'])) {
 							$parts_table += $run[0]['count'];
 						}
 					} else if (strpos($tbl, 'partrepair_') !== false) {
-						$run = $pdo->query('SELECT COUNT(*) AS count FROM ' . $tbl, $t->rand_bool($i));
+						$run = $pdo->query($cntsql, $t->rand_bool($i));
 						if (isset($run[0]['count']) && is_numeric($run[0]['count'])) {
 							$partrepair_table += $run[0]['count'];
 						}
@@ -720,16 +731,8 @@ while ($i > 0) {
 		$book_percent = sprintf("%02s", floor(($book_releases_now / $releases_now) * 100));
 		$misc_percent = sprintf("%02s", floor(($misc_releases_now / $releases_now) * 100));
 	} else {
-		$nfo_percent = 0;
-		$pre_percent = 0;
-		$request_percent = 0;
-		$games_percent = 0;
-		$movie_percent = 0;
-		$xxx_percent = 0;
-		$music_percent = 0;
-		$apps_percent = 0;
-		$tvrage_percent = 0;
-		$book_percent = 0;
+		$nfo_percent = $pre_percent = $request_percent = $games_percent = $movie_percent = 0;
+		$xxx_percent = $music_percent = $apps_percent = $tvrage_percent = $book_percent = 0;
 		$misc_percent = 0;
 	}
 
@@ -849,10 +852,10 @@ while ($i > 0) {
 		printf($mask4, "predb", number_format($predb - $distinct_predb_matched) . "(" . $pre_diff . ")", number_format($predb_matched) . "(" . $pre_percent . "%)");
 		printf($mask4, "requestID", number_format($requestid_inprogress) . "(" . $requestid_diff . ")", number_format($requestid_matched) . "(" . $request_percent . "%)");
 		printf($mask4, "NFO's", number_format($nfo_remaining_now) . "(" . $nfo_diff . ")", number_format($nfo_now) . "(" . $nfo_percent . "%)");
-		printf($mask4, "Console(1000)", number_format($games_releases_proc) . "(" . $games_diff . ")", number_format($games_releases_now) . "(" . $games_percent . "%)");
+		printf($mask4, "Games(1000)", number_format($games_releases_proc) . "(" . $games_diff . ")", number_format($games_releases_now) . "(" . $games_percent . "%)");
 		printf($mask4, "Movie(2000)", number_format($movie_releases_proc) . "(" . $movie_diff . ")", number_format($movie_releases_now) . "(" . $movie_percent . "%)");
 		printf($mask4, "Audio(3000)", number_format($music_releases_proc) . "(" . $music_diff . ")", number_format($music_releases_now) . "(" . $music_percent . "%)");
-		printf($mask4, "PC(4000)", number_format($apps_releases_proc) . "(" . $apps_diff . ")", number_format($apps_releases_now) . "(" . $apps_percent . "%)");
+		printf($mask4, "Apps(4000)", number_format($apps_releases_proc) . "(" . $apps_diff . ")", number_format($apps_releases_now) . "(" . $apps_percent . "%)");
 		printf($mask4, "TVShows(5000)", number_format($tvrage_releases_proc) . "(" . $tvrage_diff . ")", number_format($tvrage_releases_now) . "(" . $tvrage_percent . "%)");
 		printf($mask4, "xXx(6000)", number_format($xxx_releases_proc) . "(" . $xxx_diff . ")", number_format($xxx_releases_now) . "(" . $xxx_percent . "%)");
 		printf($mask4, "Misc(7000)", number_format($work_remaining_now) . "(" . $misc_diff . ")", number_format($misc_releases_now) . "(" . $misc_percent . "%)");

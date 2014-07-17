@@ -10,6 +10,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Move Tmux functions in monitor.php to Tmux class
 	* Chg: Move Tmux proc queries to Tmux class (will not require a restart of monitor.php to tweak queries)
 	* Chg: Greatly improve processing times for fixReleaseNames MD5 and remove needless loop.
+	* Chg: Monitor.php TPG row counts now use INFORMATION_SCHEMA instead as they don't need to be 100% accurate -- greatly increases monitor loop speed
 2014-07-17 kevin
 	* Chg: Various speed-up to purge group/partrepair/blacklist.
 	* Rem: Remove sab URL checking #1396.
