@@ -1,6 +1,8 @@
 <?php
 namespace nzedb\db;
 use \nzedb\utility\Utility;
+use \nzedb\libraries\Cache;
+use \nzedb\libraries\CacheException;
 
 //use nzedb\controllers\ColorCLI;
 
@@ -26,11 +28,6 @@ class DB extends \PDO
 	 * but expanding for full logging with agnostic API planned.
 	 */
 	public $log;
-
-	/**
-	 * @var bool	Whether memcache is enabled.
-	 */
-	public $memcached;
 
 	/**
 	 * @var bool Is this a Command Line Interface instance.
@@ -73,6 +70,16 @@ class DB extends \PDO
 	private $opts;
 
 	/**
+	 * @var null|\nzedb\libraries\Cache
+	 */
+	private $cacheServer = null;
+
+	/**
+	 * @var bool Should we cache the results of the query method?
+	 */
+	private $cacheEnabled = false;
+
+	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
 	 */
@@ -109,11 +116,17 @@ class DB extends \PDO
 			$this->initialiseDatabase();
 		}
 
-		if (defined("MEMCACHE_ENABLED")) {
-			$this->memcached = MEMCACHE_ENABLED;
-		} else {
-			$this->memcached = false;
+		$this->cacheEnabled = (bool) (defined('nZEDb_CACHE_TYPE') && nZEDb_CACHE_TYPE > 0);
+
+		if ($this->cacheEnabled) {
+			try {
+				$this->cacheServer = new Cache();
+			} catch (CacheException $error) {
+				$this->cacheEnabled = false;
+				$this->echoError($error->getMessage(), '__construct', 4);
+			}
 		}
+
 		$this->ct = $this->opts['ct'];
 		$this->log = $this->opts['log'];
 
@@ -566,19 +579,18 @@ class DB extends \PDO
 		}
 	}
 
-
 	/**
 	 * Returns an array of result (empty array if no results or an error occurs)
-	 * Optional: Pass true to cache the result with memcache.
+	 * Optional: Pass true to cache the result with a cache server.
 	 *
-	 * @param string $query    SQL to execute.
-	 * @param bool   $memcache Indicates if memcache should you be used if available.
+	 * @param string $query       SQL to execute.
+	 * @param bool   $cache       Indicates if the query result should be cached.
+	 * @param int    $cacheExpiry The time in seconds before deleting the query result from the cache server.
 	 *
 	 * @return array Array of results (possibly empty) on success, empty array on failure.
 	 */
-	public function query($query, $memcache = false)
+	public function query($query, $cache = false, $cacheExpiry = 600)
 	{
-		$memcached = null;
 		if (empty($query)) {
 			return false;
 		}
@@ -587,28 +599,21 @@ class DB extends \PDO
 			$query = Utility::collapseWhiteSpace($query);
 		}
 
-		if ($memcache === true && $this->memcached === true) {
+		if ($this->cacheEnabled === true) {
 			try {
-				$memcached = new Mcached();
-				if ($memcached !== false) {
-					$crows = $memcached->get($query);
-					if ($crows !== false) {
-						return $crows;
-					}
+				$data = $this->cacheServer->get($this->cacheServer->createKey($query));
+				if ($data !== false) {
+					return $data;
 				}
-			} catch (\Exception $e) {
-				$this->echoError($e->getMessage(), 'query', 4, false, $e);
-
-				if ($this->_debug) {
-					$this->debugging->start("query", $query, 6);
-				}
+			} catch (CacheException $error) {
+				$this->echoError($error->getMessage(), 'query', 4);
 			}
 		}
 
 		$result = $this->queryArray($query);
 
-		if ($memcache === true && $this->memcached === true) {
-			$memcached->add($query, $result);
+		if ($this->cacheEnabled === true) {
+			$this->cacheServer->set($this->cacheServer->createKey($query), $result, $cacheExpiry);
 		}
 
 		return ($result === false) ? array() : $result;
@@ -1051,84 +1056,4 @@ class DB extends \PDO
 		}
 	}
 
-}
-
-// Class for caching queries into RAM using memcache.
-class Mcached
-{
-	/**
-	 * @var \ColorCLI
-	 */
-	public $log;
-
-	private $compression;
-
-	private $expiry;
-
-	private $memcache;
-
-	// Make a connection to memcached server.
-	public function __construct(array $options = array())
-	{
-		$defaults = array(
-			'log'	=> new \ColorCLI(),
-		);
-		$options += $defaults;
-
-		$this->log = $options['log'];
-
-		if (extension_loaded('memcache')) {
-			$this->memcache = new \Memcache();
-			if ($this->memcache->connect(MEMCACHE_HOST, MEMCACHE_PORT) === false) {
-				throw new \Exception($this->log->error("\nUnable to connect to the memcache server."));
-			}
-		} else {
-			throw new \Exception($this->log->error("Extension 'memcache' not loaded."));
-		}
-
-		$this->expiry = MEMCACHE_EXPIRY;
-		$this->compression = MEMCACHE_COMPRESSED;
-
-		if (defined('MEMCACHE_COMPRESSION')) {
-			if (MEMCACHE_COMPRESSION === false) {
-				$this->compression = false;
-			}
-		}
-	}
-
-	// Return a SHA1 hash of the query, used for the key.
-	public function key($query)
-	{
-		return sha1($query);
-	}
-
-	// Return some stats on the server.
-	public function Server_Stats()
-	{
-		return $this->memcache->getExtendedStats();
-	}
-
-	// Flush all the data on the server.
-	public function Flush()
-	{
-		$this->memcache->flush();
-	}
-
-	// Add a query to memcached server.
-	public function add($query, $result)
-	{
-		return $this->memcache->add($this->key($query), $result, $this->compression, $this->expiry);
-	}
-
-	// Delete a query on the memcached server.
-	public function delete($query)
-	{
-		return $this->memcache->delete($this->key($query));
-	}
-
-	// Retrieve a query from the memcached server. Stores the query if not found.
-	public function get($query)
-	{
-		return $this->memcache->get($this->key($query));
-	}
 }
