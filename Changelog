@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-17 taskym
+	* Chg: Plot to Blob, Compress plot, Fix: Selecting title
 2014-07-17 niel
 	* Chg: Modifying DB::queryArray() to make it more efficient.
 2014-07-17 ruhllatio
