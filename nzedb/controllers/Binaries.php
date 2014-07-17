@@ -657,7 +657,7 @@ class Binaries
 					$now = time();
 
 					// Check if the header's time is newer than now, if so, set it now.
-					$articles[$matches[1]]['Date'] = ($date > $now ? $now : $date);
+					$articles[$matches[1]]['Date'] = (is_numeric($date) ? ($date > $now ? $now : $date) : $now);
 
 					$articles[$matches[1]]['MaxParts'] = $matches[3];
 
