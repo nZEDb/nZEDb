@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-16 bart39
+	* Fix: XXX processing / counts in monitor
 2014-07-16 niel
 	* Chg: Refactored CLI code out of DbUpdate and Versions classes and into their own scripts in .../nzedb/cli
 		NOTE: This means "php nzedb/db/DbUpdate.php true", now needs to be "php cli/update_db.php true"

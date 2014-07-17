@@ -119,8 +119,8 @@ $proc_work = "SELECT "
 
 $proc_work2 = "SELECT "
 	. "(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND ((r.categoryid BETWEEN 4000 AND 4999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) OR (r.categoryid = 4050 AND r.gamesinfo_id IS NULL))) AS pc, "
-	. "(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.categoryid BETWEEN 6000 AND 6999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS xxx, "
-	. "(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND ((r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) OR (r.categoryid = 4050 AND r.gamesinfo_id IS NULL))) AS work, "
+	. "(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND ((r.categoryid BETWEEN 6000 AND 6999 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) OR (r.categoryid BETWEEN 6000 AND 6040 AND r.xxxinfo_id = 0))) AS xxx, "
+	. "(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND ((r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) OR (r.categoryid = 4050 AND r.gamesinfo_id IS NULL) OR (r.categoryid BETWEEN 6000 AND 6040 AND r.xxxinfo_id = 0))) AS work, "
 	. "(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table, "
 	. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
 
@@ -193,6 +193,7 @@ $proc_tmux = "SELECT "
 	. "(SELECT VALUE FROM settings WHERE SETTING = 'lookupbooks') as processbooks, "
 	. "(SELECT VALUE FROM settings WHERE SETTING = 'lookupmusic') as processmusic, "
 	. "(SELECT VALUE FROM settings WHERE SETTING = 'lookupgames') as processgames, "
+	. "(SELECT VALUE FROM settings WHERE SETTING = 'lookupxxx') as processxxx, "
 	. "(SELECT VALUE FROM settings WHERE SETTING = 'tmpunrarpath') as tmpunrar, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post_amazon') as post_amazon, "
 	. "(SELECT VALUE FROM tmux WHERE SETTING = 'post_timer_amazon') as post_timer_amazon, "
@@ -318,7 +319,7 @@ $movie_diff = $movie_percent = $movie_releases_now = $movie_releases_proc = 0;
 $nfo_diff = $nfo_percent = $nfo_remaining_now = $nfo_now = $tvrage_releases_proc_start = 0;
 $pc_diff = $pc_percent = $pc_releases_now = $pc_releases_proc = $book_releases_proc_start = 0;
 $pre_diff = $pre_percent = $predb_matched = $predb_start = $predb = $distinct_predb_matched = 0;
-$xxx_diff = $xxx_percent = $xxx_remaining_now = $xxx_releases_proc_start = $xxx_releases_now = 0;
+$xxx_diff = $xxx_percent = $xxx_releases_proc = $xxx_releases_proc_start = $xxx_releases_now = 0;
 $nfo_remaining_start = $work_remaining_start = $releases_start = $releases_now = $releases_since_start = 0;
 $request_percent = $requestid_inprogress_start = $requestid_inprogress = $requestid_diff = $requestid_matched = 0;
 $total_work_now = $work_diff = $work_remaining_now = $pc_releases_proc_start = 0;
@@ -598,7 +599,7 @@ while ($i > 0) {
 		$work_remaining_now = $proc_work_result2[0]['work'] - $proc_work_result2[0]['pc'] - $proc_work_result2[0]['xxx'];
 	}
 	if ($proc_work_result2[0]['xxx'] != null) {
-		$xxx_remaining_now = $proc_work_result2[0]['xxx'];
+		$xxx_releases_proc = $proc_work_result2[0]['xxx'];
 	}
 	if ($proc_work_result[0]['releases'] != null) {
 		$releases_loop = $proc_work_result[0]['releases'];
@@ -686,6 +687,9 @@ while ($i > 0) {
 	}
 	if ($proc_tmux_result[0]['processgames'] != null) {
 		$processgames = $proc_tmux_result[0]['processgames'];
+	}
+	if ($proc_tmux_result[0]['processgames'] != null) {
+		$processxxx = $proc_tmux_result[0]['processxxx'];
 	}
 	if ($proc_tmux_result[0]['tmux_session'] != null) {
 		$tmux_session = $proc_tmux_result[0]['tmux_session'];
@@ -1221,7 +1225,7 @@ while ($i > 0) {
 					break;
 			}
 
-			if ($post == 1 && ($work_remaining_now + $pc_releases_proc + $xxx_remaining_now) > 0) {
+			if ($post == 1 && ($work_remaining_now + $pc_releases_proc + $xxx_releases_proc) > 0) {
 				//run postprocess_releases additional
 				$history = str_replace(" ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'`);
 				if ($last_history != $history) {
@@ -1248,7 +1252,7 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -t${tmux_session}:2.0 ' \
 						$_python ${DIR}update/python/postprocess_threaded.py nfo $log; date +\"%D %T\"; $_sleep $post_timer' 2>&1 1> /dev/null"
 				);
-			} else if (($post == 3) && (($nfo_remaining_now > 0) || ($work_remaining_now + $pc_releases_proc + $xxx_remaining_now > 0))) {
+			} else if (($post == 3) && (($nfo_remaining_now > 0) || ($work_remaining_now + $pc_releases_proc + $xxx_releases_proc > 0))) {
 				//run postprocess_releases additional
 				$history = str_replace(" ", '', `tmux list-panes -t${tmux_session}:2 | grep 0: | awk '{print $4;}'`);
 				if ($last_history != $history) {
@@ -1294,18 +1298,18 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.1 'echo \"\033[38;5;${color}m\n${panes2[1]} has been disabled/terminated by Postprocess Non-Amazon\"'");
 			}
 
-			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0) || ($pc_releases_proc > 0)) && (($processbooks == 1) || ($processmusic == 1) || ($processgames == 1))) {
+			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0) || ($pc_releases_proc > 0) || ($xxx_releases_proc > 0)) && (($processbooks == 1) || ($processmusic == 1) || ($processgames == 1)  || ($processxxx == 1))) {
 				//run postprocess_releases amazon
 				$log = writelog($panes2[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.2 ' \
 						$_python ${DIR}update/python/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
 				);
-			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0)) {
+			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0) && ($processxxx == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
-			} else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0) && ($pc_releases_proc == 0)) {
+				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated in Admin Disable Music/Books/Console/XXX\"'");
+			} else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0) && ($pc_releases_proc == 0) && ($xxx_releases_proc == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by No Music/Books/Console/Games to process\"'");
+				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by No Music/Books/Console/Games/XXX to process\"'");
 			} else {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:2.2 'echo \"\033[38;5;${color}m\n${panes2[2]} has been disabled/terminated by Postprocess Amazon\"'");
@@ -1476,7 +1480,8 @@ while ($i > 0) {
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.0 'echo \"\033[38;5;${color}m\n${panes1[0]} has been disabled/terminated by Update TV/Theater\"'");
 			}
 
-			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) || ($console_releases_proc > 0) || ($pc_releases_proc > 0)) && (($processbooks != 0) || ($processmusic != 0) || ($processgames != 0))) {
+			if (($post_amazon == 1) && (($music_releases_proc > 0) || ($book_releases_proc > 0) ||
+					($console_releases_proc > 0) || ($pc_releases_proc > 0) || ($xxx_releases_proc > 0)) && (($processbooks != 0) || ($processmusic != 0) || ($processgames != 0) || ($processxxx != 0))) {
 				//run postprocess_releases amazon
 				$log = writelog($panes1[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
@@ -1484,10 +1489,10 @@ while ($i > 0) {
 				);
 			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated in Admin Disable Music/Books/Console\"'");
-			} else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0) && ($pc_releases_proc == 0)) {
+				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated in Admin Disable Music/Books/Console/XXX\"'");
+			} else if (($post_amazon == 1) && ($music_releases_proc == 0) && ($book_releases_proc == 0) && ($console_releases_proc == 0) && ($pc_releases_proc == 0) && ($xxx_releases_proc == 0)) {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
-				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by No Music/Books/Console/Games to process\"'");
+				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by No Music/Books/Console/Games/XXX to process\"'");
 			} else {
 				$color = get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:1.1 'echo \"\033[38;5;${color}m\n${panes1[1]} has been disabled/terminated by Postprocess Amazon\"'");
