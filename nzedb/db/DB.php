@@ -599,7 +599,7 @@ class DB extends \PDO
 			$query = Utility::collapseWhiteSpace($query);
 		}
 
-		if ($this->cacheEnabled === true) {
+		if ($cache === true && $this->cacheEnabled === true) {
 			try {
 				$data = $this->cacheServer->get($this->cacheServer->createKey($query));
 				if ($data !== false) {
@@ -612,7 +612,7 @@ class DB extends \PDO
 
 		$result = $this->queryArray($query);
 
-		if ($this->cacheEnabled === true) {
+		if ($cache === true && $this->cacheEnabled === true) {
 			$this->cacheServer->set($this->cacheServer->createKey($query), $result, $cacheExpiry);
 		}
 

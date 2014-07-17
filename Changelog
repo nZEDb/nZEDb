@@ -15,6 +15,8 @@ New updates are grouped by person, at the top of the file.
 2014-07-16 ruhllatio
 	* Fix: TPG/Threaded for ProcessReleases move
 2014-07-16 kevin
+	* Chg: Link to ubuntu guide.
+	* Fix: Cache check on query.
 	* Add: Redis cache support, in addition to multiple server support for memcached. You must copy the new settings from settings.php.example, the old settings in config.php are obsolete.
 	* Chg: Move ProcessReleases out of Releases.
 	* Chg: Speed up release creation.
