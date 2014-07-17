@@ -91,7 +91,7 @@ if ($nntpproxy == 0) {
 }
 
 //totals per category in db, results by parentID
-$qry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid";
+$catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid";
 
 //needs to be processed query
 $proc_work = $t->proc_query(1, $bookreqids, $request_hours, $db_name);
@@ -215,9 +215,10 @@ $fcfirstrun = true;
 $fcnum = 0;
 
 while ($i > 0) {
-	//kill mediainfo and ffmpeg if exceeds 60 sec
+	//kill mediainfo, avconv and ffmpeg if exceeds 60 sec
 	shell_exec("killall -o 60s -9 mediainfo 2>&1 1> /dev/null");
 	shell_exec("killall -o 60s -9 ffmpeg 2>&1 1> /dev/null");
+	shell_exec("killall -o 60s -9 avconv 2>&1 1> /dev/null");
 
 	//check the db connection
 	if ($pdo->ping(true) == false) {
@@ -232,14 +233,76 @@ while ($i > 0) {
 
 	//run queries only after time exceeded, these queries can take awhile
 	if ($i == 1 || (TIME() - $time1 >= $monitor && $running == 1)) {
+
 		echo $c->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
 		$time02 = TIME();
 		$split_result = $pdo->query($split_query, false);
 		$split_time = (TIME() - $time02);
 		$split1_time = (TIME() - $time01);
 
+		$games_releases_now = $movie_releases_now = $games_releases_now = 0;
+		$audio_releases_now = $pc_releases_now = $tv_releases_now = 0;
+		$xxx_releases_now = $misc_releases_now = $books_releases_now = 0;
+
 		$time03 = TIME();
-		$initquery = $pdo->query($qry, false);
+		if ($pdo->dbSystem() === 'mysql') {
+			//This is subpartition compatible -- loops through all partitions and adds their total row counts instead of doing a slow query count
+			$partitions = $pdo->queryDirect("SELECT TABLE_ROWS AS count, PARTITION_NAME AS category FROM INFORMATION_SCHEMA.PARTITIONS WHERE TABLE_NAME = 'releases' AND TABLE_SCHEMA = " . $pdo->escapeString($db_name));
+			foreach ($partitions as $partition) {
+				switch ((string) $partition['category']) {
+					case 'console':
+						$games_releases_now += $partition['count'];
+						break;
+					case 'movies':
+						$movie_releases_now += $partition['count'];
+						break;
+					case 'audio':
+						$music_releases_now += $partition['count'];
+						break;
+					case 'pc':
+						$apps_releases_now += $partition['count'];
+						break;
+					case 'tv':
+						$tvrage_releases_now += $partition['count'];
+						break;
+					case 'xxx':
+						$xxx_releases_now += $partition['count'];
+						break;
+					case 'misc':
+						$misc_releases_now += $partition['count'];
+						break;
+					case 'books':
+						$book_releases_now += $partition['count'];
+						break;
+					default:
+						continue 2;
+				}
+			}
+		} else {
+			$initquery = $pdo->query($catcntqry, false);
+			foreach ($initquery as $cat) {
+				switch ((int) $cat['parentid']) {
+					case Category::CAT_PARENT_GAME:
+						$games_releases_now = $cat['count'];
+					case Category::CAT_PARENT_MOVIE:
+						$movie_releases_now = $cat['count'];
+					case Category::CAT_PARENT_MUSIC:
+						$music_releases_now = $cat['count'];
+					case Category::CAT_PARENT_PC:
+						$apps_releases_now = $cat['count'];
+					case Category::CAT_PARENT_TV:
+						$tvrage_releases_now = $cat['count'];
+					case Category::CAT_PARENT_XXX:
+						$xxx_releases_now = $cat['count'];
+					case Category::CAT_PARENT_MISC:
+						$misc_releases_now = $cat['count'];
+					case Category::CAT_PARENT_BOOKS:
+						$book_releases_now = $cat['count'];
+					default:
+						break;
+				}
+			}
+		}
 		$init_time = (TIME() - $time03);
 		$init1_time = (TIME() - $time01);
 
@@ -372,35 +435,6 @@ while ($i > 0) {
 			$work_remaining_start = $proc_work_result2[0]['work'] - $proc_work_result2[0]['apps'];
 		}
 	}
-
-	//get values from $qry
-	foreach ($initquery as $cat) {
-		if ($cat['parentid'] == 1000) {
-			$games_releases_now = $cat['count'];
-		}
-		if ($cat['parentid'] == 2000) {
-			$movie_releases_now = $cat['count'];
-		}
-		if ($cat['parentid'] == 3000) {
-			$music_releases_now = $cat['count'];
-		}
-		if ($cat['parentid'] == 4000) {
-			$apps_releases_now = $cat['count'];
-		}
-		if ($cat['parentid'] == 5000) {
-			$tvrage_releases_now = $cat['count'];
-		}
-		if ($cat['parentid'] == 6000) {
-			$xxx_releases_now = $cat['count'];
-		}
-		if ($cat['parentid'] == 7000) {
-			$misc_releases_now = $cat['count'];
-		}
-		if ($cat['parentid'] == 8000) {
-			$book_releases_now = $cat['count'];
-		}
-	}
-
 
 	//get values from $proc
 	if ($proc_work_result[0]['games'] != null) {
@@ -1374,7 +1408,7 @@ while ($i > 0) {
 						$_python ${DIR}update/python/backfill_threaded.py all $log; date +\"%D %T\"; $_sleep $backsleep' 2>&1 1> /dev/null"
 				);
 				$time6 = TIME();
-			} else if (($kill_coll == false) || ($kill_pp == false)) {
+			} else if (($kill_coll == true) || ($kill_pp == true)) {
 				$color = $t->get_color($colors_start, $colors_end, $colors_exc);
 				shell_exec("tmux respawnp -k -t${tmux_session}:0.3 'echo \"\033[38;5;${color}m\n${panes0[3]} has been disabled/terminated by Exceeding Limits\"'");
 			} else {

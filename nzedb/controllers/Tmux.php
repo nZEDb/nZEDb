@@ -277,7 +277,7 @@ class Tmux
 			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv, "
 			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies, "
 			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio, "
-			. "((SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) + (SELECT count(*) FROM releases WHERE categoryid = 4050 AND gamesinfo_id IS NULL)) AS games, "
+			. "((SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) + (SELECT COUNT(*) FROM releases WHERE categoryid = 4050 AND gamesinfo_id = 0)) AS games, "
 			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (" . $this->bookreqids . ") AND bookinfoid IS NULL) AS book, "
 			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0) AS xxx, "
 			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) AS releases, "
