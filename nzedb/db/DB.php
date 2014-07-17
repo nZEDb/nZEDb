@@ -628,21 +628,44 @@ class DB extends \PDO
 	 */
 	public function queryArray($query)
 	{
-		if (empty($query)) {
+		$result = false;
+		if (!empty($query)) {
+			$result = $this->queryDirect($query);
+
+			if (!empty($result)) {
+				$result = $result->fetchAll();
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns all results as an associative array.
+	 *
+	 * Do not use this function for large dat-asets, as it can cripple the Db server and use huge
+	 * amounts of RAM. Instead iterate through the data.
+	 *
+	 * @param string $query The query to execute.
+	 *
+	 * @return array|boolean Array of results on success, false otherwise.
+	 */
+	public function queryAssoc($query)
+	{
+		if ($query == '') {
 			return false;
 		}
-
-		$result = $this->queryDirect($query);
-		if ($result === false) {
-			return false;
+		$mode = self::$_pdo->getAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE);
+		if ($mode != \PDO::FETCH_ASSOC) {
+			self::$_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 		}
 
-		$rows = array();
-		foreach ($result as $row) {
-			$rows[] = $row;
-		}
+		$result = $this->queryArray($query);
 
-		return (!isset($rows)) ? false : $rows;
+		if ($mode != \PDO::FETCH_ASSOC) {
+			self::$_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+		}
+		return $result;
 	}
 
 	/**
@@ -757,32 +780,7 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Returns results as an array but without an empty array like our query() function.
-	 *
-	 * @param string $query The query to execute.
-	 *
-	 * @return array|boolean Array of results on success, false otherwise.
-	 */
-	public function queryAssoc($query)
-	{
-		if ($query == '') {
-			return false;
-		}
-		$mode = self::$_pdo->getAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE);
-		if ($mode != \PDO::FETCH_ASSOC) {
-			self::$_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
-		}
-
-		$result = $this->queryArray($query);
-
-		if ($mode != \PDO::FETCH_ASSOC) {
-			self::$_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
-		}
-		return $result;
-	}
-
-	/**
-	 * Optimises/repairs/analyzes tables on mysql.
+	 * Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
 	 *
 	 * @param bool   $admin
 	 * @param string $type  'true'    Force optimize of all tables.
