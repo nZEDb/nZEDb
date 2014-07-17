@@ -239,7 +239,7 @@ class Users
 		$sql[] = sprintf('role = %d', $role);
 		$sql[] = sprintf('invites = %d', $invites);
 		$sql[] = sprintf('movieview = %d', $movieview);
-		$sql[] = sprintf('xxxview = %d', $movieview);
+		$sql[] = sprintf('xxxview = %d', $xxxview);
 		$sql[] = sprintf('musicview = %d', $musicview);
 		$sql[] = sprintf('consoleview = %d', $consoleview);
 		$sql[] = sprintf('gameview = %d', $gameview);
