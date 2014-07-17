@@ -10,7 +10,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: XXX processing / counts in monitor
 	* Fix: Set date to now if article header has no date
 2014-07-16 niel
-	* Chg: Refactored CLI code out of DbUpdate and Versions classes and into their own scripts in .../nzedb/cli
+	* Chg: Refactored CLI code out of DbUpdate and Versions classes and into their own scripts in .../cli
 	NOTE: This means "php nzedb/db/DbUpdate.php true", now needs to be "php cli/update_db.php true"
 	* Fix: Processing tasky's SQL patch file.
 2014-07-16 ruhllatio
