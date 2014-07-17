@@ -245,10 +245,15 @@ while ($i > 0) {
 		$xxx_releases_now = $misc_releases_now = $books_releases_now = 0;
 
 		$time03 = TIME();
-		/**
 		if ($pdo->dbSystem() === 'mysql') {
 			//This is subpartition compatible -- loops through all partitions and adds their total row counts instead of doing a slow query count
-			$partitions = $pdo->queryDirect("SELECT TABLE_ROWS AS count, PARTITION_NAME AS category FROM INFORMATION_SCHEMA.PARTITIONS WHERE TABLE_NAME = 'releases' AND TABLE_SCHEMA = " . $pdo->escapeString($db_name));
+			$partitions = $pdo->queryDirect("
+								SELECT SUM(TABLE_ROWS) AS count, PARTITION_NAME AS category
+								FROM INFORMATION_SCHEMA.PARTITIONS
+								WHERE TABLE_NAME = 'releases'
+								AND TABLE_SCHEMA = " . $pdo->escapeString($db_name) . "
+								GROUP BY PARTITION_NAME"
+			);
 			foreach ($partitions as $partition) {
 				switch ((string) $partition['category']) {
 					case 'console':
@@ -280,7 +285,6 @@ while ($i > 0) {
 				}
 			}
 		} else {
-		**/
 			$initquery = $pdo->query($catcntqry, false);
 			foreach ($initquery as $cat) {
 				switch ((int) $cat['parentid']) {
@@ -304,7 +308,7 @@ while ($i > 0) {
 						break;
 				}
 			}
-		//}
+		}
 		$init_time = (TIME() - $time03);
 		$init1_time = (TIME() - $time01);
 
