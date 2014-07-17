@@ -688,7 +688,7 @@ while ($i > 0) {
 	if ($proc_tmux_result[0]['processgames'] != null) {
 		$processgames = $proc_tmux_result[0]['processgames'];
 	}
-	if ($proc_tmux_result[0]['processgames'] != null) {
+	if ($proc_tmux_result[0]['processxxx'] != null) {
 		$processxxx = $proc_tmux_result[0]['processxxx'];
 	}
 	if ($proc_tmux_result[0]['tmux_session'] != null) {
