@@ -245,40 +245,42 @@ while ($i > 0) {
 		$xxx_releases_now = $misc_releases_now = $books_releases_now = 0;
 
 		$time03 = TIME();
+		/**
 		if ($pdo->dbSystem() === 'mysql') {
 			//This is subpartition compatible -- loops through all partitions and adds their total row counts instead of doing a slow query count
 			$partitions = $pdo->queryDirect("SELECT TABLE_ROWS AS count, PARTITION_NAME AS category FROM INFORMATION_SCHEMA.PARTITIONS WHERE TABLE_NAME = 'releases' AND TABLE_SCHEMA = " . $pdo->escapeString($db_name));
 			foreach ($partitions as $partition) {
 				switch ((string) $partition['category']) {
 					case 'console':
-						$games_releases_now += $partition['count'];
+						$games_releases_now = $partition['count'];
 						break;
 					case 'movies':
-						$movie_releases_now += $partition['count'];
+						$movie_releases_now = $partition['count'];
 						break;
 					case 'audio':
-						$music_releases_now += $partition['count'];
+						$music_releases_now = $partition['count'];
 						break;
 					case 'pc':
-						$apps_releases_now += $partition['count'];
+						$apps_releases_now = $partition['count'];
 						break;
 					case 'tv':
-						$tvrage_releases_now += $partition['count'];
+						$tvrage_releases_now = $partition['count'];
 						break;
 					case 'xxx':
-						$xxx_releases_now += $partition['count'];
+						$xxx_releases_now = $partition['count'];
 						break;
 					case 'misc':
-						$misc_releases_now += $partition['count'];
+						$misc_releases_now = $partition['count'];
 						break;
 					case 'books':
-						$book_releases_now += $partition['count'];
+						$book_releases_now = $partition['count'];
 						break;
 					default:
 						continue 2;
 				}
 			}
 		} else {
+		**/
 			$initquery = $pdo->query($catcntqry, false);
 			foreach ($initquery as $cat) {
 				switch ((int) $cat['parentid']) {
@@ -302,7 +304,7 @@ while ($i > 0) {
 						break;
 				}
 			}
-		}
+		//}
 		$init_time = (TIME() - $time03);
 		$init1_time = (TIME() - $time01);
 
