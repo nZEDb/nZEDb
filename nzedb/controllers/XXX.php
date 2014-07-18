@@ -88,7 +88,8 @@ class XXX
 	{
 		return $this->pdo->query(
 			sprintf('
-				SELECT *
+				SELECT *,
+				UNCOMPRESS(plot) AS plot
 				FROM xxxinfo
 				ORDER BY createddate DESC %s',
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
