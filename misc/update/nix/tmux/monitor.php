@@ -35,6 +35,8 @@ $bookreqids = ($bkreqid === null || $bkreqid == "") ? 8010 : $bkreqid;
 $reqHours = $pdo->getSetting('request_hours');
 $request_hours = isset($reqHours) ? $reqHours : 1;
 
+$pre_lim = '7';
+
 if ($t->command_exist("python3")) {
 	$PYTHON = "python3 -OOu";
 } else {
@@ -1016,8 +1018,6 @@ while ($i > 0) {
 			} else if ($dehash == 2) {
 				if ($i === 1) {
 					$pre_lim = '';
-				} else {
-					$pre_lim = '7';
 				}
 				$log = $t->writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
@@ -1026,8 +1026,6 @@ while ($i > 0) {
 			} else if ($dehash == 3) {
 				if ($i === 1) {
 					$pre_lim = '';
-				} else {
-					$pre_lim = '7';
 				}
 				$log = $t->writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
