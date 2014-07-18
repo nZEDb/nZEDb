@@ -16,7 +16,7 @@ function getOddGames($c)
 {
 	$pdo = new Settings();
 	$res = $pdo->query('
-				SELECT searchname, id
+				SELECT searchname, id, categoryid
 				FROM releases
 				WHERE nzbstatus = 1
 				AND gamesinfo_id = 0
@@ -42,19 +42,21 @@ function getOddGames($c)
 					if ($gameCheck ===  false) {
 						$gameId = $gen->updategamesinfo($gameInfo);
 						$usedgb = true;
-						if ($gameId === false) {
+					if ($gameId === false) {
 							$gameId = -2;
 						}
 					} else {
 						$gameId = $gameCheck['id'];
 					}
-					$pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d, categoryid = %d WHERE id = %d', $gameId, 4050, $arr['id']));
+					if($gameId != -2){
+						$arr['categoryid'] = 4050;
+					}
+					$pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d, categoryid = %d WHERE id = %d', $gameId, $arr['categoryid'], $arr['id']));
 				} else {
 					// Could not parse release title.
 					$pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', -2, $arr['id']));
 						echo '.';
 				}
-
 				// Sleep to not flood giantbomb.
 				$diff = floor((microtime(true) - $startTime) * 1000000);
 				if ($gen->sleeptime * 1000 - $diff > 0 && $usedgb === true) {
