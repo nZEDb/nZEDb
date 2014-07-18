@@ -1014,14 +1014,24 @@ while ($i > 0) {
 						$_php ${DIR}update/decrypt_hashes.php 1000 $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null"
 				);
 			} else if ($dehash == 2) {
+				if ($i === 1) {
+					$pre_lim = '';
+				} else {
+					$pre_lim = '7';
+				}
 				$log = $t->writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
-						$_php ${DIR}update/nix/tmux/bin/postprocess_pre.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null"
+						$_php ${DIR}update/nix/tmux/bin/postprocess_pre.php $pre_lim ($log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null"
 				);
 			} else if ($dehash == 3) {
+				if ($i === 1) {
+					$pre_lim = '';
+				} else {
+					$pre_lim = '7';
+				}
 				$log = $t->writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
-						$_php ${DIR}update/nix/tmux/bin/postprocess_pre.php $log; \
+						$_php ${DIR}update/nix/tmux/bin/postprocess_pre.php $pre_lim $log; \
 						$_php ${DIR}update/decrypt_hashes.php 1000 $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null"
 				);
 			} else {
