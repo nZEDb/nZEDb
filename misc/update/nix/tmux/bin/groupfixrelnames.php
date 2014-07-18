@@ -100,14 +100,6 @@ if (!isset($argv[1])) {
 			}
 		}
 	} else if ($pieces[0] == 'par2' && isset($pieces[1]) && isset($pieces[2]) && is_numeric($pieces[2])) {
-		$nntp = new NNTP();
-		if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-			exit($c->error("Unable to connect to usenet."));
-		}
-		if ($proxy == "1") {
-			usleep(500000);
-		}
-
 		$releases = $pdo->queryDirect(
 						sprintf('
 							SELECT r.id AS releaseid, r.guid
@@ -122,6 +114,13 @@ if (!isset($argv[1])) {
 						)
 		);
 		if ($releases !== false) {
+			$nntp = new NNTP();
+			if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+				exit($c->error("Unable to connect to usenet."));
+			}
+			if ($proxy == "1") {
+				usleep(500000);
+			}
 			$nzbcontents = new NZBContents(array('echo' => true, 'nntp' => $nntp, 'nfo' => new Nfo(), 'db' => $pdo, 'pp' => new PostProcess(true)));
 			foreach ($releases as $release) {
 				$res = $nzbcontents->checkPAR2($release['guid'], $release['releaseid'], $groupID, 1, 1);
@@ -129,19 +128,11 @@ if (!isset($argv[1])) {
 					echo '.';
 				}
 			}
-		}
-		if ($proxy != "1") {
-			$nntp->doQuit();
+			if ($proxy != "1") {
+				$nntp->doQuit();
+			}
 		}
 	} else if ($pieces[0] == 'miscsorter' && isset($pieces[1]) && isset($pieces[2]) && is_numeric($pieces[2])) {
-		$nntp = new NNTP();
-		if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-			exit($c->error("Unable to connect to usenet."));
-		}
-		if ($proxy == "1") {
-			usleep(500000);
-		}
-
 		$releases = $pdo->queryDirect(
 						sprintf('
 							SELECT r.id AS releaseid
@@ -157,6 +148,13 @@ if (!isset($argv[1])) {
 						)
 		);
 		if ($releases !== false) {
+			$nntp = new NNTP();
+			if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+				exit($c->error("Unable to connect to usenet."));
+			}
+			if ($proxy == "1") {
+				usleep(500000);
+			}
 			$sorter = new MiscSorter(true);
 			foreach ($releases as $release) {
 				$res = $sorter->nfosorter(null, $release['releaseid'], $nntp);
@@ -165,9 +163,9 @@ if (!isset($argv[1])) {
 					echo '.';
 				}
 			}
-		}
-		if ($proxy != "1") {
-			$nntp->doQuit();
+			if ($proxy != "1") {
+				$nntp->doQuit();
+			}
 		}
 	}
 }
