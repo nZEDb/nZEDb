@@ -455,10 +455,10 @@ class Groups
 		// Remove rows from part repair.
 		$this->pdo->queryExec(sprintf("DELETE FROM partrepair WHERE group_id = %d", $id));
 
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS collections_', $id));
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS binaries_', $id));
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS parts_', $id));
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS partrepair_', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS collections_%d', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS binaries_%d', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS parts_%d', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS partrepair_%d', $id));
 
 		// Reset the group stats.
 		return $this->pdo->queryExec(
