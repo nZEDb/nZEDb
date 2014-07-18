@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-18 kevin
 	* Fix: Missing UNCOMPRESS for plot on xxxinfo.
+	* Add: Customizable part-repair max tries.
 2014-07-18 ruhllatio
 	* Fix: MySQL memory leaks from cache limit errors in PreDB FT
 2014-07-17 taskym
