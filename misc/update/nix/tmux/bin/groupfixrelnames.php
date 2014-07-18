@@ -21,7 +21,7 @@ if (!isset($argv[1])) {
 								uncompress(nfo) AS textstring
 							FROM releases r
 							INNER JOIN releasenfo rn ON r.id = rn.releaseid
-							WHERE nzbstatus = 1
+							WHERE r.nzbstatus = 1
 							AND r.preid = 0
 							AND r.group_id = %d
 							ORDER BY r.postdate DESC
@@ -53,7 +53,7 @@ if (!isset($argv[1])) {
 								r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id
 							FROM releases r
 							INNER JOIN releasefiles rf ON r.id = rf.releaseid
-							WHERE nzbstatus = 1 AND proc_files = 0
+							WHERE r.nzbstatus = 1 AND r.proc_files = 0
 							AND r.preid = 0
 							AND r.group_id = %d
 							ORDER BY r.postdate ASC
@@ -110,12 +110,12 @@ if (!isset($argv[1])) {
 
 		$releases = $pdo->queryDirect(
 						sprintf('
-							SELECT id AS releaseid, guid
-							FROM releases
-							WHERE nzbstatus = 1 AND proc_par2 = 0
-							AND preid = 0
-							AND group_id = %d
-							ORDER BY postdate ASC
+							SELECT r.id AS releaseid, r.guid
+							FROM releases r
+							WHERE r.nzbstatus = 1 AND r.proc_par2 = 0
+							AND r.preid = 0
+							AND r.group_id = %d
+							ORDER BY r.postdate ASC
 							LIMIT %s',
 							$groupID,
 							$maxperrun
@@ -144,13 +144,13 @@ if (!isset($argv[1])) {
 
 		$releases = $pdo->queryDirect(
 						sprintf('
-							SELECT id AS releaseid
-							FROM releases
-							WHERE nzbstatus = 1 AND nfostatus = 1
-							AND proc_sorter = 0 AND isrenamed = 0
-							AND preid = 0
-							AND group_id = %d
-							ORDER BY postdate DESC
+							SELECT r.id AS releaseid
+							FROM releases r
+							WHERE r.nzbstatus = 1 AND r.nfostatus = 1
+							AND r.proc_sorter = 0 AND r.isrenamed = 0
+							AND r.preid = 0
+							AND r.group_id = %d
+							ORDER BY r.postdate DESC
 							LIMIT %s',
 							$groupID,
 							$maxperrun

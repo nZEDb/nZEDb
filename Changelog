@@ -10,6 +10,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: MySQL memory leaks from cache limit errors in PreDB FT
 	* Chg: Remove NNTP from Tmux PreDB / set checkPre tmux to run full once then for past week with large DB supported query
 	* Add: fixReleaseNames by Group that beats the pants off the old one (testing mode)
+	* Chg: Clean a few queries up in new group fix release names
 2014-07-18 kevin
 	* Fix: Missing UNCOMPRESS for plot on xxxinfo.
 	* Add: Customizable part-repair max tries.
