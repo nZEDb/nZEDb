@@ -19,6 +19,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Change python postprocess_threaded.py to do tv and movie by groupID instead (in line with Bart/Ruhllatio's changes)
 	* Chg: Call processAdditional directly, saving a DB instance in postprocess.
 	* Add: Logic to attempt to detect string size overflow in NNTP, preventing some rare fatal errors.
+	* ---: Merge tasky's PR.
 2014-07-19 bart39
 	* Add: XXX to reset_postprocessing.
 	* Fix: Undefined variable in groupfixrelnames
