@@ -99,7 +99,7 @@ class PostProcess
 	{
 		$this->processPredb($nntp);
 		$this->processAdditional($nntp);
-		$this->processNfos('', $nntp);
+		$this->processNfos($nntp);
 		$this->processSharing($nntp);
 		$this->processMovies();
 		$this->processMusic();
@@ -195,15 +195,14 @@ class PostProcess
 	/**
 	 * Process nfo files.
 	 *
-	 * @param string $releaseToWork
 	 * @param NNTP   $nntp
 	 *
 	 * @return void
 	 */
-	public function processNfos($releaseToWork = '', $nntp)
+	public function processNfos($nntp)
 	{
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			$this->Nfo->processNfoFiles($releaseToWork,	$this->pdo->getSetting('lookupimdb'), $this->pdo->getSetting('lookuptvrage'),	$groupID = '', $nntp);
+			$this->Nfo->processNfoFiles($nntp, '', (int)$this->pdo->getSetting('lookupimdb'), (int)$this->pdo->getSetting('lookuptvrage'));
 		}
 	}
 
@@ -247,10 +246,6 @@ class PostProcess
 
 	/**
 	 * Lookup xxx if enabled.
-	 *
-	 * @param string $releaseToWork
-	 *
-	 * @return void
 	 */
 	public function processXXX()
 	{
@@ -266,15 +261,14 @@ class PostProcess
 	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
 	 *
 	 * @param NNTP   $nntp          Class NNTP
-	 * @param string $releaseToWork String containing SQL results. Optional.
 	 * @param string $groupID       Group ID. Optional
 	 *
 	 * @return void
 	 */
-	public function processAdditional($nntp, $releaseToWork = '', $groupID = '')
+	public function processAdditional($nntp, $groupID = '')
 	{
 		$processAdditional = new ProcessAdditional($this->echooutput, $nntp, $this->pdo);
-		$processAdditional->start($releaseToWork, $groupID);
+		$processAdditional->start($groupID);
 	}
 
 	/**

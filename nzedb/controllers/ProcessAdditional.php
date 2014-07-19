@@ -143,14 +143,6 @@ Class ProcessAdditional
 			(($this->pdo->getSetting('unrarpath') == '') ? false : true)
 		);
 
-		// Set up the temporary files folder location.
-		$this->_mainTmpPath = $this->pdo->getSetting('tmpunrarpath');
-		// Check if it ends with a dir separator.
-		if (!preg_match('/[\/\\\\]$/', $this->_mainTmpPath)) {
-			$this->_mainTmpPath .= DS;
-		}
-		$this->tmpPath = $this->_mainTmpPath;
-
 		$this->_audioSavePath = nZEDb_COVERS . 'audiosample' . DS;
 
 		$this->_audioFileRegex   = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
@@ -162,44 +154,16 @@ Class ProcessAdditional
 	/**
 	 * Main method.
 	 *
-	 * @param string     $release Optional single release to work on.
 	 * @param int|string $groupID Optional ID of a group to work on.
 	 *
 	 * @void
 	 */
-	public function start($release = '', $groupID = '')
+	public function start($groupID = '')
 	{
+		$this->_setMainTempPath($groupID);
+
 		// Fetch all the releases to work on.
-		if ($release === '') {
-			// Clear out old folders/files from the temp folder.
-			$this->_recursivePathDelete(
-				$this->_mainTmpPath,
-				// These are folders we don't want to delete.
-				array(
-					// This is the actual unrar folder.
-					$this->_mainTmpPath,
-					// This folder is used by misc/testing/Dev/rename_u4e.php
-					$this->_mainTmpPath . 'u4e'
-				)
-			);
-			$this->_fetchReleases($groupID);
-		} else {
-			$release = explode('           =+=            ', $release);
-			$this->_releases = array(
-				array(
-					'id'             => $release[0],
-					'guid'           => $release[1],
-					'name'           => $release[2],
-					'disablepreview' => $release[3],
-					'size'           => $release[4],
-					'group_id'       => $release[5],
-					'nfostatus'      => $release[6],
-					'categoryid'     => $release[7],
-					'searchname'     => $release[8]
-				)
-			);
-			$this->_totalReleases = 1;
-		}
+		$this->_fetchReleases($groupID);
 
 		// Check if we have releases to work on.
 		if ($this->_totalReleases > 0) {
@@ -211,6 +175,51 @@ Class ProcessAdditional
 	}
 
 	/**
+	 * @var string Main temp path to work on.
+	 */
+	protected $_mainTmpPath;
+
+	/**
+	 * @var string Temp path for current release.
+	 */
+	protected $tmpPath;
+
+	/**
+	 * Set up the path to the folder we will work in.
+	 *
+	 * @param string|int $groupID
+	 */
+	protected function _setMainTempPath(&$groupID = '')
+	{
+		// Set up the temporary files folder location.
+		$this->_mainTmpPath = $this->pdo->getSetting('tmpunrarpath');
+
+		// Check if it ends with a dir separator.
+		if (!preg_match('/[\/\\\\]$/', $this->_mainTmpPath)) {
+			$this->_mainTmpPath .= DS;
+		}
+
+		// If we are doing per group, use the groupID has a inner path, so other scripts don't delete the files we are working on.
+		if ($groupID !== '') {
+			$this->_mainTmpPath .= ($groupID . DS);
+		}
+
+		// Clear out old folders/files from the temp folder.
+		$this->_recursivePathDelete(
+			$this->_mainTmpPath,
+			// These are folders we don't want to delete.
+			array(
+				// This is the actual unrar folder.
+				$this->_mainTmpPath,
+				// This folder is used by misc/testing/Dev/rename_u4e.php
+				$this->_mainTmpPath . 'u4e'
+			)
+		);
+
+		$this->tmpPath = $this->_mainTmpPath;
+	}
+
+	/**
 	 * Get all releases that need to be processed.
 	 *
 	 * @param int|string $groupID
@@ -219,53 +228,30 @@ Class ProcessAdditional
 	 */
 	protected function _fetchReleases($groupID)
 	{
-		$this->_releases = array();
-		$this->_totalReleases = 0;
-		$groupID = ($groupID === '' ? '' : 'AND r.group_id = ' . $groupID);
+		$this->_releases = $this->pdo->query(
+			sprintf('
+				SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname
+				FROM releases r
+				LEFT JOIN category c ON c.id = r.categoryid
+				WHERE r.nzbstatus = 1
+				%s %s %s
+				AND r.passwordstatus BETWEEN -6 AND -1
+				AND r.haspreview = -1
+				AND c.disablepreview = 0
+				ORDER BY r.passwordstatus ASC, r.postdate DESC
+				LIMIT %d',
+				$this->_maxSize,
+				$this->_minSize,
+				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
+				$this->_queryLimit
+			)
+		);
 
-		$i = -6;
-		$limit = $this->_queryLimit;
-		// Get releases starting from -6 password status until we reach our max limit set in site or we reach -1 password status.
-		while (($this->_totalReleases <= $limit) && ($i <= -1)) {
-
-			$releases = $this->pdo->query(
-				sprintf('
-						SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id,
-							r.nfostatus, r.completion, r.categoryid, r.searchname
-						FROM releases r
-						LEFT JOIN category c ON c.id = r.categoryid
-						WHERE nzbstatus = 1
-						%s %s %s
-						AND r.passwordstatus = %d
-						AND (r.haspreview = -1 AND c.disablepreview = 0)
-						ORDER BY postdate
-						DESC LIMIT %d',
-					$this->_maxSize, $this->_minSize, $groupID, $i, $limit
-				)
-			);
-
-			if ($releases === false) {
-				return;
-			}
-
-			// Get the count of rows we got from the query.
-			$currentCount = count($releases);
-
-			if ($currentCount > 0) {
-
-				// Merge the results.
-				$this->_releases += $releases;
-
-				// Decrement so we don't get more than the max user specified value.
-				$limit -= $currentCount;
-
-				// Update the total results.
-				$this->_totalReleases += $currentCount;
-
-				// Echo how many we got for this query.
-				$this->_echo('Passwordstatus = ' . $i . ': Available to process = ' . $currentCount);
-			}
-			$i++;
+		if (is_array($this->_releases)) {
+			$this->_totalReleases = count($this->_releases);
+		} else {
+			$this->_releases = array();
+			$this->_totalReleases = 0;
 		}
 	}
 
