@@ -143,14 +143,6 @@ Class ProcessAdditional
 			(($this->pdo->getSetting('unrarpath') == '') ? false : true)
 		);
 
-		// Set up the temporary files folder location.
-		$this->_mainTmpPath = $this->pdo->getSetting('tmpunrarpath');
-		// Check if it ends with a dir separator.
-		if (!preg_match('/[\/\\\\]$/', $this->_mainTmpPath)) {
-			$this->_mainTmpPath .= DS;
-		}
-		$this->tmpPath = $this->_mainTmpPath;
-
 		$this->_audioSavePath = nZEDb_COVERS . 'audiosample' . DS;
 
 		$this->_audioFileRegex   = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
@@ -168,9 +160,48 @@ Class ProcessAdditional
 	 */
 	public function start($groupID = '')
 	{
-		// If the groupID is not empty, set the temp path to the group ID.
+		$this->_setMainTempPath($groupID);
+
+		// Fetch all the releases to work on.
+		$this->_fetchReleases($groupID);
+
+		// Check if we have releases to work on.
+		if ($this->_totalReleases > 0) {
+			// Echo start time and process description.
+			$this->_echoDescription();
+
+			$this->_processReleases();
+		}
+	}
+
+	/**
+	 * @var string Main temp path to work on.
+	 */
+	protected $_mainTmpPath;
+
+	/**
+	 * @var string Temp path for current release.
+	 */
+	protected $tmpPath;
+
+	/**
+	 * Set up the path to the folder we will work in.
+	 *
+	 * @param string|int $groupID
+	 */
+	protected function _setMainTempPath(&$groupID = '')
+	{
+		// Set up the temporary files folder location.
+		$this->_mainTmpPath = $this->pdo->getSetting('tmpunrarpath');
+
+		// Check if it ends with a dir separator.
+		if (!preg_match('/[\/\\\\]$/', $this->_mainTmpPath)) {
+			$this->_mainTmpPath .= DS;
+		}
+
+		// If we are doing per group, use the groupID has a inner path, so other scripts don't delete the files we are working on.
 		if ($groupID !== '') {
-			$this->_mainTmpPath .= $groupID . DS;
+			$this->_mainTmpPath .= ($groupID . DS);
 		}
 
 		// Clear out old folders/files from the temp folder.
@@ -185,16 +216,7 @@ Class ProcessAdditional
 			)
 		);
 
-		// Fetch all the releases to work on.
-		$this->_fetchReleases($groupID);
-
-		// Check if we have releases to work on.
-		if ($this->_totalReleases > 0) {
-			// Echo start time and process description.
-			$this->_echoDescription();
-
-			$this->_processReleases();
-		}
+		$this->tmpPath = $this->_mainTmpPath;
 	}
 
 	/**
