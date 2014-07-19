@@ -24,6 +24,7 @@ if (!isset($argv[1])) {
 								FROM releases r
 								INNER JOIN releasenfo rn ON r.id = rn.releaseid
 								WHERE r.nzbstatus = 1
+								AND r.proc_nfo = 0
 								AND r.preid = 0
 								AND r.categoryid = %d
 								ORDER BY r.postdate DESC
@@ -141,7 +142,7 @@ if (!isset($argv[1])) {
 		case $pieces[0] === 'miscsorter' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
-								SELECT r.id AS releaseid,
+								SELECT r.id AS releaseid
 								FROM releases r
 								WHERE r.nzbstatus = 1 AND r.nfostatus = 1
 								AND r.proc_sorter = 0 AND r.isrenamed = 0
@@ -185,7 +186,7 @@ if (!isset($argv[1])) {
 							LIMIT %s
 							OFFSET %s',
 							$maxperrun,
-							$thread * maxperrun
+							$thread * $maxperrun
 						)
 			);
 			if ($pres !== false) {
@@ -199,7 +200,7 @@ if (!isset($argv[1])) {
 						$searched = -6;
 						echo "*";
 					} else {
-						$searched = $pres['searched'] - 1;
+						$searched = $pre['searched'] - 1;
 						echo ".";
 					}
 					$pdo->queryExec(sprintf("UPDATE predb SET searched = %d WHERE id = %d", $searched, $res['preid']));

@@ -6,11 +6,12 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-07-19 kevin
-	* Fix: Hard-coded 15 workers in update_threaded.py
 2014-07-19 ruhllatio
 	* Chg: groupfixreleasenames var fixes and change to use categoryid instead of group_id
 	* Fix: groupID placement for PAR2 in gfrn / refactor pieces / fix whitespace
+	* Chg: add slower count logic to gfRn to be more exact on which categories to attempt
+2014-07-19 kevin
+	* Fix: Hard-coded 15 workers in update_threaded.py
 2014-07-19 bart39
 	* Add: XXX to reset_postprocessing.
 	* Fix: Undefined variable in groupfixrelnames
