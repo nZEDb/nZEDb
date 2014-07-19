@@ -27,9 +27,12 @@ function getOddGames($c)
 	if ($res !== false) {
 				$c->doEcho($c->header("Processing... 150 release(s)."));
 			$gen = new Games(true);
+
+			//Match on 78% title
+			$gen->matchpercent = 78;
 			foreach ($res as $arr) {
 				$startTime = microtime(true);
-				$usedgb = false;
+				$usedgb = true;
 				$gameInfo = $gen->parseTitle($arr['searchname']);
 				if ($gameInfo !== false) {
 						$c->doEcho(
@@ -39,25 +42,31 @@ function getOddGames($c)
 
 					// Check for existing games entry.
 					$gameCheck = $gen->getgamesinfoByName($gameInfo['title'], $gameInfo['platform']);
-					if ($gameCheck ===  false) {
+					if ($gameCheck === false) {
 						$gameId = $gen->updategamesinfo($gameInfo);
 						$usedgb = true;
-					if ($gameId === false) {
+						if ($gameId === false) {
 							$gameId = -2;
+
+							//If result is empty then set gamesinfo_id back to 0 so we can parse it at a later time.
+							if ($gen->maxhitrequest === true) {
+								$gameId = 0;
+							}
 						}
 					} else {
 						$gameId = $gameCheck['id'];
 					}
-					if($gameId != -2){
+					if ($gameId != -2 && $gameId != 0) {
 						$arr['categoryid'] = 4050;
 					}
+
 					$pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d, categoryid = %d WHERE id = %d', $gameId, $arr['categoryid'], $arr['id']));
 				} else {
 					// Could not parse release title.
 					$pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', -2, $arr['id']));
 						echo '.';
 				}
-				// Sleep to not flood giantbomb.
+				// Sleep so not to flood giantbomb.
 				$diff = floor((microtime(true) - $startTime) * 1000000);
 				if ($gen->sleeptime * 1000 - $diff > 0 && $usedgb === true) {
 					usleep($gen->sleeptime * 1000 - $diff);
