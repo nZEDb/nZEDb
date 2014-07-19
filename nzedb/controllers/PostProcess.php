@@ -99,7 +99,7 @@ class PostProcess
 	{
 		$this->processPredb($nntp);
 		$this->processAdditional($nntp);
-		$this->processNfos('', $nntp);
+		$this->processNfos($nntp);
 		$this->processSharing($nntp);
 		$this->processMovies();
 		$this->processMusic();
@@ -195,15 +195,14 @@ class PostProcess
 	/**
 	 * Process nfo files.
 	 *
-	 * @param string $releaseToWork
 	 * @param NNTP   $nntp
 	 *
 	 * @return void
 	 */
-	public function processNfos($releaseToWork = '', $nntp)
+	public function processNfos($nntp)
 	{
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			$this->Nfo->processNfoFiles($releaseToWork,	$this->pdo->getSetting('lookupimdb'), $this->pdo->getSetting('lookuptvrage'),	$groupID = '', $nntp);
+			$this->Nfo->processNfoFiles($this->pdo->getSetting('lookupimdb'), $this->pdo->getSetting('lookuptvrage'), '', $nntp);
 		}
 	}
 

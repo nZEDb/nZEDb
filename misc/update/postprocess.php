@@ -84,7 +84,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 		}
 	}
 
-	$postprocess->processNfos($releaseToWork = '', $nntp);
+	$postprocess->processNfos($nntp);
 } else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
 		   $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
 		   $argv[1] !== 'nfo' && $argv[1] == 'movies' && $argv[1] !== 'music' &&
