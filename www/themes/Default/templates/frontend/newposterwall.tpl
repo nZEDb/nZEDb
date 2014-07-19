@@ -26,6 +26,8 @@
 									class="library-console"
 								{elseif $type == 'Movies'}
 									class="library-show"
+								{elseif $type == 'XXX'}
+									class="library-show"
 								{elseif $type == 'Audio'}
 									class="library-music"
 								{elseif $type == 'Books'}
@@ -43,6 +45,9 @@
 									{elseif $type == 'Movies'}
 										<img width="140px" height="205px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/movies/{$result.imdbid}-cover.jpg"/>
+									{elseif $type == 'XXX'}
+										<img width="140px" height="205px" alt=""
+											 src="{$smarty.const.WWW_TOP}/covers/xxx/{$result.xxxinfo_id}-cover.jpg"/>
 									{elseif $type == 'Audio'}
 										<img height="250px" width="250px" alt=""
 											 src="{$smarty.const.WWW_TOP}/covers/music/{$result.musicinfoid}.jpg"/>
@@ -100,6 +105,19 @@
 												   rel="{$cpurl}/api/{$cpapi}/movie.add/?identifier=tt{$result.imdbid}&title={$result.searchname|escape:"url"}"></a>
 											</div>
 										{/if}
+									{elseif $type == 'XXX'}
+										<div class="icon icon_ade">
+											<a class="divlink" target="_blank" title="View on AdultDVDEmpire"
+												href="{$site->dereferrer_link}http://www.adultdvdempire.com/dvd/search?q={$result.title|escape:"url"}/"></a>
+										</div>
+										<div class="icon icon_popporn">
+											<a class="divlink" target="_blank" title="View on PopPorn"
+												href="{$site->dereferrer_link}http://dereferer.org/?http://www.popporn.com/results/index.cfm?v=4&g=0&searchtext={$result.title|escape:"url"}/"></a>
+										</div>
+										<div class="icon icon_iafd">
+											<a class="divlink" target="_blank" title="View on Internet Adult Film Database"
+												href="{$site->dereferrer_link}http://www.iafd.com/results.asp?searchtype=title&searchstring={$result.title|escape:"url"}/"></a>
+										</div>
 									{elseif $type == 'PC'}
 										<div class="icon icon_ign">
 											<a class="divlink" title="Find on IGN"

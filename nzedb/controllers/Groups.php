@@ -455,10 +455,10 @@ class Groups
 		// Remove rows from part repair.
 		$this->pdo->queryExec(sprintf("DELETE FROM partrepair WHERE group_id = %d", $id));
 
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS collections_', $id));
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS binaries_', $id));
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS parts_', $id));
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS partrepair_', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS collections_%d', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS binaries_%d', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS parts_%d', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS partrepair_%d', $id));
 
 		// Reset the group stats.
 		return $this->pdo->queryExec(
@@ -498,32 +498,28 @@ class Groups
 	}
 
 	/**
-	 * Purge a group.
+	 * Purge a single group or all groups.
 	 *
-	 * @param int|string $id The group ID.
+	 * @param int|string|bool $id The group ID. If false, purge all groups.
 	 */
-	public function purge($id)
+	public function purge($id = false)
 	{
-		$this->reset($id);
-
-		$releases = new Releases();
-		$rels = $this->pdo->query(sprintf("SELECT id FROM releases WHERE group_id = %d", $id));
-		foreach ($rels as $rel) {
-			$releases->delete($rel["id"]);
+		if ($id === false) {
+			$this->resetall();
+		} else {
+			$this->reset($id);
 		}
-	}
 
-	/**
-	 * Purge all groups.
-	 */
-	public function purgeall()
-	{
-		$this->resetall();
+		$releaseArray = $this->pdo->queryDirect(
+			sprintf("SELECT guid FROM releases %s", ($id === false ? '' : 'WHERE group_id = ' . $id))
+		);
 
-		$releases = new Releases();
-		$rels = $this->pdo->query("SELECT id FROM releases");
-		foreach ($rels as $rel) {
-			$releases->delete($rel["id"]);
+		if ($releaseArray !== false) {
+			$releases = new Releases();
+			$nzb = new NZB($this->pdo);
+			foreach ($releaseArray as $release) {
+				$releases->deleteSingle($release['guid'], $nzb);
+			}
 		}
 	}
 

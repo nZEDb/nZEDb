@@ -107,6 +107,7 @@ class PostProcess
 		$this->processGames();
 		$this->processAnime();
 		$this->processTv();
+		$this->processXXX();
 		$this->processBooks();
 	}
 
@@ -241,6 +242,21 @@ class PostProcess
 		if ($this->pdo->getSetting('lookuptvrage') == 1) {
 			$tvRage = new TvRage($this->echooutput);
 			$tvRage->processTvReleases($releaseToWork, true);
+		}
+	}
+
+	/**
+	 * Lookup xxx if enabled.
+	 *
+	 * @param string $releaseToWork
+	 *
+	 * @return void
+	 */
+	public function processXXX()
+	{
+		if ($this->pdo->getSetting('lookupxxx') == 1) {
+			$movie = new XXX($this->echooutput);
+			$movie->processXXXReleases();
 		}
 	}
 

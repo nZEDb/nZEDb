@@ -20,15 +20,16 @@ if ($pdo->getSetting('tablepergroup') === 1) {
 
 $groupName = isset($argv[3]) ? $argv[3] : '';
 if (isset($argv[1]) && isset($argv[2])) {
-	$releases = new Releases();
+	$consoletools = new ConsoleTools();
+	$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools));
 	if ($argv[1] == 1 && $argv[2] == 'true') {
 		$releases->processReleases(1, 1, $groupName, $nntp, true);
 	} else if ($argv[1] == 1 && $argv[2] == 'false') {
-		$releases->processReleases(1, 2, $groupName, null, true);
+		$releases->processReleases(1, 2, $groupName, $nntp, true);
 	} else if ($argv[1] == 2 && $argv[2] == 'true') {
 		$releases->processReleases(2, 1, $groupName, $nntp, true);
 	} else if ($argv[1] == 2 && $argv[2] == 'false') {
-		$releases->processReleases(2, 2, $groupName, null, true);
+		$releases->processReleases(2, 2, $groupName, $nntp, true);
 	} else if ($argv[1] == 4 && ($argv[2] == 'true' || $argv[2] == 'false')) {
 		echo $c->header("Moving all releases to other -> misc, this can take a while, be patient.");
 		$releases->resetCategorize();
@@ -36,7 +37,6 @@ if (isset($argv[1]) && isset($argv[2])) {
 		echo $c->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease('name', 'WHERE iscategorized = 0 AND categoryID = 7010', true);
-		$consoletools = new ConsoleTools();
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the usenet subject.");
 	} else if ($argv[1] == 6 && $argv[2] == 'true') {

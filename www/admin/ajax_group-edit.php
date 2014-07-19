@@ -26,7 +26,7 @@ if (isset($_GET['action']) && $_GET['action'] == "2") {
 	print "All groups reset.";
 } else if (isset($_GET['action']) && $_GET['action'] == "6") {
 	session_write_close();
-	$group->purgeall();
+	$group->purge();
 	print "All groups purged.";
 } else {
 	if (isset($_GET['group_id'])) {

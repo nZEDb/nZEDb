@@ -10,7 +10,7 @@ if (\nzedb\utility\Utility::isCLI()) {
 
 $pdo = new Settings();
 $page = new AdminPage();
-$rel = new Releases();
+$rel = new Releases(array('Settings' => $pdo, 'Groups' => null));
 
 if ($page->isPostBack())
 {

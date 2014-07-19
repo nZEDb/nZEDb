@@ -4,7 +4,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $log = new ColorCLI();
 
-echo $log->warning("This file is deprecated and will be removed in a future version.\nUse 'php nzedb/db/DbUpdate.php 1' instead");
+echo $log->warning("This file is deprecated and will be removed in a future version.\nUse 'php cli/update_db.php 1' instead");
 
 if (\nzedb\utility\Utility::hasCommand("php5")) {
 	$PHP = "php5";

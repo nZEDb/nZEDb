@@ -155,14 +155,14 @@ class Utility
 
 		$pdo = new \nzedb\db\Settings();
 		$patch = $pdo->getSetting(['section' => '', 'subsection' => '', 'name' => 'sqlpatch']);
-		$ver = $versions->versions->db;
+		$ver = $versions->versions->sql->file;
 
 		// Check database patch version
 		if ($patch < $ver) {
 			if (self::isCLI()) {
 				echo (new \ColorCLI())->error(
 					"\nYour database is not up to date. Reported patch levels\n Db: $patch\n file: $ver\nPlease update.\n php " .
-					 nZEDb_LIB .  "db/DbUpdate.php 1\n"
+					 nZEDb_ROOT .  "cli/update_db.php true\n"
 				);
 				throw new \RuntimeException("Reported patch versions do not match. Need to update database?");
 			}

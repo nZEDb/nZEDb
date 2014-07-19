@@ -6,6 +6,55 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-19 ruhllatio
+	* Chg: groupfixreleasenames var fixes and change to use categoryid instead of group_id
+2014-07-19 bart39
+	* Add: XXX to reset_postprocessing.
+	* Fix: Undefined variable in groupfixrelnames
+2014-07-19 taskym
+	* Fix: Better Matching (gamesorter)
+	* Add: Maximum Requests (Games)
+2014-07-18 ruhllatio
+	* Fix: MySQL memory leaks from cache limit errors in PreDB FT
+	* Chg: Remove NNTP from Tmux PreDB / set checkPre tmux to run full once then for past week with large DB supported query
+	* Add: fixReleaseNames by Group that beats the pants off the old one (testing mode)
+	* Chg: Clean a few queries up in new group fix release names
+	* Chg: Don't start NNTP for fRN Groups par2/miscsorter if SQL doesn't return any releases
+	* Chg: Monitor.php now uses groupfixRelNames instead of the old fixReleasesNames (reset your thread/max per thread settings)
+2014-07-18 kevin
+	* Fix: Missing UNCOMPRESS for plot on xxxinfo.
+	* Add: Customizable part-repair max tries.
+	* Add: (by Mike1) Query to tpg_fixes.php for getting size from parts into collections.
+2014-07-17 taskym
+	* Chg: Plot to Blob, Compress plot, Fix: Selecting title
+2014-07-17 niel
+	* Chg: Modifying DB::queryArray() to make it more efficient.
+2014-07-17 ruhllatio
+	* Chg: Move Tmux functions in monitor.php to Tmux class
+	* Chg: Move Tmux proc queries to Tmux class (will not require a restart of monitor.php to tweak queries)
+	* Chg: Greatly improve processing times for fixReleaseNames MD5 and remove needless loop.
+	* Chg: Monitor.php TPG row counts now use INFORMATION_SCHEMA instead as they don't need to be 100% accurate -- greatly increases monitor loop speed
+	* Chg: Parent Category counts now done using INFORMATION_SCHEMA.PARTITION table_row counts = much faster (try two)
+2014-07-17 kevin
+	* Chg: Various speed-up to purge group/partrepair/blacklist.
+	* Rem: Remove sab URL checking #1396.
+	* Chg: Speed up purging/reset group more, re-use more class instances, changes to optimise method.
+2014-07-16 bart39
+	* Fix: XXX processing / counts in monitor
+	* Fix: Set date to now if article header has no date
+2014-07-16 niel
+	* Chg: Refactored CLI code out of DbUpdate and Versions classes and into their own scripts in .../cli
+	NOTE: This means "php nzedb/db/DbUpdate.php true", now needs to be "php cli/update_db.php true"
+	* Fix: Processing tasky's SQL patch file.
+2014-07-16 ruhllatio
+	* Fix: TPG/Threaded for ProcessReleases move
+2014-07-16 kevin
+	* Chg: Link to ubuntu guide.
+	* Fix: Cache check on query.
+	* Add: Redis cache support, in addition to multiple server support for memcached. You must copy the new settings from settings.php.example, the old settings in config.php are obsolete.
+	* Chg: Move ProcessReleases out of Releases.
+	* Chg: Speed up release creation.
+	* ---: Merge PR by tasky.
 2014-07-15 ruhllatio
 	* Chg: Improve TV series listing site response
 	* Chg: Remove likes from predbft search query

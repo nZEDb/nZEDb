@@ -24,13 +24,22 @@
 
 
 /*
-movie, console and music modals with backdrop images.
+movie, xxx, console and music modals with backdrop images.
 */
 #movieinfo { background-position: center center; background-repeat: no-repeat; position: absolute; z-index: 2;}
 #movieinfo h1 { font-size: 32px; padding: 10px 10px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000; }
 #movieinfo h2, #movieinfo h3 { padding: 10px 20px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000; }
 #movieinfo a { color: #fff; }
 #movieinfo img.cover { margin-right: 20px; -webkit-box-shadow: 0px 0px 4px #000; -moz-box-shadow: 0px 0px 4px #000; }
+
+#xxxinfo { background-position: center center; background-repeat: no-repeat; position: absolute; z-index: 2;}
+#xxxinfo h1 { font-size: 32px; padding: 10px 10px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000;}
+#xxxinfo h2, #xxxinfo h3 { padding: 10px 20px 0px 20px; color: #fff; text-shadow: 0px 0px 4px #000;}
+#xxxinfo a { color: #fff;}
+#xxxinfo img.cover { width: 187px; height: 270px; margin-right: 20px; -webkit-box-shadow: 0px 0px 4px #000; -moz-box-shadow: 0px 0px 4px #000;}
+#xxxbackdrop { position: absolute; width: 600px; height: 717px; margin-left: -3px; top: 20px; background-color: #000; overflow: hidden;}
+#xxxbackdrop img { opacity:0.5; width: 100%; height: 100%;}
+
 #backdrop { position: absolute; width: 810px; height: 455px; margin-left: -3px; top: 20px; background-color: #000; overflow: hidden;}
 #backdrop img { opacity:0.5; width: 100%; height: 100%;}
 
@@ -148,3 +157,30 @@ div.icon_check          { background-image:url('../../../themes_shared/images/ic
         .cboxMovie .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
         .cboxMovie .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
         .cboxMovie .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
+
+.cboxXXX{}
+    .cboxXXX #cboxContent{background:#fff;}
+    .cboxXXX #cboxTopLeft{width:25px; height:25px; background:url(../../../themes_shared/images/colorbox/border1.png) 0 0 no-repeat;}
+    .cboxXXX #cboxTopCenter{height:25px; background:url(../../../themes_shared/images/colorbox/border1.png) 0 -50px repeat-x;}
+    .cboxXXX #cboxTopRight{width:25px; height:25px; background:url(../../../themes_shared/images/colorbox/border1.png) -25px 0 no-repeat;}
+    .cboxXXX #cboxBottomLeft{width:25px; height:25px; background:url(../../../themes_shared/images/colorbox/border1.png) 0 -25px no-repeat;}
+    .cboxXXX #cboxBottomCenter{height:25px; background:url(../../../themes_shared/images/colorbox/border1.png) 0 -75px repeat-x;}
+    .cboxXXX #cboxBottomRight{width:25px; height:25px; background:url(../../../themes_shared/images/colorbox/border1.png) -25px -25px no-repeat;}
+    .cboxXXX #cboxMiddleLeft{width:25px; background:url(../../../themes_shared/images/colorbox/border2.png) 0 0 repeat-y;}
+    .cboxXXX #cboxMiddleRight{width:25px; background:url(../../../themes_shared/images/colorbox/border2.png) -25px 0 repeat-y;}
+    .cboxXXX #cboxLoadedContent{background:#fff; margin-top:32px; padding:1px; }
+    .cboxXXX #cboxLoadingOverlay{background:#fff;}
+    .cboxXXX #cboxTitle{position:absolute; font-size:125%; top:-2px; left:0; color:#000; margin-top:-10px;}
+    .cboxXXX #cboxCurrent{position:absolute; top:-1px; right:205px; text-indent:-9999px;}
+    .cboxXXX #cboxSlideshow, .cboxMovie #cboxPrevious, .cboxMovie #cboxNext, .cboxMovie #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-1px; background:url(../../../themes_shared/images/colorbox/controls.png) 0 0 no-repeat;}
+    .cboxXXX #cboxPrevious{background-position:0px 0px; right:44px;}
+    .cboxXXX #cboxPrevious.hover{background-position:0px -25px;}
+    .cboxXXX #cboxNext{background-position:-25px 0px; right:22px;}
+    .cboxXXX #cboxNext.hover{background-position:-25px -25px;}
+    .cboxXXX #cboxClose{background-position:-50px 0px; right:0;}
+    .cboxXXX #cboxClose.hover{background-position:-50px -25px;}
+    .cboxXXX .cboxSlideshow_on #cboxPrevious, .cboxMovie .cboxSlideshow_off #cboxPrevious{right:66px;}
+    .cboxXXX .cboxSlideshow_on #cboxSlideshow{background-position:-75px -25px; right:44px;}
+    .cboxXXX .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
+    .cboxXXX .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
+    .cboxXXX .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}

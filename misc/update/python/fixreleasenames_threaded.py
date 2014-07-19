@@ -26,7 +26,7 @@ if len(sys.argv) == 1:
 		+ "python " + sys.argv[0] + " [nfo, filename, par2] preid                ...: To process all releases not matched to preid, using [nfo, filename, par2].\n"
 		+ "python " + sys.argv[0] + " nfo clean                                  ...: To process all releases processed by filename, using nfo.\n"
 		+ "python " + sys.argv[0] + " par2 clean                                 ...: To process all releases processed by filename and nfo, using par2.\n"
-		+ "python " + sys.argv[0] + " predbft clean                                  ...: To process all releases using reverse match by PreDB title.\n"
+		+ "python " + sys.argv[0] + " predbft clean                              ...: To process all releases using reverse match by PreDB title.\n"
 		+ bcolors.ENDC)
 	sys.exit()
 
@@ -55,7 +55,6 @@ cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamesperrun'")
 perrun = cur[0].fetchone()
 
 datas = []
-maxtries = 0
 
 if len(sys.argv) > 1 and sys.argv[1] == "nfo":
 	run = "SELECT DISTINCT id AS releaseid FROM releases WHERE nzbstatus = 1 AND nfostatus = 1 AND proc_nfo = 0 AND" + clean + "ORDER BY postdate DESC LIMIT %s"
@@ -70,11 +69,9 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "filename"):
 	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "md5"):
-	while len(datas) == 0 and maxtries >= -5:
-		run = "SELECT DISTINCT rel.id FROM releases rel INNER JOIN releasefiles rf ON rel.id = rf.releaseid WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN %s AND 0 AND (rel.ishashed = 1 OR rf.ishashed = 1) AND preid = 0 ORDER BY postdate ASC LIMIT %s"
-		cur[0].execute(run, (maxtries, int(perrun[0])*int(run_threads[0])))
-		datas = cur[0].fetchall()
-		maxtries = maxtries - 1
+	run = "SELECT DISTINCT rel.id FROM releases rel LEFT OUTER JOIN releasefiles rf ON rel.id = rf.releaseid AND rf.ishashed = 1 WHERE nzbstatus = 1 AND rel.dehashstatus BETWEEN -6 AND 0 AND rel.ishashed = 1 AND preid = 0 ORDER BY dehashstatus DESC, postdate ASC LIMIT %s"
+	cur[0].execute(run, (int(perrun[0])*int(run_threads[0])))
+	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	#This one does from oldest posts to newest posts, since nfo pp does same thing but newest to oldest
 	run = "SELECT id AS releaseid, guid, group_id FROM releases WHERE nzbstatus = 1 AND proc_par2 = 0 AND" + clean + "ORDER BY postdate ASC LIMIT %s"
@@ -82,7 +79,7 @@ elif len(sys.argv) > 1 and (sys.argv[1] == "par2"):
 	datas = cur[0].fetchall()
 elif len(sys.argv) > 1 and (sys.argv[1] == "predbft"):
 	#This one does from oldest posts to newest posts since there are many other more efficient PreDB matching schemes
-	run = "SELECT id AS preid FROM predb WHERE LENGTH(title) >= 15 AND title NOT REGEXP '[\"\<\> ]' AND searched = 0 AND DATEDIFF(NOW(), predate) > 1 ORDER BY predate ASC LIMIT %s"
+	run = "SELECT id AS preid FROM predb WHERE LENGTH(title) >= 15	AND title NOT REGEXP '[\"\<\> ]' AND searched = 0 AND DATEDIFF(NOW(), predate) > 1 ORDER BY predate ASC LIMIT %s"
 	cur[0].execute(run, (int(perrun[0]) * int(run_threads[0])))
 	datas = cur[0].fetchall()
 
@@ -121,11 +118,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	if sys.argv[1] == 'md5':
-		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} {} releases. dehashstatus range {} to 0".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1], maxtries + 1) + bcolors.ENDC)
-	else:
-		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} releases using {}".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1]) + bcolors.ENDC)
-	time.sleep(2)
+	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} releases using {}".format(run_threads[0], "{:,}".format(len(datas)), sys.argv[1]) + bcolors.ENDC)
 
 	def signal_handler(signal, frame):
 		sys.exit(0)
