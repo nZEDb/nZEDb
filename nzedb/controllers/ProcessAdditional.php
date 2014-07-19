@@ -204,6 +204,13 @@ Class ProcessAdditional
 			$this->_mainTmpPath .= ($groupID . DS);
 		}
 
+		if (!is_dir($this->_mainTmpPath)) {
+			$old = umask(0777);
+			@mkdir($this->_mainTmpPath, 0777, true);
+			@chmod($this->_mainTmpPath, 0777);
+			@umask($old);
+		}
+
 		// Clear out old folders/files from the temp folder.
 		$this->_recursivePathDelete(
 			$this->_mainTmpPath,
