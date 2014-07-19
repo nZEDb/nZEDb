@@ -13,9 +13,10 @@ if (!isset($argv[1])) {
 	$proxy = $pdo->getSetting('nntpproxy');
 	$categoryID = $pieces[1];
 	$maxperrun = $pieces[2];
+	$thread = $pieces[3];
 
 	switch (true) {
-		case $pieces[0] === 'nfo' && isset($pieces[1]) && isset($pieces[2]) && is_numeric($pieces[2]):
+		case $pieces[0] === 'nfo' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT r.id AS releaseid, r.guid, r.group_id, r.categoryid, r.name, r.searchname,
@@ -48,7 +49,7 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $pieces[0] === 'filename' && isset($pieces[1]) && isset($pieces[2]) && is_numeric($pieces[2]):
+		case $pieces[0] === 'filename' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT rf.name AS textstring, rf.releaseid AS fileid,
@@ -74,7 +75,7 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $pieces[0] === 'md5' && isset($pieces[1]) && isset($pieces[2]) && is_numeric($pieces[2]):
+		case $pieces[0] === 'md5' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, r.dehashstatus,
@@ -103,10 +104,10 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $pieces[0] === 'par2' && isset($pieces[1]) && isset($pieces[2]) && is_numeric($pieces[2]):
+		case $pieces[0] === 'par2' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
-								SELECT r.id AS releaseid, r.guid
+								SELECT r.id AS releaseid, r.guid, r.group_id
 								FROM releases r
 								WHERE r.nzbstatus = 1 AND r.proc_par2 = 0
 								AND r.preid = 0
@@ -127,7 +128,7 @@ if (!isset($argv[1])) {
 				}
 				$nzbcontents = new NZBContents(array('echo' => true, 'nntp' => $nntp, 'nfo' => new Nfo(), 'db' => $pdo, 'pp' => new PostProcess(true)));
 				foreach ($releases as $release) {
-					$res = $nzbcontents->checkPAR2($release['guid'], $release['releaseid'], $categoryID, 1, 1);
+					$res = $nzbcontents->checkPAR2($release['guid'], $release['releaseid'], $release['group_id'], 1, 1);
 					if ($res === false) {
 						echo '.';
 					}
@@ -137,10 +138,10 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $pieces[0] === 'miscsorter' && isset($pieces[1]) && isset($pieces[2]) && is_numeric($pieces[2]):
+		case $pieces[0] === 'miscsorter' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
-								SELECT r.id AS releaseid
+								SELECT r.id AS releaseid,
 								FROM releases r
 								WHERE r.nzbstatus = 1 AND r.nfostatus = 1
 								AND r.proc_sorter = 0 AND r.isrenamed = 0
@@ -173,7 +174,7 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $pieces[0] === 'predbft' && isset($pieces[1]) && isset($pieces[2]) && is_numeric($pieces[2]):
+		case $pieces[0] === 'predbft' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun) && isset($thread) && is_numeric($thread):
 			$pres = $pdo->queryDirect(
 						sprintf('
 							SELECT p.id AS preid, p.title, p.source, p.searched
@@ -184,7 +185,7 @@ if (!isset($argv[1])) {
 							LIMIT %s
 							OFFSET %s',
 							$maxperrun,
-							$categoryID * maxperrun
+							$thread * maxperrun
 						)
 			);
 			if ($pres !== false) {

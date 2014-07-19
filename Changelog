@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-19 ruhllatio
 	* Chg: groupfixreleasenames var fixes and change to use categoryid instead of group_id
+	* Fix: groupID placement for PAR2 in gfrn / refactor pieces / fix whitespace
 2014-07-19 bart39
 	* Add: XXX to reset_postprocessing.
 	* Fix: Undefined variable in groupfixrelnames

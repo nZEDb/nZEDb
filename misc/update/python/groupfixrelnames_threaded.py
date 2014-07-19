@@ -101,7 +101,7 @@ def main():
 			count = 0
 		count += 1
 		time.sleep(.03)
-		my_queue.put("%s %s %s" % (sys.argv[1], category[0], maxperrun))
+		my_queue.put("%s %s %s %s" % (sys.argv[1], category[0], maxperrun, count))
 
 	my_queue.join()
 
