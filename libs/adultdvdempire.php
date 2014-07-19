@@ -62,6 +62,17 @@ class adultdvdempire
 		$this->edithtml = new simple_html_dom();
 	}
 
+	/*
+	 * Remove from memory if they weren't removed
+	 *
+	 */
+	public function __destruct(){
+		$this->html->clear();
+		$this->edithtml->clear();
+		unset($this->response);
+		unset($this->tmprsp);
+	}
+
 	/**
 	 * Gets Trailer Movies -- Need layout change
 	 * Todo: Make layout work with the player/Download swf?
@@ -196,6 +207,7 @@ class adultdvdempire
 	{
 		$this->tmprsp = str_ireplace("Section Categories", "scat", $this->response);
 		$this->edithtml->load($this->tmprsp);
+		if($this->edithtml->find("div[class=scat]", 0)){
 		$ret = $this->edithtml->find("div[class=scat]", 0);
 		$this->tmprsp = trim($ret->outertext);
 		$ret = $this->edithtml->load($this->tmprsp);
@@ -211,6 +223,7 @@ class adultdvdempire
 		}
 		$categories = array_map('trim', $categories);
 		$this->res['genres'] = $categories;
+		}
 		$this->edithtml->clear();
 		unset($this->tmprsp);
 		unset($ret);
@@ -230,6 +243,7 @@ class adultdvdempire
 		$dofeature = null;
 		$this->tmprsp = str_ireplace("Section ProductInfo", "spdinfo", $this->response);
 		$this->edithtml->load($this->tmprsp);
+		if($this->edithtml->find("div[class=spdinfo]", 0)){
 		$ret = $this->edithtml->find("div[class=spdinfo]", 0);
 		$this->tmprsp = trim($ret->outertext);
 		$ret = $this->edithtml->load($this->tmprsp);
@@ -250,6 +264,7 @@ class adultdvdempire
 		array_shift($this->res['productinfo']);
 		array_shift($this->res['productinfo']);
 		$this->res['productinfo'] = array_chunk($this->res['productinfo'], 2, false);
+		}
 		$this->edithtml->clear();
 		unset($this->tmprsp);
 		unset($ret);
