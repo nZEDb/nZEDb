@@ -9,20 +9,20 @@ $c = new ColorCLI();
 **/
 
 $args = array(
-			'all'        => true,
-			'pre'        => true,
-			'nfo'        => true,
-			'movies'     => false,
-			'music'      => false,
-			'console'    => false,
-			'games'      => false,
-			'book'       => false,
-			'anime'      => false,
-			'tv'         => false,
-			'xxx'        => false,
-			'additional' => true,
-			'sharing'    => true,
-			'allinf'     => true
+	'all'        => true,
+	'pre'        => true,
+	'nfo'        => true,
+	'movies'     => false,
+	'music'      => false,
+	'console'    => false,
+	'games'      => false,
+	'book'       => false,
+	'anime'      => false,
+	'tv'         => false,
+	'xxx'        => false,
+	'additional' => true,
+	'sharing'    => true,
+	'allinf'     => true
 );
 
 $bool = array(
