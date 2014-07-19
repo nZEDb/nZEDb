@@ -15,6 +15,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Hard-coded 15 workers in update_threaded.py
 	* Chg: Various changes to process additional / nfo for python scripts.
 	* Chg: Create temp dir if not exists and set up perms for threaded scripts - processadditional.
+	* Chg: Change python postprocess_threaded.py to do tv and movie by groupID instead (in line with Bart/Ruhllatio's changes)
 2014-07-19 bart39
 	* Add: XXX to reset_postprocessing.
 	* Fix: Undefined variable in groupfixrelnames
