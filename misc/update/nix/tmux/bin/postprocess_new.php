@@ -25,7 +25,7 @@ switch ($options[1]) {
 		if ($options[1] === 'nfo') {
 			(new Nfo(true))->processNfoFiles($nntp, $options[0]);
 		} else {
-			(new PostProcess(true))->processAdditional($nntp, $options[0]);
+			(new ProcessAdditional(true, $nntp, $pdo))->start($options[0]);
 		}
 
 		$nntp->doQuit();

@@ -133,8 +133,7 @@ class PostProcess
 	public function processBooks()
 	{
 		if ($this->pdo->getSetting('lookupbooks') != 0) {
-			$books = new Books($this->echooutput);
-			$books->processBookReleases();
+			(new Books($this->echooutput))->processBookReleases();
 		}
 	}
 
@@ -146,8 +145,7 @@ class PostProcess
 	public function processConsoles()
 	{
 		if ($this->pdo->getSetting('lookupgames') != 0) {
-			$console = new Console($this->echooutput);
-			$console->processConsoleReleases();
+			(new Console($this->echooutput))->processConsoleReleases();
 		}
 	}
 
@@ -159,8 +157,7 @@ class PostProcess
 	public function processGames()
 	{
 		if ($this->pdo->getSetting('lookupgames') != 0) {
-			$games = new Games($this->echooutput);
-			$games->processGamesReleases();
+			(new Games($this->echooutput))->processGamesReleases();
 		}
 	}
 
@@ -174,8 +171,7 @@ class PostProcess
 	public function processMovies($groupID = '')
 	{
 		if ($this->pdo->getSetting('lookupimdb') == 1) {
-			$movie = new Movie($this->echooutput);
-			$movie->processMovieReleases($groupID);
+			(new Movie($this->echooutput))->processMovieReleases($groupID);
 		}
 	}
 
@@ -187,8 +183,7 @@ class PostProcess
 	public function processMusic()
 	{
 		if ($this->pdo->getSetting('lookupmusic') != 0) {
-			$music = new Music($this->echooutput);
-			$music->processMusicReleases();
+			(new Music($this->echooutput))->processMusicReleases();
 		}
 	}
 
@@ -199,7 +194,7 @@ class PostProcess
 	 *
 	 * @return void
 	 */
-	public function processNfos($nntp)
+	public function processNfos(&$nntp)
 	{
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
 			$this->Nfo->processNfoFiles($nntp, '', (int)$this->pdo->getSetting('lookupimdb'), (int)$this->pdo->getSetting('lookuptvrage'));
@@ -213,7 +208,7 @@ class PostProcess
 	 *
 	 * @return void
 	 */
-	public function processPredb($nntp)
+	public function processPredb(&$nntp)
 	{
 		// 2014-05-31 : Web PreDB fetching is removed. Using IRC is now recommended.
 	}
@@ -225,8 +220,7 @@ class PostProcess
 	 */
 	public function processSharing(&$nntp)
 	{
-		$sharing = new Sharing($this->pdo, $nntp);
-		$sharing->start();
+		(new Sharing($this->pdo, $nntp))->start();
 	}
 
 	/**
@@ -239,8 +233,7 @@ class PostProcess
 	public function processTv($groupID = '')
 	{
 		if ($this->pdo->getSetting('lookuptvrage') == 1) {
-			$tvRage = new TvRage($this->echooutput);
-			$tvRage->processTvReleases($groupID, true);
+			(new TvRage($this->echooutput))->processTvReleases($groupID, true);
 		}
 	}
 
@@ -250,8 +243,7 @@ class PostProcess
 	public function processXXX()
 	{
 		if ($this->pdo->getSetting('lookupxxx') == 1) {
-			$movie = new XXX($this->echooutput);
-			$movie->processXXXReleases();
+			(new XXX($this->echooutput))->processXXXReleases();
 		}
 	}
 
@@ -261,14 +253,12 @@ class PostProcess
 	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
 	 *
 	 * @param NNTP   $nntp          Class NNTP
-	 * @param string $groupID       Group ID. Optional
 	 *
 	 * @return void
 	 */
-	public function processAdditional($nntp, $groupID = '')
+	public function processAdditional(&$nntp)
 	{
-		$processAdditional = new ProcessAdditional($this->echooutput, $nntp, $this->pdo);
-		$processAdditional->start($groupID);
+		(new ProcessAdditional($this->echooutput, $nntp, $this->pdo))->start();
 	}
 
 	/**
@@ -284,7 +274,7 @@ class PostProcess
 	 *
 	 * @return bool
 	 */
-	public function parsePAR2($messageID, $relID, $groupID, $nntp, $show)
+	public function parsePAR2($messageID, $relID, $groupID, &$nntp, $show)
 	{
 		if ($messageID === '') {
 			return false;

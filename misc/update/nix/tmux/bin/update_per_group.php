@@ -64,10 +64,8 @@ if ($pieces[0] != 'Stage7b') {
 //	if($retcount > 0)
 //		printf($mask, str_replace('alt.binaries', 'a.b', $groupname), $first);
 
-	$postprocess = new PostProcess(true);
-	$postprocess->processAdditional($nntp, $groupid);
-	$nfopostprocess = new Nfo(true);
-	$nfopostprocess->processNfoFiles($nntp, $groupid);
+	(new ProcessAdditional(true, $nntp, $pdo))->start($groupid);
+	(new Nfo(true))->processNfoFiles($nntp, $groupid);
 	if ($nntpProxy != "1") {
 		$nntp->doQuit();
 	}
