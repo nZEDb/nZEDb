@@ -26,10 +26,10 @@ if len(sys.argv) == 1:
 	sys.exit()
 
 if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" and sys.argv[1] != "par2" and sys.argv[1] != "miscsorter" and sys.argv[1] != "predbft":
-	print(bcolors.ERROR + "\n\An invalid argument was supplied\npostprocess_threaded.py [md5, nfo, filename, par2, miscsorter, predbft]\n" + bcolors.ENDC)
+	print(bcolors.ERROR + "\n\An invalid argument was supplied\ngroupfixrelnames_threaded.py [md5, nfo, filename, par2, miscsorter, predbft]\n" + bcolors.ENDC)
 	sys.exit()
 
-print(bcolors.HEADER + "\nfixReleaseNames Per Group Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+print(bcolors.HEADER + "\nfixReleaseNames Per Category Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 datas = []
 
@@ -37,11 +37,11 @@ cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamethreads'")
 run_threads = cur[0].fetchone()
 cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamesperrun'")
 run_perrun = cur[0].fetchone()
-cur[0].execute("SELECT id FROM groups WHERE active = 1 ORDER BY CAST(last_record AS SIGNED) - CAST(first_record AS SIGNED) DESC")
+cur[0].execute("SELECT id FROM category WHERE status < 2 AND parentid IS NOT NULL ORDER BY title ASC")
 datas = cur[0].fetchall()
 
 threads = int(run_threads[0])
-groups = int(len(datas))
+categories = int(len(datas))
 maxperrun = int(run_perrun[0])
 
 #close connection to mysql
@@ -78,7 +78,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} groups with a maximum of {} per group using {}.".format(threads, groups, maxperrun, sys.argv[1]) + bcolors.ENDC)
+	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} active categories with a maximum of {} per category using {}.".format(threads, categories, maxperrun, sys.argv[1]) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -96,16 +96,16 @@ def main():
 	#now load some arbitrary jobs into the queue
 	count = 0
 
-	for groupid in datas:
+	for category in datas:
 		if count >= threads:
 			count = 0
 		count += 1
 		time.sleep(.03)
-		my_queue.put("%s %s %s" % (sys.argv[1], groupid[0], maxperrun))
+		my_queue.put("%s %s %s" % (sys.argv[1], category[0], maxperrun))
 
 	my_queue.join()
 
-	print(bcolors.HEADER + "\nfixReleaseNames Per Group Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "\nfixReleaseNames Per Category Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 if __name__ == '__main__':

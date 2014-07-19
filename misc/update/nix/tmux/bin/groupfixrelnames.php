@@ -11,7 +11,7 @@ if (!isset($argv[1])) {
 	$namefixer = new NameFixer(true);
 	$pieces = explode(' ', $argv[1]);
 	$proxy = $pdo->getSetting('nntpproxy');
-	$groupID = $pieces[1];
+	$categoryID = $pieces[1];
 	$maxperrun = $pieces[2];
 
 	switch (true) {
@@ -24,10 +24,10 @@ if (!isset($argv[1])) {
 								INNER JOIN releasenfo rn ON r.id = rn.releaseid
 								WHERE r.nzbstatus = 1
 								AND r.preid = 0
-								AND r.group_id = %d
+								AND r.categoryid = %d
 								ORDER BY r.postdate DESC
 								LIMIT %s',
-								$groupID,
+								$categoryID,
 								$maxperrun
 							)
 			);
@@ -57,10 +57,10 @@ if (!isset($argv[1])) {
 								INNER JOIN releasefiles rf ON r.id = rf.releaseid
 								WHERE r.nzbstatus = 1 AND r.proc_files = 0
 								AND r.preid = 0
-								AND r.group_id = %d
+								AND r.categoryid = %d
 								ORDER BY r.postdate ASC
 								LIMIT %s',
-								$groupID,
+								$categoryID,
 								$maxperrun
 							)
 			);
@@ -83,10 +83,10 @@ if (!isset($argv[1])) {
 								LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1
 								WHERE nzbstatus = 1 AND r.dehashstatus BETWEEN -6 AND 0
 								AND r.preid = 0
-								AND r.group_id = %d
+								AND r.categoryid = %d
 								ORDER BY r.dehashstatus DESC, r.postdate ASC
 								LIMIT %s',
-								$groupID,
+								$categoryID,
 								$maxperrun
 							)
 			);
@@ -110,10 +110,10 @@ if (!isset($argv[1])) {
 								FROM releases r
 								WHERE r.nzbstatus = 1 AND r.proc_par2 = 0
 								AND r.preid = 0
-								AND r.group_id = %d
+								AND r.categoryid = %d
 								ORDER BY r.postdate ASC
 								LIMIT %s',
-								$groupID,
+								$categoryID,
 								$maxperrun
 							)
 			);
@@ -127,7 +127,7 @@ if (!isset($argv[1])) {
 				}
 				$nzbcontents = new NZBContents(array('echo' => true, 'nntp' => $nntp, 'nfo' => new Nfo(), 'db' => $pdo, 'pp' => new PostProcess(true)));
 				foreach ($releases as $release) {
-					$res = $nzbcontents->checkPAR2($release['guid'], $release['releaseid'], $groupID, 1, 1);
+					$res = $nzbcontents->checkPAR2($release['guid'], $release['releaseid'], $categoryID, 1, 1);
 					if ($res === false) {
 						echo '.';
 					}
@@ -145,10 +145,10 @@ if (!isset($argv[1])) {
 								WHERE r.nzbstatus = 1 AND r.nfostatus = 1
 								AND r.proc_sorter = 0 AND r.isrenamed = 0
 								AND r.preid = 0
-								AND r.group_id = %d
+								AND r.categoryid = %d
 								ORDER BY r.postdate DESC
 								LIMIT %s',
-								$groupID,
+								$categoryID,
 								$maxperrun
 							)
 			);
@@ -184,7 +184,7 @@ if (!isset($argv[1])) {
 							LIMIT %s
 							OFFSET %s',
 							$maxperrun,
-							$groupid * maxperrun
+							$categoryID * maxperrun
 						)
 			);
 			if ($pres !== false) {
@@ -201,7 +201,7 @@ if (!isset($argv[1])) {
 						$searched = $pres['searched'] - 1;
 						echo ".";
 					}
-					$pdo->queryExec(sprintf("UPDATE predb SET searched = %d WHERE id = %d", $searched, $pres['preid']));
+					$pdo->queryExec(sprintf("UPDATE predb SET searched = %d WHERE id = %d", $searched, $res['preid']));
 					$namefixer->checked++;
 				}
 			}
