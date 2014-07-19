@@ -198,7 +198,7 @@ if (!isset($argv[1])) {
 						$searched = -6;
 						echo "*";
 					} else {
-						$searched = $res['searched'] - 1;
+						$searched = $pres['searched'] - 1;
 						echo ".";
 					}
 					$pdo->queryExec(sprintf("UPDATE predb SET searched = %d WHERE id = %d", $searched, $res['preid']));

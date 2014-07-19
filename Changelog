@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-19 bart39
 	* Add: XXX to reset_postprocessing.
+	* Fix: Undefined variable in groupfixrelnames
 2014-07-19 taskym
 	* Fix: Better Matching (gamesorter)
 	* Add: Maximum Requests (Games)
