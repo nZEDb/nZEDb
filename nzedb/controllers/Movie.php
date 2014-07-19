@@ -998,31 +998,27 @@ class Movie
 	/**
 	 * Process releases with no IMDB ID's.
 	 *
-	 * @param string $releaseToWork
+	 * @param string $groupID optional
 	 */
-	public function processMovieReleases($releaseToWork = '')
+	public function processMovieReleases($groupID = '')
 	{
 		$trakTv = new TraktTv();
 
 		// Get all releases without an IMDB id.
-		if ($releaseToWork === '') {
-			$res = $this->pdo->query(
-				sprintf("
-					SELECT r.searchname, r.id
-					FROM releases r
-					WHERE r.imdbid IS NULL
-					AND r.nzbstatus = 1
-					AND r.categoryid BETWEEN 2000 AND 2999
-					LIMIT %d",
-					$this->movieqty
-				)
-			);
-			$movieCount = count($res);
-		} else {
-			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('searchname' => $pieces[0], 'id' => $pieces[1]));
-			$movieCount = 1;
-		}
+		$res = $this->pdo->query(
+			sprintf("
+				SELECT r.searchname, r.id
+				FROM releases r
+				WHERE r.imdbid IS NULL
+				AND r.nzbstatus = 1
+				AND r.categoryid BETWEEN 2000 AND 2999
+				%s
+				LIMIT %d",
+				($groupID === '' ? '' : ('AND r.group_id = ' . $groupID)),
+				$this->movieqty
+			)
+		);
+		$movieCount = count($res);
 
 		if ($movieCount > 0) {
 			if ($this->echooutput && $movieCount > 1) {

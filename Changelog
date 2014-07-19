@@ -11,11 +11,18 @@ New updates are grouped by person, at the top of the file.
 	* Fix: groupID placement for PAR2 in gfrn / refactor pieces / fix whitespace
 	* Chg: add slower count logic to gfRn to be more exact on which categories to attempt
 	* Fix: last undefined in gfRn
+	* Chg: Remove postprocess_old_threaded from monitor as Amazon cannot make use of threaded ops and is a waste of overhead
 2014-07-19 kevin
 	* Fix: Hard-coded 15 workers in update_threaded.py
+	* Chg: Various changes to process additional / nfo for python scripts.
+	* Chg: Create temp dir if not exists and set up perms for threaded scripts - processadditional.
+	* Chg: Change python postprocess_threaded.py to do tv and movie by groupID instead (in line with Bart/Ruhllatio's changes)
+	* Chg: Call processAdditional directly, saving a DB instance in postprocess.
+	* Add: Logic to attempt to detect string size overflow in NNTP, preventing some rare fatal errors.
 2014-07-19 bart39
 	* Add: XXX to reset_postprocessing.
 	* Fix: Undefined variable in groupfixrelnames
+	* Chg: Various changes to process additional / nfo for python scripts.
 2014-07-19 taskym
 	* Fix: Better Matching (gamesorter)
 	* Add: Maximum Requests (Games)
