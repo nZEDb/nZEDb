@@ -170,7 +170,7 @@ Class ProcessAdditional
 	public function start($release = '', $groupID = '')
 	{
 		// Fetch all the releases to work on.
-		if ($release === '') {
+		if ($groupID === '') {
 			// Clear out old folders/files from the temp folder.
 			$this->_recursivePathDelete(
 				$this->_mainTmpPath,
@@ -182,24 +182,22 @@ Class ProcessAdditional
 					$this->_mainTmpPath . 'u4e'
 				)
 			);
-			$this->_fetchReleases($groupID);
 		} else {
-			$release = explode('           =+=            ', $release);
-			$this->_releases = array(
+			$this->_mainTmpPath .= $groupID . DS;
+			// Clear out old folders/files from the temp folder.
+			$this->_recursivePathDelete(
+				$this->_mainTmpPath,
+				// These are folders we don't want to delete.
 				array(
-					'id'             => $release[0],
-					'guid'           => $release[1],
-					'name'           => $release[2],
-					'disablepreview' => $release[3],
-					'size'           => $release[4],
-					'group_id'       => $release[5],
-					'nfostatus'      => $release[6],
-					'categoryid'     => $release[7],
-					'searchname'     => $release[8]
+					// This is the actual unrar folder.
+					$this->_mainTmpPath,
+					// This folder is used by misc/testing/Dev/rename_u4e.php
+					$this->_mainTmpPath . 'u4e'
 				)
 			);
-			$this->_totalReleases = 1;
 		}
+
+		$this->_fetchReleases($groupID);
 
 		// Check if we have releases to work on.
 		if ($this->_totalReleases > 0) {
@@ -230,8 +228,7 @@ Class ProcessAdditional
 
 			$releases = $this->pdo->query(
 				sprintf('
-						SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id,
-							r.nfostatus, r.completion, r.categoryid, r.searchname
+						SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname
 						FROM releases r
 						LEFT JOIN category c ON c.id = r.categoryid
 						WHERE nzbstatus = 1
@@ -258,6 +255,7 @@ Class ProcessAdditional
 
 				// Decrement so we don't get more than the max user specified value.
 				$limit -= $currentCount;
+				echo "pwdstatus: " . $i . " limit: " . $limit . PHP_EOL;
 
 				// Update the total results.
 				$this->_totalReleases += $currentCount;
