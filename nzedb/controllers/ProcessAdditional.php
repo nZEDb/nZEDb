@@ -512,14 +512,13 @@ Class ProcessAdditional
 
 				if (isset($this->_currentNZBFile['segments'])) {
 					// Get the amount of segments for this file.
-					$segCount = count($this->_currentNZBFile['segments']);
+					$segCount = (count($this->_currentNZBFile['segments']) - 1);
 					// If it's more than 1 try to get up to the site specified value of segments.
 					for ($i = 0; $i < $this->_segmentsToDownload; $i++) {
-						if ($segCount > $i) {
-							$this->_sampleMessageIDs[] = (string)$this->_currentNZBFile['segments'][$i];
-						} else {
+						if ($i > $segCount) {
 							break;
 						}
+						$this->_sampleMessageIDs[] = (string)$this->_currentNZBFile['segments'][$i];
 					}
 				}
 			}
@@ -533,14 +532,13 @@ Class ProcessAdditional
 
 				if (isset($this->_currentNZBFile['segments'])) {
 					// Get the amount of segments for this file.
-					$segCount = count($this->_currentNZBFile['segments']);
+					$segCount = (count($this->_currentNZBFile['segments']) - 1);
 					// If it's more than 1 try to get up to the site specified value of segments.
 					for ($i = 0; $i < $this->_segmentsToDownload; $i++) {
-						if ($segCount > $i) {
-							$this->_JPGMessageIDs[] = (string)$this->_currentNZBFile['segments'][$i];
-						} else {
+						if ($i > $segCount) {
 							break;
 						}
+						$this->_JPGMessageIDs[] = (string)$this->_currentNZBFile['segments'][$i];
 					}
 				}
 			}
@@ -606,7 +604,14 @@ Class ProcessAdditional
 			}
 
 			// Get message-id's for the rar file.
-			$mID = array_slice((array) $nzbFile['segments'], 0, $this->_maximumRarSegments);
+			$segCount = (count($nzbFile['segments']) - 1);
+			$mID = array();
+			for ($i = 0; $i < $this->_maximumRarSegments; $i++) {
+				if ($i > $segCount) {
+					break;
+				}
+				$mID[] = (string)$nzbFile['segments'][$i];
+			}
 
 			// Download the article(s) from usenet.
 			$fetchedBinary = $this->_nntp->getMessages($this->_releaseGroupName, $mID, $this->_alternateNNTP);
