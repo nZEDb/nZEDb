@@ -1168,9 +1168,7 @@ while ($i > 0) {
 				//run postprocess_releases amazon
 				$log = $t->writelog($panes2[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.2 ' \
-						$_phpn ${DIR}update/postprocess.php book true $log; $_phpn ${DIR}update/postprocess.php music true $log; \
-						$_phpn ${DIR}update/postprocess.php games true $log; $_phpn ${DIR}update/postprocess.php console true $log; \
-						$_phpn ${DIR}update/postprocess.php xxx true $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
+						$_phpn ${DIR}update/nix/tmux/bin/postprocess_amazon.php $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
 				);
 			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0) && ($processxxx == 0)) {
 				$color = $t->get_color($colors_start, $colors_end, $colors_exc);
@@ -1353,9 +1351,7 @@ while ($i > 0) {
 				//run postprocess_releases amazon
 				$log = $t->writelog($panes1[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_phpn ${DIR}update/postprocess.php book true $log; $_phpn ${DIR}update/postprocess.php music true $log; \
-						$_phpn ${DIR}update/postprocess.php games true $log; $_phpn ${DIR}update/postprocess.php console true $log; \
-						$_phpn ${DIR}update/postprocess.php xxx true $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
+						$_phpn ${DIR}update/nix/tmux/bin/postprocess_amazon.php $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
 				);
 			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0)) {
 				$color = $t->get_color($colors_start, $colors_end, $colors_exc);

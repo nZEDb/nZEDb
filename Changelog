@@ -12,6 +12,9 @@ New updates are grouped by person, at the top of the file.
 	* Chg: add slower count logic to gfRn to be more exact on which categories to attempt
 	* Fix: last undefined in gfRn
 	* Chg: Remove postprocess_old_threaded from monitor as Amazon cannot make use of threaded ops and is a waste of overhead
+	* Chg: Revamp postprocess.php so it isn't complete shit
+	* Chg: Tweak some settings for gfRn
+	* Chg: Set Tmux Amazon to use Tmux php single thread script instead due to tmpunrar clearing in main postprocess.php
 2014-07-19 kevin
 	* Fix: Hard-coded 15 workers in update_threaded.py
 	* Chg: Various changes to process additional / nfo for python scripts.
