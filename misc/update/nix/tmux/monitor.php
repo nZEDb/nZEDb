@@ -35,6 +35,8 @@ $bookreqids = ($bkreqid === null || $bkreqid == "") ? 8010 : $bkreqid;
 $reqHours = $pdo->getSetting('request_hours');
 $request_hours = isset($reqHours) ? $reqHours : 1;
 
+$pre_lim = '7';
+
 if ($t->command_exist("python3")) {
 	$PYTHON = "python3 -OOu";
 } else {
@@ -995,12 +997,12 @@ while ($i > 0) {
 			if ($fix_names == 1) {
 				$log = $t->writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py md5 $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py filename preid $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py nfo preid $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py par2 preid $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py miscsorter $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py predbft $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null"
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py md5 $log; \
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py filename $log; \
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py nfo $log; \
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py par2 $log; \
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py miscsorter $log; \
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py predbft $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null"
 				);
 			} else {
 				$color = $t->get_color($colors_start, $colors_end, $colors_exc);
@@ -1016,8 +1018,6 @@ while ($i > 0) {
 			} else if ($dehash == 2) {
 				if ($i === 1) {
 					$pre_lim = '';
-				} else {
-					$pre_lim = '7';
 				}
 				$log = $t->writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
@@ -1026,8 +1026,6 @@ while ($i > 0) {
 			} else if ($dehash == 3) {
 				if ($i === 1) {
 					$pre_lim = '';
-				} else {
-					$pre_lim = '7';
 				}
 				$log = $t->writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
