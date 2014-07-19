@@ -167,15 +167,15 @@ class PostProcess
 	/**
 	 * Lookup imdb if enabled.
 	 *
-	 * @param string $releaseToWork
+	 * @param string $groupID optional
 	 *
 	 * @return void
 	 */
-	public function processMovies($releaseToWork = '')
+	public function processMovies($groupID = '')
 	{
 		if ($this->pdo->getSetting('lookupimdb') == 1) {
 			$movie = new Movie($this->echooutput);
-			$movie->processMovieReleases($releaseToWork);
+			$movie->processMovieReleases($groupID);
 		}
 	}
 
@@ -232,15 +232,15 @@ class PostProcess
 	/**
 	 * Process all TV related releases which will assign their series/episode/rage data.
 	 *
-	 * @param string $releaseToWork
+	 * @param string $groupID optional
 	 *
 	 * @return void
 	 */
-	public function processTv($releaseToWork = '')
+	public function processTv($groupID = '')
 	{
 		if ($this->pdo->getSetting('lookuptvrage') == 1) {
 			$tvRage = new TvRage($this->echooutput);
-			$tvRage->processTvReleases($releaseToWork, true);
+			$tvRage->processTvReleases($groupID, true);
 		}
 	}
 
