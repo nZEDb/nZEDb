@@ -27,7 +27,7 @@ if (isset($pieces[2])) {
 		usleep(500000);
 	}
 
-	$postprocess->processAdditional($nntp, '', $pieces[0]);
+	$postprocess->processAdditional($nntp, $pieces[0]);
 	if ($pdo->getSetting('nntpproxy') != "1") {
 		$nntp->doQuit();
 	}

@@ -162,41 +162,30 @@ Class ProcessAdditional
 	/**
 	 * Main method.
 	 *
-	 * @param string     $release Optional single release to work on.
 	 * @param int|string $groupID Optional ID of a group to work on.
 	 *
 	 * @void
 	 */
-	public function start($release = '', $groupID = '')
+	public function start($groupID = '')
 	{
-		// Fetch all the releases to work on.
-		if ($groupID === '') {
-			// Clear out old folders/files from the temp folder.
-			$this->_recursivePathDelete(
-				$this->_mainTmpPath,
-				// These are folders we don't want to delete.
-				array(
-					// This is the actual unrar folder.
-					$this->_mainTmpPath,
-					// This folder is used by misc/testing/Dev/rename_u4e.php
-					$this->_mainTmpPath . 'u4e'
-				)
-			);
-		} else {
+		// If the groupID is not empty, set the temp path to the group ID.
+		if ($groupID !== '') {
 			$this->_mainTmpPath .= $groupID . DS;
-			// Clear out old folders/files from the temp folder.
-			$this->_recursivePathDelete(
-				$this->_mainTmpPath,
-				// These are folders we don't want to delete.
-				array(
-					// This is the actual unrar folder.
-					$this->_mainTmpPath,
-					// This folder is used by misc/testing/Dev/rename_u4e.php
-					$this->_mainTmpPath . 'u4e'
-				)
-			);
 		}
 
+		// Clear out old folders/files from the temp folder.
+		$this->_recursivePathDelete(
+			$this->_mainTmpPath,
+			// These are folders we don't want to delete.
+			array(
+				// This is the actual unrar folder.
+				$this->_mainTmpPath,
+				// This folder is used by misc/testing/Dev/rename_u4e.php
+				$this->_mainTmpPath . 'u4e'
+			)
+		);
+
+		// Fetch all the releases to work on.
 		$this->_fetchReleases($groupID);
 
 		// Check if we have releases to work on.

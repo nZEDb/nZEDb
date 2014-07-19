@@ -246,10 +246,6 @@ class PostProcess
 
 	/**
 	 * Lookup xxx if enabled.
-	 *
-	 * @param string $releaseToWork
-	 *
-	 * @return void
 	 */
 	public function processXXX()
 	{
@@ -265,15 +261,14 @@ class PostProcess
 	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
 	 *
 	 * @param NNTP   $nntp          Class NNTP
-	 * @param string $releaseToWork String containing SQL results. Optional.
 	 * @param string $groupID       Group ID. Optional
 	 *
 	 * @return void
 	 */
-	public function processAdditional($nntp, $releaseToWork = '', $groupID = '')
+	public function processAdditional($nntp, $groupID = '')
 	{
 		$processAdditional = new ProcessAdditional($this->echooutput, $nntp, $this->pdo);
-		$processAdditional->start($releaseToWork, $groupID);
+		$processAdditional->start($groupID);
 	}
 
 	/**
