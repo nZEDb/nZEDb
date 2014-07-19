@@ -21,11 +21,7 @@ pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 if len(sys.argv) == 1:
 	print(bcolors.ERROR + "\nAn argument is required\n\n"
-		+ "python " + sys.argv[0] + " [md5, nfo, filename, par2, miscsorter]     ...: To process all previously unprocessed releases, using [md5, nfo, filename, par2, miscsorter].\n"
-		+ "python " + sys.argv[0] + " [nfo, filename, par2] preid                ...: To process all releases not matched to preid, using [nfo, filename, par2].\n"
-		+ "python " + sys.argv[0] + " nfo clean                                  ...: To process all releases processed by filename, using nfo.\n"
-		+ "python " + sys.argv[0] + " par2 clean                                 ...: To process all releases processed by filename and nfo, using par2.\n"
-		+ "python " + sys.argv[0] + " predbft clean                              ...: To process all releases using reverse match by PreDB title.\n"
+		+ "python " + sys.argv[0] + " [md5, nfo, filename, par2, miscsorter, predbft]     ...: To process all previously unprocessed releases, using [md5, nfo, filename, par2, miscsorter, predbft].\n"
 		+ bcolors.ENDC)
 	sys.exit()
 
@@ -46,7 +42,7 @@ datas = cur[0].fetchall()
 
 threads = int(run_threads[0])
 groups = int(len(datas))
-maxperrun = round(int(run_perrun[0]) / 100)
+maxperrun = int(run_perrun[0])
 
 #close connection to mysql
 info.disconnect(cur[0], cur[1])
@@ -108,8 +104,6 @@ def main():
 		my_queue.put("%s %s %s" % (sys.argv[1], groupid[0], maxperrun))
 
 	my_queue.join()
-	cur.close()
-	con.close()
 
 	print(bcolors.HEADER + "\nfixReleaseNames Per Group Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
