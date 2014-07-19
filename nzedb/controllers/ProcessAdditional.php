@@ -239,15 +239,16 @@ Class ProcessAdditional
 
 			$releases = $this->pdo->query(
 				sprintf('
-						SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname
-						FROM releases r
-						LEFT JOIN category c ON c.id = r.categoryid
-						WHERE nzbstatus = 1
-						%s %s %s
-						AND r.passwordstatus = %d
-						AND (r.haspreview = -1 AND c.disablepreview = 0)
-						ORDER BY postdate
-						DESC LIMIT %d',
+					SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname
+					FROM releases r
+					LEFT JOIN category c ON c.id = r.categoryid
+					WHERE nzbstatus = 1
+					%s %s %s
+					AND r.passwordstatus = %d
+					AND r.haspreview = -1
+					AND c.disablepreview = 0
+					ORDER BY postdate
+					DESC LIMIT %d',
 					$this->_maxSize, $this->_minSize, $groupID, $i, $limit
 				)
 			);
