@@ -41,8 +41,7 @@ function getOddGames($c)
 						);
 
 					// Check for existing games entry.
-					$gameCheck = $gen->getgamesinfoByName($gameInfo['title'],
-														  $gameInfo['platform']);
+					$gameCheck = $gen->getgamesinfoByName($gameInfo['title'], $gameInfo['platform']);
 					if ($gameCheck === false) {
 						$gameId = $gen->updategamesinfo($gameInfo);
 						$usedgb = true;
@@ -67,7 +66,7 @@ function getOddGames($c)
 					$pdo->queryExec(sprintf('UPDATE releases SET gamesinfo_id = %d WHERE id = %d', -2, $arr['id']));
 						echo '.';
 				}
-				// Sleep to not flood giantbomb.
+				// Sleep so not to flood giantbomb.
 				$diff = floor((microtime(true) - $startTime) * 1000000);
 				if ($gen->sleeptime * 1000 - $diff > 0 && $usedgb === true) {
 					usleep($gen->sleeptime * 1000 - $diff);
