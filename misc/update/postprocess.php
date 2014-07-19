@@ -9,25 +9,25 @@ $c = new ColorCLI();
 **/
 
 $args = array(
-			'all'		=>	true,
-			'pre'		=>	true,
-			'nfo'		=>	true,
-			'movies'	=>	false,
-			'music'	=>	false,
-			'console'	=>	false,
-			'games'	=>	false,
-			'book'		=>	false,
-			'anime'	=>	false,
-			'tv'		=>	false,
-			'xxx'		=>	false,
-			'additional'	=>	true,
-			'sharing'	=>	true,
-			'allinf'	=>	true
+			'all'        => true,
+			'pre'        => true,
+			'nfo'        => true,
+			'movies'     => false,
+			'music'      => false,
+			'console'    => false,
+			'games'      => false,
+			'book'       => false,
+			'anime'      => false,
+			'tv'         => false,
+			'xxx'        => false,
+			'additional' => true,
+			'sharing'    => true,
+			'allinf'     => true
 );
 
 $bool = array(
-		'true',
-		'false'
+	'true',
+	'false'
 );
 
 if (!isset($argv[1]) || !in_array($argv[1], $args) || !isset($argv[2]) || !in_array($argv[2], $bool)) {
@@ -98,7 +98,8 @@ switch ($mode) {
 		break;
 	case 'anime':
 		exit;
-		$postprocess->processAnime();
+		//$postprocess->processAnime();
+		//break;
 	case 'book':
 		$postprocess->processBooks();
 		break;
