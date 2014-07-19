@@ -11,6 +11,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: groupID placement for PAR2 in gfrn / refactor pieces / fix whitespace
 	* Chg: add slower count logic to gfRn to be more exact on which categories to attempt
 	* Fix: last undefined in gfRn
+	* Chg: Remove postprocess_old_threaded from monitor as Amazon cannot make use of threaded ops and is a waste of overhead
 2014-07-19 kevin
 	* Fix: Hard-coded 15 workers in update_threaded.py
 	* Chg: Various changes to process additional / nfo for python scripts.

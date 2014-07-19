@@ -180,7 +180,7 @@ if (!isset($argv[1])) {
 						sprintf('
 							SELECT p.id AS preid, p.title, p.source, p.searched
 							FROM predb p
-							WHERE LENGTH(title) >= 10 AND searched = 0
+							WHERE LENGTH(title) >= 15 AND searched = 0
 							AND DATEDIFF(NOW(), predate) > 1
 							ORDER BY predate ASC
 							LIMIT %s
