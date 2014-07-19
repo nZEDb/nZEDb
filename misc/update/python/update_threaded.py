@@ -92,8 +92,6 @@ def main():
 		my_queue.put("%s  %s" % (str(release[0]), count))
 
 	my_queue.join()
-	cur.close()
-	con.close()
 
 	#stage7b
 	final = "Stage7b"
