@@ -202,7 +202,7 @@ class PostProcess
 	public function processNfos($nntp)
 	{
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			$this->Nfo->processNfoFiles($this->pdo->getSetting('lookupimdb'), $this->pdo->getSetting('lookuptvrage'), '', $nntp);
+			$this->Nfo->processNfoFiles($nntp, '', (int)$this->pdo->getSetting('lookupimdb'), (int)$this->pdo->getSetting('lookuptvrage'));
 		}
 	}
 

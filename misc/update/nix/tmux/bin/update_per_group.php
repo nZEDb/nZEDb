@@ -67,7 +67,7 @@ if ($pieces[0] != 'Stage7b') {
 	$postprocess = new PostProcess(true);
 	$postprocess->processAdditional($nntp, '', $groupid);
 	$nfopostprocess = new Nfo(true);
-	$nfopostprocess->processNfoFiles(1, 1, $groupid, $nntp);
+	$nfopostprocess->processNfoFiles($nntp, $groupid);
 	if ($nntpProxy != "1") {
 		$nntp->doQuit();
 	}

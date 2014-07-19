@@ -243,16 +243,16 @@ class Nfo
 	/**
 	 * Attempt to find NFO files inside the NZB's of releases.
 	 *
+	 * @param object $nntp           Instance of class NNTP.
+	 * @param string $groupID        (optional) The group ID to work on.
 	 * @param int $processImdb       Attempt to find IMDB id's in the NZB?
 	 * @param int $processTvrage     Attempt to find TvRage id's in the NZB?
-	 * @param string $groupID        (optional) The group ID to work on.
-	 * @param object $nntp           Instance of class NNTP.
 	 *
 	 * @return int                   How many NFO's were processed?
 	 *
 	 * @access public
 	 */
-	public function processNfoFiles($processImdb = 1, $processTvrage = 1, $groupID = '', $nntp)
+	public function processNfoFiles($nntp, $groupID = '', $processImdb = 1, $processTvrage = 1)
 	{
 		$nfoCount = $ret = 0;
 		$groupID = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);

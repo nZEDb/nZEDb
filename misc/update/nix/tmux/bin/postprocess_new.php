@@ -40,7 +40,7 @@ if (isset($pieces[2])) {
 	if ($pdo->getSetting('nntpproxy') == "1") {
 		usleep(500000);
 	}
-	$nfopostprocess->processNfoFiles(1, 1, $pieces[0], $nntp);
+	$nfopostprocess->processNfoFiles($nntp, $pieces[0]);
 	//$postprocess->processNfos($argv[1], $nntp);
 	if ($pdo->getSetting('nntpproxy') != "1") {
 		$nntp->doQuit();
