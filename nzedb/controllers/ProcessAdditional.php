@@ -228,54 +228,30 @@ Class ProcessAdditional
 	 */
 	protected function _fetchReleases($groupID)
 	{
-		$this->_releases = array();
-		$this->_totalReleases = 0;
-		$groupID = ($groupID === '' ? '' : 'AND r.group_id = ' . $groupID);
+		$this->_releases = $this->pdo->query(
+			sprintf('
+				SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname
+				FROM releases r
+				LEFT JOIN category c ON c.id = r.categoryid
+				WHERE r.nzbstatus = 1
+				%s %s %s
+				AND r.passwordstatus BETWEEN -6 AND -1
+				AND r.haspreview = -1
+				AND c.disablepreview = 0
+				ORDER BY r.passwordstatus ASC, r.postdate DESC
+				LIMIT %d',
+				$this->_maxSize,
+				$this->_minSize,
+				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
+				$this->_queryLimit
+			)
+		);
 
-		$i = -6;
-		$limit = $this->_queryLimit;
-		// Get releases starting from -6 password status until we reach our max limit set in site or we reach -1 password status.
-		while (($this->_totalReleases <= $limit) && ($i <= -1)) {
-
-			$releases = $this->pdo->query(
-				sprintf('
-					SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname
-					FROM releases r
-					LEFT JOIN category c ON c.id = r.categoryid
-					WHERE nzbstatus = 1
-					%s %s %s
-					AND r.passwordstatus = %d
-					AND r.haspreview = -1
-					AND c.disablepreview = 0
-					ORDER BY postdate
-					DESC LIMIT %d',
-					$this->_maxSize, $this->_minSize, $groupID, $i, $limit
-				)
-			);
-
-			if ($releases === false) {
-				return;
-			}
-
-			// Get the count of rows we got from the query.
-			$currentCount = count($releases);
-
-			if ($currentCount > 0) {
-
-				// Merge the results.
-				$this->_releases += $releases;
-
-				// Decrement so we don't get more than the max user specified value.
-				$limit -= $currentCount;
-				echo "pwdstatus: " . $i . " limit: " . $limit . PHP_EOL;
-
-				// Update the total results.
-				$this->_totalReleases += $currentCount;
-
-				// Echo how many we got for this query.
-				$this->_echo('Passwordstatus = ' . $i . ': Available to process = ' . $currentCount);
-			}
-			$i++;
+		if (is_array($this->_releases)) {
+			$this->_totalReleases = count($this->_releases);
+		} else {
+			$this->_releases = array();
+			$this->_totalReleases = 0;
 		}
 	}
 
