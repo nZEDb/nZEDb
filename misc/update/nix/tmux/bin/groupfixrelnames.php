@@ -201,7 +201,7 @@ if (!isset($argv[1])) {
 						$searched = $pres['searched'] - 1;
 						echo ".";
 					}
-					$pdo->queryExec(sprintf("UPDATE predb SET searched = %d WHERE id = %d", $searched, $res['preid']));
+					$pdo->queryExec(sprintf("UPDATE predb SET searched = %d WHERE id = %d", $searched, $pres['preid']));
 					$namefixer->checked++;
 				}
 			}
