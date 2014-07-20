@@ -255,7 +255,7 @@ class Nfo
 	public function processNfoFiles($nntp, $groupID = '', $processImdb = 1, $processTvrage = 1)
 	{
 		$nfoCount = $ret = 0;
-		$groupID = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);
+		$this->groupID = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);
 		$res = array();
 
 
@@ -274,7 +274,7 @@ class Nfo
 					$i,
 					self::NFO_UNPROC,
 					$this->maxsize * 1073741824,
-					$groupID,
+					$this->groupID,
 					$this->nzbs
 				)
 			);
@@ -286,6 +286,8 @@ class Nfo
 		if ($nfoCount > 0) {
 			$this->c->doEcho(
 				$this->c->primary(
+					PHP_EOL .
+					($this->groupID == '' ? '' : '[' . $groupID . '] ') .
 					'Processing ' . $nfoCount .
 					' NFO(s), starting at ' . $this->nzbs .
 					' * = hidden NFO, + = NFO, - = no NFO, f = download failed.'
@@ -293,13 +295,22 @@ class Nfo
 			);
 
 			// Get count of releases per nfo status
-			$outString = 'Available to process';
-			for ($i = -1; $i >= -6; $i--) {
-				$ns =  $this->pdo->query('SELECT COUNT(*) AS count FROM releases WHERE nfostatus = ' . $i);
-				$outString .= ', ' . $i . ' = ' . number_format($ns[0]['count']);
+			$outString = PHP_EOL . 'Available to process';
+			$nfostats =  $this->pdo->queryDirect(
+								sprintf('
+									SELECT nfostatus AS status, COUNT(*) AS count
+									FROM releases
+									WHERE nfostatus BETWEEN -6 AND %d %s
+									GROUP BY nfostatus
+									ORDER BY nfostatus ASC',
+									self::NFO_UNPROC,
+									$this->groupID
+								)
+			);
+			foreach ($nfostats as $row) {
+					$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
 			}
-			$this->c->doEcho($this->c->header($outString . '.'));
-
+			echo $this->c->doEcho($this->c->header($outString . '.'));
 			$groups = new Groups();
 			$nzbContents = new NZBContents(array('echo' => $this->echo, 'nntp' => $nntp, 'nfo' => $this, 'db' => $this->pdo, 'pp' => new PostProcess(true)));
 			$movie = new Movie($this->echo);

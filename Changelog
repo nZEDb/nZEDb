@@ -9,6 +9,8 @@ New updates are grouped by person, at the top of the file.
 2014-07-20 ruhllatio
 	* Fix: PreDB join timer logic in Tmux now runs full once and last week thereafter properly
 	* Add: ishashed to gfRn md5 work queries
+	* Chg: Revert decrypt_hashes all script to look outside category 7020 (Misc->Hashed)
+	* Chg: Improve NFO Proc count query and output
 2014-07-19 ruhllatio
 	* Chg: groupfixreleasenames var fixes and change to use categoryid instead of group_id
 	* Fix: groupID placement for PAR2 in gfrn / refactor pieces / fix whitespace
