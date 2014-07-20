@@ -506,14 +506,32 @@ class NNTP extends Net_NNTP_Client
 		// Check if the msgIds are in an array.
 		if (is_array($identifiers)) {
 
+			$loops = $messageSize = 0;
+
 			// Loop over the message-ID's or article numbers.
 			foreach ($identifiers as $wanted) {
+
+				/* This is to attempt to prevent string size overflow.
+				 * We get the size of 1 body in bytes, we increment the loop on every loop,
+				 * then we multiply the # of loops by the first size we got and check if it
+				 * exceeds 1.7 billion bytes (less than 2GB to give us headroom).
+				 * If we exceed, return the data.
+				 * If we don't do this, these errors are fatal.
+				 */
+				if ((++$loops * $messageSize) >= 1700000000) {
+					return $body;
+				}
+
 				// Download the body.
 				$message = $this->_getMessage($groupName, $wanted);
 
 				// Append the body to $body.
 				if (!$this->isError($message)) {
 					$body .= $message;
+
+					if ($messageSize === 0) {
+						$messageSize = strlen($message);
+					}
 
 				// If there is an error try the alternate provider or return the PEAR error.
 				} else {

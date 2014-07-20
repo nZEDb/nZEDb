@@ -65,6 +65,15 @@ class popporn
 		}
 	}
 
+	/*
+	 * Remove from memory if it still exists
+	 */
+	public function __destruct()
+	{
+	$this->html->clear();
+	unset($this->response);
+	unset($this->res);
+	}
 	/**
 	 * Get Box Cover Images
 	 * @return array - boxcover,backcover

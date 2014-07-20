@@ -18,7 +18,9 @@ conf = info.readConfig()
 cur = info.connect()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-threads = 15
+cur[0].execute("SELECT value FROM settings WHERE setting = 'releasesthreads'")
+threads = cur[0].fetchone()
+threads = int(threads[0])
 
 print(bcolors.HEADER + "\nUpdate Per Group Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
@@ -90,8 +92,6 @@ def main():
 		my_queue.put("%s  %s" % (str(release[0]), count))
 
 	my_queue.join()
-	cur.close()
-	con.close()
 
 	#stage7b
 	final = "Stage7b"

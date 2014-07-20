@@ -2,49 +2,41 @@
 require_once dirname(__FILE__) . '/../../../config.php';
 
 if (!isset($argv[1])) {
-	exit($c->error("This script is not intended to be run manually, it is called from postprocess_threaded.py."));
+	exit((new ColorCLI())->error('This script is not intended to be run manually, it is called from postprocess_threaded.py.'));
 }
 
-$pdo = new \nzedb\db\Settings();
-$c = new ColorCLI();
+$options = explode('           =+=            ', $argv[1]);
+if (!isset($options[1])) {
+	return;
+}
 
-$tmux = new Tmux;
-$torun = $tmux->get()->post;
+switch ($options[1]) {
+	case 'additional':
+	case 'nfo':
+		$pdo = new \nzedb\db\Settings();
 
-$pieces = explode('           =+=            ', $argv[1]);
+		// Create the connection here and pass, this is for post processing, so check for alternate
+		$nntp = new NNTP();
 
-$postprocess = new PostProcess(true);
-if (isset($pieces[6])) {
-	// Create the connection here and pass, this is for post processing, so check for alternate
-	$nntp = new NNTP();
-	if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-		exit($c->error("Unable to connect to usenet."));
-	}
-	if ($pdo->getSetting('nntpproxy') == "1") {
-		usleep(500000);
-	}
+		if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+			exit($c->error('Unable to connect to usenet.'));
+		}
 
-	$postprocess->processAdditional($nntp, $argv[1]);
-	if ($pdo->getSetting('nntpproxy') != "1") {
+		if ($options[1] === 'nfo') {
+			(new Nfo(true))->processNfoFiles($nntp, $options[0]);
+		} else {
+			(new ProcessAdditional(true, $nntp, $pdo))->start($options[0]);
+		}
+
 		$nntp->doQuit();
-	}
-} else if (isset($pieces[3])) {
-	// Create the connection here and pass, this is for post processing, so check for alternate
-	$nntp = new NNTP();
-	if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-		exit($c->error("Unable to connect to usenet."));
-	}
-	if ($pdo->getSetting('nntpproxy') == "1") {
-		usleep(500000);
-	}
+		return;
 
-	$postprocess->processNfos($argv[1], $nntp);
-	if ($pdo->getSetting('nntpproxy') != "1") {
-		$nntp->doQuit();
-	}
-} else if (isset($pieces[2])) {
-	$postprocess->processMovies($argv[1]);
-	echo '.';
-} else if (isset($pieces[1])) {
-	$postprocess->processTv($argv[1]);
+	case 'movie':
+		(new PostProcess(true))->processMovies($options[0]);
+		echo '.';
+		return;
+
+	case 'tv':
+		(new PostProcess(true))->processTv($options[0]);
+		return;
 }

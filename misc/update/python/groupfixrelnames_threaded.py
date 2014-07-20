@@ -32,12 +32,30 @@ if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" a
 print(bcolors.HEADER + "\nfixReleaseNames Per Category Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 datas = []
+join = " "
+where = " "
+limit = 0
+
+if sys.argv[1] == "md5":
+	join = " LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1 "
+	where = " r.proc_files = 0 AND r.ishashed = 1 AND r.dehashstatus BETWEEN -6 AND 0 AND "
+if sys.argv[1] == "nfo":
+	join = " "
+	where = " r.proc_nfo = 0 AND r.nfostatus = 1 AND "
+if sys.argv[1] == "filename":
+	join = " INNER JOIN releasefiles rf ON r.id = rf.releaseid "
+	where = " r.proc_files = 0 AND "
+if sys.argv[1] == "par2":
+	where = " r.proc_par2 = 0 AND "
+if sys.argv[1] == "miscsorter":
+	where = " r.nfostatus = 1 AND r.proc_sorter = 0 AND r.isrenamed = 0 AND "
 
 cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamethreads'")
 run_threads = cur[0].fetchone()
 cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamesperrun'")
 run_perrun = cur[0].fetchone()
-cur[0].execute("SELECT id FROM category WHERE status < 2 AND parentid IS NOT NULL ORDER BY title ASC")
+
+cur[0].execute("SELECT c.id, count(DISTINCT r.id) AS count FROM category c INNER JOIN releases r ON c.id = r.categoryid AND r.preid = 0 AND nzbstatus = 1" + join + "WHERE" + where + "c.status < 2 AND c.parentid IS NOT NULL GROUP BY c.id HAVING count > 1 ORDER BY count DESC")
 datas = cur[0].fetchall()
 
 threads = int(run_threads[0])
@@ -97,11 +115,15 @@ def main():
 	count = 0
 
 	for category in datas:
+		limit = maxperrun
 		if count >= threads:
 			count = 0
 		count += 1
 		time.sleep(.03)
-		my_queue.put("%s %s %s" % (sys.argv[1], category[0], maxperrun))
+		if int(category[1]) < maxperrun:
+			limit = int(category[1])
+		if limit > 0:
+			my_queue.put("%s %s %s %s" % (sys.argv[1], category[0], limit, count))
 
 	my_queue.join()
 

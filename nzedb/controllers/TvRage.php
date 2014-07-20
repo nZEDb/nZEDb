@@ -672,20 +672,29 @@ class TvRage
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
 	}
 
-	public function processTvReleases($releaseToWork = '', $lookupTvRage = true, $local = false)
+	public function processTvReleases($groupID = '', $lookupTvRage = true, $local = false)
 	{
 		$ret = 0;
 		$trakt = new TraktTv();
 
 		// Get all releases without a rageid which are in a tv category.
-		if ($releaseToWork == '') {
-			$res = $this->pdo->query(sprintf("SELECT r.searchname, r.id FROM releases r WHERE r.nzbstatus = 1 AND r.rageid = -1 AND r.size > 1048576 AND r.categoryid BETWEEN 5000 AND 5999 ORDER BY r.postdate DESC LIMIT %d", $this->rageqty));
-			$tvcount = count($res);
-		} else {
-			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('searchname' => $pieces[0], 'id' => $pieces[1]));
-			$tvcount = 1;
-		}
+
+		$res = $this->pdo->query(
+			sprintf("
+				SELECT r.searchname, r.id
+				FROM releases r
+				WHERE r.nzbstatus = 1
+				AND r.rageid = -1
+				AND r.size > 1048576
+				AND r.categoryid BETWEEN 5000 AND 5999
+				%s
+				ORDER BY r.postdate DESC
+				LIMIT %d",
+				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
+				$this->rageqty
+			)
+		);
+		$tvcount = count($res);
 
 		if ($this->echooutput && $tvcount > 1) {
 			echo $this->c->header("Processing TV for " . $tvcount . " release(s).");
