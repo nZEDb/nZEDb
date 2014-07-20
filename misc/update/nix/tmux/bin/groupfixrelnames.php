@@ -83,7 +83,8 @@ if (!isset($argv[1])) {
 									rf.name AS filename
 								FROM releases r
 								LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1
-								WHERE nzbstatus = 1 AND r.dehashstatus BETWEEN -6 AND 0
+								WHERE nzbstatus = 1 AND r.ishashed = 1
+								AND r.dehashstatus BETWEEN -6 AND 0
 								AND r.preid = 0
 								AND r.categoryid = %d
 								ORDER BY r.dehashstatus DESC, r.postdate ASC

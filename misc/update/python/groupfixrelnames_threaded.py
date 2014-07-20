@@ -38,7 +38,7 @@ limit = 0
 
 if sys.argv[1] == "md5":
 	join = " LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1 "
-	where = " r.proc_files = 0 AND r.dehashstatus BETWEEN -6 AND 0 AND "
+	where = " r.proc_files = 0 AND r.ishashed = 1 AND r.dehashstatus BETWEEN -6 AND 0 AND "
 if sys.argv[1] == "nfo":
 	join = " "
 	where = " r.proc_nfo = 0 AND r.nfostatus = 1 AND "
