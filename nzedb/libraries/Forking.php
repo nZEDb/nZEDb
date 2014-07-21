@@ -64,6 +64,7 @@ class Forking extends \fork_daemon
 	{
 		$maxProcesses = 0;
 		$this->processAdditional = $this->processNFO = $this->processTV = $this->processMovies = false;
+		$this->work = array();
 		switch ($type) {
 			// The option for backFill is for doing up to x articles. Else it's done by date.
 			case 'backfill':
@@ -89,80 +90,91 @@ class Forking extends \fork_daemon
 				$maxProcesses = $this->pdo->getSetting('releasesthreads');
 				break;
 
-			case 'postprocess':
-
-				$work = false;
-				switch ($options[0]) {
-					case 'all':
-						$work = true;
-						$postProcess = new \PostProcess(true);
-						$this->processSharing($postProcess);
-						//$postProcess->processAnime();
-						$postProcess->processBooks();
-						$postProcess->processConsoles();
-						$postProcess->processGames();
-						$postProcess->processMusic();
-						$postProcess->processXXX();
-						unset($postProcess);
-						$this->processAdditional = true;
-						$this->processNFO = ($this->pdo->getSetting('lookupnfo') == 1 ? true : false);
-						$this->processMovies = ($this->pdo->getSetting('lookupimdb') == 1 ? true : false);
-						$this->processTV = ($this->pdo->getSetting('lookuptvrage') == 1 ? true : false);
-						break;
-					case 'add':
-						$this->processAdditional = true;
-						$work = true;
-						break;
-					case 'ama':
-						$postProcess = new \PostProcess(true);
-						//$postProcess->processAnime();
-						$postProcess->processBooks();
-						$postProcess->processConsoles();
-						$postProcess->processGames();
-						$postProcess->processMusic();
-						$postProcess->processXXX();
-						break;
-					case 'mov':
-						$work = true;
-						$this->processMovies = ($this->pdo->getSetting('lookupimdb') == 1 ? true : false);
-						if ($this->processMovies === false) {
-							exit('Looking up imdb is disabled in your site settings.' . PHP_EOL);
-						}
-						break;
-					case 'nfo':
-						$work = true;
-						$this->processNFO = ($this->pdo->getSetting('lookupnfo') == 1 ? true : false);
-						if ($this->processNFO === false) {
-							exit('Looking up NFOs is disabled in your site settings.' . PHP_EOL);
-						}
-						break;
-					case 'sha':
-						if ($this->processSharing($postProcess) === false) {
-							exit('Sharing is disabled in your sharing settings.' . PHP_EOL);
-						}
-						break;
-					case 'tv':
-						$work = true;
-						$this->processTV = ($this->pdo->getSetting('lookuptvrage') == 1 ? true : false);
-						if ($this->processTV === false) {
-							exit('Looking up tvrage is disabled in your site settings.' . PHP_EOL);
-						}
-						break;
-					default:
-						break;
-				}
-
-				$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
-				if ($work === true) {
-					$this->work = $this->pdo->query('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
-				} else {
-					$this->work = array();
-				}
-				$maxProcesses = $this->pdo->getSetting('releasesthreads');
+			case 'postProcess_ama':
+				$this->processSingle(false);
 				break;
 
-			default:
-				$this->work = array();
+			case 'postProcess_add':
+				if ($this->checkProcessAdditional() === true) {
+					$this->processAdditional = true;
+					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
+					$this->work = $this->pdo->query(
+						sprintf('
+							SELECT DISTINCT(g.id)
+							FROM groups g
+							INNER JOIN releases r ON r.group_id = g.id
+							LEFT JOIN category c ON c.id = r.categoryid
+							WHERE r.nzbstatus = %d
+							AND r.passwordstatus BETWEEN -6 AND -1
+							AND r.haspreview = -1
+							AND c.disablepreview = 0',
+							\NZB::NZB_ADDED
+						)
+					);
+					$maxProcesses = $this->pdo->getSetting('maxaddprocessed');
+				}
+				break;
+
+			case 'postProcess_mov':
+				if ($this->checkProcessMovies() === true) {
+					$this->processMovies = true;
+					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
+					$this->work = $this->pdo->query(
+						sprintf('
+							SELECT DISTINCT(g.id)
+							FROM groups g
+							INNER JOIN releases r ON r.group_id = g.id
+							WHERE r.nzbstatus = %d
+							AND r.imdbid IS NULL
+							AND r.categoryid BETWEEN 2000 AND 2999',
+							\NZB::NZB_ADDED
+						)
+					);
+					$maxProcesses = $this->pdo->getSetting('maximdbprocessed');
+				}
+				break;
+
+			case 'postProcess_nfo':
+				if ($this->checkProcessNfo() === true) {
+					$this->processNFO = true;
+					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
+					$this->work = $this->pdo->query(
+						sprintf('
+							SELECT DISTINCT(g.id)
+							FROM groups g
+							INNER JOIN releases r ON r.group_id = g.id
+							WHERE r.nzbstatus = %d
+							AND r.nfostatus BETWEEN -6 AND -1',
+							\NZB::NZB_ADDED
+						)
+					);
+					$maxProcesses = $this->pdo->getSetting('maxnfoprocessed');
+				}
+				break;
+
+			case 'postProcess_sha':
+				$postProcess = new \PostProcess(true);
+				$this->processSharing($postProcess);
+				break;
+
+			case 'postProcess_tv':
+				if ($this->checkProcessTV() === true) {
+					$this->processTV = true;
+					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
+					$this->work = $this->pdo->query(
+						sprintf('
+							SELECT DISTINCT(g.id)
+							FROM groups g
+							INNER JOIN releases r ON r.group_id = g.id
+							WHERE r.nzbstatus = %d
+							AND r.rageid = -1
+							AND r.size > 1048576
+							AND r.categoryid BETWEEN 5000 AND 5999',
+							\NZB::NZB_ADDED
+						)
+					);
+					$maxProcesses = $this->pdo->getSetting('maxrageprocessed');
+				}
 				break;
 		}
 
@@ -187,6 +199,116 @@ class Forking extends \fork_daemon
 				$postProcess->processSharing($nntp);
 			}
 			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Process all that require a single thread.
+	 *
+	 * @param bool $sharing Process sharing?
+	 */
+	private function processSingle($sharing = true)
+	{
+		$postProcess = new \PostProcess(true);
+		if ($sharing) {
+			$this->processSharing($postProcess);
+		}
+		//$postProcess->processAnime();
+		$postProcess->processBooks();
+		$postProcess->processConsoles();
+		$postProcess->processGames();
+		$postProcess->processMusic();
+		$postProcess->processXXX();
+	}
+
+	/**
+	 * Check if we should process NFO's.
+	 * @return bool
+	 */
+	private function checkProcessNfo()
+	{
+		if ($this->pdo->getSetting('lookupnfo') == 1) {
+			return (
+				$this->pdo->queryOneRow(
+					sprintf(
+						'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus BETWEEN -1 AND %d LIMIT 1',
+						\NZB::NZB_ADDED, \Nfo::NFO_UNPROC
+					)
+				) === false ? false : true
+			);
+		}
+		return false;
+	}
+
+	/**
+	 * Check if we should process Additional's.
+	 * @return bool
+	 */
+	private function checkProcessAdditional()
+	{
+		return (
+			$this->pdo->queryOneRow(
+				sprintf('
+					SELECT r.id
+					FROM releases r
+					LEFT JOIN category c ON c.id = r.categoryid
+					WHERE r.nzbstatus = %d
+					AND r.passwordstatus BETWEEN -6 AND -1
+					AND r.haspreview = -1
+					AND c.disablepreview = 0
+					LIMIT 1',
+					\NZB::NZB_ADDED
+				)
+			) === false ? false : true
+		);
+	}
+
+	/**
+	 * Check if we should process Movies.
+	 * @return bool
+	 */
+	private function checkProcessMovies()
+	{
+		if ($this->pdo->getSetting('lookupimdb') == 1) {
+			return (
+				$this->pdo->queryOneRow(
+					sprintf('
+						SELECT id
+						FROM releases
+						WHERE nzbstatus = %d
+						AND imdbid IS NULL
+						AND categoryid BETWEEN 2000 AND 2999
+						LIMIT 1',
+						\NZB::NZB_ADDED
+					)
+				) === false ? false : true
+			);
+		}
+		return false;
+	}
+
+	/**
+	 * Check if we should process TV's.
+	 * @return bool
+	 */
+	private function checkProcessTV()
+	{
+		if ($this->pdo->getSetting('lookuptvrage') == 1) {
+			return (
+				$this->pdo->queryOneRow(
+					sprintf('
+						SELECT id
+						FROM releases
+						WHERE nzbstatus = %d
+						AND size > 1048576
+						AND rageid = -1
+						AND categoryid BETWEEN 5000 AND 5999
+						LIMIT 1',
+						\NZB::NZB_ADDED
+					)
+				) === false ? false : true
+			);
 		}
 		return false;
 	}

@@ -1,8 +1,7 @@
 <?php
-if (!isset($argv[1])) {
+if (!isset($argv[1]) || !in_array($argv[1], ['ama', 'add', 'mov', 'nfo', 'sha', 'tv'])) {
 	exit(
 		'Available options:' . PHP_EOL .
-		'all => Do all the types of post processing.' . PHP_EOL .
 		'ama => Do amazon processing, this does not use multi-processing, because of amazon API restrictions.' . PHP_EOL .
 		'add => Do additional (rar|zip) processing.' . PHP_EOL .
 		'mov => Do movie processing.' . PHP_EOL .
@@ -14,4 +13,4 @@ if (!isset($argv[1])) {
 
 declare(ticks=1);
 require(dirname(__FILE__) . '/../../config.php');
-(new \nzedb\libraries\Forking())->processWorkType('postprocess', array(0 => $argv[1]));
+(new \nzedb\libraries\Forking())->processWorkType('postProcess_' . $argv[1]);

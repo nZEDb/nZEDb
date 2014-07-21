@@ -8,6 +8,7 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-21 kevin
 	* Chg: Add options to multiprocessing postprocess.
+	* Chg: Change multiprocessing postprocess to check if there's work first.
 2014-07-20 kevin
 	* Add: Multi processing scripts for binaries/backfill/postprocess/releases, written in PHP.
 2014-07-20 ruhllatio
