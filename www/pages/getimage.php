@@ -1,6 +1,6 @@
 <?php
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 // Page is accessible only to logged in users.
 if (!$users->isLoggedIn()) {
@@ -13,8 +13,8 @@ if (!isset($_GET["type"]) || !isset($_GET["id"]) || !ctype_digit($_GET["id"])) {
 
 // User requested a tvrage image.
 if ($_GET["type"] == "tvrage") {
-	$db = new DB();
-	if ($db->dbSystem() === 'mysql') {
+	$pdo = new Settings();
+	if ($pdo->dbSystem() === 'mysql') {
 		$rage = new TvRage();
 		$r = $rage->getByID($_GET["id"]);
 		if (!$r) {
@@ -22,8 +22,8 @@ if ($_GET["type"] == "tvrage") {
 		}
 
 		$imgdata = $r["imgdata"];
-	} else if ($db->dbSystem() === 'pgsql') {
-		$s = new Sites(); // Creates the nZEDb_COVERS constant
+	} else if ($pdo->dbSystem() === 'pgsql') {
+		$pdo = new Settings(); // Creates the nZEDb_COVERS constant
 		$imgdata = @file_get_contents(nZEDb_COVERS . 'tvrage/' . $_GET['id'] . '.jpg');
 		if ($imgdata === false) {
 			$page->show404();

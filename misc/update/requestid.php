@@ -15,7 +15,7 @@ if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric
 		);
 }
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 $reqidlocal = new RequestIDStandalone();
 
 $reqidlocal->standaloneLocalLookup($argv);
@@ -51,7 +51,7 @@ class RequestIDStandalone
 	/**
 	 * @var nzedb\db\DB
 	 */
-	protected $db;
+	protected $pdo;
 
 	/**
 	 * @var ConsoleTools
@@ -93,7 +93,7 @@ class RequestIDStandalone
 	{
 		$this->echoOutput = ($echoOutput && nZEDb_ECHOCLI);
 		$this->category = new Categorize();
-		$this->db = new DB();
+		$this->pdo = new Settings();
 		$this->groups = new Groups();
 		$this->namefixer = new NameFixer();
 		$this->consoleTools = new ConsoleTools();
@@ -110,9 +110,9 @@ class RequestIDStandalone
 
 		$timestart = TIME();
 		$counted = $counter = 0;
-		($argv[2] === 'show' ? $this->show = 1 : $this->show = 0);
+		(isset($argv[2]) && $argv[2] === 'show' ? $this->show = 1 : $this->show = 0);
 
-		$res = $this->db->queryDirect($this->_buildWorkQuery($argv));
+		$res = $this->pdo->queryDirect($this->_buildWorkQuery($argv));
 
 		if ($res !== false) {
 			$total = $res->rowCount();
@@ -219,7 +219,7 @@ class RequestIDStandalone
 	 */
 	protected function _enumerateWork($total)
 	{
-		$reqidcount = $this->db->queryOneRow('SELECT COUNT(*) AS count FROM predb WHERE requestid > 0');
+		$reqidcount = $this->pdo->queryOneRow('SELECT COUNT(*) AS count FROM predb WHERE requestid > 0');
 		echo $this->c->header(PHP_EOL . "Comparing " . number_format($total) . " releases against " . number_format($reqidcount['count']) . " Local requestID's." . PHP_EOL);
 		sleep(2);
 	}
@@ -263,12 +263,12 @@ class RequestIDStandalone
 		}
 		if (preg_match($regex, $oldName, $matches)) {
 			var_dump($matches['title']);
-			$this->run = $this->db->queryOneRow(
+			$this->run = $this->pdo->queryOneRow(
 							sprintf(
 								"SELECT id, title FROM predb " .
 								"WHERE title = %s OR filename = %s",
-								$this->db->escapeString($matches['title']),
-								$this->db->escapeString($matches['title'])
+								$this->pdo->escapeString($matches['title']),
+								$this->pdo->escapeString($matches['title'])
 							)
 			);
 			if ($this->run !== false) {
@@ -294,7 +294,7 @@ class RequestIDStandalone
 			return;
 		}
 
-		$this->db->queryExec(
+		$this->pdo->queryExec(
 			sprintf(
 				'UPDATE releases SET reqidstatus = %d ' .
 				'WHERE id = %d',
@@ -360,7 +360,7 @@ class RequestIDStandalone
 				return false;
 		}
 		$groupid = $groups->getIDByName($groupName);
-		$this->run = $this->db->queryOneRow(
+		$this->run = $this->pdo->queryOneRow(
 						sprintf(
 							"SELECT id, title FROM predb " .
 							"WHERE requestid = %d AND group_id = %d",
@@ -389,7 +389,7 @@ class RequestIDStandalone
 		$this->requestID = $requestID;
 
 		$groupid = $this->groups->getIDByName($groupName);
-		$this->run = $this->db->queryDirect(
+		$this->run = $this->pdo->queryDirect(
 							sprintf(
 								'SELECT id, title FROM predb ' .
 								'WHERE requestid = %d AND group_id = %d',
@@ -438,23 +438,23 @@ class RequestIDStandalone
 		$this->show = $show;
 
 		if ($determinedcat == $row['categoryid']) {
-			$this->run = $this->db->queryExec(
+			$this->run = $this->pdo->queryExec(
 							sprintf(
 								'UPDATE releases SET preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s ' .
 								'WHERE id = %d',
 								$preid,
-								$this->db->escapeString($title),
+								$this->pdo->escapeString($title),
 								$row['id']
 							)
 			);
 		} else {
-			$this->run = $this->db->queryExec(
+			$this->run = $this->pdo->queryExec(
 							sprintf(
 								'UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, ' .
 								'imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, ' .
 								'preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s, categoryid = %d WHERE id = %d',
 								$preid,
-								$this->db->escapeString($title),
+								$this->pdo->escapeString($title),
 								$determinedcat,
 								$row['id']
 							)

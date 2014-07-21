@@ -20,14 +20,6 @@ class NNTP extends Net_NNTP_Client
 	protected $_debugging;
 
 	/**
-	 * Object containing site settings.
-	 *
-	 * @var bool|stdClass
-	 * @access protected
-	 */
-	protected $_site;
-
-	/**
 	 * Log/echo debug?
 	 * @var bool
 	 * @access protected
@@ -93,8 +85,7 @@ class NNTP extends Net_NNTP_Client
 	public function __construct($echo = true)
 	{
 		$this->_c    = new ColorCLI();
-		$sites       = new Sites();
-		$this->_site = $sites->get();
+		$this->pdo = new \nzedb\db\Settings();
 
 		$this->_echo      = ($echo && nZEDb_ECHOCLI);
 		$this->_debugBool = (nZEDb_LOGGING || nZEDb_DEBUG);
@@ -102,7 +93,7 @@ class NNTP extends Net_NNTP_Client
 			$this->_debugging = new Debugging("NNTP");
 		}
 
-		$this->_nntpRetries = ((!empty($this->_site->nntpretries) ? (int)$this->_site->nntpretries : 0) + 1);
+		$this->_nntpRetries = ($this->pdo->getSetting('nntpretries') != '') ? (int)$this->pdo->getSetting('nntpretries') : 0 + 1;
 
 		$this->_initiateYEncSettings();
 	}
@@ -258,7 +249,7 @@ class NNTP extends Net_NNTP_Client
 			// If we are connected and authenticated, try enabling compression if we have it enabled.
 			if ($connected === true && $authenticated === true) {
 				// Try to enable compression.
-				if ($compression === true && $this->_site->compressedheaders == 1) {
+				if ($compression === true && $this->pdo->getSetting('compressedheaders') == 1) {
 					$this->_enableCompression();
 				}
 				if ($this->_debugBool) {
@@ -330,7 +321,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function enableCompression()
 	{
-		if (!$this->_site->compressedheaders == 1) {
+		if (!$this->pdo->getSetting('compressedheaders') == 1) {
 			return;
 		}
 		$this->_enableCompression();
@@ -1096,7 +1087,7 @@ class NNTP extends Net_NNTP_Client
 	protected function _initiateYEncSettings()
 	{
 		// Check if the user wants to use yyDecode or the simple_php_yenc_decode extension.
-		$this->_yyDecoderPath  = (!empty($this->_site->yydecoderpath) ? $this->_site->yydecoderpath : false);
+		$this->_yyDecoderPath  = ($this->pdo->getSetting('yydecoderpath') != '') ? $this->pdo->getSetting('yydecoderpath') : false;
 		if (strpos($this->_yyDecoderPath, 'simple_php_yenc_decode') !== false) {
 			if (extension_loaded('simple_php_yenc_decode')) {
 				$this->_yEncExtension = true;
@@ -1222,22 +1213,16 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function &_getXFeatureTextResponse()
 	{
-		$tries = $bytesReceived = $totalBytesReceived = 0;
-		$completed = $possibleTerm = false;
-		$data = $buffer = null;
+		$possibleTerm = false;
+		$data = null;
 
 		while (!feof($this->_socket)) {
-			// Reset only if decompression has not failed.
-			if ($tries === 0) {
-				$completed = false;
-			}
 
 			// Did we find a possible ending ? (.\r\n)
 			if ($possibleTerm !== false) {
 
 				// Loop, sleeping shortly, to allow the server time to upload data, if it has any.
-				$iterator = 0;
-				do {
+				for ($i = 0; $i < 3; $i++) {
 					// If the socket is really empty, fGets will get stuck here, so set the socket to non blocking in case.
 					stream_set_blocking($this->_socket, 0);
 
@@ -1248,76 +1233,59 @@ class NNTP extends Net_NNTP_Client
 					stream_set_blocking($this->_socket, 1);
 
 					// Don't sleep on last iteration.
-					if ($iterator < 2 && empty($buffer)) {
-						usleep(20000);
-					} else {
+					if (!empty($buffer)) {
 						break;
+					} else if ($i < 2) {
+						usleep(10000);
 					}
-				} while($iterator++ < 2);
+				}
 
 				// If the buffer was really empty, then we know $possibleTerm was the real ending.
 				if (empty($buffer)) {
-					$completed = true;
+					// Remove .\r\n from end, decompress data.
+					$deComp = @gzuncompress(mb_substr($data, 0, -3, '8bit'));
 
-					// The buffer was not empty, so we know this was not the real ending, so reset $possibleTerm.
-				} else {
-					$possibleTerm = false;
-				}
-			} else {
-				// Don't try to re-download from the socket if decompression failed.
-				if ($tries === 0) {
-					// Get data from the stream.
-					$buffer = fgets($this->_socket);
-				}
-			}
+					if (!empty($deComp)) {
 
-			// We found a ending, try to decompress the full buffer.
-			if ($completed === true) {
-				$deComp = @gzuncompress(mb_substr($data, 0, -3, '8bit'));
-				// Split the string of headers into an array of individual headers, then return it.
-				if (!empty($deComp)) {
+						$bytesReceived = strlen($data);
+						if ($this->_echo && $bytesReceived > 10240) {
+							$this->_c->doEcho(
+								$this->_c->primaryOver(
+									'Received ' . round($bytesReceived / 1024) .
+									'KB from group (' . $this->group() . ').'
+								), true
+							);
+						}
 
-					if ($this->_echo && $totalBytesReceived > 10240) {
-						$this->_c->doEcho(
-							$this->_c->primaryOver(
-								'Received ' .
-								round($totalBytesReceived / 1024) .
-								'KB from group (' .
-								$this->group() .
-								")."
-							), true
-						);
-					}
-
-					// Return array of headers.
-					$deComp = explode("\r\n", trim($deComp));
-					return $deComp;
-				} else {
-					// Try 5 times to decompress.
-					if ($tries++ > 5) {
-						$message = 'Decompression Failed after 5 tries.';
+						// Split the string of headers into an array of individual headers, then return it.
+						$deComp = explode("\r\n", trim($deComp));
+						return $deComp;
+					} else {
+						$message = 'Decompression of OVER headers failed.';
 						if ($this->_debugBool) {
 							$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 						}
 						$message = $this->throwError($this->_c->error($message), 1000);
 						return $message;
 					}
-					// Skip the loop to try decompressing again.
-					continue;
+
+				} else {
+					// The buffer was not empty, so we know this was not the real ending, so reset $possibleTerm.
+					$possibleTerm = false;
 				}
+			} else {
+				// Get data from the stream.
+				$buffer = fgets($this->_socket);
 			}
 
-			// Get byte count.
-			$bytesReceived = strlen($buffer);
-
-			// If we got no bytes at all try one more time to pull data.
-			if ($bytesReceived === 0) {
+			// If we got no data at all try one more time to pull data.
+			if (empty($buffer)) {
+				usleep(10000);
 				$buffer = fgets($this->_socket);
-				$bytesReceived = strlen($buffer);
 
-				// If the buffer is zero it's zero, return error.
-				if ($bytesReceived === 0) {
-					$message = 'The NNTP server has returned no data.';
+				// If wet got nothing again, return error.
+				if (empty($buffer)) {
+					$message = 'Error fetching data from usenet server while downloading OVER headers.';
 					if ($this->_debugBool) {
 						$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 					}
@@ -1326,35 +1294,17 @@ class NNTP extends Net_NNTP_Client
 				}
 			}
 
-			// Append buffer to final data object.
+			// Append current buffer to rest of buffer.
 			$data .= $buffer;
 
-			// Update total bytes received.
-			$totalBytesReceived += $bytesReceived;
-
 			// Check if we have the ending (.\r\n)
-			if ($bytesReceived > 2 &&
-				$buffer[$bytesReceived - 3] === '.' &&
-				$buffer[$bytesReceived - 2] === "\r" &&
-				$buffer[$bytesReceived - 1] === "\n"
-			) {
+			if (substr($buffer, -3) === ".\r\n") {
 				// We have a possible ending, next loop check if it is.
 				$possibleTerm = true;
-				continue;
 			}
-
-		}
-		// Throw an error if we get out of the loop.
-		if (!feof($this->_socket)) {
-			$message = "Error: Could not find the end-of-file pointer on the gzip stream.";
-			if ($this->_debugBool) {
-				$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
-			}
-			$message = $this->throwError($this->_c->error($message), 1000);
-			return $message;
 		}
 
-		$message = 'Decompression Failed, connection closed.';
+		$message = 'Unspecified error while downloading OVER headers.';
 		if ($this->_debugBool) {
 			$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 		}

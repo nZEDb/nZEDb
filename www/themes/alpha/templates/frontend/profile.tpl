@@ -77,7 +77,7 @@
 	{if $user.id==$userdata.id || $userdata.role==2}<tr><th title="Not public">Excluded Categories:</th>
 		<td>{$exccats|replace:",":"<br/>"}</td>
 		</tr>{/if}
-	{if $page->site->sabintegrationtype == 2 && $user.id==$userdata.id}
+	{if $page->settings->getSetting('sabintegrationtype') == 2 && $user.id==$userdata.id}
 		<tr>
 		<th>SABnzbd Integration:</th>
 		<td>

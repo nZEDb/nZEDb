@@ -2,8 +2,7 @@
 require dirname(__FILE__) . '/config.php';
 
 $c = new ColorCLI();
-$s = new Sites();
-$site = $s->get();
+$nntpproxy = (new nzedb\db\Settings())->getSetting('nntpproxy');
 
 // Create the connection here and pass
 $nntp = new NNTP();
@@ -11,7 +10,7 @@ if ($nntp->doConnect() !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }
 
-if ($site->nntpproxy === "1") {
+if ($nntpproxy == "1") {
 	usleep(500000);
 }
 
@@ -43,6 +42,6 @@ if (isset($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'safe' && $argv[1] !== 
 			. 'php backfill.php all			 ...: Backfills all groups 1 at a time, by date (set in admin-view groups)' . "\n"
 			. 'php backfill.php alt.binaries.ath	 ...: Backfills a group by name, by date (set in admin-view groups)' . "\n"));
 }
-if ($site->nntpproxy != "1") {
+if ($nntpproxy != "1") {
 	$nntp->doQuit();
 }

@@ -1,6 +1,6 @@
 <?php
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 use nzedb\utility\Utility;
 
 /**
@@ -41,7 +41,7 @@ class NameFixer
 	{
 		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->relid = $this->fixed = $this->checked = 0;
-		$this->db = new DB();
+		$this->pdo = new Settings();
 		$this->timeother = ' AND rel.adddate > (NOW() - INTERVAL 0 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC';
 		$this->timeall = ' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC';
 		$this->fullother = ' AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id';
@@ -51,7 +51,7 @@ class NameFixer
 		$this->consoletools = new ConsoleTools();
 		$this->category = new Categorize();
 		$this->utility = new Utility();
-		$this->_groups = new Groups($this->db);
+		$this->_groups = new Groups($this->pdo);
 	}
 
 	/**
@@ -97,7 +97,7 @@ class NameFixer
 				echo $this->c->primary(number_format($total) . ' releases to process.');
 
 				foreach ($releases as $rel) {
-					$releaseRow = $this->db->queryOneRow(
+					$releaseRow = $this->pdo->queryOneRow(
 						sprintf('
 							SELECT nfo.releaseid AS nfoid, rel.group_id, rel.categoryid, rel.name, rel.searchname,
 								UNCOMPRESS(nfo) AS textstring, rel.id AS releaseid
@@ -112,7 +112,7 @@ class NameFixer
 
 					// Ignore encrypted NFOs.
 					if (preg_match('/^=newz\[NZB\]=\w+/', $releaseRow['textstring'])) {
-						$this->db->queryExec(
+						$this->pdo->queryExec(
 							sprintf('UPDATE releases SET proc_nfo = 1 WHERE id = %d', $releaseRow['releaseid'])
 						);
 						continue;
@@ -221,7 +221,7 @@ class NameFixer
 						'echo' => $this->echooutput,
 						'nntp' => $nntp,
 						'nfo'  => new Nfo(),
-						'db'   => $this->db,
+						'db'   => $this->pdo,
 						'pp'   => new PostProcess(true)
 					)
 				);
@@ -254,20 +254,20 @@ class NameFixer
 		// 24 hours, other cats
 		if ($time == 1 && $cats == 1) {
 			echo $this->c->header($query . $this->timeother . ";\n");
-			$releases = $this->db->queryDirect($query . $this->timeother);
+			$releases = $this->pdo->queryDirect($query . $this->timeother);
 		} // 24 hours, all cats
 		else if ($time == 1 && $cats == 2) {
 			echo $this->c->header($query . $this->timeall . ";\n");
-			$releases = $this->db->queryDirect($query . $this->timeall);
+			$releases = $this->pdo->queryDirect($query . $this->timeall);
 		} //other cats
 		else if ($time == 2 && $cats == 1) {
 			echo $this->c->header($query . $this->fullother . ";\n");
-			$releases = $this->db->queryDirect($query . $this->fullother);
+			$releases = $this->pdo->queryDirect($query . $this->fullother);
 		}
 		// all cats
 		else if ($time == 2 && $cats == 2) {
 			echo $this->c->header($query . $this->fullall . ";\n");
-			$releases = $this->db->queryDirect($query . $this->fullall);
+			$releases = $this->pdo->queryDirect($query . $this->fullall);
 		}
 		return $releases;
 	}
@@ -420,7 +420,7 @@ class NameFixer
 						} else if ($type == "PreDB FT Exact, ") {
 							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
 						}
-						$this->db->queryExec(
+						$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
 								SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
@@ -429,14 +429,14 @@ class NameFixer
 									searchname = %s, %s categoryid = %d
 								WHERE id = %d',
 								$preId,
-								$this->db->escapeString(substr($newName, 0, 255)),
+								$this->pdo->escapeString(substr($newName, 0, 255)),
 								$status,
 								$determinedCategory,
 								$release['releaseid']
 							)
 						);
 					} else {
-						$this->db->queryExec(
+						$this->pdo->queryExec(
 							sprintf('
 								UPDATE releases
 								SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
@@ -445,7 +445,7 @@ class NameFixer
 									searchname = %s, iscategorized = 1, categoryid = %d
 								WHERE id = %d',
 								$preId,
-								$this->db->escapeString(substr($newName, 0, 255)),
+								$this->pdo->escapeString(substr($newName, 0, 255)),
 								$determinedCategory,
 								$release['releaseid']
 							)
@@ -501,7 +501,7 @@ class NameFixer
 	// Match a PreDB title to a release name or searchname using an exact full-text match
 	public function matchPredbFT($pre, $echo, $namestatus, $echooutput, $show)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$matching = 0;
 		$this->matched = false;
 
@@ -511,10 +511,10 @@ class NameFixer
 		$titlematch = '+"' . implode('" +"', $matches[0]) . '"';
 
 		//Find release matches with fulltext and then identify exact matches with cleaned LIKE string
-		$res = $db->queryDirect(sprintf("SELECT rs.releaseid AS releaseid FROM releasesearch rs
+		$res = $pdo->queryDirect(sprintf("SELECT rs.releaseid AS releaseid FROM releasesearch rs
 						     WHERE MATCH (rs.name, rs.searchname) AGAINST ('%s' IN BOOLEAN MODE)
 						     AND (rs.name LIKE %s OR rs.searchname LIKE %s)
-						     LIMIT 16", $titlematch, $db->escapeString($titlelike), $db->escapeString($titlelike)
+						     LIMIT 16", $titlematch, $pdo->escapeString($titlelike), $pdo->escapeString($titlelike)
 			)
 		);
 
@@ -527,22 +527,22 @@ class NameFixer
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
 		if ($total > 0 && $total <= 15) {
 			foreach ($res as $row) {
-				$release = $db->queryOneRow(sprintf("SELECT id AS releaseid, name, searchname, group_id, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND id = %d", $row['releaseid']));
+				$release = $pdo->queryOneRow(sprintf("SELECT id AS releaseid, name, searchname, group_id, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND id = %d", $row['releaseid']));
 				if ($release !== false) {
-					$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
+					$pdo->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
 					if ($pre['title'] !== $release['searchname']) {
 						$determinedcat = $this->category->determineCategory($pre['title'], $release['group_id']);
 
 						if ($echo == 1) {
 							$this->matched = true;
 							if ($namestatus == 1) {
-								$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-										. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']
+								$pdo->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+										. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $pdo->escapeString($pre['title']), $determinedcat, $release['releaseid']
 									)
 								);
 							} else {
-								$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-										. "searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']
+								$pdo->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+										. "searchname = %s, categoryid = %d WHERE id = %d", $pdo->escapeString($pre['title']), $determinedcat, $release['releaseid']
 									)
 								);
 							}
@@ -565,17 +565,17 @@ class NameFixer
 	// Match a release filename to a PreDB filename or title.
 	public function matchPredbFiles($release, $echo, $namestatus, $echooutput, $show, $type)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$matching = 0;
 		$this->matched = false;
 
 		if ($type = 'full') {
-			$column = sprintf("filename = %s OR title = %s", $db->escapeString($release['filename']), $db->escapeString($release['filename']));
+			$column = sprintf("filename = %s OR title = %s", $pdo->escapeString($release['filename']), $pdo->escapeString($release['filename']));
 		} else {
-			$column = sprintf("filename = %s", $db->escapeString($release['filename']));
+			$column = sprintf("filename = %s", $pdo->escapeString($release['filename']));
 		}
 
-		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE %s", $column));
+		$res = $pdo->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb WHERE %s", $column));
 
 		if ($res !== false) {
 			$total = $res->rowCount();
@@ -586,7 +586,7 @@ class NameFixer
 		if ($total > 0) {
 			foreach ($res as $pre) {
 				if ($echo == 1) {
-					$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
+					$pdo->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
 				}
 				if ($pre['title'] !== $release['searchname']) {
 					$determinedcat = $this->category->determineCategory($pre['title'], $release['group_id']);
@@ -594,13 +594,13 @@ class NameFixer
 					if ($echo == 1) {
 						$this->matched = true;
 						if ($namestatus == 1) {
-							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']
+							$pdo->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $pdo->escapeString($pre['title']), $determinedcat, $release['releaseid']
 								)
 							);
 						} else {
-							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d WHERE id = %d", $db->escapeString($pre['title']), $determinedcat, $release['releaseid']
+							$pdo->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+									. "searchname = %s, categoryid = %d WHERE id = %d", $pdo->escapeString($pre['title']), $determinedcat, $release['releaseid']
 								)
 							);
 						}
@@ -620,7 +620,7 @@ class NameFixer
 	// Match a Hash from the predb to a release.
 	public function matchPredbHash($hash, $release, $echo, $namestatus, $echooutput, $show)
 	{
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$matching = 0;
 		$this->matched = false;
 
@@ -631,7 +631,7 @@ class NameFixer
 			$hashtype = "MD5, ";
 		}
 
-		$res = $db->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb inner join predbhash on predbhash.pre_id = predb.id WHERE MATCH (predbhash.hashes) AGAINST (%s)", $db->escapeString(strtolower($hash))));
+		$res = $pdo->queryDirect(sprintf("SELECT id AS preid, title, source FROM predb inner join predbhash on predbhash.pre_id = predb.id WHERE MATCH (predbhash.hashes) AGAINST (%s)", $pdo->escapeString(strtolower($hash))));
 
 		if ($res !== false) {
 			$total = $res->rowCount();
@@ -641,20 +641,20 @@ class NameFixer
 
 		if ($total > 0) {
 			foreach ($res as $row) {
-				$db->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $row['preid'], $release['releaseid']));
+				$pdo->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $row['preid'], $release['releaseid']));
 				if ($row["title"] !== $release["searchname"]) {
 					$determinedcat = $this->category->determineCategory($row["title"], $release["group_id"]);
 
 					if ($echo == 1) {
 						$this->matched = true;
 						if ($namestatus == 1) {
-							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]
+							$pdo->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+									. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1, dehashstatus = 1 WHERE id = %d", $pdo->escapeString($row["title"]), $determinedcat, $release["releaseid"]
 								)
 							);
 						} else {
-							$db->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-									. "searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $db->escapeString($row["title"]), $determinedcat, $release["releaseid"]
+							$pdo->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
+									. "searchname = %s, categoryid = %d, dehashstatus = 1 WHERE id = %d", $pdo->escapeString($row["title"]), $determinedcat, $release["releaseid"]
 								)
 							);
 						}
@@ -667,7 +667,7 @@ class NameFixer
 				}
 			}
 		} else {
-			$db->queryExec(sprintf("UPDATE releases SET dehashstatus = %d - 1 WHERE id = %d", $release['dehashstatus'], $release['releaseid']));
+			$pdo->queryExec(sprintf("UPDATE releases SET dehashstatus = %d - 1 WHERE id = %d", $release['dehashstatus'], $release['releaseid']));
 			//echo ".";
 		}
 
@@ -681,7 +681,7 @@ class NameFixer
 		if (preg_match_all('/([\w\(\)]+[\s\._-]([\w\(\)]+[\s\._-])+[\w\(\)]+-\w+)/', $release['textstring'], $matches)) {
 			foreach ($matches as $match) {
 				foreach ($match as $val) {
-					$title = $this->db->queryOneRow("SELECT title, id from predb WHERE title = " . $this->db->escapeString(trim($val)));
+					$title = $this->pdo->queryOneRow("SELECT title, id from predb WHERE title = " . $this->pdo->escapeString(trim($val)));
 					if ($title !== false) {
 						$this->updateRelease($release, $title['title'], $method = "preDB: Match", $echo, $type, $namestatus, $show, $title['id']);
 					}
@@ -716,16 +716,16 @@ class NameFixer
 		}
 		// The release didn't match so set proc_nfo = 1 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		if ($namestatus == 1 && $this->matched === false && $type == "NFO, ") {
-			$db = $this->db;
-			$db->queryExec(sprintf("UPDATE releases SET proc_nfo = 1 WHERE id = %d", $release["releaseid"]));
+			$pdo = $this->pdo;
+			$pdo->queryExec(sprintf("UPDATE releases SET proc_nfo = 1 WHERE id = %d", $release["releaseid"]));
 		} // The release didn't match so set proc_files = 1 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		else if ($namestatus == 1 && $this->matched === false && $type == "Filenames, ") {
-			$db = $this->db;
-			$db->queryExec(sprintf("UPDATE releases SET proc_files = 1 WHERE id = %d", $release["releaseid"]));
+			$pdo = $this->pdo;
+			$pdo->queryExec(sprintf("UPDATE releases SET proc_files = 1 WHERE id = %d", $release["releaseid"]));
 		} // The release didn't match so set proc_par2 = 1 so it doesn't get rechecked. Also allows removeCrapReleases to run extra things on the release.
 		else if ($namestatus == 1 && $this->matched === false && $type == "PAR2, ") {
-			$db = $this->db;
-			$db->queryExec(sprintf("UPDATE releases SET proc_par2 = 1 WHERE id = %d", $release["releaseid"]));
+			$pdo = $this->pdo;
+			$pdo->queryExec(sprintf("UPDATE releases SET proc_par2 = 1 WHERE id = %d", $release["releaseid"]));
 		}
 
 		return $this->matched;

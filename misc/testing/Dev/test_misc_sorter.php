@@ -3,10 +3,9 @@ require dirname(__FILE__) . '/../../../www/config.php';
 
 $sorter = new MiscSorter(true);
 
-$s = new Sites();
-$site = $s->get();
+$altNNTP = (new Settings())->getSetting('alternate_nntp');
 $nntp = new NNTP();
-if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true)
+if (($altNNTP === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true)
 {
 	echo $c->error("Unable to connect to usenet.\n");
 	return;

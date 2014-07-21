@@ -1,13 +1,11 @@
 <?php
 require_once './config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 // new to get information on books groups
 
-
 $page = new AdminPage();
-$sites = new Sites();
 $id = 0;
 
 // Set the current action.
@@ -17,57 +15,55 @@ switch($action)
 {
 	case 'submit':
 		$error = "";
-		// book_reqids is an array it needs to be a comma seperated string, make it so
-		$book_ids = implode(', ', $_POST['book_reqids']);
-		// save it back
-		$_POST['book_reqids'] = $book_ids;
+
+		if (!empty($_POST['book_reqids'])) {
+			// book_reqids is an array it needs to be a comma separated string, make it so.
+			$_POST['book_reqids'] = is_array($_POST['book_reqids']) ?
+				implode(', ', $_POST['book_reqids']) : $_POST['book_reqids'];
+		}
 		// update site table as always
-		$ret = $sites->update($_POST);
+		$ret = $page->settings->update($_POST);
 
 		if (is_int($ret))
 		{
-			if ($ret == Sites::ERR_BADUNRARPATH)
+			if ($ret == Settings::ERR_BADUNRARPATH)
 				$error = "The unrar path does not point to a valid binary";
-			else if ($ret == Sites::ERR_BADFFMPEGPATH)
+			else if ($ret == Settings::ERR_BADFFMPEGPATH)
 				$error = "The ffmpeg path does not point to a valid binary";
-			else if ($ret == Sites::ERR_BADMEDIAINFOPATH)
+			else if ($ret == Settings::ERR_BADMEDIAINFOPATH)
 				$error = "The mediainfo path does not point to a valid binary";
-			else if ($ret == Sites::ERR_BADNZBPATH)
+			else if ($ret == Settings::ERR_BADNZBPATH)
 				$error = "The nzb path does not point to an existing directory";
-			else if ($ret == Sites::ERR_DEEPNOUNRAR)
+			else if ($ret == Settings::ERR_DEEPNOUNRAR)
 				$error = "Deep password check requires a valid path to unrar binary";
-			else if ($ret == Sites::ERR_BADTMPUNRARPATH)
+			else if ($ret == Settings::ERR_BADTMPUNRARPATH)
 				$error = "The temp unrar path is not a valid directory";
-			else if ($ret == Sites::ERR_BADNZBPATH_UNREADABLE) {
+			else if ($ret == Settings::ERR_BADNZBPATH_UNREADABLE) {
 				$error = "The nzb path cannot be read from. Check the permissions.";
-			} else if ($ret == Sites::ERR_BADNZBPATH_UNSET) {
+			} else if ($ret == Settings::ERR_BADNZBPATH_UNSET) {
 				$error = "The nzb path is required, please set it.";
-			} else if ($ret == Sites::ERR_BAD_COVERS_PATH) {
+			} else if ($ret == Settings::ERR_BAD_COVERS_PATH) {
 				$error = 'The covers&apos; path is required and must exist. Please set it.';
-			} else if ($ret == Sites::ERR_BAD_YYDECODER_PATH) {
+			} else if ($ret == Settings::ERR_BAD_YYDECODER_PATH) {
 				$error = 'The yydecoder&apos;s path must exist. Please set it or leave it empty.';
 			}
 		}
 
-		if ($error == "")
-		{
-			$site = $ret;
-			$returnid = $site->id;
-			header("Location:".WWW_TOP."/site-edit.php?id=".$returnid);
-		}
-		else
-		{
+		if ($error == "") {
+			$site     = $ret;
+			$returnid = $site['id'];
+			header("Location:" . WWW_TOP . "/site-edit.php?id=" . $returnid);
+		} else {
 			$page->smarty->assign('error', $error);
-			$site = $sites->row2Object($_POST);
-			$page->smarty->assign('fsite', $site);
+			$page->smarty->assign('settings', $page->settings->rowsToArray($_POST));
 		}
 		break;
 
 	case 'view':
 	default:
 		$page->title = "Site Edit";
-		$site = $sites->get();
-		$page->smarty->assign('fsite', $site);
+		$site = $page->settings;
+		$page->smarty->assign('site', $site);
 		break;
 }
 
@@ -103,7 +99,7 @@ $page->smarty->assign('sabpriority_ids', array(SABnzbd::PRIORITY_FORCE, SABnzbd:
 $page->smarty->assign('sabpriority_names', array('Force', 'High', 'Normal', 'Low'));
 
 $page->smarty->assign('newgroupscan_names', array('Days','Posts'));
-$page->smarty->assign('registerstatus_ids', array(Sites::REGISTER_STATUS_API_ONLY, Sites::REGISTER_STATUS_OPEN, Sites::REGISTER_STATUS_INVITE, Sites::REGISTER_STATUS_CLOSED));
+$page->smarty->assign('registerstatus_ids', array(Settings::REGISTER_STATUS_API_ONLY, Settings::REGISTER_STATUS_OPEN, Settings::REGISTER_STATUS_INVITE, Settings::REGISTER_STATUS_CLOSED));
 $page->smarty->assign('registerstatus_names', array('API Only', 'Open', 'Invite', 'Closed'));
 $page->smarty->assign('passworded_ids', array(0,1,10));
 $page->smarty->assign('passworded_names', array('Don\'t show passworded or potentially passworded', 'Don\'t show passworded', 'Show everything'));
@@ -129,8 +125,8 @@ $page->smarty->assign('lookup_reqids_names', array('Disabled', 'Lookup Request I
 $page->smarty->assign('coversPath', nZEDb_COVERS);
 
 // return a list of audiobooks, ebooks, technical and foreign books
-$db = new DB();
-$result = $db->query("SELECT id, title FROM category WHERE id in (3030, 8010, 8040, 8060)");
+$pdo = new Settings();
+$result = $pdo->query("SELECT id, title FROM category WHERE id in (3030, 8010, 8040, 8060)");
 
 // setup the display lists for these categories, this could have been static, but then if names changed they would be wrong
 $book_reqids_ids = array();

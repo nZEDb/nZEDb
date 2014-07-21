@@ -1,21 +1,20 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-$s = new Sites();
-$site = $s->get();
+$pdo = new \nzedb\db\Settings();
 $c = new ColorCLI();
 
 // Don't use alternate here, if a article fails in post proc it will use alternate on its own.
 $nntp = new NNTP();
-if (($site->alternate_nntp === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }
-if ($site->nntpproxy === "1") {
+if ($pdo->getSetting('nntpproxy') == "1") {
 	usleep(500000);
 }
 
 // Remove folders from tmpunrar.
-$tmpunrar = $site->tmpunrarpath;
+$tmpunrar = $pdo->getSetting('tmpunrarpath');
 rmtree($tmpunrar);
 
 if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'allinf' &&
@@ -251,7 +250,7 @@ if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !=
 		}
 	}
 }
-if ($site->nntpproxy != "1") {
+if ($pdo->getSetting('nntpproxy') != "1") {
 	$nntp->doQuit();
 }
 

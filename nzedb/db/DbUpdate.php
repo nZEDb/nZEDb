@@ -58,7 +58,7 @@ class DbUpdate
 	/**
 	 * @var object	Instance variable for DB object.
 	 */
-	public $db;
+	public $pdo;
 
 	/**
 	 * @var nzedb\utility\Git instance
@@ -100,17 +100,17 @@ class DbUpdate
 		unset($defaults);
 
 		$this->backup	= $options['backup'];
-		$this->db		= $options['db'];
+		$this->pdo		= $options['db'];
 		$this->git		= $options['git'];
 		$this->log		= $options['logger'];
 
-		if (is_a($this->db, 'Settings')) {
-			$this->settings =& $this->db;
+		if (is_a($this->pdo, 'Settings')) {
+			$this->settings =& $this->pdo;
 		} else {
 			$this->settings = new Settings();
 		}
 
-		$this->_DbSystem = strtolower($this->db->dbSystem());
+		$this->_DbSystem = strtolower($this->pdo->dbSystem());
 	}
 
 	public function loadTables(array $options = [])
@@ -144,7 +144,7 @@ class DbUpdate
 						$fields = trim($line);
 
 						echo "Inserting data into table: '$table'\n";
-						$this->db->exec(sprintf($sql, $file, $table, $fields));
+						$this->pdo->exec(sprintf($sql, $file, $table, $fields));
 					} else {
 						exit("Failed to open file: '$file'\n");
 					}
@@ -187,7 +187,7 @@ class DbUpdate
 		if ($count > 0) {
 			echo $this->log->header('Processing...');
 			natsort($files);
-			$local = $this->db->isLocalDb() ? '' : 'LOCAL ';
+			$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
 
 			foreach($files as $file) {
 				if (!preg_match($options['regex'], $file, $matches)) {
@@ -197,7 +197,7 @@ class DbUpdate
 					$this->splitSQL($file, ['local' => $local, 'data' => $options['data']]);
 					$current = (integer)$this->settings->getSetting('sqlpatch');
 					$current++;
-					$this->db->queryExec("UPDATE settings SET value = '$current' WHERE setting = 'sqlpatch';");
+					$this->pdo->queryExec("UPDATE settings SET value = '$current' WHERE setting = 'sqlpatch';");
 					$newName = $matches['drive'] . $matches['path'] .
 							   str_pad($current, 4, '0', STR_PAD_LEFT) . '~' . $matches['table'] . '.sql';
 					rename($matches[0], $newName);
@@ -228,7 +228,7 @@ class DbUpdate
 
 		if (count($files)) {
 			natsort($files);
-			$local = $this->db->isLocalDb() ? '' : 'LOCAL ';
+			$local = $this->pdo->isLocalDb() ? '' : 'LOCAL ';
 			$data = $options['data'];
 			echo $this->log->primary('Looking for unprocessed patches...');
 			foreach($files as $file) {
@@ -253,7 +253,7 @@ class DbUpdate
 					}
 					$this->splitSQL($file, ['local' => $local, 'data' => $data]);
 					if ($setPatch) {
-						$this->db->queryExec("UPDATE settings SET value = '$patch' WHERE setting = 'sqlpatch';");
+						$this->pdo->queryExec("UPDATE settings SET value = '$patch' WHERE setting = 'sqlpatch';");
 					}
 					$patched++;
 				}
@@ -277,7 +277,7 @@ class DbUpdate
 
 		$sql = file_get_contents($options['filepath']);
 		$sql = str_replace(array('DELIMITER $$', 'DELIMITER ;', '$$'), '', $sql);
-		$this->db->exec($sql);
+		$this->pdo->exec($sql);
 	}
 
 	public function splitSQL($file, array $options = [])
@@ -315,7 +315,7 @@ class DbUpdate
 						}
 
 						try {
-							$qry = $this->db->prepare($query);
+							$qry = $this->pdo->prepare($query);
 							$qry->execute();
 							echo $this->log->alternateOver('SUCCESS: ') . $this->log->primary($query);
 						} catch (\PDOException $e) {
@@ -339,9 +339,9 @@ class DbUpdate
 								}
 							} else {
 								if (preg_match('/ALTER IGNORE/i', $query)) {
-									$this->db->queryExec("SET SESSION old_alter_table = 1");
+									$this->pdo->queryExec("SET SESSION old_alter_table = 1");
 									try {
-										$this->db->exec($query);
+										$this->pdo->exec($query);
 										echo $this->log->alternateOver('SUCCESS: ') . $this->log->primary($query);
 									} catch (PDOException $e) {
 										exit($this->log->error(

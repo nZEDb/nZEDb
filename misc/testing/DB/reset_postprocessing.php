@@ -1,9 +1,9 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
-$db = new DB();
+$pdo = new Settings();
 $c = new ColorCLI();
 $consoletools = new ConsoleTools();
 $ran = false;
@@ -14,21 +14,21 @@ if (isset($argv[1]) && $argv[1] === "all") {
 		$where = '';
 		if (isset($argv[3]) && $argv[3] === "truncate") {
 			echo "Truncating tables\n";
-			$db->queryExec("TRUNCATE TABLE consoleinfo");
-			$db->queryExec("TRUNCATE TABLE gamesinfo");
-			$db->queryExec("TRUNCATE TABLE movieinfo");
-			$db->queryExec("TRUNCATE TABLE releasevideo");
-			$db->queryExec("TRUNCATE TABLE musicinfo");
-			$db->queryExec("TRUNCATE TABLE bookinfo");
-			$db->queryExec("TRUNCATE TABLE releasenfo");
-			$db->queryExec("TRUNCATE TABLE releaseextrafull");
+			$pdo->queryExec("TRUNCATE TABLE consoleinfo");
+			$pdo->queryExec("TRUNCATE TABLE gamesinfo");
+			$pdo->queryExec("TRUNCATE TABLE movieinfo");
+			$pdo->queryExec("TRUNCATE TABLE releasevideo");
+			$pdo->queryExec("TRUNCATE TABLE musicinfo");
+			$pdo->queryExec("TRUNCATE TABLE bookinfo");
+			$pdo->queryExec("TRUNCATE TABLE releasenfo");
+			$pdo->queryExec("TRUNCATE TABLE releaseextrafull");
 		}
 		echo $c->header("Resetting all postprocessing");
-		$qry = $db->queryDirect("SELECT id FROM releases");
+		$qry = $pdo->queryDirect("SELECT id FROM releases");
 		$total = $qry->rowCount();
 		$affected = 0;
 		foreach ($qry as $releases) {
-			$db->queryExec(
+			$pdo->queryExec(
 				sprintf("
 					UPDATE releases
 					SET consoleinfoid = NULL, gamesinfo_id = NULL, imdbid = NULL, musicinfoid = NULL,
@@ -45,7 +45,7 @@ if (isset($argv[1]) && $argv[1] === "all") {
 if (isset($argv[1]) && ($argv[1] === "consoles" || $argv[1] === "all")) {
 	$ran = true;
 	if (isset($argv[3]) && $argv[3] === "truncate") {
-		$db->queryExec("TRUNCATE TABLE consoleinfo");
+		$pdo->queryExec("TRUNCATE TABLE consoleinfo");
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $c->header("Resetting all Console postprocessing");
@@ -55,7 +55,7 @@ if (isset($argv[1]) && ($argv[1] === "consoles" || $argv[1] === "all")) {
 		$where = "WHERE consoleinfoid IN (-2, 0) AND categoryid BETWEEN 1000 AND 1999";
 	}
 
-	$qry = $db->queryDirect("SELECT id FROM releases" . $where);
+	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	if ($qry !== false ) {
 		$total = $qry->rowCount();
 	} else {
@@ -63,7 +63,7 @@ if (isset($argv[1]) && ($argv[1] === "consoles" || $argv[1] === "all")) {
 	}
 	$concount = 0;
 	foreach ($qry as $releases) {
-		$db->queryExec("UPDATE releases SET consoleinfoid = NULL WHERE id = " . $releases['id']);
+		$pdo->queryExec("UPDATE releases SET consoleinfoid = NULL WHERE id = " . $releases['id']);
 		$consoletools->overWritePrimary("Resetting Console Releases:  " . $consoletools->percentString(++$concount, $total));
 	}
 	echo $c->header("\n" . number_format($concount) . " consoleinfoID's reset.");
@@ -71,7 +71,7 @@ if (isset($argv[1]) && ($argv[1] === "consoles" || $argv[1] === "all")) {
 if (isset($argv[1]) && ($argv[1] === "games" || $argv[1] === "all")) {
 	$ran = true;
 	if (isset($argv[3]) && $argv[3] === "truncate") {
-		$db->queryExec("TRUNCATE TABLE gamesinfo");
+		$pdo->queryExec("TRUNCATE TABLE gamesinfo");
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $c->header("Resetting all Games postprocessing");
@@ -81,7 +81,7 @@ if (isset($argv[1]) && ($argv[1] === "games" || $argv[1] === "all")) {
 		$where = " WHERE gamesinfo_id IN (-2, 0) AND categoryid = 4050";
 	}
 
-	$qry      = $db->queryDirect("SELECT id FROM releases" . $where);
+	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	if ($qry !== false ) {
 		$total = $qry->rowCount();
 	} else {
@@ -89,7 +89,7 @@ if (isset($argv[1]) && ($argv[1] === "games" || $argv[1] === "all")) {
 	}
 	$concount = 0;
 	foreach ($qry as $releases) {
-		$db->queryExec("UPDATE releases SET gamesinfo_id = NULL WHERE id = " . $releases['id']);
+		$pdo->queryExec("UPDATE releases SET gamesinfo_id = NULL WHERE id = " . $releases['id']);
 		$consoletools->overWritePrimary("Resetting Games Releases:  " .	$consoletools->percentString(++$concount, $total));
 	}
 	echo $c->header("\n" . number_format($concount) . " gameinfo_ID's reset.");
@@ -97,7 +97,7 @@ if (isset($argv[1]) && ($argv[1] === "games" || $argv[1] === "all")) {
 if (isset($argv[1]) && ($argv[1] === "movies" || $argv[1] === "all")) {
 	$ran = true;
 	if (isset($argv[3]) && $argv[3] === "truncate") {
-		$db->queryExec("TRUNCATE TABLE movieinfo");
+		$pdo->queryExec("TRUNCATE TABLE movieinfo");
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $c->header("Resetting all Movie postprocessing");
@@ -107,7 +107,7 @@ if (isset($argv[1]) && ($argv[1] === "movies" || $argv[1] === "all")) {
 		$where = " WHERE imdbid IN (-2, 0) AND categoryid BETWEEN 2000 AND 2999";
 	}
 
-	$qry      = $db->queryDirect("SELECT id FROM releases" . $where);
+	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	if ($qry !== false ) {
 		$total = $qry->rowCount();
 	} else {
@@ -115,7 +115,7 @@ if (isset($argv[1]) && ($argv[1] === "movies" || $argv[1] === "all")) {
 	}
 	$concount = 0;
 	foreach ($qry as $releases) {
-		$db->queryExec("UPDATE releases SET imdbid = NULL WHERE id = " . $releases['id']);
+		$pdo->queryExec("UPDATE releases SET imdbid = NULL WHERE id = " . $releases['id']);
 		$consoletools->overWritePrimary("Resetting Movie Releases:  " . $consoletools->percentString(++$concount, $total));
 	}
 	echo $c->header("\n" . number_format($concount) . " imdbID's reset.");
@@ -123,7 +123,7 @@ if (isset($argv[1]) && ($argv[1] === "movies" || $argv[1] === "all")) {
 if (isset($argv[1]) && ($argv[1] === "music" || $argv[1] === "all")) {
 	$ran = true;
 	if (isset($argv[3]) && $argv[3] === "truncate") {
-		$db->queryExec("TRUNCATE TABLE musicinfo");
+		$pdo->queryExec("TRUNCATE TABLE musicinfo");
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $c->header("Resetting all Music postprocessing");
@@ -133,11 +133,11 @@ if (isset($argv[1]) && ($argv[1] === "music" || $argv[1] === "all")) {
 		$where = " WHERE musicinfoid IN (-2, 0) AND categoryid BETWEEN 3000 AND 3999";
 	}
 
-	$qry = $db->queryDirect("SELECT id FROM releases" . $where);
+	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	$total = $qry->rowCount();
 	$concount = 0;
 	foreach ($qry as $releases) {
-		$db->queryExec("UPDATE releases SET musicinfoid = NULL WHERE id = " . $releases['id']);
+		$pdo->queryExec("UPDATE releases SET musicinfoid = NULL WHERE id = " . $releases['id']);
 		$consoletools->overWritePrimary("Resetting Music Releases:  " .	$consoletools->percentString(++$concount, $total));
 	}
 	echo $c->header("\n" . number_format($concount) . " musicinfoID's reset.");
@@ -153,7 +153,7 @@ if (isset($argv[1]) && ($argv[1] === "misc" || $argv[1] === "all")) {
 	}
 
 	echo $c->primary("SELECT id FROM releases" . $where);
-	$qry      = $db->queryDirect("SELECT id FROM releases" . $where);
+	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	if ($qry !== false ) {
 		$total = $qry->rowCount();
 	} else {
@@ -161,7 +161,7 @@ if (isset($argv[1]) && ($argv[1] === "misc" || $argv[1] === "all")) {
 	}
 	$concount = 0;
 	foreach ($qry as $releases) {
-		$db->queryExec("UPDATE releases SET passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0 WHERE id = " . $releases['id']);
+		$pdo->queryExec("UPDATE releases SET passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0 WHERE id = " . $releases['id']);
 		$consoletools->overWritePrimary("Resetting Releases:  " . $consoletools->percentString(++$concount, $total));
 	}
 	echo $c->header("\n" . number_format($concount) . " Release's reset.");
@@ -169,7 +169,7 @@ if (isset($argv[1]) && ($argv[1] === "misc" || $argv[1] === "all")) {
 if (isset($argv[1]) && ($argv[1] === "tv" || $argv[1] === "all")) {
 	$ran = true;
 	if (isset($argv[3]) && $argv[3] === "truncate") {
-		$db->queryExec("TRUNCATE TABLE tvrage");
+		$pdo->queryExec("TRUNCATE TABLE tvrage");
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $c->header("Resetting all TV postprocessing");
@@ -179,7 +179,7 @@ if (isset($argv[1]) && ($argv[1] === "tv" || $argv[1] === "all")) {
 		$where = " WHERE rageid IN (-2, 0) OR rageid IS NULL AND categoryid BETWEEN 5000 AND 5999";
 	}
 
-	$qry      = $db->queryDirect("SELECT id FROM releases" . $where);
+	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	if ($qry !== false ) {
 		$total = $qry->rowCount();
 	} else {
@@ -187,7 +187,7 @@ if (isset($argv[1]) && ($argv[1] === "tv" || $argv[1] === "all")) {
 	}
 	$concount = 0;
 	foreach ($qry as $releases) {
-		$db->queryExec("UPDATE releases SET rageid = -1 WHERE id = " . $releases['id']);
+		$pdo->queryExec("UPDATE releases SET rageid = -1 WHERE id = " . $releases['id']);
 		$consoletools->overWritePrimary("Resetting TV Releases:  " . $consoletools->percentString(++$concount, $total));
 	}
 	echo $c->header("\n" . number_format($concount) . " rageID's reset.");
@@ -195,7 +195,7 @@ if (isset($argv[1]) && ($argv[1] === "tv" || $argv[1] === "all")) {
 if (isset($argv[1]) && ($argv[1] === "books" || $argv[1] === "all")) {
 	$ran = true;
 	if (isset($argv[3]) && $argv[3] === "truncate") {
-		$db->queryExec("TRUNCATE TABLE bookinfo");
+		$pdo->queryExec("TRUNCATE TABLE bookinfo");
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $c->header("Resetting all Book postprocessing");
@@ -205,11 +205,11 @@ if (isset($argv[1]) && ($argv[1] === "books" || $argv[1] === "all")) {
 		$where = " WHERE bookinfoid IN (-2, 0) AND categoryid BETWEEN 8000 AND 8999";
 	}
 
-	$qry = $db->queryDirect("SELECT id FROM releases" . $where);
+	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	$total = $qry->rowCount();
 	$concount = 0;
 	foreach ($qry as $releases) {
-		$db->queryExec("UPDATE releases SET bookinfoid = NULL WHERE id = " . $releases['id']);
+		$pdo->queryExec("UPDATE releases SET bookinfoid = NULL WHERE id = " . $releases['id']);
 		$consoletools->overWritePrimary("Resetting Book Releases:  " . $consoletools->percentString(++$concount, $total));
 	}
 	echo $c->header("\n" . number_format($concount) . " bookinfoID's reset.");
@@ -217,7 +217,7 @@ if (isset($argv[1]) && ($argv[1] === "books" || $argv[1] === "all")) {
 if (isset($argv[1]) && ($argv[1] === "nfos" || $argv[1] === "all")) {
 	$ran = true;
 	if (isset($argv[3]) && $argv[3] === "truncate") {
-		$db->queryExec("TRUNCATE TABLE releasenfo");
+		$pdo->queryExec("TRUNCATE TABLE releasenfo");
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $c->header("Resetting all NFO postprocessing");
@@ -227,11 +227,11 @@ if (isset($argv[1]) && ($argv[1] === "nfos" || $argv[1] === "all")) {
 		$where = " WHERE nfostatus < -1";
 	}
 
-	$qry = $db->queryDirect("SELECT id FROM releases" . $where);
+	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	$total = $qry->rowCount();
 	$concount = 0;
 	foreach ($qry as $releases) {
-		$db->queryExec("UPDATE releases SET nfostatus = -1 WHERE id = " . $releases['id']);
+		$pdo->queryExec("UPDATE releases SET nfostatus = -1 WHERE id = " . $releases['id']);
 		$consoletools->overWritePrimary("Resetting NFO Releases:  " . $consoletools->percentString(++$concount, $total));
 	}
 	echo $c->header("\n" . number_format($concount) . " NFO's reset.");

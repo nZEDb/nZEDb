@@ -1,0 +1,1 @@
+INSERT INTO menu (href, title, tooltip, role, ordinal ) VALUES ('games', 'PC Games', "Browse PC Games.", 1, 69);
