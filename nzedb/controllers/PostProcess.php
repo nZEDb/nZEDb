@@ -190,14 +190,15 @@ class PostProcess
 	/**
 	 * Process nfo files.
 	 *
-	 * @param NNTP   $nntp
+	 * @param NNTP       $nntp
+	 * @param int|string $groupID Optional
 	 *
 	 * @return void
 	 */
-	public function processNfos(&$nntp)
+	public function processNfos(&$nntp, $groupID = '')
 	{
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			$this->Nfo->processNfoFiles($nntp, '', (int)$this->pdo->getSetting('lookupimdb'), (int)$this->pdo->getSetting('lookuptvrage'));
+			$this->Nfo->processNfoFiles($nntp, $groupID, (int)$this->pdo->getSetting('lookupimdb'), (int)$this->pdo->getSetting('lookuptvrage'));
 		}
 	}
 
@@ -252,13 +253,14 @@ class PostProcess
 	 *
 	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
 	 *
-	 * @param NNTP   $nntp          Class NNTP
+	 * @param NNTP       $nntp    Class NNTP
+	 * @param int|string $groupID Optional
 	 *
 	 * @return void
 	 */
-	public function processAdditional(&$nntp)
+	public function processAdditional(&$nntp, $groupID = '')
 	{
-		(new ProcessAdditional($this->echooutput, $nntp, $this->pdo))->start();
+		(new ProcessAdditional($this->echooutput, $nntp, $this->pdo))->start($groupID);
 	}
 
 	/**

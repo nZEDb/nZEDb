@@ -94,7 +94,7 @@ switch ($mode) {
 		}
 		break;
 	case 'additional':
-		$postprocess->processAdditional($nntp);
+		$postprocess->processAdditional($nntp, (isset($argv[3]) && is_numeric($argv[3]) ? $argv[3] : ''));
 		break;
 	case 'anime':
 		exit;
@@ -110,7 +110,7 @@ switch ($mode) {
 		$postprocess->processGames();
 		break;
 	case 'nfo':
-		$postprocess->processNfos($nntp);
+		$postprocess->processNfos($nntp, (isset($argv[3]) && is_numeric($argv[3]) ? $argv[3] : ''));
 		break;
 	case 'movies':
 		$postprocess->processMovies();
