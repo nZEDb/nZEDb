@@ -127,4 +127,4 @@ if ($groups !== false) {
 	}
 }
 
-//var_dump($activeGroups);
+var_dump($activeGroups);
