@@ -41,11 +41,19 @@ class Forking extends \fork_daemon
 		parent::__construct();
 		$this->register_logging(
 			[0 => $this, 1 => 'logger'],
-			(nZEDb_DEBUG === true ? \fork_daemon::LOG_LEVEL_ALL : \fork_daemon::LOG_LEVEL_INFO)
+			(defined('nZEDb_MULTIPROCESSING_LOG_TYPE') ? nZEDb_MULTIPROCESSING_LOG_TYPE : \fork_daemon::LOG_LEVEL_INFO)
 		);
 		$this->max_children_set(3);
-		$this->max_work_per_child_set(1);
-		$this->child_max_run_time_set(600);
+		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILD_WORK')) {
+			$this->max_work_per_child_set(nZEDb_MULTIPROCESSING_MAX_CHILD_WORK);
+		} else {
+			$this->max_work_per_child_set(1);
+		}
+		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILD_WORK')) {
+			$this->child_max_run_time_set(nZEDb_MULTIPROCESSING_MAX_CHILD_WORK);
+		} else {
+			$this->child_max_run_time_set(600);
+		}
 		$this->register_parent_child_exit([0 => $this, 1 => 'childExit']);
 	}
 
@@ -80,7 +88,11 @@ class Forking extends \fork_daemon
 
 			case 'binaries':
 				$this->register_child_run([0 => $this, 1 => 'binariesChildWorker']);
-				$this->work = $this->pdo->query('SELECT name FROM groups WHERE active = 1');
+				$this->work = $this->pdo->query(sprintf(
+						'SELECT name, %d AS max FROM groups WHERE active = 1',
+						$options[0]
+					)
+				);
 				$maxProcesses = $this->pdo->getSetting('binarythreads');
 				break;
 
@@ -91,7 +103,7 @@ class Forking extends \fork_daemon
 				break;
 
 			case 'postProcess_ama':
-				$this->processSingle(false);
+				$this->processSingle();
 				break;
 
 			case 'postProcess_add':
@@ -179,7 +191,11 @@ class Forking extends \fork_daemon
 		}
 
 		if (is_numeric($maxProcesses) && $maxProcesses > 0) {
-			$this->max_children_set($maxProcesses);
+			if (defined('nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE')) {
+				$this->max_children_set(nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE);
+			} else {
+				$this->max_children_set($maxProcesses);
+			}
 		}
 	}
 
@@ -205,15 +221,10 @@ class Forking extends \fork_daemon
 
 	/**
 	 * Process all that require a single thread.
-	 *
-	 * @param bool $sharing Process sharing?
 	 */
-	private function processSingle($sharing = true)
+	private function processSingle()
 	{
 		$postProcess = new \PostProcess(true);
-		if ($sharing) {
-			$this->processSharing($postProcess);
-		}
 		//$postProcess->processAnime();
 		$postProcess->processBooks();
 		$postProcess->processConsoles();
@@ -382,7 +393,7 @@ class Forking extends \fork_daemon
 	public function binariesChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_binaries.php ' . $group['name']);
+			passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_binaries.php ' . $group['name'] . ' ' . $group['max']);
 		}
 	}
 
