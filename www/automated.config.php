@@ -75,6 +75,9 @@ if (is_file(__DIR__ . DS . 'settings.php')) {
 	define('nZEDb_QUERY_STRIP_WHITESPACE', false);
 	define('nZEDb_RENAME_PAR2', true);
 	define('nZEDb_RENAME_MUSIC_MEDIAINFO', true);
+	define('nZEDb_CACHE_EXPIRY_SHORT', 300);
+	define('nZEDb_CACHE_EXPIRY_MEDIUM', 600);
+	define('nZEDb_CACHE_EXPIRY_LONG', 900);
 }
 
 require_once nZEDb_CORE . 'autoloader.php';
