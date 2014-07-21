@@ -125,7 +125,8 @@ class Forking extends \fork_daemon
 							AND r.passwordstatus BETWEEN -6 AND -1
 							AND r.haspreview = -1
 							AND c.disablepreview = 0
-							GROUP BY LEFT(r.guid, 1)',
+							GROUP BY LEFT(r.guid, 1)
+							LIMIT 16',
 							\NZB::NZB_ADDED
 						)
 					);
@@ -144,7 +145,8 @@ class Forking extends \fork_daemon
 							WHERE nzbstatus = %d
 							AND imdbid IS NULL
 							AND categoryid BETWEEN 2000 AND 2999
-							GROUP BY LEFT(guid, 1)',
+							GROUP BY LEFT(guid, 1)
+							LIMIT 16',
 							\NZB::NZB_ADDED
 						)
 					);
@@ -162,7 +164,8 @@ class Forking extends \fork_daemon
 							FROM releases
 							WHERE nzbstatus = %d
 							AND nfostatus BETWEEN -6 AND -1
-							GROUP BY LEFT(guid, 1)',
+							GROUP BY LEFT(guid, 1)
+							LIMIT 16',
 							\NZB::NZB_ADDED
 						)
 					);
@@ -187,7 +190,8 @@ class Forking extends \fork_daemon
 							AND rageid = -1
 							AND size > 1048576
 							AND categoryid BETWEEN 5000 AND 5999
-							GROUP BY LEFT(guid, 1)',
+							GROUP BY LEFT(guid, 1)
+							LIMIT 16',
 							\NZB::NZB_ADDED
 						)
 					);
