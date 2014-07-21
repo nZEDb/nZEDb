@@ -113,7 +113,7 @@ switch ($mode) {
 		$postprocess->processNfos($nntp, (isset($argv[3]) && is_numeric($argv[3]) ? $argv[3] : ''));
 		break;
 	case 'movies':
-		$postprocess->processMovies();
+		$postprocess->processMovies((isset($argv[3]) && is_numeric($argv[3]) ? $argv[3] : ''));
 		break;
 	case 'music':
 		$postprocess->processMusic();
@@ -125,7 +125,7 @@ switch ($mode) {
 		$postprocess->processSharing($nntp);
 		break;
 	case 'tv':
-		$postprocess->processTV();
+		$postprocess->processTV((isset($argv[3]) && is_numeric($argv[3]) ? $argv[3] : ''));
 		break;
 	case 'xxx':
 		$postprocess->processXXX();

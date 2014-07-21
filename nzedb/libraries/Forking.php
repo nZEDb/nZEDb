@@ -63,6 +63,7 @@ class Forking extends \fork_daemon
 	private function getWork(&$type, array &$options = array())
 	{
 		$maxProcesses = 0;
+		$this->processAdditional = $this->processNFO = $this->processTV = $this->processMovies = false;
 		switch ($type) {
 			// The option for backFill is for doing up to x articles. Else it's done by date.
 			case 'backfill':
@@ -89,25 +90,74 @@ class Forking extends \fork_daemon
 				break;
 
 			case 'postprocess':
-				$postProcess = new \PostProcess(true);
-				//$postProcess->processAnime();
-				$postProcess->processBooks();
-				$postProcess->processConsoles();
-				$postProcess->processGames();
-				$postProcess->processMusic();
-				$postProcess->processXXX();
 
-				$sharing = $this->pdo->queryOneRow('SELECT enabled FROM sharing');
-				if ($sharing !== false && $sharing['enabled'] == 1) {
-					$nntp = new \NNTP(true);
-					if (($this->pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === true) {
-						$postProcess->processSharing($nntp);
-					}
+				$work = false;
+				switch ($options[0]) {
+					case 'all':
+						$work = true;
+						$postProcess = new \PostProcess(true);
+						$this->processSharing($postProcess);
+						//$postProcess->processAnime();
+						$postProcess->processBooks();
+						$postProcess->processConsoles();
+						$postProcess->processGames();
+						$postProcess->processMusic();
+						$postProcess->processXXX();
+						unset($postProcess);
+						$this->processAdditional = true;
+						$this->processNFO = ($this->pdo->getSetting('lookupnfo') == 1 ? true : false);
+						$this->processMovies = ($this->pdo->getSetting('lookupimdb') == 1 ? true : false);
+						$this->processTV = ($this->pdo->getSetting('lookuptvrage') == 1 ? true : false);
+						break;
+					case 'add':
+						$this->processAdditional = true;
+						$work = true;
+						break;
+					case 'ama':
+						$postProcess = new \PostProcess(true);
+						//$postProcess->processAnime();
+						$postProcess->processBooks();
+						$postProcess->processConsoles();
+						$postProcess->processGames();
+						$postProcess->processMusic();
+						$postProcess->processXXX();
+						break;
+					case 'mov':
+						$work = true;
+						$this->processMovies = ($this->pdo->getSetting('lookupimdb') == 1 ? true : false);
+						if ($this->processMovies === false) {
+							exit('Looking up imdb is disabled in your site settings.' . PHP_EOL);
+						}
+						break;
+					case 'nfo':
+						$work = true;
+						$this->processNFO = ($this->pdo->getSetting('lookupnfo') == 1 ? true : false);
+						if ($this->processNFO === false) {
+							exit('Looking up NFOs is disabled in your site settings.' . PHP_EOL);
+						}
+						break;
+					case 'sha':
+						if ($this->processSharing($postProcess) === false) {
+							exit('Sharing is disabled in your sharing settings.' . PHP_EOL);
+						}
+						break;
+					case 'tv':
+						$work = true;
+						$this->processTV = ($this->pdo->getSetting('lookuptvrage') == 1 ? true : false);
+						if ($this->processTV === false) {
+							exit('Looking up tvrage is disabled in your site settings.' . PHP_EOL);
+						}
+						break;
+					default:
+						break;
 				}
 
-				unset($postProcess, $nntp);
 				$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
-				$this->work = $this->pdo->query('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
+				if ($work === true) {
+					$this->work = $this->pdo->query('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
+				} else {
+					$this->work = array();
+				}
 				$maxProcesses = $this->pdo->getSetting('releasesthreads');
 				break;
 
@@ -122,6 +172,26 @@ class Forking extends \fork_daemon
 	}
 
 	/**
+	 * Process sharing.
+	 *
+	 * @param \PostProcess $postProcess
+	 *
+	 * @return bool
+	 */
+	private function processSharing(&$postProcess)
+	{
+		$sharing = $this->pdo->queryOneRow('SELECT enabled FROM sharing');
+		if ($sharing !== false && $sharing['enabled'] == 1) {
+			$nntp = new \NNTP(true);
+			if (($this->pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === true) {
+				$postProcess->processSharing($nntp);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Process work if we have any.
 	 */
 	private function processWork()
@@ -129,8 +199,6 @@ class Forking extends \fork_daemon
 		if (count($this->work) > 0) {
 			$this->addwork($this->work);
 			$this->process_work(true);
-		} else if (nZEDb_ECHOCLI) {
-			echo 'Nothing to do!' . PHP_EOL;
 		}
 	}
 
@@ -203,11 +271,25 @@ class Forking extends \fork_daemon
 		}
 	}
 
+	private $processAdditional = false;
+	private $processNFO = false;
+	private $processMovies = false;
+	private $processTV = false;
 	public function postProcessChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php additional true ' . $group['id']);
-			passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php nfo true ' . $group['id']);
+			if ($this->processAdditional) {
+				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php additional true ' . $group['id']);
+			}
+			if ($this->processNFO) {
+				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php nfo true ' . $group['id']);
+			}
+			if ($this->processMovies) {
+				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php movies true ' . $group['id']);
+			}
+			if ($this->processTV) {
+				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php tv true ' . $group['id']);
+			}
 		}
 	}
 }
