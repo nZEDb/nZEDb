@@ -118,18 +118,18 @@ class Forking extends \fork_daemon
 					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 					$this->work = $this->pdo->query(
 						sprintf('
-							SELECT DISTINCT(g.id)
-							FROM groups g
-							INNER JOIN releases r ON r.group_id = g.id
+							SELECT LEFT(r.guid, 1) AS id
+							FROM releases r
 							LEFT JOIN category c ON c.id = r.categoryid
 							WHERE r.nzbstatus = %d
 							AND r.passwordstatus BETWEEN -6 AND -1
 							AND r.haspreview = -1
-							AND c.disablepreview = 0',
+							AND c.disablepreview = 0
+							GROUP BY LEFT(r.guid, 1)',
 							\NZB::NZB_ADDED
 						)
 					);
-					$maxProcesses = $this->pdo->getSetting('maxaddprocessed');
+					$maxProcesses = $this->pdo->getSetting('postthreads');
 				}
 				break;
 
@@ -139,16 +139,16 @@ class Forking extends \fork_daemon
 					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 					$this->work = $this->pdo->query(
 						sprintf('
-							SELECT DISTINCT(g.id)
-							FROM groups g
-							INNER JOIN releases r ON r.group_id = g.id
-							WHERE r.nzbstatus = %d
-							AND r.imdbid IS NULL
-							AND r.categoryid BETWEEN 2000 AND 2999',
+							SELECT LEFT(guid, 1) AS id
+							FROM releases
+							WHERE nzbstatus = %d
+							AND imdbid IS NULL
+							AND categoryid BETWEEN 2000 AND 2999
+							GROUP BY LEFT(guid, 1)',
 							\NZB::NZB_ADDED
 						)
 					);
-					$maxProcesses = $this->pdo->getSetting('maximdbprocessed');
+					$maxProcesses = $this->pdo->getSetting('postthreadsnon');
 				}
 				break;
 
@@ -158,11 +158,11 @@ class Forking extends \fork_daemon
 					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 					$this->work = $this->pdo->query(
 						sprintf('
-							SELECT DISTINCT(g.id)
-							FROM groups g
-							INNER JOIN releases r ON r.group_id = g.id
-							WHERE r.nzbstatus = %d
-							AND r.nfostatus BETWEEN -6 AND -1',
+							SELECT LEFT(guid, 1) AS id
+							FROM releases
+							WHERE nzbstatus = %d
+							AND nfostatus BETWEEN -6 AND -1
+							GROUP BY LEFT(guid, 1)',
 							\NZB::NZB_ADDED
 						)
 					);
@@ -181,27 +181,36 @@ class Forking extends \fork_daemon
 					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 					$this->work = $this->pdo->query(
 						sprintf('
-							SELECT DISTINCT(g.id)
-							FROM groups g
-							INNER JOIN releases r ON r.group_id = g.id
-							WHERE r.nzbstatus = %d
-							AND r.rageid = -1
-							AND r.size > 1048576
-							AND r.categoryid BETWEEN 5000 AND 5999',
+							SELECT LEFT(guid, 1) AS id
+							FROM releases
+							WHERE nzbstatus = %d
+							AND rageid = -1
+							AND size > 1048576
+							AND categoryid BETWEEN 5000 AND 5999
+							GROUP BY LEFT(guid, 1)',
 							\NZB::NZB_ADDED
 						)
 					);
-					$maxProcesses = $this->pdo->getSetting('maxrageprocessed');
+					$maxProcesses = $this->pdo->getSetting('postthreadsnon');
 				}
 				break;
 		}
 
+		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE') && nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE > 0) {
+			$maxProcesses = nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE;
+		}
+
 		if (is_numeric($maxProcesses) && $maxProcesses > 0) {
-			if (defined('nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE')) {
-				$this->max_children_set((nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE > 0 ? nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE : $maxProcesses));
-			} else {
-				$this->max_children_set($maxProcesses);
+			switch ($type) {
+				case 'postProcess_tv':
+				case 'postProcess_mov':
+				case 'postProcess_nfo':
+				case 'postProcess_add':
+					if ($maxProcesses > 16) {
+						$maxProcesses = 16;
+					}
 			}
+			$this->max_children_set($maxProcesses);
 		}
 	}
 
@@ -338,6 +347,10 @@ class Forking extends \fork_daemon
 		if (count($this->work) > 0) {
 			$this->addwork($this->work);
 			$this->process_work(true);
+		} else {
+			if (nZEDb_ECHOCLI) {
+				echo 'No work to do!' . PHP_EOL;
+			}
 		}
 	}
 

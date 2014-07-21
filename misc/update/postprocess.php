@@ -81,6 +81,8 @@ if ($show === 'true') {
 	$postprocess = new PostProcess();
 }
 
+$charArray = ['a','b','c','d','e','f','0','1','2','3','4','5','6','7','8','9'];
+
 switch ($mode) {
 
 	case 'all':
@@ -94,7 +96,7 @@ switch ($mode) {
 		}
 		break;
 	case 'additional':
-		$postprocess->processAdditional($nntp, (isset($argv[3]) && is_numeric($argv[3]) ? $argv[3] : ''));
+		$postprocess->processAdditional($nntp, '', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
 		break;
 	case 'anime':
 		exit;
@@ -110,10 +112,10 @@ switch ($mode) {
 		$postprocess->processGames();
 		break;
 	case 'nfo':
-		$postprocess->processNfos($nntp, (isset($argv[3]) && is_numeric($argv[3]) ? $argv[3] : ''));
+		$postprocess->processNfos($nntp, '', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
 		break;
 	case 'movies':
-		$postprocess->processMovies((isset($argv[3]) && is_numeric($argv[3]) ? $argv[3] : ''));
+		$postprocess->processMovies('', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
 		break;
 	case 'music':
 		$postprocess->processMusic();
@@ -125,7 +127,7 @@ switch ($mode) {
 		$postprocess->processSharing($nntp);
 		break;
 	case 'tv':
-		$postprocess->processTV((isset($argv[3]) && is_numeric($argv[3]) ? $argv[3] : ''));
+		$postprocess->processTV('', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
 		break;
 	case 'xxx':
 		$postprocess->processXXX();

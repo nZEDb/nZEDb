@@ -17,6 +17,7 @@ New updates are grouped by person, at the top of the file.
 	* Add: Option to disable text output from child processes on multiprocessing scripts.
 	* Chg: Change cached query in browse to use nZEDb_CACHE_EXPIRY_MEDIUM.
 	* Fix: Query in NFO (the between was reversed).
+	* Chg: Change multiprocessing/threading scripts to do nfo/ppadd/movie/tv by guid first letter, gives better workload.
 2014-07-20 kevin
 	* Add: Multi processing scripts for binaries/backfill/postprocess/releases, written in PHP.
 2014-07-20 ruhllatio

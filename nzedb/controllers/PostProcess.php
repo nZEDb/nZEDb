@@ -164,14 +164,15 @@ class PostProcess
 	/**
 	 * Lookup imdb if enabled.
 	 *
-	 * @param string $groupID optional
+	 * @param string $groupID  (Optional) ID of a group to work on.
+	 * @param string $guidChar (Optional) First letter of a release GUID to use to get work.
 	 *
 	 * @return void
 	 */
-	public function processMovies($groupID = '')
+	public function processMovies($groupID = '', $guidChar = '')
 	{
 		if ($this->pdo->getSetting('lookupimdb') == 1) {
-			(new Movie($this->echooutput))->processMovieReleases($groupID);
+			(new Movie($this->echooutput))->processMovieReleases($groupID, $guidChar);
 		}
 	}
 
@@ -190,15 +191,16 @@ class PostProcess
 	/**
 	 * Process nfo files.
 	 *
-	 * @param NNTP       $nntp
-	 * @param int|string $groupID Optional
+	 * @param NNTP   $nntp
+	 * @param string $groupID  (Optional) ID of a group to work on.
+	 * @param string $guidChar (Optional) First letter of a release GUID to use to get work.
 	 *
 	 * @return void
 	 */
-	public function processNfos(&$nntp, $groupID = '')
+	public function processNfos(&$nntp, $groupID = '', $guidChar = '')
 	{
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			$this->Nfo->processNfoFiles($nntp, $groupID, (int)$this->pdo->getSetting('lookupimdb'), (int)$this->pdo->getSetting('lookuptvrage'));
+			$this->Nfo->processNfoFiles($nntp, $groupID, $guidChar, (int)$this->pdo->getSetting('lookupimdb'), (int)$this->pdo->getSetting('lookuptvrage'));
 		}
 	}
 
@@ -227,14 +229,15 @@ class PostProcess
 	/**
 	 * Process all TV related releases which will assign their series/episode/rage data.
 	 *
-	 * @param string $groupID optional
+	 * @param string $groupID  (Optional) ID of a group to work on.
+	 * @param string $guidChar (Optional) First letter of a release GUID to use to get work.
 	 *
 	 * @return void
 	 */
-	public function processTv($groupID = '')
+	public function processTv($groupID = '', $guidChar = '')
 	{
 		if ($this->pdo->getSetting('lookuptvrage') == 1) {
-			(new TvRage($this->echooutput))->processTvReleases($groupID, true);
+			(new TvRage($this->echooutput))->processTvReleases($groupID, $guidChar, true);
 		}
 	}
 
@@ -254,13 +257,14 @@ class PostProcess
 	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
 	 *
 	 * @param NNTP       $nntp    Class NNTP
-	 * @param int|string $groupID Optional
+	 * @param int|string $groupID  (Optional) ID of a group to work on.
+	 * @param string     $guidChar (Optional) First char of release GUID, can be used to select work.
 	 *
 	 * @return void
 	 */
-	public function processAdditional(&$nntp, $groupID = '')
+	public function processAdditional(&$nntp, $groupID = '', $guidChar = '')
 	{
-		(new ProcessAdditional($this->echooutput, $nntp, $this->pdo))->start($groupID);
+		(new ProcessAdditional($this->echooutput, $nntp, $this->pdo))->start($groupID, $guidChar);
 	}
 
 	/**

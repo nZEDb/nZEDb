@@ -154,16 +154,17 @@ Class ProcessAdditional
 	/**
 	 * Main method.
 	 *
-	 * @param int|string $groupID Optional ID of a group to work on.
+	 * @param int|string $groupID  (Optional) ID of a group to work on.
+	 * @param string     $guidChar (Optional) First char of release GUID, can be used to select work.
 	 *
 	 * @void
 	 */
-	public function start($groupID = '')
+	public function start($groupID = '', $guidChar = '')
 	{
-		$this->_setMainTempPath($groupID);
+		$this->_setMainTempPath($groupID, $guidChar);
 
 		// Fetch all the releases to work on.
-		$this->_fetchReleases($groupID);
+		$this->_fetchReleases($groupID, $guidChar);
 
 		// Check if we have releases to work on.
 		if ($this->_totalReleases > 0) {
@@ -188,8 +189,9 @@ Class ProcessAdditional
 	 * Set up the path to the folder we will work in.
 	 *
 	 * @param string|int $groupID
+	 * @param string     $guidChar
 	 */
-	protected function _setMainTempPath(&$groupID = '')
+	protected function _setMainTempPath(&$groupID = '', &$guidChar)
 	{
 		// Set up the temporary files folder location.
 		$this->_mainTmpPath = $this->pdo->getSetting('tmpunrarpath');
@@ -202,6 +204,8 @@ Class ProcessAdditional
 		// If we are doing per group, use the groupID has a inner path, so other scripts don't delete the files we are working on.
 		if ($groupID !== '') {
 			$this->_mainTmpPath .= ($groupID . DS);
+		} else if ($guidChar !== '') {
+			$this->_mainTmpPath .= ($guidChar . DS);
 		}
 
 		if (!is_dir($this->_mainTmpPath)) {
@@ -230,10 +234,11 @@ Class ProcessAdditional
 	 * Get all releases that need to be processed.
 	 *
 	 * @param int|string $groupID
+	 * @param string     $guidChar
 	 *
 	 * @void
 	 */
-	protected function _fetchReleases($groupID)
+	protected function _fetchReleases($groupID, &$guidChar)
 	{
 		$this->_releases = $this->pdo->query(
 			sprintf('
@@ -241,7 +246,7 @@ Class ProcessAdditional
 				FROM releases r
 				LEFT JOIN category c ON c.id = r.categoryid
 				WHERE r.nzbstatus = 1
-				%s %s %s
+				%s %s %s %s
 				AND r.passwordstatus BETWEEN -6 AND -1
 				AND r.haspreview = -1
 				AND c.disablepreview = 0
@@ -250,6 +255,7 @@ Class ProcessAdditional
 				$this->_maxSize,
 				$this->_minSize,
 				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
+				($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, true, false)),
 				$this->_queryLimit
 			)
 		);

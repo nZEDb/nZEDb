@@ -672,7 +672,7 @@ class TvRage
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
 	}
 
-	public function processTvReleases($groupID = '', $lookupTvRage = true, $local = false)
+	public function processTvReleases($groupID = '', $guidChar = '', $lookupTvRage = true, $local = false)
 	{
 		$ret = 0;
 		$trakt = new TraktTv();
@@ -687,10 +687,11 @@ class TvRage
 				AND r.rageid = -1
 				AND r.size > 1048576
 				AND r.categoryid BETWEEN 5000 AND 5999
-				%s
+				%s %s
 				ORDER BY r.postdate DESC
 				LIMIT %d",
 				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
+				($guidChar === '' ? '' : 'AND LEFT(r.guid, 1) ' . $this->pdo->likeString($guidChar, true, false)),
 				$this->rageqty
 			)
 		);

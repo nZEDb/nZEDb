@@ -1041,6 +1041,7 @@
 					<input class="short" id="postthreads" name="postthreads" type="text" value="{$site->postthreads}"/>
 					<div class="hint">The number of threads for additional postprocessing. This includes deep rar
 						inspection, preview and sample creation and nfo processing.
+						The max is 16, if you set anything higher it will use 16.
 					</div>
 				</td>
 			</tr>
@@ -1048,8 +1049,8 @@
 				<td style="width:180px;"><label for="postthreadsnon">Postprocessing Non-Amazon Threads:</label></td>
 				<td>
 					<input class="short" id="postthreadsnon" name="postthreadsnon" type="text" value="{$site->postthreadsnon}"/>
-					<div class="hint">The number of threads for non-amazon postprocessing. This includes movies, anime and
-						tv lookups.
+					<div class="hint">The number of threads for non-amazon postprocessing. This includes nfo, movies, anime and
+						tv lookups. The max is 16, if you set anything higher it will use 16.
 					</div>
 				</td>
 			</tr>

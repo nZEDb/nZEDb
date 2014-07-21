@@ -23,20 +23,20 @@ switch ($options[1]) {
 		}
 
 		if ($options[1] === 'nfo') {
-			(new Nfo(true))->processNfoFiles($nntp, $options[0]);
+			(new Nfo(true))->processNfoFiles($nntp, '', $options[0]);
 		} else {
-			(new ProcessAdditional(true, $nntp, $pdo))->start($options[0]);
+			(new ProcessAdditional(true, $nntp, $pdo))->start('', $options[0]);
 		}
 
 		$nntp->doQuit();
 		return;
 
 	case 'movie':
-		(new PostProcess(true))->processMovies($options[0]);
+		(new PostProcess(true))->processMovies('', $options[0]);
 		echo '.';
 		return;
 
 	case 'tv':
-		(new PostProcess(true))->processTv($options[0]);
+		(new PostProcess(true))->processTv('', $options[0]);
 		return;
 }

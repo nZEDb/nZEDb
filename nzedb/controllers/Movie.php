@@ -998,9 +998,10 @@ class Movie
 	/**
 	 * Process releases with no IMDB ID's.
 	 *
-	 * @param string $groupID optional
+	 * @param string $groupID  (Optional) ID of a group to work on.
+	 * @param string $guidChar (Optional) First letter of a release GUID to use to get work.
 	 */
-	public function processMovieReleases($groupID = '')
+	public function processMovieReleases($groupID = '', $guidChar = '')
 	{
 		$trakTv = new TraktTv();
 
@@ -1012,9 +1013,10 @@ class Movie
 				WHERE r.imdbid IS NULL
 				AND r.nzbstatus = 1
 				AND r.categoryid BETWEEN 2000 AND 2999
-				%s
+				%s %s
 				LIMIT %d",
 				($groupID === '' ? '' : ('AND r.group_id = ' . $groupID)),
+				($guidChar === '' ? '' : ('AND r.guid ' . $this->pdo->likeString($guidChar, true, false))),
 				$this->movieqty
 			)
 		);
