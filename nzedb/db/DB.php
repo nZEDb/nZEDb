@@ -116,7 +116,7 @@ class DB extends \PDO
 			$this->initialiseDatabase();
 		}
 
-		$this->cacheEnabled = (bool) (defined('nZEDb_CACHE_TYPE') && nZEDb_CACHE_TYPE > 0);
+		$this->cacheEnabled = (defined('nZEDb_CACHE_TYPE') && (nZEDb_CACHE_TYPE > 0) ? true : false);
 
 		if ($this->cacheEnabled) {
 			try {

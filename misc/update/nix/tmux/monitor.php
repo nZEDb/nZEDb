@@ -34,6 +34,7 @@ $bkreqid = $pdo->getSetting('book_reqids');
 $bookreqids = ($bkreqid === null || $bkreqid == "") ? 8010 : $bkreqid;
 $reqHours = $pdo->getSetting('request_hours');
 $request_hours = isset($reqHours) ? $reqHours : 1;
+$pre_lim = '';
 
 if ($t->command_exist("python3")) {
 	$PYTHON = "python3 -OOu";
@@ -988,6 +989,10 @@ while ($i > 0) {
 		$clean = ' ';
 	}
 
+	if ($i === 2) {
+		$pre_lim = '7';
+	}
+
 	if ($running == 1) {
 		//run these if complete sequential not set
 		if ($seq != 2) {
@@ -995,12 +1000,12 @@ while ($i > 0) {
 			if ($fix_names == 1) {
 				$log = $t->writelog($panes1[0]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.0 ' \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py md5 $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py filename preid $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py nfo preid $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py par2 preid $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py miscsorter $log; \
-						$_python ${DIR}update/python/fixreleasenames_threaded.py predbft $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null"
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py md5 $log; \
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py filename $log; \
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py nfo $log; \
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py par2 $log; \
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py miscsorter $log; \
+						$_python ${DIR}update/python/groupfixrelnames_threaded.py predbft $log; date +\"%D %T\"; $_sleep $fix_timer' 2>&1 1> /dev/null"
 				);
 			} else {
 				$color = $t->get_color($colors_start, $colors_end, $colors_exc);
@@ -1016,12 +1021,12 @@ while ($i > 0) {
 			} else if ($dehash == 2) {
 				$log = $t->writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
-						$_php ${DIR}update/nix/tmux/bin/postprocess_pre.php $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null"
+						$_php ${DIR}update/nix/tmux/bin/postprocess_pre.php $pre_lim $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null"
 				);
 			} else if ($dehash == 3) {
 				$log = $t->writelog($panes1[3]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.3 ' \
-						$_php ${DIR}update/nix/tmux/bin/postprocess_pre.php $log; \
+						$_php ${DIR}update/nix/tmux/bin/postprocess_pre.php $pre_lim $log; \
 						$_php ${DIR}update/decrypt_hashes.php 1000 $log; date +\"%D %T\"; $_sleep $dehash_timer' 2>&1 1> /dev/null"
 				);
 			} else {
@@ -1160,7 +1165,7 @@ while ($i > 0) {
 				//run postprocess_releases amazon
 				$log = $t->writelog($panes2[2]);
 				shell_exec("tmux respawnp -t${tmux_session}:2.2 ' \
-						$_python ${DIR}update/python/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
+						$_phpn ${DIR}update/nix/tmux/bin/postprocess_amazon.php $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
 				);
 			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0) && ($processxxx == 0)) {
 				$color = $t->get_color($colors_start, $colors_end, $colors_exc);
@@ -1343,7 +1348,7 @@ while ($i > 0) {
 				//run postprocess_releases amazon
 				$log = $t->writelog($panes1[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_python ${DIR}update/python/postprocess_old_threaded.py amazon $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
+						$_phpn ${DIR}update/nix/tmux/bin/postprocess_amazon.php $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
 				);
 			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0)) {
 				$color = $t->get_color($colors_start, $colors_end, $colors_exc);

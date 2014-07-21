@@ -183,6 +183,7 @@ class Binaries
 		$this->_newGroupMessagesToScan = ($this->_pdo->getSetting('newgroupmsgstoscan') != '') ? $this->_pdo->getSetting('newgroupmsgstoscan') : 50000;
 		$this->_newGroupDaysToScan = ($this->_pdo->getSetting('newgroupdaystoscan') != '') ? (int)$this->_pdo->getSetting('newgroupdaystoscan') : 3;
 		$this->_partRepairLimit = ($this->_pdo->getSetting('maxpartrepair') != '') ? (int)$this->_pdo->getSetting('maxpartrepair') : 15000;
+		$this->_partRepairMaxTries = ($this->_pdo->getSetting('partrepairmaxtries') != '' ? (int)$this->_pdo->getSetting('partrepairmaxtries') : 3);
 		$this->_showDroppedYEncParts = ($this->_pdo->getSetting('showdroppedyencparts') == 1 ? true : false);
 		$this->_tablePerGroup = ($this->_pdo->getSetting('tablepergroup') == 1 ? true : false);
 
@@ -206,9 +207,11 @@ class Binaries
 	/**
 	 * Download new headers for all active groups.
 	 *
+	 * @param int $maxHeaders (Optional) How many headers to download max.
+	 *
 	 * @return void
 	 */
-	public function updateAllGroups()
+	public function updateAllGroups($maxHeaders = 0)
 	{
 		$groups = $this->_groups->getActive();
 
@@ -235,7 +238,7 @@ class Binaries
 				if ($this->_echoCLI) {
 					$this->_colorCLI->doEcho($this->_colorCLI->header($dMessage), true);
 				}
-				$this->updateGroup($group);
+				$this->updateGroup($group, $maxHeaders);
 				$counter++;
 			}
 
@@ -263,10 +266,11 @@ class Binaries
 	 * Download new headers for a single group.
 	 *
 	 * @param array $groupMySQL Array of MySQL results for a single group.
+	 * @param int   $maxHeaders (Optional) How many headers to download max.
 	 *
 	 * @return void
 	 */
-	public function updateGroup($groupMySQL)
+	public function updateGroup($groupMySQL, $maxHeaders = 0)
 	{
 		$startGroup = microtime(true);
 
@@ -357,6 +361,14 @@ class Binaries
 		$total = (string)($groupLast - $first);
 		// This is how many articles are available (without $leaveOver).
 		$realTotal = (string)($groupNNTP['last'] - $first);
+
+		// Check if we should limit the amount of fetched new headers.
+		if ($maxHeaders > 0) {
+			if ($maxHeaders < ($groupLast - $first)) {
+				$groupLast = $last = (string)($first + $maxHeaders);
+			}
+			$total = (string)($groupLast - $first);
+		}
 
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if ($total > 0) {
@@ -1062,8 +1074,15 @@ class Binaries
 			}
 		}
 
-		// Remove articles that we cant fetch after 5 attempts.
-		$this->_pdo->queryExec(sprintf('DELETE FROM %s WHERE attempts >= 5 AND group_id = %d', $group['prname'], $groupArr['id']));
+		// Remove articles that we cant fetch after x attempts.
+		$this->_pdo->queryExec(
+			sprintf(
+				'DELETE FROM %s WHERE attempts >= %d AND group_id = %d',
+				$group['prname'],
+				$this->_partRepairMaxTries,
+				$groupArr['id']
+			)
+		);
 	}
 
 	/**

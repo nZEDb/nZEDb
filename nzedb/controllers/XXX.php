@@ -73,7 +73,7 @@ class XXX
 	 */
 	public function getXXXInfo($xxxid)
 	{
-		return $this->pdo->queryOneRow(sprintf("SELECT * FROM xxxinfo WHERE id = %d", $xxxid));
+		return $this->pdo->queryOneRow(sprintf("SELECT *, UNCOMPRESS(plot) AS plot FROM xxxinfo WHERE id = %d", $xxxid));
 	}
 
 	/**
@@ -88,7 +88,8 @@ class XXX
 	{
 		return $this->pdo->query(
 			sprintf('
-				SELECT *
+				SELECT *,
+				UNCOMPRESS(plot) AS plot
 				FROM xxxinfo
 				ORDER BY createddate DESC %s',
 				($start === false ? '' : ' LIMIT ' . $num . ' OFFSET ' . $start)
@@ -179,7 +180,7 @@ class XXX
 				GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts,
 				GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments,
 				GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs,
-				m.*, groups.name AS group_name, rn.id as nfoid FROM releases r
+				m.*, UNCOMPRESS(m.plot) AS plot, groups.name AS group_name, rn.id as nfoid FROM releases r
 				LEFT OUTER JOIN groups ON groups.id = r.group_id
 				LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id
 				INNER JOIN xxxinfo m ON m.id = r.xxxinfo_id
@@ -215,7 +216,7 @@ class XXX
 				STRING_AGG(r.totalpart::text, ',' ORDER BY r.postdate DESC) AS grp_release_totalparts,
 				STRING_AGG(r.comments::text, ',' ORDER BY r.postdate DESC) AS grp_release_comments,
 				STRING_AGG(r.grabs::text, ',' ORDER BY r.postdate DESC) AS grp_release_grabs,
-				m.*, groups.name AS group_name,
+				m.*, UNCOMPRESS(m.plot) AS plot, groups.name AS group_name,
 				rn.id as nfoid
 				FROM releases r
 				LEFT OUTER JOIN groups ON groups.id = r.group_id
@@ -318,14 +319,18 @@ class XXX
 	protected function getBrowseBy()
 	{
 		$browseBy = ' ';
-		$browseByArr = array('title', 'director', 'actors', 'genre');
+		$browseByArr = array('title', 'director', 'actors', 'genre', 'id');
 		foreach ($browseByArr as $bb) {
 			if (isset($_REQUEST[$bb]) && !empty($_REQUEST[$bb])) {
 				$bbv = stripslashes($_REQUEST[$bb]);
-				if($bb == "genre"){
-				$bbv = $this->getgenreid($bbv);
+				if ($bb == "genre") {
+					$bbv = $this->getgenreid($bbv);
 				}
+				if ($bb == 'id') {
+					$browseBy .= 'm.' . $bb . '=' . $bbv . ' AND ';
+				} else {
 					$browseBy .= 'm.' . $bb . ' LIKE (' . $this->pdo->escapeString('%' . $bbv . '%') . ') AND ';
+				}
 			}
 		}
 		return $browseBy;
@@ -461,9 +466,9 @@ class XXX
 					INSERT INTO xxxinfo
 						(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, cover, backdrop, createddate, updateddate)
 					VALUES
-						(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
+						(%s, %s, COMPRESS(%s), %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())
 					ON DUPLICATE KEY UPDATE
-						title = %s, tagline = %s, plot = %s, genre = %s, director = %s, actors = %s, extras = %s, productinfo = %s, trailers = %s, directurl = %s, classused = %s, cover = %d, backdrop = %d, updateddate = NOW()",
+						title = %s, tagline = %s, plot = COMPRESS(%s), genre = %s, director = %s, actors = %s, extras = %s, productinfo = %s, trailers = %s, directurl = %s, classused = %s, cover = %d, backdrop = %d, updateddate = NOW()",
 					$this->pdo->escapeString($mov['title']),
 					$this->pdo->escapeString($mov['tagline']),
 					$this->pdo->escapeString($mov['plot']),
@@ -498,7 +503,7 @@ class XXX
 						INSERT INTO xxxinfo
 							(title, tagline, plot, genre, director, actors, extras, productinfo, trailers, directurl, classused, cover, backdrop, createddate, updateddate)
 						VALUES
-							(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
+							(%s, %s, COMPRESS(%s), %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, NOW(), NOW())",
 						$this->pdo->escapeString($mov['title']),
 						$this->pdo->escapeString($mov['tagline']),
 						$this->pdo->escapeString($mov['plot']),

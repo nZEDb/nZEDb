@@ -506,17 +506,21 @@ class NameFixer
 		$this->matched = false;
 
 		//Remove all non-printable chars from PreDB title
-		//$titlelike = "%" . $this->utility->stripNonPrintingChars($pre['title']) . "%";
-		//preg_match_all('#[a-zA-Z]{2,}#', $pre['title'], $matches, PREG_PATTERN_ORDER);
-		//$titlematch = '+"' . implode('" +"', $matches[0]) . '"';
-		$titlematch = '+"' . $this->utility->stripNonPrintingChars($pre['title']) . '"';
+		$titlelike = "%" . $this->utility->stripNonPrintingChars($pre['title']) . "%";
+		preg_match_all('#[a-zA-Z0-9]{3,}#', $pre['title'], $matches, PREG_PATTERN_ORDER);
+		$titlematch = '+' . implode(' +', $matches[0]);
 
 		//Find release matches with fulltext and then identify exact matches with cleaned LIKE string
 		$res = $pdo->queryDirect(sprintf("
-							SELECT rs.releaseid AS releaseid FROM releasesearch rs
-							WHERE MATCH (rs.name, rs.searchname) AGAINST ('%s' IN BOOLEAN MODE)
+							SELECT rs.releaseid AS releaseid, rs.name, rs.searchname,
+								r.group_id, r.categoryid
+							FROM releasesearch rs
+							INNER JOIN releases r ON rs.releaseid = r.id AND r.preid = 0
+							WHERE MATCH (rs.name, rs.searchname) AGAINST ('%1\$s' IN BOOLEAN MODE)
+							AND (r.name LIKE '%2\$s' OR r.searchname LIKE '%2\$s')
 							LIMIT 21",
-							$titlematch
+							$titlematch,
+							$titlelike
 			)
 		);
 
@@ -529,33 +533,29 @@ class NameFixer
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
 		if ($total > 0 && $total <= 20) {
 			foreach ($res as $row) {
-				$release = $pdo->queryOneRow(sprintf("SELECT id AS releaseid, name, searchname, group_id, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND id = %d", $row['releaseid']));
-				if ($release !== false) {
-					$pdo->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $release['releaseid']));
-					if ($pre['title'] !== $release['searchname']) {
-						$determinedcat = $this->category->determineCategory($pre['title'], $release['group_id']);
-
+					if ($pre['title'] !== $row['searchname']) {
+						$determinedcat = $this->category->determineCategory($pre['title'], $row['group_id']);
 						if ($echo == 1) {
+							$pdo->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $row['releaseid']));
 							$this->matched = true;
 							if ($namestatus == 1) {
 								$pdo->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-										. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $pdo->escapeString($pre['title']), $determinedcat, $release['releaseid']
+										. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $pdo->escapeString($pre['title']), $determinedcat, $row['releaseid']
 									)
 								);
 							} else {
 								$pdo->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-										. "searchname = %s, categoryid = %d WHERE id = %d", $pdo->escapeString($pre['title']), $determinedcat, $release['releaseid']
+										. "searchname = %s, categoryid = %d WHERE id = %d", $pdo->escapeString($pre['title']), $determinedcat, $row['releaseid']
 									)
 								);
 							}
 						}
 
 						if ($echooutput && $show === 1) {
-							$this->updateRelease($release, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show);
+							$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show);
 						}
 						$matching++;
 					}
-				}
 			}
 		} elseif ($total >= 10) {
 			$matching = -1;

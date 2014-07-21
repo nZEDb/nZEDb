@@ -50,19 +50,31 @@ Class PreDb
 	 *
 	 * @param $nntp
 	 */
-	public function checkPre($nntp)
+	public function checkPre($dateLimit = false)
 	{
+
+		$this->dateLimit = $dateLimit;
+
 		$consoleTools = new ConsoleTools();
 		$updated = 0;
+		$datesql = '';
+
 		if ($this->echooutput) {
 			echo $this->c->header('Querying DB for release search names not matched with PreDB titles.');
 		}
 
-		$res = $this->pdo->queryDirect('
-			SELECT p.id AS preid, r.id AS releaseid
-			FROM predb p
-			INNER JOIN releases r ON p.title = r.searchname
-			WHERE r.preid = 0'
+		if ($this->dateLimit !== false && is_numeric($this->dateLimit)) {
+			$datesql = sprintf('AND DATEDIFF(NOW(), adddate) <= %d', $this->dateLimit);
+		}
+
+		$res = $this->pdo->queryDirect(
+						sprintf('
+							SELECT p.id AS preid, r.id AS releaseid
+							FROM predb p
+							INNER JOIN releases r ON p.title = r.searchname
+							WHERE r.preid < 1 %s',
+							$datesql
+						)
 		);
 
 		if ($res !== false) {

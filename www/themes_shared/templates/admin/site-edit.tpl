@@ -909,6 +909,21 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="delaytime">Delay Time Check:</label></td>
+				<td>
+					<input class="short" id="delaytime" name="delaytime" type="text" value="{$site->delaytime}"/>
+					<div class="hint">The time in hours to wait, since last activity, before releases without parts counts
+						in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..
+					</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset>
+		<legend>Part Repair Settings</legend>
+		<table class="input">
+			<tr>
 				<td style="width:180px;"><label for="partrepair">Part Repair:</label></td>
 				<td>
 					{html_radios id="partrepair" name='partrepair' values=$yesno_ids output=$yesno_names selected=$site->partrepair separator='<br />'}
@@ -935,12 +950,10 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="delaytime">Delay Time Check:</label></td>
+				<td style="width:180px;"><label for="partrepairmaxtries">Maximum repair per run:</label></td>
 				<td>
-					<input class="short" id="delaytime" name="delaytime" type="text" value="{$site->delaytime}"/>
-					<div class="hint">The time in hours to wait, since last activity, before releases without parts counts
-						in the subject are are created<br \> Setting this below 2 hours could create incomplete releases..
-					</div>
+					<input class="short" id="partrepairmaxtries" name="partrepairmaxtries" type="text" value="{$site->partrepairmaxtries}"/>
+					<div class="hint">Maximum amount of times to try part repair.</div>
 				</td>
 			</tr>
 		</table>

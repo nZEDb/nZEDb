@@ -178,7 +178,7 @@ class Releases
 						$order[0],
 						$order[1],
 						$limit
-			), true
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 

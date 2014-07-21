@@ -6,6 +6,58 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-21 kevin
+	* Chg: Add options to multiprocessing postprocess.
+	* Chg: Change multiprocessing postprocess to check if there's work first.
+	* Add: Settings file for multiprocessing.
+	* Add: Option to limit how much new headers to download on update_binaries.
+	* Chg: Only enable header compression if we use a method that requires it, saves time when using the instance for something that will never use it.
+	* Add: Option to disable text output from child processes on multiprocessing scripts.
+	* Chg: Change cached query in browse to use nZEDb_CACHE_EXPIRY_MEDIUM.
+2014-07-20 kevin
+	* Add: Multi processing scripts for binaries/backfill/postprocess/releases, written in PHP.
+2014-07-20 ruhllatio
+	* Fix: PreDB join timer logic in Tmux now runs full once and last week thereafter properly
+	* Add: ishashed to gfRn md5 work queries
+	* Chg: Revert decrypt_hashes all script to look outside category 7020 (Misc->Hashed)
+	* Chg: Improve NFO Proc count query and output
+2014-07-19 ruhllatio
+	* Chg: groupfixreleasenames var fixes and change to use categoryid instead of group_id
+	* Fix: groupID placement for PAR2 in gfrn / refactor pieces / fix whitespace
+	* Chg: add slower count logic to gfRn to be more exact on which categories to attempt
+	* Fix: last undefined in gfRn
+	* Chg: Remove postprocess_old_threaded from monitor as Amazon cannot make use of threaded ops and is a waste of overhead
+	* Chg: Revamp postprocess.php so it isn't complete shit
+	* Chg: Tweak some settings for gfRn
+	* Chg: Set Tmux Amazon to use Tmux php single thread script instead due to tmpunrar clearing in main postprocess.php
+2014-07-19 kevin
+	* Fix: Hard-coded 15 workers in update_threaded.py
+	* Chg: Various changes to process additional / nfo for python scripts.
+	* Chg: Create temp dir if not exists and set up perms for threaded scripts - processadditional.
+	* Chg: Change python postprocess_threaded.py to do tv and movie by groupID instead (in line with Bart/Ruhllatio's changes)
+	* Chg: Call processAdditional directly, saving a DB instance in postprocess.
+	* Add: Logic to attempt to detect string size overflow in NNTP, preventing some rare fatal errors.
+	* ---: Merge tasky's PR.
+2014-07-19 bart39
+	* Add: XXX to reset_postprocessing.
+	* Fix: Undefined variable in groupfixrelnames
+	* Chg: Various changes to process additional / nfo for python scripts.
+2014-07-19 taskym
+	* Fix: Better Matching (gamesorter)
+	* Add: Maximum Requests (Games)
+2014-07-18 ruhllatio
+	* Fix: MySQL memory leaks from cache limit errors in PreDB FT
+	* Chg: Remove NNTP from Tmux PreDB / set checkPre tmux to run full once then for past week with large DB supported query
+	* Add: fixReleaseNames by Group that beats the pants off the old one (testing mode)
+	* Chg: Clean a few queries up in new group fix release names
+	* Chg: Don't start NNTP for fRN Groups par2/miscsorter if SQL doesn't return any releases
+	* Chg: Monitor.php now uses groupfixRelNames instead of the old fixReleasesNames (reset your thread/max per thread settings)
+2014-07-18 kevin
+	* Fix: Missing UNCOMPRESS for plot on xxxinfo.
+	* Add: Customizable part-repair max tries.
+	* Add: (by Mike1) Query to tpg_fixes.php for getting size from parts into collections.
+2014-07-17 taskym
+	* Chg: Plot to Blob, Compress plot, Fix: Selecting title
 2014-07-17 niel
 	* Chg: Modifying DB::queryArray() to make it more efficient.
 2014-07-17 ruhllatio
