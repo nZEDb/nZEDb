@@ -691,7 +691,7 @@ class TvRage
 				ORDER BY r.postdate DESC
 				LIMIT %d",
 				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
-				($guidChar === '' ? '' : 'AND LEFT(r.guid, 1) ' . $this->pdo->likeString($guidChar, true, false)),
+				($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, true, false)),
 				$this->rageqty
 			)
 		);
