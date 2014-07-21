@@ -11,6 +11,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Change multiprocessing postprocess to check if there's work first.
 	* Add: Settings file for multiprocessing.
 	* Add: Option to limit how much new headers to download on update_binaries.
+	* Chg: Only enable header compression if we use a method that requires it, saves time when using the instance for something that will never use it.
 2014-07-20 kevin
 	* Add: Multi processing scripts for binaries/backfill/postprocess/releases, written in PHP.
 2014-07-20 ruhllatio

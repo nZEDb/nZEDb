@@ -38,7 +38,14 @@ class NNTP extends Net_NNTP_Client
 	 * @var boolean
 	 * @access protected
 	 */
-	protected $_compression = false;
+	protected $_compressionSupported = true;
+
+	/**
+	 * Is header compression enabled for the session?
+	 * @var bool
+	 * @access protected
+	 */
+	protected $_compressionEnabled = false;
 
 	/**
 	 * Currently selected group.
@@ -125,8 +132,8 @@ class NNTP extends Net_NNTP_Client
 		if (// Don't reconnect to usenet if:
 			// We are already connected to usenet. AND
 			parent::_isConnected() &&
-			// (If compression is wanted and on,                    OR    Compression is not wanted and off.) AND
-			(($compression && $this->_compression)                   || (!$compression && !$this->_compression)) &&
+			// (If compression is wanted and on,                    OR    Compression is not wanted and off.)          AND
+			(($compression && $this->_compressionEnabled)           || (!$compression && !$this->_compressionEnabled)) &&
 			// (Alternate is wanted, AND current server is alt,     OR    Alternate is not wanted AND current is main.)
 			(($alternate && $this->_currentServer === NNTP_SERVER_A) || (!$alternate && $this->_currentServer === NNTP_SERVER))
 		) {
@@ -248,9 +255,9 @@ class NNTP extends Net_NNTP_Client
 
 			// If we are connected and authenticated, try enabling compression if we have it enabled.
 			if ($connected === true && $authenticated === true) {
-				// Try to enable compression.
-				if ($compression === true && $this->pdo->getSetting('compressedheaders') == 1) {
-					$this->_enableCompression();
+				// Check if we should use compression on the connection.
+				if ($compression === false || $this->pdo->getSetting('compressedheaders') == 0) {
+					$this->_compressionSupported = false;
 				}
 				if ($this->_debugBool) {
 					$this->_debugging->start("doConnect", "Connected to " . $this->_currentServer . '.', Debugging::DEBUG_INFO);
@@ -307,7 +314,8 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function _resetProperties()
 	{
-		$this->_compression = false;
+		$this->_compressionEnabled = false;
+		$this->_compressionSupported = true;
 		$this->_currentGroup = '';
 		$this->_postingAllowed = false;
 		parent::_resetProperties();
@@ -372,6 +380,8 @@ class NNTP extends Net_NNTP_Client
 			return $connected;
 		}
 
+		// Enabled header compression if not enabled.
+		$this->_enableCompression();
 		return parent::getOverview($range, $names, $forceNames);
 	}
 
@@ -409,6 +419,9 @@ class NNTP extends Net_NNTP_Client
 		if ($connected !== true) {
 			return $connected;
 		}
+
+		// Enabled header compression if not enabled.
+		$this->_enableCompression();
 
 		// Send XOVER command to NNTP with wanted articles.
 		$response = $this->_sendCommand('XOVER ' . $range);
@@ -474,6 +487,23 @@ class NNTP extends Net_NNTP_Client
 		}
 		// Return the array of headers.
 		return $data;
+	}
+
+	/**
+	 * Fetch valid groups.
+	 *
+	 * Returns a list of valid groups (that the client is permitted to select) and associated information.
+	 *
+	 * @param string $wildMat (optional) http://tools.ietf.org/html/rfc3977#section-4
+	 *
+	 * @return array|object Pear error on failure, array with groups on success.
+	 * @access public
+	 */
+	public function getGroups($wildMat = null)
+	{
+		// Enabled header compression if not enabled.
+		$this->_enableCompression();
+		return parent::getGroups($wildMat);
 	}
 
 	/**
@@ -1167,6 +1197,13 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function _enableCompression()
 	{
+		if ($this->_compressionEnabled === true) {
+			return true;
+		} else if ($this->_compressionSupported === false) {
+			return false;
+		}
+
+
 		// Send this command to the usenet server.
 		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
 
@@ -1175,6 +1212,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("_enableCompression", $response->getMessage(), Debugging::DEBUG_NOTICE);
 			}
+			$this->_compressionSupported = false;
 			return $response;
 		} else if ($response !== 290) {
 			$msg = "XFeature GZip Compression not supported. Consider disabling compression in site settings.";
@@ -1185,10 +1223,12 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_echo) {
 				$this->_c->doEcho($this->_c->error($msg), true);
 			}
+			$this->_compressionSupported = false;
 			return false;
 		}
 
-		$this->_compression = true;
+		$this->_compressionEnabled = true;
+		$this->_compressionSupported = true;
 		return true;
 	}
 
@@ -1204,7 +1244,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function _getTextResponse()
 	{
-		if ($this->_compression === true &&
+		if ($this->_compressionEnabled === true &&
 			isset($this->_currentStatusResponse[1]) &&
 			stripos($this->_currentStatusResponse[1], 'COMPRESS=GZIP') !== false) {
 
