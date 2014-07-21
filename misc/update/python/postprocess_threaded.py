@@ -13,6 +13,7 @@ import subprocess
 import string
 import signal
 import datetime
+import math
 import lib.info as info
 from lib.info import bcolors
 conf = info.readConfig()
@@ -81,25 +82,7 @@ else:
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-if len(sys.argv) > 1 and sys.argv[1] == "additional":
-	cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'postthreads') AS a, (SELECT value FROM settings WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM settings WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM settings WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM settings WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM settings WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM settings WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -1 "+group_id+") as j, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -2 "+group_id+") as k, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -3 "+group_id+") as l, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -4 "+group_id+") as m, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -5 "+group_id+") as n, (SELECT count(*) FROM releases WHERE haspreview = -1 and passwordstatus = -6 "+group_id+") as o")
-	dbgrab = cur[0].fetchall()
-	ps1 = format(int(dbgrab[0][9]))
-	ps2 = format(int(dbgrab[0][10]))
-	ps3 = format(int(dbgrab[0][11]))
-	ps4 = format(int(dbgrab[0][12]))
-	ps5 = format(int(dbgrab[0][13]))
-	ps6 = format(int(dbgrab[0][14]))
-elif len(sys.argv) > 1 and sys.argv[1] == "nfo":
-	cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'postthreads') AS a, (SELECT value FROM settings WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM settings WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM settings WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM settings WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM settings WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM settings WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i, (SELECT count(*) FROM releases WHERE nfostatus = -1 "+group_id+") as j, (SELECT count(*) FROM releases WHERE nfostatus = -2 "+group_id+") as k, (SELECT count(*) FROM releases WHERE nfostatus = -3 "+group_id+") as l, (SELECT count(*) FROM releases WHERE nfostatus = -4 "+group_id+") as m, (SELECT count(*) FROM releases WHERE nfostatus = -5 "+group_id+") as n, (SELECT count(*) FROM releases WHERE nfostatus = -6 "+group_id+") as o")
-	dbgrab = cur[0].fetchall()
-	ps1 = format(int(dbgrab[0][9]))
-	ps2 = format(int(dbgrab[0][10]))
-	ps3 = format(int(dbgrab[0][11]))
-	ps4 = format(int(dbgrab[0][12]))
-	ps5 = format(int(dbgrab[0][13]))
-	ps6 = format(int(dbgrab[0][14]))
-elif len(sys.argv) > 1 and (sys.argv[1] == "movie" or sys.argv[1] == "tv"):
+if len(sys.argv) > 1 and (sys.argv[1] == "additional" or sys.argv[1] == "nfo" or sys.argv[1] == "movie" or sys.argv[1] == "tv"):
 	cur[0].execute("SELECT(SELECT value FROM settings WHERE setting = 'postthreadsnon') AS a, (SELECT value FROM settings WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM settings WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM settings WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM settings WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM settings WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM settings WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i")
 	dbgrab = cur[0].fetchall()
 else:
@@ -130,10 +113,10 @@ process_additional = run_threads * ppperrun
 process_nfo = run_threads * nfoperrun
 
 if sys.argv[1] == "additional":
-	cur[0].execute("SELECT DISTINCT r.group_id from releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 "+maxsize+" AND (r.haspreview = -1 AND c.disablepreview = 0) AND r.passwordstatus BETWEEN -6 AND -1")
+	cur[0].execute("SELECT c.id, count(DISTINCT r.id)as count from category c LEFT JOIN releases r ON c.id = r.categoryid WHERE r.nzbstatus = 1 "+maxsize+" AND r.haspreview = -1 AND c.disablepreview = 0 AND r.passwordstatus BETWEEN -6 AND -1 AND c.status < 2 AND c.parentid IS NOT NULL GROUP BY c.id HAVING count > 1 ORDER BY count DESC")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "nfo":
-	cur[0].execute("SELECT DISTINCT group_id from releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1")
+	cur[0].execute("SELECT c.id, count(DISTINCT r.id)as count from category c LEFT JOIN releases r ON c.id = r.categoryid WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1 AND c.status < 2 AND c.parentid IS NOT NULL GROUP BY c.id HAVING count > 1 ORDER BY count DESC")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
 	cur[0].execute("SELECT DISTINCT group_id FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 "+orderBY)
@@ -189,9 +172,10 @@ def u(x):
 def main(args):
 	global time_of_last_run
 	time_of_last_run = time.time()
-
-	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} groups.".format(run_threads, "{:,}".format(len(datas))) + bcolors.ENDC)
-
+	if (sys.argv[1] == "additional" or sys.argv[1] == "nfo"):
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} categorys.".format(run_threads, "{:,}".format(len(datas))) + bcolors.ENDC)
+	else:
+		print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} groups.".format(run_threads, "{:,}".format(len(datas))) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -208,13 +192,17 @@ def main(args):
 
 	#now load some arbitrary jobs into the queue
 	if sys.argv[1] == "additional":
-		for release in datas:
-			time.sleep(.02)
-			my_queue.put(u("%s           =+=            %s") % (release[0], sys.argv[1]))
+		for category in datas:
+			threads = math.ceil(category[1] / ppperrun)
+			for i in range(1, int(threads)):
+				time.sleep(.02)
+				my_queue.put(u("%s           =+=            %s           =+=            %s") % (category[0], sys.argv[1], ((i * ppperrun) - ppperrun)))
 	elif sys.argv[1] == "nfo":
-		for release in datas:
-			time.sleep(.02)
-			my_queue.put(u("%s           =+=            %s") % (release[0], sys.argv[1]))
+		for category in datas:
+			threads = math.ceil(category[1] / nfoperrun)
+			for i in range(1, int(threads)):
+				time.sleep(.02)
+				my_queue.put(u("%s           =+=            %s           =+=            %s") % (category[0], sys.argv[1], ((i * nfoperrun) - nfoperrun)))
 	elif sys.argv[1] == "movie":
 		for release in datas:
 			time.sleep(.02)

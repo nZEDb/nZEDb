@@ -154,16 +154,16 @@ Class ProcessAdditional
 	/**
 	 * Main method.
 	 *
-	 * @param int|string $groupID Optional ID of a group to work on.
+	 * @param int|string $categoryID Optional ID of a category to work on.
 	 *
 	 * @void
 	 */
-	public function start($groupID = '')
+	public function start($categoryID = '', $offset = '')
 	{
-		$this->_setMainTempPath($groupID);
+		$this->_setMainTempPath($categoryID, $offset);
 
 		// Fetch all the releases to work on.
-		$this->_fetchReleases($groupID);
+		$this->_fetchReleases($categoryID, $offset);
 
 		// Check if we have releases to work on.
 		if ($this->_totalReleases > 0) {
@@ -187,9 +187,9 @@ Class ProcessAdditional
 	/**
 	 * Set up the path to the folder we will work in.
 	 *
-	 * @param string|int $groupID
+	 * @param string|int $categoryID
 	 */
-	protected function _setMainTempPath(&$groupID = '')
+	protected function _setMainTempPath(&$categoryID = '', &$offset = 0)
 	{
 		// Set up the temporary files folder location.
 		$this->_mainTmpPath = $this->pdo->getSetting('tmpunrarpath');
@@ -200,8 +200,8 @@ Class ProcessAdditional
 		}
 
 		// If we are doing per group, use the groupID has a inner path, so other scripts don't delete the files we are working on.
-		if ($groupID !== '') {
-			$this->_mainTmpPath .= ($groupID . DS);
+		if ($categoryID !== '') {
+			$this->_mainTmpPath .= ($categoryID . "_" . $offset . DS);
 		}
 
 		if (!is_dir($this->_mainTmpPath)) {
@@ -229,15 +229,15 @@ Class ProcessAdditional
 	/**
 	 * Get all releases that need to be processed.
 	 *
-	 * @param int|string $groupID
+	 * @param int|string $categoryID
 	 *
 	 * @void
 	 */
-	protected function _fetchReleases($groupID)
+	protected function _fetchReleases($categoryID, $offset)
 	{
 		$this->_releases = $this->pdo->query(
 			sprintf('
-				SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname
+				SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname, r.preid
 				FROM releases r
 				LEFT JOIN category c ON c.id = r.categoryid
 				WHERE r.nzbstatus = 1
@@ -246,11 +246,12 @@ Class ProcessAdditional
 				AND r.haspreview = -1
 				AND c.disablepreview = 0
 				ORDER BY r.passwordstatus ASC, r.postdate DESC
-				LIMIT %d',
+				LIMIT %d %s',
 				$this->_maxSize,
 				$this->_minSize,
-				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
-				$this->_queryLimit
+				($categoryID === '' ? '' : 'AND r.categoryid = ' . $categoryID),
+				$this->_queryLimit,
+				($offset === '' ? '' : 'OFFSET ' . $offset)
 			)
 		);
 
@@ -826,7 +827,7 @@ Class ProcessAdditional
 					}
 
 					//Run a PreDB filename check on insert to try and match the release
-					else if (strpos($file['name'], '.') != 0 && strlen($file['name']) > 0) {
+					else if (strpos($file['name'], '.') != 0 && strlen($file['name']) > 0 && $this->_release['preid'] == 0) {
 						$this->_release['filename'] = nzedb\utility\Utility::cutStringUsingLast('.', $file['name'], 'left', false);
 						$this->_release['releaseid'] = $this->_release['id'];
 						$this->_nameFixer->matchPredbFiles($this->_release, 1, 1, true, 1, 'full');
