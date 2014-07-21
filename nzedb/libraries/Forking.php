@@ -192,7 +192,7 @@ class Forking extends \fork_daemon
 
 		if (is_numeric($maxProcesses) && $maxProcesses > 0) {
 			if (defined('nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE')) {
-				$this->max_children_set(nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE);
+				$this->max_children_set((nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE > 0 ? nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE : $maxProcesses));
 			} else {
 				$this->max_children_set($maxProcesses);
 			}
