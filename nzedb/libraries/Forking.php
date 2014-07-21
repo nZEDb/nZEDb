@@ -55,6 +55,12 @@ class Forking extends \fork_daemon
 			$this->child_max_run_time_set(600);
 		}
 		$this->register_parent_child_exit([0 => $this, 1 => 'childExit']);
+
+		if (defined('nZEDb_MULTIPROCESSING_HIDE_CHILD_OUTPUT')) {
+			$this->hideOutput = nZEDb_MULTIPROCESSING_HIDE_CHILD_OUTPUT;
+		} else {
+			$this->hideOutput = false;
+		}
 	}
 
 	/**
@@ -384,23 +390,38 @@ class Forking extends \fork_daemon
 	public function backFillChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			passthru(
-				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'backfill.php ' .
-				$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : ''));
+			if ($this->hideOutput) {
+				exec(
+					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'backfill.php ' .
+					$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : ''));
+			} else {
+				passthru(
+					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'backfill.php ' .
+					$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : ''));
+			}
 		}
 	}
 
 	public function binariesChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_binaries.php ' . $group['name'] . ' ' . $group['max']);
+			if ($this->hideOutput) {
+				exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_binaries.php ' . $group['name'] . ' ' . $group['max']);
+			} else {
+				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_binaries.php ' . $group['name'] . ' ' . $group['max']);
+			}
+
 		}
 	}
 
 	public function releasesChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_releases.php 1 false ' . $group['name']);
+			if ($this->hideOutput) {
+				exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_releases.php 1 false ' . $group['name']);
+			} else {
+				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_releases.php 1 false ' . $group['name']);
+			}
 		}
 	}
 
@@ -412,16 +433,32 @@ class Forking extends \fork_daemon
 	{
 		foreach ($groups as $group) {
 			if ($this->processAdditional) {
-				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php additional true ' . $group['id']);
+				if ($this->hideOutput) {
+					exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php additional true ' . $group['id']);
+				} else {
+					passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php additional true ' . $group['id']);
+				}
 			}
 			if ($this->processNFO) {
-				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php nfo true ' . $group['id']);
+				if ($this->hideOutput) {
+					exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php nfo true ' . $group['id']);
+				} else {
+					passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php nfo true ' . $group['id']);
+				}
 			}
 			if ($this->processMovies) {
-				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php movies true ' . $group['id']);
+				if ($this->hideOutput) {
+					exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php movies true ' . $group['id']);
+				} else {
+					passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php movies true ' . $group['id']);
+				}
 			}
 			if ($this->processTV) {
-				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php tv true ' . $group['id']);
+				if ($this->hideOutput) {
+					exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php tv true ' . $group['id']);
+				} else {
+					passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php tv true ' . $group['id']);
+				}
 			}
 		}
 	}
