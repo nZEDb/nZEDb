@@ -55,7 +55,7 @@ class ProcessReleases
 	 */
 	public function processReleases($categorize, $postProcess, $groupName, &$nntp, $echooutput)
 	{
-		$this->echoCLI = $echooutput;
+		$this->echoCLI = ($echooutput && nZEDb_ECHOCLI);
 		$groupID = '';
 
 		if (!empty($groupName)) {
