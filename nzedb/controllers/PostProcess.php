@@ -171,8 +171,8 @@ class PostProcess
 	 */
 	public function processMovies($groupID = '', $guidChar = '')
 	{
-		if ($this->pdo->getSetting('lookupimdb') == 1) {
-			(new Movie($this->echooutput))->processMovieReleases($groupID, $guidChar);
+		if ($this->pdo->getSetting('lookupimdb') > 0) {
+			(new Movie($this->echooutput))->processMovieReleases($groupID, $guidChar, $this->pdo->getSetting('lookupimdb'));
 		}
 	}
 
@@ -236,8 +236,8 @@ class PostProcess
 	 */
 	public function processTv($groupID = '', $guidChar = '')
 	{
-		if ($this->pdo->getSetting('lookuptvrage') == 1) {
-			(new TvRage($this->echooutput))->processTvReleases($groupID, $guidChar, true);
+		if ($this->pdo->getSetting('lookuptvrage') > 0) {
+			(new TvRage($this->echooutput))->processTvReleases($groupID, $guidChar, $this->pdo->getSetting('lookuptvrage'));
 		}
 	}
 

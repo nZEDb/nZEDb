@@ -18,6 +18,8 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Change cached query in browse to use nZEDb_CACHE_EXPIRY_MEDIUM.
 	* Fix: Query in NFO (the between was reversed).
 	* Chg: Change multiprocessing/threading scripts to do nfo/ppadd/movie/tv by guid first letter, gives better workload.
+	* Add: Renamed only processing option for movies/tv.
+	* Fix: Reverse like string %.
 2014-07-20 kevin
 	* Add: Multi processing scripts for binaries/backfill/postprocess/releases, written in PHP.
 2014-07-20 ruhllatio

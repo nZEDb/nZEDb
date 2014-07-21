@@ -256,7 +256,7 @@ class Nfo
 	public function processNfoFiles($nntp, $groupID = '', $guidChar = '', $processImdb = 1, $processTvrage = 1)
 	{
 		$ret = 0;
-		$guidCharQuery = ($guidChar === '' ? '' : 'AND guid ' . $this->pdo->likeString($guidChar, true, false));
+		$guidCharQuery = ($guidChar === '' ? '' : 'AND guid ' . $this->pdo->likeString($guidChar, false, true));
 		$groupIDQuery = ($groupID === '' ? '' : 'AND group_id =' . $groupID);
 
 		$res = $this->pdo->query(

@@ -119,6 +119,12 @@ $page->smarty->assign('lookupgames_names', array('Disabled', 'Lookup All Console
 $page->smarty->assign('lookupmusic_ids', array(0,1,2));
 $page->smarty->assign('lookupmusic_names', array('Disabled', 'Lookup All Music', 'Lookup Renamed Music'));
 
+$page->smarty->assign('lookupmovies_ids', array(0,1,2));
+$page->smarty->assign('lookupmovies_names', array('Disabled', 'Lookup All Movies', 'Lookup Renamed Movies'));
+
+$page->smarty->assign('lookuptv_ids', array(0,1,2));
+$page->smarty->assign('lookuptv_names', array('Disabled', 'Lookup All TV', 'Lookup Renamed TV'));
+
 $page->smarty->assign('lookup_reqids_ids', array(0,1,2));
 $page->smarty->assign('lookup_reqids_names', array('Disabled', 'Lookup Request IDs', 'Lookup Request IDs Threaded'));
 

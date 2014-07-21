@@ -300,7 +300,7 @@ class Forking extends \fork_daemon
 	 */
 	private function checkProcessMovies()
 	{
-		if ($this->pdo->getSetting('lookupimdb') == 1) {
+		if ($this->pdo->getSetting('lookupimdb') > 0) {
 			return (
 				$this->pdo->queryOneRow(
 					sprintf('
@@ -324,7 +324,7 @@ class Forking extends \fork_daemon
 	 */
 	private function checkProcessTV()
 	{
-		if ($this->pdo->getSetting('lookuptvrage') == 1) {
+		if ($this->pdo->getSetting('lookuptvrage') > 0) {
 			return (
 				$this->pdo->queryOneRow(
 					sprintf('
