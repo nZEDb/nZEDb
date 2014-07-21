@@ -256,32 +256,25 @@ class Nfo
 	{
 		$nfoCount = $ret = 0;
 		$this->groupID = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);
-		$res = array();
 
-
-		$i = -1;
-		while (($nfoCount != $this->nzbs) && ($i >= -6)) {
-			$res += $this->pdo->query(
-				sprintf('
-					SELECT id, guid, group_id, name
-					FROM releases
-					WHERE nzbstatus = %d
-					AND nfostatus BETWEEN %d AND %d
-					AND size < %s
-					%s
-					LIMIT %d',
-					NZB::NZB_ADDED,
-					$i,
-					self::NFO_UNPROC,
-					$this->maxsize * 1073741824,
-					$this->groupID,
-					$this->nzbs
-				)
-			);
-			$nfoCount += count($res);
-			$i--;
-		}
-
+		$res = $this->pdo->query(
+			sprintf('
+				SELECT id, guid, group_id, name
+				FROM releases
+				WHERE nzbstatus = %d
+				AND nfostatus BETWEEN %d AND -1
+				AND size < %s
+				%s
+				ORDER BY nfostatus ASC, postdate DESC
+				LIMIT %d',
+				NZB::NZB_ADDED,
+				self::NFO_UNPROC,
+				$this->maxsize * 1073741824,
+				$this->groupID,
+				$this->nzbs
+			)
+		);
+		$nfoCount = count($res);
 
 		if ($nfoCount > 0) {
 			$this->c->doEcho(

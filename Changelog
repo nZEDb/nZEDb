@@ -16,6 +16,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Only enable header compression if we use a method that requires it, saves time when using the instance for something that will never use it.
 	* Add: Option to disable text output from child processes on multiprocessing scripts.
 	* Chg: Change cached query in browse to use nZEDb_CACHE_EXPIRY_MEDIUM.
+	* Fix: Query in NFO (the between was reversed).
 2014-07-20 kevin
 	* Add: Multi processing scripts for binaries/backfill/postprocess/releases, written in PHP.
 2014-07-20 ruhllatio
