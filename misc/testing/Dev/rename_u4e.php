@@ -1,7 +1,10 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-$tmpPath = (new Settings())->getSetting('tmpunrarpath');
+$pdo = new nzedb\db\Settings();
+
+$tmpPath = $pdo->getSetting('tmpunrarpath');
+
 if (empty($tmpPath)) {
 	exit ('The tmpunrarpath site setting must not be empty!' . PHP_EOL);
 }
@@ -22,13 +25,14 @@ if (!is_dir($tmpPath)) {
 	}
 }
 
-if (empty($site->unrarpath)) {
+$unrarPath = $pdo->getSetting('unrarpath');
+
+if (empty($unrarPath)) {
 	exit ('The site setting for the unrar path must not be empty!' . PHP_EOL);
 }
 
 $c = new ColorCLI();
 
-$pdo = new nzedb\db\Settings();
 $nntp = new NNTP;
 $nzbContents= new NZBContents(
 	array(
@@ -114,7 +118,7 @@ if ($releases !== false) {
 		// Extract the RAR file.
 		nzedb\utility\runCmd(
 			'"' .
-			$site->unrarpath .
+			$unrarPath .
 			'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
 			$tmpPath . 'u4e_l2r.rar" "' .
 			$tmpPath . '"'

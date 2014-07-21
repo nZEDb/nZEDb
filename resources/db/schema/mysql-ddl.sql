@@ -71,9 +71,10 @@ CREATE TABLE         releases (
   tvtitle           VARCHAR(255)                   NULL,
   tvairdate         DATETIME                       NULL,
   imdbid            MEDIUMINT(7) UNSIGNED ZEROFILL NULL,
+  xxxinfo_id        INT SIGNED                     NOT NULL DEFAULT '0',
   musicinfoid       INT                            NULL,
   consoleinfoid     INT                            NULL,
-  gamesinfo_id      INT                            NULL,
+  gamesinfo_id      INT SIGNED                     NOT NULL DEFAULT '0',
   bookinfoid        INT                            NULL,
   anidbid           INT                            NULL,
   preid             INT UNSIGNED                   NOT NULL DEFAULT '0',
@@ -109,6 +110,7 @@ CREATE TABLE         releases (
   INDEX ix_releases_dehashstatus              (dehashstatus),
   INDEX ix_releases_reqidstatus               (reqidstatus),
   INDEX ix_releases_nfostatus                 (nfostatus),
+  INDEX ix_releases_xxxinfo_id                (xxxinfo_id),
   INDEX ix_releases_musicinfoid               (musicinfoid),
   INDEX ix_releases_consoleinfoid             (consoleinfoid),
   INDEX ix_releases_gamesinfo_id              (gamesinfo_id),
@@ -431,6 +433,33 @@ CREATE TABLE         movieinfo (
   AUTO_INCREMENT  = 1;
 
 
+DROP TABLE IF EXISTS xxxinfo;
+CREATE TABLE         xxxinfo (
+  id          INT(10) UNSIGNED               NOT NULL AUTO_INCREMENT,
+  title       VARCHAR(255)                   NOT NULL,
+  tagline     VARCHAR(1024)                  NOT NULL,
+  plot        VARCHAR(1024)                  NOT NULL,
+  genre       VARCHAR(64)                    NOT NULL,
+  director    VARCHAR(64)                    DEFAULT NULL,
+  actors      VARCHAR(2000)                  NOT NULL,
+  extras      TEXT                           DEFAULT NULL,
+  productinfo TEXT                           DEFAULT NULL,
+  trailers    TEXT                           DEFAULT NULL,
+  directurl   VARCHAR(2000)                  NOT NULL,
+  classused   VARCHAR(3)                     NOT NULL,
+  cover       TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
+  backdrop    TINYINT(1) UNSIGNED            NOT NULL DEFAULT '0',
+  createddate DATETIME                       NOT NULL,
+  updateddate DATETIME                       NOT NULL,
+  PRIMARY KEY                      (id),
+  INDEX        ix_xxxinfo_title  (title)
+)
+  ENGINE          = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE         = utf8_unicode_ci
+  AUTO_INCREMENT  = 1;
+
+
 DROP TABLE IF EXISTS animetitles;
 CREATE TABLE         animetitles (
   anidbid  INT(7) UNSIGNED  NOT NULL,
@@ -572,6 +601,7 @@ CREATE TABLE         users (
   invites        INT              NOT NULL DEFAULT '0',
   invitedby      INT              NULL,
   movieview      INT              NOT NULL DEFAULT '1',
+  xxxview        INT              NOT NULL DEFAULT '1',
   musicview      INT              NOT NULL DEFAULT '1',
   consoleview    INT              NOT NULL DEFAULT '1',
   bookview       INT              NOT NULL DEFAULT '1',

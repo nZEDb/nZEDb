@@ -7,7 +7,7 @@
 Class NZBContents
 {
 	/**
-	 * @var nzedb\db\DB
+	 * @var nzedb\db\Settings
 	 * @access protected
 	 */
 	public $pdo;
@@ -84,7 +84,7 @@ Class NZBContents
 		$this->echooutput = ($options['echo'] && nZEDb_ECHOCLI);
 		$this->lookuppar2 = ($this->pdo->getSetting('lookuppar2') == 1 ? true : false);
 		$this->alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
-		$this->nzb  = new NZB();
+		$this->nzb  = new NZB($this->pdo);
 	}
 
 	/**

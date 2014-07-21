@@ -19,7 +19,6 @@ section,subsection,name,value,hint,setting
 		fixnamesperrun	10	The maximum number of releases to check per run(threaded script only).	fixnamesperrun
 		fixnamethreads	1	The number of threads for fixReleasesNames. This includes md5, nfos and filenames.	fixnamethreads
 		grabstatus	1	Whether to update download counts when someone downloads a release.	grabstatus
-		hashcheck	1		hashcheck
 		innerfileblacklist			You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
 		lastpretime	0	Last time we downloaded a pre using WEB sources	lastpretime
 		lookup_reqids	1	Whether to attempt to lookup Request IDs using the Request ID link below.	lookup_reqids
@@ -27,6 +26,7 @@ section,subsection,name,value,hint,setting
 		lookupbooks	1	Whether to attempt to lookup book information from Amazon when processing binaries.	lookupbooks
 		lookupgames	1	Whether to attempt to lookup game information from Amazon when processing binaries.	lookupgames
 		lookupimdb	1	Whether to attempt to lookup film information from IMDB or TheMovieDB when processing binaries.	lookupimdb
+		lookupxxx	1	Whether to attempt to lookup xxx information from ADE or Popporn when processing binaries.	lookupxxx
 		lookupmusic	1	Whether to attempt to lookup music information from Amazon when processing binaries.	lookupmusic
 		lookupnfo	1	Whether to attempt to retrieve an nfo file from usenet when processing binaries.<br/>NOTE: disabling nfo lookups will disable movie lookups.	lookupnfo
 		lookuppar2	0	Whether to attempt to find a better name for releases in misc->other using the PAR2 file.<br/>NOTE: this can be slow depending on the group!	lookuppar2
@@ -36,6 +36,7 @@ section,subsection,name,value,hint,setting
 		maxbooksprocessed	300	The maximum amount of books to process with amazon per run. This does not use an NNTP connection	maxbooksprocessed
 		maxgamesprocessed	150	The maximum amount of games to process with amazon per run. This does not use an NNTP connection.	maxgamesprocessed
 		maximdbprocessed	100	The maximum amount of movies to process with IMDB per run. This does not use an NNTP connection or query Amazon.	maximdbprocessed
+		maxxxxprocessed		100	The maximum amount of xxx to process with ADE and Popporn per run. This does not use an NNTP connection or query Amazon.	maxxxxprocessed
 		maxmssgs	20000	The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.	maxmssgs
 		maxmusicprocessed	150	The maximum amount of music to process with amazon per run. This does not use an NNTP connection.	maxmusicprocessed
 		maxnestedlevels	3	How many levels deep to go into nested rar/zip files.	maxnestedlevels
@@ -82,7 +83,7 @@ section,subsection,name,value,hint,setting
 		showbacks	0		showbacks
 		showdroppedyencparts	0	For developers. Whether to log all headers that have 'yEnc' and are dropped. Logged to not_yenc/groupname.dropped.txt.	showdroppedyencparts
 		showpasswordedrelease	0	Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.	showpasswordedrelease
-		sqlpatch	249		sqlpatch
+		sqlpatch	0		sqlpatch
 		storeuserips	0	Whether to store the users ip address when they signup or login.	storeuserips
 		tablepergroup	0	This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.<br />Run: show variables like '%open%f	tablepergroup
 		tmpunrarpath		The path to where unrar puts files. WARNING: This directory will have its contents deleted.<br/>Use forward slashes in windows c:/temp/path/stuff/will/be/unpacked/to	tmpunrarpath

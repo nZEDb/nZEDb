@@ -12,4 +12,5 @@ if (!isset($argv[1])) {
 	$postprocess->processMusic($argv[1]);
 	$postprocess->processGames($argv[1]);
 	$postprocess->processConsoles($argv[1]);
+	$postprocess->processXXX($argv[1]);
 }

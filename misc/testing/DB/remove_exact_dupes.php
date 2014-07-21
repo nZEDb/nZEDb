@@ -17,10 +17,10 @@ if ($argc < 3 || !isset($argv[1]) || (isset($argv[1]) && !is_numeric($argv[1])))
 $crosspostt = $argv[1];
 $pdo = new Settings();
 $c = new ColorCLI();
-$releases = new Releases();
+$releases = new Releases(array('Settings' => $pdo, 'Groups' => null));
 $count = $total = $all = 0;
-$nzb = new NZB();
-$ri = new ReleaseImage();
+$nzb = new NZB($pdo);
+$ri = new ReleaseImage($pdo);
 $consoleTools = new ConsoleTools();
 $size = ' size ';
 if ($argv[2] === 'near') {
@@ -55,7 +55,7 @@ do {
 					}
 				}
 			}
-			if ($releases->fastDelete($rowrel['id'], $rowrel['guid']) !== false) {
+			if ($releases->deleteSingle($rowrel['guid'], $nzb) !== false) {
 				$consoleTools->overWritePrimary('Deleted: ' . number_format(++$count) . " Duplicate Releases");
 			}
 		}

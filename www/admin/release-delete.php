@@ -6,7 +6,7 @@ $page = new AdminPage(true);
 
 if (isset($_GET['id'])) {
     $releases = new Releases();
-    $releases->delete($_GET['id']);
+    $releases->deleteMultiple($_GET['id']);
 }
 
 if (isset($_GET['from'])) {

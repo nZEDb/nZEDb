@@ -287,7 +287,7 @@ class Console
 	{
 		$pdo = $this->pdo;
 		$gen = new Genres();
-		$ri = new ReleaseImage();
+		$ri = new ReleaseImage($this->pdo);
 
 		$con = array();
 		$amaz = $this->fetchAmazonProperties($gameInfo['title'], $gameInfo['node']);

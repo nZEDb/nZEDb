@@ -185,17 +185,40 @@ if ($page->isPostBack()) {
 				}
 			}
 
-			// If it all worked, move to the next page.
+			$ver = new \nzedb\utility\Versions();
+			$patch = $ver->getSQLPatchFromFiles();
+			$pdo->setSetting(['..sqlpatch' => $patch]);
+
 			if ($dbInstallWorked) {
+				$ver   = new \nzedb\utility\Versions();
+				$patch = $ver->getSQLPatchFromFiles();
+				if ($patch > 0) {
+					$updateSettings = $pdo->setSetting(
+										[
+											'section'    => '',
+											'subsection' => '',
+											'name'       => 'sqlpatch',
+											'value'      => $patch
+										]);
+				} else {
+					$updateSettings = false;
+				}
+			}
+
+			// If it all worked, move to the next page.
+			if ($dbInstallWorked && $updateSettings) {
 				header("Location: ?success");
 				if (file_exists($cfg->DB_DIR . '/post_install.php')) {
 					exec("php " . $cfg->DB_DIR . "/post_install.php ${pdo}");
 				}
 				exit();
+			} else if (!$updateSettings) {
+				$cfg->error    = true;
+				$cfg->emessage = "Could not update sqlpatch to '$patch' for your database.";
 			} else {
 				$cfg->dbCreateCheck = false;
-				$cfg->error = true;
-				$cfg->emessage = 'Could not select data from your database.';
+				$cfg->error         = true;
+				$cfg->emessage      = 'Could not select data from your database.';
 			}
 		}
 	}
