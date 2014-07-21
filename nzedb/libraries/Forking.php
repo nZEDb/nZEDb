@@ -145,9 +145,11 @@ class Forking extends \fork_daemon
 							WHERE nzbstatus = %d
 							AND imdbid IS NULL
 							AND categoryid BETWEEN 2000 AND 2999
+							%s
 							GROUP BY LEFT(guid, 1)
 							LIMIT 16',
-							\NZB::NZB_ADDED
+							\NZB::NZB_ADDED,
+							($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : '')
 						)
 					);
 					$maxProcesses = $this->pdo->getSetting('postthreadsnon');
@@ -190,9 +192,11 @@ class Forking extends \fork_daemon
 							AND rageid = -1
 							AND size > 1048576
 							AND categoryid BETWEEN 5000 AND 5999
+							%s
 							GROUP BY LEFT(guid, 1)
 							LIMIT 16',
-							\NZB::NZB_ADDED
+							\NZB::NZB_ADDED,
+							($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : '')
 						)
 					);
 					$maxProcesses = $this->pdo->getSetting('postthreadsnon');
@@ -309,8 +313,10 @@ class Forking extends \fork_daemon
 						WHERE nzbstatus = %d
 						AND imdbid IS NULL
 						AND categoryid BETWEEN 2000 AND 2999
+						%s
 						LIMIT 1',
-						\NZB::NZB_ADDED
+						\NZB::NZB_ADDED,
+						($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : '')
 					)
 				) === false ? false : true
 			);
@@ -334,8 +340,10 @@ class Forking extends \fork_daemon
 						AND size > 1048576
 						AND rageid = -1
 						AND categoryid BETWEEN 5000 AND 5999
+						%s
 						LIMIT 1',
-						\NZB::NZB_ADDED
+						\NZB::NZB_ADDED,
+						($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : '')
 					)
 				) === false ? false : true
 			);
