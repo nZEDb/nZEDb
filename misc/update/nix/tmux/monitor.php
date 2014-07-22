@@ -1097,7 +1097,7 @@ while ($i > 0) {
 						&& ($processbooks == 1 || $processmusic == 1 || $processgames == 1  || $processxxx == 1):
 					$log = $t->writelog($panes2[2]);
 					shell_exec("tmux respawnp -t${tmux_session}:2.2 ' \
-							$_phpn ${DIR}update/misc/update/postprocess.php amazon true $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
+							$_phpn ${DIR}update/postprocess.php amazon true $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
 					);
 					break;
 				case $post_amazon == 1 && $processbooks == 0 && $processmusic == 0 && $processgames == 0 && $processxxx == 0:
@@ -1297,7 +1297,7 @@ while ($i > 0) {
 				//run postprocess_releases amazon
 				$log = $t->writelog($panes1[1]);
 				shell_exec("tmux respawnp -t${tmux_session}:1.1 ' \
-						$_phpn ${DIR}update/misc/update/postprocess.php amazon true $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
+						$_phpn ${DIR}update/postprocess.php amazon true $log; date +\"%D %T\"; $_sleep $post_timer_amazon' 2>&1 1> /dev/null"
 				);
 			} else if (($post_amazon == 1) && ($processbooks == 0) && ($processmusic == 0) && ($processgames == 0)) {
 				$color = $t->get_color($colors_start, $colors_end, $colors_exc);
