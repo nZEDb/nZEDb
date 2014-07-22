@@ -159,7 +159,7 @@ class Forking extends \fork_daemon
 					if ($groups->rowCount() > 0) {
 						foreach($groups as $group) {
 							$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d LIMIT 1', $group['id']));
-							if ($check === false) {
+							if ($check !== false) {
 								$this->work[] = array('id' => $group['id']);
 							}
 						}
