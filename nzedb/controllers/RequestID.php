@@ -61,12 +61,12 @@ class RequestID
 	protected $groupID = 0;
 
 	/**
-	 * @var array MySQL results for releases with RequestID's.
+	 * @var \PDOStatement MySQL results for releases with RequestID's.
 	 */
 	protected $results = array();
 
 	/**
-	 * @var array Single MySQL result.
+	 * @var PDO Single MySQL result.
 	 */
 	protected $result = array();
 

@@ -37,16 +37,15 @@ switch (true) {
 		$releases->deleteUnwantedCollections($groupID);
 		$releases->createReleases($groupID);
 		$releases->createNZBs($groupID);
-		$releases->processRequestIDs($groupID, 5000, true);
 		$releases->processRequestIDs($groupID, 1000, false);
 		$releases->deleteCollections($groupID);
 		break;
 	case $groupID == 'Stage7b':
 		// Runs functions that run on releases table after all others completed
 		$groupID = '';
-		$releases->deletedReleasesByGroup($groupID);
-		$releases->processRequestIDs($groupID, 5000, true);
-		$releases->categorizeReleases(1, $groupID);
+		$releases->deletedReleasesByGroup();
+		$releases->processRequestIDs('', 5000, true);
+		$releases->categorizeReleases(1);
 		$releases->deleteReleases();
 		break;
 	default:
