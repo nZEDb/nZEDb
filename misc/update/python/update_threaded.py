@@ -95,7 +95,7 @@ def main():
 
 	#stage7b
 	final = "Stage7b"
-	subprocess.call(["php", pathname+"/../nix/tmux/bin/update_releases.php", ""+str(final)])
+	subprocess.call(["php", pathname+"/../nix/tmux/bin/update_releases.php", "tmux  "+str(final)])
 
 	print(bcolors.HEADER + "\nUpdate Releases Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
