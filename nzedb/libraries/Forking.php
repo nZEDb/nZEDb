@@ -109,9 +109,9 @@ class Forking extends \fork_daemon
 	private function getWork()
 	{
 		$maxProcesses = 0;
+
 		switch ($this->workType) {
 
-			// The option for backFill is for doing up to x articles. Else it's done by date.
 			case 'backfill':
 				$maxProcesses = $this->backfillMainMethod();
 				break;
@@ -146,6 +146,10 @@ class Forking extends \fork_daemon
 
 			case 'postProcess_tv':
 				$maxProcesses = $this->postProcessTvMainMethod();
+				break;
+
+			case 'update_all':
+				$maxProcesses = $this->updateAllMainMethod();
 				break;
 		}
 
@@ -199,6 +203,7 @@ class Forking extends \fork_daemon
 	private function backfillMainMethod()
 	{
 		$this->register_child_run([0 => $this, 1 => 'backFillChildWorker']);
+		// The option for backFill is for doing up to x articles. Else it's done by date.
 		$this->work = $this->pdo->query(
 			sprintf(
 				'SELECT name %s FROM groups WHERE backfill = 1',
@@ -546,6 +551,27 @@ class Forking extends \fork_daemon
 		$postProcess->processGames();
 		$postProcess->processMusic();
 		$postProcess->processXXX();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////// All "update_all" code goes here ///////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	private function updateAllMainMethod()
+	{
+		$this->register_child_run([0 => $this, 1 => 'updateAllChildWorker']);
+		$this->work = $this->pdo->query('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
+		return $this->pdo->getSetting('releasesthreads');
+	}
+
+	public function updateAllChildWorker($groups, $identifier = '')
+	{
+		foreach ($groups as $group) {
+			$this->executeCommand(
+				PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS .
+				'switch.php "php  update_per_group  ' .  $group['id'] . '"'
+			);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
