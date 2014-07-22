@@ -6,67 +6,45 @@ require_once(nZEDb_LIBS . 'forkdaemon-php' . DS . 'fork_daemon.php');
 /**
  * Class Forking
  *
+ * This forks various nZEDb scripts.
+ *
+ * For example, you get all the ID's of the active groups in the groups table, you then iterate over them and spawn
+ * processes of misc/update_binaries.php passing the group ID's.
+ *
  * @package nzedb\libraries
  */
 class Forking extends \fork_daemon
 {
-	/**
-	 * Setup the class to work on a type of work, then process the work.
-	 * Valid work types:
-	 *
-	 * @param string $type    The type of multiProcessing to do : backfill, binaries, releases, postprocess
-	 * @param array  $options Array containing arguments for the type of work.
-	 *
-	 * @throws ForkingException
-	 */
-	public function processWorkType($type, array $options = array())
-	{
-		$time = microtime(true);
-		// Init Settings here, as forking causes errors when the class goes out of scope.
-		$this->pdo = new \nzedb\db\Settings();
-		$this->getWork($type, $options);
-		// Now we destroy settings, to prevent errors from forking.
-		unset($this->pdo);
-		$this->processWork();
-
-		if ($type === 'releases' && $this->tablePerGroup === true) {
-			$this->executeCommand(
-				PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS .
-				'switch.php "php  releases  ' . count($this->work) . '_"'
-			);
-		}
-
-		if (nZEDb_ECHOCLI) {
-			echo (
-				'Multi-processing for ' . $type . ' finished in ' .  (microtime(true) - $time) .
-				' seconds at ' . date(DATE_RFC2822) . '.' . PHP_EOL
-			);
-		}
-	}
+	const OUTPUT_NONE     = 0; // Don't display child output.
+	const OUTPUT_REALTIME = 1; // Display child output in real time.
+	const OUTPUT_SERIALLY = 2; // Display child output when child is done.
 
 	/**
-	 *
+	 * Setup required parent / self vars.
 	 */
 	public function __construct()
 	{
 		parent::__construct();
+
 		$this->register_logging(
 			[0 => $this, 1 => 'logger'],
 			(defined('nZEDb_MULTIPROCESSING_LOG_TYPE') ? nZEDb_MULTIPROCESSING_LOG_TYPE : \fork_daemon::LOG_LEVEL_INFO)
 		);
-		$this->max_children_set(3);
+
+		$this->max_work_per_child_set(1);
 		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILD_WORK')) {
 			$this->max_work_per_child_set(nZEDb_MULTIPROCESSING_MAX_CHILD_WORK);
-		} else {
-			$this->max_work_per_child_set(1);
 		}
+
+		$this->child_max_run_time_set(600);
 		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILD_TIME')) {
 			$this->child_max_run_time_set(nZEDb_MULTIPROCESSING_MAX_CHILD_TIME);
-		} else {
-			$this->child_max_run_time_set(600);
 		}
+
+		// Use a single exit method for all children, makes things easier.
 		$this->register_parent_child_exit([0 => $this, 1 => 'childExit']);
 
+		$this->outputType = self::OUTPUT_REALTIME;
 		if (defined('nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE')) {
 			switch (nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE) {
 				case 0:
@@ -81,93 +59,69 @@ class Forking extends \fork_daemon
 				default:
 					$this->outputType = self::OUTPUT_REALTIME;
 			}
-		} else {
-			$this->outputType = self::OUTPUT_REALTIME;
 		}
 	}
 
-	const OUTPUT_NONE     = 0; // Don't display child output.
-	const OUTPUT_REALTIME = 1; // Display child output in real time.
-	const OUTPUT_SERIALLY = 2; // Display child output when child is done.
-
 	/**
-	 * Work to work on.
-	 * @var array
-	 */
-	private $work = array();
-
-	/**
-	 * How much work do we have to do?
-	 * @var int
-	 */
-	private $workCount = 0;
-
-	/**
-	 * Max amount of child processes to do work at a time.
-	 * @var int
-	 */
-	private $maxProcesses = 1;
-
-	/**
-	 * Are we using tablePerGroup?
-	 * @var bool
-	 */
-	private $tablePerGroup = false;
-
-	/**
-	 * Get work for our workers to work on.
+	 * Setup the class to work on a type of work, then process the work.
+	 * Valid work types:
 	 *
-	 * @param string $type
-	 * @param array  $options
+	 * @param string $type    The type of multiProcessing to do : backfill, binaries, releases, postprocess
+	 * @param array  $options Array containing arguments for the type of work.
+	 *
+	 * @throws ForkingException
 	 */
-	private function getWork(&$type, array &$options = array())
+	public function processWorkType($type, array $options = array())
+	{
+		// Set/reset some variables.
+		$startTime = microtime(true);
+		$this->workType = $type;
+		$this->workTypeOptions = $options;
+		$this->processAdditional = $this->processNFO = $this->processTV = $this->processMovies = $this->tablePerGroup = false;
+		$this->work = array();
+
+		// Init Settings here, as forking causes errors when it's destroyed.
+		$this->pdo = new \nzedb\db\Settings();
+
+		// Get work to fork.
+		$this->getWork();
+
+		// Now we destroy settings, to prevent errors from forking.
+		unset($this->pdo);
+
+		// Process the work we got.
+		$this->processWork();
+
+		// Process extra work that should not be forked and done after.
+		$this->processEndWork();
+
+		if (nZEDb_ECHOCLI) {
+			echo (
+				'Multi-processing for ' . $this->workType . ' finished in ' .  (microtime(true) - $startTime) .
+				' seconds at ' . date(DATE_RFC2822) . '.' . PHP_EOL
+			);
+		}
+	}
+
+	/**
+	 * Get work for our workers to work on, set the max child processes here.
+	 */
+	private function getWork()
 	{
 		$maxProcesses = 0;
-		$this->processAdditional = $this->processNFO = $this->processTV = $this->processMovies = false;
-		$this->work = array();
-		switch ($type) {
+		switch ($this->workType) {
+
 			// The option for backFill is for doing up to x articles. Else it's done by date.
 			case 'backfill':
-				$this->register_child_run([0 => $this, 1 => 'backFillChildWorker']);
-				$this->work = $this->pdo->query(
-					sprintf(
-						'SELECT name %s FROM groups WHERE backfill = 1',
-						($options[0] === false ? '' : (', ' . $options[0] . ' AS max'))
-					)
-				);
-				$maxProcesses = $this->pdo->getSetting('backfillthreads');
+				$maxProcesses = $this->backfillMainMethod();
 				break;
 
 			case 'binaries':
-				$this->register_child_run([0 => $this, 1 => 'binariesChildWorker']);
-				$this->work = $this->pdo->query(sprintf(
-						'SELECT name, %d AS max FROM groups WHERE active = 1',
-						$options[0]
-					)
-				);
-				$maxProcesses = $this->pdo->getSetting('binarythreads');
+				$maxProcesses = $this->binariesMainMethod();
 				break;
 
 			case 'releases':
-				$this->register_child_run([0 => $this, 1 => 'releasesChildWorker']);
-
-				$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 1 ? true : false);
-				if ($this->tablePerGroup === true) {
-
-					$groups = $this->pdo->queryDirect('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
-
-					if ($groups->rowCount() > 0) {
-						foreach($groups as $group) {
-							if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1',$group['id'])) !== false) {
-								$this->work[] = array('id' => $group['id']);
-							}
-						}
-					}
-				} else {
-					$this->work = $this->pdo->query('SELECT name FROM groups WHERE (active = 1 OR backfill = 1)');
-				}
-
-				$maxProcesses = $this->pdo->getSetting('releasesthreads');
+				$maxProcesses = $this->releasesMainMethod();
 				break;
 
 			case 'postProcess_ama':
@@ -175,167 +129,198 @@ class Forking extends \fork_daemon
 				break;
 
 			case 'postProcess_add':
-				if ($this->checkProcessAdditional() === true) {
-					$this->processAdditional = true;
-					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
-					$this->work = $this->pdo->query(
-						sprintf('
-							SELECT LEFT(r.guid, 1) AS id
-							FROM releases r
-							LEFT JOIN category c ON c.id = r.categoryid
-							WHERE r.nzbstatus = %d
-							AND r.passwordstatus BETWEEN -6 AND -1
-							AND r.haspreview = -1
-							AND c.disablepreview = 0
-							GROUP BY LEFT(r.guid, 1)
-							LIMIT 16',
-							\NZB::NZB_ADDED
-						)
-					);
-					$maxProcesses = $this->pdo->getSetting('postthreads');
-				}
+				$maxProcesses = $this->postProcessAddMainMethod();
 				break;
 
 			case 'postProcess_mov':
-				if ($this->checkProcessMovies() === true) {
-					$this->processMovies = true;
-					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
-					$this->work = $this->pdo->query(
-						sprintf('
-							SELECT LEFT(guid, 1) AS id
-							FROM releases
-							WHERE nzbstatus = %d
-							AND imdbid IS NULL
-							AND categoryid BETWEEN 2000 AND 2999
-							%s
-							GROUP BY LEFT(guid, 1)
-							LIMIT 16',
-							\NZB::NZB_ADDED,
-							($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : '')
-						)
-					);
-					$maxProcesses = $this->pdo->getSetting('postthreadsnon');
-				}
+				$maxProcesses = $this->postProcessMovMainMethod();
 				break;
 
 			case 'postProcess_nfo':
-				if ($this->checkProcessNfo() === true) {
-					$this->processNFO = true;
-					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
-					$this->work = $this->pdo->query(
-						sprintf('
-							SELECT LEFT(guid, 1) AS id
-							FROM releases
-							WHERE nzbstatus = %d
-							AND nfostatus BETWEEN -6 AND -1
-							GROUP BY LEFT(guid, 1)
-							LIMIT 16',
-							\NZB::NZB_ADDED
-						)
-					);
-					$maxProcesses = $this->pdo->getSetting('nfothreads');
-				}
+				$maxProcesses = $this->postProcessNfoMainMethod();
 				break;
 
 			case 'postProcess_sha':
-				$postProcess = new \PostProcess(true);
-				$this->processSharing($postProcess);
+				$this->processSharing();
 				break;
 
 			case 'postProcess_tv':
-				if ($this->checkProcessTV() === true) {
-					$this->processTV = true;
-					$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
-					$this->work = $this->pdo->query(
-						sprintf('
-							SELECT LEFT(guid, 1) AS id
-							FROM releases
-							WHERE nzbstatus = %d
-							AND rageid = -1
-							AND size > 1048576
-							AND categoryid BETWEEN 5000 AND 5999
-							%s
-							GROUP BY LEFT(guid, 1)
-							LIMIT 16',
-							\NZB::NZB_ADDED,
-							($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : '')
-						)
-					);
-					$maxProcesses = $this->pdo->getSetting('postthreadsnon');
-				}
+				$maxProcesses = $this->postProcessTvMainMethod();
 				break;
 		}
 
-		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE') && nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE > 0) {
-			$maxProcesses = nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE;
-		}
+		$this->setMaxProcesses($maxProcesses);
+	}
 
-		if (is_numeric($maxProcesses) && $maxProcesses > 0) {
-			switch ($type) {
-				case 'postProcess_tv':
-				case 'postProcess_mov':
-				case 'postProcess_nfo':
-				case 'postProcess_add':
-					if ($maxProcesses > 16) {
-						$maxProcesses = 16;
-					}
+	/**
+	 * Process work if we have any.
+	 */
+	private function processWork()
+	{
+		$this->workCount = count($this->work);
+		if ($this->workCount > 0) {
+
+			if (nZEDb_ECHOCLI) {
+				echo (
+					'Multi-processing started at ' . date(DATE_RFC2822) . ' with ' . $this->workCount .
+					' job(s) to do using a max of ' . $this->maxProcesses . ' child process(es).' . PHP_EOL
+				);
 			}
-			$this->maxProcesses = $maxProcesses;
-			$this->max_children_set($maxProcesses);
-		}
-	}
 
-	/**
-	 * Process sharing.
-	 *
-	 * @param \PostProcess $postProcess
-	 *
-	 * @return bool
-	 */
-	private function processSharing(&$postProcess)
-	{
-		$sharing = $this->pdo->queryOneRow('SELECT enabled FROM sharing');
-		if ($sharing !== false && $sharing['enabled'] == 1) {
-			$nntp = new \NNTP(true);
-			if (($this->pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === true) {
-				$postProcess->processSharing($nntp);
+			$this->addwork($this->work);
+			$this->process_work(true);
+		} else {
+			if (nZEDb_ECHOCLI) {
+				echo 'No work to do!' . PHP_EOL;
 			}
-			return true;
 		}
-		return false;
 	}
 
 	/**
-	 * Process all that require a single thread.
+	 * Process any work that does not need to be forked, but needs to run at the end.
 	 */
-	private function processSingle()
+	private function processEndWork()
 	{
-		$postProcess = new \PostProcess(true);
-		//$postProcess->processAnime();
-		$postProcess->processBooks();
-		$postProcess->processConsoles();
-		$postProcess->processGames();
-		$postProcess->processMusic();
-		$postProcess->processXXX();
-	}
-
-	/**
-	 * Check if we should process NFO's.
-	 * @return bool
-	 */
-	private function checkProcessNfo()
-	{
-		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			return (
-				$this->pdo->queryOneRow(
-					sprintf(
-						'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus BETWEEN -1 AND %d LIMIT 1',
-						\NZB::NZB_ADDED, \Nfo::NFO_UNPROC
-					)
-				) === false ? false : true
+		if ($this->workType === 'releases' && $this->tablePerGroup === true) {
+			$this->executeCommand(
+				PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS .
+				'switch.php "php  releases  ' . count($this->work) . '_"'
 			);
 		}
-		return false;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////// All backFill code here ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * @return int
+	 */
+	private function backfillMainMethod()
+	{
+		$this->register_child_run([0 => $this, 1 => 'backFillChildWorker']);
+		$this->work = $this->pdo->query(
+			sprintf(
+				'SELECT name %s FROM groups WHERE backfill = 1',
+				($this->workTypeOptions[0] === false ? '' : (', ' . $this->workTypeOptions[0] . ' AS max'))
+			)
+		);
+		return $this->pdo->getSetting('backfillthreads');
+	}
+
+	public function backFillChildWorker($groups, $identifier = '')
+	{
+		foreach ($groups as $group) {
+			$this->executeCommand(
+				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'backfill.php ' .
+				$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : '')
+			);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////// All binaries code here ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	private function binariesMainMethod()
+	{
+		$this->register_child_run([0 => $this, 1 => 'binariesChildWorker']);
+		$this->work = $this->pdo->query(
+			sprintf(
+				'SELECT name, %d AS max FROM groups WHERE active = 1',
+				$this->workTypeOptions[0]
+			)
+		);
+		return $this->pdo->getSetting('binarythreads');
+	}
+
+	public function binariesChildWorker($groups, $identifier = '')
+	{
+		foreach ($groups as $group) {
+			$this->executeCommand(
+				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS .
+				'update_binaries.php ' . $group['name'] . ' ' . $group['max']
+			);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////// All releases code here ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	private function releasesMainMethod()
+	{
+		$this->register_child_run([0 => $this, 1 => 'releasesChildWorker']);
+
+		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 1 ? true : false);
+		if ($this->tablePerGroup === true) {
+
+			$groups = $this->pdo->queryDirect('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
+
+			if ($groups->rowCount() > 0) {
+				foreach($groups as $group) {
+					if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1',$group['id'])) !== false) {
+						$this->work[] = array('id' => $group['id']);
+					}
+				}
+			}
+		} else {
+			$this->work = $this->pdo->query('SELECT name FROM groups WHERE (active = 1 OR backfill = 1)');
+		}
+
+		return $this->pdo->getSetting('releasesthreads');
+	}
+
+	public function releasesChildWorker($groups, $identifier = '')
+	{
+		foreach ($groups as $group) {
+			if ($this->tablePerGroup === true) {
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS .
+					'switch.php "php  releases  ' .  $group['id'] . '"'
+				);
+			} else {
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_UPDATE . 'update_releases.php 1 false ' . $group['name']
+				);
+			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////// All post process code here /////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * Only 1 exit method is used for post process, since they are all similar.
+	 *
+	 * @param        $groups
+	 * @param string $identifier
+	 */
+	public function postProcessChildWorker($groups, $identifier = '')
+	{
+		foreach ($groups as $group) {
+			if ($this->processAdditional) {
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_UPDATE . 'postprocess.php additional true ' . $group['id']
+				);
+			}
+			if ($this->processNFO) {
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_UPDATE . 'postprocess.php nfo true ' . $group['id']
+				);
+			}
+			if ($this->processMovies) {
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_UPDATE . 'postprocess.php movies true ' . $group['id']
+				);
+			}
+			if ($this->processTV) {
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_UPDATE . 'postprocess.php tv true ' . $group['id']
+				);
+			}
+		}
 	}
 
 	/**
@@ -359,6 +344,72 @@ class Forking extends \fork_daemon
 				)
 			) === false ? false : true
 		);
+	}
+
+	private function postProcessAddMainMethod()
+	{
+		$maxProcesses = 1;
+		if ($this->checkProcessAdditional() === true) {
+			$this->processAdditional = true;
+			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
+			$this->work = $this->pdo->query(
+				sprintf('
+					SELECT LEFT(r.guid, 1) AS id
+					FROM releases r
+					LEFT JOIN category c ON c.id = r.categoryid
+					WHERE r.nzbstatus = %d
+					AND r.passwordstatus BETWEEN -6 AND -1
+					AND r.haspreview = -1
+					AND c.disablepreview = 0
+					GROUP BY LEFT(r.guid, 1)
+					LIMIT 16',
+					\NZB::NZB_ADDED
+				)
+			);
+			$maxProcesses = $this->pdo->getSetting('postthreads');
+		}
+		return $maxProcesses;
+	}
+
+	/**
+	 * Check if we should process NFO's.
+	 * @return bool
+	 */
+	private function checkProcessNfo()
+	{
+		if ($this->pdo->getSetting('lookupnfo') == 1) {
+			return (
+				$this->pdo->queryOneRow(
+					sprintf(
+						'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus BETWEEN -1 AND %d LIMIT 1',
+						\NZB::NZB_ADDED, \Nfo::NFO_UNPROC
+					)
+				) === false ? false : true
+			);
+		}
+		return false;
+	}
+
+	private function postProcessNfoMainMethod()
+	{
+		$maxProcesses = 1;
+		if ($this->checkProcessNfo() === true) {
+			$this->processNFO = true;
+			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
+			$this->work = $this->pdo->query(
+				sprintf('
+					SELECT LEFT(guid, 1) AS id
+					FROM releases
+					WHERE nzbstatus = %d
+					AND nfostatus BETWEEN -6 AND -1
+					GROUP BY LEFT(guid, 1)
+					LIMIT 16',
+					\NZB::NZB_ADDED
+				)
+			);
+			$maxProcesses = $this->pdo->getSetting('nfothreads');
+		}
+		return $maxProcesses;
 	}
 
 	/**
@@ -385,6 +436,31 @@ class Forking extends \fork_daemon
 			);
 		}
 		return false;
+	}
+
+	private function postProcessMovMainMethod()
+	{
+		$maxProcesses = 1;
+		if ($this->checkProcessMovies() === true) {
+			$this->processMovies = true;
+			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
+			$this->work = $this->pdo->query(
+				sprintf('
+					SELECT LEFT(guid, 1) AS id
+					FROM releases
+					WHERE nzbstatus = %d
+					AND imdbid IS NULL
+					AND categoryid BETWEEN 2000 AND 2999
+					%s
+					GROUP BY LEFT(guid, 1)
+					LIMIT 16',
+					\NZB::NZB_ADDED,
+					($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : '')
+				)
+			);
+			$maxProcesses = $this->pdo->getSetting('postthreadsnon');
+		}
+		return $maxProcesses;
 	}
 
 	/**
@@ -414,29 +490,67 @@ class Forking extends \fork_daemon
 		return false;
 	}
 
-	/**
-	 * Process work if we have any.
-	 */
-	private function processWork()
+	private function postProcessTvMainMethod()
 	{
-		$this->workCount = count($this->work);
-		if ($this->workCount > 0) {
-
-			if (nZEDb_ECHOCLI) {
-				echo (
-					'Multi-processing started at ' . date(DATE_RFC2822) . ' with ' . $this->workCount .
-					' job(s) to do using a max of ' . $this->maxProcesses . ' child process(es).' . PHP_EOL
-				);
-			}
-
-			$this->addwork($this->work);
-			$this->process_work(true);
-		} else {
-			if (nZEDb_ECHOCLI) {
-				echo 'No work to do!' . PHP_EOL;
-			}
+		$maxProcesses = 1;
+		if ($this->checkProcessTV() === true) {
+			$this->processTV = true;
+			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
+			$this->work = $this->pdo->query(
+				sprintf('
+					SELECT LEFT(guid, 1) AS id
+					FROM releases
+					WHERE nzbstatus = %d
+					AND rageid = -1
+					AND size > 1048576
+					AND categoryid BETWEEN 5000 AND 5999
+					%s
+					GROUP BY LEFT(guid, 1)
+					LIMIT 16',
+					\NZB::NZB_ADDED,
+					($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : '')
+				)
+			);
+			$maxProcesses = $this->pdo->getSetting('postthreadsnon');
 		}
+		return $maxProcesses;
 	}
+
+	/**
+	 * Process sharing.
+	 *
+	 * @return bool
+	 */
+	private function processSharing()
+	{
+		$sharing = $this->pdo->queryOneRow('SELECT enabled FROM sharing');
+		if ($sharing !== false && $sharing['enabled'] == 1) {
+			$nntp = new \NNTP(true);
+			if (($this->pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === true) {
+				(new \PostProcess(true))->processSharing($nntp);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Process all that require a single thread.
+	 */
+	private function processSingle()
+	{
+		$postProcess = new \PostProcess(true);
+		//$postProcess->processAnime();
+		$postProcess->processBooks();
+		$postProcess->processConsoles();
+		$postProcess->processGames();
+		$postProcess->processMusic();
+		$postProcess->processXXX();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////// Various methods ///////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * Execute a shell command, use the appropriate PHP function based on user setting.
@@ -459,21 +573,32 @@ class Forking extends \fork_daemon
 	}
 
 	/**
-	 * @var \nzedb\db\Settings
+	 * Set the amount of max child processes.
+	 * @param int $maxProcesses
 	 */
-	private $pdo;
-
-	/**
-	 *
-	 */
-	public function __destruct()
+	private function setMaxProcesses($maxProcesses)
 	{
-		parent::__destruct();
-	}
+		// Check if override setting is on.
+		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE') && nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE > 0) {
+			$maxProcesses = nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE;
+		}
 
-	/**
-	 * All the following methods should not be accessed, they are used by the parent class.
-	 */
+		if (is_numeric($maxProcesses) && $maxProcesses > 0) {
+			switch ($this->workType) {
+				case 'postProcess_tv':
+				case 'postProcess_mov':
+				case 'postProcess_nfo':
+				case 'postProcess_add':
+					if ($maxProcesses > 16) {
+						$maxProcesses = 16;
+					}
+			}
+			$this->maxProcesses = $maxProcesses;
+			$this->max_children_set($maxProcesses);
+		} else {
+			$this->max_children_set(1);
+		}
+	}
 
 	/**
 	 * Echo a message to CLI.
@@ -505,76 +630,65 @@ class Forking extends \fork_daemon
 	}
 
 	/**
-	 * The following methods are where the work is done with the data sent from the parent process.
 	 *
-	 * @param array  $groups     Array of group data.
-	 * @param string $identifier Optional identifier to give a PID a name.
 	 */
-	public function backFillChildWorker($groups, $identifier = '')
+	public function __destruct()
 	{
-		foreach ($groups as $group) {
-			$this->executeCommand(
-				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'backfill.php ' .
-				$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : '')
-			);
-		}
+		parent::__destruct();
 	}
 
-	public function binariesChildWorker($groups, $identifier = '')
-	{
-		foreach ($groups as $group) {
-			$this->executeCommand(
-				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS .
-				'update_binaries.php ' . $group['name'] . ' ' . $group['max']
-			);
-		}
-	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////// All class vars here /////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public function releasesChildWorker($groups, $identifier = '')
-	{
-		foreach ($groups as $group) {
-			if ($this->tablePerGroup === true) {
-				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS .
-					'switch.php "php  releases  ' .  $group['id'] . '"'
-				);
-			} else {
-				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_releases.php 1 false ' . $group['name']
-				);
-			}
-		}
-	}
+	/**
+	 * Work to work on.
+	 * @var array
+	 */
+	private $work = array();
 
-	private $processAdditional = false;
-	private $processNFO = false;
-	private $processMovies = false;
-	private $processTV = false;
-	public function postProcessChildWorker($groups, $identifier = '')
-	{
-		foreach ($groups as $group) {
-			if ($this->processAdditional) {
-				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php additional true ' . $group['id']
-				);
-			}
-			if ($this->processNFO) {
-				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php nfo true ' . $group['id']
-				);
-			}
-			if ($this->processMovies) {
-				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php movies true ' . $group['id']
-				);
-			}
-			if ($this->processTV) {
-				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php tv true ' . $group['id']
-				);
-			}
-		}
-	}
+	/**
+	 * How much work do we have to do?
+	 * @var int
+	 */
+	private $workCount = 0;
+
+	/**
+	 * The type of work we want to work on.
+	 * @var string
+	 */
+	private $workType = '';
+
+	/**
+	 * List of passed in options for the current work type.
+	 * @var array
+	 */
+	private $workTypeOptions = array();
+
+	/**
+	 * Max amount of child processes to do work at a time.
+	 * @var int
+	 */
+	private $maxProcesses = 1;
+
+	/**
+	 * Are we using tablePerGroup?
+	 * @var bool
+	 */
+	private $tablePerGroup = false;
+
+	/**
+	 * @var \nzedb\db\Settings
+	 */
+	private $pdo;
+
+	/**
+	 * @var bool
+	 */
+	private $processAdditional = false; // Should we process additional?
+	private $processNFO = false;        // Should we process NFOs?
+	private $processMovies = false;     // Should we process Movies?
+	private $processTV = false;         // Should we process TV?
 }
 
 class ForkingException extends \Exception {}
