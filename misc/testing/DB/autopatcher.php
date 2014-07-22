@@ -34,7 +34,7 @@ if (isset($argv[1]) && ($argv[1] == "true" || $argv[1] == "safe")) {
 	echo $c->header("Patching database - ${dbname}.");
 
 	$safe = ($argv[1] === "safe") ? true : false;
-	system("$PHP " . nZEDb_LIB . 'db' . DS . "DbUpdate.php 1 $safe");
+	system("$PHP " . nZEDb_ROOT . 'cli' . DS . "update_db.php true $safe");
 
 	// Remove folders from smarty.
 	$cleared = $smarty->clearCompiledTemplate();
