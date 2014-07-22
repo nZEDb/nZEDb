@@ -74,6 +74,16 @@ switch ($options[1]) {
 		}
 		break;
 
+	// Process all local requestID for a single group.
+	// $options[2] => (int)groupID, group to work on
+	case 'requestid':
+		require_once dirname(__FILE__) . '/../../../config.php';
+		if (is_numeric($options[2])) {
+			(new \RequestID(true))->lookupReqIDs($options[2], 5000, true);
+		}
+		break;
+
+
 	// Do a single group (update_binaries/backFill/update_releases/postprocess).
 	// $options[2] => (int)groupID, group to work on
 	case 'update_per_group':

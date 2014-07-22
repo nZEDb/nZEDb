@@ -20,6 +20,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Make forking use tmux/bin/update-releases.php when TPG is on.
 	* Chg: Move some of the bin/ scripts into a central script.
 	* Add: php version of update_threaded.py
+	* Add: php multiprocess requestID, fix the python one at the same time.
 2014-07-21 ruhllatio
 	* Fix: NNTP being called in update_releases threaded removed -- much faster per thread
 2014-07-21 kevin

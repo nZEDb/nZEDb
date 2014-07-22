@@ -1055,6 +1055,14 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="reqidthreads">Request ID Threads:</label></td>
+				<td>
+					<input class="short" id="reqidthreads" name="reqidthreads" type="text" value="{$site->reqidthreads}"/>
+					<div class="hint">The number of threads for local Request ID processing.
+					</div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="postthreadsnon">Postprocessing Non-Amazon Threads:</label></td>
 				<td>
 					<input class="short" id="postthreadsnon" name="postthreadsnon" type="text" value="{$site->postthreadsnon}"/>

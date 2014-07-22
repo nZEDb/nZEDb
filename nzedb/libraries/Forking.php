@@ -60,6 +60,8 @@ class Forking extends \fork_daemon
 					$this->outputType = self::OUTPUT_REALTIME;
 			}
 		}
+
+		$this->dnr_path = PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS . 'switch.php "php  ';
 	}
 
 	/**
@@ -148,6 +150,10 @@ class Forking extends \fork_daemon
 				$maxProcesses = $this->postProcessTvMainMethod();
 				break;
 
+			case 'request_id':
+				$maxProcesses = $this->requestIDMainMethod();
+				break;
+
 			case 'update_all':
 				$maxProcesses = $this->updateAllMainMethod();
 				break;
@@ -187,8 +193,7 @@ class Forking extends \fork_daemon
 	{
 		if ($this->workType === 'releases' && $this->tablePerGroup === true) {
 			$this->executeCommand(
-				PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS .
-				'switch.php "php  releases  ' . count($this->work) . '_"'
+				$this->dnr_path . 'releases  ' . count($this->work) . '_"'
 			);
 		}
 	}
@@ -217,7 +222,7 @@ class Forking extends \fork_daemon
 	{
 		foreach ($groups as $group) {
 			$this->executeCommand(
-				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'backfill.php ' .
+				PHP_BINARY . ' ' . nZEDb_UPDATE . 'backfill.php ' .
 				$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : '')
 			);
 		}
@@ -243,8 +248,7 @@ class Forking extends \fork_daemon
 	{
 		foreach ($groups as $group) {
 			$this->executeCommand(
-				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS .
-				'update_binaries.php ' . $group['name'] . ' ' . $group['max']
+				PHP_BINARY . ' ' . nZEDb_UPDATE  . 'update_binaries.php ' . $group['name'] . ' ' . $group['max']
 			);
 		}
 	}
@@ -281,8 +285,7 @@ class Forking extends \fork_daemon
 		foreach ($groups as $group) {
 			if ($this->tablePerGroup === true) {
 				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS .
-					'switch.php "php  releases  ' .  $group['id'] . '"'
+					$this->dnr_path . 'releases  ' .  $group['id'] . '"'
 				);
 			} else {
 				$this->executeCommand(
@@ -554,6 +557,39 @@ class Forking extends \fork_daemon
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////// All requestID code goes here ////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	private function requestIDMainMethod()
+	{
+		$this->register_child_run([0 => $this, 1 => 'requestIDChildWorker']);
+		$this->work = $this->pdo->query(
+			sprintf('
+				SELECT DISTINCT(g.id)
+				FROM groups g
+				INNER JOIN releases r ON r.group_id = g.id
+				WHERE (g.active = 1 OR g.backfill = 1)
+				AND r.nzbstatus = %d
+				AND r.preid = 0
+				AND r.isrequestid = 1
+				AND r.reqidstatus = %d',
+				\NZB::NZB_ADDED,
+				\RequestID::REQID_UPROC
+			)
+		);
+		return $this->pdo->getSetting('reqidthreads');
+	}
+
+	public function requestIDChildWorker($groups, $identifier = '')
+	{
+		foreach ($groups as $group) {
+			$this->executeCommand(
+				$this->dnr_path . 'requestid  ' .  $group['id'] . '"'
+			);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////// All "update_all" code goes here ///////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -568,8 +604,7 @@ class Forking extends \fork_daemon
 	{
 		foreach ($groups as $group) {
 			$this->executeCommand(
-				PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS .
-				'switch.php "php  update_per_group  ' .  $group['id'] . '"'
+				$this->dnr_path . 'update_per_group  ' .  $group['id'] . '"'
 			);
 		}
 	}
@@ -666,6 +701,12 @@ class Forking extends \fork_daemon
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////// All class vars here /////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * Path to do not run folder.
+	 * @var string
+	 */
+	private $dnr_path = '';
 
 	/**
 	 * Work to work on.
