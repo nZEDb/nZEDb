@@ -77,8 +77,8 @@ switch ($options[1]) {
 	// Process all local requestID for a single group.
 	// $options[2] => (int)groupID, group to work on
 	case 'requestid':
-		require_once dirname(__FILE__) . '/../../../config.php';
 		if (is_numeric($options[2])) {
+			require_once dirname(__FILE__) . '/../../../config.php';
 			(new \RequestID(true))->lookupReqIDs($options[2], 5000, true);
 		}
 		break;
