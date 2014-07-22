@@ -205,7 +205,7 @@ class fork_daemon
 	 * @access private
 	 * @var array $forked_children_count
 	 */
-	private $forked_children_count = 0;
+	protected $forked_children_count = 0;
 
 	/**
 	 * track the work units to process

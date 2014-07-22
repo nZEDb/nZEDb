@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-07-22 kevin
 	* Add: Option to multiprocessing settings to change the way child process text is displayed (none, realtime, serially).
 	* Add: Setting for NFO threads.
+	* Add: More verbose to multi-processing.
 2014-07-21 ruhllatio
 	* Fix: NNTP being called in update_releases threaded removed -- much faster per thread
 2014-07-21 kevin

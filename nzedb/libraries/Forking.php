@@ -29,7 +29,10 @@ class Forking extends \fork_daemon
 		unset($this->pdo);
 		$this->processWork();
 		if (nZEDb_ECHOCLI) {
-			echo 'Multiprocessing for ' . $type . ' finished in ' . (microtime(true) - $time) . ' seconds.' . PHP_EOL;
+			echo (
+				'Multi-processing for ' . $type . ' finished in ' .  (microtime(true) - $time) .
+				' seconds at ' . date(DATE_RFC2822) . '.' . PHP_EOL
+			);
 		}
 	}
 
@@ -80,9 +83,22 @@ class Forking extends \fork_daemon
 	const OUTPUT_SERIALLY = 2; // Display child output when child is done.
 
 	/**
+	 * Work to work on.
 	 * @var array
 	 */
 	private $work = array();
+
+	/**
+	 * How much work do we have to do?
+	 * @var int
+	 */
+	private $workCount = 0;
+
+	/**
+	 * Max amount of child processes to do work at a time.
+	 * @var int
+	 */
+	private $maxProcesses = 1;
 
 	/**
 	 * Get work for our workers to work on.
@@ -234,6 +250,7 @@ class Forking extends \fork_daemon
 						$maxProcesses = 16;
 					}
 			}
+			$this->maxProcesses = $maxProcesses;
 			$this->max_children_set($maxProcesses);
 		}
 	}
@@ -372,7 +389,16 @@ class Forking extends \fork_daemon
 	 */
 	private function processWork()
 	{
-		if (count($this->work) > 0) {
+		$this->workCount = count($this->work);
+		if ($this->workCount > 0) {
+
+			if (nZEDb_ECHOCLI) {
+				echo (
+					'Multi-processing started at ' . date(DATE_RFC2822) . ' with ' . $this->workCount .
+					' job(s) to do using a max of ' . $this->maxProcesses . ' child process(es).' . PHP_EOL
+				);
+			}
+
 			$this->addwork($this->work);
 			$this->process_work(true);
 		} else {
@@ -439,7 +465,13 @@ class Forking extends \fork_daemon
 	 */
 	public function childExit($pid, $identifier = '')
 	{
-		echo 'Process ID #' . $pid . ' has completed.' . PHP_EOL;
+		if (nZEDb_ECHOCLI) {
+			echo (
+				'Process ID #' . $pid . ' has completed.' . PHP_EOL .
+				'There are ' . ($this->forked_children_count - 1) . ' process(es) still active with ' .
+				(--$this->workCount) . ' job(s) left in the queue.' . PHP_EOL
+			);
+		}
 	}
 
 	/**
@@ -483,6 +515,7 @@ class Forking extends \fork_daemon
 	private $processTV = false;
 	public function postProcessChildWorker($groups, $identifier = '')
 	{
+		var_dump($this->forked_children_count);
 		foreach ($groups as $group) {
 			if ($this->processAdditional) {
 				$this->executeCommand(
