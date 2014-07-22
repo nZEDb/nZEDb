@@ -515,7 +515,6 @@ class Forking extends \fork_daemon
 	private $processTV = false;
 	public function postProcessChildWorker($groups, $identifier = '')
 	{
-		var_dump($this->forked_children_count);
 		foreach ($groups as $group) {
 			if ($this->processAdditional) {
 				$this->executeCommand(
