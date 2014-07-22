@@ -56,12 +56,28 @@ class Forking extends \fork_daemon
 		}
 		$this->register_parent_child_exit([0 => $this, 1 => 'childExit']);
 
-		if (defined('nZEDb_MULTIPROCESSING_HIDE_CHILD_OUTPUT')) {
-			$this->hideOutput = nZEDb_MULTIPROCESSING_HIDE_CHILD_OUTPUT;
+		if (defined('nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE')) {
+			switch (nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE) {
+				case 0:
+					$this->outputType = self::OUTPUT_NONE;
+					break;
+				case 1:
+					$this->outputType = self::OUTPUT_REALTIME;
+					break;
+				case 2:
+					$this->outputType = self::OUTPUT_SERIALLY;
+					break;
+				default:
+					$this->outputType = self::OUTPUT_REALTIME;
+			}
 		} else {
-			$this->hideOutput = false;
+			$this->outputType = self::OUTPUT_REALTIME;
 		}
 	}
+
+	const OUTPUT_NONE     = 0; // Don't display child output.
+	const OUTPUT_REALTIME = 1; // Display child output in real time.
+	const OUTPUT_SERIALLY = 2; // Display child output when child is done.
 
 	/**
 	 * @var array
@@ -367,6 +383,26 @@ class Forking extends \fork_daemon
 	}
 
 	/**
+	 * Execute a shell command, use the appropriate PHP function based on user setting.
+	 *
+	 * @param string $command
+	 */
+	private function executeCommand($command)
+	{
+		switch($this->outputType) {
+			case self::OUTPUT_NONE:
+				exec($command);
+				break;
+			case self::OUTPUT_REALTIME:
+				passthru($command);
+				break;
+			case self::OUTPUT_SERIALLY:
+				echo shell_exec($command);
+				break;
+		}
+	}
+
+	/**
 	 * @var \nzedb\db\Settings
 	 */
 	private $pdo;
@@ -415,38 +451,29 @@ class Forking extends \fork_daemon
 	public function backFillChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			if ($this->hideOutput) {
-				exec(
-					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'backfill.php ' .
-					$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : ''));
-			} else {
-				passthru(
-					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'backfill.php ' .
-					$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : ''));
-			}
+			$this->executeCommand(
+				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'backfill.php ' .
+				$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : '')
+			);
 		}
 	}
 
 	public function binariesChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			if ($this->hideOutput) {
-				exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_binaries.php ' . $group['name'] . ' ' . $group['max']);
-			} else {
-				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_binaries.php ' . $group['name'] . ' ' . $group['max']);
-			}
-
+			$this->executeCommand(
+				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS .
+				'update_binaries.php ' . $group['name'] . ' ' . $group['max']
+			);
 		}
 	}
 
 	public function releasesChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			if ($this->hideOutput) {
-				exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_releases.php 1 false ' . $group['name']);
-			} else {
-				passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_releases.php 1 false ' . $group['name']);
-			}
+			$this->executeCommand(
+				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_releases.php 1 false ' . $group['name']
+			);
 		}
 	}
 
@@ -458,32 +485,24 @@ class Forking extends \fork_daemon
 	{
 		foreach ($groups as $group) {
 			if ($this->processAdditional) {
-				if ($this->hideOutput) {
-					exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php additional true ' . $group['id']);
-				} else {
-					passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php additional true ' . $group['id']);
-				}
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php additional true ' . $group['id']
+				);
 			}
 			if ($this->processNFO) {
-				if ($this->hideOutput) {
-					exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php nfo true ' . $group['id']);
-				} else {
-					passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php nfo true ' . $group['id']);
-				}
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php nfo true ' . $group['id']
+				);
 			}
 			if ($this->processMovies) {
-				if ($this->hideOutput) {
-					exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php movies true ' . $group['id']);
-				} else {
-					passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php movies true ' . $group['id']);
-				}
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php movies true ' . $group['id']
+				);
 			}
 			if ($this->processTV) {
-				if ($this->hideOutput) {
-					exec(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php tv true ' . $group['id']);
-				} else {
-					passthru(PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php tv true ' . $group['id']);
-				}
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'postprocess.php tv true ' . $group['id']
+				);
 			}
 		}
 	}

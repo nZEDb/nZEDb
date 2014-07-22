@@ -38,8 +38,12 @@ define('nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE', 0);
 define('nZEDb_MULTIPROCESSING_LOG_TYPE', 6);
 
 /**
- * To hide text output of child processes or not.
+ * How to display the text output (echo's) from the child processes.
  *
- * @default false
+ * 0 - Do not display any anything.
+ * 1 - Display the text as the child outputs it in real time. (This will mix all the child process text output.)
+ * 2 - Display the text when the child is done. (This will display the text serially.)
+ *
+ * @default 1
  */
-define('nZEDb_MULTIPROCESSING_HIDE_CHILD_OUTPUT', false);
+define('nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE', 0);
