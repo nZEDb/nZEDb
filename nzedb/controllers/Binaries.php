@@ -207,9 +207,11 @@ class Binaries
 	/**
 	 * Download new headers for all active groups.
 	 *
+	 * @param int $maxHeaders (Optional) How many headers to download max.
+	 *
 	 * @return void
 	 */
-	public function updateAllGroups()
+	public function updateAllGroups($maxHeaders = 0)
 	{
 		$groups = $this->_groups->getActive();
 
@@ -236,7 +238,7 @@ class Binaries
 				if ($this->_echoCLI) {
 					$this->_colorCLI->doEcho($this->_colorCLI->header($dMessage), true);
 				}
-				$this->updateGroup($group);
+				$this->updateGroup($group, $maxHeaders);
 				$counter++;
 			}
 
@@ -264,10 +266,11 @@ class Binaries
 	 * Download new headers for a single group.
 	 *
 	 * @param array $groupMySQL Array of MySQL results for a single group.
+	 * @param int   $maxHeaders (Optional) How many headers to download max.
 	 *
 	 * @return void
 	 */
-	public function updateGroup($groupMySQL)
+	public function updateGroup($groupMySQL, $maxHeaders = 0)
 	{
 		$startGroup = microtime(true);
 
@@ -358,6 +361,14 @@ class Binaries
 		$total = (string)($groupLast - $first);
 		// This is how many articles are available (without $leaveOver).
 		$realTotal = (string)($groupNNTP['last'] - $first);
+
+		// Check if we should limit the amount of fetched new headers.
+		if ($maxHeaders > 0) {
+			if ($maxHeaders < ($groupLast - $first)) {
+				$groupLast = $last = (string)($first + $maxHeaders);
+			}
+			$total = (string)($groupLast - $first);
+		}
 
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if ($total > 0) {

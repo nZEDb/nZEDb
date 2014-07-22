@@ -672,9 +672,12 @@ class TvRage
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
 	}
 
-	public function processTvReleases($groupID = '', $lookupTvRage = true, $local = false)
+	public function processTvReleases($groupID = '', $guidChar = '', $lookupTvRage = 1, $local = false)
 	{
 		$ret = 0;
+		if ($lookupTvRage == 0) {
+			return $ret;
+		}
 		$trakt = new TraktTv();
 
 		// Get all releases without a rageid which are in a tv category.
@@ -687,10 +690,12 @@ class TvRage
 				AND r.rageid = -1
 				AND r.size > 1048576
 				AND r.categoryid BETWEEN 5000 AND 5999
-				%s
+				%s %s %s
 				ORDER BY r.postdate DESC
 				LIMIT %d",
 				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
+				($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, false, true)),
+				($lookupTvRage == 2 ? 'AND r.isrenamed = 1' : ''),
 				$this->rageqty
 			)
 		);

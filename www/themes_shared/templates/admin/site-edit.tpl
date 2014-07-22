@@ -577,30 +577,16 @@
 				<td style="width:180px;"><label for="lookupnfo">Lookup NFO:</label></td>
 				<td>
 					{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$site->lookupnfo separator='<br />'}
-					<div class="hint">Whether to attempt to retrieve an nfo file from usenet when processing binaries.<br/>
+					<div class="hint">Whether to attempt to retrieve an nfo file from usenet.<br/>
 						<strong>NOTE: disabling nfo lookups will disable movie lookups.</strong>
 					</div>
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="lookuptvrage">Lookup TV Rage:</label></td>
-				<td>
-					{html_radios id="lookuptvrage" name='lookuptvrage' values=$yesno_ids output=$yesno_names selected=$site->lookuptvrage separator='<br />'}
-					<div class="hint">Whether to attempt to lookup tv rage ids on the web when processing binaries.</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="lookupimdb">Lookup Movies:</label></td>
-				<td>
-					{html_radios id="lookupimdb" name='lookupimdb' values=$yesno_ids output=$yesno_names selected=$site->lookupimdb separator='<br />'}
-					<div class="hint">Whether to attempt to lookup film information from IMDB or TheMovieDB when processing binaries.</div>
-				</td>
-			</tr>
-						<tr>
 				<td style="width:180px;"><label for="lookupxxx">Lookup XXX:</label></td>
 				<td>
 					{html_radios id="lookupxxx" name='lookupxxx' values=$yesno_ids output=$yesno_names selected=$site->lookupxxx separator='<br />'}
-					<div class="hint">Whether to attempt to lookup film information from ADE or Popporn when processing binaries.</div>
+					<div class="hint">Whether to attempt to lookup film information from ADE or Popporn.</div>
 				</td>
 			</tr>
 			<tr>
@@ -608,28 +594,42 @@
 				<td style="width:180px;"><label for="lookupanidb">Lookup AniDB:</label></td>
 				<td>
 					{html_radios id="lookupanidb" name='lookupanidb' values=$yesno_ids output=$yesno_names selected=$site->lookupanidb separator='<br />'}
-					<div class="hint">Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.</div>
+					<div class="hint">Whether to attempt to lookup anime information from AniDB. Currently it is not recommend to enable this.</div>
 				</td>
 			</tr>
 			<tr>
 				<td style="width:180px;"><label for="lookupmusic">Lookup Music:</label></td>
 				<td>
 					{html_options style="width:180px;" id="lookupmusic" name='lookupmusic' values=$lookupmusic_ids output=$lookupmusic_names selected=$site->lookupmusic}
-					<div class="hint">Whether to attempt to lookup music information from Amazon when processing binaries.</div>
+					<div class="hint">Whether to attempt to lookup music information from Amazon.</div>
 				</td>
 			</tr>
 			<tr>
 				<td style="width:180px;"><label for="lookupgames">Lookup Games:</label></td>
 				<td>
 					{html_options style="width:180px;" id="lookupgames" name='lookupgames' values=$lookupgames_ids output=$lookupgames_names selected=$site->lookupgames}
-					<div class="hint">Whether to attempt to lookup game information from Amazon when processing binaries.</div>
+					<div class="hint">Whether to attempt to lookup game information from Amazon.</div>
 				</td>
 			</tr>
 			<tr>
 				<td style="width:180px;"><label for="lookupbooks">Lookup Books:</label></td>
 				<td>
 					{html_options style="width:180px;" id="lookupbooks" name='lookupbooks' values=$lookupbooks_ids output=$lookupbooks_names selected=$site->lookupbooks}
-					<div class="hint">Whether to attempt to lookup book information from Amazon when processing binaries.</div>
+					<div class="hint">Whether to attempt to lookup book information from Amazon.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="lookupimdb">Lookup Movies:</label></td>
+				<td>
+					{html_options style="width:180px;" id="lookupimdb" name='lookupimdb' values=$lookupmovies_ids output=$lookupmovies_names selected=$site->lookupimdb}
+					<div class="hint">Whether to attempt to lookup film information from IMDB or TheMovieDB.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="lookuptvrage">Lookup Movies:</label></td>
+				<td>
+					{html_options style="width:180px;" id="lookuptvrage" name='lookuptvrage' values=$lookuptv_ids output=$lookuptv_names selected=$site->lookuptvrage}
+					<div class="hint">Whether to attempt to lookup tv rage ids on the web.</div>
 				</td>
 			</tr>
 			<tr>
@@ -1040,7 +1040,25 @@
 				<td>
 					<input class="short" id="postthreads" name="postthreads" type="text" value="{$site->postthreads}"/>
 					<div class="hint">The number of threads for additional postprocessing. This includes deep rar
-						inspection, preview and sample creation and nfo processing.
+						inspection, preview and sample creation processing.
+						The max is 16, if you set anything higher it will use 16.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="nfothreads">NFO Threads:</label></td>
+				<td>
+					<input class="short" id="nfothreads" name="nfothreads" type="text" value="{$site->nfothreads}"/>
+					<div class="hint">The number of threads for nfo postprocessing.
+						The max is 16, if you set anything higher it will use 16.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="reqidthreads">Request ID Threads:</label></td>
+				<td>
+					<input class="short" id="reqidthreads" name="reqidthreads" type="text" value="{$site->reqidthreads}"/>
+					<div class="hint">The number of threads for local Request ID processing.
 					</div>
 				</td>
 			</tr>
@@ -1049,7 +1067,7 @@
 				<td>
 					<input class="short" id="postthreadsnon" name="postthreadsnon" type="text" value="{$site->postthreadsnon}"/>
 					<div class="hint">The number of threads for non-amazon postprocessing. This includes movies, anime and
-						tv lookups.
+						tv lookups. The max is 16, if you set anything higher it will use 16.
 					</div>
 				</td>
 			</tr>

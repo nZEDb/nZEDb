@@ -6,9 +6,42 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-22 Bart39
+	* Fix: Another fix for PredbFT matching issue with preid being blanked out after match
+2014-07-22 ruhllatio
+	* Fix: Attempt to fix strange PreDBFT name matching... also fix issue with preid being blanked out after match
+	* Chg: Monitor.php now uses PHP forking for threaded operations (if you're using safe scripts, these will still be python)
+	* Chg: Switched majority of if/then/else logic to switch/case.
+	* Chg: groupFixReleaseNames is now using guid thread separation like the other threaded scripts
+2014-07-22 kevin
+	* Add: Option to multiprocessing settings to change the way child process text is displayed (none, realtime, serially).
+	* Add: Setting for NFO threads.
+	* Add: More verbose to multi-processing.
+	* Chg: Make forking use tmux/bin/update-releases.php when TPG is on.
+	* Chg: Move some of the bin/ scripts into a central script.
+	* Add: php version of update_threaded.py
+	* Add: php multiprocess requestID, fix the python one at the same time.
+2014-07-21 ruhllatio
+	* Fix: NNTP being called in update_releases threaded removed -- much faster per thread
+2014-07-21 kevin
+	* Chg: Add options to multiprocessing postprocess.
+	* Chg: Change multiprocessing postprocess to check if there's work first.
+	* Add: Settings file for multiprocessing.
+	* Add: Option to limit how much new headers to download on update_binaries.
+	* Chg: Only enable header compression if we use a method that requires it, saves time when using the instance for something that will never use it.
+	* Add: Option to disable text output from child processes on multiprocessing scripts.
+	* Chg: Change cached query in browse to use nZEDb_CACHE_EXPIRY_MEDIUM.
+	* Fix: Query in NFO (the between was reversed).
+	* Chg: Change multiprocessing/threading scripts to do nfo/ppadd/movie/tv by guid first letter, gives better workload.
+	* Add: Renamed only processing option for movies/tv.
+	* Fix: Reverse like string %.
+2014-07-20 kevin
+	* Add: Multi processing scripts for binaries/backfill/postprocess/releases, written in PHP.
 2014-07-20 ruhllatio
 	* Fix: PreDB join timer logic in Tmux now runs full once and last week thereafter properly
 	* Add: ishashed to gfRn md5 work queries
+	* Chg: Revert decrypt_hashes all script to look outside category 7020 (Misc->Hashed)
+	* Chg: Improve NFO Proc count query and output
 2014-07-19 ruhllatio
 	* Chg: groupfixreleasenames var fixes and change to use categoryid instead of group_id
 	* Fix: groupID placement for PAR2 in gfrn / refactor pieces / fix whitespace

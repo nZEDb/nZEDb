@@ -61,12 +61,12 @@ class RequestID
 	protected $groupID = 0;
 
 	/**
-	 * @var array MySQL results for releases with RequestID's.
+	 * @var \PDOStatement MySQL results for releases with RequestID's.
 	 */
 	protected $results = array();
 
 	/**
-	 * @var array Single MySQL result.
+	 * @var PDO Single MySQL result.
 	 */
 	protected $result = array();
 
@@ -119,9 +119,6 @@ class RequestID
 	{
 		$this->groupID = $groupID;
 		$this->limit = $limit;
-		if ($local === false && $this->limit > self::MAX_WEB_LOOKUPS) {
-			$this->limit = self::MAX_WEB_LOOKUPS;
-		}
 		$this->local = $local;
 		$this->reqIDsFound = 0;
 		$this->_getResults();
@@ -141,34 +138,31 @@ class RequestID
 	 */
 	protected function _getResults()
 	{
-		// Look for records that potentially have requestID titles and have not been matched to a PreDB title
-		if ($this->local === true) {
-			$weblookup = '';
-		} else {
-			$weblookup = sprintf('OR (reqidstatus = %d AND adddate < NOW() - INTERVAL %d HOUR)',
-						self::REQID_NONE,
-						$this->_request_hours
-						);
-		}
-
 		$this->results = $this->pdo->queryDirect(
 			sprintf ('
 				SELECT r.id, r.name, r.searchname, g.name AS groupname, r.group_id
 				FROM releases r
 				LEFT JOIN groups g ON r.group_id = g.id
-				WHERE nzbstatus = 1
-				AND preid = 0
-				AND isrequestid = 1
+				WHERE r.nzbstatus = 1
+				AND r.preid = 0
+				AND r.isrequestid = 1
 				AND (
-					reqidstatus = %d
+					r.reqidstatus = %d
 					%s
 				)
 				%s %s %s LIMIT %d',
 				($this->local === true ? self::REQID_UPROC : self::REQID_NOLL),
-				$weblookup,
-				(empty($this->groupID) ? '' : ('AND group_id = ' . $this->groupID)),
+				($this->local === false
+					? sprintf(
+						'OR (r.reqidstatus = %d AND r.adddate < NOW() - INTERVAL %d HOUR)',
+						self::REQID_NONE,
+						$this->_request_hours
+					)
+					: ''
+				),
+				(empty($this->groupID) ? '' : ('AND r.group_id = ' . $this->groupID)),
 				($this->local === true ? '' : $this->_getReqIdGroups()), // Limit to req id groups on web look ups.
-				($this->local === true ? '' :  'ORDER BY postdate DESC'),
+				($this->local === true ? '' :  'ORDER BY r.postdate DESC'),
 				$this->limit
 			)
 		);

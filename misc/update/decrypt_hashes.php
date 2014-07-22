@@ -26,7 +26,7 @@ function preName($argv)
 	$namefixer = new NameFixer();
 
 	if (isset($argv[1]) && $argv[1] === "all") {
-		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020');
+		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE preid = 0 AND ishashed = 1');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
 		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {

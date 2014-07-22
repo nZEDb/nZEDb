@@ -91,7 +91,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "additional":
 	ps5 = format(int(dbgrab[0][13]))
 	ps6 = format(int(dbgrab[0][14]))
 elif len(sys.argv) > 1 and sys.argv[1] == "nfo":
-	cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'postthreads') AS a, (SELECT value FROM settings WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM settings WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM settings WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM settings WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM settings WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM settings WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i, (SELECT count(*) FROM releases WHERE nfostatus = -1 "+group_id+") as j, (SELECT count(*) FROM releases WHERE nfostatus = -2 "+group_id+") as k, (SELECT count(*) FROM releases WHERE nfostatus = -3 "+group_id+") as l, (SELECT count(*) FROM releases WHERE nfostatus = -4 "+group_id+") as m, (SELECT count(*) FROM releases WHERE nfostatus = -5 "+group_id+") as n, (SELECT count(*) FROM releases WHERE nfostatus = -6 "+group_id+") as o")
+	cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'nfothreads') AS a, (SELECT value FROM settings WHERE setting = 'maxaddprocessed') AS b, (SELECT value FROM settings WHERE setting = 'maxnfoprocessed') AS c, (SELECT value FROM settings WHERE setting = 'maximdbprocessed') AS d, (SELECT value FROM settings WHERE setting = 'maxrageprocessed') AS e, (SELECT value FROM settings WHERE setting = 'maxsizetopostprocess') AS f, (SELECT value FROM settings WHERE setting = 'tmpunrarpath') AS g, (SELECT value FROM tmux WHERE setting = 'post') AS h, (SELECT value FROM tmux WHERE setting = 'post_non') AS i, (SELECT count(*) FROM releases WHERE nfostatus = -1 "+group_id+") as j, (SELECT count(*) FROM releases WHERE nfostatus = -2 "+group_id+") as k, (SELECT count(*) FROM releases WHERE nfostatus = -3 "+group_id+") as l, (SELECT count(*) FROM releases WHERE nfostatus = -4 "+group_id+") as m, (SELECT count(*) FROM releases WHERE nfostatus = -5 "+group_id+") as n, (SELECT count(*) FROM releases WHERE nfostatus = -6 "+group_id+") as o")
 	dbgrab = cur[0].fetchall()
 	ps1 = format(int(dbgrab[0][9]))
 	ps2 = format(int(dbgrab[0][10]))
@@ -130,22 +130,22 @@ process_additional = run_threads * ppperrun
 process_nfo = run_threads * nfoperrun
 
 if sys.argv[1] == "additional":
-	cur[0].execute("SELECT DISTINCT r.group_id from releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 "+maxsize+" AND (r.haspreview = -1 AND c.disablepreview = 0) AND r.passwordstatus BETWEEN -6 AND -1")
+	cur[0].execute("SELECT LEFT(r.guid, 1) AS group_id FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 "+maxsize+" AND (r.haspreview = -1 AND c.disablepreview = 0) AND r.passwordstatus BETWEEN -6 AND -1 GROUP BY LEFT(r.guid, 1) LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "nfo":
-	cur[0].execute("SELECT DISTINCT group_id from releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1")
+	cur[0].execute("SELECT LEFT(guid, 1) AS group_id FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1 GROUP BY LEFT(guid, 1) LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-	cur[0].execute("SELECT DISTINCT group_id FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 "+orderBY)
+	cur[0].execute("SELECT LEFT(guid, 1) AS group_id FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 GROUP BY LEFT(guid, 1) "+orderBY+" LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "movie":
-	cur[0].execute("SELECT DISTINCT group_id FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 "+orderBY)
+	cur[0].execute("SELECT LEFT(guid, 1) AS group_id FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 GROUP BY LEFT(guid, 1) "+orderBY+" LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "tv" and len(sys.argv) == 3 and sys.argv[2] == "clean":
-	cur[0].execute("SELECT DISTINCT group_id FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid BETWEEN 5000 AND 5999 "+orderBY)
+	cur[0].execute("SELECT LEFT(guid, 1) AS group_id FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid BETWEEN 5000 AND 5999 GROUP BY LEFT(guid, 1) "+orderBY+" LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "tv":
-	cur[0].execute("SELECT DISTINCT group_id FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid BETWEEN 5000 AND 5999 "+orderBY)
+	cur[0].execute("SELECT LEFT(guid, 1) AS group_id FROM releases WHERE nzbstatus = 1 AND searchname IS NOT NULL AND rageid = -1 AND categoryid BETWEEN 5000 AND 5999 GROUP BY LEFT(guid, 1) "+orderBY+" LIMIT 16")
 	datas = cur[0].fetchall()
 
 #close connection to mysql

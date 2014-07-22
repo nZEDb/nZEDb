@@ -244,48 +244,48 @@ class Nfo
 	 * Attempt to find NFO files inside the NZB's of releases.
 	 *
 	 * @param object $nntp           Instance of class NNTP.
-	 * @param string $groupID        (optional) The group ID to work on.
-	 * @param int $processImdb       Attempt to find IMDB id's in the NZB?
-	 * @param int $processTvrage     Attempt to find TvRage id's in the NZB?
+	 * @param string $groupID        (optional) Group ID.
+	 * @param string $guidChar       (optional) First character of the release GUID (used for multi-processing).
+	 * @param int    $processImdb    (optional) Attempt to find IMDB id's in the NZB?
+	 * @param int    $processTvrage  (optional) Attempt to find TvRage id's in the NZB?
 	 *
 	 * @return int                   How many NFO's were processed?
 	 *
 	 * @access public
 	 */
-	public function processNfoFiles($nntp, $groupID = '', $processImdb = 1, $processTvrage = 1)
+	public function processNfoFiles($nntp, $groupID = '', $guidChar = '', $processImdb = 1, $processTvrage = 1)
 	{
-		$nfoCount = $ret = 0;
-		$groupID = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);
-		$res = array();
+		$ret = 0;
+		$guidCharQuery = ($guidChar === '' ? '' : 'AND guid ' . $this->pdo->likeString($guidChar, false, true));
+		$groupIDQuery = ($groupID === '' ? '' : 'AND group_id =' . $groupID);
 
-
-		$i = -1;
-		while (($nfoCount != $this->nzbs) && ($i >= -6)) {
-			$res += $this->pdo->query(
-				sprintf('
-					SELECT id, guid, group_id, name
-					FROM releases
-					WHERE nzbstatus = %d
-					AND nfostatus BETWEEN %d AND %d
-					AND size < %s
-					%s
-					LIMIT %d',
-					NZB::NZB_ADDED,
-					$i,
-					self::NFO_UNPROC,
-					$this->maxsize * 1073741824,
-					$groupID,
-					$this->nzbs
-				)
-			);
-			$nfoCount += count($res);
-			$i--;
-		}
-
+		$res = $this->pdo->query(
+			sprintf('
+				SELECT id, guid, group_id, name
+				FROM releases
+				WHERE nzbstatus = %d
+				AND nfostatus BETWEEN -6 AND %d
+				AND size < %s
+				%s
+				%s
+				ORDER BY nfostatus ASC, postdate DESC
+				LIMIT %d',
+				NZB::NZB_ADDED,
+				self::NFO_UNPROC,
+				$this->maxsize * 1073741824,
+				$guidCharQuery,
+				$groupIDQuery,
+				$this->nzbs
+			)
+		);
+		$nfoCount = count($res);
 
 		if ($nfoCount > 0) {
 			$this->c->doEcho(
 				$this->c->primary(
+					PHP_EOL .
+					($guidChar === '' ? '' : '[' . $guidChar . '] ') .
+					($groupID === '' ? '' : '[' . $groupID . '] ') .
 					'Processing ' . $nfoCount .
 					' NFO(s), starting at ' . $this->nzbs .
 					' * = hidden NFO, + = NFO, - = no NFO, f = download failed.'
@@ -293,10 +293,21 @@ class Nfo
 			);
 
 			// Get count of releases per nfo status
-			$outString = 'Available to process';
-			for ($i = -1; $i >= -6; $i--) {
-				$ns =  $this->pdo->query('SELECT COUNT(*) AS count FROM releases WHERE nfostatus = ' . $i);
-				$outString .= ', ' . $i . ' = ' . number_format($ns[0]['count']);
+			$outString = PHP_EOL . 'Available to process';
+			$nfostats = $this->pdo->queryDirect(
+				sprintf('
+					SELECT nfostatus AS status, COUNT(*) AS count
+					FROM releases
+					WHERE nfostatus BETWEEN -6 AND %d %s %s
+					GROUP BY nfostatus
+					ORDER BY nfostatus ASC',
+					self::NFO_UNPROC,
+					$guidCharQuery,
+					$groupIDQuery
+				)
+			);
+			foreach ($nfostats as $row) {
+				$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
 			}
 			$this->c->doEcho($this->c->header($outString . '.'));
 
