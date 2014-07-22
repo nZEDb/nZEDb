@@ -61,7 +61,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../nix/tmux/bin/update_per_group.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  update_per_group  "+my_id])
 					self.my_queue.task_done()
 
 def main():
@@ -95,7 +95,7 @@ def main():
 
 	#stage7b
 	final = "final"
-	subprocess.call(["php", pathname+"/../nix/tmux/bin/update_releases.php", "tmux  "+str(count)+"  ignore"])
+	subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  releases  "+str(count)+"_"])
 
 	print(bcolors.HEADER + "\nUpdate Releases Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)

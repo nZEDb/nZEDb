@@ -16,6 +16,15 @@ define('nZEDb_LIBS', nZEDb_ROOT . 'libs' . DS);
 // Used to refer to the /misc class files.
 define('nZEDb_MISC', nZEDb_ROOT . 'misc' . DS);
 
+// /misc/update/
+define('nZEDb_UPDATE', nZEDb_MISC . 'update' . DS);
+
+// /misc/update/nix/
+define('nZEDb_NIX', nZEDb_UPDATE . 'nix' . DS);
+
+// /misc/update/nix/multiprocessing/
+define('nZEDb_MULTIPROCESSING', nZEDb_NIX . 'multiprocessing' . DS);
+
 // Refers to the web root for the Smarty lib
 define('nZEDb_WWW', nZEDb_ROOT . 'www' . DS);
 

@@ -1,0 +1,122 @@
+<?php
+
+if (!isset($argv[1])) {
+	exit("This script is not intended to be run manually." . PHP_EOL);
+}
+
+// Are we coming from python or php ? $options[0] => (string): python|php
+// The type of process we want to do: $options[1] => (string): releases
+$options = explode('  ', $argv[1]);
+
+switch ($options[1]) {
+
+	// Process releases.
+	// $options[2] => (string)groupCount, number of groups terminated by _ | (int)groupID, group to work on
+	case 'releases':
+		require_once dirname(__FILE__) . '/../../../config.php';
+		$pdo = new nzedb\db\Settings();
+		$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => null, 'ConsoleTools' => new ConsoleTools()));
+
+		//Runs function that are per group
+		if (is_numeric($options[2])) {
+
+			if ($options[0] === 'python') {
+				collectionCheck($pdo, $options[2]);
+			}
+
+			$releases->processIncompleteCollections($options[2]);
+			$releases->processCollectionSizes($options[2]);
+			$releases->deleteUnwantedCollections($options[2]);
+			$releases->createReleases($options[2]);
+			$releases->createNZBs($options[2]);
+			$releases->deleteCollections($options[2]);
+
+		} else {
+
+			// Run functions that run on releases table after all others completed.
+			$groupCount = rtrim($options[2], '_');
+			if (!is_numeric($groupCount)) {
+				$groupCount = 1;
+			}
+			$releases->deletedReleasesByGroup();
+			$releases->deleteReleases();
+			$releases->processRequestIDs('', (5000 * $groupCount), true);
+			$releases->processRequestIDs('', (1000 * $groupCount), false);
+			$releases->categorizeReleases(1);
+		}
+		break;
+
+	// Do a single group (update_binaries/backFill/update_releases/postprocess).
+	// $options[2] => (int)groupID, group to work on
+	case 'update_per_group':
+		if (is_numeric($options[2])) {
+
+			require_once dirname(__FILE__) . '/../../../config.php';
+			$pdo = new nzedb\db\Settings();
+
+			// Get the group info from MySQL.
+			$groupMySQL = $pdo->queryOneRow(sprintf('SELECT * FROM groups WHERE id = %d', $options[2]));
+
+			if ($groupMySQL === false) {
+				exit('ERROR: Group not found with ID ' . $options[2] . PHP_EOL);
+			}
+
+			// Connect to NNTP.
+			$nntp = nntp($pdo);
+			$backFill = new Backfill($nntp, true);
+
+			// Update the group for new binaries.
+			(new Binaries($nntp, true, $backFill))->updateGroup($groupMySQL);
+
+			// BackFill the group with 20k articles.
+			$backFill->backfillAllGroups($groupMySQL['name'], 20000, 'normal');
+
+			// Check if we got anything from binaries/backFill, exit if not.
+			collectionCheck($pdo, $options[2]);
+
+			// Create releases.
+			$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => null, 'ConsoleTools' => null));
+			$releases->processIncompleteCollections($options[2]);
+			$releases->processCollectionSizes($options[2]);
+			$releases->deleteUnwantedCollections($options[2]);
+			$releases->createReleases($options[2]);
+			$releases->createNZBs($options[2]);
+			$releases->deleteCollections($options[2]);
+
+			// Post process the releases.
+			(new ProcessAdditional(true, $nntp, $pdo))->start($options[2]);
+			(new Nfo(true))->processNfoFiles($nntp, $options[2]);
+
+		}
+		break;
+}
+
+/**
+ * Check if the group should be processed.
+ *
+ * @param \nzedb\db\Settings $pdo
+ * @param int                $groupID
+ */
+function collectionCheck(&$pdo, $groupID)
+{
+	if ($pdo->queryOneRow(sprintf('SELECT id FROM collections_%d LIMIT 1', $groupID)) === false) {
+		exit();
+	}
+}
+
+/**
+ * Connect to usenet, return NNTP object.
+ *
+ * @param \nzedb\db\Settings $pdo
+ *
+ * @return NNTP
+ */
+function &nntp(&$pdo)
+{
+	$nntp = new NNTP();
+	if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+		exit("ERROR: Unable to connect to usenet." . PHP_EOL);
+	}
+
+	return $nntp;
+}

@@ -31,8 +31,8 @@ class Forking extends \fork_daemon
 
 		if ($type === 'releases' && $this->tablePerGroup === true) {
 			$this->executeCommand(
-				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'nix' .
-				DS . 'tmux' . DS . 'bin' . DS . 'update_releases.php "php  ' . count($this->work) . '  ignore"'
+				PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS .
+				'switch.php "php  releases  ' . count($this->work) . '_"'
 			);
 		}
 
@@ -158,8 +158,7 @@ class Forking extends \fork_daemon
 
 					if ($groups->rowCount() > 0) {
 						foreach($groups as $group) {
-							$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d LIMIT 1', $group['id']));
-							if ($check !== false) {
+							if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1',$group['id'])) !== false) {
 								$this->work[] = array('id' => $group['id']);
 							}
 						}
@@ -536,8 +535,8 @@ class Forking extends \fork_daemon
 		foreach ($groups as $group) {
 			if ($this->tablePerGroup === true) {
 				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'nix' . DS . 'tmux' . DS . 'bin' . DS .
-					'update_releases.php "php  ignore  ' . $group['id'] . '"'
+					PHP_BINARY . ' ' . nZEDb_MULTIPROCESSING . '.do_not_run' . DS .
+					'switch.php "php  releases  ' .  $group['id'] . '"'
 				);
 			} else {
 				$this->executeCommand(
