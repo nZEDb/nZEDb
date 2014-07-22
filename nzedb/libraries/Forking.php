@@ -187,7 +187,7 @@ class Forking extends \fork_daemon
 							\NZB::NZB_ADDED
 						)
 					);
-					$maxProcesses = $this->pdo->getSetting('maxnfoprocessed');
+					$maxProcesses = $this->pdo->getSetting('nfothreads');
 				}
 				break;
 
