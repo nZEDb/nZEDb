@@ -501,27 +501,27 @@ class NameFixer
 	// Match a PreDB title to a release name or searchname using an exact full-text match
 	public function matchPredbFT($pre, $echo, $namestatus, $echooutput, $show)
 	{
-		$pdo = $this->pdo;
 		$matching = 0;
 		$this->matched = false;
 
 		//Remove all non-printable chars from PreDB title
-		$titlelike = "%" . $this->utility->stripNonPrintingChars($pre['title']) . "%";
 		preg_match_all('#[a-zA-Z0-9]{3,}#', $pre['title'], $matches, PREG_PATTERN_ORDER);
 		$titlematch = '+' . implode(' +', $matches[0]);
 
 		//Find release matches with fulltext and then identify exact matches with cleaned LIKE string
-		$res = $pdo->queryDirect(sprintf("
+		$res = $this->pdo->queryDirect(
+						sprintf("
 							SELECT rs.releaseid AS releaseid, rs.name, rs.searchname,
 								r.group_id, r.categoryid
 							FROM releasesearch rs
-							INNER JOIN releases r ON rs.releaseid = r.id AND r.preid = 0
+							INNER JOIN releases r ON rs.releaseid = r.id
 							WHERE MATCH (rs.name, rs.searchname) AGAINST ('%1\$s' IN BOOLEAN MODE)
-							AND (r.name LIKE '%2\$s' OR r.searchname LIKE '%2\$s')
+							AND r.preid = 0
+							AND (r.name %2\$s OR r.searchname %2\$s)
 							LIMIT 21",
 							$titlematch,
-							$titlelike
-			)
+							$this->pdo->likeString($pre['title'], true, true)
+						)
 		);
 
 		if ($res !== false) {
@@ -536,23 +536,49 @@ class NameFixer
 					if ($pre['title'] !== $row['searchname']) {
 						$determinedcat = $this->category->determineCategory($pre['title'], $row['group_id']);
 						if ($echo == 1) {
-							$pdo->queryExec(sprintf("UPDATE releases SET preid = %d WHERE id = %d", $pre['preid'], $row['releaseid']));
+							$this->pdo->queryExec(
+										sprintf("
+											UPDATE releases
+											SET preid = %d
+											WHERE id = %d",
+											$pre['preid'],
+											$row['releaseid']
+										)
+							);
 							$this->matched = true;
 							if ($namestatus == 1) {
-								$pdo->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-										. "searchname = %s, categoryid = %d, isrenamed = 1, iscategorized = 1 WHERE id = %d", $pdo->escapeString($pre['title']), $determinedcat, $row['releaseid']
-									)
+								$this->pdo->queryExec(
+											sprintf("
+												UPDATE releases
+												SET rageid = -1, seriesfull = NULL, season = NULL,
+													episode = NULL, tvtitle = NULL, tvairdate = NULL,
+													imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL,
+													bookinfoid = NULL, anidbid = NULL, searchname = %s,
+													categoryid = %d, isrenamed = 1, iscategorized = 1
+												WHERE id = %d",
+												$this->pdo->escapeString($pre['title']),
+												$determinedcat, $row['releaseid']
+											)
 								);
 							} else {
-								$pdo->queryExec(sprintf("UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
-										. "searchname = %s, categoryid = %d WHERE id = %d", $pdo->escapeString($pre['title']), $determinedcat, $row['releaseid']
-									)
+								$this->pdo->queryExec(
+											sprintf("
+												UPDATE releases
+												SET rageid = -1, seriesfull = NULL, season = NULL,
+													episode = NULL, tvtitle = NULL, tvairdate = NULL,
+													imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL,
+													bookinfoid = NULL, anidbid = NULL, searchname = %s,
+													categoryid = %d
+												WHERE id = %d",
+												$this->pdo->escapeString($pre['title']),
+												$determinedcat,
+												$row['releaseid']
+											)
 								);
 							}
 						}
-
 						if ($echooutput && $show === 1) {
-							$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show);
+							$this->updateRelease($row, $pre['title'], $method = "Title Match source: " . $pre['source'], $echo, "PreDB FT Exact, ", $namestatus, $show, $pre['preid']);
 						}
 						$matching++;
 					}

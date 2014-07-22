@@ -6,6 +6,10 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-22 ruhllatio
+	* Fix: Attempt to fix strange PreDBFT name matching... also fix issue with preid being blanked out after match
+	* Chg: Monitor.php now uses PHP forking for threaded operations (if you're using safe scripts, these will still be python)
+	* Chg: Switched majority of if/then/else logic to switch/case.
 2014-07-22 kevin
 	* Add: Option to multiprocessing settings to change the way child process text is displayed (none, realtime, serially).
 	* Add: Setting for NFO threads.
