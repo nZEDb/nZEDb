@@ -11,25 +11,26 @@ if (!isset($argv[1])) {
 	$namefixer = new NameFixer(true);
 	$pieces = explode(' ', $argv[1]);
 	$proxy = $pdo->getSetting('nntpproxy');
-	$categoryID = $pieces[1];
+	$guidChar = $pieces[1];
 	$maxperrun = $pieces[2];
 	$thread = $pieces[3];
 
 	switch (true) {
-		case $pieces[0] === 'nfo' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun):
+		case $pieces[0] === 'nfo' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT r.id AS releaseid, r.guid, r.group_id, r.categoryid, r.name, r.searchname,
 									uncompress(nfo) AS textstring
-								FROM releases r
+								FROM releases r USE INDEX (ix_releases_guid)
 								INNER JOIN releasenfo rn ON r.id = rn.releaseid
-								WHERE r.nzbstatus = 1
+								WHERE r.guid %s
+								AND r.nzbstatus = 1
 								AND r.proc_nfo = 0
+								AND r.nfostatus = 1
 								AND r.preid = 0
-								AND r.categoryid = %d
 								ORDER BY r.postdate DESC
 								LIMIT %s',
-								$categoryID,
+								$pdo->likeString($guidChar, false, true),
 								$maxperrun
 							)
 			);
@@ -50,19 +51,19 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $pieces[0] === 'filename' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun):
+		case $pieces[0] === 'filename' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT rf.name AS textstring, rf.releaseid AS fileid,
 									r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id
-								FROM releases r
+								FROM releases r USE INDEX (ix_releases_guid)
 								INNER JOIN releasefiles rf ON r.id = rf.releaseid
-								WHERE r.nzbstatus = 1 AND r.proc_files = 0
+								WHERE r.guid %s
+								AND r.nzbstatus = 1 AND r.proc_files = 0
 								AND r.preid = 0
-								AND r.categoryid = %d
 								ORDER BY r.postdate ASC
 								LIMIT %s',
-								$categoryID,
+								$pdo->likeString($guidChar, false, true),
 								$maxperrun
 							)
 			);
@@ -76,20 +77,20 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $pieces[0] === 'md5' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun):
+		case $pieces[0] === 'md5' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, r.dehashstatus,
 									rf.name AS filename
-								FROM releases r
+								FROM releases r USE INDEX (ix_releases_guid)
 								LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1
-								WHERE nzbstatus = 1 AND r.ishashed = 1
+								WHERE r.guid %s
+								AND nzbstatus = 1 AND r.ishashed = 1
 								AND r.dehashstatus BETWEEN -6 AND 0
 								AND r.preid = 0
-								AND r.categoryid = %d
 								ORDER BY r.dehashstatus DESC, r.postdate ASC
 								LIMIT %s',
-								$categoryID,
+								$pdo->likeString($guidChar, false, true),
 								$maxperrun
 							)
 			);
@@ -106,17 +107,18 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $pieces[0] === 'par2' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun):
+		case $pieces[0] === 'par2' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT r.id AS releaseid, r.guid, r.group_id
-								FROM releases r
-								WHERE r.nzbstatus = 1 AND r.proc_par2 = 0
+								FROM releases r USE INDEX (ix_releases_guid)
+								WHERE r.guid %s
+								AND r.nzbstatus = 1
+								AND r.proc_par2 = 0
 								AND r.preid = 0
-								AND r.categoryid = %d
 								ORDER BY r.postdate ASC
 								LIMIT %s',
-								$categoryID,
+								$pdo->likeString($guidChar, false, true),
 								$maxperrun
 							)
 			);
@@ -140,18 +142,18 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $pieces[0] === 'miscsorter' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun):
+		case $pieces[0] === 'miscsorter' && isset($guidChar) && isset($maxperrun) && is_numeric($maxperrun):
 			$releases = $pdo->queryDirect(
 							sprintf('
 								SELECT r.id AS releaseid
-								FROM releases r
-								WHERE r.nzbstatus = 1 AND r.nfostatus = 1
+								FROM releases r USE INDEX (ix_releases_guid)
+								WHERE r.guid %s
+								AND r.nzbstatus = 1 AND r.nfostatus = 1
 								AND r.proc_sorter = 0 AND r.isrenamed = 0
 								AND r.preid = 0
-								AND r.categoryid = %d
 								ORDER BY r.postdate DESC
 								LIMIT %s',
-								$categoryID,
+								$pdo->likeString($guidChar, false, true),
 								$maxperrun
 							)
 			);
@@ -176,7 +178,7 @@ if (!isset($argv[1])) {
 				}
 			}
 			break;
-		case $pieces[0] === 'predbft' && isset($categoryID) && isset($maxperrun) && is_numeric($maxperrun) && isset($thread) && is_numeric($thread):
+		case $pieces[0] === 'predbft' && isset($maxperrun) && is_numeric($maxperrun) && isset($thread) && is_numeric($thread):
 			$pres = $pdo->queryDirect(
 						sprintf('
 							SELECT p.id AS preid, p.title, p.source, p.searched

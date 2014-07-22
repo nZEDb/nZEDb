@@ -29,38 +29,48 @@ if sys.argv[1] != "nfo" and sys.argv[1] != "filename" and sys.argv[1] != "md5" a
 	print(bcolors.ERROR + "\n\An invalid argument was supplied\ngroupfixrelnames_threaded.py [md5, nfo, filename, par2, miscsorter, predbft]\n" + bcolors.ENDC)
 	sys.exit()
 
-print(bcolors.HEADER + "\nfixReleaseNames Per Category Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+print(bcolors.HEADER + "\nfixReleaseNames {} Threaded Started at {}".format(sys.argv[1], datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 datas = []
-join = " "
-where = " "
 limit = 0
 
-if sys.argv[1] == "md5":
-	join = " LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1 "
-	where = " r.proc_files = 0 AND r.ishashed = 1 AND r.dehashstatus BETWEEN -6 AND 0 AND "
-if sys.argv[1] == "nfo":
-	join = " "
-	where = " r.proc_nfo = 0 AND r.nfostatus = 1 AND "
-if sys.argv[1] == "filename":
-	join = " INNER JOIN releasefiles rf ON r.id = rf.releaseid "
-	where = " r.proc_files = 0 AND "
-if sys.argv[1] == "par2":
-	where = " r.proc_par2 = 0 AND "
-if sys.argv[1] == "miscsorter":
-	where = " r.nfostatus = 1 AND r.proc_sorter = 0 AND r.isrenamed = 0 AND "
+join = ""
+where = ""
+datelimit = "AND DATEDIFF(NOW(), r.adddate) <= 7"
+groupby = "GROUP BY LEFT(r.guid, 1)"
+orderby = "ORDER BY LEFT(r.guid, 1) ASC"
+rowlimit = "LIMIT 16"
 
 cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamethreads'")
 run_threads = cur[0].fetchone()
 cur[0].execute("SELECT value FROM settings WHERE setting = 'fixnamesperrun'")
 run_perrun = cur[0].fetchone()
 
-cur[0].execute("SELECT c.id, count(DISTINCT r.id) AS count FROM category c INNER JOIN releases r ON c.id = r.categoryid AND r.preid = 0 AND nzbstatus = 1" + join + "WHERE" + where + "c.status < 2 AND c.parentid IS NOT NULL GROUP BY c.id HAVING count > 1 ORDER BY count DESC")
+threads = int(run_threads[0])
+if threads > 16:
+	threads = 16
+maxperrun = int(run_perrun[0])
+
+if sys.argv[1] == "md5":
+	join = "LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid AND rf.ishashed = 1"
+	where = "r.ishashed = 1 AND r.dehashstatus BETWEEN -6 AND 0"
+elif sys.argv[1] == "nfo":
+	where = "r.proc_nfo = 0 AND r.nfostatus = 1"
+elif sys.argv[1] == "filename":
+	join = "INNER JOIN releasefiles rf ON r.id = rf.releaseid"
+	where = "r.proc_files = 0"
+elif sys.argv[1] == "par2":
+	where = "r.proc_par2 = 0"
+elif sys.argv[1] == "miscsorter":
+	where = "r.nfostatus = 1 AND r.proc_sorter = 0 AND r.isrenamed = 0"
+elif sys.argv[1] == "predbft":
+	where = "1=1"
+	rowlimit = "LIMIT %s" % (threads)
+
+cur[0].execute("SELECT DISTINCT LEFT(r.guid, 1), COUNT(*) AS count FROM releases r %s WHERE %s AND r.preid = 0 AND r.nzbstatus = 1 %s %s %s %s" % (join, where, datelimit, groupby, orderby, rowlimit))
 datas = cur[0].fetchall()
 
-threads = int(run_threads[0])
-categories = int(len(datas))
-maxperrun = int(run_perrun[0])
+guids = int(len(datas))
 
 #close connection to mysql
 info.disconnect(cur[0], cur[1])
@@ -96,7 +106,7 @@ def main():
 	global time_of_last_run
 	time_of_last_run = time.time()
 
-	print(bcolors.HEADER + "We will be using a max of {} threads, a queue of {} active categories with a maximum of {} per category using {}.".format(threads, categories, maxperrun, sys.argv[1]) + bcolors.ENDC)
+	print(bcolors.HEADER + "We will be using a max of {} threads, a total of {} guid prefixes with a maximum of {} per thread.".format(threads, guids, maxperrun) + bcolors.ENDC)
 	time.sleep(2)
 
 	def signal_handler(signal, frame):
@@ -114,20 +124,21 @@ def main():
 	#now load some arbitrary jobs into the queue
 	count = 0
 
-	for category in datas:
-		limit = maxperrun
+	for firstguid in datas:
 		if count >= threads:
 			count = 0
 		count += 1
+		if firstguid[1] < maxperrun:
+			limit = firstguid[1]
+		else:
+			limit = maxperrun
 		time.sleep(.03)
-		if int(category[1]) < maxperrun:
-			limit = int(category[1])
 		if limit > 0:
-			my_queue.put("%s %s %s %s" % (sys.argv[1], category[0], limit, count))
+			my_queue.put("%s %s %s %s" % (sys.argv[1], firstguid[0], limit, count))
 
 	my_queue.join()
 
-	print(bcolors.HEADER + "\nfixReleaseNames Per Category Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
+	print(bcolors.HEADER + "\nfixReleaseNames Per GUID Prefix Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
 
 if __name__ == '__main__':
