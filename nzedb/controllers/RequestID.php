@@ -119,9 +119,6 @@ class RequestID
 	{
 		$this->groupID = $groupID;
 		$this->limit = $limit;
-		if ($local === false && $this->limit > self::MAX_WEB_LOOKUPS) {
-			$this->limit = self::MAX_WEB_LOOKUPS;
-		}
 		$this->local = $local;
 		$this->reqIDsFound = 0;
 		$this->_getResults();

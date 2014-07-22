@@ -94,8 +94,8 @@ def main():
 	my_queue.join()
 
 	#stage7b
-	final = "Stage7b"
-	subprocess.call(["php", pathname+"/../nix/tmux/bin/update_releases.php", "tmux  "+str(final)])
+	final = "final"
+	subprocess.call(["php", pathname+"/../nix/tmux/bin/update_releases.php", "tmux  "+str(count)+"  ignore"])
 
 	print(bcolors.HEADER + "\nUpdate Releases Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)

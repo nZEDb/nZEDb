@@ -32,7 +32,7 @@ class Forking extends \fork_daemon
 		if ($type === 'releases' && $this->tablePerGroup === true) {
 			$this->executeCommand(
 				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'nix' .
-				DS . 'tmux' . DS . 'bin' . DS . 'update_releases.php "php  Stage7b"'
+				DS . 'tmux' . DS . 'bin' . DS . 'update_releases.php "php  ' . count($this->work) . '  ignore"'
 			);
 		}
 
@@ -537,7 +537,7 @@ class Forking extends \fork_daemon
 			if ($this->tablePerGroup === true) {
 				$this->executeCommand(
 					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'nix' . DS . 'tmux' . DS . 'bin' . DS .
-					'update_releases.php "php  ' . $group['id'] . '"'
+					'update_releases.php "php  ignore  ' . $group['id'] . '"'
 				);
 			} else {
 				$this->executeCommand(

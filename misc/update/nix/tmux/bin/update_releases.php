@@ -8,13 +8,16 @@ if (!isset($argv[1])) {
 }
 
 $pieces = explode('  ', $argv[1]);
-$groupID = $pieces[1];
+// [0] => (string)tmux|(string)php
+// [1] => (int)groupCount|(string)ignore
+// [2] => (int)groupID|(string)ignore
+
 
 $pdo = new nzedb\db\Settings();
 $releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => new ConsoleTools()));
 
 switch (true) {
-	case is_numeric($groupID):
+	case is_numeric($pieces[2]):
 		if ($pieces[0] === 'tmux') {
 			// Don't even process the group if no collections
 			$test = $pdo->queryOneRow(
@@ -22,7 +25,7 @@ switch (true) {
 					SELECT id
 					FROM collections_%d
 					LIMIT 1',
-					$groupID
+					$pieces[2]
 				)
 			);
 			if ($test === false) {
@@ -30,20 +33,20 @@ switch (true) {
 			}
 		}
 		//Runs function that are per group
-		$releases->processIncompleteCollections($groupID);
-		$releases->processCollectionSizes($groupID);
-		$releases->deleteUnwantedCollections($groupID);
-		$releases->createReleases($groupID);
-		$releases->createNZBs($groupID);
-		$releases->processRequestIDs($groupID, 1000, false);
-		$releases->deleteCollections($groupID);
+		$releases->processIncompleteCollections($pieces[2]);
+		$releases->processCollectionSizes($pieces[2]);
+		$releases->deleteUnwantedCollections($pieces[2]);
+		$releases->createReleases($pieces[2]);
+		$releases->createNZBs($pieces[2]);
+		$releases->deleteCollections($pieces[2]);
 		break;
-	case $groupID === 'Stage7b':
+	case $pieces[2] === 'ignore':
 		// Runs functions that run on releases table after all others completed
 		$releases->deletedReleasesByGroup();
-		$releases->processRequestIDs('', 5000, true);
-		$releases->categorizeReleases(1);
 		$releases->deleteReleases();
+		$releases->processRequestIDs('', (5000 * $pieces[1]), true);
+		$releases->processRequestIDs('', (1000 * $pieces[1]), false);
+		$releases->categorizeReleases(1);
 		break;
 	default:
 		exit;
