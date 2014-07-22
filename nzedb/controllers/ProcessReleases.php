@@ -670,14 +670,14 @@ class ProcessReleases
 	/**
 	 * Process RequestID's.
 	 *
-	 * @param int  $groupID
+	 * @param int|string  $groupID
 	 * @param int  $limit
 	 * @param bool $local
 	 *
 	 * @access public
 	 * @void
 	 */
-	public function processRequestIDs($groupID, $limit, $local)
+	public function processRequestIDs($groupID = '', $limit = 5000, $local = true)
 	{
 		if ($local === false && $this->pdo->getSetting('lookup_reqids') == 0) {
 			return;
@@ -716,7 +716,7 @@ class ProcessReleases
 	 * @void
 	 * @access public
 	 */
-	public function categorizeReleases($categorize, $groupID)
+	public function categorizeReleases($categorize, $groupID = '')
 	{
 		$startTime = time();
 		if ($this->echoCLI) {
@@ -948,7 +948,7 @@ class ProcessReleases
 	 * @void
 	 * @access public
 	 */
-	public function deletedReleasesByGroup($groupID)
+	public function deletedReleasesByGroup($groupID = '')
 	{
 		$startTime = time();
 		$minSizeDeleted = $maxSizeDeleted = $minFilesDeleted = 0;

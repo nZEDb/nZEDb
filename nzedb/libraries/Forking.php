@@ -28,6 +28,14 @@ class Forking extends \fork_daemon
 		// Now we destroy settings, to prevent errors from forking.
 		unset($this->pdo);
 		$this->processWork();
+
+		if ($type === 'releases' && $this->tablePerGroup === true) {
+			$this->executeCommand(
+				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'nix' .
+				DS . 'tmux' . DS . 'bin' . DS . 'update_releases.php "php  ' . count($this->work) . '  ignore"'
+			);
+		}
+
 		if (nZEDb_ECHOCLI) {
 			echo (
 				'Multi-processing for ' . $type . ' finished in ' .  (microtime(true) - $time) .
@@ -101,6 +109,12 @@ class Forking extends \fork_daemon
 	private $maxProcesses = 1;
 
 	/**
+	 * Are we using tablePerGroup?
+	 * @var bool
+	 */
+	private $tablePerGroup = false;
+
+	/**
 	 * Get work for our workers to work on.
 	 *
 	 * @param string $type
@@ -136,7 +150,24 @@ class Forking extends \fork_daemon
 
 			case 'releases':
 				$this->register_child_run([0 => $this, 1 => 'releasesChildWorker']);
-				$this->work = $this->pdo->query('SELECT name FROM groups WHERE (active = 1 OR backfill = 1)');
+
+				$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 1 ? true : false);
+				if ($this->tablePerGroup === true) {
+
+					$groups = $this->pdo->queryDirect('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
+
+					if ($groups->rowCount() > 0) {
+						foreach($groups as $group) {
+							$check = $this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d LIMIT 1', $group['id']));
+							if ($check !== false) {
+								$this->work[] = array('id' => $group['id']);
+							}
+						}
+					}
+				} else {
+					$this->work = $this->pdo->query('SELECT name FROM groups WHERE (active = 1 OR backfill = 1)');
+				}
+
 				$maxProcesses = $this->pdo->getSetting('releasesthreads');
 				break;
 
@@ -503,9 +534,16 @@ class Forking extends \fork_daemon
 	public function releasesChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			$this->executeCommand(
-				PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_releases.php 1 false ' . $group['name']
-			);
+			if ($this->tablePerGroup === true) {
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'nix' . DS . 'tmux' . DS . 'bin' . DS .
+					'update_releases.php "php  ignore  ' . $group['id'] . '"'
+				);
+			} else {
+				$this->executeCommand(
+					PHP_BINARY . ' ' . nZEDb_MISC . 'update' . DS . 'update_releases.php 1 false ' . $group['name']
+				);
+			}
 		}
 	}
 

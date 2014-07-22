@@ -61,12 +61,12 @@ class RequestID
 	protected $groupID = 0;
 
 	/**
-	 * @var array MySQL results for releases with RequestID's.
+	 * @var \PDOStatement MySQL results for releases with RequestID's.
 	 */
 	protected $results = array();
 
 	/**
-	 * @var array Single MySQL result.
+	 * @var PDO Single MySQL result.
 	 */
 	protected $result = array();
 
@@ -119,9 +119,6 @@ class RequestID
 	{
 		$this->groupID = $groupID;
 		$this->limit = $limit;
-		if ($local === false && $this->limit > self::MAX_WEB_LOOKUPS) {
-			$this->limit = self::MAX_WEB_LOOKUPS;
-		}
 		$this->local = $local;
 		$this->reqIDsFound = 0;
 		$this->_getResults();
