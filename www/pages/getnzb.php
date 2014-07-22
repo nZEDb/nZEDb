@@ -1,6 +1,5 @@
 <?php
-$nzb = new NZB();
-$rel = new Releases();
+
 $uid = 0;
 
 use \nzedb\db\Settings;
@@ -43,6 +42,7 @@ if ($dlrequests['num'] > $maxdls) {
 	$page->show503();
 }
 
+$rel = new Releases();
 // User requested a zip of guid,guid,guid releases.
 if (isset($_GET["id"]) && isset($_GET["zip"]) && $_GET["zip"] == "1") {
 	$guids = explode(",", $_GET["id"]);
@@ -74,6 +74,7 @@ if (isset($_GET["id"]) && isset($_GET["zip"]) && $_GET["zip"] == "1") {
 	}
 }
 
+$nzb = new NZB();
 if (isset($_GET["id"])) {
 	$reldata = $rel->getByGuid($_GET["id"]);
 	$nzbpath = $nzb->getNZBPath($_GET["id"]);

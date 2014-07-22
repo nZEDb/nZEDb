@@ -36,11 +36,11 @@ $c = new ColorCLI();
 $nntp = new NNTP;
 $nzbContents= new NZBContents(
 	array(
-		'db' => $pdo,
-		'echo' => true,
-		'nfo' => new Nfo(true),
-		'pp' => new PostProcess(true),
-		'nntp' => $nntp
+		'Settings' => $pdo,
+		'Echo' => true,
+		'Nfo' => new Nfo(true),
+		'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $nfo, 'Echo' => true]),
+		'NNTP' => $nntp
 	)
 );
 $categorize = new Categorize();

@@ -33,7 +33,7 @@ preName($argv, $argc);
 function preName($argv, $argc)
 {
 	$pdo = new Settings();
-	$groups = new Groups();
+	$groups = new Groups($pdo);
 	$category = new Categorize();
 	$internal = $external = $pre = $none = 0;
 	$show = 2;

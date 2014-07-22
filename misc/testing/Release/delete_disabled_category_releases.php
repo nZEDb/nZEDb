@@ -10,7 +10,7 @@ if (isset($argv[1]) && $argv[1] == "true") {
 
 	$timestart = TIME();
 	$pdo = new Settings();
-	$releases = new Releases(array('Settings' => $pdo, 'Groups' => null));
+	$releases = new Releases(array('Settings' => $pdo));
 	$category = new Category();
 	$nzb = new NZB($pdo);
 	$catlist = $category->getDisabledIDs();

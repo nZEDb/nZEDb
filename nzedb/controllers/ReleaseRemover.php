@@ -133,7 +133,7 @@ class ReleaseRemover
 		$this->pdo = new Settings();
 		$this->color = new ColorCLI();
 		$this->consoleTools = new ConsoleTools();
-		$this->releases = new Releases(array('Settings' => $this->pdo, 'Groups' => null));
+		$this->releases = new Releases(array('Settings' => $this->pdo));
 		$this->nzb = new NZB($this->pdo);
 
 		$this->mysql = ($this->pdo->dbSystem() === 'mysql' ? true : false);
