@@ -10,6 +10,34 @@ $options = explode('  ', $argv[1]);
 
 switch ($options[1]) {
 
+	// Runs backFill interval or all.
+	// $options[2] => (string)group name, Name of group to work on.
+	// $options[3] => (int)   backfill type from tmux settings.
+	case 'backfill':
+		if (in_array((int)$options[3], [1, 2])) {
+			require_once dirname(__FILE__) . '/../../../config.php';
+			$pdo = new \nzedb\db\Settings();
+			$nntp = nntp($pdo);
+			switch ($options[3]) {
+				case 1: // BackFill interval.
+					(new Backfill($nntp))->backfillAllGroups($options[2]);
+					break;
+				case 2: // BackFill all.
+					(new Backfill($nntp))->backfillAllGroups($options[2], (new Tmux())->get()->backfill_qty);
+					break;
+			}
+		}
+		break;
+
+	// BackFill a single group, 10000 parts.
+	// $options[2] => (string)group name, Name of group to work on.
+	case 'backfill_all_quick':
+		require_once dirname(__FILE__) . '/../../../config.php';
+		$pdo = new \nzedb\db\Settings();
+		$nntp = nntp($pdo);
+		(new Backfill($nntp, true))->backfillAllGroups($options[2], 10000, 'normal');
+		break;
+
 	// Process releases.
 	// $options[2] => (string)groupCount, number of groups terminated by _ | (int)groupID, group to work on
 	case 'releases':
