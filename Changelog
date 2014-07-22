@@ -21,6 +21,8 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Move some of the bin/ scripts into a central script.
 	* Add: php version of update_threaded.py
 	* Add: php multiprocess requestID, fix the python one at the same time.
+	* Chg: Re-use more class instances, save memory and process time.
+	* Fix: Use update_db.php on autopatcher/tmux optimize/patchDB
 2014-07-21 ruhllatio
 	* Fix: NNTP being called in update_releases threaded removed -- much faster per thread
 2014-07-21 kevin

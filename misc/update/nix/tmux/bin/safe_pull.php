@@ -25,7 +25,7 @@ if (!isset($argv[1])) {
 	if (isset($pieces[1]) && $pieces[1] == 'partrepair') {
 		$binaries = new Binaries($nntp);
 		$groupName = $pieces[0];
-		$grp = new Groups();
+		$grp = new Groups($pdo);
 		$groupArr = $grp->getByName($groupName);
 		// Select group, here, only once
 		$data = $nntp->selectGroup($groupArr['name']);
@@ -39,7 +39,7 @@ if (!isset($argv[1])) {
 	} else if (isset($pieces[1]) && $pieces[0] == 'binupdate') {
 		$binaries = new Binaries($nntp);
 		$groupName = $pieces[1];
-		$grp = new Groups();
+		$grp = new Groups($pdo);
 		$groupArr = $grp->getByName($groupName);
 		$binaries->updateGroup($groupArr);
 	} else if (isset($pieces[2]) && ($pieces[2] == 'Binary' || $pieces[2] == 'Backfill')) {

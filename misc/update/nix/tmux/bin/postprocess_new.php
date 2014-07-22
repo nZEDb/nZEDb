@@ -32,11 +32,11 @@ switch ($options[1]) {
 		return;
 
 	case 'movie':
-		(new PostProcess(true))->processMovies('', $options[0]);
+		(new PostProcess(['Echo' => true, 'Settings' => $pdo]))->processMovies('', $options[0]);
 		echo '.';
 		return;
 
 	case 'tv':
-		(new PostProcess(true))->processTv('', $options[0]);
+		(new PostProcess(['Echo' => true, 'Settings' => $pdo]))->processTv('', $options[0]);
 		return;
 }

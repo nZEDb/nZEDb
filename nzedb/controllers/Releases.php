@@ -23,10 +23,15 @@ class Releases
 	/**
 	 * @var array $options Class instances.
 	 */
-	public function __construct(array $options = array('Settings' => null, 'Groups' => null))
+	public function __construct(array $options = array())
 	{
-		$this->pdo = ($options['Settings'] === null ? new Settings() : $options['Settings']);
-		$this->groups = ($options['Groups'] === null ? new Groups($this->pdo) : $options['Groups']);
+		$defaultOptions = [
+			'Settings' => null,
+			'Groups'   => null
+		];
+		$defaultOptions = array_replace($defaultOptions, $options);
+		$this->pdo = ($defaultOptions['Settings'] instanceof Settings ? $defaultOptions['Settings'] : new Settings());
+		$this->groups = ($defaultOptions['Groups'] instanceof Groups ? $defaultOptions['Groups'] : new Groups($this->pdo));
 		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0' ? false : true);
 	}
 

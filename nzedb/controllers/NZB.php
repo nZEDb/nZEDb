@@ -86,11 +86,7 @@ class NZB
 	 */
 	public function __construct(&$pdo = null)
 	{
-		if ($pdo === null) {
-			$this->pdo = new \nzedb\db\Settings();
-		} else {
-			$this->pdo = $pdo;
-		}
+		$this->pdo = ($pdo instanceof \nzedb\db\Settings ? $pdo : new \nzedb\db\Settings());
 
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$nzbSplitLevel = $this->pdo->getSetting('nzbsplitlevel');

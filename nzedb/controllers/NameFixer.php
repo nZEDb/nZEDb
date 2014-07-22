@@ -216,13 +216,14 @@ class NameFixer
 				$this->_totalReleases = $total;
 
 				echo $this->c->primary(number_format($total) . ' releases to process.');
+				$Nfo = new Nfo();
 				$nzbContents = new NZBContents(
 					array(
 						'echo' => $this->echooutput,
 						'nntp' => $nntp,
-						'nfo'  => new Nfo(),
+						'nfo'  => $Nfo,
 						'db'   => $this->pdo,
-						'pp'   => new PostProcess(true)
+						'pp'   => new PostProcess(['Echo' => true, 'Settings' => $this->pdo, 'Nfo' => $Nfo])
 					)
 				);
 

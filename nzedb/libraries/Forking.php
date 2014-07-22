@@ -535,7 +535,7 @@ class Forking extends \fork_daemon
 		if ($sharing !== false && $sharing['enabled'] == 1) {
 			$nntp = new \NNTP(true);
 			if (($this->pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === true) {
-				(new \PostProcess(true))->processSharing($nntp);
+				(new \PostProcess(['Echo' => true, 'Settings' => $this->pdo]))->processSharing($nntp);
 			}
 			return true;
 		}
@@ -547,7 +547,7 @@ class Forking extends \fork_daemon
 	 */
 	private function processSingle()
 	{
-		$postProcess = new \PostProcess(true);
+		$postProcess = new \PostProcess(['Echo' => true, 'Settings' => $this->pdo]);
 		//$postProcess->processAnime();
 		$postProcess->processBooks();
 		$postProcess->processConsoles();

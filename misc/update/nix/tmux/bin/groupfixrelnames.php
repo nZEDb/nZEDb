@@ -127,18 +127,19 @@ if (!isset($argv[1])) {
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 					exit($c->error("Unable to connect to usenet."));
 				}
-				if ($proxy == "1") {
-					usleep(500000);
-				}
-				$nzbcontents = new NZBContents(array('echo' => true, 'nntp' => $nntp, 'nfo' => new Nfo(), 'db' => $pdo, 'pp' => new PostProcess(true)));
+
+				$Nfo = new Nfo();
+				$nzbcontents = new NZBContents(
+					array(
+						'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
+						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'Echo' => true, 'NameFixer' => $namefixer])
+					)
+				);
 				foreach ($releases as $release) {
 					$res = $nzbcontents->checkPAR2($release['guid'], $release['releaseid'], $release['group_id'], 1, 1);
 					if ($res === false) {
 						echo '.';
 					}
-				}
-				if ($proxy != "1") {
-					$nntp->doQuit();
 				}
 			}
 			break;

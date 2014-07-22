@@ -226,11 +226,11 @@ class Nfo
 			if ($release['completion'] == 0) {
 				$nzbContents = new NZBContents(
 					array(
-						'echo' => $this->echo,
-						'nntp' => $nntp,
-						'nfo'  => $this,
-						'db'   => $this->pdo,
-						'pp'   => new PostProcess(true)
+						'Echo' => $this->echo,
+						'NNTP' => $nntp,
+						'Nfo'  => $this,
+						'Settings'   => $this->pdo,
+						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this])
 					)
 				);
 				$nzbContents->parseNZB($release['guid'], $release['id'], $release['group_id']);
@@ -311,8 +311,16 @@ class Nfo
 			}
 			$this->c->doEcho($this->c->header($outString . '.'));
 
-			$groups = new Groups();
-			$nzbContents = new NZBContents(array('echo' => $this->echo, 'nntp' => $nntp, 'nfo' => $this, 'db' => $this->pdo, 'pp' => new PostProcess(true)));
+			$groups = new Groups($this->pdo);
+			$nzbContents = new NZBContents(
+				array(
+					'Echo' => $this->echo,
+					'NNTP' => $nntp,
+					'Nfo' => $this,
+					'Settings' => $this->pdo,
+					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo])
+				)
+			);
 			$movie = new Movie($this->echo);
 			$tvRage = new TvRage($this->echo);
 

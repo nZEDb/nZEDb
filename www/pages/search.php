@@ -5,10 +5,11 @@ use nzedb\db\Settings;
 if (!$users->isLoggedIn())
 	$page->show403();
 
-$releases = new Releases();
-$grp = new Groups();
-$c = new Category();
 $pdo = new Settings();
+$grp = new Groups($pdo);
+$releases = new Releases(['Groups' => $grp, 'Settings' => $pdo]);
+$c = new Category();
+
 
 $page->meta_title = "Search Nzbs";
 $page->meta_keywords = "search,nzb,description,details";
