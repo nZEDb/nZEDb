@@ -43,16 +43,16 @@ if (!isset($argv[1])) {
 		$groupArr = $grp->getByName($groupName);
 		$binaries->updateGroup($groupArr);
 	} else if (isset($pieces[2]) && ($pieces[2] == 'Binary' || $pieces[2] == 'Backfill')) {
-		$backfill = new Backfill($nntp);
+		$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo, 'Groups' => $grp]);
 		$backfill->getFinal($pieces[0], $pieces[1], $pieces[2]);
 	} else if (isset($pieces[2]) && $pieces[2] == 'BackfillAll') {
-		$backfill = new Backfill($nntp);
+		$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo, 'Groups' => $grp]);
 		$backfill->backfillAllGroups($pieces[0], $pieces[1]);
 	} else if (isset($pieces[3])) {
-		$backfill = new Backfill($nntp);
+		$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo, 'Groups' => $grp]);
 		$backfill->getRange($pieces[0], $pieces[1], $pieces[2], $pieces[3]);
 	} else if (isset($pieces[1])) {
-		$backfill = new Backfill($nntp);
+		$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo, 'Groups' => $grp]);
 		$backfill->backfillAllGroups($pieces[0], $pieces[1]);
 	}
 	if ($nntpProxy != "1") {

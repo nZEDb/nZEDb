@@ -31,7 +31,7 @@ $nntp = new NNTP(['Settings' => $pdo]);
 
 $nntp->doConnect() or exit('Could not connect to Usenet!' . PHP_EOL);
 
-$backFill = new Backfill($nntp, true);
+$backFill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
 
 foreach ($groups as $group) {
 	$groupNNTP = $nntp->selectGroup($group['name']);
