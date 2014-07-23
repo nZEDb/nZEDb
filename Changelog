@@ -11,6 +11,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Remove needless concats from TMUX sql queries.
 2014-07-23 niel
 	* Fix: Changing case on self::ADE.
+	* Fix: Code style violations
 2014-07-23 kevin
 	* Chg: Make monitor use the old backfill, since they are not compatible yet.
 	* Chg: Re-use some class instances when initiating NNTP / Sharing, saves memory/CPU.
