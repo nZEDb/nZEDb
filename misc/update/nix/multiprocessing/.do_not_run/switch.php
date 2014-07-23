@@ -153,6 +153,7 @@ switch ($options[1]) {
 	case 'pp_movie':
 		if (charCheck($options[2])) {
 			require_once dirname(__FILE__) . '/../../../config.php';
+			$pdo = new \nzedb\db\Settings();
 			(new PostProcess(['Echo' => true, 'Settings' => $pdo]))->processMovies('', $options[2]);
 		}
 		break;
@@ -160,6 +161,7 @@ switch ($options[1]) {
 	case 'pp_tv':
 		if (charCheck($options[2])) {
 			require_once dirname(__FILE__) . '/../../../config.php';
+			$pdo = new \nzedb\db\Settings();
 			(new PostProcess(['Echo' => true, 'Settings' => $pdo]))->processTv('', $options[2]);
 		}
 		break;
