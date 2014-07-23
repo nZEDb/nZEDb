@@ -69,12 +69,12 @@ class PostProcess
 	public function __construct(array $options = array())
 	{
 		$defaultOptions = array(
-			'Settings'     => null,
+			'Echo'         => true,
 			'Groups'       => null,
 			'NameFixer'    => null,
 			'Nfo'          => null,
 			'ReleaseFiles' => null,
-			'Echo'         => false
+			'Settings'     => null,
 		);
 
 		$defaultOptions = array_replace($defaultOptions, $options);

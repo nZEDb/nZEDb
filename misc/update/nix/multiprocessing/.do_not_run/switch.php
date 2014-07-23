@@ -12,19 +12,15 @@ switch ($options[1]) {
 
 	// Runs backFill interval or all.
 	// $options[2] => (string)group name, Name of group to work on.
-	// $options[3] => (int)   backfill type from tmux settings.
+	// $options[3] => (int)   backfill type from tmux settings. 1 = Backfill interval , 2 = Bakfill all
 	case 'backfill':
 		if (in_array((int)$options[3], [1, 2])) {
 			require_once dirname(__FILE__) . '/../../../config.php';
 			$pdo = new \nzedb\db\Settings();
-			$nntp = nntp($pdo);
-			switch ($options[3]) {
-				case 1: // BackFill interval.
-					(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2]);
-					break;
-				case 2: // BackFill all.
-					(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], (new Tmux())->get()->backfill_qty);
-					break;
+			$value = $pdo->queryOneRow("SELECT value FROM tmux WHERE setting = 'backfill_qty'");
+			if ($value !== false) {
+				$nntp = nntp($pdo);
+				(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], ($options[3] == 1 ? '' : $value['value']));
 			}
 		}
 		break;
@@ -43,7 +39,7 @@ switch ($options[1]) {
 	case 'releases':
 		require_once dirname(__FILE__) . '/../../../config.php';
 		$pdo = new nzedb\db\Settings();
-		$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => null, 'ConsoleTools' => new ConsoleTools()));
+		$releases = new ProcessReleases(['Settings' => $pdo]);
 
 		//Runs function that are per group
 		if (is_numeric($options[2])) {
@@ -52,12 +48,7 @@ switch ($options[1]) {
 				collectionCheck($pdo, $options[2]);
 			}
 
-			$releases->processIncompleteCollections($options[2]);
-			$releases->processCollectionSizes($options[2]);
-			$releases->deleteUnwantedCollections($options[2]);
-			$releases->createReleases($options[2]);
-			$releases->createNZBs($options[2]);
-			$releases->deleteCollections($options[2]);
+			processReleases($releases, $options[2]);
 
 		} else {
 
@@ -113,13 +104,7 @@ switch ($options[1]) {
 			collectionCheck($pdo, $options[2]);
 
 			// Create releases.
-			$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => null, 'ConsoleTools' => null));
-			$releases->processIncompleteCollections($options[2]);
-			$releases->processCollectionSizes($options[2]);
-			$releases->deleteUnwantedCollections($options[2]);
-			$releases->createReleases($options[2]);
-			$releases->createNZBs($options[2]);
-			$releases->deleteCollections($options[2]);
+			processReleases(new ProcessReleases(['Settings' => $pdo]), $options[2]);
 
 			// Post process the releases.
 			(new ProcessAdditional(true, $nntp, $pdo))->start($options[2]);
@@ -154,7 +139,7 @@ switch ($options[1]) {
 		if (charCheck($options[2])) {
 			require_once dirname(__FILE__) . '/../../../config.php';
 			$pdo = new \nzedb\db\Settings();
-			(new PostProcess(['Echo' => true, 'Settings' => $pdo]))->processMovies('', $options[2]);
+			(new PostProcess(['Settings' => $pdo]))->processMovies('', $options[2]);
 		}
 		break;
 
@@ -162,9 +147,25 @@ switch ($options[1]) {
 		if (charCheck($options[2])) {
 			require_once dirname(__FILE__) . '/../../../config.php';
 			$pdo = new \nzedb\db\Settings();
-			(new PostProcess(['Echo' => true, 'Settings' => $pdo]))->processTv('', $options[2]);
+			(new PostProcess(['Settings' => $pdo]))->processTv('', $options[2]);
 		}
 		break;
+}
+
+/**
+ * Create / process releases for a groupID.
+ *
+ * @param ProcessReleases $releases
+ * @param int             $groupID
+ */
+function processReleases($releases, $groupID)
+{
+	$releases->processIncompleteCollections($groupID);
+	$releases->processCollectionSizes($groupID);
+	$releases->deleteUnwantedCollections($groupID);
+	$releases->createReleases($groupID);
+	$releases->createNZBs($groupID);
+	$releases->deleteCollections($groupID);
 }
 
 /**

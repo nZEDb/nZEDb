@@ -20,8 +20,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$done = 0;
 		$timestart = TIME();
 		$consoletools = new ConsoleTools();
+		$rc = new ReleaseCleaning();
 		foreach ($res as $row) {
-			$rc = new ReleaseCleaning();
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
@@ -33,7 +33,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$timenc = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->primary("\n" . $done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
-		$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools));
+		$releases = new ProcessReleases(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize();
 		$categorized = $releases->categorizeRelease("name", "", true);
 		$timecat = $consoletools->convertTime(TIME() - $timestart);
@@ -56,8 +56,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$done = 0;
 		$timestart = TIME();
 		$consoletools = new ConsoleTools();
+		$rc = new ReleaseCleaning();
 		foreach ($res as $row) {
-			$rc = new ReleaseCleaning();
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
@@ -69,7 +69,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$timenc = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->header($done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
-		$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools));
+		$releases = new ProcessReleases(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize("WHERE isrenamed = 0");
 		$categorized = $releases->categorizeRelease("name", "WHERE isrenamed = 0", true);
 		$timecat = $consoletools->convertTime(TIME() - $timestart);
