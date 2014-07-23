@@ -9,6 +9,8 @@ New updates are grouped by person, at the top of the file.
 2014-07-23 ruhllatio
 	* Chg: Move ReqIDLocal class to controllers, begin to add options to thread by Guid
 	* Chg: Remove needless concats from TMUX sql queries.
+	* Chg: match_prefiles revamp and class script
+	* Chg: match_prefiles has now moved to /misc/update and options have changed.
 2014-07-23 niel
 	* Fix: Changing case on self::ADE.
 	* Fix: Code style violations
