@@ -9,6 +9,10 @@ New updates are grouped by person, at the top of the file.
 2014-07-23 ruhllatio
 	* Chg: Move ReqIDLocal class to controllers, begin to add options to thread by Guid
 	* Chg: Remove needless concats from TMUX sql queries.
+	* Chg: match_prefiles revamp and class script
+	* Chg: match_prefiles has now moved to /misc/update and options have changed.
+	* Chg: Remove old match_prefiles from /misc/testing/Dev
+	* Fix: backfill_threaded script being called by php in monitor instead of python
 2014-07-23 niel
 	* Fix: Changing case on self::ADE.
 	* Fix: Code style violations
@@ -18,6 +22,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Re-use class instances when initiating Backfill.
 	* Chg: Rename update_all to update_per_group for conistency.
 	* Chg: Re-use class instancess win initiating ProcessReleases.
+	* Fix: Issues in ReqIDLocal
 2014-07-22 Bart39
 	* Fix: Another fix for PredbFT matching issue with preid being blanked out after match.
 	* Fix: MultiProcessing nfo fix

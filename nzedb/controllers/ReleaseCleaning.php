@@ -2549,7 +2549,7 @@ class ReleaseCleaning
 			return $match[1];
 		} //LOL.3E05.720p.WEB.DL.nHD.x264-NhaNc3 [64/71] - "LOL.3E05.720p.WEB.DL.nHD.x264-NhaNc3.sfv" yEnc
 		if (preg_match('/^([\w.-]{8,})[- ]{0,3}\[\d+\/(\d+\])[- ]{0,3}".+?' . $this->e1, $this->subject, $match)
-			&& !preg_match('/^(\d{4,6})-\d{1}\[/', $this->subject, $match)
+			&& !preg_match('/^(\d{4,6})-\d{1}\[/', $this->subject)
 		) {
 			return $match[1];
 		} //Uploader.Presents-LaLa.2014.Englisch.R6.HDCAM.x264.AC3-SmY(06/56]"SmY-I,F.2014.part05.rar" yEnc

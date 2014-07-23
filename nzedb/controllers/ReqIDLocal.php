@@ -71,9 +71,8 @@ class ReqIDLocal
 	protected $show = 0;
 
 	/**
-	 * Construct.
-	 *
-	 * @param bool $echoOutput
+	 * @param ColorCLI $ColorCLI
+	 * @param bool     $echoOutput
 	 */
 	public function __construct($ColorCLI, $echoOutput = false)
 	{
@@ -81,23 +80,20 @@ class ReqIDLocal
 		$this->category = new Categorize();
 		$this->pdo = new Settings();
 		$this->groups = new Groups($this->pdo);
-		$this->namefixer = new NameFixer();
 		$this->consoleTools = new ConsoleTools();
-		$this->c = $ColorCLI;
+		$this->colorCLI = $ColorCLI;
 	}
 
 	/**
 	 * Main Worker Function that spawns child functions
 	 *
-	 * @param array $argv
+	 * @param array  $argv
+	 * @param string $charGuid
 	 */
 	public function standaloneLocalLookup($argv, $charGuid = '')
 	{
-
-		$options = explode('  ', $argv[1]);
-
-		$timestart = TIME();
-		$counted = $counter = 0;
+		$timestart = time();
+		$counted = $counter = $total = 0;
 		(isset($argv[2]) && $argv[2] === 'show' ? $this->show = 1 : $this->show = 0);
 
 		$this->charGuid = $charGuid;
@@ -135,16 +131,19 @@ class ReqIDLocal
 					$this->consoleTools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $this->consoleTools->percentString(++$counter, $total));
 				}
 			}
-			echo $this->c->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoleTools->convertTime(TIME() - $timestart) . ".");
+			echo $this->colorCLI->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoleTools->convertTime(time() - $timestart) . ".");
 		} else {
-			echo $this->c->info("No work to process." . PHP_EOL);
+			echo $this->colorCLI->info("No work to process." . PHP_EOL);
 		}
 	}
 
 	/**
 	 * Builds work query for main function
 	 *
-	 * @param array $argv
+	 * @param array  $argv
+	 * @param string $charGuid
+	 *
+	 * @return string
 	 */
 	protected function _buildWorkQuery($argv, $charGuid)
 	{
@@ -189,9 +188,12 @@ class ReqIDLocal
 							"WHERE %s nzbstatus = 1
 							AND preid = 0
 							AND (isrenamed = 0 AND isrequestid = 1 %s
-							AND reqidstatus in (0, -1, -3)",
+							AND reqidstatus in (%d, %d, %d)",
 							$guidLike,
-							$time
+							$time,
+							self::REQID_UPROC,
+							self::REQID_NOLL,
+							self::REQID_NONE
 						);
 				break;
 			default:	// NUMERIC - runs on all releases not already renamed limited by user not already PreDB matched
@@ -200,19 +202,23 @@ class ReqIDLocal
 							"WHERE %s nzbstatus = 1
 							AND preid = 0
 							AND (isrenamed = 0 AND isrequestid = 1 %s
-							AND reqidstatus in (0, -1, -3) " .
-							"ORDER BY postdate DESC
+							AND reqidstatus in (%d, %d, %d)
+							ORDER BY postdate DESC
 							LIMIT %d",
 							$guidLike,
 							$time,
+							self::REQID_UPROC,
+							self::REQID_NOLL,
+							self::REQID_NONE,
 							$argv[1]
 						);
 				break;
 		}
 		return
-			sprintf(
-				"SELECT r.id, r.name, r.categoryid, r.reqidstatus, g.name AS groupname, g.id as gid " .
-				"FROM releases r
+			sprintf("
+				SELECT r.id, r.name, r.categoryid, r.reqidstatus,
+					g.name AS groupname, g.id as gid
+				FROM releases r
 				LEFT JOIN groups g ON r.group_id = g.id %s",
 				$where
 			);
@@ -226,9 +232,12 @@ class ReqIDLocal
 	protected function _enumerateWork($total)
 	{
 		$reqidcount = $this->pdo->queryOneRow('SELECT COUNT(*) AS count FROM predb WHERE requestid > 0');
-		echo $this->c->header(PHP_EOL . "Comparing " . number_format($total) . " releases against " . number_format($reqidcount['count']) . " Local requestID's." . PHP_EOL);
+		echo $this->colorCLI->header(PHP_EOL . "Comparing " . number_format($total) . " releases against " . number_format($reqidcount['count']) . " Local requestID's." . PHP_EOL);
 		sleep(2);
 	}
+
+	private $oldName;
+	private $groupName;
 
 	/**
 	 * Sub function that attempts to match RequestID Releases
@@ -236,6 +245,8 @@ class ReqIDLocal
 	 *
 	 * @param string $groupName
 	 * @param string $oldName
+	 *
+	 * @return array|bool
 	 */
 	protected function _multiLookup($groupName, $oldName)
 	{
@@ -284,6 +295,7 @@ class ReqIDLocal
 			default:
 				return false;
 		}
+		return false;
 	}
 
 	/**
@@ -301,11 +313,11 @@ class ReqIDLocal
 		}
 
 		$this->pdo->queryExec(
-			sprintf(
-				'UPDATE releases SET reqidstatus = %d ' .
-				'WHERE id = %d',
-				$status,
-				$releaseID
+					sprintf('
+						UPDATE releases SET reqidstatus = %d
+						WHERE id = %d',
+						$status,
+						$releaseID
 			)
 		);
 	}
@@ -315,6 +327,8 @@ class ReqIDLocal
 	 * from the release usenet name and returns
 	 *
 	 * @param string $releaseName
+	 *
+	 * @return int
 	 */
 	protected function _siftReqId($releaseName)
 	{
@@ -323,7 +337,7 @@ class ReqIDLocal
 				if ((int) $requestID['reqid'] > 0) {
 					return (int) $requestID['reqid'];
 				} else {
-					continue;
+					break;
 				}
 			case preg_match('/\[\s*(\d+)\s*\]/', $releaseName, $requestID):
 			case preg_match('/^REQ\s*(\d{4,6})/i', $releaseName, $requestID):
@@ -332,11 +346,10 @@ class ReqIDLocal
 				if ((int) $requestID[1] > 0) {
 					return (int) $requestID[1];
 				} else {
-					continue;
+					break;
 				}
-			default:
-				return self::REQID_ZERO;
 		}
+		return self::REQID_ZERO;
 	}
 
 	/**
@@ -347,35 +360,57 @@ class ReqIDLocal
 	 * @param int $requestID
 	 * @param string $groupName
 	 * @param string $oldName
+	 *
+	 * @return array|bool
 	 */
 	protected function _singleAltLookup($requestID, $groupName, $oldName)
 	{
+		$this->oldName = $oldName;
+
 		switch (true) {
-			case preg_match('/\[#?a\.b\.teevee\]/', $oldName):
-				$groupName = 'alt.binaries.teevee';
-			case preg_match('/\[#?a\.b\.moovee\]/', $oldName):
-				$groupName = 'alt.binaries.moovee';
-			case preg_match('/\[#?a\.b\.erotica\]/', $oldName):
-				$groupName = 'alt.binaries.erotica';
-			case preg_match('/\[#?a\.b\.foreign\]/', $oldName):
-				$groupName = 'alt.binaries.mom';
 			case $groupName == 'alt.binaries.etc':
 				$groupName = 'alt.binaries.teevee';
+				break;
+			case strpos($this->oldName, 'teevee') !== false:
+				$groupName = 'alt.binaries.teevee';
+				break;
+			case strpos($this->oldName, 'moovee') !== false:
+				$groupName = 'alt.binaries.moovee';
+				break;
+			case strpos($this->oldName, 'erotica') !== false:
+				$groupName = 'alt.binaries.erotica';
+				break;
+			case strpos($this->oldName, 'foreign') !== false:
+				$groupName = 'alt.binaries.mom';
+				break;
+			case strpos($this->oldName, 'inner-sanctum') !== false:
+				$groupName = 'alt.binaries.inner-sanctum';
+				break;
+			case strpos($this->oldName, 'sounds.flac') !== false:
+				$groupName = 'alt.binaries.sounds.flac';
+				break;
+			case strpos($this->oldName, 'scnzb') !== false:
+				$groupName = 'alt.binaries.boneless';
+				break;
+			case strpos($this->oldName, 'hdtv.x264') !== false:
+				$groupName = 'alt.binaries.hdtv.x264';
+				break;
 			default:
 				return false;
 		}
-		$groupid = $groups->getIDByName($groupName);
+		$groupid = $this->groups->getIDByName($groupName);
 		$this->run = $this->pdo->queryOneRow(
-						sprintf(
-							"SELECT id, title FROM predb " .
-							"WHERE requestid = %d AND group_id = %d",
-							$requestID,
-							$groupid
-						)
+							sprintf("
+								SELECT id, title FROM predb
+								WHERE requestid = %d AND group_id = %d",
+								$requestID,
+								$groupid
+							)
 		);
 		if (isset($this->run['title'])) {
 			return array('title' => $this->run['title'], 'id' => $this->run['id']);
 		}
+		return false;
 	}
 
 	/**
@@ -385,6 +420,8 @@ class ReqIDLocal
 	 * @param int $requestID
 	 * @param string $groupName
 	 * @param string $oldName
+	 *
+	 * @return array|bool
 	 */
 	protected function _stageLookup($requestID, $groupName, $oldName)
 	{
@@ -422,13 +459,14 @@ class ReqIDLocal
 					return $this->_multiLookup($this->groupName, $this->oldName);
 			}
 		} else {
-			$result = $this->_singleAltLookup($this->groupName, $this->oldname);
+			$result = $this->_singleAltLookup($this->requestID, $this->groupName, $this->oldName);
 			if (is_array($result) && is_numeric($result['id']) && $result['title'] !== '') {
 				return $result;
 			} else {
 				return $this->_multiLookup($this->groupName, $this->oldName);
 			}
 		}
+		return false;
 	}
 
 	/**
@@ -448,9 +486,10 @@ class ReqIDLocal
 		if ($determinedcat == $row['categoryid']) {
 			$this->run = $this->pdo->queryExec(
 							sprintf(
-								'UPDATE releases SET preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s ' .
+								'UPDATE releases SET preid = %d, reqidstatus = %d, isrenamed = 1, iscategorized = 1, searchname = %s ' .
 								'WHERE id = %d',
 								$preid,
+								self::REQID_FOUND,
 								$this->pdo->escapeString($title),
 								$row['id']
 							)
@@ -460,8 +499,9 @@ class ReqIDLocal
 							sprintf(
 								'UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, ' .
 								'imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, ' .
-								'preid = %d, reqidstatus = 1, isrenamed = 1, iscategorized = 1, searchname = %s, categoryid = %d WHERE id = %d',
+								'preid = %d, reqidstatus = %d, isrenamed = 1, iscategorized = 1, searchname = %s, categoryid = %d WHERE id = %d',
 								$preid,
+								self::REQID_FOUND,
 								$this->pdo->escapeString($title),
 								$determinedcat,
 								$row['id']
@@ -472,16 +512,16 @@ class ReqIDLocal
 				$newcatname = $this->category->getNameByID($determinedcat);
 				$oldcatname = $this->category->getNameByID($row['categoryid']);
 
-				$this->namefixer->echoChangedReleaseName(
-										array(
-											'new_name'     => $title,
-											'old_name'     => $row['name'],
-											'new_category' => $newcatname,
-											'old_category' => $oldcatname,
-											'group'        => $row['groupname'],
-											'release_id'   => $row['id'],
-											'method'       => 'misc/update/requestid.php'
-										)
+				NameFixer::echoChangedReleaseName(
+									array(
+										'new_name'     => $title,
+										'old_name'     => $row['name'],
+										'new_category' => $newcatname,
+										'old_category' => $oldcatname,
+										'group'        => $row['groupname'],
+										'release_id'   => $row['id'],
+										'method'       => 'misc/update/requestid.php'
+									)
 				);
 		}
 	}
