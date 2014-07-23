@@ -154,8 +154,8 @@ class Forking extends \fork_daemon
 				$maxProcesses = $this->requestIDMainMethod();
 				break;
 
-			case 'update_all':
-				$maxProcesses = $this->updateAllMainMethod();
+			case 'update_per_group':
+				$maxProcesses = $this->updatePerGroupMainMethod();
 				break;
 		}
 
@@ -191,10 +191,19 @@ class Forking extends \fork_daemon
 	 */
 	private function processEndWork()
 	{
-		if ($this->workType === 'releases' && $this->tablePerGroup === true) {
-			$this->executeCommand(
-				$this->dnr_path . 'releases  ' . count($this->work) . '_"'
-			);
+		switch ($this->workType) {
+			case 'releases':
+				if ($this->tablePerGroup === true) {
+					$this->executeCommand(
+						$this->dnr_path . 'releases  ' . count($this->work) . '_"'
+					);
+				}
+				break;
+			case 'update_per_group':
+				$this->executeCommand(
+					$this->dnr_path . 'releases  ' . count($this->work) . '_"'
+				);
+				break;
 		}
 	}
 
@@ -586,17 +595,17 @@ class Forking extends \fork_daemon
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////// All "update_all" code goes here ///////////////////////////////////////////////
+	///////////////////////////////// All "update_per_Group" code goes here ////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	private function updateAllMainMethod()
+	private function updatePerGroupMainMethod()
 	{
-		$this->register_child_run([0 => $this, 1 => 'updateAllChildWorker']);
+		$this->register_child_run([0 => $this, 1 => 'updatePerGroupChildWorker']);
 		$this->work = $this->pdo->query('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
 		return $this->pdo->getSetting('releasesthreads');
 	}
 
-	public function updateAllChildWorker($groups, $identifier = '')
+	public function updatePerGroupChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
 			$this->executeCommand(
