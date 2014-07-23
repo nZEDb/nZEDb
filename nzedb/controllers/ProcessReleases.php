@@ -722,12 +722,20 @@ class ProcessReleases
 		if ($this->echoCLI) {
 			echo $this->colorCLI->header("Process Releases -> Categorize releases.");
 		}
-		if ($categorize == 1) {
-			$this->categorizeRelease(
-				'name',
-				(!empty($groupID) ? 'WHERE iscategorized = 0 AND group_id = ' . $groupID : 'WHERE iscategorized = 0')
-			);
+		switch ((int)$categorize) {
+			case 2:
+				$type = 'searchname';
+				break;
+			case 1:
+			default:
+
+				$type = 'name';
+				break;
 		}
+		$this->categorizeRelease(
+			$type,
+			(!empty($groupID) ? 'WHERE iscategorized = 0 AND group_id = ' . $groupID : 'WHERE iscategorized = 0')
+		);
 
 		if ($this->echoCLI) {
 			$this->colorCLI->doEcho($this->colorCLI->primary($this->consoleTools->convertTime(time() - $startTime)), true);

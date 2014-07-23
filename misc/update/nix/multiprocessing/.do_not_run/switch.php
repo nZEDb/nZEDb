@@ -70,7 +70,7 @@ switch ($options[1]) {
 			$releases->deleteReleases();
 			$releases->processRequestIDs('', (5000 * $groupCount), true);
 			$releases->processRequestIDs('', (1000 * $groupCount), false);
-			$releases->categorizeReleases(1);
+			$releases->categorizeReleases(2);
 		}
 		break;
 
