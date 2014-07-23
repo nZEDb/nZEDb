@@ -21,6 +21,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Re-use class instances when initiating Backfill.
 	* Chg: Rename update_all to update_per_group for conistency.
 	* Chg: Re-use class instancess win initiating ProcessReleases.
+	* Fix: Issues in ReqIDLocal
 2014-07-22 Bart39
 	* Fix: Another fix for PredbFT matching issue with preid being blanked out after match.
 	* Fix: MultiProcessing nfo fix

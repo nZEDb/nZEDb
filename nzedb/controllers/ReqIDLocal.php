@@ -71,9 +71,8 @@ class ReqIDLocal
 	protected $show = 0;
 
 	/**
-	 * Construct.
-	 *
-	 * @param bool $echoOutput
+	 * @param ColorCLI $ColorCLI
+	 * @param bool     $echoOutput
 	 */
 	public function __construct($ColorCLI, $echoOutput = false)
 	{
@@ -82,17 +81,18 @@ class ReqIDLocal
 		$this->pdo = new Settings();
 		$this->groups = new Groups($this->pdo);
 		$this->consoleTools = new ConsoleTools();
-		$this->c = $ColorCLI;
+		$this->colorCLI = $ColorCLI;
 	}
 
 	/**
 	 * Main Worker Function that spawns child functions
 	 *
-	 * @param array $argv
+	 * @param array  $argv
+	 * @param string $charGuid
 	 */
 	public function standaloneLocalLookup($argv, $charGuid = '')
 	{
-		$timestart = TIME();
+		$timestart = time();
 		$counted = $counter = $total = 0;
 		(isset($argv[2]) && $argv[2] === 'show' ? $this->show = 1 : $this->show = 0);
 
@@ -131,16 +131,19 @@ class ReqIDLocal
 					$this->consoleTools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $this->consoleTools->percentString(++$counter, $total));
 				}
 			}
-			echo $this->c->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoleTools->convertTime(TIME() - $timestart) . ".");
+			echo $this->colorCLI->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoleTools->convertTime(time() - $timestart) . ".");
 		} else {
-			echo $this->c->info("No work to process." . PHP_EOL);
+			echo $this->colorCLI->info("No work to process." . PHP_EOL);
 		}
 	}
 
 	/**
 	 * Builds work query for main function
 	 *
-	 * @param array $argv
+	 * @param array  $argv
+	 * @param string $charGuid
+	 *
+	 * @return string
 	 */
 	protected function _buildWorkQuery($argv, $charGuid)
 	{
@@ -229,9 +232,12 @@ class ReqIDLocal
 	protected function _enumerateWork($total)
 	{
 		$reqidcount = $this->pdo->queryOneRow('SELECT COUNT(*) AS count FROM predb WHERE requestid > 0');
-		echo $this->c->header(PHP_EOL . "Comparing " . number_format($total) . " releases against " . number_format($reqidcount['count']) . " Local requestID's." . PHP_EOL);
+		echo $this->colorCLI->header(PHP_EOL . "Comparing " . number_format($total) . " releases against " . number_format($reqidcount['count']) . " Local requestID's." . PHP_EOL);
 		sleep(2);
 	}
+
+	private $oldName;
+	private $groupName;
 
 	/**
 	 * Sub function that attempts to match RequestID Releases
@@ -239,6 +245,8 @@ class ReqIDLocal
 	 *
 	 * @param string $groupName
 	 * @param string $oldName
+	 *
+	 * @return array|bool
 	 */
 	protected function _multiLookup($groupName, $oldName)
 	{
@@ -287,6 +295,7 @@ class ReqIDLocal
 			default:
 				return false;
 		}
+		return false;
 	}
 
 	/**
@@ -318,6 +327,8 @@ class ReqIDLocal
 	 * from the release usenet name and returns
 	 *
 	 * @param string $releaseName
+	 *
+	 * @return int
 	 */
 	protected function _siftReqId($releaseName)
 	{
@@ -349,6 +360,8 @@ class ReqIDLocal
 	 * @param int $requestID
 	 * @param string $groupName
 	 * @param string $oldName
+	 *
+	 * @return array|bool
 	 */
 	protected function _singleAltLookup($requestID, $groupName, $oldName)
 	{
@@ -385,7 +398,7 @@ class ReqIDLocal
 			default:
 				return false;
 		}
-		$groupid = $groups->getIDByName($groupName);
+		$groupid = $this->groups->getIDByName($groupName);
 		$this->run = $this->pdo->queryOneRow(
 							sprintf("
 								SELECT id, title FROM predb
@@ -407,6 +420,8 @@ class ReqIDLocal
 	 * @param int $requestID
 	 * @param string $groupName
 	 * @param string $oldName
+	 *
+	 * @return array|bool
 	 */
 	protected function _stageLookup($requestID, $groupName, $oldName)
 	{
@@ -444,13 +459,14 @@ class ReqIDLocal
 					return $this->_multiLookup($this->groupName, $this->oldName);
 			}
 		} else {
-			$result = $this->_singleAltLookup($this->groupName, $this->oldname);
+			$result = $this->_singleAltLookup($this->requestID, $this->groupName, $this->oldName);
 			if (is_array($result) && is_numeric($result['id']) && $result['title'] !== '') {
 				return $result;
 			} else {
 				return $this->_multiLookup($this->groupName, $this->oldName);
 			}
 		}
+		return false;
 	}
 
 	/**
