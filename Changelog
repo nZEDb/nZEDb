@@ -11,6 +11,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Remove needless concats from TMUX sql queries.
 	* Chg: match_prefiles revamp and class script
 	* Chg: match_prefiles has now moved to /misc/update and options have changed.
+	* Chg: Remove old match_prefiles from /misc/testing/Dev
 2014-07-23 niel
 	* Fix: Changing case on self::ADE.
 	* Fix: Code style violations
