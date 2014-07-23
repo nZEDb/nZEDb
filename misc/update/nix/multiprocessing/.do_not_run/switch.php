@@ -20,10 +20,10 @@ switch ($options[1]) {
 			$nntp = nntp($pdo);
 			switch ($options[3]) {
 				case 1: // BackFill interval.
-					(new Backfill($nntp))->backfillAllGroups($options[2]);
+					(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2]);
 					break;
 				case 2: // BackFill all.
-					(new Backfill($nntp))->backfillAllGroups($options[2], (new Tmux())->get()->backfill_qty);
+					(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], (new Tmux())->get()->backfill_qty);
 					break;
 			}
 		}
@@ -35,7 +35,7 @@ switch ($options[1]) {
 		require_once dirname(__FILE__) . '/../../../config.php';
 		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
-		(new Backfill($nntp, true))->backfillAllGroups($options[2], 10000, 'normal');
+		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true))->backfillAllGroups($options[2], 10000, 'normal');
 		break;
 
 	// Process releases.
@@ -101,7 +101,7 @@ switch ($options[1]) {
 
 			// Connect to NNTP.
 			$nntp = nntp($pdo);
-			$backFill = new Backfill($nntp, true);
+			$backFill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true);
 
 			// Update the group for new binaries.
 			(new Binaries($nntp, true, $backFill))->updateGroup($groupMySQL);
@@ -137,7 +137,7 @@ switch ($options[1]) {
 			$pdo = new \nzedb\db\Settings();
 
 			// Create the connection here and pass, this is for post processing, so check for alternate.
-			$nntp = new NNTP();
+			$nntp = new NNTP(['Settings' => $pdo]);
 			if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 				exit($c->error('Unable to connect to usenet.'));
 			}

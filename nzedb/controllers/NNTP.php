@@ -11,7 +11,7 @@ class NNTP extends Net_NNTP_Client
 	 * @var ColorCLI
 	 * @access protected
 	 */
-	protected $_c;
+	protected $_colorCLI;
 
 	/**
 	 * @var Debugging
@@ -85,19 +85,27 @@ class NNTP extends Net_NNTP_Client
 	/**
 	 * Default constructor.
 	 *
-	 * @param bool $echo Echo to cli?
+	 * @param array $options Class instances and echo to CLI bool.
 	 *
 	 * @access public
 	 */
-	public function __construct($echo = true)
+	public function __construct(array $options = array())
 	{
-		$this->_c    = new ColorCLI();
-		$this->pdo = new \nzedb\db\Settings();
+		$defOptions = [
+			'Settings' => null,
+			'Echo'     => true,
+			'ColorCLI' => null
+		];
+		$defOptions = array_replace($defOptions, $options);
 
-		$this->_echo      = ($echo && nZEDb_ECHOCLI);
+		$this->_echo      = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+
+		$this->_colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new \nzedb\db\Settings());
+
 		$this->_debugBool = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debugBool) {
-			$this->_debugging = new Debugging("NNTP");
+			$this->_debugging = new Debugging('NNTP');
 		}
 
 		$this->_nntpRetries = ($this->pdo->getSetting('nntpretries') != '') ? (int)$this->pdo->getSetting('nntpretries') : 0 + 1;
@@ -207,7 +215,7 @@ class NNTP extends Net_NNTP_Client
 				if ($this->_debugBool) {
 					$this->_debugging->start("doConnect", $message, Debugging::DEBUG_ERROR);
 				}
-				return $this->throwError($this->_c->error($message));
+				return $this->throwError($this->_colorCLI->error($message));
 			}
 
 			// If we are connected, try to authenticate.
@@ -248,7 +256,7 @@ class NNTP extends Net_NNTP_Client
 						if ($this->_debugBool) {
 							$this->_debugging->start("doConnect", $message, Debugging::DEBUG_ERROR);
 						}
-						return $this->throwError($this->_c->error($message));
+						return $this->throwError($this->_colorCLI->error($message));
 					}
 				}
 			}
@@ -277,7 +285,7 @@ class NNTP extends Net_NNTP_Client
 		if ($this->_debugBool) {
 			$this->_debugging->start("doConnect", $message, Debugging::DEBUG_ERROR);
 		}
-		return $this->throwError($this->_c->error($message));
+		return $this->throwError($this->_colorCLI->error($message));
 	}
 
 	/**
@@ -531,7 +539,7 @@ class NNTP extends Net_NNTP_Client
 		$body = '';
 
 		$aConnected = false;
-		$nntp = ($alternate === true ? new NNTP($this->_echo) : null);
+		$nntp = ($alternate === true ? new NNTP(['Echo' => $this->_echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI]) : null);
 
 		// Check if the msgIds are in an array.
 		if (is_array($identifiers)) {
@@ -623,7 +631,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("getMessages", $message, Debugging::DEBUG_WARNING);
 			}
-			return $this->throwError($this->_c->error($message));
+			return $this->throwError($this->_colorCLI->error($message));
 		}
 
 		if ($aConnected === true) {
@@ -809,7 +817,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("postArticle", $message, Debugging::DEBUG_NOTICE);
 			}
-			return $this->throwError($this->_c->error($message));
+			return $this->throwError($this->_colorCLI->error($message));
 		}
 
 		$connected = $this->_checkConnection();
@@ -823,7 +831,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("postArticle", $message, Debugging::DEBUG_WARNING);
 			}
-			return $this->throwError($this->_c->error($message));
+			return $this->throwError($this->_colorCLI->error($message));
 		}
 
 		if (strlen($from) > 510) {
@@ -831,7 +839,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("postArticle", $message, Debugging::DEBUG_WARNING);
 			}
-			return $this->throwError($this->_c->error($message));
+			return $this->throwError($this->_colorCLI->error($message));
 		}
 
 		// Check if the group is string or array.
@@ -891,7 +899,7 @@ class NNTP extends Net_NNTP_Client
 			}
 
 			if ($this->_echo) {
-				$this->_c->doEcho($this->_c->error($message), true);
+				$this->_colorCLI->doEcho($this->_colorCLI->error($message), true);
 			}
 			$nntp->doQuit();
 		}
@@ -1221,7 +1229,7 @@ class NNTP extends Net_NNTP_Client
 			}
 
 			if ($this->_echo) {
-				$this->_c->doEcho($this->_c->error($msg), true);
+				$this->_colorCLI->doEcho($this->_colorCLI->error($msg), true);
 			}
 			$this->_compressionSupported = false;
 			return false;
@@ -1307,8 +1315,8 @@ class NNTP extends Net_NNTP_Client
 
 						$bytesReceived = strlen($data);
 						if ($this->_echo && $bytesReceived > 10240) {
-							$this->_c->doEcho(
-								$this->_c->primaryOver(
+							$this->_colorCLI->doEcho(
+								$this->_colorCLI->primaryOver(
 									'Received ' . round($bytesReceived / 1024) .
 									'KB from group (' . $this->group() . ').'
 								), true
@@ -1323,7 +1331,7 @@ class NNTP extends Net_NNTP_Client
 						if ($this->_debugBool) {
 							$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 						}
-						$message = $this->throwError($this->_c->error($message), 1000);
+						$message = $this->throwError($this->_colorCLI->error($message), 1000);
 						return $message;
 					}
 
@@ -1347,7 +1355,7 @@ class NNTP extends Net_NNTP_Client
 					if ($this->_debugBool) {
 						$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 					}
-					$message = $this->throwError($this->_c->error($message), 1000);
+					$message = $this->throwError($this->_colorCLI->error($message), 1000);
 					return $message;
 				}
 			}
@@ -1366,7 +1374,7 @@ class NNTP extends Net_NNTP_Client
 		if ($this->_debugBool) {
 			$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 		}
-		$message = $this->throwError($this->_c->error($message), 1000);;
+		$message = $this->throwError($this->_colorCLI->error($message), 1000);;
 		return $message;
 	}
 

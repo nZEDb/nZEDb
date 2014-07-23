@@ -9,7 +9,7 @@ $pdo = new \nzedb\db\Settings();
 $c = new ColorCLI();
 
 // Create the connection here and pass
-$nntp = new NNTP();
+$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 if ($nntp->doConnect() !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }

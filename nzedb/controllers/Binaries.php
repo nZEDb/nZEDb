@@ -160,21 +160,27 @@ class Binaries
 	public function __construct($nntp = null, $echo = true, $backFill = false)
 	{
 		$this->_nntp = $nntp;
+		$this->_colorCLI = new ColorCLI();
+		$this->_pdo = new nzedb\db\Settings();
+		$this->_groups = new Groups($this->_pdo);
 		$this->_echoCLI = ($echo && nZEDb_ECHOCLI);
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 		if ($backFill === false) {
-			$this->_backFill = new Backfill($this->_nntp, $echo);
+			$this->_backFill = new Backfill(
+				[
+					'NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Groups' => $this->_groups,
+					'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI
+				]
+			);
 		} else {
 			$this->_backFill = $backFill;
 		}
-		$this->_colorCLI = new ColorCLI();
+
 		$this->_collectionsCleaning = new CollectionsCleaning();
 		$this->_consoleTools = new ConsoleTools();
-		$this->_pdo = new nzedb\db\Settings();
 		if ($this->_debug) {
 			$this->_debugging = new Debugging("Binaries");
 		}
-		$this->_groups = new Groups($this->_pdo);
 
 		$this->messageBuffer = ($this->_pdo->getSetting('maxmssgs') != '') ? $this->_pdo->getSetting('maxmssgs') : 20000;
 		$this->_compressedHeaders = ($this->_pdo->getSetting('compressedheaders') == 1 ? true : false);

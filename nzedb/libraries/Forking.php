@@ -529,7 +529,7 @@ class Forking extends \fork_daemon
 	{
 		$sharing = $this->pdo->queryOneRow('SELECT enabled FROM sharing');
 		if ($sharing !== false && $sharing['enabled'] == 1) {
-			$nntp = new \NNTP(true);
+			$nntp = new \NNTP(['Settings' => $this->pdo]);
 			if (($this->pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === true) {
 				(new \PostProcess(['Echo' => true, 'Settings' => $this->pdo]))->processSharing($nntp);
 			}
