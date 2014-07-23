@@ -20,14 +20,27 @@ require_once 'simple_html_dom.php';
 
 class hotmovies
 {
+
+	/**
+	* Set this for what you are searching for.
+ 	* @var string null
+ 	*/
+	public $searchterm = null;
+
+	/**
+	 * Define a cookie file
+	 * @var string null
+	 */
+	public $cookie = null;
+
 	/*
 	 * Define HotMovies url http://www.hotmovies.com/search.php?words=bangin+the+boss&complete=on&search_in=video_title
 	 * Needed Search Queries Variables
 	*/
-	const hmurl = "http://www.hotmovies.com";
-	const trailingsearch = "/search.php?words=";
-	const extrasearch = "&complete=on&search_in=video_title";
-	const if18 = true;
+	const HMURL = "http://www.hotmovies.com";
+	const TRAILINGSEARCH = "/search.php?words=";
+	const EXTRASEARCH = "&complete=on&search_in=video_title";
+	const IF18 = true;
 
 	// Sets Post fields for trailers
 	protected $postparams = null;
@@ -40,17 +53,6 @@ class hotmovies
 
 	// Sets the URl to retrieve in _gethmurl
 	protected $getlink = null;
-	/*
-	 * Set this for what you are searching for.
-	 * @var string null
-	 */
-	public $searchterm = null;
-
-	/**
-	 * Define a cookie file
-	 * @var string null
-	 */
-	public $cookie = null;
 
 	public function __construct($echooutput = true)
 	{
@@ -208,7 +210,7 @@ class hotmovies
 		if (!isset($this->searchterm)) {
 			return false;
 		}
-		$this->getlink = SELF::hmurl . self::trailingsearch . urlencode($this->searchterm) . self::extrasearch;
+		$this->getlink = self::HMURL . self::TRAILINGSEARCH . urlencode($this->searchterm) . self::EXTRASEARCH;
 		if ($this->_gethmurl() === false) {
 			return false;
 		} else {
@@ -288,7 +290,7 @@ class hotmovies
 		if (isset($this->getlink)) {
 			$ch = curl_init($this->getlink);
 		} else {
-			$ch = curl_init(SELF::hmurl);
+			$ch = curl_init(self::HMURL);
 		}
 		if($usepost === true){
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
