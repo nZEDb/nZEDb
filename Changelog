@@ -12,6 +12,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: match_prefiles revamp and class script
 	* Chg: match_prefiles has now moved to /misc/update and options have changed.
 	* Chg: Remove old match_prefiles from /misc/testing/Dev
+	* Fix: backfill_threaded script being called by php in monitor instead of python
 2014-07-23 niel
 	* Fix: Changing case on self::ADE.
 	* Fix: Code style violations
