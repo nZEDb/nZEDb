@@ -628,6 +628,10 @@ class XXX
 
 				}
 			}
+		} else {
+			if ($this->echooutput) {
+				$this->c->doEcho($this->c->header('No xxx releases to process.'));
+			}
 		}
 	}
 
