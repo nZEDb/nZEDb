@@ -33,7 +33,7 @@ class adultdvdempire
 	public $searchterm = null;
 
 	/* Define param if trailing url is found get it and set it for future calls */
-	/* Anything after the $ade url is trailing */
+	/* Anything after the $ADE url is trailing */
 	protected $urlfound = null;
 
 	/* Sets the directurl for template */
@@ -82,7 +82,7 @@ class adultdvdempire
 		$this->_getadeurl($this->trailers . $this->urlfound);
 		$this->html->load($this->response);
 		if (preg_match("/(\"|')(?P<swf>[^\"']+.swf)(\"|')/i", $this->response, $matches)) {
-			$this->res['trailers']['url'] = SELF::ade . trim(trim($matches['swf']), '"');
+			$this->res['trailers']['url'] = self::ADE . trim(trim($matches['swf']), '"');
 			if (preg_match("#(?:streamID:\s\")(?P<streamid>[0-9A-Z]+)(?:\")#",
 						   $this->response,
 						   $matches)
@@ -296,7 +296,7 @@ class adultdvdempire
 					if ($p >= 90) {
 						$this->found = true;
 						$this->urlfound = $ret;
-						$this->directurl = self::ade.$ret;
+						$this->directurl = self::ADE.$ret;
 						$this->title = $title;
 						unset($ret);
 						$this->html->clear();
