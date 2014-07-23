@@ -7,7 +7,7 @@ if (!isset($argv[2]) || !is_numeric($argv[2])) {
 	exit($c->error("\nTest your nntp connection, get group information and postdate for specific article.\n\n"
 		. "php $argv[0] alt.binaries.teevee 595751142    ...: To test nntp on alt.binaries.teevee with artivle 595751142.\n"));
 }
-$nntp = new NNTP();
+$nntp = new NNTP(['ColorCLI' => $c]);
 if ($nntp->doConnect() !== true) {
 	exit();
 }

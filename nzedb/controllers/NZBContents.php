@@ -89,7 +89,7 @@ Class NZBContents
 
 		$this->echooutput = ($defaultOptions['Echo'] && nZEDb_ECHOCLI);
 		$this->pdo = ($defaultOptions['Settings'] instanceof \nzedb\db\Settings ? $defaultOptions['Settings'] : new \nzedb\db\Settings());
-		$this->nntp = ($defaultOptions['NNTP'] instanceof NNTP ? $defaultOptions['NNTP'] : new NNTP($this->echooutput));
+		$this->nntp = ($defaultOptions['NNTP'] instanceof NNTP ? $defaultOptions['NNTP'] : new NNTP(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
 		$this->nfo = ($defaultOptions['Nfo'] instanceof Nfo ? $defaultOptions['Nfo'] : new Nfo($this->echooutput));
 		$this->pp = (
 			$defaultOptions['PostProcess'] instanceof PostProcess

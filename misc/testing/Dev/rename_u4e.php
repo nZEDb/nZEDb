@@ -33,7 +33,7 @@ if (empty($unrarPath)) {
 
 $c = new ColorCLI();
 
-$nntp = new NNTP;
+$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 $nzbContents= new NZBContents(
 	array(
 		'Settings' => $pdo,

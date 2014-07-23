@@ -10,7 +10,7 @@ if (!isset($argv[1])) {
 	exit($c->error("This script is not intended to be run manually, it is called from safe threaded scripts."));
 } else if (isset($argv[1])) {
 	// Create the connection here and pass
-	$nntp = new NNTP();
+	$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 	if ($nntp->doConnect() !== true) {
 		exit($c->error("Unable to connect to usenet."));
 	}

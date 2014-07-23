@@ -60,7 +60,7 @@ $pdo = new \nzedb\db\Settings();
 $proxy = (int)$pdo->getSetting('nntpproxy');
 
 if ($args[$argv[1]] === true) {
-	$nntp = new NNTP();
+	$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 	if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 		exit($c->error("Unable to connect to usenet." . PHP_EOL));
 	}

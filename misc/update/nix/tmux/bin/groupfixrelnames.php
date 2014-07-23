@@ -123,7 +123,7 @@ if (!isset($argv[1])) {
 							)
 			);
 			if ($releases !== false) {
-				$nntp = new NNTP();
+				$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 					exit($c->error("Unable to connect to usenet."));
 				}
@@ -159,7 +159,7 @@ if (!isset($argv[1])) {
 							)
 			);
 			if ($releases !== false) {
-				$nntp = new NNTP();
+				$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 					exit($c->error("Unable to connect to usenet."));
 				}

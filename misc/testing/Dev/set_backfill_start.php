@@ -27,7 +27,7 @@ if (count($groups) === 0) {
 	}
 }
 
-$nntp = new NNTP(true);
+$nntp = new NNTP(['Settings' => $pdo]);
 
 $nntp->doConnect() or exit('Could not connect to Usenet!' . PHP_EOL);
 

@@ -25,7 +25,7 @@ $totalstart = microtime(true);
 echo "You have $numofgroups active, it takes about 2 minutes on average to processes each group.\n";
 foreach ($groups as $group) {
 	$starttime = microtime(true);
-	$nntp = new NNTP();
+	$nntp = new NNTP(['ColorCLI' => $c, 'Settings' => $pdo]);
 	if ($nntp->doConnect() !== true) {
 		return;
 	}

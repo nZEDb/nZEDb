@@ -234,7 +234,7 @@ class PostProcess
 	 */
 	public function processSharing(&$nntp)
 	{
-		(new Sharing($this->pdo, $nntp))->start();
+		(new Sharing(['Settings' => $this->pdo, 'NNTP' => $nntp]))->start();
 	}
 
 	/**
