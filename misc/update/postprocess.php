@@ -50,7 +50,7 @@ if (!isset($argv[1]) || !in_array($argv[1], $args) || !isset($argv[2]) || !in_ar
 				. "php postprocess.php additional true  ...: Processes previews/mediainfo/etc...\n"
 				. "php postprocess.php sharing true     ...: Processes uploading/downloading comments.\n"
 				. "php postprocess.php allinf true      ...: Does all the types of post processing on a loop, sleeping 15 seconds between.\n"
-				. "php postpricess.php amazon true      ...: Does all the amazon (books/console/games/music/xxx).\n"
+				. "php postprocess.php amazon true      ...: Does all the amazon (books/console/games/music/xxx).\n"
 		)
 	);
 }

@@ -7,7 +7,10 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-07-22 Bart39
-	* Fix: Another fix for PredbFT matching issue with preid being blanked out after match
+	* Fix: Another fix for PredbFT matching issue with preid being blanked out after match.
+	* Fix: MultiProcessing nfo fix
+	* Chg: ProcessAdditional - only rename audio from mediainfo if not already predb matched.
+	* Fix: typo in /update/postprocess.php
 2014-07-22 ruhllatio
 	* Fix: Attempt to fix strange PreDBFT name matching... also fix issue with preid being blanked out after match
 	* Chg: Monitor.php now uses PHP forking for threaded operations (if you're using safe scripts, these will still be python)

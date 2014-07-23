@@ -142,7 +142,7 @@ switch ($options[1]) {
 				exit($c->error('Unable to connect to usenet.'));
 			}
 
-			if ($options[1] === 'nfo') {
+			if ($options[1] === 'pp_nfo') {
 				(new Nfo(true))->processNfoFiles($nntp, '', $options[2]);
 			} else {
 				(new ProcessAdditional(true, $nntp, $pdo))->start('', $options[2]);
