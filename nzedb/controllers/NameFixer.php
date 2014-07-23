@@ -216,13 +216,14 @@ class NameFixer
 				$this->_totalReleases = $total;
 
 				echo $this->c->primary(number_format($total) . ' releases to process.');
+				$Nfo = new Nfo();
 				$nzbContents = new NZBContents(
 					array(
 						'echo' => $this->echooutput,
 						'nntp' => $nntp,
-						'nfo'  => new Nfo(),
+						'nfo'  => $Nfo,
 						'db'   => $this->pdo,
-						'pp'   => new PostProcess(true)
+						'pp'   => new PostProcess(['Echo' => true, 'Settings' => $this->pdo, 'Nfo' => $Nfo])
 					)
 				);
 
@@ -425,7 +426,7 @@ class NameFixer
 								UPDATE releases
 								SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
 									tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
-									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = %s,
+									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = %d,
 									searchname = %s, %s categoryid = %d
 								WHERE id = %d',
 								$preId,
@@ -441,7 +442,7 @@ class NameFixer
 								UPDATE releases
 								SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
 									tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
-									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = %s,
+									consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = %d,
 									searchname = %s, iscategorized = 1, categoryid = %d
 								WHERE id = %d',
 								$preId,
@@ -531,7 +532,7 @@ class NameFixer
 		}
 
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
-		if ($total > 0 && $total <= 20) {
+		if ($total > 0 && $total <= 10) {
 			foreach ($res as $row) {
 					if ($pre['title'] !== $row['searchname']) {
 						$determinedcat = $this->category->determineCategory($pre['title'], $row['group_id']);
@@ -583,7 +584,7 @@ class NameFixer
 						$matching++;
 					}
 			}
-		} elseif ($total >= 10) {
+		} elseif ($total >= 11) {
 			$matching = -1;
 		}
 
@@ -635,7 +636,7 @@ class NameFixer
 					}
 
 					if ($echooutput && $show === 1) {
-						$this->updateRelease($release, $pre['title'], $method = "file matched source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show);
+						$this->updateRelease($release, $pre['title'], $method = "file matched source: " . $pre['source'], $echo, "PreDB file match, ", $namestatus, $show, $pre['preid']);
 					}
 					$matching++;
 				}
@@ -1119,7 +1120,7 @@ class NameFixer
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: Title - SxxExx - Eptitle", $echo, $type, $namestatus, $show);
 		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\)\.nds/i', $release["textstring"], $result)) {
 			$this->updateRelease($release, $result["0"], $method = "fileCheck: ).nds Nintendo DS", $echo, $type, $namestatus, $show);
-		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\.(pdf|htm(l)?|epub|mobi|azw|opf|fb2|prc|djvu|cb[rz])/i', $release["textstring"], $result)) {
+		} else if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/\w.+?\.(epub|mobi|azw|opf|fb2|prc|djvu|cb[rz])/i', $release["textstring"], $result)) {
 			$result = str_replace("." . $result["1"], " (" . $result["1"] . ")", $result['0']);
 			$this->updateRelease($release, $result, $method = "fileCheck: EBook", $echo, $type, $namestatus, $show);
 		}

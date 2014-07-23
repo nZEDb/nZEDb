@@ -9,7 +9,7 @@ $pdo = new \nzedb\db\Settings();
 $c = new ColorCLI();
 
 // Create the connection here and pass
-$nntp = new NNTP();
+$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 if ($nntp->doConnect() !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }
@@ -22,7 +22,7 @@ if (isset($argv[1]) && !is_numeric($argv[1])) {
 	$groupName = $argv[1];
 	echo $c->header("Updating group: $groupName");
 
-	$grp = new Groups();
+	$grp = new Groups($pdo);
 	$group = $grp->getByName($groupName);
 	$binaries->updateGroup($group, (isset($argv[2]) && is_numeric($argv[2]) && $argv[2] > 0 ? $argv[2] : 0));
 } else {

@@ -1,0 +1,1 @@
+INSERT IGNORE INTO settings(setting, name, value, hint) VALUES('reqidthreads', 'reqidthreads', '1', 'The number of threads for local request id processing.');

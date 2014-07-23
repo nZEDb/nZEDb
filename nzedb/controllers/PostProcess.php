@@ -64,22 +64,33 @@ class PostProcess
 	/**
 	 * Constructor.
 	 *
-	 * @param bool $echoOutput Echo to CLI or not?
+	 * @param array $options Pass in class instances.
 	 */
-	public function __construct($echoOutput = false)
+	public function __construct(array $options = array())
 	{
+		$defaultOptions = array(
+			'Settings'     => null,
+			'Groups'       => null,
+			'NameFixer'    => null,
+			'Nfo'          => null,
+			'ReleaseFiles' => null,
+			'Echo'         => false
+		);
+
+		$defaultOptions = array_replace($defaultOptions, $options);
+
 		//\\ Various.
-		$this->echooutput = ($echoOutput && nZEDb_ECHOCLI);
+		$this->echooutput = ($defaultOptions['Echo'] && nZEDb_ECHOCLI);
 		//\\
 
 		//\\ Class instances.
-		$this->pdo = new nzedb\db\Settings();
-		$this->groups = new Groups();
+		$this->pdo = (($defaultOptions['Settings'] instanceof nzedb\db\Settings) ? $defaultOptions['Settings'] : new nzedb\db\Settings());
+		$this->groups = (($defaultOptions['Groups'] instanceof Groups) ? $defaultOptions['Groups'] : new Groups($this->pdo));
 		$this->_par2Info = new Par2Info();
 		$this->debugging = new Debugging('PostProcess');
-		$this->nameFixer = new NameFixer($this->echooutput);
-		$this->Nfo = new Nfo($this->echooutput);
-		$this->releaseFiles = new ReleaseFiles();
+		$this->nameFixer = (($defaultOptions['NameFixer'] instanceof NameFixer) ? $defaultOptions['NameFixer'] : new NameFixer($this->echooutput));
+		$this->Nfo = (($defaultOptions['Nfo'] instanceof Nfo ) ? $defaultOptions['Nfo'] : new Nfo($this->echooutput));
+		$this->releaseFiles = (($defaultOptions['ReleaseFiles'] instanceof ReleaseFiles) ? $defaultOptions['ReleaseFiles'] : new ReleaseFiles($this->echooutput));
 		//\\
 
 		//\\ Site settings.
@@ -223,7 +234,7 @@ class PostProcess
 	 */
 	public function processSharing(&$nntp)
 	{
-		(new Sharing($this->pdo, $nntp))->start();
+		(new Sharing(['Settings' => $this->pdo, 'NNTP' => $nntp]))->start();
 	}
 
 	/**

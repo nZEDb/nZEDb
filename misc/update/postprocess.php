@@ -9,20 +9,21 @@ $c = new ColorCLI();
 **/
 
 $args = array(
+	'additional' => true,
 	'all'        => true,
-	'pre'        => true,
-	'nfo'        => true,
-	'movies'     => false,
-	'music'      => false,
+	'allinf'     => true,
+	'amazon'     => false,
+	'anime'      => false,
+	'book'       => false,
 	'console'    => false,
 	'games'      => false,
-	'book'       => false,
-	'anime'      => false,
+	'movies'     => false,
+	'music'      => false,
+	'nfo'        => true,
+	'pre'        => true,
+	'sharing'    => true,
 	'tv'         => false,
 	'xxx'        => false,
-	'additional' => true,
-	'sharing'    => true,
-	'allinf'     => true
 );
 
 $bool = array(
@@ -49,114 +50,82 @@ if (!isset($argv[1]) || !in_array($argv[1], $args) || !isset($argv[2]) || !in_ar
 				. "php postprocess.php additional true  ...: Processes previews/mediainfo/etc...\n"
 				. "php postprocess.php sharing true     ...: Processes uploading/downloading comments.\n"
 				. "php postprocess.php allinf true      ...: Does all the types of post processing on a loop, sleeping 15 seconds between.\n"
+				. "php postprocess.php amazon true      ...: Does all the amazon (books/console/games/music/xxx).\n"
 		)
 	);
 }
 
 $pdo = new \nzedb\db\Settings();
 
-$mode = $argv[1];
-$conn = $args[$mode];
-$show = $argv[2];
+$proxy = (int)$pdo->getSetting('nntpproxy');
 
-$proxy = $pdo->getSetting('nntpproxy');
-// Remove folders from tmpunrar.
-$tmpunrar = $pdo->getSetting('tmpunrarpath');
-rmtree($tmpunrar);
-
-if ($conn === true) {
-	// Don't use alternate here, if a article fails in post proc it will use alternate on its own.
-	$nntp = new NNTP();
-	if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-		exit($c->error("Unable to connect to usenet."));
-	}
-	if ($proxy == "1") {
-		usleep(500000);
+if ($args[$argv[1]] === true) {
+	$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+	if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+		exit($c->error("Unable to connect to usenet." . PHP_EOL));
 	}
 }
 
-if ($show === 'true') {
-	$postprocess = new PostProcess(true);
-} else {
-	$postprocess = new PostProcess();
-}
+$postProcess = new PostProcess(['Settings' => $pdo, 'Echo' => ($argv[2] === 'true' ? true : false)]);
 
 $charArray = ['a','b','c','d','e','f','0','1','2','3','4','5','6','7','8','9'];
 
-switch ($mode) {
+switch ($argv[1]) {
 
 	case 'all':
-		$postprocess->processAll($nntp);
+		$postProcess->processAll($nntp);
 		break;
 	case 'allinf':
 		$i = 1;
 		while ($i = 1) {
-			$postprocess->processAll($nntp);
+			$postProcess->processAll($nntp);
 			sleep(15);
 		}
 		break;
 	case 'additional':
-		$postprocess->processAdditional($nntp, '', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
+		$postProcess->processAdditional($nntp, '', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
+		break;
+	case 'amazon':
+		$postProcess->processBooks();
+		$postProcess->processConsoles();
+		$postProcess->processGames();
+		$postProcess->processMusic();
+		$postProcess->processXXX();
 		break;
 	case 'anime':
 		exit;
-		//$postprocess->processAnime();
+		//$postProcess->processAnime();
 		//break;
 	case 'book':
-		$postprocess->processBooks();
+		$postProcess->processBooks();
 		break;
 	case 'consoles':
-		$postprocess->processConsoles();
+		$postProcess->processConsoles();
 		break;
 	case 'games':
-		$postprocess->processGames();
+		$postProcess->processGames();
 		break;
 	case 'nfo':
-		$postprocess->processNfos($nntp, '', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
+		$postProcess->processNfos($nntp, '', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
 		break;
 	case 'movies':
-		$postprocess->processMovies('', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
+		$postProcess->processMovies('', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
 		break;
 	case 'music':
-		$postprocess->processMusic();
+		$postProcess->processMusic();
 		break;
 	case 'pre':
-		$postprocess->processPredb($nntp);
+		$postProcess->processPredb($nntp);
 		break;
 	case 'sharing':
-		$postprocess->processSharing($nntp);
+		$postProcess->processSharing($nntp);
 		break;
 	case 'tv':
-		$postprocess->processTV('', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
+		$postProcess->processTV('', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
 		break;
 	case 'xxx':
-		$postprocess->processXXX();
+		$postProcess->processXXX();
 		break;
 	default:
 		exit;
-}
-
-if ($proxy != "1" && $conn === true) {
-	$nntp->doQuit();
-}
-
-/**
- * Delete a file or directory recursively.
- *
- * @param string $path
- * found here, modded to only delete subfolders
- * https://gist.github.com/SteelPangolin/1407308
- */
-function rmtree($path)
-{
-	if (is_dir($path)) {
-		foreach (scandir($path) as $name) {
-			if (in_array($name, array('.', '..'))) {
-				continue;
-			}
-
-			$subpath = $path . DIRECTORY_SEPARATOR . $name;
-			rmtree($subpath);
-		}
-	}
 }

@@ -13,7 +13,7 @@ if (\nzedb\utility\Utility::hasCommand("php5")) {
 }
 
 $safe = (isset($argv[1]) && $argv[1] === "safe") ? true : false;
-system("$PHP " . nZEDb_LIB . 'db' . DS . "DbUpdate.php 1 $safe");
+system("$PHP " . nZEDb_ROOT . 'cli' . DS . "update_db.php true $safe");
 
 exit();
 //// Function inspired by : http://stackoverflow.com/questions/1883079/best-practice-import-mysql-file-in-php-split-queries/2011454#2011454

@@ -16,11 +16,7 @@ class Groups
 	 */
 	public function __construct($pdo=null)
 	{
-		if (!is_null($pdo)) {
-			$this->pdo = $pdo;
-		} else {
-			$this->pdo = new Settings();
-		}
+		$this->pdo = ($pdo instanceof Settings ? $pdo : new Settings());
 	}
 
 	/**
@@ -515,7 +511,7 @@ class Groups
 		);
 
 		if ($releaseArray !== false) {
-			$releases = new Releases();
+			$releases = new Releases(['Settings' => $this->pdo, 'Groups' => $this]);
 			$nzb = new NZB($this->pdo);
 			foreach ($releaseArray as $release) {
 				$releases->deleteSingle($release['guid'], $nzb);
@@ -537,7 +533,7 @@ class Groups
 		if (preg_match('/^\s*$/m', $groupList)) {
 			$ret = "No group list provided.";
 		} else {
-			$nntp = new NNTP(false);
+			$nntp = new NNTP(['Echo' => false]);
 			if ($nntp->doConnect() !== true) {
 				return 'Problem connecting to usenet.';
 			}

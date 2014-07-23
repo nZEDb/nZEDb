@@ -86,16 +86,28 @@ class Backfill
 	/**
 	 * Constructor.
 	 *
-	 * @param NNTP $nntp Class instance of NNTP.
-	 * @param bool $echo Echo to cli?
+	 * @param array $options Class instances / Echo to cli?
 	 */
-	public function __construct($nntp = null, $echo = true)
+	public function __construct(array $options = array())
 	{
-		$this->_nntp = $nntp;
-		$this->_echoCLI = ($echo && nZEDb_ECHOCLI);
-		$this->_colorCLI = new ColorCLI();
-		$this->_pdo = new nzedb\db\Settings();
-		$this->_groups = new Groups($this->_pdo);
+		$defOptions = [
+			'Echo'     => true,
+			'ColorCLI' => null,
+			'Groups'   => null,
+			'NNTP'     => null,
+			'Settings' => null
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->_echoCLI = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+
+		$this->_colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->_pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new \nzedb\db\Settings());
+		$this->_groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups($this->_pdo));
+		$this->_nntp = ($defOptions['NNTP'] instanceof NNTP
+			? $defOptions['NNTP'] : new NNTP(['Settings' => $this->_pdo, 'Echo' => $this->_echoCLI, 'ColorCLI' => $this->_colorCLI])
+		);
+
 		$this->_debug = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debug) {
 			$this->_debugging = new Debugging('Backfill');

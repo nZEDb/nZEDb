@@ -94,7 +94,7 @@ class RequestIDStandalone
 		$this->echoOutput = ($echoOutput && nZEDb_ECHOCLI);
 		$this->category = new Categorize();
 		$this->pdo = new Settings();
-		$this->groups = new Groups();
+		$this->groups = new Groups($this->pdo);
 		$this->namefixer = new NameFixer();
 		$this->consoleTools = new ConsoleTools();
 		$this->c = new ColorCLI();

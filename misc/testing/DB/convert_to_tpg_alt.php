@@ -13,7 +13,7 @@ if (!isset($argv[1]) || $argv[1] != 'true') {
 $pdo = new Settings();
 $start = TIME();
 $consoleTools = new ConsoleTools();
-$groups = new Groups();
+$groups = new Groups($pdo);
 
 $actgroups = $pdo->query("SELECT DISTINCT group_id from collections");
 

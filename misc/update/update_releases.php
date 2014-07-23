@@ -6,7 +6,7 @@ $c = new ColorCLI();
 
 if (isset($argv[2]) && $argv[2] === 'true') {
 	// Create the connection here and pass
-	$nntp = new NNTP();
+	$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 	if ($nntp->doConnect() !== true) {
 		exit($c->error("Unable to connect to usenet."));
 	}

@@ -6,7 +6,7 @@ use nzedb\db\Settings;
 $c = new ColorCLI();
 if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	$pdo = new Settings();
-	$releases = new Releases(array('Settings' => $pdo, 'Groups' => null));
+	$releases = new Releases(array('Settings' => $pdo));
 	$nzb = new NZB($pdo);
 	$consoletools = new ConsoleTools();
 	$timestart = TIME();
