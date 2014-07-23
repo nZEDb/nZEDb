@@ -4,9 +4,9 @@
  * Maximum time in seconds a child can stay alive.
  * Keeps long processes, like groups with millions of parts from preventing other groups to update.
  *
- * @default 600
+ * @default 1800
  */
-define('nZEDb_MULTIPROCESSING_MAX_CHILD_TIME', 600);
+define('nZEDb_MULTIPROCESSING_MAX_CHILD_TIME', 1800);
 
 /**
  * How much work can 1 child do.

@@ -70,7 +70,7 @@ switch ($options[1]) {
 			$releases->deleteReleases();
 			$releases->processRequestIDs('', (5000 * $groupCount), true);
 			$releases->processRequestIDs('', (1000 * $groupCount), false);
-			$releases->categorizeReleases(1);
+			$releases->categorizeReleases(2);
 		}
 		break;
 
@@ -127,6 +127,59 @@ switch ($options[1]) {
 
 		}
 		break;
+
+	// Post process additional and NFO.
+	// $options[2] => (char)Letter or number a-f 0-9, first character of release guid.
+	case 'pp_additional':
+	case 'pp_nfo':
+		if (charCheck($options[2])) {
+			require_once dirname(__FILE__) . '/../../../config.php';
+			$pdo = new \nzedb\db\Settings();
+
+			// Create the connection here and pass, this is for post processing, so check for alternate.
+			$nntp = new NNTP();
+			if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+				exit($c->error('Unable to connect to usenet.'));
+			}
+
+			if ($options[1] === 'pp_nfo') {
+				(new Nfo(true))->processNfoFiles($nntp, '', $options[2]);
+			} else {
+				(new ProcessAdditional(true, $nntp, $pdo))->start('', $options[2]);
+			}
+		}
+		break;
+
+	case 'pp_movie':
+		if (charCheck($options[2])) {
+			require_once dirname(__FILE__) . '/../../../config.php';
+			$pdo = new \nzedb\db\Settings();
+			(new PostProcess(['Echo' => true, 'Settings' => $pdo]))->processMovies('', $options[2]);
+		}
+		break;
+
+	case 'pp_tv':
+		if (charCheck($options[2])) {
+			require_once dirname(__FILE__) . '/../../../config.php';
+			$pdo = new \nzedb\db\Settings();
+			(new PostProcess(['Echo' => true, 'Settings' => $pdo]))->processTv('', $options[2]);
+		}
+		break;
+}
+
+/**
+ * Check if the character contains a-f or 0-9.
+ *
+ * @param string $char
+ *
+ * @return bool
+ */
+function charCheck($char)
+{
+	if (in_array($char, ['a','b','c','d','e','f','0','1','2','3','4','5','6','7','8','9'])) {
+		return true;
+	}
+	return false;
 }
 
 /**
