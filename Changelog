@@ -6,6 +6,12 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-22 taskym
+	* Add: Hot Movies Scraper
+	* Add: Process Hotmovies, Chg: Fetch XXX Info from scraper used
+	* Chg: Alter xxxinfo_id back to 0 for hotmovies processing
+	* Add: Echo if no xxx releases to process
+	* Fix: constants style
 2014-07-23 ruhllatio
 	* Chg: Move ReqIDLocal class to controllers, begin to add options to thread by Guid
 	* Chg: Remove needless concats from TMUX sql queries.
