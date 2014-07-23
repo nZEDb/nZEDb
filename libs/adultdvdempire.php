@@ -23,6 +23,8 @@ require_once 'simple_html_dom.php';
  */
 class adultdvdempire
 {
+	/* Define ADE Url here */
+	const ADE = "http://www.adultdvdempire.com";
 
 	/* If a release matches define it as as true = gives callback to continue */
 	public $found = null;
@@ -33,9 +35,6 @@ class adultdvdempire
 	/* Define param if trailing url is found get it and set it for future calls */
 	/* Anything after the $ade url is trailing */
 	protected $urlfound = null;
-
-	/* Define ADE Url here */
-	const ade = "http://www.adultdvdempire.com";
 
 	/* Sets the directurl for template */
 	protected $directurl = null;
@@ -327,7 +326,7 @@ class adultdvdempire
 	private function _getadeurl($trailing = null)
 	{
 		if (isset($trailing)) {
-			$ch = curl_init(SELF::ade . $trailing);
+			$ch = curl_init(self::ADE . $trailing);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_HEADER, 0);
 			curl_setopt($ch, CURLOPT_VERBOSE, 0);
