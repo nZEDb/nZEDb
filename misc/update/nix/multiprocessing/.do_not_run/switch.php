@@ -124,7 +124,7 @@ switch ($options[1]) {
 			// Create the connection here and pass, this is for post processing, so check for alternate.
 			$nntp = new NNTP(['Settings' => $pdo]);
 			if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-				exit($c->error('Unable to connect to usenet.'));
+				exit('Unable to connect to usenet.');
 			}
 
 			if ($options[1] === 'pp_nfo') {
