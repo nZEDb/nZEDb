@@ -308,24 +308,20 @@ class Forking extends \fork_daemon
 	public function postProcessChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
+			$type = '';
 			if ($this->processAdditional) {
-				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_UPDATE . 'postprocess.php additional true ' . $group['id']
-				);
+				$type = 'pp_additional  ';
+			} else if ($this->processNFO) {
+				$type = 'pp_nfo  ';
+			} else if ($this->processMovies) {
+				$type = 'pp_movie  ';
+			} else if ($this->processTV) {
+				$type = 'pp_tv  ';
 			}
-			if ($this->processNFO) {
+
+			if ($type !== '') {
 				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_UPDATE . 'postprocess.php nfo true ' . $group['id']
-				);
-			}
-			if ($this->processMovies) {
-				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_UPDATE . 'postprocess.php movies true ' . $group['id']
-				);
-			}
-			if ($this->processTV) {
-				$this->executeCommand(
-					PHP_BINARY . ' ' . nZEDb_UPDATE . 'postprocess.php tv true ' . $group['id']
+					$this->dnr_path . $type .  $group['id'] . '"'
 				);
 			}
 		}
