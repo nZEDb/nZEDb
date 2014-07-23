@@ -36,7 +36,7 @@ class Forking extends \fork_daemon
 			$this->max_work_per_child_set(nZEDb_MULTIPROCESSING_MAX_CHILD_WORK);
 		}
 
-		$this->child_max_run_time_set(600);
+		$this->child_max_run_time_set(1800);
 		if (defined('nZEDb_MULTIPROCESSING_MAX_CHILD_TIME')) {
 			$this->child_max_run_time_set(nZEDb_MULTIPROCESSING_MAX_CHILD_TIME);
 		}

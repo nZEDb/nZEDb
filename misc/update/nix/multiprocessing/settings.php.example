@@ -6,7 +6,7 @@
  *
  * @default 600
  */
-define('nZEDb_MULTIPROCESSING_MAX_CHILD_TIME', 600);
+define('nZEDb_MULTIPROCESSING_MAX_CHILD_TIME', 1800);
 
 /**
  * How much work can 1 child do.
