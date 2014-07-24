@@ -6,6 +6,13 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-23 ruhllatio
+	* Chg: Case a few if/elseif run ons in NameFixer -- more to do
+	* Fix: #1408 Issue with HDTS not being categorized properly
+2014-07-23 bart39
+	* Chg: use ColorCli for ProcessAdditional / NameFixer
+2014-07-24 kevin
+	* Chg: Re-use class instances in Binaries.
 2014-07-23 bart39
 	* Fix: undefined variable
 2014-07-23 taskym

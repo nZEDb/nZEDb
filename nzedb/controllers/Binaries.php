@@ -153,31 +153,40 @@ class Binaries
 	/**
 	 * Constructor.
 	 *
-	 * @param NNTP $nntp Class instance of NNTP.
-	 * @param bool $echo Echo to cli?
-	 * @param bool|Backfill $backFill Pass Backfill class if started from there.
+	 * @param array $options Class instances / echo to CLI?
 	 */
-	public function __construct($nntp = null, $echo = true, $backFill = false)
+	public function __construct(array $options = array())
 	{
-		$this->_nntp = $nntp;
-		$this->_colorCLI = new ColorCLI();
-		$this->_pdo = new nzedb\db\Settings();
-		$this->_groups = new Groups($this->_pdo);
-		$this->_echoCLI = ($echo && nZEDb_ECHOCLI);
-		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
-		if ($backFill === false) {
-			$this->_backFill = new Backfill(
+		$defOptions = [
+			'Echo'                => true,
+			'Backfill'            => null,
+			'CollectionsCleaning' => null,
+			'ColorCLI'            => null,
+			'ConsoleTools'        => null,
+			'Groups'              => null,
+			'NNTP'                => null,
+			'Settings'            => null,
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->_echoCLI = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+
+		$this->_pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new \nzedb\db\Settings());
+		$this->_groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups($this->_pdo));
+		$this->_colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->_nntp = ($defOptions['NNTP'] instanceof NNTP ? $defOptions['NNTP'] : new NNTP(['Echo' => $this->_colorCLI, 'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI]));
+		$this->_collectionsCleaning = ($defOptions['CollectionsCleaning'] instanceof CollectionsCleaning ? $defOptions['CollectionsCleaning'] : new CollectionsCleaning());
+		$this->_consoleTools = ($defOptions['ConsoleTools'] instanceof ConsoleTools ? $defOptions['ConsoleTools'] : new ConsoleTools());
+		$this->_backFill = ($defOptions['Backfill'] instanceof Backfill ? $defOptions['Backfill'] : new Backfill(
 				[
 					'NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Groups' => $this->_groups,
 					'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI
 				]
-			);
-		} else {
-			$this->_backFill = $backFill;
-		}
+			)
+		);
 
-		$this->_collectionsCleaning = new CollectionsCleaning();
-		$this->_consoleTools = new ConsoleTools();
+		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
+
 		if ($this->_debug) {
 			$this->_debugging = new Debugging("Binaries");
 		}

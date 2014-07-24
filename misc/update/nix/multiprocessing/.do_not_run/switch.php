@@ -95,7 +95,7 @@ switch ($options[1]) {
 			$backFill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true);
 
 			// Update the group for new binaries.
-			(new Binaries($nntp, true, $backFill))->updateGroup($groupMySQL);
+			(new Binaries(['NNTP' => $nntp, 'Backfill' => $backFill, 'Settings' => $pdo]))->updateGroup($groupMySQL);
 
 			// BackFill the group with 20k articles.
 			$backFill->backfillAllGroups($groupMySQL['name'], 20000, 'normal');

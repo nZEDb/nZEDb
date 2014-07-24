@@ -12,13 +12,13 @@ if (!isset($argv[1])) {
 }
 
 $pdo = new Settings();
-$binaries = new Binaries();
+$consoleTools = new ConsoleTools();
+$binaries = new Binaries(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoleTools]);
 $crosspostt = $pdo->getSetting('crossposttime');
 $crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
 $releasecleaning = new ReleaseCleaning();
 $categorize = new Categorize();
 $nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
-$consoleTools = new ConsoleTools();
 
 if (isset($argv[2]) && is_numeric($argv[2])) {
 	exit($c->error("\nTo use a max number to process, it must be the third argument. \nTo run:\nphp nzb-import.php /path [true, false] 1000\n"));

@@ -13,7 +13,7 @@ $nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 if ($nntp->doConnect() !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }
-$binaries = new Binaries($nntp);
+$binaries = new Binaries(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo]);
 if ($pdo->getSetting('nntpproxy') == "1") {
 	usleep(500000);
 }
