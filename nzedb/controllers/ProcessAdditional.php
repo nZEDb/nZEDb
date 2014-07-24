@@ -1,6 +1,7 @@
 <?php
 require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
+
 Class ProcessAdditional
 {
 	/**
@@ -55,12 +56,13 @@ Class ProcessAdditional
 	protected $_groups;
 
 	/**
-	 * @param bool        $echo          Echo to CLI.
-	 * @param NNTP        $nntp
+	 * @param bool              $echo Echo to CLI.
+	 * @param NNTP              $nntp
 	 * @param nzedb\db\Settings $pdo
 	 */
 	public function __construct($echo = false, &$nntp, &$pdo)
 	{
+		$this->_colorCLI = new ColorCLI();
 		$this->_echoCLI = ($echo && nZEDb_ECHOCLI && (strtolower(PHP_SAPI) === 'cli'));
 		$this->_echoDebug = nZEDb_DEBUG;
 
@@ -80,7 +82,7 @@ Class ProcessAdditional
 
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
 		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
-		$this->_extractUsingRarInfo = ($this->pdo->getSetting('extractusingrarinfo') == 0 ? false :true);
+		$this->_extractUsingRarInfo = ($this->pdo->getSetting('extractusingrarinfo') == 0 ? false : true);
 
 		$this->_7zipPath = false;
 		$this->_unrarPath = false;
@@ -132,23 +134,23 @@ Class ProcessAdditional
 
 		$this->_addPAR2Files = ($this->pdo->getSetting('addpar2') === '0') ? false : true;
 
-		$this->_processSample      = ($this->pdo->getSetting('ffmpegpath') == '')        ? false : true;
-		$this->_processVideo       = ($this->pdo->getSetting('processvideos') == 0)      ? false : true;
-		$this->_processJPGSample   = ($this->pdo->getSetting('processjpg') == 0)         ? false : true;
+		$this->_processSample = ($this->pdo->getSetting('ffmpegpath') == '') ? false : true;
+		$this->_processVideo = ($this->pdo->getSetting('processvideos') == 0) ? false : true;
+		$this->_processJPGSample = ($this->pdo->getSetting('processjpg') == 0) ? false : true;
 		$this->_processAudioSample = ($this->pdo->getSetting('processaudiosample') == 0) ? false : true;
-		$this->_processMediaInfo   = ($this->pdo->getSetting('mediainfopath') == '')     ? false : true;
-		$this->_processAudioInfo   = $this->_processMediaInfo;
-		$this->_processPasswords   = (
+		$this->_processMediaInfo = ($this->pdo->getSetting('mediainfopath') == '') ? false : true;
+		$this->_processAudioInfo = $this->_processMediaInfo;
+		$this->_processPasswords = (
 			((($this->pdo->getSetting('checkpasswordedrar') == 0) ? false : true)) &&
 			(($this->pdo->getSetting('unrarpath') == '') ? false : true)
 		);
 
 		$this->_audioSavePath = nZEDb_COVERS . 'audiosample' . DS;
 
-		$this->_audioFileRegex   = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
-		$this->_ignoreBookRegex  = '/\b(epub|lit|mobi|pdf|sipdf|html)\b.*\.rar(?!.{20,})/i';
+		$this->_audioFileRegex = '\.(AAC|AIFF|APE|AC3|ASF|DTS|FLAC|MKA|MKS|MP2|MP3|RA|OGG|OGM|W64|WAV|WMA)';
+		$this->_ignoreBookRegex = '/\b(epub|lit|mobi|pdf|sipdf|html)\b.*\.rar(?!.{20,})/i';
 		$this->_supportFileRegex = '/\.(vol\d{1,3}\+\d{1,3}|par2|srs|sfv|nzb';
-		$this->_videoFileRegex   = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
+		$this->_videoFileRegex = '\.(AVI|F4V|IFO|M1V|M2V|M4V|MKV|MOV|MP4|MPEG|MPG|MPGV|MPV|OGV|QT|RM|RMVB|TS|VOB|WMV)';
 	}
 
 	/**
@@ -241,17 +243,18 @@ Class ProcessAdditional
 	protected function _fetchReleases($groupID, &$guidChar)
 	{
 		$this->_releases = $this->pdo->query(
-			sprintf('
-				SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname, r.preid
-				FROM releases r
-				LEFT JOIN category c ON c.id = r.categoryid
-				WHERE r.nzbstatus = 1
-				%s %s %s %s
-				AND r.passwordstatus BETWEEN -6 AND -1
-				AND r.haspreview = -1
-				AND c.disablepreview = 0
-				ORDER BY r.passwordstatus ASC, r.postdate DESC
-				LIMIT %d',
+			sprintf(
+				'
+								SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname, r.preid
+								FROM releases r
+								LEFT JOIN category c ON c.id = r.categoryid
+								WHERE r.nzbstatus = 1
+								%s %s %s %s
+								AND r.passwordstatus BETWEEN -6 AND -1
+								AND r.haspreview = -1
+								AND c.disablepreview = 0
+								ORDER BY r.passwordstatus ASC, r.postdate DESC
+								LIMIT %d',
 				$this->_maxSize,
 				$this->_minSize,
 				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
@@ -277,6 +280,7 @@ Class ProcessAdditional
 	{
 		if ($this->_totalReleases > 1 && $this->_echoCLI) {
 			$this->_echo(
+				PHP_EOL .
 				'Additional post-processing, started at: ' .
 				date('D M d, Y G:i a') .
 				PHP_EOL .
@@ -285,7 +289,7 @@ Class ProcessAdditional
 				'Added: s = Sample image, j = JPEG image, A = Audio sample, a = Audio MediaInfo, v = Video sample' .
 				PHP_EOL .
 				'Added: m = Video MediaInfo, n = NFO, ^ = File details from inside the RAR/ZIP'
-			);
+			, 'header');
 		}
 	}
 
@@ -296,8 +300,9 @@ Class ProcessAdditional
 	{
 		foreach ($this->_releases as $this->_release) {
 			$this->_echo(
-				'[' . $this->_release['id'] . '][' .
+				PHP_EOL . '[' . $this->_release['id'] . '][' .
 				$this->_readableBytesString($this->_release['size']) . ']',
+				'primaryOver',
 				false
 			);
 
@@ -324,10 +329,10 @@ Class ProcessAdditional
 			}
 
 			if ($this->_processPasswords === true ||
-				$this->_processSample    === true ||
+				$this->_processSample === true ||
 				$this->_processMediaInfo === true ||
 				$this->_processAudioInfo === true ||
-				$this->_processVideo     === true
+				$this->_processVideo === true
 			) {
 
 				// Process usenet Message-ID downloads.
@@ -359,7 +364,7 @@ Class ProcessAdditional
 	/**
 	 * Deletes files and folders recursively.
 	 *
-	 * @param string $path   Path to a folder or file.
+	 * @param string $path           Path to a folder or file.
 	 * @param array  $ignoredFolders Array with paths to folders to ignore.
 	 *
 	 * @void
@@ -369,9 +374,9 @@ Class ProcessAdditional
 	{
 		if (is_dir($path)) {
 
-			$files = glob(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR  . '*');
+			$files = glob(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '*');
 
-			foreach($files as $file){
+			foreach ($files as $file) {
 				$this->_recursivePathDelete($file, $ignoredFolders);
 			}
 
@@ -403,7 +408,7 @@ Class ProcessAdditional
 
 			if (!is_dir($this->tmpPath)) {
 
-				$this->_echo('Unable to create directory: ' . $this->tmpPath);
+				$this->_echo('Unable to create directory: ' . $this->tmpPath, 'warning');
 
 				// Decrement password status.
 				$this->pdo->queryExec(
@@ -428,7 +433,7 @@ Class ProcessAdditional
 		$nzbPath = $this->_nzb->NZBPath($this->_release['guid']);
 		if ($nzbPath === false) {
 
-			$this->_echo('NZB not found for GUID: ' . $this->_release['guid']);
+			$this->_echo('NZB not found for GUID: ' . $this->_release['guid'], 'warning');
 
 			// The nzb was not located. decrement the password status.
 			$this->pdo->queryExec(
@@ -453,7 +458,7 @@ Class ProcessAdditional
 		$this->_nzbContents = $this->_nzb->nzbFileList($nzbContents);
 		if (count($this->_nzbContents) === 0) {
 
-			$this->_echo('NZB is empty or broken for GUID: ' . $this->_release['guid']);
+			$this->_echo('NZB is empty or broken for GUID: ' . $this->_release['guid'], 'warning');
 
 			// There does not appear to be any files in the nzb, decrement password status.
 			$this->pdo->queryExec(
@@ -492,7 +497,7 @@ Class ProcessAdditional
 	protected function _processNZBContents()
 	{
 		$totalBookFiles = 0;
-		foreach($this->_nzbContents as $this->_currentNZBFile) {
+		foreach ($this->_nzbContents as $this->_currentNZBFile) {
 
 			// Check if it's not a nfo, nzb, par2 etc...
 			if (preg_match($this->_supportFileRegex . '|nfo\b|inf\b|ofn\b)($|[ ")\]-])(?!.{20,})/i', $this->_currentNZBFile['title'])) {
@@ -501,8 +506,9 @@ Class ProcessAdditional
 
 			// Check if it's a rar/zip.
 			if ($this->_NZBHasCompressedFile === false &&
-				preg_match('
-					/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zip)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
+				preg_match(
+					'
+										/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zip)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
 					$this->_currentNZBFile['title']
 				)
 			) {
@@ -597,14 +603,15 @@ Class ProcessAdditional
 			}
 
 			if ($this->_releaseHasPassword === true) {
-				$this->_echo('Skipping processing of rar ' . $nzbFile['title'] . ' it has a password.');
+				$this->_echo('Skipping processing of rar ' . $nzbFile['title'] . ' it has a password.', 'primaryOver', false);
 				break;
 			}
 
 			// Probably not a rar/zip.
 			if (!preg_match(
 				'/\.\b(part\d+|part00\.rar|part01\.rar|rar|r00|r01|zipr\d{2,3}|zip|zipx)($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
-				$nzbFile['title'])
+				$nzbFile['title']
+			)
 			) {
 				continue;
 			}
@@ -629,7 +636,7 @@ Class ProcessAdditional
 
 				// Echo we downloaded compressed file.
 				if ($this->_echoCLI) {
-					echo '(cB)';
+					$this->_echo('(cB)', 'primaryOver', false);
 				}
 
 				$notInfinite++;
@@ -644,7 +651,7 @@ Class ProcessAdditional
 			} else {
 
 				if ($this->_echoCLI) {
-					echo 'f(' . $notInfinite . ')';
+					$this->_echo('f(' . $notInfinite . ')', 'primaryOver', false);
 				}
 
 				$notInfinite += 0.2;
@@ -688,7 +695,7 @@ Class ProcessAdditional
 		switch ($dataSummary['main_type']) {
 			case ArchiveInfo::TYPE_RAR:
 				if ($this->_echoCLI) {
-					echo 'r';
+					$this->_echo('r', 'primaryOver', false);
 				}
 
 				if ($this->_extractUsingRarInfo === false && $this->_unrarPath !== false) {
@@ -700,7 +707,7 @@ Class ProcessAdditional
 				break;
 			case ArchiveInfo::TYPE_ZIP:
 				if ($this->_echoCLI) {
-					echo 'z';
+					$this->_echo('z', 'primaryOver', false);
 				}
 
 				if ($this->_extractUsingRarInfo === false && $this->_7zipPath !== false) {
@@ -769,8 +776,7 @@ Class ProcessAdditional
 							($this->tmpPath . mt_rand(10, 999999) . '_' . $fileName),
 							$this->_archiveInfo->getFileData($file['name'], $file['source'])
 						);
-					}
-					// If the files are compressed, use a binary extractor.
+					} // If the files are compressed, use a binary extractor.
 					else {
 						$this->_archiveInfo->extractFile($file['name'], $this->tmpPath . mt_rand(10, 999999) . '_' . $fileName);
 					}
@@ -805,11 +811,12 @@ Class ProcessAdditional
 			 */
 			if ($this->_addedFileInfo < 11 &&
 				$this->pdo->queryOneRow(
-					sprintf('
-						SELECT id FROM releasefiles
-						WHERE releaseid = %d
-						AND name = %s
-						AND size = %d',
+					sprintf(
+						'
+												SELECT id FROM releasefiles
+												WHERE releaseid = %d
+												AND name = %s
+												AND size = %d',
 						$this->_release['id'], $this->pdo->escapeString($file['name']), $file['size']
 					)
 				) === false
@@ -819,7 +826,7 @@ Class ProcessAdditional
 					$this->_addedFileInfo++;
 
 					if ($this->_echoCLI) {
-						echo '^';
+						$this->_echo('^', 'primaryOver', false);
 					}
 
 					// Check for "codec spam"
@@ -829,9 +836,7 @@ Class ProcessAdditional
 						$this->_debug('Codec spam found, setting release to potentially passworded.' . PHP_EOL);
 						$this->_releaseHasPassword = true;
 						$this->_passwordStatus[] = Releases::PASSWD_POTENTIAL;
-					}
-
-					//Run a PreDB filename check on insert to try and match the release
+					} //Run a PreDB filename check on insert to try and match the release
 					else if (strpos($file['name'], '.') != 0 && strlen($file['name']) > 0) {
 						$this->_release['filename'] = $file['name'];
 						$this->_release['releaseid'] = $this->_release['id'];
@@ -902,47 +907,35 @@ Class ProcessAdditional
 					// Process PAR2 files.
 					if ($this->_foundPAR2Info === false && preg_match('/\.par2$/', $file)) {
 						$this->_siftPAR2Info($file);
-					}
-
-					// Process NFO files.
+					} // Process NFO files.
 					else if ($this->_releaseHasNoNFO === true && preg_match('/(\.(nfo|inf|ofn)|info\.txt)$/i', $file)) {
 						$this->_processNfoFile($file);
-					}
-
-					// Process audio files.
+					} // Process audio files.
 					else if (
 						($this->_foundAudioInfo === false ||
-						$this->_foundAudioSample === false) &&
+							$this->_foundAudioSample === false) &&
 						preg_match('/(.*)' . $this->_audioFileRegex . '$/i', $file, $fileType)
 					) {
 						// Try to get audio sample/audio media info.
 						@rename($file, $this->tmpPath . 'audiofile.' . $fileType[2]);
 						$this->_getAudioInfo($this->tmpPath . 'audiofile.' . $fileType[2], $fileType[2]);
 						@unlink($this->tmpPath . 'audiofile.' . $fileType[2]);
-					}
-
-					// Process JPG files.
+					} // Process JPG files.
 					else if ($this->_foundJPGSample === false && preg_match('/\.jpe?g$/i', $file)) {
 						$this->_getJPGSample($file);
 						@unlink($file);
-					}
-
-					// Video sample // video clip // video media info.
+					} // Video sample // video clip // video media info.
 					else if (($this->_foundSample === false || $this->_foundVideo === false || $this->_foundMediaInfo === false) &&
 						preg_match('/(.*)' . $this->_videoFileRegex . '$/i', $file)
 					) {
 						$this->_processVideoFile($file);
-					}
-
-					// Check if it's alt.binaries.u4e file.
+					} // Check if it's alt.binaries.u4e file.
 					else if (in_array($this->_releaseGroupName, array('alt.binaries.u4e', 'alt.binaries.mom')) &&
 						preg_match('/Linux_2rename\.sh/i', $file) &&
 						$this->_release['categoryid'] == Category::CAT_OTHER_HASHED
 					) {
 						$this->_processU4ETitle($file);
-					}
-
-					// If we have GNU file, check the type of file and process it.
+					} // If we have GNU file, check the type of file and process it.
 					else if ($this->_hasGNUFile) {
 						exec('file -b "' . $file . '"', $output);
 
@@ -1034,7 +1027,7 @@ Class ProcessAdditional
 
 				if ($sampleBinary !== false) {
 					if ($this->_echoCLI) {
-						echo '(sB)';
+						$this->_echo('(sB)', 'primaryOver', false);
 					}
 
 					// Check if it's more than 40 bytes.
@@ -1062,7 +1055,7 @@ Class ProcessAdditional
 
 					}
 				} else if ($this->_echoCLI) {
-					echo 'f';
+					$this->_echo('f', 'primaryOver', false);
 				}
 			}
 		}
@@ -1091,7 +1084,7 @@ Class ProcessAdditional
 				if ($mediaBinary !== false) {
 
 					if ($this->_echoCLI) {
-						echo '(mB)';
+						$this->_echo('(mB)', 'primaryOver', false);
 					}
 
 					// If it's more than 40 bytes...
@@ -1117,7 +1110,7 @@ Class ProcessAdditional
 						}
 					}
 				} else if ($this->_echoCLI) {
-					echo 'f';
+					$this->_echo('f', 'primaryOver', false);
 				}
 			}
 		}
@@ -1143,7 +1136,7 @@ Class ProcessAdditional
 
 				if ($audioBinary !== false) {
 					if ($this->_echoCLI) {
-						echo '(aB)';
+						$this->_echo('(aB)', 'primaryOver', false);
 					}
 
 					$fileLocation = $this->tmpPath . 'audio.' . $this->_AudioInfoExtension;
@@ -1154,7 +1147,7 @@ Class ProcessAdditional
 					$this->_getAudioInfo($fileLocation, $this->_AudioInfoExtension);
 
 				} else if ($this->_echoCLI) {
-					echo 'f';
+					$this->_echo('f', 'primaryOver', false);
 				}
 			}
 		}
@@ -1180,7 +1173,7 @@ Class ProcessAdditional
 			if ($jpgBinary !== false) {
 
 				if ($this->_echoCLI) {
-					echo '(jB)';
+					$this->_echo('(jB)', 'primaryOver', false);
 				}
 
 				// Try to create a file with it.
@@ -1188,32 +1181,33 @@ Class ProcessAdditional
 
 				// Try to resize and move it.
 				$this->_foundJPGSample = (
-					$this->_releaseImage->saveImage(
-						$this->_release['guid'] . '_thumb', $this->tmpPath . 'samplepicture.jpg',
-						$this->_releaseImage->jpgSavePath, 650, 650
-					) === 1 ? true : false
+				$this->_releaseImage->saveImage(
+					$this->_release['guid'] . '_thumb', $this->tmpPath . 'samplepicture.jpg',
+					$this->_releaseImage->jpgSavePath, 650, 650
+				) === 1 ? true : false
 				);
 
 				if ($this->_foundJPGSample !== false) {
 					// Update the DB to say we got it.
 					$this->pdo->queryExec(
-						sprintf('
-							UPDATE releases
-							SET jpgstatus = %d
-							WHERE id = %d', 1,
+						sprintf(
+							'
+														UPDATE releases
+														SET jpgstatus = %d
+														WHERE id = %d', 1,
 							$this->_release['id']
 						)
 					);
 
 					if ($this->_echoCLI) {
-						echo 'j';
+						$this->_echo('j', 'primaryOver', false);
 					}
 				}
 
 				@unlink($this->tmpPath . 'samplepicture.jpg');
 
 			} else if ($this->_echoCLI) {
-				echo 'f';
+				$this->_echo('f', 'primaryOver', false);
 			}
 		}
 	}
@@ -1241,11 +1235,12 @@ Class ProcessAdditional
 
 		// Get the amount of files we found inside the RAR/ZIP files.
 		$releaseFiles = $this->pdo->queryOneRow(
-			sprintf('
-				SELECT COUNT(releasefiles.releaseid) AS count,
-				SUM(releasefiles.size) AS size
-				FROM releasefiles
-				WHERE releaseid = %d',
+			sprintf(
+				'
+								SELECT COUNT(releasefiles.releaseid) AS count,
+								SUM(releasefiles.size) AS size
+								FROM releasefiles
+								WHERE releaseid = %d',
 				$this->_release['id']
 			)
 		);
@@ -1263,24 +1258,24 @@ Class ProcessAdditional
 
 		// If we failed to get anything from the RAR/ZIPs, decrement the passwordstatus, if the rar/zip has no password.
 		if ($this->_releaseHasPassword === false && $this->_NZBHasCompressedFile && $releaseFiles['count'] == 0) {
-			$query = sprintf('
-				UPDATE releases
-				SET passwordstatus = passwordstatus - 1, rarinnerfilecount = %d %s %s %s
-				WHERE id = %d',
+			$query = sprintf(
+				'
+								UPDATE releases
+								SET passwordstatus = passwordstatus - 1, rarinnerfilecount = %d %s %s %s
+								WHERE id = %d',
 				$releaseFiles['count'],
 				$iSQL,
 				$vSQL,
 				$jSQL,
 				$this->_release['id']
 			);
-		}
-
-		// Else update the release with the password status (if the admin enabled the setting).
+		} // Else update the release with the password status (if the admin enabled the setting).
 		else {
-			$query = sprintf('
-				UPDATE releases
-				SET passwordstatus = %d, rarinnerfilecount = %d %s %s %s
-				WHERE id = %d',
+			$query = sprintf(
+				'
+								UPDATE releases
+								SET passwordstatus = %d, rarinnerfilecount = %d %s %s %s
+								WHERE id = %d',
 				($this->_processPasswords === true ? $this->_passwordStatus : Releases::PASSWD_NONE),
 				$releaseFiles['count'],
 				$iSQL,
@@ -1353,7 +1348,7 @@ Class ProcessAdditional
 		// Make sure the category is music or other.
 		$rQuery = $this->pdo->queryOneRow(
 			sprintf(
-				'SELECT searchname, categoryid as id, group_id FROM releases WHERE proc_pp = 0 AND id = %d',
+				'SELECT searchname, categoryid AS id, group_id FROM releases WHERE proc_pp = 0 AND id = %d',
 				$this->_release['id']
 			)
 		);
@@ -1413,10 +1408,11 @@ Class ProcessAdditional
 
 									// Update the search name.
 									$this->pdo->queryExec(
-										sprintf('
-											UPDATE releases
-											SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
-											WHERE id = %d',
+										sprintf(
+											'
+																						UPDATE releases
+																						SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
+																						WHERE id = %d',
 											$this->pdo->escapeString(substr($newName, 0, 255)),
 											$newCat,
 											$this->_release['id']
@@ -1425,14 +1421,15 @@ Class ProcessAdditional
 
 									// Echo the changed name.
 									if ($this->_echoCLI) {
-										NameFixer::echoChangedReleaseName(array(
-												'new_name'     => $newName,
-												'old_name'     => $rQuery['searchname'],
+										NameFixer::echoChangedReleaseName(
+											array(
+												'new_name' => $newName,
+												'old_name' => $rQuery['searchname'],
 												'new_category' => $newCat,
 												'old_category' => $rQuery['id'],
-												'group'        => $rQuery['group_id'],
-												'release_id'   => $this->_release['id'],
-												'method'       => 'ProcessAdditional->_getAudioInfo'
+												'group' => $rQuery['group_id'],
+												'release_id' => $this->_release['id'],
+												'method' => 'ProcessAdditional->_getAudioInfo'
 											)
 										);
 									}
@@ -1444,7 +1441,7 @@ Class ProcessAdditional
 								$retVal = true;
 								$this->_foundAudioInfo = true;
 								if ($this->_echoCLI) {
-									echo 'a';
+									$this->_echo('a', 'primaryOver', false);
 								}
 								break;
 							}
@@ -1494,10 +1491,11 @@ Class ProcessAdditional
 
 					// Update DB to said we got a audio sample.
 					$this->pdo->queryExec(
-						sprintf('
-							UPDATE releases
-							SET audiostatus = 1
-							WHERE id = %d',
+						sprintf(
+							'
+														UPDATE releases
+														SET audiostatus = 1
+														WHERE id = %d',
 							$this->_release['id']
 						)
 					);
@@ -1505,7 +1503,7 @@ Class ProcessAdditional
 					$audVal = $this->_foundAudioSample = true;
 
 					if ($this->_echoCLI) {
-						echo 'A';
+						$this->_echo('A', 'primaryOver', false);
 					}
 
 				}
@@ -1523,19 +1521,20 @@ Class ProcessAdditional
 	{
 		// Try to resize/move the image.
 		$this->_foundJPGSample = (
-			$this->_releaseImage->saveImage(
-				$this->_release['guid'] . '_thumb',
-				$fileLocation, $this->_releaseImage->jpgSavePath, 650, 650
-			) === 1 ? true : false
+		$this->_releaseImage->saveImage(
+			$this->_release['guid'] . '_thumb',
+			$fileLocation, $this->_releaseImage->jpgSavePath, 650, 650
+		) === 1 ? true : false
 		);
 
 		// If it's successful, tell the DB.
 		if ($this->_foundJPGSample !== false) {
 			$this->pdo->queryExec(
-				sprintf('
-					UPDATE releases
-					SET jpgstatus = %d
-					WHERE id = %d',
+				sprintf(
+					'
+										UPDATE releases
+										SET jpgstatus = %d
+										WHERE id = %d',
 					1,
 					$this->_release['id']
 				)
@@ -1589,7 +1588,6 @@ Class ProcessAdditional
 				'"'
 			);
 
-
 			// Check if the file exists.
 			if (is_file($fileName)) {
 
@@ -1607,7 +1605,7 @@ Class ProcessAdditional
 				if ($saved === 1) {
 
 					if ($this->_echoCLI) {
-						echo 's';
+						$this->_echo('s', 'primaryOver', false);
 					}
 					return true;
 				}
@@ -1746,15 +1744,16 @@ Class ProcessAdditional
 
 				// Update query to say we got the video.
 				$this->pdo->queryExec(
-					sprintf('
-						UPDATE releases
-						SET videostatus = 1
-						WHERE guid = %s',
+					sprintf(
+						'
+												UPDATE releases
+												SET videostatus = 1
+												WHERE guid = %s',
 						$this->pdo->escapeString($this->_release['guid'])
 					)
 				);
 				if ($this->_echoCLI) {
-					echo 'v';
+					$this->_echo('v', 'primaryOver', false);
 				}
 				return true;
 			}
@@ -1796,7 +1795,7 @@ Class ProcessAdditional
 				$this->_releaseExtra->addFromXml($this->_release['id'], $xmlArray);
 
 				if ($this->_echoCLI) {
-					echo 'm';
+					$this->_echo('m', 'primaryOver', false);
 				}
 				return true;
 			}
@@ -1818,10 +1817,11 @@ Class ProcessAdditional
 		}
 
 		$releaseInfo = $this->pdo->queryOneRow(
-			sprintf('
-				SELECT UNIX_TIMESTAMP(postdate) AS postdate, proc_pp
-				FROM releases
-				WHERE id = %d',
+			sprintf(
+				'
+								SELECT UNIX_TIMESTAMP(postdate) AS postdate, proc_pp
+								FROM releases
+								WHERE id = %d',
 				$this->_release['id']
 			)
 		);
@@ -1834,7 +1834,8 @@ Class ProcessAdditional
 		$foundName = true;
 		if (nZEDb_RENAME_PAR2 &&
 			$releaseInfo['proc_pp'] == 0 &&
-			in_array(((int)$this->_release['categoryid']),
+			in_array(
+				((int)$this->_release['categoryid']),
 				array(
 					Category::CAT_BOOKS_OTHER,
 					Category::CAT_GAME_OTHER,
@@ -1869,8 +1870,11 @@ Class ProcessAdditional
 			if ($this->_addPAR2Files) {
 				if ($filesAdded < 11 &&
 					$this->pdo->queryOneRow(
-						sprintf('SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
-						$this->_release['id'], $this->pdo->escapeString($file['name']))) === false
+						sprintf(
+							'SELECT id FROM releasefiles WHERE releaseid = %d AND name = %s',
+							$this->_release['id'], $this->pdo->escapeString($file['name'])
+						)
+					) === false
 				) {
 
 					// Try to add the files to the DB.
@@ -1974,13 +1978,14 @@ Class ProcessAdditional
 
 					// Update the release with the data.
 					$this->pdo->queryExec(
-						sprintf('
-							UPDATE releases
-							SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
-								tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
-								consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
-								searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
-							WHERE id = %d',
+						sprintf(
+							'
+														UPDATE releases
+														SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
+															tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
+															consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
+															searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
+														WHERE id = %d',
 							$this->pdo->escapeString(substr($newName, 0, 255)),
 							$newCategory,
 							$this->_release['id']
@@ -1989,14 +1994,15 @@ Class ProcessAdditional
 
 					// Echo the changed name to CLI.
 					if ($this->_echoCLI) {
-						NameFixer::echoChangedReleaseName(array(
-								'new_name'     => $newName,
-								'old_name'     => $this->_release['searchname'],
+						NameFixer::echoChangedReleaseName(
+							array(
+								'new_name' => $newName,
+								'old_name' => $this->_release['searchname'],
 								'new_category' => $newCategory,
 								'old_category' => $this->_release['categoryid'],
-								'group'        => $this->_release['group_id'],
-								'release_id'   => $this->_release['id'],
-								'method'       => 'ProcessAdditional->_processU4ETitle'
+								'group' => $this->_release['group_id'],
+								'release_id' => $this->_release['id'],
+								'method' => 'ProcessAdditional->_processU4ETitle'
 							)
 						);
 					}
@@ -2197,14 +2203,14 @@ Class ProcessAdditional
 	protected function _resetReleaseStatus()
 	{
 		// Only process for samples, previews and images if not disabled.
-		$this->_foundVideo       = ($this->_processVideo           ? false : true);
-		$this->_foundMediaInfo   = ($this->_processMediaInfo       ? false : true);
-		$this->_foundAudioInfo   = ($this->_processAudioInfo       ? false : true);
-		$this->_foundAudioSample = ($this->_processAudioSample     ? false : true);
-		$this->_foundJPGSample   = ($this->_processJPGSample       ? false : true);
-		$this->_foundSample      = ($this->_processSample          ? false : true);
-		$this->_foundSample      = (($this->_release['disablepreview'] == 1) ? true  : false);
-		$this->_foundPAR2Info    = false;
+		$this->_foundVideo = ($this->_processVideo ? false : true);
+		$this->_foundMediaInfo = ($this->_processMediaInfo ? false : true);
+		$this->_foundAudioInfo = ($this->_processAudioInfo ? false : true);
+		$this->_foundAudioSample = ($this->_processAudioSample ? false : true);
+		$this->_foundJPGSample = ($this->_processJPGSample ? false : true);
+		$this->_foundSample = ($this->_processSample ? false : true);
+		$this->_foundSample = (($this->_release['disablepreview'] == 1) ? true : false);
+		$this->_foundPAR2Info = false;
 
 		$this->_passwordStatus = array(Releases::PASSWD_NONE);
 		$this->_releaseHasPassword = false;
@@ -2236,10 +2242,10 @@ Class ProcessAdditional
 	 *
 	 * @void
 	 */
-	protected function _echo($string, $newLine = true)
+	protected function _echo($string, $type, $newLine = true)
 	{
 		if ($this->_echoCLI) {
-			echo ($string . ($newLine ? PHP_EOL : ''));
+			$this->_colorCLI->doEcho($this->_colorCLI->$type($string), $newLine);
 		}
 	}
 
@@ -2254,7 +2260,7 @@ Class ProcessAdditional
 	protected function _debug($string, $newline = true)
 	{
 		if ($this->_echoDebug) {
-			$this->_echo('DEBUG: ' . $string, $newline);
+			$this->_echo('DEBUG: ' . $string, 'debug', $newline);
 		}
 	}
 }

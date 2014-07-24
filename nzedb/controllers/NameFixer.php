@@ -486,17 +486,16 @@ class NameFixer
 			'release_id'   => 0,
 			'method'       => ''
 		)
-	)
-	{
+	) {
 		echo
-		PHP_EOL .
-		'New name:     ' . $data['new_name']     . PHP_EOL .
-		'Old name:     ' . $data['old_name']     . PHP_EOL .
-		'New category: ' . $data['new_category'] . PHP_EOL .
-		'Old category: ' . $data['old_category'] . PHP_EOL .
-		'Group:        ' . $data['group']        . PHP_EOL .
-		'Release ID:   ' . $data['release_id']   . PHP_EOL .
-		'Method:       ' . $data['method']       . PHP_EOL;
+			PHP_EOL .
+			ColorCLI::headerOver('New name:     ') . ColorCLI::primaryOver($data['new_name']) . PHP_EOL .
+			ColorCLI::headerOver('Old name:     ') . ColorCLI::primaryOver($data['old_name']) . PHP_EOL .
+			ColorCLI::headerOver('New category: ') . ColorCLI::primaryOver($data['new_category']) . PHP_EOL .
+			ColorCLI::headerOver('Old category: ') . ColorCLI::primaryOver($data['old_category']) . PHP_EOL .
+			ColorCLI::headerOver('Group:        ') . ColorCLI::primaryOver($data['group']) . PHP_EOL .
+			ColorCLI::headerOver('Release ID:   ') . ColorCLI::primaryOver($data['release_id']) . PHP_EOL .
+			ColorCLI::headerOver('Method:       ') . ColorCLI::primaryOver($data['method']) . PHP_EOL;
 	}
 
 	// Match a PreDB title to a release name or searchname using an exact full-text match
