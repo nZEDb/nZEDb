@@ -6,11 +6,14 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-07-23 ruhllatio
+2014-07-24 ruhllatio
 	* Chg: Case a few if/elseif run ons in NameFixer -- more to do
 	* Fix: #1408 Issue with HDTS not being categorized properly
-2014-07-23 bart39
+2014-07-24 bart39
 	* Chg: use ColorCli for ProcessAdditional / NameFixer
+	* Chg: Reset gamesinfo_id and xxinfo_id when recategorizing
+	* Fix: Disable "like" matching when looking up releases against existing tvrage shows - causes incorrect matches with single word show titles like '24'
+	NB: Run php /misc/testing/DB/reset_postprocessing.php tv true to attempt to fix these.
 2014-07-24 kevin
 	* Chg: Re-use class instances in Binaries.
 2014-07-23 bart39

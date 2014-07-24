@@ -98,15 +98,15 @@ class TvRage
 
 		// If there was not an exact title match, look for title with missing chars
 		// example release name :Zorro 1990, tvrage name Zorro (1990)
-		$pieces = explode(' ', $title);
-		$title4 = '%';
-		foreach ($pieces as $piece) {
-			$title4 .= str_replace(array("'", "!"), "", $piece) . '%';
-		}
-		$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string ,$this->pdo->escapeString($title4)));
-		if (isset($res['rageid'])) {
-			return $res['rageid'];
-		}
+//		$pieces = explode(' ', $title);
+//		$title4 = '%';
+//		foreach ($pieces as $piece) {
+//			$title4 .= str_replace(array("'", "!"), "", $piece) . '%';
+//		}
+//		$res = $this->pdo->queryOneRow(sprintf("SELECT rageid FROM tvrage WHERE replace(replace(releasetitle, %s, ''), '!', '') LIKE %s", $string ,$this->pdo->escapeString($title4)));
+//		if (isset($res['rageid'])) {
+//			return $res['rageid'];
+//		}
 
 		return false;
 	}
