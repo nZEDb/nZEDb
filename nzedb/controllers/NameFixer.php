@@ -410,16 +410,24 @@ class NameFixer
 				if ($echo == 1) {
 					if ($nameStatus == 1) {
 						$status = '';
-						if ($type == "NFO, ") {
-							$status = "isrenamed = 1, iscategorized = 1, proc_nfo = 1,";
-						} else if ($type == "PAR2, ") {
-							$status = "isrenamed = 1, iscategorized = 1, proc_par2 = 1,";
-						} else if ($type == "Filenames, " || $type = "file matched source: ") {
-							$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
-						} else if ($type == "SHA1, " || $type == "MD5, ") {
-							$status = "isrenamed = 1, iscategorized = 1, dehashstatus = 1,";
-						} else if ($type == "PreDB FT Exact, ") {
-							$status = "isrenamed = 1, iscategorized = 1,";
+						switch ($type) {
+							case "NFO, ":
+								$status = "isrenamed = 1, iscategorized = 1, proc_nfo = 1,";
+								break;
+							case "PAR2, ":
+								$status = "isrenamed = 1, iscategorized = 1, proc_par2 = 1,";
+								break;
+							case "Filenames, ":
+							case "file matched source: ":
+								$status = "isrenamed = 1, iscategorized = 1, proc_files = 1,";
+								break;
+							case "SHA1, ":
+							case "MD5, ":
+								$status = "isrenamed = 1, iscategorized = 1, dehashstatus = 1,";
+								break;
+							case "PreDB FT Exact, ":
+								$status = "isrenamed = 1, iscategorized = 1,";
+								break;
 						}
 						$this->pdo->queryExec(
 							sprintf('
@@ -901,14 +909,21 @@ class NameFixer
 		if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/(\w[-\w`~!@#$%^&*()_+={}|"<>?\[\]\\;\',.\/ ]+\s?\((19|20)\d\d\))/i', $release["textstring"], $result) && !preg_match('/\.pdf|Audio ?Book/i', $release["textstring"])) {
 			$releasename = $result[0];
 			if ($this->done === false && $this->relid !== $release["releaseid"] && preg_match('/(idiomas|lang|language|langue|sprache).*?\b(Brazilian|Chinese|Croatian|Danish|DE|Deutsch|Dutch|Estonian|ES|English|Englisch|Finnish|Flemish|Francais|French|FR|German|Greek|Hebrew|Icelandic|Italian|Japenese|Japan|Japanese|Korean|Latin|Nordic|Norwegian|Polish|Portuguese|Russian|Serbian|Slovenian|Swedish|Spanisch|Spanish|Thai|Turkish)\b/i', $release["textstring"], $result)) {
-				if ($result[2] == 'DE') {
-					$result[2] = 'DUTCH';
-				} else if ($result[2] == 'Englisch') {
-					$result[2] = 'English';
-				} else if ($result[2] == 'FR') {
-					$result[2] = 'FRENCH';
-				} else if ($result[2] == 'ES') {
-					$result[2] = 'SPANISH';
+				switch ($result[2]) {
+					case 'DE':
+						$result[2] = 'DUTCH';
+						break;
+					case 'Englisch':
+						$result[2] = 'English';
+						break;
+					case 'FR':
+						$result[2] = 'FRENCH';
+						break;
+					case 'ES':
+						$result[2] = 'SPANISH';
+						break;
+					default:
+						break;
 				}
 				$releasename = $releasename . "." . $result[2];
 			}
