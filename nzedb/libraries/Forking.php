@@ -26,6 +26,8 @@ class Forking extends \fork_daemon
 	{
 		parent::__construct();
 
+		$this->_colorCLI = new \ColorCLI();
+
 		$this->register_logging(
 			[0 => $this, 1 => 'logger'],
 			(defined('nZEDb_MULTIPROCESSING_LOG_TYPE') ? nZEDb_MULTIPROCESSING_LOG_TYPE : \fork_daemon::LOG_LEVEL_INFO)
@@ -98,9 +100,11 @@ class Forking extends \fork_daemon
 		$this->processEndWork();
 
 		if (nZEDb_ECHOCLI) {
-			echo (
-				'Multi-processing for ' . $this->workType . ' finished in ' .  (microtime(true) - $startTime) .
-				' seconds at ' . date(DATE_RFC2822) . '.' . PHP_EOL
+			$this->_colorCLI->doEcho(
+				$this->_colorCLI->header(
+					'Multi-processing for ' . $this->workType . ' finished in ' . (microtime(true) - $startTime) .
+					' seconds at ' . date(DATE_RFC2822) . '.' . PHP_EOL
+				)
 			);
 		}
 	}
@@ -171,9 +175,11 @@ class Forking extends \fork_daemon
 		if ($this->workCount > 0) {
 
 			if (nZEDb_ECHOCLI) {
-				echo (
-					'Multi-processing started at ' . date(DATE_RFC2822) . ' with ' . $this->workCount .
-					' job(s) to do using a max of ' . $this->maxProcesses . ' child process(es).' . PHP_EOL
+				$this->_colorCLI->doEcho(
+					$this->_colorCLI->header(
+						'Multi-processing started at ' . date(DATE_RFC2822) . ' with ' . $this->workCount .
+						' job(s) to do using a max of ' . $this->maxProcesses . ' child process(es).'
+					)
 				);
 			}
 
@@ -181,7 +187,9 @@ class Forking extends \fork_daemon
 			$this->process_work(true);
 		} else {
 			if (nZEDb_ECHOCLI) {
-				echo 'No work to do!' . PHP_EOL;
+				$this->_colorCLI->doEcho(
+					$this->_colorCLI->header('No work to do!')
+				);
 			}
 		}
 	}
@@ -687,10 +695,12 @@ class Forking extends \fork_daemon
 	public function childExit($pid, $identifier = '')
 	{
 		if (nZEDb_ECHOCLI) {
-			echo (
-				'Process ID #' . $pid . ' has completed.' . PHP_EOL .
-				'There are ' . ($this->forked_children_count - 1) . ' process(es) still active with ' .
-				(--$this->workCount) . ' job(s) left in the queue.' . PHP_EOL
+			$this->_colorCLI->doEcho(
+				$this->_colorCLI->header(
+					'Process ID #' . $pid . ' has completed.' . PHP_EOL .
+					'There are ' . ($this->forked_children_count - 1) . ' process(es) still active with ' .
+					(--$this->workCount) . ' job(s) left in the queue.' . PHP_EOL
+				)
 			);
 		}
 	}

@@ -13,6 +13,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: use ColorCli for ProcessAdditional / NameFixer
 	* Chg: Reset gamesinfo_id and xxinfo_id when recategorizing
 	* Fix: Disable "like" matching when looking up releases against existing tvrage shows - causes incorrect matches with single word show titles like '24'
+	* Add: use ColorCli for Forking
 	NB: Run php /misc/testing/DB/reset_postprocessing.php tv true to attempt to fix these.
 2014-07-24 kevin
 	* Chg: Re-use class instances in Binaries.
