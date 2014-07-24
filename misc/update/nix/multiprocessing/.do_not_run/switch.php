@@ -70,7 +70,7 @@ switch ($options[1]) {
 	case 'requestid':
 		if (is_numeric($options[2])) {
 			require_once dirname(__FILE__) . '/../../../config.php';
-			(new \RequestID(true))->lookupReqIDs($options[2], 5000, true);
+			(new \RequestIDLocal(['Echo' => true]))->lookupRequestIDs(['GroupID' => $options[2], 'limit' => 5000]);
 		}
 		break;
 

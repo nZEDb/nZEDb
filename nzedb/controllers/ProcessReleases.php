@@ -705,7 +705,22 @@ class ProcessReleases
 				)
 			);
 		}
-		$foundRequestIDs = (new RequestID($this->echoCLI))->lookupReqIDs($groupID, $limit, $local);
+
+		if ($local === true) {
+			$foundRequestIDs = (
+				new RequestIDLocal(
+					['Echo' => $this->echoCLI, 'ColorCLI' => $this->colorCLI, 'ConsoleTools' => $this->consoleTools,
+					 'Groups' => $this->groups, 'Settings' => $this->pdo]
+				)
+			)->lookupRequestIDs(['GroupID' => $groupID, 'limit' => $limit, 'time' => 168]);
+		} else {
+			$foundRequestIDs = (
+				new RequestIDWeb(
+					['Echo' => $this->echoCLI, 'ColorCLI' => $this->colorCLI, 'ConsoleTools' => $this->consoleTools,
+					 'Groups' => $this->groups, 'Settings' => $this->pdo]
+				)
+			)->lookupRequestIDs(['GroupID' => $groupID, 'limit' => $limit, 'time' => 168]);
+		}
 		if ($this->echoCLI) {
 			$this->colorCLI->doEcho(
 				$this->colorCLI->primary(
