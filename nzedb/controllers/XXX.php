@@ -2,6 +2,7 @@
 
 require_once nZEDb_LIBS . 'adultdvdempire.php';
 require_once nZEDb_LIBS . 'popporn.php';
+require_once nZEDb_LIBS . 'hotmovies.php';
 
 use nzedb\db\Settings;
 use nzedb\utility;
@@ -423,8 +424,16 @@ class XXX
 		$res = $mov->search();
 		$this->whichclass = "ade";
 		if ($res === false) {
+			$this->whichclass = "hm";
+			// IF no result from Adultdvdempire check hotmovies
+			$mov = new hotmovies();
+			$mov->cookie = $this->cookie;
+			$mov->searchterm = $xxxmovie;
+			$res = $mov->search();
+		}
+		if($res === false){
 			$this->whichclass = "pop";
-			// IF no result from Adultdvdempire check popporn
+			// IF no result from Adultdvdempire and hotmovies check popporn
 			$mov = new popporn();
 			$mov->cookie = $this->cookie;
 			$mov->searchterm = $xxxmovie;
@@ -433,10 +442,26 @@ class XXX
 		// If a result is true getall information.
 		if ($res !== false) {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->primary("Fetching XXX info for: " . $xxxmovie));
+				$fromstr = null;
+				switch($this->whichclass){
+					case "ade":
+					$fromstr = "Adult DVD Empire";
+						break;
+					case "pop":
+					$fromstr = "PopPorn";
+						break;
+					case "hm":
+					$fromstr = "Hot Movies";
+						break;
+					default:
+						$fromstr = null;
+
+				}
+				$this->c->doEcho($this->c->primary("Fetching XXX info from: " . $fromstr ));
 			}
 			$res = $mov->_getall();
 		} else {
+			// Nothing was found, go ahead and set to -2 :(
 			return false;
 		}
 
@@ -602,6 +627,10 @@ class XXX
 
 
 				}
+			}
+		} else {
+			if ($this->echooutput) {
+				$this->c->doEcho($this->c->header('No xxx releases to process.'));
 			}
 		}
 	}
