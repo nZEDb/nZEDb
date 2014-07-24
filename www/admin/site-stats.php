@@ -3,9 +3,10 @@ require_once './config.php';
 
 $page = new AdminPage();
 $users = new Users();
-$releases = new Releases();
+$pdo = new \nzedb\db\Settings();
+$releases = new Releases(['Settings' => $pdo]);
 $logging = new Logging();
-if ((new \nzedb\db\Settings())->getSetting('loggingopt') == '0') {
+if ($pdo->getSetting('loggingopt') == '0') {
 	$loggingon = '0';
 } else {
 	$loggingon = '1';

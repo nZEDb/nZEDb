@@ -7,7 +7,7 @@
 Class NZBContents
 {
 	/**
-	 * @var nzedb\db\DB
+	 * @var nzedb\db\Settings
 	 * @access protected
 	 */
 	public $pdo;
@@ -65,26 +65,41 @@ Class NZBContents
 	 *
 	 * @param array $options
 	 *     array(
-	 *         'echo'  => bool        ; To echo to CLI or not.
-	 *         'nntp'  => NNTP        ; Class NNTP.
-	 *         'nfo'   => Nfo         ; Class Nfo.
-	 *         'db'    => DB          ; Class nzedb\db\DB.
-	 *         'pp'    => PostProcess ; Class PostProcess.
+	 *         'Echo'        => bool        ; To echo to CLI or not.
+	 *         'NNTP'        => NNTP        ; Class NNTP.
+	 *         'Nfo'         => Nfo         ; Class Nfo.
+	 *         'NZB'         => NZB         ; Class NZB.
+	 *         'Settings'    => DB          ; Class nzedb\db\Settings.
+	 *         'PostProcess' => PostProcess ; Class PostProcess.
 	 *     )
 	 *
 	 * @access public
 	 */
-	public function __construct($options)
+	public function __construct(array $options = array())
 	{
-		$this->pdo  = $options['db'];
-		$this->nntp = $options['nntp'];
-		$this->nfo  = $options['nfo'];
-		$this->pp   = $options['pp'];
+		$defaultOptions = [
+			'Echo'        => false,
+			'NNTP'        => null,
+			'Nfo'         => null,
+			'NZB'         => null,
+			'Settings'    => null,
+			'PostProcess' => null,
+		];
+		$defaultOptions = array_replace($defaultOptions, $options);
 
-		$this->echooutput = ($options['echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($defaultOptions['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($defaultOptions['Settings'] instanceof \nzedb\db\Settings ? $defaultOptions['Settings'] : new \nzedb\db\Settings());
+		$this->nntp = ($defaultOptions['NNTP'] instanceof NNTP ? $defaultOptions['NNTP'] : new NNTP(['Echo' => $this->echooutput, 'Settings' => $this->pdo]));
+		$this->nfo = ($defaultOptions['Nfo'] instanceof Nfo ? $defaultOptions['Nfo'] : new Nfo($this->echooutput));
+		$this->pp = (
+			$defaultOptions['PostProcess'] instanceof PostProcess
+				? $defaultOptions['PostProcess']
+				: new PostProcess(['Echo' => $this->echooutput, 'Nfo' => $this->nfo, 'Settings' => $this->pdo])
+		);
+		$this->nzb = ($defaultOptions['NZB'] instanceof NZB ? $defaultOptions['NZB'] : new NZB($this->pdo));
+
 		$this->lookuppar2 = ($this->pdo->getSetting('lookuppar2') == 1 ? true : false);
 		$this->alternateNNTP = ($this->pdo->getSetting('alternate_nntp') == 1 ? true : false);
-		$this->nzb  = new NZB();
 	}
 
 	/**

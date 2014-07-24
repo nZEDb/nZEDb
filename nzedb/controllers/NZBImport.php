@@ -9,7 +9,7 @@ use nzedb\db\Settings;
 class NZBImport
 {
 	/**
-	 * @var DB
+	 * @var \nzedb\db\Settings
 	 * @access protected
 	 */
 	protected $pdo;
@@ -82,16 +82,16 @@ class NZBImport
 	 */
 	public function __construct($browser = false, $echo = true)
 	{
+		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
 		$this->pdo = new Settings();
-		$this->binaries = new Binaries();
+		$this->binaries = new Binaries(['Settings' => $this->pdo, 'Echo' => $this->echoCLI]);
 		$this->category = new Categorize();
-		$this->nzb = new NZB();
+		$this->nzb = new NZB($this->pdo);
 		$this->releaseCleaner = new ReleaseCleaning();
 
 		$this->crossPostt = ($this->pdo->getSetting('crossposttime') != '') ? $this->pdo->getSetting('crossposttime') : 2;
 		$this->browser = $browser;
 		$this->retVal = '';
-		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
 	}
 
 	/**

@@ -64,22 +64,33 @@ class PostProcess
 	/**
 	 * Constructor.
 	 *
-	 * @param bool $echoOutput Echo to CLI or not?
+	 * @param array $options Pass in class instances.
 	 */
-	public function __construct($echoOutput = false)
+	public function __construct(array $options = array())
 	{
+		$defaultOptions = array(
+			'Echo'         => true,
+			'Groups'       => null,
+			'NameFixer'    => null,
+			'Nfo'          => null,
+			'ReleaseFiles' => null,
+			'Settings'     => null,
+		);
+
+		$defaultOptions = array_replace($defaultOptions, $options);
+
 		//\\ Various.
-		$this->echooutput = ($echoOutput && nZEDb_ECHOCLI);
+		$this->echooutput = ($defaultOptions['Echo'] && nZEDb_ECHOCLI);
 		//\\
 
 		//\\ Class instances.
-		$this->pdo = new nzedb\db\Settings();
-		$this->groups = new Groups();
+		$this->pdo = (($defaultOptions['Settings'] instanceof nzedb\db\Settings) ? $defaultOptions['Settings'] : new nzedb\db\Settings());
+		$this->groups = (($defaultOptions['Groups'] instanceof Groups) ? $defaultOptions['Groups'] : new Groups($this->pdo));
 		$this->_par2Info = new Par2Info();
 		$this->debugging = new Debugging('PostProcess');
-		$this->nameFixer = new NameFixer($this->echooutput);
-		$this->Nfo = new Nfo($this->echooutput);
-		$this->releaseFiles = new ReleaseFiles();
+		$this->nameFixer = (($defaultOptions['NameFixer'] instanceof NameFixer) ? $defaultOptions['NameFixer'] : new NameFixer($this->echooutput));
+		$this->Nfo = (($defaultOptions['Nfo'] instanceof Nfo ) ? $defaultOptions['Nfo'] : new Nfo($this->echooutput));
+		$this->releaseFiles = (($defaultOptions['ReleaseFiles'] instanceof ReleaseFiles) ? $defaultOptions['ReleaseFiles'] : new ReleaseFiles($this->echooutput));
 		//\\
 
 		//\\ Site settings.
@@ -99,7 +110,7 @@ class PostProcess
 	{
 		$this->processPredb($nntp);
 		$this->processAdditional($nntp);
-		$this->processNfos('', $nntp);
+		$this->processNfos($nntp);
 		$this->processSharing($nntp);
 		$this->processMovies();
 		$this->processMusic();
@@ -107,6 +118,7 @@ class PostProcess
 		$this->processGames();
 		$this->processAnime();
 		$this->processTv();
+		$this->processXXX();
 		$this->processBooks();
 	}
 
@@ -132,8 +144,7 @@ class PostProcess
 	public function processBooks()
 	{
 		if ($this->pdo->getSetting('lookupbooks') != 0) {
-			$books = new Books($this->echooutput);
-			$books->processBookReleases();
+			(new Books($this->echooutput))->processBookReleases();
 		}
 	}
 
@@ -145,8 +156,7 @@ class PostProcess
 	public function processConsoles()
 	{
 		if ($this->pdo->getSetting('lookupgames') != 0) {
-			$console = new Console($this->echooutput);
-			$console->processConsoleReleases();
+			(new Console($this->echooutput))->processConsoleReleases();
 		}
 	}
 
@@ -158,23 +168,22 @@ class PostProcess
 	public function processGames()
 	{
 		if ($this->pdo->getSetting('lookupgames') != 0) {
-			$games = new Games($this->echooutput);
-			$games->processGamesReleases();
+			(new Games($this->echooutput))->processGamesReleases();
 		}
 	}
 
 	/**
 	 * Lookup imdb if enabled.
 	 *
-	 * @param string $releaseToWork
+	 * @param string $groupID  (Optional) ID of a group to work on.
+	 * @param string $guidChar (Optional) First letter of a release GUID to use to get work.
 	 *
 	 * @return void
 	 */
-	public function processMovies($releaseToWork = '')
+	public function processMovies($groupID = '', $guidChar = '')
 	{
-		if ($this->pdo->getSetting('lookupimdb') == 1) {
-			$movie = new Movie($this->echooutput);
-			$movie->processMovieReleases($releaseToWork);
+		if ($this->pdo->getSetting('lookupimdb') > 0) {
+			(new Movie($this->echooutput))->processMovieReleases($groupID, $guidChar, $this->pdo->getSetting('lookupimdb'));
 		}
 	}
 
@@ -186,23 +195,23 @@ class PostProcess
 	public function processMusic()
 	{
 		if ($this->pdo->getSetting('lookupmusic') != 0) {
-			$music = new Music($this->echooutput);
-			$music->processMusicReleases();
+			(new Music($this->echooutput))->processMusicReleases();
 		}
 	}
 
 	/**
 	 * Process nfo files.
 	 *
-	 * @param string $releaseToWork
 	 * @param NNTP   $nntp
+	 * @param string $groupID  (Optional) ID of a group to work on.
+	 * @param string $guidChar (Optional) First letter of a release GUID to use to get work.
 	 *
 	 * @return void
 	 */
-	public function processNfos($releaseToWork = '', $nntp)
+	public function processNfos(&$nntp, $groupID = '', $guidChar = '')
 	{
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
-			$this->Nfo->processNfoFiles($releaseToWork,	$this->pdo->getSetting('lookupimdb'), $this->pdo->getSetting('lookuptvrage'),	$groupID = '', $nntp);
+			$this->Nfo->processNfoFiles($nntp, $groupID, $guidChar, (int)$this->pdo->getSetting('lookupimdb'), (int)$this->pdo->getSetting('lookuptvrage'));
 		}
 	}
 
@@ -213,7 +222,7 @@ class PostProcess
 	 *
 	 * @return void
 	 */
-	public function processPredb($nntp)
+	public function processPredb(&$nntp)
 	{
 		// 2014-05-31 : Web PreDB fetching is removed. Using IRC is now recommended.
 	}
@@ -225,22 +234,31 @@ class PostProcess
 	 */
 	public function processSharing(&$nntp)
 	{
-		$sharing = new Sharing($this->pdo, $nntp);
-		$sharing->start();
+		(new Sharing(['Settings' => $this->pdo, 'NNTP' => $nntp]))->start();
 	}
 
 	/**
 	 * Process all TV related releases which will assign their series/episode/rage data.
 	 *
-	 * @param string $releaseToWork
+	 * @param string $groupID  (Optional) ID of a group to work on.
+	 * @param string $guidChar (Optional) First letter of a release GUID to use to get work.
 	 *
 	 * @return void
 	 */
-	public function processTv($releaseToWork = '')
+	public function processTv($groupID = '', $guidChar = '')
 	{
-		if ($this->pdo->getSetting('lookuptvrage') == 1) {
-			$tvRage = new TvRage($this->echooutput);
-			$tvRage->processTvReleases($releaseToWork, true);
+		if ($this->pdo->getSetting('lookuptvrage') > 0) {
+			(new TvRage($this->echooutput))->processTvReleases($groupID, $guidChar, $this->pdo->getSetting('lookuptvrage'));
+		}
+	}
+
+	/**
+	 * Lookup xxx if enabled.
+	 */
+	public function processXXX()
+	{
+		if ($this->pdo->getSetting('lookupxxx') == 1) {
+			(new XXX($this->echooutput))->processXXXReleases();
 		}
 	}
 
@@ -249,16 +267,15 @@ class PostProcess
 	 *
 	 * @note Called externally by tmux/bin/update_per_group and update/postprocess.php
 	 *
-	 * @param NNTP   $nntp          Class NNTP
-	 * @param string $releaseToWork String containing SQL results. Optional.
-	 * @param string $groupID       Group ID. Optional
+	 * @param NNTP       $nntp    Class NNTP
+	 * @param int|string $groupID  (Optional) ID of a group to work on.
+	 * @param string     $guidChar (Optional) First char of release GUID, can be used to select work.
 	 *
 	 * @return void
 	 */
-	public function processAdditional($nntp, $releaseToWork = '', $groupID = '')
+	public function processAdditional(&$nntp, $groupID = '', $guidChar = '')
 	{
-		$processAdditional = new ProcessAdditional($this->echooutput, $nntp, $this->pdo);
-		$processAdditional->start($releaseToWork, $groupID);
+		(new ProcessAdditional($this->echooutput, $nntp, $this->pdo))->start($groupID, $guidChar);
 	}
 
 	/**
@@ -274,7 +291,7 @@ class PostProcess
 	 *
 	 * @return bool
 	 */
-	public function parsePAR2($messageID, $relID, $groupID, $nntp, $show)
+	public function parsePAR2($messageID, $relID, $groupID, &$nntp, $show)
 	{
 		if ($messageID === '') {
 			return false;

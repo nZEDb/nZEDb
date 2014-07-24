@@ -34,9 +34,7 @@ if (isset($argv[1]) && ($argv[1] === "run" || $argv[1] === "true" || $argv[1] ==
 	}
 } else {
 	exit($c->error("\nThis script will optimise the tables.\n\n"
-		. "php $argv[0] run          ...: Optimise the tables that have freespace > 5%.\n"
-		. "php $argv[0] true         ...: Force Optimise on all tables.\n"
-		. "php $argv[0] all          ...: Optimise all tables at once that have freespace > 5%.\n"
-		. "php $argv[0] full         ...: Force Optimise all tables at once.\n"
+		. "php $argv[0] run|all      ...: Optimise the tables that have freespace > 5%.\n"
+		. "php $argv[0] true|full    ...: Force Optimise on all tables.\n"
 		. "php $argv[0] analyze      ...: Analyze tables to rebuild statistics.\n"));
 }

@@ -58,13 +58,6 @@ class Backfill
 	protected $_echoCLI;
 
 	/**
-	 * Do we need to reset the collection hashes?
-	 *
-	 * @var bool
-	 */
-	protected $_hashCheck;
-
-	/**
 	 * Are we using nntp proxy?
 	 *
 	 * @var bool
@@ -93,23 +86,34 @@ class Backfill
 	/**
 	 * Constructor.
 	 *
-	 * @param NNTP $nntp Class instance of NNTP.
-	 * @param bool $echo Echo to cli?
+	 * @param array $options Class instances / Echo to cli?
 	 */
-	public function __construct($nntp = null, $echo = true)
+	public function __construct(array $options = array())
 	{
-		$this->_nntp = $nntp;
-		$this->_echoCLI = ($echo && nZEDb_ECHOCLI);
-		$this->_colorCLI = new ColorCLI();
-		$this->_pdo = new nzedb\db\Settings();
-		$this->_groups = new Groups($this->_pdo);
+		$defOptions = [
+			'Echo'     => true,
+			'ColorCLI' => null,
+			'Groups'   => null,
+			'NNTP'     => null,
+			'Settings' => null
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->_echoCLI = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+
+		$this->_colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->_pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new \nzedb\db\Settings());
+		$this->_groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups($this->_pdo));
+		$this->_nntp = ($defOptions['NNTP'] instanceof NNTP
+			? $defOptions['NNTP'] : new NNTP(['Settings' => $this->_pdo, 'Echo' => $this->_echoCLI, 'ColorCLI' => $this->_colorCLI])
+		);
+
 		$this->_debug = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debug) {
 			$this->_debugging = new Debugging('Backfill');
 		}
 
 		$this->_compressedHeaders = ($this->_pdo->getSetting('compressedheaders') == 1 ? true : false);
-		$this->_hashCheck = ($this->_pdo->getSetting('hashcheck') == 1 ? true : false);
 		$this->_nntpProxy = ($this->_pdo->getSetting('nntpproxy') == 1 ? true : false);
 		$this->_safeBackFillDate = ($this->_pdo->getSetting('safebackfilldate') != '') ? $this->_pdo->getSetting('safebackfilldate') : '2008-08-14';
 		$this->_safePartRepair = ($this->_pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill');
@@ -127,14 +131,6 @@ class Backfill
 	 */
 	public function backfillAllGroups($groupName = '', $articles ='', $type = '')
 	{
-		if ($this->_hashCheck === false) {
-			$dMessage = "You must run update_binaries.php to update your collectionhash.";
-			if ($this->_debug) {
-				$this->_debugging->start("backfillAllGroups", $dMessage, 1);
-			}
-			exit($this->_colorCLI->error($dMessage));
-		}
-
 		$res = array();
 		if ($groupName !== '') {
 			$grp = $this->_groups->getByName($groupName);
@@ -167,7 +163,7 @@ class Backfill
 				$this->_colorCLI->doEcho($this->_colorCLI->header($dMessage), true);
 			}
 
-			$this->_binaries = new Binaries($this->_nntp, $this->_echoCLI, $this);
+			$this->_binaries = new Binaries(['NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Backfill' => $this, 'ColorCLI' => $this->_colorCLI, 'Settings' => $this->_pdo, 'Groups' => $this->_groups]);
 
 			if ($articles !== '' && !is_numeric($articles)) {
 				$articles = 20000;
@@ -389,14 +385,6 @@ class Backfill
 	 */
 	public function safeBackfill($articles = '')
 	{
-		if ($this->_hashCheck === false) {
-			$dMessage = "You must run update_binaries.php to update your collectionhash.\n";
-			if ($this->_debug) {
-				$this->_debugging->start("safeBackfill", $dMessage, 1);
-			}
-			exit($dMessage);
-		}
-
 		$groupname = $this->_pdo->queryOneRow(
 			sprintf('
 				SELECT name FROM groups
@@ -752,7 +740,7 @@ class Backfill
 	 */
 	public function getRange($group, $first, $last, $threads)
 	{
-		$binaries = new Binaries($this->_nntp, $this->_echoCLI, $this);
+		$binaries = new Binaries(['NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Backfill' => $this, 'ColorCLI' => $this->_colorCLI, 'Settings' => $this->_pdo, 'Groups' => $this->_groups]);
 		$groupArr = $this->_groups->getByName($group);
 
 		if ($this->_echoCLI) {

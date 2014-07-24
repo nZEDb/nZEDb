@@ -45,13 +45,13 @@ $myisam = $pdo->queryOneRow("SELECT CONCAT(ROUND(KBS/POWER(1024,IF(pw<0,0,IF(pw>
 	. "SUBSTR(' KMG',IF(pw<0,0,IF(pw>3,0,pw))+1,1)) recommended_key_buffer_size "
 	. "FROM (SELECT SUM(index_length) KBS "
 	. "FROM information_schema.tables "
-	. "WHERE engine='MyISAM' AND table_schema NOT IN ('information_schema','mysql')) A, (SELECT 3 pw) B;");
+	. "WHERE engine='MyISAM' AND table_schema NOT IN ('information_schema','mysql')) A, (SELECT 3 pw) B;", false);
 
 $innodb = $pdo->queryOneRow("SELECT CONCAT(ROUND(KBS/POWER(1024,IF(pw<0,0,IF(pw>3,0,pw)))+0.49999), "
 	. "SUBSTR(' KMG',IF(pw<0,0,IF(pw>3,0,pw))+1,1)) recommended_innodb_buffer_pool_size "
 	. "FROM (SELECT SUM(index_length) KBS "
 	. "FROM information_schema.tables "
-	. "WHERE engine='InnoDB') A,(SELECT 3 pw) B;");
+	. "WHERE engine='InnoDB') A,(SELECT 3 pw) B;", false);
 
 $a = $myisam['recommended_key_buffer_size'];
 if ($myisam['recommended_key_buffer_size'] === null) {
@@ -63,8 +63,8 @@ if ($innodb['recommended_innodb_buffer_pool_size'] === null) {
 }
 
 // Get current variables
-$aa = $pdo->queryOneRow("SHOW VARIABLES WHERE Variable_name = 'key_buffer_size'");
-$bb = $pdo->queryOneRow("SHOW VARIABLES WHERE Variable_name = 'innodb_buffer_pool_size'");
+$aa = $pdo->queryOneRow("SHOW VARIABLES WHERE Variable_name = 'key_buffer_size'", false);
+$bb = $pdo->queryOneRow("SHOW VARIABLES WHERE Variable_name = 'innodb_buffer_pool_size'", false);
 
 if ($aa['value'] >= 1073741824) {
 	$current_a = $aa['value'] / 1024 / 1024 / 1024;

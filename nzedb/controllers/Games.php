@@ -24,6 +24,8 @@ class Games
 		$this->sleeptime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
 		$this->imgSavePath = nZEDb_COVERS . 'games' . DS;
 		$this->renamed = '';
+		$this->matchpercent = 60;
+		$this->maxhitrequest = false;
 		if ($this->pdo->getSetting('lookupgames') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
@@ -181,7 +183,8 @@ class Games
 				. "GROUP_CONCAT(r.totalpart ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_totalparts, "
 				. "GROUP_CONCAT(r.comments ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_comments, "
 				. "GROUP_CONCAT(r.grabs ORDER BY r.postdate DESC SEPARATOR ',') AS grp_release_grabs, "
-				. "con.*, r.gamesinfo_id, groups.name AS group_name, rn.id as nfoid FROM releases r "
+				. "con.*, YEAR (con.releasedate) as year, r.gamesinfo_id, groups.name AS group_name,
+				rn.id as nfoid FROM releases r "
 				. "LEFT OUTER JOIN groups ON groups.id = r.group_id "
 				. "LEFT OUTER JOIN releasenfo rn ON rn.releaseid = r.id "
 				. "INNER JOIN gamesinfo con ON con.id = r.gamesinfo_id "
@@ -245,7 +248,7 @@ class Games
 
 	public function getBrowseByOptions()
 	{
-		return array('platform' => 'platform', 'title' => 'title', 'genre' => 'genreID');
+		return array('platform' => 'platform', 'title' => 'title', 'genre' => 'genreID', 'year' => 'year');
 	}
 
 	public function getBrowseBy()
@@ -257,7 +260,11 @@ class Games
 		foreach ($browsebyArr as $bbk => $bbv) {
 			if (isset($_REQUEST[$bbk]) && !empty($_REQUEST[$bbk])) {
 				$bbs = stripslashes($_REQUEST[$bbk]);
-				$browseby .= 'con.' . $bbv . ' ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+				if ($bbk === 'year') {
+					$browseby .= 'YEAR (con.releasedate) ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+				} else {
+					$browseby .= 'con.' . $bbv . ' ' . $like . ' (' . $this->pdo->escapeString('%' . $bbs . '%') . ') AND ';
+				}
 			}
 		}
 
@@ -318,10 +325,13 @@ class Games
 	public function updategamesinfo($gameInfo)
 	{
 		$gen = new Genres();
-		$ri = new ReleaseImage();
+		$ri = new ReleaseImage($this->pdo);
 
 		$con = array();
 		$ggameid = $this->fetchgiantbombgameid($gameInfo['title']);
+		if($this->maxhitrequest === true){
+		return false;
+		}
 		$gb = $this->fetchGiantBombArray($ggameid);
 		$gb = $gb['results'];
 		if (!is_array($gb)) {
@@ -378,9 +388,7 @@ class Games
 		// This actual compares the two strings and outputs a percentage value.
 		$titlepercent = $platformpercent = '';
 		similar_text(strtolower($gameInfo['title']), strtolower($con['title']), $titlepercent);
-		similar_text(strtolower($gameInfo['platform']),
-					 strtolower($con['platform']),
-					 $platformpercent);
+		similar_text(strtolower($gameInfo['platform']), strtolower($con['platform']), $platformpercent);
 
 		// If the release is DLC matching sucks, so assume anything over 50% is legit.
 		if (isset($gameInfo['dlc']) && $gameInfo['dlc'] == 1) {
@@ -395,18 +403,16 @@ class Games
 		echo("Matched: Platform Percentage: $platformpercent% \n");
 		*/
 
-		// If the Title is less than 80% Platform must be 100% unless it is XBLA.
-		if ($titlepercent < 60) {
+		// If the Title is less than 60% Platform must be 100% unless it is XBLA.
+		if ($titlepercent < $this->matchpercent) {
 			if ($platformpercent != 100) {
 				return false;
 			}
 		}
 
-		// If title is less than 80% then its most likely not a match.
-		if ($titlepercent < 60) {
-			similar_text(strtolower($gameInfo['title'] . ' - ' . $gameInfo['platform']),
-						 strtolower($con['title']),
-						 $titlewithplatpercent);
+		// If title is less than 70% then its most likely not a match.
+		if ($titlepercent < $this->matchpercent) {
+			similar_text(strtolower($gameInfo['title'] . ' - ' . $gameInfo['platform']), strtolower($con['title']), $titlewithplatpercent);
 			if ($titlewithplatpercent < 70) {
 				return false;
 			}
@@ -422,11 +428,6 @@ class Games
 		$con['url'] = (string)$gb['site_detail_url'];
 		$con['url'] = str_replace("%26tag%3Dws", "%26tag%3Dopensourceins%2D21", $con['url']);
 
-		/*$con['salesrank'] = (string)$amaz->Items->Item->SalesRank;
-		if ($con['salesrank'] == "") {
-			$con['salesrank'] = 'null';
-		}
-		*/
 		if (is_array($gb['publishers'])) {
 			while (list($key) = each($gb['publishers'])) {
 				if ($key == 0) {
@@ -448,7 +449,7 @@ class Games
 		}
 
 		$con['review'] = "";
-		if (isset($gb['decription'])) {
+		if (isset($gb['description'])) {
 			$con['review'] = trim(strip_tags((string)$gb['description']));
 		}
 
@@ -599,6 +600,11 @@ class Games
 		$obj = new GiantBomb($this->pubkey);
 		try {
 			$result = json_decode(json_encode($obj->search($title, '', 1)), true);
+			// We hit the maximum request.
+			if(empty($result)){
+			$this->maxhitrequest = true;
+			$result = false;
+			}
 			if (!is_array($result['results']) || (int) $result['number_of_total_results'] === 0) {
 				$result = false;
 			} else {
@@ -618,7 +624,7 @@ class Games
 				SELECT searchname, id
 				FROM releases
 				WHERE nzbstatus = 1 %s
-				AND gamesinfo_id IS NULL
+				AND gamesinfo_id = 0
 				AND categoryid = 4050
 				ORDER BY postdate DESC
 				LIMIT %d',
@@ -633,6 +639,9 @@ class Games
 			}
 
 			foreach ($res as $arr) {
+
+				// Reset maxhitrequest
+				$this->maxhitrequest = false;
 				$startTime = microtime(true);
 				$usedgb = false;
 				$gameInfo = $this->parseTitle($arr['searchname']);
@@ -653,7 +662,13 @@ class Games
 						$usedgb = true;
 						if ($gameId === false) {
 							$gameId = -2;
+
+						// Leave gamesinfo_id 0 to parse again
+						if($this->maxhitrequest === true){
+							$gameId = 0;
 						}
+						}
+
 					} else {
 						$gameId = $gameCheck['id'];
 					}

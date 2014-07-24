@@ -107,7 +107,7 @@ class Movie
 	{
 		$this->c = new ColorCLI();
 		$this->pdo = new Settings();
-		$this->releaseImage = new ReleaseImage();
+		$this->releaseImage = new ReleaseImage($this->pdo);
 
 		$this->imdbLanguage = ($this->pdo->getSetting('imdblanguage') != '') ? $this->pdo->getSetting('imdblanguage') : 'en';
 
@@ -998,31 +998,34 @@ class Movie
 	/**
 	 * Process releases with no IMDB ID's.
 	 *
-	 * @param string $releaseToWork
+	 * @param string $groupID    (Optional) ID of a group to work on.
+	 * @param string $guidChar   (Optional) First letter of a release GUID to use to get work.
+	 * @param int    $lookupIMDB (Optional) 0 Don't lookup IMDB, 1 lookup IMDB, 2 lookup IMDB on releases that were renamed.
 	 */
-	public function processMovieReleases($releaseToWork = '')
+	public function processMovieReleases($groupID = '', $guidChar = '', $lookupIMDB = 1)
 	{
+		if ($lookupIMDB == 0) {
+			return;
+		}
 		$trakTv = new TraktTv();
 
 		// Get all releases without an IMDB id.
-		if ($releaseToWork === '') {
-			$res = $this->pdo->query(
-				sprintf("
-					SELECT r.searchname, r.id
-					FROM releases r
-					WHERE r.imdbid IS NULL
-					AND r.nzbstatus = 1
-					AND r.categoryid BETWEEN 2000 AND 2999
-					LIMIT %d",
-					$this->movieqty
-				)
-			);
-			$movieCount = count($res);
-		} else {
-			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('searchname' => $pieces[0], 'id' => $pieces[1]));
-			$movieCount = 1;
-		}
+		$res = $this->pdo->query(
+			sprintf("
+				SELECT r.searchname, r.id
+				FROM releases r
+				WHERE r.imdbid IS NULL
+				AND r.nzbstatus = 1
+				AND r.categoryid BETWEEN 2000 AND 2999
+				%s %s %s
+				LIMIT %d",
+				($groupID === '' ? '' : ('AND r.group_id = ' . $groupID)),
+				($guidChar === '' ? '' : ('AND r.guid ' . $this->pdo->likeString($guidChar, false, true))),
+				($lookupIMDB == 2 ? 'AND r.isrenamed = 1' : ''),
+				$this->movieqty
+			)
+		);
+		$movieCount = count($res);
 
 		if ($movieCount > 0) {
 			if ($this->echooutput && $movieCount > 1) {

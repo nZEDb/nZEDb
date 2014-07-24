@@ -58,6 +58,14 @@
 			</td>
 		</tr>
 		<tr>
+		<tr>
+			<th>View XXX Page:</th>
+			<td>
+				<input id="xxxview"	name="xxxview" value="1" type="checkbox" {if $user.xxxview=="1"}checked="checked"{/if}>
+				<span class="help-block">Browse XXX covers. Only shows xxx releases with known lookup info.</span>
+			</td>
+		</tr>
+		<tr>
 			<th>View Music Page:</th>
 			<td>
 				<input id="musicview" name="musicview" value="1" type="checkbox" {if $user.musicview=="1"}checked="checked"{/if}>

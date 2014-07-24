@@ -33,7 +33,7 @@ preName($argv, $argc);
 function preName($argv, $argc)
 {
 	$pdo = new Settings();
-	$groups = new Groups();
+	$groups = new Groups($pdo);
 	$category = new Categorize();
 	$internal = $external = $pre = $none = 0;
 	$show = 2;
@@ -142,6 +142,7 @@ function preName($argv, $argc)
 						$preid = $prefile['id'];
 						$cleanName = $prefile['title'];
 						$predbfile = true;
+						$propername = true;
 					}
 				if ($cleanName != $row['name'] && $cleanName != $row['searchname']) {
 					if (strlen(utf8_decode($cleanName)) <= 3) {

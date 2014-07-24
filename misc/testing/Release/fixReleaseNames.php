@@ -31,8 +31,9 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 	}
 
 	if ($argv[1] == 7 || $argv[1] == 8) {
-		$nntp = new NNTP();
-		if (((new Settings())->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+		$pdo = new nzedb\db\Settings();
+		$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+		if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 			echo $c->error("Unable to connect to usenet.\n");
 			return;
 		}

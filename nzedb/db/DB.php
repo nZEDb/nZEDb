@@ -1,5 +1,8 @@
 <?php
 namespace nzedb\db;
+use \nzedb\utility\Utility;
+use \nzedb\libraries\Cache;
+use \nzedb\libraries\CacheException;
 
 //use nzedb\controllers\ColorCLI;
 
@@ -11,6 +14,7 @@ namespace nzedb\db;
  *
  * Exceptions are caught and displayed to the user.
  * Properties are explicitly created, so IDEs can offer autocompletion for them.
+ * @extends \PDO
  */
 class DB extends \PDO
 {
@@ -26,11 +30,6 @@ class DB extends \PDO
 	public $log;
 
 	/**
-	 * @var bool	Whether memcache is enabled.
-	 */
-	public $memcached;
-
-	/**
 	 * @var bool Is this a Command Line Interface instance.
 	 */
 	protected $_cli;
@@ -41,7 +40,7 @@ class DB extends \PDO
 	protected $_debug;
 
 	/**
-	 * @var object Instance of PDO class.
+	 * @var \PDO Instance of PDO class.
 	 */
 	protected static $_pdo = null;
 
@@ -71,6 +70,16 @@ class DB extends \PDO
 	private $opts;
 
 	/**
+	 * @var null|\nzedb\libraries\Cache
+	 */
+	private $cacheServer = null;
+
+	/**
+	 * @var bool Should we cache the results of the query method?
+	 */
+	private $cacheEnabled = false;
+
+	/**
 	 * Constructor. Sets up all necessary properties. Instantiates a PDO object
 	 * if needed, otherwise returns the current one.
 	 */
@@ -97,7 +106,7 @@ class DB extends \PDO
 			$this->debugging = new \Debugging("DB");
 		}
 
-		$this->_cli = \nzedb\utility\Utility::isCLI();
+		$this->_cli = Utility::isCLI();
 
 		if (!empty($this->opts['dbtype'])) {
 			$this->dbSystem = strtolower($this->opts['dbtype']);
@@ -107,11 +116,17 @@ class DB extends \PDO
 			$this->initialiseDatabase();
 		}
 
-		if (defined("MEMCACHE_ENABLED")) {
-			$this->memcached = MEMCACHE_ENABLED;
-		} else {
-			$this->memcached = false;
+		$this->cacheEnabled = (defined('nZEDb_CACHE_TYPE') && (nZEDb_CACHE_TYPE > 0) ? true : false);
+
+		if ($this->cacheEnabled) {
+			try {
+				$this->cacheServer = new Cache();
+			} catch (CacheException $error) {
+				$this->cacheEnabled = false;
+				$this->echoError($error->getMessage(), '__construct', 4);
+			}
 		}
+
 		$this->ct = $this->opts['ct'];
 		$this->log = $this->opts['log'];
 
@@ -143,16 +158,20 @@ class DB extends \PDO
 	/**
 	 * Looks up info for index on table.
 	 *
-	 * @param $table	Table to look at.
-	 * @param $index	Index to check.
+	 * @param $table string Table to look at.
+	 * @param $index string Index to check.
 	 *
-	 * @return bool|array	False on failure, associative array of SHOW data.
+	 * @return bool|array False on failure, associative array of SHOW data.
 	 */
 	public function checkIndex($table, $index)
 	{
-		$result = self::$_pdo->query(sprintf("SHOW INDEX FROM %s WHERE key_name = '%s'",
-										trim($table),
-										trim($index)));
+		$result = self::$_pdo->query(
+			sprintf(
+				"SHOW INDEX FROM %s WHERE key_name = '%s'",
+				trim($table),
+				trim($index)
+			)
+		);
 		if ($result === false) {
 			return false;
 		}
@@ -162,10 +181,13 @@ class DB extends \PDO
 
 	public function checkColumnIndex($table, $column)
 	{
-		$result = self::$_pdo->query(sprintf("SHOW INDEXES IN %s WHERE non_unique = 0 AND column_name = '%s'",
-										trim($table),
-										trim($column)
-								));
+		$result = self::$_pdo->query(
+			sprintf(
+				"SHOW INDEXES IN %s WHERE non_unique = 0 AND column_name = '%s'",
+				trim($table),
+				trim($column)
+			)
+		);
 		if ($result === false) {
 			return false;
 		}
@@ -175,8 +197,7 @@ class DB extends \PDO
 
 	public function getTableList ()
 	{
-		$query  = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' :
-			'SELECT datname AS Database FROM pg_database');
+		$query  = ($this->opts['dbtype'] === 'mysql' ? 'SHOW DATABASES' : 'SELECT datname AS Database FROM pg_database');
 		$result = self::$_pdo->query($query);
 		return $result->fetchAll(\PDO::FETCH_ASSOC);
 	}
@@ -235,15 +256,18 @@ class DB extends \PDO
 
 		$found = self::checkDbExists();
 		if ($this->opts['dbtype'] === 'pgsql' && !$found) {
-			throw new \RuntimeException('Could not find your database: ' . $this->opts['dbname'] .
-										', please see Install.txt for instructions on how to create a database.', 1);
+			throw new \RuntimeException(
+				'Could not find your database: ' . $this->opts['dbname'] .
+				', please see Install.txt for instructions on how to create a database.',
+				1
+			);
 		}
 
 		if ($this->opts['createDb']) {
 			if ($found) {
 				try {
 					self::$_pdo->query("DROP DATABASE " . $this->opts['dbname']);
-				} catch (Exception $e) {
+				} catch (\Exception $e) {
 					throw new \RuntimeException("Error trying to drop your old database: '{$this->opts['dbname']}'", 2);
 				}
 				$found = self::checkDbExists();
@@ -281,19 +305,20 @@ class DB extends \PDO
 	/**
 	 * Echo error, optionally exit.
 	 *
-	 * @param string	$error		The error message.
-	 * @param string	$method		The method where the error occured.
-	 * @param int		$severity	The severity of the error.
-	 * @param bool		$exit		Exit or not?
-	 * @param exception	$e			Previous exception object.
+	 * @param string     $error    The error message.
+	 * @param string     $method   The method where the error occured.
+	 * @param int        $severity The severity of the error.
+	 * @param bool       $exit     Exit or not?
+	 * @param \Exception $e        Previous exception object.
 	 */
 	protected function echoError ($error, $method, $severity, $exit = false, $e = null)
 	{
 		if ($this->_debug) {
 			$this->debugging->start($method, $error, $severity);
 
-			echo(($this->_cli ? $this->log->error($error) . PHP_EOL :
-				'<div class="error">' . $error . '</div>'));
+			echo(
+				($this->_cli ? $this->log->error($error) . PHP_EOL : '<div class="error">' . $error . '</div>')
+			);
 		}
 
 		if ($exit) {
@@ -337,7 +362,7 @@ class DB extends \PDO
 	public function likeString($str, $left=true, $right=true)
 	{
 		return (
-			($this->dbSystem === 'mysql' ? 'LIKE ' : 'ILIKE ') .
+			'LIKE ' .
 			$this->escapeString(
 				($left  ? '%' : '') .
 				$str .
@@ -361,7 +386,7 @@ class DB extends \PDO
 	 *
 	 * @param string $query
 	 *
-	 * @return bool
+	 * @return bool|int
 	 */
 	public function queryInsert($query)
 	{
@@ -370,7 +395,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = \nzedb\utility\Utility::collapseWhiteSpace($query);
+			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -406,7 +431,7 @@ class DB extends \PDO
 	 * @param string $query
 	 * @param bool   $silent Echo or log errors?
 	 *
-	 * @return bool
+	 * @return bool|\PDOStatement
 	 */
 	public function queryExec($query, $silent = false)
 	{
@@ -415,7 +440,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = \nzedb\utility\Utility::collapseWhiteSpace($query);
+			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		$i = 2;
@@ -451,7 +476,7 @@ class DB extends \PDO
 	 * @param string $query
 	 * @param bool   $insert
 	 *
-	 * @return array
+	 * @return array|\PDOStatement
 	 */
 	protected function queryExecHelper($query, $insert = false)
 	{
@@ -511,7 +536,7 @@ class DB extends \PDO
 	 * @param string $query
 	 * @param bool   $silent Whether to skip echoing errors to the console.
 	 *
-	 * @return bool|int
+	 * @return bool|int|\PDOStatement
 	 */
 	public function exec($query, $silent = false)
 	{
@@ -520,7 +545,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = \nzedb\utility\Utility::collapseWhiteSpace($query);
+			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		try {
@@ -554,48 +579,41 @@ class DB extends \PDO
 		}
 	}
 
-
 	/**
 	 * Returns an array of result (empty array if no results or an error occurs)
-	 * Optional: Pass true to cache the result with memcache.
+	 * Optional: Pass true to cache the result with a cache server.
 	 *
-	 * @param string $query    SQL to execute.
-	 * @param bool   $memcache Indicates if memcache should you be used if available.
+	 * @param string $query       SQL to execute.
+	 * @param bool   $cache       Indicates if the query result should be cached.
+	 * @param int    $cacheExpiry The time in seconds before deleting the query result from the cache server.
 	 *
 	 * @return array Array of results (possibly empty) on success, empty array on failure.
 	 */
-	public function query($query, $memcache = false)
+	public function query($query, $cache = false, $cacheExpiry = 600)
 	{
 		if (empty($query)) {
 			return false;
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = \nzedb\utility\Utility::collapseWhiteSpace($query);
+			$query = Utility::collapseWhiteSpace($query);
 		}
 
-		if ($memcache === true && $this->memcached === true) {
+		if ($cache === true && $this->cacheEnabled === true) {
 			try {
-				$memcached = new Mcached();
-				if ($memcached !== false) {
-					$crows = $memcached->get($query);
-					if ($crows !== false) {
-						return $crows;
-					}
+				$data = $this->cacheServer->get($this->cacheServer->createKey($query));
+				if ($data !== false) {
+					return $data;
 				}
-			} catch (Exception $e) {
-				$this->echoError($e->getMessage(), 'query', 4, false, $e);
-
-				if ($this->_debug) {
-					$this->debugging->start("query", $query, 6);
-				}
+			} catch (CacheException $error) {
+				$this->echoError($error->getMessage(), 'query', 4);
 			}
 		}
 
 		$result = $this->queryArray($query);
 
-		if ($memcache === true && $this->memcached === true) {
-			$memcached->add($query, $result);
+		if ($cache === true && $this->cacheEnabled === true) {
+			$this->cacheServer->set($this->cacheServer->createKey($query), $result, $cacheExpiry);
 		}
 
 		return ($result === false) ? array() : $result;
@@ -610,21 +628,44 @@ class DB extends \PDO
 	 */
 	public function queryArray($query)
 	{
-		if (empty($query)) {
+		$result = false;
+		if (!empty($query)) {
+			$result = $this->queryDirect($query);
+
+			if (!empty($result)) {
+				$result = $result->fetchAll();
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns all results as an associative array.
+	 *
+	 * Do not use this function for large dat-asets, as it can cripple the Db server and use huge
+	 * amounts of RAM. Instead iterate through the data.
+	 *
+	 * @param string $query The query to execute.
+	 *
+	 * @return array|boolean Array of results on success, false otherwise.
+	 */
+	public function queryAssoc($query)
+	{
+		if ($query == '') {
 			return false;
 		}
-
-		$result = $this->queryDirect($query);
-		if ($result === false) {
-			return false;
+		$mode = self::$_pdo->getAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE);
+		if ($mode != \PDO::FETCH_ASSOC) {
+			self::$_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 		}
 
-		$rows = array();
-		foreach ($result as $row) {
-			$rows[] = $row;
-		}
+		$result = $this->queryArray($query);
 
-		return (!isset($rows)) ? false : $rows;
+		if ($mode != \PDO::FETCH_ASSOC) {
+			self::$_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+		}
+		return $result;
 	}
 
 	/**
@@ -632,7 +673,7 @@ class DB extends \PDO
 	 *
 	 * @param string $query The query to run.
 	 *
-	 * @return bool|PDO object
+	 * @return bool|\PDOStatement
 	 */
 	public function queryDirect($query)
 	{
@@ -641,7 +682,7 @@ class DB extends \PDO
 		}
 
 		if (nZEDb_QUERY_STRIP_WHITESPACE) {
-			$query = \nzedb\utility\Utility::collapseWhiteSpace($query);
+			$query = Utility::collapseWhiteSpace($query);
 		}
 
 		try {
@@ -711,6 +752,7 @@ class DB extends \PDO
 	 * Returns the first row of the query.
 	 *
 	 * @param string $query
+	 * @param bool   $appendLimit
 	 *
 	 * @return array|bool
 	 */
@@ -738,106 +780,85 @@ class DB extends \PDO
 	}
 
 	/**
-	 * Returns results as an array but without an empty array like our query() function.
-	 *
-	 * @param string $query The query to execute.
-	 *
-	 * @return array|boolean Array of results on success, false otherwise.
-	 */
-	public function queryAssoc($query)
-	{
-		if ($query == '') {
-			return false;
-		}
-		$mode = self::$_pdo->getAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE);
-		if ($mode != \PDO::FETCH_ASSOC) {
-			self::$_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
-		}
-
-		$result = $this->queryArray($query);
-
-		if ($mode != \PDO::FETCH_ASSOC) {
-			self::$_pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
-		}
-		return $result;
-	}
-
-	/**
 	 * Optimises/repairs tables on mysql. Vacuum/analyze on postgresql.
 	 *
 	 * @param bool   $admin
-	 * @param string $type
+	 * @param string $type  'true'    Force optimize of all tables.
+	 *                      'full'    Force optimize of all tables.
+	 *                      'all'     Optimise tables with 5% or more free space.
+	 *                      'run'     Optimise tables with 5% or more free space.
+	 *                      'analyze' Analyze tables to rebuild statistics.
 	 *
-	 * @return int
+	 * @return int Quantity optimized/analyzed
 	 */
 	public function optimise($admin = false, $type = '')
 	{
-		$tablecnt = 0;
-		if ($this->dbSystem === 'mysql') {
-			if ($type === 'true' || $type === 'full' || $type === 'analyze') {
-				$alltables = $this->query('SHOW TABLE STATUS');
-			} else {
-				$alltables = $this->query('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
+		$tableArray = $myIsamTables = false;
+
+		if ($type === 'true' || $type === 'full' || $type === 'analyze') {
+			$tableArray = $this->queryDirect('SHOW TABLE STATUS ');
+			$myIsamTables = $this->queryDirect("SHOW TABLE STATUS WHERE ENGINE LIKE 'myisam'");
+		} else if ($type === 'all' || $type === 'run') {
+			$tableArray = $this->queryDirect('SHOW TABLE STATUS WHERE Data_free / Data_length > 0.005');
+			$myIsamTables = $this->queryDirect("SHOW TABLE STATUS WHERE ENGINE LIKE 'myisam' AND Data_free / Data_length > 0.005");
+		}
+
+		$optimised = 0;
+		if ($tableArray !== false && $tableArray->rowCount() > 0) {
+
+			$tableNames = '';
+			foreach ($tableArray as $table) {
+				$tableNames .= $table['name'] . ',';
 			}
-			$tablecnt = count($alltables);
-			if ($type === 'all' || $type === 'full') {
-				$tbls = '';
-				foreach ($alltables as $table) {
-					$tbls .= $table['name'] . ', ';
-				}
-				$tbls = rtrim(trim($tbls),',');
-				if ($admin === false) {
-					$message = 'Optimizing tables: ' . $tbls;
-					echo $this->log->primary($message);
-					if ($this->_debug) {
-						$this->debugging->start("optimise", $message, 5);
-					}
-				}
-				$this->queryExec("OPTIMIZE LOCAL TABLE ${tbls}");
+			$tableNames = rtrim($tableNames, ',');
+
+			if ($type === 'analyze') {
+
+				$this->queryExec('ANALYZE LOCAL TABLE ' . $tableNames);
+				$this->logOptimize($admin, 'ANALYZE', $tableNames);
+
 			} else {
-				foreach ($alltables as $table) {
-					if ($type === 'analyze') {
-						if ($admin === false) {
-							$message = 'Analyzing table: ' . $table['name'];
-							echo $this->log->primary($message);
-							if ($this->_debug) {
-								$this->debugging->start("optimise", $message, 5);
-							}
-						}
-						$this->queryExec('ANALYZE LOCAL TABLE `' . $table['name'] . '`');
-					} else {
-						if ($admin === false) {
-							$message = 'Optimizing table: ' . $table['name'];
-							echo $this->log->primary($message);
-							if ($this->_debug) {
-								$this->debugging->start("optimise", $message, 5);
-							}
-						}
-						if (strtolower($table['engine']) == 'myisam') {
-							$this->queryExec('REPAIR TABLE `' . $table['name'] . '`');
-						}
-						$this->queryExec('OPTIMIZE LOCAL TABLE `' . $table['name'] . '`');
+
+				$this->queryExec('OPTIMIZE LOCAL TABLE ' . $tableNames);
+				$this->logOptimize($admin, 'OPTIMIZE', $tableNames);
+
+				if ($myIsamTables !== false && $myIsamTables->rowCount() > 0) {
+					$tableNames = '';
+					foreach ($myIsamTables as $table) {
+						$tableNames .= $table['name'] . ',';
 					}
+					$this->queryExec('REPAIR LOCAL TABLE ' . rtrim($tableNames, ','));
+					$this->logOptimize($admin, 'REPAIR', $tableNames);
 				}
-			}
-			if ($type !== 'analyze') {
+
 				$this->queryExec('FLUSH TABLES');
 			}
-		} else if ($this->dbSystem === 'pgsql') {
-			$alltables = $this->query("SELECT table_name as name FROM information_schema.tables WHERE table_schema = 'public'");
-			$tablecnt = count($alltables);
-			foreach ($alltables as $table) {
-				if ($admin === false) {
-					$message = 'Vacuuming table: ' . $table['name'] . ".\n";
-					echo $message;
-					if ($this->_debug) {
-						$this->debugging->start("optimise", $message, 5);
-					}
-				}
-				$this->query('VACUUM (ANALYZE) ' . $table['name']);
-			}
+			$optimised = $tableArray->rowCount();
 		}
-		return $tablecnt;
+
+		return $optimised;
+	}
+
+	/**
+	 * Log/echo repaired/optimized/analyzed tables.
+	 *
+	 * @param bool   $web    If we are on web, don't echo.
+	 * @param string $type   ANALYZE|OPTIMIZE|REPAIR
+	 * @param string $tables Table names.
+	 *
+	 * @access private
+	 * @void
+	 */
+	private function logOptimize($web, $type, $tables)
+	{
+		$message = $type . ' table: ' . $tables;
+		if ($web === false) {
+			echo $this->log->primary($message);
+
+		}
+		if ($this->_debug) {
+			$this->debugging->start("optimise", $message, 5);
+		}
 	}
 
 	/**
@@ -878,11 +899,7 @@ class DB extends \PDO
 	 */
 	public function from_unixtime($utime)
 	{
-		if ($this->dbSystem === 'mysql') {
-			return 'FROM_UNIXTIME(' . $utime . ')';
-		} else {
-			return 'TO_TIMESTAMP(' . $utime . ')::TIMESTAMP';
-		}
+		return 'FROM_UNIXTIME(' . $utime . ')';
 	}
 
 	/**
@@ -908,12 +925,7 @@ class DB extends \PDO
 	 */
 	public function unix_timestamp_column($column, $outputName = 'unix_time')
 	{
-		return ($this->dbSystem === 'mysql'
-			?
-				'UNIX_TIMESTAMP(' . $column . ') AS ' . $outputName
-			:
-				"EXTRACT('EPOCH' FROM " . $column . ')::INT AS ' . $outputName
-		);
+		return ('UNIX_TIMESTAMP(' . $column . ') AS ' . $outputName);
 	}
 
 	/**
@@ -967,7 +979,7 @@ class DB extends \PDO
 	 * @param string $query SQL query to run, with optional place holders.
 	 * @param array $options Driver options.
 	 *
-	 * @return false|PDOstatement on success false on failure.
+	 * @return false|\PDOstatement on success false on failure.
 	 *
 	 * @link http://www.php.net/pdo.prepare.php
 	 */
@@ -994,6 +1006,7 @@ class DB extends \PDO
 	 */
 	public function getAttribute($attribute)
 	{
+		$result = false;
 		if ($attribute != '') {
 			try {
 				$result = self::$_pdo->getAttribute($attribute);
@@ -1004,8 +1017,9 @@ class DB extends \PDO
 				echo $this->log->error("\n" . $e->getMessage());
 				$result = false;
 			}
-			return $result;
+
 		}
+		return $result;
 	}
 
 	/**
@@ -1044,81 +1058,4 @@ class DB extends \PDO
 		}
 	}
 
-}
-
-// Class for caching queries into RAM using memcache.
-class Mcached
-{
-	public $log;
-
-	private $compression;
-
-	private $expiry;
-
-	private $memcache;
-
-	// Make a connection to memcached server.
-	public function __construct(array $options = array())
-	{
-		$defaults = array(
-			'log'	=> new \ColorCLI(),
-		);
-		$options += $defaults;
-
-		$this->log = $options['log'];
-
-		if (extension_loaded('memcache')) {
-			$this->memcache = new \Memcache();
-			if ($this->memcache->connect(MEMCACHE_HOST, MEMCACHE_PORT) === false) {
-				throw new \Exception($this->log->error("\nUnable to connect to the memcache server."));
-			}
-		} else {
-			throw new \Exception($this->log->error("Extension 'memcache' not loaded."));
-		}
-
-		$this->expiry = MEMCACHE_EXPIRY;
-		$this->compression = MEMCACHE_COMPRESSED;
-
-		if (defined('MEMCACHE_COMPRESSION')) {
-			if (MEMCACHE_COMPRESSION === false) {
-				$this->compression = false;
-			}
-		}
-	}
-
-	// Return a SHA1 hash of the query, used for the key.
-	public function key($query)
-	{
-		return sha1($query);
-	}
-
-	// Return some stats on the server.
-	public function Server_Stats()
-	{
-		return $this->memcache->getExtendedStats();
-	}
-
-	// Flush all the data on the server.
-	public function Flush()
-	{
-		return $this->memcache->flush();
-	}
-
-	// Add a query to memcached server.
-	public function add($query, $result)
-	{
-		return $this->memcache->add($this->key($query), $result, $this->compression, $this->expiry);
-	}
-
-	// Delete a query on the memcached server.
-	public function delete($query)
-	{
-		return $this->memcache->delete($this->key($query));
-	}
-
-	// Retrieve a query from the memcached server. Stores the query if not found.
-	public function get($query)
-	{
-		return $this->memcache->get($this->key($query));
-	}
 }

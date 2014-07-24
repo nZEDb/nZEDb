@@ -69,6 +69,8 @@ switch ($page->page) {
 	case 'sysinfo':
 	case 'terms-and-conditions':
 	case 'upcoming':
+	case 'xxx':
+	case 'xxxmodal':
 		// Don't show these pages if it's an API-only site.
 		if (!$users->isLoggedIn() && $page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 			header("Location: " . $page->settings->getSetting('code'));

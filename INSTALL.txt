@@ -38,7 +38,7 @@ REQUIREMENTS
 			ZLib
 
 		(optional extensions)
-			Memcache (caching query results)
+			Memcached (caching query results) (Memcached, not the memcache extension).
 
 	Database:
 		MySQL 5.5+

@@ -30,7 +30,7 @@ class MiscSorter
 		$this->movie = new Movie($this->echooutput);
 		$this->nfolib = new Nfo($this->echooutput);
 		$this->nc = new ReleaseCleaning();
-		$this->groups = new Groups();
+		$this->groups = new Groups($this->pdo);
 		$this->c = new ColorCLI();
 
 		//$res = $this->pdo->queryExec("SET NAMES 'utf8'");
@@ -189,7 +189,7 @@ class MiscSorter
 		if ($debug == '')
 			$debug = $this->DEBUGGING;
 		$n = "\n";
-		$groups = new Groups();
+		$groups = $this->groups;
 
 		$release = $this->pdo->query("SELECT r.searchname as searchname, categoryid as cat, g.name as name FROM releases r INNER JOIN groups g ON r.group_id = g.id WHERE r.id = {$id}");
 		$oldcatname = $this->category->getNameByID($release[0]['cat']);

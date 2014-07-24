@@ -13,18 +13,20 @@ section,subsection,name,value,hint,setting
 		delaytime	2	The time in hours to wait, since last activity, before releases without parts counts in the subject are are created<br \\> Setting this below 2 hours could create incomplete releases.	delaytime
 		deletepasswordedrelease	0	Whether to delete releases which are passworded.	deletepasswordedrelease
 		deletepossiblerelease	0	Whether to delete releases which are potentially passworded.	deletepossiblerelease
+		extractusingrarinfo	0	Whether to use rarinfo or 7zip/unrar directly to decompress zip/rar files.	extractusingrarinfo
 		ffmpeg_duration	5	The maximum duration (In Seconds) for ffmpeg to generate the sample for. (Default 5)	ffmpeg_duration
 		ffmpeg_image_time	5		ffmpeg_image_time
 		fixnamesperrun	10	The maximum number of releases to check per run(threaded script only).	fixnamesperrun
 		fixnamethreads	1	The number of threads for fixReleasesNames. This includes md5, nfos and filenames.	fixnamethreads
 		grabstatus	1	Whether to update download counts when someone downloads a release.	grabstatus
-		hashcheck	1		hashcheck
+		innerfileblacklist			You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.	innerfileblacklist
 		lastpretime	0	Last time we downloaded a pre using WEB sources	lastpretime
 		lookup_reqids	1	Whether to attempt to lookup Request IDs using the Request ID link below.	lookup_reqids
 		lookupanidb	0	Whether to attempt to lookup anime information from AniDB when processing binaries. Currently it is not recommend to enable this.	lookupanidb
 		lookupbooks	1	Whether to attempt to lookup book information from Amazon when processing binaries.	lookupbooks
 		lookupgames	1	Whether to attempt to lookup game information from Amazon when processing binaries.	lookupgames
 		lookupimdb	1	Whether to attempt to lookup film information from IMDB or TheMovieDB when processing binaries.	lookupimdb
+		lookupxxx	1	Whether to attempt to lookup xxx information from ADE or Popporn when processing binaries.	lookupxxx
 		lookupmusic	1	Whether to attempt to lookup music information from Amazon when processing binaries.	lookupmusic
 		lookupnfo	1	Whether to attempt to retrieve an nfo file from usenet when processing binaries.<br/>NOTE: disabling nfo lookups will disable movie lookups.	lookupnfo
 		lookuppar2	0	Whether to attempt to find a better name for releases in misc->other using the PAR2 file.<br/>NOTE: this can be slow depending on the group!	lookuppar2
@@ -34,8 +36,10 @@ section,subsection,name,value,hint,setting
 		maxbooksprocessed	300	The maximum amount of books to process with amazon per run. This does not use an NNTP connection	maxbooksprocessed
 		maxgamesprocessed	150	The maximum amount of games to process with amazon per run. This does not use an NNTP connection.	maxgamesprocessed
 		maximdbprocessed	100	The maximum amount of movies to process with IMDB per run. This does not use an NNTP connection or query Amazon.	maximdbprocessed
+		maxxxxprocessed		100	The maximum amount of xxx to process with ADE and Popporn per run. This does not use an NNTP connection or query Amazon.	maxxxxprocessed
 		maxmssgs	20000	The maximum number of messages to fetch at a time from the server. Only raise this if you have php set right and lots of RAM.	maxmssgs
 		maxmusicprocessed	150	The maximum amount of music to process with amazon per run. This does not use an NNTP connection.	maxmusicprocessed
+		maxnestedlevels	3	How many levels deep to go into nested rar/zip files.	maxnestedlevels
 		maxnfoprocessed	100	The maximum amount of NFO files to process per run. This uses an NNTP connection, 1 per thread. This does not query Amazon.	maxnfoprocessed
 		maxnzbsprocessed	1000	The maximum amount of NZB files to create on stage 5 in update_releases.	maxnzbsprocessed
 		maxpartrepair	15000	The maximum amount of articles to attempt to repair at a time. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until improves. Ar least until the cause can be determined.	maxpartrepair
@@ -45,6 +49,7 @@ section,subsection,name,value,hint,setting
 		maxsizetopostprocess	100	The maximum size in gigabytes to post process (additional) a release. If set to 0, then ignored.	maxsizetopostprocess
 		minsizetopostprocess	1	The minimum size in megabytes to post process (additional) a release. If set to 0, then ignored.	minsizetopostprocess
 		miscotherretentionhours	0	The number of hours releases categorized as Misc->Other will be retained. Set to 0 to disable.	miscotherretentionhours
+		nfothreads	1	The number of threads for nfo postprocessing. The max is 16, if you set anything higher it will use 16.	nfothreads
 		newgroupdaystoscan	1	Days	newgroupdaystoscan
 		newgroupmsgstoscan	100000	Posts	newgroupmsgstoscan
 		newgroupscanmethod	0	Scan back X (posts/days) for each new group? Use backfill to scan further.	newgroupscanmethod
@@ -69,8 +74,8 @@ section,subsection,name,value,hint,setting
 		releasecompletion	0	The minimum completion % to keep a release. Set to 0 to disable.	releasecompletion
 		releaseretentiondays	0	!!THIS IS NOT HEADER RETENTION!! The number of days releases will be retained for use throughout site. Set to 0 to disable.	releaseretentiondays
 		releasesthreads	1	The number of threads for update_releases. This is only for tablepergroup.	releasesthreads
-		releasethreads	1		releasethreads
 		replacenzbs	0	NZBs that are crossposted, instead of deleting, replace with the nzb grabbed.(This is not necessary, was added before I understood how crossposted nzbs work).	replacenzbs
+		reqidthreads	1	The number of threads for local request id processing.	reqidthreads
 		request_hours	1	The maximum hours after a release is added to recheck for a Request ID match.	request_hours
 		request_url	http://reqid.nzedb.com/index.php	Optional URL to lookup Request IDs.	request_url
 		safebackfilldate	2012-06-24	The target date for safe backfill. Format: YYYY-MM-DD	safebackfilldate
@@ -79,7 +84,7 @@ section,subsection,name,value,hint,setting
 		showbacks	0		showbacks
 		showdroppedyencparts	0	For developers. Whether to log all headers that have 'yEnc' and are dropped. Logged to not_yenc/groupname.dropped.txt.	showdroppedyencparts
 		showpasswordedrelease	0	Whether to show passworded or potentially passworded releases in browse, search, api and rss feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.	showpasswordedrelease
-		sqlpatch	243		sqlpatch
+		sqlpatch	0		sqlpatch
 		storeuserips	0	Whether to store the users ip address when they signup or login.	storeuserips
 		tablepergroup	0	This uses separate tables for collections, binaries and parts for each group.<br />This requires you to run convert_to_tpg.php or reset_truncate.php.<br />This requires that you also run releases_threaded.py.<br />Run: show variables like '%open%f	tablepergroup
 		tmpunrarpath		The path to where unrar puts files. WARNING: This directory will have its contents deleted.<br/>Use forward slashes in windows c:/temp/path/stuff/will/be/unpacked/to	tmpunrarpath

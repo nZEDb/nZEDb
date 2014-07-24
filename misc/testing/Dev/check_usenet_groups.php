@@ -10,7 +10,8 @@ if (!isset($argv[1])) {
 		. "php $argv[0] 1000000   ...: To show all groups you do not have with more than 1000000 posts per hour.\n"));
 }
 
-$nntp = new NNTP();
+$pdo = new Settings();
+$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 if ($nntp->doConnect() !== true) {
 	exit();
 }
@@ -24,7 +25,6 @@ if (!isset($data['group'])) {
 }
 $nntp->doQuit();
 
-$pdo = new Settings();
 $res = $pdo->query("SELECT name FROM groups");
 $counter = 0;
 $minvalue = $argv[1];

@@ -5,7 +5,7 @@ use nzedb\db\Settings;
 class Groups
 {
 	/**
-	 * @var DB
+	 * @var nzedb\db\Settings
 	 */
 	protected $pdo;
 
@@ -16,11 +16,7 @@ class Groups
 	 */
 	public function __construct($pdo=null)
 	{
-		if (!is_null($pdo)) {
-			$this->pdo = $pdo;
-		} else {
-			$this->pdo = new Settings();
-		}
+		$this->pdo = ($pdo instanceof Settings ? $pdo : new Settings());
 	}
 
 	/**
@@ -450,15 +446,15 @@ class Groups
 	public function reset($id)
 	{
 		// Remove rows from collections / binaries / parts.
-		(new Binaries())->purgeGroup($id);
+		(new Binaries(['Groups' => $this, 'Settings' => $this->pdo]))->purgeGroup($id);
 
 		// Remove rows from part repair.
 		$this->pdo->queryExec(sprintf("DELETE FROM partrepair WHERE group_id = %d", $id));
 
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS collections_', $id));
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS binaries_', $id));
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS parts_', $id));
-		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS partrepair_', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS collections_%d', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS binaries_%d', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS parts_%d', $id));
+		$this->pdo->queryExec(sprintf('DROP TABLE IF EXISTS partrepair_%d', $id));
 
 		// Reset the group stats.
 		return $this->pdo->queryExec(
@@ -498,32 +494,28 @@ class Groups
 	}
 
 	/**
-	 * Purge a group.
+	 * Purge a single group or all groups.
 	 *
-	 * @param int|string $id The group ID.
+	 * @param int|string|bool $id The group ID. If false, purge all groups.
 	 */
-	public function purge($id)
+	public function purge($id = false)
 	{
-		$this->reset($id);
-
-		$releases = new Releases();
-		$rels = $this->pdo->query(sprintf("SELECT id FROM releases WHERE group_id = %d", $id));
-		foreach ($rels as $rel) {
-			$releases->delete($rel["id"]);
+		if ($id === false) {
+			$this->resetall();
+		} else {
+			$this->reset($id);
 		}
-	}
 
-	/**
-	 * Purge all groups.
-	 */
-	public function purgeall()
-	{
-		$this->resetall();
+		$releaseArray = $this->pdo->queryDirect(
+			sprintf("SELECT guid FROM releases %s", ($id === false ? '' : 'WHERE group_id = ' . $id))
+		);
 
-		$releases = new Releases();
-		$rels = $this->pdo->query("SELECT id FROM releases");
-		foreach ($rels as $rel) {
-			$releases->delete($rel["id"]);
+		if ($releaseArray !== false) {
+			$releases = new Releases(['Settings' => $this->pdo, 'Groups' => $this]);
+			$nzb = new NZB($this->pdo);
+			foreach ($releaseArray as $release) {
+				$releases->deleteSingle($release['guid'], $nzb);
+			}
 		}
 	}
 
@@ -541,7 +533,7 @@ class Groups
 		if (preg_match('/^\s*$/m', $groupList)) {
 			$ret = "No group list provided.";
 		} else {
-			$nntp = new NNTP(false);
+			$nntp = new NNTP(['Echo' => false]);
 			if ($nntp->doConnect() !== true) {
 				return 'Problem connecting to usenet.';
 			}
@@ -651,6 +643,16 @@ class Groups
 			if ($statement = $this->pdo->queryExec(sprintf('SELECT * FROM %s_%s LIMIT 1', $tableName, $groupID), true) === false) {
 				if ($this->pdo->queryExec(sprintf('CREATE TABLE %s_%s LIKE %s', $tableName, $groupID, $tableName), true) === false) {
 					return false;
+				} else {
+					if ($tableName === 'collections') {
+						$this->pdo->queryExec(
+							sprintf(
+								'CREATE TRIGGER delete_collections_%s BEFORE DELETE ON collections_%s FOR EACH ROW BEGIN' .
+								' DELETE FROM binaries_%s WHERE collectionid = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END',
+								$groupID, $groupID, $groupID, $groupID
+							)
+						);
+					}
 				}
 			}
 		}
