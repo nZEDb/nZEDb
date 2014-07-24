@@ -12,6 +12,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Alter xxxinfo_id back to 0 for hotmovies processing
 	* Add: Echo if no xxx releases to process
 	* Fix: constants style
+	* Fix: SQL -- xxxinfo_id
 2014-07-23 ruhllatio
 	* Chg: Move ReqIDLocal class to controllers, begin to add options to thread by Guid
 	* Chg: Remove needless concats from TMUX sql queries.
