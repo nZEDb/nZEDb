@@ -592,9 +592,9 @@ class NameFixer
 					$this->consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $this->consoletools->percentString(++$counter, $total));
 				}
 			}
-			echo $c->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(TIME() - $timestart) . ".");
+			echo $this->c->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(TIME() - $timestart) . ".");
 		} else {
-			echo $c->info("\nNothing to do.");
+			echo $this->c->info("\nNothing to do.");
 		}
 	}
 

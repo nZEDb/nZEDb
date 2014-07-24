@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-22 bart39
+	* Fix: undefined variable
 2014-07-22 taskym
 	* Add: Hot Movies Scraper
 	* Add: Process Hotmovies, Chg: Fetch XXX Info from scraper used
@@ -30,7 +32,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Rename update_all to update_per_group for conistency.
 	* Chg: Re-use class instancess win initiating ProcessReleases.
 	* Fix: Issues in ReqIDLocal
-2014-07-22 Bart39
+2014-07-22 bart39
 	* Fix: Another fix for PredbFT matching issue with preid being blanked out after match.
 	* Fix: MultiProcessing nfo fix
 	* Chg: ProcessAdditional - only rename audio from mediainfo if not already predb matched.
