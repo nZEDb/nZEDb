@@ -163,7 +163,7 @@ class Backfill
 				$this->_colorCLI->doEcho($this->_colorCLI->header($dMessage), true);
 			}
 
-			$this->_binaries = new Binaries($this->_nntp, $this->_echoCLI, $this);
+			$this->_binaries = new Binaries(['NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Backfill' => $this, 'ColorCLI' => $this->_colorCLI, 'Settings' => $this->_pdo, 'Groups' => $this->_groups]);
 
 			if ($articles !== '' && !is_numeric($articles)) {
 				$articles = 20000;
@@ -740,7 +740,7 @@ class Backfill
 	 */
 	public function getRange($group, $first, $last, $threads)
 	{
-		$binaries = new Binaries($this->_nntp, $this->_echoCLI, $this);
+		$binaries = new Binaries(['NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Backfill' => $this, 'ColorCLI' => $this->_colorCLI, 'Settings' => $this->_pdo, 'Groups' => $this->_groups]);
 		$groupArr = $this->_groups->getByName($group);
 
 		if ($this->_echoCLI) {

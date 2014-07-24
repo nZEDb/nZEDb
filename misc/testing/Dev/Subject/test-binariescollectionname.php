@@ -34,7 +34,7 @@ else
 
 function dogroup($group, $nntp)
 {
-	$binaries = new Binaries($nntp);
+	$binaries = new Binaries(['NNTP' => $nntp]);
 	$binaries->updateGroup($group);
 	echo "Press enter to continue, type n and press enter to quit.\n";
 	$cmd = trim(fgets(fopen("php://stdin","r")));
