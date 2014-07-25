@@ -240,7 +240,7 @@ switch ($function) {
 
 		// Register.
 		$userDefault = $users->getDefaultRole();
-		$uid = $users->signup(
+		$uid = $users->signUp(
 			$username, $password, $_GET['email'], $_SERVER['REMOTE_ADDR'], $userDefault['id'], $userDefault['defaultinvites']
 		);
 

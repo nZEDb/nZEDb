@@ -8,6 +8,8 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-25 kevin
 	* Chg: Re-use class instances in various places.
+	* Add: PHPDOC to Users.
+	* Chg: Re-use class instances when creating Users/UserSeries/XXX.
 2014-07-24 ruhllatio
 	* Chg: Case a few if/elseif run ons in NameFixer -- more to do
 	* Fix: #1408 Issue with HDTS not being categorized properly

@@ -4,9 +4,10 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$movie = new XXX(true);
 $pdo = new Settings();
 $c = new ColorCLI();
+$movie = new XXX(['Echo' => true, 'ColorCLI' => $c, 'Settings' => $pdo]);
+
 
 $movies = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE cover = 0");
 if ($movies->rowCount() > 0) {

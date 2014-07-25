@@ -6,7 +6,7 @@ if (!$users->isLoggedIn()) {
 $releases = new Releases();
 $tvrage = new TvRage();
 $cat = new Category(['Settings' => $releases->pdo]);
-$us = new UserSeries();
+$us = new UserSeries(['Settings' => $releases->pdo]);
 
 if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 	$category = -1;

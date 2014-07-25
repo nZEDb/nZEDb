@@ -41,7 +41,7 @@ if ($showregister == 0) {
 				// Get the default user role.
 				$userdefault = $users->getDefaultRole();
 
-				$ret = $users->signup($_POST['username'], $_POST['firstname'], $_POST['lastname'], $_POST['password'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $userdefault['id'], $userdefault['defaultinvites'], $_POST['invitecode']);
+				$ret = $users->signUp($_POST['username'], $_POST['firstname'], $_POST['lastname'], $_POST['password'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $userdefault['id'], $userdefault['defaultinvites'], $_POST['invitecode']);
 				if ($ret > 0) {
 					$users->login($ret, $_SERVER['REMOTE_ADDR']);
 					header("Location: " . WWW_TOP . "/");
