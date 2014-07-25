@@ -8,7 +8,7 @@ if (isset($_REQUEST["del"])) {
 	$um->delMovie($users->currentUserId(), $_REQUEST["del"]);
 }
 
-$cat = new Category(['Settings' => $um->pdo]);
+$cat = new Category(['Settings' => $page->settings]);
 $tmpcats = $cat->getChildren(Category::CAT_PARENT_MOVIE, true, $page->userdata["categoryexclusions"]);
 $categories = array();
 foreach ($tmpcats as $c) {

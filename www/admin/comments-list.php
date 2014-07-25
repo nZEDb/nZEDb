@@ -1,7 +1,6 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
 $releases = new ReleaseComments($page->settings);
 
@@ -21,5 +20,3 @@ $page->smarty->assign('commentslist',$commentslist);
 
 $page->content = $page->smarty->fetch('comments-list.tpl');
 $page->render();
-
-?>

@@ -6,7 +6,6 @@ if (PHP_SAPI === 'cli') {
 }
 
 require_once './config.php';
-$page = new Page;
 $page = new AdminPage();
 
 $filesToProcess = Array();

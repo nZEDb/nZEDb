@@ -54,10 +54,12 @@ class UserMovies
 	 *
 	 * @param int $uid
 	 * @param int $imdbid
+	 *
+	 * @return bool
 	 */
 	public function delMovie($uid, $imdbid)
 	{
-		$this->pdo->queryExec(sprintf("DELETE FROM usermovies WHERE userid = %d AND imdbid = %d ", $uid, $imdbid));
+		return $this->pdo->queryExec(sprintf("DELETE FROM usermovies WHERE userid = %d AND imdbid = %d ", $uid, $imdbid));
 	}
 
 	/**

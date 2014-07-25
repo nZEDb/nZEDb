@@ -1,9 +1,8 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$con = new Console();
+$con = new Console(['Settings' => $page->settings]);
 
 $page->title = "Console List";
 
@@ -23,5 +22,3 @@ $page->smarty->assign('consolelist',$consolelist);
 
 $page->content = $page->smarty->fetch('console-list.tpl');
 $page->render();
-
-?>

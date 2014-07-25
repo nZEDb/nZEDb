@@ -209,7 +209,7 @@ switch ($function) {
 
 	// Capabilities request.
 	case 'c':
-		$category = new Category();
+		$category = new Category(['Settings' => $page->settings]);
 		$page->smarty->assign('parentcatlist', $category->getForMenu());
 		header('Content-type: text/xml');
 		echo $page->smarty->fetch('apicaps.tpl');

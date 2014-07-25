@@ -1,7 +1,6 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
 $m = new Music(['Settings' => $page->settings]);
 
@@ -23,5 +22,3 @@ $page->smarty->assign('musiclist',$musiclist);
 
 $page->content = $page->smarty->fetch('music-list.tpl');
 $page->render();
-
-?>

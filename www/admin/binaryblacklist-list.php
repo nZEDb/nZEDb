@@ -1,9 +1,8 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$bin = new Binaries();
+$bin = new Binaries(['Settings' => $page->settings]);
 
 $page->title = "Binary Black/Whitelist List";
 

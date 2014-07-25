@@ -1,7 +1,6 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
 $releases = new Releases(['Settings' => $page->settings]);
 

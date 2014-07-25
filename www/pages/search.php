@@ -8,7 +8,6 @@ $grp = new Groups(['Settings' => $page->settings]);
 $releases = new Releases(['Groups' => $grp, 'Settings' => $page->settings]);
 $c = new Category(['Settings' => $page->settings]);
 
-
 $page->meta_title = "Search Nzbs";
 $page->meta_keywords = "search,nzb,description,details";
 $page->meta_description = "Search for Nzbs";

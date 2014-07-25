@@ -5,7 +5,7 @@ if (!$users->isLoggedIn()) {
 
 $id = $_GET["id"] + 0;
 
-$forum = new Forum();
+$forum = new Forum(['Settings' => $page->settings]);
 if ($page->isPostBack()) {
 	$forum->add($id, $users->currentUserId(), "", $_POST["addReply"]);
 	header("Location:" . WWW_TOP . "/forumpost/" . $id . "#last");

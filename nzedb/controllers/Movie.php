@@ -263,7 +263,7 @@ class Movie
 	 * @param       $maxAge
 	 * @param array $excludedCats
 	 *
-	 * @return bool
+	 * @return bool|PDOStatement
 	 */
 	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
 	{

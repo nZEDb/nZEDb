@@ -9,7 +9,7 @@ if ($page->userdata != null) {
 }
 
 // Useful links.
-$contents = new Contents();
+$contents = new Contents(['Settings' => $page->settings]);
 $contentlist = $contents->getForMenuByTypeAndRole(Contents::TYPEUSEFUL, $role);
 foreach ($contentlist as $content) {
 	$arPages[] = buildURL("Useful Links", $content->title, '/content/' . $content->id . $content->url, 'monthly', '0.50');

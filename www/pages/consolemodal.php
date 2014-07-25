@@ -4,7 +4,7 @@ if (!$users->isLoggedIn()) {
 }
 
 if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
-	$console = new Console();
+	$console = new Console(['Settings' => $page->settings]);
 	$con = $console->getConsoleInfo($_GET['id']);
 	if (!$con) {
 		$page->show404();

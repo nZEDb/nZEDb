@@ -15,7 +15,7 @@ if (isset($_GET['id'])) {
 		$page->show404();
 	}
 
-	$nzb = new NZB($users->pdo);
+	$nzb = new NZB($page->settings);
 	$nzbPath = $nzb->getNZBPath($_GET['id']);
 	if (!file_exists($nzbPath)) {
 		$page->show404();

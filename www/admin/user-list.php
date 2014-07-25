@@ -2,7 +2,7 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$users = new Users();
+$users = new Users(['Settings' => $page->settings]);
 
 $page->title = "User List";
 

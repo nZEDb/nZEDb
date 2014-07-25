@@ -7,14 +7,11 @@ $id = 0;
 
 $page->title = "Movie Add";
 
-if (isset($_REQUEST['id']) && ctype_digit($_REQUEST['id']) && strlen($_REQUEST['id']) == 7)
-{
+if (isset($_REQUEST['id']) && ctype_digit($_REQUEST['id']) && strlen($_REQUEST['id']) == 7) {
 	$id = $_REQUEST['id'];
 	$movCheck = $movie->getMovieInfo($id);
-	if (!$movCheck || (isset($_REQUEST['update']) && $_REQUEST['update'] == 1))
-	{
-		if($movie->updateMovieInfo($id))
-		{
+	if (!$movCheck || (isset($_REQUEST['update']) && $_REQUEST['update'] == 1)) {
+		if($movie->updateMovieInfo($id)) {
 			header("Location:".WWW_TOP."/movie-list.php");
 			die();
 		}

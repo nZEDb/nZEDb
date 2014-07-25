@@ -3,8 +3,8 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$book = new Books();
-$cat = new Category(['Settings' => $book->pdo]);
+$book = new Books(['Settings' => $page->settings]);
+$cat = new Category(['Settings' => $page->settings]);
 
 $boocats = $cat->getChildren(Category::CAT_PARENT_BOOKS);
 $btmp = array();

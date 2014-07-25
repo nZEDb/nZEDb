@@ -2,7 +2,7 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$users = new Users();
+$users = new Users(['Settings' => $page->settings]);
 $id = 0;
 
 // Set the current action.

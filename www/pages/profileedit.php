@@ -3,7 +3,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$category = new Category();
+$category = new Category(['Settings' => $page->settings]);
 $sab = new SABnzbd($page);
 $nzbGet = new NZBGet($page);
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';

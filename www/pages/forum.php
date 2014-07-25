@@ -3,7 +3,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$forum = new Forum();
+$forum = new Forum(['Settings' => $page->settings]);
 
 if ($page->isPostBack()) {
 	$forum->add(0, $users->currentUserId(), $_POST["addSubject"], $_POST["addMessage"]);

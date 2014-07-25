@@ -8,23 +8,18 @@ if ($users->isLoggedIn()) {
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action)
-{
+switch($action) {
 	case "reset":
-		if (!isset($_REQUEST['guid']))
-		{
+		if (!isset($_REQUEST['guid'])) {
 			$page->smarty->assign('error', "No reset code provided.");
 			break;
 		}
 
 		$ret = $users->getByPassResetGuid($_REQUEST['guid']);
-		if (!$ret)
-		{
+		if (!$ret) {
 			$page->smarty->assign('error', "Bad reset code provided.");
 			break;
-		}
-		else
-		{
+		} else {
 			// Reset the password, inform the user, send out the email.
 			$users->updatePassResetGuid($ret["id"], "");
 			$newpass = $users->generatePassword();
