@@ -4,7 +4,7 @@ if (!$users->isLoggedIn()) {
 }
 
 $book = new Books();
-$cat = new Category();
+$cat = new Category(['Settings' => $book->pdo]);
 
 $boocats = $cat->getChildren(Category::CAT_PARENT_BOOKS);
 $btmp = array();

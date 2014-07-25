@@ -28,11 +28,11 @@ abstract class RequestID
 		$defOptions = array_replace($defOptions, $options);
 
 		$this->echoOutput = ($defOptions['Echo'] && nZEDb_ECHOCLI);
-		$this->category = ($defOptions['Categorize'] instanceof Categorize ? $defOptions['Categorize'] : new Categorize());
 		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
-		$this->groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups($this->pdo));
-		$this->consoleTools = ($defOptions['ConsoleTools'] instanceof ConsoleTools ? $defOptions['ConsoleTools'] : new ConsoleTools());
+		$this->category = ($defOptions['Categorize'] instanceof Categorize ? $defOptions['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->consoleTools = ($defOptions['ConsoleTools'] instanceof ConsoleTools ? $defOptions['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->colorCLI]));
 	}
 
 	/**

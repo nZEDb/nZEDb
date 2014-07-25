@@ -2,9 +2,9 @@
 //This script will update all records in the gamesinfo table
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-$game = new Games(true);
-$pdo = new nzedb\db\DB();
+$pdo = new nzedb\db\Settings();
 $c = new ColorCLI();
+$game = new Games(['Echo' => true, 'Settings' => $pdo, 'ColorCLI' => $c]);
 
 $res = $pdo->query(
 	sprintf("SELECT searchname FROM releases WHERE gamesinfo_id IS NULL AND categoryid = 4050 ORDER BY id DESC LIMIT 100")

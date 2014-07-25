@@ -48,10 +48,10 @@ class NameFixer
 		$this->fullall = '';
 		$this->done = $this->matched = false;
 		$this->c = new ColorCLI();
-		$this->consoletools = new ConsoleTools();
-		$this->category = new Categorize();
+		$this->consoletools = new ConsoleTools(['ColorCLI' => $this->c]);
+		$this->category = new Categorize(['Settings' => $this->pdo]);
 		$this->utility = new Utility();
-		$this->_groups = new Groups($this->pdo);
+		$this->_groups = new Groups(['Settings' => $this->pdo]);
 	}
 
 	/**

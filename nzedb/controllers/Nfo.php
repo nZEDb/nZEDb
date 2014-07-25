@@ -311,7 +311,7 @@ class Nfo
 			}
 			$this->c->doEcho($this->c->header($outString . '.'));
 
-			$groups = new Groups($this->pdo);
+			$groups = new Groups(['Settings' => $this->pdo]);
 			$nzbContents = new NZBContents(
 				array(
 					'Echo' => $this->echo,

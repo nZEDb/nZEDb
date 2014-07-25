@@ -74,16 +74,23 @@ class Category
 	const STATUS_DISABLED = 2;
 
 	/**
-	 * @var pdo
+	 * @var Settings
 	 */
-	protected $pdo;
+	public $pdo;
 
 	/**
 	 * Construct.
+	 *
+	 * @param array $options Class instances.
 	 */
-	public function __construct()
+	public function __construct(array $options = array())
 	{
-		$this->pdo = new Settings();
+		$defOptions = [
+			'Settings' => null,
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
 	}
 
 	/**

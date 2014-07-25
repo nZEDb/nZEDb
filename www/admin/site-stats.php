@@ -5,7 +5,7 @@ $page = new AdminPage();
 $users = new Users();
 $pdo = new \nzedb\db\Settings();
 $releases = new Releases(['Settings' => $pdo]);
-$logging = new Logging();
+$logging = new Logging(['Settings' => $pdo]);
 if ($pdo->getSetting('loggingopt') == '0') {
 	$loggingon = '0';
 } else {

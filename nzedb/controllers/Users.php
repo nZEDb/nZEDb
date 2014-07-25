@@ -56,7 +56,6 @@ class Users
 
 	public function delete($id)
 	{
-		$pdo = $this->pdo;
 		$this->delCartForUser($id);
 		$this->delUserCategoryExclusions($id);
 
@@ -69,10 +68,10 @@ class Users
 		$us = new UserSeries();
 		$us->delShowForUser($id);
 
-		$forum = new Forum();
+		$forum = new Forum(['Settings' => $this->pdo]);
 		$forum->deleteUser($id);
 
-		$pdo->queryExec(sprintf("DELETE FROM users WHERE id = %d", $id));
+		$this->pdo->queryExec(sprintf("DELETE FROM users WHERE id = %d", $id));
 	}
 
 	public function getRange($start, $num, $orderby, $username = '', $email = '', $host = '', $role = '', $apiRequests = false)
@@ -606,7 +605,7 @@ class Users
 	public function getCategoryExclusionNames($uid)
 	{
 		$data = $this->getCategoryExclusion($uid);
-		$category = new Category();
+		$category = new Category(['Settings' => $this->pdo]);
 		$data1 = $category->getByIds($data);
 		$ret = array();
 		if ($data1 !== false) {

@@ -9,13 +9,13 @@ $forum = new Forum();
 if ($page->isPostBack()) {
 	$forum->add($id, $users->currentUserId(), "", $_POST["addReply"]);
 	header("Location:" . WWW_TOP . "/forumpost/" . $id . "#last");
-	die();
+	exit();
 }
 
 $results = $forum->getPosts($id);
 if (count($results) == 0) {
 	header("Location:" . WWW_TOP . "/forum");
-	die();
+	exit();
 }
 
 $page->meta_title = "Forum Post";

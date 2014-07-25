@@ -41,7 +41,7 @@ $covgroup = '';
 if ($category == -1 && $grp == "") {
 	$page->smarty->assign("catname", "All");
 } elseif ($category != -1 && $grp == "") {
-	$cat = new Category();
+	$cat = new Category(['Settings' => $releases->pdo]);
 	$cdata = $cat->getById($category);
 	if ($cdata) {
 		$page->smarty->assign('catname', $cdata["title"]);

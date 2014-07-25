@@ -5,7 +5,7 @@ require_once './config.php';
 
 $page = new AdminPage(true);
 $releases = new Releases();
-$category = new Category();
+$category = new Category(['Settings' => $releases->pdo]);
 $id = 0;
 
 // Set the current action.

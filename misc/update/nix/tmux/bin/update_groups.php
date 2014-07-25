@@ -6,7 +6,7 @@ use nzedb\db\Settings;
 $start = TIME();
 $pdo = new Settings();
 $c = new ColorCLI();
-$consoleTools = new ConsoleTools();
+$consoleTools = new ConsoleTools(['ColorCLI' => $c]);
 
 $nntpProxy = $pdo->getSetting('nntpproxy');
 

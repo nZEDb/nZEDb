@@ -19,7 +19,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		echo $c->header("Going to recreate all search names, recategorize them and fix the names with namefixer, this can take a while.");
 		$done = 0;
 		$timestart = TIME();
-		$consoletools = new ConsoleTools();
+		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 		$rc = new ReleaseCleaning();
 		foreach ($res as $row) {
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
@@ -55,7 +55,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		echo $c->header("Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.");
 		$done = 0;
 		$timestart = TIME();
-		$consoletools = new ConsoleTools();
+		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 		$rc = new ReleaseCleaning();
 		foreach ($res as $row) {
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
@@ -90,8 +90,8 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	if (count($res) > 0) {
 		echo $c->header("Going to reset search names, this can take a while.");
 		$done = 0;
-		$timestart = TIME();
-		$consoletools = new ConsoleTools();
+		$timestart = time();
+		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 		foreach ($res as $row) {
 			$rc = new ReleaseCleaning();
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);

@@ -85,7 +85,7 @@ class NZBImport
 		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
 		$this->pdo = new Settings();
 		$this->binaries = new Binaries(['Settings' => $this->pdo, 'Echo' => $this->echoCLI]);
-		$this->category = new Categorize();
+		$this->category = new Categorize(['Settings' => $this->pdo]);
 		$this->nzb = new NZB($this->pdo);
 		$this->releaseCleaner = new ReleaseCleaning();
 

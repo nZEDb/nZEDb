@@ -6,9 +6,9 @@ if (!$users->isLoggedIn())
 	$page->show403();
 
 $pdo = new Settings();
-$grp = new Groups($pdo);
+$grp = new Groups(['Settings' => $pdo]);
 $releases = new Releases(['Groups' => $grp, 'Settings' => $pdo]);
-$c = new Category();
+$c = new Category(['Settings' => $pdo]);
 
 
 $page->meta_title = "Search Nzbs";

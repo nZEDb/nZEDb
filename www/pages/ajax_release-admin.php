@@ -1,7 +1,7 @@
 <?php
 $page = new AdminPage(true);
 $releases = new Releases();
-$category = new Category();
+$category = new Category(['Settings' => $releases->pdo]);
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';

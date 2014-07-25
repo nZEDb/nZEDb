@@ -8,12 +8,27 @@ use nzedb\db\Settings;
  */
 class Books
 {
-	private $pdo;
+	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
 
-	function __construct($echooutput = false)
+	/**
+	 * @param array $options Class instances / Echo to cli.
+	 */
+	public function __construct(array $options = array())
 	{
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
-		$this->pdo = new Settings();
+		$defOptions = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->echooutput = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+		$this->c = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
+
 		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
 		$this->privkey = $this->pdo->getSetting('amazonprivkey');
 		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
@@ -25,7 +40,6 @@ class Books
 		if ($this->pdo->getSetting('lookupbooks') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
-		$this->c = new ColorCLI();
 	}
 
 	public function getBookInfo($id)
@@ -73,7 +87,7 @@ class Books
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = ' (';
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {
@@ -135,7 +149,7 @@ class Books
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = ' (';
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {

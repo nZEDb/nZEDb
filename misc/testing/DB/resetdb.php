@@ -20,11 +20,11 @@ echo "\n";
 echo $c->header("Thank you, continuing...\n\n");
 
 $pdo = new Settings();
-$timestart = TIME();
+$timestart = time();
 $relcount = 0;
 $ri = new ReleaseImage($pdo);
 $nzb = new NZB($pdo);
-$consoletools = new ConsoleTools();
+$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 
 $pdo->queryExec("UPDATE groups SET first_record = 0, first_record_postdate = NULL, last_record = 0, last_record_postdate = NULL, last_updated = NULL");
 echo $c->primary("Reseting all groups completed.");

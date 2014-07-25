@@ -12,13 +12,28 @@ class Games
 	const CONS_UPROC = 0; // Release has not been processed.
 	const REQID_FOUND = 1; // Request ID found and release was updated.
 
+	/**
+	 * @var nzedb\db\Settings
+	 */
 	public $pdo;
 
-	function __construct($echooutput = false)
+	/**
+	 * @param array $options Class instances / Echo to cli.
+	 */
+	public function __construct(array $options = array())
 	{
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
+		$defOptions = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defOptions = array_replace($defOptions, $options);
 
-		$this->pdo = new Settings();
+		$this->echooutput = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+
+		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
+		$this->c = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+
 		$this->pubkey = $this->pdo->getSetting('giantbombkey');
 		$this->gameqty = ($this->pdo->getSetting('maxgamesprocessed') != '') ? $this->pdo->getSetting('maxgamesprocessed') : 150;
 		$this->sleeptime = ($this->pdo->getSetting('amazonsleep') != '') ? $this->pdo->getSetting('amazonsleep') : 1000;
@@ -30,7 +45,6 @@ class Games
 			$this->renamed = 'AND isrenamed = 1';
 		}
 		//$this->cleangames = ($this->pdo->getSetting('lookupgames') == 2) ? 'AND isrenamed = 1' : '';
-		$this->c = new ColorCLI();
 	}
 
 	public function getgamesinfo($id)
@@ -81,7 +95,7 @@ class Games
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = " (";
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {
@@ -134,7 +148,7 @@ class Games
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = " (";
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {
@@ -324,7 +338,7 @@ class Games
 	 */
 	public function updategamesinfo($gameInfo)
 	{
-		$gen = new Genres();
+		$gen = new Genres(['Settings' => $this->pdo]);
 		$ri = new ReleaseImage($this->pdo);
 
 		$con = array();

@@ -5,7 +5,7 @@ require_once './config.php';
 
 $page = new AdminPage();
 $console = new Console();
-$gen = new Genres();
+$gen = new Genres(['Settings' => $console->pdo]);
 $id = 0;
 
 // Set the current action.

@@ -8,16 +8,15 @@ $forum = new Forum();
 if ($page->isPostBack()) {
 	$forum->add(0, $users->currentUserId(), $_POST["addSubject"], $_POST["addMessage"]);
 	header("Location:" . WWW_TOP . "/forum");
-	die();
+	exit();
 }
-$browsecount = $forum->getBrowseCount();
 
 $offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 
 $results = array();
 $results = $forum->getBrowseRange($offset, ITEMS_PER_PAGE);
 
-$page->smarty->assign('pagertotalitems', $browsecount);
+$page->smarty->assign('pagertotalitems', $forum->getBrowseCount());
 $page->smarty->assign('pageroffset', $offset);
 $page->smarty->assign('pageritemsperpage', ITEMS_PER_PAGE);
 $page->smarty->assign('pagerquerybase', WWW_TOP . "/forum?offset=");

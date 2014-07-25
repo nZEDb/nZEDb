@@ -11,10 +11,27 @@ class Genres
 	const STATUS_ENABLED = 0;
 	const STATUS_DISABLED = 1;
 
+	/**
+	 * @var nzedb\db\Settings;
+	 */
+	public $pdo;
+
+	/**
+	 * @param array $options Class instances.
+	 */
+	public function __construct(array $options = array())
+	{
+		$defOptions = [
+			'Settings' => null
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
+	}
+
 	public function getGenres($type='', $activeonly=false)
 	{
-		$pdo = new Settings();
-		return $pdo->query($this->getListQuery($type, $activeonly));
+		return $this->pdo->query($this->getListQuery($type, $activeonly));
 	}
 
 	private function getListQuery($type='', $activeonly=false)
@@ -34,16 +51,13 @@ class Genres
 
 	public function getRange($type='', $activeonly=false, $start, $num)
 	{
-		$pdo = new Settings();
 		$sql = $this->getListQuery($type, $activeonly);
 		$sql .= " LIMIT ".$num." OFFSET ".$start;
-		return $pdo->query($sql);
+		return $this->pdo->query($sql);
 	}
 
 	public function getCount($type='', $activeonly=false)
 	{
-		$pdo = new Settings();
-
 		if (!empty($type))
 			$typesql = sprintf(" AND genres.type = %d", $type);
 		else
@@ -54,25 +68,22 @@ class Genres
 		else
 			$sql = sprintf("SELECT COUNT(*) AS num FROM genres WHERE 1 %s ORDER BY title", $typesql);
 
-		$res = $pdo->queryOneRow($sql);
+		$res = $this->pdo->queryOneRow($sql);
 		return $res["num"];
 	}
 
 	public function getById($id)
 	{
-		$pdo = new Settings();
-		return $pdo->queryOneRow(sprintf("SELECT * FROM genres WHERE id = %d", $id));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM genres WHERE id = %d", $id));
 	}
 
 	public function update($id, $disabled)
 	{
-		$pdo = new Settings();
-		return $pdo->queryExec(sprintf("UPDATE genres SET disabled = %d WHERE id = %d", $disabled, $id));
+		return $this->pdo->queryExec(sprintf("UPDATE genres SET disabled = %d WHERE id = %d", $disabled, $id));
 	}
 
 	public function getDisabledIDs()
 	{
-		$pdo = new Settings();
-		return $pdo->query("SELECT id FROM genres WHERE disabled = 1");
+		return $this->pdo->query("SELECT id FROM genres WHERE disabled = 1");
 	}
 }

@@ -132,7 +132,7 @@ class ReleaseRemover
 	{
 		$this->pdo = new Settings();
 		$this->color = new ColorCLI();
-		$this->consoleTools = new ConsoleTools();
+		$this->consoleTools = new ConsoleTools(['ColorCLI' => $this->color]);
 		$this->releases = new Releases(array('Settings' => $this->pdo));
 		$this->nzb = new NZB($this->pdo);
 

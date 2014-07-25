@@ -85,9 +85,9 @@ class PostProcess
 
 		//\\ Class instances.
 		$this->pdo = (($defaultOptions['Settings'] instanceof nzedb\db\Settings) ? $defaultOptions['Settings'] : new nzedb\db\Settings());
-		$this->groups = (($defaultOptions['Groups'] instanceof Groups) ? $defaultOptions['Groups'] : new Groups($this->pdo));
+		$this->groups = (($defaultOptions['Groups'] instanceof Groups) ? $defaultOptions['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_par2Info = new Par2Info();
-		$this->debugging = new Debugging('PostProcess');
+		$this->debugging = new Debugging(['Class' => 'PostProcess']);
 		$this->nameFixer = (($defaultOptions['NameFixer'] instanceof NameFixer) ? $defaultOptions['NameFixer'] : new NameFixer($this->echooutput));
 		$this->Nfo = (($defaultOptions['Nfo'] instanceof Nfo ) ? $defaultOptions['Nfo'] : new Nfo($this->echooutput));
 		$this->releaseFiles = (($defaultOptions['ReleaseFiles'] instanceof ReleaseFiles) ? $defaultOptions['ReleaseFiles'] : new ReleaseFiles($this->echooutput));
@@ -130,7 +130,7 @@ class PostProcess
 	public function processAnime()
 	{
 		if ($this->pdo->getSetting('lookupanidb') == 1) {
-			$anidb = new AniDB($this->echooutput);
+			$anidb = new AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
 			$anidb->animetitlesUpdate();
 			$anidb->processAnimeReleases();
 		}
@@ -144,7 +144,7 @@ class PostProcess
 	public function processBooks()
 	{
 		if ($this->pdo->getSetting('lookupbooks') != 0) {
-			(new Books($this->echooutput))->processBookReleases();
+			(new Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processBookReleases();
 		}
 	}
 
@@ -156,7 +156,7 @@ class PostProcess
 	public function processConsoles()
 	{
 		if ($this->pdo->getSetting('lookupgames') != 0) {
-			(new Console($this->echooutput))->processConsoleReleases();
+			(new Console(['Settings' => $this->pdo, 'Echo' => $this->echooutput]))->processConsoleReleases();
 		}
 	}
 
@@ -168,7 +168,7 @@ class PostProcess
 	public function processGames()
 	{
 		if ($this->pdo->getSetting('lookupgames') != 0) {
-			(new Games($this->echooutput))->processGamesReleases();
+			(new Games(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processGamesReleases();
 		}
 	}
 

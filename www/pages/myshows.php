@@ -34,8 +34,7 @@ switch ($action) {
 		if ($show) {
 			$page->show404('Already subscribed');
 		} else {
-			$pdo = new Settings();
-			$show = $pdo->queryOneRow(sprintf("SELECT releasetitle FROM tvrage WHERE rageid = %d", $rid));
+			$show = $us->pdo->queryOneRow(sprintf("SELECT releasetitle FROM tvrage WHERE rageid = %d", $rid));
 			if (!$show) {
 				$page->show404('Seriously?');
 			}
@@ -50,7 +49,7 @@ switch ($action) {
 				header("Location:" . WWW_TOP . "/myshows");
 			}
 		} else {
-			$cat = new Category();
+			$cat = new Category(['Settings' => $us->pdo]);
 			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 			$categories = array();
 			foreach ($tmpcats as $c) {
@@ -87,7 +86,7 @@ switch ($action) {
 				header("Location:" . WWW_TOP . "/myshows");
 			}
 		} else {
-			$cat = new Category();
+			$cat = new Category(['Settings' => $us->pdo]);
 
 			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 			$categories = array();
@@ -117,7 +116,7 @@ switch ($action) {
 
 		$shows = $us->getShows($users->currentUserId());
 
-		$releases = new Releases();
+		$releases = new Releases(['Settings' => $us->pdo]);
 		$browsecount = $releases->getShowsCount($shows, -1, $page->userdata["categoryexclusions"]);
 
 		$offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
@@ -156,7 +155,7 @@ switch ($action) {
 		$page->meta_keywords = "search,add,to,cart,nzb,description,details";
 		$page->meta_description = "Manage Your Shows";
 
-		$cat = new Category();
+		$cat = new Category(['Settings' => $us->pdo]);
 		$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 		$categories = array();
 		foreach ($tmpcats as $c) {

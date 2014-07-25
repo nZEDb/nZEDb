@@ -34,8 +34,8 @@ class ProcessReleases
 
 		$this->pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new nzedb\db\Settings());
 		$this->colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
-		$this->consoleTools = ($defOptions['ConsoleTools'] instanceof ConsoleTools ? $defOptions['ConsoleTools'] : new ConsoleTools());
-		$this->groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups($this->pdo));
+		$this->consoleTools = ($defOptions['ConsoleTools'] instanceof ConsoleTools ? $defOptions['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->colorCLI]));
+		$this->groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->nzb = ($defOptions['NZB'] instanceof NZB ? $defOptions['NZB'] : new NZB($this->pdo));
 		$this->releaseCleaning = ($defOptions['ReleaseCleaning'] instanceof ReleaseCleaning ? $defOptions['ReleaseCleaning'] : new ReleaseCleaning());
 		$this->releases = ($defOptions['Releases'] instanceof Releases ? $defOptions['Releases'] : new Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
@@ -178,7 +178,7 @@ class ProcessReleases
 	 */
 	public function categorizeRelease($type, $where = '')
 	{
-		$cat = new Categorize();
+		$cat = new Categorize(['Settings' => $this->pdo]);
 		$categorized = $total = 0;
 		$releases = $this->pdo->queryDirect(sprintf('SELECT id, %s, group_id FROM releases %s', $type, $where));
 		if ($releases !== false) {
@@ -419,7 +419,7 @@ class ProcessReleases
 		$startTime = time();
 		$group = $this->groups->getCBPTableNames($this->tablePerGroup, $groupID);
 
-		$categorize = new Categorize();
+		$categorize = new Categorize(['Settings' => $this->pdo]);
 		$returnCount = $duplicate = 0;
 
 		if ($this->echoCLI) {
@@ -1084,8 +1084,8 @@ class ProcessReleases
 	public function deleteReleases()
 	{
 		$startTime = time();
-		$category = new Category();
-		$genres = new Genres();
+		$category = new Category(['Settings' => $this->pdo]);
+		$genres = new Genres(['Settings' => $this->pdo]);
 		$passwordDeleted = $duplicateDeleted = $retentionDeleted = $completionDeleted = $disabledCategoryDeleted = 0;
 		$disabledGenreDeleted = $miscRetentionDeleted = $totalDeleted = $categoryMinSizeDeleted = 0;
 

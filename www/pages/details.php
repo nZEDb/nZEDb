@@ -17,7 +17,7 @@ if (isset($_GET['id'])) {
 	}
 
 	$nfo = $releases->getReleaseNfo($data['id'], false);
-	$re = new ReleaseExtra;
+	$re = new ReleaseExtra();
 	$reVideo = $re->getVideo($data['id']);
 	$reAudio = $re->getAudio($data['id']);
 	$reSubs = $re->getSubs($data['id']);
@@ -60,7 +60,7 @@ if (isset($_GET['id'])) {
 	}
 
 	if ($data['anidbid'] > 0) {
-		$AniDB = new AniDB();
+		$AniDB = new AniDB(['Settings' => $releases->pdo]);
 		$ani = $AniDB->getAnimeInfo($data['anidbid']);
 	}
 
@@ -100,12 +100,12 @@ if (isset($_GET['id'])) {
 	}
 
 	if ($data['consoleinfoid'] != '') {
-		$c = new Console();
+		$c = new Console(['Settings' => $releases->pdo]);
 		$con = $c->getConsoleInfo($data['consoleinfoid']);
 	}
 
 	if ($data['bookinfoid'] != '') {
-		$b = new Books();
+		$b = new Books(['Settings' => $releases->pdo]);
 		$boo = $b->getBookInfo($data['bookinfoid']);
 	}
 

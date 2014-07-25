@@ -4,6 +4,11 @@ use nzedb\db\Settings;
 
 class UserMovies
 {
+	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
+
 	function __construct()
 	{
 		$this->pdo = new Settings();

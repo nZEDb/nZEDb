@@ -5,7 +5,7 @@
  *
  * @example usage:
  *          (in constructor, initiate instance)
- *          $this->Debugging = new Debugging("MyClassName");
+ *          $this->Debugging = new Debugging(['Class' => 'ClassName']);
  *
  *          (in method, DEBUG_INFO would be the severity of your error, see below)
  *          $this->Debugging->start("MyMethodName", "My debug message.", DEBUG_INFO);
@@ -176,14 +176,22 @@ class Debugging
 	/**
 	 * Constructor.
 	 *
-	 * @param string $class The name of the class. ex,: $d = new Debugging("Binaries");
+	 * @param array $options Class instances / Name of the class to debug.
+	 * ex: new Debugging(['Class' => 'Binaries']);
 	 *
 	 * @access public
 	 */
-	public function __construct($class="")
+	public function __construct(array $options = array())
 	{
-		$this->class = $class;
-		$this->colorCLI = new ColorCLI();
+		$defOptions = [
+			'Class'    => '',
+			'ColorCLI' => null
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->class = $defOptions['Class'];
+		$this->colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+
 		$this->newLine = PHP_EOL;
 		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli');
 		$this->isWindows = (strtolower(substr(PHP_OS, 0, 3)) === 'win');

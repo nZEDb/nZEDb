@@ -23,7 +23,7 @@ if (!isset($argv[1])) {
 
 	$pieces = explode(' ', $argv[1]);
 	if (isset($pieces[1]) && $pieces[1] == 'partrepair') {
-		$grp = new Groups($pdo);
+		$grp = new Groups(['Settings' => $pdo]);
 		$binaries = new Binaries(['NNTP' => $nntp, 'Groups' => $grp, 'Settings' => $pdo, 'ColorCLI' => $c]);
 		$groupName = $pieces[0];
 		$groupArr = $grp->getByName($groupName);
@@ -37,7 +37,7 @@ if (!isset($argv[1])) {
 		}
 		$binaries->partRepair($groupArr);
 	} else if (isset($pieces[1]) && $pieces[0] == 'binupdate') {
-		$grp = new Groups($pdo);
+		$grp = new Groups(['Settings' => $pdo]);
 		$binaries = new Binaries(['NNTP' => $nntp, 'Groups' => $grp, 'Settings' => $pdo, 'ColorCLI' => $c]);
 		$groupName = $pieces[1];
 		$groupArr = $grp->getByName($groupName);

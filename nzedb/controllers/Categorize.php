@@ -37,10 +37,12 @@ class Categorize extends Category
 
 	/**
 	 * Construct.
+	 *
+	 * @param array $options Class instances.
 	 */
-	public function __construct()
+	public function __construct(array $options = array())
 	{
-		parent::__construct();
+		parent::__construct($options);
 		$this->categorizeForeign = ($this->pdo->getSetting('categorizeforeign') == "0") ? false : true;
 		$this->catWebDL = ($this->pdo->getSetting('catwebdl') == "0") ? false : true;
 	}

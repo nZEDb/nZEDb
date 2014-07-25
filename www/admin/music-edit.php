@@ -3,7 +3,7 @@ require_once './config.php';
 
 $page = new AdminPage();
 $music = new Music();
-$gen = new Genres();
+$gen = new Genres(['Settings' => $music->pdo]);
 $id = 0;
 
 // Set the current action.
