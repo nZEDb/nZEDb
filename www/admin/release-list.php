@@ -2,7 +2,7 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$releases = new Releases();
+$releases = new Releases(['Settings' => $page->settings]);
 
 $page->title = "Release List";
 

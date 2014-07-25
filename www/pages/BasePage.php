@@ -6,6 +6,11 @@ use \nzedb\db\Settings;
 
 class BasePage
 {
+	/**
+	 * @var \nzedb\db\Settings
+	 */
+	public $settings = null;
+
 	public $title = '';
 	public $content = '';
 	public $head = '';
@@ -13,7 +18,6 @@ class BasePage
 	public $meta_keywords = '';
 	public $meta_title = '';
 	public $meta_description = '';
-	public $pdo = '';
 	public $page = '';
 	public $page_template = '';
 	public $smarty = '';
@@ -58,8 +62,7 @@ class BasePage
 		$this->smarty->setCacheDir(SMARTY_DIR.'cache/');
 		$this->smarty->error_reporting = (E_ALL - E_NOTICE);
 
-		if (isset($_SERVER['SERVER_NAME']))
-		{
+		if (isset($_SERVER['SERVER_NAME'])) {
 			if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')
 				$httpstart = 'https://';
 			else
@@ -71,9 +74,8 @@ class BasePage
 
 		$this->page = (isset($_GET['page'])) ? $_GET['page'] : 'content';
 
-		$users = new Users();
-		if ($users->isLoggedIn())
-		{
+		$users = new Users(['Settings' => $this->settings]);
+		if ($users->isLoggedIn()) {
 			$this->userdata = $users->getById($users->currentUserId());
 			$this->userdata['categoryexclusions'] = $users->getCategoryExclusion($users->currentUserId());
 

@@ -4,7 +4,7 @@ if (!$users->isLoggedIn()) {
 }
 
 $movie = new XXX();
-$cat = new Category();
+$cat = new Category(['Settings' => $movie->pdo]);
 
 $moviecats = $cat->getChildren(Category::CAT_PARENT_XXX);
 $mtmp = array();

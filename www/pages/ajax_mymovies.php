@@ -5,7 +5,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$um = new UserMovies();
+$um = new UserMovies(['Settings' => $page->settings]);
 
 if (isset($_REQUEST['del'])) {
 	$usermovies = $um->delMovie($users->currentUserId(), $_REQUEST['del']);

@@ -55,7 +55,7 @@ Class PreDb
 
 		$this->dateLimit = $dateLimit;
 
-		$consoleTools = new ConsoleTools();
+		$consoleTools = new ConsoleTools(['ColorCLI' => $this->c]);
 		$updated = 0;
 		$datesql = '';
 
@@ -160,7 +160,7 @@ Class PreDb
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
 		$namefixer = new NameFixer($this->echooutput);
-		$consoletools = new ConsoleTools();
+		$consoletools = new ConsoleTools(['ColorCLI' => $this->c]);
 		$updated = $checked = 0;
 		$matches = '';
 

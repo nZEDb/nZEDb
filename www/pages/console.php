@@ -4,8 +4,8 @@ if (!$users->isLoggedIn()) {
 }
 
 $console = new Console();
-$cat = new Category();
-$gen = new Genres();
+$cat = new Category(['Settings' => $console->pdo]);
+$gen = new Genres(['Settings' => $console->pdo]);
 
 $concats = $cat->getChildren(Category::CAT_PARENT_GAME);
 $ctmp = array();

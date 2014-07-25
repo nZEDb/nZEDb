@@ -4,8 +4,8 @@ if ($page->isPostBack()) {
 		$page->smarty->assign('error', "Please enter your username and password.");
 	} else {
 		$page->smarty->assign('username', $_POST["username"]);
-		$users = new Users();
-		$logging = new Logging();
+		$users = new Users(['Settings' => $page->settings]);
+		$logging = new Logging(['Settings' => $page->settings]);
 		$res = $users->getByUsername($_POST["username"]);
 		$dis = $users->isDisabled($_POST["username"]);
 

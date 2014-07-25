@@ -80,7 +80,7 @@ if ($uid != '') {
 	}
 }
 
-$releases = new Releases();
+$releases = new Releases(['Settings' => $page->settings]);
 
 if (isset($_GET['extended']) && $_GET['extended'] == 1) {
 	$page->smarty->assign('extended', '1');
@@ -143,7 +143,7 @@ switch ($function) {
 			$maxAge
 		);
 
-		printOutput(addLanguage($relData), $outputXML, $page, $offset);
+		printOutput(addLanguage($relData, $page->settings), $outputXML, $page, $offset);
 		break;
 
 	// Search movie releases.
@@ -163,7 +163,7 @@ switch ($function) {
 			$maxAge
 		);
 
-		printOutput(addLanguage($relData), $outputXML, $page, $offset);
+		printOutput(addLanguage($relData, $page->settings), $outputXML, $page, $offset);
 		break;
 
 	// Get NZB.
@@ -240,7 +240,7 @@ switch ($function) {
 
 		// Register.
 		$userDefault = $users->getDefaultRole();
-		$uid = $users->signup(
+		$uid = $users->signUp(
 			$username, $password, $_GET['email'], $_SERVER['REMOTE_ADDR'], $userDefault['id'], $userDefault['defaultinvites']
 		);
 
@@ -423,14 +423,14 @@ function verifyEmptyParameter($parameter)
 /**
  * Add language from media info XML to release search names.
  * @param array $releaseData
+ * @param nzedb\db\Settings $settings
  * @return array
  */
-function addLanguage($releaseData)
+function addLanguage($releaseData, $settings)
 {
-	$pdo = new nzedb\db\DB();
 	$returnData = array();
 	foreach ($releaseData as $release) {
-		$audios = $pdo->query(sprintf('SELECT * FROM releaseaudio WHERE releaseid = %d', $release['id']));
+		$audios = $settings->query(sprintf('SELECT * FROM releaseaudio WHERE releaseid = %d', $release['id']));
 		foreach ($audios as $audio) {
 			if ($audio['audiolanguage'] != '') {
 				$release['searchname'] = ($release['searchname'] . ' ' . $audio['audiolanguage']);

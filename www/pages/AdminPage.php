@@ -25,10 +25,10 @@ class AdminPage extends BasePage
 
 		// Set the users style.
 		$style = $users->getStyle($users->currentUserId());
-		if (isset($style['style']) && $style['style'] !== 'None') {
+		if ($style !== 'None') {
 			$this->smarty->setTemplateDir(
 				array(
-					'user_admin' => nZEDb_WWW . 'themes/' . $style['style'] . '/templates/admin',
+					'user_admin' => nZEDb_WWW . 'themes/' . $style . '/templates/admin',
 					'admin' => nZEDb_WWW . 'themes_shared/templates/admin',
 					'frontend' => nZEDb_WWW . 'themes/Default/templates/frontend',
 				)

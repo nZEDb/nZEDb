@@ -6,6 +6,24 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-25 ruhllatio
+	* Fix: match_prefiles not honoring CLI arg limit
+	* Chg: Monitor now using proper PDO for work queries
+	* Chg: Removed tons of nasty if/then/else statements that weren't needed
+	* Fix: unkown $c assignment causing script failure in monitor
+	* Fix: undefined index errors in monitor.php
+2014-07-25 kevin
+	* Chg: Re-use class instances in various places.
+	* Add: PHPDOC to Users.
+	* Chg: Re-use class instances when creating Users/UserSeries/XXX.
+	* Chg: Add PHPDOC to UserMovies and make it re-use Settings instances.
+	* Chg: TvRage to re-use class instances.
+	* Chg: Pass ColorCLI to PostProcess to pass to it's instanciated classes.
+	* Chg: Re-use Settings for TraktTv.
+	* Fix: Wrong BasePage var name usage.
+	* Chg: Re-use class instances on ReleaseRemover.
+	* Chg: Re-use class instances in various other places.
+	* Chg: Use BasePage's settings for many of the instanciations.
 2014-07-24 ruhllatio
 	* Chg: Case a few if/elseif run ons in NameFixer -- more to do
 	* Fix: #1408 Issue with HDTS not being categorized properly

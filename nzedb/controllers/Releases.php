@@ -25,13 +25,13 @@ class Releases
 	 */
 	public function __construct(array $options = array())
 	{
-		$defaultOptions = [
+		$defaults = [
 			'Settings' => null,
 			'Groups'   => null
 		];
-		$defaultOptions = array_replace($defaultOptions, $options);
-		$this->pdo = ($defaultOptions['Settings'] instanceof Settings ? $defaultOptions['Settings'] : new Settings());
-		$this->groups = ($defaultOptions['Groups'] instanceof Groups ? $defaultOptions['Groups'] : new Groups($this->pdo));
+		$defaults = array_replace($defaults, $options);
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0' ? false : true);
 	}
 
@@ -409,7 +409,7 @@ class Releases
 				$cartsrch = sprintf(' INNER JOIN usercart ON usercart.userid = %d AND usercart.releaseid = r.id ', $uid);
 			} else if ($cat[0] != -1) {
 				$catsrch = ' AND (';
-				$categ = new Category();
+				$categ = new Category(['Settings' => $this->pdo]);
 				foreach ($cat as $category) {
 					if ($category != -1) {
 						if ($categ->isParent($category)) {
@@ -957,7 +957,7 @@ class Releases
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			$catsrch = ' AND (';
 			foreach ($cat as $category) {
 				if ($category != -1) {
@@ -1317,7 +1317,7 @@ class Releases
 	{
 		// Get the category for the parent of this release.
 		$currRow = $this->getById($currentid);
-		$cat = new Category();
+		$cat = new Category(['Settings' => $this->pdo]);
 		$catrow = $cat->getById($currRow['categoryid']);
 		$parentCat = $catrow['parentid'];
 

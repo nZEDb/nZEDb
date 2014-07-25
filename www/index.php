@@ -14,7 +14,7 @@ require_once 'automated.config.php';
 
 
 $page = new Page;
-$users = new Users;
+$users = new Users();
 
 switch ($page->page) {
 	case 'ajax_mediainfo':

@@ -26,11 +26,11 @@ class MiscSorter
 		$this->DEBUGGING = nZEDb_DEBUG;
 
 		$this->pdo = new Settings();
-		$this->category = new Categorize($this->echooutput);
+		$this->category = new Categorize(['Settings' => $this->pdo]);
 		$this->movie = new Movie($this->echooutput);
 		$this->nfolib = new Nfo($this->echooutput);
-		$this->nc = new ReleaseCleaning();
-		$this->groups = new Groups($this->pdo);
+		$this->nc = new ReleaseCleaning($this->pdo);
+		$this->groups = new Groups(['Settings' => $this->pdo]);
 		$this->c = new ColorCLI();
 
 		//$res = $this->pdo->queryExec("SET NAMES 'utf8'");
@@ -389,7 +389,7 @@ class MiscSorter
 				$query = "SELECT id FROM bookinfo WHERE asin = '" . (string) $amaz->Items->Item->ASIN . "'";
 				$rel = $this->pdo->query($query);
 				if (count($rel) == 0) {
-					$book = new Books($this->echooutput);
+					$book = new Books(['Echo' => $this->echooutput, 'ColorCLI' => $this->c, 'Settings' => $this->pdo]);
 					$bookId = $book->updateBookInfo('', $amaz);
 					unset($book);
 				} else {

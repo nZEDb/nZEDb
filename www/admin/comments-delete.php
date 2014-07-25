@@ -6,7 +6,7 @@ $page = new AdminPage();
 
 if (isset($_GET['id']))
 {
-	$rc = new ReleaseComments();
+	$rc = new ReleaseComments($page->settings);
 	$rc->deleteComment($_GET['id']);
 }
 

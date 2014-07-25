@@ -89,7 +89,7 @@ else if (isset($_GET['purge_site'])) {
 		$ids = $pdo->query(sprintf('SELECT id FROM releasecomment WHERE siteid = %s', $pdo->escapeString($guid['site_guid'])));
 		$total = count($ids);
 		if ($total > 0) {
-			$rc = new ReleaseComments();
+			$rc = new ReleaseComments($page->settings);
 			foreach ($ids as $id) {
 				$rc->deleteComment($id['id']);
 			}

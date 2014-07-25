@@ -12,12 +12,12 @@ if (!isset($argv[1])) {
 }
 
 $pdo = new Settings();
-$consoleTools = new ConsoleTools();
+$consoleTools = new ConsoleTools(['ColorCLI' => $c]);
 $binaries = new Binaries(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoleTools]);
 $crosspostt = $pdo->getSetting('crossposttime');
 $crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
-$releasecleaning = new ReleaseCleaning();
-$categorize = new Categorize();
+$releasecleaning = new ReleaseCleaning($pdo);
+$categorize = new Categorize(['Settings' => $pdo]);
 $nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
 
 if (isset($argv[2]) && is_numeric($argv[2])) {

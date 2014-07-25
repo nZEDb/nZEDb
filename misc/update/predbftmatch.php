@@ -15,7 +15,7 @@ if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric
 }
 
 $pdo = new Settings();
-$consoletools = new ConsoleTools();
+$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 $namefixer = new NameFixer();
 $offset = '';
 

@@ -40,7 +40,7 @@ function preName($argv)
 	if ($total > 0) {
 		echo $c->header("\n" . number_format($total) . ' releases to process.');
 		sleep(2);
-		$consoletools = new ConsoleTools();
+		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 
 		foreach ($res as $row) {
 			$success = 0;

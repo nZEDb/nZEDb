@@ -4,20 +4,20 @@ if (!$users->isLoggedIn()) {
 }
 
 if (isset($_GET['id'])) {
-	$releases = new Releases();
+	$releases = new Releases(['Settings' => $page->settings]);
 	$data = $releases->getByGuid($_GET['id']);
 
 	if (!$data) {
 		$page->show404();
 	}
 
-	$rc = new ReleaseComments();
+	$rc = new ReleaseComments($page->settings);
 	if ($page->isPostBack()) {
 		$rc->addComment($data['id'], $_POST['txtAddComment'], $users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 	}
 
 	$nfo = $releases->getReleaseNfo($data['id'], false);
-	$re = new ReleaseExtra;
+	$re = new ReleaseExtra($page->settings);
 	$reVideo = $re->getVideo($data['id']);
 	$reAudio = $re->getAudio($data['id']);
 	$reSubs = $re->getSubs($data['id']);
@@ -26,7 +26,7 @@ if (isset($_GET['id'])) {
 
 	$rage = $ani = $mov = $mus = $con = $boo = '';
 	if ($data['rageid'] != '') {
-		$tvrage = new TvRage();
+		$tvrage = new TvRage(['Settings' => $page->settings]);
 		$rageinfo = $tvrage->getByRageID($data['rageid']);
 		if (count($rageinfo) > 0) {
 			$seriesnames = $seriesdescription = $seriescountry = $seriesgenre = $seriesimg = $seriesid = array();
@@ -60,7 +60,7 @@ if (isset($_GET['id'])) {
 	}
 
 	if ($data['anidbid'] > 0) {
-		$AniDB = new AniDB();
+		$AniDB = new AniDB(['Settings' => $releases->pdo]);
 		$ani = $AniDB->getAnimeInfo($data['anidbid']);
 	}
 
@@ -68,7 +68,7 @@ if (isset($_GET['id'])) {
 		$movie = new Movie();
 		$mov = $movie->getMovieInfo($data['imdbid']);
 
-		$trakt = new TraktTv();
+		$trakt = new TraktTv(['Settings' => $page->settings]);
 		$traktSummary = $trakt->traktMoviesummary('tt' . $data['imdbid'], true);
 		if ($traktSummary !== false &&
 			isset($traktSummary['trailer']) &&
@@ -100,16 +100,16 @@ if (isset($_GET['id'])) {
 	}
 
 	if ($data['consoleinfoid'] != '') {
-		$c = new Console();
+		$c = new Console(['Settings' => $page->settings]);
 		$con = $c->getConsoleInfo($data['consoleinfoid']);
 	}
 
 	if ($data['bookinfoid'] != '') {
-		$b = new Books();
+		$b = new Books(['Settings' => $page->settings]);
 		$boo = $b->getBookInfo($data['bookinfoid']);
 	}
 
-	$rf = new ReleaseFiles();
+	$rf = new ReleaseFiles($page->settings);
 	$releasefiles = $rf->get($data['id']);
 
 	$predb = new PreDb();

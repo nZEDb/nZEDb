@@ -230,7 +230,7 @@ class Nfo
 						'NNTP' => $nntp,
 						'Nfo'  => $this,
 						'Settings'   => $this->pdo,
-						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this])
+						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this, 'ColorCLI' => $this->c])
 					)
 				);
 				$nzbContents->parseNZB($release['guid'], $release['id'], $release['group_id']);
@@ -311,18 +311,18 @@ class Nfo
 			}
 			$this->c->doEcho($this->c->header($outString . '.'));
 
-			$groups = new Groups($this->pdo);
+			$groups = new Groups(['Settings' => $this->pdo]);
 			$nzbContents = new NZBContents(
 				array(
 					'Echo' => $this->echo,
 					'NNTP' => $nntp,
 					'Nfo' => $this,
 					'Settings' => $this->pdo,
-					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo])
+					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo, 'ColorCLI' => $this->c])
 				)
 			);
 			$movie = new Movie($this->echo);
-			$tvRage = new TvRage($this->echo);
+			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
 
 			foreach ($res as $arr) {
 				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));

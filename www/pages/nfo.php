@@ -6,7 +6,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$releases = new Releases();
+$releases = new Releases(['Settings' => $page->settings]);
 
 if (isset($_GET["id"]))
 {

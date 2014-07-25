@@ -22,7 +22,7 @@ if (isset($argv[1]) && !is_numeric($argv[1])) {
 	$groupName = $argv[1];
 	echo $c->header("Updating group: $groupName");
 
-	$grp = new Groups($pdo);
+	$grp = new Groups(['Settings' => $pdo]);
 	$group = $grp->getByName($groupName);
 	$binaries->updateGroup($group, (isset($argv[2]) && is_numeric($argv[2]) && $argv[2] > 0 ? $argv[2] : 0));
 } else {

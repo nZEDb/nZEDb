@@ -7,7 +7,7 @@ if (!isset($_REQUEST["id"])) {
 	$page->show404();
 }
 
-$r = new Releases();
+$r = new Releases(['Settings' => $page->settings]);
 $rel = $r->getByGuid($_REQUEST["id"]);
 
 if (!$rel) {

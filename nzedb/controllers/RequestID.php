@@ -17,7 +17,7 @@ abstract class RequestID
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions = [
+		$defaults = [
 			'Echo'         => true,
 			'Categorize'   => null,
 			'ColorCLI'     => null,
@@ -25,14 +25,14 @@ abstract class RequestID
 			'Groups'       => null,
 			'Settings'     => null,
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$defaults = array_replace($defaults, $options);
 
-		$this->echoOutput = ($defOptions['Echo'] && nZEDb_ECHOCLI);
-		$this->category = ($defOptions['Categorize'] instanceof Categorize ? $defOptions['Categorize'] : new Categorize());
-		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
-		$this->groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups($this->pdo));
-		$this->consoleTools = ($defOptions['ConsoleTools'] instanceof ConsoleTools ? $defOptions['ConsoleTools'] : new ConsoleTools());
-		$this->colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->echoOutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->category = ($defaults['Categorize'] instanceof Categorize ? $defaults['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->colorCLI = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->consoleTools = ($defaults['ConsoleTools'] instanceof ConsoleTools ? $defaults['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->colorCLI]));
 	}
 
 	/**

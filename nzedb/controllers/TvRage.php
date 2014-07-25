@@ -3,6 +3,9 @@
 use nzedb\db\Settings;
 use nzedb\utility;
 
+/**
+ * Class TvRage
+ */
 class TvRage
 {
 	const APIKEY = '7FwjZ8loweFcOhHfnU3E';
@@ -28,27 +31,58 @@ class TvRage
 	public $xmlEpisodeInfoUrl;
 	public $xmlFullScheduleUrl  = 'http://services.tvrage.com/feeds/fullschedule.php?country=';
 
-	function __construct($echooutput = false)
+	/**
+	 * @param array $options Class instances / Echo to CLI.
+	 */
+	public function __construct(array $options = array())
 	{
-		$this->pdo = new Settings();
+		$defaults = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 		$this->rageqty = ($this->pdo->getSetting('maxrageprocessed') != '') ? $this->pdo->getSetting('maxrageprocessed') : 75;
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
-		$this->c = new ColorCLI();
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
 
 		$this->xmlEpisodeInfoUrl =
 			"http://services.tvrage.com/myfeeds/episodeinfo.php?key=" . TvRage::APIKEY;
 	}
 
+	/**
+	 * Get rage info for a ID.
+	 *
+	 * @param int $id
+	 *
+	 * @return array|bool
+	 */
 	public function getByID($id)
 	{
 		return $this->pdo->queryOneRow(sprintf("SELECT * FROM tvrage WHERE id = %d", $id));
 	}
 
+	/**
+	 * Get rage info for a rage ID.
+	 *
+	 * @param int $id
+	 *
+	 * @return array
+	 */
 	public function getByRageID($id)
 	{
 		return $this->pdo->query(sprintf("SELECT * FROM tvrage WHERE rageid = %d", $id));
 	}
 
+	/**
+	 * Get rage info for a title.
+	 *
+	 * @param $title
+	 *
+	 * @return bool
+	 */
 	public function getByTitle($title)
 	{
 		// Set string to differentiate between mysql and PG for string replacement matching operations
@@ -114,11 +148,19 @@ class TvRage
 		return false;
 	}
 
+	/**
+	 * Get a country code for a country name.
+	 *
+	 * @param string $country
+	 *
+	 * @return mixed
+	 */
 	public function countryCode($country)
 	{
 		if (!is_array($country) && strlen($country) > 2) {
-			$code = $this->pdo->queryOneRow('SELECT code FROM countries WHERE LOWER(name) = LOWER('
-										   . $this->pdo->escapeString($country) . ')');
+			$code = $this->pdo->queryOneRow(
+				'SELECT code FROM countries WHERE LOWER(name) = LOWER(' . $this->pdo->escapeString($country) . ')'
+			);
 			if (isset($code['code'])) {
 				return $code['code'];
 			}
@@ -681,7 +723,7 @@ class TvRage
 		if ($lookupTvRage == 0) {
 			return $ret;
 		}
-		$trakt = new TraktTv();
+		$trakt = new TraktTv(['Settings' => $this->pdo]);
 
 		// Get all releases without a rageid which are in a tv category.
 

@@ -104,7 +104,7 @@ class Music
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = " (";
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {
@@ -170,7 +170,7 @@ class Music
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = " (";
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {
@@ -359,7 +359,7 @@ class Music
 	public function updateMusicInfo($title, $year, $amazdata = null)
 	{
 		$pdo = $this->pdo;
-		$gen = new Genres();
+		$gen = new Genres(['Settings' => $this->pdo]);
 		$ri = new ReleaseImage($this->pdo);
 		$titlepercent = 0;
 

@@ -4,8 +4,8 @@ if (!$users->isLoggedIn()) {
 }
 
 $music = new Music();
-$cat = new Category();
-$gen = new Genres();
+$cat = new Category(['Settings' => $music->pdo]);
+$gen = new Genres(['Settings' => $music->pdo]);
 
 $musiccats = $cat->getChildren(Category::CAT_PARENT_MUSIC);
 $mtmp = array();

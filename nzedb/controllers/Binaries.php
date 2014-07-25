@@ -172,11 +172,11 @@ class Binaries
 		$this->_echoCLI = ($defOptions['Echo'] && nZEDb_ECHOCLI);
 
 		$this->_pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new \nzedb\db\Settings());
-		$this->_groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups($this->_pdo));
+		$this->_groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups(['Settings' => $this->_pdo]));
 		$this->_colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
 		$this->_nntp = ($defOptions['NNTP'] instanceof NNTP ? $defOptions['NNTP'] : new NNTP(['Echo' => $this->_colorCLI, 'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI]));
 		$this->_collectionsCleaning = ($defOptions['CollectionsCleaning'] instanceof CollectionsCleaning ? $defOptions['CollectionsCleaning'] : new CollectionsCleaning());
-		$this->_consoleTools = ($defOptions['ConsoleTools'] instanceof ConsoleTools ? $defOptions['ConsoleTools'] : new ConsoleTools());
+		$this->_consoleTools = ($defOptions['ConsoleTools'] instanceof ConsoleTools ? $defOptions['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->_colorCLI]));
 		$this->_backFill = ($defOptions['Backfill'] instanceof Backfill ? $defOptions['Backfill'] : new Backfill(
 				[
 					'NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Groups' => $this->_groups,
@@ -188,7 +188,7 @@ class Binaries
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 
 		if ($this->_debug) {
-			$this->_debugging = new Debugging("Binaries");
+			$this->_debugging = new Debugging(['Class' => 'Binaries', 'ColorCLI' => $this->_colorCLI]);
 		}
 
 		$this->messageBuffer = ($this->_pdo->getSetting('maxmssgs') != '') ? $this->_pdo->getSetting('maxmssgs') : 20000;

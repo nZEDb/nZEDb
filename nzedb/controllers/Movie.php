@@ -126,7 +126,7 @@ class Movie
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Debugging('Movie');
+			$this->debugging = new Debugging(['Class' => 'Movie', 'ColorCLI' => $this->c]);
 		}
 	}
 
@@ -352,7 +352,7 @@ class Movie
 		$catSearch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catSearch = '(';
-			$Category = new Category();
+			$Category = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 
@@ -1007,7 +1007,7 @@ class Movie
 		if ($lookupIMDB == 0) {
 			return;
 		}
-		$trakTv = new TraktTv();
+		$trakTv = new TraktTv(['Settings' => $this->pdo]);
 
 		// Get all releases without an IMDB id.
 		$res = $this->pdo->query(
@@ -1324,7 +1324,7 @@ class Movie
 	protected function parseMovieSearchName($releaseName)
 	{
 		// Check if it's foreign ?
-		$cat = new Categorize();
+		$cat = new Categorize(['Settings' => $this->pdo]);
 		if (!$cat->isMovieForeign($releaseName)) {
 			$name = $year = '';
 			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';

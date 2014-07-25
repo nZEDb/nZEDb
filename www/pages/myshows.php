@@ -1,12 +1,10 @@
 <?php
 
-use nzedb\db\Settings;
-
 if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$us = new UserSeries();
+$us = new UserSeries(['Settings' => $page->settings]);
 
 $action = isset($_REQUEST['id']) ? $_REQUEST['id'] : '';
 $rid = isset($_REQUEST['subpage']) ? $_REQUEST['subpage'] : '';
@@ -34,8 +32,7 @@ switch ($action) {
 		if ($show) {
 			$page->show404('Already subscribed');
 		} else {
-			$pdo = new Settings();
-			$show = $pdo->queryOneRow(sprintf("SELECT releasetitle FROM tvrage WHERE rageid = %d", $rid));
+			$show = $us->pdo->queryOneRow(sprintf("SELECT releasetitle FROM tvrage WHERE rageid = %d", $rid));
 			if (!$show) {
 				$page->show404('Seriously?');
 			}
@@ -50,7 +47,7 @@ switch ($action) {
 				header("Location:" . WWW_TOP . "/myshows");
 			}
 		} else {
-			$cat = new Category();
+			$cat = new Category(['Settings' => $page->settings]);
 			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 			$categories = array();
 			foreach ($tmpcats as $c) {
@@ -87,7 +84,7 @@ switch ($action) {
 				header("Location:" . WWW_TOP . "/myshows");
 			}
 		} else {
-			$cat = new Category();
+			$cat = new Category(['Settings' => $page->settings]);
 
 			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 			$categories = array();
@@ -117,7 +114,7 @@ switch ($action) {
 
 		$shows = $us->getShows($users->currentUserId());
 
-		$releases = new Releases();
+		$releases = new Releases(['Settings' => $page->settings]);
 		$browsecount = $releases->getShowsCount($shows, -1, $page->userdata["categoryexclusions"]);
 
 		$offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
@@ -156,7 +153,7 @@ switch ($action) {
 		$page->meta_keywords = "search,add,to,cart,nzb,description,details";
 		$page->meta_description = "Manage Your Shows";
 
-		$cat = new Category();
+		$cat = new Category(['Settings' => $page->settings]);
 		$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 		$categories = array();
 		foreach ($tmpcats as $c) {

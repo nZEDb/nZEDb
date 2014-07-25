@@ -103,14 +103,14 @@ class Backfill
 
 		$this->_colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
 		$this->_pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new \nzedb\db\Settings());
-		$this->_groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups($this->_pdo));
+		$this->_groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups(['Settings' => $this->_pdo]));
 		$this->_nntp = ($defOptions['NNTP'] instanceof NNTP
 			? $defOptions['NNTP'] : new NNTP(['Settings' => $this->_pdo, 'Echo' => $this->_echoCLI, 'ColorCLI' => $this->_colorCLI])
 		);
 
 		$this->_debug = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debug) {
-			$this->_debugging = new Debugging('Backfill');
+			$this->_debugging = new Debugging(['Class' => 'Backfill', 'ColorCLI' => $this->_colorCLI]);
 		}
 
 		$this->_compressedHeaders = ($this->_pdo->getSetting('compressedheaders') == 1 ? true : false);

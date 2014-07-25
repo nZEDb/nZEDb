@@ -40,11 +40,11 @@ $nzbContents= new NZBContents(
 		'Settings' => $pdo,
 		'Echo' => true,
 		'Nfo' => $nfo,
-		'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $nfo]),
+		'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $nfo, 'ColorCLI' => $c]),
 		'NNTP' => $nntp
 	)
 );
-$categorize = new Categorize();
+$categorize = new Categorize(['Settings' => $pdo]);
 
 $releases = $pdo->queryDirect(
 	sprintf('
