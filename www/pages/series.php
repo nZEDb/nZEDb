@@ -3,7 +3,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$releases = new Releases();
+$releases = new Releases(['Settings' => $page->settings]);
 $tvrage = new TvRage(['Settings' => $page->settings]);
 $cat = new Category(['Settings' => $page->settings]);
 $us = new UserSeries(['Settings' => $page->settings]);

@@ -2,8 +2,8 @@
 
 use \nzedb\db\Settings;
 
-$category = new Category();
-$releases = new Releases(['Settings' => $category->pdo]);
+$category = new Category(['Settings' => $page->settings]);
+$releases = new Releases(['Settings' => $page->settings]);
 
 // If no content id provided then show user the rss selection page.
 if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {

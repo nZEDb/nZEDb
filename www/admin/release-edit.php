@@ -1,11 +1,9 @@
 <?php
 require_once './config.php';
 
-
-
 $page = new AdminPage(true);
-$releases = new Releases();
-$category = new Category(['Settings' => $releases->pdo]);
+$releases = new Releases(['Settings' => $page->settings]);
+$category = new Category(['Settings' => $page->settings]);
 $id = 0;
 
 // Set the current action.
@@ -41,5 +39,3 @@ $page->smarty->assign('catlist',$category->getForSelect(false));
 
 $page->content = $page->smarty->fetch('release-edit.tpl');
 $page->render();
-
-?>

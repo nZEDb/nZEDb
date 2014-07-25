@@ -2,9 +2,8 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$pdo = new \nzedb\db\Settings();
-$releases = new Releases(['Settings' => $pdo]);
-$logging = new Logging(['Settings' => $pdo]);
+$releases = new Releases(['Settings' => $page->settings]);
+$logging = new Logging(['Settings' => $page->settings]);
 if ($pdo->getSetting('loggingopt') == '0') {
 	$loggingon = '0';
 } else {
@@ -27,8 +26,7 @@ $page->smarty->assign('topcomments', $topcomments);
 $recent = $releases->getRecentlyAdded();
 $page->smarty->assign('recent', $recent);
 
-if ($loggingon == '1')
-{
+if ($loggingon == '1') {
 	$toplogincombined = $logging->getTopCombined();
 	$page->smarty->assign('toplogincombined', $toplogincombined);
 
@@ -38,5 +36,3 @@ if ($loggingon == '1')
 
 $page->content = $page->smarty->fetch('site-stats.tpl');
 $page->render();
-
-?>

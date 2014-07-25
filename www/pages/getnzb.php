@@ -42,7 +42,7 @@ if ($dlrequests['num'] > $maxdls) {
 	$page->show503();
 }
 
-$rel = new Releases();
+$rel = new Releases(['Settings' => $page->settings]);
 // User requested a zip of guid,guid,guid releases.
 if (isset($_GET["id"]) && isset($_GET["zip"]) && $_GET["zip"] == "1") {
 	$guids = explode(",", $_GET["id"]);
@@ -74,7 +74,7 @@ if (isset($_GET["id"]) && isset($_GET["zip"]) && $_GET["zip"] == "1") {
 	}
 }
 
-$nzb = new NZB();
+$nzb = new NZB($page->settings);
 if (isset($_GET["id"])) {
 	$reldata = $rel->getByGuid($_GET["id"]);
 	$nzbpath = $nzb->getNZBPath($_GET["id"]);

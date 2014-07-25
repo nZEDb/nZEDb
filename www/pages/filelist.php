@@ -4,7 +4,7 @@ if (!$users->isLoggedIn()) {
 }
 
 if (isset($_GET["id"])) {
-	$releases = new Releases();
+	$releases = new Releases(['Settings' => $page->settings]);
 	$rel = $releases->getByGuid($_GET["id"]);
 	if (!$rel) {
 		$page->show404();

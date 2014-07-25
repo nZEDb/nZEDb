@@ -2,15 +2,12 @@
 require_once './config.php';
 require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 
-use nzedb\db\Settings;
-
 if (\nzedb\utility\Utility::isCLI()) {
 	exit ('This script is only for exporting from the web, use the script in misc/testing'. PHP_EOL);
 }
 
-$pdo = new Settings();
 $page = new AdminPage();
-$rel = new Releases(array('Settings' => $pdo));
+$rel = new Releases(['Settings' => $page->settings]);
 
 if ($page->isPostBack())
 {

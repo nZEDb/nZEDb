@@ -3,7 +3,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$releases = new Releases();
+$releases = new Releases(['Settings' => $page->settings]);
 
 $category = -1;
 if (isset($_REQUEST["t"]) && ctype_digit($_REQUEST["t"])) {

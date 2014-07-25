@@ -4,7 +4,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$us = new UserSeries();
+$us = new UserSeries(['Settings' => $page->settings]);
 
 $action = isset($_REQUEST['id']) ? $_REQUEST['id'] : '';
 $rid = isset($_REQUEST['subpage']) ? $_REQUEST['subpage'] : '';
@@ -47,7 +47,7 @@ switch ($action) {
 				header("Location:" . WWW_TOP . "/myshows");
 			}
 		} else {
-			$cat = new Category(['Settings' => $us->pdo]);
+			$cat = new Category(['Settings' => $page->settings]);
 			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 			$categories = array();
 			foreach ($tmpcats as $c) {
@@ -84,7 +84,7 @@ switch ($action) {
 				header("Location:" . WWW_TOP . "/myshows");
 			}
 		} else {
-			$cat = new Category(['Settings' => $us->pdo]);
+			$cat = new Category(['Settings' => $page->settings]);
 
 			$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 			$categories = array();
@@ -114,7 +114,7 @@ switch ($action) {
 
 		$shows = $us->getShows($users->currentUserId());
 
-		$releases = new Releases(['Settings' => $us->pdo]);
+		$releases = new Releases(['Settings' => $page->settings]);
 		$browsecount = $releases->getShowsCount($shows, -1, $page->userdata["categoryexclusions"]);
 
 		$offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
@@ -153,7 +153,7 @@ switch ($action) {
 		$page->meta_keywords = "search,add,to,cart,nzb,description,details";
 		$page->meta_description = "Manage Your Shows";
 
-		$cat = new Category(['Settings' => $us->pdo]);
+		$cat = new Category(['Settings' => $page->settings]);
 		$tmpcats = $cat->getChildren(Category::CAT_PARENT_TV, true, $page->userdata["categoryexclusions"]);
 		$categories = array();
 		foreach ($tmpcats as $c) {

@@ -4,7 +4,7 @@ if (!$users->isLoggedIn()) {
 }
 
 if (isset($_GET['id'])) {
-	$releases = new Releases();
+	$releases = new Releases(['Settings' => $page->settings]);
 	$data = $releases->getByGuid($_GET['id']);
 
 	if (!$data) {
@@ -100,12 +100,12 @@ if (isset($_GET['id'])) {
 	}
 
 	if ($data['consoleinfoid'] != '') {
-		$c = new Console(['Settings' => $releases->pdo]);
+		$c = new Console(['Settings' => $page->settings]);
 		$con = $c->getConsoleInfo($data['consoleinfoid']);
 	}
 
 	if ($data['bookinfoid'] != '') {
-		$b = new Books(['Settings' => $releases->pdo]);
+		$b = new Books(['Settings' => $page->settings]);
 		$boo = $b->getBookInfo($data['bookinfoid']);
 	}
 

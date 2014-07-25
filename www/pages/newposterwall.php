@@ -3,9 +3,9 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$releases = new Releases();
-$contents = new Contents(['Settings' => $releases->pdo]);
-$category = new Category(['Settings' => $releases->pdo]);
+$releases = new Releases(['Settings' => $page->settings]);
+$contents = new Contents(['Settings' => $page->settings]);
+$category = new Category(['Settings' => $page->settings]);
 $error = false;
 
 // Array with all the possible poster wall types.
