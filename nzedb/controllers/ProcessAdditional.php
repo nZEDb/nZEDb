@@ -72,10 +72,10 @@ Class ProcessAdditional
 		$this->_nzb = new NZB($this->pdo);
 		$this->_groups = new Groups(['Settings' => $this->pdo]);
 		$this->_archiveInfo = new ArchiveInfo();
-		$this->_releaseFiles = new ReleaseFiles();
+		$this->_releaseFiles = new ReleaseFiles($this->pdo);
 		$this->_nameFixer = new NameFixer($this->_echoCLI);
 		$this->_categorize = new Categorize(['Settings' => $this->pdo]);
-		$this->_releaseExtra = new ReleaseExtra();
+		$this->_releaseExtra = new ReleaseExtra($this->pdo);
 		$this->_releaseImage = new ReleaseImage($this->pdo);
 		$this->_par2Info = new Par2Info();
 		$this->_nfo = new Nfo($this->_echoCLI);

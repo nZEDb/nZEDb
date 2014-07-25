@@ -11,13 +11,13 @@ if (isset($_GET['id'])) {
 		$page->show404();
 	}
 
-	$rc = new ReleaseComments();
+	$rc = new ReleaseComments($page->settings);
 	if ($page->isPostBack()) {
 		$rc->addComment($data['id'], $_POST['txtAddComment'], $users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 	}
 
 	$nfo = $releases->getReleaseNfo($data['id'], false);
-	$re = new ReleaseExtra();
+	$re = new ReleaseExtra($page->settings);
 	$reVideo = $re->getVideo($data['id']);
 	$reAudio = $re->getAudio($data['id']);
 	$reSubs = $re->getSubs($data['id']);
@@ -109,7 +109,7 @@ if (isset($_GET['id'])) {
 		$boo = $b->getBookInfo($data['bookinfoid']);
 	}
 
-	$rf = new ReleaseFiles();
+	$rf = new ReleaseFiles($page->settings);
 	$releasefiles = $rf->get($data['id']);
 
 	$predb = new PreDb();

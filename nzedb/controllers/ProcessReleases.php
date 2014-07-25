@@ -18,7 +18,7 @@ class ProcessReleases
 	 * @param array $options Class instances / Echo to cli ?
 	 */
 	public function __construct(array $options = array()) {
-		$defOptions = [
+		$defaults = [
 			'Echo'            => true,
 			'ColorCLI'        => null,
 			'ConsoleTools'    => null,
@@ -28,17 +28,17 @@ class ProcessReleases
 			'Releases'        => null,
 			'Settings'        => null,
 		];
-		$defOptions =array_replace($defOptions, $options);
+		$defaults =array_replace($defaults, $options);
 
-		$this->echoCLI = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+		$this->echoCLI = ($defaults['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new nzedb\db\Settings());
-		$this->colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
-		$this->consoleTools = ($defOptions['ConsoleTools'] instanceof ConsoleTools ? $defOptions['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->colorCLI]));
-		$this->groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups(['Settings' => $this->pdo]));
-		$this->nzb = ($defOptions['NZB'] instanceof NZB ? $defOptions['NZB'] : new NZB($this->pdo));
-		$this->releaseCleaning = ($defOptions['ReleaseCleaning'] instanceof ReleaseCleaning ? $defOptions['ReleaseCleaning'] : new ReleaseCleaning());
-		$this->releases = ($defOptions['Releases'] instanceof Releases ? $defOptions['Releases'] : new Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
+		$this->pdo = ($defaults['Settings'] instanceof \nzedb\db\Settings ? $defaults['Settings'] : new nzedb\db\Settings());
+		$this->colorCLI = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->consoleTools = ($defaults['ConsoleTools'] instanceof ConsoleTools ? $defaults['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->colorCLI]));
+		$this->groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->nzb = ($defaults['NZB'] instanceof NZB ? $defaults['NZB'] : new NZB($this->pdo));
+		$this->releaseCleaning = ($defaults['ReleaseCleaning'] instanceof ReleaseCleaning ? $defaults['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
+		$this->releases = ($defaults['Releases'] instanceof Releases ? $defaults['Releases'] : new Releases(['Settings' => $this->pdo, 'Groups' => $this->groups]));
 
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$this->collectionDelayTime = ($this->pdo->getSetting('delaytime')!= '' ? (int)$this->pdo->getSetting('delaytime') : 2);

@@ -7,7 +7,7 @@ if (!isset($_REQUEST["id"])) {
 	$page->show404();
 }
 
-$rf = new ReleaseFiles();
+$rf = new ReleaseFiles($page->settings);
 $files = $rf->getByGuid($_REQUEST["id"]);
 
 if (count($files) == 0) {

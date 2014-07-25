@@ -29,7 +29,7 @@ class MiscSorter
 		$this->category = new Categorize(['Settings' => $this->pdo]);
 		$this->movie = new Movie($this->echooutput);
 		$this->nfolib = new Nfo($this->echooutput);
-		$this->nc = new ReleaseCleaning();
+		$this->nc = new ReleaseCleaning($this->pdo);
 		$this->groups = new Groups(['Settings' => $this->pdo]);
 		$this->c = new ColorCLI();
 

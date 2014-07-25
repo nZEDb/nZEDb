@@ -1,5 +1,5 @@
 <?php
-
+use nzedb\db\Settings;
 /**
  * Adds/fetches rar/zip/etc files for a release.
  *
@@ -8,16 +8,16 @@
 class ReleaseFiles
 {
 	/**
-	 * @var nzedb\db\DB
+	 * @var nzedb\db\Settings
 	 */
 	protected $pdo;
 
 	/**
-	 *
+	 * @param nzedb\db\Settings $settings
 	 */
-	public function __construct()
+	public function __construct($settings = null)
 	{
-		$this->pdo = new nzedb\db\DB();
+		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
 	}
 
 	/**

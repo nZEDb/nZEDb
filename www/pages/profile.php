@@ -3,7 +3,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$rc = new ReleaseComments();
+$rc = new ReleaseComments($page->settings);
 $sab = new SABnzbd($page);
 
 $userid = 0;

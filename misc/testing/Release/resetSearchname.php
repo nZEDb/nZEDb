@@ -18,9 +18,9 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	if (count($res) > 0) {
 		echo $c->header("Going to recreate all search names, recategorize them and fix the names with namefixer, this can take a while.");
 		$done = 0;
-		$timestart = TIME();
+		$timestart = time();
 		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
-		$rc = new ReleaseCleaning();
+		$rc = new ReleaseCleaning($pdo);
 		foreach ($res as $row) {
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
@@ -56,7 +56,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$done = 0;
 		$timestart = TIME();
 		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
-		$rc = new ReleaseCleaning();
+		$rc = new ReleaseCleaning($pdo);
 		foreach ($res as $row) {
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
@@ -93,7 +93,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$timestart = time();
 		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 		foreach ($res as $row) {
-			$rc = new ReleaseCleaning();
+			$rc = new ReleaseCleaning($pdo);
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];

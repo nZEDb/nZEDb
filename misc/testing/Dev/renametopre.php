@@ -122,7 +122,7 @@ function preName($argv, $argc)
 				$match = '';
 				if (preg_match('/alt\.binaries\.e\-?book(\.[a-z]+)?/', $groupname)) {
 					if (preg_match('/^[0-9]{1,6}-[0-9]{1,6}-[0-9]{1,6}$/', $cleanName, $match)) {
-						$rf = new ReleaseFiles();
+						$rf = new ReleaseFiles($pdo);
 						$files = $rf->get($row['id']);
 						foreach ($files as $f) {
 							if (preg_match(
@@ -314,7 +314,7 @@ function releaseCleaner($subject, $group_id, $fromName, $size, $groupname, $usep
 	$groups = new Groups();
 	$match = '';
 	$groupName = $groups->getByNameByID($group_id);
-	$releaseCleaning = new ReleaseCleaning();
+	$releaseCleaning = new ReleaseCleaning($groups->pdo);
 	$cleanerName = $releaseCleaning->releaseCleaner($subject, $fromName, $size, $groupname, $usepre);
 	if (!is_array($cleanerName) && $cleanerName != false) {
 		return array("cleansubject" => $cleanerName, "properlynamed" => true, "increment" => false);

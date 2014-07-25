@@ -87,7 +87,7 @@ class NZBImport
 		$this->binaries = new Binaries(['Settings' => $this->pdo, 'Echo' => $this->echoCLI]);
 		$this->category = new Categorize(['Settings' => $this->pdo]);
 		$this->nzb = new NZB($this->pdo);
-		$this->releaseCleaner = new ReleaseCleaning();
+		$this->releaseCleaner = new ReleaseCleaning($this->pdo);
 
 		$this->crossPostt = ($this->pdo->getSetting('crossposttime') != '') ? $this->pdo->getSetting('crossposttime') : 2;
 		$this->browser = $browser;

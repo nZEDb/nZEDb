@@ -3,7 +3,7 @@ require_once './config.php';
 
 
 $page = new AdminPage();
-$releases = new ReleaseComments();
+$releases = new ReleaseComments($page->settings);
 
 $page->title = "Comments List";
 

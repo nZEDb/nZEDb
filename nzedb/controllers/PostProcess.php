@@ -92,7 +92,7 @@ class PostProcess
 		$this->debugging = new Debugging(['Class' => 'PostProcess', 'ColorCLI' => $this->colorCLI]);
 		$this->nameFixer = (($defaults['NameFixer'] instanceof NameFixer) ? $defaults['NameFixer'] : new NameFixer($this->echooutput));
 		$this->Nfo = (($defaults['Nfo'] instanceof Nfo ) ? $defaults['Nfo'] : new Nfo($this->echooutput));
-		$this->releaseFiles = (($defaults['ReleaseFiles'] instanceof ReleaseFiles) ? $defaults['ReleaseFiles'] : new ReleaseFiles($this->echooutput));
+		$this->releaseFiles = (($defaults['ReleaseFiles'] instanceof ReleaseFiles) ? $defaults['ReleaseFiles'] : new ReleaseFiles($this->pdo));
 		//\\
 
 		//\\ Site settings.

@@ -16,7 +16,7 @@ $consoleTools = new ConsoleTools(['ColorCLI' => $c]);
 $binaries = new Binaries(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoleTools]);
 $crosspostt = $pdo->getSetting('crossposttime');
 $crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
-$releasecleaning = new ReleaseCleaning();
+$releasecleaning = new ReleaseCleaning($pdo);
 $categorize = new Categorize(['Settings' => $pdo]);
 $nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
 

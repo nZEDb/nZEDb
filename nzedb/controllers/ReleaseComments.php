@@ -4,42 +4,45 @@ use nzedb\db\Settings;
 
 class ReleaseComments
 {
+	/**
+	 * @param nzedb\db\Settings $settings
+	 */
+	public function __construct($settings = null)
+	{
+		$this->pdo = ($settings instanceof Settings ? $settings : new Settings());
+	}
+
 	// Returns the row associated to the id of a comment.
 	public function getCommentById($id)
 	{
-		$pdo = new Settings();
-		return $pdo->queryOneRow(sprintf("SELECT * FROM releasecomment WHERE id = %d", $id));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM releasecomment WHERE id = %d", $id));
 	}
 
 	public function getComments($id)
 	{
-		$pdo = new Settings();
-		return $pdo->query(sprintf("SELECT releasecomment.* FROM releasecomment WHERE releaseid = %d", $id));
+		return $this->pdo->query(sprintf("SELECT releasecomment.* FROM releasecomment WHERE releaseid = %d", $id));
 	}
 
 	public function getCommentCount()
 	{
-		$pdo = new Settings();
-		$res = $pdo->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM releasecomment"));
+		$res = $this->pdo->queryOneRow(sprintf("SELECT COUNT(id) AS num FROM releasecomment"));
 		return $res["num"];
 	}
 
 	// For deleting a single comment on the site.
 	public function deleteComment($id)
 	{
-		$pdo = new Settings();
 		$res = $this->getCommentById($id);
 		if ($res)
 		{
-			$pdo->queryExec(sprintf("DELETE FROM releasecomment WHERE id = %d", $id));
+			$this->pdo->queryExec(sprintf("DELETE FROM releasecomment WHERE id = %d", $id));
 			$this->updateReleaseCommentCount($res["releaseid"]);
 		}
 	}
 
 	public function deleteCommentsForRelease($id)
 	{
-		$pdo = new Settings();
-		$pdo->queryExec(sprintf("DELETE FROM releasecomment WHERE releaseid = %d", $id));
+		$this->pdo->queryExec(sprintf("DELETE FROM releasecomment WHERE releaseid = %d", $id));
 		$this->updateReleaseCommentCount($id);
 	}
 
@@ -60,23 +63,21 @@ class ReleaseComments
 
 	public function addComment($id, $text, $userid, $host)
 	{
-		$pdo = new Settings();
-
-		if ($pdo->getSetting('storeuserips') != "1")
+		if ($this->pdo->getSetting('storeuserips') != "1")
 			$host = "";
 
-		$username = $pdo->queryOneRow(sprintf('SELECT username FROM users WHERE id = %d', $userid));
+		$username = $this->pdo->queryOneRow(sprintf('SELECT username FROM users WHERE id = %d', $userid));
 		$username = ($username === false ? 'ANON' : $username['username']);
 
-		$comid = $pdo->queryInsert(
+		$comid = $this->pdo->queryInsert(
 			sprintf("
 				INSERT INTO releasecomment (releaseid, text, userid, createddate, host, username)
 				VALUES (%d, %s, %d, NOW(), %s, %s)",
 				$id,
-				$pdo->escapeString($text),
+				$this->pdo->escapeString($text),
 				$userid,
-				$pdo->escapeString($host),
-				$pdo->escapeString($username)
+				$this->pdo->escapeString($host),
+				$this->pdo->escapeString($username)
 			)
 		);
 		$this->updateReleaseCommentCount($id);
@@ -85,8 +86,7 @@ class ReleaseComments
 
 	public function getCommentsRange($start, $num)
 	{
-		$pdo = new Settings();
-		return $pdo->query(
+		return $this->pdo->query(
 			sprintf("
 				SELECT releasecomment.*, releases.guid
 				FROM releasecomment
@@ -100,8 +100,7 @@ class ReleaseComments
 	// Updates the amount of comments for the rlease.
 	public function updateReleaseCommentCount($relid)
 	{
-		$pdo = new Settings();
-		$pdo->queryExec(
+		$this->pdo->queryExec(
 			sprintf("
 				UPDATE releases
 				SET comments = (SELECT COUNT(id) from releasecomment WHERE releasecomment.releaseid = %d)
@@ -114,8 +113,7 @@ class ReleaseComments
 
 	public function getCommentCountForUser($uid)
 	{
-		$pdo = new Settings();
-		$res = $pdo->queryOneRow(
+		$res = $this->pdo->queryOneRow(
 			sprintf("
 				SELECT COUNT(id) AS num
 				FROM releasecomment
@@ -128,14 +126,12 @@ class ReleaseComments
 
 	public function getCommentsForUserRange($uid, $start, $num)
 	{
-		$pdo = new Settings();
-
 		if ($start === false)
 			$limit = "";
 		else
 			$limit = " LIMIT ".$num." OFFSET ".$start;
 
-		return $pdo->query(
+		return $this->pdo->query(
 			sprintf("
 				SELECT releasecomment.*
 				FROM releasecomment
