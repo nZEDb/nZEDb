@@ -723,7 +723,7 @@ class TvRage
 		if ($lookupTvRage == 0) {
 			return $ret;
 		}
-		$trakt = new TraktTv();
+		$trakt = new TraktTv(['Settings' => $this->pdo]);
 
 		// Get all releases without a rageid which are in a tv category.
 

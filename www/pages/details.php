@@ -68,7 +68,7 @@ if (isset($_GET['id'])) {
 		$movie = new Movie();
 		$mov = $movie->getMovieInfo($data['imdbid']);
 
-		$trakt = new TraktTv();
+		$trakt = new TraktTv(['Settings' => $page->pdo]);
 		$traktSummary = $trakt->traktMoviesummary('tt' . $data['imdbid'], true);
 		if ($traktSummary !== false &&
 			isset($traktSummary['trailer']) &&

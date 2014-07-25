@@ -1,5 +1,5 @@
 <?php
-
+use nzedb\db\Settings;
 /**
  * Class TraktTv
  * Lookup information from trakt.tv using their API.
@@ -13,9 +13,15 @@ Class TraktTv
 	 *
 	 * @access public
 	 */
-	public function __construct()
+	public function __construct(array $options = array())
 	{
-		$this->APIKEY = (new \nzedb\db\Settings())->getSetting('trakttvkey');
+		$defaults = [
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$settings = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->APIKEY = $settings->getSetting('trakttvkey');
 	}
 
 	/**
