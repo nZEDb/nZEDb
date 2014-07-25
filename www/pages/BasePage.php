@@ -142,7 +142,7 @@ class BasePage
 			//$this->floodCheck(false, '');
 		}
 
-	$this->smarty->assign('site', new Settings());
+	$this->smarty->assign('site', $this->settings);
 	$this->smarty->assign('page', $this);
 	}
 
