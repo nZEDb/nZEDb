@@ -651,7 +651,7 @@ Class ProcessAdditional
 			} else {
 
 				if ($this->_echoCLI) {
-					$this->_echo('f(' . $notInfinite . ')', 'primaryOver', false);
+					$this->_echo('f(' . $notInfinite . ')', 'warningOver', false);
 				}
 
 				$notInfinite += 0.2;
@@ -1055,7 +1055,7 @@ Class ProcessAdditional
 
 					}
 				} else if ($this->_echoCLI) {
-					$this->_echo('f', 'primaryOver', false);
+					$this->_echo('f', 'warningOver', false);
 				}
 			}
 		}
@@ -1110,7 +1110,7 @@ Class ProcessAdditional
 						}
 					}
 				} else if ($this->_echoCLI) {
-					$this->_echo('f', 'primaryOver', false);
+					$this->_echo('f', 'warningOver', false);
 				}
 			}
 		}
@@ -1147,7 +1147,7 @@ Class ProcessAdditional
 					$this->_getAudioInfo($fileLocation, $this->_AudioInfoExtension);
 
 				} else if ($this->_echoCLI) {
-					$this->_echo('f', 'primaryOver', false);
+					$this->_echo('f', 'warningOver', false);
 				}
 			}
 		}
@@ -1207,7 +1207,7 @@ Class ProcessAdditional
 				@unlink($this->tmpPath . 'samplepicture.jpg');
 
 			} else if ($this->_echoCLI) {
-				$this->_echo('f', 'primaryOver', false);
+				$this->_echo('f', 'warningOver', false);
 			}
 		}
 	}
