@@ -322,7 +322,7 @@ class Nfo
 				)
 			);
 			$movie = new Movie($this->echo);
-			$tvRage = new TvRage($this->echo);
+			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
 
 			foreach ($res as $arr) {
 				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));

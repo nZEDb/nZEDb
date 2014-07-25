@@ -26,7 +26,7 @@ if (isset($_GET['id'])) {
 
 	$rage = $ani = $mov = $mus = $con = $boo = '';
 	if ($data['rageid'] != '') {
-		$tvrage = new TvRage();
+		$tvrage = new TvRage(['Settings' => $page->pdo]);
 		$rageinfo = $tvrage->getByRageID($data['rageid']);
 		if (count($rageinfo) > 0) {
 			$seriesnames = $seriesdescription = $seriescountry = $seriesgenre = $seriesimg = $seriesid = array();

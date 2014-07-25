@@ -4,9 +4,9 @@ if (!$users->isLoggedIn()) {
 }
 
 $releases = new Releases();
-$tvrage = new TvRage();
-$cat = new Category(['Settings' => $releases->pdo]);
-$us = new UserSeries(['Settings' => $releases->pdo]);
+$tvrage = new TvRage(['Settings' => $page->pdo]);
+$cat = new Category(['Settings' => $page->pdo]);
+$us = new UserSeries(['Settings' => $page->pdo]);
 
 if (isset($_GET["id"]) && ctype_digit($_GET['id'])) {
 	$category = -1;

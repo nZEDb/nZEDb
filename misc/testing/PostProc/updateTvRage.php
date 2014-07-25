@@ -5,9 +5,9 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 use nzedb\db\Settings;
 use nzedb\utility;
 
-$tvrage = new TvRage(true);
 $pdo = new Settings();
 $c = new ColorCLI();
+$tvrage = new TvRage(['Settings' => $pdo, 'ColorCLI' => $c, 'Echo' => true]);
 
 $shows = $pdo->queryDirect("SELECT rageid FROM tvrage WHERE imgdata IS NULL ORDER BY rageid DESC LIMIT 2000");
 if ($shows->rowCount() > 0) {

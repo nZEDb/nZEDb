@@ -248,7 +248,7 @@ class PostProcess
 	public function processTv($groupID = '', $guidChar = '')
 	{
 		if ($this->pdo->getSetting('lookuptvrage') > 0) {
-			(new TvRage($this->echooutput))->processTvReleases($groupID, $guidChar, $this->pdo->getSetting('lookuptvrage'));
+			(new TvRage(['Echo' => $this->echooutput, 'Settings' => $this->pdo]))->processTvReleases($groupID, $guidChar, $this->pdo->getSetting('lookuptvrage'));
 		}
 	}
 

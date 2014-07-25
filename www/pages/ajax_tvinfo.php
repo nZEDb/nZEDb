@@ -23,7 +23,7 @@ if (!$rel) {
 
 
 	if ($rel["rageid"] > 0) {
-		$t = new TvRage();
+		$t = new TvRage(['Settings' => $page->pdo]);
 		$rage = $t->getByRageID($rel["rageid"]);
 		if (count($rage) > 0) {
 			if ($rage[0]["imgdata"] != "") {

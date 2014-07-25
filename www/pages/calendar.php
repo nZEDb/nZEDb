@@ -3,7 +3,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$tvrage = new TvRage();
+$tvrage = new TvRage(['Settings' => $page->pdo]);
 
 $date = date("Y-m-d");
 if (isset($_GET["date"])) {
