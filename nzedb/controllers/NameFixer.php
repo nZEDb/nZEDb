@@ -223,7 +223,7 @@ class NameFixer
 						'nntp' => $nntp,
 						'nfo'  => $Nfo,
 						'db'   => $this->pdo,
-						'pp' => new PostProcess(['Settings' => $this->pdo, 'Nfo' => $Nfo])
+						'pp' => new PostProcess(['Settings' => $this->pdo, 'Nfo' => $Nfo, 'ColorCLI' => $this->c])
 					)
 				);
 

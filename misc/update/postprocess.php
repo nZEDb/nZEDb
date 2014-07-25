@@ -66,7 +66,7 @@ if ($args[$argv[1]] === true) {
 	}
 }
 
-$postProcess = new PostProcess(['Settings' => $pdo, 'Echo' => ($argv[2] === 'true' ? true : false)]);
+$postProcess = new PostProcess(['Settings' => $pdo, 'Echo' => ($argv[2] === 'true' ? true : false), 'ColorCLI' => $c]);
 
 $charArray = ['a','b','c','d','e','f','0','1','2','3','4','5','6','7','8','9'];
 

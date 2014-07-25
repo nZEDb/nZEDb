@@ -779,7 +779,7 @@ class ProcessReleases
 	public function postProcessReleases($postProcess, &$nntp)
 	{
 		if ($postProcess == 1) {
-			(new PostProcess(['Echo' => $this->echoCLI, 'Settings' => $this->pdo, 'Groups' => $this->groups]))->processAll($nntp);
+			(new PostProcess(['Echo' => $this->echoCLI, 'Settings' => $this->pdo, 'Groups' => $this->groups, 'ColorCLI' => $this->colorCLI]))->processAll($nntp);
 		} else {
 			if ($this->echoCLI) {
 				$this->colorCLI->doEcho(

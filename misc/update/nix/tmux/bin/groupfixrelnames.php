@@ -132,7 +132,7 @@ if (!isset($argv[1])) {
 				$nzbcontents = new NZBContents(
 					array(
 						'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
-						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
+						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer, 'ColorCLI' => $c])
 					)
 				);
 				foreach ($releases as $release) {

@@ -64,7 +64,7 @@ if (!isset($argv[1])) {
 		$nzbcontents = new NZBContents(
 			array(
 				'Echo' => true, 'NNTP' => $nntp, 'Nfo' => new Nfo(), 'Settings' => $pdo,
-				'PostProcess' => new PostProcess(['Settings' => $pdo, 'NameFixer' => $namefixer])
+				'PostProcess' => new PostProcess(['Settings' => $pdo, 'NameFixer' => $namefixer, 'ColorCLI' => $c])
 			)
 		);
 		//echo " " . microtime();
