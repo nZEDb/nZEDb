@@ -8,7 +8,7 @@ class SiteMap
 	public $priority = '';
 	public $changefreq = '';
 
-	function Sitemap($t, $n, $l, $p, $c)
+	public function __construct($t, $n, $l, $p, $c)
 	{
 		$this->type = $t;
 		$this->name = $n;

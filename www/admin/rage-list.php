@@ -2,7 +2,7 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$tvrage = new TvRage(['Settings' => $page->pdo]);
+$tvrage = new TvRage(['Settings' => $page->settings]);
 
 $page->title = "TV Rage List";
 

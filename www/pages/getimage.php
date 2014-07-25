@@ -12,7 +12,7 @@ if (!isset($_GET["type"]) || !isset($_GET["id"]) || !ctype_digit($_GET["id"])) {
 // User requested a tvrage image.
 if ($_GET["type"] == "tvrage") {
 
-	$rage = new TvRage(['Settings' => $page->pdo]);
+	$rage = new TvRage(['Settings' => $page->settings]);
 	$r = $rage->getByID($_GET["id"]);
 	if (!$r) {
 		$page->show404();

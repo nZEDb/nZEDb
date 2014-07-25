@@ -3,7 +3,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$um = new UserMovies(['Settings' => $page->pdo]);
+$um = new UserMovies(['Settings' => $page->settings]);
 if (isset($_REQUEST["del"])) {
 	$um->delMovie($users->currentUserId(), $_REQUEST["del"]);
 }

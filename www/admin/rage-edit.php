@@ -2,7 +2,7 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$tvrage = new TvRage(['Settings' => $page->pdo]);
+$tvrage = new TvRage(['Settings' => $page->settings]);
 $id = 0;
 
 // Set the current action.

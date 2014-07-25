@@ -9,7 +9,7 @@ class BasePage
 	/**
 	 * @var \nzedb\db\Settings
 	 */
-	public $pdo = null;
+	public $settings = null;
 
 	public $title = '';
 	public $content = '';

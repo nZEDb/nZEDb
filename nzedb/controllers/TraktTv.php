@@ -11,6 +11,8 @@ Class TraktTv
 	/**
 	 * Construct. Set up API key.
 	 *
+	 * @param array $options Class instances.
+	 *
 	 * @access public
 	 */
 	public function __construct(array $options = array())

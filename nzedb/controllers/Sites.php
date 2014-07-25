@@ -30,9 +30,17 @@ class Sites
 	 */
 	protected $_versions = false;
 
-	public function __construct()
+	/**
+	 * @param array $options Class instances.
+	 */
+	public function __construct(array $options = array())
 	{
-		$this->_db = new \nzedb\db\Settings();
+		$defaults = [
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->_db = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 
 		if (defined('nZEDb_VERSIONS')) {
 			try {

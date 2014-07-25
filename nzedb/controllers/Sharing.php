@@ -76,13 +76,13 @@ Class Sharing
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions= [
+		$defaults= [
 			'Settings' => null,
 			'NNTP'     => null,
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$defaults = array_replace($defaults, $options);
 
-		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 
 		// Get all sharing info from DB.
 		$check = $this->pdo->queryOneRow('SELECT * FROM sharing');
@@ -97,7 +97,7 @@ Class Sharing
 			return;
 		}
 
-		$this->nntp = ($defOptions['NNTP'] instanceof NNTP ? $defOptions['NNTP'] : new NNTP(['Settings' => $this->pdo]));
+		$this->nntp = ($defaults['NNTP'] instanceof NNTP ? $defaults['NNTP'] : new NNTP(['Settings' => $this->pdo]));
 
 		// Cache sharing settings.
 		$this->siteSettings = $check;

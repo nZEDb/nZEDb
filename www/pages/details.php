@@ -26,7 +26,7 @@ if (isset($_GET['id'])) {
 
 	$rage = $ani = $mov = $mus = $con = $boo = '';
 	if ($data['rageid'] != '') {
-		$tvrage = new TvRage(['Settings' => $page->pdo]);
+		$tvrage = new TvRage(['Settings' => $page->settings]);
 		$rageinfo = $tvrage->getByRageID($data['rageid']);
 		if (count($rageinfo) > 0) {
 			$seriesnames = $seriesdescription = $seriescountry = $seriesgenre = $seriesimg = $seriesid = array();
@@ -68,7 +68,7 @@ if (isset($_GET['id'])) {
 		$movie = new Movie();
 		$mov = $movie->getMovieInfo($data['imdbid']);
 
-		$trakt = new TraktTv(['Settings' => $page->pdo]);
+		$trakt = new TraktTv(['Settings' => $page->settings]);
 		$traktSummary = $trakt->traktMoviesummary('tt' . $data['imdbid'], true);
 		if ($traktSummary !== false &&
 			isset($traktSummary['trailer']) &&
