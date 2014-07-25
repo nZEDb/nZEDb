@@ -24,6 +24,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Re-use class instances on ReleaseRemover.
 	* Chg: Re-use class instances in various other places.
 	* Chg: Use BasePage's settings for many of the instanciations.
+	* Chg: Re-use class instances on Namefixer.
 2014-07-24 ruhllatio
 	* Chg: Case a few if/elseif run ons in NameFixer -- more to do
 	* Fix: #1408 Issue with HDTS not being categorized properly

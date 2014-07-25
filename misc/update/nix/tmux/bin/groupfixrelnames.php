@@ -8,7 +8,7 @@ if (!isset($argv[1])) {
 	exit($c->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
 } else if (isset($argv[1])) {
 	$pdo = new Settings();
-	$namefixer = new NameFixer();
+	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c]);
 	$pieces = explode(' ', $argv[1]);
 	$proxy = $pdo->getSetting('nntpproxy');
 	$guidChar = $pieces[1];

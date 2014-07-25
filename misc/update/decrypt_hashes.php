@@ -22,9 +22,10 @@ preName($argv);
 function preName($argv)
 {
 	$pdo = new Settings();
-	$timestart = TIME();
-	$namefixer = new NameFixer();
+	$timestart = time();
+	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c]);
 
+	$res = false;
 	if (isset($argv[1]) && $argv[1] === "all") {
 		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE preid = 0 AND ishashed = 1');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
@@ -34,8 +35,10 @@ function preName($argv)
 	}
 	$c = new ColorCLI();
 
-	$total = $res->rowCount();
-	$counter = $counted = 0;
+	$counter = $counted = $total = 0;
+	if ($res !== false) {
+		$total = $res->rowCount();
+	}
 	$show = (!isset($argv[2]) || $argv[2] !== 'show') ? 0 : 1;
 	if ($total > 0) {
 		echo $c->header("\n" . number_format($total) . ' releases to process.');

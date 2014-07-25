@@ -12,8 +12,9 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $n = "\n";
 $c = new ColorCLI();
-$namefixer = new NameFixer();
-$predb = new PreDb(['Echo' => true, 'Settings' => $namefixer->pdo, 'ColorCLI' => $c]);
+$pdo = new nzedb\db\Settings();
+$namefixer = new NameFixer(['ColorCLI' => $c, 'Settings' => $pdo]);
+$predb = new PreDb(['Echo' => true, 'Settings' => $pdo, 'ColorCLI' => $c]);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 	$update = ($argv[2] == "true") ? 1 : 2;
@@ -31,7 +32,6 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 	}
 
 	if ($argv[1] == 7 || $argv[1] == 8) {
-		$pdo = new nzedb\db\Settings();
 		$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 		if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 			echo $c->error("Unable to connect to usenet.\n");

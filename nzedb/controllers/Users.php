@@ -136,13 +136,13 @@ class Users
 		return $this->pdo->query(
 			sprintf(
 				$query,
-				($start === false ? '' : ('LIMIT ' . $offset . ' OFFSET ' . $start)),
 				($userName != '' ? ('AND users.username ' . $this->pdo->likeString($userName)) : ''),
 				($email != '' ? ('AND users.email ' . $this->pdo->likeString($email)) : ''),
 				($host != '' ? ('AND users.host ' . $this->pdo->likeString($host)) : ''),
 				($role != '' ? ('AND users.role = ' . $role) : ''),
 				$order[0],
-				$order[1]
+				$order[1],
+				($start === false ? '' : ('LIMIT ' . $offset . ' OFFSET ' . $start))
 			)
 		);
 	}

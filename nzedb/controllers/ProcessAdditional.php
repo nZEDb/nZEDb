@@ -87,8 +87,8 @@ Class ProcessAdditional
 		$this->_groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_archiveInfo = new ArchiveInfo();
 		$this->_releaseFiles = ($defaults['ReleaseFiles'] instanceof ReleaseFiles ? $defaults['ReleaseFiles'] : new ReleaseFiles($this->pdo));
-		$this->_nameFixer = ($defaults['NameFixer'] instanceof NameFixer ? $defaults['NameFixer'] : new NameFixer(['Echo' =>$this->_echoCLI]));
 		$this->_categorize = ($defaults['Categorize'] instanceof Categorize ? $defaults['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->_nameFixer = ($defaults['NameFixer'] instanceof NameFixer ? $defaults['NameFixer'] : new NameFixer(['Echo' =>$this->_echoCLI, 'Groups' => $this->_groups, 'Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI, 'Categorize' => $this->_categorize]));
 		$this->_releaseExtra = ($defaults['ReleaseExtra'] instanceof ReleaseExtra ? $defaults['ReleaseExtra'] : new ReleaseExtra($this->pdo));
 		$this->_releaseImage = ($defaults['ReleaseImage'] instanceof ReleaseImage ? $defaults['ReleaseImage'] : new ReleaseImage($this->pdo));
 		$this->_par2Info = new Par2Info();
