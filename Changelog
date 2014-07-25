@@ -10,6 +10,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: match_prefiles not honoring CLI arg limit
 	* Chg: Monitor now using proper PDO for work queries
 	* Chg: Removed tons of nasty if/then/else statements that weren't needed
+	* Fix: unkown $c assignment causing script failure in monitor
 2014-07-25 kevin
 	* Chg: Re-use class instances in various places.
 	* Add: PHPDOC to Users.

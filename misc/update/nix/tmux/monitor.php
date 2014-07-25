@@ -411,7 +411,8 @@ while ($i > 0) {
 	}
 
 	if (($proc_work_result == false) || ($proc_work_result2 == false) || ($proc_work_result3 == false) || ($split_result == false) || ($proc_tmux_result == false)) {
-		exit $c-error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
+		echo $c->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
+		exit;
 	}
 
 	//get initial start postproc values from work queries -- this is used to determine diff variables
@@ -451,67 +452,63 @@ while ($i > 0) {
 	$requestid_matched = $proc_work_result3['requestid_matched'];
 
 	// get various counts from split result (different queries for different database types)
-	if ($split_result !== false) {
-		if ($tablepergroup == 0) {
-			$binaries_table = $proc_work_result3['binaries_table'];
-			$parts_table = $split_result['parts_table'];
-			$collections_table = $proc_work_result2['collections_table'];
-			$partrepair_table = $proc_work_result2['partrepair_table'];
-		}
-		$predb = $split_result['predb'];
-		$nowTime = time();
-		if ($predb > $nowTime) {
-			$predb = $nowTime;
-		}
-		if($split_result['oldestcollection'] != null) {
-			$oldestcollection = $split_result['oldestcollection'];
-		}
-		$backfill_groups_days = $split_result['backfill_groups_days'];
-		$backfill_groups_date = $split_result['backfill_groups_date'];
-		$newestadd = $split_result['newestadd'];
+	if ($tablepergroup == 0) {
+		$binaries_table = $proc_work_result3['binaries_table'];
+		$parts_table = $split_result['parts_table'];
+		$collections_table = $proc_work_result2['collections_table'];
+		$partrepair_table = $proc_work_result2['partrepair_table'];
 	}
+	$predb = $split_result['predb'];
+	$nowTime = time();
+	if ($predb > $nowTime) {
+		$predb = $nowTime;
+	}
+	if($split_result['oldestcollection'] != null) {
+		$oldestcollection = $split_result['oldestcollection'];
+	}
+	$backfill_groups_days = $split_result['backfill_groups_days'];
+	$backfill_groups_date = $split_result['backfill_groups_date'];
+	$newestadd = $split_result['newestadd'];
 
 	// assign settings from tmux and settings tables
-	if ($proc_tmux_result !== false) {
-		$collections_kill = $proc_tmux_result['collections_kill'];
-		$postprocess_kill = $proc_tmux_result['postprocess_kill'];
-		$backfilldays = $proc_tmux_result['backfilldays'];
-		$tmpunrar = $proc_tmux_result['tmpunrar'];
-		$active_groups = $proc_tmux_result['active_groups'];
-		$all_groups = $proc_tmux_result['all_groups'];
-		$compressed = $proc_tmux_result['compressed'];
-		$colors_start = $proc_tmux_result['colors_start'];
-		$colors_end = $proc_tmux_result['colors_end'];
-		$colors_exc = $proc_tmux_result['colors_exc'];
-		$processbooks = $proc_tmux_result['processbooks'];
-		$processgames = $proc_tmux_result['processgames'];
-		$processmovies = $proc_tmux_result['processmovies'];
-		$processmusic = $proc_tmux_result['processmusic'];
-		$processtvrage = $proc_tmux_result['processtvrage'];
-		$processxxx = $proc_tmux_result['processxxx'];
-		$processnfo = $proc_tmux_result['processnfo'];
-		$processpar2 = $proc_tmux_result['processpar2'];
-		$tmux_session = $proc_tmux_result['tmux_session'];
-		$monitor = $proc_tmux_result['monitor'];
-		$backfill = $proc_tmux_result['backfill'];
-		$niceness = $proc_tmux_result['niceness'];
-		$progressive = $proc_tmux_result['progressive'];
-		$binaries = $proc_tmux_result['binaries_run'];
-		$import = $proc_tmux_result['import'];
-		$nzbs = $proc_tmux_result['nzbs'];
-		$fix_names = $proc_tmux_result['fix_names'];
-		$fix_crap = explode(', ', ($proc_tmux_result['fix_crap']));
-		$fix_crap_opt = $proc_tmux_result['fix_crap_opt'];
-		$update_tv = $proc_tmux_result['update_tv'];
-		$post = $proc_tmux_result['post'];
-		$releases_run = $proc_tmux_result['releases_run'];
-		$releases_threaded = $proc_tmux_result['releases_threaded'];
-		$dehash = $proc_tmux_result['dehash'];
-		$newestname = $proc_tmux_result['newestname'];
-		$show_query = $proc_tmux_result['show_query'];
-		$running = (int)$proc_tmux_result['is_running'];
-		$sharing_timer = $proc_tmux_result['sharing_timer'];
-	}
+	$collections_kill = $proc_tmux_result['collections_kill'];
+	$postprocess_kill = $proc_tmux_result['postprocess_kill'];
+	$backfilldays = $proc_tmux_result['backfilldays'];
+	$tmpunrar = $proc_tmux_result['tmpunrar'];
+	$active_groups = $proc_tmux_result['active_groups'];
+	$all_groups = $proc_tmux_result['all_groups'];
+	$compressed = $proc_tmux_result['compressed'];
+	$colors_start = $proc_tmux_result['colors_start'];
+	$colors_end = $proc_tmux_result['colors_end'];
+	$colors_exc = $proc_tmux_result['colors_exc'];
+	$processbooks = $proc_tmux_result['processbooks'];
+	$processgames = $proc_tmux_result['processgames'];
+	$processmovies = $proc_tmux_result['processmovies'];
+	$processmusic = $proc_tmux_result['processmusic'];
+	$processtvrage = $proc_tmux_result['processtvrage'];
+	$processxxx = $proc_tmux_result['processxxx'];
+	$processnfo = $proc_tmux_result['processnfo'];
+	$processpar2 = $proc_tmux_result['processpar2'];
+	$tmux_session = $proc_tmux_result['tmux_session'];
+	$monitor = $proc_tmux_result['monitor'];
+	$backfill = $proc_tmux_result['backfill'];
+	$niceness = $proc_tmux_result['niceness'];
+	$progressive = $proc_tmux_result['progressive'];
+	$binaries = $proc_tmux_result['binaries_run'];
+	$import = $proc_tmux_result['import'];
+	$nzbs = $proc_tmux_result['nzbs'];
+	$fix_names = $proc_tmux_result['fix_names'];
+	$fix_crap = explode(', ', ($proc_tmux_result['fix_crap']));
+	$fix_crap_opt = $proc_tmux_result['fix_crap_opt'];
+	$update_tv = $proc_tmux_result['update_tv'];
+	$post = $proc_tmux_result['post'];
+	$releases_run = $proc_tmux_result['releases_run'];
+	$releases_threaded = $proc_tmux_result['releases_threaded'];
+	$dehash = $proc_tmux_result['dehash'];
+	$newestname = $proc_tmux_result['newestname'];
+	$show_query = $proc_tmux_result['show_query'];
+	$running = (int)$proc_tmux_result['is_running'];
+	$sharing_timer = $proc_tmux_result['sharing_timer'];
 
 	//reset monitor paths before query
 	$monitor_path = "";
