@@ -8,6 +8,8 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-25 ruhllatio
 	* Fix: match_prefiles not honoring CLI arg limit
+	* Chg: Monitor now using proper PDO for work queries
+	* Chg: Removed tons of nasty if/then/else statements that weren't needed
 2014-07-25 kevin
 	* Chg: Re-use class instances in various places.
 	* Add: PHPDOC to Users.
