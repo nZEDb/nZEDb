@@ -86,7 +86,7 @@ class Users
 		$this->delCartForUser($userID);
 		$this->delUserCategoryExclusions($userID);
 		(new ReleaseComments())->deleteCommentsForUser($userID);
-		(new UserMovies())->delMovieForUser($userID);
+		(new UserMovies(['Settings' => $this->pdo]))->delMovieForUser($userID);
 		(new UserSeries(['Settings' => $this->pdo]))->delShowForUser($userID);
 		(new Forum(['Settings' => $this->pdo]))->deleteUser($userID);
 
