@@ -94,9 +94,6 @@ if ($nntpproxy == 0) {
 //totals per category in db, results by parentID
 $catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid";
 
-// tmux and site settings, refreshes every loop
-$proc_tmux = $t->getMonitorSettings();
-
 //create timers and set to now
 $time = $time1 = $time2 = $time3 = $time4 = $time5 = $time6 = $time7 = time();
 
@@ -208,10 +205,10 @@ while ($i > 0) {
 		$pdo = new Settings();
 	}
 
-	// These queries are very fast, run every loop
 	$time01 = time();
+	// These queries are very fast, run every loop -- tmux and site settings
 	$proc_tmux_result = false;
-	$proc_tmux_result = $pdo->queryOneRow($proc_tmux, false);
+	$proc_tmux_result = $pdo->queryOneRow($t->getMonitorSettings(), false);
 	$tmux_time = (time() - $time01);
 
 	//run queries only after time exceeded, these queries can take awhile
