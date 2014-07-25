@@ -557,7 +557,7 @@ class NameFixer
 		$show = (isset($args[2]) && $args[2] === 'show') ? 1 : 0;
 
 		if (isset($args[1]) && is_numeric($args[1])) {
-			$orderby = "ORDER BY r.postdate DESC";
+			$orderby = "ORDER BY r.id DESC";
 			$limit = "LIMIT " . $args[1];
 		}
 
@@ -565,15 +565,13 @@ class NameFixer
 		echo $this->c->primary("Matching predb filename to cleaned releasefiles.name.\n");
 
 		$qry =	sprintf('
-				SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid,
+				SELECT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid,
 					rf.name AS filename
 				FROM releases r
 				INNER JOIN releasefiles rf ON r.id = rf.releaseid
 				AND rf.name IS NOT NULL
-				WHERE r.nzbstatus = 1
-				AND r.preid = 0
-				AND r.passwordstatus = 0
-				AND LENGTH(rf.name) > 4;
+				WHERE r.preid = 0
+				GROUP BY r.id
 				%s %s',
 				$orderby,
 				$limit
@@ -635,9 +633,8 @@ class NameFixer
 						$matching++;
 				}
 			}
-		} else {
-			return $matching;
 		}
+		return $matching;
 	}
 
 	// Cleans file names for PreDB Match
