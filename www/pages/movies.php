@@ -3,8 +3,8 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$movie = new Movie();
-$cat = new Category(['Settings' => $movie->pdo]);
+$movie = new Movie(['Settings' => $page->settings]);
+$cat = new Category(['Settings' => $page->settings]);
 
 $moviecats = $cat->getChildren(Category::CAT_PARENT_MOVIE);
 $mtmp = array();

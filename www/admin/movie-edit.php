@@ -1,9 +1,8 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$movie = new Movie();
+$movie = new Movie(['Settings' => $page->settings]);
 $id = 0;
 
 // Set the current action.
@@ -58,5 +57,3 @@ if (isset($_REQUEST["id"]))
 
 $page->content = $page->smarty->fetch('movie-edit.tpl');
 $page->render();
-
-?>

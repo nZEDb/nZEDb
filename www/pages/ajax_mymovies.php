@@ -15,7 +15,7 @@ if (isset($_REQUEST['del'])) {
 	$cats[] = '2030';
 	$cats[] = '2040';
 
-	$m = new Movie(false);
+	$m = new Movie(['Settings' => $page->settings]);
 	$mi = $m->getMovieInfo($_REQUEST['add']);
 	if (!$mi) {
 		$m->updateMovieInfo($_REQUEST['add']);
@@ -27,9 +27,8 @@ if (isset($_REQUEST['del'])) {
 		$page->show404();
 	}
 
-	$pdo = new \nzedb\db\Settings();
-	$tmdb = new TMDb($pdo->getSetting('tmdbkey'), $pdo->getSetting('imdblanguage'));
-	$m = new Movie(false);
+	$tmdb = new TMDb($page->settings->getSetting('tmdbkey'), $page->settings->getSetting('imdblanguage'));
+	$m = new Movie(['Settings' => $page->settings, 'TMDb' => $tmdb]);
 
 	if (is_numeric($_REQUEST['id'])) {
 		$movie = $m->fetchTMDBProperties($_REQUEST['id']);
@@ -69,7 +68,7 @@ if (isset($_REQUEST['del'])) {
 		} else {
 			$ourmovieimdbs = array();
 			if (count($imdbids) > 0) {
-				$m = new Movie();
+				$m = new Movie(['Settings' => $page->settings, 'TMDb' => $tmdb]);
 				$allmovies = $m->getMovieInfoMultiImdb($imdbids);
 				foreach ($allmovies as $ourmovie) {
 					if ($ourmovie['relimdb'] != '') {

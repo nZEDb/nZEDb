@@ -328,7 +328,7 @@ class Nfo
 					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo, 'ColorCLI' => $this->c])
 				)
 			);
-			$movie = new Movie($this->echo);
+			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
 			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
 
 			foreach ($res as $arr) {

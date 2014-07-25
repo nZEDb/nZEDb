@@ -65,7 +65,7 @@ if (isset($_GET['id'])) {
 	}
 
 	if ($data['imdbid'] != '' && $data['imdbid'] != 0000000) {
-		$movie = new Movie();
+		$movie = new Movie(['Settings' => $page->settings]);
 		$mov = $movie->getMovieInfo($data['imdbid']);
 
 		$trakt = new TraktTv(['Settings' => $page->settings]);
@@ -95,7 +95,7 @@ if (isset($_GET['id'])) {
 	}
 
 	if ($data['musicinfoid'] != '') {
-		$music = new Music();
+		$music = new Music(['Settings' => $page->settings]);
 		$mus = $music->getMusicInfo($data['musicinfoid']);
 	}
 

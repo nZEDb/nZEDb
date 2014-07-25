@@ -21,9 +21,11 @@ preName($argv);
 
 function preName($argv)
 {
-	$pdo = new Settings();
+	global $c;
 	$timestart = time();
-	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c]);
+	$pdo = new Settings();
+	$consoletools = new ConsoleTools(['ColorCLI' => $c]);
+	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools]);
 
 	$res = false;
 	if (isset($argv[1]) && $argv[1] === "all") {
@@ -33,7 +35,6 @@ function preName($argv)
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
 		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
-	$c = new ColorCLI();
 
 	$counter = $counted = $total = 0;
 	if ($res !== false) {
@@ -43,7 +44,6 @@ function preName($argv)
 	if ($total > 0) {
 		echo $c->header("\n" . number_format($total) . ' releases to process.');
 		sleep(2);
-		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 
 		foreach ($res as $row) {
 			$success = 0;

@@ -3,7 +3,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$m = new Movie();
+$m = new Movie(['Settings' => $page->settings]);
 
 if (!isset($_GET["id"])) {
 	$_GET["id"] = 1;

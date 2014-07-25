@@ -3,7 +3,7 @@ if (!$users->isLoggedIn()) {
 	$page->show403();
 }
 
-$music = new Music();
+$music = new Music(['Settings' => $page->settings]);
 
 if (isset($_GET["id"]) && ctype_digit($_GET["id"])) {
 	$mus = $music->getMusicInfo($_GET['id']);

@@ -3,7 +3,7 @@ require_once './config.php';
 
 
 $page = new AdminPage();
-$m = new Music();
+$m = new Music(['Settings' => $page->settings]);
 
 $page->title = "Music List";
 

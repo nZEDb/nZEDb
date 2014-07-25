@@ -185,7 +185,7 @@ class PostProcess
 	public function processMovies($groupID = '', $guidChar = '')
 	{
 		if ($this->pdo->getSetting('lookupimdb') > 0) {
-			(new Movie($this->echooutput))->processMovieReleases($groupID, $guidChar, $this->pdo->getSetting('lookupimdb'));
+			(new Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processMovieReleases($groupID, $guidChar, $this->pdo->getSetting('lookupimdb'));
 		}
 	}
 
@@ -197,7 +197,7 @@ class PostProcess
 	public function processMusic()
 	{
 		if ($this->pdo->getSetting('lookupmusic') != 0) {
-			(new Music($this->echooutput))->processMusicReleases();
+			(new Music(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processMusicReleases();
 		}
 	}
 

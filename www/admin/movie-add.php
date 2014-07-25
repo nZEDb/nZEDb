@@ -1,9 +1,8 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$movie = new Movie();
+$movie = new Movie(['Settings' => $page->settings]);
 $id = 0;
 
 $page->title = "Movie Add";
@@ -24,5 +23,3 @@ if (isset($_REQUEST['id']) && ctype_digit($_REQUEST['id']) && strlen($_REQUEST['
 
 $page->content = $page->smarty->fetch('movie-add.tpl');
 $page->render();
-
-?>

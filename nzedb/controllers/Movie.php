@@ -101,17 +101,26 @@ class Movie
 	protected $imdbLanguage;
 
 	/**
-	 * @param bool $echoOutput
+	 * @param array $options Class instances / Echo to CLI.
 	 */
-	public function __construct($echoOutput = false)
+	public function __construct(array $options = array())
 	{
-		$this->c = new ColorCLI();
-		$this->pdo = new Settings();
-		$this->releaseImage = new ReleaseImage($this->pdo);
+		$defaults = [
+			'Echo'         => false,
+			'ColorCLI'     => null,
+			'ReleaseImage' => null,
+			'Settings'     => null,
+			'TMDb'         => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->releaseImage = ($defaults['ReleaseImage'] instanceof ReleaseImage ? $defaults['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->imdbLanguage = ($this->pdo->getSetting('imdblanguage') != '') ? $this->pdo->getSetting('imdblanguage') : 'en';
 
-		$this->tmdb = new TMDb($this->pdo->getSetting('tmdbkey'), $this->imdbLanguage);
+		$this->tmdb = ($defaults['TMDb'] instanceof TMDb ? $defaults['TMDb'] : new TMDb($this->pdo->getSetting('tmdbkey'), $this->imdbLanguage));
 
 		$this->fanartapikey = $this->pdo->getSetting('fanarttvkey');
 		$this->imdburl = ($this->pdo->getSetting('imdburl') == 0 ? false : true);
@@ -120,7 +129,7 @@ class Movie
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
 
 		$this->debug = nZEDb_DEBUG;
-		$this->echooutput = ($echoOutput && nZEDb_ECHOCLI);
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'movies' . DS;
 		$this->service = '';
 
