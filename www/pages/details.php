@@ -112,7 +112,7 @@ if (isset($_GET['id'])) {
 	$rf = new ReleaseFiles($page->settings);
 	$releasefiles = $rf->get($data['id']);
 
-	$predb = new PreDb();
+	$predb = new PreDb(['Settings' => $page->settings]);
 	$pre = $predb->getForRelease($data['preid']);
 
 	$user = $users->getById($users->currentUserId());

@@ -4,7 +4,7 @@ require_once './config.php';
 $page = new AdminPage();
 $releases = new Releases(['Settings' => $page->settings]);
 $logging = new Logging(['Settings' => $page->settings]);
-if ($pdo->getSetting('loggingopt') == '0') {
+if ($page->settings->getSetting('loggingopt') == '0') {
 	$loggingon = '0';
 } else {
 	$loggingon = '1';
@@ -14,7 +14,7 @@ $page->smarty->assign('loggingon', $loggingon);
 
 $page->title = 'Site Stats';
 
-$topgrabs = (new Users(['Settings' => $pdo]))->getTopGrabbers();
+$topgrabs = (new Users(['Settings' => $page->settings]))->getTopGrabbers();
 $page->smarty->assign('topgrabs', $topgrabs);
 
 $topdownloads = $releases->getTopDownloads();

@@ -172,7 +172,7 @@ if (!isset($groups) || count($groups) == 0) {
 			@unlink($nzbFile);
 		} else {
 			$relguid = sha1(uniqid('', true) . mt_rand());
-			$nzb = new NZB();
+			$nzb = new NZB($pdo);
 			$propername = true;
 			$relid = false;
 			if ($usenzbname === true) {

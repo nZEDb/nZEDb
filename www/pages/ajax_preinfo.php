@@ -7,7 +7,7 @@ if (!isset($_REQUEST["id"])) {
 	$page->show404();
 }
 
-$pre = new PreDb();
+$pre = new PreDb(['Settings' => $page->settings]);
 $predata = $pre->getOne($_REQUEST["id"]);
 
 if (!$predata) {

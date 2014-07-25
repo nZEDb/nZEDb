@@ -25,13 +25,13 @@ class MiscSorter
 		$this->qty = 100;
 		$this->DEBUGGING = nZEDb_DEBUG;
 
+		$this->c = new ColorCLI();
 		$this->pdo = new Settings();
 		$this->category = new Categorize(['Settings' => $this->pdo]);
 		$this->movie = new Movie($this->echooutput);
-		$this->nfolib = new Nfo($this->echooutput);
+		$this->nfolib = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
 		$this->nc = new ReleaseCleaning($this->pdo);
 		$this->groups = new Groups(['Settings' => $this->pdo]);
-		$this->c = new ColorCLI();
 
 		//$res = $this->pdo->queryExec("SET NAMES 'utf8'");
 		//$res = $this->pdo->queryExec("SET CHARACTER SET 'utf8'");
@@ -453,7 +453,7 @@ class MiscSorter
 			return false;
 		}
 
-		$nzb1 = new NZB();
+		$nzb1 = new NZB($this->pdo);
 		$nzbpath = $nzb1->NZBPath($guid);
 		$nzb = array();
 

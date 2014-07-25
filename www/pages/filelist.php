@@ -10,7 +10,7 @@ if (isset($_GET["id"])) {
 		$page->show404();
 	}
 
-	$nzb = new NZB();
+	$nzb = new NZB($page->settings);
 	$nzbpath = $nzb->getNZBPath($_GET["id"]);
 	if (!file_exists($nzbpath)) {
 		$page->show404();

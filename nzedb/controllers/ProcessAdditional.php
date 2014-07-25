@@ -1,7 +1,7 @@
 <?php
 require_once nZEDb_LIBS . 'rarinfo/archiveinfo.php';
 require_once nZEDb_LIBS . 'rarinfo/par2info.php';
-
+use nzedb\db\Settings;
 Class ProcessAdditional
 {
 	/**
@@ -56,29 +56,43 @@ Class ProcessAdditional
 	protected $_groups;
 
 	/**
-	 * @param bool              $echo Echo to CLI.
-	 * @param NNTP              $nntp
-	 * @param nzedb\db\Settings $pdo
+	 * @param array $options Class instances / echo to cli.
 	 */
-	public function __construct($echo = false, &$nntp, &$pdo)
+	public function __construct(array $options = array())
 	{
+		$defaults = [
+			'Echo'         => false,
+			'Categorize'   => null,
+			'ColorCLI'     => null,
+			'Groups'       => null,
+			'NameFixer'    => null,
+			'Nfo'          => null,
+			'NNTP'         => null,
+			'NZB'          => null,
+			'ReleaseExtra' => null,
+			'ReleaseFiles' => null,
+			'ReleaseImage' => null,
+			'Settings'     => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
 		$this->_colorCLI = new ColorCLI();
-		$this->_echoCLI = ($echo && nZEDb_ECHOCLI && (strtolower(PHP_SAPI) === 'cli'));
+		$this->_echoCLI = ($defaults['Echo'] && nZEDb_ECHOCLI && (strtolower(PHP_SAPI) === 'cli'));
 		$this->_echoDebug = nZEDb_DEBUG;
 
-		$this->_nntp = $nntp;
-		$this->pdo = $pdo;
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->_nntp = ($defaults['NNTP'] instanceof NNTP ? $defaults['NNTP'] : new NNTP(['ColorCLI' => $this->_colorCLI, 'Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 
-		$this->_nzb = new NZB($this->pdo);
-		$this->_groups = new Groups(['Settings' => $this->pdo]);
+		$this->_nzb = ($defaults['NZB'] instanceof NZB ? $defaults['NZB'] : new NZB($this->pdo));
+		$this->_groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_archiveInfo = new ArchiveInfo();
-		$this->_releaseFiles = new ReleaseFiles($this->pdo);
-		$this->_nameFixer = new NameFixer($this->_echoCLI);
-		$this->_categorize = new Categorize(['Settings' => $this->pdo]);
-		$this->_releaseExtra = new ReleaseExtra($this->pdo);
-		$this->_releaseImage = new ReleaseImage($this->pdo);
+		$this->_releaseFiles = ($defaults['ReleaseFiles'] instanceof ReleaseFiles ? $defaults['ReleaseFiles'] : new ReleaseFiles($this->pdo));
+		$this->_nameFixer = ($defaults['NameFixer'] instanceof NameFixer ? $defaults['NameFixer'] : new NameFixer(['Echo' =>$this->_echoCLI]));
+		$this->_categorize = ($defaults['Categorize'] instanceof Categorize ? $defaults['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->_releaseExtra = ($defaults['ReleaseExtra'] instanceof ReleaseExtra ? $defaults['ReleaseExtra'] : new ReleaseExtra($this->pdo));
+		$this->_releaseImage = ($defaults['ReleaseImage'] instanceof ReleaseImage ? $defaults['ReleaseImage'] : new ReleaseImage($this->pdo));
 		$this->_par2Info = new Par2Info();
-		$this->_nfo = new Nfo($this->_echoCLI);
+		$this->_nfo = ($defaults['Nfo'] instanceof Nfo ? $defaults['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI]));
 
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
 		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));

@@ -11,9 +11,9 @@
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $n = "\n";
-$namefixer = new NameFixer();
-$predb = new PreDb(true);
 $c = new ColorCLI();
+$namefixer = new NameFixer();
+$predb = new PreDb(['Echo' => true, 'Settings' => $namefixer->pdo, 'ColorCLI' => $c]);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 	$update = ($argv[2] == "true") ? 1 : 2;
