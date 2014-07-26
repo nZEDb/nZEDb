@@ -88,6 +88,9 @@ if (is_file(__DIR__ . DS . 'settings.php')) {
 	define('nZEDb_CACHE_EXPIRY_MEDIUM', 600);
 	define('nZEDb_CACHE_EXPIRY_LONG', 900);
 	define('nZEDb_PREINFO_OPEN', false);
+	define('nZEDb_FLOOD_CHECK', false);
+	define('nZEDb_FLOOD_WAIT_TIME', 5);
+	define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
 }
 
 require_once nZEDb_CORE . 'autoloader.php';

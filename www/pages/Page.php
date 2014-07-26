@@ -3,7 +3,7 @@
 
 class Page extends BasePage
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 

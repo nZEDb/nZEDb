@@ -12,7 +12,7 @@ if (is_file("config.php")) {
 }
 require_once 'automated.config.php';
 
-$page = new Page;
+$page = new Page();
 
 switch ($page->page) {
 	case 'ajax_mediainfo':

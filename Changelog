@@ -10,6 +10,8 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Remove 'See full summary »' from the end of imdb movie plot #1420
 2014-07-26 kevin
 	* Fix: #1421
+	* Add: Settings to settings.php for temporarily blocking site access to those sending too many requests.
+	* Chg: Show 404 page when page is missing.
 2014-07-25 ruhllatio
 	* Fix: match_prefiles not honoring CLI arg limit
 	* Chg: Monitor now using proper PDO for work queries
