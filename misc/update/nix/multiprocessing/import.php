@@ -7,7 +7,8 @@ if (!isset($argv[1]) || !is_dir($argv[1])) {
 	exit(
 		'First argument (mandatory):' . PHP_EOL .
 		'Path to a folder, containing folders with .nzb or .nzb.gz files inside them.' . PHP_EOL .
-		'If you supply a path containing only files, the files will be ignored.' . PHP_EOL . PHP_EOL .
+		'If you supply a path containing only files, the files will be ignored.' . PHP_EOL .
+		'The sub-folders will be searched recursively for NZB files.' . PHP_EOL . PHP_EOL .
 		'Second argument (optional):' . PHP_EOL .
 		'Number of processes, how many processes to run max at a time. (default is 1)' . PHP_EOL . PHP_EOL .
 		'Third argument (optional):' . PHP_EOL .
