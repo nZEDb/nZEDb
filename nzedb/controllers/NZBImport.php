@@ -82,13 +82,13 @@ class NZBImport
 	public function __construct(array $options = array())
 	{
 		$defaults = [
-			'Browser'        => false, // Was this started from the browser?
-			'Echo'           => true,  // Echo to CLI?
-			'Binaries'       => null,
-			'Category'       => null,
-			'NZB'            => null,
-			'ReleaseCleaner' => null,
-			'Settings'       => null,
+			'Browser'          => false, // Was this started from the browser?
+			'Echo'             => true,  // Echo to CLI?
+			'Binaries'         => null,
+			'Categorize'       => null,
+			'NZB'              => null,
+			'ReleaseCleaning'  => null,
+			'Settings'         => null,
 		];
 		$defaults = array_replace($defaults, $options);
 
@@ -417,7 +417,7 @@ class NZBImport
 				)
 			);
 		} else {
-			$this->echoOut('This release is already in our DB so skipping: ' . $subject);
+			//$this->echoOut('This release is already in our DB so skipping: ' . $subject);
 			return false;
 		}
 
