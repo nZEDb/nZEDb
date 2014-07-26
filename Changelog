@@ -18,6 +18,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Automatically rehash user passwords if needed.
 	* Add: Support for GNU Timeout, to kill unrar/ffmpeg/etc after set time (you can set the time / path to timeout in site edit, on linux it should be /usr/bin/timeout)
 	* Chg: Move safe_pull.php into switch.php
+	* Add: Renamed option to multiprocess/postprocess.php movie/tv
 2014-07-25 ruhllatio
 	* Fix: match_prefiles not honoring CLI arg limit
 	* Chg: Monitor now using proper PDO for work queries

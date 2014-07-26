@@ -177,15 +177,18 @@ class PostProcess
 	/**
 	 * Lookup imdb if enabled.
 	 *
-	 * @param string $groupID  (Optional) ID of a group to work on.
-	 * @param string $guidChar (Optional) First letter of a release GUID to use to get work.
+	 * @param string     $groupID       (Optional) ID of a group to work on.
+	 * @param string     $guidChar      (Optional) First letter of a release GUID to use to get work.
+	 * @param int|string $processMovies (Optional) 0 Don't process, 1 process all releases,
+	 *                                             2 process renamed releases only, '' check site setting
 	 *
 	 * @return void
 	 */
-	public function processMovies($groupID = '', $guidChar = '')
+	public function processMovies($groupID = '', $guidChar = '', $processMovies = '')
 	{
-		if ($this->pdo->getSetting('lookupimdb') > 0) {
-			(new Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processMovieReleases($groupID, $guidChar, $this->pdo->getSetting('lookupimdb'));
+		$processMovies = (is_numeric($processMovies) ? $processMovies : $this->pdo->getSetting('lookupimdb'));
+		if ($processMovies > 0) {
+			(new Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processMovieReleases($groupID, $guidChar, $processMovies);
 		}
 	}
 
@@ -242,15 +245,18 @@ class PostProcess
 	/**
 	 * Process all TV related releases which will assign their series/episode/rage data.
 	 *
-	 * @param string $groupID  (Optional) ID of a group to work on.
-	 * @param string $guidChar (Optional) First letter of a release GUID to use to get work.
+	 * @param string     $groupID   (Optional) ID of a group to work on.
+	 * @param string     $guidChar  (Optional) First letter of a release GUID to use to get work.
+	 * @param string|int $processTV (Optional) 0 Don't process, 1 process all releases,
+	 *                                         2 process renamed releases only, '' check site setting
 	 *
 	 * @return void
 	 */
-	public function processTv($groupID = '', $guidChar = '')
+	public function processTv($groupID = '', $guidChar = '', $processTV = '')
 	{
-		if ($this->pdo->getSetting('lookuptvrage') > 0) {
-			(new TvRage(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processTvReleases($groupID, $guidChar, $this->pdo->getSetting('lookuptvrage'));
+		$processTV = (is_numeric($processTV) ? $processTV : $this->pdo->getSetting('lookuptvrage'));
+		if ($processTV > 0) {
+			(new TvRage(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processTvReleases($groupID, $guidChar, $processTV);
 		}
 	}
 
