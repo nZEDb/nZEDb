@@ -82,6 +82,39 @@
 				</tr>
 			{/if}
 
+			{if $xxx}
+				<tr>
+					<th style="vertical-align:top">XXX Info:</th>
+					<td><strong>{$xxx.title|stripslashes|escape:"htmlall"}</strong>
+						{if $xxx.tagline != ''}<br>{$xxx.tagline|stripslashes|escape:"htmlall"}{/if}
+						{if $xxx.plot != ''}{if $xxx.tagline != ''} - {else}<br>{/if}{$xxx.plot|stripslashes|escape:"htmlall"}{/if}
+						<br><br>{if $xxx.director != ""} <strong>Director:</strong> {$xxx.director}<br>{/if}
+						<strong>Genre:</strong> {$xxx.genre}
+						{if $xxx.actors !=''}<br><strong>Starring:</strong>{$xxx.actors}{/if}
+						{if $xxx.trailers != ''}
+							<br /><strong>Trailer:</strong>
+							<div>{$xxx.trailers}</div>
+						{/if}
+						<div style="margin-top:10px;">
+							<span class="label label-default">
+								{if $xxx.classused === "ade"}
+								<a target="_blank" href="{$site->dereferrer_link}{$xxx.directurl}/" title="View at Adult DVD Empire">ADE</a>
+								{elseif $xxx.classused === "pop"}
+								<a target="_blank" href="{$site->dereferrer_link}{$xxx.directurl}/" title="View at Popporn">Popporn</a>
+								{else}
+								<a target="_blank" href="{$site->dereferrer_link}{$xxx.directurl}/" title="View at Hot Movies">HM</a>
+								{/if}
+							</span>
+							{if $xxx.classused != ''}
+								<span class="label label-default">
+								<a target="_blank" href="{$site->dereferrer_link}http://www.iafd.com/results.asp?searchtype=title&searchstring={$xxx.title}" title="Search IAFD">IAFD</a>
+								</span>
+							{/if}
+						</div>
+					</td>
+				</tr>
+			{/if}
+
 			{if $anidb && $anidb.anidbid > 0}
 				<tr>
 					<th style="vertical-align:top">Anime Info:</th>
@@ -195,6 +228,8 @@
 
 		{if $movie && $release.rageid < 0 && $movie.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}"*}
+
+		{if $xxx && $xxx.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$xxx.id}-cover.jpg" alt="{$xxx.title|escape:"htmlall"}">{/if}
 
 		{if $anidb && $release.anidbid > 0 && $anidb.picture != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" alt="{$anidb.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" alt="{$anidb.title|escape:"htmlall"}*}
