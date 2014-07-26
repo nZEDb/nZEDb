@@ -97,11 +97,9 @@ class BasePage
 		$this->smarty->error_reporting = ((nZEDb_DEBUG ? E_ALL : E_ALL - E_NOTICE));
 
 		if (isset($_SERVER['SERVER_NAME'])) {
-			$httpStart = ($this->https === true ? 'https://' : 'http://');
-
 			$this->serverurl = (
-				$httpStart . $_SERVER['SERVER_NAME'] .
-				(($_SERVER['SERVER_PORT'] != '80' && $_SERVER['SERVER_PORT'] != '443') ? ':'.$_SERVER['SERVER_PORT'] : '') .
+				($this->https === true ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'] .
+				(($_SERVER['SERVER_PORT'] != '80' && $_SERVER['SERVER_PORT'] != '443') ? ':' . $_SERVER['SERVER_PORT'] : '') .
 				WWW_TOP . '/'
 			);
 			$this->smarty->assign('serverroot', $this->serverurl);
@@ -129,7 +127,7 @@ class BasePage
 				$this->users->updateSiteAccessed($this->userdata['id']);
 			}
 
-			$this->smarty->assign('userdata',$this->userdata);
+			$this->smarty->assign('userdata', $this->userdata);
 			$this->smarty->assign('loggedin', 'true');
 
 			$sab = new SABnzbd($this);
@@ -146,8 +144,8 @@ class BasePage
 					$this->smarty->assign('ismod', 'true');
 			}
 		} else {
-			$this->smarty->assign('isadmin', 'false');
-			$this->smarty->assign('ismod', 'false');
+			$this->smarty->assign('isadmin',  'false');
+			$this->smarty->assign('ismod',    'false');
 			$this->smarty->assign('loggedin', 'false');
 		}
 
