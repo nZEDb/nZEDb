@@ -1,5 +1,5 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
@@ -16,7 +16,7 @@ if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $mtmp)) {
 	$category = $_REQUEST['t'] + 0;
 }
 
-$user = $users->getById($users->currentUserId());
+$user = $page->users->getById($page->users->currentUserId());
 $cpapi = $user['cp_api'];
 $cpurl = $user['cp_url'];
 $page->smarty->assign('cpapi', $cpapi);

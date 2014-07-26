@@ -14,7 +14,7 @@ $page->smarty->assign('loggingon', $loggingon);
 
 $page->title = 'Site Stats';
 
-$topgrabs = (new Users(['Settings' => $page->settings]))->getTopGrabbers();
+$topgrabs = $page->users->getTopGrabbers();
 $page->smarty->assign('topgrabs', $topgrabs);
 
 $topdownloads = $releases->getTopDownloads();

@@ -1,7 +1,7 @@
 <?php
 
 // Page is accessible only to logged in users.
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 

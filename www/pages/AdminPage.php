@@ -5,7 +5,7 @@ require_once './config.php';
 
 class AdminPage extends BasePage
 {
-	function __construct($allowmod = false)
+	public function __construct($allowmod = false)
 	{
 		parent::__construct();
 
@@ -15,8 +15,7 @@ class AdminPage extends BasePage
 				'frontend' => nZEDb_WWW.'themes/Default/templates/frontend',
 			));
 
-		$users = new Users();
-		if (!$users->isLoggedIn() || !isset($this->userdata['role']))
+		if (!$this->users->isLoggedIn() || !isset($this->userdata['role']))
 			$this->show403(true);
 
 		// If the user isn't an admin or mod then access is denied, OR if they're a mod and mods aren't allowed then access is denied.
@@ -24,7 +23,7 @@ class AdminPage extends BasePage
 			$this->show403(true);
 
 		// Set the users style.
-		$style = $users->getStyle($users->currentUserId());
+		$style = $this->users->getStyle($this->users->currentUserId());
 		if ($style !== 'None') {
 			$this->smarty->setTemplateDir(
 				array(
@@ -48,4 +47,3 @@ class AdminPage extends BasePage
 		parent::render();
 	}
 }
-?>

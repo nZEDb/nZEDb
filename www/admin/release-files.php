@@ -2,9 +2,8 @@
 require_once './config.php';
 
 $page = new AdminPage;
-$users = new Users(['Settings' => $page->settings]);
 
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 

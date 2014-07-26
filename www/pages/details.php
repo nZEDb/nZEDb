@@ -1,5 +1,5 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
@@ -13,7 +13,7 @@ if (isset($_GET['id'])) {
 
 	$rc = new ReleaseComments($page->settings);
 	if ($page->isPostBack()) {
-		$rc->addComment($data['id'], $_POST['txtAddComment'], $users->currentUserId(), $_SERVER['REMOTE_ADDR']);
+		$rc->addComment($data['id'], $_POST['txtAddComment'], $page->users->currentUserId(), $_SERVER['REMOTE_ADDR']);
 	}
 
 	$nfo = $releases->getReleaseNfo($data['id'], false);
@@ -115,7 +115,7 @@ if (isset($_GET['id'])) {
 	$predb = new PreDb(['Settings' => $page->settings]);
 	$pre = $predb->getForRelease($data['preid']);
 
-	$user = $users->getById($users->currentUserId());
+	$user = $page->users->getById($page->users->currentUserId());
 
 	$page->smarty->assign('cpapi',  $user['cp_api']);
 	$page->smarty->assign('cpurl', $user['cp_url']);

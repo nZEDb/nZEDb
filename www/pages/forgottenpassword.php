@@ -2,7 +2,7 @@
 
 use nzedb\utility;
 
-if ($users->isLoggedIn()) {
+if ($page->users->isLoggedIn()) {
 	$page->show404();
 }
 
@@ -15,15 +15,15 @@ switch($action) {
 			break;
 		}
 
-		$ret = $users->getByPassResetGuid($_REQUEST['guid']);
+		$ret = $page->users->getByPassResetGuid($_REQUEST['guid']);
 		if (!$ret) {
 			$page->smarty->assign('error', "Bad reset code provided.");
 			break;
 		} else {
 			// Reset the password, inform the user, send out the email.
-			$users->updatePassResetGuid($ret["id"], "");
-			$newpass = $users->generatePassword();
-			$users->updatePassword($ret["id"], $newpass);
+			$page->users->updatePassResetGuid($ret["id"], "");
+			$newpass = $page->users->generatePassword();
+			$page->users->updatePassword($ret["id"], $newpass);
 
 			$to = $ret["email"];
 			$subject = $page->settings->getSetting('title')." Password Reset";
@@ -44,14 +44,14 @@ switch($action) {
 			$page->smarty->assign('error', "Missing Email");
 		} else {
 			// Check users exists and send an email.
-			$ret = $users->getByEmail($_POST['email']);
+			$ret = $page->users->getByEmail($_POST['email']);
 			if (!$ret) {
 				$page->smarty->assign('sent', "true");
 				break;
 			} else {
 				// Generate a forgottenpassword guid, store it in the user table.
 				$guid = md5(uniqid());
-				$users->updatePassResetGuid($ret["id"], $guid);
+				$page->users->updatePassResetGuid($ret["id"], $guid);
 
 				// Send the email
 				$to = $ret["email"];

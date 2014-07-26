@@ -1,11 +1,11 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
 $um = new UserMovies(['Settings' => $page->settings]);
 if (isset($_REQUEST["del"])) {
-	$um->delMovie($users->currentUserId(), $_REQUEST["del"]);
+	$um->delMovie($page->users->currentUserId(), $_REQUEST["del"]);
 }
 
 $cat = new Category(['Settings' => $page->settings]);
@@ -15,7 +15,7 @@ foreach ($tmpcats as $c) {
 	$categories[$c['id']] = $c['title'];
 }
 
-$movies = $um->getMovies($users->currentUserId());
+$movies = $um->getMovies($page->users->currentUserId());
 $results = array();
 foreach ($movies as $mov => $m) {
 	$movcats = explode('|', $m['categoryid']);

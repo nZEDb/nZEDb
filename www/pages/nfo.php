@@ -2,7 +2,7 @@
 
 use nzedb\utility;
 
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 

@@ -28,6 +28,8 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Re-use class instances on Movie.
 	* Chg: Re-use BasePage's nzedb\db\Settings instance in as many www/admin files as possible to speed up page loads.
 	* Chg: BasePage, save a DB call by re-using the Settings instance for smarty, speeds up execution of all web-pages.
+	* Chg: Store and re-use the Users instance in BasePage instead of destroying it and later recreating another instance in index.php
+	* Add: Setting to settings.php for opening preinfo to the public.
 2014-07-24 ruhllatio
 	* Chg: Case a few if/elseif run ons in NameFixer -- more to do
 	* Fix: #1408 Issue with HDTS not being categorized properly

@@ -6,7 +6,7 @@ $menu = new Menu($page->settings);
 $id = 0;
 
 // Get the user roles.
-$userroles = (new Users(['Settings' => $page->settings]))->getRoles();
+$userroles = $page->users->getRoles();
 $roles = array();
 foreach ($userroles as $r) {
 	$roles[$r['id']] = $r['name'];

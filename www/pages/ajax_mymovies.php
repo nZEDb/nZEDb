@@ -1,14 +1,14 @@
 <?php
 require_once nZEDb_LIBS . 'TMDb.php';
 
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
 $um = new UserMovies(['Settings' => $page->settings]);
 
 if (isset($_REQUEST['del'])) {
-	$usermovies = $um->delMovie($users->currentUserId(), $_REQUEST['del']);
+	$usermovies = $um->delMovie($page->users->currentUserId(), $_REQUEST['del']);
 } else if (isset($_REQUEST['add'])) {
 	// Derive cats from user preferences.
 	$cats = array();
@@ -21,7 +21,7 @@ if (isset($_REQUEST['del'])) {
 		$m->updateMovieInfo($_REQUEST['add']);
 	}
 
-	$usermovies = $um->addMovie($users->currentUserId(), $_REQUEST['add'], $cats);
+	$usermovies = $um->addMovie($page->users->currentUserId(), $_REQUEST['add'], $cats);
 } else {
 	if (!isset($_REQUEST['id'])) {
 		$page->show404();
@@ -78,7 +78,7 @@ if (isset($_REQUEST['del'])) {
 			}
 
 			$userimdbs = array();
-			$usermovies = $um->getMovies($users->currentUserId());
+			$usermovies = $um->getMovies($page->users->currentUserId());
 			foreach ($usermovies as $umovie) {
 				$userimdbs[$umovie['imdbid']] = $umovie['imdbid'];
 			}

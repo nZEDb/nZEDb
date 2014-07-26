@@ -1,5 +1,5 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
@@ -7,7 +7,7 @@ $id = $_GET["id"] + 0;
 
 $forum = new Forum(['Settings' => $page->settings]);
 if ($page->isPostBack()) {
-	$forum->add($id, $users->currentUserId(), "", $_POST["addReply"]);
+	$forum->add($id, $page->users->currentUserId(), "", $_POST["addReply"]);
 	header("Location:" . WWW_TOP . "/forumpost/" . $id . "#last");
 	exit();
 }
