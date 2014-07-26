@@ -229,7 +229,7 @@
 		{if $movie && $release.rageid < 0 && $movie.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/movies/{$movie.imdbid}-cover.jpg" alt="{$movie.title|escape:"htmlall"}"*}
 
-		{if $xxx && $xxx.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/movies/{$xxx.id}-cover.jpg" alt="{$xxx.title|escape:"htmlall"}">{/if}
+		{if $xxx && $xxx.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/xxx/{$xxx.id}-cover.jpg" alt="{$xxx.title|escape:"htmlall"}">{/if}
 
 		{if $anidb && $release.anidbid > 0 && $anidb.picture != ""}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" alt="{$anidb.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/anime/{$anidb.anidbid}.jpg" alt="{$anidb.title|escape:"htmlall"}*}
