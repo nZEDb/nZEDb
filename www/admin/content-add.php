@@ -1,7 +1,6 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
 $contents = new Contents(['Settings' => $page->settings]);
 $id = 0;
