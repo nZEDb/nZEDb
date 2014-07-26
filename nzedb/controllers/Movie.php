@@ -633,7 +633,7 @@ class Movie
 		}
 
 		$mov['title']    = html_entity_decode($mov['title']   , ENT_QUOTES, 'UTF-8');
-		$mov['plot']     = html_entity_decode($mov['plot']    , ENT_QUOTES, 'UTF-8');
+		$mov['plot']     = html_entity_decode(preg_replace('/\s+See full summary »/', ' ', $mov['plot']), ENT_QUOTES, 'UTF-8');
 		$mov['tagline']  = html_entity_decode($mov['tagline'] , ENT_QUOTES, 'UTF-8');
 		$mov['genre']    = html_entity_decode($mov['genre']   , ENT_QUOTES, 'UTF-8');
 		$mov['director'] = html_entity_decode($mov['director'], ENT_QUOTES, 'UTF-8');

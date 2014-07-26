@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-26 bart39
+	* Fix: Remove 'See full summary »' from the end of imdb movie plot #1420
 2014-07-26 kevin
 	* Fix: #1421
 2014-07-25 ruhllatio
