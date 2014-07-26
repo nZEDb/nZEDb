@@ -111,9 +111,9 @@ class Forking extends \fork_daemon
 
 	/**
 	 * Only post process renamed movie / tv releases?
-	 * @var string
+	 * @var bool
 	 */
-	private $ppRenamedOnly = '';
+	private $ppRenamedOnly;
 
 	/**
 	 * Get work for our workers to work on, set the max child processes here.
