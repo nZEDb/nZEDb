@@ -758,6 +758,8 @@ class Users
 	/**
 	 * Verify a password against a hash.
 	 *
+	 * Automatically update the hash if it needs to be.
+	 *
 	 * @param string $password
 	 * @param string $hash
 	 *
@@ -765,7 +767,29 @@ class Users
 	 */
 	public function checkPassword($password, $hash)
 	{
-		return ($this->password_hash ? password_verify($password, $hash) : (crypt($password, $hash) == $hash));
+		if ($this->password_hash) {
+			$check = password_verify($password, $hash);
+			if ($check === false) {
+				return false;
+			}
+
+			// Update the hash if it needs to be.
+			if (password_needs_rehash($hash, PASSWORD_DEFAULT, ['cost' => $this->password_hash_cost])) {
+				$hash = $this->hashPassword($password);
+				if ($hash !== false) {
+					$this->pdo->queryExec(
+						sprintf(
+							'UPDATE users SET password = %s WHERE id = %d',
+							$this->pdo->escapeString($hash),
+							$this->currentUserId()
+						)
+					);
+				}
+			}
+			return true;
+		} else {
+			return (crypt($password, $hash) == $hash);
+		}
 	}
 
 	/**
