@@ -115,6 +115,24 @@
 				</tr>
 			{/if}
 
+			{if $game}
+				<tr>
+					<th style="vertical-align:top">PC Game Info:</th>
+					<td><strong>{$game.title|escape:"htmlall"} ({$game.releasedate|date_format:"%Y"})</strong><br>
+						{if $game.review != ""}<span class="descinitial">{$game.review|escape:"htmlall"|nl2br|magicurl|truncate:"350":" <a class=\"descmore\" href=\"#\">more...</a>"}</span>{if $game.review|strlen > 350}<span class="descfull">{$game.review|escape:"htmlall"|nl2br|magicurl}</span>{/if}<br><br>{/if}
+						{if $game.esrb != ""}<strong>ESRB:</strong> {$game.esrb|escape:"htmlall"}<br>{/if}
+						{if $game.genres != ""}<strong>Genre:</strong> {$game.genres|escape:"htmlall"}<br>{/if}
+						{if $game.publisher != ""}<strong>Publisher:</strong> {$game.publisher|escape:"htmlall"}<br>{/if}
+						{if $game.platform != ""}<strong>Platform:</strong> {$game.platform|escape:"htmlall"}<br>{/if}
+						{if $game.releasedate != ""}<strong>Released:</strong> {$game.releasedate|date_format}{/if}
+						<div style="margin-top:10px;">
+							<span class="label label-default"><a target="_blank" href="{$site->dereferrer_link}{$game.url}/" title="View game at Giantbomb">Giantbomb</a></span>
+						</div>
+					</td>
+				</tr>
+			{/if}
+
+
 			{if $boo}
 				<tr>
 					<th style="vertical-align:top">Book Info:</th>
@@ -183,6 +201,8 @@
 
 		{if $con && $con.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/console/{$con.id}.jpg" alt="{$con.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WWW_TOP}/covers/console/{$con.id}.jpg" width="160" alt="{$con.title|escape:"htmlall"}*}
+
+		{if $game && $game.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/games/{$game.id}.jpg" alt="{$game.title|escape:"htmlall"}">{/if}
 
 		{if $music && $music.cover == 1}<img class="shadow img-thumbnail" style="vertical-align:top" src="{$smarty.const.WWW_TOP}/covers/music/{$music.id}.jpg" alt="{$music.title|escape:"htmlall"}">{/if}
 		{*{$smarty.const.WW>{/if}W_TOP}/covers/music/{$music.id}.jpg" width="160" alt="{$music.title|escape:"htmlall"}*}

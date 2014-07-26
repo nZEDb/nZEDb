@@ -104,6 +104,11 @@ if (isset($_GET['id'])) {
 		$con = $c->getConsoleInfo($data['consoleinfoid']);
 	}
 
+	if ($data['gamesinfo_id'] != '') {
+		$g = new Games(['Settings' => $page->settings]);
+		$game = $g->getgamesInfo($data['gamesinfo_id']);
+	}
+
 	if ($data['bookinfoid'] != '') {
 		$b = new Books(['Settings' => $page->settings]);
 		$boo = $b->getBookInfo($data['bookinfoid']);
@@ -130,6 +135,7 @@ if (isset($_GET['id'])) {
 	$page->smarty->assign('anidb', $ani);
 	$page->smarty->assign('music', $mus);
 	$page->smarty->assign('con', $con);
+	$page->smarty->assign('game', $game);
 	$page->smarty->assign('boo', $boo);
 	$page->smarty->assign('pre', $pre);
 	$page->smarty->assign('comments', $comments);
