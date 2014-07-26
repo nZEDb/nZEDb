@@ -168,6 +168,14 @@ Class ProcessAdditional
 	}
 
 	/**
+	 * Clear out the main temp path when done.
+	 */
+	public function __destruct()
+	{
+		$this->_clearMainTmpPath();
+	}
+
+	/**
 	 * Main method.
 	 *
 	 * @param int|string $groupID  (Optional) ID of a group to work on.
@@ -206,6 +214,8 @@ Class ProcessAdditional
 	 *
 	 * @param string|int $groupID
 	 * @param string     $guidChar
+	 *
+	 * @throws ProcessAdditionalException
 	 */
 	protected function _setMainTempPath(&$groupID = '', &$guidChar)
 	{
@@ -231,19 +241,32 @@ Class ProcessAdditional
 			@umask($old);
 		}
 
-		// Clear out old folders/files from the temp folder.
-		$this->_recursivePathDelete(
-			$this->_mainTmpPath,
-			// These are folders we don't want to delete.
-			array(
-				// This is the actual unrar folder.
-				$this->_mainTmpPath,
-				// This folder is used by misc/testing/Dev/rename_u4e.php
-				$this->_mainTmpPath . 'u4e'
-			)
-		);
+		if (!is_dir($this->_mainTmpPath)) {
+			throw new ProcessAdditionalException('Could create the tmpunrar folder (' . $this->_mainTmpPath . ')');
+		}
+
+		$this->_clearMainTmpPath();
 
 		$this->tmpPath = $this->_mainTmpPath;
+	}
+
+	/**
+	 * Clear out old folders/files from the main temp folder.
+	 */
+	protected function _clearMainTmpPath()
+	{
+		if ($this->_mainTmpPath != '') {
+			$this->_recursivePathDelete(
+				$this->_mainTmpPath,
+				// These are folders we don't want to delete.
+				array(
+					// This is the actual temp folder.
+					$this->_mainTmpPath,
+					// This folder is used by misc/testing/Dev/rename_u4e.php
+					$this->_mainTmpPath . 'u4e'
+				)
+			);
+		}
 	}
 
 	/**
@@ -2251,7 +2274,8 @@ Class ProcessAdditional
 	/**
 	 * Echo a string to CLI.
 	 *
-	 * @param string $string
+	 * @param string $string  String to echo.
+	 * @param string $type    Method type.
 	 * @param bool   $newLine Print a new line at the end of the string.
 	 *
 	 * @void
@@ -2278,3 +2302,5 @@ Class ProcessAdditional
 		}
 	}
 }
+
+class ProcessAdditionalException extends Exception { }

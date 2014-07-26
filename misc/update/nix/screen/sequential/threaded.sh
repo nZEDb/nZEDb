@@ -16,7 +16,6 @@ else
 	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
 
-export NZEDB_UNRAR=`php $NZEDB_ROOT/nzedb/db/Settings.php tmpunrarpath`
 export niceness=10
 export START_PATH="${NZEDB_ROOT}"
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
@@ -31,13 +30,6 @@ command -v python3 >/dev/null 2>&1 && export PYTHON=`command -v python3` || { ex
 export PHP="nice -n$niceness $PHP"
 export PYTHON="nice -n$niceness $PYTHON"
 
-#delete stale tmpunrar folders
-# we need to have this use the Db setting. No idea how yet, but this fails too often otherwise.
-export count=`find $NZEDB_UNRAR -type d -print| wc -l`
-if [ $count != 1 ]
-then
-	rm -r $NZEDB_UNRAR/*
-fi
 if [[ $1 != "true" ]]
 then
 	$PHP ${NZEDB_PATH}/nix/tmux/bin/resetdelaytime.php

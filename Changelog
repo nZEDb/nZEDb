@@ -12,6 +12,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: #1421
 	* Add: Settings to settings.php for temporarily blocking site access to those sending too many requests.
 	* Chg: Show 404 page when page is missing.
+	* Chg: Move all tmpunrar deletions to ProcessAdditional to try to avoid external issues.
 2014-07-25 ruhllatio
 	* Fix: match_prefiles not honoring CLI arg limit
 	* Chg: Monitor now using proper PDO for work queries
