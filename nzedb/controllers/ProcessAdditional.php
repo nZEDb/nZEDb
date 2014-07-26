@@ -1623,6 +1623,12 @@ Class ProcessAdditional
 				'" -vcodec copy -f null /dev/null 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
 			);
 
+			if (isset($time[0])) {
+				$time = $time[0];
+			} else {
+				$time = '';
+			}
+
 			// If it's 11 chars long, it's good (00:00:00.00)
 			if (strlen($time) !== 11) {
 				// If not set it to 1 second.
@@ -1702,6 +1708,12 @@ Class ProcessAdditional
 					$fileLocation .
 					'" -vcodec copy -f null /dev/null 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
 				);
+
+				if (isset($time[0])) {
+					$time = $time[0];
+				} else {
+					$time = '';
+				}
 
 				// If we don't get the time create the sample the old way (gets the start of the video).
 				$numbers = array();

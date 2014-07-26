@@ -790,6 +790,13 @@
 				</td>
 			</tr>
 			<tr>
+				<td style="width:180px;"><label for="timeoutseconds">Time in seconds to kill unrar/ffmpeg/etc:</label></td>
+				<td>
+					<input class="short" id="timeoutseconds" name="timeoutseconds" type="text" value="{$site->timeoutseconds}"/>
+					<div class="hint">How much time to wait for unrar/ffmpeg/etc before killing it, set to 0 to disable. 60 is a good value. Requires the GNU Timeout path to be set.</div>
+				</td>
+			</tr>
+			<tr>
 				<td style="width:180px;"><label for="maxaddprocessed">Maximum add PP per run:</label></td>
 				<td>
 					<input class="short" id="maxaddprocessed" name="maxaddprocessed" type="text" value="{$site->maxaddprocessed}"/>
