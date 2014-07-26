@@ -768,8 +768,7 @@ class Users
 	public function checkPassword($password, $hash)
 	{
 		if ($this->password_hash) {
-			$check = password_verify($password, $hash);
-			if ($check === false) {
+			if (password_verify($password, $hash) === false) {
 				return false;
 			}
 
