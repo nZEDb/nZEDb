@@ -34,8 +34,7 @@ switch ($options[1]) {
 	case 'backfill_all_quantity':
 		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
-		$backFill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
-		$backFill->backfillAllGroups($options[2], $options[3]);
+		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], $options[3]);
 		break;
 
 	// BackFill a single group, 10000 parts.
@@ -55,8 +54,7 @@ switch ($options[1]) {
 	case 'get_final':
 		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
-		$backFill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
-		$backFill->getFinal($options[2], $options[3], $options[4]);
+		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->getFinal($options[2], $options[3], $options[4]);
 		break;
 
 	/* Get a range of article headers for a group.
@@ -69,8 +67,7 @@ switch ($options[1]) {
 	case 'get_range':
 		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
-		$backFill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
-		$backFill->getRange($options[2], $options[3], $options[4], $options[5]);
+		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->getRange($options[2], $options[3], $options[4], $options[5]);
 		break;
 
 	/* Do part repair for a group.
@@ -80,9 +77,8 @@ switch ($options[1]) {
 	case 'part_repair':
 		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
-		$grp = new Groups(['Settings' => $pdo]);
-		$binaries = new Binaries(['NNTP' => $nntp, 'Groups' => $grp, 'Settings' => $pdo]);
-		$groupMySQL = $grp->getByName($options[2]);
+		$groups = new Groups(['Settings' => $pdo]);
+		$groupMySQL = $groups->getByName($options[2]);
 		// Select group, here, only once
 		$data = $nntp->selectGroup($groupMySQL['name']);
 		if ($nntp->isError($data)) {
@@ -90,7 +86,7 @@ switch ($options[1]) {
 				exit();
 			}
 		}
-		$binaries->partRepair($groupMySQL);
+		(new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $pdo]))->partRepair($groupMySQL);
 		break;
 
 	// Process releases.
@@ -139,9 +135,8 @@ switch ($options[1]) {
 		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
-		$binaries = new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[2]);
-		$binaries->updateGroup($groupMySQL);
+		(new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $pdo]))->updateGroup($groupMySQL);
 		break;
 
 
