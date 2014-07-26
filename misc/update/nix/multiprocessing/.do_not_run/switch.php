@@ -140,7 +140,7 @@ switch ($options[1]) {
 		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
 		$binaries = new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $pdo]);
-		$groupMySQL = $grp->getByName($options[2]);
+		$groupMySQL = $groups->getByName($options[2]);
 		$binaries->updateGroup($groupMySQL);
 		break;
 
