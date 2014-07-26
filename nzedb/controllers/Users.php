@@ -51,6 +51,10 @@ class Users
 		$defaults = array_replace($defaults, $options);
 
 		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+
+		// Use password_hash functions if version of PHP is 5.5 or higher, it is more secure than crypt.
+		$this->password_hash = (version_compare(PHP_VERSION, '5.5.0', '>='));
+		$this->password_hash_cost = (defined('nZEDb_PASSWORD_HASH_COST') ? nZEDb_PASSWORD_HASH_COST : 10);
 	}
 
 	/**
@@ -734,9 +738,9 @@ class Users
 	 *
 	 * @return string
 	 */
-	public static function hashPassword($password)
+	public function hashPassword($password)
 	{
-		return crypt($password);  // let the salt be automatically generated
+		return ($this->password_hash ? password_hash($password, PASSWORD_DEFAULT, ['cost' => $this->password_hash_cost]) : crypt($password));
 	}
 
 	/**
@@ -759,9 +763,9 @@ class Users
 	 *
 	 * @return bool
 	 */
-	public static function checkPassword($password, $hash)
+	public function checkPassword($password, $hash)
 	{
-		return (crypt($password, $hash) == $hash);
+		return ($this->password_hash ? password_verify($password, $hash) : (crypt($password, $hash) == $hash));
 	}
 
 	/**
