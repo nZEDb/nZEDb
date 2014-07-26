@@ -12,7 +12,7 @@ class InstallPage
 	public $smarty = '';
 	public $error = false;
 
-	function  __construct()
+	public function  __construct()
 	{
 		@session_start();
 

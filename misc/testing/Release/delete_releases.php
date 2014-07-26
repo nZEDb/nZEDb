@@ -2,9 +2,6 @@
 // New line for CLI.
 $n = PHP_EOL;
 
-// Time the script started.
-$timeStart = TIME();
-
 // Include config.php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
@@ -43,6 +40,6 @@ if ($totalArgs < 2) {
 	));
 }
 
-$RR = new ReleaseRemover();
+$RR = new ReleaseRemover(['ColorCLI' => $c]);
 // Remove argv[0] and send the array.
 $RR->removeByCriteria(array_slice($argv, 1, $totalArgs-1));

@@ -62,5 +62,5 @@ if (isset($argv[3]) && $argv[3] === 'blacklist' && isset($argv[4])) {
 	$blacklistID = $argv[4];
 }
 
-$RR = new ReleaseRemover();
+$RR = new ReleaseRemover(['ColorCLI' => $c]);
 $RR->removeCrap(($argv[1] === 'true' ? true : false), $argv[2], (isset($argv[3]) ? $argv[3] : ''), (isset($blacklistID) ? $argv[4] : ''));

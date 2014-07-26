@@ -1,18 +1,15 @@
 <?php
 require_once './config.php';
 
-
-
 $page = new AdminPage();
-$console = new Console();
-$gen = new Genres();
+$console = new Console(['Settings' => $page->settings]);
+$gen = new Genres(['Settings' => $page->settings]);
 $id = 0;
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-if (isset($_REQUEST["id"]))
-{
+if (isset($_REQUEST["id"])) {
 	$id = $_REQUEST["id"];
 	$con = $console->getConsoleInfo($id);
 
@@ -20,17 +17,16 @@ if (isset($_REQUEST["id"]))
 		$page->show404();
 	}
 
-	switch($action)
-	{
+	switch($action) {
 		case 'submit':
 			$coverLoc = nZEDb_COVERS . "console/" . $id . '.jpg';
 
-			if($_FILES['cover']['size'] > 0)
-			{
+			if($_FILES['cover']['size'] > 0) {
 				$tmpName = $_FILES['cover']['tmp_name'];
 				$file_info = getimagesize($tmpName);
-				if(!empty($file_info))
+				if(!empty($file_info)) {
 					move_uploaded_file($_FILES['cover']['tmp_name'], $coverLoc);
+				}
 			}
 
 			$_POST['cover'] = (file_exists($coverLoc)) ? 1 : 0;
@@ -54,5 +50,3 @@ if (isset($_REQUEST["id"]))
 
 $page->content = $page->smarty->fetch('console-edit.tpl');
 $page->render();
-
-?>

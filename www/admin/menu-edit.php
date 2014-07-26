@@ -1,26 +1,21 @@
 <?php
 require_once './config.php';
 
-
-
 $page = new AdminPage();
-$menu = new Menu();
-$users = new Users();
+$menu = new Menu($page->settings);
 $id = 0;
 
 // Get the user roles.
-$userroles = $users->getRoles();
+$userroles = $page->users->getRoles();
 $roles = array();
-foreach ($userroles as $r)
-{
+foreach ($userroles as $r) {
 	$roles[$r['id']] = $r['name'];
 }
 
 // set the current action
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action)
-{
+switch($action) {
 	case 'submit':
 		if ($_POST["id"] == "")
 			$menu->add($_POST);
@@ -50,5 +45,3 @@ $page->smarty->assign('role_names', $roles);
 
 $page->content = $page->smarty->fetch('menu-edit.tpl');
 $page->render();
-
-?>

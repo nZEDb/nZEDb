@@ -131,8 +131,7 @@ $page->smarty->assign('lookup_reqids_names', array('Disabled', 'Lookup Request I
 $page->smarty->assign('coversPath', nZEDb_COVERS);
 
 // return a list of audiobooks, ebooks, technical and foreign books
-$pdo = new Settings();
-$result = $pdo->query("SELECT id, title FROM category WHERE id in (3030, 8010, 8040, 8060)");
+$result = $page->settings->query("SELECT id, title FROM category WHERE id in (3030, 8010, 8040, 8060)");
 
 // setup the display lists for these categories, this could have been static, but then if names changed they would be wrong
 $book_reqids_ids = array();
@@ -160,8 +159,7 @@ $page->smarty->assign('loggingopt_names', array ('Disabled', 'Log in DB only', '
 
 $themelist = array();
 $themes = scandir(nZEDb_WWW."/themes");
-foreach ($themes as $theme)
-{
+foreach ($themes as $theme) {
 	if (strpos($theme, ".") === false && is_dir(nZEDb_WWW."/themes/".$theme))
 		$themelist[] = $theme;
 }
@@ -170,5 +168,3 @@ $page->smarty->assign('themelist', $themelist);
 
 $page->content = $page->smarty->fetch('site-edit.tpl');
 $page->render();
-
-?>

@@ -82,15 +82,22 @@ class Nfo
 	/**
 	 * Default constructor.
 	 *
-	 * @param bool $echo Echo to cli.
+	 * @param array $options Class instance / echo to cli.
 	 *
 	 * @access public
 	 */
-	public function __construct($echo = false)
+	public function __construct(array $options = array())
 	{
-		$this->echo = ($echo && nZEDb_ECHOCLI);
-		$this->c = new ColorCLI();
-		$this->pdo = new Settings();
+		$defaults = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->echo = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 		$this->nzbs = ($this->pdo->getSetting('maxnfoprocessed') != '') ? (int)$this->pdo->getSetting('maxnfoprocessed') : 100;
 		$this->maxsize = ($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
 		$this->tmpPath = $this->pdo->getSetting('tmpunrarpath');
@@ -230,7 +237,7 @@ class Nfo
 						'NNTP' => $nntp,
 						'Nfo'  => $this,
 						'Settings'   => $this->pdo,
-						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this])
+						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this, 'ColorCLI' => $this->c])
 					)
 				);
 				$nzbContents->parseNZB($release['guid'], $release['id'], $release['group_id']);
@@ -311,18 +318,18 @@ class Nfo
 			}
 			$this->c->doEcho($this->c->header($outString . '.'));
 
-			$groups = new Groups($this->pdo);
+			$groups = new Groups(['Settings' => $this->pdo]);
 			$nzbContents = new NZBContents(
 				array(
 					'Echo' => $this->echo,
 					'NNTP' => $nntp,
 					'Nfo' => $this,
 					'Settings' => $this->pdo,
-					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo])
+					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo, 'ColorCLI' => $this->c])
 				)
 			);
-			$movie = new Movie($this->echo);
-			$tvRage = new TvRage($this->echo);
+			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
+			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
 
 			foreach ($res as $arr) {
 				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));

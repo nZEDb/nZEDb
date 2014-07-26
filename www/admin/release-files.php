@@ -2,20 +2,19 @@
 require_once './config.php';
 
 $page = new AdminPage;
-$users = new Users;
 
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
 if (isset($_GET['id'])) {
-	$releases = new Releases();
+	$releases = new Releases(['Settings' => $page->settings]);
 	$release = $releases->getByGuid($_GET['id']);
 	if ($release === false) {
 		$page->show404();
 	}
 
-	$nzb = new NZB();
+	$nzb = new NZB($page->settings);
 	$nzbPath = $nzb->getNZBPath($_GET['id']);
 	if (!file_exists($nzbPath)) {
 		$page->show404();

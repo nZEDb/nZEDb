@@ -1,35 +1,34 @@
 <?php
 require_once nZEDb_LIBS . 'TMDb.php';
 
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$um = new UserMovies();
+$um = new UserMovies(['Settings' => $page->settings]);
 
 if (isset($_REQUEST['del'])) {
-	$usermovies = $um->delMovie($users->currentUserId(), $_REQUEST['del']);
+	$usermovies = $um->delMovie($page->users->currentUserId(), $_REQUEST['del']);
 } else if (isset($_REQUEST['add'])) {
 	// Derive cats from user preferences.
 	$cats = array();
 	$cats[] = '2030';
 	$cats[] = '2040';
 
-	$m = new Movie(false);
+	$m = new Movie(['Settings' => $page->settings]);
 	$mi = $m->getMovieInfo($_REQUEST['add']);
 	if (!$mi) {
 		$m->updateMovieInfo($_REQUEST['add']);
 	}
 
-	$usermovies = $um->addMovie($users->currentUserId(), $_REQUEST['add'], $cats);
+	$usermovies = $um->addMovie($page->users->currentUserId(), $_REQUEST['add'], $cats);
 } else {
 	if (!isset($_REQUEST['id'])) {
 		$page->show404();
 	}
 
-	$pdo = new \nzedb\db\Settings();
-	$tmdb = new TMDb($pdo->getSetting('tmdbkey'), $pdo->getSetting('imdblanguage'));
-	$m = new Movie(false);
+	$tmdb = new TMDb($page->settings->getSetting('tmdbkey'), $page->settings->getSetting('imdblanguage'));
+	$m = new Movie(['Settings' => $page->settings, 'TMDb' => $tmdb]);
 
 	if (is_numeric($_REQUEST['id'])) {
 		$movie = $m->fetchTMDBProperties($_REQUEST['id']);
@@ -69,7 +68,7 @@ if (isset($_REQUEST['del'])) {
 		} else {
 			$ourmovieimdbs = array();
 			if (count($imdbids) > 0) {
-				$m = new Movie();
+				$m = new Movie(['Settings' => $page->settings, 'TMDb' => $tmdb]);
 				$allmovies = $m->getMovieInfoMultiImdb($imdbids);
 				foreach ($allmovies as $ourmovie) {
 					if ($ourmovie['relimdb'] != '') {
@@ -79,7 +78,7 @@ if (isset($_REQUEST['del'])) {
 			}
 
 			$userimdbs = array();
-			$usermovies = $um->getMovies($users->currentUserId());
+			$usermovies = $um->getMovies($page->users->currentUserId());
 			foreach ($usermovies as $umovie) {
 				$userimdbs[$umovie['imdbid']] = $umovie['imdbid'];
 			}

@@ -8,7 +8,7 @@ if (!isset($argv[1])) {
 	exit($c->error("This script is not intended to be run manually, it is called from fixreleasenames_threaded.py."));
 } else if (isset($argv[1])) {
 	$pdo = new Settings();
-	$namefixer = new NameFixer(true);
+	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c]);
 	$pieces = explode(' ', $argv[1]);
 	if (isset($pieces[1]) && $pieces[0] == 'nfo') {
 		$release = $pieces[1];
@@ -63,8 +63,9 @@ if (!isset($argv[1])) {
 		$groupID = $pieces[3];
 		$nzbcontents = new NZBContents(
 			array(
-				'Echo' => true, 'NNTP' => $nntp, 'Nfo' => new Nfo(), 'Settings' => $pdo,
-				'PostProcess' => new PostProcess(['Settings' => $pdo, 'NameFixer' => $namefixer])
+				'Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo,
+				'Nfo' => new Nfo(['Settings' => $pdo, 'ColorCLI' => $c, 'Echo' => true]),
+				'PostProcess' => new PostProcess(['Settings' => $pdo, 'NameFixer' => $namefixer, 'ColorCLI' => $c])
 			)
 		);
 		//echo " " . microtime();

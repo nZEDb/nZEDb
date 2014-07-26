@@ -9,16 +9,26 @@ use nzedb\db\Settings;
  */
 class Music
 {
+	/**
+	 * @var nzedb\db\Settings
+	 */
 	public $pdo;
 
 	/**
-	 * @param bool $echooutput
+	 * @param array $options Class instances/ echo to CLI.
 	 */
-	function __construct($echooutput = false)
+	public function __construct(array $options = array())
 	{
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
+		$defaults = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
 
-		$this->pdo = new Settings();
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
 		$this->privkey = $this->pdo->getSetting('amazonprivkey');
 		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
@@ -29,7 +39,7 @@ class Music
 		if ($this->pdo->getSetting('lookupmusic') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
-		$this->c = new ColorCLI();
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
 	}
 
 	/**
@@ -104,7 +114,7 @@ class Music
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = " (";
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {
@@ -170,7 +180,7 @@ class Music
 		$catsrch = "";
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catsrch = " (";
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 					if ($categ->isParent($category)) {
@@ -359,7 +369,7 @@ class Music
 	public function updateMusicInfo($title, $year, $amazdata = null)
 	{
 		$pdo = $this->pdo;
-		$gen = new Genres();
+		$gen = new Genres(['Settings' => $this->pdo]);
 		$ri = new ReleaseImage($this->pdo);
 		$titlepercent = 0;
 

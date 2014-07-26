@@ -2,13 +2,13 @@
 
 use \nzedb\db\Settings;
 
-$category = new Category();
-$releases = new Releases();
+$category = new Category(['Settings' => $page->settings]);
+$releases = new Releases(['Settings' => $page->settings]);
 
 // If no content id provided then show user the rss selection page.
 if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 	// User has to either be logged in, or using rsskey.
-	if (!$users->isLoggedIn()) {
+	if (!$page->users->isLoggedIn()) {
 		if ($page->settings->getSetting('registerstatus') != Settings::REGISTER_STATUS_API_ONLY) {
 			header('X-nZEDb: ERROR: You must be logged in or provide a valid User ID and API key!');
 			$page->show403();
@@ -33,20 +33,20 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 } else {
 	$rsstoken = $uid = -1;
 	// User requested a feed, ensure either logged in or passing a valid token.
-	if ($users->isLoggedIn()) {
+	if ($page->users->isLoggedIn()) {
 		$uid = $page->userdata["id"];
 		$rsstoken = $page->userdata["rsstoken"];
 		$maxrequests = $page->userdata['apirequests'];
 	} else {
 		if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
-			$res = $users->getById(0);
+			$res = $page->users->getById(0);
 		} else {
 			if (!isset($_GET["i"]) || !isset($_GET["r"])) {
 				header('X-nZEDb: ERROR: Both the User ID and API key are required for viewing the RSS!');
 				$page->show403();
 			}
 
-			$res = $users->getByIdAndRssToken($_GET["i"], $_GET["r"]);
+			$res = $page->users->getByIdAndRssToken($_GET["i"], $_GET["r"]);
 		}
 
 		if (!$res) {
@@ -59,12 +59,12 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 		$maxrequests = $res['apirequests'];
 	}
 
-	$apirequests = $users->getApiRequests($uid);
+	$apirequests = $page->users->getApiRequests($uid);
 	if ($apirequests['num'] > $maxrequests) {
 		header('X-nZEDb: ERROR: You have reached your daily limit for API requests!');
 		$page->show503();
 	} else {
-		$users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
+		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 	}
 
 	// Valid or logged in user, get them the requested feed.
@@ -102,10 +102,10 @@ if (!isset($_GET["t"]) && !isset($_GET["rage"]) && !isset($_GET["anidb"])) {
 	$page->smarty->assign('rsstoken', $rsstoken);
 
 	if ($usercat == -3) {
-		$catexclusions = $users->getCategoryExclusion($uid);
+		$catexclusions = $page->users->getCategoryExclusion($uid);
 		$reldata = $releases->getShowsRss($usernum, $uid, $catexclusions, $userairdate);
 	} elseif ($usercat == -4) {
-		$catexclusions = $users->getCategoryExclusion($uid);
+		$catexclusions = $page->users->getCategoryExclusion($uid);
 		$reldata = $releases->getMyMoviesRss($usernum, $uid, $catexclusions);
 	} else {
 		$reldata = $releases->getRss(explode(",", $usercat), $usernum, $uid, $userrage, $useranidb, $userairdate);

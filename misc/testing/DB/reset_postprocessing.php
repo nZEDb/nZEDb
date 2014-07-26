@@ -5,7 +5,7 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 $c = new ColorCLI();
-$consoletools = new ConsoleTools();
+$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 $ran = false;
 
 if (isset($argv[1]) && $argv[1] === "all") {

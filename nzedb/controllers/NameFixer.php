@@ -35,23 +35,39 @@ class NameFixer
 	protected $_totalReleases;
 
 	/**
-	 * @param bool $echooutput
+	 * @var nzedb\db\Settings
 	 */
-	public function __construct($echooutput = true)
+	public $pdo;
+
+	/**
+	 * @param array $options Class instances / Echo to cli.
+	 */
+	public function __construct(array $options = array())
 	{
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
+		$defaults = [
+			'Echo'         => true,
+			'Categorize'   => null,
+			'ColorCLI'     => null,
+			'ConsoleTools' => null,
+			'Groups'       => null,
+			'Utility'      => null,
+			'Settings'     => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
 		$this->relid = $this->fixed = $this->checked = 0;
-		$this->pdo = new Settings();
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 		$this->timeother = ' AND rel.adddate > (NOW() - INTERVAL 0 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC';
 		$this->timeall = ' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC';
 		$this->fullother = ' AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id';
 		$this->fullall = '';
 		$this->done = $this->matched = false;
-		$this->c = new ColorCLI();
-		$this->consoletools = new ConsoleTools();
-		$this->category = new Categorize();
-		$this->utility = new Utility();
-		$this->_groups = new Groups($this->pdo);
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->consoletools = ($defaults['ConsoleTools'] instanceof ConsoleTools ? $defaults['ConsoleTools'] :new ConsoleTools(['ColorCLI' => $this->c]));
+		$this->category = ($defaults['Categorize'] instanceof Categorize ? $defaults['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->utility = ($defaults['Utility'] instanceof Utility ? $defaults['Utility'] :new Utility());
+		$this->_groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
 	}
 
 	/**
@@ -216,15 +232,15 @@ class NameFixer
 				$this->_totalReleases = $total;
 
 				echo $this->c->primary(number_format($total) . ' releases to process.');
-				$Nfo = new Nfo();
+				$Nfo = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
 				$nzbContents = new NZBContents(
-					array(
-						'echo' => $this->echooutput,
-						'nntp' => $nntp,
-						'nfo'  => $Nfo,
-						'db'   => $this->pdo,
-						'pp' => new PostProcess(['Settings' => $this->pdo, 'Nfo' => $Nfo])
-					)
+					[
+						'Echo' => $this->echooutput,
+						'NNTP' => $nntp,
+						'Nfo'  => $Nfo,
+						'Settings'   => $this->pdo,
+						'PostProcess' => new PostProcess(['Settings' => $this->pdo, 'Nfo' => $Nfo, 'ColorCLI' => $this->c])
+					]
 				);
 
 				foreach ($releases as $release) {
@@ -350,7 +366,7 @@ class NameFixer
 	public function updateRelease($release, $name, $method, $echo, $type, $nameStatus, $show, $preId = 0)
 	{
 		if ($this->relid !== $release['releaseid']) {
-			$releaseCleaning = new ReleaseCleaning();
+			$releaseCleaning = new ReleaseCleaning($this->pdo);
 			$newName = $releaseCleaning->fixerCleaner($name);
 			if (strtolower($newName) != strtolower($release["searchname"])) {
 				$this->matched = true;
@@ -557,7 +573,7 @@ class NameFixer
 		$show = (isset($args[2]) && $args[2] === 'show') ? 1 : 0;
 
 		if (isset($args[1]) && is_numeric($args[1])) {
-			$orderby = "ORDER BY r.postdate DESC";
+			$orderby = "ORDER BY r.id DESC";
 			$limit = "LIMIT " . $args[1];
 		}
 
@@ -565,15 +581,13 @@ class NameFixer
 		echo $this->c->primary("Matching predb filename to cleaned releasefiles.name.\n");
 
 		$qry =	sprintf('
-				SELECT DISTINCT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid,
+				SELECT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid,
 					rf.name AS filename
 				FROM releases r
 				INNER JOIN releasefiles rf ON r.id = rf.releaseid
 				AND rf.name IS NOT NULL
-				WHERE r.nzbstatus = 1
-				AND r.preid = 0
-				AND r.passwordstatus = 0
-				AND LENGTH(rf.name) > 4;
+				WHERE r.preid = 0
+				GROUP BY r.id
 				%s %s',
 				$orderby,
 				$limit
@@ -635,9 +649,8 @@ class NameFixer
 						$matching++;
 				}
 			}
-		} else {
-			return $matching;
 		}
+		return $matching;
 	}
 
 	// Cleans file names for PreDB Match

@@ -7,16 +7,21 @@ class Groups
 	/**
 	 * @var nzedb\db\Settings
 	 */
-	protected $pdo;
+	public $pdo;
 
 	/**
 	 * Construct.
 	 *
-	 * @param null $pdo
+	 * @param array $options Class instances.
 	 */
-	public function __construct($pdo=null)
+	public function __construct(array $options = array())
 	{
-		$this->pdo = ($pdo instanceof Settings ? $pdo : new Settings());
+		$defOptions = [
+			'Settings' => null
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
 	}
 
 	/**

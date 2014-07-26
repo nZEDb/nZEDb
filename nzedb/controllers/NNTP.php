@@ -91,21 +91,21 @@ class NNTP extends Net_NNTP_Client
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions = [
+		$defaults = [
 			'Settings' => null,
 			'Echo'     => true,
 			'ColorCLI' => null
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$defaults = array_replace($defaults, $options);
 
-		$this->_echo      = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+		$this->_echo = ($defaults['Echo'] && nZEDb_ECHOCLI);
 
-		$this->_colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
-		$this->pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new \nzedb\db\Settings());
+		$this->_colorCLI = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($defaults['Settings'] instanceof \nzedb\db\Settings ? $defaults['Settings'] : new \nzedb\db\Settings());
 
 		$this->_debugBool = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debugBool) {
-			$this->_debugging = new Debugging('NNTP');
+			$this->_debugging = new Debugging(['Class' => 'NNTP', 'ColorCLI' => $this->_colorCLI]);
 		}
 
 		$this->_nntpRetries = ($this->pdo->getSetting('nntpretries') != '') ? (int)$this->pdo->getSetting('nntpretries') : 0 + 1;

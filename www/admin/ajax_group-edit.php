@@ -3,7 +3,7 @@ require_once './config.php';
 
 // Login check.
 $admin = new AdminPage;
-$group  = new Groups();
+$group  = new Groups(['Settings' => $admin->settings]);
 
 // session_write_close(); allows the admin to use the site while the ajax request is being processed.
 if (isset($_GET['action']) && $_GET['action'] == "2") {

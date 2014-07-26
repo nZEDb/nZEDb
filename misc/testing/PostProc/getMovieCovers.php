@@ -4,9 +4,9 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$movie = new Movie(true);
 $pdo = new Settings();
 $c = new ColorCLI();
+$movie = new Movie(['Echo' => true, 'Settings' => $pdo, 'ColorCLI' => $c]);
 
 $movies = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE cover = 0 ORDER BY year ASC, id DESC");
 if ($movies->rowCount() > 0) {

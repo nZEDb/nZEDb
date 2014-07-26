@@ -6,10 +6,10 @@ use nzedb\db\Settings;
 $c = new ColorCLI();
 if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	$pdo = new Settings();
-	$releases = new Releases(array('Settings' => $pdo));
+	$releases = new Releases(['Settings' => $pdo]);
 	$nzb = new NZB($pdo);
-	$consoletools = new ConsoleTools();
-	$timestart = TIME();
+	$consoletools = new ConsoleTools(['ColorCLI' => $c]);
+	$timestart = time();
 	$checked = $deleted = 0;
 	$couldbe = $argv[1] === "true" ? $couldbe = "could be " : "were ";
 	echo $c->header('Getting List of nzbs to check against db.');
@@ -37,19 +37,17 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 					$deleted++;
 				}
 			}
-			$time = $consoletools->convertTime(TIME() - $timestart);
+			$time = $consoletools->convertTime(time() - $timestart);
 			$consoletools->overWritePrimary('Checking NZBs: ' . $deleted . ' nzbs of ' . ++$checked . ' releases checked ' . $couldbe . 'deleted from disk,  Running time: ' . $time);
 		}
 	}
 	echo $c->header("\n" . number_format($checked) . ' nzbs checked, ' . number_format($deleted) . ' nzbs ' . $couldbe . 'deleted.');
 
-	$timestart = TIME();
+	$timestart = time();
 	$checked = $deleted = 0;
 	echo $c->header("Getting List of releases to check against nzbs.");
-	$consoletools = new ConsoleTools();
 	$res = $pdo->queryDirect('SELECT id, guid FROM releases');
 	if ($res->rowCount() > 0) {
-		$consoletools = new ConsoleTools();
 		foreach ($res as $row) {
 			$nzbpath = $nzb->getNZBPath($row["guid"]);
 			if (!file_exists($nzbpath)) {

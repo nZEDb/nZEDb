@@ -8,7 +8,7 @@ if (!isset($argv[1])) {
 	exit($c->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
 } else if (isset($argv[1])) {
 	$pdo = new Settings();
-	$namefixer = new NameFixer(true);
+	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c]);
 	$pieces = explode(' ', $argv[1]);
 	$proxy = $pdo->getSetting('nntpproxy');
 	$guidChar = $pieces[1];
@@ -128,11 +128,11 @@ if (!isset($argv[1])) {
 					exit($c->error("Unable to connect to usenet."));
 				}
 
-				$Nfo = new Nfo();
+				$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true, 'ColorCLI' => $c]);
 				$nzbcontents = new NZBContents(
 					array(
 						'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
-						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
+						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer, 'ColorCLI' => $c])
 					)
 				);
 				foreach ($releases as $release) {

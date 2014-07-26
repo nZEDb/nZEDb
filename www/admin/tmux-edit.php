@@ -8,8 +8,7 @@ $id = 0;
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action)
-{
+switch($action) {
 	case 'submit':
 		$error = "";
 		$ret = $tmux->update($_POST);

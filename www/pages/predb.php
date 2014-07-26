@@ -1,9 +1,9 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$predb = new PreDb();
+$predb = new PreDb(['Settings' => $page->settings]);
 
 $offset = (isset($_REQUEST["offset"]) && ctype_digit($_REQUEST['offset'])) ? $_REQUEST["offset"] : 0;
 

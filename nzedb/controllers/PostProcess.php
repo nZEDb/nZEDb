@@ -68,8 +68,9 @@ class PostProcess
 	 */
 	public function __construct(array $options = array())
 	{
-		$defaultOptions = array(
+		$defaults = array(
 			'Echo'         => true,
+			'ColorCLI'     => null,
 			'Groups'       => null,
 			'NameFixer'    => null,
 			'Nfo'          => null,
@@ -77,20 +78,21 @@ class PostProcess
 			'Settings'     => null,
 		);
 
-		$defaultOptions = array_replace($defaultOptions, $options);
+		$defaults = array_replace($defaults, $options);
 
 		//\\ Various.
-		$this->echooutput = ($defaultOptions['Echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
 		//\\
 
 		//\\ Class instances.
-		$this->pdo = (($defaultOptions['Settings'] instanceof nzedb\db\Settings) ? $defaultOptions['Settings'] : new nzedb\db\Settings());
-		$this->groups = (($defaultOptions['Groups'] instanceof Groups) ? $defaultOptions['Groups'] : new Groups($this->pdo));
+		$this->colorCLI = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->pdo = (($defaults['Settings'] instanceof nzedb\db\Settings) ? $defaults['Settings'] : new nzedb\db\Settings());
+		$this->groups = (($defaults['Groups'] instanceof Groups) ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_par2Info = new Par2Info();
-		$this->debugging = new Debugging('PostProcess');
-		$this->nameFixer = (($defaultOptions['NameFixer'] instanceof NameFixer) ? $defaultOptions['NameFixer'] : new NameFixer($this->echooutput));
-		$this->Nfo = (($defaultOptions['Nfo'] instanceof Nfo ) ? $defaultOptions['Nfo'] : new Nfo($this->echooutput));
-		$this->releaseFiles = (($defaultOptions['ReleaseFiles'] instanceof ReleaseFiles) ? $defaultOptions['ReleaseFiles'] : new ReleaseFiles($this->echooutput));
+		$this->debugging = new Debugging(['Class' => 'PostProcess', 'ColorCLI' => $this->colorCLI]);
+		$this->nameFixer = (($defaults['NameFixer'] instanceof NameFixer) ? $defaults['NameFixer'] : new NameFixer(['Echo' => $this->echooutput, 'ColorCLI' => $this->colorCLI, 'Settings' => $this->pdo, 'Groups' => $this->groups]));
+		$this->Nfo = (($defaults['Nfo'] instanceof Nfo ) ? $defaults['Nfo'] : new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]));
+		$this->releaseFiles = (($defaults['ReleaseFiles'] instanceof ReleaseFiles) ? $defaults['ReleaseFiles'] : new ReleaseFiles($this->pdo));
 		//\\
 
 		//\\ Site settings.
@@ -130,7 +132,7 @@ class PostProcess
 	public function processAnime()
 	{
 		if ($this->pdo->getSetting('lookupanidb') == 1) {
-			$anidb = new AniDB($this->echooutput);
+			$anidb = new AniDB(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]);
 			$anidb->animetitlesUpdate();
 			$anidb->processAnimeReleases();
 		}
@@ -144,7 +146,7 @@ class PostProcess
 	public function processBooks()
 	{
 		if ($this->pdo->getSetting('lookupbooks') != 0) {
-			(new Books($this->echooutput))->processBookReleases();
+			(new Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processBookReleases();
 		}
 	}
 
@@ -156,7 +158,7 @@ class PostProcess
 	public function processConsoles()
 	{
 		if ($this->pdo->getSetting('lookupgames') != 0) {
-			(new Console($this->echooutput))->processConsoleReleases();
+			(new Console(['Settings' => $this->pdo, 'Echo' => $this->echooutput, 'ColorCLI' => $this->colorCLI]))->processConsoleReleases();
 		}
 	}
 
@@ -168,7 +170,7 @@ class PostProcess
 	public function processGames()
 	{
 		if ($this->pdo->getSetting('lookupgames') != 0) {
-			(new Games($this->echooutput))->processGamesReleases();
+			(new Games(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processGamesReleases();
 		}
 	}
 
@@ -183,7 +185,7 @@ class PostProcess
 	public function processMovies($groupID = '', $guidChar = '')
 	{
 		if ($this->pdo->getSetting('lookupimdb') > 0) {
-			(new Movie($this->echooutput))->processMovieReleases($groupID, $guidChar, $this->pdo->getSetting('lookupimdb'));
+			(new Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processMovieReleases($groupID, $guidChar, $this->pdo->getSetting('lookupimdb'));
 		}
 	}
 
@@ -195,7 +197,7 @@ class PostProcess
 	public function processMusic()
 	{
 		if ($this->pdo->getSetting('lookupmusic') != 0) {
-			(new Music($this->echooutput))->processMusicReleases();
+			(new Music(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processMusicReleases();
 		}
 	}
 
@@ -248,7 +250,7 @@ class PostProcess
 	public function processTv($groupID = '', $guidChar = '')
 	{
 		if ($this->pdo->getSetting('lookuptvrage') > 0) {
-			(new TvRage($this->echooutput))->processTvReleases($groupID, $guidChar, $this->pdo->getSetting('lookuptvrage'));
+			(new TvRage(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processTvReleases($groupID, $guidChar, $this->pdo->getSetting('lookuptvrage'));
 		}
 	}
 
@@ -258,7 +260,7 @@ class PostProcess
 	public function processXXX()
 	{
 		if ($this->pdo->getSetting('lookupxxx') == 1) {
-			(new XXX($this->echooutput))->processXXXReleases();
+			(new XXX(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processXXXReleases();
 		}
 	}
 
@@ -275,7 +277,7 @@ class PostProcess
 	 */
 	public function processAdditional(&$nntp, $groupID = '', $guidChar = '')
 	{
-		(new ProcessAdditional($this->echooutput, $nntp, $this->pdo))->start($groupID, $guidChar);
+		(new ProcessAdditional(['Echo' => $this->echooutput, 'NNTP' => $nntp, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI, 'Groups' => $this->groups, 'NameFixer' => $this->nameFixer, 'Nfo' => $this->Nfo, 'ReleaseFiles' => $this->releaseFiles]))->start($groupID, $guidChar);
 	}
 
 	/**

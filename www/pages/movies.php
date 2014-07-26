@@ -1,10 +1,10 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$movie = new Movie();
-$cat = new Category();
+$movie = new Movie(['Settings' => $page->settings]);
+$cat = new Category(['Settings' => $page->settings]);
 
 $moviecats = $cat->getChildren(Category::CAT_PARENT_MOVIE);
 $mtmp = array();
@@ -16,7 +16,7 @@ if (isset($_REQUEST['t']) && array_key_exists($_REQUEST['t'], $mtmp)) {
 	$category = $_REQUEST['t'] + 0;
 }
 
-$user = $users->getById($users->currentUserId());
+$user = $page->users->getById($page->users->currentUserId());
 $cpapi = $user['cp_api'];
 $cpurl = $user['cp_url'];
 $page->smarty->assign('cpapi', $cpapi);

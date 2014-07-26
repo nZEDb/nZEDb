@@ -1,9 +1,9 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$userData = $users->getById($users->currentUserId());
+$userData = $page->users->getById($page->users->currentUserId());
 if (!$userData) {
 	$page->show404();
 }

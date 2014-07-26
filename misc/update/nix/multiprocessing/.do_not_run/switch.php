@@ -107,8 +107,8 @@ switch ($options[1]) {
 			processReleases(new ProcessReleases(['Settings' => $pdo]), $options[2]);
 
 			// Post process the releases.
-			(new ProcessAdditional(true, $nntp, $pdo))->start($options[2]);
-			(new Nfo(true))->processNfoFiles($nntp, $options[2]);
+			(new ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start($options[2]);
+			(new Nfo(['Echo' => true, 'Settings' => $pdo]))->processNfoFiles($nntp, $options[2]);
 
 		}
 		break;
@@ -128,9 +128,9 @@ switch ($options[1]) {
 			}
 
 			if ($options[1] === 'pp_nfo') {
-				(new Nfo(true))->processNfoFiles($nntp, '', $options[2]);
+				(new Nfo(['Echo' => true, 'Settings' => $pdo]))->processNfoFiles($nntp, '', $options[2]);
 			} else {
-				(new ProcessAdditional(true, $nntp, $pdo))->start('', $options[2]);
+				(new ProcessAdditional(['Echo' => true, 'NNTP' => $nntp, 'Settings' => $pdo]))->start('', $options[2]);
 			}
 		}
 		break;

@@ -14,6 +14,7 @@ if (isset($argv[1]) && $argv[1] === "true") {
 
 function getOddGames($c)
 {
+	global $c;
 	$pdo = new Settings();
 	$res = $pdo->query('
 				SELECT searchname, id, categoryid
@@ -26,7 +27,7 @@ function getOddGames($c)
 
 	if ($res !== false) {
 				$c->doEcho($c->header("Processing... 150 release(s)."));
-			$gen = new Games(true);
+			$gen = new Games(['Echo' => true, 'Settings' => $pdo, 'ColorCLI' => $c]);
 
 			//Match on 78% title
 			$gen->matchpercent = 78;

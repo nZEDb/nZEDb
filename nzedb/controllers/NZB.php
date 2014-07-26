@@ -35,9 +35,9 @@ class NZB
 	/**
 	 * Instance of class db.
 	 * @var \nzedb\db\Settings
-	 * @access protected
+	 * @access public
 	 */
-	protected $pdo;
+	public $pdo;
 
 	/**
 	 * Current nZEDb version.

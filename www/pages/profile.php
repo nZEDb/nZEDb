@@ -1,30 +1,30 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$rc = new ReleaseComments();
+$rc = new ReleaseComments($page->settings);
 $sab = new SABnzbd($page);
 
 $userid = 0;
 if (isset($_GET["id"])) {
 	$userid = $_GET["id"] + 0;
 } elseif (isset($_GET["name"])) {
-	$res = $users->getByUsername($_GET["name"]);
+	$res = $page->users->getByUsername($_GET["name"]);
 	if ($res) {
 		$userid = $res["id"];
 	}
 } else {
-	$userid = $users->currentUserId();
+	$userid = $page->users->currentUserId();
 }
 
-$data = $users->getById($userid);
+$data = $page->users->getById($userid);
 if (!$data) {
 	$page->show404();
 }
 
 // Get the users API request count for the day.
-$apiRequests = $users->getApiRequests($userid);
+$apiRequests = $page->users->getApiRequests($userid);
 if (!$apiRequests) {
 	$apiRequests = 0;
 }
@@ -32,7 +32,7 @@ $page->smarty->assign('apirequests', $apiRequests['num']);
 
 $invitedby = '';
 if ($data["invitedby"] != "") {
-	$invitedby = $users->getById($data["invitedby"]);
+	$invitedby = $page->users->getById($data["invitedby"]);
 }
 
 // Check if the user selected a theme.
@@ -57,7 +57,7 @@ $page->smarty->assign('pager', $pager);
 $commentslist = $rc->getCommentsForUserRange($userid, $offset, ITEMS_PER_PAGE);
 $page->smarty->assign('commentslist',$commentslist);
 
-$exccats = $users->getCategoryExclusionNames($userid);
+$exccats = $page->users->getCategoryExclusionNames($userid);
 $page->smarty->assign('exccats', implode(",", $exccats));
 
 $page->smarty->assign('saburl', $sab->url);
