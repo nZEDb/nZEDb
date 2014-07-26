@@ -13,6 +13,11 @@ New updates are grouped by person, at the top of the file.
 	* Add: Settings to settings.php for temporarily blocking site access to those sending too many requests.
 	* Chg: Show 404 page when page is missing.
 	* Chg: Move all tmpunrar deletions to ProcessAdditional to try to avoid external issues.
+	* Chg: Automatically use the new password_hash function if php version is 5.5 or higher, which is more secure than crypt and avoids warnings in PHP 5.6 for empty salt in crypt.
+	* ---: If you are running PHP 5.5 or higher, run the misc/testing/dev/find_password_hash_cost.php script and set the number it gives in settings.php nZEDb_PASSWORD_HASH_COST to make the password algorithm stronger.
+	* Chg: Automatically rehash user passwords if needed.
+	* Add: Support for GNU Timeout, to kill unrar/ffmpeg/etc after set time (you can set the time / path to timeout in site edit, on linux it should be /usr/bin/timeout)
+	* Chg: Move safe_pull.php into switch.php
 2014-07-25 ruhllatio
 	* Fix: match_prefiles not honoring CLI arg limit
 	* Chg: Monitor now using proper PDO for work queries

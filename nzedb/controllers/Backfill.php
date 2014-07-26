@@ -776,13 +776,15 @@ class Backfill
 	}
 
 	/**
+	 * Set the oldest/newest article number / date after backfill or binaries when using threaded scripts.
+	 *
 	 * @param string $group
-	 * @param int $first
-	 * @param int $type
+	 * @param int    $articleNumber
+	 * @param int    $type
 	 *
 	 * @return void
 	 */
-	public function getFinal($group, $first, $type)
+	public function getFinal($group, $articleNumber, $type)
 	{
 		$groupArr = $this->_groups->getByName($group);
 
@@ -795,17 +797,24 @@ class Backfill
 			}
 		}
 
-		if ($type == 'Backfill') {
-			$postsdate = $this->postdate($first, $data);
+		if ($type === 'Backfill') {
+			$this->_pdo->queryExec(
+				sprintf(
+					'UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d',
+					$this->_pdo->from_unixtime($this->postdate($articleNumber, $data)),
+					$this->_pdo->escapeString($articleNumber),
+					$groupArr['id']
+				)
+			);
 		} else {
-			$postsdate = $this->postdate($first, $data);
-		}
-		$postsdate = $this->_pdo->from_unixtime($postsdate);
-
-		if ($type == 'Backfill') {
-			$this->_pdo->queryExec(sprintf('UPDATE groups SET first_record_postdate = %s, first_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $this->_pdo->escapeString($first), $groupArr['id']));
-		} else {
-			$this->_pdo->queryExec(sprintf('UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d', $postsdate, $this->_pdo->escapeString($first), $groupArr['id']));
+			$this->_pdo->queryExec(
+				sprintf(
+					'UPDATE groups SET last_record_postdate = %s, last_record = %s, last_updated = NOW() WHERE id = %d',
+					$this->_pdo->from_unixtime($this->postdate($articleNumber, $data)),
+					$this->_pdo->escapeString($articleNumber),
+					$groupArr['id']
+				)
+			);
 		}
 
 		if ($this->_echoCLI) {

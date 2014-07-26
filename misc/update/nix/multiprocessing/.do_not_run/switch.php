@@ -4,6 +4,8 @@ if (!isset($argv[1])) {
 	exit("This script is not intended to be run manually." . PHP_EOL);
 }
 
+require_once dirname(__FILE__) . '/../../../config.php';
+
 // Are we coming from python or php ? $options[0] => (string): python|php
 // The type of process we want to do: $options[1] => (string): releases
 $options = explode('  ', $argv[1]);
@@ -15,7 +17,6 @@ switch ($options[1]) {
 	// $options[3] => (int)   backfill type from tmux settings. 1 = Backfill interval , 2 = Bakfill all
 	case 'backfill':
 		if (in_array((int)$options[3], [1, 2])) {
-			require_once dirname(__FILE__) . '/../../../config.php';
 			$pdo = new \nzedb\db\Settings();
 			$value = $pdo->queryOneRow("SELECT value FROM tmux WHERE setting = 'backfill_qty'");
 			if ($value !== false) {
@@ -25,19 +26,72 @@ switch ($options[1]) {
 		}
 		break;
 
+	/*  BackFill up to x number of articles for all groups.
+	 *
+	 * $options[2] => (string) Group name.
+	 * $options[3] => (int)    Quantity of articles to download.
+	 */
+	case 'backfill_all_quantity':
+		$pdo = new \nzedb\db\Settings();
+		$nntp = nntp($pdo);
+		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], $options[3]);
+		break;
+
 	// BackFill a single group, 10000 parts.
 	// $options[2] => (string)group name, Name of group to work on.
 	case 'backfill_all_quick':
-		require_once dirname(__FILE__) . '/../../../config.php';
 		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
 		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true))->backfillAllGroups($options[2], 10000, 'normal');
 		break;
 
+	/* Update the last or first article number / date.
+	 *
+	 * $options[2] => (string) Group name.
+	 * $options[3] => (int)    Article number.
+	 * $options[4] => (string) Type: Binaries or Backfill
+	 */
+	case 'get_final':
+		$pdo = new \nzedb\db\Settings();
+		$nntp = nntp($pdo);
+		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->getFinal($options[2], $options[3], $options[4]);
+		break;
+
+	/* Get a range of article headers for a group.
+	 *
+	 * $options[2] => (string) Group name.
+	 * $options[3] => (int)    First article number in range.
+	 * $options[4] => (int)    Last article number in range.
+	 * $options[5] => (int)    Number of threads.
+	 */
+	case 'get_range':
+		$pdo = new \nzedb\db\Settings();
+		$nntp = nntp($pdo);
+		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->getRange($options[2], $options[3], $options[4], $options[5]);
+		break;
+
+	/* Do part repair for a group.
+	 *
+	 * $options[2] => (string) Group name.
+	 */
+	case 'part_repair':
+		$pdo = new \nzedb\db\Settings();
+		$nntp = nntp($pdo);
+		$groups = new Groups(['Settings' => $pdo]);
+		$groupMySQL = $groups->getByName($options[2]);
+		// Select group, here, only once
+		$data = $nntp->selectGroup($groupMySQL['name']);
+		if ($nntp->isError($data)) {
+			if ($nntp->dataError($nntp, $groupMySQL['name']) === false) {
+				exit();
+			}
+		}
+		(new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $pdo]))->partRepair($groupMySQL);
+		break;
+
 	// Process releases.
 	// $options[2] => (string)groupCount, number of groups terminated by _ | (int)groupID, group to work on
 	case 'releases':
-		require_once dirname(__FILE__) . '/../../../config.php';
 		$pdo = new nzedb\db\Settings();
 		$releases = new ProcessReleases(['Settings' => $pdo]);
 
@@ -69,9 +123,20 @@ switch ($options[1]) {
 	// $options[2] => (int)groupID, group to work on
 	case 'requestid':
 		if (is_numeric($options[2])) {
-			require_once dirname(__FILE__) . '/../../../config.php';
 			(new \RequestIDLocal(['Echo' => true]))->lookupRequestIDs(['GroupID' => $options[2], 'limit' => 5000]);
 		}
+		break;
+
+	/* Update a single group's article headers.
+	 *
+	 * $options[2] => (string) Group name.
+	 */
+	case 'update_group_headers':
+		$pdo = new \nzedb\db\Settings();
+		$nntp = nntp($pdo);
+		$groups = new Groups(['Settings' => $pdo]);
+		$groupMySQL = $groups->getByName($options[2]);
+		(new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $pdo]))->updateGroup($groupMySQL);
 		break;
 
 
@@ -80,7 +145,6 @@ switch ($options[1]) {
 	case 'update_per_group':
 		if (is_numeric($options[2])) {
 
-			require_once dirname(__FILE__) . '/../../../config.php';
 			$pdo = new nzedb\db\Settings();
 
 			// Get the group info from MySQL.
@@ -118,7 +182,6 @@ switch ($options[1]) {
 	case 'pp_additional':
 	case 'pp_nfo':
 		if (charCheck($options[2])) {
-			require_once dirname(__FILE__) . '/../../../config.php';
 			$pdo = new \nzedb\db\Settings();
 
 			// Create the connection here and pass, this is for post processing, so check for alternate.
@@ -137,7 +200,6 @@ switch ($options[1]) {
 
 	case 'pp_movie':
 		if (charCheck($options[2])) {
-			require_once dirname(__FILE__) . '/../../../config.php';
 			$pdo = new \nzedb\db\Settings();
 			(new PostProcess(['Settings' => $pdo]))->processMovies('', $options[2]);
 		}
@@ -145,7 +207,6 @@ switch ($options[1]) {
 
 	case 'pp_tv':
 		if (charCheck($options[2])) {
-			require_once dirname(__FILE__) . '/../../../config.php';
 			$pdo = new \nzedb\db\Settings();
 			(new PostProcess(['Settings' => $pdo]))->processTv('', $options[2]);
 		}

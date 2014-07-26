@@ -64,7 +64,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  "+my_id])
 					time.sleep(.03)
 					self.my_queue.task_done()
 
@@ -93,7 +93,7 @@ def main():
 		#start new groups using binaries.php, no need to check nntp
 		if group[1] == 0:
 			run += 1
-			my_queue.put("binupdate %s" % (group[0]))
+			my_queue.put("update_group_headers  %s" % (group[0]))
 			time.sleep(0.01)
 		elif group[1] != 0:
 			#only process if more that 20k headers available and skip the first 20k
@@ -101,25 +101,25 @@ def main():
 			#run small groups using binaries.php
 			if count <= maxmssgs * 2:
 				run += 1
-				my_queue.put("binupdate %s" % (group[0]))
+				my_queue.put("update_group_headers  %s" % (group[0]))
 			#thread large groups using backfill.php
 			else:
-				my_queue.put("%s %s" % (group[0], 'partrepair'))
+				my_queue.put("part_repair  %s" % (group[0]))
 				geteach = math.floor(count / maxmssgs)
 				remaining = count - geteach * maxmssgs
 				for loop in range(int(geteach)):
 					run += 1
-					my_queue.put("%s %s %s %s" % (group[0], group[1] + loop * maxmssgs + maxmssgs, group[1] + loop * maxmssgs + 1, run))
+					my_queue.put("get_range  %s  %s  %s  %s" % (group[0], group[1] + loop * maxmssgs + maxmssgs, group[1] + loop * maxmssgs + 1, run))
 				run += 1
-				my_queue.put("%s %s %s %s" % (group[0], group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
+				my_queue.put("get_range  %s  %s  %s  %s" % (group[0], group[1] + (loop + 1) * maxmssgs + remaining + 1, group[1] + (loop + 1) * maxmssgs + 1, run))
 				groups.append(group[0])
 				finals.append(int(group[2]))
 
 	my_queue.join()
 
 	for group in list(zip(groups, finals)):
-		final = ("{} {} Binary".format(group[0], group[1]))
-		subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+str(final)])
+		final = ("{}  {}  Binaries".format(group[0], group[1]))
+		subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  get_final  "+str(final)])
 
 	print(bcolors.HEADER + "\nBinaries Safe Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)
