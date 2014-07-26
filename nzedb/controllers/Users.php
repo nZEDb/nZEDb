@@ -489,12 +489,12 @@ class Users
 	}
 
 	/**
-	 * Check if the user is in the database, and if their API key is good.
+	 * Check if the user is in the database, and if their API key is good, return user data if so.
 	 *
 	 * @param int    $userID   ID of the user.
 	 * @param string $rssToken API key.
 	 *
-	 * @return bool
+	 * @return bool|array
 	 */
 	public function getByIdAndRssToken($userID, $rssToken)
 	{
@@ -503,7 +503,7 @@ class Users
 			return false;
 		}
 
-		return ($user['rsstoken'] == $rssToken ? true : false);
+		return ($user['rsstoken'] != $rssToken ? false : $user);
 	}
 
 	/**
