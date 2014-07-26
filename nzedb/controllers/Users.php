@@ -136,13 +136,13 @@ class Users
 		return $this->pdo->query(
 			sprintf(
 				$query,
-				($start === false ? '' : ('LIMIT ' . $offset . ' OFFSET ' . $start)),
 				($userName != '' ? ('AND users.username ' . $this->pdo->likeString($userName)) : ''),
 				($email != '' ? ('AND users.email ' . $this->pdo->likeString($email)) : ''),
 				($host != '' ? ('AND users.host ' . $this->pdo->likeString($host)) : ''),
 				($role != '' ? ('AND users.role = ' . $role) : ''),
 				$order[0],
-				$order[1]
+				$order[1],
+				($start === false ? '' : ('LIMIT ' . $offset . ' OFFSET ' . $start))
 			)
 		);
 	}
@@ -489,12 +489,12 @@ class Users
 	}
 
 	/**
-	 * Check if the user is in the database, and if their API key is good.
+	 * Check if the user is in the database, and if their API key is good, return user data if so.
 	 *
 	 * @param int    $userID   ID of the user.
 	 * @param string $rssToken API key.
 	 *
-	 * @return bool
+	 * @return bool|array
 	 */
 	public function getByIdAndRssToken($userID, $rssToken)
 	{
@@ -503,7 +503,7 @@ class Users
 			return false;
 		}
 
-		return ($user['rsstoken'] == $rssToken ? true : false);
+		return ($user['rsstoken'] != $rssToken ? false : $user);
 	}
 
 	/**

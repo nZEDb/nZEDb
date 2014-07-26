@@ -9,7 +9,7 @@ class Contents
 	const TYPEINDEX = 3;
 
 	/**
-	 * @var Settings
+	 * @var nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -188,12 +188,12 @@ class Contents
 
 	public function data_update($content)
 	{
-		return $this->pdo->queryExec(sprintf("UPDATE content SET role = %d, title = %s, url = %s, body = %s, metadescription = %s, metakeywords = %s, contenttype = %d, showinmenu = %d, status = %d, ordinal = %d WHERE id = %d", $content->role, $pdo->escapeString($content->title), $pdo->escapeString($content->url), $pdo->escapeString($content->body), $pdo->escapeString($content->metadescription), $pdo->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal, $content->id));
+		return $this->pdo->queryExec(sprintf("UPDATE content SET role = %d, title = %s, url = %s, body = %s, metadescription = %s, metakeywords = %s, contenttype = %d, showinmenu = %d, status = %d, ordinal = %d WHERE id = %d", $content->role, $this->pdo->escapeString($content->title), $this->pdo->escapeString($content->url), $this->pdo->escapeString($content->body), $this->pdo->escapeString($content->metadescription), $this->pdo->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal, $content->id));
 	}
 
 	public function data_add($content)
 	{
-		return $this->pdo->queryInsert(sprintf("INSERT INTO content (role, title, url, body, metadescription, metakeywords, contenttype, showinmenu, status, ordinal) values (%d, %s, %s, %s, %s, %s, %d, %d, %d, %d )", $content->role, $pdo->escapeString($content->title), $pdo->escapeString($content->url), $pdo->escapeString($content->body), $pdo->escapeString($content->metadescription), $pdo->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal));
+		return $this->pdo->queryInsert(sprintf("INSERT INTO content (role, title, url, body, metadescription, metakeywords, contenttype, showinmenu, status, ordinal) values (%d, %s, %s, %s, %s, %s, %d, %d, %d, %d )", $content->role, $this->pdo->escapeString($content->title), $this->pdo->escapeString($content->url), $this->pdo->escapeString($content->body), $this->pdo->escapeString($content->metadescription), $this->pdo->escapeString($content->metakeywords), $content->contenttype, $content->showinmenu, $content->status, $content->ordinal));
 	}
 
 	public function data_get()

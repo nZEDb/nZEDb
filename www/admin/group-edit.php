@@ -2,7 +2,7 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$groups = new Groups();
+$groups = new Groups(['Settings' => $page->settings]);
 $id = 0;
 
 // Set the current action.
@@ -46,5 +46,3 @@ $page->smarty->assign('yesno_names', array( 'Yes', 'No'));
 
 $page->content = $page->smarty->fetch('group-edit.tpl');
 $page->render();
-
-?>

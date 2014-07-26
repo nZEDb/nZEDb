@@ -5,8 +5,9 @@ $page = new AdminPage();
 $releases = new Releases(['Settings' => $page->settings]);
 
 $num = 0;
-if (isset($_GET["id"]))
+if (isset($_GET["id"])) {
 	$num = $releases->removeRageIdFromReleases($_GET["id"]);
+}
 
 $page->smarty->assign('numtv',$num);
 

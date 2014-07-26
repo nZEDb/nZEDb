@@ -75,22 +75,32 @@ class NZBImport
 	/**
 	 * Construct.
 	 *
-	 * @param bool $browser Was this started from the browser?
-	 * @param bool $echo    Echo to CLI?
+	 * @param array $options Class instances / various options.
 	 *
 	 * @access public
 	 */
-	public function __construct($browser = false, $echo = true)
+	public function __construct(array $options = array())
 	{
-		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
-		$this->pdo = new Settings();
-		$this->binaries = new Binaries(['Settings' => $this->pdo, 'Echo' => $this->echoCLI]);
-		$this->category = new Categorize(['Settings' => $this->pdo]);
-		$this->nzb = new NZB($this->pdo);
-		$this->releaseCleaner = new ReleaseCleaning($this->pdo);
+		$defaults = [
+			'Browser'        => false, // Was this started from the browser?
+			'Echo'           => true,  // Echo to CLI?
+			'Binaries'       => null,
+			'Category'       => null,
+			'NZB'            => null,
+			'ReleaseCleaner' => null,
+			'Settings'       => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $defaults['Echo']);
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->binaries = ($defaults['Binaries'] instanceof Binaries ? $defaults['Binaries'] : new Binaries(['Settings' => $this->pdo, 'Echo' => $this->echoCLI]));
+		$this->category = ($defaults['Categorize'] instanceof Categorize ? $defaults['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->nzb = ($defaults['NZB'] instanceof NZB ? $defaults['NZB'] : new NZB($this->pdo));
+		$this->releaseCleaner = ($defaults['ReleaseCleaning'] instanceof ReleaseCleaning ? $defaults['ReleaseCleaning'] : new ReleaseCleaning($this->pdo));
 
 		$this->crossPostt = ($this->pdo->getSetting('crossposttime') != '') ? $this->pdo->getSetting('crossposttime') : 2;
-		$this->browser = $browser;
+		$this->browser = $defaults['Browser'];
 		$this->retVal = '';
 	}
 

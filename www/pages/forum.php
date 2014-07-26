@@ -1,12 +1,12 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$forum = new Forum();
+$forum = new Forum(['Settings' => $page->settings]);
 
 if ($page->isPostBack()) {
-	$forum->add(0, $users->currentUserId(), $_POST["addSubject"], $_POST["addMessage"]);
+	$forum->add(0, $page->users->currentUserId(), $_POST["addSubject"], $_POST["addMessage"]);
 	header("Location:" . WWW_TOP . "/forum");
 	exit();
 }

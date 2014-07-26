@@ -1,5 +1,5 @@
 <?php
-
+use nzedb\db\Settings;
 /**
  * Class for inserting names/categories etc from PreDB sources into the DB,
  * also for matching names on files / subjects.
@@ -35,20 +35,30 @@ Class PreDb
 	 * @var ColorCLI
 	 */
 	protected $c;
+
 	/**
-	 * @param bool $echo
+	 * @param array $options
 	 */
-	public function __construct($echo = false)
+	public function __construct(array $options = array())
 	{
-		$this->echooutput = ($echo && nZEDb_ECHOCLI);
-		$this->pdo = new nzedb\db\DB();
-		$this->c = new ColorCLI();
+		$defaults = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
 	}
+
+	private $dateLimit;
 
 	/**
 	 * Attempts to match PreDB titles to releases.
 	 *
-	 * @param $nntp
+	 * @param $dateLimit
 	 */
 	public function checkPre($dateLimit = false)
 	{
@@ -159,7 +169,7 @@ Class PreDb
 	 */
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
-		$namefixer = new NameFixer($this->echooutput);
+		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->c, 'Settings' => $this->pdo]);
 		$consoletools = new ConsoleTools(['ColorCLI' => $this->c]);
 		$updated = $checked = 0;
 		$matches = '';
@@ -231,7 +241,7 @@ Class PreDb
 	{
 		if ($search !== '') {
 			$search = explode(' ', trim($search));
-			if (count($search > 1)) {
+			if (count($search) > 1) {
 				$search = "LIKE '%" . implode("%' AND title LIKE '%", $search) . "%'";
 			} else {
 				$search = "LIKE '%" . $search . "%'";

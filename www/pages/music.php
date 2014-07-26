@@ -1,11 +1,11 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$music = new Music();
-$cat = new Category(['Settings' => $music->pdo]);
-$gen = new Genres(['Settings' => $music->pdo]);
+$music = new Music(['Settings' => $page->settings]);
+$cat = new Category(['Settings' => $page->settings]);
+$gen = new Genres(['Settings' => $page->settings]);
 
 $musiccats = $cat->getChildren(Category::CAT_PARENT_MUSIC);
 $mtmp = array();

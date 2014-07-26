@@ -471,7 +471,6 @@ while ($i > 0) {
 	$collections_kill = $proc_tmux_result['collections_kill'];
 	$postprocess_kill = $proc_tmux_result['postprocess_kill'];
 	$backfilldays = $proc_tmux_result['backfilldays'];
-	$tmpunrar = $proc_tmux_result['tmpunrar'];
 	$active_groups = $proc_tmux_result['active_groups'];
 	$all_groups = $proc_tmux_result['all_groups'];
 	$compressed = $proc_tmux_result['compressed'];

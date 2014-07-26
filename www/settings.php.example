@@ -18,6 +18,29 @@ define('ITEMS_PER_PAGE', '50');
  */
 define('ITEMS_PER_COVER_PAGE', '20');
 
+/**
+ * If the PRE API page (preinfo) is open to the public or only accessible by registered / api users.
+ * @default false
+ */
+define('nZEDb_PREINFO_OPEN', false);
+
+/**
+ * Whether to check if a person is trying to send too many requests in a given amount of time,
+ * lock out the person of the site for a amount of time.
+ */
+define('nZEDb_FLOOD_CHECK', false);
+
+/**
+ * How many seconds should the person be locked out of the site.
+ */
+define('nZEDb_FLOOD_WAIT_TIME', 5);
+
+/**
+ * How many requests in a second can a person send to the site max before being locked out for
+ * nZEDb_FLOOD_WAIT_TIME seconds.
+ */
+define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////// CLI Settings //////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

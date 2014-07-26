@@ -90,8 +90,8 @@ class PostProcess
 		$this->groups = (($defaults['Groups'] instanceof Groups) ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_par2Info = new Par2Info();
 		$this->debugging = new Debugging(['Class' => 'PostProcess', 'ColorCLI' => $this->colorCLI]);
-		$this->nameFixer = (($defaults['NameFixer'] instanceof NameFixer) ? $defaults['NameFixer'] : new NameFixer($this->echooutput));
-		$this->Nfo = (($defaults['Nfo'] instanceof Nfo ) ? $defaults['Nfo'] : new Nfo($this->echooutput));
+		$this->nameFixer = (($defaults['NameFixer'] instanceof NameFixer) ? $defaults['NameFixer'] : new NameFixer(['Echo' => $this->echooutput, 'ColorCLI' => $this->colorCLI, 'Settings' => $this->pdo, 'Groups' => $this->groups]));
+		$this->Nfo = (($defaults['Nfo'] instanceof Nfo ) ? $defaults['Nfo'] : new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]));
 		$this->releaseFiles = (($defaults['ReleaseFiles'] instanceof ReleaseFiles) ? $defaults['ReleaseFiles'] : new ReleaseFiles($this->pdo));
 		//\\
 
@@ -185,7 +185,7 @@ class PostProcess
 	public function processMovies($groupID = '', $guidChar = '')
 	{
 		if ($this->pdo->getSetting('lookupimdb') > 0) {
-			(new Movie($this->echooutput))->processMovieReleases($groupID, $guidChar, $this->pdo->getSetting('lookupimdb'));
+			(new Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processMovieReleases($groupID, $guidChar, $this->pdo->getSetting('lookupimdb'));
 		}
 	}
 
@@ -197,7 +197,7 @@ class PostProcess
 	public function processMusic()
 	{
 		if ($this->pdo->getSetting('lookupmusic') != 0) {
-			(new Music($this->echooutput))->processMusicReleases();
+			(new Music(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI]))->processMusicReleases();
 		}
 	}
 
@@ -277,7 +277,7 @@ class PostProcess
 	 */
 	public function processAdditional(&$nntp, $groupID = '', $guidChar = '')
 	{
-		(new ProcessAdditional($this->echooutput, $nntp, $this->pdo))->start($groupID, $guidChar);
+		(new ProcessAdditional(['Echo' => $this->echooutput, 'NNTP' => $nntp, 'Settings' => $this->pdo, 'ColorCLI' => $this->colorCLI, 'Groups' => $this->groups, 'NameFixer' => $this->nameFixer, 'Nfo' => $this->Nfo, 'ReleaseFiles' => $this->releaseFiles]))->start($groupID, $guidChar);
 	}
 
 	/**

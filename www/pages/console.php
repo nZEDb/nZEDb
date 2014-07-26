@@ -1,11 +1,11 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$console = new Console();
-$cat = new Category(['Settings' => $console->pdo]);
-$gen = new Genres(['Settings' => $console->pdo]);
+$console = new Console(['Settings' => $page->settings]);
+$cat = new Category(['Settings' => $page->settings]);
+$gen = new Genres(['Settings' => $page->settings]);
 
 $concats = $cat->getChildren(Category::CAT_PARENT_GAME);
 $ctmp = array();

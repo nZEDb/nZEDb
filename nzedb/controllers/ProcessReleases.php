@@ -450,7 +450,7 @@ class ProcessReleases
 		}
 
 		if ($collections !== false && $collections->rowCount() > 0) {
-			$preDB = new PreDb($this->echoCLI);
+			$preDB = new PreDb(['Echo' => $this->echoCLI, 'ColorCLI' => $this->colorCLI, 'Settings' => $this->pdo]);
 
 			$insertQuery = (
 				"INSERT INTO releases (%s %s %s name, searchname, totalpart, group_id, adddate, guid, rageid,

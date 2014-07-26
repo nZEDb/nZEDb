@@ -6,6 +6,13 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-26 bart39
+	* Fix: Remove 'See full summary »' from the end of imdb movie plot #1420
+2014-07-26 kevin
+	* Fix: #1421
+	* Add: Settings to settings.php for temporarily blocking site access to those sending too many requests.
+	* Chg: Show 404 page when page is missing.
+	* Chg: Move all tmpunrar deletions to ProcessAdditional to try to avoid external issues.
 2014-07-25 ruhllatio
 	* Fix: match_prefiles not honoring CLI arg limit
 	* Chg: Monitor now using proper PDO for work queries
@@ -24,6 +31,12 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Re-use class instances on ReleaseRemover.
 	* Chg: Re-use class instances in various other places.
 	* Chg: Use BasePage's settings for many of the instanciations.
+	* Chg: Re-use class instances on Namefixer.
+	* Chg: Re-use class instances on Movie.
+	* Chg: Re-use BasePage's nzedb\db\Settings instance in as many www/admin files as possible to speed up page loads.
+	* Chg: BasePage, save a DB call by re-using the Settings instance for smarty, speeds up execution of all web-pages.
+	* Chg: Store and re-use the Users instance in BasePage instead of destroying it and later recreating another instance in index.php
+	* Add: Setting to settings.php for opening preinfo to the public.
 2014-07-24 ruhllatio
 	* Chg: Case a few if/elseif run ons in NameFixer -- more to do
 	* Fix: #1408 Issue with HDTS not being categorized properly

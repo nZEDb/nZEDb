@@ -2,14 +2,13 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$users = new Users();
 $id = 0;
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
 // Get the user roles.
-$userroles = $users->getRoles();
+$userroles = $page->users->getRoles();
 $roles = array();
 $defaultrole = Users::ROLE_USER;
 $defaultinvites = Users::DEFAULT_INVITES;
@@ -43,12 +42,12 @@ switch($action) {
 					$invites = $role['defaultinvites'];
 				}
 			}
-			$ret = $users->signUp($_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["password"], $_POST["email"], '', 	$_POST["role"], $invites, "", true);
+			$ret = $page->users->signUp($_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["password"], $_POST["email"], '', 	$_POST["role"], $invites, "", true);
 		} else {
-			$ret = $users->update($_POST["id"], $_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["email"], $_POST["grabs"], $_POST["role"], $_POST["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['xxxview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"),
+			$ret = $page->users->update($_POST["id"], $_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["email"], $_POST["grabs"], $_POST["role"], $_POST["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['xxxview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"),
 				(isset($_POST['gameview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"));
 			if ($_POST['password'] != "") {
-				$users->updatePassword($_POST["id"], $_POST['password']);
+				$page->users->updatePassword($_POST["id"], $_POST['password']);
 			}
 		}
 
@@ -100,7 +99,7 @@ switch($action) {
 		if (isset($_GET["id"])) {
 			$page->title = "User Edit";
 			$id = $_GET["id"];
-			$user = $users->getByID($id);
+			$user = $page->users->getByID($id);
 			$page->smarty->assign('user', $user);
 		}
 		break;

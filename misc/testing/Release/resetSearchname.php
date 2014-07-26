@@ -30,19 +30,19 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
-		$timenc = $consoletools->convertTime(TIME() - $timestart);
+		$timenc = $consoletools->convertTime(time() - $timestart);
 		echo $c->primary("\n" . $done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
 		$releases = new ProcessReleases(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize();
 		$categorized = $releases->categorizeRelease("name", "", true);
-		$timecat = $consoletools->convertTime(TIME() - $timestart);
+		$timecat = $consoletools->convertTime(time() - $timestart);
 		echo $c->primary("\nFinished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 
-		$namefixer = new NameFixer();
+		$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools]);
 		$namefixer->fixNamesWithNfo(2, 1, 1, 1, $show);
 		$namefixer->fixNamesWithFiles(2, 1, 1, 1, $show);
-		$timetotal = $consoletools->convertTime(TIME() - $timestart);
+		$timetotal = $consoletools->convertTime(time() - $timestart);
 		echo $c->header("\nFinished recreating search names / recategorizing / refixing names in " . $timetotal);
 	} else {
 		exit($c->info("You have no releases in the DB."));
@@ -66,19 +66,19 @@ if (isset($argv[1]) && $argv[1] == "full") {
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
-		$timenc = $consoletools->convertTime(TIME() - $timestart);
+		$timenc = $consoletools->convertTime(time() - $timestart);
 		echo $c->header($done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
 		$releases = new ProcessReleases(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize("WHERE isrenamed = 0");
 		$categorized = $releases->categorizeRelease("name", "WHERE isrenamed = 0", true);
-		$timecat = $consoletools->convertTime(TIME() - $timestart);
+		$timecat = $consoletools->convertTime(time() - $timestart);
 		echo $c->header("Finished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 
-		$namefixer = new NameFixer();
+		$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools]);
 		$namefixer->fixNamesWithNfo(2, 1, 1, 1, $show);
 		$namefixer->fixNamesWithFiles(2, 1, 1, 1, $show);
-		$timetotal = $consoletools->convertTime(TIME() - $timestart);
+		$timetotal = $consoletools->convertTime(time() - $timestart);
 		echo $c->header("Finished recreating search names / recategorizing / refixing names in " . $timetotal);
 	} else {
 		exit($c->info("You have no releases in the DB."));

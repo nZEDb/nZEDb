@@ -82,15 +82,22 @@ class Nfo
 	/**
 	 * Default constructor.
 	 *
-	 * @param bool $echo Echo to cli.
+	 * @param array $options Class instance / echo to cli.
 	 *
 	 * @access public
 	 */
-	public function __construct($echo = false)
+	public function __construct(array $options = array())
 	{
-		$this->echo = ($echo && nZEDb_ECHOCLI);
-		$this->c = new ColorCLI();
-		$this->pdo = new Settings();
+		$defaults = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->echo = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 		$this->nzbs = ($this->pdo->getSetting('maxnfoprocessed') != '') ? (int)$this->pdo->getSetting('maxnfoprocessed') : 100;
 		$this->maxsize = ($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
 		$this->tmpPath = $this->pdo->getSetting('tmpunrarpath');
@@ -321,7 +328,7 @@ class Nfo
 					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo, 'ColorCLI' => $this->c])
 				)
 			);
-			$movie = new Movie($this->echo);
+			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
 			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
 
 			foreach ($res as $arr) {

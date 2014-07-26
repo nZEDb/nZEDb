@@ -2,9 +2,8 @@
 require_once './config.php';
 
 $page = new AdminPage;
-$users = new Users(['Settings' => $page->settings]);
 
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
@@ -15,7 +14,7 @@ if (isset($_GET['id'])) {
 		$page->show404();
 	}
 
-	$nzb = new NZB($users->pdo);
+	$nzb = new NZB($page->settings);
 	$nzbPath = $nzb->getNZBPath($_GET['id']);
 	if (!file_exists($nzbPath)) {
 		$page->show404();

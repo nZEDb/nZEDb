@@ -3,13 +3,14 @@ require_once './config.php';
 
 
 $page = new AdminPage();
-$AniDB = new AniDB();
+$AniDB = new AniDB(['Settings' => $page->settings]);
 
 $page->title = "AniDB List";
 
 $aname = "";
-if (isset($_REQUEST['animetitle']) && !empty($_REQUEST['animetitle']))
+if (isset($_REQUEST['animetitle']) && !empty($_REQUEST['animetitle'])) {
 	$aname = $_REQUEST['animetitle'];
+}
 
 $animecount = $AniDB->getAnimeCount($aname);
 
@@ -30,5 +31,3 @@ $page->smarty->assign('anidblist',$anidblist);
 
 $page->content = $page->smarty->fetch('anidb-list.tpl');
 $page->render();
-
-?>

@@ -1,13 +1,12 @@
 <?php
 
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
 $grp = new Groups(['Settings' => $page->settings]);
 $releases = new Releases(['Groups' => $grp, 'Settings' => $page->settings]);
 $c = new Category(['Settings' => $page->settings]);
-
 
 $page->meta_title = "Search Nzbs";
 $page->meta_keywords = "search,nzb,description,details";

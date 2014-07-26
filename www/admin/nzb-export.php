@@ -9,8 +9,7 @@ if (\nzedb\utility\Utility::isCLI()) {
 $page = new AdminPage();
 $rel = new Releases(['Settings' => $page->settings]);
 
-if ($page->isPostBack())
-{
+if ($page->isPostBack()) {
 	$retVal = $path = '';
 
 	$path = $_POST["folder"];
@@ -20,7 +19,7 @@ if ($page->isPostBack())
 	$gzip = ($_POST["gzip"] === '1' ? true : false);
 
 	if ($path !== "") {
-		$NE = new NZBExport(true);
+		$NE = new NZBExport(['Browser' => true, 'Settings' => $page->settings, 'Releases' => $rel]);
 		$retVal = $NE->beginExport(
 			array(
 				$path,

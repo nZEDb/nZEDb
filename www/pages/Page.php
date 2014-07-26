@@ -3,7 +3,7 @@
 
 class Page extends BasePage
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -12,8 +12,8 @@ class Page extends BasePage
 			$role = $this->userdata["role"];
 		}
 
-		$content = new Contents();
-		$menu = new Menu();
+		$content = new Contents(['Settings' => $this->settings]);
+		$menu = new Menu($this->settings);
 		$this->smarty->assign('menulist', $menu->get($role, $this->serverurl));
 		$this->smarty->assign('usefulcontentlist', $content->getForMenuByTypeAndRole(Contents::TYPEUSEFUL, $role));
 		$this->smarty->assign('articlecontentlist', $content->getForMenuByTypeAndRole(Contents::TYPEARTICLE, $role));
@@ -72,4 +72,3 @@ class Page extends BasePage
 		parent::render();
 	}
 }
-?>
