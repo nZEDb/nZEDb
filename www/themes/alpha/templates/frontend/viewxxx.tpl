@@ -22,10 +22,4 @@
 
 	{if $movie.actors != ''}<h4>Starring:<br>{$movie.actors}</h4>{/if}
 
-	{if $movie.trailers != ''}
-		<b>Trailer:</b>
-		{$movie.trailers}
-		<br>
-	{/if}
-
 </div>
