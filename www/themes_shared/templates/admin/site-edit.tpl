@@ -360,6 +360,17 @@
 					</div>
 				</td>
 			</tr>
+			<tr>
+				<td style="width:180px;"><label for="timeoutpath">GNU Timeout Path:</label></td>
+				<td>
+					<input id="timeoutpath" class="long" name="timeoutpath" type="text" value="{$site->timeoutpath}"/>
+					<div class="hint">The path to the <a href="http://linux.die.net/man/1/timeout">timeout</a> binary.
+						This is used to limit the amount of time the above programs can run.
+						You can the time limit in the process additional section.
+						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/timeout.exe</span>
+					</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 
