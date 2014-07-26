@@ -198,17 +198,27 @@ switch ($options[1]) {
 		}
 		break;
 
+	/* Post process movies.
+	 *
+	 * $options[2] (char) Single character, first letter of release guid.
+	 * $options[3] (int)  Process all releases or renamed releases only.
+	 */
 	case 'pp_movie':
 		if (charCheck($options[2])) {
 			$pdo = new \nzedb\db\Settings();
-			(new PostProcess(['Settings' => $pdo]))->processMovies('', $options[2]);
+			(new PostProcess(['Settings' => $pdo]))->processMovies('', $options[2], (isset($options[3]) ? $options[3] : ''));
 		}
 		break;
 
+	/* Post process TV.
+	 *
+	 * $options[2] (char) Single character, first letter of release guid.
+	 * $options[3] (int)  Process all releases or renamed releases only.
+	 */
 	case 'pp_tv':
 		if (charCheck($options[2])) {
 			$pdo = new \nzedb\db\Settings();
-			(new PostProcess(['Settings' => $pdo]))->processTv('', $options[2]);
+			(new PostProcess(['Settings' => $pdo]))->processTv('', $options[2], (isset($options[3]) ? $options[3] : ''));
 		}
 		break;
 }
