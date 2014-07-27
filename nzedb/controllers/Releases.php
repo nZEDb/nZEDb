@@ -1376,28 +1376,26 @@ class Releases
 	public function getZipped($guids)
 	{
 		$nzb = new NZB($this->pdo);
-		$zipfile = new ZipFile();
+		$zipFile = new ZipFile();
 
 		foreach ($guids as $guid) {
-			$nzbpath = $nzb->getNZBPath($guid);
+			$nzbPath = $nzb->NZBPath($guid);
 
-			if (is_file($nzbpath)) {
-				ob_start();
-				@readgzfile($nzbpath);
-				$nzbfile = ob_get_contents();
-				ob_end_clean();
+			if ($nzbPath) {
+				$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbPath);
 
-				$filename = $guid;
-				$r = $this->getByGuid($guid);
-				if ($r) {
-					$filename = $r['searchname'];
+				if ($nzbContents) {
+					$filename = $guid;
+					$r = $this->getByGuid($guid);
+					if ($r) {
+						$filename = $r['searchname'];
+					}
+					$zipFile->addFile($nzbContents, $filename . '.nzb');
 				}
-
-				$zipfile->addFile($nzbfile, $filename . '.nzb');
 			}
 		}
 
-		return $zipfile->file();
+		return $zipFile->file();
 	}
 
 	public function getbyRageId($rageid, $series = '', $episode = '')

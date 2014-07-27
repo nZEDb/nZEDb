@@ -61,12 +61,7 @@ class Music
 	 */
 	public function getMusicInfoByName($artist, $album)
 	{
-		$pdo = $this->pdo;
-		$like = 'ILIKE';
-		if ($pdo->dbSystem() === 'mysql') {
-			$like = 'LIKE';
-		}
-		return $pdo->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title LIKE %s AND artist %s %s", $pdo->escapeString("%" . $artist . "%"), $like, $pdo->escapeString("%" . $album . "%")));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title %s AND artist %s", $this->pdo->likeString($album, true, true), $this->pdo->likeString($artist, true, true)));
 	}
 
 	/**
@@ -584,7 +579,7 @@ class Music
 	/**
 	 *
 	 */
-	public function processMusicReleases()
+	public function processMusicReleases($local = false)
 	{
 		$pdo = $this->pdo;
 		$res = $pdo->queryDirect(sprintf('SELECT searchname, id FROM releases '
@@ -612,7 +607,7 @@ class Music
 					// Do a local lookup first
 					$musicCheck = $this->getMusicInfoByName('', $album["name"]);
 
-					if ($musicCheck === false) {
+					if ($musicCheck === false && $local === false) {
 						$albumId = $this->updateMusicInfo($album["name"], $album['year']);
 						$usedAmazon = true;
 						if ($albumId === false) {

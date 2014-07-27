@@ -115,17 +115,14 @@ Class ProcessAdditional
 
 		$this->_hasGNUFile = (nzedb\utility\Utility::hasCommand('file') === true ? true : false);
 
-		$this->_killString = '';
+		$this->_killString = '"';
 		if ($this->pdo->getSetting('timeoutpath') != '' && $this->pdo->getSetting('timeoutseconds') > 0) {
 			$this->_killString = (
-				'"' . $this->pdo->getSetting('timeoutpath') . '" -s KILL ' . $this->pdo->getSetting('timeoutseconds') . 's '
+				'"' . $this->pdo->getSetting('timeoutpath') .
+				'" --foreground --signal=KILL ' .
+				$this->pdo->getSetting('timeoutseconds') . ' "'
 			);
 		}
-
-		// ffmpeg stalls with timeout, so don't use it. It doesn't stall on avconv however.
-		$this->_ffmpegKillString = (
-			strpos($this->pdo->getSetting('ffmpegpath'), 'ffmpeg') !== false ? '' : $this->_killString
-		);
 
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
@@ -142,6 +139,8 @@ Class ProcessAdditional
 		// Maximum RAR files to check for a password before stopping.
 		$this->_maximumRarPasswordChecks =
 			($this->pdo->getSetting('passchkattempts') != '') ? (int)$this->pdo->getSetting('passchkattempts') : 1;
+
+		$this->_maximumRarPasswordChecks = ($this->_maximumRarPasswordChecks < 1 ? 1 : $this->_maximumRarPasswordChecks);
 
 		// Maximum size of releases in GB.
 		$this->_maxSize =
@@ -494,14 +493,7 @@ Class ProcessAdditional
 			return false;
 		}
 
-		// Turn on output buffering.
-		ob_start();
-		// Decompress the NZB.
-		@readgzfile($nzbPath);
-		// Read the nzb into memory.
-		$nzbContents = ob_get_contents();
-		// Clean (erase) the output buffer and turn off output buffering.
-		ob_end_clean();
+		$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbPath);
 
 		// Get a list of files in the nzb.
 		$this->_nzbContents = $this->_nzb->nzbFileList($nzbContents);
@@ -556,8 +548,7 @@ Class ProcessAdditional
 			// Check if it's a rar/zip.
 			if ($this->_NZBHasCompressedFile === false &&
 				preg_match(
-					'
-										/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zip)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
+					'/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zip)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
 					$this->_currentNZBFile['title']
 				)
 			) {
@@ -642,12 +633,12 @@ Class ProcessAdditional
 	 */
 	protected function _processNZBCompressedFiles()
 	{
-		$notInfinite = 0;
+		$failed = $downloaded = 0;
 		// Loop through the files, attempt to find if password-ed and files. Starting with what not to process.
 		foreach ($this->_nzbContents as $nzbFile) {
-			if ($this->_maximumRarPasswordChecks > 1 && $notInfinite > $this->_maximumRarPasswordChecks) {
+			if ($downloaded >= $this->_maximumRarSegments) {
 				break;
-			} else if ($notInfinite > $this->_maximumRarSegments) {
+			} else if ($failed >= $this->_maximumRarPasswordChecks) {
 				break;
 			}
 
@@ -688,7 +679,7 @@ Class ProcessAdditional
 					$this->_echo('(cB)', 'primaryOver', false);
 				}
 
-				$notInfinite++;
+				$downloaded++;
 
 				// Process the compressed file.
 				$decompressed = $this->_processCompressedData($fetchedBinary);
@@ -698,12 +689,10 @@ Class ProcessAdditional
 				}
 
 			} else {
-
+				$failed++;
 				if ($this->_echoCLI) {
-					$this->_echo('f(' . $notInfinite . ')', 'warningOver', false);
+					$this->_echo('f(' . $failed . ')', 'warningOver', false);
 				}
-
-				$notInfinite += 0.2;
 			}
 		}
 	}
@@ -751,8 +740,7 @@ Class ProcessAdditional
 					$fileName = $this->tmpPath . uniqid() . '.rar';
 					file_put_contents($fileName, $compressedData);
 					nzedb\utility\runCmd(
-						$this->_killString .
-						'"' . $this->_unrarPath .
+						$this->_killString . $this->_unrarPath .
 						'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
 						$fileName . '" "' . $this->tmpPath . 'unrar/"'
 					);
@@ -768,8 +756,7 @@ Class ProcessAdditional
 					$fileName = $this->tmpPath . uniqid() . '.zip';
 					file_put_contents($fileName, $compressedData);
 					nzedb\utility\runCmd(
-						$this->_killString .
-						'"' . $this->_7zipPath . '" x "' .
+						$this->_killString . $this->_7zipPath . '" x "' .
 						$fileName . '" -bd -y -o"' . $this->tmpPath . 'unzip/"'
 					);
 					unlink($fileName);
@@ -1434,7 +1421,7 @@ Class ProcessAdditional
 
 				// Get the media info for the file.
 				$xmlArray = nzedb\utility\runCmd(
-					$this->_killString . '"' . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
+					$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 				);
 				if (is_array($xmlArray)) {
 
@@ -1519,8 +1506,7 @@ Class ProcessAdditional
 
 				// Create an audio sample.
 				nzedb\utility\runCmd(
-					$this->_ffmpegKillString .
-					'"' .
+					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -t 30 -i "' .
 					$fileLocation .
@@ -1605,6 +1591,44 @@ Class ProcessAdditional
 	}
 
 	/**
+	 * Get accurate time from video segment.
+	 *
+	 * @param string $videoLocation
+	 *
+	 * @return array|string
+	 */
+	private function getVideoTime($videoLocation)
+	{
+		$tmpVideo = ($this->tmpPath . uniqid() . '.avi');
+		// Get the real duration of the file.
+		$time = nzedb\utility\runCmd(
+			$this->_killString .
+			$this->pdo->getSetting('ffmpegpath') .
+			'" -i "' .
+			$videoLocation .
+			'" -vcodec copy -y "' .
+			$tmpVideo .
+			'" 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
+		);
+		@unlink($tmpVideo);
+
+		$time = (isset($time[0]) ? $time[0] : '');
+
+		if ($time !== '' && preg_match('/(\d{1,2}).(\d{2})/', $time, $numbers)) {
+			// Reduce the last number by 1, this is to make sure we don't ask avconv/ffmpeg for non existing data.
+			if ($numbers[2] > 0) {
+				$numbers[2] -= 1;
+			} else if ($numbers[1] > 0) {
+				$numbers[1] -= 1;
+				$numbers[2] = '99';
+			}
+			$time = ('00:00:' . $numbers[1] . '.' . $numbers[2]);
+		}
+
+		return $time;
+	}
+
+	/**
 	 * Try to get a preview image from a video file.
 	 *
 	 * @param string $fileLocation
@@ -1627,8 +1651,7 @@ Class ProcessAdditional
 
 			// Create the image.
 			nzedb\utility\runCmd(
-				$this->_ffmpegKillString .
-				'"' .
+				$this->_killString .
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
 				$fileLocation .
@@ -1663,43 +1686,6 @@ Class ProcessAdditional
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Get accurate time from video segment.
-	 *
-	 * @param string $videoLocation
-	 *
-	 * @return array|string
-	 */
-	private function getVideoTime($videoLocation)
-	{
-		$tmpVideo = ($this->tmpPath . uniqid() . '.avi');
-			// Get the real duration of the file.
-		$time = nzedb\utility\runCmd(
-			$this->_ffmpegKillString .
-			'"' .
-			$this->pdo->getSetting('ffmpegpath') .
-			'" -i "' .
-			$videoLocation .
-			'" -vcodec copy -y "' .
-			$tmpVideo .
-			'" 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
-		);
-		@unlink($tmpVideo);
-
-		$time = (isset($time[0]) ? $time[0] : '');
-
-		if ($time !== '' && preg_match('/(\d{1,2}).(\d{2})/', $time, $numbers)) {
-			if ($numbers[2] > 0) {
-				$numbers[2] -= 1;
-			} else if ($numbers[1] > 0) {
-				$numbers[1] -= 1;
-			}
-			$time = ('00:00:' . $numbers[1] . '.' . $numbers[2]);
-		}
-
-		return $time;
 	}
 
 	/**
@@ -1757,8 +1743,7 @@ Class ProcessAdditional
 
 					// Try to get the sample (from the end instead of the start).
 					nzedb\utility\runCmd(
-						$this->_ffmpegKillString .
-						'"' .
+						$this->_killString .
 						$this->pdo->getSetting('ffmpegpath') .
 						'" -i "' .
 						$fileLocation .
@@ -1775,8 +1760,7 @@ Class ProcessAdditional
 			if ($newMethod === false) {
 				// If longer than 60 or we could not get the video length, run the old way.
 				nzedb\utility\runCmd(
-					$this->_ffmpegKillString .
-					'"' .
+					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -i "' .
 					$fileLocation .
@@ -1851,7 +1835,7 @@ Class ProcessAdditional
 
 			// Run media info on it.
 			$xmlArray = nzedb\utility\runCmd(
-				$this->_killString . '"' . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
+				$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 			);
 
 			// Check if we got it.

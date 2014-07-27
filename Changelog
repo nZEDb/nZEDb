@@ -6,6 +6,26 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-27 tasky
+	* Fix: Popporn kept returning false #1425
+2014-07-27 ruhllatio
+	* Fix: local lookup query WHEREs were backwards sprintf'd
+	* Fix: forgot a LIKE
+	* Fix: Monitor not reflecting newestpre time despite having plenty of new Pres
+2014-07-27 kevin
+	* Fix: warningOver method on ColorCLI.
+	* Fix: Missing max part repair not being used in a query.
+	* Chg: Maximum failed part downloads setting to not divide by 5, this will speed up post process additional.
+	* Fix: The logic for calculating failed/downloaded rar parts.
+	* Fix: Typo in nfo query.
+	* Chg: Check if maxsizetopostprocess is 0 in nfo, ignore if so.
+	* Add: Min / Max release size setting to process NFOs.
+	* Chg: Move NZB decompression to a central location.
+	* Chg: Remove timeout for avconv also, will look into alternatives.
+	* Chg: Get timeout to work on avconv/ffmpeg, needed the --foreground option.
+	* Add: Max NFO download retries setting.
+	* Add: Query limiters to Forking to prevent spawning of processes needlessly.
+	* Add: password_compat library recommended by php.net for php versions prior to 5.5 to replace our usage of crypt without a salt, which will make passwords more secure for our users still on php 5.4
 2014-07-26 ruhllatio
 	* Merge Tasky's PR #1424 - updating changelog to reflect
 2014-07-26 tasky

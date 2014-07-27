@@ -352,12 +352,21 @@ class Forking extends \fork_daemon
 		}
 	}
 
+	private $ppAddMinSize = '';
+	private $ppAddMaxSize = '';
+
 	/**
 	 * Check if we should process Additional's.
 	 * @return bool
 	 */
 	private function checkProcessAdditional()
 	{
+		$this->ppAddMinSize =
+			($this->pdo->getSetting('minsizetopostprocess') != '') ? (int)$this->pdo->getSetting('minsizetopostprocess') : 1;
+		$this->ppAddMinSize = ($this->ppAddMinSize === 0 ? '' : 'AND r.size > ' . ($this->ppAddMinSize * 1048576));
+		$this->ppAddMaxSize =
+			($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
+		$this->ppAddMaxSize = ($this->ppAddMaxSize === 0 ? '' : 'AND r.size < ' . ($this->ppAddMaxSize * 1073741824));
 		return (
 			$this->pdo->queryOneRow(
 				sprintf('
@@ -368,8 +377,11 @@ class Forking extends \fork_daemon
 					AND r.passwordstatus BETWEEN -6 AND -1
 					AND r.haspreview = -1
 					AND c.disablepreview = 0
+					%s %s
 					LIMIT 1',
-					\NZB::NZB_ADDED
+					\NZB::NZB_ADDED,
+					$this->ppAddMaxSize,
+					$this->ppAddMinSize
 				)
 			) === false ? false : true
 		);
@@ -390,15 +402,22 @@ class Forking extends \fork_daemon
 					AND r.passwordstatus BETWEEN -6 AND -1
 					AND r.haspreview = -1
 					AND c.disablepreview = 0
+					%s %s
 					GROUP BY LEFT(r.guid, 1)
 					LIMIT 16',
-					\NZB::NZB_ADDED
+					\NZB::NZB_ADDED,
+					$this->ppAddMaxSize,
+					$this->ppAddMinSize
 				)
 			);
 			$maxProcesses = $this->pdo->getSetting('postthreads');
 		}
 		return $maxProcesses;
 	}
+
+	private $maxNfoRetries = -1;
+	private $nfoMaxSize = '';
+	private $nfoMinSize = '';
 
 	/**
 	 * Check if we should process NFO's.
@@ -407,11 +426,21 @@ class Forking extends \fork_daemon
 	private function checkProcessNfo()
 	{
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
+			$this->nfoMaxSize = ($this->pdo->getSetting('maxsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('maxsizetoprocessnfo') : 100;
+			$this->nfoMaxSize = ($this->nfoMaxSize > 0 ? ('AND size < ' . ($this->nfoMaxSize * 1073741824)) : '');
+			$this->nfoMinSize = ($this->pdo->getSetting('minsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('minsizetoprocessnfo') : 100;
+			$this->nfoMinSize = ($this->nfoMinSize > 0 ? ('AND size > ' . ($this->nfoMinSize * 1048576)) : '');
+			$this->maxNfoRetries = ($this->pdo->getSetting('maxnforetries') >= 0 ? -($this->pdo->getSetting('maxnforetries') + 1) : \Nfo::NFO_UNPROC);
+			$this->maxNfoRetries = ($this->maxNfoRetries < -8 ? -8 : $this->maxNfoRetries);
 			return (
 				$this->pdo->queryOneRow(
 					sprintf(
-						'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus BETWEEN -1 AND %d LIMIT 1',
-						\NZB::NZB_ADDED, \Nfo::NFO_UNPROC
+						'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus BETWEEN %d AND %d %s %s LIMIT 1',
+						\NZB::NZB_ADDED,
+						$this->maxNfoRetries,
+						\Nfo::NFO_UNPROC,
+						$this->nfoMaxSize,
+						$this->nfoMinSize
 					)
 				) === false ? false : true
 			);
@@ -430,10 +459,15 @@ class Forking extends \fork_daemon
 					SELECT LEFT(guid, 1) AS id
 					FROM releases
 					WHERE nzbstatus = %d
-					AND nfostatus BETWEEN -6 AND -1
+					AND nfostatus BETWEEN %d AND %d
+					%s %s
 					GROUP BY LEFT(guid, 1)
 					LIMIT 16',
-					\NZB::NZB_ADDED
+					\NZB::NZB_ADDED,
+					$this->maxNfoRetries,
+					\Nfo::NFO_UNPROC,
+					$this->nfoMaxSize,
+					$this->nfoMinSize
 				)
 			);
 			$maxProcesses = $this->pdo->getSetting('nfothreads');
