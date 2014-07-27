@@ -23,6 +23,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Get timeout to work on avconv/ffmpeg, needed the --foreground option.
 	* Add: Max NFO download retries setting.
 	* Add: Query limiters to Forking to prevent spawning of processes needlessly.
+	* Add: password_compat library recommended by php.net for php versions prior to 5.5 to replace our usage of crypt without a salt, which will make passwords more secure for our users still on php 5.4
 2014-07-26 ruhllatio
 	* Merge Tasky's PR #1424 - updating changelog to reflect
 2014-07-26 tasky

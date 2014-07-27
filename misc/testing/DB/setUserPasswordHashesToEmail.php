@@ -19,7 +19,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$output = new ColorCLI();
+$colorCLI = new ColorCLI();
 
 $warning = <<<WARNING
 This script will (re)set the password hashes for older hashes (pre Db patch
@@ -30,40 +30,42 @@ a few users then run setUsersPasswordHash.php for each of them instead.
 WARNING;
 $usage = "\nUsage: php {$argv[0]} <IUnderStandTheRisks>";
 
-echo $output->warning($warning);
+echo $colorCLI->warning($warning);
 if ($argc != 2) {
-	exit($output->error("\nWrong number of parameters$usage"));
+	exit($colorCLI->error("\nWrong number of parameters$usage"));
 } else if ($argv[1] !== 1 && $argv[1] != '<IUnderStandTheRisks>' && $argv[1] != 'IUnderStandTheRisks' && $argv[1] != 'true') {
-	exit($output->error("\nInvalid parameter(s)$usage"));
+	exit($colorCLI->error("\nInvalid parameter(s)$usage"));
 }
 
-
 $pdo = new Settings();
-$query = "SELECT `id`, `username`, `email`, `password` FROM users";
 
-$users = $pdo->query($query);
+$users = $pdo->query("SELECT id, username, email, password FROM users");
 $update = $pdo->Prepare('UPDATE users SET password = :password WHERE id = :id');
 
-foreach($users as $user)
-{
+$Users = new Users(['Settings' => $pdo]);
+
+foreach($users as $user) {
 	if (needUpdate($user)) {
-		$hash = crypt($user['email']);
-		$update->execute([':password' => $hash, ':id' => $user['id']]);
-		echo $output->primary('Updating hash for user:') . $user['username'];
+		$hash = $Users->hashPassword($user['email']);
+		if ($hash !== false) {
+			$update->execute([':password' => $hash, ':id' => $user['id']]);
+			echo $colorCLI->primary('Updating hash for user:') . $user['username'];
+		} else {
+			echo $colorCLI->error('Error updating hash for user:') . $user['username'];
+		}
 	}
 }
 
 function needUpdate($user)
 {
-	global $output;
+	global $colorCLI;
 	$status = true;
 	if (empty($user['email'])) {
 		$status = false;
-		echo $output->error('Cannot update password hash - Email is not set for user: ' . $user['username']);
+		echo $colorCLI->error('Cannot update password hash - Email is not set for user: ' . $user['username']);
 	} else if (preg_match('#^\$.+$#', $user['password'])) {
 		$status = false;
-		echo $user['username'] . $output->primary(' is already using new style hash ;-)');
+		echo $user['username'] . $colorCLI->primary(' is already using new style hash ;-)');
 	}
 	return $status;
 }
-?>
