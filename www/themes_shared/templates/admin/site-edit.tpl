@@ -820,7 +820,7 @@
 				<td style="width:180px;"><label for="passchkattempts">Maximum failed part downloads:</label></td>
 				<td>
 					<input class="short" id="passchkattempts" name="passchkattempts" type="text" value="{$site->passchkattempts}"/>
-					<div class="hint">How many times to download a different when failing and article fails to download for a RAR/ZIP, this is multiplied by 5, so if you set it to 1, we will retry 5 times.</div>
+					<div class="hint">How many times to download a different when failing and article fails to download for a RAR/ZIP.</div>
 				</td>
 			</tr>
 			<tr>

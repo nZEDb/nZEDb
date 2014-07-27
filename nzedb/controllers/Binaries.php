@@ -986,10 +986,11 @@ class Binaries
 		$missingParts = $this->_pdo->query(
 			sprintf('
 				SELECT * FROM %s
-				WHERE group_id = %d AND attempts < 5
+				WHERE group_id = %d AND attempts < %d
 				ORDER BY numberid ASC LIMIT %d',
 				$group['prname'],
 				$groupArr['id'],
+				$this->_partRepairMaxTries,
 				$this->_partRepairLimit
 			)
 		);

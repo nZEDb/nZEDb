@@ -556,8 +556,7 @@ Class ProcessAdditional
 			// Check if it's a rar/zip.
 			if ($this->_NZBHasCompressedFile === false &&
 				preg_match(
-					'
-										/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zip)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
+					'/\.(part0*1|part0+|r0+|r0*1|rar|0+|0*10?|zip)(\s*\.rar)*($|[ ")\]-])|"[a-f0-9]{32}\.[1-9]\d{1,2}".*\(\d+\/\d{2,}\)$/i',
 					$this->_currentNZBFile['title']
 				)
 			) {
@@ -703,7 +702,7 @@ Class ProcessAdditional
 					$this->_echo('f(' . $notInfinite . ')', 'warningOver', false);
 				}
 
-				$notInfinite += 0.2;
+				$notInfinite++;
 			}
 		}
 	}
@@ -1605,6 +1604,45 @@ Class ProcessAdditional
 	}
 
 	/**
+	 * Get accurate time from video segment.
+	 *
+	 * @param string $videoLocation
+	 *
+	 * @return array|string
+	 */
+	private function getVideoTime($videoLocation)
+	{
+		$tmpVideo = ($this->tmpPath . uniqid() . '.avi');
+		// Get the real duration of the file.
+		$time = nzedb\utility\runCmd(
+			$this->_ffmpegKillString .
+			'"' .
+			$this->pdo->getSetting('ffmpegpath') .
+			'" -i "' .
+			$videoLocation .
+			'" -vcodec copy -y "' .
+			$tmpVideo .
+			'" 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
+		);
+		@unlink($tmpVideo);
+
+		$time = (isset($time[0]) ? $time[0] : '');
+
+		if ($time !== '' && preg_match('/(\d{1,2}).(\d{2})/', $time, $numbers)) {
+			// Reduce the last number by 1, this is to make sure we don't ask avconv/ffmpeg for non existing data.
+			if ($numbers[2] > 0) {
+				$numbers[2] -= 1;
+			} else if ($numbers[1] > 0) {
+				$numbers[1] -= 1;
+				$numbers[2] = '99';
+			}
+			$time = ('00:00:' . $numbers[1] . '.' . $numbers[2]);
+		}
+
+		return $time;
+	}
+
+	/**
 	 * Try to get a preview image from a video file.
 	 *
 	 * @param string $fileLocation
@@ -1663,43 +1701,6 @@ Class ProcessAdditional
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Get accurate time from video segment.
-	 *
-	 * @param string $videoLocation
-	 *
-	 * @return array|string
-	 */
-	private function getVideoTime($videoLocation)
-	{
-		$tmpVideo = ($this->tmpPath . uniqid() . '.avi');
-			// Get the real duration of the file.
-		$time = nzedb\utility\runCmd(
-			$this->_ffmpegKillString .
-			'"' .
-			$this->pdo->getSetting('ffmpegpath') .
-			'" -i "' .
-			$videoLocation .
-			'" -vcodec copy -y "' .
-			$tmpVideo .
-			'" 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
-		);
-		@unlink($tmpVideo);
-
-		$time = (isset($time[0]) ? $time[0] : '');
-
-		if ($time !== '' && preg_match('/(\d{1,2}).(\d{2})/', $time, $numbers)) {
-			if ($numbers[2] > 0) {
-				$numbers[2] -= 1;
-			} else if ($numbers[1] > 0) {
-				$numbers[1] -= 1;
-			}
-			$time = ('00:00:' . $numbers[1] . '.' . $numbers[2]);
-		}
-
-		return $time;
 	}
 
 	/**
