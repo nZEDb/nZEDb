@@ -12,40 +12,50 @@ use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
-if ($argc < 3)
-{
-	exit($c->error("\nNot enough parameters\nUsage: php {$argv[0]} <new-password> [<user-name> | <userid>]"));
+if ($argc < 3) {
+	exit(
+		$c->error(
+			'Not enough parameters!' . PHP_EOL .
+			'Argument 1: New password.' . PHP_EOL .
+			'Argument 2: ID or username of the user.' . PHP_EOL
+		)
+	);
 }
 
 $password = $argv[1];
 $identifier = $argv[2];
-if (is_numeric($password))
-{
-	exit($c->error("\nPassword cannot be numbers only!"));
+if (is_numeric($password)) {
+	exit($c->error('Password cannot be numbers only!'));
 }
 
-
-$field = is_numeric($identifier) ? 'id' : 'username';
+$field = (is_numeric($identifier) ? 'id' : 'username');
 $pdo = new Settings();
-$query = "SELECT `id`, `username` FROM users WHERE $field = ";
-$query .= is_numeric($identifier) ? $identifier : "'$identifier'";
-$resulta = $pdo->queryOneRow($query);
+$user = $pdo->queryOneRow(
+	sprintf(
+		"SELECT id, username FROM users WHERE %s = %s",
+		$field,
+		(is_numeric($identifier) ? $identifier : $pdo->escapeString($identifier))
+	)
+);
 
-if ($resulta !== false)
-{
-	$hash = crypt($password);		// Let crypt use a random salt.
-	$query = "UPDATE `users` SET password = '$hash' WHERE `id` = {$resulta['id']}";
-	$result = $pdo->queryDirect($query);
-	if ($result === false)
-	{
-		echo $c->error("An error occured during update attempt.\n" . $pdo->errorInfo());
+if ($user !== false) {
+	$users = new Users(['Settings' => $pdo]);
+	$hash = $users->hashPassword($password);
+	$result = false;
+	if ($hash !== false) {
+		$hash = $pdo->queryExec(
+			sprintf(
+				'UPDATE users SET password = %s WHERE id = %d',
+				$hash, $user['id']
+			)
+		);
 	}
-	else
-	{
-		echo $c->headerOver("Updated {$resulta['username']}'s password hash to") . $c->primary("\n$hash");
+
+	if ($result === false || $hash === false) {
+		echo $c->error('An error occured during update attempt.' . PHP_EOL . $pdo->errorInfo());
+	} else {
+		echo $c->headerOver("Updated {$user['username']}'s password hash to: ") . $c->primary("$hash");
 	}
-}
-else
-{
-	echo $c->error("Unable to find $field '$identifier' in the users. Cannot change password.\n");
+} else {
+	echo $c->error("Unable to find {$field} '{$identifier}' in the users. Cannot change password.");
 }

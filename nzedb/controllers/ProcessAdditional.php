@@ -115,12 +115,12 @@ Class ProcessAdditional
 
 		$this->_hasGNUFile = (nzedb\utility\Utility::hasCommand('file') === true ? true : false);
 
-		$this->_killString = '';
+		$this->_killString = '"';
 		if ($this->pdo->getSetting('timeoutpath') != '' && $this->pdo->getSetting('timeoutseconds') > 0) {
 			$this->_killString = (
 				'"' . $this->pdo->getSetting('timeoutpath') .
-				'" --preserve-status --foreground --signal=KILL ' .
-				$this->pdo->getSetting('timeoutseconds') . ' '
+				'" --foreground --signal=KILL ' .
+				$this->pdo->getSetting('timeoutseconds') . ' "'
 			);
 		}
 
@@ -740,8 +740,7 @@ Class ProcessAdditional
 					$fileName = $this->tmpPath . uniqid() . '.rar';
 					file_put_contents($fileName, $compressedData);
 					nzedb\utility\runCmd(
-						$this->_killString .
-						'"' . $this->_unrarPath .
+						$this->_killString . $this->_unrarPath .
 						'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
 						$fileName . '" "' . $this->tmpPath . 'unrar/"'
 					);
@@ -757,8 +756,7 @@ Class ProcessAdditional
 					$fileName = $this->tmpPath . uniqid() . '.zip';
 					file_put_contents($fileName, $compressedData);
 					nzedb\utility\runCmd(
-						$this->_killString .
-						'"' . $this->_7zipPath . '" x "' .
+						$this->_killString . $this->_7zipPath . '" x "' .
 						$fileName . '" -bd -y -o"' . $this->tmpPath . 'unzip/"'
 					);
 					unlink($fileName);
@@ -1423,7 +1421,7 @@ Class ProcessAdditional
 
 				// Get the media info for the file.
 				$xmlArray = nzedb\utility\runCmd(
-					$this->_killString . '"' . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
+					$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 				);
 				if (is_array($xmlArray)) {
 
@@ -1509,7 +1507,6 @@ Class ProcessAdditional
 				// Create an audio sample.
 				nzedb\utility\runCmd(
 					$this->_killString .
-					'"' .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -t 30 -i "' .
 					$fileLocation .
@@ -1605,7 +1602,7 @@ Class ProcessAdditional
 		$tmpVideo = ($this->tmpPath . uniqid() . '.avi');
 		// Get the real duration of the file.
 		$time = nzedb\utility\runCmd(
-			$this->_killString . '"' .
+			$this->_killString .
 			$this->pdo->getSetting('ffmpegpath') .
 			'" -i "' .
 			$videoLocation .
@@ -1654,7 +1651,7 @@ Class ProcessAdditional
 
 			// Create the image.
 			nzedb\utility\runCmd(
-				$this->_killString . '"' .
+				$this->_killString .
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
 				$fileLocation .
@@ -1746,7 +1743,7 @@ Class ProcessAdditional
 
 					// Try to get the sample (from the end instead of the start).
 					nzedb\utility\runCmd(
-						$this->_killString . '"' .
+						$this->_killString .
 						$this->pdo->getSetting('ffmpegpath') .
 						'" -i "' .
 						$fileLocation .
@@ -1763,7 +1760,7 @@ Class ProcessAdditional
 			if ($newMethod === false) {
 				// If longer than 60 or we could not get the video length, run the old way.
 				nzedb\utility\runCmd(
-					$this->_killString . '"' .
+					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -i "' .
 					$fileLocation .
@@ -1838,7 +1835,7 @@ Class ProcessAdditional
 
 			// Run media info on it.
 			$xmlArray = nzedb\utility\runCmd(
-				$this->_killString . '"' . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
+				$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 			);
 
 			// Check if we got it.

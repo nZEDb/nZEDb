@@ -747,6 +747,13 @@
 					<div class="hint">The minimum size in megabytes of a release to process it for NFOs. If set to 0, then ignored.</div>
 				</td>
 			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxnforetries">Maximum amount of times to redownload a NFO:</label></td>
+				<td>
+					<input class="short" id="maxnforetries" name="maxnforetries" type="text" value="{$site->maxnforetries}"/>
+					<div class="hint">How many times to retry when a NFO fails to download. If set to 0, we will not retry. The max is 7.</div>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 

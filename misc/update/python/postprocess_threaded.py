@@ -133,7 +133,7 @@ if sys.argv[1] == "additional":
 	cur[0].execute("SELECT LEFT(r.guid, 1) FROM releases r LEFT JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 "+maxsize+" AND (r.haspreview = -1 AND c.disablepreview = 0) AND r.passwordstatus BETWEEN -6 AND -1 GROUP BY LEFT(r.guid, 1) LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "nfo":
-	cur[0].execute("SELECT LEFT(guid, 1) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1 GROUP BY LEFT(guid, 1) LIMIT 16")
+	cur[0].execute("SELECT LEFT(guid, 1) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -8 AND -1 GROUP BY LEFT(guid, 1) LIMIT 16")
 	datas = cur[0].fetchall()
 elif sys.argv[1] == "movie" and len(sys.argv) == 3 and sys.argv[2] == "clean":
 	cur[0].execute("SELECT LEFT(guid, 1) FROM releases WHERE nzbstatus = 1 AND isrenamed = 1 AND searchname IS NOT NULL AND imdbid IS NULL AND categoryid BETWEEN 2000 AND 2999 GROUP BY LEFT(guid, 1) "+orderBY+" LIMIT 16")

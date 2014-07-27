@@ -52,8 +52,10 @@ class Users
 
 		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 
-		// Use password_hash functions if version of PHP is 5.5 or higher, it is more secure than crypt.
-		$this->password_hash = (version_compare(PHP_VERSION, '5.5.0', '>='));
+		// password_hash functions are available on PHP 5.5.0 or higher, use password_compat for forward compatibility on older versions.
+		if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
+			require_once(nZEDb_LIBS . 'password_compat' . DS . 'lib' . DS . 'password.php');
+		}
 		$this->password_hash_cost = (defined('nZEDb_PASSWORD_HASH_COST') ? nZEDb_PASSWORD_HASH_COST : 10);
 	}
 
@@ -732,18 +734,6 @@ class Users
 	}
 
 	/**
-	 * Hash a password using crypt.
-	 *
-	 * @param string $password
-	 *
-	 * @return string
-	 */
-	public function hashPassword($password)
-	{
-		return ($this->password_hash ? password_hash($password, PASSWORD_DEFAULT, ['cost' => $this->password_hash_cost]) : crypt($password));
-	}
-
-	/**
 	 * SHA1 a string.
 	 *
 	 * @param string $string
@@ -756,39 +746,49 @@ class Users
 	}
 
 	/**
+	 * Hash a password using crypt.
+	 *
+	 * @param string $password
+	 *
+	 * @return string|bool
+	 */
+	public function hashPassword($password)
+	{
+		return password_hash($password, PASSWORD_DEFAULT, ['cost' => $this->password_hash_cost]);
+	}
+
+	/**
 	 * Verify a password against a hash.
 	 *
 	 * Automatically update the hash if it needs to be.
 	 *
-	 * @param string $password
-	 * @param string $hash
+	 * @param string $password Password to check against hash.
+	 * @param string $hash     Hash to check against password.
+	 * @param int    $userID   ID of the user.
 	 *
 	 * @return bool
 	 */
-	public function checkPassword($password, $hash)
+	public function checkPassword($password, $hash, $userID = -1)
 	{
-		if ($this->password_hash) {
-			if (password_verify($password, $hash) === false) {
-				return false;
-			}
-
-			// Update the hash if it needs to be.
-			if (password_needs_rehash($hash, PASSWORD_DEFAULT, ['cost' => $this->password_hash_cost])) {
-				$hash = $this->hashPassword($password);
-				if ($hash !== false) {
-					$this->pdo->queryExec(
-						sprintf(
-							'UPDATE users SET password = %s WHERE id = %d',
-							$this->pdo->escapeString($hash),
-							$this->currentUserId()
-						)
-					);
-				}
-			}
-			return true;
-		} else {
-			return (crypt($password, $hash) == $hash);
+		if (password_verify($password, $hash) === false) {
+			return false;
 		}
+
+		// Update the hash if it needs to be.
+		if (is_numeric($userID) && $userID > 0 && password_needs_rehash($hash, PASSWORD_DEFAULT, ['cost' => $this->password_hash_cost])) {
+			$hash = $this->hashPassword($password);
+
+			if ($hash !== false) {
+				$this->pdo->queryExec(
+					sprintf(
+						'UPDATE users SET password = %s WHERE id = %d',
+						$this->pdo->escapeString($hash),
+						$userID
+					)
+				);
+			}
+		}
+		return true;
 	}
 
 	/**
