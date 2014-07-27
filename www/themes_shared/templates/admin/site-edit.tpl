@@ -367,6 +367,7 @@
 					<div class="hint">The path to the <a href="http://linux.die.net/man/1/timeout">timeout</a> binary.
 						This is used to limit the amount of time unrar/7zip/avconv/mediainfo can run.
 						You can the time limit in the process additional section.
+						You can leave this empty to disable this.
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/timeout.exe</span>
 					</div>
 				</td>
@@ -585,15 +586,6 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="lookupnfo">Lookup NFO:</label></td>
-				<td>
-					{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$site->lookupnfo separator='<br />'}
-					<div class="hint">Whether to attempt to retrieve an nfo file from usenet.<br/>
-						<strong>NOTE: disabling nfo lookups will disable movie lookups.</strong>
-					</div>
-				</td>
-			</tr>
-			<tr>
 				<td style="width:180px;"><label for="lookupxxx">Lookup XXX:</label></td>
 				<td>
 					{html_radios id="lookupxxx" name='lookupxxx' values=$yesno_ids output=$yesno_names selected=$site->lookupxxx separator='<br />'}
@@ -648,15 +640,6 @@
 				<td>
 					{html_options_multiple id="book_reqids" name='book_reqids' values=$book_reqids_ids output=$book_reqids_names selected=$book_reqids_selected}
 					<div class="hint">Categories of Books to lookup information for (only work if Lookup Books is set to yes).</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="maxnfoprocessed">Maximum NFO files per run:</label></td>
-				<td>
-					<input class="short" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$site->maxnfoprocessed}"/>
-					<div class="hint">The maximum amount of NFO files to process per run. This uses NNTP an connection, 1
-						per thread. This does not query Amazon.
-					</div>
 				</td>
 			</tr>
 			<tr>
@@ -724,6 +707,44 @@
 						post-proc, multiply by the number of threads. ie Postprocessing Threads = 12, Amazon sleep time =
 						12000<br/><a href="https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html">https://affiliate-program.amazon.com/gp/advertising/api/detail/faq.html</a>
 					</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset>
+	<legend>NFO Processing Settings</legend>
+		<table class="input">
+			<tr>
+				<td style="width:180px;"><label for="lookupnfo">Lookup NFO:</label></td>
+				<td>
+					{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$site->lookupnfo separator='<br />'}
+					<div class="hint">Whether to attempt to retrieve an nfo file from usenet.<br/>
+						<strong>NOTE: disabling nfo lookups will disable movie lookups.</strong>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxnfoprocessed">Maximum NFO files per run:</label></td>
+				<td>
+					<input class="short" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$site->maxnfoprocessed}"/>
+					<div class="hint">The maximum amount of NFO files to process per run. This uses NNTP an connection, 1
+						per thread. This does not query Amazon.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxsizetoprocessnfo">Maximum Release Size to process NFOs:</label></td>
+				<td>
+					<input class="short" id="maxsizetoprocessnfo" name="maxsizetoprocessnfo" type="text" value="{$site->maxsizetoprocessnfo}"/>
+					<div class="hint">The maximum size in gigabytes of a release to process it for NFOs. If set to 0, then ignored.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="minsizetoprocessnfo">Minimum Release Size to process NFOs:</label></td>
+				<td>
+					<input class="short" id="minsizetoprocessnfo" name="minsizetoprocessnfo" type="text" value="{$site->minsizetoprocessnfo}"/>
+					<div class="hint">The minimum size in megabytes of a release to process it for NFOs. If set to 0, then ignored.</div>
 				</td>
 			</tr>
 		</table>

@@ -136,7 +136,7 @@ class NZBImport
 
 				// Get the contents of the NZB file as a string.
 				if (strtolower(substr($nzbFile, -7)) === '.nzb.gz') {
-					$nzbString = $this->deZipNzb($nzbFile);
+					$nzbString = nzedb\utility\Utility::unzipGzipFile($nzbFile);
 				} else {
 					$nzbString = file_get_contents($nzbFile);
 				}
@@ -230,33 +230,6 @@ class NZBImport
 		} else {
 			return true;
 		}
-	}
-
-	/**
-	 * Decompress a gzip'ed NZB.
-	 * @param string $path Path to the zipped NZB.
-	 *
-	 * @return string|bool
-	 *
-	 * @access protected
-	 */
-	protected function deZipNzb($path)
-	{
-		// String to hold the NZB contents.
-		$string = '';
-
-		// Open the gzip file.
-		$nzb = @gzopen($path, 'rb', 0);
-		if ($nzb) {
-			// Append the decompressed data to the string until we find the end of file pointer.
-			while (!gzeof($nzb)) {
-				$string .= gzread($nzb, 1024);
-			}
-			// Close the gzip file.
-			gzclose($nzb);
-		}
-		// Return the string.
-		return ($string === '' ? false : $string);
 	}
 
 	/**

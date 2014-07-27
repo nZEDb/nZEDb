@@ -99,8 +99,10 @@ class Nfo
 		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
 		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 		$this->nzbs = ($this->pdo->getSetting('maxnfoprocessed') != '') ? (int)$this->pdo->getSetting('maxnfoprocessed') : 100;
-		$this->maxsize = ($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
+		$this->maxsize = ($this->pdo->getSetting('maxsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('maxsizetoprocessnfo') : 100;
 		$this->maxsize = ($this->maxsize > 0 ? ('AND size < ' . ($this->maxsize * 1073741824)) : '');
+		$this->minsize = ($this->pdo->getSetting('minsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('minsizetoprocessnfo') : 100;
+		$this->minsize = ($this->minsize > 0 ? ('AND size > ' . ($this->minsize * 1048576)) : '');
 		$this->tmpPath = $this->pdo->getSetting('tmpunrarpath');
 		if (!preg_match('/[\/\\\\]$/', $this->tmpPath)) {
 			$this->tmpPath .= DS;
@@ -273,14 +275,13 @@ class Nfo
 				FROM releases
 				WHERE nzbstatus = %d
 				AND nfostatus BETWEEN -6 AND %d
-				%s
-				%s
-				%s
+				%s %s %s %s
 				ORDER BY nfostatus ASC, postdate DESC
 				LIMIT %d',
 				NZB::NZB_ADDED,
 				self::NFO_UNPROC,
 				$this->maxsize,
+				$this->minsize,
 				$guidCharQuery,
 				$groupIDQuery,
 				$this->nzbs
@@ -306,12 +307,17 @@ class Nfo
 				sprintf('
 					SELECT nfostatus AS status, COUNT(*) AS count
 					FROM releases
-					WHERE nfostatus BETWEEN -6 AND %d %s %s
+					WHERE nfostatus BETWEEN -6 AND %d
+					AND nzbstatus = %d
+					%s %s %s %s
 					GROUP BY nfostatus
 					ORDER BY nfostatus ASC',
 					self::NFO_UNPROC,
+					NZB::NZB_ADDED,
 					$guidCharQuery,
-					$groupIDQuery
+					$groupIDQuery,
+					$this->minsize,
+					$this->maxsize
 				)
 			);
 			foreach ($nfostats as $row) {

@@ -17,8 +17,10 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath) {
 		if (is_file($filePath) && preg_match('/\.nzb\.gz/', $filePath)) {
-			$nzbpath = 'compress.zlib://' . $filePath;
-			$nzbfile = @simplexml_load_file($nzbpath);
+			$nzbfile = nzedb\utility\Utility::unzipGzipFile($filePath);
+			if ($nzbfile) {
+				$nzbfile = @simplexml_load_string($nzbfile);
+			}
 			if ($nzbfile && preg_match('/([a-f0-9]+)\.nzb/', $filePath, $guid)) {
 				$res = $pdo->queryOneRow(sprintf("SELECT id, guid FROM releases WHERE guid = %s", $pdo->escapeString(stristr($filePath->getFilename(), '.nzb.gz', true))));
 				if ($res === false) {

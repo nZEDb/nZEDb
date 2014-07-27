@@ -496,14 +496,7 @@ Class ProcessAdditional
 			return false;
 		}
 
-		// Turn on output buffering.
-		ob_start();
-		// Decompress the NZB.
-		@readgzfile($nzbPath);
-		// Read the nzb into memory.
-		$nzbContents = ob_get_contents();
-		// Clean (erase) the output buffer and turn off output buffering.
-		ob_end_clean();
+		$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbPath);
 
 		// Get a list of files in the nzb.
 		$this->_nzbContents = $this->_nzb->nzbFileList($nzbContents);
