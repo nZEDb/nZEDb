@@ -466,6 +466,7 @@ while ($i > 0) {
 	$backfill_groups_days = $split_result['backfill_groups_days'];
 	$backfill_groups_date = $split_result['backfill_groups_date'];
 	$newestadd = $split_result['newestadd'];
+	$newestpre = $split_result['newestpre'];
 
 	// assign settings from tmux and settings tables
 	$collections_kill = $proc_tmux_result['collections_kill'];

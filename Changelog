@@ -9,6 +9,7 @@ New updates are grouped by person, at the top of the file.
 2014-07-27 ruhllatio
 	* Fix: local lookup query WHEREs were backwards sprintf'd
 	* Fix: forgot a LIKE
+	* Fix: Monitor not reflecting newestpre time despite having plenty of new Pres
 2014-07-26 kevin
 	* Fix: warningOver method on ColorCLI.
 	* Fix: Missing max part repair not being used in a query.
