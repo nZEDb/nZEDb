@@ -55,7 +55,7 @@ class popporn
 	// Sets the directurl for the template and returns it in the array
 	protected $directurl = null;
 
-	public function __construct($echooutput = true)
+	public function __construct()
 	{
 		$this->response = array();
 		$this->res = array();
@@ -74,6 +74,7 @@ class popporn
 	unset($this->response);
 	unset($this->res);
 	}
+
 	/**
 	 * Get Box Cover Images
 	 * @return array - boxcover,backcover
@@ -385,6 +386,6 @@ class popporn
 			return false;
 		}
 		curl_close($ch);
-		return false;
+		return true;
 	}
 }
