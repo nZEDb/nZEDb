@@ -6,6 +6,11 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-26 ruhllatio
+	* Merge Tasky's PR #1424 - updating changelog to reflect
+2014-07-26 tasky
+	* Add: Add Game/XXX Info to nzb details: First Stage.
+	* Add: Hot Movies Icon and Fix layout
 2014-07-26 bart39
 	* Fix: Remove 'See full summary »' from the end of imdb movie plot #1420
 2014-07-26 kevin
@@ -19,6 +24,8 @@ New updates are grouped by person, at the top of the file.
 	* Add: Support for GNU Timeout, to kill unrar/ffmpeg/etc after set time (you can set the time / path to timeout in site edit, on linux it should be /usr/bin/timeout)
 	* Chg: Move safe_pull.php into switch.php
 	* Add: Renamed option to multiprocess/postprocess.php movie/tv
+	* Add: PHP multi-processing import script.
+	* Chg: Do not use timeout for ffmpeg, it stalls, avconv however does not stall with timeout, change the time command for avcong/ffmpeg's changes.
 2014-07-25 ruhllatio
 	* Fix: match_prefiles not honoring CLI arg limit
 	* Chg: Monitor now using proper PDO for work queries

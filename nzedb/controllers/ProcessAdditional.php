@@ -122,6 +122,11 @@ Class ProcessAdditional
 			);
 		}
 
+		// ffmpeg stalls with timeout, so don't use it. It doesn't stall on avconv however.
+		$this->_ffmpegKillString = (
+			strpos($this->pdo->getSetting('ffmpegpath'), 'ffmpeg') !== false ? '' : $this->_killString
+		);
+
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
 			($this->pdo->getSetting('maxaddprocessed') != '') ? (int)$this->pdo->getSetting('maxaddprocessed') : 25;
@@ -155,7 +160,7 @@ Class ProcessAdditional
 
 		$this->_addPAR2Files = ($this->pdo->getSetting('addpar2') === '0') ? false : true;
 
-		$this->_processSample = ($this->pdo->getSetting('ffmpegpath') == '') ? false : true;
+		$this->_processSample = ($this->pdo->getSetting('ffmpegpath') == '' ? false : true);
 		$this->_processVideo = ($this->pdo->getSetting('processvideos') == 0) ? false : true;
 		$this->_processJPGSample = ($this->pdo->getSetting('processjpg') == 0) ? false : true;
 		$this->_processAudioSample = ($this->pdo->getSetting('processaudiosample') == 0) ? false : true;
@@ -1514,6 +1519,7 @@ Class ProcessAdditional
 
 				// Create an audio sample.
 				nzedb\utility\runCmd(
+					$this->_ffmpegKillString .
 					'"' .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -t 30 -i "' .
@@ -1614,40 +1620,21 @@ Class ProcessAdditional
 		if (is_file($fileLocation)) {
 
 			// Get the exact time of this video.
-			$time = nzedb\utility\runCmd(
-				$this->_killString .
-				'"' .
-				$this->pdo->getSetting('ffmpegpath') .
-				'" -i "' .
-				$fileLocation .
-				'" -vcodec copy -f null /dev/null 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
-			);
-
-			if (isset($time[0])) {
-				$time = $time[0];
-			} else {
-				$time = '';
-			}
-
-			// If it's 11 chars long, it's good (00:00:00.00)
-			if (strlen($time) !== 11) {
-				// If not set it to 1 second.
-				$time = '00:00:01';
-			}
+			$time = $this->getVideoTime($fileLocation);
 
 			// Create path to temp file.
 			$fileName = ($this->tmpPath . 'zzzz' . mt_rand(5, 12) . mt_rand(5, 12) . '.jpg');
 
 			// Create the image.
 			nzedb\utility\runCmd(
-				$this->_killString .
+				$this->_ffmpegKillString .
 				'"' .
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
 				$fileLocation .
 				'" -ss ' .
-				$time .
-				' -loglevel quiet -vframes 1 -y "' .
+				($time === '' ? ' 00:00:00.00' : $time) .
+				' -vframes 1 -loglevel quiet -y "' .
 				$fileName .
 				'"'
 			);
@@ -1679,6 +1666,43 @@ Class ProcessAdditional
 	}
 
 	/**
+	 * Get accurate time from video segment.
+	 *
+	 * @param string $videoLocation
+	 *
+	 * @return array|string
+	 */
+	private function getVideoTime($videoLocation)
+	{
+		$tmpVideo = ($this->tmpPath . uniqid() . '.avi');
+			// Get the real duration of the file.
+		$time = nzedb\utility\runCmd(
+			$this->_ffmpegKillString .
+			'"' .
+			$this->pdo->getSetting('ffmpegpath') .
+			'" -i "' .
+			$videoLocation .
+			'" -vcodec copy -y "' .
+			$tmpVideo .
+			'" 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
+		);
+		@unlink($tmpVideo);
+
+		$time = (isset($time[0]) ? $time[0] : '');
+
+		if ($time !== '' && preg_match('/(\d{1,2}).(\d{2})/', $time, $numbers)) {
+			if ($numbers[2] > 0) {
+				$numbers[2] -= 1;
+			} else if ($numbers[1] > 0) {
+				$numbers[1] -= 1;
+			}
+			$time = ('00:00:' . $numbers[1] . '.' . $numbers[2]);
+		}
+
+		return $time;
+	}
+
+	/**
 	 * Try to get a preview video from a video file.
 	 *
 	 * @param string $fileLocation
@@ -1697,62 +1721,34 @@ Class ProcessAdditional
 			// Create a filename to store the temp file.
 			$fileName = ($this->tmpPath . 'zzzz' . $this->_release['guid'] . '.ogv');
 
+			$newMethod = false;
 			// If wanted sample length is less than 60, try to get sample from the end of the video.
 			if ($this->_ffMPEGDuration < 60) {
 				// Get the real duration of the file.
-				$time = nzedb\utility\runCmd(
-					$this->_killString .
-					'"' .
-					$this->pdo->getSetting('ffmpegpath') .
-					'" -i "' .
-					$fileLocation .
-					'" -vcodec copy -f null /dev/null 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
-				);
+				$time = $this->getVideoTime($fileLocation);
 
-				if (isset($time[0])) {
-					$time = $time[0];
-				} else {
-					$time = '';
-				}
+				if (preg_match('/(\d{2}).(\d{2})/', $time, $numbers)) {
+					$newMethod = true;
 
-				// If we don't get the time create the sample the old way (gets the start of the video).
-				$numbers = array();
-				if (!preg_match('/^\d{2}:\d{2}:(\d{2}).(\d{2})$/', $time, $numbers)) {
-					nzedb\utility\runCmd(
-						$this->_killString .
-						'"' .
-						$this->pdo->getSetting('ffmpegpath') .
-						'" -i "' .
-						$fileLocation .
-						'" -vcodec libtheora -filter:v scale=320:-1 -t ' .
-						$this->_ffMPEGDuration .
-						' -acodec libvorbis -loglevel quiet -y "' .
-						$fileName .
-						'"'
-					);
-				} else {
-					// Get the max seconds from the video clip.
-					$maxLength = (int)$numbers[1];
+					// Get the lowest time we can start making the video at based on how many seconds the admin wants the video to be.
+					if ($numbers[1] <= $this->_ffMPEGDuration) { // If the clip is shorter than the length we want.
 
-					// If the clip is shorter than the length we want.
-					if ($maxLength <= $this->_ffMPEGDuration) {
 						// The lowest we want is 0.
 						$lowestLength = '00:00:00.00';
 
-						// If it's longer.
-					} else {
-						// The lowest we want is the the difference .
-						$lowestLength = ($maxLength - $this->_ffMPEGDuration);
+					} else { // If the clip is longer than the length we want.
+
+						// The lowest we want is the the difference between the max video length and our wanted total time.
+						$lowestLength = ($numbers[1] - $this->_ffMPEGDuration);
 
 						// Form the time string.
 						$end = '.' . $numbers[2];
 						switch (strlen($lowestLength)) {
 							case 1:
-								$lowestLength = '00:00:0' . (string)$lowestLength . $end;
+								$lowestLength = ('00:00:0' . (string)$lowestLength . $end);
 								break;
 							case 2:
-
-								$lowestLength = '00:00:' . (string)$lowestLength . $end;
+								$lowestLength = ('00:00:' . (string)$lowestLength . $end);
 								break;
 							default:
 								$lowestLength = '00:00:60.00';
@@ -1761,7 +1757,7 @@ Class ProcessAdditional
 
 					// Try to get the sample (from the end instead of the start).
 					nzedb\utility\runCmd(
-						$this->_killString .
+						$this->_ffmpegKillString .
 						'"' .
 						$this->pdo->getSetting('ffmpegpath') .
 						'" -i "' .
@@ -1774,10 +1770,12 @@ Class ProcessAdditional
 						'"'
 					);
 				}
-			} else {
-				// If longer than 60, then run the old way.
+			}
+
+			if ($newMethod === false) {
+				// If longer than 60 or we could not get the video length, run the old way.
 				nzedb\utility\runCmd(
-					$this->_killString .
+					$this->_ffmpegKillString .
 					'"' .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -i "' .
