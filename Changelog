@@ -23,6 +23,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Move safe_pull.php into switch.php
 	* Add: Renamed option to multiprocess/postprocess.php movie/tv
 	* Add: PHP multi-processing import script.
+	* Chg: Do not use timeout for ffmpeg, it stalls, avconv however does not stall with timeout, change the time command for avcong/ffmpeg's changes.
 2014-07-25 ruhllatio
 	* Fix: match_prefiles not honoring CLI arg limit
 	* Chg: Monitor now using proper PDO for work queries
