@@ -50,7 +50,7 @@ class Books
 
 	public function getBookInfoByName($author, $title)
 	{
-		return $this->pdo->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title %s', $this->pdo->likeString($author, true, true), $this->pdo->likeString($title, true, true)));
+		return $this->pdo->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author %s AND title %s', $this->pdo->likeString($author, true, true), $this->pdo->likeString($title, true, true)));
 	}
 
 	public function getRange($start, $num)
