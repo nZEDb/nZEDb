@@ -143,6 +143,8 @@ Class ProcessAdditional
 		$this->_maximumRarPasswordChecks =
 			($this->pdo->getSetting('passchkattempts') != '') ? (int)$this->pdo->getSetting('passchkattempts') : 1;
 
+		$this->_maximumRarPasswordChecks = ($this->_maximumRarPasswordChecks < 1 ? 1 : $this->_maximumRarPasswordChecks);
+
 		// Maximum size of releases in GB.
 		$this->_maxSize =
 			($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
@@ -641,12 +643,12 @@ Class ProcessAdditional
 	 */
 	protected function _processNZBCompressedFiles()
 	{
-		$notInfinite = 0;
+		$failed = $downloaded = 0;
 		// Loop through the files, attempt to find if password-ed and files. Starting with what not to process.
 		foreach ($this->_nzbContents as $nzbFile) {
-			if ($this->_maximumRarPasswordChecks > 1 && $notInfinite > $this->_maximumRarPasswordChecks) {
+			if ($downloaded >= $this->_maximumRarSegments) {
 				break;
-			} else if ($notInfinite > $this->_maximumRarSegments) {
+			} else if ($failed >= $this->_maximumRarPasswordChecks) {
 				break;
 			}
 
@@ -687,7 +689,7 @@ Class ProcessAdditional
 					$this->_echo('(cB)', 'primaryOver', false);
 				}
 
-				$notInfinite++;
+				$downloaded++;
 
 				// Process the compressed file.
 				$decompressed = $this->_processCompressedData($fetchedBinary);
@@ -697,12 +699,10 @@ Class ProcessAdditional
 				}
 
 			} else {
-
+				$failed++;
 				if ($this->_echoCLI) {
-					$this->_echo('f(' . $notInfinite . ')', 'warningOver', false);
+					$this->_echo('f(' . $failed . ')', 'warningOver', false);
 				}
-
-				$notInfinite++;
 			}
 		}
 	}

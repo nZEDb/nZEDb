@@ -10,6 +10,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: warningOver method on ColorCLI.
 	* Fix: Missing max part repair not being used in a query.
 	* Chg: Maximum failed part downloads setting to not divide by 5, this will speed up post process additional.
+	* Fix: The logic for calculating failed/downloaded rar parts.
 2014-07-26 ruhllatio
 	* Merge Tasky's PR #1424 - updating changelog to reflect
 2014-07-26 tasky
