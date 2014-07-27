@@ -794,7 +794,7 @@
 				<td>
 					<input class="short" id="timeoutseconds" name="timeoutseconds" type="text" value="{$site->timeoutseconds}"/>
 					<div class="hint">How much time to wait for unrar/7zip/avconv/mediainfo before killing it, set to 0 to disable.
-						ffmpeg currently is not supported as it freezes if ran with timeout, avconv however does not freeze.
+						We do not run ffmpeg with timeout as it freezes, avconv however does not freeze.
 						60 is a good value. Requires the GNU Timeout path to be set.</div>
 				</td>
 			</tr>
