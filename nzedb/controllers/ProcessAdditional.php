@@ -119,7 +119,7 @@ Class ProcessAdditional
 		if ($this->pdo->getSetting('timeoutpath') != '' && $this->pdo->getSetting('timeoutseconds') > 0) {
 			$this->_killString = (
 				'"' . $this->pdo->getSetting('timeoutpath') .
-				'" --preserve-status --foreground --signal=KILL ' .
+				'" --foreground --signal=KILL ' .
 				$this->pdo->getSetting('timeoutseconds') . ' '
 			);
 		}
