@@ -122,11 +122,6 @@ Class ProcessAdditional
 			);
 		}
 
-		// ffmpeg stalls with timeout, so don't use it. It doesn't stall on avconv however.
-		$this->_ffmpegKillString = (
-			strpos($this->pdo->getSetting('ffmpegpath'), 'ffmpeg') !== false ? '' : $this->_killString
-		);
-
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
 			($this->pdo->getSetting('maxaddprocessed') != '') ? (int)$this->pdo->getSetting('maxaddprocessed') : 25;
@@ -1511,7 +1506,6 @@ Class ProcessAdditional
 
 				// Create an audio sample.
 				nzedb\utility\runCmd(
-					$this->_ffmpegKillString .
 					'"' .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -t 30 -i "' .
@@ -1608,7 +1602,6 @@ Class ProcessAdditional
 		$tmpVideo = ($this->tmpPath . uniqid() . '.avi');
 		// Get the real duration of the file.
 		$time = nzedb\utility\runCmd(
-			$this->_ffmpegKillString .
 			'"' .
 			$this->pdo->getSetting('ffmpegpath') .
 			'" -i "' .
@@ -1658,7 +1651,6 @@ Class ProcessAdditional
 
 			// Create the image.
 			nzedb\utility\runCmd(
-				$this->_ffmpegKillString .
 				'"' .
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
@@ -1751,7 +1743,6 @@ Class ProcessAdditional
 
 					// Try to get the sample (from the end instead of the start).
 					nzedb\utility\runCmd(
-						$this->_ffmpegKillString .
 						'"' .
 						$this->pdo->getSetting('ffmpegpath') .
 						'" -i "' .
@@ -1769,7 +1760,6 @@ Class ProcessAdditional
 			if ($newMethod === false) {
 				// If longer than 60 or we could not get the video length, run the old way.
 				nzedb\utility\runCmd(
-					$this->_ffmpegKillString .
 					'"' .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -i "' .

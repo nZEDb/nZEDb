@@ -365,7 +365,7 @@
 				<td>
 					<input id="timeoutpath" class="long" name="timeoutpath" type="text" value="{$site->timeoutpath}"/>
 					<div class="hint">The path to the <a href="http://linux.die.net/man/1/timeout">timeout</a> binary.
-						This is used to limit the amount of time unrar/7zip/avconv/mediainfo can run.
+						This is used to limit the amount of time unrar/7zip/mediainfo can run.
 						You can the time limit in the process additional section.
 						You can leave this empty to disable this.
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/timeout.exe</span>
@@ -811,11 +811,11 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="timeoutseconds">Time in seconds to kill unrar/7zip/avconc/ffmpeg:</label></td>
+				<td style="width:180px;"><label for="timeoutseconds">Time in seconds to kill unrar/7zip/mediainfo:</label></td>
 				<td>
 					<input class="short" id="timeoutseconds" name="timeoutseconds" type="text" value="{$site->timeoutseconds}"/>
-					<div class="hint">How much time to wait for unrar/7zip/avconv/mediainfo before killing it, set to 0 to disable.
-						We do not run ffmpeg with timeout as it freezes, avconv however does not freeze.
+					<div class="hint">How much time to wait for unrar/7zip/mediainfo before killing it, set to 0 to disable.
+						We do not run ffmpeg or avconv with timeout as it freezes.
 						60 is a good value. Requires the GNU Timeout path to be set.</div>
 				</td>
 			</tr>
