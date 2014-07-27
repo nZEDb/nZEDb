@@ -410,7 +410,7 @@ class Forking extends \fork_daemon
 			return (
 				$this->pdo->queryOneRow(
 					sprintf(
-						'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus BETWEEN -1 AND %d LIMIT 1',
+						'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus BETWEEN -6 AND %d LIMIT 1',
 						\NZB::NZB_ADDED, \Nfo::NFO_UNPROC
 					)
 				) === false ? false : true
