@@ -762,26 +762,28 @@ class Users
 	 *
 	 * Automatically update the hash if it needs to be.
 	 *
-	 * @param string $password
-	 * @param string $hash
+	 * @param string $password Password to check against hash.
+	 * @param string $hash     Hash to check against password.
+	 * @param int    $userID   ID of the user.
 	 *
 	 * @return bool
 	 */
-	public function checkPassword($password, $hash)
+	public function checkPassword($password, $hash, $userID = -1)
 	{
 		if (password_verify($password, $hash) === false) {
 			return false;
 		}
 
 		// Update the hash if it needs to be.
-		if (password_needs_rehash($hash, PASSWORD_DEFAULT, ['cost' => $this->password_hash_cost])) {
+		if (is_numeric($userID) && $userID > 0 && password_needs_rehash($hash, PASSWORD_DEFAULT, ['cost' => $this->password_hash_cost])) {
 			$hash = $this->hashPassword($password);
+
 			if ($hash !== false) {
 				$this->pdo->queryExec(
 					sprintf(
 						'UPDATE users SET password = %s WHERE id = %d',
 						$this->pdo->escapeString($hash),
-						$this->currentUserId()
+						$userID
 					)
 				);
 			}
