@@ -118,8 +118,8 @@ while count < 10000:
 		print(bcolors.PRIMARY + "Group {} has {} articles, in the range {} to {}".format(datas[0], "{:,}".format(count), "{:,}".format(datas[2]), "{:,}".format(datas[3])) + bcolors.ENDC)
 		print(bcolors.PRIMARY + "Our oldest post is: {}".format("{:,}".format(datas[1])) + bcolors.ENDC)
 		print(bcolors.PRIMARY + "Available Posts: {}".format("{:,}".format(count)) + bcolors.ENDC)
-		group = ("{} {} BackfillAll".format(datas[0], count))
-		subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+str(group)])
+		group = ("{}  {}".format(datas[0], count))
+		subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  backfill_all_quantity  "+str(group)])
 
 #calculate the number of items for queue
 if (count > (backfill_qty * run_threads)):
@@ -147,7 +147,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  "+my_id])
 					time.sleep(.03)
 					self.my_queue.task_done()
 
@@ -172,16 +172,16 @@ def main(args):
 	#now load some arbitrary jobs into the queue
 	for i in range(0, int(geteach)):
 		time.sleep(.03)
-		my_queue.put("%s %s %s %s" % (datas[0], datas[1] - i * maxmssgs - 1, datas[1] - i * maxmssgs - maxmssgs, i+1))
+		my_queue.put("get_range  %s  %s  %s  %s" % (datas[0], datas[1] - i * maxmssgs - 1, datas[1] - i * maxmssgs - maxmssgs, i+1))
 
 	my_queue.join()
 
 	#get postdate
-	final = ("{} {} Backfill".format(datas[0], int(datas[1] - (maxmssgs * geteach))))
-	subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+str(final)])
+	final = ("{}  {}  Backfill".format(datas[0], int(datas[1] - (maxmssgs * geteach))))
+	subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  get_final  "+str(final)])
 
-	group = ("{} {}".format(datas[0], 1000))
-	subprocess.call(["php", pathname+"/../nix/tmux/bin/safe_pull.php", ""+str(group)])
+	group = ("{}  {}".format(datas[0], 1000))
+	subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  backfill_all_quantity  "+str(group)])
 	if run_threads <= geteach:
 		print(bcolors.HEADER + "\nWe used {} threads, a queue of {} and grabbed {} headers".format(run_threads, "{:,}".format(geteach), "{:,}".format(geteach * maxmssgs)) + bcolors.ENDC)
 	else:

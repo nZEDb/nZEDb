@@ -24,7 +24,7 @@ if (isset($_GET['id'])) {
 	$comments = $rc->getComments($data['id']);
 	$similars = $releases->searchSimilar($data['id'], $data['searchname'], 6, $page->userdata['categoryexclusions']);
 
-	$rage = $ani = $mov = $mus = $con = $boo = '';
+	$rage = $ani = $mov = $mus = $con = $game = $xxx = $boo = '';
 	if ($data['rageid'] != '') {
 		$tvrage = new TvRage(['Settings' => $page->settings]);
 		$rageinfo = $tvrage->getByRageID($data['rageid']);
@@ -94,6 +94,24 @@ if (isset($_GET['id'])) {
 		}
 	}
 
+	if ($data['xxxinfo_id'] != '' && $data['xxxinfo_id'] != 0) {
+		$x = new XXX(['Settings' => $page->settings]);
+		$xxx = $x->getXXXInfo($data['xxxinfo_id']);
+
+		if (isset($xxx['trailers'])) {
+			$xxx['trailers'] = $x->insertswf($xxx['classused'], $xxx['trailers']);
+		}
+
+		if ($xxx && isset($xxx['title'])) {
+			$xxx['title'] = str_replace(array('/', '\\'), '', $xxx['title']);
+			$xxx['actors'] = $x->makeFieldLinks($xxx, 'actors');
+			$xxx['genre'] = $x->makeFieldLinks($xxx, 'genre');
+			$xxx['director'] = $x->makeFieldLinks($xxx, 'director');
+		}else{
+			$xxx = false;
+		}
+	}
+
 	if ($data['musicinfoid'] != '') {
 		$music = new Music(['Settings' => $page->settings]);
 		$mus = $music->getMusicInfo($data['musicinfoid']);
@@ -102,6 +120,11 @@ if (isset($_GET['id'])) {
 	if ($data['consoleinfoid'] != '') {
 		$c = new Console(['Settings' => $page->settings]);
 		$con = $c->getConsoleInfo($data['consoleinfoid']);
+	}
+
+	if ($data['gamesinfo_id'] != '') {
+		$g = new Games(['Settings' => $page->settings]);
+		$game = $g->getgamesInfo($data['gamesinfo_id']);
 	}
 
 	if ($data['bookinfoid'] != '') {
@@ -127,9 +150,11 @@ if (isset($_GET['id'])) {
 	$page->smarty->assign('nfo', $nfo);
 	$page->smarty->assign('rage', $rage);
 	$page->smarty->assign('movie', $mov);
+	$page->smarty->assign('xxx', $xxx);
 	$page->smarty->assign('anidb', $ani);
 	$page->smarty->assign('music', $mus);
 	$page->smarty->assign('con', $con);
+	$page->smarty->assign('game', $game);
 	$page->smarty->assign('boo', $boo);
 	$page->smarty->assign('pre', $pre);
 	$page->smarty->assign('comments', $comments);

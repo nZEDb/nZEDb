@@ -81,7 +81,7 @@ class Forking extends \fork_daemon
 		$startTime = microtime(true);
 		$this->workType = $type;
 		$this->workTypeOptions = $options;
-		$this->processAdditional = $this->processNFO = $this->processTV = $this->processMovies = $this->tablePerGroup = false;
+		$this->processAdditional = $this->processNFO = $this->processTV = $this->processMovies = $this->tablePerGroup = $this->ppRenamedOnly = false;
 		$this->work = array();
 
 		// Init Settings here, as forking causes errors when it's destroyed.
@@ -108,6 +108,12 @@ class Forking extends \fork_daemon
 			);
 		}
 	}
+
+	/**
+	 * Only post process renamed movie / tv releases?
+	 * @var bool
+	 */
+	private $ppRenamedOnly;
 
 	/**
 	 * Get work for our workers to work on, set the max child processes here.
@@ -139,6 +145,7 @@ class Forking extends \fork_daemon
 				break;
 
 			case 'postProcess_mov':
+				$this->ppRenamedOnly = (isset($this->workTypeOptions[0]) && $this->workTypeOptions[0] === true ? true : false);
 				$maxProcesses = $this->postProcessMovMainMethod();
 				break;
 
@@ -151,6 +158,7 @@ class Forking extends \fork_daemon
 				break;
 
 			case 'postProcess_tv':
+				$this->ppRenamedOnly = (isset($this->workTypeOptions[0]) && $this->workTypeOptions[0] === true ? true : false);
 				$maxProcesses = $this->postProcessTvMainMethod();
 				break;
 
@@ -171,13 +179,13 @@ class Forking extends \fork_daemon
 	 */
 	private function processWork()
 	{
-		$this->workCount = count($this->work);
-		if ($this->workCount > 0) {
+		$this->_workCount = count($this->work);
+		if ($this->_workCount > 0) {
 
 			if (nZEDb_ECHOCLI) {
 				$this->_colorCLI->doEcho(
 					$this->_colorCLI->header(
-						'Multi-processing started at ' . date(DATE_RFC2822) . ' with ' . $this->workCount .
+						'Multi-processing started at ' . date(DATE_RFC2822) . ' with ' . $this->_workCount .
 						' job(s) to do using a max of ' . $this->maxProcesses . ' child process(es).'
 					)
 				);
@@ -202,13 +210,13 @@ class Forking extends \fork_daemon
 		switch ($this->workType) {
 			case 'releases':
 				if ($this->tablePerGroup === true) {
-					$this->executeCommand(
+					$this->_executeCommand(
 						$this->dnr_path . 'releases  ' . count($this->work) . '_"'
 					);
 				}
 				break;
 			case 'update_per_group':
-				$this->executeCommand(
+				$this->_executeCommand(
 					$this->dnr_path . 'releases  ' . count($this->work) . '_"'
 				);
 				break;
@@ -238,7 +246,7 @@ class Forking extends \fork_daemon
 	public function backFillChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			$this->executeCommand(
+			$this->_executeCommand(
 				PHP_BINARY . ' ' . nZEDb_UPDATE . 'backfill.php ' .
 				$group['name'] . (isset($group['max']) ? (' ' . $group['max']) : '')
 			);
@@ -264,7 +272,7 @@ class Forking extends \fork_daemon
 	public function binariesChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			$this->executeCommand(
+			$this->_executeCommand(
 				PHP_BINARY . ' ' . nZEDb_UPDATE  . 'update_binaries.php ' . $group['name'] . ' ' . $group['max']
 			);
 		}
@@ -301,11 +309,11 @@ class Forking extends \fork_daemon
 	{
 		foreach ($groups as $group) {
 			if ($this->tablePerGroup === true) {
-				$this->executeCommand(
+				$this->_executeCommand(
 					$this->dnr_path . 'releases  ' .  $group['id'] . '"'
 				);
 			} else {
-				$this->executeCommand(
+				$this->_executeCommand(
 					PHP_BINARY . ' ' . nZEDb_UPDATE . 'update_releases.php 1 false ' . $group['name']
 				);
 			}
@@ -337,8 +345,8 @@ class Forking extends \fork_daemon
 			}
 
 			if ($type !== '') {
-				$this->executeCommand(
-					$this->dnr_path . $type .  $group['id'] . '"'
+				$this->_executeCommand(
+					$this->dnr_path . $type .  $group['id'] . (isset($group['renamed']) ? ('  ' . $group['renamed']) : '') . '"'
 				);
 			}
 		}
@@ -448,10 +456,11 @@ class Forking extends \fork_daemon
 						WHERE nzbstatus = %d
 						AND imdbid IS NULL
 						AND categoryid BETWEEN 2000 AND 2999
-						%s
+						%s %s
 						LIMIT 1',
 						\NZB::NZB_ADDED,
-						($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : '')
+						($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : ''),
+						($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 					)
 				) === false ? false : true
 			);
@@ -467,16 +476,18 @@ class Forking extends \fork_daemon
 			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 			$this->work = $this->pdo->query(
 				sprintf('
-					SELECT LEFT(guid, 1) AS id
+					SELECT LEFT(guid, 1) AS id, %d AS renamed
 					FROM releases
 					WHERE nzbstatus = %d
 					AND imdbid IS NULL
 					AND categoryid BETWEEN 2000 AND 2999
-					%s
+					%s %s
 					GROUP BY LEFT(guid, 1)
 					LIMIT 16',
+					($this->ppRenamedOnly ? 2 : 1),
 					\NZB::NZB_ADDED,
-					($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : '')
+					($this->pdo->getSetting('lookupimdb') == 2 ? 'AND isrenamed = 1' : ''),
+					($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 				)
 			);
 			$maxProcesses = $this->pdo->getSetting('postthreadsnon');
@@ -500,10 +511,11 @@ class Forking extends \fork_daemon
 						AND size > 1048576
 						AND rageid = -1
 						AND categoryid BETWEEN 5000 AND 5999
-						%s
+						%s %s
 						LIMIT 1',
 						\NZB::NZB_ADDED,
-						($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : '')
+						($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : ''),
+						($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 					)
 				) === false ? false : true
 			);
@@ -519,17 +531,19 @@ class Forking extends \fork_daemon
 			$this->register_child_run([0 => $this, 1 => 'postProcessChildWorker']);
 			$this->work = $this->pdo->query(
 				sprintf('
-					SELECT LEFT(guid, 1) AS id
+					SELECT LEFT(guid, 1) AS id, %d AS renamed
 					FROM releases
 					WHERE nzbstatus = %d
 					AND rageid = -1
 					AND size > 1048576
 					AND categoryid BETWEEN 5000 AND 5999
-					%s
+					%s %s
 					GROUP BY LEFT(guid, 1)
 					LIMIT 16',
+					($this->ppRenamedOnly ? 2 : 1),
 					\NZB::NZB_ADDED,
-					($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : '')
+					($this->pdo->getSetting('lookuptvrage') == 2 ? 'AND isrenamed = 1' : ''),
+					($this->ppRenamedOnly ? 'AND isrenamed = 1' : '')
 				)
 			);
 			$maxProcesses = $this->pdo->getSetting('postthreadsnon');
@@ -596,7 +610,7 @@ class Forking extends \fork_daemon
 	public function requestIDChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			$this->executeCommand(
+			$this->_executeCommand(
 				$this->dnr_path . 'requestid  ' .  $group['id'] . '"'
 			);
 		}
@@ -616,7 +630,7 @@ class Forking extends \fork_daemon
 	public function updatePerGroupChildWorker($groups, $identifier = '')
 	{
 		foreach ($groups as $group) {
-			$this->executeCommand(
+			$this->_executeCommand(
 				$this->dnr_path . 'update_per_group  ' .  $group['id'] . '"'
 			);
 		}
@@ -631,7 +645,7 @@ class Forking extends \fork_daemon
 	 *
 	 * @param string $command
 	 */
-	private function executeCommand($command)
+	protected function _executeCommand($command)
 	{
 		switch($this->outputType) {
 			case self::OUTPUT_NONE:
@@ -699,7 +713,7 @@ class Forking extends \fork_daemon
 				$this->_colorCLI->header(
 					'Process ID #' . $pid . ' has completed.' . PHP_EOL .
 					'There are ' . ($this->forked_children_count - 1) . ' process(es) still active with ' .
-					(--$this->workCount) . ' job(s) left in the queue.' . PHP_EOL
+					(--$this->_workCount) . ' job(s) left in the queue.' . PHP_EOL
 				)
 			);
 		}
@@ -733,7 +747,7 @@ class Forking extends \fork_daemon
 	 * How much work do we have to do?
 	 * @var int
 	 */
-	private $workCount = 0;
+	public $_workCount = 0;
 
 	/**
 	 * The type of work we want to work on.

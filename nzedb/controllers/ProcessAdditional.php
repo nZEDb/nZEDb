@@ -115,6 +115,18 @@ Class ProcessAdditional
 
 		$this->_hasGNUFile = (nzedb\utility\Utility::hasCommand('file') === true ? true : false);
 
+		$this->_killString = '';
+		if ($this->pdo->getSetting('timeoutpath') != '' && $this->pdo->getSetting('timeoutseconds') > 0) {
+			$this->_killString = (
+				'"' . $this->pdo->getSetting('timeoutpath') . '" -s KILL ' . $this->pdo->getSetting('timeoutseconds') . 's '
+			);
+		}
+
+		// ffmpeg stalls with timeout, so don't use it. It doesn't stall on avconv however.
+		$this->_ffmpegKillString = (
+			strpos($this->pdo->getSetting('ffmpegpath'), 'ffmpeg') !== false ? '' : $this->_killString
+		);
+
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
 			($this->pdo->getSetting('maxaddprocessed') != '') ? (int)$this->pdo->getSetting('maxaddprocessed') : 25;
@@ -148,7 +160,7 @@ Class ProcessAdditional
 
 		$this->_addPAR2Files = ($this->pdo->getSetting('addpar2') === '0') ? false : true;
 
-		$this->_processSample = ($this->pdo->getSetting('ffmpegpath') == '') ? false : true;
+		$this->_processSample = ($this->pdo->getSetting('ffmpegpath') == '' ? false : true);
 		$this->_processVideo = ($this->pdo->getSetting('processvideos') == 0) ? false : true;
 		$this->_processJPGSample = ($this->pdo->getSetting('processjpg') == 0) ? false : true;
 		$this->_processAudioSample = ($this->pdo->getSetting('processaudiosample') == 0) ? false : true;
@@ -282,16 +294,16 @@ Class ProcessAdditional
 		$this->_releases = $this->pdo->query(
 			sprintf(
 				'
-								SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname, r.preid
-								FROM releases r
-								LEFT JOIN category c ON c.id = r.categoryid
-								WHERE r.nzbstatus = 1
-								%s %s %s %s
-								AND r.passwordstatus BETWEEN -6 AND -1
-								AND r.haspreview = -1
-								AND c.disablepreview = 0
-								ORDER BY r.passwordstatus ASC, r.postdate DESC
-								LIMIT %d',
+				SELECT r.id, r.guid, r.name, c.disablepreview, r.size, r.group_id, r.nfostatus, r.completion, r.categoryid, r.searchname, r.preid
+				FROM releases r
+				LEFT JOIN category c ON c.id = r.categoryid
+				WHERE r.nzbstatus = 1
+				%s %s %s %s
+				AND r.passwordstatus BETWEEN -6 AND -1
+				AND r.haspreview = -1
+				AND c.disablepreview = 0
+				ORDER BY r.passwordstatus ASC, r.postdate DESC
+				LIMIT %d',
 				$this->_maxSize,
 				$this->_minSize,
 				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
@@ -738,7 +750,12 @@ Class ProcessAdditional
 				if ($this->_extractUsingRarInfo === false && $this->_unrarPath !== false) {
 					$fileName = $this->tmpPath . uniqid() . '.rar';
 					file_put_contents($fileName, $compressedData);
-					nzedb\utility\runCmd('"' . $this->_unrarPath . '" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' . $fileName . '" "' . $this->tmpPath . 'unrar/"');
+					nzedb\utility\runCmd(
+						$this->_killString .
+						'"' . $this->_unrarPath .
+						'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
+						$fileName . '" "' . $this->tmpPath . 'unrar/"'
+					);
 					unlink($fileName);
 				}
 				break;
@@ -750,7 +767,11 @@ Class ProcessAdditional
 				if ($this->_extractUsingRarInfo === false && $this->_7zipPath !== false) {
 					$fileName = $this->tmpPath . uniqid() . '.zip';
 					file_put_contents($fileName, $compressedData);
-					nzedb\utility\runCmd('"' . $this->_7zipPath . '" x "' . $fileName . '" -bd -y -o"' . $this->tmpPath . 'unzip/"');
+					nzedb\utility\runCmd(
+						$this->_killString .
+						'"' . $this->_7zipPath . '" x "' .
+						$fileName . '" -bd -y -o"' . $this->tmpPath . 'unzip/"'
+					);
 					unlink($fileName);
 				}
 				break;
@@ -850,10 +871,10 @@ Class ProcessAdditional
 				$this->pdo->queryOneRow(
 					sprintf(
 						'
-												SELECT id FROM releasefiles
-												WHERE releaseid = %d
-												AND name = %s
-												AND size = %d',
+						SELECT id FROM releasefiles
+						WHERE releaseid = %d
+						AND name = %s
+						AND size = %d',
 						$this->_release['id'], $this->pdo->escapeString($file['name']), $file['size']
 					)
 				) === false
@@ -1229,9 +1250,10 @@ Class ProcessAdditional
 					$this->pdo->queryExec(
 						sprintf(
 							'
-														UPDATE releases
-														SET jpgstatus = %d
-														WHERE id = %d', 1,
+							UPDATE releases
+							SET jpgstatus = %d
+							WHERE id = %d',
+							1,
 							$this->_release['id']
 						)
 					);
@@ -1274,10 +1296,10 @@ Class ProcessAdditional
 		$releaseFiles = $this->pdo->queryOneRow(
 			sprintf(
 				'
-								SELECT COUNT(releasefiles.releaseid) AS count,
-								SUM(releasefiles.size) AS size
-								FROM releasefiles
-								WHERE releaseid = %d',
+				SELECT COUNT(releasefiles.releaseid) AS count,
+				SUM(releasefiles.size) AS size
+				FROM releasefiles
+				WHERE releaseid = %d',
 				$this->_release['id']
 			)
 		);
@@ -1310,9 +1332,9 @@ Class ProcessAdditional
 		else {
 			$query = sprintf(
 				'
-								UPDATE releases
-								SET passwordstatus = %d, rarinnerfilecount = %d %s %s %s
-								WHERE id = %d',
+				UPDATE releases
+				SET passwordstatus = %d, rarinnerfilecount = %d %s %s %s
+				WHERE id = %d',
 				($this->_processPasswords === true ? $this->_passwordStatus : Releases::PASSWD_NONE),
 				$releaseFiles['count'],
 				$iSQL,
@@ -1410,8 +1432,10 @@ Class ProcessAdditional
 			// Check if media info is enabled.
 			if ($retVal === false) {
 
-				//  Get the media info for the file.
-				$xmlArray = nzedb\utility\runCmd('"' . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"');
+				// Get the media info for the file.
+				$xmlArray = nzedb\utility\runCmd(
+					$this->_killString . '"' . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
+				);
 				if (is_array($xmlArray)) {
 
 					// Convert to array.
@@ -1447,9 +1471,9 @@ Class ProcessAdditional
 									$this->pdo->queryExec(
 										sprintf(
 											'
-																						UPDATE releases
-																						SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
-																						WHERE id = %d',
+											UPDATE releases
+											SET searchname = %s, categoryid = %d, iscategorized = 1, isrenamed = 1, proc_pp = 1
+											WHERE id = %d',
 											$this->pdo->escapeString(substr($newName, 0, 255)),
 											$newCat,
 											$this->_release['id']
@@ -1495,6 +1519,7 @@ Class ProcessAdditional
 
 				// Create an audio sample.
 				nzedb\utility\runCmd(
+					$this->_ffmpegKillString .
 					'"' .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -t 30 -i "' .
@@ -1530,9 +1555,9 @@ Class ProcessAdditional
 					$this->pdo->queryExec(
 						sprintf(
 							'
-														UPDATE releases
-														SET audiostatus = 1
-														WHERE id = %d',
+							UPDATE releases
+							SET audiostatus = 1
+							WHERE id = %d',
 							$this->_release['id']
 						)
 					);
@@ -1569,9 +1594,9 @@ Class ProcessAdditional
 			$this->pdo->queryExec(
 				sprintf(
 					'
-										UPDATE releases
-										SET jpgstatus = %d
-										WHERE id = %d',
+					UPDATE releases
+					SET jpgstatus = %d
+					WHERE id = %d',
 					1,
 					$this->_release['id']
 				)
@@ -1595,32 +1620,21 @@ Class ProcessAdditional
 		if (is_file($fileLocation)) {
 
 			// Get the exact time of this video.
-			$time = @exec(
-				'"' .
-				$this->pdo->getSetting('ffmpegpath') .
-				'" -i "' .
-				$fileLocation .
-				'" -vcodec copy -f null /dev/null 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
-			);
-
-			// If it's 11 chars long, it's good (00:00:00.00)
-			if (strlen($time) !== 11) {
-				// If not set it to 1 second.
-				$time = '00:00:01';
-			}
+			$time = $this->getVideoTime($fileLocation);
 
 			// Create path to temp file.
 			$fileName = ($this->tmpPath . 'zzzz' . mt_rand(5, 12) . mt_rand(5, 12) . '.jpg');
 
 			// Create the image.
 			nzedb\utility\runCmd(
+				$this->_ffmpegKillString .
 				'"' .
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
 				$fileLocation .
 				'" -ss ' .
-				$time .
-				' -loglevel quiet -vframes 1 -y "' .
+				($time === '' ? ' 00:00:00.00' : $time) .
+				' -vframes 1 -loglevel quiet -y "' .
 				$fileName .
 				'"'
 			);
@@ -1652,6 +1666,43 @@ Class ProcessAdditional
 	}
 
 	/**
+	 * Get accurate time from video segment.
+	 *
+	 * @param string $videoLocation
+	 *
+	 * @return array|string
+	 */
+	private function getVideoTime($videoLocation)
+	{
+		$tmpVideo = ($this->tmpPath . uniqid() . '.avi');
+			// Get the real duration of the file.
+		$time = nzedb\utility\runCmd(
+			$this->_ffmpegKillString .
+			'"' .
+			$this->pdo->getSetting('ffmpegpath') .
+			'" -i "' .
+			$videoLocation .
+			'" -vcodec copy -y "' .
+			$tmpVideo .
+			'" 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
+		);
+		@unlink($tmpVideo);
+
+		$time = (isset($time[0]) ? $time[0] : '');
+
+		if ($time !== '' && preg_match('/(\d{1,2}).(\d{2})/', $time, $numbers)) {
+			if ($numbers[2] > 0) {
+				$numbers[2] -= 1;
+			} else if ($numbers[1] > 0) {
+				$numbers[1] -= 1;
+			}
+			$time = ('00:00:' . $numbers[1] . '.' . $numbers[2]);
+		}
+
+		return $time;
+	}
+
+	/**
 	 * Try to get a preview video from a video file.
 	 *
 	 * @param string $fileLocation
@@ -1670,54 +1721,34 @@ Class ProcessAdditional
 			// Create a filename to store the temp file.
 			$fileName = ($this->tmpPath . 'zzzz' . $this->_release['guid'] . '.ogv');
 
+			$newMethod = false;
 			// If wanted sample length is less than 60, try to get sample from the end of the video.
 			if ($this->_ffMPEGDuration < 60) {
 				// Get the real duration of the file.
-				$time = @exec(
-					'"' .
-					$this->pdo->getSetting('ffmpegpath') .
-					'" -i "' .
-					$fileLocation .
-					'" -vcodec copy -f null /dev/null 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
-				);
+				$time = $this->getVideoTime($fileLocation);
 
-				// If we don't get the time create the sample the old way (gets the start of the video).
-				$numbers = array();
-				if (!preg_match('/^\d{2}:\d{2}:(\d{2}).(\d{2})$/', $time, $numbers)) {
-					nzedb\utility\runCmd(
-						'"' .
-						$this->pdo->getSetting('ffmpegpath') .
-						'" -i "' .
-						$fileLocation .
-						'" -vcodec libtheora -filter:v scale=320:-1 -t ' .
-						$this->_ffMPEGDuration .
-						' -acodec libvorbis -loglevel quiet -y "' .
-						$fileName .
-						'"'
-					);
-				} else {
-					// Get the max seconds from the video clip.
-					$maxLength = (int)$numbers[1];
+				if (preg_match('/(\d{2}).(\d{2})/', $time, $numbers)) {
+					$newMethod = true;
 
-					// If the clip is shorter than the length we want.
-					if ($maxLength <= $this->_ffMPEGDuration) {
+					// Get the lowest time we can start making the video at based on how many seconds the admin wants the video to be.
+					if ($numbers[1] <= $this->_ffMPEGDuration) { // If the clip is shorter than the length we want.
+
 						// The lowest we want is 0.
 						$lowestLength = '00:00:00.00';
 
-						// If it's longer.
-					} else {
-						// The lowest we want is the the difference .
-						$lowestLength = ($maxLength - $this->_ffMPEGDuration);
+					} else { // If the clip is longer than the length we want.
+
+						// The lowest we want is the the difference between the max video length and our wanted total time.
+						$lowestLength = ($numbers[1] - $this->_ffMPEGDuration);
 
 						// Form the time string.
 						$end = '.' . $numbers[2];
 						switch (strlen($lowestLength)) {
 							case 1:
-								$lowestLength = '00:00:0' . (string)$lowestLength . $end;
+								$lowestLength = ('00:00:0' . (string)$lowestLength . $end);
 								break;
 							case 2:
-
-								$lowestLength = '00:00:' . (string)$lowestLength . $end;
+								$lowestLength = ('00:00:' . (string)$lowestLength . $end);
 								break;
 							default:
 								$lowestLength = '00:00:60.00';
@@ -1726,6 +1757,7 @@ Class ProcessAdditional
 
 					// Try to get the sample (from the end instead of the start).
 					nzedb\utility\runCmd(
+						$this->_ffmpegKillString .
 						'"' .
 						$this->pdo->getSetting('ffmpegpath') .
 						'" -i "' .
@@ -1738,9 +1770,12 @@ Class ProcessAdditional
 						'"'
 					);
 				}
-			} else {
-				// If longer than 60, then run the old way.
+			}
+
+			if ($newMethod === false) {
+				// If longer than 60 or we could not get the video length, run the old way.
 				nzedb\utility\runCmd(
+					$this->_ffmpegKillString .
 					'"' .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -i "' .
@@ -1783,9 +1818,9 @@ Class ProcessAdditional
 				$this->pdo->queryExec(
 					sprintf(
 						'
-												UPDATE releases
-												SET videostatus = 1
-												WHERE guid = %s',
+						UPDATE releases
+						SET videostatus = 1
+						WHERE guid = %s',
 						$this->pdo->escapeString($this->_release['guid'])
 					)
 				);
@@ -1815,7 +1850,9 @@ Class ProcessAdditional
 		if (is_file($fileLocation)) {
 
 			// Run media info on it.
-			$xmlArray = nzedb\utility\runCmd('"' . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"');
+			$xmlArray = nzedb\utility\runCmd(
+				$this->_killString . '"' . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
+			);
 
 			// Check if we got it.
 			if (is_array($xmlArray)) {
@@ -1856,9 +1893,9 @@ Class ProcessAdditional
 		$releaseInfo = $this->pdo->queryOneRow(
 			sprintf(
 				'
-								SELECT UNIX_TIMESTAMP(postdate) AS postdate, proc_pp
-								FROM releases
-								WHERE id = %d',
+				SELECT UNIX_TIMESTAMP(postdate) AS postdate, proc_pp
+				FROM releases
+				WHERE id = %d',
 				$this->_release['id']
 			)
 		);
@@ -2017,12 +2054,12 @@ Class ProcessAdditional
 					$this->pdo->queryExec(
 						sprintf(
 							'
-														UPDATE releases
-														SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
-															tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
-															consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
-															searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
-														WHERE id = %d',
+							UPDATE releases
+							SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL,
+								tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL,
+								consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, preid = 0,
+								searchname = %s, isrenamed = 1, iscategorized = 1, proc_files = 1, categoryid = %d
+							WHERE id = %d',
 							$this->pdo->escapeString(substr($newName, 0, 255)),
 							$newCategory,
 							$this->_release['id']

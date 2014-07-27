@@ -7,6 +7,7 @@ use nzedb\db\Settings;
 
 $page = new AdminPage();
 $id = 0;
+$error = '';
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
@@ -65,6 +66,10 @@ switch($action)
 		$site = $page->settings;
 		$page->smarty->assign('site', $site);
 		break;
+}
+
+if ($error === '') {
+	$page->smarty->assign('error', '');
 }
 
 $page->smarty->assign('yesno_ids', array(1,0));
@@ -148,7 +153,7 @@ $page->smarty->assign('book_reqids_ids', $book_reqids_ids);
 $page->smarty->assign('book_reqids_names', $book_reqids_names);
 
 // convert from a list to an array as we need to use an array, but teh sites table only saves strings
-$books_selected = explode(",", $site->book_reqids);
+$books_selected = explode(",", $page->settings->getSetting('book_reqids'));
 
 // convert from a string array to an int array
 $books_selected = array_map(create_function('$value', 'return (int)$value;'), $books_selected);
