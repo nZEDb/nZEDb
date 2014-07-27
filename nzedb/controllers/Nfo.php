@@ -264,7 +264,7 @@ class Nfo
 	{
 		$ret = 0;
 		$guidCharQuery = ($guidChar === '' ? '' : 'AND guid ' . $this->pdo->likeString($guidChar, false, true));
-		$groupIDQuery = ($groupID === '' ? '' : 'AND group_id =' . $groupID);
+		$groupIDQuery = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);
 
 		$res = $this->pdo->query(
 			sprintf('
