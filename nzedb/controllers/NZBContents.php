@@ -139,14 +139,14 @@ Class NZBContents
 				if ($this->echooutput) {
 					echo '-';
 				}
-				$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = 0 WHERE id = %d', $relID));
+				$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', Nfo::NFO_NONFO, $relID));
 				$fetchedBinary = false;
 			}
 		} else {
 			if ($this->echooutput) {
 				echo '-';
 			}
-			$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = 0 WHERE id = %d', $relID));
+			$this->pdo->queryExec(sprintf('UPDATE releases SET nfostatus = %d WHERE id = %d', Nfo::NFO_NONFO, $relID));
 		}
 
 		return $fetchedBinary;

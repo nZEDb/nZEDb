@@ -41,6 +41,7 @@ section,subsection,name,value,hint,setting
 		maxmusicprocessed	150	The maximum amount of music to process with amazon per run. This does not use an NNTP connection.	maxmusicprocessed
 		maxnestedlevels	3	How many levels deep to go into nested rar/zip files.	maxnestedlevels
 		maxnfoprocessed	100	The maximum amount of NFO files to process per run. This uses an NNTP connection, 1 per thread. This does not query Amazon.	maxnfoprocessed
+		maxnforetries	5	How many times to retry when a NFO fails to download. If set to 0, we will not retry. The max is 7.	maxnforetries
 		maxnzbsprocessed	1000	The maximum amount of NZB files to create on stage 5 in update_releases.	maxnzbsprocessed
 		maxpartrepair	15000	The maximum amount of articles to attempt to repair at a time. If you notice that you are getting a lot of parts into the partrepair table, it is possible that you USP is not keeping up with the requests. Try to reduce the threads to safe scripts, stop using safe scripts or stop using nntpproxy until improves. Ar least until the cause can be determined.	maxpartrepair
 		maxpartsprocessed	3	If a part fails to download while post processing, this will retry up to the amount you set, then give up.	maxpartsprocessed

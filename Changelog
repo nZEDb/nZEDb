@@ -21,6 +21,7 @@ New updates are grouped by person, at the top of the file.
 	* Chg: Move NZB decompression to a central location.
 	* Chg: Remove timeout for avconv also, will look into alternatives.
 	* Chg: Get timeout to work on avconv/ffmpeg, needed the --foreground option.
+	* Add: Max NFO download retries setting.
 2014-07-26 ruhllatio
 	* Merge Tasky's PR #1424 - updating changelog to reflect
 2014-07-26 tasky

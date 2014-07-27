@@ -75,6 +75,7 @@ class Nfo
 	 */
 	protected $echo;
 
+	const NFO_FAILED = -9; // We failed to get a NFO after admin set max retries.
 	const NFO_UNPROC = -1; // Release has not been processed yet.
 	const NFO_NONFO  =  0; // Release has no NFO.
 	const NFO_FOUND  =  1; // Release has an NFO.
@@ -103,6 +104,8 @@ class Nfo
 		$this->maxsize = ($this->maxsize > 0 ? ('AND size < ' . ($this->maxsize * 1073741824)) : '');
 		$this->minsize = ($this->pdo->getSetting('minsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('minsizetoprocessnfo') : 100;
 		$this->minsize = ($this->minsize > 0 ? ('AND size > ' . ($this->minsize * 1048576)) : '');
+		$this->maxRetries = ($this->pdo->getSetting('maxnforetries') >= 0 ? -($this->pdo->getSetting('maxnforetries') + 1) : self::NFO_UNPROC);
+		$this->maxRetries = ($this->maxRetries < -8 ? -8 : $this->maxRetries);
 		$this->tmpPath = $this->pdo->getSetting('tmpunrarpath');
 		if (!preg_match('/[\/\\\\]$/', $this->tmpPath)) {
 			$this->tmpPath .= DS;
@@ -274,11 +277,12 @@ class Nfo
 				SELECT id, guid, group_id, name
 				FROM releases
 				WHERE nzbstatus = %d
-				AND nfostatus BETWEEN -6 AND %d
+				AND nfostatus BETWEEN %d AND %d
 				%s %s %s %s
 				ORDER BY nfostatus ASC, postdate DESC
 				LIMIT %d',
 				NZB::NZB_ADDED,
+				$this->maxRetries,
 				self::NFO_UNPROC,
 				$this->maxsize,
 				$this->minsize,
@@ -301,29 +305,34 @@ class Nfo
 				)
 			);
 
-			// Get count of releases per nfo status
-			$outString = PHP_EOL . 'Available to process';
-			$nfostats = $this->pdo->queryDirect(
-				sprintf('
-					SELECT nfostatus AS status, COUNT(*) AS count
-					FROM releases
-					WHERE nfostatus BETWEEN -6 AND %d
-					AND nzbstatus = %d
-					%s %s %s %s
-					GROUP BY nfostatus
-					ORDER BY nfostatus ASC',
-					self::NFO_UNPROC,
-					NZB::NZB_ADDED,
-					$guidCharQuery,
-					$groupIDQuery,
-					$this->minsize,
-					$this->maxsize
-				)
-			);
-			foreach ($nfostats as $row) {
-				$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
+			if ($this->echo) {
+				// Get count of releases per nfo status
+				$outString = PHP_EOL . 'Available to process';
+				$nfoStats = $this->pdo->queryDirect(
+					sprintf('
+						SELECT nfostatus AS status, COUNT(*) AS count
+						FROM releases
+						WHERE nfostatus BETWEEN %d AND %d
+						AND nzbstatus = %d
+						%s %s %s %s
+						GROUP BY nfostatus
+						ORDER BY nfostatus ASC',
+						$this->maxRetries,
+						self::NFO_UNPROC,
+						NZB::NZB_ADDED,
+						$guidCharQuery,
+						$groupIDQuery,
+						$this->minsize,
+						$this->maxsize
+					)
+				);
+				if ($nfoStats !== false && $nfoStats->rowCount() > 0) {
+					foreach ($nfoStats as $row) {
+						$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
+					}
+					$this->c->doEcho($this->c->header($outString . '.'));
+				}
 			}
-			$this->c->doEcho($this->c->header($outString . '.'));
 
 			$groups = new Groups(['Settings' => $this->pdo]);
 			$nzbContents = new NZBContents(
@@ -380,14 +389,36 @@ class Nfo
 		}
 
 		// Remove nfo that we cant fetch after 5 attempts.
-		$relres = $this->pdo->query(sprintf('SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus < -6', NZB::NZB_ADDED));
-		foreach ($relres as $relrow) {
-			$this->pdo->queryExec(sprintf('DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %d', $relrow['id']));
+		$releases = $this->pdo->queryDirect(
+			sprintf(
+				'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus < %d',
+				NZB::NZB_ADDED,
+				$this->maxRetries
+			)
+		);
+
+		if ($releases !== false && $releases->rowCount() > 0) {
+			foreach ($releases as $release) {
+				$this->pdo->queryExec(
+					sprintf('DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %d', $release['id'])
+				);
+			}
 		}
+
+		// Set releases with no NFO.
+		$this->pdo->queryExec(
+			sprintf(
+				'UPDATE releases SET nfostatus = %d WHERE nfostatus < %d %s %s',
+				self::NFO_FAILED,
+				$this->maxRetries,
+				$groupIDQuery,
+				$guidCharQuery
+			)
+		);
 
 		if ($this->echo) {
 			if ($nfoCount > 0) {
-				echo "\n";
+				echo PHP_EOL;
 			}
 			if ($ret > 0) {
 				$this->c->doEcho($ret . ' NFO file(s) found/processed.', true);
