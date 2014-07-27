@@ -28,7 +28,7 @@ class Nfo
 
 	/**
 	 * Max NFO size to process.
-	 * @var int
+	 * @var string
 	 * @access private
 	 */
 	private $maxsize;
@@ -100,6 +100,7 @@ class Nfo
 		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 		$this->nzbs = ($this->pdo->getSetting('maxnfoprocessed') != '') ? (int)$this->pdo->getSetting('maxnfoprocessed') : 100;
 		$this->maxsize = ($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
+		$this->maxsize = ($this->maxsize > 0 ? ('AND size < ' . ($this->maxsize * 1073741824)) : '');
 		$this->tmpPath = $this->pdo->getSetting('tmpunrarpath');
 		if (!preg_match('/[\/\\\\]$/', $this->tmpPath)) {
 			$this->tmpPath .= DS;
@@ -264,7 +265,7 @@ class Nfo
 	{
 		$ret = 0;
 		$guidCharQuery = ($guidChar === '' ? '' : 'AND guid ' . $this->pdo->likeString($guidChar, false, true));
-		$groupIDQuery = ($groupID === '' ? '' : 'AND group_id =' . $groupID);
+		$groupIDQuery = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);
 
 		$res = $this->pdo->query(
 			sprintf('
@@ -272,14 +273,14 @@ class Nfo
 				FROM releases
 				WHERE nzbstatus = %d
 				AND nfostatus BETWEEN -6 AND %d
-				AND size < %s
+				%s
 				%s
 				%s
 				ORDER BY nfostatus ASC, postdate DESC
 				LIMIT %d',
 				NZB::NZB_ADDED,
 				self::NFO_UNPROC,
-				$this->maxsize * 1073741824,
+				$this->maxsize,
 				$guidCharQuery,
 				$groupIDQuery,
 				$this->nzbs
