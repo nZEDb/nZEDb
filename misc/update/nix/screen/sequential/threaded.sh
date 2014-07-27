@@ -16,7 +16,6 @@ else
 	export NZEDB_ROOT="$(php ../../../../../nZEDbBase.php)"
 fi
 
-export NZEDB_UNRAR=`php $NZEDB_ROOT/nzedb/db/Settings.php tmpunrarpath`
 export niceness=10
 export START_PATH="${NZEDB_ROOT}"
 export NZEDB_PATH="${NZEDB_ROOT}/misc/update"
@@ -31,13 +30,6 @@ command -v python3 >/dev/null 2>&1 && export PYTHON=`command -v python3` || { ex
 export PHP="nice -n$niceness $PHP"
 export PYTHON="nice -n$niceness $PYTHON"
 
-#delete stale tmpunrar folders
-# we need to have this use the Db setting. No idea how yet, but this fails too often otherwise.
-export count=`find $NZEDB_UNRAR -type d -print| wc -l`
-if [ $count != 1 ]
-then
-	rm -r $NZEDB_UNRAR/*
-fi
 if [[ $1 != "true" ]]
 then
 	$PHP ${NZEDB_PATH}/nix/tmux/bin/resetdelaytime.php
@@ -84,7 +76,6 @@ do
 #	$PYTHON -OOu ${THREADED_PATH}/binaries_threaded.py
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_threaded.py all
 #	$PYTHON -OOu ${THREADED_PATH}/backfill_safe_threaded.py
-#	$PYTHON -OOu ${THREADED_PATH}/grabnzbs_threaded.py
 #	$PYTHON -OOu ${THREADED_PATH}/releases_threaded.py
 #	$PHP ${NZEDB_PATH}/update_releases.php 1 false
 #	$PHP ${NZEDB_PATH}/decrypt_hashes.php full
@@ -99,7 +90,7 @@ do
 #   $PYTHON -OOu ${THREADED_PATH}/requestid_threaded.py						#This is much slower for local lookup, but is faster for remote lookup
 #	$PHP ${DB_PATH}/populate_nzb_guid.php limited
 #	$PHP ${DB_PATH}/populate_nzb_guid.php true
-#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py additional		#you can run per groupid, categoryid or parentid
+#	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py additional		#you can run per group_id, categoryid or parentid
 #	$PYTHON -OOu ${THREADED_PATH}/postprocess_threaded.py nfo
 #	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py md5			#fixReleaseNames.php should be used instead
 #	$PYTHON -OOu ${THREADED_PATH}/fixreleasenames_threaded.py nfo

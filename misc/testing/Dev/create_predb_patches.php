@@ -3,8 +3,8 @@
 /*
 require_once '../../../www/config.php';
 
-use nzedb\db\DB;
-$db = new DB();
+use nzedb\db\Settings;
+$pdo = new Settings();
 
 // Last patch date +1 day.
 $lpdpo = "2013-05-30";
@@ -15,9 +15,9 @@ $wp = "144";
 if (!file_exists(nZEDb_WWW."/a"))
 	mkdir(nZEDb_WWW."/a", 0755, true);
 
-if ($db->dbSystem() === "mysql")
+if ($pdo->dbSystem() === "mysql")
 	$uta = "UNIX_TIMESTAMP(adddate)";
-else if ($db->dbSystem() === "pgsql")
+else if ($pdo->dbSystem() === "pgsql")
 	$uta = "extract(epoch FROM adddate)";
 
 foreach (range($lppo, $wp) as $number)
@@ -25,9 +25,9 @@ foreach (range($lppo, $wp) as $number)
 	$loop = $number*10000+1;
 	$number2 = str_pad($number, 3, '0', STR_PAD_LEFT);
 	if ($number == 1)
-		$db->query("select {$uta},title,category,replace(size,'[a-zA-Z]',''),predate from predb where adddate > '".$lpdpo."' limit 1,10000 INTO OUTFILE 'data001.txt' FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n'");
+		$pdo->query("select {$uta},title,category,replace(size,'[a-zA-Z]',''),predate from predb where adddate > '".$lpdpo."' limit 1,10000 INTO OUTFILE 'data001.txt' FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n'");
 	else
-		$db->query("select {$uta},title,category,replace(size,'[a-zA-Z]',''),predate from predb where adddate > '".$lpdpo."' limit ${loop}, 10000 INTO OUTFILE 'data${number2}.txt' FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n'");
+		$pdo->query("select {$uta},title,category,replace(size,'[a-zA-Z]',''),predate from predb where adddate > '".$lpdpo."' limit ${loop}, 10000 INTO OUTFILE 'data${number2}.txt' FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n'");
 
 	$fp = gzopen (nZEDb_WWW."/a/data".$number2.".gz", 'w9');
 	gzwrite ($fp, file_get_contents("/var/lib/mysql/nzedb/data".$number2.'.txt'));

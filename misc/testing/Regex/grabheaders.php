@@ -38,7 +38,7 @@ for ($x = $first; $x <= $last; $x += 5000) {
 	$y = $x + 4999;
 
 	echo "Grabbing " . $x . " -> " . $y . "\n";
-	$msgs = $nntp->getOverview((int)$x . "-" . (int)$y, true, false);
+	$msgs = $nntp->getXOVER($x . "-" . $y);
 
 	foreach ($msgs as $msg) {
 		//if (isset($msg[':bytes']))

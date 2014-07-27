@@ -5,28 +5,27 @@
 
 require dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 use nzedb\utility;
 
 class AniDBstandAlone {
 
 	const CLIENTVER = 1;
 	function __construct($echooutput=false) {
-		$s = new Sites();
-		$this->site = $s->get();
-		$this->aniqty = (!empty($this->site->maxanidbprocessed)) ? $this->site->maxanidbprocessed : 100;
+		$this->pdo = new Settings();
+		$maxanidbprocessed = $this->pdo->getSetting('maxanidbprocessed');
+		$this->aniqty = (!empty($maxanidbprocessed)) ? $maxanidbprocessed : 100;
 		$this->echooutput = $echooutput;
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
-		$this->APIKEY = $this->site->anidbkey;
-		$this->db = new DB();
+		$this->APIKEY = $this->pdo->getSetting('anidbkey');
 		$this->c = new ColorCLI();
 		}
 
 	// ===== function getanimetitlesUpdate =================================================================
 	public function animetitlesUpdate() {
 
-		$db = $this->db;
-		$lastUpdate = $db->queryOneRow('SELECT max(unixtime) as utime FROM animetitles');
+		$pdo = $this->pdo;
+		$lastUpdate = $pdo->queryOneRow('SELECT max(unixtime) as utime FROM animetitles');
 		if (isset($lastUpdate['utime']) && (time() - $lastUpdate['utime']) < 604800) {
 			if ($this->echooutput) {
 				echo "\n";
@@ -45,13 +44,13 @@ class AniDBstandAlone {
 			return false;
 			}
 
-		$db->queryExec('DELETE FROM animetitles WHERE anidbid IS NOT NULL');
+		$pdo->queryExec('DELETE FROM animetitles WHERE anidbid IS NOT NULL');
 		if ($this->echooutput) {
 			echo $this->c->header("Total of ".count($animetitles[1])." titles to add\n\n");
 			}
 		for ($loop = 0; $loop < count($animetitles[1]); $loop++) {
-			$db->queryInsert(sprintf('INSERT IGNORE INTO animetitles (anidbid, title, unixtime) VALUES (%d, %s, %d)',
-			$animetitles[1][$loop], $db->escapeString(html_entity_decode($animetitles[2][$loop], ENT_QUOTES, 'UTF-8')), time()
+			$pdo->queryInsert(sprintf('INSERT IGNORE INTO animetitles (anidbid, title, unixtime) VALUES (%d, %s, %d)',
+			$animetitles[1][$loop], $pdo->escapeString(html_entity_decode($animetitles[2][$loop], ENT_QUOTES, 'UTF-8')), time()
 			));
 			}
 		if ($loop % 2500 == 0 && $this->echooutput) {
@@ -67,7 +66,7 @@ class AniDBstandAlone {
 	public function getAniDBInfo($exitcount) {
 
 		// Declare and set main variables
-		$db = $this->db;
+		$pdo = $this->pdo;
 		$ri = new ReleaseImage();
 		$apicount = 0;
 
@@ -78,30 +77,28 @@ class AniDBstandAlone {
 			);
 
 		// Used for information purposes in main echo
-		$animetitles = $db->query('SELECT DISTINCT anidbid FROM animetitles');
-		$anidbtitles = $db->query('SELECT DISTINCT anidbid FROM anidb');
-		$anidbtitleslang = $db->query('SELECT DISTINCT anidbid FROM anidb_titles');
-		$anidbjointitles = $db->query(sprintf("SELECT * FROM animetitles
+		$animetitles = $pdo->query('SELECT DISTINCT anidbid FROM animetitles');
+		$anidbtitles = $pdo->query('SELECT DISTINCT anidbid FROM anidb');
+		$anidbjointitles = $pdo->query(sprintf("SELECT * FROM animetitles
 					INNER JOIN anidb ON animetitles.anidbid = anidb.anidbid"
 					));
-		$anidbmissingtitles = $db->query(sprintf("SELECT * FROM animetitles
+		$anidbmissingtitles = $pdo->query(sprintf("SELECT * FROM animetitles
 					WHERE anidbid NOT IN (%s)", $notinani
 					));
 
 		// Stage declarations
-		$aniremovedstage0 = $db->query(sprintf("SELECT anidbid FROM anidb WHERE anidbid NOT IN (%s)", $notinani));
-		$animissstage1 = $db->query(sprintf("SELECT DISTINCT anidbid FROM animetitles WHERE anidbid NOT IN (%s)", $notinani));
-		$anirunnstage2 = $db->query('SELECT anidbid FROM anidb WHERE (startdate < CURDATE() AND (enddate > CURDATE() OR enddate IS NULL)) AND (unixtime < UNIX_TIMESTAMP(NOW()- INTERVAL 7 DAY)) ORDER BY unixtime');
-		$anioldstage3 = $db->query('SELECT anidbid FROM anidb WHERE (unixtime < UNIX_TIMESTAMP(NOW()- INTERVAL 90 DAY)) ORDER BY unixtime');
+		$aniremovedstage0 = $pdo->query(sprintf("SELECT anidbid FROM anidb WHERE anidbid NOT IN (%s)", $notinani));
+		$animissstage1 = $pdo->query(sprintf("SELECT DISTINCT anidbid FROM animetitles WHERE anidbid NOT IN (%s)", $notinani));
+		$anirunnstage2 = $pdo->query('SELECT anidbid FROM anidb WHERE (startdate < CURDATE() AND (enddate > CURDATE() OR enddate IS NULL)) AND (unixtime < UNIX_TIMESTAMP(NOW()- INTERVAL 7 DAY)) ORDER BY unixtime');
+		$anioldstage3 = $pdo->query('SELECT anidbid FROM anidb WHERE (unixtime < UNIX_TIMESTAMP(NOW()- INTERVAL 90 DAY)) ORDER BY unixtime');
 		echo  $this->c->header("Total of " . count($animetitles) . " distinct titles present in animetitles.\n" .
-					"Total of " . count($anidbtitles) . " distinct titles present in anidb.\n" .
-					"Total of " . count($anidbtitleslang) . " distinct titles present in anidb_titles.\n" .
-					"Total of " . count($anidbjointitles) . " titles in both anidb and animetitles.\n" .
-					"Total of " . count($anidbmissingtitles) . " missing titles in anidb table.\n" .
-					"Total of " . count($animissstage1) . " missing distinct titles in anidb table.\n" .
-					"Total of " . count($aniremovedstage0) . " orphaned anime titles no longer in animetitles to be removed from anidb table.\n" .
-					"Total of " . count($anirunnstage2) . " running anime titles in anidb table not updated for 7 days.\n" .
-					"Total of " . count($anioldstage3) . " anime titles in anidb table not updated for 90 days.\n");
+					  "Total of " . count($anidbtitles) . " distinct titles present in anidb.\n" .
+					  "Total of " . count($anidbjointitles) . " titles in both anidb and animetitles.\n" .
+					  "Total of " . count($anidbmissingtitles) . " missing titles in anidb table.\n" .
+					  "Total of " . count($animissstage1) . " missing distinct titles in anidb table.\n" .
+					  "Total of " . count($aniremovedstage0) . " orphaned anime titles no longer in animetitles to be removed from anidb table.\n" .
+					  "Total of " . count($anirunnstage2) . " running anime titles in anidb table not updated for 7 days.\n" .
+					  "Total of " . count($anioldstage3) . " anime titles in anidb table not updated for 90 days.\n");
 
 		if ($this->APIKEY == '') {
 			echo $this->c->error("Error: You need an API key from AniDB.net to use this.  Try adding \"nzedb\" in Site Edit.\n");
@@ -127,13 +124,13 @@ class AniDBstandAlone {
 
 		// Begin Stage 0: Remove Orphaned AniDB entries from anidb table if no longer in animetitles table
 
-		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."] Stage 0 -> Remove Orphaned AniDB."));
+		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."] Stage 0 -> Remove deleted anidbid."));
 
 		foreach ($aniremovedstage0 as $value) {
 			$anidbid = (int)$value['anidbid'];
 			if ($this->echooutput) {
 				// Remove AniDB ID from anidb
-				echo 'Stage 0: Removing orphaned AniDB ID: '.$anidbid."\n";
+				echo 'Removing AniDB ID '.$anidbid."\n";
 				}
 			$this->deleteTitle($anidbid);
 			$image_file = $this->imgSavePath . $anidbid;
@@ -150,7 +147,7 @@ class AniDBstandAlone {
 		foreach ($animissstage1 as $value) {
 			$anidbid = (int)$value['anidbid'];
 			if ($this->echooutput) {
-				echo 'Stage 1: Adding AniDB ID: ' . $anidbid . "\n";
+				echo 'Adding AniDB ID ' . $anidbid . "\n";
 			}
 
 			// Pull information from AniDB for this ID and increment API counter -- if false (banned) exit
@@ -159,44 +156,33 @@ class AniDBstandAlone {
 			if ($AniDBAPIArray['banned']){
 				if ($this->echooutput) {
 					echo "AniDB Banned, import will fail, please wait 24 hours before retrying\n";
-					$this->c->doEcho($this->c->header("Exit getAniDBInfo at " . date('D M d, Y G:i a')));
 				}
 				return;
 			}
-			elseif ($AniDBAPIArray['notfound']){
-				// anidb is present in animetitles, but not yet on site. Temporarily remove title from animetitles to prevent banning.
-				$db->queryExec(sprintf('DELETE FROM animetitles WHERE anidbid = %d', $anidbid));
-				if ($this->echooutput) {
-					$this->c->doEcho($this->c->header("Anime id ".$anidbid." removed until next update animetitles."));
-				}
+			$this->addTitle($AniDBAPIArray);
+
+			// Save the image to covers directory
+			if ($AniDBAPIArray['picture']) {
+				$ri->saveImage($AniDBAPIArray['anidbid'], 'http://img7.anidb.net/pics/anime/'.$AniDBAPIArray['picture'], $this->imgSavePath);
 			}
-			else {
-				$this->addTitle($AniDBAPIArray);
-	
-				// Save the image to covers directory
-				if ($AniDBAPIArray['picture']) {
-					$ri->saveImage($AniDBAPIArray['anidbid'], 'http://img7.anidb.net/pics/anime/'.$AniDBAPIArray['picture'], $this->imgSavePath);
-				}
-				// Print total count added
-				if ($apicount != 0 && $this->echooutput) {
-					echo $this->c->header("Processed " . $apicount . " anidb entries of a total possible of " . $exitcount . " for this session\n");
-				}
-				// Sleep 4 Minutes for Every 10 Records
-				if ($apicount % 10 == 0 && $apicount != 0) {
-					$sleeptime = 180 + rand(30,90);
-					if ($this->echooutput) {
-						$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."] Start waitloop for " . $sleeptime . " seconds to prevent banning.\n"));
-						}
-					sleep($sleeptime);
+			// Print total count added
+			if ($apicount != 0 && $this->echooutput) {
+				echo $this->c->header("Processed " . $apicount . " anidb entries of a total possible of " . $exitcount . " for this session\n");
+			}
+			// Sleep 4 Minutes for Every 10 Records
+			if ($apicount % 10 == 0 && $apicount != 0) {
+				$sleeptime = 180 + rand(30,90);
+				if ($this->echooutput) {
+					$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."] Start waitloop for " . $sleeptime . " seconds to prevent banning.\n"));
 					}
+				sleep($sleeptime);
+				}
 			}
 
-			// using exitcount if this number of API calls is reached exit
-			if ($apicount >= $exitcount) {
-				$this->c->doEcho($this->c->header("Exit getAniDBInfo at " . date('D M d, Y G:i a')));
-				return;
+		// using exitcount if this number of API calls is reached exit
+		if ($apicount >= $exitcount) {
+			return;
 			}
-		} // end stage 1
 
 		// Begin Stage 2: Update running series in anidb table -- we only update series already existing in db
 		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."] Stage 2 -> Update running series."));
@@ -205,7 +191,7 @@ class AniDBstandAlone {
 			$anidbid = (int)$value['anidbid'];
 
 			if ($this->echooutput) {
-				echo 'Stage 2: Updating AniDB ID: '.$anidbid."\n";
+				echo 'Updating AniDB ID '.$anidbid."\n";
 				}
 			// actually get the information on this anime from anidb
 			$AniDBAPIArrayNew = $this->AniDBAPI($anidbid);
@@ -215,21 +201,16 @@ class AniDBstandAlone {
 				if ($this->echooutput) {
 					echo $this->c->error("AniDB Banned, import will fail, please wait 24 hours before retrying.\n");
 					}
-				$this->c->doEcho($this->c->header("Exit getAniDBInfo at " . date('D M d, Y G:i a')));
 				return;
 				}
 			// increment apicount on API access
 			$apicount++;
 			// update the stored information with updated data
-			// lazy way: delete then insert
-			$this->deleteTitle($anidbid);
-			$this->addTitle($AniDBAPIArrayNew);
-
-//			$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'], $AniDBAPIArrayNew['type'],
-//			$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'],
-//			$AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'],
-//			$AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'],
-//			$AniDBAPIArrayNew['airdates'], $AniDBAPIArrayNew['episodetitles']);
+			$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'], $AniDBAPIArrayNew['type'],
+			$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'],
+			$AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'],
+			$AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'],
+			$AniDBAPIArrayNew['airdates'], $AniDBAPIArrayNew['episodetitles']);
 
 			$image_file = $this->imgSavePath . $anidbid;
 
@@ -257,7 +238,6 @@ class AniDBstandAlone {
 
 			// using exitcount if this number of API calls is reached exit
 			if ($apicount >= $exitcount) {
-				$this->c->doEcho($this->c->header("Exit getAniDBInfo at " . date('D M d, Y G:i a')));
 				return;
 				}
 			}
@@ -266,10 +246,10 @@ class AniDBstandAlone {
 		// same as step2: but other for loop (so we need to make a proper function out of this?!)
 		$this->c->doEcho($this->c->header("[".date('d-m-Y G:i')."] Stage 3 -> Update 90+ day old series."));
 
-		foreach($anioldstage3 as $value) {
+		foreach($anidboldtitles as $value) {
 			$anidbid = (int)$value['anidbid'];
 			if ($this->echooutput) {
-				echo 'Stage 3: Updating AniDB ID: '.$anidbid."\n";
+				echo 'Updating AniDB ID '.$anidbid."\n";
 				}
 			// actually get the information on this anime from anidb
 			$AniDBAPIArrayNew = $this->AniDBAPI($anidbid);
@@ -277,23 +257,17 @@ class AniDBstandAlone {
 				if ($this->echooutput) {
 					echo "AniDB Banned, import will fail, please wait 24 hours before retrying\n";
 					}
-				$this->c->doEcho($this->c->header("Exit getAniDBInfo at " . date('D M d, Y G:i a')));
 				return;
 				}
 			// increment apicount on API access
 			$apicount++;
 
 			// update the stored information with updated data
-			// lazy way: delete then insert
-			$this->deleteTitle($anidbid);
-			$this->addTitle($AniDBAPIArrayNew);
-
-			// update the stored information with updated data
-//			$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'], $AniDBAPIArrayNew['type'],
-//			$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'],
-//			$AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'],
-//			$AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'],
-//			$AniDBAPIArrayNew['airdates'], $AniDBAPIArrayNew['episodetitles']);
+			$this->updateTitle($AniDBAPIArrayNew['anidbid'], $AniDBAPIArrayNew['title'], $AniDBAPIArrayNew['type'],
+			$AniDBAPIArrayNew['startdate'], $AniDBAPIArrayNew['enddate'], $AniDBAPIArrayNew['related'],
+			$AniDBAPIArrayNew['creators'], $AniDBAPIArrayNew['description'], $AniDBAPIArrayNew['rating'],
+			$AniDBAPIArrayNew['categories'], $AniDBAPIArrayNew['characters'], $AniDBAPIArrayNew['epnos'],
+			$AniDBAPIArrayNew['airdates'], $AniDBAPIArrayNew['episodetitles']);
 
 			$image_file = $this->imgSavePath . $anidbid;
 
@@ -321,62 +295,47 @@ class AniDBstandAlone {
 
 			// using exitcount if this number of API calls is reached exit
 			if ($apicount >= $exitcount) {
-				$this->c->doEcho($this->c->header("Exit getAniDBInfo at " . date('D M d, Y G:i a')));
 				return;
+				}
+
 			}
-		}
-		$this->c->doEcho($this->c->header("Exit getAniDBInfo at " . date('D M d, Y G:i a')));
 
 	} // end public function getAniDBInfo($exitcount)
 
 	public function addTitle($AniDBAPIArray) {
-		$db = $this->db;
-		$db->queryInsert(sprintf("INSERT INTO anidb VALUES (%d, 0, 0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)",
-			$AniDBAPIArray['anidbid'], $db->escapeString($AniDBAPIArray['title']), $db->escapeString($AniDBAPIArray['type']),
-			(empty($AniDBAPIArray['startdate']) ? 'null' : $db->escapeString($AniDBAPIArray['startdate'])),
-			(empty($AniDBAPIArray['enddate']) ? 'null' : $db->escapeString($AniDBAPIArray['enddate'])),
-			$db->escapeString($AniDBAPIArray['related']), $db->escapeString($AniDBAPIArray['creators']),
-			$db->escapeString($AniDBAPIArray['description']), $db->escapeString($AniDBAPIArray['rating']),
-			$db->escapeString($AniDBAPIArray['picture']), $db->escapeString($AniDBAPIArray['categories']),
-			$db->escapeString($AniDBAPIArray['characters']), $db->escapeString($AniDBAPIArray['epnos']),
-			$db->escapeString($AniDBAPIArray['airdates']), $db->escapeString($AniDBAPIArray['episodetitles']), time()
+		$pdo = $this->pdo;
+		$pdo->queryInsert(sprintf("INSERT INTO anidb VALUES (%d, 0, 0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)",
+			$AniDBAPIArray['anidbid'], $pdo->escapeString($AniDBAPIArray['title']), $pdo->escapeString($AniDBAPIArray['type']),
+			(empty($AniDBAPIArray['startdate']) ? 'null' : $pdo->escapeString($AniDBAPIArray['startdate'])),
+			(empty($AniDBAPIArray['enddate']) ? 'null' : $pdo->escapeString($AniDBAPIArray['enddate'])),
+			$pdo->escapeString($AniDBAPIArray['related']), $pdo->escapeString($AniDBAPIArray['creators']),
+			$pdo->escapeString($AniDBAPIArray['description']), $pdo->escapeString($AniDBAPIArray['rating']),
+			$pdo->escapeString($AniDBAPIArray['picture']), $pdo->escapeString($AniDBAPIArray['categories']),
+			$pdo->escapeString($AniDBAPIArray['characters']), $pdo->escapeString($AniDBAPIArray['epnos']),
+			$pdo->escapeString($AniDBAPIArray['airdates']), $pdo->escapeString($AniDBAPIArray['episodetitles']), time()
 			));
-
-		$titlesmix = explode('|', $AniDBAPIArray['titles']);
-		foreach ($titlesmix as $mix) {
-			$titles = explode('~', $mix);
-			$db->queryInsert(sprintf("INSERT INTO anidb_titles VALUES (%d, %s, %s, %s)",
-					$AniDBAPIArray['anidbid'],
-					$db->escapeString($titles[0]),
-					$db->escapeString($titles[1]),
-					$db->escapeString($titles[2])
-				));
 		}
-echo "\nEnd addTitle\n";
-	}
 
 	public function updateTitle($anidbID, $title, $type, $startdate, $enddate, $related, $creators, $description, $rating, $categories, $characters, $epnos, $airdates, $episodetitles) {
-		$db = $this->db;
-              $db->queryExec(sprintf('UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s,
+		$pdo = $this->pdo;
+              $pdo->queryExec(sprintf('UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s,
 					rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d
 					WHERE anidbid = %d',
-					$db->escapeString($title), $db->escapeString($type), (empty($AniDBAPIArray['startdate']) ? 'null' : $db->escapeString($AniDBAPIArray['startdate'])),
-					(empty($AniDBAPIArray['enddate']) ? 'null' : $db->escapeString($AniDBAPIArray['enddate'])), $db->escapeString($related), $db->escapeString($creators),
-					$db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters), $db->escapeString($epnos),
-					$db->escapeString($airdates), $db->escapeString($episodetitles), time(), $anidbID
+					$pdo->escapeString($title), $pdo->escapeString($type), (empty($AniDBAPIArray['startdate']) ? 'null' : $pdo->escapeString($AniDBAPIArray['startdate'])),
+					(empty($AniDBAPIArray['enddate']) ? 'null' : $pdo->escapeString($AniDBAPIArray['enddate'])), $pdo->escapeString($related), $pdo->escapeString($creators),
+					$pdo->escapeString($description), $pdo->escapeString($rating), $pdo->escapeString($categories), $pdo->escapeString($characters), $pdo->escapeString($epnos),
+					$pdo->escapeString($airdates), $pdo->escapeString($episodetitles), time(), $anidbID
 					));
-// TODO: Update anidb_lang fields (or do this in separate function?!?!)
 		}
 
 	public function deleteTitle($anidbID) {
-		$db = $this->db;
-		$db->queryExec(sprintf('DELETE FROM anidb WHERE anidbid = %d', $anidbID));
-		$db->queryExec(sprintf('DELETE FROM anidb_titles WHERE anidbid = %d', $anidbID));
+		$pdo = $this->pdo;
+		$pdo->queryExec(sprintf('DELETE FROM anidb WHERE anidbid = %d', $anidbID));
 		}
 
 	public function getAnimeInfo($anidbID) {
-		$db = $this->db;
-		$animeInfo = $db->query(sprintf('SELECT * FROM anidb WHERE anidbid = %d', $anidbID
+		$pdo = $this->pdo;
+		$animeInfo = $pdo->query(sprintf('SELECT * FROM anidb WHERE anidbid = %d', $anidbID
 					));
 		return isset($animeInfo[0]) ? $animeInfo[0] : false;
 		}
@@ -397,137 +356,80 @@ echo "\nEnd addTitle\n";
 			echo "Response: '".$apiresponse."'\n";
 			}
 		if (!$apiresponse) {
-			echo "AniDB   : Error getting response.\n";
 			return false;
-		} else {
+			}
 		curl_close($ch);
+
+		//TODO: SimpleXML - maybe not.
+
+		$AniDBAPIArray['anidbid'] = $anidbID;
 
 		// if we are banned simply return false
 		if (preg_match("/\<error\>Banned\<\/error\>/", $apiresponse)) {
 			$AniDBAPIArray['banned'] = true;
 			return $AniDBAPIArray;
-		} elseif (preg_match("/\<error\>Anime not found\<\/error\>/", $apiresponse)) {
-			echo "AniDB   : Anime not yet on site. Remove until next update.\n";
+		} else {
 			$AniDBAPIArray['banned'] = false;
-			$AniDBAPIArray['notfound'] = true;
-			return $AniDBAPIArray;
-		} else {
-			if (!preg_match('/anime id="\d+"/', $apiresponse, $valid)) {
-				echo "AniDB   : No 'anime id' field found in response.\n";
-				return false;
+			preg_match_all('/<title xml:lang="x-jat" type="(?:official|main)">(.+)<\/title>/i', $apiresponse, $title);
+			$AniDBAPIArray['title'] = isset($title[1][0]) ? $title[1][0] : '';
+			preg_match_all('/<(type|(?:start|end)date)>(.+)<\/\1>/i', $apiresponse, $type_startenddate);
+			$AniDBAPIArray['type'] = isset($type_startenddate[2][0]) ? $type_startenddate[2][0] : '';
+			// new checks for correct start and enddate
+			// Warning: missing date info is added to default January 1st, 2008 (2008 -> 2008-01-01)
+			if (isset($type_startenddate[2][1])) {
+				if (($timestamp = strtotime($type_startenddate[2][1])) === false) {
+					// Timestamp is bad -- set ''
+					$AniDBAPIArray['startdate']= '';
+					}
+				// Startdate valid for php, convert in case only year or month is given to sql date
+				$AniDBAPIArray['startdate'] = date('Y-m-d', strtotime($type_startenddate[2][1]));
+			} else {
+				$AniDBAPIArray['startdate'] = '';
 			}
-		}
-		}
-
-// why do we need a title in specific language anyway? With the anidb_lang we have all available languages we can search on. Remove this when we remove the lang column in anidb!!
-		preg_match('/<title xml:lang="en" type="official">([^<]+)<\/title>/', $apiresponse, $safeTitle);
-// get any language as long as it is main
-		if(!$safeTitle)
-			preg_match('/<title xml:lang=".*?" type="main">([^<]+)<\/title>/', $apiresponse, $safeTitle);
-
-// replace xml:lang with lang: (workaround to get lang recognised by attributes(). There should be better way, so go and optimize this code!
-		$apiresponse = preg_replace('/<title xml:lang="/', '/<title lang="', $apiresponse);
-
-		$AniDBAPIXML = new SimpleXMLElement($apiresponse);
-
-		if(!$AniDBAPIXML)
-			return false;
-
-		if($AniDBAPIXML->titles->title)
-			foreach($AniDBAPIXML->titles->title as $titles) {
-				$lang = (STRING)$titles->attributes()->lang;
-				$type = (STRING)$titles->attributes()->type;
-				$titlesArray[] = $lang."~".$type."~".(string) $titles;
+			if (isset($type_startenddate[2][2])) {
+				if (($timestamp = strtotime($type_startenddate[2][2])) === false) {
+					// Timestamp not good->make it null";
+					$AniDBAPIArray['enddate']= '';
+					}
+				// Startdate valid for php, convert in case only year or month is given to sql date
+				$AniDBAPIArray['enddate'] = date('Y-m-d', strtotime($type_startenddate[2][2]));
+			} else {
+				// echo "Null date ".$type_startenddate[2][2]."\n";
+				$AniDBAPIArray['enddate'] = '';
 			}
 
-		if($AniDBAPIXML->relatedanime)
-			foreach($AniDBAPIXML->relatedanime as $related)
-				$relatedArray[] = (string) $related->anime;
+			preg_match_all('/<anime id="\d+" type=".+">([^<]+)<\/anime>/is', $apiresponse, $related);
+			$AniDBAPIArray['related'] = isset($related[1]) ? implode($related[1], '|') : '';
+			preg_match_all('/<name id="\d+" type=".+">([^<]+)<\/name>/is', $apiresponse, $creators);
+			$AniDBAPIArray['creators'] = isset($creators[1]) ? implode($creators[1], '|') : '';
+			preg_match('/<description>([^<]+)<\/description>/is', $apiresponse, $description);
+			$AniDBAPIArray['description'] = isset($description[1]) ? $description[1] : '';
+			preg_match('/<permanent count="\d+">(.+)<\/permanent>/i', $apiresponse, $rating);
+			$AniDBAPIArray['rating'] = isset($rating[1]) ? $rating[1] : '';
+			preg_match('/<picture>(.+)<\/picture>/i', $apiresponse, $picture);
+			$AniDBAPIArray['picture'] = isset($picture[1]) ? $picture[1] : '';
+			preg_match_all('/<category id="\d+" parentid="\d+" hentai="(?:true|false)" weight="\d+">\s+<name>([^<]+)<\/name>/is', $apiresponse, $categories);
+			$AniDBAPIArray['categories'] = isset($categories[1]) ? implode($categories[1], '|') : '';
+			preg_match_all('/<character id="\d+" type=".+" update="\d{4}-\d{2}-\d{2}">\s+<name>([^<]+)<\/name>/is', $apiresponse, $characters);
+			$AniDBAPIArray['characters'] = isset($characters[1]) ? implode($characters[1], '|') : '';
+			// if there are no episodes defined this can throw an error we should catch and handle this, but currently we do not
+			preg_match('/<episodes>\s+<episode.+<\/episodes>/is', $apiresponse, $episodes);
+			preg_match_all('/<epno>(.+)<\/epno>/i', $episodes[0], $epnos);
+			$AniDBAPIArray['epnos'] = isset($epnos[1]) ? implode($epnos[1], '|') : '';
+			preg_match_all('/<airdate>(.+)<\/airdate>/i', $episodes[0], $airdates);
+			$AniDBAPIArray['airdates'] = isset($airdates[1]) ? implode($airdates[1], '|') : '';
+			preg_match_all('/<title xml:lang="en">(.+)<\/title>/i', $episodes[0], $episodetitles);
+			$AniDBAPIArray['episodetitles'] = isset($episodetitles[1]) ? implode($episodetitles[1], '|') : '';
 
-		if($AniDBAPIXML->creators->name)
-			foreach($AniDBAPIXML->creators->name as $creator)
-				$creatorsArray[] = (string) $creator;
+			$sleeptime = 10 + rand(2, 10);
 
-		if($AniDBAPIXML->categories->category)
-			foreach($AniDBAPIXML->categories->category as $category)
-				$categoriesArray[] = (string) $category->name;
-
-		if($AniDBAPIXML->characters->character)
-			foreach($AniDBAPIXML->characters->character as $character)
-				$charactersArray[] = (string) $character->name;
-
-// only english episode titles for now
-		foreach($AniDBAPIXML->episodes->episode as $episode) {
-			$epnosArray[] = (string) $episode->epno;
-			$airdatesArray[] = (string) $episode->airdate;
-			foreach($episode->title as $episodetitles) {
-				if($episodetitles->attributes()->lang == 'en') {
-					$episodetitlesArray[] = (string) $episodetitles;
+			if ($this->echooutput) {
+				$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."] Start waitloop for " . $sleeptime . " seconds to comply with flooding rule."));
 				}
-			}
+			sleep($sleeptime);
+			return $AniDBAPIArray;
 		}
-
-		if (isset($AniDBAPIXML->startdate[0])) {
-			if (($timestamp = strtotime($AniDBAPIXML->startdate[0])) === false) {
-				// Timestamp is bad -- set ''
-				$startdate= '';
-			}
-			// Startdate valid for php, convert in case only year or month is given to sql date
-			$startdate= date('Y-m-d', strtotime($AniDBAPIXML->startdate[0]));
-		} else {
-			$startdate = '';
-		}
-
-		if (isset($AniDBAPIXML->enddate[0])) {
-			if (($timestamp = strtotime($AniDBAPIXML->enddate[0])) === false) {
-				// Timestamp not good->make it null";
-				$enddate = '';
-			}
-			// Startdate valid for php, convert in case only year or month is given to sql date
-			$enddate = date('Y-m-d', strtotime($AniDBAPIXML->enddate[0]));
-		} else {
-			// echo "Null date ".$type_startenddate[2][2]."\n";
-			$enddate = '';
-		}
-
-		if (isset($AniDBAPIXML->ratings->permanent)) {
-			$rating = $AniDBAPIXML->ratings->permanent;
-		}
-		elseif (isset($AniDBAPIXML->ratings->temporary)) {
-				$rating = $AniDBAPIXML->ratings->temporary;
-		}
-		else {
-			$rating = '';
-		}
-
-		$AniDBAPIArray = array(
-			'anidbid' => $anidbID,
-			'title' => $safeTitle[1],
-			'titles' => isset($titlesArray) ? implode($titlesArray, '|') : '',
-			'type' => isset($AniDBAPIXML->type[0]) ? (string) $AniDBAPIXML->type[0] : '',
-			'startdate' => (string) $startdate,
-			'enddate' => (string) $enddate,
-			'related' => isset($relatedArray) ? implode($relatedArray, '|') : '',
-			'creators' => isset($creatorsArray) ? implode($creatorsArray, '|') : '',
-			'description' => isset($AniDBAPIXML->description) ? (string) $AniDBAPIXML->description : '',
-			'rating' =>  (string) $rating,
-			'picture' => isset($AniDBAPIXML->picture[0]) ? (string) $AniDBAPIXML->picture[0] : '',
-			'categories' => isset($categoriesArray) ? implode($categoriesArray, '|') : '',
-			'characters' => isset($charactersArray) ? implode($charactersArray, '|') : '',
-			'epnos' => isset($epnosArray) ? implode($epnosArray, '|') : '',
-			'airdates' => isset($airdatesArray) ? implode($airdatesArray, '|') : '',
-			'episodetitles' => isset($episodetitlesArray) ? implode($episodetitlesArray, '|') : '',
-		);
-
-		$sleeptime = 10 + rand(2, 10);
-
-		if ($this->echooutput) {
-			$this->c->doEcho($this->c->primary("[".date('d-m-Y G:i')."] Start waitloop for " . $sleeptime . " seconds to comply with flooding rule."));
-		}
-		sleep($sleeptime);
-		return $AniDBAPIArray;
-	} // end public function AniDBAPI($anidbID)
-
+	}
 } // end class AniDBstandAlone
 
 $c = new ColorCLI();
@@ -545,7 +447,6 @@ if (isset($argv[1]) && is_numeric($argv[1])) {
 		}
 	// then get the titles, this is where we will make the real changes
 	$anidb->getAniDBInfo((int)$argv[1] + rand(1, 12));
-//	$anidb->getAniDBInfo((int)$argv[1]);
 } else {
 	echo $c->error("This script is designed to gather all show data from anidb and add it to the anidb table for nZEDb, as part of this process we need the number of API queries that can be executed max.\nTo execute this script run:\nphp populate_anidb.php 30\n");
 }

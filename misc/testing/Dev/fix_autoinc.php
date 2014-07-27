@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 passthru('clear');
 $c = new ColorCLI();
@@ -22,25 +22,25 @@ if (trim($line) != 'BACKEDUP') {
 echo "\n";
 echo $c->header("Thank you, continuing...\n\n");
 
-$db = new Db();
+$pdo = new Settings();
 $database = DB_NAME;
 
 $count = 0;
-$list = $db->query("SELECT TABLE_NAME, COLUMN_NAME, UPPER(COLUMN_TYPE), EXTRA FROM information_schema.columns WHERE table_schema = '" . $database . "'");
+$list = $pdo->query("SELECT TABLE_NAME, COLUMN_NAME, UPPER(COLUMN_TYPE), EXTRA FROM information_schema.columns WHERE table_schema = '" . $database . "'");
 if (count($list) == 0) {
 	echo $c->info("No table columns to rename");
 } else {
 	foreach ($list as $column) {
 		if (strtolower($column['column_name']) === 'id' && strtolower($column['extra']) === 'auto_increment') {
 			$extra = 'AUTO_INCREMENT';
-			$placeholder = $db->query("SELECT MAX(id) AS id FROM " . $column['table_name']);
+			$placeholder = $pdo->query("SELECT MAX(id) AS id FROM " . $column['table_name']);
 			if ($placeholder[0]['id'] != 0) {
 				$number = $placeholder[0]['id'] + 1;
 			} else {
 				$number = 0;
 			}
 			echo $c->primary("ALTER TABLE " . $column['table_name'] . " AUTO_INCREMENT = " . $number . ";");
-			$db->queryDirect("ALTER TABLE " . $column['table_name'] . " AUTO_INCREMENT = " . $number);
+			$pdo->queryDirect("ALTER TABLE " . $column['table_name'] . " AUTO_INCREMENT = " . $number);
 			$count++;
 		}
 	}

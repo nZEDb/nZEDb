@@ -1,51 +1,38 @@
 <?php
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// Put your test code at the bottom of this file. ////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 require_once dirname(__FILE__) . '/../../../www/config.php';
 echo 'This script is going to run without debug, you can turn on debug by passing true as an argument.' . PHP_EOL;
-$d = new NNTPdebug((isset($argv[1]) ? true : false));
-$nntp = new NNTP();
-$nntp->setLogger($d);
-$connected = $nntp->doConnect();
-if ($connected !== true) {exit();}
-$n = PHP_EOL;
-////////////////////////////////////////////////////////////////////////////////
-//////////////////// Put your test code under here. ////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 
-echo 'This is the last post in the sharing group:' . $n.$n;
-$x = $nntp->selectGroup('alt.binaries.zines');
-$x = $nntp->get_Header($x['group'], $x['last']);
-echo 'Subject: '.$x['Subject'].$n.'Poster: '.$x['From'].$n.'Time: '.$x['Date'].$n
-.$n.'Now we will post an article to alt.test and see if it posted. The article will have this subject: I am testing posting articles to usenet, ignore'.$n;
-$nntp->postArticle('alt.testing', 'I am testing posting articles to usenet, ignore', 'This is a test', '<testing@test.com>');
-for($i=15;$i>=0;$i--) {echo "Sleeping $i so the article propagates.\r"; sleep(1);}
-echo $n.$n;
-$x = $nntp->selectGroup('alt.testing');
-$x = $nntp->get_Header($x['group'], $x['last']);
-echo 'Subject: '.$x['Subject'].$n.'Poster: '.$x['From'].$n.'Time: '.$x['Date'].$n;
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+class NNTPTest extends NNTP
+{
+	/**
+	 * @param NNTPdebug $logger
+	 */
+	public function __construct($logger)
+	{
+		parent::__construct();
+		$this->setLogger($logger);
+	}
+	public function __destruct()
+	{
+		parent::__destruct();
+	}
+}
 
 /**
- * Class NNTPdebug
+ * Class NNTPDebug
  */
-class NNTPdebug
+class NNTPDebug
 {
 	/**
 	 * Construct.
 	 */
 	public function __construct($debug = false)
 	{
-
 		define('PEAR_LOG_DEBUG', $debug);
 		$this->color = new ColorCLI();
-		/*if (defined('nZEDb_DEBUG')) {
-			define('PEAR_LOG_DEBUG', nZEDb_DEBUG);
-			$this->color = new ColorCLI();
-		} else {
-			define('PEAR_LOG_DEBUG', false);
-		}*/
 	}
 
 	/**
@@ -110,3 +97,34 @@ class NNTPdebug
 		}
 	}
 }
+
+$nntp = new NNTPTest(new NNTPDebug((isset($argv[1]) ? true : false)));
+if ($nntp->doConnect() !== true) {exit('Error connecting to usenet!' . PHP_EOL);}
+$n = PHP_EOL;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////// Put your test code under here. ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+$db = new nzedb\db\DB();
+$groups = $db->query('SELECT name FROM groups WHERE name NOT like \'alt.binaries.%\' AND active = 1');
+
+$groupList = array();
+foreach ($groups as $group) {
+	$groupList += $nntp->getGroups($group['name']);
+}
+$groupList += $nntp->getGroups('alt.binaries.*');
+
+$groups = $db->queryDirect('SELECT name FROM groups WHERE active = 1');
+
+$activeGroups = array();
+
+if ($groups !== false) {
+	foreach($groups as $group) {
+		if (isset($groupList[$group['name']])) {
+			$activeGroups[$group['name']] = $groupList[$group['name']];
+		}
+	}
+}
+
+var_dump($activeGroups);

@@ -6,10 +6,10 @@ require dirname(__FILE__) . '/../../../www/config.php';
 // Downloads predb titles from github and stores them in the predb table.
 if (isset($argv[1]) && is_numeric($argv[1]))
 {
-	$db = new DB();
+	$pdo = new Settings();
 	$predb = new PreDb();
 	$consoletools = new ConsoleTools();
-	$predbv = $db->queryOneRow("SELECT value AS v FROM settings WHERE setting = 'predbversion'");
+	$predbv = $pdo->queryOneRow("SELECT value AS v FROM settings WHERE setting = 'predbversion'");
 	if ($predbv["v"] == 142)
 		exit("You are at the maximum backfill.\n");
 	else if ($argv[1] == 0 || $argv[1] > 142)
@@ -61,11 +61,11 @@ if (isset($argv[1]) && is_numeric($argv[1]))
 						if (file_exists($file))
 						{
 							chmod($file, 0777);
-							$ins = $db->queryExec(sprintf("LOAD DATA INFILE %s IGNORE INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (title, category, size, predate) set title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $db->escapeString($file)));
+							$ins = $pdo->queryExec(sprintf("LOAD DATA INFILE %s IGNORE INTO TABLE predb FIELDS TERMINATED BY ',' ENCLOSED BY '~' LINES TERMINATED BY '\n' (title, category, size, predate) set title = title, category = category, size = round(size), predate = predate, source = 'backfill', md5 = md5(title)", $pdo->escapeString($file)));
 							unlink($file);
 							if ($ins === false)
 								exit();
-							$db->queryExec(sprintf("UPDATE settings SET value = %d WHERE setting = %s", $filenumber+1, $db->escapeString("predbversion")));
+							$pdo->queryExec(sprintf("UPDATE settings SET value = %d WHERE setting = %s", $filenumber+1, $pdo->escapeString("predbversion")));
 							$predb->parseTitles(2, 1, 2, 1, 1);
 							$predb->matchPredb();
 							$done++;

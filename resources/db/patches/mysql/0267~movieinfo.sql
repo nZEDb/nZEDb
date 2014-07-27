@@ -1,0 +1,1 @@
+UPDATE movieinfo SET plot = TRIM(SUBSTR(plot, 1, LENGTH(plot) -20)) WHERE plot LIKE '%See full summary »'

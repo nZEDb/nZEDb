@@ -1,7 +1,7 @@
 <?php
 $page = new AdminPage(true);
-$releases = new Releases();
-$category = new Category();
+$releases = new Releases(['Settings' => $page->settings]);
+$category = new Category(['Settings' => $page->settings]);
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
@@ -40,7 +40,7 @@ switch ($action) {
 				$is_guid = false;
 			}
 		}
-		$releases->delete($_REQUEST["id"], $is_guid);
+		$releases->deleteMultiple($_REQUEST['id'], $is_guid);
 		break;
 	default:
 		$page->show404();

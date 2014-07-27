@@ -1,9 +1,9 @@
 <?php
 require dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
-$db = new DB();
+$pdo = new Settings();
 $count = $groups = 0;
 $c = new ColorCLI();
 
@@ -21,8 +21,8 @@ if (isset($argv[2]) && is_numeric($argv[2])) {
 
 $mask = $c->primary("%-50.50s %22.22s %22.22s %22.22s %22.22s");
 $mask1 = $c->header("%-50.50s %22.22s %22.22s %22.22s %22.22s");
-$groups = $db->queryOneRow("SELECT COUNT(*) AS count FROM groups WHERE backfill = 1 AND first_record IS NOT NULL");
-if ($rels = $db->query("SELECT last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded FROM groups")) {
+$groups = $pdo->queryOneRow("SELECT COUNT(*) AS count FROM groups WHERE backfill = 1 AND first_record IS NOT NULL");
+if ($rels = $pdo->query("SELECT last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded FROM groups")) {
 	foreach ($rels as $rel) {
 		$count += $rel['headers_downloaded'];
 	}
@@ -32,7 +32,7 @@ printf($mask1, "Group Name => " . $groups['count'] . "(" . number_format($count)
 printf($mask1, "==================================================", "======================", "======================", "======================", "======================");
 
 if (isset($argv[1]) && ($argv[1] === "desc" || $argv[1] === "DESC")) {
-	if ($rels = $db->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, "
+	if ($rels = $pdo->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, "
 			. "CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded, "
 			. "TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups "
 			. "WHERE backfill = 1 AND first_record_postdate IS NOT NULL AND last_updated IS NOT NULL "
@@ -43,7 +43,7 @@ if (isset($argv[1]) && ($argv[1] === "desc" || $argv[1] === "DESC")) {
 		}
 	}
 } else if (isset($argv[1]) && ($argv[1] === "asc" || $argv[1] === "ASC")) {
-	if ($rels = $db->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, "
+	if ($rels = $pdo->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, "
 			. "CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded, "
 			. "TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups "
 			. "WHERE backfill = 1 AND first_record_postdate IS NOT NULL AND last_updated IS NOT NULL "
@@ -54,7 +54,7 @@ if (isset($argv[1]) && ($argv[1] === "desc" || $argv[1] === "DESC")) {
 		}
 	}
 } else {
-	if ($rels = $db->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, "
+	if ($rels = $pdo->query(sprintf("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, "
 			. "CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded, "
 			. "TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups "
 			. "WHERE backfill = 1 AND first_record_postdate IS NOT NULL AND last_updated IS NOT NULL AND "

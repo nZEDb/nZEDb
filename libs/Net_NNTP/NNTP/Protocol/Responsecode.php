@@ -91,17 +91,15 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_PROHIBITED', 201);
  * 'Closing connection - goodbye!' (RFC977)
  *
  * @access     public
- * @since      ?
  */
-//define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_REQUESTED', 205);   ///// goodbye
+define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_REQUESTED', 205);
 
 /**
  * 'Service discontinued' (RFC977)
  *
  * @access     public
- * @since      ?
  */
-//define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_FORCED', 400);   ///// unavailable / discontinued
+define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_FORCED', 400);
 
 
 /**
@@ -168,11 +166,15 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_GROUP_SELECTED', 211);
  */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_GROUP', 411);
 
-
+/**
+ * 'Groups and descriptions unavailable'
+ *
+ * @access     public
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_XGTITLE_GROUPS_UNAVAILABLE', 481);
 
 // }}}
 // {{{ Constants: Article retrieval
-
 
 
 /**
@@ -251,7 +253,12 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER', 423);
  */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_ID', 430);
 
-
+/**
+ * 'List of groups and descriptions follows' (RFC2980)
+ *
+ * @access     public
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_XGTITLE_GROUPS_FOLLOW', 482);
 
 
 
@@ -389,6 +396,13 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REQUIRED', 480);
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_CONTINUE', 381);
 
 /**
+ * 'Continue with TLS negotiation' (RFC4642)
+ *
+ * @access     public
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_TLS_AUTHENTICATION_CONTINUE', 382);
+
+/**
  * 'Authentication accepted' (RFC2980)
  *
  * @access     public
@@ -495,6 +509,14 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_INTERNAL_FAULT', 403);
  * @access     public
  */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_BASE64_ENCODING_ERROR', 504);
+
+/**
+ * 'Can not initiate TLS negotiation' (RFC4642)
+ *
+ * @access     public
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_TLS_FAILED_NEGOTIATION', 580);
+
 
 // }}}
 

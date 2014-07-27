@@ -24,8 +24,8 @@ if len(sys.argv) == 1:
 	print(bcolors.HEADER + "\nThis script will run update_binaries per group."
 		"\nThis script can run on 1 group, an array of groups or all groups.\n"
 		"\nEach group is processed in a single thread, for all groups. For example, 10 groups, 10 threads, upto max threads.\n"
-		"\npython " + sys.argv[0] + " 155              ...: To run against groupid 155."
-		"\npython " + sys.argv[0] + " '(155, 52)'      ...: To run against groupid 155 and 52."
+		"\npython " + sys.argv[0] + " 155              ...: To run against group_id 155."
+		"\npython " + sys.argv[0] + " '(155, 52)'      ...: To run against group_id 155 and 52."
 		"\npython " + sys.argv[0] + " alt.binaries.tv  ...: To run against group alt.binaries.teevee."
 		"\npython " + sys.argv[0] + "                  ...: To run against all active groups." + bcolors.ENDC)
 
@@ -54,12 +54,9 @@ if len(datas) == 0:
 	info.disconnect(cur[0], cur[1])
 	sys.exit
 
-cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'binarythreads') AS a, (SELECT value FROM settings WHERE setting = 'hashcheck') AS b")
+cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'binarythreads') AS a")
 dbgrab = cur[0].fetchall()
 run_threads = int(dbgrab[0][0])
-hashcheck = int(dbgrab[0][1])
-if hashcheck == 0:
-	print(bcolors.ERROR + "We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB/reset_Collections.php true" + bcolors.ENDC)
 
 #close connection to mysql
 info.disconnect(cur[0], cur[1])

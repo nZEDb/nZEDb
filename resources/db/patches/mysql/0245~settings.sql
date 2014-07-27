@@ -1,0 +1,3 @@
+INSERT IGNORE INTO settings (name , value, setting, hint) VALUES ('extractusingrarinfo', '0', 'extractusingrarinfo', 'Whether to use rarinfo or 7zip/unrar directly to decompress zip/rar files.');
+INSERT IGNORE INTO settings (name , value, setting, hint) VALUES ('maxnestedlevels', '3', 'maxnestedlevels', 'How many levels deep to go into nested rar/zip files.');
+INSERT IGNORE INTO settings (name , value, setting, hint) VALUES ('innerfileblacklist', '', 'innerfileblacklist', 'You can add a regex here to set releases to potentially passworded when a file name inside a rar/zip matches this regex.');

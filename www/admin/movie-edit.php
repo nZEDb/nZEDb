@@ -1,42 +1,40 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$movie = new Movie();
+$movie = new Movie(['Settings' => $page->settings]);
 $id = 0;
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-if (isset($_REQUEST["id"]))
-{
+if (isset($_REQUEST["id"])) {
 	$id = $_REQUEST["id"];
 	$mov = $movie->getMovieInfo($id);
 
-	if (!$mov)
+	if (!$mov) {
 		$page->show404();
+	}
 
-	switch($action)
-	{
+	switch($action) {
 		case 'submit':
 			$coverLoc    = nZEDb_COVERS . "movies/" . $id . '-cover.jpg';
 			$backdropLoc = nZEDb_COVERS . "movies/" . $id . '-backdrop.jpg';
 
-			if($_FILES['cover']['size'] > 0)
-			{
+			if($_FILES['cover']['size'] > 0) {
 				$tmpName = $_FILES['cover']['tmp_name'];
 				$file_info = getimagesize($tmpName);
-				if(!empty($file_info))
+				if(!empty($file_info)) {
 					move_uploaded_file($_FILES['cover']['tmp_name'], $coverLoc);
+				}
 			}
 
-			if($_FILES['backdrop']['size'] > 0)
-			{
+			if($_FILES['backdrop']['size'] > 0) {
 				$tmpName = $_FILES['backdrop']['tmp_name'];
 				$file_info = getimagesize($tmpName);
-				if(!empty($file_info))
+				if(!empty($file_info)) {
 					move_uploaded_file($_FILES['backdrop']['tmp_name'], $backdropLoc);
+				}
 			}
 
 			$_POST['cover'] = (file_exists($coverLoc)) ? 1 : 0;
@@ -58,5 +56,3 @@ if (isset($_REQUEST["id"]))
 
 $page->content = $page->smarty->fetch('movie-edit.tpl');
 $page->render();
-
-?>

@@ -2,18 +2,14 @@
 require_once './config.php';
 require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 
-use nzedb\db\DB;
-
 if (\nzedb\utility\Utility::isCLI()) {
 	exit ('This script is only for exporting from the web, use the script in misc/testing'. PHP_EOL);
 }
 
-$db = new DB();
 $page = new AdminPage();
-$rel = new Releases();
+$rel = new Releases(['Settings' => $page->settings]);
 
-if ($page->isPostBack())
-{
+if ($page->isPostBack()) {
 	$retVal = $path = '';
 
 	$path = $_POST["folder"];
@@ -23,7 +19,7 @@ if ($page->isPostBack())
 	$gzip = ($_POST["gzip"] === '1' ? true : false);
 
 	if ($path !== "") {
-		$NE = new NZBExport(true);
+		$NE = new NZBExport(['Browser' => true, 'Settings' => $page->settings, 'Releases' => $rel]);
 		$retVal = $NE->beginExport(
 			array(
 				$path,

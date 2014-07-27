@@ -3,13 +3,13 @@
  * Type php resetSearchname.php to see detailed info. */
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
 if (isset($argv[1]) && $argv[1] == "full") {
-	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id");
+	$pdo = new Settings();
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id");
 
 	$show = 2;
 	if (isset($argv[2]) && $argv[2] === 'show') {
@@ -18,87 +18,87 @@ if (isset($argv[1]) && $argv[1] == "full") {
 	if (count($res) > 0) {
 		echo $c->header("Going to recreate all search names, recategorize them and fix the names with namefixer, this can take a while.");
 		$done = 0;
-		$timestart = TIME();
-		$consoletools = new ConsoleTools();
+		$timestart = time();
+		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
+		$rc = new ReleaseCleaning($pdo);
 		foreach ($res as $row) {
-			$rc = new ReleaseCleaning();
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
-			$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($newname), $row['id']));
+			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $pdo->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
-		$timenc = $consoletools->convertTime(TIME() - $timestart);
+		$timenc = $consoletools->convertTime(time() - $timestart);
 		echo $c->primary("\n" . $done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
-		$releases = new Releases();
+		$releases = new ProcessReleases(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize();
 		$categorized = $releases->categorizeRelease("name", "", true);
-		$timecat = $consoletools->convertTime(TIME() - $timestart);
+		$timecat = $consoletools->convertTime(time() - $timestart);
 		echo $c->primary("\nFinished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 
-		$namefixer = new NameFixer();
+		$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools]);
 		$namefixer->fixNamesWithNfo(2, 1, 1, 1, $show);
 		$namefixer->fixNamesWithFiles(2, 1, 1, 1, $show);
-		$timetotal = $consoletools->convertTime(TIME() - $timestart);
+		$timetotal = $consoletools->convertTime(time() - $timestart);
 		echo $c->header("\nFinished recreating search names / recategorizing / refixing names in " . $timetotal);
 	} else {
 		exit($c->info("You have no releases in the DB."));
 	}
 } else if (isset($argv[1]) && $argv[1] == "limited") {
-	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id WHERE isrenamed = 0");
+	$pdo = new Settings();
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id WHERE isrenamed = 0");
 
 	if (count($res) > 0) {
 		echo $c->header("Going to recreate search names that have not been fixed with namefixer, recategorize them, and fix them with namefixer, this can take a while.");
 		$done = 0;
 		$timestart = TIME();
-		$consoletools = new ConsoleTools();
+		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
+		$rc = new ReleaseCleaning($pdo);
 		foreach ($res as $row) {
-			$rc = new ReleaseCleaning();
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
-			$db->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $db->escapeString($newname), $row['id']));
+			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s WHERE id = %d", $pdo->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}
-		$timenc = $consoletools->convertTime(TIME() - $timestart);
+		$timenc = $consoletools->convertTime(time() - $timestart);
 		echo $c->header($done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
-		$releases = new Releases();
+		$releases = new ProcessReleases(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize("WHERE isrenamed = 0");
 		$categorized = $releases->categorizeRelease("name", "WHERE isrenamed = 0", true);
-		$timecat = $consoletools->convertTime(TIME() - $timestart);
+		$timecat = $consoletools->convertTime(time() - $timestart);
 		echo $c->header("Finished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 
-		$namefixer = new NameFixer();
+		$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools]);
 		$namefixer->fixNamesWithNfo(2, 1, 1, 1, $show);
 		$namefixer->fixNamesWithFiles(2, 1, 1, 1, $show);
-		$timetotal = $consoletools->convertTime(TIME() - $timestart);
+		$timetotal = $consoletools->convertTime(time() - $timestart);
 		echo $c->header("Finished recreating search names / recategorizing / refixing names in " . $timetotal);
 	} else {
 		exit($c->info("You have no releases in the DB."));
 	}
 } else if (isset($argv[1]) && $argv[1] == "reset") {
-	$db = new DB();
-	$res = $db->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.groupid = groups.id");
+	$pdo = new Settings();
+	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id");
 
 	if (count($res) > 0) {
 		echo $c->header("Going to reset search names, this can take a while.");
 		$done = 0;
-		$timestart = TIME();
-		$consoletools = new ConsoleTools();
+		$timestart = time();
+		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 		foreach ($res as $row) {
-			$rc = new ReleaseCleaning();
+			$rc = new ReleaseCleaning($pdo);
 			$newname = $rc->releaseCleaner($row['name'], $row['fromname'], $row['size'], $row['gname']);
 			if (is_array($newname)) {
 				$newname = $newname['cleansubject'];
 			}
-			$db->queryExec(sprintf("UPDATE releases SET searchname = %s where id = %d", $db->escapeString($newname), $row['id']));
+			$pdo->queryExec(sprintf("UPDATE releases SET searchname = %s where id = %d", $pdo->escapeString($newname), $row['id']));
 			$done++;
 			$consoletools->overWritePrimary("Renaming:" . $consoletools->percentString($done, count($res)));
 		}

@@ -15,11 +15,13 @@ class Install
 	public $NNTP_SERVER;
 	public $NNTP_PORT;
 	public $NNTP_SSLENABLED;
+	public $NNTP_SOCKET_TIMEOUT;
 	public $NNTP_USERNAME_A;
 	public $NNTP_PASSWORD_A;
 	public $NNTP_SERVER_A;
 	public $NNTP_PORT_A;
 	public $NNTP_SSLENABLED_A;
+	public $NNTP_SOCKET_TIMEOUT_A;
 	public $COVERS_PATH;
 	public $coverPathCheck = false;
 	public $SMARTY_DIR;
@@ -132,12 +134,14 @@ class Install
 		$tmpCfg = str_replace('%%NNTP_SERVER%%', $this->NNTP_SERVER, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_PORT%%', $this->NNTP_PORT, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_SSLENABLED%%', ($this->NNTP_SSLENABLED ? "true" : "false"), $tmpCfg);
+		$tmpCfg = str_replace('%%NNTP_SOCKET_TIMEOUT%%', $this->NNTP_SOCKET_TIMEOUT, $tmpCfg);
 
 		$tmpCfg = str_replace('%%NNTP_USERNAME_A%%', $this->NNTP_USERNAME_A, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_PASSWORD_A%%', $this->NNTP_PASSWORD_A, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_SERVER_A%%', $this->NNTP_SERVER_A, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_PORT_A%%', $this->NNTP_PORT_A, $tmpCfg);
 		$tmpCfg = str_replace('%%NNTP_SSLENABLED_A%%', ($this->NNTP_SSLENABLED_A ? "true" : "false"), $tmpCfg);
+		$tmpCfg = str_replace('%%NNTP_SOCKET_TIMEOUT_A%%', $this->NNTP_SOCKET_TIMEOUT_A, $tmpCfg);
 
 		$this->COMPILED_CONFIG = $tmpCfg;
 		return @file_put_contents(nZEDb_WWW . DS .'config.php', $tmpCfg);

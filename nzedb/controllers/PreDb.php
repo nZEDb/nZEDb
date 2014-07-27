@@ -1,5 +1,5 @@
 <?php
-
+use nzedb\db\Settings;
 /**
  * Class for inserting names/categories etc from PreDB sources into the DB,
  * also for matching names on files / subjects.
@@ -29,40 +29,62 @@ Class PreDb
 	/**
 	 * @var nzedb\db\DB
 	 */
-	protected $db;
+	protected $pdo;
 
 	/**
 	 * @var ColorCLI
 	 */
 	protected $c;
+
 	/**
-	 * @param bool $echo
+	 * @param array $options
 	 */
-	public function __construct($echo = false)
+	public function __construct(array $options = array())
 	{
-		$this->echooutput = ($echo && nZEDb_ECHOCLI);
-		$this->db = new nzedb\db\DB();
-		$this->c = new ColorCLI();
+		$defaults = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
 	}
+
+	private $dateLimit;
 
 	/**
 	 * Attempts to match PreDB titles to releases.
 	 *
-	 * @param $nntp
+	 * @param $dateLimit
 	 */
-	public function checkPre($nntp)
+	public function checkPre($dateLimit = false)
 	{
-		$consoleTools = new ConsoleTools();
+
+		$this->dateLimit = $dateLimit;
+
+		$consoleTools = new ConsoleTools(['ColorCLI' => $this->c]);
 		$updated = 0;
+		$datesql = '';
+
 		if ($this->echooutput) {
 			echo $this->c->header('Querying DB for release search names not matched with PreDB titles.');
 		}
 
-		$res = $this->db->queryDirect('
-			SELECT p.id AS preid, r.id AS releaseid
-			FROM predb p
-			INNER JOIN releases r ON p.title = r.searchname
-			WHERE r.preid = 0'
+		if ($this->dateLimit !== false && is_numeric($this->dateLimit)) {
+			$datesql = sprintf('AND DATEDIFF(NOW(), adddate) <= %d', $this->dateLimit);
+		}
+
+		$res = $this->pdo->queryDirect(
+						sprintf('
+							SELECT p.id AS preid, r.id AS releaseid
+							FROM predb p
+							INNER JOIN releases r ON p.title = r.searchname
+							WHERE r.preid < 1 %s',
+							$datesql
+						)
 		);
 
 		if ($res !== false) {
@@ -72,7 +94,7 @@ Class PreDb
 
 			if ($total > 0) {
 				foreach ($res as $row) {
-					$this->db->queryExec(
+					$this->pdo->queryExec(
 						sprintf('UPDATE releases SET preid = %d WHERE id = %d', $row['preid'], $row['releaseid'])
 					);
 
@@ -100,16 +122,16 @@ Class PreDb
 	 *
 	 * @param string $cleanerName
 	 *
-	 * @return array Empty if not found, title/ID from PreDB if found.
+	 * @return array|bool Array with title/ID from PreDB if found, bool False if not found.
 	 */
 	public function matchPre($cleanerName)
 	{
 		if ($cleanerName == '') {
-			return array();
+			return false;
 		}
 
-		$titleCheck = $this->db->queryOneRow(
-			sprintf('SELECT id FROM predb WHERE title = %s', $this->db->escapeString($cleanerName))
+		$titleCheck = $this->pdo->queryOneRow(
+			sprintf('SELECT id FROM predb WHERE title = %s LIMIT 1', $this->pdo->escapeString($cleanerName))
 		);
 
 		if ($titleCheck !== false) {
@@ -120,8 +142,8 @@ Class PreDb
 		}
 
 		// Check if clean name matches a PreDB filename.
-		$fileCheck = $this->db->queryOneRow(
-			sprintf('SELECT id, title FROM predb WHERE filename = %s', $this->db->escapeString($cleanerName))
+		$fileCheck = $this->pdo->queryOneRow(
+			sprintf('SELECT id, title FROM predb WHERE filename = %s LIMIT 1', $this->pdo->escapeString($cleanerName))
 		);
 
 		if ($fileCheck !== false) {
@@ -131,7 +153,7 @@ Class PreDb
 			);
 		}
 
-		return array();
+		return false;
 	}
 
 	/**
@@ -147,8 +169,8 @@ Class PreDb
 	 */
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
-		$namefixer = new NameFixer($this->echooutput);
-		$consoletools = new ConsoleTools();
+		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->c, 'Settings' => $this->pdo]);
+		$consoletools = new ConsoleTools(['ColorCLI' => $this->c]);
 		$updated = $checked = 0;
 		$matches = '';
 
@@ -171,18 +193,18 @@ Class PreDb
 		$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
 
 		if ($cats === 3) {
-			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
+			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
 				. 'WHERE nzbstatus = 1 AND dehashstatus BETWEEN -6 AND 0 AND preid = 0 %s', $regex);
 		} else {
-			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.groupid, '
+			$query = sprintf('SELECT r.id AS releaseid, r.name, r.searchname, r.categoryid, r.group_id, '
 				. 'dehashstatus, rf.name AS filename FROM releases r '
 				. 'LEFT OUTER JOIN releasefiles rf ON r.id = rf.releaseid '
 				. 'WHERE nzbstatus = 1 AND isrenamed = 0 AND dehashstatus BETWEEN -6 AND 0 %s %s %s', $regex, $ct, $tq);
 		}
 
-		$res = $this->db->queryDirect($query);
+		$res = $this->pdo->queryDirect($query);
 		$total = $res->rowCount();
 		echo $this->c->primary(number_format($total) . " releases to process.");
 		if ($total > 0) {
@@ -219,19 +241,19 @@ Class PreDb
 	{
 		if ($search !== '') {
 			$search = explode(' ', trim($search));
-			if (count($search > 1)) {
+			if (count($search) > 1) {
 				$search = "LIKE '%" . implode("%' AND title LIKE '%", $search) . "%'";
 			} else {
 				$search = "LIKE '%" . $search . "%'";
 			}
 			$search = 'WHERE title ' . $search;
-			$count = $this->db->queryOneRow(sprintf('SELECT COUNT(*) AS cnt FROM predb %s', $search));
+			$count = $this->pdo->queryOneRow(sprintf('SELECT COUNT(*) AS cnt FROM predb %s', $search));
 			$count = $count['cnt'];
 		} else {
 			$count = $this->getCount();
 		}
 
-		$parr = $this->db->query(
+		$parr = $this->pdo->query(
 			sprintf('
 				SELECT p.*, r.guid
 				FROM predb p
@@ -252,7 +274,7 @@ Class PreDb
 	 */
 	public function getCount()
 	{
-		$count = $this->db->queryOneRow('SELECT COUNT(*) AS cnt FROM predb');
+		$count = $this->pdo->queryOneRow('SELECT COUNT(*) AS cnt FROM predb');
 		return ($count === false ? 0 : $count['cnt']);
 	}
 
@@ -265,7 +287,7 @@ Class PreDb
 	 */
 	public function getForRelease($preID)
 	{
-		return $this->db->query(sprintf('SELECT * FROM predb WHERE id = %d', $preID));
+		return $this->pdo->query(sprintf('SELECT * FROM predb WHERE id = %d', $preID));
 	}
 
 	/**
@@ -277,7 +299,7 @@ Class PreDb
 	 */
 	public function getOne($preID)
 	{
-		return $this->db->queryOneRow(sprintf('SELECT * FROM predb WHERE id = %d', $preID));
+		return $this->pdo->queryOneRow(sprintf('SELECT * FROM predb WHERE id = %d', $preID));
 	}
 
 }

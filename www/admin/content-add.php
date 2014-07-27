@@ -1,16 +1,14 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$contents = new Contents();
+$contents = new Contents(['Settings' => $page->settings]);
 $id = 0;
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action)
-{
+switch($action) {
 	case 'add':
 		$page->title = "Content Add";
 		$content = new Content();
@@ -23,10 +21,9 @@ switch($action)
 	case 'submit':
 		// Validate and add or update.
 		$returnid = 0;
-		if (!isset($_POST["id"]) || $_POST["id"]=="")
+		if (!isset($_POST["id"]) || $_POST["id"]=="") {
 			$returnid = $contents->add($_POST);
-		else
-		{
+		} else {
 			$content = $contents->update($_POST);
 			$returnid = $content->id;
 		}
@@ -35,8 +32,7 @@ switch($action)
 
 	case 'view':
 	default:
-		if (isset($_GET["id"]))
-		{
+		if (isset($_GET["id"])) {
 			$page->title = "Content Edit";
 			$id = $_GET["id"];
 
@@ -60,5 +56,3 @@ $page->smarty->assign('rolelist', $rolelist);
 
 $page->content = $page->smarty->fetch('content-add.tpl');
 $page->render();
-
-?>

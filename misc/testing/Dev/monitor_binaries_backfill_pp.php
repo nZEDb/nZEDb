@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
@@ -16,13 +16,13 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 } else {
 	// Set reset timer
 	$time1 = TIME();
-	$db = new DB();
+	$pdo = new Settings();
 	$check = '';
 	$killtime = $argv[1];
 	$sleep = $argv[2];
 
 	// make sure compressed headers are enabled
-	$db->queryExec("UPDATE settings SET value = 1 WHERE setting = 'compressedheaders'");
+	$pdo->queryExec("UPDATE settings SET value = 1 WHERE setting = 'compressedheaders'");
 
 	while (1 === 1) {
 		//kill mediainfo and ffmpeg if exceeds 60 sec
@@ -39,7 +39,7 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 				$threads++;
 				if ($time[1] >= $killtime) {
 					// Disable compressed headers
-					$db->queryExec("UPDATE settings SET value = 0 WHERE setting = 'compressedheaders'");
+					$pdo->queryExec("UPDATE settings SET value = 0 WHERE setting = 'compressedheaders'");
 					// kill pid
 					echo $c->alternate("PID: $line1[0] USER: $line1[1] TIME: $time[0] CMD: $line");
 					usleep(10000);
@@ -59,7 +59,7 @@ if ($argc !== 3 || !is_numeric($argv[1]) || !is_numeric($argv[2])) {
 
 		// re-enable compressed haders if good running 10 min
 		if (TIME() - $time1 > ($killtime + 300)) {
-			$db->queryExec("UPDATE settings SET value = 1 WHERE setting = 'compressedheaders'");
+			$pdo->queryExec("UPDATE settings SET value = 1 WHERE setting = 'compressedheaders'");
 			$time1 = TIME();
 		}
 

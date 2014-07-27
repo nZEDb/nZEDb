@@ -7,12 +7,23 @@ class ConsoleTools
 {
 
 	/**
+	 * @var ColorCLI
+	 */
+	public $c;
+
+	/**
 	 * Construct.
 	 */
-	public function __construct()
+	public function __construct(array $options = array())
 	{
+		$defOptions = [
+			'ColorCLI' => null
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->c = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+
 		$this->lastMessageLength = 0;
-		$this->c = new ColorCLI();
 	}
 
 	/**

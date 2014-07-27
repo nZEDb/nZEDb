@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * Maximum time in seconds a child can stay alive.
+ * Keeps long processes, like groups with millions of parts from preventing other groups to update.
+ *
+ * @default 1800
+ */
+define('nZEDb_MULTIPROCESSING_MAX_CHILD_TIME', 1800);
+
+/**
+ * How much work can 1 child do.
+ * Increasing this currently reduces performance with no benefits, here for testing or future use.
+ *
+ * @default 1
+ */
+define('nZEDb_MULTIPROCESSING_MAX_CHILD_WORK', 1);
+
+/**
+ * This setting can be used to override your site settings, to cap the maximum amount of child processes.
+ * Set to 0 to ignore.
+ *
+ * @default 0
+ */
+define('nZEDb_MULTIPROCESSING_MAX_CHILDREN_OVERRIDE', 0);
+
+/**
+ * Which type of messages to display on the screen.
+ *
+ * -1 All messages.
+ *  2 Critical messages.
+ *  4 Warnings.
+ *  6 Info messages.
+ *  7 Debug messages.
+ *
+ * @default 6
+ */
+define('nZEDb_MULTIPROCESSING_LOG_TYPE', 6);
+
+/**
+ * How to display the text output (echo's) from the child processes.
+ *
+ * 0 - Do not display any anything.
+ * 1 - Display the text as the child outputs it in real time. (This will mix all the child process text output.)
+ * 2 - Display the text when the child is done. (This will display the text serially.)
+ *
+ * @default 1
+ */
+define('nZEDb_MULTIPROCESSING_CHILD_OUTPUT_TYPE', 1);

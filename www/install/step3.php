@@ -21,6 +21,7 @@ if ($page->isPostBack()) {
 	$cfg->NNTP_PASSWORD = trim($_POST['pass']);
 	$cfg->NNTP_PORT = (trim($_POST['port']) == '') ? 119 : trim($_POST['port']);
 	$cfg->NNTP_SSLENABLED = (isset($_POST['ssl']) ? (trim($_POST['ssl']) == '1' ? true : false) : false);
+	$cfg->NNTP_SOCKET_TIMEOUT = (is_numeric(trim($_POST['socket_timeout'])) ? (int) trim($_POST['socket_timeout']) : 120);
 
 	require_once nZEDb_LIBS . 'Net_NNTP/NNTP/Client.php';
 	$test = new Net_NNTP_Client();

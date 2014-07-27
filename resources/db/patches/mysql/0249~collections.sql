@@ -1,0 +1,2 @@
+DROP TRIGGER IF EXISTS delete_collections;
+CREATE TRIGGER delete_collections BEFORE DELETE ON collections FOR EACH ROW BEGIN DELETE FROM binaries WHERE collectionid = OLD.id; DELETE FROM parts WHERE collection_id = OLD.id; END;

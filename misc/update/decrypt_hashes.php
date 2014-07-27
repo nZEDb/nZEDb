@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
@@ -21,26 +21,29 @@ preName($argv);
 
 function preName($argv)
 {
-	$db = new DB();
-	$timestart = TIME();
-	$namefixer = new NameFixer();
+	global $c;
+	$timestart = time();
+	$pdo = new Settings();
+	$consoletools = new ConsoleTools(['ColorCLI' => $c]);
+	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools]);
 
+	$res = false;
 	if (isset($argv[1]) && $argv[1] === "all") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE categoryid = 7020');
+		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE preid = 0 AND ishashed = 1');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0');
+		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
-		$res = $db->queryDirect('SELECT id AS releaseid, name, searchname, groupid, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
+		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
-	$c = new ColorCLI();
 
-	$total = $res->rowCount();
-	$counter = $counted = 0;
+	$counter = $counted = $total = 0;
+	if ($res !== false) {
+		$total = $res->rowCount();
+	}
 	$show = (!isset($argv[2]) || $argv[2] !== 'show') ? 0 : 1;
 	if ($total > 0) {
 		echo $c->header("\n" . number_format($total) . ' releases to process.');
 		sleep(2);
-		$consoletools = new ConsoleTools();
 
 		foreach ($res as $row) {
 			$success = 0;
@@ -51,7 +54,7 @@ function preName($argv)
 			}
 
 			if ($success === 0) {
-				$db->queryDirect(sprintf('UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d', $row['releaseid']));
+				$pdo->queryDirect(sprintf('UPDATE releases SET dehashstatus = dehashstatus - 1 WHERE id = %d', $row['releaseid']));
 			} else {
 				$counted++;
 			}

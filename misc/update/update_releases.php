@@ -1,36 +1,35 @@
 <?php
-
 require_once dirname(__FILE__) . '/config.php';
 
+$pdo = new \nzedb\db\Settings();
 $c = new ColorCLI();
-$s = new Sites();
-$site = $s->get();
 
 if (isset($argv[2]) && $argv[2] === 'true') {
 	// Create the connection here and pass
-	$nntp = new NNTP();
+	$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 	if ($nntp->doConnect() !== true) {
 		exit($c->error("Unable to connect to usenet."));
 	}
-	if ($site->nntpproxy === "1") {
+	if ($pdo->getSetting('nntpproxy') === "1") {
 		usleep(500000);
 	}
 }
-if ($site->tablepergroup === 1) {
+if ($pdo->getSetting('tablepergroup') === 1) {
 	exit($c->error("You are using 'tablepergroup', you must use releases_threaded.py"));
 }
 
 $groupName = isset($argv[3]) ? $argv[3] : '';
 if (isset($argv[1]) && isset($argv[2])) {
-	$releases = new Releases();
+	$consoletools = new ConsoleTools(['ColorCLI' => $c]);
+	$releases = new ProcessReleases(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools]);
 	if ($argv[1] == 1 && $argv[2] == 'true') {
 		$releases->processReleases(1, 1, $groupName, $nntp, true);
 	} else if ($argv[1] == 1 && $argv[2] == 'false') {
-		$releases->processReleases(1, 2, $groupName, null, true);
+		$releases->processReleases(1, 2, $groupName, $nntp, true);
 	} else if ($argv[1] == 2 && $argv[2] == 'true') {
 		$releases->processReleases(2, 1, $groupName, $nntp, true);
 	} else if ($argv[1] == 2 && $argv[2] == 'false') {
-		$releases->processReleases(2, 2, $groupName, null, true);
+		$releases->processReleases(2, 2, $groupName, $nntp, true);
 	} else if ($argv[1] == 4 && ($argv[2] == 'true' || $argv[2] == 'false')) {
 		echo $c->header("Moving all releases to other -> misc, this can take a while, be patient.");
 		$releases->resetCategorize();
@@ -38,21 +37,20 @@ if (isset($argv[1]) && isset($argv[2])) {
 		echo $c->header("Categorizing all non-categorized releases in other->misc using usenet subject. This can take a while, be patient.");
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease('name', 'WHERE iscategorized = 0 AND categoryID = 7010', true);
-		$consoletools = new ConsoleTools();
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the usenet subject.");
 	} else if ($argv[1] == 6 && $argv[2] == 'true') {
 		echo $c->header("Categorizing releases in all sections using the searchname. This can take a while, be patient.");
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease('searchname', '', true);
-		$consoletools = new ConsoleTools();
+		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the search name.");
 	} else if ($argv[1] == 6 && $argv[2] == 'false') {
 		echo $c->header("Categorizing releases in misc sections using the searchname. This can take a while, be patient.");
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease('searchname', 'WHERE categoryID IN (1090, 2020, 3050, 5050, 6050, 7010)', true);
-		$consoletools = new ConsoleTools();
+		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the search name.");
 	} else {
@@ -70,6 +68,6 @@ if (isset($argv[1]) && isset($argv[2])) {
 			. "php update_releases.php 6 false			...: Categorizes releases in misc sections using the search name\n"
 			. "php update_releases.php 6 true			...: Categorizes releases in all sections using the search name\n"));
 }
-if ($site->nntpproxy != "1" && $argv[2] === 'true') {
+if ($pdo->getSetting('nntpproxy') != "1" && $argv[2] === 'true') {
 	$nntp->doQuit();
 }

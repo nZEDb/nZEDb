@@ -8,7 +8,7 @@
  */
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $c = new ColorCLI();
 
@@ -26,19 +26,19 @@ if (is_numeric($password))
 
 
 $field = is_numeric($identifier) ? 'id' : 'username';
-$db = new DB();
+$pdo = new Settings();
 $query = "SELECT `id`, `username` FROM users WHERE $field = ";
 $query .= is_numeric($identifier) ? $identifier : "'$identifier'";
-$resulta = $db->queryOneRow($query);
+$resulta = $pdo->queryOneRow($query);
 
 if ($resulta !== false)
 {
 	$hash = crypt($password);		// Let crypt use a random salt.
 	$query = "UPDATE `users` SET password = '$hash' WHERE `id` = {$resulta['id']}";
-	$result = $db->queryDirect($query);
+	$result = $pdo->queryDirect($query);
 	if ($result === false)
 	{
-		echo $c->error("An error occured during update attempt.\n" . $db->errorInfo());
+		echo $c->error("An error occured during update attempt.\n" . $pdo->errorInfo());
 	}
 	else
 	{

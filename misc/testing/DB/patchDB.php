@@ -4,7 +4,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $log = new ColorCLI();
 
-echo $log->warning("This file is deprecated and will be removed in a future version.\nUse 'php nzedb/db/DbUpdate.php 1' instead");
+echo $log->warning("This file is deprecated and will be removed in a future version.\nUse 'php cli/update_db.php 1' instead");
 
 if (\nzedb\utility\Utility::hasCommand("php5")) {
 	$PHP = "php5";
@@ -13,7 +13,7 @@ if (\nzedb\utility\Utility::hasCommand("php5")) {
 }
 
 $safe = (isset($argv[1]) && $argv[1] === "safe") ? true : false;
-system("$PHP " . nZEDb_LIB . 'db' . DS . "DbUpdate.php 1 $safe");
+system("$PHP " . nZEDb_ROOT . 'cli' . DS . "update_db.php true $safe");
 
 exit();
 //// Function inspired by : http://stackoverflow.com/questions/1883079/best-practice-import-mysql-file-in-php-split-queries/2011454#2011454
@@ -26,8 +26,8 @@ exit();
 //
 //		if (is_resource($file) === true) {
 //			$query = array();
-//			$db = new DB();
-//			$dbsys = $db->dbSystem();
+//			$pdo = new Settings();
+//			$dbsys = $pdo->dbSystem();
 //			$c = new ColorCLI();
 //
 //			while (feof($file) === false) {
@@ -40,7 +40,7 @@ exit();
 //						$query = str_replace(array("`", chr(96)), '', $query);
 //					}
 //					try {
-//						$qry = $db->prepare($query);
+//						$qry = $pdo->prepare($query);
 //						$qry->execute();
 //						echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
 //					} catch (PDOException $e) {
@@ -67,9 +67,9 @@ exit();
 //							}
 //						} else {
 //							if (preg_match('/ALTER IGNORE/i', $query)) {
-//								$db->queryExec("SET SESSION old_alter_table = 1");
+//								$pdo->queryExec("SET SESSION old_alter_table = 1");
 //								try {
-//									$qry = $db->prepare($query);
+//									$qry = $pdo->prepare($query);
 //									$qry->execute();
 //									echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
 //								} catch (PDOException $e) {
@@ -102,7 +102,7 @@ exit();
 //
 //function BackupDatabase()
 //{
-//	$db = new DB();
+//	$pdo = new Settings();
 //	$c = new ColorCLI();
 //	$DIR = nZEDb_MISC;
 //
@@ -113,9 +113,9 @@ exit();
 //	}
 //
 //	//Backup based on database system
-//	if ($db->dbSystem() === "mysql") {
+//	if ($pdo->dbSystem() === "mysql") {
 //		system("$PHP ${DIR}testing/DB/mysqldump_tables.php db dump ../../../");
-//	} else if ($db->dbSystem() === "pgsql") {
+//	} else if ($pdo->dbSystem() === "pgsql") {
 //		exit($c->error("Currently not supported on this platform."));
 //	}
 //}
@@ -134,13 +134,13 @@ exit();
 //	$currentversion = $site->sqlpatch;
 //	$patched = 0;
 //	$patches = array();
-//	$db = new DB();
+//	$pdo = new Settings();
 //	$backedup = false;
 //	$c = new ColorCLI();
 //
-//	if ($db->dbSystem() === "mysql") {
+//	if ($pdo->dbSystem() === "mysql") {
 //		$path = nZEDb_RES . 'db/patches/mysql/';
-//	} else if ($db->dbSystem() === "pgsql") {
+//	} else if ($pdo->dbSystem() === "pgsql") {
 //		$path = nZEDb_RES . 'db/patches/pgsql/';
 //	}
 //
@@ -154,10 +154,10 @@ exit();
 //		exit($c->error("\nHave you changed the path to the patches folder, or do you have the right permissions?\n"));
 //	}
 //
-//	/* 	if ($db->dbSystem() === "mysql")
+//	/* 	if ($pdo->dbSystem() === "mysql")
 //	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/patches/mysql/',
 //	nZEDb_ROOT);
-//	  else if ($db->dbSystem() === "pgsql")
+//	  else if ($pdo->dbSystem() === "pgsql")
 //	  $patchpath = preg_replace('/\/misc\/testing\/DB/i', '/db/patches/pgsql/', nZEDb_ROOT);
 //	 */ sort($patches);
 //

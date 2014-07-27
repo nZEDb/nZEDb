@@ -58,12 +58,27 @@
 			</td>
 		</tr>
 		<tr>
+		<tr>
+			<th>View XXX Page:</th>
+			<td>
+				<input id="xxxview"	name="xxxview" value="1" type="checkbox" {if $user.xxxview=="1"}checked="checked"{/if}>
+				<span class="help-block">Browse XXX covers. Only shows xxx releases with known lookup info.</span>
+			</td>
+		</tr>
+		<tr>
 			<th>View Music Page:</th>
 			<td>
 				<input id="musicview" name="musicview" value="1" type="checkbox" {if $user.musicview=="1"}checked="checked"{/if}>
 				<span class="help-block">Browse music covers. Only shows music with known lookup info.</span>
 			</td>
 		</tr>
+			<tr>
+				<th>View Game Page:</th>
+				<td>
+					<input id="gameview" name="gameview" value="1" type="checkbox" {if $user.gameview=="1"}checked="checked"{/if}>
+					<span class="help-block">Browse game covers. Only shows games with known lookup info.</span>
+				</td>
+			</tr>
 		<tr>
 			<th>View Console Page:</th>
 			<td>
@@ -87,7 +102,7 @@
 		</tr>
 		</table>
 	</fieldset>
-	{if $page->site->sabintegrationtype != 1}
+	{if $page->settings->getSetting('sabintegrationtype') != 1}
 		<fieldset>
 			<legend>Queue Type</legend>
 			<table class="table table-condensed input">
@@ -104,7 +119,7 @@
 			</table>
 		</fieldset>
 	{/if}
-	{if $user.queuetype == 2 && ($page->site->sabintegrationtype == 0 || $page->site->sabintegrationtype == 2)}
+	{if $user.queuetype == 2 && ($page->settings->getSetting('sabintegrationtype') == 0 || $page->settings->getSetting('sabintegrationtype') == 2)}
 		<fieldset>
 			<legend>NZBGet Integration</legend>
 			<table class="table table-condensed input">
@@ -138,7 +153,7 @@
 			</table>
 		</fieldset>
 	{/if}
-	{if $user.queuetype == 1 && $page->site->sabintegrationtype == 2}
+	{if $user.queuetype == 1 && $page->settings->getSetting('sabintegrationtype') == 2}
 		<fieldset>
 			<legend>SABnzbd Integration</legend>
 			<table class="table table-condensed input">

@@ -1,21 +1,21 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$releases = new Releases();
-$contents = new Contents();
-$category = new Category();
+$releases = new Releases(['Settings' => $page->settings]);
+$contents = new Contents(['Settings' => $page->settings]);
+$category = new Category(['Settings' => $page->settings]);
 $error = false;
 
 // Array with all the possible poster wall types.
-$startTypes = array('Books', 'Console', 'Movies', 'Audio'/*, 'Recent'*/);
+$startTypes = array('Books', 'Console', 'Movies', 'XXX', 'Audio', 'PC'/*, 'Recent'*/);
 // Array that will contain the poster wall types (the above array minus whatever they have disabled in admin).
 $types = array();
 // Get the names of all enabled parent categories.
 $categories = $category->getEnabledParentNames();
 // Loop through our possible ones and check if they are in the enabled categories.
-if (count($categories > 0)) {
+if (count($categories) > 0) {
 	foreach ($categories as $pType) {
 		if (in_array($pType['title'], $startTypes)) {
 			$types[] = $pType['title'];
@@ -49,7 +49,7 @@ if (!$error) {
 			$getnewestmovies = $releases->getNewestMovies();
 			$page->smarty->assign('newest', $getnewestmovies);
 
-			$user = $users->getById($users->currentUserId());
+			$user = $page->users->getById($page->users->currentUserId());
 			$page->smarty->assign('cpapi', $user['cp_api']);
 			$page->smarty->assign('cpurl', $user['cp_url']);
 			$page->smarty->assign('goto', 'movies');
@@ -60,6 +60,18 @@ if (!$error) {
 			$page->smarty->assign('newest', $getnewestconsole);
 			$page->smarty->assign('goto', 'console');
 			break;
+
+		case 'XXX':
+			$getnewestxxx = $releases->getNewestXXX();
+			$page->smarty->assign('newest', $getnewestxxx);
+			$page->smarty->assign('goto', 'xxx');
+			break;
+
+        case 'PC':
+            $getnewestgame = $releases->getNewestGames();
+            $page->smarty->assign('newest', $getnewestgame);
+            $page->smarty->assign('goto', 'games');
+            break;
 
 		case 'Audio':
 			$getnewestmp3 = $releases->getnewestMP3s();

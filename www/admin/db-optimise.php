@@ -1,12 +1,8 @@
 <?php
 require_once './config.php';
-
-use nzedb\db\DB;
-
 $page = new AdminPage();
-$db = new DB();
 
-$tablelist = $db->optimise(true);
+$tablelist = $page->settings->optimise(true);
 
 $page->title = "DB Table Optimise";
 $page->smarty->assign('tablelist', $tablelist);

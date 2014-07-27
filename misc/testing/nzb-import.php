@@ -5,14 +5,15 @@ $n = PHP_EOL;
 // Print usage.
 if (count($argv) !== 6) {
 	exit(
-		'This will import NZB files(.nzb or .nzb.gz) into your nZEDb site.'. $n . $n .
+		'This will import NZB files(.nzb or .nzb.gz), into your nZEDb site from a folder recursively(it will go down into sub-folders).'. $n .
+		'Please use arg5, something sensible like 100k, if you have millions of NZB files the initial scan will be VERY slow otherwise.' . $n . $n .
 		'Usage: ' . $n .
 		$_SERVER['_'] . ' ' . __FILE__ . ' arg1 arg2 arg3 arg4 arg5' . $n . $n .
 		'arg1 : Path to folder where NZB files are stored.                | a folder path' . $n .
 		'arg2 : Delete NZB when successfully imported.(recommended)       | true/false' . $n .
 		'arg3 : Delete NZB when unsuccessfully imported.(not recommended) | true/false' . $n .
 		'arg4 : Use NZB file name as release name.(not recommended)       | true/false' . $n .
-		'arg5 : Import this many NZB files. 0 for all                     | a number' . $n . $n .
+		'arg5 : Import this many NZB files. (RECOMMENDED 100,000)         | a number' . $n . $n .
 		'ie: ' . $_SERVER['_'] . ' ' . __FILE__ . ' ' . nZEDb_ROOT . 'nzbToImport' . DS . ' true false false 1000' . $n
 	);
 }
@@ -33,7 +34,7 @@ if (!in_array($argv[4], array('true', 'false'))) {
 if (!is_numeric($argv[5])) {
 	exit('Error: arg5 must be a number' . $n);
 }
-if ((int)$argv[5] < 0) {
+if ($argv[5] < 0) {
 	exit('Error: arg5 must be 0 or higher' . $n);
 }
 
@@ -43,23 +44,26 @@ if (substr($path, -1) !== DS) {
 	$path .= DS;
 }
 
-// Get the files from the user specified path.
-$filesToProcess = glob($path . "*.{nzb,nzb.gz}", GLOB_BRACE);
-$totalFiles = count($filesToProcess);
-if ($totalFiles > 0) {
+$files = new RegexIterator(
+	new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator($argv[1])
+	),
+	'/^.+\.nzb(\.gz)?$/i',
+	RecursiveRegexIterator::GET_MATCH
+);
 
-	// If the user wants to limit the amount of import. do that here.
-	if ((int)$argv[5] > 0) {
-
-		// Check if the files found is more than the user's max wanted.
-		if ($totalFiles > (int)$argv[5]) {
-			// Sort the array by value.
-			asort($filesToProcess);
-
-			// Get up to argv5 files.
-			$filesToProcess = array_slice($filesToProcess, 1, (int)$argv[5]);
-		}
+$i = 1;
+$nzbFiles = array();
+foreach ($files as $file) {
+	$nzbFiles[] = $file[0];
+	if ($i++ >= $argv[5]) {
+		break;
 	}
+}
+
+if ($i > 1) {
+
+	unset($files);
 
 	// Check these user argument values, convert them to bool.
 	$deleteNZB = ($argv[2] == 'true') ? true : false;
@@ -69,7 +73,7 @@ if ($totalFiles > 0) {
 	// Create a new instance of NZBImport and send it the file locations.
 	$NZBImport = new NZBImport();
 
-	$NZBImport->beginImport($filesToProcess, $useNzbName, $deleteNZB, $deleteFailedNZB);
+	$NZBImport->beginImport($nzbFiles, $useNzbName, $deleteNZB, $deleteFailedNZB);
 } else {
 	echo 'Nothing found to import!' . $n;
 }

@@ -11,30 +11,37 @@ else
 	{
 		$groups = new Groups();
 		$grouplist = $groups->getActive();
-		$nntp = new NNTP();
+		$nntp = new NNTP(['Settings' => $group->pdo]);
+		$binaries = new Binaries(['NNTP' => $nntp, 'Groups' => $groups, 'Settings' => $group->pdo]);
 		foreach ($grouplist as $group)
 		{
 			if ($nntp->doConnect() !== true) {
 				exit();
 			}
-			dogroup($group, $nntp);
+			dogroup($group, $binaries);
 			$nntp->doQuit();
 		}
 	}
 	else
 	{
 		$nntp = new NNTP();
+		$binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $nntp->pdo]);
 		if ($nntp->doConnect() !== true) {
 			exit();
 		}
-		dogroup($argv[1], $nntp);
+		dogroup($argv[1], $binaries);
 		$nntp->doQuit();
 	}
 }
 
-function dogroup($group, $nntp)
+/**
+ * @param string $group
+ * @param Binaries $binaries
+ *
+ * @return bool
+ */
+function dogroup($group, $binaries)
 {
-	$binaries = new Binaries($nntp);
 	$binaries->updateGroup($group);
 	echo "Press enter to continue, type n and press enter to quit.\n";
 	$cmd = trim(fgets(fopen("php://stdin","r")));

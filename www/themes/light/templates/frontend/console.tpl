@@ -70,26 +70,6 @@
 								alt=""/></a><a title="Sort Ascending" href="{$orderbyreleasedate_asc}"><img
 								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
 				</th>
-				<th>posted<br/><a title="Sort Descending" href="{$orderbyposted_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
-								alt=""/></a><a title="Sort Ascending" href="{$orderbyposted_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
-				</th>
-				<th>size<br/><a title="Sort Descending" href="{$orderbysize_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
-								alt=""/></a><a title="Sort Ascending" href="{$orderbysize_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
-				</th>
-				<th>files<br/><a title="Sort Descending" href="{$orderbyfiles_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
-								alt=""/></a><a title="Sort Ascending" href="{$orderbyfiles_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
-				</th>
-				<th>stats<br/><a title="Sort Descending" href="{$orderbystats_desc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_down.gif"
-								alt=""/></a><a title="Sort Ascending" href="{$orderbystats_asc}"><img
-								src="{$smarty.const.WWW_TOP}/themes_shared/images/sorting/arrow_up.gif" alt=""/></a>
-				</th>
 			</tr>
 			{foreach from=$results item=result}
 				<tr class="{cycle values=",alt"}">
@@ -108,7 +88,7 @@
 								<a class="rndbtnsml" target="_blank" href="{$site->dereferrer_link}{$result.url}"
 								   name="amazon{$result.consoleinfoid}" title="View amazon page">Amazon</a>
 								<a class="rndbtnsml" target="_blank"
-								   href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}/"
+								   href="{$site->dereferrer_link}http://ign.com/search?q={$result.title|escape:"htmlall"}&page=0&count=10&type=object&objectType=game&filter=games&"
 								   name="ign{$result.consoleinfoid}" title="View ign page">IGN</a>
 								<a class="rndbtnsml" target="_blank"
 								   href="{$site->dereferrer_link}http://www.gamespot.com/search/?qs={$result.title|escape:"htmlall"}/"

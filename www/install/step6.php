@@ -1,7 +1,7 @@
 <?php
 require_once realpath(__DIR__ . '/../automated.config.php');
 
-use nzedb\db\DB;
+use nzedb\db\Settings;
 
 $page = new InstallPage();
 
@@ -78,11 +78,11 @@ if ($page->isPostBack()) {
 			mkdir($cfg->UNRAR_PATH);
 		}
 
-		$db = new DB();
-		$sql1 = sprintf("UPDATE settings SET value = %s WHERE setting = 'nzbpath'", $db->escapeString($cfg->NZB_PATH));
-		$sql2 = sprintf("UPDATE settings SET value = %s WHERE setting = 'tmpunrarpath'", $db->escapeString($cfg->UNRAR_PATH));
-		$sql3 = sprintf("UPDATE settings SET value = %s WHERE setting = 'coverspath'", $db->escapeString($cfg->COVERS_PATH));
-		if ($db->queryExec($sql1) === false || $db->queryExec($sql2) === false || $db->queryExec($sql3) === false) {
+		$pdo = new Settings();
+		$sql1 = sprintf("UPDATE settings SET value = %s WHERE setting = 'nzbpath'", $pdo->escapeString($cfg->NZB_PATH));
+		$sql2 = sprintf("UPDATE settings SET value = %s WHERE setting = 'tmpunrarpath'", $pdo->escapeString($cfg->UNRAR_PATH));
+		$sql3 = sprintf("UPDATE settings SET value = %s WHERE setting = 'coverspath'", $pdo->escapeString($cfg->COVERS_PATH));
+		if ($pdo->queryExec($sql1) === false || $pdo->queryExec($sql2) === false || $pdo->queryExec($sql3) === false) {
 			$cfg->error = true;
 		}
 

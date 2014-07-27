@@ -2,36 +2,36 @@
 require dirname(__FILE__) . '/config.php';
 
 $c = new ColorCLI();
-$s = new Sites();
-$site = $s->get();
+$pdo = new nzedb\db\Settings();
+$nntpproxy = $pdo->getSetting('nntpproxy');
 
 // Create the connection here and pass
-$nntp = new NNTP();
+$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 if ($nntp->doConnect() !== true) {
 	exit($c->error("Unable to connect to usenet."));
 }
 
-if ($site->nntpproxy === "1") {
+if ($nntpproxy == "1") {
 	usleep(500000);
 }
 
 if (isset($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && !isset($argv[2])) {
-	$backfill = new Backfill($nntp);
+	$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo]);
 	$backfill->backfillAllGroups();
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && !isset($argv[2])) {
-	$backfill = new Backfill($nntp);
+	$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo]);
 	$backfill->backfillAllGroups($argv[1]);
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
-	$backfill = new Backfill($nntp);
+	$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo]);
 	$backfill->backfillAllGroups($argv[1], $argv[2]);
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] == 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
-	$backfill = new Backfill($nntp);
+	$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo]);
 	$backfill->backfillAllGroups('', $argv[2], 'normal');
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] !== 'safe' && $argv[1] !== 'alph' && $argv[1] == 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
-	$backfill = new Backfill($nntp);
+	$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo]);
 	$backfill->backfillAllGroups('', $argv[2], 'date');
 } else if (isset($argv[1]) && $argv[1] !== 'all' && $argv[1] == 'safe' && $argv[1] !== 'alph' && $argv[1] !== 'date' && !is_numeric($argv[1]) && isset($argv[2]) && is_numeric($argv[2])) {
-	$backfill = new Backfill($nntp);
+	$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo]);
 	$backfill->safeBackfill($argv[2]);
 } else {
 	exit($c->error("\nWrong set of arguments.\n"
@@ -43,6 +43,6 @@ if (isset($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'safe' && $argv[1] !== 
 			. 'php backfill.php all			 ...: Backfills all groups 1 at a time, by date (set in admin-view groups)' . "\n"
 			. 'php backfill.php alt.binaries.ath	 ...: Backfills a group by name, by date (set in admin-view groups)' . "\n"));
 }
-if ($site->nntpproxy != "1") {
+if ($nntpproxy != "1") {
 	$nntp->doQuit();
 }
