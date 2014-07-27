@@ -1,34 +1,21 @@
 <?php
 require_once nZEDb_LIB . 'utility' . DS . 'Utility.php';
 
-use nzedb\db\Settings;
+use nzedb\db\DB;
 
 class AniDB
 {
-	/**
-	 * @var nzedb\db\Settings
-	 */
-	public $pdo;
 
-	/**
-	 * @param array $options Class instances / Echo to cli.
-	 */
-	public function __construct(array $options = array())
+	function __construct($echooutput = false)
 	{
-		$defOptions = [
-			'Echo'     => false,
-			'ColorCLI' => null,
-			'Settings' => null,
-		];
-		$defOptions = array_replace($defOptions, $options);
+		$s = new Sites();
+		$site = $s->get();
 
-		$this->echooutput = ($defOptions['Echo'] && nZEDb_ECHOCLI);
-		$this->c = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
-		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
-
-		$qty = $this->pdo->getSetting('maxanidbprocessed');
-		$this->aniqty = !empty($qty) ? $qty : 100;
+		$this->aniqty = (!empty($site->maxanidbprocessed)) ? $site->maxanidbprocessed : 100;
+		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
+		$this->db = new DB();
+		$this->c = new ColorCLI();
 	}
 
 	public function animetitlesUpdate()
@@ -42,38 +29,38 @@ class AniDB
 
 	public function addTitle($AniDBAPIArray)
 	{
-		$pdo = $this->pdo;
-		$pdo->queryInsert(sprintf("INSERT INTO anidb VALUES (%d, 0, 0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)", $AniDBAPIArray['anidbid'], $pdo->escapeString($AniDBAPIArray['title']), $pdo->escapeString($AniDBAPIArray['type']), $pdo->escapeString($AniDBAPIArray['startdate']), $pdo->escapeString($AniDBAPIArray['enddate']), $pdo->escapeString($AniDBAPIArray['related']), $pdo->escapeString($AniDBAPIArray['creators']), $pdo->escapeString($AniDBAPIArray['description']), $pdo->escapeString($AniDBAPIArray['rating']), $pdo->escapeString($AniDBAPIArray['picture']), $pdo->escapeString($AniDBAPIArray['categories']), $pdo->escapeString($AniDBAPIArray['characters']), $pdo->escapeString($AniDBAPIArray['epnos']), $pdo->escapeString($AniDBAPIArray['airdates']), $pdo->escapeString($AniDBAPIArray['episodetitles']), time()));
+		$db = $this->db;
+		$db->queryInsert(sprintf("INSERT INTO anidb VALUES (%d, 0, 0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d)", $AniDBAPIArray['anidbid'], $db->escapeString($AniDBAPIArray['title']), $db->escapeString($AniDBAPIArray['type']), $db->escapeString($AniDBAPIArray['startdate']), $db->escapeString($AniDBAPIArray['enddate']), $db->escapeString($AniDBAPIArray['related']), $db->escapeString($AniDBAPIArray['creators']), $db->escapeString($AniDBAPIArray['description']), $db->escapeString($AniDBAPIArray['rating']), $db->escapeString($AniDBAPIArray['picture']), $db->escapeString($AniDBAPIArray['categories']), $db->escapeString($AniDBAPIArray['characters']), $db->escapeString($AniDBAPIArray['epnos']), $db->escapeString($AniDBAPIArray['airdates']), $db->escapeString($AniDBAPIArray['episodetitles']), time()));
 	}
 
 	public function updateTitle($anidbID, $title, $type, $startdate, $enddate, $related, $creators, $description, $rating, $categories, $characters, $epnos, $airdates, $episodetitles)
 	{
-		$pdo = $this->pdo;
-		$pdo->queryExec(sprintf('UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s, rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d WHERE anidbid = %d', $pdo->escapeString($title), $pdo->escapeString($type), $pdo->escapeString($startdate), $pdo->escapeString($enddate), $pdo->escapeString($related), $pdo->escapeString($creators), $pdo->escapeString($description), $pdo->escapeString($rating), $pdo->escapeString($categories), $pdo->escapeString($characters), $pdo->escapeString($epnos), $pdo->escapeString($airdates), $pdo->escapeString($episodetitles), $anidbID, time()));
+		$db = $this->db;
+		$db->queryExec(sprintf('UPDATE anidb SET title = %s, type = %s, startdate = %s, enddate = %s, related = %s, creators = %s, description = %s, rating = %s, categories = %s, characters = %s, epnos = %s, airdates = %s, episodetitles = %s, unixtime = %d WHERE anidbid = %d', $db->escapeString($title), $db->escapeString($type), $db->escapeString($startdate), $db->escapeString($enddate), $db->escapeString($related), $db->escapeString($creators), $db->escapeString($description), $db->escapeString($rating), $db->escapeString($categories), $db->escapeString($characters), $db->escapeString($epnos), $db->escapeString($airdates), $db->escapeString($episodetitles), $anidbID, time()));
 	}
 
 	public function deleteTitle($anidbID)
 	{
-		$pdo = $this->pdo;
-		$pdo->queryExec(sprintf('DELETE FROM anidb WHERE anidbid = %d', $anidbID));
+		$db = $this->db;
+		$db->queryExec(sprintf('DELETE FROM anidb WHERE anidbid = %d', $anidbID));
 	}
 
 	public function getanidbID($title)
 	{
-		$pdo = $this->pdo;
+		$db = $this->db;
 		$anidbID = "";
-		if ($pdo->dbSystem() === 'mysql') {
-			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1', $pdo->escapeString('^' . $title . '$'));
-			$anidbID = $pdo->queryOneRow($query);
+		if ($db->dbSystem() === 'mysql') {
+			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title REGEXP %s LIMIT 1', $db->escapeString('^' . $title . '$'));
+			$anidbID = $db->queryOneRow($query);
 
 			// if the first query failed try it again using like as we have a change for a match
 			if ($anidbID == False) {
-				$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title LIKE %s LIMIT 1', $pdo->escapeString('%' . $title . '%'));
-				$anidbID = $pdo->queryOneRow($query);
+				$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title LIKE %s LIMIT 1', $db->escapeString('%' . $title . '%'));
+				$anidbID = $db->queryOneRow($query);
 			}
 		} else {
-			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title ~ %s LIMIT 1', $pdo->escapeString('^' . $title . '$'));
-			$anidbID = $pdo->queryOneRow($query);
+			$query = sprintf('SELECT anidbid as anidbid FROM animetitles WHERE title ~ %s LIMIT 1', $db->escapeString('^' . $title . '$'));
+			$anidbID = $db->queryOneRow($query);
 		}
 
 		return $anidbID['anidbid'];
@@ -81,9 +68,9 @@ class AniDB
 
 	public function getAnimeList($letter = '', $animetitle = '')
 	{
-		$pdo = $this->pdo;
+		$db = $this->db;
 
-		if ($pdo->dbSystem() === 'mysql') {
+		if ($db->dbSystem() === 'mysql') {
 			$regex = 'REGEXP';
 			$like = 'LIKE';
 		} else {
@@ -96,19 +83,20 @@ class AniDB
 			if ($letter == '0-9')
 				$letter = '[0-9]';
 
-			$rsql .= sprintf('AND anidb.title %s %s', $regex, $pdo->escapeString('^' . $letter));
+			$rsql .= sprintf('AND anidb_titles.title_lang %s %s', $regex, $db->escapeString('^' . $letter));
 		}
 
 		$tsql = '';
 		if ($animetitle != '')
-			$tsql .= sprintf('AND anidb.title %s %s', $like, $pdo->escapeString('%' . $animetitle . '%'));
+			$tsql .= sprintf('AND anidb_titles.title_lang %s %s', $like, $db->escapeString('%' . $animetitle . '%'));
 
-		return $pdo->query(sprintf('SELECT anidb.anidbid, anidb.title, anidb.type, anidb.categories, anidb.rating, anidb.startdate, anidb.enddate FROM anidb WHERE anidb.anidbid > 0 %s %s GROUP BY anidb.anidbid ORDER BY anidb.title ASC', $rsql, $tsql));
+//		return $db->query(sprintf('SELECT anidb.anidbid, anidb.title, anidb.type, anidb.categories, anidb.rating, anidb.startdate, anidb.enddate FROM anidb WHERE anidb.anidbid > 0 %s %s GROUP BY anidb.anidbid ORDER BY anidb.title ASC', $rsql, $tsql));
+		return $db->query(sprintf('SELECT anidb.anidbid, anidb_titles.title_lang, anidb.type, anidb.categories, anidb.rating, anidb.startdate, anidb.enddate FROM anidb INNER JOIN anidb_titles ON anidb_titles.anidbid = anidb.anidbid WHERE anidb.anidbid > 0 %s %s ORDER BY anidb_titles.title_lang ASC', $rsql, $tsql));
 	}
 
 	public function getAnimeRange($start, $num, $animetitle = '')
 	{
-		$pdo = $this->pdo;
+		$db = $this->db;
 
 		if ($start === false)
 			$limit = '';
@@ -117,37 +105,37 @@ class AniDB
 
 		$rsql = '';
 		if ($animetitle != '') {
-			if ($pdo->dbSystem() === 'mysql')
-				$rsql = sprintf('AND anidb.title LIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
+			if ($db->dbSystem() === 'mysql')
+				$rsql = sprintf('AND anidb_titles.title_lang LIKE %s', $db->escapeString('%' . $animetitle . '%'));
 			else
-				$rsql = sprintf('AND anidb.title ILIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
+				$rsql = sprintf('AND anidb_titles.title_lang ILIKE %s', $db->escapeString('%' . $animetitle . '%'));
 		}
 
-		return $pdo->query(sprintf('SELECT anidbid, title, description FROM anidb WHERE 1=1 %s ORDER BY anidbid ASC' . $limit, $rsql));
+		return $db->query(sprintf('SELECT anidb.anidbid, anidb_titles.title_lang, anidb.description FROM anidb INNER JOIN anidb_titles ON anidb_titles.anidbid = anidb.anidbid WHERE 1=1 %s ORDER BY anidbid ASC' . $limit, $rsql));
 	}
 
 	public function getAnimeCount($animetitle = '')
 	{
-		$pdo = $this->pdo;
+		$db = $this->db;
 
 		$rsql = '';
 		if ($animetitle != '') {
-			if ($pdo->dbSystem() === 'mysql')
-				$rsql .= sprintf('AND anidb.title LIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
+			if ($db->dbSystem() === 'mysql')
+				$rsql .= sprintf('AND anidb.title LIKE %s', $db->escapeString('%' . $animetitle . '%'));
 			else
-				$rsql .= sprintf('AND anidb.title ILIKE %s', $pdo->escapeString('%' . $animetitle . '%'));
+				$rsql .= sprintf('AND anidb.title ILIKE %s', $db->escapeString('%' . $animetitle . '%'));
 		}
 
-		$res = $pdo->queryOneRow(sprintf('SELECT COUNT(anidbid) AS num FROM anidb WHERE 1=1 %s', $rsql));
+		$res = $db->queryOneRow(sprintf('SELECT COUNT(anidbid) AS num FROM anidb WHERE 1=1 %s', $rsql));
 
 		return $res['num'];
 	}
 
 	public function getAnimeInfo($anidbID)
 	{
-		$pdo = $this->pdo;
-		$animeInfo = $pdo->query(sprintf('SELECT * FROM anidb WHERE anidbid = %d', $anidbID));
-
+		$db = $this->db;
+//		$animeInfo = $db->query(sprintf('SELECT * FROM anidb WHERE anidbid = %d', $anidbID));
+		$animeInfo = $db->query(sprintf('SELECT anidb_titles.title_type,anidb_titles.lang,anidb_titles.title_lang,anidb.* FROM anidb INNER JOIN anidb_titles ON anidb_titles.anidbid = anidb.anidbid WHERE anidb.anidbid = %d', $anidbID));
 		return isset($animeInfo[0]) ? $animeInfo[0] : false;
 	}
 
@@ -273,8 +261,8 @@ class AniDB
 	// determine if given an ID it is ANIME or not, this should be moved to postprocess to be cleaner but for now as to not touch another file leave it here
 	public function checkIfAnime($releaseid)
 	{
-		$pdo = $this->pdo;
-		$result = $pdo->query(sprintf('SELECT categoryid FROM releases WHERE id = %d', $releaseid));
+		$db = $this->db;
+		$result = $db->query(sprintf('SELECT categoryid FROM releases WHERE id = %d', $releaseid));
 
 		if (isset($result[0]['categoryid']) && $result[0]['categoryid'] == "5070")
 			return True;
@@ -284,8 +272,9 @@ class AniDB
 
 	function processAnAnimeRelease($results)
 	{
-		$pdo = $this->pdo;
-		$ri = new ReleaseImage($this->pdo);
+		$db = $this->db;
+		$ri = new ReleaseImage();
+		$site = new Sites();
 
 		if (count($results) > 0) {
 			if ($this->echooutput) {
@@ -308,7 +297,7 @@ class AniDB
 				$anidbID = $this->getanidbID($cleanFilename['title']);
 				if (!$anidbID) {
 					// no anidb ID found so set what we know and exit
-					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d, rageid = %d WHERE id = %d', $pdo->escapeString($getReleaseName['title']), -1, -2, $arr['id']));
+					$db->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d, rageid = %d WHERE id = %d', $db->escapeString($getReleaseName['title']), -1, -2, $arr['id']));
 					continue;
 				}
 
@@ -345,11 +334,11 @@ class AniDB
 					}
 
 					// lastly update the information, we also want a better readable name, AKA search name so we can use the title we cleaned
-					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, episode = %s, tvtitle = %s, tvairdate = %s, anidbid = %d, rageid = %d WHERE id = %d', $pdo->escapeString($getReleaseName['title']), $pdo->escapeString($cleanFilename['epno']), $pdo->escapeString($tvtitle), $pdo->escapeString($airdate), $AniDBAPIArray['anidbid'], -2, $arr['id']));
+					$db->queryExec(sprintf('UPDATE releases SET searchname = %s, episode = %s, tvtitle = %s, tvairdate = %s, anidbid = %d, rageid = %d WHERE id = %d', $db->escapeString($getReleaseName['title']), $db->escapeString($cleanFilename['epno']), $db->escapeString($tvtitle), $db->escapeString($airdate), $AniDBAPIArray['anidbid'], -2, $arr['id']));
 				}
 				else {
 					// if the anime was not found, just simply update the search name
-					$pdo->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d WHERE id = %d', $pdo->escapeString($getReleaseName['title']), $AniDBAPIArray['anidbid'], $arr['id']));
+					$db->queryExec(sprintf('UPDATE releases SET searchname = %s, anidbid = %d WHERE id = %d', $db->escapeString($getReleaseName['title']), $AniDBAPIArray['anidbid'], $arr['id']));
 				}
 			} // foreach
 
@@ -367,12 +356,12 @@ class AniDB
 	// process a group of previously unprcoessed Anime Releases, as in postprocess
 	public function processAnimeReleases($hours = 0)
 	{
-		$pdo = $this->pdo;
+		$db = $this->db;
 		if ($hours == 0)
-			$results = $pdo->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND anidbid IS NULL AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d', Category::CAT_TV_ANIME, $this->aniqty));
+			$results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND anidbid IS NULL AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) ORDER BY postdate DESC LIMIT %d', Category::CAT_TV_ANIME, $this->aniqty));
 		else
 		// only select items within 6 hours
-			$results = $pdo->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND anidbid IS NULL AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) adddate > ( NOW( ) - INTERVAL 6 HOUR ) ORDER BY postdate DESC LIMIT %d', Category::CAT_TV_ANIME, $this->aniqty));
+			$results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE nzbstatus = 1 AND anidbid IS NULL AND categoryid IN (SELECT id FROM category WHERE categoryid = %d) adddate > ( NOW( ) - INTERVAL 6 HOUR ) ORDER BY postdate DESC LIMIT %d', Category::CAT_TV_ANIME, $this->aniqty));
 
 
 		// process the resulting set
@@ -382,9 +371,9 @@ class AniDB
 	// process a single Anime Release based on teh release ID, such a realtime
 	public function processSingleAnime($releaseid)
 	{
-		$pdo = $this->pdo;
+		$db = $this->db;
 		// get full information on a single release
-		$results = $pdo->query(sprintf('SELECT searchname, id FROM releases WHERE id = %d', $releaseid));
+		$results = $db->query(sprintf('SELECT searchname, id FROM releases WHERE id = %d', $releaseid));
 
 		// process the resulting set in this case 1
 		$this->processAnAnimeRelease($results);
