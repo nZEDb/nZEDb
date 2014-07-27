@@ -183,15 +183,13 @@ class NZBExport
 					}
 				// If not, decompress it and create a file to store it in.
 				} else {
-					ob_start();
-					if (!@readgzfile($nzbFile)) {
+					$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbFile);
+					if (!$nzbContents) {
 						if ($this->echoCLI) {
 							echo 'Unable to export NZB with GUID: ' . $release['guid'];
 						}
 						continue;
 					}
-					$nzbContents = ob_get_contents();
-					ob_end_clean();
 					$fh = fopen($currentFile . '.nzb', 'w');
 					fwrite($fh, $nzbContents);
 					fclose($fh);

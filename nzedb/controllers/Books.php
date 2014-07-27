@@ -50,12 +50,7 @@ class Books
 
 	public function getBookInfoByName($author, $title)
 	{
-		$pdo = $this->pdo;
-		$like = 'ILIKE';
-		if ($pdo->dbSystem() === 'mysql') {
-			$like = 'LIKE';
-		}
-		return $pdo->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author LIKE %s AND title %s %s', $pdo->escapeString('%' . $author . '%'), $like, $pdo->escapeString('%' . $title . '%')));
+		return $this->pdo->queryOneRow(sprintf('SELECT * FROM bookinfo WHERE author %s AND title %s', $this->pdo->likeString($author, true, true), $this->pdo->likeString($title, true, true)));
 	}
 
 	public function getRange($start, $num)
@@ -68,7 +63,7 @@ class Books
 			$limit = ' LIMIT ' . $num . ' OFFSET ' . $start;
 		}
 
-		return $pdo->query(' SELECT * FROM bookinfo ORDER BY createddate DESC' . $limit);
+		return $pdo->query('SELECT * FROM bookinfo ORDER BY createddate DESC' . $limit);
 	}
 
 	public function getCount()
@@ -326,7 +321,7 @@ class Books
 						WHERE nzbstatus = 1 %s
 						AND bookinfoid IS NULL
 						AND categoryid in (%s)
-						ORDER BY POSTDATE
+						ORDER BY postdate
 						DESC LIMIT %d', $this->renamed, $bookids[$i], $this->bookqty)
 					), $bookids[$i]
 				);

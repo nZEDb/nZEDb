@@ -309,6 +309,10 @@ class NZB
 		$num_pars = $i = 0;
 		$result = array();
 
+		if (!$nzb) {
+			return $result;
+		}
+
 		$nzb = str_replace("\x0F", '', $nzb);
 		$xml = @simplexml_load_string($nzb);
 		if (!$xml || strtolower($xml->getName()) !== 'nzb') {

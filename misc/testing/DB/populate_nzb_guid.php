@@ -41,8 +41,10 @@ function create_guids($live, $delete = false)
 			$reccnt++;
 			$nzbpath = $nzb->NZBPath($relrec['guid']);
 			if ($nzbpath !== false) {
-				$nzbpath = 'compress.zlib://' . $nzbpath;
-				$nzbfile = @simplexml_load_file($nzbpath);
+				$nzbfile = nzedb\utility\Utility::unzipGzipFile($nzbpath);
+				if ($nzbfile) {
+					$nzbfile = @simplexml_load_string($nzbfile);
+				}
 				if (!$nzbfile) {
 					if (isset($delete) && $delete == 'delete') {
 						//echo "\n".$nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";

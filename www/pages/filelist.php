@@ -16,10 +16,7 @@ if (isset($_GET["id"])) {
 		$page->show404();
 	}
 
-	ob_start();
-	@readgzfile($nzbpath);
-	$nzbfile = ob_get_contents();
-	ob_end_clean();
+	$nzbfile = nzedb\utility\Utility::unzipGzipFile($nzbpath);
 
 	$ret = $nzb->nzbFileList($nzbfile);
 

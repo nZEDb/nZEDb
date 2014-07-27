@@ -1,0 +1,2 @@
+INSERT IGNORE INTO settings(setting, name, value, hint) VALUES('maxsizetoprocessnfo', 'maxsizetoprocessnfo', '100', 'The maximum size in gigabytes of a release to process it for NFOs. If set to 0, then ignored.');
+INSERT IGNORE INTO settings(setting, name, value, hint) VALUES('minsizetoprocessnfo', 'minsizetoprocessnfo', '1', 'The minimum size in megabytes of a release to process it for NFOs. If set to 0, then ignored.');

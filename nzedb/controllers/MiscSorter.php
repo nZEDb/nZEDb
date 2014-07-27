@@ -458,7 +458,7 @@ class MiscSorter
 		$nzb = array();
 
 		if ($nzbpath !== false) {
-			$xmlObj = @simplexml_load_file('compress.zlib://' . $nzbpath);
+			$xmlObj = @simplexml_load_file(nzedb\utility\Utility::unzipGzipFile($nzbpath));
 			if ($xmlObj && strtolower($xmlObj->getName()) == 'nzb') {
 				foreach ($xmlObj->file as $file) {
 					$nzbfile = array();

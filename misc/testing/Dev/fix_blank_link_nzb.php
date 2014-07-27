@@ -20,10 +20,9 @@ if (isset($argv[1]) && $argv[1] == "true")
 		$nzbpath = $nzb->NZBPath($guid["guid"]);
 		if($nzbpath !== false) {
 			$nzbcount++;
-			$nzbpathc = 'compress.zlib://'.$nzbpath;
-			$nzbfile = file_get_contents($nzbpathc);
+			$nzbfile = nzedb\utility\Utility::unzipGzipFile($nzbpath);
 
-			if (preg_match("/^[\r\n]+<\?xml/", $nzbfile)) {
+			if ($nzbfile && preg_match('/^[\r\n]+<\?xml/', $nzbfile)) {
 				$brokencount++;
 				$nzbfile = preg_replace('/^[\r\n]+<\?xml/i', '<?xml', $nzbfile);
 				$nzb = preg_replace('/<\/nzb>.+/i', '</nzb>', $nzbfile);

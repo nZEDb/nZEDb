@@ -284,8 +284,8 @@ Class NZBContents
 			return false;
 		}
 
-		$nzbPath = 'compress.zlib://' . $nzbPath;
-		if (!$nzbPath) {
+		$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbPath);
+		if (!$nzbContents) {
 			if ($this->echooutput) {
 				echo
 					PHP_EOL .
@@ -299,7 +299,7 @@ Class NZBContents
 			return false;
 		}
 
-		$nzbFile = @simplexml_load_file($nzbPath);
+		$nzbFile = @simplexml_load_string($nzbContents);
 		if (!$nzbFile) {
 			if ($this->echooutput) {
 				echo PHP_EOL . "Unable to load NZB: $guid appears to be an invalid NZB, skipping." . PHP_EOL;
