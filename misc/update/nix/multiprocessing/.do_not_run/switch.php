@@ -1,10 +1,13 @@
 <?php
 
-if (!isset($argv[1])) {
+// Assume no arguments means the script was started directly from command line.
+if ($argc == 1) {
 	exit("This script is not intended to be run manually." . PHP_EOL);
 }
 
-require_once dirname(__FILE__) . '/../../../config.php';
+require_once dirname(dirname(dirname(__DIR_))) . DIRECTORY_SEPARATOR . 'config.php';
+
+$pdo = new \nzedb\db\Settings();
 
 // Are we coming from python or php ? $options[0] => (string): python|php
 // The type of process we want to do: $options[1] => (string): releases
@@ -17,7 +20,6 @@ switch ($options[1]) {
 	// $options[3] => (int)   backfill type from tmux settings. 1 = Backfill interval , 2 = Bakfill all
 	case 'backfill':
 		if (in_array((int)$options[3], [1, 2])) {
-			$pdo = new \nzedb\db\Settings();
 			$value = $pdo->queryOneRow("SELECT value FROM tmux WHERE setting = 'backfill_qty'");
 			if ($value !== false) {
 				$nntp = nntp($pdo);
@@ -32,7 +34,6 @@ switch ($options[1]) {
 	 * $options[3] => (int)    Quantity of articles to download.
 	 */
 	case 'backfill_all_quantity':
-		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
 		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->backfillAllGroups($options[2], $options[3]);
 		break;
@@ -40,7 +41,6 @@ switch ($options[1]) {
 	// BackFill a single group, 10000 parts.
 	// $options[2] => (string)group name, Name of group to work on.
 	case 'backfill_all_quick':
-		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
 		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true))->backfillAllGroups($options[2], 10000, 'normal');
 		break;
@@ -52,7 +52,6 @@ switch ($options[1]) {
 	 * $options[4] => (string) Type: Binaries or Backfill
 	 */
 	case 'get_final':
-		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
 		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->getFinal($options[2], $options[3], $options[4]);
 		break;
@@ -65,7 +64,6 @@ switch ($options[1]) {
 	 * $options[5] => (int)    Number of threads.
 	 */
 	case 'get_range':
-		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
 		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->getRange($options[2], $options[3], $options[4], $options[5]);
 		break;
@@ -75,7 +73,6 @@ switch ($options[1]) {
 	 * $options[2] => (string) Group name.
 	 */
 	case 'part_repair':
-		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[2]);
@@ -92,7 +89,6 @@ switch ($options[1]) {
 	// Process releases.
 	// $options[2] => (string)groupCount, number of groups terminated by _ | (int)groupID, group to work on
 	case 'releases':
-		$pdo = new nzedb\db\Settings();
 		$releases = new ProcessReleases(['Settings' => $pdo]);
 
 		//Runs function that are per group
@@ -132,7 +128,6 @@ switch ($options[1]) {
 	 * $options[2] => (string) Group name.
 	 */
 	case 'update_group_headers':
-		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[2]);
@@ -144,9 +139,6 @@ switch ($options[1]) {
 	// $options[2] => (int)groupID, group to work on
 	case 'update_per_group':
 		if (is_numeric($options[2])) {
-
-			$pdo = new nzedb\db\Settings();
-
 			// Get the group info from MySQL.
 			$groupMySQL = $pdo->queryOneRow(sprintf('SELECT * FROM groups WHERE id = %d', $options[2]));
 
@@ -182,8 +174,6 @@ switch ($options[1]) {
 	case 'pp_additional':
 	case 'pp_nfo':
 		if (charCheck($options[2])) {
-			$pdo = new \nzedb\db\Settings();
-
 			// Create the connection here and pass, this is for post processing, so check for alternate.
 			$nntp = new NNTP(['Settings' => $pdo]);
 			if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
@@ -205,7 +195,6 @@ switch ($options[1]) {
 	 */
 	case 'pp_movie':
 		if (charCheck($options[2])) {
-			$pdo = new \nzedb\db\Settings();
 			(new PostProcess(['Settings' => $pdo]))->processMovies('', $options[2], (isset($options[3]) ? $options[3] : ''));
 		}
 		break;
@@ -217,7 +206,6 @@ switch ($options[1]) {
 	 */
 	case 'pp_tv':
 		if (charCheck($options[2])) {
-			$pdo = new \nzedb\db\Settings();
 			(new PostProcess(['Settings' => $pdo]))->processTv('', $options[2], (isset($options[3]) ? $options[3] : ''));
 		}
 		break;
