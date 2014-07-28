@@ -111,7 +111,7 @@ switch ($options[1]) {
 				return;
 			}
 		}
-		(new Binaries(['NNTP' => $nntp, 'Settings' => $pdo, 'Groups' => $groups]))->scan($groupMySQL, $options[3], $options[4], ($pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill'));
+		(new Binaries(['NNTP' => $nntp, 'Settings' => $pdo, 'Groups' => $groups]))->scan($groupMySQL, $options[4], $options[3], ($pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill'));
 		break;
 
 	/* Do part repair for a group.
