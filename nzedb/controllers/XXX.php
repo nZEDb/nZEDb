@@ -3,6 +3,7 @@
 require_once nZEDb_LIBS . 'adultdvdempire.php';
 require_once nZEDb_LIBS . 'popporn.php';
 require_once nZEDb_LIBS . 'hotmovies.php';
+require_once nZEDb_LIBS . 'IAFD.php';
 
 use nzedb\db\Settings;
 use nzedb\utility;
@@ -389,7 +390,38 @@ class XXX
 
 		$res = false;
 		$this->whichclass = '';
-		// Check Adultdvdempire for xxx info.
+
+		$iafd = new iafd();
+		$iafd->searchterm = $xxxmovie;
+		if($iafd->findme() === true){
+		switch($iafd->classfound){
+			case "ade":
+				$mov = new adultdvdempire();
+				$mov->directlink = $iafd->directurl;
+				$res = $mov->getdirect();
+				$res['title'] = $iafd->title;
+				$res['directurl'] = $iafd->directurl;
+				$this->whichclass = $iafd->classfound;
+				$this->c->doEcho($this->c->primary("Fetching XXX info from: Adult DVD Empire"));
+				break;
+			case "hm":
+				$mov = new hotmovies();
+				$mov->directlink = $iafd->directurl;
+				$res = $mov->getdirect();
+				$res['title'] = $iafd->title;
+				$res['directurl'] = $iafd->directurl;
+				$this->whichclass = $iafd->classfound;
+				$this->c->doEcho($this->c->primary("Fetching XXX info from: Hot Movies"));
+				break;
+			default:
+				$res = false;
+
+		}
+		}else{
+		$res = false;
+		}
+
+		if($res === false){
 		$mov = new adultdvdempire();
 		$mov->searchterm = $xxxmovie;
 		$res = $mov->search();
@@ -434,6 +466,7 @@ class XXX
 		} else {
 			// Nothing was found, go ahead and set to -2 :(
 			return false;
+		}
 		}
 
 		$mov = array();
@@ -558,7 +591,6 @@ class XXX
 					WHERE r.nzbstatus = 1
 					AND r.xxxinfo_id = 0
 					AND r.categoryid BETWEEN 6000 AND 6040
-					AND r.isrenamed = 1
 					LIMIT %d",
 					$this->movieqty
 				)
@@ -619,7 +651,7 @@ class XXX
 		$cat = new Categorize(['Settings' => $this->pdo]);
 		if (!$cat->isMovieForeign($releaseName)) {
 			$name = '';
-			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|XXX|BTS|DirFix|Disc|Trailer|WEBRiP|NFO)[^\w]';
+			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|[Dd][Ii][Ss][Cc](\d+|\s*\.\d+z)+|XXX|BTS|DirFix|Trailer|WEBRiP|NFO)[^\w]';
 
 			/* Initial scan of getting a name.
 			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
@@ -638,8 +670,9 @@ class XXX
 				$name = preg_replace('/\(.*?\)|[._]/i', ' ', $name);
 				// Finally remove multiple spaces and trim leading spaces.
 				$name = trim(preg_replace('/\s{2,}/', ' ', $name));
-					// Check if the name is long enough and not just numbers and not file (d) of (d).
-				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/(- File \d+ of \d+|\d+.\d+.\d+)/',$name)) {
+
+				// Check if the name is long enough and not just numbers and not file (d) of (d) and does not contain Episodes.
+				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/(- File \d+ of \d+|\d+.\d+.\d+)/',$name) && !preg_match('/(E\d+)/',$name)) {
 					if ($this->debug && $this->echooutput) {
 						$this->c->doEcho("DB name: {$releaseName}", true);
 					}
