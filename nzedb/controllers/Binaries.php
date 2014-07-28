@@ -854,7 +854,6 @@ class Binaries
 
 				if ($this->_pdo->queryExec(rtrim($partsQuery, ',')) === false) {
 					$headersNotInserted += $this->_rollbackAddToPartRepair($articles);
-					$this->_pdo->Rollback();
 				} else {
 					$this->_pdo->Commit();
 				}
