@@ -40,14 +40,11 @@ if ($groups === false) {
 
 	$groupCount = $groups->rowCount();
 	foreach ($groups as $group) {
-		// Check if the tables are created.
-		if ($pdo->queryExec(sprintf('SELECT id FROM collections_%d LIMIT 1', $group['id']) !== false)) {
-			echo 'Fixing group ' . $group['id'] . PHP_EOL;
-			foreach ($queries as $query) {
-				$pdo->queryExec(sprintf($query, $group['id']), true);
-			}
-			echo 'Finished fixing group ' . $group['id'] . ', ' . (--$groupCount) . ' to go!' .PHP_EOL;
+		echo 'Fixing group ' . $group['id'] . PHP_EOL;
+		foreach ($queries as $query) {
+			$pdo->queryExec(sprintf($query, $group['id']), true);
 		}
+		echo 'Finished fixing group ' . $group['id'] . ', ' . (--$groupCount) . ' to go!' .PHP_EOL;
 	}
 	echo 'All done!' . PHP_EOL;
 }
