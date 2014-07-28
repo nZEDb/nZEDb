@@ -33,17 +33,18 @@ if (empty($unrarPath)) {
 
 $c = new ColorCLI();
 
-$nntp = new NNTP;
+$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+$nfo = new Nfo(['Echo' => true, 'ColorCLI' => $c, 'Settings' => $pdo]);
 $nzbContents= new NZBContents(
 	array(
-		'db' => $pdo,
-		'echo' => true,
-		'nfo' => new Nfo(true),
-		'pp' => new PostProcess(true),
-		'nntp' => $nntp
+		'Settings' => $pdo,
+		'Echo' => true,
+		'Nfo' => $nfo,
+		'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $nfo, 'ColorCLI' => $c]),
+		'NNTP' => $nntp
 	)
 );
-$categorize = new Categorize();
+$categorize = new Categorize(['Settings' => $pdo]);
 
 $releases = $pdo->queryDirect(
 	sprintf('

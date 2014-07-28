@@ -17,11 +17,11 @@ if ($argc < 3 || !isset($argv[1]) || (isset($argv[1]) && !is_numeric($argv[1])))
 $crosspostt = $argv[1];
 $pdo = new Settings();
 $c = new ColorCLI();
-$releases = new Releases(array('Settings' => $pdo, 'Groups' => null));
+$releases = new Releases(['Settings' => $pdo]);
 $count = $total = $all = 0;
 $nzb = new NZB($pdo);
 $ri = new ReleaseImage($pdo);
-$consoleTools = new ConsoleTools();
+$consoleTools = new ConsoleTools(['ColorCLI' => $c]);
 $size = ' size ';
 if ($argv[2] === 'near') {
 	$size = ' size between (size *.99) AND (size * 1.01) ';
@@ -63,6 +63,5 @@ do {
 	$all += $count;
 	$count = 0;
 	echo "\n\n";
-	$consoleTools = new ConsoleTools();
 } while ($total > 0);
 echo $c->header("\nDeleted ". number_format($all) . " Duplicate Releases");

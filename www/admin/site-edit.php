@@ -7,6 +7,7 @@ use nzedb\db\Settings;
 
 $page = new AdminPage();
 $id = 0;
+$error = '';
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
@@ -67,6 +68,10 @@ switch($action)
 		break;
 }
 
+if ($error === '') {
+	$page->smarty->assign('error', '');
+}
+
 $page->smarty->assign('yesno_ids', array(1,0));
 $page->smarty->assign('yesno_names', array('Yes', 'No'));
 
@@ -119,14 +124,19 @@ $page->smarty->assign('lookupgames_names', array('Disabled', 'Lookup All Console
 $page->smarty->assign('lookupmusic_ids', array(0,1,2));
 $page->smarty->assign('lookupmusic_names', array('Disabled', 'Lookup All Music', 'Lookup Renamed Music'));
 
+$page->smarty->assign('lookupmovies_ids', array(0,1,2));
+$page->smarty->assign('lookupmovies_names', array('Disabled', 'Lookup All Movies', 'Lookup Renamed Movies'));
+
+$page->smarty->assign('lookuptv_ids', array(0,1,2));
+$page->smarty->assign('lookuptv_names', array('Disabled', 'Lookup All TV', 'Lookup Renamed TV'));
+
 $page->smarty->assign('lookup_reqids_ids', array(0,1,2));
 $page->smarty->assign('lookup_reqids_names', array('Disabled', 'Lookup Request IDs', 'Lookup Request IDs Threaded'));
 
 $page->smarty->assign('coversPath', nZEDb_COVERS);
 
 // return a list of audiobooks, ebooks, technical and foreign books
-$pdo = new Settings();
-$result = $pdo->query("SELECT id, title FROM category WHERE id in (3030, 8010, 8040, 8060)");
+$result = $page->settings->query("SELECT id, title FROM category WHERE id in (3030, 8010, 8040, 8060)");
 
 // setup the display lists for these categories, this could have been static, but then if names changed they would be wrong
 $book_reqids_ids = array();
@@ -143,7 +153,7 @@ $page->smarty->assign('book_reqids_ids', $book_reqids_ids);
 $page->smarty->assign('book_reqids_names', $book_reqids_names);
 
 // convert from a list to an array as we need to use an array, but teh sites table only saves strings
-$books_selected = explode(",", $site->book_reqids);
+$books_selected = explode(",", $page->settings->getSetting('book_reqids'));
 
 // convert from a string array to an int array
 $books_selected = array_map(create_function('$value', 'return (int)$value;'), $books_selected);
@@ -154,8 +164,7 @@ $page->smarty->assign('loggingopt_names', array ('Disabled', 'Log in DB only', '
 
 $themelist = array();
 $themes = scandir(nZEDb_WWW."/themes");
-foreach ($themes as $theme)
-{
+foreach ($themes as $theme) {
 	if (strpos($theme, ".") === false && is_dir(nZEDb_WWW."/themes/".$theme))
 		$themelist[] = $theme;
 }
@@ -164,5 +173,3 @@ $page->smarty->assign('themelist', $themelist);
 
 $page->content = $page->smarty->fetch('site-edit.tpl');
 $page->render();
-
-?>

@@ -4,9 +4,9 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$console = new Console(true);
 $pdo = new Settings();
 $c = new ColorCLI();
+$console = new Console(['Echo' => true, 'Settings' => $pdo, 'ColorCLI' => $c]);
 
 $res = $pdo->queryDirect(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ORDER BY id DESC" ));
 if ($res->rowCount() > 0) {

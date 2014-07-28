@@ -153,28 +153,43 @@ class Binaries
 	/**
 	 * Constructor.
 	 *
-	 * @param NNTP $nntp Class instance of NNTP.
-	 * @param bool $echo Echo to cli?
-	 * @param bool|Backfill $backFill Pass Backfill class if started from there.
+	 * @param array $options Class instances / echo to CLI?
 	 */
-	public function __construct($nntp = null, $echo = true, $backFill = false)
+	public function __construct(array $options = array())
 	{
-		$this->_nntp = $nntp;
-		$this->_echoCLI = ($echo && nZEDb_ECHOCLI);
+		$defOptions = [
+			'Echo'                => true,
+			'Backfill'            => null,
+			'CollectionsCleaning' => null,
+			'ColorCLI'            => null,
+			'ConsoleTools'        => null,
+			'Groups'              => null,
+			'NNTP'                => null,
+			'Settings'            => null,
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->_echoCLI = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+
+		$this->_pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new \nzedb\db\Settings());
+		$this->_groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups(['Settings' => $this->_pdo]));
+		$this->_colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->_nntp = ($defOptions['NNTP'] instanceof NNTP ? $defOptions['NNTP'] : new NNTP(['Echo' => $this->_colorCLI, 'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI]));
+		$this->_collectionsCleaning = ($defOptions['CollectionsCleaning'] instanceof CollectionsCleaning ? $defOptions['CollectionsCleaning'] : new CollectionsCleaning());
+		$this->_consoleTools = ($defOptions['ConsoleTools'] instanceof ConsoleTools ? $defOptions['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->_colorCLI]));
+		$this->_backFill = ($defOptions['Backfill'] instanceof Backfill ? $defOptions['Backfill'] : new Backfill(
+				[
+					'NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Groups' => $this->_groups,
+					'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI
+				]
+			)
+		);
+
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
-		if ($backFill === false) {
-			$this->_backFill = new Backfill($this->_nntp, $echo);
-		} else {
-			$this->_backFill = $backFill;
-		}
-		$this->_colorCLI = new ColorCLI();
-		$this->_collectionsCleaning = new CollectionsCleaning();
-		$this->_consoleTools = new ConsoleTools();
-		$this->_pdo = new nzedb\db\Settings();
+
 		if ($this->_debug) {
-			$this->_debugging = new Debugging("Binaries");
+			$this->_debugging = new Debugging(['Class' => 'Binaries', 'ColorCLI' => $this->_colorCLI]);
 		}
-		$this->_groups = new Groups($this->_pdo);
 
 		$this->messageBuffer = ($this->_pdo->getSetting('maxmssgs') != '') ? $this->_pdo->getSetting('maxmssgs') : 20000;
 		$this->_compressedHeaders = ($this->_pdo->getSetting('compressedheaders') == 1 ? true : false);
@@ -183,6 +198,7 @@ class Binaries
 		$this->_newGroupMessagesToScan = ($this->_pdo->getSetting('newgroupmsgstoscan') != '') ? $this->_pdo->getSetting('newgroupmsgstoscan') : 50000;
 		$this->_newGroupDaysToScan = ($this->_pdo->getSetting('newgroupdaystoscan') != '') ? (int)$this->_pdo->getSetting('newgroupdaystoscan') : 3;
 		$this->_partRepairLimit = ($this->_pdo->getSetting('maxpartrepair') != '') ? (int)$this->_pdo->getSetting('maxpartrepair') : 15000;
+		$this->_partRepairMaxTries = ($this->_pdo->getSetting('partrepairmaxtries') != '' ? (int)$this->_pdo->getSetting('partrepairmaxtries') : 3);
 		$this->_showDroppedYEncParts = ($this->_pdo->getSetting('showdroppedyencparts') == 1 ? true : false);
 		$this->_tablePerGroup = ($this->_pdo->getSetting('tablepergroup') == 1 ? true : false);
 
@@ -206,9 +222,11 @@ class Binaries
 	/**
 	 * Download new headers for all active groups.
 	 *
+	 * @param int $maxHeaders (Optional) How many headers to download max.
+	 *
 	 * @return void
 	 */
-	public function updateAllGroups()
+	public function updateAllGroups($maxHeaders = 0)
 	{
 		$groups = $this->_groups->getActive();
 
@@ -235,7 +253,7 @@ class Binaries
 				if ($this->_echoCLI) {
 					$this->_colorCLI->doEcho($this->_colorCLI->header($dMessage), true);
 				}
-				$this->updateGroup($group);
+				$this->updateGroup($group, $maxHeaders);
 				$counter++;
 			}
 
@@ -263,10 +281,11 @@ class Binaries
 	 * Download new headers for a single group.
 	 *
 	 * @param array $groupMySQL Array of MySQL results for a single group.
+	 * @param int   $maxHeaders (Optional) How many headers to download max.
 	 *
 	 * @return void
 	 */
-	public function updateGroup($groupMySQL)
+	public function updateGroup($groupMySQL, $maxHeaders = 0)
 	{
 		$startGroup = microtime(true);
 
@@ -357,6 +376,14 @@ class Binaries
 		$total = (string)($groupLast - $first);
 		// This is how many articles are available (without $leaveOver).
 		$realTotal = (string)($groupNNTP['last'] - $first);
+
+		// Check if we should limit the amount of fetched new headers.
+		if ($maxHeaders > 0) {
+			if ($maxHeaders < ($groupLast - $first)) {
+				$groupLast = $last = (string)($first + $maxHeaders);
+			}
+			$total = (string)($groupLast - $first);
+		}
 
 		// If total is bigger than 0 it means we have new parts in the newsgroup.
 		if ($total > 0) {
@@ -959,10 +986,11 @@ class Binaries
 		$missingParts = $this->_pdo->query(
 			sprintf('
 				SELECT * FROM %s
-				WHERE group_id = %d AND attempts < 5
+				WHERE group_id = %d AND attempts < %d
 				ORDER BY numberid ASC LIMIT %d',
 				$group['prname'],
 				$groupArr['id'],
+				$this->_partRepairMaxTries,
 				$this->_partRepairLimit
 			)
 		);
@@ -1062,8 +1090,15 @@ class Binaries
 			}
 		}
 
-		// Remove articles that we cant fetch after 5 attempts.
-		$this->_pdo->queryExec(sprintf('DELETE FROM %s WHERE attempts >= 5 AND group_id = %d', $group['prname'], $groupArr['id']));
+		// Remove articles that we cant fetch after x attempts.
+		$this->_pdo->queryExec(
+			sprintf(
+				'DELETE FROM %s WHERE attempts >= %d AND group_id = %d',
+				$group['prname'],
+				$this->_partRepairMaxTries,
+				$groupArr['id']
+			)
+		);
 	}
 
 	/**

@@ -23,10 +23,15 @@ class Releases
 	/**
 	 * @var array $options Class instances.
 	 */
-	public function __construct(array $options = array('Settings' => null, 'Groups' => null))
+	public function __construct(array $options = array())
 	{
-		$this->pdo = ($options['Settings'] === null ? new Settings() : $options['Settings']);
-		$this->groups = ($options['Groups'] === null ? new Groups($this->pdo) : $options['Groups']);
+		$defaults = [
+			'Settings' => null,
+			'Groups'   => null
+		];
+		$defaults = array_replace($defaults, $options);
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0' ? false : true);
 	}
 
@@ -168,7 +173,7 @@ class Releases
 						AND rn.nfo IS NOT NULL
 						INNER JOIN category c ON c.id = r.categoryid
 						INNER JOIN category cp ON cp.id = c.parentid
-						WHERE nzbstatus = 1 AND r.passwordstatus <= %d %s %s %s %s
+						WHERE nzbstatus = 1 AND r.passwordstatus %s %s %s %s %s
 						ORDER BY %s %s %s",
 						$this->showPasswords(),
 						$catsrch,
@@ -178,7 +183,7 @@ class Releases
 						$order[0],
 						$order[1],
 						$limit
-			), true
+			), true, nZEDb_CACHE_EXPIRY_MEDIUM
 		);
 	}
 
@@ -193,8 +198,26 @@ class Releases
 							"SELECT value
 							FROM settings
 							WHERE setting = 'showpasswordedrelease'");
-
-		return ($res === false ? 0 : $res['value']);
+		$passwordStatus = sprintf('= %d', Releases::PASSWD_NONE) ;
+		if ($res === false) {
+			return $passwordStatus;
+		}
+		switch (true) {
+			case $res['value'] == 0:
+				return $passwordStatus;
+				break;
+			case $res['value'] == 1:
+				$passwordStatus = sprintf('<= %d', Releases::PASSWD_POTENTIAL);
+				return $passwordStatus;
+				break;
+			case $res['value'] == 1:
+				$passwordStatus = sprintf('<= %d', Releases::PASSWD_RAR);
+				return $passwordStatus;
+				break;
+			default:
+				return $passwordStatus;
+				break;
+		}
 	}
 
 	/**
@@ -404,7 +427,7 @@ class Releases
 				$cartsrch = sprintf(' INNER JOIN usercart ON usercart.userid = %d AND usercart.releaseid = r.id ', $uid);
 			} else if ($cat[0] != -1) {
 				$catsrch = ' AND (';
-				$categ = new Category();
+				$categ = new Category(['Settings' => $this->pdo]);
 				foreach ($cat as $category) {
 					if ($category != -1) {
 						if ($categ->isParent($category)) {
@@ -952,7 +975,7 @@ class Releases
 	{
 		$catsrch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
-			$categ = new Category();
+			$categ = new Category(['Settings' => $this->pdo]);
 			$catsrch = ' AND (';
 			foreach ($cat as $category) {
 				if ($category != -1) {
@@ -1312,7 +1335,7 @@ class Releases
 	{
 		// Get the category for the parent of this release.
 		$currRow = $this->getById($currentid);
-		$cat = new Category();
+		$cat = new Category(['Settings' => $this->pdo]);
 		$catrow = $cat->getById($currRow['categoryid']);
 		$parentCat = $catrow['parentid'];
 
@@ -1371,28 +1394,26 @@ class Releases
 	public function getZipped($guids)
 	{
 		$nzb = new NZB($this->pdo);
-		$zipfile = new ZipFile();
+		$zipFile = new ZipFile();
 
 		foreach ($guids as $guid) {
-			$nzbpath = $nzb->getNZBPath($guid);
+			$nzbPath = $nzb->NZBPath($guid);
 
-			if (is_file($nzbpath)) {
-				ob_start();
-				@readgzfile($nzbpath);
-				$nzbfile = ob_get_contents();
-				ob_end_clean();
+			if ($nzbPath) {
+				$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbPath);
 
-				$filename = $guid;
-				$r = $this->getByGuid($guid);
-				if ($r) {
-					$filename = $r['searchname'];
+				if ($nzbContents) {
+					$filename = $guid;
+					$r = $this->getByGuid($guid);
+					if ($r) {
+						$filename = $r['searchname'];
+					}
+					$zipFile->addFile($nzbContents, $filename . '.nzb');
 				}
-
-				$zipfile->addFile($nzbfile, $filename . '.nzb');
 			}
 		}
 
-		return $zipfile->file();
+		return $zipFile->file();
 	}
 
 	public function getbyRageId($rageid, $series = '', $episode = '')

@@ -5,7 +5,7 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 $c = new ColorCLI();
-$consoletools = new ConsoleTools();
+$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 $ran = false;
 
 if (isset($argv[1]) && $argv[1] === "all") {
@@ -22,6 +22,7 @@ if (isset($argv[1]) && $argv[1] === "all") {
 			$pdo->queryExec("TRUNCATE TABLE bookinfo");
 			$pdo->queryExec("TRUNCATE TABLE releasenfo");
 			$pdo->queryExec("TRUNCATE TABLE releaseextrafull");
+			$pdo->queryExec("TRUNCATE TABLE xxxinfo");
 		}
 		echo $c->header("Resetting all postprocessing");
 		$qry = $pdo->queryDirect("SELECT id FROM releases");
@@ -31,8 +32,8 @@ if (isset($argv[1]) && $argv[1] === "all") {
 			$pdo->queryExec(
 				sprintf("
 					UPDATE releases
-					SET consoleinfoid = NULL, gamesinfo_id = NULL, imdbid = NULL, musicinfoid = NULL,
-						bookinfoid = NULL, rageid = -1, passwordstatus = -1, haspreview = -1,
+					SET consoleinfoid = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfoid = NULL,
+						bookinfoid = NULL, rageid = -1, xxxinfo_id = 0, passwordstatus = -1, haspreview = -1,
 						jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1
 					WHERE id = %d",
 					$releases['id']
@@ -75,7 +76,7 @@ if (isset($argv[1]) && ($argv[1] === "games" || $argv[1] === "all")) {
 	}
 	if (isset($argv[2]) && $argv[2] === "true") {
 		echo $c->header("Resetting all Games postprocessing");
-		$where = ' WHERE gamesinfo_id IS NOT NULL';
+		$where = ' WHERE gamesinfo_id != 0';
 	} else {
 		echo $c->header("Resetting all failed Games postprocessing");
 		$where = " WHERE gamesinfo_id IN (-2, 0) AND categoryid = 4050";
@@ -214,6 +215,29 @@ if (isset($argv[1]) && ($argv[1] === "books" || $argv[1] === "all")) {
 	}
 	echo $c->header("\n" . number_format($concount) . " bookinfoID's reset.");
 }
+if (isset($argv[1]) && ($argv[1] === "xxx" || $argv[1] === "all")) {
+	$ran = true;
+	if (isset($argv[3]) && $argv[3] === "truncate") {
+		$pdo->queryExec("TRUNCATE TABLE xxxinfo");
+	}
+	if (isset($argv[2]) && $argv[2] === "true") {
+		echo $c->header("Resetting all XXX postprocessing");
+		$where = ' WHERE xxxinfo_id != 0';
+	} else {
+		echo $c->header("Resetting all failed XXX postprocessing");
+		$where = " WHERE xxxinfo_id IN (-2, 0) AND categoryid BETWEEN 6000 AND 6040";
+	}
+
+	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
+	$total = $qry->rowCount();
+	$concount = 0;
+	foreach ($qry as $releases) {
+		$pdo->queryExec("UPDATE releases SET xxxinfo_id = 0 WHERE id = " . $releases['id']);
+		$consoletools->overWritePrimary("Resetting XXX Releases:  " . $consoletools->percentString(++$concount,
+				$total));
+	}
+	echo $c->header("\n" . number_format($concount) . " xxxinfo_ID's reset.");
+}
 if (isset($argv[1]) && ($argv[1] === "nfos" || $argv[1] === "all")) {
 	$ran = true;
 	if (isset($argv[3]) && $argv[3] === "truncate") {
@@ -252,6 +276,7 @@ if ($ran === false) {
 			. "php $argv[0] misc true        ...: To reset all misc.\n"
 			. "php $argv[0] tv true          ...: To reset all tv.\n"
 			. "php $argv[0] books true       ...: To reset all books.\n"
+			. "php $argv[0] xxx true         ...: To reset all xxx.\n"
 			. "php $argv[0] nfos true        ...: To reset all nfos.\n"
 			. "php $argv[0] all true         ...: To reset everything.\n"
 		)

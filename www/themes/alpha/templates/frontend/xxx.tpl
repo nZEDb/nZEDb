@@ -79,6 +79,21 @@
 									title="Search AdultdvdEmpire page"
 									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/ade.png"></a>
 							{/if}
+							{if $result.classused == "hm"}
+								<a
+									target="_blank"
+									href="{$site->dereferrer_link}{$result.directurl}"
+									name="viewhm{$result.title}"
+									title="View Hot Movies page"
+									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
+							{else}
+								<a
+									target="_blank"
+									href="{$site->dereferrer_link}http://www.hotmovies.com/search.php?words={$result.title}&complete=on&search_in=video_title"
+									name="viewhm{$result.title}"
+									title="Search Hot Movies page"
+									><img src="{$smarty.const.WWW_TOP}/themes_shared/images/icons/hotmovies.png"></a>
+							{/if}
 							{if $result.classused == "pop"}
 							<a
 								target="_blank"

@@ -2,7 +2,7 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$menu = new Menu();
+$menu = new Menu($page->settings);
 
 $page->title = "Menu List";
 
@@ -11,5 +11,3 @@ $page->smarty->assign('menulist',$menulist);
 
 $page->content = $page->smarty->fetch('menu-list.tpl');
 $page->render();
-
-?>

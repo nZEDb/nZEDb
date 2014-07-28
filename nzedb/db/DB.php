@@ -101,11 +101,6 @@ class DB extends \PDO
 		);
 		$this->opts = $options + $defaults;
 
-		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
-		if ($this->_debug) {
-			$this->debugging = new \Debugging("DB");
-		}
-
 		$this->_cli = Utility::isCLI();
 
 		if (!empty($this->opts['dbtype'])) {
@@ -116,7 +111,7 @@ class DB extends \PDO
 			$this->initialiseDatabase();
 		}
 
-		$this->cacheEnabled = (bool) (defined('nZEDb_CACHE_TYPE') && nZEDb_CACHE_TYPE > 0);
+		$this->cacheEnabled = (defined('nZEDb_CACHE_TYPE') && (nZEDb_CACHE_TYPE > 0) ? true : false);
 
 		if ($this->cacheEnabled) {
 			try {
@@ -129,6 +124,12 @@ class DB extends \PDO
 
 		$this->ct = $this->opts['ct'];
 		$this->log = $this->opts['log'];
+
+		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
+		if ($this->_debug) {
+			$this->debugging = new \Debugging(['Class' => 'DB', 'ColorCLI' => $this->log]);
+		}
+
 
 		if ($this->opts['checkVersion']) {
 			$this->fetchDbVersion();

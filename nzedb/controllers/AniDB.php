@@ -5,17 +5,30 @@ use nzedb\db\Settings;
 
 class AniDB
 {
-	private $pdo;
+	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
 
-	function __construct($echooutput = false)
+	/**
+	 * @param array $options Class instances / Echo to cli.
+	 */
+	public function __construct(array $options = array())
 	{
-		$this->pdo = new Settings();
+		$defOptions = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defOptions = array_replace($defOptions, $options);
+
+		$this->echooutput = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+		$this->c = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
 
 		$qty = $this->pdo->getSetting('maxanidbprocessed');
 		$this->aniqty = !empty($qty) ? $qty : 100;
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'anime' . DS;
-		$this->c = new ColorCLI();
 	}
 
 	public function animetitlesUpdate()

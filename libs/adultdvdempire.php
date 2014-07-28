@@ -23,6 +23,8 @@ require_once 'simple_html_dom.php';
  */
 class adultdvdempire
 {
+	/* Define ADE Url here */
+	const ADE = "http://www.adultdvdempire.com";
 
 	/* If a release matches define it as as true = gives callback to continue */
 	public $found = null;
@@ -31,11 +33,8 @@ class adultdvdempire
 	public $searchterm = null;
 
 	/* Define param if trailing url is found get it and set it for future calls */
-	/* Anything after the $ade url is trailing */
+	/* Anything after the $ADE url is trailing */
 	protected $urlfound = null;
-
-	/* Define ADE Url here */
-	const ade = "http://www.adultdvdempire.com";
 
 	/* Sets the directurl for template */
 	protected $directurl = null;
@@ -62,6 +61,17 @@ class adultdvdempire
 		$this->edithtml = new simple_html_dom();
 	}
 
+	/*
+	 * Remove from memory if they weren't removed
+	 *
+	 */
+	public function __destruct(){
+		$this->html->clear();
+		$this->edithtml->clear();
+		unset($this->response);
+		unset($this->tmprsp);
+	}
+
 	/**
 	 * Gets Trailer Movies -- Need layout change
 	 * Todo: Make layout work with the player/Download swf?
@@ -72,7 +82,7 @@ class adultdvdempire
 		$this->_getadeurl($this->trailers . $this->urlfound);
 		$this->html->load($this->response);
 		if (preg_match("/(\"|')(?P<swf>[^\"']+.swf)(\"|')/i", $this->response, $matches)) {
-			$this->res['trailers']['url'] = SELF::ade . trim(trim($matches['swf']), '"');
+			$this->res['trailers']['url'] = self::ADE . trim(trim($matches['swf']), '"');
 			if (preg_match("#(?:streamID:\s\")(?P<streamid>[0-9A-Z]+)(?:\")#",
 						   $this->response,
 						   $matches)
@@ -196,6 +206,7 @@ class adultdvdempire
 	{
 		$this->tmprsp = str_ireplace("Section Categories", "scat", $this->response);
 		$this->edithtml->load($this->tmprsp);
+		if($this->edithtml->find("div[class=scat]", 0)){
 		$ret = $this->edithtml->find("div[class=scat]", 0);
 		$this->tmprsp = trim($ret->outertext);
 		$ret = $this->edithtml->load($this->tmprsp);
@@ -211,6 +222,7 @@ class adultdvdempire
 		}
 		$categories = array_map('trim', $categories);
 		$this->res['genres'] = $categories;
+		}
 		$this->edithtml->clear();
 		unset($this->tmprsp);
 		unset($ret);
@@ -230,6 +242,7 @@ class adultdvdempire
 		$dofeature = null;
 		$this->tmprsp = str_ireplace("Section ProductInfo", "spdinfo", $this->response);
 		$this->edithtml->load($this->tmprsp);
+		if($this->edithtml->find("div[class=spdinfo]", 0)){
 		$ret = $this->edithtml->find("div[class=spdinfo]", 0);
 		$this->tmprsp = trim($ret->outertext);
 		$ret = $this->edithtml->load($this->tmprsp);
@@ -250,6 +263,7 @@ class adultdvdempire
 		array_shift($this->res['productinfo']);
 		array_shift($this->res['productinfo']);
 		$this->res['productinfo'] = array_chunk($this->res['productinfo'], 2, false);
+		}
 		$this->edithtml->clear();
 		unset($this->tmprsp);
 		unset($ret);
@@ -282,7 +296,7 @@ class adultdvdempire
 					if ($p >= 90) {
 						$this->found = true;
 						$this->urlfound = $ret;
-						$this->directurl = self::ade.$ret;
+						$this->directurl = self::ADE.$ret;
 						$this->title = $title;
 						unset($ret);
 						$this->html->clear();
@@ -312,7 +326,7 @@ class adultdvdempire
 	private function _getadeurl($trailing = null)
 	{
 		if (isset($trailing)) {
-			$ch = curl_init(SELF::ade . $trailing);
+			$ch = curl_init(self::ADE . $trailing);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_HEADER, 0);
 			curl_setopt($ch, CURLOPT_VERBOSE, 0);

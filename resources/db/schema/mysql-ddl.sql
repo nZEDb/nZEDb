@@ -438,7 +438,7 @@ CREATE TABLE         xxxinfo (
   id          INT(10) UNSIGNED               NOT NULL AUTO_INCREMENT,
   title       VARCHAR(255)                   NOT NULL,
   tagline     VARCHAR(1024)                  NOT NULL,
-  plot        VARCHAR(1024)                  NOT NULL,
+  plot        BLOB                           NULL DEFAULT NULL,
   genre       VARCHAR(64)                    NOT NULL,
   director    VARCHAR(64)                    DEFAULT NULL,
   actors      VARCHAR(2000)                  NOT NULL,

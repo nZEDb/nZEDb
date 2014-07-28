@@ -15,11 +15,11 @@ if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric
 }
 
 $pdo = new Settings();
-$consoletools = new ConsoleTools();
-$namefixer = new NameFixer();
+$consoletools = new ConsoleTools(['ColorCLI' => $c]);
+$namefixer = new NameFixer(['ColorCLI' => $c, 'ConsoleTools' => $consoletools, 'Settings' => $pdo]);
 $offset = '';
 
-$timestart = TIME();
+$timestart = time();
 $counter = $counted = 0;
 
 if (isset($argv[3]) && is_numeric($argv[3])) {

@@ -1,17 +1,16 @@
 <?php
-$nzb = new NZB();
-$rel = new Releases();
+
 $uid = 0;
 
 use \nzedb\db\Settings;
 
 // Page is accessible only by the rss token, or logged in users.
-if ($users->isLoggedIn()) {
-	$uid = $users->currentUserId();
+if ($page->users->isLoggedIn()) {
+	$uid = $page->users->currentUserId();
 	$maxdls = $page->userdata["downloadrequests"];
 } else {
 	if ($page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
-		$res = $users->getById(0);
+		$res = $page->users->getById(0);
 	} else {
 		if ((!isset($_GET["i"]) || !isset($_GET["r"]))) {
 			header("X-DNZB-RCode: 400");
@@ -19,7 +18,7 @@ if ($users->isLoggedIn()) {
 			$page->show403();
 		}
 
-		$res = $users->getByIdAndRssToken($_GET["i"], $_GET["r"]);
+		$res = $page->users->getByIdAndRssToken($_GET["i"], $_GET["r"]);
 		if (!$res) {
 			header("X-DNZB-RCode: 401");
 			header("X-DNZB-RText: Unauthorised, wrong user ID or rss key!");
@@ -31,18 +30,19 @@ if ($users->isLoggedIn()) {
 }
 
 // Remove any suffixed id with .nzb which is added to help weblogging programs see nzb traffic.
-if (isset($_GET["id"])) {
-	$_GET["id"] = preg_replace("/\.nzb/i", "", $_GET["id"]);
+if (isset($_GET['id'])) {
+	$_GET['id'] = str_ireplace('.nzb','', $_GET['id']);
 }
 
 // Check download limit on user role.
-$dlrequests = $users->getDownloadRequests($uid);
+$dlrequests = $page->users->getDownloadRequests($uid);
 if ($dlrequests['num'] > $maxdls) {
 	header("X-DNZB-RCode: 503");
 	header("X-DNZB-RText: User has exceeded maximum downloads for the day!");
 	$page->show503();
 }
 
+$rel = new Releases(['Settings' => $page->settings]);
 // User requested a zip of guid,guid,guid releases.
 if (isset($_GET["id"]) && isset($_GET["zip"]) && $_GET["zip"] == "1") {
 	$guids = explode(",", $_GET["id"]);
@@ -54,13 +54,13 @@ if (isset($_GET["id"]) && isset($_GET["zip"]) && $_GET["zip"] == "1") {
 
 	$zip = $rel->getZipped($guids);
 	if (strlen($zip) > 0) {
-		$users->incrementGrabs($uid, count($guids));
+		$page->users->incrementGrabs($uid, count($guids));
 		foreach ($guids as $guid) {
 			$rel->updateGrab($guid);
-			$users->addDownloadRequest($uid);
+			$page->users->addDownloadRequest($uid);
 
 			if (isset($_GET["del"]) && $_GET["del"] == 1) {
-				$users->delCartByUserAndRelease($guid, $uid);
+				$page->users->delCartByUserAndRelease($guid, $uid);
 			}
 		}
 
@@ -74,6 +74,7 @@ if (isset($_GET["id"]) && isset($_GET["zip"]) && $_GET["zip"] == "1") {
 	}
 }
 
+$nzb = new NZB($page->settings);
 if (isset($_GET["id"])) {
 	$reldata = $rel->getByGuid($_GET["id"]);
 	$nzbpath = $nzb->getNZBPath($_GET["id"]);
@@ -86,10 +87,10 @@ if (isset($_GET["id"])) {
 
 	if ($reldata) {
 		$rel->updateGrab($_GET["id"]);
-		$users->addDownloadRequest($uid);
-		$users->incrementGrabs($uid);
+		$page->users->addDownloadRequest($uid);
+		$page->users->incrementGrabs($uid);
 		if (isset($_GET["del"]) && $_GET["del"] == 1) {
-			$users->delCartByUserAndRelease($_GET["id"], $uid);
+			$page->users->delCartByUserAndRelease($_GET["id"], $uid);
 		}
 	} else {
 		header("X-DNZB-RCode: 404");

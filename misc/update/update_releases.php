@@ -6,7 +6,7 @@ $c = new ColorCLI();
 
 if (isset($argv[2]) && $argv[2] === 'true') {
 	// Create the connection here and pass
-	$nntp = new NNTP();
+	$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 	if ($nntp->doConnect() !== true) {
 		exit($c->error("Unable to connect to usenet."));
 	}
@@ -20,8 +20,8 @@ if ($pdo->getSetting('tablepergroup') === 1) {
 
 $groupName = isset($argv[3]) ? $argv[3] : '';
 if (isset($argv[1]) && isset($argv[2])) {
-	$consoletools = new ConsoleTools();
-	$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools));
+	$consoletools = new ConsoleTools(['ColorCLI' => $c]);
+	$releases = new ProcessReleases(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools]);
 	if ($argv[1] == 1 && $argv[2] == 'true') {
 		$releases->processReleases(1, 1, $groupName, $nntp, true);
 	} else if ($argv[1] == 1 && $argv[2] == 'false') {
@@ -43,14 +43,14 @@ if (isset($argv[1]) && isset($argv[2])) {
 		echo $c->header("Categorizing releases in all sections using the searchname. This can take a while, be patient.");
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease('searchname', '', true);
-		$consoletools = new ConsoleTools();
+		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the search name.");
 	} else if ($argv[1] == 6 && $argv[2] == 'false') {
 		echo $c->header("Categorizing releases in misc sections using the searchname. This can take a while, be patient.");
 		$timestart = TIME();
 		$relcount = $releases->categorizeRelease('searchname', 'WHERE categoryID IN (1090, 2020, 3050, 5050, 6050, 7010)', true);
-		$consoletools = new ConsoleTools();
+		$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 		$time = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->primary("\n" . 'Finished categorizing ' . $relcount . ' releases in ' . $time . " seconds, using the search name.");
 	} else {

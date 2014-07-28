@@ -1,5 +1,5 @@
 <?php
-
+use nzedb\db\Settings;
 /**
  * Class for inserting names/categories etc from PreDB sources into the DB,
  * also for matching names on files / subjects.
@@ -35,34 +35,56 @@ Class PreDb
 	 * @var ColorCLI
 	 */
 	protected $c;
+
 	/**
-	 * @param bool $echo
+	 * @param array $options
 	 */
-	public function __construct($echo = false)
+	public function __construct(array $options = array())
 	{
-		$this->echooutput = ($echo && nZEDb_ECHOCLI);
-		$this->pdo = new nzedb\db\DB();
-		$this->c = new ColorCLI();
+		$defaults = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
 	}
+
+	private $dateLimit;
 
 	/**
 	 * Attempts to match PreDB titles to releases.
 	 *
-	 * @param $nntp
+	 * @param $dateLimit
 	 */
-	public function checkPre($nntp)
+	public function checkPre($dateLimit = false)
 	{
-		$consoleTools = new ConsoleTools();
+
+		$this->dateLimit = $dateLimit;
+
+		$consoleTools = new ConsoleTools(['ColorCLI' => $this->c]);
 		$updated = 0;
+		$datesql = '';
+
 		if ($this->echooutput) {
 			echo $this->c->header('Querying DB for release search names not matched with PreDB titles.');
 		}
 
-		$res = $this->pdo->queryDirect('
-			SELECT p.id AS preid, r.id AS releaseid
-			FROM predb p
-			INNER JOIN releases r ON p.title = r.searchname
-			WHERE r.preid = 0'
+		if ($this->dateLimit !== false && is_numeric($this->dateLimit)) {
+			$datesql = sprintf('AND DATEDIFF(NOW(), adddate) <= %d', $this->dateLimit);
+		}
+
+		$res = $this->pdo->queryDirect(
+						sprintf('
+							SELECT p.id AS preid, r.id AS releaseid
+							FROM predb p
+							INNER JOIN releases r ON p.title = r.searchname
+							WHERE r.preid < 1 %s',
+							$datesql
+						)
 		);
 
 		if ($res !== false) {
@@ -147,8 +169,8 @@ Class PreDb
 	 */
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
-		$namefixer = new NameFixer($this->echooutput);
-		$consoletools = new ConsoleTools();
+		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->c, 'Settings' => $this->pdo]);
+		$consoletools = new ConsoleTools(['ColorCLI' => $this->c]);
 		$updated = $checked = 0;
 		$matches = '';
 
@@ -219,7 +241,7 @@ Class PreDb
 	{
 		if ($search !== '') {
 			$search = explode(' ', trim($search));
-			if (count($search > 1)) {
+			if (count($search) > 1) {
 				$search = "LIKE '%" . implode("%' AND title LIKE '%", $search) . "%'";
 			} else {
 				$search = "LIKE '%" . $search . "%'";

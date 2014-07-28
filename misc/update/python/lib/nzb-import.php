@@ -12,13 +12,13 @@ if (!isset($argv[1])) {
 }
 
 $pdo = new Settings();
-$binaries = new Binaries();
+$consoleTools = new ConsoleTools(['ColorCLI' => $c]);
+$binaries = new Binaries(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoleTools]);
 $crosspostt = $pdo->getSetting('crossposttime');
 $crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
-$releasecleaning = new ReleaseCleaning();
-$categorize = new Categorize();
+$releasecleaning = new ReleaseCleaning($pdo);
+$categorize = new Categorize(['Settings' => $pdo]);
 $nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
-$consoleTools = new ConsoleTools();
 
 if (isset($argv[2]) && is_numeric($argv[2])) {
 	exit($c->error("\nTo use a max number to process, it must be the third argument. \nTo run:\nphp nzb-import.php /path [true, false] 1000\n"));
@@ -172,7 +172,7 @@ if (!isset($groups) || count($groups) == 0) {
 			@unlink($nzbFile);
 		} else {
 			$relguid = sha1(uniqid('', true) . mt_rand());
-			$nzb = new NZB();
+			$nzb = new NZB($pdo);
 			$propername = true;
 			$relid = false;
 			if ($usenzbname === true) {

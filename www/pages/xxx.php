@@ -1,10 +1,10 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
-$movie = new XXX();
-$cat = new Category();
+$movie = new XXX(['Settings' => $page->settings]);
+$cat = new Category(['Settings' => $page->settings]);
 
 $moviecats = $cat->getChildren(Category::CAT_PARENT_XXX);
 $mtmp = array();

@@ -11,7 +11,7 @@ class NNTP extends Net_NNTP_Client
 	 * @var ColorCLI
 	 * @access protected
 	 */
-	protected $_c;
+	protected $_colorCLI;
 
 	/**
 	 * @var Debugging
@@ -38,7 +38,14 @@ class NNTP extends Net_NNTP_Client
 	 * @var boolean
 	 * @access protected
 	 */
-	protected $_compression = false;
+	protected $_compressionSupported = true;
+
+	/**
+	 * Is header compression enabled for the session?
+	 * @var bool
+	 * @access protected
+	 */
+	protected $_compressionEnabled = false;
 
 	/**
 	 * Currently selected group.
@@ -78,19 +85,27 @@ class NNTP extends Net_NNTP_Client
 	/**
 	 * Default constructor.
 	 *
-	 * @param bool $echo Echo to cli?
+	 * @param array $options Class instances and echo to CLI bool.
 	 *
 	 * @access public
 	 */
-	public function __construct($echo = true)
+	public function __construct(array $options = array())
 	{
-		$this->_c    = new ColorCLI();
-		$this->pdo = new \nzedb\db\Settings();
+		$defaults = [
+			'Settings' => null,
+			'Echo'     => true,
+			'ColorCLI' => null
+		];
+		$defaults = array_replace($defaults, $options);
 
-		$this->_echo      = ($echo && nZEDb_ECHOCLI);
+		$this->_echo = ($defaults['Echo'] && nZEDb_ECHOCLI);
+
+		$this->_colorCLI = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($defaults['Settings'] instanceof \nzedb\db\Settings ? $defaults['Settings'] : new \nzedb\db\Settings());
+
 		$this->_debugBool = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debugBool) {
-			$this->_debugging = new Debugging("NNTP");
+			$this->_debugging = new Debugging(['Class' => 'NNTP', 'ColorCLI' => $this->_colorCLI]);
 		}
 
 		$this->_nntpRetries = ($this->pdo->getSetting('nntpretries') != '') ? (int)$this->pdo->getSetting('nntpretries') : 0 + 1;
@@ -125,8 +140,8 @@ class NNTP extends Net_NNTP_Client
 		if (// Don't reconnect to usenet if:
 			// We are already connected to usenet. AND
 			parent::_isConnected() &&
-			// (If compression is wanted and on,                    OR    Compression is not wanted and off.) AND
-			(($compression && $this->_compression)                   || (!$compression && !$this->_compression)) &&
+			// (If compression is wanted and on,                    OR    Compression is not wanted and off.)          AND
+			(($compression && $this->_compressionEnabled)           || (!$compression && !$this->_compressionEnabled)) &&
 			// (Alternate is wanted, AND current server is alt,     OR    Alternate is not wanted AND current is main.)
 			(($alternate && $this->_currentServer === NNTP_SERVER_A) || (!$alternate && $this->_currentServer === NNTP_SERVER))
 		) {
@@ -200,7 +215,7 @@ class NNTP extends Net_NNTP_Client
 				if ($this->_debugBool) {
 					$this->_debugging->start("doConnect", $message, Debugging::DEBUG_ERROR);
 				}
-				return $this->throwError($this->_c->error($message));
+				return $this->throwError($this->_colorCLI->error($message));
 			}
 
 			// If we are connected, try to authenticate.
@@ -241,16 +256,16 @@ class NNTP extends Net_NNTP_Client
 						if ($this->_debugBool) {
 							$this->_debugging->start("doConnect", $message, Debugging::DEBUG_ERROR);
 						}
-						return $this->throwError($this->_c->error($message));
+						return $this->throwError($this->_colorCLI->error($message));
 					}
 				}
 			}
 
 			// If we are connected and authenticated, try enabling compression if we have it enabled.
 			if ($connected === true && $authenticated === true) {
-				// Try to enable compression.
-				if ($compression === true && $this->pdo->getSetting('compressedheaders') == 1) {
-					$this->_enableCompression();
+				// Check if we should use compression on the connection.
+				if ($compression === false || $this->pdo->getSetting('compressedheaders') == 0) {
+					$this->_compressionSupported = false;
 				}
 				if ($this->_debugBool) {
 					$this->_debugging->start("doConnect", "Connected to " . $this->_currentServer . '.', Debugging::DEBUG_INFO);
@@ -270,7 +285,7 @@ class NNTP extends Net_NNTP_Client
 		if ($this->_debugBool) {
 			$this->_debugging->start("doConnect", $message, Debugging::DEBUG_ERROR);
 		}
-		return $this->throwError($this->_c->error($message));
+		return $this->throwError($this->_colorCLI->error($message));
 	}
 
 	/**
@@ -307,7 +322,8 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function _resetProperties()
 	{
-		$this->_compression = false;
+		$this->_compressionEnabled = false;
+		$this->_compressionSupported = true;
 		$this->_currentGroup = '';
 		$this->_postingAllowed = false;
 		parent::_resetProperties();
@@ -372,6 +388,8 @@ class NNTP extends Net_NNTP_Client
 			return $connected;
 		}
 
+		// Enabled header compression if not enabled.
+		$this->_enableCompression();
 		return parent::getOverview($range, $names, $forceNames);
 	}
 
@@ -409,6 +427,9 @@ class NNTP extends Net_NNTP_Client
 		if ($connected !== true) {
 			return $connected;
 		}
+
+		// Enabled header compression if not enabled.
+		$this->_enableCompression();
 
 		// Send XOVER command to NNTP with wanted articles.
 		$response = $this->_sendCommand('XOVER ' . $range);
@@ -477,6 +498,23 @@ class NNTP extends Net_NNTP_Client
 	}
 
 	/**
+	 * Fetch valid groups.
+	 *
+	 * Returns a list of valid groups (that the client is permitted to select) and associated information.
+	 *
+	 * @param string $wildMat (optional) http://tools.ietf.org/html/rfc3977#section-4
+	 *
+	 * @return array|object Pear error on failure, array with groups on success.
+	 * @access public
+	 */
+	public function getGroups($wildMat = null)
+	{
+		// Enabled header compression if not enabled.
+		$this->_enableCompression();
+		return parent::getGroups($wildMat);
+	}
+
+	/**
 	 * Download multiple article bodies and string them together.
 	 *
 	 * @param string $groupName   The name of the group the articles are in.
@@ -501,19 +539,37 @@ class NNTP extends Net_NNTP_Client
 		$body = '';
 
 		$aConnected = false;
-		$nntp = ($alternate === true ? new NNTP($this->_echo) : null);
+		$nntp = ($alternate === true ? new NNTP(['Echo' => $this->_echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI]) : null);
 
 		// Check if the msgIds are in an array.
 		if (is_array($identifiers)) {
 
+			$loops = $messageSize = 0;
+
 			// Loop over the message-ID's or article numbers.
 			foreach ($identifiers as $wanted) {
+
+				/* This is to attempt to prevent string size overflow.
+				 * We get the size of 1 body in bytes, we increment the loop on every loop,
+				 * then we multiply the # of loops by the first size we got and check if it
+				 * exceeds 1.7 billion bytes (less than 2GB to give us headroom).
+				 * If we exceed, return the data.
+				 * If we don't do this, these errors are fatal.
+				 */
+				if ((++$loops * $messageSize) >= 1700000000) {
+					return $body;
+				}
+
 				// Download the body.
 				$message = $this->_getMessage($groupName, $wanted);
 
 				// Append the body to $body.
 				if (!$this->isError($message)) {
 					$body .= $message;
+
+					if ($messageSize === 0) {
+						$messageSize = strlen($message);
+					}
 
 				// If there is an error try the alternate provider or return the PEAR error.
 				} else {
@@ -575,7 +631,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("getMessages", $message, Debugging::DEBUG_WARNING);
 			}
-			return $this->throwError($this->_c->error($message));
+			return $this->throwError($this->_colorCLI->error($message));
 		}
 
 		if ($aConnected === true) {
@@ -761,7 +817,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("postArticle", $message, Debugging::DEBUG_NOTICE);
 			}
-			return $this->throwError($this->_c->error($message));
+			return $this->throwError($this->_colorCLI->error($message));
 		}
 
 		$connected = $this->_checkConnection();
@@ -775,7 +831,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("postArticle", $message, Debugging::DEBUG_WARNING);
 			}
-			return $this->throwError($this->_c->error($message));
+			return $this->throwError($this->_colorCLI->error($message));
 		}
 
 		if (strlen($from) > 510) {
@@ -783,7 +839,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("postArticle", $message, Debugging::DEBUG_WARNING);
 			}
-			return $this->throwError($this->_c->error($message));
+			return $this->throwError($this->_colorCLI->error($message));
 		}
 
 		// Check if the group is string or array.
@@ -843,7 +899,7 @@ class NNTP extends Net_NNTP_Client
 			}
 
 			if ($this->_echo) {
-				$this->_c->doEcho($this->_c->error($message), true);
+				$this->_colorCLI->doEcho($this->_colorCLI->error($message), true);
 			}
 			$nntp->doQuit();
 		}
@@ -1149,6 +1205,13 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function _enableCompression()
 	{
+		if ($this->_compressionEnabled === true) {
+			return true;
+		} else if ($this->_compressionSupported === false) {
+			return false;
+		}
+
+
 		// Send this command to the usenet server.
 		$response = $this->_sendCommand('XFEATURE COMPRESS GZIP');
 
@@ -1157,6 +1220,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("_enableCompression", $response->getMessage(), Debugging::DEBUG_NOTICE);
 			}
+			$this->_compressionSupported = false;
 			return $response;
 		} else if ($response !== 290) {
 			$msg = "XFeature GZip Compression not supported. Consider disabling compression in site settings.";
@@ -1165,12 +1229,14 @@ class NNTP extends Net_NNTP_Client
 			}
 
 			if ($this->_echo) {
-				$this->_c->doEcho($this->_c->error($msg), true);
+				$this->_colorCLI->doEcho($this->_colorCLI->error($msg), true);
 			}
+			$this->_compressionSupported = false;
 			return false;
 		}
 
-		$this->_compression = true;
+		$this->_compressionEnabled = true;
+		$this->_compressionSupported = true;
 		return true;
 	}
 
@@ -1186,7 +1252,7 @@ class NNTP extends Net_NNTP_Client
 	 */
 	protected function _getTextResponse()
 	{
-		if ($this->_compression === true &&
+		if ($this->_compressionEnabled === true &&
 			isset($this->_currentStatusResponse[1]) &&
 			stripos($this->_currentStatusResponse[1], 'COMPRESS=GZIP') !== false) {
 
@@ -1249,8 +1315,8 @@ class NNTP extends Net_NNTP_Client
 
 						$bytesReceived = strlen($data);
 						if ($this->_echo && $bytesReceived > 10240) {
-							$this->_c->doEcho(
-								$this->_c->primaryOver(
+							$this->_colorCLI->doEcho(
+								$this->_colorCLI->primaryOver(
 									'Received ' . round($bytesReceived / 1024) .
 									'KB from group (' . $this->group() . ').'
 								), true
@@ -1265,7 +1331,7 @@ class NNTP extends Net_NNTP_Client
 						if ($this->_debugBool) {
 							$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 						}
-						$message = $this->throwError($this->_c->error($message), 1000);
+						$message = $this->throwError($this->_colorCLI->error($message), 1000);
 						return $message;
 					}
 
@@ -1289,7 +1355,7 @@ class NNTP extends Net_NNTP_Client
 					if ($this->_debugBool) {
 						$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 					}
-					$message = $this->throwError($this->_c->error($message), 1000);
+					$message = $this->throwError($this->_colorCLI->error($message), 1000);
 					return $message;
 				}
 			}
@@ -1308,7 +1374,7 @@ class NNTP extends Net_NNTP_Client
 		if ($this->_debugBool) {
 			$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 		}
-		$message = $this->throwError($this->_c->error($message), 1000);;
+		$message = $this->throwError($this->_colorCLI->error($message), 1000);;
 		return $message;
 	}
 

@@ -104,6 +104,10 @@ class Tmux
 					(%2\$s 'lookupmusic') as processmusic,
 					(%2\$s 'lookupgames') as processgames,
 					(%2\$s 'lookupxxx') as processxxx,
+					(%2\$s 'lookupimdb') as processmovies,
+					(%2\$s 'lookuptvrage') as processtvrage,
+					(%2\$s 'lookupnfo') as processnfo,
+					(%2\$s 'lookuppar2') as processpar2,
 					(%2\$s 'tmpunrarpath') as tmpunrar,
 					(%2\$s 'compressedheaders') AS compressed",
 					$tmuxstr,
@@ -273,46 +277,47 @@ class Tmux
 		$this->request_hours = $request_hours;
 		$this->db_name = $db_name;
 
-		$qry1 = "SELECT "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv, "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies, "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio, "
-			. "((SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) + (SELECT COUNT(*) FROM releases WHERE categoryid = 4050 AND gamesinfo_id = 0)) AS games, "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (" . $this->bookreqids . ") AND bookinfoid IS NULL) AS book, "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0) AS xxx, "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) AS releases, "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo, "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
-		$qry2 = "SELECT "
-			. "(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.categoryid BETWEEN 4000 AND 4999 AND r.categoryid != 4050 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS apps, "
-			. "(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work, "
-			. "(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table, "
-			. "(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
-		$qry3 = "SELECT "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = 0) AS requestid_unproc, "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -1) AS requestid_local, "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $this->request_hours . " HOUR) AS requestid_web, "
-			. "(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1) AS requestid_matched, "
-			. "(SELECT COUNT(*) FROM releases WHERE preid > 0) AS predb_matched, "
-			. "(SELECT COUNT(DISTINCT(preid)) FROM releases WHERE preid > 0) AS distinct_predb_matched, "
-			. "(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
-		$qry4 = "SELECT "
-			. "(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$this->db_name') AS predb, "
-			. "(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$this->db_name') AS parts_table, "
-			. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval backfill_target day) < first_record_postdate) AS backfill_groups_days, "
-			. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval datediff(curdate(), "
-			. "(SELECT VALUE FROM settings WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date, "
-			. "(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
-			. "(SELECT UNIX_TIMESTAMP(predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre, "
-			. "(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd";
-		$qry5 = "SELECT "
-			. "(SELECT COUNT(*) FROM predb WHERE id IS NOT NULL) AS predb, "
-			. "(SELECT COUNT(*) FROM parts WHERE id IS NOT NULL) AS parts_table, "
-			. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - backfill_target * interval '1 days') < first_record_postdate) AS backfill_groups_days, "
-			. "(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM settings WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date, "
-			. "(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection, "
-			. "(SELECT extract(epoch FROM predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre, "
-			. "(SELECT extract(epoch FROM adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd";
+		$qry1 = "SELECT
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS tv,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS movies,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS audio,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) +
+					(SELECT COUNT(*) FROM releases WHERE categoryid = 4050 AND gamesinfo_id = 0) AS games,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (" . $this->bookreqids . ") AND bookinfoid IS NULL) AS book,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0) AS xxx,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) AS releases,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -8 AND -1) AS nforemains";
+		$qry2 = "SELECT
+				(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.categoryid BETWEEN 4000 AND 4999 AND r.categoryid != 4050 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS apps,
+				(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work,
+				(SELECT COUNT(*) FROM collections WHERE collectionhash IS NOT NULL) AS collections_table,
+				(SELECT COUNT(*) FROM partrepair WHERE attempts < 5) AS partrepair_table";
+		$qry3 = "SELECT
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = 0) AS requestid_unproc,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -1) AS requestid_local,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND preid = 0 AND reqidstatus = -3 AND adddate > NOW() - INTERVAL " . $this->request_hours . " HOUR) AS requestid_web,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND isrequestid = 1 AND reqidstatus = 1) AS requestid_matched,
+				(SELECT COUNT(*) FROM releases WHERE preid > 0) AS predb_matched,
+				(SELECT COUNT(DISTINCT(preid)) FROM releases WHERE preid > 0) AS distinct_predb_matched,
+				(SELECT COUNT(*) FROM binaries WHERE collectionid IS NOT NULL) AS binaries_table";
+		$qry4 = "SELECT
+				(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'predb' AND TABLE_SCHEMA = '$this->db_name') AS predb,
+				(SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES where table_name = 'parts' AND TABLE_SCHEMA = '$this->db_name') AS parts_table,
+				(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval backfill_target day) < first_record_postdate) AS backfill_groups_days,
+				(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (now() - interval datediff(curdate(),
+				(SELECT VALUE FROM settings WHERE SETTING = 'safebackfilldate')) day) < first_record_postdate) AS backfill_groups_date,
+				(SELECT UNIX_TIMESTAMP(dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
+				(SELECT UNIX_TIMESTAMP(predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre,
+				(SELECT UNIX_TIMESTAMP(adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd";
+		$qry5 = "SELECT
+				(SELECT COUNT(*) FROM predb WHERE id IS NOT NULL) AS predb,
+				(SELECT COUNT(*) FROM parts WHERE id IS NOT NULL) AS parts_table,
+				(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - backfill_target * interval '1 days') < first_record_postdate) AS backfill_groups_days,
+				(SELECT COUNT(*) FROM groups WHERE first_record IS NOT NULL AND backfill = 1 AND (current_timestamp - (date(current_date::date) - date((SELECT value FROM settings WHERE setting = 'safebackfilldate')::date)) * interval '1 days') < first_record_postdate) AS backfill_groups_date,
+				(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
+				(SELECT extract(epoch FROM predate) FROM predb ORDER BY predate DESC LIMIT 1) AS newestpre,
+				(SELECT extract(epoch FROM adddate) FROM releases WHERE nzbstatus = 1 ORDER BY adddate DESC LIMIT 1) AS newestadd";
 
 		switch ((int) $this->qry) {
 			case 1:

@@ -11,9 +11,9 @@ if (!isset($argv[1]) || $argv[1] != 'true') {
 }
 
 $pdo = new Settings();
-$start = TIME();
-$consoleTools = new ConsoleTools();
-$groups = new Groups();
+$start = time();
+$consoleTools = new ConsoleTools(['ColorCLI' => $c]);
+$groups = new Groups(['Settings' => $pdo]);
 
 $actgroups = $pdo->query("SELECT DISTINCT group_id from collections");
 

@@ -1,25 +1,22 @@
 <?php
-if (!$users->isLoggedIn()) {
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
 }
 
 if (isset($_GET["id"])) {
-	$releases = new Releases();
+	$releases = new Releases(['Settings' => $page->settings]);
 	$rel = $releases->getByGuid($_GET["id"]);
 	if (!$rel) {
 		$page->show404();
 	}
 
-	$nzb = new NZB();
+	$nzb = new NZB($page->settings);
 	$nzbpath = $nzb->getNZBPath($_GET["id"]);
 	if (!file_exists($nzbpath)) {
 		$page->show404();
 	}
 
-	ob_start();
-	@readgzfile($nzbpath);
-	$nzbfile = ob_get_contents();
-	ob_end_clean();
+	$nzbfile = nzedb\utility\Utility::unzipGzipFile($nzbpath);
 
 	$ret = $nzb->nzbFileList($nzbfile);
 

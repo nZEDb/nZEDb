@@ -45,7 +45,7 @@ $uid = $apiKey = '';
 $catExclusions = array();
 $maxRequests = 0;
 // Page is accessible only by the apikey, or logged in users.
-if ($users->isLoggedIn()) {
+if ($page->users->isLoggedIn()) {
 	$uid = $page->userdata['id'];
 	$apiKey = $page->userdata['rsstoken'];
 	$catExclusions = $page->userdata['categoryexclusions'];
@@ -55,7 +55,7 @@ if ($users->isLoggedIn()) {
 		if (!isset($_GET['apikey'])) {
 			showApiError(200, 'Missing parameter (apikey)');
 		}
-		$res = $users->getByRssToken($_GET['apikey']);
+		$res = $page->users->getByRssToken($_GET['apikey']);
 		$apiKey = $_GET['apikey'];
 
 		if (!$res) {
@@ -63,7 +63,7 @@ if ($users->isLoggedIn()) {
 		}
 
 		$uid = $res['id'];
-		$catExclusions = $users->getCategoryExclusion($uid);
+		$catExclusions = $page->users->getCategoryExclusion($uid);
 		$maxRequests = $res['apirequests'];
 	}
 }
@@ -73,14 +73,14 @@ $page->smarty->assign('rsstoken', $apiKey);
 
 // Record user access to the api, if its been called by a user (i.e. capabilities request do not require a user to be logged in or key provided).
 if ($uid != '') {
-	$users->updateApiAccessed($uid);
-	$apiRequests = $users->getApiRequests($uid);
+	$page->users->updateApiAccessed($uid);
+	$apiRequests = $page->users->getApiRequests($uid);
 	if ($apiRequests['num'] > $maxRequests) {
 		showApiError(500, 'Request limit reached (' . $apiRequests['num'] . '/' . $maxRequests . ')');
 	}
 }
 
-$releases = new Releases();
+$releases = new Releases(['Settings' => $page->settings]);
 
 if (isset($_GET['extended']) && $_GET['extended'] == 1) {
 	$page->smarty->assign('extended', '1');
@@ -102,7 +102,7 @@ switch ($function) {
 	case 's':
 		verifyEmptyParameter('q');
 		$maxAge = maxAge();
-		$users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
+		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$categoryID = categoryID();
 		$limit = limit();
 		$offset = offset();
@@ -129,7 +129,7 @@ switch ($function) {
 		verifyEmptyParameter('season');
 		verifyEmptyParameter('ep');
 		$maxAge = maxAge();
-		$users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
+		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
 		$relData = $releases->searchbyRageId(
@@ -143,7 +143,7 @@ switch ($function) {
 			$maxAge
 		);
 
-		printOutput(addLanguage($relData), $outputXML, $page, $offset);
+		printOutput(addLanguage($relData, $page->settings), $outputXML, $page, $offset);
 		break;
 
 	// Search movie releases.
@@ -151,7 +151,7 @@ switch ($function) {
 		verifyEmptyParameter('q');
 		verifyEmptyParameter('imdbid');
 		$maxAge = maxAge();
-		$users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
+		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$offset = offset();
 
 		$relData = $releases->searchbyImdbId(
@@ -163,7 +163,7 @@ switch ($function) {
 			$maxAge
 		);
 
-		printOutput(addLanguage($relData), $outputXML, $page, $offset);
+		printOutput(addLanguage($relData, $page->settings), $outputXML, $page, $offset);
 		break;
 
 	// Get NZB.
@@ -196,7 +196,7 @@ switch ($function) {
 			showApiError(200, 'Missing parameter (id is required for downloading an NZB)');
 		}
 
-		$users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
+		$page->users->addApiRequest($uid, $_SERVER['REQUEST_URI']);
 		$data = $releases->getByGuid($_GET['id']);
 
 		$relData = array();
@@ -209,7 +209,7 @@ switch ($function) {
 
 	// Capabilities request.
 	case 'c':
-		$category = new Category();
+		$category = new Category(['Settings' => $page->settings]);
 		$page->smarty->assign('parentcatlist', $category->getForMenu());
 		header('Content-type: text/xml');
 		echo $page->smarty->fetch('apicaps.tpl');
@@ -224,28 +224,28 @@ switch ($function) {
 		}
 
 		// Check email is valid format.
-		if (!$users->isValidEmail($_GET['email'])) {
+		if (!$page->users->isValidEmail($_GET['email'])) {
 			showApiError(106);
 		}
 
 		// Check email isn't taken.
-		$ret = $users->getByEmail($_GET['email']);
+		$ret = $page->users->getByEmail($_GET['email']);
 		if (isset($ret['id'])) {
 			showApiError(105);
 		}
 
 		// Create username/pass and register.
-		$username = $users->generateUsername($_GET['email']);
-		$password = $users->generatePassword();
+		$username = $page->users->generateUsername($_GET['email']);
+		$password = $page->users->generatePassword();
 
 		// Register.
-		$userDefault = $users->getDefaultRole();
-		$uid = $users->signup(
+		$userDefault = $page->users->getDefaultRole();
+		$uid = $page->users->signUp(
 			$username, $password, $_GET['email'], $_SERVER['REMOTE_ADDR'], $userDefault['id'], $userDefault['defaultinvites']
 		);
 
 		// Check if it succeeded.
-		$userData = $users->getById($uid);
+		$userData = $page->users->getById($uid);
 		if (!$userData) {
 			showApiError(107);
 		}
@@ -423,14 +423,14 @@ function verifyEmptyParameter($parameter)
 /**
  * Add language from media info XML to release search names.
  * @param array $releaseData
+ * @param nzedb\db\Settings $settings
  * @return array
  */
-function addLanguage($releaseData)
+function addLanguage($releaseData, $settings)
 {
-	$pdo = new nzedb\db\DB();
 	$returnData = array();
 	foreach ($releaseData as $release) {
-		$audios = $pdo->query(sprintf('SELECT * FROM releaseaudio WHERE releaseid = %d', $release['id']));
+		$audios = $settings->query(sprintf('SELECT * FROM releaseaudio WHERE releaseid = %d', $release['id']));
 		foreach ($audios as $audio) {
 			if ($audio['audiolanguage'] != '') {
 				$release['searchname'] = ($release['searchname'] . ' ' . $audio['audiolanguage']);

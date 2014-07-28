@@ -35,9 +35,9 @@ class NZB
 	/**
 	 * Instance of class db.
 	 * @var \nzedb\db\Settings
-	 * @access protected
+	 * @access public
 	 */
-	protected $pdo;
+	public $pdo;
 
 	/**
 	 * Current nZEDb version.
@@ -86,11 +86,7 @@ class NZB
 	 */
 	public function __construct(&$pdo = null)
 	{
-		if ($pdo === null) {
-			$this->pdo = new \nzedb\db\Settings();
-		} else {
-			$this->pdo = $pdo;
-		}
+		$this->pdo = ($pdo instanceof \nzedb\db\Settings ? $pdo : new \nzedb\db\Settings());
 
 		$this->tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 0 ? false : true);
 		$nzbSplitLevel = $this->pdo->getSetting('nzbsplitlevel');
@@ -312,6 +308,10 @@ class NZB
 	{
 		$num_pars = $i = 0;
 		$result = array();
+
+		if (!$nzb) {
+			return $result;
+		}
 
 		$nzb = str_replace("\x0F", '', $nzb);
 		$xml = @simplexml_load_string($nzb);

@@ -1,14 +1,12 @@
 <?php
 
-use nzedb\db\Settings;
-
-if (!$users->isLoggedIn())
+if (!$page->users->isLoggedIn()) {
 	$page->show403();
+}
 
-$releases = new Releases();
-$grp = new Groups();
-$c = new Category();
-$pdo = new Settings();
+$grp = new Groups(['Settings' => $page->settings]);
+$releases = new Releases(['Groups' => $grp, 'Settings' => $page->settings]);
+$c = new Category(['Settings' => $page->settings]);
 
 $page->meta_title = "Search Nzbs";
 $page->meta_keywords = "search,nzb,description,details";
@@ -202,9 +200,9 @@ $page->smarty->assign('sizelist', $sizelist);
 $page->smarty->assign('results', $results);
 $page->smarty->assign('sadvanced', ($searchtype != "basic"));
 
-$ft1 = $pdo->checkIndex('releases', 'ix_releases_name_searchname_ft');
-$ft2 = $pdo->checkIndex('releases', 'ix_releases_name_ft');
-$ft3 = $pdo->checkIndex('releases', 'ix_releases_searchname_ft');
+$ft1 = $page->settings->checkIndex('releases', 'ix_releases_name_searchname_ft');
+$ft2 = $page->settings->checkIndex('releases', 'ix_releases_name_ft');
+$ft3 = $page->settings->checkIndex('releases', 'ix_releases_searchname_ft');
 if (isset($ft1['key_name']) || (isset($ft2['key_name']) && isset($ft3['key_name']))) {
 	$page->smarty->assign('fulltext', true);
 }

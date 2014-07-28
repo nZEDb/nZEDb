@@ -7,7 +7,7 @@ if (!isset($argv[2]) || !is_numeric($argv[2])) {
 	exit($c->error("\nTest your nntp connection, get group information and postdate for specific article.\n\n"
 		. "php $argv[0] alt.binaries.teevee 595751142    ...: To test nntp on alt.binaries.teevee with artivle 595751142.\n"));
 }
-$nntp = new NNTP();
+$nntp = new NNTP(['ColorCLI' => $c]);
 if ($nntp->doConnect() !== true) {
 	exit();
 }
@@ -26,6 +26,6 @@ $msg = $nntp->getXOVER($first.'-'.$first);
 print_r($msg);
 
 // get postdate for an article
-$backfill = new Backfill($nntp);
+$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c]);
 $newdate = $backfill->postdate($first, $groupArr);
 echo $c->primary("The posted date for ".$group.", article ".$first." is ".date('Y-m-d H:i:s', $newdate));

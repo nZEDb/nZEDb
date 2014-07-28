@@ -18,7 +18,9 @@ conf = info.readConfig()
 cur = info.connect()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-threads = 15
+cur[0].execute("SELECT value FROM settings WHERE setting = 'releasesthreads'")
+threads = cur[0].fetchone()
+threads = int(threads[0])
 
 print(bcolors.HEADER + "\nUpdate Per Group Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
@@ -59,7 +61,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../nix/tmux/bin/update_per_group.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  update_per_group  "+my_id])
 					self.my_queue.task_done()
 
 def main():
@@ -90,12 +92,10 @@ def main():
 		my_queue.put("%s  %s" % (str(release[0]), count))
 
 	my_queue.join()
-	cur.close()
-	con.close()
 
 	#stage7b
-	final = "Stage7b"
-	subprocess.call(["php", pathname+"/../nix/tmux/bin/update_releases.php", ""+str(final)])
+	final = "final"
+	subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  releases  "+str(count)+"_"])
 
 	print(bcolors.HEADER + "\nUpdate Releases Threaded Completed at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 	print(bcolors.HEADER + "Running time: {}\n\n".format(str(datetime.timedelta(seconds=time.time() - start_time))) + bcolors.ENDC)

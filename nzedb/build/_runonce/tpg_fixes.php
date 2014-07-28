@@ -53,6 +53,15 @@ if ($groups === false) {
 	$query6 = "CREATE TRIGGER delete_collections_%s BEFORE DELETE ON collections_%s FOR EACH ROW BEGIN DELETE FROM
 	binaries_%s WHERE collectionid = OLD.id; DELETE FROM parts_%s WHERE collection_id = OLD.id; END";
 
+	// Get size from parts and add it to collections.
+	$query7 = "UPDATE collections_%s c
+				SET c.filesize = (
+					SELECT COALESCE(SUM(p.size), 0)
+					FROM parts_%s p
+					WHERE p.collectionid = c.id
+				)
+				WHERE c.filecheck = 3 AND c.filesize = 0";
+
 	foreach ($groups as $group) {
 		echo 'Fixing group ' . $group['id'] . PHP_EOL;
 		$pdo->queryExec(sprintf($query1, 'collections_' . $group['id']), true);
@@ -64,6 +73,7 @@ if ($groups === false) {
 		}
 		$pdo->queryExec(sprintf($query5, $group['id'], $group['id']), true);
 		$pdo->queryExec(sprintf($query6, $group['id'], $group['id'], $group['id'], $group['id']), true);
+		$pdo->queryExec(sprintf($query7, $group['id'], $group['id']), true);
 		echo 'Finished fixing group ' . $group['id'] . PHP_EOL;
 	}
 	echo 'All done!' . PHP_EOL;

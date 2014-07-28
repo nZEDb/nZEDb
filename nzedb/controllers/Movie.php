@@ -101,17 +101,26 @@ class Movie
 	protected $imdbLanguage;
 
 	/**
-	 * @param bool $echoOutput
+	 * @param array $options Class instances / Echo to CLI.
 	 */
-	public function __construct($echoOutput = false)
+	public function __construct(array $options = array())
 	{
-		$this->c = new ColorCLI();
-		$this->pdo = new Settings();
-		$this->releaseImage = new ReleaseImage($this->pdo);
+		$defaults = [
+			'Echo'         => false,
+			'ColorCLI'     => null,
+			'ReleaseImage' => null,
+			'Settings'     => null,
+			'TMDb'         => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->releaseImage = ($defaults['ReleaseImage'] instanceof ReleaseImage ? $defaults['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->imdbLanguage = ($this->pdo->getSetting('imdblanguage') != '') ? $this->pdo->getSetting('imdblanguage') : 'en';
 
-		$this->tmdb = new TMDb($this->pdo->getSetting('tmdbkey'), $this->imdbLanguage);
+		$this->tmdb = ($defaults['TMDb'] instanceof TMDb ? $defaults['TMDb'] : new TMDb($this->pdo->getSetting('tmdbkey'), $this->imdbLanguage));
 
 		$this->fanartapikey = $this->pdo->getSetting('fanarttvkey');
 		$this->imdburl = ($this->pdo->getSetting('imdburl') == 0 ? false : true);
@@ -120,13 +129,13 @@ class Movie
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
 
 		$this->debug = nZEDb_DEBUG;
-		$this->echooutput = ($echoOutput && nZEDb_ECHOCLI);
+		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'movies' . DS;
 		$this->service = '';
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Debugging('Movie');
+			$this->debugging = new Debugging(['Class' => 'Movie', 'ColorCLI' => $this->c]);
 		}
 	}
 
@@ -254,7 +263,7 @@ class Movie
 	 * @param       $maxAge
 	 * @param array $excludedCats
 	 *
-	 * @return bool
+	 * @return bool|PDOStatement
 	 */
 	public function getMovieRange($cat, $start, $num, $orderBy, $maxAge = -1, $excludedCats = array())
 	{
@@ -352,7 +361,7 @@ class Movie
 		$catSearch = '';
 		if (count($cat) > 0 && $cat[0] != -1) {
 			$catSearch = '(';
-			$Category = new Category();
+			$Category = new Category(['Settings' => $this->pdo]);
 			foreach ($cat as $category) {
 				if ($category != -1) {
 
@@ -624,7 +633,7 @@ class Movie
 		}
 
 		$mov['title']    = html_entity_decode($mov['title']   , ENT_QUOTES, 'UTF-8');
-		$mov['plot']     = html_entity_decode($mov['plot']    , ENT_QUOTES, 'UTF-8');
+		$mov['plot']     = html_entity_decode(preg_replace('/\s+See full summary »/', ' ', $mov['plot']), ENT_QUOTES, 'UTF-8');
 		$mov['tagline']  = html_entity_decode($mov['tagline'] , ENT_QUOTES, 'UTF-8');
 		$mov['genre']    = html_entity_decode($mov['genre']   , ENT_QUOTES, 'UTF-8');
 		$mov['director'] = html_entity_decode($mov['director'], ENT_QUOTES, 'UTF-8');
@@ -998,31 +1007,34 @@ class Movie
 	/**
 	 * Process releases with no IMDB ID's.
 	 *
-	 * @param string $releaseToWork
+	 * @param string $groupID    (Optional) ID of a group to work on.
+	 * @param string $guidChar   (Optional) First letter of a release GUID to use to get work.
+	 * @param int    $lookupIMDB (Optional) 0 Don't lookup IMDB, 1 lookup IMDB, 2 lookup IMDB on releases that were renamed.
 	 */
-	public function processMovieReleases($releaseToWork = '')
+	public function processMovieReleases($groupID = '', $guidChar = '', $lookupIMDB = 1)
 	{
-		$trakTv = new TraktTv();
+		if ($lookupIMDB == 0) {
+			return;
+		}
+		$trakTv = new TraktTv(['Settings' => $this->pdo]);
 
 		// Get all releases without an IMDB id.
-		if ($releaseToWork === '') {
-			$res = $this->pdo->query(
-				sprintf("
-					SELECT r.searchname, r.id
-					FROM releases r
-					WHERE r.imdbid IS NULL
-					AND r.nzbstatus = 1
-					AND r.categoryid BETWEEN 2000 AND 2999
-					LIMIT %d",
-					$this->movieqty
-				)
-			);
-			$movieCount = count($res);
-		} else {
-			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('searchname' => $pieces[0], 'id' => $pieces[1]));
-			$movieCount = 1;
-		}
+		$res = $this->pdo->query(
+			sprintf("
+				SELECT r.searchname, r.id
+				FROM releases r
+				WHERE r.imdbid IS NULL
+				AND r.nzbstatus = 1
+				AND r.categoryid BETWEEN 2000 AND 2999
+				%s %s %s
+				LIMIT %d",
+				($groupID === '' ? '' : ('AND r.group_id = ' . $groupID)),
+				($guidChar === '' ? '' : ('AND r.guid ' . $this->pdo->likeString($guidChar, false, true))),
+				($lookupIMDB == 2 ? 'AND r.isrenamed = 1' : ''),
+				$this->movieqty
+			)
+		);
+		$movieCount = count($res);
 
 		if ($movieCount > 0) {
 			if ($this->echooutput && $movieCount > 1) {
@@ -1321,7 +1333,7 @@ class Movie
 	protected function parseMovieSearchName($releaseName)
 	{
 		// Check if it's foreign ?
-		$cat = new Categorize();
+		$cat = new Categorize(['Settings' => $this->pdo]);
 		if (!$cat->isMovieForeign($releaseName)) {
 			$name = $year = '';
 			$followingList = '[^\w]((1080|480|720)p|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid)[^\w]';

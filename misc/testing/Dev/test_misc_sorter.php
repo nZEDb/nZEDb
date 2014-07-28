@@ -3,8 +3,10 @@ require dirname(__FILE__) . '/../../../www/config.php';
 
 $sorter = new MiscSorter(true);
 
-$altNNTP = (new nzedb\db\Settings())->getSetting('alternate_nntp');
-$nntp = new NNTP();
+$pdo = new nzedb\db\Settings();
+$altNNTP = $pdo->getSetting('alternate_nntp');
+$c = new ColorCLI();
+$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 if (($altNNTP === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true)
 {
 	echo $c->error("Unable to connect to usenet.\n");

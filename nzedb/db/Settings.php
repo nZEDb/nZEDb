@@ -109,7 +109,9 @@ class Settings extends DB
 	public function rowsToArray(array $rows)
 	{
 		foreach($rows as $row) {
-			$this->rowToArray($row);
+			if (is_array($row)) {
+				$this->rowToArray($row);
+			}
 		}
 		return $this->settings;
 	}

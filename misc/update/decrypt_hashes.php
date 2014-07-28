@@ -21,26 +21,29 @@ preName($argv);
 
 function preName($argv)
 {
+	global $c;
+	$timestart = time();
 	$pdo = new Settings();
-	$timestart = TIME();
-	$namefixer = new NameFixer();
+	$consoletools = new ConsoleTools(['ColorCLI' => $c]);
+	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools]);
 
+	$res = false;
 	if (isset($argv[1]) && $argv[1] === "all") {
-		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020');
+		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE preid = 0 AND ishashed = 1');
 	} else if (isset($argv[1]) && $argv[1] === "full") {
 		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0');
 	} else if (isset($argv[1]) && is_numeric($argv[1])) {
 		$res = $pdo->queryDirect('SELECT id AS releaseid, name, searchname, group_id, categoryid, dehashstatus FROM releases WHERE categoryid = 7020 AND dehashstatus BETWEEN -6 AND 0 ORDER BY postdate DESC LIMIT ' . $argv[1]);
 	}
-	$c = new ColorCLI();
 
-	$total = $res->rowCount();
-	$counter = $counted = 0;
+	$counter = $counted = $total = 0;
+	if ($res !== false) {
+		$total = $res->rowCount();
+	}
 	$show = (!isset($argv[2]) || $argv[2] !== 'show') ? 0 : 1;
 	if ($total > 0) {
 		echo $c->header("\n" . number_format($total) . ' releases to process.');
 		sleep(2);
-		$consoletools = new ConsoleTools();
 
 		foreach ($res as $row) {
 			$success = 0;

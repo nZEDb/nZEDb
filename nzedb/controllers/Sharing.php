@@ -70,18 +70,19 @@ Class Sharing
 	/**
 	 * Construct.
 	 *
-	 * @param \nzedb\db\Settings $pdo
-	 * @param NNTP $nntp
+	 * @param array $options Class instances.
 	 *
 	 * @access public
 	 */
-	public function __construct(&$pdo = null, &$nntp = null)
+	public function __construct(array $options = array())
 	{
-		if (!is_null($pdo)) {
-			$this->pdo = $pdo;
-		} else {
-			$this->pdo = new Settings();
-		}
+		$defaults= [
+			'Settings' => null,
+			'NNTP'     => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 
 		// Get all sharing info from DB.
 		$check = $this->pdo->queryOneRow('SELECT * FROM sharing');
@@ -96,7 +97,7 @@ Class Sharing
 			return;
 		}
 
-		$this->nntp = $nntp;
+		$this->nntp = ($defaults['NNTP'] instanceof NNTP ? $defaults['NNTP'] : new NNTP(['Settings' => $this->pdo]));
 
 		// Cache sharing settings.
 		$this->siteSettings = $check;
@@ -123,10 +124,7 @@ Class Sharing
 			return;
 		}
 
-		if (is_null($this->nntp)) {
-			$this->nntp = new NNTP();
-			$this->nntp->doConnect();
-		}
+		$this->nntp->doConnect();
 
 		if ($this->siteSettings['fetching']) {
 			$this->fetchAll();

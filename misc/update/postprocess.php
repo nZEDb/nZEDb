@@ -1,293 +1,131 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-$pdo = new \nzedb\db\Settings();
 $c = new ColorCLI();
 
-// Don't use alternate here, if a article fails in post proc it will use alternate on its own.
-$nntp = new NNTP();
-if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-	exit($c->error("Unable to connect to usenet."));
-}
-if ($pdo->getSetting('nntpproxy') == "1") {
-	usleep(500000);
-}
-
-// Remove folders from tmpunrar.
-$tmpunrar = $pdo->getSetting('tmpunrarpath');
-rmtree($tmpunrar);
-
-if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] == 'all' && $argv[1] !== 'allinf' &&
-	$argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' && $argv[1] !== 'movies' &&
-	$argv[1] !== 'music' && $argv[1] !== 'games' && $argv[1] != 'consoles' &&
-	$argv[1] != 'consoles' && $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'xxx' &&
-	$argv[1] !== 'additional' && $argv[1] !== 'sharing' && isset($argv[2]) &&
-	($argv[2] == 'true' || $argv[2] == 'false')
-) {
-	if ($argv[2] == 'true') {
-		$postprocess = new PostProcess(true);
-	} else {
-		if ($argv[2] == 'false') {
-			$postprocess = new PostProcess();
-		}
-	}
-
-	$postprocess->processAll($nntp);
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' && $argv[1] == 'allinf' &&
-		   $argv[1] !== 'tmux' && $argv[1] !== 'book' && $argv[1] !== 'nfo' &&
-		   $argv[1] !== 'movies' && $argv[1] !== 'music' && $argv[1] !== 'games' &&
-		   $argv[1] != 'consoles' && $argv[1] != 'consoles' && $argv[1] !== 'anime' &&
-		   $argv[1] !== 'tv' && $argv[1] !== 'xxx' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' &&
-		   isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-) {
-	if ($argv[2] == 'true') {
-		$postprocess = new PostProcess(true);
-	} else {
-		if ($argv[2] == 'false') {
-			$postprocess = new PostProcess();
-		}
-	}
-
-	$i = 1;
-	while ($i = 1) {
-		$postprocess->processAll($nntp);
-		sleep(15);
-	}
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-		   $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
-		   $argv[1] == 'pre' && $argv[1] !== 'movies' && $argv[1] !== 'music' &&
-		   $argv[1] !== 'games' && $argv[1] != 'consoles' && $argv[1] != 'consoles' &&
-		   $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'xxx' && $argv[1] !== 'additional' &&
-		   $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-) {
-	if ($argv[2] == 'true') {
-		$postprocess = new PostProcess(true);
-	} else {
-		if ($argv[2] == 'false') {
-			$postprocess = new PostProcess();
-		}
-	}
-
-	$postprocess->processPredb($nntp);
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-		   $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
-		   $argv[1] == 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' &&
-		   $argv[1] !== 'games' && $argv[1] != 'consoles' && $argv[1] != 'consoles' &&
-		   $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'xxx' && $argv[1] !== 'additional' &&
-		   $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-) {
-	if ($argv[2] == 'true') {
-		$postprocess = new PostProcess(true);
-	} else {
-		if ($argv[2] == 'false') {
-			$postprocess = new PostProcess();
-		}
-	}
-
-	$postprocess->processNfos($releaseToWork = '', $nntp);
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-		   $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
-		   $argv[1] !== 'nfo' && $argv[1] == 'movies' && $argv[1] !== 'music' &&
-		   $argv[1] !== 'games' && $argv[1] != 'consoles' && $argv[1] != 'consoles' &&
-		   $argv[1] !== 'anime' && $argv[1] !== 'tv' && $argv[1] !== 'xxx' && $argv[1] !== 'additional' &&
-		   $argv[1] !== 'sharing' && isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-) {
-	if ($argv[2] == 'true') {
-		$postprocess = new PostProcess(true);
-	} else {
-		if ($argv[2] == 'false') {
-			$postprocess = new PostProcess();
-		}
-	}
-
-	$postprocess->processMovies();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-		   $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
-		   $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] == 'music' &&
-		   $argv[1] !== 'games' && $argv[1] !== 'consoles' && $argv[1] !== 'anime' &&
-		   $argv[1] !== 'tv' && $argv[1] !== 'xxx' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' &&
-		   isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-) {
-	if ($argv[2] == 'true') {
-		$postprocess = new PostProcess(true);
-	} else {
-		if ($argv[2] == 'false') {
-			$postprocess = new PostProcess();
-		}
-	}
-
-	$postprocess->processMusic();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-		   $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
-		   $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' &&
-		   $argv[1] == 'games' && $argv[1] !== 'consoles' && $argv[1] !== 'anime' &&
-		   $argv[1] !== 'tv' && $argv[1] !== 'xxx' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' &&
-		   isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-) {
-	if ($argv[2] == 'true') {
-		$postprocess = new PostProcess(true);
-	} else {
-		if ($argv[2] == 'false') {
-			$postprocess = new PostProcess();
-		}
-	}
-
-	$postprocess->processGames();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-		   $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
-		   $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' &&
-		   $argv[1] == 'consoles' && $argv[1] !== 'games' && $argv[1] !== 'anime' &&
-		   $argv[1] !== 'tv' && $argv[1] !== 'xxx' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' &&
-		   isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-) {
-	if ($argv[2] == 'true') {
-		$postprocess = new PostProcess(true);
-	} else {
-		if ($argv[2] == 'false') {
-			$postprocess = new PostProcess();
-		}
-	}
-	$postprocess->processConsoles();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-		   $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
-		   $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' &&
-		   $argv[1] !== 'games' && $argv[1] !== 'consoles' && $argv[1] !== 'anime' &&
-		   $argv[1] !== 'tv' && $argv[1] !== 'xxx' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' &&
-		   isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-) {
-	if ($argv[2] == 'true') {
-		$postprocess = new PostProcess(true);
-	} else {
-		if ($argv[2] == 'false') {
-			$postprocess = new PostProcess();
-		}
-	}
-	$postprocess->processAnime();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-		   $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
-		   $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' &&
-		   $argv[1] !== 'games' && $argv[1] !== 'consoles' && $argv[1] !== 'anime' &&
-		   $argv[1] == 'tv' && $argv[1] !== 'xxx' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' &&
-		   isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-) {
-	if ($argv[2] == 'true') {
-		$postprocess = new PostProcess(true);
-	} else {
-		if ($argv[2] == 'false') {
-			$postprocess = new PostProcess();
-		}
-	}
-
-	$postprocess->processTV();
-} else if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-		   $argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
-		   $argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' &&
-		   $argv[1] !== 'games' && $argv[1] !== 'consoles' && $argv[1] !== 'anime' &&
-		   $argv[1] != 'tv' && $argv[1] == 'xxx' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' &&
-		   isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-) {
-	if ($argv[2] == 'true') {
-		$postprocess = new PostProcess(true);
-	} else {
-		if ($argv[2] == 'false') {
-			$postprocess = new PostProcess();
-		}
-	}
-
-	$postprocess->processXXX();
-} else {
-	if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-		$argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] == 'book' &&
-		$argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' &&
-		$argv[1] !== 'games' && $argv[1] !== 'consoles' && $argv[1] !== 'anime' &&
-		$argv[1] !== 'tv' && $argv[1] !== 'xxx' && $argv[1] !== 'additional' && $argv[1] !== 'sharing' &&
-		isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-	) {
-		if ($argv[2] == 'true') {
-			$postprocess = new PostProcess(true);
-		} else {
-			if ($argv[2] == 'false') {
-				$postprocess = new PostProcess();
-			}
-		}
-
-		$postprocess->processBooks();
-	} else {
-		if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-			$argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
-			$argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' &&
-			$argv[1] !== 'games' && $argv[1] !== 'consoles' && $argv[1] !== 'anime' &&
-			$argv[1] !== 'tv' && $argv[1] !== 'xxx' && $argv[1] == 'additional' && $argv[1] !== 'sharing' &&
-			isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-		) {
-			if ($argv[2] == 'true') {
-				$postprocess = new PostProcess(true);
-			} else {
-				if ($argv[2] == 'false') {
-					$postprocess = new PostProcess();
-				}
-			}
-
-			$postprocess->processAdditional($nntp);
-		} else {
-			if (isset($argv[1]) && !is_numeric($argv[1]) && $argv[1] !== 'all' &&
-				$argv[1] !== 'allinf' && $argv[1] !== 'tmux' && $argv[1] !== 'book' &&
-				$argv[1] !== 'nfo' && $argv[1] !== 'movies' && $argv[1] !== 'music' &&
-				$argv[1] !== 'games' && $argv[1] !== 'consoles' && $argv[1] !== 'anime' &&
-				$argv[1] !== 'tv' && $argv[1] !== 'xxx' && $argv[1] !== 'additional' && $argv[1] === 'sharing' &&
-				isset($argv[2]) && ($argv[2] == 'true' || $argv[2] == 'false')
-			) {
-				if ($argv[2] == 'true') {
-					$postprocess = new PostProcess(true);
-				} else {
-					if ($argv[2] == 'false') {
-						$postprocess = new PostProcess();
-					}
-				}
-
-				$postprocess->processSharing($nntp);
-			} else {
-				exit($c->error("\nIncorrect arguments.\n"
-							   . "The second argument (true/false) determines wether to echo or not.\n\n"
-							   . "php postprocess.php all true         ...: Does all the types of post processing.\n"
-							   . "php postprocess.php pre true         ...: Processes all Predb sites.\n"
-							   . "php postprocess.php nfo true         ...: Processes NFO files.\n"
-							   . "php postprocess.php movies true      ...: Processes movies.\n"
-							   . "php postprocess.php music true       ...: Processes music.\n"
-							   . "php postprocess.php console true     ...: Processes console games.\n"
-							   . "php postprocess.php games true       ...: Processes games.\n"
-							   . "php postprocess.php book true        ...: Processes books.\n"
-							   . "php postprocess.php anime true       ...: Processes anime.\n"
-							   . "php postprocess.php tv true          ...: Processes tv.\n"
-							   . "php postprocess.php xxx true         ...: Processes xxx.\n"
-							   . "php postprocess.php additional true  ...: Processes previews/mediainfo/etc...\n"
-							   . "php postprocess.php sharing true     ...: Processes uploading/downloading comments.\n"
-							   . "php postprocess.php allinf true      ...: Does all the types of post processing on a loop, sleeping 15 seconds between.\n"));
-			}
-		}
-	}
-}
-if ($pdo->getSetting('nntpproxy') != "1") {
-	$nntp->doQuit();
-}
-
 /**
- * Delete a file or directory recursively.
- *
- * @param string $path
- * found here, modded to only delete subfolders
- * https://gist.github.com/SteelPangolin/1407308
- */
-function rmtree($path)
-{
-	if (is_dir($path)) {
-		foreach (scandir($path) as $name) {
-			if (in_array($name, array('.', '..'))) {
-				continue;
-			}
+  Array with possible arguments for run and
+  whether or not those methods of operation require NNTP
+**/
 
-			$subpath = $path . DIRECTORY_SEPARATOR . $name;
-			rmtree($subpath);
-		}
+$args = array(
+	'additional' => true,
+	'all'        => true,
+	'allinf'     => true,
+	'amazon'     => false,
+	'anime'      => false,
+	'book'       => false,
+	'console'    => false,
+	'games'      => false,
+	'movies'     => false,
+	'music'      => false,
+	'nfo'        => true,
+	'pre'        => true,
+	'sharing'    => true,
+	'tv'         => false,
+	'xxx'        => false,
+);
+
+$bool = array(
+	'true',
+	'false'
+);
+
+if (!isset($argv[1]) || !in_array($argv[1], $args) || !isset($argv[2]) || !in_array($argv[2], $bool)) {
+	exit(
+		$c->error(
+			"\nIncorrect arguments.\n"
+				. "The second argument (true/false) determines wether to echo or not.\n\n"
+				. "php postprocess.php all true         ...: Does all the types of post processing.\n"
+				. "php postprocess.php pre true         ...: Processes all Predb sites.\n"
+				. "php postprocess.php nfo true         ...: Processes NFO files.\n"
+				. "php postprocess.php movies true      ...: Processes movies.\n"
+				. "php postprocess.php music true       ...: Processes music.\n"
+				. "php postprocess.php console true     ...: Processes console games.\n"
+				. "php postprocess.php games true       ...: Processes games.\n"
+				. "php postprocess.php book true        ...: Processes books.\n"
+				. "php postprocess.php anime true       ...: Processes anime.\n"
+				. "php postprocess.php tv true          ...: Processes tv.\n"
+				. "php postprocess.php xxx true         ...: Processes xxx.\n"
+				. "php postprocess.php additional true  ...: Processes previews/mediainfo/etc...\n"
+				. "php postprocess.php sharing true     ...: Processes uploading/downloading comments.\n"
+				. "php postprocess.php allinf true      ...: Does all the types of post processing on a loop, sleeping 15 seconds between.\n"
+				. "php postprocess.php amazon true      ...: Does all the amazon (books/console/games/music/xxx).\n"
+		)
+	);
+}
+
+$pdo = new \nzedb\db\Settings();
+
+$proxy = (int)$pdo->getSetting('nntpproxy');
+
+if ($args[$argv[1]] === true) {
+	$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+	if (($pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
+		exit($c->error("Unable to connect to usenet." . PHP_EOL));
 	}
+}
+
+$postProcess = new PostProcess(['Settings' => $pdo, 'Echo' => ($argv[2] === 'true' ? true : false), 'ColorCLI' => $c]);
+
+$charArray = ['a','b','c','d','e','f','0','1','2','3','4','5','6','7','8','9'];
+
+switch ($argv[1]) {
+
+	case 'all':
+		$postProcess->processAll($nntp);
+		break;
+	case 'allinf':
+		$i = 1;
+		while ($i = 1) {
+			$postProcess->processAll($nntp);
+			sleep(15);
+		}
+		break;
+	case 'additional':
+		$postProcess->processAdditional($nntp, '', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
+		break;
+	case 'amazon':
+		$postProcess->processBooks();
+		$postProcess->processConsoles();
+		$postProcess->processGames();
+		$postProcess->processMusic();
+		$postProcess->processXXX();
+		break;
+	case 'anime':
+		exit;
+		//$postProcess->processAnime();
+		//break;
+	case 'book':
+		$postProcess->processBooks();
+		break;
+	case 'consoles':
+		$postProcess->processConsoles();
+		break;
+	case 'games':
+		$postProcess->processGames();
+		break;
+	case 'nfo':
+		$postProcess->processNfos($nntp, '', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
+		break;
+	case 'movies':
+		$postProcess->processMovies('', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
+		break;
+	case 'music':
+		$postProcess->processMusic();
+		break;
+	case 'pre':
+		$postProcess->processPredb($nntp);
+		break;
+	case 'sharing':
+		$postProcess->processSharing($nntp);
+		break;
+	case 'tv':
+		$postProcess->processTV('', (isset($argv[3]) && in_array($argv[3], $charArray) ? $argv[3] : ''));
+		break;
+	case 'xxx':
+		$postProcess->processXXX();
+		break;
+	default:
+		exit;
 }

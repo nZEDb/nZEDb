@@ -2,10 +2,9 @@
 require_once './config.php';
 
 $page = new AdminPage();
-$users = new Users();
-$releases = new Releases();
-$logging = new Logging();
-if ((new \nzedb\db\Settings())->getSetting('loggingopt') == '0') {
+$releases = new Releases(['Settings' => $page->settings]);
+$logging = new Logging(['Settings' => $page->settings]);
+if ($page->settings->getSetting('loggingopt') == '0') {
 	$loggingon = '0';
 } else {
 	$loggingon = '1';
@@ -15,7 +14,7 @@ $page->smarty->assign('loggingon', $loggingon);
 
 $page->title = 'Site Stats';
 
-$topgrabs = $users->getTopGrabbers();
+$topgrabs = $page->users->getTopGrabbers();
 $page->smarty->assign('topgrabs', $topgrabs);
 
 $topdownloads = $releases->getTopDownloads();
@@ -27,8 +26,7 @@ $page->smarty->assign('topcomments', $topcomments);
 $recent = $releases->getRecentlyAdded();
 $page->smarty->assign('recent', $recent);
 
-if ($loggingon == '1')
-{
+if ($loggingon == '1') {
 	$toplogincombined = $logging->getTopCombined();
 	$page->smarty->assign('toplogincombined', $toplogincombined);
 
@@ -38,5 +36,3 @@ if ($loggingon == '1')
 
 $page->content = $page->smarty->fetch('site-stats.tpl');
 $page->render();
-
-?>

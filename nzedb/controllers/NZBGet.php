@@ -92,8 +92,8 @@ class NZBGet
 		}
 
 		$this->fullURL = $this->verifyURL($this->url);
-		$this->Releases = new Releases();
-		$this->NZB = new NZB();
+		$this->Releases = new Releases(['Settings' => $page->settings]);
+		$this->NZB = new NZB($page->settings);
 	}
 
 	/**
@@ -107,17 +107,10 @@ class NZBGet
 	 */
 	public function sendNZBToNZBGet($guid)
 	{
-		$reldata = $this->Releases->getByGuid($guid);
-		$nzbpath = $this->NZB->getNZBPath($guid);
+		$relData = $this->Releases->getByGuid($guid);
 
-		$string = '';
-		$nzb = @gzopen($nzbpath, 'rb', 0);
-		if ($nzb) {
-			while (!gzeof($nzb)) {
-				$string .= gzread($nzb, 1024);
-			}
-			gzclose($nzb);
-		}
+		$string = nzedb\utility\Utility::unzipGzipFile($this->NZB->getNZBPath($guid));
+		$string = ($string === false ? '' : $string);
 
 		$header =
 			'<?xml version="1.0"?>
@@ -125,10 +118,10 @@ class NZBGet
 				<methodName>append</methodName>
 				<params>
 					<param>
-						<value><string>' . $reldata['searchname'] . '</string></value>
+						<value><string>' . $relData['searchname'] . '</string></value>
 					</param>
 					<param>
-						<value><string>' . $reldata['category_name'] . '</string></value>
+						<value><string>' . $relData['category_name'] . '</string></value>
 					</param>
 					<param>
 						<value><i4>0</i4></value>

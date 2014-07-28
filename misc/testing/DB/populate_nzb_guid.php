@@ -21,10 +21,10 @@ if (isset($argv[1])) {
 function create_guids($live, $delete = false)
 {
 	$pdo = new Settings();
-	$consoletools = new ConsoleTools();
+	$c = new ColorCLI();
+	$consoletools = new ConsoleTools(['ColorCLI' => $c]);
 	$timestart = TIME();
 	$relcount = $deleted = 0;
-	$c = new ColorCLI();
 
 	if ($live == "true") {
 		$relrecs = $pdo->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC"));
@@ -34,15 +34,17 @@ function create_guids($live, $delete = false)
 	$total = $relrecs->rowCount();
 	if ($total > 0) {
 		echo $c->header("Creating nzb_guids for " . number_format($total) . " releases.");
-		$releases = new Releases(array('Settings' => $pdo, 'Groups' => null));
+		$releases = new Releases(['Settings' => $pdo]);
 		$nzb = new NZB($pdo);
 		$reccnt = 0;
 		foreach ($relrecs as $relrec) {
 			$reccnt++;
 			$nzbpath = $nzb->NZBPath($relrec['guid']);
 			if ($nzbpath !== false) {
-				$nzbpath = 'compress.zlib://' . $nzbpath;
-				$nzbfile = @simplexml_load_file($nzbpath);
+				$nzbfile = nzedb\utility\Utility::unzipGzipFile($nzbpath);
+				if ($nzbfile) {
+					$nzbfile = @simplexml_load_string($nzbfile);
+				}
 				if (!$nzbfile) {
 					if (isset($delete) && $delete == 'delete') {
 						//echo "\n".$nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";

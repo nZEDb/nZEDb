@@ -2,7 +2,7 @@
 
 use \nzedb\db\Settings;
 
-if ($users->isLoggedIn()) {
+if ($page->users->isLoggedIn()) {
 	$page->show404();
 }
 
@@ -39,11 +39,11 @@ if ($showregister == 0) {
 				$page->smarty->assign('error', "Password Mismatch");
 			} else {
 				// Get the default user role.
-				$userdefault = $users->getDefaultRole();
+				$userdefault = $page->users->getDefaultRole();
 
-				$ret = $users->signup($_POST['username'], $_POST['firstname'], $_POST['lastname'], $_POST['password'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $userdefault['id'], $userdefault['defaultinvites'], $_POST['invitecode']);
+				$ret = $page->users->signUp($_POST['username'], $_POST['firstname'], $_POST['lastname'], $_POST['password'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $userdefault['id'], $userdefault['defaultinvites'], $_POST['invitecode']);
 				if ($ret > 0) {
-					$users->login($ret, $_SERVER['REMOTE_ADDR']);
+					$page->users->login($ret, $_SERVER['REMOTE_ADDR']);
 					header("Location: " . WWW_TOP . "/");
 				} else {
 					switch ($ret) {
@@ -75,7 +75,7 @@ if ($showregister == 0) {
 		case "view": {
 				if (isset($_GET["invitecode"])) {
 					// See if its a valid invite.
-					$invite = $users->getInvite($_GET["invitecode"]);
+					$invite = $page->users->getInvite($_GET["invitecode"]);
 					if (!$invite) {
 						$page->smarty->assign('error', sprintf("Bad or invite code older than %d days.", Users::DEFAULT_INVITE_EXPIRY_DAYS));
 						$page->smarty->assign('showregister', "0");

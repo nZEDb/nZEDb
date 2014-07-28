@@ -21,12 +21,24 @@ require_once 'simple_html_dom.php';
 class popporn
 {
 	/*
+	 * Set this for what you are searching for.
+	 * @var string null
+	 */
+	public $searchterm = null;
+
+	/**
+	 * Define a cookie file
+	 * @var string null
+	 */
+	public $cookie = null;
+
+	/*
 	 * Define Popporn url
 	 * Needed Search Queries Variables
 	*/
-	const popurl = "http://www.popporn.com";
-	const trailingsearch = "/results/index.cfm?v=4&g=0&searchtext=";
-	const if18 = "http://www.popporn.com/popporn/4";
+	const POPURL = "http://www.popporn.com";
+	const TRAILINGSEARCH = "/results/index.cfm?v=4&g=0&searchtext=";
+	const IF18 = "http://www.popporn.com/popporn/4";
 
 	/**
 	 * Add this to popurl to get results
@@ -43,19 +55,7 @@ class popporn
 	// Sets the directurl for the template and returns it in the array
 	protected $directurl = null;
 
-	/*
-	 * Set this for what you are searching for.
-	 * @var string null
-	 */
-	public $searchterm = null;
-
-	/**
-	 * Define a cookie file
-	 * @var string null
-	 */
-	public $cookie = null;
-
-	public function __construct($echooutput = true)
+	public function __construct()
 	{
 		$this->response = array();
 		$this->res = array();
@@ -63,6 +63,16 @@ class popporn
 		if (isset($this->cookie)) {
 			@$this->_getpopurl();
 		}
+	}
+
+	/*
+	 * Remove from memory if it still exists
+	 */
+	public function __destruct()
+	{
+	$this->html->clear();
+	unset($this->response);
+	unset($this->res);
 	}
 
 	/**
@@ -127,8 +137,8 @@ class popporn
 				$this->postparams = "method=pipeStreamLoc&productID=" . $productid;
 				$this->_getpopurl(true);
 				$ret = json_decode(json_decode($this->response, true), true);
-				$this->res['trailers']['baseurl'] = self::popurl . "/flashmediaserver/trailerPlayer.swf";
-				$this->res['trailers']['flashvars'] = "subscribe=false&image=&file=" . self::popurl . "/" . $ret['LOC'] . "&autostart=false";
+				$this->res['trailers']['baseurl'] = self::POPURL . "/flashmediaserver/trailerPlayer.swf";
+				$this->res['trailers']['flashvars'] = "subscribe=false&image=&file=" . self::POPURL . "/" . $ret['LOC'] . "&autostart=false";
 				unset($this->response);
 				$this->response = $tmprsp;
 			}
@@ -271,7 +281,7 @@ class popporn
 		if (!isset($this->searchterm)) {
 			return false;
 		}
-		$this->trailurl = self::trailingsearch . urlencode($this->searchterm);
+		$this->trailurl = self::TRAILINGSEARCH . urlencode($this->searchterm);
 		if ($this->_getpopurl() === false) {
 			return false;
 		} else {
@@ -349,10 +359,11 @@ class popporn
 	private function _getpopurl($usepost = false)
 	{
 		if (isset($this->trailurl)) {
-			$ch = curl_init(SELF::popurl . $this->trailurl);
+			$ch = curl_init(self::POPURL . $this->trailurl);
 		} else {
-			$ch = curl_init(SELF::if18);
+			$ch = curl_init(self::IF18);
 		}
+
 		if($usepost === true){
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 			curl_setopt($ch, CURLOPT_POST, 1);
@@ -375,5 +386,6 @@ class popporn
 			return false;
 		}
 		curl_close($ch);
+		return true;
 	}
 }

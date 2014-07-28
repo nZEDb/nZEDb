@@ -12,9 +12,7 @@ if (is_file("config.php")) {
 }
 require_once 'automated.config.php';
 
-
-$page = new Page;
-$users = new Users;
+$page = new Page();
 
 switch ($page->page) {
 	case 'ajax_mediainfo':
@@ -72,7 +70,7 @@ switch ($page->page) {
 	case 'xxx':
 	case 'xxxmodal':
 		// Don't show these pages if it's an API-only site.
-		if (!$users->isLoggedIn() && $page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
+		if (!$page->users->isLoggedIn() && $page->settings->getSetting('registerstatus') == Settings::REGISTER_STATUS_API_ONLY) {
 			header("Location: " . $page->settings->getSetting('code'));
 			break;
 		}

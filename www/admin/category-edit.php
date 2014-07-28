@@ -1,16 +1,14 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$category = new Category();
+$category = new Category(['Settings' => $page->settings]);
 $id = 0;
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'view';
 
-switch($action)
-{
+switch($action) {
 	case 'submit':
 		$ret = $category->update($_POST["id"], $_POST["status"], $_POST["description"], $_POST["disablepreview"], $_POST["minsize"]);
 		header("Location:".WWW_TOP."/category-list.php");
@@ -18,8 +16,7 @@ switch($action)
 
 	case 'view':
 	default:
-		if (isset($_GET["id"]))
-		{
+		if (isset($_GET["id"])) {
 			$page->title = "Category Edit";
 			$id = $_GET["id"];
 			$cat = $category->getByID($id);
@@ -33,5 +30,3 @@ $page->smarty->assign('status_names', array( 'Yes', 'No', 'Disabled'));
 
 $page->content = $page->smarty->fetch('category-edit.tpl');
 $page->render();
-
-?>

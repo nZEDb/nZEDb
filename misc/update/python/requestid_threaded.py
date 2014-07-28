@@ -25,17 +25,9 @@ conf = info.readConfig()
 cur = info.connect()
 start_time = time.time()
 pathname = os.path.abspath(os.path.dirname(sys.argv[0]))
-threads = 5
-web = None
-
-try:
-    r1 = urllib2.urlopen("http://reqid.nzedb.com").getcode()
-    if r1 == 200:
-        web = True
-    else:
-        web = False
-except:
-    web = False
+cur[0].execute("SELECT value FROM settings WHERE setting = 'reqidthreads'")
+threads = cur[0].fetchone()
+threads = int(threads[0])
 
 
 print(bcolors.HEADER + "\n\nRequestID Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
@@ -43,7 +35,7 @@ print(bcolors.HEADER + "\n\nRequestID Threaded Started at {}".format(datetime.da
 cur[0].execute("SELECT value FROM settings WHERE setting = 'request_hours'")
 dbgrab = cur[0].fetchone()
 request_hours = str(dbgrab[0])
-cur[0].execute("SELECT r.id, r.name, g.name AS groupname, reqidstatus FROM releases r LEFT JOIN groups g ON r.group_id = g.id WHERE nzbstatus = 1 AND preid = 0 AND isrequestid = 1 AND reqidstatus in (0, -1) OR (reqidstatus = -3 AND adddate > NOW() - INTERVAL " + request_hours + " HOUR) LIMIT 100000")
+cur[0].execute("SELECT DISTINCT(g.id) FROM releases r INNER JOIN groups g ON r.group_id = g.id WHERE r.nzbstatus = 1 AND r.preid = 0 AND r.isrequestid = 1 AND r.reqidstatus in (0, -1) OR (r.reqidstatus = -3 AND r.adddate > NOW() - INTERVAL " + request_hours + " HOUR)")
 datas = cur[0].fetchall()
 
 #close connection to mysql
@@ -73,7 +65,7 @@ class queue_runner(threading.Thread):
 			else:
 				if my_id:
 					time_of_last_run = time.time()
-					subprocess.call(["php", pathname+"/../nix/tmux/bin/requestID.php", ""+my_id])
+					subprocess.call(["php", pathname+"/../nix/multiprocessing/.do_not_run/switch.php", "python  requestid  "+my_id])
 					time.sleep(.03)
 					self.my_queue.task_done()
 
@@ -98,8 +90,7 @@ def main():
 
 	#now load some arbitrary jobs into the queue
 	for release in datas:
-		time.sleep(.03)
-		my_queue.put("%s                       %s                       %s                       %s" % (release[0], release[1], release[2], web))
+		my_queue.put("%s" % (release[0]))
 
 	my_queue.join()
 

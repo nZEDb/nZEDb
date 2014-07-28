@@ -49,7 +49,7 @@ if (isset($argv[1])) {
 		}
 
 		echo $c->primary('Patching database - ' . $dbname);
-		exec("$PHP ${DIR}testing/DB/patchDB.php");
+		exec("$PHP ${ROOTDIR}/cli/update_db.php true");
 	}
 
 	$tablecnt = 0;

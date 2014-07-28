@@ -125,16 +125,26 @@ class ReleaseRemover
 	/**
 	 * Construct.
 	 *
-	 * @param bool $browser Is is run from the browser?
-	 * @param bool $echo    Echo to CLI?
+	 * @param array $options Class instances / various options.
 	 */
-	public function __construct($browser = false, $echo = true)
+	public function __construct(array $options = array())
 	{
-		$this->pdo = new Settings();
-		$this->color = new ColorCLI();
-		$this->consoleTools = new ConsoleTools();
-		$this->releases = new Releases(array('Settings' => $this->pdo, 'Groups' => null));
-		$this->nzb = new NZB($this->pdo);
+		$defaults = [
+			'Browser'      => false, // Are we coming from the web script.
+			'Echo'         => true,  // Echo to CLI?
+			'ColorCLI'     => null,
+			'ConsoleTools' => null,
+			'NZB'          => null,
+			'Releases'     => null,
+			'Settings'     => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->color = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->consoleTools = ($defaults['ConsoleTools'] instanceof ConsoleTools ? $defaults['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->color]));
+		$this->releases = ($defaults['Releases'] instanceof Releases ? $defaults['Releases'] : new Releases(['Settings' => $this->pdo]));
+		$this->nzb = ($defaults['NZB'] instanceof NZB ? $defaults['NZB'] : new NZB($this->pdo));
 
 		$this->mysql = ($this->pdo->dbSystem() === 'mysql' ? true : false);
 		$this->like = ($this->mysql ? 'LIKE' : 'ILIKE');
@@ -142,8 +152,8 @@ class ReleaseRemover
 		$this->query = '';
 		$this->error = '';
 		$this->ignoreUserCheck = false;
-		$this->browser = $browser;
-		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
+		$this->browser = $defaults['Browser'];
+		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $defaults['Echo']);
 	}
 
 	/**

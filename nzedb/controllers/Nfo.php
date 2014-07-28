@@ -28,7 +28,7 @@ class Nfo
 
 	/**
 	 * Max NFO size to process.
-	 * @var int
+	 * @var string
 	 * @access private
 	 */
 	private $maxsize;
@@ -75,6 +75,7 @@ class Nfo
 	 */
 	protected $echo;
 
+	const NFO_FAILED = -9; // We failed to get a NFO after admin set max retries.
 	const NFO_UNPROC = -1; // Release has not been processed yet.
 	const NFO_NONFO  =  0; // Release has no NFO.
 	const NFO_FOUND  =  1; // Release has an NFO.
@@ -82,17 +83,29 @@ class Nfo
 	/**
 	 * Default constructor.
 	 *
-	 * @param bool $echo Echo to cli.
+	 * @param array $options Class instance / echo to cli.
 	 *
 	 * @access public
 	 */
-	public function __construct($echo = false)
+	public function __construct(array $options = array())
 	{
-		$this->echo = ($echo && nZEDb_ECHOCLI);
-		$this->c = new ColorCLI();
-		$this->pdo = new Settings();
+		$defaults = [
+			'Echo'     => false,
+			'ColorCLI' => null,
+			'Settings' => null,
+		];
+		$defaults = array_replace($defaults, $options);
+
+		$this->echo = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
 		$this->nzbs = ($this->pdo->getSetting('maxnfoprocessed') != '') ? (int)$this->pdo->getSetting('maxnfoprocessed') : 100;
-		$this->maxsize = ($this->pdo->getSetting('maxsizetopostprocess') != '') ? (int)$this->pdo->getSetting('maxsizetopostprocess') : 100;
+		$this->maxsize = ($this->pdo->getSetting('maxsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('maxsizetoprocessnfo') : 100;
+		$this->maxsize = ($this->maxsize > 0 ? ('AND size < ' . ($this->maxsize * 1073741824)) : '');
+		$this->minsize = ($this->pdo->getSetting('minsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('minsizetoprocessnfo') : 100;
+		$this->minsize = ($this->minsize > 0 ? ('AND size > ' . ($this->minsize * 1048576)) : '');
+		$this->maxRetries = ($this->pdo->getSetting('maxnforetries') >= 0 ? -($this->pdo->getSetting('maxnforetries') + 1) : self::NFO_UNPROC);
+		$this->maxRetries = ($this->maxRetries < -8 ? -8 : $this->maxRetries);
 		$this->tmpPath = $this->pdo->getSetting('tmpunrarpath');
 		if (!preg_match('/[\/\\\\]$/', $this->tmpPath)) {
 			$this->tmpPath .= DS;
@@ -226,11 +239,11 @@ class Nfo
 			if ($release['completion'] == 0) {
 				$nzbContents = new NZBContents(
 					array(
-						'echo' => $this->echo,
-						'nntp' => $nntp,
-						'nfo'  => $this,
-						'db'   => $this->pdo,
-						'pp'   => new PostProcess(true)
+						'Echo' => $this->echo,
+						'NNTP' => $nntp,
+						'Nfo'  => $this,
+						'Settings'   => $this->pdo,
+						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this, 'ColorCLI' => $this->c])
 					)
 				);
 				$nzbContents->parseNZB($release['guid'], $release['id'], $release['group_id']);
@@ -243,73 +256,96 @@ class Nfo
 	/**
 	 * Attempt to find NFO files inside the NZB's of releases.
 	 *
-	 * @param string $releaseToWork
-	 * @param int $processImdb       Attempt to find IMDB id's in the NZB?
-	 * @param int $processTvrage     Attempt to find TvRage id's in the NZB?
-	 * @param string $groupID        (optional) The group ID to work on.
 	 * @param object $nntp           Instance of class NNTP.
+	 * @param string $groupID        (optional) Group ID.
+	 * @param string $guidChar       (optional) First character of the release GUID (used for multi-processing).
+	 * @param int    $processImdb    (optional) Attempt to find IMDB id's in the NZB?
+	 * @param int    $processTvrage  (optional) Attempt to find TvRage id's in the NZB?
 	 *
 	 * @return int                   How many NFO's were processed?
 	 *
 	 * @access public
 	 */
-	public function processNfoFiles($releaseToWork = '', $processImdb = 1, $processTvrage = 1, $groupID = '', $nntp)
+	public function processNfoFiles($nntp, $groupID = '', $guidChar = '', $processImdb = 1, $processTvrage = 1)
 	{
-		$nfoCount = $ret = 0;
-		$groupID = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);
-		$res = array();
+		$ret = 0;
+		$guidCharQuery = ($guidChar === '' ? '' : 'AND guid ' . $this->pdo->likeString($guidChar, false, true));
+		$groupIDQuery = ($groupID === '' ? '' : 'AND group_id = ' . $groupID);
 
-		if ($releaseToWork === '') {
-			$i = -1;
-			while (($nfoCount != $this->nzbs) && ($i >= -6)) {
-				$res += $this->pdo->query(
-					sprintf('
-						SELECT id, guid, group_id, name
-						FROM releases
-						WHERE nzbstatus = %d
-						AND nfostatus BETWEEN %d AND %d
-						AND size < %s
-						%s
-						LIMIT %d',
-						NZB::NZB_ADDED,
-						$i,
-						self::NFO_UNPROC,
-						$this->maxsize * 1073741824,
-						$groupID,
-						$this->nzbs
-					)
-				);
-				$nfoCount += count($res);
-				$i--;
-			}
-		} else {
-			$pieces = explode('           =+=            ', $releaseToWork);
-			$res = array(array('id' => $pieces[0], 'guid' => $pieces[1], 'group_id' => $pieces[2], 'name' => $pieces[3]));
-			$nfoCount = 1;
-		}
+		$res = $this->pdo->query(
+			sprintf('
+				SELECT id, guid, group_id, name
+				FROM releases
+				WHERE nzbstatus = %d
+				AND nfostatus BETWEEN %d AND %d
+				%s %s %s %s
+				ORDER BY nfostatus ASC, postdate DESC
+				LIMIT %d',
+				NZB::NZB_ADDED,
+				$this->maxRetries,
+				self::NFO_UNPROC,
+				$this->maxsize,
+				$this->minsize,
+				$guidCharQuery,
+				$groupIDQuery,
+				$this->nzbs
+			)
+		);
+		$nfoCount = count($res);
 
 		if ($nfoCount > 0) {
-			if ($releaseToWork === '') {
-				$this->c->doEcho(
-					$this->c->primary(
-						'Processing ' . $nfoCount .
-						' NFO(s), starting at ' . $this->nzbs .
-						' * = hidden NFO, + = NFO, - = no NFO, f = download failed.'
+			$this->c->doEcho(
+				$this->c->primary(
+					PHP_EOL .
+					($guidChar === '' ? '' : '[' . $guidChar . '] ') .
+					($groupID === '' ? '' : '[' . $groupID . '] ') .
+					'Processing ' . $nfoCount .
+					' NFO(s), starting at ' . $this->nzbs .
+					' * = hidden NFO, + = NFO, - = no NFO, f = download failed.'
+				)
+			);
+
+			if ($this->echo) {
+				// Get count of releases per nfo status
+				$outString = PHP_EOL . 'Available to process';
+				$nfoStats = $this->pdo->queryDirect(
+					sprintf('
+						SELECT nfostatus AS status, COUNT(*) AS count
+						FROM releases
+						WHERE nfostatus BETWEEN %d AND %d
+						AND nzbstatus = %d
+						%s %s %s %s
+						GROUP BY nfostatus
+						ORDER BY nfostatus ASC',
+						$this->maxRetries,
+						self::NFO_UNPROC,
+						NZB::NZB_ADDED,
+						$guidCharQuery,
+						$groupIDQuery,
+						$this->minsize,
+						$this->maxsize
 					)
 				);
-
-				// Get count of releases per nfo status
-				$outString = 'Available to process';
-				for ($i = -1; $i >= -6; $i--) {
-					$ns =  $this->pdo->query('SELECT COUNT(*) AS count FROM releases WHERE nfostatus = ' . $i);
-					$outString .= ', ' . $i . ' = ' . number_format($ns[0]['count']);
+				if ($nfoStats !== false && $nfoStats->rowCount() > 0) {
+					foreach ($nfoStats as $row) {
+						$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
+					}
+					$this->c->doEcho($this->c->header($outString . '.'));
 				}
-				$this->c->doEcho($this->c->header($outString . '.'));
 			}
-			$groups = new Groups();
-			$nzbContents = new NZBContents(array('echo' => $this->echo, 'nntp' => $nntp, 'nfo' => $this, 'db' => $this->pdo, 'pp' => new PostProcess(true)));
-			$movie = new Movie($this->echo);
-			$tvRage = new TvRage($this->echo);
+
+			$groups = new Groups(['Settings' => $this->pdo]);
+			$nzbContents = new NZBContents(
+				array(
+					'Echo' => $this->echo,
+					'NNTP' => $nntp,
+					'Nfo' => $this,
+					'Settings' => $this->pdo,
+					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo, 'ColorCLI' => $this->c])
+				)
+			);
+			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
+			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
 
 			foreach ($res as $arr) {
 				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));
@@ -353,19 +389,39 @@ class Nfo
 		}
 
 		// Remove nfo that we cant fetch after 5 attempts.
-		if ($releaseToWork === '') {
-			$relres = $this->pdo->query(sprintf('SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus < -6', NZB::NZB_ADDED));
-			foreach ($relres as $relrow) {
-				$this->pdo->queryExec(sprintf('DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %d', $relrow['id']));
-			}
+		$releases = $this->pdo->queryDirect(
+			sprintf(
+				'SELECT id FROM releases WHERE nzbstatus = %d AND nfostatus < %d',
+				NZB::NZB_ADDED,
+				$this->maxRetries
+			)
+		);
 
-			if ($this->echo) {
-				if ($nfoCount > 0 && $releaseToWork === '') {
-					echo "\n";
-				}
-				if ($ret > 0 && $releaseToWork === '') {
-					$this->c->doEcho($ret . ' NFO file(s) found/processed.', true);
-				}
+		if ($releases !== false && $releases->rowCount() > 0) {
+			foreach ($releases as $release) {
+				$this->pdo->queryExec(
+					sprintf('DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %d', $release['id'])
+				);
+			}
+		}
+
+		// Set releases with no NFO.
+		$this->pdo->queryExec(
+			sprintf(
+				'UPDATE releases SET nfostatus = %d WHERE nfostatus < %d %s %s',
+				self::NFO_FAILED,
+				$this->maxRetries,
+				$groupIDQuery,
+				$guidCharQuery
+			)
+		);
+
+		if ($this->echo) {
+			if ($nfoCount > 0) {
+				echo PHP_EOL;
+			}
+			if ($ret > 0) {
+				$this->c->doEcho($ret . ' NFO file(s) found/processed.', true);
 			}
 		}
 		return $ret;

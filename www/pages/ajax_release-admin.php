@@ -1,7 +1,7 @@
 <?php
 $page = new AdminPage(true);
-$releases = new Releases();
-$category = new Category();
+$releases = new Releases(['Settings' => $page->settings]);
+$category = new Category(['Settings' => $page->settings]);
 
 // Set the current action.
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';

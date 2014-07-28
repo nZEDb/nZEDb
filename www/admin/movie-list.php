@@ -1,9 +1,8 @@
 <?php
 require_once './config.php';
 
-
 $page = new AdminPage();
-$movie = new Movie();
+$movie = new Movie(['Settings' => $page->settings]);
 
 $page->title = "Movie List";
 
@@ -22,5 +21,3 @@ $page->smarty->assign('movielist',$movielist);
 
 $page->content = $page->smarty->fetch('movie-list.tpl');
 $page->render();
-
-?>
