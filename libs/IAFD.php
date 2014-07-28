@@ -29,7 +29,6 @@ class iafd {
 	const IAFDSEARCHURL = "http://www.iafd.com/results.asp?searchtype=title&searchstring=";
 	const IAFDURL = "http://www.iafd.com";
 	const ADE = "Adult DVD Empire";
-	const POP = "Popporn";
 	const HM = "Hot Movies";
 
 
