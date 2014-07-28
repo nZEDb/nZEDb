@@ -67,6 +67,29 @@
 					{/foreach}
 				</ul>
 			</li>
+		{elseif ($parentcat.id == 6000 && $userdata.xxxview=="1" && $site->lookupxxx=="1")}
+			<li class="dropdown">
+				<a id="cat3"
+					class="dropdown-toggle"
+					data-toggle="dropdown"
+					data-hover="dropdown"
+					href="{$smarty.const.WWW_TOP}/xxx">{$parentcat.title}
+					<b class="caret"></b></a>
+				<ul class="dropdown-menu" role="menu" aria-labelledby="cat3">
+					<li><a href="{$smarty.const.WWW_TOP}/xxx">All {$parentcat.title}</a></li>
+					{foreach from=$parentcat.subcatlist item=subcat}
+						{if $subcat.id == 6010 OR 6020 OR 6030 OR 6040}
+							<li><a title="Browse {$subcat.title}"
+									href="{$smarty.const.WWW_TOP}/xxx?t={$subcat.id}">{$subcat.title}</a>
+							</li>
+						{else}
+							<li><a title="Browse {$subcat.title}"
+									href="{$smarty.const.WWW_TOP}/browse?t={$subcat.id}">{$subcat.title}</a>
+							</li>
+						{/if}
+					{/foreach}
+				</ul>
+			</li>
 		{elseif ($parentcat.id == 8000 && $userdata.bookview=="1")}
 			<li class="dropdown">
 				<a id="cat3" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" href="{$smarty.const.WWW_TOP}/books">{$parentcat.title} <b class="caret"></b></a>

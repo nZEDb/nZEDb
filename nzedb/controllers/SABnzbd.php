@@ -118,20 +118,6 @@ class SABnzbd
 				$this->integrated = self::INTEGRATION_TYPE_NONE;
 				break;
 		}
-		// Verify the URL is good, fix it if not.
-		if ($this->url !== '' && preg_match('/(?P<first>\/)?(?P<sab>[a-z]+)?(?P<last>\/)?$/i', $this->url, $matches)) {
-			if (!isset($matches['first'])) {
-				$this->url .= '/';
-			}
-			if (!isset($matches['sab'])) {
-				$this->url .= 'sabnzbd';
-			} elseif ($matches['sab'] !== 'sabnzbd') {
-				$this->url .= 'sabnzbd';
-			}
-			if (!isset($matches['last'])) {
-				$this->url .= '/';
-			}
-		}
 	}
 
 	/**

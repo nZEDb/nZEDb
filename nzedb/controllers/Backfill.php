@@ -58,13 +58,6 @@ class Backfill
 	protected $_echoCLI;
 
 	/**
-	 * Do we need to reset the collection hashes?
-	 *
-	 * @var bool
-	 */
-	protected $_hashCheck;
-
-	/**
 	 * Are we using nntp proxy?
 	 *
 	 * @var bool
@@ -109,7 +102,6 @@ class Backfill
 		}
 
 		$this->_compressedHeaders = ($this->_pdo->getSetting('compressedheaders') == 1 ? true : false);
-		$this->_hashCheck = ($this->_pdo->getSetting('hashcheck') == 1 ? true : false);
 		$this->_nntpProxy = ($this->_pdo->getSetting('nntpproxy') == 1 ? true : false);
 		$this->_safeBackFillDate = ($this->_pdo->getSetting('safebackfilldate') != '') ? $this->_pdo->getSetting('safebackfilldate') : '2008-08-14';
 		$this->_safePartRepair = ($this->_pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill');
@@ -127,14 +119,6 @@ class Backfill
 	 */
 	public function backfillAllGroups($groupName = '', $articles ='', $type = '')
 	{
-		if ($this->_hashCheck === false) {
-			$dMessage = "You must run update_binaries.php to update your collectionhash.";
-			if ($this->_debug) {
-				$this->_debugging->start("backfillAllGroups", $dMessage, 1);
-			}
-			exit($this->_colorCLI->error($dMessage));
-		}
-
 		$res = array();
 		if ($groupName !== '') {
 			$grp = $this->_groups->getByName($groupName);
@@ -389,14 +373,6 @@ class Backfill
 	 */
 	public function safeBackfill($articles = '')
 	{
-		if ($this->_hashCheck === false) {
-			$dMessage = "You must run update_binaries.php to update your collectionhash.\n";
-			if ($this->_debug) {
-				$this->_debugging->start("safeBackfill", $dMessage, 1);
-			}
-			exit($dMessage);
-		}
-
 		$groupname = $this->_pdo->queryOneRow(
 			sprintf('
 				SELECT name FROM groups

@@ -54,12 +54,9 @@ if len(datas) == 0:
 	info.disconnect(cur[0], cur[1])
 	sys.exit
 
-cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'binarythreads') AS a, (SELECT value FROM settings WHERE setting = 'hashcheck') AS b")
+cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'binarythreads') AS a")
 dbgrab = cur[0].fetchall()
 run_threads = int(dbgrab[0][0])
-hashcheck = int(dbgrab[0][1])
-if hashcheck == 0:
-	print(bcolors.ERROR + "We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB/reset_Collections.php true" + bcolors.ENDC)
 
 #close connection to mysql
 info.disconnect(cur[0], cur[1])

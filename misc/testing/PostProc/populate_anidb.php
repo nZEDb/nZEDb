@@ -67,7 +67,7 @@ class AniDBstandAlone {
 
 		// Declare and set main variables
 		$pdo = $this->pdo;
-		$ri = new ReleaseImage();
+		$ri = new ReleaseImage($this->pdo);
 		$apicount = 0;
 
 		$this->c->doEcho($this->c->header("Start getAniDBInfo at " . date('D M d, Y G:i a')));

@@ -31,6 +31,50 @@
 	</form>
 {/if}
 
+{if $covergrp == "xxx"}
+	<form class="form-inline" name="browseby" action="{$smarty.const.WWW_TOP}/search" method="get">
+		<input class="form-control"
+			style="width: 150px;"
+			id="xxxtitle"
+			type="text"
+			name="title"
+			value="{$title}"
+			placeholder="Title">
+		<input class="form-control"
+			style="width: 150px;"
+			id="xxxactors"
+			type="text"
+			name="actors"
+			value="{$actors}"
+			placeholder="Actor">
+		<input class="form-control"
+			style="width: 150px;"
+			id="xxxdirector"
+			type="text"
+			name="director"
+			value="{$director}"
+			placeholder="Director">
+		<select class="form-control"
+			style="width: 150px;"
+			id="genre"
+			name="genre"
+			placeholder="Genre">
+			<option class="grouping" value="">Genre...</option>
+			{foreach from=$genres item=gen}
+				<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
+			{/foreach}
+		</select>
+		<select class="form-control" style="width: 150px;" id="category" name="t">
+			<option class="grouping" value="2000">Category...</option>
+			{foreach from=$catlist item=ct}
+				<option {if $ct.id==$category}selected="selected"{/if}
+					value="{$ct.id}">{$ct.title}</option>
+			{/foreach}
+		</select>
+		<input class="btn btn-success" type="submit" value="Go">
+	</form>
+{/if}
+
 {if $covergrp == "books"}
 	<form class="form-inline" name="browseby" action="{$smarty.const.WWW_TOP}/search" method="get">
 		<input class="form-control" style="width: 150px;" id="author" type="text" name="author" value="{$author}" placeholder="Author">
@@ -191,6 +235,50 @@
 			<option class="grouping" value="2000">Category... </option>
 			{foreach from=$catlist item=ct}
 				<option {if $ct.id==$category}selected="selected"{/if} value="{$ct.id}">{$ct.title}</option>
+			{/foreach}
+		</select>
+		<input class="btn btn-success" type="submit" value="Go">
+	</form>
+{/if}
+
+{if {$smarty.get.page} == "xxx"}
+	<form class="form-inline" name="browseby" action="xxx">
+		<input class="form-control"
+			style="width: 150px;"
+			id="xxxtitle"
+			type="text"
+			name="title"
+			value="{$title}"
+			placeholder="Title">
+		<input class="form-control"
+			style="width: 150px;"
+			id="xxxactors"
+			type="text"
+			name="actors"
+			value="{$actors}"
+			placeholder="Actor">
+		<input class="form-control"
+			style="width: 150px;"
+			id="xxxdirector"
+			type="text"
+			name="director"
+			value="{$director}"
+			placeholder="Director">
+		<select class="form-control"
+			style="width: auto;"
+			id="genre"
+			name="genre"
+			placeholder="Genre">
+			<option class="grouping" value="">Genre...</option>
+			{foreach from=$genres item=gen}
+				<option {if $gen==$genre}selected="selected"{/if} value="{$gen}">{$gen}</option>
+			{/foreach}
+		</select>
+		<select class="form-control" style="width: auto;" id="category" name="t">
+			<option class="grouping" value="2000">Category...</option>
+			{foreach from=$catlist item=ct}
+				<option {if $ct.id==$category}selected="selected"{/if}
+					value="{$ct.id}">{$ct.title}</option>
 			{/foreach}
 		</select>
 		<input class="btn btn-success" type="submit" value="Go">

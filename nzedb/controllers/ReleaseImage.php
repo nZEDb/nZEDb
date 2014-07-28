@@ -46,11 +46,14 @@ class ReleaseImage
 
 	/**
 	 * Construct.
+	 * @param \nzedb\db\Settings()
 	 */
-	public function __construct()
+	public function __construct(&$pdo = null)
 	{
 		// Creates the nZEDb_COVERS constant
-		$pdo = new \nzedb\db\Settings();
+		if ($pdo === null) {
+			$pdo = new \nzedb\db\Settings();
+		}
 		//                                                            Table    |  Column
 		$this->audSavePath    = nZEDb_COVERS . 'audiosample' . DS; // releases    guid
 		$this->imgSavePath    = nZEDb_COVERS . 'preview'     . DS; // releases    guid

@@ -505,16 +505,18 @@ class NameFixer
 		$matching = 0;
 		$this->matched = false;
 
-		//Remove all non-printable chars, preg match all interesting words
-		$titlelike = "%" . $this->utility->stripNonPrintingChars($pre['title']) . "%";
-		preg_match_all('#[a-zA-Z]{2,}#', $pre['title'], $matches, PREG_PATTERN_ORDER);
-		$titlematch = '+"' . implode('" +"', $matches[0]) . '"';
+		//Remove all non-printable chars from PreDB title
+		//$titlelike = "%" . $this->utility->stripNonPrintingChars($pre['title']) . "%";
+		//preg_match_all('#[a-zA-Z]{2,}#', $pre['title'], $matches, PREG_PATTERN_ORDER);
+		//$titlematch = '+"' . implode('" +"', $matches[0]) . '"';
+		$titlematch = '+"' . $this->utility->stripNonPrintingChars($pre['title']) . '"';
 
 		//Find release matches with fulltext and then identify exact matches with cleaned LIKE string
-		$res = $pdo->queryDirect(sprintf("SELECT rs.releaseid AS releaseid FROM releasesearch rs
-						     WHERE MATCH (rs.name, rs.searchname) AGAINST ('%s' IN BOOLEAN MODE)
-						     AND (rs.name LIKE %s OR rs.searchname LIKE %s)
-						     LIMIT 16", $titlematch, $pdo->escapeString($titlelike), $pdo->escapeString($titlelike)
+		$res = $pdo->queryDirect(sprintf("
+							SELECT rs.releaseid AS releaseid FROM releasesearch rs
+							WHERE MATCH (rs.name, rs.searchname) AGAINST ('%s' IN BOOLEAN MODE)
+							LIMIT 21",
+							$titlematch
 			)
 		);
 
@@ -525,7 +527,7 @@ class NameFixer
 		}
 
 		// Run if row count is positive, but do not run if row count exceeds 10 (as this is likely a failed title match)
-		if ($total > 0 && $total <= 15) {
+		if ($total > 0 && $total <= 20) {
 			foreach ($res as $row) {
 				$release = $pdo->queryOneRow(sprintf("SELECT id AS releaseid, name, searchname, group_id, categoryid FROM releases WHERE nzbstatus = 1 AND preid = 0 AND id = %d", $row['releaseid']));
 				if ($release !== false) {

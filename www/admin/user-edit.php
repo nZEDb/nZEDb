@@ -31,6 +31,7 @@ switch($action)
 		$user["role"] = $defaultrole;
 		$user["invites"] = $defaultinvites;
 		$user["movieview"] = "1";
+		$user["xxxview"] = "1";
 		$user["musicview"] = "1";
 		$user["consoleview"] = "1";
 		$user["gameview"] = "1";
@@ -51,7 +52,7 @@ switch($action)
 		}
 		else
 		{
-			$ret = $users->update($_POST["id"], $_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["email"], $_POST["grabs"], $_POST["role"], $_POST["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"),
+			$ret = $users->update($_POST["id"], $_POST["username"], $_POST["firstname"], $_POST["lastname"], $_POST["email"], $_POST["grabs"], $_POST["role"], $_POST["invites"], (isset($_POST['movieview']) ? "1" : "0"), (isset($_POST['xxxview']) ? "1" : "0"), (isset($_POST['musicview']) ? "1" : "0"), (isset($_POST['consoleview']) ? "1" : "0"),
 				(isset($_POST['gameview']) ? "1" : "0"), (isset($_POST['bookview']) ? "1" : "0"));
 			if ($_POST['password'] != "")
 					$users->updatePassword($_POST["id"], $_POST['password']);

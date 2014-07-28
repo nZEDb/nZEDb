@@ -37,7 +37,6 @@ function preFileName($argv)
 	$utility = new Utility();
 
 	$qrycat = $renamed = $regfilter = $orderby = $limit = '';
-	//$noslash = "AND rf.name NOT REGEXP '\\\\\\\\' ";
 	$regfilter = "AND rf.name REGEXP BINARY '^[a-z0-9]{1,20}-[a-z0-9]{1,20}\..{3}$' ";
 	$rfname = "SUBSTRING_INDEX(rf.name, '.', 1)";
 	$orderby = "ORDER BY postdate ASC";
@@ -67,7 +66,6 @@ function preFileName($argv)
 			"%s %s",
 			$rfname,
 			$qrycat,
-			//$noslash,
 			$regfilter,
 			$renamed,
 			$orderby,
@@ -98,17 +96,23 @@ function preFileName($argv)
 					$fileName = $utility->cutStringUsingLast('.', $fileName, "left", false);
 				}
 				//if filename has a .vol001, send it back to the function to cut the next period
-				if (preg_match('/\.vol\d+$/', $fileName)) {
+				if (preg_match('/\.vol\d+(\+\d+)?$/', $fileName)) {
 					$fileName = $utility->cutStringUsingLast('.', $fileName, "left", false);
 				}
 				//if filename contains a slash, cut the string and keep string to the right of the last slash
 				if (strpos($fileName, '\\') !== false) {
 					$fileName = $utility->cutStringUsingLast('\\', $fileName, "right", false);
 				}
-				$row['filename'] = $fileName;
+				$row['filename'] = trim($fileName);
 			}
 			if (isset($row['filename']) && $row['filename'] !== '' && strpos($row['filename'], '.') != 0 && strlen($row['filename']) > 0) {
 				$success = $namefixer->matchPredbFiles($row, 1, 1, true, $show, $argv[1]);
+				// A lot of obscured releases have one NFO file properly named with a track number (Audio) at the front of it
+				// This will strip out the track and match it to its pre title
+				if ($success === 0 && preg_match('/^\d{2}-[a-z0-9]/', $row['filename'])) {
+					$row['filename'] = preg_replace('/^\d{2}-/', '', $row['filename']);
+					$success = $namefixer->matchPredbFiles($row, 1, 1, true, $show, $argv[1]);
+				}
 			}
 			if ($success === 1) {
 				$counted++;

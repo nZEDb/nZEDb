@@ -33,7 +33,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$timenc = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->primary("\n" . $done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
-		$releases = new Releases();
+		$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools));
 		$releases->resetCategorize();
 		$categorized = $releases->categorizeRelease("name", "", true);
 		$timecat = $consoletools->convertTime(TIME() - $timestart);
@@ -69,7 +69,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$timenc = $consoletools->convertTime(TIME() - $timestart);
 		echo $c->header($done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
-		$releases = new Releases();
+		$releases = new ProcessReleases(true, array('Settings' => $pdo, 'ColorCLI' => $c, 'ConsoleTools' => $consoletools));
 		$releases->resetCategorize("WHERE isrenamed = 0");
 		$categorized = $releases->categorizeRelease("name", "WHERE isrenamed = 0", true);
 		$timecat = $consoletools->convertTime(TIME() - $timestart);

@@ -10,16 +10,17 @@ if (isset($argv[1]) && $argv[1] == "true") {
 
 	$timestart = TIME();
 	$pdo = new Settings();
-	$releases = new Releases();
+	$releases = new Releases(array('Settings' => $pdo, 'Groups' => null));
 	$category = new Category();
+	$nzb = new NZB($pdo);
 	$catlist = $category->getDisabledIDs();
 	$relsdeleted = 0;
 	if (count($catlist > 0)) {
 		foreach ($catlist as $cat) {
-			if ($rels = $pdo->query(sprintf("SELECT id, guid FROM releases WHERE categoryid = %d", $cat['id']))) {
+			if ($rels = $pdo->query(sprintf("SELECT guid FROM releases WHERE categoryid = %d", $cat['id']))) {
 				foreach ($rels as $rel) {
 					$relsdeleted++;
-					$releases->fastDelete($rel['id'], $rel['guid']);
+					$releases->deleteSingle($rel['guid'], $nzb);
 				}
 			}
 		}

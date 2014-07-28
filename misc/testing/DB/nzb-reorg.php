@@ -7,7 +7,7 @@ if (!isset($argv[1]) || !isset($argv[2]))
 	exit("ERROR: You must supply the level you want to reorganize it to, and the source directory  (You would use: 3 .../nZEDb/resources/nzb/ to move it to 3 levels deep)\n");
 
 $pdo = new Settings();
-$nzb = new NZB();
+$nzb = new NZB($pdo);
 $consoleTools = new ConsoleTools();
 
 $newLevel = $argv[1];

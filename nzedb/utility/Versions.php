@@ -2,27 +2,9 @@
 namespace nzedb\utility;
 
 use nzedb\db\Settings;
-use nzedb\utility\Git;
 
 if (!defined('GIT_PRE_COMMIT')) {
 	define('GIT_PRE_COMMIT', false);
-}
-
-// Only set an argument if calling from bash or MS-DOS batch scripts. Otherwise
-// instantiate the class and use as below.
-if (PHP_SAPI == 'cli' && isset($argc) && $argc > 1 && isset($argv[1]) && $argv[1] == true) {
-	require_once realpath(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'automated.config.php');
-
-	$vers = new Versions();
-	echo $vers->out->header("Checking versions...");
-	if ($vers->checkAll()) {
-		$vers->save();
-	} else {
-		echo "No changes detected.\n";
-		echo "Commit: " . $vers->getCommit() . "\n";
-		echo " Patch: " . $vers->getSQLVersion() . "\n";
-		echo "   Tag: " . $vers->getTagVersion() . "\n";
-	}
 }
 
 class Versions
@@ -30,12 +12,13 @@ class Versions
 	/**
 	 * These constants are bitwise for checking what was changed.
 	 */
-	const UPDATED_DB_REVISION	= 1;
-	const UPDATED_GIT_COMMIT	= 2;
-	const UPDATED_GIT_TAG		= 4;
+	const UPDATED_GIT_COMMIT	= 1;
+	const UPDATED_GIT_TAG		= 2;
+	const UPDATED_SQL_DB_PATCH	= 4;
+	const UPDATED_SQL_FILE_LAST	= 8;
 
 	/**
-	 * @var nzedb\utility\Git instance variable.
+	 * @var \nzedb\utility\Git instance variable.
 	 */
 	public $git;
 
@@ -91,7 +74,7 @@ class Versions
 		libxml_use_internal_errors($temp);
 
 		if ($this->_xml === false) {
-			if (PHP_SAPI == 'cli') {
+			if (Utility::isCLI()) {
 				$this->out->error("Your versions XML file ({nZEDb_VERSIONS}) is broken, try updating from git.");
 			}
 			throw new \Exception("Failed to open versions XML file '$filepath'");
@@ -124,31 +107,11 @@ class Versions
 	 */
 	public function checkAll($update = true)
 	{
-		$this->checkDb($update);
 		$this->checkGitCommit($update);
 		$this->checkGitTag($update);
+		$this->checkSQLDb($update);
+		$this->checkSQLFileLatest($update);
 		return $this->hasChanged();
-	}
-
-	/**
-	 * Checks the database sqlpatch setting against the XML's stored value.
-	 * @param boolean $update Whether the XML should be updated by the check.
-	 * @return boolean The new database sqlpatch version, or false.
-	 */
-	public function checkDb($update = true)
-	{
-		$settings = new Settings();
-		$setting = $settings->getSetting('sqlpatch');
-
-		if ($this->_vers->db < $setting) {
-			if ($update) {
-				echo $this->out->primary("Updating Db revision to " . $setting);
-				$this->_vers->db = $setting;
-				$this->_changes |= self::UPDATED_DB_REVISION;
-			}
-			return $this->_vers->db;
-		}
-		return false;
 	}
 
 	/**
@@ -201,38 +164,86 @@ class Versions
 		}
 		return false;
 	}
-/*
-	public function check($update = true)
+
+	/**
+	 * Checks the database sqlpatch setting against the XML's stored value.
+	 *
+	 * @param boolean $update Whether the XML should be updated by the check.
+	 *
+	 * @return boolean The new database sqlpatch version, or false.
+	 */
+	public function checkSQLDb($update = false)
 	{
-		if ($this->vers->setting) {
+		$settings = new Settings();
+		$setting  = $settings->getSetting('sqlpatch');
+
+		if ($this->_vers->sql->db < $setting) {
 			if ($update) {
-				echo $this->out->primary("\n");
-				;
-				$this->_updated = true;
+				echo $this->out->primary("Updating Db revision to " . $setting);
+				$this->_vers->sql->db = $setting;
+				$this->_changes |= self::UPDATED_SQL_DB_PATCH;
 			}
-			return true;
+			return $this->_vers->patch->db;
 		}
 		return false;
 	}
- */
+
+	/**
+	 * Checks the numeric value from the last SQL patch file, updating the versions file if desired.
+	 *
+	 * @param bool $update	Whether to update the versions file.
+	 *
+	 * @return bool|int	False if there is a problem, otherwise the number from the last patch file.
+	 */
+	public function checkSQLFileLatest($update = true)
+	{
+		$options = array(
+			'data'  => nZEDb_RES . 'db' . DS . 'schema' . DS . 'data' . DS,
+			'ext'   => 'sql',
+			'path'  => nZEDb_RES . 'db' . DS . 'patches' . DS . 'mysql',
+			'regex' =>
+				'#^' . Utility::PATH_REGEX . '(?P<patch>\d{4})~(?P<table>\w+)\.sql$#',
+			'safe'  => true,
+		);
+		$files = Utility::getDirFiles($options);
+		natsort($files);
+
+		$last = (preg_match($options['regex'], end($files), $matches)) ? (int)$matches['patch'] : false;
+
+		if ($last !== false && $this->_vers->sql->file != $last) {
+			if ($update) {
+				echo $this->out->primary("Updating latest patch file to " . $last);
+				$this->_vers->sql->file = $last;
+				$this->_changes |= self::UPDATED_SQL_FILE_LAST;
+			}
+			return $this->_vers->patch->db;
+		}
+		return $last;
+	}
+
 	public function getCommit()
 	{
-		return $this->_vers->git->commit;
+		return $this->_vers->git->commit->__toString();
 	}
 
 	public function getGitHookPrecommit()
 	{
-		return $this->_vers->git->hooks->precommit;
+		return $this->_vers->git->hooks->precommit->__toString();
 	}
 
-	public function getSQLVersion()
+	public function getSQLPatchFromDb()
 	{
-		return $this->_vers->db;
+		return $this->_vers->sql->db->__toString();
+	}
+
+	public function getSQLPatchFromFiles()
+	{
+		return $this->_vers->sql->file->__toString();
 	}
 
 	public function getTagVersion()
 	{
-		return $this->_vers->git->tag;
+		return $this->_vers->git->tag->__toString();
 	}
 
 	/**

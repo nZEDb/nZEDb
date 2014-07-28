@@ -9,8 +9,57 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-21 niel
 	* New: Merged and tagged v0.3.8 to master branch
+2014-07-17 niel
+	* Chg: Modifying DB::queryArray() to make it more efficient.
+2014-07-17 ruhllatio
+	* Chg: Move Tmux functions in monitor.php to Tmux class
+	* Chg: Move Tmux proc queries to Tmux class (will not require a restart of monitor.php to tweak queries)
+	* Chg: Greatly improve processing times for fixReleaseNames MD5 and remove needless loop.
+	* Chg: Monitor.php TPG row counts now use INFORMATION_SCHEMA instead as they don't need to be 100% accurate -- greatly increases monitor loop speed
+	* Chg: Parent Category counts now done using INFORMATION_SCHEMA.PARTITION table_row counts = much faster (try two)
+2014-07-17 kevin
+	* Chg: Various speed-up to purge group/partrepair/blacklist.
+	* Rem: Remove sab URL checking #1396.
+	* Chg: Speed up purging/reset group more, re-use more class instances, changes to optimise method.
+2014-07-16 bart39
+	* Fix: XXX processing / counts in monitor
+	* Fix: Set date to now if article header has no date
+2014-07-16 niel
+	* Chg: Refactored CLI code out of DbUpdate and Versions classes and into their own scripts in .../cli
+	NOTE: This means "php nzedb/db/DbUpdate.php true", now needs to be "php cli/update_db.php true"
+	* Fix: Processing tasky's SQL patch file.
+2014-07-16 ruhllatio
+	* Fix: TPG/Threaded for ProcessReleases move
+2014-07-16 kevin
+	* Chg: Link to ubuntu guide.
+	* Fix: Cache check on query.
+	* Add: Redis cache support, in addition to multiple server support for memcached. You must copy the new settings from settings.php.example, the old settings in config.php are obsolete.
+	* Chg: Move ProcessReleases out of Releases.
+	* Chg: Speed up release creation.
+	* ---: Merge PR by tasky.
+2014-07-15 ruhllatio
+	* Chg: Improve TV series listing site response
+	* Chg: Remove likes from predbft search query
+	* Chg: match_prefiles will find a few more audio matches
+	* Chg: More improvements (speed) to site queries for TV/Movie.
+2014-07-15 kevin
+	* Chg: Change stage 3 for the trigger changes on automatic binaries/parts deletion.
+	* Chg: Refactor stage 4.5 to be similar to stage 3.
+	* Chg: Refactor various processReleases stages.
+2014-07-15 bart39
+	* Fix: Delete collections at filecheck = 5 at the end of Releases Stage 3.
+	* Fix: Undefined variable $site in requestID.php
+	* Add: CollectionsCleaning regex additions.
 2014-07-14 niel
 	* New: Merged and tagged v0.3.7 to master branch.
+	* Chg: Modified install step 2, to set sqlpatch setting using the value of the highest patch file found.
+2014-07-14 ruhllatio
+	* Chg: RequestID.php multi lookup (last chance match) much more accurate
+	* Fix: test-rottentomato not working
+	* Chg: Some categorization improvements.
+2014-07-14 kevin
+	* Chg: Speed-up stage 5 more by buffering some variables.
+	* Fix: Wrong usage of NZB construct in 2 places, pass pdo to all NZB contructs at the same time.
 2014-07-13 bart39
 	* Fix: !!! TPG USERS MUST RUN nzedb/build/_runounce/tpg_fixes.php !!!!!!!!!!!!!!!!!!!!!!!!!
 	* Fix: Move collections deletion trigger to before delete.

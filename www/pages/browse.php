@@ -49,6 +49,8 @@ if ($category == -1 && $grp == "") {
 			$covgroup = 'console';
 		} elseif ($cdata['parentid'] == Category::CAT_PARENT_MOVIE || $cdata['id'] == Category::CAT_PARENT_MOVIE) {
 			$covgroup = 'movies';
+		} elseif ($cdata['parentid'] == Category::CAT_PARENT_XXX || $cdata['id'] == Category::CAT_PARENT_XXX) {
+			$covgroup = 'xxx';
 		} elseif ($cdata['parentid'] == Category::CAT_PARENT_PC || $cdata['id'] == Category::CAT_PC_GAMES) {
 			$covgroup = 'games';
 		} elseif ($cdata['parentid'] == Category::CAT_PARENT_MUSIC || $cdata['id'] == Category::CAT_PARENT_MUSIC) {

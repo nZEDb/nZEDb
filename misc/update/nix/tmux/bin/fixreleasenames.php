@@ -52,19 +52,22 @@ if (!isset($argv[1])) {
 			}
 		}
 	} else if (isset($pieces[1]) && $pieces[0] == 'par2') {
+		//echo PHP_EOL . microtime();
 		$nntp = new NNTP();
 		if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 			exit($c->error("Unable to connect to usenet."));
 		}
 		if ($pdo->getSetting('nntpproxy') == "1") {
-			usleep(500000);
+			//usleep(500000);
 		}
 
 		$relID = $pieces[1];
 		$guid = $pieces[2];
 		$groupID = $pieces[3];
 		$nzbcontents = new NZBContents(array('echo' => true, 'nntp' => $nntp, 'nfo' => new Nfo(), 'db' => $pdo, 'pp' => new PostProcess(true)));
+		//echo " " . microtime();
 		$res = $nzbcontents->checkPAR2($guid, $relID, $groupID, 1, 1);
+		//echo " " . microtime() . " ";
 		if ($res === false) {
 			echo '.';
 		}

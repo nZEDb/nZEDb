@@ -23,7 +23,7 @@ class NZBExport
 	protected $retVal;
 
 	/**
-	 * @var DB
+	 * @var \nzedb\db\Settings
 	 * @access protected
 	 */
 	protected $pdo;
@@ -56,8 +56,8 @@ class NZBExport
 	{
 		$this->browser = $browser;
 		$this->pdo = new Settings();
-		$this->releases = new Releases();
-		$this->nzb = new NZB();
+		$this->releases = new Releases(array('Settings' => $this->pdo, 'Groups' => null));
+		$this->nzb = new NZB($this->pdo);
 		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $echo);
 	}
 

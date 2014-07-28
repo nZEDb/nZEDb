@@ -107,7 +107,7 @@ class Movie
 	{
 		$this->c = new ColorCLI();
 		$this->pdo = new Settings();
-		$this->releaseImage = new ReleaseImage();
+		$this->releaseImage = new ReleaseImage($this->pdo);
 
 		$this->imdbLanguage = ($this->pdo->getSetting('imdblanguage') != '') ? $this->pdo->getSetting('imdblanguage') : 'en';
 

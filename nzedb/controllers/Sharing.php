@@ -42,7 +42,7 @@ Class Sharing
 	 */
 
 	/**
-	 * @var DB
+	 * @var \nzedb\db\Settings
 	 * @access protected
 	 */
 	protected $pdo;
@@ -70,7 +70,7 @@ Class Sharing
 	/**
 	 * Construct.
 	 *
-	 * @param DB $pdo
+	 * @param \nzedb\db\Settings $pdo
 	 * @param NNTP $nntp
 	 *
 	 * @access public

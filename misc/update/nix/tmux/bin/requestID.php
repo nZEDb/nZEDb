@@ -36,7 +36,7 @@ if ($requestID != 0 and $requestID != '') {
 		$bFound = true;
 		$local = true;
 	} else if ($web == "True") {
-		$newTitle = getReleaseNameFromRequestID($site, $requestID, $pieces[2]);
+		$newTitle = getReleaseNameFromRequestID($requestID, $pieces[2]);
 		if (is_array($newTitle) && $newTitle['title'] != '') {
 			$bFound = true;
 			$local = false;
@@ -87,7 +87,7 @@ if ($bFound === true) {
 	echo '.';
 }
 
-function getReleaseNameFromRequestID($site, $requestID, $groupName)
+function getReleaseNameFromRequestID($requestID, $groupName)
 {
 	global $pdo;
 	$requestURL = $pdo->getSetting('request_url');

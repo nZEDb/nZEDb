@@ -40,7 +40,7 @@ switch ($action) {
 				$is_guid = false;
 			}
 		}
-		$releases->delete($_REQUEST["id"], $is_guid);
+		$releases->deleteMultiple($_REQUEST['id'], $is_guid);
 		break;
 	default:
 		$page->show404();

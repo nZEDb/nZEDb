@@ -323,7 +323,7 @@ class Games
 	public function updategamesinfo($gameInfo)
 	{
 		$gen = new Genres();
-		$ri = new ReleaseImage();
+		$ri = new ReleaseImage($this->pdo);
 
 		$con = array();
 		$ggameid = $this->fetchgiantbombgameid($gameInfo['title']);
@@ -623,7 +623,7 @@ class Games
 				SELECT searchname, id
 				FROM releases
 				WHERE nzbstatus = 1 %s
-				AND gamesinfo_id IS NULL
+				AND gamesinfo_id = 0
 				AND categoryid = 4050
 				ORDER BY postdate DESC
 				LIMIT %d',

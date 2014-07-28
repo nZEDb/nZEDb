@@ -14,7 +14,7 @@ class TvRage
 	public $c;
 
 	/**
-	 * @var Database object
+	 * @var nzedb\db\Settings
 	 */
 	public $pdo;
 
@@ -334,9 +334,39 @@ class TvRage
 		}
 
 		if ($this->pdo->dbSystem() === 'mysql') {
-			return $this->pdo->query(sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageid FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql));
+			return $this->pdo->query(
+						sprintf("
+							SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate,
+								userseries.id AS userseriesid
+							FROM tvrage
+							LEFT OUTER JOIN userseries ON userseries.userid = %d
+								AND userseries.rageid = tvrage.rageid
+							WHERE tvrage.rageid IN (SELECT DISTINCT rageid FROM releases WHERE categoryid BETWEEN 5000 AND 5999 AND rageid > 0)
+							AND tvrage.rageid > 0 %s %s
+							GROUP BY tvrage.rageid
+							ORDER BY tvrage.releasetitle ASC",
+							$uid,
+							$rsql,
+							$tsql
+						)
+			);
 		} else {
-			return $this->pdo->query(sprintf("SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate, userseries.id as userseriesid from tvrage LEFT OUTER JOIN userseries ON userseries.userid = %d AND userseries.rageid = tvrage.rageid WHERE tvrage.rageid IN (SELECT rageid FROM releases) AND tvrage.rageid > 0 %s %s GROUP BY tvrage.rageid, tvrage.id, userseries.id ORDER BY tvrage.releasetitle ASC", $uid, $rsql, $tsql));
+			return $this->pdo->query(
+						sprintf("
+							SELECT tvrage.id, tvrage.rageid, tvrage.releasetitle, tvrage.genre, tvrage.country, tvrage.createddate, tvrage.prevdate, tvrage.nextdate,
+								userseries.id AS userseriesid
+							FROM tvrage
+							LEFT OUTER JOIN userseries ON userseries.userid = %d
+								AND userseries.rageid = tvrage.rageid
+							WHERE tvrage.rageid IN (SELECT DISTINCT rageid FROM releases WHERE categoryid BETWEEN 5000 AND 5999 AND rageid > 0)
+							AND tvrage.rageid > 0 %s %s
+							GROUP BY tvrage.rageid, tvrage.id, userseries.id
+							ORDER BY tvrage.releasetitle ASC",
+							$uid,
+							$rsql,
+							$tsql
+						)
+			);
 		}
 	}
 
@@ -642,20 +672,30 @@ class TvRage
 		$this->add($rageid, $show['cleanname'], $desc, $genre, $country, $imgbytes);
 	}
 
-	public function processTvReleases($releaseToWork = '', $lookupTvRage = true, $local = false)
+	public function processTvReleases($groupID = '', $guidChar = '', $lookupTvRage = true, $local = false)
 	{
 		$ret = 0;
 		$trakt = new TraktTv();
 
 		// Get all releases without a rageid which are in a tv category.
-		if ($releaseToWork == '') {
-			$res = $this->pdo->query(sprintf("SELECT r.searchname, r.id FROM releases r WHERE r.nzbstatus = 1 AND r.rageid = -1 AND r.size > 1048576 AND r.categoryid BETWEEN 5000 AND 5999 ORDER BY r.postdate DESC LIMIT %d", $this->rageqty));
-			$tvcount = count($res);
-		} else {
-			$pieces = explode("           =+=            ", $releaseToWork);
-			$res = array(array('searchname' => $pieces[0], 'id' => $pieces[1]));
-			$tvcount = 1;
-		}
+
+		$res = $this->pdo->query(
+			sprintf("
+				SELECT r.searchname, r.id
+				FROM releases r
+				WHERE r.nzbstatus = 1
+				AND r.rageid = -1
+				AND r.size > 1048576
+				AND r.categoryid BETWEEN 5000 AND 5999
+				%s %s
+				ORDER BY r.postdate DESC
+				LIMIT %d",
+				($groupID === '' ? '' : 'AND r.group_id = ' . $groupID),
+				($guidChar === '' ? '' : 'AND r.guid ' . $this->pdo->likeString($guidChar, true, false)),
+				$this->rageqty
+			)
+		);
+		$tvcount = count($res);
 
 		if ($this->echooutput && $tvcount > 1) {
 			echo $this->c->header("Processing TV for " . $tvcount . " release(s).");

@@ -24,17 +24,11 @@ count = 0
 print(bcolors.HEADER + "\nBinaries Safe Threaded Started at {}".format(datetime.datetime.now().strftime("%H:%M:%S")) + bcolors.ENDC)
 
 #get values from db
-cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'binarythreads') AS a, (SELECT value FROM settings WHERE setting = 'maxmssgs') AS b, (SELECT value FROM settings WHERE setting = 'hashcheck') AS c")
+cur[0].execute("SELECT (SELECT value FROM settings WHERE setting = 'binarythreads') AS a, (SELECT value FROM settings WHERE setting = 'maxmssgs') AS b")
 dbgrab = cur[0].fetchall()
 
 run_threads = int(dbgrab[0][0])
 maxmssgs = int(dbgrab[0][1])
-hashcheck = int(dbgrab[0][2])
-
-if hashcheck == 0:
-	print(bcolors.ERROR + "We have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp misc/testing/DB/reset_Collections.php true" + bcolors.ENDC)
-	info.disconnect(cur[0], cur[1])
-	sys.exit()
 
 #before we get the groups, lets update shortgroups
 subprocess.call(["php", pathname+"/../nix/tmux/bin/update_groups.php", ""])

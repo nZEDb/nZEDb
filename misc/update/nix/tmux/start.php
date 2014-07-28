@@ -14,16 +14,9 @@ passthru('clear');
 
 $patch = $pdo->getSetting('sqlpatch');
 $patch = ($patch != '') ? $patch : 0;
-$hashcheck = $pdo->getSetting('hashcheck');
-$hashcheck = ($hashcheck != '') ? $hashcheck : 0;
 $delaytimet = $pdo->getSetting('delaytime');
 $delaytimet = ($delaytimet) ? (int)$delaytimet : 2;
 $nntpproxy = $pdo->getSetting('nntpproxy');
-
-// Check collections version
-if ($hashcheck != 1) {
-	exit($c->error("\nWe have updated the way collections are created, the collection table has to be updated to use the new changes.\nphp ${DIR}testing/DB/reset_Collections.php true\n"));
-}
 
 // Search for NNTPProxy session that might be running froma userthreaded.php run. Setup a clean environment to run in.
 exec("tmux list-session | grep NNTPProxy", $nntpkill);

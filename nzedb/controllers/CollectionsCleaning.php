@@ -356,6 +356,10 @@ class CollectionsCleaning
 		if (preg_match('/^([a-zA-Z0-9].+?\s{2,}|Old Dad uppt\s+)(.+?) \d+\/\d+\] - ".+?" yEnc$/', $this->subject, $match)) {
 			return $match[1] . $match[2];
 		}
+		//[28/55] - "XzrgzBWoRqtcuBF.part27.rar" - 4,78 GB >>>UpperTeam for Usenet-Space-Cowboys.info and Secretusenet.com<<< yEnc
+		if (preg_match('/^\[\d+\/(\d+\][ _-]{0,3}".+?)' . $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB].+UpperTeam.+ Secretusenet\.com.+yEnc$/', $this->subject, $match)) {
+			return $match[1];
+		}
 		return $this->generic();
 	}
 
@@ -1954,6 +1958,9 @@ class CollectionsCleaning
 		} //<-{Retrouvez-nous sur NextDownload}-> > >"Next1023"[15/24] - "Next1023.9.vol001+001.par2" yEnc
 		if (preg_match('/^<-{Retrouvez-nous sur NextDownload}-> > >"(\w+)"\[\d+\/(\d+\])[ _-]{0,3}".+?' . $this->e1, $this->subject, $match)) {
 			return $match[1] . $match[2];
+		} //[28/55] - "XzrgzBWoRqtcuBF.part27.rar" - 4,78 GB >>>UpperTeam for Usenet-Space-Cowboys.info and Secretusenet.com<<< yEnc
+		if (preg_match('/^\[\d+\/(\d+\][ _-]{0,3}".+?)' . $this->e0 . '[- ]{0,3}\d+[.,]\d+ [kKmMgG][bB].+UpperTeam.+ Secretusenet\.com.+yEnc$/', $this->subject, $match)) {
+			return $match[1];
 		}
 		return $this->generic();
 	}

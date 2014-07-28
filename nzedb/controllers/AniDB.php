@@ -272,7 +272,7 @@ class AniDB
 	function processAnAnimeRelease($results)
 	{
 		$pdo = $this->pdo;
-		$ri = new ReleaseImage();
+		$ri = new ReleaseImage($this->pdo);
 
 		if (count($results) > 0) {
 			if ($this->echooutput) {

@@ -80,8 +80,12 @@ class Settings extends DB
 	public function getSetting($options = array())
 	{
 		if (!is_array($options)) {
-			$options = ['setting' => $options];
+			$options = $this->_dottedToArray($options);
+			if (isset($options['setting']) && isset($this->settings[$options['setting']])) {
+				return $this->settings[$options['setting']];
+			}
 		}
+
 		$defaults = array(
 			'section'    => '',
 			'subsection' => '',
@@ -124,29 +128,50 @@ class Settings extends DB
 	/**
 	 * Set a setting in the database.
 	 *
-	 * @TODO not completed yet, do not use
-	 *
 	 * @param array $options Array containing the mandatory keys of 'section', 'subsection', and 'value'
+	 *
+	 * @return boolean	true or false indicating success/failure.
 	 */
 	public function setSetting(array $options)
 	{
-		$defaults = [
-			'section'    => '',
-			'subsection' => '',
-			'value'      => '',
-			'setting'    => '',
-		];
-		$options += $defaults;
-		$temp1 = $options['section'] . $options['subsection'] . $options['value'];
-		$temp2 = $options['section'] . $options['subsection'] . $options['setting'];
-		if (empty($temp1) && empty($temp2)) {
-			return false;
+		if (count($options) == 1) {
+			foreach ($options as $key => $value) {
+				$options = $this->_dottedToArray($key);
+				$options['value'] = $value;
+			}
 		}
 
-		extract($options);
+		$where    = $result = false;
+		$defaults = [
+			'section'    => null,
+			'subsection' => null,
+			'name'       => '',
+			'value'      => null,
+			'setting'    => null,
+		];
+		$options += $defaults;
 
+		$temp1 = $options['section'] . $options['subsection'] . $options['name'];
+		$temp2 = $options['section'] . $options['subsection'] . $options['setting'];
+		if (!empty($temp1) || !empty($temp2)) {
+			if (empty($temp1)) {
+				if (isset($this->settings[$options['setting']])) {
+					$this->settings[$options['setting']] = $options['value'];
+				}
+				$result = $this->update($options);
+			} else if (!empty($options['name'])) {
+				$where = sprintf("name = '%s'", $options['name']);
+				$where .= ($options['section'] === null) ? '' : sprintf(" AND section = '%s'", $options['section']);
+				$where .= ($options['subsection'] === null) ? '' : sprintf(" AND subsection = '%s'", $options['subsection']);
 
-		return '';
+				$sql    = sprintf("UPDATE settings SET value = '%s' WHERE %s",
+								  $options['value'],
+								  $where);
+				$result = self::$_pdo->query($sql);
+			}
+		}
+
+		return ($result === false) ? false : true;
 	}
 
 	public function table()
@@ -188,6 +213,37 @@ class Settings extends DB
 			$ver = '0.0.0';
 		}
 		return $ver;
+	}
+
+	protected function _dottedToArray($setting)
+	{
+		$result = array();
+		if (is_string($setting)) {
+			$parts = explode('.', $setting);
+			switch (count($parts)) {
+				case 3:
+					list(
+						$result['section'],
+						$result['subsection'],
+						$result['name'],
+						) = $parts;
+					break;
+				case 2:
+					list(
+						$result['subsection'],
+						$result['name'],
+						) = $parts;
+					break;
+				case 1:
+					list(
+						$result['setting'],
+						) = $parts;
+					break;
+			}
+		} else {
+			$result = false;
+		}
+		return $result;
 	}
 
 	protected function _getFromSettings($options)

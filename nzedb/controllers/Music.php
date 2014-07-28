@@ -360,7 +360,7 @@ class Music
 	{
 		$pdo = $this->pdo;
 		$gen = new Genres();
-		$ri = new ReleaseImage();
+		$ri = new ReleaseImage($this->pdo);
 		$titlepercent = 0;
 
 		$mus = array();
