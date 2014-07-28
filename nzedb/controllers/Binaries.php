@@ -811,6 +811,8 @@ class Binaries
 							$headersNotInserted += $this->_rollbackAddToPartRepair(array($data['Parts']));
 							// Unset so we don't add to part repair again later if parts insert fails.
 							unset($articles[$subject]);
+							// Restart transaction.
+							$this->_pdo->beginTransaction();
 							continue;
 						}
 						// Buffer found collection hashes / ID's.
@@ -838,6 +840,7 @@ class Binaries
 					if ($binaryID === false) {
 						$headersNotInserted += $this->_rollbackAddToPartRepair(array($data['Parts']));
 						unset($articles[$subject]);
+						$this->_pdo->beginTransaction();
 						continue;
 					}
 
