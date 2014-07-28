@@ -8,25 +8,16 @@ $pdo = new Settings();
 $c = new ColorCLI();
 $consoleTools = new ConsoleTools(['ColorCLI' => $c]);
 
-$nntpProxy = $pdo->getSetting('nntpproxy');
-
 // Create the connection here and pass
 $nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
 if ($nntp->doConnect() !== true) {
 	exit($c->error("Unable to connect to usenet."));
-}
-if ($nntpProxy == "1") {
-	usleep(500000);
 }
 
 echo $c->header("Getting first/last for all your active groups.");
 $data = $nntp->getGroups();
 if ($nntp->isError($data)) {
 	exit($c->error("Failed to getGroups() from nntp server."));
-}
-
-if ($nntpProxy != "1") {
-	$nntp->doQuit();
 }
 
 echo $c->header("Inserting new values into shortgroups table.");

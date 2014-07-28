@@ -26,6 +26,6 @@ $msg = $nntp->getXOVER($first.'-'.$first);
 print_r($msg);
 
 // get postdate for an article
-$backfill = new Backfill(['NNTP' => $nntp, 'ColorCLI' => $c]);
-$newdate = $backfill->postdate($first, $groupArr);
+$binaries = new Binaries(['NNTP' => $nntp, 'ColorCLI' => $c]);
+$newdate = $binaries->postdate($first, $groupArr);
 echo $c->primary("The posted date for ".$group.", article ".$first." is ".date('Y-m-d H:i:s', $newdate));

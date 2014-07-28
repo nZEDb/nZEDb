@@ -688,7 +688,6 @@ class ReleaseRemover
 	protected function removeBlacklist()
 	{
 		$status = sprintf('AND status = %d', Binaries::BLACKLIST_ENABLED);
-		$where = '';
 
 		if (isset($this->blacklistID) && $this->blacklistID !== '' && $this->delete === false) {
 			$status = '';

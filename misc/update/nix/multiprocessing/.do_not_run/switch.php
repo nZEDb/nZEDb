@@ -52,9 +52,46 @@ switch ($options[1]) {
 	 * $options[4] => (string) Type: Binaries or Backfill
 	 */
 	case 'get_final':
+		$columns = array();
+		switch ($options[4]) {
+			case 'Binaries':
+				$columns[1] = 'last_record_postdate';
+				$columns[2] = 'last_record';
+				break;
+			case 'Backfill':
+				$columns[1] = 'first_record_postdate';
+				$columns[2] = 'first_record';
+				break;
+			default:
+				exit();
+		}
 		$pdo = new \nzedb\db\Settings();
-		$nntp = nntp($pdo);
-		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->getFinal($options[2], $options[3], $options[4]);
+		$groups = new Groups(['Settings' => $pdo]);
+		$groupID = $groups->getIDByName($options[2]);
+		$groupNames = $groups->getCBPTableNames(($pdo->getSetting('tablepergroup') == 1), $groupID);
+
+		$articleDate = $pdo->queryOneRow(
+			sprintf(
+				'SELECT UNIX_TIMESTAMP(c.dateadded) AS utime FROM %s c INNER JOIN %s p ON p.collectionid = c.id WHERE p.id = %d',
+				$groupNames['cname'],
+				$groupNames['pname'],
+				$options[3]
+			)
+		);
+
+		if ($articleDate === false) {
+			exit();
+		}
+
+		$pdo->queryExec(
+			sprintf(
+				'UPDATE groups SET %s = %s, %s = %s, last_updated = NOW() WHERE id = %d',
+				$columns[1], $pdo->from_unixtime($articleDate['utime']),
+				$columns[2], $options[3],
+				$groupID
+			)
+		);
+		echo 'Safe threaded ' . $options[4] .' completed for ' . $options[2] . '.' . PHP_EOL;
 		break;
 
 	/* Get a range of article headers for a group.
@@ -67,7 +104,14 @@ switch ($options[1]) {
 	case 'get_range':
 		$pdo = new \nzedb\db\Settings();
 		$nntp = nntp($pdo);
-		(new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]))->getRange($options[2], $options[3], $options[4], $options[5]);
+		$groups = new Groups(['Settings' => $pdo]);
+		$groupMySQL = $groups->getByName($options[2]);
+		if ($nntp->isError($nntp->selectGroup($groupMySQL['name']))) {
+			if ($nntp->isError($nntp->dataError($nntp, $groupMySQL['name']))) {
+				return;
+			}
+		}
+		(new Binaries(['NNTP' => $nntp, 'Settings' => $pdo, 'Groups' => $groups]))->scan($groupMySQL, $options[3], $options[4], ($pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill'));
 		break;
 
 	/* Do part repair for a group.
@@ -76,9 +120,9 @@ switch ($options[1]) {
 	 */
 	case 'part_repair':
 		$pdo = new \nzedb\db\Settings();
-		$nntp = nntp($pdo);
 		$groups = new Groups(['Settings' => $pdo]);
 		$groupMySQL = $groups->getByName($options[2]);
+		$nntp = nntp($pdo);
 		// Select group, here, only once
 		$data = $nntp->selectGroup($groupMySQL['name']);
 		if ($nntp->isError($data)) {
@@ -159,7 +203,7 @@ switch ($options[1]) {
 			$backFill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo], true);
 
 			// Update the group for new binaries.
-			(new Binaries(['NNTP' => $nntp, 'Backfill' => $backFill, 'Settings' => $pdo]))->updateGroup($groupMySQL);
+			(new Binaries(['NNTP' => $nntp, 'Settings' => $pdo]))->updateGroup($groupMySQL);
 
 			// BackFill the group with 20k articles.
 			$backFill->backfillAllGroups($groupMySQL['name'], 20000, 'normal');
