@@ -32,6 +32,9 @@ class adultdvdempire
 	/* Get and compare searchterm */
 	public $searchterm = null;
 
+	/* If a directlink is given retrieve and parse */
+	public $directlink = null;
+
 	/* Define param if trailing url is found get it and set it for future calls */
 	/* Anything after the $ADE url is trailing */
 	protected $urlfound = null;
@@ -50,9 +53,8 @@ class adultdvdempire
 	protected $reviews = "/reviews";
 	protected $trailers = "/trailers";
 
-	public function __construct($echooutput = true)
+	public function __construct()
 	{
-		$this->echooutput = ($echooutput && nZEDb_ECHOCLI);
 		$this->url = null;
 		$this->response = array();
 		$this->res = array();
@@ -142,15 +144,13 @@ class adultdvdempire
 	public function _sypnosis($tagline = false)
 	{
 		if ($tagline === true) {
-			if($this->html->find("p.Tagline", 0)){
-				$ret = $this->html->find("p.Tagline", 0);
-			if (!empty($ret->plaintext)) {
+			if($ret = $this->html->find("p.Tagline", 0)){
+				if (!empty($ret->plaintext)) {
 				$this->res['tagline'] = trim($ret->plaintext);
 			}
 			}
 		}
-		if ($this->html->find("p.Tagline", 0)->next_sibling()->next_sibling()) {
-			$ret = $this->html->find("p.Tagline", 0)->next_sibling()->next_sibling();
+		if ($ret = $this->html->find("p.Tagline", 0)->next_sibling()->next_sibling()) {
 			$this->res['sypnosis'] = trim($ret->innertext);
 		}
 
@@ -170,8 +170,7 @@ class adultdvdempire
 		$this->edithtml->load($this->tmprsp);
 
 
-		if ($this->edithtml->find("div[class=scast]", 0)) {
-		$ret = $this->edithtml->find("div[class=scast]", 0);
+		if ($ret = $this->edithtml->find("div[class=scast]", 0)) {
 		$this->tmprsp = trim($ret->outertext);
 		$ret = $this->edithtml->load($this->tmprsp);
 		foreach ($ret->find("a.PerformerName") as $a) {
@@ -206,8 +205,7 @@ class adultdvdempire
 	{
 		$this->tmprsp = str_ireplace("Section Categories", "scat", $this->response);
 		$this->edithtml->load($this->tmprsp);
-		if($this->edithtml->find("div[class=scat]", 0)){
-		$ret = $this->edithtml->find("div[class=scat]", 0);
+		if($ret = $this->edithtml->find("div[class=scat]", 0)){
 		$this->tmprsp = trim($ret->outertext);
 		$ret = $this->edithtml->load($this->tmprsp);
 
@@ -242,8 +240,7 @@ class adultdvdempire
 		$dofeature = null;
 		$this->tmprsp = str_ireplace("Section ProductInfo", "spdinfo", $this->response);
 		$this->edithtml->load($this->tmprsp);
-		if($this->edithtml->find("div[class=spdinfo]", 0)){
-		$ret = $this->edithtml->find("div[class=spdinfo]", 0);
+		if($ret = $this->edithtml->find("div[class=spdinfo]", 0)){
 		$this->tmprsp = trim($ret->outertext);
 		$ret = $this->edithtml->load($this->tmprsp);
 		foreach ($ret->find("text") as $strong) {
@@ -271,6 +268,21 @@ class adultdvdempire
 		return $this->res;
 	}
 
+	/**
+	 * Gets the direct link information and returns it
+	 * @return array|bool
+	 */
+	public function getdirect()
+	{
+		if (isset($this->directlink)) {
+			if ($this->_getadeurl() === false) {
+				return false;
+			} else {
+				$this->html->load($this->response);
+				return $this->_getall();
+			}
+		}
+	}
 	/**
 	 * Searches xxx name.
 	 * @return bool - True if releases has 90% match, else false
@@ -327,22 +339,27 @@ class adultdvdempire
 	{
 		if (isset($trailing)) {
 			$ch = curl_init(self::ADE . $trailing);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_HEADER, 0);
-			curl_setopt($ch, CURLOPT_VERBOSE, 0);
-			curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
-			curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-			$this->response = curl_exec($ch);
-			if (!$this->response) {
-				curl_close($ch);
-
-				return false;
-			}
+		}
+		if (isset($this->directlink)) {
+			$ch = curl_init($this->directlink);
+			$this->directlink = null;
+		}
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_VERBOSE, 0);
+		curl_setopt($ch, CURLOPT_USERAGENT, "Firefox/2.0.0.1");
+		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+		$this->response = curl_exec($ch);
+		if (!$this->response) {
 			curl_close($ch);
-		} else {
+
 			return false;
 		}
+		curl_close($ch);
+		return true;
 	}
+
+
 
 	/*
 	 * Gets all Information.

@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-28 taskym
+	* Add: Added IAFD, less memory usage, regex update #1431
 2014-07-27 bart39
 	* Chg: Don't display Releases that have not been processed by PP Additional (passwordstatus -1 to -6) if show passwords is set to not display potentially passworded. #1302
 2014-07-27 tasky
