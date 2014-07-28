@@ -651,7 +651,7 @@ class XXX
 		$cat = new Categorize(['Settings' => $this->pdo]);
 		if (!$cat->isMovieForeign($releaseName)) {
 			$name = '';
-			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|[Dd][Ii][Ss][Cc](\d+|\s*\.\d+)|XXX|BTS|DirFix|Trailer|WEBRiP|NFO)[^\w]';
+			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|[Dd][Ii][Ss][Cc](\d+|\s*\d+|\.\d+)|XXX|BTS|DirFix|Trailer|WEBRiP|NFO)[^\w]';
 
 			/* Initial scan of getting a name.
 			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
