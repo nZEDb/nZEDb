@@ -198,7 +198,7 @@ class Releases
 							"SELECT value
 							FROM settings
 							WHERE setting = 'showpasswordedrelease'");
-		$passwordStatus = '= 0';
+		$passwordStatus = sprintf('= %d', Releases::PASSWD_NONE) ;
 		if ($res === false) {
 			return $passwordStatus;
 		}
@@ -207,11 +207,11 @@ class Releases
 				return $passwordStatus;
 				break;
 			case $res['value'] == 1:
-				$passwordStatus = '<= 1';
+				$passwordStatus = sprintf('<= %d', Releases::PASSWD_POTENTIAL);
 				return $passwordStatus;
 				break;
 			case $res['value'] == 1:
-				$passwordStatus = '<= 10';
+				$passwordStatus = sprintf('<= %d', Releases::PASSWD_RAR);
 				return $passwordStatus;
 				break;
 			default:
