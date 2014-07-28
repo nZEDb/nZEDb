@@ -33,6 +33,11 @@ class hotmovies
 	 */
 	public $cookie = null;
 
+	/**
+	 * If a directlink is set parse it instead of search for it.
+	 * @var null
+	 */
+    public $directlink = null;
 	/*
 	 * Define HotMovies url http://www.hotmovies.com/search.php?words=bangin+the+boss&complete=on&search_in=video_title
 	 * Needed Search Queries Variables
@@ -81,8 +86,7 @@ class hotmovies
 	 */
 	public function _covers()
 	{
-		if ($this->html->find('div#large_cover, img#cover', 1)) {
-			$ret = $this->html->find('div#large_cover, img#cover', 1);
+		if ($ret = $this->html->find('div#large_cover, img#cover', 1)) {
 			$this->res['boxcover'] = trim($ret->src);
 			$this->res['backcover'] = str_ireplace(".cover",".back",trim($ret->src));
 		}else{
@@ -118,8 +122,7 @@ class hotmovies
 	{
 		$studio = false;
 		$director = false;
-		if ($this->html->find('div.page_video_info', 0)) {
-			$ret = $this->html->find('div.page_video_info', 0);
+		if ($ret = $this->html->find('div.page_video_info', 0)) {
 			foreach ($ret->find("text") as $e) {
 				$e = trim($e->innertext);
 				$e = str_replace(",", "", $e);
@@ -185,8 +188,7 @@ class hotmovies
 	 */
 	public function _genres()
 	{
-		if ($this->html->find('div.categories',0)) {
-			$ret = $this->html->find('div.categories',0);
+		if ($ret = $this->html->find('div.categories',0)) {
 			foreach ($ret->find('a') as $e) {
 				if(stristr($e->title,"->")){
 				$e = explode("->",$e->plaintext);
@@ -202,6 +204,23 @@ class hotmovies
 	}
 
 	/**
+	 * Directly gets the link if directlink is set, and parses it.
+	 *
+	 * @return array|bool
+	 */
+	public function getdirect()
+	{
+		if (isset($this->directlink)) {
+			if ($this->_gethmurl() === false) {
+				return false;
+			} else {
+				return $this->_getall();
+			}
+		}
+	}
+
+
+	/**
 	 * Searches for match against searchterm
 	 * @return bool, true if search >= 90%
 	 */
@@ -214,8 +233,7 @@ class hotmovies
 		if ($this->_gethmurl() === false) {
 			return false;
 		} else {
-			if ($this->html->find('h3[class=title]', 0)) {
-				$ret = $this->html->find('h3[class=title]', 0);
+			if ($ret = $this->html->find('h3[class=title]', 0)) {
 				if($ret->find('a[title]',0)){
 					$ret = $ret->find('a[title]', 0);
 					$title = trim($ret->title);
@@ -291,6 +309,10 @@ class hotmovies
 			$ch = curl_init($this->getlink);
 		} else {
 			$ch = curl_init(self::HMURL);
+		}
+		if(isset($this->directlink)){
+			$ch = curl_init($this->directlink);
+			$this->directlink = null;
 		}
 		if($usepost === true){
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
