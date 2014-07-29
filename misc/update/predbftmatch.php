@@ -6,7 +6,7 @@ use nzedb\db\Settings;
 $pdo = new Settings();
 
 if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric($argv[1]))) {
-	exit($pdo->cli->error(" This script tries to match a release name or searchname to a PreDB title by using Full Text Search Matching.\n"
+	exit($pdo->log->error(" This script tries to match a release name or searchname to a PreDB title by using Full Text Search Matching.\n"
 			. "It will first parse PreDB titles to match, order by oldest to newest pre.\n\n"
 			. "php predbftmatch.php 1000 show 1000	...: to limit to 1000 presently unsearched PreDB titles ordered by oldest to newest predate and show renaming offset title return by 1000.\n"
 			. "php predbftmatch.php full show		...: to run on all unmatched PreDB titles and show renaming.\n"
@@ -15,8 +15,8 @@ if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric
 			));
 }
 
-$consoletools = new ConsoleTools(['ColorCLI' => $pdo->cli]);
-$namefixer = new NameFixer(['ColorCLI' => $pdo->cli, 'ConsoleTools' => $consoletools, 'Settings' => $pdo]);
+$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+$namefixer = new NameFixer(['ColorCLI' => $pdo->log, 'ConsoleTools' => $consoletools, 'Settings' => $pdo]);
 $offset = '';
 
 $timestart = time();
@@ -54,7 +54,7 @@ $total = $titles->rowCount();
 
 if ($total > 1) {
 
-	echo $pdo->cli->header("\nMatching " . number_format($total) . " PreDB titles against release name or searchname.\n"
+	echo $pdo->log->header("\nMatching " . number_format($total) . " PreDB titles against release name or searchname.\n"
 			   . "'.' = No Match Found, '*' = Bad Match Parameters (Flood)\n\n");
 	sleep(2);
 
@@ -63,7 +63,7 @@ if ($total > 1) {
 		$searched = 0;
 		$matched = $namefixer->matchPredbFT($row, 1, 1, true, $show);
 		//echo "Pre Title " . $row['title'] . " is translated to search string: ";
-		//echo $pdo->cli->header($matched);
+		//echo $pdo->log->header($matched);
 		if ($matched > 0) {
 			$searched = 1;
 			$counted++;
@@ -80,10 +80,10 @@ if ($total > 1) {
 		}
 	}
 	if ($total > 0) {
-		echo $pdo->cli->header("\nRenamed " . number_format($counted) . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
+		echo $pdo->log->header("\nRenamed " . number_format($counted) . " releases in " . $consoletools->convertTime(TIME() - $timestart) . ".");
 	} else {
-		echo $pdo->cli->info("\nNothing to do.");
+		echo $pdo->log->info("\nNothing to do.");
 	}
 } else {
-	echo $pdo->cli->info("No work to process.\n");
+	echo $pdo->log->info("No work to process.\n");
 }

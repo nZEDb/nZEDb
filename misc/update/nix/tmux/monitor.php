@@ -126,14 +126,14 @@ $games_releases_proc_start = $movie_releases_proc_start = $show_query = $run_rel
 $last_history = "";
 
 // Analyze tables
-printf($pdo->cli->info("\nAnalyzing your tables to refresh your indexes."));
+printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
 $pdo->optimise(true, 'analyze');
 
-$mask1 = $pdo->cli->headerOver("%-18s") . " " . $pdo->cli->tmuxOrange("%-48.48s");
-$mask2 = $pdo->cli->headerOver("%-20s") . " " . $pdo->cli->tmuxOrange("%-33.33s");
-$mask3 = $pdo->cli->header("%-16.16s %25.25s %25.25s");
-$mask4 = $pdo->cli->primaryOver("%-16.16s") . " " . $pdo->cli->tmuxOrange("%25.25s %25.25s");
-$mask5 = $pdo->cli->tmuxOrange("%-16.16s %25.25s %25.25s");
+$mask1 = $pdo->log->headerOver("%-18s") . " " . $pdo->log->tmuxOrange("%-48.48s");
+$mask2 = $pdo->log->headerOver("%-20s") . " " . $pdo->log->tmuxOrange("%-33.33s");
+$mask3 = $pdo->log->header("%-16.16s %25.25s %25.25s");
+$mask4 = $pdo->log->primaryOver("%-16.16s") . " " . $pdo->log->tmuxOrange("%25.25s %25.25s");
+$mask5 = $pdo->log->tmuxOrange("%-16.16s %25.25s %25.25s");
 
 //create display
 passthru('clear');
@@ -215,7 +215,7 @@ while ($i > 0) {
 
 		$proc_work_result = $proc_work_result2 = $proc_work_result3 = $split_result = false;
 
-		echo $pdo->cli->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
+		echo $pdo->log->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
 		$time02 = time();
 
 		if ($dbtype == 'mysql') {
@@ -407,7 +407,7 @@ while ($i > 0) {
 	}
 
 	if (($proc_work_result == false) || ($proc_work_result2 == false) || ($proc_work_result3 == false) || ($split_result == false) || ($proc_tmux_result == false)) {
-		echo $pdo->cli->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
+		echo $pdo->log->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
 		exit;
 	}
 
@@ -647,9 +647,9 @@ while ($i > 0) {
 	}
 
 	if ($compressed === '1') {
-		$mask2 = $pdo->cli->headerOver("%-20s") . " " . $pdo->cli->tmuxOrange("%-33.33s");
+		$mask2 = $pdo->log->headerOver("%-20s") . " " . $pdo->log->tmuxOrange("%-33.33s");
 	} else {
-		$mask2 = $pdo->cli->alternateOver("%-20s") . " " . $pdo->cli->tmuxOrange("%-33.33s");
+		$mask2 = $pdo->log->alternateOver("%-20s") . " " . $pdo->log->tmuxOrange("%-33.33s");
 	}
 
 	//update display
@@ -747,7 +747,7 @@ while ($i > 0) {
 		printf($mask4, "Combined", $tmux_time . " " . $split_time . " " . $init_time . " " . $proc1_time . " " . $proc2_time . " " . $proc3_time . " " . $tpg_count_time, $tmux_time . " " . $split1_time . " " . $init1_time . " " . $proc11_time . " " . $proc21_time . " " . $proc31_time . " " . $tpg_count_1_time);
 
 		$pieces = explode(" ", $pdo->getAttribute(PDO::ATTR_SERVER_INFO));
-		echo $pdo->cli->primaryOver("\nThreads = ") . $pdo->cli->headerOver($pieces[4]) . $pdo->cli->primaryOver(', Opens ') . $pdo->cli->headerOver($pieces[14]) . $pdo->cli->primaryOver(', Tables = ') . $pdo->cli->headerOver($pieces[22]) . $pdo->cli->primaryOver(', Slow = ') . $pdo->cli->headerOver($pieces[11]) . $pdo->cli->primaryOver(', QPS = ') . $pdo->cli->header($pieces[28]);
+		echo $pdo->log->primaryOver("\nThreads = ") . $pdo->log->headerOver($pieces[4]) . $pdo->log->primaryOver(', Opens ') . $pdo->log->headerOver($pieces[14]) . $pdo->log->primaryOver(', Tables = ') . $pdo->log->headerOver($pieces[22]) . $pdo->log->primaryOver(', Slow = ') . $pdo->log->headerOver($pieces[11]) . $pdo->log->primaryOver(', QPS = ') . $pdo->log->header($pieces[28]);
 	}
 
 	//get list of panes by name

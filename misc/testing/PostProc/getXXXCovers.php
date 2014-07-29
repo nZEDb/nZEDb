@@ -11,7 +11,7 @@ $movie = new XXX(['Echo' => true, 'Settings' => $pdo]);
 
 $movies = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE cover = 0");
 if ($movies->rowCount() > 0) {
-	echo $pdo->cli->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
+	echo $pdo->log->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
 }
 
 foreach ($movies as $mov) {

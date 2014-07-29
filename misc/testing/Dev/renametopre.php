@@ -19,7 +19,7 @@ use nzedb\db\Settings;
 $pdo = new Settings();
 
 if (!(isset($argv[1]) && ($argv[1] == "all" || $argv[1] == "full" || $argv[1] == "preid" || is_numeric($argv[1])))) {
-	exit($pdo->cli->error(
+	exit($pdo->log->error(
 		"\nThis script will attempt to rename releases using regexes first from ReleaseCleaning.php and then from this file.\n"
 		. "An optional last argument, show, will display the release name changes.\n\n"
 		. "php $argv[0] full                    ...: To process all releases not previously renamed.\n"
@@ -46,7 +46,7 @@ function preName($argv, $argc)
 		$show = 3;
 	}
 	$counter = 0;
-	$pdo->cli = new ColorCLI();
+	$pdo->log = new ColorCLI();
 	$full = $all = $usepre = false;
 	$what = $where = $why = '';
 	if ($argv[1] === 'full') {
@@ -87,14 +87,14 @@ function preName($argv, $argc)
 		$why = ' WHERE 1=1';
 	}
 	resetSearchnames();
-	echo $pdo->cli->header(
+	echo $pdo->log->header(
 		"SELECT id, name, searchname, fromname, size, group_id, categoryid FROM releases" . $why . $what .
 		$where . ";\n"
 	);
 	$res = $pdo->queryDirect("SELECT id, name, searchname, fromname, size, group_id, categoryid FROM releases" . $why . $what . $where);
 	$total = $res->rowCount();
 	if ($total > 0) {
-		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->cli]);
+		$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 		foreach ($res as $row) {
 			$groupname = $groups->getByNameByID($row['group_id']);
 			$cleanerName = releaseCleaner($row['name'], $row['group_id'], $row['fromname'], $row['size'], $groupname, $usepre);
@@ -196,7 +196,7 @@ function preName($argv, $argc)
 						}
 					}
 				} else if ($show === 3 && preg_match('/^\[?\d*\].+?yEnc/i', $row['name'])) {
-					echo $pdo->cli->primary($row['name']);
+					echo $pdo->log->primary($row['name']);
 				}
 			}
 			if ($cleanName == $row['name']) {
@@ -209,15 +209,15 @@ function preName($argv, $argc)
 			}
 		}
 	}
-	echo $pdo->cli->header("\n" . number_format($pre) . " renamed using preDB Match\n" . number_format($external) . " renamed using ReleaseCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
+	echo $pdo->log->header("\n" . number_format($pre) . " renamed using preDB Match\n" . number_format($external) . " renamed using ReleaseCleaning.php\n" . number_format($internal) . " using renametopre.php\nout of " . number_format($total) . " releases.\n");
 	if (isset($argv[1]) && is_numeric($argv[1]) && !isset($argv[2])) {
-		echo $pdo->cli->header("Categorizing all releases using searchname from the last ${argv[1]} hours. This can take a while, be patient.");
+		echo $pdo->log->header("Categorizing all releases using searchname from the last ${argv[1]} hours. This can take a while, be patient.");
 	} else if (isset($argv[1]) && $argv[1] !== "all" && isset($argv[2]) && !is_numeric($argv[2]) && !preg_match('/\([\d, ]+\)/', $argv[2])) {
-		echo $pdo->cli->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
+		echo $pdo->log->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
 	} else if (isset($argv[1]) && isset($argv[2]) && (is_numeric($argv[2]) || preg_match('/\([\d, ]+\)/', $argv[2]))) {
-		echo $pdo->cli->header("Categorizing all non-categorized releases in ${argv[2]} using searchname. This can take a while, be patient.");
+		echo $pdo->log->header("Categorizing all non-categorized releases in ${argv[2]} using searchname. This can take a while, be patient.");
 	} else {
-		echo $pdo->cli->header("Categorizing all releases using searchname. This can take a while, be patient.");
+		echo $pdo->log->header("Categorizing all releases using searchname. This can take a while, be patient.");
 	}
 	$timestart = TIME();
 	if (isset($argv[1]) && is_numeric($argv[1])) {
@@ -239,12 +239,12 @@ function preName($argv, $argc)
 	} else {
 		$relcount = categorizeRelease("searchname", "WHERE (iscategorized = 0 OR categoryID = 7010) AND adddate > NOW() - INTERVAL " . $argv[1] . " HOUR", true);
 	}
-	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->cli]);
+	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$time = $consoletools->convertTime(TIME() - $timestart);
-	echo $pdo->cli->header("Finished categorizing " . number_format($relcount) . " releases in " . $time . " seconds, using the usenet subject.\n");
+	echo $pdo->log->header("Finished categorizing " . number_format($relcount) . " releases in " . $time . " seconds, using the usenet subject.\n");
 	/*
 	  if (isset($argv[1]) && $argv[1] !== "all") {
-	  echo $pdo->cli->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
+	  echo $pdo->log->header("Categorizing all non-categorized releases in other->misc using searchname. This can take a while, be patient.");
 	  $timestart1 = TIME();
 	  if (isset($argv[2]) && is_numeric($argv[2])) {
 	  $relcount = categorizeRelease("name", str_replace(" AND", "WHERE", $where), true);
@@ -253,7 +253,7 @@ function preName($argv, $argc)
 	  }
 	  $consoletools1 = new ConsoleTools();
 	  $time1 = $consoletools1->convertTime(TIME() - $timestart1);
-	  echo $pdo->cli->header("Finished categorizing " . number_format($relcount) . " releases in " . $time1 . " seconds, using the searchname.\n");
+	  echo $pdo->log->header("Finished categorizing " . number_format($relcount) . " releases in " . $time1 . " seconds, using the searchname.\n");
 	  }
 	 */
 	resetSearchnames();
@@ -262,23 +262,23 @@ function preName($argv, $argc)
 function resetSearchnames()
 {
 	global $pdo;
-	echo $pdo->cli->header("Resetting blank searchnames.");
+	echo $pdo->log->header("Resetting blank searchnames.");
 	$bad = $pdo->queryDirect(
 		"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
 		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE searchname = ''"
 	);
 	$tot = $bad->rowCount();
 	if ($tot > 0) {
-		echo $pdo->cli->primary(number_format($tot) . " Releases had no searchname.");
+		echo $pdo->log->primary(number_format($tot) . " Releases had no searchname.");
 	}
-	echo $pdo->cli->header("Resetting searchnames that are 8 characters or less.");
+	echo $pdo->log->header("Resetting searchnames that are 8 characters or less.");
 	$run = $pdo->queryDirect(
 		"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
 		. "preid = 0, searchname = name, isrenamed = 0, iscategorized = 0 WHERE LENGTH(searchname) <= 8 AND LENGTH(name) > 8"
 	);
 	$total = $run->rowCount();
 	if ($total > 0) {
-		echo $pdo->cli->primary(number_format($total) . " Releases had searchnames that were 8 characters or less.");
+		echo $pdo->log->primary(number_format($total) . " Releases had searchnames that were 8 characters or less.");
 	}
 }
 
@@ -289,9 +289,9 @@ function categorizeRelease($type, $where, $echooutput = false)
 {
 	global $pdo;
 	$cat = new Categorize(['Settings' => $pdo]);
-	$consoletools = new consoleTools(['ColorCLI' => $pdo->cli]);
+	$consoletools = new consoleTools(['ColorCLI' => $pdo->log]);
 	$relcount = 0;
-	echo $pdo->cli->primary("SELECT id, " . $type . ", group_id FROM releases " . $where);
+	echo $pdo->log->primary("SELECT id, " . $type . ", group_id FROM releases " . $where);
 	$resrel = $pdo->queryDirect("SELECT id, " . $type . ", group_id FROM releases " . $where);
 	$total = $resrel->rowCount();
 	if ($total > 0) {

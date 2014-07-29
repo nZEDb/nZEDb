@@ -9,7 +9,7 @@ $console = new Console(['Echo' => true, 'Settings' => $pdo]);
 
 $res = $pdo->queryDirect(sprintf("SELECT searchname, id FROM releases WHERE consoleinfoid IS NULL AND categoryid BETWEEN 1000 AND 1999 ORDER BY id DESC" ));
 if ($res->rowCount() > 0) {
-	echo $pdo->cli->header("Updating console info for " . number_format($res->rowCount()) . " releases.");
+	echo $pdo->log->header("Updating console info for " . number_format($res->rowCount()) . " releases.");
 
 	foreach ($res as $arr) {
 		$starttime = microtime(true);
@@ -17,14 +17,14 @@ if ($res->rowCount() > 0) {
 		if ($gameInfo !== false) {
 			$game = $console->updateConsoleInfo($gameInfo);
 			if ($game === false) {
-				echo $pdo->cli->primary($gameInfo['release'] . ' not found');
+				echo $pdo->log->primary($gameInfo['release'] . ' not found');
 			}
 		}
 
 		// amazon limits are 1 per 1 sec
 		$diff = floor((microtime(true) - $starttime) * 1000000);
 		if (1000000 - $diff > 0) {
-			echo $pdo->cli->alternate("Sleeping");
+			echo $pdo->log->alternate("Sleeping");
 			usleep(1000000 - $diff);
 		}
 	}

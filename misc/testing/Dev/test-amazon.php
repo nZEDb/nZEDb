@@ -15,8 +15,8 @@ catch(Exception $e){$result = false;}
 
 if ($result !== false) {
 	print_r($result);
-	exit($pdo->cli->header("\nLooks like it is working alright."));
+	exit($pdo->log->header("\nLooks like it is working alright."));
 } else {
 	print_r($e);
-	exit($pdo->cli->error("\nThere was a problem attemtping to query amazon. Maybe your keys or wrong, or you are being throttled.\n"));
+	exit($pdo->log->error("\nThere was a problem attemtping to query amazon. Maybe your keys or wrong, or you are being throttled.\n"));
 }

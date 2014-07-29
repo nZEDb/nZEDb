@@ -11,10 +11,10 @@ $tvrage = new TvRage(['Settings' => $pdo, 'Echo' => true]);
 $shows = $pdo->queryDirect("SELECT rageid FROM tvrage WHERE imgdata IS NULL ORDER BY rageid DESC LIMIT 2000");
 if ($shows->rowCount() > 0) {
 	echo "\n";
-	echo $pdo->cli->header("Updating " . number_format($shows->rowCount()) . " tv shows.\n");
+	echo $pdo->log->header("Updating " . number_format($shows->rowCount()) . " tv shows.\n");
 } else {
 	echo "\n";
-	echo $pdo->cli->info("All shows in TvRage database have been updated.\n");
+	echo $pdo->log->info("All shows in TvRage database have been updated.\n");
 	usleep(5000000);
 }
 $loop = 0;
@@ -53,10 +53,10 @@ foreach ($shows as $show) {
 	}
 	$pdo->queryDirect(sprintf("UPDATE tvrage SET description = %s, genre = %s, country = %s, imgdata = %s WHERE rageid = %d", $pdo->escapeString(substr($desc, 0, 10000)), $pdo->escapeString(substr($genre, 0, 64)), $pdo->escapeString($country), $pdo->escapeString($imgbytes), $rageid));
 	$name = $pdo->query("Select releasetitle from tvrage where rageid = " . $rageid);
-	echo $pdo->cli->primary("Updated: " . $name[0]['releasetitle']);
+	echo $pdo->log->primary("Updated: " . $name[0]['releasetitle']);
 	$diff = floor((microtime(true) - $starttime) * 1000000);
 	if (1000000 - $diff > 0) {
-		echo $pdo->cli->alternate("Sleeping");
+		echo $pdo->log->alternate("Sleeping");
 		usleep(1000000 - $diff);
 	}
 }

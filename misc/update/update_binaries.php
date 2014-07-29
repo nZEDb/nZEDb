@@ -8,15 +8,15 @@ require_once dirname(__FILE__) . '/config.php';
 $pdo = new \nzedb\db\Settings();
 
 // Create the connection here and pass
-$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $pdo->cli]);
+$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $pdo->log]);
 if ($nntp->doConnect() !== true) {
-	exit($pdo->cli->error("Unable to connect to usenet."));
+	exit($pdo->log->error("Unable to connect to usenet."));
 }
-$binaries = new Binaries(['NNTP' => $nntp, 'ColorCLI' => $pdo->cli, 'Settings' => $pdo]);
+$binaries = new Binaries(['NNTP' => $nntp, 'ColorCLI' => $pdo->log, 'Settings' => $pdo]);
 
 if (isset($argv[1]) && !is_numeric($argv[1])) {
 	$groupName = $argv[1];
-	echo $pdo->cli->header("Updating group: $groupName");
+	echo $pdo->log->header("Updating group: $groupName");
 
 	$grp = new Groups(['Settings' => $pdo]);
 	$group = $grp->getByName($groupName);

@@ -10,7 +10,7 @@ $movie = new Movie(array('Echo' => true, 'Settings' => $pdo));
 
 $movies = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE cover = 0 ORDER BY year ASC, id DESC");
 if ($movies->rowCount() > 0) {
-	echo $pdo->cli->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
+	echo $pdo->log->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
 }
 
 foreach ($movies as $mov) {

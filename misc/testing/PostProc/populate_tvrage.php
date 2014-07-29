@@ -6,7 +6,7 @@ use nzedb\db\Settings;
 $pdo = new Settings();
 
 if (!isset($argv[1]) || $argv[1] != 'true') {
-	exit($pdo->cli->error("\nThis script will download all tvrage shows and insert into the db.\n\n"
+	exit($pdo->log->error("\nThis script will download all tvrage shows and insert into the db.\n\n"
 			. "php $argv[0] true    ...: To run.\n"));
 }
 
@@ -22,12 +22,12 @@ if ($tvshows !== false) {
 		}
 	}
 } else {
-	exit($pdo->cli->info("TVRage site has a hard limit of 400 concurrent API requests. At the moment, they have reached that limit. Please wait before retrying\n"));
+	exit($pdo->log->info("TVRage site has a hard limit of 400 concurrent API requests. At the moment, they have reached that limit. Please wait before retrying\n"));
 }
 if ($updated != 0) {
-	echo $pdo->cli->info("Inserted " . $updated . " new shows into the TvRage table.  To fill out the newly populated TvRage table\n"
+	echo $pdo->log->info("Inserted " . $updated . " new shows into the TvRage table.  To fill out the newly populated TvRage table\n"
 	. "php misc/testing/PostProc/updateTvRage.php\n");
 } else {
 	echo "\n";
-	echo $pdo->cli->info("TvRage database is already up to date!\n");
+	echo $pdo->log->info("TvRage database is already up to date!\n");
 }

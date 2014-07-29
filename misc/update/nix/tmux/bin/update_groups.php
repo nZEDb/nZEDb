@@ -5,21 +5,21 @@ use nzedb\db\Settings;
 
 $start = TIME();
 $pdo = new Settings();
-$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->cli]);
+$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 
 // Create the connection here and pass
 $nntp = new NNTP(['Settings' => $pdo]);
 if ($nntp->doConnect() !== true) {
-	exit($pdo->cli->error("Unable to connect to usenet."));
+	exit($pdo->log->error("Unable to connect to usenet."));
 }
 
-echo $pdo->cli->header("Getting first/last for all your active groups.");
+echo $pdo->log->header("Getting first/last for all your active groups.");
 $data = $nntp->getGroups();
 if ($nntp->isError($data)) {
-	exit($pdo->cli->error("Failed to getGroups() from nntp server."));
+	exit($pdo->log->error("Failed to getGroups() from nntp server."));
 }
 
-echo $pdo->cli->header("Inserting new values into shortgroups table.");
+echo $pdo->log->header("Inserting new values into shortgroups table.");
 
 $pdo->queryExec('TRUNCATE TABLE shortgroups');
 
@@ -29,10 +29,10 @@ $res = $pdo->query('SELECT name FROM groups WHERE active = 1 OR backfill = 1');
 foreach ($data as $newgroup) {
 	if (myInArray($res, $newgroup['group'], 'name')) {
 		$pdo->queryInsert(sprintf('INSERT INTO shortgroups (name, first_record, last_record, updated) VALUES (%s, %s, %s, NOW())', $pdo->escapeString($newgroup['group']), $pdo->escapeString($newgroup['first']), $pdo->escapeString($newgroup['last'])));
-		echo $pdo->cli->primary('Updated ' . $newgroup['group']);
+		echo $pdo->log->primary('Updated ' . $newgroup['group']);
 	}
 }
-echo $pdo->cli->header('Running time: ' . $consoleTools->convertTimer(TIME() - $start));
+echo $pdo->log->header('Running time: ' . $consoleTools->convertTimer(TIME() - $start));
 
 function myInArray($array, $value, $key)
 {

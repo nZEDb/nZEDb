@@ -8,11 +8,11 @@ $pdo = new Settings();
 if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 	$releases = new Releases(['Settings' => $pdo]);
 	$nzb = new NZB($pdo);
-	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->cli]);
+	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$timestart = time();
 	$checked = $deleted = 0;
 	$couldbe = $argv[1] === "true" ? $couldbe = "could be " : "were ";
-	echo $pdo->cli->header('Getting List of nzbs to check against db.');
+	echo $pdo->log->header('Getting List of nzbs to check against db.');
 	$dirItr = new RecursiveDirectoryIterator($pdo->getSetting('nzbpath'));
 	$itr = new RecursiveIteratorIterator($dirItr, RecursiveIteratorIterator::LEAVES_ONLY);
 	foreach ($itr as $filePath) {
@@ -43,11 +43,11 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 			$consoletools->overWritePrimary('Checking NZBs: ' . $deleted . ' nzbs of ' . ++$checked . ' releases checked ' . $couldbe . 'deleted from disk,  Running time: ' . $time);
 		}
 	}
-	echo $pdo->cli->header("\n" . number_format($checked) . ' nzbs checked, ' . number_format($deleted) . ' nzbs ' . $couldbe . 'deleted.');
+	echo $pdo->log->header("\n" . number_format($checked) . ' nzbs checked, ' . number_format($deleted) . ' nzbs ' . $couldbe . 'deleted.');
 
 	$timestart = time();
 	$checked = $deleted = 0;
-	echo $pdo->cli->header("Getting List of releases to check against nzbs.");
+	echo $pdo->log->header("Getting List of releases to check against nzbs.");
 	$res = $pdo->queryDirect('SELECT id, guid FROM releases');
 	if ($res->rowCount() > 0) {
 		foreach ($res as $row) {
@@ -66,9 +66,9 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 			$consoletools->overWritePrimary('Checking Releases: ' . $deleted . " releases have no nzb of " . ++$checked . " and " . $couldbe . "deleted from db,  Running time: " . $time);
 		}
 	}
-	echo $pdo->cli->header("\n" . number_format($checked) . " releases checked, " . number_format($deleted) . " releases " . $couldbe . "deleted.");
+	echo $pdo->log->header("\n" . number_format($checked) . " releases checked, " . number_format($deleted) . " releases " . $couldbe . "deleted.");
 } else {
-	exit($pdo->cli->error("\nThis script can remove all nzbs not found in the db and all releases with no nzbs found. It can also delete invalid nzbs.\n\n"
+	exit($pdo->log->error("\nThis script can remove all nzbs not found in the db and all releases with no nzbs found. It can also delete invalid nzbs.\n\n"
 			. "php $argv[0] true     ...: For a dry run, to see how many would be deleted.\n"
 			. "php $argv[0] delete   ...: To delete all affected.\n"));
 }

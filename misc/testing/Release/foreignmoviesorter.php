@@ -9,11 +9,11 @@ if (isset($argv[1]) && $argv[1] === "true") {
 	$results = getForeignMovies();
 	foreach ($results as $result) {
 		$cat = determineMovieCategory($result['searchname']);
-		echo $pdo->cli->headerOver("English track found for: ") . $pdo->cli->primary($result['searchname'] . ": " . $cat . " moving...");
+		echo $pdo->log->headerOver("English track found for: ") . $pdo->log->primary($result['searchname'] . ": " . $cat . " moving...");
 		updaterelease($result['id'], $cat);
 	}
 } else {
-	exit($pdo->cli->error("\nThis script attempts to recategorize foreign movies that have an english audio track.\n"
+	exit($pdo->log->error("\nThis script attempts to recategorize foreign movies that have an english audio track.\n"
 					. "php $argv[0] true       ...:recategorize foreign movies.\n"));
 }
 

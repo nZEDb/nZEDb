@@ -21,7 +21,7 @@ if (isset($argv[1])) {
 function create_guids($live, $delete = false)
 {
 	$pdo = new Settings();
-	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->cli]);
+	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$timestart = TIME();
 	$relcount = $deleted = 0;
 
@@ -32,7 +32,7 @@ function create_guids($live, $delete = false)
 	}
 	$total = $relrecs->rowCount();
 	if ($total > 0) {
-		echo $pdo->cli->header("Creating nzb_guids for " . number_format($total) . " releases.");
+		echo $pdo->log->header("Creating nzb_guids for " . number_format($total) . " releases.");
 		$releases = new Releases(['Settings' => $pdo]);
 		$nzb = new NZB($pdo);
 		$reccnt = 0;
@@ -80,7 +80,7 @@ function create_guids($live, $delete = false)
 				}
 			} else {
 				if (isset($delete) && $delete == 'delete') {
-					//echo $pdo->cli->primary($nzb->NZBPath($relrec['guid']) . " does not have an nzb, deleting.");
+					//echo $pdo->log->primary($nzb->NZBPath($relrec['guid']) . " does not have an nzb, deleting.");
 					$releases->deleteSingle($relrec['guid'], $nzb);
 				}
 			}
@@ -89,9 +89,9 @@ function create_guids($live, $delete = false)
 		if ($relcount > 0) {
 			echo "\n";
 		}
-		echo $pdo->cli->header("Updated " . $relcount . " release(s). This script ran for " . $consoletools->convertTime(TIME() - $timestart));
+		echo $pdo->log->header("Updated " . $relcount . " release(s). This script ran for " . $consoletools->convertTime(TIME() - $timestart));
 	} else {
-		echo $pdo->cli->info('Query time: ' . $consoletools->convertTime(TIME() - $timestart));
-		exit($pdo->cli->info("No releases are missing the guid."));
+		echo $pdo->log->info('Query time: ' . $consoletools->convertTime(TIME() - $timestart));
+		exit($pdo->log->info("No releases are missing the guid."));
 	}
 }

@@ -6,13 +6,13 @@ use nzedb\db\Settings;
 $pdo = new Settings();
 
 if (!isset($argv[1])) {
-	exit($pdo->cli->error("\nYou must supply a path as the first argument. Two additional, optional arguments can also be used.\n\n"
+	exit($pdo->log->error("\nYou must supply a path as the first argument. Two additional, optional arguments can also be used.\n\n"
 			. "php $argv[0] /path/to/import true 1000            ...: To import using the filename as release searchname, limited to 1000\n"
 			. "php $argv[0] /path/to/import false                ...: To import using the subject as release searchname\n"));
 }
 
-$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->cli]);
-$binaries = new Binaries(['Settings' => $pdo, 'ColorCLI' => $pdo->cli]);
+$consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
+$binaries = new Binaries(['Settings' => $pdo, 'ColorCLI' => $pdo->log]);
 $crosspostt = $pdo->getSetting('crossposttime');
 $crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
 $releasecleaning = new ReleaseCleaning($pdo);
@@ -20,7 +20,7 @@ $categorize = new Categorize(['Settings' => $pdo]);
 $nzbsperhour = $nzbSkipped = $maxtoprocess = 0;
 
 if (isset($argv[2]) && is_numeric($argv[2])) {
-	exit($pdo->cli->error("\nTo use a max number to process, it must be the third argument. \nTo run:\nphp nzb-import.php /path [true, false] 1000\n"));
+	exit($pdo->log->error("\nTo use a max number to process, it must be the third argument. \nTo run:\nphp nzb-import.php /path [true, false] 1000\n"));
 }
 if (!isset($argv[2])) {
 	$pieces = explode("   ", $argv[1]);
@@ -80,7 +80,7 @@ if (!isset($groups) || count($groups) == 0) {
 
 	//iterate over all nzb files in all folders and subfolders
 	if (!file_exists($path)) {
-		echo $pdo->cli->error("\nUnable to access " . $path . "  Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n");
+		echo $pdo->log->error("\nUnable to access " . $path . "  Only use a folder (/path/to/nzbs/, not /path/to/nzbs/file.nzb).\n");
 		return;
 	}
 	$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
@@ -226,12 +226,12 @@ if (!isset($groups) || count($groups) == 0) {
 				}
 				if (( $nzbCount >= $maxtoprocess) && ( $maxtoprocess != 0 )) {
 					$nzbsperhour = number_format(round($nzbCount / $seconds * 3600), 0);
-					exit($pdo->cli->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time) . "\nAveraged " . $nzbsperhour . " imports per hour from " . $path));
+					exit($pdo->log->header("\nProcessed " . number_format($nzbCount) . " nzbs in " . relativeTime($time) . "\nAveraged " . $nzbsperhour . " imports per hour from " . $path));
 				}
 				@unlink($nzbFile);
 			} else {
 				$pdo->queryExec(sprintf("DELETE FROM releases WHERE guid = %s AND postdate = %s AND size = %d", $pdo->escapeString($relguid), $pdo->escapeString($totalsize)));
-				echo $pdo->cli->error("\nFailed copying NZB, deleting release from DB.\n");
+				echo $pdo->log->error("\nFailed copying NZB, deleting release from DB.\n");
 				@unlink($nzbFile);
 				flush();
 				$importfailed = true;
@@ -241,7 +241,7 @@ if (!isset($groups) || count($groups) == 0) {
 	}
 }
 
-exit($pdo->cli->header("\nRunning Time: " . relativeTime($time) . "\n"
+exit($pdo->log->header("\nRunning Time: " . relativeTime($time) . "\n"
 		. "Processed:    " . number_format($nzbCount + $nzbSkipped) . "\n"
 		. "Imported:     " . number_format($nzbCount) . "\n"
 		. "Duplicates:   " . number_format($nzbSkipped)));

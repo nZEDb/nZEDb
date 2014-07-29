@@ -6,7 +6,7 @@ use nzedb\db\Settings;
 $pdo = new Settings();
 
 if (!isset($argv[1])) {
-	exit($pdo->cli->error("\nThis script gets all binary groups from usenet and compares against yours.\n\n"
+	exit($pdo->log->error("\nThis script gets all binary groups from usenet and compares against yours.\n\n"
 		. "php $argv[0] 1000000   ...: To show all groups you do not have with more than 1000000 posts per hour.\n"));
 }
 
@@ -17,10 +17,10 @@ if ($nntp->doConnect() !== true) {
 $data = $nntp->getGroups();
 
 if ($nntp->isError($data)) {
-	exit($pdo->cli->error("\nFailed to getGroups() from nntp server.\n"));
+	exit($pdo->log->error("\nFailed to getGroups() from nntp server.\n"));
 }
 if (!isset($data['group'])) {
-	exit($pdo->cli->error("\nFailed to getGroups() from nntp server.\n"));
+	exit($pdo->log->error("\nFailed to getGroups() from nntp server.\n"));
 }
 $nntp->doQuit();
 
@@ -40,8 +40,8 @@ foreach ($grps as $grp) {
 	if (!myInArray($res, $grp, "name")) {
 		$data = $pdo->queryOneRow(sprintf("SELECT (MAX(last_record) - MIN(first_record)) AS count, (MAX(last_record) - MIN(last_record))/(UNIX_TIMESTAMP(MAX(updated))-UNIX_TIMESTAMP(MIN(updated))) as per_second, (MAX(last_record) - MIN(last_record)) AS tracked, MIN(updated) AS firstchecked from allgroups WHERE name = %s", $pdo->escapeString($grp["name"])));
 		if (floor($data["per_second"]*3600) >= $minvalue) {
-			echo $pdo->cli->header($grp["name"]);
-			echo $pdo->cli->primary("Available Post Count: ".number_format($data["count"])."\n"
+			echo $pdo->log->header($grp["name"]);
+			echo $pdo->log->primary("Available Post Count: ".number_format($data["count"])."\n"
 				."Date First Checked:   ".$data["firstchecked"]."\n"
 				."Posts Since First:    ".number_format($data["tracked"])."\n"
 				."Average Per Hour:     ".number_format(floor($data["per_second"]*3600))."\n");
@@ -51,7 +51,7 @@ foreach ($grps as $grp) {
 }
 
 if ($counter == 0) {
-	echo $pdo->cli->info("No groups currently exceeding ".number_format($minvalue)." posts per hour. Try again in a few minutes.");
+	echo $pdo->log->info("No groups currently exceeding ".number_format($minvalue)." posts per hour. Try again in a few minutes.");
 }
 
 function myInArray($array, $value, $key){

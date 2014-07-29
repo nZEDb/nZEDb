@@ -8,7 +8,7 @@ if (!isset($argv[1])) {
 	$pdo = new nzedb\db\Settings();
 	$nntp = new NNTP(['Settings' => $pdo]);
 	if ($nntp->doConnect() !== true) {
-		exit($pdo->cli->error("Unable to connect to usenet."));
+		exit($pdo->log->error("Unable to connect to usenet."));
 	}
 	$backfill = new Backfill(['NNTP' => $nntp, 'Settings' => $pdo]);
 	$groups = new Groups(['Settings' => $pdo]);
@@ -23,10 +23,10 @@ function dogroup($name, $articles)
 	global $backfill, $pdo;
 
 	$backfill->backfillAllGroups($name, $articles);
-	echo $pdo->cli->primaryOver("Type y and press enter to continue, n to quit.\n");
+	echo $pdo->log->primaryOver("Type y and press enter to continue, n to quit.\n");
 	if (trim(fgets(fopen("php://stdin", "r"))) == 'y') {
 		return true;
 	} else {
-		exit($pdo->cli->primary("Done"));
+		exit($pdo->log->primary("Done"));
 	}
 }

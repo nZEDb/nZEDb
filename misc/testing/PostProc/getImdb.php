@@ -11,7 +11,7 @@ $movie = new Movie(['Echo' => true, 'Settings' => $pdo]);
 
 $movies = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE tmdbid IS NULL ORDER BY id ASC");
 if ($movies->rowCount() > 0) {
-	echo $pdo->cli->header("Updating movie info for " . number_format($movies->rowCount()) . " movies.");
+	echo $pdo->log->header("Updating movie info for " . number_format($movies->rowCount()) . " movies.");
 
 	foreach ($movies as $mov) {
 		$starttime = microtime(true);
