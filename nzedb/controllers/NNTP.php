@@ -105,7 +105,7 @@ class NNTP extends Net_NNTP_Client
 
 		$this->_debugBool = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debugBool) {
-			$this->_debugging = new Debugging(['Class' => 'NNTP', 'ColorCLI' => $this->pdo->cli]);
+			$this->_debugging = new Debugging(['Class' => 'NNTP', 'ColorCLI' => $this->pdo->log]);
 		}
 
 		$this->_nntpRetries = ($this->pdo->getSetting('nntpretries') != '') ? (int)$this->pdo->getSetting('nntpretries') : 0 + 1;
@@ -215,7 +215,7 @@ class NNTP extends Net_NNTP_Client
 				if ($this->_debugBool) {
 					$this->_debugging->start("doConnect", $message, Debugging::DEBUG_ERROR);
 				}
-				return $this->throwError($this->pdo->cli->error($message));
+				return $this->throwError($this->pdo->log->error($message));
 			}
 
 			// If we are connected, try to authenticate.
@@ -256,7 +256,7 @@ class NNTP extends Net_NNTP_Client
 						if ($this->_debugBool) {
 							$this->_debugging->start("doConnect", $message, Debugging::DEBUG_ERROR);
 						}
-						return $this->throwError($this->pdo->cli->error($message));
+						return $this->throwError($this->pdo->log->error($message));
 					}
 				}
 			}
@@ -285,7 +285,7 @@ class NNTP extends Net_NNTP_Client
 		if ($this->_debugBool) {
 			$this->_debugging->start("doConnect", $message, Debugging::DEBUG_ERROR);
 		}
-		return $this->throwError($this->pdo->cli->error($message));
+		return $this->throwError($this->pdo->log->error($message));
 	}
 
 	/**
@@ -539,7 +539,7 @@ class NNTP extends Net_NNTP_Client
 		$body = '';
 
 		$aConnected = false;
-		$nntp = ($alternate === true ? new NNTP(['Echo' => $this->_echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->pdo->cli]) : null);
+		$nntp = ($alternate === true ? new NNTP(['Echo' => $this->_echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->pdo->log]) : null);
 
 		// Check if the msgIds are in an array.
 		if (is_array($identifiers)) {
@@ -631,7 +631,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("getMessages", $message, Debugging::DEBUG_WARNING);
 			}
-			return $this->throwError($this->pdo->cli->error($message));
+			return $this->throwError($this->pdo->log->error($message));
 		}
 
 		if ($aConnected === true) {
@@ -817,7 +817,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("postArticle", $message, Debugging::DEBUG_NOTICE);
 			}
-			return $this->throwError($this->pdo->cli->error($message));
+			return $this->throwError($this->pdo->log->error($message));
 		}
 
 		$connected = $this->_checkConnection();
@@ -831,7 +831,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("postArticle", $message, Debugging::DEBUG_WARNING);
 			}
-			return $this->throwError($this->pdo->cli->error($message));
+			return $this->throwError($this->pdo->log->error($message));
 		}
 
 		if (strlen($from) > 510) {
@@ -839,7 +839,7 @@ class NNTP extends Net_NNTP_Client
 			if ($this->_debugBool) {
 				$this->_debugging->start("postArticle", $message, Debugging::DEBUG_WARNING);
 			}
-			return $this->throwError($this->pdo->cli->error($message));
+			return $this->throwError($this->pdo->log->error($message));
 		}
 
 		// Check if the group is string or array.
@@ -899,7 +899,7 @@ class NNTP extends Net_NNTP_Client
 			}
 
 			if ($this->_echo) {
-				$this->pdo->cli->doEcho($this->pdo->cli->error($message), true);
+				$this->pdo->log->doEcho($this->pdo->log->error($message), true);
 			}
 			$nntp->doQuit();
 		}
@@ -1229,7 +1229,7 @@ class NNTP extends Net_NNTP_Client
 			}
 
 			if ($this->_echo) {
-				$this->pdo->cli->doEcho($this->pdo->cli->error($msg), true);
+				$this->pdo->log->doEcho($this->pdo->log->error($msg), true);
 			}
 			$this->_compressionSupported = false;
 			return false;
@@ -1315,8 +1315,8 @@ class NNTP extends Net_NNTP_Client
 
 						$bytesReceived = strlen($data);
 						if ($this->_echo && $bytesReceived > 10240) {
-							$this->pdo->cli->doEcho(
-								$this->pdo->cli->primaryOver(
+							$this->pdo->log->doEcho(
+								$this->pdo->log->primaryOver(
 									'Received ' . round($bytesReceived / 1024) .
 									'KB from group (' . $this->group() . ').'
 								), true
@@ -1331,7 +1331,7 @@ class NNTP extends Net_NNTP_Client
 						if ($this->_debugBool) {
 							$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 						}
-						$message = $this->throwError($this->pdo->cli->error($message), 1000);
+						$message = $this->throwError($this->pdo->log->error($message), 1000);
 						return $message;
 					}
 
@@ -1355,7 +1355,7 @@ class NNTP extends Net_NNTP_Client
 					if ($this->_debugBool) {
 						$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 					}
-					$message = $this->throwError($this->pdo->cli->error($message), 1000);
+					$message = $this->throwError($this->pdo->log->error($message), 1000);
 					return $message;
 				}
 			}
@@ -1374,7 +1374,7 @@ class NNTP extends Net_NNTP_Client
 		if ($this->_debugBool) {
 			$this->_debugging->start("_getXFeatureTextResponse", $message, Debugging::DEBUG_NOTICE);
 		}
-		$message = $this->throwError($this->pdo->cli->error($message), 1000);;
+		$message = $this->throwError($this->pdo->log->error($message), 1000);;
 		return $message;
 	}
 

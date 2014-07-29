@@ -554,20 +554,20 @@ class Games
 
 		if ($gamesId) {
 			if ($this->echooutput) {
-				$this->pdo->cli->doEcho(
-					$this->pdo->cli->header("Added/updated game: ") .
-					$this->pdo->cli->alternateOver("   Title:    ") .
-					$this->pdo->cli->primary($con['title']) .
-					$this->pdo->cli->alternateOver("   Platform: ") .
-					$this->pdo->cli->primary($con['platform'])
+				$this->pdo->log->doEcho(
+					$this->pdo->log->header("Added/updated game: ") .
+					$this->pdo->log->alternateOver("   Title:    ") .
+					$this->pdo->log->primary($con['title']) .
+					$this->pdo->log->alternateOver("   Platform: ") .
+					$this->pdo->log->primary($con['platform'])
 				);
 			}
 			$con['cover'] = $ri->saveImage($gamesId, $con['coverurl'], $this->imgSavePath, 250, 250);
 		} else {
 			if ($this->echooutput) {
-				$this->pdo->cli->doEcho(
-					$this->pdo->cli->headerOver("Nothing to update: ") .
-					$this->pdo->cli->primary($con['title'] . " (" . $con['platform'] . ')' )
+				$this->pdo->log->doEcho(
+					$this->pdo->log->headerOver("Nothing to update: ") .
+					$this->pdo->log->primary($con['title'] . " (" . $con['platform'] . ')' )
 				);
 			}
 		}
@@ -647,7 +647,7 @@ class Games
 
 		if ($res !== false && $res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->pdo->cli->doEcho($this->pdo->cli->header("Processing " . $res->rowCount() . ' games release(s).'));
+				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' games release(s).'));
 			}
 
 			foreach ($res as $arr) {
@@ -660,9 +660,9 @@ class Games
 				if ($gameInfo !== false) {
 
 					if ($this->echooutput) {
-						$this->pdo->cli->doEcho(
-							$this->pdo->cli->headerOver('Looking up: ') .
-							$this->pdo->cli->primary($gameInfo['title'] . ' (' . $gameInfo['platform'] . ')' )
+						$this->pdo->log->doEcho(
+							$this->pdo->log->headerOver('Looking up: ') .
+							$this->pdo->log->primary($gameInfo['title'] . ' (' . $gameInfo['platform'] . ')' )
 						);
 					}
 
@@ -704,7 +704,7 @@ class Games
 			}
 		} else {
 			if ($this->echooutput) {
-				$this->pdo->cli->doEcho($this->pdo->cli->header('No games releases to process.'));
+				$this->pdo->log->doEcho($this->pdo->log->header('No games releases to process.'));
 			}
 		}
 	}

@@ -557,21 +557,21 @@ class Console
 
 		if ($consoleId) {
 			if ($this->echooutput) {
-				$this->pdo->cli->doEcho(
-					$this->pdo->cli->header("Added/updated game: ") .
-					$this->pdo->cli->alternateOver("   Title:    ") .
-					$this->pdo->cli->primary($con['title']) .
-					$this->pdo->cli->alternateOver("   Platform: ") .
-					$this->pdo->cli->primary($con['platform'])
+				$this->pdo->log->doEcho(
+					$this->pdo->log->header("Added/updated game: ") .
+					$this->pdo->log->alternateOver("   Title:    ") .
+					$this->pdo->log->primary($con['title']) .
+					$this->pdo->log->alternateOver("   Platform: ") .
+					$this->pdo->log->primary($con['platform'])
 				);
 			}
 
 			$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
 		} else {
 			if ($this->echooutput) {
-				$this->pdo->cli->doEcho(
-					$this->pdo->cli->headerOver("Nothing to update: ") .
-					$this->pdo->cli->primary(
+				$this->pdo->log->doEcho(
+					$this->pdo->log->headerOver("Nothing to update: ") .
+					$this->pdo->log->primary(
 						$con['title'] .
 						" (" .
 						$con['platform'] .
@@ -600,7 +600,7 @@ class Console
 
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->pdo->cli->doEcho($this->pdo->cli->header("Processing " . $res->rowCount() . ' console release(s).'));
+				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' console release(s).'));
 			}
 
 			foreach ($res as $arr) {
@@ -610,9 +610,9 @@ class Console
 				if ($gameInfo !== false) {
 
 					if ($this->echooutput) {
-						$this->pdo->cli->doEcho(
-							$this->pdo->cli->headerOver('Looking up: ') .
-							$this->pdo->cli->primary(
+						$this->pdo->log->doEcho(
+							$this->pdo->log->headerOver('Looking up: ') .
+							$this->pdo->log->primary(
 								$gameInfo['title'] .
 								' (' .
 								$gameInfo['platform'] . ')'
@@ -651,7 +651,7 @@ class Console
 				}
 			}
 		} else if ($this->echooutput) {
-			$this->pdo->cli->doEcho($this->pdo->cli->header('No console releases to process.'));
+			$this->pdo->log->doEcho($this->pdo->log->header('No console releases to process.'));
 		}
 	}
 

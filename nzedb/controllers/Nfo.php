@@ -234,7 +234,7 @@ class Nfo
 						'NNTP' => $nntp,
 						'Nfo'  => $this,
 						'Settings'   => $this->pdo,
-						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this, 'ColorCLI' => $this->pdo->cli])
+						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this, 'ColorCLI' => $this->pdo->log])
 					)
 				);
 				$nzbContents->parseNZB($release['guid'], $release['id'], $release['group_id']);
@@ -285,8 +285,8 @@ class Nfo
 		$nfoCount = count($res);
 
 		if ($nfoCount > 0) {
-			$this->pdo->cli->doEcho(
-				$this->pdo->cli->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					PHP_EOL .
 					($guidChar === '' ? '' : '[' . $guidChar . '] ') .
 					($groupID === '' ? '' : '[' . $groupID . '] ') .
@@ -321,7 +321,7 @@ class Nfo
 					foreach ($nfoStats as $row) {
 						$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
 					}
-					$this->pdo->cli->doEcho($this->pdo->cli->header($outString . '.'));
+					$this->pdo->log->doEcho($this->pdo->log->header($outString . '.'));
 				}
 			}
 
@@ -332,7 +332,7 @@ class Nfo
 					'NNTP' => $nntp,
 					'Nfo' => $this,
 					'Settings' => $this->pdo,
-					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo, 'ColorCLI' => $this->pdo->cli])
+					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo, 'ColorCLI' => $this->pdo->log])
 				)
 			);
 			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);
@@ -412,7 +412,7 @@ class Nfo
 				echo PHP_EOL;
 			}
 			if ($ret > 0) {
-				$this->pdo->cli->doEcho($ret . ' NFO file(s) found/processed.', true);
+				$this->pdo->log->doEcho($ret . ' NFO file(s) found/processed.', true);
 			}
 		}
 		return $ret;

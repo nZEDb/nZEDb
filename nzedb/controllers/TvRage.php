@@ -418,7 +418,7 @@ class TvRage
 		}
 		foreach ($countries as $country) {
 			if ($this->echooutput) {
-				echo $this->pdo->cli->headerOver('Updating schedule for: ') . $this->pdo->cli->primary($country['country']);
+				echo $this->pdo->log->headerOver('Updating schedule for: ') . $this->pdo->log->primary($country['country']);
 			}
 
 			$sched = nzedb\utility\getURL($this->xmlFullScheduleUrl . $country['country']);
@@ -490,12 +490,12 @@ class TvRage
 
 							// Output.
 							if ($this->echooutput) {
-								echo $this->pdo->cli->primary($epInfo['showname'] . " (" . $showId . "):");
+								echo $this->pdo->log->primary($epInfo['showname'] . " (" . $showId . "):");
 								if (isset($epInfo['prev']['day_time'])) {
-									echo $this->pdo->cli->headerOver("Prev EP: ") . $this->pdo->cli->primary("{$prev_ep} - " . date("m/d/Y H:i T", $epInfo['prev']['day_time']));
+									echo $this->pdo->log->headerOver("Prev EP: ") . $this->pdo->log->primary("{$prev_ep} - " . date("m/d/Y H:i T", $epInfo['prev']['day_time']));
 								}
 								if (isset($epInfo['next']['day_time'])) {
-									echo $this->pdo->cli->headerOver("Next EP: ") . $this->pdo->cli->primary("{$next_ep} - " . date("m/d/Y H:i T", $epInfo['next']['day_time']));
+									echo $this->pdo->log->headerOver("Next EP: ") . $this->pdo->log->primary("{$next_ep} - " . date("m/d/Y H:i T", $epInfo['next']['day_time']));
 								}
 								echo "\n";
 							}
@@ -512,12 +512,12 @@ class TvRage
 			} else {
 				// No response from tvrage.
 				if ($this->echooutput) {
-					echo $this->pdo->cli->info("Schedule not found.");
+					echo $this->pdo->log->info("Schedule not found.");
 				}
 			}
 		}
 		if ($this->echooutput) {
-			echo $this->pdo->cli->primary("Updated the TVRage schedule succesfully.");
+			echo $this->pdo->log->primary("Updated the TVRage schedule succesfully.");
 		}
 	}
 
@@ -615,7 +615,7 @@ class TvRage
 	public function updateEpInfo($show, $relid)
 	{
 		if ($this->echooutput) {
-			echo $this->pdo->cli->headerOver("Updating Episode: ") . $this->pdo->cli->primary($show['cleanname'] . " " . $show['seriesfull'] . (($show['year'] != '') ? ' ' . $show['year'] : '') . (($show['country'] != '') ? ' [' . $show['country'] . ']' : ''));
+			echo $this->pdo->log->headerOver("Updating Episode: ") . $this->pdo->log->primary($show['cleanname'] . " " . $show['seriesfull'] . (($show['year'] != '') ? ' ' . $show['year'] : '') . (($show['country'] != '') ? ' [' . $show['country'] . ']' : ''));
 		}
 
 		$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $this->pdo->escapeString($this->checkDate($show['airdate'])) : "NULL";
@@ -740,7 +740,7 @@ class TvRage
 		$tvcount = count($res);
 
 		if ($this->echooutput && $tvcount > 1) {
-			echo $this->pdo->cli->header("Processing TV for " . $tvcount . " release(s).");
+			echo $this->pdo->log->header("Processing TV for " . $tvcount . " release(s).");
 		}
 
 		foreach ($res as $arr) {
@@ -760,7 +760,7 @@ class TvRage
 				if ($id === false && $lookupTvRage) {
 					// If it doesnt exist locally and lookups are allowed lets try to get it.
 					if ($this->echooutput) {
-						echo $this->pdo->cli->primaryOver("TVRage ID for ") . $this->pdo->cli->headerOver($show['cleanname']) . $this->pdo->cli->primary(" not found in local db, checking web.");
+						echo $this->pdo->log->primaryOver("TVRage ID for ") . $this->pdo->log->headerOver($show['cleanname']) . $this->pdo->log->primary(" not found in local db, checking web.");
 					}
 
 					$tvrShow = $this->getRageMatch($show);
@@ -773,7 +773,7 @@ class TvRage
 						if ($traktArray !== false) {
 							if (isset($traktArray['show']['tvrage_id']) && $traktArray['show']['tvrage_id'] !== 0) {
 								if ($this->echooutput) {
-									echo $this->pdo->cli->primary('Found TVRage ID on trakt:' . $traktArray['show']['tvrage_id']);
+									echo $this->pdo->log->primary('Found TVRage ID on trakt:' . $traktArray['show']['tvrage_id']);
 								}
 								$this->updateRageInfoTrakt($traktArray['show']['tvrage_id'], $show, $traktArray, $arr['id']);
 							}
@@ -792,7 +792,7 @@ class TvRage
 					}
 				} else if ($id > 0) {
 					//if ($this->echooutput) {
-					//    echo $this->pdo->cli->AlternateOver("TV series: ") . $this->pdo->cli->header($show['cleanname'] . " " . $show['seriesfull'] . (($show['year'] != '') ? ' ' . $show['year'] : '') . (($show['country'] != '') ? ' [' . $show['country'] . ']' : ''));
+					//    echo $this->pdo->log->AlternateOver("TV series: ") . $this->pdo->log->header($show['cleanname'] . " " . $show['seriesfull'] . (($show['year'] != '') ? ' ' . $show['year'] : '') . (($show['country'] != '') ? ' [' . $show['country'] . ']' : ''));
 					// }
 					$tvairdate = (isset($show['airdate']) && !empty($show['airdate'])) ? $this->pdo->escapeString($this->checkDate($show['airdate'])) : "NULL";
 					$tvtitle = "NULL";
@@ -893,7 +893,7 @@ class TvRage
 				// Look for 100% title matches first.
 				if (isset($titleMatches[100])) {
 					if ($this->echooutput) {
-						echo $this->pdo->cli->primary('Found 100% match: "' . $titleMatches[100][0]['title'] . '"');
+						echo $this->pdo->log->primary('Found 100% match: "' . $titleMatches[100][0]['title'] . '"');
 					}
 					return $titleMatches[100][0];
 				}
@@ -901,7 +901,7 @@ class TvRage
 				// Look for 100% url matches next.
 				if (isset($urlMatches[100])) {
 					if ($this->echooutput) {
-						echo $this->pdo->cli->primary('Found 100% url match: "' . $urlMatches[100][0]['title'] . '"');
+						echo $this->pdo->log->primary('Found 100% url match: "' . $urlMatches[100][0]['title'] . '"');
 					}
 					return $urlMatches[100][0];
 				}
@@ -909,7 +909,7 @@ class TvRage
 				// Look for 100% aka matches next.
 				if (isset($akaMatches[100])) {
 					if ($this->echooutput) {
-						echo $this->pdo->cli->primary('Found 100% aka match: "' . $akaMatches[100][0]['title'] . '"');
+						echo $this->pdo->log->primary('Found 100% aka match: "' . $akaMatches[100][0]['title'] . '"');
 					}
 					return $akaMatches[100][0];
 				}
@@ -924,7 +924,7 @@ class TvRage
 					}
 
 					if ($this->echooutput) {
-						echo $this->pdo->cli->primary('Found ' . $mk . '% match: "' . $titleMatches[$mk][0]['title'] . '"');
+						echo $this->pdo->log->primary('Found ' . $mk . '% match: "' . $titleMatches[$mk][0]['title'] . '"');
 					}
 					return $titleMatches[$mk][0];
 				}
@@ -938,18 +938,18 @@ class TvRage
 					}
 
 					if ($this->echooutput) {
-						echo $this->pdo->cli->primary('Found ' . $ak . '% aka match: "' . $akaMatches[$ak][0]['title'] . '"');
+						echo $this->pdo->log->primary('Found ' . $ak . '% aka match: "' . $akaMatches[$ak][0]['title'] . '"');
 					}
 					return $akaMatches[$ak][0];
 				}
 
 				if ($this->echooutput) {
-					echo $this->pdo->cli->primary('No match found on TVRage trying Trakt.');
+					echo $this->pdo->log->primary('No match found on TVRage trying Trakt.');
 				}
 				return false;
 			} else {
 				if ($this->echooutput) {
-					echo $this->pdo->cli->primary('Nothing returned from tvrage.');
+					echo $this->pdo->log->primary('Nothing returned from tvrage.');
 				}
 				return false;
 			}
@@ -958,7 +958,7 @@ class TvRage
 		}
 
 		if ($this->echooutput) {
-			echo $this->pdo->cli->primary('No match found online.');
+			echo $this->pdo->log->primary('No match found online.');
 		}
 		return false;
 	}
