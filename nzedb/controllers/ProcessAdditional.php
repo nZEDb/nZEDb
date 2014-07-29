@@ -1606,8 +1606,6 @@ Class ProcessAdditional
 			$extension = '.avi';
 		}
 
-		var_dump($extension);
-
 		$tmpVideo = ($this->tmpPath . uniqid() . $extension);
 		// Get the real duration of the file.
 		$time = nzedb\utility\runCmd(
