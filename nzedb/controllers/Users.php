@@ -56,7 +56,7 @@ class Users
 		if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
 			require_once(nZEDb_LIBS . 'password_compat' . DS . 'lib' . DS . 'password.php');
 		}
-		$this->password_hash_cost = (defined('nZEDb_PASSWORD_HASH_COST') ? nZEDb_PASSWORD_HASH_COST : 10);
+		$this->password_hash_cost = (defined('nZEDb_PASSWORD_HASH_COST') ? nZEDb_PASSWORD_HASH_COST : 11);
 	}
 
 	/**

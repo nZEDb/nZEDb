@@ -1622,6 +1622,9 @@ Class ProcessAdditional
 				$numbers[1] -= 1;
 				$numbers[2] = '99';
 			}
+			// Manually pad the numbers in case they are 1 number. to get 02 for example instead of 2.
+			$numbers[1] = str_pad($numbers[1], 2, '0', STR_PAD_LEFT);
+			$numbers[2] = str_pad($numbers[2], 2, '0', STR_PAD_LEFT);
 			$time = ('00:00:' . $numbers[1] . '.' . $numbers[2]);
 		}
 

@@ -64,9 +64,9 @@ define('nZEDb_VERSIONS', nZEDb_LIB . 'build' . DS . 'nZEDb.xml');
 
 if (is_file(__DIR__ . DS . 'settings.php')) {
 	require_once(__DIR__ . DS . 'settings.php');
-	// Remove this in the future, this is for those who are nothing updating their settings.php file.
-	if (!defined('nZEDb_LOGAUTOLOADER')) {
-		define('nZEDb_LOGAUTOLOADER', false);
+	// Remove this in the future, here for those not updating settings.php
+	if (!defined('nZEDb_USE_SQL_TRANSACTIONS')) {
+		define('nZEDb_USE_SQL_TRANSACTIONS', true);
 	}
 } else {
 	define('ITEMS_PER_PAGE', '50');
@@ -91,6 +91,7 @@ if (is_file(__DIR__ . DS . 'settings.php')) {
 	define('nZEDb_FLOOD_CHECK', false);
 	define('nZEDb_FLOOD_WAIT_TIME', 5);
 	define('nZEDb_FLOOD_MAX_REQUESTS_PER_SECOND', 5);
+	define('nZEDb_USE_SQL_TRANSACTIONS', true);
 }
 
 require_once nZEDb_CORE . 'autoloader.php';

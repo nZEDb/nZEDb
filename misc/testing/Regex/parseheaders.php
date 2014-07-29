@@ -4,7 +4,6 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $group = $argv[1];
 $cleaner = new ReleaseCleaning();
-$c = new ColorCLI();
 
 if (isset($argv[1]) && file_exists($argv[1])) {
 	$filename = $argv[1];

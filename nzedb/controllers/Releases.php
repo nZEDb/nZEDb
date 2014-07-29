@@ -173,7 +173,7 @@ class Releases
 						AND rn.nfo IS NOT NULL
 						INNER JOIN category c ON c.id = r.categoryid
 						INNER JOIN category cp ON cp.id = c.parentid
-						WHERE nzbstatus = 1 AND r.passwordstatus <= %d %s %s %s %s
+						WHERE nzbstatus = 1 AND r.passwordstatus %s %s %s %s %s
 						ORDER BY %s %s %s",
 						$this->showPasswords(),
 						$catsrch,
@@ -198,8 +198,27 @@ class Releases
 							"SELECT value
 							FROM settings
 							WHERE setting = 'showpasswordedrelease'");
+		$passwordStatus = sprintf('= %d', Releases::PASSWD_NONE) ;
+		if ($res === false) {
+			return $passwordStatus;
+		}
 
-		return ($res === false ? 0 : $res['value']);
+		switch (true) {
+			case $res['value'] == 0:
+				return $passwordStatus;
+				break;
+			case $res['value'] == 1:
+				$passwordStatus = sprintf('<= %d', Releases::PASSWD_POTENTIAL);
+				return $passwordStatus;
+				break;
+			case $res['value'] == 10:
+				$passwordStatus = sprintf('<= %d', Releases::PASSWD_RAR);
+				return $passwordStatus;
+				break;
+			default:
+				return $passwordStatus;
+				break;
+		}
 	}
 
 	/**

@@ -6,6 +6,26 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-29 kevin
+	* Chg: Add ignore to latest patch for those with duplicates.
+	* Fix: Issue where avconv returns single digit time vs ffmpeg's double digit time format, pad the string adding the missing 0's to mimic ffmpeg's output.
+	* Chg: Speed up article inserts even more.
+	* Fix: Put check to see if we downloaded 1 article header or not when inserting into binaries table.
+	* Fix: Part repair issue in Binaries.
+	* Fix: Check for empty parts query.
+	* Chg: Raise default min password_hash cost to 11. As noted previously, you should run the script to figure out a decent cost for your system. 10 is not recommended anymore by the PHP developper.
+	* Chg: Modify find_password_hash_cost.php to accept a time target argument. Recommended values are between 0.2 and 0.5 seconds.
+	* Rem: Remove the forced require on multiprocessing settings.php as we do defined checks on all the vars anyways and all the settings are optional.
+2014-07-28 kevin
+	* Chg: Another massive boost to header insert speed.
+	* ---: With these changes, if you have not followed INSTALL.txt which says to change the MySQL max_allowed_packet to 16M (or more) you might have issues, be warned.
+	* ---: !!!!READ THIS!!!!: TPG users MUST run nzedb\build\_runonce\tpg_more_fixes.php
+	* Add: Debug message to binaries to show amount of bytes sent to MySQL when inserting parts.
+	* Add: Option to settings.php to disable SQL transactions. Update your settings.php file!
+2014-07-28 taskym
+	* Add: Added IAFD, less memory usage, regex update #1431
+2014-07-27 bart39
+	* Chg: Don't display Releases that have not been processed by PP Additional (passwordstatus -1 to -6) if show passwords is set to not display potentially passworded. #1302
 2014-07-27 tasky
 	* Fix: Popporn kept returning false #1425
 2014-07-27 ruhllatio

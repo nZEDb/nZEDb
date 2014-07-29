@@ -471,7 +471,9 @@
 				<td>
 					{html_options style="width:180px;" id="showpasswordedrelease" name='showpasswordedrelease' values=$passworded_ids output=$passworded_names selected=$site->showpasswordedrelease}
 					<div class="hint">Whether to show passworded or potentially passworded releases in browse, search, api and rss
-						feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.
+						feeds. Potentially passworded means releases which contain .cab or .ace files which are
+						typically password protected and will also exclude anything not processed by PostProcess
+						Additional.
 					</div>
 				</td>
 			</tr>
