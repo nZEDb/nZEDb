@@ -105,6 +105,7 @@ $last_history = "";
 // Analyze tables
 printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
 $pdo->optimise(true, 'analyze');
+passthru('clear');
 
 $mask1 = $pdo->log->headerOver("%-18s") . " " . $pdo->log->tmuxOrange("%-48.48s");
 $mask2 = $pdo->log->headerOver("%-20s") . " " . $pdo->log->tmuxOrange("%-33.33s");
@@ -286,7 +287,7 @@ while ($i > 0) {
 		$timer2 = time();
 	}
 
-	if (($runVar['counts']['proc1'] == false) || ($runVar['counts']['proc2'] == false) || ($runVar['counts']['proc3'] == false) || ($splitqry == false)) {
+	if (($proc1res == false) || ($proc2res == false) || ($proc3res == false) || ($splitres == false) || ($runVar['timers']['newOld'] == false)) {
 		echo $pdo->log->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
 		exit;
 	}
