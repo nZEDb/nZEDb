@@ -775,21 +775,29 @@ class Binaries
 		// End of processing headers.
 		$timeCleaning = number_format($startUpdate - $startCleaning, 2);
 
-		$binariesQuery = sprintf('INSERT INTO %s (id, partsize, currentparts) VALUES ', $tableNames['bname']);
-		foreach ($binariesUpdate as $binaryID => $binaries) {
-			$binariesQuery .= '(' . $binaryID . ',' . $binaries['Size'] . ',' . $binaries['Parts'] . '),';
+		$binariesQuery = $binariesCheck = sprintf('INSERT INTO %s (id, partsize, currentparts) VALUES ', $tableNames['bname']);
+		foreach ($binariesUpdate as $binaryID => $binary) {
+			$binariesQuery .= '(' . $binaryID . ',' . $binary['Size'] . ',' . $binary['Parts'] . '),';
 		}
+		$binariesQueryLength = strlen($binariesQuery);
 		$binariesQuery = rtrim($binariesQuery, ',') . ' ON DUPLICATE KEY UPDATE partsize = VALUES(partsize), currentparts = VALUES(currentparts)';
 
 		if ($this->_debug) {
 			$this->_colorCLI->doEcho(
 				$this->_colorCLI->debug(
-					'Sending ' . round(strlen($binariesQuery) / 1024, 2) . ' KB of binaries to MySQL'
+					'Sending ' . round($binariesQueryLength / 1024, 2) . ' KB of binaries to MySQL'
 				)
 			);
 		}
 
-		if ($this->_pdo->queryExec($binariesQuery) === false) {
+		// Check if we got any binaries.
+		if (strlen($binariesCheck) === $binariesQueryLength) {
+			$binariesCheck = true;
+		} else {
+			$binariesCheck = $this->_pdo->queryExec($binariesQuery);
+		}
+
+		if ($binariesCheck === false) {
 			$rangeNotReceived[] = $headersReceived;
 			$this->_pdo->Rollback();
 		} else {
