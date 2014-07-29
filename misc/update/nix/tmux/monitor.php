@@ -4,19 +4,17 @@ require_once dirname(__FILE__) . '/../../../../www/config.php';
 use nzedb\db\Settings;
 
 $pdo = new Settings();
+$t = new Tmux();
+$tmux = $t->get();
+
 $versions = \nzedb\utility\Utility::getValidVersionsFile();
-
-//exec('git log | grep "^commit" | wc -l', $commit);
 $git = new \nzedb\utility\Git();
-
 $version = $versions->versions->git->tag . 'r' . $git->commits();
 
 $DIR = nZEDb_MISC;
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
 
-$t = new Tmux();
-$tmux = $t->get();
 $seq = (isset($tmux->sequential)) ? $tmux->sequential : 0;
 $powerline = (isset($tmux->powerline)) ? $tmux->powerline : 0;
 $run_ircscraper = $tmux->run_ircscraper;
@@ -35,17 +33,8 @@ $reqHours = $pdo->getSetting('request_hours');
 $request_hours = isset($reqHours) ? $reqHours : 1;
 $pre_lim = '';
 
-if ($t->command_exist("python3")) {
-	$PYTHON = "python3 -OOu";
-} else {
-	$PYTHON = "python -OOu";
-}
-
-if ($t->command_exist("php5")) {
-	$PHP = "php5";
-} else {
-	$PHP = "php";
-}
+$PYTHON = ($t->command_exist("python3") ? 'python3 - OOu' : 'python -OOu');
+$PHP = ($t->command_exist("php5") ? 'php5' : 'php');
 
 if ($nntpproxy == 0) {
 	$port = NNTP_PORT;
@@ -279,6 +268,9 @@ while ($i > 0) {
 						}
 					}
 				}
+				//free up memory used by now stale data
+				unset($age, $run, $run1, $tables);
+
 				$runVar['timers']['newOld']['oldestcollection'] = $age;
 				$tpg_count_time = (time() - $timer07);
 				$tpg_count_1_time = (time() - $timer01);
@@ -302,6 +294,9 @@ while ($i > 0) {
 	foreach ($proc3res AS $proc3key => $proc3) {
 		$runVar['counts']['now'][$proc3key] = $proc3;
 	}
+
+	// now that we have merged our query data we can unset these to free up memory
+	unset($proc1res, $proc2res, $proc3res);
 
 	//reset monitor paths before assigning query values
 	$monitor_path = $monitor_path_a = $monitor_path_b = "";
@@ -645,13 +640,19 @@ while ($i > 0) {
 	}
 
 	if ($runVar['settings']['show_query'] == 1) {
-		echo "\n";
+		echo PHP_EOL;
 		printf($mask3, "Query Block", "Time", "Cumulative");
 		printf($mask3, "======================================", "=========================", "======================================");
 		printf($mask4, "Combined", $tmux_time . " " . $split_time . " " . $init_time . " " . $proc1_time . " " . $proc2_time . " " . $proc3_time . " " . $tpg_count_time, $tmux_time . " " . $split1_time . " " . $init1_time . " " . $proc11_time . " " . $proc21_time . " " . $proc31_time . " " . $tpg_count_1_time);
 
 		$pieces = explode(" ", $pdo->getAttribute(PDO::ATTR_SERVER_INFO));
-		echo $pdo->log->primaryOver("\nThreads = ") . $pdo->log->headerOver($pieces[4]) . $pdo->log->primaryOver(', Opens ') . $pdo->log->headerOver($pieces[14]) . $pdo->log->primaryOver(', Tables = ') . $pdo->log->headerOver($pieces[22]) . $pdo->log->primaryOver(', Slow = ') . $pdo->log->headerOver($pieces[11]) . $pdo->log->primaryOver(', QPS = ') . $pdo->log->header($pieces[28]);
+		echo $pdo->log->primaryOver("\nThreads = ") .
+					$pdo->log->headerOver($pieces[4]) . $pdo->log->primaryOver(', Opens = ') .
+					$pdo->log->headerOver($pieces[14]) . $pdo->log->primaryOver(', Tables = ') .
+					$pdo->log->headerOver($pieces[22]) . $pdo->log->primaryOver(', Slow = ') .
+					$pdo->log->headerOver($pieces[11]) . $pdo->log->primaryOver(', QPS = ') .
+					$pdo->log->header($pieces[28])
+		;
 	}
 
 	//get list of panes by name
@@ -680,11 +681,7 @@ while ($i > 0) {
 			break;
 	}
 
-	if (nZEDb_DEBUG) {
-		$show_time = "/usr/bin/time";
-	} else {
-		$show_time = "";
-	}
+	(nZEDb_DEBUG ? $show_time = "/usr/bin/time" : $show_time = "");
 
 	$_php = $show_time . " nice -n{$runVar['settings']['niceness']} $PHP";
 	$_phpn = "nice -n{$runVar['settings']['niceness']} $PHP";
