@@ -15,6 +15,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Check for empty parts query.
 	* Chg: Raise default min password_hash cost to 11. As noted previously, you should run the script to figure out a decent cost for your system. 10 is not recommended anymore by the PHP developper.
 	* Chg: Modify find_password_hash_cost.php to accept a time target argument. Recommended values are between 0.2 and 0.5 seconds.
+	* Rem: Remove the forced require on multiprocessing settings.php as we do defined checks on all the vars anyways and all the settings are optional.
 2014-07-28 kevin
 	* Chg: Another massive boost to header insert speed.
 	* ---: With these changes, if you have not followed INSTALL.txt which says to change the MySQL max_allowed_packet to 16M (or more) you might have issues, be warned.
