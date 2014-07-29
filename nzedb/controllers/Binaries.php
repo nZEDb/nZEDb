@@ -852,6 +852,14 @@ class Binaries
 					}
 				}
 
+				if ($this->_debug) {
+					$this->_colorCLI->doEcho(
+						$this->_colorCLI->debug(
+							'Sending ' . round(strlen($partsQuery) / 1024, 2) . ' KB of parts to MySQL'
+						)
+					);
+				}
+
 				if ($this->_pdo->queryExec(rtrim($partsQuery, ',')) === false) {
 					$headersNotInserted += $this->_rollbackAddToPartRepair($articles);
 				} else {
