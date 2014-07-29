@@ -1614,7 +1614,7 @@ Class ProcessAdditional
 
 		$time = (isset($time[0]) ? $time[0] : '');
 
-		if ($time !== '' && preg_match('/(\d{1,2}).(\d{2})/', $time, $numbers)) {
+		if ($time !== '' && preg_match('/(\d{1,2}).(\d{1,2})/', $time, $numbers)) {
 			// Reduce the last number by 1, this is to make sure we don't ask avconv/ffmpeg for non existing data.
 			if ($numbers[2] > 0) {
 				$numbers[2] -= 1;
