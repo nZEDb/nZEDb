@@ -3,12 +3,12 @@ require_once dirname(__FILE__) . '/../../../config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$pdo = new Settings();
+
 if (!isset($argv[1])) {
-	exit($c->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
+	exit($pdo->log->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
 } else if (isset($argv[1])) {
-	$pdo = new Settings();
-	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c]);
+	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $pdo->log]);
 	$pieces = explode(' ', $argv[1]);
 	$guidChar = $pieces[1];
 	$maxperrun = $pieces[2];
@@ -122,16 +122,16 @@ if (!isset($argv[1])) {
 							)
 			);
 			if ($releases !== false) {
-				$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+				$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $pdo->log]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-					exit($c->error("Unable to connect to usenet."));
+					exit($pdo->log->error("Unable to connect to usenet."));
 				}
 
-				$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true, 'ColorCLI' => $c]);
+				$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true, 'ColorCLI' => $pdo->log]);
 				$nzbcontents = new NZBContents(
 					array(
 						'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
-						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer, 'ColorCLI' => $c])
+						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer, 'ColorCLI' => $pdo->log])
 					)
 				);
 				foreach ($releases as $release) {
@@ -158,9 +158,9 @@ if (!isset($argv[1])) {
 							)
 			);
 			if ($releases !== false) {
-				$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+				$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $pdo->log]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
-					exit($c->error("Unable to connect to usenet."));
+					exit($pdo->log->error("Unable to connect to usenet."));
 				}
 				$sorter = new MiscSorter(true);
 				foreach ($releases as $release) {

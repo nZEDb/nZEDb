@@ -5,9 +5,9 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 $count = $groups = 0;
-$c = new ColorCLI();
+$cli = new ColorCLI();
 
-echo $c->header("This script will show all Backfill Groups.\n"
+echo $cli->header("This script will show all Backfill Groups.\n"
 	. "An optional first argument of ASC/DESC is used to sort the display by first_record_postdate in ascending/descending order.\n"
 	. "An optional second argument will limit the return to that number of groups.\n\n"
 	. "php $argv[0] true 20    ...: To sort the backfill groups by first_record_postdate and display only 20 groups.\n");
@@ -19,8 +19,8 @@ if (isset($argv[2]) && is_numeric($argv[2])) {
 	$limit = "limit " . $argv[1];
 }
 
-$mask = $c->primary("%-50.50s %22.22s %22.22s %22.22s %22.22s");
-$mask1 = $c->header("%-50.50s %22.22s %22.22s %22.22s %22.22s");
+$mask = $cli->primary("%-50.50s %22.22s %22.22s %22.22s %22.22s");
+$mask1 = $cli->header("%-50.50s %22.22s %22.22s %22.22s %22.22s");
 $groups = $pdo->queryOneRow("SELECT COUNT(*) AS count FROM groups WHERE backfill = 1 AND first_record IS NOT NULL");
 if ($rels = $pdo->query("SELECT last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS headers_downloaded FROM groups")) {
 	foreach ($rels as $rel) {
