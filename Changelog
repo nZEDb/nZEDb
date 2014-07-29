@@ -11,6 +11,7 @@ New updates are grouped by person, at the top of the file.
 	* ---: With these changes, if you have not followed INSTALL.txt which says to change the MySQL max_allowed_packet to 16M (or more) you might have issues, be warned.
 	* ---: !!!!READ THIS!!!!: TPG users MUST run nzedb\build\_runonce\tpg_more_fixes.php
 	* Add: Debug message to binaries to show amount of bytes sent to MySQL when inserting parts.
+	* Add: Option to settings.php to disable SQL transactions. Update your settings.php file!
 2014-07-28 taskym
 	* Add: Added IAFD, less memory usage, regex update #1431
 2014-07-27 bart39
