@@ -72,7 +72,7 @@ switch ($options[1]) {
 
 		$articleDate = $pdo->queryOneRow(
 			sprintf(
-				'SELECT UNIX_TIMESTAMP(c.dateadded) AS utime FROM %s c INNER JOIN %s p ON p.collectionid = c.id WHERE p.id = %d',
+				'SELECT UNIX_TIMESTAMP(c.dateadded) AS utime FROM %s c INNER JOIN %s p ON p.collection_id = c.id WHERE p.id = %d',
 				$groupNames['cname'],
 				$groupNames['pname'],
 				$options[3]
