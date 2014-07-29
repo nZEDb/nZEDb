@@ -869,7 +869,10 @@ class DB extends \PDO
 	 */
 	public function beginTransaction()
 	{
-		return self::$_pdo->beginTransaction();
+		if (nZEDb_USE_SQL_TRANSACTIONS) {
+			return self::$_pdo->beginTransaction();
+		}
+		return true;
 	}
 
 	/**
@@ -879,7 +882,10 @@ class DB extends \PDO
 	 */
 	public function Commit()
 	{
-		return self::$_pdo->commit();
+		if (nZEDb_USE_SQL_TRANSACTIONS) {
+			return self::$_pdo->commit();
+		}
+		return true;
 	}
 
 	/**
@@ -889,7 +895,10 @@ class DB extends \PDO
 	 */
 	public function Rollback()
 	{
-		return self::$_pdo->rollBack();
+		if (nZEDb_USE_SQL_TRANSACTIONS) {
+			return self::$_pdo->rollBack();
+		}
+		return true;
 	}
 
 	/**

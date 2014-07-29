@@ -69,7 +69,7 @@ function daysOld($timestamp)
 // This function taken from lib/backfill.php, and modified to fit our needs.
 function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 {
-	$c = New ColorCLI();
+	global $pdo, $c;
 
 	$st = false;
 	if ($debug && $bfcheck) {
@@ -85,7 +85,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 		$st = true;
 	}
 
-	$backfill = New Backfill(['NNTP' => $nntp, 'ColorCLI' => $c]);
+	$binaries = new Binaries(['NNTP' => $nntp, 'ColorCLI' => $c, 'Settings' => $pdo]);
 
 	$data = $nntp->selectGroup($group);
 	if ($nntp->isError($data)) {
@@ -109,8 +109,8 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 		exit($c->error("Group data is coming back as php's max value. You should not see this since we use a patched Net_NNTP that fixes this bug."));
 	}
 
-	$firstDate = $backfill->postdate($data['first'], $data);
-	$lastDate = $backfill->postdate($data['last'], $data);
+	$firstDate = $binaries->postdate($data['first'], $data);
+	$lastDate = $binaries->postdate($data['last'], $data);
 
 	if ($goaldate < $firstDate && $bfcheck) {
 		if ($st === true) {
@@ -135,16 +135,16 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 	$dateofnextone = $lastDate;
 	// Match on days not timestamp to speed things up.
 	while (daysOld($dateofnextone) < $days) {
-		while (($tmpDate = $backfill->postdate(($upperbound - $interval), $data)) > $goaldate) {
+		while (($tmpDate = $binaries->postdate(($upperbound - $interval), $data)) > $goaldate) {
 			$upperbound = $upperbound - $interval;
 		}
 
 		if (!$templowered) {
 			$interval = ceil(($interval / 2));
 		}
-		$dateofnextone = $backfill->postdate(($upperbound - 1), $data);
+		$dateofnextone = $binaries->postdate(($upperbound - 1), $data);
 		while (!$dateofnextone) {
-			$dateofnextone = $backfill->postdate(($upperbound - 1), $data);
+			$dateofnextone = $binaries->postdate(($upperbound - 1), $data);
 		}
 	}
 	if ($st === true) {
