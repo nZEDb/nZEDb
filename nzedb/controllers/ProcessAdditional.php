@@ -1599,7 +1599,16 @@ Class ProcessAdditional
 	 */
 	private function getVideoTime($videoLocation)
 	{
-		$tmpVideo = ($this->tmpPath . uniqid() . '.avi');
+		// Attempt to get the file extension as ffmpeg fails on some videos with the wrong extension, avconv however is fine.
+		if (preg_match('/(\.[a-zA-Z0-9]+)\s*$/', $videoLocation, $extension)) {
+			$extension = $extension[1];
+		} else {
+			$extension = '.avi';
+		}
+
+		var_dump($extension);
+
+		$tmpVideo = ($this->tmpPath . uniqid() . $extension);
 		// Get the real duration of the file.
 		$time = nzedb\utility\runCmd(
 			$this->_killString .
