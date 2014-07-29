@@ -771,7 +771,7 @@ class Binaries
 		// Check if we got any binaries. If we did, try to insert them.
 		if (!((strlen($binariesCheck) === strlen($binariesQuery)) ? true : $this->_pdo->queryExec($binariesQuery))) {
 			if ($addToPartRepair) {
-				$rangeNotReceived[] = $headersReceived;
+				$rangeNotReceived += $headersReceived;
 			}
 			$this->_pdo->Rollback();
 		} else {
@@ -786,7 +786,7 @@ class Binaries
 
 			if ($this->_pdo->queryExec(rtrim($partsQuery, ',')) === false) {
 				if ($addToPartRepair) {
-					$rangeNotReceived[] = $headersReceived;
+					$rangeNotReceived += $headersReceived;
 				}
 				$this->_pdo->Rollback();
 			} else {
