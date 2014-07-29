@@ -54,7 +54,7 @@ class Settings extends DB
 		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
-		return self::$_pdo;
+		return self::$pdo;
 	}
 
 	/**
@@ -169,7 +169,7 @@ class Settings extends DB
 				$sql    = sprintf("UPDATE settings SET value = '%s' WHERE %s",
 								  $options['value'],
 								  $where);
-				$result = self::$_pdo->query($sql);
+				$result = self::$pdo->query($sql);
 			}
 		}
 
