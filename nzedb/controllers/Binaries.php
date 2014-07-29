@@ -584,14 +584,14 @@ class Binaries
 			}
 		}
 
-		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = array();
+		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = $headersNotInserted = array();
 		$notYEnc = $headersBlackListed = 0;
 
 		$partsQuery = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $tableNames['pname']);
 
 		$this->_pdo->beginTransaction();
 		// Loop articles, figure out files/parts.
-		foreach ($headers as $key => $header) {
+		foreach ($headers as $header) {
 
 			// Check if we got the article or not.
 			if (isset($header['Number'])) {
@@ -646,7 +646,7 @@ class Binaries
 			if (!isset($articles[$matches[1]])) {
 
 				// Attempt to find the file count. If it is not found, set it to 0.
-				if (!preg_match('/[\[(\s](\d{1,5})(\/|[\s_]of\s_]|-)(\d{1,5})[\])\s$:]/i', $matches[1], $fileCount)) {
+				if (!preg_match('/[\[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[\])\s$:]/i', $matches[1], $fileCount)) {
 					$fileCount[1] = $fileCount[3] = 0;
 
 					if ($this->_showDroppedYEncParts === true) {
@@ -658,13 +658,12 @@ class Binaries
 				}
 
 				// (hash) Used to group articles together when forming the release/nzb.
-				$header['CollectionHash'] =
-					sha1(
-						$this->_collectionsCleaning->collectionsCleaner($matches[1], $groupMySQL['name']) .
-						$header['From'] .
-						$groupMySQL['id'] .
-						$fileCount[3]
-					);
+				$header['CollectionHash'] = sha1(
+					$this->_collectionsCleaning->collectionsCleaner($matches[1], $groupMySQL['name']) .
+					$header['From'] .
+					$groupMySQL['id'] .
+					$fileCount[3]
+				);
 
 				if (!isset($collectionIDs[$header['CollectionHash']])) {
 
@@ -696,7 +695,7 @@ class Binaries
 
 					if ($collectionID === false) {
 						if ($addToPartRepair) {
-							$rangeNotReceived[] = $header['Number'];
+							$headersNotInserted[] = $header['Number'];
 						}
 						$this->_pdo->Rollback();
 						$this->_pdo->beginTransaction();
@@ -725,7 +724,7 @@ class Binaries
 
 				if ($binaryID === false) {
 					if ($addToPartRepair) {
-						$rangeNotReceived[] = $header['Number'];
+						$headersNotInserted[] = $header['Number'];
 					}
 					$this->_pdo->Rollback();
 					$this->_pdo->beginTransaction();
@@ -771,7 +770,7 @@ class Binaries
 		// Check if we got any binaries. If we did, try to insert them.
 		if (!((strlen($binariesCheck) === strlen($binariesQuery)) ? true : $this->_pdo->queryExec($binariesQuery))) {
 			if ($addToPartRepair) {
-				$rangeNotReceived += $headersReceived;
+				$headersNotInserted += $headersReceived;
 			}
 			$this->_pdo->Rollback();
 		} else {
@@ -786,7 +785,7 @@ class Binaries
 
 			if ($this->_pdo->queryExec(rtrim($partsQuery, ',')) === false) {
 				if ($addToPartRepair) {
-					$rangeNotReceived += $headersReceived;
+					$headersNotInserted += $headersReceived;
 				}
 				$this->_pdo->Rollback();
 			} else {
@@ -815,6 +814,18 @@ class Binaries
 		}
 
 		if ($addToPartRepair) {
+
+			$notInsertedCount = count($headersNotInserted);
+			if ($notInsertedCount > 0) {
+				$this->addMissingParts($headersNotInserted, $tableNames['prname'], $groupMySQL['id']);
+
+				$this->log(
+					$notInsertedCount . ' articles failed to insert!',
+					'scan',
+					Debugging::DEBUG_WARNING,
+					'warning'
+				);
+			}
 
 			// Check if we have any missing headers.
 			if (($last - $first - $notYEnc - $headersBlackListed + 1) > count($headersReceived)) {
