@@ -197,5 +197,4 @@ if ($releases !== false) {
 			)
 		);
 	}
-	$nntp->doQuit();
 }

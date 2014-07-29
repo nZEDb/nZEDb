@@ -10,7 +10,6 @@ if (!isset($argv[1])) {
 	$pdo = new Settings();
 	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $c]);
 	$pieces = explode(' ', $argv[1]);
-	$proxy = $pdo->getSetting('nntpproxy');
 	$guidChar = $pieces[1];
 	$maxperrun = $pieces[2];
 	$thread = $pieces[3];
@@ -163,9 +162,6 @@ if (!isset($argv[1])) {
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 					exit($c->error("Unable to connect to usenet."));
 				}
-				if ($proxy == "1") {
-					usleep(500000);
-				}
 				$sorter = new MiscSorter(true);
 				foreach ($releases as $release) {
 					$res = $sorter->nfosorter(null, $release['releaseid'], $nntp);
@@ -173,9 +169,6 @@ if (!isset($argv[1])) {
 						$pdo->queryExec(sprintf('UPDATE releases SET proc_sorter = 1 WHERE id = %d', $release['releaseid']));
 						echo '.';
 					}
-				}
-				if ($proxy != "1") {
-					$nntp->doQuit();
 				}
 			}
 			break;

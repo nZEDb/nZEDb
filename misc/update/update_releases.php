@@ -10,9 +10,6 @@ if (isset($argv[2]) && $argv[2] === 'true') {
 	if ($nntp->doConnect() !== true) {
 		exit($c->error("Unable to connect to usenet."));
 	}
-	if ($pdo->getSetting('nntpproxy') === "1") {
-		usleep(500000);
-	}
 }
 if ($pdo->getSetting('tablepergroup') === 1) {
 	exit($c->error("You are using 'tablepergroup', you must use releases_threaded.py"));
@@ -67,7 +64,4 @@ if (isset($argv[1]) && isset($argv[2])) {
 			. "php update_releases.php 5 true			...: Categorizes all releases in other-> misc (which have not been categorized already)\n"
 			. "php update_releases.php 6 false			...: Categorizes releases in misc sections using the search name\n"
 			. "php update_releases.php 6 true			...: Categorizes releases in all sections using the search name\n"));
-}
-if ($pdo->getSetting('nntpproxy') != "1" && $argv[2] === 'true') {
-	$nntp->doQuit();
 }
