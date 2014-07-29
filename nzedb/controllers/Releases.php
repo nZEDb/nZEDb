@@ -202,6 +202,7 @@ class Releases
 		if ($res === false) {
 			return $passwordStatus;
 		}
+
 		switch (true) {
 			case $res['value'] == 0:
 				return $passwordStatus;
@@ -210,7 +211,7 @@ class Releases
 				$passwordStatus = sprintf('<= %d', Releases::PASSWD_POTENTIAL);
 				return $passwordStatus;
 				break;
-			case $res['value'] == 1:
+			case $res['value'] == 10:
 				$passwordStatus = sprintf('<= %d', Releases::PASSWD_RAR);
 				return $passwordStatus;
 				break;
