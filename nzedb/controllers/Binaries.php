@@ -518,6 +518,7 @@ class Binaries
 		$returnArray = array();
 
 		$partRepair = ($type === 'partrepair');
+		$addToPartRepair = ($type === 'update' && $this->_partRepair);
 
 		// Download the headers.
 		if ($partRepair === true) {
@@ -604,8 +605,8 @@ class Binaries
 			}
 		}
 
-		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = array();
-		$notYEnc = $headersReceived = $headersBlackListed = 0;
+		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = array();
+		$notYEnc = $headersBlackListed = 0;
 
 		$partsQuery = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $tableNames['pname']);
 
@@ -615,9 +616,11 @@ class Binaries
 
 			// Check if we got the article or not.
 			if (isset($header['Number'])) {
-				$headersReceived++;
+				$headersReceived[] = $header['Number'];
 			} else {
-				$rangeNotReceived[] = $header['Number'];
+				if ($addToPartRepair) {
+					$rangeNotReceived[] = $header['Number'];
+				}
 				continue;
 			}
 
@@ -713,7 +716,9 @@ class Binaries
 					);
 
 					if ($collectionID === false) {
-						$rangeNotReceived[] = $header['Number'];
+						if ($addToPartRepair) {
+							$rangeNotReceived[] = $header['Number'];
+						}
 						$this->_pdo->Rollback();
 						$this->_pdo->beginTransaction();
 						continue;
@@ -740,7 +745,9 @@ class Binaries
 				);
 
 				if ($binaryID === false) {
-					$rangeNotReceived[] = $header['Number'];
+					if ($addToPartRepair) {
+						$rangeNotReceived[] = $header['Number'];
+					}
 					$this->_pdo->Rollback();
 					$this->_pdo->beginTransaction();
 					continue;
@@ -766,8 +773,8 @@ class Binaries
 				'(' . $binaryID . ',' . $header['Number'] . ',' . rtrim($header['Message-ID'], '>') . "'," .
 				$matches[2] . ',' . $header['Bytes'] . ',' . $collectionID . '),';
 
-			unset($headers[$key]); // Reclaim memory.
 		}
+		unset($headers); // Reclaim memory.
 
 		// Start of inserting into SQL.
 		$startUpdate = microtime(true);
@@ -779,26 +786,14 @@ class Binaries
 		foreach ($binariesUpdate as $binaryID => $binary) {
 			$binariesQuery .= '(' . $binaryID . ',' . $binary['Size'] . ',' . $binary['Parts'] . '),';
 		}
-		$binariesQueryLength = strlen($binariesQuery);
 		$binariesQuery = rtrim($binariesQuery, ',') . ' ON DUPLICATE KEY UPDATE partsize = VALUES(partsize), currentparts = VALUES(currentparts)';
+		$binariesCheck .= ' ON DUPLICATE KEY UPDATE partsize = VALUES(partsize), currentparts = VALUES(currentparts)';
 
-		if ($this->_debug) {
-			$this->_colorCLI->doEcho(
-				$this->_colorCLI->debug(
-					'Sending ' . round($binariesQueryLength / 1024, 2) . ' KB of binaries to MySQL'
-				)
-			);
-		}
-
-		// Check if we got any binaries.
-		if (strlen($binariesCheck) === $binariesQueryLength) {
-			$binariesCheck = true;
-		} else {
-			$binariesCheck = $this->_pdo->queryExec($binariesQuery);
-		}
-
-		if ($binariesCheck === false) {
-			$rangeNotReceived[] = $headersReceived;
+		// Check if we got any binaries. If we did, try to insert them.
+		if (!((strlen($binariesCheck) === strlen($binariesQuery)) ? true : $this->_pdo->queryExec($binariesQuery))) {
+			if ($addToPartRepair) {
+				$rangeNotReceived[] = $headersReceived;
+			}
 			$this->_pdo->Rollback();
 		} else {
 
@@ -811,7 +806,9 @@ class Binaries
 			}
 
 			if ($this->_pdo->queryExec(rtrim($partsQuery, ',')) === false) {
-				$rangeNotReceived[] = $headersReceived;
+				if ($addToPartRepair) {
+					$rangeNotReceived[] = $headersReceived;
+				}
 				$this->_pdo->Rollback();
 			} else {
 				$this->_pdo->Commit();
@@ -821,41 +818,42 @@ class Binaries
 		if ($this->_echoCLI && $partRepair === false) {
 			$this->_colorCLI->doEcho(
 				$this->_colorCLI->primary(
-					'Received ' . $headersReceived .
+					'Received ' . count($headersReceived) .
 					' articles of ' . (number_format($last - $first + 1)) . ' requested, ' .
 					$headersBlackListed . ' blacklisted, ' . $notYEnc . ' not yEnc.'
 				)
 			);
 		}
 
-		if (count($headersRepaired) > 0) {
+		// Start of part repair.
+		$startPR = microtime(true);
+
+		// End of inserting.
+		$timeInsert = number_format($startPR - $startUpdate, 2);
+
+		if ($partRepair && count($headersRepaired) > 0) {
 			$this->removeRepairedParts($headersRepaired, $tableNames['prname'], $groupMySQL['id']);
 		}
 
-		$notReceivedCount = count($rangeNotReceived);
-		if ($notReceivedCount > 0) {
-			switch ($type) {
-				case 'backfill':
-					// Don't add missing articles.
-					break;
-				case 'partrepair':
-					// Don't add here. Bulk update in partRepair
-					break;
-				case 'update':
-				default:
-					if ($this->_partRepair) {
-						$this->addMissingParts($rangeNotReceived, $tableNames['prname'], $groupMySQL['id']);
-					}
-					break;
-			}
+		if ($addToPartRepair) {
 
-			if ($this->_echoCLI && $partRepair === false) {
-				$this->_colorCLI->doEcho(
-					$this->_colorCLI->alternate(
-						'Server did not return ' . $notReceivedCount .
-						' articles from ' . $groupMySQL['name'] . '.'
-					), true
-				);
+			// Check if we have any missing headers.
+			if (($last - $first - $notYEnc - $headersBlackListed + 1) > count($headersReceived)) {
+				$rangeNotReceived += array_diff(range($first, $last), $headersReceived);
+			}
+			$notReceivedCount = count($rangeNotReceived);
+
+			if ($notReceivedCount > 0) {
+				$this->addMissingParts($rangeNotReceived, $tableNames['prname'], $groupMySQL['id']);
+
+				if ($this->_echoCLI) {
+					$this->_colorCLI->doEcho(
+						$this->_colorCLI->alternate(
+							'Server did not return ' . $notReceivedCount .
+							' articles from ' . $groupMySQL['name'] . '.'
+						), true
+					);
+				}
 			}
 		}
 
@@ -866,8 +864,10 @@ class Binaries
 				$this->_colorCLI->primaryOver(' to download articles, ') .
 				$this->_colorCLI->alternateOver($timeCleaning . 's') .
 				$this->_colorCLI->primaryOver(' to process collections, ') .
-				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $startUpdate, 2) . 's') .
+				$this->_colorCLI->alternateOver(number_format($timeInsert, 2) . 's') .
 				$this->_colorCLI->primaryOver(' to insert binaries/parts, ') .
+				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $startPR, 2) . 's') .
+				$this->_colorCLI->primaryOver(' for part repair, ') .
 				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $startLoop, 2) . 's') .
 				$this->_colorCLI->primary(' total.')
 			);
