@@ -13,6 +13,7 @@ New updates are grouped by person, at the top of the file.
 	* Fix: Put check to see if we downloaded 1 article header or not when inserting into binaries table.
 	* Fix: Part repair issue in Binaries.
 	* Fix: Check for empty parts query.
+	* Chg: Raise default min password_hash cost to 11. As noted previously, you should run the script to figure out a decent cost for your system. 10 is not recommended anymore by the PHP developper.
 2014-07-28 kevin
 	* Chg: Another massive boost to header insert speed.
 	* ---: With these changes, if you have not followed INSTALL.txt which says to change the MySQL max_allowed_packet to 16M (or more) you might have issues, be warned.
