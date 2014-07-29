@@ -133,7 +133,7 @@ while ($i > 0) {
 	//run queries only after time exceeded, these queries can take awhile
 	if ($i == 1 || (time() - $timer2 >= $runVar['settings']['monitor'] && $runVar['settings']['is_running'] == 1)) {
 
-		$runVar['counts']['proc1'] = $runVar['counts']['proc2'] = $runVar['counts']['proc3'] = $splitqry = newOld_qry = false;
+		$runVar['counts']['proc1'] = $runVar['counts']['proc2'] = $runVar['counts']['proc3'] = $splitqry = $newOldqry = false;
 		$runVar['counts']['now']['total_work'] = 0;
 		$runVar['modsettings']['fix_crap'] = explode(', ', ($runVar['settings']['fix_crap']));
 
