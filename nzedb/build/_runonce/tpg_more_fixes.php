@@ -36,7 +36,7 @@ if ($groups === false) {
 	// Drop this index, as we will recreate it as a unique.
 	$queries[] = 'ALTER TABLE binaries_%d DROP INDEX ix_binary_binaryhash';
 	// Recreate the index as unique so we can use on duplicate key update, saving select / update query.
-	$queries[] = 'ALTER TABLE binaries_%d ADD UNIQUE INDEX ix_binary_binaryhash(binaryhash)';
+	$queries[] = 'ALTER IGNORE TABLE binaries_%d ADD UNIQUE INDEX ix_binary_binaryhash(binaryhash)';
 
 	$groupCount = $groups->rowCount();
 	foreach ($groups as $group) {
