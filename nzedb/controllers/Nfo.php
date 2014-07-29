@@ -41,13 +41,6 @@ class Nfo
 	private $tmpPath;
 
 	/**
-	 * Instance of class ColorCLI
-	 * @var ColorCLI
-	 * @access private
-	 */
-	private $c;
-
-	/**
 	 * Primary color for console text output.
 	 * @var string
 	 * @access private
@@ -91,14 +84,12 @@ class Nfo
 	{
 		$defaults = [
 			'Echo'     => false,
-			'ColorCLI' => null,
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->echo = ($defaults['Echo'] && nZEDb_ECHOCLI);
-		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->echo = ($options['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->nzbs = ($this->pdo->getSetting('maxnfoprocessed') != '') ? (int)$this->pdo->getSetting('maxnfoprocessed') : 100;
 		$this->maxsize = ($this->pdo->getSetting('maxsizetoprocessnfo') != '') ? (int)$this->pdo->getSetting('maxsizetoprocessnfo') : 100;
 		$this->maxsize = ($this->maxsize > 0 ? ('AND size < ' . ($this->maxsize * 1073741824)) : '');
@@ -243,7 +234,7 @@ class Nfo
 						'NNTP' => $nntp,
 						'Nfo'  => $this,
 						'Settings'   => $this->pdo,
-						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this, 'ColorCLI' => $this->c])
+						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this, 'ColorCLI' => $this->pdo->log])
 					)
 				);
 				$nzbContents->parseNZB($release['guid'], $release['id'], $release['group_id']);
@@ -294,8 +285,8 @@ class Nfo
 		$nfoCount = count($res);
 
 		if ($nfoCount > 0) {
-			$this->c->doEcho(
-				$this->c->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					PHP_EOL .
 					($guidChar === '' ? '' : '[' . $guidChar . '] ') .
 					($groupID === '' ? '' : '[' . $groupID . '] ') .
@@ -330,7 +321,7 @@ class Nfo
 					foreach ($nfoStats as $row) {
 						$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
 					}
-					$this->c->doEcho($this->c->header($outString . '.'));
+					$this->pdo->log->doEcho($this->pdo->log->header($outString . '.'));
 				}
 			}
 
@@ -341,11 +332,11 @@ class Nfo
 					'NNTP' => $nntp,
 					'Nfo' => $this,
 					'Settings' => $this->pdo,
-					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo, 'ColorCLI' => $this->c])
+					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo, 'ColorCLI' => $this->pdo->log])
 				)
 			);
-			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
-			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
+			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);
+			$tvRage = new TvRage(['Echo' => $this->echo, 'Settings' => $this->pdo]);
 
 			foreach ($res as $arr) {
 				$fetchedBinary = $nzbContents->getNFOfromNZB($arr['guid'], $arr['id'], $arr['group_id'], $groups->getByNameByID($arr['group_id']));
@@ -421,7 +412,7 @@ class Nfo
 				echo PHP_EOL;
 			}
 			if ($ret > 0) {
-				$this->c->doEcho($ret . ' NFO file(s) found/processed.', true);
+				$this->pdo->log->doEcho($ret . ' NFO file(s) found/processed.', true);
 			}
 		}
 		return $ret;
