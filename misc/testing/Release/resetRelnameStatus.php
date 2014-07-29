@@ -4,11 +4,11 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 use nzedb\db\Settings;
 
 exit('Needs to be rewritten');
-$c = new ColorCLI();
+$cli = new ColorCLI();
 
 
 if (!isset($argv[1])) {
-	exit($c->error("\nThis script will set bitwise = 0 or all rename bits to unchecked or just specific bits.\n\n"
+	exit($cli->error("\nThis script will set bitwise = 0 or all rename bits to unchecked or just specific bits.\n\n"
 			. "php $argv[0] true           ...: To reset bitwise on all releases to 0.\n"
 			. "php $argv[0] rename         ...: To reset bitwise on all releases for just rename bits (4, 8, 16, 32, 64, 128).\n"
 			. "php $argv[0] 512            ...: To reset a specific bit.\n"));
@@ -24,9 +24,9 @@ if ($argv[1] === 'true') {
 }
 
 if ($res->rowCount() > 0 && is_numeric($argv[1])) {
-	echo $c->header('Succesfully reset the bitwise of ' . number_format($res->rowCount()) . ' releases to 0 for bit(s) ' . $argv[1] . '.');
+	echo $cli->header('Succesfully reset the bitwise of ' . number_format($res->rowCount()) . ' releases to 0 for bit(s) ' . $argv[1] . '.');
 } else if ($res->rowCount() > 0) {
-	echo $c->header('Succesfully reset the bitwise of ' . number_format($res->rowCount()) . ' releases to un-renamed.');
+	echo $cli->header('Succesfully reset the bitwise of ' . number_format($res->rowCount()) . ' releases to un-renamed.');
 } else {
-	echo $c->header('No releases to be reset.');
+	echo $cli->header('No releases to be reset.');
 }

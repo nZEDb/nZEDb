@@ -5,13 +5,13 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 use nzedb\db\Settings;
 
 $pdo = new Settings();
-$c = new ColorCLI();
-$movie = new XXX(['Echo' => true, 'ColorCLI' => $c, 'Settings' => $pdo]);
+
+$movie = new XXX(['Echo' => true, 'Settings' => $pdo]);
 
 
 $movies = $pdo->queryDirect("SELECT id FROM xxxinfo WHERE cover = 0");
 if ($movies->rowCount() > 0) {
-	echo $c->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
+	echo $pdo->cli->primary("Updating " . number_format($movies->rowCount()) . " movie covers.");
 }
 
 foreach ($movies as $mov) {

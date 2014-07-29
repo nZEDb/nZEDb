@@ -32,25 +32,18 @@ Class PreDb
 	protected $pdo;
 
 	/**
-	 * @var ColorCLI
-	 */
-	protected $c;
-
-	/**
 	 * @param array $options
 	 */
 	public function __construct(array $options = array())
 	{
 		$defaults = [
 			'Echo'     => false,
-			'ColorCLI' => null,
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 	}
 
 	private $dateLimit;
@@ -65,12 +58,12 @@ Class PreDb
 
 		$this->dateLimit = $dateLimit;
 
-		$consoleTools = new ConsoleTools(['ColorCLI' => $this->c]);
+		$consoleTools = new ConsoleTools(['ColorCLI' => $this->pdo->cli]);
 		$updated = 0;
 		$datesql = '';
 
 		if ($this->echooutput) {
-			echo $this->c->header('Querying DB for release search names not matched with PreDB titles.');
+			echo $this->pdo->cli->header('Querying DB for release search names not matched with PreDB titles.');
 		}
 
 		if ($this->dateLimit !== false && is_numeric($this->dateLimit)) {
@@ -90,7 +83,7 @@ Class PreDb
 		if ($res !== false) {
 
 			$total = $res->rowCount();
-			echo $this->c->primary(number_format($total) . ' releases to match.');
+			echo $this->pdo->cli->primary(number_format($total) . ' releases to match.');
 
 			if ($total > 0) {
 				foreach ($res as $row) {
@@ -110,7 +103,7 @@ Class PreDb
 			}
 
 			if ($this->echooutput) {
-				echo $this->c->header(
+				echo $this->pdo->cli->header(
 					'Matched ' . number_format(($updated > 0) ? $updated : 0) . ' PreDB titles to release search names.'
 				);
 			}
@@ -169,8 +162,8 @@ Class PreDb
 	 */
 	public function parseTitles($time, $echo, $cats, $namestatus, $show)
 	{
-		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->c, 'Settings' => $this->pdo]);
-		$consoletools = new ConsoleTools(['ColorCLI' => $this->c]);
+		$namefixer = new NameFixer(['Echo' => $this->echooutput, 'ConsoleTools' => $this->pdo->cli, 'Settings' => $this->pdo]);
+		$consoletools = new ConsoleTools(['ColorCLI' => $this->pdo->cli]);
 		$updated = $checked = 0;
 		$matches = '';
 
@@ -188,7 +181,7 @@ Class PreDb
 			if ($time == 1) {
 				$te = ' in the past 3 hours';
 			}
-			echo $this->c->header('Fixing search names' . $te . " using the predb hash.");
+			echo $this->pdo->cli->header('Fixing search names' . $te . " using the predb hash.");
 		}
 		$regex = "AND (r.ishashed = 1 OR rf.ishashed = 1)";
 
@@ -206,7 +199,7 @@ Class PreDb
 
 		$res = $this->pdo->queryDirect($query);
 		$total = $res->rowCount();
-		echo $this->c->primary(number_format($total) . " releases to process.");
+		echo $this->pdo->cli->primary(number_format($total) . " releases to process.");
 		if ($total > 0) {
 			foreach ($res as $row) {
 				if (preg_match('/[a-fA-F0-9]{32,40}/i', $row['name'], $matches)) {
@@ -220,9 +213,9 @@ Class PreDb
 			}
 		}
 		if ($echo == 1) {
-			echo $this->c->header("\n" . $updated . " releases have had their names changed out of: " . number_format($checked) . " files.");
+			echo $this->pdo->cli->header("\n" . $updated . " releases have had their names changed out of: " . number_format($checked) . " files.");
 		} else {
-			echo $this->c->header("\n" . $updated . " releases could have their names changed. " . number_format($checked) . " files were checked.");
+			echo $this->pdo->cli->header("\n" . $updated . " releases could have their names changed. " . number_format($checked) . " files were checked.");
 		}
 
 		return $updated;

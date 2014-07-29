@@ -79,6 +79,7 @@ class Settings extends DB
 	 */
 	public function getSetting($options = array())
 	{
+		// todo: think about making this static so it can be accessed without instantiating.
 		if (!is_array($options)) {
 			$options = $this->_dottedToArray($options);
 			if (isset($options['setting']) && isset($this->settings[$options['setting']])) {

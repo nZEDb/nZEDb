@@ -5,10 +5,9 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 $covers = $updated = $deleted = 0;
-$c = new ColorCLI();
 
 if ($argc == 1 || $argv[1] != 'true') {
-	exit($c->error("\nThis script will check all images in covers/movies and compare to db->movieinfo.\nTo run:\nphp $argv[0] true\n"));
+	exit($pdo->cli->error("\nThis script will check all images in covers/movies and compare to db->movieinfo.\nTo run:\nphp $argv[0] true\n"));
 }
 
 $row = $pdo->queryOneRow("SELECT value FROM settings WHERE setting = 'coverspath'");
@@ -31,7 +30,7 @@ foreach ($itr as $filePath) {
 			} else {
 				$run = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE imdbid = " . $match[1]);
 				if ($run->rowCount() == 0) {
-					echo $c->info($filePath . " not found in db.");
+					echo $pdo->cli->info($filePath . " not found in db.");
 				}
 			}
 		}
@@ -46,7 +45,7 @@ foreach ($itr as $filePath) {
 			} else {
 				$run = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE imdbid = " . $match1[1]);
 				if ($run->rowCount() == 0) {
-					echo $c->info($filePath . " not found in db.");
+					echo $pdo->cli->info($filePath . " not found in db.");
 				}
 			}
 		}
@@ -57,7 +56,7 @@ $qry = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE cover = 1");
 foreach ($qry as $rows) {
     if (!is_file($path2covers . $rows['imdbid'] . '-cover.jpg')) {
 		$pdo->queryDirect("UPDATE movieinfo SET cover = 0 WHERE cover = 1 AND imdbid = " . $rows['imdbid']);
-        echo $c->info($path2covers . $rows['imdbid'] . "-cover.jpg does not exist.");
+        echo $pdo->cli->info($path2covers . $rows['imdbid'] . "-cover.jpg does not exist.");
 		$deleted++;
 	}
 }
@@ -65,10 +64,10 @@ $qry1 = $pdo->queryDirect("SELECT imdbid FROM movieinfo WHERE backdrop = 1");
 foreach ($qry1 as $rows) {
     if (!is_file($path2covers . $rows['imdbid'] . '-backdrop.jpg')) {
         $pdo->queryDirect("UPDATE movieinfo SET backdrop = 0 WHERE backdrop = 1 AND imdbid = " . $rows['imdbid']);
-        echo $c->info($path2covers . $rows['imdbid'] . "-backdrop.jpg does not exist.");
+        echo $pdo->cli->info($path2covers . $rows['imdbid'] . "-backdrop.jpg does not exist.");
 		$deleted++;
 	}
 }
-echo $c->header($covers . " covers set.");
-echo $c->header($updated . " backdrops set.");
-echo $c->header($deleted . " movies unset.");
+echo $pdo->cli->header($covers . " covers set.");
+echo $pdo->cli->header($updated . " backdrops set.");
+echo $pdo->cli->header($deleted . " movies unset.");

@@ -3,11 +3,11 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$pdo = new Settings();
 
 if (!isset($argv[1])) {
 	if ($argv[1] !== 'test' || $argv[1] !== 'alter') {
-		exit($c->error("\nThis script will scan mysql-ddl.sql for all UNIQUE INDEXES.\n"
+		exit($pdo->cli->error("\nThis script will scan mysql-ddl.sql for all UNIQUE INDEXES.\n"
 						. "It will verify that you have them. If you do not, you can choose to run manually or allow the script to run them.\n\n"
 						. "php $argv[0] test      ...: To verify all unique indexes.\n"
 						. "php $argv[0] alter     ...: To add missing unique indexes.\n"));
@@ -15,30 +15,29 @@ if (!isset($argv[1])) {
 }
 
 // Set for Session
-$pdo = new Settings();
 if ($argv[1] === 'alter') {
 	$pdo->queryExec("SET SESSION old_alter_table = 1");
 }
 
 function run_query($query, $test)
 {
-	$c = new ColorCLI();
+	global $pdo;
+
 	if ($test === 'alter') {
-		$pdo = new Settings();
 		try {
 			$qry = $pdo->prepare($query);
 			$qry->execute();
-			echo $c->alternateOver('SUCCESS: ') . $c->primary($query);
+			echo $pdo->cli->alternateOver('SUCCESS: ') . $pdo->cli->primary($query);
 		} catch (PDOException $e) {
 			if ($e->errorInfo[1] == 1061) {
 				// Duplicate key exists
-				echo $c->alternateOver('SKIPPED Index name exists: ') . $c->primary($query);
+				echo $pdo->cli->alternateOver('SKIPPED Index name exists: ') . $pdo->cli->primary($query);
 			} else {
-				echo $c->alternateOver('FAILED: ') . $c->primary($query);
+				echo $pdo->cli->alternateOver('FAILED: ') . $pdo->cli->primary($query);
 			}
 		}
 	} else {
-		echo $c->header($query);
+		echo $pdo->cli->header($query);
 	}
 }
 
@@ -113,11 +112,11 @@ if ($handle) {
 						run_query($qry, $argv[1]);
 					}
 				} else {
-					echo $c->primary("A Unique Index exists for " . trim($match['table']) . " on " . trim($match['column']));
+					echo $pdo->cli->primary("A Unique Index exists for " . trim($match['table']) . " on " . trim($match['column']));
 				}
 			}
 		}
 	}
 } else {
-	echo $c->error("\nCan not open mysql-ddl.sql.");
+	echo $pdo->cli->error("\nCan not open mysql-ddl.sql.");
 }

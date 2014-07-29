@@ -3,14 +3,14 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$pdo = new Settings();
+
 if ($argc === 1 || !is_numeric($argv[1])) {
-	exit($c->error("\nThis script will show table data, index and free space used. The argument needed is numeric.\n\n"
+	exit($pdo->cli->error("\nThis script will show table data, index and free space used. The argument needed is numeric.\n\n"
 		. "php $argv[0] 1      ...: To show all tables with data + index space used greater than 1MB or free space greater than 1MB.\n"
 		. "php $argv[0] .01    ...: To show all tables with data + index space used greater than .01MB or free space greater than .01MB.\n"));
 }
 passthru('clear');
-$pdo = new Settings();
 $data = $index = $total = $free = 0;
 
 $table_data = "SELECT TABLE_NAME AS 'Table', TABLE_ROWS AS 'Rows', "
@@ -25,7 +25,7 @@ $table_data = "SELECT TABLE_NAME AS 'Table', TABLE_ROWS AS 'Rows', "
 
 $run = $pdo->queryDirect($table_data);
 
-$mask = $c->headerOver("%-25.25s ") .  $c->primaryOver("%7.7s %10.10s %15.15s %15.15s %15.15s %15.15s\n");
+$mask = $pdo->cli->headerOver("%-25.25s ") .  $pdo->cli->primaryOver("%7.7s %10.10s %15.15s %15.15s %15.15s %15.15s\n");
 printf($mask, 'Table Name', 'Engine', 'Row_Format', 'Data Size', 'Index Size', 'Free Space', 'Total Size');
 printf($mask, '=========================', '=======', '==========', '===============', '===============', '===============', '===============');
 foreach ($run as $table) {
@@ -81,10 +81,10 @@ if ($bb['value'] >= 1073741824) {
 	$current_b .= "M";
 }
 
-echo $c->headerOver("\n\nThe recommended minimums are:\n");
-echo $c->primaryOver("MyISAM: key-buffer-size           = ") . $c->alternate($a);
-echo $c->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $c->alternate($b);
+echo $pdo->cli->headerOver("\n\nThe recommended minimums are:\n");
+echo $pdo->cli->primaryOver("MyISAM: key-buffer-size           = ") . $pdo->cli->alternate($a);
+echo $pdo->cli->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $pdo->cli->alternate($b);
 
-echo $c->headerOver("\nYour current setting are:\n");
-echo $c->primaryOver("MyISAM: key-buffer-size           = ") . $c->alternate($current_a);
-echo $c->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $c->alternate($current_b);
+echo $pdo->cli->headerOver("\nYour current setting are:\n");
+echo $pdo->cli->primaryOver("MyISAM: key-buffer-size           = ") . $pdo->cli->alternate($current_a);
+echo $pdo->cli->primaryOver("InnoDB: innodb_buffer_pool_size   = ") . $pdo->cli->alternate($current_b);

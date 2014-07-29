@@ -22,16 +22,14 @@ class Console
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions = [
+		$defaults = [
 			'Echo'     => false,
-			'ColorCLI' => null,
 			'Settings' => null,
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$options += $defaults;
 
-		$this->echooutput = ($defOptions['Echo'] && nZEDb_ECHOCLI);
-		$this->c = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
-		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
 		$this->privkey = $this->pdo->getSetting('amazonprivkey');
@@ -559,21 +557,21 @@ class Console
 
 		if ($consoleId) {
 			if ($this->echooutput) {
-				$this->c->doEcho(
-					$this->c->header("Added/updated game: ") .
-					$this->c->alternateOver("   Title:    ") .
-					$this->c->primary($con['title']) .
-					$this->c->alternateOver("   Platform: ") .
-					$this->c->primary($con['platform'])
+				$this->pdo->cli->doEcho(
+					$this->pdo->cli->header("Added/updated game: ") .
+					$this->pdo->cli->alternateOver("   Title:    ") .
+					$this->pdo->cli->primary($con['title']) .
+					$this->pdo->cli->alternateOver("   Platform: ") .
+					$this->pdo->cli->primary($con['platform'])
 				);
 			}
 
 			$con['cover'] = $ri->saveImage($consoleId, $con['coverurl'], $this->imgSavePath, 250, 250);
 		} else {
 			if ($this->echooutput) {
-				$this->c->doEcho(
-					$this->c->headerOver("Nothing to update: ") .
-					$this->c->primary(
+				$this->pdo->cli->doEcho(
+					$this->pdo->cli->headerOver("Nothing to update: ") .
+					$this->pdo->cli->primary(
 						$con['title'] .
 						" (" .
 						$con['platform'] .
@@ -602,7 +600,7 @@ class Console
 
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Processing " . $res->rowCount() . ' console release(s).'));
+				$this->pdo->cli->doEcho($this->pdo->cli->header("Processing " . $res->rowCount() . ' console release(s).'));
 			}
 
 			foreach ($res as $arr) {
@@ -612,9 +610,9 @@ class Console
 				if ($gameInfo !== false) {
 
 					if ($this->echooutput) {
-						$this->c->doEcho(
-							$this->c->headerOver('Looking up: ') .
-							$this->c->primary(
+						$this->pdo->cli->doEcho(
+							$this->pdo->cli->headerOver('Looking up: ') .
+							$this->pdo->cli->primary(
 								$gameInfo['title'] .
 								' (' .
 								$gameInfo['platform'] . ')'
@@ -653,7 +651,7 @@ class Console
 				}
 			}
 		} else if ($this->echooutput) {
-			$this->c->doEcho($this->c->header('No console releases to process.'));
+			$this->pdo->cli->doEcho($this->pdo->cli->header('No console releases to process.'));
 		}
 	}
 

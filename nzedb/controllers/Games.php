@@ -22,17 +22,15 @@ class Games
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions = [
+		$defaults = [
 			'Echo'     => false,
-			'ColorCLI' => null,
 			'Settings' => null,
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$options += $defaults;
 
-		$this->echooutput = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
-		$this->c = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		$this->pubkey = $this->pdo->getSetting('giantbombkey');
 		$this->gameqty = ($this->pdo->getSetting('maxgamesprocessed') != '') ? $this->pdo->getSetting('maxgamesprocessed') : 150;
@@ -556,20 +554,20 @@ class Games
 
 		if ($gamesId) {
 			if ($this->echooutput) {
-				$this->c->doEcho(
-					$this->c->header("Added/updated game: ") .
-					$this->c->alternateOver("   Title:    ") .
-					$this->c->primary($con['title']) .
-					$this->c->alternateOver("   Platform: ") .
-					$this->c->primary($con['platform'])
+				$this->pdo->cli->doEcho(
+					$this->pdo->cli->header("Added/updated game: ") .
+					$this->pdo->cli->alternateOver("   Title:    ") .
+					$this->pdo->cli->primary($con['title']) .
+					$this->pdo->cli->alternateOver("   Platform: ") .
+					$this->pdo->cli->primary($con['platform'])
 				);
 			}
 			$con['cover'] = $ri->saveImage($gamesId, $con['coverurl'], $this->imgSavePath, 250, 250);
 		} else {
 			if ($this->echooutput) {
-				$this->c->doEcho(
-					$this->c->headerOver("Nothing to update: ") .
-					$this->c->primary($con['title'] . " (" . $con['platform'] . ')' )
+				$this->pdo->cli->doEcho(
+					$this->pdo->cli->headerOver("Nothing to update: ") .
+					$this->pdo->cli->primary($con['title'] . " (" . $con['platform'] . ')' )
 				);
 			}
 		}
@@ -649,7 +647,7 @@ class Games
 
 		if ($res !== false && $res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header("Processing " . $res->rowCount() . ' games release(s).'));
+				$this->pdo->cli->doEcho($this->pdo->cli->header("Processing " . $res->rowCount() . ' games release(s).'));
 			}
 
 			foreach ($res as $arr) {
@@ -662,9 +660,9 @@ class Games
 				if ($gameInfo !== false) {
 
 					if ($this->echooutput) {
-						$this->c->doEcho(
-							$this->c->headerOver('Looking up: ') .
-							$this->c->primary($gameInfo['title'] . ' (' . $gameInfo['platform'] . ')' )
+						$this->pdo->cli->doEcho(
+							$this->pdo->cli->headerOver('Looking up: ') .
+							$this->pdo->cli->primary($gameInfo['title'] . ' (' . $gameInfo['platform'] . ')' )
 						);
 					}
 
@@ -706,7 +704,7 @@ class Games
 			}
 		} else {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header('No games releases to process.'));
+				$this->pdo->cli->doEcho($this->pdo->cli->header('No games releases to process.'));
 			}
 		}
 	}

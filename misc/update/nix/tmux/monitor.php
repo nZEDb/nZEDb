@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$pdo = new Settings();
 $versions = \nzedb\utility\Utility::getValidVersionsFile();
 
 //exec('git log | grep "^commit" | wc -l', $commit);
@@ -11,7 +11,6 @@ $git = new \nzedb\utility\Git();
 
 $version = $versions->versions->git->tag . 'r' . $git->commits();
 
-$pdo = new Settings();
 $DIR = nZEDb_MISC;
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
@@ -127,14 +126,14 @@ $games_releases_proc_start = $movie_releases_proc_start = $show_query = $run_rel
 $last_history = "";
 
 // Analyze tables
-printf($c->info("\nAnalyzing your tables to refresh your indexes."));
+printf($pdo->cli->info("\nAnalyzing your tables to refresh your indexes."));
 $pdo->optimise(true, 'analyze');
 
-$mask1 = $c->headerOver("%-18s") . " " . $c->tmuxOrange("%-48.48s");
-$mask2 = $c->headerOver("%-20s") . " " . $c->tmuxOrange("%-33.33s");
-$mask3 = $c->header("%-16.16s %25.25s %25.25s");
-$mask4 = $c->primaryOver("%-16.16s") . " " . $c->tmuxOrange("%25.25s %25.25s");
-$mask5 = $c->tmuxOrange("%-16.16s %25.25s %25.25s");
+$mask1 = $pdo->cli->headerOver("%-18s") . " " . $pdo->cli->tmuxOrange("%-48.48s");
+$mask2 = $pdo->cli->headerOver("%-20s") . " " . $pdo->cli->tmuxOrange("%-33.33s");
+$mask3 = $pdo->cli->header("%-16.16s %25.25s %25.25s");
+$mask4 = $pdo->cli->primaryOver("%-16.16s") . " " . $pdo->cli->tmuxOrange("%25.25s %25.25s");
+$mask5 = $pdo->cli->tmuxOrange("%-16.16s %25.25s %25.25s");
 
 //create display
 passthru('clear');
@@ -216,7 +215,7 @@ while ($i > 0) {
 
 		$proc_work_result = $proc_work_result2 = $proc_work_result3 = $split_result = false;
 
-		echo $c->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
+		echo $pdo->cli->info("\nThe numbers(queries) above are currently being refreshed. \nNo pane(script) can be (re)started until these have completed.\n");
 		$time02 = time();
 
 		if ($dbtype == 'mysql') {
@@ -408,7 +407,7 @@ while ($i > 0) {
 	}
 
 	if (($proc_work_result == false) || ($proc_work_result2 == false) || ($proc_work_result3 == false) || ($split_result == false) || ($proc_tmux_result == false)) {
-		echo $c->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
+		echo $pdo->cli->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
 		exit;
 	}
 
@@ -648,9 +647,9 @@ while ($i > 0) {
 	}
 
 	if ($compressed === '1') {
-		$mask2 = $c->headerOver("%-20s") . " " . $c->tmuxOrange("%-33.33s");
+		$mask2 = $pdo->cli->headerOver("%-20s") . " " . $pdo->cli->tmuxOrange("%-33.33s");
 	} else {
-		$mask2 = $c->alternateOver("%-20s") . " " . $c->tmuxOrange("%-33.33s");
+		$mask2 = $pdo->cli->alternateOver("%-20s") . " " . $pdo->cli->tmuxOrange("%-33.33s");
 	}
 
 	//update display
@@ -748,7 +747,7 @@ while ($i > 0) {
 		printf($mask4, "Combined", $tmux_time . " " . $split_time . " " . $init_time . " " . $proc1_time . " " . $proc2_time . " " . $proc3_time . " " . $tpg_count_time, $tmux_time . " " . $split1_time . " " . $init1_time . " " . $proc11_time . " " . $proc21_time . " " . $proc31_time . " " . $tpg_count_1_time);
 
 		$pieces = explode(" ", $pdo->getAttribute(PDO::ATTR_SERVER_INFO));
-		echo $c->primaryOver("\nThreads = ") . $c->headerOver($pieces[4]) . $c->primaryOver(', Opens ') . $c->headerOver($pieces[14]) . $c->primaryOver(', Tables = ') . $c->headerOver($pieces[22]) . $c->primaryOver(', Slow = ') . $c->headerOver($pieces[11]) . $c->primaryOver(', QPS = ') . $c->header($pieces[28]);
+		echo $pdo->cli->primaryOver("\nThreads = ") . $pdo->cli->headerOver($pieces[4]) . $pdo->cli->primaryOver(', Opens ') . $pdo->cli->headerOver($pieces[14]) . $pdo->cli->primaryOver(', Tables = ') . $pdo->cli->headerOver($pieces[22]) . $pdo->cli->primaryOver(', Slow = ') . $pdo->cli->headerOver($pieces[11]) . $pdo->cli->primaryOver(', QPS = ') . $pdo->cli->header($pieces[28]);
 	}
 
 	//get list of panes by name
