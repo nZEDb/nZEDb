@@ -47,9 +47,9 @@ if ($groups === false) {
 	switch ($argv[1]) {
 		case 1:
 			// Drop this index, as we will recreate it as a unique.
-			$queries['single'] = 'ALTER TABLE binaries_%d DROP INDEX ix_binary_binaryhash';
+			$queries[] = ['t' => 1, 'q' => 'ALTER TABLE binaries_%d DROP INDEX ix_binary_binaryhash'];
 			// Recreate the index as unique so we can use on duplicate key update, saving select / update query.
-			$queries['single'] = 'ALTER IGNORE TABLE binaries_%d ADD UNIQUE INDEX ix_binary_binaryhash(binaryhash)';
+			$queries[] = ['t' => 1, 'q' => 'ALTER IGNORE TABLE binaries_%d ADD UNIQUE INDEX ix_binary_binaryhash(binaryhash)'];
 			break;
 		default:
 			exit();
@@ -59,13 +59,19 @@ if ($groups === false) {
 	if (count($queries) && $groupCount) {
 		foreach ($groups as $group) {
 			echo 'Fixing group ' . $group['id'] . PHP_EOL;
-			foreach ($queries as $type => $query) {
-				switch ($type) {
-					case 'single':
-						$pdo->queryExec(sprintf($query, $group['id']), true);
+			foreach ($queries as $query) {
+				switch ($query['t']) {
+					// Queries needing 1 group ID.
+					case 1:
+						$pdo->queryExec(sprintf($query['q'], $group['id']));
 						break;
-					case 'double':
-						$pdo->queryExec(sprintf($query, $group['id'], $group['id']), true);
+					// Queries needing 2 group IDs.
+					case 2:
+						$pdo->queryExec(sprintf($query['q'], $group['id'], $group['id']), true);
+						break;
+					// Queries needing 3 group IDs.
+					case 3:
+						$pdo->queryExec(sprintf($query['q'], $group['id'], $group['id'], $group['id']), true);
 						break;
 				}
 			}
