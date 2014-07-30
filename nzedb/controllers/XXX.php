@@ -1,10 +1,5 @@
 <?php
 
-require_once nZEDb_LIBS . 'adultdvdempire.php';
-require_once nZEDb_LIBS . 'popporn.php';
-require_once nZEDb_LIBS . 'hotmovies.php';
-require_once nZEDb_LIBS . 'IAFD.php';
-
 use nzedb\db\Settings;
 use nzedb\utility;
 
@@ -249,7 +244,7 @@ class XXX
 				}
 			}
 			$catSearch .= '1=2)';
-		}
+	}
 		return $catSearch;
 	}
 
@@ -391,12 +386,12 @@ class XXX
 		$res = false;
 		$this->whichclass = '';
 
-		$iafd = new iafd();
+		$iafd = new IAFD();
 		$iafd->searchterm = $xxxmovie;
 		if($iafd->findme() === true){
 		switch($iafd->classfound){
 			case "ade":
-				$mov = new adultdvdempire();
+				$mov = new ADE();
 				$mov->directlink = $iafd->directurl;
 				$res = $mov->getdirect();
 				$res['title'] = $iafd->title;
@@ -405,7 +400,7 @@ class XXX
 				$this->c->doEcho($this->c->primary("Fetching XXX info from: Adult DVD Empire"));
 				break;
 			case "hm":
-				$mov = new hotmovies();
+				$mov = new Hotmovies();
 				$mov->directlink = $iafd->directurl;
 				$res = $mov->getdirect();
 				$res['title'] = $iafd->title;
@@ -422,14 +417,14 @@ class XXX
 		}
 
 		if($res === false){
-		$mov = new adultdvdempire();
+		$mov = new ADE();
 		$mov->searchterm = $xxxmovie;
 		$res = $mov->search();
 		$this->whichclass = "ade";
 		if ($res === false) {
 			$this->whichclass = "hm";
 			// IF no result from Adultdvdempire check hotmovies
-			$mov = new hotmovies();
+			$mov = new Hotmovies();
 			$mov->cookie = $this->cookie;
 			$mov->searchterm = $xxxmovie;
 			$res = $mov->search();
@@ -437,7 +432,7 @@ class XXX
 		if($res === false){
 			$this->whichclass = "pop";
 			// IF no result from Adultdvdempire and hotmovies check popporn
-			$mov = new popporn();
+			$mov = new Popporn();
 			$mov->cookie = $this->cookie;
 			$mov->searchterm = $xxxmovie;
 			$res = $mov->search();
