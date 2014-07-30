@@ -8,6 +8,8 @@ New updates are grouped by person, at the top of the file.
 
 2014-07-30 kevin
 	* Fix: Fix issue where multiple scripts running on the same group could overwrite the binaries table "currentparts" count causing long release creation time because of invalid count.
+	* Add: For users on PHP 5.5.0 or higher, set the CLI process name in ProcessAdditional to the releaseid so you can know which release is causing the issue.
+	* Chg: Set full path to file to be easier to track for previous add.
 2014-07-29 kevin
 	* Chg: Add ignore to latest patch for those with duplicates.
 	* Fix: Issue where avconv returns single digit time vs ffmpeg's double digit time format, pad the string adding the missing 0's to mimic ffmpeg's output.
