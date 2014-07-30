@@ -708,9 +708,9 @@ class Binaries
 
 				$binaryID = $this->_pdo->queryInsert(
 					sprintf("
-					INSERT INTO %s (binaryhash, name, collectionid, totalparts, currentparts, filenumber, partsize)
-					VALUES ('%s', %s, %d, %d, 1, %d, %d)
-					ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
+						INSERT INTO %s (binaryhash, name, collectionid, totalparts, currentparts, filenumber, partsize)
+						VALUES ('%s', %s, %d, %d, 1, %d, %d)
+						ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
 						$tableNames['bname'],
 						md5($matches[1] . $header['From'] . $groupMySQL['id']),
 						$this->_pdo->escapeString(utf8_encode($matches[1])),
@@ -731,8 +731,20 @@ class Binaries
 					continue;
 				}
 
-				$binariesUpdate[$binaryID]['Size'] = $header['Bytes'];
-				$binariesUpdate[$binaryID]['Parts'] = 1;
+				$counts = $this->_pdo->queryOneRow(
+					sprintf(
+						'SELECT currentparts, partsize FROM %s WHERE id = %d',
+						$tableNames['bname'], $binaryID
+					)
+				);
+
+				if ($counts === false) {
+					$binariesUpdate[$binaryID]['Size'] = $header['Bytes'];
+					$binariesUpdate[$binaryID]['Parts'] = 1;
+				} else {
+					$binariesUpdate[$binaryID]['Size'] = $counts['partsize'];
+					$binariesUpdate[$binaryID]['Parts'] = $counts['currentparts'];
+				}
 
 				$articles[$matches[1]]['CollectionID'] = $collectionID;
 				$articles[$matches[1]]['BinaryID'] = $binaryID;
