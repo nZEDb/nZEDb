@@ -124,6 +124,8 @@ Class ProcessAdditional
 			);
 		}
 
+		$this->_showCLIReleaseID = (version_compare(PHP_VERSION, '5.5.0', '>=') ? (PHP_BINARY . ' ' . __DIR__ . DS .  'ProcessAdditional.php ReleaseID: ') : false);
+
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
 			($this->pdo->getSetting('maxaddprocessed') != '') ? (int)$this->pdo->getSetting('maxaddprocessed') : 25;
@@ -353,6 +355,10 @@ Class ProcessAdditional
 				'primaryOver',
 				false
 			);
+
+			if ($this->_showCLIReleaseID) {
+				cli_set_process_title($this->_showCLIReleaseID . $this->_release['id']);
+			}
 
 			// Create folder to store temporary files.
 			if ($this->_createTempFolder() === false) {
