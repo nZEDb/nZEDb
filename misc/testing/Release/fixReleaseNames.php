@@ -12,7 +12,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 $n = "\n";
 $pdo = new nzedb\db\Settings();
-$namefixer = new NameFixer(['ColorCLI' => $pdo->log, 'Settings' => $pdo]);
+$namefixer = new NameFixer(['Settings' => $pdo]);
 $predb = new PreDb(['Echo' => true, 'Settings' => $pdo]);
 
 if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {

@@ -48,9 +48,9 @@ class Users
 		$defaults = [
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		// password_hash functions are available on PHP 5.5.0 or higher, use password_compat for forward compatibility on older versions.
 		if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {

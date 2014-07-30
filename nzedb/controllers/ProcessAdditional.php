@@ -63,7 +63,6 @@ Class ProcessAdditional
 		$defaults = [
 			'Echo'         => false,
 			'Categorize'   => null,
-			'ColorCLI'     => null,
 			'Groups'       => null,
 			'NameFixer'    => null,
 			'Nfo'          => null,
@@ -74,25 +73,25 @@ Class ProcessAdditional
 			'ReleaseImage' => null,
 			'Settings'     => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->_colorCLI = new ColorCLI();
-		$this->_echoCLI = ($defaults['Echo'] && nZEDb_ECHOCLI && (strtolower(PHP_SAPI) === 'cli'));
+		$this->pdo->log = new ColorCLI();
+		$this->_echoCLI = ($options['Echo'] && nZEDb_ECHOCLI && (strtolower(PHP_SAPI) === 'cli'));
 		$this->_echoDebug = nZEDb_DEBUG;
 
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->_nntp = ($defaults['NNTP'] instanceof NNTP ? $defaults['NNTP'] : new NNTP(['ColorCLI' => $this->_colorCLI, 'Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 
-		$this->_nzb = ($defaults['NZB'] instanceof NZB ? $defaults['NZB'] : new NZB($this->pdo));
-		$this->_groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->_nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
+		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_archiveInfo = new ArchiveInfo();
-		$this->_releaseFiles = ($defaults['ReleaseFiles'] instanceof ReleaseFiles ? $defaults['ReleaseFiles'] : new ReleaseFiles($this->pdo));
-		$this->_categorize = ($defaults['Categorize'] instanceof Categorize ? $defaults['Categorize'] : new Categorize(['Settings' => $this->pdo]));
-		$this->_nameFixer = ($defaults['NameFixer'] instanceof NameFixer ? $defaults['NameFixer'] : new NameFixer(['Echo' =>$this->_echoCLI, 'Groups' => $this->_groups, 'Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI, 'Categorize' => $this->_categorize]));
-		$this->_releaseExtra = ($defaults['ReleaseExtra'] instanceof ReleaseExtra ? $defaults['ReleaseExtra'] : new ReleaseExtra($this->pdo));
-		$this->_releaseImage = ($defaults['ReleaseImage'] instanceof ReleaseImage ? $defaults['ReleaseImage'] : new ReleaseImage($this->pdo));
+		$this->_releaseFiles = ($options['ReleaseFiles'] instanceof ReleaseFiles ? $options['ReleaseFiles'] : new ReleaseFiles($this->pdo));
+		$this->_categorize = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->_nameFixer = ($options['NameFixer'] instanceof NameFixer ? $options['NameFixer'] : new NameFixer(['Echo' =>$this->_echoCLI, 'Groups' => $this->_groups, 'Settings' => $this->pdo, 'Categorize' => $this->_categorize]));
+		$this->_releaseExtra = ($options['ReleaseExtra'] instanceof ReleaseExtra ? $options['ReleaseExtra'] : new ReleaseExtra($this->pdo));
+		$this->_releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 		$this->_par2Info = new Par2Info();
-		$this->_nfo = ($defaults['Nfo'] instanceof Nfo ? $defaults['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI]));
+		$this->_nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
 		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
@@ -2313,7 +2312,7 @@ Class ProcessAdditional
 	protected function _echo($string, $type, $newLine = true)
 	{
 		if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho($this->_colorCLI->$type($string), $newLine);
+			$this->pdo->log->doEcho($this->pdo->log->$type($string), $newLine);
 		}
 	}
 

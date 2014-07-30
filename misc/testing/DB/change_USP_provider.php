@@ -76,7 +76,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 	}
 
 	if (!isset($nntp)) {
-		$nntp = new NNTP(['ColorCLI' => $pdo->log]);
+		$nntp = new NNTP(['Settings' => $pdo]);
 		if ($nntp->doConnect(false) !== true) {
 			return;
 		}
@@ -84,7 +84,7 @@ function daytopost($nntp, $group, $days, $debug = true, $bfcheck = true)
 		$st = true;
 	}
 
-	$binaries = new Binaries(['NNTP' => $nntp, 'ColorCLI' => $pdo->log, 'Settings' => $pdo]);
+	$binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo]);
 
 	$data = $nntp->selectGroup($group);
 	if ($nntp->isError($data)) {

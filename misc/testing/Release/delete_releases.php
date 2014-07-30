@@ -40,6 +40,6 @@ if ($totalArgs < 2) {
 	));
 }
 
-$RR = new ReleaseRemover(['ColorCLI' => $cli]);
+$RR = new ReleaseRemover();
 // Remove argv[0] and send the array.
 $RR->removeByCriteria(array_slice($argv, 1, $totalArgs-1));

@@ -15,8 +15,7 @@ if (!isset($argv[1]) || ( $argv[1] != "all" && $argv[1] != "full" && !is_numeric
 			));
 }
 
-$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
-$namefixer = new NameFixer(['ColorCLI' => $pdo->log, 'ConsoleTools' => $consoletools, 'Settings' => $pdo]);
+$namefixer = new NameFixer(['Settings' => $pdo]);
 $offset = '';
 
 $timestart = time();

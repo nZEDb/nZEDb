@@ -8,7 +8,7 @@ $pdo = new Settings();
 if (!isset($argv[1])) {
 	exit($pdo->log->error("This script is not intended to be run manually, it is called from groupfixrelnames_threaded.py."));
 } else if (isset($argv[1])) {
-	$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $pdo->log]);
+	$namefixer = new NameFixer(['Settings' => $pdo]);
 	$pieces = explode(' ', $argv[1]);
 	$guidChar = $pieces[1];
 	$maxperrun = $pieces[2];
@@ -122,16 +122,16 @@ if (!isset($argv[1])) {
 							)
 			);
 			if ($releases !== false) {
-				$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $pdo->log]);
+				$nntp = new NNTP(['Settings' => $pdo]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 					exit($pdo->log->error("Unable to connect to usenet."));
 				}
 
-				$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true, 'ColorCLI' => $pdo->log]);
+				$Nfo = new Nfo(['Settings' => $pdo, 'Echo' => true]);
 				$nzbcontents = new NZBContents(
 					array(
 						'Echo' => true, 'NNTP' => $nntp, 'Nfo' => $Nfo, 'Settings' => $pdo,
-						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer, 'ColorCLI' => $pdo->log])
+						'PostProcess' => new PostProcess(['Settings' => $pdo, 'Nfo' => $Nfo, 'NameFixer' => $namefixer])
 					)
 				);
 				foreach ($releases as $release) {
@@ -158,7 +158,7 @@ if (!isset($argv[1])) {
 							)
 			);
 			if ($releases !== false) {
-				$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $pdo->log]);
+				$nntp = new NNTP(['Settings' => $pdo]);
 				if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {
 					exit($pdo->log->error("Unable to connect to usenet."));
 				}
