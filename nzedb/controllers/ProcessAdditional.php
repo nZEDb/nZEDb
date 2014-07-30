@@ -75,7 +75,6 @@ Class ProcessAdditional
 		];
 		$options += $defaults;
 
-		$this->pdo->log = new ColorCLI();
 		$this->_echoCLI = ($options['Echo'] && nZEDb_ECHOCLI && (strtolower(PHP_SAPI) === 'cli'));
 		$this->_echoDebug = nZEDb_DEBUG;
 
