@@ -15,8 +15,7 @@ $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
 
 $runVar['constants'] = $pdo->queryOneRow($t->getConstantSettings());
-
-$runVar['constants']['pre_lim'] = '';
+$runVar['constants']['pre_lim'] == '';
 
 $runVar['commands']['python'] = ($t->command_exist("python3") ? 'python3 -OOu' : 'python -OOu');
 $runVar['commands']['php'] = ($t->command_exist("php5") ? 'php5' : 'php');
@@ -69,9 +68,10 @@ if ($runVar['constants']['nntpproxy'] == 0) {
 $catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid";
 
 //create timers and set to now
-$runVar['timers']['timer1'] = $runVar['timers']['timer2'] = $runVar['timers']['timer3'] = $runVar['timers']['timer4'] = $runVar['timers']['timer5'] = time();
+$runVar['timers']['timer1'] = $runVar['timers']['timer2'] = $runVar['timers']['timer3'] =
+$runVar['timers']['timer4'] = $runVar['timers']['timer5'] = time();
 
-$tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time = 0;
+$tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time =
 $init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tpg_count_1_time = 0;
 
 $last_history = "";
@@ -89,8 +89,8 @@ $mask5 = $pdo->log->tmuxOrange("%-16.16s %25.25s %25.25s");
 
 $runVar['settings']['monitor'] = 0;
 $runVar['counts']['iterations'] = 1;
-$fcfirstrun = true;
-$fcnum = 0;
+$runVar['modsettings']['fc']['firstrun'] = true;
+$runVar['modsettings']['fc']['num'] = 0;
 
 while ($runVar['counts']['iterations'] > 0) {
 
@@ -665,15 +665,15 @@ while ($runVar['counts']['iterations'] > 0) {
 	$_pythonn = "nice -n{$runVar['settings']['niceness']} {$runVar['commands']['python']}";
 
 	if (($runVar['settings']['postprocess_kill'] < $runVar['counts']['now']['total_work']) && ($runVar['settings']['postprocess_kill'] != 0)) {
-		$kill_pp = true;
+		$runVar['killswitch']['pp'] = true;
 	} else {
-		$kill_pp = false;
+		$runVar['killswitch']['pp'] = false;
 	}
 
 	if (($runVar['settings']['collections_kill'] < $runVar['counts']['now']['collections_table']) && ($runVar['settings']['collections_kill'] != 0)) {
-		$kill_coll = true;
+		$runVar['killswitch']['coll'] = true;
 	} else {
-		$kill_coll = false;
+		$runVar['killswitch']['coll'] = false;
 	}
 
 	if ($runVar['settings']['binaries_run'] != 0) {
@@ -692,158 +692,26 @@ while ($runVar['counts']['iterations'] > 0) {
 		}
 	}
 
-	if ($runVar['settings']['post_non'] == 2) {
-		$runVar['modsettings']['clean'] = ' clean ';
-	} else {
-		$runVar['modsettings']['clean'] = ' ';
-	}
-
-	if ($runVar['counts']['iterations'] === 2) {
-		$runVar['constants']['pre_lim'] = '7';
-	}
+	($runVar['settings']['post_non'] == 2 ? $runVar['modsettings']['clean'] = ' clean ' : $runVar['modsettings']['clean'] = ' ');
+	($runVar['counts']['iterations'] > 1 ? $runVar['constants']['pre_lim'] = '7' : $runVar['constants']['pre_lim'] == '');
 
 	if ($runVar['settings']['is_running'] == 1) {
+
 		//run these if complete sequential not set
 		if ($runVar['constants']['sequential'] != 2) {
+
 			//fix names
-			switch ($runVar['settings']['fix_names']) {
-				case 1:
-					$log = $t->writelog($runVar['panes']['one'][0]);
-					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.0 ' \
-							{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py md5 $log; \
-							{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py filename $log; \
-							{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py nfo $log; \
-							{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py par2 $log; \
-							{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py miscsorter $log; \
-							{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/groupfixrelnames_threaded.py predbft $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['fix_timer']}' 2>&1 1> /dev/null"
-					);
-					break;
-				default:
-					$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-					shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:1.0 'echo \"\033[38;5;${color}m\n{$runVar['panes']['one'][0]} has been disabled/terminated by Fix Release Names\"'");
-					break;
-			}
+			$t->runPaneExtra('fixnames', $runVar);
+
 			//dehash releases
 			$t->runPaneExtra('dehash', $runVar);
 
 			// Remove crap releases.
-			switch ($runVar['settings']['fix_crap_opt']) {
-				// Do all types up to 2 hours.
-				case 'All':
-					$log = $t->writelog($runVar['panes']['one'][1]);
-					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.1 ' \
-							{$runVar['commands']['_php']} {$runVar['paths']['misc']}testing/Release/removeCrapReleases.php true 2 $log; \
-							date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['crap_timer']}' 2>&1 1> /dev/null"
-					);
-					break;
-				// The user has specified custom types.
-				case 'Custom':
-					$log = $t->writelog($runVar['panes']['one'][1]);
+			$runVar['modsettings']['fc'] = $t->runPaneExtra('removecrap', $runVar);
 
-					// Check how many types the user picked.
-					$fcmax = count($runVar['modsettings']['fix_crap']);
-
-					// Make sure the user actually selected some.
-					if ($fcmax > 0) {
-
-						// If this is the first run, do a full run, else run on last 2 hours of releases.
-						$fctime = '4';
-						if ((($runVar['counts']['iterations'] == 1) || $fcfirstrun)) {
-							$fctime = 'full';
-						}
-
-						//Check to see if the pane is dead, if so respawn it.
-						if (shell_exec("tmux list-panes -t{$runVar['constants']['tmux_session']}:1 | grep ^1 | grep -c dead") == 1) {
-
-							// Run remove crap releases.
-							shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.1 ' \
-								echo \"Running removeCrapReleases for {$runVar['modsettings']['fix_crap'][$fcnum]}\"; \
-								php {$runVar['paths']['misc']}testing/Release/removeCrapReleases.php true $fctime {$runVar['modsettings']['fix_crap'][$fcnum]} $log; \
-								date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['crap_timer']}' 2>&1 1> /dev/null"
-							);
-
-							// Increment so we know which type to run next.
-							$fcnum++;
-						}
-
-						// If we reached the end, reset the type.
-						if ($fcnum == $fcmax) {
-							$fcnum = 0;
-
-							// And say we are not on the first run, so we run 2 hours the next times.
-							$fcfirstrun = false;
-						}
-					}
-					break;
-				case 'Disabled':
-				default:
-					$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-					shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:1.1 'echo \"\033[38;5;${color}m\n{$runVar['panes']['one'][1]} has been disabled/terminated by Remove Crap Releases\"'");
-					break;
-			}
 			//run postprocess_releases additional
-			switch (true) {
-				case $runVar['settings']['post'] == 1 && ($runVar['counts']['now']['work'] + $runVar['counts']['now']['apps'] + $runVar['counts']['now']['processxxx']) > 0:
-					$history = str_replace(" ", '', `tmux list-panes -t{$runVar['constants']['tmux_session']}:2 | grep 0: | awk '{print $4;}'`);
-					if ($last_history != $history) {
-						$last_history = $history;
-						$runVar['timers']['timer3'] = time();
-					} else {
-						if (time() - $runVar['timers']['timer3'] >= $runVar['settings']['post_kill_timer']) {
-							$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-							passthru("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:2.0 'echo \"\033[38;5;${color}m\n{$runVar['panes']['two'][0]} has been terminated by Possible Hung thread\"'");
-							$wipe = `tmux clearhist -t{$runVar['constants']['tmux_session']}:2.0`;
-							$runVar['timers']['timer3'] = time();
-						}
-					}
-					$dead1 = str_replace(" ", '', `tmux list-panes -t{$runVar['constants']['tmux_session']}:2 | grep dead | grep 0: | wc -l`);
-					if ($dead1 == 1) {
-						$runVar['timers']['timer3'] = time();
-					}
-					$log = $t->writelog($runVar['panes']['two'][0]);
-					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 'echo \"\033[38;5;${color}m\"; \
-							{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php add $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
-					);
-					break;
-				case $runVar['settings']['post'] == 2 && $runVar['counts']['now']['processnfo'] > 0:
-					$log = $t->writelog($runVar['panes']['two'][0]);
-					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 ' \
-							{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php nfo $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
-					);
-					break;
-				case $runVar['settings']['post'] == 3 && ($runVar['counts']['now']['processnfo'] > 0 || $runVar['counts']['now']['work'] + $runVar['counts']['now']['apps'] + $runVar['counts']['now']['processxxx'] > 0):
-					//run postprocess_releases additional
-					$history = str_replace(" ", '', `tmux list-panes -t{$runVar['constants']['tmux_session']}:2 | grep 0: | awk '{print $4;}'`);
-					if ($last_history != $history) {
-						$last_history = $history;
-						$runVar['timers']['timer3'] = time();
-					} else {
-						if (time() - $runVar['timers']['timer3'] >= $runVar['settings']['post_kill_timer']) {
-							$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-							shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:2.0 'echo \"\033[38;5;${color}m\n{$runVar['panes']['two'][0]} has been terminated by Possible Hung thread\"'");
-							$wipe = `tmux clearhist -t{$runVar['constants']['tmux_session']}:2.0`;
-							$runVar['timers']['timer3'] = time();
-						}
-					}
-					$dead1 = str_replace(" ", '', `tmux list-panes -t{$runVar['constants']['tmux_session']}:2 | grep dead | grep 0: | wc -l`);
-					if ($dead1 == 1) {
-						$runVar['timers']['timer3'] = time();
-					}
-					$log = $t->writelog($runVar['panes']['two'][0]);
-					shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:2.0 ' \
-							{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php add $log; \
-							{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/nix/multiprocessing/postprocess.php nfo $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer']}' 2>&1 1> /dev/null"
-					);
-					break;
-				case $runVar['settings']['post'] != 0 && ($runVar['counts']['now']['processnfo'] == 0) && ($runVar['counts']['now']['work'] + $runVar['counts']['now']['apps'] + $runVar['counts']['now']['processxxx'] == 0):
-					$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-					shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:2.0 'echo \"\033[38;5;${color}m\n{$runVar['panes']['two'][0]} has been disabled/terminated by No Misc/Nfo to process\"'");
-					break;
-				default:
-					$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-					shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:2.0 'echo \"\033[38;5;${color}m\n{$runVar['panes']['two'][0]} has been disabled/terminated by Postprocess Additional\"'");
-					break;
-			}
+			$t->runPaneExtra('ppadditional', $runVar);
+
 			//run postprocess_releases non amazon
 			$t->runPaneExtra('nonamazon', $runVar);
 
@@ -856,7 +724,7 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		if ($runVar['constants']['sequential'] == 1) {
 			//run nzb-import
-			if (($runVar['settings']['import'] != 0) && ($kill_pp == false)) {
+			if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
 				$log = $t->writelog($runVar['panes']['zero'][1]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.1 ' \
 						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/import_threaded.py $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['import_timer']}' 2>&1 1> /dev/null"
@@ -867,119 +735,7 @@ while ($runVar['counts']['iterations'] > 0) {
 			}
 
 			//run update_binaries
-			$log = $t->writelog($runVar['panes']['zero'][2]);
-			if (($kill_coll == false) && ($kill_pp == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
-				switch (true) {
-					//runs all/safe less than 4800
-					case $runVar['settings']['binaries_run'] != 0 && $runVar['settings']['backfill'] == 4 && $runVar['settings']['releases_run'] != 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								{$runVar['scripts']['binaries']} $log; \
-								{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; \
-								{$runVar['scripts']['releases']} $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-					//runs all less than 4800
-					case $runVar['settings']['binaries_run'] != 0 && $runVar['settings']['backfill'] != 0 && $runVar['settings']['releases_run'] != 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								{$runVar['scripts']['binaries']} $log; \
-								{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; \
-								{$runVar['scripts']['releases']} $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-					//runs bin/back/safe less than 4800
-					case $runVar['settings']['binaries_run'] != 0 && $runVar['settings']['backfill'] == 4 && $runVar['settings']['releases_run'] == 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								{$runVar['scripts']['binaries']} $log; \
-								{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; date +\"%D %T\"; \
-								echo \"\nreleases has been disabled/terminated by Releases\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-					//runs bin/back less than 4800
-					case $runVar['settings']['binaries_run'] != 0 && $runVar['settings']['backfill'] != 0 && $runVar['settings']['releases_run'] == 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								{$runVar['scripts']['binaries']} $log; \
-								{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; date +\"%D %T\"; echo \"\nreleases have been disabled/terminated by Releases\"; \
-								{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-					//runs back/safe/rel less than 4800
-					case $runVar['settings']['binaries_run'] == 0 && $runVar['settings']['backfill'] == 4 && $runVar['settings']['releases_run'] != 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; \
-								{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; \
-								{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-					//runs back/rel less than 4800
-					case $runVar['settings']['binaries_run'] == 0 && $runVar['settings']['backfill'] != 0 && $runVar['settings']['releases_run'] != 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; \
-								{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; \
-								{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-					//runs bin/rel less than 4800
-					case $runVar['settings']['binaries_run'] != 0 && $runVar['settings']['backfill'] == 0 && $runVar['settings']['releases_run'] != 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								{$runVar['scripts']['binaries']} $log; \
-								{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; \
-								{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-					//runs bin less than 4800
-					case $runVar['settings']['binaries_run'] != 0 && $runVar['settings']['backfill'] == 0 && $runVar['settings']['releases_run'] == 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								{$runVar['scripts']['binaries']} $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; \
-								{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-					//runs back/safe less than 4800
-					case $runVar['settings']['binaries_run'] == 0 && $runVar['settings']['backfill'] == 4 && $runVar['settings']['releases_run'] == 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; \
-								{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-					//runs back less than 4800
-					case $runVar['settings']['binaries_run'] == 0 && $runVar['settings']['backfill'] == 4 && $runVar['settings']['releases_run'] == 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; \
-								{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-					//runs rel less than 4800
-					case $runVar['settings']['binaries_run'] == 0 && $runVar['settings']['backfill'] == 0 && $runVar['settings']['releases_run'] != 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Binaries and Backfill\"; \
-								{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-					case $runVar['settings']['binaries_run'] == 0 && $runVar['settings']['backfill'] == 0 && $runVar['settings']['releases_run'] == 0:
-						shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-								echo \"\nbinaries, backfill and releases have been disabled/terminated by Binaries, Backfill and Releases\"; \
-								{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-						);
-						break;
-				}
-			} else if (($kill_coll == false) && ($kill_pp == false) && (time() - $runVar['timers']['timer5'] >= 4800)) {
-				//run backfill all once and resets the timer
-				if ($runVar['settings']['backfill'] != 0) {
-					shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.2 ' \
-						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-					);
-					$runVar['timers']['timer5'] = time();
-				}
-				$runVar['timers']['timer5'] = time();
-			} else if ((($kill_coll == true) || ($kill_pp == true)) && ($runVar['settings']['releases_run'] != 0)) {
-				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 'echo \"\033[38;5;${color}m\"; \
-					echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; \
-					{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-				);
-			} else if (($kill_coll == true) || ($kill_pp == true)) {
-				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][2]} has been disabled/terminated by Exceeding Limits\"'");
-			}
+			$t->runBasicSequential($runVar);
 
 			//pane setup for IrcScraper / Sharing
 			$ipane = 3;
@@ -989,12 +745,12 @@ while ($runVar['counts']['iterations'] > 0) {
 				$spane = 4;
 			}
 			//run IRCScraper
-			$t->run_ircscraper($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $ipane, $runVar['constants']['run_ircscraper']);
+			$t->run_ircscraper($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $ipane, $runVar['constants']['run_ircscraper'], $runVar);
 			//run Sharing
-			$t->run_sharing($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $spane, $runVar['commands']['_sleep'], $runVar['settings']['sharing_timer']);
+			$t->run_sharing($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $spane, $runVar['commands']['_sleep'], $runVar['settings']['sharing_timer'], $runVar);
 		} else if ($runVar['constants']['sequential'] == 2) {
 			//run nzb-import
-			if (($runVar['settings']['import'] != 0) && ($kill_pp == false)) {
+			if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
 				$log = $t->writelog($runVar['panes']['zero'][1]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.1 ' \
 						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/import_threaded.py $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['import_timer']}' 2>&1 1> /dev/null"
@@ -1062,12 +818,12 @@ while ($runVar['counts']['iterations'] > 0) {
 		} else {
 			//run update_binaries
 			$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-			if (($runVar['settings']['binaries_run'] != 0) && ($kill_coll == false) && ($kill_pp == false)) {
+			if (($runVar['settings']['binaries_run'] != 0) && ($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false)) {
 				$log = $t->writelog($runVar['panes']['zero'][2]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
 						{$runVar['scripts']['binaries']} $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['bins_timer']}' 2>&1 1> /dev/null"
 				);
-			} else if (($kill_coll == true) || ($kill_pp == true)) {
+			} else if (($runVar['killswitch']['coll'] == true) || ($runVar['killswitch']['pp'] == true)) {
 				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.2 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][2]} has been disabled/terminated by Exceeding Limits\"'");
 			} else {
@@ -1082,23 +838,23 @@ while ($runVar['counts']['iterations'] > 0) {
 				$backsleep = $runVar['settings']['back_timer'];
 			}
 
-			if (($runVar['settings']['backfill'] == 4) && ($kill_coll == false) && ($kill_pp == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
+			if (($runVar['settings']['backfill'] == 4) && ($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
 				$log = $t->writelog($runVar['panes']['zero'][3]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.3 ' \
 						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
 				);
-			} else if (($runVar['settings']['backfill'] != 0) && ($kill_coll == false) && ($kill_pp == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
+			} else if (($runVar['settings']['backfill'] != 0) && ($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
 				$log = $t->writelog($runVar['panes']['zero'][3]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.3 ' \
 						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py group $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
 				);
-			} else if (($runVar['settings']['backfill'] != 0) && ($kill_coll == false) && ($kill_pp == false) && (time() - $runVar['timers']['timer5'] >= 4800)) {
+			} else if (($runVar['settings']['backfill'] != 0) && ($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] >= 4800)) {
 				$log = $t->writelog($runVar['panes']['zero'][3]);
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.3 ' \
 						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} $backsleep' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer5'] = time();
-			} else if (($kill_coll == true) || ($kill_pp == true)) {
+			} else if (($runVar['killswitch']['coll'] == true) || ($runVar['killswitch']['pp'] == true)) {
 				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.3 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][3]} has been disabled/terminated by Exceeding Limits\"'");
 			} else {
@@ -1107,12 +863,12 @@ while ($runVar['counts']['iterations'] > 0) {
 			}
 
 			//run nzb-import
-			if (($runVar['settings']['import'] != 0) && ($kill_pp == false)) {
+			if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
 				$log = $t->writelog($runVar['panes']['zero'][1]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.1 ' \
 						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/import_threaded.py $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['import_timer']}' 2>&1 1> /dev/null"
 				);
-			} else if ($kill_pp == true) {
+			} else if ($runVar['killswitch']['pp'] == true) {
 				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.1 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][1]} has been disabled/terminated by Exceeding Limits\"'");
 			} else {
@@ -1139,10 +895,10 @@ while ($runVar['counts']['iterations'] > 0) {
 				$spane = 4;
 			}
 			//run IRCScraper
-			$t->run_ircscraper($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $ipane, $runVar['constants']['run_ircscraper']);
+			$t->run_ircscraper($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $ipane, $runVar['constants']['run_ircscraper'], $runVar);
 
 			//run Sharing
-			$t->run_sharing($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $spane, $runVar['commands']['_sleep'], $runVar['settings']['sharing_timer']);
+			$t->run_sharing($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $spane, $runVar['commands']['_sleep'], $runVar['settings']['sharing_timer'], $runVar);
 		}
 	} else if ($runVar['constants']['sequential'] == 0) {
 		$t->notRunningNonSeq();

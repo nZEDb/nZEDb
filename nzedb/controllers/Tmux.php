@@ -46,6 +46,76 @@ class Tmux
 		return $this->rows2Object($rows);
 	}
 
+	public function getConnectionsCounts(&$runVar)
+	{
+		$this->runVar = $runVar;
+
+		$this->runVar['connections']['primary']['active'] = $this->runVar['connections']['primary']['total'] =
+		$this->runVar['connections']['alternate']['active'] = $this->runVar['connections']['alternate']['total'] = 0;
+
+		$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . ":" . $this->runVar['connections']['port'] . " | grep -c ESTAB"));
+		$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip'] . ":" . $this->runVar['connections']['port']));
+		if ($this->runVar['constants']['alternate_nntp']) {
+			$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip_a'] . ":" . $this->runVar['connections']['port_a'] . " | grep -c ESTAB"));
+			$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip_a'] . ":" . $this->runVar['connections']['port_a']));
+		}
+		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
+				$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . ":https | grep -c ESTAB"));
+				$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip'] . ":https"));
+				if ($this->runVar['constants']['alternate_nntp']) {
+					$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip_a'] . ":https | grep -c ESTAB"));
+					$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip_a'] . ":https"));
+				}
+		}
+		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
+			$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['port'] . " | grep -c ESTAB"));
+			$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['port']));
+			if ($this->runVar['constants']['alternate_nntp']) {
+				$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['port_a'] . " | grep -c ESTAB"));
+				$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['port_a']));
+			}
+		}
+		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
+			$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . " | grep -c ESTAB"));
+			$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip']));
+			if ($this->runVar['constants']['alternate_nntp']) {
+				$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . " | grep -c ESTAB"));
+				$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip']));
+			}
+		}
+		return ($this->runVar['connections']);
+	}
+
+	public function getListOfPanes(&$runVar)
+	{
+		$this->runVar = $runVar;
+		switch ($this->runVar['constants']['sequential']) {
+			case 0:
+				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$this->runVar['constants']['tmux_session']}:0 -F '#{pane_title}'`");
+				$this->runVar['panes']['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
+				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$this->runVar['constants']['tmux_session']}:1 -F '#{pane_title}'`");
+				$this->runVar['panes']['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
+				$panes_win_3 = shell_exec("echo `tmux list-panes -t {$this->runVar['constants']['tmux_session']}:2 -F '#{pane_title}'`");
+				$this->runVar['panes']['two'] = str_replace("\n", '', explode(" ", $panes_win_3));
+				break;
+			case 1:
+				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$this->runVar['constants']['tmux_session']}:0 -F '#{pane_title}'`");
+				$this->runVar['panes']['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
+				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$this->runVar['constants']['tmux_session']}:1 -F '#{pane_title}'`");
+				$this->runVar['panes']['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
+				$panes_win_3 = shell_exec("echo `tmux list-panes -t {$this->runVar['constants']['tmux_session']}:2 -F '#{pane_title}'`");
+				$this->runVar['panes']['two'] = str_replace("\n", '', explode(" ", $panes_win_3));
+				break;
+			case 2:
+				$panes_win_1 = shell_exec("echo `tmux list-panes -t {$this->runVar['constants']['tmux_session']}:0 -F '#{pane_title}'`");
+				$this->runVar['panes']['zero'] = str_replace("\n", '', explode(" ", $panes_win_1));
+				$panes_win_2 = shell_exec("echo `tmux list-panes -t {$this->runVar['constants']['tmux_session']}:1 -F '#{pane_title}'`");
+				$this->runVar['panes']['one'] = str_replace("\n", '', explode(" ", $panes_win_2));
+				break;
+		}
+		return ($this->runVar['panes']);
+	}
+
 	public function getConstantSettings()
 	{
 		$tmuxstr = 'SELECT value FROM tmux WHERE setting =';
