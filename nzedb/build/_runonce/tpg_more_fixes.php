@@ -63,7 +63,7 @@ if ($groups === false) {
 				switch ($query['t']) {
 					// Queries needing 1 group ID.
 					case 1:
-						$pdo->queryExec(sprintf($query['q'], $group['id']));
+						$pdo->queryExec(sprintf($query['q'], $group['id']), true);
 						break;
 					// Queries needing 2 group IDs.
 					case 2:
