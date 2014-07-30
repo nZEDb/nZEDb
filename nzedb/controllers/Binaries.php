@@ -147,7 +147,7 @@ class Binaries
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions = [
+		$defaults = [
 			'Echo'                => true,
 			'CollectionsCleaning' => null,
 			'ColorCLI'            => null,
@@ -155,15 +155,15 @@ class Binaries
 			'NNTP'                => null,
 			'Settings'            => null,
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$options += $defaults;
 
-		$this->_echoCLI = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+		$this->_echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->_pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new \nzedb\db\Settings());
-		$this->_groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups(['Settings' => $this->_pdo]));
-		$this->_colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
-		$this->_nntp = ($defOptions['NNTP'] instanceof NNTP ? $defOptions['NNTP'] : new NNTP(['Echo' => $this->_colorCLI, 'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI]));
-		$this->_collectionsCleaning = ($defOptions['CollectionsCleaning'] instanceof CollectionsCleaning ? $defOptions['CollectionsCleaning'] : new CollectionsCleaning());
+		$this->_pdo = ($options['Settings'] instanceof \nzedb\db\Settings ? $options['Settings'] : new \nzedb\db\Settings());
+		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->_pdo]));
+		$this->_colorCLI = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
+		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->_colorCLI, 'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI]));
+		$this->_collectionsCleaning = ($options['CollectionsCleaning'] instanceof CollectionsCleaning ? $options['CollectionsCleaning'] : new CollectionsCleaning());
 
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 
@@ -184,19 +184,6 @@ class Binaries
 
 		$this->blackList = array();
 		$this->_blackListLoaded = false;
-
-
-		$SQLTime = $this->_pdo->queryOneRow('SELECT UNIX_TIMESTAMP(NOW()) AS time');
-		if ($SQLTime !== false) {
-			if ($SQLTime['time'] != time()) {
-				$difference = abs($SQLTime['time'] - time());
-				if ($difference > 60) {
-					exit('FATAL ERROR: PHP and MySQL time do not match!' . PHP_EOL);
-				}
-			}
-		} else {
-			exit('FATAL ERROR: Unable to get current time from MySQL!' . PHP_EOL);
-		}
 	}
 
 	/**
@@ -214,46 +201,39 @@ class Binaries
 		if ($groupCount > 0) {
 			$counter = 1;
 			$allTime = microtime(true);
-			$dMessage = "Updating: " . $groupCount . ' group(s) - Using compression? ' . ($this->_compressedHeaders ? 'Yes' : 'No');
-			if ($this->_debug) {
-				$this->_debugging->start("updateAllGroups", $dMessage, 5);
-			}
 
-			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho($this->_colorCLI->header($dMessage), true);
-			}
+			$this->log(
+				'Updating: ' . $groupCount . ' group(s) - Using compression? ' . ($this->_compressedHeaders ? 'Yes' : 'No'),
+				'updateAllGroups',
+				Debugging::DEBUG_INFO,
+				'header'
+			);
 
 			// Loop through groups.
 			foreach ($groups as $group) {
-				$dMessage = "Starting group " . $counter . ' of ' . $groupCount;
-				if ($this->_debug) {
-					$this->_debugging->start("updateAllGroups", $dMessage, 5);
-				}
-
-				if ($this->_echoCLI) {
-					$this->_colorCLI->doEcho($this->_colorCLI->header($dMessage), true);
-				}
+				$this->log(
+					'Starting group ' . $counter . ' of ' . $groupCount,
+					'updateAllGroups',
+					Debugging::DEBUG_INFO,
+					'header'
+				);
 				$this->updateGroup($group, $maxHeaders);
 				$counter++;
 			}
 
-			$dMessage = 'Updating completed in ' . number_format(microtime(true) - $allTime, 2) . " seconds.";
-			if ($this->_debug) {
-				$this->_debugging->start("updateAllGroups", $dMessage, 5);
-			}
-
-			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho($this->_colorCLI->primary($dMessage));
-			}
+			$this->log(
+				'Updating completed in ' . number_format(microtime(true) - $allTime, 2) . ' seconds.',
+				'updateAllGroups',
+				Debugging::DEBUG_INFO,
+				'primary'
+			);
 		} else {
-			$dMessage = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
-			if ($this->_debug) {
-				$this->_debugging->start("updateAllGroups", $dMessage, 4);
-			}
-
-			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho($this->_colorCLI->warning($dMessage), true);
-			}
+			$this->log(
+				'No groups specified. Ensure groups are added to nZEDb\'s database for updating.',
+				'updateAllGroups',
+				Debugging::DEBUG_NOTICE,
+				'warning'
+			);
 		}
 	}
 
@@ -556,13 +536,12 @@ class Binaries
 
 			// Check if the non-compression headers have an error.
 			if ($this->_nntp->isError($headers)) {
-				$dMessage = "Code {$headers->code}: {$headers->message}\nSkipping group: ${$groupMySQL['name']}";
-				if ($this->_debug) {
-					$this->_debugging->start("scan", $dMessage, 3);
-				}
-				if ($this->_echoCLI) {
-					$this->_colorCLI->doEcho($this->_colorCLI->error($dMessage), true);
-				}
+				$this->log(
+					"Code {$headers->code}: {$headers->message}\nSkipping group: ${$groupMySQL['name']}",
+					'scan',
+					Debugging::DEBUG_WARNING,
+					'error'
+				);
 				return $returnArray;
 			}
 		}
@@ -605,14 +584,14 @@ class Binaries
 			}
 		}
 
-		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = array();
+		$headersRepaired = $articles = $rangeNotReceived = $collectionIDs = $binariesUpdate = $headersReceived = $headersNotInserted = array();
 		$notYEnc = $headersBlackListed = 0;
 
-		$partsQuery = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $tableNames['pname']);
+		$partsQuery = $partsCheck = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $tableNames['pname']);
 
 		$this->_pdo->beginTransaction();
 		// Loop articles, figure out files/parts.
-		foreach ($headers as $key => $header) {
+		foreach ($headers as $header) {
 
 			// Check if we got the article or not.
 			if (isset($header['Number'])) {
@@ -667,7 +646,7 @@ class Binaries
 			if (!isset($articles[$matches[1]])) {
 
 				// Attempt to find the file count. If it is not found, set it to 0.
-				if (!preg_match('/[\[(\s](\d{1,5})(\/|[\s_]of\s_]|-)(\d{1,5})[\])\s$:]/i', $matches[1], $fileCount)) {
+				if (!preg_match('/[\[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[\])\s$:]/i', $matches[1], $fileCount)) {
 					$fileCount[1] = $fileCount[3] = 0;
 
 					if ($this->_showDroppedYEncParts === true) {
@@ -679,13 +658,12 @@ class Binaries
 				}
 
 				// (hash) Used to group articles together when forming the release/nzb.
-				$header['CollectionHash'] =
-					sha1(
-						$this->_collectionsCleaning->collectionsCleaner($matches[1], $groupMySQL['name']) .
-						$header['From'] .
-						$groupMySQL['id'] .
-						$fileCount[3]
-					);
+				$header['CollectionHash'] = sha1(
+					$this->_collectionsCleaning->collectionsCleaner($matches[1], $groupMySQL['name']) .
+					$header['From'] .
+					$groupMySQL['id'] .
+					$fileCount[3]
+				);
 
 				if (!isset($collectionIDs[$header['CollectionHash']])) {
 
@@ -717,7 +695,7 @@ class Binaries
 
 					if ($collectionID === false) {
 						if ($addToPartRepair) {
-							$rangeNotReceived[] = $header['Number'];
+							$headersNotInserted[] = $header['Number'];
 						}
 						$this->_pdo->Rollback();
 						$this->_pdo->beginTransaction();
@@ -730,9 +708,9 @@ class Binaries
 
 				$binaryID = $this->_pdo->queryInsert(
 					sprintf("
-					INSERT INTO %s (binaryhash, name, collectionid, totalparts, currentparts, filenumber, partsize)
-					VALUES ('%s', %s, %d, %d, 1, %d, %d)
-					ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
+						INSERT INTO %s (binaryhash, name, collectionid, totalparts, currentparts, filenumber, partsize)
+						VALUES ('%s', %s, %d, %d, 1, %d, %d)
+						ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
 						$tableNames['bname'],
 						md5($matches[1] . $header['From'] . $groupMySQL['id']),
 						$this->_pdo->escapeString(utf8_encode($matches[1])),
@@ -746,15 +724,27 @@ class Binaries
 
 				if ($binaryID === false) {
 					if ($addToPartRepair) {
-						$rangeNotReceived[] = $header['Number'];
+						$headersNotInserted[] = $header['Number'];
 					}
 					$this->_pdo->Rollback();
 					$this->_pdo->beginTransaction();
 					continue;
 				}
 
-				$binariesUpdate[$binaryID]['Size'] = $header['Bytes'];
-				$binariesUpdate[$binaryID]['Parts'] = 1;
+				$counts = $this->_pdo->queryOneRow(
+					sprintf(
+						'SELECT currentparts, partsize FROM %s WHERE id = %d',
+						$tableNames['bname'], $binaryID
+					)
+				);
+
+				if ($counts === false) {
+					$binariesUpdate[$binaryID]['Size'] = $header['Bytes'];
+					$binariesUpdate[$binaryID]['Parts'] = 1;
+				} else {
+					$binariesUpdate[$binaryID]['Size'] = $counts['partsize'];
+					$binariesUpdate[$binaryID]['Parts'] = $counts['currentparts'];
+				}
 
 				$articles[$matches[1]]['CollectionID'] = $collectionID;
 				$articles[$matches[1]]['BinaryID'] = $binaryID;
@@ -792,7 +782,7 @@ class Binaries
 		// Check if we got any binaries. If we did, try to insert them.
 		if (!((strlen($binariesCheck) === strlen($binariesQuery)) ? true : $this->_pdo->queryExec($binariesQuery))) {
 			if ($addToPartRepair) {
-				$rangeNotReceived[] = $headersReceived;
+				$headersNotInserted += $headersReceived;
 			}
 			$this->_pdo->Rollback();
 		} else {
@@ -805,9 +795,9 @@ class Binaries
 				);
 			}
 
-			if ($this->_pdo->queryExec(rtrim($partsQuery, ',')) === false) {
+			if (!((strlen($partsQuery) === strlen($partsCheck)) ? true  : $this->_pdo->queryExec(rtrim($partsQuery, ',')))) {
 				if ($addToPartRepair) {
-					$rangeNotReceived[] = $headersReceived;
+					$headersNotInserted += $headersReceived;
 				}
 				$this->_pdo->Rollback();
 			} else {
@@ -837,9 +827,21 @@ class Binaries
 
 		if ($addToPartRepair) {
 
+			$notInsertedCount = count($headersNotInserted);
+			if ($notInsertedCount > 0) {
+				$this->addMissingParts($headersNotInserted, $tableNames['prname'], $groupMySQL['id']);
+
+				$this->log(
+					$notInsertedCount . ' articles failed to insert!',
+					'scan',
+					Debugging::DEBUG_WARNING,
+					'warning'
+				);
+			}
+
 			// Check if we have any missing headers.
 			if (($last - $first - $notYEnc - $headersBlackListed + 1) > count($headersReceived)) {
-				$rangeNotReceived += array_diff(range($first, $last), $headersReceived);
+				$rangeNotReceived = array_merge($rangeNotReceived, array_diff(range($first, $last), $headersReceived));
 			}
 			$notReceivedCount = count($rangeNotReceived);
 
@@ -1191,36 +1193,30 @@ class Binaries
 
 		// If the date we want is older than the oldest date in the group return the groups oldest article.
 		if ($goaldate < $firstDate) {
-			$dMessage =
+			$this->log(
 				"Backfill target of $days day(s) is older than the first article stored on your news server.\nStarting from the first available article (" .
 				date('r', $firstDate) . ' or ' .
-				$this->daysOld($firstDate) . " days).";
-			if ($this->_debug) {
-				$this->_debugging->start("daytopost", $dMessage, 3);
-			}
-
-			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho($this->_colorCLI->warning($dMessage), true);
-			}
+				$this->daysOld($firstDate) . " days).",
+				'daytopost',
+				Debugging::DEBUG_WARNING,
+				'warning'
+			);
 			return $data['first'];
 
 			// If the date we want is newer than the groups newest date, return the groups newest article.
 		} else if ($goaldate > $lastDate) {
-			$dMessage =
+			$this->log(
 				'Backfill target of ' .
 				$days .
 				" day(s) is newer than the last article stored on your news server.\nTo backfill this group you need to set Backfill Days to at least " .
 				ceil($this->daysOld($lastDate) + 1) .
 				' days (' .
 				date('r', $lastDate - 86400) .
-				").";
-			if ($this->_debug) {
-				$this->_debugging->start("daytopost", $dMessage, 2);
-			}
-
-			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho($this->_colorCLI->error($dMessage), true);
-			}
+				").",
+				'daytopost',
+				Debugging::DEBUG_ERROR,
+				'error'
+			);
 			return $data['last'];
 		}
 
@@ -1322,15 +1318,17 @@ class Binaries
 		}
 
 		if ($this->_debug) {
-			$dMessage =
+			$this->_debugging->start(
+				"daytopost",
 				'Determined to be article: ' .
 				number_format($upperbound) .
 				' which is ' .
 				$this->daysOld($dateofnextone) .
 				' days old (' .
 				date('r', $dateofnextone) .
-				')';
-			$this->_debugging->start("daytopost", $dMessage, 5);
+				')',
+				Debugging::DEBUG_INFO
+			);
 		}
 
 		return $upperbound;
@@ -1555,6 +1553,27 @@ class Binaries
 	public function purgeGroup($groupID)
 	{
 		$this->_pdo->queryExec(sprintf('DELETE c FROM collections c WHERE c.group_id = %d', $groupID));
+	}
+
+	/**
+	 * Log / Echo message.
+	 *
+	 * @param string $message Message to log.
+	 * @param string $method  Method that called this.
+	 * @param int    $level   Debugging severity level constant.
+	 * @param string $color   ColorCLI method name.
+	 */
+	private function log($message, $method, $level, $color)
+	{
+		if ($this->_echoCLI) {
+			$this->_colorCLI->doEcho(
+				$this->_colorCLI->$color($message), true
+			);
+		}
+
+		if ($this->_debug) {
+			$this->_debugging->start($method, $message, $level);
+		}
 	}
 
 }
