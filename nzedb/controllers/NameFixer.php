@@ -54,18 +54,18 @@ class NameFixer
 		];
 		$options += $defaults;
 
-		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->relid = $this->fixed = $this->checked = 0;
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->timeother = ' AND rel.adddate > (NOW() - INTERVAL 0 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC';
 		$this->timeall = ' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC';
 		$this->fullother = ' AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id';
 		$this->fullall = '';
 		$this->done = $this->matched = false;
-		$this->consoletools = ($defaults['ConsoleTools'] instanceof ConsoleTools ? $defaults['ConsoleTools'] :new ConsoleTools(['ColorCLI' => $this->pdo->log]));
-		$this->category = ($defaults['Categorize'] instanceof Categorize ? $defaults['Categorize'] : new Categorize(['Settings' => $this->pdo]));
-		$this->utility = ($defaults['Utility'] instanceof Utility ? $defaults['Utility'] :new Utility());
-		$this->_groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->consoletools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] :new ConsoleTools(['ColorCLI' => $this->pdo->log]));
+		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->utility = ($options['Utility'] instanceof Utility ? $options['Utility'] :new Utility());
+		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 	}
 
 	/**
