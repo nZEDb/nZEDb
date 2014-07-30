@@ -18,6 +18,14 @@
  * @author niel / kevin
  * @copyright 2014 nZEDb
  */
+
+if (!isset($argv[1]) || !in_array($argv[1], ['1', '2'])) {
+	exit(
+	'Options: (enter a number, it\'s not recommended to rerun the same fix)' . PHP_EOL .
+	'1: 2014-07-28: Add unique key to binaryhash to be able to do multiple updates in 1 statement.' . PHP_EOL
+	);
+}
+
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'www' . DIRECTORY_SEPARATOR . 'config.php';
 
 use nzedb\db\Settings;
@@ -33,18 +41,36 @@ $groups = $pdo->queryDirect('SELECT id FROM groups WHERE active = 1 OR backfill 
 if ($groups === false) {
 	echo "No active groups. Fix not needed.\n";
 } else {
-	// Drop this index, as we will recreate it as a unique.
-	$queries[] = 'ALTER TABLE binaries_%d DROP INDEX ix_binary_binaryhash';
-	// Recreate the index as unique so we can use on duplicate key update, saving select / update query.
-	$queries[] = 'ALTER IGNORE TABLE binaries_%d ADD UNIQUE INDEX ix_binary_binaryhash(binaryhash)';
+
+	$queries = array();
+
+	switch ($argv[1]) {
+		case 1:
+			// Drop this index, as we will recreate it as a unique.
+			$queries['single'] = 'ALTER TABLE binaries_%d DROP INDEX ix_binary_binaryhash';
+			// Recreate the index as unique so we can use on duplicate key update, saving select / update query.
+			$queries['single'] = 'ALTER IGNORE TABLE binaries_%d ADD UNIQUE INDEX ix_binary_binaryhash(binaryhash)';
+			break;
+		default:
+			exit();
+	}
 
 	$groupCount = $groups->rowCount();
-	foreach ($groups as $group) {
-		echo 'Fixing group ' . $group['id'] . PHP_EOL;
-		foreach ($queries as $query) {
-			$pdo->queryExec(sprintf($query, $group['id']), true);
+	if (count($queries) && $groupCount) {
+		foreach ($groups as $group) {
+			echo 'Fixing group ' . $group['id'] . PHP_EOL;
+			foreach ($queries as $type => $query) {
+				switch ($type) {
+					case 'single':
+						$pdo->queryExec(sprintf($query, $group['id']), true);
+						break;
+					case 'double':
+						$pdo->queryExec(sprintf($query, $group['id'], $group['id']), true);
+						break;
+				}
+			}
+			echo 'Finished fixing group ' . $group['id'] . ', ' . (--$groupCount) . ' to go!' .PHP_EOL;
 		}
-		echo 'Finished fixing group ' . $group['id'] . ', ' . (--$groupCount) . ' to go!' .PHP_EOL;
 	}
 	echo 'All done!' . PHP_EOL;
 }
