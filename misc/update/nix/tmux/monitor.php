@@ -33,7 +33,7 @@ $reqHours = $pdo->getSetting('request_hours');
 $request_hours = isset($reqHours) ? $reqHours : 1;
 $pre_lim = '';
 
-$PYTHON = ($t->command_exist("python3") ? 'python3 - OOu' : 'python -OOu');
+$PYTHON = ($t->command_exist("python3") ? 'python3 -OOu' : 'python -OOu');
 $PHP = ($t->command_exist("php5") ? 'php5' : 'php');
 
 if ($nntpproxy == 0) {
@@ -165,6 +165,7 @@ while ($i > 0) {
 			foreach ($partitions as $partition) {
 				$runVar['counts']['now'][$partition['category']] = $partition['count'];
 			}
+			unset($partitions);
 		} else {
 			$initquery = $pdo->queryDirect($catcntqry, false);
 			$catParentPart = array(
@@ -180,6 +181,7 @@ while ($i > 0) {
 			foreach ($initquery as $parent => $count) {
 				$runVar['counts']['now'][$catParentPart[$parent]] = $count;
 			}
+			unset($initquery);
 		}
 		$init_time = (time() - $timer03);
 		$init1_time = (time() - $timer01);
@@ -268,35 +270,77 @@ while ($i > 0) {
 						}
 					}
 				}
+				$runVar['timers']['newOld']['oldestcollection'] = $age;
+
 				//free up memory used by now stale data
 				unset($age, $run, $run1, $tables);
 
-				$runVar['timers']['newOld']['oldestcollection'] = $age;
 				$tpg_count_time = (time() - $timer07);
 				$tpg_count_1_time = (time() - $timer01);
 			}
 		}
 		$timer2 = time();
-	}
 
-	if (($proc1res == false) || ($proc2res == false) || ($proc3res == false) || ($splitres == false) || ($runVar['timers']['newOld'] == false)) {
-		echo $pdo->log->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
-		exit;
-	}
+		if (($proc1res == false) || ($proc2res == false) || ($proc3res == false) || ($splitres == false) || ($runVar['timers']['newOld'] == false)) {
+			echo $pdo->log->error(PHP_EOL . "Monitor encountered severe errors retrieving process data from MySQL.  Please diagnose and try running again." . PHP_EOL);
+			exit;
+		}
 
-	//assign postprocess values from $proc
-	foreach ($proc1res AS $proc1key => $proc1) {
-		$runVar['counts']['now'][$proc1key] = $proc1;
-	}
-	foreach ($proc2res AS $proc2key => $proc2) {
-		$runVar['counts']['now'][$proc2key] = $proc2;
-	}
-	foreach ($proc3res AS $proc3key => $proc3) {
-		$runVar['counts']['now'][$proc3key] = $proc3;
-	}
+		//assign postprocess values from $proc
+		foreach ($proc1res AS $proc1key => $proc1) {
+			$runVar['counts']['now'][$proc1key] = $proc1;
+		}
+		foreach ($proc2res AS $proc2key => $proc2) {
+			$runVar['counts']['now'][$proc2key] = $proc2;
+		}
+		foreach ($proc3res AS $proc3key => $proc3) {
+			$runVar['counts']['now'][$proc3key] = $proc3;
+		}
 
-	// now that we have merged our query data we can unset these to free up memory
-	unset($proc1res, $proc2res, $proc3res);
+		// now that we have merged our query data we can unset these to free up memory
+		unset($proc1res, $proc2res, $proc3res, $splitres);
+
+		// Zero out any post proc counts when that type of pp has been turned off
+		foreach ($runVar['settings'] as $settingkey => $setting) {
+			if (strpos($settingkey, 'process') === 0 && $setting === 0) {
+				$runVar['counts']['now'][$settingkey] = $runVar['counts']['start'][$settingkey] = 0;
+			}
+		}
+
+		//set initial start postproc values from work queries -- this is used to determine diff variables
+		if ($i == 1) {
+			$runVar['counts']['start'] = $runVar['counts']['now'];
+		}
+
+		foreach ($runVar['counts']['now'] as $key => $proc) {
+
+			//if key is a process type, add it to total_work
+			if (strpos($key, 'process') === 0) {
+				$runVar['counts']['now']['total_work'] += $proc;
+			}
+
+			//calculate diffs
+			$runVar['counts']['diff'][$key] = number_format($proc - $runVar['counts']['start'][$key]);
+
+			//calculate percentages -- if user has no releases, set 0 for each key or this will fail on divide by zero
+			if ($runVar['counts']['now']['releases'] != 0) {
+				$runVar['counts']['percent'][$key] = sprintf("%02s", floor(($proc / $runVar['counts']['now']['releases']) * 100));
+			} else {
+				$runVar['counts']['percent'][$key] = 0;
+			}
+
+		}
+
+		$runVar['counts']['now']['total_work'] += $runVar['counts']['now']['work'];
+
+		// Set initial total work count for diff
+		if ($i == 1) {
+			$runVar['counts']['start']['total_work'] = $runVar['counts']['now']['total_work'];
+		}
+
+		// Set diff total work count
+		$runVar['counts']['diff']['total_work'] = $runVar['counts']['now']['total_work'] - $runVar['counts']['start']['total_work'];
+	}
 
 	//reset monitor paths before assigning query values
 	$monitor_path = $monitor_path_a = $monitor_path_b = "";
@@ -306,84 +350,35 @@ while ($i > 0) {
 	$monitor_path_a = $runVar['settings']['monitor_path_a'];
 	$monitor_path_b = $runVar['settings']['monitor_path_b'];
 
-	// Zero out any post proc counts when that type of pp has been turned off
-	foreach ($runVar['settings'] as $settingkey => $setting) {
-		if (strpos($settingkey, 'process') === 0 && $setting === 0) {
-			$runVar['counts']['now'][$settingkey] = $runVar['counts']['start'][$settingkey] = 0;
-		}
-	}
-
-	//set initial start postproc values from work queries -- this is used to determine diff variables
-	if ($i == 1) {
-		$runVar['counts']['start'] = $runVar['counts']['now'];
-	}
-
-	foreach ($runVar['counts']['now'] as $key => $proc) {
-
-		//if key is a process type, add it to total_work
-		if (strpos($key, 'process') === 0) {
-			$runVar['counts']['now']['total_work'] += $proc;
-		}
-
-		//calculate diffs
-		$runVar['counts']['diff'][$key] = number_format($proc - $runVar['counts']['start'][$key]);
-
-		//calculate percentages -- if user has no releases, set 0 for each key or this will fail on divide by zero
-		if ($runVar['counts']['now']['releases'] != 0) {
-			$runVar['counts']['percent'][$key] = sprintf("%02s", floor(($proc / $runVar['counts']['now']['releases']) * 100));
-		} else {
-			$runVar['counts']['percent'][$key] = 0;
-		}
-
-	}
-	$runVar['counts']['now']['total_work'] += $runVar['counts']['now']['work'];
-
-	// Set initial total work count for diff
-	if ($i == 1) {
-		$runVar['counts']['start']['total_work'] = $runVar['counts']['now']['total_work'];
-	}
-
-	// Set diff total work count
-	$runVar['counts']['diff']['total_work'] = $runVar['counts']['now']['total_work'] - $runVar['counts']['start']['total_work'];
-
 	//get usenet connections
+	$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
+	$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":" . $port));
 	if ($alternate_nntp) {
-		$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
-		$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":" . $port));
-		$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip_a . ":" . $port_a . " | grep -c ESTAB"));
-		$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip_a . ":" . $port_a));
-		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a) {
-			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":https | grep -c ESTAB"));
-			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":https"));
-			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip_a . ":https | grep -c ESTAB"));
-			$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip_a . ":https"));
+		$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $ip_a . ":" . $port_a . " | grep -c ESTAB"));
+		$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip_a . ":" . $port_a));
+	}
+	if ($runVar['connections']['primary']['active'] == 0 && $runVar['connections']['primary']['total'] == 0 && $runVar['connections']['alternate']['active'] == 0 && $runVar['connections']['alternate']['total'] == 0 && $port != $port_a) {
+		$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":https | grep -c ESTAB"));
+		$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":https"));
+		if ($alternate_nntp) {
+			$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $ip_a . ":https | grep -c ESTAB"));
+			$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip_a . ":https"));
 		}
-		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a) {
-			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $port . " | grep -c ESTAB"));
-			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port));
-			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $port_a . " | grep -c ESTAB"));
-			$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port_a));
+	}
+	if ($runVar['connections']['primary']['active'] == 0 && $runVar['connections']['primary']['total'] == 0 && $runVar['connections']['alternate']['active'] == 0 && $runVar['connections']['alternate']['total'] == 0 && $port != $port_a) {
+		$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $port . " | grep -c ESTAB"));
+		$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port));
+		if ($alternate_nntp) {
+			$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $port_a . " | grep -c ESTAB"));
+			$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port_a));
 		}
-		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0 && $port != $port_a) {
-			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . " | grep -c ESTAB"));
-			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip));
-			$usp2activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . " | grep -c ESTAB"));
-			$usp2totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip));
-		}
-	} else {
-		$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":" . $port . " | grep -c ESTAB"));
-		$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":" . $port));
-		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0) {
-			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . ":https | grep -c ESTAB"));
-			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip . ":https"));
-		}
-		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0) {
-			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $port . " | grep -c ESTAB"));
-			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $port));
-		}
-		if ($usp1activeconnections == 0 && $usp1totalconnections == 0 && $usp2activeconnections == 0 && $usp2totalconnections == 0) {
-			$usp1activeconnections = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . " | grep -c ESTAB"));
-			$usp1totalconnections = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip));
+	}
+	if ($runVar['connections']['primary']['active'] == 0 && $runVar['connections']['primary']['total'] == 0 && $runVar['connections']['alternate']['active'] == 0 && $runVar['connections']['alternate']['total'] == 0 && $port != $port_a) {
+		$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . " | grep -c ESTAB"));
+		$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip));
+		if ($alternate_nntp) {
+			$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $ip . " | grep -c ESTAB"));
+			$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $ip));
 		}
 	}
 
@@ -401,9 +396,9 @@ while ($i > 0) {
 	} else {
 		printf($mask2, "Monitor Off v$version [" . $patch . "]: ", $t->relativeTime("$timer1"));
 	}
-	printf($mask1, "USP Connections:", $usp1activeconnections . " active (" . $usp1totalconnections . " total) - " . $host . ":" . $port);
+	printf($mask1, "USP Connections:", $runVar['connections']['primary']['active'] . " active (" . $runVar['connections']['primary']['total'] . " total) - " . $host . ":" . $port);
 	if ($alternate_nntp) {
-		printf($mask1, "USP Alternate:", $usp2activeconnections . " active (" . $usp2totalconnections . " total) - " . (($alternate_nntp) ? $host_a . ":" . $port_a : "n/a"));
+		printf($mask1, "USP Alternate:", $runVar['connections']['alternate']['active'] . " active (" . $runVar['connections']['alternate']['total'] . " total) - " . (($alternate_nntp) ? $host_a . ":" . $port_a : "n/a"));
 	}
 
 	printf($mask1, "Newest Release:", $runVar['timers']['newOld']['newestrelname']);
@@ -417,6 +412,7 @@ while ($i > 0) {
 	echo "\n";
 
 	if ($runVar['settings']['monitor'] > 0) {
+
 		printf($mask3, "Collections", "Binaries", "Parts");
 		printf($mask3, "======================================", "=========================", "======================================");
 		printf($mask5,
@@ -602,7 +598,7 @@ while ($i > 0) {
 				$runVar['counts']['diff']['total_work']
 			),
 			sprintf(
-				"%s(%d%%)",
+				"%s(%d)",
 				number_format($runVar['counts']['now']['releases']),
 				$runVar['counts']['diff']['releases']
 			)
