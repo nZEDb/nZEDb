@@ -29,9 +29,10 @@ class Releases
 			'Settings' => null,
 			'Groups'   => null
 		];
-		$defaults = array_replace($defaults, $options);
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$options += $defaults;
+
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->updategrabs = ($this->pdo->getSetting('grabstatus') == '0' ? false : true);
 	}
 

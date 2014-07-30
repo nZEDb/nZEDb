@@ -25,11 +25,10 @@ class MiscSorter
 		$this->qty = 100;
 		$this->DEBUGGING = nZEDb_DEBUG;
 
-		$this->c = new ColorCLI();
 		$this->pdo = new Settings();
 		$this->category = new Categorize(['Settings' => $this->pdo]);
-		$this->movie = new Movie(['Echo' => $this->echooutput, 'ColorCLI' => $this->c, 'Settings' => $this->pdo]);
-		$this->nfolib = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
+		$this->movie = new Movie(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
+		$this->nfolib = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
 		$this->nc = new ReleaseCleaning($this->pdo);
 		$this->groups = new Groups(['Settings' => $this->pdo]);
 
@@ -199,8 +198,8 @@ class MiscSorter
 		if ($name != '') {
 			$query .= ", isrenamed = 1, iscategorized = 1, searchname = " . $this->pdo->escapeString($name);
 			$name = preg_replace(array('/^[-=_\.:\s]+/', '/[-=_\.:\s]+$/'), '', $name);
-			echo $n . $n . $this->c->headerOver("New name:  ") . $this->c->primary($name) .
-			$this->c->headerOver("Old name:  ") . $this->c->primaryOver($release[0]["searchname"]);
+			echo $n . $n . $this->pdo->log->headerOver("New name:  ") . $this->pdo->log->primary($name) .
+			$this->pdo->log->headerOver("Old name:  ") . $this->pdo->log->primaryOver($release[0]["searchname"]);
 		}
 
 		switch ($type) {
@@ -227,11 +226,11 @@ class MiscSorter
 			default:
 				break;
 		}
-		echo $n . $this->c->headerOver("New cat:   ") . $this->c->primary($newcatname) .
-		$this->c->headerOver("Old cat:   ") . $this->c->primary($oldcatname) .
-		$this->c->headerOver("Group:     ") . $this->c->primary($release[0]['name']) .
-		$this->c->headerOver("Method:    ") . $this->c->primary('sorter ' . $type) .
-		$this->c->headerOver("ReleaseID: ") . $this->c->primary($id);
+		echo $n . $this->pdo->log->headerOver("New cat:   ") . $this->pdo->log->primary($newcatname) .
+		$this->pdo->log->headerOver("Old cat:   ") . $this->pdo->log->primary($oldcatname) .
+		$this->pdo->log->headerOver("Group:     ") . $this->pdo->log->primary($release[0]['name']) .
+		$this->pdo->log->headerOver("Method:    ") . $this->pdo->log->primary('sorter ' . $type) .
+		$this->pdo->log->headerOver("ReleaseID: ") . $this->pdo->log->primary($id);
 
 		$query .= " WHERE id = {$id}";
 		//$this->doecho($query);
@@ -389,7 +388,7 @@ class MiscSorter
 				$query = "SELECT id FROM bookinfo WHERE asin = '" . (string) $amaz->Items->Item->ASIN . "'";
 				$rel = $this->pdo->query($query);
 				if (count($rel) == 0) {
-					$book = new Books(['Echo' => $this->echooutput, 'ColorCLI' => $this->c, 'Settings' => $this->pdo]);
+					$book = new Books(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
 					$bookId = $book->updateBookInfo('', $amaz);
 					unset($book);
 				} else {
@@ -740,7 +739,7 @@ class MiscSorter
 	function nfosorter($category = Category::CAT_PARENT_MISC, $id = 0, $nntp)
 	{
 		if (!isset($nntp))
-			exit($this->c->error("Not connected to usenet(miscsorter->nfosorter).\n"));
+			exit($this->pdo->log->error("Not connected to usenet(miscsorter->nfosorter).\n"));
 
 		$this->idarr = $this->getIDs($category);
 		if ($id != 0)

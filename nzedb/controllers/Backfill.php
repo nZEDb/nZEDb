@@ -3,6 +3,13 @@
 class Backfill
 {
 	/**
+	 * Instance of class Settings
+	 *
+	 * @var nzedb\db\DB
+	 */
+	public $pdo;
+
+	/**
 	 * @var Binaries
 	 */
 	protected $_binaries;
@@ -13,13 +20,6 @@ class Backfill
 	 * @var ColorCLI
 	 */
 	protected $_colorCLI;
-
-	/**
-	 * Instance of class Settings
-	 *
-	 * @var nzedb\db\DB
-	 */
-	protected $_pdo;
 
 	/**
 	 * Instance of class debugging.
@@ -82,33 +82,31 @@ class Backfill
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions = [
+		$defaults = [
 			'Echo'     => true,
-			'ColorCLI' => null,
 			'Groups'   => null,
 			'NNTP'     => null,
 			'Settings' => null
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$options += $defaults;
 
-		$this->_echoCLI = ($defOptions['Echo'] && nZEDb_ECHOCLI);
+		$this->_echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->_colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
-		$this->_pdo = ($defOptions['Settings'] instanceof \nzedb\db\Settings ? $defOptions['Settings'] : new \nzedb\db\Settings());
-		$this->_groups = ($defOptions['Groups'] instanceof Groups ? $defOptions['Groups'] : new Groups(['Settings' => $this->_pdo]));
-		$this->_nntp = ($defOptions['NNTP'] instanceof NNTP
-			? $defOptions['NNTP'] : new NNTP(['Settings' => $this->_pdo, 'Echo' => $this->_echoCLI, 'ColorCLI' => $this->_colorCLI])
+		$this->pdo = ($options['Settings'] instanceof \nzedb\db\Settings ? $options['Settings'] : new \nzedb\db\Settings());
+		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->_nntp = ($options['NNTP'] instanceof NNTP
+			? $options['NNTP'] : new NNTP(['Settings' => $this->pdo])
 		);
 
 		$this->_debug = (nZEDb_LOGGING || nZEDb_DEBUG);
 		if ($this->_debug) {
-			$this->_debugging = new Debugging(['Class' => 'Backfill', 'ColorCLI' => $this->_colorCLI]);
+			$this->_debugging = new Debugging(['Class' => 'Backfill', 'ColorCLI' => $this->pdo->log]);
 		}
 
-		$this->_compressedHeaders = ($this->_pdo->getSetting('compressedheaders') == 1 ? true : false);
-		$this->_safeBackFillDate = ($this->_pdo->getSetting('safebackfilldate') != '') ? $this->_pdo->getSetting('safebackfilldate') : '2008-08-14';
-		$this->_safePartRepair = ($this->_pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill');
-		$this->_tablePerGroup = ($this->_pdo->getSetting('tablepergroup') == 1 ? true : false);
+		$this->_compressedHeaders = ($this->pdo->getSetting('compressedheaders') == 1 ? true : false);
+		$this->_safeBackFillDate = ($this->pdo->getSetting('safebackfilldate') != '') ? $this->pdo->getSetting('safebackfilldate') : '2008-08-14';
+		$this->_safePartRepair = ($this->pdo->getSetting('safepartrepair') == 1 ? 'update' : 'backfill');
+		$this->_tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 1 ? true : false);
 	}
 
 	/**
@@ -151,11 +149,11 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho($this->_colorCLI->header($dMessage), true);
+				$this->pdo->log->doEcho($this->pdo->log->header($dMessage), true);
 			}
 
 			$this->_binaries = new Binaries(
-				['NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'ColorCLI' => $this->_colorCLI, 'Settings' => $this->_pdo, 'Groups' => $this->_groups]
+				['NNTP' => $this->_nntp, 'Echo' => $this->_echoCLI, 'Settings' => $this->pdo, 'Groups' => $this->_groups]
 			);
 
 			if ($articles !== '' && !is_numeric($articles)) {
@@ -171,7 +169,7 @@ class Backfill
 					}
 
 					if ($this->_echoCLI) {
-						$this->_colorCLI->doEcho($this->_colorCLI->header($dMessage), true);
+						$this->pdo->log->doEcho($this->pdo->log->header($dMessage), true);
 					}
 				}
 				$this->backfillGroup($groupArr, $groupCount - $counter, $articles);
@@ -184,7 +182,7 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho($this->_colorCLI->primary($dMessage));
+				$this->pdo->log->doEcho($this->pdo->log->primary($dMessage));
 			}
 		} else {
 			$dMessage = "No groups specified. Ensure groups are added to nZEDb's database for updating.";
@@ -193,7 +191,7 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho($this->_colorCLI->warning($dMessage), true);
+				$this->pdo->log->doEcho($this->pdo->log->warning($dMessage), true);
 			}
 		}
 	}
@@ -224,7 +222,7 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho($this->_colorCLI->error($dMessage));
+				$this->pdo->log->doEcho($this->pdo->log->error($dMessage));
 			}
 			return;
 		}
@@ -239,7 +237,7 @@ class Backfill
 		}
 
 		if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho($this->_colorCLI->primary('Processing ' . $groupName), true);
+			$this->pdo->log->doEcho($this->pdo->log->primary('Processing ' . $groupName), true);
 		}
 
 		// Check if this is days or post backfill.
@@ -269,14 +267,14 @@ class Backfill
 			}
 
 			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho($this->_colorCLI->notice($dMessage), true);
+				$this->pdo->log->doEcho($this->pdo->log->notice($dMessage), true);
 			}
 			return;
 		}
 
 		if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho(
-				$this->_colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					'Group ' .
 					$groupName .
 					"'s oldest article is " .
@@ -306,8 +304,8 @@ class Backfill
 		while ($done === false) {
 
 			if ($this->_echoCLI) {
-				$this->_colorCLI->doEcho(
-					$this->_colorCLI->set256('Yellow') .
+				$this->pdo->log->doEcho(
+					$this->pdo->log->set256('Yellow') .
 					"\nGetting " .
 					(number_format($last - $first + 1)) .
 					" articles from " .
@@ -317,7 +315,7 @@ class Backfill
 					" group(s) left. (" .
 					(number_format($first - $targetpost)) .
 					" articles in queue)." .
-					$this->_colorCLI->rsetColor(), true
+					$this->pdo->log->rsetColor(), true
 				);
 			}
 
@@ -333,13 +331,13 @@ class Backfill
 				$newdate = $this->_binaries->postdate($first, $data);
 			}
 
-			$this->_pdo->queryExec(
+			$this->pdo->queryExec(
 				sprintf('
 					UPDATE groups
 					SET first_record_postdate = %s, first_record = %s, last_updated = NOW()
 					WHERE id = %d',
-					$this->_pdo->from_unixtime($newdate),
-					$this->_pdo->escapeString($first),
+					$this->pdo->from_unixtime($newdate),
+					$this->pdo->escapeString($first),
 					$groupArr['id'])
 			);
 			if ($first == $targetpost) {
@@ -355,8 +353,8 @@ class Backfill
 		}
 
 		if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho(
-				$this->_colorCLI->primary(
+			$this->pdo->log->doEcho(
+				$this->pdo->log->primary(
 					PHP_EOL .
 					'Group ' .
 					$groupName .
@@ -378,13 +376,13 @@ class Backfill
 	 */
 	public function safeBackfill($articles = '')
 	{
-		$groupname = $this->_pdo->queryOneRow(
+		$groupname = $this->pdo->queryOneRow(
 			sprintf('
 				SELECT name FROM groups
 				WHERE first_record_postdate BETWEEN %s AND NOW()
 				AND backfill = 1
 				ORDER BY name ASC',
-				$this->_pdo->escapeString($this->_safeBackFillDate)
+				$this->pdo->escapeString($this->_safeBackFillDate)
 			)
 		);
 

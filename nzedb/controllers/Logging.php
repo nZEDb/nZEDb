@@ -32,14 +32,12 @@ class Logging
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions = [
-			'ColorCLI' => null,
+		$defaults = [
 			'Settings' => null,
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$options += $defaults;
 
-		$this->pdo = ($defOptions['Settings'] instanceof Settings ? $defOptions['Settings'] : new Settings());
-		$this->colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 
 		$this->newLine = PHP_EOL;
 	}

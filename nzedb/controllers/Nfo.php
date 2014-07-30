@@ -234,7 +234,7 @@ class Nfo
 						'NNTP' => $nntp,
 						'Nfo'  => $this,
 						'Settings'   => $this->pdo,
-						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this, 'ColorCLI' => $this->pdo->log])
+						'PostProcess'   => new PostProcess(['Echo' => $this->echo, 'Settings' => $this->pdo, 'Nfo' => $this])
 					)
 				);
 				$nzbContents->parseNZB($release['guid'], $release['id'], $release['group_id']);
@@ -332,7 +332,7 @@ class Nfo
 					'NNTP' => $nntp,
 					'Nfo' => $this,
 					'Settings' => $this->pdo,
-					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo, 'ColorCLI' => $this->pdo->log])
+					'PostProcess' => new PostProcess(['Echo' => $this->echo, 'Nfo' => $this, 'Settings' => $this->pdo])
 				)
 			);
 			$movie = new Movie(['Echo' => $this->echo, 'Settings' => $this->pdo]);

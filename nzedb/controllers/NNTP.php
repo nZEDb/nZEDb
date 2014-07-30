@@ -539,7 +539,7 @@ class NNTP extends Net_NNTP_Client
 		$body = '';
 
 		$aConnected = false;
-		$nntp = ($alternate === true ? new NNTP(['Echo' => $this->_echo, 'Settings' => $this->pdo, 'ColorCLI' => $this->pdo->log]) : null);
+		$nntp = ($alternate === true ? new NNTP(['Echo' => $this->_echo, 'Settings' => $this->pdo]) : null);
 
 		// Check if the msgIds are in an array.
 		if (is_array($identifiers)) {

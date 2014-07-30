@@ -31,6 +31,8 @@ Class PreDb
 	 */
 	protected $pdo;
 
+	private $dateLimit;
+
 	/**
 	 * @param array $options
 	 */
@@ -46,8 +48,6 @@ Class PreDb
 		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 	}
 
-	private $dateLimit;
-
 	/**
 	 * Attempts to match PreDB titles to releases.
 	 *
@@ -55,7 +55,6 @@ Class PreDb
 	 */
 	public function checkPre($dateLimit = false)
 	{
-
 		$this->dateLimit = $dateLimit;
 
 		$consoleTools = new ConsoleTools(['ColorCLI' => $this->pdo->log]);
@@ -81,7 +80,6 @@ Class PreDb
 		);
 
 		if ($res !== false) {
-
 			$total = $res->rowCount();
 			echo $this->pdo->log->primary(number_format($total) . ' releases to match.');
 
