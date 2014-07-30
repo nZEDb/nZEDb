@@ -646,7 +646,7 @@ class Binaries
 			if (!isset($articles[$matches[1]])) {
 
 				// Attempt to find the file count. If it is not found, set it to 0.
-				if (!preg_match('/[\[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[\])\s$:]/i', $matches[1], $fileCount)) {
+				if (!preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $matches[1], $fileCount)) {
 					$fileCount[1] = $fileCount[3] = 0;
 
 					if ($this->_showDroppedYEncParts === true) {
@@ -657,15 +657,15 @@ class Binaries
 					}
 				}
 
-				// (hash) Used to group articles together when forming the release/nzb.
-				$header['CollectionHash'] = sha1(
+				// Used to group articles together when forming the release/nzb.
+				$header['CollectionKey'] = (
 					$this->_collectionsCleaning->collectionsCleaner($matches[1], $groupMySQL['name']) .
 					$header['From'] .
 					$groupMySQL['id'] .
 					$fileCount[3]
 				);
 
-				if (!isset($collectionIDs[$header['CollectionHash']])) {
+				if (!isset($collectionIDs[$header['CollectionKey']])) {
 
 					/* Date from header should be a string this format:
 					 * 31 Mar 2014 15:36:04 GMT or 6 Oct 1998 04:38:40 -0500
@@ -689,7 +689,7 @@ class Binaries
 							$this->_pdo->escapeString(substr($header['Xref'], 0, 255)),
 							$groupMySQL['id'],
 							$fileCount[3],
-							$header['CollectionHash']
+							sha1($header['CollectionKey'])
 						)
 					);
 
@@ -701,9 +701,9 @@ class Binaries
 						$this->_pdo->beginTransaction();
 						continue;
 					}
-					$collectionIDs[$header['CollectionHash']] = $collectionID;
+					$collectionIDs[$header['CollectionKey']] = $collectionID;
 				} else {
-					$collectionID = $collectionIDs[$header['CollectionHash']];
+					$collectionID = $collectionIDs[$header['CollectionKey']];
 				}
 
 				$binaryID = $this->_pdo->queryInsert(
