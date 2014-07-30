@@ -47,6 +47,30 @@ class Tmux
 		return $this->rows2Object($rows);
 	}
 
+	public function getConstantSettings()
+	{
+		$tmuxstr = 'SELECT value FROM tmux WHERE setting =';
+		$settstr = 'SELECT value FROM settings WHERE setting =';
+
+		$sql = sprintf(
+				"SELECT
+					(%1\$s 'sequential') AS sequential,
+					(%1\$s 'tmux_session') AS tmux_session,
+					(%1\$s 'run_ircscraper') AS run_ircscraper,
+					(%2\$s 'sqlpatch') as sqlpatch,
+					(%2\$s 'alternate_nntp') as alternate_nntp,
+					(%2\$s 'tablepergroup') as tablepergroup,
+					(%2\$s 'delaytime') as delaytime,
+					(%2\$s 'nntpproxy') as nntpproxy,
+					(%2\$s 'book_reqids') as book_reqids,
+					(%2\$s 'request_hours') as request_hours",
+					$tmuxstr,
+					$settstr
+		);
+		return $sql;
+	}
+
+
 	public function getMonitorSettings()
 	{
 		$tmuxstr = 'SELECT value FROM tmux WHERE setting =';
@@ -55,7 +79,6 @@ class Tmux
 		$sql = sprintf(
 				"SELECT
 					(%1\$s 'monitor_delay') AS monitor,
-					(%1\$s 'tmux_session') AS tmux_session,
 					(%1\$s 'niceness') AS niceness,
 					(%1\$s 'binaries') AS binaries_run,
 					(%1\$s 'backfill') AS backfill,
