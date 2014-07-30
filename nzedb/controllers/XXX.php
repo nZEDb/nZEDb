@@ -55,26 +55,24 @@ class XXX
 	{
 		$defaults = [
 			'Echo'         => false,
-			'ColorCLI'     => null,
 			'ReleaseImage' => null,
 			'Settings'     => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->releaseImage = ($defaults['ReleaseImage'] instanceof ReleaseImage ? $defaults['ReleaseImage'] : new ReleaseImage($this->pdo));
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
 		$this->showPasswords = ($this->pdo->getSetting('showpasswordedrelease') != '') ? $this->pdo->getSetting('showpasswordedrelease') : 0;
 		$this->debug = nZEDb_DEBUG;
-		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->imgSavePath = nZEDb_COVERS . 'xxx' . DS;
 		$this->cookie = nZEDb_TMP . 'xxx.cookie';
 
 		if (nZEDb_DEBUG || nZEDb_LOGGING) {
 			$this->debug = true;
-			$this->debugging = new Debugging(['Class' => 'XXX', 'ColorCLI' => $this->c]);
+			$this->debugging = new Debugging(['Class' => 'XXX', 'ColorCLI' => $this->pdo->log]);
 		}
 	}
 
@@ -402,7 +400,7 @@ class XXX
 				$res['title'] = $iafd->title;
 				$res['directurl'] = $iafd->directurl;
 				$this->whichclass = $iafd->classfound;
-				$this->c->doEcho($this->c->primary("Fetching XXX info from: Adult DVD Empire"));
+				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from: Adult DVD Empire"));
 				break;
 			case "hm":
 				$mov = new hotmovies();
@@ -411,7 +409,7 @@ class XXX
 				$res['title'] = $iafd->title;
 				$res['directurl'] = $iafd->directurl;
 				$this->whichclass = $iafd->classfound;
-				$this->c->doEcho($this->c->primary("Fetching XXX info from: Hot Movies"));
+				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from: Hot Movies"));
 				break;
 			default:
 				$res = false;
@@ -460,7 +458,7 @@ class XXX
 						$fromstr = null;
 
 				}
-				$this->c->doEcho($this->c->primary("Fetching XXX info from: " . $fromstr ));
+				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from: " . $fromstr ));
 			}
 			$res = $mov->_getall();
 		} else {
@@ -568,9 +566,9 @@ class XXX
 			$xxxID=$check['id'];
 		}
 		if ($this->echooutput) {
-			$this->c->doEcho(
-				$this->c->headerOver(($xxxID !== false ? 'Added/updated movie: ' : 'Nothing to update for xxx movie: ')) .
-				$this->c->primary($mov['title'])
+			$this->pdo->log->doEcho(
+				$this->pdo->log->headerOver(($xxxID !== false ? 'Added/updated movie: ' : 'Nothing to update for xxx movie: ')) .
+				$this->pdo->log->primary($mov['title'])
 			);
 		}
 		return $xxxID;
@@ -599,7 +597,7 @@ class XXX
 
 		if ($movieCount > 0) {
 			if ($this->echooutput && $movieCount > 1) {
-				$this->c->doEcho($this->c->header("Processing " . $movieCount . " XXX releases."));
+				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $movieCount . " XXX releases."));
 			}
 
 			// Loop over releases.
@@ -615,7 +613,7 @@ class XXX
 					$movieName = $this->currentTitle;
 
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->primaryOver("Looking up: ") . $this->c->headerOver($movieName), true);
+						$this->pdo->log->doEcho($this->pdo->log->primaryOver("Looking up: ") . $this->pdo->log->headerOver($movieName), true);
 						$idcheck = $this->updateXXXInfo($movieName);
 					}
 					if($idcheck == false){
@@ -633,7 +631,7 @@ class XXX
 			}
 		} else {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header('No xxx releases to process.'));
+				$this->pdo->log->doEcho($this->pdo->log->header('No xxx releases to process.'));
 			}
 		}
 	}
@@ -674,7 +672,7 @@ class XXX
 				// Check if the name is long enough and not just numbers and not file (d) of (d) and does not contain Episodes.
 				if (strlen($name) > 5 && !preg_match('/^\d+$/', $name) && !preg_match('/(- File \d+ of \d+|\d+.\d+.\d+)/',$name) && !preg_match('/(E\d+)/',$name)) {
 					if ($this->debug && $this->echooutput) {
-						$this->c->doEcho("DB name: {$releaseName}", true);
+						$this->pdo->log->doEcho("DB name: {$releaseName}", true);
 					}
 					$this->currentTitle = $name;
 					return true;

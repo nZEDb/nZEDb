@@ -230,14 +230,14 @@ class NameFixer
 				$this->_totalReleases = $total;
 
 				echo $this->pdo->log->primary(number_format($total) . ' releases to process.');
-				$Nfo = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->pdo->log]);
+				$Nfo = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
 				$nzbContents = new NZBContents(
 					[
 						'Echo' => $this->echooutput,
 						'NNTP' => $nntp,
 						'Nfo'  => $Nfo,
 						'Settings'   => $this->pdo,
-						'PostProcess' => new PostProcess(['Settings' => $this->pdo, 'Nfo' => $Nfo, 'ColorCLI' => $this->pdo->log])
+						'PostProcess' => new PostProcess(['Settings' => $this->pdo, 'Nfo' => $Nfo])
 					]
 				);
 

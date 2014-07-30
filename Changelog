@@ -6,11 +6,15 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-30 niel
+	* Chg: Standardising all usage of ColorCLI class to either $cli, $pdo->log, or $this->pdo->log depending on context.
+		This reduces duplicated instances (and therefore RAM) and time taken to instantiate additional copies.
 2014-07-30 kevin
 	* Fix: Fix issue where multiple scripts running on the same group could overwrite the binaries table "currentparts" count causing long release creation time because of invalid count.
 	* Add: For users on PHP 5.5.0 or higher, set the CLI process name in ProcessAdditional to the releaseid so you can know which release is causing the issue.
 	* Chg: Set full path to file to be easier to track for previous add.
 	* Chg: Save a select query in binaries scan by changing the insert query.
+	* Chg: Speed up process time of headers by doing the sha1 only once.
 2014-07-29 kevin
 	* Chg: Add ignore to latest patch for those with duplicates.
 	* Fix: Issue where avconv returns single digit time vs ffmpeg's double digit time format, pad the string adding the missing 0's to mimic ffmpeg's output.

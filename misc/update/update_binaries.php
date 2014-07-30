@@ -8,11 +8,11 @@ require_once dirname(__FILE__) . '/config.php';
 $pdo = new \nzedb\db\Settings();
 
 // Create the connection here and pass
-$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $pdo->log]);
+$nntp = new NNTP(['Settings' => $pdo]);
 if ($nntp->doConnect() !== true) {
 	exit($pdo->log->error("Unable to connect to usenet."));
 }
-$binaries = new Binaries(['NNTP' => $nntp, 'ColorCLI' => $pdo->log, 'Settings' => $pdo]);
+$binaries = new Binaries(['NNTP' => $nntp, 'Settings' => $pdo]);
 
 if (isset($argv[1]) && !is_numeric($argv[1])) {
 	$groupName = $argv[1];
