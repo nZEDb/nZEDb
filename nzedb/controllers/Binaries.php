@@ -16,11 +16,6 @@ class Binaries
 	const BLACKLIST_FIELD_MESSAGEID = 3;
 
 	/**
-	 * @var nzedb\db\Settings
-	 */
-	public $pdo;
-
-	/**
 	 * The cache of the blacklist.
 	 *
 	 * @var array
@@ -33,6 +28,11 @@ class Binaries
 	 * @var int
 	 */
 	public $messageBuffer;
+
+	/**
+	 * @var ColorCLI
+	 */
+	protected $_colorCLI;
 
 	/**
 	 * @var CollectionsCleaning
@@ -74,6 +74,11 @@ class Binaries
 	 * @var bool
 	 */
 	protected $_partRepair;
+
+	/**
+	 * @var nzedb\db\Settings
+	 */
+	protected $_pdo;
 
 	/**
 	 * How many days to go back on a new group?
@@ -145,6 +150,7 @@ class Binaries
 		$defaults = [
 			'Echo'                => true,
 			'CollectionsCleaning' => null,
+			'ColorCLI'            => null,
 			'Groups'              => null,
 			'NNTP'                => null,
 			'Settings'            => null,
@@ -153,27 +159,28 @@ class Binaries
 
 		$this->_echoCLI = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($options['Settings'] instanceof \nzedb\db\Settings ? $options['Settings'] : new \nzedb\db\Settings());
-		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
-		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $options['Echo'], 'Settings' => $this->pdo]));
+		$this->_pdo = ($options['Settings'] instanceof \nzedb\db\Settings ? $options['Settings'] : new \nzedb\db\Settings());
+		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->_pdo]));
+		$this->_colorCLI = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
+		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->_colorCLI, 'Settings' => $this->_pdo, 'ColorCLI' => $this->_colorCLI]));
 		$this->_collectionsCleaning = ($options['CollectionsCleaning'] instanceof CollectionsCleaning ? $options['CollectionsCleaning'] : new CollectionsCleaning());
 
 		$this->_debug = (nZEDb_DEBUG || nZEDb_LOGGING);
 
 		if ($this->_debug) {
-			$this->_debugging = new Debugging(['Class' => 'Binaries', 'ColorCLI' => $this->pdo->log]);
+			$this->_debugging = new Debugging(['Class' => 'Binaries', 'ColorCLI' => $this->_colorCLI]);
 		}
 
-		$this->messageBuffer = ($this->pdo->getSetting('maxmssgs') != '') ? $this->pdo->getSetting('maxmssgs') : 20000;
-		$this->_compressedHeaders = ($this->pdo->getSetting('compressedheaders') == 1 ? true : false);
-		$this->_partRepair = ($this->pdo->getSetting('partrepair') == 0 ? false : true);
-		$this->_newGroupScanByDays = ($this->pdo->getSetting('newgroupscanmethod') == 1 ? true : false);
-		$this->_newGroupMessagesToScan = ($this->pdo->getSetting('newgroupmsgstoscan') != '') ? $this->pdo->getSetting('newgroupmsgstoscan') : 50000;
-		$this->_newGroupDaysToScan = ($this->pdo->getSetting('newgroupdaystoscan') != '') ? (int)$this->pdo->getSetting('newgroupdaystoscan') : 3;
-		$this->_partRepairLimit = ($this->pdo->getSetting('maxpartrepair') != '') ? (int)$this->pdo->getSetting('maxpartrepair') : 15000;
-		$this->_partRepairMaxTries = ($this->pdo->getSetting('partrepairmaxtries') != '' ? (int)$this->pdo->getSetting('partrepairmaxtries') : 3);
-		$this->_showDroppedYEncParts = ($this->pdo->getSetting('showdroppedyencparts') == 1 ? true : false);
-		$this->_tablePerGroup = ($this->pdo->getSetting('tablepergroup') == 1 ? true : false);
+		$this->messageBuffer = ($this->_pdo->getSetting('maxmssgs') != '') ? $this->_pdo->getSetting('maxmssgs') : 20000;
+		$this->_compressedHeaders = ($this->_pdo->getSetting('compressedheaders') == 1 ? true : false);
+		$this->_partRepair = ($this->_pdo->getSetting('partrepair') == 0 ? false : true);
+		$this->_newGroupScanByDays = ($this->_pdo->getSetting('newgroupscanmethod') == 1 ? true : false);
+		$this->_newGroupMessagesToScan = ($this->_pdo->getSetting('newgroupmsgstoscan') != '') ? $this->_pdo->getSetting('newgroupmsgstoscan') : 50000;
+		$this->_newGroupDaysToScan = ($this->_pdo->getSetting('newgroupdaystoscan') != '') ? (int)$this->_pdo->getSetting('newgroupdaystoscan') : 3;
+		$this->_partRepairLimit = ($this->_pdo->getSetting('maxpartrepair') != '') ? (int)$this->_pdo->getSetting('maxpartrepair') : 15000;
+		$this->_partRepairMaxTries = ($this->_pdo->getSetting('partrepairmaxtries') != '' ? (int)$this->_pdo->getSetting('partrepairmaxtries') : 3);
+		$this->_showDroppedYEncParts = ($this->_pdo->getSetting('showdroppedyencparts') == 1 ? true : false);
+		$this->_tablePerGroup = ($this->_pdo->getSetting('tablepergroup') == 1 ? true : false);
 
 		$this->blackList = array();
 		$this->_blackListLoaded = false;
@@ -252,18 +259,18 @@ class Binaries
 		}
 
 		if ($this->_echoCLI) {
-			$this->pdo->log->doEcho($this->pdo->log->primary('Processing ' . $groupMySQL['name']), true);
+			$this->_colorCLI->doEcho($this->_colorCLI->primary('Processing ' . $groupMySQL['name']), true);
 		}
 
 		// Attempt to repair any missing parts before grabbing new ones.
 		if ($groupMySQL['last_record'] != 0) {
 			if ($this->_partRepair) {
 				if ($this->_echoCLI) {
-					$this->pdo->log->doEcho($this->pdo->log->primary('Part repair enabled. Checking for missing parts.'), true);
+					$this->_colorCLI->doEcho($this->_colorCLI->primary('Part repair enabled. Checking for missing parts.'), true);
 				}
 				$this->partRepair($groupMySQL);
 			} else if ($this->_echoCLI) {
-				$this->pdo->log->doEcho($this->pdo->log->primary('Part repair disabled by user.'), true);
+				$this->_colorCLI->doEcho($this->_colorCLI->primary('Part repair disabled by user.'), true);
 			}
 		}
 
@@ -272,12 +279,12 @@ class Binaries
 
 			$groupMySQL['first_record_postdate'] = $this->postdate($groupMySQL['first_record'], $groupNNTP);
 
-			$this->pdo->queryExec(
+			$this->_pdo->queryExec(
 				sprintf('
 					UPDATE groups
 					SET first_record_postdate = %s
 					WHERE id = %d',
-					$this->pdo->from_unixtime($groupMySQL['first_record_postdate']),
+					$this->_pdo->from_unixtime($groupMySQL['first_record_postdate']),
 					$groupMySQL['id']
 				)
 			);
@@ -342,8 +349,8 @@ class Binaries
 		if ($total > 0) {
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->primary(
+				$this->_colorCLI->doEcho(
+					$this->_colorCLI->primary(
 						($groupMySQL['last_record'] == 0
 							? 'New group ' . $groupNNTP['group'] . ' starting with ' .
 								($this->_newGroupScanByDays
@@ -376,8 +383,8 @@ class Binaries
 				$first++;
 
 				if ($this->_echoCLI) {
-					$this->pdo->log->doEcho(
-						$this->pdo->log->header(
+					$this->_colorCLI->doEcho(
+						$this->_colorCLI->header(
 							"\nGetting " . number_format($last - $first + 1) . ' articles (' . number_format($first) .
 							' to ' . number_format($last) . ') from ' . $groupMySQL['name'] . " - (" .
 							number_format($groupLast - $last) . " articles in queue)."
@@ -401,13 +408,13 @@ class Binaries
 							$groupMySQL['first_record_postdate'] = $this->postdate($groupMySQL['first_record'], $groupNNTP);
 						}
 
-						$this->pdo->queryExec(
+						$this->_pdo->queryExec(
 							sprintf('
 								UPDATE groups
 								SET first_record = %s, first_record_postdate = %s
 								WHERE id = %d',
 								$scanSummary['firstArticleNumber'],
-								$this->pdo->from_unixtime($this->pdo->escapeString($groupMySQL['first_record_postdate'])),
+								$this->_pdo->from_unixtime($this->_pdo->escapeString($groupMySQL['first_record_postdate'])),
 								$groupMySQL['id']
 							)
 						);
@@ -419,24 +426,24 @@ class Binaries
 						$scanSummary['lastArticleDate'] = $this->postdate($scanSummary['lastArticleNumber'], $groupNNTP);
 					}
 
-					$this->pdo->queryExec(
+					$this->_pdo->queryExec(
 						sprintf('
 							UPDATE groups
 							SET last_record = %s, last_record_postdate = %s, last_updated = NOW()
 							WHERE id = %d',
-							$this->pdo->escapeString($scanSummary['lastArticleNumber']),
-							$this->pdo->from_unixtime($scanSummary['lastArticleDate']),
+							$this->_pdo->escapeString($scanSummary['lastArticleNumber']),
+							$this->_pdo->from_unixtime($scanSummary['lastArticleDate']),
 							$groupMySQL['id']
 						)
 					);
 				} else {
 					// If we didn't fetch headers, update the record still.
-					$this->pdo->queryExec(
+					$this->_pdo->queryExec(
 						sprintf('
 							UPDATE groups
 							SET last_record = %s, last_updated = NOW()
 							WHERE id = %d',
-							$this->pdo->escapeString($last),
+							$this->_pdo->escapeString($last),
 							$groupMySQL['id']
 						)
 					);
@@ -450,16 +457,16 @@ class Binaries
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->primary(
+				$this->_colorCLI->doEcho(
+					$this->_colorCLI->primary(
 						PHP_EOL . 'Group ' . $groupMySQL['name'] . ' processed in ' .
 						number_format(microtime(true) - $startGroup, 2) . ' seconds.'
 					), true
 				);
 			}
 		} else if ($this->_echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
+			$this->_colorCLI->doEcho(
+				$this->_colorCLI->primary(
 					'No new articles for ' . $groupMySQL['name'] . ' (first ' . number_format($first) .
 					', last ' . number_format($last) . ', grouplast ' . number_format($groupMySQL['last_record']) .
 					', total ' . number_format($total) . ")\n" . 'Server oldest: ' . number_format($groupNNTP['first']) .
@@ -506,7 +513,7 @@ class Binaries
 
 			// Increment if part repair and return false.
 			if ($partRepair === true) {
-				$this->pdo->queryExec(
+				$this->_pdo->queryExec(
 					sprintf(
 						'UPDATE partrepair SET attempts = attempts + 1 WHERE group_id = %d AND numberid %s',
 						$groupMySQL['id'],
@@ -582,7 +589,7 @@ class Binaries
 
 		$partsQuery = $partsCheck = sprintf('INSERT INTO %s (binaryid, number, messageid, partnumber, size, collection_id) VALUES ', $tableNames['pname']);
 
-		$this->pdo->beginTransaction();
+		$this->_pdo->beginTransaction();
 		// Loop articles, figure out files/parts.
 		foreach ($headers as $header) {
 
@@ -639,7 +646,7 @@ class Binaries
 			if (!isset($articles[$matches[1]])) {
 
 				// Attempt to find the file count. If it is not found, set it to 0.
-				if (!preg_match('/[\[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[\])\s$:]/i', $matches[1], $fileCount)) {
+				if (!preg_match('/[[(\s](\d{1,5})(\/|[\s_]of[\s_]|-)(\d{1,5})[])\s$:]/i', $matches[1], $fileCount)) {
 					$fileCount[1] = $fileCount[3] = 0;
 
 					if ($this->_showDroppedYEncParts === true) {
@@ -650,15 +657,15 @@ class Binaries
 					}
 				}
 
-				// (hash) Used to group articles together when forming the release/nzb.
-				$header['CollectionHash'] = sha1(
+				// Used to group articles together when forming the release/nzb.
+				$header['CollectionKey'] = (
 					$this->_collectionsCleaning->collectionsCleaner($matches[1], $groupMySQL['name']) .
 					$header['From'] .
 					$groupMySQL['id'] .
 					$fileCount[3]
 				);
 
-				if (!isset($collectionIDs[$header['CollectionHash']])) {
+				if (!isset($collectionIDs[$header['CollectionKey']])) {
 
 					/* Date from header should be a string this format:
 					 * 31 Mar 2014 15:36:04 GMT or 6 Oct 1998 04:38:40 -0500
@@ -669,20 +676,20 @@ class Binaries
 					// Get the current unixtime from PHP.
 					$now = time();
 
-					$collectionID = $this->pdo->queryInsert(
+					$collectionID = $this->_pdo->queryInsert(
 						sprintf("
 							INSERT INTO %s (subject, fromname, date, xref, group_id,
 								totalfiles, collectionhash, dateadded)
 							VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %d, %d, '%s', NOW())
 							ON DUPLICATE KEY UPDATE dateadded = NOW()",
 							$tableNames['cname'],
-							$this->pdo->escapeString(substr(utf8_encode($matches[1]), 0, 255)),
-							$this->pdo->escapeString(utf8_encode($header['From'])),
+							$this->_pdo->escapeString(substr(utf8_encode($matches[1]), 0, 255)),
+							$this->_pdo->escapeString(utf8_encode($header['From'])),
 							(is_numeric($header['Date']) ? ($header['Date'] > $now ? $now : $header['Date']) : $now),
-							$this->pdo->escapeString(substr($header['Xref'], 0, 255)),
+							$this->_pdo->escapeString(substr($header['Xref'], 0, 255)),
 							$groupMySQL['id'],
 							$fileCount[3],
-							$header['CollectionHash']
+							sha1($header['CollectionKey'])
 						)
 					);
 
@@ -690,23 +697,23 @@ class Binaries
 						if ($addToPartRepair) {
 							$headersNotInserted[] = $header['Number'];
 						}
-						$this->pdo->Rollback();
-						$this->pdo->beginTransaction();
+						$this->_pdo->Rollback();
+						$this->_pdo->beginTransaction();
 						continue;
 					}
-					$collectionIDs[$header['CollectionHash']] = $collectionID;
+					$collectionIDs[$header['CollectionKey']] = $collectionID;
 				} else {
-					$collectionID = $collectionIDs[$header['CollectionHash']];
+					$collectionID = $collectionIDs[$header['CollectionKey']];
 				}
 
-				$binaryID = $this->pdo->queryInsert(
+				$binaryID = $this->_pdo->queryInsert(
 					sprintf("
 						INSERT INTO %s (binaryhash, name, collectionid, totalparts, currentparts, filenumber, partsize)
 						VALUES ('%s', %s, %d, %d, 1, %d, %d)
 						ON DUPLICATE KEY UPDATE currentparts = currentparts + 1, partsize = partsize + %d",
 						$tableNames['bname'],
 						md5($matches[1] . $header['From'] . $groupMySQL['id']),
-						$this->pdo->escapeString(utf8_encode($matches[1])),
+						$this->_pdo->escapeString(utf8_encode($matches[1])),
 						$collectionID,
 						$matches[3],
 						$fileCount[1],
@@ -719,25 +726,13 @@ class Binaries
 					if ($addToPartRepair) {
 						$headersNotInserted[] = $header['Number'];
 					}
-					$this->pdo->Rollback();
-					$this->pdo->beginTransaction();
+					$this->_pdo->Rollback();
+					$this->_pdo->beginTransaction();
 					continue;
 				}
 
-				$counts = $this->pdo->queryOneRow(
-					sprintf(
-						'SELECT currentparts, partsize FROM %s WHERE id = %d',
-						$tableNames['bname'], $binaryID
-					)
-				);
-
-				if ($counts === false) {
-					$binariesUpdate[$binaryID]['Size'] = $header['Bytes'];
-					$binariesUpdate[$binaryID]['Parts'] = 1;
-				} else {
-					$binariesUpdate[$binaryID]['Size'] = $counts['partsize'];
-					$binariesUpdate[$binaryID]['Parts'] = $counts['currentparts'];
-				}
+				$binariesUpdate[$binaryID]['Size'] = 0;
+				$binariesUpdate[$binaryID]['Parts'] = 0;
 
 				$articles[$matches[1]]['CollectionID'] = $collectionID;
 				$articles[$matches[1]]['BinaryID'] = $binaryID;
@@ -769,38 +764,37 @@ class Binaries
 		foreach ($binariesUpdate as $binaryID => $binary) {
 			$binariesQuery .= '(' . $binaryID . ',' . $binary['Size'] . ',' . $binary['Parts'] . '),';
 		}
-		$binariesQuery = rtrim($binariesQuery, ',') . ' ON DUPLICATE KEY UPDATE partsize = VALUES(partsize), currentparts = VALUES(currentparts)';
-		$binariesCheck .= ' ON DUPLICATE KEY UPDATE partsize = VALUES(partsize), currentparts = VALUES(currentparts)';
+		$binariesEnd = ' ON DUPLICATE KEY UPDATE partsize = VALUES(partsize) + partsize, currentparts = VALUES(currentparts) + currentparts';
+		$binariesQuery = rtrim($binariesQuery, ',') . $binariesEnd;
 
 		// Check if we got any binaries. If we did, try to insert them.
-		if (!((strlen($binariesCheck) === strlen($binariesQuery)) ? true : $this->pdo->queryExec($binariesQuery))) {
-			if ($addToPartRepair) {
-				$headersNotInserted += $headersReceived;
-			}
-			$this->pdo->Rollback();
-		} else {
-
+		if (((strlen($binariesCheck . $binariesEnd) === strlen($binariesQuery)) ? true : $this->_pdo->queryExec($binariesQuery))) {
 			if ($this->_debug) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->debug(
+				$this->_colorCLI->doEcho(
+					$this->_colorCLI->debug(
 						'Sending ' . round(strlen($partsQuery) / 1024, 2) . ' KB of parts to MySQL'
 					)
 				);
 			}
 
-			if (!((strlen($partsQuery) === strlen($partsCheck)) ? true  : $this->pdo->queryExec(rtrim($partsQuery, ',')))) {
+			if (((strlen($partsQuery) === strlen($partsCheck)) ? true  : $this->_pdo->queryExec(rtrim($partsQuery, ',')))) {
+				$this->_pdo->Commit();
+			} else {
 				if ($addToPartRepair) {
 					$headersNotInserted += $headersReceived;
 				}
-				$this->pdo->Rollback();
-			} else {
-				$this->pdo->Commit();
+				$this->_pdo->Rollback();
 			}
+		} else {
+			if ($addToPartRepair) {
+				$headersNotInserted += $headersReceived;
+			}
+			$this->_pdo->Rollback();
 		}
 
 		if ($this->_echoCLI && $partRepair === false) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->primary(
+			$this->_colorCLI->doEcho(
+				$this->_colorCLI->primary(
 					'Received ' . count($headersReceived) .
 					' articles of ' . (number_format($last - $first + 1)) . ' requested, ' .
 					$headersBlackListed . ' blacklisted, ' . $notYEnc . ' not yEnc.'
@@ -842,8 +836,8 @@ class Binaries
 				$this->addMissingParts($rangeNotReceived, $tableNames['prname'], $groupMySQL['id']);
 
 				if ($this->_echoCLI) {
-					$this->pdo->log->doEcho(
-						$this->pdo->log->alternate(
+					$this->_colorCLI->doEcho(
+						$this->_colorCLI->alternate(
 							'Server did not return ' . $notReceivedCount .
 							' articles from ' . $groupMySQL['name'] . '.'
 						), true
@@ -854,17 +848,17 @@ class Binaries
 
 		$currentMicroTime = microtime(true);
 		if ($this->_echoCLI && $partRepair === false) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->alternateOver($timeHeaders . 's') .
-				$this->pdo->log->primaryOver(' to download articles, ') .
-				$this->pdo->log->alternateOver($timeCleaning . 's') .
-				$this->pdo->log->primaryOver(' to process collections, ') .
-				$this->pdo->log->alternateOver(number_format($timeInsert, 2) . 's') .
-				$this->pdo->log->primaryOver(' to insert binaries/parts, ') .
-				$this->pdo->log->alternateOver(number_format($currentMicroTime - $startPR, 2) . 's') .
-				$this->pdo->log->primaryOver(' for part repair, ') .
-				$this->pdo->log->alternateOver(number_format($currentMicroTime - $startLoop, 2) . 's') .
-				$this->pdo->log->primary(' total.')
+			$this->_colorCLI->doEcho(
+				$this->_colorCLI->alternateOver($timeHeaders . 's') .
+				$this->_colorCLI->primaryOver(' to download articles, ') .
+				$this->_colorCLI->alternateOver($timeCleaning . 's') .
+				$this->_colorCLI->primaryOver(' to process collections, ') .
+				$this->_colorCLI->alternateOver(number_format($timeInsert, 2) . 's') .
+				$this->_colorCLI->primaryOver(' to insert binaries/parts, ') .
+				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $startPR, 2) . 's') .
+				$this->_colorCLI->primaryOver(' for part repair, ') .
+				$this->_colorCLI->alternateOver(number_format($currentMicroTime - $startLoop, 2) . 's') .
+				$this->_colorCLI->primary(' total.')
 			);
 		}
 		return $returnArray;
@@ -887,7 +881,7 @@ class Binaries
 				$headersNotInserted[] = $file['Parts']['number'];
 			}
 		}
-		$this->pdo->Rollback();
+		$this->_pdo->Rollback();
 		return $headersNotInserted;
 	}
 
@@ -902,7 +896,7 @@ class Binaries
 	{
 		$tableNames = $this->_groups->getCBPTableNames($this->_tablePerGroup, $groupArr['id']);
 		// Get all parts in partrepair table.
-		$missingParts = $this->pdo->query(
+		$missingParts = $this->_pdo->query(
 			sprintf('
 				SELECT * FROM %s
 				WHERE group_id = %d AND attempts < %d
@@ -917,8 +911,8 @@ class Binaries
 		$missingCount = count($missingParts);
 		if ($missingCount > 0) {
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->primary(
+				$this->_colorCLI->doEcho(
+					$this->_colorCLI->primary(
 						'Attempting to repair ' .
 						number_format($missingCount) .
 						' parts.'
@@ -968,7 +962,7 @@ class Binaries
 			}
 
 			// Calculate parts repaired
-			$result = $this->pdo->queryOneRow(
+			$result = $this->_pdo->queryOneRow(
 				sprintf('
 					SELECT COUNT(id) AS num
 					FROM %s
@@ -987,7 +981,7 @@ class Binaries
 
 			// Update attempts on remaining parts for active group
 			if (isset($missingParts[$missingCount - 1]['id'])) {
-				$this->pdo->queryExec(
+				$this->_pdo->queryExec(
 					sprintf('
 						UPDATE %s
 						SET attempts = attempts + 1
@@ -1001,8 +995,8 @@ class Binaries
 			}
 
 			if ($this->_echoCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->primary(
+				$this->_colorCLI->doEcho(
+					$this->_colorCLI->primary(
 						PHP_EOL .
 						number_format($partsRepaired) .
 						' parts repaired.'
@@ -1012,7 +1006,7 @@ class Binaries
 		}
 
 		// Remove articles that we cant fetch after x attempts.
-		$this->pdo->queryExec(
+		$this->_pdo->queryExec(
 			sprintf(
 				'DELETE FROM %s WHERE attempts >= %d AND group_id = %d',
 				$tableNames['prname'],
@@ -1061,7 +1055,7 @@ class Binaries
 				$local = false;
 				if ($groupID !== '') {
 					// Try to get locally.
-					$local = $this->pdo->queryOneRow(
+					$local = $this->_pdo->queryOneRow(
 						'SELECT c.date AS date FROM ' .
 						$group['cname'] .
 						' c, ' .
@@ -1106,7 +1100,7 @@ class Binaries
 			}
 
 			if ($this->_debug) {
-				$this->pdo->log->doEcho($this->pdo->log->debug('Postdate retried ' . $attempts . " time(s)."));
+				$this->_colorCLI->doEcho($this->_colorCLI->debug('Postdate retried ' . $attempts . " time(s)."));
 			}
 		} while ($attempts <= 20);
 
@@ -1354,7 +1348,7 @@ class Binaries
 		foreach ($numbers as $number) {
 			$insertStr .= '(' . $number . ',' . $groupID .'),';
 		}
-		return $this->pdo->queryInsert((rtrim($insertStr, ',') . ' ON DUPLICATE KEY UPDATE attempts=attempts+1'));
+		return $this->_pdo->queryInsert((rtrim($insertStr, ',') . ' ON DUPLICATE KEY UPDATE attempts=attempts+1'));
 	}
 
 	/**
@@ -1372,7 +1366,7 @@ class Binaries
 		foreach ($numbers as $number) {
 			$sql .= $number . ',';
 		}
-		$this->pdo->queryExec((rtrim($sql, ',') . ') AND group_id = ' . $groupID));
+		$this->_pdo->queryExec((rtrim($sql, ',') . ') AND group_id = ' . $groupID));
 	}
 
 	/**
@@ -1430,7 +1424,7 @@ class Binaries
 	 */
 	public function getBlacklist($activeOnly = true)
 	{
-		return $this->pdo->query(
+		return $this->_pdo->query(
 			sprintf('
 				SELECT
 					binaryblacklist.id, binaryblacklist.optype, binaryblacklist.status, binaryblacklist.description,
@@ -1452,7 +1446,7 @@ class Binaries
 	 */
 	public function getBlacklistByID($id)
 	{
-		return $this->pdo->queryOneRow(sprintf('SELECT * FROM binaryblacklist WHERE id = %d', $id));
+		return $this->_pdo->queryOneRow(sprintf('SELECT * FROM binaryblacklist WHERE id = %d', $id));
 	}
 
 	/**
@@ -1464,7 +1458,7 @@ class Binaries
 	 */
 	public function deleteBlacklist($id)
 	{
-		return $this->pdo->queryExec(sprintf('DELETE FROM binaryblacklist WHERE id = %d', $id));
+		return $this->_pdo->queryExec(sprintf('DELETE FROM binaryblacklist WHERE id = %d', $id));
 	}
 
 	/**
@@ -1476,17 +1470,17 @@ class Binaries
 	 */
 	public function updateBlacklist($blacklistArray)
 	{
-		$this->pdo->queryExec(
+		$this->_pdo->queryExec(
 			sprintf('
 				UPDATE binaryblacklist
 				SET groupname = %s, regex = %s, status = %d, description = %s, optype = %d, msgcol = %d
 				WHERE id = %d ',
 				($blacklistArray['groupname'] == ''
 					? 'null'
-					: $this->pdo->escapeString(preg_replace('/a\.b\./i', 'alt.binaries.', $blacklistArray['groupname']))
+					: $this->_pdo->escapeString(preg_replace('/a\.b\./i', 'alt.binaries.', $blacklistArray['groupname']))
 				),
-				$this->pdo->escapeString($blacklistArray['regex']), $blacklistArray['status'],
-				$this->pdo->escapeString($blacklistArray['description']),
+				$this->_pdo->escapeString($blacklistArray['regex']), $blacklistArray['status'],
+				$this->_pdo->escapeString($blacklistArray['description']),
 				$blacklistArray['optype'],
 				$blacklistArray['msgcol'],
 				$blacklistArray['id']
@@ -1503,17 +1497,17 @@ class Binaries
 	 */
 	public function addBlacklist($blacklistArray)
 	{
-		return $this->pdo->queryInsert(
+		return $this->_pdo->queryInsert(
 			sprintf('
 				INSERT INTO binaryblacklist (groupname, regex, status, description, optype, msgcol)
 				VALUES (%s, %s, %d, %s, %d, %d)',
 				($blacklistArray['groupname'] == ''
 					? 'null'
-					: $this->pdo->escapeString(preg_replace('/a\.b\./i', 'alt.binaries.', $blacklistArray['groupname']))
+					: $this->_pdo->escapeString(preg_replace('/a\.b\./i', 'alt.binaries.', $blacklistArray['groupname']))
 				),
-				$this->pdo->escapeString($blacklistArray['regex']),
+				$this->_pdo->escapeString($blacklistArray['regex']),
 				$blacklistArray['status'],
-				$this->pdo->escapeString($blacklistArray['description']),
+				$this->_pdo->escapeString($blacklistArray['description']),
 				$blacklistArray['optype'],
 				$blacklistArray['msgcol']
 			)
@@ -1531,7 +1525,7 @@ class Binaries
 	 */
 	public function delete($collectionID)
 	{
-		$this->pdo->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $collectionID));
+		$this->_pdo->queryExec(sprintf('DELETE FROM collections WHERE id = %d', $collectionID));
 	}
 
 	/**
@@ -1545,7 +1539,7 @@ class Binaries
 	 */
 	public function purgeGroup($groupID)
 	{
-		$this->pdo->queryExec(sprintf('DELETE c FROM collections c WHERE c.group_id = %d', $groupID));
+		$this->_pdo->queryExec(sprintf('DELETE c FROM collections c WHERE c.group_id = %d', $groupID));
 	}
 
 	/**
@@ -1559,8 +1553,8 @@ class Binaries
 	private function log($message, $method, $level, $color)
 	{
 		if ($this->_echoCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->$color($message), true
+			$this->_colorCLI->doEcho(
+				$this->_colorCLI->$color($message), true
 			);
 		}
 
