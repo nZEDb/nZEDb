@@ -4,11 +4,10 @@ use nzedb\db\Settings;
 
 class Tmux
 {
-	public $pdo;
 
-	function __construct()
+	function __construct($pdo = false)
 	{
-		$this->pdo = new Settings();
+		(($pdo) == false ? $this->pdo = new Settings() : $this->pdo = $pdo);
 	}
 
 	public function version()
@@ -69,7 +68,6 @@ class Tmux
 		);
 		return $sql;
 	}
-
 
 	public function getMonitorSettings()
 	{
@@ -245,42 +243,6 @@ class Tmux
 		}
 		//$return .= ($diff>0)?"ago":"left";
 		return $return;
-	}
-
-	public function run_ircscraper($tmux_session, $_php, $pane, $run_ircscraper)
-	{
-		if ($run_ircscraper == 1) {
-			//Check to see if the pane is dead, if so respawn it.
-			if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
-				$DIR = nZEDb_MISC;
-				$ircscraper = $DIR . "testing/IRCScraper/scrape.php";
-				shell_exec(
-					"tmux respawnp -t${tmux_session}:${pane}.0 ' \
-							$_php $ircscraper true'"
-				);
-			}
-		} else {
-			shell_exec("tmux respawnp -t${tmux_session}:${pane}.0 'echo \"\nIRCScraper has been disabled/terminated by IRCSCraper\"'");
-		}
-	}
-
-	public function run_sharing($tmux_session, $_php, $pane, $_sleep, $sharing_timer)
-	{
-		$pdo = new Settings();
-		$sharing = $pdo->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
-		$tmux = $this->get();
-		$tmux_share = (isset($tmux->run_sharing)) ? $tmux->run_sharing : 0;
-
-		if ($tmux_share && $sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
-			if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
-				$DIR = nZEDb_MISC;
-				$sharing2 = $DIR . "/update/postprocess.php sharing true";
-				shell_exec(
-					"tmux respawnp -t${tmux_session}:${pane}.0 ' \
-						$_php $sharing2; $_sleep $sharing_timer' 2>&1 1> /dev/null"
-				);
-			}
-		}
 	}
 
 	public function command_exist($cmd)
