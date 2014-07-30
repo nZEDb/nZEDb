@@ -32,13 +32,13 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$timenc = $consoletools->convertTime(time() - $timestart);
 		echo $pdo->log->primary("\n" . $done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
-		$releases = new ProcessReleases(['Settings' => $pdo, 'ColorCLI' => $pdo->log, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
+		$releases = new ProcessReleases(['Settings' => $pdo, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize();
 		$categorized = $releases->categorizeRelease("name", "", true);
 		$timecat = $consoletools->convertTime(time() - $timestart);
 		echo $pdo->log->primary("\nFinished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 
-		$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $pdo->log, 'ConsoleTools' => $consoletools]);
+		$namefixer = new NameFixer(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
 		$namefixer->fixNamesWithNfo(2, 1, 1, 1, $show);
 		$namefixer->fixNamesWithFiles(2, 1, 1, 1, $show);
 		$timetotal = $consoletools->convertTime(time() - $timestart);
@@ -68,13 +68,13 @@ if (isset($argv[1]) && $argv[1] == "full") {
 		$timenc = $consoletools->convertTime(time() - $timestart);
 		echo $pdo->log->header($done . " releases renamed in " . $timenc . ".\nNow the releases will be recategorized.");
 
-		$releases = new ProcessReleases(['Settings' => $pdo, 'ColorCLI' => $pdo->log, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
+		$releases = new ProcessReleases(['Settings' => $pdo, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize("WHERE isrenamed = 0");
 		$categorized = $releases->categorizeRelease("name", "WHERE isrenamed = 0", true);
 		$timecat = $consoletools->convertTime(time() - $timestart);
 		echo $pdo->log->header("Finished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 
-		$namefixer = new NameFixer(['Settings' => $pdo, 'ColorCLI' => $pdo->log, 'ConsoleTools' => $consoletools]);
+		$namefixer = new NameFixer(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
 		$namefixer->fixNamesWithNfo(2, 1, 1, 1, $show);
 		$namefixer->fixNamesWithFiles(2, 1, 1, 1, $show);
 		$timetotal = $consoletools->convertTime(time() - $timestart);
