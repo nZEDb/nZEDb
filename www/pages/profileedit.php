@@ -67,7 +67,6 @@ switch ($action) {
 					(isset($_POST['movieview']) ? "1" : "0"),
 					(isset($_POST['xxxview']) ? "1" : "0"),
 					(isset($_POST['musicview']) ? "1" : "0"),
-					(isset($_POST['gameview']) ? "1" : "0"),
 					(isset($_POST['consoleview']) ? "1" : "0"),
 					(isset($_POST['gameview']) ? "1" : "0"),
 					(isset($_POST['bookview']) ? "1" : "0"),
