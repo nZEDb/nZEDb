@@ -9,6 +9,11 @@ class TmuxOutput extends Tmux
 {
 
 	/**
+	 * protected array
+	 */
+	protected $runVar = array();
+
+	/**
 	 * @param $pdo Class instances / Echo to cli?
 	 */
 	public function __construct($pdo)
@@ -19,18 +24,16 @@ class TmuxOutput extends Tmux
 
 	public function displayOutput($section, $runVar)
 	{
-		$this->runVar = $runVar;
-
 		switch ((int) $section) {
 
 			case 1:
-				$this->_displayHeader($this->runVar);
-				$break;
+				$this->_displayHeader($runVar);
+				break;
 			case 2:
-				$this->_displayMonitor($this->runVar);
-				$break;
+				$this->_displayMonitor($runVar);
+				break;
 			case 3:
-				$this->_displayQueryBlock($this->runVar);
+				$this->_displayQueryBlock($runVar);
 				break;
 		}
 	}
@@ -49,77 +52,76 @@ class TmuxOutput extends Tmux
 
 	protected function _displayHeader($runVar)
 	{
-		$this->runVar = $runVar;
 		$versions = \nzedb\utility\Utility::getValidVersionsFile();
 		$git = new \nzedb\utility\Git();
 		$version = $versions->versions->git->tag . 'r' . $git->commits();
 
-		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
+		$masks = $this->_getColorsMasks($runVar['settings']['compressed']);
 
-		if ($this->runVar['settings']['is_running'] == 1) {
-			printf($masks[2], "Monitor Running v$version [" . $this->runVar['constants']['sqlpatch'] . "]: ", $this->relativeTime($this->runVar['timers']['timer1']));
+		if ($runVar['settings']['is_running'] == 1) {
+			printf($masks[2], "Monitor Running v$version [" . $runVar['constants']['sqlpatch'] . "]: ", $this->relativeTime($runVar['timers']['timer1']));
 		} else {
-			printf($masks[2], "Monitor Off v$version [" . $this->runVar['constants']['sqlpatch'] . "]: ", $this->relativeTime($this->runVar['timers']['timer1']));
+			printf($masks[2], "Monitor Off v$version [" . $runVar['constants']['sqlpatch'] . "]: ", $this->relativeTime($runVar['timers']['timer1']));
 		}
 		printf($masks[1],
 				"USP Connections:",
 				sprintf(
 					"%d active (%d total) - %s:%d)",
-					$this->runVar['connections']['primary']['active'],
-					$this->runVar['connections']['primary']['total'],
-					$this->runVar['connections']['host'],
-					$this->runVar['connections']['port']
+					$runVar['connections']['primary']['active'],
+					$runVar['connections']['primary']['total'],
+					$runVar['connections']['host'],
+					$runVar['connections']['port']
 				)
 		);
-		if ($this->runVar['constants']['alternate_nntp']) {
+		if ($runVar['constants']['alternate_nntp']) {
 			printf($masks[1],
 					"USP Alternate:",
 					sprintf(
 						"%d active (%d total) - %s:%d)",
-						$this->runVar['connections']['alternate']['active'],
-						$this->runVar['connections']['alternate']['total'],
-						$this->runVar['connections']['host_a'],
-						$this->runVar['connections']['port_a']
+						$runVar['connections']['alternate']['active'],
+						$runVar['connections']['alternate']['total'],
+						$runVar['connections']['host_a'],
+						$runVar['connections']['port_a']
 					)
 			);
 		}
 
 		printf($masks[1],
 				"Newest Release:",
-				$this->runVar['timers']['newOld']['newestrelname']
+				$runVar['timers']['newOld']['newestrelname']
 		);
 		printf($masks[1],
 				"Release Added:",
 				sprintf(
 					"%s ago",
-					$this->relativeTime($this->runVar['timers']['newOld']['newestrelease'])
+					$this->relativeTime($runVar['timers']['newOld']['newestrelease'])
 				)
 		);
 		printf($masks[1],
 				"Predb Updated:",
 				sprintf(
 					"%s ago",
-					$this->relativeTime($this->runVar['timers']['newOld']['newestpre'])
+					$this->relativeTime($runVar['timers']['newOld']['newestpre'])
 				)
 		);
 		printf($masks[1],
 				sprintf(
 					"Collection Age[%d]:",
-					$this->runVar['constants']['delaytime']
+					$runVar['constants']['delaytime']
 				),
 				sprintf(
 					"%s ago",
-					$this->relativeTime($this->runVar['timers']['newOld']['oldestcollection'])
+					$this->relativeTime($runVar['timers']['newOld']['oldestcollection'])
 				)
 		);
 		printf($masks[1],
 				"Parts in Repair:",
-				number_format($this->runVar['counts']['now']['partrepair_table'])
+				number_format($runVar['counts']['now']['partrepair_table'])
 		);
-		if (($this->runVar['settings']['post'] == "1" || $this->runVar['settings']['post'] == "3") && $this->runVar['constants']['sequential'] != 2) {
+		if (($runVar['settings']['post'] == "1" || $runVar['settings']['post'] == "3") && $runVar['constants']['sequential'] != 2) {
 			printf($masks[1],
 					"Postprocess:",
-					"stale for " . $this->relativeTime($this->runVar['timers']['timer3'])
+					"stale for " . $this->relativeTime($runVar['timers']['timer3'])
 			);
 		}
 		echo PHP_EOL;
@@ -127,29 +129,26 @@ class TmuxOutput extends Tmux
 
 	protected function _displayTableCounts($runVar)
 	{
-		$this->runVar = $runVar;
-
-		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
+		$masks = $this->_getColorsMasks($runVar['settings']['compressed']);
 
 		printf($masks[3], "Collections", "Binaries", "Parts");
-		$this->_displaySeparator($this->runVar['settings']['compressed']);
+		$this->_displaySeparator($runVar['settings']['compressed']);
 		printf($masks[5],
-				number_format($this->runVar['counts']['now']['collections_table']),
-				number_format($this->runVar['counts']['now']['binaries_table']),
-				number_format($this->runVar['counts']['now']['parts_table'])
+				number_format($runVar['counts']['now']['collections_table']),
+				number_format($runVar['counts']['now']['binaries_table']),
+				number_format($runVar['counts']['now']['parts_table'])
 		);
 	}
 
 	protected function _displayPaths($runVar)
 	{
-		$this->runVar = $runVar;
 		$monitor_path = $monitor_path_a = $monitor_path_b = "";
-		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
+		$masks = $this->_getColorsMasks($runVar['settings']['compressed']);
 
 		// assign timers from tmux table
-		$monitor_path = $this->runVar['settings']['monitor_path'];
-		$monitor_path_a = $this->runVar['settings']['monitor_path_a'];
-		$monitor_path_b = $this->runVar['settings']['monitor_path_b'];
+		$monitor_path = $runVar['settings']['monitor_path'];
+		$monitor_path_a = $runVar['settings']['monitor_path_a'];
+		$monitor_path_b = $runVar['settings']['monitor_path_b'];
 
 		if (((isset($monitor_path)) && (file_exists($monitor_path))) ||
 			((isset($monitor_path_a)) && (file_exists($monitor_path_a))) ||
@@ -157,7 +156,7 @@ class TmuxOutput extends Tmux
 
 			echo "\n";
 			printf($masks[3], "File System", "Used", "Free");
-
+			$this->_displaySeparator($runVar['settings']['compressed']);
 			if (isset($monitor_path) && $monitor_path != "" && file_exists($monitor_path)) {
 				$disk_use = $this->decodeSize(disk_total_space($monitor_path) - disk_free_space($monitor_path));
 				$disk_free = $this->decodeSize(disk_free_space($monitor_path));
@@ -194,202 +193,192 @@ class TmuxOutput extends Tmux
 
 	protected function _displayMonitor($runVar)
 	{
-		$this->runVar = $runVar;
-		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
+		$masks = $this->_getColorsMasks($runVar['settings']['compressed']);
 
-		$this->_displayTableCounts($this->runVar);
-		$this->_displayPaths($this->runVar);
-
-		printf($masks[3], "Collections", "Binaries", "Parts");
-		$this->_displaySeparator($this->runVar['settings']['compressed']);
-		printf($masks[5],
-				number_format($this->runVar['counts']['now']['collections_table']),
-				number_format($this->runVar['counts']['now']['binaries_table']),
-				number_format($this->runVar['counts']['now']['parts_table'])
-		);
+		$this->_displayTableCounts($runVar);
+		$this->_displayPaths($runVar);
 
 		printf($masks[3], "Category", "In Process", "In Database");
-		$this->_displaySeparator($this->runVar['settings']['compressed']);
+		$this->_displaySeparator($runVar['settings']['compressed']);
 		printf($masks[4], "predb",
 			sprintf(
 				"%s(%d)",
-				number_format($this->runVar['counts']['now']['predb'] - $this->runVar['counts']['now']['distinct_predb_matched']),
-				$this->runVar['counts']['diff']['distinct_predb_matched']
+				number_format($runVar['counts']['now']['predb'] - $runVar['counts']['now']['distinct_predb_matched']),
+				$runVar['counts']['diff']['distinct_predb_matched']
 			),
 			sprintf(
 				"%s(%d%%)",
-				number_format($this->runVar['counts']['now']['predb_matched']),
-				$this->runVar['counts']['percent']['predb_matched']
+				number_format($runVar['counts']['now']['predb_matched']),
+				$runVar['counts']['percent']['predb_matched']
 			)
 		);
 		printf($masks[4], "requestID",
 			sprintf(
 				"%s(%d)",
-				number_format($this->runVar['counts']['now']['requestid_inprogress']),
-				$this->runVar['counts']['diff']['requestid_inprogress']
+				number_format($runVar['counts']['now']['requestid_inprogress']),
+				$runVar['counts']['diff']['requestid_inprogress']
 			),
 			sprintf(
 				"%s(%d%%)",
-				number_format($this->runVar['counts']['now']['requestid_matched']),
-				$this->runVar['counts']['percent']['requestid_matched']
+				number_format($runVar['counts']['now']['requestid_matched']),
+				$runVar['counts']['percent']['requestid_matched']
 			)
 		);
 		printf($masks[4], "NFO's",
 			sprintf(
 				"%s(%d)",
-				number_format($this->runVar['counts']['now']['processnfo']),
-				$this->runVar['counts']['diff']['processnfo']
+				number_format($runVar['counts']['now']['processnfo']),
+				$runVar['counts']['diff']['processnfo']
 			),
 			sprintf(
 				"%s(%d%%)",
-				number_format($this->runVar['counts']['now']['nfo']),
-				$this->runVar['counts']['percent']['nfo']
+				number_format($runVar['counts']['now']['nfo']),
+				$runVar['counts']['percent']['nfo']
 			)
 		);
-		printf($masks[4], "Console(1000)",
+		printf($masks[4], "Console",
 			sprintf(
 				"%s(%d)",
-				number_format($this->runVar['counts']['now']['processconsole']),
-				$this->runVar['counts']['diff']['processgames']
+				number_format($runVar['counts']['now']['processconsole']),
+				$runVar['counts']['diff']['processgames']
 			),
 			sprintf(
 				"%s(%d%%)",
-				number_format($this->runVar['counts']['now']['console']),
-				$this->runVar['counts']['percent']['console']
+				number_format($runVar['counts']['now']['console']),
+				$runVar['counts']['percent']['console']
 			)
 		);
-		printf($masks[4], "Movie(2000)",
+		printf($masks[4], "Movie",
 			sprintf(
 				"%s(%d)",
-				number_format($this->runVar['counts']['now']['processmovies']),
-				$this->runVar['counts']['diff']['processmovies']
+				number_format($runVar['counts']['now']['processmovies']),
+				$runVar['counts']['diff']['processmovies']
 			),
 			sprintf(
 				"%s(%d%%)",
-				number_format($this->runVar['counts']['now']['movies']),
-				$this->runVar['counts']['percent']['movies']
+				number_format($runVar['counts']['now']['movies']),
+				$runVar['counts']['percent']['movies']
 			)
 		);
-		printf($masks[4], "Audio(3000)",
+		printf($masks[4], "Audio",
 			sprintf(
 				"%s(%d)",
-				number_format($this->runVar['counts']['now']['processmusic']),
-				$this->runVar['counts']['diff']['processmusic']
+				number_format($runVar['counts']['now']['processmusic']),
+				$runVar['counts']['diff']['processmusic']
 			),
 			sprintf(
 				"%s(%d%%)",
-				number_format($this->runVar['counts']['now']['audio']),
-				$this->runVar['counts']['percent']['audio']
+				number_format($runVar['counts']['now']['audio']),
+				$runVar['counts']['percent']['audio']
 			)
 		);
-		printf($masks[4], "PC(4000)",
+		printf($masks[4], "PC",
 			sprintf(
 				"%s(%d)",
-				number_format($this->runVar['counts']['now']['processgames']),
-				$this->runVar['counts']['diff']['processgames']
+				number_format($runVar['counts']['now']['processgames']),
+				$runVar['counts']['diff']['processgames']
 			),
 			sprintf(
 				"%s(%d%%)",
-				number_format($this->runVar['counts']['now']['pc']),
-				$this->runVar['counts']['percent']['pc']
+				number_format($runVar['counts']['now']['pc']),
+				$runVar['counts']['percent']['pc']
 			)
 		);
-		printf($masks[4], "TV(5000)",
+		printf($masks[4], "TV",
 			sprintf(
 				"%s(%d)",
-				number_format($this->runVar['counts']['now']['processtvrage']),
-				$this->runVar['counts']['diff']['processtvrage']
+				number_format($runVar['counts']['now']['processtvrage']),
+				$runVar['counts']['diff']['processtvrage']
 			),
 			sprintf(
 				"%s(%d%%)",
-				number_format($this->runVar['counts']['now']['tv']),
-				$this->runVar['counts']['percent']['tv']
+				number_format($runVar['counts']['now']['tv']),
+				$runVar['counts']['percent']['tv']
 			)
 		);
-		printf($masks[4], "xXx(6000)",
+		printf($masks[4], "XXX",
 			sprintf(
 				"%s(%d)",
-				number_format($this->runVar['counts']['now']['processxxx']),
-				$this->runVar['counts']['diff']['processxxx']
+				number_format($runVar['counts']['now']['processxxx']),
+				$runVar['counts']['diff']['processxxx']
 			),
 			sprintf(
 				"%s(%d%%)",
-				number_format($this->runVar['counts']['now']['xxx']),
-				$this->runVar['counts']['percent']['xxx']
+				number_format($runVar['counts']['now']['xxx']),
+				$runVar['counts']['percent']['xxx']
 			)
 		);
-		printf($masks[4], "Misc(7000)",
+		printf($masks[4], "Misc",
 			sprintf(
 				"%s(%d)",
-				number_format($this->runVar['counts']['now']['work']),
-				$this->runVar['counts']['diff']['work']
+				number_format($runVar['counts']['now']['work']),
+				$runVar['counts']['diff']['work']
 			),
 			sprintf(
 				"%s(%d%%)",
-				number_format($this->runVar['counts']['now']['misc']),
-				$this->runVar['counts']['percent']['misc']
+				number_format($runVar['counts']['now']['misc']),
+				$runVar['counts']['percent']['misc']
 			)
 		);
-		printf($masks[4], "Books(8000)",
+		printf($masks[4], "Books",
 			sprintf(
 				"%s(%d)",
-				number_format($this->runVar['counts']['now']['processbooks']),
-				$this->runVar['counts']['diff']['processbooks']
+				number_format($runVar['counts']['now']['processbooks']),
+				$runVar['counts']['diff']['processbooks']
 			),
 			sprintf(
 				"%s(%d%%)",
-				number_format($this->runVar['counts']['now']['books']),
-				$this->runVar['counts']['percent']['books']
+				number_format($runVar['counts']['now']['books']),
+				$runVar['counts']['percent']['books']
 			)
 		);
 		printf($masks[4], "Total",
 			sprintf(
 				"%s(%s)",
-				number_format($this->runVar['counts']['now']['total_work']),
-				number_format($this->runVar['counts']['diff']['total_work'])
+				number_format($runVar['counts']['now']['total_work']),
+				number_format($runVar['counts']['diff']['total_work'])
 			),
 			sprintf(
 				"%s(%s)",
-				number_format($this->runVar['counts']['now']['releases']),
-				number_format($this->runVar['counts']['diff']['releases'])
+				number_format($runVar['counts']['now']['releases']),
+				number_format($runVar['counts']['diff']['releases'])
 			)
 		);
 		echo PHP_EOL;
 
-		$this->_displayBackfill($this->runVar);
+		$this->_displayBackfill($runVar);
 	}
 
 	protected function _displayBackfill($runVar)
 	{
-		$this->runVar = $runVar;
-		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
+		$masks = $this->_getColorsMasks($runVar['settings']['compressed']);
 
 		printf($masks[3], "Groups", "Active", "Backfill");
-		$this->_displaySeparator($this->runVar['settings']['compressed']);
-		if ($this->runVar['settings']['backfilldays'] == "1") {
+		$this->_displaySeparator($runVar['settings']['compressed']);
+		if ($runVar['settings']['backfilldays'] == "1") {
 			printf($masks[4], "Activated",
 				sprintf(
 					"%d(%d)",
-					$this->runVar['counts']['now']['active_groups'],
-					$this->runVar['counts']['now']['all_groups']
+					$runVar['counts']['now']['active_groups'],
+					$runVar['counts']['now']['all_groups']
 				),
 				sprintf(
 					"%d(%d)",
-					$this->runVar['counts']['now']['backfill_groups_days'],
-					$this->runVar['counts']['now']['all_groups']
+					$runVar['counts']['now']['backfill_groups_days'],
+					$runVar['counts']['now']['all_groups']
 				)
 			);
 		} else {
 			printf($masks[4], "Activated",
 				sprintf(
 					"%d(%d)",
-					$this->runVar['counts']['now']['active_groups'],
-					$this->runVar['counts']['now']['all_groups']
+					$runVar['counts']['now']['active_groups'],
+					$runVar['counts']['now']['all_groups']
 				),
 				sprintf(
 					"%d(%d)",
-					$this->runVar['counts']['now']['backfill_groups_date'],
-					$this->runVar['counts']['now']['all_groups']
+					$runVar['counts']['now']['backfill_groups_date'],
+					$runVar['counts']['now']['all_groups']
 				)
 			);
 		}
@@ -397,32 +386,31 @@ class TmuxOutput extends Tmux
 
 	protected function _displayQueryBlock($runVar)
 	{
-		$this->runVar = $runVar;
-		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
+		$masks = $this->_getColorsMasks($runVar['settings']['compressed']);
 
 		echo PHP_EOL;
 		printf($masks[3], "Query Block", "Time", "Cumulative");
-		$this->_displaySeparator($this->runVar['settings']['compressed']);
+		$this->_displaySeparator($runVar['settings']['compressed']);
 		printf($masks[4], "Combined",
 				sprintf(
 					"%d %d %d %d %d %d %d",
-					$this->runVar['timers']['query']['tmux_time'],
-					$this->runVar['timers']['query']['split_time'],
-					$this->runVar['timers']['query']['init_time'],
-					$this->runVar['timers']['query']['proc1_time'],
-					$this->runVar['timers']['query']['proc2_time'],
-					$this->runVar['timers']['query']['proc3_time'],
-					$this->runVar['timers']['query']['tpg_time']
+					$runVar['timers']['query']['tmux_time'],
+					$runVar['timers']['query']['split_time'],
+					$runVar['timers']['query']['init_time'],
+					$runVar['timers']['query']['proc1_time'],
+					$runVar['timers']['query']['proc2_time'],
+					$runVar['timers']['query']['proc3_time'],
+					$runVar['timers']['query']['tpg_time']
 				),
 				sprintf(
 					"%d %d %d %d %d %d %d",
-					$this->runVar['timers']['query']['tmux_time'],
-					$this->runVar['timers']['query']['split1_time'],
-					$this->runVar['timers']['query']['init1_time'],
-					$this->runVar['timers']['query']['proc11_time'],
-					$this->runVar['timers']['query']['proc21_time'],
-					$this->runVar['timers']['query']['proc31_time'],
-					$this->runVar['timers']['query']['tpg1_time']
+					$runVar['timers']['query']['tmux_time'],
+					$runVar['timers']['query']['split1_time'],
+					$runVar['timers']['query']['init1_time'],
+					$runVar['timers']['query']['proc11_time'],
+					$runVar['timers']['query']['proc21_time'],
+					$runVar['timers']['query']['proc31_time'],
+					$runVar['timers']['query']['tpg1_time']
 				)
 		);
 
@@ -443,89 +431,91 @@ class TmuxOutput extends Tmux
 
 	public function getConnectionsInfo($runVar)
 	{
-		$this->runVar = $runVar;
-
-		if ($this->runVar['constants']['nntpproxy'] == 0) {
-			$this->runVar['connections']['port'] = NNTP_PORT;
-			$this->runVar['connections']['host'] = NNTP_SERVER;
-			$this->runVar['connections']['ip'] = gethostbyname($this->runVar['connections']['host']);
-			if ($this->runVar['constants']['alternate_nntp']) {
-				$this->runVar['connections']['port_a'] = NNTP_PORT_A;
-				$this->runVar['connections']['host_a'] = NNTP_SERVER_A;
-				$this->runVar['connections']['ip_a'] = gethostbyname($this->runVar['connections']['host_a']);
+		if ($runVar['constants']['nntpproxy'] == 0) {
+			$runVar['connections']['port'] = NNTP_PORT;
+			$runVar['connections']['host'] = NNTP_SERVER;
+			$runVar['connections']['ip'] = gethostbyname($runVar['connections']['host']);
+			if ($runVar['constants']['alternate_nntp']) {
+				$runVar['connections']['port_a'] = NNTP_PORT_A;
+				$runVar['connections']['host_a'] = NNTP_SERVER_A;
+				$runVar['connections']['ip_a'] = gethostbyname($runVar['connections']['host_a']);
 			}
 		} else {
-			$filename = $this->runVar['paths']['misc'] . "update/python/lib/nntpproxy.conf";
+			$filename = $runVar['paths']['misc'] . "update/python/lib/nntpproxy.conf";
 			$fp = fopen($filename, "r") or die("Couldn't open $filename");
 			while (!feof($fp)) {
 				$line = fgets($fp);
 				if (preg_match('/"host": "(.+)",$/', $line, $match)) {
-					$this->runVar['connections']['host'] = $match[1];
+					$runVar['connections']['host'] = $match[1];
 				}
 				if (preg_match('/"port": (.+),$/', $line, $match)) {
-					$this->runVar['connections']['port'] = $match[1];
+					$runVar['connections']['port'] = $match[1];
 					break;
 				}
 			}
-			if ($this->runVar['constants']['alternate_nntp']) {
-				$filename = $this->runVar['paths']['misc'] . "update/python/lib/nntpproxy_a.conf";
+			if ($runVar['constants']['alternate_nntp']) {
+				$filename = $runVar['paths']['misc'] . "update/python/lib/nntpproxy_a.conf";
 				$fp = fopen($filename, "r") or die("Couldn't open $filename");
 				while (!feof($fp)) {
 					$line = fgets($fp);
 					if (preg_match('/"host": "(.+)",$/', $line, $match)) {
-						$this->runVar['connections']['host_a'] = $match[1];
+						$runVar['connections']['host_a'] = $match[1];
 					}
 					if (preg_match('/"port": (.+),$/', $line, $match)) {
-						$this->runVar['connections']['port_a'] = $match[1];
+						$runVar['connections']['port_a'] = $match[1];
 						break;
 					}
 				}
 			}
-			$this->runVar['connections']['ip'] = gethostbyname($this->runVar['connections']['host']);
-			if ($this->runVar['constants']['alternate_nntp']) {
-				$this->runVar['connections']['ip_a'] = gethostbyname($this->runVar['connections']['host_a']);
+			$runVar['connections']['ip'] = gethostbyname($runVar['connections']['host']);
+			if ($runVar['constants']['alternate_nntp']) {
+				$runVar['connections']['ip_a'] = gethostbyname($runVar['connections']['host_a']);
 			}
 		}
-		return $this->runVar['connections'];
+		return $runVar['connections'];
 	}
 
-	public function getConnectionsCounts(&$runVar)
+	public function getConnectionsCounts($runVar)
 	{
-		$this->runVar = $runVar;
+		$runVar['connections']['primary']['active'] = $runVar['connections']['primary']['total'] =
+		$runVar['connections']['alternate']['active'] = $runVar['connections']['alternate']['total'] = 0;
 
-		$this->runVar['connections']['primary']['active'] = $this->runVar['connections']['primary']['total'] =
-		$this->runVar['connections']['alternate']['active'] = $this->runVar['connections']['alternate']['total'] = 0;
-
-		$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . ":" . $this->runVar['connections']['port'] . " | grep -c ESTAB"));
-		$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip'] . ":" . $this->runVar['connections']['port']));
-		if ($this->runVar['constants']['alternate_nntp'] == 1) {
-			$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip_a'] . ":" . $this->runVar['connections']['port_a'] . " | grep -c ESTAB"));
-			$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip_a'] . ":" . $this->runVar['connections']['port_a']));
+		$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . ":" . $runVar['connections']['port'] . " | grep -c ESTAB"));
+		$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip'] . ":" . $runVar['connections']['port']));
+		if ($runVar['constants']['alternate_nntp'] == 1) {
+			$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip_a'] . ":" . $runVar['connections']['port_a'] . " | grep -c ESTAB"));
+			$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip_a'] . ":" . $runVar['connections']['port_a']));
 		}
-		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
-				$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . ":https | grep -c ESTAB"));
-				$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip'] . ":https"));
-				if ($this->runVar['constants']['alternate_nntp'] == 1) {
-					$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip_a'] . ":https | grep -c ESTAB"));
-					$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip_a'] . ":https"));
+		if ($runVar['connections']['primary']['active'] == 0 && $runVar['connections']['primary']['total'] == 0
+					&& $runVar['connections']['alternate']['active'] == 0 && $runVar['connections']['alternate']['total'] == 0
+						&& $runVar['connections']['port'] != $runVar['connections']['port_a']) {
+				$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . ":https | grep -c ESTAB"));
+				$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip'] . ":https"));
+				if ($runVar['constants']['alternate_nntp'] == 1) {
+					$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip_a'] . ":https | grep -c ESTAB"));
+					$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip_a'] . ":https"));
 				}
 		}
-		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
-			$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['port'] . " | grep -c ESTAB"));
-			$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['port']));
-			if ($this->runVar['constants']['alternate_nntp'] == 1) {
-				$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['port_a'] . " | grep -c ESTAB"));
-				$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['port_a']));
+		if ($runVar['connections']['primary']['active'] == 0 && $runVar['connections']['primary']['total'] == 0
+					&& $runVar['connections']['alternate']['active'] == 0 && $runVar['connections']['alternate']['total'] == 0
+						&& $runVar['connections']['port'] != $runVar['connections']['port_a']) {
+			$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['port'] . " | grep -c ESTAB"));
+			$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['port']));
+			if ($runVar['constants']['alternate_nntp'] == 1) {
+				$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['port_a'] . " | grep -c ESTAB"));
+				$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['port_a']));
 			}
 		}
-		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
-			$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . " | grep -c ESTAB"));
-			$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip']));
-			if ($this->runVar['constants']['alternate_nntp'] == 1) {
-				$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . " | grep -c ESTAB"));
-				$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip']));
+		if ($runVar['connections']['primary']['active'] == 0 && $runVar['connections']['primary']['total'] == 0
+					&& $runVar['connections']['alternate']['active'] == 0 && $runVar['connections']['alternate']['total'] == 0
+						&& $runVar['connections']['port'] != $runVar['connections']['port_a']) {
+			$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . " | grep -c ESTAB"));
+			$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip']));
+			if ($runVar['constants']['alternate_nntp'] == 1) {
+				$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . " | grep -c ESTAB"));
+				$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip']));
 			}
 		}
-		return ($this->runVar['connections']);
+		return ($runVar['connections']);
 	}
 }

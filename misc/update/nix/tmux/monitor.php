@@ -334,13 +334,16 @@ while ($runVar['counts']['iterations'] > 0) {
 		}
 	}
 
-	($runVar['settings']['post_non'] == 2 ? $runVar['modsettings']['clean'] = ' clean ' : $runVar['modsettings']['clean'] = ' ');
-	($runVar['counts']['iterations'] > 1 ? $runVar['constants']['pre_lim'] = '7' : $runVar['constants']['pre_lim'] == '');
+	$runVar['modsettings']['clean'] = ($runVar['settings']['post_non'] == 2 ? ' clean ' : ' ');
+	$runVar['constants']['pre_lim'] = ($runVar['counts']['iterations'] > 1 ? '7' : '');
 
 	if ($runVar['settings']['is_running'] == 1) {
 
 		//run sharing regardless of sequential setting
 		$t->runPane('sharing', $runVar);
+
+		//run nzb-import
+		$t->runPane('import', $runVar);
 
 		//run these if complete sequential not set
 		if ($runVar['constants']['sequential'] != 2) {
@@ -368,31 +371,11 @@ while ($runVar['counts']['iterations'] > 0) {
 		}
 
 		if ($runVar['constants']['sequential'] == 1) {
-			//run nzb-import
-			if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
-				$log = $t->writelog($runVar['panes']['zero'][1]);
-				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.1 ' \
-						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/import_threaded.py $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['import_timer']}' 2>&1 1> /dev/null"
-				);
-			} else {
-				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.1 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][1]} has been disabled/terminated by Import\"'");
-			}
 
 			//run update_binaries
 			$t->runBasicSequential($runVar);
 
 		} else if ($runVar['constants']['sequential'] == 2) {
-			//run nzb-import
-			if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
-				$log = $t->writelog($runVar['panes']['zero'][1]);
-				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.1 ' \
-						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/import_threaded.py $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['import_timer']}' 2>&1 1> /dev/null"
-				);
-			} else {
-				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.1 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][1]} has been disabled/terminated by Import\"'");
-			}
 
 			//update tv and theaters
 			if (($runVar['settings']['update_tv'] == 1) && ((time() - $runVar['timers']['timer4'] >= $runVar['settings']['tv_timer']) || ($runVar['counts']['iterations'] == 1))) {
@@ -488,20 +471,6 @@ while ($runVar['counts']['iterations'] > 0) {
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.3 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][3]} has been disabled/terminated by Backfill\"'");
 			}
 
-			//run nzb-import
-			if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
-				$log = $t->writelog($runVar['panes']['zero'][1]);
-				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.1 ' \
-						{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/import_threaded.py $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['import_timer']}' 2>&1 1> /dev/null"
-				);
-			} else if ($runVar['killswitch']['pp'] == true) {
-				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.1 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][1]} has been disabled/terminated by Exceeding Limits\"'");
-			} else {
-				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.1 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][1]} has been disabled/terminated by Import\"'");
-			}
-
 			//run update_releases
 			if ($runVar['settings']['releases_run'] != 0) {
 				$log = $t->writelog($runVar['panes']['zero'][4]);
@@ -513,7 +482,7 @@ while ($runVar['counts']['iterations'] > 0) {
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.4 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][4]} has been disabled/terminated by Releases\"'");
 			}
 		}
-	} else {
+	} else  if ($runVar['settings']['is_running'] == 0) {
 		$t->runPane('notrunning', $runVar);
 	}
 
