@@ -10,12 +10,25 @@ $tOut = new TmuxOutput($pdo);
 $runVar['paths']['misc'] = nZEDb_MISC;
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
+$tmux = $tRun->get('niceness');
+
+$tmux_niceness = (isset($tmux->niceness) ? $tmux->niceness : 2);
 
 $runVar['constants'] = $pdo->queryOneRow($tRun->getConstantSettings());
 $runVar['constants']['pre_lim'] = '';
 
-$runVar['commands']['python'] = ($tRun->command_exist("python3") ? 'python3 -OOu' : 'python -OOu');
-$runVar['commands']['php'] = ($tRun->command_exist("php5") ? 'php5' : 'php');
+$PHP = ($tRun->command_exist("php5") ? 'php5' : 'php');
+$PYTHON = ($tRun->command_exist("python3") ? 'python3 -OOu' : 'python -OOu');
+
+//assign shell commands
+$show_time = (nZEDb_DEBUG ? "/usr/bin/time" : "");
+$runVar['commands']['_php'] = $show_time . " nice -n{$tmux_niceness} $PHP";
+$runVar['commands']['_phpn'] = "nice -n{$tmux_niceness} $PHP";
+$runVar['commands']['_python'] = $show_time . " nice -n{$tmux_niceness} $PYTHON";
+$runVar['commands']['_sleep'] = "{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/tmux/bin/showsleep.php";
+
+//spawn IRCScraper as soon as possible
+$tRun->runPane('scraper', $runVar);
 
 //get list of panes by name
 $runVar['panes'] = $tRun->getListOfPanes($runVar);
@@ -60,16 +73,6 @@ while ($runVar['counts']['iterations'] > 0) {
 
 	$runVar['modsettings']['clean'] = ($runVar['settings']['post_non'] == 2 ? ' clean ' : ' ');
 	$runVar['constants']['pre_lim'] = ($runVar['counts']['iterations'] == 1 ? '7' : '');
-
-	//assign shell commands
-	$show_time = (nZEDb_DEBUG ? "/usr/bin/time" : "");
-	$runVar['commands']['_php'] = $show_time . " nice -n{$runVar['settings']['niceness']} {$runVar['commands']['php']}";
-	$runVar['commands']['_phpn'] = "nice -n{$runVar['settings']['niceness']} {$runVar['commands']['php']}";
-	$runVar['commands']['_python'] = $show_time . " nice -n{$runVar['settings']['niceness']} {$runVar['commands']['python']}";
-	$runVar['commands']['_sleep'] = "{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/tmux/bin/showsleep.php";
-
-	//spawn IRCScraper as soon as possible
-	$tRun->runPane('scraper', $runVar);
 
 	//assign scripts
 	$runVar['scripts']['releases'] = ($runVar['constants']['tablepergroup'] == 0
@@ -342,6 +345,9 @@ while ($runVar['counts']['iterations'] > 0) {
 
 		//run postprocess_releases amazon
 		$tRun->runPane('amazon', $runVar);
+
+		//respawn IRCScraper if it has been killed
+		$tRun->runPane('scraper', $runVar);
 
 		//run sharing regardless of sequential setting
 		$tRun->runPane('sharing', $runVar);

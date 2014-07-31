@@ -38,10 +38,17 @@ class Tmux
 		return $tmux;
 	}
 
-	public function get()
+	public function get($setting = '')
 	{
 		$pdo = $this->pdo;
-		$rows = $pdo->query("SELECT * FROM tmux");
+		$where = ($setting !== '' ? sprintf('WHERE setting = %s', $pdo->escapeString($setting)) : '');
+
+		$rows = $pdo->query(
+					sprintf(
+						"SELECT * FROM tmux %s",
+						$where
+					)
+		);
 
 		if ($rows === false) {
 			return false;
@@ -200,7 +207,6 @@ class Tmux
 		$sql = sprintf(
 				"SELECT
 					(%1\$s 'monitor_delay') AS monitor,
-					(%1\$s 'niceness') AS niceness,
 					(%1\$s 'binaries') AS binaries_run,
 					(%1\$s 'backfill') AS backfill,
 					(%1\$s 'import') AS import,
@@ -250,6 +256,7 @@ class Tmux
 					(%2\$s 'lookuptvrage') as processtvrage,
 					(%2\$s 'lookupnfo') as processnfo,
 					(%2\$s 'lookuppar2') as processpar2,
+					(%2\$s 'nzbthreads') as nzbthreads,
 					(%2\$s 'tmpunrarpath') as tmpunrar,
 					(%2\$s 'compressedheaders') AS compressed",
 					$tmuxstr,

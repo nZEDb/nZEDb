@@ -323,10 +323,20 @@ class TmuxRun extends Tmux
 
 	protected function _runNZBImport($runVar)
 	{
+		switch ($runVar['settings']['import']) {
+			case 1:
+				$useFilenames = 'false';
+				break;
+			case 2:
+				$useFilenames = 'true';
+				break;
+		}
+
 		if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
 			$log = $this->writelog($runVar['panes']['zero'][1]);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.1 ' \
-					{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/import_threaded.py $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['import_timer']}' 2>&1 1> /dev/null"
+				{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/multiprocessing/import.php {$runVar['settings']['nzbs']} {$runVar['settings']['nzbthreads']} true {$useFilenames} false $log; \
+				date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['import_timer']}' 2>&1 1> /dev/null"
 			);
 
 		} else if ($runVar['killswitch']['pp'] == true) {
@@ -686,7 +696,7 @@ class TmuxRun extends Tmux
 			if (shell_exec("tmux list-panes -t{$runVar['constants']['tmux_session']}:${pane} | grep ^0 | grep -c dead") == 1) {
 				shell_exec(
 					"tmux respawnp -t{$runVar['constants']['tmux_session']}:${pane}.0 ' \
-					{$runVar['commands']['_php']} {$runVar['paths']['misc']}testing/IRCScraper/scrape.php true'"
+					{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}testing/IRCScraper/scrape.php true'"
 				);
 			}
 		} else {
