@@ -1,10 +1,5 @@
 <?php
 
-require_once nZEDb_LIBS . 'adultdvdempire.php';
-require_once nZEDb_LIBS . 'popporn.php';
-require_once nZEDb_LIBS . 'hotmovies.php';
-require_once nZEDb_LIBS . 'IAFD.php';
-
 use nzedb\db\Settings;
 use nzedb\utility;
 
@@ -60,7 +55,7 @@ class XXX
 		];
 		$options += $defaults;
 
-		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] :	new Settings());
 		$this->releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 
 		$this->movieqty = ($this->pdo->getSetting('maxxxxprocessed') != '') ? $this->pdo->getSetting('maxxxxprocessed') : 100;
@@ -247,7 +242,7 @@ class XXX
 				}
 			}
 			$catSearch .= '1=2)';
-		}
+	}
 		return $catSearch;
 	}
 
@@ -389,27 +384,27 @@ class XXX
 		$res = false;
 		$this->whichclass = '';
 
-		$iafd = new iafd();
+		$iafd = new IAFD();
 		$iafd->searchterm = $xxxmovie;
-		if($iafd->findme() === true){
+		if($iafd->findme() !== false){
 		switch($iafd->classfound){
 			case "ade":
-				$mov = new adultdvdempire();
+				$mov = new ADE();
 				$mov->directlink = $iafd->directurl;
 				$res = $mov->getdirect();
 				$res['title'] = $iafd->title;
 				$res['directurl'] = $iafd->directurl;
 				$this->whichclass = $iafd->classfound;
-				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from: Adult DVD Empire"));
+				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Adult DVD Empire"));
 				break;
 			case "hm":
-				$mov = new hotmovies();
+				$mov = new Hotmovies();
 				$mov->directlink = $iafd->directurl;
 				$res = $mov->getdirect();
 				$res['title'] = $iafd->title;
 				$res['directurl'] = $iafd->directurl;
 				$this->whichclass = $iafd->classfound;
-				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from: Hot Movies"));
+				$this->pdo->log->doEcho($this->pdo->log->primary("Fetching XXX info from IAFD: Hot Movies"));
 				break;
 			default:
 				$res = false;
@@ -419,32 +414,43 @@ class XXX
 		$res = false;
 		}
 
+		if ($res === false) {
+			$this->whichclass = "aebn";
+			$mov = new AEBN();
+			$mov->cookie = $this->cookie;
+			$mov->searchterm = $xxxmovie;
+			$res = $mov->search();
 		if($res === false){
-		$mov = new adultdvdempire();
-		$mov->searchterm = $xxxmovie;
-		$res = $mov->search();
-		$this->whichclass = "ade";
+			$this->whichclass = "ade";
+			$mov = new ADE();
+			$mov->searchterm = $xxxmovie;
+			$res = $mov->search();
+		}
+
 		if ($res === false) {
 			$this->whichclass = "hm";
-			// IF no result from Adultdvdempire check hotmovies
-			$mov = new hotmovies();
+			$mov = new Hotmovies();
 			$mov->cookie = $this->cookie;
 			$mov->searchterm = $xxxmovie;
 			$res = $mov->search();
 		}
+
 		if($res === false){
 			$this->whichclass = "pop";
-			// IF no result from Adultdvdempire and hotmovies check popporn
-			$mov = new popporn();
+			$mov = new Popporn();
 			$mov->cookie = $this->cookie;
 			$mov->searchterm = $xxxmovie;
 			$res = $mov->search();
 		}
+
 		// If a result is true getall information.
 		if ($res !== false) {
 			if ($this->echooutput) {
 				$fromstr = null;
 				switch($this->whichclass){
+					case "aebn":
+					$fromstr = "AEBN";
+						break;
 					case "ade":
 					$fromstr = "Adult DVD Empire";
 						break;
@@ -465,8 +471,7 @@ class XXX
 			// Nothing was found, go ahead and set to -2 :(
 			return false;
 		}
-		}
-
+	}
 		$mov = array();
 
 		$mov['trailers'] = (isset($res['trailers'])) ? serialize($res['trailers']) : '';
@@ -649,7 +654,7 @@ class XXX
 		$cat = new Categorize(['Settings' => $this->pdo]);
 		if (!$cat->isMovieForeign($releaseName)) {
 			$name = '';
-			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|[Dd][Ii][Ss][Cc](\d+|\s*\d+|\.\d+)|XXX|BTS|DirFix|Trailer|WEBRiP|NFO)[^\w]';
+			$followingList = '[^\w]((2160|1080|480|720)(p|i)|AC3D|Directors([^\w]CUT)?|DD5\.1|(DVD|BD|BR)(Rip)?|BluRay|divx|HDTV|iNTERNAL|LiMiTED|(Real\.)?Proper|RE(pack|Rip)|Sub\.?(fix|pack)|Unrated|WEB-DL|(x|H)[-._ ]?264|xvid|[Dd][Ii][Ss][Cc](\d+|\s*\d+|\.\d+)|XXX|BTS|DirFix|Trailer|WEBRiP|NFO|BONUS)[^\w]';
 
 			/* Initial scan of getting a name.
 			 * [\w. -]+ Gets 0-9a-z. - characters, most scene movie titles contain these chars.
