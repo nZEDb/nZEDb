@@ -273,7 +273,7 @@ class TmuxRun extends Tmux
 	{
 		//run backfill
 		$backsleep = ($runVar['settings']['progressive'] == 1 && floor($runVar['counts']['now']['collections_table'] / 500) > $runVar['settings']['back_timer']
-					? floor($runVar['counts']['now']['collections_table'] / 500);
+					? floor($runVar['counts']['now']['collections_table'] / 500)
 					: $runVar['settings']['back_timer']
 		);
 
