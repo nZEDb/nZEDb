@@ -1,27 +1,11 @@
 <?php
-/**
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program (see LICENSE.txt in the base directory.  If
- * not, see:
- * @link      <http://www.gnu.org/licenses/>.
- * @author    mike
- * @copyright 2014 nZEDb
- */
 
-require_once 'simple_html_dom.php';
+require_once nZEDb_LIBS . 'simple_html_dom.php';
 
 /**
  * Class adultdvdempire
  */
-class adultdvdempire
+class ADE
 {
 	/* Define ADE Url here */
 	const ADE = "http://www.adultdvdempire.com";
@@ -257,6 +241,7 @@ class adultdvdempire
 				}
 			}
 		}
+
 		array_shift($this->res['productinfo']);
 		array_shift($this->res['productinfo']);
 		$this->res['productinfo'] = array_chunk($this->res['productinfo'], 2, false);
@@ -296,20 +281,15 @@ class adultdvdempire
 			return false;
 		} else {
 			$this->html->load($this->response);
-			unset($this->response);
-			$ret = $this->html->find("span.sub strong", 0);
-			$ret = (int)$ret->plaintext;
-			if (isset($ret)) {
-				if ($ret >= 1) {
-					$ret = $this->html->find("a.boxcover", 0);
+			if ($ret = $this->html->find("a.boxcover", 0)){
 					$title = $ret->title;
 					$ret = (string)trim($ret->href);
 					similar_text($this->searchterm, $title, $p);
 					if ($p >= 90) {
 						$this->found = true;
 						$this->urlfound = $ret;
-						$this->directurl = self::ADE.$ret;
-						$this->title = $title;
+						$this->directurl = self::ADE . $ret;
+						$this->title = trim($title);
 						unset($ret);
 						$this->html->clear();
 						$this->_getadeurl($this->urlfound);
@@ -322,9 +302,6 @@ class adultdvdempire
 				} else {
 					return false;
 				}
-			} else {
-				return false;
-			}
 		}
 	}
 
