@@ -366,6 +366,7 @@ while ($runVar['counts']['iterations'] > 0) {
 
 			//run postprocess_releases additional
 			$runVar['timers']['timer3'] = $tRun->runPane('ppadditional', $runVar);
+			var_dump($runVar['timers']['timer3']);
 
 			//run postprocess_releases non amazon
 			$tRun->runPane('nonamazon', $runVar);
