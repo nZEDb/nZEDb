@@ -20,74 +20,13 @@ class Forking extends \fork_daemon
 	const OUTPUT_SERIALLY = 2; // Display child output when child is done.
 
 	/**
-	 * @var \nezedb\db\Settings
-	 */
-	public $pdo;
-
-	/**
-	 * Path to do not run folder.
-	 * @var string
-	 */
-	private $dnr_path = '';
-
-	/**
-	 * Work to work on.
-	 * @var array
-	 */
-	private $work = array();
-
-	/**
-	 * How much work do we have to do?
-	 * @var int
-	 */
-	public $_workCount = 0;
-
-	/**
-	 * The type of work we want to work on.
-	 * @var string
-	 */
-	private $workType = '';
-
-	/**
-	 * List of passed in options for the current work type.
-	 * @var array
-	 */
-	private $workTypeOptions = array();
-
-	/**
-	 * Max amount of child processes to do work at a time.
-	 * @var int
-	 */
-	private $maxProcesses = 1;
-
-	/**
-	 * Are we using tablePerGroup?
-	 * @var bool
-	 */
-	private $tablePerGroup = false;
-
-	/**
-	 * @var bool
-	 */
-	private $processAdditional = false; // Should we process additional?
-	private $processNFO = false; // Should we process NFOs?
-	private $processMovies = false; // Should we process Movies?
-	private $processTV = false; // Should we process TV?
-
-	/**
 	 * Setup required parent / self vars.
 	 */
-	public function __construct(array $options = array())
+	public function __construct()
 	{
 		parent::__construct();
 
-		$defaults = [
-			'settings' => null,
-		];
-		$options += $defaults;
-
-		$this->pdo = ($options['Settings'] instanceof \nzedb\db\Settings ? $options['Settings'] :
-			new \nzedb\db\Settings());
+		$this->_colorCLI = new \ColorCLI();
 
 		$this->register_logging(
 			[0 => $this, 1 => 'logger'],
@@ -128,14 +67,6 @@ class Forking extends \fork_daemon
 	}
 
 	/**
-	 *
-	 */
-	public function __destruct()
-	{
-		parent::__destruct();
-	}
-
-	/**
 	 * Setup the class to work on a type of work, then process the work.
 	 * Valid work types:
 	 *
@@ -154,6 +85,7 @@ class Forking extends \fork_daemon
 		$this->work = array();
 
 		// Init Settings here, as forking causes errors when it's destroyed.
+		$this->pdo = new \nzedb\db\Settings();
 
 		// Get work to fork.
 		$this->getWork();
@@ -168,8 +100,8 @@ class Forking extends \fork_daemon
 		$this->processEndWork();
 
 		if (nZEDb_ECHOCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->header(
+			$this->_colorCLI->doEcho(
+				$this->_colorCLI->header(
 					'Multi-processing for ' . $this->workType . ' finished in ' . (microtime(true) - $startTime) .
 					' seconds at ' . date(DATE_RFC2822) . '.' . PHP_EOL
 				)
@@ -251,8 +183,8 @@ class Forking extends \fork_daemon
 		if ($this->_workCount > 0) {
 
 			if (nZEDb_ECHOCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->header(
+				$this->_colorCLI->doEcho(
+					$this->_colorCLI->header(
 						'Multi-processing started at ' . date(DATE_RFC2822) . ' with ' . $this->_workCount .
 						' job(s) to do using a max of ' . $this->maxProcesses . ' child process(es).'
 					)
@@ -263,8 +195,8 @@ class Forking extends \fork_daemon
 			$this->process_work(true);
 		} else {
 			if (nZEDb_ECHOCLI) {
-				$this->pdo->log->doEcho(
-					$this->pdo->log->header('No work to do!')
+				$this->_colorCLI->doEcho(
+					$this->_colorCLI->header('No work to do!')
 				);
 			}
 		}
@@ -664,7 +596,7 @@ class Forking extends \fork_daemon
 		if ($sharing !== false && $sharing['enabled'] == 1) {
 			$nntp = new \NNTP(['Settings' => $this->pdo]);
 			if (($this->pdo->getSetting('alternate_nntp') == 1 ? $nntp->doConnect(true, true) : $nntp->doConnect()) === true) {
-				(new \PostProcess(['Settings' => $this->pdo]))->processSharing($nntp);
+				(new \PostProcess(['Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI]))->processSharing($nntp);
 			}
 			return true;
 		}
@@ -676,7 +608,7 @@ class Forking extends \fork_daemon
 	 */
 	private function processSingle()
 	{
-		$postProcess = new \PostProcess(['Settings' => $this->pdo]);
+		$postProcess = new \PostProcess(['Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI]);
 		//$postProcess->processAnime();
 		$postProcess->processBooks();
 		$postProcess->processConsoles();
@@ -811,8 +743,8 @@ class Forking extends \fork_daemon
 	public function childExit($pid, $identifier = '')
 	{
 		if (nZEDb_ECHOCLI) {
-			$this->pdo->log->doEcho(
-				$this->pdo->log->header(
+			$this->_colorCLI->doEcho(
+				$this->_colorCLI->header(
 					'Process ID #' . $pid . ' has completed.' . PHP_EOL .
 					'There are ' . ($this->forked_children_count - 1) . ' process(es) still active with ' .
 					(--$this->_workCount) . ' job(s) left in the queue.' . PHP_EOL
@@ -821,6 +753,72 @@ class Forking extends \fork_daemon
 		}
 	}
 
+	/**
+	 *
+	 */
+	public function __destruct()
+	{
+		parent::__destruct();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////// All class vars here /////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * Path to do not run folder.
+	 * @var string
+	 */
+	private $dnr_path = '';
+
+	/**
+	 * Work to work on.
+	 * @var array
+	 */
+	private $work = array();
+
+	/**
+	 * How much work do we have to do?
+	 * @var int
+	 */
+	public $_workCount = 0;
+
+	/**
+	 * The type of work we want to work on.
+	 * @var string
+	 */
+	private $workType = '';
+
+	/**
+	 * List of passed in options for the current work type.
+	 * @var array
+	 */
+	private $workTypeOptions = array();
+
+	/**
+	 * Max amount of child processes to do work at a time.
+	 * @var int
+	 */
+	private $maxProcesses = 1;
+
+	/**
+	 * Are we using tablePerGroup?
+	 * @var bool
+	 */
+	private $tablePerGroup = false;
+
+	/**
+	 * @var \nzedb\db\Settings
+	 */
+	private $pdo;
+
+	/**
+	 * @var bool
+	 */
+	private $processAdditional = false; // Should we process additional?
+	private $processNFO = false;        // Should we process NFOs?
+	private $processMovies = false;     // Should we process Movies?
+	private $processTV = false;         // Should we process TV?
 }
 
 class ForkingException extends \Exception {}
