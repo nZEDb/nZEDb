@@ -37,8 +37,10 @@ class TmuxOutput extends Tmux
 	protected function _getColorsMasks($compressed)
 	{
 		$masks[1] = $this->pdo->log->headerOver("%-18s") . " " . $this->pdo->log->tmuxOrange("%-48.48s");
-		$masks[2] = ($compressed == '1' ? $this->pdo->log->headerOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s")
-					: $this->pdo->log->alternateOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s"));
+		$masks[2] = ($compressed == 1
+					? $this->pdo->log->headerOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s")
+					: $this->pdo->log->alternateOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s")
+		);
 		$masks[3] = $this->pdo->log->header("%-16.16s %25.25s %25.25s");
 		$masks[4] = $this->pdo->log->primaryOver("%-16.16s") . " " . $this->pdo->log->tmuxOrange("%25.25s %25.25s");
 		$masks[5] = $this->pdo->log->tmuxOrange("%-16.16s %25.25s %25.25s");
@@ -146,10 +148,9 @@ class TmuxOutput extends Tmux
 		$monitor_path_a = $runVar['settings']['monitor_path_a'];
 		$monitor_path_b = $runVar['settings']['monitor_path_b'];
 
-		if (((isset($monitor_path)) && (file_exists($monitor_path))) ||
-			((isset($monitor_path_a)) && (file_exists($monitor_path_a))) ||
-				((isset($monitor_path_b)) && (file_exists($monitor_path_b)))) {
-
+		if (((isset($monitor_path)) && (file_exists($monitor_path)))
+			|| ((isset($monitor_path_a)) && (file_exists($monitor_path_a)))
+				|| ((isset($monitor_path_b)) && (file_exists($monitor_path_b)))) {
 			echo "\n";
 			printf($masks[3], "File System", "Used", "Free");
 			$this->_displaySeparator($runVar['settings']['compressed']);
@@ -198,7 +199,7 @@ class TmuxOutput extends Tmux
 		$this->_displaySeparator($runVar['settings']['compressed']);
 		printf($masks[4], "predb",
 			sprintf(
-				"%s(%d)",
+				"%s(%s)",
 				number_format($runVar['counts']['now']['predb'] - $runVar['counts']['now']['distinct_predb_matched']),
 				$runVar['counts']['diff']['distinct_predb_matched']
 			),
@@ -210,7 +211,7 @@ class TmuxOutput extends Tmux
 		);
 		printf($masks[4], "requestID",
 			sprintf(
-				"%s(%d)",
+				"%s(%s)",
 				number_format($runVar['counts']['now']['requestid_inprogress']),
 				$runVar['counts']['diff']['requestid_inprogress']
 			),
@@ -222,7 +223,7 @@ class TmuxOutput extends Tmux
 		);
 		printf($masks[4], "NFO's",
 			sprintf(
-				"%s(%d)",
+				"%s(%s)",
 				number_format($runVar['counts']['now']['processnfo']),
 				$runVar['counts']['diff']['processnfo']
 			),
@@ -234,7 +235,7 @@ class TmuxOutput extends Tmux
 		);
 		printf($masks[4], "Console",
 			sprintf(
-				"%s(%d)",
+				"%s(%s)",
 				number_format($runVar['counts']['now']['processconsole']),
 				$runVar['counts']['diff']['processgames']
 			),
@@ -246,7 +247,7 @@ class TmuxOutput extends Tmux
 		);
 		printf($masks[4], "Movie",
 			sprintf(
-				"%s(%d)",
+				"%s(%s)",
 				number_format($runVar['counts']['now']['processmovies']),
 				$runVar['counts']['diff']['processmovies']
 			),
@@ -258,7 +259,7 @@ class TmuxOutput extends Tmux
 		);
 		printf($masks[4], "Audio",
 			sprintf(
-				"%s(%d)",
+				"%s(%s)",
 				number_format($runVar['counts']['now']['processmusic']),
 				$runVar['counts']['diff']['processmusic']
 			),
@@ -270,7 +271,7 @@ class TmuxOutput extends Tmux
 		);
 		printf($masks[4], "PC",
 			sprintf(
-				"%s(%d)",
+				"%s(%s)",
 				number_format($runVar['counts']['now']['processgames']),
 				$runVar['counts']['diff']['processgames']
 			),
@@ -282,7 +283,7 @@ class TmuxOutput extends Tmux
 		);
 		printf($masks[4], "TV",
 			sprintf(
-				"%s(%d)",
+				"%s(%s)",
 				number_format($runVar['counts']['now']['processtvrage']),
 				$runVar['counts']['diff']['processtvrage']
 			),
@@ -294,7 +295,7 @@ class TmuxOutput extends Tmux
 		);
 		printf($masks[4], "XXX",
 			sprintf(
-				"%s(%d)",
+				"%s(%s)",
 				number_format($runVar['counts']['now']['processxxx']),
 				$runVar['counts']['diff']['processxxx']
 			),
@@ -306,7 +307,7 @@ class TmuxOutput extends Tmux
 		);
 		printf($masks[4], "Misc",
 			sprintf(
-				"%s(%d)",
+				"%s(%s)",
 				number_format($runVar['counts']['now']['work']),
 				$runVar['counts']['diff']['work']
 			),
@@ -318,7 +319,7 @@ class TmuxOutput extends Tmux
 		);
 		printf($masks[4], "Books",
 			sprintf(
-				"%s(%d)",
+				"%s(%s)",
 				number_format($runVar['counts']['now']['processbooks']),
 				$runVar['counts']['diff']['processbooks']
 			),
@@ -337,7 +338,7 @@ class TmuxOutput extends Tmux
 			sprintf(
 				"%s(%s)",
 				number_format($runVar['counts']['now']['releases']),
-				number_format($runVar['counts']['diff']['releases'])
+				$runVar['counts']['diff']['releases']
 			)
 		);
 		echo PHP_EOL;
