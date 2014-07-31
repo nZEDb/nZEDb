@@ -875,6 +875,16 @@ New updates are grouped by person, at the top of the file.
 	* Chg: IRCClient, only reply to pings from the server to prevent abusers from making us flood.
 2014-04-28 bart39
 	* Fix: temp workaround for srrdb update issues due to rss changes on their site.
+2014-04-27 Roelski
+	* Added anidb_titles
+	* Add patch with anidb_titles and filled anidb
+	* Changed populate_anidb to use simplexml
+	* Added updates for all languages into anidb_titles.
+	* Added function for truncating anidb results (or we should make some columns wider, as results are too big for some anime)
+	* Updated templates  and frontend for multiple languages view and search
+	* Changed anidb_title_lang so difference can be seen between anidb.lang
+	* Fixed Alpha theme with anidb.title_lang to use multiple languages in list
+	* Changed some columns to text in anidb table
 2014-04-27 niel
 	* Fix: Reinstate Db/commit checking for tmux.
 2014-04-27 kevin

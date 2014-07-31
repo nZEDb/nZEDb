@@ -36,7 +36,7 @@
 		</tr>
 		{foreach $anime as $a}
 			<tr class="{cycle values=",alt"}">
-				<td><a class="title" title="View anime" href="{$smarty.const.WWW_TOP}/anime/{$a.anidbid}">{$a.title|escape:"htmlall"}</a>{if {$a.startdate} != ''}<br />({$a.startdate|date_format} - {/if}{if $a.enddate != ''}{$a.enddate|date_format}{/if})</td>
+				<td><a class="title" title="View anime" href="{$smarty.const.WWW_TOP}/anime/{$a.anidbid}">{$a.title_lang|escape:"htmlall"}</a>{if {$a.startdate} != ''}<br />({$a.startdate|date_format} - {/if}{if $a.enddate != ''}{$a.enddate|date_format}{/if})</td>
 				<td style="text-align: center;">{if {$a.type} != ''}{$a.type|escape:"htmlall"}{/if}</td>
 				<td>{if {$a.categories} != ''}{$a.categories|escape:"htmlall"|replace:'|':', '}{/if}</td>
 				<td style="text-align: center;">{if {$a.rating} != ''}{$a.rating}{/if}</td>
