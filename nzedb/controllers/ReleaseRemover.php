@@ -31,24 +31,28 @@ class ReleaseRemover
 
 	/**
 	 * The query we will use to select unwanted releases.
+	 *
 	 * @var string
 	 */
 	protected $query;
 
 	/**
 	 * LIKE is case sensitive in PgSQL, get the insensitive one for it.
+	 *
 	 * @var string
 	 */
 	protected $like;
 
 	/**
 	 * If an error occurred, store it here.
+	 *
 	 * @var string
 	 */
 	protected $error;
 
 	/**
 	 * Time we started.
+	 *
 	 * @var int
 	 */
 	protected $timeStart;
@@ -62,12 +66,14 @@ class ReleaseRemover
 
 	/**
 	 * Ignore user check?
+	 *
 	 * @var bool
 	 */
 	protected $ignoreUserCheck;
 
 	/**
 	 * Is is run from the browser?
+	 *
 	 * @var bool
 	 */
 	protected $browser;
@@ -127,7 +133,7 @@ class ReleaseRemover
 		$defaults = [
 			'Browser'      => false, // Are we coming from the web script.
 			'ConsoleTools' => null,
-			'Echo'         => true,  // Echo to CLI?
+			'Echo'         => true, // Echo to CLI?
 			'NZB'          => null,
 			'Releases'     => null,
 			'Settings'     => null,
@@ -171,7 +177,7 @@ class ReleaseRemover
 		$this->query = 'SELECT id, guid, searchname FROM releases WHERE 1=1';
 
 		// Keep forming the query based on the user's criteria, return if any errors.
-		foreach($arguments as $arg) {
+		foreach ($arguments as $arg) {
 			$this->error = '';
 			$string = $this->formatCriteriaQuery($arg);
 			if ($string === false) {
@@ -204,28 +210,28 @@ class ReleaseRemover
 
 		return ($this->browser
 			?
-				'Success! ' .
-				($this->delete ? "Deleted " : "Would have deleted ") .
-				$this->deletedCount .
-				' release(s) in ' .
-				$this->consoleTools->convertTime(TIME() - $this->timeStart)
+			'Success! ' .
+			($this->delete ? "Deleted " : "Would have deleted ") .
+			$this->deletedCount .
+			' release(s) in ' .
+			$this->consoleTools->convertTime(TIME() - $this->timeStart)
 			:
-				true
+			true
 		);
 	}
 
 	/**
 	 * Delete crap releases.
 	 *
-	 * @param bool       $delete Delete the release or just show the result?
-	 * @param int|string $time   Time in hours (to select old releases) or 'full' for no time limit.
-	 * @param string     $type   Type of query to run [blacklist, executable, gibberish, hashed, installbin, passworded,
+	 * @param bool       $delete                 Delete the release or just show the result?
+	 * @param int|string $time                   Time in hours (to select old releases) or 'full' for no time limit.
+	 * @param string     $type                   Type of query to run [blacklist, executable, gibberish, hashed, installbin, passworded,
 	 *                                           passwordurl, sample, scr, short, size, ''] ('' runs against all types)
 	 * @param string     $blacklistID
 	 *
 	 * @return string|bool
 	 */
-	public function removeCrap($delete, $time, $type='', $blacklistID='')
+	public function removeCrap($delete, $time, $type = '', $blacklistID = '')
 	{
 		$this->timeStart = time();
 		$this->delete = $delete;
@@ -246,6 +252,7 @@ class ReleaseRemover
 			default:
 				if (!is_numeric($time)) {
 					$this->error = 'Error, time must be a number or full.';
+
 					return $this->returnError();
 				}
 				if ($this->echoCLI) {
@@ -319,7 +326,8 @@ class ReleaseRemover
 				$this->removeCodecPoster();
 				break;
 			default:
-				$this->error = 'Wrong type: ' .$type;
+				$this->error = 'Wrong type: ' . $type;
+
 				return $this->returnError();
 		}
 
@@ -363,6 +371,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -389,6 +398,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -415,6 +425,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -448,6 +459,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -472,6 +484,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -496,6 +509,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -549,6 +563,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -583,6 +598,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -605,6 +621,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -646,6 +663,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -670,6 +688,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -711,25 +730,19 @@ class ReleaseRemover
 					$forBegin = strpos($dbRegex, 'brazilian');
 					$regexMatch = str_replace('|', ' ', substr($dbRegex, $forBegin, strpos($dbRegex, ')') - $forBegin));
 					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->pdo->escapeString($regexMatch));
-				}
-
-				else if ($this->crapTime === '' && substr($dbRegex, 7, 11) === 'bl|cz|de|es') {
+				} else if ($this->crapTime === '' && substr($dbRegex, 7, 11) === 'bl|cz|de|es') {
 					// Find first bl|cz instance position in Regex, then find first closing parenthesis.
 					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
 					$forBegin = strpos($dbRegex, 'bl|cz');
 					$regexMatch = str_replace('|', '" "', substr($dbRegex, $forBegin, strpos($dbRegex, ')') - $forBegin));
 					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"') AND", $regexMatch);
-				}
-
-				else if ($this->crapTime === '' && substr($dbRegex, 8, 5) === '19|20') {
+				} else if ($this->crapTime === '' && substr($dbRegex, 8, 5) === '19|20') {
 					// Find first bl|cz instance position in Regex, then find last closing parenthesis as this is reversed.
 					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
 					$forBegin = strpos($dbRegex, 'bl|cz');
 					$regexMatch = str_replace('|', '" "', substr($dbRegex, $forBegin, strrpos($dbRegex, ')') - $forBegin));
 					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"') AND", $regexMatch);
-				}
-
-				else if ($this->crapTime === '' && substr($dbRegex, 7, 14) === 'chinese.subbed') {
+				} else if ($this->crapTime === '' && substr($dbRegex, 7, 14) === 'chinese.subbed') {
 					// Find first brazilian instance position in Regex, then find first closing parenthesis.
 					// Then substitute all pipes (|) with spaces for FT search and insert into query
 					$forBegin = strpos($dbRegex, 'chinese');
@@ -752,48 +765,42 @@ class ReleaseRemover
 							)
 						);
 					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->pdo->escapeString($regexMatch));
-				}
-
-				else if ($this->crapTime === '' && substr($dbRegex, 8, 2) === '4u') {
+				} else if ($this->crapTime === '' && substr($dbRegex, 8, 2) === '4u') {
 					// Find first 4u\.nl instance position in Regex, then find first closing parenthesis.
 					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
 					$forBegin = strpos($dbRegex, '4u');
 					$regexMatch = str_replace('|', ' ', str_replace('nov[ a]+rip', 'nova', str_replace('4u.nl', '"4u" "nl"', substr($dbRegex, $forBegin, strpos($dbRegex, ')') - $forBegin))));
 					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->pdo->escapeString($regexMatch));
-				}
-
-				else if ($this->crapTime === '' && substr($dbRegex, 8, 5) === 'bd|dl') {
+				} else if ($this->crapTime === '' && substr($dbRegex, 8, 5) === 'bd|dl') {
 					// Find first bd|dl instance position in Regex, then find last closing parenthesis as this is reversed.
 					// Then substitute all pipes (|) with quotation marks for FT search (quotes ignore min counts) and insert into query
 					$forBegin = strpos($dbRegex, 'bd|dl');
 					$regexMatch = str_replace('\\', '', str_replace(']', '', str_replace('[', '', str_replace('|', ' ',
-					str_replace('bd|dl)mux', 'bdmux dlmux', substr($dbRegex, $forBegin, strrpos($dbRegex, ')') - $forBegin))))));
+									str_replace('bd|dl)mux', 'bdmux dlmux', substr($dbRegex, $forBegin, strrpos($dbRegex, ')') - $forBegin))
+								)
+							)
+						)
+					);
 					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST ('\"%s\"') AND", $regexMatch);
-				}
-
-				else if ($this->crapTime === '' && substr($dbRegex, 7, 9) === 'imageset|') {
+				} else if ($this->crapTime === '' && substr($dbRegex, 7, 9) === 'imageset|') {
 					// Find first imageset| instance position in Regex, then find last closing parenthesis.
 					// Then substitute all pipes (|) with quotation marks for FT search (quotes exclude min counts) and insert into query
 					$forBegin = strpos($dbRegex, 'imageset');
 					$regexMatch = str_replace('|', ' ', substr($dbRegex, $forBegin, strpos($dbRegex, ')') - $forBegin));
 					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $this->pdo->escapeString($regexMatch));
-				}
-
-				else if ($this->crapTime === '' && substr($dbRegex, 1, 9) === 'hdnectar|') {
+				} else if ($this->crapTime === '' && substr($dbRegex, 1, 9) === 'hdnectar|') {
 					// Find first hdnectar| instance position in Regex.
 					// Then substitute all pipes (|) with quotation marks for FT search (quotes exclude min counts) and insert into query
 					$regexMatch = str_replace('|', ' ', $dbRegex);
 					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $regexMatch);
-				}
-
-				else if ($this->crapTime === '' && substr($dbRegex, 1, 10) === 'Passworded') {
+				} else if ($this->crapTime === '' && substr($dbRegex, 1, 10) === 'Passworded') {
 					// Find first Passworded instance position in Regex, then find last closing parenthesis.
 					// Then substitute all pipes (|) with quotation marks for FT search (quotes exclude min counts) and insert into query
 					$regexMatch = str_replace('|', ' ', $dbRegex);
 					$ftMatch = sprintf("MATCH (rs.name, rs.searchname) AGAINST (%s) AND", $regexMatch);
 				}
 
-				switch ((int) $regex['msgcol']) {
+				switch ((int)$regex['msgcol']) {
 					case Binaries::BLACKLIST_FIELD_SUBJECT:
 						$regexSQL = sprintf("WHERE %s (rs.name {$this->regexp} %s OR rs.searchname {$this->regexp} %s)", $ftMatch, $dbRegex, $dbRegex);
 						$opTypeName = "Subject";
@@ -849,7 +856,9 @@ class ReleaseRemover
 
 				// Provide useful output of operations
 				echo $this->pdo->log->header(sprintf("Finding crap releases for %s: Using %s method against release %s.\n" .
-				"%s", $this->method, $blType, $opTypeName, $ftUsing));
+						"%s", $this->method, $blType, $opTypeName, $ftUsing
+					)
+				);
 
 				$this->query = sprintf(
 					"SELECT r.guid, r.searchname
@@ -865,6 +874,7 @@ class ReleaseRemover
 		} else {
 			echo $this->pdo->log->error("No regular expressions were selected for blacklist removal. Make sure you have activated REGEXPs in Site Edit and you're specifying a valid ID.\n");
 		}
+
 		return true;
 	}
 
@@ -893,7 +903,8 @@ class ReleaseRemover
 			foreach ($allRegex as $regex) {
 
 				$regexSQL = sprintf("LEFT JOIN releasefiles rf ON r.id = rf.releaseid
-				WHERE rf.name {$this->regexp} %s ", $this->pdo->escapeString($regex['regex']));
+				WHERE rf.name {$this->regexp} %s ", $this->pdo->escapeString($regex['regex'])
+				);
 
 				if ($regexSQL === '') {
 					continue;
@@ -938,12 +949,14 @@ class ReleaseRemover
 
 			}
 		}
+
 		return true;
 	}
 
 	/**
 	 * Remove releases that contain .wmv files and Codec\Setup.exe files, aka that spam poster.
 	 * Thanks to dizant from nZEDb forums for parts of the sql query
+	 *
 	 * @return bool
 	 */
 	protected function removeCodecPoster()
@@ -979,6 +992,7 @@ class ReleaseRemover
 		if ($this->checkSelectQuery() === false) {
 			return $this->returnError();
 		}
+
 		return $this->deleteReleases();
 	}
 
@@ -1001,6 +1015,7 @@ class ReleaseRemover
 		}
 
 		$this->deletedCount += $deletedCount;
+
 		return true;
 	}
 
@@ -1019,9 +1034,11 @@ class ReleaseRemover
 			} else {
 				$this->error = '';
 			}
+
 			return false;
 		}
 		$this->result = $result;
+
 		return true;
 	}
 
@@ -1037,6 +1054,7 @@ class ReleaseRemover
 		// Check if the user wants to ignore the check.
 		if ($argument === 'ignore') {
 			$this->ignoreUserCheck = true;
+
 			return '';
 		}
 
@@ -1047,7 +1065,7 @@ class ReleaseRemover
 			$args[0] = $this->cleanSpaces($args[0]);
 			$args[1] = $this->cleanSpaces($args[1]);
 			$args[2] = $this->cleanSpaces($args[2]);
-			switch($args[0]) {
+			switch ($args[0]) {
 				case 'fromname':
 					switch ($args[1]) {
 						case 'equals':
@@ -1064,6 +1082,7 @@ class ReleaseRemover
 								$this->error = 'This group was not found in your database: ' . $args[2] . PHP_EOL;
 								break;
 							}
+
 							return ' AND group_id = ' . $group['id'];
 						case 'like':
 							$groups = $this->pdo->query('SELECT id FROM groups WHERE name ' . $this->formatLike($args[2], 'name'));
@@ -1076,6 +1095,7 @@ class ReleaseRemover
 								$gQuery .= $group['id'] . ',';
 							}
 							$gQuery = substr($gQuery, 0, strlen($gQuery) - 1) . ')';
+
 							return $gQuery;
 						default:
 							break;
@@ -1162,6 +1182,7 @@ class ReleaseRemover
 					}
 			}
 		}
+
 		return false;
 	}
 
@@ -1187,8 +1208,10 @@ class ReleaseRemover
 		$userInput = trim(fgets(fopen('php://stdin', 'r')));
 		if ($userInput !== 'yes') {
 			echo $this->pdo->log->primary('You typed: "' . $userInput . '", the program will exit.');
+
 			return false;
 		}
+
 		return true;
 	}
 
@@ -1218,6 +1241,7 @@ class ReleaseRemover
 		if (count($newString) > 1) {
 			$string = implode("%' AND {$type} {$this->like} '%", array_unique($newString));
 		}
+
 		return " {$this->like} '%" . $string . "%' ";
 	}
 
@@ -1235,6 +1259,7 @@ class ReleaseRemover
 			if ($this->echoCLI && $this->error !== '') {
 				echo $this->pdo->log->error($this->error);
 			}
+
 			return false;
 		}
 
