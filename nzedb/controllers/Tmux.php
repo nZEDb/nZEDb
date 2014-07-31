@@ -46,46 +46,6 @@ class Tmux
 		return $this->rows2Object($rows);
 	}
 
-	public function getConnectionsCounts(&$runVar)
-	{
-		$this->runVar = $runVar;
-
-		$this->runVar['connections']['primary']['active'] = $this->runVar['connections']['primary']['total'] =
-		$this->runVar['connections']['alternate']['active'] = $this->runVar['connections']['alternate']['total'] = 0;
-
-		$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . ":" . $this->runVar['connections']['port'] . " | grep -c ESTAB"));
-		$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip'] . ":" . $this->runVar['connections']['port']));
-		if ($this->runVar['constants']['alternate_nntp']) {
-			$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip_a'] . ":" . $this->runVar['connections']['port_a'] . " | grep -c ESTAB"));
-			$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip_a'] . ":" . $this->runVar['connections']['port_a']));
-		}
-		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
-				$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . ":https | grep -c ESTAB"));
-				$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip'] . ":https"));
-				if ($this->runVar['constants']['alternate_nntp']) {
-					$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip_a'] . ":https | grep -c ESTAB"));
-					$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip_a'] . ":https"));
-				}
-		}
-		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
-			$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['port'] . " | grep -c ESTAB"));
-			$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['port']));
-			if ($this->runVar['constants']['alternate_nntp']) {
-				$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['port_a'] . " | grep -c ESTAB"));
-				$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['port_a']));
-			}
-		}
-		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
-			$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . " | grep -c ESTAB"));
-			$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip']));
-			if ($this->runVar['constants']['alternate_nntp']) {
-				$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . " | grep -c ESTAB"));
-				$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip']));
-			}
-		}
-		return ($this->runVar['connections']);
-	}
-
 	public function getListOfPanes(&$runVar)
 	{
 		$this->runVar = $runVar;
@@ -333,14 +293,13 @@ class Tmux
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 5000 AND 5999 AND rageid = -1) AS processtvrage,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 2000 AND 2999 AND imdbid IS NULL) AS processmovies,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (3010, 3040, 3050) AND musicinfoid IS NULL) AS processmusic,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) +
-					(SELECT COUNT(*) FROM releases WHERE categoryid = 4050 AND gamesinfo_id = 0) AS processgames,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 1000 AND 1999 AND consoleinfoid IS NULL) AS processconsole,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid IN (" . $this->bookreqids . ") AND bookinfoid IS NULL) AS processbooks,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid = 4050 AND gamesinfo_id = 0) AS processgames,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0) AS processxxx,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -8 AND -1) AS processnfo";
 		$proc2 = "SELECT
-				(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.categoryid BETWEEN 4000 AND 4999 AND r.categoryid != 4050 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS apps,
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo,
 				(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work,
 				(SELECT COUNT(*) FROM groups WHERE active = 1) AS active_groups,
 				(SELECT COUNT(*) FROM groups WHERE name IS NOT NULL) AS all_groups";

@@ -5,64 +5,20 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 $t = new TmuxRun($pdo);
-
-$versions = \nzedb\utility\Utility::getValidVersionsFile();
-$git = new \nzedb\utility\Git();
-$version = $versions->versions->git->tag . 'r' . $git->commits();
+$to = new TmuxOutput($pdo);
 
 $runVar['paths']['misc'] = nZEDb_MISC;
 $db_name = DB_NAME;
 $dbtype = DB_SYSTEM;
 
 $runVar['constants'] = $pdo->queryOneRow($t->getConstantSettings());
-$runVar['constants']['pre_lim'] == '';
+$runVar['constants']['pre_lim'] = '';
 
 $runVar['commands']['python'] = ($t->command_exist("python3") ? 'python3 -OOu' : 'python -OOu');
 $runVar['commands']['php'] = ($t->command_exist("php5") ? 'php5' : 'php');
 
-if ($runVar['constants']['nntpproxy'] == 0) {
-	$runVar['connections']['port'] = NNTP_PORT;
-	$runVar['connections']['host'] = NNTP_SERVER;
-	$runVar['connections']['ip'] = gethostbyname($runVar['connections']['host']);
-	if ($runVar['constants']['alternate_nntp']) {
-		$runVar['connections']['port_a'] = NNTP_PORT_A;
-		$runVar['connections']['host_a'] = NNTP_SERVER_A;
-		$runVar['connections']['ip_a'] = gethostbyname($runVar['connections']['host_a']);
-	}
-} else {
-	$filename = $runVar['paths']['misc'] . "update/python/lib/nntpproxy.conf";
-	$fp = fopen($filename, "r") or die("Couldn't open $filename");
-	while (!feof($fp)) {
-		$line = fgets($fp);
-		if (preg_match('/"host": "(.+)",$/', $line, $match)) {
-			$runVar['connections']['host'] = $match[1];
-		}
-		if (preg_match('/"port": (.+),$/', $line, $match)) {
-			$runVar['connections']['port'] = $match[1];
-			break;
-		}
-	}
-
-	if ($runVar['constants']['alternate_nntp']) {
-		$filename = $runVar['paths']['misc'] . "update/python/lib/nntpproxy_a.conf";
-		$fp = fopen($filename, "r") or die("Couldn't open $filename");
-		while (!feof($fp)) {
-			$line = fgets($fp);
-			if (preg_match('/"host": "(.+)",$/', $line, $match)) {
-				$runVar['connections']['host_a'] = $match[1];
-			}
-			if (preg_match('/"port": (.+),$/', $line, $match)) {
-				$runVar['connections']['port_a'] = $match[1];
-				break;
-			}
-		}
-	}
-	$runVar['connections']['ip'] = gethostbyname($runVar['connections']['host']);
-	if ($runVar['constants']['alternate_nntp']) {
-		$runVar['connections']['ip_a'] = gethostbyname($runVar['connections']['host_a']);
-	}
-	unset($fp);
-}
+//get usenet connection info
+$runVar['connections'] = $to->getConnectionsInfo($runVar);
 
 //totals per category in db, results by parentID
 $catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category c, releases r WHERE r.categoryid = c.id GROUP BY c.parentid";
@@ -71,21 +27,15 @@ $catcntqry = "SELECT c.parentid AS parentid, COUNT(r.id) AS count FROM category 
 $runVar['timers']['timer1'] = $runVar['timers']['timer2'] = $runVar['timers']['timer3'] =
 $runVar['timers']['timer4'] = $runVar['timers']['timer5'] = time();
 
-$tmux_time = $split_time = $init_time = $proc1_time = $proc2_time = $proc3_time = $split1_time =
-$init1_time = $proc11_time = $proc21_time = $proc31_time = $tpg_count_time = $tpg_count_1_time = 0;
-
-$last_history = "";
+$runVar['timers']['query']['tmux_time'] = $runVar['timers']['query']['split_time'] = $runVar['timers']['query']['init_time'] = $runVar['timers']['query']['proc1_time'] =
+$runVar['timers']['query']['proc2_time'] = $runVar['timers']['query']['proc3_time'] = $runVar['timers']['query']['split1_time'] = $runVar['timers']['query']['init1_time'] =
+$runVar['timers']['query']['proc11_time'] = $runVar['timers']['query']['proc21_time'] = $runVar['timers']['query']['proc31_time'] = $runVar['timers']['query']['tpg_time'] =
+$runVar['timers']['query']['tpg1_time'] = 0;
 
 // Analyze tables
 printf($pdo->log->info("\nAnalyzing your tables to refresh your indexes."));
 $pdo->optimise(true, 'analyze');
 passthru('clear');
-
-$mask1 = $pdo->log->headerOver("%-18s") . " " . $pdo->log->tmuxOrange("%-48.48s");
-$mask2 = $pdo->log->headerOver("%-20s") . " " . $pdo->log->tmuxOrange("%-33.33s");
-$mask3 = $pdo->log->header("%-16.16s %25.25s %25.25s");
-$mask4 = $pdo->log->primaryOver("%-16.16s") . " " . $pdo->log->tmuxOrange("%25.25s %25.25s");
-$mask5 = $pdo->log->tmuxOrange("%-16.16s %25.25s %25.25s");
 
 $runVar['settings']['monitor'] = 0;
 $runVar['counts']['iterations'] = 1;
@@ -103,7 +53,7 @@ while ($runVar['counts']['iterations'] > 0) {
 	$timer01 = time();
 	// These queries are very fast, run every loop -- tmux and site settings
 	$runVar['settings'] = $pdo->queryOneRow($t->getMonitorSettings(), false);
-	$tmux_time = (time() - $timer01);
+	$runVar['timers']['query']['tmux_time'] = (time() - $timer01);
 
 	//run queries only after time exceeded, these queries can take awhile
 	if ($runVar['counts']['iterations'] == 1 || (time() - $runVar['timers']['timer2'] >= $runVar['settings']['monitor'] && $runVar['settings']['is_running'] == 1)) {
@@ -131,8 +81,8 @@ while ($runVar['counts']['iterations'] > 0) {
 			$runVar['counts']['now'][$splitkey] = $split;
 		}
 
-		$split_time = (time() - $timer02);
-		$split1_time = (time() - $timer01);
+		$runVar['timers']['query']['split_time'] = (time() - $timer02);
+		$runVar['timers']['query']['split1_time'] = (time() - $timer01);
 
 		$timer03 = time();
 		if ($pdo->dbSystem() === 'mysql') {
@@ -169,23 +119,23 @@ while ($runVar['counts']['iterations'] > 0) {
 			unset($initquery);
 		}
 
-		$init_time = (time() - $timer03);
-		$init1_time = (time() - $timer01);
+		$runVar['timers']['query']['init_time'] = (time() - $timer03);
+		$runVar['timers']['query']['init1_time'] = (time() - $timer01);
 
 		$timer04 = time();
 		$proc1res = $pdo->queryOneRow($t->proc_query(1, $runVar['constants']['book_reqids'], $runVar['constants']['request_hours'], $db_name), $t->rand_bool($runVar['counts']['iterations']));
-		$proc1_time = (time() - $timer04);
-		$proc11_time = (time() - $timer01);
+		$runVar['timers']['query']['proc1_time'] = (time() - $timer04);
+		$runVar['timers']['query']['proc11_time'] = (time() - $timer01);
 
 		$timer05 = time();
 		$proc2res = $pdo->queryOneRow($t->proc_query(2, $runVar['constants']['book_reqids'], $runVar['constants']['request_hours'], $db_name), $t->rand_bool($runVar['counts']['iterations']));
-		$proc2_time = (time() - $timer05);
-		$proc21_time = (time() - $timer01);
+		$runVar['timers']['query']['proc2_time'] = (time() - $timer05);
+		$runVar['timers']['query']['proc21_time'] = (time() - $timer01);
 
 		$timer06 = time();
 		$proc3res = $pdo->queryOneRow($t->proc_query(3, $runVar['constants']['book_reqids'], $runVar['constants']['request_hours'], $db_name), $t->rand_bool($runVar['counts']['iterations']));
-		$proc3_time = (time() - $timer06);
-		$proc31_time = (time() - $timer01);
+		$runVar['timers']['query']['proc3_time'] = (time() - $timer06);
+		$runVar['timers']['query']['proc31_time'] = (time() - $timer01);
 
 		$timer07 = time();
 		if ($runVar['constants']['tablepergroup'] == 1) {
@@ -261,8 +211,8 @@ while ($runVar['counts']['iterations'] > 0) {
 				//free up memory used by now stale data
 				unset($age, $run, $run1, $tables);
 
-				$tpg_count_time = (time() - $timer07);
-				$tpg_count_1_time = (time() - $timer01);
+				$runVar['timers']['query']['tpg_time'] = (time() - $timer07);
+				$runVar['timers']['query']['tpg1_time'] = (time() - $timer01);
 			}
 		}
 		$runVar['timers']['timer2'] = time();
@@ -327,16 +277,8 @@ while ($runVar['counts']['iterations'] > 0) {
 		$runVar['counts']['diff']['total_work'] = $runVar['counts']['now']['total_work'] - $runVar['counts']['start']['total_work'];
 	}
 
-	//reset monitor paths before assigning query values
-	$monitor_path = $monitor_path_a = $monitor_path_b = "";
-
-	// assign timers from tmux table
-	$monitor_path = $runVar['settings']['monitor_path'];
-	$monitor_path_a = $runVar['settings']['monitor_path_a'];
-	$monitor_path_b = $runVar['settings']['monitor_path_b'];
-
 	//get usenet connections
-	$runVar['connections'] = $t->getConnectionsCounts($runVar);
+	$runVar['connections'] = $to->getConnectionsCounts($runVar);
 
 	if ($runVar['settings']['compressed'] === '1') {
 		$mask2 = $pdo->log->headerOver("%-20s") . " " . $pdo->log->tmuxOrange("%-33.33s");
@@ -344,325 +286,30 @@ while ($runVar['counts']['iterations'] > 0) {
 		$mask2 = $pdo->log->alternateOver("%-20s") . " " . $pdo->log->tmuxOrange("%-33.33s");
 	}
 
-	//update display
+	//begin update display with screen clear
 	passthru('clear');
-	if ($runVar['settings']['is_running'] == 1) {
-		printf($mask2, "Monitor Running v$version [" . $runVar['constants']['sqlpatch'] . "]: ", $t->relativeTime($runVar['timers']['timer1']));
-	} else {
-		printf($mask2, "Monitor Off v$version [" . $runVar['constants']['sqlpatch'] . "]: ", $t->relativeTime($runVar['timers']['timer1']));
-	}
-	printf($mask1,
-			"USP Connections:",
-			sprintf(
-				"%d active (%d total) - %s:%d)",
-				$runVar['connections']['primary']['active'],
-				$runVar['connections']['primary']['total'],
-				$runVar['connections']['host'],
-				$runVar['connections']['port']
-			)
-	);
-	if ($runVar['constants']['alternate_nntp']) {
-		printf($mask1,
-				"USP Alternate:",
-			sprintf(
-				"%d active (%d total) - %s:%d)",
-				$runVar['connections']['alternate']['active'],
-				$runVar['connections']['alternate']['total'],
-				$runVar['connections']['host_a'],
-				$runVar['connections']['port_a']
-			)
-		);
-	}
 
-	printf($mask1,
-			"Newest Release:",
-			$runVar['timers']['newOld']['newestrelname']
-	);
-	printf($mask1,
-			"Release Added:",
-			sprintf(
-				"%s ago",
-				$t->relativeTime($runVar['timers']['newOld']['newestrelease'])
-			)
-	);
-	printf($mask1,
-			"Predb Updated:",
-			sprintf(
-				"%s ago",
-				$t->relativeTime($runVar['timers']['newOld']['newestpre'])
-			)
-	);
-	printf($mask1,
-			sprintf(
-				"Collection Age[%d]:",
-				$runVar['constants']['delaytime']
-			),
-			sprintf(
-				"%s ago",
-				$t->relativeTime($runVar['timers']['newOld']['oldestcollection'])
-			)
-	);
-	printf($mask1,
-			"Parts in Repair:",
-			number_format($runVar['counts']['now']['partrepair_table'])
-	);
-	if (($runVar['settings']['post'] == "1" || $runVar['settings']['post'] == "3") && $runVar['constants']['sequential'] != 2) {
-		printf($mask1,
-				"Postprocess:",
-				"stale for " . $t->relativeTime($runVar['timers']['timer3'])
-		);
-	}
-	echo PHP_EOL;
+	//display monitor header
+	$to->displayOutput(1, $runVar);
 
 	if ($runVar['settings']['monitor'] > 0) {
-
-		printf($mask3, "Collections", "Binaries", "Parts");
-		printf($mask3, "======================================", "=========================", "======================================");
-		printf($mask5,
-				number_format($runVar['counts']['now']['collections_table']),
-				number_format($runVar['counts']['now']['binaries_table']),
-				number_format($runVar['counts']['now']['parts_table'])
-		);
-
-		if (((isset($monitor_path)) && (file_exists($monitor_path))) || ((isset($monitor_path_a)) && (file_exists($monitor_path_a))) || ((isset($monitor_path_b)) && (file_exists($monitor_path_b)))) {
-			echo "\n";
-			printf($mask3, "File System", "Used", "Free");
-			printf($mask3, "======================================", "=========================", "======================================");
-			if (isset($monitor_path) && $monitor_path != "" && file_exists($monitor_path)) {
-				$disk_use = $t->decodeSize(disk_total_space($monitor_path) - disk_free_space($monitor_path));
-				$disk_free = $t->decodeSize(disk_free_space($monitor_path));
-				if (basename($monitor_path) == "") {
-					$show = "/";
-				} else {
-					$show = basename($monitor_path);
-				}
-				printf($mask4, $show, $disk_use, $disk_free);
-			}
-			if (isset($monitor_path_a) && $monitor_path_a != "" && file_exists($monitor_path_a)) {
-				$disk_use = $t->decodeSize(disk_total_space($monitor_path_a) - disk_free_space($monitor_path_a));
-				$disk_free = $t->decodeSize(disk_free_space($monitor_path_a));
-				if (basename($monitor_path_a) == "") {
-					$show = "/";
-				} else {
-					$show = basename($monitor_path_a);
-				}
-				printf($mask4, $show, $disk_use, $disk_free);
-			}
-			if (isset($monitor_path_b) && $monitor_path_b != "" && file_exists($monitor_path_b)) {
-				$disk_use = $t->decodeSize(disk_total_space($monitor_path_b) - disk_free_space($monitor_path_b));
-				$disk_free = $t->decodeSize(disk_free_space($monitor_path_b));
-				if (basename($monitor_path_b) == "") {
-					$show = "/";
-				} else {
-					$show = basename($monitor_path_b);
-				}
-				printf($mask4, $show, $disk_use, $disk_free);
-			}
-		}
-		echo "\n";
-		printf($mask3, "Category", "In Process", "In Database");
-		printf($mask3, "======================================", "=========================", "======================================");
-		printf($mask4, "predb",
-			sprintf(
-				"%s(%d)",
-				number_format($runVar['counts']['now']['predb'] - $runVar['counts']['now']['distinct_predb_matched']),
-				$runVar['counts']['diff']['distinct_predb_matched']
-			),
-			sprintf(
-				"%s(%d%%)",
-				number_format($runVar['counts']['now']['predb_matched']),
-				$runVar['counts']['percent']['predb_matched']
-			)
-		);
-		printf($mask4, "requestID",
-			sprintf(
-				"%s(%d)",
-				number_format($runVar['counts']['now']['requestid_inprogress']),
-				$runVar['counts']['diff']['requestid_inprogress']
-			),
-			sprintf(
-				"%s(%d%%)",
-				number_format($runVar['counts']['now']['requestid_matched']),
-				$runVar['counts']['percent']['requestid_matched']
-			)
-		);
-		printf($mask4, "NFO's",
-			sprintf(
-				"%s(%d)",
-				number_format($runVar['counts']['now']['processnfo']),
-				$runVar['counts']['diff']['processnfo']
-			),
-			sprintf(
-				"%s(%d%%)",
-				number_format($runVar['counts']['now']['nfo']),
-				$runVar['counts']['percent']['nfo']
-			)
-		);
-		printf($mask4, "Games(1000)",
-			sprintf(
-				"%s(%d)",
-				number_format($runVar['counts']['now']['processgames']),
-				$runVar['counts']['diff']['processgames']
-			),
-			sprintf(
-				"%s(%d%%)",
-				number_format($runVar['counts']['now']['console']),
-				$runVar['counts']['percent']['console']
-			)
-		);
-		printf($mask4, "Movie(2000)",
-			sprintf(
-				"%s(%d)",
-				number_format($runVar['counts']['now']['processmovies']),
-				$runVar['counts']['diff']['processmovies']
-			),
-			sprintf(
-				"%s(%d%%)",
-				number_format($runVar['counts']['now']['movies']),
-				$runVar['counts']['percent']['movies']
-			)
-		);
-		printf($mask4, "Audio(3000)",
-			sprintf(
-				"%s(%d)",
-				number_format($runVar['counts']['now']['processmusic']),
-				$runVar['counts']['diff']['processmusic']
-			),
-			sprintf(
-				"%s(%d%%)",
-				number_format($runVar['counts']['now']['audio']),
-				$runVar['counts']['percent']['audio']
-			)
-		);
-		printf($mask4, "Apps(4000)",
-			sprintf(
-				"%s(%d)",
-				number_format($runVar['counts']['now']['apps']),
-				$runVar['counts']['diff']['apps']
-			),
-			sprintf(
-				"%s(%d%%)",
-				number_format($runVar['counts']['now']['pc']),
-				$runVar['counts']['percent']['pc']
-			)
-		);
-		printf($mask4, "TV(5000)",
-			sprintf(
-				"%s(%d)",
-				number_format($runVar['counts']['now']['processtvrage']),
-				$runVar['counts']['diff']['processtvrage']
-			),
-			sprintf(
-				"%s(%d%%)",
-				number_format($runVar['counts']['now']['tv']),
-				$runVar['counts']['percent']['tv']
-			)
-		);
-		printf($mask4, "xXx(6000)",
-			sprintf(
-				"%s(%d)",
-				number_format($runVar['counts']['now']['processxxx']),
-				$runVar['counts']['diff']['processxxx']
-			),
-			sprintf(
-				"%s(%d%%)",
-				number_format($runVar['counts']['now']['xxx']),
-				$runVar['counts']['percent']['xxx']
-			)
-		);
-		printf($mask4, "Misc(7000)",
-			sprintf(
-				"%s(%d)",
-				number_format($runVar['counts']['now']['work']),
-				$runVar['counts']['diff']['work']
-			),
-			sprintf(
-				"%s(%d%%)",
-				number_format($runVar['counts']['now']['misc']),
-				$runVar['counts']['percent']['misc']
-			)
-		);
-		printf($mask4, "Books(8000)",
-			sprintf(
-				"%s(%d)",
-				number_format($runVar['counts']['now']['processbooks']),
-				$runVar['counts']['diff']['processbooks']
-			),
-			sprintf(
-				"%s(%d%%)",
-				number_format($runVar['counts']['now']['books']),
-				$runVar['counts']['percent']['books']
-			)
-		);
-		printf($mask4, "Total",
-			sprintf(
-				"%s(%s)",
-				number_format($runVar['counts']['now']['total_work']),
-				number_format($runVar['counts']['diff']['total_work'])
-			),
-			sprintf(
-				"%s(%s)",
-				number_format($runVar['counts']['now']['releases']),
-				number_format($runVar['counts']['diff']['releases'])
-			)
-		);
-		echo "\n";
-		printf($mask3, "Groups", "Active", "Backfill");
-		printf($mask3, "======================================", "=========================", "======================================");
-		if ($runVar['settings']['backfilldays'] == "1") {
-			printf($mask4, "Activated",
-				sprintf(
-					"%d(%d)",
-					$runVar['counts']['now']['active_groups'],
-					$runVar['counts']['now']['all_groups']
-				),
-				sprintf(
-					"%d(%d)",
-					$runVar['counts']['now']['backfill_groups_days'],
-					$runVar['counts']['now']['all_groups']
-				)
-			);
-		} else {
-			printf($mask4, "Activated",
-				sprintf(
-					"%d(%d)",
-					$runVar['counts']['now']['active_groups'],
-					$runVar['counts']['now']['all_groups']
-				),
-				sprintf(
-					"%d(%d)",
-					$runVar['counts']['now']['backfill_groups_date'],
-					$runVar['counts']['now']['all_groups']
-				)
-			);
-		}
+		//display monitor body
+		$to->displayOutput(2, $runVar);
 	}
 
 	if ($runVar['settings']['show_query'] == 1) {
-		echo PHP_EOL;
-		printf($mask3, "Query Block", "Time", "Cumulative");
-		printf($mask3, "======================================", "=========================", "======================================");
-		printf($mask4, "Combined", $tmux_time . " " . $split_time . " " . $init_time . " " . $proc1_time . " " . $proc2_time . " " . $proc3_time . " " . $tpg_count_time, $tmux_time . " " . $split1_time . " " . $init1_time . " " . $proc11_time . " " . $proc21_time . " " . $proc31_time . " " . $tpg_count_1_time);
-
-		$pieces = explode(" ", $pdo->getAttribute(PDO::ATTR_SERVER_INFO));
-		echo $pdo->log->primaryOver("\nThreads = ") .
-					$pdo->log->headerOver($pieces[4]) . $pdo->log->primaryOver(', Opens = ') .
-					$pdo->log->headerOver($pieces[14]) . $pdo->log->primaryOver(', Tables = ') .
-					$pdo->log->headerOver($pieces[22]) . $pdo->log->primaryOver(', Slow = ') .
-					$pdo->log->headerOver($pieces[11]) . $pdo->log->primaryOver(', QPS = ') .
-					$pdo->log->header($pieces[28]);
+		$to->displayOutput(3, $runVar);
 	}
 
 	//get list of panes by name
 	$runVar['panes'] = $t->getListOfPanes($runVar);
 
-	(nZEDb_DEBUG ? $show_time = "/usr/bin/time" : $show_time = "");
+	$show_time = (nZEDb_DEBUG ? "/usr/bin/time" : "");
 
 	$runVar['commands']['_php'] = $show_time . " nice -n{$runVar['settings']['niceness']} {$runVar['commands']['php']}";
 	$runVar['commands']['_phpn'] = "nice -n{$runVar['settings']['niceness']} {$runVar['commands']['php']}";
-
 	$runVar['commands']['_python'] = $show_time . " nice -n{$runVar['settings']['niceness']} {$runVar['commands']['python']}";
-	$_pythonn = "nice -n{$runVar['settings']['niceness']} {$runVar['commands']['python']}";
+	$runVar['commands']['_sleep'] = "{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/tmux/bin/showsleep.php";
 
 	if (($runVar['settings']['postprocess_kill'] < $runVar['counts']['now']['total_work']) && ($runVar['settings']['postprocess_kill'] != 0)) {
 		$runVar['killswitch']['pp'] = true;
@@ -681,8 +328,6 @@ while ($runVar['counts']['iterations'] > 0) {
 	} else if ($runVar['settings']['binaries_run'] == 2) {
 		$runVar['scripts']['binaries'] = "{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/binaries_safe_threaded.py";
 	}
-
-	$runVar['commands']['_sleep'] = "{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/tmux/bin/showsleep.php";
 
 	if ($runVar['settings']['releases_run'] != 0) {
 		if ($runVar['constants']['tablepergroup'] == 0) {
@@ -779,16 +424,22 @@ while ($runVar['counts']['iterations'] > 0) {
 
 			//run post process amazon
 			if (($runVar['settings']['post_amazon'] == 1) && (($runVar['counts']['now']['processmusic'] > 0) || ($runVar['counts']['now']['processbooks'] > 0) ||
-					($runVar['counts']['now']['processgames'] > 0) || ($runVar['counts']['now']['apps'] > 0) || ($runVar['counts']['now']['processxxx'] > 0)) && (($runVar['settings']['processbooks'] != 0) || ($runVar['settings']['processmusic'] != 0) || ($runVar['settings']['processgames'] != 0) || ($runVar['settings']['processxxx'] != 0))) {
+					($runVar['counts']['now']['processconsole'] > 0) || ($runVar['counts']['now']['processgames'] > 0) || ($runVar['counts']['now']['processxxx'] > 0)) &&
+						(($runVar['settings']['processbooks'] != 0) || ($runVar['settings']['processmusic'] != 0) || ($runVar['settings']['processgames'] != 0) || ($runVar['settings']['processxxx'] != 0))) {
 				//run postprocess_releases amazon
 				$log = $t->writelog($runVar['panes']['one'][1]);
 				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:1.1 ' \
-						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/postprocess.php amazon true $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer_amazon']}' 2>&1 1> /dev/null"
+						{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/postprocess.php amazon true $log; \
+						date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['post_timer_amazon']}' 2>&1 1> /dev/null"
 				);
+
 			} else if (($runVar['settings']['post_amazon'] == 1) && ($runVar['settings']['processbooks'] == 0) && ($runVar['settings']['processmusic'] == 0) && ($runVar['settings']['processgames'] == 0)) {
 				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:1.1 'echo \"\033[38;5;${color}m\n{$runVar['panes']['one'][1]} has been disabled/terminated in Admin Disable Music/Books/Console/XXX\"'");
-			} else if (($runVar['settings']['post_amazon'] == 1) && ($runVar['counts']['now']['processmusic'] == 0) && ($runVar['counts']['now']['processbooks'] == 0) && ($runVar['counts']['now']['processgames'] == 0) && ($runVar['counts']['now']['apps'] == 0) && ($runVar['counts']['now']['processxxx'] == 0)) {
+
+			} else if (($runVar['settings']['post_amazon'] == 1) && ($runVar['counts']['now']['processmusic'] == 0) &&
+					($runVar['counts']['now']['processbooks'] == 0) && ($runVar['counts']['now']['processconsole'] == 0) &&
+						($runVar['counts']['now']['processgames'] == 0) && ($runVar['counts']['now']['processxxx'] == 0)) {
 				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:1.1 'echo \"\033[38;5;${color}m\n{$runVar['panes']['one'][1]} has been disabled/terminated by No Music/Books/Console/Games/XXX to process\"'");
 			} else {
@@ -901,11 +552,11 @@ while ($runVar['counts']['iterations'] > 0) {
 			$t->run_sharing($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $spane, $runVar['commands']['_sleep'], $runVar['settings']['sharing_timer'], $runVar);
 		}
 	} else if ($runVar['constants']['sequential'] == 0) {
-		$t->notRunningNonSeq();
+		$t->notRunningNonSeq($runVar);
 	} else if ($runVar['constants']['sequential'] == 1) {
-		$t->notRunningBasicSeq();
+		$t->notRunningBasicSeq($runVar);
 	} else if ($runVar['constants']['sequential'] == 2) {
-		$t->notRunningCompSeq();
+		$t->notRunningCompSeq($runVar);
 	}
 
 	$runVar['counts']['iterations']++;

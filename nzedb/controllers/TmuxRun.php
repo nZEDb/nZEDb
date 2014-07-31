@@ -280,7 +280,7 @@ class TmuxRun extends Tmux
 		return $this->runVar['timers']['timer4'];
 	}
 
-	public function notRunningNonSeq(&$runVar)
+	public function notRunningNonSeq($runVar)
 	{
 		$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 		for ($g = 1; $g <= 4; $g++) {
@@ -294,7 +294,7 @@ class TmuxRun extends Tmux
 		}
 	}
 
-	public function notRunningBasicSeq(&$runVar)
+	public function notRunningBasicSeq($runVar)
 	{
 		$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 		for ($g = 1; $g <= 2; $g++) {
@@ -308,7 +308,7 @@ class TmuxRun extends Tmux
 		}
 	}
 
-	public function notRunningCompSeq(&$runVar)
+	public function notRunningCompSeq($runVar)
 	{
 		$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 		for ($g = 1; $g <= 2; $g++) {
