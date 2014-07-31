@@ -272,11 +272,10 @@ class TmuxRun extends Tmux
 	protected function _runNonBackfill($runVar)
 	{
 		//run backfill
-		if ($runVar['settings']['progressive'] == 1 && floor($runVar['counts']['collections']['rowCount'] / 500) > $runVar['settings']['back_timer']) {
-			$backsleep = floor($runVar['counts']['collections']['rowCount'] / 500);
-		} else {
-			$backsleep = $runVar['settings']['back_timer'];
-		}
+		$backsleep = ($runVar['settings']['progressive'] == 1 && floor($runVar['counts']['now']['collections_table'] / 500) > $runVar['settings']['back_timer']
+					? floor($runVar['counts']['now']['collections_table'] / 500);
+					: $runVar['settings']['back_timer']
+		);
 
 		if (($runVar['settings']['backfill'] == 4) && ($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
 			$log = $this->writelog($runVar['panes']['zero'][3]);
