@@ -241,6 +241,7 @@ class ADE
 				}
 			}
 		}
+
 		array_shift($this->res['productinfo']);
 		array_shift($this->res['productinfo']);
 		$this->res['productinfo'] = array_chunk($this->res['productinfo'], 2, false);
@@ -280,20 +281,15 @@ class ADE
 			return false;
 		} else {
 			$this->html->load($this->response);
-			unset($this->response);
-			$ret = $this->html->find("span.sub strong", 0);
-			$ret = (int)$ret->plaintext;
-			if (isset($ret)) {
-				if ($ret >= 1) {
-					$ret = $this->html->find("a.boxcover", 0);
+			if ($ret = $this->html->find("a.boxcover", 0)){
 					$title = $ret->title;
 					$ret = (string)trim($ret->href);
 					similar_text($this->searchterm, $title, $p);
 					if ($p >= 90) {
 						$this->found = true;
 						$this->urlfound = $ret;
-						$this->directurl = self::ADE.$ret;
-						$this->title = $title;
+						$this->directurl = self::ADE . $ret;
+						$this->title = trim($title);
 						unset($ret);
 						$this->html->clear();
 						$this->_getadeurl($this->urlfound);
@@ -306,9 +302,6 @@ class ADE
 				} else {
 					return false;
 				}
-			} else {
-				return false;
-			}
 		}
 	}
 

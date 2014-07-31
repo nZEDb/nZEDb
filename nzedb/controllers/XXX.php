@@ -388,7 +388,7 @@ class XXX
 
 		$iafd = new IAFD();
 		$iafd->searchterm = $xxxmovie;
-		if($iafd->findme() === true){
+		if($iafd->findme() !== false){
 		switch($iafd->classfound){
 			case "ade":
 				$mov = new ADE();
@@ -397,7 +397,7 @@ class XXX
 				$res['title'] = $iafd->title;
 				$res['directurl'] = $iafd->directurl;
 				$this->whichclass = $iafd->classfound;
-				$this->c->doEcho($this->c->primary("Fetching XXX info from: Adult DVD Empire"));
+				$this->c->doEcho($this->c->primary("Fetching XXX info from IAFD: Adult DVD Empire"));
 				break;
 			case "hm":
 				$mov = new Hotmovies();
@@ -406,7 +406,7 @@ class XXX
 				$res['title'] = $iafd->title;
 				$res['directurl'] = $iafd->directurl;
 				$this->whichclass = $iafd->classfound;
-				$this->c->doEcho($this->c->primary("Fetching XXX info from: Hot Movies"));
+				$this->c->doEcho($this->c->primary("Fetching XXX info from IAFD: Hot Movies"));
 				break;
 			default:
 				$res = false;
@@ -416,32 +416,43 @@ class XXX
 		$res = false;
 		}
 
+		if ($res === false) {
+			$this->whichclass = "aebn";
+			$mov = new AEBN();
+			$mov->cookie = $this->cookie;
+			$mov->searchterm = $xxxmovie;
+			$res = $mov->search();
 		if($res === false){
-		$mov = new ADE();
-		$mov->searchterm = $xxxmovie;
-		$res = $mov->search();
-		$this->whichclass = "ade";
+			$this->whichclass = "ade";
+			$mov = new ADE();
+			$mov->searchterm = $xxxmovie;
+			$res = $mov->search();
+		}
+
 		if ($res === false) {
 			$this->whichclass = "hm";
-			// IF no result from Adultdvdempire check hotmovies
 			$mov = new Hotmovies();
 			$mov->cookie = $this->cookie;
 			$mov->searchterm = $xxxmovie;
 			$res = $mov->search();
 		}
+
 		if($res === false){
 			$this->whichclass = "pop";
-			// IF no result from Adultdvdempire and hotmovies check popporn
 			$mov = new Popporn();
 			$mov->cookie = $this->cookie;
 			$mov->searchterm = $xxxmovie;
 			$res = $mov->search();
 		}
+
 		// If a result is true getall information.
 		if ($res !== false) {
 			if ($this->echooutput) {
 				$fromstr = null;
 				switch($this->whichclass){
+					case "aebn":
+					$fromstr = "AEBN";
+						break;
 					case "ade":
 					$fromstr = "Adult DVD Empire";
 						break;
@@ -462,8 +473,7 @@ class XXX
 			// Nothing was found, go ahead and set to -2 :(
 			return false;
 		}
-		}
-
+	}
 		$mov = array();
 
 		$mov['trailers'] = (isset($res['trailers'])) ? serialize($res['trailers']) : '';

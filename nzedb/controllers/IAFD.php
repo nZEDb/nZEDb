@@ -94,6 +94,9 @@ class IAFD {
 			if($ret = $this->html->find("div#moviedata, h2, dt", 0)){
 			if($ret->find("h2",0)){
 				$firsttitle = $ret->find("h2",0)->innertext;
+				if(preg_match("/Movie Titles/",$firsttitle)){
+					return false;
+				}
 				}
 			if($ret->find("dt",0)){
 			    $secondtitle = $ret->find("dd", 0)->innertext;
@@ -102,14 +105,14 @@ class IAFD {
 				if(isset($secondtitle) OR isset($firsttitle)){
 					$firsttitle = preg_replace("/\(([0-9]+)\)/","",$firsttitle);
 					$secondtitle = preg_replace("/\(([0-9]+)\)/", "", $secondtitle);
-					similar_text($this->searchterm, $firsttitle, $p);
+					similar_text($this->searchterm, trim($firsttitle), $p);
 					if ($p >= 90) {
-						$this->title = $firsttitle;
+						$this->title = trim($firsttitle);
 						return true;
 					} else {
-						similar_text($this->searchterm, $secondtitle, $p);
+						similar_text($this->searchterm, trim($secondtitle), $p);
 						if($p >= 90) {
-							$this->title = $secondtitle;
+							$this->title = trim($secondtitle);
 							return true;
 						}else{
 							return false;
