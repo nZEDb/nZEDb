@@ -1,5 +1,7 @@
 <?php
 
+use nzedb\db\Settings;
+
 /**
  * Tmux output functions for printing monitor data
  *
@@ -9,17 +11,11 @@ class TmuxOutput extends Tmux
 {
 
 	/**
-	 * protected array
+	 * @param $pdo Class instances
 	 */
-	protected $runVar = array();
-
-	/**
-	 * @param $pdo Class instances / Echo to cli?
-	 */
-	public function __construct($pdo)
+	public function __construct(Settings $pdo = null)
 	{
-		$this->pdo = $pdo;
-		parent::__construct($this->pdo);
+		parent::__construct($pdo);
 	}
 
 	public function displayOutput($section, $runVar)
@@ -67,8 +63,8 @@ class TmuxOutput extends Tmux
 				"USP Connections:",
 				sprintf(
 					"%d active (%d total) - %s:%d)",
-					$runVar['connections']['primary']['active'],
-					$runVar['connections']['primary']['total'],
+					$runVar['conncounts']['primary']['active'],
+					$runVar['conncounts']['primary']['total'],
 					$runVar['connections']['host'],
 					$runVar['connections']['port']
 				)
@@ -78,8 +74,8 @@ class TmuxOutput extends Tmux
 					"USP Alternate:",
 					sprintf(
 						"%d active (%d total) - %s:%d)",
-						$runVar['connections']['alternate']['active'],
-						$runVar['connections']['alternate']['total'],
+						$runVar['conncounts']['alternate']['active'],
+						$runVar['conncounts']['alternate']['total'],
 						$runVar['connections']['host_a'],
 						$runVar['connections']['port_a']
 					)
@@ -427,95 +423,5 @@ class TmuxOutput extends Tmux
 	{
 		$masks = $this->_getColorsMasks($compressed);
 		printf($masks[3], "======================================", "=========================", "======================================");
-	}
-
-	public function getConnectionsInfo($runVar)
-	{
-		if ($runVar['constants']['nntpproxy'] == 0) {
-			$runVar['connections']['port'] = NNTP_PORT;
-			$runVar['connections']['host'] = NNTP_SERVER;
-			$runVar['connections']['ip'] = gethostbyname($runVar['connections']['host']);
-			if ($runVar['constants']['alternate_nntp']) {
-				$runVar['connections']['port_a'] = NNTP_PORT_A;
-				$runVar['connections']['host_a'] = NNTP_SERVER_A;
-				$runVar['connections']['ip_a'] = gethostbyname($runVar['connections']['host_a']);
-			}
-		} else {
-			$filename = $runVar['paths']['misc'] . "update/python/lib/nntpproxy.conf";
-			$fp = fopen($filename, "r") or die("Couldn't open $filename");
-			while (!feof($fp)) {
-				$line = fgets($fp);
-				if (preg_match('/"host": "(.+)",$/', $line, $match)) {
-					$runVar['connections']['host'] = $match[1];
-				}
-				if (preg_match('/"port": (.+),$/', $line, $match)) {
-					$runVar['connections']['port'] = $match[1];
-					break;
-				}
-			}
-			if ($runVar['constants']['alternate_nntp']) {
-				$filename = $runVar['paths']['misc'] . "update/python/lib/nntpproxy_a.conf";
-				$fp = fopen($filename, "r") or die("Couldn't open $filename");
-				while (!feof($fp)) {
-					$line = fgets($fp);
-					if (preg_match('/"host": "(.+)",$/', $line, $match)) {
-						$runVar['connections']['host_a'] = $match[1];
-					}
-					if (preg_match('/"port": (.+),$/', $line, $match)) {
-						$runVar['connections']['port_a'] = $match[1];
-						break;
-					}
-				}
-			}
-			$runVar['connections']['ip'] = gethostbyname($runVar['connections']['host']);
-			if ($runVar['constants']['alternate_nntp']) {
-				$runVar['connections']['ip_a'] = gethostbyname($runVar['connections']['host_a']);
-			}
-		}
-		return $runVar['connections'];
-	}
-
-	public function getConnectionsCounts($runVar)
-	{
-		$runVar['connections']['primary']['active'] = $runVar['connections']['primary']['total'] =
-		$runVar['connections']['alternate']['active'] = $runVar['connections']['alternate']['total'] = 0;
-
-		$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . ":" . $runVar['connections']['port'] . " | grep -c ESTAB"));
-		$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip'] . ":" . $runVar['connections']['port']));
-		if ($runVar['constants']['alternate_nntp'] == 1) {
-			$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip_a'] . ":" . $runVar['connections']['port_a'] . " | grep -c ESTAB"));
-			$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip_a'] . ":" . $runVar['connections']['port_a']));
-		}
-		if ($runVar['connections']['primary']['active'] == 0 && $runVar['connections']['primary']['total'] == 0
-					&& $runVar['connections']['alternate']['active'] == 0 && $runVar['connections']['alternate']['total'] == 0
-						&& $runVar['connections']['port'] != $runVar['connections']['port_a']) {
-				$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . ":https | grep -c ESTAB"));
-				$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip'] . ":https"));
-				if ($runVar['constants']['alternate_nntp'] == 1) {
-					$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip_a'] . ":https | grep -c ESTAB"));
-					$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip_a'] . ":https"));
-				}
-		}
-		if ($runVar['connections']['primary']['active'] == 0 && $runVar['connections']['primary']['total'] == 0
-					&& $runVar['connections']['alternate']['active'] == 0 && $runVar['connections']['alternate']['total'] == 0
-						&& $runVar['connections']['port'] != $runVar['connections']['port_a']) {
-			$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['port'] . " | grep -c ESTAB"));
-			$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['port']));
-			if ($runVar['constants']['alternate_nntp'] == 1) {
-				$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['port_a'] . " | grep -c ESTAB"));
-				$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['port_a']));
-			}
-		}
-		if ($runVar['connections']['primary']['active'] == 0 && $runVar['connections']['primary']['total'] == 0
-					&& $runVar['connections']['alternate']['active'] == 0 && $runVar['connections']['alternate']['total'] == 0
-						&& $runVar['connections']['port'] != $runVar['connections']['port_a']) {
-			$runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . " | grep -c ESTAB"));
-			$runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip']));
-			if ($runVar['constants']['alternate_nntp'] == 1) {
-				$runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $runVar['connections']['ip'] . " | grep -c ESTAB"));
-				$runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $runVar['connections']['ip']));
-			}
-		}
-		return ($runVar['connections']);
 	}
 }
