@@ -22,7 +22,7 @@ $nntpproxy = $pdo->getSetting('nntpproxy');
 if ($nntpproxy === '0') {
 	exit();
 } else {
-	$modules = array("nntp", "socketpool");
+	$modules = array("socketpool");
 	foreach ($modules as &$value) {
 		if (!python_module_exist($value)) {
 			exit($pdo->log->error("NNTP Proxy requires " . $value . " python module but it's not installed. Aborting."));
