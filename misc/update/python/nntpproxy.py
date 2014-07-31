@@ -232,7 +232,7 @@ if __name__ == "__main__":
         retry_max=3,
         retry_delay=1,
         timeout=-1,
-        max_lifetime=30.,
+        max_lifetime=30000.,
         max_size=int(config["pool"]["size"]),
         options=config["usenet"]
     )
