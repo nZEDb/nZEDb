@@ -17,7 +17,7 @@ $consoletools = new ConsoleTools(['ColorCLI' => $this->pdo->cli]);
 $DoPartRepair = ($pdo->getSetting('partrepair') == '0') ? false : true;
 
 if ((!isset($argv[1])) || $argv[1] != 'true') {
-	exit($$this->pdo->cli->error("\nMandatory argument missing\n\n"
+	exit($this->pdo->cli->error("\nMandatory argument missing\n\n"
 			. "This script will allow you to move from single collections/binaries/parts tables to TPG without having to run reset_truncate.\n"
 			. "Please STOP all update scripts before running this script.\n\n"
 			. "Use the following options to run:\n"
