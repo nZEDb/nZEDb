@@ -12,7 +12,7 @@ if (!isset($argv[1])) {
 }
 
 $consoleTools = new ConsoleTools(['ColorCLI' => $pdo->log]);
-$binaries = new Binaries(['Settings' => $pdo, 'ColorCLI' => $pdo->log]);
+$binaries = new Binaries(['Settings' => $pdo]);
 $crosspostt = $pdo->getSetting('crossposttime');
 $crosspostt = (!empty($crosspostt)) ? $crosspostt : 2;
 $releasecleaning = new ReleaseCleaning($pdo);

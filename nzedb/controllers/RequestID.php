@@ -20,19 +20,17 @@ abstract class RequestID
 		$defaults = [
 			'Echo'         => true,
 			'Categorize'   => null,
-			'ColorCLI'     => null,
 			'ConsoleTools' => null,
 			'Groups'       => null,
 			'Settings'     => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->echoOutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->category = ($defaults['Categorize'] instanceof Categorize ? $defaults['Categorize'] : new Categorize(['Settings' => $this->pdo]));
-		$this->groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
-		$this->colorCLI = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
-		$this->consoleTools = ($defaults['ConsoleTools'] instanceof ConsoleTools ? $defaults['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->colorCLI]));
+		$this->echoOutput = ($options['Echo'] && nZEDb_ECHOCLI);
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->consoleTools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
 	}
 
 	/**
@@ -66,15 +64,15 @@ abstract class RequestID
 
 		if ($this->_releases !== false && $this->_releases->rowCount() > 0) {
 			$this->_totalReleases = $this->_releases->rowCount();
-			$this->colorCLI->doEcho($this->colorCLI->primary('Processing ' . $this->_totalReleases . " releases for RequestID's."));
+			$this->pdo->log->doEcho($this->pdo->log->primary('Processing ' . $this->_totalReleases . " releases for RequestID's."));
 			$renamed = $this->_processReleases();
 			if ($this->echoOutput) {
-				echo $this->colorCLI->header(
+				echo $this->pdo->log->header(
 					"\nRenamed " . number_format($renamed) . " releases in " . $this->consoleTools->convertTime(time() - $startTime) . "."
 				);
 			}
 		} elseif ($this->echoOutput) {
-			$this->colorCLI->doEcho($this->colorCLI->primary("No RequestID's to process."));
+			$this->pdo->log->doEcho($this->pdo->log->primary("No RequestID's to process."));
 		}
 
 		return $renamed;

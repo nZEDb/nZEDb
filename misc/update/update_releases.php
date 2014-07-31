@@ -5,7 +5,7 @@ $pdo = new \nzedb\db\Settings();
 
 if (isset($argv[2]) && $argv[2] === 'true') {
 	// Create the connection here and pass
-	$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $pdo->log]);
+	$nntp = new NNTP(['Settings' => $pdo]);
 	if ($nntp->doConnect() !== true) {
 		exit($pdo->log->error("Unable to connect to usenet."));
 	}
@@ -17,7 +17,7 @@ if ($pdo->getSetting('tablepergroup') === 1) {
 $groupName = isset($argv[3]) ? $argv[3] : '';
 if (isset($argv[1]) && isset($argv[2])) {
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
-	$releases = new ProcessReleases(['Settings' => $pdo, 'ColorCLI' => $pdo->log, 'ConsoleTools' => $consoletools]);
+	$releases = new ProcessReleases(['Settings' => $pdo, 'ConsoleTools' => $consoletools]);
 	if ($argv[1] == 1 && $argv[2] == 'true') {
 		$releases->processReleases(1, 1, $groupName, $nntp, true);
 	} else if ($argv[1] == 1 && $argv[2] == 'false') {
