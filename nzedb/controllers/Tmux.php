@@ -147,6 +147,7 @@ class Tmux
 					(%1\$s 'colors_exc') AS colors_exc,
 					(%1\$s 'showquery') AS show_query,
 					(%1\$s 'running') AS is_running,
+					(%1\$s 'run_sharing') AS run_sharing,
 					(%1\$s 'sharing_timer') AS sharing_timer,
 					(%2\$s 'lookupbooks') as processbooks,
 					(%2\$s 'lookupmusic') as processmusic,

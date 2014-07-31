@@ -55,6 +55,16 @@ while ($runVar['counts']['iterations'] > 0) {
 	$runVar['settings'] = $pdo->queryOneRow($t->getMonitorSettings(), false);
 	$runVar['timers']['query']['tmux_time'] = (time() - $timer01);
 
+	$show_time = (nZEDb_DEBUG ? "/usr/bin/time" : "");
+
+	$runVar['commands']['_php'] = $show_time . " nice -n{$runVar['settings']['niceness']} {$runVar['commands']['php']}";
+	$runVar['commands']['_phpn'] = "nice -n{$runVar['settings']['niceness']} {$runVar['commands']['php']}";
+	$runVar['commands']['_python'] = $show_time . " nice -n{$runVar['settings']['niceness']} {$runVar['commands']['python']}";
+	$runVar['commands']['_sleep'] = "{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/tmux/bin/showsleep.php";
+
+	//run IRCScraper
+	$t->runPaneExtra('scraper', $runVar);
+
 	//run queries only after time exceeded, these queries can take awhile
 	if ($runVar['counts']['iterations'] == 1 || (time() - $runVar['timers']['timer2'] >= $runVar['settings']['monitor'] && $runVar['settings']['is_running'] == 1)) {
 
@@ -304,13 +314,6 @@ while ($runVar['counts']['iterations'] > 0) {
 	//get list of panes by name
 	$runVar['panes'] = $t->getListOfPanes($runVar);
 
-	$show_time = (nZEDb_DEBUG ? "/usr/bin/time" : "");
-
-	$runVar['commands']['_php'] = $show_time . " nice -n{$runVar['settings']['niceness']} {$runVar['commands']['php']}";
-	$runVar['commands']['_phpn'] = "nice -n{$runVar['settings']['niceness']} {$runVar['commands']['php']}";
-	$runVar['commands']['_python'] = $show_time . " nice -n{$runVar['settings']['niceness']} {$runVar['commands']['python']}";
-	$runVar['commands']['_sleep'] = "{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/tmux/bin/showsleep.php";
-
 	if (($runVar['settings']['postprocess_kill'] < $runVar['counts']['now']['total_work']) && ($runVar['settings']['postprocess_kill'] != 0)) {
 		$runVar['killswitch']['pp'] = true;
 	} else {
@@ -453,19 +456,8 @@ while ($runVar['counts']['iterations'] > 0) {
 					{$runVar['paths']['misc']}update/nix/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null"
 			);
 
-			//pane setup for IrcScraper / Sharing
-			$ipane = 2;
-			if ($runVar['constants']['nntpproxy'] == 1) {
-				$spane = 4;
-			} else {
-				$spane = 3;
-			}
-
-			//run IRCScraper
-			$t->run_ircscraper($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $ipane, $runVar['constants']['run_ircscraper']);
-
 			//run Sharing
-			$t->run_sharing($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $spane, $runVar['commands']['_sleep'], $runVar['settings']['sharing_timer']);
+			$t->run_sharing('sharing', $runVar);
 		} else {
 			//run update_binaries
 			$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
@@ -538,18 +530,11 @@ while ($runVar['counts']['iterations'] > 0) {
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.4 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][4]} has been disabled/terminated by Releases\"'");
 			}
 
-			//pane setup for IrcScraper / Sharing
-			$ipane = 3;
-			if ($runVar['constants']['nntpproxy'] == 1) {
-				$spane = 5;
-			} else {
-				$spane = 4;
-			}
 			//run IRCScraper
-			$t->run_ircscraper($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $ipane, $runVar['constants']['run_ircscraper'], $runVar);
+			$t->runPaneExtra('scraper', $runVar);
 
 			//run Sharing
-			$t->run_sharing($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $spane, $runVar['commands']['_sleep'], $runVar['settings']['sharing_timer'], $runVar);
+			$t->run_sharing('sharing', $runVar);
 		}
 	} else if ($runVar['constants']['sequential'] == 0) {
 		$t->notRunningNonSeq($runVar);

@@ -42,9 +42,25 @@ class TmuxRun extends Tmux
 					case 'removecrap':
 						return $this->_runRemoveCrap($this->runVar);
 						break;
+					case 'scraper':
+						return $this->_runIRCScraper(3, $this->runVar);
+						break;
+					case 'sharing':
+						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 5 : 4), $this->runVar);
+						break;
 					case 'updatetv':
 						return $this->_runUpdateTv($this->runVar);
 						break;
+				}
+			case 2:
+				switch ($cmdParam) {
+					case 'scraper':
+						return $this->_runIRCScraper(2, $this->runVar);
+						break;
+					case 'sharing':
+						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 5 : 4), $this->runVar);
+						break;
+
 				}
 		}
 	}
@@ -319,16 +335,16 @@ class TmuxRun extends Tmux
 		}
 	}
 
-	public function run_ircscraper($tmux_session, $_php, $pane, $run_ircscraper, &$runVar)
+	protected function _runIRCScraper($pane, $runVar)
 	{
 		$this->runVar = $runVar;
-		if ($run_ircscraper == 1) {
+
+		if ($this->runVar['settings']['run_ircscraper'] == 1) {
 			//Check to see if the pane is dead, if so respawn it.
-			if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
-				$ircscraper = $this->runVar['paths']['misc'] . "testing/IRCScraper/scrape.php";
+			if (shell_exec("tmux list-panes -t{$this->runVar['constants']tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
 				shell_exec(
 					"tmux respawnp -t${tmux_session}:${pane}.0 ' \
-					$_php $ircscraper true'"
+					{$this->runVar['commands']['_php']} {$this->runVar['paths']['misc']}testing/IRCScraper/scrape.php true"
 				);
 			}
 		} else {
@@ -336,19 +352,18 @@ class TmuxRun extends Tmux
 		}
 	}
 
-	public function run_sharing($tmux_session, $_php, $pane, $_sleep, $sharing_timer, &$runVar)
+	public function run_sharing($pane, $runVar)
 	{
 		$this->runVar = $runVar;
-		$sharing = $this->pdo->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
-		$tmux = $this->get();
-		$tmux_share = (isset($tmux->run_sharing)) ? $tmux->run_sharing : 0;
 
-		if ($tmux_share && $sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
+		$sharing = $this->pdo->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
+
+		if ($this->runVar['settings']['run_sharing'] == 1 && $sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
 			if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
-				$sharing2 = $this->runVar['paths']['misc'] . "/update/postprocess.php sharing true";
 				shell_exec(
 					"tmux respawnp -t${tmux_session}:${pane}.0 ' \
-						$_php $sharing2; $_sleep $sharing_timer' 2>&1 1> /dev/null"
+						{$this->runVar['commands']['_php']} {$this->runVar['paths']['misc']}/update/postprocess.php sharing true; \
+						{$this->runVar['commands']['_sleep']} {$this->runVar['settings']['sharing_timer']} 2>&1 1> /dev/null"
 				);
 			}
 		}
@@ -356,140 +371,142 @@ class TmuxRun extends Tmux
 
 	public function runBasicSequential($runVar)
 	{
-			$log = $this->writelog($runVar['panes']['zero'][2]);
-			if (($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
-				switch ($runVar['settings']['binaries_run']) {
-					case 0:
-						switch ($runVar['settings']['backfill']) {
-							case 0:
-								//runs rel less than 4800
-								if ($runVar['settings']['releases_run'] != 0) {
-									shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-										{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Binaries and Backfill\"; \
-										{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-									);
-								//runs nothing as all are disabled
-								} else if ($runVar['settings']['releases_run'] == 0) {
-									shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-										echo \"\nbinaries, backfill and releases have been disabled/terminated by Binaries, Backfill and Releases\"; \
-										{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-									);
-								}
-								break;
-							case 4:
-								//runs back/safe/rel less than 4800
-								if ($runVar['settings']['releases_run'] != 0) {
-									shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-										{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; \
-										{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; \
-										{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-									);
-								//runs back/safe less than 4800
-								} else if ($runVar['settings']['releases_run'] == 0) {
+		$this->runVar = $runVar;
+
+		$log = $this->writelog($runVar['panes']['zero'][2]);
+		if (($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] <= 4800)) {
+			switch ($runVar['settings']['binaries_run']) {
+				case 0:
+					switch ($runVar['settings']['backfill']) {
+						case 0:
+							//runs rel less than 4800
+							if ($runVar['settings']['releases_run'] != 0) {
 								shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-									{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; date +\"%D %T\"; \
-									echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; \
+									{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Binaries and Backfill\"; \
 									{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
 								);
-								}
-								break;
-							default:
-								//runs back/rel less than 4800
-								if ($runVar['settings']['releases_run'] != 0) {
-									shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-										{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; \
-										{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; \
-										{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-									);
-								//runs back less than 4800
-								} else if ($runVar['settings']['releases_run'] == 0) {
-									shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-										{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; \
-										date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; \
-										{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-									);
-								}
-								break;
-						}
-						break;
-					default:
-						switch ($runVar['settings']['backfill']) {
-							case 0:
-								//runs bin/rel less than 4800
-								if ($runVar['settings']['releases_run'] != 0) {
-									shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-										{$runVar['scripts']['binaries']} $log; \
-										{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; \
-										{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-									);
-								//runs bin less than 4800
-								} else if ($runVar['settings']['releases_run'] == 0) {
-									shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-										{$runVar['scripts']['binaries']} $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; \
-										{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-									);
-								}
-								break;
-							case 4:
-								//runs all/safe less than 4800
-								if ($runVar['settings']['releases_run'] != 0) {
-									shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-										{$runVar['scripts']['binaries']} $log; \
-										{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; \
-										{$runVar['scripts']['releases']} $log; date +\"%D %T\"; \
-										{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-									);
-								//runs bin/back/safe less than 4800
-								} else if ($runVar['settings']['releases_run'] == 0) {
-									shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-										{$runVar['scripts']['binaries']} $log; \
-										{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; date +\"%D %T\"; \
-										echo \"\nreleases has been disabled/terminated by Releases\"; \
-										{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-									);
-								}
-								break;
-							default:
-								//runs all less than 4800
-								if ($runVar['settings']['releases_run'] != 0) {
-									shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-										{$runVar['scripts']['binaries']} $log; \
-										{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; \
-										{$runVar['scripts']['releases']} $log; date +\"%D %T\"; \
-										{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-									);
-								//runs bin/back less than 4800
-								} else if ($runVar['settings']['releases_run'] == 0) {
-									shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
-										{$runVar['scripts']['binaries']} $log; \
-										{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; date +\"%D %T\"; \
-										echo \"\nreleases have been disabled/terminated by Releases\"; \
-										{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-									);
-								}
-								break;
-						}
-						break;
-				}
-			} else if (($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] >= 4800)) {
-				//run backfill all once and resets the timer
-				if ($runVar['settings']['backfill'] != 0) {
-					shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.2 ' \
-						{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-					);
-					$runVar['timers']['timer5'] = time();
-				}
-				$runVar['timers']['timer5'] = time();
-			} else if ((($runVar['killswitch']['coll'] == true) || ($runVar['killswitch']['pp'] == true)) && ($runVar['settings']['releases_run'] != 0)) {
-				$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 'echo \"\033[38;5;${color}m\"; \
-					echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; \
-					{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
-				);
-			} else if (($runVar['killswitch']['coll'] == true) || ($runVar['killswitch']['pp'] == true)) {
-				$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
-				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][2]} has been disabled/terminated by Exceeding Limits\"'");
+							//runs nothing as all are disabled
+							} else if ($runVar['settings']['releases_run'] == 0) {
+								shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
+									echo \"\nbinaries, backfill and releases have been disabled/terminated by Binaries, Backfill and Releases\"; \
+									{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+								);
+							}
+							break;
+						case 4:
+							//runs back/safe/rel less than 4800
+							if ($runVar['settings']['releases_run'] != 0) {
+								shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
+									{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; \
+									{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; \
+									{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+								);
+							//runs back/safe less than 4800
+							} else if ($runVar['settings']['releases_run'] == 0) {
+							shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
+								{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; date +\"%D %T\"; \
+								echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; \
+								{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+							);
+							}
+							break;
+						default:
+							//runs back/rel less than 4800
+							if ($runVar['settings']['releases_run'] != 0) {
+								shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
+									{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; \
+									{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries has been disabled/terminated by Binaries\"; \
+									{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+								);
+							//runs back less than 4800
+							} else if ($runVar['settings']['releases_run'] == 0) {
+								shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
+									{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; \
+									date +\"%D %T\"; echo \"\nbinaries and releases have been disabled/terminated by Binaries and Releases\"; \
+									{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+								);
+							}
+							break;
+					}
+					break;
+				default:
+					switch ($runVar['settings']['backfill']) {
+						case 0:
+							//runs bin/rel less than 4800
+							if ($runVar['settings']['releases_run'] != 0) {
+								shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
+									{$runVar['scripts']['binaries']} $log; \
+									{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbackfill has been disabled/terminated by Backfill\"; \
+									{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+								);
+							//runs bin less than 4800
+							} else if ($runVar['settings']['releases_run'] == 0) {
+								shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
+									{$runVar['scripts']['binaries']} $log; date +\"%D %T\"; echo \"\nbackfill and releases have been disabled/terminated by Backfill and Releases\"; \
+									{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+								);
+							}
+							break;
+						case 4:
+							//runs all/safe less than 4800
+							if ($runVar['settings']['releases_run'] != 0) {
+								shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
+									{$runVar['scripts']['binaries']} $log; \
+									{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; \
+									{$runVar['scripts']['releases']} $log; date +\"%D %T\"; \
+									{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+								);
+							//runs bin/back/safe less than 4800
+							} else if ($runVar['settings']['releases_run'] == 0) {
+								shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
+									{$runVar['scripts']['binaries']} $log; \
+									{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_safe_threaded.py $log; date +\"%D %T\"; \
+									echo \"\nreleases has been disabled/terminated by Releases\"; \
+									{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+								);
+							}
+							break;
+						default:
+							//runs all less than 4800
+							if ($runVar['settings']['releases_run'] != 0) {
+								shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
+									{$runVar['scripts']['binaries']} $log; \
+									{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; \
+									{$runVar['scripts']['releases']} $log; date +\"%D %T\"; \
+									{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+								);
+							//runs bin/back less than 4800
+							} else if ($runVar['settings']['releases_run'] == 0) {
+								shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
+									{$runVar['scripts']['binaries']} $log; \
+									{$runVar['commands']['_python']} {$runVar['paths']['misc']}update/python/backfill_threaded.py $log; date +\"%D %T\"; \
+									echo \"\nreleases have been disabled/terminated by Releases\"; \
+									{$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+								);
+							}
+							break;
+					}
+					break;
 			}
+		} else if (($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] >= 4800)) {
+			//run backfill all once and resets the timer
+			if ($runVar['settings']['backfill'] != 0) {
+				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.2 ' \
+					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+				);
+				$runVar['timers']['timer5'] = time();
+			}
+			$runVar['timers']['timer5'] = time();
+		} else if ((($runVar['killswitch']['coll'] == true) || ($runVar['killswitch']['pp'] == true)) && ($runVar['settings']['releases_run'] != 0)) {
+			$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
+			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 'echo \"\033[38;5;${color}m\"; \
+				echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; \
+				{$runVar['scripts']['releases']} $log; date +\"%D %T\"; echo \"\nbinaries and backfill has been disabled/terminated by Exceeding Limits\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
+			);
+		} else if (($runVar['killswitch']['coll'] == true) || ($runVar['killswitch']['pp'] == true)) {
+			$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
+			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][2]} has been disabled/terminated by Exceeding Limits\"'");
+		}
+		return $runVar['timers']['timer5']
 	}
-
 }
