@@ -1,24 +1,8 @@
 <?php
-/**
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program (see LICENSE.txt in the base directory.  If
- * not, see:
- * @link      <http://www.gnu.org/licenses/>.
- * @author    mike
- * @copyright 2014 nZEDb
- */
 
-require_once 'simple_html_dom.php';
+require_once nZEDb_LIBS . 'simple_html_dom.php';
 
-class popporn
+class Popporn
 {
 	/*
 	 * Set this for what you are searching for.
@@ -55,7 +39,7 @@ class popporn
 	// Sets the directurl for the template and returns it in the array
 	protected $directurl = null;
 
-	public function __construct($echooutput = true)
+	public function __construct()
 	{
 		$this->response = array();
 		$this->res = array();
@@ -74,14 +58,14 @@ class popporn
 	unset($this->response);
 	unset($this->res);
 	}
+
 	/**
 	 * Get Box Cover Images
 	 * @return array - boxcover,backcover
 	 */
 	public function _covers()
 	{
-		if ($this->html->find('div[id=box-art], a[rel=box-art]', 1)) {
-			$ret = $this->html->find('div[id=box-art], a[rel=box-art]', 1);
+		if ($ret = $this->html->find('div[id=box-art], a[rel=box-art]', 1)) {
 			$this->res['boxcover'] = trim($ret->href);
 			$this->res['backcover'] = str_ireplace("_aa","_bb",trim($ret->href));
 		}
@@ -94,8 +78,7 @@ class popporn
 	 */
 	public function _sypnosis()
 	{
-		if ($this->html->find('div[id=product-info] ,h3[class=highlight]', 1)) {
-			$ret = $this->html->find('div[id=product-info] ,h3[class=highlight]', 1);
+		if ($ret = $this->html->find('div[id=product-info] ,h3[class=highlight]', 1)) {
 			if ($ret->next_sibling()->plaintext) {
 				if (!stristr(trim($ret->next_sibling()->plaintext), "POPPORN EXCLUSIVE")) {
 					$this->res['sypnosis'] = trim($ret->next_sibling()->plaintext);
@@ -122,8 +105,7 @@ class popporn
 	 */
 	public function _trailers()
 	{
-		if ($this->html->find('input#thickbox-trailer-link', 0)) {
-			$ret = $this->html->find('input#thickbox-trailer-link', 0);
+		if ($ret = $this->html->find('input#thickbox-trailer-link', 0)) {
 			$ret->value = trim($ret->value);
 			$ret->value = str_replace("..", "", $ret->value);
 			$tmprsp = $this->response;
@@ -155,8 +137,7 @@ class popporn
 	public function _productinfo($extras = true)
 	{
 		$country = false;
-		if ($this->html->find('div#lside', 0)) {
-			$ret = $this->html->find('div#lside', 0);
+		if ($ret = $this->html->find('div#lside', 0)) {
 			foreach ($ret->find("text") as $e) {
 				$e = trim($e->innertext);
 				$e = str_replace(",", "", $e);
@@ -212,8 +193,7 @@ class popporn
 	{
 		$cast = false;
 		$director = false;
-		if ($this->html->find('div#lside', 0)) {
-			$ret = $this->html->find('div#lside', 0);
+		if ($ret = $this->html->find('div#lside', 0)) {
 			foreach ($ret->find("text") as $e) {
 				$e = trim($e->innertext);
 				$e = str_replace(",", "", $e);
@@ -258,8 +238,7 @@ class popporn
 	 */
 	public function _genres()
 	{
-		if ($this->html->find('div[id=thekeywords], p[class=keywords]', 1)) {
-			$ret = $this->html->find('div[id=thekeywords], p[class=keywords]', 1);
+		if ($ret = $this->html->find('div[id=thekeywords], p[class=keywords]', 1)) {
 			foreach ($ret->find('a') as $e) {
 				$genres[] = trim($e->plaintext);
 			}
@@ -285,14 +264,12 @@ class popporn
 			return false;
 		} else {
 			$this->html->load($this->response);
-			if ($this->html->find('h2[class=title]', 0)) {
-				$ret = $this->html->find('h2[class=title]', 0);
+			if ($ret = $this->html->find('h2[class=title]', 0)) {
 				$title = trim($ret->innertext);
 			} else {
 				return false;
 			}
-			if($this->html->find('#link-to-this',0)){
-			$ret = $this->html->find('#link-to-this', 0);
+			if($ret = $this->html->find('#link-to-this',0)){
 			$ret = trim($ret->href);
 			$this->directurl = $ret;
 			}
@@ -385,6 +362,6 @@ class popporn
 			return false;
 		}
 		curl_close($ch);
-		return false;
+		return true;
 	}
 }

@@ -21,14 +21,13 @@ class Music
 	{
 		$defaults = [
 			'Echo'     => false,
-			'ColorCLI' => null,
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->pubkey = $this->pdo->getSetting('amazonpubkey');
 		$this->privkey = $this->pdo->getSetting('amazonprivkey');
 		$this->asstag = $this->pdo->getSetting('amazonassociatetag');
@@ -39,7 +38,6 @@ class Music
 		if ($this->pdo->getSetting('lookupmusic') == 2) {
 			$this->renamed = 'AND isrenamed = 1';
 		}
-		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
 	}
 
 	/**
@@ -61,12 +59,7 @@ class Music
 	 */
 	public function getMusicInfoByName($artist, $album)
 	{
-		$pdo = $this->pdo;
-		$like = 'ILIKE';
-		if ($pdo->dbSystem() === 'mysql') {
-			$like = 'LIKE';
-		}
-		return $pdo->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title LIKE %s AND artist %s %s", $pdo->escapeString("%" . $artist . "%"), $like, $pdo->escapeString("%" . $album . "%")));
+		return $this->pdo->queryOneRow(sprintf("SELECT * FROM musicinfo WHERE title %s AND artist %s", $this->pdo->likeString($album, true, true), $this->pdo->likeString($artist, true, true)));
 	}
 
 	/**
@@ -502,14 +495,14 @@ class Music
 				} else {
 					$artist = "Artist: " . $mus['artist'] . ", Album: ";
 				}
-				$this->c->doEcho(
-					$this->c->header("\nAdded/updated album: ") .
-					$this->c->alternateOver("   Artist: ") .
-					$this->c->primary($mus['artist']) .
-					$this->c->alternateOver("   Title:  ") .
-					$this->c->primary($mus['title']) .
-					$this->c->alternateOver("   Year:   ") .
-					$this->c->primary($mus['year'])
+				$this->pdo->log->doEcho(
+					$this->pdo->log->header("\nAdded/updated album: ") .
+					$this->pdo->log->alternateOver("   Artist: ") .
+					$this->pdo->log->primary($mus['artist']) .
+					$this->pdo->log->alternateOver("   Title:  ") .
+					$this->pdo->log->primary($mus['title']) .
+					$this->pdo->log->alternateOver("   Year:   ") .
+					$this->pdo->log->primary($mus['year'])
 				);
 			}
 			$mus['cover'] = $ri->saveImage($musicId, $mus['coverurl'], $this->imgSavePath, 250, 250);
@@ -520,9 +513,9 @@ class Music
 				} else {
 					$artist = "Artist: " . $mus['artist'] . ", Album: ";
 				}
-				$this->c->doEcho(
-					$this->c->headerOver("Nothing to update: ") .
-					$this->c->primaryOver(
+				$this->pdo->log->doEcho(
+					$this->pdo->log->headerOver("Nothing to update: ") .
+					$this->pdo->log->primaryOver(
 						$artist .
 						$mus['title'] .
 						" (" .
@@ -584,7 +577,7 @@ class Music
 	/**
 	 *
 	 */
-	public function processMusicReleases()
+	public function processMusicReleases($local = false)
 	{
 		$pdo = $this->pdo;
 		$res = $pdo->queryDirect(sprintf('SELECT searchname, id FROM releases '
@@ -592,8 +585,8 @@ class Music
 				. 'ORDER BY postdate DESC LIMIT %d', $this->renamed, $this->musicqty));
 		if ($res->rowCount() > 0) {
 			if ($this->echooutput) {
-				$this->c->doEcho(
-					$this->c->header("Processing " . $res->rowCount() .' music release(s).'
+				$this->pdo->log->doEcho(
+					$this->pdo->log->header("Processing " . $res->rowCount() .' music release(s).'
 					)
 				);
 			}
@@ -606,13 +599,13 @@ class Music
 					$newname = $album["name"] . ' (' . $album["year"] . ')';
 
 					if ($this->echooutput) {
-						$this->c->doEcho($this->c->headerOver('Looking up: ') . $this->c->primary($newname));
+						$this->pdo->log->doEcho($this->pdo->log->headerOver('Looking up: ') . $this->pdo->log->primary($newname));
 					}
 
 					// Do a local lookup first
 					$musicCheck = $this->getMusicInfoByName('', $album["name"]);
 
-					if ($musicCheck === false) {
+					if ($musicCheck === false && $local === false) {
 						$albumId = $this->updateMusicInfo($album["name"], $album['year']);
 						$usedAmazon = true;
 						if ($albumId === false) {
@@ -643,7 +636,7 @@ class Music
 
 		} else {
 			if ($this->echooutput) {
-				$this->c->doEcho($this->c->header('No music releases to process.'));
+				$this->pdo->log->doEcho($this->pdo->log->header('No music releases to process.'));
 			}
 		}
 	}

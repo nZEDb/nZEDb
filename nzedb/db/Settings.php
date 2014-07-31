@@ -54,7 +54,7 @@ class Settings extends DB
 		$this->table = ($result === false) ? 'settings' : 'site';
 		$this->setCovers();
 
-		return self::$_pdo;
+		return self::$pdo;
 	}
 
 	/**
@@ -79,6 +79,7 @@ class Settings extends DB
 	 */
 	public function getSetting($options = array())
 	{
+		// todo: think about making this static so it can be accessed without instantiating.
 		if (!is_array($options)) {
 			$options = $this->_dottedToArray($options);
 			if (isset($options['setting']) && isset($this->settings[$options['setting']])) {
@@ -109,7 +110,9 @@ class Settings extends DB
 	public function rowsToArray(array $rows)
 	{
 		foreach($rows as $row) {
-			$this->rowToArray($row);
+			if (is_array($row)) {
+				$this->rowToArray($row);
+			}
 		}
 		return $this->settings;
 	}
@@ -167,7 +170,7 @@ class Settings extends DB
 				$sql    = sprintf("UPDATE settings SET value = '%s' WHERE %s",
 								  $options['value'],
 								  $where);
-				$result = self::$_pdo->query($sql);
+				$result = self::$pdo->query($sql);
 			}
 		}
 

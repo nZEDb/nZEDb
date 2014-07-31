@@ -3,44 +3,44 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$cli = new ColorCLI();
 
 $pdo = new Settings(['checkVersion' => true]);
 $ftinnodb = $pdo->isDbVersionAtLeast('5.6');
 if ($pdo->dbSystem() === "pgsql") {
-	exit($c->error("\nCurrently only for mysql."));
+	exit($cli->error("\nCurrently only for mysql."));
 }
 
 if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	$tbl = $argv[1];
-	printf($c->header("Converting $tbl"));
+	printf($cli->header("Converting $tbl"));
 	$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 } else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "dmyisam") {
 	$tbl = $argv[1];
-	printf($c->header("Converting $tbl"));
+	printf($cli->header("Converting $tbl"));
 	$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=DYNAMIC");
 } else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "cinnodb") {
 	$tbl = $argv[1];
 	if ($ftinnodb || (!$ftinnodb && $tbl !== 'releasesearch' && $tbl !== 'predbhash')) {
-		printf($c->header("Converting $tbl"));
+		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 	} else {
-		printf($c->header("Not converting releasesearch / predbhash as your INNODB version does not support fulltext indexes"));
+		printf($cli->header("Not converting releasesearch / predbhash as your INNODB version does not support fulltext indexes"));
 	}
 } else if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "dinnodb") {
 	$tbl = $argv[1];
 	if ($ftinnodb || (!$ftinnodb && $tbl !== 'releasesearch' && $tbl !== 'predbhash')) {
-		printf($c->header("Converting $tbl"));
+		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	} else {
-		printf($c->header("Not converting releasesearch / predbhash as your INNODB version does not support fulltext indexes"));
+		printf($cli->header("Not converting releasesearch / predbhash as your INNODB version does not support fulltext indexes"));
 	}
 } else if (isset($argv[1]) && $argv[1] == "fmyisam") {
 	$sql = 'SHOW table status WHERE Engine != "MyIsam" ||  Row_format != "FIXED"';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		printf($c->header("Converting $tbl"));
+		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
 } else if (isset($argv[1]) && $argv[1] == "dmyisam") {
@@ -48,7 +48,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		printf($c->header("Converting $tbl"));
+		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=DYNAMIC");
 	}
 } else if (isset($argv[1]) && $argv[1] == "dinnodb") {
@@ -57,7 +57,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
 		if ($tbl !== 'releasesearch' && $tbl !== 'predbhash') {
-			printf($c->header("Converting $tbl"));
+			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 		}
 	}
@@ -66,11 +66,11 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$tables = $pdo->query($sql);
 		foreach ($tables as $row) {
 			$tbl = $row['name'];
-			printf($c->header("Converting $tbl"));
+			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 		}
 	} else {
-		printf($c->header("Not converting releasesearch as your INNODB version does not support fulltext indexes"));
+		printf($cli->header("Not converting releasesearch as your INNODB version does not support fulltext indexes"));
 	}
 } else if (isset($argv[1]) && $argv[1] == "cinnodb") {
 	$sql = 'SHOW table status WHERE Engine != "InnoDB" OR Row_format != "Compressed"';
@@ -78,7 +78,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
 		if ($tbl !== 'releasenfo' && $tbl !== 'releasesearch') {
-			printf($c->header("Converting $tbl"));
+			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 		}
 	}
@@ -86,7 +86,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		printf($c->header("Converting $tbl"));
+		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
 	if ($ftinnodb) {
@@ -94,11 +94,11 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$tables = $pdo->query($sql);
 		foreach ($tables as $row) {
 			$tbl = $row['name'];
-			printf($c->header("Converting $tbl"));
+			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 		}
 	} else {
-		printf($c->header("Not converting releasesearch / predbhash as your INNODB version does not support fulltext indexes"));
+		printf($cli->header("Not converting releasesearch / predbhash as your INNODB version does not support fulltext indexes"));
 	}
 } else if (isset($argv[1]) && $argv[1] == "cinnodb-noparts") {
 	$sql = 'SHOW table status WHERE Engine != "InnoDB" OR Row_format != "Compressed"';
@@ -106,7 +106,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
 		if ($tbl !== 'releasenfo' && $tbl !== 'releasesearch' && !preg_match('/parts/', $tbl)) {
-			printf($c->header("Converting $tbl"));
+			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 		}
 	}
@@ -114,14 +114,14 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		printf($c->header("Converting $tbl"));
+		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=DYNAMIC");
 	}
 	$sql = 'SHOW table status WHERE Name LIKE "parts%" AND (Engine != "MyISAM" || Row_format != "Dynamic")';
 	$tables = $pdo->query($sql);
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
-		printf($c->header("Converting $tbl"));
+		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MyISAM ROW_FORMAT=DYNAMIC");
 	}
 	if ($ftinnodb) {
@@ -129,17 +129,17 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 		$tables = $pdo->query($sql);
 		foreach ($tables as $row) {
 			$tbl = $row['name'];
-			printf($c->header("Converting $tbl"));
+			printf($cli->header("Converting $tbl"));
 			$pdo->queryExec("ALTER TABLE $tbl ENGINE=INNODB ROW_FORMAT=COMPRESSED");
 		}
 	} else {
-		printf($c->header("Not converting releasesearch / predbhash as your INNODB version does not support fulltext indexes"));
+		printf($cli->header("Not converting releasesearch / predbhash as your INNODB version does not support fulltext indexes"));
 	}
 } else if (isset($argv[1]) && $argv[1] == "collections") {
 	$arr = array("parts", "binaries", "collections");
 	foreach ($arr as $row) {
 		$tbl = $row;
-		printf($c->header("Converting $tbl"));
+		printf($cli->header("Converting $tbl"));
 		$pdo->queryExec("ALTER TABLE $tbl ENGINE=MYISAM ROW_FORMAT=FIXED");
 	}
 } else if (isset($argv[1]) && $argv[1] == "mariadb-tokudb") {
@@ -147,7 +147,7 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
 		if ($tbl !== 'releasesearch') {
-			printf($c->header("Converting $tbl"));
+			printf($cli->header("Converting $tbl"));
 			$sql = "ALTER TABLE $tbl ENGINE=TokuDB Compression=tokudb_lzma";
 			$pdo->queryExec($sql);
 			$pdo->queryExec("OPTIMIZE TABLE $tbl");
@@ -158,14 +158,14 @@ if (isset($argv[1]) && isset($argv[2]) && $argv[2] == "fmyisam") {
 	foreach ($tables as $row) {
 		$tbl = $row['name'];
 		if ($tbl !== 'releasesearch') {
-			printf($c->header("Converting $tbl"));
+			printf($cli->header("Converting $tbl"));
 			$sql = "ALTER TABLE $tbl ENGINE=TokuDB row_format=tokudb_lzma";
 			$pdo->queryExec($sql);
 			$pdo->queryExec("OPTIMIZE TABLE $tbl");
 		}
 	}
 } else {
-	exit($c->error(
+	exit($cli->error(
 		"\nThis script will convert your tables to a new engine/format. Only tables not meeting the new engine/format will be converted.\n"
 		. "A comparison of these, excluding TokuDB, https://github.com/nZEDb/nZEDb/wiki/MySQL-Storage-Engine-Comparison\n\n"
 		. "php convert_mysql_tables.php dmyisam                                        ...: Converts all the tables to Myisam Dynamic. This is the default and is recommended where ram is limited.\n"

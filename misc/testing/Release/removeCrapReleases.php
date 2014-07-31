@@ -2,13 +2,14 @@
 
 /* This script deletes releases that match certain criteria, type php removeCrapReleases.php false for details. */
 require_once dirname(__FILE__) . '/../../../www/config.php';
-$c = new ColorCLI();
+
+$cli = new ColorCLI();
 $n = PHP_EOL;
 
 $argCnt = count($argv);
 if ($argCnt === 1) {
 	exit(
-		$c->error(
+		$cli->error(
 			$n .
 			'Run fixReleaseNames.php first to attempt to fix release names.'. $n .
 			'This will miss some releases if you have not set fixReleaseNames to set the release as checked.' . $n . $n .
@@ -51,16 +52,16 @@ if ($argCnt === 2) {
 			"php $argv[0] true full blacklist 1 = Remove releases matching blacklist id 1." . $n
 		);
 	} else {
-		exit ($c->error("Wrong usage! Type php $argv[0] false"));
+		exit ($cli->error("Wrong usage! Type php $argv[0] false"));
 	}
 }
 if ($argCnt < 3) {
-	exit ($c->error("Wrong usage! Type php $argv[0] false"));
+	exit ($cli->error("Wrong usage! Type php $argv[0] false"));
 }
 
 if (isset($argv[3]) && $argv[3] === 'blacklist' && isset($argv[4])) {
 	$blacklistID = $argv[4];
 }
 
-$RR = new ReleaseRemover(['ColorCLI' => $c]);
+$RR = new ReleaseRemover();
 $RR->removeCrap(($argv[1] === 'true' ? true : false), $argv[2], (isset($argv[3]) ? $argv[3] : ''), (isset($blacklistID) ? $argv[4] : ''));

@@ -60,13 +60,13 @@ class NZBExport
 			'Releases' => null,
 			'Settings' => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->browser = $defaults['Browser'];
-		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $defaults['Echo']);
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Setting'] : new Settings());
-		$this->releases = ($defaults['Releases'] instanceof Releases ? $defaults['Releases'] : new Releases(['Settings' => $this->pdo]));
-		$this->nzb = ($defaults['NZB'] instanceof NZB ? $defaults['NZB'] : new NZB($this->pdo));
+		$this->browser = $options['Browser'];
+		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $options['Echo']);
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Setting'] : new Settings());
+		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo]));
+		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 	}
 
 	/**
@@ -183,15 +183,13 @@ class NZBExport
 					}
 				// If not, decompress it and create a file to store it in.
 				} else {
-					ob_start();
-					if (!@readgzfile($nzbFile)) {
+					$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbFile);
+					if (!$nzbContents) {
 						if ($this->echoCLI) {
 							echo 'Unable to export NZB with GUID: ' . $release['guid'];
 						}
 						continue;
 					}
-					$nzbContents = ob_get_contents();
-					ob_end_clean();
 					$fh = fopen($currentFile . '.nzb', 'w');
 					fwrite($fh, $nzbContents);
 					fclose($fh);

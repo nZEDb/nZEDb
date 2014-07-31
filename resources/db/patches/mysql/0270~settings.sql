@@ -1,0 +1,1 @@
+INSERT IGNORE INTO settings(setting, name, value, hint) VALUES('maxnforetries', 'maxnforetries', '5', 'How many times to retry when a NFO fails to download. If set to 0, we will not retry. The max is 7.');

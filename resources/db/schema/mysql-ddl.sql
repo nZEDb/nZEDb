@@ -38,10 +38,10 @@ CREATE TABLE         binaries (
   binaryhash   VARCHAR(255)        NOT NULL DEFAULT '0',
   partcheck    BIT                 NOT NULL DEFAULT 0,
   partsize     BIGINT UNSIGNED     NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
-  INDEX ix_binary_binaryhash (binaryhash),
-  INDEX ix_binary_partcheck  (partcheck),
-  INDEX ix_binary_collection (collectionid)
+  PRIMARY KEY                       (id),
+  UNIQUE INDEX ix_binary_binaryhash (binaryhash),
+  INDEX        ix_binary_partcheck  (partcheck),
+  INDEX        ix_binary_collection (collectionid)
 )
   ENGINE          = MYISAM
   DEFAULT CHARSET = utf8

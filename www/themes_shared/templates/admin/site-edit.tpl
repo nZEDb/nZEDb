@@ -365,8 +365,9 @@
 				<td>
 					<input id="timeoutpath" class="long" name="timeoutpath" type="text" value="{$site->timeoutpath}"/>
 					<div class="hint">The path to the <a href="http://linux.die.net/man/1/timeout">timeout</a> binary.
-						This is used to limit the amount of time the above programs can run.
+						This is used to limit the amount of time unrar/7zip/mediainfo/ffmpeg/avconv can run.
 						You can the time limit in the process additional section.
+						You can leave this empty to disable this.
 						<br/>Use forward slashes in windows <span style="font-family:courier;">c:/path/to/timeout.exe</span>
 					</div>
 				</td>
@@ -470,7 +471,9 @@
 				<td>
 					{html_options style="width:180px;" id="showpasswordedrelease" name='showpasswordedrelease' values=$passworded_ids output=$passworded_names selected=$site->showpasswordedrelease}
 					<div class="hint">Whether to show passworded or potentially passworded releases in browse, search, api and rss
-						feeds. Potentially passworded means releases which contain .cab or .ace files which are typically password protected.
+						feeds. Potentially passworded means releases which contain .cab or .ace files which are
+						typically password protected and will also exclude anything not processed by PostProcess
+						Additional.
 					</div>
 				</td>
 			</tr>
@@ -585,15 +588,6 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="lookupnfo">Lookup NFO:</label></td>
-				<td>
-					{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$site->lookupnfo separator='<br />'}
-					<div class="hint">Whether to attempt to retrieve an nfo file from usenet.<br/>
-						<strong>NOTE: disabling nfo lookups will disable movie lookups.</strong>
-					</div>
-				</td>
-			</tr>
-			<tr>
 				<td style="width:180px;"><label for="lookupxxx">Lookup XXX:</label></td>
 				<td>
 					{html_radios id="lookupxxx" name='lookupxxx' values=$yesno_ids output=$yesno_names selected=$site->lookupxxx separator='<br />'}
@@ -648,15 +642,6 @@
 				<td>
 					{html_options_multiple id="book_reqids" name='book_reqids' values=$book_reqids_ids output=$book_reqids_names selected=$book_reqids_selected}
 					<div class="hint">Categories of Books to lookup information for (only work if Lookup Books is set to yes).</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="width:180px;"><label for="maxnfoprocessed">Maximum NFO files per run:</label></td>
-				<td>
-					<input class="short" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$site->maxnfoprocessed}"/>
-					<div class="hint">The maximum amount of NFO files to process per run. This uses NNTP an connection, 1
-						per thread. This does not query Amazon.
-					</div>
 				</td>
 			</tr>
 			<tr>
@@ -730,6 +715,51 @@
 	</fieldset>
 
 	<fieldset>
+	<legend>NFO Processing Settings</legend>
+		<table class="input">
+			<tr>
+				<td style="width:180px;"><label for="lookupnfo">Lookup NFO:</label></td>
+				<td>
+					{html_radios id="lookupnfo" name='lookupnfo' values=$yesno_ids output=$yesno_names selected=$site->lookupnfo separator='<br />'}
+					<div class="hint">Whether to attempt to retrieve an nfo file from usenet.<br/>
+						<strong>NOTE: disabling nfo lookups will disable movie lookups.</strong>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxnfoprocessed">Maximum NFO files per run:</label></td>
+				<td>
+					<input class="short" id="maxnfoprocessed" name="maxnfoprocessed" type="text" value="{$site->maxnfoprocessed}"/>
+					<div class="hint">The maximum amount of NFO files to process per run. This uses NNTP an connection, 1
+						per thread. This does not query Amazon.
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxsizetoprocessnfo">Maximum Release Size to process NFOs:</label></td>
+				<td>
+					<input class="short" id="maxsizetoprocessnfo" name="maxsizetoprocessnfo" type="text" value="{$site->maxsizetoprocessnfo}"/>
+					<div class="hint">The maximum size in gigabytes of a release to process it for NFOs. If set to 0, then ignored.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="minsizetoprocessnfo">Minimum Release Size to process NFOs:</label></td>
+				<td>
+					<input class="short" id="minsizetoprocessnfo" name="minsizetoprocessnfo" type="text" value="{$site->minsizetoprocessnfo}"/>
+					<div class="hint">The minimum size in megabytes of a release to process it for NFOs. If set to 0, then ignored.</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:180px;"><label for="maxnforetries">Maximum amount of times to redownload a NFO:</label></td>
+				<td>
+					<input class="short" id="maxnforetries" name="maxnforetries" type="text" value="{$site->maxnforetries}"/>
+					<div class="hint">How many times to retry when a NFO fails to download. If set to 0, we will not retry. The max is 7.</div>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+
+	<fieldset>
 	<legend>Post Process Additional Settings - Rar/ZIP file processing</legend>
 		<table class="input">
 			<tr>
@@ -790,10 +820,11 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="width:180px;"><label for="timeoutseconds">Time in seconds to kill unrar/ffmpeg/etc:</label></td>
+				<td style="width:180px;"><label for="timeoutseconds">Time in seconds to kill unrar/7zip/mediainfo/ffmpeg/avconv:</label></td>
 				<td>
 					<input class="short" id="timeoutseconds" name="timeoutseconds" type="text" value="{$site->timeoutseconds}"/>
-					<div class="hint">How much time to wait for unrar/ffmpeg/etc before killing it, set to 0 to disable. 60 is a good value. Requires the GNU Timeout path to be set.</div>
+					<div class="hint">How much time to wait for unrar/7zip/mediainfo/ffmpeg/avconv before killing it, set to 0 to disable.
+						60 is a good value. Requires the GNU Timeout path to be set.</div>
 				</td>
 			</tr>
 			<tr>
@@ -818,7 +849,7 @@
 				<td style="width:180px;"><label for="passchkattempts">Maximum failed part downloads:</label></td>
 				<td>
 					<input class="short" id="passchkattempts" name="passchkattempts" type="text" value="{$site->passchkattempts}"/>
-					<div class="hint">How many times to download a different when failing and article fails to download for a RAR/ZIP, this is multiplied by 5, so if you set it to 1, we will retry 5 times.</div>
+					<div class="hint">How many times to download a different when failing and article fails to download for a RAR/ZIP. The minimum is 1.</div>
 				</td>
 			</tr>
 			<tr>

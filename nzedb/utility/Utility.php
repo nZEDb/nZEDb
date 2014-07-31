@@ -232,6 +232,32 @@ class Utility
 		}
 		return $path;
 	}
+
+	/**
+	 * Unzip a gzip file, return the output. Return false on error / empty.
+	 *
+	 * @param string $filePath
+	 *
+	 * @return bool|string
+	 */
+	static public function unzipGzipFile($filePath)
+	{
+		// String to hold the NZB contents.
+		$string = '';
+
+		// Open the gzip file.
+		$gzFile = @gzopen($filePath, 'rb', 0);
+		if ($gzFile) {
+			// Append the decompressed data to the string until we find the end of file pointer.
+			while (!gzeof($gzFile)) {
+				$string .= gzread($gzFile, 1024);
+			}
+			// Close the gzip file.
+			gzclose($gzFile);
+		}
+		// Return the string.
+		return ($string === '' ? false : $string);
+	}
 }
 
 /**

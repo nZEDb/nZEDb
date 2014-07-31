@@ -4,11 +4,11 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 use nzedb\db\Settings;
 
 $pdo = new Settings();
-$c = new ColorCLI();
+$cli = new ColorCLI();
 $count = $groups = 0;
 if (!isset($argv[1])) {
 	passthru("clear");
-	exit($c->error("\nThis script will show all Active Groups. There is 1 required argument and 2 optional arguments.\n"
+	exit($cli->error("\nThis script will show all Active Groups. There is 1 required argument and 2 optional arguments.\n"
 			. "The first argument of [date, releases] is used to sort the display by first_record_postdate or by the number of releases.\n"
 			. "The second argument [ASC, DESC] sorts by ascending or descending.\n"
 			. "The third argument will limit the return to that number of groups.\n"
@@ -40,7 +40,7 @@ if (isset($argv[3]) && is_numeric($argv[3])) {
 	$limit = "";
 }
 
-$mask = $c->primary("%-50.50s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s");
+$mask = $cli->primary("%-50.50s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s");
 if ($rels = $pdo->queryDirect("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups")) {
 	foreach ($rels as $rel) {
 		$count += $rel['headers downloaded'];

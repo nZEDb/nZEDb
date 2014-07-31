@@ -1,10 +1,10 @@
 <?php
 require_once dirname(__FILE__) . '/config.php';
 
-$c = new ColorCLI();
+$cli = new ColorCLI();
 
 if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && $argv[1] != "web" && !is_numeric($argv[1])) || !isset($argv[2]) || !in_array($argv[2], ['true', 'false'])) {
-	exit ($c->error(
+	exit ($cli->error(
 			PHP_EOL
 			. "This script tries to match a release request ID by group to a PreDB request ID by group doing local lookup only." . PHP_EOL
 			. "In addition an optional final argument is time, in minutes, to check releases that have previously been checked." . PHP_EOL . PHP_EOL
@@ -20,11 +20,11 @@ if (!isset($argv[1]) || ($argv[1] != "all" && $argv[1] != "full" && $argv[1] != 
 }
 
 if ($argv[1] === 'web') {
-	(new RequestIDWeb(['ColorCLI' => $c]))->lookupRequestIDs(
+	(new RequestIDWeb())->lookupRequestIDs(
 		['limit' => $argv[1], 'show' => $argv[2], 'time' => (isset($argv[3]) && is_numeric($argv[3]) && $argv[3] > 0 ? $argv[3] : 0)]
 	);
 } else {
-	(new RequestIDLocal(['ColorCLI' => $c]))->lookupRequestIDs(
+	(new RequestIDLocal())->lookupRequestIDs(
 		['limit' => $argv[1], 'show' => $argv[2], 'time' => (isset($argv[3]) && is_numeric($argv[3]) && $argv[3] > 0 ? $argv[3] : 0)]
 	);
 }

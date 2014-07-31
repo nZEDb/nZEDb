@@ -47,27 +47,25 @@ class NameFixer
 		$defaults = [
 			'Echo'         => true,
 			'Categorize'   => null,
-			'ColorCLI'     => null,
 			'ConsoleTools' => null,
 			'Groups'       => null,
 			'Utility'      => null,
 			'Settings'     => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->echooutput = ($defaults['Echo'] && nZEDb_ECHOCLI);
+		$this->echooutput = ($options['Echo'] && nZEDb_ECHOCLI);
 		$this->relid = $this->fixed = $this->checked = 0;
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
 		$this->timeother = ' AND rel.adddate > (NOW() - INTERVAL 0 HOUR) AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id ORDER BY postdate DESC';
 		$this->timeall = ' AND rel.adddate > (NOW() - INTERVAL 6 HOUR) GROUP BY rel.id ORDER BY postdate DESC';
 		$this->fullother = ' AND rel.categoryid IN (1090, 2020, 3050, 6050, 5050, 7010, 8050) GROUP BY rel.id';
 		$this->fullall = '';
 		$this->done = $this->matched = false;
-		$this->c = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
-		$this->consoletools = ($defaults['ConsoleTools'] instanceof ConsoleTools ? $defaults['ConsoleTools'] :new ConsoleTools(['ColorCLI' => $this->c]));
-		$this->category = ($defaults['Categorize'] instanceof Categorize ? $defaults['Categorize'] : new Categorize(['Settings' => $this->pdo]));
-		$this->utility = ($defaults['Utility'] instanceof Utility ? $defaults['Utility'] :new Utility());
-		$this->_groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->consoletools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] :new ConsoleTools(['ColorCLI' => $this->pdo->log]));
+		$this->category = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->utility = ($options['Utility'] instanceof Utility ? $options['Utility'] :new Utility());
+		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 	}
 
 	/**
@@ -110,7 +108,7 @@ class NameFixer
 			$total = $releases->rowCount();
 			if ($total > 0) {
 				$this->_totalReleases = $total;
-				echo $this->c->primary(number_format($total) . ' releases to process.');
+				echo $this->pdo->log->primary(number_format($total) . ' releases to process.');
 
 				foreach ($releases as $rel) {
 					$releaseRow = $this->pdo->queryOneRow(
@@ -140,7 +138,7 @@ class NameFixer
 				}
 				$this->_echoFoundCount($echo, ' NFO\'s');
 			} else {
-				echo $this->c->info('Nothing to fix.');
+				echo $this->pdo->log->info('Nothing to fix.');
 			}
 		}
 	}
@@ -187,7 +185,7 @@ class NameFixer
 			$total = $releases->rowCount();
 			if ($total > 0) {
 				$this->_totalReleases = $total;
-				echo $this->c->primary(number_format($total) . ' file names to process.');
+				echo $this->pdo->log->primary(number_format($total) . ' file names to process.');
 
 				foreach ($releases as $release) {
 					$this->done = $this->matched = false;
@@ -198,7 +196,7 @@ class NameFixer
 
 				$this->_echoFoundCount($echo, ' files');
 			} else {
-				echo $this->c->info('Nothing to fix.');
+				echo $this->pdo->log->info('Nothing to fix.');
 			}
 		}
 	}
@@ -231,15 +229,15 @@ class NameFixer
 			if ($total > 0) {
 				$this->_totalReleases = $total;
 
-				echo $this->c->primary(number_format($total) . ' releases to process.');
-				$Nfo = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo, 'ColorCLI' => $this->c]);
+				echo $this->pdo->log->primary(number_format($total) . ' releases to process.');
+				$Nfo = new Nfo(['Echo' => $this->echooutput, 'Settings' => $this->pdo]);
 				$nzbContents = new NZBContents(
 					[
 						'Echo' => $this->echooutput,
 						'NNTP' => $nntp,
 						'Nfo'  => $Nfo,
 						'Settings'   => $this->pdo,
-						'PostProcess' => new PostProcess(['Settings' => $this->pdo, 'Nfo' => $Nfo, 'ColorCLI' => $this->c])
+						'PostProcess' => new PostProcess(['Settings' => $this->pdo, 'Nfo' => $Nfo])
 					]
 				);
 
@@ -253,7 +251,7 @@ class NameFixer
 				}
 				$this->_echoFoundCount($echo, ' files');
 			} else {
-				echo $this->c->alternate('Nothing to fix.');
+				echo $this->pdo->log->alternate('Nothing to fix.');
 			}
 		}
 	}
@@ -270,20 +268,20 @@ class NameFixer
 		$releases = false;
 		// 24 hours, other cats
 		if ($time == 1 && $cats == 1) {
-			echo $this->c->header($query . $this->timeother . ";\n");
+			echo $this->pdo->log->header($query . $this->timeother . ";\n");
 			$releases = $this->pdo->queryDirect($query . $this->timeother);
 		} // 24 hours, all cats
 		else if ($time == 1 && $cats == 2) {
-			echo $this->c->header($query . $this->timeall . ";\n");
+			echo $this->pdo->log->header($query . $this->timeall . ";\n");
 			$releases = $this->pdo->queryDirect($query . $this->timeall);
 		} //other cats
 		else if ($time == 2 && $cats == 1) {
-			echo $this->c->header($query . $this->fullother . ";\n");
+			echo $this->pdo->log->header($query . $this->fullother . ";\n");
 			$releases = $this->pdo->queryDirect($query . $this->fullother);
 		}
 		// all cats
 		else if ($time == 2 && $cats == 2) {
-			echo $this->c->header($query . $this->fullall . ";\n");
+			echo $this->pdo->log->header($query . $this->fullall . ";\n");
 			$releases = $this->pdo->queryDirect($query . $this->fullall);
 		}
 		return $releases;
@@ -298,7 +296,7 @@ class NameFixer
 	protected function _echoFoundCount($echo, $type)
 	{
 		if ($echo == 1) {
-			echo $this->c->header(
+			echo $this->pdo->log->header(
 				PHP_EOL .
 				number_format($this->fixed) .
 				' releases have had their names changed out of: ' .
@@ -306,7 +304,7 @@ class NameFixer
 				$type . '.'
 			);
 		} else {
-			echo $this->c->header(
+			echo $this->pdo->log->header(
 				PHP_EOL .
 				number_format($this->fixed) .
 				' releases could have their names changed. ' .
@@ -322,7 +320,7 @@ class NameFixer
 	 */
 	protected function _echoStartMessage($time, $type)
 	{
-		echo $this->c->header(
+		echo $this->pdo->log->header(
 			sprintf(
 				'Fixing search names %s using %s.',
 				($time == 1 ? 'in the past 6 hours' : 'since the beginning'),
@@ -338,7 +336,7 @@ class NameFixer
 	protected function _echoRenamed($show)
 	{
 		if ($this->checked % 500 == 0 && $show === 1) {
-			echo $this->c->alternate(PHP_EOL . number_format($this->checked) . ' files processed.' . PHP_EOL);
+			echo $this->pdo->log->alternate(PHP_EOL . number_format($this->checked) . ' files processed.' . PHP_EOL);
 		}
 
 		if ($show === 2) {
@@ -396,26 +394,26 @@ class NameFixer
 					}
 
 					echo
-						$this->c->headerOver("\nNew name:  ") .
-						$this->c->primary($newName) .
-						$this->c->headerOver("Old name:  ") .
-						$this->c->primary($release["searchname"]) .
-						$this->c->headerOver("Use name:  ") .
-						$this->c->primary($release["name"]) .
-						$this->c->headerOver("New cat:   ") .
-						$this->c->primary($newCatName) .
-						$this->c->headerOver("Old cat:   ") .
-						$this->c->primary($oldCatName) .
-						$this->c->headerOver("Group:     ") .
-						$this->c->primary($groupName) .
-						$this->c->headerOver("Method:    ") .
-						$this->c->primary($type . $method) .
-						$this->c->headerOver("ReleaseID: ") .
-						$this->c->primary($release["releaseid"]);
+						$this->pdo->log->headerOver("\nNew name:  ") .
+						$this->pdo->log->primary($newName) .
+						$this->pdo->log->headerOver("Old name:  ") .
+						$this->pdo->log->primary($release["searchname"]) .
+						$this->pdo->log->headerOver("Use name:  ") .
+						$this->pdo->log->primary($release["name"]) .
+						$this->pdo->log->headerOver("New cat:   ") .
+						$this->pdo->log->primary($newCatName) .
+						$this->pdo->log->headerOver("Old cat:   ") .
+						$this->pdo->log->primary($oldCatName) .
+						$this->pdo->log->headerOver("Group:     ") .
+						$this->pdo->log->primary($groupName) .
+						$this->pdo->log->headerOver("Method:    ") .
+						$this->pdo->log->primary($type . $method) .
+						$this->pdo->log->headerOver("ReleaseID: ") .
+						$this->pdo->log->primary($release["releaseid"]);
 					if (isset($release['filename']) && $release['filename'] != ""){
 						echo
-							$this->c->headerOver("Filename:  ") .
-							$this->c->primary($release["filename"]);
+							$this->pdo->log->headerOver("Filename:  ") .
+							$this->pdo->log->primary($release["filename"]);
 					}
 
 					if ($type !== "PAR2, ") {
@@ -577,8 +575,8 @@ class NameFixer
 			$limit = "LIMIT " . $args[1];
 		}
 
-		echo $this->c->header("\nMatch PreFiles (${args[1]}) Started at " . date('g:i:s'));
-		echo $this->c->primary("Matching predb filename to cleaned releasefiles.name.\n");
+		echo $this->pdo->log->header("\nMatch PreFiles (${args[1]}) Started at " . date('g:i:s'));
+		echo $this->pdo->log->primary("Matching predb filename to cleaned releasefiles.name.\n");
 
 		$qry =	sprintf('
 				SELECT r.id AS releaseid, r.name, r.searchname, r.group_id, r.categoryid,
@@ -601,7 +599,7 @@ class NameFixer
 
 		if ($total > 0) {
 
-			echo $this->c->header("\n" . number_format($total) . ' releases to process.');
+			echo $this->pdo->log->header("\n" . number_format($total) . ' releases to process.');
 
 			foreach ($query as $row) {
 				$success = 0;
@@ -613,9 +611,9 @@ class NameFixer
 					$this->consoletools->overWritePrimary("Renamed Releases: [" . number_format($counted) . "] " . $this->consoletools->percentString(++$counter, $total));
 				}
 			}
-			echo $this->c->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(TIME() - $timestart) . ".");
+			echo $this->pdo->log->header("\nRenamed " . number_format($counted) . " releases in " . $this->consoletools->convertTime(TIME() - $timestart) . ".");
 		} else {
-			echo $this->c->info("\nNothing to do.");
+			echo $this->pdo->log->info("\nNothing to do.");
 		}
 	}
 
