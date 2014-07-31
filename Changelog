@@ -6,6 +6,8 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
+2014-07-31 niel
+	* Fix: Typoes in .../misc/testing/DB/convert_to_tpg.php causing undefined variable error.
 2014-07-30 niel
 	* Chg: Standardising all usage of ColorCLI class to either $cli, $pdo->log, or $this->pdo->log depending on context.
 		This reduces duplicated instances (and therefore RAM) and time taken to instantiate additional copies.
