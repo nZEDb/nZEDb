@@ -6,13 +6,59 @@ New updates are grouped by person, at the top of the file.
 ***Please run .../nzedb/build/_runonce/relocateOldDirectoryContents.php to move all of your old files into the new folder names***
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
-2014-07-26 kevin
+2014-07-31 niel
+	* Fix: Typoes in .../misc/testing/DB/convert_to_tpg.php causing undefined variable error.
+2014-07-30 niel
+	* Chg: Standardising all usage of ColorCLI class to either $cli, $pdo->log, or $this->pdo->log depending on context.
+		This reduces duplicated instances (and therefore RAM) and time taken to instantiate additional copies.
+2014-07-30 kevin
+	* Fix: Fix issue where multiple scripts running on the same group could overwrite the binaries table "currentparts" count causing long release creation time because of invalid count.
+	* Add: For users on PHP 5.5.0 or higher, set the CLI process name in ProcessAdditional to the releaseid so you can know which release is causing the issue.
+	* Chg: Set full path to file to be easier to track for previous add.
+	* Chg: Save a select query in binaries scan by changing the insert query.
+	* Chg: Speed up process time of headers by doing the sha1 only once.
+2014-07-29 kevin
+	* Chg: Add ignore to latest patch for those with duplicates.
+	* Fix: Issue where avconv returns single digit time vs ffmpeg's double digit time format, pad the string adding the missing 0's to mimic ffmpeg's output.
+	* Chg: Speed up article inserts even more.
+	* Fix: Put check to see if we downloaded 1 article header or not when inserting into binaries table.
+	* Fix: Part repair issue in Binaries.
+	* Fix: Check for empty parts query.
+	* Chg: Raise default min password_hash cost to 11. As noted previously, you should run the script to figure out a decent cost for your system. 10 is not recommended anymore by the PHP developper.
+	* Chg: Modify find_password_hash_cost.php to accept a time target argument. Recommended values are between 0.2 and 0.5 seconds.
+	* Rem: Remove the forced require on multiprocessing settings.php as we do defined checks on all the vars anyways and all the settings are optional.
+	* Chg: Extract the extension from the video file when getting time, as ffmpeg has issues on some videos when using the wrong extension.
+	* Chg: More changes to getVideoTime to increases chances of non black previews.
+2014-07-28 kevin
+	* Chg: Another massive boost to header insert speed.
+	* ---: With these changes, if you have not followed INSTALL.txt which says to change the MySQL max_allowed_packet to 16M (or more) you might have issues, be warned.
+	* ---: !!!!READ THIS!!!!: TPG users MUST run nzedb\build\_runonce\tpg_more_fixes.php
+	* Add: Debug message to binaries to show amount of bytes sent to MySQL when inserting parts.
+	* Add: Option to settings.php to disable SQL transactions. Update your settings.php file!
+2014-07-28 taskym
+	* Add: Added IAFD, less memory usage, regex update #1431
+2014-07-27 bart39
+	* Chg: Don't display Releases that have not been processed by PP Additional (passwordstatus -1 to -6) if show passwords is set to not display potentially passworded. #1302
+2014-07-27 tasky
+	* Fix: Popporn kept returning false #1425
+2014-07-27 ruhllatio
+	* Fix: local lookup query WHEREs were backwards sprintf'd
+	* Fix: forgot a LIKE
+	* Fix: Monitor not reflecting newestpre time despite having plenty of new Pres
+2014-07-27 kevin
 	* Fix: warningOver method on ColorCLI.
 	* Fix: Missing max part repair not being used in a query.
 	* Chg: Maximum failed part downloads setting to not divide by 5, this will speed up post process additional.
 	* Fix: The logic for calculating failed/downloaded rar parts.
 	* Fix: Typo in nfo query.
 	* Chg: Check if maxsizetopostprocess is 0 in nfo, ignore if so.
+	* Add: Min / Max release size setting to process NFOs.
+	* Chg: Move NZB decompression to a central location.
+	* Chg: Remove timeout for avconv also, will look into alternatives.
+	* Chg: Get timeout to work on avconv/ffmpeg, needed the --foreground option.
+	* Add: Max NFO download retries setting.
+	* Add: Query limiters to Forking to prevent spawning of processes needlessly.
+	* Add: password_compat library recommended by php.net for php versions prior to 5.5 to replace our usage of crypt without a salt, which will make passwords more secure for our users still on php 5.4
 2014-07-26 ruhllatio
 	* Merge Tasky's PR #1424 - updating changelog to reflect
 2014-07-26 tasky

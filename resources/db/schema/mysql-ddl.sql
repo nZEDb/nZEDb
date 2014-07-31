@@ -24,21 +24,25 @@ CREATE TABLE collections (
 
 
 DROP TABLE IF EXISTS binaries;
-CREATE TABLE binaries (
-	id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-	name VARCHAR(1000) NOT NULL DEFAULT '',
-	collectionid INT(11) UNSIGNED NOT NULL DEFAULT '0',
-	filenumber INT UNSIGNED NOT NULL DEFAULT '0',
-	totalparts INT(11) UNSIGNED NOT NULL DEFAULT '0',
-	binaryhash VARCHAR(255) NOT NULL DEFAULT '0',
-	partcheck BIT NOT NULL DEFAULT 0,
-	partsize BIGINT UNSIGNED NOT NULL DEFAULT '0',
-	PRIMARY KEY (id),
-    INDEX ix_binary_binaryhash (binaryhash),
-    INDEX ix_binary_partcheck (partcheck),
-    INDEX ix_binary_collection  (collectionid)
-) ENGINE=MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1;
-
+CREATE TABLE         binaries (
+  id           BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  name         VARCHAR(1000)       NOT NULL DEFAULT '',
+  collectionid INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  filenumber   INT UNSIGNED        NOT NULL DEFAULT '0',
+  totalparts   INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+  currentparts INT UNSIGNED        NOT NULL DEFAULT '0',
+  binaryhash   VARCHAR(255)        NOT NULL DEFAULT '0',
+  partcheck    BIT                 NOT NULL DEFAULT 0,
+  partsize     BIGINT UNSIGNED     NOT NULL DEFAULT '0',
+  PRIMARY KEY                       (id),
+  UNIQUE INDEX ix_binary_binaryhash (binaryhash),
+  INDEX        ix_binary_partcheck  (partcheck),
+  INDEX        ix_binary_collection (collectionid)
+)
+  ENGINE          = MYISAM
+  DEFAULT CHARSET = utf8
+  COLLATE         = utf8_unicode_ci
+  AUTO_INCREMENT  = 1;
 
 DROP TABLE IF EXISTS releases;
 CREATE TABLE releases (

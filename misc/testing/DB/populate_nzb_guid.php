@@ -5,7 +5,7 @@ require_once dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$cli = new ColorCLI();
 if (isset($argv[1])) {
 	$del = false;
 	if (isset($argv[2])) {
@@ -13,7 +13,7 @@ if (isset($argv[1])) {
 	}
 	create_guids($argv[1], $del);
 } else {
-	exit($c->error("\nThis script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\n\n"
+	exit($cli->error("\nThis script updates all releases with the guid (md5 hash of the first message-id) from the nzb file.\n\n"
 			. "php $argv[0] true         ...: To create missing nzb_guids.\n"
 			. "php $argv[0] true delete  ...: To create missing nzb_guids and delete invalid nzbs and releases.\n"));
 }
@@ -21,8 +21,7 @@ if (isset($argv[1])) {
 function create_guids($live, $delete = false)
 {
 	$pdo = new Settings();
-	$c = new ColorCLI();
-	$consoletools = new ConsoleTools(['ColorCLI' => $c]);
+	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$timestart = TIME();
 	$relcount = $deleted = 0;
 
@@ -33,7 +32,7 @@ function create_guids($live, $delete = false)
 	}
 	$total = $relrecs->rowCount();
 	if ($total > 0) {
-		echo $c->header("Creating nzb_guids for " . number_format($total) . " releases.");
+		echo $pdo->log->header("Creating nzb_guids for " . number_format($total) . " releases.");
 		$releases = new Releases(['Settings' => $pdo]);
 		$nzb = new NZB($pdo);
 		$reccnt = 0;
@@ -41,8 +40,10 @@ function create_guids($live, $delete = false)
 			$reccnt++;
 			$nzbpath = $nzb->NZBPath($relrec['guid']);
 			if ($nzbpath !== false) {
-				$nzbpath = 'compress.zlib://' . $nzbpath;
-				$nzbfile = @simplexml_load_file($nzbpath);
+				$nzbfile = nzedb\utility\Utility::unzipGzipFile($nzbpath);
+				if ($nzbfile) {
+					$nzbfile = @simplexml_load_string($nzbfile);
+				}
 				if (!$nzbfile) {
 					if (isset($delete) && $delete == 'delete') {
 						//echo "\n".$nzb->NZBPath($relrec['guid'])." is not a valid xml, deleting release.\n";
@@ -79,7 +80,7 @@ function create_guids($live, $delete = false)
 				}
 			} else {
 				if (isset($delete) && $delete == 'delete') {
-					//echo $c->primary($nzb->NZBPath($relrec['guid']) . " does not have an nzb, deleting.");
+					//echo $pdo->log->primary($nzb->NZBPath($relrec['guid']) . " does not have an nzb, deleting.");
 					$releases->deleteSingle($relrec['guid'], $nzb);
 				}
 			}
@@ -88,9 +89,9 @@ function create_guids($live, $delete = false)
 		if ($relcount > 0) {
 			echo "\n";
 		}
-		echo $c->header("Updated " . $relcount . " release(s). This script ran for " . $consoletools->convertTime(TIME() - $timestart));
+		echo $pdo->log->header("Updated " . $relcount . " release(s). This script ran for " . $consoletools->convertTime(TIME() - $timestart));
 	} else {
-		echo $c->info('Query time: ' . $consoletools->convertTime(TIME() - $timestart));
-		exit($c->info("No releases are missing the guid."));
+		echo $pdo->log->info('Query time: ' . $consoletools->convertTime(TIME() - $timestart));
+		exit($pdo->log->info("No releases are missing the guid."));
 	}
 }

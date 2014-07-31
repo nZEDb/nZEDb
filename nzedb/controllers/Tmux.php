@@ -287,7 +287,7 @@ class Tmux
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND categoryid BETWEEN 6000 AND 6040 AND xxxinfo_id = 0) AS xxx,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1) AS releases,
 				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus = 1) AS nfo,
-				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -6 AND -1) AS nforemains";
+				(SELECT COUNT(*) FROM releases WHERE nzbstatus = 1 AND nfostatus BETWEEN -8 AND -1) AS nforemains";
 		$qry2 = "SELECT
 				(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.categoryid BETWEEN 4000 AND 4999 AND r.categoryid != 4050 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS apps,
 				(SELECT COUNT(*) FROM releases r INNER JOIN category c ON c.id = r.categoryid WHERE r.nzbstatus = 1 AND r.passwordstatus BETWEEN -6 AND -1 AND r.haspreview = -1 AND c.disablepreview = 0) AS work,

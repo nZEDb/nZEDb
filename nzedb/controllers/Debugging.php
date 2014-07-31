@@ -183,14 +183,14 @@ class Debugging
 	 */
 	public function __construct(array $options = array())
 	{
-		$defOptions = [
+		$defaults = [
 			'Class'    => '',
 			'ColorCLI' => null
 		];
-		$defOptions = array_replace($defOptions, $options);
+		$options += $defaults;
 
-		$this->class = $defOptions['Class'];
-		$this->colorCLI = ($defOptions['ColorCLI'] instanceof ColorCLI ? $defOptions['ColorCLI'] : new ColorCLI());
+		$this->class = $options['Class'];
+		$this->colorCLI = ($options['ColorCLI'] instanceof ColorCLI ? $options['ColorCLI'] : new ColorCLI());
 
 		$this->newLine = PHP_EOL;
 		$this->outputCLI = (strtolower(PHP_SAPI) === 'cli');

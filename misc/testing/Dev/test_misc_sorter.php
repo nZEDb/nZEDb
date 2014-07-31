@@ -5,8 +5,7 @@ $sorter = new MiscSorter(true);
 
 $pdo = new nzedb\db\Settings();
 $altNNTP = $pdo->getSetting('alternate_nntp');
-$c = new ColorCLI();
-$nntp = new NNTP(['Settings' => $pdo, 'ColorCLI' => $c]);
+$nntp = new NNTP(['Settings' => $pdo]);
 if (($altNNTP === '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true)
 {
 	echo $c->error("Unable to connect to usenet.\n");

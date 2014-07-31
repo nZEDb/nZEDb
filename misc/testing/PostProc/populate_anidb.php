@@ -91,7 +91,7 @@ class AniDBstandAlone {
 		$aniremovedstage0 = $pdo->query(sprintf("SELECT anidbid FROM anidb WHERE anidbid NOT IN (%s)", $notinani));
 		$animissstage1 = $pdo->query(sprintf("SELECT DISTINCT anidbid FROM animetitles WHERE anidbid NOT IN (%s)", $notinani));
 		$anirunnstage2 = $pdo->query('SELECT anidbid FROM anidb WHERE (startdate < CURDATE() AND (enddate > CURDATE() OR enddate IS NULL)) AND (unixtime < UNIX_TIMESTAMP(NOW()- INTERVAL 7 DAY)) ORDER BY unixtime');
-		$anioldstage3 = $pdo->query('SELECT anidbid FROM anidb WHERE (unixtime < UNIX_TIMESTAMP(NOW()- INTERVAL 90 DAY)) ORDER BY unixtime');
+		$anidboldtitles = $pdo->query('SELECT anidbid FROM anidb WHERE (unixtime < UNIX_TIMESTAMP(NOW()- INTERVAL 90 DAY)) ORDER BY unixtime');
 		echo  $this->c->header("Total of " . count($animetitles) . " distinct titles present in animetitles.\n" .
 					  "Total of " . count($anidbtitles) . " distinct titles present in anidb.\n" .
 					  "Total of " . count($anidbtitleslang) . " distinct titles present in anidb_titles.\n" .
@@ -100,7 +100,7 @@ class AniDBstandAlone {
 					  "Total of " . count($animissstage1) . " missing distinct titles in anidb table.\n" .
 					  "Total of " . count($aniremovedstage0) . " orphaned anime titles no longer in animetitles to be removed from anidb table.\n" .
 					  "Total of " . count($anirunnstage2) . " running anime titles in anidb table not updated for 7 days.\n" .
-					  "Total of " . count($anioldstage3) . " anime titles in anidb table not updated for 90 days.\n");
+					  "Total of " . count($anidboldtitles) . " anime titles in anidb table not updated for 90 days.\n");
 
 		if ($this->APIKEY == '') {
 			echo $this->c->error("Error: You need an API key from AniDB.net to use this.  Try adding \"nzedb\" in Site Edit.\n");
@@ -394,7 +394,7 @@ class AniDBstandAlone {
 		if (!$apiresponse) {
 			echo "AniDB   : Error getting response.\n";
 			return false;
-		} else {
+		}
 		curl_close($ch);
 
 
@@ -414,7 +414,6 @@ class AniDBstandAlone {
 				echo "AniDB   : No 'anime id' field found in response.\n";
 				return false;
 			}
-		}
 		}
 
 // why do we need a title in specific language anyway? With the anidb_lang we have all available languages we can search on. Remove this when we remove the lang column in anidb!!
@@ -515,6 +514,7 @@ class AniDBstandAlone {
 			'epnos' => isset($epnosArray) ? implode($epnosArray, '|') : '',
 			'airdates' => isset($airdatesArray) ? implode($airdatesArray, '|') : '',
 			'episodetitles' => isset($episodetitlesArray) ? implode($episodetitlesArray, '|') : '',
+			'banned' => false,
 		);
 
 			$sleeptime = 10 + rand(2, 10);

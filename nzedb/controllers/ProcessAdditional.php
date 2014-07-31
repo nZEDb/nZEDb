@@ -63,7 +63,6 @@ Class ProcessAdditional
 		$defaults = [
 			'Echo'         => false,
 			'Categorize'   => null,
-			'ColorCLI'     => null,
 			'Groups'       => null,
 			'NameFixer'    => null,
 			'Nfo'          => null,
@@ -74,25 +73,24 @@ Class ProcessAdditional
 			'ReleaseImage' => null,
 			'Settings'     => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->_colorCLI = new ColorCLI();
-		$this->_echoCLI = ($defaults['Echo'] && nZEDb_ECHOCLI && (strtolower(PHP_SAPI) === 'cli'));
+		$this->_echoCLI = ($options['Echo'] && nZEDb_ECHOCLI && (strtolower(PHP_SAPI) === 'cli'));
 		$this->_echoDebug = nZEDb_DEBUG;
 
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->_nntp = ($defaults['NNTP'] instanceof NNTP ? $defaults['NNTP'] : new NNTP(['ColorCLI' => $this->_colorCLI, 'Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->_nntp = ($options['NNTP'] instanceof NNTP ? $options['NNTP'] : new NNTP(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 
-		$this->_nzb = ($defaults['NZB'] instanceof NZB ? $defaults['NZB'] : new NZB($this->pdo));
-		$this->_groups = ($defaults['Groups'] instanceof Groups ? $defaults['Groups'] : new Groups(['Settings' => $this->pdo]));
+		$this->_nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
+		$this->_groups = ($options['Groups'] instanceof Groups ? $options['Groups'] : new Groups(['Settings' => $this->pdo]));
 		$this->_archiveInfo = new ArchiveInfo();
-		$this->_releaseFiles = ($defaults['ReleaseFiles'] instanceof ReleaseFiles ? $defaults['ReleaseFiles'] : new ReleaseFiles($this->pdo));
-		$this->_categorize = ($defaults['Categorize'] instanceof Categorize ? $defaults['Categorize'] : new Categorize(['Settings' => $this->pdo]));
-		$this->_nameFixer = ($defaults['NameFixer'] instanceof NameFixer ? $defaults['NameFixer'] : new NameFixer(['Echo' =>$this->_echoCLI, 'Groups' => $this->_groups, 'Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI, 'Categorize' => $this->_categorize]));
-		$this->_releaseExtra = ($defaults['ReleaseExtra'] instanceof ReleaseExtra ? $defaults['ReleaseExtra'] : new ReleaseExtra($this->pdo));
-		$this->_releaseImage = ($defaults['ReleaseImage'] instanceof ReleaseImage ? $defaults['ReleaseImage'] : new ReleaseImage($this->pdo));
+		$this->_releaseFiles = ($options['ReleaseFiles'] instanceof ReleaseFiles ? $options['ReleaseFiles'] : new ReleaseFiles($this->pdo));
+		$this->_categorize = ($options['Categorize'] instanceof Categorize ? $options['Categorize'] : new Categorize(['Settings' => $this->pdo]));
+		$this->_nameFixer = ($options['NameFixer'] instanceof NameFixer ? $options['NameFixer'] : new NameFixer(['Echo' =>$this->_echoCLI, 'Groups' => $this->_groups, 'Settings' => $this->pdo, 'Categorize' => $this->_categorize]));
+		$this->_releaseExtra = ($options['ReleaseExtra'] instanceof ReleaseExtra ? $options['ReleaseExtra'] : new ReleaseExtra($this->pdo));
+		$this->_releaseImage = ($options['ReleaseImage'] instanceof ReleaseImage ? $options['ReleaseImage'] : new ReleaseImage($this->pdo));
 		$this->_par2Info = new Par2Info();
-		$this->_nfo = ($defaults['Nfo'] instanceof Nfo ? $defaults['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo, 'ColorCLI' => $this->_colorCLI]));
+		$this->_nfo = ($options['Nfo'] instanceof Nfo ? $options['Nfo'] : new Nfo(['Echo' => $this->_echoCLI, 'Settings' => $this->pdo]));
 
 		$this->_innerFileBlacklist = ($this->pdo->getSetting('innerfileblacklist') == '' ? false : $this->pdo->getSetting('innerfileblacklist'));
 		$this->_maxNestedLevels = ($this->pdo->getSetting('maxnestedlevels') == 0 ? 3 : $this->pdo->getSetting('maxnestedlevels'));
@@ -115,17 +113,16 @@ Class ProcessAdditional
 
 		$this->_hasGNUFile = (nzedb\utility\Utility::hasCommand('file') === true ? true : false);
 
-		$this->_killString = '';
+		$this->_killString = '"';
 		if ($this->pdo->getSetting('timeoutpath') != '' && $this->pdo->getSetting('timeoutseconds') > 0) {
 			$this->_killString = (
-				'"' . $this->pdo->getSetting('timeoutpath') . '" -s KILL ' . $this->pdo->getSetting('timeoutseconds') . 's '
+				'"' . $this->pdo->getSetting('timeoutpath') .
+				'" --foreground --signal=KILL ' .
+				$this->pdo->getSetting('timeoutseconds') . ' "'
 			);
 		}
 
-		// ffmpeg stalls with timeout, so don't use it. It doesn't stall on avconv however.
-		$this->_ffmpegKillString = (
-			strpos($this->pdo->getSetting('ffmpegpath'), 'ffmpeg') !== false ? '' : $this->_killString
-		);
+		$this->_showCLIReleaseID = (version_compare(PHP_VERSION, '5.5.0', '>=') ? (PHP_BINARY . ' ' . __DIR__ . DS .  'ProcessAdditional.php ReleaseID: ') : false);
 
 		// Maximum amount of releases to fetch per run.
 		$this->_queryLimit =
@@ -357,6 +354,10 @@ Class ProcessAdditional
 				false
 			);
 
+			if ($this->_showCLIReleaseID) {
+				cli_set_process_title($this->_showCLIReleaseID . $this->_release['id']);
+			}
+
 			// Create folder to store temporary files.
 			if ($this->_createTempFolder() === false) {
 				continue;
@@ -496,14 +497,7 @@ Class ProcessAdditional
 			return false;
 		}
 
-		// Turn on output buffering.
-		ob_start();
-		// Decompress the NZB.
-		@readgzfile($nzbPath);
-		// Read the nzb into memory.
-		$nzbContents = ob_get_contents();
-		// Clean (erase) the output buffer and turn off output buffering.
-		ob_end_clean();
+		$nzbContents = nzedb\utility\Utility::unzipGzipFile($nzbPath);
 
 		// Get a list of files in the nzb.
 		$this->_nzbContents = $this->_nzb->nzbFileList($nzbContents);
@@ -750,8 +744,7 @@ Class ProcessAdditional
 					$fileName = $this->tmpPath . uniqid() . '.rar';
 					file_put_contents($fileName, $compressedData);
 					nzedb\utility\runCmd(
-						$this->_killString .
-						'"' . $this->_unrarPath .
+						$this->_killString . $this->_unrarPath .
 						'" e -ai -ep -c- -id -inul -kb -or -p- -r -y "' .
 						$fileName . '" "' . $this->tmpPath . 'unrar/"'
 					);
@@ -767,8 +760,7 @@ Class ProcessAdditional
 					$fileName = $this->tmpPath . uniqid() . '.zip';
 					file_put_contents($fileName, $compressedData);
 					nzedb\utility\runCmd(
-						$this->_killString .
-						'"' . $this->_7zipPath . '" x "' .
+						$this->_killString . $this->_7zipPath . '" x "' .
 						$fileName . '" -bd -y -o"' . $this->tmpPath . 'unzip/"'
 					);
 					unlink($fileName);
@@ -1433,7 +1425,7 @@ Class ProcessAdditional
 
 				// Get the media info for the file.
 				$xmlArray = nzedb\utility\runCmd(
-					$this->_killString . '"' . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
+					$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 				);
 				if (is_array($xmlArray)) {
 
@@ -1518,8 +1510,7 @@ Class ProcessAdditional
 
 				// Create an audio sample.
 				nzedb\utility\runCmd(
-					$this->_ffmpegKillString .
-					'"' .
+					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -t 30 -i "' .
 					$fileLocation .
@@ -1582,10 +1573,10 @@ Class ProcessAdditional
 	{
 		// Try to resize/move the image.
 		$this->_foundJPGSample = (
-		$this->_releaseImage->saveImage(
-			$this->_release['guid'] . '_thumb',
-			$fileLocation, $this->_releaseImage->jpgSavePath, 650, 650
-		) === 1 ? true : false
+			$this->_releaseImage->saveImage(
+				$this->_release['guid'] . '_thumb',
+				$fileLocation, $this->_releaseImage->jpgSavePath, 650, 650
+			) === 1 ? true : false
 		);
 
 		// If it's successful, tell the DB.
@@ -1608,38 +1599,42 @@ Class ProcessAdditional
 	 *
 	 * @param string $videoLocation
 	 *
-	 * @return array|string
+	 * @return string
 	 */
 	private function getVideoTime($videoLocation)
 	{
-		$tmpVideo = ($this->tmpPath . uniqid() . '.avi');
+		// Attempt to get the file extension as ffmpeg fails on some videos with the wrong extension, avconv however is fine.
+		if (preg_match('/(\.[a-zA-Z0-9]+)\s*$/', $videoLocation, $extension)) {
+			$extension = $extension[1];
+		} else {
+			$extension = '.avi';
+		}
+
+		$tmpVideo = ($this->tmpPath . uniqid() . $extension);
 		// Get the real duration of the file.
 		$time = nzedb\utility\runCmd(
-			$this->_ffmpegKillString .
-			'"' .
+			$this->_killString .
 			$this->pdo->getSetting('ffmpegpath') .
-			'" -i "' .
-			$videoLocation .
-			'" -vcodec copy -y "' .
-			$tmpVideo .
-			'" 2>&1 | cut -f 6 -d \'=\' | grep \'^[0-9].*bitrate\' | cut -f 1 -d \' \''
+			'" -i "' . $videoLocation .
+			'" -vcodec copy -y 2>&1 "' .
+			$tmpVideo . '"',
+			false
 		);
 		@unlink($tmpVideo);
 
-		$time = (isset($time[0]) ? $time[0] : '');
-
-		if ($time !== '' && preg_match('/(\d{1,2}).(\d{2})/', $time, $numbers)) {
+		if (empty($time) || !preg_match('/time=(\d{1,2}:\d{1,2}:)?(\d{1,2})\.(\d{1,2})\s*bitrate=/i', implode(' ', $time), $numbers)) {
+			return '';
+		} else {
 			// Reduce the last number by 1, this is to make sure we don't ask avconv/ffmpeg for non existing data.
-			if ($numbers[2] > 0) {
-				$numbers[2] -= 1;
+			if ($numbers[3] > 0) {
+				$numbers[3] -= 1;
 			} else if ($numbers[1] > 0) {
-				$numbers[1] -= 1;
-				$numbers[2] = '99';
+				$numbers[2] -= 1;
+				$numbers[3] = '99';
 			}
-			$time = ('00:00:' . $numbers[1] . '.' . $numbers[2]);
+			// Manually pad the numbers in case they are 1 number. to get 02 for example instead of 2.
+			return ('00:00:' . str_pad($numbers[2], 2, '0', STR_PAD_LEFT) . '.' . str_pad($numbers[3], 2, '0', STR_PAD_LEFT));
 		}
-
-		return $time;
 	}
 
 	/**
@@ -1657,21 +1652,18 @@ Class ProcessAdditional
 
 		if (is_file($fileLocation)) {
 
-			// Get the exact time of this video.
-			$time = $this->getVideoTime($fileLocation);
-
 			// Create path to temp file.
 			$fileName = ($this->tmpPath . 'zzzz' . mt_rand(5, 12) . mt_rand(5, 12) . '.jpg');
 
+			$time = $this->getVideoTime($fileLocation);
+
 			// Create the image.
 			nzedb\utility\runCmd(
-				$this->_ffmpegKillString .
-				'"' .
+				$this->_killString .
 				$this->pdo->getSetting('ffmpegpath') .
 				'" -i "' .
 				$fileLocation .
-				'" -ss ' .
-				($time === '' ? ' 00:00:00.00' : $time) .
+				'" -ss ' . ($time === '' ? '00:00:03.00' : $time)  .
 				' -vframes 1 -loglevel quiet -y "' .
 				$fileName .
 				'"'
@@ -1728,7 +1720,7 @@ Class ProcessAdditional
 				// Get the real duration of the file.
 				$time = $this->getVideoTime($fileLocation);
 
-				if (preg_match('/(\d{2}).(\d{2})/', $time, $numbers)) {
+				if ($time !== '' && preg_match('/(\d{2}).(\d{2})/', $time, $numbers)) {
 					$newMethod = true;
 
 					// Get the lowest time we can start making the video at based on how many seconds the admin wants the video to be.
@@ -1758,8 +1750,7 @@ Class ProcessAdditional
 
 					// Try to get the sample (from the end instead of the start).
 					nzedb\utility\runCmd(
-						$this->_ffmpegKillString .
-						'"' .
+						$this->_killString .
 						$this->pdo->getSetting('ffmpegpath') .
 						'" -i "' .
 						$fileLocation .
@@ -1776,8 +1767,7 @@ Class ProcessAdditional
 			if ($newMethod === false) {
 				// If longer than 60 or we could not get the video length, run the old way.
 				nzedb\utility\runCmd(
-					$this->_ffmpegKillString .
-					'"' .
+					$this->_killString .
 					$this->pdo->getSetting('ffmpegpath') .
 					'" -i "' .
 					$fileLocation .
@@ -1852,7 +1842,7 @@ Class ProcessAdditional
 
 			// Run media info on it.
 			$xmlArray = nzedb\utility\runCmd(
-				$this->_killString . '"' . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
+				$this->_killString . $this->pdo->getSetting('mediainfopath') . '" --Output=XML "' . $fileLocation . '"'
 			);
 
 			// Check if we got it.
@@ -2321,7 +2311,7 @@ Class ProcessAdditional
 	protected function _echo($string, $type, $newLine = true)
 	{
 		if ($this->_echoCLI) {
-			$this->_colorCLI->doEcho($this->_colorCLI->$type($string), $newLine);
+			$this->pdo->log->doEcho($this->pdo->log->$type($string), $newLine);
 		}
 	}
 

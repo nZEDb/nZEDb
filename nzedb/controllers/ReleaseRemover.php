@@ -20,11 +20,6 @@ class ReleaseRemover
 	private $nzb;
 
 	/**
-	 * @var ColorCLI
-	 */
-	protected $color;
-
-	/**
 	 * @var ConsoleTools
 	 */
 	protected $consoleTools;
@@ -131,20 +126,18 @@ class ReleaseRemover
 	{
 		$defaults = [
 			'Browser'      => false, // Are we coming from the web script.
-			'Echo'         => true,  // Echo to CLI?
-			'ColorCLI'     => null,
 			'ConsoleTools' => null,
+			'Echo'         => true,  // Echo to CLI?
 			'NZB'          => null,
 			'Releases'     => null,
 			'Settings'     => null,
 		];
-		$defaults = array_replace($defaults, $options);
+		$options += $defaults;
 
-		$this->pdo = ($defaults['Settings'] instanceof Settings ? $defaults['Settings'] : new Settings());
-		$this->color = ($defaults['ColorCLI'] instanceof ColorCLI ? $defaults['ColorCLI'] : new ColorCLI());
-		$this->consoleTools = ($defaults['ConsoleTools'] instanceof ConsoleTools ? $defaults['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->color]));
-		$this->releases = ($defaults['Releases'] instanceof Releases ? $defaults['Releases'] : new Releases(['Settings' => $this->pdo]));
-		$this->nzb = ($defaults['NZB'] instanceof NZB ? $defaults['NZB'] : new NZB($this->pdo));
+		$this->pdo = ($options['Settings'] instanceof Settings ? $options['Settings'] : new Settings());
+		$this->consoleTools = ($options['ConsoleTools'] instanceof ConsoleTools ? $options['ConsoleTools'] : new ConsoleTools(['ColorCLI' => $this->pdo->log]));
+		$this->releases = ($options['Releases'] instanceof Releases ? $options['Releases'] : new Releases(['Settings' => $this->pdo]));
+		$this->nzb = ($options['NZB'] instanceof NZB ? $options['NZB'] : new NZB($this->pdo));
 
 		$this->mysql = ($this->pdo->dbSystem() === 'mysql' ? true : false);
 		$this->like = ($this->mysql ? 'LIKE' : 'ILIKE');
@@ -152,8 +145,8 @@ class ReleaseRemover
 		$this->query = '';
 		$this->error = '';
 		$this->ignoreUserCheck = false;
-		$this->browser = $defaults['Browser'];
-		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $defaults['Echo']);
+		$this->browser = $options['Browser'];
+		$this->echoCLI = (!$this->browser && nZEDb_ECHOCLI && $options['Echo']);
 	}
 
 	/**
@@ -205,8 +198,8 @@ class ReleaseRemover
 		$this->deleteReleases();
 
 		if ($this->echoCLI) {
-			echo $this->color->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
-			echo $this->color->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
+			echo $this->pdo->log->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
+			echo $this->pdo->log->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
 
 		return ($this->browser
@@ -247,7 +240,7 @@ class ReleaseRemover
 		switch ($time) {
 			case 'full':
 				if ($this->echoCLI) {
-					echo $this->color->header("Removing crap releases - no time limit.\n");
+					echo $this->pdo->log->header("Removing crap releases - no time limit.\n");
 				}
 				break;
 			default:
@@ -256,7 +249,7 @@ class ReleaseRemover
 					return $this->returnError();
 				}
 				if ($this->echoCLI) {
-					echo $this->color->header('Removing crap releases from the past ' . $time . " hour(s).\n");
+					echo $this->pdo->log->header('Removing crap releases from the past ' . $time . " hour(s).\n");
 				}
 				$this->crapTime =
 					' AND r.adddate > (NOW() - INTERVAL ' .
@@ -331,8 +324,8 @@ class ReleaseRemover
 		}
 
 		if ($this->echoCLI) {
-			echo $this->color->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
-			echo $this->color->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
+			echo $this->pdo->log->headerOver(($this->delete ? "Deleted " : "Would have deleted ") . $this->deletedCount . " release(s). This script ran for ");
+			echo $this->pdo->log->header($this->consoleTools->convertTime(TIME() - $this->timeStart));
 		}
 
 		return ($this->browser
@@ -688,7 +681,6 @@ class ReleaseRemover
 	protected function removeBlacklist()
 	{
 		$status = sprintf('AND status = %d', Binaries::BLACKLIST_ENABLED);
-		$where = '';
 
 		if (isset($this->blacklistID) && $this->blacklistID !== '' && $this->delete === false) {
 			$status = '';
@@ -856,7 +848,7 @@ class ReleaseRemover
 				}
 
 				// Provide useful output of operations
-				echo $this->color->header(sprintf("Finding crap releases for %s: Using %s method against release %s.\n" .
+				echo $this->pdo->log->header(sprintf("Finding crap releases for %s: Using %s method against release %s.\n" .
 				"%s", $this->method, $blType, $opTypeName, $ftUsing));
 
 				$this->query = sprintf(
@@ -871,7 +863,7 @@ class ReleaseRemover
 
 			}
 		} else {
-			echo $this->color->error("No regular expressions were selected for blacklist removal. Make sure you have activated REGEXPs in Site Edit and you're specifying a valid ID.\n");
+			echo $this->pdo->log->error("No regular expressions were selected for blacklist removal. Make sure you have activated REGEXPs in Site Edit and you're specifying a valid ID.\n");
 		}
 		return true;
 	}
@@ -999,10 +991,10 @@ class ReleaseRemover
 			if ($this->delete) {
 				$this->releases->deleteSingle($release['guid'], $this->nzb);
 				if ($this->echoCLI) {
-					echo $this->color->primary('Deleting: ' . $this->method . ': ' . $release['searchname']);
+					echo $this->pdo->log->primary('Deleting: ' . $this->method . ': ' . $release['searchname']);
 				}
 			} elseif ($this->echoCLI) {
-				echo $this->color->primary('Would be deleting: ' . $this->method . ': ' . $release['searchname']);
+				echo $this->pdo->log->primary('Would be deleting: ' . $this->method . ': ' . $release['searchname']);
 			}
 			$deletedCount++;
 		}
@@ -1184,7 +1176,7 @@ class ReleaseRemover
 		}
 
 		// Print the query to the user, ask them if they want to continue using it.
-		echo $this->color->primary(
+		echo $this->pdo->log->primary(
 			'This is the query we have formatted using your criteria, you can run it in SQL to see if you like the results:' .
 			self::N . $this->query . ';' . self::N .
 			'If you are satisfied, type yes and press enter. Anything else will exit.'
@@ -1193,7 +1185,7 @@ class ReleaseRemover
 		// Check the users response.
 		$userInput = trim(fgets(fopen('php://stdin', 'r')));
 		if ($userInput !== 'yes') {
-			echo $this->color->primary('You typed: "' . $userInput . '", the program will exit.');
+			echo $this->pdo->log->primary('You typed: "' . $userInput . '", the program will exit.');
 			return false;
 		}
 		return true;
@@ -1240,7 +1232,7 @@ class ReleaseRemover
 			return $this->error . '<br />';
 		} else {
 			if ($this->echoCLI && $this->error !== '') {
-				echo $this->color->error($this->error);
+				echo $this->pdo->log->error($this->error);
 			}
 			return false;
 		}

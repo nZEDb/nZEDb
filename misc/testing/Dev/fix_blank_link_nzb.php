@@ -4,26 +4,24 @@ require dirname(__FILE__) . '/../../../www/config.php';
 
 use nzedb\db\Settings;
 
-$c = new ColorCLI();
+$pdo = new Settings();
 
 if (isset($argv[1]) && $argv[1] == "true")
 {
 	$timestart = TIME();
 	$nzbcount = $brokencount = 0;
-	$pdo = new Settings();
 
 	$guids = $pdo->queryDirect("SELECT guid FROM releases WHERE nzbstatus = 1 ORDER BY postdate DESC");
-	echo $c->primary("Be patient, this WILL take a very long time, make sure to kill all nZEDb scripts first. There are " . number_format($guids->rowCount()) . " NZB files to scan.");
+	echo $pdo->log->primary("Be patient, this WILL take a very long time, make sure to kill all nZEDb scripts first. There are " . number_format($guids->rowCount()) . " NZB files to scan.");
 	$nzb = new NZB($pdo);
 	foreach ($guids as $guid)
 	{
 		$nzbpath = $nzb->NZBPath($guid["guid"]);
 		if($nzbpath !== false) {
 			$nzbcount++;
-			$nzbpathc = 'compress.zlib://'.$nzbpath;
-			$nzbfile = file_get_contents($nzbpathc);
+			$nzbfile = nzedb\utility\Utility::unzipGzipFile($nzbpath);
 
-			if (preg_match("/^[\r\n]+<\?xml/", $nzbfile)) {
+			if ($nzbfile && preg_match('/^[\r\n]+<\?xml/', $nzbfile)) {
 				$brokencount++;
 				$nzbfile = preg_replace('/^[\r\n]+<\?xml/i', '<?xml', $nzbfile);
 				$nzb = preg_replace('/<\/nzb>.+/i', '</nzb>', $nzbfile);
@@ -45,12 +43,12 @@ if (isset($argv[1]) && $argv[1] == "true")
 				echo ".";
 			}
 		} else {
-			echo $c->error("\nWrong permissions on NZB file, or it does not exist.\n");
+			echo $pdo->log->error("\nWrong permissions on NZB file, or it does not exist.\n");
 		}
 		unset($guid);
 	}
-	echo $c->header($nzbcount." NZB files scanned. in " . TIME() - $timestart . " seconds. ".$brokencount." NZB files were fixed.");
+	echo $pdo->log->header($nzbcount." NZB files scanned. in " . TIME() - $timestart . " seconds. ".$brokencount." NZB files were fixed.");
 } else {
-	exit($c->error("\nThis script can be dangerous, if you are sure you want to run this, STOP ALL OTHER nZEDb SCRIPTS.\n\n"
+	exit($pdo->log->error("\nThis script can be dangerous, if you are sure you want to run this, STOP ALL OTHER nZEDb SCRIPTS.\n\n"
 				. "php $argv[0] true     ...: To remove blank lines from all nzbs.\n"));
 }
