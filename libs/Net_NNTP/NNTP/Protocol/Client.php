@@ -1977,7 +1977,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 			case NET_NNTP_PROTOCOL_RESPONSECODE_NOT_SUPPORTED:
 				return $this->throwError('Internal server error, function not performed', $response, $this->_currentStatusResponse());
 
-			// RFC4642: 'Can not initiate TLS negotiation'
+			// 580, RFC4642: 'Can not initiate TLS negotiation'
 			case NET_NNTP_PROTOCOL_RESPONSECODE_TLS_FAILED_NEGOTIATION:
 				return $this->throwError('Can not initiate TLS negotiation', $response, $this->_currentStatusResponse());
 
