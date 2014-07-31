@@ -952,6 +952,7 @@ class ReleaseRemover
 		$regex = sprintf("rf.name %s 'x264.*\.(wmv|avi)$'", $this->regexp);
 		$codec = '%\\Codec%Setup.exe%';
 		$iferror = '%If_you_get_error.txt%';
+		$ifnotplaying = '%read me if the movie not playing.txt%';
 		$categories = sprintf("r.categoryid IN (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) AND",
 			Category::CAT_MOVIE_3D,
 			Category::CAT_MOVIE_BLURAY,
@@ -967,8 +968,8 @@ class ReleaseRemover
 		);
 		$codeclike = sprintf("UNION SELECT r.guid, r.searchname FROM releases r
 			LEFT JOIN releasefiles rf ON r.id = rf.releaseid
-			WHERE %s rf.name %s '%s' OR rf.name %s '%s'", $categories, $this->like, $codec, $this->like, $iferror
-			);
+			WHERE %s rf.name %s '%s' OR rf.name %s '%s' OR rf.name %s '%s'", $categories, $this->like, $codec, $this->like, $iferror, $this->like, $ifnotplaying
+		);
 		$this->query = sprintf(
 			"SELECT r.guid, r.searchname FROM releases
 			r INNER JOIN releasefiles rf ON (rf.releaseid = r.id)
