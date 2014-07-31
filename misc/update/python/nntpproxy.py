@@ -7,7 +7,7 @@ import random
 import socket
 import SocketServer
 import socketpool
-import nntp
+from lib.pynntp.nntp import nntp
 from lib.info import bcolors
 from socketpool import util
 
@@ -22,11 +22,13 @@ class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
         self._pool = pool
         self._connected = False
         self._life = time.time() - random.randint(0, 10)
+        self._start_time = time.time()
         if backend_mod.Socket != socket.socket:
             raise ValueError("Bad backend")
         nntp.NNTPClient.__init__(self, self.host, self.port, username, password, timeout=timeout, use_ssl=use_ssl)
         self.id = self.socket.getsockname()[1]
-        print(bcolors.HEADER + "%5d NEW CONNECTION" % self.id + bcolors.ENDC)
+        print(bcolors.PRIMARY + "New NNTP connection to %s established with ID #%5d" %
+              (self.host, self.id) + bcolors.ENDC)
         self._connected = True
         self.xfeature_compress_gzip()
 
@@ -52,6 +54,8 @@ class NNTPClientConnector(socketpool.Connector, nntp.NNTPClient):
         return self._life
 
     def invalidate(self):
+        print(bcolors.PRIMARY + "Disconnecting from NNTP connection ID #%5d after %d seconds." %
+              (self.id, (time.time() - self._start_time)) + bcolors.ENDC)
         self.close()
         self._connected = False
         self._life = -1
@@ -69,89 +73,120 @@ class NNTPProxyRequestHandler(SocketServer.StreamRequestHandler):
 
     def handle(self):
         with self.server.nntp_client_pool.connection() as nntp_client:
+
             self.wfile.write("200 localhost NNRP Service Ready.\r\n")
+
             for line in self.rfile:
                 data = line.strip()
 
-                if data.startswith("GROUP"):
-                    print(bcolors.ALTERNATE + "%5d %s" % (nntp_client.id, data))
-                else:
-                    print(bcolors.HEADER + "%5d " % nntp_client.id) + (bcolors.PRIMARY + "%s" % data)
-
-                if data.startswith("AUTHINFO user") or data.startswith("AUTHINFO pass"):
-                    self.wfile.write("281 Ok\r\n")
-
-                elif data.startswith("XFEATURE"):
-                    self.wfile.write("290 feature enabled\r\n")
-
-                elif data.startswith("GROUP"):
-                    total, first, last, group = nntp_client.group(data.split(None, 1)[1])
-                    self.wfile.write("211 %d %d %d %s\r\n" % (total, first, last, group))
-
-                elif data.startswith("XOVER"):
-                    rng = data.split(None, 1)[1]
-                    rng = tuple(map(int, rng.split("-")))
-                    xover_gen = nntp_client.xover_gen(rng)
-                    self.wfile.write("224 data follows\r\n")
-                    for entry in xover_gen:
-                        self.wfile.write("\t".join(entry) + "\r\n")
-                    self.wfile.write(".\r\n")
-
-                elif data.startswith("ARTICLE"):
-                    msgid = data.split(None, 1)[1]
-                    article = nntp_client.article(msgid, False)
-                    # check no of return values for compatibility with pynntp<=0.8.3
-                    if len(article) == 2:
-                        articleno, head, body = 0, article[0], article[1]
+                if not data.startswith("POST"):
+                    if data.startswith("GROUP"):
+                        print(bcolors.ALTERNATE + "%5d %s" % (nntp_client.id, data))
                     else:
-                        articleno, head, body = article
-                    self.wfile.write("220 %d %s\r\n" % (articleno, msgid))
-                    head = "\r\n".join([": ".join(item) for item in head.items()]) + "\r\n\r\n"
-                    self.wfile.write(head)
-                    self.wfile.write(body.replace("\r\n.", "\r\n.."))
-                    self.wfile.write(".\r\n")
+                        print(bcolors.HEADER + "%5d " % nntp_client.id) + (bcolors.PRIMARY + "%s" % data)
 
-                elif data.startswith("HEAD"):
-                    msgid = data.split(None, 1)[1]
-                    head = nntp_client.head(msgid)
-                    self.wfile.write("221 %s\r\n" % msgid)
-                    head = "\r\n".join([": ".join(item) for item in head.items()]) + "\r\n\r\n"
-                    self.wfile.write(head)
-                    self.wfile.write(".\r\n")
+                if data.startswith("XOVER"):
+                    try:
+                        rng = data.split(None, 1)[1]
+                        rng = tuple(map(int, rng.split("-")))
+                        xover_gen = nntp_client.xover_gen(rng)
+                        self.wfile.write("224 data follows\r\n")
+                        for entry in xover_gen:
+                            self.wfile.write("\t".join(entry) + "\r\n")
+                        self.wfile.write(".\r\n")
+                    except Exception as ex:
+                        print(bcolors.ERROR + str(ex.message) + bcolors.ENDC)
+                        self.wfile.write("503 internal server error\r\n")
 
                 elif data.startswith("BODY"):
                     msgid = data.split(None, 1)[1]
                     try:
-                        body = nntp_client.bodymsgid
+                        body = nntp_client.body(msgid)
                         self.wfile.write("222 %s\r\n" % msgid)
                         self.wfile.write(body.replace("\r\n.", "\r\n.."))
                         self.wfile.write(".\r\n")
                     except Exception as ex:
-                        print(bcolors.ERROR + str(ex) + bcolors.ENDC)
-                        self.wfile.write("430 No Such Article\r\n")
+                        print(bcolors.ERROR + str(ex.message) + bcolors.ENDC)
+                        self.wfile.write("430 no such article\r\n")
+
+                elif data.startswith("GROUP"):
+                    try:
+                        total, first, last, group = nntp_client.group(data.split(None, 1)[1])
+                        self.wfile.write("211 %d %d %d %s\r\n" % (total, first, last, group))
+                    except Exception as ex:
+                        print(bcolors.ERROR + str(ex.message) + bcolors.ENDC)
+                        self.wfile.write("411 no such news group\r\n")
 
                 elif data.startswith("LIST OVERVIEW.FMT"):
-                    fmt = nntp_client.list_overview_fmt()
-                    self.wfile.write("215 Order of fields in overview database.\r\n")
-                    fmt = "\r\n".join(["%s:%s" % (f[0], "full" if f[1] else "") for f in fmt]) + "\r\n"
-                    self.wfile.write(fmt)
-                    self.wfile.write(".\r\n")
+                    try:
+                        fmt = nntp_client.list_overview_fmt()
+                        self.wfile.write("215 Order of fields in overview database.\r\n")
+                        fmt = "\r\n".join(["%s:%s" % (f[0], "full" if f[1] else "") for f in fmt]) + "\r\n"
+                        self.wfile.write(fmt)
+                        self.wfile.write(".\r\n")
+                    except Exception as ex:
+                        print(bcolors.ERROR + str(ex.message) + bcolors.ENDC)
+                        self.wfile.write("503 internal server error\r\n")
+
+                elif data.startswith("HEAD"):
+                    msgid = data.split(None, 1)[1]
+                    try:
+                        head = nntp_client.head(msgid)
+                        self.wfile.write("221 %s\r\n" % msgid)
+                        head = "\r\n".join([": ".join(item) for item in head.items()]) + "\r\n\r\n"
+                        self.wfile.write(head)
+                        self.wfile.write(".\r\n")
+                    except Exception as ex:
+                        print(bcolors.ERROR + str(ex.message) + bcolors.ENDC)
+                        self.wfile.write("430 no such article\r\n")
+
+                elif data.startswith("ARTICLE"):
+                    msgid = data.split(None, 1)[1]
+                    try:
+                        article = nntp_client.article(msgid, False)
+                        # check no of return values for compatibility with pynntp<=0.8.3
+                        if len(article) == 2:
+                            articleno, head, body = 0, article[0], article[1]
+                        else:
+                            articleno, head, body = article
+                        self.wfile.write("220 %d %s\r\n" % (articleno, msgid))
+                        head = "\r\n".join([": ".join(item) for item in head.items()]) + "\r\n\r\n"
+                        self.wfile.write(head)
+                        self.wfile.write(body.replace("\r\n.", "\r\n.."))
+                        self.wfile.write(".\r\n")
+                    except Exception as ex:
+                        print(bcolors.ERROR + str(ex.message) + bcolors.ENDC)
+                        self.wfile.write("430 no such article\r\n")
 
                 elif data == "LIST":
-                    list_gen = nntp_client.list_gen()
-                    self.wfile.write("215 list of newsgroups follows\r\n")
-                    for entry in list_gen:
-                        self.wfile.write("%s %d %d %s\r\n" % entry)
-                    self.wfile.write(".\r\n")
+                    try:
+                        list_gen = nntp_client.list_gen()
+                        self.wfile.write("215 list of newsgroups follows\r\n")
+                        for entry in list_gen:
+                            self.wfile.write("%s %d %d %s\r\n" % entry)
+                        self.wfile.write(".\r\n")
+                    except Exception as ex:
+                        print(bcolors.ERROR + str(ex.message) + bcolors.ENDC)
+                        self.wfile.write("503 internal server error\r\n")
 
                 elif data.startswith("LIST ACTIVE") and not data.startswith("LIST ACTIVE.TIMES"):
-                    pattern = data[11:].strip() or None
-                    active_gen = nntp_client.list_active_gen(pattern)
-                    self.wfile.write("215 list of newsgroups follows\r\n")
-                    for entry in active_gen:
-                        self.wfile.write("%s %d %d %s\r\n" % entry)
-                    self.wfile.write(".\r\n")
-                    self.wfile.write(str(e) + "\r\n")
+                    try:
+                        pattern = data[11:].strip() or None
+                        active_gen = nntp_client.list_active_gen(pattern)
+                        self.wfile.write("215 list of newsgroups follows\r\n")
+                        for entry in active_gen:
+                            self.wfile.write("%s %d %d %s\r\n" % entry)
+                        self.wfile.write(".\r\n")
+                        self.wfile.write(str(e) + "\r\n")
+                    except Exception as ex:
+                        print(bcolors.ERROR + str(ex.message) + bcolors.ENDC)
+                        self.wfile.write("503 internal server error\r\n")
+
+                elif data.startswith("AUTHINFO user") or data.startswith("AUTHINFO pass"):
+                    self.wfile.write("281 Ok\r\n")
+
+                elif data.startswith("XFEATURE"):
+                    self.wfile.write("290 feature enabled\r\n")
 
                 elif data.startswith("QUIT"):
                     self.wfile.write("205 Connection closing\r\n")
@@ -194,14 +229,18 @@ if __name__ == "__main__":
 
     nntp_client_pool = socketpool.ConnectionPool(
         NNTPClientConnector,
-        max_lifetime=30000,
-        max_size=config["pool"]["size"],
+        retry_max=3,
+        retry_delay=1,
+        timeout=-1,
+        max_lifetime=30000.,
+        max_size=int(config["pool"]["size"]),
         options=config["usenet"]
     )
 
-    addr = (config["proxy"]["host"], config["proxy"]["port"])
-    proxy = NNTPProxyServer(addr, NNTPProxyRequestHandler, nntp_client_pool)
+    proxy = NNTPProxyServer((config["proxy"]["host"], config["proxy"]["port"]),
+                            NNTPProxyRequestHandler, nntp_client_pool)
     remote = (config["usenet"]["host"], config["usenet"]["port"])
-    print(bcolors.HEADER + "NNTPProxy listening on %s:%d" % addr)
-    print(bcolors.HEADER + "NNTPProxy connected to %s:%d" % remote)
+    print(bcolors.PRIMARY +
+          "NNTP proxy server started on: %s:%d, using a maximum pool size of %d." %
+          (config["proxy"]["host"], config["proxy"]["port"], config["pool"]["size"]))
     proxy.serve_forever()
