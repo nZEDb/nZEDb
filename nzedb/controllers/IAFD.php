@@ -1,24 +1,8 @@
 <?php
-/**
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program (see LICENSE.txt in the base directory.  If
- * not, see:
- * @link      <http://www.gnu.org/licenses/>.
- * @author    mike
- * @copyright 2014 nZEDb
- */
 
-require_once 'simple_html_dom.php';
+require_once nZEDb_LIBS . 'simple_html_dom.php';
 
-class iafd {
+class IAFD {
 
 	public $searchterm = null;
 	public $cookie = null;
@@ -110,6 +94,9 @@ class iafd {
 			if($ret = $this->html->find("div#moviedata, h2, dt", 0)){
 			if($ret->find("h2",0)){
 				$firsttitle = $ret->find("h2",0)->innertext;
+				if(preg_match("/Movie Titles/",$firsttitle)){
+					return false;
+				}
 				}
 			if($ret->find("dt",0)){
 			    $secondtitle = $ret->find("dd", 0)->innertext;
@@ -118,14 +105,14 @@ class iafd {
 				if(isset($secondtitle) OR isset($firsttitle)){
 					$firsttitle = preg_replace("/\(([0-9]+)\)/","",$firsttitle);
 					$secondtitle = preg_replace("/\(([0-9]+)\)/", "", $secondtitle);
-					similar_text($this->searchterm, $firsttitle, $p);
+					similar_text($this->searchterm, trim($firsttitle), $p);
 					if ($p >= 90) {
-						$this->title = $firsttitle;
+						$this->title = trim($firsttitle);
 						return true;
 					} else {
-						similar_text($this->searchterm, $secondtitle, $p);
+						similar_text($this->searchterm, trim($secondtitle), $p);
 						if($p >= 90) {
-							$this->title = $secondtitle;
+							$this->title = trim($secondtitle);
 							return true;
 						}else{
 							return false;
