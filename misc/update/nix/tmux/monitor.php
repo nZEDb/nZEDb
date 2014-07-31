@@ -63,7 +63,7 @@ while ($runVar['counts']['iterations'] > 0) {
 	$runVar['commands']['_sleep'] = "{$runVar['commands']['_phpn']} {$runVar['paths']['misc']}update/nix/tmux/bin/showsleep.php";
 
 	//run IRCScraper
-	$t->runPaneExtra('scraper', $runVar);
+	$t->runPane('scraper', $runVar);
 
 	//run queries only after time exceeded, these queries can take awhile
 	if ($runVar['counts']['iterations'] == 1 || (time() - $runVar['timers']['timer2'] >= $runVar['settings']['monitor'] && $runVar['settings']['is_running'] == 1)) {
@@ -290,12 +290,6 @@ while ($runVar['counts']['iterations'] > 0) {
 	//get usenet connections
 	$runVar['connections'] = $to->getConnectionsCounts($runVar);
 
-	if ($runVar['settings']['compressed'] === '1') {
-		$mask2 = $pdo->log->headerOver("%-20s") . " " . $pdo->log->tmuxOrange("%-33.33s");
-	} else {
-		$mask2 = $pdo->log->alternateOver("%-20s") . " " . $pdo->log->tmuxOrange("%-33.33s");
-	}
-
 	//begin update display with screen clear
 	passthru('clear');
 
@@ -345,29 +339,32 @@ while ($runVar['counts']['iterations'] > 0) {
 
 	if ($runVar['settings']['is_running'] == 1) {
 
+		//run sharing regardless of sequential setting
+		$t->runPane('sharing', $runVar);
+
 		//run these if complete sequential not set
 		if ($runVar['constants']['sequential'] != 2) {
 
 			//fix names
-			$t->runPaneExtra('fixnames', $runVar);
+			$t->runPane('fixnames', $runVar);
 
 			//dehash releases
-			$t->runPaneExtra('dehash', $runVar);
+			$t->runPane('dehash', $runVar);
 
 			// Remove crap releases.
-			$runVar['modsettings']['fc'] = $t->runPaneExtra('removecrap', $runVar);
+			$runVar['modsettings']['fc'] = $t->runPane('removecrap', $runVar);
 
 			//run postprocess_releases additional
-			$t->runPaneExtra('ppadditional', $runVar);
+			$t->runPane('ppadditional', $runVar);
 
 			//run postprocess_releases non amazon
-			$t->runPaneExtra('nonamazon', $runVar);
+			$t->runPane('nonamazon', $runVar);
 
 			//run postprocess_releases amazon
-			$t->runPaneExtra('amazon', $runVar);
+			$t->runPane('amazon', $runVar);
 
 			//update tv and theaters
-			$runVar['timers']['timer4'] = $t->runPaneExtra('updatetv', $runVar);
+			$runVar['timers']['timer4'] = $t->runPane('updatetv', $runVar);
 		}
 
 		if ($runVar['constants']['sequential'] == 1) {
@@ -385,17 +382,6 @@ while ($runVar['counts']['iterations'] > 0) {
 			//run update_binaries
 			$t->runBasicSequential($runVar);
 
-			//pane setup for IrcScraper / Sharing
-			$ipane = 3;
-			if ($runVar['constants']['nntpproxy'] == 1) {
-				$spane = 5;
-			} else {
-				$spane = 4;
-			}
-			//run IRCScraper
-			$t->run_ircscraper($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $ipane, $runVar['constants']['run_ircscraper'], $runVar);
-			//run Sharing
-			$t->run_sharing($runVar['constants']['tmux_session'], $runVar['commands']['_php'], $spane, $runVar['commands']['_sleep'], $runVar['settings']['sharing_timer'], $runVar);
 		} else if ($runVar['constants']['sequential'] == 2) {
 			//run nzb-import
 			if (($runVar['settings']['import'] != 0) && ($runVar['killswitch']['pp'] == false)) {
@@ -455,9 +441,6 @@ while ($runVar['counts']['iterations'] > 0) {
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
 					{$runVar['paths']['misc']}update/nix/screen/sequential/user_threaded.sh true $log; date +\"%D %T\"' 2>&1 1> /dev/null"
 			);
-
-			//run Sharing
-			$t->run_sharing('sharing', $runVar);
 		} else {
 			//run update_binaries
 			$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
@@ -529,19 +512,9 @@ while ($runVar['counts']['iterations'] > 0) {
 				$color = $t->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.4 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][4]} has been disabled/terminated by Releases\"'");
 			}
-
-			//run IRCScraper
-			$t->runPaneExtra('scraper', $runVar);
-
-			//run Sharing
-			$t->run_sharing('sharing', $runVar);
 		}
-	} else if ($runVar['constants']['sequential'] == 0) {
-		$t->notRunningNonSeq($runVar);
-	} else if ($runVar['constants']['sequential'] == 1) {
-		$t->notRunningBasicSeq($runVar);
-	} else if ($runVar['constants']['sequential'] == 2) {
-		$t->notRunningCompSeq($runVar);
+	} else {
+		$t->runPane('notrunning', $runVar);
 	}
 
 	$runVar['counts']['iterations']++;

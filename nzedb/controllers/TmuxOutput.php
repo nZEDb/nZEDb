@@ -19,7 +19,6 @@ class TmuxOutput extends Tmux
 
 	public function displayOutput($section, $runVar)
 	{
-
 		$this->runVar = $runVar;
 
 		switch ((int) $section) {
@@ -36,10 +35,11 @@ class TmuxOutput extends Tmux
 		}
 	}
 
-	protected function _getColorsMasks()
+	protected function _getColorsMasks($compressed)
 	{
 		$masks[1] = $this->pdo->log->headerOver("%-18s") . " " . $this->pdo->log->tmuxOrange("%-48.48s");
-		$masks[2] = $this->pdo->log->headerOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s");
+		$masks[2] = ($compressed == '1' ? $this->pdo->log->headerOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s")
+					: $this->pdo->log->alternateOver("%-20s") . " " . $this->pdo->log->tmuxOrange("%-33.33s"));
 		$masks[3] = $this->pdo->log->header("%-16.16s %25.25s %25.25s");
 		$masks[4] = $this->pdo->log->primaryOver("%-16.16s") . " " . $this->pdo->log->tmuxOrange("%25.25s %25.25s");
 		$masks[5] = $this->pdo->log->tmuxOrange("%-16.16s %25.25s %25.25s");
@@ -54,7 +54,7 @@ class TmuxOutput extends Tmux
 		$git = new \nzedb\utility\Git();
 		$version = $versions->versions->git->tag . 'r' . $git->commits();
 
-		$masks = $this->_getColorsMasks();
+		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
 
 		if ($this->runVar['settings']['is_running'] == 1) {
 			printf($masks[2], "Monitor Running v$version [" . $this->runVar['constants']['sqlpatch'] . "]: ", $this->relativeTime($this->runVar['timers']['timer1']));
@@ -74,13 +74,13 @@ class TmuxOutput extends Tmux
 		if ($this->runVar['constants']['alternate_nntp']) {
 			printf($masks[1],
 					"USP Alternate:",
-				sprintf(
-					"%d active (%d total) - %s:%d)",
-					$this->runVar['connections']['alternate']['active'],
-					$this->runVar['connections']['alternate']['total'],
-					$this->runVar['connections']['host_a'],
-					$this->runVar['connections']['port_a']
-				)
+					sprintf(
+						"%d active (%d total) - %s:%d)",
+						$this->runVar['connections']['alternate']['active'],
+						$this->runVar['connections']['alternate']['total'],
+						$this->runVar['connections']['host_a'],
+						$this->runVar['connections']['port_a']
+					)
 			);
 		}
 
@@ -129,10 +129,10 @@ class TmuxOutput extends Tmux
 	{
 		$this->runVar = $runVar;
 
-		$masks = $this->_getColorsMasks();
+		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
 
 		printf($masks[3], "Collections", "Binaries", "Parts");
-		$this->_displaySeparator();
+		$this->_displaySeparator($this->runVar['settings']['compressed']);
 		printf($masks[5],
 				number_format($this->runVar['counts']['now']['collections_table']),
 				number_format($this->runVar['counts']['now']['binaries_table']),
@@ -144,7 +144,7 @@ class TmuxOutput extends Tmux
 	{
 		$this->runVar = $runVar;
 		$monitor_path = $monitor_path_a = $monitor_path_b = "";
-		$masks = $this->_getColorsMasks();
+		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
 
 		// assign timers from tmux table
 		$monitor_path = $this->runVar['settings']['monitor_path'];
@@ -195,13 +195,13 @@ class TmuxOutput extends Tmux
 	protected function _displayMonitor($runVar)
 	{
 		$this->runVar = $runVar;
-		$masks = $this->_getColorsMasks();
+		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
 
 		$this->_displayTableCounts($this->runVar);
 		$this->_displayPaths($this->runVar);
 
 		printf($masks[3], "Collections", "Binaries", "Parts");
-		$this->_displaySeparator();
+		$this->_displaySeparator($this->runVar['settings']['compressed']);
 		printf($masks[5],
 				number_format($this->runVar['counts']['now']['collections_table']),
 				number_format($this->runVar['counts']['now']['binaries_table']),
@@ -209,7 +209,7 @@ class TmuxOutput extends Tmux
 		);
 
 		printf($masks[3], "Category", "In Process", "In Database");
-		$this->_displaySeparator();
+		$this->_displaySeparator($this->runVar['settings']['compressed']);
 		printf($masks[4], "predb",
 			sprintf(
 				"%s(%d)",
@@ -362,10 +362,10 @@ class TmuxOutput extends Tmux
 	protected function _displayBackfill($runVar)
 	{
 		$this->runVar = $runVar;
-		$masks = $this->_getColorsMasks();
+		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
 
 		printf($masks[3], "Groups", "Active", "Backfill");
-		$this->_displaySeparator();
+		$this->_displaySeparator($this->runVar['settings']['compressed']);
 		if ($this->runVar['settings']['backfilldays'] == "1") {
 			printf($masks[4], "Activated",
 				sprintf(
@@ -390,7 +390,7 @@ class TmuxOutput extends Tmux
 					"%d(%d)",
 					$this->runVar['counts']['now']['backfill_groups_date'],
 					$this->runVar['counts']['now']['all_groups']
-				)e
+				)
 			);
 		}
 	}
@@ -398,11 +398,11 @@ class TmuxOutput extends Tmux
 	protected function _displayQueryBlock($runVar)
 	{
 		$this->runVar = $runVar;
-		$masks = $this->_getColorsMasks();
+		$masks = $this->_getColorsMasks($this->runVar['settings']['compressed']);
 
 		echo PHP_EOL;
 		printf($masks[3], "Query Block", "Time", "Cumulative");
-		$this->_displaySeparator();
+		$this->_displaySeparator($this->runVar['settings']['compressed']);
 		printf($masks[4], "Combined",
 				sprintf(
 					"%d %d %d %d %d %d %d",
@@ -435,9 +435,9 @@ class TmuxOutput extends Tmux
 					$this->pdo->log->header($pieces[28]);
 	}
 
-	protected function _displaySeparator()
+	protected function _displaySeparator($compressed)
 	{
-		$masks = $this->_getColorsMasks();
+		$masks = $this->_getColorsMasks($compressed);
 		printf($masks[3], "======================================", "=========================", "======================================");
 	}
 
@@ -498,14 +498,14 @@ class TmuxOutput extends Tmux
 
 		$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . ":" . $this->runVar['connections']['port'] . " | grep -c ESTAB"));
 		$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip'] . ":" . $this->runVar['connections']['port']));
-		if ($this->runVar['constants']['alternate_nntp']) {
+		if ($this->runVar['constants']['alternate_nntp'] == 1) {
 			$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip_a'] . ":" . $this->runVar['connections']['port_a'] . " | grep -c ESTAB"));
 			$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip_a'] . ":" . $this->runVar['connections']['port_a']));
 		}
 		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
 				$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . ":https | grep -c ESTAB"));
 				$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip'] . ":https"));
-				if ($this->runVar['constants']['alternate_nntp']) {
+				if ($this->runVar['constants']['alternate_nntp'] == 1) {
 					$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip_a'] . ":https | grep -c ESTAB"));
 					$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip_a'] . ":https"));
 				}
@@ -513,7 +513,7 @@ class TmuxOutput extends Tmux
 		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
 			$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['port'] . " | grep -c ESTAB"));
 			$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['port']));
-			if ($this->runVar['constants']['alternate_nntp']) {
+			if ($this->runVar['constants']['alternate_nntp'] == 1) {
 				$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['port_a'] . " | grep -c ESTAB"));
 				$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['port_a']));
 			}
@@ -521,7 +521,7 @@ class TmuxOutput extends Tmux
 		if ($this->runVar['connections']['primary']['active'] == 0 && $this->runVar['connections']['primary']['total'] == 0 && $this->runVar['connections']['alternate']['active'] == 0 && $this->runVar['connections']['alternate']['total'] == 0 && $this->runVar['connections']['port'] != $this->runVar['connections']['port_a']) {
 			$this->runVar['connections']['primary']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . " | grep -c ESTAB"));
 			$this->runVar['connections']['primary']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip']));
-			if ($this->runVar['constants']['alternate_nntp']) {
+			if ($this->runVar['constants']['alternate_nntp'] == 1) {
 				$this->runVar['connections']['alternate']['active'] = str_replace("\n", '', shell_exec("ss -n | grep " . $this->runVar['connections']['ip'] . " | grep -c ESTAB"));
 				$this->runVar['connections']['alternate']['total'] = str_replace("\n", '', shell_exec("ss -n | grep -c " . $this->runVar['connections']['ip']));
 			}

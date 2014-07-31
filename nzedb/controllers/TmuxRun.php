@@ -16,12 +16,18 @@ class TmuxRun extends Tmux
 		parent::__construct($this->pdo);
 	}
 
-	// runs panes other than bins/backfill/import/releases
-	public function runPaneExtra($cmdParam, $runVar)
+	// main switch for running tmux panes
+	public function runPane($cmdParam, $runVar)
 	{
 		$this->runVar = $runVar;
 		switch ($this->runVar['constants']['sequential']) {
 			case 0:
+				switch ($cmdParam) {
+					case 'notrunning':
+						$this->_notRunningNonSeq($this->runVar);
+						break 2;
+				}
+				continue;
 			case 1:
 				switch ($cmdParam) {
 					case 'amazon':
@@ -32,6 +38,9 @@ class TmuxRun extends Tmux
 						break;
 					case 'fixnames':
 						$this->_runFixReleaseNames($this->runVar);
+						break;
+					case 'main':
+						$this->_runBasicSequential($this->runVar);
 						break;
 					case 'nonamazon':
 						$this->_runNonAmazon($this->runVar);
@@ -51,17 +60,24 @@ class TmuxRun extends Tmux
 					case 'updatetv':
 						return $this->_runUpdateTv($this->runVar);
 						break;
+					case 'notrunning':
+						$this->_notRunningBasicSeq($this->runVar);
+						break;
 				}
+				break;
 			case 2:
 				switch ($cmdParam) {
+					case 'notrunning':
+						$this->_notRunningFullSeq($this->runVar);
+						break;
 					case 'scraper':
 						return $this->_runIRCScraper(2, $this->runVar);
 						break;
 					case 'sharing':
-						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 5 : 4), $this->runVar);
+						$this->_runSharing(($runVar['constants']['nntpproxy'] == 1 ? 4 : 3), $this->runVar);
 						break;
-
 				}
+				break;
 		}
 	}
 
@@ -296,7 +312,7 @@ class TmuxRun extends Tmux
 		return $this->runVar['timers']['timer4'];
 	}
 
-	public function notRunningNonSeq($runVar)
+	protected function _notRunningNonSeq($runVar)
 	{
 		$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 		for ($g = 1; $g <= 4; $g++) {
@@ -310,7 +326,7 @@ class TmuxRun extends Tmux
 		}
 	}
 
-	public function notRunningBasicSeq($runVar)
+	protected function _notRunningBasicSeq($runVar)
 	{
 		$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 		for ($g = 1; $g <= 2; $g++) {
@@ -324,7 +340,7 @@ class TmuxRun extends Tmux
 		}
 	}
 
-	public function notRunningCompSeq($runVar)
+	protected function _notRunningCompSeq($runVar)
 	{
 		$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 		for ($g = 1; $g <= 2; $g++) {
@@ -341,7 +357,7 @@ class TmuxRun extends Tmux
 
 		if ($this->runVar['settings']['run_ircscraper'] == 1) {
 			//Check to see if the pane is dead, if so respawn it.
-			if (shell_exec("tmux list-panes -t{$this->runVar['constants']tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
+			if (shell_exec("tmux list-panes -t{$this->runVar['constants']['tmux_session']}:${pane} | grep ^0 | grep -c dead") == 1) {
 				shell_exec(
 					"tmux respawnp -t${tmux_session}:${pane}.0 ' \
 					{$this->runVar['commands']['_php']} {$this->runVar['paths']['misc']}testing/IRCScraper/scrape.php true"
@@ -352,14 +368,14 @@ class TmuxRun extends Tmux
 		}
 	}
 
-	public function run_sharing($pane, $runVar)
+	protected function _runSharing($pane, $runVar)
 	{
 		$this->runVar = $runVar;
 
 		$sharing = $this->pdo->queryOneRow('SELECT enabled, posting, fetching FROM sharing');
 
 		if ($this->runVar['settings']['run_sharing'] == 1 && $sharing['enabled'] == 1 && ($sharing['posting'] == 1 || $sharing['fetching'] == 1)) {
-			if (shell_exec("tmux list-panes -t${tmux_session}:${pane} | grep ^0 | grep -c dead") == 1) {
+			if (shell_exec("tmux list-panes -t{$this->runVar['constants']['tmux_session']}:${pane} | grep ^0 | grep -c dead") == 1) {
 				shell_exec(
 					"tmux respawnp -t${tmux_session}:${pane}.0 ' \
 						{$this->runVar['commands']['_php']} {$this->runVar['paths']['misc']}/update/postprocess.php sharing true; \
@@ -369,7 +385,7 @@ class TmuxRun extends Tmux
 		}
 	}
 
-	public function runBasicSequential($runVar)
+	protected function _runBasicSequential($runVar)
 	{
 		$this->runVar = $runVar;
 
@@ -507,6 +523,6 @@ class TmuxRun extends Tmux
 			$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 'echo \"\033[38;5;${color}m\n{$runVar['panes']['zero'][2]} has been disabled/terminated by Exceeding Limits\"'");
 		}
-		return $runVar['timers']['timer5']
+		return $runVar['timers']['timer5'];
 	}
 }
