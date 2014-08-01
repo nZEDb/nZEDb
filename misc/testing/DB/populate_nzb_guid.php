@@ -23,14 +23,17 @@ function create_guids($live, $delete = false)
 	$pdo = new Settings();
 	$consoletools = new ConsoleTools(['ColorCLI' => $pdo->log]);
 	$timestart = TIME();
-	$relcount = $deleted = 0;
+	$relcount = $deleted = $total = 0;
 
+	$relrecs = false;
 	if ($live == "true") {
 		$relrecs = $pdo->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC"));
 	} else if ($live == "limited") {
 		$relrecs = $pdo->queryDirect(sprintf("SELECT id, guid FROM releases WHERE nzbstatus = 1 AND nzb_guid IS NULL ORDER BY id DESC LIMIT 10000"));
 	}
-	$total = $relrecs->rowCount();
+	if ($relrecs) {
+		$total = $relrecs->rowCount();
+	}
 	if ($total > 0) {
 		echo $pdo->log->header("Creating nzb_guids for " . number_format($total) . " releases.");
 		$releases = new Releases(['Settings' => $pdo]);
