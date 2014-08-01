@@ -342,6 +342,7 @@ class IRCClient
 		while(true) {
 			$this->_readSocket();
 
+			$matches = array();
 			// We got pinged, reply with a pong.
 			if (preg_match('/^PING\s*:(.+?)$/', $this->_buffer, $matches)) {
 				$this->_pong($matches[1]);

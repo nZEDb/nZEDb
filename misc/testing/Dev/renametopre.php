@@ -101,7 +101,7 @@ function preName($argv, $argc)
 			$preid = 0;
 			$predb = $predbfile = $increment = false;
 			if (!is_array($cleanerName)) {
-				$cleanName = trim($cleanerName);
+				$cleanName = trim((string)$cleanerName);
 				$propername = $increment = true;
 				if ($cleanName != '' && $cleanerName != false) {
 					$run = $pdo->queryOneRow("SELECT id FROM predb WHERE title = " . $pdo->escapeString($cleanName));

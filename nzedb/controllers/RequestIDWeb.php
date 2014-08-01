@@ -108,34 +108,36 @@ class RequestIDWeb extends RequestID
 		// Array to store results.
 		$requestArray = array();
 
-		// Loop all the results.
-		foreach($this->_releases as $release) {
+		if ($this->_releases instanceof Traversable) {
+			// Loop all the results.
+			foreach($this->_releases as $release) {
 
-			$this->_release['name'] = $release['name'];
-			// Try to find a request ID for the release.
-			$requestId = $this->_siftReqId();
+				$this->_release['name'] = $release['name'];
+				// Try to find a request ID for the release.
+				$requestId = $this->_siftReqId();
 
-			// If there's none, update the release and continue.
-			if ($requestId === self::REQID_ZERO) {
-				$this->_requestIdNotFound($release['id'], self::REQID_NONE);
-				if ($this->echoOutput) {
-					echo '-';
+				// If there's none, update the release and continue.
+				if ($requestId === self::REQID_ZERO) {
+					$this->_requestIdNotFound($release['id'], self::REQID_NONE);
+					if ($this->echoOutput) {
+						echo '-';
+					}
+					continue;
 				}
-				continue;
-			}
 
-			// Change etc to teevee.
-			if ($release['groupname'] === 'alt.binaries.etc') {
-				$release['groupname'] = 'alt.binaries.teevee';
-			}
+				// Change etc to teevee.
+				if ($release['groupname'] === 'alt.binaries.etc') {
+					$release['groupname'] = 'alt.binaries.teevee';
+				}
 
-			// Send the release ID so we can track the return data.
-			$requestArray[$release['id']] = array(
-				'reqid' => $requestId,
-				'ident' => $release['id'],
-				'group' => $release['groupname'],
-				'sname' => $release['searchname']
-			);
+				// Send the release ID so we can track the return data.
+				$requestArray[$release['id']] = array(
+					'reqid' => $requestId,
+					'ident' => $release['id'],
+					'group' => $release['groupname'],
+					'sname' => $release['searchname']
+				);
+			}
 		}
 
 		// Check if we requests to send to the web.

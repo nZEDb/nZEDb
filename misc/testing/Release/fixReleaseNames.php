@@ -30,6 +30,7 @@ if (isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4])) {
 		$show = 1;
 	}
 
+	$nntp = null;
 	if ($argv[1] == 7 || $argv[1] == 8) {
 		$nntp = new NNTP(['Settings' => $pdo]);
 		if (($pdo->getSetting('alternate_nntp') == '1' ? $nntp->doConnect(true, true) : $nntp->doConnect()) !== true) {

@@ -67,26 +67,28 @@ class RequestIDLocal extends RequestID
 	protected function _processReleases()
 	{
 		$renamed = $checked = 0;
-		foreach ($this->_releases as $this->_release) {
-			$this->_requestID = $this->_siftReqId();
+		if ($this->_releases instanceof Traversable) {
+			foreach ($this->_releases as $this->_release) {
+				$this->_requestID = $this->_siftReqId();
 
-			// Do a local lookup using multiple possible methods
-			$this->_newTitle = $this->_getNewTitle();
+				// Do a local lookup using multiple possible methods
+				$this->_newTitle = $this->_getNewTitle();
 
-			if ($this->_newTitle !== false && isset($this->_newTitle['title'])) {
-				$this->_updateRelease();
-				$renamed++;
-			} else {
-				$this->_requestIdNotFound($this->_release['id'], ($this->_release['reqidstatus'] == self::REQID_UPROC ? self::REQID_NOLL : self::REQID_NONE));
+				if ($this->_newTitle !== false && isset($this->_newTitle['title'])) {
+					$this->_updateRelease();
+					$renamed++;
+				} else {
+					$this->_requestIdNotFound($this->_release['id'], ($this->_release['reqidstatus'] == self::REQID_UPROC ? self::REQID_NOLL : self::REQID_NONE));
+				}
+
+				if ($this->echoOutput && $this->_show === 0) {
+					$this->consoleTools->overWritePrimary(
+						"Checked Releases: [" . number_format($checked) . "] " .
+						$this->consoleTools->percentString(++$checked, $this->_totalReleases)
+					);
+				}
+
 			}
-
-			if ($this->echoOutput && $this->_show === 0) {
-				$this->consoleTools->overWritePrimary(
-					"Checked Releases: [" . number_format($checked) . "] " .
-					$this->consoleTools->percentString(++$checked, $this->_totalReleases)
-				);
-			}
-
 		}
 
 		return $renamed;

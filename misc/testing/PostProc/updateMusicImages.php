@@ -38,12 +38,14 @@ foreach ($itr as $filePath) {
 }
 
 $qry = $pdo->queryDirect("SELECT id FROM musicinfo WHERE cover = 1");
-foreach ($qry as $rows) {
-    if (!is_file($path2covers . $rows['id'] . '.jpg')) {
-        $pdo->queryDirect("UPDATE musicinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
-        echo $pdo->log->info($path2covers . $rows['id'] . ".jpg does not exist.");
-        $deleted++;
-    }
+if ($qry instanceof Traversable) {
+	foreach ($qry as $rows) {
+		if (!is_file($path2covers . $rows['id'] . '.jpg')) {
+			$pdo->queryDirect("UPDATE musicinfo SET cover = 0 WHERE cover = 1 AND id = " . $rows['id']);
+			echo $pdo->log->info($path2covers . $rows['id'] . ".jpg does not exist.");
+			$deleted++;
+		}
+	}
 }
 echo $pdo->log->header($covers . " covers set.");
 echo $pdo->log->header($deleted . " music unset.");

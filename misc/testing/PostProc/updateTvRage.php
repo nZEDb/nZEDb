@@ -18,45 +18,47 @@ if ($shows->rowCount() > 0) {
 	usleep(5000000);
 }
 $loop = 0;
-foreach ($shows as $show) {
-	$starttime = microtime(true);
-	$rageid = $show['rageid'];
-	$tvrShow = $tvrage->getRageInfoFromService($rageid);
-	$genre = '';
-	if (isset($tvrShow['genres']) && is_array($tvrShow['genres']) && !empty($tvrShow['genres'])) {
-		if (is_array($tvrShow['genres']['genre'])) {
-			$genre = @implode('|', $tvrShow['genres']['genre']);
-		} else {
-			$genre = $tvrShow['genres']['genre'];
-		}
-	}
-	$country = '';
-	if (isset($tvrShow['country']) && !empty($tvrShow['country'])) {
-		$country = $tvrage->countryCode($tvrShow['country']);
-	}
-
-	$rInfo = $tvrage->getRageInfoFromPage($rageid);
-	$desc = '';
-	if (isset($rInfo['desc']) && !empty($rInfo['desc'])) {
-		$desc = $rInfo['desc'];
-	}
-
-	$imgbytes = '';
-	if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
-		$img = nzedb\utility\getUrl($rInfo['imgurl']);
-		if ($img !== false) {
-			$im = @imagecreatefromstring($img);
-			if ($im !== false) {
-				$imgbytes = $img;
+if ($shows instanceof Traversable) {
+	foreach ($shows as $show) {
+		$starttime = microtime(true);
+		$rageid = $show['rageid'];
+		$tvrShow = $tvrage->getRageInfoFromService($rageid);
+		$genre = '';
+		if (isset($tvrShow['genres']) && is_array($tvrShow['genres']) && !empty($tvrShow['genres'])) {
+			if (is_array($tvrShow['genres']['genre'])) {
+				$genre = @implode('|', $tvrShow['genres']['genre']);
+			} else {
+				$genre = $tvrShow['genres']['genre'];
 			}
 		}
-	}
-	$pdo->queryDirect(sprintf("UPDATE tvrage SET description = %s, genre = %s, country = %s, imgdata = %s WHERE rageid = %d", $pdo->escapeString(substr($desc, 0, 10000)), $pdo->escapeString(substr($genre, 0, 64)), $pdo->escapeString($country), $pdo->escapeString($imgbytes), $rageid));
-	$name = $pdo->query("Select releasetitle from tvrage where rageid = " . $rageid);
-	echo $pdo->log->primary("Updated: " . $name[0]['releasetitle']);
-	$diff = floor((microtime(true) - $starttime) * 1000000);
-	if (1000000 - $diff > 0) {
-		echo $pdo->log->alternate("Sleeping");
-		usleep(1000000 - $diff);
+		$country = '';
+		if (isset($tvrShow['country']) && !empty($tvrShow['country'])) {
+			$country = $tvrage->countryCode($tvrShow['country']);
+		}
+
+		$rInfo = $tvrage->getRageInfoFromPage($rageid);
+		$desc = '';
+		if (isset($rInfo['desc']) && !empty($rInfo['desc'])) {
+			$desc = $rInfo['desc'];
+		}
+
+		$imgbytes = '';
+		if (isset($rInfo['imgurl']) && !empty($rInfo['imgurl'])) {
+			$img = nzedb\utility\getUrl($rInfo['imgurl']);
+			if ($img !== false) {
+				$im = @imagecreatefromstring($img);
+				if ($im !== false) {
+					$imgbytes = $img;
+				}
+			}
+		}
+		$pdo->queryDirect(sprintf("UPDATE tvrage SET description = %s, genre = %s, country = %s, imgdata = %s WHERE rageid = %d", $pdo->escapeString(substr($desc, 0, 10000)), $pdo->escapeString(substr($genre, 0, 64)), $pdo->escapeString($country), $pdo->escapeString($imgbytes), $rageid));
+		$name = $pdo->query("Select releasetitle from tvrage where rageid = " . $rageid);
+		echo $pdo->log->primary("Updated: " . $name[0]['releasetitle']);
+		$diff = floor((microtime(true) - $starttime) * 1000000);
+		if (1000000 - $diff > 0) {
+			echo $pdo->log->alternate("Sleeping");
+			usleep(1000000 - $diff);
+		}
 	}
 }

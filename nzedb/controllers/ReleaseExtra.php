@@ -6,6 +6,11 @@ use nzedb\utility;
 class ReleaseExtra
 {
 	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
+
+	/**
 	 * @param nzedb\db\Settings $settings
 	 */
 	public function __construct($settings = null)

@@ -8,10 +8,45 @@ use nzedb\db\Settings;
 
 class ReleaseCleaning
 {
+	/**
+	 * @var string
+	 */
 	public $subject = '';
+
+	/**
+	 * @var string
+	 */
 	public $groupName = '';
+
+	/**
+	 * @var string
+	 */
 	public $size = '';
+
+	/**
+	 * @var string
+	 */
 	public $fromName = '';
+
+	/**
+	 * @var string
+	 */
+	public $e0;
+
+	/**
+	 * @var string
+	 */
+	public $e1;
+
+	/**
+	 * @var string
+	 */
+	public $e2;
+
+	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
 
 	/**
 	 * @param nzedb\db\Settings $settings

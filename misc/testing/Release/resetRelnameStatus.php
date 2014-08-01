@@ -15,6 +15,7 @@ if (!isset($argv[1])) {
 }
 
 $pdo = new Settings();
+$res = false;
 if ($argv[1] === 'true') {
 	$res = $pdo->queryExec('UPDATE releases SET bitwise = 0, iscategorized = 0, isrenamed = 0, nzbstatus = 0, ishashed = 0, isrequestid = 0');
 } else if ($argv[1] === 'rename') {
@@ -23,9 +24,9 @@ if ($argv[1] === 'true') {
 	$res = $pdo->queryExec('UPDATE releases SET bitwise = ((bitwise & ~' . $argv[1] . ')|0)');
 }
 
-if ($res->rowCount() > 0 && is_numeric($argv[1])) {
+if ($res !== false && is_numeric($argv[1])) {
 	echo $cli->header('Succesfully reset the bitwise of ' . number_format($res->rowCount()) . ' releases to 0 for bit(s) ' . $argv[1] . '.');
-} else if ($res->rowCount() > 0) {
+} else if ($res !== false) {
 	echo $cli->header('Succesfully reset the bitwise of ' . number_format($res->rowCount()) . ' releases to un-renamed.');
 } else {
 	echo $cli->header('No releases to be reset.');
