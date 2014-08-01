@@ -39,7 +39,7 @@ class Popporn
 	// Sets the directurl for the template and returns it in the array
 	protected $directurl = null;
 
-	protected $response = array();
+	protected $response = null;
 	protected $res = array();
 	protected $html;
 
