@@ -5,6 +5,7 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 
+$path = '';
 if (isset($argv[2])) {
 	if (!preg_match('/^\//', $argv[2])) {
 		$path = getcwd() . '/' . $argv[2];
@@ -16,9 +17,8 @@ if (isset($argv[2])) {
 if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 	if (!preg_match('/\.csv$/', $path)) {
 		$path = dirname($path) . '/' . basename($path) . '/predb_dump.csv';
-	} else {
-		$path = $path;
 	}
+
 	if (!preg_match('/^\//', $path)) {
 		$path = getcwd() . '/' . $path;
 	}
@@ -114,6 +114,6 @@ if (isset($argv[1]) && $argv[1] == 'export' && isset($argv[2])) {
 					. "For importing, the script insert new rows and update existing matched rows. For databases not on the local system, use remote, else use local.\n"
 					. "For exporting, the path must be writeable by mysql, any existing file[predb_dump.csv] will be
 					overwritten.\n\n"
-					. "php $argv[0] export /path/to/write/to                     ...: To export.\n"
-					. "php $argv[0] [remote | local] /path/to/filename           ...: To import.\n"));
+					. "php dump_predb.php export /path/to/write/to                     ...: To export.\n"
+					. "php dump_predb.php [remote | local] /path/to/filename           ...: To import.\n"));
 }

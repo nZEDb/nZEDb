@@ -90,7 +90,7 @@ def main():
 	s = name = ""
 	for group in datas:
 		time.sleep(.03)
-		#start new groups using binaries.php, no need to check nntp
+		#start new groups using binaries.php, no need to check pynntp
 		if group[1] == 0:
 			run += 1
 			my_queue.put("update_group_headers  %s" % (group[0]))

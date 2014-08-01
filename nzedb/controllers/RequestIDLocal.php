@@ -100,7 +100,7 @@ class RequestIDLocal extends RequestID
 	protected function _getNewTitle()
 	{
 		if ($this->_requestID === -2) {
-			return $this->_multiLookup($this->_release['groupname'], $this->_release['name']);
+			return $this->_multiLookup();
 		}
 
 		$check = $this->pdo->queryDirect(
@@ -111,7 +111,7 @@ class RequestIDLocal extends RequestID
 			)
 		);
 
-		if ($check !== false) {
+		if ($check instanceof Traversable) {
 			if ($check->rowCount() == 1) {
 				foreach ($check as $row) {
 					if (preg_match('/s\d+/i', $row['title']) && !preg_match('/s\d+e\d+/i', $row['title'])) {
@@ -156,6 +156,7 @@ class RequestIDLocal extends RequestID
 				'(avi|jpg|nzb|m3u|mkv|par2|part\d+|nfo|sample|sfv|rar|r?\d{1,3}|\d+|zip)*)\s*\".*/i'
 		;
 
+		$matches = array();
 		switch (true) {
 			case preg_match($regex1, $this->_release['name'], $matches):
 			case preg_match($regex2, $this->_release['name'], $matches):

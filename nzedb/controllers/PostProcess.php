@@ -56,6 +56,11 @@ class PostProcess
 	protected $nameFixer;
 
 	/**
+	 * @var Par2Info
+	 */
+	protected $_par2Info;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $options Pass in class instances.
@@ -101,7 +106,6 @@ class PostProcess
 	 */
 	public function processAll($nntp)
 	{
-		$this->processPredb($nntp);
 		$this->processAdditional($nntp);
 		$this->processNfos($nntp);
 		$this->processSharing($nntp);
@@ -209,18 +213,6 @@ class PostProcess
 		if ($this->pdo->getSetting('lookupnfo') == 1) {
 			$this->Nfo->processNfoFiles($nntp, $groupID, $guidChar, (int)$this->pdo->getSetting('lookupimdb'), (int)$this->pdo->getSetting('lookuptvrage'));
 		}
-	}
-
-	/**
-	 * Fetch titles from predb sites.
-	 *
-	 * @param $nntp
-	 *
-	 * @return void
-	 */
-	public function processPredb(&$nntp)
-	{
-		// 2014-05-31 : Web PreDB fetching is removed. Using IRC is now recommended.
 	}
 
 	/**

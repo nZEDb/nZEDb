@@ -467,7 +467,6 @@ class Games
 			$con['review'] = trim(strip_tags((string)$gb['description']));
 		}
 
-		$genreKey = -1;
 		$genreName = '';
 
 		if (empty($genreName) && isset($gb['genres'][0]['name'])) {

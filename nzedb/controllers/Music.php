@@ -153,12 +153,11 @@ class Music
 	 * @param       $start
 	 * @param       $num
 	 * @param       $orderby
-	 * @param       $maxage
 	 * @param array $excludedcats
 	 *
 	 * @return array
 	 */
-	public function getMusicRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
+	public function getMusicRange($cat, $start, $num, $orderby, $excludedcats = array())
 	{
 		$pdo = $this->pdo;
 
@@ -490,11 +489,6 @@ class Music
 
 		if ($musicId) {
 			if ($this->echooutput) {
-				if ($mus["artist"] == "") {
-					$artist = "";
-				} else {
-					$artist = "Artist: " . $mus['artist'] . ", Album: ";
-				}
 				$this->pdo->log->doEcho(
 					$this->pdo->log->header("\nAdded/updated album: ") .
 					$this->pdo->log->alternateOver("   Artist: ") .
@@ -648,7 +642,6 @@ class Music
 	 */
 	public function parseArtist($releasename)
 	{
-		$name = '';
 		if (preg_match('/(.+?)(\d{1,2} \d{1,2} )?\(?(19\d{2}|20[0-1][0-9])\b/', $releasename, $name)) {
 			$result = array();
 			$result["year"] = $name[3];
@@ -661,20 +654,7 @@ class Music
 			$f = preg_replace('/ (\d{1,2} \d{1,2} )?(CD(A|EP|M|R|S)?|QEDCD|SBD) /i', ' ', $e);
 			$g = str_replace(array('_', '-'), ' ', $f);
 			$h = trim(preg_replace('/\s\s+/', ' ', $g));
-			$newname = trim(preg_Replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$|-WEB$/i', '', $h));
-
-			/*var_dump($releasename);
-			var_dump($name[1]);
-			var_dump($a);
-			var_dump($b);
-			var_dump($c);
-			var_dump($d);
-			var_dump($e);
-			var_dump($f);
-			var_dump($g);
-			var_dump($h);
-			var_dump($newname);
-			//exit();*/
+			$newname = trim(preg_replace('/ [a-z]{2}$| [a-z]{3} \d{2,}$|\d{5,} \d{5,}$|-WEB$/i', '', $h));
 
 			if (!preg_match('/^[a-z0-9]+$/i', $newname) && strlen($newname) > 10) {
 				$result["name"] = $newname;

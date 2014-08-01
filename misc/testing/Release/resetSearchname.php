@@ -34,7 +34,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 
 		$releases = new ProcessReleases(['Settings' => $pdo, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize();
-		$categorized = $releases->categorizeRelease("name", "", true);
+		$categorized = $releases->categorizeRelease("name", "");
 		$timecat = $consoletools->convertTime(time() - $timestart);
 		echo $pdo->log->primary("\nFinished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 
@@ -70,7 +70,7 @@ if (isset($argv[1]) && $argv[1] == "full") {
 
 		$releases = new ProcessReleases(['Settings' => $pdo, 'ConsoleTools' => $consoletools, 'ReleaseCleaning' => $rc]);
 		$releases->resetCategorize("WHERE isrenamed = 0");
-		$categorized = $releases->categorizeRelease("name", "WHERE isrenamed = 0", true);
+		$categorized = $releases->categorizeRelease("name", "WHERE isrenamed = 0");
 		$timecat = $consoletools->convertTime(time() - $timestart);
 		echo $pdo->log->header("Finished categorizing " . $categorized . " releases in " . $timecat . ".\nFinally, the releases will be fixed using the NFO/filenames.");
 

@@ -127,7 +127,7 @@ class Books
 		return $res['num'];
 	}
 
-	public function getBookRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
+	public function getBookRange($cat, $start, $num, $orderby, $excludedcats = array())
 	{
 		$pdo = $this->pdo;
 

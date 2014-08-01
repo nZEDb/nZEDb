@@ -15,6 +15,41 @@ class ProcessReleases
 	const FILE_COMPLETE   = 1; // We have all the parts for the file (binaries table partcheck column).
 
 	/**
+	 * @var Groups
+	 */
+	public $groups;
+
+	/**
+	 * @var bool
+	 */
+	public $tablePerGroup;
+
+	/**
+	 * @var int
+	 */
+	public $collectionDelayTime;
+
+	/**
+	 * @var int
+	 */
+	public $crossPostTime;
+
+	/**
+	 * @var int
+	 */
+	public $releaseCreationLimit;
+
+	/**
+	 * @var int
+	 */
+	public $completion;
+
+	/**
+	 * @var int
+	 */
+	public $processRequestIDs;
+
+	/**
 	 * @param array $options Class instances / Echo to cli ?
 	 */
 	public function __construct(array $options = array())
@@ -1086,7 +1121,7 @@ class ProcessReleases
 		$category = new Category(['Settings' => $this->pdo]);
 		$genres = new Genres(['Settings' => $this->pdo]);
 		$passwordDeleted = $duplicateDeleted = $retentionDeleted = $completionDeleted = $disabledCategoryDeleted = 0;
-		$disabledGenreDeleted = $miscRetentionDeleted = $totalDeleted = $categoryMinSizeDeleted = 0;
+		$disabledGenreDeleted = $miscRetentionDeleted = $categoryMinSizeDeleted = 0;
 
 		// Delete old releases and finished collections.
 		if ($this->echoCLI) {

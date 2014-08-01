@@ -144,7 +144,7 @@ class Settings extends DB
 			}
 		}
 
-		$where    = $result = false;
+		$result = false;
 		$defaults = [
 			'section'    => null,
 			'subsection' => null,
@@ -251,7 +251,6 @@ class Settings extends DB
 
 	protected function _getFromSettings($options)
 	{
-		$result = array();
 		$sql     = 'SELECT value FROM settings ';
 		$where   = $options['section'] . $options['subsection'] . $options['name']; // Can't use expression in empty() < PHP 5.5
 		if (!empty($where)) {

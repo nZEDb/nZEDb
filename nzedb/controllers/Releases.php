@@ -21,6 +21,16 @@ class Releases
 	public $pdo;
 
 	/**
+	 * @var Groups
+	 */
+	public $groups;
+
+	/**
+	 * @var bool
+	 */
+	public $updategrabs;
+
+	/**
 	 * @var array $options Class instances.
 	 */
 	public function __construct(array $options = array())
@@ -207,18 +217,14 @@ class Releases
 		switch (true) {
 			case $res['value'] == 0:
 				return $passwordStatus;
-				break;
 			case $res['value'] == 1:
 				$passwordStatus = sprintf('<= %d', Releases::PASSWD_POTENTIAL);
 				return $passwordStatus;
-				break;
 			case $res['value'] == 10:
 				$passwordStatus = sprintf('<= %d', Releases::PASSWD_RAR);
 				return $passwordStatus;
-				break;
 			default:
 				return $passwordStatus;
-				break;
 		}
 	}
 
@@ -1014,7 +1020,7 @@ class Releases
 			}
 		}
 
-		$daysnewsql = $daysoldsql = $maxagesql = $groupIDsql = $parentcatsql = '';
+		$daysnewsql = $daysoldsql = $maxagesql = $groupIDsql = '';
 
 		$searchnamesql = ($searchname != '-1' ? $this->searchSQL($searchname, 'searchname') : '');
 		$usenetnamesql = ($usenetname != '-1' ? $this->searchSQL($usenetname, 'name') : '');

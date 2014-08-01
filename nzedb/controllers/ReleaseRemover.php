@@ -108,7 +108,7 @@ class ReleaseRemover
 	protected $echoCLI;
 
 	/**
-	 * @var int
+	 * @var string
 	 */
 	protected $blacklistID;
 

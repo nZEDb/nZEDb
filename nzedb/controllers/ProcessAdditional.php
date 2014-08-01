@@ -56,6 +56,96 @@ Class ProcessAdditional
 	protected $_groups;
 
 	/**
+	 * @var Par2Info
+	 */
+	protected $_par2Info;
+
+	/**
+	 * @var ArchiveInfo
+	 */
+	protected $_archiveInfo;
+
+	/**
+	 * @var array|bool|string
+	 */
+	protected $_innerFileBlacklist;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	protected $_maxNestedLevels;
+
+	/**
+	 * @var array|bool|string
+	 */
+	protected $_7zipPath;
+
+	/**
+	 * @var array|bool|string
+	 */
+	protected $_unrarPath;
+
+	/**
+	 * @var bool
+	 */
+	protected $_hasGNUFile;
+
+	/**
+	 * @var string
+	 */
+	protected $_killString;
+
+	/**
+	 * @var bool|string
+	 */
+	protected $_showCLIReleaseID;
+
+	/**
+	 * @var int
+	 */
+	protected $_queryLimit;
+
+	/**
+	 * @var int
+	 */
+	protected $_segmentsToDownload;
+
+	/**
+	 * @var int
+	 */
+	protected $_maximumRarSegments;
+
+	/**
+	 * @var int
+	 */
+	protected $_maximumRarPasswordChecks;
+
+	/**
+	 * @var string
+	 */
+	protected $_maxSize;
+
+	/**
+	 * @var string
+	 */
+	protected $_minSize;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processSample;
+
+	/**
+	 * @var string
+	 */
+	protected $_audioSavePath;
+
+	/**
+	 * @var string
+	 */
+	protected $_supportFileRegex;
+
+	/**
 	 * @param array $options Class instances / echo to cli.
 	 */
 	public function __construct(array $options = array())
@@ -770,7 +860,7 @@ Class ProcessAdditional
 				return false;
 		}
 
-		return $this->_processCompressedFileList($dataSummary['main_type']);
+		return $this->_processCompressedFileList();
 	}
 
 	/**
@@ -941,7 +1031,7 @@ Class ProcessAdditional
 
 		// Get all the remaining files in the temp dir.
 		$files = $this->_getTempDirectoryContents();
-		if ($files !== false) {
+		if ($files instanceof Traversable) {
 
 			foreach ($files as $file) {
 				$file = (string)$file;
@@ -1267,7 +1357,7 @@ Class ProcessAdditional
 	 */
 	protected function _finalizeRelease()
 	{
-		$vSQL = $jSQL = $query = '';
+		$vSQL = $jSQL = '';
 		$iSQL = ', haspreview = 0';
 
 		// If samples exist from previous runs, set flags.

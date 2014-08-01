@@ -24,7 +24,7 @@ class hash_algorithms
 
 	/**
 	 * The string we are expecting to get.
-	 * @var string
+	 * @var array
 	 */
 	protected $_expectedString;
 
@@ -38,6 +38,8 @@ class hash_algorithms
 	 * @param string $inputString
 	 * @param string $expectedString
 	 * @param bool $writeToFile
+	 *
+	 * @access public
 	 */
 	public function __construct($inputString, $expectedString, $writeToFile)
 	{
@@ -52,6 +54,12 @@ class hash_algorithms
 		$this->_testStrings();
 	}
 
+	/**
+	 * Test various hash algorithms on strings.
+	 *
+	 * @access protected
+	 * @void
+	 */
 	protected function _testStrings()
 	{
 		if ($this->_writeToFile) {
@@ -142,6 +150,13 @@ class hash_algorithms
 		}
 	}
 
+	/**
+	 * Return various versions of a input string to hash.
+	 *
+	 * @param string $string
+	 *
+	 * @return array
+	 */
 	protected function _hashesToArray($string)
 	{
 		$strings = array(
