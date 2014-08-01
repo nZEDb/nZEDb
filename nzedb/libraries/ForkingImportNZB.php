@@ -1,6 +1,8 @@
 <?php
 namespace nzedb\libraries;
 
+use nzedb\db\Settings;
+
 /**
  * Class ForkingImportNZB
  *
@@ -14,12 +16,13 @@ class ForkingImportNZB extends Forking
 	public function __construct(array $options = array())
 	{
 		$defaults = [
-			'settings' => null,
+			'settings' => new Settings(),
 		];
 		$options += $defaults;
 
 		parent::__construct($options);
 		$this->importPath = (PHP_BINARY . ' ' . nZEDb_MISC . 'testing' . DS . 'nzb-import.php ');
+		$this->pdo = $options['settings'];
 	}
 
 	public function __destruct()
