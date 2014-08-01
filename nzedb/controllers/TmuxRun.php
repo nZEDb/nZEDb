@@ -639,13 +639,14 @@ class TmuxRun extends Tmux
 		} else if (($runVar['killswitch']['coll'] == false) && ($runVar['killswitch']['pp'] == false) && (time() - $runVar['timers']['timer5'] >= 4800)) {
 			//run backfill all once and resets the timer
 			if ($runVar['settings']['backfill'] != 0) {
-				shell_exec("tmux respawnp -k -t{$runVar['constants']['tmux_session']}:0.2 ' \
+				shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 ' \
 					{$runVar['commands']['_php']} {$runVar['paths']['misc']}update/python/backfill_threaded.py all $log; \
 					date +\"%D %T\"; {$runVar['commands']['_sleep']} {$runVar['settings']['seq_timer']}' 2>&1 1> /dev/null"
 				);
 				$runVar['timers']['timer5'] = time();
 			}
 			$runVar['timers']['timer5'] = time();
+
 		} else if ((($runVar['killswitch']['coll'] == true) || ($runVar['killswitch']['pp'] == true)) && ($runVar['settings']['releases_run'] != 0)) {
 			$color = $this->get_color($runVar['settings']['colors_start'], $runVar['settings']['colors_end'], $runVar['settings']['colors_exc']);
 			shell_exec("tmux respawnp -t{$runVar['constants']['tmux_session']}:0.2 'echo \"\033[38;5;${color}m\"; \
