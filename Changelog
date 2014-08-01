@@ -7,7 +7,7 @@ New updates are grouped by person, at the top of the file.
 ***moved smarty path, please run sudo chmod -R 777 smarty/templates_c/***
 
 2014-08-01 DariusIII
-        *Upd: Codec spam removal update
+        * Upd: Codec spam removal update
 2014-08-01 bart39
 	* Fix: UpdateTV for tmux complete sequential.
 	* Fix: Display issues for long titles on predb alpha theme.
