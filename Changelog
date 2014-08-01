@@ -12,6 +12,7 @@ New updates are grouped by person, at the top of the file.
 	* Mrg: tasky's XXX changes PR #1440
 	* Mrg: dev-tmuxrevamp into dev (please make sure tmux is restarted)
 	* Fix: Fix typo in tmux monitor output for USP connections
+	* Fix: 'apps' undefined indexes -- remove a few scrutinized breaks
 2014-07-31 ruhllatio
 	* Mrg: tasky's XXX changes PR #1436
 2014-07-31 kevin
