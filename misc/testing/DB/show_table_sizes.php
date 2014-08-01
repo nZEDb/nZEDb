@@ -28,14 +28,16 @@ $run = $pdo->queryDirect($table_data);
 $mask = $pdo->log->headerOver("%-25.25s ") .  $pdo->log->primaryOver("%7.7s %10.10s %15.15s %15.15s %15.15s %15.15s\n");
 printf($mask, 'Table Name', 'Engine', 'Row_Format', 'Data Size', 'Index Size', 'Free Space', 'Total Size');
 printf($mask, '=========================', '=======', '==========', '===============', '===============', '===============', '===============');
-foreach ($run as $table) {
-	if ($table['total'] > $argv[1] || $table['free'] > $argv[1]) {
-		printf($mask, $table['table'], $table['engine'], str_replace('row_format=', '', $table['format']), number_format($table['data'], 2) . " MB", number_format($table['index'], 2) . " MB", number_format($table['free'], 2) . " MB", number_format($table['total'], 2) . " MB");
+if ($run instanceof Traversable) {
+	foreach ($run as $table) {
+		if ($table['total'] > $argv[1] || $table['free'] > $argv[1]) {
+			printf($mask, $table['table'], $table['engine'], str_replace('row_format=', '', $table['format']), number_format($table['data'], 2) . " MB", number_format($table['index'], 2) . " MB", number_format($table['free'], 2) . " MB", number_format($table['total'], 2) . " MB");
+		}
+		$data += $table['data'];
+		$index += $table['index'];
+		$free += $table['free'];
+		$total += $table['total'];
 	}
-	$data += $table['data'];
-	$index += $table['index'];
-	$free += $table['free'];
-	$total += $table['total'];
 }
 printf($mask, '=========================', '=======', '==========', '===============', '===============', '===============', '===============');
 printf($mask, 'Table Name', 'Engine', 'Row_Format', 'Data Size', 'Index Size', 'Free Space', 'Total Size');

@@ -25,20 +25,22 @@ if (isset($argv[1]) && $argv[1] === "all") {
 		}
 		echo $pdo->log->header("Resetting all postprocessing");
 		$qry = $pdo->queryDirect("SELECT id FROM releases");
-		$total = $qry->rowCount();
 		$affected = 0;
-		foreach ($qry as $releases) {
-			$pdo->queryExec(
-				sprintf("
-					UPDATE releases
-					SET consoleinfoid = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfoid = NULL,
-						bookinfoid = NULL, rageid = -1, xxxinfo_id = 0, passwordstatus = -1, haspreview = -1,
-						jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1
-					WHERE id = %d",
-					$releases['id']
-				)
-			);
-			$consoletools->overWritePrimary("Resetting Releases:  " . $consoletools->percentString(++$affected, $total));
+		if ($qry instanceof Traversable) {
+			$total = $qry->rowCount();
+			foreach ($qry as $releases) {
+				$pdo->queryExec(
+					sprintf("
+						UPDATE releases
+						SET consoleinfoid = NULL, gamesinfo_id = 0, imdbid = NULL, musicinfoid = NULL,
+							bookinfoid = NULL, rageid = -1, xxxinfo_id = 0, passwordstatus = -1, haspreview = -1,
+							jpgstatus = 0, videostatus = 0, audiostatus = 0, nfostatus = -1
+						WHERE id = %d",
+						$releases['id']
+					)
+				);
+				$consoletools->overWritePrimary("Resetting Releases:  " . $consoletools->percentString(++$affected, $total));
+			}
 		}
 	}
 }
@@ -56,15 +58,17 @@ if (isset($argv[1]) && ($argv[1] === "consoles" || $argv[1] === "all")) {
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
-	if ($qry !== false ) {
+	if ($qry !== false) {
 		$total = $qry->rowCount();
 	} else {
 		$total = 0;
 	}
 	$concount = 0;
-	foreach ($qry as $releases) {
-		$pdo->queryExec("UPDATE releases SET consoleinfoid = NULL WHERE id = " . $releases['id']);
-		$consoletools->overWritePrimary("Resetting Console Releases:  " . $consoletools->percentString(++$concount, $total));
+	if ($qry instanceof Traversable) {
+		foreach ($qry as $releases) {
+			$pdo->queryExec("UPDATE releases SET consoleinfoid = NULL WHERE id = " . $releases['id']);
+			$consoletools->overWritePrimary("Resetting Console Releases:  " . $consoletools->percentString(++$concount, $total));
+		}
 	}
 	echo $pdo->log->header("\n" . number_format($concount) . " consoleinfoID's reset.");
 }
@@ -82,17 +86,19 @@ if (isset($argv[1]) && ($argv[1] === "games" || $argv[1] === "all")) {
 	}
 
 	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
-	if ($qry !== false ) {
+	if ($qry !== false) {
 		$total = $qry->rowCount();
 	} else {
 		$total = 0;
 	}
 	$concount = 0;
-	foreach ($qry as $releases) {
-		$pdo->queryExec("UPDATE releases SET gamesinfo_id = NULL WHERE id = " . $releases['id']);
-		$consoletools->overWritePrimary("Resetting Games Releases:  " .	$consoletools->percentString(++$concount, $total));
+	if ($qry instanceof Traversable) {
+		foreach ($qry as $releases) {
+			$pdo->queryExec("UPDATE releases SET gamesinfo_id = NULL WHERE id = " . $releases['id']);
+			$consoletools->overWritePrimary("Resetting Games Releases:  " .	$consoletools->percentString(++$concount, $total));
+		}
+		echo $pdo->log->header("\n" . number_format($concount) . " gameinfo_ID's reset.");
 	}
-	echo $pdo->log->header("\n" . number_format($concount) . " gameinfo_ID's reset.");
 }
 if (isset($argv[1]) && ($argv[1] === "movies" || $argv[1] === "all")) {
 	$ran = true;
@@ -108,15 +114,17 @@ if (isset($argv[1]) && ($argv[1] === "movies" || $argv[1] === "all")) {
 	}
 
 	$qry      = $pdo->queryDirect("SELECT id FROM releases" . $where);
-	if ($qry !== false ) {
+	if ($qry !== false) {
 		$total = $qry->rowCount();
 	} else {
 		$total = 0;
 	}
 	$concount = 0;
-	foreach ($qry as $releases) {
-		$pdo->queryExec("UPDATE releases SET imdbid = NULL WHERE id = " . $releases['id']);
-		$consoletools->overWritePrimary("Resetting Movie Releases:  " . $consoletools->percentString(++$concount, $total));
+	if ($qry instanceof Traversable) {
+		foreach ($qry as $releases) {
+			$pdo->queryExec("UPDATE releases SET imdbid = NULL WHERE id = " . $releases['id']);
+			$consoletools->overWritePrimary("Resetting Movie Releases:  " . $consoletools->percentString(++$concount, $total));
+		}
 	}
 	echo $pdo->log->header("\n" . number_format($concount) . " imdbID's reset.");
 }
@@ -136,9 +144,11 @@ if (isset($argv[1]) && ($argv[1] === "music" || $argv[1] === "all")) {
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	$total = $qry->rowCount();
 	$concount = 0;
-	foreach ($qry as $releases) {
-		$pdo->queryExec("UPDATE releases SET musicinfoid = NULL WHERE id = " . $releases['id']);
-		$consoletools->overWritePrimary("Resetting Music Releases:  " .	$consoletools->percentString(++$concount, $total));
+	if ($qry instanceof Traversable) {
+		foreach ($qry as $releases) {
+			$pdo->queryExec("UPDATE releases SET musicinfoid = NULL WHERE id = " . $releases['id']);
+			$consoletools->overWritePrimary("Resetting Music Releases:  " .	$consoletools->percentString(++$concount, $total));
+		}
 	}
 	echo $pdo->log->header("\n" . number_format($concount) . " musicinfoID's reset.");
 }
@@ -160,9 +170,11 @@ if (isset($argv[1]) && ($argv[1] === "misc" || $argv[1] === "all")) {
 		$total = 0;
 	}
 	$concount = 0;
-	foreach ($qry as $releases) {
-		$pdo->queryExec("UPDATE releases SET passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0 WHERE id = " . $releases['id']);
-		$consoletools->overWritePrimary("Resetting Releases:  " . $consoletools->percentString(++$concount, $total));
+	if ($qry instanceof Traversable) {
+		foreach ($qry as $releases) {
+			$pdo->queryExec("UPDATE releases SET passwordstatus = -1, haspreview = -1, jpgstatus = 0, videostatus = 0, audiostatus = 0 WHERE id = " . $releases['id']);
+			$consoletools->overWritePrimary("Resetting Releases:  " . $consoletools->percentString(++$concount, $total));
+		}
 	}
 	echo $pdo->log->header("\n" . number_format($concount) . " Release's reset.");
 }
@@ -186,9 +198,11 @@ if (isset($argv[1]) && ($argv[1] === "tv" || $argv[1] === "all")) {
 		$total = 0;
 	}
 	$concount = 0;
-	foreach ($qry as $releases) {
-		$pdo->queryExec("UPDATE releases SET rageid = -1 WHERE id = " . $releases['id']);
-		$consoletools->overWritePrimary("Resetting TV Releases:  " . $consoletools->percentString(++$concount, $total));
+	if ($qry instanceof Traversable) {
+		foreach ($qry as $releases) {
+			$pdo->queryExec("UPDATE releases SET rageid = -1 WHERE id = " . $releases['id']);
+			$consoletools->overWritePrimary("Resetting TV Releases:  " . $consoletools->percentString(++$concount, $total));
+		}
 	}
 	echo $pdo->log->header("\n" . number_format($concount) . " rageID's reset.");
 }
@@ -208,9 +222,11 @@ if (isset($argv[1]) && ($argv[1] === "books" || $argv[1] === "all")) {
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
 	$total = $qry->rowCount();
 	$concount = 0;
-	foreach ($qry as $releases) {
-		$pdo->queryExec("UPDATE releases SET bookinfoid = NULL WHERE id = " . $releases['id']);
-		$consoletools->overWritePrimary("Resetting Book Releases:  " . $consoletools->percentString(++$concount, $total));
+	if ($qry instanceof Traversable) {
+		foreach ($qry as $releases) {
+			$pdo->queryExec("UPDATE releases SET bookinfoid = NULL WHERE id = " . $releases['id']);
+			$consoletools->overWritePrimary("Resetting Book Releases:  " . $consoletools->percentString(++$concount, $total));
+		}
 	}
 	echo $pdo->log->header("\n" . number_format($concount) . " bookinfoID's reset.");
 }
@@ -228,12 +244,14 @@ if (isset($argv[1]) && ($argv[1] === "xxx" || $argv[1] === "all")) {
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
-	$total = $qry->rowCount();
 	$concount = 0;
-	foreach ($qry as $releases) {
-		$pdo->queryExec("UPDATE releases SET xxxinfo_id = 0 WHERE id = " . $releases['id']);
-		$consoletools->overWritePrimary("Resetting XXX Releases:  " . $consoletools->percentString(++$concount,
-				$total));
+	if ($qry instanceof Traversable) {
+		$total = $qry->rowCount();
+		foreach ($qry as $releases) {
+			$pdo->queryExec("UPDATE releases SET xxxinfo_id = 0 WHERE id = " . $releases['id']);
+			$consoletools->overWritePrimary("Resetting XXX Releases:  " . $consoletools->percentString(++$concount,
+					$total));
+		}
 	}
 	echo $pdo->log->header("\n" . number_format($concount) . " xxxinfo_ID's reset.");
 }
@@ -251,11 +269,13 @@ if (isset($argv[1]) && ($argv[1] === "nfos" || $argv[1] === "all")) {
 	}
 
 	$qry = $pdo->queryDirect("SELECT id FROM releases" . $where);
-	$total = $qry->rowCount();
 	$concount = 0;
-	foreach ($qry as $releases) {
-		$pdo->queryExec("UPDATE releases SET nfostatus = -1 WHERE id = " . $releases['id']);
-		$consoletools->overWritePrimary("Resetting NFO Releases:  " . $consoletools->percentString(++$concount, $total));
+	if ($qry instanceof Traversable) {
+		$total = $qry->rowCount();
+		foreach ($qry as $releases) {
+			$pdo->queryExec("UPDATE releases SET nfostatus = -1 WHERE id = " . $releases['id']);
+			$consoletools->overWritePrimary("Resetting NFO Releases:  " . $consoletools->percentString(++$concount, $total));
+		}
 	}
 	echo $pdo->log->header("\n" . number_format($concount) . " NFO's reset.");
 }

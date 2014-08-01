@@ -48,18 +48,18 @@ if ($sql != '') {
 	$res = $pdo->queryDirect($sql);
 	@unlink("xdfrexgvtedvgb.uhdntef");
 
-	foreach ($res as $setting)
-	{
-		$line = sprintf($mask, $setting['setting'], $setting['value']);
-		if (nZEDb_DEBUG) {
-			echo $line;
+	if ($res instanceof Traversable) {
+		foreach ($res as $setting) {
+			$line = sprintf($mask, $setting['setting'], $setting['value']);
+			if (nZEDb_DEBUG) {
+				echo $line;
+			}
+			$output .= $line;
 		}
-		$output .= $line;
 	}
 
 	if ($style == 'html') {
-		$line .= "\t</tbody>\n</table>\n";
-		$output .= $line;
+		$output .= "\t</tbody>\n</table>\n";
 	}
 
 	file_put_contents("xdfrexgvtedvgb.uhdntef", $output, FILE_APPEND);
