@@ -14,6 +14,51 @@ class Books
 	public $pdo;
 
 	/**
+	 * @var bool
+	 */
+	public $echooutput;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $pubkey;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $privkey;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $asstag;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $bookqty;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $sleeptime;
+
+	/**
+	 * @var string
+	 */
+	public $imgSavePath;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $bookreqids;
+
+	/**
+	 * @var string
+	 */
+	public $renamed;
+
+	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
 	public function __construct(array $options = array())
@@ -330,8 +375,8 @@ class Books
 	/**
 	 * Process book releases.
 	 *
-	 * @param \PDOStatement $res      Array containing unprocessed book SQL data set.
-	 * @param int           $categoryID The category id.
+	 * @param \PDOStatement|bool $res      Array containing unprocessed book SQL data set.
+	 * @param int                $categoryID The category id.
 	 * @void
 	 */
 	protected function processBookReleasesHelper($res, $categoryID)

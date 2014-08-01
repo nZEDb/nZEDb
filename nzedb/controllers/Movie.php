@@ -101,6 +101,36 @@ class Movie
 	protected $imdbLanguage;
 
 	/**
+	 * @var array|bool|string
+	 */
+	public $fanartapikey;
+
+	/**
+	 * @var bool
+	 */
+	public $imdburl;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $movieqty;
+
+	/**
+	 * @var bool
+	 */
+	public $echooutput;
+
+	/**
+	 * @var string
+	 */
+	public $imgSavePath;
+
+	/**
+	 * @var string
+	 */
+	public $service;
+
+	/**
 	 * @param array $options Class instances / Echo to CLI.
 	 */
 	public function __construct(array $options = array())
@@ -118,7 +148,7 @@ class Movie
 
 		$this->imdbLanguage = ($this->pdo->getSetting('imdblanguage') != '') ? (string)$this->pdo->getSetting('imdblanguage') : 'en';
 
-		$this->tmdb = ($options['TMDb'] instanceof TMDb ? $options['TMDb'] : new TMDb($this->pdo->getSetting('tmdbkey'), $this->imdbLanguage));
+		$this->tmdb = ($options['TMDb'] instanceof \TMDb ? $options['TMDb'] : new \TMDb($this->pdo->getSetting('tmdbkey'), $this->imdbLanguage));
 
 		$this->fanartapikey = $this->pdo->getSetting('fanarttvkey');
 		$this->imdburl = ($this->pdo->getSetting('imdburl') == 0 ? false : true);
@@ -914,6 +944,7 @@ class Movie
 				}
 			}
 
+			$matches = array();
 			foreach ($imdb_regex_multi as $field => $regex) {
 				if (preg_match_all($regex, $buffer, $matches)) {
 					$match2 = $matches[1];

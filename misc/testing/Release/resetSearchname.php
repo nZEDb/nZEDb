@@ -7,13 +7,14 @@ use nzedb\db\Settings;
 
 $pdo = new Settings();
 
+$show = 2;
+if (isset($argv[2]) && $argv[2] === 'show') {
+	$show = 1;
+}
+
 if (isset($argv[1]) && $argv[1] == "full") {
 	$res = $pdo->query("SELECT releases.id, releases.name, releases.fromname, releases.size, groups.name AS gname FROM releases INNER JOIN groups ON releases.group_id = groups.id");
 
-	$show = 2;
-	if (isset($argv[2]) && $argv[2] === 'show') {
-		$show = 1;
-	}
 	if (count($res) > 0) {
 		echo $pdo->log->header("Going to recreate all search names, recategorize them and fix the names with namefixer, this can take a while.");
 		$done = 0;

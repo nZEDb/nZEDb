@@ -2,6 +2,10 @@
 
 require_once dirname(__FILE__) . '/../../../www/config.php';
 
+if (!isset($argv[1])) {
+	exit();
+}
+
 $group = $argv[1];
 //$cleaner = new CollectionsCleaning();
 $nntp = new NNTP();

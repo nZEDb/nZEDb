@@ -50,6 +50,36 @@ class ProcessReleases
 	public $processRequestIDs;
 
 	/**
+	 * @var bool
+	 */
+	public $echoCLI;
+
+	/**
+	 * @var nzedb\db\Settings
+	 */
+	public $pdo;
+
+	/**
+	 * @var ConsoleTools
+	 */
+	public $consoleTools;
+
+	/**
+	 * @var NZB
+	 */
+	public $nzb;
+
+	/**
+	 * @var ReleaseCleaning
+	 */
+	public $releaseCleaning;
+
+	/**
+	 * @var Releases
+	 */
+	public $releases;
+
+	/**
 	 * @param array $options Class instances / Echo to cli ?
 	 */
 	public function __construct(array $options = array())

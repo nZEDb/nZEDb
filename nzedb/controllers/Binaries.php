@@ -610,7 +610,7 @@ class Binaries
 			}
 
 			// If set we are running in partRepair mode.
-			if ($partRepair === true) {
+			if ($partRepair === true && !is_null($missingParts)) {
 				if (!in_array($header['Number'], $missingParts)) {
 					// If article isn't one that is missing skip it.
 					continue;

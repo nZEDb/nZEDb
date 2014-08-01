@@ -291,7 +291,7 @@ class Forking extends \fork_daemon
 
 			$groups = $this->pdo->queryDirect('SELECT id FROM groups WHERE (active = 1 OR backfill = 1)');
 
-			if ($groups->rowCount() > 0) {
+			if ($groups instanceof \Traversable) {
 				foreach($groups as $group) {
 					if ($this->pdo->queryOneRow(sprintf('SELECT id FROM collections_%d  LIMIT 1',$group['id'])) !== false) {
 						$this->work[] = array('id' => $group['id']);
@@ -810,7 +810,7 @@ class Forking extends \fork_daemon
 	/**
 	 * @var \nzedb\db\Settings
 	 */
-	private $pdo;
+	public $pdo;
 
 	/**
 	 * @var bool

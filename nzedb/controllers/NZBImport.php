@@ -36,10 +36,10 @@ class NZBImport
 	 * @var int
 	 * @access protected
 	 */
-	protected $crossPost;
+	protected $crossPostt;
 
 	/**
-	 * @var Category
+	 * @var Categorize
 	 * @access protected
 	 */
 	protected $category;
@@ -71,6 +71,16 @@ class NZBImport
 	 * @access protected
 	 */
 	protected $relGuid;
+
+	/**
+	 * @var bool
+	 */
+	public $echoCLI;
+
+	/**
+	 * @var NZB
+	 */
+	public $nzb;
 
 	/**
 	 * Construct.

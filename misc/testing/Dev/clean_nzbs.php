@@ -54,7 +54,7 @@ if (isset($argv[1]) && ($argv[1] === "true" || $argv[1] === "delete")) {
 			$nzbpath = $nzb->getNZBPath($row["guid"]);
 			if (!file_exists($nzbpath)) {
 				if ($argv[1] === "delete") {
-					@copy($nzbpath, nZEDb_ROOT . "pooped/" . $guid[1] . ".nzb.gz");
+					@copy($nzbpath, nZEDb_ROOT . "pooped/" . $row["guid"] . ".nzb.gz");
 					$releases->deleteSingle($row['guid'], $nzb);
 				}
 				$deleted++;

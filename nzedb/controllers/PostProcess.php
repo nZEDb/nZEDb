@@ -6,7 +6,7 @@ use nzedb\utility;
 class PostProcess
 {
 	/**
-	 * @var nzedb\db\DB
+	 * @var nzedb\db\Settings
 	 */
 	public $pdo;
 

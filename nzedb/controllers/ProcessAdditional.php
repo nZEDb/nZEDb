@@ -146,6 +146,111 @@ Class ProcessAdditional
 	protected $_supportFileRegex;
 
 	/**
+	 * @var bool
+	 */
+	protected $_echoCLI;
+
+	/**
+	 * @var NNTP
+	 */
+	protected $_nntp;
+
+	/**
+	 * @var ReleaseFiles
+	 */
+	protected $_releaseFiles;
+
+	/**
+	 * @var Categorize
+	 */
+	protected $_categorize;
+
+	/**
+	 * @var NameFixer
+	 */
+	protected $_nameFixer;
+
+	/**
+	 * @var ReleaseExtra
+	 */
+	protected $_releaseExtra;
+
+	/**
+	 * @var ReleaseImage
+	 */
+	protected $_releaseImage;
+
+	/**
+	 * @var Nfo
+	 */
+	protected $_nfo;
+
+	/**
+	 * @var bool
+	 */
+	protected $_extractUsingRarInfo;
+
+	/**
+	 * @var bool
+	 */
+	protected $_alternateNNTP;
+
+	/**
+	 * @var int
+	 */
+	protected $_ffMPEGDuration;
+
+	/**
+	 * @var bool
+	 */
+	protected $_addPAR2Files;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processVideo;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processJPGSample;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processAudioSample;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processMediaInfo;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processAudioInfo;
+
+	/**
+	 * @var bool
+	 */
+	protected $_processPasswords;
+
+	/**
+	 * @var string
+	 */
+	protected $_audioFileRegex;
+
+	/**
+	 * @var string
+	 */
+	protected $_ignoreBookRegex;
+
+	/**
+	 * @var string
+	 */
+	protected $_videoFileRegex;
+
+	/**
 	 * @param array $options Class instances / echo to cli.
 	 */
 	public function __construct(array $options = array())
@@ -1007,16 +1112,18 @@ Class ProcessAdditional
 			// Get all the compressed files in the temp folder.
 			$files = $this->_getTempDirectoryContents('/.*\.([rz]\d{2,}|rar|zipx?|0{0,2}1)($|[^a-z0-9])/i');
 
-			foreach ($files as $file) {
+			if ($files instanceof Traversable) {
+				foreach ($files as $file) {
 
-				// Check if the file exists.
-				if (is_file($file[0])) {
-					$rarData = @file_get_contents($file[0]);
-					if ($rarData !== false) {
-						$this->_processCompressedData($rarData);
-						$foundCompressedFile = true;
+					// Check if the file exists.
+					if (is_file($file[0])) {
+						$rarData = @file_get_contents($file[0]);
+						if ($rarData !== false) {
+							$this->_processCompressedData($rarData);
+							$foundCompressedFile = true;
+						}
+						@unlink($file[0]);
 					}
-					@unlink($file[0]);
 				}
 			}
 

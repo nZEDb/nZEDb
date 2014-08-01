@@ -18,6 +18,46 @@ class Console
 	public $pdo;
 
 	/**
+	 * @var bool
+	 */
+	public $echooutput;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $pubkey;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $privkey;
+
+	/**
+	 * @var array|bool|string
+	 */
+	public $asstag;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $gameqty;
+
+	/**
+	 * @var array|bool|int|string
+	 */
+	public $sleeptime;
+
+	/**
+	 * @var string
+	 */
+	public $imgSavePath;
+
+	/**
+	 * @var string
+	 */
+	public $renamed;
+
+	/**
 	 * @param array $options Class instances / Echo to cli.
 	 */
 	public function __construct(array $options = array())
@@ -602,51 +642,53 @@ class Console
 				$this->pdo->log->doEcho($this->pdo->log->header("Processing " . $res->rowCount() . ' console release(s).'));
 			}
 
-			foreach ($res as $arr) {
-				$startTime = microtime(true);
-				$usedAmazon = false;
-				$gameInfo = $this->parseTitle($arr['searchname']);
-				if ($gameInfo !== false) {
+			if ($res instanceof Traversable) {
+				foreach ($res as $arr) {
+					$startTime = microtime(true);
+					$usedAmazon = false;
+					$gameInfo = $this->parseTitle($arr['searchname']);
+					if ($gameInfo !== false) {
 
-					if ($this->echooutput) {
-						$this->pdo->log->doEcho(
-							$this->pdo->log->headerOver('Looking up: ') .
-							$this->pdo->log->primary(
-								$gameInfo['title'] .
-								' (' .
-								$gameInfo['platform'] . ')'
-							)
-						);
-					}
-
-					// Check for existing console entry.
-					$gameCheck = $this->getConsoleInfoByName($gameInfo['title'], $gameInfo['platform']);
-
-					if ($gameCheck === false) {
-						$gameId = $this->updateConsoleInfo($gameInfo);
-						$usedAmazon = true;
-						if ($gameId === false) {
-							$gameId = -2;
+						if ($this->echooutput) {
+							$this->pdo->log->doEcho(
+								$this->pdo->log->headerOver('Looking up: ') .
+								$this->pdo->log->primary(
+									$gameInfo['title'] .
+									' (' .
+									$gameInfo['platform'] . ')'
+								)
+							);
 						}
+
+						// Check for existing console entry.
+						$gameCheck = $this->getConsoleInfoByName($gameInfo['title'], $gameInfo['platform']);
+
+						if ($gameCheck === false) {
+							$gameId = $this->updateConsoleInfo($gameInfo);
+							$usedAmazon = true;
+							if ($gameId === false) {
+								$gameId = -2;
+							}
+						} else {
+							$gameId = $gameCheck['id'];
+						}
+
+						// Update release.
+						$this->pdo->queryExec(sprintf('UPDATE releases SET consoleinfoid = %d WHERE id = %d', $gameId, $arr['id']));
 					} else {
-						$gameId = $gameCheck['id'];
+						// Could not parse release title.
+						$this->pdo->queryExec(sprintf('UPDATE releases SET consoleinfoid = %d WHERE id = %d', -2, $arr['id']));
+
+						if ($this->echooutput) {
+							echo '.';
+						}
 					}
 
-					// Update release.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET consoleinfoid = %d WHERE id = %d', $gameId, $arr['id']));
-				} else {
-					// Could not parse release title.
-					$this->pdo->queryExec(sprintf('UPDATE releases SET consoleinfoid = %d WHERE id = %d', -2, $arr['id']));
-
-					if ($this->echooutput) {
-						echo '.';
+					// Sleep to not flood amazon.
+					$diff = floor((microtime(true) - $startTime) * 1000000);
+					if ($this->sleeptime * 1000 - $diff > 0 && $usedAmazon === true) {
+						usleep($this->sleeptime * 1000 - $diff);
 					}
-				}
-
-				// Sleep to not flood amazon.
-				$diff = floor((microtime(true) - $startTime) * 1000000);
-				if ($this->sleeptime * 1000 - $diff > 0 && $usedAmazon === true) {
-					usleep($this->sleeptime * 1000 - $diff);
 				}
 			}
 		} else if ($this->echooutput) {
@@ -657,7 +699,7 @@ class Console
 	function parseTitle($releasename)
 	{
 		$releasename = preg_replace('/\sMulti\d?\s/i', '', $releasename);
-		$result = $title = array();
+		$result = array();
 
 		// Get name of the game from name of release.
 		if (preg_match('/^(.+((abgx360EFNet|EFNet\sFULL|FULL\sabgxEFNet|abgx\sFULL|abgxbox360EFNet)\s|illuminatenboard\sorg|Place2(hom|us)e.net|united-forums? co uk|\(\d+\)))?(?P<title>.*?)[\.\-_ \:](v\.?\d\.\d|PAL|NTSC|EUR|USA|JP|ASIA|JAP|JPN|AUS|MULTI(\.?\d{1,2})?|PATCHED|FULLDVD|DVD5|DVD9|DVDRIP|PROPER|REPACK|RETAIL|DEMO|DISTRIBUTION|REGIONFREE|[\. ]RF[\. ]?|READ\.?NFO|NFOFIX|PSX(2PSP)?|PS[2-4]|PSP|PSVITA|WIIU|WII|X\-?BOX|XBLA|X360|3DS|NDS|N64|NGC)/i', $releasename, $matches)) {
@@ -677,6 +719,8 @@ class Console
 					$result['title'] = $dlc[0];
 				}
 			}
+		} else {
+			$title = '';
 		}
 
 		// Get the platform of the release.

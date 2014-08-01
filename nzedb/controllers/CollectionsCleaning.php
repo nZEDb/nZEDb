@@ -7,8 +7,30 @@
  */
 class CollectionsCleaning
 {
+	/**
+	 * @var string
+	 */
 	public $subject = '';
+
+	/**
+	 * @var string
+	 */
 	public $groupName = '';
+
+	/**
+	 * @var string
+	 */
+	public $e0;
+
+	/**
+	 * @var string
+	 */
+	public $e1;
+
+	/**
+	 * @var string
+	 */
+	public $e2;
 
 	/**
 	 *

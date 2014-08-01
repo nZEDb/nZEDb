@@ -34,6 +34,8 @@ class Install
 	public $ADMIN_EMAIL;
 	public $NZB_PATH;
 	public $TMP_PATH;
+	public $UNRAR_PATH;
+	public $WWW_TOP;
 	public $COMPILED_CONFIG;
 	public $doCheck = false;
 	public $sha1Check;
