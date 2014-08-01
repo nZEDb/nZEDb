@@ -64,7 +64,7 @@ class TmuxOutput extends Tmux
 		printf($masks[1],
 				"USP Connections:",
 				sprintf(
-					"%d active (%d total) - %s:%d)",
+					"%d active (%d total) - %s:%d",
 					$runVar['conncounts']['primary']['active'],
 					$runVar['conncounts']['primary']['total'],
 					$runVar['connections']['host'],
