@@ -124,7 +124,7 @@ class Console
 		return ($res === false ? 0 : $res["num"]);
 	}
 
-	public function getConsoleRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
+	public function getConsoleRange($cat, $start, $num, $orderby, $excludedcats = array())
 	{
 
 		$browseby = $this->getBrowseBy();
@@ -467,7 +467,6 @@ class Console
 			$con['review'] = trim(strip_tags((string)$amaz->Items->Item->EditorialReviews->EditorialReview->Content));
 		}
 
-		$genreKey = -1;
 		$genreName = '';
 		if (isset($amaz->Items->Item->BrowseNodes) || isset($amaz->Items->Item->ItemAttributes->Genre)) {
 			if (isset($amaz->Items->Item->BrowseNodes)) {

@@ -27,13 +27,13 @@ class Categorize extends Category
 	 * Release name to sort through.
 	 * @var string
 	 */
-	protected $releaseName;
+	public $releaseName;
 
 	/**
 	 * Group ID of the releasename we are sorting through.
 	 * @var int|string
 	 */
-	protected $groupID;
+	public $groupID;
 
 	/**
 	 * Construct.

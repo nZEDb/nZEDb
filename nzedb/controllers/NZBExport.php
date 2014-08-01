@@ -85,7 +85,7 @@ class NZBExport
 			$gzip = true;
 		}
 
-		$fromDate = $toDate = $groups = '';
+		$fromDate = $toDate = '';
 		$path = $params[0];
 
 		// Check if the path ends with dir separator.
@@ -136,7 +136,7 @@ class NZBExport
 			$groups = $this->pdo->query('SELECT id, name FROM groups');
 		}
 
-		$exported = $currentExport = 0;
+		$exported = 0;
 		// Loop over groups to take less RAM.
 		foreach ($groups as $group) {
 			$currentExport = 0;

@@ -10,6 +10,7 @@ New updates are grouped by person, at the top of the file.
 	* ---: Test scrutinizer.
 	* Chg: More changes for scrutinizer.
 	* Chg: More scrutinize recommendations.
+	* Rem: Remove unused variables.
 2014-08-01 ruhllatio
 	* Mrg: tasky's XXX changes PR #1440
 	* Mrg: dev-tmuxrevamp into dev (please make sure tmux is restarted)

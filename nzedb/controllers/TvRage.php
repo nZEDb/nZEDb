@@ -236,7 +236,7 @@ class TvRage
 		$ret = [];
 
 		if (!$show) {
-			return FALSE;
+			return false;
 		}
 
 		$url = $this->showQuickInfoURL . urlencode($show);
@@ -306,6 +306,7 @@ class TvRage
 
 			return $ret;
 		}
+		return false;
 	}
 
 	public function getRange($start, $num, $ragename = "")
@@ -847,7 +848,6 @@ class TvRage
 				}
 
 				foreach ($arrXml['show'] as $arr) {
-					$titlepct = $urlpct = $akapct = 0;
 					$tvrlink = '';
 
 					// Get a match percentage based on our name and the name returned from tvr.
@@ -956,11 +956,6 @@ class TvRage
 		} else {
 			return -1;
 		}
-
-		if ($this->echooutput) {
-			echo $this->pdo->log->primary('No match found online.');
-		}
-		return false;
 	}
 
 	public function checkMatch($ourName, $tvrName)
@@ -1224,5 +1219,3 @@ class TvRage
 	}
 
 }
-
-?>

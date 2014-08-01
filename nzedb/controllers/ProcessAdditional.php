@@ -860,7 +860,7 @@ Class ProcessAdditional
 				return false;
 		}
 
-		return $this->_processCompressedFileList($dataSummary['main_type']);
+		return $this->_processCompressedFileList();
 	}
 
 	/**
@@ -1357,7 +1357,7 @@ Class ProcessAdditional
 	 */
 	protected function _finalizeRelease()
 	{
-		$vSQL = $jSQL = $query = '';
+		$vSQL = $jSQL = '';
 		$iSQL = ', haspreview = 0';
 
 		// If samples exist from previous runs, set flags.

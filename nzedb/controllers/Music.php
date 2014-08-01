@@ -153,12 +153,11 @@ class Music
 	 * @param       $start
 	 * @param       $num
 	 * @param       $orderby
-	 * @param       $maxage
 	 * @param array $excludedcats
 	 *
 	 * @return array
 	 */
-	public function getMusicRange($cat, $start, $num, $orderby, $maxage = -1, $excludedcats = array())
+	public function getMusicRange($cat, $start, $num, $orderby, $excludedcats = array())
 	{
 		$pdo = $this->pdo;
 
@@ -490,11 +489,6 @@ class Music
 
 		if ($musicId) {
 			if ($this->echooutput) {
-				if ($mus["artist"] == "") {
-					$artist = "";
-				} else {
-					$artist = "Artist: " . $mus['artist'] . ", Album: ";
-				}
 				$this->pdo->log->doEcho(
 					$this->pdo->log->header("\nAdded/updated album: ") .
 					$this->pdo->log->alternateOver("   Artist: ") .
