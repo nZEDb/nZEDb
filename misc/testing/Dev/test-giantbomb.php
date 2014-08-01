@@ -8,6 +8,8 @@ $giantbombkey = (new \nzedb\db\Settings())->getSetting('giantbombkey');
 $cli = new ColorCLI();
 $obj = new GiantBomb($giantbombkey, $resp = "json");
 
+$e = null;
+
 try {
 	$result = $obj->search("South Park The Stick Of Truth", '', 1);
 	$result = json_decode(json_encode($result), true);

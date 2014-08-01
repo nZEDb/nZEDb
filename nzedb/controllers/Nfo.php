@@ -34,6 +34,20 @@ class Nfo
 	private $maxsize;
 
 	/**
+	 * Max amount of times to retry to download a Nfo.
+	 * @var string|int
+	 * @access private
+	 */
+	private $maxRetries;
+
+	/**
+	 * Min NFO size to process.
+	 * @var string|int
+	 * @access private
+	 */
+	private $minsize;
+
+	/**
 	 * Path to temporarily store files.
 	 * @var string
 	 * @access private
@@ -298,7 +312,6 @@ class Nfo
 
 			if ($this->echo) {
 				// Get count of releases per nfo status
-				$outString = PHP_EOL . 'Available to process';
 				$nfoStats = $this->pdo->queryDirect(
 					sprintf('
 						SELECT nfostatus AS status, COUNT(*) AS count
@@ -317,7 +330,8 @@ class Nfo
 						$this->maxsize
 					)
 				);
-				if ($nfoStats !== false && $nfoStats->rowCount() > 0) {
+				if ($nfoStats instanceof Traversable) {
+					$outString = PHP_EOL . 'Available to process';
 					foreach ($nfoStats as $row) {
 						$outString .= ', ' . $row['status'] . ' = ' . number_format($row['count']);
 					}
@@ -388,7 +402,7 @@ class Nfo
 			)
 		);
 
-		if ($releases !== false && $releases->rowCount() > 0) {
+		if ($releases instanceof Traversable) {
 			foreach ($releases as $release) {
 				$this->pdo->queryExec(
 					sprintf('DELETE FROM releasenfo WHERE nfo IS NULL AND releaseid = %d', $release['id'])

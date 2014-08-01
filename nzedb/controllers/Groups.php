@@ -515,7 +515,7 @@ class Groups
 			sprintf("SELECT guid FROM releases %s", ($id === false ? '' : 'WHERE group_id = ' . $id))
 		);
 
-		if ($releaseArray !== false) {
+		if ($releaseArray instanceof Traversable) {
 			$releases = new Releases(['Settings' => $this->pdo, 'Groups' => $this]);
 			$nzb = new NZB($this->pdo);
 			foreach ($releaseArray as $release) {

@@ -141,6 +141,12 @@ class Binaries
 	protected $_blackListEmpty = false;
 
 	/**
+	 * Max tries to download headers.
+	 * @var int
+	 */
+	protected $_partRepairMaxTries;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $options Class instances / echo to CLI?

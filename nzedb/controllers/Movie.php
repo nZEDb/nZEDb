@@ -764,6 +764,7 @@ class Movie
 			if ($buffer !== false) {
 				$art = @simplexml_load_string($buffer);
 				if ($art !== false) {
+					$ret = array();
 					if (isset($art->movie->moviebackgrounds->moviebackground[0]['url'])) {
 						$ret['backdrop'] = $art->movie->moviebackgrounds->moviebackground[0]['url'];
 					} else if (isset($art->movie->moviethumbs->moviethumb[0]['url'])) {
