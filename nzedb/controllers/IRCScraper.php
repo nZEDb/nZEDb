@@ -6,7 +6,7 @@ class IRCScraper extends IRCClient
 {
 	/**
 	 * Regex to ignore categories.
-	 * @var string
+	 * @var string|bool
 	 */
 	protected $_categoryIgnoreRegex;
 
@@ -59,7 +59,7 @@ class IRCScraper extends IRCClient
 
 	/**
 	 * Regex to ignore PRE titles.
-	 * @var string
+	 * @var string|bool
 	 */
 	protected $_titleIgnoreRegex;
 
