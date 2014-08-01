@@ -319,7 +319,7 @@ while ($runVar['counts']['iterations'] > 0) {
 	);
 
 	//begin update display with screen clear
-	exec('clear');
+	passthru('clear');
 
 	//display monitor header
 	$tOut->displayOutput(1, $runVar);
