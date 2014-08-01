@@ -23,20 +23,12 @@ if (command_exist('php5')) {
 
 if (isset($argv[1])) {
 	$tmux = new Tmux();
-	$running = $tmux->get()->running;
-	$delay = $tmux->get()->monitor_delay;
-	$patch = $tmux->get()->patchdb;
-	$restart = 'false';
-
-	if ($running == '1' && $argv[1] == 'true') {
-		$pdo->queryExec("UPDATE tmux SET value = '0' WHERE setting = 'RUNNING'");
-		$sleep = $delay;
-		echo $pdo->log->header("Stopping tmux scripts and waiting $sleep seconds for all panes to shutdown");
-		$restart = 'true';
-		sleep($sleep);
+	$restart = false;
+	if ($argv[1] === 'true') {
+		$restart = $tmux->isRunning();
 	}
 
-	if ($patch == '1') {
+	if ($tmux->get()->patchdb == '1') {
 		exec("cd $ROOTDIR && git pull");
 
 		//remove folders from smarty
