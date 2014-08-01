@@ -51,7 +51,7 @@ while ($cdone < $clen['total']) {
 	// Only load 1000 collections per loop to not overload memory.
 	$collections = $pdo->queryAssoc('select * from collections limit ' . $cdone . ',1000;');
 
-	if ($collections) {
+	if ($collections instanceof Traversable) {
 		foreach ($collections as $collection) {
 			$collection['subject'] = $pdo->escapeString($collection['subject']);
 			$collection['fromname'] = $pdo->escapeString($collection['fromname']);
@@ -72,7 +72,7 @@ while ($cdone < $clen['total']) {
 			//Get binaries and split to correct group tables.
 			$binaries = $pdo->queryAssoc('SELECT * FROM binaries WHERE collectionID = ' . $oldcid . ';');
 
-			if ($binaries) {
+			if ($binaries instanceof Traversable) {
 				foreach ($binaries as $binary) {
 					$binary['name'] = $pdo->escapeString($binary['name']);
 					$binary['binaryhash'] = $pdo->escapeString($binary['binaryhash']);
@@ -87,7 +87,7 @@ while ($cdone < $clen['total']) {
 
 					//Get parts and split to correct group tables.
 					$parts = $pdo->queryAssoc('SELECT * FROM parts WHERE binaryID = ' . $oldbid . ';');
-					if ($parts) {
+					if ($parts instanceof Traversable) {
 						$firstpart = true;
 						$partsnew = '';
 						foreach ($parts as $part) {
@@ -121,7 +121,7 @@ if ($DoPartRepair === true) {
 		while ($pdone < $plen['total']) {
 			// Only load 10000 partrepair records per loop to not overload memory.
 			$partrepairs = $pdo->queryAssoc(sprintf('select * from partrepair where group_id = %d limit %d, 10000;', $group['id'], $pdone));
-			if ($partrepairs) {
+			if ($partrepairs instanceof Traversable) {
 				foreach ($partrepairs as $partrepair) {
 					$partrepair['numberid'] = $pdo->escapeString($partrepair['numberid']);
 					$partrepair['group_id'] = $pdo->escapeString($partrepair['group_id']);

@@ -24,7 +24,7 @@ class hash_algorithms
 
 	/**
 	 * The string we are expecting to get.
-	 * @var string|array
+	 * @var array
 	 */
 	protected $_expectedString;
 

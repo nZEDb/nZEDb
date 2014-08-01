@@ -8,7 +8,7 @@ $pdo = new Settings();
 
 if (!isset($argv[1]) || (isset($argv[1]) && $argv[1] !== 'true')) {
 	exit($pdo->log->error("\nThis script resets all AUTOINC ids for each table id columns, it can be dangerous. Please BACKUP your database before running this script.\n"
-					. "php $argv[0] true      ...: To reset all table id columns.\n"));
+					. "php fix_autoinc.php true      ...: To reset all table id columns.\n"));
 }
 
 echo $pdo->log->warning("This script resets all table id columns.");

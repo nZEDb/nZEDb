@@ -8,11 +8,11 @@ $pdo = new Settings();
 if ($argc < 3 || !isset($argv[1]) || (isset($argv[1]) && !is_numeric($argv[1]))) {
 	exit($pdo->log->error("\nIncorrect argument suppplied. This script will delete all duplicate releases matching on name, fromname, group_id and size.\n"
 		. "Unfortunately, I can not guarantee which copy will be deleted.\n\n"
-		. "php $argv[0] 10 exact             ...: To delete all duplicates added within the last 10 hours.\n"
-		. "php $argv[0] 10 near              ...: To delete all duplicates with size variation of 1% and added within the last 10 hours.\n"
-		. "php $argv[0] 0 exact              ...: To delete all duplicates.\n"
-		. "php $argv[0] 0 near               ...: To delete all duplicates with size variation of 1%.\n"
-		. "php $argv[0] 10 exact dupes/      ...: To delete all duplicates added within the last 10 hours and save a copy of the nzb to dupes folder.\n"));
+		. "php remove_exact_dupes.php 10 exact             ...: To delete all duplicates added within the last 10 hours.\n"
+		. "php remove_exact_dupes.php 10 near              ...: To delete all duplicates with size variation of 1% and added within the last 10 hours.\n"
+		. "php remove_exact_dupes.php 0 exact              ...: To delete all duplicates.\n"
+		. "php remove_exact_dupes.php 0 near               ...: To delete all duplicates with size variation of 1%.\n"
+		. "php remove_exact_dupes.php 10 exact dupes/      ...: To delete all duplicates added within the last 10 hours and save a copy of the nzb to dupes folder.\n"));
 }
 
 $crosspostt = $argv[1];
@@ -38,9 +38,9 @@ if ($crosspostt != 0) {
 
 do {
 	$resrel = $pdo->queryDirect($query);
-	$total = $resrel->rowCount();
-	echo $pdo->log->header(number_format($total) . " Releases have Duplicates");
-	if (count($resrel) > 0) {
+	if ($resrel instanceof Traversable) {
+		$total = $resrel->rowCount();
+		echo $pdo->log->header(number_format($total) . " Releases have Duplicates");
 		foreach ($resrel as $rowrel) {
 			$nzbpath = $nzb->getNZBPath($rowrel['guid']);
 			if (isset($argv[3]) && is_dir($argv[3])) {

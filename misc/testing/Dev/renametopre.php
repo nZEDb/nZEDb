@@ -38,7 +38,7 @@ function preName($argv, $argc)
 	global $pdo;
 	$groups = new Groups(['Settings' => $pdo]);
 	$category = new Categorize(['Settings' => $pdo]);
-	$internal = $external = $pre = $none = 0;
+	$internal = $external = $pre = 0;
 	$show = 2;
 	if ($argv[$argc - 1] === 'show') {
 		$show = 1;
@@ -48,7 +48,7 @@ function preName($argv, $argc)
 	$counter = 0;
 	$pdo->log = new ColorCLI();
 	$full = $all = $usepre = false;
-	$what = $where = $why = '';
+	$what = $where = '';
 	if ($argv[1] === 'full') {
 		$full = true;
 	} else if ($argv[1] === 'all') {
@@ -152,14 +152,14 @@ function preName($argv, $argc)
 					} else {
 						$determinedcat = $category->determineCategory($cleanName, $row["group_id"]);
 						if ($propername == true) {
-							$run = $pdo->queryExec(
+							$pdo->queryExec(
 								sprintf(
 									"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL, "
 									. "iscategorized = 1, isrenamed = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $pdo->escapeString($cleanName), $determinedcat, $row['id']
 								)
 							);
 						} else {
-							$run = $pdo->queryExec(
+							$pdo->queryExec(
 								sprintf(
 									"UPDATE releases SET rageid = -1, seriesfull = NULL, season = NULL, episode = NULL, tvtitle = NULL, tvairdate = NULL, imdbid = NULL, musicinfoid = NULL, consoleinfoid = NULL, bookinfoid = NULL, anidbid = NULL,  "
 									. "iscategorized = 1, searchname = %s, categoryid = %d, preid = " . $preid . " WHERE id = %d", $pdo->escapeString($cleanName), $determinedcat, $row['id']
@@ -167,16 +167,12 @@ function preName($argv, $argc)
 							);
 						}
 						if ($increment === true) {
-							$status = "renametopre Match";
 							$internal++;
 						} else if ($predb === true) {
-							$status = "PreDB: Match";
 							$pre++;
 						} else if ($predbfile === true) {
-							$status = "PreDB: Filename Match";
 							$pre++;
 						} else if ($propername === true) {
-							$status = "ReleaseCleaner Match";
 							$external++;
 						}
 						if ($show === 1) {
