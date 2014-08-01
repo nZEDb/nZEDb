@@ -35,7 +35,7 @@ else
 }
 
 /**
- * @param string $group
+ * @param array $group
  * @param Binaries $binaries
  *
  * @return bool
