@@ -436,7 +436,7 @@ class Tmux
 				(SELECT searchname FROM releases ORDER BY adddate DESC LIMIT 1) AS newestrelname,
 				(SELECT UNIX_TIMESTAMP(MIN(dateadded)) FROM collections) AS oldestcollection,
 				(SELECT UNIX_TIMESTAMP(MAX(predate)) FROM predb) AS newestpre,
-				(SELECT UNIX_TIMESTAMP(MAX(adddate)) FROM releases WHERE nzbstatus = 1) AS newestrelease";
+				(SELECT UNIX_TIMESTAMP(MAX(adddate)) FROM releases) AS newestrelease";
 		$newoldpg = "SELECT
 				(SELECT searchname FROM releases ORDER BY adddate DESC LIMIT 1) AS newestrelname,
 				(SELECT extract(epoch FROM dateadded) FROM collections ORDER BY dateadded ASC LIMIT 1) AS oldestcollection,
