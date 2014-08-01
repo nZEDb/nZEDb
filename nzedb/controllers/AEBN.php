@@ -36,7 +36,7 @@ class AEBN
 	protected $searchfound = false;
 
 	protected $whichsite = array();
-	protected $response = array();
+	protected $response = null;
 	protected $res = array();
 	protected $html;
 

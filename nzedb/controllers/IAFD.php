@@ -19,7 +19,7 @@ class IAFD {
 	protected $dosearch = false;
 	protected $dvdfound = false;
 	protected $getredirect = null;
-	protected $response = array();
+	protected $response = null;
 	protected $res = array();
 	protected $html;
 
