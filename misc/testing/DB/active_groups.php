@@ -43,7 +43,7 @@ if (isset($argv[3]) && is_numeric($argv[3])) {
 
 $mask = $pdo->log->primary("%-50.50s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s %22.22s");
 $releases = $pdo->queryDirect("SELECT name, backfill_target, first_record_postdate, last_updated, last_updated, CAST(last_record AS SIGNED)-CAST(first_record AS SIGNED) AS 'headers downloaded', TIMESTAMPDIFF(DAY,first_record_postdate,NOW()) AS days FROM groups");
-if ($releases !== false) {
+if ($releases instanceof Traversable) {
 	foreach ($releases as $release) {
 		$count += $release['headers downloaded'];
 		$groups++;
@@ -68,7 +68,7 @@ $releases = $pdo->queryDirect(
 	)
 );
 
-if ($releases !== false) {
+if ($releases instanceof Traversable) {
 	foreach ($releases as $release) {
 		$headers = number_format($release['headers downloaded']);
 		printf(
