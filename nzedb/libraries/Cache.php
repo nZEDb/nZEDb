@@ -22,17 +22,12 @@ Class Cache
 	 */
 	public function set($key, $data, $expiration)
 	{
-		switch (nZEDb_CACHE_TYPE) {
-			case Cache::TYPE_REDIS:
-				$data = ($this->IgBinarySupport ? igbinary_serialize($data) : serialize($data));
-				break;
-			case Cache::TYPE_MEMCACHED:
-				break;
-			default:
-				return false;
-		}
 		if ($this->connected === true && $this->ping() === true) {
-			return $this->server->set($key, $data, $expiration);
+			return $this->server->set(
+				$key,
+				($this->isRedis ? ($this->IgBinarySupport ? igbinary_serialize($data) : serialize($data)) : $data),
+				$expiration
+			);
 		}
 		return false;
 	}
@@ -48,16 +43,8 @@ Class Cache
 	public function get($key)
 	{
 		if ($this->connected === true && $this->ping() === true) {
-			switch (nZEDb_CACHE_TYPE) {
-				case Cache::TYPE_REDIS:
-					$data = $this->server->get($key);
-					return ($this->IgBinarySupport ? igbinary_unserialize($data) : unserialize($data));
-					break;
-				case Cache::TYPE_MEMCACHED:
-					return $this->server->get($key);
-				default:
-					return false;
-			}
+			$data = $this->server->get($key);
+			return ($this->isRedis ? ($this->IgBinarySupport ? igbinary_unserialize($data) : unserialize($data)) : $data);
 		}
 		return false;
 	}
