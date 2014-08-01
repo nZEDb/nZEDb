@@ -13,6 +13,11 @@ abstract class RequestID
 	const REQID_FOUND  =  1; // Request ID found and release was updated.
 
 	/**
+	 * @var Groups
+	 */
+	public $groups;
+
+	/**
 	 * @param array $options Class instances / Echo to cli?
 	 */
 	public function __construct(array $options = array())
@@ -124,6 +129,7 @@ abstract class RequestID
 	 */
 	protected function _siftReqId()
 	{
+		$requestID = array();
 		switch (true) {
 			case preg_match('/\[ ?#?scnzb@?efnet ?\]\[(\d+)\]/', $this->_release['name'], $requestID):
 			case preg_match('/\[\s*(\d+)\s*\]/', $this->_release['name'], $requestID):

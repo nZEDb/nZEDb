@@ -21,6 +21,16 @@ class Releases
 	public $pdo;
 
 	/**
+	 * @var Groups
+	 */
+	public $groups;
+
+	/**
+	 * @var bool
+	 */
+	public $updategrabs;
+
+	/**
 	 * @var array $options Class instances.
 	 */
 	public function __construct(array $options = array())
